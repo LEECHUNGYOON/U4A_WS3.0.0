@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>U4A Workspace #Main</title>
+    <meta charset="utf-8">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <!-- 테스트용 -->
+    <!-- <script id="sap-ui-bootstrap" src="https://openui5.hana.ondemand.com/resources/sap-ui-core.js"
+        data-sap-ui-language="EN" data-sap-ui-preload="async" data-sap-ui-compatversion="edge"
+        data-sap-ui-theme="sap_fiori_3_dark"
+        data-sap-ui-libs="sap.m, sap.ui.layout, sap.ui.table, sap.tnt, sap.ui.codeeditor, sap.ui.unified"
+        data-sap-ui-noduplicateids="true" data-sap-ui-resourceroots='{
+                "u4a" : "../lib/u4a/"
+            }'>
+    </script> -->
+
+    <!-- Release 용 -->
+    <!-- <script id="sap-ui-bootstrap" src="../lib/openui5/v1772/resources/sap-ui-core.js" data-sap-ui-language="EN"
+        data-sap-ui-preload="async" data-sap-ui-compatversion="edge" data-sap-ui-theme="sap_fiori_3_dark"
+        data-sap-ui-libs="sap.m, sap.ui.layout, sap.ui.table, sap.tnt, sap.ui.codeeditor, sap.ui.unified"
+        data-sap-ui-noduplicateids="true" data-sap-ui-resourceroots='{
+                "u4a" : "../lib/u4a/"
+            }'>
+    </script> -->
+
+    <link rel="stylesheet" href="./css/ws10_20.css">
+    <link rel="stylesheet" href="../css/jquery-ui.min.css">
+    <style>
+        .sapMPageFloatingFooter .sapUiHidden {
+            transition: top 0.35;
+        }
+    </style>
+</head>
+
+<body class="sapUiBody sapUiSizeCompact">
+    <div id="content" class="u4aWsContent"></div>
+
+    <script>
+        function onError(message, url, line, col, errorObj) {
+            alert(`${message}\n${url}, ${line}:${col}`);
+        }
+        window.onerror = onError;
+        document.onerror = onError;
+    </script>
+
+    <script src="./js/library-preload.js"></script>
+
+</body>
+
+</html>

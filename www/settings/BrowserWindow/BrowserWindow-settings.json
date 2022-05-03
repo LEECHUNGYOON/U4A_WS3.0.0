@@ -1,0 +1,21 @@
+{
+    "browserWindow": {
+        "width": 800,
+        "height": 800,
+        "icon": "www/img/logo.png",
+        "autoHideMenuBar": true,
+        "webPreferences": {
+            "devTools": true,
+            "nodeIntegration": true,
+            "enableRemoteModule": true,
+            "contextIsolation": false,
+            "backgroundThrottling": false,
+            "nativeWindowOpen": true,
+            "webSecurity": false,
+            "autoplayPolicy": "no-user-gesture-required"
+        }
+    },
+    "browserWindowInstance": {
+
+    }        
+}

@@ -1,0 +1,15 @@
+.u4aWsRuntimeDropArea {
+    /* border: 1rem solid black; */
+    border: .0625rem solid;
+    border-style: dashed !important;
+}
+.sapUiTheme-sap_fiori_3_dark .u4aWsRuntimeDropArea {
+    border: .0625rem solid #8696a9;
+}
+
+.sapMSticky .sapMTableTH {
+    top: 0;
+    position: sticky;
+    position: -webkit-sticky;
+    z-index: 1;
+}

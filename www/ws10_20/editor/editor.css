@@ -1,0 +1,353 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #222;
+    width:100%;
+    overflow:auto;
+}
+
+#editor {
+    margin: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.loading {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    z-index:10000;
+    margin: 0 auto;
+    top: 50vh;
+    -webkit-transform: translateY(-50%);
+            transform: translateY(-50%);
+}
+
+.loading__circle {
+    border-radius: 50%;
+    background-color: #979196;
+    width: 17px;
+    height: 17px;
+    display: block;
+    position: absolute;
+    z-index: 1;
+}
+
+.loading__circle:nth-child(1) {
+    top: 108px;
+    left: 86px;
+    -webkit-animation-duration: 750ms;
+            animation-duration: 750ms;
+    -webkit-animation-name: upup;
+            animation-name: upup;
+    -webkit-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease-in-out;
+            animation-timing-function: ease-in-out;
+    -webkit-animation-delay: -62.5ms;
+            animation-delay: -62.5ms;
+}
+
+.loading__circle:nth-child(2) {
+    top: 86px;
+    left: 108px;
+    -webkit-animation-duration: 750ms;
+            animation-duration: 750ms;
+    -webkit-animation-name: upup;
+            animation-name: upup;
+    -webkit-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease-in-out;
+            animation-timing-function: ease-in-out;
+    -webkit-animation-delay: -125ms;
+            animation-delay: -125ms;
+}
+
+.loading__circle:nth-child(3) {
+    top: 56px;
+    left: 116px;
+    -webkit-animation-duration: 750ms;
+            animation-duration: 750ms;
+    -webkit-animation-name: upup;
+            animation-name: upup;
+    -webkit-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease-in-out;
+            animation-timing-function: ease-in-out;
+    -webkit-animation-delay: -187.5ms;
+            animation-delay: -187.5ms;
+}
+
+.loading__circle:nth-child(4) {
+    top: 26px;
+    left: 108px;
+    -webkit-animation-duration: 750ms;
+            animation-duration: 750ms;
+    -webkit-animation-name: upup;
+            animation-name: upup;
+    -webkit-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease-in-out;
+            animation-timing-function: ease-in-out;
+    -webkit-animation-delay: -250ms;
+            animation-delay: -250ms;
+}
+
+.loading__circle:nth-child(5) {
+    top: 4px;
+    left: 86px;
+    -webkit-animation-duration: 750ms;
+            animation-duration: 750ms;
+    -webkit-animation-name: upup;
+            animation-name: upup;
+    -webkit-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+    -webkit-animation-timing-function: ease-in-out;
+            animation-timing-function: ease-in-out;
+    -webkit-animation-delay: -312.5ms;
+            animation-delay: -312.5ms;
+}
+
+.loading__circle:nth-child(6) {
+  top: -4px;
+  left: 56px;
+  -webkit-animation-duration: 750ms;
+          animation-duration: 750ms;
+  -webkit-animation-name: upup;
+          animation-name: upup;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease-in-out;
+          animation-timing-function: ease-in-out;
+  -webkit-animation-delay: -375ms;
+          animation-delay: -375ms;
+}
+
+.loading__circle:nth-child(7) {
+  top: 4px;
+  left: 26px;
+  -webkit-animation-duration: 750ms;
+          animation-duration: 750ms;
+  -webkit-animation-name: upup;
+          animation-name: upup;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease-in-out;
+          animation-timing-function: ease-in-out;
+  -webkit-animation-delay: -437.5ms;
+          animation-delay: -437.5ms;
+}
+
+.loading__circle:nth-child(8) {
+  top: 26px;
+  left: 4px;
+  -webkit-animation-duration: 750ms;
+          animation-duration: 750ms;
+  -webkit-animation-name: upup;
+          animation-name: upup;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease-in-out;
+          animation-timing-function: ease-in-out;
+  -webkit-animation-delay: -500ms;
+          animation-delay: -500ms;
+}
+
+.loading__circle:nth-child(9) {
+  top: 56px;
+  left: -4px;
+  -webkit-animation-duration: 750ms;
+          animation-duration: 750ms;
+  -webkit-animation-name: upup;
+          animation-name: upup;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease-in-out;
+          animation-timing-function: ease-in-out;
+  -webkit-animation-delay: -562.5ms;
+          animation-delay: -562.5ms;
+}
+
+.loading__circle:nth-child(10) {
+  top: 86px;
+  left: 4px;
+  -webkit-animation-duration: 750ms;
+          animation-duration: 750ms;
+  -webkit-animation-name: upup;
+          animation-name: upup;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease-in-out;
+          animation-timing-function: ease-in-out;
+  -webkit-animation-delay: -625ms;
+          animation-delay: -625ms;
+}
+
+.loading__circle:nth-child(11) {
+  top: 108px;
+  left: 26px;
+  -webkit-animation-duration: 750ms;
+          animation-duration: 750ms;
+  -webkit-animation-name: upup;
+          animation-name: upup;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease-in-out;
+          animation-timing-function: ease-in-out;
+  -webkit-animation-delay: -687.5ms;
+          animation-delay: -687.5ms;
+}
+
+.loading__circle:nth-child(12) {
+  top: 116px;
+  left: 56px;
+  -webkit-animation-duration: 750ms;
+          animation-duration: 750ms;
+  -webkit-animation-name: upup;
+          animation-name: upup;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: ease-in-out;
+          animation-timing-function: ease-in-out;
+  -webkit-animation-delay: -750ms;
+          animation-delay: -750ms;
+}
+
+@-webkit-keyframes upup {
+  0% {
+    -webkit-transform: scale(0.2, 0.2);
+            transform: scale(0.2, 0.2);
+    opacity: 1;
+  }
+  50% {
+    -webkit-transform: scale(1, 1);
+           transform: scale(1, 1);
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: scale(0.2, 0.2);
+            transform: scale(0.2, 0.2);
+    opacity: 1;
+  }
+}
+
+@keyframes upup {
+  0% {
+    -webkit-transform: scale(0.2, 0.2);
+            transform: scale(0.2, 0.2);
+    opacity: 1;
+  }
+  50% {
+    -webkit-transform: scale(1, 1);
+            transform: scale(1, 1);
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: scale(0.2, 0.2);
+            transform: scale(0.2, 0.2);
+    opacity: 1;
+  }
+}
+
+#snackbar {
+visibility: hidden;
+min-width: 250px;
+margin-left: -125px;
+background-color: #333;
+color: #fff;
+text-align: center;
+border-radius: 2px;
+padding: 16px;
+position: fixed;
+z-index: 1;
+left: 50%;
+bottom: 30%;
+font-size: 17px;
+}
+
+#snackbar.show {
+visibility: visible;
+-webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+#zzoverlay {
+position: fixed;
+display: none;
+width: 100%;
+height: 100%;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: rgba(0,0,0,0.5);
+z-index: 10000;
+
+}
+
+#zztext{
+position: absolute;
+top: 50%;
+left: 50%;
+font-size: 50px;
+color: white;
+transform: translate(-50%,-50%);
+-ms-transform: translate(-50%,-50%);
+}
+
+#BTSAVE {
+display: block;
+position: fixed;
+bottom: 25px;
+right: 30px;
+z-index: 99;
+font-size: 18px;
+border: none;
+outline: none;
+background-color: red;
+cursor: pointer;
+padding: 12px;
+border-radius: 4px;
+color:#ffffff;
+text-shadow:0px 1px 0px #1570cd;
+background-color:#3d94f6;
+}
+
+#BTSAVE:hover {
+background-color: #555;
+}
+
+#FINDDEL {
+display: none;
+position: fixed;
+bottom: 25px;
+right: 120px;
+z-index: 99;
+font-size: 18px;
+border: none;
+outline: none;
+background-color: red;
+cursor: pointer;
+padding: 12px;
+border-radius: 4px;
+color:#ffffff;
+text-shadow:0px 1px 0px #1570cd;
+background-color:#3d94f6;
+}
+
+#FINDDEL:hover {
+background-color: #555;
+}
+
+.cl_findLine {
+position: absolute;
+background-color: blue;
+
+}
+
+.btnHidden {
+visibility: hidden;
+}
