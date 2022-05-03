@@ -6,6 +6,7 @@
     "use strict";
 
     let REMOTE = parent.REMOTE,
+        REMOTEMAIN = parent.REMOTEMAIN,
         APPCOMMON = oAPP.common,
         CURRWIN = REMOTE.getCurrentWindow(),
         SESSKEY = parent.getSessionKey(),
@@ -273,10 +274,13 @@
      ************************************************************************/
     oAPP.events.ev_pressBindPopupBtn = (oEvent) => {
 
-        alert("Binding Popup 버튼 이벤트");
+        // alert("Binding Popup 버튼 이벤트");
 
-        return;
-        
+        // return;
+
+        debugger;
+
+
         var sPopupName = "BINDPOPUP";
 
         // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
@@ -304,7 +308,7 @@
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
         // 실행할 URL
-        var sUrlPath = PATH.join(APPPATH, "ws10_20", "findPopup", "frame.html");
+        var sUrlPath = PATH.join(APPPATH, "ws10_20", "bindPopup", "frame.html");
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
@@ -312,12 +316,19 @@
         // 실행할 URL 적용
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {         
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
-            oBrowserWindow.webContents.send('if-find-info', oFindData);
+            var oBindPopupData = {
+                oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보 (필수)
+                T_9011: oAPP.DATA.LIB.T_9011,
+                oAppInfo: parent.getAppInfo(),
+                servNm: parent.getServerPath(),
+            };
+
+            oBrowserWindow.webContents.send('if_modelBindingPopup', oBindPopupData);
 
         });
 
@@ -352,6 +363,18 @@
 
     }; // end of oAPP.events.ev_pressZoomBtn 
 
+    /************************************************************************
+     * WS20의 멀티 메시지 리스트 아이템 클릭 이벤트
+     ************************************************************************/
+    oAPP.events.ev_pressFooterMsgColListItem = function (oEvent) {
 
+        var oCtx = oEvent.getSource().getBindingContext(),
+            sBindPath = oCtx.sPath,
+            oBindData = oCtx.getProperty(sBindPath);
+
+        // 하위로직 수행..
+
+
+    }; // end of oAPP.events.ev_pressFooterMsgColListItem  
 
 })(window, $, oAPP);

@@ -96,15 +96,18 @@
      * **********************************************************************/
     oAPP.fn.fnMultiFooterMsg = function (aMsg) {
 
-        // 멀티 푸터 메시지 호출
-        if (oAPP.fn.fnShowMultiFooterMsg) {
-            oAPP.fn.fnShowMultiFooterMsg(aMsg);
+        let oMultiFooterMsgSplit = sap.ui.getCore().byId("u4aWs20MultiFootSplitLayoutData");
+        if (oMultiFooterMsgSplit == null) {
             return;
         }
 
-        oAPP.loadJs("fnShowMultiFooterMsg", function () {
-            oAPP.fn.fnShowMultiFooterMsg(aMsg);
-        });
+        oAPP.common.fnMultiFooterMsgClose();
+
+        oAPP.common.fnSetModelProperty("/FMTMSG", aMsg);
+
+        oMultiFooterMsgSplit.setSize("300px");
+        oMultiFooterMsgSplit.setMinSize(100);
+        oMultiFooterMsgSplit.setResizable(true);
 
     }; // end of oAPP.fn.fnMultiFooterMsg
 
@@ -143,7 +146,7 @@
         oBrowserOptions.url = sPath;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = oCurrWin;
-        
+
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
         oBrowserOptions.webPreferences.OBJTY = sWinObjType;

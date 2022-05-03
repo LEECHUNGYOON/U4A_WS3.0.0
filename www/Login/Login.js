@@ -368,10 +368,10 @@ let oAPP = (function () {
 
         switch (sStaffID) {
             case "yshong":
-                oPw.setValue("1qazxsw2");                
+                oPw.setValue("1qazxsw2");
                 break;
 
-            case "shhong":                
+            case "shhong":
                 oPw.setValue("2wsxzaq1!");
                 break;
 
@@ -448,6 +448,7 @@ let oAPP = (function () {
 
         return new sap.m.Page({
                 showHeader: false,
+                showFooter: true,
                 backgroundDesign: sap.m.PageBackgroundDesign.Transparent,
 
                 content: [
@@ -469,7 +470,25 @@ let oAPP = (function () {
 
                     })
 
-                ]
+                ],
+                footer: new sap.m.Toolbar({
+                    content: [
+                        new sap.m.Text({
+                            text: "Copyright 2022. Infocg inc. all rights reserved."
+                        }),
+
+                        new sap.m.ToolbarSpacer(),
+
+                        // new sap.m.Text({
+                        //     text: "CLIENT: {/LOGIN/CLIENT}"
+                        // }),
+
+                        new sap.m.Text({      
+                            text: "SYSID: {/LOGIN/SYSID}"
+                        }),
+
+                    ]
+                }).addStyleClass("sapUiSizeCompact")
 
             })
             .bindElement("/LOGIN")
@@ -507,6 +526,7 @@ let oAPP = (function () {
             ID: sRememberId,
             PW: "",
             LANGU: oServerInfo.LANGU,
+            SYSID: oServerInfo.SYSID,
             REMEMBER: bIsRemember,
             IDSUGG: []
         };
