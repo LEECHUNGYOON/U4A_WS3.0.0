@@ -241,7 +241,8 @@
             INSTANCENO: oItemData.INSNO,
             SYSTEMID: oItemData.SYSID,
             CLIENT: "",
-            LANGU: ""
+            LANGU: "",
+            SYSID: oItemData.SYSID
         };
 
         if (oResult.SYSINFO) {
