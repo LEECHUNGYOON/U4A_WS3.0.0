@@ -1,0 +1,31 @@
+{
+	"UI5" : {
+		"version": "v11000",
+		"testResource" : "https://sapui5.hana.ondemand.com/resources/sap-ui-core.js",
+		"bootstrap" : {
+			"data-sap-ui-language": "EN",
+			"data-sap-ui-noDuplicateIds": "true",
+			"data-sap-ui-preload": "async",
+			"data-sap-ui-compatVersion": "edge",
+			"data-sap-ui-theme": "sap_horizon_dark",
+			"data-sap-ui-libs": "sap.m"
+		}
+	},	
+	"requireFolders": [
+		"p13n",
+		"ext_api",
+		"ext_api\\vbs"
+	],
+	"requireFiles" : [
+		"p13n\\p13n.json",
+		"p13n\\events.json",
+		"p13n\\login.json",
+		"p13n\\ServerInfo.json",
+		"p13n\\zoom.json"		
+	],
+	"vbs" : {
+		"rootPath" : "ext_api\\vbs",
+		"controllerClassVbs" : "sapgui_ws.vbs"
+	},
+	"isDev" : true
+}

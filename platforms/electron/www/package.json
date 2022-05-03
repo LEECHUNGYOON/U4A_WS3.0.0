@@ -1,0 +1,16 @@
+{
+  "main": "cdv-electron-main.js",
+  "name": "com.u4a_ws3.app",
+  "displayName": "u4a_ws3",
+  "version": "3.0.0",
+  "description": "A U4A IDE Platform RnD Team application that responds to the deviceready event.",
+  "homepage": "https://www.u4ainfo.com",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "U4A IDE Platform RnD Team",
+    "email": "u4aide@u4ainfo.com"
+  },
+  "dependencies": {
+    "electron-devtools-installer": "^3.2.0"
+  }
+}

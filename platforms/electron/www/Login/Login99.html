@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+	<link rel="stylesheet" href="css/login.css">
+	<!-- <link rel="stylesheet" href="./style.css"> -->
+	<title>U4A Workspace #Login</title>
+</head>
+
+<body class="u4aWsLoginBody">
+
+	<script src="../cordova.js"></script>
+	<script src="Login01.js"></script>
+
+	<div class="u4aWsLoginWrapper">
+		<div class="u4aWsLoginContainer">
+			<div>
+				<div class="u4aWsLoginHeader">
+					<img class="u4a_logo" src="../img/logo.png" />
+					<h3 style="color:#ffffff;text-align: center;">U4A Workspace Login</h3>
+				</div>
+			</div>
+			<div class="u4aWsLoginFormArea">
+				<form class="u4aWsLoginForm" action="" method="post" name="form">
+					<label for="client">Client</label>
+					<input id="clientInput" style="width:100px;" maxLength="3" class="u4aWsLoginFormStyling" type="text"
+						onkeydown="if(window.event.keyCode==13){oAPP.fn_submit();};" name="client" placeholder="" />
+					<label for="username">ID</label>
+					<input id="idInput" class="u4aWsLoginFormStyling" type="text"
+						onkeydown="if(window.event.keyCode==13){oAPP.fn_submit();};" name="username" placeholder="" />
+					<label for="password">Password</label>
+					<input id="pwInput" class="u4aWsLoginFormStyling" type="password"
+						onkeydown="if(window.event.keyCode==13){oAPP.fn_submit();};" name="password" placeholder="" />
+					<label for="langu">Language</label>
+					<input id="languInput" style="width:100px;" class="u4aWsLoginFormStyling" type="text"
+						onkeydown="if(window.event.keyCode==13){oAPP.fn_submit();};" name="langu" placeholder="" />
+
+					<div class="u4aWsLoginBtnAnimate">
+						<a class="u4aWsLoginBtnSignin" onclick="oAPP.fn_submit();">Sign in</a>
+					</div>					
+				</form>
+			</div>
+			<div style="margin-top: 1rem; margin-left: 0.5rem;">
+				<button class="staffLoginBtn" style="width:100px;" onclick="oAPP.fnStaffLogin('ZAESTFT201', '1Qazxsw2@@');">영선(독일)</button>
+				<button class="staffLoginBtn" onclick="oAPP.fnStaffLogin('yshong', '1qazxsw2');">영선</button>
+				<button class="staffLoginBtn" onclick="oAPP.fnStaffLogin('shhong', '2wsxzaq1!');">성호</button>
+				<button class="staffLoginBtn" onclick="oAPP.fnStaffLogin('pes', 'dmstjq8!');">은섭</button>
+				<button class="staffLoginBtn" onclick="oAPP.fnStaffLogin('soccerhs', 'cjddbs12');">청윤</button>
+			</div>
+		</div>
+
+		<ul class="bg-bubbles">
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+		</ul>
+	</div>
+
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+        <link rel="stylesheet" href="css/login.css">
+        <title>U4A Workspace #Login</title>
+    </head>
+    <body>
+
+        <div class="login-page">
+            <div class="form">
+              <div class="login-form">
+                <input id="idInput" type="text" onkeydown="if(window.event.keyCode==13){oAPP.fn_submit();};" placeholder="id"/>
+                <input id="pwInput" type="password" onkeydown="if(window.event.keyCode==13){oAPP.fn_submit();};" placeholder="pw"/>                
+                <button id="loginBtn" onclick="oAPP.fn_submit();">login</button>          
+            </div>
+          </div>
+        </div>  
+
+        <script src="../cordova.js"></script>
+        <script src="Login01.js"></script>
+   
+    </body>
+</html> -->

@@ -1,0 +1,25 @@
+{
+  "browserWindow": {
+    "height": 800,
+    "webPreferences": {
+      "devTools": true,
+      "nodeIntegration": true,
+      "enableRemoteModule": true,
+      "contextIsolation": false,
+      "backgroundThrottling": false,
+      "nativeWindowOpen": true,
+      "webSecurity": false,
+      "autoplayPolicy": "no-user-gesture-required"
+    },
+    "width": 800,
+    "icon": "www/img/logo.png",
+    "autoHideMenuBar": true
+  },
+  "browserWindowInstance": {
+    "loadURL": {
+      "url": "index.html"
+    }
+  },
+  "scheme": "file",
+  "hostname": "localhost"
+}

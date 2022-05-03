@@ -1,0 +1,18 @@
+{
+  "background_color": "#FFF",
+  "display": "standalone",
+  "orientation": "any",
+  "start_url": "index.html",
+  "name": "u4a_ws3",
+  "short_name": "u4a_ws3",
+  "version": "com.u4a_ws3.app",
+  "description": "A U4A IDE Platform RnD Team application that responds to the deviceready event.",
+  "author": "U4A IDE Platform RnD Team",
+  "icons": [
+    {
+      "src": "www/img/logo.png",
+      "type": "image/png",
+      "sizes": "undefinedxundefined"
+    }
+  ]
+}

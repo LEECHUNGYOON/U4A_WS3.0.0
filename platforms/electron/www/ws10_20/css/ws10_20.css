@@ -1,0 +1,240 @@
+html,
+body,
+.u4aWsContent {
+    height: 100%;
+}
+
+.sapMSticky .sapMTableTH {
+    top: 0;
+    position: sticky;
+    position: -webkit-sticky;
+    z-index: 1;
+}
+
+.sapMSticky5 .sapMTableTH, .sapMSticky7>.sapMListInfoTBarContainer {
+    top: 2.75rem;
+}
+
+.sapMMessageToast {
+    max-width: none !important;
+}
+
+.sapMSelectListItemBase,
+.sapMITBText,
+.sapMListTblCellNoData,
+.sapMGHLITitle,
+.sapMObjStatusText {
+    font-family: "72", "72full", Arial, Helvetica, sans-serif;
+}
+
+.sapMDialog>.sapMDialogTitle:focus::after {
+    border: none !important;
+}
+
+.u4aWs10_HeaderToolbar .sapMBtn .sapMBtnInner {
+    border-color: transparent !important;
+}
+
+.u4aCssEditorDialog .sapMDialogScroll {
+    height: 100%;
+}
+
+/* Message Footer */
+.u4aWsMsgFooter {
+    position: absolute !important;
+    visibility: visible;
+    /* z-index: 10000000; */
+    bottom: 0;
+    width: 100%;
+    height: 200px;
+    min-height: 50px;
+    border: none;
+    box-shadow: 0 0 0 0.0625rem rgb(0 0 0 / 42%), 0 0.625rem 1.875rem 0 rgb(0 0 0 / 30%);
+    border-radius: 0.25rem;
+    overflow: hidden;
+    background: #fff;
+    box-sizing: border-box;
+    outline: none;
+    transform: translate(-50%);
+    -moz-transform: translate(-50%);
+    -webkit-transform: translate(-50%);
+    -ms-transform: translate(-50%);
+    display: inline-block;
+    left: 50%;
+}
+
+.u4aWsMsgFooterInner {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100%;
+}
+
+.u4aWsMsgFooterInactive {
+    display: none;
+}
+
+/* Toolbar Header */
+.u4aWs20_HeaderToolbar .sapMBtn .sapMBtnInner {
+    border-color: transparent !important;
+}
+
+.u4aWs20Page .sapTntToolPageHeader .sapMIBar {
+    padding-left: 0px;
+}
+
+/* WS10-> APP F4 Dialog */
+.u4aWsAppF4Dialog.sapMDialog {
+    min-height: 500px !important;
+    min-width: 800px !important;
+}
+
+/* WS20-> Mime Dialog */
+.u4aMimeTreeDlg.sapMDialog {
+    min-height: 500px !important;
+    min-width: 800px !important;
+}
+
+.u4aWsAppf4tree .sapUiTableTr,
+.u4aWsAppf4tree .sapUiTableTreeIcon,
+.u4aWsAppf4tree .sapUiTableCellFlex>.sapUiTableCellInner,
+.u4aWsAppf4tree .sapUiTableCellFlex>.sapUiTableCellInner .sapMText,
+.u4aWsAppf4tree .sapUiTableCell>.sapUiTableCellInner,
+.u4aWsAppf4tree .sapUiTableCell>.sapUiTableCellInner .sapMText {
+    cursor: pointer;
+}
+
+.u4aWsMimeImgPrev {
+    max-width: 100%;
+}
+
+.sapMPageFooterControlShow.sapUiHidden {
+    visibility: visible;
+    top: auto;
+    bottom: 0 !important;
+}
+
+.u4aWsBusyDialog.sapMDialog {
+    box-shadow: none !important;
+}
+.u4aWsBusyDialog.sapMDialog .sapMDialogSection {
+    background: transparent;
+}
+.u4aWsBusyDialog .u4aWsAvatarBusy {
+    background-color: transparent;
+}
+
+
+/************************************************************************************ 
+    sap_fiori_3_dark 
+ ************************************************************************************/
+
+.sapUiTheme-sap_fiori_3_dark .sapMListTblCellNoData {
+    color: #fff;
+}
+
+.sapUiTheme-sap_fiori_3_dark .u4aWsMsgFooterInner {
+    background-color: #29313a;
+}
+
+.sapUiTheme-sap_fiori_3_dark .sapMTBSeparator {
+    background: #b6cae0;
+}
+
+.sapUiTheme-sap_fiori_3_dark .u4aWsMsgFooter_HeaderToolbar.sapTntToolHeader {
+    background-color: #354a5f !important;
+    box-shadow: inset 0 -0.0625rem 0 0 #354a5f !important;
+}
+
+.sapUiTheme-sap_fiori_3_dark .sapTntToolHeader.sapMTB.u4aWsWindowMenuToolbar {
+    background-color: #29313A;
+}
+
+.sapUiTheme-sap_fiori_3_dark .sapMInput.sapMInputBaseReadonly .sapMInputBaseReadonlyWrapper.sapMInputBaseContentWrapperError {
+    background: #29313a;
+    border-color: #f88;
+}
+
+.u4aWsDisableTreeDrop {
+    opacity: 0.3;
+}
+
+.sapUiTheme-sap_fiori_3_dark .u4aWsDisableTreeDrop,
+.sapUiTheme-sap_horizon_dark .u4aWsDisableTreeDrop {
+    opacity: 0.3;
+}
+
+.sapUiTheme-sap_fiori_3_dark .u4aWsTmplWzdSideNav .sapTntNavLIItem>.sapUiIcon {
+    color: #8696A9;
+}
+
+.sapUiTheme-sap_fiori_3_dark .u4aWsTmplWzdAttrActive .sapTntNavLIItem>.sapUiIcon {
+    color: #ABE2AB;
+}
+
+/* CSS Link Add Popup */
+.sapUiTheme-sap_fiori_3_dark .u4aWsCssJsLinkAddStatSuccess {
+    color: #107e3e;
+}
+
+.sapUiTheme-sap_fiori_3_dark .u4aWsCssJsLinkAddStatError {
+    color: #bb0000;
+}
+
+.sapUiTheme-sap_fiori_3_dark .u4aWsCssJsLinkAddStatSuccess {
+    color: #abe2ab;
+}
+
+.sapUiTheme-sap_fiori_3_dark .u4aWsCssJsLinkAddStatError {
+    color: #ff8888;
+}
+
+/* Mime Repository Dialog */
+.sapUiTheme-sap_fiori_3_dark .u4aWsMimeTreeTable .u4aMimeTreeMyApp.sapUiTableContentRow,
+.sapUiTheme-sap_fiori_3_dark .u4aWsMimeTreeTable .u4aMimeTreeMyApp.sapUiTableContentRow.sapUiTableRowHvr {
+    background-color: #3c597a;
+}
+
+.sapUiTheme-sap_fiori_3_dark .u4aWsMimeTreeTable .u4aMimeTreeMyApp .sapMText,
+.sapUiTheme-sap_fiori_3_dark .u4aWsMimeTreeTable .u4aMimeTreeMyAppChild .sapMText,
+.sapUiTheme-sap_fiori_3_dark .u4aWsMimeTreeTable .u4aMimeTreeBrightRow .sapMText {
+    color: #fff;
+}
+
+.sapUiTheme-sap_fiori_3_dark .u4aWsMimeTreeTable .u4aMimeTreeDarkRow .sapMText {
+    color: #89919a;
+}
+
+
+
+/************************************************************************************ 
+    sap_horizon_dark 
+ ************************************************************************************/
+
+.sapUiTheme-sap_horizon_dark .sapMDialog {
+    box-shadow: 0 0 0 0.0625rem rgb(111, 111, 111), 1px 0rem 20rem 0 rgba(255, 255, 255, 0.3);
+}
+
+.sapUiTheme-sap_horizon_dark .u4aWsTmplWzdSideNav .sapTntNavLIItem .sapUiIcon {
+    color: #eaecee;
+}
+                                                      
+.sapUiTheme-sap_horizon_dark .u4aWsTmplWzdAttrActive .sapTntNavLIItem .sapUiIcon,
+.sapUiTheme-sap_horizon_dark .sapTntNavLI .u4aWsTmplWzdAttrActive .sapTntNavLIGroup.sapTntNavLIItem:not(.sapTntNavLIItemDisabled):active .sapUiIcon {
+    color: #97dd40;
+}
+
+/* Mime Repository Dialog */
+.sapUiTheme-sap_horizon_dark .u4aWsMimeTreeTable .u4aMimeTreeMyApp.sapUiTableContentRow,
+.sapUiTheme-sap_horizon_dark .u4aWsMimeTreeTable .u4aMimeTreeMyApp.sapUiTableContentRow.sapUiTableRowHvr {
+    background-color: #3c597a;
+}
+
+.sapUiTheme-sap_horizon_dark .u4aWsMimeTreeTable .u4aMimeTreeMyApp .sapMText,
+.sapUiTheme-sap_horizon_dark .u4aWsMimeTreeTable .u4aMimeTreeMyAppChild .sapMText,
+.sapUiTheme-sap_horizon_dark .u4aWsMimeTreeTable .u4aMimeTreeBrightRow .sapMText {
+    color: #fff;
+}
+
+.sapUiTheme-sap_horizon_dark .u4aWsMimeTreeTable .u4aMimeTreeDarkRow .sapMText {
+    color: #89919a;
+}

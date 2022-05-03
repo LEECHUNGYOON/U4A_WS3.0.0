@@ -1,0 +1,92 @@
+fn_setModelProperty
+oAPP.common.fnSetModelProperty
+
+fn_checkAppName
+oAPP.fn.fnCheckAppName
+
+fn_onEnterDispChangeMode
+oAPP.fn.fnOnEnterDispChangeMode
+
+fn_showFloatingFooterMsg
+oAPP.common.fnShowFloatingFooterMsg
+
+onMoveToPage
+oAPP.fn.fnOnMoveToPage
+
+setShortCut
+oAPP.common.setShortCut
+
+removeShortCut
+oAPP.common.removeShortCut
+
+fn_checkAppExists
+oAPP.fn.fnCheckAppExists
+
+fn_external_open
+oAPP.fn.fnExternalOpen
+
+sendAjaxLoginChk
+oAPP.common.sendAjaxLoginChk
+
+onExecApp
+oAPP.fn.fnOnExecApp
+
+fn_getModelProperty
+oAPP.common.fnGetModelProperty
+
+setDefaultBrowser
+oAPP.fn.fnOnInitP13nSettings
+
+onP13nFolderCreate
+oAPP.fn.fnOnP13nFolderCreate
+
+fn_MoveToWs10
+oAPP.fn.fnMoveToWs10
+
+fn_HideFloatingFooterMsg
+oAPP.common.fnHideFloatingFooterMsg
+
+// WS20 화면에서 떠있는 Dialog, Popup 종류, Electron Browser들 전체 닫는 function
+oAPP.fn.fnCloseAllWs20Dialogs();
+
+// Dialog가 있을 경우 닫는다.
+oAPP.fn.fnCloseAllDialog();
+
+// footer 메시지가 열려 있을 경우 닫는다.
+oAPP.common.fnHideFloatingFooterMsg();
+
+// Multi Footer 메시지 영역이 있으면 삭제.
+oAPP.common.fnMultiFooterMsgClose();
+
+// Electron Browser들 전체 닫는 function
+oAPP.fn.fnChildWindowClose();
+
+// 멀티 footer 메시지 띄우기
+oAPP.fn.fnShowMultiFooterMsg(aMsg);
+
+// Z-Index 구하기
+oAPP.common.fnGetZIndex();
+
+// 메시지 클래스 텍스트 구하기
+oAPP.common.fnGetMsgClassTxt();
+
+// 브라우저 갯수 체크
+oAPP.fn.fnGetSameBrowsers();
+
+// 컨트롤러 클래스 실행 (이벤트 메소드 명, 라인 번호)
+oAPP.common.execControllerClass = function(METHNM, INDEX)
+
+
+
+
+// ajax 양식
+function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob) {
+
+
+
+
+
+
+// bootstrap 경로 수정해야 할 위치
+ServerList.html
+ws10_20.html
