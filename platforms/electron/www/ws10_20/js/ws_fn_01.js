@@ -1352,6 +1352,9 @@
         let oWS20Page = new sap.m.Page("WS20", {
             showHeader: false,
             enableScrolling: false,
+            floatingFooter: false,
+            showFooter: true,
+
             content: [
 
                 new sap.m.VBox({
@@ -1368,27 +1371,27 @@
                 })
 
             ], // end of page content
-
-            floatingFooter: true,
+            
             footer: oMsgFooter,
 
-        }).bindProperty("showFooter", {
-            parts: [
-                sFmsgBindRootPath + "/ISSHOW"
-            ],
-            formatter: function (isshow) {
+        });
+        // .bindProperty("showFooter", {
+        //     parts: [
+        //         sFmsgBindRootPath + "/ISSHOW"
+        //     ],
+        //     formatter: function (isshow) {
 
-                if (isshow == null) {
-                    return false;
-                }
+        //         if (isshow == null) {
+        //             return false;
+        //         }
 
-                if (typeof isshow !== "boolean") {
-                    return false;
-                }
+        //         if (typeof isshow !== "boolean") {
+        //             return false;
+        //         }
 
-                return isshow;
-            }
-        }).addStyleClass("u4aWs20Page");
+        //         return isshow;
+        //     }
+        // }).addStyleClass("u4aWs20Page");
 
         return oWS20Page;
 
@@ -1411,7 +1414,7 @@
                     ],
                     layoutData: new sap.ui.layout.SplitterLayoutData({
                         size: "auto",
-                        // minSize: 800
+                        minSize: 800
                     })
                 }),
 

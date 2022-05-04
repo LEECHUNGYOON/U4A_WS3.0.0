@@ -1411,7 +1411,7 @@
                     ],
                     layoutData: new sap.ui.layout.SplitterLayoutData({
                         size: "auto",
-                        // minSize: 800
+                        minSize: 800
                     })
                 }),
 
