@@ -2,7 +2,7 @@
  * ws_fn_01.js
  **************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -17,11 +17,11 @@
     /************************************************************************
      * 초기 화면 그리기
      ************************************************************************/
-    oAPP.fn.fnOnInitRendering = function () {
+    oAPP.fn.fnOnInitRendering = function() {
 
         var oApp = new sap.m.NavContainer("WSAPP", {
             autoFocus: false,
-            afterNavigate: function (oEvent) {
+            afterNavigate: function(oEvent) {
 
                 // // 각 페이지 이동 시 푸터 메시지가 있으면 숨김처리.
                 // oAPP.common.fnHideFloatingFooterMsg();
@@ -53,7 +53,7 @@
         // 처음 로드 할때 APP NAME Input에 포커스 주기
         oApp.addDelegate({
 
-            onAfterRendering: function () {
+            onAfterRendering: function() {
 
                 if (parent.oWS.utill.attr.ISINIT == null) {
 
@@ -92,7 +92,7 @@
     /************************************************************************
      * 10번 페이지 Window Menu List
      ************************************************************************/
-    oAPP.fn.fnGetWindowMenuListWS10 = function () {
+    oAPP.fn.fnGetWindowMenuListWS10 = function() {
 
         var aWMENU10 = [{
                     key: "WMENU10_01",
@@ -179,7 +179,7 @@
     /************************************************************************
      * 20번 페이지 Window Menu List
      ************************************************************************/
-    oAPP.fn.fnGetWindowMenuListWS20 = function () {
+    oAPP.fn.fnGetWindowMenuListWS20 = function() {
 
         var aWMENU10 = [{
                 key: "WMENU10_01",
@@ -228,6 +228,7 @@
                     key: "WMENU40_02",
                     text: "Close Browser",
                     enabled: true,
+
                 },
                 {
                     key: "WMENU40_05",
@@ -300,7 +301,7 @@
     /**************************************************************************
      * WS10 페이지의 윈도우 메뉴 정보
      **************************************************************************/
-    oAPP.fn.fnGetWindowMenuWS10 = function () {
+    oAPP.fn.fnGetWindowMenuWS10 = function() {
 
         return [{
                 key: "WMENU10",
@@ -329,7 +330,7 @@
     /**************************************************************************
      * WS20 페이지의 윈도우 메뉴 정보
      **************************************************************************/
-    oAPP.fn.fnGetWindowMenuWS20 = function () {
+    oAPP.fn.fnGetWindowMenuWS20 = function() {
 
         return [{
                 key: "WMENU10",
@@ -368,7 +369,7 @@
     /************************************************************************
      * 10번 페이지 Header Toolbar Contents
      ************************************************************************/
-    oAPP.fn.fnGetHeaderToolbarContentWs10 = function () {
+    oAPP.fn.fnGetHeaderToolbarContentWs10 = function() {
 
         var sBindRoot = "/WMENU/WS10";
 
@@ -489,7 +490,7 @@
                         parts: [
                             "key"
                         ],
-                        formatter: function (sKey) {
+                        formatter: function(sKey) {
 
                             if (sKey == null) {
                                 return false;
@@ -542,7 +543,7 @@
             })
             .addStyleClass("sapUiSizeCompact u4aWsWinTxtSrchInput")
             .addDelegate({
-                onAfterRendering: function (oEvent) {
+                onAfterRendering: function(oEvent) {
 
                     var oInput = oEvent.srcControl;
                     if (oInput == null) {
@@ -590,7 +591,7 @@
                 icon: "sap-icon://search",
                 tooltip: "window Text Search",
                 press: oAPP.events.ev_winTxtSrchWS10
-            }).bindProperty("visible", "/WS10/SRCHTXT/INPUT_VISI", function (bIsVisi) {
+            }).bindProperty("visible", "/WS10/SRCHTXT/INPUT_VISI", function(bIsVisi) {
 
                 if (bIsVisi == null) {
                     return false;
@@ -601,7 +602,7 @@
             }),
 
             /*****************************************************************************
-             * 20번 상단 Text Search -- END
+             * 10번 상단 Text Search -- END
              *****************************************************************************/
 
             new sap.m.Button({
@@ -615,7 +616,7 @@
     /************************************************************************
      * 10번 페이지 Sub Header Toolbar Contents
      ************************************************************************/
-    oAPP.fn.fnGetSubHeaderToolbarContentWs10 = function () {
+    oAPP.fn.fnGetSubHeaderToolbarContentWs10 = function() {
 
         /**
          * Transaction Buttons
@@ -700,13 +701,13 @@
     /************************************************************************
      * 10번 페이지 Contents
      ************************************************************************/
-    oAPP.fn.fnGetPageContentWs10 = function () {
+    oAPP.fn.fnGetPageContentWs10 = function() {
 
         var oAppNmInput = new sap.m.SearchField("AppNmInput", {
                 value: "{/WS10/APPID}",
                 change: oAPP.events.ev_AppInputChange,
                 search: oAPP.events.ev_AppValueHelp,
-                suggest: function (oEvent) {
+                suggest: function(oEvent) {
 
                     var sValue = oEvent.getParameter("suggestValue"),
                         aFilters = [];
@@ -715,7 +716,7 @@
 
                         aFilters = [
                             new sap.ui.model.Filter([
-                                new sap.ui.model.Filter("APPID", function (sText) {
+                                new sap.ui.model.Filter("APPID", function(sText) {
                                     return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                 }),
                             ], false)
@@ -778,7 +779,7 @@
     /************************************************************************
      * 10번 페이지 화면 그리기
      ************************************************************************/
-    oAPP.fn.fnOnInitRenderingWS10 = function () {
+    oAPP.fn.fnOnInitRenderingWS10 = function() {
 
         var sFmsgBindRootPath = "/FMSG/WS10";
 
@@ -823,7 +824,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (isshow) {
+            formatter: function(isshow) {
 
                 if (isshow == null) {
                     return false;
@@ -869,7 +870,7 @@
      * 10번 페이지 Application Name SearchField의 Key down Event
      * F4 펑션 키를 눌렀을 때 F4 Help를 띄우기 목적인 이벤트
      ************************************************************************/
-    oAPP.fn.fnWs10AppInputKeyDownEvent = function (event) {
+    oAPP.fn.fnWs10AppInputKeyDownEvent = function(event) {
 
         var iKeyCode = event.keyCode;
 
@@ -921,7 +922,7 @@
     /************************************************************************
      * 20번 페이지 Header Toolbar Content
      ************************************************************************/
-    oAPP.fn.fnGetHeaderToolbarContentWs20 = function () {
+    oAPP.fn.fnGetHeaderToolbarContentWs20 = function() {
 
         var sBindRoot = "/WMENU/WS20";
 
@@ -951,7 +952,7 @@
             oNewWin = new sap.m.Button("ws20_newWinBtn", {
                 icon: "sap-icon://create",
                 tooltip: "New Browser (Ctrl+N)",
-                press: function () {
+                press: function() {
                     parent.onNewWindow();
                 }
             }).addStyleClass("u4aWs20NewWin");
@@ -991,7 +992,7 @@
     /************************************************************************
      * 20번 페이지 화면 그리기
      ************************************************************************/
-    oAPP.fn.fnOnInitRenderingWS20 = function () {
+    oAPP.fn.fnOnInitRenderingWS20 = function() {
 
         var sFmsgBindRootPath = "/FMSG/WS20";
 
@@ -1214,333 +1215,175 @@
 
         oAPP.wmenu.WS20 = oMenuUI;
 
-        let oWS20PageCustomHeader = new sap.m.OverflowToolbar({
-            content: [
-                new sap.m.HBox({
-                    items: {
-                        path: sHMenuBindRoot + "/HEADER",
-                        template: new sap.m.Button({
-                            text: "{text}",
-                            press: oAPP.events.ev_pressWMenu20
-                        }).bindProperty("visible", {
-                            parts: [
-                                "key"
-                            ],
-                            formatter: function (sKey) {
+        return new sap.m.Page("WS20", {
+            showHeader: true,
+            enableScrolling: false,
+            customHeader: new sap.m.OverflowToolbar({
+                content: [
+                    new sap.m.HBox({
+                        items: {
+                            path: sHMenuBindRoot + "/HEADER",
+                            template: new sap.m.Button({
+                                text: "{text}",
+                                press: oAPP.events.ev_pressWMenu20
+                            }).bindProperty("visible", {
+                                parts: [
+                                    "key"
+                                ],
+                                formatter: function(sKey) {
 
-                                if (sKey == null) {
-                                    return false;
-                                }
+                                    if (sKey == null) {
+                                        return false;
+                                    }
 
-                                if (sKey != "Test20") {
+                                    if (sKey != "Test20") {
+                                        return true;
+                                    }
+
+                                    // U4A R&D 일 경우에만 Test Menu를 보여준다.
+                                    var bIsStaff = oAPP.fn.fnIsStaff();
+                                    if (!bIsStaff) {
+                                        return false;
+                                    }
+
                                     return true;
+
                                 }
+                            })
+                        }
+                    }),
 
-                                // U4A R&D 일 경우에만 Test Menu를 보여준다.
-                                var bIsStaff = oAPP.fn.fnIsStaff();
-                                if (!bIsStaff) {
-                                    return false;
-                                }
+                    new sap.m.ToolbarSpacer(),
 
-                                return true;
+                    // Browser Pin Button
+                    new sap.m.OverflowToolbarToggleButton({
+                        icon: "sap-icon://pushpin-off",
+                        pressed: "{/SETTING/ISPIN}",
+                        press: oAPP.events.ev_windowPinBtn
+                    }),
 
+                    // zoom 기능
+                    new sap.m.Button({
+                        icon: "sap-icon://zoom-in",
+                        press: oAPP.events.ev_pressZoomBtn,
+                        tooltip: "zoom",
+                    }),
+
+                    /*****************************************************************************
+                     * 20번 상단 Text Search -- START
+                     *****************************************************************************/
+                    // search Input
+                    new sap.m.Input("txtSrchInputWS20", {
+                        width: "50px",
+                        value: "{/WS20/SRCHTXT/INPUT_VALUE}",
+                        visible: "{/WS20/SRCHTXT/INPUT_VISI}",
+                        placeholder: "Text Search..",
+                        liveChange: oAPP.events.ev_winTxtSrchLibChgWS20
+                    })
+                    .addStyleClass("sapUiSizeCompact u4aWsWinTxtSrchInput")
+                    .addDelegate({
+                        onAfterRendering: function(oEvent) {
+
+                            var oInput = oEvent.srcControl;
+                            if (oInput == null) {
+                                return;
                             }
-                        })
-                    }
-                }),
 
-                new sap.m.ToolbarSpacer(),
+                            oInput.$().animate({
+                                minWidth: "200px"
+                            }, 300, "linear");
 
-                // Browser Pin Button
-                new sap.m.OverflowToolbarToggleButton({
-                    icon: "sap-icon://pushpin-off",
-                    pressed: "{/SETTING/ISPIN}",
-                    press: oAPP.events.ev_windowPinBtn
-                }),
-
-                // zoom 기능
-                new sap.m.Button({
-                    icon: "sap-icon://zoom-in",
-                    press: oAPP.events.ev_pressZoomBtn,
-                    tooltip: "zoom",
-                }),
-
-                /*****************************************************************************
-                 * 20번 상단 Text Search -- START
-                 *****************************************************************************/
-                // search Input
-                new sap.m.Input("txtSrchInputWS20", {
-                    width: "50px",
-                    value: "{/WS20/SRCHTXT/INPUT_VALUE}",
-                    visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                    placeholder: "Text Search..",
-                    liveChange: oAPP.events.ev_winTxtSrchLibChgWS20
-                })
-                .addStyleClass("sapUiSizeCompact u4aWsWinTxtSrchInput")
-                .addDelegate({
-                    onAfterRendering: function (oEvent) {
-
-                        var oInput = oEvent.srcControl;
-                        if (oInput == null) {
-                            return;
                         }
 
-                        oInput.$().animate({
-                            minWidth: "200px"
-                        }, 300, "linear");
+                    }),
 
-                    }
+                    // 검색 결과 텍스트
+                    new sap.m.Text({
+                        text: "{/WS20/SRCHTXT/COUNT}",
+                    }).addStyleClass("sapUiTinyMarginBegin"),
 
-                }),
+                    new sap.m.ToolbarSeparator({
+                        visible: "{/WS20/SRCHTXT/INPUT_VISI}"
+                    }),
 
-                // 검색 결과 텍스트
-                new sap.m.Text({
-                    text: "{/WS20/SRCHTXT/COUNT}",
-                }).addStyleClass("sapUiTinyMarginBegin"),
+                    // up 버튼
+                    new sap.m.Button({
+                        icon: "sap-icon://navigation-up-arrow",
+                        visible: "{/WS20/SRCHTXT/INPUT_VISI}",
+                    }),
 
-                new sap.m.ToolbarSeparator({
-                    visible: "{/WS20/SRCHTXT/INPUT_VISI}"
-                }),
+                    // down 버튼
+                    new sap.m.Button({
+                        icon: "sap-icon://navigation-down-arrow",
+                        visible: "{/WS20/SRCHTXT/INPUT_VISI}",
+                    }),
 
-                // up 버튼
-                new sap.m.Button({
-                    icon: "sap-icon://navigation-up-arrow",
-                    visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                }),
+                    // search 닫기
+                    new sap.m.Button({
+                        icon: "sap-icon://decline",
+                        visible: "{/WS20/SRCHTXT/INPUT_VISI}",
+                        press: oAPP.events.ev_winTxtSrchClsWS20
+                    }),
 
-                // down 버튼
-                new sap.m.Button({
-                    icon: "sap-icon://navigation-down-arrow",
-                    visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                }),
+                    // 검색 버튼
+                    new sap.m.Button({
+                        icon: "sap-icon://search",
+                        tooltip: "window Text Search",
+                        press: oAPP.events.ev_winTxtSrchWS20
+                    }).bindProperty("visible", "/WS20/SRCHTXT/INPUT_VISI", function(bIsVisi) {
 
-                // search 닫기
-                new sap.m.Button({
-                    icon: "sap-icon://decline",
-                    visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                    press: oAPP.events.ev_winTxtSrchClsWS20
-                }),
+                        if (bIsVisi == null) {
+                            return false;
+                        }
 
-                // 검색 버튼
-                new sap.m.Button({
-                    icon: "sap-icon://search",
-                    tooltip: "window Text Search",
-                    press: oAPP.events.ev_winTxtSrchWS20
-                }).bindProperty("visible", "/WS20/SRCHTXT/INPUT_VISI", function (bIsVisi) {
+                        return !bIsVisi;
 
-                    if (bIsVisi == null) {
-                        return false;
-                    }
+                    }),
 
-                    return !bIsVisi;
+                    /*****************************************************************************
+                     * 20번 상단 Text Search -- END
+                     *****************************************************************************/
 
-                }),
+                    new sap.m.Button({
+                        icon: "sap-icon://log",
+                        press: oAPP.events.ev_Logout
+                    }),
 
-                /*****************************************************************************
-                 * 20번 상단 Text Search -- END
-                 *****************************************************************************/
+                ] // end of custom header content
 
-                new sap.m.Button({
-                    icon: "sap-icon://log",
-                    press: oAPP.events.ev_Logout
-                }),
-
-            ] // end of custom header content
-
-        }).addStyleClass("sapTntToolHeader u4aWsWindowMenuToolbar");
-
-        let oWS20Page = new sap.m.Page("WS20", {
-            showHeader: false,
-            enableScrolling: false,
-            floatingFooter: false,
-            showFooter: true,
+            }).addStyleClass("sapTntToolHeader u4aWsWindowMenuToolbar"),
 
             content: [
-
-                new sap.m.VBox({
-                    height: "100%",
-                    width: "100%",
-                    renderType: "Bare",
-                    items: [
-
-                        oWS20PageCustomHeader,
-
-                        oAPP.fn.fnGetWs20SplitLayout(oToolPage)
-
-                    ]
-                })
-
+                oToolPage
             ], // end of page content
-            
+
+            floatingFooter: true,
             footer: oMsgFooter,
 
-        });
-        // .bindProperty("showFooter", {
-        //     parts: [
-        //         sFmsgBindRootPath + "/ISSHOW"
-        //     ],
-        //     formatter: function (isshow) {
+        }).bindProperty("showFooter", {
+            parts: [
+                sFmsgBindRootPath + "/ISSHOW"
+            ],
+            formatter: function(isshow) {
 
-        //         if (isshow == null) {
-        //             return false;
-        //         }
+                if (isshow == null) {
+                    return false;
+                }
 
-        //         if (typeof isshow !== "boolean") {
-        //             return false;
-        //         }
+                if (typeof isshow !== "boolean") {
+                    return false;
+                }
 
-        //         return isshow;
-        //     }
-        // }).addStyleClass("u4aWs20Page");
-
-        return oWS20Page;
+                return isshow;
+            }
+        }).addStyleClass("u4aWs20Page");
 
     }; // end of oAPP.fn.fnOnInitRenderingWS20
 
     /************************************************************************
-     * 20번 페이지 Split Layout
-     ************************************************************************/
-    oAPP.fn.fnGetWs20SplitLayout = (oToolPage) => {
-
-        return new sap.ui.layout.Splitter({
-            orientation: sap.ui.core.Orientation.Vertical,
-            contentAreas: [
-                new sap.m.Page({
-                    showHeader: false,
-                    enableScrolling: false,
-
-                    content: [
-                        oToolPage
-                    ],
-                    layoutData: new sap.ui.layout.SplitterLayoutData({
-                        size: "auto",
-                        minSize: 800
-                    })
-                }),
-
-                new sap.m.Page({
-                    showHeader: false,
-                    enableScrolling: false,
-
-                    content: [
-
-                        new sap.m.Table("footerMsgTable", {
-                            sticky: ["ColumnHeaders", "HeaderToolbar"],
-                            fixedLayout: true,
-                            headerToolbar: new sap.m.Toolbar({
-                                content: [
-                                    new sap.m.Text({
-                                        text: "Error Footer Message"
-                                    }),
-                                    new sap.m.ToolbarSpacer(),
-                                    new sap.m.Button({
-                                        icon: "sap-icon://decline",
-                                        press: oAPP.events.fnPressMultiFooterMsgCloseBtn
-                                    })
-                                ]
-                            }).addStyleClass("u4aWsMsgFooter_HeaderToolbar"),
-
-                            columns: [
-                                new sap.m.Column({
-                                    width: "100px",
-                                    hAlign: "Center",
-                                    header: new sap.m.Label({
-                                        design: "Bold",
-                                        text: "Error Type"
-                                    })
-                                }),
-                                new sap.m.Column({
-                                    width: "80px",
-                                    hAlign: "Center",
-                                    header: new sap.m.Label({
-                                        design: "Bold",
-                                        text: "Line"
-                                    })
-                                }),
-                                new sap.m.Column({
-                                    header: new sap.m.Label({
-                                        design: "Bold",
-                                        text: "Description"
-                                    })
-                                }),
-                            ],
-                            items: {
-                                path: "/FMTMSG",
-                                template: new sap.m.ColumnListItem({
-                                    type: "Active",
-                                    press: oAPP.events.ev_pressFooterMsgColListItem,
-                                    cells: [
-                                        new sap.m.Text({
-                                            text: '{TYPE}'
-                                        }),
-                                        new sap.m.Text({
-                                            text: '{LINE}'
-                                        }),
-                                        new sap.m.Text({
-                                            text: '{DESC}'
-                                        }),
-                                    ]
-                                })
-                            }
-
-                        }).addStyleClass("sapUiSizeCompact")
-                        .attachBrowserEvent("dblclick", function (oEvent) {
-
-                            var oTarget = oEvent.target,
-                                $SelectedRow = $(oTarget).closest(".sapMListTblRow");
-
-                            if (!$SelectedRow.length) {
-                                return;
-                            }
-
-                            var oRow = $SelectedRow[0],
-                                oSelectedRow = sap.ui.getCore().byId(oRow.id);
-
-                            if (!oSelectedRow) {
-                                return;
-                            }
-
-                            var oCtx = oSelectedRow.getBindingContext(),
-                                oRowData = oSelectedRow.getModel().getProperty(oCtx.sPath);
-
-                            switch (oRowData.GRCOD) {
-
-                                case "CLS_SNTX":
-                                case "METH":
-                                case "CLSD":
-                                case "CPRO":
-                                case "CPUB":
-
-                                    oAPP.common.execControllerClass(oRowData.OBJID, oRowData.LINE);
-                                    return;
-
-                                default:
-
-                                    oAPP.fn.setSelectTreeItem(oRowData.OBJID, oRowData.UIATK, oRowData.TYPE);
-                                    return;
-
-                            }
-
-                        })
-
-                    ],
-                    layoutData: new sap.ui.layout.SplitterLayoutData("u4aWs20MultiFootSplitLayoutData", {
-                        size: "0px",
-                        minSize: 0,
-                        resizable: false,
-                    })
-                }),
-
-            ]
-
-        });
-
-    }; // end of oAPP.fn.fnGetWs20SplitLayout
-
-    /************************************************************************
      * 20번 페이지 Sub Header Toolbar
      ************************************************************************/
-    oAPP.fn.fnGetSubHeaderToolbarContentWs20 = function () {
+    oAPP.fn.fnGetSubHeaderToolbarContentWs20 = function() {
 
         // visible 바인딩 프로퍼티 설정
         function lf_bindPropForVisible(bIsDispMode) {
@@ -1683,7 +1526,7 @@
     /************************************************************************
      * 20번 페이지 Tnt Tool page 의 main contents 영역 그리기
      ************************************************************************/
-    oAPP.fn.fnOnInitRenderingWS20Main = function () {
+    oAPP.fn.fnOnInitRenderingWS20Main = function() {
 
         /**
          * Transaction Buttons
@@ -1694,22 +1537,19 @@
             content: aSubHeaderToolbarContents
         }).addStyleClass("u4aWs20_HeaderToolbar sapTntToolHeader");
 
-        var oPage = new sap.m.Page("WS20_MAIN", {
+        return new sap.m.Page("WS20_MAIN", {
             customHeader: oToolHeader,
-            enableScrolling: false,
             content: [
                 // oSplitter
             ],
         }).addStyleClass("u4aWs20MainPage");
-
-        return oPage;
 
     }; // end of oAPP.fn.fnOnInitRenderingWS20Main
 
     /************************************************************************
      * Personalization Settings..(개인화 설정)
      ************************************************************************/
-    oAPP.fn.fnOnInitP13nSettings = function () {
+    oAPP.fn.fnOnInitP13nSettings = function() {
 
         // 개인화 폴더 생성 및 로그인 사용자별 개인화 Object 만들기
         oAPP.fn.fnOnP13nFolderCreate();
@@ -1728,7 +1568,7 @@
     /************************************************************************
      * 개인화 폴더 생성 및 로그인 사용자별 개인화 Object 만들기
      ************************************************************************/
-    oAPP.fn.fnOnP13nFolderCreate = function () {
+    oAPP.fn.fnOnP13nFolderCreate = function() {
 
         // 로그인 유저 정보		
         var oUserInfo = parent.getUserInfo(),
@@ -1779,7 +1619,7 @@
     /************************************************************************
      * 브라우저 zoom 정보 생성
      ************************************************************************/
-    oAPP.fn.fnOnP13nBrowserZoom = function () {
+    oAPP.fn.fnOnP13nBrowserZoom = function() {
 
         var sZoomFileName = PATH.join(USERDATA, "p13n", "zoom.json"), // zoom 파일 경로
             oZoomData = parent.require(sZoomFileName);
@@ -1886,7 +1726,7 @@
     /************************************************************************
      * 사용자 개인화(윈도우 ZOOM) 설정팝업 
      ************************************************************************/
-    oAPP.fn.setBrowserZoomZero = function () {
+    oAPP.fn.setBrowserZoomZero = function() {
 
         WEBFRAME.setZoomLevel(0);
 
@@ -1895,7 +1735,7 @@
     /************************************************************************
      * 개인화 정보를 읽어서 WS10 페이지의 APP Name Input에 Suggestion 설정하기
      ************************************************************************/
-    oAPP.fn.fnGetP13nWs10AppSuggetion = function () {
+    oAPP.fn.fnGetP13nWs10AppSuggetion = function() {
 
         var FS = parent.FS;
 
@@ -1923,7 +1763,7 @@
     /************************************************************************
      * 입력한 APPID를 개인화 데이터로 저장
      ************************************************************************/
-    oAPP.fn.fnSetP13nWs10AppSuggetion = function (APPID) {
+    oAPP.fn.fnSetP13nWs10AppSuggetion = function(APPID) {
 
         var FS = parent.FS;
 
@@ -1969,7 +1809,7 @@
     /************************************************************************
      * Default Browser 개인화 설정
      ************************************************************************/
-    oAPP.fn.fnOnP13nExeDefaultBrowser = function () {
+    oAPP.fn.fnOnP13nExeDefaultBrowser = function() {
 
         var FS = parent.FS;
 
@@ -2015,7 +1855,7 @@
     /************************************************************************
      * 현재 Local PC에 설치된 Browser 정보 구하기
      ************************************************************************/
-    oAPP.fn.fnGetExecBrowserInfo = function () {
+    oAPP.fn.fnGetExecBrowserInfo = function() {
 
         var aBrowserInfo = [],
             aDefaultBrowsInfo = parent.getDefaultBrowserInfo(),
@@ -2070,7 +1910,7 @@
      * @param {Array} aCurrentInfo 
      * - 현재 Local PC에 설치된 브라우저의 정보
      ************************************************************************/
-    oAPP.fn.fnCompareBeforeBrowserInfo = function (aBeforeInfo, aCurrentInfo) {
+    oAPP.fn.fnCompareBeforeBrowserInfo = function(aBeforeInfo, aCurrentInfo) {
 
         var iBeforeCnt = aBeforeInfo.length,
             iCurrCnt = aCurrentInfo.length;
@@ -2147,14 +1987,14 @@
     /************************************************************************
      * MIME Dialog 관련 로직..
      ************************************************************************/
-    oAPP.fn.fnMimeDialogOpener = function () {
+    oAPP.fn.fnMimeDialogOpener = function() {
 
         if (oAPP.fn.fnMimePopupOpen) {
             oAPP.fn.fnMimePopupOpen();
             return;
         }
 
-        oAPP.loadJs("fnMimePopupOpen", function () {
+        oAPP.loadJs("fnMimePopupOpen", function() {
             oAPP.fn.fnMimePopupOpen();
         });
 
