@@ -1,0 +1,10 @@
+.sapMSticky .sapMTableTH {
+    top: 0;
+    position: sticky;
+    position: -webkit-sticky;
+    z-index: 1;
+}
+
+.sapMSticky5 .sapMTableTH, .sapMSticky7>.sapMListInfoTBarContainer {
+    top: 2.75rem;
+}

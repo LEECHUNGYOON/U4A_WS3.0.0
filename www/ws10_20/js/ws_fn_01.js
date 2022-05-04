@@ -145,6 +145,9 @@
             }, {
                 key: "WMENU30_02",
                 text: "Close Browser"
+            }, {
+                key: "WMENU30_03",
+                text: "Options..."
             }],
             Test10 = [{
                     key: "Test90",
@@ -224,6 +227,11 @@
                 {
                     key: "WMENU40_02",
                     text: "Close Browser",
+                    enabled: true,
+                },
+                {
+                    key: "WMENU40_05",
+                    text: "Options..",
                     enabled: true,
                 },
                 {
@@ -1345,138 +1353,14 @@
             }).addStyleClass("sapTntToolHeader u4aWsWindowMenuToolbar"),
 
             content: [
-                new sap.ui.layout.Splitter({
-                    orientation: sap.ui.core.Orientation.Vertical,
-                    contentAreas: [
-                        new sap.m.Page({
-                            showHeader: false,
-                            enableScrolling: false,
 
-                            content: [
-                                oToolPage
-                            ],
-                            layoutData: new sap.ui.layout.SplitterLayoutData({
-                                size: "auto",
-                                minSize: 800
-                            })
-                        }),
-
-                        new sap.m.Page({
-                            showHeader: false,
-                            enableScrolling: false,
-
-                            content: [
-
-                                new sap.m.Table("footerMsgTable", {
-                                    sticky: ["ColumnHeaders", "HeaderToolbar"],
-                                    fixedLayout: true,
-                                    headerToolbar: 
-                                        new sap.m.Toolbar({
-                                            content: [
-                                                new sap.m.Text({
-                                                    text: "Error Footer Message"
-                                                }),
-                                                new sap.m.ToolbarSpacer(),
-                                                new sap.m.Button({
-                                                    icon: "sap-icon://decline",
-                                                    press: oAPP.events.fnPressMultiFooterMsgCloseBtn
-                                                })
-                                            ]
-                                        }).addStyleClass("u4aWsMsgFooter_HeaderToolbar"),
-
-                                    columns: [
-                                        new sap.m.Column({
-                                            width: "100px",
-                                            hAlign: "Center",
-                                            header: new sap.m.Label({
-                                                design: "Bold",
-                                                text: "Error Type"
-                                            })
-                                        }),
-                                        new sap.m.Column({
-                                            width: "80px",
-                                            hAlign: "Center",
-                                            header: new sap.m.Label({
-                                                design: "Bold",
-                                                text: "Line"
-                                            })
-                                        }),
-                                        new sap.m.Column({
-                                            header: new sap.m.Label({
-                                                design: "Bold",
-                                                text: "Description"
-                                            })
-                                        }),
-                                    ],
-                                    items: {
-                                        path: "/FMTMSG",
-                                        template: new sap.m.ColumnListItem({
-                                            type: "Active",
-                                            press: oAPP.events.ev_pressFooterMsgColListItem,
-                                            cells: [
-                                                new sap.m.Text({
-                                                    text: '{TYPE}'
-                                                }),
-                                                new sap.m.Text({
-                                                    text: '{LINE}'
-                                                }),
-                                                new sap.m.Text({
-                                                    text: '{DESC}'
-                                                }),
-                                            ]
-                                        })
-                                    }
-
-                                }).addStyleClass("sapUiSizeCompact")
-                                .attachBrowserEvent("dblclick", function (oEvent) {
-
-                                    var oTarget = oEvent.target,
-                                        $SelectedRow = $(oTarget).closest(".sapMListTblRow");
-
-                                    if (!$SelectedRow.length) {
-                                        return;
-                                    }
-
-                                    var oRow = $SelectedRow[0],
-                                        oSelectedRow = sap.ui.getCore().byId(oRow.id);
-
-                                    if (!oSelectedRow) {
-                                        return;
-                                    }
-
-                                    var oCtx = oSelectedRow.getBindingContext(),
-                                        oRowData = oSelectedRow.getModel().getProperty(oCtx.sPath);
-
-                                    switch (oRowData.GRCOD) {
-
-                                        case "CLS_SNTX":
-                                        case "METH":
-                                        case "CLSD":
-                                        case "CPRO":
-                                        case "CPUB":
-
-                                            oAPP.common.execControllerClass(oRowData.OBJID, oRowData.LINE);
-                                            return;
-
-                                        default:
-
-                                            oAPP.fn.setSelectTreeItem(oRowData.OBJID, oRowData.UIATK, oRowData.TYPE);
-                                            return;
-
-                                    }
-
-                                })
-
-                            ],
-                            layoutData: new sap.ui.layout.SplitterLayoutData("u4aWs20MultiFootSplitLayoutData", {
-                                size: "0px",
-                                minSize: 0,
-                                resizable: false,
-                            })
-                        }),
-
+                new sap.m.VBox({
+                    height: "100%",
+                    width: "100%",
+                    renderType: sap.m.FlexRendertype.Bare,
+                    items: [
+                        oAPP.fn.fnGetWs20SplitLayout(oToolPage)
                     ]
-
                 }),
 
             ], // end of page content
@@ -1503,6 +1387,146 @@
         }).addStyleClass("u4aWs20Page");
 
     }; // end of oAPP.fn.fnOnInitRenderingWS20
+
+    /************************************************************************
+     * 20번 페이지 Split Layout
+     ************************************************************************/
+    oAPP.fn.fnGetWs20SplitLayout = (oToolPage) => {
+
+        return new sap.ui.layout.Splitter({
+            orientation: sap.ui.core.Orientation.Vertical,
+            contentAreas: [
+                new sap.m.Page({
+                    showHeader: false,
+                    enableScrolling: false,
+
+                    content: [
+                        oToolPage
+                    ],
+                    layoutData: new sap.ui.layout.SplitterLayoutData({
+                        size: "auto",
+                        minSize: 800
+                    })
+                }),
+
+                new sap.m.Page({
+                    showHeader: false,
+                    enableScrolling: false,
+
+                    content: [
+
+                        new sap.m.Table("footerMsgTable", {
+                            sticky: ["ColumnHeaders", "HeaderToolbar"],
+                            fixedLayout: true,
+                            headerToolbar: new sap.m.Toolbar({
+                                content: [
+                                    new sap.m.Text({
+                                        text: "Error Footer Message"
+                                    }),
+                                    new sap.m.ToolbarSpacer(),
+                                    new sap.m.Button({
+                                        icon: "sap-icon://decline",
+                                        press: oAPP.events.fnPressMultiFooterMsgCloseBtn
+                                    })
+                                ]
+                            }).addStyleClass("u4aWsMsgFooter_HeaderToolbar"),
+
+                            columns: [
+                                new sap.m.Column({
+                                    width: "100px",
+                                    hAlign: "Center",
+                                    header: new sap.m.Label({
+                                        design: "Bold",
+                                        text: "Error Type"
+                                    })
+                                }),
+                                new sap.m.Column({
+                                    width: "80px",
+                                    hAlign: "Center",
+                                    header: new sap.m.Label({
+                                        design: "Bold",
+                                        text: "Line"
+                                    })
+                                }),
+                                new sap.m.Column({
+                                    header: new sap.m.Label({
+                                        design: "Bold",
+                                        text: "Description"
+                                    })
+                                }),
+                            ],
+                            items: {
+                                path: "/FMTMSG",
+                                template: new sap.m.ColumnListItem({
+                                    type: "Active",
+                                    press: oAPP.events.ev_pressFooterMsgColListItem,
+                                    cells: [
+                                        new sap.m.Text({
+                                            text: '{TYPE}'
+                                        }),
+                                        new sap.m.Text({
+                                            text: '{LINE}'
+                                        }),
+                                        new sap.m.Text({
+                                            text: '{DESC}'
+                                        }),
+                                    ]
+                                })
+                            }
+
+                        }).addStyleClass("sapUiSizeCompact")
+                        .attachBrowserEvent("dblclick", function (oEvent) {
+
+                            var oTarget = oEvent.target,
+                                $SelectedRow = $(oTarget).closest(".sapMListTblRow");
+
+                            if (!$SelectedRow.length) {
+                                return;
+                            }
+
+                            var oRow = $SelectedRow[0],
+                                oSelectedRow = sap.ui.getCore().byId(oRow.id);
+
+                            if (!oSelectedRow) {
+                                return;
+                            }
+
+                            var oCtx = oSelectedRow.getBindingContext(),
+                                oRowData = oSelectedRow.getModel().getProperty(oCtx.sPath);
+
+                            switch (oRowData.GRCOD) {
+
+                                case "CLS_SNTX":
+                                case "METH":
+                                case "CLSD":
+                                case "CPRO":
+                                case "CPUB":
+
+                                    oAPP.common.execControllerClass(oRowData.OBJID, oRowData.LINE);
+                                    return;
+
+                                default:
+
+                                    oAPP.fn.setSelectTreeItem(oRowData.OBJID, oRowData.UIATK, oRowData.TYPE);
+                                    return;
+
+                            }
+
+                        })
+
+                    ],
+                    layoutData: new sap.ui.layout.SplitterLayoutData("u4aWs20MultiFootSplitLayoutData", {
+                        size: "0px",
+                        minSize: 0,
+                        resizable: false,
+                    })
+                }),
+
+            ]
+
+        });
+
+    }; // end of oAPP.fn.fnGetWs20SplitLayout
 
     /************************************************************************
      * 20번 페이지 Sub Header Toolbar
@@ -1661,12 +1685,29 @@
             content: aSubHeaderToolbarContents
         }).addStyleClass("u4aWs20_HeaderToolbar sapTntToolHeader");
 
-        return new sap.m.Page("WS20_MAIN", {
+        var oPage = new sap.m.Page("WS20_MAIN", {
             customHeader: oToolHeader,
+            enableScrolling: false,
             content: [
                 // oSplitter
             ],
         }).addStyleClass("u4aWs20MainPage");
+
+        return new sap.m.VBox({
+            height: "100%",
+            width: "100%",
+            renderType: "Bare",
+            layoutData: new sap.m.FlexItemData({
+                shrinkFactor: 1,
+                order: 1,
+                growFactor: 1
+            }),
+            items: [
+
+                oPage
+
+            ]
+        });
 
     }; // end of oAPP.fn.fnOnInitRenderingWS20Main
 

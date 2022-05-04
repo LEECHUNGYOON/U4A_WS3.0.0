@@ -349,21 +349,71 @@
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
 
-            // // IPCMAIN 이벤트 해제
-            // IPCMAIN.off(`${BROWSKEY}--find`, oAPP.fn.fnIpcMain_Find);
-            // IPCMAIN.off(`${BROWSKEY}--find--controller`, oAPP.fn.fnIpcMain_Find_Controller);
+            oBrowserWindow = null;
+
+        });
+
+    }; // end of oAPP.fn.fnDocuPopupOpener
+
+    /************************************************************************
+     * WS Options Popup Opener
+     ************************************************************************/
+    oAPP.fn.fnWsOptionsPopupOpener = () => {
+
+        var sPopupName = "WS_OPTIONS";
+
+        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        var oResult = oAPP.common.getCheckAlreadyOpenWindow(sPopupName);
+        if (oResult.ISOPEN) {
+            return;
+        }
+
+        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.title = "Options..";
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.parent = CURRWIN;
+
+        oBrowserOptions.backgroundColor = "#1c2228";
+
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
+
+        // 브라우저 오픈
+        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        var sUrlPath = PATH.join(APPPATH, "ws10_20", "optionPopup", "frame.html");
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+
+        oBrowserWindow.loadURL(sUrlPath);
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            var oOptionData = {
+                oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보
+            };
+
+            oBrowserWindow.webContents.send('if-ws-options-info', oOptionData);
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
 
             oBrowserWindow = null;
 
         });
 
-        // // 선택한 UI 정보를 WS20에 표시
-        // IPCMAIN.on(`${BROWSKEY}--find`, oAPP.fn.fnIpcMain_Find);
 
-        // // 선택한 UI 정보를 가지고 controller(class builder) 실행
-        // IPCMAIN.on(`${BROWSKEY}--find--controller`, oAPP.fn.fnIpcMain_Find_Controller);
-
-
-    }; // end of oAPP.fn.fnDocuPopupOpener
+    }; // end of oAPP.fn.fnWsOptionsPopupOpener
 
 })(window, $, oAPP);

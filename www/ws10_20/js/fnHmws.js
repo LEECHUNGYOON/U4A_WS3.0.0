@@ -397,6 +397,19 @@
 
     }; // end of oAPP.fn.fnWS10WMENU30_02
 
+    /************************************************************************
+     * [WS10] Options..
+     ************************************************************************/
+    oAPP.fn.fnWS10WMENU30_03 = () => {
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        oAPP.fn.fnWsOptionsPopupOpener();
+
+    }; // end of oAPP.fn.fnWS10WMENU30_03
 
     /************************************************************************
      * [WS20] Theme Designer
@@ -655,6 +668,20 @@
         oAPP.events.ev_Logout();
 
     }; // end of oAPP.fn.fnWS20WMENU40_04
+
+    /************************************************************************
+     * [WS20] Options...
+     ************************************************************************/
+    oAPP.fn.fnWS20WMENU40_05 = () => {
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        oAPP.fn.fnWsOptionsPopupOpener();
+
+    }; // end of oAPP.fn.fnWS20WMENU40_05
 
     /************************************************************************
      * [WS20] Application Help

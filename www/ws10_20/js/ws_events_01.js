@@ -274,13 +274,6 @@
      ************************************************************************/
     oAPP.events.ev_pressBindPopupBtn = (oEvent) => {
 
-        // alert("Binding Popup 버튼 이벤트");
-
-        // return;
-
-        debugger;
-
-
         var sPopupName = "BINDPOPUP";
 
         // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
@@ -316,7 +309,7 @@
         // 실행할 URL 적용
         oBrowserWindow.loadURL(sUrlPath);
 
-        oBrowserWindow.webContents.openDevTools();
+        // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
