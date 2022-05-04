@@ -1214,154 +1214,158 @@
 
         oAPP.wmenu.WS20 = oMenuUI;
 
-        return new sap.m.Page("WS20", {
-            showHeader: true,
-            enableScrolling: false,
-            customHeader: new sap.m.OverflowToolbar({
-                content: [
-                    new sap.m.HBox({
-                        items: {
-                            path: sHMenuBindRoot + "/HEADER",
-                            template: new sap.m.Button({
-                                text: "{text}",
-                                press: oAPP.events.ev_pressWMenu20
-                            }).bindProperty("visible", {
-                                parts: [
-                                    "key"
-                                ],
-                                formatter: function (sKey) {
+        let oWS20PageCustomHeader = new sap.m.OverflowToolbar({
+            content: [
+                new sap.m.HBox({
+                    items: {
+                        path: sHMenuBindRoot + "/HEADER",
+                        template: new sap.m.Button({
+                            text: "{text}",
+                            press: oAPP.events.ev_pressWMenu20
+                        }).bindProperty("visible", {
+                            parts: [
+                                "key"
+                            ],
+                            formatter: function (sKey) {
 
-                                    if (sKey == null) {
-                                        return false;
-                                    }
-
-                                    if (sKey != "Test20") {
-                                        return true;
-                                    }
-
-                                    // U4A R&D 일 경우에만 Test Menu를 보여준다.
-                                    var bIsStaff = oAPP.fn.fnIsStaff();
-                                    if (!bIsStaff) {
-                                        return false;
-                                    }
-
-                                    return true;
-
+                                if (sKey == null) {
+                                    return false;
                                 }
-                            })
-                        }
-                    }),
 
-                    new sap.m.ToolbarSpacer(),
+                                if (sKey != "Test20") {
+                                    return true;
+                                }
 
-                    // Browser Pin Button
-                    new sap.m.OverflowToolbarToggleButton({
-                        icon: "sap-icon://pushpin-off",
-                        pressed: "{/SETTING/ISPIN}",
-                        press: oAPP.events.ev_windowPinBtn
-                    }),
+                                // U4A R&D 일 경우에만 Test Menu를 보여준다.
+                                var bIsStaff = oAPP.fn.fnIsStaff();
+                                if (!bIsStaff) {
+                                    return false;
+                                }
 
-                    // zoom 기능
-                    new sap.m.Button({
-                        icon: "sap-icon://zoom-in",
-                        press: oAPP.events.ev_pressZoomBtn,
-                        tooltip: "zoom",
-                    }),
+                                return true;
 
-                    /*****************************************************************************
-                     * 20번 상단 Text Search -- START
-                     *****************************************************************************/
-                    // search Input
-                    new sap.m.Input("txtSrchInputWS20", {
-                        width: "50px",
-                        value: "{/WS20/SRCHTXT/INPUT_VALUE}",
-                        visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                        placeholder: "Text Search..",
-                        liveChange: oAPP.events.ev_winTxtSrchLibChgWS20
-                    })
-                    .addStyleClass("sapUiSizeCompact u4aWsWinTxtSrchInput")
-                    .addDelegate({
-                        onAfterRendering: function (oEvent) {
-
-                            var oInput = oEvent.srcControl;
-                            if (oInput == null) {
-                                return;
                             }
+                        })
+                    }
+                }),
 
-                            oInput.$().animate({
-                                minWidth: "200px"
-                            }, 300, "linear");
+                new sap.m.ToolbarSpacer(),
 
+                // Browser Pin Button
+                new sap.m.OverflowToolbarToggleButton({
+                    icon: "sap-icon://pushpin-off",
+                    pressed: "{/SETTING/ISPIN}",
+                    press: oAPP.events.ev_windowPinBtn
+                }),
+
+                // zoom 기능
+                new sap.m.Button({
+                    icon: "sap-icon://zoom-in",
+                    press: oAPP.events.ev_pressZoomBtn,
+                    tooltip: "zoom",
+                }),
+
+                /*****************************************************************************
+                 * 20번 상단 Text Search -- START
+                 *****************************************************************************/
+                // search Input
+                new sap.m.Input("txtSrchInputWS20", {
+                    width: "50px",
+                    value: "{/WS20/SRCHTXT/INPUT_VALUE}",
+                    visible: "{/WS20/SRCHTXT/INPUT_VISI}",
+                    placeholder: "Text Search..",
+                    liveChange: oAPP.events.ev_winTxtSrchLibChgWS20
+                })
+                .addStyleClass("sapUiSizeCompact u4aWsWinTxtSrchInput")
+                .addDelegate({
+                    onAfterRendering: function (oEvent) {
+
+                        var oInput = oEvent.srcControl;
+                        if (oInput == null) {
+                            return;
                         }
 
-                    }),
+                        oInput.$().animate({
+                            minWidth: "200px"
+                        }, 300, "linear");
 
-                    // 검색 결과 텍스트
-                    new sap.m.Text({
-                        text: "{/WS20/SRCHTXT/COUNT}",
-                    }).addStyleClass("sapUiTinyMarginBegin"),
+                    }
 
-                    new sap.m.ToolbarSeparator({
-                        visible: "{/WS20/SRCHTXT/INPUT_VISI}"
-                    }),
+                }),
 
-                    // up 버튼
-                    new sap.m.Button({
-                        icon: "sap-icon://navigation-up-arrow",
-                        visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                    }),
+                // 검색 결과 텍스트
+                new sap.m.Text({
+                    text: "{/WS20/SRCHTXT/COUNT}",
+                }).addStyleClass("sapUiTinyMarginBegin"),
 
-                    // down 버튼
-                    new sap.m.Button({
-                        icon: "sap-icon://navigation-down-arrow",
-                        visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                    }),
+                new sap.m.ToolbarSeparator({
+                    visible: "{/WS20/SRCHTXT/INPUT_VISI}"
+                }),
 
-                    // search 닫기
-                    new sap.m.Button({
-                        icon: "sap-icon://decline",
-                        visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                        press: oAPP.events.ev_winTxtSrchClsWS20
-                    }),
+                // up 버튼
+                new sap.m.Button({
+                    icon: "sap-icon://navigation-up-arrow",
+                    visible: "{/WS20/SRCHTXT/INPUT_VISI}",
+                }),
 
-                    // 검색 버튼
-                    new sap.m.Button({
-                        icon: "sap-icon://search",
-                        tooltip: "window Text Search",
-                        press: oAPP.events.ev_winTxtSrchWS20
-                    }).bindProperty("visible", "/WS20/SRCHTXT/INPUT_VISI", function (bIsVisi) {
+                // down 버튼
+                new sap.m.Button({
+                    icon: "sap-icon://navigation-down-arrow",
+                    visible: "{/WS20/SRCHTXT/INPUT_VISI}",
+                }),
 
-                        if (bIsVisi == null) {
-                            return false;
-                        }
+                // search 닫기
+                new sap.m.Button({
+                    icon: "sap-icon://decline",
+                    visible: "{/WS20/SRCHTXT/INPUT_VISI}",
+                    press: oAPP.events.ev_winTxtSrchClsWS20
+                }),
 
-                        return !bIsVisi;
+                // 검색 버튼
+                new sap.m.Button({
+                    icon: "sap-icon://search",
+                    tooltip: "window Text Search",
+                    press: oAPP.events.ev_winTxtSrchWS20
+                }).bindProperty("visible", "/WS20/SRCHTXT/INPUT_VISI", function (bIsVisi) {
 
-                    }),
+                    if (bIsVisi == null) {
+                        return false;
+                    }
 
-                    /*****************************************************************************
-                     * 20번 상단 Text Search -- END
-                     *****************************************************************************/
+                    return !bIsVisi;
 
-                    new sap.m.Button({
-                        icon: "sap-icon://log",
-                        press: oAPP.events.ev_Logout
-                    }),
+                }),
 
-                ] // end of custom header content
+                /*****************************************************************************
+                 * 20번 상단 Text Search -- END
+                 *****************************************************************************/
 
-            }).addStyleClass("sapTntToolHeader u4aWsWindowMenuToolbar"),
+                new sap.m.Button({
+                    icon: "sap-icon://log",
+                    press: oAPP.events.ev_Logout
+                }),
 
+            ] // end of custom header content
+
+        }).addStyleClass("sapTntToolHeader u4aWsWindowMenuToolbar");
+
+        let oWS20Page = new sap.m.Page("WS20", {
+            showHeader: false,
+            enableScrolling: false,
             content: [
 
                 new sap.m.VBox({
                     height: "100%",
                     width: "100%",
-                    renderType: sap.m.FlexRendertype.Bare,
+                    renderType: "Bare",
                     items: [
+
+                        oWS20PageCustomHeader,
+
                         oAPP.fn.fnGetWs20SplitLayout(oToolPage)
+
                     ]
-                }),
+                })
 
             ], // end of page content
 
@@ -1386,6 +1390,8 @@
             }
         }).addStyleClass("u4aWs20Page");
 
+        return oWS20Page;
+
     }; // end of oAPP.fn.fnOnInitRenderingWS20
 
     /************************************************************************
@@ -1405,7 +1411,7 @@
                     ],
                     layoutData: new sap.ui.layout.SplitterLayoutData({
                         size: "auto",
-                        minSize: 800
+                        // minSize: 800
                     })
                 }),
 
@@ -1693,21 +1699,7 @@
             ],
         }).addStyleClass("u4aWs20MainPage");
 
-        return new sap.m.VBox({
-            height: "100%",
-            width: "100%",
-            renderType: "Bare",
-            layoutData: new sap.m.FlexItemData({
-                shrinkFactor: 1,
-                order: 1,
-                growFactor: 1
-            }),
-            items: [
-
-                oPage
-
-            ]
-        });
+        return oPage;
 
     }; // end of oAPP.fn.fnOnInitRenderingWS20Main
 

@@ -335,7 +335,7 @@
             clearTimeout(oAPP.attr.footerMsgTimeout);
             delete oAPP.attr.footerMsgTimeout;
 
-        }, 10000);
+        }, 100000);
 
     }; // end of oAPP.common.fnShowFloatingFooterMsg
 

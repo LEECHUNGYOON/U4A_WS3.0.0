@@ -1,7 +1,7 @@
 /**************************************************************************
  * ServerList.js
  **************************************************************************/
-(function() {
+(function () {
     "use strict";
 
     let oAPP = parent.oAPP;
@@ -10,6 +10,7 @@
         REMOTEMAIN = oAPP.REMOTEMAIN,
         FS = REMOTE.require('fs'),
         APP = REMOTE.app,
+        APPPATH = APP.getAppPath(),
         PATH = REMOTE.require('path'),
         MENU = REMOTE.Menu,
         RANDOM = oAPP.RANDOM,
@@ -353,7 +354,7 @@
         // }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -387,7 +388,7 @@
     function fnSendAjax(sUrl, oFormData, fnSuccess, fnError, fnCancel) {
 
         // ajax call 취소할 경우..
-        xhr.onabort = function() {
+        xhr.onabort = function () {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -396,7 +397,7 @@
         };
 
         // ajax call 실패 할 경우
-        xhr.onerror = function() {
+        xhr.onerror = function () {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -404,7 +405,7 @@
 
         };
 
-        xhr.onreadystatechange = function(a, b, c, d, e) { // 요청에 대한 콜백         
+        xhr.onreadystatechange = function (a, b, c, d, e) { // 요청에 대한 콜백         
 
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
@@ -453,7 +454,7 @@
                     new sap.m.Button({
                         icon: "sap-icon://decline",
                         tooltip: "{/MSGCLS/0019}", // cancel
-                        press: function(oEvent) {
+                        press: function (oEvent) {
 
                             var oDialog = oEvent.getSource().getParent();
 
@@ -464,7 +465,7 @@
                 ]
 
             })
-            .bindProperty("title", "/SERVDLG/TRCOD", function(TITLE) {
+            .bindProperty("title", "/SERVDLG/TRCOD", function (TITLE) {
 
                 if (!TITLE) {
                     return;
@@ -553,7 +554,7 @@
                                 maxLength: 3,
                                 required: true,
                                 submit: ev_pressServerInfoSaveSubmit,
-                                liveChange: function(oEvent) {
+                                liveChange: function (oEvent) {
 
                                     var sValue = oEvent.getParameter("value");
 
@@ -1020,7 +1021,7 @@
             text: fnGetLanguClassTxt("0023"), //"Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function() {
+            close: function () {
                 xhr.abort();
             }
         });
@@ -1153,11 +1154,26 @@
     } // end of fnLoadBootStrapSetting
 
     /************************************************************************
+     * 공통 css을 적용한다.
+     ************************************************************************/
+    function fnLoadCommonCss() {
+
+        var sCommonCssUrl = PATH.join(APPPATH, "css", "common.css");
+
+        var oCss = document.createElement("link");
+        oCss.setAttribute("rel", "stylesheet");
+        oCss.setAttribute("href", sCommonCssUrl);
+
+        document.head.appendChild(oCss);
+
+    } // end of fnLoadCommonCss
+
+    /************************************************************************
      * ------------------------ [ Server List Start ] ------------------------
      * **********************************************************************/
     function fnOnInit() {
 
-        sap.ui.getCore().attachInit(function() {
+        sap.ui.getCore().attachInit(function () {
 
             // 초기값 바인딩
             fnOnInitBinding();
@@ -1186,6 +1202,9 @@
 
     // Bootstrap Setting
     fnLoadBootStrapSetting();
+
+    // 공통 css load
+    fnLoadCommonCss();
 
     // Window onload
     window.addEventListener("load", fnOnInit);
