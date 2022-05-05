@@ -55,11 +55,7 @@
 
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
-
-        oBrowserWindow.loadURL(sUrlPath);
-        
-        // oBrowserWindow.loadURL(`file://${parent.__dirname}/../ws10_20/editor/errorPageEditorFrame.html`);
-
+    
         // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트

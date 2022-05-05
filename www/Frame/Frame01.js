@@ -70,14 +70,15 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     oWS.utill.attr.paths.CLIPBOARD = PATH.join(APP.getPath("userData"), "\\clipboard.json");
     oWS.utill.attr.paths.P13N = APP.getPath("userData") + '\\p13n\\p13n.json';
 
-    // Popup Paths..
-    oWS.utill.attr.paths.ERRPAGE = PATH.join(APPPATH, "ws10_20", "editor", "errorPageEditorFrame.html");
+    // Popup Paths..    
+    oWS.utill.attr.paths.ERRPAGE = PATH.join(APPPATH, "ws10_20", "Popups", "errPageEditorPopup", "errorPageEditorFrame.html");
     oWS.utill.attr.paths.UIFIND = PATH.join(APPPATH, "ws10_20", "Popups", "findPopup", "frame.html");
     oWS.utill.attr.paths.RTMCLS = PATH.join(APPPATH, "ws10_20", "Popups", "runtimeClassNavigator", "frame.html"); // runtime class navigator        
     oWS.utill.attr.paths.BINDPOPUP = PATH.join(APPPATH, "ws10_20", "Popups", "bindPopup", "frame.html");
     oWS.utill.attr.paths.TXTSRCH = PATH.join(APPPATH, "ws10_20", "Popups", "textSearchPopup", "index.html");    
     oWS.utill.attr.paths.APPDOCU = PATH.join(APPPATH, "ws10_20", "Popups", "docPopup", "frame.html");
     oWS.utill.attr.paths.WSOPTS = PATH.join(APPPATH, "ws10_20", "Popups", "optionPopup", "frame.html");    
+    oWS.utill.attr.paths.EDITPOP = PATH.join(APPPATH, "ws10_20", "Popups", "editorPopup", "editorFrame.html");    
 
     // SAP icon Path
     oWS.utill.attr.paths.SAPICONPATH = PATH.join(APPPATH, '/icons/');

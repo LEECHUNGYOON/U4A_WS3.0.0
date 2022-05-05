@@ -46,6 +46,8 @@ document.addEventListener('deviceready', onDeviceReady, false);
 
 function onDeviceReady() {
 
+    console.log("onDeviceReady");
+    
     var oWs_frame = document.getElementById("ws_editorframe");
     if (!oWs_frame) {
         return;
@@ -57,6 +59,16 @@ function onDeviceReady() {
 
 oAPP.IPCRENDERER.on('if-editor-info', function (event, res) {
 
+    console.log("if-editor-info");
+
     setEditorInfo(res);
+
+    onDeviceReady();
+
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+
+  console.log("DOMContentLoaded");
 
 });

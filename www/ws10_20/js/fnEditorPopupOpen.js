@@ -57,10 +57,9 @@
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
-        var sUrlPath = PATH.join(APPPATH, "ws10_20", "editor", "editorFrame.html");        
-        oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.loadURL(`file://${parent.__dirname}/../ws10_20/editor/editorFrame.html`);
+        var sUrlPath = parent.getPath("EDITPOP");
+        oBrowserWindow.loadURL(sUrlPath);
 
         // oBrowserWindow.webContents.openDevTools();
 
@@ -86,7 +85,7 @@
         IPCMAIN.on("if-editor-save", oAPP.fn.fnIpcMain_EditorSave);
 
         // 브라우저를 닫을때 타는 이벤트
-        oBrowserWindow.on('closed', () => {            
+        oBrowserWindow.on('closed', () => {
 
             // IPCMAIN 이벤트 해제
             IPCMAIN.removeListener("if-editor-save", oAPP.fn.fnIpcMain_EditorSave);
