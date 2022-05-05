@@ -134,7 +134,7 @@
 
         }
 
-        var oCurrWin = parent.REMOTE.getCurrentWindow(),
+        var oCurrWin = REMOTE.getCurrentWindow(),
             SESSKEY = parent.getSessionKey(),
             BROWSERKEY = parent.getBrowserKey();
 
@@ -146,7 +146,6 @@
         oBrowserOptions.url = sPath;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = oCurrWin;
-
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
         oBrowserOptions.webPreferences.OBJTY = sWinObjType;

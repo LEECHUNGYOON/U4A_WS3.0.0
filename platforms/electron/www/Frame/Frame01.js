@@ -2,7 +2,8 @@
  *  ## Electron
  */
 
-var REMOTE = require('@electron/remote'),
+var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에서 parent로 접근이 안됨.)
+    REMOTE = require('@electron/remote'),
     REMOTEMAIN = REMOTE.require('@electron/remote/main'),
     GLOBALSHORTCUT = REMOTE.require('electron').globalShortcut,
     IPCMAIN = REMOTE.require('electron').ipcMain,
@@ -28,20 +29,21 @@ APP.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 /**
  *  ## oWS WS
  */
-var oWS = {};
 
-(function (oWS) {
+var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에서 parent로 접근이 안됨.)
+    oWS = {};
+
+(function(oWS) {
     "use strict";
 
     oWS.utill = {};
     oWS.utill.fn = {};
     oWS.utill.attr = {};
+    oWS.utill.attr.paths = {}; // 각종 패스 모음
+    oWS.utill.attr.METADATA = {}; // 메타 데이터
 
     // Busy Indicator 상태
     oWS.utill.attr.isBusy = "";
-
-    // 메타 데이터
-    oWS.utill.attr.METADATA = {};
 
     /**
      * ## 각종 Path 들
@@ -52,8 +54,7 @@ var oWS = {};
      *    2. 동적으로 개인화 파일 등을 만들때..
      *      - APP.getPath("userData") + "\\경로명"
      */
-
-    oWS.utill.attr.paths = {};
+    
     oWS.utill.attr.paths.LOGIN = PATH.join(APPPATH, '/Login/Login.html');
     oWS.utill.attr.paths.LOGIN2 = PATH.join(APPPATH, '/Login/Login2.html');
     oWS.utill.attr.paths.WS10 = PATH.join(APPPATH, '/ws10_20/ws10_20.html');
@@ -61,12 +62,22 @@ var oWS = {};
     oWS.utill.attr.paths.ERRORPAGE = PATH.join(APPPATH, '/ws10_20/errorpage.html');
     oWS.utill.attr.paths.JQUERYUI = PATH.join(APPPATH, '/js/jquery-ui.min.js');
     oWS.utill.attr.paths.JQUERYUICSS = PATH.join(APPPATH, '/css/jquery-ui.min.css');
-    oWS.utill.attr.paths.P13N = APP.getPath("userData") + '\\p13n\\p13n.json';
     oWS.utill.attr.paths.MSG = PATH.join(APPPATH, '/msg');
-    oWS.utill.attr.paths.RTMCLS = PATH.join(APPPATH, '/ws10_20/runtimeClassNavigator/frame.html'); // runtime class navigator    
     oWS.utill.attr.paths.BROWSERSETTINGS = PATH.join(APPPATH, '/settings/BrowserWindow/BrowserWindow-settings.json');
     oWS.utill.attr.paths.SERVERLIST = PATH.join(APPPATH, '/ServerList/ServerFrame.html');
+
+    // User Data Paths..
     oWS.utill.attr.paths.CLIPBOARD = PATH.join(APP.getPath("userData"), "\\clipboard.json");
+    oWS.utill.attr.paths.P13N = APP.getPath("userData") + '\\p13n\\p13n.json';
+
+    // Popup Paths..
+    oWS.utill.attr.paths.ERRPAGE = PATH.join(APPPATH, "ws10_20", "editor", "errorPageEditorFrame.html");
+    oWS.utill.attr.paths.UIFIND = PATH.join(APPPATH, "ws10_20", "Popups", "findPopup", "frame.html");
+    oWS.utill.attr.paths.RTMCLS = PATH.join(APPPATH, "ws10_20", "Popups", "runtimeClassNavigator", "frame.html"); // runtime class navigator        
+    oWS.utill.attr.paths.BINDPOPUP = PATH.join(APPPATH, "ws10_20", "Popups", "bindPopup", "frame.html");
+    oWS.utill.attr.paths.TXTSRCH = PATH.join(APPPATH, "ws10_20", "Popups", "textSearchPopup", "index.html");    
+    oWS.utill.attr.paths.APPDOCU = PATH.join(APPPATH, "ws10_20", "Popups", "docPopup", "frame.html");
+    oWS.utill.attr.paths.WSOPTS = PATH.join(APPPATH, "ws10_20", "Popups", "optionPopup", "frame.html");    
 
     // SAP icon Path
     oWS.utill.attr.paths.SAPICONPATH = PATH.join(APPPATH, '/icons/');
@@ -96,7 +107,7 @@ var oWS = {};
      */
 
     // 1. 메시지 호출
-    oWS.utill.fn.showMessage = function (oUI5, KIND, TYPE, MSG, fn_callback) {
+    oWS.utill.fn.showMessage = function(oUI5, KIND, TYPE, MSG, fn_callback) {
 
         /**
          * # oUI5
@@ -343,7 +354,7 @@ var oWS = {};
     }; // end of oWS.utill.fn.showMessage
 
     // 2. 서버 정보를 구한다.
-    oWS.utill.fn.getServerInfo = function () {
+    oWS.utill.fn.getServerInfo = function() {
 
         if (!oWS.oServerInfo) {
             return;
@@ -354,7 +365,7 @@ var oWS = {};
     };
 
     // 3. 서버 URL을 구한다.
-    oWS.utill.fn.getServerPath = function () {
+    oWS.utill.fn.getServerPath = function() {
 
         if (!oWS.oServerInfo) {
             return;
@@ -370,7 +381,7 @@ var oWS = {};
     };
 
     // 4. 서버 호스트를 구한다.
-    oWS.utill.fn.getServerHost = function () {
+    oWS.utill.fn.getServerHost = function() {
 
         if (!oWS.oServerInfo) {
             return;
@@ -388,7 +399,7 @@ var oWS = {};
     };
 
     // 4. Page 이동
-    oWS.utill.fn.onMoveToPage = function (sMovePath) {
+    oWS.utill.fn.onMoveToPage = function(sMovePath) {
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {
@@ -413,17 +424,17 @@ var oWS = {};
     };
 
     // 5. Electron Instance return.
-    oWS.utill.fn.getElectronRemote = function () {
+    oWS.utill.fn.getElectronRemote = function() {
         return REMOTE;
     };
 
     // 6. NODE JS 'require' return.
-    oWS.utill.fn.getRequire = function () {
+    oWS.utill.fn.getRequire = function() {
         return require;
     };
 
     // 7. Application 정보 저장
-    oWS.utill.fn.setAppInfo = function (oAppInfo) {
+    oWS.utill.fn.setAppInfo = function(oAppInfo) {
 
         if (oWS.utill.attr.oAppInfo) {
             delete oWS.utill.attr.oAppInfo;
@@ -479,7 +490,7 @@ var oWS = {};
     };
 
     // 8. AppID 및 Create, Change, Display 모드 정보 구하기
-    oWS.utill.fn.getAppInfo = function () {
+    oWS.utill.fn.getAppInfo = function() {
 
         if (!oWS.utill.attr.oAppInfo) {
             return;
@@ -490,12 +501,12 @@ var oWS = {};
     };
 
     // 9. SAP Icon Image Path 만들어주는 function
-    oWS.utill.fn.getSapIconPath = function (sIconName) {
+    oWS.utill.fn.getSapIconPath = function(sIconName) {
         return oWS.utill.attr.paths.SAPICONPATH + sIconName + ".gif";
     };
 
     // 10. Window Header Menu Setting
-    oWS.utill.fn.setBrowserMenu = function (aTemplate) {
+    oWS.utill.fn.setBrowserMenu = function(aTemplate) {
 
         var oCurrWin = REMOTE.getCurrentWindow(),
             MENU = REMOTE.Menu;
@@ -511,12 +522,12 @@ var oWS = {};
     };
 
     // 11. 현재 dirname 구하기
-    oWS.utill.fn.getDirName = function () {
+    oWS.utill.fn.getDirName = function() {
         return __dirname;
     };
 
     // 12. Page Path 구하기
-    oWS.utill.fn.getPath = function (sPagePath) {
+    oWS.utill.fn.getPath = function(sPagePath) {
 
         var sPath = oWS.utill.attr.paths[sPagePath];
         if (!sPath) {
@@ -572,7 +583,7 @@ var oWS = {};
     // }; // end of oWS.utill.fn.ajax
 
     // 14. 서버에서 App 정보를 구한다.
-    oWS.utill.fn.getAppDataFromServer = function (oFormData, fn_callback) {
+    oWS.utill.fn.getAppDataFromServer = function(oFormData, fn_callback) {
 
         var sPath = getServerPath() + '/INIT_PRC';
 
@@ -587,7 +598,7 @@ var oWS = {};
     }; // end of oWS.utill.fn.getAppDataFromServer
 
     // 15. 새창 띄우기
-    oWS.utill.fn.onNewWindow = function () {
+    oWS.utill.fn.onNewWindow = function() {
 
         const WINDOWSTATE = REMOTE.require('electron-window-state');
 
@@ -632,7 +643,7 @@ var oWS = {};
         // oBrowserWindow.webContents.openDevTools();        
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             // console.log('did-finish-load');
 
@@ -670,7 +681,7 @@ var oWS = {};
      *  - A : +
      *  - D : -  
      */
-    oWS.utill.fn.setSessionCount = function (TYPE) {
+    oWS.utill.fn.setSessionCount = function(TYPE) {
         return;
 
         var sFoldPath = PATH.join(__dirname, '../conf/'),
@@ -829,12 +840,12 @@ var oWS = {};
     }; // end of oWS.utill.fn.setBusy
 
     // 현재 Busy Indicator 상태를 리턴해준다.
-    oWS.utill.fn.getBusy = function () {
+    oWS.utill.fn.getBusy = function() {
         return oWS.utill.attr.isBusy;
     };
 
     // 20. Page Loading 실행
-    oWS.utill.fn.showLoadingPage = function (bIsShow) {
+    oWS.utill.fn.showLoadingPage = function(bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
         if (!oLoadPg) {
@@ -1111,6 +1122,6 @@ IPCRENDERER.on('if-meta-info', (event, res) => {
 
 });
 
-window.onload = function () {
+window.onload = function() {
     showLoadingPage('');
 };

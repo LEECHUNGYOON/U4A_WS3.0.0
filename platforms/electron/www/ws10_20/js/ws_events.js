@@ -1055,8 +1055,7 @@
         oBrowserOptions.title = "Icon List";
         oBrowserOptions.url = sPath;
         oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.parent = oCurrWin;
-        
+        oBrowserOptions.parent = oCurrWin;        
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
         oBrowserOptions.webPreferences.OBJTY = sWinObjType;
@@ -1130,8 +1129,8 @@
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oRuntimeInfo = {
-                aRuntimeData : oAPP.DATA.LIB.T_0022,
-                oUserInfo : oUserInfo                
+                oUserInfo : oUserInfo,
+                aRuntimeData : oAPP.DATA.LIB.T_0022                              
             };
 
             // 오픈할 URL 파라미터 전송

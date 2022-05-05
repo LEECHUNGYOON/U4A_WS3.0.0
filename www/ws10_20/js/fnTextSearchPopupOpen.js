@@ -5,7 +5,7 @@
  * - file Desc : Text Search Popup
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -15,9 +15,7 @@
         PATH = parent.PATH,
         APP = parent.APP;
 
-    oAPP.fn.fnTextSearchPopupOpen = function () {
-
-        debugger;
+    oAPP.fn.fnTextSearchPopupOpen = function() {
 
         var sWinObjType = "TXTSRCH";
 
@@ -31,7 +29,7 @@
             SESSKEY = parent.getSessionKey(),
             BROWSKEY = parent.getBrowserKey();
 
-        var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/BrowserWindow/BrowserWindow-settings.json"),
+        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
@@ -45,7 +43,31 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        oBrowserWindow.loadURL(`file://${parent.__dirname}/../ws10_20/editor/editorFrame.html`);
+        var sUrlPath = parent.getPath(sWinObjType);
+        oBrowserWindow.loadURL(sUrlPath);
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function() {
+
+            var oFindData = {
+                oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보
+                aAttrData: aAttrData,
+                aServEvtData: aServerEventList,
+                aT_0022: oAPP.DATA.LIB.T_0022
+            };
+
+            oBrowserWindow.webContents.send('if-find-info', oFindData);
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+
+            oBrowserWindow = null;
+
+        });
 
     }; // end of oAPP.fn.fnTextSearchPopupOpen
 

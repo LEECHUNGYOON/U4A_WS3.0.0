@@ -13,7 +13,8 @@
         REMOTEMAIN = parent.REMOTEMAIN,
         IPCMAIN = parent.IPCMAIN,
         PATH = parent.PATH,
-        APP = parent.APP;
+        APP = parent.APP,
+        APPCOMMON = oAPP.common;
 
 
     oAPP.fn.fnErrorPageEditorPopupOpen = function () {
@@ -21,7 +22,7 @@
         var sPopupName = "ERRPAGE";
 
         // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = oAPP.common.getCheckAlreadyOpenWindow(sPopupName);
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             return;
         }
@@ -34,13 +35,12 @@
             oUserInfo = parent.getUserInfo(),
             sBrowserTitle = "Editor - Customizing the Error Page";
 
-        var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/BrowserWindow/BrowserWindow-settings.json"),
+        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.title = sBrowserTitle;
         oBrowserOptions.autoHideMenuBar = true;
-
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -53,7 +53,13 @@
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
-        oBrowserWindow.loadURL(`file://${parent.__dirname}/../ws10_20/editor/errorPageEditorFrame.html`);
+        var sUrlPath = parent.getPath(sPopupName);
+        oBrowserWindow.loadURL(sUrlPath);
+
+        oBrowserWindow.loadURL(sUrlPath);
+        
+        // oBrowserWindow.loadURL(`file://${parent.__dirname}/../ws10_20/editor/errorPageEditorFrame.html`);
+
         // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
@@ -74,13 +80,13 @@
         IPCMAIN.on("if-ErrorPage-Preview", oAPP.fn.fnIpcMain_ErrorPagePreview);
 
         // 브라우저를 닫을때 타는 이벤트
-        oBrowserWindow.on('closed', () => {
-
-            oBrowserWindow = null;
+        oBrowserWindow.on('closed', () => {            
 
             // IPCMAIN 이벤트 해제
             IPCMAIN.removeListener("if-ErrorPageEditor-Save", oAPP.fn.fnIpcMain_ErrorPageEditorSave);
             IPCMAIN.removeListener("if-ErrorPage-Preview", oAPP.fn.fnIpcMain_ErrorPagePreview);
+
+            oBrowserWindow = null;
 
         });
 
@@ -126,17 +132,17 @@
         }
 
         // 기존에 Error Page Editor 미리보기 팝업이 열렸을 경우 창을 닫고 다시 띄운다.
-        var oResult = oAPP.common.getCheckAlreadyOpenWindow(sWinObjType);
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
         if (oResult.ISOPEN) {
             oResult.WINDOW.close();
             // return;
         }
 
-        var oCurrWin = parent.REMOTE.getCurrentWindow(),
+        var oCurrWin = REMOTE.getCurrentWindow(),
             oSaveData = res.SAVEDATA,
             SESSKEY = parent.getSessionKey();
 
-        var sSettingsJsonPath = parent.PATH.join(parent.APP.getAppPath(), "/settings/BrowserWindow/BrowserWindow-settings.json"),
+        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
