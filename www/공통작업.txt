@@ -90,3 +90,8 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 // bootstrap 경로 수정해야 할 위치
 ServerList.html
 ws10_20.html
+
+
+
+// 멀티푸터 메시지
+oAPP.fn.fnMultiFooterMsg

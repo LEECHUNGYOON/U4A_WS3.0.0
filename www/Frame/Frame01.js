@@ -79,6 +79,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     oWS.utill.attr.paths.APPDOCU = PATH.join(APPPATH, "ws10_20", "Popups", "docPopup", "frame.html");
     oWS.utill.attr.paths.WSOPTS = PATH.join(APPPATH, "ws10_20", "Popups", "optionPopup", "frame.html");    
     oWS.utill.attr.paths.EDITPOP = PATH.join(APPPATH, "ws10_20", "Popups", "editorPopup", "editorFrame.html");    
+    oWS.utill.attr.paths.ERRMSGPOP = PATH.join(APPPATH, "ws10_20", "Popups", "errMsgPopup", "frame.html");    
 
     // SAP icon Path
     oWS.utill.attr.paths.SAPICONPATH = PATH.join(APPPATH, '/icons/');
