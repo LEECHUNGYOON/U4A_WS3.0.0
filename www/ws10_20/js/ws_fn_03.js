@@ -712,9 +712,7 @@
             // Dialog 가 Open 되면 child window 전체를 숨긴다.
             var $oOpendDialog = $(".sapMDialogOpen");
             if (!$oOpendDialog.length) {
-
                 oAPP.fn.fnChildWindowShow(true);
-
                 return;
             }
 

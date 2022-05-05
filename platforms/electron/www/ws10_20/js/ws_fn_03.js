@@ -713,6 +713,8 @@
             var $oOpendDialog = $(".sapMDialogOpen");
             if (!$oOpendDialog.length) {
 
+                console.log("감지");
+                
                 oAPP.fn.fnChildWindowShow(true);
 
                 return;
