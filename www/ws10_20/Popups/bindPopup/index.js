@@ -1098,16 +1098,7 @@ let oAPP = parent.oAPP;
      ************************************************************************/
     oAPP.fn.fnOnSmoothLoading = () => {
 
-        var oCurrWin = oAPP.REMOTE.getCurrentWindow();
-        oCurrWin.show();
-
-        setTimeout(() => {
-
-            oCurrWin.setOpacity(1.0);
-
-            $('#content').fadeIn(300, 'linear');
-
-        }, 300);
+        $('#content').fadeIn(300, 'linear');
 
     }; // end of fnOnSmoothLoading 
 

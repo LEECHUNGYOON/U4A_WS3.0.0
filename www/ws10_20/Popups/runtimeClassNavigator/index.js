@@ -438,12 +438,14 @@ let oAPP = parent.oAPP;
 
             oAPP.setBusy('');
 
-            // 자연스러운 로딩
-            setTimeout(() => {
+            $('#content').fadeIn(300, 'linear');
 
-                $('#content').fadeIn(300, 'linear');
+            // // 자연스러운 로딩
+            // setTimeout(() => {
 
-            }, 100);
+               
+
+            // }, 100);
 
         });
 

@@ -648,11 +648,11 @@ let oAPP = (function () {
             parent.setMetadata(oResult.META);
         }
 
-        parent.document.body.style.backgroundColor = "#1c2228";
+        // parent.document.body.style.backgroundColor = "#1c2228";
 
-        var oCurrWin = parent.REMOTE.getCurrentWindow();
+        // var oCurrWin = parent.REMOTE.getCurrentWindow();
 
-        oCurrWin.setBackgroundColor("#1c2228");
+        // oCurrWin.setBackgroundColor("#1c2228");
 
         parent.onMoveToPage("WS10");
 

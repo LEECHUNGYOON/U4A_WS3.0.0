@@ -319,13 +319,6 @@
         oBrowserWindow.backgroundColor = "#1c2228";
         oBrowserWindow.backgroundColor = "#f7f7f7";
 
-        /*********************************************************
-         * 테스트... 주석처리 해야되는 부분
-         *********************************************************/
-        // if (parent.process.env.COMPUTERNAME.startsWith("YOON")) {
-        //     oBrowserWindow.backgroundColor = "#f7f7f7";
-        // }
-
         // 브라우저 윈도우 기본 사이즈
         oBrowserWindow.x = mainWindowState.x;
         oBrowserWindow.y = mainWindowState.y;
@@ -361,17 +354,8 @@
                 BROWSERKEY: BROWSERKEY
             };
 
-            /*********************************************************
-             * 테스트... 주석처리 해야되는 부분
-             *********************************************************/
-            // if (parent.process.env.COMPUTERNAME.startsWith("YOON")) {
-            //     oMetadata.EXEPAGE = "LOGIN2";
-            // }
-
             // 메타 정보를 보낸다.
             oBrowserWindow.webContents.send('if-meta-info', oMetadata);
-
-            // oBrowserWindow.show();
 
         });
 
@@ -915,7 +899,7 @@
         // ServerInfo.json 파일에 서버 정보 저장
         FS.writeFileSync(sServerInfoPath, JSON.stringify(aServerInfo));
 
-        fnSetModelProperty("/SERVERINFO", aServerInfo);
+        fnSetModelProperty("/SERVERINFO", aServerInfo, true);
 
 
         // 업데이트 처리

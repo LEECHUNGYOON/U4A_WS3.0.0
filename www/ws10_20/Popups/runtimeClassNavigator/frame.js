@@ -79,6 +79,10 @@ let oAPP = (function(window) {
 
         oWs_frame.src = "index.html";
 
+
+        var oCurrWin = oAPP.REMOTE.getCurrentWindow();
+        oCurrWin.setOpacity(1);
+
     });
 
     window.oAPP = oAPP;

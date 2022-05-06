@@ -1104,7 +1104,7 @@
 
         oBrowserOptions.title = "Runtime Class Navigator";
         oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.show = false;
+        oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.backgroundColor = "#1c2228";
 
@@ -1134,7 +1134,7 @@
             // 오픈할 URL 파라미터 전송
             oBrowserWindow.webContents.send('if-runtime-info', oRuntimeInfo);
 
-            oBrowserWindow.show();
+            // oBrowserWindow.show();
 
         });
 

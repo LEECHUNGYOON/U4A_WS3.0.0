@@ -54,8 +54,8 @@
         oBrowserOptions.title = "Find";
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
-        oBrowserOptions.show = false;
-        // oBrowserOptions.opacity = 0.0;        
+        // oBrowserOptions.show = false;
+        oBrowserOptions.opacity = 0.0;        
         oBrowserOptions.backgroundColor = "#1c2228";
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -88,7 +88,7 @@
 
             oBrowserWindow.webContents.send('if-find-info', oFindData);            
 
-            oBrowserWindow.show();
+            // oBrowserWindow.show();
 
         });
 

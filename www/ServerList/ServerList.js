@@ -899,7 +899,7 @@
         // ServerInfo.json 파일에 서버 정보 저장
         FS.writeFileSync(sServerInfoPath, JSON.stringify(aServerInfo));
 
-        fnSetModelProperty("/SERVERINFO", aServerInfo);
+        fnSetModelProperty("/SERVERINFO", aServerInfo, true);
 
 
         // 업데이트 처리

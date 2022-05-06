@@ -1129,16 +1129,19 @@ let oAPP = parent.oAPP;
      ************************************************************************/
     oAPP.fn.fnOnSmoothLoading = () => {
 
+
+        $('#content').fadeIn(300, 'linear');
+
         // var oCurrWin = oAPP.REMOTE.getCurrentWindow();
         // oCurrWin.show();      
-      
-        setTimeout(() => {
 
-            // oCurrWin.setOpacity(1.0);
+        // setTimeout(() => {
 
-            $('#content').fadeIn(300, 'linear');
+        //     // oCurrWin.setOpacity(1.0);
 
-        }, 100);
+            
+
+        // }, 100);
 
     }; // end of fnOnSmoothLoading 
 
@@ -1159,15 +1162,8 @@ let oAPP = parent.oAPP;
 
             oAPP.setBusy('');
 
-             // 자연스러운 로딩
-             setTimeout(() => {
-
-                $('#content').fadeIn(300, 'linear');
-
-            }, 100);
-            
-            // // 자연스러운 로딩
-            // oAPP.fn.fnOnSmoothLoading();
+            // 자연스러운 로딩
+            oAPP.fn.fnOnSmoothLoading();
 
         });
 
