@@ -5,7 +5,7 @@
  * - file Desc : 브라우저 상단 메뉴 이벤트
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -14,7 +14,7 @@
         REMOTEMAIN = parent.REMOTEMAIN;
 
     // App. Package Change
-    oAPP.fn.fnHmws10_10_10 = function(oEvent) {
+    oAPP.fn.fnHmws10_10_10 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -25,7 +25,7 @@
     };
 
     // App. Importing
-    oAPP.fn.fnHmws10_10_20_10 = function(oEvent) {
+    oAPP.fn.fnHmws10_10_20_10 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -36,7 +36,7 @@
     };
 
     // App. Exporting
-    oAPP.fn.fnHmws10_10_20_20 = function(oEvent) {
+    oAPP.fn.fnHmws10_10_20_20 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -46,7 +46,7 @@
     };
 
     // U4A Help Document
-    oAPP.fn.fnHmws10_10_30 = function(oEvent) {
+    oAPP.fn.fnHmws10_10_30 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -56,7 +56,7 @@
     };
 
     // U4A Shortcut Create
-    oAPP.fn.fnHmws10_10_40_10 = function(oEvent) {
+    oAPP.fn.fnHmws10_10_40_10 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -66,7 +66,7 @@
     };
 
     // QR Code Maker
-    oAPP.fn.fnHmws10_10_40_20 = function(oEvent) {
+    oAPP.fn.fnHmws10_10_40_20 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -76,7 +76,7 @@
     };
 
     // new Window
-    oAPP.fn.fnHmws10_30_10 = function(oEvent) {
+    oAPP.fn.fnHmws10_30_10 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -87,7 +87,7 @@
     };
 
     // Theme Designer
-    oAPP.fn.fnHmws20_10_10 = function(oEvent) {
+    oAPP.fn.fnHmws20_10_10 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -99,7 +99,7 @@
     };
 
     // Font Style Wizard
-    oAPP.fn.fnHmws20_10_20 = function(oEvent) {
+    oAPP.fn.fnHmws20_10_20 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -133,6 +133,7 @@
         oBrowserOptions.title = "U4A Workspace: Font Style";
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.devTools = false;
+        oBrowserOptions.show = false;
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.nodeIntegration = false;
@@ -150,8 +151,9 @@
         // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
+            oBrowserWindow.show();
 
         });
 
@@ -163,7 +165,7 @@
     }; // end of oAPP.fn.fnHmws20_10_20
 
     // Select Browser Type
-    oAPP.fn.fnHmws20_20_10 = function(oEvent) {
+    oAPP.fn.fnHmws20_20_10 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -175,14 +177,14 @@
             return;
         }
 
-        oAPP.loadJs("fnSelectBrowserPopupOpen", function() {
+        oAPP.loadJs("fnSelectBrowserPopupOpen", function () {
             oAPP.fn.fnSelectBrowserPopupOpen();
         });
 
     }; // end of oAPP.fn.fnHmws20_20_10    
 
     // CSS Editor
-    oAPP.fn.fnHmws20_30_10 = function(oEvent) {
+    oAPP.fn.fnHmws20_30_10 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -202,14 +204,14 @@
             return;
         }
 
-        oAPP.loadJs("fnEditorPopupOpen", function() {
+        oAPP.loadJs("fnEditorPopupOpen", function () {
             oAPP.fn.fnEditorPopupOpen(oEditorInfo);
         });
 
     }; // end of oAPP.fn.fnHmws20_30_10
 
     // Javascript Editor
-    oAPP.fn.fnHmws20_30_20 = function(oEvent) {
+    oAPP.fn.fnHmws20_30_20 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -229,14 +231,14 @@
             return;
         }
 
-        oAPP.loadJs("fnEditorPopupOpen", function() {
+        oAPP.loadJs("fnEditorPopupOpen", function () {
             oAPP.fn.fnEditorPopupOpen(oEditorInfo);
         });
 
     }; // end of oAPP.fn.fnHmws20_30_20
 
     // HTML Editor
-    oAPP.fn.fnHmws20_30_30 = function(oEvent) {
+    oAPP.fn.fnHmws20_30_30 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -256,14 +258,14 @@
             return;
         }
 
-        oAPP.loadJs("fnEditorPopupOpen", function() {
+        oAPP.loadJs("fnEditorPopupOpen", function () {
             oAPP.fn.fnEditorPopupOpen(oEditorInfo);
         });
 
     }; // end of oAPP.fn.fnHmws20_30_30
 
     // Error Page Editor
-    oAPP.fn.fnHmws20_30_40 = function(oEvent) {
+    oAPP.fn.fnHmws20_30_40 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -281,7 +283,7 @@
     // };
 
     // Close Browser
-    oAPP.fn.fnHmws20_40_20 = function(oEvent) {
+    oAPP.fn.fnHmws20_40_20 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -294,7 +296,7 @@
     };
 
     // User Profile
-    oAPP.fn.fnHmws20_40_30 = function(oEvent) {
+    oAPP.fn.fnHmws20_40_30 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -304,7 +306,7 @@
     };
 
     // Logoff
-    oAPP.fn.fnHmws20_40_40 = function(oEvent) {
+    oAPP.fn.fnHmws20_40_40 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -315,7 +317,7 @@
     };
 
     // Application Help
-    oAPP.fn.fnHmws20_50_10 = function(oEvent) {
+    oAPP.fn.fnHmws20_50_10 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -326,7 +328,7 @@
     };
 
     // Settings..
-    oAPP.fn.fnHmws20_50_20 = function(oEvent) {
+    oAPP.fn.fnHmws20_50_20 = function (oEvent) {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -350,7 +352,7 @@
     /************************************************************************
      * [WS10] Select Browser Type
      ************************************************************************/
-    oAPP.fn.fnWS10WMENU20_01 = function() {
+    oAPP.fn.fnWS10WMENU20_01 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -362,7 +364,7 @@
             return;
         }
 
-        oAPP.loadJs("fnSelectBrowserPopupOpen", function() {
+        oAPP.loadJs("fnSelectBrowserPopupOpen", function () {
             oAPP.fn.fnSelectBrowserPopupOpen();
         });
 
@@ -371,7 +373,7 @@
     /************************************************************************
      * [WS10] New Window
      ************************************************************************/
-    oAPP.fn.fnWS10WMENU30_01 = function() {
+    oAPP.fn.fnWS10WMENU30_01 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -385,7 +387,7 @@
     /************************************************************************
      * [WS10] Close Browser
      ************************************************************************/
-    oAPP.fn.fnWS10WMENU30_02 = function() {
+    oAPP.fn.fnWS10WMENU30_02 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -414,7 +416,7 @@
     /************************************************************************
      * [WS20] Theme Designer
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU10_01 = function() {
+    oAPP.fn.fnWS20WMENU10_01 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -426,7 +428,7 @@
     /************************************************************************
      * [WS20] Font Style Wizard
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU10_02 = function() {
+    oAPP.fn.fnWS20WMENU10_02 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -460,6 +462,7 @@
         oBrowserOptions.title = "U4A Workspace: Font Style";
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.devTools = false;
+        oBrowserOptions.show = false;
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.nodeIntegration = false;
@@ -477,7 +480,9 @@
         // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            oBrowserWindow.show();
 
 
         });
@@ -492,7 +497,7 @@
     /************************************************************************
      * [WS20] Select Browser Type
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU20_01 = function() {
+    oAPP.fn.fnWS20WMENU20_01 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -504,7 +509,7 @@
             return;
         }
 
-        oAPP.loadJs("fnSelectBrowserPopupOpen", function() {
+        oAPP.loadJs("fnSelectBrowserPopupOpen", function () {
             oAPP.fn.fnSelectBrowserPopupOpen();
         });
 
@@ -513,7 +518,7 @@
     /************************************************************************
      * [WS20] Editor
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU30_01 = function() {
+    oAPP.fn.fnWS20WMENU30_01 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -533,7 +538,7 @@
             return;
         }
 
-        oAPP.loadJs("fnEditorPopupOpen", function() {
+        oAPP.loadJs("fnEditorPopupOpen", function () {
             oAPP.fn.fnEditorPopupOpen(oEditorInfo);
         });
 
@@ -542,7 +547,7 @@
     /************************************************************************
      * [WS20] Javascript Editor
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU30_02 = function() {
+    oAPP.fn.fnWS20WMENU30_02 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -562,7 +567,7 @@
             return;
         }
 
-        oAPP.loadJs("fnEditorPopupOpen", function() {
+        oAPP.loadJs("fnEditorPopupOpen", function () {
             oAPP.fn.fnEditorPopupOpen(oEditorInfo);
         });
 
@@ -571,7 +576,7 @@
     /************************************************************************
      * [WS20] HTML Editor
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU30_03 = function() {
+    oAPP.fn.fnWS20WMENU30_03 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -591,7 +596,7 @@
             return;
         }
 
-        oAPP.loadJs("fnEditorPopupOpen", function() {
+        oAPP.loadJs("fnEditorPopupOpen", function () {
             oAPP.fn.fnEditorPopupOpen(oEditorInfo);
         });
 
@@ -600,7 +605,7 @@
     /************************************************************************
      * [WS20] Error Page Editor
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU30_04 = function() {
+    oAPP.fn.fnWS20WMENU30_04 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -615,7 +620,7 @@
     /************************************************************************
      * [WS20] new Window
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU40_01 = function() {
+    oAPP.fn.fnWS20WMENU40_01 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -629,7 +634,7 @@
     /************************************************************************
      * [WS20] Close Browser
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU40_02 = function() {
+    oAPP.fn.fnWS20WMENU40_02 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -644,7 +649,7 @@
     /************************************************************************
      * [WS20] User Profile
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU40_03 = function() {
+    oAPP.fn.fnWS20WMENU40_03 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -656,7 +661,7 @@
     /************************************************************************
      * [WS20] Logoff
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU40_04 = function() {
+    oAPP.fn.fnWS20WMENU40_04 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -684,7 +689,7 @@
     /************************************************************************
      * [WS20] Application Help
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU50_01 = function() {
+    oAPP.fn.fnWS20WMENU50_01 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -696,7 +701,7 @@
     /************************************************************************
      * [WS20] Settings
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU50_02 = function() {
+    oAPP.fn.fnWS20WMENU50_02 = function () {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -712,7 +717,7 @@
     /************************************************************************
      * Busy 강제실행
      ************************************************************************/
-    oAPP.fn.fnWS10Test90 = function() {
+    oAPP.fn.fnWS10Test90 = function () {
 
         oAPP.fn.fnTest90();
 
@@ -721,7 +726,7 @@
     /************************************************************************
      * Busy 강제종료
      ************************************************************************/
-    oAPP.fn.fnWS10Test99 = function() {
+    oAPP.fn.fnWS10Test99 = function () {
 
         oAPP.fn.fnTest99();
 
@@ -730,7 +735,7 @@
     /************************************************************************
      * 세션 끊기
      ************************************************************************/
-    oAPP.fn.fnWS10Test98 = function() {
+    oAPP.fn.fnWS10Test98 = function () {
 
         oAPP.fn.fnTest98();
 
@@ -739,7 +744,7 @@
     /************************************************************************
      * 개발툴
      ************************************************************************/
-    oAPP.fn.fnWS10Test97 = function() {
+    oAPP.fn.fnWS10Test97 = function () {
 
         oAPP.fn.fnTest97();
 
@@ -748,7 +753,7 @@
     /************************************************************************
      * CTS Popup
      ************************************************************************/
-    oAPP.fn.fnWS10Test95 = function() {
+    oAPP.fn.fnWS10Test95 = function () {
 
         oAPP.fn.fnTest95();
 
@@ -757,7 +762,7 @@
     /************************************************************************
      * Busy 강제실행
      ************************************************************************/
-    oAPP.fn.fnWS20Test90 = function() {
+    oAPP.fn.fnWS20Test90 = function () {
 
         oAPP.fn.fnTest90();
 
@@ -766,7 +771,7 @@
     /************************************************************************
      * Busy 강제종료
      ************************************************************************/
-    oAPP.fn.fnWS20Test99 = function() {
+    oAPP.fn.fnWS20Test99 = function () {
 
         oAPP.fn.fnTest99();
 
@@ -775,7 +780,7 @@
     /************************************************************************
      * 로그아웃 (세션 죽이기)
      ************************************************************************/
-    oAPP.fn.fnWS20Test98 = function() {
+    oAPP.fn.fnWS20Test98 = function () {
 
         oAPP.fn.fnTest98();
 
@@ -784,7 +789,7 @@
     /************************************************************************
      * 개발툴 실행
      ************************************************************************/
-    oAPP.fn.fnWS20Test97 = function() {
+    oAPP.fn.fnWS20Test97 = function () {
 
         oAPP.fn.fnTest97();
 
@@ -793,7 +798,7 @@
     /************************************************************************
      * CTS popup Test
      ************************************************************************/
-    oAPP.fn.fnWS20Test95 = function() {
+    oAPP.fn.fnWS20Test95 = function () {
 
         oAPP.fn.fnTest95();
 
@@ -802,7 +807,7 @@
     /************************************************************************
      * Property 도움말 테스트
      ************************************************************************/
-    oAPP.fn.fnWS20Test91 = function() {
+    oAPP.fn.fnWS20Test91 = function () {
 
         oAPP.fn.fnTest91();
 
@@ -811,7 +816,7 @@
     /************************************************************************
      * Document Popup
      ************************************************************************/
-    oAPP.fn.fnWS20doc01 = function() {
+    oAPP.fn.fnWS20doc01 = function () {
 
         oAPP.fn.fnDocuPopupOpener();
 

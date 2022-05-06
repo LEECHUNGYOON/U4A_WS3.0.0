@@ -299,7 +299,7 @@
      ************************************************************************/
     oAPP.events.ev_AppExam = function (oEvent) {
 
-        
+
 
         var oCurrWin = REMOTE.getCurrentWindow(),
             SESSKEY = parent.getSessionKey(),
@@ -476,7 +476,6 @@
         parent.showMessage(sap, 30, 'I', sMsg, lf_MsgCallback);
 
         function lf_MsgCallback(TYPE) {
-            
 
             if (TYPE == null || TYPE == "NO") {
                 return;
@@ -502,10 +501,8 @@
 
             for (var i = 0; i < icnt; i++) {
 
-                var oBrows = aSameBrows[i],
-                    bIsDestroyed = oBrows.isDestroyed();
-
-                if(bIsDestroyed){
+                var oBrows = aSameBrows[i];
+                if (oBrows.isDestroyed()) {
                     continue;
                 }
 
@@ -608,7 +605,7 @@
      * Display or Change Button Event
      ************************************************************************/
     oAPP.events.ev_pressDisplayModeBtn = function (oEvent) {
-        
+
         var oAppInfo = jQuery.extend(true, {}, parent.getAppInfo()); // APP 정보
 
         // edit 모드 -> display 모드
@@ -708,7 +705,7 @@
         oEvent.mParameters.IS_ACT = "X";
 
         var oLocalEvent = new sap.ui.base.Event(),
-            oNewEvent = jQuery.extend(true, oLocalEvent, oEvent);           
+            oNewEvent = jQuery.extend(true, oLocalEvent, oEvent);
 
         var TRKORR = oEvent.getParameter("TRKORR");
 
@@ -1055,7 +1052,7 @@
         oBrowserOptions.title = "Icon List";
         oBrowserOptions.url = sPath;
         oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.parent = oCurrWin;        
+        oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
         oBrowserOptions.webPreferences.OBJTY = sWinObjType;
@@ -1085,7 +1082,7 @@
      * Runtime Class Navigator Button
      ************************************************************************/
     oAPP.events.ev_pressRuntimeBtn = function () {
-        
+
         var sWinObjType = "RTMCLS";
 
         // 기존에 RUNTIMECLASS 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
@@ -1107,12 +1104,13 @@
 
         oBrowserOptions.title = "Runtime Class Navigator";
         oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.show = false;
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.backgroundColor = "#1c2228";
 
         oBrowserOptions.webPreferences.partition = SESSKEY;
-        oBrowserOptions.webPreferences.browserkey = BROWSKEY;        
-        oBrowserOptions.webPreferences.OBJTY = sWinObjType;        
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -1122,19 +1120,21 @@
         oBrowserWindow.setMenu(null);
 
         oBrowserWindow.loadURL(sUrl);
-        
+
         // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oRuntimeInfo = {
-                oUserInfo : oUserInfo,
-                aRuntimeData : oAPP.DATA.LIB.T_0022                              
+                oUserInfo: oUserInfo,
+                aRuntimeData: oAPP.DATA.LIB.T_0022
             };
 
             // 오픈할 URL 파라미터 전송
             oBrowserWindow.webContents.send('if-runtime-info', oRuntimeInfo);
+
+            oBrowserWindow.show();
 
         });
 

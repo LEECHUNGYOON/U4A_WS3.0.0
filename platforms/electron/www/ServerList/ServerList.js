@@ -332,6 +332,8 @@
         oBrowserWindow.width = mainWindowState.width;
         oBrowserWindow.height = mainWindowState.height;
 
+        oBrowserWindow.show = false;
+        oBrowserWindow.opacity = 0.0;
         oWebPreferences.partition = SESSKEY;
         oWebPreferences.browserkey = BROWSERKEY;
 
@@ -345,13 +347,9 @@
         // 브라우저 윈도우 기본 사이즈 감지
         mainWindowState.manage(oBrowserWindow);
 
-        oBrowserWindow.loadURL(`file://${parent.__dirname}/../Frame/Frame.html`);
+        oBrowserWindow.loadURL(oAPP.PATH.join(oAPP.APPPATH, "Frame", "Frame.html"));
 
         // oBrowserWindow.webContents.openDevTools();
-
-        // if (parent.process.env.COMPUTERNAME.startsWith("YOON")) {
-        //     oBrowserWindow.webContents.openDevTools();
-        // }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -372,6 +370,8 @@
 
             // 메타 정보를 보낸다.
             oBrowserWindow.webContents.send('if-meta-info', oMetadata);
+
+            // oBrowserWindow.show();
 
         });
 
@@ -1169,6 +1169,24 @@
     } // end of fnLoadCommonCss
 
     /************************************************************************
+     * 자연스러운 로딩
+     ************************************************************************/
+    function fnOnSmoothLoading() {
+
+        var oCurrWin = oAPP.REMOTE.getCurrentWindow();
+        oCurrWin.show();
+
+        setTimeout(() => {
+
+            oCurrWin.setOpacity(1.0);
+
+            $('#content').fadeIn(300, 'linear');
+
+        }, 300);
+
+    } // end of fnOnSmoothLoading    
+
+    /************************************************************************
      * ------------------------ [ Server List Start ] ------------------------
      * **********************************************************************/
     function fnOnInit() {
@@ -1195,6 +1213,9 @@
 
             // 서버 리스트 초기 화면 그리기
             fnOnInitRendering();
+
+            // 자연스러운 로딩 
+            fnOnSmoothLoading();
 
         });
 

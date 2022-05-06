@@ -289,6 +289,8 @@
         oBrowserOptions.title = "Binding Popup";
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.show = false;
+        oBrowserOptions.opacity = 0.0; 
         oBrowserOptions.backgroundColor = "#1c2228";
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -319,6 +321,8 @@
 
             oBrowserWindow.webContents.send('if_modelBindingPopup', oBindPopupData);
 
+            // oBrowserWindow.show();
+            
         });
 
         // 브라우저를 닫을때 타는 이벤트

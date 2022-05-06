@@ -9,6 +9,7 @@ let oAPP = (function () {
     "use strict";
 
     const
+        REMOTE = parent.REMOTE,
         PATH = parent.PATH,
         REGEDIT = parent.REGEDIT,
         APP = parent.APP,
@@ -483,7 +484,7 @@ let oAPP = (function () {
                         //     text: "CLIENT: {/LOGIN/CLIENT}"
                         // }),
 
-                        new sap.m.Text({      
+                        new sap.m.Text({
                             text: "SYSID: {/LOGIN/SYSID}"
                         }),
 
@@ -658,6 +659,24 @@ let oAPP = (function () {
     };
 
     /************************************************************************
+     * 자연스러운 로딩
+     ************************************************************************/
+    oAPP.fn.fnOnSmoothLoading = () => {
+
+        // var oCurrWin = REMOTE.getCurrentWindow();
+        // oCurrWin.show();
+
+        setTimeout(() => {
+
+            // oCurrWin.setOpacity(1.0);
+
+            $('#content').fadeIn(300, 'linear');
+
+        }, 500);
+
+    }; // end of oAPP.fn.fnOnSmoothLoading 
+
+    /************************************************************************
      *---------------------[ U4A WS Login Page Start ] ----------------------
      ************************************************************************/
     oAPP.fn.fnAttachInit = () => {
@@ -671,6 +690,9 @@ let oAPP = (function () {
             oAPP.fn.fnOnInitRendering();
 
             fnSetBusy('');
+
+            // 자연스러운 로딩
+            oAPP.fn.fnOnSmoothLoading();
 
             // // 초기값 바인딩
             // fnOnInitBinding();

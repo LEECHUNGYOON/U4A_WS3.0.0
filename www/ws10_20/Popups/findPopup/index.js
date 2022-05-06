@@ -1079,8 +1079,12 @@ let oAPP = parent.oAPP;
             return;
         }
 
-        let oCurrWin = oAPP.REMOTE.getCurrentWindow(),
-            oWebCon = oCurrWin.webContents,
+        let oCurrWin = oAPP.REMOTE.getCurrentWindow();
+        if (oCurrWin.isDestroyed()) {
+            return;
+        }
+
+        let oWebCon = oCurrWin.webContents,
             oWebPref = oWebCon.getWebPreferences(),
             sBrowserKey = oWebPref.browserkey,
             IPCRENDERER = oAPP.IPCRENDERER;
@@ -1102,8 +1106,12 @@ let oAPP = parent.oAPP;
             return;
         }
 
-        let oCurrWin = oAPP.REMOTE.getCurrentWindow(),
-            oWebCon = oCurrWin.webContents,
+        let oCurrWin = oAPP.REMOTE.getCurrentWindow();
+        if (oCurrWin.isDestroyed()) {
+            return;
+        }
+
+        let oWebCon = oCurrWin.webContents,
             oWebPref = oWebCon.getWebPreferences(),
             sBrowserKey = oWebPref.browserkey,
             IPCRENDERER = oAPP.IPCRENDERER;
@@ -1114,6 +1122,25 @@ let oAPP = parent.oAPP;
         IPCRENDERER.send(`${sBrowserKey}--find--controller`, oBindData);
 
     }; // end of oAPP.events.ev_press_Link_Find_Controller
+
+
+    /************************************************************************
+     * 자연스러운 로딩
+     ************************************************************************/
+    oAPP.fn.fnOnSmoothLoading = () => {
+
+        // var oCurrWin = oAPP.REMOTE.getCurrentWindow();
+        // oCurrWin.show();      
+      
+        setTimeout(() => {
+
+            // oCurrWin.setOpacity(1.0);
+
+            $('#content').fadeIn(300, 'linear');
+
+        }, 100);
+
+    }; // end of fnOnSmoothLoading 
 
     /************************************************************************
      * -- Start of Program
@@ -1131,6 +1158,16 @@ let oAPP = parent.oAPP;
             oAPP.fn.fnInitRendering();
 
             oAPP.setBusy('');
+
+             // 자연스러운 로딩
+             setTimeout(() => {
+
+                $('#content').fadeIn(300, 'linear');
+
+            }, 100);
+            
+            // // 자연스러운 로딩
+            // oAPP.fn.fnOnSmoothLoading();
 
         });
 

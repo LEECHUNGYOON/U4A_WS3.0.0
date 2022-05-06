@@ -14,7 +14,8 @@
         REMOTE = parent.REMOTE,
         APP = REMOTE.app,
         PATH = REMOTE.require('path'),
-        APPPATH = APP.getAppPath();
+        APPPATH = APP.getAppPath(),
+        APPCOMMON = oAPP.common;
 
     /************************************************************************
      * Child Window를 활성/비활성 처리 한다.
@@ -252,16 +253,24 @@
      ************************************************************************/
     oAPP.common.fnMultiFooterMsgClose = function () {
 
-        let oMultiFooterMsgSplit = sap.ui.getCore().byId("u4aWs20MultiFootSplitLayoutData");
-        if (oMultiFooterMsgSplit == null) {
-            return;
+        var sPopupName = "ERRMSGPOP";
+
+        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        if (oResult.ISOPEN) {
+            oResult.WINDOW.close();
         }
 
-        oMultiFooterMsgSplit.setSize("0px");
-        oMultiFooterMsgSplit.setMinSize(0);
-        oMultiFooterMsgSplit.setResizable(false);
+        // let oMultiFooterMsgSplit = sap.ui.getCore().byId("u4aWs20MultiFootSplitLayoutData");
+        // if (oMultiFooterMsgSplit == null) {
+        //     return;
+        // }
 
-        oAPP.common.fnSetModelProperty("/FMTMSG", []);
+        // oMultiFooterMsgSplit.setSize("0px");
+        // oMultiFooterMsgSplit.setMinSize(0);
+        // oMultiFooterMsgSplit.setResizable(false);
+
+        // oAPP.common.fnSetModelProperty("/FMTMSG", []);
 
     }; // end of oAPP.common.fnMultiFooterMsgClose
 
@@ -1448,14 +1457,22 @@ function fn_logoff_success(TYPE) {
          *	3. 나는 로그인 화면으로 전환한다.
          */
         var sKey = parent.getSessionKey(),
-            oMeBrows = parent.REMOTE.getCurrentWindow(), // 현재 나의 브라우저
-            aBrowserList = parent.REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
+            oMeBrows = parent.REMOTE.getCurrentWindow(); // 현재 나의 브라우저
+        if (oMeBrows.isDestroyed()) {
+            return;
+        }
+
+        var aBrowserList = parent.REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
             iBrowsLen = aBrowserList.length;
 
         for (var i = 0; i < iBrowsLen; i++) {
 
-            var oBrows = aBrowserList[i],
-                oWebCon = oBrows.webContents,
+            var oBrows = aBrowserList[i];
+            if (oBrows.isDestroyed()) {
+                continue;
+            }
+
+            var oWebCon = oBrows.webContents,
                 oWebPref = oWebCon.getWebPreferences();
 
             // session 정보가 없으면 skip.

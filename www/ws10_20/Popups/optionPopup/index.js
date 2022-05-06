@@ -111,11 +111,29 @@ let oAPP = parent.oAPP;
                 title: "Option Popup"
             });
 
-            oApp.addPage(oPage);
-            oApp.placeAt("content");
+        oApp.addPage(oPage);
+        oApp.placeAt("content");
 
     };
- 
+
+    /************************************************************************
+     * 자연스러운 로딩
+     ************************************************************************/
+    oAPP.fn.fnOnSmoothLoading = () => {
+
+        var oCurrWin = oAPP.REMOTE.getCurrentWindow();
+        oCurrWin.show();
+
+        setTimeout(() => {
+
+            oCurrWin.setOpacity(1.0);
+
+            $('#content').fadeIn(300, 'linear');
+
+        }, 300);
+
+    }; // end of fnOnSmoothLoading 
+
     /************************************************************************
      * -- Start of Program
      ************************************************************************/
@@ -130,6 +148,9 @@ let oAPP = parent.oAPP;
             oAPP.fn.fnInitRendering();
 
             oAPP.setBusy('');
+
+            // 자연스러운 로딩
+            oAPP.fn.fnOnSmoothLoading();
 
         });
 

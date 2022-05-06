@@ -5,6 +5,8 @@
     z-index: 1;
 }
 
-.sapMSticky5 .sapMTableTH, .sapMSticky7>.sapMListInfoTBarContainer {
+.sapMSticky5 .sapMTableTH,
+.sapMSticky7>.sapMListInfoTBarContainer {
     top: 2.75rem;
 }
+

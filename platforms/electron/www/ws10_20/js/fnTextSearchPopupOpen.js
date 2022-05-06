@@ -35,6 +35,7 @@
 
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.frame = false;
+        oBrowserOptions.show = false;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sWinObjType;
@@ -59,6 +60,8 @@
             };
 
             oBrowserWindow.webContents.send('if-find-info', oFindData);
+
+            oBrowserWindow.show();
 
         });
 

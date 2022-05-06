@@ -6,11 +6,12 @@
 
 let oAPP = parent.oAPP;
 
-(function(window, oAPP) {
+(function (window, oAPP) {
     "use strict";
 
     let PATH = oAPP.PATH,
         APP = oAPP.APP,
+        APPPATH = APP.getAppPath(),
         require = parent.require;
 
     /************************************************************************
@@ -24,7 +25,7 @@ let oAPP = parent.oAPP;
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.fn.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
+    oAPP.fn.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -42,7 +43,7 @@ let oAPP = parent.oAPP;
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.fn.fnGetModelProperty = function(sModelPath) {
+    oAPP.fn.fnGetModelProperty = function (sModelPath) {
 
         return sap.ui.getCore().getModel().getProperty(sModelPath);
 
@@ -51,7 +52,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * ws의 설정 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.getSettingsInfo = function() {
+    oAPP.fn.getSettingsInfo = function () {
 
         // Browser Window option
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
@@ -69,7 +70,7 @@ let oAPP = parent.oAPP;
     // /************************************************************************
     //  * UI5 BootStrap 
     //  ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = function() {
+    oAPP.fn.fnLoadBootStrapSetting = function () {
 
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
@@ -108,7 +109,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 초기 모델 바인딩
      ************************************************************************/
-    oAPP.fn.fnInitModelBinding = function() {
+    oAPP.fn.fnInitModelBinding = function () {
 
         var oJsonModel = new sap.ui.model.json.JSONModel();
         oJsonModel.setData({
@@ -122,7 +123,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 화면 초기 렌더링
      ************************************************************************/
-    oAPP.fn.fnInitRendering = function() {
+    oAPP.fn.fnInitRendering = function () {
 
         var oToolbar = new sap.m.Toolbar({
                 content: [
@@ -132,10 +133,17 @@ let oAPP = parent.oAPP;
                     new sap.m.ToolbarSpacer(),
                     new sap.m.Button({
                         icon: "sap-icon://decline",
+                        press: function () {
+
+                            var oCurrWin = oAPP.REMOTE.getCurrentWindow();
+                            oCurrWin.close();
+                        }
                         // press: oAPP.events.fnPressMultiFooterMsgCloseBtn
                     })
                 ]
-            }).addStyleClass("u4aWsMsgFooter_HeaderToolbar"),
+            })
+            // .addStyleClass("u4aWsMsgFooter_HeaderToolbar"),
+            .addStyleClass("u4aWsMsgFooter_HeaderToolbar u4aWsWindowHeaderDraggable"),
 
             oTable = new sap.m.Table("footerMsgTable", {
                 sticky: ["ColumnHeaders", "HeaderToolbar"],
@@ -187,9 +195,7 @@ let oAPP = parent.oAPP;
             }).addStyleClass("sapUiSizeCompact");
 
         // Multi Footer Message 더블클릭
-        oTable.attachBrowserEvent("dblclick", function(oEvent) {
-
-            return;
+        oTable.attachBrowserEvent("dblclick", function (oEvent) {
 
             var oTarget = oEvent.target,
                 $SelectedRow = $(oTarget).closest(".sapMListTblRow");
@@ -208,26 +214,21 @@ let oAPP = parent.oAPP;
             var oCtx = oSelectedRow.getBindingContext(),
                 oRowData = oSelectedRow.getModel().getProperty(oCtx.sPath);
 
-            switch (oRowData.GRCOD) {
-
-                case "CLS_SNTX":
-                case "METH":
-                case "CLSD":
-                case "CPRO":
-                case "CPUB":
-
-                    oAPP.common.execControllerClass(oRowData.OBJID, oRowData.LINE);
-                    return;
-
-                default:
-
-                    oAPP.fn.setSelectTreeItem(oRowData.OBJID, oRowData.UIATK, oRowData.TYPE);
-                    return;
-
+            let oCurrWin = oAPP.REMOTE.getCurrentWindow();
+            if (oCurrWin.isDestroyed()) {
+                return;
             }
 
-        });
+            let oWebCon = oCurrWin.webContents,
+                oWebPref = oWebCon.getWebPreferences(),
+                sBrowserKey = oWebPref.browserkey,
+                IPCRENDERER = oAPP.IPCRENDERER;
 
+            IPCRENDERER.send(`${sBrowserKey}--errormsg--click`, {
+                oRowData: oRowData
+            });
+
+        });
 
         var oPage = new sap.m.Page({
             showHeader: false,
@@ -246,21 +247,46 @@ let oAPP = parent.oAPP;
     }; // end of oAPP.fn.fnInitRendering       
 
     /************************************************************************
+     * 공통 css을 적용한다.
+     ************************************************************************/
+    oAPP.fn.fnLoadCommonCss = () => {
+
+        var sCommonCssUrl = PATH.join(APPPATH, "css", "common.css");
+
+        var oCss = document.createElement("link");
+        oCss.setAttribute("rel", "stylesheet");
+        oCss.setAttribute("href", sCommonCssUrl);
+
+        document.head.appendChild(oCss);
+
+    }; // end of oAPP.fn.fnLoadCommonCss
+
+    /************************************************************************
      * -- Start of Program
      ************************************************************************/
 
-    // // UI5 Boot Strap을 로드 하고 attachInit 한다.
+    // UI5 Boot Strap을 로드 하고 attachInit 한다.
     oAPP.fn.fnLoadBootStrapSetting();
 
-    window.onload = function() {
+    // 공통 CSS를 적용한다.
+    oAPP.fn.fnLoadCommonCss();
 
-        sap.ui.getCore().attachInit(function() {
+    window.onload = function () {
+
+        sap.ui.getCore().attachInit(function () {
 
             oAPP.fn.fnInitModelBinding();
 
             oAPP.fn.fnInitRendering();
 
             oAPP.setBusy('');
+
+            // 자연스러운 로딩
+            setTimeout(() => {
+
+                $('#content').fadeIn(300, 'linear');
+
+            }, 100);
 
         });
 

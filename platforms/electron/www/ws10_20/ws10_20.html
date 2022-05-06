@@ -34,11 +34,15 @@
         .sapMPageFloatingFooter .sapUiHidden {
             transition: top 0.35;
         }
+        html,
+        body {
+            overflow-y: hidden;
+        }
     </style>
 </head>
 
 <body class="sapUiBody sapUiSizeCompact">
-    <div id="content" class="u4aWsContent"></div>
+    <div id="content" style="display: none;" class="u4aWsContent"></div>
 
     <script>
         function onError(message, url, line, col, errorObj) {

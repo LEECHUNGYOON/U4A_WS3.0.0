@@ -22,8 +22,12 @@ let oAPP = (function (window) {
 
     oAPP.fn.getSessionKey = function () {
 
-        var oCurrWin = oAPP.REMOTE.getCurrentWindow(),
-            oWebCon = oCurrWin.webContents,
+        let oCurrWin = oAPP.REMOTE.getCurrentWindow();
+        if (oCurrWin.isDestroyed()) {
+            return;
+        }
+
+        let oWebCon = oCurrWin.webContents,
             oWebPref = oWebCon.getWebPreferences();
 
         return oWebPref.partition;
@@ -32,8 +36,12 @@ let oAPP = (function (window) {
 
     oAPP.fn.fnGetBrowserKey = function () {
 
-        var oCurrWin = oAPP.REMOTE.getCurrentWindow(),
-            oWebCon = oCurrWin.webContents,
+        var oCurrWin = oAPP.REMOTE.getCurrentWindow();
+        if (oCurrWin.isDestroyed()) {
+            return;
+        }
+
+        let oWebCon = oCurrWin.webContents,
             oWebPref = oWebCon.getWebPreferences();
 
         return oWebPref.browserkey;

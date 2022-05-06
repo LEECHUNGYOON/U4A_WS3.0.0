@@ -22,8 +22,12 @@ function setEditorInfo(oEditorInfo) {
 
 function getSessionKey() {
 
-    var oCurrWin = oAPP.REMOTE.getCurrentWindow(),
-        oWebCon = oCurrWin.webContents,
+    let oCurrWin = oAPP.REMOTE.getCurrentWindow();
+    if (oCurrWin.isDestroyed()) {
+        return;
+    }
+
+    let oWebCon = oCurrWin.webContents,
         oWebPref = oWebCon.getWebPreferences();
 
     return oWebPref.partition;
@@ -32,8 +36,12 @@ function getSessionKey() {
 
 function getBrowserKey() {
 
-    var oCurrWin = oAPP.REMOTE.getCurrentWindow(),
-        oWebCon = oCurrWin.webContents,
+    let oCurrWin = oAPP.REMOTE.getCurrentWindow();
+    if (oCurrWin.isDestroyed()) {
+        return;
+    }
+
+    let oWebCon = oCurrWin.webContents,
         oWebPref = oWebCon.getWebPreferences();
 
     return oWebPref.browserkey;
@@ -47,7 +55,7 @@ document.addEventListener('deviceready', onDeviceReady, false);
 function onDeviceReady() {
 
     console.log("onDeviceReady");
-    
+
     var oWs_frame = document.getElementById("ws_editorframe");
     if (!oWs_frame) {
         return;
@@ -69,6 +77,6 @@ oAPP.IPCRENDERER.on('if-editor-info', function (event, res) {
 
 document.addEventListener('DOMContentLoaded', function () {
 
-  console.log("DOMContentLoaded");
+    console.log("DOMContentLoaded");
 
 });

@@ -41,6 +41,8 @@
             oBrowserWindow = JSON.parse(JSON.stringify(oBrowserOptions.browserWindow));
 
         oBrowserWindow.backgroundColor = "#1c2228";
+        oBrowserWindow.show = false;
+        oBrowserWindow.opacity = 0.0;
 
         // 인트로 화면 닫기
         let oCurrWindow = REMOTE.getCurrentWindow();
@@ -60,9 +62,9 @@
         oWin.webContents.on('did-finish-load', function () {
 
             oWin.webContents.send('window-id', oWin.id);
-
+      
             oCurrWindow.close();
-
+            
         });
 
         oWin.on('closed', () => {

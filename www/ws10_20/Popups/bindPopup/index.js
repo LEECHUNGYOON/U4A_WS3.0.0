@@ -599,7 +599,7 @@ let oAPP = parent.oAPP;
 
             //바인딩 필드 정보 검색.
             sendAjax(oAPP.attr.servNm + "/getBindAttrData", oFormData, function (param) {
-            // sendAjax(oAPP.attr.servNm + "/getBindAttrData?sap-user=pes&sap-password=dmstjq8!", oFormData, function (param) {
+                // sendAjax(oAPP.attr.servNm + "/getBindAttrData?sap-user=pes&sap-password=dmstjq8!", oFormData, function (param) {
 
                 var l_model = oAPP.attr.oModel;
 
@@ -1093,6 +1093,24 @@ let oAPP = parent.oAPP;
 
     } // end of sendAjax
 
+    /************************************************************************
+     * 자연스러운 로딩
+     ************************************************************************/
+    oAPP.fn.fnOnSmoothLoading = () => {
+
+        var oCurrWin = oAPP.REMOTE.getCurrentWindow();
+        oCurrWin.show();
+
+        setTimeout(() => {
+
+            oCurrWin.setOpacity(1.0);
+
+            $('#content').fadeIn(300, 'linear');
+
+        }, 300);
+
+    }; // end of fnOnSmoothLoading 
+
 
     /************************************************************************
      * -- Start of Program
@@ -1108,11 +1126,10 @@ let oAPP = parent.oAPP;
             //바인딩 팝업 화면 구성.
             oAPP.fn.callBindPopup();
 
-            // oAPP.fn.fnInitModelBinding();
-
-            // oAPP.fn.fnInitRendering();
-
             oAPP.setBusy('');
+
+            // 자연스러운 로딩
+            oAPP.fn.fnOnSmoothLoading();
 
         });
 

@@ -5,7 +5,7 @@
  * - file Desc : ws 메인 
  ************************************************************************/
 
-(function(window, oAPP) {
+(function (window, oAPP) {
     "use strict";
 
     var APPCOMMON = oAPP.common;
@@ -13,7 +13,7 @@
     /**************************************************************************
      * 공통 인스턴스 정의
      **************************************************************************/
-    oAPP.main.fnPredefineGlobalObject = function() {
+    oAPP.main.fnPredefineGlobalObject = function () {
 
         var oMetaData = parent.getMetadata();
 
@@ -31,7 +31,7 @@
     /************************************************************************
      * 접속 Language 에 맞는 메시지 텍스트 읽어오기
      ************************************************************************/
-    oAPP.main.fnOnLoadMessageClass = function() {
+    oAPP.main.fnOnLoadMessageClass = function () {
 
         var FS = parent.FS,
             oUserInfo = parent.getUserInfo();
@@ -53,7 +53,7 @@
     /**************************************************************************
      * U4A WS 메타 정보 구하기
      **************************************************************************/
-    oAPP.main.fnOnInitModelBinding = function() {
+    oAPP.main.fnOnInitModelBinding = function () {
 
         var sAPPID = "";
 
@@ -116,7 +116,7 @@
     /************************************************************************
      * window Event Handle ..
      ************************************************************************/
-    oAPP.main.fnBeforeunload = function() {
+    oAPP.main.fnBeforeunload = function () {
 
         // 설정된 Global Shortcut 단축키 삭제
         oAPP.common.fnRemoveGlobalShortcut();
@@ -157,7 +157,7 @@
     /************************************************************************
      * 서버 세션 유지 이벤트 전파
      ************************************************************************/
-    oAPP.main.fnServerSessionCheckPropagation = function() {
+    oAPP.main.fnServerSessionCheckPropagation = function () {
 
         if (!oAPP.attr.serverSessionCheckingMe) {
             return;
@@ -183,9 +183,9 @@
     /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------
      ************************************************************************/
-    oAPP.main.fnWsStart = function() {
+    oAPP.main.fnWsStart = function () {
 
-        sap.ui.getCore().attachInit(function() {
+        sap.ui.getCore().attachInit(function () {
 
             // 초기 현재 화면 위치 정보 저장
             parent.setCurrPage("WS10");
@@ -229,6 +229,13 @@
             // DOM 감지
             oAPP.fn.fnSetMutationObserver();
 
+            // 자연스러운 로딩
+            setTimeout(() => {                
+
+                $('#content').fadeIn(300, 'linear');
+
+            }, 300);
+
         }); // end of attachInit
 
         /************************************************************************
@@ -240,7 +247,7 @@
     }; // end of oAPP.main.fnWsStart
 
     // Test..
-    oAPP.main.fnSetLanguage = function() {
+    oAPP.main.fnSetLanguage = function () {
 
         var oUserInfo = parent.getUserInfo(),
             oMetaScript = document.getElementById("sap-ui-bootstrap");

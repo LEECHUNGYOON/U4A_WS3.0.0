@@ -54,20 +54,22 @@
         oBrowserOptions.title = "Find";
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.show = false;
+        // oBrowserOptions.opacity = 0.0;        
         oBrowserOptions.backgroundColor = "#1c2228";
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
+
+        var aAttrData = oAPP.fn.getAttrChangedData(), // attribute 정보
+        aServerEventList = oAPP.fn.getServerEventList(); // 서버 이벤트 리스트
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
         // 브라우저 상단 메뉴 없애기
-        oBrowserWindow.setMenu(null);
-
-        var aAttrData = oAPP.fn.getAttrChangedData(), // attribute 정보
-            aServerEventList = oAPP.fn.getServerEventList(); // 서버 이벤트 리스트
+        oBrowserWindow.setMenu(null);       
 
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
@@ -84,7 +86,9 @@
                 aT_0022: oAPP.DATA.LIB.T_0022
             };
 
-            oBrowserWindow.webContents.send('if-find-info', oFindData);
+            oBrowserWindow.webContents.send('if-find-info', oFindData);            
+
+            oBrowserWindow.show();
 
         });
 
