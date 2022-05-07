@@ -617,8 +617,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
             oDefaultOption = parent.require(sSettingsJsonPath),
             // oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
             oBrowserOptions = JSON.parse(JSON.stringify(oDefaultOption.browserWindow));
-
-        // oBrowserOptions.show = false;
+        
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
@@ -660,9 +659,6 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
             // 브라우저가 오픈되면서 부모가 가지고 있는 메타 관련 정보들을 전달한다.
             oBrowserWindow.webContents.send('if-meta-info', oMetadata);
-
-            // oBrowserWindow.show();
-            //oBrowserWindow.setOpacity(1.0);
 
         });
 

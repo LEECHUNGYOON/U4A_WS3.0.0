@@ -1182,7 +1182,7 @@
             var oCurrWin = oAPP.REMOTE.getCurrentWindow();
             oCurrWin.setOpacity(1.0);
 
-            $('#content').fadeIn(500, 'linear');
+            $('#content').fadeIn(1000, 'linear');
 
         });
 

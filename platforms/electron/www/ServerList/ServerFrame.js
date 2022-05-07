@@ -1,7 +1,7 @@
 /**************************************************************************
  * ServerFrame.js
  **************************************************************************/
-let oAPP = (function (window) {
+let oAPP = (function(window) {
     "use strict";
 
     let oAPP = {};
@@ -11,10 +11,10 @@ let oAPP = (function (window) {
     oAPP.REMOTEMAIN = oAPP.REMOTE.require('@electron/remote/main');
     oAPP.RANDOM = oAPP.REMOTE.require("random-key");
     oAPP.PATH = oAPP.REMOTE.require('path');
-    oAPP.APP = oAPP.REMOTE.app,
-        oAPP.APPPATH = oAPP.APP.getAppPath();
+    oAPP.APP = oAPP.REMOTE.app;
+    oAPP.APPPATH = oAPP.APP.getAppPath();
 
-    oAPP.fn.fnOnDeviceReady = function () {
+    oAPP.fn.fnOnDeviceReady = function() {
 
         var oWs_frame = document.getElementById("ws_serverframe");
         if (!oWs_frame) {
@@ -22,7 +22,7 @@ let oAPP = (function (window) {
         }
 
         oWs_frame.src = "ServerList.html";
-        
+
     };
 
     document.addEventListener('deviceready', oAPP.fn.fnOnDeviceReady, false);

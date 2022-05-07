@@ -647,10 +647,11 @@ let oAPP = (function () {
             parent.setMetadata(oResult.META);
         }
 
+        $('#content').css({"display": "none"});
+
         var oCurrWin = REMOTE.getCurrentWindow();
         oCurrWin.setBackgroundColor("#1c2228");
-
-        $('#content').css({"display": "none"});
+        oCurrWin.setOpacity(0.0);        
 
         parent.onMoveToPage("WS10");
 
