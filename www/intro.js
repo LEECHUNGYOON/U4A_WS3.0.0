@@ -41,7 +41,6 @@
             oBrowserWindow = JSON.parse(JSON.stringify(oBrowserOptions.browserWindow));
 
         oBrowserWindow.backgroundColor = "#1c2228";
-        oBrowserWindow.show = false;
         oBrowserWindow.opacity = 0.0;
 
         // 인트로 화면 닫기

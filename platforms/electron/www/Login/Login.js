@@ -639,8 +639,7 @@ let oAPP = (function () {
         // 로그인 아이디 저장
         oAPP.fn.fnSaveIDSuggData(oLogInData.ID);
 
-
-        // 로그인 유저의 아이디/패스워드를 암호화해서 저장해둔다.    
+        // 로그인 유저의 아이디/패스워드를 저장해둔다.    
         parent.setUserInfo(oLogInData);
 
         // Metadata 정보 세팅 (서버 호스트명.. 또는 메시지 클래스 데이터 등..)
@@ -648,31 +647,26 @@ let oAPP = (function () {
             parent.setMetadata(oResult.META);
         }
 
-        // parent.document.body.style.backgroundColor = "#1c2228";
+        var oCurrWin = REMOTE.getCurrentWindow();
+        oCurrWin.setBackgroundColor("#1c2228");
 
-        // var oCurrWin = parent.REMOTE.getCurrentWindow();
-
-        // oCurrWin.setBackgroundColor("#1c2228");
+        $('#content').css({"display": "none"});
 
         parent.onMoveToPage("WS10");
 
-    };
+    }; // end of oAPP.fn.fnOnLoginSuccess
 
     /************************************************************************
      * 자연스러운 로딩
      ************************************************************************/
     oAPP.fn.fnOnSmoothLoading = () => {
 
-        // var oCurrWin = REMOTE.getCurrentWindow();
-        // oCurrWin.show();
+        var oCurrWin = REMOTE.getCurrentWindow();
+        oCurrWin.setOpacity(1.0);
 
         setTimeout(() => {
-
-            // oCurrWin.setOpacity(1.0);
-
-            $('#content').fadeIn(300, 'linear');
-
-        }, 500);
+            $('#content').fadeIn(500, 'linear');
+        },500);         
 
     }; // end of oAPP.fn.fnOnSmoothLoading 
 
@@ -689,7 +683,7 @@ let oAPP = (function () {
             // 로그인 페이지 초기 렌더링
             oAPP.fn.fnOnInitRendering();
 
-            fnSetBusy('');
+            // fnSetBusy('');
 
             // 자연스러운 로딩
             oAPP.fn.fnOnSmoothLoading();

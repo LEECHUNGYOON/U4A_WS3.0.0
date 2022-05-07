@@ -1133,9 +1133,7 @@
 
             // 오픈할 URL 파라미터 전송
             oBrowserWindow.webContents.send('if-runtime-info', oRuntimeInfo);
-
-            // oBrowserWindow.show();
-
+            
         });
 
         // 브라우저를 닫을때 타는 이벤트

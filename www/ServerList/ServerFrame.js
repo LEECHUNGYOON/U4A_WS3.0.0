@@ -22,13 +22,7 @@ let oAPP = (function (window) {
         }
 
         oWs_frame.src = "ServerList.html";
-
-        // debugger;
-
-        // var oCurrWin = oAPP.REMOTE.getCurrentWindow();
-        // oCurrWin.show();
-        // oCurrWin.setOpacity(1.0);
-
+        
     };
 
     document.addEventListener('deviceready', oAPP.fn.fnOnDeviceReady, false);

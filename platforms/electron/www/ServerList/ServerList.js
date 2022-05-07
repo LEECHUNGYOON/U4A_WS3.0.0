@@ -325,7 +325,6 @@
         oBrowserWindow.width = mainWindowState.width;
         oBrowserWindow.height = mainWindowState.height;
 
-        oBrowserWindow.show = false;
         oBrowserWindow.opacity = 0.0;
         oWebPreferences.partition = SESSKEY;
         oWebPreferences.browserkey = BROWSERKEY;
@@ -1150,25 +1149,7 @@
 
         document.head.appendChild(oCss);
 
-    } // end of fnLoadCommonCss
-
-    /************************************************************************
-     * 자연스러운 로딩
-     ************************************************************************/
-    function fnOnSmoothLoading() {
-
-        var oCurrWin = oAPP.REMOTE.getCurrentWindow();
-        oCurrWin.show();
-
-        setTimeout(() => {
-
-            oCurrWin.setOpacity(1.0);
-
-            $('#content').fadeIn(300, 'linear');
-
-        }, 300);
-
-    } // end of fnOnSmoothLoading    
+    } // end of fnLoadCommonCss  
 
     /************************************************************************
      * ------------------------ [ Server List Start ] ------------------------
@@ -1198,8 +1179,10 @@
             // 서버 리스트 초기 화면 그리기
             fnOnInitRendering();
 
-            // 자연스러운 로딩 
-            fnOnSmoothLoading();
+            var oCurrWin = oAPP.REMOTE.getCurrentWindow();
+            oCurrWin.setOpacity(1.0);
+
+            $('#content').fadeIn(500, 'linear');
 
         });
 

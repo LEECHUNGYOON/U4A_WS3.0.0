@@ -1122,29 +1122,8 @@ let oAPP = parent.oAPP;
         IPCRENDERER.send(`${sBrowserKey}--find--controller`, oBindData);
 
     }; // end of oAPP.events.ev_press_Link_Find_Controller
-
-
-    /************************************************************************
-     * 자연스러운 로딩
-     ************************************************************************/
-    oAPP.fn.fnOnSmoothLoading = () => {
-
-
-        $('#content').fadeIn(300, 'linear');
-
-        // var oCurrWin = oAPP.REMOTE.getCurrentWindow();
-        // oCurrWin.show();      
-
-        // setTimeout(() => {
-
-        //     // oCurrWin.setOpacity(1.0);
-
-            
-
-        // }, 100);
-
-    }; // end of fnOnSmoothLoading 
-
+    
+  
     /************************************************************************
      * -- Start of Program
      ************************************************************************/
@@ -1162,8 +1141,7 @@ let oAPP = parent.oAPP;
 
             oAPP.setBusy('');
 
-            // 자연스러운 로딩
-            oAPP.fn.fnOnSmoothLoading();
+            $('#content').fadeIn(300, 'linear');
 
         });
 

@@ -1083,17 +1083,6 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
  *  Electron Event 
  */
 
-/************************************************************************
- * 자연스러운 로딩
- ************************************************************************/
-function fnOnSmoothLoading() {
-
-    var oCurrWin = REMOTE.getCurrentWindow();
-    oCurrWin.show();
-    oCurrWin.setOpacity(1.0);
-
-} // end of fnOnSmoothLoading 
-
 // 전달받은 Meta 정보를 저장한다.
 IPCRENDERER.on('if-meta-info', (event, res) => {
 
@@ -1134,8 +1123,8 @@ IPCRENDERER.on('if-meta-info', (event, res) => {
         onMoveToPage(oMetadata.EXEPAGE);
     }
 
-    // 자연스러운 로딩
-    fnOnSmoothLoading();
+    // // 자연스러운 로딩
+    // fnOnSmoothLoading();
 
 });
 
