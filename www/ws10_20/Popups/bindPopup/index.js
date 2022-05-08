@@ -1097,11 +1097,10 @@ let oAPP = parent.oAPP;
      * 자연스러운 로딩
      ************************************************************************/
     oAPP.fn.fnOnSmoothLoading = () => {
-
-        // $('#content').fadeIn(300, 'linear');
+      
         setTimeout(() => {
 
-            $('#content').fadeIn(500, 'linear');
+            $('#content').fadeIn(1000, 'linear');
             
         }, 100);
 

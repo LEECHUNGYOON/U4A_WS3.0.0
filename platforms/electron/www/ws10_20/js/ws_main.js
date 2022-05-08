@@ -229,12 +229,9 @@
             // Loading Page
             parent.showLoadingPage('');
 
-            // var oCurrWin = parent.REMOTE.getCurrentWindow();
-            // oCurrWin.setOpacity(1.0);
-            
             setTimeout(() => {
 
-                $('#content').fadeIn(500, 'linear');
+                $('#content').fadeIn(1000, 'linear');
                 
             }, 100);
 

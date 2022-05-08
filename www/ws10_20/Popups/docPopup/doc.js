@@ -616,18 +616,7 @@ window.addEventListener('load', () => {
     let oApp = new sap.m.SplitApp({
         mode: "HideMode",
         busyIndicatorDelay: 1
-    });
-
-    // yoon test
-    oApp.addDelegate({
-        onAfterRendering: function() {
-           
-            // setTimeout(() => {
-            //     $('#content').fadeIn(500, 'linear');
-            // }, 100);
-
-        }
-    });
+    }); 
 
     //====================================================================================        
     // 좌측 영역 

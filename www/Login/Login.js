@@ -709,7 +709,7 @@ let oAPP = (function() {
     oAPP.fn.fnOnSmoothLoading = () => {
  
         setTimeout(() => {
-            $('#content').fadeIn(500, 'linear');
+            $('#content').fadeIn(1000, 'linear');
         }, 100);
 
     }; // end of oAPP.fn.fnOnSmoothLoading 

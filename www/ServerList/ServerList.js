@@ -1182,7 +1182,7 @@
             fnOnInitRendering();
 
             setTimeout(() => {
-                $('#content').fadeIn(500, 'linear');
+                $('#content').fadeIn(1000, 'linear');
             }, 100);
 
         });
