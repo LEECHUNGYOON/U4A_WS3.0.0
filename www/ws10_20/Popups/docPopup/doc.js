@@ -621,13 +621,10 @@ window.addEventListener('load', () => {
     // yoon test
     oApp.addDelegate({
         onAfterRendering: function() {
-
-            var oCurrWin = oAPP.REMOTE.getCurrentWindow();
-            oCurrWin.setOpacity(1.0);
-
-            setTimeout(() => {
-                $('#content').fadeIn(500, 'linear');
-            }, 100);
+           
+            // setTimeout(() => {
+            //     $('#content').fadeIn(500, 'linear');
+            // }, 100);
 
         }
     });

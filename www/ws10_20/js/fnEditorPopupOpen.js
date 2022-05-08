@@ -44,6 +44,8 @@
 
         oBrowserOptions.title = sBrowserTitle;
         oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.backgroundColor = "#1c2228";
 
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -56,7 +58,6 @@
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
-
 
         var sUrlPath = parent.getPath("EDITPOP");
         oBrowserWindow.loadURL(sUrlPath);
@@ -78,6 +79,8 @@
             };
 
             oBrowserWindow.webContents.send('if-editor-info', oEditorInfo);
+
+            oBrowserWindow.setOpacity(1.0);
 
         });
 

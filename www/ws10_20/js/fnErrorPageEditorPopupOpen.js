@@ -41,6 +41,8 @@
 
         oBrowserOptions.title = sBrowserTitle;
         oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.backgroundColor = "#1c2228";
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -68,6 +70,8 @@
             };
 
             oBrowserWindow.webContents.send('if-editor-info', oEditorInfo);
+
+            oBrowserWindow.setOpacity(1.0);
 
         });
 

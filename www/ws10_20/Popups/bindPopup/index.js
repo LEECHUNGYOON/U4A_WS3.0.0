@@ -1098,7 +1098,12 @@ let oAPP = parent.oAPP;
      ************************************************************************/
     oAPP.fn.fnOnSmoothLoading = () => {
 
-        $('#content').fadeIn(300, 'linear');
+        // $('#content').fadeIn(300, 'linear');
+        setTimeout(() => {
+
+            $('#content').fadeIn(500, 'linear');
+            
+        }, 100);
 
     }; // end of fnOnSmoothLoading 
 

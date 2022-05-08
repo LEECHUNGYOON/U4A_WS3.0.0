@@ -42,6 +42,7 @@
 
         oBrowserWindow.backgroundColor = "#1c2228";
         oBrowserWindow.opacity = 0.0;
+        // oBrowserWindow.show = false;
 
         // 인트로 화면 닫기
         let oCurrWindow = REMOTE.getCurrentWindow();
@@ -58,12 +59,14 @@
 
         // oWin.webContents.openDevTools();
 
-        oWin.webContents.on('did-finish-load', function () {
+        oWin.webContents.on('did-finish-load', function () {            
 
             oWin.webContents.send('window-id', oWin.id);
-      
+
+            oWin.setOpacity(1.0);
+           
             oCurrWindow.close();
-            
+
         });
 
         oWin.on('closed', () => {

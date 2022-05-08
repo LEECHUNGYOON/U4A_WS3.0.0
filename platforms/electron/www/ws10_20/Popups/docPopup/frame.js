@@ -47,7 +47,7 @@ let oAPP = (function(window) {
             return;
         }
 
-        oWs_frame.src = "doc.html";
+        oWs_frame.src = "doc.html";       
 
     });
 

@@ -4,7 +4,7 @@
  * - file Name : findPopup/frame.js
  ************************************************************************/
 
-let oAPP = (function (window) {
+let oAPP = (function(window) {
     "use strict";
 
     let oAPP = {};
@@ -17,7 +17,7 @@ let oAPP = (function (window) {
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
 
-    oAPP.setBusy = function (bIsShow) {
+    oAPP.setBusy = function(bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
 
@@ -48,10 +48,7 @@ let oAPP = (function (window) {
             return;
         }
 
-        oWs_frame.src = "index.html";       
-        
-        var oCurrWin = oAPP.REMOTE.getCurrentWindow();
-            oCurrWin.setOpacity(1);
+        oWs_frame.src = "index.html";
 
     });
 

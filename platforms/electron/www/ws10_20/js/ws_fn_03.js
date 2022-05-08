@@ -115,12 +115,12 @@
 
         oBrowserOptions.title = "Error Message Popup";
         oBrowserOptions.center = true;
-        oBrowserOptions.show = false;
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.backgroundColor = "#1c2228";
         oBrowserOptions.titleBarStyle = "hidden";
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.height = 400;
-        oBrowserOptions.parent = CURRWIN;
-        oBrowserOptions.backgroundColor = "#1c2228";
+        oBrowserOptions.parent = CURRWIN;        
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
@@ -147,7 +147,7 @@
 
             oBrowserWindow.webContents.send('if-errmsg-info', oSendData);
 
-            oBrowserWindow.show();
+            oBrowserWindow.setOpacity(1.0);
 
         });
 

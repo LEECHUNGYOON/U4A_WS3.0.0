@@ -127,8 +127,14 @@ let oAPP = parent.oAPP;
 
         var oToolbar = new sap.m.Toolbar({
                 content: [
-                    new sap.m.Text({
-                        text: "Error Footer Message"
+                    // new sap.m.Text({
+                    //     text: "Error Footer Message"
+                    // }),
+                    new sap.m.ObjectStatus({
+                        // inverted: true,
+                        text: "Error Footer Message",
+                        state: "Error",
+                        icon: "sap-icon://alert"
                     }),
                     new sap.m.ToolbarSpacer(),
                     new sap.m.Button({
@@ -235,7 +241,7 @@ let oAPP = parent.oAPP;
             content: [
                 oTable
             ]
-        });
+        }).addStyleClass("u4aWsErrMsgPopupPage");
 
         new sap.m.App({
             autoFocus: false,

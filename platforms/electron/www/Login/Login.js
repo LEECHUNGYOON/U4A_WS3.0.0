@@ -655,7 +655,7 @@ let oAPP = (function() {
 
             var oCurrWin = REMOTE.getCurrentWindow();
             oCurrWin.setBackgroundColor("#1c2228");
-            oCurrWin.setOpacity(0.0);
+            // oCurrWin.setOpacity(0.0);
 
             parent.onMoveToPage("WS10");
 
@@ -707,13 +707,10 @@ let oAPP = (function() {
      * 자연스러운 로딩
      ************************************************************************/
     oAPP.fn.fnOnSmoothLoading = () => {
-
-        var oCurrWin = REMOTE.getCurrentWindow();
-        oCurrWin.setOpacity(1.0);
-
+ 
         setTimeout(() => {
             $('#content').fadeIn(500, 'linear');
-        }, 500);
+        }, 100);
 
     }; // end of oAPP.fn.fnOnSmoothLoading 
 

@@ -289,7 +289,6 @@
         oBrowserOptions.title = "Binding Popup";
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
-        // oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0; 
         oBrowserOptions.backgroundColor = "#1c2228";
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -320,6 +319,8 @@
             };
 
             oBrowserWindow.webContents.send('if_modelBindingPopup', oBindPopupData);
+
+            oBrowserWindow.setOpacity(1.0);
 
             // oBrowserWindow.show();
             

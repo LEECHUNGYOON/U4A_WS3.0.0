@@ -229,13 +229,13 @@
             // Loading Page
             parent.showLoadingPage('');
 
-            var oCurrWin = parent.REMOTE.getCurrentWindow();
-            oCurrWin.setOpacity(1.0);
+            // var oCurrWin = parent.REMOTE.getCurrentWindow();
+            // oCurrWin.setOpacity(1.0);
             
             setTimeout(() => {
 
-                $('#content').fadeIn(1000, 'linear');
-
+                $('#content').fadeIn(500, 'linear');
+                
             }, 100);
 
         }); // end of attachInit

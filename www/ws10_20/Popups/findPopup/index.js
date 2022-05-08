@@ -6,7 +6,7 @@
 
 let oAPP = parent.oAPP;
 
-(function (window, oAPP) {
+(function(window, oAPP) {
     "use strict";
 
     oAPP.settings = {};
@@ -34,7 +34,7 @@ let oAPP = parent.oAPP;
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.fn.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
+    oAPP.fn.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -52,7 +52,7 @@ let oAPP = parent.oAPP;
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.fn.fnGetModelProperty = function (sModelPath) {
+    oAPP.fn.fnGetModelProperty = function(sModelPath) {
 
         return sap.ui.getCore().getModel().getProperty(sModelPath);
 
@@ -61,7 +61,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * ws의 설정 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.getSettingsInfo = function () {
+    oAPP.fn.getSettingsInfo = function() {
 
         // Browser Window option
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
@@ -79,7 +79,7 @@ let oAPP = parent.oAPP;
     // /************************************************************************
     //  * UI5 BootStrap 
     //  ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = function () {
+    oAPP.fn.fnLoadBootStrapSetting = function() {
 
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
@@ -117,7 +117,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * find 대상 모수 데이터 구하기
      ************************************************************************/
-    oAPP.fn.getAttrChangedData = function () {
+    oAPP.fn.getAttrChangedData = function() {
 
         return oAPP.attr.aAttrData;
 
@@ -126,7 +126,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 서버 이벤트 정보 구하기
      ************************************************************************/
-    oAPP.fn.getServerEventList = function () {
+    oAPP.fn.getServerEventList = function() {
 
         return oAPP.attr.aServEvtData;
 
@@ -135,7 +135,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 22번 테이블 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.get0022Data = function () {
+    oAPP.fn.get0022Data = function() {
 
         return oAPP.attr.aT_0022;
 
@@ -145,7 +145,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 초기 모델 바인딩
      ************************************************************************/
-    oAPP.fn.fnInitModelBinding = function () {
+    oAPP.fn.fnInitModelBinding = function() {
 
         var oFind2Data = oAPP.fn.fnGetFindData2();
 
@@ -171,7 +171,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 화면 초기 렌더링
      ************************************************************************/
-    oAPP.fn.fnInitRendering = function () {
+    oAPP.fn.fnInitRendering = function() {
 
         var oTntPage = oAPP.fn.fnGetFindTntToolPage();
 
@@ -217,7 +217,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 메인 페이지 (tnt ToolPage)
      **************************************************************************/
-    oAPP.fn.fnGetFindTntToolPage = function () {
+    oAPP.fn.fnGetFindTntToolPage = function() {
 
         var oPage1 = oAPP.fn.fnGetFindPage1(), // "UI Where to Use the Event"
             oPage2 = oAPP.fn.fnGetFindPage2(), // "Model Binding Usage For UI"
@@ -259,7 +259,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 메뉴 리스트
      **************************************************************************/
-    oAPP.fn.fnGetFindMenuList = function () {
+    oAPP.fn.fnGetFindMenuList = function() {
 
         return [{
                 key: C_FIND_MENU1_ID,
@@ -284,7 +284,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "UI Where to Use the Event" 페이지
      **************************************************************************/
-    oAPP.fn.fnGetFindPage1 = function () {
+    oAPP.fn.fnGetFindPage1 = function() {
 
         var EnumLabelDesignBold = sap.m.LabelDesign.Bold,
             EnumSticky = sap.m.Sticky;
@@ -387,7 +387,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "Model Binding Usage For UI" 페이지
      **************************************************************************/
-    oAPP.fn.fnGetFindPage2 = function () {
+    oAPP.fn.fnGetFindPage2 = function() {
 
         var oLeftPage = oAPP.fn.fnGetFindPage2_LeftPage(),
             oRightPage = oAPP.fn.fnGetFindPage2_RightPage();
@@ -429,7 +429,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "Model Binding Usage For UI" 페이지의 Split 중 왼쪽영역
      **************************************************************************/
-    oAPP.fn.fnGetFindPage2_LeftPage = function () {
+    oAPP.fn.fnGetFindPage2_LeftPage = function() {
 
         var EnumLabelDesignBold = sap.m.LabelDesign.Bold,
             EnumSticky = sap.m.Sticky;
@@ -534,7 +534,7 @@ let oAPP = parent.oAPP;
                                     parts: [
                                         "UIATV"
                                     ],
-                                    formatter: function (UIATV) {
+                                    formatter: function(UIATV) {
 
                                         if (UIATV == null) {
                                             return "";
@@ -571,7 +571,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "Model Binding Usage For UI" 페이지의 Split 중 오른쪽영역
      **************************************************************************/
-    oAPP.fn.fnGetFindPage2_RightPage = function () {
+    oAPP.fn.fnGetFindPage2_RightPage = function() {
 
         var EnumLabelDesignBold = sap.m.LabelDesign.Bold,
             EnumSticky = sap.m.Sticky;
@@ -672,7 +672,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "CSS Style Class Where to Use" 페이지
      **************************************************************************/
-    oAPP.fn.fnGetFindPage3 = function () {
+    oAPP.fn.fnGetFindPage3 = function() {
 
         var EnumLabelDesignBold = sap.m.LabelDesign.Bold,
             EnumSticky = sap.m.Sticky;
@@ -749,7 +749,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "Event JS Where to Use" 페이지
      **************************************************************************/
-    oAPP.fn.fnGetFindPage4 = function () {
+    oAPP.fn.fnGetFindPage4 = function() {
 
         var EnumLabelDesignBold = sap.m.LabelDesign.Bold,
             EnumSticky = sap.m.Sticky;
@@ -839,7 +839,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "UI Where to Use the Event" Data
      **************************************************************************/
-    oAPP.fn.fnGetFindData1 = function () {
+    oAPP.fn.fnGetFindData1 = function() {
 
         // Attribute 정보를 구한다.
         var aAttrData = oAPP.fn.getAttrChangedData(),
@@ -889,7 +889,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "Model Binding Usage For UI" 페이지의 Split 중 왼쪽영역 데이터
      **************************************************************************/
-    oAPP.fn.fnGetFindData2 = function () {
+    oAPP.fn.fnGetFindData2 = function() {
 
         // Attribute 정보를 구한다.
         var aAttrData = oAPP.fn.getAttrChangedData(),
@@ -929,7 +929,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "CSS Style Class Where to Use" 페이지 데이터
      **************************************************************************/
-    oAPP.fn.fnGetFindData3 = function () {
+    oAPP.fn.fnGetFindData3 = function() {
 
         // Attribute 정보를 구한다.
         var aAttrData = oAPP.fn.getAttrChangedData(),
@@ -955,7 +955,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "Event JS Where to Use" 페이지 데이터
      **************************************************************************/
-    oAPP.fn.fnGetFindData4 = function () {
+    oAPP.fn.fnGetFindData4 = function() {
 
         // Attribute 정보를 구한다.
         var aAttrData = oAPP.fn.getAttrChangedData(),
@@ -1006,7 +1006,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 TNT 메뉴 선택 시 NavContainer의 afterNav events.
      **************************************************************************/
-    oAPP.events.ev_findNavConAfterNav = function (oEvent) {
+    oAPP.events.ev_findNavConAfterNav = function(oEvent) {
 
         var oMovePage = oEvent.getParameter("to"),
             toId = oEvent.getParameter("toId");
@@ -1055,7 +1055,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 TNT 메뉴 선택 이벤트
      **************************************************************************/
-    oAPP.events.ev_sideNaviItemSelection = function (oEvent) {
+    oAPP.events.ev_sideNaviItemSelection = function(oEvent) {
 
         var oSelectedItem = oEvent.getParameter("item"),
             sItemKey = oSelectedItem.getProperty("key");
@@ -1072,7 +1072,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 링크 이벤트들..
      **************************************************************************/
-    oAPP.events.ev_press_Link_Find = function (oEvent) {
+    oAPP.events.ev_press_Link_Find = function(oEvent) {
 
         var oCtx = oEvent.getSource().getBindingContext();
         if (oCtx == null) {
@@ -1099,7 +1099,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 링크 이벤트인데 Controller 실행 할 경우.
      **************************************************************************/
-    oAPP.events.ev_press_Link_Find_Controller = function (oEvent) {
+    oAPP.events.ev_press_Link_Find_Controller = function(oEvent) {
 
         var oCtx = oEvent.getSource().getBindingContext();
         if (oCtx == null) {
@@ -1122,8 +1122,8 @@ let oAPP = parent.oAPP;
         IPCRENDERER.send(`${sBrowserKey}--find--controller`, oBindData);
 
     }; // end of oAPP.events.ev_press_Link_Find_Controller
-    
-  
+
+
     /************************************************************************
      * -- Start of Program
      ************************************************************************/
@@ -1131,9 +1131,9 @@ let oAPP = parent.oAPP;
     // // UI5 Boot Strap을 로드 하고 attachInit 한다.
     oAPP.fn.fnLoadBootStrapSetting();
 
-    window.onload = function () {
+    window.onload = function() {
 
-        sap.ui.getCore().attachInit(function () {
+        sap.ui.getCore().attachInit(function() {
 
             oAPP.fn.fnInitModelBinding();
 
@@ -1141,7 +1141,9 @@ let oAPP = parent.oAPP;
 
             oAPP.setBusy('');
 
-            $('#content').fadeIn(300, 'linear');
+            setTimeout(() => {
+                $('#content').fadeIn(500, 'linear');
+            }, 100);
 
         });
 

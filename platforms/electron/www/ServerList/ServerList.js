@@ -1,7 +1,7 @@
 /**************************************************************************
  * ServerList.js
  **************************************************************************/
-(function () {
+(function() {
     "use strict";
 
     let oAPP = parent.oAPP;
@@ -312,25 +312,25 @@
             BROWSERKEY = RANDOM.generate(10);
 
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/BrowserWindow/BrowserWindow-settings.json"),
-            oBrowserOptions = parent.require(sSettingsJsonPath),
-            oBrowserWindow = oBrowserOptions.browserWindow,
-            oWebPreferences = oBrowserWindow.webPreferences;
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow),
+            oWebPreferences = oBrowserOptions.webPreferences;
 
-        oBrowserWindow.backgroundColor = "#1c2228";
-        oBrowserWindow.backgroundColor = "#f7f7f7";
+        oBrowserOptions.backgroundColor = "#1c2228";
+        oBrowserOptions.backgroundColor = "#f7f7f7";
 
         // 브라우저 윈도우 기본 사이즈
-        oBrowserWindow.x = mainWindowState.x;
-        oBrowserWindow.y = mainWindowState.y;
-        oBrowserWindow.width = mainWindowState.width;
-        oBrowserWindow.height = mainWindowState.height;
+        oBrowserOptions.x = mainWindowState.x;
+        oBrowserOptions.y = mainWindowState.y;
+        oBrowserOptions.width = mainWindowState.width;
+        oBrowserOptions.height = mainWindowState.height;
 
-        oBrowserWindow.opacity = 0.0;
+        oBrowserOptions.opacity = 0.0;
         oWebPreferences.partition = SESSKEY;
         oWebPreferences.browserkey = BROWSERKEY;
 
         // 브라우저 오픈
-        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserWindow);
+        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
         // 브라우저 상단 메뉴 없애기
@@ -344,7 +344,7 @@
         // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -355,6 +355,8 @@
 
             // 메타 정보를 보낸다.
             oBrowserWindow.webContents.send('if-meta-info', oMetadata);
+           
+            oBrowserWindow.setOpacity(1.0);
 
         });
 
@@ -371,7 +373,7 @@
     function fnSendAjax(sUrl, oFormData, fnSuccess, fnError, fnCancel) {
 
         // ajax call 취소할 경우..
-        xhr.onabort = function () {
+        xhr.onabort = function() {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -380,7 +382,7 @@
         };
 
         // ajax call 실패 할 경우
-        xhr.onerror = function () {
+        xhr.onerror = function() {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -388,7 +390,7 @@
 
         };
 
-        xhr.onreadystatechange = function (a, b, c, d, e) { // 요청에 대한 콜백         
+        xhr.onreadystatechange = function(a, b, c, d, e) { // 요청에 대한 콜백         
 
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
@@ -437,7 +439,7 @@
                     new sap.m.Button({
                         icon: "sap-icon://decline",
                         tooltip: "{/MSGCLS/0019}", // cancel
-                        press: function (oEvent) {
+                        press: function(oEvent) {
 
                             var oDialog = oEvent.getSource().getParent();
 
@@ -448,7 +450,7 @@
                 ]
 
             })
-            .bindProperty("title", "/SERVDLG/TRCOD", function (TITLE) {
+            .bindProperty("title", "/SERVDLG/TRCOD", function(TITLE) {
 
                 if (!TITLE) {
                     return;
@@ -537,7 +539,7 @@
                                 maxLength: 3,
                                 required: true,
                                 submit: ev_pressServerInfoSaveSubmit,
-                                liveChange: function (oEvent) {
+                                liveChange: function(oEvent) {
 
                                     var sValue = oEvent.getParameter("value");
 
@@ -1004,7 +1006,7 @@
             text: fnGetLanguClassTxt("0023"), //"Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function () {
+            close: function() {
                 xhr.abort();
             }
         });
@@ -1156,7 +1158,7 @@
      * **********************************************************************/
     function fnOnInit() {
 
-        sap.ui.getCore().attachInit(function () {
+        sap.ui.getCore().attachInit(function() {
 
             // 초기값 바인딩
             fnOnInitBinding();
@@ -1179,12 +1181,9 @@
             // 서버 리스트 초기 화면 그리기
             fnOnInitRendering();
 
-            var oCurrWin = oAPP.REMOTE.getCurrentWindow();
-            oCurrWin.setOpacity(1.0);
-
             setTimeout(() => {
                 $('#content').fadeIn(500, 'linear');
-            }, 100);            
+            }, 100);
 
         });
 
