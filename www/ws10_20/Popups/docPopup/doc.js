@@ -1,14 +1,10 @@
 // const oAPP = parent.fn_getParent();
 // const oWIN = oAPP.remote.getCurrentWindow();
-debugger;
-
 
 /************************************************************************
  * ws의 설정 정보를 구한다.
  ************************************************************************/
 function fnGetSettingsInfo() {
-
-    debugger;
 
     let PATH = parent.oAPP.PATH,
         APP = parent.oAPP.APP;
@@ -30,8 +26,6 @@ function fnGetSettingsInfo() {
 //  * UI5 BootStrap 
 //  ************************************************************************/
 function fnLoadBootStrapSetting() {
-
-    debugger;
 
     var oSettings = fnGetSettingsInfo(),
         oSetting_UI5 = oSettings.UI5,
@@ -90,10 +84,10 @@ oPrc.isChang = false;
 // window 이벤트 설정 
 //====================================================================================   
 
-document.addEventListener('keyup', function (e) {
+document.addEventListener('keyup', function(e) {
     oPrc.isPressed = false;
 });
-document.addEventListener('keydown', function (e) {
+document.addEventListener('keydown', function(e) {
     oPrc.isPressed = true;
 });
 
@@ -106,7 +100,7 @@ fnLoadBootStrapSetting();
 
 //dom start event
 // document.addEventListener('DOMContentLoaded', () => {
-    
+
 window.addEventListener('load', () => {
 
     parent.oAPP.setBusy('');
@@ -130,19 +124,19 @@ window.addEventListener('load', () => {
 
         let scale = 1;
 
-        $(oDom).on("keyup", function (e) {
+        $(oDom).on("keyup", function(e) {
             if (e.key !== "Control") {
                 return;
             }
             oPrc.isPressed = false;
         });
-        $(oDom).on("keydown", function (e) {
+        $(oDom).on("keydown", function(e) {
             if (e.key !== "Control") {
                 return;
             }
             oPrc.isPressed = true;
         });
-        $(oDom).on("wheel", function (e) {
+        $(oDom).on("wheel", function(e) {
 
             //e.preventDefault();
             if (!oPrc.isPressed) {
@@ -232,7 +226,7 @@ window.addEventListener('load', () => {
         xhr.open("POST", url);
         //xhr.setRequestHeader('Content-Type', 'multipart/form-data');
 
-        xhr.onload = function (e) {
+        xhr.onload = function(e) {
 
             oApp.setBusy(false);
 
@@ -269,7 +263,7 @@ window.addEventListener('load', () => {
 
         };
 
-        xhr.onerror = function (e) {
+        xhr.onerror = function(e) {
             oApp.setBusy(false);
             //크리티컬 메시지 처리 서버에서 JSON 오류라는건 잘못된 경로로 판단함 
             oPrc.fn_setMsgMove("The wrong approach");
@@ -302,7 +296,7 @@ window.addEventListener('load', () => {
         */
 
         xhr.open("POST", url);
-        xhr.onload = function (e) {
+        xhr.onload = function(e) {
 
             oApp.setBusy(false);
 
@@ -373,7 +367,7 @@ window.addEventListener('load', () => {
 
         };
 
-        xhr.onerror = function () {
+        xhr.onerror = function() {
             oApp.setBusy(false);
             //크리티컬 메시지 처리 서버에서 JSON 오류라는건 잘못된 경로로 판단함 
             oPrc.fn_setMsgMove("The wrong approach");
@@ -624,6 +618,19 @@ window.addEventListener('load', () => {
         busyIndicatorDelay: 1
     });
 
+    // yoon test
+    oApp.addDelegate({
+        onAfterRendering: function() {
+
+            var oCurrWin = oAPP.REMOTE.getCurrentWindow();
+            oCurrWin.setOpacity(1.0);
+
+            setTimeout(() => {
+                $('#content').fadeIn(500, 'linear');
+            }, 100);
+
+        }
+    });
 
     //====================================================================================        
     // 좌측 영역 
@@ -734,7 +741,7 @@ window.addEventListener('load', () => {
             sap.m.MessageBox.information("do you want to delete?", {
                 actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CLOSE],
                 emphasizedAction: "Manage Products",
-                onClose: function (sAction) {
+                onClose: function(sAction) {
                     if (sap.m.MessageBox.Action.OK === sAction) {
 
                         //변경 여부 지시자 초기화 
@@ -775,7 +782,7 @@ window.addEventListener('load', () => {
             sap.m.MessageBox.information("do you want to save", {
                 actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CLOSE],
                 emphasizedAction: "Manage Products",
-                onClose: function (sAction) {
+                onClose: function(sAction) {
                     if (sap.m.MessageBox.Action.OK === sAction) {
                         //저장 처리 
                         oPrc.fn_Save();
@@ -855,7 +862,7 @@ window.addEventListener('load', () => {
         showGroupFont: true,
         showGroupLink: true,
         showGroupInsert: true,
-        ready: function () {
+        ready: function() {
             this.addButtonGroup('styleselect');
             this.addButtonGroup('table');
 
@@ -870,7 +877,7 @@ window.addEventListener('load', () => {
 
     });
 
-    oRch.attachChange(function () {
+    oRch.attachChange(function() {
         //변경 여부 지시자 설정 
         oPrc.isChang = true;
 
@@ -881,14 +888,14 @@ window.addEventListener('load', () => {
 
     });
 
-    oRch.attachBrowserEvent('focusin', function () {
+    oRch.attachBrowserEvent('focusin', function() {
         //좌측 문서 리스트 항목 영역 접기 
         oApp.hideMaster();
     });
 
 
     //그룹 버튼 생성 
-    setTimeout(function () {
+    setTimeout(function() {
         oRch.addButtonGroup('styleselect');
         oRch.addButtonGroup('table');
     }, 0);

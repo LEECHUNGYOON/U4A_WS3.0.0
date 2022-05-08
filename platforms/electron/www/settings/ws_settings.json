@@ -13,6 +13,7 @@
 	},	
 	"requireFolders": [
 		"p13n",
+		"p13n\\theme",
 		"ext_api",
 		"ext_api\\vbs"
 	],

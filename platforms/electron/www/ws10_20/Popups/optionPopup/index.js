@@ -6,7 +6,7 @@
 
 let oAPP = parent.oAPP;
 
-(function (window, oAPP) {
+(function(window, oAPP) {
     "use strict";
 
     let PATH = oAPP.PATH,
@@ -24,7 +24,7 @@ let oAPP = parent.oAPP;
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.fn.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
+    oAPP.fn.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -42,7 +42,7 @@ let oAPP = parent.oAPP;
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.fn.fnGetModelProperty = function (sModelPath) {
+    oAPP.fn.fnGetModelProperty = function(sModelPath) {
 
         return sap.ui.getCore().getModel().getProperty(sModelPath);
 
@@ -51,7 +51,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * ws의 설정 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.getSettingsInfo = function () {
+    oAPP.fn.getSettingsInfo = function() {
 
         // Browser Window option
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
@@ -69,7 +69,7 @@ let oAPP = parent.oAPP;
     // /************************************************************************
     //  * UI5 BootStrap 
     //  ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = function () {
+    oAPP.fn.fnLoadBootStrapSetting = function() {
 
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
@@ -122,15 +122,11 @@ let oAPP = parent.oAPP;
     oAPP.fn.fnOnSmoothLoading = () => {
 
         var oCurrWin = oAPP.REMOTE.getCurrentWindow();
-        oCurrWin.show();
+        oCurrWin.setOpacity(1.0);
 
         setTimeout(() => {
-
-            oCurrWin.setOpacity(1.0);
-
-            $('#content').fadeIn(300, 'linear');
-
-        }, 300);
+            $('#content').fadeIn(500, 'linear');
+        }, 100);
 
     }; // end of fnOnSmoothLoading 
 
@@ -141,9 +137,9 @@ let oAPP = parent.oAPP;
     // // UI5 Boot Strap을 로드 하고 attachInit 한다.
     oAPP.fn.fnLoadBootStrapSetting();
 
-    window.onload = function () {
+    window.onload = function() {
 
-        sap.ui.getCore().attachInit(function () {
+        sap.ui.getCore().attachInit(function() {
 
             oAPP.fn.fnInitRendering();
 

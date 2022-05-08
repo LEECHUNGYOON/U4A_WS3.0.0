@@ -371,7 +371,6 @@
         oBrowserOptions.title = "Options..";
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
-        oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.backgroundColor = "#1c2228";
         oBrowserOptions.webPreferences.partition = SESSKEY;

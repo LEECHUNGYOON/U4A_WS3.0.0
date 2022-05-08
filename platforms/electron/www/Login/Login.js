@@ -5,7 +5,7 @@
  * - file Desc : WS Login Page
  ************************************************************************/
 
-let oAPP = (function () {
+let oAPP = (function() {
     "use strict";
 
     const
@@ -217,7 +217,7 @@ let oAPP = (function () {
                                     value: "{ID}",
                                     showSearchButton: false,
                                     placeholder: "　",
-                                    suggest: function (oEvent) {
+                                    suggest: function(oEvent) {
 
                                         var sValue = oEvent.getParameter("suggestValue"),
                                             aFilters = [];
@@ -226,7 +226,7 @@ let oAPP = (function () {
 
                                             aFilters = [
                                                 new sap.ui.model.Filter([
-                                                    new sap.ui.model.Filter("ID", function (sText) {
+                                                    new sap.ui.model.Filter("ID", function(sText) {
                                                         return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                                     }),
                                                 ], false)
@@ -238,7 +238,7 @@ let oAPP = (function () {
                                         this.suggest();
 
                                     },
-                                    search: function (oEvent) {
+                                    search: function(oEvent) {
 
                                         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
                                         if (bIsPressClearBtn) {
@@ -329,25 +329,25 @@ let oAPP = (function () {
 
             new sap.m.Button({
                 text: "영선",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("yshong");
                 }
             }),
             new sap.m.Button({
                 text: "성호",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("shhong");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
             new sap.m.Button({
                 text: "은섭",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("pes");
                 }
             }),
             new sap.m.Button({
                 text: "청윤",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("soccerhs");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
@@ -586,7 +586,7 @@ let oAPP = (function () {
         parent.setBusy('X');
 
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () { // 요청에 대한 콜백
+        xhr.onreadystatechange = function() { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
@@ -647,15 +647,61 @@ let oAPP = (function () {
             parent.setMetadata(oResult.META);
         }
 
-        $('#content').css({"display": "none"});
+        $('#content').css({
+            "display": "none"
+        });
 
-        var oCurrWin = REMOTE.getCurrentWindow();
-        oCurrWin.setBackgroundColor("#1c2228");
-        oCurrWin.setOpacity(0.0);        
+        oAPP.fn.fnP13nCreateTheme().then(() => {
 
-        parent.onMoveToPage("WS10");
+            var oCurrWin = REMOTE.getCurrentWindow();
+            oCurrWin.setBackgroundColor("#1c2228");
+            oCurrWin.setOpacity(0.0);
+
+            parent.onMoveToPage("WS10");
+
+        });
 
     }; // end of oAPP.fn.fnOnLoginSuccess
+
+    oAPP.fn.fnP13nCreateTheme = () => {
+
+        return new Promise((resolve, reject) => {            
+
+            let oCoreModel = sap.ui.getCore().getModel(),
+                oLogInData = oCoreModel.getProperty("/LOGIN"),
+                sSysID = oLogInData.SYSID,
+                sThemeJsonPath = PATH.join(USERPATH, "p13n", "theme", `${sSysID}.json`);
+
+            let oDefThemeInfo = {
+                THEME: "",
+                BGCOL: ""
+            };   
+            
+            // SYSTEM ID 테마 정보 JSON 파일 유무 확인
+            if (!FS.existsSync(sThemeJsonPath)) {
+
+                FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
+                    encoding: "utf8",
+                    mode: 0o777 // 올 권한
+                }, function(err) {
+
+                    if (err) {
+                        reject(err.toString());
+                        return;
+                    }
+
+                    resolve();
+
+                });
+
+                return;
+            }
+
+            resolve();
+
+        });
+
+    }; // end of oAPP.fn.fnP13nCreateTheme
 
     /************************************************************************
      * 자연스러운 로딩
@@ -667,7 +713,7 @@ let oAPP = (function () {
 
         setTimeout(() => {
             $('#content').fadeIn(500, 'linear');
-        },500);         
+        }, 500);
 
     }; // end of oAPP.fn.fnOnSmoothLoading 
 
@@ -848,7 +894,7 @@ let oAPP = (function () {
         // 저장하려는 ID가 이미 있고 Array에 가장 첫번째에 있으면 빠져나간다.    
         if (iFindIndex == 0) {
             return;
-        }
+        }        
 
         // 저장하려는 ID가 이미 있고 Array에 첫번째가 아니면 
         // 기존 저장된 위치의 ID 정보를 삭제
@@ -927,7 +973,7 @@ window.onload = () => {
 
 };
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
 
     // parent.fn_onWinMove(false, parent.REMOTE.getCurrentWindow());
 

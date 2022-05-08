@@ -417,9 +417,9 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         // var oCurrWin = REMOTE.getCurrentWindow();
         // oCurrWin.setMenuBarVisibility(true);
 
-        // if (sMovePath == "LOGIN") {
-        //     oCurrWin.setMenuBarVisibility(false);
-        // }
+        if (sMovePath == "LOGIN") {
+            delete oWS.utill.attr.ISINIT;
+        }
 
         oWs_frame.src = sPath;
 
