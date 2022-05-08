@@ -31,6 +31,7 @@
         var oBindData = {
             TITLE: "",
             TYPE: "",
+            OBJID : OBJID
         }
 
         // TYPE 에 따라 모델을 초기화 한다.
@@ -95,7 +96,8 @@
                     }),
 
                     new sap.m.Title({
-                        text: "{" + CLIENT_EDITOR_BIND_ROOT_PATH + "/TITLE}"
+                        text: `{${CLIENT_EDITOR_BIND_ROOT_PATH}/TITLE} -- {${CLIENT_EDITOR_BIND_ROOT_PATH}/OBJID}`
+                        // text: "{" + CLIENT_EDITOR_BIND_ROOT_PATH + "/TITLE}"
                     }).addStyleClass("sapUiTinyMarginBegin"),
 
                     new sap.m.ToolbarSpacer(),
