@@ -277,6 +277,10 @@
 
         debugger;
 
+        alert("준비중입니다.");
+
+        return;
+
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
             return;
