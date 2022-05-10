@@ -244,7 +244,6 @@
         l_14.UILIB = ls_0022.LIBNM;
         l_14.ISEXT = ls_0022.ISEXT;
         l_14.TGLIB = ls_0022.TGLIB;
-        l_14.LIBNM = ls_0022.LIBNM;
 
         //UI ICON 구성.
         l_14.UICON = oAPP.fn.fnGetSapIconPath(ls_0022.UICON);

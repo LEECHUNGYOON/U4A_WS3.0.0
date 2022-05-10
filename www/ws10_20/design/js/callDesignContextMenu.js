@@ -359,7 +359,6 @@
                 l_14.UILIB = param.E_UIOBJ.LIBNM;
                 l_14.ISEXT = param.E_UIOBJ.ISEXT;
                 l_14.TGLIB = param.E_UIOBJ.TGLIB;
-                l_14.LIBNM = param.E_UIOBJ.LIBNM;
 
                 //UI ICON 구성.
                 l_14.UICON = oAPP.fn.fnGetSapIconPath(param.E_UIOBJ.UICON);
@@ -396,7 +395,7 @@
 
 
                 //미리보기 UI 추가
-                oAPP.attr.ui.frame.contentWindow.addUIObjPreView(l_14.OBJID, l_14.UIOBK, l_14.LIBNM, 
+                oAPP.attr.ui.frame.contentWindow.addUIObjPreView(l_14.OBJID, l_14.UIOBK, l_14.UILIB, 
                     l_14.UIFND, l_14.POBID, l_14.PUIOK, param.E_EMB_AGGR.UIATT, [ls_0015], lt_ua018, lt_ua032, lt_ua030, lt_ua026, lt_ua050);
 
                 //aggregation 정보 초기화.
@@ -856,8 +855,17 @@
             //UI의 클라이언트 이벤트가 존재하는 경우 복사 처리.
             lf_copyClientEvent(ls_14.OBJID, is_copied);
 
+
+            var l_UILIB = ls_14.UILIB;
+            
+            var ls_0022 = oAPP.DATA.LIB.T_0022.find( a=> a.UOBK === ls_14.UIOBK );
+
+            if(ls_0022){
+                l_UILIB = ls_0022.LIBNM;
+            }
+
             //미리보기 UI 추가
-            oAPP.attr.ui.frame.contentWindow.addUIObjPreView(ls_14.OBJID, ls_14.UIOBK, ls_14.UILIB, 
+            oAPP.attr.ui.frame.contentWindow.addUIObjPreView(ls_14.OBJID, ls_14.UIOBK, l_UILIB, 
                 ls_14.UIFND, ls_14.POBID, ls_14.PUIOK, ls_14.UIATT, lt_0015, it_ua018, it_ua032, it_ua030, it_ua026, it_ua050);
 
 

@@ -44,8 +44,8 @@
   //미리보기 iframe 영역 구성.
   oAPP.fn.loadPreviewFrame = function(){
 
-    //미리보기 html 정보가 로드되지 않은경우.
-    if(!oAPP.attr.ui.frame){
+     //미리보기 html 정보가 로드되지 않은경우.
+     if(!oAPP.attr.ui.frame){
       oAPP.attr.ui.frame = document.getElementById("prevHTML");
 
       var l_info = parent.getUserInfo();

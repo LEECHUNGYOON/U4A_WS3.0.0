@@ -16,6 +16,9 @@
     //path prefix 정보.
     oAPP.attr.servNm = parent.getServerPath();
 
+    //프로퍼티 점검 항목 수집 object.
+    oAPP.attr.chkProp = {};
+
     //10번 정보 구조 생성.
     oAPP.fn.crtStru0010 = function(){
 
@@ -242,12 +245,25 @@
 
         console.log("app 데이터 완료 : " + new Date());
 
+        for(var i=param.APPDATA.T_0014.length-1; i>=0; i--){
+          
+          //StyleCSS, HTMLCode, ScriptCode UI가 존재하는경우.
+          if(param.APPDATA.T_0014[i].UIOBK === "UO99997" || param.APPDATA.T_0014[i].UIOBK === "UO99998" || 
+            param.APPDATA.T_0014[i].UIOBK === "UO99999"){
+            //해당 라인 삭제.
+            param.APPDATA.T_0014.splice(i,1);
+            continue;
+          }
+
+        }
+
         oAPP.DATA.APPDATA = param.APPDATA;
 
         //application ui design, attribute 정보 매핑.
         oAPP.attr.oModel.oData.TREE = oAPP.DATA.APPDATA.T_0014;
 
         var l_edit = true;
+
 
         //edit 불가능 상태인경우.
         if(oAPP.attr.appInfo.IS_EDIT === ""){
@@ -660,7 +676,7 @@
     oSApp.setModel(oAPP.attr.oModel);
 
     //좌측 페이지(UI Design 영역)
-    var oLPage = new sap.m.Page({showHeader:false,layoutData:new sap.ui.layout.SplitterLayoutData({size:"25%",minSize:300})});
+    var oLPage = new sap.m.Page({enableScrolling:false,showHeader:false,layoutData:new sap.ui.layout.SplitterLayoutData({size:"25%",minSize:300})});
     oSApp.addContentArea(oLPage);
 
     //가운데 페이지(미리보기 영역)

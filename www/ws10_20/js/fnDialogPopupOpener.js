@@ -428,11 +428,11 @@
             return;
         }
 
-        let oServerInfo = parent.getServerInfo(),
-            sSysID = oServerInfo.SYSID,
-            sThemePath = PATH.join(parent.getPath("THEME"), `${sSysID}.json`),
-            oThemeInfo = parent.require(sThemePath);
+        let oServerInfo = parent.getServerInfo(), // 서버 정보
+            sSysID = oServerInfo.SYSID, // System ID
+            oThemeInfo = parent.getThemeInfo(); // 테마 개인화 정보
 
+        // Browswer Options
         let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
@@ -441,7 +441,7 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.backgroundColor = "#1c2228";
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;

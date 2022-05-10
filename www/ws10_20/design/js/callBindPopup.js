@@ -46,8 +46,11 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
             it_tree[i].stat_src = "sap-icon://status-positive";
             it_tree[i].stat_color = "#01DF3A";
 
+            //현재 TABLE이 바인딩 팝업 호출건의 PATH와 동일하다면.
             if(it_tree[i].CHILD === oAPP.attr.oBindDialog._is_attr.UIATV){
+              //선택됨 icon 처리.
               it_tree[i].stat_src = "sap-icon://accept";
+              it_tree[i].stat_color = "#1589FF";
             }
 
             continue;
@@ -60,8 +63,11 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
             it_tree[i].stat_src = "sap-icon://status-positive";
             it_tree[i].stat_color = "#01DF3A";
 
+            //현재 TABLE이 바인딩 팝업 호출건의 PATH와 동일하다면.
             if(it_tree[i].CHILD === oAPP.attr.oBindDialog._is_attr.UIATV){
+              //선택됨 icon 처리.
               it_tree[i].stat_src = "sap-icon://accept";
+              it_tree[i].stat_color = "#1589FF";
             }
 
             continue;
@@ -73,6 +79,10 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
               oAPP.attr.oBindDialog._CARDI === "R" ||
               oAPP.attr.oBindDialog._CARDI === "ST" ) && 
              ( l_path && l_path.substr(0,it_tree[i].CHILD.length) === it_tree[i].CHILD)){
+
+            //N건 바인딩 필드 아이콘 표현.
+            it_tree[i].stat_src = "sap-icon://share-2";
+            it_tree[i].stat_color = "#FBB917";
 
             var lt_child = l_model.oData.TREE.filter( a => a.PARENT === it_tree[i].CHILD );
             lf_setBindEnable(lt_child, l_path, l_model, it_tree[i].KIND);
@@ -105,8 +115,11 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
               it_tree[i].stat_color = "#01DF3A";
             }            
 
+            //현재 TABLE이 바인딩 팝업 호출건의 PATH와 동일하다면.
             if(it_tree[i].CHILD === oAPP.attr.oBindDialog._is_attr.UIATV){
+              //선택됨 icon 처리.
               it_tree[i].stat_src = "sap-icon://accept";
+              it_tree[i].stat_color = "#1589FF";
             }            
 
             continue;
@@ -167,6 +180,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
             if(it_tree[i].CHILD === oAPP.attr.oBindDialog._is_attr.UIATV){
               //선택됨 icon 처리.
               it_tree[i].stat_src = "sap-icon://accept";
+              it_tree[i].stat_color = "#1589FF";
 
               //이전 선택한 바인딩 상세정보가 존재하는경우.
               if(oAPP.attr.oBindDialog._is_attr.MPROP !== ""){
@@ -408,12 +422,6 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
       L_UIATV = l_path;
     }
 
-    //이전 바인딩 path가 존재하는 경우.
-    if(L_UIATV !== ""){
-      //이전 바인딩 PATH를 -로 분리.
-       lt_split = L_UIATV.split("-");
-    }
-
 
     var l_cnt = 0;
     oAPP.attr.oBindDialog._oTree.expand(l_cnt);
@@ -458,10 +466,16 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
         }
 
-        //현재 TREE의 PATH와 이전 바인딩 PATH가 부합되지 않는경우 SKIP.
-        if(T_TREE[i].CHILD !== lt_split.slice(0,parseInt(T_TREE[i].ZLEVEL)-1).join("-")){
+        //N건 바인딩 존재시 현재 라인이 N건 바인딩 PATH와 동일한경우.
+        if(l_path && T_TREE[i].CHILD === l_path){
+          //해당 라인 펼침 처리.
+          oAPP.attr.oBindDialog._oTree.expand(l_cnt);
+        }
+
+        if(L_UIATV !== "" && T_TREE[i].CHILD !== L_UIATV.substr(0,T_TREE[i].CHILD.length)){
           continue;
         }
+
 
         //현재 TREE의 PATH가 바인딩 팝업 호출시 이전 바인딩 PATH정보와 동일한건인경우.
         if(oAPP.attr.oBindDialog._is_attr.UIATV === T_TREE[i].CHILD){
@@ -469,6 +483,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
           oAPP.attr.oBindDialog._oTree.setSelectedIndex(l_cnt);
           continue;
         }
+
+        if(T_TREE[i].KIND ==="E"){continue;}
 
         //현재 TREE의 PATH와 이전 바인딩 PATH가 부합되는경우 해당 라인 펼침 처리.
         oAPP.attr.oBindDialog._oTree.expand(l_cnt);
@@ -606,7 +622,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
           ls_mprop.sel_vis = true;
 
           //구조(TAB) 안에 있는 필드 중 CUKY, UNIT 타입이 없으면 잠김.
-          lt_filt = it_parent.filter( a => a.DATATYPE === "CUKY" || a.DATATYPE === "UNIT");
+          var lt_filt = it_parent.filter( a => a.DATATYPE === "CUKY" || a.DATATYPE === "UNIT");
 
           //금액, UNIT 참조필드가 존재하지 않는경우 화면 잠금 처리.
 
@@ -988,9 +1004,16 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
     selectionMode: "Single",
     selectionBehavior: "RowOnly",
     visibleRowCountMode: "Auto",
+    rowHeight:30,
     rowSelectionChange:lf_selTabRow
   }); //바인딩 tree 정보.
 
+
+  //TREE 스크롤 이벤트.
+  oTree.attachFirstVisibleRowChanged(function(){
+    //현재 선택된 DOM focus out 처리.
+    document.activeElement.blur();
+  });
 
 
   //tree 더블클릭 이벤트.
@@ -1075,9 +1098,17 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
     visibleRowCountMode:"Auto",
     width:"100%",
     visible:"{/resize}",
+    rowHeight:30,
     layoutData: new sap.ui.layout.SplitterLayoutData()
   });
   oSpt1.addContentArea(oTab);
+
+
+  //바인딩 추가속성 정보 table 스크롤 이벤트.
+  oTab.attachFirstVisibleRowChanged(function(){
+    //현재 선택된 DOM focus out 처리.
+    document.activeElement.blur();
+  });
 
 
   //추가바인딩 속성의 Property 컬럼.

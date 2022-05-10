@@ -68,9 +68,9 @@ let oAPP = parent.oAPP;
 
     }; // end of oAPP.fn.getSettingsInfo
 
-    /************************************************************************
-     * UI5 BootStrap 
-     ************************************************************************/
+    // /************************************************************************
+    //  * UI5 BootStrap 
+    //  ************************************************************************/
     oAPP.fn.fnLoadBootStrapSetting = function () {
 
         var oSettings = oAPP.fn.getSettingsInfo(),
@@ -81,7 +81,6 @@ let oAPP = parent.oAPP;
             bIsDev = oSettings.isDev,
             oBootStrap = oSetting_UI5.bootstrap,
             oUserInfo = oAPP.attr.oUserInfo,
-            oThemeInfo = oAPP.attr.oThemeInfo,
             sLangu = oUserInfo.LANGU;
 
         var oScript = document.createElement("script");
@@ -93,7 +92,6 @@ let oAPP = parent.oAPP;
         }
 
         // 로그인 Language 적용
-        oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
         oScript.setAttribute("data-sap-ui-language", sLangu);
         oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.tnt, sap.ui.table, sap.ui.layout");
 
@@ -182,7 +180,7 @@ let oAPP = parent.oAPP;
             oAPP.attr.oTree.expandToLevel(99999);
 
             //tree table 컬럼길이 재조정 처리.
-            oAPP.fn.setTreeAutoResizeCol();
+            oAPP.fn.setTreeAutoResizeCol(100);
 
         });
 
@@ -210,7 +208,8 @@ let oAPP = parent.oAPP;
             selectionMode: "Single",
             selectionBehavior: "RowOnly",
             visibleRowCountMode: "Auto",
-            rowSelectionChange: lf_selTabRow
+            rowHeight:30,
+            rowSelectionChange: oAPP.fn.selTabRow
         });
         oSpt1.addContentArea(oAPP.attr.oTree);
 
@@ -230,29 +229,8 @@ let oAPP = parent.oAPP;
 
         //drag start 이벤트
         oDrag.attachDragStart(function (oEvent) {
-
-            //drag한 위치의 바인딩 정보 얻기.
-            var l_ctxt = oEvent.mParameters.target.getBindingContext();
-            if (!l_ctxt) {
-                return;
-            }
-
-            //drag한 TREE 정보 얻기.
-            var ls_drag = l_ctxt.getProperty();
-            if (!ls_drag) {
-                return;
-            }
-
-            var l_obj = {};
-
-            //프로세스 코드.
-            l_obj.PRCCD = "PRC001";
-
-            //DRAG 한 라인 정보.
-            l_obj.IF_DATA = ls_drag;
-
-            //DRAG한 UI ID 정보 세팅.
-            event.dataTransfer.setData("text/plain", JSON.stringify(l_obj));
+            //drag 처리.
+            oAPP.fn.setDragStart(oEvent);
 
         }); //drag start 이벤트
 
@@ -349,6 +327,7 @@ let oAPP = parent.oAPP;
             visibleRowCountMode: "Auto",
             width: "100%",
             visible: "{/resize}",
+            rowHeight:30,
             layoutData: new sap.ui.layout.SplitterLayoutData()
         });
         oSpt1.addContentArea(oTab);
@@ -407,7 +386,7 @@ let oAPP = parent.oAPP;
         //바인딩 추가속성 정보 input 값변경 이벤트
         oTabCol2Inp1.attachChange(function () {
             //conversion명 대문자 변환 처리.
-            lf_setConvNameUpperCase(this);
+            oAPP.fn.setConvNameUpperCase(this);
 
         });
 
@@ -425,7 +404,7 @@ let oAPP = parent.oAPP;
         //바인딩 추가속성 정보 DDLB 선택 이벤트.
         oTabCol2Sel1.attachChange(function () {
             //바인딩 추가속성 정보 DDLB 선택 이벤트.
-            lf_setAddtBindInfoDDLB(this);
+            oAPP.fn.setAddtBindInfoDDLB(this);
 
         });
 
@@ -445,543 +424,123 @@ let oAPP = parent.oAPP;
             template: new sap.ui.table.Row()
         });
 
-        /************************************************************************
-         * ui Info 영역 END.
-         ************************************************************************/
+
+        // //table Drag 설정.
+        // oAPP.fn.setTreeDrag();
 
 
         //서버에서 바인딩 정보 얻기.
-        lf_getBindFieldInfo();
+        oAPP.fn.getBindFieldInfo();
 
 
-        //conversion명 대문자 변환 처리.
-        function lf_setConvNameUpperCase(oUi) {
 
-            if (!oUi) {
-                return;
-            }
+    };  //바인딩 팝업 화면 구성.
 
-            var l_ctxt = oUi.getBindingContext();
 
-            var ls_line = l_ctxt.getProperty();
 
-            //Conversion Routine에서 값을 입력한 경우 하위 로직 수행.
-            if (ls_line.ITMCD !== "P06") {
-                return;
-            }
 
-            //Conversion 명 대문자 변환 처리.
-            ls_line.val = ls_line.val.toUpperCase();
-            oUi.setValue(ls_line.val);
+    //conversion명 대문자 변환 처리.
+    oAPP.fn.setConvNameUpperCase = function(oUi) {
 
-        } //conversion명 대문자 변환 처리.
+        if (!oUi) {
+            return;
+        }
 
+        var l_ctxt = oUi.getBindingContext();
 
+        var ls_line = l_ctxt.getProperty();
 
+        //Conversion Routine에서 값을 입력한 경우 하위 로직 수행.
+        if (ls_line.ITMCD !== "P06") {
+            return;
+        }
 
-        //바인딩 추가속성 정보 DDLB 선택 이벤트.
-        function lf_setAddtBindInfoDDLB(oUi) {
+        //Conversion 명 대문자 변환 처리.
+        ls_line.val = ls_line.val.toUpperCase();
+        oUi.setValue(ls_line.val);
 
-            var l_ctxt = oUi.getBindingContext();
+    }; //conversion명 대문자 변환 처리.
 
-            var ls_line = l_ctxt.getProperty();
 
-            //Bind type DDLB을 선택하지 않은경우 exit.
-            if (ls_line.ITMCD !== "P04") {
-                return;
-            }
 
-            //Reference Field name 라인 정보 얻기.
-            var ls_P05 = oAPP.attr.oModel.oData.T_MPROP.find(a => a.ITMCD === "P05");
-            if (!ls_P05) {
-                return;
-            }
 
-            //Reference Field name 라인 정보 얻기.
-            var ls_P06 = oAPP.attr.oModel.oData.T_MPROP.find(a => a.ITMCD === "P06");
-            if (!ls_P06) {
-                return;
-            }
+    //STRING_TABLE 여부 확인.
+    oAPP.fn.chkStringTable = function(is_tree) {
 
-            //Bind type DDLB을 빈값 선택한 경우.
-            if (ls_line.val === "") {
+        //TABLE이 아닌경우 EXIT.
+        if (is_tree.KIND !== "T") {
+            return;
+        }
 
-                //Reference Field name DEFAULT 선택 불가능 처리.
-                ls_P05.edit = false;
+        //현재 라인이 STRING_TABLE인경우 STRING_TABLE FLAG RETURN.
+        if (is_tree.EXP_TYP === "STR_TAB") {
+            return true;
+        }
 
-                //Reference Field name 선택값 초기화.
-                ls_P05.val = "";
+    }; //STRING_TABLE 여부 확인.
 
-                //Conversion Routine 선택 가능 처리.
-                ls_P06.edit = true;
 
-            } else if (ls_line.val !== "") {
-                //Bind type DDLB을 선택한 경우.
 
-                //Reference Field name DEFAULT 선택 가능 처리.
-                ls_P05.edit = true;
 
-                //Conversion Routine 선택 불가 처리.
-                ls_P06.edit = false;
+    //range table 여부 확인.
+    oAPP.fn.chkRangeTable = function(is_tree) {
 
-                //Conversion Routine 선택값 초기화.
-                ls_P06.val = "";
+        //TABLE이 아닌경우 EXIT.
+        if (is_tree.KIND !== "T") {
+            return;
+        }
 
-            }
+        //현재 table의 하위 필드 정보 검색.
+        var lt_filter = oAPP.attr.oModel.oData.TREE.filter(a => a.PARENT === is_tree.CHILD);
 
-            //모델 갱신 처리.
-            oAPP.attr.oModel.refresh();
+        //child가 4건이 아닌경우 exit.
+        if (lt_filter.length !== 4) {
+            return;
+        }
 
-        } //바인딩 추가속성 정보 DDLB 선택 이벤트.
+        //SIGN, OPTION, LOW, HIGH 필드가 아닌 필드 검색.
+        var l_indx = lt_filter.findIndex(a => a.NTEXT !== "SIGN" && a.NTEXT !== "OPTION" &&
+            a.NTEXT !== "LOW" && a.NTEXT !== "HIGH");
 
+        //SIGN, OPTION, LOW, HIGH 이외의 필드가 존재하지 않는경우.
+        if (l_indx === -1) {
+            //range table flag return
+            return true;
+        }
 
+    }; //range table 여부 확인.
 
 
-        //바인딩 가능여부 flag 처리.
-        function lf_setBindEnable(it_tree, l_path, l_model, KIND) {
 
-            if (it_tree.length === 0) {
-                return;
-            }
+    //라인선택 이벤트
+    oAPP.fn.selTabRow = function(oEvent) {
 
-            for (var i = 0, l = it_tree.length; i < l; i++) {
+        var l_indx = this.getSelectedIndex();
+        if (l_indx === -1) {
+            return;
+        }
 
-                switch (it_tree[i].KIND) {
-                    case "T": //TABLE인경우.
+        var l_bind = this.getBinding("rows");
 
-                        it_tree[i].enable = true;
-                        it_tree[i].stat_src = "sap-icon://status-positive";
-                        it_tree[i].stat_color = "#01DF3A";
+        var l_ctxt = l_bind.getContextByIndex(l_indx);
+        if (!l_ctxt) {
+            return;
+        }
 
-                        var lt_child = l_model.oData.TREE.filter(a => a.PARENT === it_tree[i].CHILD);
+        var ls_tree = l_ctxt.getProperty();
 
-                        lf_setBindEnable(lt_child, l_path, l_model, it_tree[i].KIND);
+        //추가속성 table layout 설정.
+        oAPP.fn.setAdditLayout(ls_tree);
 
-                        break;
 
-                    case "S": //STRUCTURE인경우.
+        var l_path = l_ctxt.getPath();
 
-                        //structure은 drag false.
-                        it_tree[i].enable = false;
-
-                        //현재 path의 하위 path정보 얻기.
-                        var lt_child = l_model.oData.TREE.filter(a => a.PARENT === it_tree[i].CHILD);
-
-                        //하위 path를 탐색하며 선택 가능 flag 처리.
-                        lf_setBindEnable(lt_child, l_path, l_model, KIND);
-                        break;
-
-                    case "E": //일반 필드인경우.
-
-                        it_tree[i].enable = true;
-                        it_tree[i].stat_src = "sap-icon://status-positive";
-                        it_tree[i].stat_color = "#01DF3A";
-
-
-                        break;
-
-                }
-
-            }
-
-        } //바인딩 가능여부 flag 처리.
-
-
-
-        //서버에서 바인딩 attr 정보 얻기.
-        function lf_getBindFieldInfo() {
-
-
-            //화면 잠금 처리.
-            oAPP.attr.oModel.setProperty("/busy", true);
-
-            //클래스명 서버 전송 데이터에 구성.
-            var oFormData = new FormData();
-            oFormData.append("CLSNM", oAPP.attr.oAppInfo.CLSID);
-
-            //바인딩 필드 정보 검색.
-            sendAjax(oAPP.attr.servNm + "/getBindAttrData", oFormData, function (param) {
-                // sendAjax(oAPP.attr.servNm + "/getBindAttrData?sap-user=pes&sap-password=dmstjq8!", oFormData, function (param) {
-
-                var l_model = oAPP.attr.oModel;
-
-                l_model.oData.TREE = param.T_ATTR;
-
-                //바인딩 정보가 존재하지 않는경우.
-                if (l_model.oData.TREE.length === 0) {
-                    //tree 정보 공백 처리.
-                    l_model.oData.zTREE = [];
-
-                    //화면 잠금 해제 처리.
-                    l_model.oData.busy = false;
-
-                    //모델 정보 바인딩 처리.
-                    l_model.refresh(true);
-
-                    sap.m.MessageToast.show("Binding attributes dose not exist.");
-
-                    // //바인딩 필드가 존재하지 않음 메시지 처리.
-                    // parent.showMessage(sap, 10, "E", "Binding attributes dose not exist.");
-
-                    return;
-
-                }
-
-                //controller의 바인딩 가능 attribute 정보가 존재하는경우.
-                if (l_model.oData.TREE.length !== 0) {
-
-                    //2레벨의 TABLE, STRUCTURE정보만 발췌.
-                    var lt_filt = l_model.oData.TREE.filter(a => a.ZLEVEL === 2 && a.KIND !== "E");
-
-                    //TABLE, STRUCTURE를 탐색하며 선택 가능 여부 처리.
-                    lf_setBindEnable(lt_filt, "", l_model);
-
-                    //tree 바인딩 정보 구성.
-                    oAPP.fn.setTreeJson(l_model, "TREE", "CHILD", "PARENT", "zTREE");
-
-                }
-
-                //화면 입력 가능 여부 처리.
-                l_model.oData.edit = oAPP.attr.oModel.oData.IS_EDIT;
-
-
-                //tree 전체 접힘 처리.
-                oAPP.attr.oTree.collapseAll();
-
-                //이전 선택 라인정보 초기화.
-                oAPP.attr.oTree.clearSelection();
-
-                //화면 잠금 해제 처리.
-                l_model.oData.busy = false;
-
-                //모델 정보 바인딩 처리.
-                l_model.refresh(true);
-
-                //tree table 컬럼길이 재조정 처리.
-                oAPP.fn.setTreeAutoResizeCol();
-
-
-            }); //바인딩 필드 정보 검색.
-
-        } //서버에서 바인딩 attr 정보 얻기.
-
-
-
-
-        //STRING_TABLE 여부 확인.
-        function lf_chkStringTable(is_tree) {
-
-            //TABLE이 아닌경우 EXIT.
-            if (is_tree.KIND !== "T") {
-                return;
-            }
-
-            //현재 라인이 STRING_TABLE인경우 STRING_TABLE FLAG RETURN.
-            if (is_tree.EXP_TYP === "STR_TAB") {
-                return true;
-            }
-
-        } //STRING_TABLE 여부 확인.
-
-
-
-
-        //range table 여부 확인.
-        function lf_chkRangeTable(is_tree) {
-
-            //TABLE이 아닌경우 EXIT.
-            if (is_tree.KIND !== "T") {
-                return;
-            }
-
-            //현재 table의 하위 필드 정보 검색.
-            var lt_filter = oAPP.attr.oModel.oData.TREE.filter(a => a.PARENT === is_tree.CHILD);
-
-            //child가 4건이 아닌경우 exit.
-            if (lt_filter.length !== 4) {
-                return;
-            }
-
-            //SIGN, OPTION, LOW, HIGH 필드가 아닌 필드 검색.
-            var l_indx = lt_filter.findIndex(a => a.NTEXT !== "SIGN" && a.NTEXT !== "OPTION" &&
-                a.NTEXT !== "LOW" && a.NTEXT !== "HIGH");
-
-            //SIGN, OPTION, LOW, HIGH 이외의 필드가 존재하지 않는경우.
-            if (l_indx === -1) {
-                //range table flag return
-                return true;
-            }
-
-        } //range table 여부 확인.
-
-
-
-
-        //라인선택 이벤트
-        function lf_selTabRow(oEvent) {
-
-            var l_indx = this.getSelectedIndex();
-            if (l_indx === -1) {
-                return;
-            }
-
-            var l_bind = this.getBinding("rows");
-
-            var l_ctxt = l_bind.getContextByIndex(l_indx);
-            if (!l_ctxt) {
-                return;
-            }
-
-            var ls_tree = l_ctxt.getProperty();
-
-            //일반 필드가 아닌경우.
-            if (ls_tree.KIND !== "E") {
-                //바인딩 추가 구성 정보 초기화.
-                oAPP.attr.oModel.oData.T_MPROP = [];
-
-                //좌측 tree 영역 100%으로 설정(우측 바인딩 세부정보 비활성 처리)
-                oAPP.attr.oModel.oData.width = "100%";
-                oAPP.attr.oModel.oData.resize = false;
-                oAPP.attr.oModel.refresh();
-
-                //선택 해제 처리.
-                this.clearSelection();
-
-                return;
-            }
-
-            //프로퍼티에서 바인딩 팝업 호출시 추가속성 정보 활성 처리.
-            if (ls_tree.KIND === "E") {
-                oAPP.attr.oModel.oData.width = "65%";
-                oAPP.attr.oModel.oData.resize = true;
-            }
-
-
-            var l_path = l_ctxt.getPath();
-
-            l_path = l_path.substr(0, l_path.lastIndexOf("/"));
-
-            //추가속성 정보 출력 처리.
-            lf_setAdditBindInfo(ls_tree, oAPP.attr.oModel.getProperty(l_path));
-
-        } //라인선택 이벤트
-
-
-
-
+        l_path = l_path.substr(0, l_path.lastIndexOf("/"));
 
         //추가속성 정보 출력 처리.
-        function lf_setAdditBindInfo(is_tree, it_parent) {
+        oAPP.fn.setAdditBindInfo(ls_tree, oAPP.attr.oModel.getProperty(l_path));
 
-            oAPP.attr.oModel.oData.T_MPROP = [];
-
-            //바인딩 팝업 호출 ATTR의 타입이 프로퍼티가 아닌경우 EXIT.
-            if (is_tree.KIND !== "E") {
-                oAPP.attr.oModel.refresh();
-                return;
-            }
-
-
-            //바인딩 추가속성 리스트 얻기.
-            var lt_ua028 = oAPP.attr.T_9011.filter(a => a.CATCD === "UA028");
-
-            var ls_mprop = {},
-                lt_split = [];
-
-            //바인딩 추가 속성 정의건이 존재하는 경우.
-            if (is_tree.MPROP) {
-                lt_split = is_tree.MPROP.split("|");
-            }
-
-            //nozero 불가능 항목.
-            var l_nozero = "Cg";
-
-            //number format 가능항목.
-            var l_numfmt = "IP";
-
-            for (var i = 0, l = lt_ua028.length, l_cnt = 0; i < l; i++) {
-
-                ls_mprop.ITMCD = lt_ua028[i].ITMCD;
-                ls_mprop.prop = lt_ua028[i].FLD01;
-                ls_mprop.val = "";
-                ls_mprop.stat = "None";
-                ls_mprop.statTxt = "";
-
-                ls_mprop.edit = false;
-                ls_mprop.inp_vis = false;
-                ls_mprop.sel_vis = false;
-                ls_mprop.txt_vis = false;
-
-                //조회모드 여부 (예:X) 가 아닌경우 화면 edit 처리.
-                if (lt_ua028[i].FLD02 !== "X") {
-                    ls_mprop.edit = true;
-                }
-
-                switch (lt_ua028[i].ITMCD) {
-
-                    case "P01": //Field name
-                        ls_mprop.val = is_tree.NTEXT;
-                        ls_mprop.txt_vis = true;
-                        break;
-
-                    case "P02": //Field path
-                        ls_mprop.val = is_tree.CHILD;
-                        ls_mprop.txt_vis = true;
-                        break;
-
-                    case "P03": //type
-                        ls_mprop.val = is_tree.TYPE;
-                        ls_mprop.txt_vis = true;
-                        break;
-
-                    case "P04": //Bind type
-                        if (is_tree.MPROP) {
-                            ls_mprop.val = lt_split[0];
-                        }
-                        ls_mprop.sel_vis = true;
-
-                        //P 타입이 아닌경우 입력 필드 잠금 처리.
-                        if (is_tree.TYPE_KIND !== "P") {
-                            ls_mprop.edit = false;
-                        }
-
-                        ls_mprop.T_DDLB = [{
-                                "KEY": "",
-                                "TEXT": ""
-                            },
-                            {
-                                "KEY": "sap.ui.model.type.Currency",
-                                "TEXT": "sap.ui.model.type.Currency"
-                            },
-                            {
-                                "KEY": "ext.ui.model.type.Quantity",
-                                "TEXT": "ext.ui.model.type.Quantity"
-                            }
-                        ];
-
-                        break;
-
-                    case "P05": //Reference Field name
-                        if (is_tree.MPROP) {
-                            ls_mprop.val = lt_split[1];
-                        }
-                        ls_mprop.sel_vis = true;
-
-                        //구조(TAB) 안에 있는 필드 중 CUKY, UNIT 타입이 없으면 잠김.
-                        lt_filt = it_parent.filter(a => a.DATATYPE === "CUKY" || a.DATATYPE === "UNIT");
-
-                        //금액, UNIT 참조필드가 존재하지 않는경우 화면 잠금 처리.
-
-                        ls_mprop.edit = false;
-
-                        if (lt_filt.length !== 0) {
-
-                            ls_mprop.edit = true;
-
-                            ls_mprop.T_DDLB = [{
-                                "KEY": "",
-                                "TEXT": ""
-                            }];
-
-                            for (var j = 0, l2 = lt_filt.length, ls_ddlb = {}; j < l2; j++) {
-
-                                ls_ddlb.KEY = ls_ddlb.TEXT = lt_filt[j].CHILD;
-                                ls_mprop.T_DDLB.push(ls_ddlb);
-                                ls_ddlb = {};
-
-                            }
-
-                        }
-
-                        if (lt_split.length === 0 || lt_split[0] === "") {
-                            ls_mprop.edit = false;
-                        }
-
-                        break;
-
-                    case "P06": //Conversion Routine
-
-                        ls_mprop.val = is_tree.CONVE;
-
-                        ls_mprop.maxlen = 5;
-
-                        if (is_tree.MPROP) {
-                            ls_mprop.val = lt_split[2];
-                        }
-                        ls_mprop.inp_vis = true;
-                        break;
-
-                    case "P07": //Nozero
-                        if (is_tree.MPROP) {
-                            ls_mprop.val = lt_split[3];
-                        }
-
-                        //값이 존재하지 않는경우 default false
-                        if (ls_mprop.val === "") {
-                            ls_mprop.val = "false";
-                        }
-
-                        ls_mprop.sel_vis = true;
-
-                        //Nozero 가능항목에 속하지 않는 타입인경우 입력필드 잠금 처리.
-                        if (l_nozero.indexOf(is_tree.TYPE_KIND) !== -1) {
-                            ls_mprop.edit = false;
-                        }
-
-                        ls_mprop.T_DDLB = [{
-                                "KEY": "true",
-                                "TEXT": "true"
-                            },
-                            {
-                                "KEY": "false",
-                                "TEXT": "false"
-                            }
-                        ];
-
-                        break;
-
-                    case "P08": //Is number format?
-                        if (is_tree.MPROP) {
-                            ls_mprop.val = lt_split[4];
-                        }
-
-                        //값이 존재하지 않는경우 default false
-                        if (ls_mprop.val === "") {
-                            ls_mprop.val = "false";
-                        }
-
-                        ls_mprop.sel_vis = true;
-
-                        //number format 가능항목에 속하지 않는 타입인경우 입력필드 잠금 처리.
-                        if (l_numfmt.indexOf(is_tree.TYPE_KIND) === -1) {
-                            ls_mprop.edit = false;
-                        }
-
-                        ls_mprop.T_DDLB = [{
-                                "KEY": "true",
-                                "TEXT": "true"
-                            },
-                            {
-                                "KEY": "false",
-                                "TEXT": "false"
-                            }
-                        ];
-
-                        break;
-                }
-
-                oAPP.attr.oModel.oData.T_MPROP.push(ls_mprop);
-                ls_mprop = {};
-
-            }
-
-            oAPP.attr.oModel.refresh();
-
-        } //추가속성 정보 출력 처리.
-
-
-
-    };
+    }; //라인선택 이벤트
 
 
 
@@ -1050,8 +609,10 @@ let oAPP = parent.oAPP;
     }; //tree 구성 function.
 
 
+
+
     //tree table 컬럼길이 재조정 처리.
-    oAPP.fn.setTreeAutoResizeCol = function () {
+    oAPP.fn.setTreeAutoResizeCol = function (iTime) {
 
         setTimeout(() => {
             var lt_col = oAPP.attr.oTree.getColumns();
@@ -1064,10 +625,58 @@ let oAPP = parent.oAPP;
                 oAPP.attr.oTree.autoResizeColumn(i);
             }
 
-        }, 100);
+        }, iTime);
 
 
-    };
+    };  //tree table 컬럼길이 재조정 처리.
+
+
+
+
+    //tree drag 처리.
+    oAPP.fn.setTreeDrag = function(){
+
+        function lf_setDraggable(){
+            console.log(111);
+            var lt_row = oAPP.attr.oTree.getRows();
+
+            if(lt_row.length == 0){return;}
+
+            for(var i=0, l=lt_row.length; i<l; i++){
+                
+                var l_dom = lt_row[i].getDomRef();
+                if(!l_dom){continue;}
+
+                l_dom.draggable = false;
+
+                var l_ctxt = lt_row[i].getBindingContext();
+                if(!l_ctxt){continue;}
+
+                var l_binfo = l_ctxt.getProperty();
+
+                l_dom.draggable = l_binfo.enable;
+
+
+            }
+
+
+        }
+
+        var l_meta = sap.ui.table.Row.getMetadata();
+        l_meta.dnd.draggable = true;
+
+        var l_bind = oAPP.attr.oTree.getBinding();
+
+        if(!l_bind){return;}
+
+        l_bind.attachChange(lf_setDraggable);
+
+        oAPP.attr.oTree.attachToggleOpenState(lf_setDraggable);
+        oAPP.attr.oTree.attachFirstVisibleRowChanged(lf_setDraggable);
+
+
+
+    };  //tree drag 처리.
 
 
     function sendAjax(sPath, oFormData, fn_success) {
@@ -1095,19 +704,6 @@ let oAPP = parent.oAPP;
 
     } // end of sendAjax
 
-    /************************************************************************
-     * 자연스러운 로딩
-     ************************************************************************/
-    oAPP.fn.fnOnSmoothLoading = () => {
-      
-        setTimeout(() => {
-
-            $('#content').fadeIn(1000, 'linear');
-            
-        }, 100);
-
-    }; // end of fnOnSmoothLoading 
-
 
     /************************************************************************
      * -- Start of Program
@@ -1123,13 +719,494 @@ let oAPP = parent.oAPP;
             //바인딩 팝업 화면 구성.
             oAPP.fn.callBindPopup();
 
-            oAPP.setBusy('');
+            // oAPP.fn.fnInitModelBinding();
 
-            // 자연스러운 로딩
-            oAPP.fn.fnOnSmoothLoading();
+            // oAPP.fn.fnInitRendering();
+
+            oAPP.setBusy('');
 
         });
 
     };
+
+
+
+
+    //추가속성 table layout 설정.
+    oAPP.fn.setAdditLayout = function(is_tree){
+
+        if(!is_tree){
+            //좌측 tree 영역 100%으로 설정(우측 바인딩 세부정보 비활성 처리)
+            oAPP.attr.oModel.oData.width = "100%";
+            oAPP.attr.oModel.oData.resize = false;
+            oAPP.attr.oModel.refresh();
+            return;
+        }
+
+        //일반 필드가 아닌경우.
+        if (is_tree.KIND !== "E") {
+            //바인딩 추가 구성 정보 초기화.
+            oAPP.attr.oModel.oData.T_MPROP = [];
+
+            //좌측 tree 영역 100%으로 설정(우측 바인딩 세부정보 비활성 처리)
+            oAPP.attr.oModel.oData.width = "100%";
+            oAPP.attr.oModel.oData.resize = false;
+            oAPP.attr.oModel.refresh();
+
+            //선택 해제 처리.
+            oAPP.attr.oTree.clearSelection();
+
+            return;
+        }
+
+        //프로퍼티에서 바인딩 팝업 호출시 추가속성 정보 활성 처리.
+        if (is_tree.KIND === "E") {
+            oAPP.attr.oModel.oData.width = "65%";
+            oAPP.attr.oModel.oData.resize = true;
+        }
+
+        oAPP.attr.oModel.refresh();
+
+
+    };  //추가속성 table layout 설정.
+
+
+
+
+    //추가속성 정보 출력 처리.
+    oAPP.fn.setAdditBindInfo = function(is_tree, it_parent) {
+
+        oAPP.attr.oModel.oData.T_MPROP = [];
+
+        //바인딩 팝업 호출 ATTR의 타입이 프로퍼티가 아닌경우 EXIT.
+        if (is_tree.KIND !== "E") {
+            oAPP.attr.oModel.refresh();
+            return;
+        }
+
+
+        //바인딩 추가속성 리스트 얻기.
+        var lt_ua028 = oAPP.attr.T_9011.filter(a => a.CATCD === "UA028");
+
+        var ls_mprop = {},
+            lt_split = [];
+
+        //바인딩 추가 속성 정의건이 존재하는 경우.
+        if (is_tree.MPROP) {
+            lt_split = is_tree.MPROP.split("|");
+        }
+
+        //nozero 불가능 항목.
+        var l_nozero = "Cg";
+
+        //number format 가능항목.
+        var l_numfmt = "IP";
+
+        for (var i = 0, l = lt_ua028.length, l_cnt = 0; i < l; i++) {
+
+            ls_mprop.ITMCD = lt_ua028[i].ITMCD;
+            ls_mprop.prop = lt_ua028[i].FLD01;
+            ls_mprop.val = "";
+            ls_mprop.stat = "None";
+            ls_mprop.statTxt = "";
+
+            ls_mprop.edit = false;
+            ls_mprop.inp_vis = false;
+            ls_mprop.sel_vis = false;
+            ls_mprop.txt_vis = false;
+
+            //조회모드 여부 (예:X) 가 아닌경우 화면 edit 처리.
+            if (lt_ua028[i].FLD02 !== "X") {
+                ls_mprop.edit = true;
+            }
+
+            switch (lt_ua028[i].ITMCD) {
+
+                case "P01": //Field name
+                    ls_mprop.val = is_tree.NTEXT;
+                    ls_mprop.txt_vis = true;
+                    break;
+
+                case "P02": //Field path
+                    ls_mprop.val = is_tree.CHILD;
+                    ls_mprop.txt_vis = true;
+                    break;
+
+                case "P03": //type
+                    ls_mprop.val = is_tree.TYPE;
+                    ls_mprop.txt_vis = true;
+                    break;
+
+                case "P04": //Bind type
+                    if (is_tree.MPROP) {
+                        ls_mprop.val = lt_split[0];
+                    }
+                    ls_mprop.sel_vis = true;
+
+                    //P 타입이 아닌경우 입력 필드 잠금 처리.
+                    if (is_tree.TYPE_KIND !== "P") {
+                        ls_mprop.edit = false;
+                    }
+
+                    ls_mprop.T_DDLB = [{
+                            "KEY": "",
+                            "TEXT": ""
+                        },
+                        {
+                            "KEY": "sap.ui.model.type.Currency",
+                            "TEXT": "sap.ui.model.type.Currency"
+                        },
+                        {
+                            "KEY": "ext.ui.model.type.Quantity",
+                            "TEXT": "ext.ui.model.type.Quantity"
+                        }
+                    ];
+
+                    break;
+
+                case "P05": //Reference Field name
+                    if (is_tree.MPROP) {
+                        ls_mprop.val = lt_split[1];
+                    }
+                    ls_mprop.sel_vis = true;
+
+                    //구조(TAB) 안에 있는 필드 중 CUKY, UNIT 타입이 없으면 잠김.
+                    var lt_filt = it_parent.filter(a => a.DATATYPE === "CUKY" || a.DATATYPE === "UNIT");
+
+                    //금액, UNIT 참조필드가 존재하지 않는경우 화면 잠금 처리.
+
+                    ls_mprop.edit = false;
+
+                    if (lt_filt.length !== 0) {
+
+                        ls_mprop.edit = true;
+
+                        ls_mprop.T_DDLB = [{
+                            "KEY": "",
+                            "TEXT": ""
+                        }];
+
+                        for (var j = 0, l2 = lt_filt.length, ls_ddlb = {}; j < l2; j++) {
+
+                            ls_ddlb.KEY = ls_ddlb.TEXT = lt_filt[j].CHILD;
+                            ls_mprop.T_DDLB.push(ls_ddlb);
+                            ls_ddlb = {};
+
+                        }
+
+                    }
+
+                    if (lt_split.length === 0 || lt_split[0] === "") {
+                        ls_mprop.edit = false;
+                    }
+
+                    break;
+
+                case "P06": //Conversion Routine
+
+                    ls_mprop.val = is_tree.CONVE;
+
+                    ls_mprop.maxlen = 5;
+
+                    if (is_tree.MPROP) {
+                        ls_mprop.val = lt_split[2];
+                    }
+                    ls_mprop.inp_vis = true;
+                    break;
+
+                case "P07": //Nozero
+                    if (is_tree.MPROP) {
+                        ls_mprop.val = lt_split[3];
+                    }
+
+                    //값이 존재하지 않는경우 default false
+                    if (ls_mprop.val === "") {
+                        ls_mprop.val = "false";
+                    }
+
+                    ls_mprop.sel_vis = true;
+
+                    //Nozero 가능항목에 속하지 않는 타입인경우 입력필드 잠금 처리.
+                    if (l_nozero.indexOf(is_tree.TYPE_KIND) !== -1) {
+                        ls_mprop.edit = false;
+                    }
+
+                    ls_mprop.T_DDLB = [{
+                            "KEY": "true",
+                            "TEXT": "true"
+                        },
+                        {
+                            "KEY": "false",
+                            "TEXT": "false"
+                        }
+                    ];
+
+                    break;
+
+                case "P08": //Is number format?
+                    if (is_tree.MPROP) {
+                        ls_mprop.val = lt_split[4];
+                    }
+
+                    //값이 존재하지 않는경우 default false
+                    if (ls_mprop.val === "") {
+                        ls_mprop.val = "false";
+                    }
+
+                    ls_mprop.sel_vis = true;
+
+                    //number format 가능항목에 속하지 않는 타입인경우 입력필드 잠금 처리.
+                    if (l_numfmt.indexOf(is_tree.TYPE_KIND) === -1) {
+                        ls_mprop.edit = false;
+                    }
+
+                    ls_mprop.T_DDLB = [{
+                            "KEY": "true",
+                            "TEXT": "true"
+                        },
+                        {
+                            "KEY": "false",
+                            "TEXT": "false"
+                        }
+                    ];
+
+                    break;
+            }
+
+            oAPP.attr.oModel.oData.T_MPROP.push(ls_mprop);
+            ls_mprop = {};
+
+        }
+
+        oAPP.attr.oModel.refresh();
+
+    }; //추가속성 정보 출력 처리.
+
+
+
+
+    //서버에서 바인딩 attr 정보 얻기.
+    oAPP.fn.getBindFieldInfo = function() {
+
+        //화면 잠금 처리.
+        oAPP.attr.oModel.setProperty("/busy", true);
+
+        //클래스명 서버 전송 데이터에 구성.
+        var oFormData = new FormData();
+        oFormData.append("CLSNM", oAPP.attr.oAppInfo.CLSID);
+
+        //바인딩 필드 정보 검색.
+        sendAjax(oAPP.attr.servNm + "/getBindAttrData", oFormData, function (param) {
+
+            var l_model = oAPP.attr.oModel;
+
+            l_model.oData.TREE = param.T_ATTR;
+
+            //default 화면 편집 불가능.
+            l_model.oData.edit = false;
+
+            //workbench 화면이 편집상태인경우.
+            if(oAPP.attr.oAppInfo.IS_EDIT === "X"){
+                //화면 편집 가능 flag 처리.
+                l_model.oData.edit = true;
+            }
+
+            //바인딩 정보가 존재하지 않는경우.
+            if (l_model.oData.TREE.length === 0) {
+                //tree 정보 공백 처리.
+                l_model.oData.zTREE = [];
+
+                //화면 잠금 해제 처리.
+                l_model.oData.busy = false;
+
+                //모델 정보 바인딩 처리.
+                l_model.refresh(true);
+
+                // //바인딩 필드가 존재하지 않음 메시지 처리.
+                sap.m.MessageToast.show("Binding attributes dose not exist.");
+
+                return;
+
+            }
+
+            //controller의 바인딩 가능 attribute 정보가 존재하는경우.
+            if (l_model.oData.TREE.length !== 0) {
+
+                //2레벨의 TABLE, STRUCTURE정보만 발췌.
+                var lt_filt = l_model.oData.TREE.filter(a => a.ZLEVEL === 2 && a.KIND !== "E");
+
+                //TABLE, STRUCTURE를 탐색하며 선택 가능 여부 처리.
+                oAPP.fn.setBindEnable(lt_filt, "", l_model);
+
+                //tree 바인딩 정보 구성.
+                oAPP.fn.setTreeJson(l_model, "TREE", "CHILD", "PARENT", "zTREE");
+
+            }
+
+            //tree 전체 접힘 처리.
+            oAPP.attr.oTree.collapseAll();
+
+            //이전 선택 라인정보 초기화.
+            oAPP.attr.oTree.clearSelection();
+
+            //화면 잠금 해제 처리.
+            l_model.oData.busy = false;
+
+            //모델 정보 바인딩 처리.
+            l_model.refresh(true);
+
+            //tree table 컬럼길이 재조정 처리.
+            oAPP.fn.setTreeAutoResizeCol(500);
+
+            //추가속성 table layout 설정.
+            oAPP.fn.setAdditLayout();
+
+
+        }); //바인딩 필드 정보 검색.
+
+    }; //서버에서 바인딩 attr 정보 얻기.
+
+
+
+
+    //바인딩 가능여부 flag 처리.
+    oAPP.fn.setBindEnable = function(it_tree, l_path, l_model, KIND) {
+
+        if (it_tree.length === 0) {
+            return;
+        }
+
+        for (var i = 0, l = it_tree.length; i < l; i++) {
+
+            switch (it_tree[i].KIND) {
+                case "T": //TABLE인경우.
+
+                    it_tree[i].enable = true;
+                    it_tree[i].stat_src = "sap-icon://status-positive";
+                    it_tree[i].stat_color = "#01DF3A";
+
+                    var lt_child = l_model.oData.TREE.filter(a => a.PARENT === it_tree[i].CHILD);
+
+                    oAPP.fn.setBindEnable(lt_child, l_path, l_model, it_tree[i].KIND);
+
+                    break;
+
+                case "S": //STRUCTURE인경우.
+
+                    //structure은 drag false.
+                    it_tree[i].enable = false;
+
+                    //현재 path의 하위 path정보 얻기.
+                    var lt_child = l_model.oData.TREE.filter(a => a.PARENT === it_tree[i].CHILD);
+
+                    //하위 path를 탐색하며 선택 가능 flag 처리.
+                    oAPP.fn.setBindEnable(lt_child, l_path, l_model, KIND);
+                    break;
+
+                case "E": //일반 필드인경우.
+
+                    it_tree[i].enable = true;
+                    it_tree[i].stat_src = "sap-icon://status-positive";
+                    it_tree[i].stat_color = "#01DF3A";
+
+
+                    break;
+
+            }
+
+        }
+
+    }; //바인딩 가능여부 flag 처리.
+
+
+
+
+    //바인딩 추가속성 정보 DDLB 선택 이벤트.
+    oAPP.fn.setAddtBindInfoDDLB = function(oUi) {
+
+        var l_ctxt = oUi.getBindingContext();
+
+        var ls_line = l_ctxt.getProperty();
+
+        //Bind type DDLB을 선택하지 않은경우 exit.
+        if (ls_line.ITMCD !== "P04") {
+            return;
+        }
+
+        //Reference Field name 라인 정보 얻기.
+        var ls_P05 = oAPP.attr.oModel.oData.T_MPROP.find(a => a.ITMCD === "P05");
+        if (!ls_P05) {
+            return;
+        }
+
+        //Reference Field name 라인 정보 얻기.
+        var ls_P06 = oAPP.attr.oModel.oData.T_MPROP.find(a => a.ITMCD === "P06");
+        if (!ls_P06) {
+            return;
+        }
+
+        //Bind type DDLB을 빈값 선택한 경우.
+        if (ls_line.val === "") {
+
+            //Reference Field name DEFAULT 선택 불가능 처리.
+            ls_P05.edit = false;
+
+            //Reference Field name 선택값 초기화.
+            ls_P05.val = "";
+
+            //Conversion Routine 선택 가능 처리.
+            ls_P06.edit = true;
+
+        } else if (ls_line.val !== "") {
+            //Bind type DDLB을 선택한 경우.
+
+            //Reference Field name DEFAULT 선택 가능 처리.
+            ls_P05.edit = true;
+
+            //Conversion Routine 선택 불가 처리.
+            ls_P06.edit = false;
+
+            //Conversion Routine 선택값 초기화.
+            ls_P06.val = "";
+
+        }
+
+        //모델 갱신 처리.
+        oAPP.attr.oModel.refresh();
+
+    }; //바인딩 추가속성 정보 DDLB 선택 이벤트.
+
+
+
+
+    //drag 정보 처리.
+    oAPP.fn.setDragStart = function(oEvent){
+        //drag한 위치의 바인딩 정보 얻기.
+        var l_ctxt = oEvent.mParameters.target.getBindingContext();
+        if (!l_ctxt) {
+            return;
+        }
+
+        //drag한 TREE 정보 얻기.
+        var ls_drag = l_ctxt.getProperty();
+        if (!ls_drag) {
+            return;
+        }
+
+        var l_obj = {};
+
+        //프로세스 코드.
+        l_obj.PRCCD = "PRC001";
+
+        //DRAG 한 라인 정보.
+        l_obj.IF_DATA = ls_drag;
+
+        var l_json = JSON.stringify(l_obj);
+
+        //DRAG한 UI ID 정보 세팅.
+        event.dataTransfer.setData("prc001", l_json);
+
+    };
+
 
 })(window, oAPP);

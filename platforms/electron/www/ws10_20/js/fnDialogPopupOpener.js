@@ -429,9 +429,10 @@
         }
 
         let oServerInfo = parent.getServerInfo(),
-            sSysID = oServerInfo.SYSID,
-            sThemePath = PATH.join(parent.getPath("THEME"), `${sSysID}.json`),
-            oThemeInfo = parent.require(sThemePath);
+            sSysID = oServerInfo.SYSID;
+        //     sThemePath = PATH.join(parent.getPath("THEME"), `${sSysID}.json`),
+        //     oThemeInfo = parent.require(sThemePath);
+        let oThemeInfo = parent.getThemeInfo();
 
         let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
@@ -441,7 +442,7 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.backgroundColor = "#1c2228";
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
