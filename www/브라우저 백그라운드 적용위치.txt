@@ -15,3 +15,7 @@ oAPP.fn.fnDocuPopupOpener
 oAPP.fn.fnEditorPopupOpen
 
 oAPP.fn.fnErrorPageEditorPopupOpen
+
+oAPP.fn.fnWsOptionsPopupOpener
+
+oAPP.fn.fnTextSearchPopupOpener

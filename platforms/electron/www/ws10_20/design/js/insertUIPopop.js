@@ -270,8 +270,14 @@
 
 
     //결과 테이블
-    var oTab1 = new sap.ui.table.Table({selectionMode: "Single",selectionBehavior:"Row",
+    var oTab1 = new sap.ui.table.Table({selectionMode: "Single",selectionBehavior:"Row",rowHeight:30,
       visibleRowCountMode:"Auto",layoutData:new sap.m.FlexItemData({growFactor:1})});
+
+    //테이블 스크롤 이벤트.
+    oTab1.attachFirstVisibleRowChanged(function(){
+      //현재 선택된 DOM focus out 처리.
+      document.activeElement.blur();
+    });
 
     //table 더블클릭 이벤트.
     oTab1.attachBrowserEvent("dblclick",function(oEvent){

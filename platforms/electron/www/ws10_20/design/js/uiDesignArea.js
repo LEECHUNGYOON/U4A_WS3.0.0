@@ -9,7 +9,7 @@
 
     //design tree UI.
     var oLTree1 = new sap.ui.table.TreeTable({selectionMode:"Single", selectionBehavior:"RowOnly",
-      columnHeaderVisible:false, visibleRowCountMode:"Auto", alternateRowColors:true});
+      columnHeaderVisible:false, visibleRowCountMode:"Auto", alternateRowColors:true, rowHeight:30});
     oLPage.addContent(oLTree1);
 
     //tree item 선택 이벤트.
@@ -55,11 +55,12 @@
     var oLCol1 = new sap.ui.table.Column({autoResizable:true});
     oLTree1.addColumn(oLCol1);
 
-    var oLHbox1 = new sap.m.HBox({width:"100%",alignItems:"Center", justifyContent:"SpaceBetween",wrap:"Wrap"});
+    var oLHbox1 = new sap.m.HBox({width:"100%",alignItems:"Center", justifyContent:"SpaceBetween",wrap:"NoWrap"});
     oLCol1.setTemplate(oLHbox1);
 
     var oLHbox2 = new sap.m.HBox({renderType:"Bare",alignItems:"Center"});
     oLHbox1.addItem(oLHbox2);
+    // oLCol1.setTemplate(oLHbox2);
 
     //라인 선택 checkbox
     var oChk1 = new sap.m.CheckBox({visible:"{chk_visible}",selected:"{chk}"});
@@ -86,11 +87,15 @@
     //UI명.
     var oLtxt1 = new sap.m.Text({text:"{OBJID}"});
     oLHbox2.addItem(oLtxt1);
+
+    // var oLCol2 = new sap.ui.table.Column({autoResizable:true, hAlign:"End"});
+    // oLTree1.addColumn(oLCol2);
     
     //부모 Aggregation text UI.
     //var oLtxt2 = new sap.m.Text({text:"{UIATT}"});
-    var oLtxt2 = new sap.m.ObjectStatus({text:"{UIATT}",icon:"{UIATT_ICON}"});
+    var oLtxt2 = new sap.m.ObjectStatus({text:"{UIATT}", icon:"{UIATT_ICON}"});
     oLHbox1.addItem(oLtxt2);
+    // oLCol2.setTemplate(oLtxt2);
     
 
     //drag UI 생성.
@@ -139,10 +144,29 @@
     
     //drag UI가 다른라인에 올라갔을때 이벤트.
     oLTDrop1.attachDragEnter(function(oEvent){
+
       //drag UI가 다른라인에 올라갔을때 이벤트.
       oAPP.fn.designDragEnter(oEvent);
 
     });
+
+
+
+    //drag UI가 drop위치에 올려졌을때 이벤트.
+    oLTDrop1.attachDragOver(function(oEvent){
+
+      //컨트롤키 눌렀다면.
+      if(event.ctrlKey){
+        //copy 표시.
+        this.setDropEffect("Copy");
+
+      }else{
+        //안누른경우 move 표시.
+        this.setDropEffect("Move");
+      }
+
+    }); //drag UI가 drop위치에 올려졌을때 이벤트.
+
 
 
     //drop 이벤트.
@@ -285,6 +309,9 @@
 
       //drop 가능 여부에 따른 라인 css 처리.
       oAPP.fn.designSetDropStyle();
+
+      //현재 선택된 DOM focus out 처리.
+      document.activeElement.blur();
 
     }); //design tree 스크롤 이벤트.
 

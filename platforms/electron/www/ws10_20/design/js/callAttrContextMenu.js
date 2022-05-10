@@ -67,6 +67,7 @@
                 break;
             
             case "M03": //프로퍼티 동일 속성 동기화 처리.
+                oAPP.fn.attrContextMenuSetSameAttr(oEvent.oSource);
                 break;
             
             case "M04": //클라이언트 이벤트 해제 처리.
@@ -327,6 +328,35 @@
 
 
     };  //클라이언트 이벤트 해제 처리.
+
+
+
+
+    //프로퍼티 동일 속성 동기화 처리.
+    oAPP.fn.attrContextMenuSetSameAttr = function(oMenu){
+
+        //모델 정보 얻기.
+        var oModel = oMenu.getModel();
+        if(!oModel){return;}
+
+        //이벤트 발생 attribute 라인 정보 얻기.
+        var ls_attr = oModel.getProperty("/attr");
+
+
+        if(typeof oAPP.fn.callSetSameAttrPopup !== "undefined"){
+            //프로퍼티 동일 속성 동기화 처리 팝업 호출.
+            oAPP.fn.callSetSameAttrPopup(ls_attr);
+            return;
+        }
+
+        oAPP.fn.getScript("design/js/callSetSameAttrPopup",function(){
+            //프로퍼티 동일 속성 동기화 처리 팝업 호출.
+            oAPP.fn.callSetSameAttrPopup(ls_attr);
+    
+        });
+
+
+    };  //프로퍼티 동일 속성 동기화 처리.
 
 
 })();

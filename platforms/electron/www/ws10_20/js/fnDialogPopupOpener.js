@@ -420,6 +420,8 @@
      ************************************************************************/
     oAPP.fn.fnWsOptionsPopupOpener = () => {
 
+        debugger;
+        
         let sPopupName = "WSOPTS";
 
         // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
@@ -428,12 +430,11 @@
             return;
         }
 
-        let oServerInfo = parent.getServerInfo(),
-            sSysID = oServerInfo.SYSID;
-        //     sThemePath = PATH.join(parent.getPath("THEME"), `${sSysID}.json`),
-        //     oThemeInfo = parent.require(sThemePath);
-        let oThemeInfo = parent.getThemeInfo();
+        let oServerInfo = parent.getServerInfo(), // 서버 정보
+            sSysID = oServerInfo.SYSID, // System ID
+            oThemeInfo = parent.getThemeInfo(); // 테마 개인화 정보
 
+        // Browswer Options
         let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
@@ -457,7 +458,7 @@
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {

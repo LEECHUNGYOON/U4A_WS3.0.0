@@ -85,6 +85,9 @@
       //Description 등록처리.
       oAPP.fn.setDesc(oRInp1.getValue(), this.getValue());
 
+      //화면에서 UI추가, 이동, 삭제 및 attr 변경시 변경 flag 처리.
+      oAPP.fn.setChangeFlag();
+
     }); //Description 변경 이벤트.
 
 
@@ -141,11 +144,24 @@
       //attribute의 context menu 호출전 처리.
       oAPP.fn.attrBeforeContextMenu(oEvent);
 
-    });
+    }); //attribute context menu 호출 이벤트.
+
+
+    //drop UI 생성.
+    var oDrop1 = new sap.ui.core.dnd.DropInfo({targetAggregation:"items"});
+    oAPP.attr.ui.oRTab1.addDragDropConfig(oDrop1);
+
+    //drag UI가 다른라인에 올라갔을때 이벤트.
+    oDrop1.attachDrop(function(oEvent){
+      //attribute에 drag UI가 올라갔을때 이벤트.
+      oAPP.fn.attrDrop(oEvent);
+
+    }); //drag UI가 다른라인에 올라갔을때 이벤트.
 
 
     //attribute명 컬럼.
-    var oRCol1 = new sap.m.Column({width:"30%"});
+    //var oRCol1 = new sap.m.Column({width:"30%"});
+    var oRCol1 = new sap.m.Column();
     oRTab1.addColumn(oRCol1);
 
     //attribute입력 컬럼
@@ -2409,6 +2425,12 @@
       ls_0015.APPID = oAPP.attr.appInfo.APPID;
       ls_0015.GUINR = oAPP.attr.appInfo.GUINR;
 
+      var ls_0022 = oAPP.DATA.LIB.T_0022.find( a => a.UIOBK === is_attr.UIOBK );
+
+      if(ls_0022){
+        ls_0015.UILIK = ls_0022.UILIK;
+      }
+
       oAPP.attr.prev[is_attr.OBJID]._T_0015.push(ls_0015);
 
     } //ATTRIBUTE 수집처리.
@@ -2481,19 +2503,29 @@
     }
 
     
-    var l_dval = "";
+    var ls_0023, l_dval = "", l_ISLST = "";
 
     //ROOT가 아닌경우, 직접 입력가능한 aggregation이 아닌경우 default 값 얻기.
     if(is_attr.OBJID !== "ROOT" && is_attr.UIATK.indexOf("_1") === -1){
-      l_dval = oAPP.DATA.LIB.T_0023.find( a => a.UIATK === is_attr.UIATK ).DEFVL;
+      ls_0023 = oAPP.DATA.LIB.T_0023.find( a => a.UIATK === is_attr.UIATK );
 
+    }
+
+    if(ls_0023){
+      l_dval = ls_0023.DEFVL;
+      l_ISLST = ls_0023.ISLST;
     }
 
 
     //프로퍼티 입력건 정합성 점검.
     if(oAPP.fn.chkValidProp(is_attr) === false){
-      //입력 불가능한 값인경우 default 값으로 변경 처리.
-      is_attr.UIATV = l_dval;
+      
+      //DDLB로 표현되는건이 아닌경우.
+      if(l_ISLST !== "X"){
+        //입력 불가능한 값인경우 default 값으로 변경 처리.
+        is_attr.UIATV = l_dval;
+      }
+
     }
 
     //default 값과 동일한 경우 수집항목이 존재하지 않는경우 exit.
@@ -2506,6 +2538,13 @@
       var l_indx = oAPP.attr.prev[is_attr.OBJID]._T_0015.splice(l_indx,1);
       return;
     }
+
+    //프로퍼티 type이 숫자 유형인경우.
+    if(is_attr.UIATY === "1" && ( is_attr.UIADT === "int" || is_attr.UIADT === "float")){
+      //입력값 숫자 유형으로 변경 처리.                
+      is_attr.UIATV  = String(Number(is_attr.UIATV));
+    }
+
 
     //입력값이 존재하지 않는경우, default 값과 다르다면.
     if(is_attr.UIATV === "" && l_dval !== is_attr.UIATV){
@@ -2874,6 +2913,8 @@
     is_0015.chk_visb = false; //checkbox invisible
     is_0015.btn_visb = false; //버튼 invisible
 
+    is_0015.dropEnable = false;
+
   };  //visible, editable등의 attribute 처리 전용 바인딩 필드 생성 처리.
 
 
@@ -3197,6 +3238,9 @@
           return;
 
         }
+
+        //drop 가능 처리.
+        is_attr.dropEnable = true;
         
 
         break;
@@ -3261,6 +3305,9 @@
         if(is_attr.UIATV !== ""){
           is_attr.icon1_color = "green";  //바인딩(서버이벤트) 색상 필드
         }
+
+        //drop 가능 처리.
+        is_attr.dropEnable = true;
 
         break;
 
@@ -3449,6 +3496,8 @@
 
       //Aggregation이 아닌경우 입력필드 입력 가능 처리.
       oAPP.fn.setAttrEditable(ls_0015);
+
+      //aggregation이 아닌경우 default 입력가능 처리.
       if(ls_0015.UIATY !== "3"){
         ls_0015.edit = true;
       }
@@ -3520,10 +3569,13 @@
 
       if(typeof ls_0015 === "undefined"){continue;}
 
-      //입력값 매핑.
-      oAPP.attr.oModel.oData.T_ATTR[i].UIATV = ls_0015.UIATV;
-      oAPP.attr.oModel.oData.T_ATTR[i].ADDSC = ls_0015.ADDSC;
-      oAPP.attr.oModel.oData.T_ATTR[i].ISWIT = ls_0015.ISWIT;
+      oAPP.fn.moveCorresponding(ls_0015, oAPP.attr.oModel.oData.T_ATTR[i]);
+
+      // //입력값 매핑.
+      // oAPP.attr.oModel.oData.T_ATTR[i].UIATV = ls_0015.UIATV;
+      // oAPP.attr.oModel.oData.T_ATTR[i].ADDSC = ls_0015.ADDSC;
+      // oAPP.attr.oModel.oData.T_ATTR[i].ISWIT = ls_0015.ISWIT;
+      // oAPP.attr.oModel.oData.T_ATTR[i].ISSPACE = ls_0015.ISSPACE;
 
       //이벤트인경우 설정된 이벤트가 존재시.
       if(ls_0015.UIATY === "2" && ls_0015.UIATV !== ""){
@@ -3539,9 +3591,9 @@
       //바인딩처리된경우 하위 로직 수행.
       if(ls_0015.ISBND !== "X" ){continue;}
 
-      //바인딩 구성정보 매핑.
-      oAPP.attr.oModel.oData.T_ATTR[i].ISBND = ls_0015.ISBND;
-      oAPP.attr.oModel.oData.T_ATTR[i].MPROP = ls_0015.MPROP;
+      // //바인딩 구성정보 매핑.
+      // oAPP.attr.oModel.oData.T_ATTR[i].ISBND = ls_0015.ISBND;
+      // oAPP.attr.oModel.oData.T_ATTR[i].MPROP = ls_0015.MPROP;
 
       //프로퍼티의 DDLB 항목에서 바인딩 처리한경우.
       if(oAPP.attr.oModel.oData.T_ATTR[i].UIATY === "1" && typeof oAPP.attr.oModel.oData.T_ATTR[i].T_DDLB !== "undefined"){
@@ -4356,6 +4408,62 @@
 
 
   };  //DOCUMENT 영역의 ATTRIBUTE 갱신 처리.
+
+
+
+
+  //attribute에 drag UI가 올라갔을때 이벤트.
+  oAPP.fn.attrDrop = function(oEvent){
+
+    //drop UI 정보 얻기.
+    var l_row = oEvent.mParameters.dragSession.getDropControl();
+
+    //drop UI를 얻지 못한 경우 exit.
+    if(!l_row){
+      oEvent.preventDefault(true);
+      return;
+    }
+
+    //바인딩 정보 얻기.
+    var l_ctxt = l_row.getBindingContext();
+
+    //바인딩 정보가 존재하지 않는경우 exit.
+    if(!l_ctxt){
+      oEvent.preventDefault(true);
+      return;
+    }
+
+    //현재 라인이 drop 가능한건 인지 확인.
+    var l_drop_enable = l_ctxt.getProperty("dropEnable");
+
+    //drop 불가능한 경우 exit.
+    if(!l_drop_enable){
+      oEvent.preventDefault(true);
+      return;
+    }
+
+    debugger;
+
+    //drag 정보 얻기.
+    var l_json = event.dataTransfer.getData("prc001");
+
+
+    //json 형식 parse, 실패시 exit.
+    try{
+      l_json = JSON.parse(l_json);
+    }catch(e){
+
+      oEvent.preventDefault(true);
+      return;
+    }
+
+    //바인딩 팝업에서 drag한게 아닌경우 exit.
+    if(l_json.PRCCD !== "PRC001"){
+      return;
+    }
+
+
+  };  //attribute에 drag UI가 올라갔을때 이벤트.
 
 
 
