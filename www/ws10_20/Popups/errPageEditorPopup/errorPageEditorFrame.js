@@ -79,6 +79,8 @@ let oAPP = (function (window) {
 
         oAPP.fn.fnSetEditorInfo(res);
 
+        oAPP.attr.oThemeInfo = res.oThemeInfo;
+
         var oWs_frame = document.getElementById("ws_editorframe");
         if (!oWs_frame) {
             return;

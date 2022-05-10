@@ -19,10 +19,10 @@
 
     oAPP.fn.fnErrorPageEditorPopupOpen = function () {
 
-        var sPopupName = "ERRPAGE";
+        let sPopupName = "ERRPAGE";
 
         // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             return;
         }
@@ -33,6 +33,7 @@
             oAppInfo = parent.getAppInfo(),
             oEditData = oAPP.DATA.APPDATA.S_ERHTML,
             oUserInfo = parent.getUserInfo(),
+            oThemeInfo = parent.getThemeInfo(), // theme 정보   
             sBrowserTitle = "Editor - Customizing the Error Page";
 
         var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
@@ -42,7 +43,7 @@
         oBrowserOptions.title = sBrowserTitle;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.backgroundColor = "#1c2228";
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -65,6 +66,7 @@
 
             var oEditorInfo = {
                 APPINFO: oAppInfo,
+                oThemeInfo: oThemeInfo, // 테마 개인화 정보
                 EDITDATA: oEditData,
                 USERINFO: oUserInfo
             };

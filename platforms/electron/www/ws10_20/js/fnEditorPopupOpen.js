@@ -32,20 +32,22 @@
             return;
         }
 
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보  
+
         let oCurrWin = REMOTE.getCurrentWindow(),
             SESSKEY = parent.getSessionKey(),
             BROWSKEY = parent.getBrowserKey(),
             oAppInfo = parent.getAppInfo(),
             sBrowserTitle = oAppInfo.APPID + " - " + oEditInfo.OBJNM + " Editor";
 
-        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+        let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.title = sBrowserTitle;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.backgroundColor = "#1c2228";
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
 
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -53,7 +55,7 @@
         oBrowserOptions.webPreferences.OBJTY = oEditInfo.OBJTY;
 
         // 브라우저 오픈
-        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
         // 브라우저 상단 메뉴 없애기

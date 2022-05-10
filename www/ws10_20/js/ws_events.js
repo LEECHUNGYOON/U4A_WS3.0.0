@@ -1097,6 +1097,8 @@
             oUserInfo = parent.getUserInfo(),
             sUrl = parent.getPath(sWinObjType);
 
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보      
+
         // 브라우저 옵션 설정
         var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
@@ -1106,7 +1108,7 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = oCurrWin;
-        oBrowserOptions.backgroundColor = "#1c2228";
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
 
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -1128,14 +1130,15 @@
 
             var oRuntimeInfo = {
                 oUserInfo: oUserInfo,
+                oThemeInfo: oThemeInfo,
                 aRuntimeData: oAPP.DATA.LIB.T_0022
             };
 
             // 오픈할 URL 파라미터 전송
             oBrowserWindow.webContents.send('if-runtime-info', oRuntimeInfo);
-            
+
             oBrowserWindow.setOpacity(1.0);
-            
+
         });
 
         // 브라우저를 닫을때 타는 이벤트

@@ -88,6 +88,9 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     // Default Browser 기준정보 (Login.js 에서 관련 기준 정보 선행체크함.)
     oWS.utill.attr.aDefaultBrowsInfo = [];
 
+    // Theme 정보
+    oWS.utill.attr.oThemeInfo = {};
+
     // Browser Session Key 정보
     oWS.utill.attr.sessionkey = "";
 
@@ -611,18 +614,19 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
             defaultHeight: 800
         });
 
-        var SESSKEY = getSessionKey(),
+        let SESSKEY = getSessionKey(),
             BROWSERKEY = getRandomKey(10);
 
-        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+        let oThemeInfo = getThemeInfo(), // 테마 정보
+            sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             // oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
             oBrowserOptions = JSON.parse(JSON.stringify(oDefaultOption.browserWindow));
-        
+
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
-        oBrowserOptions.backgroundColor = "#1c2228";
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
 
         // 브라우저 윈도우 기본 사이즈
         oBrowserOptions.x = mainWindowState.x;
@@ -641,7 +645,6 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
         mainWindowState.manage(oBrowserWindow);
 
-        // oBrowserWindow.loadURL(`file://${__dirname}/../Frame/Frame.html`);
         oBrowserWindow.loadURL(PATH.join(APPPATH, "Frame", "Frame.html"));
 
         // oBrowserWindow.webContents.openDevTools();        
@@ -657,6 +660,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
             oMetadata.BROWSERKEY = BROWSERKEY;
             oMetadata.EXEPAGE = "WS10";
             oMetadata.DEFBR = parent.getDefaultBrowserInfo();
+            oMetadata.THEMEINFO = parent.getThemeInfo();
 
             // 브라우저가 오픈되면서 부모가 가지고 있는 메타 관련 정보들을 전달한다.
             oBrowserWindow.webContents.send('if-meta-info', oMetadata);
@@ -677,7 +681,6 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         });
 
     };
-
 
     /** 
      * 16. 새창 띄울때 현재 세션 추가하기
@@ -1120,6 +1123,11 @@ IPCRENDERER.on('if-meta-info', (event, res) => {
     // 이동할 페이지
     if (oMetadata.EXEPAGE) {
         onMoveToPage(oMetadata.EXEPAGE);
+    }
+
+    // 테마정보
+    if (oMetadata.THEMEINFO) {
+        setThemeInfo(oMetadata.THEMEINFO);
     }
 
     // // 자연스러운 로딩

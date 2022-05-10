@@ -311,6 +311,7 @@
         var SESSKEY = RANDOM.generate(40),
             BROWSERKEY = RANDOM.generate(10);            
 
+        // Browser Options..
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/BrowserWindow/BrowserWindow-settings.json"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow),
@@ -324,7 +325,6 @@
         oBrowserOptions.y = mainWindowState.y;
         oBrowserOptions.width = mainWindowState.width;
         oBrowserOptions.height = mainWindowState.height;
-
         oBrowserOptions.opacity = 0.0;
         oWebPreferences.partition = SESSKEY;
         oWebPreferences.browserkey = BROWSERKEY;

@@ -11,6 +11,7 @@ let oAPP = (function (window) {
     let oAPP = {},
         PATH = parent.PATH,
         APP = parent.APP,
+        USERDATA = parent.USERDATA,
         require = parent.require;
 
     oAPP.global = {};
@@ -178,7 +179,8 @@ let oAPP = (function (window) {
     oAPP.getBrowserWindowSettingInfo = function () {
 
         // Browser Window option
-        var sSettingsJsonPath = PATH.join(APP.getAppPath(), "settings", "/BrowserWindow/BrowserWindow-settings.json"),
+        // var sSettingsJsonPath = PATH.join(APP.getAppPath(), "settings", "/BrowserWindow/BrowserWindow-settings.json"),
+        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
 
             // JSON 파일 형식의 Setting 정보를 읽는다..
             oSettings = require(sSettingsJsonPath);
@@ -196,15 +198,16 @@ let oAPP = (function (window) {
      ************************************************************************/
     oAPP.fnLoadBootStrapSetting = function () {
 
-        var oSettings = oAPP.getSettingsInfo(),
+        let oSettings = oAPP.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
             sVersion = oSetting_UI5.version,
             sTestResource = oSetting_UI5.testResource,
             sReleaseResource = `../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
             bIsDev = oSettings.isDev,
             oBootStrap = oSetting_UI5.bootstrap,
-            oUserInfo = parent.getUserInfo(),
-            sLangu = oUserInfo.LANGU;
+            oUserInfo = parent.getUserInfo(), // 로그인 유저 정보
+            sLangu = oUserInfo.LANGU, // 접속 언어           
+            oThemeInfo = parent.getThemeInfo(); // theme 정보      
 
         var oScript = document.createElement("script");
         oScript.id = "sap-ui-bootstrap";
@@ -214,6 +217,7 @@ let oAPP = (function (window) {
             oScript.setAttribute(key, oBootStrap[key]);
         }
 
+        oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
         oScript.setAttribute("data-sap-ui-language", sLangu);
         oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.layout, sap.ui.table, sap.tnt, sap.ui.codeeditor, sap.ui.unified");
 
@@ -222,7 +226,7 @@ let oAPP = (function (window) {
             oScript.setAttribute("src", sTestResource);
         } else {
             oScript.setAttribute("src", sReleaseResource);
-        }       
+        }
 
         document.head.appendChild(oScript);
 

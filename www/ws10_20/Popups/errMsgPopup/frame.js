@@ -4,7 +4,7 @@
  * - file Name : bindPopup/frame.js
  ************************************************************************/
 
-let oAPP = (function(window) {
+let oAPP = (function (window) {
     "use strict";
 
     let oAPP = {};
@@ -17,7 +17,7 @@ let oAPP = (function(window) {
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
 
-    oAPP.setBusy = function(bIsShow) {
+    oAPP.setBusy = function (bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
 
@@ -39,7 +39,8 @@ let oAPP = (function(window) {
     oAPP.IPCRENDERER.on('if-errmsg-info', (events, oInfo) => {
 
         oAPP.attr.oUserInfo = oInfo.oUserInfo; // User 정보(필수)
-        oAPP.attr.aMsg = oInfo.aMsg; 
+        oAPP.attr.oThemeInfo = oInfo.oThemeInfo; // 테마 개인화 정보
+        oAPP.attr.aMsg = oInfo.aMsg;
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {

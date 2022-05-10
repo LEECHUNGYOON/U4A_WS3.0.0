@@ -2,7 +2,7 @@
  * ws_events_01.js
  **************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     let REMOTE = parent.REMOTE,
@@ -19,7 +19,7 @@
     /************************************************************************
      * [WS20] 페이지의 멀티 메시지 닫기
      * **********************************************************************/
-    oAPP.events.fnPressMultiFooterMsgCloseBtn = function() {
+    oAPP.events.fnPressMultiFooterMsgCloseBtn = function () {
 
         APPCOMMON.fnMultiFooterMsgClose();
 
@@ -28,7 +28,7 @@
     /************************************************************************
      * [WS20] Find Button Event
      ************************************************************************/
-    oAPP.events.ev_pressFindBtn = function() {
+    oAPP.events.ev_pressFindBtn = function () {
 
         oAPP.fn.fnFindPopupOpener();
 
@@ -37,7 +37,7 @@
     /************************************************************************
      * [WS10] Text Search Button Event
      ************************************************************************/
-    oAPP.events.ev_winTxtSrchWS10 = function(oEvent) {
+    oAPP.events.ev_winTxtSrchWS10 = function (oEvent) {
 
 
         oAPP.fn.fnTextSearchPopupOpener();
@@ -57,7 +57,7 @@
     /************************************************************************
      * [WS20] Text Search Button Event
      ************************************************************************/
-    oAPP.events.ev_winTxtSrchWS20 = function(oEvent) {
+    oAPP.events.ev_winTxtSrchWS20 = function (oEvent) {
 
         var oModelData = APPCOMMON.fnGetModelProperty("/WS20/SRCHTXT"),
             bSrchInpVisi = oModelData.INPUT_VISI;
@@ -71,7 +71,7 @@
     /************************************************************************
      * [WS10] Text Search Button Close Event
      ************************************************************************/
-    oAPP.events.ev_winTxtSrchClsWS10 = function(oEvent) {
+    oAPP.events.ev_winTxtSrchClsWS10 = function (oEvent) {
 
         var oCurrWin = REMOTE.getCurrentWindow();
         oCurrWin.webContents.stopFindInPage("clearSelection");
@@ -89,9 +89,9 @@
         $oInput.animate({
             maxWidth: "50px",
             minWidth: "50px",
-        }, 300, "linear", function() {
+        }, 300, "linear", function () {
 
-            setTimeout(function() {
+            setTimeout(function () {
 
                 var oModelData = APPCOMMON.fnGetModelProperty("/WS10/SRCHTXT"),
                     bSrchInpVisi = oModelData.INPUT_VISI;
@@ -110,7 +110,7 @@
     /************************************************************************
      * [WS20] Text Search Button Close Event
      ************************************************************************/
-    oAPP.events.ev_winTxtSrchClsWS20 = function(oEvent) {
+    oAPP.events.ev_winTxtSrchClsWS20 = function (oEvent) {
 
         var oCurrWin = REMOTE.getCurrentWindow();
         oCurrWin.webContents.stopFindInPage("clearSelection");
@@ -128,9 +128,9 @@
         $oInput.animate({
             maxWidth: "50px",
             minWidth: "50px",
-        }, 300, "linear", function() {
+        }, 300, "linear", function () {
 
-            setTimeout(function() {
+            setTimeout(function () {
 
                 var oModelData = APPCOMMON.fnGetModelProperty("/WS20/SRCHTXT"),
                     bSrchInpVisi = oModelData.INPUT_VISI;
@@ -149,7 +149,7 @@
     /************************************************************************
      * [WS10] Text Search Lib Change
      ************************************************************************/
-    oAPP.events.ev_winTxtSrchLibChgWS10 = function(oEvent) {
+    oAPP.events.ev_winTxtSrchLibChgWS10 = function (oEvent) {
 
         var sValue = oEvent.getParameter("value"),
             oCurrWin = REMOTE.getCurrentWindow();
@@ -161,7 +161,7 @@
     /************************************************************************
      * [WS20] Text Search Lib Change
      ************************************************************************/
-    oAPP.events.ev_winTxtSrchLibChgWS20 = function(oEvent) {
+    oAPP.events.ev_winTxtSrchLibChgWS20 = function (oEvent) {
 
         var sValue = oEvent.getParameter("value"),
             oCurrWin = REMOTE.getCurrentWindow();
@@ -173,7 +173,7 @@
     /************************************************************************
      * [WS10 / WS20] Browser Pin Button Event
      ************************************************************************/
-    oAPP.events.ev_windowPinBtn = function(oEvent) {
+    oAPP.events.ev_windowPinBtn = function (oEvent) {
 
         var oCurrWin = REMOTE.getCurrentWindow(),
             bIsPress = oEvent.getParameter("pressed");
@@ -185,7 +185,7 @@
     /************************************************************************
      * [WS10] Window Menu Click Event
      ************************************************************************/
-    oAPP.events.ev_pressWMenu10 = function(oEvent) {
+    oAPP.events.ev_pressWMenu10 = function (oEvent) {
 
         var oBindCtx = oEvent.getSource().getBindingContext(),
             sBindPath = oBindCtx.sPath,
@@ -206,7 +206,7 @@
     /************************************************************************
      * [WS20] Window Menu Click Event
      ************************************************************************/
-    oAPP.events.ev_pressWMenu20 = function(oEvent) {
+    oAPP.events.ev_pressWMenu20 = function (oEvent) {
 
         var oBindCtx = oEvent.getSource().getBindingContext(),
             sBindPath = oBindCtx.sPath,
@@ -227,7 +227,7 @@
     /************************************************************************
      * [WS10] Window Menu Item Click Event
      ************************************************************************/
-    oAPP.events.ev_pressWmenuItemWS10 = function(oEvent) {
+    oAPP.events.ev_pressWmenuItemWS10 = function (oEvent) {
 
         var oSelectedItem = oEvent.getParameter("item"),
             oBindCtx = oSelectedItem.getBindingContext(),
@@ -250,7 +250,7 @@
     /************************************************************************
      * [WS20] Window Menu Item Click Event
      ************************************************************************/
-    oAPP.events.ev_pressWmenuItemWS20 = function(oEvent) {
+    oAPP.events.ev_pressWmenuItemWS20 = function (oEvent) {
 
         var oSelectedItem = oEvent.getParameter("item"),
             oBindCtx = oSelectedItem.getBindingContext(),
@@ -282,6 +282,8 @@
             return;
         }
 
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보
+
         var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
@@ -289,8 +291,8 @@
         oBrowserOptions.title = "Binding Popup";
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
-        oBrowserOptions.opacity = 0.0; 
-        oBrowserOptions.backgroundColor = "#1c2228";
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
@@ -309,10 +311,11 @@
         // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oBindPopupData = {
                 oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보 (필수)
+                oThemeInfo: oThemeInfo, // 테마 개인화 정보
                 T_9011: oAPP.DATA.LIB.T_9011,
                 oAppInfo: parent.getAppInfo(),
                 servNm: parent.getServerPath(),
@@ -323,7 +326,7 @@
             oBrowserWindow.setOpacity(1.0);
 
             // oBrowserWindow.show();
-            
+
         });
 
         // 브라우저를 닫을때 타는 이벤트
@@ -338,7 +341,7 @@
     /************************************************************************
      * Browser Zoom 버튼 클릭 이벤트
      ************************************************************************/
-    oAPP.events.ev_pressZoomBtn = function(oEvent) {
+    oAPP.events.ev_pressZoomBtn = function (oEvent) {
 
         var oBtn = oEvent.getSource();
 
@@ -349,7 +352,7 @@
     /************************************************************************
      * WS20의 멀티 메시지 리스트 아이템 클릭 이벤트
      ************************************************************************/
-    oAPP.events.ev_pressFooterMsgColListItem = function(oEvent) {
+    oAPP.events.ev_pressFooterMsgColListItem = function (oEvent) {
 
         var oCtx = oEvent.getSource().getBindingContext(),
             sBindPath = oCtx.sPath,

@@ -554,6 +554,9 @@ function fnSaveEventSuggestion(sName, sValue) {
 
 }
 
+/************************************************************************
+ * 서버 이벤트 Suggestion 데이터 읽기
+ ************************************************************************/
 function fnReadEventSuggestion(sName) {
 
     let sJsonPath = PATH.join(USERDATA, "p13n", "events.json"),
@@ -564,4 +567,20 @@ function fnReadEventSuggestion(sName) {
         return [];
     }
 
+}
+
+/************************************************************************
+ * 테마 정보 저장
+ ************************************************************************/
+function setThemeInfo(oThemeInfo) {
+
+    oWS.utill.attr.oThemeInfo = oThemeInfo;
+
+}
+
+/************************************************************************
+ * 테마 정보 구하기
+ ************************************************************************/
+function getThemeInfo() {
+    return oWS.utill.attr.oThemeInfo || {};
 }

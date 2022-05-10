@@ -39,6 +39,7 @@ let oAPP = (function(window) {
     oAPP.IPCRENDERER.on('if-appdocu-info', (events, oInfo) => {
 
         oAPP.attr.oUserInfo = oInfo.USERINFO;
+        oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
         oAPP.attr.oAppInfo = oInfo.APPINFO;
         oAPP.attr.sServerPath = oInfo.SERVPATH;
 

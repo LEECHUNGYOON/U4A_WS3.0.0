@@ -109,6 +109,8 @@
             oResult.WINDOW.close();
         }
 
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보 
+
         var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
@@ -116,7 +118,7 @@
         oBrowserOptions.title = "Error Message Popup";
         oBrowserOptions.center = true;
         oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.backgroundColor = "#1c2228";
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.titleBarStyle = "hidden";
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.height = 400;
@@ -142,6 +144,7 @@
 
             var oSendData = {
                 oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보
+                oThemeInfo: oThemeInfo, // 테마 개인화 정보
                 aMsg: aMsg
             };
 

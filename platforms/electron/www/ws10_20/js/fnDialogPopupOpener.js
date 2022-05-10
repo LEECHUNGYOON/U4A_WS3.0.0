@@ -363,6 +363,8 @@
             return;
         }
 
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보  
+
         var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
@@ -371,7 +373,7 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.backgroundColor = "#1c2228";
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
@@ -393,6 +395,7 @@
 
             var oDocuData = {
                 USERINFO: parent.getUserInfo(),
+                oThemeInfo: oThemeInfo, // 테마 개인화 정보
                 APPINFO: parent.getAppInfo(),
                 SERVPATH: parent.getServerPath()
             };
@@ -416,8 +419,6 @@
      * WS Options Popup Opener
      ************************************************************************/
     oAPP.fn.fnWsOptionsPopupOpener = () => {
-
-        debugger;
 
         let sPopupName = "WSOPTS";
 
@@ -455,7 +456,7 @@
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        oBrowserWindow.webContents.openDevTools();
+        // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {

@@ -651,10 +651,14 @@ let oAPP = (function () {
             "display": "none"
         });
 
-        oAPP.fn.fnP13nCreateTheme().then(() => {
+        // 테마 설정
+        oAPP.fn.fnP13nCreateTheme().then((oThemeInfo) => {
+
+            // 테마 정보를 저장한다.
+            parent.setThemeInfo(oThemeInfo);
 
             var oCurrWin = REMOTE.getCurrentWindow();
-            oCurrWin.setBackgroundColor("#1c2228");
+            oCurrWin.setBackgroundColor(oThemeInfo.BGCOL);
             // oCurrWin.setOpacity(0.0);
 
             parent.onMoveToPage("WS10");
@@ -663,6 +667,9 @@ let oAPP = (function () {
 
     }; // end of oAPP.fn.fnOnLoginSuccess
 
+    /************************************************************************
+     * 테마 정보 저장
+     ************************************************************************/
     oAPP.fn.fnP13nCreateTheme = () => {
 
         return new Promise((resolve, reject) => {
@@ -682,6 +689,7 @@ let oAPP = (function () {
             // SYSTEM ID 테마 정보 JSON 파일 유무 확인
             if (!FS.existsSync(sThemeJsonPath)) {
 
+                // 테마 정보가 없으면 신규 파일 생성 후 기본 테마 정보 전달
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
@@ -692,14 +700,16 @@ let oAPP = (function () {
                         return;
                     }
 
-                    resolve();
+                    resolve(oDefThemeInfo);
 
                 });
 
                 return;
             }
 
-            resolve();
+            // 테마 정보가 있을 경우 바로 읽어서 전달
+            let oThemeInfo = parent.require(sThemeJsonPath);
+            resolve(oThemeInfo);
 
         });
 
