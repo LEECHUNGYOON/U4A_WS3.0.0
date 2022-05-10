@@ -100,7 +100,7 @@
      * WS20의 하단 멀티 푸터 메시지 처리
      * **********************************************************************/
     oAPP.fn.fnMultiFooterMsg = function (aMsg) {
-
+        
         var sPopupName = "ERRMSGPOP";
 
         // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.

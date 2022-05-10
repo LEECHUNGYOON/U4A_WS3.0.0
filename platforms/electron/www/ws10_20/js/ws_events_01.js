@@ -308,7 +308,7 @@
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -324,8 +324,6 @@
             oBrowserWindow.webContents.send('if_modelBindingPopup', oBindPopupData);
 
             oBrowserWindow.setOpacity(1.0);
-
-            // oBrowserWindow.show();
 
         });
 

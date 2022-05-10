@@ -81,6 +81,7 @@ let oAPP = parent.oAPP;
             bIsDev = oSettings.isDev,
             oBootStrap = oSetting_UI5.bootstrap,
             oUserInfo = oAPP.attr.oUserInfo,
+            oThemeInfo = oAPP.attr.oThemeInfo,
             sLangu = oUserInfo.LANGU;
 
         var oScript = document.createElement("script");
@@ -92,6 +93,7 @@ let oAPP = parent.oAPP;
         }
 
         // 로그인 Language 적용
+        oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
         oScript.setAttribute("data-sap-ui-language", sLangu);
         oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.tnt, sap.ui.table, sap.ui.layout");
 

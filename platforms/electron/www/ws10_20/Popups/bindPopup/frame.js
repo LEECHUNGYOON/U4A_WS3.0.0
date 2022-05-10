@@ -39,6 +39,7 @@ let oAPP = (function(window) {
     oAPP.IPCRENDERER.on('if_modelBindingPopup', (events, oInfo) => {
 
         oAPP.attr.oUserInfo = oInfo.oUserInfo; // User 정보(필수)
+        oAPP.attr.oThemeInfo = oInfo.oThemeInfo; // User 정보(필수)
 
         oAPP.attr.T_9011 = oInfo.T_9011;
         oAPP.attr.oAppInfo = oInfo.oAppInfo;
