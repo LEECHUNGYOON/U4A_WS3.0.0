@@ -10,7 +10,9 @@
 			"data-sap-ui-theme": "sap_horizon_dark",
 			"data-sap-ui-libs": "sap.m"
 		}
-	},	
+	},
+	"defaultTheme": "sap_horizon_dark",
+	"defaultBackgroundColor": "#12171c",	
 	"requireFolders": [
 		"p13n",
 		"p13n\\theme",

@@ -309,7 +309,7 @@
         });
 
         var SESSKEY = RANDOM.generate(40),
-            BROWSERKEY = RANDOM.generate(10);
+            BROWSERKEY = RANDOM.generate(10);            
 
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/BrowserWindow/BrowserWindow-settings.json"),
             oDefaultOption = parent.require(sSettingsJsonPath),

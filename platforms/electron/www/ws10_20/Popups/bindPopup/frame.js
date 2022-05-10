@@ -49,10 +49,7 @@ let oAPP = (function (window) {
             return;
         }
 
-        oWs_frame.src = "index.html";
-
-        var oCurrWin = oAPP.REMOTE.getCurrentWindow();
-        oCurrWin.setOpacity(1);
+        oWs_frame.src = "index.html";      
 
     });
 
