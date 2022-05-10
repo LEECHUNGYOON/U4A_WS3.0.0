@@ -277,11 +277,7 @@
     oAPP.fn.fnTextSearchPopupOpener = function () {
 
         debugger;
-
-        alert("준비중입니다.");
-
-        return;
-
+        
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
             return;
@@ -302,7 +298,7 @@
         // oBrowserOptions.title = "Error Message Popup";
         // oBrowserOptions.center = true;
         oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.backgroundColor = "#1c2228";
+        // oBrowserOptions.backgroundColor = "#1c2228";
         oBrowserOptions.titleBarStyle = "hidden";
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.height = 200;
@@ -458,7 +454,7 @@
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        oBrowserWindow.webContents.openDevTools();
+        // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
