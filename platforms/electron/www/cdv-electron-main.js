@@ -82,8 +82,7 @@ function createWindow () {
         icon: appIcon,
         alwaysOnTop: true,
         transparent: true,
-        frame: false,
-        alwaysOnTop: true    
+        frame: false  
     });
 
     // browserWindowOpts.webPreferences.preload = path.join(app.getAppPath(), 'cdv-electron-preload.js');

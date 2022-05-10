@@ -300,8 +300,12 @@
         oBrowserOptions.opacity = 0.0;
         // oBrowserOptions.backgroundColor = "#1c2228";
         oBrowserOptions.titleBarStyle = "hidden";
-        oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.height = 200;
+        oBrowserOptions.autoHideMenuBar = true;        
+        oBrowserOptions.width = 380;
+        oBrowserOptions.height = 60;
+        oBrowserOptions.frame = false;
+        oBrowserOptions.transparent = true;        
+        oBrowserOptions.resizable = false;        
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -416,8 +420,6 @@
      ************************************************************************/
     oAPP.fn.fnWsOptionsPopupOpener = () => {
 
-        debugger;
-        
         let sPopupName = "WSOPTS";
 
         // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
