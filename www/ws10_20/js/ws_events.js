@@ -701,6 +701,15 @@
 
         // 멀티 푸터 메시지가 있을 경우 닫기
         oAPP.common.fnMultiFooterMsgClose();
+        
+        let T_excep = oAPP.fn.chkExcepionAttr(),
+            iexceplength = T_excep.length;
+
+        if(iexceplength !== 0){
+
+            oAPP.fn.fnMultiFooterMsg(T_excep);
+            return;
+        }
 
         oEvent.mParameters.IS_ACT = "X";
 

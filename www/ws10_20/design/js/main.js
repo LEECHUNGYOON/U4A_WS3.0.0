@@ -58,6 +58,16 @@
 
 
 
+    
+    //오류 출력 구조 생성.
+    oAPP.fn.crtErrorSyntaxStru = function(){
+      return {"GRCOD":"", "TYPE":"", "FNAME":"", "DESC":"","LINE":"", 
+              "METHOD":"", "OBJID":"", "UIATK":"", "GUBN":""};
+
+    };  //오류 출력 구조 생성.
+
+
+
 
     //UI의 attribute(property, event, aggregation, assosication)에 해당하는 펑션 이름 얻기.
     oAPP.fn.getUIAttrFuncName = function(UIOBJ,UIATY,UIATT,param){
@@ -495,6 +505,7 @@
     };  //화면에서 UI추가, 이동, 삭제 및 attr 변경시 변경 flag 처리.
 
 
+    
 
 
     //model, 미리보기 정보 제거.
@@ -656,6 +667,135 @@
 
 
     };  //UI DOM을 기준으로 UI instance 정보 얻기.
+
+
+
+
+    /************************************************************************
+     * attribute 점검 항목 영역 -start.
+      GRCOD(20) TYPE C,       "내부 그룹코드
+      TYPE      TYPE SYMSGTY, "오류 타입
+      FNAME     TYPE STRING,  "오류 필드명
+      DESC      TYPE STRING,  "내역
+      LINE      TYPE I,       "오류 Index
+      METHOD    TYPE STRING,  "메소드명
+      OBJID     TYPE STRING,  "UI OBJECT ID
+      UIATK     TYPE ZTU4A0023-UIATK, "오류 대상 프로퍼티 내부KEY
+      GUBN(1)   TYPE C. "A:UI 디자인 영역 B:컨트롤러 EDIT
+     ************************************************************************/
+    //attribute 예외처리 항목 점검 function.
+    oAPP.fn.chkExcepionAttr = function(){
+
+      var lt_err = [];
+
+      //ui table 예외처리 프로퍼티 점검.
+      oAPP.fn.chkExcepUiTable(lt_err);
+
+
+
+      //오류 점검 결과 RETURN.
+      return lt_err;
+
+
+    };  //attribute 예외처리 항목 점검 function.
+
+
+
+    //ui table 예외처리 프로퍼티 점검.
+    oAPP.fn.chkExcepUiTable = function(it_err){
+
+      //design tree 정보를 기준으로 ZY04A0014 저장 정보 구성.
+      var lt_0014 = oAPP.fn.parseTree2Tab(oAPP.attr.oModel.oData.zTREE);
+
+      if(lt_0014.length === 0){return;}
+
+      //sap.ui.table.Table 정보 존재여부 확인.
+      var lt_tab = lt_0014.filter( a=> a.UIOBK === "UO01139" );
+
+      //sap.ui.table.Table이 존재하지 않는경우 exit.
+      if(lt_tab.length === 0){return;}
+      
+      //sap.ui.table.Table의 예외처리 프로퍼티 입력값 점검.
+      for(var i=0, l=lt_tab.length; i<l; i++){
+        
+        if(!oAPP.attr.prev[lt_tab[i].OBJID]._T_0015){continue;}
+        
+        //대상 TABLE의 autoColumnResize 프로퍼티 입력건 확인.
+        var ls_0015 = oAPP.attr.prev[lt_tab[i].OBJID]._T_0015.find( a => a.UIATK === "EXT00002289" );
+
+        //입력건이 존재하지 않는경우 SKIP.
+        if(!ls_0015){continue;}
+
+        //바인딩처리된건, 입력값이 존재하지 않는건인경우 SKIP.
+        if(ls_0015.ISBND === "X" || ls_0015.UIATV === ""){continue;}
+
+        //autoColumnResize를 사용하고자 설정한 경우.
+        if(ls_0015.UIATV !== "true"){continue;}
+
+        //해당 TABLE의 columns Aggregation에 속한 UI 검색.
+        var lt_col = lt_0014.filter( a => a.POBID === lt_tab[i].OBJID && a.UIATK === "AT000013067" );
+
+        //columns Aggregation ui가 존재하지 않는경우 skip.
+        if(lt_col.length === 0){continue;}
+
+        var l_found = false;
+
+        //대상 table의 column에 autoColumnResize 프로퍼티 입력건 확인.
+        for(var j=0, l2 = lt_col.length; j<l2; j++){
+          if(!oAPP.attr.prev[lt_col[j].OBJID]._T_0015){continue;}
+
+          //autoResizable 프러퍼티 입력건 존재 여부 확인.
+          var l_attr = oAPP.attr.prev[lt_col[j].OBJID]._T_0015.find( a=> a.UIATK === "AT000012975");
+
+          //입력건이 존재하지 않는경우 skip.
+          if(!l_attr){continue;}
+
+          //autoResizable 프로퍼티에 바인딩 처리된경우.
+          if(l_attr.ISBND === "X" && l_attr.UIATV !== ""){
+            //찾름 flag 처리 후 loop exit.
+            l_found = true;
+            break;
+          }
+
+          //autoResizable 프로퍼티를 true로 설정한 건이 존재하는경우.
+          if(l_attr.UIATV === "true"){
+            //찾름 flag 처리 후 loop exit.
+            l_found = true;
+            break;
+          }
+
+        }
+
+        //autoResizable프로퍼티 입력건이 존재하는 경우 skip.
+        if(l_found === true){continue;}
+
+        //대상 table의 autoColumnResize 프로퍼티를 설정한경우,
+        //column UI의 autoResizable 프로퍼티를 true로 설정한건이 한건도 없다면 오류 처리.
+
+        //오류 필드 생성 처리.
+        var ls_err = oAPP.fn.crtErrorSyntaxStru();
+
+        //오류 수집 처리.
+        ls_err.GRCOD   = "PROG";
+        ls_err.TYPE    = "E";
+        ls_err.FNAME   = "";
+        ls_err.DESC    = "When the UI Table property “AutoColumnResize” value is “true”, it must be “true” in “autoResizable” among the column properties.";
+        ls_err.LINE    = "0";
+        ls_err.METHOD  = "";
+        ls_err.OBJID   = lt_tab[i].OBJID;
+        ls_err.UIATK   = ls_0015.UIATK;
+        ls_err.GUBN    = "A";
+        it_err.push(ls_err);
+        ls_err = {};
+
+      } //sap.ui.table.Table의 예외처리 프로퍼티 입력값 점검.
+
+
+    };  //ui table 예외처리 프로퍼티 점검.
+
+    /************************************************************************
+     * attribute 점검 항목 영역 -end.
+     ************************************************************************/
 
 
 
