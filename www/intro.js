@@ -11,12 +11,12 @@
     oAPP.fn = {};
 
     let REMOTE = require('@electron/remote'),
-        REMOTEMAIN = REMOTE.require('@electron/remote/main'),
-        // let REMOTE = require('electron').remote,
+        REMOTEMAIN = REMOTE.require('@electron/remote/main'),        
         APP = REMOTE.app,
         PATH = REMOTE.require('path'),
         APPPATH = APP.getAppPath(),
-        FS = REMOTE.require('fs-extra');
+        FS = REMOTE.require('fs-extra'),
+        ZIP = require("zip-lib");
 
     oAPP.fn.fnOnDeviceReady = function () {
 
@@ -59,12 +59,12 @@
 
         // oWin.webContents.openDevTools();
 
-        oWin.webContents.on('did-finish-load', function () {            
+        oWin.webContents.on('did-finish-load', function () {
 
             oWin.webContents.send('window-id', oWin.id);
 
             oWin.setOpacity(1.0);
-           
+
             oCurrWindow.close();
 
         });
@@ -85,7 +85,7 @@
      ************************************************************************/
     oAPP.fn.setInitInstall = function (fnCallback) {
 
-        var oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
+        var oSettingsPath = PATH.join(APPPATH, "settings", "ws_settings.json"),
             oSettings = require(oSettingsPath),
             aPaths = oSettings.requireFolders, // 필수 폴더 리스트
             aFiles = oSettings.requireFiles, // 필수 파일 리스트
@@ -156,6 +156,10 @@
 
         }
 
+        // let oHelpDocuPromise = oAPP.fn.fnCopyHelpDocument();
+
+        // aPromise.push(oHelpDocuPromise);
+
         // 상위 폴더를 생성 후 끝나면 실행
         Promise.all(aPromise).then(function (values) {
 
@@ -176,7 +180,7 @@
 
         });
 
-    }; // end of oAPP.fn.setInitInstall
+    }; // end of oAPP.fn.setInitInstall    
 
     /************************************************************************
      * build된 폴더에서 vbs 파일을 로컬 폴더로 복사한다.
@@ -254,6 +258,25 @@
         });
 
     };
+
+    /************************************************************************
+     * U4A help document를 복사한다.
+     ************************************************************************/
+    oAPP.fn.fnCopyHelpDocument = () => {
+
+        return new Promise((resolve, reject) => {
+
+            var oSettingsPath = PATH.join(APPPATH, "settings", "ws_settings.json"),
+                oSettings = require(oSettingsPath),
+                sU4aHelpDocuFilePath = PATH.join(APPPATH, oSettings.path.u4aHelpDocFilePath);
+
+            
+
+
+
+        });
+
+    }; // end of oAPP.fn.fnCopyHelpDocument
 
     document.addEventListener('deviceready', oAPP.fn.fnOnDeviceReady, false);
 

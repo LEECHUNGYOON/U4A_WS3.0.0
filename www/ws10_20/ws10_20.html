@@ -45,15 +45,20 @@
     <div id="content" style="display: none;" class="u4aWsContent"></div>
 
     <script>
+        
         function onError(message, url, line, col, errorObj) {
             alert(`${message}\n${url}, ${line}:${col}`);
         }
+        
         window.onerror = onError;
         document.onerror = onError;
+
+
+
     </script>
 
     <script src="./js/library-preload.js"></script>
-
+    <script src="ws10_20.js"></script>
 </body>
 
 </html>

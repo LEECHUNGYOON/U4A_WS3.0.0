@@ -16,6 +16,8 @@
 	"requireFolders": [
 		"p13n",
 		"p13n\\theme",
+		"help",
+		"help\\u4a_help",
 		"ext_api",
 		"ext_api\\vbs"
 	],
@@ -29,6 +31,9 @@
 	"vbs" : {
 		"rootPath" : "ext_api\\vbs",
 		"controllerClassVbs" : "sapgui_ws.vbs"
+	},
+	"path" : {
+		"u4aHelpDocFilePath" : "help\\u4a_help\\U4A.zip"
 	},
 	"isDev" : true
 }
