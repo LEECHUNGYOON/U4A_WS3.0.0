@@ -251,7 +251,9 @@
                 resolve("X");
 
             }).catch(function (err) {
+
                 reject(err.toString());
+                
             });
 
         });

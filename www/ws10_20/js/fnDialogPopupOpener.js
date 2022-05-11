@@ -277,7 +277,7 @@
     oAPP.fn.fnTextSearchPopupOpener = function () {
 
         debugger;
-        
+
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
             return;
@@ -300,12 +300,12 @@
         oBrowserOptions.opacity = 0.0;
         // oBrowserOptions.backgroundColor = "#1c2228";
         oBrowserOptions.titleBarStyle = "hidden";
-        oBrowserOptions.autoHideMenuBar = true;        
+        oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.width = 380;
         oBrowserOptions.height = 60;
         oBrowserOptions.frame = false;
-        oBrowserOptions.transparent = true;        
-        oBrowserOptions.resizable = false;        
+        oBrowserOptions.transparent = true;
+        oBrowserOptions.resizable = false;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -484,5 +484,70 @@
 
 
     }; // end of oAPP.fn.fnWsOptionsPopupOpener
+
+    /************************************************************************
+     * U4A Help Document Popup Opener
+     ************************************************************************/
+    oAPP.fn.fnU4AHelpDocuPopupOpener = () => {
+
+        let sPopupName = "U4ADOCU";
+
+        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        if (oResult.ISOPEN) {
+            return;
+        }
+
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보  
+
+        let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.title = "U4A Help Documents";
+        oBrowserOptions.width = 350;
+        oBrowserOptions.height = 500;
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
+
+        // 브라우저 오픈
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+
+        let sUrlPath = parent.getPath(sPopupName);
+        oBrowserWindow.loadURL(sUrlPath);
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            var oDocuData = {
+                oUserInfo: parent.getUserInfo(),
+                oThemeInfo: oThemeInfo, // 테마 개인화 정보               
+            };
+
+            oBrowserWindow.webContents.send('if-u4adocu-info', oDocuData);
+
+            oBrowserWindow.setOpacity(1.0);
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+
+            oBrowserWindow = null;
+
+        });
+
+    }; // end of oAPP.fn.fnU4ADocuPopupOpener
 
 })(window, $, oAPP);
