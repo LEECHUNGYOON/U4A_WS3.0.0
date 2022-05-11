@@ -77,6 +77,8 @@ let oAPP = parent.oAPP;
     //  ************************************************************************/
     oAPP.fn.fnLoadBootStrapSetting = function () {
 
+        debugger;
+        
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
             sVersion = oSetting_UI5.version,

@@ -590,7 +590,7 @@ let oAPP = (function () {
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
-                    parent.setBusy('');
+                    // parent.setBusy('');
 
                     var oResult = JSON.parse(xhr.responseText);
                     if (oResult.TYPE == "E") {
@@ -603,7 +603,22 @@ let oAPP = (function () {
 
                     parent.showLoadingPage('X');
 
-                    oAPP.fn.fnOnLoginSuccess(oResult);
+
+                    // 여기까지 온건 로그인 성공했다는 뜻이니까 
+                    // 권한 체크를 수행한다.
+                    oAPP.fn.fnCheckAuthrity()
+                        .then(() => {
+
+                            // 권한이 있으면 성공적으로 로그인 후 10번으로 이동
+                            oAPP.fn.fnOnLoginSuccess(oResult);
+
+                        })
+                        .catch((e) => {
+
+                            debugger;
+                            
+                            // 권한이 없으므로 오류 메시지를 띄운다.
+                        });
 
                 } else {
 
@@ -617,6 +632,60 @@ let oAPP = (function () {
         xhr.send(oFormData); // 요청 전송         
 
     }; // end of oAPP.events.ev_login
+
+    /************************************************************************
+     * 개발 권한 체크
+     ************************************************************************/
+    oAPP.fn.fnCheckAuthrity = () => {
+
+        return new Promise((resolve, reject) => {
+
+            var sServicePath = parent.getServerPath() + "/chk_u4a_authority";
+
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () { // 요청에 대한 콜백
+                if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
+                    if (xhr.status === 200 || xhr.status === 201) {
+
+                        parent.setBusy('');
+
+                        var oResult = JSON.parse(xhr.responseText);
+                        if(oResult.ISLICEN == ""){
+                            reject(oResult.RTMSG);
+                            return;
+                        }
+
+                        if(oResult.DEV_KEY == ""){
+                            reject(oResult.RTMSG);
+                            return;
+                        }
+
+
+
+                        // ***  ISLICEN <== 값이 없으면 !!! 메시지 처리후 화면 종료 !!!
+                        // ***  DEV_KEY <== 개발자 KEY  !!! 메시지 처리후 화면 종료 !!!
+                        // ***  RTMSG   <== 리턴 메시지
+                        // ***  IS_DEV  <== 개발서버 여부 개발서버 : D / (조회만 가능)
+
+                        // {"ISLICEN":"X","RTMSG":"","IS_DEV":"D","DEV_KEY":"39787814141386174101"}
+
+
+
+
+                    } else {
+
+                        parent.showMessage(null, 99, "E", xhr.responseText);
+
+                    }
+                }
+            };
+
+            xhr.open('POST', sServicePath); // 메소드와 주소 설정
+            xhr.send(oFormData); // 요청 전송   
+
+        }); // end of promise
+
+    }; // end of oAPP.fn.fnCheckAuthrity
 
     /************************************************************************
      * 로그인 성공시 
