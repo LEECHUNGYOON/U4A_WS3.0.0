@@ -5,7 +5,7 @@
  * - file Desc : WS Login Page
  ************************************************************************/
 
-let oAPP = (function () {
+let oAPP = (function() {
     "use strict";
 
     const
@@ -217,7 +217,7 @@ let oAPP = (function () {
                                     value: "{ID}",
                                     showSearchButton: false,
                                     placeholder: "　",
-                                    suggest: function (oEvent) {
+                                    suggest: function(oEvent) {
 
                                         var sValue = oEvent.getParameter("suggestValue"),
                                             aFilters = [];
@@ -226,7 +226,7 @@ let oAPP = (function () {
 
                                             aFilters = [
                                                 new sap.ui.model.Filter([
-                                                    new sap.ui.model.Filter("ID", function (sText) {
+                                                    new sap.ui.model.Filter("ID", function(sText) {
                                                         return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                                     }),
                                                 ], false)
@@ -238,7 +238,7 @@ let oAPP = (function () {
                                         this.suggest();
 
                                     },
-                                    search: function (oEvent) {
+                                    search: function(oEvent) {
 
                                         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
                                         if (bIsPressClearBtn) {
@@ -329,25 +329,25 @@ let oAPP = (function () {
 
             new sap.m.Button({
                 text: "영선",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("yshong");
                 }
             }),
             new sap.m.Button({
                 text: "성호",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("shhong");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
             new sap.m.Button({
                 text: "은섭",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("pes");
                 }
             }),
             new sap.m.Button({
                 text: "청윤",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("soccerhs");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
@@ -586,11 +586,11 @@ let oAPP = (function () {
         parent.setBusy('X');
 
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () { // 요청에 대한 콜백
+        xhr.onreadystatechange = function() { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
-                    parent.setBusy('');
+                    // parent.setBusy('');
 
                     var oResult = JSON.parse(xhr.responseText);
                     if (oResult.TYPE == "E") {
@@ -603,7 +603,28 @@ let oAPP = (function () {
 
                     parent.showLoadingPage('X');
 
-                    oAPP.fn.fnOnLoginSuccess(oResult);
+                    // // [임시 주석] 권한이 있으면 성공적으로 로그인 후 10번으로 이동
+                    // oAPP.fn.fnOnLoginSuccess(oResult);
+
+                    // return;
+
+                    // 여기까지 온건 로그인 성공했다는 뜻이니까 
+                    // 권한 체크를 수행한다.
+                    oAPP.fn.fnCheckAuthrity()
+                        .then(() => {
+
+                            // 권한이 있으면 성공적으로 로그인 후 10번으로 이동
+                            oAPP.fn.fnOnLoginSuccess(oResult);
+
+                        })
+                        .catch((e) => {
+
+                            debugger;
+
+                            oAPP.fn.fnShowIllustMsg(e);
+
+                            // 권한이 없으므로 오류 메시지를 띄운다.
+                        });
 
                 } else {
 
@@ -617,6 +638,93 @@ let oAPP = (function () {
         xhr.send(oFormData); // 요청 전송         
 
     }; // end of oAPP.events.ev_login
+
+    /************************************************************************
+     * 개발 권한 체크
+     ************************************************************************/
+    oAPP.fn.fnCheckAuthrity = () => {
+
+        return new Promise((resolve, reject) => {
+
+            var sServicePath = parent.getServerPath() + "/chk_u4a_authority";
+
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() { // 요청에 대한 콜백
+                if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
+                    if (xhr.status === 200 || xhr.status === 201) {
+
+                        debugger;
+
+                        parent.setBusy('');
+                        parent.showLoadingPage('');
+
+                        var oResult = JSON.parse(xhr.responseText);
+                        if (oResult.ISLICEN == "") {
+                            reject(oResult.RTMSG);
+                            return;
+                        }
+
+                        if (oResult.DEV_KEY == "") {
+                            reject(oResult.RTMSG);
+                            return;
+                        }
+
+
+
+                        // ***  ISLICEN <== 값이 없으면 !!! 메시지 처리후 화면 종료 !!!
+                        // ***  DEV_KEY <== 개발자 KEY  !!! 메시지 처리후 화면 종료 !!!
+                        // ***  RTMSG   <== 리턴 메시지
+                        // ***  IS_DEV  <== 개발서버 여부 개발서버 : D / (조회만 가능)
+
+                        // {"ISLICEN":"X","RTMSG":"","IS_DEV":"D","DEV_KEY":"39787814141386174101"}
+
+
+
+
+                    } else {
+
+                        parent.showMessage(null, 99, "E", xhr.responseText);
+
+                    }
+                }
+            };
+
+            xhr.open('GET', sServicePath); // 메소드와 주소 설정
+            xhr.send(); // 요청 전송   
+
+        }); // end of promise
+
+    }; // end of oAPP.fn.fnCheckAuthrity
+
+    oAPP.fn.fnShowIllustMsg = (sMsg) => {
+
+        debugger;
+
+        let oMsg = new sap.m.IllustratedMessage({
+            title: "No Authority!",
+            description: sMsg,
+            illustrationSize: sap.m.IllustratedMessageSize.Dialog,
+            illustrationType: "UnsuccessfulAuth",
+            additionalContent: new sap.m.Button({
+                text: "OK",
+                press: oAPP.events.ev_attachIllustMsgOkBtn
+            })
+        });
+
+        new sap.m.Dialog({
+            content: [
+                oMsg
+            ]
+        }).open();
+
+    };
+
+    oAPP.events.ev_attachIllustMsgOkBtn = () => {
+
+        debugger;
+
+
+    };
 
     /************************************************************************
      * 로그인 성공시 
@@ -693,7 +801,7 @@ let oAPP = (function () {
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         reject(err.toString());
@@ -982,7 +1090,7 @@ window.onload = () => {
 
 };
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
 
     // parent.fn_onWinMove(false, parent.REMOTE.getCurrentWindow());
 

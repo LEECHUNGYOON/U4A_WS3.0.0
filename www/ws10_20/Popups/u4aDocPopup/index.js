@@ -85,6 +85,7 @@ let oAPP = parent.oAPP;
             sTestResource = oSetting_UI5.testResource,
             sReleaseResource = `../../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
             // sReleaseResource = PATH.join(APPPATH, `lib\\ui5\\${sVersion}\\resources\\sap-ui-core.js`),
+            // sReleaseResource = PATH.join(`file:\\${APPPATH}`, `lib\\ui5\\${sVersion}\\resources\\sap-ui-core.js`),
             bIsDev = oSettings.isDev,
             oBootStrap = oSetting_UI5.bootstrap,
             oUserInfo = oAPP.attr.oUserInfo,
