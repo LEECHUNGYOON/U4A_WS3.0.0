@@ -1,8 +1,8 @@
 {
-	"UI5" : {
+	"UI5": {
 		"version": "v11000",
-		"testResource" : "https://sapui5.hana.ondemand.com/1.100.0/resources/sap-ui-core.js",
-		"bootstrap" : {
+		"testResource": "https://sapui5.hana.ondemand.com/1.100.0/resources/sap-ui-core.js",
+		"bootstrap": {
 			"data-sap-ui-language": "EN",
 			"data-sap-ui-noDuplicateIds": "true",
 			"data-sap-ui-preload": "async",
@@ -12,7 +12,7 @@
 		}
 	},
 	"defaultTheme": "sap_horizon_dark",
-	"defaultBackgroundColor": "#12171c",	
+	"defaultBackgroundColor": "#12171c",
 	"requireFolders": [
 		"p13n",
 		"p13n\\theme",
@@ -21,19 +21,20 @@
 		"ext_api",
 		"ext_api\\vbs"
 	],
-	"requireFiles" : [
+	"requireFiles": [
 		"p13n\\p13n.json",
 		"p13n\\events.json",
 		"p13n\\login.json",
 		"p13n\\ServerInfo.json",
-		"p13n\\zoom.json"		
+		"p13n\\zoom.json"
 	],
-	"vbs" : {
-		"rootPath" : "ext_api\\vbs",
-		"controllerClassVbs" : "sapgui_ws.vbs"
+	"vbs": {
+		"rootPath": "ext_api\\vbs",
+		"controllerClassVbs": "sapgui_ws.vbs"
 	},
-	"path" : {
-		"u4aHelpDocFilePath" : "help\\u4a_help\\U4A.zip"
+	"path": {
+		"u4aHelpDocFolderPath": "help\\u4a_help",
+		"u4aHelpDocFilePath": "help\\u4a_help\\U4A.zip"
 	},
-	"isDev" : true
+	"isDev": true
 }

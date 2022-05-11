@@ -11,12 +11,12 @@
     oAPP.fn = {};
 
     let REMOTE = require('@electron/remote'),
-        REMOTEMAIN = REMOTE.require('@electron/remote/main'),        
+        REMOTEMAIN = REMOTE.require('@electron/remote/main'),
         APP = REMOTE.app,
         PATH = REMOTE.require('path'),
         APPPATH = APP.getAppPath(),
-        FS = REMOTE.require('fs-extra'),
-        ZIP = require("zip-lib");
+        USERDATA = APP.getPath("userData"),
+        FS = REMOTE.require('fs-extra');
 
     oAPP.fn.fnOnDeviceReady = function () {
 
@@ -156,13 +156,13 @@
 
         }
 
-        // let oHelpDocuPromise = oAPP.fn.fnCopyHelpDocument();
+        let oHelpDocuPromise = oAPP.fn.fnInstallHelpDocument();
 
-        // aPromise.push(oHelpDocuPromise);
+        aPromise.push(oHelpDocuPromise);
 
         // 상위 폴더를 생성 후 끝나면 실행
         Promise.all(aPromise).then(function (values) {
-
+         
             oAPP.fn.copyVbsToLocalFolder(function (oResult) {
 
                 if (oResult.RETCD == 'E') {
@@ -223,7 +223,6 @@
 
             fnCallback(oResult);
 
-
         }).catch(function (err) {
 
             oResult.RETCD = 'E';
@@ -257,26 +256,104 @@
 
         });
 
-    };
+    }; // end of oAPP.fn.copyVbsPromise
 
     /************************************************************************
-     * U4A help document를 복사한다.
+     * U4A help document를 로컬에 설치한다.
      ************************************************************************/
-    oAPP.fn.fnCopyHelpDocument = () => {
+    oAPP.fn.fnInstallHelpDocument = () => {
+
+        return new Promise((resolve, reject) => {
+
+            let lf_err = (e) => {
+                    reject(err.toString());
+                },
+
+                // 파일 압축 풀기 성공 콜백
+                lf_FileExtractSuccess = () => {
+                    resolve();
+                },
+
+                // copy 성공 콜백
+                lf_CopySuccess = () => {
+
+                    oAPP.fn.fnCopyHelpDocFileExtract()
+                        .then(lf_FileExtractSuccess)
+                        .catch(lf_err);
+                };
+
+            // help docu file 복사    
+            oAPP.fn.fnCopyHelpDocFile()
+                .then(lf_CopySuccess)
+                .catch(lf_err);
+
+        }); // end of promise
+
+    }; // end of oAPP.fn.fnInstallHelpDocument
+
+    /************************************************************************
+     * U4A help document 파일을 로컬에 복사
+     ************************************************************************/
+    oAPP.fn.fnCopyHelpDocFile = () => {
 
         return new Promise((resolve, reject) => {
 
             var oSettingsPath = PATH.join(APPPATH, "settings", "ws_settings.json"),
                 oSettings = require(oSettingsPath),
-                sU4aHelpDocuFilePath = PATH.join(APPPATH, oSettings.path.u4aHelpDocFilePath);
+                sHelpDocOriginFile = PATH.join(APPPATH, oSettings.path.u4aHelpDocFilePath),
+                sHelpDocTargetPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFilePath);
 
-            
+            //1. Document File을 복사한다.
+            FS.copy(sHelpDocOriginFile, sHelpDocTargetPath, {
+                overwrite: true,
+            }).then(function () {
 
+                resolve();
 
+            }).catch(function (err) {
+                reject(err.toString());
+            });
 
         });
 
-    }; // end of oAPP.fn.fnCopyHelpDocument
+    }; // end of oAPP.fn.fnCopyHelpDocFile
+
+    /************************************************************************
+     * U4A help document 파일을 로컬에 복사
+     ************************************************************************/
+    oAPP.fn.fnCopyHelpDocFileExtract = () => {
+
+        return new Promise((resolve, reject) => {
+
+            let oSettingsPath = PATH.join(APPPATH, "settings", "ws_settings.json"),
+                oSettings = require(oSettingsPath),
+                sHelpDocFolderPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFolderPath),
+                sHelpDocTargetPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFilePath);
+
+            let ZIP = require("zip-lib"),
+                UNZIP = new ZIP.Unzip({
+                    // Called before an item is extracted.
+                    onEntry: function (event) {
+                        console.log(event.entryCount, event.entryName);
+                    }
+                });
+
+            UNZIP.extract(sHelpDocTargetPath, sHelpDocFolderPath, {
+                    overwrite: true
+                })
+                .then(function () {
+
+                    resolve();
+
+                }, function (err) {
+
+                    reject(err.toString());
+
+                });
+
+        }); // end of promise
+
+    }; // end of oAPP.fn.fnCopyHelpDocFileExtract
 
     document.addEventListener('deviceready', oAPP.fn.fnOnDeviceReady, false);
 
