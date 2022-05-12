@@ -50,25 +50,31 @@ let oAPP = (function() {
     // 현재 PC에 설치되어 있는 브라우저 설치 경로를 구한다.
     oAPP.fn.fnCheckIstalledBrowser = () => {
 
-        // Default Browser 정보를 구한다.
-        var aDefaultBrowsers = oAPP.fn.getDefaultBrowserInfo(),
-            iBrowsCnt = aDefaultBrowsers.length;
+        return new Promise((resolve, reject) => {
 
-        var aPromise = [];
+            // Default Browser 정보를 구한다.
+            var aDefaultBrowsers = oAPP.fn.getDefaultBrowserInfo(),
+                iBrowsCnt = aDefaultBrowsers.length;
 
-        // Default Browser 기준으로 현재 내 PC에 해당 브라우저가 설치되어 있는지 
-        // 레지스트리를 확인하여 설치 경로를 구한다.
-        for (var i = 0; i < iBrowsCnt; i++) {
+            var aPromise = [];
 
-            var oPromise = oAPP.fn.fnGetBrowserInfoPromise(aDefaultBrowsers, i);
+            // Default Browser 기준으로 현재 내 PC에 해당 브라우저가 설치되어 있는지 
+            // 레지스트리를 확인하여 설치 경로를 구한다.
+            for (var i = 0; i < iBrowsCnt; i++) {
 
-            aPromise.push(oPromise);
+                var oPromise = oAPP.fn.fnGetBrowserInfoPromise(aDefaultBrowsers, i);
 
-        }
+                aPromise.push(oPromise);
 
-        Promise.all(aPromise).then((aValues) => {
+            }
 
-            parent.setDefaultBrowserInfo(aValues);
+            Promise.all(aPromise).then((aValues) => {
+
+                parent.setDefaultBrowserInfo(aValues);
+
+                resolve();
+
+            });
 
         });
 
@@ -159,7 +165,7 @@ let oAPP = (function() {
         }
 
         oScript.setAttribute("data-sap-ui-language", sLangu);
-        oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.f, sap.ui.layout");
+        oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.f, sap.ui.layout, sap.tnt");
         oScript.setAttribute("data-sap-ui-theme", "sap_fiori_3");
 
         // 개발일때와 release 할 때의 Bootstrip 경로 분기
@@ -172,6 +178,44 @@ let oAPP = (function() {
         document.head.appendChild(oScript);
 
     }; // end of fnLoadBootStrapSetting
+
+    /************************************************************************
+     * Illustration Pool에 TNT Theme를 등록한다.
+     ************************************************************************/
+    oAPP.fn.fnRegisterIllustrationPool = () => {
+
+        jQuery.sap.require("sap.m.IllustrationPool");
+
+        let oTntSet = {
+            setFamily: "tnt",
+            setURI: sap.ui.require.toUrl("sap/tnt/themes/base/illustrations")
+        };
+
+        let oPool = sap.m.IllustrationPool;
+
+        // register tnt illustration set
+        oPool.registerIllustrationSet(oTntSet, false);
+
+    }; // end of oAPP.fn.fnRegisterIllustrationPool
+
+    /************************************************************************
+     * Icon Pool에 Fiori icon인 TNT ICON을 등록한다.
+     ************************************************************************/
+    oAPP.fn.fnRegisterFioriIconPool = () => {
+
+        jQuery.sap.require("sap.ui.core.IconPool");
+
+        let oTntSet = {
+            collectionName: "SAP-icons-TNT",
+            fontFamily: "SAP-icons-TNT",
+            fontURI: sap.ui.require.toUrl("sap/tnt/themes/base/fonts"),
+            lazy: true
+        };
+
+        let oIconPool = sap.ui.core.IconPool;
+        oIconPool.registerFont(oTntSet);
+
+    }; // end of oAPP.fn.fnRegisterFioriIconPool
 
     /************************************************************************
      * 로그인 페이지의 form
@@ -590,7 +634,7 @@ let oAPP = (function() {
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
-                    // parent.setBusy('');
+                    parent.setBusy('');
 
                     var oResult = JSON.parse(xhr.responseText);
                     if (oResult.TYPE == "E") {
@@ -601,8 +645,6 @@ let oAPP = (function() {
                         return;
                     }
 
-                    parent.showLoadingPage('X');
-
                     // // [임시 주석] 권한이 있으면 성공적으로 로그인 후 10번으로 이동
                     // oAPP.fn.fnOnLoginSuccess(oResult);
 
@@ -610,20 +652,27 @@ let oAPP = (function() {
 
                     // 여기까지 온건 로그인 성공했다는 뜻이니까 
                     // 권한 체크를 수행한다.
-                    oAPP.fn.fnCheckAuthrity()
-                        .then(() => {
+                    oAPP.fn.fnCheckAuthority()
+                        .then((oAuthInfo) => {
+
+                            debugger;
+
+                            var oResultData = jQuery.extend(true, {}, oResult);
+
+                            oResultData.USER_AUTH = oAuthInfo;                            
+
+                            parent.showLoadingPage('X');
 
                             // 권한이 있으면 성공적으로 로그인 후 10번으로 이동
-                            oAPP.fn.fnOnLoginSuccess(oResult);
+                            oAPP.fn.fnOnLoginSuccess(oResultData);
+                            // oAPP.fn.fnOnLoginSuccess(oResult);
 
                         })
                         .catch((e) => {
 
-                            debugger;
-
-                            oAPP.fn.fnShowIllustMsg(e);
-
                             // 권한이 없으므로 오류 메시지를 띄운다.
+                            oAPP.fn.fnShowNoAuthIllustMsg(e);
+
                         });
 
                 } else {
@@ -642,7 +691,7 @@ let oAPP = (function() {
     /************************************************************************
      * 개발 권한 체크
      ************************************************************************/
-    oAPP.fn.fnCheckAuthrity = () => {
+    oAPP.fn.fnCheckAuthority = () => {
 
         return new Promise((resolve, reject) => {
 
@@ -653,12 +702,21 @@ let oAPP = (function() {
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
-                        debugger;
+                        // ***  ISLICEN <== 값이 없으면 !!! 메시지 처리후 화면 종료 !!!
+                        // ***  DEV_KEY <== 개발자 KEY  !!! 메시지 처리후 화면 종료 !!!
+                        // ***  RTMSG   <== 리턴 메시지
+                        // ***  IS_DEV  <== 개발서버 여부 개발서버 : D / (조회만 가능)
 
-                        parent.setBusy('');
-                        parent.showLoadingPage('');
+                        // {"ISLICEN":"X","RTMSG":"","IS_DEV":"D","DEV_KEY":"39787814141386174101"}
+
 
                         var oResult = JSON.parse(xhr.responseText);
+
+                        // test 용
+                        // oResult.ISLICEN = "";
+                        // oResult.RTMSG = "권한이 없습니다!!!"
+
+
                         if (oResult.ISLICEN == "") {
                             reject(oResult.RTMSG);
                             return;
@@ -669,21 +727,12 @@ let oAPP = (function() {
                             return;
                         }
 
-
-
-                        // ***  ISLICEN <== 값이 없으면 !!! 메시지 처리후 화면 종료 !!!
-                        // ***  DEV_KEY <== 개발자 KEY  !!! 메시지 처리후 화면 종료 !!!
-                        // ***  RTMSG   <== 리턴 메시지
-                        // ***  IS_DEV  <== 개발서버 여부 개발서버 : D / (조회만 가능)
-
-                        // {"ISLICEN":"X","RTMSG":"","IS_DEV":"D","DEV_KEY":"39787814141386174101"}
-
-
-
+                        resolve(oResult);
 
                     } else {
 
                         parent.showMessage(null, 99, "E", xhr.responseText);
+                        parent.setBusy('');
 
                     }
                 }
@@ -694,37 +743,47 @@ let oAPP = (function() {
 
         }); // end of promise
 
-    }; // end of oAPP.fn.fnCheckAuthrity
+    }; // end of oAPP.fn.fnCheckAuthority
 
-    oAPP.fn.fnShowIllustMsg = (sMsg) => {
+    /************************************************************************
+     * 권한 없음 Illustration Message Popup Open
+     ************************************************************************/
+    oAPP.fn.fnShowNoAuthIllustMsg = (sMsg) => {
 
-        debugger;
+        let oAuthDialog = sap.ui.getCore().byId("authMsg");
+        if (oAuthDialog) {
+            return;
+        }
 
         let oMsg = new sap.m.IllustratedMessage({
             title: "No Authority!",
             description: sMsg,
             illustrationSize: sap.m.IllustratedMessageSize.Dialog,
-            illustrationType: "UnsuccessfulAuth",
+            illustrationType: "tnt-UnsuccessfulAuth",
             additionalContent: new sap.m.Button({
                 text: "OK",
                 press: oAPP.events.ev_attachIllustMsgOkBtn
             })
         });
 
-        new sap.m.Dialog({
+        new sap.m.Dialog("authMsg", {
+            showHeader: false,
             content: [
                 oMsg
             ]
         }).open();
 
-    };
+    }; // end of oAPP.fn.fnShowNoAuthIllustMsg
 
+    /************************************************************************
+     * 권한 없음 Illustration Message Popup Ok 버튼 press 이벤트
+     ************************************************************************/
     oAPP.events.ev_attachIllustMsgOkBtn = () => {
 
-        debugger;
+        var oCurrWin = REMOTE.getCurrentWindow();
+        oCurrWin.close();
 
-
-    };
+    }; // end of oAPP.events.ev_attachIllustMsgOkBtn
 
     /************************************************************************
      * 로그인 성공시 
@@ -746,6 +805,9 @@ let oAPP = (function() {
 
         // 로그인 아이디 저장
         oAPP.fn.fnSaveIDSuggData(oLogInData.ID);
+
+        // 유저 정보에 Authority 정보를 저장한다.
+        oLogInData.USER_AUTH = oResult.USER_AUTH;
 
         // 로그인 유저의 아이디/패스워드를 저장해둔다.    
         parent.setUserInfo(oLogInData);
@@ -770,6 +832,8 @@ let oAPP = (function() {
             // oCurrWin.setOpacity(0.0);
 
             parent.onMoveToPage("WS10");
+
+            parent.showLoadingPage('');
 
         });
 
@@ -840,6 +904,12 @@ let oAPP = (function() {
     oAPP.fn.fnAttachInit = () => {
 
         sap.ui.getCore().attachInit(() => {
+
+            // Illustration Message TNT-svg register
+            oAPP.fn.fnRegisterIllustrationPool();
+
+            // IconPool Register Fiori icon
+            oAPP.fn.fnRegisterFioriIconPool();
 
             // 초기값 바인딩
             oAPP.fn.fnOnInitModelBinding();
@@ -1084,9 +1154,11 @@ oAPP.fn.fnLoadBootStrapSetting();
 window.onload = () => {
 
     // Default Browser check
-    oAPP.fn.fnCheckIstalledBrowser();
+    oAPP.fn.fnCheckIstalledBrowser().then(() => {
 
-    oAPP.fn.fnAttachInit();
+        oAPP.fn.fnAttachInit();
+
+    });   
 
 };
 

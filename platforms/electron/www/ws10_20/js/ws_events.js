@@ -162,6 +162,8 @@
                 // 오류 사운드 실행
                 parent.setSoundMsg('02'); // sap sound(error)
 
+                let oCurrWin = REMOTE.getCurrentWindow();
+                
                 // 작업표시줄 깜빡임
                 oCurrWin.flashFrame(true);
 

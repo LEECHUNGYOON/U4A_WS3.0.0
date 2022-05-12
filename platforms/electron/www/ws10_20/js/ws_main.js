@@ -65,6 +65,7 @@
         // ModelData
         var oMetaData = {
             METADATA: parent.getMetadata(),
+            USERINFO: parent.getUserInfo(),
             WMENU: {
                 WS10: {},
                 WS20: {}
