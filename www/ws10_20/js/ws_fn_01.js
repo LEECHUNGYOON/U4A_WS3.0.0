@@ -781,6 +781,8 @@
      ************************************************************************/
     oAPP.fn.fnOnInitRenderingWS10 = function() {
 
+        debugger;
+        
         var sFmsgBindRootPath = "/FMSG/WS10";
 
         var aHeaderToolbarContents = oAPP.fn.fnGetHeaderToolbarContentWs10(),

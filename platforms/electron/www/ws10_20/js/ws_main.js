@@ -55,13 +55,6 @@
      **************************************************************************/
     oAPP.main.fnOnInitModelBinding = function() {
 
-        var sAPPID = "";
-
-        // // 청윤이 PC일경우
-        // if (parent.process.env.COMPUTERNAME.startsWith("YOON")) {
-        //     sAPPID = "YLCY_TT02";
-        // }
-
         // ModelData
         var oMetaData = {
             METADATA: parent.getMetadata(),
@@ -74,7 +67,7 @@
                 ISPIN: false
             },
             WS10: {
-                APPID: sAPPID,
+                APPID: "",
                 SRCHTXT: {
                     INPUT_VISI: false,
                     INPUT_VALUE: "",

@@ -11,6 +11,7 @@
     oAPP.fn = {};
 
     let REMOTE = require('@electron/remote'),
+        autoUpdater = REMOTE.require("electron-updater").autoUpdater,
         REMOTEMAIN = REMOTE.require('@electron/remote/main'),
         APP = REMOTE.app,
         PATH = REMOTE.require('path'),
@@ -19,6 +20,13 @@
         FS = REMOTE.require('fs-extra');
 
     oAPP.fn.fnOnDeviceReady = function () {
+
+
+        
+
+        oAPP.fn.fnCheckVersion();
+
+        return;
 
         // 초기 설치(기본 폴더, vbs 옮기기 등등)
         oAPP.fn.setInitInstall(function () {
@@ -31,7 +39,76 @@
 
         });
 
+
+
     }; // end of oAPP.fn.fnOnDeviceReady   
+
+
+    oAPP.fn.fnCheckVersion = () => {
+        
+        /* Updater Event 설정 ======================================================*/
+
+        autoUpdater.on('checking-for-update', () => {
+
+            console.log("업데이트 확인 중...");
+
+        });
+
+
+
+        autoUpdater.on('update-available', (info) => {
+
+
+            console.log("업데이트가 가능합니다.");
+
+
+
+        });
+
+
+
+        autoUpdater.on('update-not-available', (info) => {
+
+            console.log("현재 최신버전입니다.");
+
+        });
+
+
+
+        autoUpdater.on('error', (err) => {
+
+            console.log('에러가 발생하였습니다. 에러내용 : ' + err);
+
+        });
+
+
+
+        autoUpdater.on('download-progress', (progressObj) => {
+
+            let log_message = "다운로드 속도: " + progressObj.bytesPerSecond;
+
+            log_message = log_message + ' - 현재 ' + progressObj.percent + '%';
+
+            log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+
+
+            console.log(log_message);
+
+        });
+
+
+
+        autoUpdater.on('update-downloaded', (info) => {
+
+            console.log('업데이트가 완료되었습니다.');
+
+            autoUpdater.quitAndInstall(); //<--- 자동 인스톨  
+
+
+
+        });
+
+    };
 
     oAPP.fn.fnOpenServerList = function () {
 
@@ -162,7 +239,7 @@
 
         // 상위 폴더를 생성 후 끝나면 실행
         Promise.all(aPromise).then(function (values) {
-         
+
             oAPP.fn.copyVbsToLocalFolder(function (oResult) {
 
                 if (oResult.RETCD == 'E') {
@@ -253,7 +330,7 @@
             }).catch(function (err) {
 
                 reject(err.toString());
-                
+
             });
 
         });

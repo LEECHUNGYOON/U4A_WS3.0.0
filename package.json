@@ -1,11 +1,14 @@
 {
   "name": "com.u4a_ws3.app",
   "displayName": "u4a_ws3",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "A U4A IDE Platform RnD Team application that responds to the deviceready event.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "electron-builder install-app-deps",
+    "app:dir": "electron-builder --dir",
+    "app:dist": "electron-builder"
   },
   "keywords": [
     "ecosystem:cordova"
@@ -24,7 +27,15 @@
       "electron"
     ]
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LEECHUNGYOON/U4A_WS3.0.0.git"
+  },
   "build": {
+    "win": {},
+    "publish": {
+      "provider": "github"
+    },
     "files": [
       "**/*",
       "./node_modules/**/*",
@@ -45,6 +56,7 @@
   "dependencies": {
     "@electron/remote": "^2.0.8",
     "child_process": "^1.0.2",
+    "electron-updater": "^5.0.1",
     "electron-window-state": "^5.0.3",
     "fs-extra": "^10.1.0",
     "node-cmd": "^5.0.0",
