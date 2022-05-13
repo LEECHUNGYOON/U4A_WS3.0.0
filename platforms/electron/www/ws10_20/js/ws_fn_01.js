@@ -618,8 +618,6 @@
      ************************************************************************/
     oAPP.fn.fnGetSubHeaderToolbarContentWs10 = function () {
 
-        debugger;
-
         var lo_bindPropForVisible = {
             parts: [{
                 path: "/USERINFO/USER_AUTH/IS_DEV"
