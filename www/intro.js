@@ -10,7 +10,7 @@
     let oAPP = {};
     oAPP.fn = {};
 
-    let REMOTE = require('@electron/remote'),
+    const REMOTE = require('@electron/remote'),
         autoUpdater = REMOTE.require("electron-updater").autoUpdater,
         REMOTEMAIN = REMOTE.require('@electron/remote/main'),
         APP = REMOTE.app,
@@ -19,97 +19,175 @@
         USERDATA = APP.getPath("userData"),
         FS = REMOTE.require('fs-extra');
 
+    var oProgressBar = document.getElementById("progressBar_dynamic"),
+        bIsPackaged = APP.isPackaged;
+
     oAPP.fn.fnOnDeviceReady = function () {
 
+        // 현재 버전 보여주기
+        oAPP.fn.fnDisplayCurrentVersion();
 
-        
+        let
+            // 초기 인스톨 끝났을때 수행
+            lf_initInstallFinished = () => {
 
-        oAPP.fn.fnCheckVersion();
+                // no build 일 경우
+                if (!bIsPackaged) {
 
-        return;
+                    setTimeout(() => {
+                        oAPP.fn.fnOpenServerList();
+                    }, 3000);
 
-        // 초기 설치(기본 폴더, vbs 옮기기 등등)
-        oAPP.fn.setInitInstall(function () {
-
-            setTimeout(function () {
+                    return;
+                }
 
                 oAPP.fn.fnOpenServerList();
 
-            }, 3000);
+            },
 
-        });
+            // 버전 체크 끝났을때 수행
+            lf_versionCheckFinished = () => {
 
+                // 초기 설치(기본 폴더, vbs 옮기기 등등)
+                oAPP.fn.setInitInstall(lf_initInstallFinished);
 
+            };
 
-    }; // end of oAPP.fn.fnOnDeviceReady   
+        // no build 일 경우는 업데이트 확인 하지 않고 바로 실행     
+        if (!bIsPackaged) {
+            lf_versionCheckFinished();
+            return;
+        }
 
+        // 업데이트 버전 확인
+        oAPP.fn.fnCheckVersion().then(lf_versionCheckFinished);
 
+    }; // end of oAPP.fn.fnOnDeviceReady 
+
+    /************************************************************************
+     * 현재 설치된 WS Version을 화면에 표시
+     ************************************************************************/
+    oAPP.fn.fnDisplayCurrentVersion = () => {
+
+        let oVerTxt = document.getElementById("versionTxt");
+        if (oVerTxt == null) {
+            return;
+        }
+
+        let oAppInfo = require("./package.json"),
+            sVersion = oAppInfo.version;
+
+        oVerTxt.innerHTML = `version ${sVersion}`;
+
+    }; // end of oAPP.fn.fnDisplayCurrentVersion
+
+    /************************************************************************
+     * WS Version을 확인한다.
+     ************************************************************************/
     oAPP.fn.fnCheckVersion = () => {
-        
-        /* Updater Event 설정 ======================================================*/
 
-        autoUpdater.on('checking-for-update', () => {
+        return new Promise((resolve, reject) => {
 
-            console.log("업데이트 확인 중...");
+            /* Updater Event 설정 ======================================================*/
+
+            autoUpdater.on('checking-for-update', () => {
+
+                // status Text
+                oAPP.fn.fnSetStatusText("Checking for updates...");
+
+                console.log("업데이트 확인 중...");
+
+            });
+
+            autoUpdater.on('update-available', (info) => {
+
+                // 프로그래스 바를 활성화 한다.
+                let oProgressBar = document.getElementById("progressBar");
+                if (oProgressBar == null) {
+                    return;
+                }
+
+                oProgressBar.classList.remove("invisible");
+
+                console.log("업데이트가 가능합니다.");
+
+            });
+
+            autoUpdater.on('update-not-available', (info) => {
+
+                resolve();
+
+                console.log("현재 최신버전입니다.");
+
+            });
+
+            autoUpdater.on('error', (err) => {
+
+                resolve();
+
+                console.log('에러가 발생하였습니다. 에러내용 : ' + err);
+
+            });
+
+            autoUpdater.on('download-progress', (progressObj) => {
+
+                // let log_message = "다운로드 속도: " + progressObj.bytesPerSecond;
+
+                // log_message = log_message + ' - 현재 ' + progressObj.percent + '%';
+
+                // log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+
+                let sPer = `${parseFloat(progressObj.percent).toFixed(2)}%`;
+
+                oAPP.fn.fnSetStatusText(`downloading... ${sPer} `);
+
+                oProgressBar.style.width = sPer;
+
+                // console.log(log_message);
+
+            });
+
+            autoUpdater.on('update-downloaded', (info) => {
+
+                console.log('업데이트가 완료되었습니다.');
+
+                oAPP.fn.fnSetStatusText(`Update Complete! Restarting...`);
+
+                setTimeout(() => {
+
+                    autoUpdater.quitAndInstall(); //<--- 자동 인스톨 
+
+                }, 1000);
+
+
+            });
+
+            autoUpdater.checkForUpdates();
 
         });
 
+    }; // oAPP.fn.fnCheckVersion
 
+    /************************************************************************
+     * 버전 체크 시 현재 상태 텍스트 적용
+     * **********************************************************************
+     * @param {String} sText 
+     * - 상태 텍스트
+     ************************************************************************/
+    oAPP.fn.fnSetStatusText = (sText) => {
 
-        autoUpdater.on('update-available', (info) => {
+        let oStatusTxt = document.getElementById("statusText");
+        if (oStatusTxt == null) {
+            return;
+        }
 
+        oStatusTxt.innerHTML = sText;
 
-            console.log("업데이트가 가능합니다.");
+    }; // end of oAPP.fn.fnSetStatusText
 
-
-
-        });
-
-
-
-        autoUpdater.on('update-not-available', (info) => {
-
-            console.log("현재 최신버전입니다.");
-
-        });
-
-
-
-        autoUpdater.on('error', (err) => {
-
-            console.log('에러가 발생하였습니다. 에러내용 : ' + err);
-
-        });
-
-
-
-        autoUpdater.on('download-progress', (progressObj) => {
-
-            let log_message = "다운로드 속도: " + progressObj.bytesPerSecond;
-
-            log_message = log_message + ' - 현재 ' + progressObj.percent + '%';
-
-            log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-
-
-            console.log(log_message);
-
-        });
-
-
-
-        autoUpdater.on('update-downloaded', (info) => {
-
-            console.log('업데이트가 완료되었습니다.');
-
-            autoUpdater.quitAndInstall(); //<--- 자동 인스톨  
-
-
-
-        });
-
-    };
-
+    /************************************************************************
+     * 서버 리스트를 오픈한다.
+     ************************************************************************/
     oAPP.fn.fnOpenServerList = function () {
 
         // Electron Browser Default Options
@@ -435,5 +513,4 @@
     }; // end of oAPP.fn.fnCopyHelpDocFileExtract
 
     document.addEventListener('deviceready', oAPP.fn.fnOnDeviceReady, false);
-
 })();

@@ -5,7 +5,7 @@
  * - file Desc : WS Login Page
  ************************************************************************/
 
-let oAPP = (function() {
+let oAPP = (function () {
     "use strict";
 
     const
@@ -261,7 +261,7 @@ let oAPP = (function() {
                                     value: "{ID}",
                                     showSearchButton: false,
                                     placeholder: "　",
-                                    suggest: function(oEvent) {
+                                    suggest: function (oEvent) {
 
                                         var sValue = oEvent.getParameter("suggestValue"),
                                             aFilters = [];
@@ -270,7 +270,7 @@ let oAPP = (function() {
 
                                             aFilters = [
                                                 new sap.ui.model.Filter([
-                                                    new sap.ui.model.Filter("ID", function(sText) {
+                                                    new sap.ui.model.Filter("ID", function (sText) {
                                                         return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                                     }),
                                                 ], false)
@@ -282,7 +282,7 @@ let oAPP = (function() {
                                         this.suggest();
 
                                     },
-                                    search: function(oEvent) {
+                                    search: function (oEvent) {
 
                                         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
                                         if (bIsPressClearBtn) {
@@ -373,25 +373,25 @@ let oAPP = (function() {
 
             new sap.m.Button({
                 text: "영선",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("yshong");
                 }
             }),
             new sap.m.Button({
                 text: "성호",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("shhong");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
             new sap.m.Button({
                 text: "은섭",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("pes");
                 }
             }),
             new sap.m.Button({
                 text: "청윤",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("soccerhs");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
@@ -630,18 +630,16 @@ let oAPP = (function() {
         parent.setBusy('X');
 
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() { // 요청에 대한 콜백
+        xhr.onreadystatechange = function () { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
-
-                    parent.setBusy('');
 
                     var oResult = JSON.parse(xhr.responseText);
                     if (oResult.TYPE == "E") {
 
                         // 오류 처리..                   
                         parent.showMessage(null, 99, "E", oResult.MSG);
-
+                        parent.setBusy('');
                         return;
                     }
 
@@ -659,12 +657,15 @@ let oAPP = (function() {
 
                             var oResultData = jQuery.extend(true, {}, oResult);
 
-                            oResultData.USER_AUTH = oAuthInfo;                            
+                            oResultData.USER_AUTH = oAuthInfo;
 
                             parent.showLoadingPage('X');
 
                             // 권한이 있으면 성공적으로 로그인 후 10번으로 이동
                             oAPP.fn.fnOnLoginSuccess(oResultData);
+
+                            parent.setBusy('');
+
                             // oAPP.fn.fnOnLoginSuccess(oResult);
 
                         })
@@ -673,12 +674,14 @@ let oAPP = (function() {
                             // 권한이 없으므로 오류 메시지를 띄운다.
                             oAPP.fn.fnShowNoAuthIllustMsg(e);
 
+                            parent.setBusy('');
+
                         });
 
                 } else {
 
                     parent.showMessage(null, 99, "E", xhr.responseText);
-
+                    parent.setBusy('');
                 }
             }
         };
@@ -698,7 +701,7 @@ let oAPP = (function() {
             var sServicePath = parent.getServerPath() + "/chk_u4a_authority";
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() { // 요청에 대한 콜백
+            xhr.onreadystatechange = function () { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -865,7 +868,7 @@ let oAPP = (function() {
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         reject(err.toString());
@@ -1158,11 +1161,11 @@ window.onload = () => {
 
         oAPP.fn.fnAttachInit();
 
-    });   
+    });
 
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
     // parent.fn_onWinMove(false, parent.REMOTE.getCurrentWindow());
 

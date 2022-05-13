@@ -22,13 +22,10 @@
                 web.setZoomLevel(oAPP.attr.scale);
 
             }
+            
         });
 
     }; // end of oAPP.fn.fnAttachMouseWheelEvent
-
-
-
-
 
     /************************************************************************/
 
