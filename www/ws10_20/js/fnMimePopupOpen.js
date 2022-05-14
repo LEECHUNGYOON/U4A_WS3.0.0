@@ -337,6 +337,18 @@
                 var oDialog = oEvent.getSource();
                 oDialog.destroy();
 
+            },
+            escapeHandler: () => {                
+
+                let oDialog = sap.ui.getCore().byId(C_DIALOG_ID);
+                if(oDialog == null){
+                    return; 
+                }
+
+                if(parent.getBusy() != "X"){
+                    oDialog.close();
+                }
+
             }
 
         }).addStyleClass(C_DIALOG_ID);
@@ -395,7 +407,11 @@
                 return;
             }
 
-            oMimeTreeTable.getModel().refresh();
+            let oMimeTreeModel = oMimeTreeTable.getModel();
+            if (oMimeTreeModel) {
+                oMimeTreeTable.getModel().refresh();
+            }
+
             oMimeTreeTable.expandToLevel(1);
             oMimeTreeTable.setSelectedIndex(0);
 
@@ -1216,7 +1232,7 @@
     /************************************************************************
      * 파일 다운로드 API
      * **********************************************************************/
-    oAPP.fn.fnFileDown = function(sFileName, oMimeObj) {        
+    oAPP.fn.fnFileDown = function(sFileName, oMimeObj) {
 
         let defaultDownPath = APP.getPath("downloads");
 
@@ -1241,7 +1257,7 @@
 
         oFilePathPromise.then((oPaths) => {
 
-            if(oPaths.canceled){
+            if (oPaths.canceled) {
                 return;
             }
 
