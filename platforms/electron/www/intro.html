@@ -2,168 +2,220 @@
 <html>
 
 <head>
-  <meta charset="UTF-8">
-  <title></title>
+    <meta charset="UTF-8">
+    <title></title>
 
-  <style>
-    /* body {
+    <style>
+        /* body {
       background: url('./img/intro.png') no-repeat fixed 50% 50%/80%;
     } */
-    * {
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-      user-select: none;
-      -webkit-user-select: none;
-    }
+        :root {
+            --sapIllus_BrandColorPrimary: #5d36ff;
+            --sapIllus_BrandColorSecondary: #4098ff;
+            --sapIllus_StrokeDetailColor: #5581ae;
+            --sapIllus_Layering1: #fff;
+            --sapIllus_Layering2: #b9c1c6;
+            --sapIllus_BackgroundColor: #223548;
+            --sapIllus_ObjectFillColor: #fff;
+            --sapIllus_AccentColor: #f58b00;
+            --sapIllus_NoColor: none;
+            --sapIllus_PatternShadow: url(#sapIllus_PatternShadow);
+            --sapIllus_PatternHighlight: url(#sapIllus_PatternHighlight);
+            --sapContent_Illustrative_Color1: #5d36ff;
+            --sapContent_Illustrative_Color2: #4098ff;
+            --sapContent_Illustrative_Color3: #f58b00;
+            --sapContent_Illustrative_Color4: #5581ae;
+            --sapContent_Illustrative_Color5: #fff;
+            --sapContent_Illustrative_Color6: #b9c1c6;
+            --sapContent_Illustrative_Color7: #223548;
+            --sapContent_Illustrative_Color8: #fff;
+            --sapContent_Illustrative_Color9: #64edd2;
+            --sapContent_Illustrative_Color10: #ebf8ff;
+            --sapContent_Illustrative_Color11: #f31ded;
+            --sapContent_Illustrative_Color12: #00a800;
+            --sapContent_Illustrative_Color13: #1782ff;
+            --sapContent_Illustrative_Color14: #0070f3;
+            --sapContent_Illustrative_Color15: #cc7400;
+            --sapContent_Illustrative_Color16: #3b0ac6;
+            --sapContent_Illustrative_Color17: #00a58a;
+            --sapContent_Illustrative_Color18: #2a4259;
+            --sapContent_Illustrative_Color19: #324e6b;
+            --sapContent_Illustrative_Color20: #3b5b7c
+        }
 
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      margin: 0px;
-      overflow: hidden;
-    }
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
 
-    .u4aWsIntroArea {
-      width: 100%;
-      height: 100%;
-      background: url('./img/intro.png') no-repeat fixed 50% 50%/80%;
-    }
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            overflow: hidden;
+        }
 
-    .progress {
-      margin: 10px;
-      width: 100%;
-    }
+        .u4aWsIntroArea {
+            -webkit-app-region: drag;
+            width: 100%;
+            height: 100%;
+            background-color: #1d232a;
+            border-radius: 1rem;
+        }
 
-    .progress {
-      height: 20px;
-      /* margin-bottom: 20px; */
-      overflow: hidden;
-      background-color: #f5f5f5;
-      border-radius: 4px;
-      -webkit-box-shadow: inset 0 1px 2px rgb(0 0 0 / 10%);
-      box-shadow: inset 0 1px 2px rgb(0 0 0 / 10%);
-    }
+        .u4aWsIntro {
+            width: 100%;
+            height: 100%;
+            background: url(./img/intro.png) no-repeat fixed 50% 50%/100%;
+            background-position-y: -127px;
+            background-position-x: -5px;
+        }
 
-    .progress-bar.active,
-    .progress.active .progress-bar {
-      -webkit-animation: progress-bar-stripes 2s linear infinite;
-      -o-animation: progress-bar-stripes 2s linear infinite;
-      animation: progress-bar-stripes 2s linear infinite;
-    }
+        .progress {
+            margin: 10px;
+            width: 100%;
+        }
 
-    .progress .progress-bar-success {
-      background-color: #5cb85c;
-    }
+        .progress {
+            height: 20px;
+            /* margin-bottom: 20px; */
+            overflow: hidden;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 2px rgb(0 0 0 / 10%);
+            box-shadow: inset 0 1px 2px rgb(0 0 0 / 10%);
+        }
 
-    .progress-bar-striped,
-    .progress-striped .progress-bar {
-      background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
-      background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
-      background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
-      -webkit-background-size: 40px 40px;
-      background-size: 40px 40px;
-    }
+        .progress-bar.active,
+        .progress.active .progress-bar {
+            -webkit-animation: progress-bar-stripes 2s linear infinite;
+            -o-animation: progress-bar-stripes 2s linear infinite;
+            animation: progress-bar-stripes 2s linear infinite;
+        }
 
-    .progress-bar {
-      float: left;
-      width: 0;
-      height: 100%;
-      font-size: 12px;
-      line-height: 20px;
-      color: #fff;
-      text-align: center;
-      background-color: #337ab7;
-      -webkit-box-shadow: inset 0 -1px 0 rgb(0 0 0 / 15%);
-      box-shadow: inset 0 -1px 0 rgb(0 0 0 / 15%);
-      -webkit-transition: width .6s ease;
-      -o-transition: width .6s ease;
-      transition: width .6s ease;
-    }
+        .progress .progress-bar-success {
+            background-color: #5cb85c;
+        }
 
-    .progress-area {
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      bottom: 200px;
-      width: 100%;
-      align-items: center;
-    }
+        .progress-bar-striped,
+        .progress-striped .progress-bar {
+            background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
+            background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
+            background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
+            -webkit-background-size: 40px 40px;
+            background-size: 40px 40px;
+        }
 
-    .progress-area-inner {
-      display: flex;
-      width: 70%;
-    }
+        .progress-bar {
+            float: left;
+            width: 0;
+            height: 100%;
+            font-size: 12px;
+            line-height: 20px;
+            color: #fff;
+            text-align: center;
+            background-color: #337ab7;
+            -webkit-box-shadow: inset 0 -1px 0 rgb(0 0 0 / 15%);
+            box-shadow: inset 0 -1px 0 rgb(0 0 0 / 15%);
+            -webkit-transition: width .6s ease;
+            -o-transition: width .6s ease;
+            transition: width .6s ease;
+        }
 
-    .versionTextArea {
-      color: #adadadeb;
-      font-weight: bold;     
-    }
+        .progress-area {
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            bottom: 130px;
+            width: 100%;
+            align-items: center;
+        }
 
-    .statusText {
-      margin-top: 1rem;
-      color: #adadadeb;
+        .progress-area-inner {
+            display: flex;
+            width: 70%;
+        }
 
-      animation: editTitle 1.2s infinite;
-      -webkit-animation: editTitle 1.2s infinite;
-      -moz-animation-duration: 1.2s;
-      -moz-animation-name: editTitle;
-      -moz-animation-iteration-count: infinite;
+        .versionTextArea {
+            color: #adadadeb;
+            font-weight: bold;
+        }
 
-    }
-    
-    @keyframes editTitle {
-      0% {
-        color: #adadadeb;
-      }
+        .statusText {
+            margin-top: 1rem;
+            color: #adadadeb;
 
-      50% {
-        color: #000000;
-      }
+            animation: editTitle 1.2s infinite;
+            -webkit-animation: editTitle 1.2s infinite;
+            -moz-animation-duration: 1.2s;
+            -moz-animation-name: editTitle;
+            -moz-animation-iteration-count: infinite;
 
-      100% {
-        color: #adadadeb;
-      }      
-    }
-    
-    .invisible {
-      visibility: hidden;
-    }
-  </style>
+        }
+
+        @keyframes editTitle {
+            0% {
+                color: #adadadeb;
+            }
+
+            50% {
+                color: #000000;
+            }
+
+            100% {
+                color: #adadadeb;
+            }
+        }
+
+        .invisible {
+            visibility: hidden;
+        }
+    </style>
 
 </head>
 
 <body>
 
-  <div class="u4aWsIntroArea">
+    <div class="u4aWsIntroArea">
+        <div class="u4aWsIntro">
 
-    <div class="progress-area">
+            <div class="progress-area">
 
-      <!-- 버전 정보 텍스트 -->
-      <div class="versionTextArea">
-        <span id="versionTxt"> </span>
-      </div>
+                <!-- 버전 정보 텍스트 -->
+                <div class="versionTextArea">
+                    <span id="versionTxt"> </span>
+                </div>
 
-      <div class="statusText">
-        <span id="statusText"> </span>
-      </div>
+                <div class="statusText">
+                    <span id="statusText"> </span>
+                </div>
 
-      <!-- 업데이트시 보여지는 progress bar -->
-      <div class="progress-area-inner">
-        <div id="progressBar" class="progress invisible">
-          <div id="progressBar_dynamic" class="progress-bar progress-bar-success progress-bar-striped active"
-            role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-            <span id="current-progress"></span>
-          </div>
+                <!-- 업데이트시 보여지는 progress bar -->
+                <div class="progress-area-inner">
+                    <div id="progressBar"
+                         class="progress invisible">
+                        <div id="progressBar_dynamic"
+                             class="progress-bar progress-bar-success progress-bar-striped active"
+                             role="progressbar"
+                             aria-valuenow="0"
+                             aria-valuemin="0"
+                             aria-valuemax="100"
+                             style="width: 0%">
+                            <span id="current-progress"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-      </div>
     </div>
 
-  </div>
-
-  <script src="cordova.js"></script>
-  <script src="intro.js"></script>
+    <script src="cordova.js"></script>
+    <script src="intro.js"></script>
 </body>
 
 

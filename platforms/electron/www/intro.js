@@ -23,7 +23,7 @@
         bIsPackaged = APP.isPackaged;
 
     oAPP.fn.fnOnDeviceReady = function () {
-
+   
         // 현재 버전 보여주기
         oAPP.fn.fnDisplayCurrentVersion();
 

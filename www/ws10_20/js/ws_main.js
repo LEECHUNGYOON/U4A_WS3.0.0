@@ -180,6 +180,9 @@
     oAPP.main.fnWsStart = function() {
 
         sap.ui.getCore().attachInit(function() {
+            
+            // Register illustration Message Pool
+            oAPP.fn.fnRegisterIllustrationPool();
 
             // 초기 현재 화면 위치 정보 저장
             parent.setCurrPage("WS10");

@@ -953,8 +953,14 @@
         oAPP.fn.fnChildWindowClose();
 
         // 세션 타임아웃 메시지 팝업 띄우기
-        var sMsg = oAPP.common.fnGetMsgClassTxt("0007"); // "Session TimeOut.. Please Try Login Again!";
-        parent.showMessage(sap, 20, 'E', sMsg, oAPP.common.setSessionTimeoutOK);
+
+        // var sMsg = oAPP.common.fnGetMsgClassTxt("0007"); // "Session TimeOut.. Please Try Login Again!";
+        // parent.showMessage(sap, 20, 'E', sMsg, oAPP.common.setSessionTimeoutOK);
+        let sTitle = "Session Timeout",
+            sDesc = "Please Try Login Again!",
+            sIllustType = "tnt-SessionExpired";
+
+        oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, oAPP.common.setSessionTimeoutOK);
 
     }; // end of oAPP.common.setSessionTimeout
 
@@ -1445,7 +1451,13 @@ function fn_logoff_success(TYPE) {
 
         var sMsg = oAPP.common.fnGetMsgClassTxt("0007"); // "Session TimeOut.. Please Try Login Again!";
 
-        parent.showMessage(sap, 20, 'E', sMsg, lf_OK);
+        // parent.showMessage(sap, 20, 'E', sMsg, lf_OK);
+
+        let sTitle = "Session Timeout",
+            sDesc = "Please Try Login Again!",
+            sIllustType = "tnt-SessionExpired";
+
+        oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, lf_OK);
 
     }
 
