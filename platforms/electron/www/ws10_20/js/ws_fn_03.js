@@ -807,15 +807,22 @@
 
     }; // end of oAPP.fn.fnRegisterIllustrationPool
 
-
+    /************************************************************************
+     * Illustration Message Dialog
+     ************************************************************************
+     * @param {String}  sTitle
+     * - 메시지 제목
+     * 
+     * @param {String}   sDesc
+     * - 메시지 내용
+     * 
+     * @param {String}  sIllustType
+     * - illustration Type (sapui5 library 참조) 
+     * 
+     * @param {Function}  fnCallback
+     * - 메시지 Dialog에서 확인 버튼 눌렀을때 콜백 펑션
+     ************************************************************************/
     oAPP.fn.fnShowIllustMsgDialog = (sTitle, sDesc, sIllustType, fnCallback) => {
-
-        // let oIllustMsg = sap.ui.getCore().byId("illustMsg");
-        // if (oIllustMsg) {
-        //     return;
-        // }
-
-        debugger;
 
         let oMsg = new sap.m.IllustratedMessage({
             title: sTitle,
@@ -825,8 +832,6 @@
             additionalContent: new sap.m.Button({
                 text: "OK",
                 press: function() {
-
-                    debugger;
 
                     let oIllustMsg = sap.ui.getCore().byId("illustMsg");
                     if (oIllustMsg) {
@@ -842,15 +847,13 @@
         });
 
         new sap.m.Dialog("illustMsg", {
-            // showHeader: false,
             title: sTitle,
             state: sap.ui.core.ValueState.Error,
             content: [
                 oMsg
             ],
+            escapeHandler: () => {}, // esc 키 방지
             afterClose: function() {
-
-                debugger;
 
                 let oIllustMsg = sap.ui.getCore().byId("illustMsg");
                 if (oIllustMsg) {
@@ -860,7 +863,6 @@
             }
         }).open();
 
-    };
-
+    }; // end of oAPP.fn.fnShowIllustMsgDialog
 
 })(window, $, oAPP);
