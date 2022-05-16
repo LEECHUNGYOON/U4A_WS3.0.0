@@ -1472,14 +1472,23 @@
                 press: oAPP.events.ev_pressDisplayModeBtn
             }).bindProperty("visible", {
                 parts: [{
-                    path: "/USERINFO/USER_AUTH/IS_DEV"
-                }, {
-                    path: sVisiBindPath
-                }],
-                formatter: (IS_DEV, IS_EDIT) => {
+                        path: "/USERINFO/USER_AUTH/IS_DEV"
+                    },
+                    {
+                        path: "/IS_EXAM"
+                    }, {
+                        path: sVisiBindPath
+                    }
+                ],
+                formatter: (IS_DEV, IS_EXAM, IS_EDIT) => {
 
                     // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
                     if (IS_DEV != "D") {
+                        return false;
+                    }
+
+                    // 샘플 어플리케이션일 경우 비활성화
+                    if (IS_EXAM == "X") {
                         return false;
                     }
 
@@ -1584,15 +1593,39 @@
             oChangeModeBtn, // Change Button
 
             new sap.m.ToolbarSeparator()
-            .bindProperty("visible", "/USERINFO/USER_AUTH/IS_DEV", (IS_DEV) => {
+            .bindProperty("visible", {
+                parts: [{
+                        path: "/USERINFO/USER_AUTH/IS_DEV"
+                    },
+                    {
+                        path: "/IS_EXAM"
+                    }
+                ],
+                formatter: (IS_DEV, IS_EXAM) => {                   
 
-                if (IS_DEV == "D") {
+                    // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
+                    if (IS_DEV != "D") {
+                        return false;
+                    }
+
+                    // 샘플 어플리케이션일 경우 비활성화
+                    if (IS_EXAM == "X") {
+                        return false;
+                    }
+
                     return true;
+
                 }
-
-                return false;
-
             }),
+            // .bindProperty("visible", "/USERINFO/USER_AUTH/IS_DEV", (IS_DEV) => {
+
+            //     if (IS_DEV == "D") {
+            //         return true;
+            //     }
+
+            //     return false;
+
+            // }),
 
             oSyntaxCheckBtn, // syntax Check Button
             oActivateBtn, // Activate Button                    

@@ -865,4 +865,34 @@
 
     }; // end of oAPP.fn.fnShowIllustMsgDialog
 
+    // oAPP.fn.fnMovePageWs20(sAppID, "D", true);
+
+    /************************************************************************
+     * Example용 WS20 페이지로 이동
+     ************************************************************************
+     * @param {String} sAppID
+     * - WS20 페이지로 이동할 어플리케이션 ID
+     *          
+     ************************************************************************/
+    oAPP.fn.fnExamMoveToPageWs20 = (sAppID) => {
+        
+        debugger;
+
+        var oAppInput = sap.ui.getCore().byId("AppNmInput"),            
+            oDispModeBtn = sap.ui.getCore().byId("displayBtn");
+
+        if (!oAppInput && !oDispModeBtn) {
+            return;
+        }
+
+        var sAppID = sAppID.toUpperCase();
+
+        oAppInput.setValue(sAppID);
+
+        oDispModeBtn.firePress();      
+
+        oAPP.common.fnSetModelProperty("/IS_EXAM", "X", true);
+
+    }; // end of oAPP.fn.fnExamMoveToPageWs20
+
 })(window, $, oAPP);

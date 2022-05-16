@@ -264,6 +264,9 @@
             // oAPP.common.fnSetModelProperty("/WS20/APP", {});
             oAPP.common.fnSetModelProperty("/WS20", {});
 
+            // 샘플 여부 플래그를 삭제한다.
+            oAPP.common.fnSetModelProperty("/IS_EXAM", "");
+
             // 10번 프로그램으로 이동한다.        
             oAPP.fn.fnOnMoveToPage("WS10");
 

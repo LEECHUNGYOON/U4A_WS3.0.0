@@ -52,7 +52,10 @@
 
             case "B": // WS 디자인 영역으로 이동
 
-                onAppCrAndChgMode(sAppID);
+                // onAppCrAndChgMode(sAppID);
+
+                // 샘플에 대한 WS20 페이지 이동
+                oAPP.fn.fnExamMoveToPageWs20(sAppID);
 
                 break;
         }
