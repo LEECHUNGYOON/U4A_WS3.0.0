@@ -200,3 +200,9 @@
             transform: rotate(405deg);
         }
     }
+
+
+
+    .sapUiTableCell:focus::before {
+        outline: none !important;
+    }
