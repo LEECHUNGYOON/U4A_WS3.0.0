@@ -202,6 +202,26 @@ let oAPP = parent.oAPP;
         });
 
 
+        oTool.addContent(new sap.m.ToolbarSeparator());
+
+
+        //갱신버튼
+        var oToolBtn3 = new sap.m.Button({
+            text: "Refresh",
+            icon: "sap-icon://refresh",
+            type: "Emphasized",
+            busy: "{/busy}",
+            busyIndicatorDelay: 1
+        });
+        oTool.addContent(oToolBtn3);
+
+        //갱신버튼 이벤트
+        oToolBtn3.attachPress(function () {
+            //서버에서 바인딩 정보 얻기.
+            oAPP.fn.getBindFieldInfo();
+        });
+
+
         var oSpt1 = new sap.ui.layout.Splitter();
         oPage.addContent(oSpt1);
 
@@ -390,6 +410,9 @@ let oAPP = parent.oAPP;
             //conversion명 대문자 변환 처리.
             oAPP.fn.setConvNameUpperCase(this);
 
+            //바인딩 추가속성값 설정.
+            oAPP.fn.setMPROP();
+
         });
 
         //추가속성정보 DDLB 필드.
@@ -407,6 +430,9 @@ let oAPP = parent.oAPP;
         oTabCol2Sel1.attachChange(function () {
             //바인딩 추가속성 정보 DDLB 선택 이벤트.
             oAPP.fn.setAddtBindInfoDDLB(this);
+
+            //바인딩 추가속성값 설정.
+            oAPP.fn.setMPROP();
 
         });
 
@@ -439,6 +465,58 @@ let oAPP = parent.oAPP;
     };  //바인딩 팝업 화면 구성.
 
 
+
+
+    //바인딩 추가 속성값 설정.
+    oAPP.fn.setMPROP = function(){
+        var l_indx = oAPP.attr.oTree.getSelectedIndex();
+        if(l_indx === -1){return;}
+
+        var l_ctxt = oAPP.attr.oTree.getContextByIndex(l_indx);
+        if (!l_ctxt) {
+            return;
+        }
+
+        var ls_tree = l_ctxt.getProperty();
+
+        if(ls_tree.KIND !== "E"){return;}
+
+        //Bind type 라인 얻기.
+        var ls_p04 = oAPP.attr.oModel.oData.T_MPROP.find( a=> a.ITMCD === "P04");
+        if(!ls_p04){
+            oAPP.attr.oModel.setProperty("MPROP", "", l_ctxt);
+            return;
+        }
+
+        //Reference Field name 라인 얻기.
+        var ls_p05 = oAPP.attr.oModel.oData.T_MPROP.find( a=> a.ITMCD === "P05");
+        if(!ls_p05){
+            oAPP.attr.oModel.setProperty("MPROP", "", l_ctxt);
+            return;
+        }
+
+        //Bind type이 구성된경우 Reference Field name이 존재하지 않는다면.
+        if(ls_p04.val !== "" && ls_p05.val === ""){
+            //추가속성정보 제거 처리.
+            oAPP.attr.oModel.setProperty("MPROP", "", l_ctxt);
+            return;
+        }
+
+        //추가속성 세팅된 값을 취합.
+        for(var i=3, l=oAPP.attr.oModel.oData.T_MPROP.length, l_array = []; i<l; i++){
+            //바인딩 추가 속성 정보 수집.
+            l_array.push(oAPP.attr.oModel.oData.T_MPROP[i].val);
+    
+        }
+
+        //return 파라메터에 바인딩 추가 속성 정보 매핑.
+        ls_tree.MPROP = l_array.join("|");
+
+        //tree의 해당 라인에 바인딩 추가속성값 매핑.
+        oAPP.attr.oModel.setProperty("MPROP", ls_tree.MPROP, l_ctxt);
+
+
+    };  //바인딩 추가 속성값 설정.
 
 
     //conversion명 대문자 변환 처리.
