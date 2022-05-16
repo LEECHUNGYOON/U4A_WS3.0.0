@@ -274,65 +274,7 @@
      ************************************************************************/
     oAPP.events.ev_pressBindPopupBtn = (oEvent) => {
 
-        var sPopupName = "BINDPOPUP";
-
-        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
-        if (oResult.ISOPEN) {
-            return;
-        }
-
-        let oThemeInfo = parent.getThemeInfo(); // theme 정보
-
-        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
-            oDefaultOption = parent.require(sSettingsJsonPath),
-            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
-
-        oBrowserOptions.title = "Binding Popup";
-        oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.parent = CURRWIN;
-        oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
-        oBrowserOptions.webPreferences.partition = SESSKEY;
-        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
-        oBrowserOptions.webPreferences.OBJTY = sPopupName;
-
-        // 브라우저 오픈
-        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
-        REMOTEMAIN.enable(oBrowserWindow.webContents);
-
-        // 브라우저 상단 메뉴 없애기
-        oBrowserWindow.setMenu(null);
-
-        // 실행할 URL 적용
-        var sUrlPath = parent.getPath(sPopupName);
-        oBrowserWindow.loadURL(sUrlPath);
-
-        // oBrowserWindow.webContents.openDevTools();
-
-        // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
-
-            var oBindPopupData = {
-                oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보 (필수)
-                oThemeInfo: oThemeInfo, // 테마 개인화 정보
-                T_9011: oAPP.DATA.LIB.T_9011,
-                oAppInfo: parent.getAppInfo(),
-                servNm: parent.getServerPath(),
-            };
-
-            oBrowserWindow.webContents.send('if_modelBindingPopup', oBindPopupData);
-
-            oBrowserWindow.setOpacity(1.0);
-
-        });
-
-        // 브라우저를 닫을때 타는 이벤트
-        oBrowserWindow.on('closed', () => {
-
-            oBrowserWindow = null;
-
-        });
+        oAPP.fn.fnBindWindowPopupOpener();
 
     }; // end of oAPP.events.ev_pressBindPopupBtn
 

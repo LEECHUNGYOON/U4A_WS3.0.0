@@ -86,6 +86,33 @@
 
     }; // end of oAPP.fn.fnIpcMain_errmsg_click
 
+    /************************************************************************
+     * Application Import 성공시 타는 이벤트
+     ************************************************************************/
+    oAPP.fn.fnIpcMain_export_import_IMPORT = (event, res) => {
+
+        // 페이지 이동 처리..
+        onAppCrAndChgMode(res.APPID);
+
+        // 푸터 메시지
+        oAPP.common.fnShowFloatingFooterMsg("S", "WS20", res.RTMSG);
+
+    }; // end of oAPP.fn.fnIpcMain_export_import_IMPORT
+
+    /************************************************************************
+     * Application Export 성공시 타는 이벤트
+     ************************************************************************/
+    oAPP.fn.fnIpcMain_export_import_EXPORT = (event, res) => {
+
+        // oAPP.ipcRenderer.send(`${oAPP.BROWSKEY}--export_import-EXPORT`, { RETCD: "S", RTMSG: Lmsg });
+
+        let sCurrPage = parent.getCurrPage();
+
+        // 푸터 메시지
+        oAPP.common.fnShowFloatingFooterMsg(res.RETCD, sCurrPage, res.RTMSG);
+
+    }; // end of oAPP.fn.fnIpcMain_export_import_EXPORT
+
 })(window, $, oAPP);
 
 

@@ -272,6 +272,73 @@
     }; // end of oAPP.fn.fnBindPopupOpener
 
     /************************************************************************
+     * [WS20] Binding Popup 버튼 이벤트
+     ************************************************************************/
+    oAPP.fn.fnBindWindowPopupOpener = () => {
+
+        var sPopupName = "BINDPOPUP";
+
+        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        if (oResult.ISOPEN) {
+            return;
+        }
+
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보
+
+        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.title = "Binding Popup";
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
+
+        // 브라우저 오픈
+        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+
+        // 실행할 URL 적용
+        var sUrlPath = parent.getPath(sPopupName);
+        oBrowserWindow.loadURL(sUrlPath);
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            var oBindPopupData = {
+                oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보 (필수)
+                oThemeInfo: oThemeInfo, // 테마 개인화 정보
+                T_9011: oAPP.DATA.LIB.T_9011,
+                oAppInfo: parent.getAppInfo(),
+                servNm: parent.getServerPath(),
+            };
+
+            oBrowserWindow.webContents.send('if_modelBindingPopup', oBindPopupData);
+
+            oBrowserWindow.setOpacity(1.0);
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+
+            oBrowserWindow = null;
+
+        });
+
+    }; // end of oAPP.fn.fnBindWindowPopupOpener
+
+    /************************************************************************
      * Text 검색 팝업 (electron 기능)
      ************************************************************************/
     oAPP.fn.fnTextSearchPopupOpener = function () {
@@ -549,5 +616,183 @@
         });
 
     }; // end of oAPP.fn.fnU4ADocuPopupOpener
+
+    /************************************************************************
+     * WS APP Import/Export Popup Opener
+     * **********************************************************************
+     * @param {String} sFlag  
+     * - IMPORT : Application Import
+     * - EXPORT : Application Export
+     * **********************************************************************/
+    oAPP.fn.fnWsImportExportPopupOpener = (sFlag) => {
+
+        let sPopupName = "IMPEXPPOP";
+
+        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        if (oResult.ISOPEN) {
+            return;
+        }
+
+        if (sFlag == "EXPORT") {
+
+            // application명 정합성 체크
+            let bCheckAppNm = oAPP.fn.fnCheckAppName();
+            if (!bCheckAppNm) {
+                return;
+            }
+
+        }
+
+        let sAppId = APPCOMMON.fnGetModelProperty("/WS10/APPID"),
+            sServerPath = parent.getServerPath(),
+            oBrowserOptions = {
+                "height": 400,
+                "width": 400,
+                "transparent": true,
+                "frame": false,
+                "resizable": false,
+                "maximizable": false,
+                "minimizable": false,
+                "icon": "www/img/logo.png",
+                "webPreferences": {
+                    "devTools": true,
+                    "nodeIntegration": true,
+                    "enableRemoteModule": true,
+                    "contextIsolation": false,
+                    "nativeWindowOpen": true,
+                    "webSecurity": false
+                }
+
+            };
+
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.title = sFlag;
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.modal = true;
+        oBrowserOptions.parent = CURRWIN;
+
+        // 브라우저 오픈
+        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+
+        var oSendData = {
+            BROWSKEY: BROWSKEY,
+            SERVPATH: sServerPath,
+            PRCCD: sFlag,
+            APPID: ""
+        };
+
+        if (sFlag == "EXPORT") {
+            oSendData.APPID = sAppId;
+        }
+
+        var sUrlPath = parent.getPath(sPopupName);
+        oBrowserWindow.loadURL(sUrlPath);
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            oBrowserWindow.webContents.send("export_import-INITDATA", oSendData);
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+
+            IPCMAIN.off(`${BROWSKEY}--export_import-IMPORT`, oAPP.fn.fnIpcMain_export_import_IMPORT);
+            IPCMAIN.off(`${BROWSKEY}--export_import-EXPORT`, oAPP.fn.fnIpcMain_export_import_EXPORT);
+
+            oBrowserWindow = null;
+
+        });
+
+        // IPCMAIN 이벤트
+        IPCMAIN.on(`${BROWSKEY}--export_import-IMPORT`, oAPP.fn.fnIpcMain_export_import_IMPORT);
+        IPCMAIN.on(`${BROWSKEY}--export_import-EXPORT`, oAPP.fn.fnIpcMain_export_import_EXPORT);
+
+    }; // end of oAPP.fn.fnWsImportExportPopupOpener
+
+
+    /************************************************************************
+     * About U4A Popup Opener
+     ************************************************************************/
+    oAPP.fn.fnAboutU4APopupOpener = () => {
+        
+        let sPopupName = "ABOUTU4APOP";
+
+        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        if (oResult.ISOPEN) {
+            return;
+        }
+
+        let sServerPath = parent.getServerPath(),
+            oBrowserOptions = {
+                "height": 640,
+                "width": 500,
+                "resizable": false,
+                "fullscreenable": true,
+                "maximizable": false,
+                "minimizable": false,
+                "icon": "www/img/logo.png",
+                "webPreferences": {
+                    "devTools": true,
+                    "nodeIntegration": true,
+                    "enableRemoteModule": true,
+                    "contextIsolation": false,
+                    "nativeWindowOpen": true,
+                    "webSecurity": false
+                }
+
+            };
+
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.title = "About U4A";
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.modal = true;
+        oBrowserOptions.parent = CURRWIN;
+
+        // 브라우저 오픈
+        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+
+        var oSendData = {
+            SERVPATH: sServerPath
+        };
+
+        var sUrlPath = parent.getPath(sPopupName);
+        oBrowserWindow.loadURL(sUrlPath);
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            oBrowserWindow.webContents.send("if-about-u4a", oSendData);
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+
+            oBrowserWindow = null;
+
+        });
+    
+    }; // end of oAPP.fn.fnAboutU4APopupOpener
+
 
 })(window, $, oAPP);

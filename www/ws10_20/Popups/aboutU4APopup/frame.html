@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        html {
+            background-color: #FAFAFA;
+            background-image: url("back_img.png");
+
+
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center center;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: Roboto, 'Segoe UI', Arial, 'Malgun Gothic', Gulim, sans-serif;
+            font-size: 81.25%;
+            text-shadow: 0 0 4px #F2F2F2;
+        }
+
+        li {
+            margin-left: 40px;
+            padding-bottom: 7px;
+            color: blue;
+        }
+
+        hr {
+            width: 95%;
+        }
+
+        .shadowbox {
+            margin-left: 5px;
+            height: 100%;
+            border-radius: 3px;
+            box-shadow: 0px 4px 4px 4px #999;
+            /*background-color: rgb(255, 3, 0, 0.5); */
+        }
+
+        #logo {
+            vertical-align: middle;
+            padding: 10px;
+            width: 40px;
+            height: 40px;
+        }
+
+        #logo2 {
+            vertical-align: middle;
+            padding: 10px;
+            width: 45px;
+            height: 45px;
+        }
+
+        #ts0 {
+            font-weight: bolder;
+            padding-left: 20px;
+            font-size: 1rem;
+            color: black;
+        }
+
+        #ts1 {
+            font-weight: bolder;
+            font-size: 1.2rem;
+            color: black;
+        }
+
+        #ts2 {
+            font-weight: bolder;
+            font-size: 1.2rem;
+            color: #ff00ff;
+        }
+
+        #ts3 {
+            font-weight: bolder;
+            font-size: 1.2rem;
+            color: blue;
+        }
+
+        #ts4 {
+            font-weight: strong;
+            font-size: 0.8rem;
+            color: #ff00ff;
+        }
+
+        #ts5 {
+            font-weight: strong;
+            font-size: 0.8rem;
+            color: black;
+        }
+
+        #ts10 {
+            font-weight: strong;
+            font-size: 0.8rem;
+            color: #ff00ff;
+        }
+
+        #ts11 {
+            font-weight: strong;
+            font-size: 0.8rem;
+            color: black;
+        }
+
+
+
+        .copyright {
+            font-weight: bold;
+            font-size: 0.7rem;
+            color: #5858FA;
+        }
+
+        .trand {
+            font-size: 0.5rem;
+            color: #585858;
+            padding-left: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div>
+        <div class="shadowbox">
+            <div>
+
+                <img id="logo" src="logo.png">
+
+
+                <span id="ts1">About</span>&nbsp;
+                <span id="ts2">U4A IDE</span>&nbsp;
+                <span id="ts3">Platform</span>
+
+                <img id="logo2" src="workspace.png">
+
+            </div>
+            <div>
+
+                <hr color="#BDBDBD">
+
+                <p id="ts0">&gt;&gt;&nbsp;Version Info.</p>
+
+                <li>
+                    <span id="ts4">U4A IDE</span>&nbsp;
+                    <span id="ts5">Version&nbsp;:</span>
+                    <span id="VER1"> </span>
+                </li>
+
+                <li>
+                    <span id="ts10">Work Space 3.0</span>&nbsp;
+                    <span id="ts11">Version&nbsp;:</span>
+                    <span id="VER3"> </span>
+                </li>
+
+
+                <li>
+                    <span id="ts5">openUI5 Lib. Version&nbsp;:</span>
+                    <span id="VER2"> </span>
+                </li>
+
+                <br>
+
+                <!-- 20210616 YSHONG: 설치된 라이선스 유형 표기 추가 -->
+                <p id="ts0">&gt;&gt;&nbsp;Installed License Type</p>
+
+                <li>
+
+                    <!--LV_TXT = GCL_LICK->GET_LIC_TYPE( ). -->
+
+                    <span id="LIC_TYPE"> </span>
+
+
+                </li>
+
+                <!--"-* 20210616 YSHONG: END -->
+
+                <br>
+
+                <p id="ts0">&gt;&gt;&nbsp;Ref. Web Sites</p>
+
+                <li>
+                    <a id="U4A" href="javascript:void(0);" target="" title="www.u4ainfo.com"
+                        style="text-decoration:none" onclick="gfn_winOpen(event)">
+                        <span id="ts4">U4A IDE</span><span id="ts4">&nbsp;Official Web Site</span></a>
+                </li>
+
+                <li>
+                    <a id="UI5" href="javascript:void(0);" target="" title="openui5.org" style="text-decoration:none"
+                        onclick="gfn_winOpen(event)">
+                        <span id="ts5">openUI5 Official Web Site</span></a>
+                </li>
+
+            </div>
+            <br>
+            <br>
+            <br>
+            <div style="text-align: center;">
+                <a id="INFOCG" href="javascript:void(0);" target="" title="www.infocg.co.kr"
+                    style="text-decoration:none" onclick="gfn_winOpen(event)">
+                    <span id="ts6" class="copyright">Copyright 2017. INFOCG Inc. all rights reserved.</span></a>
+                <br>
+
+            </div>
+
+            <br>
+            <br>
+
+            <hr color="#BDBDBD">
+
+            <div class="trand">
+                <p style="font-size: 10px;">"ABAP®", "SAP NetWeaver®", "SAP S/4HANA®"
+                    &nbsp;are the trademark(s) or registered trademark(s)
+                    &nbsp;of SAP SE in Germany and in several other countries.</p>
+
+            </div>
+
+            <br>
+
+        </div>
+    </div>
+
+
+
+    <script>
+        window.addEventListener('beforeunload', function () {
+
+            let REMOTE = parent.gfn_remote(),
+                oWin = REMOTE.getCurrentWindow();
+
+            oWin.setOverlayIcon(null, '');
+
+        });
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            setTimeout(() => {
+
+                let PATH = parent.require('path'),
+                    sURL = PATH.join(parent.SERVPATH, "about_u4aide");
+
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+
+                    if (xhr.readyState == XMLHttpRequest.DONE) {
+
+                        var sData = JSON.parse(xhr.response);
+
+                        if (sData.RETCD === "E") {
+
+                            var REMOTE = parent.gfn_remote();
+                            const {
+                                dialog
+                            } = REMOTE.require('electron');
+                            dialog.showErrorBox('Oops! Something went wrong!', sData.RTMSG);
+
+                            var oWIN = REMOTE.getCurrentWindow();
+                            oWIN.close();
+
+                            return;
+
+                        }
+
+
+                        document.getElementById('LIC_TYPE').innerHTML = sData.DATA.LIC_TYPE;
+                        document.getElementById('VER1').innerHTML = sData.DATA.VER1;
+                        document.getElementById('VER2').innerHTML = sData.DATA.VER2;
+                        document.getElementById('VER3').innerHTML = parent.gfn_remote().app
+                            .getVersion();
+
+
+                    }
+                };
+
+                xhr.open('GET', sURL, true);
+                xhr.send(null);
+
+            }, 0);
+
+        });
+
+
+        //window open
+        function gfn_winOpen(e) {
+
+            e.stopPropagation();
+
+            let REMOTE = parent.gfn_remote();
+            let PATH = REMOTE.require('path');
+            let REGEDIT = REMOTE.require('regedit');
+            let {
+                execFile
+            } = REMOTE.require('child_process');
+
+            var Lurl = "",
+                Limg = "";
+
+            switch (e.target.id) {
+                case 'ts4':
+                    Lurl = "https://www.u4ainfo.com";
+                    Limg = PATH.join(parent.__dirname, 'U4A_V1.ico');
+                    break;
+
+                case 'ts5':
+                    Lurl = "https://openui5.org/";
+                    Limg = PATH.join(parent.__dirname, 'fav_UI5.png');
+                    break;
+
+                case 'ts6':
+                    Lurl = "http://www.infocg.co.kr";
+                    Limg = PATH.join(parent.__dirname, 'infocg.png');
+                    break;
+
+                default:
+                    return;
+                    break;
+
+            }
+
+            let vbsDirectory = PATH.join(PATH.dirname(parent.process.execPath), 'resources/regedit/vbs');
+            REGEDIT.setExternalVBSLocation(vbsDirectory);
+
+            var Lcr = "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe",
+                Ledg = "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe";
+
+
+            function Lfn_winOPEN(typ, is_stop) {
+
+                REGEDIT.list(typ, (err, res) => {
+
+                    if (err) {
+
+                        if (is_stop) {
+                            return;
+                        }
+                        Lfn_winOPEN(Ledg, true);
+
+                        return;
+
+                    }
+
+                    var sObjKey = Object.keys(res)[0],
+                        oPathObj = res[sObjKey],
+                        oExePathObj = oPathObj.values[""];
+
+                    if (typeof oExePathObj === "undefined") {
+                        if (is_stop) {
+                            return;
+                        }
+                        Lfn_winOPEN(Ledg, true);
+                        return;
+                    }
+
+                    var child = execFile(oExePathObj.value, [Lurl], (error, stdout, stderr) => {
+
+                        if (error) {
+                            console.error(error);
+                        }
+
+                    });
+
+                });
+
+            } //END - Lfn_winOPEN
+
+
+            Lfn_winOPEN(Lcr, false);
+
+
+        }
+    </script>
+
+
+</body>
+
+</html>
