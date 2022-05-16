@@ -77,11 +77,10 @@ let oAPP = parent.oAPP;
             oSetting_UI5 = oSettings.UI5,
             sVersion = oSetting_UI5.version,
             sTestResource = oSetting_UI5.testResource,
-            sReleaseResource = `../../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
+            sReleaseResource = `../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
             bIsDev = oSettings.isDev,
             oBootStrap = oSetting_UI5.bootstrap,
             oUserInfo = oAPP.attr.oUserInfo,
-            oThemeInfo = oAPP.attr.oThemeInfo,
             sLangu = oUserInfo.LANGU;
 
         var oScript = document.createElement("script");
@@ -93,7 +92,6 @@ let oAPP = parent.oAPP;
         }
 
         // 로그인 Language 적용
-        oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
         oScript.setAttribute("data-sap-ui-language", sLangu);
         oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.tnt, sap.ui.table, sap.ui.layout");
 
@@ -506,6 +504,10 @@ let oAPP = parent.oAPP;
 
         //SIGN, OPTION, LOW, HIGH 이외의 필드가 존재하지 않는경우.
         if (l_indx === -1) {
+
+            //RANGE TABLE 처리.
+            is_tree.EXP_TYP = "RANGE_TAB";
+
             //range table flag return
             return true;
         }
@@ -1038,7 +1040,7 @@ let oAPP = parent.oAPP;
                 var lt_filt = l_model.oData.TREE.filter(a => a.ZLEVEL === 2 && a.KIND !== "E");
 
                 //TABLE, STRUCTURE를 탐색하며 선택 가능 여부 처리.
-                oAPP.fn.setBindEnable(lt_filt, "", l_model);
+                oAPP.fn.setBindEnable(lt_filt, "", l_model, "");
 
                 //tree 바인딩 정보 구성.
                 oAPP.fn.setTreeJson(l_model, "TREE", "CHILD", "PARENT", "zTREE");
@@ -1050,6 +1052,9 @@ let oAPP = parent.oAPP;
 
             //이전 선택 라인정보 초기화.
             oAPP.attr.oTree.clearSelection();
+
+            //tee에서 필터 처리시 전체 펼침 처리.
+            oAPP.attr.oTree.expandToLevel(99999);
 
             //화면 잠금 해제 처리.
             l_model.oData.busy = false;
@@ -1072,13 +1077,29 @@ let oAPP = parent.oAPP;
 
 
     //바인딩 가능여부 flag 처리.
-    oAPP.fn.setBindEnable = function(it_tree, l_path, l_model, KIND) {
+    oAPP.fn.setBindEnable = function(it_tree, l_path, l_model, KIND_PATH, KIND) {
 
         if (it_tree.length === 0) {
             return;
         }
 
         for (var i = 0, l = it_tree.length; i < l; i++) {
+            
+            it_tree[i].isTabField = false;
+
+            //table로부터 파생된 필드인경우.
+            if(KIND === "T"){
+                //table로부터 팡생된 필드임 flag 처리.
+                it_tree[i].isTabField = true;
+            }
+
+            if(KIND_PATH === ""){
+                it_tree[i].KIND_PATH = it_tree[i].KIND;
+
+            }else{
+                
+                it_tree[i].KIND_PATH = KIND_PATH + "-" + it_tree[i].KIND;
+            }
 
             switch (it_tree[i].KIND) {
                 case "T": //TABLE인경우.
@@ -1089,7 +1110,10 @@ let oAPP = parent.oAPP;
 
                     var lt_child = l_model.oData.TREE.filter(a => a.PARENT === it_tree[i].CHILD);
 
-                    oAPP.fn.setBindEnable(lt_child, l_path, l_model, it_tree[i].KIND);
+                    //range table 여부 확인.
+                    oAPP.fn.chkRangeTable(it_tree[i]);
+
+                    oAPP.fn.setBindEnable(lt_child, l_path, l_model, it_tree[i].KIND_PATH, it_tree[i].KIND);
 
                     break;
 
@@ -1102,7 +1126,7 @@ let oAPP = parent.oAPP;
                     var lt_child = l_model.oData.TREE.filter(a => a.PARENT === it_tree[i].CHILD);
 
                     //하위 path를 탐색하며 선택 가능 flag 처리.
-                    oAPP.fn.setBindEnable(lt_child, l_path, l_model, KIND);
+                    oAPP.fn.setBindEnable(lt_child, l_path, l_model, it_tree[i].KIND_PATH, KIND);
                     break;
 
                 case "E": //일반 필드인경우.

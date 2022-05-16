@@ -148,7 +148,7 @@
 
 
     //drop UI 생성.
-    var oDrop1 = new sap.ui.core.dnd.DropInfo({targetAggregation:"items"});
+    var oDrop1 = new sap.ui.core.dnd.DropInfo({targetAggregation:"items", enabled:"{/IS_EDIT}"});
     oAPP.attr.ui.oRTab1.addDragDropConfig(oDrop1);
 
     //drag UI가 다른라인에 올라갔을때 이벤트.
@@ -495,7 +495,7 @@
     //프로퍼티에서 바인딩 처리 호출한게 아닌경우 exit.
     if(is_attr.UIATY !== "1"){return;}
 
-    var l_title = "Data Binding / Unbinding - Property";
+    var l_title = "Data Binding / Unbinding - Property : " + is_attr.UAITT;
     var l_CARDI = "F";
 
     //SELECT OPTION2의 VALUE에 바인딩처리 하는경우.
@@ -536,25 +536,11 @@
     //aggregation에서 바인딩 처리 호출한게 아닌경우 exit.
     if(is_attr.UIATY !== "3"){return;}
 
-    //현재 ui의 tree 정보 얻기.
-    var l_tree = oAPP.fn.getTreeData(is_attr.OBJID);
-
-    //CHILD 정보가 존재하는경우.
-    if(l_tree.zTREE.length !== 0){
-
-      //현재 바인딩 아이콘을 선택한 AGGREGATION에 추가된 UI정보 얻기.
-      var lt_filter = l_tree.zTREE.filter( a => a.UIATK === is_attr.UIATK);
-
-      //현재 aggregation에 2개 이상의 UI가 추가된경우.
-      if(lt_filter.length >= 2){
-        parent.showMessage(sap, 10, "E", "If you have one or more child objects, you can not specify a model.");
-        return;
-      }
-
-    }
+    //aggregation 바인딩 처리 가능여부 점검.
+    if(oAPP.fn.attrChkBindAggrPossible(is_attr)){return;}
 
 
-    var l_title = "Data Binding / Unbinding - Aggregation";
+    var l_title = "Data Binding / Unbinding - Aggregation : " + is_attr.UIATT;
     var l_CARDI = "T";
 
     //대상 function이 존재하는경우 호출 처리.
@@ -2540,7 +2526,7 @@
     }
 
     //프로퍼티 type이 숫자 유형인경우.
-    if(is_attr.UIATY === "1" && ( is_attr.UIADT === "int" || is_attr.UIADT === "float")){
+    if(is_attr.UIATY === "1" && is_attr.ISBND === "" && ( is_attr.UIADT === "int" || is_attr.UIADT === "float")){
       //입력값 숫자 유형으로 변경 처리.                
       is_attr.UIATV  = String(Number(is_attr.UIATV));
     }
@@ -3234,6 +3220,9 @@
 
           //help 아이콘 -> 상세 아이콘 처리.
           is_attr.icon2_src = "sap-icon://inspection";
+          
+          //drop 가능 처리.
+          is_attr.dropEnable = true;
 
           return;
 
@@ -4420,7 +4409,7 @@
 
     //drop UI를 얻지 못한 경우 exit.
     if(!l_row){
-      oEvent.preventDefault(true);
+      parent.showMessage(sap, 10, "E", "impossible.");
       return;
     }
 
@@ -4429,42 +4418,266 @@
 
     //바인딩 정보가 존재하지 않는경우 exit.
     if(!l_ctxt){
-      oEvent.preventDefault(true);
+      parent.showMessage(sap, 10, "E", "impossible.");
       return;
     }
 
     //현재 라인이 drop 가능한건 인지 확인.
-    var l_drop_enable = l_ctxt.getProperty("dropEnable");
+    var ls_attr = l_ctxt.getProperty();
 
     //drop 불가능한 경우 exit.
-    if(!l_drop_enable){
-      oEvent.preventDefault(true);
+    if(!ls_attr.dropEnable){
+      parent.showMessage(sap, 10, "E", "impossible.");
       return;
     }
-
     debugger;
 
     //drag 정보 얻기.
     var l_json = event.dataTransfer.getData("prc001");
 
+    //drag 정보를 얻지 못한 경우 exit.
+    if(typeof l_json === "undefined" || l_json === ""){
+      parent.showMessage(sap, 10, "E", "impossible.");
+      return;
+    }
 
     //json 형식 parse, 실패시 exit.
     try{
       l_json = JSON.parse(l_json);
-    }catch(e){
 
-      oEvent.preventDefault(true);
+    }catch(e){
+      parent.showMessage(sap, 10, "E", "impossible.");
       return;
     }
 
     //바인딩 팝업에서 drag한게 아닌경우 exit.
     if(l_json.PRCCD !== "PRC001"){
+      parent.showMessage(sap, 10, "E", "impossible.");
       return;
+    }
+
+    //바인딩 팝업에서 최상위를 drag한경우, structure를 drag한경우 exit.
+    if(l_json.IF_DATA.KIND === "" || l_json.IF_DATA.KIND === "S"){
+      parent.showMessage(sap, 10, "E", "impossible.");
+      return;
+    }
+
+    //aggregation인경우 TABLE을 DROP하지 않았다면.
+    if(ls_attr.UIATY === "3" && l_json.IF_DATA.KIND !== "T" ){
+      parent.showMessage(sap, 10, "E", "impossible.");
+      return;
+    }
+
+    //n건 바인딩 처리된 UI인지 여부 확인.
+    var l_path = oAPP.fn.getParentAggrBind(oAPP.attr.prev[ls_attr.OBJID]);
+
+    var l_isTree = false;
+
+    //바인딩 팝업을 호출한 attribute정보가 sap.m.Tree의 parent, child인경우.
+    if(ls_attr.UIATK === "EXT00001190" ||  //parent
+      ls_attr.UIATK === "EXT00001191"){   //child
+
+      //items aggregation에 바인딩된 정보 매핑.
+      l_path = oAPP.attr.prev[ls_attr.OBJID]._MODEL["items"];
+
+      l_isTree = true;
+
+    //바인딩 팝업을 호출한 attribute정보가 sap.ui.table.TreeTable의 parent, child인경우.
+    }else if(ls_attr.UIATK === "EXT00001192" || //parent
+      ls_attr.UIATK === "EXT00001193"){  //child
+
+      //rows aggregation에 바인딩된 정보 매핑.
+      l_path = oAPP.attr.prev[ls_attr.OBJID]._MODEL["rows"];
+
+      l_isTree = true;
+
+    }
+
+    //tree의 parent, child에 drop한경우 n건 바인딩 정보가 존재하지 않는경우.
+    if(l_isTree && !l_path){
+      parent.showMessage(sap, 10, "E", "impossible.");
+      return;
+    }
+
+    
+    var lt_split1, lt_split2;
+
+    //drag한 UI가 table로부터 파생된 필드인경우.
+    if(l_json.IF_DATA.isTabField === true){
+
+      //현재 UI가 N건 바인딩처리된건이 아닌경우 EXIT.
+      if(typeof l_path === "undefined" || l_path === "" || l_path === null){
+        parent.showMessage(sap, 10, "E", "impossible.");
+        return;
+      }
+
+      //현재 UI가 N건 바인딩 처리됐다면 
+      if(l_path !== l_json.IF_DATA.CHILD.substr(0, l_path.length)){
+        parent.showMessage(sap, 10, "E", "impossible.");
+        return;
+      }
+
+      //현재 UI의 N건 바인딩 PATH를 구분자로 분리.(STRU-STRU-TAB 형식)
+      lt_split1 = l_path.split("-");
+
+      //DRAG한 UI의 KIND PATH 정보를 구분자로 분리.(S-S-T-T-E 형식)
+      lt_split2 = l_json.IF_DATA.KIND_PATH.split("-");
+
+      //현재 UI의 N건 바인딩 PATH 위치까지를 제거.(S-S-T 부분까지 제거)
+      lt_split2.splice(0, lt_split1.length);
+
+    }
+
+    //drop위치의 attribute가 property인경우.
+    if(ls_attr.UIATY === "1"){
+      
+      //selectOption2의 value에 바인딩 처리되는경우.
+      if(ls_attr.UIATK === "EXT00001161"){
+        //drag한 필드가 range table이 아닌경우 exit.
+        if(l_json.IF_DATA.EXP_TYP !== "RANGE_TAB"){
+          parent.showMessage(sap, 10, "E", "impossible.");
+          return;
+        }
+
+        
+        if(typeof lt_split2 !== "undefined"){
+          //마지막 필드 제거(마지막필드는 range table이므로)
+          lt_split2.splice(lt_split2.length - 1, 1);
+
+          //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
+          if(lt_split2.findIndex( a=> a === "T" ) !== -1){
+            parent.showMessage(sap, 10, "E", "impossible.");
+            return;
+          }
+
+        }        
+        
+        //프로퍼티 바인딩 처리.
+        oAPP.fn.attrSetBindProp(ls_attr, l_json.IF_DATA);
+        oEvent.preventDefault(true);
+        return;
+
+      }
+      
+      //프로퍼티가 ARRAY로 입력 가능한 경우, 프로퍼티 타입이 숫자 유형이 아님.
+      if((ls_attr.ISMLB === "X" && (ls_attr.UIADT !== "int" && ls_attr.UIADT !== "float"))){
+        //string_table이 아닌경우 exit.
+        if(l_json.IF_DATA.EXP_TYP !== "STR_TAB"){
+          parent.showMessage(sap, 10, "E", "impossible.");
+          return;
+        }
+
+        if(typeof lt_split2 !== "undefined"){
+          //마지막 필드 제거(마지막필드는 string_table이므로)
+          lt_split2.splice(lt_split2.length - 1, 1);
+
+          //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
+          if(lt_split2.findIndex( a=> a === "T" ) !== -1){
+            parent.showMessage(sap, 10, "E", "impossible.");
+            return;
+          }
+
+        }
+
+        //프로퍼티 바인딩 처리.
+        oAPP.fn.attrSetBindProp(ls_attr, l_json.IF_DATA);
+        oEvent.preventDefault(true);
+        return;
+      }
+
+      //일반 프로퍼티의 경우 Elementary Type 이 아닌경우 EXIT.
+      if(l_json.IF_DATA.KIND !== "E"){
+        parent.showMessage(sap, 10, "E", "impossible.");
+        return;
+      }
+
+      //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
+      if(typeof lt_split2 !== "undefined" && lt_split2.findIndex( a=> a === "T" ) !== -1){
+        parent.showMessage(sap, 10, "E", "impossible.");
+        return;
+      }
+
+
+      //tree인경우 n건 바인딩 path와 다른 경우 exit.
+      if(l_isTree && l_path && l_path !== l_json.IF_DATA.CHILD.substr(0, l_path.length)){
+        parent.showMessage(sap, 10, "E", "impossible.");
+        return;
+      }
+
+      //sap.ui.core.HTML의 content프로퍼티에 drop된경우 예외처리.
+      if(oAPP.fn.attrChkHTMLContent(ls_attr, true, function(){oAPP.fn.attrSetBindProp(ls_attr, l_json.IF_DATA);})){return;}
+
+      //프로퍼티 바인딩 처리.
+      oAPP.fn.attrSetBindProp(ls_attr, l_json.IF_DATA);
+      oEvent.preventDefault(true);
+
+    } //drop위치의 attribute가 property인경우.
+
+
+    //AGGREGATION인경우 N건 들어가는 AGGREGATION이 아닌경우 EXIT.
+    if(ls_attr.UIATY === "3" && ls_attr.ISMLB !== "X"){
+      parent.showMessage(sap, 10, "E", "impossible.");
+      return;
+    }
+
+    
+    //AGGREGATION에 string_table을 drop한경우.
+    if(ls_attr.UIATY === "3" && l_json.IF_DATA.EXP_TYP === "STR_TAB"){
+      parent.showMessage(sap, 10, "E", "impossible.");
+      return;
+    }
+
+
+    //drop위치의 attribute가 aggregation인경우.
+    if(ls_attr.UIATY === "3" && l_json.IF_DATA.KIND === "T"){
+
+      //aggregation 바인딩 처리 가능여부 점검.
+      if(oAPP.fn.attrChkBindAggrPossible(ls_attr)){return;}
+
+      if(typeof lt_split2 !== "undefined"){
+        //마지막 필드 제거(마지막필드는 TABLE이므로)
+        lt_split2.splice(lt_split2.length - 1, 1);
+
+        //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
+        if(lt_split2.findIndex( a=> a === "T" ) !== -1){
+          parent.showMessage(sap, 10, "E", "impossible.");
+          return;
+        }
+
+      }
+
+      //aggregation 바인딩 처리.
+      oAPP.fn.attrBindCallBackAggr(true, l_json.IF_DATA, ls_attr);
+      oEvent.preventDefault(true);
     }
 
 
   };  //attribute에 drag UI가 올라갔을때 이벤트.
 
 
+
+
+  //aggregation 바인딩 처리 가능여부 점검.
+  oAPP.fn.attrChkBindAggrPossible = function(is_attr){
+
+    //현재 ui의 tree 정보 얻기.
+    var l_tree = oAPP.fn.getTreeData(is_attr.OBJID);
+
+    //CHILD 정보가 없는경우 exit.
+    if(l_tree.zTREE.length === 0){return;}
+
+    //현재 바인딩 아이콘을 선택한 AGGREGATION에 추가된 UI정보 얻기.
+    var lt_filter = l_tree.zTREE.filter( a => a.UIATK === is_attr.UIATK);
+
+    //현재 aggregation에 2개 이상의 UI가 추가된경우.
+    if(lt_filter.length >= 2){      
+      parent.showMessage(sap, 10, "E", "If you have one or more child objects, you can not specify a model.");
+      
+      //오류 FLAG RETURN.
+      return true;
+    }
+
+
+  };  //aggregation 바인딩 처리 가능여부 점검.
 
 })();

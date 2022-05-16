@@ -833,10 +833,6 @@
             var lt_0015 = lf_copyAttrData(ls_14, is_copied, aggrParam, bKeep);
 
 
-            //file uploader UI의 uploaderUrl 프로퍼티 예외처리.
-            oAPP.fn.attrUploadUrlException(ls_14.OBJID, ls_14.UIOBK);
-
-
             //tree embeded aggregation 아이콘 표현.
             oAPP.fn.setTreeAggrIcon(ls_14);
 
@@ -867,6 +863,10 @@
             //미리보기 UI 추가
             oAPP.attr.ui.frame.contentWindow.addUIObjPreView(ls_14.OBJID, ls_14.UIOBK, l_UILIB, 
                 ls_14.UIFND, ls_14.POBID, ls_14.PUIOK, ls_14.UIATT, lt_0015, it_ua018, it_ua032, it_ua030, it_ua026, it_ua050);
+
+                
+            //file uploader UI의 uploaderUrl 프로퍼티 예외처리.
+            oAPP.fn.attrUploadUrlException(ls_14.OBJID, ls_14.UIOBK);
 
 
             //복사한 데이터의 CHILD 정보가 존재하지 않는경우.
