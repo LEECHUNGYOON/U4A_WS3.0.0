@@ -291,6 +291,7 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.title = "Binding Popup";
+        oBrowserOptions.width = 1000;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;

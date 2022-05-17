@@ -70,14 +70,9 @@
             // 리턴받은 APP 정보를 Frame에 저장한다.
             parent.setAppInfo(oAppInfo);
 
-            var oWs20 = {
-                APP: oAppInfo,
-                SRCHTXT: {
-                    INPUT_VISI: false,
-                    INPUT_VALUE: "",
-                    COUNT: ""
-                }
-            };
+            // WS20 기본 모델 데이터
+            var oWs20 = oAPP.main.fnGetWs20InitData();
+            oWs20.APP = oAppInfo;        
 
             // 모델에 데이터 업데이트
             oAPP.common.fnSetModelProperty("/WS20", oWs20);

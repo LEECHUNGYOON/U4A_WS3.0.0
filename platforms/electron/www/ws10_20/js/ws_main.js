@@ -5,7 +5,7 @@
  * - file Desc : ws 메인 
  ************************************************************************/
 
-(function(window, oAPP) {
+(function (window, oAPP) {
     "use strict";
 
     var APPCOMMON = oAPP.common;
@@ -13,7 +13,7 @@
     /**************************************************************************
      * 공통 인스턴스 정의
      **************************************************************************/
-    oAPP.main.fnPredefineGlobalObject = function() {
+    oAPP.main.fnPredefineGlobalObject = function () {
 
         var oMetaData = parent.getMetadata();
 
@@ -31,7 +31,7 @@
     /************************************************************************
      * 접속 Language 에 맞는 메시지 텍스트 읽어오기
      ************************************************************************/
-    oAPP.main.fnOnLoadMessageClass = function() {
+    oAPP.main.fnOnLoadMessageClass = function () {
 
         var FS = parent.FS,
             oUserInfo = parent.getUserInfo();
@@ -51,9 +51,45 @@
     }; // end of oAPP.main.fnOnLoadMessageClass
 
     /**************************************************************************
+     * [WS10] 모델 데이터 기본세팅
+     **************************************************************************/
+    oAPP.main.fnGetWs10InitData = () => {
+
+        return {
+            APPID: "",
+            SRCHTXT: {
+                INPUT_VISI: false,
+                INPUT_VALUE: "",
+                COUNT: ""
+            }
+        };
+
+    }; // end of oAPP.main.fnGetWs10InitData
+
+    /**************************************************************************
+     * [WS20] 모델 데이터 기본세팅
+     **************************************************************************/
+    oAPP.main.fnGetWs20InitData = () => {
+
+        return {
+            SRCHTXT: {
+                INPUT_VISI: false,
+                INPUT_VALUE: "",
+                COUNT: ""
+            },
+            SIDEMENU: {
+                SELKEY: "",
+                ITEMS: oAPP.main.fnGetWs20SideMenuItemList(),
+                FIXITM: oAPP.main.fnGetWs20SideMenuFixItemList()
+            }
+        };
+
+    }; // end of oAPP.main.fnGetWs20InitData
+
+    /**************************************************************************
      * U4A WS 메타 정보 구하기
      **************************************************************************/
-    oAPP.main.fnOnInitModelBinding = function() {
+    oAPP.main.fnOnInitModelBinding = function () {
 
         // ModelData
         var oMetaData = {
@@ -66,21 +102,8 @@
             SETTING: {
                 ISPIN: false
             },
-            WS10: {
-                APPID: "",
-                SRCHTXT: {
-                    INPUT_VISI: false,
-                    INPUT_VALUE: "",
-                    COUNT: ""
-                }
-            },
-            WS20: {
-                SRCHTXT: {
-                    INPUT_VISI: false,
-                    INPUT_VALUE: "",
-                    COUNT: ""
-                }
-            },
+            WS10: oAPP.main.fnGetWs10InitData(),
+            WS20: oAPP.main.fnGetWs20InitData(),
             FMSG: {
                 WS10: {
                     ISSHOW: false,
@@ -107,10 +130,30 @@
 
     }; // end of oAPP.main.fnOnInitModelBinding    
 
+    oAPP.main.fnGetWs20SideMenuItemList = () => {
+
+        return [{
+            key: "",
+            icon: "",
+            visible: true
+        }];
+    };
+
+    oAPP.main.fnGetWs20SideMenuFixItemList = () => {
+
+        return [{
+            key: "FIXITM_10",
+            icon: "sap-icon://it-system",
+            text: "",
+            visible: true
+        }];
+
+    };
+
     /************************************************************************
      * window Event Handle ..
      ************************************************************************/
-    oAPP.main.fnBeforeunload = function() {
+    oAPP.main.fnBeforeunload = function () {
 
         // 설정된 Global Shortcut 단축키 삭제
         oAPP.common.fnRemoveGlobalShortcut();
@@ -151,7 +194,7 @@
     /************************************************************************
      * 서버 세션 유지 이벤트 전파
      ************************************************************************/
-    oAPP.main.fnServerSessionCheckPropagation = function() {
+    oAPP.main.fnServerSessionCheckPropagation = function () {
 
         if (!oAPP.attr.serverSessionCheckingMe) {
             return;
@@ -177,10 +220,10 @@
     /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------
      ************************************************************************/
-    oAPP.main.fnWsStart = function() {
+    oAPP.main.fnWsStart = function () {
 
-        sap.ui.getCore().attachInit(function() {
-            
+        sap.ui.getCore().attachInit(function () {
+
             // Register illustration Message Pool
             oAPP.fn.fnRegisterIllustrationPool();
 
@@ -229,7 +272,7 @@
             setTimeout(() => {
 
                 $('#content').fadeIn(1000, 'linear');
-                
+
             }, 100);
 
         }); // end of attachInit
@@ -243,7 +286,7 @@
     }; // end of oAPP.main.fnWsStart
 
     // Test..
-    oAPP.main.fnSetLanguage = function() {
+    oAPP.main.fnSetLanguage = function () {
 
         var oUserInfo = parent.getUserInfo(),
             oMetaScript = document.getElementById("sap-ui-bootstrap");

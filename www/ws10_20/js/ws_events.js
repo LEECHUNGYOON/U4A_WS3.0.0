@@ -590,7 +590,15 @@
             sItemKey = oSelectedItem.getProperty("key"),
             sItemTxt = oSelectedItem.getProperty("text");
 
-        parent.showMessage(sap, 10, "", "key: " + sItemKey + ", text: " + sItemTxt);
+        var sPrefix = `fnWs20Side${sItemKey}`;
+
+        if(typeof oAPP.fn[sPrefix] == "undefined"){
+            return;
+        };        
+
+        oAPP.fn[sPrefix](oEvent);
+
+        // parent.showMessage(sap, 10, "", "key: " + sItemKey + ", text: " + sItemTxt);
 
     }; // end of oAPP.events.ev_pressSideNavMenu
 

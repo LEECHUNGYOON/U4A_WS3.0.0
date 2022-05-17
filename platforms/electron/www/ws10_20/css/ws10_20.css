@@ -11,7 +11,8 @@ body,
     z-index: 1;
 }
 
-.sapMSticky5 .sapMTableTH, .sapMSticky7>.sapMListInfoTBarContainer {
+.sapMSticky5 .sapMTableTH,
+.sapMSticky7>.sapMListInfoTBarContainer {
     top: 2.75rem;
 }
 
@@ -116,9 +117,11 @@ body,
 .u4aWsBusyDialog.sapMDialog {
     box-shadow: none !important;
 }
+
 .u4aWsBusyDialog.sapMDialog .sapMDialogSection {
     background: transparent;
 }
+
 .u4aWsBusyDialog .u4aWsAvatarBusy {
     background-color: transparent;
 }
@@ -189,10 +192,10 @@ body,
 }
 
 /* Mime Repository Dialog */
-.sapUiTheme-sap_fiori_3_dark .u4aWsMimeTreeTable .u4aMimeTreeMyApp.sapUiTableContentRow,
+/* .sapUiTheme-sap_fiori_3_dark .u4aWsMimeTreeTable .u4aMimeTreeMyApp.sapUiTableContentRow,
 .sapUiTheme-sap_fiori_3_dark .u4aWsMimeTreeTable .u4aMimeTreeMyApp.sapUiTableContentRow.sapUiTableRowHvr {
     background-color: #3c597a;
-}
+} */
 
 .sapUiTheme-sap_fiori_3_dark .u4aWsMimeTreeTable .u4aMimeTreeMyApp .sapMText,
 .sapUiTheme-sap_fiori_3_dark .u4aWsMimeTreeTable .u4aMimeTreeMyAppChild .sapMText,
@@ -217,7 +220,7 @@ body,
 .sapUiTheme-sap_horizon_dark .u4aWsTmplWzdSideNav .sapTntNavLIItem .sapUiIcon {
     color: #eaecee;
 }
-                                                      
+
 .sapUiTheme-sap_horizon_dark .u4aWsTmplWzdAttrActive .sapTntNavLIItem .sapUiIcon,
 .sapUiTheme-sap_horizon_dark .sapTntNavLI .u4aWsTmplWzdAttrActive .sapTntNavLIGroup.sapTntNavLIItem:not(.sapTntNavLIItemDisabled):active .sapUiIcon {
     color: #97dd40;
@@ -238,3 +241,19 @@ body,
 .sapUiTheme-sap_horizon_dark .u4aWsMimeTreeTable .u4aMimeTreeDarkRow .sapMText {
     color: #89919a;
 }
+
+
+
+
+/************************************************************************************ 
+    default
+ ************************************************************************************/
+
+/* Mime Repository Dialog */
+.u4aWsMimeTreeTable .u4aMimeTreeMyApp.sapUiTableContentRow,
+.u4aWsMimeTreeTable .u4aMimeTreeMyApp.sapUiTableContentRow.sapUiTableRowHvr {
+    background-color: #eaecee;
+}
+
+
+
