@@ -31,7 +31,7 @@
         var oBindData = {
             TITLE: "",
             TYPE: "",
-            OBJID : OBJID
+            OBJID: OBJID
         }
 
         // TYPE 에 따라 모델을 초기화 한다.
@@ -66,6 +66,8 @@
 
         var oClientEditorDialog = sap.ui.getCore().byId(C_DLG_ID);
         if (oClientEditorDialog) {
+         
+            oClientEditorDialog.setStretch(false);
 
             // Dialog가 열려 있으면 빠져나간다.
             if (oClientEditorDialog.isOpen() == true) {
@@ -76,7 +78,8 @@
             return;
         }
 
-        var oContents = oAPP.fn.fnClientEditorPopupContents();
+        var oContents = oAPP.fn.fnClientEditorPopupContents(),
+            oCustomHeader = oAPP.fn.fnGetClientEditorCustomHeader();
 
         var oClientEditorDialog = new sap.m.Dialog(C_DLG_ID, {
 
@@ -87,39 +90,7 @@
             contentWidth: "50%",
             contentHeight: "500px",
             // icon: "sap-icon://syntax",
-            customHeader: new sap.m.Toolbar({
-                content: [
-                    new sap.m.ToolbarSpacer(),
-
-                    new sap.ui.core.Icon({
-                        src: "sap-icon://syntax"
-                    }),
-
-                    new sap.m.Title({
-                        text: `{${CLIENT_EDITOR_BIND_ROOT_PATH}/TITLE} -- {${CLIENT_EDITOR_BIND_ROOT_PATH}/OBJID}`
-                        // text: "{" + CLIENT_EDITOR_BIND_ROOT_PATH + "/TITLE}"
-                    }).addStyleClass("sapUiTinyMarginBegin"),
-
-                    new sap.m.ToolbarSpacer(),
-
-                    new sap.m.Button({
-                        icon: "sap-icon://decline",
-                        press: function() {
-
-                            var oDialog = sap.ui.getCore().byId(C_DLG_ID);
-                            if(oDialog == null){
-                                return;
-                            }
-
-                            if(oDialog.isOpen()){
-                                oDialog.close();
-                            }
-
-                        }
-                    })
-
-                ]
-            }),
+            customHeader: oCustomHeader,
 
             // Aggregations
             buttons: [
@@ -187,6 +158,59 @@
 
     }; // end of oAPP.fn.fnClientEditorPopupOpen
 
+    oAPP.fn.fnGetClientEditorCustomHeader = () => {
+
+        return new sap.m.Toolbar({
+            content: [
+                new sap.m.ToolbarSpacer(),
+
+                new sap.ui.core.Icon({
+                    src: "sap-icon://syntax"
+                }),
+
+                new sap.m.Title({
+                    text: `{${CLIENT_EDITOR_BIND_ROOT_PATH}/TITLE} -- {${CLIENT_EDITOR_BIND_ROOT_PATH}/OBJID}`
+                    // text: "{" + CLIENT_EDITOR_BIND_ROOT_PATH + "/TITLE}"
+                }).addStyleClass("sapUiTinyMarginBegin"),
+
+                new sap.m.ToolbarSpacer(),
+
+                new sap.m.Button({
+                    icon: "sap-icon://decline",
+                    press: function() {
+
+                        var oDialog = sap.ui.getCore().byId(C_DLG_ID);
+                        if (oDialog == null) {
+                            return;
+                        }
+
+                        if (oDialog.isOpen()) {
+                            oDialog.close();
+                        }
+
+                    }
+                })
+
+            ]
+        }).attachBrowserEvent("dblclick", (oEvent) => {
+
+            var oToolbar = sap.ui.getCore().byId(oEvent.currentTarget.id);
+            if (oToolbar == null || oToolbar instanceof sap.m.Toolbar == false) {
+                return;
+            }
+
+            var oDialog = oToolbar.getParent();
+            if (oDialog instanceof sap.m.Dialog == false) {
+                return;
+            }
+
+            var bIsStretch = oDialog.getStretch();
+            oDialog.setStretch(!bIsStretch);
+
+        });
+
+    }; // end of oAPP.fn.fnGetClientEditorCustomHeader
+
     /************************************************************************
      * Client Editor (HTML, JAVASCRIPT) Contents UI
      ************************************************************************/
@@ -197,7 +221,7 @@
             type: "{" + CLIENT_EDITOR_BIND_ROOT_PATH + "/TYPE}",
             value: "{" + CLIENT_EDITOR_BIND_ROOT_PATH + "/EDITDATA/DATA}",
         }).bindProperty("editable", "/WS20/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding);
-        
+
         oCodeEditor.addDelegate({
             onAfterRendering: function(oControl) {
 
@@ -274,7 +298,7 @@
      * Client Editor (HTML, JAVASCRIPT) Save Event
      ************************************************************************/
     oAPP.events.ev_pressClientEditorSave = function(oEvent) {
-        
+
         if (typeof GfnEditorCallback !== "function") {
             return;
         }
