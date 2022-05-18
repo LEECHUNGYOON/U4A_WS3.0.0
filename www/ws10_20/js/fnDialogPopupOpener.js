@@ -278,7 +278,7 @@
 
         var sPopupName = "BINDPOPUP";
 
-        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             return;
@@ -359,7 +359,7 @@
 
         var sPopupName = "TXTSRCH";
 
-        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             oResult.WINDOW.close();
@@ -431,7 +431,7 @@
 
         var sPopupName = "APPDOCU";
 
-        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             return;
@@ -503,7 +503,7 @@
 
         let sPopupName = "WSOPTS";
 
-        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             return;
@@ -570,7 +570,6 @@
 
         });
 
-
     }; // end of oAPP.fn.fnWsOptionsPopupOpener
 
     /************************************************************************
@@ -580,7 +579,7 @@
 
         let sPopupName = "U4ADOCU";
 
-        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             return;
@@ -656,7 +655,7 @@
 
         let sPopupName = "IMPEXPPOP";
 
-        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             return;
@@ -763,7 +762,7 @@
 
         let sPopupName = "ABOUTU4APOP";
 
-        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             return;
@@ -843,7 +842,7 @@
 
         var sWinObjType = "RTMCLS";
 
-        // 기존에 RUNTIMECLASS 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = oAPP.common.getCheckAlreadyOpenWindow(sWinObjType);
         if (oResult.ISOPEN) {
             return;
@@ -919,7 +918,7 @@
 
         var sWinObjType = "FONTSTYLE";
 
-        // 기존에 ICONLIST 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
         if (oResult.ISOPEN) {
             return;
@@ -993,7 +992,7 @@
             // sUrl = encodeURI("/zu4a_acs/icon_exp?WS=X#/overview/SAP-icons"),
             sPath = sServerPath + "/external_open?URL=" + encodeURIComponent(sUrl);
 
-        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = oAPP.common.getCheckAlreadyOpenWindow(sWinObjType);
         if (oResult.ISOPEN) {
 
@@ -1022,5 +1021,140 @@
 
     }; // end of oAPP.fn.fnIconListPopupOpener
 
+    /************************************************************************
+     * WS20의 하단 멀티 푸터 메시지 처리
+     * **********************************************************************/
+    oAPP.fn.fnMultiFooterMsg = function (aMsg) {
+
+        var sPopupName = "ERRMSGPOP";
+
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        if (oResult.ISOPEN) {
+            oResult.WINDOW.close();
+        }
+
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보 
+
+        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.title = "Error Message Popup";
+        oBrowserOptions.center = true;
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+        oBrowserOptions.titleBarStyle = "hidden";
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.height = 400;
+        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
+
+        // 브라우저 오픈
+        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = CURRWIN.getBounds();
+        oBrowserWindow.setBounds({
+            x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
+            y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+        });
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+
+        var sUrlPath = parent.getPath(sPopupName);
+        oBrowserWindow.loadURL(sUrlPath);
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            var oSendData = {
+                oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보
+                oThemeInfo: oThemeInfo, // 테마 개인화 정보
+                aMsg: aMsg
+            };
+
+            oBrowserWindow.webContents.send('if-errmsg-info', oSendData);
+
+            oBrowserWindow.setOpacity(1.0);
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+
+            IPCMAIN.off(`${BROWSKEY}--errormsg--click`, oAPP.fn.fnIpcMain_errmsg_click);
+
+            oBrowserWindow = null;
+
+        });
+
+
+        IPCMAIN.on(`${BROWSKEY}--errormsg--click`, oAPP.fn.fnIpcMain_errmsg_click);
+
+
+    }; // end of oAPP.fn.fnMultiFooterMsg
+
+    /************************************************************************
+     * WS20의 UI Property 도움말
+     * **********************************************************************/
+    oAPP.fn.fnPropertyHelpPopup = function (sUrl) {
+
+        var sWinObjType = "PROPHELP",
+            sPath = parent.getServerPath() + "/external_open?URL=" + encodeURIComponent(sUrl + "&WS=X");
+
+        // 테스트 목적임.
+        if (typeof sUrl !== "string") {
+            var testUrl = "/ZU4A_ACS/U4A_API_DOCUMENT?VER=1.77.2&CLSNM=sap.m.Page&GUBUN=1&PROPID=showFooter&UIOBK=UO00389";
+            sPath = parent.getServerPath() + "/external_open?URL=" + encodeURIComponent(testUrl + "&WS=X");
+        }
+
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
+        if (oResult.ISOPEN) {
+
+            oResult.WINDOW.webContents.send('if-extopen-url', sPath);
+            return;
+
+        }
+
+        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.title = "Property Help";
+        oBrowserOptions.url = sPath;
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+
+        oAPP.fn.fnExternalOpen(oBrowserOptions);
+
+    }; // end of oAPP.fn.fnPropertyHelpPopup   
+
+    /************************************************************************
+     * Editor Popup Opener
+     * **********************************************************************/
+    oAPP.fn.fnEditorPopupOpener = (oEditorInfo, sSearchValue) => {
+
+        // Editor Popup Open
+        if (oAPP.fn.fnEditorPopupOpen) {
+            oAPP.fn.fnEditorPopupOpen(oEditorInfo, sSearchValue);
+            return;
+        }
+
+        oAPP.loadJs("fnEditorPopupOpen", function () {
+            oAPP.fn.fnEditorPopupOpen(oEditorInfo, sSearchValue);
+        });
+
+    }; // end of oAPP.fn.fnEditorPopupOpener
 
 })(window, $, oAPP);

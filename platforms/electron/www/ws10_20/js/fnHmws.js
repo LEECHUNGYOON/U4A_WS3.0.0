@@ -144,15 +144,7 @@
             OBJNM: "CSS"
         };
 
-        // Editor Popup Open
-        if (oAPP.fn.fnEditorPopupOpen) {
-            oAPP.fn.fnEditorPopupOpen(oEditorInfo);
-            return;
-        }
-
-        oAPP.loadJs("fnEditorPopupOpen", function () {
-            oAPP.fn.fnEditorPopupOpen(oEditorInfo);
-        });
+        oAPP.fn.fnEditorPopupOpener(oEditorInfo);
 
     }; // end of oAPP.fn.fnHmws20_30_10
 
@@ -171,15 +163,7 @@
             DATA: ""
         }
 
-        // Editor Popup Open
-        if (oAPP.fn.fnEditorPopupOpen) {
-            oAPP.fn.fnEditorPopupOpen(oEditorInfo);
-            return;
-        }
-
-        oAPP.loadJs("fnEditorPopupOpen", function () {
-            oAPP.fn.fnEditorPopupOpen(oEditorInfo);
-        });
+        oAPP.fn.fnEditorPopupOpener(oEditorInfo);
 
     }; // end of oAPP.fn.fnHmws20_30_20
 
@@ -198,15 +182,7 @@
             DATA: ""
         }
 
-        // Editor Popup Open
-        if (oAPP.fn.fnEditorPopupOpen) {
-            oAPP.fn.fnEditorPopupOpen(oEditorInfo);
-            return;
-        }
-
-        oAPP.loadJs("fnEditorPopupOpen", function () {
-            oAPP.fn.fnEditorPopupOpen(oEditorInfo);
-        });
+        oAPP.fn.fnEditorPopupOpener(oEditorInfo);
 
     }; // end of oAPP.fn.fnHmws20_30_30
 
@@ -501,15 +477,7 @@
             OBJNM: "CSS"
         };
 
-        // Editor Popup Open
-        if (oAPP.fn.fnEditorPopupOpen) {
-            oAPP.fn.fnEditorPopupOpen(oEditorInfo);
-            return;
-        }
-
-        oAPP.loadJs("fnEditorPopupOpen", function () {
-            oAPP.fn.fnEditorPopupOpen(oEditorInfo);
-        });
+        oAPP.fn.fnEditorPopupOpener(oEditorInfo);        
 
     }; // end of oAPP.fn.fnWS20WMENU30_01
 
@@ -530,16 +498,8 @@
             DATA: ""
         }
 
-        // Editor Popup Open
-        if (oAPP.fn.fnEditorPopupOpen) {
-            oAPP.fn.fnEditorPopupOpen(oEditorInfo);
-            return;
-        }
-
-        oAPP.loadJs("fnEditorPopupOpen", function () {
-            oAPP.fn.fnEditorPopupOpen(oEditorInfo);
-        });
-
+        oAPP.fn.fnEditorPopupOpener(oEditorInfo);
+      
     }; // end of oAPP.fn.fnWS20WMENU30_02
 
     /************************************************************************
@@ -559,15 +519,7 @@
             DATA: "",
         }
 
-        // Editor Popup Open
-        if (oAPP.fn.fnEditorPopupOpen) {
-            oAPP.fn.fnEditorPopupOpen(oEditorInfo);
-            return;
-        }
-
-        oAPP.loadJs("fnEditorPopupOpen", function () {
-            oAPP.fn.fnEditorPopupOpen(oEditorInfo);
-        });
+        oAPP.fn.fnEditorPopupOpener(oEditorInfo);
 
     }; // end of oAPP.fn.fnWS20WMENU30_03
 

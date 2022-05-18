@@ -24,15 +24,9 @@
      * @param {Object} oEditInfo
      * - 오픈 하려는 에디터의 타입 정보
      ************************************************************************/
-    oAPP.fn.fnEditorPopupOpen = function (oEditInfo) {
-
-        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(oEditInfo.OBJTY);
-        if (oResult.ISOPEN) {
-            return;
-        }
-
-        let oThemeInfo = parent.getThemeInfo(); // theme 정보  
+    oAPP.fn.fnEditorPopupOpen = function (oEditInfo, sSearchValue) {
+        
+        debugger;
 
         let oCurrWin = REMOTE.getCurrentWindow(),
             SESSKEY = parent.getSessionKey(),
@@ -40,7 +34,20 @@
             oAppInfo = parent.getAppInfo(),
             sBrowserTitle = oAppInfo.APPID + " - " + oEditInfo.OBJNM + " Editor";
 
-        let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(oEditInfo.OBJTY);
+        if (oResult.ISOPEN) {
+
+            if(oEditInfo.OBJTY == "CS"){
+                lf_webContentSend(oResult.WINDOW, sSearchValue);
+            }
+         
+            return;
+
+        }
+
+        let oThemeInfo = parent.getThemeInfo(), // theme 정보  
+            sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
@@ -76,20 +83,7 @@
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
-            // 에디터 타입에 해당하는 데이터를 구한다.
-            var oGetEditorData = oAPP.fn.fnGetEditorData(oEditInfo.OBJTY);
-
-            // 에디터 타입에 맞는 데이터를 저장한다.
-            oEditInfo.DATA = oGetEditorData && oGetEditorData.DATA ? oGetEditorData.DATA : "";
-
-            var oEditorInfo = {
-                APPINFO: oAppInfo,
-                EDITORINFO: oEditInfo,
-            };
-
-            oBrowserWindow.webContents.send('if-editor-info', oEditorInfo);
-
-            oBrowserWindow.setOpacity(1.0);
+            lf_webContentSend(oBrowserWindow, sSearchValue);
 
         });
 
@@ -105,6 +99,26 @@
             oBrowserWindow = null;
 
         });
+
+        function lf_webContentSend(oBrowserWindow, sSearchValue) {
+
+            // 에디터 타입에 해당하는 데이터를 구한다.
+            var oGetEditorData = oAPP.fn.fnGetEditorData(oEditInfo.OBJTY);
+
+            // 에디터 타입에 맞는 데이터를 저장한다.
+            oEditInfo.DATA = oGetEditorData && oGetEditorData.DATA ? oGetEditorData.DATA : "";
+
+            var oEditorInfo = {
+                APPINFO: oAppInfo,
+                EDITORINFO: oEditInfo,
+                SRCHVAL: sSearchValue // 선택한 style class의 검색용 데이터
+            };
+
+            oBrowserWindow.webContents.send('if-editor-info', oEditorInfo);
+
+            oBrowserWindow.setOpacity(1.0);
+
+        }
 
     }; // end of oAPP.fn.fnEditorPopupOpen
 

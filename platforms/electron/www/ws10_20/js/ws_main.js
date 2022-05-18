@@ -130,21 +130,28 @@
 
     }; // end of oAPP.main.fnOnInitModelBinding    
 
+    /**************************************************************************
+     * [WS20] Side Menu List
+     **************************************************************************/
     oAPP.main.fnGetWs20SideMenuItemList = () => {
 
         return [{
-            key: "",
-            icon: "",
+            key: "MENUITEM_10",
+            icon: "sap-icon://screen-split-three",
+            text: "Split Position Change",
             visible: true
         }];
     };
 
+    /**************************************************************************
+     * [WS20] Side Fixed Menu List
+     **************************************************************************/
     oAPP.main.fnGetWs20SideMenuFixItemList = () => {
 
         return [{
             key: "FIXITM_10",
             icon: "sap-icon://it-system",
-            text: "",
+            text: "System Infomation",
             visible: true
         }];
 

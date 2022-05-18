@@ -1,10 +1,10 @@
-(function() {
+(function () {
     "use strict";
 
     // *--------------------------------------------------------------------*
     // * ★★-글로벌 variable
     // *--------------------------------------------------------------------*    
-    var oAPP = parent.oAPP;    
+    var oAPP = parent.oAPP;
 
     var oFind = {};
     oFind.Sval = " L_FINDVAL "; //"find value 처음 한번만 대상
@@ -37,11 +37,11 @@
 
     // "-EDITOR 포커스 아웃 (data 서버 동기화)
     // L_FOCUS
-    editor.on('focus', function() {
+    editor.on('focus', function () {
         LF_messageHIDE();
     });
 
-    editor.on("change", function() {
+    editor.on("change", function () {
         //    "-* find value 정보잇을경우만 대상   
 
         if (oFind.aMakers.length > 0) {
@@ -93,7 +93,7 @@
         x.innerHTML = txt;
         x.className = "show";
 
-        oTimer = setTimeout(function() {
+        oTimer = setTimeout(function () {
             clearTimeout(oTimer);
             oTimer = null;
 
@@ -139,7 +139,7 @@
             oBtn.classList.remove("btnHidden");
 
             //editor에 focus가 발생하면 메시지 팝업을 종료 한다.
-            editor.on('focus', function() {
+            editor.on('focus', function () {
                 LF_messageHIDE();
             });
         } else {
@@ -148,6 +148,7 @@
 
     }
 
+    // Init
     function fnOnInit() {
 
         editor.resize();
@@ -155,8 +156,8 @@
         var oInfo = parent.getEditorInfo(),
             oAppInfo = oInfo.APPINFO,
             oEditorInfo = oInfo.EDITORINFO,
-
-            L_EDIT = oAppInfo.IS_EDIT;
+            sSearchValue = oInfo.SRCHVAL, // 검색할 데이터
+            L_EDIT = oAppInfo.IS_EDIT; // edit 여부
 
         // "-Editor 잠금/편집 처리 여부
         LF_setEDITOR(L_EDIT);
@@ -165,19 +166,89 @@
         oAPP.fn.fnSetEditorData(oEditorInfo);
 
         // 에디터 내의 텍스트 검색할 경우
-        if(oEditorInfo.FILTER == null){           
+        if (sSearchValue == null) {
             return;
         }
 
         // 검색로직 추가 여기다가 텍스트 검색하는 로직 추가 해라..
-
+        oAPP.fn.fnFindText(sSearchValue);
 
 
 
 
     } // end of fnOnInit
 
-    oAPP.fn.fnSetEditorData = function(oEditorInfo) {
+
+    // 텍스트 검색
+    oAPP.fn.fnFindText = (sSearchValue) => {
+
+        debugger;
+
+        // //class 선언
+        // .cl_findLine {
+        //     position: absolute;
+        //     background - color: blue;
+
+        // }
+
+
+        LF_fineMarker(sSearchValue);
+
+
+        function LF_fineMarker(v) {
+
+            if (v === "") {
+                return;
+            }
+
+            // css 명이 space 로 구분되기 때문에 분리해서 찾음 예 => cl_xxx cl_ttt
+            var Tval = v.split(" "),
+                Lmax = Tval.length,
+                i = 0;
+
+            for (i = 0; i < Lmax; i++) {
+
+                if (Tval[i] === "") {
+                    continue;
+                }
+
+                var Info = editor.find(Tval[i]);
+                if (typeof Info === "undefined") {
+                    return;
+                }
+
+                var oBj = editor.session.addMarker(new oFind.Range(Info.start.row, Info.start.column, Info.end.row, Info.end.column), "cl_findLine", "text");
+
+                // oFind.aMakers.push(oBj);
+
+                // Info = null;
+                // oBj = null;
+
+            }
+
+            // var o = document.getElementById('FINDDEL');
+            // o.style.display = "block";
+
+        }
+
+        function LF_removeALLMarker() {
+
+            var i = 0;
+            var Lmax = oFind.aMakers.length;
+            for (i = 0; i < Lmax; i++) {
+                editor.session.removeMarker(oFind.aMakers[i]);
+            }
+
+            oFind.aMakers = [];
+
+            // var o = document.getElementById('FINDDEL');
+            // o.style.display = "none";
+
+        }
+
+    }; // end of oAPP.fn.fnFindText
+
+    oAPP.fn.fnSetEditorData = function (oEditorInfo) {
 
         // 로딩 실행
         lf_setEditorBusy('X');
@@ -206,8 +277,8 @@
     };
 
     // 에디터에 입력한 내용 저장
-    oAPP.fn.fnEditorValueSave = function() {
-      
+    oAPP.fn.fnEditorValueSave = function () {
+
         // 에디터가 혹시라도 읽기 전용 모드이면 저장하지 않고 빠져나간다.
         if (editor.getReadOnly()) {
             return;
@@ -233,7 +304,7 @@
         oAPP.IPCRENDERER.send("if-editor-save", {
             BROWSKEY: BROWSKEY,
             IS_CHAG: "X",
-            SAVEDATA : oSaveEditorData
+            SAVEDATA: oSaveEditorData
         });
 
         lf_setEditorBusy('');
@@ -243,18 +314,18 @@
     }; // end of oAPP.fn.fnEditorValueSave
 
     // *-윈도우 오류
-    window.onerror = function(message, source, lineno, colno, error) {
+    window.onerror = function (message, source, lineno, colno, error) {
         alert("EDIT ERRO:" + message);
     };
 
     //문서 실행
-    $(document).ready(function() {
-        
+    $(document).ready(function () {
+
         // 클라이언트 세션 유지를 위한 function
         oAPP.fn.fnKeepClientSession();
 
         //윈도우 resize 이벤트
-        $(window).resize(function() {
+        $(window).resize(function () {
 
             var h = $(window).height() - 60;
             editor.resize();
@@ -265,7 +336,7 @@
 
     });
 
-    window.addEventListener("beforeunload", function(){
+    window.addEventListener("beforeunload", function () {
 
         // 윈도우 클릭 이벤트 해제
         window.removeEventListener("click", oAPP.fn.fnWindowClickEventListener);
@@ -276,7 +347,7 @@
     /************************************************************************
      * 클라이언트 세션 유지를 위한 function
      * **********************************************************************/
-    oAPP.fn.fnKeepClientSession = function(){
+    oAPP.fn.fnKeepClientSession = function () {
 
         // 브라우저의 세션 키
         var sSessionKey = parent.getSessionKey();
@@ -297,7 +368,7 @@
     /************************************************************************
      * 브라우저에서 키보드, 마우스 클릭 이벤트를 감지하여 클라이언트 세션을 유지한다.
      * **********************************************************************/
-    oAPP.fn.fnWindowClickEventListener = function(){
+    oAPP.fn.fnWindowClickEventListener = function () {
 
         // 브라우저의 세션 키
         var sSessionKey = parent.getSessionKey();
@@ -310,5 +381,3 @@
     window.oAPP = oAPP;
 
 })();
-
-
