@@ -157,7 +157,7 @@ let oAPP = parent.oAPP;
         oApp.setModel(oAPP.attr.oModel);
 
         //바인딩 팝업 table 출력 page.
-        var oPage = new sap.m.Page();
+        var oPage = new sap.m.Page({enableScrolling:false});
         oApp.addPage(oPage);
 
 
@@ -172,6 +172,7 @@ let oAPP = parent.oAPP;
             icon: "sap-icon://expand-all",
             type: "Emphasized",
             busy: "{/busy}",
+            tooltip: "Expand",
             busyIndicatorDelay: 1
         });
         oTool.addContent(oToolBtn1);
@@ -192,6 +193,7 @@ let oAPP = parent.oAPP;
             icon: "sap-icon://collapse-all",
             type: "Emphasized",
             busy: "{/busy}",
+            tooltip: "Collapse",
             busyIndicatorDelay: 1
         });
         oTool.addContent(oToolBtn2);
@@ -211,6 +213,7 @@ let oAPP = parent.oAPP;
             icon: "sap-icon://refresh",
             type: "Emphasized",
             busy: "{/busy}",
+            tooltip: "Refresh",
             busyIndicatorDelay: 1
         });
         oTool.addContent(oToolBtn3);
@@ -221,7 +224,7 @@ let oAPP = parent.oAPP;
             oAPP.fn.getBindFieldInfo();
         });
 
-
+        
         var oSpt1 = new sap.ui.layout.Splitter();
         oPage.addContent(oSpt1);
 
@@ -231,11 +234,12 @@ let oAPP = parent.oAPP;
             selectionBehavior: "RowOnly",
             visibleRowCountMode: "Auto",
             rowHeight:30,
+            title:new sap.m.Label({text:"※ Table, Field를 Drag하여 Property, Aggregation에 Drop시 바인딩 할 수 있습니다."}),
             rowSelectionChange: oAPP.fn.selTabRow
         });
         oSpt1.addContentArea(oAPP.attr.oTree);
 
-
+        
         oAPP.attr.oTree.attachFilter(function () {
             //tee에서 필터 처리시 전체 펼침 처리.
             this.expandToLevel(99999);
@@ -279,6 +283,7 @@ let oAPP = parent.oAPP;
 
         //바인딩 필드 타입 컬럼.
         var oTreeCol2 = new sap.ui.table.Column({
+            filterProperty: "TYPE",
             autoResizable: true,
             label: new sap.m.Label({
                 text: "Type",
@@ -308,6 +313,7 @@ let oAPP = parent.oAPP;
 
         //필드 description 컬럼.
         var oTreeCol3 = new sap.ui.table.Column({
+            filterProperty: "DESCR",
             autoResizable: true,
             label: new sap.m.Label({
                 text: "Description",
@@ -320,16 +326,17 @@ let oAPP = parent.oAPP;
         oAPP.attr.oTree.addColumn(oTreeCol3);
 
 
-        var oTreeCol4 = new sap.ui.table.Column({
-            label: new sap.m.Label({
-                text: "enable",
-                design: "Bold"
-            }),
-            template: new sap.m.Text({
-                text: "{enable}"
-            })
-        });
-        oAPP.attr.oTree.addColumn(oTreeCol4);
+        // //테스트 바인딩 가능 여부 필드.
+        // var oTreeCol4 = new sap.ui.table.Column({
+        //     label: new sap.m.Label({
+        //         text: "enable",
+        //         design: "Bold"
+        //     }),
+        //     template: new sap.m.Text({
+        //         text: "{enable}"
+        //     })
+        // });
+        // oAPP.attr.oTree.addColumn(oTreeCol4);
 
 
         //바인딩 TREE 모델 바인딩 처리.

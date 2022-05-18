@@ -261,7 +261,7 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
   oTool.addContent(new sap.m.ToolbarSpacer());
 
   //우상단 닫기버튼.
-  var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject"});
+  var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip: "Close"});
   oTool.addContent(oBtn0);
 
   //닫기 버튼 선택 이벤트.
@@ -330,7 +330,7 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
   });
 
   //이벤트 생성 버튼.
-  var oBtn1 = new sap.m.Button({type:"Accept",icon:"sap-icon://accept"});
+  var oBtn1 = new sap.m.Button({type:"Accept",icon:"sap-icon://accept", tooltip: "Create"});
   oDlg.addButton(oBtn1);
 
   //이벤트 생성 이벤트
@@ -362,7 +362,7 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
 
 
   //팝업 종료 버튼.
-  var oBtn2 = new sap.m.Button({type:"Reject",icon:"sap-icon://decline"});
+  var oBtn2 = new sap.m.Button({type:"Reject",icon:"sap-icon://decline", tooltip: "Close"});
   oDlg.addButton(oBtn2);
 
   //팝업 종료 이벤트.

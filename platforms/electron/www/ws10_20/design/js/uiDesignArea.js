@@ -190,7 +190,7 @@
     oLTree1.setToolbar(oLTBar1);
 
     //펼침 버튼.
-    var oLBtn1 = new sap.m.Button({icon:"sap-icon://expand-group"});
+    var oLBtn1 = new sap.m.Button({icon:"sap-icon://expand-group", tooltip:"Expand"});
     oLTBar1.addContent(oLBtn1);
 
     //펼침 이벤트.
@@ -204,7 +204,7 @@
 
 
     //접힘 버튼.
-    var oLBtn2 = new sap.m.Button({icon:"sap-icon://collapse-group"});
+    var oLBtn2 = new sap.m.Button({icon:"sap-icon://collapse-group", tooltip:"Collapse"});
     oLTBar1.addContent(oLBtn2);
 
     //접힘 버튼 선택 이벤트.
@@ -220,7 +220,7 @@
     oLTBar1.addContent(new sap.m.ToolbarSeparator({visible:"{/IS_EDIT}"}));
 
     //삭제 버튼.
-    var oLBtn3 = new sap.m.Button({icon:"sap-icon://delete",visible:"{/IS_EDIT}"});
+    var oLBtn3 = new sap.m.Button({icon:"sap-icon://delete",visible:"{/IS_EDIT}", tooltip:"Delete", type:"Reject"});
     oLTBar1.addContent(oLBtn3);
 
     //삭제버튼 선택 이벤트
@@ -237,7 +237,7 @@
 
 
     //wizard 버튼 추가.
-    var oLBtn4 = new sap.m.Button({icon:"sap-icon://responsive",visible:"{/IS_EDIT}"});
+    var oLBtn4 = new sap.m.Button({icon:"sap-icon://responsive", visible:"{/IS_EDIT}", tooltip:"Wizard", type:"Accept"});
     oLTBar1.addContent(oLBtn4);
 
 
@@ -1093,7 +1093,7 @@
 
 
   //drop callback 이벤트.
-  oAPP.fn.drop_cb = function(param, i_drag, i_drop){
+  oAPP.fn.drop_cb = function(param, i_drag, i_drop, bIsCopy){
 
     //선택가능 aggregation리스트가 존재하지 않는경우, drag, drop의 부모, aggregation이 동일한경우.
     if(typeof param === "undefined" && i_drag.POBID === i_drop.POBID && i_drag.UIATK === i_drop.UIATK){
@@ -1150,7 +1150,12 @@
         //drag건 미리보기 위치이동.
         oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(i_drag.OBJID, i_drag.UILIB, i_drag.POBID, i_drag.PUIOK, i_drag.UIATT, l_dropIndex, i_drag.UIOBK);
 
-      }      
+      }
+
+      debugger;
+      if(event.ctrlKey){
+
+      }
 
       //MODEL 갱신 처리.
       oAPP.attr.oModel.refresh();
@@ -1653,6 +1658,8 @@
     } //DnD 가능여부 확인.
 
     if(!i_OBJID){return;}
+
+    debugger;
 
     //미리보기 영역에서 drag처리한 UI명 얻기.
     var l_objid = oEvent.mParameters.browserEvent.dataTransfer.getData("text/plain");

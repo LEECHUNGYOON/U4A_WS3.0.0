@@ -159,6 +159,20 @@
     }); //drag UI가 다른라인에 올라갔을때 이벤트.
 
 
+    //attribute toolbar UI.
+    var oRTTool = new sap.m.Toolbar();
+    oRTab1.setHeaderToolbar(oRTTool);
+
+    //attribute 초기화 버튼.
+    var oRTBtn1 = new sap.m.Button({text:"Reset", icon:"sap-icon://reset", type:"Accept"});
+    oRTTool.addContent(oRTBtn1);
+
+    oRTBtn1.attachPress(function(){
+      //attribute 초기화 처리.
+      //oAPP.fn.attrResetAttr();
+    });
+
+
     //attribute명 컬럼.
     //var oRCol1 = new sap.m.Column({width:"30%"});
     var oRCol1 = new sap.m.Column();
@@ -696,9 +710,15 @@
     //style class 프로퍼티에 입력값이 존재하지 않는경우 exit.
     if(is_attr.UIATV === ""){return;}
 
+    // 에디터 정보를 담는 구조
+    var oEditorInfo = {
+        OBJID: is_attr.OBJID + is_attr.UIASN,
+        OBJTY: "CS",
+        OBJNM: "CSS"
+    };
 
     //style class 호출처리.
-
+    oAPP.fn.fnEditorPopupOpener(oEditorInfo, is_attr.UIATV);
 
     //function 호출처의 하위로직 skip을 위한 flag return.
     return true;
@@ -1162,8 +1182,18 @@
     //UI명 + 프로퍼티명으로 OBJID 구성.
     var l_objid = is_attr.OBJID + is_attr.UIASN;
 
+    //현재 display 상태인경우.
+    if(oAPP.attr.oModel.oData.IS_EDIT === false){
+      //content에 입력한 HTML이 존재하는지 확인.
+      if(oAPP.DATA.APPDATA.T_CEVT.findIndex( a=> a.OBJID === l_objid && a.OBJTY === "HM" ) === -1){
+        //존재하지 않는경우 exit.
+        return true;
+      }
+
+    }
+
     //클라이언트 스크립트 호출 FUNCTION 호출.
-    oAPP.fn.fnClientEditorPopupOpener("HM", l_objid,function(param){
+    oAPP.fn.fnClientEditorPopupOpener("HM", l_objid, function(param){
 
       //값을 삭제한 경우.
       if(param === ""){
@@ -1244,11 +1274,24 @@
     //이벤트건이 아닌경우 exit.
     if(is_attr.UIATY !== "2"){return;}
 
-    //현재 이벤트 영역이 편집 불가능하다면 exit.
-    if(is_attr.edit !== true){return;}
+    //현재 편집 가능 상태인경우.
+    if(oAPP.attr.oModel.oData.IS_EDIT === true){
+      //현재 이벤트 영역이 편집 불가능하다면 exit.
+      if(is_attr.edit !== true){return true;}
+    }
 
     //OBJID + 이벤트명 대문자 로 client이벤트 script ID 구성.
     var l_objid = is_attr.OBJID + is_attr.UIASN;
+
+    //현재 display 상태인경우.
+    if(oAPP.attr.oModel.oData.IS_EDIT === false){
+      //입력된 클라이언트 이벤트가 존재하는지 확인.
+      if(oAPP.DATA.APPDATA.T_CEVT.findIndex( a=> a.OBJID === l_objid && a.OBJTY === "JS" ) === -1){
+        //존재하지 않는경우 exit.
+        return true;
+      }
+
+    }    
 
     //클라이언트 스크립트 호출 FUNCTION 호출.
     oAPP.fn.fnClientEditorPopupOpener("JS", l_objid,function(param){
@@ -1263,7 +1306,6 @@
 
       //call back 이후 attr 갱신 처리.
       oAPP.fn.attrChangeProc(is_attr, "", false, true);
-
 
     });
 
@@ -4409,7 +4451,7 @@
 
     //drop UI를 얻지 못한 경우 exit.
     if(!l_row){
-      parent.showMessage(sap, 10, "E", "impossible.");
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
       return;
     }
 
@@ -4418,7 +4460,7 @@
 
     //바인딩 정보가 존재하지 않는경우 exit.
     if(!l_ctxt){
-      parent.showMessage(sap, 10, "E", "impossible.");
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
       return;
     }
 
@@ -4427,7 +4469,7 @@
 
     //drop 불가능한 경우 exit.
     if(!ls_attr.dropEnable){
-      parent.showMessage(sap, 10, "E", "impossible.");
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
       return;
     }
     debugger;
@@ -4437,7 +4479,7 @@
 
     //drag 정보를 얻지 못한 경우 exit.
     if(typeof l_json === "undefined" || l_json === ""){
-      parent.showMessage(sap, 10, "E", "impossible.");
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
       return;
     }
 
@@ -4446,25 +4488,25 @@
       l_json = JSON.parse(l_json);
 
     }catch(e){
-      parent.showMessage(sap, 10, "E", "impossible.");
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
       return;
     }
 
     //바인딩 팝업에서 drag한게 아닌경우 exit.
     if(l_json.PRCCD !== "PRC001"){
-      parent.showMessage(sap, 10, "E", "impossible.");
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
       return;
     }
 
     //바인딩 팝업에서 최상위를 drag한경우, structure를 drag한경우 exit.
     if(l_json.IF_DATA.KIND === "" || l_json.IF_DATA.KIND === "S"){
-      parent.showMessage(sap, 10, "E", "impossible.");
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
       return;
     }
 
     //aggregation인경우 TABLE을 DROP하지 않았다면.
     if(ls_attr.UIATY === "3" && l_json.IF_DATA.KIND !== "T" ){
-      parent.showMessage(sap, 10, "E", "impossible.");
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
       return;
     }
 
@@ -4495,7 +4537,7 @@
 
     //tree의 parent, child에 drop한경우 n건 바인딩 정보가 존재하지 않는경우.
     if(l_isTree && !l_path){
-      parent.showMessage(sap, 10, "E", "impossible.");
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
       return;
     }
 
@@ -4507,13 +4549,13 @@
 
       //현재 UI가 N건 바인딩처리된건이 아닌경우 EXIT.
       if(typeof l_path === "undefined" || l_path === "" || l_path === null){
-        parent.showMessage(sap, 10, "E", "impossible.");
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
         return;
       }
 
       //현재 UI가 N건 바인딩 처리됐다면 
       if(l_path !== l_json.IF_DATA.CHILD.substr(0, l_path.length)){
-        parent.showMessage(sap, 10, "E", "impossible.");
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
         return;
       }
 
@@ -4535,7 +4577,7 @@
       if(ls_attr.UIATK === "EXT00001161"){
         //drag한 필드가 range table이 아닌경우 exit.
         if(l_json.IF_DATA.EXP_TYP !== "RANGE_TAB"){
-          parent.showMessage(sap, 10, "E", "impossible.");
+          oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
           return;
         }
 
@@ -4546,7 +4588,7 @@
 
           //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
           if(lt_split2.findIndex( a=> a === "T" ) !== -1){
-            parent.showMessage(sap, 10, "E", "impossible.");
+            oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
             return;
           }
 
@@ -4563,7 +4605,7 @@
       if((ls_attr.ISMLB === "X" && (ls_attr.UIADT !== "int" && ls_attr.UIADT !== "float"))){
         //string_table이 아닌경우 exit.
         if(l_json.IF_DATA.EXP_TYP !== "STR_TAB"){
-          parent.showMessage(sap, 10, "E", "impossible.");
+          oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
           return;
         }
 
@@ -4573,7 +4615,7 @@
 
           //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
           if(lt_split2.findIndex( a=> a === "T" ) !== -1){
-            parent.showMessage(sap, 10, "E", "impossible.");
+            oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
             return;
           }
 
@@ -4587,20 +4629,20 @@
 
       //일반 프로퍼티의 경우 Elementary Type 이 아닌경우 EXIT.
       if(l_json.IF_DATA.KIND !== "E"){
-        parent.showMessage(sap, 10, "E", "impossible.");
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
         return;
       }
 
       //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
       if(typeof lt_split2 !== "undefined" && lt_split2.findIndex( a=> a === "T" ) !== -1){
-        parent.showMessage(sap, 10, "E", "impossible.");
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
         return;
       }
 
 
       //tree인경우 n건 바인딩 path와 다른 경우 exit.
       if(l_isTree && l_path && l_path !== l_json.IF_DATA.CHILD.substr(0, l_path.length)){
-        parent.showMessage(sap, 10, "E", "impossible.");
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
         return;
       }
 
@@ -4616,14 +4658,14 @@
 
     //AGGREGATION인경우 N건 들어가는 AGGREGATION이 아닌경우 EXIT.
     if(ls_attr.UIATY === "3" && ls_attr.ISMLB !== "X"){
-      parent.showMessage(sap, 10, "E", "impossible.");
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
       return;
     }
 
     
     //AGGREGATION에 string_table을 drop한경우.
     if(ls_attr.UIATY === "3" && l_json.IF_DATA.EXP_TYP === "STR_TAB"){
-      parent.showMessage(sap, 10, "E", "impossible.");
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
       return;
     }
 
@@ -4632,7 +4674,10 @@
     if(ls_attr.UIATY === "3" && l_json.IF_DATA.KIND === "T"){
 
       //aggregation 바인딩 처리 가능여부 점검.
-      if(oAPP.fn.attrChkBindAggrPossible(ls_attr)){return;}
+      if(oAPP.fn.attrChkBindAggrPossible(ls_attr, true)){
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+        return;
+      }
 
       if(typeof lt_split2 !== "undefined"){
         //마지막 필드 제거(마지막필드는 TABLE이므로)
@@ -4640,7 +4685,7 @@
 
         //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
         if(lt_split2.findIndex( a=> a === "T" ) !== -1){
-          parent.showMessage(sap, 10, "E", "impossible.");
+          oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
           return;
         }
 
@@ -4658,7 +4703,7 @@
 
 
   //aggregation 바인딩 처리 가능여부 점검.
-  oAPP.fn.attrChkBindAggrPossible = function(is_attr){
+  oAPP.fn.attrChkBindAggrPossible = function(is_attr, bSkipMsg){
 
     //현재 ui의 tree 정보 얻기.
     var l_tree = oAPP.fn.getTreeData(is_attr.OBJID);
@@ -4670,8 +4715,10 @@
     var lt_filter = l_tree.zTREE.filter( a => a.UIATK === is_attr.UIATK);
 
     //현재 aggregation에 2개 이상의 UI가 추가된경우.
-    if(lt_filter.length >= 2){      
-      parent.showMessage(sap, 10, "E", "If you have one or more child objects, you can not specify a model.");
+    if(lt_filter.length >= 2){
+      if(!bSkipMsg){
+        parent.showMessage(sap, 10, "E", "If you have one or more child objects, you can not specify a model.");
+      }
       
       //오류 FLAG RETURN.
       return true;

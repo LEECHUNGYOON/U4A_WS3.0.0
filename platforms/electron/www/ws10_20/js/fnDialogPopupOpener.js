@@ -1143,16 +1143,16 @@
     /************************************************************************
      * Editor Popup Opener
      * **********************************************************************/
-    oAPP.fn.fnEditorPopupOpener = (oEditorInfo) => {
+    oAPP.fn.fnEditorPopupOpener = (oEditorInfo, sSearchValue) => {
 
         // Editor Popup Open
         if (oAPP.fn.fnEditorPopupOpen) {
-            oAPP.fn.fnEditorPopupOpen(oEditorInfo);
+            oAPP.fn.fnEditorPopupOpen(oEditorInfo, sSearchValue);
             return;
         }
 
         oAPP.loadJs("fnEditorPopupOpen", function () {
-            oAPP.fn.fnEditorPopupOpen(oEditorInfo);
+            oAPP.fn.fnEditorPopupOpen(oEditorInfo, sSearchValue);
         });
 
     }; // end of oAPP.fn.fnEditorPopupOpener

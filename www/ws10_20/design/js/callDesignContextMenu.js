@@ -934,7 +934,7 @@
 
         //AGGR 선택 팝업의 CALLBACK FUNCTION.
         function lf_aggrPopup_cb(param, i_cdata){
-
+            debugger;
             //이동 가능한 aggregation 정보가 존재하지 않는경우.
             if(typeof param === "undefined"){
                 //오류 메시지 출력.
@@ -944,6 +944,24 @@
 
             //UI가 입력 가능한 카디널리티 여부 확인.
             if(oAPP.fn.chkUiCardinality(ls_tree, param.UIATK, param.ISMLB) === true){
+                return;
+            }
+
+
+            //application이 같더라도 붙여넣기시 바인딩, 이벤트가 있으면 유지여부 확인팝업 호출에 의한 주석 처리-start.
+            // //복사한 UI의 application이 현재 application과 같다면 바인딩 유지하면서 붙여넣기.
+            // if(i_cdata.APPID === oAPP.attr.appInfo.APPID){
+            //     //복사된 ui 붙여넣기 처리.
+            //     lf_paste_cb(param, i_cdata, true);
+            //     return;
+            // }
+            //application이 같더라도 붙여넣기시 바인딩, 이벤트가 있으면 유지여부 확인팝업 호출에 의한 주석 처리-end.
+
+
+            //복사한 UI에 바인딩, 이벤트 정보가 존재하지 않는경우.
+            if(lf_chkBindNEvent(i_cdata) !== true){
+                //복사된 ui 붙여넣기 처리.
+                lf_paste_cb(param, i_cdata, false);
                 return;
             }
 
@@ -963,12 +981,38 @@
                 }
 
                 //복사된 ui 붙여넣기 처리.
-                lf_paste_cb(param, i_cdata, l_flag);                
+                lf_paste_cb(param, i_cdata, l_flag);
 
             });
 
 
         }   //AGGR 선택 팝업의 CALLBACK FUNCTION.
+
+
+
+
+        //바인딩, 이벤트 설정건 존재여부 확인.
+        function lf_chkBindNEvent(is_tree){
+
+            //attribute 입력건이 존재하는경우.
+            if(typeof is_tree._T_0015 !== "undefined" && is_tree._T_0015.length !== 0 ){
+                //바인딩된 정보가 존재하거나 이벤트가 존재하는건이 있는지 여부 확인
+                if(is_tree._T_0015.findIndex( a => ( a.ISBND === "X" && a.UIATV !== "") || ( a.UIATY === "2" && a.UIATV !== "") ) !== -1 ){
+                    return true;
+                }
+
+            }
+
+            //child UI가 존재하는경우.
+            if(typeof is_tree.zTREE !== "undefined" && is_tree.zTREE.length !== 0){
+
+                for(var i=0, l=is_tree.zTREE.length; i<l; i++){
+                    return lf_chkBindNEvent(is_tree.zTREE[i]);
+                }
+
+            }
+
+        }   //바인딩, 이벤트 설정건 존재여부 확인.
 
 
 

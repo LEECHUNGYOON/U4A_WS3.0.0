@@ -955,7 +955,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
 
   //전체펼침
-  var oToolBtn1 = new sap.m.Button({text:"Expand All",icon:"sap-icon://expand-all",type:"Emphasized",busy:"{/busy}",busyIndicatorDelay:1});
+  var oToolBtn1 = new sap.m.Button({text:"Expand All",icon:"sap-icon://expand-all",
+    type:"Emphasized",busy:"{/busy}",busyIndicatorDelay:1,tooltip:"Expand"});
   oTool.addContent(oToolBtn1);
 
   //tree 전체펼침 이벤트
@@ -964,7 +965,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   });
 
   //전체접힘
-  var oToolBtn2 = new sap.m.Button({text:"Collapse All",icon:"sap-icon://collapse-all",type:"Emphasized",busy:"{/busy}",busyIndicatorDelay:1});
+  var oToolBtn2 = new sap.m.Button({text:"Collapse All",icon:"sap-icon://collapse-all",
+    type:"Emphasized",busy:"{/busy}",busyIndicatorDelay:1,tooltip:"Collapse"});
   oTool.addContent(oToolBtn2);
 
   //tree 전체접힘 이벤트
@@ -975,7 +977,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   oTool.addContent(new sap.m.ToolbarSeparator());
 
   //bind
-  var oToolBtn3 = new sap.m.Button({text:"Bind",icon:"sap-icon://connected",type:"Accept",enabled:"{/edit}",busy:"{/busy}",busyIndicatorDelay:1});
+  var oToolBtn3 = new sap.m.Button({text:"Bind",icon:"sap-icon://connected",
+    type:"Accept",enabled:"{/edit}",busy:"{/busy}",busyIndicatorDelay:1, tooltip:"Bind"});
   oTool.addContent(oToolBtn3);
 
   //bind 버튼 이벤트
@@ -986,7 +989,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   });
 
   //unbind
-  var oToolBtn4 = new sap.m.Button({text:"Unbind",icon:"sap-icon://disconnected",type:"Reject",enabled:"{/edit}",busy:"{/busy}",busyIndicatorDelay:1});
+  var oToolBtn4 = new sap.m.Button({text:"Unbind",icon:"sap-icon://disconnected",
+    type:"Reject",enabled:"{/edit}",busy:"{/busy}",busyIndicatorDelay:1, tooltip:"Unbind"});
   oTool.addContent(oToolBtn4);
 
   //unbind 버튼 선택 이벤트
@@ -1058,6 +1062,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   oTree.addColumn(oTreeCol1);
 
   var oTreeCol2 = new sap.ui.table.Column({
+    filterProperty: "TYPE",
     label:new sap.m.Label({text:"Type",design:"Bold"})
   });
 
@@ -1077,6 +1082,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   oTree.addColumn(oTreeCol2);
 
   var oTreeCol3 = new sap.ui.table.Column({
+    filterProperty: "DESCR",
     label:new sap.m.Label({text:"Description",design:"Bold"}),
     template: new sap.m.Text({text:"{DESCR}"})
   });
@@ -1209,7 +1215,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   oTool0.addContent(new sap.m.ToolbarSpacer());
 
   //우상단 닫기버튼.
-  var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject"});
+  var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip: "Close"});
   oTool0.addContent(oBtn0);
 
   //닫기 버튼 선택 이벤트.
@@ -1241,6 +1247,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
       buttons: [
         new sap.m.Button({
           type: "Reject",
+          tooltip: "Close",
           icon: "sap-icon://decline",
           press: function(){
             lf_closePopup(); 
