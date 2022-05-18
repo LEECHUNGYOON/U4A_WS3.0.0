@@ -611,8 +611,6 @@
         var oCurrWin = REMOTE.getCurrentWindow(),
             sCurrPage = parent.getCurrPage();
 
-        debugger;
-
         // 푸터 메시지가 있을 경우 닫기
         oAPP.common.fnHideFloatingFooterMsg();
 
@@ -1096,41 +1094,7 @@
      ************************************************************************/
     oAPP.events.ev_pressIconListBtn = function(oEvent) {
 
-        var sWinObjType = "ICONLIST",
-            sHost = parent.getServerHost(),
-            oUserInfo = parent.getUserInfo(),
-            sServerPath = parent.getServerPath(),
-            sIconListUrl = sHost + "/zu4a_acs/icon_exp?sap-user=" + oUserInfo.ID + "&sap-password=" + oUserInfo.PW + "&sap-language=" + oUserInfo.LANGU + "&WS=X#/overview/SAP-icons",
-            sUrl = encodeURI(sIconListUrl),
-            // sUrl = encodeURI("/zu4a_acs/icon_exp?WS=X#/overview/SAP-icons"),
-            sPath = sServerPath + "/external_open?URL=" + encodeURIComponent(sUrl);
-
-        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = oAPP.common.getCheckAlreadyOpenWindow(sWinObjType);
-        if (oResult.ISOPEN) {
-
-            oResult.WINDOW.webContents.send('if-extopen-url', sPath);
-            return;
-
-        }
-
-        var oCurrWin = REMOTE.getCurrentWindow(),
-            SESSKEY = parent.getSessionKey(),
-            BROWSERKEY = parent.getBrowserKey();
-
-        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
-            oDefaultOption = parent.require(sSettingsJsonPath),
-            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
-
-        oBrowserOptions.title = "Icon List";
-        oBrowserOptions.url = sPath;
-        oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.parent = oCurrWin;
-        oBrowserOptions.webPreferences.partition = SESSKEY;
-        oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
-        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
-
-        oAPP.fn.fnExternalOpen(oBrowserOptions);
+        oAPP.fn.fnIconListPopupOpener();        
 
     }; // end of oAPP.events.ev_pressIconListBtn
 
@@ -1156,68 +1120,7 @@
      ************************************************************************/
     oAPP.events.ev_pressRuntimeBtn = function() {
 
-        var sWinObjType = "RTMCLS";
-
-        // 기존에 RUNTIMECLASS 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = oAPP.common.getCheckAlreadyOpenWindow(sWinObjType);
-        if (oResult.ISOPEN) {
-            return;
-        }
-
-        var oCurrWin = REMOTE.getCurrentWindow(),
-            SESSKEY = parent.getSessionKey(),
-            BROWSKEY = parent.getBrowserKey(),
-            oUserInfo = parent.getUserInfo(),
-            sUrl = parent.getPath(sWinObjType);
-
-        let oThemeInfo = parent.getThemeInfo(); // theme 정보      
-
-        // 브라우저 옵션 설정
-        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
-            oDefaultOption = parent.require(sSettingsJsonPath),
-            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
-
-        oBrowserOptions.title = "Runtime Class Navigator";
-        oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.parent = oCurrWin;
-        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
-
-        oBrowserOptions.webPreferences.partition = SESSKEY;
-        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
-        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
-
-        // 브라우저 오픈
-        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
-        REMOTEMAIN.enable(oBrowserWindow.webContents);
-
-        // 브라우저 상단 메뉴 없애기        
-        oBrowserWindow.setMenu(null);
-
-        oBrowserWindow.loadURL(sUrl);
-
-        // oBrowserWindow.webContents.openDevTools();
-
-        // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
-
-            var oRuntimeInfo = {
-                oUserInfo: oUserInfo,
-                oThemeInfo: oThemeInfo,
-                aRuntimeData: oAPP.DATA.LIB.T_0022
-            };
-
-            // 오픈할 URL 파라미터 전송
-            oBrowserWindow.webContents.send('if-runtime-info', oRuntimeInfo);
-
-            oBrowserWindow.setOpacity(1.0);
-
-        });
-
-        // 브라우저를 닫을때 타는 이벤트
-        oBrowserWindow.on('closed', () => {
-            oBrowserWindow = null;
-        });
+        oAPP.fn.fnRuntimeClassNaviPopupOpener();        
 
     }; // end of oAPP.events.ev_pressRuntimeBtn    
 

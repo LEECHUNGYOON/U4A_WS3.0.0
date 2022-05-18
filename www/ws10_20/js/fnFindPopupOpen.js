@@ -70,6 +70,13 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = CURRWIN.getBounds();
+        oBrowserWindow.setBounds({
+            x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
+            y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+        });
+
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 

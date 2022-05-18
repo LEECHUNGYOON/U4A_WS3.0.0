@@ -363,8 +363,7 @@ function onLoadBusyIndicator() {
     oBrowserWindow.loadURL(sIndicatorPath);
 
     // 브라우저가 오픈이 다 되면 타는 이벤트
-    oBrowserWindow.webContents.on('did-finish-load', function () {
-        // oBrowserWindow.setBounds(oCurrWin.getBounds());
+    oBrowserWindow.webContents.on('did-finish-load', function () {        
         oBrowserWindow.setContentBounds(oCurrWin.getBounds());
     });
 

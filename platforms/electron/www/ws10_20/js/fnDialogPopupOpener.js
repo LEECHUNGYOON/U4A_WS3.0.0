@@ -295,6 +295,7 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.center = true;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -303,6 +304,13 @@
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = CURRWIN.getBounds();
+        oBrowserWindow.setBounds({
+            x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
+            y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+        });
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
@@ -343,8 +351,6 @@
      * Text 검색 팝업 (electron 기능)
      ************************************************************************/
     oAPP.fn.fnTextSearchPopupOpener = function () {
-
-        debugger;
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -450,6 +456,13 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = CURRWIN.getBounds();
+        oBrowserWindow.setBounds({
+            x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
+            y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+        });
+
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
@@ -517,6 +530,13 @@
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = CURRWIN.getBounds();
+        oBrowserWindow.setBounds({
+            x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
+            y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+        });
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
@@ -586,6 +606,13 @@
         // 브라우저 오픈
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = CURRWIN.getBounds();
+        oBrowserWindow.setBounds({
+            x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
+            y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+        });
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
@@ -679,6 +706,13 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = CURRWIN.getBounds();
+        oBrowserWindow.setBounds({
+            x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
+            y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+        });
+
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
@@ -726,7 +760,7 @@
      * About U4A Popup Opener
      ************************************************************************/
     oAPP.fn.fnAboutU4APopupOpener = () => {
-        
+
         let sPopupName = "ABOUTU4APOP";
 
         // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
@@ -767,6 +801,13 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = CURRWIN.getBounds();
+        oBrowserWindow.setBounds({
+            x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
+            y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+        });
+
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
@@ -792,8 +833,194 @@
             oBrowserWindow = null;
 
         });
-    
+
     }; // end of oAPP.fn.fnAboutU4APopupOpener
+
+    /************************************************************************
+     * Runtime Class Navigator Popup Opener
+     ************************************************************************/
+    oAPP.fn.fnRuntimeClassNaviPopupOpener = () => {
+
+        var sWinObjType = "RTMCLS";
+
+        // 기존에 RUNTIMECLASS 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        var oResult = oAPP.common.getCheckAlreadyOpenWindow(sWinObjType);
+        if (oResult.ISOPEN) {
+            return;
+        }
+
+        var SESSKEY = parent.getSessionKey(),
+            BROWSKEY = parent.getBrowserKey(),
+            oUserInfo = parent.getUserInfo(),
+            sUrl = parent.getPath(sWinObjType);
+
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보      
+
+        // 브라우저 옵션 설정
+        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.title = "Runtime Class Navigator";
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+
+        // 브라우저 오픈
+        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = CURRWIN.getBounds();
+        oBrowserWindow.setBounds({
+            x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
+            y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+        });
+
+        // 브라우저 상단 메뉴 없애기        
+        oBrowserWindow.setMenu(null);
+
+        oBrowserWindow.loadURL(sUrl);
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            var oRuntimeInfo = {
+                oUserInfo: oUserInfo,
+                oThemeInfo: oThemeInfo,
+                aRuntimeData: oAPP.DATA.LIB.T_0022
+            };
+
+            // 오픈할 URL 파라미터 전송
+            oBrowserWindow.webContents.send('if-runtime-info', oRuntimeInfo);
+
+            oBrowserWindow.setOpacity(1.0);
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+            oBrowserWindow = null;
+        });
+
+    }; // end of oAPP.fn.fnRuntimeClassNaviPopupOpener
+
+    /************************************************************************
+     * Font Style Wizard
+     ************************************************************************/
+    oAPP.fn.fnFontStyleWizardPopupOpener = () => {
+
+        var sWinObjType = "FONTSTYLE";
+
+        // 기존에 ICONLIST 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
+        if (oResult.ISOPEN) {
+            return;
+        }
+
+        var SESSKEY = parent.getSessionKey(),
+            oMeta = APPCOMMON.fnGetModelProperty("/METADATA"),
+            oServerInfo = parent.getServerInfo(),
+            oUserInfo = parent.getUserInfo();
+
+        // 실행시킬 호스트명 + U4A URL 만들기
+        var sHost = "http://" + oMeta.HOST + ":80" + oServerInfo.INSTANCENO,
+            sUrl = encodeURI(sHost + "/zu4a_imp/cssfontstylewizrd?sap-user=" + oUserInfo.ID + "&sap-password=" + oUserInfo.PW);
+
+        // 브라우저 옵션 설정
+        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.title = "U4A Workspace: Font Style";
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.nodeIntegration = false;
+        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+
+        // 브라우저 오픈
+        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        /// 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = CURRWIN.getBounds();
+        oBrowserWindow.setBounds({
+            x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
+            y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+        });
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+
+        oBrowserWindow.loadURL(sUrl);
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            oBrowserWindow.setOpacity(1.0);
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+            oBrowserWindow = null;
+        });
+
+    }; // end of oAPP.fn.fnFontStyleWizardPopupOpener
+
+    /************************************************************************
+     * Icon List Popup Opener
+     ************************************************************************/
+    oAPP.fn.fnIconListPopupOpener = () => {
+
+        var sWinObjType = "ICONLIST",
+            sHost = parent.getServerHost(),
+            oUserInfo = parent.getUserInfo(),
+            sServerPath = parent.getServerPath(),
+            sIconListUrl = sHost + "/zu4a_acs/icon_exp?sap-user=" + oUserInfo.ID + "&sap-password=" + oUserInfo.PW + "&sap-language=" + oUserInfo.LANGU + "&WS=X#/overview/SAP-icons",
+            sUrl = encodeURI(sIconListUrl),
+            // sUrl = encodeURI("/zu4a_acs/icon_exp?WS=X#/overview/SAP-icons"),
+            sPath = sServerPath + "/external_open?URL=" + encodeURIComponent(sUrl);
+
+        // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        var oResult = oAPP.common.getCheckAlreadyOpenWindow(sWinObjType);
+        if (oResult.ISOPEN) {
+
+            oResult.WINDOW.webContents.send('if-extopen-url', sPath);
+            return;
+
+        }
+
+        var oCurrWin = REMOTE.getCurrentWindow(),
+            SESSKEY = parent.getSessionKey(),
+            BROWSERKEY = parent.getBrowserKey();
+
+        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.title = "Icon List";
+        oBrowserOptions.url = sPath;
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.parent = oCurrWin;
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
+        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+
+        oAPP.fn.fnExternalOpen(oBrowserOptions);
+
+    }; // end of oAPP.fn.fnIconListPopupOpener
 
 
 })(window, $, oAPP);

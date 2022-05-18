@@ -52,13 +52,20 @@
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
+            
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = oCurrWin.getBounds();
+        oBrowserWindow.setBounds({
+            x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
+            y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+        });
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
-    
+
         // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
@@ -82,7 +89,7 @@
         IPCMAIN.on("if-ErrorPage-Preview", oAPP.fn.fnIpcMain_ErrorPagePreview);
 
         // 브라우저를 닫을때 타는 이벤트
-        oBrowserWindow.on('closed', () => {            
+        oBrowserWindow.on('closed', () => {
 
             // IPCMAIN 이벤트 해제
             IPCMAIN.removeListener("if-ErrorPageEditor-Save", oAPP.fn.fnIpcMain_ErrorPageEditorSave);

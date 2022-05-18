@@ -7,6 +7,7 @@
 
     const
         REMOTE = parent.REMOTE,
+        CURRWIN = REMOTE.getCurrentWindow(),
         REMOTEMAIN = parent.REMOTEMAIN;
 
     /************************************************************************
@@ -72,7 +73,7 @@
 
             // WS20 기본 모델 데이터
             var oWs20 = oAPP.main.fnGetWs20InitData();
-            oWs20.APP = oAppInfo;        
+            oWs20.APP = oAppInfo;
 
             // 모델에 데이터 업데이트
             oAPP.common.fnSetModelProperty("/WS20", oWs20);
@@ -522,18 +523,25 @@
      * @param {Object} oBrowserOption  
      * - Electron window Browser Option 참고
      ************************************************************************/
-    oAPP.fn.fnExternalOpen = function (oBrowserOption) {
+    oAPP.fn.fnExternalOpen = function (oBrowserOptions) {
 
-        function lf_external_open(oBrowserOption) {
+        function lf_external_open(oBrowserOptions) {
 
-            var sPath = oBrowserOption.url,
+            var sPath = oBrowserOptions.url,
 
                 // sPath = parent.getServerPath() + "/external_open?URL=" + sExtUrl,
                 sExtOpenHtmlUrl = parent.getPath('EXTOPEN');
 
             // 브라우저 오픈
-            var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOption);
+            var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
             REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+            // 팝업 위치를 부모 위치에 배치시킨다.
+            var oParentBounds = CURRWIN.getBounds();
+            oBrowserWindow.setBounds({
+                x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
+                y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+            });
 
             oBrowserWindow.setMenu(null);
 
@@ -560,7 +568,7 @@
 
             parent.setBusy('');
 
-            lf_external_open(oBrowserOption);
+            lf_external_open(oBrowserOptions);
 
         } // end of lf_success
 

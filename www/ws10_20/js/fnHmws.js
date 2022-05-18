@@ -106,61 +106,7 @@
             return;
         }
 
-        var sWinObjType = "FONTSTYLE";
-
-        // 기존에 ICONLIST 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
-        if (oResult.ISOPEN) {
-            return;
-        }
-
-        var oCurrWin = REMOTE.getCurrentWindow(),
-            SESSKEY = parent.getSessionKey();
-
-        var oMeta = APPCOMMON.fnGetModelProperty("/METADATA"),
-            oServerInfo = parent.getServerInfo(),
-            oUserInfo = parent.getUserInfo();
-
-        // 실행시킬 호스트명 + U4A URL 만들기
-        var sHost = "http://" + oMeta.HOST + ":80" + oServerInfo.INSTANCENO,
-            sUrl = encodeURI(sHost + "/zu4a_imp/cssfontstylewizrd?sap-user=" + oUserInfo.ID + "&sap-password=" + oUserInfo.PW);
-
-        // 브라우저 옵션 설정
-        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
-            oDefaultOption = parent.require(sSettingsJsonPath),
-            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
-
-        oBrowserOptions.title = "U4A Workspace: Font Style";
-        oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.devTools = false;
-        oBrowserOptions.show = false;
-        oBrowserOptions.parent = oCurrWin;
-        oBrowserOptions.webPreferences.partition = SESSKEY;
-        oBrowserOptions.webPreferences.nodeIntegration = false;
-        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
-
-        // 브라우저 오픈
-        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
-        REMOTEMAIN.enable(oBrowserWindow.webContents);
-
-        // 브라우저 상단 메뉴 없애기
-        oBrowserWindow.setMenu(null);
-
-        oBrowserWindow.loadURL(sUrl);
-
-        // oBrowserWindow.webContents.openDevTools();
-
-        // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
-
-            oBrowserWindow.show();
-
-        });
-
-        // 브라우저를 닫을때 타는 이벤트
-        oBrowserWindow.on('closed', () => {
-            oBrowserWindow = null;
-        });
+        oAPP.fn.fnFontStyleWizardPopupOpener();        
 
     }; // end of oAPP.fn.fnHmws20_10_20
 
@@ -513,62 +459,7 @@
             return;
         }
 
-        var sWinObjType = "FONTSTYLE";
-
-        // 기존에 ICONLIST 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
-        if (oResult.ISOPEN) {
-            return;
-        }
-
-        var oCurrWin = REMOTE.getCurrentWindow(),
-            SESSKEY = parent.getSessionKey();
-
-        var oMeta = APPCOMMON.fnGetModelProperty("/METADATA"),
-            oServerInfo = parent.getServerInfo(),
-            oUserInfo = parent.getUserInfo();
-
-        // 실행시킬 호스트명 + U4A URL 만들기
-        var sHost = "http://" + oMeta.HOST + ":80" + oServerInfo.INSTANCENO,
-            sUrl = encodeURI(sHost + "/zu4a_imp/cssfontstylewizrd?sap-user=" + oUserInfo.ID + "&sap-password=" + oUserInfo.PW);
-
-        // 브라우저 옵션 설정
-        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
-            oDefaultOption = parent.require(sSettingsJsonPath),
-            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
-
-        oBrowserOptions.title = "U4A Workspace: Font Style";
-        oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.devTools = false;
-        oBrowserOptions.show = false;
-        oBrowserOptions.parent = oCurrWin;
-        oBrowserOptions.webPreferences.partition = SESSKEY;
-        oBrowserOptions.webPreferences.nodeIntegration = false;
-        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
-
-        // 브라우저 오픈
-        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
-        REMOTEMAIN.enable(oBrowserWindow.webContents);
-
-        // 브라우저 상단 메뉴 없애기
-        oBrowserWindow.setMenu(null);
-
-        oBrowserWindow.loadURL(sUrl);
-
-        // oBrowserWindow.webContents.openDevTools();
-
-        // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
-
-            oBrowserWindow.show();
-
-
-        });
-
-        // 브라우저를 닫을때 타는 이벤트
-        oBrowserWindow.on('closed', () => {
-            oBrowserWindow = null;
-        });
+        oAPP.fn.fnFontStyleWizardPopupOpener();
 
     }; // end of oAPP.fn.fnWS20WMENU10_02
 
