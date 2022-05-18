@@ -45,50 +45,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     // Busy Indicator 상태
     oWS.utill.attr.isBusy = "";
 
-    /**
-     * ## 각종 Path 들
-     *  @ 패스 지정 방법..
-     *    1. 기존 있는 파일 패스를 만들 경우
-     *      - PATH.join(__dirname, '../Login/Login.html') 이와 같은 방식.
-     * 
-     *    2. 동적으로 개인화 파일 등을 만들때..
-     *      - APP.getPath("userData") + "\\경로명"
-     */
-
-    oWS.utill.attr.paths.LOGIN = PATH.join(APPPATH, '/Login/Login.html');
-    oWS.utill.attr.paths.LOGIN2 = PATH.join(APPPATH, '/Login/Login2.html');
-    oWS.utill.attr.paths.WS10 = PATH.join(APPPATH, '/ws10_20/ws10_20.html');
-    oWS.utill.attr.paths.EXTOPEN = PATH.join(APPPATH, '/ws10_20/extopen.html');
-    oWS.utill.attr.paths.ERRORPAGE = PATH.join(APPPATH, '/ws10_20/errorpage.html');
-    oWS.utill.attr.paths.JQUERYUI = PATH.join(APPPATH, '/js/jquery-ui.min.js');
-    oWS.utill.attr.paths.JQUERYUICSS = PATH.join(APPPATH, '/css/jquery-ui.min.css');
-    oWS.utill.attr.paths.MSG = PATH.join(APPPATH, '/msg');
-    oWS.utill.attr.paths.BROWSERSETTINGS = PATH.join(APPPATH, '/settings/BrowserWindow/BrowserWindow-settings.json');
-    oWS.utill.attr.paths.SERVERLIST = PATH.join(APPPATH, '/ServerList/ServerFrame.html');
-
-    // User Data Paths..
-    oWS.utill.attr.paths.CLIPBOARD = PATH.join(USERDATA, "clipboard.json");
-    oWS.utill.attr.paths.THEME = PATH.join(USERDATA, "p13n", "theme");
-    oWS.utill.attr.paths.P13N = PATH.join(USERDATA, "p13n", "p13n.json");
-
-    // Popup Paths.. 
-    const POPUP_ROOT = PATH.join(APPPATH, "ws10_20", "Popups");
-
-    oWS.utill.attr.paths.ERRPAGE = PATH.join(POPUP_ROOT, "errPageEditorPopup", "errorPageEditorFrame.html");
-    oWS.utill.attr.paths.UIFIND = PATH.join(POPUP_ROOT, "findPopup", "frame.html");
-    oWS.utill.attr.paths.RTMCLS = PATH.join(POPUP_ROOT, "runtimeClassNavigator", "frame.html"); // runtime class navigator        
-    oWS.utill.attr.paths.BINDPOPUP = PATH.join(POPUP_ROOT, "bindPopup", "frame.html"); // bind popup
-    oWS.utill.attr.paths.TXTSRCH = PATH.join(POPUP_ROOT, "textSearchPopup", "index.html");
-    oWS.utill.attr.paths.APPDOCU = PATH.join(POPUP_ROOT, "docPopup", "frame.html");
-    oWS.utill.attr.paths.WSOPTS = PATH.join(POPUP_ROOT, "optionPopup", "optionM.html");
-    oWS.utill.attr.paths.EDITPOP = PATH.join(POPUP_ROOT, "editorPopup", "editorFrame.html");
-    oWS.utill.attr.paths.ERRMSGPOP = PATH.join(POPUP_ROOT, "errMsgPopup", "frame.html");
-    oWS.utill.attr.paths.U4ADOCU = PATH.join(POPUP_ROOT, "u4aDocPopup", "frame.html");
-    oWS.utill.attr.paths.IMPEXPPOP = PATH.join(POPUP_ROOT, "importExportPopup", "index.html");
-    oWS.utill.attr.paths.ABOUTU4APOP = PATH.join(POPUP_ROOT, "aboutU4APopup", "index.html");
-
-    // SAP icon Path
-    oWS.utill.attr.paths.SAPICONPATH = PATH.join(APPPATH, '/icons/');
+    oWS.utill.attr.paths = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));
 
     // Default Browser 기준정보 (Login.js 에서 관련 기준 정보 선행체크함.)
     oWS.utill.attr.aDefaultBrowsInfo = [];

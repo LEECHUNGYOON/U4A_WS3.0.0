@@ -844,9 +844,15 @@
      * **********************************************************************
      * @param {Object} oEditInfo
      * - 오픈 하려는 에디터의 타입 정보
-     * @return {Boolean} 
-     * - true : 같은 타입의 오픈된 에디터 팝업이 이미 있는 경우.
-     * - false : 같은 타입의 오픈된 에디터 팝업이 없는 신규일 경우.
+     * 
+     * @return {Object} 
+     *  - ISOPEN {Boolean} 
+     *      true : 같은 타입의 오픈된 에디터 팝업이 이미 있는 경우.
+     *      false : 같은 타입의 오픈된 에디터 팝업이 없는 신규일 경우.
+     * 
+     *  - WINDOW {Object}
+     *      BrowserWindow Instance
+     *  
      ************************************************************************/
     oAPP.common.getCheckAlreadyOpenWindow = function(OBJTY) {
 

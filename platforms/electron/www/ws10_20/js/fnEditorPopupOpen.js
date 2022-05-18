@@ -26,8 +26,6 @@
      ************************************************************************/
     oAPP.fn.fnEditorPopupOpen = function (oEditInfo, sSearchValue) {
         
-        debugger;
-
         let oCurrWin = REMOTE.getCurrentWindow(),
             SESSKEY = parent.getSessionKey(),
             BROWSKEY = parent.getBrowserKey(),
