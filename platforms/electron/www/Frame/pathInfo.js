@@ -25,7 +25,9 @@ module.exports = (() => {
         APPPATH = APP.getAppPath(),
         USERDATA = APP.getPath("userData"),
 
-        POPUP_ROOT = PATH.join(APPPATH, "ws10_20", "Popups");
+        POPUP_ROOT = PATH.join(APPPATH, "ws10_20", "Popups"),
+        P13N_ROOT = PATH.join(USERDATA, "p13n"),
+        SUGG_ROOT = PATH.join(P13N_ROOT, "suggestion");
 
     return {
 
@@ -60,7 +62,7 @@ module.exports = (() => {
         ABOUTU4APOP: PATH.join(POPUP_ROOT, "aboutU4APopup", "index.html"),
 
         // Suggestion Json Path..
-        EVENTSUGG: PATH.join(USERDATA, "p13n", "events.json")
+        EVENTSUGG: PATH.join(SUGG_ROOT, "events.json"),
 
     };
 
