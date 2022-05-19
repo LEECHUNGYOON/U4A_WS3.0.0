@@ -150,6 +150,10 @@
 
         var FS = parent.FS;
 
+        // 서버 접속 정보
+        var oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID;
+
         // 로그인 유저 정보
         var oUserInfo = parent.getUserInfo(),
             sUserId = oUserInfo.ID.toUpperCase();
@@ -163,10 +167,10 @@
             oP13nData = JSON.parse(sP13nJsonData);
 
         // 개인화 정보 중, Default Browser 정보가 있는지 확인한다.	
-        if (!oP13nData[sUserId].APPSUGG) {
+        if (!oP13nData[sSysID].APPSUGG) {
 
             // 없으면 신규생성
-            oP13nData[sUserId].APPSUGG = [{
+            oP13nData[sSysID].APPSUGG = [{
                 APPID: sAppID
             }];
 
@@ -179,7 +183,7 @@
         // 있으면 추가한다.
 
         // 기 저장된 APPID 정보를 읽는다.
-        var aBeforeAppIds = oP13nData[sUserId].APPSUGG;
+        var aBeforeAppIds = oP13nData[sSysID].APPSUGG;
 
         // 저장하려는 APPID가 이미 있으면
         // 해당 APPID를 Suggestion 최상단에 배치한다. 
@@ -209,14 +213,14 @@
             APPID: sAppID
         });
 
-        oP13nData[sUserId].APPSUGG = aBeforeAppIds;
+        oP13nData[sSysID].APPSUGG = aBeforeAppIds;
 
         // suggustion save
         lf_saveSuggestion();
 
         function lf_saveSuggestion() {
 
-            oAPP.common.fnSetModelProperty("/WS10/APPSUGG", oP13nData[sUserId].APPSUGG);
+            oAPP.common.fnSetModelProperty("/WS10/APPSUGG", oP13nData[sSysID].APPSUGG);
 
             // p13n.json 파일에 APPID Suggestion 정보 저장
             FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData));

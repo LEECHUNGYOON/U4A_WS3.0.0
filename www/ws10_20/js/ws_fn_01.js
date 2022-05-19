@@ -1650,6 +1650,9 @@
      ************************************************************************/
     oAPP.fn.fnOnP13nFolderCreate = function () {
 
+        var oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID;
+
         // 로그인 유저 정보		
         var oUserInfo = parent.getUserInfo(),
             sUserId = oUserInfo.ID.toUpperCase();
@@ -1670,12 +1673,12 @@
             }
 
             // 파일 내용에 로그인 아이디의 정보가 있으면 리턴.
-            if (oSavedData[sUserId]) {
+            if (oSavedData[sSysID]) {
                 return;
             }
 
             // 없으면 개인화 영역 Object 생성 후 Json 파일에 저장
-            oSavedData[sUserId] = {};
+            oSavedData[sSysID] = {};
 
             FS.writeFileSync(sP13nPath, JSON.stringify(oSavedData));
 
@@ -1684,7 +1687,7 @@
 
         // 로그인 사용자의 개인화 정보가 없을 경우 
         var oP13N_data = {};
-        oP13N_data[sUserId] = {};
+        oP13N_data[sSysID] = {};
 
         // P13N 폴더가 없으면 폴더부터 생성 		
         if (!FS.existsSync(sP13nfolderPath)) {
@@ -1816,8 +1819,12 @@
      * 개인화 정보를 읽어서 WS10 페이지의 APP Name Input에 Suggestion 설정하기
      ************************************************************************/
     oAPP.fn.fnGetP13nWs10AppSuggetion = function () {
-
+        
         var FS = parent.FS;
+
+        // 서버 접속 정보
+        var oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID;
 
         // 로그인 유저 정보
         var oUserInfo = parent.getUserInfo(),
@@ -1832,11 +1839,11 @@
             oP13nData = JSON.parse(sP13nJsonData);
 
         // 개인화 정보 중, APPID의 Suggestion 정보가 있는지 확인한다.	
-        if (!oP13nData[sUserId].APPSUGG) {
+        if (!oP13nData[sSysID].APPSUGG) {
             return;
         }
 
-        oAPP.common.fnSetModelProperty("/WS10/APPSUGG", oP13nData[sUserId].APPSUGG);
+        oAPP.common.fnSetModelProperty("/WS10/APPSUGG", oP13nData[sSysID].APPSUGG);
 
     }; // end of oAPP.fn.fnGetP13nWs10AppSuggetion
 
@@ -1846,6 +1853,10 @@
     oAPP.fn.fnSetP13nWs10AppSuggetion = function (APPID) {
 
         var FS = parent.FS;
+
+        // 서버 접속 정보
+        var oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID;
 
         // 로그인 유저 정보
         var oUserInfo = parent.getUserInfo(),
@@ -1859,7 +1870,7 @@
             // 개인화 정보
             oP13nData = JSON.parse(sP13nJsonData),
 
-            aAppSugg = oP13nData[sUserId].APPSUGG;
+            aAppSugg = oP13nData[sSysID].APPSUGG;
 
         // 개인화 정보 중, Default Browser 정보가 있는지 확인한다.	
         if (!aAppSugg) {
@@ -1893,6 +1904,9 @@
 
         var FS = parent.FS;
 
+        var oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID;
+
         // 로그인 유저 정보
         var oUserInfo = parent.getUserInfo(),
             sUserId = oUserInfo.ID.toUpperCase();
@@ -1909,23 +1923,23 @@
             aCurrBrowsInfos = oAPP.fn.fnGetExecBrowserInfo();
 
         // 개인화 정보 중, Default Browser 정보가 있는지 확인한다.	
-        if (!oP13nData[sUserId].DEFBR) {
+        if (!oP13nData[sSysID].DEFBR) {
 
             // 없으면 생성
-            oP13nData[sUserId].DEFBR = aCurrBrowsInfos;
+            oP13nData[sSysID].DEFBR = aCurrBrowsInfos;
 
         } else {
 
             // 있으면 이전 저장된 Default Browser 정보와 현재 PC에 설치된 Browser 정보를 비교한 후
             // Default Browser 정보를 갱신한다.
-            var aNewInfo = oAPP.fn.fnCompareBeforeBrowserInfo(oP13nData[sUserId].DEFBR, aCurrBrowsInfos);
+            var aNewInfo = oAPP.fn.fnCompareBeforeBrowserInfo(oP13nData[sSysID].DEFBR, aCurrBrowsInfos);
 
-            oP13nData[sUserId].DEFBR = aNewInfo;
+            oP13nData[sSysID].DEFBR = aNewInfo;
 
         }
 
         // 실행 브라우저 정보를 모델에 set 하기..
-        oAPP.common.fnSetModelProperty("/DEFBR", oP13nData[sUserId].DEFBR);
+        oAPP.common.fnSetModelProperty("/DEFBR", oP13nData[sSysID].DEFBR);
 
         // p13n.json 파일에 브라우저 정보 저장
         FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData));

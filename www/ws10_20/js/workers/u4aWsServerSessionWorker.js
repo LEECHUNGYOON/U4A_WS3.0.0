@@ -22,8 +22,6 @@ self.onmessage = function (e) {
     }, iSessionTime);
 
     this.sendAjax = (sServerPath) => {
-
-        debugger;
         
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () { // 요청에 대한 콜백

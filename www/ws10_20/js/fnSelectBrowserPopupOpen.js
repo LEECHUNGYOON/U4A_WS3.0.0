@@ -12,6 +12,9 @@
 
         var FS = parent.FS,
 
+            oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID,
+
             // 로그인 유저 정보
             oUserInfo = parent.getUserInfo(),
             sUserId = oUserInfo.ID.toUpperCase(),
@@ -23,7 +26,7 @@
             // 개인화 정보
             oP13nData = JSON.parse(sP13nJsonData);
 
-        oAPP.common.fnSetModelProperty("/DEFBR", oP13nData[sUserId].DEFBR);
+        oAPP.common.fnSetModelProperty("/DEFBR", oP13nData[sSysID].DEFBR);
 
         var oDialog = sap.ui.getCore().byId("selBrwsDlg");
 
@@ -140,6 +143,9 @@
 
         var FS = parent.FS,
 
+            oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID,
+
             // 로그인 유저 정보
             oUserInfo = parent.getUserInfo(),
             sUserId = oUserInfo.ID.toUpperCase(),
@@ -149,7 +155,7 @@
             // 개인화 정보
             oP13nData = JSON.parse(sP13nJsonData);
 
-        oP13nData[sUserId].DEFBR = oAPP.common.fnGetModelProperty("/DEFBR");
+        oP13nData[sSysID].DEFBR = oAPP.common.fnGetModelProperty("/DEFBR");
 
         FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData));
 
