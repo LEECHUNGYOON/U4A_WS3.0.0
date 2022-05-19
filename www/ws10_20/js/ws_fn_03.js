@@ -71,8 +71,8 @@
         $(window).unbind("click", oAPP.fn.fnWindowClickEventListener);
         $(window).unbind("keyup", oAPP.fn.fnWindowClickEventListener);
 
-        // IPC MAIN 이벤트의 세션 타임 관련 이벤트 해제
-        parent.IPCMAIN.removeListener('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
+        // IPC MAIN 이벤트의 세션 타임 관련 이벤트 해제        
+        parent.IPCMAIN.off('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
 
         //세션타임아웃 후 전체 로그아웃 및 같은 세션 창 전체 닫기
         oAPP.common.setSessionTimeout();

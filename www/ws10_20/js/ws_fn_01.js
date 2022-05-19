@@ -1907,9 +1907,9 @@
         var oServerInfo = parent.getServerInfo(),
             sSysID = oServerInfo.SYSID;
 
-        // 로그인 유저 정보
-        var oUserInfo = parent.getUserInfo(),
-            sUserId = oUserInfo.ID.toUpperCase();
+        // // 로그인 유저 정보
+        // var oUserInfo = parent.getUserInfo(),
+        //     sUserId = oUserInfo.ID.toUpperCase();
 
         // P13N 파일 Path
         var sP13nPath = parent.getPath("P13N"),

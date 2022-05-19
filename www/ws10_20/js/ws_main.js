@@ -166,10 +166,10 @@
         oAPP.common.fnRemoveGlobalShortcut();
 
         // IPCMAIN 이벤트 해제
-        parent.IPCMAIN.removeListener('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
+        parent.IPCMAIN.off('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
 
         // EXAM MOVE 이벤트 해제
-        parent.IPCMAIN.removeListener('if-exam-move', oAPP.fn.fnIpcMain_if_exam_move);
+        parent.IPCMAIN.off('if-exam-move', oAPP.fn.fnIpcMain_if_exam_move);
 
         // 서버 세션 유지 이벤트 전파
         oAPP.main.fnServerSessionCheckPropagation();
@@ -208,7 +208,7 @@
         }
 
         // 현재 브라우저에 설정된 서버 세션 체크 전파 IPC이벤트를 해제한다.
-        parent.IPCRENDERER.removeListener('if-server-session-propagation', oAPP.fn.fnIpcRender_if_server_session_propagation);
+        parent.IPCRENDERER.off('if-server-session-propagation', oAPP.fn.fnIpcRender_if_server_session_propagation);
 
         // 브라우저 갯수 체크
         var aSameBrowser = oAPP.fn.fnGetSameBrowsers(),

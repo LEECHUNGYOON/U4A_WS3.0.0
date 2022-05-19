@@ -5,7 +5,7 @@
  * - file Desc : WS Login Page
  ************************************************************************/
 
-let oAPP = (function () {
+let oAPP = (function() {
     "use strict";
 
     const
@@ -261,7 +261,7 @@ let oAPP = (function () {
                                     value: "{ID}",
                                     showSearchButton: false,
                                     placeholder: "　",
-                                    suggest: function (oEvent) {
+                                    suggest: function(oEvent) {
 
                                         var sValue = oEvent.getParameter("suggestValue"),
                                             aFilters = [];
@@ -270,7 +270,7 @@ let oAPP = (function () {
 
                                             aFilters = [
                                                 new sap.ui.model.Filter([
-                                                    new sap.ui.model.Filter("ID", function (sText) {
+                                                    new sap.ui.model.Filter("ID", function(sText) {
                                                         return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                                     }),
                                                 ], false)
@@ -282,7 +282,7 @@ let oAPP = (function () {
                                         this.suggest();
 
                                     },
-                                    search: function (oEvent) {
+                                    search: function(oEvent) {
 
                                         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
                                         if (bIsPressClearBtn) {
@@ -373,25 +373,25 @@ let oAPP = (function () {
 
             new sap.m.Button({
                 text: "영선",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("yshong");
                 }
             }),
             new sap.m.Button({
                 text: "성호",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("shhong");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
             new sap.m.Button({
                 text: "은섭",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("pes");
                 }
             }),
             new sap.m.Button({
                 text: "청윤",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("soccerhs");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
@@ -630,7 +630,7 @@ let oAPP = (function () {
         parent.setBusy('X');
 
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () { // 요청에 대한 콜백
+        xhr.onreadystatechange = function() { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
@@ -701,7 +701,7 @@ let oAPP = (function () {
             var sServicePath = parent.getServerPath() + "/chk_u4a_authority";
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () { // 요청에 대한 콜백
+            xhr.onreadystatechange = function() { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -868,7 +868,7 @@ let oAPP = (function () {
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         reject(err.toString());
@@ -920,31 +920,8 @@ let oAPP = (function () {
             // 로그인 페이지 초기 렌더링
             oAPP.fn.fnOnInitRendering();
 
-            // fnSetBusy('');
-
             // 자연스러운 로딩
             oAPP.fn.fnOnSmoothLoading();
-
-            // // 초기값 바인딩
-            // fnOnInitBinding();
-
-            // // 브라우저 상단 메뉴 구성
-            // fnOnBrowserMenuList();
-
-            // // 초기 로딩 시, 필요한 인스턴스 생성
-            // fnOnInitInstanceCreate();
-
-            // // UI5의 필요한 Object 로드
-            // fnOnInitUi5LibraryPreload();
-
-            // // 언어별 텍스트 목록 구하기
-            // fnLoadLanguClass(navigator.language);
-
-            // // 서버 리스트 개인화 정보 설정
-            // fnOnP13nConfig();
-
-            // // 서버 리스트 초기 화면 그리기
-            // fnOnInitRendering();
 
         });
 
@@ -1015,7 +992,6 @@ let oAPP = (function () {
         return aIds[0].ID;
 
     };
-
 
     oAPP.fn.fnSaveRememberCheck = (bIsRemember) => {
 
@@ -1092,20 +1068,32 @@ let oAPP = (function () {
             aIds.splice(iFindIndex, 1);
         }
 
-        // 저장된 Suggestion 갯수가 iIdSuggMaxCnt 이상이면
-        // 마지막거 지우고 최신거를 1번째로 저장한다.
-        var iBeforeCnt = aIds.length;
+        var iBeforeCnt = aIds.length,
+            oNewData = {
+                ID: ID
+            },
 
+            aNewArr = [];
+
+        // 저장된 Suggestion 갯수가 MaxLength 이상이면
+        // 마지막거 지우고 최신거를 1번째로 저장한다.
         if (iBeforeCnt >= iIdSuggMaxCnt) {
-            aIds.pop();
+
+            for (var i = 0; i < iIdSuggMaxCnt - 1; i++) {
+                aNewArr.push(aIds[i]);
+            }
+
+        } else {
+
+            for (var i = 0; i < iBeforeCnt; i++) {
+                aNewArr.push(aIds[i]);
+            }
+
         }
 
-        // ID를 Array의 가장 첫번째로 넣는다.
-        aIds.unshift({
-            ID: ID
-        });
+        aNewArr.unshift(oNewData);
 
-        oLoginInfo.aIds = aIds;
+        oLoginInfo.aIds = aNewArr;
 
         // login.json 파일에 ID Suggestion 정보 저장
         FS.writeFileSync(sJsonPath, JSON.stringify(oLoginInfo));
@@ -1165,7 +1153,7 @@ window.onload = () => {
 
 };
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
 
     // parent.fn_onWinMove(false, parent.REMOTE.getCurrentWindow());
 
