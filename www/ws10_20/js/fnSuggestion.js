@@ -16,9 +16,12 @@
         USERDATA = APP.getPath("userData"),
         FS = parent.FS,
         APPCOMMON = oAPP.common;
-        
-    const EVENTSUGG_PATH = parent.getPath("EVENTSUGG");
-    
+
+    const
+        EVENTSUGG_PATH = parent.getPath("EVENTSUGG"),
+        P13N_ROOT = PATH.join(USERDATA, "p13n"),
+        SUGG_ROOT = PATH.join(P13N_ROOT, "suggestion");
+
     const SUGGMAXLENGTH = 10;
 
     /************************************************************************
@@ -94,5 +97,46 @@
         return aSuggData;
 
     }; // end of oAPP.fn.fnAddEventSuggRead
+
+    /************************************************************************
+     * Suggestion 데이터 저장
+     * **********************************************************************
+     * @param {String} sJsonFile  
+     * - json 파일 명
+     * 
+     * @param {any} oData 
+     * - Suggestion 저장할 데이터
+     ************************************************************************/
+    oAPP.fn.fnSuggestionSave = (sJsonFile, oData) => {
+
+        var sSavePath = PATH.join(SUGG_ROOT, `${sJsonFile}.json`);
+
+        // login.json 파일에 ID Suggestion 정보 저장
+        FS.writeFileSync(sSavePath, JSON.stringify(oData));
+
+    }; // end of oAPP.fn.fnSuggestionSave
+
+    /************************************************************************
+     * Suggestion 데이터 읽어오기
+     * **********************************************************************
+     * @param {String} sJsonFile  
+     * - json 파일 명
+     * 
+     * @return {any} oData 
+     * - 저장된 Suggestion 데이터
+     ************************************************************************/
+    oAPP.fn.fnSuggestionRead = (sJsonFile) => {
+
+        var sReadPath = PATH.join(SUGG_ROOT, `${sJsonFile}.json`);
+
+        if (!FS.existsSync(sReadPath)) {
+            return;
+        }
+
+        var sReadData = FS.readFileSync(sReadPath, 'utf-8');
+
+        return JSON.parse(sReadData);
+
+    } // end of oAPP.fn.fnSuggestionRead
 
 })(window, $, oAPP);

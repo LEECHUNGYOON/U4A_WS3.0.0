@@ -551,82 +551,15 @@
                 press: oAPP.events.ev_pressZoomBtn,
                 tooltip: "zoom",
             }),
-
-            /*****************************************************************************
-             * 10번 상단 Text Search -- START
-             *****************************************************************************/
-            // search Input
-            new sap.m.Input("txtSrchInputWS10", {
-                width: "50px",
-                value: "{/WS10/SRCHTXT/INPUT_VALUE}",
-                visible: "{/WS10/SRCHTXT/INPUT_VISI}",
-                placeholder: "Text Search..",
-                submit: oAPP.events.ev_winTxtSrchLibChgWS10
-            })
-            .addStyleClass("sapUiSizeCompact u4aWsWinTxtSrchInput")
-            .addDelegate({
-                onAfterRendering: function (oEvent) {
-
-                    var oInput = oEvent.srcControl;
-                    if (oInput == null) {
-                        return;
-                    }
-
-                    oInput.$().animate({
-                        minWidth: "200px"
-                    }, 300, "linear");
-
-                }
-
-            }),
-
-            // 검색 결과 텍스트
-            new sap.m.Text({
-                text: "{/WS10/SRCHTXT/COUNT}",
-            }).addStyleClass("sapUiTinyMarginBegin"),
-
-            new sap.m.ToolbarSeparator({
-                visible: "{/WS10/SRCHTXT/INPUT_VISI}"
-            }),
-
-            // up 버튼
-            new sap.m.Button({
-                icon: "sap-icon://navigation-up-arrow",
-                visible: "{/WS10/SRCHTXT/INPUT_VISI}",
-            }),
-
-            // down 버튼
-            new sap.m.Button({
-                icon: "sap-icon://navigation-down-arrow",
-                visible: "{/WS10/SRCHTXT/INPUT_VISI}",
-            }),
-
-            // search 닫기
-            new sap.m.Button({
-                icon: "sap-icon://decline",
-                visible: "{/WS10/SRCHTXT/INPUT_VISI}",
-                press: oAPP.events.ev_winTxtSrchClsWS10
-            }),
-
+           
             // 검색 버튼
             new sap.m.Button({
                 icon: "sap-icon://search",
                 tooltip: "window Text Search",
                 press: oAPP.events.ev_winTxtSrchWS10
-            }).bindProperty("visible", "/WS10/SRCHTXT/INPUT_VISI", function (bIsVisi) {
-
-                if (bIsVisi == null) {
-                    return false;
-                }
-
-                return !bIsVisi;
-
             }),
 
-            /*****************************************************************************
-             * 10번 상단 Text Search -- END
-             *****************************************************************************/
-
+            // Logoff 버튼
             new sap.m.Button({
                 icon: "sap-icon://log",
                 press: oAPP.events.ev_Logout

@@ -39,18 +39,16 @@
      ************************************************************************/
     oAPP.events.ev_winTxtSrchWS10 = function (oEvent) {
 
-
         oAPP.fn.fnTextSearchPopupOpener();
+        
+        // return;
 
+        // var oModelData = APPCOMMON.fnGetModelProperty("/WS10/SRCHTXT"),
+        //     bSrchInpVisi = oModelData.INPUT_VISI;
 
-        return;
+        // oModelData.INPUT_VISI = !bSrchInpVisi;
 
-        var oModelData = APPCOMMON.fnGetModelProperty("/WS10/SRCHTXT"),
-            bSrchInpVisi = oModelData.INPUT_VISI;
-
-        oModelData.INPUT_VISI = !bSrchInpVisi;
-
-        sap.ui.getCore().getModel().refresh(true);
+        // sap.ui.getCore().getModel().refresh(true);
 
     }; // end of oAPP.events.ev_winTxtSrchWS10
 

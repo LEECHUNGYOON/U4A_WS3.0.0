@@ -5,7 +5,7 @@
  * - file Desc : ws 공통 스크립트
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     oAPP.common = {};
@@ -24,7 +24,7 @@
      * - true : child window 보이기
      * - false : child window 숨김
      * **********************************************************************/
-    oAPP.common.fnIsChildWindowShow = function(bIsShow) {
+    oAPP.common.fnIsChildWindowShow = function (bIsShow) {
 
         var oCurrWin = REMOTE.getCurrentWindow(),
             aChild = oCurrWin.getChildWindows(),
@@ -58,7 +58,7 @@
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.common.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
+    oAPP.common.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -76,7 +76,7 @@
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.common.fnGetModelProperty = function(sModelPath) {
+    oAPP.common.fnGetModelProperty = function (sModelPath) {
         return sap.ui.getCore().getModel().getProperty(sModelPath);
     };
 
@@ -89,7 +89,7 @@
      * @return {String}
      * - Message Text
      ************************************************************************/
-    oAPP.common.fnGetMsgClassTxt = function(sMsgNum) {
+    oAPP.common.fnGetMsgClassTxt = function (sMsgNum) {
 
         // 메시지 클래스 내용이 없으면 리턴
         if (!oAPP.attr.oMsgClass) {
@@ -124,7 +124,7 @@
      * @return {String}
      * - Message Text
      ************************************************************************/
-    oAPP.common.fnGetMsgClsTxt = function(sMsgNum, p1, p2, p3, p4) {
+    oAPP.common.fnGetMsgClsTxt = function (sMsgNum, p1, p2, p3, p4) {
 
         // Metadata에서 메시지 클래스 정보를 구한다.
         var oMeta = parent.getMetadata(),
@@ -191,14 +191,14 @@
     /************************************************************************
      * z-Index 구하기
      * **********************************************************************/
-    oAPP.common.fnGetZIndex = function() {
+    oAPP.common.fnGetZIndex = function () {
         return sap.ui.core.Popup.getNextZIndex();
     };
 
     /************************************************************************
      * 각 페이지 이동 시 푸터 메시지가 있으면 숨김처리
      ************************************************************************/
-    oAPP.common.fnHideFloatingFooterMsg = function() {
+    oAPP.common.fnHideFloatingFooterMsg = function () {
 
         if (oAPP.attr.footerMsgTimeout) {
             clearTimeout(oAPP.attr.footerMsgTimeout);
@@ -251,7 +251,7 @@
     /************************************************************************
      * 멀티 푸터 메시지 닫기
      ************************************************************************/
-    oAPP.common.fnMultiFooterMsgClose = function() {
+    oAPP.common.fnMultiFooterMsgClose = function () {
 
         var sPopupName = "ERRMSGPOP";
 
@@ -287,7 +287,7 @@
      * 예) WS10, WS20
      * @param {String} MSG  
      ************************************************************************/
-    oAPP.common.fnShowFloatingFooterMsg = function(TYPE, POS, MSG) {
+    oAPP.common.fnShowFloatingFooterMsg = function (TYPE, POS, MSG) {
 
         oAPP.common.fnHideFloatingFooterMsg();
 
@@ -337,7 +337,7 @@
         }
 
         // timeout 시간이 도래되면 Footer Message를 지운다.
-        oAPP.attr.footerMsgTimeout = setTimeout(function() {
+        oAPP.attr.footerMsgTimeout = setTimeout(function () {
 
             oAPP.common.fnHideFloatingFooterMsg();
 
@@ -351,7 +351,7 @@
     /************************************************************************
      * window open
      ************************************************************************/
-    oAPP.common.fnWindowOpen = function() {
+    oAPP.common.fnWindowOpen = function () {
 
         var oServerInfo = parent.getServerInfo(),
             oUserInfo = parent.getUserInfo(),
@@ -379,7 +379,7 @@
     /*************************************************************************
      * Shortcut 설정
      **************************************************************************/
-    oAPP.common.getShortCutList = function(sPgNo) {
+    oAPP.common.getShortCutList = function (sPgNo) {
 
         let IS_DEV = APPCOMMON.fnGetModelProperty("/USERINFO/USER_AUTH/IS_DEV");
 
@@ -780,7 +780,7 @@
      * - page 명
      * 예) WS10, WS20     
      ************************************************************************/
-    oAPP.common.setShortCut = function(sPgNo) {
+    oAPP.common.setShortCut = function (sPgNo) {
 
         var oShortcut = oAPP.attr.oShortcut;
 
@@ -804,7 +804,7 @@
      * - page 명
      * 예) WS10, WS20     
      ************************************************************************/
-    oAPP.common.removeShortCut = function(sPgNo) {
+    oAPP.common.removeShortCut = function (sPgNo) {
 
         var oShortcut = oAPP.attr.oShortcut;
 
@@ -824,7 +824,7 @@
     /************************************************************************
      * 로그인 상태 체크
      ************************************************************************/
-    oAPP.common.sendAjaxLoginChk = function(fnCallback) {
+    oAPP.common.sendAjaxLoginChk = function (fnCallback) {
 
         var sPath = parent.getServerPath() + "/wsloginchk";
 
@@ -854,7 +854,7 @@
      *      BrowserWindow Instance
      *  
      ************************************************************************/
-    oAPP.common.getCheckAlreadyOpenWindow = function(OBJTY) {
+    oAPP.common.getCheckAlreadyOpenWindow = function (OBJTY) {
 
         var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
             aChildWin = oCurrWin.getChildWindows(), // 현재 window의 child window           
@@ -901,7 +901,7 @@
      * @param {String} INDEX
      * - 클래스 메소드 내의 소스 인덱스
      ************************************************************************/
-    oAPP.common.execControllerClass = function(METHNM, INDEX) {
+    oAPP.common.execControllerClass = function (METHNM, INDEX) {
 
         var oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
             oSettings = parent.require(oSettingsPath),
@@ -936,11 +936,11 @@
 
         var child_process = parent.SPAWN('cscript.exe', aParam);
 
-        child_process.stdout.on("data", function(data) {
+        child_process.stdout.on("data", function (data) {
             console.log(data.toString());
         }); // 실행 결과
 
-        child_process.stderr.on("data", function(data) {
+        child_process.stderr.on("data", function (data) {
             console.error(data.toString());
         }); // 실행 >에러
 
@@ -949,7 +949,7 @@
     /************************************************************************
      * 세션타임아웃 후 전체 로그아웃 및 같은 세션 창 전체 닫기
      * **********************************************************************/
-    oAPP.common.setSessionTimeout = function() {
+    oAPP.common.setSessionTimeout = function () {
 
         // 세션 타임 아웃 시, logoff 처리
         var sPath = parent.getServerPath() + '/logoff';
@@ -973,7 +973,7 @@
     /************************************************************************
      * 세션타임아웃 메시지 OK 누르면 
      * **********************************************************************/
-    oAPP.common.setSessionTimeoutOK = function() {
+    oAPP.common.setSessionTimeoutOK = function () {
 
         // 같은 세션의 윈도우가 여러개 있으면 해당 윈도우 전체닫기
         var aSameBrows = oAPP.fn.fnGetSameBrowsers();
@@ -1022,7 +1022,7 @@
     /************************************************************************
      * APP 전체 대상 글로벌 Shortcut 지정하기
      * **********************************************************************/
-    oAPP.common.fnSetGlobalShortcut = function() {
+    oAPP.common.fnSetGlobalShortcut = function () {
 
         var oShortcut = oAPP.attr.oShortcut;
 
@@ -1120,7 +1120,7 @@
     /************************************************************************
      * APP 전체 대상 글로벌 Shortcut 삭제
      * **********************************************************************/
-    oAPP.common.fnRemoveGlobalShortcut = function() {
+    oAPP.common.fnRemoveGlobalShortcut = function () {
 
         var oShortcut = parent.GLOBALSHORTCUT;
 
@@ -1134,7 +1134,7 @@
      * 
      * @param {Function} fnExecFunc 
      */
-    oAPP.common.fnSetBusyDialog = function(bIsOpen) {
+    oAPP.common.fnSetBusyDialog = function (bIsOpen) {
 
         const BusyDialogID = "u4aWsBusyDialog";
 
@@ -1170,7 +1170,7 @@
 
             // properties
             showHeader: false,
-            escapeHandler: function() {
+            escapeHandler: function () {
 
 
             },
@@ -1262,7 +1262,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
     parent.setBusy(busy);
 
     var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() { // 요청에 대한 콜백
+    xhr.onreadystatechange = function () { // 요청에 대한 콜백
         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
             if (xhr.status === 200 || xhr.status === 201) {
 
@@ -1389,12 +1389,14 @@ function ajax_unlock_app(APPID, fn_callback) {
 // logoff
 function ajax_logoff() {
 
+    debugger;
+
     parent.setBusy('X');
 
     var sPath = parent.getServerPath() + '/logoff';
 
     var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() { // 요청에 대한 콜백
+    xhr.onreadystatechange = function () { // 요청에 대한 콜백
         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
 
             if (xhr.status === 200 || xhr.status === 201) {
@@ -1403,6 +1405,7 @@ function ajax_logoff() {
 
                 var sRes = xhr.responseText;
 
+                // 로그아웃 버튼으로 호출 된 경우
                 if (sRes == "") {
 
                     // 로그오프 성공시 타는 펑션
@@ -1412,6 +1415,7 @@ function ajax_logoff() {
 
                 }
 
+                // 세션이 이미 날라간 경우
                 // SSO 만료일 경우.
                 // 로그인 쪽으로 왔을 경우.
                 var oResult = JSON.parse(sRes);
@@ -1440,10 +1444,181 @@ function ajax_logoff() {
 
 } // end of ajax_logoff
 
+// // test 로그오프 성공시 타는 펑션
+// function fn_logoff_success(TYPE) {
+
+//     debugger;
+
+//     /**
+//      * Flow Logic..
+//      * 
+//      *	1. 전체 떠있는 창이 몇개 있는지 확인한다. 
+//      *	2. 같은 세션으로 떠있는 창 전체를 닫는다.
+//      *	3. 나는 로그인 화면으로 전환한다.
+//      */
+//     var sKey = parent.getSessionKey(),
+//         oMeBrows = parent.REMOTE.getCurrentWindow(); // 현재 나의 브라우저
+//     if (oMeBrows.isDestroyed()) {
+//         return;
+//     }
+
+//     var aBrowserList = parent.REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
+//         iBrowsLen = aBrowserList.length;
+
+//     for (var i = 0; i < iBrowsLen; i++) {
+
+//         var oBrows = aBrowserList[i];
+//         if (oBrows.isDestroyed()) {
+//             continue;
+//         }
+
+//         var oWebCon = oBrows.webContents,
+//             oWebPref = oWebCon.getWebPreferences();
+
+//         // session 정보가 없으면 skip.
+//         var sSessionKey = oWebPref.partition;
+//         if (!sSessionKey) {
+//             continue;
+//         }
+
+//         // 브라우저가 내 자신이라면 skip.
+//         if (oBrows.id == oMeBrows.id) {
+//             continue;
+//         }
+
+//         // 현재 브라우저의 session key 와 동일하지 않으면 (다른 서버창) skip.
+//         if (sKey != sSessionKey) {
+//             continue;
+//         }
+
+//         oBrows.close();
+
+//     }
+
+//     if (!TYPE) {
+
+//         lf_OK();
+
+//         return;
+//     }
+
+//     if (TYPE == 'X') {
+
+//         // 현재 세션에서 파생된 Childwindow를 닫는다.
+//         oAPP.fn.fnChildWindowClose();
+
+//         // EXAM MOVE 이벤트 해제
+//         parent.IPCMAIN.removeListener('if-exam-move', oAPP.fn.fnIpcMain_if_exam_move);
+
+//         // IPCMAIN 이벤트 해제
+//         parent.IPCMAIN.removeListener('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
+
+//         // 현재 브라우저에 설정된 서버 세션 체크 전파 IPC이벤트를 해제한다.
+//         parent.IPCRENDERER.removeListener('if-server-session-propagation', oAPP.fn.fnIpcRender_if_server_session_propagation);
+
+//         window.removeEventListener("beforeunload", oAPP.main.fnBeforeunload);
+
+//         if (oAPP.attr._oWorker && oAPP.attr._oWorker.terminate) {
+//             oAPP.attr._oWorker.terminate();
+//             delete oAPP.attr._oWorker;
+//         }
+
+//         if (oAPP.attr._oServerWorker && oAPP.attr._oServerWorker) {
+//             oAPP.attr._oServerWorker.terminate();
+//             delete oAPP.attr._oServerWorker;
+//         }
+
+//         let sTitle = "Session Timeout",
+//             sDesc = "Please Try Login Again!",
+//             sIllustType = "tnt-SessionExpired";
+
+//         oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, lf_OK);
+
+//     }
+
+//     function lf_OK() {
+
+//         // /**
+//         //  * Flow Logic..
+//         //  * 
+//         //  *	1. 전체 떠있는 창이 몇개 있는지 확인한다. 
+//         //  *	2. 같은 세션으로 떠있는 창 전체를 닫는다.
+//         //  *	3. 나는 로그인 화면으로 전환한다.
+//         //  */
+//         // var sKey = parent.getSessionKey(),
+//         //     oMeBrows = parent.REMOTE.getCurrentWindow(); // 현재 나의 브라우저
+//         // if (oMeBrows.isDestroyed()) {
+//         //     return;
+//         // }
+
+//         // var aBrowserList = parent.REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
+//         //     iBrowsLen = aBrowserList.length;
+
+//         // for (var i = 0; i < iBrowsLen; i++) {
+
+//         //     var oBrows = aBrowserList[i];
+//         //     if (oBrows.isDestroyed()) {
+//         //         continue;
+//         //     }
+
+//         //     var oWebCon = oBrows.webContents,
+//         //         oWebPref = oWebCon.getWebPreferences();
+
+//         //     // session 정보가 없으면 skip.
+//         //     var sSessionKey = oWebPref.partition;
+//         //     if (!sSessionKey) {
+//         //         continue;
+//         //     }
+
+//         //     // 브라우저가 내 자신이라면 skip.
+//         //     if (oBrows.id == oMeBrows.id) {
+//         //         continue;
+//         //     }
+
+//         //     // 현재 브라우저의 session key 와 동일하지 않으면 (다른 서버창) skip.
+//         //     if (sKey != sSessionKey) {
+//         //         continue;
+//         //     }
+
+//         //     oBrows.close();
+
+//         // }
+
+//         // // Electron Browser들 전체 닫는 function
+//         oAPP.fn.fnChildWindowClose();
+
+//         // 로그인페이지로 이동..			
+//         parent.onMoveToPage("LOGIN");
+
+//         // // EXAM MOVE 이벤트 해제
+//         // parent.IPCMAIN.removeListener('if-exam-move', oAPP.fn.fnIpcMain_if_exam_move);
+
+//         // // IPCMAIN 이벤트 해제
+//         // parent.IPCMAIN.removeListener('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
+
+//         // // 현재 브라우저에 설정된 서버 세션 체크 전파 IPC이벤트를 해제한다.
+//         // parent.IPCRENDERER.removeListener('if-server-session-propagation', oAPP.fn.fnIpcRender_if_server_session_propagation);
+
+//         // window.removeEventListener("beforeunload", oAPP.main.fnBeforeunload);
+
+//         // delete oAPP.attr._oWorker;
+
+//         // delete oAPP.attr._oServerWorker;
+
+//     }
+
+//     parent.setBusy('');
+
+// } // end of fn_logoff_success
+
 // 로그오프 성공시 타는 펑션
 function fn_logoff_success(TYPE) {
 
+    debugger;
+
     if (!TYPE) {
+
+        fnServerSessionClose();
 
         lf_OK();
 
@@ -1452,22 +1627,27 @@ function fn_logoff_success(TYPE) {
 
     if (TYPE == 'X') {
 
-        // Electron Browser들 전체 닫는 function
-        oAPP.fn.fnChildWindowClose();
-
-        var sMsg = oAPP.common.fnGetMsgClassTxt("0007"); // "Session TimeOut.. Please Try Login Again!";
-
-        // parent.showMessage(sap, 20, 'E', sMsg, lf_OK);
+        fnServerSessionClose();
 
         let sTitle = "Session Timeout",
             sDesc = "Please Try Login Again!",
             sIllustType = "tnt-SessionExpired";
 
-        oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, lf_OK);
+        parent.setBusy("");
+        
+        oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, lf_OK);      
+
+        return;
 
     }
 
     function lf_OK() {
+
+        // 로그인페이지로 이동..			
+        parent.onMoveToPage("LOGIN");
+
+
+        return;
 
         /**
          * Flow Logic..
@@ -1541,6 +1721,82 @@ function fn_logoff_success(TYPE) {
     parent.setBusy('');
 
 } // end of fn_logoff_success
+
+function fnServerSessionClose() {
+
+    /**
+     * Flow Logic..
+     * 
+     *	1. 현재 떠있는 창이 몇개 있는지 확인한다. 
+     *	2. 내가 아닌 다른 창은 다 닫는다.
+     *	3. 나는 로그인 화면으로 전환한다.
+     */
+    var sKey = parent.getSessionKey(),
+        oMeBrows = parent.REMOTE.getCurrentWindow(); // 현재 나의 브라우저
+    if (oMeBrows.isDestroyed()) {
+        return;
+    }
+
+    var aBrowserList = parent.REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
+        iBrowsLen = aBrowserList.length;
+
+    for (var i = 0; i < iBrowsLen; i++) {
+
+        var oBrows = aBrowserList[i];
+        if (oBrows.isDestroyed()) {
+            continue;
+        }
+
+        var oWebCon = oBrows.webContents,
+            oWebPref = oWebCon.getWebPreferences();
+
+        // session 정보가 없으면 skip.
+        var sSessionKey = oWebPref.partition;
+        if (!sSessionKey) {
+            continue;
+        }
+
+        // 브라우저가 내 자신이라면 skip.
+        if (oBrows.id == oMeBrows.id) {
+            continue;
+        }
+
+        // 현재 브라우저의 session key 와 동일하지 않으면 (다른 서버창) skip.
+        if (sKey != sSessionKey) {
+            continue;
+        }
+
+        oBrows.close();
+
+    }
+
+    // 현재 세션에서 파생된 Childwindow를 닫는다.
+    oAPP.fn.fnChildWindowClose();
+
+    // EXAM MOVE 이벤트 해제
+    parent.IPCMAIN.removeListener('if-exam-move', oAPP.fn.fnIpcMain_if_exam_move);
+
+    // IPCMAIN 이벤트 해제
+    parent.IPCMAIN.removeListener('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
+
+    // 현재 브라우저에 설정된 서버 세션 체크 전파 IPC이벤트를 해제한다.
+    parent.IPCRENDERER.removeListener('if-server-session-propagation', oAPP.fn.fnIpcRender_if_server_session_propagation);
+
+    window.removeEventListener("beforeunload", oAPP.main.fnBeforeunload);
+
+    if (oAPP.attr._oWorker && oAPP.attr._oWorker.terminate) {
+        oAPP.attr._oWorker.terminate();
+        delete oAPP.attr._oWorker;
+    }
+
+    if (oAPP.attr._oServerWorker && oAPP.attr._oServerWorker) {
+        oAPP.attr._oServerWorker.terminate();
+        delete oAPP.attr._oServerWorker;
+    }
+
+}
+
+
 
 // 어플리케이션 생성 후 체인지 모드로 가는 펑션
 function onAppCrAndChgMode(sAppID) {

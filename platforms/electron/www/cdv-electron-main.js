@@ -90,6 +90,7 @@ function createWindow() {
         transparent: true,
         frame: false,
         movable: true,
+        resizable: false,
         width: 800,
         height: 500
     });

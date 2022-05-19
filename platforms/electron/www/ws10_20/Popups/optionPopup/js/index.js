@@ -35,6 +35,7 @@ const oAPP = {
 
 //Device ready 
 document.addEventListener('DOMContentLoaded', onDeviceReady, false);
+
 function onDeviceReady() {
     oAPP.onStart();
    

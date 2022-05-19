@@ -706,6 +706,16 @@
      ************************************************************************/
     oAPP.fn.fnShowIllustMsgDialog = (sTitle, sDesc, sIllustType, fnCallback) => {
 
+        var oDialog = sap.ui.getCore().byId("illustMsg");
+        if(oDialog){
+
+            if(!oDialog.isOpen()){
+                oDialog.open();
+            }
+
+            return;
+        }
+
         let oMsg = new sap.m.IllustratedMessage({
             title: sTitle,
             description: sDesc,

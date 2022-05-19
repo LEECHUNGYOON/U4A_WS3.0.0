@@ -352,6 +352,8 @@
      ************************************************************************/
     oAPP.fn.fnTextSearchPopupOpener = function () {
 
+        debugger;
+
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
             return;
@@ -371,7 +373,7 @@
 
         // oBrowserOptions.title = "Error Message Popup";
         // oBrowserOptions.center = true;
-        oBrowserOptions.opacity = 0.0;
+        // oBrowserOptions.opacity = 0.0;
         // oBrowserOptions.backgroundColor = "#1c2228";
         oBrowserOptions.titleBarStyle = "hidden";
         oBrowserOptions.autoHideMenuBar = true;
@@ -389,6 +391,13 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = CURRWIN.getBounds();
+        oBrowserWindow.setBounds({
+            x: Math.round((oParentBounds.x + oParentBounds.width) - 390),
+            y: Math.round((oParentBounds.y) + 30)
+        });
+
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
@@ -400,25 +409,37 @@
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
-            // var oSendData = {
-            //     oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보               
-            // };
-
-            // oBrowserWindow.webContents.send('if-errmsg-info', oSendData);
-
-            oBrowserWindow.setOpacity(1.0);
+            // oBrowserWindow.setOpacity(1.0);
 
         });
+
+        // oBrowserWindow.on('move', () => {
+
+        function lf_move() {
+
+            let oNewBounds = {};
+            let oCurrWinBounds = CURRWIN.getBounds();
+
+            oNewBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - 390;
+            oNewBounds.y = oCurrWinBounds.y + 30;
+
+            oBrowserWindow.setBounds(oNewBounds);
+        }
+
+        CURRWIN.on('move', lf_move);
+        CURRWIN.on('resize', lf_move);
 
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
 
             // IPCMAIN.off(`${BROWSKEY}--errormsg--click`, oAPP.fn.fnIpcMain_errmsg_click);
 
+            CURRWIN.off("move", lf_move);
+            CURRWIN.off("resize", lf_move);
+
             oBrowserWindow = null;
 
         });
-
 
         // IPCMAIN.on(`${BROWSKEY}--errormsg--click`, oAPP.fn.fnIpcMain_errmsg_click);
 

@@ -47,7 +47,9 @@
     <script>
         
         function onError(message, url, line, col, errorObj) {
+
             alert(`${message}\n${url}, ${line}:${col}`);
+            
         }
         
         window.onerror = onError;
