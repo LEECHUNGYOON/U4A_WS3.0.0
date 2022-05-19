@@ -1415,7 +1415,9 @@ function fnServerSessionClose() {
             continue;
         }
 
-        oBrows.close();
+        if (!oBrows.isDestroyed()) {
+            oBrows.close();
+        }        
 
     }
 
