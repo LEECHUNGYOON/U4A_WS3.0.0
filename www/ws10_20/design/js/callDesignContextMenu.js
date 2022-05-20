@@ -48,12 +48,18 @@
         //paste 메뉴.
         var oMItem7 = new this.sap.m.MenuItem({key:"M07", icon:"sap-icon://paste", text:"Paste", enabled:"{/lcmenu/enab07}"});
         oMenu1.addItem(oMItem7);
-
-        var oMItem8 = new this.sap.m.MenuItem({key:"M08", icon:"sap-icon://paste", text:"관리자",startsSection:true});
+        
+        //UI where use 메뉴.
+        var oMItem8 = new this.sap.m.MenuItem({key:"M08", icon:"sap-icon://search", text:"UI Where use", startsSection:true, enabled:"{/lcmenu/enab08}"});
         oMenu1.addItem(oMItem8);
 
-        var oMItem9 = new this.sap.m.MenuItem({key:"M09", icon:"sap-icon://paste", text:"Wizard Template 등록"});
-        oMItem8.addItem(oMItem9);
+        //관리자 메뉴.
+        var oMItem9 = new this.sap.m.MenuItem({key:"M09", icon:"sap-icon://paste", text:"관리자", startsSection:true});
+        oMenu1.addItem(oMItem9);
+
+        //관리자 서브 메뉴.
+        var oMItem10 = new this.sap.m.MenuItem({key:"M10", icon:"sap-icon://paste", text:"Wizard Template 등록"});
+        oMItem9.addItem(oMItem10);
 
 
         //생성한 popup 정보 return;
@@ -117,6 +123,10 @@
             case "M07": //paste 메뉴.
                 oAPP.fn.contextMenuUiPaste();
                 break;
+            
+            case "M08": //UI Where use 메뉴.
+                oAPP.fn.contextMenuUiWhereUse();
+                break;
 
         }
 
@@ -146,6 +156,7 @@
         ls_menu.enab05 = false;   //ui move position 불가
         ls_menu.enab06 = false;   //copy 불가
         ls_menu.enab07 = false;   //paste 불가
+        ls_menu.enab08 = false;   //UI where used 불가.
 
         //ROOT(DOCUMENT)영역인경우 모든 CONTEXT MENU 비활성 처리.
         if(OBJID === "ROOT"){
@@ -156,6 +167,9 @@
             oAPP.fn.setSelectTreeItem(OBJID);
             return;
         }
+
+        //ROOT가 아닌경우 EDIT 여부와 상관없이 UI WHERE USE 가능.
+        ls_menu.enab08 = true; //UI where used 가능.
 
         //edit 상태인경우.(APP에서 CONTEXT MENU호출건을 처리하기위함)
         if(oAPP.attr.oModel.oData.IS_EDIT === true){
@@ -643,14 +657,14 @@
         
         //UI위치 이동 function이 존재하는경우 호출 처리.
         if(typeof oAPP.fn.uiMovePosition !== "undefined"){
-            oAPP.fn.uiMovePosition(l_pos, l_parent.zTREE.length, lf_callback);
+            oAPP.fn.uiMovePosition(ls_tree.OBJID, l_pos, l_parent.zTREE.length, lf_callback);
             return;
 
         }
 
         //UI위치 이동 function이 존재하지 않는경우 js 호출 후 function 호출.
         oAPP.fn.getScript("design/js/uiMovePosition",function(){
-            oAPP.fn.uiMovePosition(l_pos, l_parent.zTREE.length, lf_callback);
+            oAPP.fn.uiMovePosition(ls_tree.OBJID, l_pos, l_parent.zTREE.length, lf_callback);
         });
 
     };  //UI 위치 이동 처리.
@@ -1075,6 +1089,37 @@
 
 
     };  //context menu ui 붙여넣기 처리.
+
+
+
+
+    //ui 사용처 리스트 메뉴.
+    oAPP.fn.contextMenuUiWhereUse = function(){
+
+        //context menu를 호출한 라인의 OBJID 얻기.
+        var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
+        
+        //DOCUMENT영역에 PASTE한경우 EXIT.
+        if(l_OBJID === "ROOT"){
+            return;
+        }
+
+        //OBJID에 해당하는 TREE 정보 얻기.
+        var ls_tree = oAPP.fn.getTreeData(l_OBJID);
+
+        //aggregation 선택 팝업 호출.
+        if(typeof oAPP.fn.callUiWhereUsePopup !== "undefined"){
+
+            oAPP.fn.callUiWhereUsePopup(ls_tree);
+            return;
+        }
+
+        //aggregation 선택 팝업이 존재하지 않는경우 js load후 호출.
+        oAPP.fn.getScript("design/js/callUiWhereUsePopup",function(){
+            oAPP.fn.callUiWhereUsePopup(ls_tree);
+        });
+
+    };  //ui 사용처 리스트 메뉴.
 
 
 })();

@@ -70,7 +70,7 @@
     //dialog 타이틀 설정.
     var ls_0022 = oAPP.DATA.LIB.T_0022.find( a => a.UIOBK === UIOBK);
     if(ls_0022){
-      oTitle.setText("UI Object Select [ " + ls_0022.UIOBJ + " ]");
+      oTitle.setText("UI Object Select - " + ls_0022.UIOBJ);
     }
 
     var oMdl = new sap.ui.model.json.JSONModel();

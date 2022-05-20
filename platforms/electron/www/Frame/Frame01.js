@@ -17,7 +17,9 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     REGEDIT = require('regedit'),
     WEBFRAME = require('electron').webFrame,
     APPPATH = APP.getAppPath(),
-    USERDATA = APP.getPath("userData");
+    USERDATA = APP.getPath("userData"),
+    CURRWIN = REMOTE.getCurrentWindow(),
+    SANITIZEHTML = require('sanitize-html');
 
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
@@ -601,6 +603,15 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = CURRWIN.getBounds();
+        oBrowserWindow.setBounds({
+            x: Math.round(oParentBounds.x + 30),
+            y: Math.round(oParentBounds.y + 30),
+            width: Math.round(oParentBounds.width),
+            height: Math.round(oParentBounds.height)
+        });
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);

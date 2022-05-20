@@ -363,7 +363,7 @@ function onLoadBusyIndicator() {
     oBrowserWindow.loadURL(sIndicatorPath);
 
     // 브라우저가 오픈이 다 되면 타는 이벤트
-    oBrowserWindow.webContents.on('did-finish-load', function () {        
+    oBrowserWindow.webContents.on('did-finish-load', function () {
         oBrowserWindow.setContentBounds(oCurrWin.getBounds());
     });
 
@@ -582,4 +582,126 @@ function setThemeInfo(oThemeInfo) {
  ************************************************************************/
 function getThemeInfo() {
     return oWS.utill.attr.oThemeInfo || {};
+}
+
+
+function setCleanHtml(msgtxt) {
+
+    debugger;
+
+    /**************************************** 
+        @2020.11.17 by soccerhs
+        - html에서 텍스트만 추출하는 Regex
+    *****************************************/
+
+    if (!msgtxt) {
+        return;
+    }
+
+    /* html 부터 head 태그 날리기 */
+    msgtxt = msgtxt.replace(/(<html>|<html)(\s|\S)*?<\/head>/igm, "\n");
+
+    /* script영역 날리기 */
+    msgtxt = msgtxt.replace(/(<script>|<script)(\s|\S)*?<\/script>/igm, "\n");
+
+    /* Table Tag만 따로 수집한다 */
+    var aTableTag = [];
+
+    msgtxt = msgtxt.replace(/(<table>|<table)(\s|\S)*?<\/table>/igm, function (full) {
+
+        var iTableCnt = aTableTag.length;
+
+        aTableTag.push(full);
+
+        return "\n&&table" + iTableCnt + "&&\n";
+
+    });
+
+    /* html의 END 태그를 개행 시키기 */
+    msgtxt = msgtxt.replace(/\s*<\/[^>]+>\s*/igm, "\n");
+
+    /* html 태그 날리기 */
+    msgtxt = msgtxt.replace(/\s*<[^>]+>/igm, "\n");
+
+    /* 여러 개행 문자를 하나의 개행문자로 축소하기 */
+    msgtxt = msgtxt.replace(/[\n$]+[\n$]/igm, "\n");
+
+    /* 추출된 문자열의 첫번째와 마지막의 개행 문자를 제거하기 */
+    msgtxt = msgtxt.replace(/(^\n|\n$)/igm, "");
+
+    msgtxt = msgtxt.replace(/\n/g, '<br>');
+
+    /* Table 태그가 있을 경우 원래 위치로 replace 수행 */
+    if (aTableTag.length != 0) {
+
+        var iLen = aTableTag.length,
+            regex = "";
+
+        for (var i = 0; i < iLen; i++) {
+
+            var oTag = aTableTag[i],
+                oDom = document.createElement("div");
+
+            oDom.innerHTML = oTag;
+
+            var oTagData = lf_removeStyleAttr(oDom);
+            aTableTag[i] = oTagData.innerHTML;
+
+            regex = "&&table" + i + "&&";
+            msgtxt = msgtxt.replace(regex, aTableTag[i]);
+
+        }
+
+    }
+
+    function lf_removeStyleAttr(oDom) {
+
+        var aChild = oDom.childNodes,
+            iChildCnt = aChild.length;
+
+        if (iChildCnt == 0) {
+            return;
+        }
+
+        for (var i = 0; i < iChildCnt; i++) {
+
+            var oChild = aChild[i],
+                aAttr = oChild.attributes,
+                iAttrLen = aAttr.length;
+
+            /* Dom이 가지고 있는 속성을 확인한다. */
+            if (iAttrLen != 0) {
+
+                for (var j = iAttrLen - 1; j >= 0; j--) {
+
+                    /* width, height 속성을 제외하고 나머지 속성 전체 제거 */
+                    var sAttrName = aAttr[j].name;
+
+                    if (sAttrName == null ||
+                        sAttrName == "" ||
+                        sAttrName == "width" ||
+                        sAttrName == "height" ||
+                        sAttrName == "background") {
+                        continue;
+                    }
+
+                    oChild.removeAttribute(sAttrName);
+
+                }
+
+            }
+
+            if (oChild.childNodes.length == 0) {
+                continue;
+            }
+
+            lf_removeStyleAttr(oChild);
+        }
+
+        return oDom;
+
+    }; /* end of f_removeStyle */
+
+    return msgtxt;
+
 }
