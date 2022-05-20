@@ -155,15 +155,15 @@
     //drag UI가 drop위치에 올려졌을때 이벤트.
     oLTDrop1.attachDragOver(function(oEvent){
 
-      //컨트롤키 눌렀다면.
-      if(event.ctrlKey){
-        //copy 표시.
-        this.setDropEffect("Copy");
+      // //컨트롤키 눌렀다면.
+      // if(event.ctrlKey){
+      //   //copy 표시.
+      //   this.setDropEffect("Copy");
 
-      }else{
-        //안누른경우 move 표시.
-        this.setDropEffect("Move");
-      }
+      // }else{
+      //   //안누른경우 move 표시.
+      //   this.setDropEffect("Move");
+      // }
 
     }); //drag UI가 drop위치에 올려졌을때 이벤트.
 
@@ -1152,10 +1152,6 @@
 
       }
 
-      debugger;
-      if(event.ctrlKey){
-
-      }
 
       //MODEL 갱신 처리.
       oAPP.attr.oModel.refresh();
