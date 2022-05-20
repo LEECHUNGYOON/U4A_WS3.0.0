@@ -2,7 +2,7 @@ let oAPP = (() => {
     "use strict";
 
     var oAPP = {};
-    oAPP.fn = {};
+    oAPP.fn = {};    
 
     const
         REMOTE = require('@electron/remote'),
@@ -11,38 +11,52 @@ let oAPP = (() => {
         PARCON = PARWIN.webContents;
 
 
+    var gSearchText = "";
 
     oAPP.fn.fnTextSearchClose = () => {
 
-        PARCON.stopFindInPage({
-            action: "clearSelection"
-        });
+        PARCON.stopFindInPage("clearSelection");
 
         PARCON.off("found-in-page", oAPP.fn.fnFindInPage);
 
         CURRWIN.close();
 
+        PARCON.focus();
+
     };
 
     oAPP.fn.fnEnterTxtSearch = (oInput) => {
 
+        var oFindTxt = document.getElementById("searchCnt");
+        if (oFindTxt == null) {
+            return;
+        }
+        
         var sValue = oInput.value;
         if (sValue == "") {
+            PARCON.stopFindInPage("clearSelection");
+            oFindTxt.innerHTML = "";            
             return;
+        }
+
+        var bIsFindNext = false;
+
+        if(gSearchText != sValue){
+            bIsFindNext = true;
         }
 
         var oFindOptions = {
             forward: true,
-            findNext: true
+            findNext: bIsFindNext
         };
+
+        gSearchText = sValue;
 
         PARCON.findInPage(sValue, oFindOptions);
 
     };
 
     oAPP.fn.fnFindInPage = (event, result) => {
-
-        debugger;
 
         var oFindTxt = document.getElementById("searchCnt");
         if (oFindTxt == null) {
