@@ -1,7 +1,7 @@
 (function(){
 
     //아이콘 리스트 팝업.
-    oAPP.fn.callIconListPopup = function(retfunc){
+    oAPP.fn.callIconListPopup = function(UIATT, retfunc){
 
         //아이콘 리스트 정보 얻기.
         var lt_icon = oAPP.attr.ui.frame.contentWindow.getIconList();
@@ -18,7 +18,7 @@
         var oTool0 = new sap.m.Toolbar();
         oDlg.setCustomHeader(oTool0);
         
-        var oTitle = new sap.m.Title({text:"UI5 Icon List"});
+        var oTitle = new sap.m.Title({text:"UI5 Icon List - " + UIATT});
     
         oTool0.addContent(oTitle);
     

@@ -166,6 +166,11 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
       //서버이벤트 DDLB 항목에 생성한 이벤트 메소드 정보 추가.
       //oAPP.attr.T_EVT.push({KEY:param.METHOD, TEXT:param.METHOD, DESC:ls_event.desc});
 
+      //서버이벤트 항목 array가 생성되지 않았다면 생성처리.
+      if(typeof oAPP.attr.T_EVT === "undefined"){
+        oAPP.attr.T_EVT = [];
+      }
+
       if(typeof param.MLIST !== "undefined" && param.MLIST.length !== 0){
         
         //기존 서버 이벤트가 존재하는경우.
@@ -237,6 +242,20 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
   } //서버이벤트 생성 처리.
 
 
+  
+  
+  //팝업 title 설정.
+  function lf_setTitle(){
+    var l_title = "Server Event Create";
+
+    if(typeof is_attr !== "undefined"){
+      l_title = "Server Event Create - " + is_attr.UIATT;
+    }
+
+    return l_title;
+    
+  } //팝업 title 설정.
+
 
   //서버 이벤트 ddlb 항목을 구성하지 않은경우.
   if(!oAPP.attr.T_EVT){
@@ -253,8 +272,10 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
 
   var oTool = new sap.m.Toolbar();
   oDlg.setCustomHeader(oTool);
+
   
-  var oTitle = new sap.m.Title({text:"Server Event Create"});
+  
+  var oTitle = new sap.m.Title({text:lf_setTitle()});
 
   oTool.addContent(oTitle);
 
@@ -267,8 +288,7 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
   //닫기 버튼 선택 이벤트.
   oBtn0.attachPress(function(){
     
-    lf_dialogClose();
-    
+    lf_dialogClose();    
 
   });
 

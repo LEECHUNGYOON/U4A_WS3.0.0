@@ -1,5 +1,5 @@
 //UI move Position 메뉴 선택시 팝업 UI
-oAPP.fn.uiMovePosition = function(pos, max, f_callBack){
+oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack){
 
   //dialog 종료.
   function lf_close(){
@@ -20,7 +20,7 @@ oAPP.fn.uiMovePosition = function(pos, max, f_callBack){
   var oTool = new sap.m.Toolbar();
   oDlg.setCustomHeader(oTool);
 
-  oTool.addContent(new sap.m.Title({text:"Move Position"}));
+  oTool.addContent(new sap.m.Title({text:"Move Position - " + OBJID}));
 
   oTool.addContent(new sap.m.ToolbarSpacer());
 

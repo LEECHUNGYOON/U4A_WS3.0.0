@@ -357,7 +357,7 @@
             //icon list popup function이 존재하는 경우.
             if(typeof oAPP.fn.callIconListPopup !== "undefined"){
                 //icon list popup 호출.
-                oAPP.fn.callIconListPopup(lf_callback);
+                oAPP.fn.callIconListPopup(is_attr.UIATT, lf_callback);
                 //하위 로직 skip처리를 위한 flag return.
                 return true;
             }
@@ -365,7 +365,7 @@
             //icon list popup function이 존재하지 않는 경우.
             oAPP.fn.getScript("design/js/callIconListPopup",function(){
                 //icon list popup function load 이후 팝업 호출.
-                oAPP.fn.callIconListPopup(lf_callback);
+                oAPP.fn.callIconListPopup(is_attr.UIATT, lf_callback);
             });
 
             //function 호출처의 하위로직 skip을 위한 flag return.

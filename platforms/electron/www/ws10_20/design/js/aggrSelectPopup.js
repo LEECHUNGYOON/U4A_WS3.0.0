@@ -44,7 +44,7 @@
     var oTool = new sap.m.Toolbar();
     oDlg1.setCustomHeader(oTool);
 
-    oTool.addContent(new sap.m.Title({text:"Aggregation List"}));
+    oTool.addContent(new sap.m.Title({text:"Aggregation List - " + i_drop.OBJID}));
 
     oTool.addContent(new sap.m.ToolbarSpacer());
 

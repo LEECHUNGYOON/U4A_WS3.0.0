@@ -111,7 +111,7 @@
      * **********************************************************************
      ************************************************************************/
     //attribute table UI.
-    var oRTab1 = new sap.m.Table({mode:"SingleSelectMaster", alternateRowColors:true});
+    var oRTab1 = new sap.m.Table({mode:"SingleSelectMaster", alternateRowColors:true, sticky:["HeaderToolbar"]});
     oRPage.setContent(oRTab1);
     oAPP.attr.ui.oRTab1 = oRTab1;
 
@@ -164,12 +164,12 @@
     oRTab1.setHeaderToolbar(oRTTool);
 
     //attribute 초기화 버튼.
-    var oRTBtn1 = new sap.m.Button({text:"Reset", icon:"sap-icon://reset", type:"Accept"});
+    var oRTBtn1 = new sap.m.Button({text:"Reset", icon:"sap-icon://reset", type:"Accept", enabled:"{/IS_EDIT}", visible:"{/uiinfo/vis02}"});
     oRTTool.addContent(oRTBtn1);
 
     oRTBtn1.attachPress(function(){
       //attribute 초기화 처리.
-      //oAPP.fn.attrResetAttr();
+      oAPP.fn.attrResetAttr();
     });
 
 
@@ -458,6 +458,74 @@
 
 
 
+  //attribute 초기화 기능.
+  oAPP.fn.attrResetAttr = function(){
+
+    //112	Resets all properties to their default values.
+    //113	The registered value will be lost. Do you want to proceed?
+    var l_msg = "Resets all properties to their default values." + "\n" + 
+      "The registered value will be lost. Do you want to proceed?";
+
+    //초기화전 확인팝업 호출.
+    parent.showMessage(sap, 30, "I", l_msg, function(param){
+
+      //YES를 선택하지 않은경우 EXIT.
+      if(param !== "YES"){return;}
+
+      //현재 ATTRIBUTE 항목중 PROPERTY 항목에 대해 직접 입력하여 값을 변경했다면, DEFAULT 값으로 초기화 처리.
+      for(var i=0, l=oAPP.attr.oModel.oData.T_ATTR.length; i<l; i++){
+
+        //프로퍼티가 아닌경우 skip.
+        if(oAPP.attr.oModel.oData.T_ATTR[i].UIATY !== "1"){continue}
+
+        //바인딩 처리된건인경우 skip.
+        if(oAPP.attr.oModel.oData.T_ATTR[i].ISBND === "X"){continue;}
+
+        var l_UIATK = oAPP.attr.oModel.oData.T_ATTR[i].UIATK;
+
+        //직접 입력 가능한 attribute 여부확인(AT000002650_1 형식으로 구성됨)
+        if(l_UIATK.indexOf("_") !== -1){
+          //_1 부분 제거.
+          l_UIATK = l_UIATK.substr(0, l_UIATK.indexOf("_"));
+        }
+
+        //현재 attribute 정보 검색.
+        var ls_0023 = oAPP.DATA.LIB.T_0023.find( a => a.UIATK === l_UIATK );
+        if(!ls_0023){continue;}
+
+        //직접 입력 가능한 AGGREGATION인경우 값을 입력했다면.
+        if(ls_0023.ISSTR === "X" && oAPP.attr.oModel.oData.T_ATTR[i].UIATV !== ""){
+          //입력값 초기화.
+          oAPP.attr.oModel.oData.T_ATTR[i].UIATV = "";
+
+          //attribute 변경건 처리.
+          oAPP.fn.attrChangeProc(oAPP.attr.oModel.oData.T_ATTR[i], "", true);
+
+          continue;
+        }
+
+        //현재 attribute값과 default값이 같다면 skip.
+        if(oAPP.attr.oModel.oData.T_ATTR[i].UIATV === ls_0023.DEFVL){continue;}
+
+        //attribute의 값을 변경한 경우 default 값으로 변환 처리.
+        oAPP.attr.oModel.oData.T_ATTR[i].UIATV = ls_0023.DEFVL;
+
+        //attribute 변경건 처리.
+        oAPP.fn.attrChangeProc(oAPP.attr.oModel.oData.T_ATTR[i], "", true);
+
+      }
+
+      //모델 갱신 처리.
+      oAPP.attr.oModel.refresh(true);
+
+    });
+
+
+  };  //attribute 초기화 기능.
+
+
+
+
   //attribute의 context menu 호출전 처리.
   oAPP.fn.attrBeforeContextMenu = function(oEvent){
 
@@ -509,7 +577,7 @@
     //프로퍼티에서 바인딩 처리 호출한게 아닌경우 exit.
     if(is_attr.UIATY !== "1"){return;}
 
-    var l_title = "Data Binding / Unbinding - Property : " + is_attr.UAITT;
+    var l_title = "Data Binding / Unbinding - Property : " + is_attr.UIATT;
     var l_CARDI = "F";
 
     //SELECT OPTION2의 VALUE에 바인딩처리 하는경우.
@@ -1460,7 +1528,7 @@
     //icon list popup function이 존재하는 경우.
     if(typeof oAPP.fn.callIconListPopup !== "undefined"){
       //icon list popup 호출.
-      oAPP.fn.callIconListPopup(lf_callback);
+      oAPP.fn.callIconListPopup(is_attr.UIATT, lf_callback);
       //하위 로직 skip처리를 위한 flag return.
       return true;
     }
@@ -1468,7 +1536,7 @@
     //icon list popup function이 존재하지 않는 경우.
     oAPP.fn.getScript("design/js/callIconListPopup",function(){
         //icon list popup function load 이후 팝업 호출.
-        oAPP.fn.callIconListPopup(lf_callback);
+        oAPP.fn.callIconListPopup(is_attr.UIATT, lf_callback);
     });
 
 
@@ -3744,12 +3812,16 @@
     //UI5 library Reference정보 구성.
     ls_uiinfo.UILIB = is_tree.UILIB;
 
-    ls_uiinfo.vis01 = false;
+    ls_uiinfo.vis01 = false;  //UI Library & sample 비활성.
+
+    ls_uiinfo.vis02 = false;  //attribute 초기화 비활성.
 
     //DOCUMENT가 아닌경우(UI인경우)만 UI정보 검색.
     if(is_tree.OBJID !== "ROOT"){
 
       ls_uiinfo.vis01 = true;
+
+      ls_uiinfo.vis02 = true;
 
       var ls_0022 = oAPP.DATA.LIB.T_0022.find( a => a.UIOBK === is_tree.UIOBK);
 

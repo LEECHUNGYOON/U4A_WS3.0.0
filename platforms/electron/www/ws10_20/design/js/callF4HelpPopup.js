@@ -89,7 +89,7 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
       }
 
       //column UI정보.
-      var oCol = new sap.m.Column();
+      var oCol = new sap.ui.table.Column();
 
       //header text UI정보.
       var oLab = new sap.m.Label();
@@ -102,7 +102,7 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
       oLab.setText(l_txt);
 
       //column에 header text UI추가.
-      oCol.setHeader(oLab);
+      oCol.setLabel(oLab);
 
       //table에 column정보 추가.
       oTable.addColumn(oCol);
@@ -139,7 +139,7 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
       var oTxt = new sap.m.Text({text:{path:l_path}});
 
       //column list item에 text ui 추가.
-      oItem.addCell(oTxt);
+      oCol.setTemplate(oTxt);
 
     }
 
@@ -325,6 +325,7 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
   var oDialog = new sap.m.Dialog({
     draggable:true,
     resizable:true,
+    verticalScrolling:false,
     contentHeight:l_height,
     contentWidth:l_width,
     icon:"sap-icon://search",
@@ -402,9 +403,7 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
       modeloTable.refresh();
 
       //-테이블 item / 컬럼 삭제
-      oTable.removeAllItems();
       oTable.removeAllColumns();
-      oItem.removeAllCells();
 
       //f4 help 필드명 검색.
       lf_getF4Field();
@@ -423,10 +422,12 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
   }   //include search help가 존재 하는경우.
 
 
+  var oHbox1 = new sap.m.HBox({height:"100%", direction:"Column", renderType:"Bare"});
+  oDialog.addContent(oHbox1);
 
   //검색조건 panel.
   var oPanel = new sap.m.Panel({expandable:true, expanded:true, headerText:"Selection"});
-  oDialog.addContent(oPanel);
+  oHbox1.addItem(oPanel);
 
   var SerchOVtoolbar = new sap.m.OverflowToolbar({width:"100%"});
   oPanel.setHeaderToolbar(SerchOVtoolbar);
@@ -488,30 +489,30 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
 
   //F4 테이블 툴바 ui 생성
   var ZF4SH_tabBAR = new sap.m.Bar({design:"Header"});
-  oDialog.addContent(ZF4SH_tabBAR);
+  oHbox1.addItem(ZF4SH_tabBAR);
 
 
 
   //★~F4 조회 리스트 테이블 ui 생성
-  var oTable = new sap.m.Table({growing:true,mode:"SingleSelectMaster",
-    growingScrollToLoad:true,sticky:["ColumnHeaders","HeaderToolbar"]});
+  var oTable = new sap.ui.table.Table({selectionMode:"Single", visibleRowCountMode:"Auto", 
+    layoutData: new sap.m.FlexItemData({growFactor:1})});
 
 
-  oDialog.addContent(oTable);
-  oTable.setHeaderToolbar(ZF4SH_ovtoolbar);
+  oHbox1.addItem(oTable);
+  oTable.setToolbar(ZF4SH_ovtoolbar);
 
   //~table 모델 설정
   var modeloTable = new sap.ui.model.json.JSONModel();
   oTable.setModel(modeloTable);
 
   //결과리스트 라인 선택 이벤트 추가.
-  oTable.attachSelectionChange(function(oEvent){
+  oTable.attachRowSelectionChange(function(oEvent){
 
     //CALLBACK FUNCTION이 존재하지 않는경우 exit.
     if(typeof f_clientCallbak === "undefined"){return;}
 
     //CALLBACK FUNCTION 수행.
-    f_clientCallbak(oEvent.mParameters.listItem.getBindingContext().getProperty());
+    f_clientCallbak(oEvent.mParameters.rowContext.getProperty());
 
     //f4 help dialog 종료.
     oDialog.close();
@@ -520,10 +521,7 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
   }); //결과리스트 라인 선택 이벤트 추가.
 
 
-  //~테이블 ColumnListItem 생성
-  var oItem = new sap.m.ColumnListItem({type:"Active"});
-
-  oTable.bindAggregation("items",{path:"/TF4LIST",template:oItem});
+  oTable.bindAggregation("rows",{path:"/TF4LIST",template:new sap.ui.table.Row()});
 
   //~출력리스트 컬럼 구성 텍스트 UI 생성
   lf_setTableColumn(l_f4_def, IT_FIELDDESCR);
