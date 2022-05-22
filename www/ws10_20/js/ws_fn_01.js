@@ -1902,7 +1902,7 @@
      * Default Browser 개인화 설정
      ************************************************************************/
     oAPP.fn.fnOnP13nExeDefaultBrowser = function () {
-
+    
         var FS = parent.FS;
 
         var oServerInfo = parent.getServerInfo(),
@@ -1985,6 +1985,11 @@
 
                 // 설치된 브라우저 정보 기준으로 가장 최근의 브라우저 정보를 자동선택 한다.
                 isSelected = true;
+                oBrowsStatus.SELECTED = isSelected;
+
+                aBrowserInfo.push(oBrowsStatus);
+
+                continue;
             }
 
             oBrowsStatus.SELECTED = false;
