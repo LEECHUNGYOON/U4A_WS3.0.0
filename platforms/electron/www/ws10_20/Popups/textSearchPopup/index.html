@@ -219,10 +219,14 @@
             <!-- search input -->
             <div class="srchInput toolbarChild" style="width:100%;">
                 <div class="srchInputContentWapper" style="width:100%;">
-                    <input id="srchInput" type="text" autocomplete="off" class="srchInputBaseInner"
+                    <!-- <input id="srchInput" type="text" autocomplete="off" class="srchInputBaseInner"
                         onKeypress="javascript:if(event.keyCode==13){                            
                             oAPP.fn.fnEnterTxtSearch(this);
-                        }">
+                        }"
+                        > -->
+                        <input id="srchInput" type="text" autocomplete="off" class="srchInputBaseInner"
+                        onkeyup="oAPP.fn.fnEnterTxtSearch(this);"
+                        >
                 </div>
             </div>
 
@@ -232,14 +236,14 @@
             <div class="toolbarSeparator toolbarChild"></div>
 
             <!-- up button -->
-            <button class="srchBtn toolbarChild">
+            <button class="srchBtn toolbarChild" onclick="oAPP.fn.fnTextSearchUP();">
                 <span class="srchBtnInner">
                     <i class="fas fa-angle-up"></i>
                 </span>
             </button>
 
             <!-- down button -->
-            <button class="srchBtn toolbarChild">
+            <button class="srchBtn toolbarChild" onclick="oAPP.fn.fnTextSearchDOWN();">
                 <span class="srchBtnInner">
                     <i class="fas fa-angle-down"></i>
                 </span>

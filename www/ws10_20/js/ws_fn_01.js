@@ -1276,73 +1276,74 @@
                     /*****************************************************************************
                      * 20번 상단 Text Search -- START
                      *****************************************************************************/
-                    // search Input
-                    new sap.m.Input("txtSrchInputWS20", {
-                        width: "50px",
-                        value: "{/WS20/SRCHTXT/INPUT_VALUE}",
-                        visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                        placeholder: "Text Search..",
-                        liveChange: oAPP.events.ev_winTxtSrchLibChgWS20
-                    })
-                    .addStyleClass("sapUiSizeCompact u4aWsWinTxtSrchInput")
-                    .addDelegate({
-                        onAfterRendering: function (oEvent) {
+                    // // search Input
+                    // new sap.m.Input("txtSrchInputWS20", {
+                    //     width: "50px",
+                    //     value: "{/WS20/SRCHTXT/INPUT_VALUE}",
+                    //     visible: "{/WS20/SRCHTXT/INPUT_VISI}",
+                    //     placeholder: "Text Search..",
+                    //     liveChange: oAPP.events.ev_winTxtSrchLibChgWS20
+                    // })
+                    // .addStyleClass("sapUiSizeCompact u4aWsWinTxtSrchInput")
+                    // .addDelegate({
+                    //     onAfterRendering: function (oEvent) {
 
-                            var oInput = oEvent.srcControl;
-                            if (oInput == null) {
-                                return;
-                            }
+                    //         var oInput = oEvent.srcControl;
+                    //         if (oInput == null) {
+                    //             return;
+                    //         }
 
-                            oInput.$().animate({
-                                minWidth: "200px"
-                            }, 300, "linear");
+                    //         oInput.$().animate({
+                    //             minWidth: "200px"
+                    //         }, 300, "linear");
 
-                        }
+                    //     }
 
-                    }),
+                    // }),
 
-                    // 검색 결과 텍스트
-                    new sap.m.Text({
-                        text: "{/WS20/SRCHTXT/COUNT}",
-                    }).addStyleClass("sapUiTinyMarginBegin"),
+                    // // 검색 결과 텍스트
+                    // new sap.m.Text({
+                    //     text: "{/WS20/SRCHTXT/COUNT}",
+                    // }).addStyleClass("sapUiTinyMarginBegin"),
 
-                    new sap.m.ToolbarSeparator({
-                        visible: "{/WS20/SRCHTXT/INPUT_VISI}"
-                    }),
+                    // new sap.m.ToolbarSeparator({
+                    //     visible: "{/WS20/SRCHTXT/INPUT_VISI}"
+                    // }),
 
-                    // up 버튼
-                    new sap.m.Button({
-                        icon: "sap-icon://navigation-up-arrow",
-                        visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                    }),
+                    // // up 버튼
+                    // new sap.m.Button({
+                    //     icon: "sap-icon://navigation-up-arrow",
+                    //     visible: "{/WS20/SRCHTXT/INPUT_VISI}",
+                    // }),
 
-                    // down 버튼
-                    new sap.m.Button({
-                        icon: "sap-icon://navigation-down-arrow",
-                        visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                    }),
+                    // // down 버튼
+                    // new sap.m.Button({
+                    //     icon: "sap-icon://navigation-down-arrow",
+                    //     visible: "{/WS20/SRCHTXT/INPUT_VISI}",
+                    // }),
 
-                    // search 닫기
-                    new sap.m.Button({
-                        icon: "sap-icon://decline",
-                        visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                        press: oAPP.events.ev_winTxtSrchClsWS20
-                    }),
+                    // // search 닫기
+                    // new sap.m.Button({
+                    //     icon: "sap-icon://decline",
+                    //     visible: "{/WS20/SRCHTXT/INPUT_VISI}",
+                    //     press: oAPP.events.ev_winTxtSrchClsWS20
+                    // }),
 
                     // 검색 버튼
                     new sap.m.Button({
                         icon: "sap-icon://search",
                         tooltip: "window Text Search",
                         press: oAPP.events.ev_winTxtSrchWS20
-                    }).bindProperty("visible", "/WS20/SRCHTXT/INPUT_VISI", function (bIsVisi) {
-
-                        if (bIsVisi == null) {
-                            return false;
-                        }
-
-                        return !bIsVisi;
-
                     }),
+                    // .bindProperty("visible", "/WS20/SRCHTXT/INPUT_VISI", function (bIsVisi) {
+
+                    //     if (bIsVisi == null) {
+                    //         return false;
+                    //     }
+
+                    //     return !bIsVisi;
+
+                    // }),
 
                     /*****************************************************************************
                      * 20번 상단 Text Search -- END
