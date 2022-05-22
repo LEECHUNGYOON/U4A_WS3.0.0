@@ -106,9 +106,11 @@ let oAPP = (function() {
                 var sObjKey = Object.keys(result)[0],
                     oPathObj = result[sObjKey],
                     oExePathObj = oPathObj.values[""];
-
-                oRETURN.INSPATH = oExePathObj.value;
-
+                
+                if(oExePathObj != null){
+                    oRETURN.INSPATH = oExePathObj.value;
+                }
+                
                 resolve(oRETURN);
 
             });
