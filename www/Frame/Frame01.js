@@ -617,7 +617,9 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
         mainWindowState.manage(oBrowserWindow);
 
-        oBrowserWindow.loadURL(PATH.join(APPPATH, "Frame", "Frame.html"));
+        // oBrowserWindow.loadURL(PATH.join(APPPATH, "Frame", "Frame.html"));
+        
+        oBrowserWindow.loadURL(parent.getPath("MAINFRAME"));
 
         // oBrowserWindow.webContents.openDevTools();        
 

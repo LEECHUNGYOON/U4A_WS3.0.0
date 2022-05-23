@@ -1,7 +1,7 @@
 /**************************************************************************
  * ServerList.js
  **************************************************************************/
-(function() {
+(function () {
     "use strict";
 
     let oAPP = parent.oAPP;
@@ -12,6 +12,7 @@
         APP = REMOTE.app,
         APPPATH = APP.getAppPath(),
         PATH = REMOTE.require('path'),
+        PATHINFO = parent.require(PATH.join(APPPATH, "frame", "pathinfo.js")),
         MENU = REMOTE.Menu,
         RANDOM = oAPP.RANDOM,
         xhr = new XMLHttpRequest();
@@ -19,8 +20,8 @@
     xhr.withCredentials = true;
 
     let sUserDataPath = APP.getPath("userData"),
-        sP13nfolderPath = sUserDataPath + "\\p13n", // P13N 폴더 경로  
-        sServerInfoPath = sUserDataPath + '\\p13n\\ServerInfo.json';
+        sP13nfolderPath = PATH.join(sUserDataPath, "p13n"), // P13N 폴더 경로  
+        sServerInfoPath = PATH.join(sUserDataPath, "p13n", "ServerInfo.json");
 
     /**************************************************************************
      * 서버 리스트 개인화 정보 설정
@@ -299,7 +300,7 @@
      * 서버 체크 성공시 로그인 팝업 실행하기
      **************************************************************************/
     function fnLoginPage(oSAPServerInfo) {
-
+     
         const WINDOWSTATE = REMOTE.require('electron-window-state');
 
         // 창 크기 기본값 설정
@@ -311,8 +312,8 @@
         var SESSKEY = RANDOM.generate(40),
             BROWSERKEY = RANDOM.generate(10);
 
-        // Browser Options..
-        var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/BrowserWindow/BrowserWindow-settings.json"),
+        // Browser Options..        
+        var sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow),
             oWebPreferences = oBrowserOptions.webPreferences;
@@ -338,8 +339,8 @@
 
         // 브라우저 윈도우 기본 사이즈 감지
         mainWindowState.manage(oBrowserWindow);
-
-        oBrowserWindow.loadURL(oAPP.PATH.join(oAPP.APPPATH, "Frame", "Frame.html"));
+                
+        oBrowserWindow.loadURL(PATHINFO.MAINFRAME);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
         if (!APP.isPackaged) {
@@ -347,7 +348,7 @@
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -376,7 +377,7 @@
     function fnSendAjax(sUrl, oFormData, fnSuccess, fnError, fnCancel) {
 
         // ajax call 취소할 경우..
-        xhr.onabort = function() {
+        xhr.onabort = function () {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -385,7 +386,7 @@
         };
 
         // ajax call 실패 할 경우
-        xhr.onerror = function() {
+        xhr.onerror = function () {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -393,7 +394,7 @@
 
         };
 
-        xhr.onreadystatechange = function(a, b, c, d, e) { // 요청에 대한 콜백         
+        xhr.onreadystatechange = function (a, b, c, d, e) { // 요청에 대한 콜백         
 
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
@@ -442,7 +443,7 @@
                     new sap.m.Button({
                         icon: "sap-icon://decline",
                         tooltip: "{/MSGCLS/0019}", // cancel
-                        press: function(oEvent) {
+                        press: function (oEvent) {
 
                             var oDialog = oEvent.getSource().getParent();
 
@@ -453,7 +454,7 @@
                 ]
 
             })
-            .bindProperty("title", "/SERVDLG/TRCOD", function(TITLE) {
+            .bindProperty("title", "/SERVDLG/TRCOD", function (TITLE) {
 
                 if (!TITLE) {
                     return;
@@ -542,7 +543,7 @@
                                 maxLength: 3,
                                 required: true,
                                 submit: ev_pressServerInfoSaveSubmit,
-                                liveChange: function(oEvent) {
+                                liveChange: function (oEvent) {
 
                                     var sValue = oEvent.getParameter("value");
 
@@ -1009,7 +1010,7 @@
             text: fnGetLanguClassTxt("0023"), //"Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function() {
+            close: function () {
                 xhr.abort();
             }
         });
@@ -1085,13 +1086,11 @@
      ************************************************************************/
     function fnGetSettingsInfo() {
 
-        var require = parent.require;
-
         // Browser Window option
-        var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
+        var sSettingsJsonPath = PATHINFO.WSSETTINGS,
 
             // JSON 파일 형식의 Setting 정보를 읽는다..
-            oSettings = require(sSettingsJsonPath);
+            oSettings = parent.require(sSettingsJsonPath);
         if (!oSettings) {
             return;
         }
@@ -1146,9 +1145,9 @@
      ************************************************************************/
     function fnLoadCommonCss() {
 
-        var sCommonCssUrl = PATH.join(APPPATH, "css", "common.css");
+        var sCommonCssUrl = PATHINFO.COMMONCSS,
+            oCss = document.createElement("link");
 
-        var oCss = document.createElement("link");
         oCss.setAttribute("rel", "stylesheet");
         oCss.setAttribute("href", sCommonCssUrl);
 
@@ -1161,7 +1160,7 @@
      * **********************************************************************/
     function fnOnInit() {
 
-        sap.ui.getCore().attachInit(function() {
+        sap.ui.getCore().attachInit(function () {
 
             // 초기값 바인딩
             fnOnInitBinding();

@@ -33,6 +33,7 @@ module.exports = (() => {
 
         LOGIN: PATH.join(APPPATH, '/Login/Login.html'),
         LOGIN2: PATH.join(APPPATH, '/Login/Login2.html'),
+        MAINFRAME: PATH.join(APPPATH, "Frame", "Frame.html"),
         WS10: PATH.join(APPPATH, '/ws10_20/ws10_20.html'),
         EXTOPEN: PATH.join(APPPATH, '/ws10_20/extopen.html'),
         ERRORPAGE: PATH.join(APPPATH, '/ws10_20/errorpage.html'),
@@ -40,7 +41,9 @@ module.exports = (() => {
         JQUERYUICSS: PATH.join(APPPATH, '/css/jquery-ui.min.css'),
         MSG: PATH.join(APPPATH, '/msg'),
         BROWSERSETTINGS: PATH.join(APPPATH, '/settings/BrowserWindow/BrowserWindow-settings.json'),
+        WSSETTINGS: PATH.join(APPPATH, "settings", "ws_settings.json"),
         SERVERLIST: PATH.join(APPPATH, '/ServerList/ServerFrame.html'),
+        COMMONCSS: PATH.join(APPPATH, "css", "common.css"),
 
         // User Data Paths..
         CLIPBOARD: PATH.join(USERDATA, "clipboard.json"),

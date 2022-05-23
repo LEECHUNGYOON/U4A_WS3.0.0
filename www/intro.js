@@ -10,20 +10,22 @@
     let oAPP = {};
     oAPP.fn = {};
 
-    const REMOTE = require('@electron/remote'),
+    const
+        REMOTE = require('@electron/remote'),
         autoUpdater = REMOTE.require("electron-updater").autoUpdater,
         REMOTEMAIN = REMOTE.require('@electron/remote/main'),
         APP = REMOTE.app,
         PATH = REMOTE.require('path'),
         APPPATH = APP.getAppPath(),
         USERDATA = APP.getPath("userData"),
-        FS = REMOTE.require('fs-extra');
+        FS = REMOTE.require('fs-extra'),
+        PATHINFO = require(PATH.join(APPPATH, "frame", "pathinfo.js"));
 
     var oProgressBar = document.getElementById("progressBar_dynamic"),
         bIsPackaged = APP.isPackaged;
 
     oAPP.fn.fnOnDeviceReady = function () {
-   
+
         // 현재 버전 보여주기
         oAPP.fn.fnDisplayCurrentVersion();
 
@@ -190,8 +192,8 @@
      ************************************************************************/
     oAPP.fn.fnOpenServerList = function () {
 
-        // Electron Browser Default Options
-        var sSettingsJsonPath = PATH.join(APPPATH, '/settings/BrowserWindow/BrowserWindow-settings.json'),
+        // Electron Browser Default Options        
+        var sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
             oBrowserOptions = require(sSettingsJsonPath),
             oBrowserWindow = JSON.parse(JSON.stringify(oBrowserOptions.browserWindow));
 
@@ -210,7 +212,7 @@
         // 브라우저 상단 메뉴 없애기
         oWin.setMenu(null);
 
-        oWin.loadURL(PATH.join(APPPATH, '/ServerList/ServerFrame.html'));
+        oWin.loadURL(PATHINFO.SERVERLIST);
 
         // oWin.webContents.openDevTools();
 
@@ -240,7 +242,7 @@
      ************************************************************************/
     oAPP.fn.setInitInstall = function (fnCallback) {
 
-        var oSettingsPath = PATH.join(APPPATH, "settings", "ws_settings.json"),
+        var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
             aPaths = oSettings.requireFolders, // 필수 폴더 리스트
             aFiles = oSettings.requireFiles, // 필수 파일 리스트
@@ -342,7 +344,7 @@
      ************************************************************************/
     oAPP.fn.copyVbsToLocalFolder = function (fnCallback) {
 
-        var sVbsFolderPath = PATH.join(APPPATH, "vbs"),
+        var sVbsFolderPath = PATH.join(APPPATH, "vbs"),       
             aVbsFolderList = FS.readdirSync(sVbsFolderPath),
             iFileCount = aVbsFolderList.length;
 
@@ -391,7 +393,7 @@
 
     oAPP.fn.copyVbsPromise = function (sFile, sVbsOrigPath) {
 
-        var oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
+        var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
             sUserDataPath = APP.getPath("userData"),
             sVbsFolderPath = oSettings.vbs.rootPath,
@@ -455,7 +457,7 @@
 
         return new Promise((resolve, reject) => {
 
-            var oSettingsPath = PATH.join(APPPATH, "settings", "ws_settings.json"),
+            var oSettingsPath = PATHINFO.WSSETTINGS,
                 oSettings = require(oSettingsPath),
                 sHelpDocOriginFile = PATH.join(APPPATH, oSettings.path.u4aHelpDocFilePath),
                 sHelpDocTargetPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFilePath);
@@ -482,7 +484,7 @@
 
         return new Promise((resolve, reject) => {
 
-            let oSettingsPath = PATH.join(APPPATH, "settings", "ws_settings.json"),
+            var oSettingsPath = PATHINFO.WSSETTINGS,
                 oSettings = require(oSettingsPath),
                 sHelpDocFolderPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFolderPath),
                 sHelpDocTargetPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFilePath);

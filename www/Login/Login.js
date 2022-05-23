@@ -5,16 +5,18 @@
  * - file Desc : WS Login Page
  ************************************************************************/
 
-let oAPP = (function() {
+let oAPP = (function () {
     "use strict";
 
     const
         REMOTE = parent.REMOTE,
+        APPPATH = parent.APPPATH,
         PATH = parent.PATH,
         REGEDIT = parent.REGEDIT,
         APP = parent.APP,
         USERPATH = APP.getPath("userData"),
         FS = parent.FS,
+        PATHINFO = parent.require(PATH.join(APPPATH, "frame", "pathinfo.js")),
         require = parent.require;
 
     let oAPP = {};
@@ -106,11 +108,11 @@ let oAPP = (function() {
                 var sObjKey = Object.keys(result)[0],
                     oPathObj = result[sObjKey],
                     oExePathObj = oPathObj.values[""];
-                
-                if(oExePathObj != null){
+
+                if (oExePathObj != null) {
                     oRETURN.INSPATH = oExePathObj.value;
                 }
-                
+
                 resolve(oRETURN);
 
             });
@@ -125,12 +127,12 @@ let oAPP = (function() {
      * WS의 설정 정보를 구한다.
      ************************************************************************/
     oAPP.fn.fnGetSettingsInfo = () => {
-
+        
         // Browser Window option
-        var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
+        var oSettingsPath = PATHINFO.WSSETTINGS,
 
             // JSON 파일 형식의 Setting 정보를 읽는다..
-            oSettings = require(sSettingsJsonPath);
+            oSettings = require(oSettingsPath);
         if (!oSettings) {
             return;
         }
@@ -263,7 +265,7 @@ let oAPP = (function() {
                                     value: "{ID}",
                                     showSearchButton: false,
                                     placeholder: "　",
-                                    suggest: function(oEvent) {
+                                    suggest: function (oEvent) {
 
                                         var sValue = oEvent.getParameter("suggestValue"),
                                             aFilters = [];
@@ -272,7 +274,7 @@ let oAPP = (function() {
 
                                             aFilters = [
                                                 new sap.ui.model.Filter([
-                                                    new sap.ui.model.Filter("ID", function(sText) {
+                                                    new sap.ui.model.Filter("ID", function (sText) {
                                                         return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                                     }),
                                                 ], false)
@@ -284,7 +286,7 @@ let oAPP = (function() {
                                         this.suggest();
 
                                     },
-                                    search: function(oEvent) {
+                                    search: function (oEvent) {
 
                                         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
                                         if (bIsPressClearBtn) {
@@ -375,25 +377,25 @@ let oAPP = (function() {
 
             new sap.m.Button({
                 text: "영선",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("yshong");
                 }
             }),
             new sap.m.Button({
                 text: "성호",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("shhong");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
             new sap.m.Button({
                 text: "은섭",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("pes");
                 }
             }),
             new sap.m.Button({
                 text: "청윤",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("soccerhs");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
@@ -632,7 +634,7 @@ let oAPP = (function() {
         parent.setBusy('X');
 
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() { // 요청에 대한 콜백
+        xhr.onreadystatechange = function () { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
@@ -703,7 +705,7 @@ let oAPP = (function() {
             var sServicePath = parent.getServerPath() + "/chk_u4a_authority";
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() { // 요청에 대한 콜백
+            xhr.onreadystatechange = function () { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -870,7 +872,7 @@ let oAPP = (function() {
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         reject(err.toString());
@@ -1155,7 +1157,7 @@ window.onload = () => {
 
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
     // parent.fn_onWinMove(false, parent.REMOTE.getCurrentWindow());
 
