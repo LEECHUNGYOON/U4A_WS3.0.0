@@ -29,40 +29,54 @@
         // 현재 버전 보여주기
         oAPP.fn.fnDisplayCurrentVersion();
 
-        let
-            // 초기 인스톨 끝났을때 수행
-            lf_initInstallFinished = () => {
-
-                // no build 일 경우
-                if (!bIsPackaged) {
-
-                    setTimeout(() => {
-                        oAPP.fn.fnOpenServerList();
-                    }, 3000);
-
-                    return;
-                }
-
+        // 초기 설치(기본 폴더, vbs 옮기기 등등)
+        oAPP.fn.setInitInstall(() => {
+            
+            setTimeout(() => {
                 oAPP.fn.fnOpenServerList();
+            }, 3000);
 
-            },
+        });
 
-            // 버전 체크 끝났을때 수행
-            lf_versionCheckFinished = () => {
 
-                // 초기 설치(기본 폴더, vbs 옮기기 등등)
-                oAPP.fn.setInitInstall(lf_initInstallFinished);
 
-            };
 
-        // no build 일 경우는 업데이트 확인 하지 않고 바로 실행     
-        if (!bIsPackaged) {
-            lf_versionCheckFinished();
-            return;
-        }
+        // oAPP.fn.setInitInstall(lf_initInstallFinished);
 
-        // 업데이트 버전 확인
-        oAPP.fn.fnCheckVersion().then(lf_versionCheckFinished);
+        // let
+        //     // 초기 인스톨 끝났을때 수행
+        //     lf_initInstallFinished = () => {
+
+        //         // // no build 일 경우
+        //         // if (!bIsPackaged) {
+
+        //         setTimeout(() => {
+        //             oAPP.fn.fnOpenServerList();
+        //         }, 3000);
+
+        //         // return;
+        //         // }
+
+        //         // oAPP.fn.fnOpenServerList();
+
+        //     };
+
+        // // 버전 체크 끝났을때 수행
+        // lf_versionCheckFinished = () => {
+
+        //     // 초기 설치(기본 폴더, vbs 옮기기 등등)
+        //     oAPP.fn.setInitInstall(lf_initInstallFinished);
+
+        // };
+
+        // // no build 일 경우는 업데이트 확인 하지 않고 바로 실행     
+        // if (!bIsPackaged) {
+        //     lf_versionCheckFinished();
+        //     return;
+        // }
+
+        // // 업데이트 버전 확인
+        // oAPP.fn.fnCheckVersion().then(lf_versionCheckFinished);
 
     }; // end of oAPP.fn.fnOnDeviceReady 
 
@@ -344,7 +358,7 @@
      ************************************************************************/
     oAPP.fn.copyVbsToLocalFolder = function (fnCallback) {
 
-        var sVbsFolderPath = PATH.join(APPPATH, "vbs"),       
+        var sVbsFolderPath = PATH.join(APPPATH, "vbs"),
             aVbsFolderList = FS.readdirSync(sVbsFolderPath),
             iFileCount = aVbsFolderList.length;
 

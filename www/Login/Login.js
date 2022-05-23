@@ -17,6 +17,7 @@ let oAPP = (function () {
         USERPATH = APP.getPath("userData"),
         FS = parent.FS,
         PATHINFO = parent.require(PATH.join(APPPATH, "frame", "pathinfo.js")),
+        autoUpdater = REMOTE.require("electron-updater").autoUpdater,
         require = parent.require;
 
     let oAPP = {};
@@ -127,7 +128,7 @@ let oAPP = (function () {
      * WS의 설정 정보를 구한다.
      ************************************************************************/
     oAPP.fn.fnGetSettingsInfo = () => {
-        
+
         // Browser Window option
         var oSettingsPath = PATHINFO.WSSETTINGS,
 
@@ -654,33 +655,64 @@ let oAPP = (function () {
 
                     // 여기까지 온건 로그인 성공했다는 뜻이니까 
                     // 권한 체크를 수행한다.
-                    oAPP.fn.fnCheckAuthority()
-                        .then((oAuthInfo) => {
 
-                            debugger;
 
-                            var oResultData = jQuery.extend(true, {}, oResult);
+                    oAPP.fn.fnCheckAuthority().then(oAPP.fn.fnCheckAuthSuccess).catch((e) => {
 
-                            oResultData.USER_AUTH = oAuthInfo;
+                        //  권한이 없으므로 오류 메시지를 띄운다.
+                        oAPP.fn.fnShowNoAuthIllustMsg(e);
 
-                            parent.showLoadingPage('X');
+                        parent.setBusy('');
 
-                            // 권한이 있으면 성공적으로 로그인 후 10번으로 이동
-                            oAPP.fn.fnOnLoginSuccess(oResultData);
+                    });
 
-                            parent.setBusy('');
 
-                            // oAPP.fn.fnOnLoginSuccess(oResult);
 
-                        })
-                        .catch((e) => {
+                    // oAPP.fn.fnCheckAuthority()
+                    //     .then((oAuthInfo) => {
 
-                            // 권한이 없으므로 오류 메시지를 띄운다.
-                            oAPP.fn.fnShowNoAuthIllustMsg(e);
+                    //         debugger;
 
-                            parent.setBusy('');
+                    //         // 고객사 라이센스를 체크한다.
+                    //         oAPP.fn.fnCheckCustomerLisence().then(() => {
 
-                        });
+
+
+
+
+
+                    //         });
+
+                    //         // CHK_CUSTOMER_LICENSE                           
+
+                    //         // WS Version을 확인한다.
+                    //         oAPP.fn.fnCheckVersion().then(() => {
+
+                    //             var oResultData = jQuery.extend(true, {}, oResult);
+
+                    //             oResultData.USER_AUTH = oAuthInfo;
+
+                    //             parent.showLoadingPage('X');
+
+                    //             // 권한이 있으면 성공적으로 로그인 후 10번으로 이동
+                    //             oAPP.fn.fnOnLoginSuccess(oResultData);
+
+                    //             parent.setBusy('');
+
+                    //         });
+
+                    //     })
+                    //     .catch((e) => {
+
+                    //         // 권한이 없으므로 오류 메시지를 띄운다.
+                    //         oAPP.fn.fnShowNoAuthIllustMsg(e);
+
+                    //         parent.setBusy('');
+
+                    //     });
+
+
+
 
                 } else {
 
@@ -694,6 +726,160 @@ let oAPP = (function () {
         xhr.send(oFormData); // 요청 전송         
 
     }; // end of oAPP.events.ev_login
+
+    /************************************************************************
+     * 개발자 권한 체크 성공시 수행
+     ************************************************************************/
+    oAPP.fn.fnCheckAuthSuccess = (oAuthInfo) => {
+
+        // 고객사 라이센스를 체크한다.
+        oAPP.fn.fnCheckCustomerLisence().then((oLicenseInfo) => {
+
+            debugger;
+
+            if (oLicenseInfo.RETCD == "E") {
+
+                //  권한이 없으므로 오류 메시지를 띄운다.
+                oAPP.fn.fnShowNoAuthIllustMsg(oLicenseInfo.RTMSG);
+
+                parent.setBusy('');
+
+                return;
+            }
+
+            // ISCDS TYPE C LENGTH 1, "on premise : space
+            // RETCD TYPE C LENGTH 1, "처리 리턴 코드 : E 오류
+            // RTMSG TYPE STRING,     "처리 리턴 메시지
+            // REMIN TYPE STRING,     "라이센스 잔여 일
+            // ISLIC TYPE C LENGTH 1, "라이센스 유효 여부 "X : 유효"
+
+
+        });
+
+    }; // end of oAPP.fn.fnCheckAuthSuccess
+
+    /************************************************************************
+     * 고객사 라이센스 체크를 한다.
+     ************************************************************************/
+    oAPP.fn.fnCheckCustomerLisence = () => {
+
+        // CHK_CUSTOMER_LICENSE
+        return new Promise((resolve, reject) => {
+
+            var sServicePath = parent.getServerPath() + "/chk_customer_license";
+
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () { // 요청에 대한 콜백
+                if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
+                    if (xhr.status === 200 || xhr.status === 201) {
+
+                        resolve();
+
+                    } else {
+
+                        parent.showMessage(null, 99, "E", xhr.responseText);
+                        parent.setBusy('');
+
+                    }
+                }
+            };
+
+            xhr.open('GET', sServicePath); // 메소드와 주소 설정
+            xhr.send(); // 요청 전송   
+
+        });
+
+    }; // end of oAPP.fn.fnCheckCustomerLisence
+
+    /************************************************************************
+     * WS Version을 확인한다.
+     ************************************************************************/
+    oAPP.fn.fnCheckVersion = () => {
+
+        return new Promise((resolve, reject) => {
+
+            /* Updater Event 설정 ======================================================*/
+
+            // // 온프로미스 이면.
+            // autoUpdater.setFeedURL("");
+
+            autoUpdater.on('checking-for-update', () => {
+
+                // status Text
+                oAPP.fn.fnSetStatusText("Checking for updates...");
+
+                console.log("업데이트 확인 중...");
+
+            });
+
+            autoUpdater.on('update-available', (info) => {
+
+                // 프로그래스 바를 활성화 한다.
+                let oProgressBar = document.getElementById("progressBar");
+                if (oProgressBar == null) {
+                    return;
+                }
+
+                oProgressBar.classList.remove("invisible");
+
+                console.log("업데이트가 가능합니다.");
+
+            });
+
+            autoUpdater.on('update-not-available', (info) => {
+
+                resolve();
+
+                console.log("현재 최신버전입니다.");
+
+            });
+
+            autoUpdater.on('error', (err) => {
+
+                resolve();
+
+                console.log('에러가 발생하였습니다. 에러내용 : ' + err);
+
+            });
+
+            autoUpdater.on('download-progress', (progressObj) => {
+
+                // let log_message = "다운로드 속도: " + progressObj.bytesPerSecond;
+
+                // log_message = log_message + ' - 현재 ' + progressObj.percent + '%';
+
+                // log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+
+                let sPer = `${parseFloat(progressObj.percent).toFixed(2)}%`;
+
+                oAPP.fn.fnSetStatusText(`downloading... ${sPer} `);
+
+                oProgressBar.style.width = sPer;
+
+                // console.log(log_message);
+
+            });
+
+            autoUpdater.on('update-downloaded', (info) => {
+
+                console.log('업데이트가 완료되었습니다.');
+
+                oAPP.fn.fnSetStatusText(`Update Complete! Restarting...`);
+
+                setTimeout(() => {
+
+                    autoUpdater.quitAndInstall(); //<--- 자동 인스톨 
+
+                }, 3000);
+
+
+            });
+
+            autoUpdater.checkForUpdates();
+
+        });
+
+    }; // oAPP.fn.fnCheckVersion
 
     /************************************************************************
      * 개발 권한 체크
