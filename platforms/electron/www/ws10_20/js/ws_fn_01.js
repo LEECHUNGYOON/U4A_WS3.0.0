@@ -1902,7 +1902,7 @@
      * Default Browser 개인화 설정
      ************************************************************************/
     oAPP.fn.fnOnP13nExeDefaultBrowser = function () {
-    
+        
         var FS = parent.FS;
 
         var oServerInfo = parent.getServerInfo(),
@@ -1940,7 +1940,7 @@
         }
 
         // 실행 브라우저 정보를 모델에 set 하기..
-        oAPP.common.fnSetModelProperty("/DEFBR", oP13nData[sSysID].DEFBR);
+        oAPP.common.fnSetModelProperty("/DEFBR", oP13nData[sSysID].DEFBR, true);
 
         // p13n.json 파일에 브라우저 정보 저장
         FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData));
@@ -1974,8 +1974,11 @@
             var bIsExist = false;
 
             if (oBrows.INSPATH) {
+
                 oBrowsStatus.INSPATH = oBrows.INSPATH;
+
                 bIsExist = FS.existsSync(oBrows.INSPATH);
+                
             }
 
             oBrowsStatus.ENABLED = bIsExist;
@@ -1985,6 +1988,7 @@
 
                 // 설치된 브라우저 정보 기준으로 가장 최근의 브라우저 정보를 자동선택 한다.
                 isSelected = true;
+
                 oBrowsStatus.SELECTED = isSelected;
 
                 aBrowserInfo.push(oBrowsStatus);
