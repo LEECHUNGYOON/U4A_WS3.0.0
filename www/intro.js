@@ -19,7 +19,7 @@
         APPPATH = APP.getAppPath(),
         USERDATA = APP.getPath("userData"),
         FS = REMOTE.require('fs-extra'),
-        PATHINFO = require(PATH.join(APPPATH, "frame", "pathinfo.js"));
+        PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));
 
     var oProgressBar = document.getElementById("progressBar_dynamic"),
         bIsPackaged = APP.isPackaged;

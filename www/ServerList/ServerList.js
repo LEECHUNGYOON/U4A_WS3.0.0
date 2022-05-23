@@ -12,7 +12,7 @@
         APP = REMOTE.app,
         APPPATH = APP.getAppPath(),
         PATH = REMOTE.require('path'),
-        PATHINFO = parent.require(PATH.join(APPPATH, "frame", "pathinfo.js")),
+        PATHINFO = parent.require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
         MENU = REMOTE.Menu,
         RANDOM = oAPP.RANDOM,
         xhr = new XMLHttpRequest();
@@ -341,6 +341,8 @@
         mainWindowState.manage(oBrowserWindow);
                 
         oBrowserWindow.loadURL(PATHINFO.MAINFRAME);
+
+        oBrowserWindow.webContents.openDevTools();
 
         // no build 일 경우에는 개발자 툴을 실행한다.
         if (!APP.isPackaged) {

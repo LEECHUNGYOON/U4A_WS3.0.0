@@ -5,7 +5,7 @@
  * - file Desc : WS Login Page
  ************************************************************************/
 
-let oAPP = (function () {
+let oAPP = (function() {
     "use strict";
 
     const
@@ -16,7 +16,7 @@ let oAPP = (function () {
         APP = parent.APP,
         USERPATH = APP.getPath("userData"),
         FS = parent.FS,
-        PATHINFO = parent.require(PATH.join(APPPATH, "frame", "pathinfo.js")),
+        PATHINFO = parent.require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
         autoUpdater = REMOTE.require("electron-updater").autoUpdater,
         require = parent.require;
 
@@ -266,7 +266,7 @@ let oAPP = (function () {
                                     value: "{ID}",
                                     showSearchButton: false,
                                     placeholder: "　",
-                                    suggest: function (oEvent) {
+                                    suggest: function(oEvent) {
 
                                         var sValue = oEvent.getParameter("suggestValue"),
                                             aFilters = [];
@@ -275,7 +275,7 @@ let oAPP = (function () {
 
                                             aFilters = [
                                                 new sap.ui.model.Filter([
-                                                    new sap.ui.model.Filter("ID", function (sText) {
+                                                    new sap.ui.model.Filter("ID", function(sText) {
                                                         return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                                     }),
                                                 ], false)
@@ -287,7 +287,7 @@ let oAPP = (function () {
                                         this.suggest();
 
                                     },
-                                    search: function (oEvent) {
+                                    search: function(oEvent) {
 
                                         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
                                         if (bIsPressClearBtn) {
@@ -378,25 +378,25 @@ let oAPP = (function () {
 
             new sap.m.Button({
                 text: "영선",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("yshong");
                 }
             }),
             new sap.m.Button({
                 text: "성호",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("shhong");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
             new sap.m.Button({
                 text: "은섭",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("pes");
                 }
             }),
             new sap.m.Button({
                 text: "청윤",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("soccerhs");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
@@ -496,11 +496,14 @@ let oAPP = (function () {
 
         var oFcard = oAPP.fn.fnGetLoginFormFCard();
 
-        return new sap.m.Page({
+        return new sap.m.Page("u4aWsLogin", {
+
+                // properties
                 showHeader: false,
                 showFooter: true,
                 backgroundDesign: sap.m.PageBackgroundDesign.Transparent,
 
+                // aggregations
                 content: [
 
                     new sap.m.VBox({
@@ -546,18 +549,56 @@ let oAPP = (function () {
 
     }; // end of oAPP.fn.fnGetLoginPage
 
+
+    /************************************************************************
+     * 업데이트 확인 페이지
+     ************************************************************************/
+    oAPP.fn.fnGetUpdatePage = () => {
+
+        return new sap.m.Page("u4aWsUpdatePage", {
+
+            // properties            
+            showHeader: false,
+            backgroundDesign: sap.m.PageBackgroundDesign.Transparent,
+
+            // aggregations
+            content: oAPP.fn.fnGetUpdatePageContents()
+
+        });
+
+    }; // end of oAPP.fn.fnGetUpdatePage
+
+    /************************************************************************
+     * 업데이트 확인 페이지의 컨텐츠
+     ************************************************************************/
+    oAPP.fn.fnGetUpdatePageContents = () => {
+
+        return [
+
+
+
+
+
+
+
+        ];
+
+    }; // end of oAPP.fn.fnGetUpdatePageContents
+
     /************************************************************************
      * 로그인 페이지 초기 렌더링
      ************************************************************************/
     oAPP.fn.fnOnInitRendering = () => {
 
-        var oApp = new sap.m.App({
+        var oApp = new sap.m.App("u4aWsLoginApp", {
             autoFocus: false,
         });
 
-        var oPage = oAPP.fn.fnGetLoginPage();
+        var oLoginPage = oAPP.fn.fnGetLoginPage(),
+            oUpdatePage = oAPP.fn.fnGetUpdatePage();
 
-        oApp.addPage(oPage);
+        oApp.addPage(oLoginPage);
+        oApp.addPage(oUpdatePage);
         oApp.placeAt("content");
 
     }; // end of oAPP.fn.fnOnInitRendering
@@ -635,7 +676,7 @@ let oAPP = (function () {
         parent.setBusy('X');
 
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () { // 요청에 대한 콜백
+        xhr.onreadystatechange = function() { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
@@ -655,64 +696,18 @@ let oAPP = (function () {
 
                     // 여기까지 온건 로그인 성공했다는 뜻이니까 
                     // 권한 체크를 수행한다.
+                    oAPP.fn.fnCheckAuthority().then((oAuthInfo) => {
 
+                        oAPP.fn.fnCheckAuthSuccess(oResult, oAuthInfo);
 
-                    oAPP.fn.fnCheckAuthority().then(oAPP.fn.fnCheckAuthSuccess).catch((e) => {
+                    }).catch((e) => {
 
-                        //  권한이 없으므로 오류 메시지를 띄운다.
+                        // 권한이 없으므로 오류 메시지를 띄운다.
                         oAPP.fn.fnShowNoAuthIllustMsg(e);
 
                         parent.setBusy('');
 
                     });
-
-
-
-                    // oAPP.fn.fnCheckAuthority()
-                    //     .then((oAuthInfo) => {
-
-                    //         debugger;
-
-                    //         // 고객사 라이센스를 체크한다.
-                    //         oAPP.fn.fnCheckCustomerLisence().then(() => {
-
-
-
-
-
-
-                    //         });
-
-                    //         // CHK_CUSTOMER_LICENSE                           
-
-                    //         // WS Version을 확인한다.
-                    //         oAPP.fn.fnCheckVersion().then(() => {
-
-                    //             var oResultData = jQuery.extend(true, {}, oResult);
-
-                    //             oResultData.USER_AUTH = oAuthInfo;
-
-                    //             parent.showLoadingPage('X');
-
-                    //             // 권한이 있으면 성공적으로 로그인 후 10번으로 이동
-                    //             oAPP.fn.fnOnLoginSuccess(oResultData);
-
-                    //             parent.setBusy('');
-
-                    //         });
-
-                    //     })
-                    //     .catch((e) => {
-
-                    //         // 권한이 없으므로 오류 메시지를 띄운다.
-                    //         oAPP.fn.fnShowNoAuthIllustMsg(e);
-
-                    //         parent.setBusy('');
-
-                    //     });
-
-
-
 
                 } else {
 
@@ -730,22 +725,12 @@ let oAPP = (function () {
     /************************************************************************
      * 개발자 권한 체크 성공시 수행
      ************************************************************************/
-    oAPP.fn.fnCheckAuthSuccess = (oAuthInfo) => {
+    oAPP.fn.fnCheckAuthSuccess = (oResult, oAuthInfo) => {
 
         // 고객사 라이센스를 체크한다.
         oAPP.fn.fnCheckCustomerLisence().then((oLicenseInfo) => {
 
             debugger;
-
-            if (oLicenseInfo.RETCD == "E") {
-
-                //  권한이 없으므로 오류 메시지를 띄운다.
-                oAPP.fn.fnShowNoAuthIllustMsg(oLicenseInfo.RTMSG);
-
-                parent.setBusy('');
-
-                return;
-            }
 
             // ISCDS TYPE C LENGTH 1, "on premise : space
             // RETCD TYPE C LENGTH 1, "처리 리턴 코드 : E 오류
@@ -753,10 +738,68 @@ let oAPP = (function () {
             // REMIN TYPE STRING,     "라이센스 잔여 일
             // ISLIC TYPE C LENGTH 1, "라이센스 유효 여부 "X : 유효"
 
+            // 오류 확인 및 라이선스 유효 여부 확인
+            if (oLicenseInfo.RETCD == "E" || oLicenseInfo.ISLIC != "X") {
+
+                // 일러스트 팝업 오류 메시지를 띄운다.
+                oAPP.fn.fnShowNoAuthIllustMsg(oLicenseInfo.RTMSG);
+
+                parent.setBusy('');
+
+                return;
+            }        
+
+            // no build일 경우는 버전 체크를 하지 않는다.
+            var bIsPackaged = APP.isPackaged;
+            if (!bIsPackaged) {
+                oAPP.fn.fnCheckVersionSuccess(oResult, oAuthInfo);
+                return;
+            }
+
+            // 온프레미스일 경우
+            if (oLicenseInfo.ISCDS != "X") {
+
+                var sVersionCheckUrl = "";
+
+                oAPP.fn.fnCheckVersion(sVersionCheckUrl).then(() => {
+
+                    oAPP.fn.fnCheckVersionSuccess(oResult, oAuthInfo);
+
+                });
+
+                return;
+
+            }
+
+            oAPP.fn.fnCheckVersion().then(() => {
+
+                oAPP.fn.fnCheckVersionSuccess(oResult, oAuthInfo);
+
+            });            
 
         });
 
     }; // end of oAPP.fn.fnCheckAuthSuccess
+
+    /************************************************************************
+     * 버전 체크 성공 시
+     ************************************************************************/
+    oAPP.fn.fnCheckVersionSuccess = (oResult, oAuthInfo) => {
+
+        debugger;
+
+        var oResultData = jQuery.extend(true, {}, oResult);
+
+        oResultData.USER_AUTH = oAuthInfo;
+
+        parent.showLoadingPage('X');
+
+        // 권한이 있으면 성공적으로 로그인 후 10번으로 이동
+        oAPP.fn.fnOnLoginSuccess(oResultData);
+
+        parent.setBusy('');
+
+    }; // end of oAPP.fn.fnCheckVersionSuccess
 
     /************************************************************************
      * 고객사 라이센스 체크를 한다.
@@ -769,11 +812,11 @@ let oAPP = (function () {
             var sServicePath = parent.getServerPath() + "/chk_customer_license";
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () { // 요청에 대한 콜백
+            xhr.onreadystatechange = function() { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
-                        resolve();
+                        resolve(JSON.parse(xhr.responseText));
 
                     } else {
 
@@ -794,19 +837,25 @@ let oAPP = (function () {
     /************************************************************************
      * WS Version을 확인한다.
      ************************************************************************/
-    oAPP.fn.fnCheckVersion = () => {
+    oAPP.fn.fnCheckVersion = (sVersionCheckUrl) => {
 
         return new Promise((resolve, reject) => {
 
+            debugger;
+
             /* Updater Event 설정 ======================================================*/
 
-            // // 온프로미스 이면.
-            // autoUpdater.setFeedURL("");
+            // 온프로미스 이면.
+            if (typeof sVersionCheckUrl !== "undefined") {
+
+                autoUpdater.setFeedURL(sVersionCheckUrl);
+
+            }
 
             autoUpdater.on('checking-for-update', () => {
 
                 // status Text
-                oAPP.fn.fnSetStatusText("Checking for updates...");
+                // oAPP.fn.fnSetStatusText("Checking for updates...");
 
                 console.log("업데이트 확인 중...");
 
@@ -814,13 +863,13 @@ let oAPP = (function () {
 
             autoUpdater.on('update-available', (info) => {
 
-                // 프로그래스 바를 활성화 한다.
-                let oProgressBar = document.getElementById("progressBar");
-                if (oProgressBar == null) {
-                    return;
-                }
+                // // 프로그래스 바를 활성화 한다.
+                // let oProgressBar = document.getElementById("progressBar");
+                // if (oProgressBar == null) {
+                //     return;
+                // }
 
-                oProgressBar.classList.remove("invisible");
+                // oProgressBar.classList.remove("invisible");
 
                 console.log("업데이트가 가능합니다.");
 
@@ -844,19 +893,19 @@ let oAPP = (function () {
 
             autoUpdater.on('download-progress', (progressObj) => {
 
-                // let log_message = "다운로드 속도: " + progressObj.bytesPerSecond;
+                let log_message = "다운로드 속도: " + progressObj.bytesPerSecond;
 
-                // log_message = log_message + ' - 현재 ' + progressObj.percent + '%';
+                log_message = log_message + ' - 현재 ' + progressObj.percent + '%';
 
-                // log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+                log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
 
-                let sPer = `${parseFloat(progressObj.percent).toFixed(2)}%`;
+                // let sPer = `${parseFloat(progressObj.percent).toFixed(2)}%`;
 
-                oAPP.fn.fnSetStatusText(`downloading... ${sPer} `);
+                // oAPP.fn.fnSetStatusText(`downloading... ${sPer} `);
 
-                oProgressBar.style.width = sPer;
+                // oProgressBar.style.width = sPer;
 
-                // console.log(log_message);
+                console.log(log_message);
 
             });
 
@@ -864,7 +913,7 @@ let oAPP = (function () {
 
                 console.log('업데이트가 완료되었습니다.');
 
-                oAPP.fn.fnSetStatusText(`Update Complete! Restarting...`);
+                // oAPP.fn.fnSetStatusText(`Update Complete! Restarting...`);
 
                 setTimeout(() => {
 
@@ -891,7 +940,7 @@ let oAPP = (function () {
             var sServicePath = parent.getServerPath() + "/chk_u4a_authority";
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () { // 요청에 대한 콜백
+            xhr.onreadystatechange = function() { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -1058,7 +1107,7 @@ let oAPP = (function () {
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         reject(err.toString());
@@ -1343,7 +1392,7 @@ window.onload = () => {
 
 };
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
 
     // parent.fn_onWinMove(false, parent.REMOTE.getCurrentWindow());
 
