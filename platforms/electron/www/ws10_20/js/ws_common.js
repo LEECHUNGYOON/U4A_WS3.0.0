@@ -956,8 +956,6 @@
 
         fetch(sPath);
 
-        // navigator.sendBeacon(sPath);
-
         fn_logoff_success('X');
 
     }; // end of oAPP.common.setSessionTimeout    
