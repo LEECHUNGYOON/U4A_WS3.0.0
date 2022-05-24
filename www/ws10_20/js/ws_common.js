@@ -951,6 +951,13 @@
      * **********************************************************************/
     oAPP.common.setSessionTimeout = function () {
 
+        // 세션 타임 아웃 시, logoff 처리
+        var sPath = parent.getServerPath() + '/logoff';
+
+        fetch(sPath);
+
+        // navigator.sendBeacon(sPath);
+
         fn_logoff_success('X');
 
     }; // end of oAPP.common.setSessionTimeout    
@@ -1206,7 +1213,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
                 // 서버 세션이 죽었다면 오류 메시지 뿌리고 10번 화면으로 이동한다.
                 parent.setBusy('');
-               
+
                 var sCleanHtml = parent.setCleanHtml(xhr.responseText);
 
                 parent.showMessage(sap, 20, 'E', sCleanHtml, fn_callback);
@@ -1365,6 +1372,12 @@ function fn_logoff_success(TYPE) {
 
         // 로그인페이지로 이동..			
         parent.onMoveToPage("LOGIN");
+
+        var currwin = parent.CURRWIN,
+            webcon = currwin.webContents,
+            sess = webcon.session;
+
+        sess.clearStorageData([]);
 
     }
 

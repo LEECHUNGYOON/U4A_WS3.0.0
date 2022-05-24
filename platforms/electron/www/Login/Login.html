@@ -11,7 +11,6 @@
     <title>U4A Workspace #Login</title>
 
     <style>
-
         html,
         body {
             margin: 0px;
@@ -19,91 +18,98 @@
 
         /* Loading Page */
         .u4a_loaders {
-        font-family: sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-        font-size: 2.5rem;
-        color: rgba(2, 8, 16, 0.55);
-        position: absolute;
-        top: 0;
-        width: 100%;
-        background: white;
-        box-shadow: rgba(0, 0, 0, 0.11) 0px 15px 30px 0px, rgba(0, 0, 0, 0.08) 0px 5px 15px 0px;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            font-size: 2.5rem;
+            color: rgba(2, 8, 16, 0.55);
+            position: absolute;
+            top: 0;
+            width: 100%;
+            background: white;
+            box-shadow: rgba(0, 0, 0, 0.11) 0px 15px 30px 0px, rgba(0, 0, 0, 0.08) 0px 5px 15px 0px;
         }
+
         .u4a_loader {
-        display: inline-block;
-        position: relative;
-        width: 60px;
-        height: 20px;
-        text-align: center;
-        vertical-align: middle;
+            display: inline-block;
+            position: relative;
+            width: 60px;
+            height: 20px;
+            text-align: center;
+            vertical-align: middle;
         }
+
         .u4a_loadersInactive {
-        display: none;
+            display: none;
         }
+
         .u4a_loader-bars:before,
         .u4a_loader-bars:after,
         .u4a_loader-bars span {
-        content: "";
-        display: block;
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 10px;
-        height: 30px;
-        background-color: rgba(2, 8, 16, 0.55);
-        -webkit-animation: u4a_grow 1.5s linear infinite;
-        animation: u4a_grow 1.5s linear infinite;
+            content: "";
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 10px;
+            height: 30px;
+            background-color: rgba(2, 8, 16, 0.55);
+            -webkit-animation: u4a_grow 1.5s linear infinite;
+            animation: u4a_grow 1.5s linear infinite;
         }
 
         .u4a_loader-bars:after {
-        left: 15px;
-        -webkit-animation: u4a_grow 1.5s linear -0.5s infinite;
-        animation: u4a_grow 1.5s linear -0.5s infinite;
+            left: 15px;
+            -webkit-animation: u4a_grow 1.5s linear -0.5s infinite;
+            animation: u4a_grow 1.5s linear -0.5s infinite;
         }
 
         .u4a_loader-bars span {
-        left: 30px;
-        -webkit-animation: u4a_grow 1.5s linear -1s infinite;
-        animation: u4a_grow 1.5s linear -1s infinite;
+            left: 30px;
+            -webkit-animation: u4a_grow 1.5s linear -1s infinite;
+            animation: u4a_grow 1.5s linear -1s infinite;
         }
 
         @-webkit-keyframes u4a_grow {
-        0% {
-        -webkit-transform: scaleY(0);
-        transform: scaleY(0);
-        opacity: 0;
-        }
-        50% {
-        -webkit-transform: scaleY(1);
-        transform: scaleY(1);
-        opacity: 1;
-        }
-        100% {
-        -webkit-transform: scaleY(0);
-        transform: scaleY(0);
-        opacity: 0;
-        }
+            0% {
+                -webkit-transform: scaleY(0);
+                transform: scaleY(0);
+                opacity: 0;
+            }
+
+            50% {
+                -webkit-transform: scaleY(1);
+                transform: scaleY(1);
+                opacity: 1;
+            }
+
+            100% {
+                -webkit-transform: scaleY(0);
+                transform: scaleY(0);
+                opacity: 0;
+            }
         }
 
         @keyframes u4a_grow {
-        0% {
-        -webkit-transform: scaleY(0);
-        transform: scaleY(0);
-        opacity: 0;
-        }
-        50% {
-        -webkit-transform: scaleY(1);
-        transform: scaleY(1);
-        opacity: 1;
-        }
-        100% {
-        -webkit-transform: scaleY(0);
-        transform: scaleY(0);
-        opacity: 0;
-        }
+            0% {
+                -webkit-transform: scaleY(0);
+                transform: scaleY(0);
+                opacity: 0;
+            }
+
+            50% {
+                -webkit-transform: scaleY(1);
+                transform: scaleY(1);
+                opacity: 1;
+            }
+
+            100% {
+                -webkit-transform: scaleY(0);
+                transform: scaleY(0);
+                opacity: 0;
+            }
         }
 
 
@@ -118,7 +124,7 @@
         .u4aWsLoginFormFcard .sapFCardHeaderImage .sapFAvatarSquare.sapFCardIcon {
             margin-right: 0.5rem;
         }
-     
+
         .u4aWsLoginFormFcard.sapFCard .sapFCardHeader .sapFCardHeaderWrapper .sapFCardHeaderText .sapMText {
             font-size: 1.2rem;
             font-weight: bold;
@@ -128,13 +134,40 @@
             border: 0px;
         }
 
+        .u4aWsVersionCheckDialog .sapMTitle {
+            /* margin-top: 1rem; */
+            color: #ecececeb;
+            animation: editTitle 1.2s infinite;
+            -webkit-animation: editTitle 1.2s infinite;
+            -moz-animation-duration: 1.2s;
+            -moz-animation-name: editTitle;
+            -moz-animation-iteration-count: infinite;
+        }
+
+        .u4aWsVersionCheckDialog .sapMIllustratedMessageDescription {
+            display: none;
+        }
+
+        @keyframes editTitle {
+			0% {
+				color: #ecececeb;
+			}
+
+			50% {
+				color: #000000;
+			}
+
+			100% {
+				color: #ecececeb;
+			}
+		}
     </style>
 </head>
 
 
 
 <body class="sapUiBody">
-    
+
     <div id="content" style="display:none;" class="u4aWsContent"></div>
 
     <!-- Page Loading Start -->
@@ -142,7 +175,7 @@
         <span class="u4a_loader u4a_loader-bars"> <span></span> </span> Loading...
     </div> -->
     <!-- Page Loading End -->
-    
+
     <script src="Login.js"></script>
 </body>
 

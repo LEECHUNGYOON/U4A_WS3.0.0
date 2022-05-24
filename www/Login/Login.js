@@ -5,7 +5,7 @@
  * - file Desc : WS Login Page
  ************************************************************************/
 
-let oAPP = (function() {
+let oAPP = (function () {
     "use strict";
 
     const
@@ -266,7 +266,7 @@ let oAPP = (function() {
                                     value: "{ID}",
                                     showSearchButton: false,
                                     placeholder: "　",
-                                    suggest: function(oEvent) {
+                                    suggest: function (oEvent) {
 
                                         var sValue = oEvent.getParameter("suggestValue"),
                                             aFilters = [];
@@ -275,7 +275,7 @@ let oAPP = (function() {
 
                                             aFilters = [
                                                 new sap.ui.model.Filter([
-                                                    new sap.ui.model.Filter("ID", function(sText) {
+                                                    new sap.ui.model.Filter("ID", function (sText) {
                                                         return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                                     }),
                                                 ], false)
@@ -287,7 +287,7 @@ let oAPP = (function() {
                                         this.suggest();
 
                                     },
-                                    search: function(oEvent) {
+                                    search: function (oEvent) {
 
                                         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
                                         if (bIsPressClearBtn) {
@@ -378,25 +378,25 @@ let oAPP = (function() {
 
             new sap.m.Button({
                 text: "영선",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("yshong");
                 }
             }),
             new sap.m.Button({
                 text: "성호",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("shhong");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
             new sap.m.Button({
                 text: "은섭",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("pes");
                 }
             }),
             new sap.m.Button({
                 text: "청윤",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("soccerhs");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
@@ -496,7 +496,7 @@ let oAPP = (function() {
 
         var oFcard = oAPP.fn.fnGetLoginFormFCard();
 
-        return new sap.m.Page("u4aWsLogin", {
+        return new sap.m.Page({
 
                 // properties
                 showHeader: false,
@@ -549,59 +549,21 @@ let oAPP = (function() {
 
     }; // end of oAPP.fn.fnGetLoginPage
 
-
-    /************************************************************************
-     * 업데이트 확인 페이지
-     ************************************************************************/
-    oAPP.fn.fnGetUpdatePage = () => {
-
-        return new sap.m.Page("u4aWsUpdatePage", {
-
-            // properties            
-            showHeader: false,
-            backgroundDesign: sap.m.PageBackgroundDesign.Transparent,
-
-            // aggregations
-            content: oAPP.fn.fnGetUpdatePageContents()
-
-        });
-
-    }; // end of oAPP.fn.fnGetUpdatePage
-
-    /************************************************************************
-     * 업데이트 확인 페이지의 컨텐츠
-     ************************************************************************/
-    oAPP.fn.fnGetUpdatePageContents = () => {
-
-        return [
-
-
-
-
-
-
-
-        ];
-
-    }; // end of oAPP.fn.fnGetUpdatePageContents
-
     /************************************************************************
      * 로그인 페이지 초기 렌더링
      ************************************************************************/
     oAPP.fn.fnOnInitRendering = () => {
 
-        var oApp = new sap.m.App("u4aWsLoginApp", {
+        var oApp = new sap.m.App({
             autoFocus: false,
         });
 
-        var oLoginPage = oAPP.fn.fnGetLoginPage(),
-            oUpdatePage = oAPP.fn.fnGetUpdatePage();
+        var oLoginPage = oAPP.fn.fnGetLoginPage();
 
         oApp.addPage(oLoginPage);
-        oApp.addPage(oUpdatePage);
         oApp.placeAt("content");
 
-    }; // end of oAPP.fn.fnOnInitRendering
+    }; // end of oAPP.fn.fnOnInitRendering   
 
     /************************************************************************
      * 로그인 페이지 초기 렌더링
@@ -612,23 +574,40 @@ let oAPP = (function() {
             bIsRemember = oAPP.fn.fnGetRememberCheck(),
             sRememberId = oAPP.fn.fnGetRememberID();
 
-        var oModelData = {
-            CLIENT: oServerInfo.CLIENT,
-            ID: sRememberId,
-            PW: "",
-            LANGU: oServerInfo.LANGU,
-            SYSID: oServerInfo.SYSID,
-            REMEMBER: bIsRemember,
-            IDSUGG: []
-        };
+        var oLoginData = {
+                CLIENT: oServerInfo.CLIENT,
+                ID: sRememberId,
+                PW: "",
+                LANGU: oServerInfo.LANGU,
+                SYSID: oServerInfo.SYSID,
+                REMEMBER: bIsRemember,
+                IDSUGG: []
+            },
+
+            oBusyPopInit = {
+                TITLE: "Checking for updates...",
+                ILLUSTTYPE: "sapIllus-BeforeSearch",
+                PROGVISI: false,
+                PERVALUE: 0
+            },
+
+            oBusyPopData = {
+                TITLE: "Checking for updates...",
+                ILLUSTTYPE: "sapIllus-BeforeSearch",
+                PROGVISI: false,
+                PERVALUE: 0
+            };
+
 
         var aIDSugg = oAPP.fn.fnReadIDSuggData();
 
-        oModelData.IDSUGG = aIDSugg;
+        oLoginData.IDSUGG = aIDSugg;
 
         var oJsonModel = new sap.ui.model.json.JSONModel();
         oJsonModel.setData({
-            LOGIN: oModelData
+            LOGIN: oLoginData,
+            BUSYPOPINIT: oBusyPopInit,
+            BUSYPOP: oBusyPopData
         });
 
         var oCoreModel = sap.ui.getCore().getModel();
@@ -676,7 +655,7 @@ let oAPP = (function() {
         parent.setBusy('X');
 
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() { // 요청에 대한 콜백
+        xhr.onreadystatechange = function () { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
@@ -727,6 +706,17 @@ let oAPP = (function() {
      ************************************************************************/
     oAPP.fn.fnCheckAuthSuccess = (oResult, oAuthInfo) => {
 
+        // no build일 경우는 버전 체크를 하지 않는다.
+        var bIsPackaged = APP.isPackaged;
+        if (!bIsPackaged) {
+
+            parent.setBusy('');
+
+            oAPP.fn.fnCheckVersionSuccess(oResult, oAuthInfo);
+
+            return;
+        }
+
         // 고객사 라이센스를 체크한다.
         oAPP.fn.fnCheckCustomerLisence().then((oLicenseInfo) => {
 
@@ -741,18 +731,24 @@ let oAPP = (function() {
             // 오류 확인 및 라이선스 유효 여부 확인
             if (oLicenseInfo.RETCD == "E" || oLicenseInfo.ISLIC != "X") {
 
-                // 일러스트 팝업 오류 메시지를 띄운다.
-                oAPP.fn.fnShowNoAuthIllustMsg(oLicenseInfo.RTMSG);
+                // // 일러스트 팝업 오류 메시지를 띄운다.
+                // oAPP.fn.fnShowNoAuthIllustMsg(oLicenseInfo.RTMSG);                
 
                 parent.setBusy('');
 
+                oAPP.fn.fnCheckVersionSuccess(oResult, oAuthInfo);
+
                 return;
-            }        
+            }
 
             // no build일 경우는 버전 체크를 하지 않는다.
             var bIsPackaged = APP.isPackaged;
             if (!bIsPackaged) {
+
+                parent.setBusy('');
+
                 oAPP.fn.fnCheckVersionSuccess(oResult, oAuthInfo);
+
                 return;
             }
 
@@ -775,7 +771,7 @@ let oAPP = (function() {
 
                 oAPP.fn.fnCheckVersionSuccess(oResult, oAuthInfo);
 
-            });            
+            });
 
         });
 
@@ -787,6 +783,11 @@ let oAPP = (function() {
     oAPP.fn.fnCheckVersionSuccess = (oResult, oAuthInfo) => {
 
         debugger;
+
+        var oDialog = sap.ui.getCore().byId("u4aWsVersionCheckDialog");
+        if (oDialog && oDialog.isOpen()) {
+            oDialog.close();
+        }
 
         var oResultData = jQuery.extend(true, {}, oResult);
 
@@ -812,7 +813,7 @@ let oAPP = (function() {
             var sServicePath = parent.getServerPath() + "/chk_customer_license";
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() { // 요청에 대한 콜백
+            xhr.onreadystatechange = function () { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -835,6 +836,59 @@ let oAPP = (function() {
     }; // end of oAPP.fn.fnCheckCustomerLisence
 
     /************************************************************************
+     * Version Check Dialog 를 실행한다.
+     ************************************************************************/
+    oAPP.fn.fnVersionCheckDialogOpen = () => {
+
+        var sDialogId = "u4aWsVersionCheckDialog";
+
+        var oDialog = sap.ui.getCore().byId(sDialogId);
+
+        if (oDialog) {
+            oDialog.open();
+            return;
+        }
+
+        var oIllustMsg = new sap.m.IllustratedMessage({
+            title: "{TITLE}",
+            description: "　",
+            illustrationSize: sap.m.IllustratedMessageSize.Dialog,
+            illustrationType: "{ILLUSTTYPE}"
+
+        }).addStyleClass(sDialogId);
+
+        var oProgressbar = new sap.m.ProgressIndicator({
+            visible: "{PROGVISI}",
+            percentValue: "{PERVALUE}",
+            displayOnly: true,
+            state: "Success",
+            displayValue: "Downloading... {PERVALUE}%"
+        }).addStyleClass("sapUiSmallMarginBeginEnd sapUiMediumMarginBottom");
+
+        new sap.m.Dialog(sDialogId, {
+                showHeader: false,
+                horizontalScrolling: false,
+                verticalScrolling: false,
+
+                content: [
+                    oIllustMsg,
+
+                    new sap.m.HBox({
+                        renderType: "Bare",
+                        items: [
+                            oProgressbar
+                        ]
+                    }),
+
+                ]
+
+            })
+            .bindElement("/BUSYPOP")
+            .open();
+
+    }; // end of oAPP.fn.fnVersionCheckDialogOpen
+
+    /************************************************************************
      * WS Version을 확인한다.
      ************************************************************************/
     oAPP.fn.fnCheckVersion = (sVersionCheckUrl) => {
@@ -842,6 +896,12 @@ let oAPP = (function() {
         return new Promise((resolve, reject) => {
 
             debugger;
+
+            var oModel = sap.ui.getCore().getModel();
+
+            oAPP.fn.fnVersionCheckDialogOpen();
+
+            parent.setBusy("");
 
             /* Updater Event 설정 ======================================================*/
 
@@ -871,6 +931,8 @@ let oAPP = (function() {
 
                 // oProgressBar.classList.remove("invisible");
 
+                oModel.setProperty("/BUSYPOP/PROGVISI", true, true);
+
                 console.log("업데이트가 가능합니다.");
 
             });
@@ -893,23 +955,32 @@ let oAPP = (function() {
 
             autoUpdater.on('download-progress', (progressObj) => {
 
-                let log_message = "다운로드 속도: " + progressObj.bytesPerSecond;
+                // let log_message = "다운로드 속도: " + progressObj.bytesPerSecond;
 
-                log_message = log_message + ' - 현재 ' + progressObj.percent + '%';
+                // log_message = log_message + ' - 현재 ' + progressObj.percent + '%';
 
-                log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+                // log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
 
                 // let sPer = `${parseFloat(progressObj.percent).toFixed(2)}%`;
 
                 // oAPP.fn.fnSetStatusText(`downloading... ${sPer} `);
 
+                var iPer = parseFloat(progressObj.percent).toFixed(2);
+
+                oModel.setProperty("/BUSYPOP/PERVALUE", iPer, true);
+
                 // oProgressBar.style.width = sPer;
 
-                console.log(log_message);
+                // console.log(log_message);
 
             });
 
             autoUpdater.on('update-downloaded', (info) => {
+
+                oModel.setProperty("/BUSYPOP/TITLE", "Update Complete! Restarting...", true);
+
+                oModel.setProperty("/BUSYPOP/ILLUSTTYPE", "sapIllus-SuccessHighFive", true);
+
 
                 console.log('업데이트가 완료되었습니다.');
 
@@ -940,7 +1011,7 @@ let oAPP = (function() {
             var sServicePath = parent.getServerPath() + "/chk_u4a_authority";
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() { // 요청에 대한 콜백
+            xhr.onreadystatechange = function () { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -1107,7 +1178,7 @@ let oAPP = (function() {
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         reject(err.toString());
@@ -1356,6 +1427,34 @@ let oAPP = (function() {
 
     }; // end of oAPP.fn.fnReadIDSuggData
 
+    /************************************************************************
+     * 네트워크 연결 시 Network Indicator 해제
+     * **********************************************************************/
+    oAPP.fn.fnNetworkCheckerOnline = function () {
+
+        // 네트워크 활성화 여부 flag
+        oAPP.attr.bIsNwActive = true;
+
+        var bIsNwActive = oAPP.attr.bIsNwActive;
+
+        parent.setNetworkBusy(!bIsNwActive);
+
+    }; // end of oAPP.fn.fnNetworkCheckerOnline
+
+    /************************************************************************
+     * 네트워크 연결 시 Network Indicator 실행
+     * **********************************************************************/
+    oAPP.fn.fnNetworkCheckerOffline = function () {
+
+        // 네트워크 활성화 여부 flag
+        oAPP.attr.bIsNwActive = false;
+
+        var bIsNwActive = oAPP.attr.bIsNwActive;
+
+        parent.setNetworkBusy(!bIsNwActive);
+
+    }; // end of oAPP.fn.fnNetworkCheckerOffline    
+
     return oAPP;
 
 })();
@@ -1379,6 +1478,12 @@ function fnSetBusy(bIsShow) {
 
 fnSetBusy('X');
 
+/************************************************************************
+ * 네트워크 연결 및 해제 시 발생되는 이벤트
+ * **********************************************************************/
+window.addEventListener("online", oAPP.fn.fnNetworkCheckerOnline, false);
+window.addEventListener("offline", oAPP.fn.fnNetworkCheckerOffline, false);
+
 oAPP.fn.fnLoadBootStrapSetting();
 
 window.onload = () => {
@@ -1392,7 +1497,7 @@ window.onload = () => {
 
 };
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
     // parent.fn_onWinMove(false, parent.REMOTE.getCurrentWindow());
 
