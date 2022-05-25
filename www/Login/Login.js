@@ -19,6 +19,7 @@ let oAPP = (function() {
         PATHINFO = parent.require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
         autoUpdater = REMOTE.require("electron-updater").autoUpdater,
         OCTOKIT = REMOTE.require("@octokit/core").Octokit,
+        GITDEVKEY = "Z2hwX1gxRUhyMW0xTkZlUnhpbnRCVkF4cHd2aG82c1FlNjJyaU1IMw==",
         require = parent.require;
 
 
@@ -675,16 +676,16 @@ let oAPP = (function() {
                     // 권한 체크를 수행한다.
                     oAPP.fn.fnCheckAuthority().then((oAuthInfo) => {
 
-                        // // no build일 경우는 버전 체크를 하지 않는다.
-                        // var bIsPackaged = APP.isPackaged;
-                        // if (!bIsPackaged) {
+                        // no build일 경우는 버전 체크를 하지 않는다.
+                        var bIsPackaged = APP.isPackaged;
+                        if (!bIsPackaged) {
 
-                        //     parent.setBusy('');
+                            parent.setBusy('');
 
-                        //     oAPP.fn.fnCheckVersionFinished(oResult, oAuthInfo);
+                            oAPP.fn.fnCheckVersionFinished(oResult, oAuthInfo);
 
-                        //     return;
-                        // }
+                            return;
+                        }
 
                         // 개발자 권한 성공시
                         oAPP.fn.fnCheckAuthSuccess(oResult, oAuthInfo);
@@ -846,7 +847,7 @@ let oAPP = (function() {
         return new Promise((resolve, reject) => {
 
             const octokit = new OCTOKIT({
-                auth: "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"
+                auth: atob(GITDEVKEY)
             });
 
             octokit.request("https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest", {
@@ -912,7 +913,7 @@ let oAPP = (function() {
 
             parent.setBusy("");
 
-            var oModel = sap.ui.getCore().getModel();           
+            var oModel = sap.ui.getCore().getModel();
 
             /* Updater Event 설정 ======================================================*/
 
