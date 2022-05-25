@@ -88,6 +88,9 @@
             //icon 정보 얻기.
             var ls_icon = l_ctxt.getProperty();
 
+            //검색조건 필드 Suggest 저장 처리.
+            oAPP.fn.saveUiSuggest("iconListSearch", ls_icon.nam, 20);
+
             //callback function에 선택한 icon명 전달.
             retfunc(ls_icon.src);
 
@@ -110,6 +113,9 @@
         //검색조건 필드.
         var oSearch = new sap.m.SearchField({placeholder:"Search Icon"});
         oTool.addContent(oSearch);
+
+        //검색조건 필드 Suggest 등록 처리.
+        oAPP.fn.setUiSuggest(oSearch, "iconListSearch");
 
         //검색 이벤트.
         oSearch.attachLiveChange(function(){

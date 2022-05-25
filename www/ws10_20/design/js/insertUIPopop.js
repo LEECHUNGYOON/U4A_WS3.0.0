@@ -50,7 +50,7 @@
     oTool.addContent(new sap.m.ToolbarSpacer());
 
     //우상단 닫기버튼.
-    var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject"});
+    var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip:"Close"});
     oTool.addContent(oBtn0);
 
     //닫기 버튼 선택 이벤트.
@@ -250,6 +250,9 @@
     var oInp2 = new sap.m.Input();
     oFrmElem3.addField(oInp2);
 
+    //ui 검색 필드 Suggest 처리.
+    oAPP.fn.setUiSuggest(oInp2, "insertUiName");
+
     //ui 검색 이벤트.
     oInp2.attachChange(function(){
         var l_val = this.getValue();
@@ -352,7 +355,7 @@
     oTab1.bindAggregation("rows",{path:"/T_LIST",template:oRow1});
 
     //확인 버튼
-    var oBtn1 = new sap.m.Button({icon: "sap-icon://accept",text: "Confirm",type: "Accept"});
+    var oBtn1 = new sap.m.Button({icon: "sap-icon://accept",text: "Confirm",type: "Accept", tooltip:"Confirm"});
     oDlg.addButton(oBtn1);
 
     oBtn1.attachPress(function(){
@@ -373,7 +376,7 @@
 
 
     //종료버튼
-    var oBtn2 = new sap.m.Button({icon: "sap-icon://decline",text: "Cancel",type: "Reject"});
+    var oBtn2 = new sap.m.Button({icon: "sap-icon://decline",text: "Cancel",type: "Reject", tooltip:"Cancel"});
     oDlg.addButton(oBtn2);
     oBtn2.attachPress(function(){
       oDlg.close();
@@ -406,6 +409,9 @@
 
       //반복해서 만들 ui 갯수
       l_ret.E_CRTCNT = oInp1.getValue();
+
+      //ui 검색필드 suggest 정보 저장 처리.
+      oAPP.fn.saveUiSuggest("insertUiName", l_ret.E_UIOBJ.UIOBJ, 10)
 
 
       //팝업 종료.

@@ -797,6 +797,84 @@
      * attribute 점검 항목 영역 -end.
      ************************************************************************/
 
+    
+
+    //ui suggestion 등록 처리.
+    oAPP.fn.setUiSuggest = function(oUi, sSuggName){
+
+      var l_meta = oUi.getMetadata();
+      if(l_meta._sClassName === "sap.m.Input"){
+        oUi.setStartSuggestion(0);
+        oUi.setShowSuggestion(true);
+        oUi.setFilterSuggests(false);
+
+      }else if(l_meta._sClassName === "sap.m.SearchField"){
+        oUi.setEnableSuggestions(true);
+        oUi.attachSuggest(function(oEvent){
+          var sValue = oEvent.getParameter("suggestValue"),
+          aFilters = [];
+
+          if (sValue) {
+
+              aFilters = [
+                  new sap.ui.model.Filter([
+                      new sap.ui.model.Filter("APPID", function (sText) {
+                          return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
+                      }),
+                  ], false)
+              ];
+
+          }
+
+          this.getBinding("suggestionItems").filter(aFilters);
+          this.suggest();
+          
+        });
+      }
+
+      var oModel = new sap.ui.model.json.JSONModel();
+      oUi.setModel(oModel, sSuggName);
+
+      oUi.bindAggregation("suggestionItems", {path: sSuggName + ">/t_sugg", 
+        template:new sap.m.SuggestionItem({key:"{" + sSuggName + ">NAME}", text:"{" + sSuggName +">NAME}"})});
+
+      var lt_sugg = oAPP.fn.fnSuggestionRead(sSuggName) || [];
+
+      oModel.setData({t_sugg:lt_sugg});
+
+    };  //ui suggestion 등록 처리.
+
+
+
+    //ui suggestion 저장 처리.
+    oAPP.fn.saveUiSuggest = function(sSuggName, sVal, iCnt){
+
+      //이전 suggestion항목 얻기.
+      var lt_sugg = oAPP.fn.fnSuggestionRead(sSuggName) || [];
+
+      //현재 입력한 값과 동일한 값 존재여부 확인.
+      var l_indx = lt_sugg.findIndex( a=> a.NAME === sVal );
+
+      //존재하는경우 해당 라인 제거.
+      if(l_indx !== -1){
+        lt_sugg.splice(l_indx,  1);
+      }
+
+      //맨 위에 입력값 추가.
+      lt_sugg.splice(0, 0, {NAME:sVal});
+      
+      //수집한 suggestion 항목이 기준값보다 큰경우.
+      if(lt_sugg.length > iCnt){
+        //기준값 이후 라인 제거 처리.
+        lt_sugg.splice(iCnt, lt_sugg.length);
+      }
+
+      //suggestion 저장 처리.
+      oAPP.fn.fnSuggestionSave(sSuggName, lt_sugg);
+
+    };  //ui suggestion 저장 처리.
+
+
 
 
     //workbench 화면을 구성할 UI가 존재하지 않는경우 exit.

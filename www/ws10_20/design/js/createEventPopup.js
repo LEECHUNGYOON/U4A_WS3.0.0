@@ -210,6 +210,12 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
 
       }
 
+      //메소드명 suggest 저장 처리.
+      oAPP.fn.saveUiSuggest("crtServEvtMethName", l_event, 20);
+
+      //메소드 desc suggest 저장 처리.
+      oAPP.fn.saveUiSuggest("crtServEvtMethDesc", ls_event.desc, 20);
+
       //CALLBACK function 호출.
       if(typeof f_callBack !== "undefined"){
         f_callBack(is_attr, param.METHOD);
@@ -320,12 +326,17 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
     maxLength:27
   });
   oFmElem1.addField(oFmInp1);
+  
 
   //Method Name 입력필드 엔터 이벤트
   oFmInp1.attachSubmit(function(){
     //desc로 포커스 처리.
     oFmInp2.focus();
   });
+
+  
+  //Method Name 입력필드 Suggestion 등록 처리.
+  oAPP.fn.setUiSuggest(oFmInp1, "crtServEvtMethName");
 
 
   var oFmElem2 = new sap.ui.layout.form.FormElement({
@@ -348,6 +359,11 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
     //생성 버튼으로 focus 처리.
     oBtn1.focus();
   });
+
+
+  //Method desc 입력필드 Suggestion 등록 처리.
+  oAPP.fn.setUiSuggest(oFmInp2, "crtServEvtMethDesc");
+
 
   //이벤트 생성 버튼.
   var oBtn1 = new sap.m.Button({type:"Accept",icon:"sap-icon://accept", tooltip: "Create"});
@@ -392,7 +408,7 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
 
 
   oModel.setData({"event":{"meth":"","desc":"",
-    "meth_stat":"None","meth_text":"","desc_stat":"None","desc_text":""}});
+    "meth_stat":"None","meth_text":"","desc_stat":"None","desc_text":""}},true);
 
 
   //dialog 호출시 이벤트.

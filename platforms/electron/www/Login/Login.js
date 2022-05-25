@@ -19,7 +19,11 @@ let oAPP = (function() {
         PATHINFO = parent.require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
         autoUpdater = REMOTE.require("electron-updater").autoUpdater,
         OCTOKIT = REMOTE.require("@octokit/core").Octokit,
-        require = parent.require;
+        require = parent.require,
+
+        GITDEVKEY = "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";
+
+
 
     let oAPP = {};
     oAPP.fn = {};
@@ -674,16 +678,16 @@ let oAPP = (function() {
                     // 권한 체크를 수행한다.
                     oAPP.fn.fnCheckAuthority().then((oAuthInfo) => {
 
-                        // no build일 경우는 버전 체크를 하지 않는다.
-                        var bIsPackaged = APP.isPackaged;
-                        if (!bIsPackaged) {
+                        // // no build일 경우는 버전 체크를 하지 않는다.
+                        // var bIsPackaged = APP.isPackaged;
+                        // if (!bIsPackaged) {
 
-                            parent.setBusy('');
+                        //     parent.setBusy('');
 
-                            oAPP.fn.fnCheckVersionFinished(oResult, oAuthInfo);
+                        //     oAPP.fn.fnCheckVersionFinished(oResult, oAuthInfo);
 
-                            return;
-                        }
+                        //     return;
+                        // }
 
                         // 개발자 권한 성공시
                         oAPP.fn.fnCheckAuthSuccess(oResult, oAuthInfo);
@@ -815,8 +819,6 @@ let oAPP = (function() {
      ************************************************************************/
     oAPP.fn.fnCheckCustomerLisenceThen = function(oLicenseInfo) {
 
-        debugger;
-
         // ISCDS TYPE C LENGTH 1, "on premise : space
         // RETCD TYPE C LENGTH 1, "처리 리턴 코드 : E 오류
         // RTMSG TYPE STRING,     "처리 리턴 메시지
@@ -846,12 +848,14 @@ let oAPP = (function() {
 
         return new Promise((resolve, reject) => {
 
-            var oSettingsPath = PATHINFO.WSSETTINGS,
-                oSettings = require(oSettingsPath),
-                sGitDevKey = oSettings.GIT.DevKey;
+            debugger;
+
+            // var oSettingsPath = PATHINFO.WSSETTINGS,
+            //     oSettings = require(oSettingsPath),
+            //     sGitDevKey = oSettings.GIT.DevKey;
 
             const octokit = new OCTOKIT({
-                auth: sGitDevKey
+                auth: GITDEVKEY
             });
 
             octokit.request("https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest", {
@@ -906,7 +910,6 @@ let oAPP = (function() {
 
         return new Promise((resolve, reject) => {
 
-            debugger;
 
             // 로그인 페이지의 Opacity를 적용한다.
             $('.u4aWsLoginFormFcard').animate({

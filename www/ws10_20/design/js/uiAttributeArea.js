@@ -205,7 +205,7 @@
     oRListItem1.addCell(oRHbox1);
 
     //attribute 직접입력 필드
-    var oRInp2 = new sap.m.Input({value:"{UIATV}",editable:"{edit}",visible:"{inp_visb}",
+    var oRInp2 = new sap.m.Input({value:"{UIATV}", editable:"{edit}",visible:"{inp_visb}", tooltip:"{UIATV}",
       showValueHelp:"{showF4}",enabled:"{/IS_EDIT}",valueState:"{valst}",valueStateText:"{valtx}"});
     oRHbox1.addItem(oRInp2);
 
@@ -228,7 +228,7 @@
 
 
     //Attribute DDLB UI
-    var oRSel1 = new sap.m.ComboBox({showSecondaryValues:true,width:"100%",selectedKey:"{UIATV}",
+    var oRSel1 = new sap.m.ComboBox({showSecondaryValues:true,width:"100%",selectedKey:"{UIATV}", tooltip:"{UIATV}",
       editable:"{edit}",visible:"{sel_visb}",enabled:"{/IS_EDIT}",tooltip:"{UIATV}",value:"{comboval}",
       valueState:"{valst}",valueStateText:"{valtx}"});
 
@@ -3238,6 +3238,9 @@
 
   //attr 라인에 따른 style 처리.
   oAPP.fn.attrSetLineStyle = function(is_attr){
+
+    //DOCUMENT의 ATTRIBUTE는 ICON 설정 불필요에 의해 EXIT 처리.
+    if(is_attr.OBJID === "ROOT"){return;}
 
     //UI 타입에 따른 로직 분기.
     switch(is_attr.UIATY){

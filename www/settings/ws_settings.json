@@ -10,10 +10,7 @@
 			"data-sap-ui-theme": "sap_horizon_dark",
 			"data-sap-ui-libs": "sap.m"
 		}
-	},
-	"GIT": {
-		"DevKey" : "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"
-	},
+	},	
 	"defaultTheme": "sap_horizon_dark",
 	"defaultBackgroundColor": "#12171c",
 	"requireFolders": [

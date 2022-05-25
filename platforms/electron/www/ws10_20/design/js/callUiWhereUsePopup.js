@@ -25,7 +25,7 @@
         oTool.addContent(new sap.m.ToolbarSpacer());
     
         //우상단 닫기버튼.
-        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", 
+        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip:"Close",
             busyIndicatorDelay:1});
         oTool.addContent(oBtn0);
 
@@ -118,7 +118,7 @@
 
         oDlg.close();
         //001	Cancel operation
-        parent.showMessage(sap,10, "I", "Cancel operation");
+        parent.showMessage(sap, 10, "I", "Cancel operation");
 
     }   //팝업 종료.
 
