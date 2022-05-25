@@ -19,9 +19,9 @@ let oAPP = (function() {
         PATHINFO = parent.require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
         autoUpdater = REMOTE.require("electron-updater").autoUpdater,
         OCTOKIT = REMOTE.require("@octokit/core").Octokit,
-        require = parent.require,
+        require = parent.require;
 
-        GITDEVKEY = "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";
+        // GITDEVKEY = "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";
 
 
 
@@ -848,14 +848,14 @@ let oAPP = (function() {
 
         return new Promise((resolve, reject) => {
 
-            debugger;
-
             // var oSettingsPath = PATHINFO.WSSETTINGS,
             //     oSettings = require(oSettingsPath),
             //     sGitDevKey = oSettings.GIT.DevKey;
+            
+            debugger;
 
             const octokit = new OCTOKIT({
-                auth: GITDEVKEY
+                auth: "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"
             });
 
             octokit.request("https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest", {
