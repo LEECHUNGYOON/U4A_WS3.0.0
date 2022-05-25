@@ -19,6 +19,8 @@
         APPPATH = APP.getAppPath(),
         USERDATA = APP.getPath("userData"),
         FS = REMOTE.require('fs-extra'),
+        IPCRENDERER = require('electron').ipcRenderer,
+        OCTOKIT = REMOTE.require("@octokit/core").Octokit,
         PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));
 
     var oProgressBar = document.getElementById("progressBar_dynamic"),
@@ -29,56 +31,58 @@
         // 현재 버전 보여주기
         oAPP.fn.fnDisplayCurrentVersion();
 
+        // on-premise 인지 CDN인지 확인
+        oAPP.fn.fnConnectionGithub().then((oResult) => {
+
+            IPCRENDERER.send("setCDN", oResult.ISCDN);
+
+            oAPP.fn.fnOnStart();
+
+        });
+
+    }; // end of oAPP.fn.fnOnDeviceReady 
+
+    oAPP.fn.fnOnStart = () => {
+
         // 초기 설치(기본 폴더, vbs 옮기기 등등)
         oAPP.fn.setInitInstall(() => {
-            
+
             setTimeout(() => {
                 oAPP.fn.fnOpenServerList();
             }, 3000);
 
         });
 
+    }; // end of oAPP.fn.fnOnStart
 
+    oAPP.fn.fnConnectionGithub = () => {
 
+        return new Promise((resolve, reject) => {
+            
+            const octokit = new OCTOKIT({
+                auth: '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'
+            });
 
-        // oAPP.fn.setInitInstall(lf_initInstallFinished);
+            octokit.request("https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest", {
+                org: "octokit", //기본값  
+                type: "Public", //github repositories type private /  Public 
+            }).then((data) => {                
 
-        // let
-        //     // 초기 인스톨 끝났을때 수행
-        //     lf_initInstallFinished = () => {
+                resolve({
+                    ISCDN: "X"
+                });
 
-        //         // // no build 일 경우
-        //         // if (!bIsPackaged) {
+            }).catch((err) => {
 
-        //         setTimeout(() => {
-        //             oAPP.fn.fnOpenServerList();
-        //         }, 3000);
+                resolve({
+                    ISCDN: ""
+                });
 
-        //         // return;
-        //         // }
+            });
 
-        //         // oAPP.fn.fnOpenServerList();
+        });
 
-        //     };
-
-        // // 버전 체크 끝났을때 수행
-        // lf_versionCheckFinished = () => {
-
-        //     // 초기 설치(기본 폴더, vbs 옮기기 등등)
-        //     oAPP.fn.setInitInstall(lf_initInstallFinished);
-
-        // };
-
-        // // no build 일 경우는 업데이트 확인 하지 않고 바로 실행     
-        // if (!bIsPackaged) {
-        //     lf_versionCheckFinished();
-        //     return;
-        // }
-
-        // // 업데이트 버전 확인
-        // oAPP.fn.fnCheckVersion().then(lf_versionCheckFinished);
-
-    }; // end of oAPP.fn.fnOnDeviceReady 
+    }; // end of oAPP.fn.fnConnectionGithub
 
     /************************************************************************
      * 현재 설치된 WS Version을 화면에 표시

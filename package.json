@@ -55,6 +55,7 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",
+    "@octokit/core": "^3.6.0",
     "child_process": "^1.0.2",
     "electron-updater": "^5.0.1",
     "electron-window-state": "^5.0.3",

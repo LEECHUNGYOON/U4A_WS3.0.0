@@ -17,6 +17,9 @@
     under the License.
 */
 
+// CDN 여부 global Flag
+global.ISCDN = "";
+
 const fs = require('fs');
 const path = require('path');
 const {
@@ -29,6 +32,15 @@ const {
     protocol,
     ipcMain
 } = require('electron');
+
+// global 변수에 CDN 여부 flag 세팅 이벤트
+ipcMain.on("setCDN", (event, data) => {
+    
+    global.ISCDN = data;
+
+});
+
+
 
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('disable-site-isolation-trials');

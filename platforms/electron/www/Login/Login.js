@@ -706,6 +706,10 @@ let oAPP = (function() {
      ************************************************************************/
     oAPP.fn.fnCheckAuthSuccess = (oResult, oAuthInfo) => {
 
+        debugger;
+        
+        var ISCDN = REMOTE.getGlobal("ISCDN");
+
         // no build일 경우는 버전 체크를 하지 않는다.
         var bIsPackaged = APP.isPackaged;
         if (!bIsPackaged) {
@@ -728,8 +732,8 @@ let oAPP = (function() {
             // REMIN TYPE STRING,     "라이센스 잔여 일
             // ISLIC TYPE C LENGTH 1, "라이센스 유효 여부 "X : 유효"
 
-            // 오류 확인 및 라이선스 유효 여부 확인
-            if (oLicenseInfo.RETCD == "E" || oLicenseInfo.ISLIC != "X") {
+            // 오류 확인
+            if (oLicenseInfo.RETCD == "E" ) {
 
                 parent.setBusy('');
 
@@ -738,8 +742,23 @@ let oAPP = (function() {
                 return;
             }
 
+            // 라이선스 유효 여부 확인
+            if(oLicenseInfo.ISLIC != "X"){
+
+                // 라이선스가 유효하지 않으면 오류 메시지와 함께 창 닫는다.
+                oAPP.fn.fnShowNoAuthIllustMsg(RETCD.RTMSG);
+
+                parent.setBusy('');
+
+                return;
+            }
+
+
+            var ISCDN = REMOTE.getGlobal("ISCDN");
+
             // 온프레미스일 경우
-            if (oLicenseInfo.ISCDS != "X") {
+            // if (oLicenseInfo.ISCDS != "X") {
+            if (ISCDN != "X") {
 
                 var sVersionCheckUrl = "";
 
@@ -886,8 +905,6 @@ let oAPP = (function() {
 
             debugger;
 
-            parent.setBusy("");
-
             // 로그인 페이지의 Opacity를 적용한다.
             $('.u4aWsLoginFormFcard').animate({
                 opacity: "0.3"
@@ -896,10 +913,12 @@ let oAPP = (function() {
             // Version Check Dialog를 띄운다.
             oAPP.fn.fnVersionCheckDialogOpen();
 
+            parent.setBusy("");
+
             var oModel = sap.ui.getCore().getModel();
 
             /* Updater Event 설정 ======================================================*/
-
+        
             // 온프로미스 이면.
             if (typeof sVersionCheckUrl !== "undefined") {
 
