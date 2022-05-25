@@ -11,6 +11,9 @@
 			"data-sap-ui-libs": "sap.m"
 		}
 	},
+	"GIT": {
+		"DevKey" : "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"
+	},
 	"defaultTheme": "sap_horizon_dark",
 	"defaultBackgroundColor": "#12171c",
 	"requireFolders": [

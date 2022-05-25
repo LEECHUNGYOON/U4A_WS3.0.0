@@ -20,25 +20,24 @@
         USERDATA = APP.getPath("userData"),
         FS = REMOTE.require('fs-extra'),
         IPCRENDERER = require('electron').ipcRenderer,
-        OCTOKIT = REMOTE.require("@octokit/core").Octokit,
+        // OCTOKIT = REMOTE.require("@octokit/core").Octokit,
         PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));
-
-    var oProgressBar = document.getElementById("progressBar_dynamic"),
-        bIsPackaged = APP.isPackaged;
 
     oAPP.fn.fnOnDeviceReady = function () {
 
         // 현재 버전 보여주기
         oAPP.fn.fnDisplayCurrentVersion();
 
-        // on-premise 인지 CDN인지 확인
-        oAPP.fn.fnConnectionGithub().then((oResult) => {
+        oAPP.fn.fnOnStart();
 
-            IPCRENDERER.send("setCDN", oResult.ISCDN);
+        // // on-premise 인지 CDN인지 확인
+        // oAPP.fn.fnConnectionGithub().then((oResult) => {
 
-            oAPP.fn.fnOnStart();
+        //     IPCRENDERER.send("setCDN", oResult.ISCDN);
 
-        });
+            
+
+        // });
 
     }; // end of oAPP.fn.fnOnDeviceReady 
 
@@ -55,34 +54,42 @@
 
     }; // end of oAPP.fn.fnOnStart
 
-    oAPP.fn.fnConnectionGithub = () => {
+    // oAPP.fn.fnConnectionGithub = () => {
 
-        return new Promise((resolve, reject) => {
-            
-            const octokit = new OCTOKIT({
-                auth: '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'
-            });
+    //     return new Promise((resolve, reject) => {
 
-            octokit.request("https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest", {
-                org: "octokit", //기본값  
-                type: "Public", //github repositories type private /  Public 
-            }).then((data) => {                
+    //         debugger;
 
-                resolve({
-                    ISCDN: "X"
-                });
+    //         var oSettingsPath = PATHINFO.WSSETTINGS,
+    //             oSettings = require(oSettingsPath),
+    //             sGitDevKey = oSettings.GIT.DevKey;
 
-            }).catch((err) => {
+    //         const octokit = new OCTOKIT({
+    //             auth: sGitDevKey
+    //         });
 
-                resolve({
-                    ISCDN: ""
-                });
+    //         octokit.request("https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest", {
+    //             org: "octokit", //기본값  
+    //             type: "Public", //github repositories type private /  Public 
+    //         }).then((data) => {
 
-            });
+    //             resolve({
+    //                 ISCDN: "X"
+    //             });
 
-        });
+    //         }).catch((err) => {
 
-    }; // end of oAPP.fn.fnConnectionGithub
+    //             console.log(err);
+
+    //             resolve({
+    //                 ISCDN: ""
+    //             });
+
+    //         });
+
+    //     });
+
+    // }; // end of oAPP.fn.fnConnectionGithub
 
     /************************************************************************
      * 현재 설치된 WS Version을 화면에 표시
