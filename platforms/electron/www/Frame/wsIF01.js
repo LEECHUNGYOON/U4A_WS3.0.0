@@ -12,6 +12,10 @@ function getServerInfo() {
     return oWS.utill.fn.getServerInfo();
 }
 
+function setServerInfo(oServerInfo){    
+    oWS.utill.fn.setServerInfo(oServerInfo);
+}
+
 // 3. 서버 URL을 구한다.
 function getServerPath() {
     return oWS.utill.fn.getServerPath();

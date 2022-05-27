@@ -5,7 +5,7 @@
  * - file Desc : WS Login Page
  ************************************************************************/
 
-let oAPP = (function() {
+let oAPP = (function () {
     "use strict";
 
     const
@@ -14,12 +14,15 @@ let oAPP = (function() {
         PATH = parent.PATH,
         REGEDIT = parent.REGEDIT,
         APP = parent.APP,
-        USERPATH = APP.getPath("userData"),
+        USERDATA = APP.getPath("userData"),
         FS = parent.FS,
         PATHINFO = parent.require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
         autoUpdater = REMOTE.require("electron-updater").autoUpdater,
+        SERVPATH = parent.getServerPath(),
+        autoUpdaterServerUrl = PATH.join(SERVPATH, "update_check"),
         OCTOKIT = REMOTE.require("@octokit/core").Octokit,
         GITDEVKEY = "Z2hwX1gxRUhyMW0xTkZlUnhpbnRCVkF4cHd2aG82c1FlNjJyaU1IMw==",
+
         require = parent.require;
 
 
@@ -270,7 +273,7 @@ let oAPP = (function() {
                                     value: "{ID}",
                                     showSearchButton: false,
                                     placeholder: "　",
-                                    suggest: function(oEvent) {
+                                    suggest: function (oEvent) {
 
                                         var sValue = oEvent.getParameter("suggestValue"),
                                             aFilters = [];
@@ -279,7 +282,7 @@ let oAPP = (function() {
 
                                             aFilters = [
                                                 new sap.ui.model.Filter([
-                                                    new sap.ui.model.Filter("ID", function(sText) {
+                                                    new sap.ui.model.Filter("ID", function (sText) {
                                                         return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                                     }),
                                                 ], false)
@@ -291,7 +294,7 @@ let oAPP = (function() {
                                         this.suggest();
 
                                     },
-                                    search: function(oEvent) {
+                                    search: function (oEvent) {
 
                                         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
                                         if (bIsPressClearBtn) {
@@ -382,25 +385,25 @@ let oAPP = (function() {
 
             new sap.m.Button({
                 text: "영선",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("yshong");
                 }
             }),
             new sap.m.Button({
                 text: "성호",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("shhong");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
             new sap.m.Button({
                 text: "은섭",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("pes");
                 }
             }),
             new sap.m.Button({
                 text: "청윤",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("soccerhs");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
@@ -659,7 +662,7 @@ let oAPP = (function() {
         parent.setBusy('X');
 
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() { // 요청에 대한 콜백
+        xhr.onreadystatechange = function () { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
@@ -672,11 +675,17 @@ let oAPP = (function() {
                         return;
                     }
 
+                    // 실제 접속한 클라이언트 정보를 저장한다.
+                    var oServerInfo = parent.getServerInfo();
+                    oServerInfo.CLIENT = oResult.MANDT;
+
+                    parent.setServerInfo(oServerInfo);
+
                     // 여기까지 온건 로그인 성공했다는 뜻이니까 
                     // 권한 체크를 수행한다.
                     oAPP.fn.fnCheckAuthority().then((oAuthInfo) => {
 
-                        // no build일 경우는 버전 체크를 하지 않는다.
+                        // // no build일 경우는 버전 체크를 하지 않는다.
                         var bIsPackaged = APP.isPackaged;
                         if (!bIsPackaged) {
 
@@ -722,7 +731,7 @@ let oAPP = (function() {
             var sServicePath = parent.getServerPath() + "/chk_u4a_authority";
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() { // 요청에 대한 콜백
+            xhr.onreadystatechange = function () { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -790,7 +799,7 @@ let oAPP = (function() {
             var sServicePath = parent.getServerPath() + "/chk_customer_license";
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() { // 요청에 대한 콜백
+            xhr.onreadystatechange = function () { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -815,7 +824,7 @@ let oAPP = (function() {
     /************************************************************************
      * 고객사 라이센스 체크 성공
      ************************************************************************/
-    oAPP.fn.fnCheckCustomerLisenceThen = function(oLicenseInfo) {
+    oAPP.fn.fnCheckCustomerLisenceThen = function (oLicenseInfo) {
 
         // ISCDS TYPE C LENGTH 1, "on premise : space
         // RETCD TYPE C LENGTH 1, "처리 리턴 코드 : E 오류
@@ -876,24 +885,142 @@ let oAPP = (function() {
     /************************************************************************
      * Github 연결을 시도 하여 on-premise 인지 CDN인지 확인
      ************************************************************************/
-    oAPP.fn.fnConnectionGithubThen = function(oReturn) {
+    oAPP.fn.fnConnectionGithubThen = function (oReturn) {
 
         // on-premise 일 경우 업데이트 URL을 서버쪽으로 바라본다.
         if (oReturn.ISCDN != "X") {
 
-            var sVersionCheckUrl = "";
-
             // 버전 체크 수행
-            oAPP.fn.fnCheckVersion(sVersionCheckUrl).then(oAPP.fn.fnCheckVersionThen.bind(this));
+            oAPP.fn.fnCheckVersion(autoUpdaterServerUrl).then(oAPP.fn.fnCheckVersionThen.bind(this));
 
             return;
 
         }
 
-        // 버전 체크 수행
-        oAPP.fn.fnCheckVersion().then(oAPP.fn.fnCheckVersionThen.bind(this));
+        // 개인화 폴더 체크 후 없으면 생성
+        oAPP.fn.fnOnP13nFolderCreate();
+
+        // CDN 업그레이드 허용 유무를 판단한다.
+        oAPP.fn.fnCheckCDNConfirm().then(oAPP.fn.fnCheckCDNConfirmThen.bind(this));
 
     }; // end of oAPP.fn.fnConnectionGithubThen
+
+    /************************************************************************
+     * 개인화 파일에 저장된 CDN 허용 여부 플래그를 구한다.
+     ************************************************************************/
+    oAPP.fn.fnGetIsCDN = () => {
+
+        // 서버 접속 정보
+        var oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID;
+
+        // P13N 파일 Path
+        var sP13nPath = parent.getPath("P13N"),
+            sP13nJsonData = FS.readFileSync(sP13nPath, 'utf-8'),
+
+            // 개인화 정보
+            oP13nData = JSON.parse(sP13nJsonData);
+
+        return oP13nData[sSysID].ISCDN;
+
+    }; // end of oAPP.fn.fnGetIsCDN
+
+    /************************************************************************
+     * 개인화 파일에 저장된 CDN 허용 여부 플래그를 저장한다.
+     ************************************************************************/
+    oAPP.fn.fnSetIsCDN = (bIsCDN) => {
+
+        // 서버 접속 정보
+        var oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID;
+
+        // P13N 파일 Path
+        var sP13nPath = parent.getPath("P13N"),
+            sP13nJsonData = FS.readFileSync(sP13nPath, 'utf-8'),
+
+            // 개인화 정보
+            oP13nData = JSON.parse(sP13nJsonData);
+
+        oP13nData[sSysID].ISCDN = bIsCDN;
+
+        FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData));
+
+    }; // end of oAPP.fn.fnSetIsCDN
+
+    /************************************************************************
+     * CDN 업그레이드 허용 유무를 판단한다.
+     ************************************************************************/
+    oAPP.fn.fnCheckCDNConfirm = () => {
+
+        return new Promise((resolve, reject) => {
+
+            var oResultData = {
+                ACTION: ""
+            };
+
+            // 개인화 파일에 저장된 CDN 허용 여부 플래그를 구한다.
+            var bIsCDN = oAPP.fn.fnGetIsCDN();
+
+            if (typeof bIsCDN != "undefined") {
+
+                oResultData.ACTION = bIsCDN;
+
+                resolve(oResultData);
+
+                return;
+
+            }
+
+            // CDN 허용이 아니면 허용 할건지 말건지 메시지 팝업을 물어본다.
+            if (typeof sap.m.MessageBox == "undefined") {
+                jQuery.sap.require("sap.m.MessageBox");
+            }
+
+            parent.setBusy("");
+
+            var YES = sap.m.MessageBox.Action.YES,
+                NO = sap.m.MessageBox.Action.NO;
+
+            sap.m.MessageBox.show("Do you want to allow CDN Auto Update?", {
+                icon: sap.m.MessageBox.Icon.QUESTION,
+                actions: [YES, NO],
+                emphasizedAction: YES,
+                onClose: (sAction) => {
+
+                    parent.setBusy("X");
+
+                    var bIsAction = (sAction == YES ? "X" : "");
+
+                    oResultData.ACTION = bIsAction;
+
+                    resolve(oResultData);
+
+                }
+
+            });
+
+        });
+
+    }; // end of oAPP.fn.fnCheckCDNConfirm
+
+    oAPP.fn.fnCheckCDNConfirmThen = function (oResult) {
+
+        // CDN 허용여부 플래그 값을 개인화 폴더에 저장한다.
+        oAPP.fn.fnSetIsCDN(oResult.ACTION);
+
+        // CDN 다운로드 허용일 경우..
+        if (oResult.ACTION == "X") {
+
+            // 버전 체크 수행
+            oAPP.fn.fnCheckVersion().then(oAPP.fn.fnCheckVersionThen.bind(this));
+
+            return;
+        }
+
+        // CDN 다운로드 허용 불가 일 경우.. on-premise 경로로 버전 업데이트 체크를 수행
+        oAPP.fn.fnCheckVersion(autoUpdaterServerUrl).then(oAPP.fn.fnCheckVersionThen.bind(this));
+
+    }; // end of oAPP.fn.fnCheckCDNConfirmThen
 
     /************************************************************************
      * WS Version을 확인한다.
@@ -901,17 +1028,6 @@ let oAPP = (function() {
     oAPP.fn.fnCheckVersion = (sVersionCheckUrl) => {
 
         return new Promise((resolve, reject) => {
-
-
-            // 로그인 페이지의 Opacity를 적용한다.
-            $('.u4aWsLoginFormFcard').animate({
-                opacity: "0.3"
-            }, 500, "linear");
-
-            // Version Check Dialog를 띄운다.
-            oAPP.fn.fnVersionCheckDialogOpen();
-
-            parent.setBusy("");
 
             var oModel = sap.ui.getCore().getModel();
 
@@ -933,6 +1049,16 @@ let oAPP = (function() {
             autoUpdater.on('update-available', (info) => {
 
                 oModel.setProperty("/BUSYPOP/PROGVISI", true, true);
+
+                // 로그인 페이지의 Opacity를 적용한다.
+                $('.u4aWsLoginFormFcard').animate({
+                    opacity: "0.3"
+                }, 500, "linear");
+
+                // Version Check Dialog를 띄운다.
+                oAPP.fn.fnVersionCheckDialogOpen();
+
+                parent.setBusy("");
 
                 console.log("업데이트가 가능합니다.");
 
@@ -1001,7 +1127,7 @@ let oAPP = (function() {
     /************************************************************************
      * 버전 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnCheckVersionThen = function() {
+    oAPP.fn.fnCheckVersionThen = function () {
 
         var oResult = this.oResult,
             oAuthInfo = this.oAuthInfo;
@@ -1067,10 +1193,13 @@ let oAPP = (function() {
         }).addStyleClass("sapUiSmallMarginBeginEnd sapUiMediumMarginBottom");
 
         new sap.m.Dialog(sDialogId, {
+
+                // properties
                 showHeader: false,
                 horizontalScrolling: false,
                 verticalScrolling: false,
 
+                // aggregations
                 content: [
                     oIllustMsg,
 
@@ -1081,7 +1210,10 @@ let oAPP = (function() {
                         ]
                     }),
 
-                ]
+                ],
+
+                // Events
+                escapeHandler: () => {}, // esc 키 방지
 
             })
             .addStyleClass(sDialogId)
@@ -1194,7 +1326,7 @@ let oAPP = (function() {
             let oCoreModel = sap.ui.getCore().getModel(),
                 oLogInData = oCoreModel.getProperty("/LOGIN"),
                 sSysID = oLogInData.SYSID,
-                sThemeJsonPath = PATH.join(USERPATH, "p13n", "theme", `${sSysID}.json`);
+                sThemeJsonPath = PATH.join(USERDATA, "p13n", "theme", `${sSysID}.json`);
 
             // default Theme setting    
             let oWsSettings = oAPP.fn.fnGetSettingsInfo(),
@@ -1210,7 +1342,7 @@ let oAPP = (function() {
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         reject(err.toString());
@@ -1269,6 +1401,9 @@ let oAPP = (function() {
 
     }; // end of oAPP.fn.fnAttachInit
 
+    /************************************************************************
+     * 로그인 정보 입력 체크
+     ************************************************************************/
     oAPP.fn.fnLoginCheck = (ID, PW, CLIENT, LANGU) => {
 
         var oCheck = {
@@ -1337,7 +1472,7 @@ let oAPP = (function() {
 
     oAPP.fn.fnSaveRememberCheck = (bIsRemember) => {
 
-        let sJsonPath = PATH.join(USERPATH, "p13n", "login.json"),
+        let sJsonPath = PATH.join(USERDATA, "p13n", "login.json"),
             sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
             oLoginInfo = JSON.parse(sJsonData);
 
@@ -1354,7 +1489,7 @@ let oAPP = (function() {
 
     oAPP.fn.fnGetRememberCheck = () => {
 
-        let sJsonPath = PATH.join(USERPATH, "p13n", "login.json"),
+        let sJsonPath = PATH.join(USERDATA, "p13n", "login.json"),
             sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
             oLoginInfo = JSON.parse(sJsonData);
 
@@ -1373,7 +1508,7 @@ let oAPP = (function() {
 
         const iIdSuggMaxCnt = 10;
 
-        let sJsonPath = PATH.join(USERPATH, "p13n", "login.json"),
+        let sJsonPath = PATH.join(USERDATA, "p13n", "login.json"),
             sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
             oLoginInfo = JSON.parse(sJsonData);
 
@@ -1447,7 +1582,7 @@ let oAPP = (function() {
      ************************************************************************/
     oAPP.fn.fnReadIDSuggData = () => {
 
-        let sJsonPath = PATH.join(USERPATH, "p13n", "login.json"),
+        let sJsonPath = PATH.join(USERDATA, "p13n", "login.json"),
             sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
             oLoginInfo = JSON.parse(sJsonData);
 
@@ -1462,7 +1597,7 @@ let oAPP = (function() {
     /************************************************************************
      * 네트워크 연결 시 Network Indicator 해제
      * **********************************************************************/
-    oAPP.fn.fnNetworkCheckerOnline = function() {
+    oAPP.fn.fnNetworkCheckerOnline = function () {
 
         // 네트워크 활성화 여부 flag
         oAPP.attr.bIsNwActive = true;
@@ -1476,7 +1611,7 @@ let oAPP = (function() {
     /************************************************************************
      * 네트워크 연결 시 Network Indicator 실행
      * **********************************************************************/
-    oAPP.fn.fnNetworkCheckerOffline = function() {
+    oAPP.fn.fnNetworkCheckerOffline = function () {
 
         // 네트워크 활성화 여부 flag
         oAPP.attr.bIsNwActive = false;
@@ -1486,6 +1621,56 @@ let oAPP = (function() {
         parent.setNetworkBusy(!bIsNwActive);
 
     }; // end of oAPP.fn.fnNetworkCheckerOffline    
+
+    /************************************************************************
+     * 개인화 폴더 생성 및 로그인 사용자별 개인화 Object 만들기
+     ************************************************************************/
+    oAPP.fn.fnOnP13nFolderCreate = function () {
+
+        var oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID;
+
+        var sP13nfolderPath = PATH.join(USERDATA, "p13n"), // P13N 폴더 경로
+            sP13nPath = parent.getPath("P13N"), // P13N.json 파일 경로
+            bIsExists = FS.existsSync(sP13nPath); // P13N.json 파일 유무 확인.        
+
+        // 파일이 있을 경우
+        if (bIsExists) {
+
+            // 파일이 있을 경우.. 파일 내용을 읽어본다.	
+            var sSavedData = FS.readFileSync(sP13nPath, 'utf-8'),
+                oSavedData = JSON.parse(sSavedData);
+
+            if (oSavedData == "") {
+                oSavedData = {};
+            }
+
+            // 파일 내용에 SYSTEM 아이디의 정보가 있으면 리턴.
+            if (oSavedData[sSysID]) {
+                return;
+            }
+
+            // 없으면 개인화 영역 Object 생성 후 Json 파일에 저장
+            oSavedData[sSysID] = {};
+
+            FS.writeFileSync(sP13nPath, JSON.stringify(oSavedData));
+
+            return;
+        }
+
+        // 로그인 사용자의 개인화 정보가 없을 경우 
+        var oP13N_data = {};
+        oP13N_data[sSysID] = {};
+
+        // P13N 폴더가 없으면 폴더부터 생성 		
+        if (!FS.existsSync(sP13nfolderPath)) {
+            FS.mkdirSync(sP13nfolderPath);
+        }
+
+        // p13n.json 파일에 브라우저 정보 저장
+        FS.writeFileSync(sP13nPath, JSON.stringify(oP13N_data));
+
+    }; // end of oAPP.fn.fnOnP13nFolderCreate
 
     return oAPP;
 
@@ -1536,7 +1721,7 @@ window.addEventListener("beforeunload", () => {
 window.addEventListener("online", oAPP.fn.fnNetworkCheckerOnline, false);
 window.addEventListener("offline", oAPP.fn.fnNetworkCheckerOffline, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
     // 브라우저 zoom 레벨을 수정 한 후 로그인 페이지로 이동 시 기본 zoom 레벨 적용
     parent.WEBFRAME.setZoomLevel(0);

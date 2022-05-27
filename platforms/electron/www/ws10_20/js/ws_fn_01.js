@@ -1673,7 +1673,7 @@
                 oSavedData = {};
             }
 
-            // 파일 내용에 로그인 아이디의 정보가 있으면 리턴.
+            // 파일 내용에 SYSTEM 아이디의 정보가 있으면 리턴.
             if (oSavedData[sSysID]) {
                 return;
             }

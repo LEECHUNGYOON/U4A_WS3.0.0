@@ -374,8 +374,9 @@
 
         //DB 검색에 실패한 경우.
         if(param.ERROR === "X"){
+          debugger;
           is_tab.ERROR = param.ERROR;
-          showMessage(sap, 20, "E", "Fail to Library load.");
+          parent.showMessage(sap, 20, "E", "Fail to Library load.");
           return;
         }
 
