@@ -10,6 +10,10 @@
 			"data-sap-ui-theme": "sap_horizon_dark",
 			"data-sap-ui-libs": "sap.m"
 		}
+	},
+	"GITHUB": {
+		"devKey" : "Z2hwX1gxRUhyMW0xTkZlUnhpbnRCVkF4cHd2aG82c1FlNjJyaU1IMw==",
+		"latestUrl" : "https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest"
 	},	
 	"defaultTheme": "sap_horizon_dark",
 	"defaultBackgroundColor": "#12171c",

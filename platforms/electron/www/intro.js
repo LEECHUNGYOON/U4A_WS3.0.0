@@ -4,7 +4,7 @@
  * - Application Intro
  **************************************************************************/
 
-(function () {
+(function() {
     "use strict";
 
     let oAPP = {};
@@ -20,24 +20,14 @@
         USERDATA = APP.getPath("userData"),
         FS = REMOTE.require('fs-extra'),
         IPCRENDERER = require('electron').ipcRenderer,
-        // OCTOKIT = REMOTE.require("@octokit/core").Octokit,
         PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));
 
-    oAPP.fn.fnOnDeviceReady = function () {
+    oAPP.fn.fnOnDeviceReady = function() {
 
         // 현재 버전 보여주기
         oAPP.fn.fnDisplayCurrentVersion();
 
         oAPP.fn.fnOnStart();
-
-        // // on-premise 인지 CDN인지 확인
-        // oAPP.fn.fnConnectionGithub().then((oResult) => {
-
-        //     IPCRENDERER.send("setCDN", oResult.ISCDN);
-
-            
-
-        // });
 
     }; // end of oAPP.fn.fnOnDeviceReady 
 
@@ -45,6 +35,20 @@
 
         // 초기 설치(기본 폴더, vbs 옮기기 등등)
         oAPP.fn.setInitInstall(() => {
+
+            debugger;
+
+            var oWsSettings = oAPP.fn.fnGetSettingsInfo();
+
+            // Trial 버전 여부 확인
+            if (oWsSettings.isTrial) {
+
+                setTimeout(() => {
+                    oAPP.fn.fnTrialLogin();
+                }, 3000);
+
+                return;
+            }
 
             setTimeout(() => {
                 oAPP.fn.fnOpenServerList();
@@ -54,42 +58,33 @@
 
     }; // end of oAPP.fn.fnOnStart
 
-    // oAPP.fn.fnConnectionGithub = () => {
+    /************************************************************************
+     * Trial 버전의 로그인 페이지로 이동한다.
+     ************************************************************************/
+    oAPP.fn.fnTrialLogin = () => {
 
-    //     return new Promise((resolve, reject) => {
 
-    //         debugger;
 
-    //         var oSettingsPath = PATHINFO.WSSETTINGS,
-    //             oSettings = require(oSettingsPath),
-    //             sGitDevKey = oSettings.GIT.DevKey;
 
-    //         const octokit = new OCTOKIT({
-    //             auth: sGitDevKey
-    //         });
+    }; // end of oAPP.fn.fnTrialLogin
 
-    //         octokit.request("https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest", {
-    //             org: "octokit", //기본값  
-    //             type: "Public", //github repositories type private /  Public 
-    //         }).then((data) => {
+    /************************************************************************
+     * WS의 설정 정보를 구한다.
+     ************************************************************************/
+    oAPP.fn.fnGetSettingsInfo = () => {
 
-    //             resolve({
-    //                 ISCDN: "X"
-    //             });
+        // Browser Window option
+        var oSettingsPath = PATHINFO.WSSETTINGS,
 
-    //         }).catch((err) => {
+            // JSON 파일 형식의 Setting 정보를 읽는다..
+            oSettings = require(oSettingsPath);
+        if (!oSettings) {
+            return;
+        }
 
-    //             console.log(err);
+        return oSettings;
 
-    //             resolve({
-    //                 ISCDN: ""
-    //             });
-
-    //         });
-
-    //     });
-
-    // }; // end of oAPP.fn.fnConnectionGithub
+    }; // end of fnGetSettingsInfo
 
     /************************************************************************
      * 현재 설치된 WS Version을 화면에 표시
@@ -106,116 +101,12 @@
 
         oVerTxt.innerHTML = `version ${sVersion}`;
 
-    }; // end of oAPP.fn.fnDisplayCurrentVersion
-
-    /************************************************************************
-     * WS Version을 확인한다.
-     ************************************************************************/
-    oAPP.fn.fnCheckVersion = () => {
-
-        return new Promise((resolve, reject) => {
-
-            /* Updater Event 설정 ======================================================*/
-
-            autoUpdater.on('checking-for-update', () => {
-
-                // status Text
-                oAPP.fn.fnSetStatusText("Checking for updates...");
-
-                console.log("업데이트 확인 중...");
-
-            });
-
-            autoUpdater.on('update-available', (info) => {
-
-                // 프로그래스 바를 활성화 한다.
-                let oProgressBar = document.getElementById("progressBar");
-                if (oProgressBar == null) {
-                    return;
-                }
-
-                oProgressBar.classList.remove("invisible");
-
-                console.log("업데이트가 가능합니다.");
-
-            });
-
-            autoUpdater.on('update-not-available', (info) => {
-
-                resolve();
-
-                console.log("현재 최신버전입니다.");
-
-            });
-
-            autoUpdater.on('error', (err) => {
-
-                resolve();
-
-                console.log('에러가 발생하였습니다. 에러내용 : ' + err);
-
-            });
-
-            autoUpdater.on('download-progress', (progressObj) => {
-
-                // let log_message = "다운로드 속도: " + progressObj.bytesPerSecond;
-
-                // log_message = log_message + ' - 현재 ' + progressObj.percent + '%';
-
-                // log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-
-                let sPer = `${parseFloat(progressObj.percent).toFixed(2)}%`;
-
-                oAPP.fn.fnSetStatusText(`downloading... ${sPer} `);
-
-                oProgressBar.style.width = sPer;
-
-                // console.log(log_message);
-
-            });
-
-            autoUpdater.on('update-downloaded', (info) => {
-
-                console.log('업데이트가 완료되었습니다.');
-
-                oAPP.fn.fnSetStatusText(`Update Complete! Restarting...`);
-
-                setTimeout(() => {
-
-                    autoUpdater.quitAndInstall(); //<--- 자동 인스톨 
-
-                }, 1000);
-
-
-            });
-
-            autoUpdater.checkForUpdates();
-
-        });
-
-    }; // oAPP.fn.fnCheckVersion
-
-    /************************************************************************
-     * 버전 체크 시 현재 상태 텍스트 적용
-     * **********************************************************************
-     * @param {String} sText 
-     * - 상태 텍스트
-     ************************************************************************/
-    oAPP.fn.fnSetStatusText = (sText) => {
-
-        let oStatusTxt = document.getElementById("statusText");
-        if (oStatusTxt == null) {
-            return;
-        }
-
-        oStatusTxt.innerHTML = sText;
-
-    }; // end of oAPP.fn.fnSetStatusText
+    }; // end of oAPP.fn.fnDisplayCurrentVersion  
 
     /************************************************************************
      * 서버 리스트를 오픈한다.
      ************************************************************************/
-    oAPP.fn.fnOpenServerList = function () {
+    oAPP.fn.fnOpenServerList = function() {
 
         // Electron Browser Default Options        
         var sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
@@ -241,7 +132,7 @@
 
         // oWin.webContents.openDevTools();
 
-        oWin.webContents.on('did-finish-load', function () {
+        oWin.webContents.on('did-finish-load', function() {
 
             oWin.webContents.send('window-id', oWin.id);
 
@@ -265,7 +156,7 @@
      * 2. 설치 경로는 WS가 설치된 userData
      *    예) C:\Users\[UserName]\AppData\Roaming\com.u4a_ws.app
      ************************************************************************/
-    oAPP.fn.setInitInstall = function (fnCallback) {
+    oAPP.fn.setInitInstall = function(fnCallback) {
 
         var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
@@ -291,9 +182,9 @@
                 continue;
             }
 
-            aPromise.push(new Promise(function (resolve, reject) {
+            aPromise.push(new Promise(function(resolve, reject) {
 
-                FS.mkdir(sFullPath, oMkdirOptions, function (err) {
+                FS.mkdir(sFullPath, oMkdirOptions, function(err) {
 
                     if (err) {
                         reject(err.toString());
@@ -323,7 +214,7 @@
                 FS.writeFile(sFileFullPath, JSON.stringify(""), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         reject(err.toString());
@@ -343,9 +234,9 @@
         aPromise.push(oHelpDocuPromise);
 
         // 상위 폴더를 생성 후 끝나면 실행
-        Promise.all(aPromise).then(function (values) {
+        Promise.all(aPromise).then(function(values) {
 
-            oAPP.fn.copyVbsToLocalFolder(function (oResult) {
+            oAPP.fn.copyVbsToLocalFolder(function(oResult) {
 
                 if (oResult.RETCD == 'E') {
                     alert(oResult.MSG);
@@ -356,7 +247,7 @@
 
             });
 
-        }).catch(function (err) {
+        }).catch(function(err) {
 
             alert(err.toString());
 
@@ -367,7 +258,7 @@
     /************************************************************************
      * build된 폴더에서 vbs 파일을 로컬 폴더로 복사한다.
      ************************************************************************/
-    oAPP.fn.copyVbsToLocalFolder = function (fnCallback) {
+    oAPP.fn.copyVbsToLocalFolder = function(fnCallback) {
 
         var sVbsFolderPath = PATH.join(APPPATH, "vbs"),
             aVbsFolderList = FS.readdirSync(sVbsFolderPath),
@@ -405,7 +296,7 @@
 
             fnCallback(oResult);
 
-        }).catch(function (err) {
+        }).catch(function(err) {
 
             oResult.RETCD = 'E';
             oResult.MSG = err.toString();
@@ -416,7 +307,7 @@
 
     }; // end of oAPP.fn.copyVbsToLocalFolder
 
-    oAPP.fn.copyVbsPromise = function (sFile, sVbsOrigPath) {
+    oAPP.fn.copyVbsPromise = function(sFile, sVbsOrigPath) {
 
         var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
@@ -428,11 +319,11 @@
 
             FS.copy(sVbsOrigPath, sVbsFullPath, {
                 overwrite: true,
-            }).then(function () {
+            }).then(function() {
 
                 resolve("X");
 
-            }).catch(function (err) {
+            }).catch(function(err) {
 
                 reject(err.toString());
 
@@ -490,11 +381,11 @@
             //1. Document File을 복사한다.
             FS.copy(sHelpDocOriginFile, sHelpDocTargetPath, {
                 overwrite: true,
-            }).then(function () {
+            }).then(function() {
 
                 resolve();
 
-            }).catch(function (err) {
+            }).catch(function(err) {
                 reject(err.toString());
             });
 
@@ -517,7 +408,7 @@
             let ZIP = require("zip-lib"),
                 UNZIP = new ZIP.Unzip({
                     // Called before an item is extracted.
-                    onEntry: function (event) {
+                    onEntry: function(event) {
                         console.log(event.entryCount, event.entryName);
                     }
                 });
@@ -525,11 +416,11 @@
             UNZIP.extract(sHelpDocTargetPath, sHelpDocFolderPath, {
                     overwrite: true
                 })
-                .then(function () {
+                .then(function() {
 
                     resolve();
 
-                }, function (err) {
+                }, function(err) {
 
                     reject(err.toString());
 
