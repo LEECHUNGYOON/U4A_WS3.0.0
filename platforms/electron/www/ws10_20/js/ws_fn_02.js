@@ -560,6 +560,8 @@
 
             oBrowserWindow.loadURL(sExtOpenHtmlUrl);
 
+            // oBrowserWindow.webContents.openDevTools();
+
             // 브라우저가 오픈이 다 되면 타는 이벤트
             oBrowserWindow.webContents.on('did-finish-load', function() {
                 // 오픈할 URL 파라미터 전송
