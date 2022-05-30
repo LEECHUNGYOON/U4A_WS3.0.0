@@ -367,7 +367,7 @@ function onLoadBusyIndicator() {
     oBrowserWindow.loadURL(sIndicatorPath);
 
     // 브라우저가 오픈이 다 되면 타는 이벤트
-    oBrowserWindow.webContents.on('did-finish-load', function () {
+    oBrowserWindow.webContents.on('did-finish-load', function() {
         oBrowserWindow.setContentBounds(oCurrWin.getBounds());
     });
 
@@ -395,7 +395,7 @@ function fn_onWinMove(on, oWin) {
 
     if (typeof oWin.__fnWinMove === "undefined") {
 
-        oWin.__fnWinMove = function () {
+        oWin.__fnWinMove = function() {
 
             fn_setWinMinSize(oWin);
 
@@ -609,7 +609,7 @@ function setCleanHtml(msgtxt) {
     /* Table Tag만 따로 수집한다 */
     var aTableTag = [];
 
-    msgtxt = msgtxt.replace(/(<table>|<table)(\s|\S)*?<\/table>/igm, function (full) {
+    msgtxt = msgtxt.replace(/(<table>|<table)(\s|\S)*?<\/table>/igm, function(full) {
 
         var iTableCnt = aTableTag.length;
 
@@ -712,9 +712,11 @@ function setCleanHtml(msgtxt) {
 function getIsTrial() {
 
     // trial 버전이 아닐때만 수행
-    var oWsSettings = getSettingsInfo();
-    return oWsSettings.isTrial;
+    var oWsSettings = getSettingsInfo(),
+        bIsTrial = oWsSettings.isTrial;
 
+    return bIsTrial;
+    
 }
 
 // ws setting 정보

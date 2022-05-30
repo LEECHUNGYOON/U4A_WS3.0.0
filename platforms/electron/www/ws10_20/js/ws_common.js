@@ -1356,11 +1356,12 @@ function fn_logoff_success(TYPE) {
 
         let sTitle = "Session Timeout",
             sDesc = "Please Try Login Again!",
-            sIllustType = "tnt-SessionExpired";
+            sIllustType = "tnt-SessionExpired",
+            sIllustSize = sap.m.IllustratedMessageSize.Dialog;
 
         parent.setBusy("");
 
-        oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, lf_OK);
+        oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, lf_OK);
 
         return;
 

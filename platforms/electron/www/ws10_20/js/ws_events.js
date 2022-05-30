@@ -1103,6 +1103,11 @@
      ************************************************************************/
     oAPP.events.ev_pressAddEventBtn = function(oEvent) {
 
+        // Trial Version Check
+        if(oAPP.fn.fnOnCheckIsTrial()){
+            return;
+        }
+
         if (!oAPP.fn.createEventPopup) {
             oAPP.fn.getScript("design/js/createEventPopup", function() {
                 oAPP.fn.createEventPopup();
