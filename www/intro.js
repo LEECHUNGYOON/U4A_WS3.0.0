@@ -4,7 +4,7 @@
  * - Application Intro
  **************************************************************************/
 
-(function() {
+(function () {
     "use strict";
 
     let oAPP = {};
@@ -20,9 +20,10 @@
         USERDATA = APP.getPath("userData"),
         FS = REMOTE.require('fs-extra'),
         IPCRENDERER = require('electron').ipcRenderer,
+        RANDOM = require("random-key"),
         PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));
 
-    oAPP.fn.fnOnDeviceReady = function() {
+    oAPP.fn.fnOnDeviceReady = function () {
 
         // 현재 버전 보여주기
         oAPP.fn.fnDisplayCurrentVersion();
@@ -36,8 +37,6 @@
         // 초기 설치(기본 폴더, vbs 옮기기 등등)
         oAPP.fn.setInitInstall(() => {
 
-            debugger;
-            
             // WS 세팅 정보
             var oWsSettings = oAPP.fn.fnGetSettingsInfo();
 
@@ -64,8 +63,85 @@
      ************************************************************************/
     oAPP.fn.fnTrialLogin = () => {
 
+        var oWsSettings = oAPP.fn.fnGetSettingsInfo(),
+            oServerInfo = oWsSettings.trialServerInfo;
 
+        const WINDOWSTATE = REMOTE.require('electron-window-state');
 
+        // 창 크기 기본값 설정
+        let mainWindowState = WINDOWSTATE({
+            defaultWidth: 800,
+            defaultHeight: 800
+        });
+
+        var SESSKEY = RANDOM.generate(40),
+            BROWSERKEY = RANDOM.generate(10);
+
+        // Browser Options..        
+        var sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            // oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow),
+            oBrowserOptions = JSON.parse(JSON.stringify(oDefaultOption.browserWindow)),
+            oWebPreferences = oBrowserOptions.webPreferences;
+
+        oBrowserOptions.backgroundColor = "#1c2228";
+        oBrowserOptions.backgroundColor = "#f7f7f7";
+
+        // 브라우저 윈도우 기본 사이즈
+        oBrowserOptions.x = mainWindowState.x;
+        oBrowserOptions.y = mainWindowState.y;
+        oBrowserOptions.width = mainWindowState.width;
+        oBrowserOptions.height = mainWindowState.height;
+        oBrowserOptions.opacity = 0.0;
+        oWebPreferences.partition = SESSKEY;
+        oWebPreferences.browserkey = BROWSERKEY;
+
+        // 인트로 화면 닫기
+        let oCurrWindow = REMOTE.getCurrentWindow();
+        oCurrWindow.hide();
+
+        // 브라우저 오픈
+        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+
+        // 브라우저 윈도우 기본 사이즈 감지
+        mainWindowState.manage(oBrowserWindow);
+
+        oBrowserWindow.loadURL(PATHINFO.MAINFRAME);
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            var oMetadata = {
+                SERVERINFO: oServerInfo,
+                EXEPAGE: "LOGIN",
+                SESSIONKEY: SESSKEY,
+                BROWSERKEY: BROWSERKEY
+            };
+
+            // 메타 정보를 보낸다.
+            oBrowserWindow.webContents.send('if-meta-info', oMetadata);
+
+            oBrowserWindow.setOpacity(1.0);
+
+            oCurrWindow.close();
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+            oBrowserWindow = null;
+        });
 
     }; // end of oAPP.fn.fnTrialLogin
 
@@ -100,6 +176,15 @@
         let oAppInfo = require("./package.json"),
             sVersion = oAppInfo.version;
 
+        // WS 세팅 정보
+        var oWsSettings = oAPP.fn.fnGetSettingsInfo();
+
+        // Trial 버전 여부 확인
+        if (oWsSettings.isTrial) {
+            oVerTxt.innerHTML = `Trial version`;
+            return;
+        }
+
         oVerTxt.innerHTML = `version ${sVersion}`;
 
     }; // end of oAPP.fn.fnDisplayCurrentVersion  
@@ -107,7 +192,7 @@
     /************************************************************************
      * 서버 리스트를 오픈한다.
      ************************************************************************/
-    oAPP.fn.fnOpenServerList = function() {
+    oAPP.fn.fnOpenServerList = function () {
 
         // Electron Browser Default Options        
         var sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
@@ -133,7 +218,7 @@
 
         // oWin.webContents.openDevTools();
 
-        oWin.webContents.on('did-finish-load', function() {
+        oWin.webContents.on('did-finish-load', function () {
 
             oWin.webContents.send('window-id', oWin.id);
 
@@ -157,7 +242,7 @@
      * 2. 설치 경로는 WS가 설치된 userData
      *    예) C:\Users\[UserName]\AppData\Roaming\com.u4a_ws.app
      ************************************************************************/
-    oAPP.fn.setInitInstall = function(fnCallback) {
+    oAPP.fn.setInitInstall = function (fnCallback) {
 
         var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
@@ -183,9 +268,9 @@
                 continue;
             }
 
-            aPromise.push(new Promise(function(resolve, reject) {
+            aPromise.push(new Promise(function (resolve, reject) {
 
-                FS.mkdir(sFullPath, oMkdirOptions, function(err) {
+                FS.mkdir(sFullPath, oMkdirOptions, function (err) {
 
                     if (err) {
                         reject(err.toString());
@@ -215,7 +300,7 @@
                 FS.writeFile(sFileFullPath, JSON.stringify(""), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         reject(err.toString());
@@ -235,9 +320,9 @@
         aPromise.push(oHelpDocuPromise);
 
         // 상위 폴더를 생성 후 끝나면 실행
-        Promise.all(aPromise).then(function(values) {
+        Promise.all(aPromise).then(function (values) {
 
-            oAPP.fn.copyVbsToLocalFolder(function(oResult) {
+            oAPP.fn.copyVbsToLocalFolder(function (oResult) {
 
                 if (oResult.RETCD == 'E') {
                     alert(oResult.MSG);
@@ -248,7 +333,7 @@
 
             });
 
-        }).catch(function(err) {
+        }).catch(function (err) {
 
             alert(err.toString());
 
@@ -259,7 +344,7 @@
     /************************************************************************
      * build된 폴더에서 vbs 파일을 로컬 폴더로 복사한다.
      ************************************************************************/
-    oAPP.fn.copyVbsToLocalFolder = function(fnCallback) {
+    oAPP.fn.copyVbsToLocalFolder = function (fnCallback) {
 
         var sVbsFolderPath = PATH.join(APPPATH, "vbs"),
             aVbsFolderList = FS.readdirSync(sVbsFolderPath),
@@ -297,7 +382,7 @@
 
             fnCallback(oResult);
 
-        }).catch(function(err) {
+        }).catch(function (err) {
 
             oResult.RETCD = 'E';
             oResult.MSG = err.toString();
@@ -308,7 +393,7 @@
 
     }; // end of oAPP.fn.copyVbsToLocalFolder
 
-    oAPP.fn.copyVbsPromise = function(sFile, sVbsOrigPath) {
+    oAPP.fn.copyVbsPromise = function (sFile, sVbsOrigPath) {
 
         var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
@@ -320,11 +405,11 @@
 
             FS.copy(sVbsOrigPath, sVbsFullPath, {
                 overwrite: true,
-            }).then(function() {
+            }).then(function () {
 
                 resolve("X");
 
-            }).catch(function(err) {
+            }).catch(function (err) {
 
                 reject(err.toString());
 
@@ -382,11 +467,11 @@
             //1. Document File을 복사한다.
             FS.copy(sHelpDocOriginFile, sHelpDocTargetPath, {
                 overwrite: true,
-            }).then(function() {
+            }).then(function () {
 
                 resolve();
 
-            }).catch(function(err) {
+            }).catch(function (err) {
                 reject(err.toString());
             });
 
@@ -409,7 +494,7 @@
             let ZIP = require("zip-lib"),
                 UNZIP = new ZIP.Unzip({
                     // Called before an item is extracted.
-                    onEntry: function(event) {
+                    onEntry: function (event) {
                         console.log(event.entryCount, event.entryName);
                     }
                 });
@@ -417,11 +502,11 @@
             UNZIP.extract(sHelpDocTargetPath, sHelpDocFolderPath, {
                     overwrite: true
                 })
-                .then(function() {
+                .then(function () {
 
                     resolve();
 
-                }, function(err) {
+                }, function (err) {
 
                     reject(err.toString());
 

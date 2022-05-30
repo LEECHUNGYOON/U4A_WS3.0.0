@@ -9,7 +9,7 @@ html,
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;  
+  overflow: hidden;
 }
 
 .u4aWsLoginBody {
@@ -394,4 +394,10 @@ a.u4aWsLoginBtnSignin:hover {
   font-size: 0.8rem !important;
   color: black !important;
   padding: 0px !important;
+}
+
+
+.u4aWsGuestLoginCard .sapFCardHeaderWrapper .sapFCardHeaderText .sapFCardHeaderTextFirstLine .sapFCardTitle {
+  font-weight: bold;
+  font-size: 1.2rem;
 }

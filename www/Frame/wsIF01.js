@@ -12,7 +12,7 @@ function getServerInfo() {
     return oWS.utill.fn.getServerInfo();
 }
 
-function setServerInfo(oServerInfo){    
+function setServerInfo(oServerInfo) {
     oWS.utill.fn.setServerInfo(oServerInfo);
 }
 
@@ -591,8 +591,6 @@ function getThemeInfo() {
 
 function setCleanHtml(msgtxt) {
 
-    debugger;
-
     /**************************************** 
         @2020.11.17 by soccerhs
         - html에서 텍스트만 추출하는 Regex
@@ -707,5 +705,30 @@ function setCleanHtml(msgtxt) {
     }; /* end of f_removeStyle */
 
     return msgtxt;
+
+}
+
+// trial 모드 여부 플래그
+function getIsTrial() {
+
+    // trial 버전이 아닐때만 수행
+    var oWsSettings = getSettingsInfo();
+    return oWsSettings.isTrial;
+
+}
+
+// ws setting 정보
+function getSettingsInfo() {
+
+    // Browser Window option
+    var oSettingsPath = PATHINFO.WSSETTINGS,
+
+        // JSON 파일 형식의 Setting 정보를 읽는다..
+        oSettings = require(oSettingsPath);
+    if (!oSettings) {
+        return;
+    }
+
+    return oSettings;
 
 }

@@ -5,7 +5,7 @@
  * - file Desc : WS Login Page
  ************************************************************************/
 
-let oAPP = (function() {
+let oAPP = (function () {
     "use strict";
 
     const
@@ -271,7 +271,7 @@ let oAPP = (function() {
                                     value: "{ID}",
                                     showSearchButton: false,
                                     placeholder: "　",
-                                    suggest: function(oEvent) {
+                                    suggest: function (oEvent) {
 
                                         var sValue = oEvent.getParameter("suggestValue"),
                                             aFilters = [];
@@ -280,7 +280,7 @@ let oAPP = (function() {
 
                                             aFilters = [
                                                 new sap.ui.model.Filter([
-                                                    new sap.ui.model.Filter("ID", function(sText) {
+                                                    new sap.ui.model.Filter("ID", function (sText) {
                                                         return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                                     }),
                                                 ], false)
@@ -292,7 +292,7 @@ let oAPP = (function() {
                                         this.suggest();
 
                                     },
-                                    search: function(oEvent) {
+                                    search: function (oEvent) {
 
                                         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
                                         if (bIsPressClearBtn) {
@@ -383,25 +383,25 @@ let oAPP = (function() {
 
             new sap.m.Button({
                 text: "영선",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("yshong");
                 }
             }),
             new sap.m.Button({
                 text: "성호",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("shhong");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
             new sap.m.Button({
                 text: "은섭",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("pes");
                 }
             }),
             new sap.m.Button({
                 text: "청윤",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("soccerhs");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
@@ -645,6 +645,7 @@ let oAPP = (function() {
 
             // 메시지 처리.. 
             parent.showMessage(null, 99, "E", oResult.MSG);
+            parent.setBusy("");
             return;
 
         }
@@ -660,7 +661,7 @@ let oAPP = (function() {
         parent.setBusy('X');
 
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() { // 요청에 대한 콜백
+        xhr.onreadystatechange = function () { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
@@ -672,7 +673,7 @@ let oAPP = (function() {
                         parent.setBusy('');
                         return;
                     }
-
+                    
                     // 실제 접속한 클라이언트 정보를 저장한다.
                     var oServerInfo = parent.getServerInfo();
                     oServerInfo.CLIENT = oResult.MANDT;
@@ -683,9 +684,13 @@ let oAPP = (function() {
                     // 권한 체크를 수행한다.
                     oAPP.fn.fnCheckAuthority().then((oAuthInfo) => {
 
-                        // // // no build일 경우는 버전 체크를 하지 않는다.
-                        var bIsPackaged = APP.isPackaged;
-                        if (!bIsPackaged) {
+                        // trial 버전 확인
+                        var oWsSettings = oAPP.fn.fnGetSettingsInfo(),
+                            bIsTrial = oWsSettings.isTrial,
+                            bIsPackaged = APP.isPackaged;
+
+                        // no build일 경우 혹은 Trial 버전일 경우는 최신 버전 체크를 하지 않는다.                        
+                        if (!bIsPackaged || bIsTrial) {
 
                             parent.setBusy('');
 
@@ -729,7 +734,7 @@ let oAPP = (function() {
             var sServicePath = parent.getServerPath() + "/chk_u4a_authority";
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() { // 요청에 대한 콜백
+            xhr.onreadystatechange = function () { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -797,7 +802,7 @@ let oAPP = (function() {
             var sServicePath = parent.getServerPath() + "/chk_customer_license";
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() { // 요청에 대한 콜백
+            xhr.onreadystatechange = function () { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -822,7 +827,7 @@ let oAPP = (function() {
     /************************************************************************
      * 고객사 라이센스 체크 성공
      ************************************************************************/
-    oAPP.fn.fnCheckCustomerLisenceThen = function(oLicenseInfo) {
+    oAPP.fn.fnCheckCustomerLisenceThen = function (oLicenseInfo) {
 
         // ISCDS TYPE C LENGTH 1, "on premise : space
         // RETCD TYPE C LENGTH 1, "처리 리턴 코드 : E 오류
@@ -888,7 +893,7 @@ let oAPP = (function() {
     /************************************************************************
      * Github 연결을 시도 하여 on-premise 인지 CDN인지 확인
      ************************************************************************/
-    oAPP.fn.fnConnectionGithubThen = function(oReturn) {
+    oAPP.fn.fnConnectionGithubThen = function (oReturn) {
 
         // on-premise 일 경우 업데이트 URL을 서버쪽으로 바라본다.
         if (oReturn.ISCDN != "X") {
@@ -1006,7 +1011,7 @@ let oAPP = (function() {
 
     }; // end of oAPP.fn.fnCheckCDNConfirm
 
-    oAPP.fn.fnCheckCDNConfirmThen = function(oResult) {
+    oAPP.fn.fnCheckCDNConfirmThen = function (oResult) {
 
         // CDN 허용여부 플래그 값을 개인화 폴더에 저장한다.
         oAPP.fn.fnSetIsCDN(oResult.ACTION);
@@ -1130,7 +1135,7 @@ let oAPP = (function() {
     /************************************************************************
      * 버전 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnCheckVersionThen = function() {
+    oAPP.fn.fnCheckVersionThen = function () {
 
         var oResult = this.oResult,
             oAuthInfo = this.oAuthInfo;
@@ -1146,7 +1151,7 @@ let oAPP = (function() {
     oAPP.fn.fnCheckVersionFinished = (oResult, oAuthInfo) => {
 
         // 로그인 페이지의 Opacity를 적용한다.
-        $('.u4aWsVersionCheckDialog,.u4aWsLoginFormFcard').animate({
+        $('.u4aWsVersionCheckDialog,.u4aWsLoginFormFcard,.u4aWsGuestLoginCard').animate({
             opacity: "0"
         }, 500, "linear", () => {
 
@@ -1156,10 +1161,10 @@ let oAPP = (function() {
 
             parent.showLoadingPage('X');
 
+            parent.setBusy('');
+
             // 권한이 있으면 성공적으로 로그인 후 10번으로 이동
             oAPP.fn.fnOnLoginSuccess(oResultData);
-
-            parent.setBusy('');
 
         });
 
@@ -1280,11 +1285,23 @@ let oAPP = (function() {
             return;
         }
 
-        // ID 저장 체크 박스값 저장
-        oAPP.fn.fnSaveRememberCheck(oLogInData.REMEMBER);
+        // trial 버전이 아닐때만 수행
+        var oWsSettings = oAPP.fn.fnGetSettingsInfo(),
+            bIsTrial = oWsSettings.isTrial,
+            oTrialServerInfo = oWsSettings.trialServerInfo;
 
-        // 로그인 아이디 저장
-        oAPP.fn.fnSaveIDSuggData(oLogInData.ID);
+        if (bIsTrial) {
+            
+            oResult.META.HOST = oTrialServerInfo.SERVERIP;
+
+        } else {
+
+            // ID 저장 체크 박스값 저장
+            oAPP.fn.fnSaveRememberCheck(oLogInData.REMEMBER);
+
+            // 로그인 아이디 저장
+            oAPP.fn.fnSaveIDSuggData(oLogInData.ID);
+        }
 
         // 유저 정보에 Authority 정보를 저장한다.
         oLogInData.USER_AUTH = oResult.USER_AUTH;
@@ -1308,8 +1325,7 @@ let oAPP = (function() {
             parent.setThemeInfo(oThemeInfo);
 
             var oCurrWin = REMOTE.getCurrentWindow();
-            oCurrWin.setBackgroundColor(oThemeInfo.BGCOL);
-            // oCurrWin.setOpacity(0.0);
+            oCurrWin.setBackgroundColor(oThemeInfo.BGCOL);            
 
             parent.onMoveToPage("WS10");
 
@@ -1345,7 +1361,7 @@ let oAPP = (function() {
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         reject(err.toString());
@@ -1390,6 +1406,20 @@ let oAPP = (function() {
 
             // IconPool Register Fiori icon
             oAPP.fn.fnRegisterFioriIconPool();
+
+            // trial 버전 확인
+            var oWsSettings = oAPP.fn.fnGetSettingsInfo();
+
+            // trial 버전 로그인 페이지를 그린다.
+            if (oWsSettings.isTrial) {
+
+                oAPP.fn.fnOnTrialLoginPageRendering();
+
+                // 자연스러운 로딩
+                oAPP.fn.fnOnSmoothLoading();
+
+                return;
+            }
 
             // 초기값 바인딩
             oAPP.fn.fnOnInitModelBinding();
@@ -1600,7 +1630,7 @@ let oAPP = (function() {
     /************************************************************************
      * 네트워크 연결 시 Network Indicator 해제
      * **********************************************************************/
-    oAPP.fn.fnNetworkCheckerOnline = function() {
+    oAPP.fn.fnNetworkCheckerOnline = function () {
 
         // 네트워크 활성화 여부 flag
         oAPP.attr.bIsNwActive = true;
@@ -1614,7 +1644,7 @@ let oAPP = (function() {
     /************************************************************************
      * 네트워크 연결 시 Network Indicator 실행
      * **********************************************************************/
-    oAPP.fn.fnNetworkCheckerOffline = function() {
+    oAPP.fn.fnNetworkCheckerOffline = function () {
 
         // 네트워크 활성화 여부 flag
         oAPP.attr.bIsNwActive = false;
@@ -1628,7 +1658,7 @@ let oAPP = (function() {
     /************************************************************************
      * 개인화 폴더 생성 및 로그인 사용자별 개인화 Object 만들기
      ************************************************************************/
-    oAPP.fn.fnOnP13nFolderCreate = function() {
+    oAPP.fn.fnOnP13nFolderCreate = function () {
 
         var oServerInfo = parent.getServerInfo(),
             sSysID = oServerInfo.SYSID;
@@ -1724,7 +1754,7 @@ window.addEventListener("beforeunload", () => {
 window.addEventListener("online", oAPP.fn.fnNetworkCheckerOnline, false);
 window.addEventListener("offline", oAPP.fn.fnNetworkCheckerOffline, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
     // 브라우저 zoom 레벨을 수정 한 후 로그인 페이지로 이동 시 기본 zoom 레벨 적용
     parent.WEBFRAME.setZoomLevel(0);

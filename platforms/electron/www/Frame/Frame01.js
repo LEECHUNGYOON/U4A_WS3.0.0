@@ -18,6 +18,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     WEBFRAME = require('electron').webFrame,
     APPPATH = APP.getAppPath(),
     USERDATA = APP.getPath("userData"),
+    PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
     CURRWIN = REMOTE.getCurrentWindow();
 
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
