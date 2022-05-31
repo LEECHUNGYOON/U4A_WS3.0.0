@@ -42,7 +42,7 @@
 		"u4aHelpDocFilePath": "help\\u4a_help\\U4A.zip"
 	},	
 	"isDev": true,
-	"isTrial": true,
+	"isTrial": false,
 	"trialServerInfo": {
 		"ID": "soccerhs",
 		"PW" : "cjddbs12",
