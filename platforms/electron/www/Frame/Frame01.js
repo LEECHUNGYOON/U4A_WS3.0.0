@@ -370,6 +370,10 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
             sInstanceNo = oServerInfo.INSTANCENO,
             sServicePath = "http://" + sServerUrl + ":80" + sInstanceNo;
 
+        if (oMetadata.HOST) {
+            return oMetadata.HOST;
+        }
+
         return sServicePath;
 
     };
@@ -625,7 +629,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         mainWindowState.manage(oBrowserWindow);
 
         // oBrowserWindow.loadURL(PATH.join(APPPATH, "Frame", "Frame.html"));
-        
+
         oBrowserWindow.loadURL(parent.getPath("MAINFRAME"));
 
         // oBrowserWindow.webContents.openDevTools();        

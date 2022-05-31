@@ -212,7 +212,7 @@
      * 서버 체크 성공시
      **************************************************************************/
     function fnServerCheckSuccess(oResponse) {
-
+      
         fnSetBusy('');
 
         var oResult = JSON.parse(oResponse);

@@ -630,6 +630,8 @@ let oAPP = (function () {
      ************************************************************************/
     oAPP.events.ev_login = () => {
 
+        debugger;
+        
         let oCoreModel = sap.ui.getCore().getModel();
         if (oCoreModel == null) {
             return;
