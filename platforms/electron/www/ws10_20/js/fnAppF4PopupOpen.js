@@ -213,7 +213,13 @@
                                 width: "200px",
                                 value: "{ERUSR}",
                                 submit: oAPP.events.ev_AppF4Search
-                            })//.bindProperty("enabled")
+                            }).bindProperty("enabled", "/USERINFO/USER_AUTH/IS_TRIAL", function(bIsTrial){
+
+                                if(bIsTrial == null){
+                                    return true;
+                                }
+
+                            })
                         }),
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({

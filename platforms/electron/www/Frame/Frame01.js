@@ -366,11 +366,9 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         }
 
         var oServerInfo = oWS.oServerInfo,
-            oMetadata = parent.getMetadata(),
-            // sServerUrl = oServerInfo.SERVERIP,
-            sServerUrl = oMetadata.HOST || oServerInfo.SERVERIP,
+            oMetadata = parent.getMetadata(), 
             sInstanceNo = oServerInfo.INSTANCENO,
-            sServicePath = "http://" + sServerUrl + ":80" + sInstanceNo;
+            sServicePath = "http://" + oServerInfo.SERVERIP + ":80" + sInstanceNo;
 
         if (oMetadata.HOST) {
             return oMetadata.HOST;
