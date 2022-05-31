@@ -991,6 +991,8 @@
      ************************************************************************/
     oAPP.fn.fnIconListPopupOpener = () => {
         
+        debugger;
+        
         var sWinObjType = "ICONLIST",
             sHost = parent.getServerHost(),
             oUserInfo = parent.getUserInfo(),

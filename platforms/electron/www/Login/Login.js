@@ -630,8 +630,6 @@ let oAPP = (function () {
      ************************************************************************/
     oAPP.events.ev_login = () => {
 
-        debugger;
-        
         let oCoreModel = sap.ui.getCore().getModel();
         if (oCoreModel == null) {
             return;
@@ -690,6 +688,8 @@ let oAPP = (function () {
                         var oWsSettings = oAPP.fn.fnGetSettingsInfo(),
                             bIsTrial = oWsSettings.isTrial,
                             bIsPackaged = APP.isPackaged;
+                            
+                            oAuthInfo.IS_TRIAL = bIsTrial; // 유저 권한 정보에 Trial 정보를 저장한다.
 
                         // no build일 경우 혹은 Trial 버전일 경우는 최신 버전 체크를 하지 않는다.                        
                         if (!bIsPackaged || bIsTrial) {
@@ -1294,7 +1294,7 @@ let oAPP = (function () {
 
         if (bIsTrial) {
             
-            oResult.META.HOST = oTrialServerInfo.SERVERIP;
+            oResult.META.HOST = `http://${oTrialServerInfo.SERVERIP}:80${oTrialServerInfo.INSTANCENO}`;
 
         } else {
 

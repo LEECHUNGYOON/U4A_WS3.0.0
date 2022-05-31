@@ -358,6 +358,8 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
     // 4. 서버 호스트를 구한다.
     oWS.utill.fn.getServerHost = function () {
+        
+        debugger;
 
         if (!oWS.oServerInfo) {
             return;

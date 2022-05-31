@@ -106,7 +106,7 @@
             return;
         }
 
-        oAPP.fn.fnFontStyleWizardPopupOpener();        
+        oAPP.fn.fnFontStyleWizardPopupOpener();
 
     }; // end of oAPP.fn.fnHmws20_10_20
 
@@ -268,6 +268,11 @@
      * [WS10] App. Package Change
      ************************************************************************/
     oAPP.fn.fnWS10WMENU10_01 = () => {
+
+        // Trial Version Check
+        if (oAPP.fn.fnOnCheckIsTrial()) {
+            return;
+        }
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -477,7 +482,7 @@
             OBJNM: "CSS"
         };
 
-        oAPP.fn.fnEditorPopupOpener(oEditorInfo);        
+        oAPP.fn.fnEditorPopupOpener(oEditorInfo);
 
     }; // end of oAPP.fn.fnWS20WMENU30_01
 
@@ -499,7 +504,7 @@
         }
 
         oAPP.fn.fnEditorPopupOpener(oEditorInfo);
-      
+
     }; // end of oAPP.fn.fnWS20WMENU30_02
 
     /************************************************************************

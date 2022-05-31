@@ -213,7 +213,7 @@
                                 width: "200px",
                                 value: "{ERUSR}",
                                 submit: oAPP.events.ev_AppF4Search
-                            })
+                            })//.bindProperty("enabled")
                         }),
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({

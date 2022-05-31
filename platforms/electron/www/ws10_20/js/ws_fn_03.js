@@ -2,7 +2,7 @@
  * ws_fn_03.js
  **************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     var PATH = parent.PATH,
@@ -18,7 +18,7 @@
     /************************************************************************
      * 설정된 세션 타임아웃 시간 체크
      * **********************************************************************/
-    oAPP.fn.fnSessionTimeoutCheck = function() {
+    oAPP.fn.fnSessionTimeoutCheck = function () {
 
         // 브라우저의 세션 키
         var sSessionKey = parent.getSessionKey();
@@ -47,7 +47,7 @@
     /************************************************************************
      * Session Time Worker onmessage 이벤트
      * **********************************************************************/
-    oAPP.fn.fnSessionTimeWorkerOnMessage = function(e) {
+    oAPP.fn.fnSessionTimeWorkerOnMessage = function (e) {
 
         if (e.data != "X") {
             return;
@@ -85,7 +85,7 @@
     /************************************************************************
      * 클릭 & 키보드 이벤트 발생 시 세션 타임 초기화 시킨다.
      * **********************************************************************/
-    oAPP.fn.fnWindowClickEventListener = function() {
+    oAPP.fn.fnWindowClickEventListener = function () {
 
         console.log("윈도우 클릭했다!!");
 
@@ -108,7 +108,7 @@
      * @param {Object}  ODATA
      * - 저장하려는 데이터
      ************************************************************************/
-    oAPP.fn.setCopyData = function(sFromKey, aTarget, ODATA) {
+    oAPP.fn.setCopyData = function (sFromKey, aTarget, ODATA) {
 
         var FS = parent.FS,
             sClipboardJsonPath = parent.getPath("CLIPBOARD"),
@@ -153,7 +153,7 @@
      * @return {Array} 
      * - 붙여 넣을 영역에 해당하는 Copy 데이터들 수집하여 리턴
      ************************************************************************/
-    oAPP.fn.getCopyData = function(sTarget) {
+    oAPP.fn.getCopyData = function (sTarget) {
 
         var FS = parent.FS,
             sClipboardJsonPath = parent.getPath("CLIPBOARD"),
@@ -210,7 +210,7 @@
      * - true  : 해당 영역에 저장된 UI 정보가 있을 경우.
      * - false : 해당 영역에 저장된 UI 정보가 없을 경우.
      ************************************************************************/
-    oAPP.fn.isExistsCopyData = function(sAreaKey) {
+    oAPP.fn.isExistsCopyData = function (sAreaKey) {
 
         var aCopyData = oAPP.fn.getCopyData(sAreaKey);
 
@@ -225,7 +225,7 @@
     /************************************************************************
      * ws의 설정 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.getSettingsInfo = function() {
+    oAPP.fn.getSettingsInfo = function () {
 
         // Browser Window option
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
@@ -243,7 +243,7 @@
     /************************************************************************
      * UI5로 만든 Window Menu를 닫는다.
      ************************************************************************/
-    oAPP.fn.fnWindowMenuClose = function() {
+    oAPP.fn.fnWindowMenuClose = function () {
 
         var $oWMenu = $(".u4aWsWindowMenu"),
             iMenuLength = $oWMenu.length;
@@ -275,7 +275,7 @@
     /************************************************************************
      * U4A R&D 여부
      ************************************************************************/
-    oAPP.fn.fnIsStaff = function() {
+    oAPP.fn.fnIsStaff = function () {
 
         var oUserInfo = parent.getUserInfo(),
             sUserId = oUserInfo.ID.toUpperCase();
@@ -299,7 +299,7 @@
     /************************************************************************
      * 현재 화면에 Open 된 Dialog가 있는지 여부 확인
      ************************************************************************/
-    oAPP.fn.fnCheckIsDialogOpen = function() {
+    oAPP.fn.fnCheckIsDialogOpen = function () {
 
         var $oDialog = $(".sapMDialogOpen"),
             iDialogLength = $oDialog.length;
@@ -315,7 +315,7 @@
     /************************************************************************
      * SAP Icon Image 경로를 주는 펑션
      ************************************************************************/
-    oAPP.fn.fnGetSapIconPath = function(sIcon) {
+    oAPP.fn.fnGetSapIconPath = function (sIcon) {
 
         if (sIcon == null) {
             return;
@@ -598,7 +598,7 @@
     /************************************************************************
      * WS20의 Change or Display 모드에 따른 UI 보이기 숨기기 bindProperty function
      ************************************************************************/
-    oAPP.fn.fnUiVisibleBinding = function(bIsDispMode) {
+    oAPP.fn.fnUiVisibleBinding = function (bIsDispMode) {
 
         if (bIsDispMode == null) {
             return false;
@@ -613,9 +613,9 @@
     /************************************************************************
      * BIND 대상 모델 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.fnGetBindAttrData = function() {
+    oAPP.fn.fnGetBindAttrData = function () {
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
 
             var sServerUrl = parent.getServerPath() + '/getBindAttrData',
                 oAppInfo = parent.getAppInfo(),
@@ -623,7 +623,7 @@
 
             oFormData.append("CLSNM", oAppInfo.CLSID);
 
-            sendAjax(sServerUrl, oFormData, function(oRes) {
+            sendAjax(sServerUrl, oFormData, function (oRes) {
 
                 parent.setBusy('');
 
@@ -638,7 +638,7 @@
     /************************************************************************
      * Dom 정보의 변화를 감지
      ************************************************************************/
-    oAPP.fn.fnSetMutationObserver = function() {
+    oAPP.fn.fnSetMutationObserver = function () {
 
         // sap-ui-static 영역만 감지한다.
         var oSapUiStatic = document.getElementById("sap-ui-static");
@@ -647,7 +647,7 @@
         }
 
         // 감시자 인스턴스 만들기
-        var observer = new MutationObserver(function(mutations) {
+        var observer = new MutationObserver(function (mutations) {
 
             // Dialog 가 Open 되면 child window 전체를 숨긴다.
             var $oOpendDialog = $(".sapMDialogOpen");
@@ -723,7 +723,7 @@
             illustrationType: sIllustType,
             additionalContent: new sap.m.Button({
                 text: "OK",
-                press: function() {
+                press: function () {
 
                     let oIllustMsg = sap.ui.getCore().byId("illustMsg");
                     if (oIllustMsg) {
@@ -745,7 +745,7 @@
                 oMsg
             ],
             escapeHandler: () => {}, // esc 키 방지
-            afterClose: function() {
+            afterClose: function () {
 
                 let oIllustMsg = sap.ui.getCore().byId("illustMsg");
                 if (oIllustMsg) {
@@ -767,16 +767,16 @@
 
         var bIsTrial = parent.getIsTrial();
 
-        if (bIsTrial) {
-
-            var sTitle = "Trial Version",
-                sDesc = "Does not Support in this Trial Version.",
-                sIllustType = "tnt-Lock",
-                sIllustSize = sap.m.IllustratedMessageSize.Spot;
-
-            oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize);
-
+        if (!bIsTrial) {
+            return bIsTrial;
         }
+
+        var sTitle = "Trial Version",
+            sDesc = "Does not Support in this Trial Version.",
+            sIllustType = "tnt-Lock",
+            sIllustSize = sap.m.IllustratedMessageSize.Spot;
+
+        oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize);
 
         return bIsTrial;
 
@@ -815,7 +815,8 @@
      ************************************************************************/
     oAPP.fn.fnWs20SideMENUITEM_10 = (oEvent) => {
 
-        alert("Split Position Change!!");
+        sap.m.MessageToast.show("준비중입니다..");
+        // alert("Split Position Change!!");
 
     }; // end of oAPP.fn.fnWs20SideMENUITEM_10
 
