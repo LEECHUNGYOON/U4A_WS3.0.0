@@ -212,7 +212,7 @@
      * 서버 체크 성공시
      **************************************************************************/
     function fnServerCheckSuccess(oResponse) {
-      
+
         fnSetBusy('');
 
         var oResult = JSON.parse(oResponse);
@@ -300,7 +300,7 @@
      * 서버 체크 성공시 로그인 팝업 실행하기
      **************************************************************************/
     function fnLoginPage(oSAPServerInfo) {
-     
+
         const WINDOWSTATE = REMOTE.require('electron-window-state');
 
         // 창 크기 기본값 설정
@@ -339,7 +339,7 @@
 
         // 브라우저 윈도우 기본 사이즈 감지
         mainWindowState.manage(oBrowserWindow);
-                
+
         oBrowserWindow.loadURL(PATHINFO.MAINFRAME);
 
         // oBrowserWindow.webContents.openDevTools();
