@@ -182,20 +182,20 @@
         if (oAppInfo) {
 
             // Edit 모드 였을 경우 Lock 해제 하고 세션 죽인다.
-            if (oAppInfo.IS_EDIT == 'X') {
+            if (oAppInfo.IS_EDIT == "X") {
 
                 var sPath = parent.getServerPath() + '/kill_session?APPID=' + oAppInfo.APPID + "&SSID=" + SSID;
-                fetch(sPath);
-                // navigator.sendBeacon(sPath);
+                // fetch(sPath);
+                navigator.sendBeacon(sPath);
                 return;
 
             }
 
             // Edit 모드가 아니라면 세션만 죽인다.
             var sPath = parent.getServerPath() + '/kill_session?SSID=' + SSID;
-            fetch(sPath);
+            // fetch(sPath);
 
-            // navigator.sendBeacon(sPath);
+            navigator.sendBeacon(sPath);
             
         }
 

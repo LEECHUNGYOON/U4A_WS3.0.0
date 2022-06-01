@@ -935,11 +935,14 @@
         var SESSKEY = parent.getSessionKey(),
             oMeta = APPCOMMON.fnGetModelProperty("/METADATA"),
             oServerInfo = parent.getServerInfo(),
+            oServerHost = parent.getServerHost(),
             oUserInfo = parent.getUserInfo();
 
         // 실행시킬 호스트명 + U4A URL 만들기
-        var sHost = "http://" + oMeta.HOST + ":80" + oServerInfo.INSTANCENO,
-            sUrl = encodeURI(sHost + "/zu4a_imp/cssfontstylewizrd?sap-user=" + oUserInfo.ID + "&sap-password=" + oUserInfo.PW);
+        // var sHost = "http://" + oMeta.HOST + ":80" + oServerInfo.INSTANCENO,
+        var sHost = oServerHost,
+            // sUrl = encodeURI(sHost + "/zu4a_imp/cssfontstylewizrd?sap-user=" + oUserInfo.ID + "&sap-password=" + oUserInfo.PW);
+            sUrl = encodeURI(`${sHost}/zu4a_imp/cssfontstylewizrd?sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}`);
 
         // 브라우저 옵션 설정
         var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
