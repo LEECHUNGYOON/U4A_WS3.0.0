@@ -184,10 +184,10 @@ function getMessage(MSGKY) {
     return oWS.utill.fn.getMessage(MSGKY);
 }
 
-// 32. 어플리케이션 실행 URL 리턴
-function getAppExePath() {
-    return oWS.utill.fn.getAppExePath();
-}
+// // 32. 어플리케이션 실행 URL 리턴
+// function getAppExePath() {
+//     return oWS.utill.fn.getAppExePath();
+// }
 
 // 33. Default Browser 정보 리턴
 function getDefaultBrowserInfo() {

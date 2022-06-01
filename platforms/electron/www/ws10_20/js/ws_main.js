@@ -185,8 +185,8 @@
             if (oAppInfo.IS_EDIT == "X") {
 
                 var sPath = parent.getServerPath() + '/kill_session?APPID=' + oAppInfo.APPID + "&SSID=" + SSID;
-                // fetch(sPath);
-                navigator.sendBeacon(sPath);
+                fetch(sPath);
+                // navigator.sendBeacon(sPath);
                 return;
 
             }

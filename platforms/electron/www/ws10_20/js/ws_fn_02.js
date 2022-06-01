@@ -560,7 +560,7 @@
 
             oBrowserWindow.loadURL(sExtOpenHtmlUrl);
 
-            oBrowserWindow.webContents.openDevTools();
+            // oBrowserWindow.webContents.openDevTools();
 
             // 브라우저가 오픈이 다 되면 타는 이벤트
             oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -613,7 +613,7 @@
         APPID = APPID.toLowerCase(); // APPID를 대문자로 변환
 
         var oServerInfo = parent.getServerInfo(),
-            oServerHost = parent.getServerHost();
+            oServerHost = parent.getServerHost(),
 
             // 실행시킬 호스트명 + U4A URL 만들기   
             sHost = oServerHost,

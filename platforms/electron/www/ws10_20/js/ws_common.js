@@ -348,33 +348,33 @@
 
     }; // end of oAPP.common.fnShowFloatingFooterMsg
 
-    /************************************************************************
-     * window open
-     ************************************************************************/
-    oAPP.common.fnWindowOpen = function () {
+    // /************************************************************************
+    //  * window open
+    //  ************************************************************************/
+    // oAPP.common.fnWindowOpen = function () {
 
-        var oServerInfo = parent.getServerInfo(),
-            oUserInfo = parent.getUserInfo(),
-            oMeta = oAPP.common.fnGetModelProperty("/METADATA"),
+    //     var oServerInfo = parent.getServerInfo(),
+    //         oUserInfo = parent.getUserInfo(),
+    //         oMeta = oAPP.common.fnGetModelProperty("/METADATA"),
 
-            // 실행시킬 호스트명 + U4A URL 만들기
-            sHost = "http://" + oMeta.HOST + ":80" + oServerInfo.INSTANCENO,
-            sPath = encodeURI(sHost + "/zu4a_acs/icon_exp");
-        // sPath = encodeURI(sHost + "/zu4a_acs/icon_exp?sap-user=" + oUserInfo.ID + "&sap-password=" + oUserInfo.PW);
+    //         // 실행시킬 호스트명 + U4A URL 만들기
+    //         sHost = "http://" + oMeta.HOST + ":80" + oServerInfo.INSTANCENO,
+    //         sPath = encodeURI(sHost + "/zu4a_acs/icon_exp");
+    //     // sPath = encodeURI(sHost + "/zu4a_acs/icon_exp?sap-user=" + oUserInfo.ID + "&sap-password=" + oUserInfo.PW);
 
-        var aParams = [{
-                NAME: "sap-user",
-                VALUE: oUserInfo.ID
-            },
-            {
-                NAME: "sap-password",
-                VALUE: oUserInfo.PW
-            },
-        ];
+    //     var aParams = [{
+    //             NAME: "sap-user",
+    //             VALUE: oUserInfo.ID
+    //         },
+    //         {
+    //             NAME: "sap-password",
+    //             VALUE: oUserInfo.PW
+    //         },
+    //     ];
 
-        oAPP.fn.fnCallBrowserOpenPost(sPath, aParams);
+    //     oAPP.fn.fnCallBrowserOpenPost(sPath, aParams);
 
-    }; // end of oAPP.common.fnWindowOpen
+    // }; // end of oAPP.common.fnWindowOpen
 
     /*************************************************************************
      * Shortcut 설정

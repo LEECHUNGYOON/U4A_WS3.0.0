@@ -359,8 +359,6 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     // 4. 서버 호스트를 구한다.
     oWS.utill.fn.getServerHost = function () {
         
-        debugger;
-
         if (!oWS.oServerInfo) {
             return;
         }
@@ -996,17 +994,17 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
     // };
 
-    // 34. 어플리케이션 실행 URL 리턴
-    oWS.utill.fn.getAppExePath = () => {
+    // // 34. 어플리케이션 실행 URL 리턴
+    // oWS.utill.fn.getAppExePath = () => {
 
-        var oServerInfo = oWS.oServerInfo,
-            sServerUrl = oServerInfo.SERVERIP,
-            sInstanceNo = oServerInfo.INSTANCENO,
-            sServicePath = "http://" + sServerUrl + ":80" + sInstanceNo + "/zu4a";
+    //     var oServerInfo = oWS.oServerInfo,
+    //         sServerUrl = oServerInfo.SERVERIP,
+    //         sInstanceNo = oServerInfo.INSTANCENO,
+    //         sServicePath = "http://" + sServerUrl + ":80" + sInstanceNo + "/zu4a";
 
-        return sServicePath;
+    //     return sServicePath;
 
-    };
+    // };
 
     // 35. Default Browser 정보 리턴
     oWS.utill.fn.getDefaultBrowserInfo = () => {
