@@ -429,7 +429,7 @@
 
         // APP 검색 팝업 옵션
         var oOptions = {
-            autoSearch: false,
+            autoSearch: true,
             initCond: {
                 PACKG: "",
                 APPID: "",

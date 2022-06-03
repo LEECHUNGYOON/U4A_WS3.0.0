@@ -5,7 +5,7 @@
  * - file Desc : CSS, JAVASCRIPT, HTML Editor
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -14,15 +14,17 @@
 
     var APPCOMMON = oAPP.common,
         REMOTE = parent.REMOTE,
-        bAutoSearch = false;
+        bAutoSearch = false,
+        bIsTrial = parent.getIsTrial();
 
-    oAPP.fn.fnAppF4PopupOpen = function(options, fnCallback) {
+    oAPP.fn.fnAppF4PopupOpen = function (options, fnCallback) {
 
         bAutoSearch = options.autoSearch;
 
         var oTab1_Data = options.initCond;
 
         var oBindData = {
+            ISTRIAL: bIsTrial, // Trial 여부 플래그
             // APPLIST1: aAPPLIST,
             TAB1: oTab1_Data,
             APPF4HIER: null
@@ -112,7 +114,7 @@
     /************************************************************************
      * WS10에 있는 APPID F4 HELP 팝업내의 TAB CONTAINER 생성
      ************************************************************************/
-    oAPP.fn.fnCreateAppF4TabCon = function(fnCallback) {
+    oAPP.fn.fnCreateAppF4TabCon = function (fnCallback) {
 
         var oItem1 = oAPP.fn.fnCreateAppF4Tab1(fnCallback),
             oItem2 = oAPP.fn.fnCreateAppF4Tab2(fnCallback);
@@ -125,7 +127,7 @@
                 oItem1,
                 oItem2,
             ],
-            select: function(oEvent) {
+            select: function (oEvent) {
 
                 var oDialog = sap.ui.getCore().byId("AppF4Dialog");
                 if (!oDialog) {
@@ -178,7 +180,7 @@
     /************************************************************************
      * Application Name F4 의 TabContainer Item1 생성
      ************************************************************************/
-    oAPP.fn.fnCreateAppF4Tab1 = function(fnCallback) {
+    oAPP.fn.fnCreateAppF4Tab1 = function (fnCallback) {
 
         var ENUM_LABEL_DESIGN_BOLD = sap.m.LabelDesign.Bold;
 
@@ -202,6 +204,19 @@
                             fields: new sap.m.Input("appf4_packg", {
                                 value: "{PACKG}",
                                 submit: oAPP.events.ev_AppF4Search
+                            }).bindProperty("enabled", {
+                                parts: [
+                                    `${C_BIND_ROOT_PATH}/ISTRIAL`
+                                ],
+                                formatter: (IS_TRIAL) => {
+
+                                    /**
+                                     * Only Trial Version Specific
+                                     */
+
+                                    return !IS_TRIAL;
+
+                                }
                             })
                         }),
                         new sap.ui.layout.form.FormElement({
@@ -213,12 +228,19 @@
                                 width: "200px",
                                 value: "{ERUSR}",
                                 submit: oAPP.events.ev_AppF4Search
-                            }).bindProperty("enabled", "/USERINFO/USER_AUTH/IS_TRIAL", function(bIsTrial){
+                            }).bindProperty("enabled", {
+                                parts: [
+                                    `${C_BIND_ROOT_PATH}/ISTRIAL`
+                                ],
+                                formatter: (IS_TRIAL) => {
 
-                                if(bIsTrial == null){
-                                    return true;
+                                    /**
+                                     * Only Trial Version Specific
+                                     */
+
+                                    return !IS_TRIAL;
+
                                 }
-
                             })
                         }),
                         new sap.ui.layout.form.FormElement({
@@ -258,7 +280,7 @@
         });
 
         // form Ui에 대한 바인딩 루트 패스 지정
-        oForm.bindElement(C_BIND_ROOT_PATH + "/TAB1");
+        oForm.bindElement(`${C_BIND_ROOT_PATH}/TAB1`);
 
         var sHeaderText = "[U4A] All App.",
 
@@ -270,7 +292,7 @@
                 content: oForm,
             }).addStyleClass("sapUiNoContentPadding"),
 
-            sTableListBindPath = C_BIND_ROOT_PATH + "/TAB1/APPLIST",
+            sTableListBindPath = `${C_BIND_ROOT_PATH}/TAB1/APPLIST`,
 
             oTable = oAPP.fn.fnGetAppF4ListTable(sTableListBindPath, fnCallback);
 
@@ -290,7 +312,7 @@
     /************************************************************************
      * Application Name F4 의 TabContainer Item2 생성
      ************************************************************************/
-    oAPP.fn.fnCreateAppF4Tab2 = function(fnCallback) {
+    oAPP.fn.fnCreateAppF4Tab2 = function (fnCallback) {
 
         function lf_nozero(sBindValue) {
 
@@ -318,7 +340,7 @@
 
 
         var ENUM_HORIZONTAL_ALIGN = sap.ui.core.HorizontalAlign,
-            sTableBindingPath = C_BIND_ROOT_PATH + "/APPF4HIER";
+            sTableBindingPath = `${C_BIND_ROOT_PATH}/APPF4HIER`;
 
         var sHeaderText = "[U4A] Application Hierarchy By Packages";
 
@@ -407,7 +429,7 @@
                     template: new sap.m.Text().bindProperty("text", "AETIM", lf_nozero),
                 }),
             ],
-            rows: {                
+            rows: {
                 path: sTableBindingPath,
                 parameters: {
                     arrayNames: ['APPF4HIER']
@@ -418,7 +440,7 @@
                     content: [
                         new sap.m.Button({
                             icon: "sap-icon://expand-group",
-                            press: function(oEvent) {
+                            press: function (oEvent) {
 
                                 var iSelIdx = oTreeTable.getSelectedIndex();
                                 if (iSelIdx == -1) {
@@ -439,7 +461,7 @@
                         }),
                         new sap.m.Button({
                             icon: "sap-icon://collapse-group",
-                            press: function(oEvent) {
+                            press: function (oEvent) {
 
                                 var iSelIdx = oTreeTable.getSelectedIndex();
                                 if (iSelIdx == -1) {
@@ -464,7 +486,7 @@
             ]
         });
 
-        oTreeTable.attachBrowserEvent("dblclick", function(oEvent) {
+        oTreeTable.attachBrowserEvent("dblclick", function (oEvent) {
 
             var oTarget = oEvent.target,
                 $SelectedRow = $(oTarget).closest(".sapUiTableRow");
@@ -520,7 +542,7 @@
     /************************************************************************
      * App Hierarchy 정보 구하기
      ************************************************************************/
-    oAPP.fn.fnGetAppHierList = function() {
+    oAPP.fn.fnGetAppHierList = function () {
 
         var sPath = parent.getServerPath() + '/getapplhierarchydata';
 
@@ -575,7 +597,7 @@
     /************************************************************************
      * APP SearchHelp의 App List Table Object Return
      ************************************************************************/
-    oAPP.fn.fnGetAppF4ListTable = function(sBindPath, fnCallback) {
+    oAPP.fn.fnGetAppF4ListTable = function (sBindPath, fnCallback) {
 
         var oTable = new sap.m.Table({
             alternateRowColors: true,
@@ -636,7 +658,7 @@
 
         });
 
-        oTable.attachBrowserEvent("dblclick", function(oEvent) {
+        oTable.attachBrowserEvent("dblclick", function (oEvent) {
 
             var oTarget = oEvent.target,
                 $SelectedRow = $(oTarget).closest(".sapMListTblRow");
@@ -674,7 +696,7 @@
     /************************************************************************
      * Application Name Search Help(F4) Ok Button
      ************************************************************************/
-    oAPP.events.ev_AppF4Search = function() {
+    oAPP.events.ev_AppF4Search = function () {
 
         var sAppF4BindPath = C_BIND_ROOT_PATH + "/TAB1";
 
@@ -715,7 +737,7 @@
     /************************************************************************
      * Application Name Search Help(F4) Cancel Button
      ************************************************************************/
-    oAPP.events.ev_AppF4DialogCancel = function() {
+    oAPP.events.ev_AppF4DialogCancel = function () {
 
         // 이전 선택한 Tab의 Key값이 존재할 경우 초기화
         if (oAPP.global.beforeSelectedKey) {
@@ -736,7 +758,7 @@
     /************************************************************************
      * Application Name Search Help(F4) 팝업 오픈 전 이벤트
      ************************************************************************/
-    oAPP.events.ev_AppF4DialogAfterOpen = function(oEvent) {
+    oAPP.events.ev_AppF4DialogAfterOpen = function (oEvent) {
 
         var oDialog = oEvent.getSource(),
             oInput = sap.ui.getCore().byId("appf4_packg");
