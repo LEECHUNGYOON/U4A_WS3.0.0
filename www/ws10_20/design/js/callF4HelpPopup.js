@@ -521,6 +521,38 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
   }); //결과리스트 라인 선택 이벤트 추가.
 
 
+  //table 더블클릭 이벤트.
+  oTable.attachBrowserEvent("dblclick", function(oEvent){
+    
+    //CALLBACK FUNCTION이 존재하지 않는경우 exit.
+    if(typeof f_clientCallbak === "undefined"){return;}
+
+    //edit 상태가 아닌경우 exit.
+    if(oAPP.attr.oModel.oData.IS_EDIT === false){return;}
+
+    //이벤트 발생 UI 정보 얻기.
+    var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target, sap.ui.getCore());
+
+    //UI정보를 얻지 못한 경우 exit.
+    if(!l_ui){return;}
+
+    //바인딩정보 얻기.
+    var l_ctxt = l_ui.getBindingContext();
+
+    //바인딩 정보를 얻지 못한 경우 exit.
+    if(!l_ctxt){return;}
+
+    //선택 처리건에 대한 return.
+    f_clientCallbak(l_ctxt.getProperty());
+
+
+    //f4 help dialog 종료.
+    oDialog.close();
+    oDialog.destroy();
+
+  });
+
+
   oTable.bindAggregation("rows",{path:"/TF4LIST",template:new sap.ui.table.Row()});
 
   //~출력리스트 컬럼 구성 텍스트 UI 생성

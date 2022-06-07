@@ -374,6 +374,7 @@
 
         //DB 검색에 실패한 경우.
         if(param.ERROR === "X"){
+          debugger;
           is_tab.ERROR = param.ERROR;
           parent.showMessage(sap, 20, "E", "Fail to Library load.");
           return;
@@ -462,8 +463,14 @@
 
       //라이브러리 정보가 로드된 경우.
       if(jQuery.isEmptyObject(oAPP.DATA.LIB) !== true){
+        
+        //design 레이아웃 순서 설정.
+        oAPP.fn.setDesignLayout();
+
         //어플리케이션 정보 구성을 위한 서버 호출.
         oAPP.fn.getAppData();
+
+
         return;
       }
 
@@ -877,6 +884,67 @@
 
 
 
+    //design 영역 순서 설정.
+    oAPP.fn.setDesignLayout = function(){
+      debugger;
+      //design 영역의 split container UI 얻기.
+      var l_split = sap.ui.getCore().byId("designSplit");
+      
+      var lt_cont = l_split.getContentAreas();
+
+      // design 영역 순서 customize 정보 얻기.
+      var lt_layout;
+
+      lt_layout = [{NAME:"designTree", IMAGE:"sap-icon://text-align-right", POSIT:0, UIID:"oDesignTree",SID:"designTree"},
+                        {NAME:"Preview", IMAGE:"sap-icon://header", POSIT:1, UIID:"oDesignPreview",SID:"designPreview"},
+                        {NAME:"Attribute", IMAGE:"sap-icon://customize", POSIT:2, UIID:"oDesignAttr",SID:"designAttr"}];
+
+      //customizing 하지 않은경우 default 순서로 설정.
+      if(!lt_layout && lt_cont.length === 0){
+        oSApp.addContentArea(oAPP.attr.ui.oDesignTree);
+        oSApp.addContentArea(oAPP.attr.ui.oDesignPreview);
+        oSApp.addContentArea(oAPP.attr.ui.oDesignAttr);
+        return;
+      }
+
+      //POSITION 으로 정렬처리.
+      lt_layout.sort(function(a,b){
+        return a.POSIT - b.POSIT;
+      });
+
+
+      //customize한 design 배치와 현재 design 배치가 변경됐는지 여부 확인.
+      if(lt_cont.length !== 0){
+        
+        var l_changed = false;
+        for(var i=0, l=lt_layout.length; i<l; i++){
+          if( lt_layout[i].SID !== lt_cont[i].sId){
+            l_changed = true;
+            break;
+          }
+        }
+
+        //변경되지 않았다면 exit.
+        if(l_changed === false){
+          return;
+        }
+
+      }
+      
+
+      //모든 영역 제거 처리.
+      l_split.removeAllContentAreas();
+
+      for(var i=0, l=lt_layout.length; i<l; i++){
+        l_split.addContentArea(oAPP.attr.ui[lt_layout[i].UIID]);
+      }
+
+
+    };  //design 영역 순서 설정.
+
+
+
+
     //workbench 화면을 구성할 UI가 존재하지 않는경우 exit.
     if(!oAPP.attr.oArea){return;}
 
@@ -886,7 +954,7 @@
     sap.ui.getCore().loadLibrary("sap.f");
 
 
-    var oSApp = new sap.ui.layout.Splitter();
+    var oSApp = new sap.ui.layout.Splitter("designSplit");
     oAPP.attr.oArea.addContent(oSApp);
 
     oAPP.attr.oModel = new sap.ui.model.json.JSONModel();
@@ -894,26 +962,30 @@
     oSApp.setModel(oAPP.attr.oModel);
 
     //좌측 페이지(UI Design 영역)
-    var oLPage = new sap.m.Page({enableScrolling:false,showHeader:false,layoutData:new sap.ui.layout.SplitterLayoutData({size:"25%",minSize:300})});
-    oSApp.addContentArea(oLPage);
+    oAPP.attr.ui.oDesignTree = new sap.m.Page("designTree", {enableScrolling:false,showHeader:false,layoutData:new sap.ui.layout.SplitterLayoutData({size:"25%",minSize:300})});
+    // oSApp.addContentArea(oAPP.attr.ui.oDesignTree);
 
     //가운데 페이지(미리보기 영역)
-    var oMPage = new sap.m.Page({title:"preview"});
-    oSApp.addContentArea(oMPage);
+    oAPP.attr.ui.oDesignPreview = new sap.m.Page("designPreview", {title:"preview"});
+    // oSApp.addContentArea(oAPP.attr.ui.oDesignPreview);
 
     //우측 페이지(attribute 영역)
-    var oRPage = new sap.f.DynamicPage({preserveHeaderStateOnScroll:true,layoutData:new sap.ui.layout.SplitterLayoutData({size:"30%",minSize:300})});
-    oSApp.addContentArea(oRPage);
+    oAPP.attr.ui.oDesignAttr = new sap.f.DynamicPage("designAttr", {preserveHeaderStateOnScroll:true,layoutData:new sap.ui.layout.SplitterLayoutData({size:"30%",minSize:300})});
+    // oSApp.addContentArea(oAPP.attr.ui.oDesignAttr);
+
+
+    //design 영역 순서 설정.
+    oAPP.fn.setDesignLayout();
 
 
     //ui design area(좌측 TREE 영역)
-    oAPP.fn.getScript("design/js/uiDesignArea",function(){oAPP.fn.uiDesignArea(oLPage);});
+    oAPP.fn.getScript("design/js/uiDesignArea",function(){oAPP.fn.uiDesignArea(oAPP.attr.ui.oDesignTree);});
 
     //ui preview area(가운데 미리보기 영역)
-    oAPP.fn.getScript("design/js/uiPreviewArea",function(){oAPP.fn.uiPreviewArea(oMPage);});
+    oAPP.fn.getScript("design/js/uiPreviewArea",function(){oAPP.fn.uiPreviewArea(oAPP.attr.ui.oDesignPreview);});
 
     //ui attribute area(우측 ui 속성정보 영역)
-    oAPP.fn.getScript("design/js/uiAttributeArea",function(){oAPP.fn.uiAttributeArea(oRPage);});
+    oAPP.fn.getScript("design/js/uiAttributeArea",function(){oAPP.fn.uiAttributeArea(oAPP.attr.ui.oDesignAttr);});
 
 
   };  //미리보기 메인 function

@@ -979,6 +979,15 @@
                 return;
             }
 
+
+            //trial 버전인경우.
+            if(parent.getIsTrial()){
+                //복사된 바인딩 정보, 서버이벤트 정보 제거 상태로 붙여넣기 처리.
+                lf_paste_cb(param, i_cdata, false);
+                return;
+            }
+            
+
             //복사한 UI의 APPLICATION이 현재 APPLICATION과 다른 경우.
             //바인딩, 서버이벤트 초기화 여부 확인 팝업 호출.
             parent.showMessage(sap, 40, "I", "Copy and paste application is different.Do you want to keep the binding?.",function(oEvent){

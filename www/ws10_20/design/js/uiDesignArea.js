@@ -1052,6 +1052,7 @@
     if(lt_path.length === 0){return;}
 
     var l_bind = oAPP.attr.ui.oLTree1.getBinding();
+    if(!l_bind){return;}
         
     //수집한 path를 기준으로 tree 펼첨 처리.
     lf_expand(l_bind._oRootNode.children[0]);

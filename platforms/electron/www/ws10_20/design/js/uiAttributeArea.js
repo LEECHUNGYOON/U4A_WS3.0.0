@@ -438,6 +438,9 @@
       return true;
     }
 
+    //trial 버전인경우 서버이벤트 메소드 생성 금지 처리.
+    if(oAPP.fn.fnOnCheckIsTrial()){return;}
+
     //대상 function이 존재하는경우 호출 처리.
     if(typeof oAPP.fn.createEventPopup !== "undefined"){
       oAPP.fn.createEventPopup(is_attr, oAPP.fn.attrCreateEventCallBack);
@@ -577,6 +580,9 @@
     //프로퍼티에서 바인딩 처리 호출한게 아닌경우 exit.
     if(is_attr.UIATY !== "1"){return;}
 
+    //trial 인경우 exit.
+    if(oAPP.fn.fnOnCheckIsTrial()){return;}
+
     var l_title = "Data Binding / Unbinding - Property : " + is_attr.UIATT;
     var l_CARDI = "F";
 
@@ -617,6 +623,9 @@
 
     //aggregation에서 바인딩 처리 호출한게 아닌경우 exit.
     if(is_attr.UIATY !== "3"){return;}
+
+    //trial 인경우 exit.
+    if(oAPP.fn.fnOnCheckIsTrial()){return;}
 
     //aggregation 바인딩 처리 가능여부 점검.
     if(oAPP.fn.attrChkBindAggrPossible(is_attr)){return;}
@@ -803,6 +812,8 @@
     //바인딩처리가 안된경우, 바인딩 필드가 존재하지 않는경우 exit.
     if(is_attr.ISBND !== "X" || is_attr.UIATV === ""){return;}
 
+    //trial 버전인경우 exit.
+    if(oAPP.fn.fnOnCheckIsTrial()){return;}
 
     //클래스명 서버 전송 데이터에 구성.
     var oFormData = new FormData();
@@ -848,6 +859,9 @@
 
     //입력한 서버이벤트가 존재하지 않는경우 EXIT.
     if(is_attr.UIATV === ""){return;}
+
+    //trial 버전인경우 exit.
+    if(oAPP.fn.fnOnCheckIsTrial()){return;}
 
     //해당 이벤트로 네비게이션 처리.
     oAPP.common.execControllerClass(is_attr.UIATV);
@@ -2909,9 +2923,60 @@
 
   //select option2의 F4HelpReturnFIeld 프로퍼티의 팝업 호출 처리.
   oAPP.fn.attrSelOption2F4HelpReturnFIeld = function(is_attr){
+
+    //CALLBACK FUNCTION.
+    function lf_callback(param){
+
+      //리스트에서 선택한 필드명 매핑.
+      is_attr.UIATV = param.FIELDNAME;
+
+      //오류 표현 필드 초기화 처리.
+      oAPP.fn.attrClearErrorField();
+
+      //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
+      oAPP.fn.attrChangeProc(is_attr);
+
+    } //CALLBACK FUNCTION.
+
     
     //selectOption2의 F4HelpReturnFIeld프로퍼티가 아닌경우 exit.
     if(is_attr.UIATK !== "EXT00001189"){return;}
+
+    //F4HelpID 프로퍼티 정보 얻기.
+    var ls_attr = oAPP.attr.oModel.oData.T_ATTR.find( a => a.UIATK === "EXT00001188" );
+
+    //F4HelpID 프로퍼티 입력값이 존재하지 않는경우 EXIT.
+    if(ls_attr.UIATV === ""){
+      ls_attr.valst = "Error";
+
+      //053	Value & is missing.
+      ls_attr.valtx = "Value DDIC Search Help ID is missing";
+
+      //005	Job finished.
+      parent.showMessage(sap, 10, "E", "Value DDIC Search Help ID is missing");
+
+      //모델 갱신 처리.
+      oAPP.attr.oModel.refresh();
+
+      //하위로직 skip처리를 위한 flag return
+      return true;
+    }
+
+    var l_title = ls_attr.UIATV + " Field List";
+
+    //동적 리스트 팝업이 존재하는경우.
+    if(typeof oAPP.fn.callDynListPopup !== "undefined"){
+      //f4 help 리스트 팝업 호출.
+      oAPP.fn.callDynListPopup("GETF4HELPFIELD", l_title, [{NAME:"SHLPNAME", VALUE:ls_attr.UIATV}], lf_callback);
+      //하위로직 skip처리를 위한 flag return
+      return true;
+    }
+
+    //동적 리스트 팝업을 load하지 못한경우.
+    oAPP.fn.getScript("design/js/callDynListPopup",function(){
+        //동적 리스트 팝업 function load 이후 팝업 호출.
+        oAPP.fn.callDynListPopup("GETF4HELPFIELD", l_title, [{NAME:"SHLPNAME", VALUE:ls_attr.UIATV}], lf_callback);
+    });
     
 
     //하위로직 skip처리를 위한 flag return

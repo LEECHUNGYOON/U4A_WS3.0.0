@@ -1,6 +1,9 @@
 // 이벤트 생성 팝업 호출.
 oAPP.fn.createEventPopup = function(is_attr, f_callBack){
 
+  //trial 버전인경우 exit.
+  if(oAPP.fn.fnOnCheckIsTrial()){return;}
+
   //팝업 종료.
   function lf_dialogClose(bSkipMsg){
     

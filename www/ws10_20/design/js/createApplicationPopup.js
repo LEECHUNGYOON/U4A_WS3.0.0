@@ -107,6 +107,18 @@
         //Package
         ls_appl.PACKG = "";
 
+        //default Package 입력 가능처리.
+        ls_appl.PACKG_edit = true;
+
+        //trial 버전 인경우.
+        if(parent.getIsTrial()){
+          //로컬 패키지 고정.
+          ls_appl.PACKG = "$TMP";
+
+          //패키지 입력 불가 처리.
+          ls_appl.PACKG_edit = false;
+        }
+
         //Request No.
         ls_appl.REQNR = "";
 
@@ -221,7 +233,8 @@
       var oInpPack = new sap.m.Input({
         value:"{/CREATE/PACKG}",
         valueState:"{/CREATE/PACKG_stat}",
-        valueStateText:"{/CREATE/PACKG_stxt}"
+        valueStateText:"{/CREATE/PACKG_stxt}",
+        editable:"{/CREATE/PACKG_edit}"
       });
 
       oInpPack.attachChange(function(){
@@ -252,12 +265,15 @@
           oModel.setProperty("/CREATE", l_create);
           return;
         }
+       
 
         //standard package를 입력한 경우.
         if(lf_chkPackageStandard(l_create) === true){
           oModel.setProperty("/CREATE", l_create);
           return;
         }
+
+        
 
         //로컬 PACKAGE를 입력하지 않은경우 Y,Z으로 입력한 PACKAGE의 정합성 점검.
         lf_chkPackage(l_create);
