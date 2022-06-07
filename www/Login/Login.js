@@ -852,7 +852,8 @@ let oAPP = (function () {
         }
 
         // 개인화 파일에 저장된 CDN 허용 여부 플래그를 구한다.
-        var bIsCDN = oAPP.fn.fnGetIsCDN();
+        // var bIsCDN = oAPP.fn.fnGetIsCDN();
+        var bIsCDN = parent.getIsCDN();
 
         // CDN 허용 여부 플래그가 저장되지 않았을 경우.
         if (typeof bIsCDN == "undefined") {
@@ -869,7 +870,8 @@ let oAPP = (function () {
                     bIsAction = (sAction == YES ? "X" : "");
 
                 // CDN 허용여부 플래그 값을 개인화 폴더에 저장한다.
-                oAPP.fn.fnSetIsCDN(bIsAction);
+                // oAPP.fn.fnSetIsCDN(bIsAction);
+                parent.setIsCDN(bIsAction);
 
                 // CDN 허용일 경우 GitHub에 Ping을 수행.
                 if (bIsAction == "X") {
@@ -1054,47 +1056,47 @@ let oAPP = (function () {
 
     }; // end of oAPP.fn.fnConnectionGithubThen
 
-    /************************************************************************
-     * 개인화 파일에 저장된 CDN 허용 여부 플래그를 구한다.
-     ************************************************************************/
-    oAPP.fn.fnGetIsCDN = () => {
+    // /************************************************************************
+    //  * 개인화 파일에 저장된 CDN 허용 여부 플래그를 구한다.
+    //  ************************************************************************/
+    // oAPP.fn.fnGetIsCDN = () => {
 
-        // 서버 접속 정보
-        var oServerInfo = parent.getServerInfo(),
-            sSysID = oServerInfo.SYSID;
+    //     // 서버 접속 정보
+    //     var oServerInfo = parent.getServerInfo(),
+    //         sSysID = oServerInfo.SYSID;
 
-        // P13N 파일 Path
-        var sP13nPath = parent.getPath("P13N"),
-            sP13nJsonData = FS.readFileSync(sP13nPath, 'utf-8'),
+    //     // P13N 파일 Path
+    //     var sP13nPath = parent.getPath("P13N"),
+    //         sP13nJsonData = FS.readFileSync(sP13nPath, 'utf-8'),
 
-            // 개인화 정보
-            oP13nData = JSON.parse(sP13nJsonData);
+    //         // 개인화 정보
+    //         oP13nData = JSON.parse(sP13nJsonData);
 
-        return oP13nData[sSysID].ISCDN;
+    //     return oP13nData[sSysID].ISCDN;
 
-    }; // end of oAPP.fn.fnGetIsCDN
+    // }; // end of oAPP.fn.fnGetIsCDN
 
-    /************************************************************************
-     * 개인화 파일에 저장된 CDN 허용 여부 플래그를 저장한다.
-     ************************************************************************/
-    oAPP.fn.fnSetIsCDN = (bIsCDN) => {
+    // /************************************************************************
+    //  * 개인화 파일에 저장된 CDN 허용 여부 플래그를 저장한다.
+    //  ************************************************************************/
+    // oAPP.fn.fnSetIsCDN = (bIsCDN) => {
 
-        // 서버 접속 정보
-        var oServerInfo = parent.getServerInfo(),
-            sSysID = oServerInfo.SYSID;
+    //     // 서버 접속 정보
+    //     var oServerInfo = parent.getServerInfo(),
+    //         sSysID = oServerInfo.SYSID;
 
-        // P13N 파일 Path
-        var sP13nPath = parent.getPath("P13N"),
-            sP13nJsonData = FS.readFileSync(sP13nPath, 'utf-8'),
+    //     // P13N 파일 Path
+    //     var sP13nPath = parent.getPath("P13N"),
+    //         sP13nJsonData = FS.readFileSync(sP13nPath, 'utf-8'),
 
-            // 개인화 정보
-            oP13nData = JSON.parse(sP13nJsonData);
+    //         // 개인화 정보
+    //         oP13nData = JSON.parse(sP13nJsonData);
 
-        oP13nData[sSysID].ISCDN = bIsCDN;
+    //     oP13nData[sSysID].ISCDN = bIsCDN;
 
-        FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData));
+    //     FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData));
 
-    }; // end of oAPP.fn.fnSetIsCDN
+    // }; // end of oAPP.fn.fnSetIsCDN
 
     /************************************************************************
      * WS Version을 확인한다.

@@ -710,7 +710,9 @@ function setCleanHtml(msgtxt) {
 
 }
 
-// trial 모드 여부 플래그
+/************************************************************************
+ * trial 모드 여부 플래그
+ ************************************************************************/
 function getIsTrial() {
 
     // trial 버전이 아닐때만 수행
@@ -718,10 +720,12 @@ function getIsTrial() {
         bIsTrial = oWsSettings.isTrial;
 
     return bIsTrial;
-    
+
 }
 
-// ws setting 정보
+/************************************************************************
+ * ws setting 정보
+ ************************************************************************/
 function getSettingsInfo() {
 
     // Browser Window option
@@ -736,3 +740,42 @@ function getSettingsInfo() {
     return oSettings;
 
 }
+
+function getIsCDN() {
+
+    // 서버 접속 정보
+    var oServerInfo = getServerInfo(),
+        sSysID = oServerInfo.SYSID;
+
+    // P13N 파일 Path
+    var sP13nPath = getPath("P13N"),
+        sP13nJsonData = FS.readFileSync(sP13nPath, 'utf-8'),
+
+        // 개인화 정보
+        oP13nData = JSON.parse(sP13nJsonData);
+
+    return oP13nData[sSysID].ISCDN;
+
+}; // end of oAPP.fn.fnGetIsCDN
+
+/************************************************************************
+ * 개인화 파일에 저장된 CDN 허용 여부 플래그를 저장한다.
+ ************************************************************************/
+function setIsCDN(bIsCDN) {
+
+    // 서버 접속 정보
+    var oServerInfo = getServerInfo(),
+        sSysID = oServerInfo.SYSID;
+
+    // P13N 파일 Path
+    var sP13nPath = getPath("P13N"),
+        sP13nJsonData = FS.readFileSync(sP13nPath, 'utf-8'),
+
+        // 개인화 정보
+        oP13nData = JSON.parse(sP13nJsonData);
+
+    oP13nData[sSysID].ISCDN = bIsCDN;
+
+    FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData));
+
+}; // end of oAPP.fn.fnSetIsCDN
