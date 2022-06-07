@@ -9,6 +9,7 @@ let oAPP = (function () {
     "use strict";
 
     const
+        require = parent.require,
         REMOTE = parent.REMOTE,
         APPPATH = parent.APPPATH,
         PATH = parent.PATH,
@@ -16,13 +17,12 @@ let oAPP = (function () {
         APP = parent.APP,
         USERDATA = APP.getPath("userData"),
         FS = parent.FS,
-        PATHINFO = parent.require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
+        PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
         autoUpdater = REMOTE.require("electron-updater").autoUpdater,
+        autoUpdaterSAP = require(parent.getPath("AUTOUPDSAP")).autoUpdaterSAP,
         SERVPATH = parent.getServerPath(),
-        autoUpdaterServerUrl = SERVPATH + "/update_check",
-        OCTOKIT = REMOTE.require("@octokit/core").Octokit,
-        require = parent.require;
-
+        autoUpdaterServerUrl = `${SERVPATH}/update_check`,
+        OCTOKIT = REMOTE.require("@octokit/core").Octokit;
 
     let oAPP = {};
     oAPP.fn = {};
@@ -673,7 +673,7 @@ let oAPP = (function () {
                         parent.setBusy('');
                         return;
                     }
-                    
+
                     // 실제 접속한 클라이언트 정보를 저장한다.
                     var oServerInfo = parent.getServerInfo();
                     oServerInfo.CLIENT = oResult.MANDT;
@@ -688,8 +688,8 @@ let oAPP = (function () {
                         var oWsSettings = oAPP.fn.fnGetSettingsInfo(),
                             bIsTrial = oWsSettings.isTrial,
                             bIsPackaged = APP.isPackaged;
-                            
-                            oAuthInfo.IS_TRIAL = bIsTrial; // 유저 권한 정보에 Trial 정보를 저장한다.
+
+                        oAuthInfo.IS_TRIAL = bIsTrial; // 유저 권한 정보에 Trial 정보를 저장한다.
 
                         // no build일 경우 혹은 Trial 버전일 경우는 최신 버전 체크를 하지 않는다.                        
                         if (!bIsPackaged || bIsTrial) {
@@ -848,10 +848,106 @@ let oAPP = (function () {
             return;
         }
 
+        // sap 서버에 최신 버전 체크 후 있다면 다운받기
+        oAPP.fn.fnSetAutoUpdateForSAP().then(oAPP.fn.fnSetAutoUpdateForSAPThen.bind(this));
+
+        return;
+
         // Github 연결을 시도 하여 on-premise 인지 CDN인지 확인
         oAPP.fn.fnConnectionGithub().then(oAPP.fn.fnConnectionGithubThen.bind(this));
 
     }; // end of oAPP.fn.fnCheckCustomerLisenceThen
+
+    oAPP.fn.fnSetAutoUpdateForSAP = () => {
+
+        return new Promise((resolve, reject) => {
+
+            var oModel = sap.ui.getCore().getModel();
+
+            //업데이트 확인
+            autoUpdaterSAP.on('checking-for-update-sap', (e) => {
+                console.log(e.params.message);
+            });
+
+            //업데이트 가능 
+            autoUpdaterSAP.on('update-available-sap', (e) => {
+
+                oModel.setProperty("/BUSYPOP/PROGVISI", true, true);
+
+                // 로그인 페이지의 Opacity를 적용한다.
+                $('.u4aWsLoginFormFcard').animate({
+                    opacity: "0.3"
+                }, 500, "linear");
+
+                // Version Check Dialog를 띄운다.
+                oAPP.fn.fnVersionCheckDialogOpen();
+
+                parent.setBusy("");
+
+                // console.log(e.params.message);
+            });
+
+            //현재 최신버전입니다
+            autoUpdaterSAP.on('update-not-available-sap', (e) => {
+
+                resolve();
+
+            });
+
+            //다운로드 ...
+            autoUpdaterSAP.on('download-progress-sap', (e) => {
+
+                var iToTal = e.params.TOTAL, // 전체 모수
+                    iJobCnt = e.params.jobCnt, // 현재 전송된 데이터
+                    iPerCnt = (iJobCnt / iToTal) * 100; // 백분율 구하기
+
+                var iPer = parseFloat(iPerCnt).toFixed(2); // 소수점 2자리까지
+
+                oModel.setProperty("/BUSYPOP/TITLE", "Downloading...", true);
+
+                oModel.setProperty("/BUSYPOP/PERVALUE", iPer, true);
+
+            });
+
+            //다운로드 ...완료
+            autoUpdaterSAP.on('update-downloaded-sap', (e) => {
+
+                oModel.setProperty("/BUSYPOP/TITLE", "Update Complete! Restarting...", true);
+
+                oModel.setProperty("/BUSYPOP/ILLUSTTYPE", "sapIllus-SuccessHighFive", true);
+
+                console.log('업데이트가 완료되었습니다.');
+
+                setTimeout(() => {
+
+                    autoUpdaterSAP.quitAndInstall(); //<--- 자동 인스톨 
+
+                }, 3000);
+
+            });
+
+            //오류
+            autoUpdaterSAP.on('update-error-sap', (e) => {
+                resolve();
+            });
+
+            // 현재 버전 읽어오기
+            // let oAppInfo = parent.require("../package.json"),
+
+            let sVersion = REMOTE.app.getVersion();
+
+            // 자동 업데이트 체크
+            autoUpdaterSAP.checkForUpdates(sVersion);
+
+        });
+
+    }; // end of  oAPP.fn.fnSetAutoUpdateForSAP
+
+    oAPP.fn.fnSetAutoUpdateForSAPThen = function () {
+
+
+
+    }; // end of oAPP.fn.fnSetAutoUpdateForSAPThen
 
     /************************************************************************
      * Github 연결을 시도 하여 on-premise 인지 CDN인지 확인
@@ -1092,23 +1188,11 @@ let oAPP = (function () {
 
             autoUpdater.on('download-progress', (progressObj) => {
 
-                // let log_message = "다운로드 속도: " + progressObj.bytesPerSecond;
-
-                // log_message = log_message + ' - 현재 ' + progressObj.percent + '%';
-
-                // log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-
-                // let sPer = `${parseFloat(progressObj.percent).toFixed(2)}%`;
-
-                // oAPP.fn.fnSetStatusText(`downloading... ${sPer} `);
-
                 var iPer = parseFloat(progressObj.percent).toFixed(2);
 
+                oModel.setProperty("/BUSYPOP/TITLE", "Downloading...", true);
+
                 oModel.setProperty("/BUSYPOP/PERVALUE", iPer, true);
-
-                // oProgressBar.style.width = sPer;
-
-                // console.log(log_message);
 
             });
 
@@ -1293,7 +1377,7 @@ let oAPP = (function () {
             oTrialServerInfo = oWsSettings.trialServerInfo;
 
         if (bIsTrial) {
-            
+
             oResult.META.HOST = `http://${oTrialServerInfo.SERVERIP}:80${oTrialServerInfo.INSTANCENO}`;
 
         } else {
@@ -1327,7 +1411,7 @@ let oAPP = (function () {
             parent.setThemeInfo(oThemeInfo);
 
             var oCurrWin = REMOTE.getCurrentWindow();
-            oCurrWin.setBackgroundColor(oThemeInfo.BGCOL);            
+            oCurrWin.setBackgroundColor(oThemeInfo.BGCOL);
 
             parent.onMoveToPage("WS10");
 

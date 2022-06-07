@@ -244,6 +244,11 @@
                     key: "WMENU40_04",
                     text: "Logoff",
                     enabled: true,
+                },
+                {
+                    key: "WMENU40_06",
+                    text: "Release Note..",
+                    enabled: true,
                 }
             ],
 

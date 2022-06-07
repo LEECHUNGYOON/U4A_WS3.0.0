@@ -44,7 +44,8 @@ module.exports = (() => {
         WSSETTINGS: PATH.join(APPPATH, "settings", "ws_settings.json"),
         SERVERLIST: PATH.join(APPPATH, '/ServerList/ServerFrame.html'),
         COMMONCSS: PATH.join(APPPATH, "css", "common.css"),
-
+        AUTOUPDSAP: PATH.join(APPPATH, "lib", "ws", "electron-updater-sap.js"),
+        
         // User Data Paths..
         CLIPBOARD: PATH.join(USERDATA, "clipboard.json"),
         THEME: PATH.join(USERDATA, "p13n", "theme"),

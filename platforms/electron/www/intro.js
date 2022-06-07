@@ -173,8 +173,10 @@
             return;
         }
 
-        let oAppInfo = require("./package.json"),
-            sVersion = oAppInfo.version;
+        // let oAppInfo = require("./package.json"),
+        //     sVersion = oAppInfo.version;
+        
+        let sVersion = APP.getVersion();
 
         // WS 세팅 정보
         var oWsSettings = oAPP.fn.fnGetSettingsInfo();

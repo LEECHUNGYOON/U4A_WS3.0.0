@@ -63,6 +63,7 @@
     "node-cmd": "^5.0.0",
     "random-key": "^0.3.2",
     "regedit": "^5.0.0",
+    "yamljs": "^0.3.0",
     "zip-lib": "^0.7.3"
   }
 }
