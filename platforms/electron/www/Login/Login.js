@@ -684,6 +684,9 @@ let oAPP = (function () {
                     // 권한 체크를 수행한다.
                     oAPP.fn.fnCheckAuthority().then((oAuthInfo) => {
 
+                        // 개인화 폴더 체크 후 없으면 생성
+                        oAPP.fn.fnOnP13nFolderCreate();
+
                         // trial 버전 확인
                         var oWsSettings = oAPP.fn.fnGetSettingsInfo(),
                             bIsTrial = oWsSettings.isTrial,
@@ -837,6 +840,8 @@ let oAPP = (function () {
         // REMIN TYPE STRING,     "라이센스 잔여 일
         // ISLIC TYPE C LENGTH 1, "라이센스 유효 여부 "X : 유효"
 
+        debugger;
+
         // 오류 확인
         if (oLicenseInfo.RETCD == "E") {
 
@@ -848,13 +853,55 @@ let oAPP = (function () {
             return;
         }
 
+        // 개인화 파일에 저장된 CDN 허용 여부 플래그를 구한다.
+        var bIsCDN = oAPP.fn.fnGetIsCDN();
+
+        // CDN 허용 여부 플래그가 저장되지 않았을 경우.
+        if (typeof bIsCDN == "undefined") {
+
+            parent.setBusy("");
+
+            parent.showMessage(sap, 30, "I", "Do you want to allow CDN Auto Update?", lf_msgCallback.bind(this));
+
+            function lf_msgCallback(sAction) {
+
+                parent.setBusy("X");
+
+                var YES = sap.m.MessageBox.Action.YES,
+                    bIsAction = (sAction == YES ? "X" : "");
+
+                // CDN 허용여부 플래그 값을 개인화 폴더에 저장한다.
+                oAPP.fn.fnSetIsCDN(bIsAction);
+
+                // CDN 허용일 경우 GitHub에 Ping을 수행.
+                if (bIsAction == "X") {
+
+                    oAPP.fn.fnConnectionGithub().then(oAPP.fn.fnConnectionGithubThen.bind(this));
+
+                    return;
+
+                }
+
+                // CDN 허용이 아닐 경우 sap 서버에 최신 버전 체크 후 있다면 다운받기
+                oAPP.fn.fnSetAutoUpdateForSAP().then(oAPP.fn.fnSetAutoUpdateForSAPThen.bind(this));
+
+            } // end of lf_msgCallback
+
+            return;
+
+        }
+
+        // CDN 플래그가 저장되어 있고, CDN 허용일 경우 GitHub에 Ping을 수행.
+        if (bIsCDN == "X") {
+
+            oAPP.fn.fnConnectionGithub().then(oAPP.fn.fnConnectionGithubThen.bind(this));
+
+            return;
+
+        }
+
         // sap 서버에 최신 버전 체크 후 있다면 다운받기
         oAPP.fn.fnSetAutoUpdateForSAP().then(oAPP.fn.fnSetAutoUpdateForSAPThen.bind(this));
-
-        return;
-
-        // Github 연결을 시도 하여 on-premise 인지 CDN인지 확인
-        oAPP.fn.fnConnectionGithub().then(oAPP.fn.fnConnectionGithubThen.bind(this));
 
     }; // end of oAPP.fn.fnCheckCustomerLisenceThen
 
@@ -931,9 +978,6 @@ let oAPP = (function () {
                 resolve();
             });
 
-            // 현재 버전 읽어오기
-            // let oAppInfo = parent.require("../package.json"),
-
             let sVersion = REMOTE.app.getVersion();
 
             // 자동 업데이트 체크
@@ -945,7 +989,11 @@ let oAPP = (function () {
 
     oAPP.fn.fnSetAutoUpdateForSAPThen = function () {
 
+        var oResult = this.oResult,
+            oAuthInfo = this.oAuthInfo;
 
+        // 버전 체크 완료시
+        oAPP.fn.fnCheckVersionFinished(oResult, oAuthInfo);
 
     }; // end of oAPP.fn.fnSetAutoUpdateForSAPThen
 
@@ -996,18 +1044,18 @@ let oAPP = (function () {
         // on-premise 일 경우 업데이트 URL을 서버쪽으로 바라본다.
         if (oReturn.ISCDN != "X") {
 
-            // 버전 체크 수행
-            oAPP.fn.fnCheckVersion(autoUpdaterServerUrl).then(oAPP.fn.fnCheckVersionThen.bind(this));
+            // sap 서버에 최신 버전 체크 후 있다면 다운받기
+            oAPP.fn.fnSetAutoUpdateForSAP().then(oAPP.fn.fnSetAutoUpdateForSAPThen.bind(this));
 
             return;
 
         }
 
-        // 개인화 폴더 체크 후 없으면 생성
-        oAPP.fn.fnOnP13nFolderCreate();
+        // 버전 체크 수행
+        oAPP.fn.fnSetAutoUpdateForCDN().then(oAPP.fn.fnSetAutoUpdateForCDNThen.bind(this));
 
-        // CDN 업그레이드 허용 유무를 판단한다.
-        oAPP.fn.fnCheckCDNConfirm().then(oAPP.fn.fnCheckCDNConfirmThen.bind(this));
+        // // 개인화 폴더 체크 후 없으면 생성
+        // oAPP.fn.fnOnP13nFolderCreate();
 
     }; // end of oAPP.fn.fnConnectionGithubThen
 
@@ -1054,84 +1102,9 @@ let oAPP = (function () {
     }; // end of oAPP.fn.fnSetIsCDN
 
     /************************************************************************
-     * CDN 업그레이드 허용 유무를 판단한다.
-     ************************************************************************/
-    oAPP.fn.fnCheckCDNConfirm = () => {
-
-        return new Promise((resolve, reject) => {
-
-            var oResultData = {
-                ACTION: ""
-            };
-
-            // 개인화 파일에 저장된 CDN 허용 여부 플래그를 구한다.
-            var bIsCDN = oAPP.fn.fnGetIsCDN();
-
-            if (typeof bIsCDN != "undefined") {
-
-                oResultData.ACTION = bIsCDN;
-
-                resolve(oResultData);
-
-                return;
-
-            }
-
-            // CDN 허용이 아니면 허용 할건지 말건지 메시지 팝업을 물어본다.
-            if (typeof sap.m.MessageBox == "undefined") {
-                jQuery.sap.require("sap.m.MessageBox");
-            }
-
-            parent.setBusy("");
-
-            var YES = sap.m.MessageBox.Action.YES,
-                NO = sap.m.MessageBox.Action.NO;
-
-            sap.m.MessageBox.show("Do you want to allow CDN Auto Update?", {
-                icon: sap.m.MessageBox.Icon.QUESTION,
-                actions: [YES, NO],
-                emphasizedAction: YES,
-                onClose: (sAction) => {
-
-                    parent.setBusy("X");
-
-                    var bIsAction = (sAction == YES ? "X" : "");
-
-                    oResultData.ACTION = bIsAction;
-
-                    resolve(oResultData);
-
-                }
-
-            });
-
-        });
-
-    }; // end of oAPP.fn.fnCheckCDNConfirm
-
-    oAPP.fn.fnCheckCDNConfirmThen = function (oResult) {
-
-        // CDN 허용여부 플래그 값을 개인화 폴더에 저장한다.
-        oAPP.fn.fnSetIsCDN(oResult.ACTION);
-
-        // CDN 다운로드 허용일 경우..
-        if (oResult.ACTION == "X") {
-
-            // 버전 체크 수행
-            oAPP.fn.fnCheckVersion().then(oAPP.fn.fnCheckVersionThen.bind(this));
-
-            return;
-        }
-
-        // CDN 다운로드 허용 불가 일 경우.. on-premise 경로로 버전 업데이트 체크를 수행
-        oAPP.fn.fnCheckVersion(autoUpdaterServerUrl).then(oAPP.fn.fnCheckVersionThen.bind(this));
-
-    }; // end of oAPP.fn.fnCheckCDNConfirmThen
-
-    /************************************************************************
      * WS Version을 확인한다.
      ************************************************************************/
-    oAPP.fn.fnCheckVersion = (sVersionCheckUrl) => {
+    oAPP.fn.fnSetAutoUpdateForCDN = (sVersionCheckUrl) => {
 
         return new Promise((resolve, reject) => {
 
@@ -1216,12 +1189,12 @@ let oAPP = (function () {
 
         });
 
-    }; // oAPP.fn.fnCheckVersion
+    }; // oAPP.fn.fnSetAutoUpdateForCDN
 
     /************************************************************************
      * 버전 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnCheckVersionThen = function () {
+    oAPP.fn.fnSetAutoUpdateForCDNThen = function () {
 
         var oResult = this.oResult,
             oAuthInfo = this.oAuthInfo;
@@ -1229,7 +1202,7 @@ let oAPP = (function () {
         // 버전 체크 완료시
         oAPP.fn.fnCheckVersionFinished(oResult, oAuthInfo);
 
-    }; // end of oAPP.fn.fnCheckVersionThen
+    }; // end of oAPP.fn.fnSetAutoUpdateForCDNThen
 
     /************************************************************************
      * 버전 체크 완료시

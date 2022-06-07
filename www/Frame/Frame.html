@@ -11,7 +11,7 @@
 </head>
 
 <body>
-<!-- <body> -->
+    <!-- <body> -->
     <!-- <iframe id="ws_frame" name="ws_frame" style="border:none;width:100%;height:100%;" allow="autoplay 'src'; fullscreen">  -->
     <iframe id="ws_frame" name="ws_frame" style="border:none;width:100%;height:100%;" allow="autoplay 'src';">
     </iframe>
@@ -58,7 +58,8 @@
 
     <script>
         function onError(message, url, line, col, errorObj) {
-            alert(`${message}\n${url}, ${line}:${col}`);
+            showMessage(null, 99, "E", `${message}\n${url}, ${line}:${col}`);
+            // alert(`${message}\n${url}, ${line}:${col}`);
         }
         window.onerror = onError;
         document.onerror = onError;

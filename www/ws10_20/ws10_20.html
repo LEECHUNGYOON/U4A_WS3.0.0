@@ -3,7 +3,7 @@
 
 <head>
     <title>U4A Workspace #Main</title>
-    <meta charset="utf-8">    
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
@@ -34,6 +34,7 @@
         .sapMPageFloatingFooter .sapUiHidden {
             transition: top 0.35;
         }
+
         html,
         body {
             overflow-y: hidden;
@@ -45,18 +46,17 @@
     <div id="content" style="display: none;" class="u4aWsContent"></div>
 
     <script>
-        
         function onError(message, url, line, col, errorObj) {
 
-            alert(`${message}\n${url}, ${line}:${col}`);
-            
+            // 메시지 처리.. 
+            parent.showMessage(null, 99, "E", `${message}\n${url}, ${line}:${col}`);
+
+            // alert();
+
         }
-        
+
         window.onerror = onError;
         document.onerror = onError;
-
-
-
     </script>
 
     <script src="./js/library-preload.js"></script>
