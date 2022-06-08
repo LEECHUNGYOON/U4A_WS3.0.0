@@ -741,6 +741,9 @@ function getSettingsInfo() {
 
 }
 
+/************************************************************************
+ * 개인화 파일에 저장된 CDN 허용 여부 플래그를 가져온다.
+ ************************************************************************/
 function getIsCDN() {
 
     // 서버 접속 정보
@@ -780,5 +783,56 @@ function setIsCDN(bIsCDN) {
 
 }; // end of oAPP.fn.fnSetIsCDN
 
+/************************************************************************
+ *  개인화 파일에 저장.
+ * **********************************************************************
+ * @param {String} sName
+ * - 개인화 구분자명 
+ * 
+ * @param {any} anyData
+ * - 저장하고 싶은 형태 자유.
+ ************************************************************************/
+function setP13nData(sName, anyData) {
 
-// function setSaveP13n
+    // 서버 접속 정보
+    var oServerInfo = getServerInfo(),
+        sSysID = oServerInfo.SYSID;
+
+    // P13N 파일 Path
+    var sP13nPath = getPath("P13N"),
+        sP13nJsonData = FS.readFileSync(sP13nPath, 'utf-8'),
+
+        // 개인화 정보
+        oP13nData = JSON.parse(sP13nJsonData);
+
+    oP13nData[sSysID][sName] = anyData;
+
+    FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData));
+
+}
+
+/************************************************************************
+ *  저장된 개인화 파일 읽기
+ * **********************************************************************
+ * @param {String} sName
+ * - 개인화 구분자명 
+ * 
+ * @return {any}
+ * - 저장했던 구조
+ ************************************************************************/
+function getP13nData(sName) {
+
+    // 서버 접속 정보
+    var oServerInfo = getServerInfo(),
+        sSysID = oServerInfo.SYSID;
+
+    // P13N 파일 Path
+    var sP13nPath = getPath("P13N"),
+        sP13nJsonData = FS.readFileSync(sP13nPath, 'utf-8'),
+
+        // 개인화 정보
+        oP13nData = JSON.parse(sP13nJsonData);
+
+    return oP13nData[sSysID][sName];
+
+}
