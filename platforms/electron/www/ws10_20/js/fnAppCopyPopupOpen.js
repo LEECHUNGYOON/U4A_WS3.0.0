@@ -17,8 +17,8 @@
 
         C_ENUM_VALUE_STATE = sap.ui.core.ValueState;
 
-    var APPCOMMON = oAPP.common;
-
+    var APPCOMMON = oAPP.common,
+        REMOTE = parent.REMOTE;
 
     /************************************************************************
      * Application Copy Popup Open
@@ -274,7 +274,7 @@
         // 패키지를 입력했는지 여부 확인
         if (oModelData.PACKG == "") {
 
-            var sPackgMsg = oAPP.common.fnGetMsgClsTxt("050", "Package");
+            var sPackgMsg = APPCOMMON.fnGetMsgClsTxt("050", "Package");
             parent.showMessage(sap, 10, "", sPackgMsg);
 
             oModelData.PACKG_VS = C_ENUM_VALUE_STATE.Error;
@@ -360,7 +360,7 @@
         if (oResult.MSGTY !== "N") {
 
             var oCurrWin = REMOTE.getCurrentWindow(),
-                sMsg = oAPP.common.fnGetMsgClsTxt("035"); // "It is already registered application information."
+                sMsg = APPCOMMON.fnGetMsgClsTxt("035"); // "It is already registered application information."
 
             parent.showMessage(sap, 10, "", sMsg);
 
