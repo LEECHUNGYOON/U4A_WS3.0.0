@@ -41,7 +41,7 @@ let oAPP = (function(window) {
      * IPCRENDERER Events..
      ************************************************************************/
     oAPP.IPCRENDERER.on('if-u4adocu-info', (events, oInfo) => {
-
+        
         oAPP.attr.oUserInfo = oInfo.oUserInfo; // User 정보(필수)
         oAPP.attr.oThemeInfo = oInfo.oThemeInfo; // User 정보(필수)       
 

@@ -1167,4 +1167,82 @@
 
     }; // end of oAPP.fn.fnEditorPopupOpener
 
+    /************************************************************************
+     * Release Note Popup Opener
+     * **********************************************************************/
+    oAPP.fn.fnReleaseNotePopupOpener = () => {
+
+        var sPopupName = "RELNOTEPOP";
+
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        if (oResult.ISOPEN) {
+            return;
+        }
+
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보  
+
+        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        // oBrowserOptions.title = "Document";
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+        oBrowserOptions.height = 700,
+        oBrowserOptions.width = 700,
+        oBrowserOptions.minWidth = 700,
+        oBrowserOptions.minHeight = 600;
+
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;        
+
+        // 브라우저 오픈
+        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = CURRWIN.getBounds();
+        oBrowserWindow.setBounds({
+            x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
+            y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+        });
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+
+        var sUrlPath = parent.getPath(sPopupName);
+        oBrowserWindow.loadURL(sUrlPath);
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            var oData = {
+                USERINFO: parent.getUserInfo(), // User 정보
+                oThemeInfo: oThemeInfo, // 테마 개인화 정보                
+                ISCDN: parent.getIsCDN(), // CDN 허용 여부
+                SERVPATH: parent.getServerPath() // ws service path
+            };
+
+            oBrowserWindow.webContents.send('if-relnote-info', oData);
+
+            oBrowserWindow.setOpacity(1.0);
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+
+            oBrowserWindow = null;
+
+        });
+
+
+    }; // end of oAPP.fn.fnReleaseNotePopupOpener
+
 })(window, $, oAPP);

@@ -783,6 +783,8 @@ window.addEventListener('load', () => {
         }
     });
 
+    debugger;
+    
     oTool.addContentLeft(oBTsave);
 
     //toolbar 우측 : 문서 갱신 date/time

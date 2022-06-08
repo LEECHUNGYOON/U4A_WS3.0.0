@@ -13,6 +13,8 @@
 	},
 	"GITHUB": {
 		"devKey" : "Z2hwX1gxRUhyMW0xTkZlUnhpbnRCVkF4cHd2aG82c1FlNjJyaU1IMw==",
+		"OWNER": "LEECHUNGYOON",
+		"REPO": "U4A_WS3.0.0",
 		"latestUrl" : "https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest"
 	},	
 	"defaultTheme": "sap_horizon_dark",

@@ -684,9 +684,6 @@ let oAPP = (function () {
                     // 권한 체크를 수행한다.
                     oAPP.fn.fnCheckAuthority().then((oAuthInfo) => {
 
-                        // 개인화 폴더 체크 후 없으면 생성
-                        oAPP.fn.fnOnP13nFolderCreate();
-
                         // trial 버전 확인
                         var oWsSettings = oAPP.fn.fnGetSettingsInfo(),
                             bIsTrial = oWsSettings.isTrial,
@@ -1456,6 +1453,9 @@ let oAPP = (function () {
     oAPP.fn.fnAttachInit = () => {
 
         sap.ui.getCore().attachInit(() => {
+
+            // 개인화 폴더 체크 후 없으면 생성
+            oAPP.fn.fnOnP13nFolderCreate();
 
             // Illustration Message TNT-svg register
             oAPP.fn.fnRegisterIllustrationPool();
