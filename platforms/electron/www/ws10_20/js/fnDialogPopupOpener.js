@@ -535,16 +535,23 @@
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
 
+        debugger;
+
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
         // 팝업 위치를 부모 위치에 배치시킨다.
         var oParentBounds = CURRWIN.getBounds();
-        oBrowserWindow.setBounds({
-            x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
-            y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
-        });
+        var oParentPosition = CURRWIN.getPosition();
+
+
+        oBrowserWindow.setPosition(oParentPosition[0], oParentPosition[1]);
+
+        // oBrowserWindow.setBounds({
+        //     x: Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+        //     y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+        // });
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
@@ -1192,13 +1199,13 @@
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.height = 700,
-        oBrowserOptions.width = 700,
-        oBrowserOptions.minWidth = 700,
-        oBrowserOptions.minHeight = 600;
+            oBrowserOptions.width = 700,
+            oBrowserOptions.minWidth = 700,
+            oBrowserOptions.minHeight = 600;
 
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
-        oBrowserOptions.webPreferences.OBJTY = sPopupName;        
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
