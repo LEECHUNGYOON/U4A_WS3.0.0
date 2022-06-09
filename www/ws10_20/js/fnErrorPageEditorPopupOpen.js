@@ -5,7 +5,7 @@
  * - file Desc : Error Page Editor
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -14,10 +14,11 @@
         IPCMAIN = parent.IPCMAIN,
         PATH = parent.PATH,
         APP = parent.APP,
+        CURRWIN = REMOTE.getCurrentWindow(),
         APPCOMMON = oAPP.common;
 
 
-    oAPP.fn.fnErrorPageEditorPopupOpen = function () {
+    oAPP.fn.fnErrorPageEditorPopupOpen = function() {
 
         let sPopupName = "ERRPAGE";
 
@@ -52,12 +53,19 @@
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
-            
+
         // 팝업 위치를 부모 위치에 배치시킨다.
-        var oParentBounds = oCurrWin.getBounds();
+        var oParentBounds = CURRWIN.getBounds(),
+            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2));
+
+        if (yPos < 0) {
+            yPos = 0;
+        };
+
         oBrowserWindow.setBounds({
-            x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
-            y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+            x: xPos,
+            y: yPos
         });
 
         // 브라우저 상단 메뉴 없애기
@@ -69,7 +77,7 @@
         // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oEditorInfo = {
                 APPINFO: oAppInfo,
@@ -104,7 +112,7 @@
     /************************************************************************
      * Error Page Editor 팝업의 저장 버튼 이벤트를 수행하기 위한 IPCMAIN 이벤트
      * **********************************************************************/
-    oAPP.fn.fnIpcMain_ErrorPageEditorSave = function (event, res) {
+    oAPP.fn.fnIpcMain_ErrorPageEditorSave = function(event, res) {
 
         var BROWSKEY = parent.getBrowserKey();
 
@@ -131,7 +139,7 @@
     /************************************************************************
      * Error Page Editor 팝업의 미리보기 IPCMAIN 이벤트
      * **********************************************************************/
-    oAPP.fn.fnIpcMain_ErrorPagePreview = function (event, res) {
+    oAPP.fn.fnIpcMain_ErrorPagePreview = function(event, res) {
 
         var sWinObjType = "ERRPAGEPREV";
 

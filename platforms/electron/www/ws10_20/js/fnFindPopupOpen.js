@@ -5,7 +5,7 @@
  * - file Desc : WS20의 Find Dialog Popup
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     /************************************************************************
@@ -37,7 +37,7 @@
     /**************************************************************************
      * WS20의 찾기버튼 Dialog Open
      * ************************************************************************/
-    oAPP.fn.fnFindPopupOpen = function () {
+    oAPP.fn.fnFindPopupOpen = function() {
 
         var sPopupName = "UIFIND";
 
@@ -71,10 +71,17 @@
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
         // 팝업 위치를 부모 위치에 배치시킨다.
-        var oParentBounds = CURRWIN.getBounds();
+        var oParentBounds = CURRWIN.getBounds(),
+            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2));
+
+        if (yPos < 0) {
+            yPos = 0;
+        };
+
         oBrowserWindow.setBounds({
-            x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
-            y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+            x: xPos,
+            y: yPos
         });
 
         // 브라우저 상단 메뉴 없애기
@@ -86,7 +93,7 @@
         // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oFindData = {
                 oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보
@@ -124,7 +131,7 @@
     /**************************************************************************
      * Find Popup에서 전달 받은 UI 정보를 가지고 WS20에 표시를 해준다.
      * ************************************************************************/
-    oAPP.fn.fnIpcMain_Find = function (events, res) {
+    oAPP.fn.fnIpcMain_Find = function(events, res) {
 
         oAPP.fn.setSelectTreeItem(res.OBJID, res.UIATK);
 
@@ -133,7 +140,7 @@
     /**************************************************************************
      * Find Popup에서 전달 받은 UI 정보를 가지고 controller(class builder)를 실행.
      * ************************************************************************/
-    oAPP.fn.fnIpcMain_Find_Controller = function (events, res) {
+    oAPP.fn.fnIpcMain_Find_Controller = function(events, res) {
 
         oAPP.common.execControllerClass(res.UIATV);
 
@@ -145,7 +152,7 @@
     /**************************************************************************
      * 찾기버튼 Dialog의 라디오 버튼 그룹 그리기
      * ************************************************************************/
-    oAPP.fn.fnGetFindPopupRadioBtnGrp = function () {
+    oAPP.fn.fnGetFindPopupRadioBtnGrp = function() {
 
         return new sap.m.RadioButtonGroup(C_FIND_DLG_RDB_ID, {
             buttons: [
@@ -169,7 +176,7 @@
     /**************************************************************************
      * UI Where to Use the Event
      * ************************************************************************/
-    oAPP.fn.fnFindPopupRdBtnChoice1 = function () {
+    oAPP.fn.fnFindPopupRdBtnChoice1 = function() {
 
         var oChoice1Dlg = sap.ui.getCore().byId(C_FIND_DLG_CH1_ID);
         if (oChoice1Dlg) {
@@ -204,7 +211,7 @@
 
                     new sap.m.Button({
                         icon: "sap-icon://decline",
-                        press: function () {
+                        press: function() {
                             oChoice1Dlg.close();
                         }
                     })
@@ -215,7 +222,7 @@
                 new sap.m.Button({
                     type: sap.m.ButtonType.Reject,
                     icon: "sap-icon://decline",
-                    press: function (oEvent) {
+                    press: function(oEvent) {
                         var oDialog = oEvent.getSource().getParent();
                         oDialog.close();
                     }
@@ -228,11 +235,11 @@
 
             // Events
             afterOpen: oAPP.events.ev_findPopupChoice1AfterOpen,
-            afterClose: function (oEvent) {
+            afterClose: function(oEvent) {
                 var oDialog = oEvent.getSource();
                 oDialog.destroy();
             },
-            escapeHandler: function () {
+            escapeHandler: function() {
                 var oDialog = sap.ui.getCore().byId(C_FIND_DLG_CH1_ID);
                 if (!oDialog) {
                     return;
@@ -251,7 +258,7 @@
     /**************************************************************************
      * Model Binding Usage For UI
      * ************************************************************************/
-    oAPP.fn.fnFindPopupRdBtnChoice2 = function () {
+    oAPP.fn.fnFindPopupRdBtnChoice2 = function() {
 
         var oChoice2Dlg = sap.ui.getCore().byId(C_FIND_DLG_CH2_ID);
         if (oChoice2Dlg) {
@@ -289,7 +296,7 @@
 
                     new sap.m.Button({
                         icon: "sap-icon://decline",
-                        press: function () {
+                        press: function() {
                             oChoice2Dlg.close();
                         }
                     })
@@ -300,7 +307,7 @@
                 new sap.m.Button({
                     type: sap.m.ButtonType.Reject,
                     icon: "sap-icon://decline",
-                    press: function (oEvent) {
+                    press: function(oEvent) {
                         var oDialog = oEvent.getSource().getParent();
                         oDialog.close();
                     }
@@ -314,12 +321,12 @@
             // Events
             afterOpen: oAPP.events.ev_findPopupChoice2AfterOpen,
 
-            afterClose: function (oEvent) {
+            afterClose: function(oEvent) {
                 var oDialog = oEvent.getSource();
                 oDialog.destroy();
             },
 
-            escapeHandler: function () {
+            escapeHandler: function() {
 
                 var oDialog = sap.ui.getCore().byId(C_FIND_DLG_CH2_ID);
                 if (!oDialog) {
@@ -341,7 +348,7 @@
     /**************************************************************************
      * CSS Style Class Where to Use
      * ************************************************************************/
-    oAPP.fn.fnFindPopupRdBtnChoice3 = function () {
+    oAPP.fn.fnFindPopupRdBtnChoice3 = function() {
 
         var oChoice3Dlg = sap.ui.getCore().byId(C_FIND_DLG_CH3_ID);
         if (oChoice3Dlg) {
@@ -375,7 +382,7 @@
 
                         new sap.m.Button({
                             icon: "sap-icon://decline",
-                            press: function () {
+                            press: function() {
                                 oChoice3Dlg.close();
                             }
                         })
@@ -386,7 +393,7 @@
                     new sap.m.Button({
                         type: sap.m.ButtonType.Reject,
                         icon: "sap-icon://decline",
-                        press: function (oEvent) {
+                        press: function(oEvent) {
                             var oDialog = oEvent.getSource().getParent();
                             oDialog.close();
                         }
@@ -399,11 +406,11 @@
                 ],
                 afterOpen: oAPP.events.ev_findPopupChoice3AfterOpen,
 
-                afterClose: function (oEvent) {
+                afterClose: function(oEvent) {
                     var oDialog = oEvent.getSource();
                     oDialog.destroy();
                 },
-                escapeHandler: function () {
+                escapeHandler: function() {
                     var oDialog = sap.ui.getCore().byId(C_FIND_DLG_CH3_ID);
                     if (!oDialog) {
                         return;
@@ -422,7 +429,7 @@
     /**************************************************************************
      * Event JS Where to Use
      * ************************************************************************/
-    oAPP.fn.fnFindPopupRdBtnChoice4 = function () {
+    oAPP.fn.fnFindPopupRdBtnChoice4 = function() {
 
         var oChoice4Dlg = sap.ui.getCore().byId(C_FIND_DLG_CH4_ID);
         if (oChoice4Dlg) {
@@ -457,7 +464,7 @@
 
                     new sap.m.Button({
                         icon: "sap-icon://decline",
-                        press: function () {
+                        press: function() {
                             oChoice4Dlg.close();
                         }
                     })
@@ -468,7 +475,7 @@
                 new sap.m.Button({
                     type: sap.m.ButtonType.Reject,
                     icon: "sap-icon://decline",
-                    press: function (oEvent) {
+                    press: function(oEvent) {
                         var oDialog = oEvent.getSource().getParent();
                         oDialog.close();
                     }
@@ -482,12 +489,12 @@
             // Events
             afterOpen: oAPP.events.ev_findPopupChoice4AfterOpen,
 
-            afterClose: function (oEvent) {
+            afterClose: function(oEvent) {
                 var oDialog = oEvent.getSource();
                 oDialog.destroy();
             },
 
-            escapeHandler: function () {
+            escapeHandler: function() {
                 var oDialog = sap.ui.getCore().byId(C_FIND_DLG_CH4_ID);
                 if (!oDialog) {
                     return;
@@ -506,7 +513,7 @@
     /**************************************************************************
      * UI Where to Use the Event 팝업의 Contents
      * ************************************************************************/
-    oAPP.fn.fnGetFindPopupChoice1Contents = function () {
+    oAPP.fn.fnGetFindPopupChoice1Contents = function() {
 
         var LabelDesignBoldEnum = sap.m.LabelDesign.Bold;
 
@@ -573,7 +580,7 @@
     /**************************************************************************
      * Model Bindig Usage for UI 팝업의 컨텐츠들..
      * ************************************************************************/
-    oAPP.fn.fnGetFindPopupChoice2Contents = function () {
+    oAPP.fn.fnGetFindPopupChoice2Contents = function() {
 
         var oLeftTable = oAPP.fn.fnGetFindPopupChoice2LeftTable(),
             oRightTable = oAPP.fn.fnGetFindPopupChoice2RightTable();
@@ -599,7 +606,7 @@
     /**************************************************************************
      * CSS Style Class Where to Use 팝업의 컨텐츠들..
      * ************************************************************************/
-    oAPP.fn.fnGetFindPopupChoice3Contents = function () {
+    oAPP.fn.fnGetFindPopupChoice3Contents = function() {
 
         var oTable = oAPP.fn.fnGetFindPopupChoice3Table();
 
@@ -615,7 +622,7 @@
     /**************************************************************************
      * Event JS Where to Use 팝업의 컨텐츠들..
      * ************************************************************************/
-    oAPP.fn.fnGetFindPopupChoice4Contents = function () {
+    oAPP.fn.fnGetFindPopupChoice4Contents = function() {
 
         var oTable = oAPP.fn.fnGetFindPopupChoice4Table();
 
@@ -631,7 +638,7 @@
     /**************************************************************************
      * Model Bindig Usage for UI 팝업의 좌측 Properties Usage Bind List
      * ************************************************************************/
-    oAPP.fn.fnGetFindPopupChoice2LeftTable = function () {
+    oAPP.fn.fnGetFindPopupChoice2LeftTable = function() {
 
         var LabelDesignBoldEnum = sap.m.LabelDesign.Bold;
 
@@ -680,7 +687,7 @@
                         parts: [
                             "UIATV"
                         ],
-                        formatter: function (UIATV) {
+                        formatter: function(UIATV) {
 
                             if (UIATV == null) {
                                 return "";
@@ -728,7 +735,7 @@
     /**************************************************************************
      * Model Bindig Usage for UI 팝업의 우측 Aggregations Usage Bind Models
      * ************************************************************************/
-    oAPP.fn.fnGetFindPopupChoice2RightTable = function () {
+    oAPP.fn.fnGetFindPopupChoice2RightTable = function() {
 
         var LabelDesignBoldEnum = sap.m.LabelDesign.Bold;
 
@@ -786,7 +793,7 @@
     /**************************************************************************
      * CSS Style Class Where to Use 팝업의 Table
      * ************************************************************************/
-    oAPP.fn.fnGetFindPopupChoice3Table = function () {
+    oAPP.fn.fnGetFindPopupChoice3Table = function() {
 
         var LabelDesignBoldEnum = sap.m.LabelDesign.Bold;
 
@@ -828,7 +835,7 @@
     /**************************************************************************
      * Event JS Where to Use 팝업의 Table
      * ************************************************************************/
-    oAPP.fn.fnGetFindPopupChoice4Table = function () {
+    oAPP.fn.fnGetFindPopupChoice4Table = function() {
 
         var LabelDesignBoldEnum = sap.m.LabelDesign.Bold;
 
@@ -884,7 +891,7 @@
     /**************************************************************************
      * UI Where to Use the Event Popup After Open
      * ************************************************************************/
-    oAPP.events.ev_findPopupChoice1AfterOpen = function (oEvent) {
+    oAPP.events.ev_findPopupChoice1AfterOpen = function(oEvent) {
 
         // Attribute 정보를 구한다.
         var aAttrData = oAPP.fn.getAttrChangedData(),
@@ -932,7 +939,7 @@
     /**************************************************************************
      * Model Binding Usage For UI Popup After Open
      * ************************************************************************/
-    oAPP.events.ev_findPopupChoice2AfterOpen = function () {
+    oAPP.events.ev_findPopupChoice2AfterOpen = function() {
 
         // Attribute 정보를 구한다.
         var aAttrData = oAPP.fn.getAttrChangedData(),
@@ -963,7 +970,7 @@
     /**************************************************************************
      * CSS Style Class Where to Use Popup After Open
      * ************************************************************************/
-    oAPP.events.ev_findPopupChoice3AfterOpen = function () {
+    oAPP.events.ev_findPopupChoice3AfterOpen = function() {
 
         // Attribute 정보를 구한다.
         var aAttrData = oAPP.fn.getAttrChangedData(),
@@ -988,7 +995,7 @@
     /**************************************************************************
      * Event JS Where to Use Popup After Open
      * ************************************************************************/
-    oAPP.events.ev_findPopupChoice4AfterOpen = function () {
+    oAPP.events.ev_findPopupChoice4AfterOpen = function() {
 
         // Attribute 정보를 구한다.
         var aAttrData = oAPP.fn.getAttrChangedData(),
@@ -1035,7 +1042,7 @@
     /**************************************************************************
      * 찾기버튼 Dialog의 확인버튼 이벤트
      * ************************************************************************/
-    oAPP.events.ev_pressFindPopupOkBtn = function () {
+    oAPP.events.ev_pressFindPopupOkBtn = function() {
 
         var oRdBtnGrp = sap.ui.getCore().byId(C_FIND_DLG_RDB_ID);
         if (!oRdBtnGrp) {
@@ -1071,7 +1078,7 @@
     /**************************************************************************
      * UI Where to Use the Event Table의 "Event ID" Link
      * ************************************************************************/
-    oAPP.events.ev_pressFindPopChoice1TblCol1 = function (oEvent) {
+    oAPP.events.ev_pressFindPopChoice1TblCol1 = function(oEvent) {
 
         debugger;
 
@@ -1085,7 +1092,7 @@
     /**************************************************************************
      * UI Where to Use the Event Table의 "Event Target Properties" Link
      * ************************************************************************/
-    oAPP.events.ev_pressFindPopChoice1TblCol3 = function (oEvent) {
+    oAPP.events.ev_pressFindPopChoice1TblCol3 = function(oEvent) {
 
         debugger;
 
@@ -1097,7 +1104,7 @@
     /**************************************************************************
      * Model Bindig Usage for UI 팝업의 좌측 Properties Usage Bind List "UI ID" Link
      * ************************************************************************/
-    oAPP.events.ev_pressFindPopChoice2Tbl1Col1 = function (oEvent) {
+    oAPP.events.ev_pressFindPopChoice2Tbl1Col1 = function(oEvent) {
 
         debugger;
 
@@ -1109,7 +1116,7 @@
     /**************************************************************************
      * Model Bindig Usage for UI 팝업의 좌측 Properties Usage Bind List "Model Full Path" Link
      * ************************************************************************/
-    oAPP.events.ev_pressFindPopChoice2Tbl1Col3 = function (oEvent) {
+    oAPP.events.ev_pressFindPopChoice2Tbl1Col3 = function(oEvent) {
 
         debugger;
 
@@ -1121,7 +1128,7 @@
     /**************************************************************************
      * Model Bindig Usage for UI 팝업의 우측 Aggregations Usage bind Models "UI ID" Link
      * ************************************************************************/
-    oAPP.events.ev_pressFindPopChoice2Tbl2Col1 = function (oEvent) {
+    oAPP.events.ev_pressFindPopChoice2Tbl2Col1 = function(oEvent) {
 
         debugger;
 
@@ -1133,7 +1140,7 @@
     /**************************************************************************
      * CSS Style Class Where to Use 팝업의 "UI OBJ ID" Link
      * ************************************************************************/
-    oAPP.events.ev_pressFindPopChoice3Tbl1Col1 = function (oEvent) {
+    oAPP.events.ev_pressFindPopChoice3Tbl1Col1 = function(oEvent) {
 
         debugger;
 
@@ -1146,7 +1153,7 @@
     /**************************************************************************
      * Event JS Where to Use 팝업의 "UI OBJ ID" Link
      * ************************************************************************/
-    oAPP.events.ev_pressFindPopChoice4Tbl1Col1 = function (oEvent) {
+    oAPP.events.ev_pressFindPopChoice4Tbl1Col1 = function(oEvent) {
 
         debugger;
 
