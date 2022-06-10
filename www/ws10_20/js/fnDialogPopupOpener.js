@@ -1350,13 +1350,12 @@
         // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function () {         
 
             var oData = {
                 USERINFO: parent.getUserInfo(), // User 정보
                 oThemeInfo: oThemeInfo, // 테마 개인화 정보                
                 ISCDN: parent.getIsCDN(), // CDN 허용 여부,
-                ISADM: "X", // admin 여부
                 SERVPATH: parent.getServerPath() // ws service path
             };
 

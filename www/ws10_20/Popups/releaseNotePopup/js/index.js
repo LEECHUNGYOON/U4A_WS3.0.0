@@ -58,11 +58,12 @@ oAPP.attachIpcRender = () => {
         oAPP.attr.sServerPath = oInfo.SERVPATH;
         oAPP.attr.ISCDN = oInfo.ISCDN;
 
-        oAPP.ISADM = oInfo.ISADM;
+        // oAPP.ISADM = oInfo.USERINFO.ISADM;
+        oAPP.ISADM = "X";
 
         var oMainFrame = document.getElementById("mainFRAME");
 
-        switch (oInfo.ISADM) {
+        switch (oAPP.ISADM) {
             case "X":
                 oMainFrame.src = "main.html";
                 break;

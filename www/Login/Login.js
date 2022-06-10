@@ -1355,12 +1355,11 @@ let oAPP = (function () {
             // 로그인 아이디 저장
             oAPP.fn.fnSaveIDSuggData(oLogInData.ID);
         }
-
-        // 유저 정보에 Authority 정보를 저장한다.
-        oLogInData.USER_AUTH = oResult.USER_AUTH;
+        
+        var oUserInfo = jQuery.extend({}, oResult, oLogInData);
 
         // 로그인 유저의 아이디/패스워드를 저장해둔다.    
-        parent.setUserInfo(oLogInData);
+        parent.setUserInfo(oUserInfo);
 
         // Metadata 정보 세팅 (서버 호스트명.. 또는 메시지 클래스 데이터 등..)
         if (oResult.META) {

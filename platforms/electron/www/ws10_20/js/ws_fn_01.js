@@ -1450,23 +1450,28 @@
                 press: oAPP.events.ev_pressDisplayModeBtn
             }).bindProperty("visible", {
                 parts: [{
-                        path: "/USERINFO/USER_AUTH/IS_DEV"
+                        path: "/USERINFO/USER_AUTH/IS_DEV" // 개발자 권한 여부
                     },
                     {
-                        path: "/IS_EXAM"
-                    }, {
+                        path: "/USERINFO/ISADM"
+                    },
+                    {
+                        path: "/WS20/APP/ADMIN_APP" // "ADMIN App 여부"
+                    },
+                    {
                         path: sVisiBindPath
-                    }
+                    },
+
                 ],
-                formatter: (IS_DEV, IS_EXAM, IS_EDIT) => {
+                formatter: (IS_DEV, ISADM, ADMIN_APP, IS_EDIT) => {
 
                     // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
                     if (IS_DEV != "D") {
                         return false;
                     }
 
-                    // 샘플 어플리케이션일 경우 비활성화
-                    if (IS_EXAM == "X") {
+                    // Admin이 아닌 유저가 Admin App을 열었을 경우 버튼 비활성화
+                    if (ISADM != "X" && ADMIN_APP == "X") {
                         return false;
                     }
 
@@ -1573,21 +1578,28 @@
             new sap.m.ToolbarSeparator()
             .bindProperty("visible", {
                 parts: [{
-                        path: "/USERINFO/USER_AUTH/IS_DEV"
+                        path: "/USERINFO/USER_AUTH/IS_DEV" // 개발자 권한 여부
                     },
                     {
-                        path: "/IS_EXAM"
-                    }
+                        path: "/USERINFO/ISADM"
+                    },
+                    {
+                        path: "/WS20/APP/ADMIN_APP" // "ADMIN App 여부"
+                    },
+                    {
+                        path: sVisiBindPath
+                    },
+
                 ],
-                formatter: (IS_DEV, IS_EXAM) => {
+                formatter: (IS_DEV, ISADM, ADMIN_APP) => {
 
                     // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
                     if (IS_DEV != "D") {
                         return false;
                     }
 
-                    // 샘플 어플리케이션일 경우 비활성화
-                    if (IS_EXAM == "X") {
+                    // Admin이 아닌 유저가 Admin App을 열었을 경우 버튼 비활성화
+                    if (ISADM != "X" && ADMIN_APP == "X") {
                         return false;
                     }
 

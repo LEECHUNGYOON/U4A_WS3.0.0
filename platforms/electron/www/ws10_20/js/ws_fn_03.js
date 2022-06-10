@@ -805,9 +805,7 @@
         oAppInput.setValue(sAppID);
 
         oDispModeBtn.firePress();
-
-        oAPP.common.fnSetModelProperty("/IS_EXAM", "X", true);
-
+     
     }; // end of oAPP.fn.fnExamMoveToPageWs20
 
     /************************************************************************

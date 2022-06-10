@@ -67,6 +67,14 @@
 
             }
 
+            var oUserInfo = oAPP.common.fnGetModelProperty("/USERINFO"),
+                ISADM = oUserInfo.ISADM; // Admin 권한 여부
+
+            // Admin이 아닌 유저가 Admin App을 열었을 경우 Disply 모드로 변환
+            if (ISADM != "X" && oAppInfo.ADMIN_APP == "X") {
+                oAppInfo.IS_EDIT = "";
+            }
+
             // Application 이 존재 할 경우
             // 리턴받은 APP 정보를 Frame에 저장한다.
             parent.setAppInfo(oAppInfo);
@@ -270,11 +278,7 @@
             parent.setAppInfo({});
 
             // WS20에 대한 모델 정보 초기화
-            // oAPP.common.fnSetModelProperty("/WS20/APP", {});
             oAPP.common.fnSetModelProperty("/WS20", {});
-
-            // 샘플 여부 플래그를 삭제한다.
-            oAPP.common.fnSetModelProperty("/IS_EXAM", "");
 
             // 10번 프로그램으로 이동한다.        
             oAPP.fn.fnOnMoveToPage("WS10");
@@ -559,7 +563,7 @@
             if (xPos < iAvailLeft) {
                 xPos = iAvailLeft;
             }
-            
+
             if (yPos < 0) {
                 yPos = 0;
             };
