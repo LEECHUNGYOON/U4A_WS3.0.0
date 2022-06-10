@@ -12,6 +12,8 @@
       "autoplayPolicy": "no-user-gesture-required"
     },
     "width": 800,
+    "minWidth": 300,
+    "minHeight": 300,
     "icon": "www/img/logo.png",
     "autoHideMenuBar": true
   },

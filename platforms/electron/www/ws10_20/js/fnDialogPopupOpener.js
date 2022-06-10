@@ -308,7 +308,13 @@
         // 팝업 위치를 부모 위치에 배치시킨다.
         var oParentBounds = CURRWIN.getBounds(),
             xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2));
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
+
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
+        }
 
         if (yPos < 0) {
             yPos = 0;
@@ -474,7 +480,13 @@
         // 팝업 위치를 부모 위치에 배치시킨다.
         var oParentBounds = CURRWIN.getBounds(),
             xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2));
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
+
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
+        }
 
         if (yPos < 0) {
             yPos = 0;
@@ -540,7 +552,7 @@
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.title = "Options..";
+        oBrowserOptions.title = "WS Options";
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
@@ -556,7 +568,13 @@
         // 팝업 위치를 부모 위치에 배치시킨다.
         var oParentBounds = CURRWIN.getBounds(),
             xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2));
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
+
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
+        }
 
         if (yPos < 0) {
             yPos = 0;
@@ -638,7 +656,13 @@
         // 팝업 위치를 부모 위치에 배치시킨다.
         var oParentBounds = CURRWIN.getBounds(),
             xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2));
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
+
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
+        }
 
         if (yPos < 0) {
             yPos = 0;
@@ -744,7 +768,13 @@
         // 팝업 위치를 부모 위치에 배치시킨다.
         var oParentBounds = CURRWIN.getBounds(),
             xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2));
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
+
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
+        }
 
         if (yPos < 0) {
             yPos = 0;
@@ -846,7 +876,13 @@
         // 팝업 위치를 부모 위치에 배치시킨다.
         var oParentBounds = CURRWIN.getBounds(),
             xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2));
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
+
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
+        }
 
         if (yPos < 0) {
             yPos = 0;
@@ -927,7 +963,13 @@
         // 팝업 위치를 부모 위치에 배치시킨다.
         var oParentBounds = CURRWIN.getBounds(),
             xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2));
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
+
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
+        }
 
         if (yPos < 0) {
             yPos = 0;
@@ -1012,7 +1054,13 @@
         // 팝업 위치를 부모 위치에 배치시킨다.
         var oParentBounds = CURRWIN.getBounds(),
             xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2));
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
+
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
+        }
 
         if (yPos < 0) {
             yPos = 0;
@@ -1125,7 +1173,13 @@
         // 팝업 위치를 부모 위치에 배치시킨다.
         var oParentBounds = CURRWIN.getBounds(),
             xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2));
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
+
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
+        }
 
         if (yPos < 0) {
             yPos = 0;
@@ -1270,7 +1324,13 @@
         // 팝업 위치를 부모 위치에 배치시킨다.
         var oParentBounds = CURRWIN.getBounds(),
             xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2));
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
+
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
+        }
 
         if (yPos < 0) {
             yPos = 0;
@@ -1314,7 +1374,7 @@
         });
 
     }; // end of oAPP.fn.fnReleaseNotePopupOpener
-    
+
     /************************************************************************
      * [WS20] 디자인영역 Layout 변경 기능 팝업
      * **********************************************************************/

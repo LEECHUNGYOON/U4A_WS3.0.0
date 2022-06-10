@@ -147,10 +147,10 @@
                 text: "Close Browser"
             }, {
                 key: "WMENU30_03",
-                text: "Options..."
+                text: "Options"
             }, {
                 key: "WMENU30_04",
-                text: "Release Note..",
+                text: "Release Note",
             }],
             Test10 = [{
                     key: "Test90",
@@ -235,7 +235,7 @@
                 },
                 {
                     key: "WMENU40_05",
-                    text: "Options..",
+                    text: "Options",
                     enabled: true,
                 },
                 // {
@@ -250,7 +250,7 @@
                 },
                 {
                     key: "WMENU40_06",
-                    text: "Release Note..",
+                    text: "Release Note",
                     enabled: true,
                 }
             ],
@@ -577,6 +577,7 @@
             // Logoff 버튼
             new sap.m.Button({
                 icon: "sap-icon://log",
+                type: sap.m.ButtonType.Reject,
                 press: oAPP.events.ev_Logout
             })
         ];
@@ -1366,6 +1367,7 @@
 
                     new sap.m.Button({
                         icon: "sap-icon://log",
+                        type: sap.m.ButtonType.Reject,
                         press: oAPP.events.ev_Logout
                     }),
 

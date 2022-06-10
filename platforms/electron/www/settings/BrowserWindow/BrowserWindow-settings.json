@@ -2,6 +2,8 @@
     "browserWindow": {
         "width": 800,
         "height": 800,
+        "minWidth": 300,
+        "minHeight": 300,
         "icon": "www/img/logo.png",
         "autoHideMenuBar": true,
         "webPreferences": {

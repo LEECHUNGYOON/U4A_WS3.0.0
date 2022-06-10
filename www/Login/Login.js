@@ -1337,7 +1337,7 @@ let oAPP = (function () {
         if (oLogInData == null) {
             return;
         }
-
+        
         // trial 버전이 아닐때만 수행
         var oWsSettings = oAPP.fn.fnGetSettingsInfo(),
             bIsTrial = oWsSettings.isTrial,

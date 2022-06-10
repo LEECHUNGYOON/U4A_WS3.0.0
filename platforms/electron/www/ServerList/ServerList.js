@@ -15,6 +15,7 @@
         PATHINFO = parent.require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
         MENU = REMOTE.Menu,
         RANDOM = oAPP.RANDOM,
+        CURRWIN = REMOTE.getCurrentWindow(),
         xhr = new XMLHttpRequest();
 
     xhr.withCredentials = true;
@@ -333,6 +334,26 @@
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // // 팝업 위치를 부모 위치에 배치시킨다.
+        // var oParentBounds = CURRWIN.getBounds(),
+        //     xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+        //     yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+        //     oWinScreen = window.screen,
+        //     iAvailLeft = oWinScreen.availLeft;
+
+        // if (xPos < iAvailLeft) {
+        //     xPos = iAvailLeft;
+        // }
+
+        // if (yPos < 0) {
+        //     yPos = 0;
+        // };
+
+        // oBrowserWindow.setBounds({
+        //     x: xPos,
+        //     y: yPos
+        // });
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);

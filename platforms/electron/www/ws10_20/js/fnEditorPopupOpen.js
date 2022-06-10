@@ -5,7 +5,7 @@
  * - file Desc : CSS, JAVASCRIPT, HTML Editor
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
 
@@ -25,7 +25,7 @@
      * @param {Object} oEditInfo
      * - 오픈 하려는 에디터의 타입 정보
      ************************************************************************/
-    oAPP.fn.fnEditorPopupOpen = function(oEditInfo, sSearchValue) {
+    oAPP.fn.fnEditorPopupOpen = function (oEditInfo, sSearchValue) {
 
         let oCurrWin = REMOTE.getCurrentWindow(),
             SESSKEY = parent.getSessionKey(),
@@ -67,7 +67,13 @@
         // 팝업 위치를 부모 위치에 배치시킨다.
         var oParentBounds = CURRWIN.getBounds(),
             xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2));
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
+
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
+        }
 
         if (yPos < 0) {
             yPos = 0;
@@ -87,7 +93,7 @@
         // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             lf_webContentSend(oBrowserWindow, sSearchValue);
 
@@ -131,7 +137,7 @@
     /************************************************************************
      * Editor 팝업의 저장 버튼 이벤트를 수행하기 위한 IPCMAIN 이벤트
      * **********************************************************************/
-    oAPP.fn.fnIpcMain_EditorSave = function(event, res) {
+    oAPP.fn.fnIpcMain_EditorSave = function (event, res) {
 
         var BROWSKEY = parent.getBrowserKey();
 
@@ -160,7 +166,7 @@
      * - 에디터 타입에 따른 에디터 정보 리턴
      * - 에디터 타입에 따른 에디터 정보가 없으면 undefined
      ************************************************************************/
-    oAPP.fn.fnGetEditorData = function(OBJTY) {
+    oAPP.fn.fnGetEditorData = function (OBJTY) {
 
         // 세개의 오브젝트 중에 하나라도 없으면 빠져나감.
         if (!OBJTY || !oAPP.DATA || !oAPP.DATA.APPDATA || !oAPP.DATA.APPDATA.T_EDIT) {
@@ -183,7 +189,7 @@
      * @param {Object}  oSaveData
      * - 저장할 에디터 정보와 데이터     
      ************************************************************************/
-    oAPP.fn.fnSetEditorData = function(oSaveData) {
+    oAPP.fn.fnSetEditorData = function (oSaveData) {
 
         // 세개의 오브젝트 중에 하나라도 없으면 빠져나감.
         if (!oAPP.DATA || !oAPP.DATA.APPDATA || !oAPP.DATA.APPDATA.T_EDIT) {
