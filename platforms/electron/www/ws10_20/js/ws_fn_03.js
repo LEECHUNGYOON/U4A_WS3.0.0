@@ -815,9 +815,8 @@
      ************************************************************************/
     oAPP.fn.fnWs20SideMENUITEM_10 = (oEvent) => {
 
-        sap.m.MessageToast.show("준비중입니다..");
-        // alert("Split Position Change!!");
-
+        oAPP.fn.callDesignLayoutChangePopupOpener();
+        
     }; // end of oAPP.fn.fnWs20SideMENUITEM_10
 
     /************************************************************************

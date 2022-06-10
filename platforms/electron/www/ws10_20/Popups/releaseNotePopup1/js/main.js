@@ -1,4 +1,4 @@
-let oAPP = {};
+let oAPP = parent.oAPP;
 let oHandle = {};
 oHandle.UI = {};
 
@@ -7,7 +7,7 @@ oHandle.UI = {};
  ************************************************************************/
 function onLoadBootStrapSetting() {
 
-    var oSettings = oAPP.fnGetSettingsInfo(),
+    var oSettings = oAPP.fn.fnGetSettingsInfo(),
         oSetting_UI5 = oSettings.UI5,
         sVersion = oSetting_UI5.version,
         sTestResource = oSetting_UI5.testResource,
@@ -44,15 +44,12 @@ function onLoadBootStrapSetting() {
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    //electron API 오브젝트 
-    oAPP = parent.fn_getParent();
+    oAPP.Octokit = oAPP.REMOTE.require("@octokit/core").Octokit;
 
-    oAPP.Octokit = oAPP.remote.require("@octokit/core").Octokit;
+    //Releases Update data 통신방식     
+    oHandle.isCDN = oAPP.fn.fnGetIsCDN();
 
-    //Releases Update data 통신방식 
-    oHandle.isCDN = oAPP.fnGetIsCDN();
-
-    var oSettings = oAPP.fnGetSettingsInfo(),
+    var oSettings = oAPP.fn.fnGetSettingsInfo(),
         oGitSettings = oSettings.GITHUB,
         sGitDevKey = oGitSettings.devKey;
 
@@ -62,23 +59,23 @@ document.addEventListener('DOMContentLoaded', () => {
     oHandle.REPO = oGitSettings.REPO; //폴더명
 
     //현재 WS3.0 버젼 
-    oHandle.curVER = `v${oAPP.APP.getVersion()}`;
-    // oHandle.curVER = "v3.0.0";
+    // oHandle.curVER = "V3.00.09";
+    oHandle.curVER = oAPP.APP.getVersion();
 
-    var sServerPath = oAPP.fnGetServerPath();
+    var sServerPath = oAPP.fn.fnGetServerPath();
 
     //SAP 서버 통신 URL     
     oHandle.sapURL = `${sServerPath}/GET_WS_RELEASE_DATA`;
 
-    // UI5 BootStrap 
+    // UI5 BootStrap
     onLoadBootStrapSetting();
 
 });
 
-window.addEventListener("load", () => {
+window.addEventListener('load', () => {
 
     //UI5 Start 
-    sap.ui.getCore().attachInit(function () {
+    sap.ui.getCore().attachInit(() => {
         gfn_crtUI_Main();
     });
 
@@ -137,6 +134,7 @@ function gfn_crtUI_Main() {
 
 }
 
+
 // 릴리즈 노트 라인 아이템 구성 
 function gfn_crtUI_Item(oParent) {
 
@@ -153,12 +151,12 @@ function gfn_crtUI_Item(oParent) {
 
 }
 
+
 // 릴리즈 노트 라인 아이템 구성 - SAP 
 function gfn_crtUI_Item_SAP(oParent) {
 
     let oformData = new FormData();
     oformData.append('VER', oHandle.curVER);
-    oformData.append('ISADM', oAPP.ISADM);
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", oHandle.sapURL, true);
@@ -167,20 +165,17 @@ function gfn_crtUI_Item_SAP(oParent) {
         if (xhr.readyState == XMLHttpRequest.DONE) {
 
             try {
-                
-                debugger;
-
                 var T_DATA = JSON.parse(xhr.response);
 
                 for (let i = 0; i < T_DATA.length; i++) {
 
                     var sLine = T_DATA[i];
-                    var LONGTXT = "<br><div style='background:white;'><br>" + sLine.LONGTXT + "<br><br></div>";
+                    var LONGTXT = "<br>" + sLine.LONGTXT;
 
                     var Lyear = Number(sLine.ERDAT.substr(0, 4)),
                         Lmon = Number(sLine.ERDAT.substr(4, 2)),
-                        Lmon = Lmon - 1,
-                        Lday = Number(sLine.ERDAT.substr(6, 2)),
+                        Lmon = Lmon - 1;
+                    Lday = Number(sLine.ERDAT.substr(6, 2)),
                         Lhour = Number(sLine.ERTIM.substr(0, 2)),
                         Lmin = Number(sLine.ERTIM.substr(2, 2));
 
@@ -221,9 +216,6 @@ function gfn_crtUI_Item_SAP(oParent) {
 
 
             } catch (err) {
-
-                //waiting off
-                oHandle.UI.PAGE.setBusy(false);
 
             }
 
@@ -266,7 +258,7 @@ async function gfn_crtUI_Item_GITHUB(oParent) {
             continue;
         }
 
-        var LONGTXT = "<br><div style='background:white;'><br>" + sLine.body + "<br><br></div>";
+        var LONGTXT = "<br>" + sLine.body;
 
         var oDate = new Date(sLine.published_at);
 

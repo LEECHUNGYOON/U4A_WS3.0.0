@@ -238,11 +238,11 @@
                     text: "Options..",
                     enabled: true,
                 },
-                {
-                    key: "WMENU40_03",
-                    text: "User Profile",
-                    enabled: true,
-                },
+                // {
+                //     key: "WMENU40_03",
+                //     text: "User Profile",
+                //     enabled: true,
+                // },
                 {
                     key: "WMENU40_04",
                     text: "Logoff",
@@ -259,11 +259,12 @@
                     key: "WMENU50_01",
                     text: "Application Help",
                     enabled: true,
-                }, {
-                    key: "WMENU50_02",
-                    text: "Settings",
-                    enabled: true,
                 },
+                // {
+                //      key: "WMENU50_02",
+                //      text: "Settings",
+                //      enabled: true,
+                //  },
                 {
                     key: "WMENU50_03",
                     text: "Document",
