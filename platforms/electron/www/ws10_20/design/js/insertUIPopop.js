@@ -400,7 +400,7 @@
       //ddlb 선택한정보(23번 테이블 구조)
       l_ret.E_EMB_AGGR = oAPP.DATA.LIB.T_0023.find(a => a.UIATK === l_selky);
 
-
+      
       //리스트 선택정보(22번 테이블 구조)
       l_ret.E_UIOBJ = oAPP.DATA.LIB.T_0022.find( a=> a.UIOBK === is_UI.UIOBK );
 

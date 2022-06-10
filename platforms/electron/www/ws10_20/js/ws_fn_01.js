@@ -257,7 +257,7 @@
 
             aWMENU50 = [{
                     key: "WMENU50_01",
-                    text: "Application Help",
+                    text: "U4A Help Document",
                     enabled: true,
                 },
                 // {
@@ -628,6 +628,7 @@
             oAppDelBtn = new sap.m.Button("appDelBtn", {
                 text: "Delete",
                 icon: "sap-icon://delete",
+                type: sap.m.ButtonType.Reject,
                 tooltip: "Delete (Ctrl+F10)",
                 press: oAPP.events.ev_AppDelete
             })

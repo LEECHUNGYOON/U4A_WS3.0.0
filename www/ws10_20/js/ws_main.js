@@ -157,6 +157,13 @@
 
     };
 
+    oAPP.main.fnOnSleep = (ms) => {
+
+        const wakeUpTime = Date.now() + ms;
+        while (Date.now() < wakeUpTime) {}
+
+    };
+
     /************************************************************************
      * window Event Handle ..
      ************************************************************************/
@@ -185,24 +192,19 @@
             if (oAppInfo.IS_EDIT == "X") {
 
                 var sPath = parent.getServerPath() + '/kill_session?APPID=' + oAppInfo.APPID + "&SSID=" + SSID;
-                fetch(sPath, {
-                    keepalive: true
-                });
-                
-                // fetch(sPath);
-                // navigator.sendBeacon(sPath);
+                navigator.sendBeacon(sPath);
+
+                oAPP.main.fnOnSleep(1000);
+
                 return;
 
             }
 
             // Edit 모드가 아니라면 세션만 죽인다.
             var sPath = parent.getServerPath() + '/kill_session?SSID=' + SSID;
-            fetch(sPath, {
-                keepalive: true
-            });
+            navigator.sendBeacon(sPath);
 
-            // fetch(sPath);
-            // navigator.sendBeacon(sPath);
+            oAPP.main.fnOnSleep(1000);
             
         }
 

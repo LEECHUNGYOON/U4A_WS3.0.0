@@ -6,7 +6,7 @@
         //MENU UI생성.
         var oMenu1 = new this.sap.m.Menu({title:"{/lcmenu/title}"});
 
-        var oModel = new this.sap.ui.model.json.JSONModel();      
+        var oModel = new this.sap.ui.model.json.JSONModel();
 
         //context menu popover에 모델 설정.
         oMenu1.setModel(oModel);
@@ -308,13 +308,23 @@
             if(oAPP.fn.chkUiCardinality(ls_tree, param.E_EMB_AGGR.UIATK, param.E_EMB_AGGR.ISMLB) === true){
                 return;
             }
+
+            var l_cnt = parseInt(param.E_CRTCNT);
+
+            //[워크벤치] 특정 API / UI 에 대한 중복 대상 관리 여부 확인.
+            if(oAPP.fn.designChkUnique(param.E_UIOBJ.UIOBK, l_cnt) === true){        
+                return;
+            }
+
+            //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.
+            if(oAPP.fn.designChkHiddenAreaUi(param.E_UIOBJ.UIOBK, ls_tree.UIOBK) === true){
+                return;
+            }
             
             //context menu 호출 UI의 child 정보가 존재하지 않는경우 생성.
             if(!ls_tree.zTREE){
                 ls_tree.zTREE = [];
-            }
-
-            var l_cnt = parseInt(param.E_CRTCNT);
+            }            
 
             //부모 UI의 입력한 AGGREGATION정보 얻기.
             var ls_0015 = oAPP.attr.prev[ls_tree.OBJID]._T_0015.find( a => a.UIATK === param.E_EMB_AGGR.UIATK && a.UIATY === "3" );
@@ -948,7 +958,7 @@
 
         //AGGR 선택 팝업의 CALLBACK FUNCTION.
         function lf_aggrPopup_cb(param, i_cdata){
-            debugger;
+
             //이동 가능한 aggregation 정보가 존재하지 않는경우.
             if(typeof param === "undefined"){
                 //오류 메시지 출력.
@@ -1083,6 +1093,17 @@
         //복사된 정보중 tree에 관련된 정보 발췌.
         var l_cdata = l_cpoied[0].DATA;
 
+
+        //복사한 UI가 이미 존재하는경우 붙여넣기 skip 처리.
+        if(oAPP.fn.designChkUnique(l_cdata.UIOBK) === true){
+            return;
+        }
+
+        //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.
+        if(oAPP.fn.designChkHiddenAreaUi(l_cdata.UIOBK, ls_tree.UIOBK) === true){
+            return;
+        }
+        
 
         //aggregation 선택 팝업 호출.
         if(typeof oAPP.fn.aggrSelectPopup !== "undefined"){

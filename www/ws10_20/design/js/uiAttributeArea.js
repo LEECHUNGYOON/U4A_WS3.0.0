@@ -4612,7 +4612,7 @@
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
       return;
     }
-    debugger;
+
 
     //drag 정보 얻기.
     var l_json = event.dataTransfer.getData("prc001");
@@ -4866,5 +4866,61 @@
 
 
   };  //aggregation 바인딩 처리 가능여부 점검.
+
+
+
+
+  //attribute 입력건에 오류가발생한 경우 초기값으로 변경 처리.
+  oAPP.fn.attrClearErrorValue = function(){
+
+    if(!document.activeElement || !document.activeElement.id){return;}
+
+    //현재 focus된 UI정보 얻기.
+    var l_ui = oAPP.fn.getUiInstanceDOM(document.activeElement, sap.ui.getCore());
+
+    //UI 정보를 얻지 못한 경우 exit.
+    if(!l_ui){return;}
+
+    //해당 UI의 바인딩 context 정보 얻기.
+    var l_ctxt = l_ui.getBindingContext();
+
+    //바인딩 정보를 얻지 못한 경우 exit.
+    if(!l_ctxt){return;}
+
+    //해당 UI가 attribute 영역건이 아닌경우 exit.
+    if(l_ctxt.sPath.substr(0,7) !== "/T_ATTR"){
+      return;
+    }
+
+    //attr 정보  얻기.
+    var ls_attr = l_ctxt.getProperty();
+
+    //정보를 얻지 못한 경우, 프로퍼티가 아닌경우 EXIT.
+    if(!ls_attr || ls_attr.UIATY !== "1"){return;}
+
+    var l_dval = "", ls_0023;
+
+    //ROOT가 아닌경우, 직접 입력가능한 aggregation이 아닌경우 default 값 얻기.
+    if(ls_attr.UIATK.indexOf("_1") === -1){
+      ls_0023 = oAPP.DATA.LIB.T_0023.find( a => a.UIATK === ls_attr.UIATK );
+
+    }
+
+    if(ls_0023){
+      l_dval = ls_0023.DEFVL;
+    }
+
+    //DEFAULT 값으로 복원 처리.
+    ls_attr.UIATV = l_dval;
+
+    //바인딩 해제 처리.
+    ls_attr.ISBND = "";
+    ls_attr.MPROP = "";
+
+    //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
+    oAPP.fn.attrChangeProc(ls_attr, "", false, true);
+
+
+  };  //attribute 입력건에 오류가발생한 경우 초기값으로 변경 처리.
 
 })();

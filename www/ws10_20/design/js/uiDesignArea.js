@@ -518,6 +518,66 @@
   };  //tree embeded aggregation 아이콘 표현.
 
 
+
+
+  //[워크벤치] 특정 API / UI 에 대한 중복 대상 관리
+  oAPP.fn.designChkUnique = function(UIOBK, iCnt){
+    
+    //[워크벤치] 특정 API / UI 에 대한 중복 대상 관리 여부건인지 확인.
+    var ls_UA039 = oAPP.DATA.LIB.T_9011.find( a=> a.CATCD === "UA039" && a.FLD02 === UIOBK && a.FLD04 === "X");
+    if(!ls_UA039){
+      //대상건이 아닌경우 exit.
+      return;
+    }
+
+    //생성 count 파라메터가 존재하는경우 2개 이상을 입력했다면 오류 flag 처리.
+    if(typeof iCnt !== "undefined" && iCnt >= 2){
+      //130	Target API and UI &1 does not allow one or more assign.
+      parent.showMessage(sap,10, "E", "Target API and UI " + ls_UA039.FLD01 +  " does not allow one or more assign.");
+      return true;
+    }
+
+    //design tree를 itab으로 변환.
+    var lt_tree = oAPP.fn.parseTree2Tab(oAPP.attr.oModel.oData.zTREE);
+
+    if(!lt_tree){return;}
+
+    //이미 해당 UI가 추가됐는지 확인.
+    if(lt_tree.findIndex( a => a.UIOBK === UIOBK) !== -1){
+      //추가 됐다면 존재함 flag return.
+      //130	Target API and UI &1 does not allow one or more assign.
+      parent.showMessage(sap,10, "E", "Target API and UI " + ls_UA039.FLD01 +  " does not allow one or more assign.");
+      return true;
+    }
+
+
+  };  //[워크벤치] 특정 API / UI 에 대한 중복 대상 관리
+
+
+
+
+  //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보
+  oAPP.fn.designChkHiddenAreaUi = function(UIOBK, PUIOK){
+
+    //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 여부 확인.
+    var ls_UA040 = oAPP.DATA.LIB.T_9011.find( a=> a.CATCD === "UA040" && a.FLD01 === UIOBK && a.FLD07 !== "X" );
+
+    //대상건이 아닌경우 exit.
+    if(!ls_UA040){return;}
+
+    //U4A_HIDDEN_AREA DIV 영역에 추가대상건인경우 추가 가능한 부모 UI OBJECT KEY가 다르다면.
+    if(ls_UA040.FLD04 !== PUIOK){
+      //131	Target API and UI &1 can only target Location &2.
+      parent.showMessage(sap, 10, "E", "Target API and UI " + ls_UA040.FLD03 +  " can only target Location " + ls_UA040.FLD06 );
+      return true;
+
+    }
+
+  } //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보
+
+
+
+
   /************************************************************************
    * UI design tree 영역 UI에 따른 ICON 세팅.
    * **********************************************************************
@@ -1656,7 +1716,6 @@
 
     if(!i_OBJID){return;}
 
-    debugger;
 
     //미리보기 영역에서 drag처리한 UI명 얻기.
     var l_objid = oEvent.mParameters.browserEvent.dataTransfer.getData("text/plain");
@@ -1672,6 +1731,11 @@
 
     //dragUI명과 dropUI명이 같은경우 exit.
     if(l_drag.OBJID === l_drop.OBJID){
+      return;
+    }
+
+    //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.
+    if(oAPP.fn.designChkHiddenAreaUi(l_drag.UIOBK, l_drop.UIOBK) === true){
       return;
     }
 

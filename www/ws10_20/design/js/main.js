@@ -374,7 +374,7 @@
 
         //DB 검색에 실패한 경우.
         if(param.ERROR === "X"){
-          debugger;
+
           is_tab.ERROR = param.ERROR;
           parent.showMessage(sap, 20, "E", "Fail to Library load.");
           return;
@@ -886,24 +886,26 @@
 
     //design 영역 순서 설정.
     oAPP.fn.setDesignLayout = function(){
-      debugger;
+
       //design 영역의 split container UI 얻기.
       var l_split = sap.ui.getCore().byId("designSplit");
       
+      //현재 design영역의 page정보 얻기.
       var lt_cont = l_split.getContentAreas();
 
       // design 영역 순서 customize 정보 얻기.
-      var lt_layout;
+      var lt_layout = parent.getP13nData("designLayout");
 
-      lt_layout = [{NAME:"designTree", IMAGE:"sap-icon://text-align-right", POSIT:0, UIID:"oDesignTree",SID:"designTree"},
-                        {NAME:"Preview", IMAGE:"sap-icon://header", POSIT:1, UIID:"oDesignPreview",SID:"designPreview"},
-                        {NAME:"Attribute", IMAGE:"sap-icon://customize", POSIT:2, UIID:"oDesignAttr",SID:"designAttr"}];
-
-      //customizing 하지 않은경우 default 순서로 설정.
+      //customizing 하지 않은경우, design영역의 page정보가 없는경우 default 순서로 설정.
       if(!lt_layout && lt_cont.length === 0){
         oSApp.addContentArea(oAPP.attr.ui.oDesignTree);
         oSApp.addContentArea(oAPP.attr.ui.oDesignPreview);
         oSApp.addContentArea(oAPP.attr.ui.oDesignAttr);
+        return;
+      }
+
+      //customize가 없으면서 이미 design영역에 page가 존재하면 exit.
+      if(!lt_layout && lt_cont.length > 0){
         return;
       }
 

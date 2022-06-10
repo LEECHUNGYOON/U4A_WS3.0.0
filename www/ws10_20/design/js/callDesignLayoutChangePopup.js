@@ -162,8 +162,8 @@
             //팝업 종료 처리.
             lf_close(oDlg, true);
 
-            // oAPP.fn.getCopyData("U4AWSuiDesignArea");
-            // oAPP.fn.setCopyData("U4AWSuiDesignArea", ["U4AWSuiDesignArea"], ls_tree);
+            //구성한 design layout 정보 저장 처리.
+            parent.setP13nData("designLayout", oMdl.oData.T_LAYOUT);
 
         }); //저장전 확인 팝업 호출.
         
@@ -212,7 +212,7 @@
     function lf_getLayout(oDlg, oMdl){
         
         //이전 저장한 레이아웃정보 얻기.
-        var lt_layout;
+        var lt_layout = parent.getP13nData("designLayout");
 
 
         //이전에 저장한 정보가 없다면 default로 세팅.

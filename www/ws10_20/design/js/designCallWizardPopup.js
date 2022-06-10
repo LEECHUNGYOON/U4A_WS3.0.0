@@ -50,17 +50,17 @@
 
         //서버 호출.
         sendAjax(oAPP.attr.servNm + "/ui_temp_wzd", oFormData, function(param){
+            
+            //WAITING OFF.
+            parent.setBusy("");
+
             //WIZARD 데이터구성에 실패한 경우.
-            if(param.RETCD === "E"){
+            if(param.RETCD !== "S"){
                 //오류에 대한 메시지 처리.
                 parent.showMessage(sap, 10, "E", param.RTMSG);
                 return;
             }
             
-            //성공이 아닌경우 exit.
-            if(param.RETCD !== "S"){
-                return;
-            }
             
             //template wizard 팝업 호출.
             oAPP.fn.fnUiTempWizardPopupOpener(param);

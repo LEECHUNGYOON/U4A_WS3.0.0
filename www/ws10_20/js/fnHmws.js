@@ -641,7 +641,7 @@
     }; // end of oAPP.fn.fnWS20WMENU40_05
 
     /************************************************************************
-     * [WS20] Application Help
+     * [WS20] U4A Help Document
      ************************************************************************/
     oAPP.fn.fnWS20WMENU50_01 = function () {
 
@@ -649,6 +649,8 @@
         if (parent.getBusy() == 'X') {
             return;
         }
+
+        oAPP.fn.fnU4AHelpDocuPopupOpener();
 
     }; // end of oAPP.fn.fnWS20WMENU50_01
 

@@ -1,4 +1,5 @@
 {
+<<<<<<< Updated upstream
   "browserWindow": {
     "height": 800,
     "webPreferences": {
@@ -20,8 +21,19 @@
   "browserWindowInstance": {
     "loadURL": {
       "url": "index.html"
+=======
+    "browserWindow": {
+        "height": 800,
+        "webPreferences": {
+            "devTools": true,
+            "nodeIntegration": true,
+            "enableRemoteModule": true,
+            "contextIsolation": false,
+            "backgroundThrottling": false,
+            "nativeWindowOpen": true,
+            "webSecurity": false
+        },
+        "width": 800
+>>>>>>> Stashed changes
     }
-  },
-  "scheme": "file",
-  "hostname": "localhost"
 }
