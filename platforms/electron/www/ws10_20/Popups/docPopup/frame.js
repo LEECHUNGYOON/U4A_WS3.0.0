@@ -33,6 +33,20 @@ let oAPP = (function(window) {
 
     };
 
+    oAPP.fn.getSessionKey = function() {
+
+        let oCurrWin = oAPP.REMOTE.getCurrentWindow();
+        if (oCurrWin.isDestroyed()) {
+            return;
+        }
+
+        let oWebCon = oCurrWin.webContents,
+            oWebPref = oWebCon.getWebPreferences();
+
+        return oWebPref.partition;
+
+    };
+
     /************************************************************************
      * IPCRENDERER Events..
      ************************************************************************/
@@ -48,7 +62,7 @@ let oAPP = (function(window) {
             return;
         }
 
-        oWs_frame.src = "doc.html";       
+        oWs_frame.src = "doc.html";
 
     });
 

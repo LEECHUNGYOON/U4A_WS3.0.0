@@ -63,6 +63,40 @@ function fnLoadBootStrapSetting() {
 
 } // end of fnLoadBootStrapSetting
 
+/************************************************************************
+ * 클라이언트 세션 유지를 위한 function
+ * **********************************************************************/
+function fnKeepClientSession() {
+
+    var oAPP = parent.oAPP;
+
+    // 브라우저의 세션 키
+    var sSessionKey = oAPP.fn.getSessionKey();
+
+    // 로딩할때 세션 타임 시작을 전체 브라우저에 알린다.
+    oAPP.IPCRENDERER.send("if-session-time", sSessionKey);
+
+    // 윈도우 클릭 이벤트 해제
+    window.removeEventListener("click", fnWindowClickEventListener);
+    window.removeEventListener("keyup", fnWindowClickEventListener);
+
+    // 윈도우 클릭 이벤트 걸기
+    window.addEventListener("click", fnWindowClickEventListener);
+    window.addEventListener("keyup", fnWindowClickEventListener);
+
+} // end of fnKeepClientSession
+
+function fnWindowClickEventListener() {
+
+    var oAPP = parent.oAPP;
+
+    // 브라우저의 세션 키
+    var sSessionKey = oAPP.fn.getSessionKey();
+
+    // 로딩할때 세션 타임 시작을 전체 브라우저에 알린다.
+    oAPP.IPCRENDERER.send("if-session-time", sSessionKey);
+
+}; // end of fnWindowClickEventListener
 
 //====================================================================================        
 // 내부 프로세스 제어 및 전역 필드 
@@ -99,6 +133,9 @@ document.addEventListener('keydown', function(e) {
 
 // UI5 Boot Strap을 로드 하고 attachInit 한다.
 fnLoadBootStrapSetting();
+
+// 클라이언트 세션 유지를 위한 이벤트를 걸어둔다.
+fnKeepClientSession();
 
 //dom start event
 // document.addEventListener('DOMContentLoaded', () => {
@@ -618,7 +655,7 @@ window.addEventListener('load', () => {
     let oApp = new sap.m.SplitApp({
         mode: "HideMode",
         busyIndicatorDelay: 1
-    }); 
+    });
 
     //====================================================================================        
     // 좌측 영역 
@@ -784,7 +821,7 @@ window.addEventListener('load', () => {
     });
 
     debugger;
-    
+
     oTool.addContentLeft(oBTsave);
 
     //toolbar 우측 : 문서 갱신 date/time
@@ -868,6 +905,10 @@ window.addEventListener('load', () => {
     });
 
     oRch.attachChange(function() {
+
+        // 클라이언트 세션 유지를 위한 function
+        fnWindowClickEventListener();
+
         //변경 여부 지시자 설정 
         oPrc.isChang = true;
 

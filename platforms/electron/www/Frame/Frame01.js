@@ -624,7 +624,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
-        mainWindowState.manage(oBrowserWindow);
+        // mainWindowState.manage(oBrowserWindow);
 
         // oBrowserWindow.loadURL(PATH.join(APPPATH, "Frame", "Frame.html"));
 

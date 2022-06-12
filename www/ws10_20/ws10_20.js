@@ -18,11 +18,24 @@
 
                 oAPP.attr.scale += ev.deltaY * -0.01;
                 oAPP.attr.scale = Math.min(Math.max(-10, oAPP.attr.scale), 10);
-                console.log(oAPP.attr.scale);
+                // console.log(oAPP.attr.scale);
                 web.setZoomLevel(oAPP.attr.scale);
 
+                // zoom 정보 저장
+                if (oAPP.attr.zoomSetTimeOut) {
+                    clearTimeout(oAPP.attr.zoomSetTimeOut);
+                    delete oAPP.attr.zoomSetTimeOut;
+                }
+
+                oAPP.attr.zoomSetTimeOut = setTimeout(() => {
+
+                    oAPP.fn.setPersonWinZoom("S");
+                    console.log("zoom 저장!!");                    
+
+                }, 500);
+
             }
-            
+
         });
 
     }; // end of oAPP.fn.fnAttachMouseWheelEvent
