@@ -5,7 +5,7 @@
  * - file Desc : UI Client Editor Popup
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -25,7 +25,7 @@
     /************************************************************************
      * Client Editor (HTML, JAVASCRIPT) OPEN
      ************************************************************************/
-    oAPP.fn.fnClientEditorPopupOpen = function (OBJTY, OBJID, fnCallback) {
+    oAPP.fn.fnClientEditorPopupOpen = function(OBJTY, OBJID, fnCallback) {
 
         EDITORDATA.OBJTY = OBJTY;
         EDITORDATA.OBJID = OBJID;
@@ -117,7 +117,7 @@
                 new sap.m.Button({
                     type: sap.m.ButtonType.Reject,
                     icon: "sap-icon://decline",
-                    press: function (oEvent) {
+                    press: function(oEvent) {
                         var oDialog = oEvent.getSource().getParent();
                         oDialog.close();
                     }
@@ -129,7 +129,7 @@
             ],
 
             // Events
-            afterOpen: function () {
+            afterOpen: function() {
 
                 // Type에 따라 관련 데이터를 가져온다.
                 switch (EDITORDATA.OBJTY) {
@@ -143,12 +143,12 @@
                 }
 
             },
-            afterClose: function (oEvent) {
+            afterClose: function(oEvent) {
 
                 EDITORDATA = {};
 
             },
-            escapeHandler: function () {
+            escapeHandler: function() {
                 var oDialog = sap.ui.getCore().byId(C_DLG_ID);
                 if (!oDialog) {
                     return;
@@ -181,7 +181,7 @@
 
                 new sap.m.Button({
                     icon: "sap-icon://decline",
-                    press: function () {
+                    press: function() {
 
                         var oDialog = sap.ui.getCore().byId(C_DLG_ID);
                         if (oDialog == null) {
@@ -226,7 +226,7 @@
     /************************************************************************
      * Client Editor (HTML, JAVASCRIPT) Contents UI
      ************************************************************************/
-    oAPP.fn.fnClientEditorPopupContents = function () {
+    oAPP.fn.fnClientEditorPopupContents = function() {
 
         var oCodeEditor = new sap.ui.codeeditor.CodeEditor(C_CODEEDIT_ID, {
             colorTheme: "solarized_dark",
@@ -235,7 +235,7 @@
         }).bindProperty("editable", "/WS20/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding);
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function (oControl) {
+            onAfterRendering: function(oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -261,11 +261,11 @@
     /************************************************************************
      * Getting Client Editor Javascript Data
      ************************************************************************/
-    oAPP.fn.fnGetClientJsData = function (EDITORDATA) {
+    oAPP.fn.fnGetClientJsData = function(EDITORDATA) {
 
         var sEditorDataBindPath = CLIENT_EDITOR_BIND_ROOT_PATH + "/EDITDATA",
 
-            aCliEvt = oAPP.DATA.APPDATA.T_CEVT,
+            aCliEvt = jQuery.extend(true, [], oAPP.DATA.APPDATA.T_CEVT),
 
             oFindScript = aCliEvt.find(a => a.OBJID == EDITORDATA.OBJID);
 
@@ -285,11 +285,13 @@
     /************************************************************************
      * Getting Client Editor HTML Data
      ************************************************************************/
-    oAPP.fn.fnGetClientHtmlData = function (EDITORDATA) {
+    oAPP.fn.fnGetClientHtmlData = function(EDITORDATA) {
 
         var sEditorDataBindPath = CLIENT_EDITOR_BIND_ROOT_PATH + "/EDITDATA",
 
-            aCliEvt = oAPP.DATA.APPDATA.T_CEVT,
+            aCliEvt = jQuery.extend(true, [], oAPP.DATA.APPDATA.T_CEVT),
+
+            // aCliEvt = oAPP.DATA.APPDATA.T_CEVT,
 
             oFindScript = aCliEvt.find(a => a.OBJID == EDITORDATA.OBJID);
 
@@ -309,7 +311,7 @@
     /************************************************************************
      * Client Editor (HTML, JAVASCRIPT) Save Event
      ************************************************************************/
-    oAPP.events.ev_pressClientEditorSave = function (oEvent) {
+    oAPP.events.ev_pressClientEditorSave = function(oEvent) {
 
         if (typeof GfnEditorCallback !== "function") {
             return;
@@ -375,7 +377,7 @@
     /************************************************************************
      * Client Editor (HTML, JAVASCRIPT) Delete Event
      ************************************************************************/
-    oAPP.events.ev_pressClientEditorDel = function (oEvent) {
+    oAPP.events.ev_pressClientEditorDel = function(oEvent) {
 
         var sEditorDataBindPath = CLIENT_EDITOR_BIND_ROOT_PATH + "/EDITDATA",
             oEditorData = APPCOMMON.fnGetModelProperty(sEditorDataBindPath),
@@ -395,7 +397,7 @@
     /************************************************************************
      * Client Editor (HTML, JAVASCRIPT) Pretty Print 기능
      ************************************************************************/
-    oAPP.events.ev_pressClientEditorPrettyPrint = function () {
+    oAPP.events.ev_pressClientEditorPrettyPrint = function() {
 
         var oCodeEditor = sap.ui.getCore().byId(C_CODEEDIT_ID);
         if (!oCodeEditor) {

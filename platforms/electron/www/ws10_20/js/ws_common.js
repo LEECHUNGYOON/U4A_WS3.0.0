@@ -379,62 +379,43 @@
     /*************************************************************************
      * [공통] 단축키 실행 할지 말지 여부 체크
      **************************************************************************/
-    oAPP.common.fnCheckShortCutExeAvaliable = () => {
+    oAPP.common.fnShortCutExeAvaliableCheck = () => {
 
-        return new Promise((resolve, reject) => {
+        // Busy Indicator가 실행중인지 확인
+        if (parent.getBusy() == 'X') {
+            console.log("!!단축기 실행 불가!!");
+            return "X";
+        }
 
-            // Busy Indicator가 실행중인지 확인
-            if (parent.getBusy() == 'X') {
-                resolve("X");
-                return;
-            }
+        // 현재 Dialog Popup이 실행 되어 있는지 확인.
+        var $oOpendDialog = $(".sapMDialogOpen");
+        if ($oOpendDialog.length) {
+            console.log("!!단축기 실행 불가!!");
+            return "X";
+        }
 
-            // 현재 Dialog Popup이 실행 되어 있는지 확인.
-            var $oOpendDialog = $(".sapMDialogOpen");
-            if ($oOpendDialog.length) {
-                resolve("X");
-                return;
-            }
+        console.log("!!___단축기 실행 가능__!!");
 
-            resolve("");
+        return "";
 
-        });
-
-    }; // end of oAPP.common.fnCheckShortCutExeAvaliable
+    }; // end of oAPP.common.fnShortCutExeAvaliableCheck
 
     /*************************************************************************
      * Shortcut 설정
      **************************************************************************/
     oAPP.common.getShortCutList = function (sPgNo) {
 
-        let IS_DEV = APPCOMMON.fnGetModelProperty("/USERINFO/USER_AUTH/IS_DEV");
+        // let IS_DEV = APPCOMMON.fnGetModelProperty("/USERINFO/USER_AUTH/IS_DEV");
 
         var aShortCutWS10 = [{
                     KEY: "Ctrl+F12", // Application Create
                     fn: () => {
 
-                        oAPP.common.fnCheckShortCutExeAvaliable().then((result) => {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
 
-                            if (result == "X") {
-                                console.log("실행 불가!!");
-                                return;
-                            }
-
-                            console.log("실행 가능!!");
-
-                            var oAppCreateBtn = sap.ui.getCore().byId("appCreateBtn");
-                            if (!oAppCreateBtn || !oAppCreateBtn.getEnabled() || !oAppCreateBtn.getVisible()) {
-                                return;
-                            }
-
-                            oAppCreateBtn.firePress();
-
-                        });
-
-                        return;
-
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -444,14 +425,18 @@
                         }
 
                         oAppCreateBtn.firePress();
+
                     }
                 },
                 {
                     KEY: "Ctrl+Shift+F1", // Application Change
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -461,14 +446,18 @@
                         }
 
                         oAppChangeBtn.firePress();
+
                     }
                 },
                 {
                     KEY: "Ctrl+F10", // Application Delete
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -478,14 +467,18 @@
                         }
 
                         oAppDelBtn.firePress();
+
                     }
                 },
                 {
                     KEY: "Shift+F11", // Application Copy
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -495,14 +488,18 @@
                         }
 
                         oAppCopyBtn.firePress();
+
                     }
                 },
                 {
                     KEY: "F7", // Display Button
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -512,14 +509,18 @@
                         }
 
                         oDisplayBtn.firePress();
+
                     }
                 },
                 {
                     KEY: "F8", // Application Execution
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -529,14 +530,18 @@
                         }
 
                         oAppExecBtn.firePress();
+
                     }
                 },
                 {
                     KEY: "Ctrl+F1", // Example Open
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -546,14 +551,18 @@
                         }
 
                         oExamBtn.firePress();
+
                     }
                 },
                 {
                     KEY: "Ctrl+F3", // Multi Preview
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -563,6 +572,7 @@
                         }
 
                         oMultiPrevBtn.firePress();
+
                     }
                 }
 
@@ -571,8 +581,11 @@
                     KEY: "Ctrl+F2", // Syntax Check Button
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -590,8 +603,11 @@
                     KEY: "F3", // Back Button
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -601,14 +617,19 @@
                         }
 
                         oBackBtn.firePress();
+
                     }
+
                 },
                 {
                     KEY: "Ctrl+F1", // Display or Change Button
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -638,8 +659,11 @@
                     KEY: "Ctrl+F3", // Activate Button
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -657,8 +681,11 @@
                     KEY: "Ctrl+S", // Save Button
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -675,8 +702,11 @@
                     KEY: "Ctrl+Shift+F12", // Mime Button
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -692,8 +722,11 @@
                     KEY: "Ctrl+F12", // Controller Button
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -709,8 +742,11 @@
                     KEY: "F8", // Application Execution Button
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -726,8 +762,11 @@
                     KEY: "Ctrl+F5", // Multi Preview Button
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -743,8 +782,11 @@
                     KEY: "Ctrl+Shift+F10", // Icon List Button
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -760,8 +802,11 @@
                     KEY: "Shift+F1", // Add Server Event Button
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -777,8 +822,11 @@
                     KEY: "F9", // Runtime Class Navigator Event Button
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
@@ -794,8 +842,11 @@
                     KEY: "Ctrl+F", // Find
                     fn: () => {
 
-                        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-                        if (parent.getBusy() == 'X') {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
                             return;
                         }
 
