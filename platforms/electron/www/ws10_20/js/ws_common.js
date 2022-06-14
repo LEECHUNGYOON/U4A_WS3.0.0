@@ -377,6 +377,32 @@
     // }; // end of oAPP.common.fnWindowOpen
 
     /*************************************************************************
+     * [공통] 단축키 실행 할지 말지 여부 체크
+     **************************************************************************/
+    oAPP.common.fnCheckShortCutExeAvaliable = () => {
+
+        return new Promise((resolve, reject) => {
+
+            // Busy Indicator가 실행중인지 확인
+            if (parent.getBusy() == 'X') {
+                resolve("X");
+                return;
+            }
+
+            // 현재 Dialog Popup이 실행 되어 있는지 확인.
+            var $oOpendDialog = $(".sapMDialogOpen");
+            if ($oOpendDialog.length) {
+                resolve("X");
+                return;
+            }
+
+            resolve("");
+
+        });
+
+    }; // end of oAPP.common.fnCheckShortCutExeAvaliable
+
+    /*************************************************************************
      * Shortcut 설정
      **************************************************************************/
     oAPP.common.getShortCutList = function (sPgNo) {
@@ -386,6 +412,26 @@
         var aShortCutWS10 = [{
                     KEY: "Ctrl+F12", // Application Create
                     fn: () => {
+
+                        oAPP.common.fnCheckShortCutExeAvaliable().then((result) => {
+
+                            if (result == "X") {
+                                console.log("실행 불가!!");
+                                return;
+                            }
+
+                            console.log("실행 가능!!");
+
+                            var oAppCreateBtn = sap.ui.getCore().byId("appCreateBtn");
+                            if (!oAppCreateBtn || !oAppCreateBtn.getEnabled() || !oAppCreateBtn.getVisible()) {
+                                return;
+                            }
+
+                            oAppCreateBtn.firePress();
+
+                        });
+
+                        return;
 
                         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
                         if (parent.getBusy() == 'X') {

@@ -21,6 +21,7 @@
                 // console.log(oAPP.attr.scale);
                 web.setZoomLevel(oAPP.attr.scale);
 
+                // zoom 정보 저장
                 if (oAPP.attr.zoomSetTimeOut) {
                     clearTimeout(oAPP.attr.zoomSetTimeOut);
                     delete oAPP.attr.zoomSetTimeOut;
@@ -29,7 +30,7 @@
                 oAPP.attr.zoomSetTimeOut = setTimeout(() => {
 
                     oAPP.fn.setPersonWinZoom("S");
-                    console.log("zoom 저장!!");
+                    console.log("zoom 저장!!");                    
 
                 }, 500);
 
