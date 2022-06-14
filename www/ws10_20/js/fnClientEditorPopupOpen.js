@@ -291,8 +291,6 @@
 
             aCliEvt = jQuery.extend(true, [], oAPP.DATA.APPDATA.T_CEVT),
 
-            // aCliEvt = oAPP.DATA.APPDATA.T_CEVT,
-
             oFindScript = aCliEvt.find(a => a.OBJID == EDITORDATA.OBJID);
 
         if (typeof oFindScript === "undefined") {
@@ -351,17 +349,18 @@
         /******************************************************************
          * Editor에 입력한 값이 있을 경우.
          ******************************************************************/
+        var oNewEditorData = jQuery.extend(true, {}, oEditorData);
 
         // 서버에서 수집된 Client 이벤트가 있을 경우
         if (iFindIndex >= 0) {
 
             // 해당 Array에 업데이트
-            oAPP.DATA.APPDATA.T_CEVT[iFindIndex] = oEditorData;
+            oAPP.DATA.APPDATA.T_CEVT[iFindIndex] = oNewEditorData;
 
         } else {
 
             // 해당 Array에 신규 추가
-            oAPP.DATA.APPDATA.T_CEVT.push(oEditorData);
+            oAPP.DATA.APPDATA.T_CEVT.push(oNewEditorData);
 
         }
 
