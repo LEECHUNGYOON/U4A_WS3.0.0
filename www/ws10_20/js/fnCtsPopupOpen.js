@@ -94,14 +94,14 @@
                     }
                 }),
 
-                // CTS 신규 생성 버튼
-                new sap.m.Button({
-                    type: sap.m.ButtonType.Ghost,
-                    icon: "sap-icon://document",
-                    press: function() {
-                        oAPP.fn.fnNewCtsPopUpOpen();
-                    }
-                }).addStyleClass("sapUiSmallMarginBegin"),
+                // // CTS 신규 생성 버튼
+                // new sap.m.Button({
+                //     type: sap.m.ButtonType.Ghost,
+                //     icon: "sap-icon://document",
+                //     press: function() {
+                //         oAPP.fn.fnNewCtsPopUpOpen();
+                //     }
+                // }).addStyleClass("sapUiSmallMarginBegin"),
 
                 // Cancel 버튼
                 new sap.m.Button({

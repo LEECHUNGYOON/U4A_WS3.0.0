@@ -670,8 +670,13 @@ function setCleanHtml(msgtxt) {
         for (var i = 0; i < iChildCnt; i++) {
 
             var oChild = aChild[i],
-                aAttr = oChild.attributes,
-                iAttrLen = aAttr.length;
+                aAttr = oChild.attributes;
+
+            if(aAttr == null){
+                continue;
+            }   
+
+            var iAttrLen = aAttr.length;
 
             /* Dom이 가지고 있는 속성을 확인한다. */
             if (iAttrLen != 0) {
