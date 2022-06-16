@@ -21,7 +21,10 @@
 
         // oAPP.attr._oWorker.postMessage(0.5);
         if (oAPP.attr._oWorker) {
+
+            iSessionTime = 0.5;
             oAPP.attr._oWorker.postMessage(iSessionTime);
+            
         }
 
     }; // end of oAPP.fn.fnIpcMain_if_session_time

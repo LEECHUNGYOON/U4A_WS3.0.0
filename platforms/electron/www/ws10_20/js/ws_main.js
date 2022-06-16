@@ -276,8 +276,8 @@
             // 개인화 정보 설정
             oAPP.fn.fnOnInitP13nSettings();
 
-            // 클라이언트 세션 타임아웃 체크
-            oAPP.fn.fnSessionTimeoutCheck();
+            // // 클라이언트 세션 타임아웃 체크
+            // oAPP.fn.fnSessionTimeoutCheck();
 
             // 서버 세션 타임아웃 체크            
             oAPP.fn.fnServerSession();

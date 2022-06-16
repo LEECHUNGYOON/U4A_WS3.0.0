@@ -20,27 +20,31 @@
      * **********************************************************************/
     oAPP.fn.fnSessionTimeoutCheck = function () {
 
-        // 브라우저의 세션 키
-        var sSessionKey = parent.getSessionKey();
+        setTimeout(() => {
 
-        // 설정된 세션 timeout 시간 도래 여부를 체크하기 위한 워커 생성
-        oAPP.attr._oWorker = new Worker('./js/workers/u4aWsClientSessionWorker.js');
+            // 브라우저의 세션 키
+            var sSessionKey = parent.getSessionKey();
 
-        // 이벤트를 받으면 세션 타임을 초기화 한다.
-        parent.IPCMAIN.on('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
+            // 설정된 세션 timeout 시간 도래 여부를 체크하기 위한 워커 생성
+            oAPP.attr._oWorker = new Worker('./js/workers/u4aWsClientSessionWorker.js');
 
-        // 로딩할때 세션 타임 시작을 전체 브라우저에 알린다.
-        parent.IPCRENDERER.send("if-session-time", sSessionKey);
+            // // 윈도우 클릭 이벤트 걸기
+            // $(window).unbind("click", oAPP.fn.fnWindowClickEventListener);
+            // $(window).unbind("keyup", oAPP.fn.fnWindowClickEventListener);
 
-        // 윈도우 클릭 이벤트 걸기
-        $(window).unbind("click", oAPP.fn.fnWindowClickEventListener);
-        $(window).unbind("keyup", oAPP.fn.fnWindowClickEventListener);
+            // $(window).bind("click", oAPP.fn.fnWindowClickEventListener);
+            // $(window).bind("keyup", oAPP.fn.fnWindowClickEventListener);
 
-        $(window).bind("click", oAPP.fn.fnWindowClickEventListener);
-        $(window).bind("keyup", oAPP.fn.fnWindowClickEventListener);
+            // Session Time Worker onmessage 이벤트
+            oAPP.attr._oWorker.onmessage = oAPP.fn.fnSessionTimeWorkerOnMessage;
 
-        // Session Time Worker onmessage 이벤트
-        oAPP.attr._oWorker.onmessage = oAPP.fn.fnSessionTimeWorkerOnMessage;
+            // 이벤트를 받으면 세션 타임을 초기화 한다.
+            parent.IPCMAIN.on('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
+
+            // 로딩할때 세션 타임 시작을 전체 브라우저에 알린다.
+            parent.IPCRENDERER.send("if-session-time", sSessionKey);
+
+        }, 0);
 
     }; // end of oAPP.fn.fnSessionTimeoutCheck
 
@@ -805,7 +809,7 @@
         oAppInput.setValue(sAppID);
 
         oDispModeBtn.firePress();
-     
+
     }; // end of oAPP.fn.fnExamMoveToPageWs20
 
     /************************************************************************
@@ -814,7 +818,7 @@
     oAPP.fn.fnWs20SideMENUITEM_10 = (oEvent) => {
 
         oAPP.fn.callDesignLayoutChangePopupOpener();
-        
+
     }; // end of oAPP.fn.fnWs20SideMENUITEM_10
 
     /************************************************************************
