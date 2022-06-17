@@ -1253,9 +1253,11 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
     parent.setBusy(busy);
 
     var xhr = new XMLHttpRequest();
+
     xhr.onreadystatechange = function () { // 요청에 대한 콜백
         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
             if (xhr.status === 200 || xhr.status === 201) {
+                
 
                 if (xhr.responseType == 'blob') {
                     if (typeof fn_success == "function") {
@@ -1288,7 +1290,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
                 // 로그인 티켓 만료되면 로그인 페이지로 이동한다.
                 if (oResult.TYPE == "E") {
-
+                    
                     // error 콜백이 있다면 호출
                     if (typeof fn_error == "function") {
                         fn_error();

@@ -942,4 +942,69 @@
 
     }; // end of oAPP.fn.fnWs20SideFIXITM_10
 
+    /************************************************************************
+     * 서버 호스트 등록 여부 체크
+     ************************************************************************/
+    oAPP.fn.fnCheckServerHost = () => {
+
+        parent.setBusy("X");
+
+        var sServerHost = parent.getServerHost(),
+            oUserInfo = parent.getUserInfo(),
+            sUrl = `${sServerHost}/zu4a_wbc/ping_check?sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.MANDT}&sap-language=${oUserInfo.LANGU}`;
+
+        var xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+
+        // ajax call 실패 할 경우
+        xhr.onerror = function () {
+
+            var oServerInfo = parent.getServerInfo();
+            var sTitle = "Host File Check",
+                sIllustType = "sapIllus-SimpleReload",
+                sIllustSize = "Dialog",
+                sDesc = "호스트를 등록하세요!!\n\n";
+
+            sDesc += "Server IP : " + oServerInfo.SERVERIP + "\n";
+            sDesc += "Server Host : " + sServerHost;
+
+            oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, () => {
+
+                fn_logoff_success();
+
+            });
+
+            parent.setBusy("");
+
+        };
+
+        xhr.onreadystatechange = function (a, b, c, d, e) { // 요청에 대한 콜백         
+
+            if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
+                if (xhr.status === 200 || xhr.status === 201) {
+
+                    parent.setBusy("");
+
+                }
+            }
+
+        };
+
+        try {
+
+            xhr.open('GET', sUrl, true);
+
+        } catch (e) {
+
+            parent.showMessage(null, 99, "E", e.message);
+
+            parent.setBusy("");
+
+            return;
+        }
+
+        xhr.send();
+
+    }; // end of oAPP.fn.fnCheckServerHost
+
 })(window, $, oAPP);
