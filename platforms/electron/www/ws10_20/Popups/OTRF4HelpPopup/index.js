@@ -550,6 +550,8 @@ let oAPP = parent.oAPP;
 		//icon src 복사 처리.
 		//parent.setClipBoardTextCopy("$OTR:" + ls_line.ALIAS_NAME);
 
+		oAPP.fn.setClipBoardTextCopy("$OTR:" + ls_line.ALIAS_NAME);
+
 		//메시지 처리.
 		sap.m.MessageToast.show("$OTR:" + ls_line.ALIAS_NAME + " copied.");
 
