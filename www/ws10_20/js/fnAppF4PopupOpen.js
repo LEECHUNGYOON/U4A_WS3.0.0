@@ -366,7 +366,7 @@
             selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
             alternateRowColors: true,
             visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
-            minAutoRowCount: 20,
+            // minAutoRowCount: 20,
             fixedColumnCount: 1,
             columns: [
                 new sap.ui.table.Column({
