@@ -754,10 +754,10 @@
             oForm = new sap.ui.layout.form.Form({
                 editable: true,
                 layout: new sap.ui.layout.form.ResponsiveGridLayout({
-                    columnsXL: 4,
+                    columnsXL: 3,
                     columnsL: 2,
                     columnsM: 1,
-                    labelSpanXL: 6,
+                    labelSpanXL: 4,
                     labelSpanL: 3,
                     labelSpanM: 3,
                     labelSpanS: 12,

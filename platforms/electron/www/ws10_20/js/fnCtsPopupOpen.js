@@ -135,7 +135,6 @@
         var oCtsPanel = oAPP.fn.fnGetCtsDlgPanel(),
             oCtsTreeTable = oAPP.fn.fnGetCtsDlgTreeTable();
 
-
         var oCtsPage = new sap.m.Page({
             showHeader: false,
             content: [
@@ -149,9 +148,22 @@
                         new sap.m.Page({
                             showHeader: true,
                             customHeader: new sap.m.Bar({
-                                content: [
+                                contentLeft: [
                                     new sap.m.Button({
-                                        text: "refresh"
+                                        text: "refresh",
+                                        icon: "sap-icon://refresh",
+                                        type: sap.m.ButtonType.Emphasized,
+                                        press: () => {
+
+                                            var oCtsDialog = sap.ui.getCore().byId(C_DLG_ID);
+                                            if (oCtsDialog == null) {
+                                                return;
+                                            }
+
+                                            oCtsDialog.fireBeforeOpen();
+                                            oCtsDialog.fireAfterOpen();
+
+                                        }
                                     })
                                 ]
                             }),
@@ -360,6 +372,64 @@
                 // }
             },
             rowSelectionChange: oAPP.events.ev_CtsTreeTableRowSelect,
+
+        });
+
+        oCtsTreeTable.attachBrowserEvent("dblclick", function (oEvent) {
+
+            var oTarget = oEvent.target,
+                $SelectedRow = $(oTarget).closest(".sapUiTableRow");
+
+            if (!$SelectedRow.length) {
+                return;
+            }
+
+            var oRow = $SelectedRow[0],
+
+                sRowId1 = oRow.getAttribute("data-sap-ui-related"),
+                sRowId2 = oRow.getAttribute("data-sap-ui"),
+                sRowId = "";
+
+            if (sRowId1 == null && sRowId2 == null) {
+                return;
+            }
+
+            if (sRowId1) {
+                sRowId = sRowId1;
+            }
+
+            if (sRowId2) {
+                sRowId = sRowId2;
+            }
+
+            var oRow = sap.ui.getCore().byId(sRowId);
+            if (!oRow) {
+                return;
+            }
+
+            var oCtx = oRow.getBindingContext(),
+                oRowData = oRow.getModel().getProperty(oCtx.sPath);
+
+            // 선택된 CTS 정보의 Parent, child 번호를 전달한다.        
+            if (typeof GfnCtsCallback === "function") {
+                GfnCtsCallback(oRowData);
+            }
+
+            var oCtsDialog = sap.ui.getCore().byId(C_DLG_ID);
+            if (oCtsDialog) {
+                oCtsDialog.close();
+            }
+            // if (oRowData.APPID == "ROOT" || oRowData.PACKG == "ROOT") {
+            //     return;
+            // }
+
+            // fnCallback(oRowData);
+
+            // var oAppF4Dialog = sap.ui.getCore().byId("AppF4Dialog");
+            // if (oAppF4Dialog) {
+            //     oAppF4Dialog.close();
+            //     return;
+            // }
 
         });
 
