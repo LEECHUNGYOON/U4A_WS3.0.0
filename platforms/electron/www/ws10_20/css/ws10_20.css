@@ -257,3 +257,8 @@ body,
 
 
 
+.u4aAppF4IconTabbar,
+.u4aAppF4IconTabbar .sapMITBContainerContent,
+.u4aAppF4IconTabbar .sapMITBContent {
+    height: calc(100% - 1rem);
+}

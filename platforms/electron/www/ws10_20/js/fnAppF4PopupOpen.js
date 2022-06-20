@@ -63,6 +63,7 @@
             resizable: true,
             contentWidth: "100%",
             contentHeight: "100%",
+            verticalScrolling: false,
             // title: "UI5 Application Search Help",
             // titleAlignment: sap.m.TitleAlignment.Center,
             // icon: "sap-icon://search",
@@ -171,7 +172,7 @@
                 }
             }
 
-        });
+        }).addStyleClass("u4aAppF4IconTabbar");
 
         return oIconTab;
 
@@ -300,8 +301,25 @@
             key: "K1",
             text: sHeaderText,
             content: [
-                oPanel,
-                oTable
+                new sap.m.VBox({
+                    renderType: "Bare",
+                    height: "100%",
+                    items: [
+                        new sap.m.VBox({
+                            renderType: "Bare",
+                            height: "100%",
+                            items: [oPanel]
+                        }),
+                        new sap.m.Page({
+                            showHeader: false,
+                            content: [
+                                oTable
+                            ]
+                        }),
+                       
+                    ]
+                }),
+
             ]
         });
 
