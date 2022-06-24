@@ -39,6 +39,33 @@ let oAPP = (function(window) {
         oCurr.close();
     };
 
+
+    oAPP.fn.fnPredefinedCssPreview = (aPreviewCss) => {
+
+        var BROWSKEY = oAPP.attr.BROWSERKEY;
+
+        var oSendData = {
+            TYPE : "P", // P : Preview, S: Save
+            DATA : aPreviewCss
+        }
+
+        oAPP.IPCRENDERER.send(`${BROWSKEY}--if-ui5css-save`, oSendData);
+
+    };
+
+    oAPP.fn.fnPredefinedCssSave = (aSaveCss) => {
+
+        var BROWSKEY = oAPP.attr.BROWSERKEY;
+
+        var oSendData = {
+            TYPE : "S", // P : Preview, S: Save
+            DATA : aSaveCss
+        }
+
+        oAPP.IPCRENDERER.send(`${BROWSKEY}--if-ui5css-save`, oSendData);
+
+    };
+
     /************************************************************************
      * IPCRENDERER Events..
      ************************************************************************/
@@ -48,6 +75,9 @@ let oAPP = (function(window) {
         if (!oWs_frame) {
             return;
         }
+
+        // 브라우저 키
+        oAPP.attr.BROWSERKEY = oInfo.BROWSKEY;
 
         var sUrl = oInfo.sServerPath + "/getui5_pre_css?LIBPATH=" + oInfo.sServerBootStrapUrl;
 
