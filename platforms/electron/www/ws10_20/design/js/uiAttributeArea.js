@@ -3189,6 +3189,8 @@
           break;
 
         case "DH001024":  //Init not Loding Waiting
+        case "DH001101":  //Whether to use Router
+
           ls_0015.chk_visb = true;
           break;
 

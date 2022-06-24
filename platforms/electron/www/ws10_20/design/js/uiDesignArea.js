@@ -1183,6 +1183,12 @@
 
         //drop건을 drag위치에 추가.
         l_parent.zTREE.splice(l_dragIndex,0,i_drop);
+        
+        var l_funcnm = oAPP.fn.getUIAttrFuncName(oAPP.attr.prev[i_drag.POBID], "3", i_drag.UIATT, "_sIndexGetter");
+
+        l_dragIndex = oAPP.attr.prev[i_drag.POBID][l_funcnm](oAPP.attr.prev[i_drag.OBJID]);
+
+        l_dropIndex = oAPP.attr.prev[i_drop.POBID][l_funcnm](oAPP.attr.prev[i_drop.OBJID]);
 
         //drag건 미리보기 위치이동.
         oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(i_drag.OBJID, i_drag.UILIB, i_drag.POBID, i_drag.PUIOK, i_drag.UIATT, l_dropIndex, i_drag.UIOBK);
@@ -1204,6 +1210,12 @@
 
         //drag건을 drop위치에 추가.
         l_parent.zTREE.splice(l_dropIndex,0,i_drag);
+
+        var l_funcnm = oAPP.fn.getUIAttrFuncName(oAPP.attr.prev[i_drag.POBID], "3", i_drag.UIATT, "_sIndexGetter");
+
+        l_dragIndex = oAPP.attr.prev[i_drag.POBID][l_funcnm](oAPP.attr.prev[i_drag.OBJID]);
+        
+        l_dropIndex = oAPP.attr.prev[i_drop.POBID][l_funcnm](oAPP.attr.prev[i_drop.OBJID]);
 
         //drop건 미리보기 위치이동.
         oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(i_drop.OBJID, i_drop.UILIB, i_drop.POBID, i_drop.PUIOK, i_drop.UIATT, l_dragIndex, i_drop.UIOBK);

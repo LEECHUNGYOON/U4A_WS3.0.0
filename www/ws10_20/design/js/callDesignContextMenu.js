@@ -622,8 +622,23 @@
         
         //AGGREGATION상에서 위치가 변경된경우.
         if(l_indx1 !== l_indx2){
+
+            var l_cnt = l_indx2;
+
+            //부모 UI에 추가 불필요 대상 UI 정보 얻기.
+            var lt_UA026 = oAPP.DATA.LIB.T_9011.filter( a => a.CATCD === "UA026" && a.FLD02 !== "X" );
+
+            //같은 aggregation안에 있는 UI중 부모에 추가되지 않은 UI 존재 여부 확인.
+            for(var i=0; i<l_indx2; i++){
+                if(lt_UA026.findIndex( a => a.FLD01 === lt_filt[i].UILIB ) !== -1){
+                    //부모에 추가되지 않은 UI인경우 PARENT.insertAggregation(UI, index) 처리할 index -1.
+                    l_cnt -= 1;
+                }
+
+            }
+
             //미리보기 갱신 처리.
-            oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(ls_tree.OBJID, ls_tree.UILIB, ls_tree.POBID, ls_tree.PUIOK, ls_tree.UIATT, l_indx2, ls_tree.UIOBK);
+            oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(ls_tree.OBJID, ls_tree.UILIB, ls_tree.POBID, ls_tree.PUIOK, ls_tree.UIATT, l_cnt, ls_tree.UIOBK);
 
             //미리보기 ui 선택.
             oAPP.attr.ui.frame.contentWindow.selPreviewUI(ls_tree.OBJID);

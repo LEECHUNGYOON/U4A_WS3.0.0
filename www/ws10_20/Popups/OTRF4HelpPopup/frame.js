@@ -4,7 +4,7 @@
  * - file Name : bindPopup/frame.js
  ************************************************************************/
 
-let oAPP = (function (window) {
+let oAPP = (function(window) {
     "use strict";
 
     let oAPP = {};
@@ -17,31 +17,7 @@ let oAPP = (function (window) {
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
 
-    // 텍스트 클립보드 복사
-    oAPP.fn.setClipBoardTextCopy = (sText, fnCallback) => {
-
-        if (typeof sText !== "string") {
-            return;
-        }
-
-        var oTextArea = document.createElement("textarea");
-        oTextArea.value = sText;
-
-        document.body.appendChild(oTextArea);
-
-        oTextArea.select();
-
-        document.execCommand('copy');
-
-        document.body.removeChild(oTextArea);
-
-        if (typeof fnCallback === "function") {
-            fnCallback();
-        }
-
-    };
-
-    oAPP.setBusy = function (bIsShow) {
+    oAPP.setBusy = function(bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
 
@@ -67,7 +43,7 @@ let oAPP = (function (window) {
 
         oAPP.attr.T_9011 = oInfo.T_9011;
         oAPP.attr.oAppInfo = oInfo.oAppInfo;
-        oAPP.attr.servNm = oInfo.servNm;
+        oAPP.attr.servNm = oInfo.servNm;        
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {

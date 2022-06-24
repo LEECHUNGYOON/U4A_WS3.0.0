@@ -211,12 +211,30 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
     //클래스명 서버 전송 데이터에 구성.
     var oFormData = new FormData();
-    oFormData.append("CLSNM", oAPP.attr.APPID.substr(0,1) + "CL_U4A_APP_"  + oAPP.attr.APPID.substr(1));
+    oFormData.append("APPID", oAPP.attr.APPID);
+    oFormData.append("CLSNM", oAPP.attr.appInfo.CLSID);
 
     //바인딩 필드 정보 검색.
     sendAjax(oAPP.attr.servNm + "/getBindAttrData", oFormData, function(param){
 
       var l_model = oAPP.attr.oBindDialog.getModel();
+
+      //오류가 발생한 경우.
+      if(param.RETCD === "E"){
+        //오류 메시지 처리.
+        parent.showMessage(sap, 10, "E", param.RTMSG);
+        
+        //tree 정보 공백 처리.
+        l_model.oData.zTREE = [];
+
+        //화면 잠금 해제 처리.
+        l_model.oData.busy = false;
+         
+        //모델 정보 바인딩 처리.
+        l_model.refresh(true);
+
+        return;
+      }
 
       l_model.oData.TREE = param.T_ATTR;
 
