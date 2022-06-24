@@ -1085,11 +1085,29 @@ let oAPP = parent.oAPP;
         //클래스명 서버 전송 데이터에 구성.
         var oFormData = new FormData();
         oFormData.append("CLSNM", oAPP.attr.oAppInfo.CLSID);
+        oFormData.append("APPID", oAPP.attr.oAppInfo.APPID);
 
         //바인딩 필드 정보 검색.
         sendAjax(oAPP.attr.servNm + "/getBindAttrData", oFormData, function (param) {
 
             var l_model = oAPP.attr.oModel;
+
+            //오류가 발생한 경우.
+            if(param.RETCD === "E"){
+                //오류 메시지 처리.
+                sap.m.MessageToast.show(param.RTMSG,{duration: 3000, at:"center center"});
+                
+                //tree 정보 공백 처리.
+                l_model.oData.zTREE = [];
+
+                //화면 잠금 해제 처리.
+                l_model.oData.busy = false;
+                
+                //모델 정보 바인딩 처리.
+                l_model.refresh(true);
+
+                return;
+            }
 
             l_model.oData.TREE = param.T_ATTR;
 
@@ -1114,7 +1132,7 @@ let oAPP = parent.oAPP;
                 l_model.refresh(true);
 
                 // //바인딩 필드가 존재하지 않음 메시지 처리.
-                sap.m.MessageToast.show("Binding attributes dose not exist.");
+                sap.m.MessageToast.show("Binding attributes dose not exist.", {duration: 3000, at:"center center"});
 
                 return;
 

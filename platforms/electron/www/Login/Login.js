@@ -1245,6 +1245,7 @@ let oAPP = (function () {
 
         }).addStyleClass(`${sDialogId}--illustMsg`);
 
+        jQuery.sap.require("sap.m.ProgressIndicator");
         var oProgressbar = new sap.m.ProgressIndicator({
             visible: "{PROGVISI}",
             percentValue: "{PERVALUE}",

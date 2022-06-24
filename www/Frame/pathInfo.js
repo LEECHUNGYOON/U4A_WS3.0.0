@@ -66,6 +66,7 @@ module.exports = (() => {
         ABOUTU4APOP: PATH.join(POPUP_ROOT, "aboutU4APopup", "index.html"),
         RELNOTEPOP: PATH.join(POPUP_ROOT, "releaseNotePopup", "index.html"),
         U4AOTRPOP: PATH.join(POPUP_ROOT, "OTRF4HelpPopup", "frame.html"),
+        UI5CSSPOP: PATH.join(POPUP_ROOT, "ui5CssPopup", "frame.html"),
 
         // Suggestion Json Path..
         EVENTSUGG: PATH.join(SUGG_ROOT, "events.json"),
