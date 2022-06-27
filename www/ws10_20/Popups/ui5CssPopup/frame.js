@@ -1,10 +1,9 @@
 /************************************************************************
  * Copyright 2020. INFOCG Inc. all rights reserved. 
  * ----------------------------------------------------------------------
- * - file Name : bindPopup/frame.js
+ * - file Name : ui5CssPopup/frame.js
  ************************************************************************/
-
-let oAPP = (function(window) {
+let oAPP = (function (window) {
     "use strict";
 
     let oAPP = {};
@@ -17,7 +16,7 @@ let oAPP = (function(window) {
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
 
-    oAPP.setBusy = function(bIsShow) {
+    oAPP.setBusy = function (bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
 
@@ -33,38 +32,47 @@ let oAPP = (function(window) {
 
     };
 
-    // 현재 팝업 닫기
+    /************************************************************************
+     * 현재 팝업 닫기
+     ************************************************************************/
     oAPP.fn.fnCurrentWindowClose = () => {
+
         var oCurr = oAPP.REMOTE.getCurrentWindow();
         oCurr.close();
-    };
 
+    }; // end of oAPP.fn.fnCurrentWindowClose
 
+    /************************************************************************
+     * 선택한 css 미리보기
+     ************************************************************************/
     oAPP.fn.fnPredefinedCssPreview = (aPreviewCss) => {
 
         var BROWSKEY = oAPP.attr.BROWSERKEY;
 
         var oSendData = {
-            TYPE : "P", // P : Preview, S: Save
-            DATA : aPreviewCss
+            TYPE: "P", // P : Preview, S: Save
+            DATA: aPreviewCss
         }
 
         oAPP.IPCRENDERER.send(`${BROWSKEY}--if-ui5css-save`, oSendData);
 
-    };
+    }; // end of oAPP.fn.fnPredefinedCssPreview
 
+    /************************************************************************
+     * 선택한 css 저장
+     ************************************************************************/
     oAPP.fn.fnPredefinedCssSave = (aSaveCss) => {
 
         var BROWSKEY = oAPP.attr.BROWSERKEY;
 
         var oSendData = {
-            TYPE : "S", // P : Preview, S: Save
-            DATA : aSaveCss
+            TYPE: "S", // P : Preview, S: Save
+            DATA: aSaveCss
         }
 
         oAPP.IPCRENDERER.send(`${BROWSKEY}--if-ui5css-save`, oSendData);
 
-    };
+    }; // end of oAPP.fn.fnPredefinedCssSave
 
     /************************************************************************
      * IPCRENDERER Events..

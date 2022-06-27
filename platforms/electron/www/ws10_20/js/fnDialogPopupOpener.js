@@ -1591,8 +1591,7 @@
 
             debugger;
 
-            // IPCMAIN.off(`${BROWSKEY}--if-ui5css-save`, lf_ui5css_getData);
-
+            
         }
 
 
