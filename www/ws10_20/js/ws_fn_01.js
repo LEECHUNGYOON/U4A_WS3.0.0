@@ -231,6 +231,11 @@
                     key: "WMENU30_04",
                     text: "Error Page Editor",
                     enabled: true,
+                },
+                {
+                    key: "WMENU30_05",
+                    text: "Skeleton Scr Setting",
+                    enabled: true,
                 }
             ],
 
@@ -821,13 +826,7 @@
                     }),
                     new sap.m.Text({
                         text: "{" + sFmsgBindRootPath + "/TXT}"
-                    }),
-                    // new sap.m.ToolbarSpacer(),
-                    // new sap.m.Button({
-                    //     icon: "sap-icon://decline",
-                    //     // type : "Critical", 
-                    //     press: oAPP.common.fnHideFloatingFooterMsg
-                    // }),
+                    }),                 
                 ]
             });
 
@@ -856,31 +855,7 @@
             }
         }).addStyleClass("u4aWs10Page");
 
-        // var oHeaderMenuToolbar = new sap.m.OverflowToolbar({
-        //     content: [
-        //         new sap.m.Button({
-        //             text: "test"
-        //         })
-        //     ]
-        // }).addStyleClass("sapTntToolHeader");
-
-        // var oVbox = new sap.m.VBox({
-        //     renderType: "Bare",
-        //     height: "100%",
-        //     items: [
-        //         oHeaderMenuToolbar,
-        //         oWs10Page
-        //     ]
-        // });
         return oWs10Page;
-
-        // return new sap.m.Page("WS10", {
-        //     showHeader: false,
-        //     enableScrolling: false,
-        //     content: [
-        //         oVbox
-        //     ]
-        // });
 
     }; // end of fnOnInitRenderingWS10
 
@@ -1159,7 +1134,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
-                    enabled: "{enabled}",
+                    // enabled: "{enabled}",
                     items: {
                         path: "items",
                         templateShareable: true,
@@ -1168,6 +1143,35 @@
                             text: "{text}",
                             enabled: "{enabled}",
                         })
+                    }
+                }).bindProperty("enabled", {
+                    parts: [
+                        "key",
+                        "enabled"
+                    ],
+                    formatter: (key, enabled) => {
+
+                        switch (key) {
+
+                            case "WMENU30_05": // skeleton Scr Setting Menu
+
+                                var oAppInfo = parent.getAppInfo();
+                                if (oAppInfo == null) {
+                                    return enabled;
+                                }
+
+                                var IS_EDIT = oAppInfo.IS_EDIT;
+
+                                if (IS_EDIT != "X") {
+                                    return false;
+                                }
+
+                                return true;
+
+                            default:
+                                return enabled;
+                        }
+
                     }
                 })
             }

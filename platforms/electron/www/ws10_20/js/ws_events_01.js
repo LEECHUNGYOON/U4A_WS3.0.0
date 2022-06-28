@@ -221,6 +221,11 @@
             return;
         }
 
+        var oModel = oMenu.getModel();
+        if (oModel) {
+            oModel.refresh(true);
+        }
+
         oMenu.openBy(oBtn);
 
     }; // end of oAPP.events.ev_pressWMenu20
