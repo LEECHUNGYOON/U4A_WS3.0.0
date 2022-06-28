@@ -3190,6 +3190,7 @@
 
         case "DH001024":  //Init not Loding Waiting
         case "DH001101":  //Whether to use Router
+        case "DH001102":  //Whether to use Skeleton Screen
 
           ls_0015.chk_visb = true;
           break;
@@ -3208,7 +3209,7 @@
         oAPP.fn.moveCorresponding(ls_temp, ls_0015);
 
         //Init not Loding Waiting 항목인경우.
-        if(lt_ua003[i].ITMCD === "DH001024"){
+        if(lt_ua003[i].ITMCD === "DH001024" || lt_ua003[i].ITMCD === "DH001101" || lt_ua003[i].ITMCD === "DH001102"){
           ls_0015.UIATV_c = false;
           if(ls_0015.UIATV === "X"){
 
@@ -3241,7 +3242,7 @@
       ls_0015.UIASN = ls_0015.UIATT.toUpperCase();
 
       //Init not Loding Waiting 항목인경우.
-      if(lt_ua003[i].ITMCD === "DH001024"){
+      if(lt_ua003[i].ITMCD === "DH001024" || lt_ua003[i].ITMCD === "DH001101" || lt_ua003[i].ITMCD === "DH001102"){
         ls_0015.UIATV_c = false;
       }
 

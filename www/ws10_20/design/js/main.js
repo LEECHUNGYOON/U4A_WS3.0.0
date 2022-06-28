@@ -24,8 +24,8 @@
 
       return {"APPID":"","APPNM":"","APPVR":"","LANGU":"","APPTY":"","CODPG":"","ACTST":"",
               "PACKG":"","CLSID":"","LCKFL":"","PGMID":"","OBJTY":"","AUTHG":"","UITHM":"",
-              "ISWIT":"","WITTY":"","TUCTY":"","SHCUT":"","ERUSR":"","ERDAT":"","ERTIM":"",
-              "AEUSR":"","AEDAT":"","AETIM":""};
+              "ISWIT":"","WITTY":"","TUCTY":"","SHCUT":"","BDCOR":"","USERT":"","USESK":"",
+              "ERUSR":"","ERDAT":"","ERTIM":"","AEUSR":"","AEDAT":"","AETIM":""};
 
     };  //10번 정보 구조 생성.
 
@@ -603,6 +603,11 @@
       //UI에 구성한 attr 정보 수집 처리.
       var lt_0015 = oAPP.fn.getAttrChangedData();
 
+      //현재 출력된 미리보기 화면 기준 Skeleton Screen 저장 정보 수집.
+      var lt_SKLE = oAPP.DATA.APPDATA.T_SKLE || [];
+
+      //이전 수집건 제거 처리.
+      delete oAPP.DATA.APPDATA.T_SKLE;
 
       return {"TU4A0010":ls_0010,
               "YU4A0014":lt_0014,
@@ -613,7 +618,8 @@
               "T_JSLK":oAPP.DATA.APPDATA.T_JSLK,
               "T_CSLK":oAPP.DATA.APPDATA.T_CSLK,
               "T_DESC":oAPP.DATA.APPDATA.T_DESC, 
-              "S_WSO": oAPP.DATA.APPDATA.S_WSO};
+              "S_WSO": oAPP.DATA.APPDATA.S_WSO,
+              "T_SKLE":lt_SKLE};
 
     };  //UI 저장 정보 구성.
    

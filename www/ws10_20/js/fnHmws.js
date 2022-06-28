@@ -590,7 +590,7 @@
      ************************************************************************/
     oAPP.fn.fnWS20WMENU30_05 = () => {
 
-        // oAPP.fn.prevSetSkeletonScreen();        
+        oAPP.fn.prevSetSkeletonScreen();        
 
     }; // end of oAPP.fn.fnWS20WMENU30_05
 

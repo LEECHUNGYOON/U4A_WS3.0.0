@@ -43,7 +43,7 @@
 
   //미리보기 iframe 영역 구성.
   oAPP.fn.loadPreviewFrame = function(){
-    
+
      //미리보기 html 정보가 로드되지 않은경우.
      if(!oAPP.attr.ui.frame || !oAPP.attr.ui.frame.contentWindow){
       oAPP.attr.ui.frame = document.getElementById("prevHTML");
@@ -776,6 +776,33 @@
     return l_text;
 
   };  //OTR TEXT 검색 처리.
+
+
+
+
+  //현재 출력된 미리보기 화면을 Skeleton Screen으로 설정처리.
+  oAPP.fn.prevSetSkeletonScreen = function(){
+
+    var l_msg = "현재 미리보기 화면 레이아웃 기준으로 Skeleton Screen 으로 설정 하시겠습니까?";
+
+    //설정전 확인 팝업 호출.
+    parent.showMessage(sap, 30, "I", l_msg, function(param){
+
+      //YES를 선택하지 않은경우 EXIT.
+      if(param !== "YES"){return;}
+
+      //현재 출력된 미리보기 화면 기준 Skeleton Screen 저장 정보 구성.
+      oAPP.DATA.APPDATA.T_SKLE = oAPP.attr.ui.frame.contentWindow._get_skeleton_tag_info();
+
+      //005	Job finished.
+      parent.showMessage(sap, 10, "S","Job finished.");
+
+      //변경 flag 처리.
+      oAPP.fn.setChangeFlag();
+
+    });
+
+  };  //현재 출력된 미리보기 화면을 Skeleton Screen으로 설정처리.
 
 
 })();
