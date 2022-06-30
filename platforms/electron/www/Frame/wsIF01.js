@@ -672,9 +672,9 @@ function setCleanHtml(msgtxt) {
             var oChild = aChild[i],
                 aAttr = oChild.attributes;
 
-            if(aAttr == null){
+            if (aAttr == null) {
                 continue;
-            }   
+            }
 
             var iAttrLen = aAttr.length;
 
@@ -839,5 +839,16 @@ function getP13nData(sName) {
         oP13nData = JSON.parse(sP13nJsonData);
 
     return oP13nData[sSysID][sName];
+
+}
+
+/************************************************************************
+ * 호스트 정보를 구한다.
+ ************************************************************************/
+function getHost() {
+
+    var oMetadata = getMetadata();
+
+    return oMetadata.HOST;
 
 }
