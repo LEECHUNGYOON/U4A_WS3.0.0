@@ -348,6 +348,8 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
             return;
         }
 
+        debugger;
+
         var oServerInfo = oWS.oServerInfo,
             sServerUrl = oServerInfo.SERVERIP,
             sInstanceNo = oServerInfo.INSTANCENO,
@@ -367,6 +369,8 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
             return;
         }
 
+        debugger;
+        
         var oServerInfo = oWS.oServerInfo,
             oMetadata = parent.getMetadata(),
             sInstanceNo = oServerInfo.INSTANCENO,
