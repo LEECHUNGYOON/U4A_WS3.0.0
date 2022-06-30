@@ -518,7 +518,7 @@
     //model, 미리보기 정보 제거.
     oAPP.fn.removeContent = function(){
       //미리보기 화면 제거.
-      oAPP.attr.ui.frame.contentWindow.removePreviewPage();      
+      oAPP.attr.ui.frame.contentWindow.removePreviewPage();
 
       oAPP.attr.prev = {}; //미리보기 정보
       oAPP.attr.popup = [];  //팝업 정보

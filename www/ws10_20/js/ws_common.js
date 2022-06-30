@@ -1440,6 +1440,8 @@ function ajax_logoff() {
 // 로그오프 성공시 타는 펑션
 function fn_logoff_success(TYPE) {
 
+    debugger;
+    
     if (!TYPE) {
 
         fnServerSessionClose();

@@ -1207,7 +1207,7 @@ let oAPP = (function () {
         $('.u4aWsVersionCheckDialog,.u4aWsLoginFormFcard,.u4aWsGuestLoginCard').animate({
             opacity: "0"
         }, 500, "linear", () => {
-
+     
             var oResultData = jQuery.extend(true, {}, oResult);
 
             oResultData.USER_AUTH = oAuthInfo;

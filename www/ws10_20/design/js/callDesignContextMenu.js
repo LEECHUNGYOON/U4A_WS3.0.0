@@ -507,6 +507,8 @@
 
             }
 
+            //미리보기 UI destroy 처리.
+            oAPP.attr.ui.frame.contentWindow.destroyUIPreView(is_tree.OBJID);
 
             //미리보기 UI 수집항목에서 해당 OBJID건 삭제.
             delete oAPP.attr.prev[is_tree.OBJID];
@@ -526,6 +528,12 @@
 
             //OBJID에 해당하는 TREE 정보 얻기.
             var ls_tree = oAPP.fn.getTreeData(l_OBJID);
+
+            //내 부모가 자식 UI가 필수인 UI에 자식이 없는경우 강제추가 script 처리. 
+            oAPP.attr.ui.frame.contentWindow.setChildUiException(ls_tree.PUIOK, ls_tree.POBID, undefined, undefined, true);
+
+            //현재 UI가 자식 UI가 필수인 UI에 자식이 없는경우 강제추가 script 처리.
+            oAPP.attr.ui.frame.contentWindow.setChildUiException(ls_tree.UIOBK, ls_tree.OBJID, undefined, undefined, true);
 
             //미리보기 화면 UI 제거.
             oAPP.attr.ui.frame.contentWindow.delUIObjPreView(ls_tree.OBJID, ls_tree.POBID, ls_tree.PUIOK, ls_tree.UIATT, ls_tree.ISMLB, ls_tree.UIOBK);
