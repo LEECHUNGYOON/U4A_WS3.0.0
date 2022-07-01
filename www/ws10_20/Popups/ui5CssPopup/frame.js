@@ -47,6 +47,8 @@ let oAPP = (function (window) {
      ************************************************************************/
     oAPP.fn.fnPredefinedCssPreview = (aPreviewCss) => {
 
+        debugger;
+
         var BROWSKEY = oAPP.attr.BROWSERKEY;
 
         var oSendData = {
@@ -63,6 +65,8 @@ let oAPP = (function (window) {
      ************************************************************************/
     oAPP.fn.fnPredefinedCssSave = (aSaveCss) => {
 
+        debugger;
+        
         var BROWSKEY = oAPP.attr.BROWSERKEY;
 
         var oSendData = {
