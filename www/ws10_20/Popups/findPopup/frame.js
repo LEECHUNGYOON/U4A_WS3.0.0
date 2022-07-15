@@ -4,7 +4,7 @@
  * - file Name : findPopup/frame.js
  ************************************************************************/
 
-let oAPP = (function(window) {
+let oAPP = (function (window) {
     "use strict";
 
     let oAPP = {};
@@ -13,11 +13,14 @@ let oAPP = (function(window) {
     oAPP.events = {};
 
     oAPP.REMOTE = require('@electron/remote');
+    oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain;
     oAPP.IPCRENDERER = require('electron').ipcRenderer;
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
+    oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
+    oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
 
-    oAPP.setBusy = function(bIsShow) {
+    oAPP.setBusy = function (bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
 
@@ -32,6 +35,22 @@ let oAPP = (function(window) {
         }
 
     };
+
+    oAPP.setBusyIndicator = function (bIsBusy) {
+
+        var oBusy = document.getElementById("u4aWsBusyIndicator");
+
+        if (!oBusy) {
+            return;
+        }
+
+        if (bIsBusy) {
+            oBusy.style.visibility = "visible";
+        } else {
+            oBusy.style.visibility = "hidden";
+        }
+
+    }
 
     /************************************************************************
      * IPCRENDERER Events..
@@ -50,6 +69,20 @@ let oAPP = (function(window) {
         }
 
         oWs_frame.src = "index.html";
+
+    });   
+
+    oAPP.fn.fnIpcMainFindSuccess = () => {
+
+        oAPP.setBusyIndicator('');
+
+    };
+
+    oAPP.IPCMAIN.on(`${oAPP.BROWSKEY}--find--success`, oAPP.fn.fnIpcMainFindSuccess);
+
+    window.addEventListener("beforeunload", () => {
+
+        oAPP.IPCMAIN.off(`${oAPP.BROWSKEY}--find--success`, oAPP.fn.fnIpcMainFindSuccess);
 
     });
 

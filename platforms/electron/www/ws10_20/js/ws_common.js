@@ -1547,8 +1547,8 @@ function fnServerSessionClose() {
     // IPCMAIN 이벤트 해제    
     parent.IPCMAIN.off('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
 
-    // 현재 브라우저에 설정된 서버 세션 체크 전파 IPC이벤트를 해제한다.
-    parent.IPCRENDERER.off('if-server-session-propagation', oAPP.fn.fnIpcRender_if_server_session_propagation);
+    // // 현재 브라우저에 설정된 서버 세션 체크 전파 IPC이벤트를 해제한다.
+    // parent.IPCRENDERER.off('if-server-session-propagation', oAPP.fn.fnIpcRender_if_server_session_propagation);
 
     window.removeEventListener("beforeunload", oAPP.main.fnBeforeunload);
 

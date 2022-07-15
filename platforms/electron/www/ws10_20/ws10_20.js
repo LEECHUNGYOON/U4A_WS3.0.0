@@ -59,10 +59,10 @@
      ************************************************************************/
     oAPP.fn.fnAttachPowerMonitorLockScreen = () => {
 
-         // 서버 세션을 체크하고 있는 브라우저일 때만 실행
-        if (!oAPP.attr.serverSessionCheckingMe) {
-            return;
-        }
+        //  // 서버 세션을 체크하고 있는 브라우저일 때만 실행
+        // if (!oAPP.attr.serverSessionCheckingMe) {
+        //     return;
+        // }
 
         // 세션 타임아웃 체크
         oAPP.fn.fnSessionTimeoutCheck();
@@ -76,10 +76,13 @@
      ************************************************************************/
     oAPP.fn.fnAttachPowerMonitorUnLockScreen = () => {
 
-        // 서버 세션을 체크하고 있는 브라우저일 때만 실행
-        if (!oAPP.attr.serverSessionCheckingMe) {
-            return;
-        }
+        // // 서버 세션을 체크하고 있는 브라우저일 때만 실행
+        // if (!oAPP.attr.serverSessionCheckingMe) {
+        //     return;
+        // }
+
+        // 이벤트를 받으면 세션 타임을 초기화 한다.
+        parent.IPCMAIN.off('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
 
         // 워커가 있을 경우에만 실행
         if (!oAPP.attr._oWorker) {

@@ -216,11 +216,16 @@
 
         fnSetBusy('');
 
-        var oResult = JSON.parse(oResponse);
+        try {
+            var oResult = JSON.parse(oResponse);
 
-        if (oResult.TYPE != "S") {
-            sap.m.MessageToast.show(oResult.MSG);
-            return;
+            if (oResult.TYPE != "S") {
+                sap.m.MessageToast.show(oResult.MSG);
+                return;
+            }
+
+        } catch (e) {
+
         }
 
         var oTable = sap.ui.getCore().byId("servlist");
@@ -248,10 +253,10 @@
             SYSID: oItemData.SYSID
         };
 
-        if (oResult.SYSINFO) {
-            oSAPServerInfo.CLIENT = oResult.SYSINFO.CLIENT;
-            oSAPServerInfo.LANGU = oResult.SYSINFO.LANGU;
-        }
+        // if (oResult.SYSINFO) {
+        //     oSAPServerInfo.CLIENT = oResult.SYSINFO.CLIENT;
+        //     oSAPServerInfo.LANGU = oResult.SYSINFO.LANGU;
+        // }
 
         fnLoginPage(oSAPServerInfo);
 

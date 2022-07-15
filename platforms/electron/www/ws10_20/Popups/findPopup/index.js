@@ -1094,6 +1094,9 @@ let oAPP = parent.oAPP;
         var sBindPath = oCtx.sPath,
             oBindData = oAPP.fn.fnGetModelProperty(sBindPath);
 
+        // oAPP.setBusy('X');    
+        // oAPP.setBusyIndicator('X');
+
         IPCRENDERER.send(`${sBrowserKey}--find`, oBindData);
 
     }; // end of oAPP.events.ev_press_Find1_EventID
@@ -1124,8 +1127,7 @@ let oAPP = parent.oAPP;
         IPCRENDERER.send(`${sBrowserKey}--find--controller`, oBindData);
 
     }; // end of oAPP.events.ev_press_Link_Find_Controller
-
-
+ 
     /************************************************************************
      * -- Start of Program
      ************************************************************************/

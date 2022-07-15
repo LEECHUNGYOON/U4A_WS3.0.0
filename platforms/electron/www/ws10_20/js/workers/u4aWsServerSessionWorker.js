@@ -6,7 +6,9 @@
 
 self.onmessage = function (e) {
 
-    var iSessionTime = 1 * 60 * 1000;
+    const iSessionTimeMinute = 10;
+
+    var iSessionTime = iSessionTimeMinute * 60 * 1000;
     var oReceiveData = e.data,
         sServerPath = oReceiveData.SERVPATH;
 
@@ -22,7 +24,7 @@ self.onmessage = function (e) {
     }, iSessionTime);
 
     this.sendAjax = (sServerPath) => {
-        
+
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
@@ -58,8 +60,7 @@ self.onmessage = function (e) {
                     console.log("server call: " + new Date());
 
                 } else {
-
-                    // 전체 브라우저를 닫는다.
+                   
                     self.postMessage("");
 
                 }

@@ -178,8 +178,15 @@
         // EXAM MOVE 이벤트 해제
         parent.IPCMAIN.off('if-exam-move', oAPP.fn.fnIpcMain_if_exam_move);
 
-        // 서버 세션 유지 이벤트 전파
-        oAPP.main.fnServerSessionCheckPropagation();
+        var oPowerMonitor = parent.POWERMONITOR;
+
+        // 대기모드로 전환 감지 이벤트 해제
+        oPowerMonitor.removeListener('lock-screen', oAPP.fn.fnAttachPowerMonitorLockScreen);
+
+        oPowerMonitor.removeListener('unlock-screen', oAPP.fn.fnAttachPowerMonitorUnLockScreen);
+
+        // // 서버 세션 유지 이벤트 전파
+        // oAPP.main.fnServerSessionCheckPropagation();
 
         // Application 정보를 구한다.
         var oAppInfo = parent.getAppInfo();
@@ -205,36 +212,36 @@
             navigator.sendBeacon(sPath);
 
             oAPP.main.fnOnSleep(1000);
-            
+
         }
 
     } // end of oAPP.main.fnBeforeunload
 
-    /************************************************************************
-     * 서버 세션 유지 이벤트 전파
-     ************************************************************************/
-    oAPP.main.fnServerSessionCheckPropagation = function () {
+    // /************************************************************************
+    //  * 서버 세션 유지 이벤트 전파
+    //  ************************************************************************/
+    // oAPP.main.fnServerSessionCheckPropagation = function () {
 
-        if (!oAPP.attr.serverSessionCheckingMe) {
-            return;
-        }
+    //     if (!oAPP.attr.serverSessionCheckingMe) {
+    //         return;
+    //     }
 
-        // 현재 브라우저에 설정된 서버 세션 체크 전파 IPC이벤트를 해제한다.
-        parent.IPCRENDERER.off('if-server-session-propagation', oAPP.fn.fnIpcRender_if_server_session_propagation);
+    //     // 현재 브라우저에 설정된 서버 세션 체크 전파 IPC이벤트를 해제한다.
+    //     parent.IPCRENDERER.off('if-server-session-propagation', oAPP.fn.fnIpcRender_if_server_session_propagation);
 
-        // 브라우저 갯수 체크
-        var aSameBrowser = oAPP.fn.fnGetSameBrowsers(),
-            iSameCnt = aSameBrowser.length;
+    //     // 브라우저 갯수 체크
+    //     var aSameBrowser = oAPP.fn.fnGetSameBrowsers(),
+    //         iSameCnt = aSameBrowser.length;
 
-        if (iSameCnt <= 0) {
-            return;
-        }
+    //     if (iSameCnt <= 0) {
+    //         return;
+    //     }
 
-        var oBrowser = aSameBrowser[0];
+    //     var oBrowser = aSameBrowser[0];
 
-        oBrowser.webContents.send('if-server-session-propagation', "X");
+    //     oBrowser.webContents.send('if-server-session-propagation', "X");
 
-    }; // end of oAPP.main.fnServerSessionCheckPropagation
+    // }; // end of oAPP.main.fnServerSessionCheckPropagation
 
     /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------

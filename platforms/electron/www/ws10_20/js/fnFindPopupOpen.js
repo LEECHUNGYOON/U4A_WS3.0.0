@@ -96,7 +96,7 @@
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        //oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -120,7 +120,7 @@
 
             // IPCMAIN 이벤트 해제
             IPCMAIN.off(`${BROWSKEY}--find`, oAPP.fn.fnIpcMain_Find);
-            IPCMAIN.off(`${BROWSKEY}--find--controller`, oAPP.fn.fnIpcMain_Find_Controller);
+            IPCMAIN.off(`${BROWSKEY}--find--controller`, oAPP.fn.fnIpcMain_Find_Controller);            
 
             oBrowserWindow = null;
 
@@ -139,7 +139,18 @@
      * ************************************************************************/
     oAPP.fn.fnIpcMain_Find = function (events, res) {
 
+        // function lf_success() {
+
+        //     IPCRENDERER.send(`${BROWSKEY}--find--success`, "X");
+
+        // }
+
+        // lf_success();
+
+        // return;
+
         oAPP.fn.setSelectTreeItem(res.OBJID, res.UIATK);
+        // oAPP.fn.setSelectTreeItem(res.OBJID, res.UIATK, lf_success);
 
     }; // end of oAPP.fn.fnIpcMain_Find
 
@@ -154,6 +165,12 @@
 
 
     }; // end of oAPP.fn.fnIpcMain_Find
+
+    // oAPP.fn.fnIpcMain_Find_Success = (events, res) => {
+
+    //     IPCRENDERER.send(`${BROWSKEY}--find--success`, "X");
+
+    // }; // end of oAPP.fn.fnIpcMain_Find_Success
 
     /**************************************************************************
      * 찾기버튼 Dialog의 라디오 버튼 그룹 그리기
