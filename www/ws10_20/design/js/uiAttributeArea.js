@@ -3191,6 +3191,7 @@
         case "DH001024":  //Init not Loding Waiting
         case "DH001101":  //Whether to use Router
         case "DH001102":  //Whether to use Skeleton Screen
+        case "DH001103":  //Whether to use Mobile Zoom
 
           ls_0015.chk_visb = true;
           break;
@@ -3208,8 +3209,13 @@
       if(ls_temp){
         oAPP.fn.moveCorresponding(ls_temp, ls_0015);
 
-        //Init not Loding Waiting 항목인경우.
-        if(lt_ua003[i].ITMCD === "DH001024" || lt_ua003[i].ITMCD === "DH001101" || lt_ua003[i].ITMCD === "DH001102"){
+        //체크박스 처리 대상항목인경우.
+        //DH001024 - Init not Loding Waiting
+        //DH001101 - Whether to use Router
+        //DH001102 - Whether to use Skeleton Screen
+        //DH001103 - Whether to use Mobile Zoom
+        if(lt_ua003[i].ITMCD === "DH001024" || lt_ua003[i].ITMCD === "DH001101" || 
+          lt_ua003[i].ITMCD === "DH001102" || lt_ua003[i].ITMCD === "DH001103"){
           ls_0015.UIATV_c = false;
           if(ls_0015.UIATV === "X"){
 
