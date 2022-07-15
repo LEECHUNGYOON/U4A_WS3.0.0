@@ -384,6 +384,8 @@
                 l_14.ISEXT = param.E_UIOBJ.ISEXT;
                 l_14.TGLIB = param.E_UIOBJ.TGLIB;
 
+                l_14.ISECP = param.E_UIOBJ.ISECP;
+
                 //UI ICON 구성.
                 l_14.UICON = oAPP.fn.fnGetSapIconPath(param.E_UIOBJ.UICON);
 

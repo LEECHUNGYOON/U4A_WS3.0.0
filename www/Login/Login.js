@@ -448,7 +448,7 @@ let oAPP = (function () {
      * 로그인 페이지의 form 영역을 감싸는 Card (sap.f.Card)
      ************************************************************************/
     oAPP.fn.fnGetLoginFormFCard = () => {
-
+        
         var oForm = oAPP.fn.fnGetLoginForm(),
             aStaffBtns = oAPP.fn.fnGetStaffLoginButton();
 
@@ -484,6 +484,23 @@ let oAPP = (function () {
                         layoutData: new sap.m.FlexItemData({
                             styleClass: "sapUiTinyMarginTop"
                         }),
+                    }).bindProperty("visible", {
+                        parts: [
+                            "/LOGIN/SYSID"
+                        ],
+                        formatter: function (SYSID) {
+                            
+                            // U4A 서버 일 경우에만 자동 로그인 버튼 보이기
+                            switch (SYSID) {
+                                case "UHA":
+                                case "U4A":
+                                    return true;
+
+                                default:
+                                    return false;
+                            }
+
+                        }
                     })
 
                 ]
@@ -1207,7 +1224,7 @@ let oAPP = (function () {
         $('.u4aWsVersionCheckDialog,.u4aWsLoginFormFcard,.u4aWsGuestLoginCard').animate({
             opacity: "0"
         }, 500, "linear", () => {
-     
+
             var oResultData = jQuery.extend(true, {}, oResult);
 
             oResultData.USER_AUTH = oAuthInfo;
@@ -1338,7 +1355,7 @@ let oAPP = (function () {
         if (oLogInData == null) {
             return;
         }
-        
+
         // trial 버전이 아닐때만 수행
         var oWsSettings = oAPP.fn.fnGetSettingsInfo(),
             bIsTrial = oWsSettings.isTrial,
@@ -1356,7 +1373,7 @@ let oAPP = (function () {
             // 로그인 아이디 저장
             oAPP.fn.fnSaveIDSuggData(oLogInData.ID);
         }
-        
+
         var oUserInfo = jQuery.extend({}, oResult, oLogInData);
 
         // 로그인 유저의 아이디/패스워드를 저장해둔다.    
