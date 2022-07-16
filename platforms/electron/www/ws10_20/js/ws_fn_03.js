@@ -904,7 +904,15 @@
 
                                     fields: [
                                         new sap.m.Text({
-                                            text: "{ID}"
+                                            // text: "{ID}"
+                                        }).bindProperty("text", "ID", function(sId){
+
+                                            if(typeof sId !== "string"){
+                                                return "";
+                                            }
+
+                                            return sId.toUpperCase();
+
                                         })
                                     ] // end of fields
 

@@ -216,8 +216,11 @@
 
         fnSetBusy('');
 
+        var oResult;
+
         try {
-            var oResult = JSON.parse(oResponse);
+            
+            oResult = JSON.parse(oResponse);
 
             if (oResult.TYPE != "S") {
                 sap.m.MessageToast.show(oResult.MSG);
@@ -253,10 +256,10 @@
             SYSID: oItemData.SYSID
         };
 
-        // if (oResult.SYSINFO) {
-        //     oSAPServerInfo.CLIENT = oResult.SYSINFO.CLIENT;
-        //     oSAPServerInfo.LANGU = oResult.SYSINFO.LANGU;
-        // }
+        if (oResult && oResult.SYSINFO) {
+            oSAPServerInfo.CLIENT = oResult.SYSINFO.CLIENT;
+            oSAPServerInfo.LANGU = oResult.SYSINFO.LANGU;
+        }
 
         fnLoginPage(oSAPServerInfo);
 
