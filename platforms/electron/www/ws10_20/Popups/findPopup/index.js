@@ -1094,7 +1094,6 @@ let oAPP = parent.oAPP;
         var sBindPath = oCtx.sPath,
             oBindData = oAPP.fn.fnGetModelProperty(sBindPath);
 
-        // oAPP.setBusy('X');    
         oAPP.setBusyIndicator('X');
 
         IPCRENDERER.send(`${sBrowserKey}--find`, oBindData);
@@ -1127,7 +1126,7 @@ let oAPP = parent.oAPP;
         oAPP.setBusyIndicator('X');
 
         IPCRENDERER.send(`${sBrowserKey}--find--controller`, oBindData);
-        
+
         setTimeout(() => {
 
             oAPP.setBusyIndicator('');

@@ -352,7 +352,7 @@ let oAPP = (function() {
                                     change: (oEvent) => {
 
                                         var sValue = oEvent.getParameter("value");
-                                        if(typeof sValue !== "string"){
+                                        if (typeof sValue !== "string") {
                                             return;
                                         }
 
@@ -664,8 +664,6 @@ let oAPP = (function() {
      ************************************************************************/
     oAPP.events.ev_login = () => {
 
-        debugger;
-
         let oCoreModel = sap.ui.getCore().getModel();
         if (oCoreModel == null) {
             return;
@@ -710,11 +708,11 @@ let oAPP = (function() {
                         return;
                     }
 
-                    // 실제 접속한 클라이언트 정보를 저장한다.
-                    var oServerInfo = parent.getServerInfo();
-                    oServerInfo.CLIENT = oResult.MANDT;
+                    // // 실제 접속한 클라이언트 정보를 저장한다.
+                    // var oServerInfo = parent.getServerInfo();
+                    // oServerInfo.CLIENT = oResult.MANDT;
 
-                    parent.setServerInfo(oServerInfo);
+                    // parent.setServerInfo(oServerInfo);
 
                     // 여기까지 온건 로그인 성공했다는 뜻이니까 
                     // 권한 체크를 수행한다.
@@ -1395,10 +1393,19 @@ let oAPP = (function() {
 
         }
 
+        debugger;
+
         var oUserInfo = jQuery.extend({}, oResult, oLogInData);
 
         // 로그인 유저의 아이디/패스워드를 저장해둔다.    
         parent.setUserInfo(oUserInfo);
+
+        // 서버 정보에 실제 로그인한 client, language 정보를 저장한다.       
+        var oServerInfo = parent.getServerInfo();
+        oServerInfo.CLIENT = oUserInfo.CLIENT;
+        oServerInfo.LANGU = oUserInfo.LANGU;
+
+        parent.setServerInfo(oServerInfo);
 
         // Metadata 정보 세팅 (서버 호스트명.. 또는 메시지 클래스 데이터 등..)
         if (oResult.META) {

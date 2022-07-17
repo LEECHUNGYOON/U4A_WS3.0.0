@@ -620,7 +620,7 @@
      * - false: 기본 브라우저 실행  
      ************************************************************************/
     oAPP.fn.fnOnExecApp = function(APPID, bIsMulti) {
-
+debugger;
         // 기본 브라우저 설정        
         oAPP.fn.fnOnInitP13nSettings();
 
