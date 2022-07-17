@@ -367,7 +367,7 @@ let oAPP = (function() {
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 design: sap.m.LabelDesign.Bold,
-                                text: "Remember ID"
+                                text: "Remember"
                             }),
                             fields: [
                                 new sap.m.CheckBox({
