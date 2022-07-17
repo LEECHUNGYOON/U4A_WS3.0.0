@@ -16,6 +16,15 @@ function setServerInfo(oServerInfo) {
     oWS.utill.fn.setServerInfo(oServerInfo);
 }
 
+function setBeforeServerInfo(oServerInfo){
+    oWS.utill.fn.setBeforeServerInfo(oServerInfo);
+}
+
+function getBeforeServerInfo() {
+    return oWS.utill.fn.getBeforeServerInfo();
+}
+
+
 // 3. 서버 URL을 구한다.
 function getServerPath() {
     return oWS.utill.fn.getServerPath();

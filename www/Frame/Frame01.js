@@ -341,6 +341,22 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
     };
 
+    oWS.utill.fn.setBeforeServerInfo = (oServerInfo) => {
+
+        oWS.oBeforeServerInfo = oServerInfo;
+
+    };
+
+    oWS.utill.fn.getBeforeServerInfo = () => {
+
+        if (!oWS.oBeforeServerInfo) {
+            return;
+        }
+
+        return oWS.oBeforeServerInfo;
+    
+    };
+
     // 3. 서버 URL을 구한다.
     oWS.utill.fn.getServerPath = function () {
 

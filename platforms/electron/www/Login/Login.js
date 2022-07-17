@@ -603,19 +603,27 @@ let oAPP = (function() {
      ************************************************************************/
     oAPP.fn.fnOnInitModelBinding = () => {
 
+        var oUserInfo = parent.getUserInfo(),
+            oServerInfo = parent.getServerInfo(),
+            bIsRemember = oAPP.fn.fnGetRememberCheck(),
+            oRememberInfo = oAPP.fn.fnGetRememberLoginInfo();
+
         debugger;
 
-        var oServerInfo = parent.getServerInfo(),
-            bIsRemember = oAPP.fn.fnGetRememberCheck(),
-            oRememberInfo = oAPP.fn.fnGetRememberLoginInfo(),
-            sRememberId = oAPP.fn.fnGetRememberID();
+        if (oUserInfo) {
+            parent.setUserInfo(null);
+            parent.setServerInfo(parent.getBeforeServerInfo());
+            oServerInfo = parent.getServerInfo();
+        }
 
         var sClient = (bIsRemember ? oRememberInfo && oRememberInfo.CLIENT || "" : oServerInfo.CLIENT),
-            sLangu = (bIsRemember ? oRememberInfo && oRememberInfo.LANGU || "" : oServerInfo.LANGU);
+            sLangu = (bIsRemember ? oRememberInfo && oRememberInfo.LANGU || "" : oServerInfo.LANGU),
+            sId = (bIsRemember ? oRememberInfo && oRememberInfo.ID || "" : "");
 
         var oLoginData = {
                 CLIENT: sClient,
-                ID: sRememberId,
+                // ID: sRememberId,
+                ID: sId,
                 PW: "",
                 LANGU: sLangu,
                 SYSID: oServerInfo.SYSID,
@@ -1386,14 +1394,15 @@ let oAPP = (function() {
 
             // ID 저장 체크 박스값 저장
             // oAPP.fn.fnSaveRememberCheck(oLogInData.REMEMBER);                      
-            oAPP.fn.fnSaveRememberCheck(oLogInData);
+            // oAPP.fn.fnSaveRememberCheck(oLogInData);
+
+            // Remember 정보 저장
+            oAPP.fn.fnSaveRemember(oLogInData);
 
             // 로그인 아이디 저장
             oAPP.fn.fnSaveIDSuggData(oLogInData.ID);
 
         }
-
-        debugger;
 
         var oUserInfo = jQuery.extend({}, oResult, oLogInData);
 
@@ -1402,6 +1411,10 @@ let oAPP = (function() {
 
         // 서버 정보에 실제 로그인한 client, language 정보를 저장한다.       
         var oServerInfo = parent.getServerInfo();
+
+        // 서버 Info 이전 값을 저장한다.
+        parent.setBeforeServerInfo(jQuery.extend(true, {}, oServerInfo));
+
         oServerInfo.CLIENT = oUserInfo.CLIENT;
         oServerInfo.LANGU = oUserInfo.LANGU;
 
@@ -1585,27 +1598,28 @@ let oAPP = (function() {
 
     };
 
-    oAPP.fn.fnGetRememberID = () => {
+    // oAPP.fn.fnGetRememberID = () => {
 
-        var bIsRemember = oAPP.fn.fnGetRememberCheck();
-        if (!bIsRemember) {
-            return "";
-        }
+    //     var bIsRemember = oAPP.fn.fnGetRememberCheck();
+    //     if (!bIsRemember) {
+    //         return "";
+    //     }
 
-        var aIds = oAPP.fn.fnReadIDSuggData(),
-            iIdLength = aIds.length;
+    //     var aIds = oAPP.fn.fnReadIDSuggData(),
+    //         iIdLength = aIds.length;
 
-        if (iIdLength <= 0) {
-            return "";
-        }
+    //     if (iIdLength <= 0) {
+    //         return "";
+    //     }
 
-        return aIds[0].ID;
+    //     return aIds[0].ID;
 
-    };
+    // };
 
-    oAPP.fn.fnSaveRememberCheck = (oLogInData) => {
+    oAPP.fn.fnSaveRemember = (oLogInData) => {
 
-        var bIsRemember = oLogInData.REMEMBER;
+        var oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID;
 
         let sJsonPath = PATH.join(USERDATA, "p13n", "login.json"),
             sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
@@ -1615,11 +1629,21 @@ let oAPP = (function() {
             oLoginInfo = {};
         }
 
-        oLoginInfo.bIsRemember = bIsRemember;
+        // System ID 별로 Client, Language를 저장할 Object 생성
+        if (typeof oLoginInfo[sSysID] == "undefined") {
+            oLoginInfo[sSysID] = {};
+        }
+
+        // Remember Check 했을 경우 ID, Client, Language 정보를 저장한다.
+        var oSysInfo = oLoginInfo[sSysID],
+            bIsRemember = oLogInData.REMEMBER;
+
+        oSysInfo.REMEMBER = bIsRemember;
 
         if (bIsRemember) {
-            oLoginInfo.CLIENT = oLogInData.CLIENT;
-            oLoginInfo.LANGU = oLogInData.LANGU;
+            oSysInfo.CLIENT = oLogInData.CLIENT;
+            oSysInfo.LANGU = oLogInData.LANGU;
+            oSysInfo.ID = oLogInData.ID;
         }
 
         // login.json 파일에 ID Suggestion 정보 저장
@@ -1627,7 +1651,55 @@ let oAPP = (function() {
 
     };
 
+    // oAPP.fn.fnSaveRememberCheck = (oLogInData) => {
+
+    //     var bIsRemember = oLogInData.REMEMBER;
+
+    //     let sJsonPath = PATH.join(USERDATA, "p13n", "login.json"),
+    //         sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
+    //         oLoginInfo = JSON.parse(sJsonData);
+
+    //     if (typeof oLoginInfo !== "object") {
+    //         oLoginInfo = {};
+    //     }
+
+    //     oLoginInfo.bIsRemember = bIsRemember;
+
+    //     if (bIsRemember) {
+    //         oLoginInfo.CLIENT = oLogInData.CLIENT;
+    //         oLoginInfo.LANGU = oLogInData.LANGU;
+    //     }
+
+    //     // login.json 파일에 ID Suggestion 정보 저장
+    //     FS.writeFileSync(sJsonPath, JSON.stringify(oLoginInfo));
+
+    // };
+
     oAPP.fn.fnGetRememberLoginInfo = () => {
+
+        var oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID;
+
+        let sJsonPath = PATH.join(USERDATA, "p13n", "login.json"),
+            sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
+            oLoginInfo = JSON.parse(sJsonData);
+
+        if (typeof oLoginInfo != "object") {
+            return;
+        }
+
+        if (typeof oLoginInfo[sSysID] == "undefined") {
+            return;
+        }
+
+        return oLoginInfo[sSysID];
+
+    };
+
+    oAPP.fn.fnGetRememberCheck = () => {
+
+        var oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID;
 
         let sJsonPath = PATH.join(USERDATA, "p13n", "login.json"),
             sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
@@ -1637,21 +1709,13 @@ let oAPP = (function() {
             return false;
         }
 
-        return oLoginInfo;
-
-    };
-
-    oAPP.fn.fnGetRememberCheck = () => {
-
-        let sJsonPath = PATH.join(USERDATA, "p13n", "login.json"),
-            sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
-            oLoginInfo = JSON.parse(sJsonData);
-
-        if (typeof oLoginInfo != "object" || oLoginInfo.bIsRemember == null) {
+        if (typeof oLoginInfo[sSysID] == "undefined") {
             return false;
         }
 
-        return oLoginInfo.bIsRemember;
+        return oLoginInfo[sSysID].REMEMBER;
+
+        // return oLoginInfo.bIsRemember;
 
     }; // end of oAPP.fn.fnGetRememberCheck
 
