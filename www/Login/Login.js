@@ -348,7 +348,18 @@ let oAPP = (function() {
                             fields: [
                                 new sap.m.Input({
                                     value: "{LANGU}",
-                                    submit: oAPP.events.ev_login
+                                    submit: oAPP.events.ev_login,
+                                    change: (oEvent) => {
+
+                                        var sValue = oEvent.getParameter("value");
+                                        if(typeof sValue !== "string"){
+                                            return;
+                                        }
+
+                                        var sUpperValue = sValue.toUpperCase();
+                                        oEvent.getSource().setValue(sUpperValue);
+
+                                    }
                                 })
                             ]
                         }),
@@ -599,8 +610,8 @@ let oAPP = (function() {
             oRememberInfo = oAPP.fn.fnGetRememberLoginInfo(),
             sRememberId = oAPP.fn.fnGetRememberID();
 
-        var sClient = (bIsRemember ? oRememberInfo && oRememberInfo.CLIENT || "" : oServerInfo.CLIENT ),
-            sLangu = (bIsRemember ? oRememberInfo && oRememberInfo.LANGU || "" : oServerInfo.LANGU );
+        var sClient = (bIsRemember ? oRememberInfo && oRememberInfo.CLIENT || "" : oServerInfo.CLIENT),
+            sLangu = (bIsRemember ? oRememberInfo && oRememberInfo.LANGU || "" : oServerInfo.LANGU);
 
         var oLoginData = {
                 CLIENT: sClient,
@@ -654,7 +665,7 @@ let oAPP = (function() {
     oAPP.events.ev_login = () => {
 
         debugger;
-        
+
         let oCoreModel = sap.ui.getCore().getModel();
         if (oCoreModel == null) {
             return;
@@ -1377,7 +1388,7 @@ let oAPP = (function() {
 
             // ID 저장 체크 박스값 저장
             // oAPP.fn.fnSaveRememberCheck(oLogInData.REMEMBER);                      
-            oAPP.fn.fnSaveRememberCheck(oLogInData);                      
+            oAPP.fn.fnSaveRememberCheck(oLogInData);
 
             // 로그인 아이디 저장
             oAPP.fn.fnSaveIDSuggData(oLogInData.ID);
@@ -1580,7 +1591,7 @@ let oAPP = (function() {
         if (iIdLength <= 0) {
             return "";
         }
-        
+
         return aIds[0].ID;
 
     };
@@ -1599,7 +1610,7 @@ let oAPP = (function() {
 
         oLoginInfo.bIsRemember = bIsRemember;
 
-        if(bIsRemember){
+        if (bIsRemember) {
             oLoginInfo.CLIENT = oLogInData.CLIENT;
             oLoginInfo.LANGU = oLogInData.LANGU;
         }
@@ -1641,7 +1652,7 @@ let oAPP = (function() {
      * ID Suggestion Data Save
      ************************************************************************/
     oAPP.fn.fnSaveIDSuggData = (ID) => {
-        
+
         const iIdSuggMaxCnt = 10;
 
         let sJsonPath = PATH.join(USERDATA, "p13n", "login.json"),

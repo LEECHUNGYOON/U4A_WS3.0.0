@@ -985,7 +985,7 @@
 
 
   //tree item 선택 처리
-  oAPP.fn.setSelectTreeItem = function(OBJID, UIATK, TYPE){
+  oAPP.fn.setSelectTreeItem = function(OBJID, UIATK, TYPE, f_cb){
     
     //tree를 탐색하며 ROOT로부터 입력 OBJID 까지의 PATH 정보 구성
     function lf_getTreePath(it_tree){
@@ -1059,7 +1059,7 @@
           oAPP.fn.designTreeItemPress(is_child.context.getProperty(),l_cnt);
 
           //attribute 영역 선택처리(UIATK가 입력된경우 선택처리)
-          oAPP.fn.setAttrFocus(UIATK, TYPE);
+          oAPP.fn.setAttrFocus(UIATK, TYPE, f_cb);
           
         }
         

@@ -1,7 +1,7 @@
 /**************************************************************************
  * ServerList.js
  **************************************************************************/
-(function () {
+(function() {
     "use strict";
 
     let oAPP = parent.oAPP;
@@ -55,6 +55,7 @@
         var oApp = new sap.m.App(),
             oPage = new sap.m.Page({
                 title: "{/MSGCLS/0001}" // "U4A Workspace ServerInfo"                
+                // title: "U4A Workspace Server Informations" // "U4A Workspace ServerInfo"                
             });
 
         oApp.addPage(oPage);
@@ -219,7 +220,7 @@
         var oResult;
 
         try {
-            
+
             oResult = JSON.parse(oResponse);
 
             if (oResult.TYPE != "S") {
@@ -379,7 +380,7 @@
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -408,7 +409,7 @@
     function fnSendAjax(sUrl, oFormData, fnSuccess, fnError, fnCancel) {
 
         // ajax call 취소할 경우..
-        xhr.onabort = function () {
+        xhr.onabort = function() {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -417,7 +418,7 @@
         };
 
         // ajax call 실패 할 경우
-        xhr.onerror = function () {
+        xhr.onerror = function() {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -425,7 +426,7 @@
 
         };
 
-        xhr.onreadystatechange = function (a, b, c, d, e) { // 요청에 대한 콜백         
+        xhr.onreadystatechange = function(a, b, c, d, e) { // 요청에 대한 콜백         
 
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
@@ -474,7 +475,7 @@
                     new sap.m.Button({
                         icon: "sap-icon://decline",
                         tooltip: "{/MSGCLS/0019}", // cancel
-                        press: function (oEvent) {
+                        press: function(oEvent) {
 
                             var oDialog = oEvent.getSource().getParent();
 
@@ -485,7 +486,7 @@
                 ]
 
             })
-            .bindProperty("title", "/SERVDLG/TRCOD", function (TITLE) {
+            .bindProperty("title", "/SERVDLG/TRCOD", function(TITLE) {
 
                 if (!TITLE) {
                     return;
@@ -574,7 +575,7 @@
                                 maxLength: 3,
                                 required: true,
                                 submit: ev_pressServerInfoSaveSubmit,
-                                liveChange: function (oEvent) {
+                                liveChange: function(oEvent) {
 
                                     var sValue = oEvent.getParameter("value");
 
@@ -1041,7 +1042,7 @@
             text: fnGetLanguClassTxt("0023"), //"Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function () {
+            close: function() {
                 xhr.abort();
             }
         });
@@ -1191,7 +1192,7 @@
      * **********************************************************************/
     function fnOnInit() {
 
-        sap.ui.getCore().attachInit(function () {
+        sap.ui.getCore().attachInit(function() {
 
             // 초기값 바인딩
             fnOnInitBinding();
@@ -1206,7 +1207,9 @@
             fnOnInitUi5LibraryPreload();
 
             // 언어별 텍스트 목록 구하기
-            fnLoadLanguClass(navigator.language);
+            // fnLoadLanguClass(navigator.language);
+
+            fnLoadLanguClass("EN");
 
             // 서버 리스트 개인화 정보 설정
             fnOnP13nConfig();
