@@ -37,7 +37,8 @@
 	],
 	"vbs": {
 		"rootPath": "ext_api\\vbs",
-		"controllerClassVbs": "sapgui_ws.vbs"
+		"controllerClassVbs": "sapgui_ws.vbs",
+		"newSessionVbs" : "newSESSTION.vbs"
 	},
 	"path": {
 		"u4aHelpDocFolderPath": "help\\u4a_help",

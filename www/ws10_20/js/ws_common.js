@@ -1005,8 +1005,10 @@
             oVbsInfo = oSettings.vbs,
             sVbsPath = oVbsInfo.rootPath,
             sVbsFileName = oVbsInfo.controllerClassVbs,
+            sNewSessionVbs = oVbsInfo.newSessionVbs,
             sAppPath = APP.getPath("userData"),
-            sVbsFullPath = PATH.join(sAppPath, sVbsPath, sVbsFileName);
+            sVbsFullPath = PATH.join(sAppPath, sVbsPath, sVbsFileName),
+            sNewSessionVbsFullPath = PATH.join(sAppPath, sVbsPath, sNewSessionVbs);
 
         var oServerInfo = parent.getServerInfo(),
             oAppInfo = parent.getAppInfo(),
@@ -1017,29 +1019,68 @@
         }
 
         var aParam = [
-            sVbsFullPath, // VBS 파일 경로
-            oServerInfo.SERVERIP, // Server IP
+            sNewSessionVbsFullPath, // VBS 파일 경로
             oServerInfo.SYSTEMID, // SYSTEM ID
-            oServerInfo.INSTANCENO, // INSTANCE Number
             oServerInfo.CLIENT, // CLIENT
             oUserInfo.ID.toUpperCase(), // SAP ID    
-            oUserInfo.PW, // SAP PW
-            oServerInfo.LANGU, // LANGUAGE
             oAppInfo.APPID, // Application Name
             (typeof METHNM == "undefined" ? "" : METHNM),
             (typeof INDEX == "undefined" ? "0" : INDEX),
             oAppInfo.IS_EDIT // Edit or Display Mode
         ];
 
-        var child_process = parent.SPAWN('cscript.exe', aParam);
+        //1. 이전 GUI 세션창 OPEN 여부 VBS 
+        var vbs = parent.SPAWN('cscript.exe', aParam);
+        vbs.stdout.on("data", function (data) {});
 
-        child_process.stdout.on("data", function (data) {
-            console.log(data.toString());
-        }); // 실행 결과
+        //GUI 세션창이 존재하지않다면 ...
+        vbs.stderr.on("data", function (data) {
 
-        child_process.stderr.on("data", function (data) {
-            console.error(data.toString());
-        }); // 실행 >에러
+            var aParam = [
+                sVbsFullPath, // VBS 파일 경로
+                oServerInfo.SERVERIP, // Server IP
+                oServerInfo.SYSTEMID, // SYSTEM ID
+                oServerInfo.INSTANCENO, // INSTANCE Number
+                oServerInfo.CLIENT, // CLIENT
+                oUserInfo.ID.toUpperCase(), // SAP ID    
+                oUserInfo.PW, // SAP PW
+                oServerInfo.LANGU, // LANGUAGE
+                oAppInfo.APPID, // Application Name
+                (typeof METHNM == "undefined" ? "" : METHNM),
+                (typeof INDEX == "undefined" ? "0" : INDEX),
+                oAppInfo.IS_EDIT // Edit or Display Mode
+            ];
+
+            var vbs = parent.SPAWN('cscript.exe', aParam);
+            vbs.stdout.on("data", function (data) {});
+            vbs.stderr.on("data", function (data) {});
+
+        });
+
+        // var aParam = [
+        //     sVbsFullPath, // VBS 파일 경로
+        //     oServerInfo.SERVERIP, // Server IP
+        //     oServerInfo.SYSTEMID, // SYSTEM ID
+        //     oServerInfo.INSTANCENO, // INSTANCE Number
+        //     oServerInfo.CLIENT, // CLIENT
+        //     oUserInfo.ID.toUpperCase(), // SAP ID    
+        //     oUserInfo.PW, // SAP PW
+        //     oServerInfo.LANGU, // LANGUAGE
+        //     oAppInfo.APPID, // Application Name
+        //     (typeof METHNM == "undefined" ? "" : METHNM),
+        //     (typeof INDEX == "undefined" ? "0" : INDEX),
+        //     oAppInfo.IS_EDIT // Edit or Display Mode
+        // ];
+
+        // var child_process = parent.SPAWN('cscript.exe', aParam);
+
+        // child_process.stdout.on("data", function (data) {
+        //     console.log(data.toString());
+        // }); // 실행 결과
+
+        // child_process.stderr.on("data", function (data) {
+        //     console.error(data.toString());
+        // }); // 실행 >에러
 
     }; // end of oAPP.common.execControllerClass
 
@@ -1257,7 +1298,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
     xhr.onreadystatechange = function () { // 요청에 대한 콜백
         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
             if (xhr.status === 200 || xhr.status === 201) {
-                
+
 
                 if (xhr.responseType == 'blob') {
                     if (typeof fn_success == "function") {
@@ -1290,7 +1331,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
                 // 로그인 티켓 만료되면 로그인 페이지로 이동한다.
                 if (oResult.TYPE == "E") {
-                    
+
                     // error 콜백이 있다면 호출
                     if (typeof fn_error == "function") {
                         fn_error();

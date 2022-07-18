@@ -664,6 +664,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
             oMetadata.EXEPAGE = "WS10";
             oMetadata.DEFBR = parent.getDefaultBrowserInfo();
             oMetadata.THEMEINFO = parent.getThemeInfo();
+            oMetadata.BeforeServerInfo = parent.getBeforeServerInfo();
 
             // 브라우저가 오픈되면서 부모가 가지고 있는 메타 관련 정보들을 전달한다.
             oBrowserWindow.webContents.send('if-meta-info', oMetadata);
@@ -1106,6 +1107,11 @@ IPCRENDERER.on('if-meta-info', (event, res) => {
     // 서버 정보
     if (oMetadata.SERVERINFO) {
         oWS.oServerInfo = oMetadata.SERVERINFO;
+    }
+    
+    // 이전 서버 접속 정보
+    if(oMetadata.BeforeServerInfo){        
+        parent.setBeforeServerInfo(oMetadata.BeforeServerInfo);
     }
 
     // 로그인 유저 정보
