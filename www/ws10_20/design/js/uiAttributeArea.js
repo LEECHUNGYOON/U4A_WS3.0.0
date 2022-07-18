@@ -2761,6 +2761,9 @@
     //appcontainer callback 이벤트.
     function lf_appCallback(param){
 
+      //편집상태가 아닌경우 exit.
+      if(!oAPP.attr.oModel.oData.IS_EDIT){return;}
+
       //APPLICATION ID 매핑.
       is_attr.UIATV = param.APPID;
 
@@ -2805,6 +2808,12 @@
     
     //appcontainer의 AppID 프로퍼티가 아닌경우 exit.
     if(is_attr.UIATK !== "EXT00000030"){return;}
+
+    //편집상태가 아닌경우 exit.
+    if(!oAPP.attr.oModel.oData.IS_EDIT){
+      //하위로직 skip처리를 위한 flag return
+      return true;
+    }
 
     //입력값 초기화 처리.
     is_attr.UIATV = "";
@@ -2857,6 +2866,9 @@
 
     }
 
+    //편집상태가 아닌경우 exit.
+    if(!oAPP.attr.oModel.oData.IS_EDIT){return;}    
+
     //점검대상 Aggregation 검색.
     var ls_attr = oAPP.attr.oModel.oData.T_ATTR.find( a=> a.UIATK === l_UIATK);
 
@@ -2885,6 +2897,12 @@
     
     //selectOption2의 F4HelpID프로퍼티가 아닌경우 exit.
     if(is_attr.UIATK !== "EXT00001188"){return;}
+
+    //편집상태가 아닌경우 exit.
+    if(!oAPP.attr.oModel.oData.IS_EDIT){
+      //하위로직 skip처리를 위한 flag return
+      return true;
+    }
     
     //f4 help callback function.
     function lf_returnDOC(param){
@@ -2941,6 +2959,12 @@
     
     //selectOption2의 F4HelpReturnFIeld프로퍼티가 아닌경우 exit.
     if(is_attr.UIATK !== "EXT00001189"){return;}
+    
+    //편집상태가 아닌경우 exit.
+    if(!oAPP.attr.oModel.oData.IS_EDIT){
+      //하위로직 skip처리를 위한 flag return
+      return true;
+    }
 
     //F4HelpID 프로퍼티 정보 얻기.
     var ls_attr = oAPP.attr.oModel.oData.T_ATTR.find( a => a.UIATK === "EXT00001188" );
@@ -2992,6 +3016,12 @@
     //F4HelpID, F4HelpReturnFIeld 프로퍼티가 아닌경우 EXIT.
     if(is_attr.UIATK !== "EXT00001188" && is_attr.UIATK !== "EXT00001189"){
       return;
+    }
+
+    //편집상태가 아닌경우 exit.
+    if(!oAPP.attr.oModel.oData.IS_EDIT){
+      //하위로직 skip처리를 위한 flag return
+      return true;
     }
 
     //F4HelpID프로퍼티인경우.
@@ -3186,6 +3216,11 @@
           //Touch style DDLB 항목 구성.
           ls_0015.T_DDLB = [{KEY:"",TEXT:""},{KEY:"circle_ripple",TEXT:"원형"}];
 
+          break;
+
+        case "DH001109":  //Body Background Color
+          ls_0015.showF4 = true;
+          ls_0015.inp_visb = true;
           break;
 
         case "DH001024":  //Init not Loding Waiting

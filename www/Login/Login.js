@@ -697,6 +697,7 @@ let oAPP = (function() {
         oFormData.append("sap-password", oLogInData.PW);
         oFormData.append("sap-client", oLogInData.CLIENT);
         oFormData.append("sap-language", oLogInData.LANGU);
+        oFormData.append("PRCCD", "00");
 
         parent.setBusy('X');
 

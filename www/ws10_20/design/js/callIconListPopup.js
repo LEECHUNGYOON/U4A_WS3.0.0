@@ -127,15 +127,22 @@
             if(typeof l_bind === "undefined"){return;}
 
             //검색조건 입력값 얻기.
-            var l_filter, l_val = this.getValue();
+            var l_val = this.getValue();
 
-            //검색조건 값이 입력된경우 필터 정보 구성.
-            if(l_val !== ""){
-                l_filter = new sap.ui.model.Filter({path:"nam",operator:"Contains",value1:l_val});
-            }
+            //검색조건 값이 입력안된 경우 필터 해제 처리.
+            if(l_val === ""){
+                l_bind.filter();
+                return;
+            }            
+
+            var lt_filter = [];
+
+            lt_filter.push(new sap.ui.model.Filter({path:"nam",operator:"Contains",value1:l_val}));
+            lt_filter.push(new sap.ui.model.Filter({path:"src",operator:"Contains",value1:l_val}));
 
             //model 필터 처리.
-            l_bind.filter(l_filter);
+            l_bind.filter([new sap.ui.model.Filter(lt_filter,false)]);
+
 
         }); //검색 이벤트.
 

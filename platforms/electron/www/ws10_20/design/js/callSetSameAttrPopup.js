@@ -396,7 +396,8 @@
                 //ATTRIBUTE 변경건 수집정보가 존재하는경우.
                 if(oAPP.attr.prev[it_tree[i].OBJID]._T_0015.length !== 0){
                     //ATTRIBUTE 변경건 수집정보에서 동일한 attribute 명 정보 검색.
-                    var ls_attr = oAPP.attr.prev[it_tree[i].OBJID]._T_0015.find( a=> a.UIATT === is_attr.UIATT && a.UIATY === is_attr.UIATY );
+                    var ls_attr = oAPP.attr.prev[it_tree[i].OBJID]._T_0015.find( a=> a.UIATT === is_attr.UIATT && 
+                        a.UIATY === is_attr.UIATY && a.UIADT === is_attr.UIADT );
 
                     //수집된 정보가 존재하는경우.
                     if(ls_attr){
@@ -445,7 +446,7 @@
 
                 //LIBRARY에서 해당 ATTRIBUTE가 존재하는지 검색.
                 var ls_0023 = oAPP.DATA.LIB.T_0023.find( a => a.UIOBK === it_tree[i].UIOBK && 
-                    a.UIATT === is_attr.UIATT && a.UIATY === l_UIATY  && a.ISDEP !== "X" );
+                    a.UIATT === is_attr.UIATT && a.UIATY === l_UIATY  && a.ISDEP !== "X" && a.UIADT === is_attr.UIADT );
 
                 //존재하지 않는경우.
                 if(!ls_0023){

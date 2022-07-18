@@ -547,8 +547,8 @@ let oAPP = parent.oAPP;
 		var ls_line = l_ctxt.getProperty();
 		if(!ls_line){return;}
 
-		//icon src 복사 처리.
-		//parent.setClipBoardTextCopy("$OTR:" + ls_line.ALIAS_NAME);
+		//OTR 클립보드 복사 처리.
+		oAPP.fn.setClipBoardTextCopy("$OTR:" + ls_line.ALIAS_NAME);
 
 		//메시지 처리.
 		sap.m.MessageToast.show("$OTR:" + ls_line.ALIAS_NAME + " copied.");
@@ -574,6 +574,32 @@ let oAPP = parent.oAPP;
 	  
 	};  //OTR 검색 팝업 호출.
 
+
+
+
+	//text 클립보드 복사 처리.
+	oAPP.fn.setClipBoardTextCopy = (sText, fnCallback) => {
+
+        if (typeof sText !== "string") {
+            return;
+        }
+
+        var oTextArea = document.createElement("textarea");
+        oTextArea.value = sText;
+
+        document.body.appendChild(oTextArea);
+
+        oTextArea.select();
+
+        document.execCommand('copy');
+
+        document.body.removeChild(oTextArea);
+
+        if (typeof fnCallback === "function") {
+            fnCallback();
+        }
+
+    };	//text 클립보드 복사 처리.
 
 
 

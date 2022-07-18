@@ -15,7 +15,8 @@
     var APPCOMMON = oAPP.common,
         REMOTE = parent.REMOTE,
         bAutoSearch = false,
-        bIsTrial = parent.getIsTrial();
+        bIsTrial = parent.getIsTrial(),
+        GfnCallback;
 
     oAPP.fn.fnAppF4PopupOpen = function (options, fnCallback) {
 
@@ -47,6 +48,13 @@
             oTree.collapseAll();
         }
 
+        if (typeof GfnCallback !== "undefined") {
+            GfnCallback = undefined;
+        }
+
+        // callback function 글로벌 변수로 저장
+        GfnCallback = fnCallback;
+
         var oAppF4Dialog = sap.ui.getCore().byId(C_DIALOG_ID);
         if (oAppF4Dialog) {
             oAppF4Dialog.open();
@@ -54,7 +62,7 @@
         }
 
         // tab container 생성
-        var oIconTab = oAPP.fn.fnCreateAppF4TabCon(fnCallback);
+        var oIconTab = oAPP.fn.fnCreateAppF4TabCon();
 
         var oAppF4Dialog = new sap.m.Dialog(C_DIALOG_ID, {
 
@@ -115,10 +123,10 @@
     /************************************************************************
      * WS10에 있는 APPID F4 HELP 팝업내의 TAB CONTAINER 생성
      ************************************************************************/
-    oAPP.fn.fnCreateAppF4TabCon = function (fnCallback) {
+    oAPP.fn.fnCreateAppF4TabCon = function () {
 
-        var oItem1 = oAPP.fn.fnCreateAppF4Tab1(fnCallback),
-            oItem2 = oAPP.fn.fnCreateAppF4Tab2(fnCallback);
+        var oItem1 = oAPP.fn.fnCreateAppF4Tab1(),
+            oItem2 = oAPP.fn.fnCreateAppF4Tab2();
 
         var oIconTab = new sap.m.IconTabBar("appf4tab", {
             backgroundDesign: sap.m.BackgroundDesign.Transparent,
@@ -181,7 +189,7 @@
     /************************************************************************
      * Application Name F4 의 TabContainer Item1 생성
      ************************************************************************/
-    oAPP.fn.fnCreateAppF4Tab1 = function (fnCallback) {
+    oAPP.fn.fnCreateAppF4Tab1 = function () {
 
         var ENUM_LABEL_DESIGN_BOLD = sap.m.LabelDesign.Bold;
 
@@ -295,7 +303,7 @@
 
             sTableListBindPath = `${C_BIND_ROOT_PATH}/TAB1/APPLIST`,
 
-            oTable = oAPP.fn.fnGetAppF4ListTable(sTableListBindPath, fnCallback);
+            oTable = oAPP.fn.fnGetAppF4ListTable(sTableListBindPath);
 
         var oItem = new sap.m.IconTabFilter({
             key: "K1",
@@ -306,7 +314,7 @@
                     height: "100%",
                     items: [
                         new sap.m.VBox({
-                            renderType: "Bare",                            
+                            renderType: "Bare",
                             items: [oPanel]
                         }),
                         new sap.m.Page({
@@ -315,7 +323,7 @@
                                 oTable
                             ]
                         }),
-                       
+
                     ]
                 }),
 
@@ -329,7 +337,7 @@
     /************************************************************************
      * Application Name F4 의 TabContainer Item2 생성
      ************************************************************************/
-    oAPP.fn.fnCreateAppF4Tab2 = function (fnCallback) {
+    oAPP.fn.fnCreateAppF4Tab2 = function () {
 
         function lf_nozero(sBindValue) {
 
@@ -542,8 +550,10 @@
                 return;
             }
 
-            fnCallback(oRowData);
-
+            if (typeof GfnCallback == "function") {
+                GfnCallback(oRowData);
+            }
+           
             var oAppF4Dialog = sap.ui.getCore().byId("AppF4Dialog");
             if (oAppF4Dialog) {
                 oAppF4Dialog.close();
@@ -614,7 +624,7 @@
     /************************************************************************
      * APP SearchHelp의 App List Table Object Return
      ************************************************************************/
-    oAPP.fn.fnGetAppF4ListTable = function (sBindPath, fnCallback) {
+    oAPP.fn.fnGetAppF4ListTable = function (sBindPath) {
 
         var oTable = new sap.m.Table({
             alternateRowColors: true,
@@ -694,8 +704,8 @@
             var oCtx = oSelectedRow.getBindingContext(),
                 oRowData = oSelectedRow.getModel().getProperty(oCtx.sPath);
 
-            if (typeof fnCallback == "function") {
-                fnCallback(oRowData);
+            if (typeof GfnCallback == "function") {
+                GfnCallback(oRowData);
             }
 
             var oAppF4Dialog = sap.ui.getCore().byId("AppF4Dialog");
