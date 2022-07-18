@@ -432,7 +432,7 @@
             autoSearch: true,
             initCond: {
                 PACKG: "",
-                APPID: "",
+                APPID: sAppId,
                 APPNM: "",
                 ERUSR: sSapId,
                 HITS: 500,

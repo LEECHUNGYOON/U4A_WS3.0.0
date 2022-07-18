@@ -28,12 +28,21 @@
 
     oRCTool.addContent(new sap.m.ToolbarSpacer());
 
+    //라이브러리명 link.
     var oRLibLink = new sap.m.Link({text:"{/uiinfo/UILIB}",visible:"{/uiinfo/vis01}",tooltip:"UI5 library Reference"});
     oRCTool.addContent(oRLibLink);
 
+    //라이브러리 sample 버튼.
     var oRLibBtn2 = new sap.m.Button({icon:"sap-icon://example",visible:"{/uiinfo/vis01}",tooltip:"UI Sample"});
     oRCTool.addContent(oRLibBtn2);
 
+    //라이브러리 sample 버튼 선택 이벤트.
+    oRLibBtn2.attachPress(function(){
+      //샘플 팝업 호출.
+      oAPP.fn.attrCallUiSample();
+    });
+
+    //UI INFO 영역 접힘/펼침 버튼.
     var oRLibBtn3 = new sap.m.Button({icon:"sap-icon://collapse-group",tooltip:"Expand/Collapse"});
     oRCTool.addContent(oRLibBtn3);
 
@@ -90,20 +99,6 @@
 
     }); //Description 변경 이벤트.
 
-
-    /*
-    var oRElm3 = new sap.ui.layout.form.FormElement({label:new sap.m.Label({text:"UI5 library Reference",design:"Bold"}),visible:"{/uiinfo/vis01}"});
-    oRCtn1.addFormElement(oRElm3);
-
-    var oRVB1 = new sap.m.HBox({direction:"Column",renderType:"Bare"});
-    oRElm3.addField(oRVB1);
-
-    var oRLk1 = new sap.m.Link({text:"{/uiinfo/UILIB}"});
-    oRVB1.addItem(oRLk1);
-
-    var oRLk2 = new sap.m.Link({text:"{/uiinfo/SAMPLE}"});
-    oRVB1.addItem(oRLk2);
-    */   
 
 
     /************************************************************************
@@ -827,7 +822,7 @@
     sendAjax(oAPP.attr.servNm + "/get_bind_fld_postion", oFormData, function(param){
 
       //wait 종료 처리.
-      parent.setBusy('');
+      parent.setBusy("");
 
       //서버에서 오류가 발생한 경우.
       if(param.RETCD === "E"){
@@ -3911,6 +3906,7 @@
 
     //UI OBJECT KEY.
     ls_uiinfo.UIOBK = is_tree.UIOBK;
+    
 
     //DOCUMENT, APP인경우 UI명 변경 불가 처리.
     ls_uiinfo.ENAB01 = true;
@@ -3923,6 +3919,9 @@
 
     //UI5 library Reference정보 구성.
     ls_uiinfo.UILIB = is_tree.UILIB;
+    
+    //UI 대문자.
+    ls_uiinfo.UIFND = is_tree.UIFND;
 
     ls_uiinfo.vis01 = false;  //UI Library & sample 비활성.
 
@@ -4979,5 +4978,47 @@
 
 
   };  //attribute 입력건에 오류가발생한 경우 초기값으로 변경 처리.
+
+
+
+
+  //샘플 팝업 호출.
+  oAPP.fn.attrCallUiSample = function(){
+
+    //UI5 bootstrap 라이브러리 활성화건 검색.
+    var ls_UA025 = oAPP.DATA.LIB.T_9011.find( a => a.CATCD === "UA025" && a.FLD01 === "APP" && a.FLD06 === "X" );
+
+    if(!ls_UA025){return;}
+
+    var oFormData = new FormData();
+    
+    //활성화된 라이브러리 버전.
+    oFormData.append("UIVER", ls_UA025.FLD07);
+
+    //라이브러리명.
+    oFormData.append("UILIB", oAPP.attr.oModel.oData.uiinfo.UILIB);
+
+    //UI 대문자.
+    oFormData.append("UIFND", oAPP.attr.oModel.oData.uiinfo.UIFND);
+
+    //서버에서 SAMPLE 정보 검색.
+    sendAjax(oAPP.attr.servNm + "/getLibSampleInfo", oFormData, function(param){
+      
+      //wait 종료 처리.
+      parent.setBusy("");
+
+      //SAMPLE 정보 검색에 실패한 경우.
+      if(param.RETCD === "E"){
+        //오류 메시지 호출.
+        parent.showMessage(sap, 10, "E", param.RTMSG);
+        return;
+      }
+
+      //BROWSER 호출.
+      oAPP.fn.fnExeBrowser(param.PATH, param.PARAM);
+
+    }); //서버에서 SAMPLE 정보 검색.
+
+  };  //샘플 팝업 호출.
 
 })();
