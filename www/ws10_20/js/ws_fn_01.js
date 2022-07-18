@@ -1833,13 +1833,8 @@
                     return;
                 }
 
-                WEBFRAME.setZoomLevel(e.oSource.getValue());
-                
-                // setTimeout(() => {
-                //     oAPP.attr.ui.oLTree1.invalidate();
-                //     // oAPP.attr.ui.oLTree1.rerender(true);
-                // },0);                
-
+                WEBFRAME.setZoomLevel(e.oSource.getValue());                
+              
             }
         });
 
