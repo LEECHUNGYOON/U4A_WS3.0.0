@@ -107,4 +107,26 @@
     // 화면 보호기 감지 이벤트
     oAPP.fn.fnAttachPowerMonitorEvent();
 
+    // window.addEventListener("resize", function(){
+
+    //     console.log("resize!!!!");
+        
+    //     var sCurrPage = parent.getCurrPage();
+    //     if(sCurrPage !== "WS20"){
+    //         console.log("20번 페이지가 아님!!");
+    //         return;
+    //     }
+    //     // oAPP.attr.ui.oLTree1
+    //     if(typeof oAPP.attr.ui["oLTree1"] == "undefined"){
+    //         console.log("tree 없다!!");
+    //         return;
+    //     }
+
+    //     setTimeout(() => {
+    //         oAPP.attr.ui.oLTree1.rerender(true);
+    //     },0);
+
+
+    // });
+
 })(oAPP);

@@ -1000,8 +1000,6 @@
      ************************************************************************/
     oAPP.common.execControllerClass = function (METHNM, INDEX) {
 
-        debugger;
-        
         var oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
             oSettings = parent.require(oSettingsPath),
             oVbsInfo = oSettings.vbs,
@@ -1058,12 +1056,6 @@
             vbs.stderr.on("data", function (data) {});
 
         });
-
-
-
-
-
-
 
         // var aParam = [
         //     sVbsFullPath, // VBS 파일 경로
