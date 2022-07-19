@@ -387,10 +387,8 @@
             return "X";
         }
 
-        // 현재 Dialog Popup이 실행 되어 있는지 확인.
-        var $oOpendDialog = $(".sapMDialogOpen");
-        if ($oOpendDialog.length) {
-            console.log("!!단축기 실행 불가!!");
+        var bIsDialogOpen = oAPP.fn.fnCheckIsDialogOpen();
+        if (bIsDialogOpen) {
             return "X";
         }
 

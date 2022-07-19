@@ -803,7 +803,9 @@
     oAPP.events.ev_CtsTreeTableRowSelect = function (oEvent) {
 
         var oTable = oEvent.getSource(),
-            iSelIdx = oTable.getSelectedIndex();
+            iSelIdx = oEvent.getParameter("rowIndex");
+
+        oTable.setSelectedIndex(iSelIdx);
 
         var oCtsHeadInfo = APPCOMMON.fnGetModelProperty("/CTS/CTSHEAD");
         oCtsHeadInfo.CTSNO = "";
