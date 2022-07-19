@@ -382,19 +382,23 @@
 
         }
 
-        if (oAPP.attr.isLogout == 'X') {
+        if (oAPP.attr.isLogoutOK == 'X') {
 
             oAPP.main.fnBeforeunload();
 
-            delete oAPP.attr.isLogout;           
-            
+            delete oAPP.attr.isLogoutOK;
+
             return;
 
         }
 
         if (aSameBrowser.length == 0) {
-           
-            oAPP.attr.isLogout = 'X';
+
+            if(oAPP.attr.isLogoutMsgOpen == 'X'){
+                return "";
+            }
+
+            oAPP.attr.isLogoutMsgOpen = 'X';
 
             var sMsg = oAPP.common.fnGetMsgClassTxt("0001"); // "Unsaved data will be lost. \n Do you want to log off?";        
 
@@ -408,9 +412,14 @@
         function lf_MsgCallback(sAction) {
 
             if (sAction != "YES") {
-                delete oAPP.attr.isLogout;
+                delete oAPP.attr.isLogoutOK;
+                delete oAPP.attr.isLogoutMsgOpen;
                 return;
-            }           
+            }
+
+            delete oAPP.attr.isLogoutMsgOpen;
+
+            oAPP.attr.isLogoutOK = 'X';
 
             oMeBrows.close();
 
