@@ -861,12 +861,7 @@
      * Save Button Event
      ************************************************************************/
     oAPP.events.ev_pressSaveBtn = function (oEvent) {
-
-        var bIsDialogOpen = oAPP.fn.fnCheckIsDialogOpen();
-        if (bIsDialogOpen) {
-            return;
-        }
-
+     
         // 푸터 메시지가 있을 경우 닫기
         oAPP.common.fnHideFloatingFooterMsg();
 

@@ -375,6 +375,7 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+            return;
             oResult.WINDOW.close();
         }
 
@@ -388,6 +389,7 @@
         oBrowserOptions.height = 60;
         oBrowserOptions.frame = false;
         oBrowserOptions.transparent = true;
+        oBrowserOptions.center = false;
         oBrowserOptions.resizable = false;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -398,12 +400,18 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        // 팝업 위치를 부모 위치에 배치시킨다.
-        var oParentBounds = CURRWIN.getBounds();
-        oBrowserWindow.setBounds({
-            x: Math.round((oParentBounds.x + oParentBounds.width) - 390),
-            y: Math.round((oParentBounds.y) + 30)
-        });
+
+        // var oParentBounds = CURRWIN.getContentBounds();
+        // oBrowserWindow.setContentBounds(oParentBounds);
+
+        // // 팝업 위치를 부모 위치에 배치시킨다.
+        // var oParentBounds = CURRWIN.getBounds();
+        // oBrowserWindow.setBounds({
+        //     x: Math.round((oParentBounds.x + oParentBounds.width) - 390),
+        //     y: Math.round((oParentBounds.y) + 30)
+        // });
+
+        lf_move();
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
@@ -416,28 +424,44 @@
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function() {
 
+            lf_move();
 
         });
 
         function lf_move() {
 
-            let oNewBounds = {};
-            let oCurrWinBounds = CURRWIN.getBounds();
+            console.log("eeee");
+        
+            var oNewBounds = {};
+            var oCurrWinBounds = CURRWIN.getBounds();
 
             oNewBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - 390;
             oNewBounds.y = oCurrWinBounds.y + 30;
 
             oBrowserWindow.setBounds(oNewBounds);
+
         }
 
-        CURRWIN.on('move', lf_move);
-        CURRWIN.on('resize', lf_move);
+        CURRWIN.off("will-move", lf_move);
+        CURRWIN.off("resized", lf_move);
+        CURRWIN.off("maximize", lf_move);
+        CURRWIN.off("unmaximize", lf_move);
+
+
+        CURRWIN.on('will-move', lf_move);
+        CURRWIN.on('resized', lf_move);
+        CURRWIN.on('maximize', lf_move);
+        CURRWIN.on('unmaximize', lf_move);
+
 
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
 
-            CURRWIN.off("move", lf_move);
-            CURRWIN.off("resize", lf_move);
+            CURRWIN.off("will-move", lf_move);
+            CURRWIN.off("resized", lf_move);
+            CURRWIN.off("maximize", lf_move);
+            CURRWIN.off("unmaximize", lf_move);
+
 
             oBrowserWindow = null;
 
@@ -1591,7 +1615,7 @@
 
             debugger;
 
-            
+
         }
 
 
