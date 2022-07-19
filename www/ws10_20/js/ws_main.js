@@ -333,6 +333,91 @@
 
     };
 
-    window.addEventListener("beforeunload", oAPP.main.fnBeforeunload);
+    // window.addEventListener("beforeunload", oAPP.main.fnBeforeunload);
+
+    window.onbeforeunload = function () {
+
+        var sKey = parent.getSessionKey(),
+            oMeBrows = parent.REMOTE.getCurrentWindow(); // 현재 나의 브라우저
+
+        if (oMeBrows.isDestroyed()) {
+            return;
+        }
+
+        var aBrowserList = parent.REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
+            iBrowsLen = aBrowserList.length;
+
+        var aSameBrowser = [];
+        for (var i = 0; i < iBrowsLen; i++) {
+
+            var oBrows = aBrowserList[i];
+            if (oBrows.isDestroyed()) {
+                continue;
+            }
+
+            var oWebCon = oBrows.webContents;
+            if (oWebCon == null) {
+                continue;
+            }
+
+            var oWebPref = oWebCon.getWebPreferences();
+
+            // session 정보가 없으면 skip.
+            var sSessionKey = oWebPref.partition;
+            if (!sSessionKey) {
+                continue;
+            }
+
+            // 브라우저가 내 자신이라면 skip.
+            if (oBrows.id == oMeBrows.id) {
+                continue;
+            }
+
+            // 현재 브라우저의 session key 와 동일하지 않으면 (다른 서버창) skip.
+            if (sKey != sSessionKey) {
+                continue;
+            }
+
+            aSameBrowser.push(oBrows);
+
+        }
+
+        if (oAPP.attr.isLogout == 'X') {
+
+            oAPP.main.fnBeforeunload();
+
+            delete oAPP.attr.isLogout;           
+            
+            return;
+
+        }
+
+        if (aSameBrowser.length == 0) {
+           
+            oAPP.attr.isLogout = 'X';
+
+            var sMsg = oAPP.common.fnGetMsgClassTxt("0001"); // "Unsaved data will be lost. \n Do you want to log off?";        
+
+            // 질문 팝업?
+            parent.showMessage(sap, 30, 'I', sMsg, lf_MsgCallback);
+
+            return "";
+
+        }
+
+        function lf_MsgCallback(sAction) {
+
+            if (sAction != "YES") {
+                delete oAPP.attr.isLogout;
+                return;
+            }           
+
+            oMeBrows.close();
+
+        }
+
+        oAPP.main.fnBeforeunload();
+
+    }
 
 })(window, oAPP);

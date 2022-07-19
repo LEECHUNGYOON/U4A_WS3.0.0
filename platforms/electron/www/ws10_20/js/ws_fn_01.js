@@ -731,6 +731,8 @@
                 change: oAPP.events.ev_AppInputChange,
                 search: oAPP.events.ev_AppValueHelp,
                 suggest: function (oEvent) {
+                    
+                    console.log();
 
                     var sValue = oEvent.getParameter("suggestValue"),
                         aFilters = [];
@@ -864,7 +866,7 @@
      * F4 펑션 키를 눌렀을 때 F4 Help를 띄우기 목적인 이벤트
      ************************************************************************/
     oAPP.fn.fnWs10AppInputKeyDownEvent = function (event) {
-
+    
         var iKeyCode = event.keyCode;
 
         var oAppInput = sap.ui.getCore().byId("AppNmInput");
@@ -891,6 +893,13 @@
             return;
 
         }
+
+        // if(iKeyCode == 36){
+        //     event.preventDefault();
+        //     event.stopImmediatePropagation();
+        //     event.stopPropagation();
+        //     return;
+        // }
 
         // F4 키가 아니면 빠져나간다.
         if (iKeyCode != 115) {
@@ -1833,13 +1842,8 @@
                     return;
                 }
 
-                WEBFRAME.setZoomLevel(e.oSource.getValue());
-                
-                // setTimeout(() => {
-                //     oAPP.attr.ui.oLTree1.invalidate();
-                //     // oAPP.attr.ui.oLTree1.rerender(true);
-                // },0);                
-
+                WEBFRAME.setZoomLevel(e.oSource.getValue());                
+              
             }
         });
 

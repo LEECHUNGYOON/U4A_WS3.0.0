@@ -19,6 +19,9 @@
     //프로퍼티 점검 항목 수집 object.
     oAPP.attr.chkProp = {};
 
+    //UI5 Standard Predefined CSS Preview 팝업에서 css 적용건 수집 array.
+    oAPP.attr.prevCSS = [];
+
     //10번 정보 구조 생성.
     oAPP.fn.crtStru0010 = function(){
 
@@ -525,6 +528,9 @@
       oAPP.attr.bfselUI = undefined; //이전 선택 UI 정보
       oAPP.attr.UA015UI = undefined; //이전 미리보기 예외 UI정보
 
+      //UI5 Standard Predefined CSS Preview 팝업에서 css 적용건 수집 array 초기화.
+      oAPP.attr.prevCSS = [];
+
       //APPLICATION의 세부 정보 광역화.
       oAPP.attr.appInfo = {};
 
@@ -545,38 +551,39 @@
 
 
 
+
+    //순번 정보(POSIT) 재정의 재귀호출 function
+    oAPP.fn.setUIPOSIT = function(it_tree, cnt){
+
+      if(!it_tree || it_tree.length === 0){return;}
+
+      //TREE 디자인 영역의 같은 레벨 기준으로 순번 설정.
+      for(var i=0, l=it_tree.length; i<l; i++){
+
+        //순번 + 1
+        cnt += 1;
+
+        //순번정보 매핑.
+        it_tree[i].POSIT = cnt;
+
+      } //TREE 디자인 영역의 같은 레벨 기준으로 순번 설정.
+
+      //CHILD UI가 존재하는 경우 재귀호출 탐색하며 순번 매핑.
+      for(var i=0, l=it_tree.length; i<l; i++){
+        oAPP.fn.setUIPOSIT(it_tree[i].zTREE, cnt);
+
+      }
+
+    };  //순번 정보(POSIT) 재정의 재귀호출 function
+
+
+
+
     //UI 저장 정보 구성.
     oAPP.fn.getSaveData = function(){
-
-      //순번 정보(POSIT) 재정의 재귀호출 function
-      function lf_setUIPos(it_tree){
-
-        if(!it_tree || it_tree.length === 0){return;}
-
-        //TREE 디자인 영역의 같은 레벨 기준으로 순번 설정.
-        for(var i=0, l=it_tree.length; i<l; i++){
-
-          //순번 + 1
-          l_pos += 1;
-
-          //순번정보 매핑.
-          it_tree[i].POSIT = l_pos;
-
-
-        } //TREE 디자인 영역의 같은 레벨 기준으로 순번 설정.
-
-        //CHILD UI가 존재하는 경우 재귀호출 탐색하며 순번 매핑.
-        for(var i=0, l=it_tree.length; i<l; i++){
-          lf_setUIPos(it_tree[i].zTREE);
-
-        }
-
-      } //순번 정보(POSIT) 재정의 재귀호출 function
-      
-      var l_pos = 0;
-
+      debugger;
       //UI POSTION 정보 재매핑 처리.
-      lf_setUIPos(oAPP.attr.oModel.oData.zTREE);
+      oAPP.fn.setUIPOSIT(oAPP.attr.oModel.oData.zTREE, 0);
 
       
       //design tree 정보를 기준으로 ZY04A0014 저장 정보 구성.

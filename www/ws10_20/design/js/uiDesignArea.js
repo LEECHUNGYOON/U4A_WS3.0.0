@@ -9,8 +9,9 @@
 
     //design tree UI.
     var oLTree1 = new sap.ui.table.TreeTable({selectionMode:"Single", selectionBehavior:"RowOnly",
-      columnHeaderVisible:false, visibleRowCountMode:"Auto", alternateRowColors:true, rowHeight:30});
-    oLPage.addContent(oLTree1);
+      columnHeaderVisible:false, visibleRowCountMode:"Auto", alternateRowColors:true, rowHeight:40});
+      oLPage.addContent(oLTree1);
+
 
     //tree item 선택 이벤트.
     oLTree1.attachCellClick(function(oEvent){
@@ -78,7 +79,7 @@
       //이벤트 발생 라인의 UI정보 얻기.
       var ls_tree = this.getBindingContext().getProperty();
       
-      //design 영역의 체크박스 선택에 따른 
+      //design 영역 체크박스 선택에 따른 parent, child의 check 선택/해제 처리.
       oAPP.fn.designTreeSelChkbox(ls_tree);
 
     }); //checkbox 선택 이벤트.
@@ -1771,34 +1772,42 @@
   };  //drop 처리 function.
 
 
-  
-  
+
+
+  //design tree의 체크박스 선택건 존재여부 확인 펑션.
+  oAPP.fn.designCheckedLine = function(bFrist, is_tree){
+
+    //function 최초 호출시.
+    if(bFrist){
+      //root를 시작점으로 설정.
+      is_tree = oAPP.attr.oModel.oData.zTREE[0];
+    }
+
+    //선택 라인 정보가 존재하는 경우.
+    if(is_tree.chk === true){
+      //찾음 flag return
+      return true;
+    }
+
+    //child정보가 존재하지 않는경우 exit.
+    if(!is_tree.zTREE || is_tree.zTREE.length === 0){return;}
+
+    //child를 탐색하며 선택건 존재여부 확인.
+    for(var i=0, l=is_tree.zTREE.length; i<l; i++){
+      var l_chk = oAPP.fn.designCheckedLine(false, is_tree.zTREE[i]);
+
+      //선택건이 존재하는 경우 찾음 flag return
+      if(l_chk === true){return true;}
+    }
+
+  };  //design tree의 체크박스 선택건 존재여부 확인 펑션.
+
+
+
+
   //멀티 삭제 처리.
   oAPP.fn.designTreeMultiDeleteItem = function(){
-    //선택건 존재여부 확인 펑션.
-    function lf_chkSelLine(is_tree){
-
-      //선택 라인 정보가 존재하는 경우.
-      if(is_tree.chk === true){
-        //찾음 flag return
-        return true;
-      }
-
-      //child정보가 존재하지 않는경우 exit.
-      if(!is_tree.zTREE || is_tree.zTREE.length === 0){return;}
-
-      //child를 탐색하며 선택건 존재여부 확인.
-      for(var i=0, l=is_tree.zTREE.length; i<l; i++){
-        var l_chk = lf_chkSelLine(is_tree.zTREE[i]);
-
-        //선택건이 존재하는 경우 찾음 flag return
-        if(l_chk === true){return true;}
-      }
-
-    } //선택건 존재여부 확인 펑션.
-
-
-
+    
     //선택라인 삭제처리.
     function lf_delSelLine(it_tree){
 
@@ -1843,7 +1852,7 @@
 
 
     //체크박스 선택건 존재여부 확인.
-    if(lf_chkSelLine(oAPP.attr.oModel.oData.zTREE[0]) !== true){
+    if(oAPP.fn.designCheckedLine(true) !== true){
       //존재하지 않는경우 오류 메시지 처리.
       parent.showMessage(sap, 20, "I", "체크박스 선택건이 존재하지 않습니다.");
       return;
@@ -2046,5 +2055,36 @@
     
 
   };  //context menu 호출전 메뉴 선택 가능 여부 설정.
+
+
+
+
+  //checkbox 선택처리된 항목 얻기.
+  oAPP.fn.designGetCheckedLine = function(bFirst, et_chked, is_tree){
+
+    //function 최초 호출 flag가 존재하는경우.
+    if(bFirst){
+      //ROOT를 시작점으로 설정.
+      is_tree = oAPP.attr.oModel.oData.zTREE[0];
+    }
+
+    //현재 라인이 체크박스 선택된건인경우.
+    if(is_tree.chk){
+      //현재라인의 OBJID 수집 처리.
+      et_chked.push({OBJID:is_tree.OBJID, UIOBK:is_tree.UIOBK});
+    }
+
+    //현재 라인의 CHILD가 존재하지 않는경우 EXIT.
+    if(is_tree.zTREE.length === 0){return;}
+
+    //CHILD가 존재하는경우.
+    for(var i=0, l=is_tree.zTREE.length; i<l; i++){
+
+      //하위를 탐색하며, CHECKBOX 선택건 수집 처리.
+      oAPP.fn.designGetCheckedLine(false, et_chked, is_tree.zTREE[i]);
+
+    }
+
+  };  //checkbox 선택처리된 항목 얻기.
 
 })();

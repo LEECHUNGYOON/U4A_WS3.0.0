@@ -410,26 +410,31 @@
             var oCtx = oRow.getBindingContext(),
                 oRowData = oRow.getModel().getProperty(oCtx.sPath);
 
-            // 선택된 CTS 정보의 Parent, child 번호를 전달한다.        
-            if (typeof GfnCtsCallback === "function") {
-                GfnCtsCallback(oRowData);
+            // 저장 확인 질문 팝업
+            parent.showMessage(sap, 30, "I", "Do you want to save it?", lf_msgCallback.bind(oRowData));
+
+            function lf_msgCallback(sAction) {
+
+                var YES = sap.m.MessageBox.Action.YES,
+                    bIsAction = (sAction == YES ? true : false);
+
+                if (!bIsAction) {
+                    return;
+                }
+
+                var oRowData = this;
+
+                // 선택된 CTS 정보의 Parent, child 번호를 전달한다.        
+                if (typeof GfnCtsCallback === "function") {
+                    GfnCtsCallback(oRowData);
+                }
+
+                var oCtsDialog = sap.ui.getCore().byId(C_DLG_ID);
+                if (oCtsDialog) {
+                    oCtsDialog.close();
+                }
+
             }
-
-            var oCtsDialog = sap.ui.getCore().byId(C_DLG_ID);
-            if (oCtsDialog) {
-                oCtsDialog.close();
-            }
-            // if (oRowData.APPID == "ROOT" || oRowData.PACKG == "ROOT") {
-            //     return;
-            // }
-
-            // fnCallback(oRowData);
-
-            // var oAppF4Dialog = sap.ui.getCore().byId("AppF4Dialog");
-            // if (oAppF4Dialog) {
-            //     oAppF4Dialog.close();
-            //     return;
-            // }
 
         });
 
