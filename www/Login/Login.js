@@ -608,8 +608,6 @@ let oAPP = (function () {
             bIsRemember = oAPP.fn.fnGetRememberCheck(),
             oRememberInfo = oAPP.fn.fnGetRememberLoginInfo();
 
-        debugger;
-
         if (oUserInfo) {
             parent.setUserInfo(null);
             parent.setServerInfo(parent.getBeforeServerInfo());
