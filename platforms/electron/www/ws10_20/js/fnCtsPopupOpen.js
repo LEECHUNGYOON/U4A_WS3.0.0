@@ -803,10 +803,9 @@
     oAPP.events.ev_CtsTreeTableRowSelect = function (oEvent) {
 
         var oTable = oEvent.getSource(),
-            // iSelIdx = oTable.getSelectedIndex();
             iSelIdx = oEvent.getParameter("rowIndex");
 
-            oTable.setSelectedIndex(iSelIdx);
+        oTable.setSelectedIndex(iSelIdx);
 
         var oCtsHeadInfo = APPCOMMON.fnGetModelProperty("/CTS/CTSHEAD");
         oCtsHeadInfo.CTSNO = "";
@@ -814,7 +813,6 @@
 
         APPCOMMON.fnSetModelProperty("/CTS/CTSHEAD", oCtsHeadInfo);
 
-        debugger;
         // 선택한 라인이 있는지 체크
         if (iSelIdx < 0) {
             return;

@@ -300,18 +300,29 @@
 
     }; // end of oAPP.events.ev_pressZoomBtn 
 
+    // /************************************************************************
+    //  * WS20의 멀티 메시지 리스트 아이템 클릭 이벤트
+    //  ************************************************************************/
+    // oAPP.events.ev_pressFooterMsgColListItem = function (oEvent) {
+
+    //     var oCtx = oEvent.getSource().getBindingContext(),
+    //         sBindPath = oCtx.sPath,
+    //         oBindData = oCtx.getProperty(sBindPath);
+
+    //     // 하위로직 수행..
+
+
+    // }; // end of oAPP.events.ev_pressFooterMsgColListItem  
+
     /************************************************************************
      * WS20의 멀티 메시지 리스트 아이템 클릭 이벤트
      ************************************************************************/
-    oAPP.events.ev_pressFooterMsgColListItem = function (oEvent) {
-
-        var oCtx = oEvent.getSource().getBindingContext(),
-            sBindPath = oCtx.sPath,
-            oBindData = oCtx.getProperty(sBindPath);
-
-        // 하위로직 수행..
+    oAPP.events.ev_pressTcodeInputSubmit = (oEvent) => {
 
 
-    }; // end of oAPP.events.ev_pressFooterMsgColListItem  
+
+
+
+    }; // end of oAPP.events.ev_pressTcodeInputSubmit
 
 })(window, $, oAPP);

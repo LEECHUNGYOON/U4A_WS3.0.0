@@ -482,6 +482,9 @@
      ************************************************************************/
     oAPP.events.ev_Logout = function () {
 
+        // // Logout 버튼으로 Logout을 시도 했다는 Flag
+        // oAPP.attr.isLogoutFromBtn = "X";
+
         var sMsg = oAPP.common.fnGetMsgClassTxt("0001"); // "Unsaved data will be lost. \n Do you want to log off?";        
 
         // 질문 팝업?
@@ -490,8 +493,12 @@
         function lf_MsgCallback(TYPE) {
 
             if (TYPE == null || TYPE == "NO") {
+                // delete oAPP.attr.isLogoutFromBtn;
                 return;
             }
+
+            // onBeforeunload event 해제
+            oAPP.main.fnDetachBeforeunloadEvent();
 
             // 나는 로그 아웃 한다.
             ajax_logoff();
@@ -860,7 +867,7 @@
     /************************************************************************
      * Save Button Event
      ************************************************************************/
-    oAPP.events.ev_pressSaveBtn = function (oEvent) {        
+    oAPP.events.ev_pressSaveBtn = function (oEvent) {  
 
         // 푸터 메시지가 있을 경우 닫기
         oAPP.common.fnHideFloatingFooterMsg();

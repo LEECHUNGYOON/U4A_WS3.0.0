@@ -37,6 +37,15 @@ let oAPP = (function (window) {
      ************************************************************************/
     oAPP.fn.fnCurrentWindowClose = () => {
 
+        var BROWSKEY = oAPP.attr.BROWSERKEY;
+
+        var oSendData = {
+            TYPE: "C", // P : Preview, S: Save, C: Close
+            DATA: []
+        }
+
+        oAPP.IPCRENDERER.send(`${BROWSKEY}--if-ui5css`, oSendData);
+
         var oCurr = oAPP.REMOTE.getCurrentWindow();
         oCurr.close();
 
@@ -56,7 +65,7 @@ let oAPP = (function (window) {
             DATA: aPreviewCss
         }
 
-        oAPP.IPCRENDERER.send(`${BROWSKEY}--if-ui5css-save`, oSendData);
+        oAPP.IPCRENDERER.send(`${BROWSKEY}--if-ui5css`, oSendData);
 
     }; // end of oAPP.fn.fnPredefinedCssPreview
 
@@ -74,7 +83,7 @@ let oAPP = (function (window) {
             DATA: aSaveCss
         }
 
-        oAPP.IPCRENDERER.send(`${BROWSKEY}--if-ui5css-save`, oSendData);
+        oAPP.IPCRENDERER.send(`${BROWSKEY}--if-ui5css`, oSendData);
 
     }; // end of oAPP.fn.fnPredefinedCssSave
 

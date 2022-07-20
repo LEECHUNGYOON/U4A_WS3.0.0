@@ -4,7 +4,7 @@ Rem *********************
 Rem *** Public Sector ***
 Rem *********************
 
-	Public HostIP, SID, SNO, MANDT, BNAME, PASS, LANGU, APPID, METHD, SPOSI, ISEDT, ISMLGN, ConnStr, W_system
+	Public HostIP, SID, SNO, MANDT, BNAME, PASS, LANGU, APPID, METHD, SPOSI, ISEDT, ConnStr, W_system
 	Public objWSH, objSapGui, objAppl, objConn, objSess
 	
 Rem ****************************
@@ -78,12 +78,6 @@ Function GetArg()
 	SPOSI  = WScript.arguments.Item(9) '네비게이션 대상 이벤트 메소드 소스 라인번호 (*옵션)
 	ISEDT  = WScript.arguments.Item(10) '수정모드 여부(예 : X, 아니오 : 공백)
 
-	REM ** 다중 로그인 여부 **
-	REM    1: SAP GUI 다중 로그인 정보 없음, 
-	REM    2: SAP GUI 다중 로그인 정보 있음(* 시스템 허용)
-	REM    X: SAP GUI 다중 로그인 시스템 허용 안함
-	ISMLGN = WScript.arguments.Item(11) 
-	
 End Function
 
 'SAP GUI 연결 문자열 설정
@@ -224,13 +218,6 @@ Function SAP_Login()
 	objSess.findById("wnd[0]/usr/txtRSYST-LANGU").Text = LANGU
 	objSess.findById("wnd[0]").sendVKey 0
 
-    '다중 로그인 팝업 처리
-	If ISMLGN = "2" Then
-		objSess.findById("wnd[1]/usr/radMULTI_LOGON_OPT2").select
-		objSess.findById("wnd[1]/tbar[0]/btn[0]").press
-	
-	End If
-	
     SAP_Login = "S" '로그인 성공
 
 End Function

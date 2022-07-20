@@ -344,6 +344,34 @@
             return;
         }
 
+        // 세션 타임아웃 팝업이 떠 있다면..
+        if (oAPP.attr.isSessTimeOutPopupOpen == 'X') {
+
+            // oAPP.main.fnDetachBeforeunloadEvent();
+
+            // fnSessionTimeOutDialogOk();
+
+            // oMeBrows.close();
+
+            return "";
+
+        }
+
+        // // 세션종료 팝업 케이스..
+        // fn();
+
+        // //펑션 우회..
+        // function fn() {
+        //     window.onbeforeunload = null;
+
+        //     window.close();
+
+        // }
+
+
+
+        // return false;  
+
         var aBrowserList = parent.REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
             iBrowsLen = aBrowserList.length;
 
@@ -382,23 +410,34 @@
 
         }
 
-        if (oAPP.attr.isLogoutOK == 'X') {
+        // // 브라우저 창을 닫았을때 나온 로그아웃 메시지창에서 OK 눌렀는지 Flag
+        // // 세션 죽이고 창을 닫는다.
+        // if (oAPP.attr.isBrowserCloseLogout == 'X') {
 
-            oAPP.main.fnBeforeunload();
+        //     oAPP.main.fnBeforeunload();
 
-            delete oAPP.attr.isLogoutOK;
+        //     delete oAPP.attr.isBrowserCloseLogout;
 
-            return;
+        //     return;
 
-        }
+        // }
 
         if (aSameBrowser.length == 0) {
 
-            if(oAPP.attr.isLogoutMsgOpen == 'X'){
+            // // Logout 버튼으로 Logout을 시도 했다는 Flag
+            // // Logout 버튼으로 Logout 처리 이면 세션 다 죽이고 Login 화면으로 이동
+            // if (oAPP.attr.isLogoutFromBtn == 'X') {
+            //     fn_logoff_success();
+            //     return;
+            // }
+
+            // 브라우저 닫기 클릭해서 발생한 Logout 메시지가 이미 떠 있다면 창을 못닫게 한다.
+            if (oAPP.attr.isBrowserCloseLogoutMsgOpen == 'X') {
                 return "";
             }
 
-            oAPP.attr.isLogoutMsgOpen = 'X';
+            // 브라우저 닫기 클릭해서 발생한 Logout 메시지 Flag
+            oAPP.attr.isBrowserCloseLogoutMsgOpen = 'X';
 
             var sMsg = oAPP.common.fnGetMsgClassTxt("0001"); // "Unsaved data will be lost. \n Do you want to log off?";        
 
@@ -411,15 +450,21 @@
 
         function lf_MsgCallback(sAction) {
 
+            delete oAPP.attr.isBrowserCloseLogoutMsgOpen;
+
             if (sAction != "YES") {
-                delete oAPP.attr.isLogoutOK;
-                delete oAPP.attr.isLogoutMsgOpen;
+                // delete oAPP.attr.isBrowserCloseLogout;
+
                 return;
             }
 
-            delete oAPP.attr.isLogoutMsgOpen;
+            // // 브라우저 창을 닫았을때 나온 로그아웃 메시지창에서 OK 눌렀는지 Flag
+            // oAPP.attr.isBrowserCloseLogout = 'X';
 
-            oAPP.attr.isLogoutOK = 'X';
+            oAPP.main.fnBeforeunload();
+
+            // onBeforeunload event 해제
+            oAPP.main.fnDetachBeforeunloadEvent();
 
             oMeBrows.close();
 
@@ -428,5 +473,11 @@
         oAPP.main.fnBeforeunload();
 
     }
+
+    oAPP.main.fnDetachBeforeunloadEvent = () => {
+
+        window.onbeforeunload = () => {};
+
+    };
 
 })(window, oAPP);

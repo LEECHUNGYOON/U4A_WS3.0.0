@@ -10,7 +10,8 @@
      ************************************************************************/
     oAPP.fn.fnIpcMain_if_session_time = function (event, res) {
 
-        var iSessionTime = oAPP.attr.iSessionTimeout; // 세션 타임아웃 시간
+        // var iSessionTime = oAPP.attr.iSessionTimeout; // 세션 타임아웃 시간
+        var iSessionTime = 0.1;
 
         var sSessionKey = parent.getSessionKey();
         if (sSessionKey != res) {

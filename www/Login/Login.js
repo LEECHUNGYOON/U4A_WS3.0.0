@@ -701,6 +701,8 @@ let oAPP = (function () {
 
         parent.setBusy('X');
 
+        var oPwInput = sap.ui.getCore().byId("ws_pw");
+
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
@@ -709,10 +711,14 @@ let oAPP = (function () {
                     var oResult = JSON.parse(xhr.responseText);
                     if (oResult.TYPE == "E") {
 
+                        oPwInput.setValue("");
+
                         // 오류 처리..                   
                         parent.showMessage(null, 99, "E", oResult.MSG);
                         parent.setBusy('');
+
                         return;
+
                     }
 
                     // // 실제 접속한 클라이언트 정보를 저장한다.

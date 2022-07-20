@@ -581,7 +581,7 @@
 
     //UI 저장 정보 구성.
     oAPP.fn.getSaveData = function(){
-      debugger;
+
       //UI POSTION 정보 재매핑 처리.
       oAPP.fn.setUIPOSIT(oAPP.attr.oModel.oData.zTREE, 0);
 

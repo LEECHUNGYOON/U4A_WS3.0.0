@@ -731,7 +731,7 @@
                 change: oAPP.events.ev_AppInputChange,
                 search: oAPP.events.ev_AppValueHelp,
                 suggest: function (oEvent) {
-                    
+
                     console.log();
 
                     var sValue = oEvent.getParameter("suggestValue"),
@@ -828,7 +828,7 @@
                     }),
                     new sap.m.Text({
                         text: "{" + sFmsgBindRootPath + "/TXT}"
-                    }),                 
+                    }),
                 ]
             });
 
@@ -866,7 +866,7 @@
      * F4 펑션 키를 눌렀을 때 F4 Help를 띄우기 목적인 이벤트
      ************************************************************************/
     oAPP.fn.fnWs10AppInputKeyDownEvent = function (event) {
-    
+
         var iKeyCode = event.keyCode;
 
         var oAppInput = sap.ui.getCore().byId("AppNmInput");
@@ -957,7 +957,15 @@
                 press: function () {
                     parent.onNewWindow();
                 }
-            }).addStyleClass("u4aWs20NewWin");
+            }).addStyleClass("u4aWs20NewWin"),
+
+            oSapTCodeInput = new sap.m.Input("ws20_sapTcodeInput", {
+                placeholder: "SAP T-CODE",
+                width: "200px",
+                submit: function (oEvent) {
+                    oAPP.events.ev_pressTcodeInputSubmit(oEvent);
+                }
+            }).addStyleClass("u4aWs20sapTcodeInput");
 
         return [
 
@@ -985,8 +993,11 @@
 
             oFindBtn, // Find Button
 
-            oNewWin, // new window Button            
+            oNewWin, // new window Button   
 
+            new sap.m.ToolbarSpacer(),
+
+            oSapTCodeInput, // T-Code input
         ];
 
     }; // end of oAPP.fn.fnGetHeaderToolbarContentWs20
@@ -1842,8 +1853,8 @@
                     return;
                 }
 
-                WEBFRAME.setZoomLevel(e.oSource.getValue());                
-              
+                WEBFRAME.setZoomLevel(e.oSource.getValue());
+
             }
         });
 

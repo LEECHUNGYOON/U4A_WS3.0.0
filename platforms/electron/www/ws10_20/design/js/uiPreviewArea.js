@@ -815,15 +815,29 @@
       if(!oAPP.attr.prev[oAPP.attr.prevCSS[i].OBJID]){continue;}
 
       //styleClass 프로퍼티 수집건 존재여부 확인.
-      var ls_attr = oAPP.attr.prev[lt_OBJID[i].OBJID]._T_0015.find( a=> a.UIATT === "styleClass" );
+      var ls_attr = oAPP.attr.prev[oAPP.attr.prevCSS[i].OBJID]._T_0015.find( a=> a.UIATT === "styleClass" );
 
       //이전에 적용한 styleClass 프로퍼티에 바인딩 처리를 한경우 skip.
       if(ls_attr && ls_attr.ISBND === "X"){
         continue;
       }
 
-      //이전에 적용한 CSS 제거 처리.
-      oAPP.attr.prev[oAPP.attr.prevCSS[i].OBJID].removeStyleClass(oAPP.attr.prevCSS[i].CSS);
+      //EXTENSTION PROPERTY인경우.
+      if(oAPP.attr.prevCSS[i].ISEXT === "X"){
+        //이전에 적용한 CSS 제거 처리.
+        oAPP.attr.prev[oAPP.attr.prevCSS[i].OBJID].removeStyleClass(oAPP.attr.prevCSS[i].CSS);
+
+        //기존에 styleClass프로퍼티 입력건이 존재하는경우.
+        if(oAPP.attr.prevCSS[i].UIATV !== ""){
+          //해당 styleClass 다시 add 처리.
+          oAPP.attr.prev[oAPP.attr.prevCSS[i].OBJID].addStyleClass(oAPP.attr.prevCSS[i].UIATV);
+        }
+        
+      }else{
+        //EXTENSTION PROPERTY가 아닌경우 이전에 적용한 CSS로 적용 처리.
+        oAPP.attr.prev[oAPP.attr.prevCSS[i].OBJID].setStyleClass(oAPP.attr.prevCSS[i].UIATV);
+      }
+
 
     } //이전 선택한 건에 대해서 CSS 원복 처리.
 
@@ -852,41 +866,49 @@
     //STYLE CLASS 병합처리.
     var l_css = it_css.join(" ");
 
-    var l_changed = false;
+    var l_changed = false, l_UIATV = "", l_sep = "";
 
     //DESIGN영역의 CHECKBOX 선택건을 대상으로 CSS 적용 처리.
     for(var i=0, l=lt_OBJID.length; i<l; i++){
 
       //선택 라인의 styleClass 프로퍼티 정보 검색.
-      var ls_0023 = oAPP.DATA.LIB.T_0023.find( a=> a.UIOBK === lt_OBJID[i].UIOBK && a.UIATY === "1" && a.ISDEP !== "X" );
+      var ls_0023 = oAPP.DATA.LIB.T_0023.find( a=> a.UIOBK === lt_OBJID[i].UIOBK &&
+        a.UIATT === "styleClass" && a.UIATY === "1" && a.ISDEP !== "X" );
 
       //선택 UI의 styleClass프로퍼가 존재하지 않는경우 SKIP.
       if(!ls_0023){continue;}
       
-      //STYLE CLASS 프로퍼티 수집건 존재여부 확인.
-      var ls_attr = oAPP.attr.prev[lt_OBJID[i].OBJID]._T_0015.find( a=> a.UIATK === ls_0023.UIATK );
+      //styleClass 프로퍼티 수집건 존재여부 확인.
+      var ls_0015 = oAPP.attr.prev[lt_OBJID[i].OBJID]._T_0015.find( a=> a.UIATK === ls_0023.UIATK );
 
-      //CHKBOX 선택한 UI의 STYLECLASS 프로퍼티가 바인딩이 걸려있다면 SKIP 처리.
-      if(ls_attr && ls_attr.ISBND === "X"){
+      //CHKBOX 선택한 UI의 styleClass 프로퍼티가 바인딩이 걸려있다면 SKIP 처리.
+      if(ls_0015 && ls_0015.ISBND === "X"){
         continue;
+      }
+
+      //styleClass 프로퍼티에 직접 입력한 값이 존재하는경우.
+      l_UIATV = "";
+      l_sep = "";
+      if(ls_0015 && ls_0015.UIATV){
+        l_UIATV = ls_0015.UIATV;
+        l_sep = " ";
       }
       
       //EXTEND PROPERTY인경우.
       if(ls_0023.ISEXT === "X"){
+        //적용하고자 하는 CSS를 ADD.
         oAPP.attr.prev[lt_OBJID[i].OBJID].addStyleClass(l_css);
 
       }else{
-        //EXTEND PROPERTY가 아닌경우 이전 css 적용값 얻기..
-        var l_prop = oAPP.attr.prev[lt_OBJID[i].OBJID].getStyleClass();
-
         //이전에 적용한 css + 적용할 CSS를 같이 적용 처리.
-        oAPP.attr.prev[lt_OBJID[i].OBJID].setStyleClass(l_prop + " " + l_css);
+
+        oAPP.attr.prev[lt_OBJID[i].OBJID].setStyleClass(l_UIATV + l_sep + l_css);
 
       }
       
       //실제 적용 처리가 아닌경우 CSS 적용건 수집 처리.
       if(!bSave){
-        oAPP.attr.prevCSS.push({OBJID:lt_OBJID[i].OBJID, CSS:l_css});
+        oAPP.attr.prevCSS.push({OBJID:lt_OBJID[i].OBJID, CSS:l_css, ISEXT:ls_0023.ISEXT, UIATV:l_UIATV});
         continue;
       }
 
@@ -895,9 +917,12 @@
       //실제 적용시 현재 DESIGN에서 선택한 UI가 CSS 적용대상건인경우.
       if(bSave && oAPP.attr.oModel.oData.uiinfo.OBJID === lt_OBJID[i].OBJID){
         //ATTRIBUTE 항목의 styleClass 프로퍼티 건 검색.
-        ls_attr = oAPP.attr.oModel.oData.T_ATTR.find( a => a.UIATK === ls_0023.UIATK );
+        var ls_attr = oAPP.attr.oModel.oData.T_ATTR.find( a => a.UIATK === ls_0023.UIATK );
 
         if(ls_attr){
+
+          //변경 FLAG 처리.
+          l_changed = true;
 
           //이전 CSS 입력건이 존재하는경우 공백 추가.
           if(ls_attr.UIATV !== ""){
@@ -905,7 +930,7 @@
           }
 
           //이전에 입력한 CSS + 적용처리 CSS.
-          ls_attr.UIATV = ls_attr.UIATV + l_css;
+          ls_attr.UIATV += l_css;
 
           //ATTR 변경처리.
           oAPP.fn.attrChangeProc(ls_attr, "INPUT");
@@ -915,18 +940,41 @@
 
       }
 
-      var ls_0015 = oAPP.fn.crtStru0015();
-      oAPP.fn.moveCorresponding(ls_0023, ls_0015);
+      //이전 styleClass 입력건이 존재하는경우.
+      if(ls_0015){
+        
+        if(ls_0015.UIATV !== ""){
+          ls_0015.UIATV += " ";
+        }
 
+        ls_0015.UIATV += l_css;
 
-      ls_0015.UIATV = l_css;
+      }else{
+        //이전 styleClass 입력건이 존재하지 않는경우.
 
+        ls_0015 = oAPP.fn.crtStru0015();
+        oAPP.fn.moveCorresponding(ls_0023, ls_0015);
+
+        ls_0015.OBJID = lt_OBJID[i].OBJID;
+
+        ls_0015.UIATV = l_css;
+
+      }
+  
       //attr 변경처리.
       oAPP.fn.attrChgAttrVal(ls_0015, "INPUT");
+
+      //변경 FLAG 처리.
+      l_changed = true;
       
 
     } //DESIGN영역의 CHECKBOX 선택건을 대상으로 CSS 적용 처리.
 
+    //변경된건이 존재하는경우.
+    if(l_changed){
+      //change flag 설정.
+      oAPP.fn.setChangeFlag();
+    }
 
   };  //미리보기 css 적용 처리.
 
