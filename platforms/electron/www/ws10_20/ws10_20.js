@@ -57,14 +57,9 @@
     /************************************************************************
      * 화면 보호기 대기모드로 전환될 때 타는 이벤트
      ************************************************************************/
-    oAPP.fn.fnAttachPowerMonitorLockScreen = () => {
+    oAPP.fn.fnAttachPowerMonitorLockScreen = () => {     
 
-        //  // 서버 세션을 체크하고 있는 브라우저일 때만 실행
-        // if (!oAPP.attr.serverSessionCheckingMe) {
-        //     return;
-        // }
-
-        // 세션 타임아웃 체크
+        //[#ws_fn_03.js] 세션 타임아웃 체크
         oAPP.fn.fnSessionTimeoutCheck();
 
         console.log("워커가 켜졌다!!");
@@ -75,12 +70,7 @@
      * 화면 보호기 대기모드가 아닐때 타는 이벤트
      ************************************************************************/
     oAPP.fn.fnAttachPowerMonitorUnLockScreen = () => {
-
-        // // 서버 세션을 체크하고 있는 브라우저일 때만 실행
-        // if (!oAPP.attr.serverSessionCheckingMe) {
-        //     return;
-        // }
-
+     
         // 이벤트를 받으면 세션 타임을 초기화 한다.
         parent.IPCMAIN.off('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
 
@@ -96,8 +86,7 @@
 
         console.log("워커 죽었다!!!!");
 
-    }; // end of oAPP.fn.fnAttachPowerMonitorUnLockScreen
-
+    }; // end of oAPP.fn.fnAttachPowerMonitorUnLockScreen    
 
     /************************************************************************/
 
@@ -106,27 +95,5 @@
 
     // 화면 보호기 감지 이벤트
     oAPP.fn.fnAttachPowerMonitorEvent();
-
-    // window.addEventListener("resize", function(){
-
-    //     console.log("resize!!!!");
-        
-    //     var sCurrPage = parent.getCurrPage();
-    //     if(sCurrPage !== "WS20"){
-    //         console.log("20번 페이지가 아님!!");
-    //         return;
-    //     }
-    //     // oAPP.attr.ui.oLTree1
-    //     if(typeof oAPP.attr.ui["oLTree1"] == "undefined"){
-    //         console.log("tree 없다!!");
-    //         return;
-    //     }
-
-    //     setTimeout(() => {
-    //         oAPP.attr.ui.oLTree1.rerender(true);
-    //     },0);
-
-
-    // });
-
+  
 })(oAPP);

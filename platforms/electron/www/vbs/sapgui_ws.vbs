@@ -4,7 +4,7 @@ Rem *********************
 Rem *** Public Sector ***
 Rem *********************
 
-	Public HostIP, SID, SNO, MANDT, BNAME, PASS, LANGU, APPID, METHD, SPOSI, ISEDT, ISMLGN, ConnStr, W_system
+	Public HostIP, SID, SNO, MANDT, BNAME, PASS, LANGU, APPID, METHD, SPOSI, ISEDT, ISMLGN, ConnStr, W_system, TCODE
 	Public objWSH, objSapGui, objAppl, objConn, objSess
 	
 Rem ****************************
@@ -77,6 +77,7 @@ Function GetArg()
 	METHD  = WScript.arguments.Item(8) '네비게이션 대상 이벤트 메소드 (*옵션)
 	SPOSI  = WScript.arguments.Item(9) '네비게이션 대상 이벤트 메소드 소스 라인번호 (*옵션)
 	ISEDT  = WScript.arguments.Item(10) '수정모드 여부(예 : X, 아니오 : 공백)
+	TCODE  = WScript.arguments.Item(11) 'SAP TCODE
 
 	REM ** 다중 로그인 여부 **
 	REM    1: SAP GUI 다중 로그인 정보 없음, 
@@ -258,7 +259,7 @@ Function call_ZU4A_CTRL_PROXY()
 	
 	'objSess.findById("wnd[0]/tbar[1]/btn[8]").press
 
-    LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT
+    LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE
 	
 	LV_ENC = Base64Encode(LV_PARA)
 

@@ -2,13 +2,13 @@
  * ws_fn_ipc.js
  **************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     /************************************************************************
      * Electron IPCMAIN의 세션 타임 체크 관련 이벤트
      ************************************************************************/
-    oAPP.fn.fnIpcMain_if_session_time = function (event, res) {
+    oAPP.fn.fnIpcMain_if_session_time = function(event, res) {
 
         // var iSessionTime = oAPP.attr.iSessionTimeout; // 세션 타임아웃 시간
         var iSessionTime = 0.1;
@@ -31,7 +31,7 @@
     /************************************************************************
      *  Electron IPCMAIN의 Exam 팝업에서 샘플 리스트의 WorkBench Move 버튼 실행 시 수행 되는 이벤트
      ************************************************************************/
-    oAPP.fn.fnIpcMain_if_exam_move = function (event, res) {
+    oAPP.fn.fnIpcMain_if_exam_move = function(event, res) {
 
         console.log("fnIpcMain_if_exam_move");
 
@@ -117,6 +117,42 @@
         oAPP.common.fnShowFloatingFooterMsg(res.RETCD, sCurrPage, res.RTMSG);
 
     }; // end of oAPP.fn.fnIpcMain_export_import_EXPORT
+
+    oAPP.fn.fnIpcMain_Attach_if_browser_close = () => {
+
+        // 여러창일때 나를 제외한 윈도우를 닫고 싶을때 
+        parent.IPCMAIN.on('if-browser-close', oAPP.fn.fnIpcMain_if_browser_close);
+
+    };
+
+    oAPP.fn.fnIpcMain_if_browser_close = (event, res) => {
+
+        var oCurrWin = parent.CURRWIN,
+            sType = res.ACTCD,
+            sCurrSessionKey = parent.getSessionKey(),
+            sCurrBrowsKey = parent.getBrowserKey();
+
+        if (res.SESSKEY !== sCurrSessionKey) {
+            return;
+        }
+
+        if (sType == "A") {
+
+            if (sCurrBrowsKey == res.BROWSKEY) {
+                return;
+            }
+
+            // onBeforeunload event 해제
+            oAPP.main.fnDetachBeforeunloadEvent();
+
+            oCurrWin.close();
+
+            // 여러창일때 나를 제외한 윈도우를 닫고 싶을때 
+            parent.IPCMAIN.off('if-browser-close', oAPP.fn.fnIpcMain_if_browser_close);
+
+        }
+
+    };
 
 })(window, $, oAPP);
 

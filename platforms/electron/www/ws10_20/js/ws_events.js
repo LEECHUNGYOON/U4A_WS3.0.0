@@ -482,8 +482,8 @@
      ************************************************************************/
     oAPP.events.ev_Logout = function () {
 
-        // // Logout 버튼으로 Logout을 시도 했다는 Flag
-        // oAPP.attr.isLogoutFromBtn = "X";
+        // Logout 버튼으로 Logout을 시도 했다는 Flag
+        oAPP.attr.isLogoutFromBtn = "X";
 
         var sMsg = oAPP.common.fnGetMsgClassTxt("0001"); // "Unsaved data will be lost. \n Do you want to log off?";        
 
@@ -493,7 +493,7 @@
         function lf_MsgCallback(TYPE) {
 
             if (TYPE == null || TYPE == "NO") {
-                // delete oAPP.attr.isLogoutFromBtn;
+                delete oAPP.attr.isLogoutFromBtn;
                 return;
             }
 

@@ -5,7 +5,7 @@
  * - file Desc : ws 메인 
  ************************************************************************/
 
-(function (window, oAPP) {
+(function(window, oAPP) {
     "use strict";
 
     var APPCOMMON = oAPP.common;
@@ -13,7 +13,7 @@
     /**************************************************************************
      * 공통 인스턴스 정의
      **************************************************************************/
-    oAPP.main.fnPredefineGlobalObject = function () {
+    oAPP.main.fnPredefineGlobalObject = function() {
 
         var oMetaData = parent.getMetadata();
 
@@ -31,7 +31,7 @@
     /************************************************************************
      * 접속 Language 에 맞는 메시지 텍스트 읽어오기
      ************************************************************************/
-    oAPP.main.fnOnLoadMessageClass = function () {
+    oAPP.main.fnOnLoadMessageClass = function() {
 
         var FS = parent.FS,
             oUserInfo = parent.getUserInfo();
@@ -89,7 +89,7 @@
     /**************************************************************************
      * U4A WS 메타 정보 구하기
      **************************************************************************/
-    oAPP.main.fnOnInitModelBinding = function () {
+    oAPP.main.fnOnInitModelBinding = function() {
 
         // ModelData
         var oMetaData = {
@@ -167,7 +167,7 @@
     /************************************************************************
      * window Event Handle ..
      ************************************************************************/
-    oAPP.main.fnBeforeunload = function () {
+    oAPP.main.fnBeforeunload = function() {
 
         // 설정된 Global Shortcut 단축키 삭제
         oAPP.common.fnRemoveGlobalShortcut();
@@ -184,6 +184,9 @@
         oPowerMonitor.removeListener('lock-screen', oAPP.fn.fnAttachPowerMonitorLockScreen);
 
         oPowerMonitor.removeListener('unlock-screen', oAPP.fn.fnAttachPowerMonitorUnLockScreen);
+
+        // 여러창일때 나를 제외한 윈도우를 닫고 싶을때 
+        parent.IPCMAIN.off('if-browser-close', oAPP.fn.fnIpcMain_if_browser_close);
 
         // // 서버 세션 유지 이벤트 전파
         // oAPP.main.fnServerSessionCheckPropagation();
@@ -246,9 +249,9 @@
     /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------
      ************************************************************************/
-    oAPP.main.fnWsStart = function () {
+    oAPP.main.fnWsStart = function() {
 
-        sap.ui.getCore().attachInit(function () {
+        sap.ui.getCore().attachInit(function() {
 
             // Register illustration Message Pool
             oAPP.fn.fnRegisterIllustrationPool();
@@ -304,6 +307,8 @@
             // 서버 호스트 등록 여부 체크
             oAPP.fn.fnCheckServerHost();
 
+            oAPP.fn.fnIpcMain_Attach_if_browser_close();
+
         }); // end of attachInit
 
         /************************************************************************
@@ -315,7 +320,7 @@
     }; // end of oAPP.main.fnWsStart
 
     // Test..
-    oAPP.main.fnSetLanguage = function () {
+    oAPP.main.fnSetLanguage = function() {
 
         var oUserInfo = parent.getUserInfo(),
             oMetaScript = document.getElementById("sap-ui-bootstrap");
@@ -333,9 +338,7 @@
 
     };
 
-    // window.addEventListener("beforeunload", oAPP.main.fnBeforeunload);
-
-    window.onbeforeunload = function () {
+    window.onbeforeunload = function() {
 
         var sKey = parent.getSessionKey(),
             oMeBrows = parent.REMOTE.getCurrentWindow(); // 현재 나의 브라우저
@@ -344,17 +347,14 @@
             return;
         }
 
+        // Logout 버튼으로 Logout을 시도 했다는 Flag
+        if (oAPP.attr.isLogoutFromBtn == "X") {
+            return "";
+        }
+
         // 세션 타임아웃 팝업이 떠 있다면..
         if (oAPP.attr.isSessTimeOutPopupOpen == 'X') {
-
-            oAPP.main.fnDetachBeforeunloadEvent();
-
-            fnSessionTimeOutDialogOk();
-
-            // oMeBrows.close();
-
             return "";
-
         }
 
         // // 세션종료 팝업 케이스..
@@ -367,10 +367,6 @@
         //     window.close();
 
         // }
-
-
-
-        // return false;  
 
         var aBrowserList = parent.REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
             iBrowsLen = aBrowserList.length;
@@ -410,26 +406,8 @@
 
         }
 
-        // // 브라우저 창을 닫았을때 나온 로그아웃 메시지창에서 OK 눌렀는지 Flag
-        // // 세션 죽이고 창을 닫는다.
-        // if (oAPP.attr.isBrowserCloseLogout == 'X') {
-
-        //     oAPP.main.fnBeforeunload();
-
-        //     delete oAPP.attr.isBrowserCloseLogout;
-
-        //     return;
-
-        // }
 
         if (aSameBrowser.length == 0) {
-
-            // // Logout 버튼으로 Logout을 시도 했다는 Flag
-            // // Logout 버튼으로 Logout 처리 이면 세션 다 죽이고 Login 화면으로 이동
-            // if (oAPP.attr.isLogoutFromBtn == 'X') {
-            //     fn_logoff_success();
-            //     return;
-            // }
 
             // 브라우저 닫기 클릭해서 발생한 Logout 메시지가 이미 떠 있다면 창을 못닫게 한다.
             if (oAPP.attr.isBrowserCloseLogoutMsgOpen == 'X') {
@@ -453,20 +431,17 @@
             delete oAPP.attr.isBrowserCloseLogoutMsgOpen;
 
             if (sAction != "YES") {
-                // delete oAPP.attr.isBrowserCloseLogout;
-
                 return;
             }
-
-            // // 브라우저 창을 닫았을때 나온 로그아웃 메시지창에서 OK 눌렀는지 Flag
-            // oAPP.attr.isBrowserCloseLogout = 'X';
 
             oAPP.main.fnBeforeunload();
 
             // onBeforeunload event 해제
             oAPP.main.fnDetachBeforeunloadEvent();
 
-            oMeBrows.close();
+            if (!oMeBrows.isDestroyed()) {
+                oMeBrows.close();
+            }
 
         }
 
