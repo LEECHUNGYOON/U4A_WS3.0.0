@@ -860,7 +860,8 @@
     /************************************************************************
      * Save Button Event
      ************************************************************************/
-    oAPP.events.ev_pressSaveBtn = function (oEvent) {        
+
+    oAPP.events.ev_pressSaveBtn = function (oEvent) {  
 
         // 푸터 메시지가 있을 경우 닫기
         oAPP.common.fnHideFloatingFooterMsg();

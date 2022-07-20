@@ -5,7 +5,7 @@
  * - file Desc : ws 공통 스크립트
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     oAPP.common = {};
@@ -24,7 +24,7 @@
      * - true : child window 보이기
      * - false : child window 숨김
      * **********************************************************************/
-    oAPP.common.fnIsChildWindowShow = function (bIsShow) {
+    oAPP.common.fnIsChildWindowShow = function(bIsShow) {
 
         var oCurrWin = REMOTE.getCurrentWindow(),
             aChild = oCurrWin.getChildWindows(),
@@ -58,7 +58,7 @@
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.common.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
+    oAPP.common.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -76,7 +76,7 @@
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.common.fnGetModelProperty = function (sModelPath) {
+    oAPP.common.fnGetModelProperty = function(sModelPath) {
         return sap.ui.getCore().getModel().getProperty(sModelPath);
     };
 
@@ -89,7 +89,7 @@
      * @return {String}
      * - Message Text
      ************************************************************************/
-    oAPP.common.fnGetMsgClassTxt = function (sMsgNum) {
+    oAPP.common.fnGetMsgClassTxt = function(sMsgNum) {
 
         // 메시지 클래스 내용이 없으면 리턴
         if (!oAPP.attr.oMsgClass) {
@@ -124,7 +124,7 @@
      * @return {String}
      * - Message Text
      ************************************************************************/
-    oAPP.common.fnGetMsgClsTxt = function (sMsgNum, p1, p2, p3, p4) {
+    oAPP.common.fnGetMsgClsTxt = function(sMsgNum, p1, p2, p3, p4) {
 
         // Metadata에서 메시지 클래스 정보를 구한다.
         var oMeta = parent.getMetadata(),
@@ -191,14 +191,14 @@
     /************************************************************************
      * z-Index 구하기
      * **********************************************************************/
-    oAPP.common.fnGetZIndex = function () {
+    oAPP.common.fnGetZIndex = function() {
         return sap.ui.core.Popup.getNextZIndex();
     };
 
     /************************************************************************
      * 각 페이지 이동 시 푸터 메시지가 있으면 숨김처리
      ************************************************************************/
-    oAPP.common.fnHideFloatingFooterMsg = function () {
+    oAPP.common.fnHideFloatingFooterMsg = function() {
 
         if (oAPP.attr.footerMsgTimeout) {
             clearTimeout(oAPP.attr.footerMsgTimeout);
@@ -251,7 +251,7 @@
     /************************************************************************
      * 멀티 푸터 메시지 닫기
      ************************************************************************/
-    oAPP.common.fnMultiFooterMsgClose = function () {
+    oAPP.common.fnMultiFooterMsgClose = function() {
 
         var sPopupName = "ERRMSGPOP";
 
@@ -287,7 +287,7 @@
      * 예) WS10, WS20
      * @param {String} MSG  
      ************************************************************************/
-    oAPP.common.fnShowFloatingFooterMsg = function (TYPE, POS, MSG) {
+    oAPP.common.fnShowFloatingFooterMsg = function(TYPE, POS, MSG) {
 
         oAPP.common.fnHideFloatingFooterMsg();
 
@@ -337,7 +337,7 @@
         }
 
         // timeout 시간이 도래되면 Footer Message를 지운다.
-        oAPP.attr.footerMsgTimeout = setTimeout(function () {
+        oAPP.attr.footerMsgTimeout = setTimeout(function() {
 
             oAPP.common.fnHideFloatingFooterMsg();
 
@@ -387,10 +387,19 @@
             return "X";
         }
 
+        // 현재 Dialog Popup이 실행 되어 있는지 확인.
         var bIsDialogOpen = oAPP.fn.fnCheckIsDialogOpen();
         if (bIsDialogOpen) {
+            console.log("!!단축기 실행 불가!!");
             return "X";
         }
+
+        // // 현재 Dialog Popup이 실행 되어 있는지 확인.
+        // var $oOpendDialog = $(".sapMDialogOpen");
+        // if ($oOpendDialog.length) {
+        //     console.log("!!단축기 실행 불가!!");
+        //     return "X";
+        // }
 
         console.log("!!___단축기 실행 가능__!!");
 
@@ -401,11 +410,26 @@
     /*************************************************************************
      * Shortcut 설정
      **************************************************************************/
-    oAPP.common.getShortCutList = function (sPgNo) {
+    oAPP.common.getShortCutList = function(sPgNo) {
 
         // let IS_DEV = APPCOMMON.fnGetModelProperty("/USERINFO/USER_AUTH/IS_DEV");
 
         var aShortCutWS10 = [{
+                    KEY: "Ctrl+Shift+F", // textSearchPopup
+                    fn: () => {
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        oAPP.fn.fnTextSearchPopupOpener();
+
+                    }
+                }, {
                     KEY: "Ctrl+F12", // Application Create
                     fn: () => {
 
@@ -576,6 +600,21 @@
 
             ],
             aShortCutWS20 = [{
+                    KEY: "Ctrl+Shift+F", // textSearchPopup
+                    fn: () => {
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        oAPP.fn.fnTextSearchPopupOpener();
+
+                    }
+                }, {
                     KEY: "Ctrl+F2", // Syntax Check Button
                     fn: () => {
 
@@ -875,7 +914,7 @@
      * - page 명
      * 예) WS10, WS20     
      ************************************************************************/
-    oAPP.common.setShortCut = function (sPgNo) {
+    oAPP.common.setShortCut = function(sPgNo) {
 
         var oShortcut = oAPP.attr.oShortcut;
 
@@ -899,7 +938,7 @@
      * - page 명
      * 예) WS10, WS20     
      ************************************************************************/
-    oAPP.common.removeShortCut = function (sPgNo) {
+    oAPP.common.removeShortCut = function(sPgNo) {
 
         var oShortcut = oAPP.attr.oShortcut;
 
@@ -919,7 +958,7 @@
     /************************************************************************
      * 로그인 상태 체크
      ************************************************************************/
-    oAPP.common.sendAjaxLoginChk = function (fnCallback) {
+    oAPP.common.sendAjaxLoginChk = function(fnCallback) {
 
         var sPath = parent.getServerPath() + "/wsloginchk";
 
@@ -949,7 +988,7 @@
      *      BrowserWindow Instance
      *  
      ************************************************************************/
-    oAPP.common.getCheckAlreadyOpenWindow = function (OBJTY) {
+    oAPP.common.getCheckAlreadyOpenWindow = function(OBJTY) {
 
         var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
             aChildWin = oCurrWin.getChildWindows(), // 현재 window의 child window           
@@ -996,7 +1035,7 @@
      * @param {String} INDEX
      * - 클래스 메소드 내의 소스 인덱스
      ************************************************************************/
-    oAPP.common.execControllerClass = function (METHNM, INDEX) {
+    oAPP.common.execControllerClass = function(METHNM, INDEX) {
 
         var oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
             oSettings = parent.require(oSettingsPath),
@@ -1029,10 +1068,10 @@
 
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
         var vbs = parent.SPAWN('cscript.exe', aParam);
-        vbs.stdout.on("data", function (data) {});
+        vbs.stdout.on("data", function(data) {});
 
         //GUI 세션창이 존재하지않다면 ...
-        vbs.stderr.on("data", function (data) {
+        vbs.stderr.on("data", function(data) {
 
             var aParam = [
                 sVbsFullPath, // VBS 파일 경로
@@ -1050,8 +1089,8 @@
             ];
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
-            vbs.stdout.on("data", function (data) {});
-            vbs.stderr.on("data", function (data) {});
+            vbs.stdout.on("data", function(data) {});
+            vbs.stderr.on("data", function(data) {});
 
         });
 
@@ -1085,7 +1124,7 @@
     /************************************************************************
      * 세션타임아웃 후 전체 로그아웃 및 같은 세션 창 전체 닫기
      * **********************************************************************/
-    oAPP.common.setSessionTimeout = function () {
+    oAPP.common.setSessionTimeout = function() {
 
         // 세션 타임 아웃 시, logoff 처리
         var sPath = parent.getServerPath() + '/logoff';
@@ -1099,7 +1138,7 @@
     /************************************************************************
      * APP 전체 대상 글로벌 Shortcut 지정하기
      * **********************************************************************/
-    oAPP.common.fnSetGlobalShortcut = function () {
+    oAPP.common.fnSetGlobalShortcut = function() {
 
         var oShortcut = oAPP.attr.oShortcut;
 
@@ -1159,7 +1198,7 @@
     /************************************************************************
      * APP 전체 대상 글로벌 Shortcut 삭제
      * **********************************************************************/
-    oAPP.common.fnRemoveGlobalShortcut = function () {
+    oAPP.common.fnRemoveGlobalShortcut = function() {
 
         var oShortcut = parent.GLOBALSHORTCUT;
 
@@ -1173,7 +1212,7 @@
      * 
      * @param {Function} fnExecFunc 
      */
-    oAPP.common.fnSetBusyDialog = function (bIsOpen) {
+    oAPP.common.fnSetBusyDialog = function(bIsOpen) {
 
         const BusyDialogID = "u4aWsBusyDialog";
 
@@ -1208,7 +1247,7 @@
 
                 // properties
                 showHeader: false,
-                escapeHandler: function () {
+                escapeHandler: function() {
 
 
                 },
@@ -1293,7 +1332,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
     var xhr = new XMLHttpRequest();
 
-    xhr.onreadystatechange = function () { // 요청에 대한 콜백
+    xhr.onreadystatechange = function() { // 요청에 대한 콜백
         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
             if (xhr.status === 200 || xhr.status === 201) {
 
@@ -1428,7 +1467,7 @@ function ajax_logoff() {
     var sPath = parent.getServerPath() + '/logoff';
 
     var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function () { // 요청에 대한 콜백
+    xhr.onreadystatechange = function() { // 요청에 대한 콜백
         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
 
             if (xhr.status === 200 || xhr.status === 201) {

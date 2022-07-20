@@ -289,10 +289,6 @@
             case "SHHONG":
             case "PES":
             case "SOCCERHS":
-            case "ZAESTFT201":
-            case "ZAESTFT202":
-            case "ZAESTFT203":
-            case "ZAESTFT204":
                 return true;
             default:
                 return false;
