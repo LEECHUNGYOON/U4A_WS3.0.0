@@ -311,8 +311,6 @@
      ************************************************************************/
     oAPP.events.ev_AppExam = function (oEvent) {
 
-
-
         var oCurrWin = REMOTE.getCurrentWindow(),
             SESSKEY = parent.getSessionKey(),
             BROWSERKEY = parent.getBrowserKey();
@@ -482,8 +480,7 @@
      ************************************************************************/
     oAPP.events.ev_Logout = function () {
 
-        // Logout 버튼으로 Logout을 시도 했다는 Flag
-        // oAPP.attr.isLogoutFromBtn = "X";
+        // Logout 버튼으로 Logout을 시도 했다는 Flag      
         oAPP.attr.isBrowserCloseLogoutMsgOpen = "X";
 
         var sMsg = oAPP.common.fnGetMsgClassTxt("0001"); // "Unsaved data will be lost. \n Do you want to log off?";        
@@ -502,35 +499,10 @@
             oAPP.main.fnDetachBeforeunloadEvent();
 
             // 나는 로그 아웃 한다.
-            ajax_logoff(); // #[ws_common.js]
-
-            // // 브라우저 갯수 체크
-            // var aSameBrows = oAPP.fn.fnGetSameBrowsers();
-            // if (aSameBrows.length == 0) {
-            //     return;
-            // }
-
-            // // 윈도우 클로즈 시킨다.
-            // lf_closeWin(aSameBrows);
+            ajax_logoff(); // #[ws_common.js]      
 
         }
-
-        // function lf_closeWin(aSameBrows) {
-
-        //     var icnt = aSameBrows.length;
-
-        //     for (var i = 0; i < icnt; i++) {
-
-        //         var oBrows = aSameBrows[i];
-        //         if (oBrows.isDestroyed()) {
-        //             continue;
-        //         }
-
-        //         oBrows.close();
-        //     }
-
-        // }
-
+     
     }; // end of oAPP.events.ev_Logout
 
     /************************************************************************

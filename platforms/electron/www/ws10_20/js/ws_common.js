@@ -1130,7 +1130,11 @@
 
         fetch(sPath);
 
-        fn_logoff_success('X');
+        parent.IPCRENDERER.send('if-browser-close', {
+            ACTCD: "C", // 같은 세션을 가진 브라우저 중 로그오프가 된 브라우저의 키를 전달한다.
+            SESSKEY: parent.getSessionKey(),
+            BROWSKEY: parent.getBrowserKey()
+        });
 
     }; // end of oAPP.common.setSessionTimeout    
 
@@ -1585,7 +1589,7 @@ function fnServerSessionClose() {
 
 }
 
-function fnSessionTimeOutDialogOk() {    
+function fnSessionTimeOutDialogOk() {
 
     // 로그인페이지로 이동..			
     parent.onMoveToPage("LOGIN");

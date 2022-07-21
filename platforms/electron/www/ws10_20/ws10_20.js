@@ -59,8 +59,8 @@
      ************************************************************************/
     oAPP.fn.fnAttachPowerMonitorLockScreen = () => {     
 
-        //[#ws_fn_03.js] 세션 타임아웃 체크
-        oAPP.fn.fnSessionTimeoutCheck();
+        // 세션 타임아웃 체크
+        oAPP.fn.fnSessionTimeoutCheck(); // #[ws_fn_03.js]
 
         console.log("워커가 켜졌다!!");
 

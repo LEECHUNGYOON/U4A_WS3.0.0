@@ -2,7 +2,7 @@
  * ws_fn_02.js
  **************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -19,7 +19,7 @@
      * @param {Char} ISEDIT
      * - 'X': Edit mode, ' ': Display Mode
      ************************************************************************/
-    oAPP.fn.fnOnEnterDispChangeMode = function (APPID, ISEDIT) {
+    oAPP.fn.fnOnEnterDispChangeMode = function(APPID, ISEDIT) {
 
         var bCheckAppNm = oAPP.fn.fnCheckAppName();
         if (!bCheckAppNm) {
@@ -137,7 +137,7 @@
      * - page 명
      * 예) WS10, WS20     
      ************************************************************************/
-    oAPP.fn.fnOnMoveToPage = function (sPgNm) {
+    oAPP.fn.fnOnMoveToPage = function(sPgNm) {
 
         var oApp = sap.ui.getCore().byId("WSAPP");
         if (!oApp) {
@@ -154,7 +154,7 @@
      * @param {String} sAppID  
      * - Application Name      
      ************************************************************************/
-    oAPP.fn.fnOnSaveAppSuggestion = function (sAppID) {
+    oAPP.fn.fnOnSaveAppSuggestion = function(sAppID) {
 
         var FS = parent.FS;
 
@@ -249,7 +249,7 @@
     /************************************************************************
      * WS10 페이지로 이동
      * **********************************************************************/
-    oAPP.fn.fnMoveToWs10 = function () {
+    oAPP.fn.fnMoveToWs10 = function() {
 
         // Busy 실행
         parent.setBusy('X');
@@ -300,7 +300,7 @@
     }; // end of oAPP.fn.fnMoveToWs10
 
     // 20 -> 10번 페이지로 이동 시 서버 세션 죽이기 위한 공통 펑션
-    oAPP.fn.fnKillUserSession = function (fn_callback) {
+    oAPP.fn.fnKillUserSession = function(fn_callback) {
 
         // var oAppInfo = parent.getAppInfo();
         var SSID = parent.getSSID();
@@ -326,7 +326,7 @@
      * - RETCD : 상태값 (Boolean)
      * - RETMSG: 상태 메시지 (String)
      ************************************************************************/
-    oAPP.fn.fnCheckValidAppName = function (sAppID) {
+    oAPP.fn.fnCheckValidAppName = function(sAppID) {
 
         var oRetData = {
             RETCD: false,
@@ -373,7 +373,7 @@
     /************************************************************************
      * Application Name 입력 체크
      ************************************************************************/
-    oAPP.fn.fnCheckAppName = function () {
+    oAPP.fn.fnCheckAppName = function() {
 
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput");
         if (!oAppNmInput) {
@@ -401,7 +401,7 @@
      * - Lock 여부
      * - Edit or Display 모드 여부
      ************************************************************************/
-    oAPP.fn.fnSetAppChangeMode = function () {
+    oAPP.fn.fnSetAppChangeMode = function() {
 
         var oAppInfo = parent.getAppInfo(),
             sCurrPage = parent.getCurrPage();
@@ -451,7 +451,7 @@
     /************************************************************************
      * WS20 페이지 Lock 풀고 Display Mode로 전환
      * **********************************************************************/
-    oAPP.fn.fnSetAppDisplayMode = function () {
+    oAPP.fn.fnSetAppDisplayMode = function() {
 
         var oAppInfo = parent.getAppInfo(),
             sCurrPage = parent.getCurrPage();
@@ -500,7 +500,7 @@
      * @param {Function} fnCallback 
      * - 성공시 실행되는 Callback Function 
      ************************************************************************/
-    oAPP.fn.fnCheckAppExists = function (APPID, fnCallback) {
+    oAPP.fn.fnCheckAppExists = function(APPID, fnCallback) {
 
         var oFormData = new FormData();
         oFormData.append("APPID", APPID);
@@ -540,7 +540,7 @@
      * @param {Object} oBrowserOption  
      * - Electron window Browser Option 참고
      ************************************************************************/
-    oAPP.fn.fnExternalOpen = function (oBrowserOptions) {
+    oAPP.fn.fnExternalOpen = function(oBrowserOptions) {
 
         function lf_external_open(oBrowserOptions) {
 
@@ -580,7 +580,7 @@
             // oBrowserWindow.webContents.openDevTools();
 
             // 브라우저가 오픈이 다 되면 타는 이벤트
-            oBrowserWindow.webContents.on('did-finish-load', function () {
+            oBrowserWindow.webContents.on('did-finish-load', function() {
                 // 오픈할 URL 파라미터 전송
                 oBrowserWindow.webContents.send('if-extopen-url', sPath);
             });
@@ -619,7 +619,7 @@
      * - true: Multi Preview로 실행
      * - false: 기본 브라우저 실행  
      ************************************************************************/
-    oAPP.fn.fnOnExecApp = function (APPID, bIsMulti) {
+    oAPP.fn.fnOnExecApp = function(APPID, bIsMulti) {
 
         // 기본 브라우저 설정        
         oAPP.fn.fnOnInitP13nSettings();
@@ -692,7 +692,7 @@
      * @param {*} t PARENT
      * @param {*} z 재구성할 MODEL PATH 명
      *************************************************************************/
-    oAPP.fn.fnSetTreeJson = function (m, p, r, t, z) {
+    oAPP.fn.fnSetTreeJson = function(m, p, r, t, z) {
 
         var lp = p.replace(/[.\[\]]/g, '/');
         lp = lp.replace(/(\/\/)/g, '/');
@@ -733,7 +733,7 @@
     /************************************************************************
      * 현재 떠있는 브라우저 중, 같은 세션의 브라우저의 인스턴스를 구한다.
      ************************************************************************/
-    oAPP.fn.fnGetSameBrowsers = function () {
+    oAPP.fn.fnGetSameBrowsers = function() {
 
         // 1. 현재 떠있는 브라우저 갯수를 구한다.
         var sKey = parent.getSessionKey(),
@@ -780,6 +780,45 @@
 
     }; // end of oAPP.fn.fnGetSameBrowsers
 
+    oAPP.fn.fnGetSameBrowsersAll = () => {
+
+        // 1. 현재 떠있는 브라우저 갯수를 구한다.
+        var sKey = parent.getSessionKey(),
+            oMeBrows = REMOTE.getCurrentWindow(), // 현재 나의 브라우저
+            aBrowserList = REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
+            iBrowsLen = aBrowserList.length;
+
+        var aSameBrows = [];
+
+        for (var i = 0; i < iBrowsLen; i++) {
+
+            var oBrows = aBrowserList[i];
+            if (oBrows.isDestroyed()) {
+                continue;
+            }
+
+            var oWebCon = oBrows.webContents,
+                oWebPref = oWebCon.getWebPreferences();
+
+            // session 정보가 없으면 skip.
+            var sSessionKey = oWebPref.partition;
+            if (!sSessionKey) {
+                continue;
+            }
+
+            // 현재 브라우저의 session key 와 동일하지 않으면 (다른 서버창) skip.
+            if (sKey != sSessionKey) {
+                continue;
+            }
+
+            // 같은 세션키를 가진 브라우저 갯수를 카운트한다.            
+            aSameBrows.push(oBrows);
+        }
+
+        return aSameBrows;
+
+    };
+
     /** 
      * @param {String} sUrl 
      * - window Open 시 실행할 URL
@@ -788,7 +827,7 @@
      * - Post로 전송할 파라미터
      * - 형식 [{ NAME:"", VALUE:""}, ... ]
      */
-    oAPP.fn.fnCallBrowserOpenPost = function (sUrl, aParams) {
+    oAPP.fn.fnCallBrowserOpenPost = function(sUrl, aParams) {
 
         // dummy로 생성한 form이 있으면 지우고 시작
         var oDummyForm = document.getElementById('dummyform');
@@ -858,7 +897,7 @@
     /************************************************************************
      * 화면에 떠있는 Dialog 들이 있을 경우 모두 닫는다.
      * **********************************************************************/
-    oAPP.fn.fnCloseAllDialog = function () {
+    oAPP.fn.fnCloseAllDialog = function() {
 
         var $OpenDialogs = $(".sapMDialogOpen"),
             iDialogLen = $OpenDialogs.length;
@@ -888,7 +927,7 @@
     /************************************************************************
      * Electron Browser들 전체 닫는 function
      ************************************************************************/
-    oAPP.fn.fnChildWindowClose = function () {
+    oAPP.fn.fnChildWindowClose = function() {
 
         var oCurrWin = parent.REMOTE.getCurrentWindow();
         if (oCurrWin.isDestroyed()) {
@@ -916,7 +955,7 @@
     /************************************************************************
      * Electron Browser들 전체 활성/비활성화
      ************************************************************************/
-    oAPP.fn.fnChildWindowShow = function (bShow) {
+    oAPP.fn.fnChildWindowShow = function(bShow) {
 
         var oCurrWin = REMOTE.getCurrentWindow();
         if (oCurrWin.isDestroyed()) {
@@ -968,7 +1007,7 @@
     /************************************************************************
      * WS20 화면에서 떠있는 Dialog, Popup 종류, Electron Browser들 전체 닫는 function
      ************************************************************************/
-    oAPP.fn.fnCloseAllWs20Dialogs = function () {
+    oAPP.fn.fnCloseAllWs20Dialogs = function() {
 
         // Dialog가 있을 경우 닫는다.
         oAPP.fn.fnCloseAllDialog();
