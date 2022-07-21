@@ -1,10 +1,27 @@
 '** U4A WorkSpace Controller Class 실행 **
 
 Rem *********************
+Rem *** 오류코드 정의     ***
+Rem *********************
+Rem *******************************************************
+Rem 오류코드  오류내역
+Rem *******************************************************
+'   E01     SAP GUI 최대 세션수 도달
+'   E02     SAP GUI 로그인 실패
+'   E03     SAP GUI 로그인 세션을 찾을 수 없습니다
+'   E99     알수 없는 오류 발생
+
+
+Rem *******************************************************
+
+
+
+Rem *********************
 Rem *** Public Sector ***
 Rem *********************
 
-	Public HostIP, SID, SNO, MANDT, BNAME, PASS, LANGU, APPID, METHD, SPOSI, ISEDT, ISMLGN, ConnStr, W_system, TCODE
+	Public HostIP, SID, SNO, MANDT, BNAME, PASS, LANGU, APPID, METHD, SPOSI, ISEDT, ISMLGN, MAXSS, ConnStr, W_system
+	         
 	Public objWSH, objSapGui, objAppl, objConn, objSess
 	
 Rem ****************************
@@ -78,12 +95,14 @@ Function GetArg()
 	SPOSI  = WScript.arguments.Item(9) '네비게이션 대상 이벤트 메소드 소스 라인번호 (*옵션)
 	ISEDT  = WScript.arguments.Item(10) '수정모드 여부(예 : X, 아니오 : 공백)
 	TCODE  = WScript.arguments.Item(11) 'SAP TCODE
-
+	
 	REM ** 다중 로그인 여부 **
 	REM    1: SAP GUI 다중 로그인 정보 없음, 
 	REM    2: SAP GUI 다중 로그인 정보 있음(* 시스템 허용)
 	REM    X: SAP GUI 다중 로그인 시스템 허용 안함
-	ISMLGN = WScript.arguments.Item(11) 
+	ISMLGN = WScript.arguments.Item(12) 
+	
+	MAXSS = CInt(WScript.arguments.Item(13)) '시스템 허용 최대 세션수
 	
 End Function
 
@@ -121,6 +140,37 @@ Function ChkEnaScript()
 	RegPath = "HKCU\SOFTWARE\SAP\SAPGUI Front\SAP Frontend Server\Security\WarnOnConnection"
 	objWSH.RegWrite RegPath, "0", "REG_DWORD"
 	
+End Function
+
+
+'로그인 Session 카운트 점검
+Function Chk_Session_Cnt() 
+
+	Dim W_syst, W_conn, W_Sess
+	Dim a
+	
+	W_syst = SID & MANDT & BNAME '로그인 점검 대상 시스템(SID + 클라이언트 + 사용자ID)
+	
+    For il = 0 To objAppl.Children.Count - 1
+        Set W_conn = objAppl.Children(il + 0)
+        
+        For it = 0 To W_conn.Children.Count - 1
+            Set W_Sess = W_conn.Children(it + 0)
+        
+            If W_Sess.Info.SystemName & W_Sess.Info.Client & W_Sess.Info.User = W_syst Then
+                a = a + 1
+				
+            End If
+        
+        Next 
+    
+    Next 
+
+    If MAXSS <= a Then
+	    Chk_Session_Cnt = "MAX_SESS"
+		
+	End If
+
 End Function
 
 
@@ -165,7 +215,7 @@ Function Attach_Session()
         If w_ret <> "S" Then
 			Attach_Session = "E" '로그인 실패
 			
-            MsgBox "Login failed!!", vbCritical, "Error!!"
+            'MsgBox "Login failed!!", vbCritical, "Error!!"
             
             Exit Function
             
@@ -268,6 +318,22 @@ Function call_ZU4A_CTRL_PROXY()
 
 End Function
 
+
+'오류 코드 메시지 리턴
+Function ERR_RET(isECD, isEMSG)
+
+	dim LV_RET
+	
+	LV_RET = isECD & "|" & isEMSG
+
+    MsgBox IsEMSG, vbCritical, "terminated"
+
+	Err.Clear
+	Err.Raise 999, "Error Occurred", LV_RET
+	
+End Function
+
+
 Rem **************************************
 Rem *** End Of Function implementation ***
 Rem **************************************
@@ -279,7 +345,7 @@ Rem *********************************
 'SAP GUI 실행 처리
 Sub StartSAPGUI
 
-	Dim LV_CNT, LV_SAPGUI, LV_RET
+	Dim LV_CNT, LV_SAPGUI, LV_RET, LV_ERR
 
 	Rem ** 호출 시 스크립트 매개변수 지정
 
@@ -320,11 +386,11 @@ Sub StartSAPGUI
 	  
         LV_RET = SAP_Login()
 
-        If LV_RET <> "S" Then
-            MsgBox "Login failed!!", vbCritical, "Error!!"
-            
-            Exit Sub
-            
+        If LV_RET <> "S" Then		
+            'MsgBox "Login failed!!", vbCritical, "Error!!"           
+            'Exit Sub
+            LV_ERR = ERR_RET("E02", "Login failed!!")
+
         End If
 
 		LV_RET = Attach_Session() '로그인 세션 연결
@@ -334,23 +400,34 @@ Sub StartSAPGUI
     '로그인 처리 리턴 코드에 따른 로직 분기
 	Select Case LV_RET
 	Case "1"
-		MsgBox "Login session not found.", vbExclamation, "Error!!"
-		Exit Sub
+		'MsgBox "Login session not found.", vbExclamation, "Error!!"
+		'Exit Sub
+		LV_ERR = ERR_RET("E03", "Login session not found.")
 		
 	Case "2"
 		objSess.findById("wnd[0]").JumpForward
 		objSess.findById("wnd[0]").maximize
 
 	Case "E"
-		MsgBox "Login failed!!", vbCritical, "Error!!"
-		Exit Sub
+		'MsgBox "Login failed!!", vbCritical, "Error!!"
+		'Exit Sub
+		LV_ERR = ERR_RET("E02", "Login failed!!")
 		
 	Case Else
-		MsgBox "An unknown error has occurred.", vbCritical, "Error!!"
-		Exit Sub
+		'MsgBox "An unknown error has occurred.", vbCritical, "Error!!"
+		'Exit Sub
+		LV_ERR = ERR_RET("E99", "An unknown error has occurred.")
 		
 	End Select
 
+    LV_RET = ""
+	LV_RET = Chk_Session_Cnt() '로그인 세션 카운트 점검
+
+	If LV_RET = "MAX_SESS" Then '최대 세션수 도달
+		LV_ERR = ERR_RET("E01", "The maximum number of sessions has been reached.")
+		
+	End If
+	
 	call_ZU4A_CTRL_PROXY() 'APP 컨트롤러 클래스 네비게이션 호출 실행
 	
 End Sub

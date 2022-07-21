@@ -963,7 +963,7 @@
                 placeholder: "SAP T-CODE",
                 width: "200px",
                 submit: function (oEvent) {
-                    oAPP.events.ev_pressTcodeInputSubmit(oEvent);
+                    oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
                 }
             }).addStyleClass("u4aWs20sapTcodeInput");
 

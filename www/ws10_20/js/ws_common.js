@@ -998,13 +998,12 @@
      * @param {String} INDEX
      * - 클래스 메소드 내의 소스 인덱스
      ************************************************************************/
-    oAPP.common.execControllerClass = function(METHNM, INDEX) {
-
-        debugger;
+    oAPP.common.execControllerClass = function(METHNM, INDEX, TCODE) {
 
         var oParam = {
-            METHNM: (typeof METHNM == "undefined" ? "" : METHNM),
-            INDEX: (typeof INDEX == "undefined" ? "0" : INDEX),
+            METHNM: (METHNM == null ? "" : METHNM),
+            INDEX: (INDEX == null ? "0" : INDEX),
+            TCODE: (typeof TCODE == "undefined" ? "" : TCODE),
         };
 
         //#[ws_fn_04.js] SAPGUI 멀티 로그인 여부 체크

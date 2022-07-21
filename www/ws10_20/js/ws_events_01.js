@@ -319,9 +319,19 @@
      ************************************************************************/
     oAPP.events.ev_pressTcodeInputSubmit = (oEvent) => {
 
+        debugger;
 
+        var sTcode = oEvent.getParameter("value");
 
+        if(sTcode == ""){
+            return;
+        }
 
+        sTcode = sTcode.toUpperCase();
+
+        oEvent.getSource().setValue(sTcode);
+
+        oAPP.common.execControllerClass(null, null, sTcode);
 
     }; // end of oAPP.events.ev_pressTcodeInputSubmit
 
