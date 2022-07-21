@@ -1000,11 +1000,9 @@
      ************************************************************************/
     oAPP.common.execControllerClass = function(METHNM, INDEX, TCODE) {
 
-        debugger;
-
         var oParam = {
-            METHNM: (typeof METHNM == "undefined" ? "" : METHNM),
-            INDEX: (typeof INDEX == "undefined" ? "0" : INDEX),
+            METHNM: (METHNM == null ? "" : METHNM),
+            INDEX: (INDEX == null ? "0" : INDEX),
             TCODE: (typeof TCODE == "undefined" ? "" : TCODE),
         };
 
@@ -1519,9 +1517,9 @@ function ajax_logoff() {
 // 로그오프 성공시 타는 펑션
 function fn_logoff_success(TYPE) {
 
-    if (!TYPE) {
+    fnServerSessionClose();
 
-        fnServerSessionClose();
+    if (!TYPE) {
 
         fnSessionTimeOutDialogOk();
 
@@ -1529,11 +1527,6 @@ function fn_logoff_success(TYPE) {
     }
 
     if (TYPE == 'X') {
-
-        fnServerSessionClose();
-
-        // 세션 타임 아웃 팝업이 떴다는 flag
-        oAPP.attr.isSessTimeOutPopupOpen = "X";
 
         let sTitle = "Session Timeout",
             sDesc = "Please Try Login Again!",
@@ -1552,32 +1545,6 @@ function fn_logoff_success(TYPE) {
 
 } // end of fn_logoff_success
 
-function fnSessionTimeOutDialogOk() {
-
-    delete oAPP.attr.isSessTimeOutPopupOpen;
-
-    parent.IPCRENDERER.send('if-browser-close', {
-        ACTCD: "A",
-        SESSKEY : parent.getSessionKey(),
-        BROWSKEY : parent.getBrowserKey()
-    });
-
-    oAPP.main.fnDetachBeforeunloadEvent();
-
-    // 로그인페이지로 이동..			
-    parent.onMoveToPage("LOGIN");
-
-    var currwin = parent.CURRWIN,
-        webcon = currwin.webContents,
-        sess = webcon.session;
-
-    sess.clearStorageData([]);
-
-    // 여러창일때 나를 제외한 윈도우를 닫고 싶을때 
-    parent.IPCMAIN.off('if-browser-close', oAPP.fn.fnIpcMain_if_browser_close);
-
-}
-
 function fnServerSessionClose() {
 
     /**
@@ -1587,62 +1554,24 @@ function fnServerSessionClose() {
      *	2. 내가 아닌 다른 창은 다 닫는다.
      *	3. 나는 로그인 화면으로 전환한다.
      */
-    var sKey = parent.getSessionKey(),
-        oMeBrows = parent.REMOTE.getCurrentWindow(); // 현재 나의 브라우저
 
-    if (oMeBrows.isDestroyed()) {
-        return;
-    }
+    parent.IPCRENDERER.send('if-browser-close', {
+        ACTCD: "A", // 나를 제외한 나머지는 다 죽인다.
+        SESSKEY: parent.getSessionKey(),
+        BROWSKEY: parent.getBrowserKey()
+    });
 
-    var aBrowserList = parent.REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
-        iBrowsLen = aBrowserList.length;
+    oAPP.main.fnDetachBeforeunloadEvent();
 
-    for (var i = 0; i < iBrowsLen; i++) {
+    // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
+    // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
+    oAPP.main.fnBeforeunload();
 
-        var oBrows = aBrowserList[i];
-        if (oBrows.isDestroyed()) {
-            continue;
-        }
-
-        var oWebCon = oBrows.webContents;
-        if (oWebCon == null) {
-            continue;
-        }
-
-        var oWebPref = oWebCon.getWebPreferences();
-
-        // session 정보가 없으면 skip.
-        var sSessionKey = oWebPref.partition;
-        if (!sSessionKey) {
-            continue;
-        }
-
-        // 브라우저가 내 자신이라면 skip.
-        if (oBrows.id == oMeBrows.id) {
-            continue;
-        }
-
-        // 현재 브라우저의 session key 와 동일하지 않으면 (다른 서버창) skip.
-        if (sKey != sSessionKey) {
-            continue;
-        }
-
-        if (!oBrows.isDestroyed()) {
-            oBrows.close();
-        }
-
-    }
+    // 브라우저에 내장된 세션 정보를 클리어 한다.
+    oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
 
     // 현재 세션에서 파생된 Childwindow를 닫는다.
     oAPP.fn.fnChildWindowClose();
-
-    // EXAM MOVE 이벤트 해제
-    parent.IPCMAIN.off('if-exam-move', oAPP.fn.fnIpcMain_if_exam_move);
-
-    // IPCMAIN 이벤트 해제    
-    parent.IPCMAIN.off('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
-
-    window.removeEventListener("beforeunload", oAPP.main.fnBeforeunload);
 
     if (oAPP.attr._oWorker && oAPP.attr._oWorker.terminate) {
         oAPP.attr._oWorker.terminate();
@@ -1653,6 +1582,13 @@ function fnServerSessionClose() {
         oAPP.attr._oServerWorker.terminate();
         delete oAPP.attr._oServerWorker;
     }
+
+}
+
+function fnSessionTimeOutDialogOk() {    
+
+    // 로그인페이지로 이동..			
+    parent.onMoveToPage("LOGIN");
 
 }
 

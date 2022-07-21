@@ -127,6 +127,8 @@
 
     oAPP.fn.fnIpcMain_if_browser_close = (event, res) => {
 
+        debugger;
+
         var oCurrWin = parent.CURRWIN,
             sType = res.ACTCD,
             sCurrSessionKey = parent.getSessionKey(),
@@ -136,21 +138,49 @@
             return;
         }
 
-        if (sType == "A") {
+        switch (sType) {
+            case "A": // 같은 세션 키를 가진 브라우저 중 나를 제외한 나머지 창을 전부 닫기
 
-            if (sCurrBrowsKey == res.BROWSKEY) {
-                return;
-            }
+                if (sCurrBrowsKey == res.BROWSKEY) {
+                    return;
+                }
 
-            // onBeforeunload event 해제
-            oAPP.main.fnDetachBeforeunloadEvent();
+                // onBeforeunload event 해제
+                oAPP.main.fnDetachBeforeunloadEvent();
 
-            oCurrWin.close();
+                // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
+                // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
+                oAPP.main.fnBeforeunload();
 
-            // 여러창일때 나를 제외한 윈도우를 닫고 싶을때 
-            parent.IPCMAIN.off('if-browser-close', oAPP.fn.fnIpcMain_if_browser_close);
+                // 브라우저에 내장된 세션 정보를 클리어 한다.
+                oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
 
+                oCurrWin.close();
+
+                break;
+
+
+            case "B": // 같은 세션 키를 가진 브라우저 중, 전달받은 키가 나와 같으면 나만 죽인다.
+
+                if (sCurrBrowsKey !== res.BROWSKEY) {
+                    return;
+                }
+
+                // onBeforeunload event 해제
+                oAPP.main.fnDetachBeforeunloadEvent();
+
+                // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
+                // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
+                oAPP.main.fnBeforeunload();
+
+                oCurrWin.close();
+
+                break;
+
+            default:
+                break;
         }
+
 
     };
 

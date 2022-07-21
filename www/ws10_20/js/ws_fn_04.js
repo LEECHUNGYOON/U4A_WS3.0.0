@@ -1,7 +1,7 @@
 /**************************************************************************                                           
  * ws_fn_04.js
  **************************************************************************/
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     var PATH = parent.PATH,
@@ -61,7 +61,7 @@
     /************************************************************************
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSapGuiMultiLoginCheckThen = function (oResult) {
+    oAPP.fn.fnSapGuiMultiLoginCheckThen = function(oResult) {
 
         var oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
             oSettings = parent.require(oSettingsPath),
@@ -82,7 +82,7 @@
         }
 
         debugger;
-        
+
         var METHNM = this.METHNM,
             INDEX = this.INDEX,
             TCODE = this.TCODE;
@@ -113,10 +113,10 @@
 
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
         var vbs = parent.SPAWN('cscript.exe', aParam);
-        vbs.stdout.on("data", function (data) {});
+        vbs.stdout.on("data", function(data) {});
 
         //GUI 세션창이 존재하지않다면 ...
-        vbs.stderr.on("data", function (data) {
+        vbs.stderr.on("data", function(data) {
 
             // HostIP = WScript.arguments.Item(0) '연결 Host IP (*필수)
             // SID    = WScript.arguments.Item(1) '연결 SID (*필수)
@@ -157,11 +157,24 @@
             ];
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
-            vbs.stdout.on("data", function (data) {});
-            vbs.stderr.on("data", function (data) {});
+            vbs.stdout.on("data", function(data) {});
+            vbs.stderr.on("data", function(data) {});
 
         });
 
     }; // end of oAPP.fn.fnSapGuiMultiLoginCheckThen
+
+    /************************************************************************
+     * 브라우저에 내장된 세션 정보를 클리어 한다.
+     ************************************************************************/
+    oAPP.fn.fnClearSessionStorageData = () => {
+
+        var currwin = parent.CURRWIN,
+            webcon = currwin.webContents,
+            sess = webcon.session;
+
+        sess.clearStorageData([]);
+
+    }; // end of oAPP.fn.fnClearSessionStorageData
 
 })(window, $, oAPP);

@@ -305,9 +305,9 @@
             }, 100);
 
             // 서버 호스트 등록 여부 체크
-            oAPP.fn.fnCheckServerHost();
+            oAPP.fn.fnCheckServerHost(); // #[ws_fn_03.js]
 
-            oAPP.fn.fnIpcMain_Attach_if_browser_close();
+            oAPP.fn.fnIpcMain_Attach_if_browser_close(); // #[ws_fn_ipc.js]
 
         }); // end of attachInit
 
@@ -338,83 +338,33 @@
 
     };
 
-    window.onbeforeunload = function() {
+    // 브라우저 닫기, window.close() 실행시 타는 이벤트
+    window.onbeforeunload = () => {
 
-        var sKey = parent.getSessionKey(),
-            oMeBrows = parent.REMOTE.getCurrentWindow(); // 현재 나의 브라우저
+        var oMeBrows = parent.REMOTE.getCurrentWindow(); // 현재 나의 브라우저
 
+        // 내가 죽었다면 빠져나간다.
         if (oMeBrows.isDestroyed()) {
             return;
         }
 
-        // Logout 버튼으로 Logout을 시도 했다는 Flag
-        if (oAPP.attr.isLogoutFromBtn == "X") {
+        // Logout 메시지가 이미 떠 있다면 창을 못닫게 한다.
+        if (oAPP.attr.isBrowserCloseLogoutMsgOpen == 'X') {
             return "";
         }
 
-        // 세션 타임아웃 팝업이 떠 있다면..
-        if (oAPP.attr.isSessTimeOutPopupOpen == 'X') {
-            return "";
-        }
+        // 같은 세션의 브라우저 갯수 체크
+        var aSameBrowser = oAPP.fn.fnGetSameBrowsers(); // #[ws_fn_02.js]        
 
-        // // 세션종료 팝업 케이스..
-        // fn();
-
-        // //펑션 우회..
-        // function fn() {
-        //     window.onbeforeunload = null;
-
-        //     window.close();
-
-        // }
-
-        var aBrowserList = parent.REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
-            iBrowsLen = aBrowserList.length;
-
-        var aSameBrowser = [];
-        for (var i = 0; i < iBrowsLen; i++) {
-
-            var oBrows = aBrowserList[i];
-            if (oBrows.isDestroyed()) {
-                continue;
-            }
-
-            var oWebCon = oBrows.webContents;
-            if (oWebCon == null) {
-                continue;
-            }
-
-            var oWebPref = oWebCon.getWebPreferences();
-
-            // session 정보가 없으면 skip.
-            var sSessionKey = oWebPref.partition;
-            if (!sSessionKey) {
-                continue;
-            }
-
-            // 브라우저가 내 자신이라면 skip.
-            if (oBrows.id == oMeBrows.id) {
-                continue;
-            }
-
-            // 현재 브라우저의 session key 와 동일하지 않으면 (다른 서버창) skip.
-            if (sKey != sSessionKey) {
-                continue;
-            }
-
-            aSameBrowser.push(oBrows);
-
-        }
-
-
+        // 같은 세션의 브라우저가 나밖에 없다면
         if (aSameBrowser.length == 0) {
 
-            // 브라우저 닫기 클릭해서 발생한 Logout 메시지가 이미 떠 있다면 창을 못닫게 한다.
+            // Logout 메시지가 이미 떠 있다면 창을 못닫게 한다.
             if (oAPP.attr.isBrowserCloseLogoutMsgOpen == 'X') {
                 return "";
             }
 
-            // 브라우저 닫기 클릭해서 발생한 Logout 메시지 Flag
+            // Logout 메시지 Open 여부 Flag
             oAPP.attr.isBrowserCloseLogoutMsgOpen = 'X';
 
             var sMsg = oAPP.common.fnGetMsgClassTxt("0001"); // "Unsaved data will be lost. \n Do you want to log off?";        
@@ -426,28 +376,149 @@
 
         }
 
-        function lf_MsgCallback(sAction) {
-
-            delete oAPP.attr.isBrowserCloseLogoutMsgOpen;
-
-            if (sAction != "YES") {
-                return;
-            }
-
-            oAPP.main.fnBeforeunload();
-
-            // onBeforeunload event 해제
-            oAPP.main.fnDetachBeforeunloadEvent();
-
-            if (!oMeBrows.isDestroyed()) {
-                oMeBrows.close();
-            }
-
-        }
-
+        // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
+        // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
         oAPP.main.fnBeforeunload();
 
+    };
+
+    function lf_MsgCallback(sAction) {
+
+        if (oAPP.attr.isBrowserCloseLogoutMsgOpen) {
+            delete oAPP.attr.isBrowserCloseLogoutMsgOpen;
+        }
+
+        if (sAction != "YES") {
+            return;
+        }
+
+        // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
+        // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
+        oAPP.main.fnBeforeunload();
+
+        // 브라우저에 내장된 세션 정보를 클리어 한다.
+        oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
+
+        // onBeforeunload event 해제
+        oAPP.main.fnDetachBeforeunloadEvent();
+
+        var oMeBrows = parent.REMOTE.getCurrentWindow(); // 현재 나의 브라우저
+        if (!oMeBrows.isDestroyed()) {
+            oMeBrows.close();
+        }
+
     }
+
+    // window.onbeforeunload = function() {
+
+    //     var sKey = parent.getSessionKey(),
+    //         oMeBrows = parent.REMOTE.getCurrentWindow(); // 현재 나의 브라우저
+
+    //     if (oMeBrows.isDestroyed()) {
+    //         return;
+    //     }
+
+    //     // Logout 버튼으로 Logout을 시도 했다는 Flag
+    //     if (oAPP.attr.isLogoutFromBtn == "X") {
+    //         return "";
+    //     }
+
+    //     // 세션 타임아웃 팝업이 떠 있다면..
+    //     if (oAPP.attr.isSessTimeOutPopupOpen == 'X') {
+    //         return "";
+    //     }
+
+    //     // // 세션종료 팝업 케이스..
+    //     // fn();
+
+    //     // //펑션 우회..
+    //     // function fn() {
+    //     //     window.onbeforeunload = null;
+
+    //     //     window.close();
+
+    //     // }
+
+    //     var aBrowserList = parent.REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
+    //         iBrowsLen = aBrowserList.length;
+
+    //     var aSameBrowser = [];
+    //     for (var i = 0; i < iBrowsLen; i++) {
+
+    //         var oBrows = aBrowserList[i];
+    //         if (oBrows.isDestroyed()) {
+    //             continue;
+    //         }
+
+    //         var oWebCon = oBrows.webContents;
+    //         if (oWebCon == null) {
+    //             continue;
+    //         }
+
+    //         var oWebPref = oWebCon.getWebPreferences();
+
+    //         // session 정보가 없으면 skip.
+    //         var sSessionKey = oWebPref.partition;
+    //         if (!sSessionKey) {
+    //             continue;
+    //         }
+
+    //         // 브라우저가 내 자신이라면 skip.
+    //         if (oBrows.id == oMeBrows.id) {
+    //             continue;
+    //         }
+
+    //         // 현재 브라우저의 session key 와 동일하지 않으면 (다른 서버창) skip.
+    //         if (sKey != sSessionKey) {
+    //             continue;
+    //         }
+
+    //         aSameBrowser.push(oBrows);
+
+    //     }
+
+
+    //     if (aSameBrowser.length == 0) {
+
+    //         // 브라우저 닫기 클릭해서 발생한 Logout 메시지가 이미 떠 있다면 창을 못닫게 한다.
+    //         if (oAPP.attr.isBrowserCloseLogoutMsgOpen == 'X') {
+    //             return "";
+    //         }
+
+    //         // 브라우저 닫기 클릭해서 발생한 Logout 메시지 Flag
+    //         oAPP.attr.isBrowserCloseLogoutMsgOpen = 'X';
+
+    //         var sMsg = oAPP.common.fnGetMsgClassTxt("0001"); // "Unsaved data will be lost. \n Do you want to log off?";        
+
+    //         // 질문 팝업?
+    //         parent.showMessage(sap, 30, 'I', sMsg, lf_MsgCallback);
+
+    //         return "";
+
+    //     }
+
+    //     function lf_MsgCallback(sAction) {
+
+    //         delete oAPP.attr.isBrowserCloseLogoutMsgOpen;
+
+    //         if (sAction != "YES") {
+    //             return;
+    //         }
+
+    //         oAPP.main.fnBeforeunload();
+
+    //         // onBeforeunload event 해제
+    //         oAPP.main.fnDetachBeforeunloadEvent();
+
+    //         if (!oMeBrows.isDestroyed()) {
+    //             oMeBrows.close();
+    //         }
+
+    //     }
+
+    //     oAPP.main.fnBeforeunload();
+
+    // }
 
     oAPP.main.fnDetachBeforeunloadEvent = () => {
 

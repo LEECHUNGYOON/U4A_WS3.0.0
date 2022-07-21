@@ -27,14 +27,7 @@
 
             // 설정된 세션 timeout 시간 도래 여부를 체크하기 위한 워커 생성
             oAPP.attr._oWorker = new Worker('./js/workers/u4aWsClientSessionWorker.js');
-
-            // // 윈도우 클릭 이벤트 걸기
-            // $(window).unbind("click", oAPP.fn.fnWindowClickEventListener);
-            // $(window).unbind("keyup", oAPP.fn.fnWindowClickEventListener);
-
-            // $(window).bind("click", oAPP.fn.fnWindowClickEventListener);
-            // $(window).bind("keyup", oAPP.fn.fnWindowClickEventListener);
-
+         
             // Session Time Worker onmessage 이벤트
             oAPP.attr._oWorker.onmessage = oAPP.fn.fnSessionTimeWorkerOnMessage;
 
@@ -69,20 +62,13 @@
         if (oAPP.attr._oServerWorker) {
             oAPP.attr._oServerWorker.terminate();
             delete oAPP.attr._oServerWorker;
-        }
-
-        // window 이벤트 해제
-        $(window).unbind("click", oAPP.fn.fnWindowClickEventListener);
-        $(window).unbind("keyup", oAPP.fn.fnWindowClickEventListener);
+        }       
 
         // IPC MAIN 이벤트의 세션 타임 관련 이벤트 해제        
         parent.IPCMAIN.off('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
 
         //세션타임아웃 후 전체 로그아웃 및 같은 세션 창 전체 닫기
         oAPP.common.setSessionTimeout();
-
-        // // Session Logoff 처리..
-        // fn_logoff_success('X');
 
     }; // end of oAPP.fn.fnSessionTimeWorkerOnMessage
 
