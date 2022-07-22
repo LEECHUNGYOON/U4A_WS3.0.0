@@ -205,8 +205,6 @@
 
                 }
 
-                debugger;
-
                 var aSortKeys = oAPP.attr.aSessionKeys.sort(),
                     sChoiceKey = aSortKeys[0];
 
@@ -216,6 +214,7 @@
                     BROWSKEY: sChoiceKey
                 });
 
+                // beforeUnload 이벤트 해제
                 oAPP.main.fnDetachBeforeunloadEvent();
 
                 // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
@@ -244,10 +243,12 @@
                     sIllustSize = sap.m.IllustratedMessageSize.Dialog;
 
                 oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, fnSessionTimeOutDialogOk);
+                
                 break;
 
             default:
                 break;
+                
         }
 
 

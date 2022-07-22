@@ -1,7 +1,7 @@
 /**************************************************************************                                           
  * ws_fn_04.js
  **************************************************************************/
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     var PATH = parent.PATH,
@@ -61,7 +61,7 @@
     /************************************************************************
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSapGuiMultiLoginCheckThen = function(oResult) {
+    oAPP.fn.fnSapGuiMultiLoginCheckThen = function (oResult) {
 
         var oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
             oSettings = parent.require(oSettingsPath),
@@ -81,21 +81,11 @@
             return;
         }
 
-        debugger;
-
         var METHNM = this.METHNM,
             INDEX = this.INDEX,
             TCODE = this.TCODE;
 
-        // SID    = WScript.arguments.Item(0) '연결 SID (*필수) => EX) U4A
-        // MANDT  = WScript.arguments.Item(1) '로그온 클라이언트 (*필수) => EX) 800
-        // BNAME  = WScript.arguments.Item(2) '로그온 SAP ID (*필수)	 => EX) USER
-        // APPID  = WScript.arguments.Item(3) 'U4A APP ID (*필수) => EX) ZU4A_TS0010
-        // METHD  = WScript.arguments.Item(4) '네비게이션 대상 이벤트 메소드 (*옵션) => EX) EV_TEST
-        // SPOSI  = WScript.arguments.Item(5) '네비게이션 대상 이벤트 메소드 소스 라인번호 (*옵션) => EX) 100
-        // ISEDT  = WScript.arguments.Item(6) '수정모드 여부(예 : X, 아니오 : 공백) 
-        // TCODE  = WScript.arguments.Item(7) 'SAP TCODE
-        // MAXSS  = CInt(WScript.arguments.Item(8)) '시스템 허용 최대 세션수
+        debugger;
 
         var aParam = [
             sNewSessionVbsFullPath, // VBS 파일 경로
@@ -113,10 +103,26 @@
 
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
         var vbs = parent.SPAWN('cscript.exe', aParam);
-        vbs.stdout.on("data", function(data) {});
+        vbs.stdout.on("data", function (data) {});
 
         //GUI 세션창이 존재하지않다면 ...
-        vbs.stderr.on("data", function(data) {
+        vbs.stderr.on("data", function (data) {
+
+            debugger;
+
+            //VBS 리턴 오류 CODE / MESSAGE 
+            var str = data.toString(),
+                Tstr = str.split(":"),
+                len = Tstr.length - 1;
+
+            if (len !== 0) {
+
+                str = Tstr[len];
+                if (str.indexOf("|") != -1) {
+                    return;
+                }
+
+            }
 
             // HostIP = WScript.arguments.Item(0) '연결 Host IP (*필수)
             // SID    = WScript.arguments.Item(1) '연결 SID (*필수)
@@ -137,7 +143,10 @@
             // REM    X: SAP GUI 다중 로그인 시스템 허용 안함
             // ISMLGN = WScript.arguments.Item(12) 
 
-            // MAXSS = CInt(WScript.arguments.Item(13))
+            // MAXSS = CInt(WScript.arguments.Item(13)) '시스템 허용 최대 세션수
+
+            debugger;
+
             var aParam = [
                 sVbsFullPath, // VBS 파일 경로
                 oServerInfo.SERVERIP, // Server IP
@@ -149,16 +158,33 @@
                 oServerInfo.LANGU, // LANGUAGE
                 oAppInfo.APPID, // Application Name
                 (typeof METHNM == "undefined" ? "" : METHNM),
-                (typeof INDEX == "undefined" ? "0" : INDEX),
-                TCODE || "", // T-CODE
+                (typeof INDEX == "undefined" ? "0" : INDEX),                
                 oAppInfo.IS_EDIT, // Edit or Display Mode,
+                TCODE || "", // T-CODE
                 oResult.RTVAL, // SAPGUI Multi Login Check Value
                 oResult.MAXSS, // 최대 세션창 갯수
             ];
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
-            vbs.stdout.on("data", function(data) {});
-            vbs.stderr.on("data", function(data) {});
+            vbs.stdout.on("data", function (data) {});
+            vbs.stderr.on("data", function (data) {
+
+                //VBS 리턴 오류 CODE / MESSAGE 
+                var str = data.toString(),
+                    Tstr = str.split(":"),
+                    len = Tstr.length - 1;
+
+                if (len !== 0) {
+
+                    str = Tstr[len];
+
+                    if (str.indexOf("|") != -1) {
+                        return;
+                    }
+
+                }
+
+            });
 
         });
 

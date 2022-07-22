@@ -959,13 +959,23 @@
                 }
             }).addStyleClass("u4aWs20NewWin"),
 
-            oSapTCodeInput = new sap.m.Input("ws20_sapTcodeInput", {
-                placeholder: "SAP T-CODE",
-                width: "200px",
-                submit: function (oEvent) {
-                    oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
+            oSapIcon = new sap.ui.core.Icon({
+                src: "sap-icon://sap-logo-shape"
+            }),
+
+            oSapTCodeInput = new sap.m.SearchField({
+                search: (oEvent) => {
+
                 }
-            }).addStyleClass("u4aWs20sapTcodeInput");
+                
+            })
+            // oSapTCodeInput = new sap.m.Input("ws20_sapTcodeInput", {
+            //     placeholder: "SAP T-CODE",
+            //     width: "200px",
+            //     submit: function (oEvent) {
+            //         oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
+            //     }
+            // }).addStyleClass("u4aWs20sapTcodeInput");
 
         return [
 
@@ -996,6 +1006,8 @@
             oNewWin, // new window Button   
 
             new sap.m.ToolbarSpacer(),
+
+            oSapIcon, // sap icon
 
             oSapTCodeInput, // T-Code input
         ];

@@ -69,83 +69,83 @@
 
     }; // end of oAPP.events.ev_winTxtSrchWS20
 
-    /************************************************************************
-     * [WS10] Text Search Button Close Event
-     ************************************************************************/
-    oAPP.events.ev_winTxtSrchClsWS10 = function (oEvent) {
+    // /************************************************************************
+    //  * [WS10] Text Search Button Close Event
+    //  ************************************************************************/
+    // oAPP.events.ev_winTxtSrchClsWS10 = function (oEvent) {
 
-        var oCurrWin = REMOTE.getCurrentWindow();
-        oCurrWin.webContents.stopFindInPage("clearSelection");
+    //     var oCurrWin = REMOTE.getCurrentWindow();
+    //     oCurrWin.webContents.stopFindInPage("clearSelection");
 
-        var oSearchInput = sap.ui.getCore().byId("txtSrchInputWS10");
-        if (oSearchInput == null) {
-            return;
-        }
+    //     var oSearchInput = sap.ui.getCore().byId("txtSrchInputWS10");
+    //     if (oSearchInput == null) {
+    //         return;
+    //     }
 
-        var $oInput = oSearchInput.$();
-        if (!$oInput.length) {
-            return;
-        }
+    //     var $oInput = oSearchInput.$();
+    //     if (!$oInput.length) {
+    //         return;
+    //     }
 
-        $oInput.animate({
-            maxWidth: "50px",
-            minWidth: "50px",
-        }, 300, "linear", function () {
+    //     $oInput.animate({
+    //         maxWidth: "50px",
+    //         minWidth: "50px",
+    //     }, 300, "linear", function () {
 
-            setTimeout(function () {
+    //         setTimeout(function () {
 
-                var oModelData = APPCOMMON.fnGetModelProperty("/WS10/SRCHTXT"),
-                    bSrchInpVisi = oModelData.INPUT_VISI;
+    //             var oModelData = APPCOMMON.fnGetModelProperty("/WS10/SRCHTXT"),
+    //                 bSrchInpVisi = oModelData.INPUT_VISI;
 
-                oModelData.INPUT_VALUE = "";
-                oModelData.INPUT_VISI = !bSrchInpVisi;
+    //             oModelData.INPUT_VALUE = "";
+    //             oModelData.INPUT_VISI = !bSrchInpVisi;
 
-                sap.ui.getCore().getModel().refresh(true);
+    //             sap.ui.getCore().getModel().refresh(true);
 
-            }, 200);
+    //         }, 200);
 
-        });
+    //     });
 
-    }; // end of oAPP.events.ev_winTxtSrchClsWS10
+    // }; // end of oAPP.events.ev_winTxtSrchClsWS10
 
-    /************************************************************************
-     * [WS20] Text Search Button Close Event
-     ************************************************************************/
-    oAPP.events.ev_winTxtSrchClsWS20 = function (oEvent) {
+    // /************************************************************************
+    //  * [WS20] Text Search Button Close Event
+    //  ************************************************************************/
+    // oAPP.events.ev_winTxtSrchClsWS20 = function (oEvent) {
 
-        var oCurrWin = REMOTE.getCurrentWindow();
-        oCurrWin.webContents.stopFindInPage("clearSelection");
+    //     var oCurrWin = REMOTE.getCurrentWindow();
+    //     oCurrWin.webContents.stopFindInPage("clearSelection");
 
-        var oSearchInput = sap.ui.getCore().byId("txtSrchInputWS20");
-        if (oSearchInput == null) {
-            return;
-        }
+    //     var oSearchInput = sap.ui.getCore().byId("txtSrchInputWS20");
+    //     if (oSearchInput == null) {
+    //         return;
+    //     }
 
-        var $oInput = oSearchInput.$();
-        if (!$oInput.length) {
-            return;
-        }
+    //     var $oInput = oSearchInput.$();
+    //     if (!$oInput.length) {
+    //         return;
+    //     }
 
-        $oInput.animate({
-            maxWidth: "50px",
-            minWidth: "50px",
-        }, 300, "linear", function () {
+    //     $oInput.animate({
+    //         maxWidth: "50px",
+    //         minWidth: "50px",
+    //     }, 300, "linear", function () {
 
-            setTimeout(function () {
+    //         setTimeout(function () {
 
-                var oModelData = APPCOMMON.fnGetModelProperty("/WS20/SRCHTXT"),
-                    bSrchInpVisi = oModelData.INPUT_VISI;
+    //             var oModelData = APPCOMMON.fnGetModelProperty("/WS20/SRCHTXT"),
+    //                 bSrchInpVisi = oModelData.INPUT_VISI;
 
-                oModelData.INPUT_VALUE = "";
-                oModelData.INPUT_VISI = !bSrchInpVisi;
+    //             oModelData.INPUT_VALUE = "";
+    //             oModelData.INPUT_VISI = !bSrchInpVisi;
 
-                sap.ui.getCore().getModel().refresh(true);
+    //             sap.ui.getCore().getModel().refresh(true);
 
-            }, 200);
+    //         }, 200);
 
-        });
+    //     });
 
-    }; // end of oAPP.events.ev_winTxtSrchClsWS20
+    // }; // end of oAPP.events.ev_winTxtSrchClsWS20
 
     /************************************************************************
      * [WS10] Text Search Lib Change
@@ -318,8 +318,6 @@
      * WS20의 멀티 메시지 리스트 아이템 클릭 이벤트
      ************************************************************************/
     oAPP.events.ev_pressTcodeInputSubmit = (oEvent) => {
-
-        debugger;
 
         var sTcode = oEvent.getParameter("value");
 
