@@ -964,18 +964,23 @@
             }),
 
             oSapTCodeInput = new sap.m.SearchField({
+                width: "200px",
+                placeholder: "SAP T-CODE",
+                showSearchButton: true,
                 search: (oEvent) => {
 
+                    debugger;
+
                 }
-                
+
             })
-            // oSapTCodeInput = new sap.m.Input("ws20_sapTcodeInput", {
-            //     placeholder: "SAP T-CODE",
-            //     width: "200px",
-            //     submit: function (oEvent) {
-            //         oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
-            //     }
-            // }).addStyleClass("u4aWs20sapTcodeInput");
+        // oSapTCodeInput = new sap.m.Input("ws20_sapTcodeInput", {
+        //     placeholder: "SAP T-CODE",
+        //     width: "200px",
+        //     submit: function (oEvent) {
+        //         oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
+        //     }
+        // }).addStyleClass("u4aWs20sapTcodeInput");
 
         return [
 

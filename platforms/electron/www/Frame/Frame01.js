@@ -31,6 +31,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 // 오디오 자동실행 오류 정책 회피
 APP.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
+
+POWERMONITOR.setMaxListeners(100);
+IPCMAIN.setMaxListeners(100);
+
 /**
  *  ## oWS WS
  */

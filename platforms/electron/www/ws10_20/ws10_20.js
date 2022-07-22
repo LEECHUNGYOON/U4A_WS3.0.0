@@ -44,7 +44,7 @@
      * 화면 보호기 감지 이벤트
      ************************************************************************/
     oAPP.fn.fnAttachPowerMonitorEvent = () => {
-
+        
         var oPowerMonitor = parent.POWERMONITOR;
 
         // 대기모드로 전환 감지 이벤트

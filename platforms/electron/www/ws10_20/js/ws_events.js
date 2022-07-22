@@ -77,7 +77,7 @@
      * App 삭제
      ************************************************************************/
     oAPP.events.ev_AppDelete = function () {
-        
+
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
             return;
@@ -495,14 +495,28 @@
                 return;
             }
 
-            // onBeforeunload event 해제
-            oAPP.main.fnDetachBeforeunloadEvent();
+            parent.IPCRENDERER.send('if-browser-close', {
+                ACTCD: "A", // 나를 제외한 나머지는 다 죽인다.
+                SESSKEY: parent.getSessionKey(),
+                BROWSKEY: parent.getBrowserKey()
+            });
 
-            // 나는 로그 아웃 한다.
-            ajax_logoff(); // #[ws_common.js]      
+            var sUrl = parent.getServerPath() + "/logoff";
+
+            var option = {
+                URL: sUrl
+            };
+
+            sendServerExit(option, () => {
+
+                window.onbeforeunload = null;
+
+                top.window.close();
+
+            });
 
         }
-     
+
     }; // end of oAPP.events.ev_Logout
 
     /************************************************************************
@@ -840,7 +854,7 @@
     /************************************************************************
      * Save Button Event
      ************************************************************************/
-    oAPP.events.ev_pressSaveBtn = function (oEvent) {  
+    oAPP.events.ev_pressSaveBtn = function (oEvent) {
 
         // 푸터 메시지가 있을 경우 닫기
         oAPP.common.fnHideFloatingFooterMsg();

@@ -149,14 +149,16 @@
                 // onBeforeunload event 해제
                 oAPP.main.fnDetachBeforeunloadEvent();
 
-                // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
-                // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
-                oAPP.main.fnBeforeunload();
-
-                // 브라우저에 내장된 세션 정보를 클리어 한다.
-                oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
-
                 oCurrWin.close();
+
+                // // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
+                // // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
+                // oAPP.main.fnBeforeunload();
+
+                // // 브라우저에 내장된 세션 정보를 클리어 한다.
+                // oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
+
+                // oCurrWin.close();
 
                 break;
 

@@ -27,7 +27,7 @@
 
             // 설정된 세션 timeout 시간 도래 여부를 체크하기 위한 워커 생성
             oAPP.attr._oWorker = new Worker('./js/workers/u4aWsClientSessionWorker.js');
-         
+
             // Session Time Worker onmessage 이벤트
             oAPP.attr._oWorker.onmessage = oAPP.fn.fnSessionTimeWorkerOnMessage;
 
@@ -62,13 +62,48 @@
         if (oAPP.attr._oServerWorker) {
             oAPP.attr._oServerWorker.terminate();
             delete oAPP.attr._oServerWorker;
-        }       
+        }
 
         // IPC MAIN 이벤트의 세션 타임 관련 이벤트 해제        
         parent.IPCMAIN.off('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
 
-        //세션타임아웃 후 전체 로그아웃 및 같은 세션 창 전체 닫기
-        oAPP.common.setSessionTimeout();
+        // Logout 버튼으로 Logout을 시도 했다는 Flag      
+        oAPP.attr.isBrowserCloseLogoutMsgOpen = "X";
+
+        // 세션 타임 아웃 팝업을 띄운다.
+        let sTitle = "Session Timeout",
+            sDesc = "Please Try Login Again!",
+            sIllustType = "tnt-SessionExpired",
+            sIllustSize = sap.m.IllustratedMessageSize.Dialog;
+
+        oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, lfSessionTimeOutDialogOk);
+
+        function lfSessionTimeOutDialogOk() {
+
+            parent.IPCRENDERER.send('if-browser-close', {
+                ACTCD: "A", // 나를 제외한 나머지는 다 죽인다.
+                SESSKEY: parent.getSessionKey(),
+                BROWSKEY: parent.getBrowserKey()
+            });
+
+            var sUrl = parent.getServerPath() + "/logoff";
+
+            var option = {
+                URL: sUrl
+            };
+
+            sendServerExit(option, () => {
+
+                window.onbeforeunload = null;
+
+                top.window.close();
+
+            });
+
+        }
+
+        // //세션타임아웃 후 전체 로그아웃 및 같은 세션 창 전체 닫기
+        // oAPP.common.setSessionTimeout();
 
     }; // end of oAPP.fn.fnSessionTimeWorkerOnMessage
 
@@ -887,9 +922,9 @@
                                     fields: [
                                         new sap.m.Text({
                                             // text: "{ID}"
-                                        }).bindProperty("text", "ID", function(sId){
+                                        }).bindProperty("text", "ID", function (sId) {
 
-                                            if(typeof sId !== "string"){
+                                            if (typeof sId !== "string") {
                                                 return "";
                                             }
 
@@ -938,7 +973,7 @@
     oAPP.fn.fnCheckServerHost = () => {
 
         parent.setBusy("X");
-        
+
         var oMetadata = parent.getMetadata(),
             sServerHost = oMetadata.HOST,
             oUserInfo = parent.getUserInfo(),

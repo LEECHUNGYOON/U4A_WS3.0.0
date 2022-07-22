@@ -5,7 +5,7 @@
  * - file Desc : ws 메인 
  ************************************************************************/
 
-(function(window, oAPP) {
+(function (window, oAPP) {
     "use strict";
 
     var APPCOMMON = oAPP.common;
@@ -13,7 +13,7 @@
     /**************************************************************************
      * 공통 인스턴스 정의
      **************************************************************************/
-    oAPP.main.fnPredefineGlobalObject = function() {
+    oAPP.main.fnPredefineGlobalObject = function () {
 
         var oMetaData = parent.getMetadata();
 
@@ -31,7 +31,7 @@
     /************************************************************************
      * 접속 Language 에 맞는 메시지 텍스트 읽어오기
      ************************************************************************/
-    oAPP.main.fnOnLoadMessageClass = function() {
+    oAPP.main.fnOnLoadMessageClass = function () {
 
         var FS = parent.FS,
             oUserInfo = parent.getUserInfo();
@@ -89,7 +89,7 @@
     /**************************************************************************
      * U4A WS 메타 정보 구하기
      **************************************************************************/
-    oAPP.main.fnOnInitModelBinding = function() {
+    oAPP.main.fnOnInitModelBinding = function () {
 
         // ModelData
         var oMetaData = {
@@ -167,7 +167,7 @@
     /************************************************************************
      * window Event Handle ..
      ************************************************************************/
-    oAPP.main.fnBeforeunload = function() {
+    oAPP.main.fnBeforeunload = function (isClearStorage) {
 
         // 설정된 Global Shortcut 단축키 삭제
         oAPP.common.fnRemoveGlobalShortcut();
@@ -188,44 +188,69 @@
         // 여러창일때 나를 제외한 윈도우를 닫고 싶을때 
         parent.IPCMAIN.off('if-browser-close', oAPP.fn.fnIpcMain_if_browser_close);
 
-        // // 서버 세션 유지 이벤트 전파
-        // oAPP.main.fnServerSessionCheckPropagation();
-
         // Application 정보를 구한다.
-        var oAppInfo = parent.getAppInfo();
-        var SSID = parent.getSSID();
+        var oAppInfo = parent.getAppInfo(),
+            SSID = parent.getSSID();
 
-        // 20번일 경우
-        if (oAppInfo) {
+        // 20번 페이지 일 경우
+        var sPath = parent.getServerPath() + '/kill_session',
+            oFormData = new FormData();
 
-            // Edit 모드 였을 경우 Lock 해제 하고 세션 죽인다.
-            if (oAppInfo.IS_EDIT == "X") {
+        // Edit 모드 였을 경우 Lock 해제 하고 세션 죽인다.
+        if (oAppInfo && oAppInfo.IS_EDIT == "X") {
 
-                var sPath = parent.getServerPath() + '/kill_session?APPID=' + oAppInfo.APPID + "&SSID=" + SSID;
-                navigator.sendBeacon(sPath);
+            oFormData.append("APPID", oAppInfo.APPID);
+            oFormData.append("SSID", SSID);
 
-                oAPP.main.fnOnSleep(1000);
+            var oOptions = {
+                URL: sPath,
+                FORMDATA: oFormData
+            };
 
-                return;
+            sendServerExit(oOptions, (o) => {
 
-            }
+                if (isClearStorage == "X") {
+                    oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
+                }
 
-            // Edit 모드가 아니라면 세션만 죽인다.
-            var sPath = parent.getServerPath() + '/kill_session?SSID=' + SSID;
-            navigator.sendBeacon(sPath);
+                window.onbeforeunload = () => {};
 
-            oAPP.main.fnOnSleep(1000);
+                top.window.close();
+
+            });
+
+            return;
 
         }
+
+        oFormData.append("SSID", SSID);
+
+        var oOptions = {
+            URL: sPath,
+            FORMDATA: oFormData
+        };
+
+        sendServerExit(oOptions, (o) => {
+
+            // 브라우저에 내장된 세션 정보를 클리어 한다.
+            if (isClearStorage == "X") {
+                oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
+            }
+
+            window.onbeforeunload = () => {};
+
+            top.window.close();
+
+        });
 
     } // end of oAPP.main.fnBeforeunload
 
     /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------
      ************************************************************************/
-    oAPP.main.fnWsStart = function() {
+    oAPP.main.fnWsStart = function () {
 
-        sap.ui.getCore().attachInit(function() {
+        sap.ui.getCore().attachInit(function () {
 
             // Register illustration Message Pool
             oAPP.fn.fnRegisterIllustrationPool();
@@ -294,7 +319,7 @@
     }; // end of oAPP.main.fnWsStart
 
     // Test..
-    oAPP.main.fnSetLanguage = function() {
+    oAPP.main.fnSetLanguage = function () {
 
         var oUserInfo = parent.getUserInfo(),
             oMetaScript = document.getElementById("sap-ui-bootstrap");
@@ -312,15 +337,13 @@
 
     };
 
+    // // 브라우저 닫기, window.close() 실행시 타는 이벤트
+    // window.onbeforeunload = () => {};
+
     // 브라우저 닫기, window.close() 실행시 타는 이벤트
     window.onbeforeunload = () => {
 
-        var oMeBrows = parent.REMOTE.getCurrentWindow(); // 현재 나의 브라우저
-
-        // 내가 죽었다면 빠져나간다.
-        if (oMeBrows.isDestroyed()) {
-            return;
-        }
+        debugger;
 
         // Logout 메시지가 이미 떠 있다면 창을 못닫게 한다.
         if (oAPP.attr.isBrowserCloseLogoutMsgOpen == 'X') {
@@ -333,10 +356,10 @@
         // 같은 세션의 브라우저가 나밖에 없다면
         if (aSameBrowser.length == 0) {
 
-            // Logout 메시지가 이미 떠 있다면 창을 못닫게 한다.
-            if (oAPP.attr.isBrowserCloseLogoutMsgOpen == 'X') {
-                return "";
-            }
+            // // Logout 메시지가 이미 떠 있다면 창을 못닫게 한다.
+            // if (oAPP.attr.isBrowserCloseLogoutMsgOpen == 'X') {
+            //     return "";
+            // }
 
             // Logout 메시지 Open 여부 Flag
             oAPP.attr.isBrowserCloseLogoutMsgOpen = 'X';
@@ -352,34 +375,36 @@
 
         // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
         // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
-        oAPP.main.fnBeforeunload();
+        oAPP.main.fnBeforeunload("");
+
+        return "";
 
     };
 
     function lf_MsgCallback(sAction) {
 
-        if (oAPP.attr.isBrowserCloseLogoutMsgOpen) {
-            delete oAPP.attr.isBrowserCloseLogoutMsgOpen;
-        }
+        delete oAPP.attr.isBrowserCloseLogoutMsgOpen;
 
         if (sAction != "YES") {
             return;
         }
 
+        debugger;
+
         // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
         // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
-        oAPP.main.fnBeforeunload();
+        oAPP.main.fnBeforeunload('X');
 
-        // 브라우저에 내장된 세션 정보를 클리어 한다.
-        oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
+        // // 브라우저에 내장된 세션 정보를 클리어 한다.
+        // oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
 
-        // onBeforeunload event 해제
-        oAPP.main.fnDetachBeforeunloadEvent();
+        // // onBeforeunload event 해제
+        // oAPP.main.fnDetachBeforeunloadEvent();
 
-        var oMeBrows = parent.REMOTE.getCurrentWindow(); // 현재 나의 브라우저
-        if (!oMeBrows.isDestroyed()) {
-            oMeBrows.close();
-        }
+        // var oMeBrows = parent.REMOTE.getCurrentWindow(); // 현재 나의 브라우저
+        // if (!oMeBrows.isDestroyed()) {
+        //     oMeBrows.close();
+        // }
 
     }
 

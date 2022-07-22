@@ -1018,23 +1018,23 @@
 
     }; // end of oAPP.common.execControllerClass
 
-    /************************************************************************
-     * 세션타임아웃 후 전체 로그아웃 및 같은 세션 창 전체 닫기
-     * **********************************************************************/
-    oAPP.common.setSessionTimeout = function () {
+    // /************************************************************************
+    //  * 세션타임아웃 후 전체 로그아웃 및 같은 세션 창 전체 닫기
+    //  * **********************************************************************/
+    // oAPP.common.setSessionTimeout = function () {
 
-        // 세션 타임 아웃 시, logoff 처리
-        var sPath = parent.getServerPath() + '/logoff';
+    //     // 세션 타임 아웃 시, logoff 처리
+    //     var sPath = parent.getServerPath() + '/logoff';
 
-        fetch(sPath);
+    //     fetch(sPath);
 
-        parent.IPCRENDERER.send('if-browser-close', {
-            ACTCD: "C", // 같은 세션을 가진 브라우저 중 로그오프가 된 브라우저의 키를 전달한다.
-            SESSKEY: parent.getSessionKey(),
-            BROWSKEY: parent.getBrowserKey()
-        });
+    //     parent.IPCRENDERER.send('if-browser-close', {
+    //         ACTCD: "C", // 같은 세션을 가진 브라우저 중 로그오프가 된 브라우저의 키를 전달한다.
+    //         SESSKEY: parent.getSessionKey(),
+    //         BROWSKEY: parent.getBrowserKey()
+    //     });
 
-    }; // end of oAPP.common.setSessionTimeout    
+    // }; // end of oAPP.common.setSessionTimeout    
 
     /************************************************************************
      * APP 전체 대상 글로벌 Shortcut 지정하기
@@ -1517,3 +1517,35 @@ function fn_PropHelpPopup(sUrl) {
     oAPP.fn.fnPropertyHelpPopup(sUrl);
 
 }
+
+
+
+
+function sendServerExit(oOptions, fnCallback) {
+
+    var sUrl = oOptions.URL,
+        oFormData = oOptions.FORMDATA;
+
+    parent.setBusy('X');
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4) {
+
+            if (typeof fnCallback === "function") {
+                fnCallback(this);
+            }
+
+        }
+    };
+
+    xhttp.open("POST", sUrl, true);
+
+    if (oFormData instanceof FormData == true) {
+        xhttp.send(oFormData);
+        return;
+    }
+
+    xhttp.send();
+
+};
