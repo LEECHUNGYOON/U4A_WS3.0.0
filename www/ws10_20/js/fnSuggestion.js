@@ -5,7 +5,7 @@
  * - file Desc : Suggestion 관련 js
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -138,5 +138,65 @@
         return JSON.parse(sReadData);
 
     } // end of oAPP.fn.fnSuggestionRead
+
+    oAPP.fn.fnReadTCodeSuggestion = () => {
+
+        const
+            SUGGNAME = "tcode";
+
+        return oAPP.fn.fnSuggestionRead(SUGGNAME);
+
+    };
+
+    oAPP.fn.fnSaveTCodeSuggestion = (sTcode) => {
+
+        const
+            SUGGNAME = "tcode",
+            TCODESUGGMAXLEN = 20;
+
+        var aSuggData = oAPP.fn.fnSuggestionRead(SUGGNAME);
+
+        // 저장된 데이터 중 같은 값이 있는지 확인한다.
+        var iFindIndex = aSuggData.findIndex(a => a.TCODE == sTcode);
+
+        // 같은 값이 있고 Array에 첫번째이면 그냥 빠져나간다.
+        if (iFindIndex == 0) {
+            return;
+        }
+
+        // 저장하려는 값이 이미 있고 Array에 첫번째가 아니면 
+        // 기존 저장된 위치의 ID 정보를 삭제
+        if (iFindIndex > 0) {
+            aSuggData.splice(iFindIndex, 1);
+        }
+
+        var iBeforeCnt = aSuggData.length,
+            oEventName = {
+                TCODE: sTcode
+            },
+
+            aNewArr = [];
+
+        // 저장된 Suggestion 갯수가 MaxLength 이상이면
+        // 마지막거 지우고 최신거를 1번째로 저장한다.
+        if (iBeforeCnt >= TCODESUGGMAXLEN) {
+
+            for (var i = 0; i < TCODESUGGMAXLEN - 1; i++) {
+                aNewArr.push(aSuggData[i]);
+            }
+
+        } else {
+
+            for (var i = 0; i < iBeforeCnt; i++) {
+                aNewArr.push(aSuggData[i]);
+            }
+
+        }
+
+        aNewArr.unshift(oEventName);
+
+        oAPP.fn.fnSuggestionSave(SUGGNAME, aNewArr);
+
+    };
 
 })(window, $, oAPP);

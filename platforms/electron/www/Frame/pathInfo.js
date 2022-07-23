@@ -70,6 +70,7 @@ module.exports = (() => {
 
         // Suggestion Json Path..
         EVENTSUGG: PATH.join(SUGG_ROOT, "events.json"),
+        TCODESUGG: PATH.join(SUGG_ROOT, "tcode.json"),
 
     };
 

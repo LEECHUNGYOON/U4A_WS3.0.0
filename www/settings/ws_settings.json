@@ -33,7 +33,8 @@
 		"p13n\\login.json",
 		"p13n\\ServerInfo.json",
 		"p13n\\zoom.json",
-		"p13n\\suggestion\\events.json"
+		"p13n\\suggestion\\events.json",
+		"p13n\\suggestion\\tcode.json"
 	],
 	"vbs": {
 		"rootPath": "ext_api\\vbs",

@@ -2,7 +2,7 @@
  * ws_fn_01.js
  **************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -17,20 +17,20 @@
     /************************************************************************
      * 초기 화면 그리기
      ************************************************************************/
-    oAPP.fn.fnOnInitRendering = function () {
+    oAPP.fn.fnOnInitRendering = function() {
 
         var oApp = new sap.m.NavContainer("WSAPP", {
             autoFocus: false,
-            afterNavigate: function (oEvent) {
-
-                // // 각 페이지 이동 시 푸터 메시지가 있으면 숨김처리.
-                // oAPP.common.fnHideFloatingFooterMsg();
+            afterNavigate: function(oEvent) {
 
                 var fromId = oEvent.getParameter("fromId"),
-                    toId = oEvent.getParameter("toId");
+                    toId = oEvent.getParameter("toId"),
+                    oToPage = oEvent.getParameter("to");
 
                 // 현재 페이지의 위치를 저장한다.
                 parent.setCurrPage(toId);
+
+                oToPage.invalidate(true);
 
                 if (fromId != "WS20") {
                     return;
@@ -53,7 +53,7 @@
         // 처음 로드 할때 APP NAME Input에 포커스 주기
         oApp.addDelegate({
 
-            onAfterRendering: function () {
+            onAfterRendering: function() {
 
                 if (parent.oWS.utill.attr.ISINIT == null) {
 
@@ -92,7 +92,7 @@
     /************************************************************************
      * 10번 페이지 Window Menu List
      ************************************************************************/
-    oAPP.fn.fnGetWindowMenuListWS10 = function () {
+    oAPP.fn.fnGetWindowMenuListWS10 = function() {
 
         var aWMENU10 = [{
                     key: "WMENU10_01",
@@ -182,7 +182,7 @@
     /************************************************************************
      * 20번 페이지 Window Menu List
      ************************************************************************/
-    oAPP.fn.fnGetWindowMenuListWS20 = function () {
+    oAPP.fn.fnGetWindowMenuListWS20 = function() {
 
         var aWMENU10 = [{
                     key: "WMENU10_01",
@@ -333,7 +333,7 @@
     /**************************************************************************
      * WS10 페이지의 윈도우 메뉴 정보
      **************************************************************************/
-    oAPP.fn.fnGetWindowMenuWS10 = function () {
+    oAPP.fn.fnGetWindowMenuWS10 = function() {
 
         return [{
                 key: "WMENU10",
@@ -362,7 +362,7 @@
     /**************************************************************************
      * WS20 페이지의 윈도우 메뉴 정보
      **************************************************************************/
-    oAPP.fn.fnGetWindowMenuWS20 = function () {
+    oAPP.fn.fnGetWindowMenuWS20 = function() {
 
         return [{
                 key: "WMENU10",
@@ -423,7 +423,7 @@
     /************************************************************************
      * 10번 페이지 Header Toolbar Contents
      ************************************************************************/
-    oAPP.fn.fnGetHeaderToolbarContentWs10 = function () {
+    oAPP.fn.fnGetHeaderToolbarContentWs10 = function() {
 
         var sBindRoot = "/WMENU/WS10";
 
@@ -544,7 +544,7 @@
                         parts: [
                             "key"
                         ],
-                        formatter: function (sKey) {
+                        formatter: function(sKey) {
 
                             if (sKey == null) {
                                 return false;
@@ -604,13 +604,13 @@
     /************************************************************************
      * 10번 페이지 Sub Header Toolbar Contents
      ************************************************************************/
-    oAPP.fn.fnGetSubHeaderToolbarContentWs10 = function () {
+    oAPP.fn.fnGetSubHeaderToolbarContentWs10 = function() {
 
         var lo_bindPropForVisible = {
             parts: [{
                 path: "/USERINFO/USER_AUTH/IS_DEV"
             }],
-            formatter: function (isDev) {
+            formatter: function(isDev) {
 
                 if (isDev != "D") {
                     return false;
@@ -724,15 +724,13 @@
     /************************************************************************
      * 10번 페이지 Contents
      ************************************************************************/
-    oAPP.fn.fnGetPageContentWs10 = function () {
+    oAPP.fn.fnGetPageContentWs10 = function() {
 
         var oAppNmInput = new sap.m.SearchField("AppNmInput", {
                 value: "{/WS10/APPID}",
                 change: oAPP.events.ev_AppInputChange,
                 search: oAPP.events.ev_AppValueHelp,
-                suggest: function (oEvent) {
-
-                    console.log();
+                suggest: function(oEvent) {
 
                     var sValue = oEvent.getParameter("suggestValue"),
                         aFilters = [];
@@ -741,7 +739,7 @@
 
                         aFilters = [
                             new sap.ui.model.Filter([
-                                new sap.ui.model.Filter("APPID", function (sText) {
+                                new sap.ui.model.Filter("APPID", function(sText) {
                                     return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                 }),
                             ], false)
@@ -758,7 +756,7 @@
                     path: "/WS10/APPSUGG",
                     sorter: "{ path : '/WS10/APPSUGG/APPID' }",
                     template: new sap.m.SuggestionItem({
-                        key: "{APPID}",
+                        // key: "{APPID}",
                         text: "{APPID}",
                     })
                 }
@@ -804,7 +802,7 @@
     /************************************************************************
      * 10번 페이지 화면 그리기
      ************************************************************************/
-    oAPP.fn.fnOnInitRenderingWS10 = function () {
+    oAPP.fn.fnOnInitRenderingWS10 = function() {
 
         var sFmsgBindRootPath = "/FMSG/WS10";
 
@@ -843,7 +841,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (isshow) {
+            formatter: function(isshow) {
 
                 if (isshow == null) {
                     return false;
@@ -865,7 +863,7 @@
      * 10번 페이지 Application Name SearchField의 Key down Event
      * F4 펑션 키를 눌렀을 때 F4 Help를 띄우기 목적인 이벤트
      ************************************************************************/
-    oAPP.fn.fnWs10AppInputKeyDownEvent = function (event) {
+    oAPP.fn.fnWs10AppInputKeyDownEvent = function(event) {
 
         var iKeyCode = event.keyCode;
 
@@ -877,54 +875,78 @@
         // Application Name에 입력한 값을 구한다.
         var sAppValue = oAppInput.getValue();
 
-        // Enter, F5키를 누르면 이벤트 전파 방지시킨다. (SearchField의 search 이벤트 발생하지 않기 위함)
-        // 그러나, Enter키를 누르면 Input의 Change 이벤트를 발생시킨다.
-        if (iKeyCode == 13 || iKeyCode == 116) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            event.stopPropagation();
+        switch (iKeyCode) {
 
-            if (iKeyCode == 13) {
-                oAppInput.fireChange({
-                    value: sAppValue
-                });
-            }
+            // Enter, F5키를 누르면 이벤트 전파 방지시킨다. (SearchField의 search 이벤트 발생하지 않기 위함)
+            // 그러나, Enter키를 누르면 Input의 Change 이벤트를 발생시킨다.
+            case 13: // Enter
+            case 116: // F5
 
-            return;
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                event.stopPropagation();
 
-        }
+                if (iKeyCode == 13) {
+                    oAppInput.fireChange({
+                        value: sAppValue
+                    });
+                }
 
-        // if(iKeyCode == 36){
-        //     event.preventDefault();
-        //     event.stopImmediatePropagation();
-        //     event.stopPropagation();
-        //     return;
-        // }
+                return;
 
-        // F4 키가 아니면 빠져나간다.
-        if (iKeyCode != 115) {
-            return;
-        }
+            case 35: // End
 
-        var sId = event.currentTarget.id,
-            oSearchField = sap.ui.getCore().byId(sId);
+                // 커서를 텍스트 맨 끝으로 보낸다.
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                event.stopPropagation();
 
-        if (!oSearchField) {
-            return;
+                var sTxtLength = sAppValue.length;
+                if(sTxtLength == 0){
+                    return;
+                }
+                
+                var oInput = oAppInput.getInputElement();
+                oInput.setSelectionRange(sTxtLength, sTxtLength);
+                oInput.focus();
+
+                return;
+
+            case 36: // Home
+
+                // 커서를 텍스트 맨 처음으로 보낸다.
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                event.stopPropagation();
+
+                var oInput = oAppInput.getInputElement();
+                oInput.setSelectionRange(0, 0);
+                oInput.focus();
+
+                return;
+
+            default:
+
+                // F4 키가 아니면 빠져나간다.
+                if (iKeyCode != 115) {
+                    return;
+                }
+
         }
 
         // F4 Help를 띄운다
-        oSearchField.fireChange({
+        oAppInput.fireChange({
             value: sAppValue
         });
-        oSearchField.fireSearch();
+
+        oAppInput.fireSearch();
 
     }; // end of oAPP.fn.fnWs10AppInputKeyDownEvent
 
     /************************************************************************
      * 20번 페이지 Header Toolbar Content
      ************************************************************************/
-    oAPP.fn.fnGetHeaderToolbarContentWs20 = function () {
+    oAPP.fn.fnGetHeaderToolbarContentWs20 = function() {
 
         var sBindRoot = "/WMENU/WS20";
 
@@ -954,7 +976,7 @@
             oNewWin = new sap.m.Button("ws20_newWinBtn", {
                 icon: "sap-icon://create",
                 tooltip: "New Browser (Ctrl+N)",
-                press: function () {
+                press: function() {
                     parent.onNewWindow();
                 }
             }).addStyleClass("u4aWs20NewWin"),
@@ -964,23 +986,50 @@
             }),
 
             oSapTCodeInput = new sap.m.SearchField({
+
+                // properties
                 width: "200px",
                 placeholder: "SAP T-CODE",
-                showSearchButton: true,
+                showSearchButton: false,
+                enableSuggestions: true,
+
+                // aggregations
+                suggestionItems: {
+                    path: "/SUGG/TCODE",
+                    sorter: "{ path : '/SUGG/TCODE/TCODE' }",
+                    template: new sap.m.SuggestionItem({
+                        // key: "{TCODE}",
+                        text: "{TCODE}",
+                    })
+                },
+
+                // events
                 search: (oEvent) => {
+                    oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
+                },
+                suggest: function(oEvent) {
 
-                    debugger;
+                    var sValue = oEvent.getParameter("suggestValue"),
+                        aFilters = [];
 
-                }
+                    if (sValue) {
 
-            })
-        // oSapTCodeInput = new sap.m.Input("ws20_sapTcodeInput", {
-        //     placeholder: "SAP T-CODE",
-        //     width: "200px",
-        //     submit: function (oEvent) {
-        //         oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
-        //     }
-        // }).addStyleClass("u4aWs20sapTcodeInput");
+                        aFilters = [
+                            new sap.ui.model.Filter([
+                                new sap.ui.model.Filter("TCODE", function(sText) {
+                                    return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
+                                }),
+                            ], false)
+                        ];
+
+                    }
+
+                    this.getBinding("suggestionItems").filter(aFilters);
+                    this.suggest();
+
+                },
+
+            }).addStyleClass("u4aWs20sapTcodeInput");
 
         return [
 
@@ -1022,7 +1071,7 @@
     /************************************************************************
      * 20번 페이지 화면 그리기
      ************************************************************************/
-    oAPP.fn.fnOnInitRenderingWS20 = function () {
+    oAPP.fn.fnOnInitRenderingWS20 = function() {
 
         var sFmsgBindRootPath = "/FMSG/WS20";
 
@@ -1315,7 +1364,7 @@
                                 parts: [
                                     "key"
                                 ],
-                                formatter: function (sKey) {
+                                formatter: function(sKey) {
 
                                     if (sKey == null) {
                                         return false;
@@ -1451,7 +1500,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (isshow) {
+            formatter: function(isshow) {
 
                 if (isshow == null) {
                     return false;
@@ -1470,7 +1519,7 @@
     /************************************************************************
      * 20번 페이지 Sub Header Toolbar
      ************************************************************************/
-    oAPP.fn.fnGetSubHeaderToolbarContentWs20 = function () {
+    oAPP.fn.fnGetSubHeaderToolbarContentWs20 = function() {
 
         // visible 바인딩 프로퍼티 설정
         function lf_bindPropForVisible(bIsDispMode) {
@@ -1701,7 +1750,7 @@
     /************************************************************************
      * 20번 페이지 Tnt Tool page 의 main contents 영역 그리기
      ************************************************************************/
-    oAPP.fn.fnOnInitRenderingWS20Main = function () {
+    oAPP.fn.fnOnInitRenderingWS20Main = function() {
 
         /**
          * Transaction Buttons
@@ -1724,7 +1773,7 @@
     /************************************************************************
      * Personalization Settings..(개인화 설정)
      ************************************************************************/
-    oAPP.fn.fnOnInitP13nSettings = function () {
+    oAPP.fn.fnOnInitP13nSettings = function() {
 
         // 개인화 폴더 생성 및 로그인 사용자별 개인화 Object 만들기
         oAPP.fn.fnOnP13nFolderCreate();
@@ -1738,12 +1787,15 @@
         // WS10 페이지 APP Name Input의 Suggestion 기능 설정
         oAPP.fn.fnGetP13nWs10AppSuggetion();
 
+        // Tcode Suggestion Setting
+        oAPP.fn.fnOnInitTCodeSuggestion(); // #[ws_fn_04.js] 
+
     }; // end of oAPP.fn.fnOnInitP13nSettings
 
     /************************************************************************
      * 개인화 폴더 생성 및 로그인 사용자별 개인화 Object 만들기
      ************************************************************************/
-    oAPP.fn.fnOnP13nFolderCreate = function () {
+    oAPP.fn.fnOnP13nFolderCreate = function() {
 
         var oServerInfo = parent.getServerInfo(),
             sSysID = oServerInfo.SYSID;
@@ -1797,7 +1849,7 @@
     /************************************************************************
      * 브라우저 zoom 정보 생성
      ************************************************************************/
-    oAPP.fn.fnOnP13nBrowserZoom = function () {
+    oAPP.fn.fnOnP13nBrowserZoom = function() {
 
         var sZoomFileName = PATH.join(USERDATA, "p13n", "zoom.json"), // zoom 파일 경로
             oZoomData = parent.require(sZoomFileName);
@@ -1904,7 +1956,7 @@
     /************************************************************************
      * 사용자 개인화(윈도우 ZOOM) 설정팝업 
      ************************************************************************/
-    oAPP.fn.setBrowserZoomZero = function () {
+    oAPP.fn.setBrowserZoomZero = function() {
 
         WEBFRAME.setZoomLevel(0);
 
@@ -1913,7 +1965,7 @@
     /************************************************************************
      * 개인화 정보를 읽어서 WS10 페이지의 APP Name Input에 Suggestion 설정하기
      ************************************************************************/
-    oAPP.fn.fnGetP13nWs10AppSuggetion = function () {
+    oAPP.fn.fnGetP13nWs10AppSuggetion = function() {
 
         var FS = parent.FS;
 
@@ -1945,7 +1997,7 @@
     /************************************************************************
      * 입력한 APPID를 개인화 데이터로 저장
      ************************************************************************/
-    oAPP.fn.fnSetP13nWs10AppSuggetion = function (APPID) {
+    oAPP.fn.fnSetP13nWs10AppSuggetion = function(APPID) {
 
         var FS = parent.FS;
 
@@ -1995,7 +2047,7 @@
     /************************************************************************
      * Default Browser 개인화 설정
      ************************************************************************/
-    oAPP.fn.fnOnP13nExeDefaultBrowser = function () {
+    oAPP.fn.fnOnP13nExeDefaultBrowser = function() {
 
         var FS = parent.FS;
 
@@ -2044,7 +2096,7 @@
     /************************************************************************
      * 현재 Local PC에 설치된 Browser 정보 구하기
      ************************************************************************/
-    oAPP.fn.fnGetExecBrowserInfo = function () {
+    oAPP.fn.fnGetExecBrowserInfo = function() {
 
         var aBrowserInfo = [],
             aDefaultBrowsInfo = parent.getDefaultBrowserInfo(),
@@ -2108,7 +2160,7 @@
      * @param {Array} aCurrentInfo 
      * - 현재 Local PC에 설치된 브라우저의 정보
      ************************************************************************/
-    oAPP.fn.fnCompareBeforeBrowserInfo = function (aBeforeInfo, aCurrentInfo) {
+    oAPP.fn.fnCompareBeforeBrowserInfo = function(aBeforeInfo, aCurrentInfo) {
 
         var iBeforeCnt = aBeforeInfo.length,
             iCurrCnt = aCurrentInfo.length;
@@ -2185,14 +2237,14 @@
     /************************************************************************
      * MIME Dialog 관련 로직..
      ************************************************************************/
-    oAPP.fn.fnMimeDialogOpener = function () {
+    oAPP.fn.fnMimeDialogOpener = function() {
 
         if (oAPP.fn.fnMimePopupOpen) {
             oAPP.fn.fnMimePopupOpen();
             return;
         }
 
-        oAPP.loadJs("fnMimePopupOpen", function () {
+        oAPP.loadJs("fnMimePopupOpen", function() {
             oAPP.fn.fnMimePopupOpen();
         });
 

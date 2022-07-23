@@ -1,7 +1,7 @@
 /**************************************************************************                                           
  * ws_fn_04.js
  **************************************************************************/
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     var PATH = parent.PATH,
@@ -33,8 +33,7 @@
             oFormData.append("sap-user", sId);
             oFormData.append("sap-password", sPw);
             oFormData.append("PC_NAME", sComputerName);
-
-            // function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob) {
+            
             sendAjax(
                 sPath,
                 oFormData,
@@ -61,7 +60,7 @@
     /************************************************************************
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSapGuiMultiLoginCheckThen = function (oResult) {
+    oAPP.fn.fnSapGuiMultiLoginCheckThen = function(oResult) {
 
         var oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
             oSettings = parent.require(oSettingsPath),
@@ -85,8 +84,6 @@
             INDEX = this.INDEX,
             TCODE = this.TCODE;
 
-        debugger;
-
         var aParam = [
             sNewSessionVbsFullPath, // VBS 파일 경로
             oServerInfo.SYSTEMID, // SYSTEM ID  
@@ -103,12 +100,10 @@
 
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
         var vbs = parent.SPAWN('cscript.exe', aParam);
-        vbs.stdout.on("data", function (data) {});
+        vbs.stdout.on("data", function(data) {});
 
         //GUI 세션창이 존재하지않다면 ...
-        vbs.stderr.on("data", function (data) {
-
-            debugger;
+        vbs.stderr.on("data", function(data) {
 
             //VBS 리턴 오류 CODE / MESSAGE 
             var str = data.toString(),
@@ -124,29 +119,6 @@
 
             }
 
-            // HostIP = WScript.arguments.Item(0) '연결 Host IP (*필수)
-            // SID    = WScript.arguments.Item(1) '연결 SID (*필수)
-            // SNO    = WScript.arguments.Item(2) '연결 SNo (*필수)
-            // MANDT  = WScript.arguments.Item(3) '로그온 클라이언트 (*필수)
-            // BNAME  = WScript.arguments.Item(4) '로그온 SAP ID (*필수)
-            // PASS   = WScript.arguments.Item(5) '로그온 SAP ID 비번 (*필수)
-            // LANGU  = WScript.arguments.Item(6) '로그온 언어키 (*필수)
-            // APPID  = WScript.arguments.Item(7) 'U4A APP ID (*필수)
-            // METHD  = WScript.arguments.Item(8) '네비게이션 대상 이벤트 메소드 (*옵션)
-            // SPOSI  = WScript.arguments.Item(9) '네비게이션 대상 이벤트 메소드 소스 라인번호 (*옵션)
-            // ISEDT  = WScript.arguments.Item(10) '수정모드 여부(예 : X, 아니오 : 공백)
-            // TCODE  = WScript.arguments.Item(11) 'SAP TCODE
-
-            // REM ** 다중 로그인 여부 **
-            // REM    1: SAP GUI 다중 로그인 정보 없음, 
-            // REM    2: SAP GUI 다중 로그인 정보 있음(* 시스템 허용)
-            // REM    X: SAP GUI 다중 로그인 시스템 허용 안함
-            // ISMLGN = WScript.arguments.Item(12) 
-
-            // MAXSS = CInt(WScript.arguments.Item(13)) '시스템 허용 최대 세션수
-
-            debugger;
-
             var aParam = [
                 sVbsFullPath, // VBS 파일 경로
                 oServerInfo.SERVERIP, // Server IP
@@ -158,7 +130,7 @@
                 oServerInfo.LANGU, // LANGUAGE
                 oAppInfo.APPID, // Application Name
                 (typeof METHNM == "undefined" ? "" : METHNM),
-                (typeof INDEX == "undefined" ? "0" : INDEX),                
+                (typeof INDEX == "undefined" ? "0" : INDEX),
                 oAppInfo.IS_EDIT, // Edit or Display Mode,
                 TCODE || "", // T-CODE
                 oResult.RTVAL, // SAPGUI Multi Login Check Value
@@ -166,8 +138,8 @@
             ];
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
-            vbs.stdout.on("data", function (data) {});
-            vbs.stderr.on("data", function (data) {
+            vbs.stdout.on("data", function(data) {});
+            vbs.stderr.on("data", function(data) {
 
                 //VBS 리턴 오류 CODE / MESSAGE 
                 var str = data.toString(),
@@ -202,5 +174,25 @@
         sess.clearStorageData([]);
 
     }; // end of oAPP.fn.fnClearSessionStorageData
+
+    /************************************************************************
+     * TCODE Suggestion 구성
+     ************************************************************************/
+    oAPP.fn.fnOnInitTCodeSuggestion = () => {
+
+        let sSuggName = "tcode";
+
+        var aSuggData = oAPP.fn.fnSuggestionRead(sSuggName);
+
+        if (aSuggData instanceof Array == false) {
+            oAPP.fn.fnSuggestionSave(sSuggName, []);
+
+            return;
+        }
+
+        oAPP.common.fnSetModelProperty("/SUGG/TCODE", aSuggData);
+
+    }; // end of oAPP.fn.fnOnInitTCodeSuggestion
+
 
 })(window, $, oAPP);
