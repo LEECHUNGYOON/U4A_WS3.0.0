@@ -207,7 +207,7 @@
                 FORMDATA: oFormData
             };
 
-            sendServerExit(oOptions, (o) => {
+            sendServerExit(oOptions, () => {
 
                 if (isClearStorage == "X") {
                     oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
@@ -230,7 +230,7 @@
             FORMDATA: oFormData
         };
 
-        sendServerExit(oOptions, (o) => {
+        sendServerExit(oOptions, () => {
 
             // 브라우저에 내장된 세션 정보를 클리어 한다.
             if (isClearStorage == "X") {
