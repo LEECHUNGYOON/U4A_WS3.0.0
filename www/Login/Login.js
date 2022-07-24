@@ -5,7 +5,7 @@
  * - file Desc : WS Login Page
  ************************************************************************/
 
-let oAPP = (function () {
+let oAPP = (function() {
     "use strict";
 
     const
@@ -22,7 +22,8 @@ let oAPP = (function () {
         autoUpdaterSAP = require(parent.getPath("AUTOUPDSAP")).autoUpdaterSAP,
         SERVPATH = parent.getServerPath(),
         autoUpdaterServerUrl = `${SERVPATH}/update_check`,
-        OCTOKIT = REMOTE.require("@octokit/core").Octokit;
+        OCTOKIT = REMOTE.require("@octokit/core").Octokit,
+        GlobalShortCut = REMOTE.globalShortcut;
 
     let oAPP = {};
     oAPP.fn = {};
@@ -271,7 +272,7 @@ let oAPP = (function () {
                                     value: "{ID}",
                                     showSearchButton: false,
                                     placeholder: "　",
-                                    suggest: function (oEvent) {
+                                    suggest: function(oEvent) {
 
                                         var sValue = oEvent.getParameter("suggestValue"),
                                             aFilters = [];
@@ -280,7 +281,7 @@ let oAPP = (function () {
 
                                             aFilters = [
                                                 new sap.ui.model.Filter([
-                                                    new sap.ui.model.Filter("ID", function (sText) {
+                                                    new sap.ui.model.Filter("ID", function(sText) {
                                                         return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                                     }),
                                                 ], false)
@@ -292,7 +293,7 @@ let oAPP = (function () {
                                         this.suggest();
 
                                     },
-                                    search: function (oEvent) {
+                                    search: function(oEvent) {
 
                                         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
                                         if (bIsPressClearBtn) {
@@ -394,25 +395,25 @@ let oAPP = (function () {
 
             new sap.m.Button({
                 text: "영선",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("yshong");
                 }
             }),
             new sap.m.Button({
                 text: "성호",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("shhong");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
             new sap.m.Button({
                 text: "은섭",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("pes");
                 }
             }),
             new sap.m.Button({
                 text: "청윤",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("soccerhs");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
@@ -499,7 +500,7 @@ let oAPP = (function () {
                         parts: [
                             "/LOGIN/SYSID"
                         ],
-                        formatter: function (SYSID) {
+                        formatter: function(SYSID) {
 
                             // U4A 서버 일 경우에만 자동 로그인 버튼 보이기
                             switch (SYSID) {
@@ -704,7 +705,7 @@ let oAPP = (function () {
         var oPwInput = sap.ui.getCore().byId("ws_pw");
 
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () { // 요청에 대한 콜백
+        xhr.onreadystatechange = function() { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
@@ -783,7 +784,7 @@ let oAPP = (function () {
             var sServicePath = parent.getServerPath() + "/chk_u4a_authority";
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () { // 요청에 대한 콜백
+            xhr.onreadystatechange = function() { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -851,7 +852,7 @@ let oAPP = (function () {
             var sServicePath = parent.getServerPath() + "/chk_customer_license";
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () { // 요청에 대한 콜백
+            xhr.onreadystatechange = function() { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -876,7 +877,7 @@ let oAPP = (function () {
     /************************************************************************
      * 고객사 라이센스 체크 성공
      ************************************************************************/
-    oAPP.fn.fnCheckCustomerLisenceThen = function (oLicenseInfo) {
+    oAPP.fn.fnCheckCustomerLisenceThen = function(oLicenseInfo) {
 
         // ISCDS TYPE C LENGTH 1, "on premise : space
         // RETCD TYPE C LENGTH 1, "처리 리턴 코드 : E 오류
@@ -1031,7 +1032,7 @@ let oAPP = (function () {
 
     }; // end of  oAPP.fn.fnSetAutoUpdateForSAP
 
-    oAPP.fn.fnSetAutoUpdateForSAPThen = function () {
+    oAPP.fn.fnSetAutoUpdateForSAPThen = function() {
 
         var oResult = this.oResult,
             oAuthInfo = this.oAuthInfo;
@@ -1083,7 +1084,7 @@ let oAPP = (function () {
     /************************************************************************
      * Github 연결을 시도 하여 on-premise 인지 CDN인지 확인
      ************************************************************************/
-    oAPP.fn.fnConnectionGithubThen = function (oReturn) {
+    oAPP.fn.fnConnectionGithubThen = function(oReturn) {
 
         // on-premise 일 경우 업데이트 URL을 서버쪽으로 바라본다.
         if (oReturn.ISCDN != "X") {
@@ -1235,7 +1236,7 @@ let oAPP = (function () {
     /************************************************************************
      * 버전 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSetAutoUpdateForCDNThen = function () {
+    oAPP.fn.fnSetAutoUpdateForCDNThen = function() {
 
         var oResult = this.oResult,
             oAuthInfo = this.oAuthInfo;
@@ -1477,7 +1478,7 @@ let oAPP = (function () {
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         reject(err.toString());
@@ -1508,50 +1509,7 @@ let oAPP = (function () {
             $('#content').fadeIn(1000, 'linear');
         }, 100);
 
-    }; // end of oAPP.fn.fnOnSmoothLoading 
-
-    /************************************************************************
-     *---------------------[ U4A WS Login Page Start ] ----------------------
-     ************************************************************************/
-    oAPP.fn.fnAttachInit = () => {
-
-        sap.ui.getCore().attachInit(() => {
-
-            // 개인화 폴더 체크 후 없으면 생성
-            oAPP.fn.fnOnP13nFolderCreate();
-
-            // Illustration Message TNT-svg register
-            oAPP.fn.fnRegisterIllustrationPool();
-
-            // IconPool Register Fiori icon
-            oAPP.fn.fnRegisterFioriIconPool();
-
-            // trial 버전 확인
-            var oWsSettings = oAPP.fn.fnGetSettingsInfo();
-
-            // trial 버전 로그인 페이지를 그린다.
-            if (oWsSettings.isTrial) {
-
-                oAPP.fn.fnOnTrialLoginPageRendering();
-
-                // 자연스러운 로딩
-                oAPP.fn.fnOnSmoothLoading();
-
-                return;
-            }
-
-            // 초기값 바인딩
-            oAPP.fn.fnOnInitModelBinding();
-
-            // 로그인 페이지 초기 렌더링
-            oAPP.fn.fnOnInitRendering();
-
-            // 자연스러운 로딩
-            oAPP.fn.fnOnSmoothLoading();
-
-        });
-
-    }; // end of oAPP.fn.fnAttachInit
+    }; // end of oAPP.fn.fnOnSmoothLoading     
 
     /************************************************************************
      * 로그인 정보 입력 체크
@@ -1601,26 +1559,11 @@ let oAPP = (function () {
 
         return oCheck;
 
-    };
+    }; // end of oAPP.fn.fnLoginCheck
 
-    // oAPP.fn.fnGetRememberID = () => {
-
-    //     var bIsRemember = oAPP.fn.fnGetRememberCheck();
-    //     if (!bIsRemember) {
-    //         return "";
-    //     }
-
-    //     var aIds = oAPP.fn.fnReadIDSuggData(),
-    //         iIdLength = aIds.length;
-
-    //     if (iIdLength <= 0) {
-    //         return "";
-    //     }
-
-    //     return aIds[0].ID;
-
-    // };
-
+    /************************************************************************
+     * Remember Check 시 로그인한 정보 저장
+     ************************************************************************/
     oAPP.fn.fnSaveRemember = (oLogInData) => {
 
         var oServerInfo = parent.getServerInfo(),
@@ -1654,32 +1597,11 @@ let oAPP = (function () {
         // login.json 파일에 ID Suggestion 정보 저장
         FS.writeFileSync(sJsonPath, JSON.stringify(oLoginInfo));
 
-    };
+    }; // end of oAPP.fn.fnSaveRemember
 
-    // oAPP.fn.fnSaveRememberCheck = (oLogInData) => {
-
-    //     var bIsRemember = oLogInData.REMEMBER;
-
-    //     let sJsonPath = PATH.join(USERDATA, "p13n", "login.json"),
-    //         sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
-    //         oLoginInfo = JSON.parse(sJsonData);
-
-    //     if (typeof oLoginInfo !== "object") {
-    //         oLoginInfo = {};
-    //     }
-
-    //     oLoginInfo.bIsRemember = bIsRemember;
-
-    //     if (bIsRemember) {
-    //         oLoginInfo.CLIENT = oLogInData.CLIENT;
-    //         oLoginInfo.LANGU = oLogInData.LANGU;
-    //     }
-
-    //     // login.json 파일에 ID Suggestion 정보 저장
-    //     FS.writeFileSync(sJsonPath, JSON.stringify(oLoginInfo));
-
-    // };
-
+    /************************************************************************
+     * Remember 저장한 로그인 정보 읽어오기
+     ************************************************************************/
     oAPP.fn.fnGetRememberLoginInfo = () => {
 
         var oServerInfo = parent.getServerInfo(),
@@ -1699,8 +1621,11 @@ let oAPP = (function () {
 
         return oLoginInfo[sSysID];
 
-    };
+    }; // end of oAPP.fn.fnGetRememberLoginInfo
 
+    /************************************************************************
+     * Remember 선택 여부 저장값 읽어오기
+     ************************************************************************/
     oAPP.fn.fnGetRememberCheck = () => {
 
         var oServerInfo = parent.getServerInfo(),
@@ -1719,8 +1644,6 @@ let oAPP = (function () {
         }
 
         return oLoginInfo[sSysID].REMEMBER;
-
-        // return oLoginInfo.bIsRemember;
 
     }; // end of oAPP.fn.fnGetRememberCheck
 
@@ -1820,7 +1743,7 @@ let oAPP = (function () {
     /************************************************************************
      * 네트워크 연결 시 Network Indicator 해제
      * **********************************************************************/
-    oAPP.fn.fnNetworkCheckerOnline = function () {
+    oAPP.fn.fnNetworkCheckerOnline = function() {
 
         // 네트워크 활성화 여부 flag
         oAPP.attr.bIsNwActive = true;
@@ -1834,7 +1757,7 @@ let oAPP = (function () {
     /************************************************************************
      * 네트워크 연결 시 Network Indicator 실행
      * **********************************************************************/
-    oAPP.fn.fnNetworkCheckerOffline = function () {
+    oAPP.fn.fnNetworkCheckerOffline = function() {
 
         // 네트워크 활성화 여부 flag
         oAPP.attr.bIsNwActive = false;
@@ -1848,7 +1771,7 @@ let oAPP = (function () {
     /************************************************************************
      * 개인화 폴더 생성 및 로그인 사용자별 개인화 Object 만들기
      ************************************************************************/
-    oAPP.fn.fnOnP13nFolderCreate = function () {
+    oAPP.fn.fnOnP13nFolderCreate = function() {
 
         var oServerInfo = parent.getServerInfo(),
             sSysID = oServerInfo.SYSID;
@@ -1894,6 +1817,74 @@ let oAPP = (function () {
         FS.writeFileSync(sP13nPath, JSON.stringify(oP13N_data));
 
     }; // end of oAPP.fn.fnOnP13nFolderCreate
+
+    /************************************************************************
+     * 단축키 설정
+     ************************************************************************/
+    oAPP.fn.fnSetShortCut = () => {
+
+        GlobalShortCut.register('F11', () => {
+
+            var oCurrWin = REMOTE.getCurrentWindow(),
+                bIsFull = oCurrWin.isFullScreen();
+
+            oCurrWin.setFullScreen(!bIsFull);
+
+        });
+
+    }; // end of oAPP.fn.fnSetShortCut
+
+    oAPP.fn.fnOnBeforeUnload = () => {
+
+        GlobalShortCut.unregisterAll();
+
+    };
+
+    /************************************************************************
+     *---------------------[ U4A WS Login Page Start ] ----------------------
+     ************************************************************************/
+    oAPP.fn.fnAttachInit = () => {
+
+        sap.ui.getCore().attachInit(() => {
+
+            // Shortcut 설정
+            oAPP.fn.fnSetShortCut();
+
+            // 개인화 폴더 체크 후 없으면 생성
+            oAPP.fn.fnOnP13nFolderCreate();
+
+            // Illustration Message TNT-svg register
+            oAPP.fn.fnRegisterIllustrationPool();
+
+            // IconPool Register Fiori icon
+            oAPP.fn.fnRegisterFioriIconPool();
+
+            // trial 버전 확인
+            var oWsSettings = oAPP.fn.fnGetSettingsInfo();
+
+            // trial 버전 로그인 페이지를 그린다.
+            if (oWsSettings.isTrial) {
+
+                oAPP.fn.fnOnTrialLoginPageRendering();
+
+                // 자연스러운 로딩
+                oAPP.fn.fnOnSmoothLoading();
+
+                return;
+            }
+
+            // 초기값 바인딩
+            oAPP.fn.fnOnInitModelBinding();
+
+            // 로그인 페이지 초기 렌더링
+            oAPP.fn.fnOnInitRendering();
+
+            // 자연스러운 로딩
+            oAPP.fn.fnOnSmoothLoading();
+
+        });
+
+    }; // end of oAPP.fn.fnAttachInit
 
     return oAPP;
 
@@ -1944,7 +1935,12 @@ window.addEventListener("beforeunload", () => {
 window.addEventListener("online", oAPP.fn.fnNetworkCheckerOnline, false);
 window.addEventListener("offline", oAPP.fn.fnNetworkCheckerOffline, false);
 
-document.addEventListener('DOMContentLoaded', function () {
+window.addEventListener("beforeunload", oAPP.fn.fnOnBeforeUnload, false);
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
 
     // 브라우저 zoom 레벨을 수정 한 후 로그인 페이지로 이동 시 기본 zoom 레벨 적용
     parent.WEBFRAME.setZoomLevel(0);
@@ -1952,6 +1948,9 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log("DOMContentLoaded_1");
 
 });
+
+
+
 
 function isBlank(s) {
     return isEmpty(s.trim());
