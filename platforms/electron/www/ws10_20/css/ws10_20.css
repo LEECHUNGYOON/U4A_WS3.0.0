@@ -235,7 +235,7 @@ body,
 .sapUiTheme-sap_horizon_dark .u4aWsMimeTreeTable .u4aMimeTreeMyApp .sapMText,
 .sapUiTheme-sap_horizon_dark .u4aWsMimeTreeTable .u4aMimeTreeMyAppChild .sapMText,
 .sapUiTheme-sap_horizon_dark .u4aWsMimeTreeTable .u4aMimeTreeBrightRow .sapMText {
-    color: #fff;
+    color: #fff;   
 }
 
 .sapUiTheme-sap_horizon_dark .u4aWsMimeTreeTable .u4aMimeTreeDarkRow .sapMText {

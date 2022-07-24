@@ -92,7 +92,9 @@ function createWindow() {
         movable: true,
         resizable: false,
         width: 800,
-        height: 500
+        height: 500,
+        minWidth: 800,
+        minHeight: 500        
     });
 
     // browserWindowOpts.webPreferences.preload = path.join(app.getAppPath(), 'cdv-electron-preload.js');

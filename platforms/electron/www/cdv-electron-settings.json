@@ -11,9 +11,9 @@
       "webSecurity": false,
       "autoplayPolicy": "no-user-gesture-required"
     },
-    "width": 800,
-    "minWidth": 300,
-    "minHeight": 300,
+    "width": 1000,
+    "minWidth": 1000,
+    "minHeight": 800,
     "icon": "www/img/logo.png",
     "autoHideMenuBar": true
   },
