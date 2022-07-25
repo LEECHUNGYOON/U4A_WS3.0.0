@@ -16,6 +16,22 @@ let oAPP = (function (window) {
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
 
+    oAPP.setBusyIndicator = (bIsBusy) => {
+
+        var oBusy = document.getElementById("u4aWsBusyIndicator");
+
+        if (!oBusy) {
+            return;
+        }
+
+        if (bIsBusy) {
+            oBusy.style.visibility = "visible";
+        } else {
+            oBusy.style.visibility = "hidden";
+        }
+
+    };
+
     oAPP.setBusy = function (bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
@@ -56,8 +72,6 @@ let oAPP = (function (window) {
      ************************************************************************/
     oAPP.fn.fnPredefinedCssPreview = (aPreviewCss) => {
 
-        debugger;
-
         var BROWSKEY = oAPP.attr.BROWSERKEY;
 
         var oSendData = {
@@ -74,8 +88,6 @@ let oAPP = (function (window) {
      ************************************************************************/
     oAPP.fn.fnPredefinedCssSave = (aSaveCss) => {
 
-        debugger;
-        
         var BROWSKEY = oAPP.attr.BROWSERKEY;
 
         var oSendData = {
@@ -106,7 +118,9 @@ let oAPP = (function (window) {
 
         oWs_frame.onload = () => {
 
-            oAPP.setBusy("");
+            oAPP.setBusyIndicator("");
+
+            // oAPP.setBusy("");
 
         };
 

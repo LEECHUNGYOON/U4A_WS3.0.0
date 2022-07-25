@@ -256,8 +256,6 @@
       //서버 호출.
       sendAjax(oAPP.attr.servNm + "/getAppData", oFormData, function(param){
 
-        console.log("app 데이터 완료 : " + new Date());
-
         for(var i=param.APPDATA.T_0014.length-1; i>=0; i--){
           
           //StyleCSS, HTMLCode, ScriptCode UI가 존재하는경우.
@@ -310,13 +308,11 @@
         //(접은뒤 펼쳐야 2레벨만 펼쳐짐 5레벨까지 펼쳐진상태에서 2레벨 펼치면 그냥 그대로 있음)
         oAPP.attr.ui.oLTree1.expandToLevel(2);
 
-        
-        console.log("좌측 tree 완료 : " + new Date());
-
-
-
         //미리보기 화면 구성.
         oAPP.fn.loadPreviewFrame();
+
+        //design 영역 invalidate 처리.
+        oAPP.fn.invalidateDesignArea();
 
         //wait off 처리.
         //parent.setBusy('');
@@ -517,11 +513,17 @@
 
     
 
-
     //model, 미리보기 정보 제거.
     oAPP.fn.removeContent = function(){
       //미리보기 화면 제거.
       oAPP.attr.ui.frame.contentWindow.removePreviewPage();
+      
+      //design tree 선택 처리 해제
+      oAPP.attr.ui.oLTree1.clearSelection();
+
+      //attribute 선택 처리 해제.
+      oAPP.attr.ui.oRTab1.removeSelections();
+
 
       oAPP.attr.prev = {}; //미리보기 정보
       oAPP.attr.popup = [];  //팝업 정보
@@ -951,6 +953,23 @@
 
 
     };  //design 영역 순서 설정.
+
+
+
+
+    //design 영역 invalidate 처리.
+    //(10번화면과 20번 화면을 이동하면서 선택 처리건
+    //잔상이 남기에 다시 그리기로 잔상 제거 처리 목적)
+    oAPP.fn.invalidateDesignArea = function(){
+
+      //좌측 DESIGN TREE 영역 invalidate 처리.
+      oAPP.attr.ui.oDesignTree.invalidate();
+
+      //우측 ATTRIBUTE 영역 invalidate 처리.
+      oAPP.attr.ui.oDesignAttr.invalidate();
+
+
+    };  //design 영역 invalidate 처리.
 
 
 

@@ -14,17 +14,15 @@
 
     var APPCOMMON = oAPP.common,
         REMOTE = parent.REMOTE,
-        bAutoSearch = false,
         bIsTrial = parent.getIsTrial(),
         GfnCallback;
 
     oAPP.fn.fnAppF4PopupOpen = function (options, fnCallback) {
 
-        bAutoSearch = options.autoSearch;
-
         var oTab1_Data = options.initCond;
 
         var oBindData = {
+            options: options,
             ISTRIAL: bIsTrial, // Trial 여부 플래그
             // APPLIST1: aAPPLIST,
             TAB1: oTab1_Data,
@@ -77,7 +75,6 @@
             // icon: "sap-icon://search",
 
             // Aggregations
-
             customHeader: new sap.m.Toolbar({
                 content: [
                     new sap.m.ToolbarSpacer(),
@@ -112,6 +109,7 @@
 
             // Events
             beforeOpen: oAPP.events.ev_AppF4DialogAfterOpen,
+            // afterOpen: oAPP.events.ev_AppF4DialogAfterOpen,
             afterClose: oAPP.events.ev_AppF4DialogCancel
 
         }).addStyleClass(C_DIALOG_ID);
@@ -143,6 +141,11 @@
                     return;
                 }
 
+                var oModelData = APPCOMMON.fnGetModelProperty(C_BIND_ROOT_PATH),
+                    oOptions = oModelData.options,
+                    // oInitCond = oOptions.initCond,
+                    bAutoSearch = oOptions.autoSearch;
+
                 var sSelectedKey = oEvent.getParameter("key"),
                     sBeforeKey = oAPP.global.beforeSelectedKey;
 
@@ -151,12 +154,44 @@
                     oAPP.global.beforeSelectedKey = sSelectedKey;
                 }
 
-                // 이전에 선택한 키와 현재 선택한 키가 같으면 
-                if (sSelectedKey == sBeforeKey) {
-                    return;
-                }
+                // // 이전에 선택한 키와 현재 선택한 키가 같으면 
+                // if (sSelectedKey == sBeforeKey) {
+                //     return;
+                // }
 
                 switch (sSelectedKey) {
+
+                    case "K1":
+
+                        var oTree = sap.ui.getCore().byId("appf4tree"),
+                            oInput = sap.ui.getCore().byId("appf4_packg");
+
+                        if (oTree) {
+                            oTree.clearSelection();
+                            oTree.collapseAll();
+
+                            // Binding data 없이 expandToLevel 실행하면 core에서 assert 경고 메시지가 발생한다.
+                            if (oTree.getBinding()) {
+                                oTree.expandToLevel(1);
+                            }
+
+                        }
+
+                        // // 패키지별 트리 APP 모델 초기화 
+                        // APPCOMMON.fnSetModelProperty(C_BIND_ROOT_PATH + "/APPF4HIER", null);
+
+                        APPCOMMON.fnSetModelProperty(C_BIND_ROOT_PATH, oModelData);
+
+                        oDialog.setInitialFocus(oInput);
+
+                        if (!bAutoSearch) {
+                            return;
+                        }
+
+                        oInput.fireSubmit();
+
+                        break;
+
                     case "K2":
 
                         // App Hierarchy 정보 구하기..
@@ -165,18 +200,8 @@
                         break;
 
                     default:
-
-                        var oTree = sap.ui.getCore().byId("appf4tree");
-                        if (oTree) {
-                            oTree.clearSelection();
-                            oTree.collapseAll();
-                            oTree.expandToLevel(1);
-                        }
-
-                        // 패키지별 트리 APP 모델 초기화 
-                        APPCOMMON.fnSetModelProperty(C_BIND_ROOT_PATH + "/APPF4HIER", null);
-
                         break;
+
                 }
             }
 
@@ -553,7 +578,7 @@
             if (typeof GfnCallback == "function") {
                 GfnCallback(oRowData);
             }
-           
+
             var oAppF4Dialog = sap.ui.getCore().byId("AppF4Dialog");
             if (oAppF4Dialog) {
                 oAppF4Dialog.close();
@@ -766,11 +791,6 @@
      ************************************************************************/
     oAPP.events.ev_AppF4DialogCancel = function () {
 
-        // 이전 선택한 Tab의 Key값이 존재할 경우 초기화
-        if (oAPP.global.beforeSelectedKey) {
-            delete oAPP.global.beforeSelectedKey;
-        }
-
         var oDialog = sap.ui.getCore().byId(C_DIALOG_ID);
         if (oDialog == null) {
             return;
@@ -787,21 +807,30 @@
      ************************************************************************/
     oAPP.events.ev_AppF4DialogAfterOpen = function (oEvent) {
 
-        var oDialog = oEvent.getSource(),
-            oInput = sap.ui.getCore().byId("appf4_packg");
+        var oIconTab = sap.ui.getCore().byId("appf4tab");
 
-        if (typeof oInput == "undefined") {
+        if (oIconTab == null) {
             return;
         }
 
-        // Package Input에 포커스를 준다.
-        oDialog.setInitialFocus(oInput);
+        // 현재 선택된 Tab의 key를 구한다.
+        var sKey = oIconTab.getSelectedKey(),
+            sBeforeKey = oAPP.global.beforeSelectedKey;
 
-        if (!bAutoSearch) {
-            return;
+        // 이전에 선택한 키값이 있다면
+        if (sBeforeKey) {
+
+            // 이전에 선택한 키값과 현재 선택된 key값이 다를 경우에만 키 값을 갱신한다.
+            if (sBeforeKey != sKey) {
+                sKey = sBeforeKey;
+                oIconTab.setSelectedKey(sKey);
+            }
+
         }
 
-        oInput.fireSubmit();
+        oIconTab.fireSelect({
+            key: sKey
+        });
 
     }; // end of oAPP.events.ev_AppF4DialogAfterOpen
 
