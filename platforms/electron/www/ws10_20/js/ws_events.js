@@ -248,6 +248,8 @@
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
             sAppID = oAppNmInput.getValue();
 
+        parent.setBusy('X');
+
         oAPP.fn.fnOnEnterDispChangeMode(sAppID, "");
 
     }; // end of oAPP.events.ev_AppDisplay
@@ -741,6 +743,8 @@
         // CTS Popup을 Open 한다.
         oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
+            debugger;
+            
             var oEvent = this,
                 IS_ACT = oEvent.getParameter("IS_ACT");
 
@@ -855,6 +859,8 @@
      * Save Button Event
      ************************************************************************/
     oAPP.events.ev_pressSaveBtn = function (oEvent) {
+
+        debugger;
 
         // 푸터 메시지가 있을 경우 닫기
         oAPP.common.fnHideFloatingFooterMsg();

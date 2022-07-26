@@ -22,6 +22,8 @@
         var oApp = new sap.m.NavContainer("WSAPP", {
             autoFocus: false,
             afterNavigate: function (oEvent) {
+                
+                sap.ui.getCore().unlock();
 
                 var fromId = oEvent.getParameter("fromId"),
                     toId = oEvent.getParameter("toId"),
@@ -436,7 +438,7 @@
         var oMenuUI = {};
 
         // WS10 페이지의 윈도우 메뉴 구성
-        oMenuUI.WMENU10 = new sap.m.Menu({
+        oMenuUI.WMENU10 = new sap.m.Menu({            
             itemSelected: oAPP.events.ev_pressWmenuItemWS10,
             items: {
                 path: sBindRoot + "/WMENU10",
@@ -455,7 +457,7 @@
             }
         }).addStyleClass("u4aWsWindowMenu");
 
-        oMenuUI.WMENU20 = new sap.m.Menu({
+        oMenuUI.WMENU20 = new sap.m.Menu({            
             itemSelected: oAPP.events.ev_pressWmenuItemWS10,
             items: {
                 path: sBindRoot + "/WMENU20",
@@ -474,7 +476,7 @@
             }
         }).addStyleClass("u4aWsWindowMenu");
 
-        oMenuUI.WMENU30 = new sap.m.Menu({
+        oMenuUI.WMENU30 = new sap.m.Menu({            
             itemSelected: oAPP.events.ev_pressWmenuItemWS10,
             items: {
                 path: sBindRoot + "/WMENU30",
@@ -493,7 +495,7 @@
             }
         }).addStyleClass("u4aWsWindowMenu");
 
-        oMenuUI.Test10 = new sap.m.Menu({
+        oMenuUI.Test10 = new sap.m.Menu({            
             itemSelected: oAPP.events.ev_pressWmenuItemWS10,
             items: {
                 path: sBindRoot + "/Test10",
