@@ -80,10 +80,10 @@ function getPath(sPagePath) {
     return oWS.utill.fn.getPath(sPagePath);
 }
 
-// 13. ajax 통신 (FormData, success callback)
-function sendAjax(sPath, oFormData, fn_callback) {
-    oWS.utill.fn.sendAjax(sPath, oFormData, fn_callback);
-}
+// // 13. ajax 통신 (FormData, success callback)
+// function sendAjax(sPath, oFormData, fn_callback) {
+//     oWS.utill.fn.sendAjax(sPath, oFormData, fn_callback);
+// }
 
 // 14. 서버에서 App 정보를 구한다.
 function getAppDataFromServer(oFormData, fn_success) {

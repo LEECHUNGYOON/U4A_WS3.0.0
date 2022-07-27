@@ -474,7 +474,7 @@
                 parent.showMessage(sap, 20, RETURN.RTCOD, RETURN.RTMSG);
                 return;
             }
-
+            
             RETURN.IS_EDIT = ""; // Display Mode FLAG
             RETURN.IS_CHAG = "";
 

@@ -829,41 +829,19 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     // 19. Busy Indicator 실행
     oWS.utill.fn.setBusy = (sIsbusy) => {
 
-        // var sIndicatorPath = APPPATH + "\\Frame\\BusyIndicator.html";
-
-        // debugger;
-
-        // var url = `file://${__dirname}/loading.html`;
-
-        // var option = {
-        //     parent: REMOTE.getCurrentWindow(),
-        //     modal: true,
-        //     show: true,
-        //     resizable: false,
-        //     frame: false,
-        //     transparent: true,
-        //     thickFrame: false,
-        //     maximizable: false,
-        //     minimizable: false
-        // };
-
-        // var oLoadingPOP = new REMOTE.BrowserWindow(option);
-
-        // oLoadingPOP.loadURL(url);
-
-        // oLoadingPOP.webContents.on('did-finish-load', function () {
-
-        //     var win = REMOTE.getCurrentWindow();
-
-        //     oLoadingPOP.setBounds(win.getBounds());
-
-        // });
-
         // ws config를 구한다.
         var oWsConfInfo = getWsConfigInfo(),
             sBusyType = oWsConfInfo.BUSYTYPE,
 
             bIsBusy = (sIsbusy == "X" ? true : false);
+        
+        // if(oWS.utill.attr.sap){
+        //     if(bIsBusy){
+        //         oWS.utill.attr.sap.ui.getCore().lock();
+        //     } else {
+        //         oWS.utill.attr.sap.ui.getCore().unlock();
+        //     }
+        // }
 
         // 현재 Busy Indicator 상태정보를 글로벌 변수에 저장한다.
         oWS.utill.attr.isBusy = sIsbusy;

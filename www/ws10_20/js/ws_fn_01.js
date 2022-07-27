@@ -22,16 +22,16 @@
         var oApp = new sap.m.NavContainer("WSAPP", {
             autoFocus: false,
             afterNavigate: function (oEvent) {
-                
-                sap.ui.getCore().unlock();
 
                 var fromId = oEvent.getParameter("fromId"),
                     toId = oEvent.getParameter("toId"),
                     oToPage = oEvent.getParameter("to");
 
+                sap.ui.getCore().unlock();
+
                 // 현재 페이지의 위치를 저장한다.
                 parent.setCurrPage(toId);
-       
+
                 if (fromId != "WS20") {
                     return;
                 }
@@ -438,7 +438,7 @@
         var oMenuUI = {};
 
         // WS10 페이지의 윈도우 메뉴 구성
-        oMenuUI.WMENU10 = new sap.m.Menu({            
+        oMenuUI.WMENU10 = new sap.m.Menu({
             itemSelected: oAPP.events.ev_pressWmenuItemWS10,
             items: {
                 path: sBindRoot + "/WMENU10",
@@ -457,7 +457,7 @@
             }
         }).addStyleClass("u4aWsWindowMenu");
 
-        oMenuUI.WMENU20 = new sap.m.Menu({            
+        oMenuUI.WMENU20 = new sap.m.Menu({
             itemSelected: oAPP.events.ev_pressWmenuItemWS10,
             items: {
                 path: sBindRoot + "/WMENU20",
@@ -476,7 +476,7 @@
             }
         }).addStyleClass("u4aWsWindowMenu");
 
-        oMenuUI.WMENU30 = new sap.m.Menu({            
+        oMenuUI.WMENU30 = new sap.m.Menu({
             itemSelected: oAPP.events.ev_pressWmenuItemWS10,
             items: {
                 path: sBindRoot + "/WMENU30",
@@ -495,7 +495,7 @@
             }
         }).addStyleClass("u4aWsWindowMenu");
 
-        oMenuUI.Test10 = new sap.m.Menu({            
+        oMenuUI.Test10 = new sap.m.Menu({
             itemSelected: oAPP.events.ev_pressWmenuItemWS10,
             items: {
                 path: sBindRoot + "/Test10",
@@ -864,6 +864,13 @@
      * F4 펑션 키를 눌렀을 때 F4 Help를 띄우기 목적인 이벤트
      ************************************************************************/
     oAPP.fn.fnWs10AppInputKeyDownEvent = function (event) {
+
+        var bIsLock = sap.ui.getCore().isLocked();
+        console.log(`bIsLock: ${bIsLock}`);
+
+        if (bIsLock) {
+            return;
+        }
 
         var oAppInput = sap.ui.getCore().byId("AppNmInput");
         if (!oAppInput) {

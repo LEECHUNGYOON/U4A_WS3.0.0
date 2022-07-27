@@ -289,6 +289,8 @@
      ************************************************************************/
     oAPP.common.fnShowFloatingFooterMsg = function (TYPE, POS, MSG) {
 
+        sap.ui.getCore().unlock();
+
         oAPP.common.fnHideFloatingFooterMsg();
 
         var oMsg = {};
@@ -352,20 +354,20 @@
      * [공통] 단축키 실행 할지 말지 여부 체크
      **************************************************************************/
     oAPP.common.fnShortCutExeAvaliableCheck = () => {
-        
+
         // Busy Indicator가 실행중인지 확인
         if (parent.getBusy() == 'X') {
-            console.log("!!단축기 실행 불가!!");
+            console.log("!! Busy가 켜져 있어서 단축기 실행 불가!!");
             return "X";
         }
-       
+
         // 화면에 메뉴 팝업이 떠있을 경우 단축키 실행 불가.
         var oMenuDom = document.querySelector(".sapMMenu");
         if (oMenuDom) {
             var sId = oMenuDom.id,
                 oMenu = sap.ui.getCore().byId(sId);
             if (oMenu && oMenu.bOpen) {
-                console.log("!!단축기 실행 불가!!");
+                console.log("!! 메뉴가 떠 있어서 단축기 실행 불가!!");
                 return "X";
             }
         }
@@ -373,7 +375,7 @@
         // 현재 Dialog Popup이 실행 되어 있는지 확인.
         var bIsDialogOpen = oAPP.fn.fnCheckIsDialogOpen();
         if (bIsDialogOpen) {
-            console.log("!!단축기 실행 불가!!");
+            console.log("!! Dialog 팝업이 떠 있어서 단축기 실행 불가!!");
             return "X";
         }
 
@@ -438,16 +440,20 @@
                     KEY: "Ctrl+Shift+F1", // Application Change
                     fn: () => {
 
+                        sap.ui.getCore().lock();
+
                         // 단축키 실행 할지 말지 여부 체크
                         var result = oAPP.common.fnShortCutExeAvaliableCheck();
 
                         // X 이면 실행 불가
                         if (result == "X") {
+                            sap.ui.getCore().unlock();
                             return;
                         }
 
                         var oAppChangeBtn = sap.ui.getCore().byId("appChangeBtn");
                         if (!oAppChangeBtn || !oAppChangeBtn.getEnabled() || !oAppChangeBtn.getVisible()) {
+                            sap.ui.getCore().unlock();
                             return;
                         }
 
@@ -500,8 +506,17 @@
                 {
                     KEY: "F7", // Display Button
                     fn: () => {
-                        
-                        // sap.ui.getCore().lock();
+
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        // lock 걸기
+                        sap.ui.getCore().lock();
+
+                        // 메뉴 팝오버 닫기
+                        oAPP.common.fnCloseMenuPopover();
 
                         // 단축키 실행 할지 말지 여부 체크
                         var result = oAPP.common.fnShortCutExeAvaliableCheck();
@@ -601,6 +616,11 @@
                     KEY: "Ctrl+Shift+F", // textSearchPopup
                     fn: () => {
 
+                        if (sap.ui.getCore().isLocked()) {
+                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
                         // 단축키 실행 할지 말지 여부 체크
                         var result = oAPP.common.fnShortCutExeAvaliableCheck();
 
@@ -615,6 +635,11 @@
                 }, {
                     KEY: "Ctrl+F2", // Syntax Check Button
                     fn: () => {
+
+                        if (sap.ui.getCore().isLocked()) {
+                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
 
                         // 단축키 실행 할지 말지 여부 체크
                         var result = oAPP.common.fnShortCutExeAvaliableCheck();
@@ -638,19 +663,38 @@
                     KEY: "F3", // Back Button
                     fn: () => {
 
+                        if (sap.ui.getCore().isLocked()) {
+                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }               
+
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        // lock 걸기
+                        sap.ui.getCore().lock();
+
+                        // 메뉴 팝오버 닫기
+                        oAPP.common.fnCloseMenuPopover();
+
                         // 단축키 실행 할지 말지 여부 체크
                         var result = oAPP.common.fnShortCutExeAvaliableCheck();
 
                         // X 이면 실행 불가
                         if (result == "X") {
+                            sap.ui.getCore().unlock();
                             return;
                         }
 
                         var oBackBtn = sap.ui.getCore().byId("backBtn");
                         if (!oBackBtn || !oBackBtn.getEnabled() || !oBackBtn.getVisible()) {
+                            sap.ui.getCore().unlock();
                             return;
                         }
 
+                        oBackBtn.focus();
                         oBackBtn.firePress();
 
                     }
@@ -659,6 +703,11 @@
                 {
                     KEY: "Ctrl+F1", // Display or Change Button
                     fn: () => {
+
+                        if (sap.ui.getCore().isLocked()) {
+                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
 
                         // 단축키 실행 할지 말지 여부 체크
                         var result = oAPP.common.fnShortCutExeAvaliableCheck();
@@ -679,11 +728,13 @@
                             bIsDisVisi = oDisplayBtn.getVisible();
 
                         if (bIsChgVisi == true) {
+                            oChangeModeBtn.focus();
                             oChangeModeBtn.firePress();
                             return;
                         }
 
                         if (bIsDisVisi == true) {
+                            oDisplayBtn.focus();
                             oDisplayBtn.firePress();
                             return;
                         }
@@ -1232,6 +1283,25 @@
 
     }; // end of oAPP.common.fnSetBusyDialog
 
+    /************************************************************************
+     * 현재 떠있는 화면에서 메뉴 또는 Popover 들을 전부 숨긴다.
+     * **********************************************************************/
+    oAPP.common.fnCloseMenuPopover = () => {
+
+        var oMenu = document.querySelector(".sapMMenu");
+        if (oMenu) {
+            // console.log("메뉴 찾았다!");
+            oMenu.style.visibility = "hidden";
+        }
+
+        var oPopover = document.querySelector(".sapMPopover");
+        if (oPopover) {
+            // console.log("팝오버 찾았다!");
+            oPopover.style.visibility = "hidden";
+        }
+
+    }; // end of oAPP.common.fnCloseMenuPopover
+
 })(window, $, oAPP);
 
 // application 초기 정보
@@ -1282,7 +1352,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
                 }
 
-                var oReturn = xhr.responseText;
+                var oReturn = xhr.response;
 
                 if (oReturn == "") {
 
@@ -1297,7 +1367,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
                 } catch (e) {
 
                     if (typeof fn_success == "function") {
-                        fn_success(xhr.responseText);
+                        fn_success(xhr.response);
                     }
 
                 }
@@ -1325,16 +1395,16 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
                 // 서버 세션이 죽었다면 오류 메시지 뿌리고 10번 화면으로 이동한다.
                 parent.setBusy('');
 
-                var sCleanHtml = parent.setCleanHtml(xhr.responseText);
+                // error 콜백이 있다면 호출
+                if (typeof fn_error == "function") {
+                    fn_error();
+                }
+
+                var sCleanHtml = parent.setCleanHtml(xhr.response);
 
                 parent.showMessage(sap, 20, 'E', sCleanHtml, fn_callback);
 
                 function fn_callback() {
-
-                    // error 콜백이 있다면 호출
-                    if (typeof fn_error == "function") {
-                        fn_error();
-                    }
 
                     // 화면에 떠있는 Dialog 들이 있을 경우 모두 닫는다.
                     oAPP.fn.fnCloseAllWs20Dialogs();

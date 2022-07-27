@@ -248,7 +248,7 @@
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
             sAppID = oAppNmInput.getValue();
 
-        oAPP.fn.fnOnEnterDispChangeMode(sAppID, "");
+        oAPP.fn.fnOnEnterDispChangeMode(sAppID, "");        
 
     }; // end of oAPP.events.ev_AppDisplay
 
@@ -523,7 +523,7 @@
      * ws main 페이지로 이동
      ************************************************************************/
     oAPP.events.ev_pageBack = function (oEvent) {
-
+        
         // app 정보를 구한다.
         var oAppInfo = parent.getAppInfo(),
 
@@ -548,6 +548,8 @@
 
         // 현재 떠있는 팝업 창들을 잠시 숨긴다.
         oAPP.fn.fnChildWindowShow(false);
+        
+        sap.ui.getCore().unlock();
 
     }; // end of oAPP.events.ev_pageBack
 
@@ -558,13 +560,17 @@
 
         // 이동을 하지 않는다.
         if (ACTCD == null || ACTCD == "CANCEL") {
+
             // 현재 떠있는 팝업 창이 있었고 숨김 처리 되있었다면 다시 활성화 시킨다.
             oAPP.fn.fnChildWindowShow(true);
+
             return;
         }
 
         // 저장 후 이동한다.
         if (ACTCD == "YES") {
+
+            sap.ui.getCore().lock();
 
             var oSaveBtn = sap.ui.getCore().byId("saveBtn");
             if (!oSaveBtn) {
@@ -579,7 +585,7 @@
             return;
 
         }
-
+        
         // WS10 페이지로 이동
         oAPP.fn.fnMoveToWs10();
 
@@ -741,8 +747,6 @@
         // CTS Popup을 Open 한다.
         oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
-            debugger;
-            
             var oEvent = this,
                 IS_ACT = oEvent.getParameter("IS_ACT");
 
@@ -858,8 +862,6 @@
      ************************************************************************/
     oAPP.events.ev_pressSaveBtn = function (oEvent) {
 
-        debugger;
-
         // 푸터 메시지가 있을 경우 닫기
         oAPP.common.fnHideFloatingFooterMsg();
 
@@ -961,66 +963,6 @@
             oAPP.common.fnSetModelProperty("/WS20/APP", oAppInfo);
 
         } // end of lf_getAppInfo      
-
-
-
-        // oAPP.fn.fnSetAppSaveAndActivate(oNewEvent);
-
-        // debugger;
-
-        // var lf_checkPackageAndCts = function(oNewEvent) {
-
-        //     debugger;
-
-        //     // Package local 여부 확인 및 Cts Assign check
-        //     oAPP.fn.fnCheckAssignPackageAndCts(oNewEvent).then(function(bIsNextProc) {
-
-        //         debugger;
-
-        //         // 다음 프로세스 실행 여부
-        //         if (!bIsNextProc) {
-
-        //             // Busy 끄기
-        //             parent.setBusy('');
-        //             return;
-        //         }
-
-        //         // Application Save and Activate 실행 
-        //         oAPP.fn.fnSetAppSaveAndActivate(oNewEvent);
-
-        //     });
-
-        // };
-
-        // var oLocalEvent = new sap.ui.base.Event(),
-        //     oNewEvent = jQuery.extend(true, oLocalEvent, oEvent);
-
-        // // 푸터 메시지가 있을 경우 닫기
-        // oAPP.common.fnHideFloatingFooterMsg();
-
-        // var ISACT = oEvent.getParameter("ISACT"); // 저장 하고 activate 할 경우
-
-        // // 저장일 경우
-        // if (!ISACT) {
-
-        //     lf_checkPackageAndCts(oNewEvent);
-        //     return;
-        // }
-
-        // // Active 일 경우 Syntax 점검
-        // oAPP.fn.fnCheckAppSyntax().then(function(bIsErr) {
-
-        //     if (bIsErr) {
-
-        //         // Busy 끄기
-        //         parent.setBusy('');
-        //         return;
-
-        //     }
-
-        //     lf_checkPackageAndCts(oNewEvent);
-
-        // });
 
     }; // end of oAPP.events.ev_pressSaveBtn
 

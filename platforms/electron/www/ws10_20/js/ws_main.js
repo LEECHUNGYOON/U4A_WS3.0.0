@@ -254,6 +254,9 @@
     oAPP.main.fnWsStart = function() {
 
         sap.ui.getCore().attachInit(function() {
+            
+            // 부모에 sap 인스턴스 전달
+            parent.oWS.utill.attr.sap = sap;
 
             // Register illustration Message Pool
             oAPP.fn.fnRegisterIllustrationPool();
