@@ -357,6 +357,9 @@
         // 같은 세션의 브라우저가 나밖에 없다면
         if (aSameBrowser.length == 0) {
 
+            // 네트워크가 차단됐을 경우는 그냥 끈다.
+            if(!oAPP.attr.bIsNwActive){ oAPP.main.fnBeforeunload(""); return;}
+
             // Logout 메시지 Open 여부 Flag
             oAPP.attr.isBrowserCloseLogoutMsgOpen = 'X';
 

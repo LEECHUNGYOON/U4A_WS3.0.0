@@ -411,7 +411,7 @@
                 oRowData = oRow.getModel().getProperty(oCtx.sPath);
 
             // 저장 확인 질문 팝업
-            parent.showMessage(sap, 30, "I", "Do you want to save it?", lf_msgCallback.bind(oRowData));
+            parent.showMessage(sap, 30, "I", "Do you want to choose?", lf_msgCallback.bind(oRowData));
 
             function lf_msgCallback(sAction) {
 
