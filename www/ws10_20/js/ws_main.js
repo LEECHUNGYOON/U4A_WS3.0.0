@@ -348,6 +348,10 @@
 
         // Logout 메시지가 이미 떠 있다면 창을 못닫게 한다.
         if (oAPP.attr.isBrowserCloseLogoutMsgOpen == 'X') {
+
+            // 네트워크가 차단됐을 경우는 그냥 끈다.            
+            if(!oAPP.attr.bIsNwActive){ oAPP.main.fnBeforeunload(""); return;}
+            
             return "";
         }
 
