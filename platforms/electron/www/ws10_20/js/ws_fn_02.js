@@ -37,10 +37,16 @@
         oFormData.append("ISEDIT", ISEDIT);
         oFormData.append("SSID", SSID);
 
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
         // 서버에서 App 정보를 구한다.
         ajax_init_prc(oFormData, lf_success);
 
         function lf_success(oAppInfo) {
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
 
             var sCurrPage = parent.getCurrPage();
 
@@ -415,10 +421,16 @@
         oFormData.append("APPID", oAppInfo.APPID);
         oFormData.append("ISEDIT", 'X');
 
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
         // 서버에서 App 정보를 구한다.
         ajax_init_prc(oFormData, lf_success);
 
         function lf_success(oAppInfo) {
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
 
             parent.setBusy('');
 
@@ -474,7 +486,7 @@
                 parent.showMessage(sap, 20, RETURN.RTCOD, RETURN.RTMSG);
                 return;
             }
-            
+
             RETURN.IS_EDIT = ""; // Display Mode FLAG
             RETURN.IS_CHAG = "";
 
@@ -758,6 +770,11 @@
 
             var oWebCon = oBrows.webContents,
                 oWebPref = oWebCon.getWebPreferences();
+
+            // 팝업같은 경우는 카운트 하지 않는다.
+            if (oWebPref.OBJTY) {
+                continue;
+            };
 
             // session 정보가 없으면 skip.
             var sSessionKey = oWebPref.partition;

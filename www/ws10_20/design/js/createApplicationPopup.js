@@ -21,7 +21,10 @@
         cs_appl.PACKG_stxt = null;  //Package
         cs_appl.REQNR_stxt = null;  //Request No.
 
-      }
+      } //valueState 바인딩 필드 초기화.
+
+
+
 
       //application 생성전 입력값 점검.
       function lf_chkValue(){
@@ -66,7 +69,7 @@
           return l_err;
         }
 
-      }
+      } //application 생성전 입력값 점검.
 
       //standard package 입력 여부 점검.
       function lf_chkPackageStandard(is_appl){
@@ -87,6 +90,8 @@
       } //standard package 입력 여부 점검.
 
 
+
+
       //초기값 설정.
       function lf_setDefaultVal(){
 
@@ -95,8 +100,18 @@
         //Web Application Name
         ls_appl.APPNM = "";
 
-        //Language Key
+        //접속 유저 정보 얻기.
+        var ls_userInfo = parent.getUserInfo();
+
+        //Language Key default EN
         ls_appl.LANGU = "EN";
+
+        //접속 유저 정보, 접속 language가 존재하는경우.
+        if(ls_userInfo && ls_userInfo.LANGU){
+          //해당 language를 default language로 설정.
+          ls_appl.LANGU = ls_userInfo.LANGU;
+
+        }
 
         //Character Format
         ls_appl.CODPG = "utf-8";
@@ -161,7 +176,10 @@
 
         oModel.setData({"CREATE":ls_appl});
 
-      }
+      } //초기값 설정.
+
+
+
 
       //dialog 종료 처리.
       function lf_closeDialog(bSkipMsg){
@@ -237,6 +255,7 @@
         editable:"{/CREATE/PACKG_edit}"
       });
 
+      //package 입력값 변경 이벤트.
       oInpPack.attachChange(function(){
 
         //화면 입력정보 얻기.
@@ -273,12 +292,14 @@
           return;
         }
 
-        
 
         //로컬 PACKAGE를 입력하지 않은경우 Y,Z으로 입력한 PACKAGE의 정합성 점검.
         lf_chkPackage(l_create);
 
-      });
+
+      }); //package 입력값 변경 이벤트.
+
+
 
       //Request No. Input Field
       var oInpReqNo = new sap.m.Input({
@@ -385,6 +406,8 @@
       //application 생성처리를 위한 서버 호출.
       function lf_createAppData(){
         
+        //생성전 화면 lock 처리.
+        sap.ui.getCore().lock();
 
         var l_create = oModel.getProperty("/CREATE");
         var l_appdata = {};
@@ -403,6 +426,9 @@
 
         //application 생성을 위한 서버 호출.
         sendAjax(parent.getServerPath() + "/createAppData",oFormData, function(ret){
+
+          //서버에서 클라이언트 도착 후 화면 잠금 해제 처리.
+          sap.ui.getCore().unlock();
 
           //busy dialog close.
           oAPP.common.fnSetBusyDialog(false);
@@ -424,22 +450,34 @@
           //dialog 종료 처리.
           lf_closeDialog(true);
 
-        },"");
+        },"", true, "POST", function(e){
+          //오류 발생시 lock 해제.
+          sap.ui.getCore().unlock();
+  
+        }); //application 생성을 위한 서버 호출.
 
       } //application 생성처리를 위한 서버 호출.
 
       
 
+      //입력 package 점검 function.
       function lf_chkPackage(is_create){
         //application명 서버전송 데이터 구성.
         
+        //서버호출전 화면 잠금 처리.
+        sap.ui.getCore().lock();
+
         //busy dialog open.
         oAPP.common.fnSetBusyDialog(true);
 
         var oFormData = new FormData();
         oFormData.append("PACKG", is_create.PACKG);
 
+        //package 입력건 점검을 위한 서버 호출.
         sendAjax(parent.getServerPath() + "/chkPackage",oFormData, function(ret){
+
+          //서버에서 클라이언트 도착 후 화면 잠금 해제 처리.
+          sap.ui.getCore().unlock();
 
           //busy dialog close.
           oAPP.common.fnSetBusyDialog(false);
@@ -474,9 +512,15 @@
           oModel.setProperty("/CREATE", is_create);
 
 
-        },"");
+        },"", true, "POST", function(e){
+          //오류 발생시 lock 해제.
+          sap.ui.getCore().unlock();
+  
+        }); //package 입력건 점검을 위한 서버 호출.
 
-      }
+      } //입력 package 점검 function.
+
+
 
       // Application 생성 Dialog
       var oCreateDialog = new sap.m.Dialog({
@@ -492,11 +536,18 @@
             icon: "sap-icon://accept",
             press : function(){
 
+              //생성전 화면 lock 처리.
+              sap.ui.getCore().lock();
+
               //busy dialog true.
               oAPP.common.fnSetBusyDialog(true);
 
               //application 생성 처리전 입력값 점검.
               if( lf_chkValue() === true){
+
+                //입력값 오류 발생시 lock해제.
+                sap.ui.getCore().unlock();
+
                 //busy dialog close.
                 oAPP.common.fnSetBusyDialog(false);
                 return;

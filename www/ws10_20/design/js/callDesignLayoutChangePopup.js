@@ -140,6 +140,9 @@
 
             if(param !== "YES"){return;}
 
+            //화면 잠금 처리.
+            oAPP.fn.designAreaLockUnlock(true);
+
             //POSITION 으로 정렬처리.
             oMdl.oData.T_LAYOUT.sort(function(a,b){
                 return a.POSIT - b.POSIT;

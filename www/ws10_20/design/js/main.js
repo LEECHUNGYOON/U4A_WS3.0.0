@@ -22,6 +22,12 @@
     //UI5 Standard Predefined CSS Preview 팝업에서 css 적용건 수집 array.
     oAPP.attr.prevCSS = [];
 
+    //D&D용 랜덤키 생성.
+    oAPP.attr.DnDRandKey = "";
+
+    //sap core 정보 광역화.
+    oAPP.attr.oCore = sap.ui.getCore();
+
     //10번 정보 구조 생성.
     oAPP.fn.crtStru0010 = function(){
 
@@ -249,13 +255,16 @@
     //어플리케이션 정보 검색.
     oAPP.fn.getAppData = function(){
 
+      //application정보 구성전 화면 잠금 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+
       //application명 서버전송 데이터 구성.
       var oFormData = new FormData();
       oFormData.append("APPID", oAPP.attr.APPID);
 
       //서버 호출.
       sendAjax(oAPP.attr.servNm + "/getAppData", oFormData, function(param){
-
+        
         for(var i=param.APPDATA.T_0014.length-1; i>=0; i--){
           
           //StyleCSS, HTMLCode, ScriptCode UI가 존재하는경우.
@@ -308,15 +317,31 @@
         //(접은뒤 펼쳐야 2레벨만 펼쳐짐 5레벨까지 펼쳐진상태에서 2레벨 펼치면 그냥 그대로 있음)
         oAPP.attr.ui.oLTree1.expandToLevel(2);
 
+        
+        //design tree 선택 처리 해제
+        oAPP.attr.ui.oLTree1.clearSelection();
+
+        //attribute 선택 처리 해제.
+        oAPP.attr.ui.oRTab1.removeSelections();
+
+
         //미리보기 화면 구성.
         oAPP.fn.loadPreviewFrame();
 
         //design 영역 invalidate 처리.
         oAPP.fn.invalidateDesignArea();
 
+
+        //D&D용 랜덤 키 생성.
+        oAPP.attr.DnDRandKey = oAPP.fn.getRandomKey();
+
         //wait off 처리.
         //parent.setBusy('');
 
+      }, "", true, "POST", function(e){
+        //오류 발생시 lock 해제.
+        oAPP.fn.designAreaLockUnlock();
+      
       }); //서버 호출.
 
     };  //어플리케이션 정보 검색.
@@ -361,8 +386,6 @@
       //라이브러리가 로드되지 않은경우 라이브러리 정보 로드를 위한 서버 호출.
       sendAjax(oAPP.attr.servNm + "/getLibData", oFormData, function(param){
         
-        console.log(is_tab.alias + " : " + console.log(new Date()));
-
         //다른 db 검색 실패 여부 확인.
         var l_err = it_lib.findIndex( a => a.ERROR === "X");
 
@@ -420,6 +443,10 @@
         oAPP.fn.getLibData(it_lib, is_tab, param.dbtot, param.dbcnt, param.fkey, param.skey);
 
 
+      }, "", true, "POST", function(e){
+        //오류 발생시 lock 해제.
+        oAPP.fn.designAreaLockUnlock();
+
       }); //라이브러리가 로드되지 않은경우 라이브러리 정보 로드를 위한 서버 호출.
 
     };  //라이브러리 정보 검색.
@@ -439,24 +466,28 @@
          typeof oAPP.DATA.APPDATA !== "undefined" &&
          isRefresh !== "X" ){
 
-         oAPP.attr.oModel.oData.IS_EDIT = false;
+          //display flag 설정.
+          oAPP.attr.oModel.oData.IS_EDIT = false;
 
-         //UI design tree영역 drag & drop 처리.
-         oAPP.fn.setTreeDnDEnable(oAPP.attr.oModel.oData.zTREE[0]);
+          //UI design tree영역 drag & drop 처리.
+          oAPP.fn.setTreeDnDEnable(oAPP.attr.oModel.oData.zTREE[0]);
 
-         //UI design tree영역 체크박스 활성여부 처리.
-         oAPP.fn.setTreeChkBoxEnable(oAPP.attr.oModel.oData.zTREE[0]);
+          //UI design tree영역 체크박스 활성여부 처리.
+          oAPP.fn.setTreeChkBoxEnable(oAPP.attr.oModel.oData.zTREE[0]);
 
-         //미리보기 UI의 drop 제거 처리.
-         oAPP.attr.ui.frame.contentWindow.removeDropConfig();
+          //미리보기 UI의 drop 제거 처리.
+          oAPP.attr.ui.frame.contentWindow.removeDropConfig();
 
-         //모델 갱신 처리.
-         oAPP.attr.oModel.refresh();
+          //css 미리보기 적용건 해제 처리.
+          oAPP.fn.prevStyleClassApply([]);
 
-         //wait off 처리.
-         parent.setBusy("");
+          //모델 갱신 처리.
+          oAPP.attr.oModel.refresh();
 
-         return;
+          //wait off 처리.
+          parent.setBusy("");
+
+          return;
 
       } //어플리케이션 정보가 출력된 상태에서 변경된 내용 없이 display로 전환된경우
 
@@ -469,10 +500,15 @@
         //어플리케이션 정보 구성을 위한 서버 호출.
         oAPP.fn.getAppData();
 
-
         return;
+
       }
 
+      
+      //라이브러리 구성전 화면 잠금 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+
+      //라이브러리 수집 object 초기화.
       oAPP.DATA.LIB = {};
 
       //검색 대상 라이브러리 정보 구성.
@@ -530,6 +566,9 @@
       oAPP.attr.bfselUI = undefined; //이전 선택 UI 정보
       oAPP.attr.UA015UI = undefined; //이전 미리보기 예외 UI정보
 
+      //D&D용 랜덤키 초기화.
+      oAPP.attr.DnDRandKey = "";
+
       //UI5 Standard Predefined CSS Preview 팝업에서 css 적용건 수집 array 초기화.
       oAPP.attr.prevCSS = [];
 
@@ -549,7 +588,6 @@
 
 
     };  //model, 미리보기 정보 제거.
-
 
 
 
@@ -970,6 +1008,51 @@
 
 
     };  //design 영역 invalidate 처리.
+
+
+
+
+    // random key 생성.
+    oAPP.fn.getRandomKey = function(){
+
+      return new Date().getTime() + window.crypto.getRandomValues(new Uint32Array(1)).toString();
+
+    };  // random key 생성.
+
+
+
+
+    //drop 가능 css 제거 처리.
+    oAPP.fn.ClearDropEffect = function(){
+
+      //focus된 dom focus 해제 처리.
+      document.activeElement.blur();
+
+      var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
+      if(l_dom === null || l_dom.length === 0){return;}
+
+      l_dom[0].setAttribute("style", "");
+      l_dom[0].style.display = "none";
+
+    };  //drop 가능 css 제거 처리.
+
+
+
+
+    //디자인 area의 잠금/잠금해제 처리.
+    oAPP.fn.designAreaLockUnlock = function(bLock){
+
+      //잠금 flag 처리된경우.
+      if(bLock){
+        //화면 잠금 처리.
+        oAPP.attr.oCore.lock();
+        return;
+      }
+
+      //잠금 flag가 없는경우 잠금 해제 처리.      
+      oAPP.attr.oCore.unlock();
+
+    };  //디자인 area의 잠금/잠금해제 처리.
 
 
 

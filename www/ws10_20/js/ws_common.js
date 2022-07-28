@@ -208,44 +208,6 @@
         // Footer 메시지 모델 초기화
         oAPP.common.fnSetModelProperty("/FMSG", {});
 
-
-        // var oApp = sap.ui.getCore().byId("WSAPP");
-
-        // if (!oApp) {
-        //     return;
-        // }
-
-        // var aPages = oApp.getPages(),
-        //     iPgCnt = aPages.length;
-
-        // if (iPgCnt == 0) {
-        //     return;
-        // }
-
-        // // 전체 페이지(10번, 20번)에 Footer를 숨긴다.
-        // for (var i = 0; i < iPgCnt; i++) {
-
-        //     var oPage = aPages[i],
-        //         bIsShow = oPage.getShowFooter();
-
-        //     if (!bIsShow) {
-        //         continue;
-        //     }
-
-        //     oPage.setProperty("showFooter", false, true);
-
-        //     // Footer 메시지 모델 초기화
-        //     oAPP.common.fnSetModelProperty("/FMSG", {});
-
-        //     var oPageDom = oPage.getDomRef(),
-
-        //         $footer = jQuery(oPageDom).find(".sapMPageFooter").last();
-
-        //     $footer.removeClass("sapMPageFooterControlShow");
-        //     $footer.addClass("sapMPageFooterControlHide");
-
-        // }
-
     }; // end of oAPP.common.fnHideFloatingFooterMsg
 
     /************************************************************************
@@ -260,17 +222,6 @@
         if (oResult.ISOPEN) {
             oResult.WINDOW.close();
         }
-
-        // let oMultiFooterMsgSplit = sap.ui.getCore().byId("u4aWs20MultiFootSplitLayoutData");
-        // if (oMultiFooterMsgSplit == null) {
-        //     return;
-        // }
-
-        // oMultiFooterMsgSplit.setSize("0px");
-        // oMultiFooterMsgSplit.setMinSize(0);
-        // oMultiFooterMsgSplit.setResizable(false);
-
-        // oAPP.common.fnSetModelProperty("/FMTMSG", []);
 
     }; // end of oAPP.common.fnMultiFooterMsgClose
 
@@ -1437,7 +1388,9 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
     xhr.onreadystatechange = function() { // 요청에 대한 콜백
         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
             if (xhr.status === 200 || xhr.status === 201) {
-
+                
+                // 화면 Lock 해제                
+                sap.ui.getCore().unlock();
 
                 if (xhr.responseType == 'blob') {
                     if (typeof fn_success == "function") {
@@ -1466,6 +1419,8 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
                         fn_success(xhr.response);
                     }
 
+                    return;
+
                 }
 
                 // 로그인 티켓 만료되면 로그인 페이지로 이동한다.
@@ -1478,6 +1433,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
                     // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Login 페이지로 이동.
                     fn_logoff_success('X');
+                    
                     return;
 
                 }
@@ -1487,6 +1443,9 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
                 }
 
             } else {
+
+                // 화면 Lock 해제
+                sap.ui.getCore().unlock();
 
                 // 서버 세션이 죽었다면 오류 메시지 뿌리고 10번 화면으로 이동한다.
                 parent.setBusy('');
@@ -1718,9 +1677,6 @@ function fn_PropHelpPopup(sUrl) {
     oAPP.fn.fnPropertyHelpPopup(sUrl);
 
 }
-
-
-
 
 function sendServerExit(oOptions, fnCallback) {
 

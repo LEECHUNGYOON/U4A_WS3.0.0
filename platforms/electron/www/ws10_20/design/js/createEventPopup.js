@@ -13,7 +13,8 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
 
     //001	Cancel operation
     parent.showMessage(sap,10, "I", "Cancel operation");
-  }
+
+  } //팝업 종료.
 
 
 
@@ -54,17 +55,24 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
       l_event = "EV_" + l_event;
     }
     
-    //서버 이벤트 항목 검색.
-    var lt_ddlb = oAPP.fn.getServerEventList();
+    // //서버 이벤트 항목 검색.
+    // oAPP.fn.getServerEventList(lf_chkDupl);
 
-    //이벤트 중복건 존재 여부 확인.
-    if(lt_ddlb.findIndex( a => a.KEY === l_event) !== -1){
+    // //이벤트 중복입력 여부 확인.
+    // function lf_chkDupl(lt_ddlb){
 
-      ls_event.meth_stat = "Error";
-      ls_event.meth_text = "Method name is duplicated.";
-      l_erflag = true;  //오류 flag 매핑.
+    //   //이벤트 중복건 존재 여부 확인.
+    //   if(lt_ddlb.findIndex( a => a.KEY === l_event) !== -1){
 
-    }
+    //     ls_event.meth_stat = "Error";
+    //     ls_event.meth_text = "Method name is duplicated.";
+    //     l_erflag = true;  //오류 flag 매핑.
+
+    //   }
+
+    // } //이벤트 중복입력 여부 확인.
+
+    
 
     //메소드명에 특수문자가 입력된 경우.
     var reg = /[^\w]/;
@@ -97,11 +105,14 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
     });
 
 
-  }
+  } //cts 선택 팝업 호출.
 
 
   //서버이벤트 생성 처리.
   function lf_createEventMethod(REQNO){
+
+    //서버이벤트 생성전 lock 설정.
+    oAPP.fn.designAreaLockUnlock(true);
 
     // //wait on 처리.
     // parent.setBusy("X");
@@ -145,6 +156,9 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
 
     //서버 생성 처리.
     sendAjax(oAPP.attr.servNm + "/createEventMethod", oFormData, function(param){
+
+      //클라이언트 도착 후 lock 해제.
+      oAPP.fn.designAreaLockUnlock();
 
       // //wait off 처리.
       // parent.setBusy("");
@@ -246,7 +260,11 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
       }
 
 
-    },"");
+    },"", true, "POST", function(e){
+      //오류 발생시 lock 해제.
+      oAPP.fn.designAreaLockUnlock();
+
+    });
 
   } //서버이벤트 생성 처리.
 
@@ -266,11 +284,11 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
   } //팝업 title 설정.
 
 
-  //서버 이벤트 ddlb 항목을 구성하지 않은경우.
-  if(!oAPP.attr.T_EVT){
-    //서버 이벤트 ddlb 구성.
-    oAPP.fn.getServerEventList();
-  }
+  // //서버 이벤트 ddlb 항목을 구성하지 않은경우.
+  // if(!oAPP.attr.T_EVT){
+  //   //서버 이벤트 ddlb 구성.
+  //   oAPP.fn.getServerEventList();
+  // }
 
   //이벤트 메소드 생성 dialog UI.
   var oDlg = new sap.m.Dialog({

@@ -95,5 +95,7 @@
 
     // 화면 보호기 감지 이벤트
     oAPP.fn.fnAttachPowerMonitorEvent();
-  
+    
+    
+
 })(oAPP);

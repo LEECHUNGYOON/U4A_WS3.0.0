@@ -5,7 +5,7 @@
  * - file Desc : ws 메인 
  ************************************************************************/
 
-(function(window, oAPP) {
+(function (window, oAPP) {
     "use strict";
 
     var APPCOMMON = oAPP.common;
@@ -13,7 +13,7 @@
     /**************************************************************************
      * 공통 인스턴스 정의
      **************************************************************************/
-    oAPP.main.fnPredefineGlobalObject = function() {
+    oAPP.main.fnPredefineGlobalObject = function () {
 
         var oMetaData = parent.getMetadata();
 
@@ -31,7 +31,7 @@
     /************************************************************************
      * 접속 Language 에 맞는 메시지 텍스트 읽어오기
      ************************************************************************/
-    oAPP.main.fnOnLoadMessageClass = function() {
+    oAPP.main.fnOnLoadMessageClass = function () {
 
         var FS = parent.FS,
             oUserInfo = parent.getUserInfo();
@@ -89,7 +89,7 @@
     /**************************************************************************
      * U4A WS 메타 정보 구하기
      **************************************************************************/
-    oAPP.main.fnOnInitModelBinding = function() {
+    oAPP.main.fnOnInitModelBinding = function () {
 
         // ModelData
         var oMetaData = {
@@ -120,7 +120,7 @@
                 }
             }
 
-        };        
+        };
 
         oAPP.attr.metadata = oMetaData;
 
@@ -170,16 +170,10 @@
     /************************************************************************
      * window Event Handle ..
      ************************************************************************/
-    oAPP.main.fnBeforeunload = function(isClearStorage) {
+    oAPP.main.fnBeforeunload = function (isClearStorage) {
 
         // 설정된 Global Shortcut 단축키 삭제
         oAPP.common.fnRemoveGlobalShortcut();
-
-        // IPCMAIN 이벤트 해제
-        parent.IPCMAIN.off('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
-
-        // EXAM MOVE 이벤트 해제
-        parent.IPCMAIN.off('if-exam-move', oAPP.fn.fnIpcMain_if_exam_move);
 
         var oPowerMonitor = parent.POWERMONITOR;
 
@@ -188,8 +182,8 @@
 
         oPowerMonitor.removeListener('unlock-screen', oAPP.fn.fnAttachPowerMonitorUnLockScreen);
 
-        // 여러창일때 나를 제외한 윈도우를 닫고 싶을때 
-        parent.IPCMAIN.off('if-browser-close', oAPP.fn.fnIpcMain_if_browser_close);
+        // IPCMAIN 이벤트 해제
+        oAPP.fn.fnIpcMain_Detach_Event_Handler();
 
         // Application 정보를 구한다.
         var oAppInfo = parent.getAppInfo(),
@@ -246,15 +240,60 @@
 
         });
 
-    } // end of oAPP.main.fnBeforeunload
+    }; // end of oAPP.main.fnBeforeunload
+
+    oAPP.main.fnDetachBeforeunloadEvent = () => {
+
+        window.onbeforeunload = () => {};
+
+    };
+
+    // Test..
+    oAPP.main.fnSetLanguage = function () {
+
+        var oUserInfo = parent.getUserInfo(),
+            oMetaScript = document.getElementById("sap-ui-bootstrap");
+
+        if (!oMetaScript) {
+            return;
+        }
+
+        var sMetaLangu = oMetaScript.getAttribute("data-sap-ui-language");
+        if (oUserInfo.LANGU == sMetaLangu) {
+            return;
+        }
+
+        oMetaScript.setAttribute("data-sap-ui-language", oUserInfo.LANGU);
+
+    };
+
+    // Drag End Event
+    oAPP.main.onDragend = () => {        
+
+        // 20번 페이지 Design영역, Attribute 영역 잔상 제거
+        oAPP.fn.ClearDropEffect();
+
+        // 미리보기쪽 잔상 제거
+        if (oAPP.attr.ui &&
+            oAPP.attr.ui.frame &&
+            oAPP.attr.ui.frame.contentWindow &&
+            oAPP.attr.ui.frame.contentWindow.prevClearDropEffect) {
+
+            oAPP.attr.ui.frame.contentWindow.prevClearDropEffect();
+
+        }
+        
+        parent.IPCRENDERER.send("if-Dialog-dragEnd");
+
+    }; // end of oAPP.main.onDragend
 
     /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------
      ************************************************************************/
-    oAPP.main.fnWsStart = function() {
+    oAPP.main.fnWsStart = function () {
 
-        sap.ui.getCore().attachInit(function() {
-            
+        sap.ui.getCore().attachInit(function () {
+
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
 
@@ -276,9 +315,6 @@
             // 브라우저 상단 메뉴를 없앤다.
             parent.setBrowserMenu(null);
 
-            // 브라우저 상단 메뉴 설정
-            // oAPP.common.fnOnLoadBrowserMenu("WS10");
-
             // APP 전체 대상 글로벌 Shortcut 지정하기
             oAPP.common.fnSetGlobalShortcut();
 
@@ -290,9 +326,6 @@
 
             // 개인화 정보 설정
             oAPP.fn.fnOnInitP13nSettings(); // #[ws_fn_01.js]
-
-            // // 클라이언트 세션 타임아웃 체크
-            // oAPP.fn.fnSessionTimeoutCheck();
 
             // 서버 세션 타임아웃 체크            
             oAPP.fn.fnServerSession();
@@ -312,7 +345,9 @@
             // 서버 호스트 등록 여부 체크
             oAPP.fn.fnCheckServerHost(); // #[ws_fn_03.js]
 
-            oAPP.fn.fnIpcMain_Attach_if_browser_close(); // #[ws_fn_ipc.js]
+            // 공통 IPCMAIN 이벤트 걸기
+            oAPP.fn.fnIpcMain_Attach_Event_Handler();
+
 
         }); // end of attachInit
 
@@ -322,24 +357,13 @@
         window.addEventListener("online", oAPP.fn.fnNetworkCheckerOnline, false);
         window.addEventListener("offline", oAPP.fn.fnNetworkCheckerOffline, false);
 
-    }; // end of oAPP.main.fnWsStart
+    }; // end of oAPP.main.fnWsStart    
 
-    // Test..
-    oAPP.main.fnSetLanguage = function() {
+    window.ondragend = (e) => {
 
-        var oUserInfo = parent.getUserInfo(),
-            oMetaScript = document.getElementById("sap-ui-bootstrap");
+        console.log('ondragend');
 
-        if (!oMetaScript) {
-            return;
-        }
-
-        var sMetaLangu = oMetaScript.getAttribute("data-sap-ui-language");
-        if (oUserInfo.LANGU == sMetaLangu) {
-            return;
-        }
-
-        oMetaScript.setAttribute("data-sap-ui-language", oUserInfo.LANGU);
+        oAPP.main.onDragend();
 
     };
 
@@ -350,8 +374,11 @@
         if (oAPP.attr.isBrowserCloseLogoutMsgOpen == 'X') {
 
             // 네트워크가 차단됐을 경우는 그냥 끈다.            
-            if(!oAPP.attr.bIsNwActive){ oAPP.main.fnBeforeunload(""); return;}
-            
+            if (!oAPP.attr.bIsNwActive) {
+                oAPP.main.fnBeforeunload("");
+                return;
+            }
+
             return "";
         }
 
@@ -362,7 +389,10 @@
         if (aSameBrowser.length == 0) {
 
             // 네트워크가 차단됐을 경우는 그냥 끈다.
-            if(!oAPP.attr.bIsNwActive){ oAPP.main.fnBeforeunload(""); return;}
+            if (!oAPP.attr.bIsNwActive) {
+                oAPP.main.fnBeforeunload("");
+                return;
+            }
 
             // Logout 메시지 Open 여부 Flag
             oAPP.attr.isBrowserCloseLogoutMsgOpen = 'X';
@@ -395,13 +425,14 @@
         // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
         // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
         oAPP.main.fnBeforeunload('X');
-        
+
     }
 
-    oAPP.main.fnDetachBeforeunloadEvent = () => {
 
-        window.onbeforeunload = () => {};
 
-    };
+
+
+
+
 
 })(window, oAPP);

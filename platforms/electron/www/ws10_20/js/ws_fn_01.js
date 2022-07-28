@@ -827,6 +827,12 @@
                     new sap.m.Text({
                         text: "{" + sFmsgBindRootPath + "/TXT}"
                     }),
+                    new sap.m.ToolbarSpacer(),
+                    new sap.m.Button({
+                        icon: "sap-icon://decline",
+                        type: "Reject",
+                        press: oAPP.common.fnHideFloatingFooterMsg
+                    }),
                 ]
             });
 
@@ -1186,12 +1192,12 @@
                     new sap.m.Text({
                         text: "{" + sFmsgBindRootPath + "/TXT}"
                     }),
-                    // new sap.m.ToolbarSpacer(),
-                    // new sap.m.Button({
-                    //     icon: "sap-icon://decline",
-                    //     // type : "Critical", 
-                    //     press: oAPP.common.fnHideFloatingFooterMsg
-                    // }),
+                    new sap.m.ToolbarSpacer(),
+                    new sap.m.Button({
+                        icon: "sap-icon://decline",
+                        type: "Reject",
+                        press: oAPP.common.fnHideFloatingFooterMsg
+                    }),
                 ]
             });
 

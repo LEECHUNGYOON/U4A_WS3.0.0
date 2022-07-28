@@ -15,9 +15,15 @@
 
     //tree item 선택 이벤트.
     oLTree1.attachCellClick(function(oEvent){
-
+      //attr 및 미리보기 갱신 전 화면 잠금 처리.
+      oAPP.fn.designAreaLockUnlock(true);   
+    
       //데이터 출력 라인을 선택하지 않은경우 exit.
-      if(!oEvent.mParameters.rowBindingContext){return;}
+      if(!oEvent.mParameters.rowBindingContext){
+        //화면 잠금 해제 처리.
+        oAPP.fn.designAreaLockUnlock();
+        return;
+      }
       
       //선택 라인 정보 얻기.
       var ls_tree = oEvent.mParameters.rowBindingContext.getProperty();
@@ -107,7 +113,7 @@
     var oLTDrop1 = new sap.ui.core.dnd.DropInfo({targetAggregation:"rows"});
     oAPP.attr.ui.oLTree1.addDragDropConfig(oLTDrop1);
 
-
+    
     //drag start 이벤트
     oLTDrag1.attachDragStart(function(oEvent){
 
@@ -123,7 +129,7 @@
       event.dataTransfer.setData("rtmcls", ls_drag.UILIB);
 
       //DRAG한 UI ID 정보 세팅.
-      event.dataTransfer.setData("text/plain", ls_drag.OBJID);
+      event.dataTransfer.setData("text/plain", ls_drag.OBJID + "|" + oAPP.attr.DnDRandKey);
 
       //drag 시작시 drop 가능건에 대한 제어 처리.
       oAPP.fn.designTreeDragStart(ls_drag);
@@ -145,7 +151,7 @@
     
     //drag UI가 다른라인에 올라갔을때 이벤트.
     oLTDrop1.attachDragEnter(function(oEvent){
-
+      
       //drag UI가 다른라인에 올라갔을때 이벤트.
       oAPP.fn.designDragEnter(oEvent);
 
@@ -1057,10 +1063,7 @@
         if(OBJID === lt_path[0]){
           
           oAPP.attr.ui.oLTree1.setSelectedIndex(l_cnt);
-          oAPP.fn.designTreeItemPress(is_child.context.getProperty(),l_cnt);
-
-          //attribute 영역 선택처리(UIATK가 입력된경우 선택처리)
-          oAPP.fn.setAttrFocus(UIATK, TYPE, f_cb);
+          oAPP.fn.designTreeItemPress(is_child.context.getProperty(), l_cnt, UIATK, TYPE, f_cb);
           
         }
         
@@ -1397,14 +1400,14 @@
 
 
   //UI design tree 라인 선택 이벤트.
-  oAPP.fn.designTreeItemPress = function(is_tree, iIndex){
+  oAPP.fn.designTreeItemPress = function(is_tree, iIndex, UIATK, TYPE, f_cb){
 
     //UI Info 영역 갱신 처리.
     oAPP.fn.setUIInfo(is_tree);
 
 
     //선택한 ui에 해당하는 attr로 갱신 처리.
-    oAPP.fn.updateAttrList(is_tree.UIOBK, is_tree.OBJID);
+    oAPP.fn.updateAttrList(is_tree.UIOBK, is_tree.OBJID, UIATK, TYPE, f_cb);
 
 
     //미리보기 화면 갱신 처리.
@@ -1730,9 +1733,24 @@
     if(!i_OBJID){return;}
 
 
-    //미리보기 영역에서 drag처리한 UI명 얻기.
-    var l_objid = oEvent.mParameters.browserEvent.dataTransfer.getData("text/plain");
+    //미리보기 영역에서 drag처리한 UI명 + D&D random key 얻기.
+    var l_dnd = oEvent.mParameters.browserEvent.dataTransfer.getData("text/plain");
 
+    //입력받은 정보가 존재하지 않는경우 exit.
+    if(!l_dnd){return;}
+
+    //OBJID|D&D random key 로 조합된 형식 분리.
+    var lt_split = l_dnd.split("|");
+
+    //조합된 형식이 아닌경우 exit.
+    if(lt_split.length < 2){return;}
+
+    //D&D random key가 현재 D&D random key와 다른경우 exit.
+    //(다른 창에서 Drag하여 현재 창에 Drop한 경우 drop 불가처리를 위함)
+    if(lt_split[1] !== oAPP.attr.DnDRandKey){return;}
+
+    //OBJID 부분 발췌.
+    var l_objid = lt_split[0];
 
     //ui 구성정보에서 직접 검색.
     l_drag = oAPP.fn.getTreeData(l_objid);

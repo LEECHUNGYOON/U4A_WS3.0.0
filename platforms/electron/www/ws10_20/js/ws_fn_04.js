@@ -194,5 +194,4 @@
 
     }; // end of oAPP.fn.fnOnInitTCodeSuggestion
 
-
 })(window, $, oAPP);

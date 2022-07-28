@@ -14,6 +14,7 @@ let oAPP = (function (window) {
     oAPP.attr.aRuntime = [];
 
     oAPP.REMOTE = require('@electron/remote');
+    oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain;
     oAPP.IPCRENDERER = require('electron').ipcRenderer;
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;

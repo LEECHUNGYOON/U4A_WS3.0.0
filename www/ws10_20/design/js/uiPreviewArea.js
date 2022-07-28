@@ -44,8 +44,8 @@
   //미리보기 iframe 영역 구성.
   oAPP.fn.loadPreviewFrame = function(){
 
-     //미리보기 html 정보가 로드되지 않은경우.
-     if(!oAPP.attr.ui.frame || !oAPP.attr.ui.frame.contentWindow){
+    //미리보기 html 정보가 로드되지 않은경우.
+    if(!oAPP.attr.ui.frame || !oAPP.attr.ui.frame.contentWindow){
       oAPP.attr.ui.frame = document.getElementById("prevHTML");
 
       var l_info = parent.getUserInfo();
@@ -61,10 +61,14 @@
         "&THEME=" + encodeURIComponent(oAPP.DATA.APPDATA.S_0010.UITHM);
 
       return;
+
     }
 
     //미리보기 화면 구성.
     if(oAPP.attr.ui.frame.contentWindow && oAPP.attr.ui.frame.contentWindow._loaded === true){
+      
+      //미리보기 화면 제거.
+      oAPP.attr.ui.frame.contentWindow.removePreviewPage();
 
       //테마 구성.
       oAPP.attr.ui.frame.contentWindow.setPreviewUiTheme(oAPP.DATA.APPDATA.S_0010.UITHM);

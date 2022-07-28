@@ -375,21 +375,20 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
-            return;
-            oResult.WINDOW.close();
+            return;            
         }
 
         var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.titleBarStyle = "hidden";
+        // oBrowserOptions.titleBarStyle = "hidden";
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.width = 380;
         oBrowserOptions.height = 60;
         oBrowserOptions.frame = false;
-        oBrowserOptions.transparent = true;
-        oBrowserOptions.center = false;
+        // oBrowserOptions.transparent = true;
+        oBrowserOptions.center = true;
         oBrowserOptions.resizable = false;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -435,32 +434,34 @@
             var oNewBounds = {};
             var oCurrWinBounds = CURRWIN.getBounds();
 
-            oNewBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - 390;
-            oNewBounds.y = oCurrWinBounds.y + 30;
+            // oNewBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - 390;
+            // oNewBounds.y = oCurrWinBounds.y + 30;
 
-            oBrowserWindow.setBounds(oNewBounds);
+            // oBrowserWindow.setBounds(oNewBounds);
+
+            oBrowserWindow.setBounds({x : oCurrWinBounds.x, y: oCurrWinBounds.y});
 
         }
 
-        CURRWIN.off("will-move", lf_move);
-        CURRWIN.off("resized", lf_move);
-        CURRWIN.off("maximize", lf_move);
-        CURRWIN.off("unmaximize", lf_move);
+        // CURRWIN.off("will-move", lf_move);
+        // CURRWIN.off("resized", lf_move);
+        // CURRWIN.off("maximize", lf_move);
+        // CURRWIN.off("unmaximize", lf_move);
 
 
-        CURRWIN.on('will-move', lf_move);
-        CURRWIN.on('resized', lf_move);
-        CURRWIN.on('maximize', lf_move);
-        CURRWIN.on('unmaximize', lf_move);
+        // CURRWIN.on('will-move', lf_move);
+        // CURRWIN.on('resized', lf_move);
+        // CURRWIN.on('maximize', lf_move);
+        // CURRWIN.on('unmaximize', lf_move);
 
 
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
 
-            CURRWIN.off("will-move", lf_move);
-            CURRWIN.off("resized", lf_move);
-            CURRWIN.off("maximize", lf_move);
-            CURRWIN.off("unmaximize", lf_move);
+            // CURRWIN.off("will-move", lf_move);
+            // CURRWIN.off("resized", lf_move);
+            // CURRWIN.off("maximize", lf_move);
+            // CURRWIN.off("unmaximize", lf_move);
 
 
             oBrowserWindow = null;

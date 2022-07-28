@@ -248,7 +248,7 @@
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
             sAppID = oAppNmInput.getValue();
 
-        oAPP.fn.fnOnEnterDispChangeMode(sAppID, "");        
+        oAPP.fn.fnOnEnterDispChangeMode(sAppID, "");
 
     }; // end of oAPP.events.ev_AppDisplay
 
@@ -523,7 +523,7 @@
      * ws main 페이지로 이동
      ************************************************************************/
     oAPP.events.ev_pageBack = function (oEvent) {
-        
+
         // app 정보를 구한다.
         var oAppInfo = parent.getAppInfo(),
 
@@ -548,7 +548,7 @@
 
         // 현재 떠있는 팝업 창들을 잠시 숨긴다.
         oAPP.fn.fnChildWindowShow(false);
-        
+
         sap.ui.getCore().unlock();
 
     }; // end of oAPP.events.ev_pageBack
@@ -585,7 +585,7 @@
             return;
 
         }
-        
+
         // WS10 페이지로 이동
         oAPP.fn.fnMoveToWs10();
 
@@ -811,6 +811,9 @@
         oFormData.append("IS_ACT", 'X');
         oFormData.append("APPDATA", JSON.stringify(oAPP.fn.getSaveData()));
 
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
         // Ajax 서버 호출
         sendAjax(sPath, oFormData, function (oResult) {
 
@@ -893,6 +896,9 @@
         }
 
         oFormData.append("APPDATA", JSON.stringify(oAPP.fn.getSaveData()));
+
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
 
         // Ajax 서버 호출
         sendAjax(sPath, oFormData, lf_getAppInfo);

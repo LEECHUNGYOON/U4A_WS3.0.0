@@ -267,15 +267,21 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
         if(oAPP.attr.oBindDialog._is_attr.UIATK === "EXT00001190" ||  //parent
            oAPP.attr.oBindDialog._is_attr.UIATK === "EXT00001191"){   //child
 
-           //items aggregation에 바인딩된 정보 매핑.
-           l_path = oAPP.attr.prev[oAPP.attr.oBindDialog._is_attr.OBJID]._MODEL["items"];
+          //items aggregation에 바인딩된 정보 매핑.
+          l_path = oAPP.attr.prev[oAPP.attr.oBindDialog._is_attr.OBJID]._MODEL["items"];
 
         //바인딩 팝업을 호출한 attribute정보가 sap.ui.table.TreeTable의 parent, child인경우.
         }else if(oAPP.attr.oBindDialog._is_attr.UIATK === "EXT00001192" || //parent
                  oAPP.attr.oBindDialog._is_attr.UIATK === "EXT00001193"){  //child
-
-           //rows aggregation에 바인딩된 정보 매핑.
-           l_path = oAPP.attr.prev[oAPP.attr.oBindDialog._is_attr.OBJID]._MODEL["rows"];
+                    
+          //rows aggregation에 바인딩된 정보 매핑.
+          l_path = oAPP.attr.prev[oAPP.attr.oBindDialog._is_attr.OBJID]._MODEL["rows"];
+        
+        }else if(oAPP.attr.oBindDialog._is_attr.UIATK === "EXT00002382" &&        //sap.ui.table.Column의 markCellColor 프로퍼티
+                 oAPP.attr.prev[oAPP.attr.oBindDialog._is_attr.OBJID].__PARENT){ //sap.ui.table.Column의 parent가 존재하는경우
+          
+          //rows aggregation에 바인딩된 정보 매핑.
+          l_path = oAPP.attr.prev[oAPP.attr.oBindDialog._is_attr.OBJID].__PARENT._MODEL["rows"];
 
         }
 

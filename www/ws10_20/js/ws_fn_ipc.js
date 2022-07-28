@@ -2,13 +2,13 @@
  * ws_fn_ipc.js
  **************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     /************************************************************************
      * Electron IPCMAIN의 세션 타임 체크 관련 이벤트
      ************************************************************************/
-    oAPP.fn.fnIpcMain_if_session_time = function(event, res) {
+    oAPP.fn.fnIpcMain_if_session_time = function (event, res) {
 
         var iSessionTime = oAPP.attr.iSessionTimeout; // 세션 타임아웃 시간
         // var iSessionTime = 0.1;
@@ -31,7 +31,7 @@
     /************************************************************************
      *  Electron IPCMAIN의 Exam 팝업에서 샘플 리스트의 WorkBench Move 버튼 실행 시 수행 되는 이벤트
      ************************************************************************/
-    oAPP.fn.fnIpcMain_if_exam_move = function(event, res) {
+    oAPP.fn.fnIpcMain_if_exam_move = function (event, res) {
 
         console.log("fnIpcMain_if_exam_move");
 
@@ -118,14 +118,53 @@
 
     }; // end of oAPP.fn.fnIpcMain_export_import_EXPORT
 
-    oAPP.fn.fnIpcMain_Attach_if_browser_close = () => {
+    /************************************************************************
+     * IPC MAIN Attach Event
+     ************************************************************************/
+    oAPP.fn.fnIpcMain_Attach_Event_Handler = () => {
 
         oAPP.attr.aSessionKeys = [];
+
+        // EXAM MOVE 이벤트
+        parent.IPCMAIN.on("if-exam-move", oAPP.fn.fnIpcMain_if_exam_move);
 
         // 여러창일때 나를 제외한 윈도우를 닫고 싶을때 
         parent.IPCMAIN.on('if-browser-close', oAPP.fn.fnIpcMain_if_browser_close);
 
+        // 전체 브라우저에 공통으로 타는 DragEnd 이벤트
+        parent.IPCMAIN.on('if-dragEnd', oAPP.fn.fnIpcMain_if_DragEnd);
+
+    }; // end of oAPP.fn.fnIpcMain_Attach_Event_Handler
+
+    /************************************************************************
+     * IPC MAIN Detach Event
+     ************************************************************************/
+    oAPP.fn.fnIpcMain_Detach_Event_Handler = () => {
+
+        // 화면 잠겼을때 세션타임 아웃 이벤트 해제
+        parent.IPCMAIN.off('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
+
+        // EXAM MOVE 이벤트 해제
+        parent.IPCMAIN.off('if-exam-move', oAPP.fn.fnIpcMain_if_exam_move);
+
+        // DragEnd 이벤트 해제
+        parent.IPCMAIN.off('if-dragEnd', oAPP.fn.fnIpcMain_if_DragEnd);
+
+        // 여러창일때 나를 제외한 윈도우를 닫고 싶을때 이벤트 해제 
+        parent.IPCMAIN.off('if-browser-close', oAPP.fn.fnIpcMain_if_browser_close);
+        
     };
+
+    /************************************************************************
+     * 전체 브라우저에 공통으로 타는 DragEnd 이벤트
+     ************************************************************************/
+    oAPP.fn.fnIpcMain_if_DragEnd = (event, res) => {
+
+        console.log("Fire!! oAPP.fn.fnIpcMain_if_DragEnd");
+
+        oAPP.main.onDragend();
+
+    }; // end of oAPP.fn.fnIpcMain_if_DragEnd
 
     oAPP.fn.fnIpcMain_if_browser_close = (event, res) => {
 
@@ -150,7 +189,7 @@
                 oAPP.main.fnDetachBeforeunloadEvent();
 
                 oCurrWin.close();
-          
+
                 break;
 
 
@@ -236,27 +275,15 @@
                     sIllustSize = sap.m.IllustratedMessageSize.Dialog;
 
                 oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, fnSessionTimeOutDialogOk);
-                
+
                 break;
 
             default:
                 break;
-                
+
         }
 
 
     };
 
 })(window, $, oAPP);
-
-
-/*************************************************************************
- * Electron IPC events..
- **************************************************************************/
-
-/*************************************************************************
- * Example 팝업
- * - 브라우저 실행
- * - WS 디자인 영역으로 이동
- **************************************************************************/
-parent.IPCMAIN.on("if-exam-move", oAPP.fn.fnIpcMain_if_exam_move);
