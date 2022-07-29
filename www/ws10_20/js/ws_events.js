@@ -15,6 +15,9 @@
      ************************************************************************/
     oAPP.events.ev_AppCreate = function () {
 
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
         var bCheckAppNm = oAPP.fn.fnCheckAppName();
         if (!bCheckAppNm) {
             return;
@@ -31,6 +34,9 @@
         ajax_init_prc(oFormData, lf_success);
 
         function lf_success(oAppInfo) {
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
 
             parent.setBusy('');
 
@@ -66,6 +72,9 @@
      ************************************************************************/
     oAPP.events.ev_AppChange = function () {
 
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
             sAppID = oAppNmInput.getValue();
 
@@ -78,13 +87,18 @@
      ************************************************************************/
     oAPP.events.ev_AppDelete = function () {
 
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
+            sap.ui.getCore().unlock();
             return;
         }
 
         var bCheckAppNm = oAPP.fn.fnCheckAppName();
         if (!bCheckAppNm) {
+            sap.ui.getCore().unlock();
             return;
         }
 
@@ -96,6 +110,9 @@
         oAPP.fn.fnCheckAppExists(sAppID, lf_result);
 
         function lf_result(RESULT) {
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
 
             parent.setBusy('');
 
@@ -123,6 +140,9 @@
                 if (TYPE == null || TYPE == "NO") {
                     return;
                 }
+
+                // 화면 Lock 걸기
+                sap.ui.getCore().lock();
 
                 // 어플리케이션 삭제하러 서버 호출
                 oAPP.fn.fnSetAppDelete();
@@ -154,6 +174,9 @@
         parent.setBusy('X');
 
         sendAjax(sPath, oFormData, function (oResult) {
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
 
             parent.setBusy('');
 
@@ -196,14 +219,19 @@
      ************************************************************************/
     oAPP.events.ev_AppCopy = function (oEvent) {
 
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
+            sap.ui.getCore().unlock();
             return;
         }
 
         // 어플리케이션 명 입력 유무 및 데이터 정합성 체크
         var bCheckAppNm = oAPP.fn.fnCheckAppName();
         if (!bCheckAppNm) {
+            sap.ui.getCore().unlock();
             return;
         }
 
@@ -215,6 +243,8 @@
         oAPP.fn.fnCheckAppExists(sAppID, lf_result);
 
         function lf_result(RESULT) {
+
+            sap.ui.getCore().unlock();
 
             parent.setBusy('');
 
@@ -244,6 +274,9 @@
      * App 조회
      ************************************************************************/
     oAPP.events.ev_AppDisplay = function (oEvent) {
+
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
 
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
             sAppID = oAppNmInput.getValue();
@@ -395,6 +428,73 @@
 
         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
         if (bIsPressClearBtn) {
+
+            debugger;
+
+            var oInput = oEvent.getSource();
+            oInput.suggest(true);
+
+            // oInput.getBinding("suggestionItems").filter();
+
+            // oInput.fireSuggest({
+            //     suggestValue: ""
+            // });
+
+            return;
+
+            if (oInput._oSuggest && oInput._oSuggest.isOpen()) {
+                oInput._oSuggest.close();
+            }
+
+            if (document.activeElement && document.activeElement.blur) {
+                document.activeElement.blur();
+            }
+
+            setTimeout(() => {
+
+                oInput.focus();
+
+                // oInput.fireSuggest();
+
+            }, 100);
+
+
+            // oInput.fireSuggest();
+
+            // document.body.focus();
+
+            // oInput.focus();
+
+            // oInput.fireSuggest();
+
+
+            // var oInput = oEvent.getSource();
+
+            // if (oInput._oSuggest) {
+
+            //     if (oInput._oSuggest.isOpen()) {
+            //         oInput._oSuggest.close();
+            //     }
+
+            //     oInput._oSuggest.open();
+
+            // }
+
+            // if (document.activeElement && document.activeElement.blur) {
+            //     document.activeElement.blur();
+            // }
+
+            // oInput.setValue("");
+            // oInput.focus();
+            // oInput.fireSuggest();
+
+            // if (oInput._oSuggest) {
+            //     oInput._oSuggest.open();
+            // }
+            // // debugger;
+
+
+
             return;
         }
 
@@ -462,16 +562,77 @@
      ************************************************************************/
     oAPP.events.ev_AppInputChange = function (oEvent) {
 
+        debugger;
+
+
+        var oInput = oEvent.getSource();
+
         oEvent.preventDefault();
 
         var sValue = oEvent.getParameter("value");
-        if (!sValue) {
-            return;
-        }
+        // if (!sValue) {
+        //     return;
+        // }
 
         var sValueUpper = sValue.toUpperCase();
 
         oEvent.getSource().setValue(sValueUpper);
+
+        // oInput.fireSuggest();
+
+
+
+
+
+
+        // var oInput = oEvent.getSource();
+
+        // oInput.f
+
+        // var sValue = oInput.getValue();
+
+
+
+        // var aFilters = [];
+
+        // if(sValue == ""){
+        //     oInput.getBinding("suggestionItems").filter();
+        //     return;
+        // }
+
+
+        // if (sValue !== "") {
+
+        //     aFilters = [
+        //         new sap.ui.model.Filter([
+        //             new sap.ui.model.Filter("APPID", sap.ui.model.FilterOperator.Contains, sValue.toUpperCase())
+        //         ], false)
+        //     ];
+
+        //     this.getBinding("suggestionItems").filter(aFilters);
+        // }
+
+        // this.suggest(true);
+
+
+
+
+
+
+
+
+
+
+        // oEvent.preventDefault();
+
+        // var sValue = oEvent.getParameter("value");
+        // if (!sValue) {
+        //     return;
+        // }
+
+        // var sValueUpper = sValue.toUpperCase();
+
+        // oEvent.getSource().setValue(sValueUpper);
 
     }; // end of oAPP.events.ev_AppInputChange
 
@@ -524,6 +685,9 @@
      ************************************************************************/
     oAPP.events.ev_pageBack = function (oEvent) {
 
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
         // app 정보를 구한다.
         var oAppInfo = parent.getAppInfo(),
 
@@ -541,7 +705,7 @@
 
         var sMsg = "";
         sMsg = oAPP.common.fnGetMsgClsTxt("118"); // "Application has been changed"
-        sMsg += " \n " + oAPP.common.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
+        sMsg += " \n " + oAPP.common.fnGetMsgClsTxt("119"); // "Save before leaving editor?"    
 
         // 메시지 질문 팝업을 띄운다.
         parent.showMessage(sap, 40, 'W', sMsg, oAPP.events.ev_pageBack_MsgCallBack);

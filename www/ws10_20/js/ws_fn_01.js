@@ -32,19 +32,28 @@
                 // 현재 페이지의 위치를 저장한다.
                 parent.setCurrPage(toId);
 
-                if (fromId != "WS20") {
-                    return;
+                switch (toId) {
+                    case "WS10":
+
+                        parent.setBusy('');
+
+                        // 10번 페이지로 넘어 올때 APP NAME Input에 포커스 주기
+                        var oAppNmInput = sap.ui.getCore().byId("AppNmInput");
+                        if (!oAppNmInput) {
+                            return;
+                        }
+
+                        oAppNmInput.focus();
+
+                        break;
+
+                    case "WS20":
+                        oAPP.fn.fnMoveToWs20();
+                        break;
+
+                    default:
+                        break;
                 }
-
-                parent.setBusy('');
-
-                // 10번 페이지로 넘어 올때 APP NAME Input에 포커스 주기
-                var oAppNmInput = sap.ui.getCore().byId("AppNmInput");
-                if (!oAppNmInput) {
-                    return;
-                }
-
-                oAppNmInput.focus();
 
             }
 
@@ -730,25 +739,44 @@
                 value: "{/WS10/APPID}",
                 change: oAPP.events.ev_AppInputChange,
                 search: oAPP.events.ev_AppValueHelp,
+                liveChange: (oEvent) => {
+
+                    var oInput = oEvent.getSource(),
+                        sValue = oInput.getValue();
+
+                    var aFilters = [];
+
+                    oInput.getBinding("suggestionItems").filter();
+
+                    aFilters = [
+                        new sap.ui.model.Filter([
+                            new sap.ui.model.Filter("APPID", sap.ui.model.FilterOperator.Contains, sValue.toUpperCase())
+                        ], false)
+                    ];
+
+                    oInput.getBinding("suggestionItems").filter(aFilters);
+
+                    oInput.suggest(true);
+
+                },
                 suggest: function (oEvent) {
 
-                    var sValue = oEvent.getParameter("suggestValue"),
-                        aFilters = [];
+                    var sValue = oEvent.getParameter("suggestValue") || "";
 
-                    if (sValue) {
+                    var aFilters = [];
 
-                        aFilters = [
-                            new sap.ui.model.Filter([
-                                new sap.ui.model.Filter("APPID", function (sText) {
-                                    return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
-                                }),
-                            ], false)
-                        ];
+                    aFilters = [
+                        new sap.ui.model.Filter([
+                            new sap.ui.model.Filter("APPID", sap.ui.model.FilterOperator.Contains, sValue.toUpperCase())
+                        ], false)
+                    ];
 
-                    }
-
+                    this.getBinding("suggestionItems").filter();
                     this.getBinding("suggestionItems").filter(aFilters);
-                    this.suggest();
+
+
+
+                    // this.suggest(true);
 
                 },
                 enableSuggestions: true,
@@ -756,7 +784,7 @@
                     path: "/WS10/APPSUGG",
                     sorter: "{ path : '/WS10/APPSUGG/APPID' }",
                     template: new sap.m.SuggestionItem({
-                        // key: "{APPID}",
+                        key: "{APPID}",
                         text: "{APPID}",
                     })
                 }
@@ -792,6 +820,25 @@
 
         // 10번 페이지 Application Name SearchField의 Key down Event
         oAppNmInput.attachBrowserEvent("keydown", oAPP.fn.fnWs10AppInputKeyDownEvent);
+        oAppNmInput.attachBrowserEvent("mousedown", () => {
+            console.log("mouseup!!");
+
+            var sValue = oAppNmInput.getValue() || "";
+
+            var aFilters = [];
+
+            aFilters = [
+                new sap.ui.model.Filter([
+                    new sap.ui.model.Filter("APPID", sap.ui.model.FilterOperator.Contains, sValue.toUpperCase())
+                ], false)
+            ];
+
+            oAppNmInput.getBinding("suggestionItems").filter();
+            oAppNmInput.getBinding("suggestionItems").filter(aFilters);
+            oAppNmInput.suggest(true);
+
+        });
+   
 
         return [
             oForm

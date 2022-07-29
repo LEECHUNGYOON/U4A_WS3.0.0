@@ -324,7 +324,16 @@
             bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
 
         if (bIsPressClearBtn) {
-            oSrchField.setValue(sValue);
+
+            oSrchField.setValue("");
+
+            oEvent.getSource().fireSuggest();
+            
+            // oEvent.getSource().suggest();
+
+            // debugger;
+
+            // oSrchField.setValue(sValue);
             return;
         }
 

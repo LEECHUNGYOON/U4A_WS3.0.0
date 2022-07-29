@@ -268,7 +268,7 @@
     };
 
     // Drag End Event
-    oAPP.main.onDragend = () => {        
+    oAPP.main.onDragend = () => {
 
         // 20번 페이지 Design영역, Attribute 영역 잔상 제거
         oAPP.fn.ClearDropEffect();
@@ -282,7 +282,7 @@
             oAPP.attr.ui.frame.contentWindow.prevClearDropEffect();
 
         }
-        
+
         parent.IPCRENDERER.send("if-Dialog-dragEnd");
 
     }; // end of oAPP.main.onDragend
@@ -391,6 +391,11 @@
             // 네트워크가 차단됐을 경우는 그냥 끈다.
             if (!oAPP.attr.bIsNwActive) {
                 oAPP.main.fnBeforeunload("");
+                return;
+            }
+
+            // Busy가 켜져 있는 상태에서는 창을 못닫는다.
+            if (parent.getBusy() == "X") {
                 return;
             }
 

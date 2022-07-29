@@ -338,7 +338,7 @@
         //wait off 처리.
         //parent.setBusy('');
 
-      }, "", true, "POST", function(e){
+      }, "X", true, "POST", function(e){
         //오류 발생시 lock 해제.
         oAPP.fn.designAreaLockUnlock();
       
@@ -443,7 +443,7 @@
         oAPP.fn.getLibData(it_lib, is_tab, param.dbtot, param.dbcnt, param.fkey, param.skey);
 
 
-      }, "", true, "POST", function(e){
+      }, "X", true, "POST", function(e){
         //오류 발생시 lock 해제.
         oAPP.fn.designAreaLockUnlock();
 

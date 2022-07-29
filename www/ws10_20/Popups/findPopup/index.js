@@ -183,14 +183,13 @@ let oAPP = parent.oAPP;
             oPage = new sap.m.Page({
 
                 // properties
-                showHeader: false,
+                showHeader: true,
                 enableScrolling: false,
 
                 // Aggregations
-                customHeader: new sap.m.Toolbar({
-                    content: [
+                customHeader: new sap.m.Bar({
 
-                        new sap.m.ToolbarSpacer(),
+                    contentMiddle: [
 
                         new sap.ui.core.Icon({
                             src: "sap-icon://sys-find"
@@ -200,9 +199,17 @@ let oAPP = parent.oAPP;
                             text: "Find"
                         }),
 
-                        new sap.m.ToolbarSpacer(),
+                    ],
+
+                    contentRight: [
+
+                        new sap.m.Button({
+                            icon: "sap-icon://refresh",
+                            press: oAPP.fn.fnFindDataRefresh
+                        })
 
                     ]
+
                 }),
                 content: [
                     oTntPage
@@ -1004,6 +1011,14 @@ let oAPP = parent.oAPP;
 
     }; // end of oAPP.fn.fnGetFindData4
 
+    // Find 정보 갱신
+    oAPP.fn.fnFindDataRefresh = () => {
+
+        IPCRENDERER.send(`${BROWSKEY}--find--data--refresh`);
+
+
+    }; // end of oAPP.fn.fnFindDataRefresh
+
 
     /**************************************************************************
      *  Find의 TNT 메뉴 선택 시 NavContainer의 afterNav events.
@@ -1131,10 +1146,10 @@ let oAPP = parent.oAPP;
 
             oAPP.setBusyIndicator('');
 
-        },3000);
+        }, 3000);
 
     }; // end of oAPP.events.ev_press_Link_Find_Controller
- 
+
     /************************************************************************
      * -- Start of Program
      ************************************************************************/

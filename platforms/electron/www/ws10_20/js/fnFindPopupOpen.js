@@ -121,6 +121,7 @@
             // IPCMAIN 이벤트 해제
             IPCMAIN.off(`${BROWSKEY}--find`, oAPP.fn.fnIpcMain_Find);
             IPCMAIN.off(`${BROWSKEY}--find--controller`, oAPP.fn.fnIpcMain_Find_Controller);            
+            IPCMAIN.off(`${BROWSKEY}--find--data--refresh`, oAPP.fn.fnIpcMain_Find_Data_Refresh);
 
             oBrowserWindow = null;
 
@@ -131,6 +132,9 @@
 
         // 선택한 UI 정보를 가지고 controller(class builder) 실행
         IPCMAIN.on(`${BROWSKEY}--find--controller`, oAPP.fn.fnIpcMain_Find_Controller);
+
+        // Find Data Refresh
+        IPCMAIN.on(`${BROWSKEY}--find--data--refresh`, oAPP.fn.fnIpcMain_Find_Data_Refresh);
 
     }; // end of oAPP.fn.fnFindPopupOpen
 
@@ -161,6 +165,15 @@
 
 
     }; // end of oAPP.fn.fnIpcMain_Find
+
+    /**************************************************************************
+     * Find Data 갱신
+     * ************************************************************************/
+    oAPP.fn.fnIpcMain_Find_Data_Refresh = (events, res) => {
+
+        debugger;
+
+    }; // end of oAPP.fn.fnIpcMain_Find_Data_Refresh
 
     /**************************************************************************
      * 찾기버튼 Dialog의 라디오 버튼 그룹 그리기

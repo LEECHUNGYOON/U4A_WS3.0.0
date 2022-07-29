@@ -1342,8 +1342,9 @@ let oAPP = parent.oAPP;
 
     //drag 종료시 css 잔상 제거.
     window.ondragend = function(){
-        alert("ondragend");
+        
         oAPP.IPCRENDERER.send("if-dragEnd");
+        
     };  //drag 종료시 css 잔상 제거.
 
 

@@ -21,8 +21,14 @@
      ************************************************************************/
     oAPP.fn.fnOnEnterDispChangeMode = function (APPID, ISEDIT) {
 
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
         var bCheckAppNm = oAPP.fn.fnCheckAppName();
         if (!bCheckAppNm) {
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
             return;
         }
 
@@ -36,9 +42,6 @@
         oFormData.append("APPID", APPID);
         oFormData.append("ISEDIT", ISEDIT);
         oFormData.append("SSID", SSID);
-
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
 
         // 서버에서 App 정보를 구한다.
         ajax_init_prc(oFormData, lf_success);
@@ -95,46 +98,18 @@
             // WS10 페이지의 APPID 입력 필드에 Suggestion을 구성할 데이터를 저장한다.
             oAPP.fn.fnOnSaveAppSuggestion(oAppInfo.APPID);
 
-            // WS20번 페이지로 이동한다.
-            oAPP.fn.fnOnMoveToPage("WS20");
-
-            // 브라우저 상단 메뉴 구성
-            // oAPP.common.fnOnLoadBrowserMenu("WS20");
-
             // 단축키 삭제
             oAPP.common.removeShortCut("WS10");
 
             // 단축키 설정
             oAPP.common.setShortCut("WS20");
 
-            // 20번 페이지 인스턴스
-            var oMainPage = sap.ui.getCore().byId("WS20_MAIN");
-            if (!oMainPage) {
-                return;
-            }
-
-            // 디자인 영역을 구성한다.
-            if (oAPP.attr.oArea) {
-                oAPP.attr.APPID = oAppInfo.APPID;
-                oAPP.fn.setUIAreaEditable();
-                return;
-            }
-
-            // 공유 Object에 20번 페이지 인스턴스를 넣는다.
-            oAPP.attr.oArea = oMainPage;
-
-            // 20번 페이지에 보여질 APPID를 입력한다.
-            oAPP.attr.APPID = oAppInfo.APPID;
-
-            // 20번 페이지를 그린다.
-            oAPP.fn.main();
-
-            // WS20 페이지의 EDIT/DISPLAY 설정(차장님 부분)
-            oAPP.fn.setUIAreaEditable();
+            // WS20번 페이지로 이동한다.
+            oAPP.fn.fnOnMoveToPage("WS20");
 
         } // end of lf_success
 
-    }; // end of oAPP.fn.fnOnEnterDispChangeMode
+    }; // end of oAPP.fn.fnOnEnterDispChangeMode    
 
     /************************************************************************
      * 페이지 이동 (WS10 -> WS20, WS20 -> WS10)
@@ -262,13 +237,16 @@
      * **********************************************************************/
     oAPP.fn.fnMoveToWs10 = function () {
 
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
         // Busy 실행
         parent.setBusy('X');
 
         // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
         oAPP.fn.fnKillUserSession(lf_success);
 
-        function lf_success() {
+        function lf_success() {            
 
             /**
              * 페이지 이동 시, CHANGE 모드였다면 현재 APP의 Lock Object를 해제한다.
@@ -306,11 +284,50 @@
             // Busy 끄기
             parent.setBusy('');
 
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
         } // end of lf_success
 
     }; // end of oAPP.fn.fnMoveToWs10
 
-    // 20 -> 10번 페이지로 이동 시 서버 세션 죽이기 위한 공통 펑션
+    /************************************************************************
+     * WS20 페이지로 이동
+     * **********************************************************************/
+    oAPP.fn.fnMoveToWs20 = function () {
+
+        var oAppInfo = parent.getAppInfo();
+
+        // 20번 페이지 인스턴스
+        var oMainPage = sap.ui.getCore().byId("WS20_MAIN");
+        if (!oMainPage) {
+            return;
+        }
+
+        // 디자인 영역을 구성한다.
+        if (oAPP.attr.oArea) {
+            oAPP.attr.APPID = oAppInfo.APPID;
+            oAPP.fn.setUIAreaEditable();
+            return;
+        }
+
+        // 공유 Object에 20번 페이지 인스턴스를 넣는다.
+        oAPP.attr.oArea = oMainPage;
+
+        // 20번 페이지에 보여질 APPID를 입력한다.
+        oAPP.attr.APPID = oAppInfo.APPID;
+
+        // 20번 페이지를 그린다.
+        oAPP.fn.main();
+
+        // WS20 페이지의 EDIT/DISPLAY 설정(차장님 부분)
+        oAPP.fn.setUIAreaEditable();
+
+    }; // end of oAPP.fn.fnMoveToWs20
+
+    /************************************************************************
+     * 20 -> 10번 페이지로 이동 시 서버 세션 죽이기 위한 공통 펑션
+     * **********************************************************************/
     oAPP.fn.fnKillUserSession = function (fn_callback) {
 
         // var oAppInfo = parent.getAppInfo();

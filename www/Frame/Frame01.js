@@ -870,13 +870,13 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
             bIsBusy = (sIsbusy == "X" ? true : false);
 
-        // if(oWS.utill.attr.sap){
-        //     if(bIsBusy){
-        //         oWS.utill.attr.sap.ui.getCore().lock();
-        //     } else {
-        //         oWS.utill.attr.sap.ui.getCore().unlock();
-        //     }
-        // }
+        if(oWS.utill.attr.sap){
+            if(bIsBusy){
+                oWS.utill.attr.sap.ui.getCore().lock();
+            } else {
+                oWS.utill.attr.sap.ui.getCore().unlock();
+            }
+        }
 
         // 현재 Busy Indicator 상태정보를 글로벌 변수에 저장한다.
         oWS.utill.attr.isBusy = sIsbusy;
