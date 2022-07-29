@@ -151,7 +151,7 @@
     
     //drag UI가 다른라인에 올라갔을때 이벤트.
     oLTDrop1.attachDragEnter(function(oEvent){
-      
+
       //drag UI가 다른라인에 올라갔을때 이벤트.
       oAPP.fn.designDragEnter(oEvent);
 
@@ -222,6 +222,21 @@
     }); //접힘 이벤트
 
 
+    //구분자 추가.
+    oLTBar1.addContent(new sap.m.ToolbarSeparator({visible:"{/IS_EDIT}"}));
+
+
+    //전체선택 해제 버튼.
+    var oLBtn5 = new sap.m.Button({icon:"sap-icon://multiselect-none", visible:"{/IS_EDIT}", tooltip:"Deselect All"});
+    oLTBar1.addContent(oLBtn5);
+
+    //전체 선택 헤제 버튼 이벤트.
+    oLBtn5.attachPress(function(oEvent){
+      //design tree의 체크박스 전체 선택 해제 처리.
+      oAPP.fn.designClearCheckAll();
+
+    }); //전체 선택 헤제 버튼 이벤트.
+
 
     //구분자 추가.
     oLTBar1.addContent(new sap.m.ToolbarSeparator({visible:"{/IS_EDIT}"}));
@@ -266,18 +281,15 @@
     }); //wizard 버튼 선택 이벤트.
 
 
-    //context menu ui 변수.
-    var oMenu;
-
     //context menu ui 생성 function이 존재하는경우.
     if(typeof oAPP.fn.callDesignContextMenu !== "undefined"){
       //context menu ui 생성 처리.
-      oMenu = oAPP.fn.callDesignContextMenu.call(this);
+      oAPP.attr.ui.designMenu = oAPP.fn.callDesignContextMenu.call(this);
     }else{
       //context menu ui 생성 function이 존재하지 않는경우 script 호출.
       oAPP.fn.getScript("design/js/callDesignContextMenu",function(){
         //context menu ui 생성 처리.
-        oMenu = oAPP.fn.callDesignContextMenu.call(this);
+        oAPP.attr.ui.designMenu = oAPP.fn.callDesignContextMenu.call(this);
       });
 
     }
@@ -299,10 +311,13 @@
       if(!ls_tree){return;}
 
       //context menu 호출전 메뉴 선택 가능 여부 설정.
-      oAPP.fn.enableDesignContextMenu(oMenu, ls_tree.OBJID);
+      oAPP.fn.enableDesignContextMenu(oAPP.attr.ui.designMenu, ls_tree.OBJID);
 
       //메뉴 호출 처리.
-      oMenu.openBy(oEvent.target);
+      setTimeout(() => {
+        oAPP.attr.ui.designMenu.openBy(oEvent.target);  
+      }, 400);     
+     
 
     }); //context menu 호출 이벤트.
 
@@ -312,7 +327,7 @@
     oLTree1.attachFirstVisibleRowChanged(function(){
       
       //context menu가 open되어있다면 close 처리.
-      oAPP.fn.contextMenuClosePopup(oMenu);
+      oAPP.fn.contextMenuClosePopup(oAPP.attr.ui.designMenu);
 
       //drop 가능 여부에 따른 라인 css 처리.
       oAPP.fn.designSetDropStyle();
@@ -327,6 +342,26 @@
 
 
   };  //좌측 페이지(UI Design 영역) 구성.
+
+
+
+
+  //팝업 수집건 제거 처리.
+  oAPP.fn.removeCollectPopup = function(OBJID){
+
+    //팝업 수집건이 존재하지 않는경우 exit.
+    if(oAPP.attr.popup.length === 0){return;}
+
+    //팝업 수집건에 입력 OBJID에 해당하는건 검색.
+    var l_indx = oAPP.attr.popup.findIndex(a=> a._OBJID === OBJID);
+
+    //찾지못한 경우 EXIT.
+    if(l_indx === -1){return;}
+
+    //찾은경우 해당 라인 제거 처리.
+    oAPP.attr.popup.splice(l_indx, 1);
+
+  };  //팝업 수집건 제거 처리.
 
 
 
@@ -678,6 +713,9 @@
     //default checkbox 비활성 처리.
     is_tree.chk_visible = false;
 
+    //체크 선택 해제 처리.
+    is_tree.chk = false;
+
 
     //편집 모드인경우 checkbox 활성 처리.
     if(oAPP.attr.appInfo.IS_EDIT === "X"){
@@ -698,7 +736,42 @@
       oAPP.fn.setTreeChkBoxEnable(is_tree.zTREE[i]);
     }
 
-  };
+  };  //체크박스 활성여부 처리.
+
+
+
+
+  //체크박스 전체 선택 해제 처리.
+  oAPP.fn.designClearCheckAll = function(){
+
+    //체크박스 선택 해제 재귀호출 function.
+    function lf_clearChkRec(is_tree){
+
+      //체크 선택 헤제 처리.
+      is_tree.chk = false;
+
+      //child가 존재하지 않는경우 exit.
+      if(!is_tree.zTREE || is_tree.zTREE.length === 0){return;}
+
+      //chiled가 존재하는경우 하위를 탐색하며 checkbox 선택 해제 처리.
+      for (var i=0, l=is_tree.zTREE.length; i<l; i++){
+
+        lf_clearChkRec(is_tree.zTREE[i]);
+
+      }
+
+    } //체크박스 선택 해제 재귀호출 function.
+
+
+    //ROOT를 시작으로 하위를 탐색하며 checkbox 선택 해제 처리.
+    lf_clearChkRec(oAPP.attr.oModel.oData.zTREE[0]);
+
+    //모델 갱신 처리.
+    oAPP.attr.oModel.refresh();
+
+
+  };  //체크박스 전체 선택 해제 처리.
+
 
 
 
@@ -1421,6 +1494,7 @@
     //미리보기 ui 선택 처리
     oAPP.attr.ui.frame.contentWindow.selPreviewUI(is_tree.OBJID);
 
+
     //tree의 first visible row 변경이 필요한경우 하위 로직 수행.
     if(typeof iIndex === "undefined"){return;}
 
@@ -1823,6 +1897,24 @@
 
 
 
+  //대상 tree라인이 n건 바인딩 처리된경우 부모를 찾아 자신 UI의 바인딩 수집건 제거 처리.
+  oAPP.fn.designUnbindLine = function(is_tree){
+
+    //해당 UI의 바인딩처리 수집건 제거 처리.
+    for(var i=0, l=oAPP.attr.prev[is_tree.OBJID]._T_0015.length; i<l; i++){
+      //바인딩 처리건이 아닌경우 SKIP.
+      if(oAPP.attr.prev[is_tree.OBJID]._T_0015[i].ISBND !== "X"){continue;}
+
+      //바인딩 처리건인경우 UI에 N건 정보 수집 됐다면 해제 처리.
+      oAPP.fn.attrUnbindProp(oAPP.attr.prev[is_tree.OBJID]._T_0015[i]);
+
+    }
+
+  };  //대상 tree라인이 n건 바인딩 처리된경우 부모를 찾아 자신 UI의 바인딩 수집건 제거 처리.
+
+
+
+  
   //멀티 삭제 처리.
   oAPP.fn.designTreeMultiDeleteItem = function(){
     
@@ -1831,39 +1923,45 @@
 
       if(it_tree.length === 0){return;}
 
+      //DESIGN TREE에서 CHECKBOX 선택건 삭제 처리.
       for(var i=it_tree.length-1; i>=0; i--){
 
         //재귀호출하며 선택한 라인정보 삭제 처리.
         lf_delSelLine(it_tree[i].zTREE);
 
 
-        //체크박스가 선택된 경우.
-        if(it_tree[i].chk === true){
+        //체크박스가 선택안된 경우 하위 로직 skip.
+        if(it_tree[i].chk !== true){continue;}
 
-          //클라이언트 이벤트 및 sap.ui.core.HTML의 프로퍼티 입력건 제거 처리.
-          oAPP.fn.delUiClientEvent(it_tree[i]);
+        //클라이언트 이벤트 및 sap.ui.core.HTML의 프로퍼티 입력건 제거 처리.
+        oAPP.fn.delUiClientEvent(it_tree[i]);
 
-          //Description 정보 삭제.
-          oAPP.fn.delDesc(it_tree[i].OBJID);
+        //Description 정보 삭제.
+        oAPP.fn.delDesc(it_tree[i].OBJID);
 
-          //자식 UI가 필수인 UI에 자식이 없는경우 강제추가 script 처리.
-          oAPP.attr.ui.frame.contentWindow.setChildUiException(it_tree[i].PUIOK, it_tree[i].POBID, undefined, undefined, true);
+        //대상 tree라인이 n건 바인딩 처리된경우 부모를 찾아 자신 UI의 바인딩 수집건 제거 처리.
+        oAPP.fn.designUnbindLine(it_tree[i]);
 
-          //미리보기에 해당 UI삭제 처리.
-          oAPP.attr.ui.frame.contentWindow.delUIObjPreView(it_tree[i].OBJID, it_tree[i].POBID, it_tree[i].PUIOK, it_tree[i].UIATT, it_tree[i].ISMLB, it_tree[i].UIOBK);
+        //팝업 수집건에서 해당 UI 제거 처리.
+        oAPP.fn.removeCollectPopup(it_tree[i].OBJID);
+        
 
-          //미리보기 UI destroy 처리.
-          oAPP.attr.ui.frame.contentWindow.destroyUIPreView(it_tree[i].OBJID, it_tree[i].POBID);
+        //자식 UI가 필수인 UI에 자식이 없는경우 강제추가 script 처리.
+        oAPP.attr.ui.frame.contentWindow.setChildUiException(it_tree[i].PUIOK, it_tree[i].POBID, undefined, undefined, true);
 
-          //UI수집건에 해당 UI 제거 처리.
-          delete oAPP.attr.prev[it_tree[i].OBJID];
+        //미리보기에 해당 UI삭제 처리.
+        oAPP.attr.ui.frame.contentWindow.delUIObjPreView(it_tree[i].OBJID, it_tree[i].POBID, it_tree[i].PUIOK, it_tree[i].UIATT, it_tree[i].ISMLB, it_tree[i].UIOBK);
 
-          //해당 라인 삭제.
-          it_tree.splice(i,1);
+        //미리보기 UI destroy 처리.
+        oAPP.attr.ui.frame.contentWindow.destroyUIPreView(it_tree[i].OBJID, it_tree[i].POBID);
 
-        }
+        //UI수집건에 해당 UI 제거 처리.
+        delete oAPP.attr.prev[it_tree[i].OBJID];
 
-      }
+        //해당 라인 삭제.
+        it_tree.splice(i,1);
+        
+      } //DESIGN TREE에서 CHECKBOX 선택건 삭제 처리.
 
     } //선택라인 삭제처리.
 

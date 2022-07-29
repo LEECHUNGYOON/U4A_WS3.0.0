@@ -3663,7 +3663,7 @@
 
   //선택한 UI에 해당하는 attribute 리스트 업데이트 처리.
   oAPP.fn.updateAttrList = function(UIOBK, OBJID, UIATK, TYPE, f_cb){
-    
+
     //이전 선택건 초기화 처리.
     oAPP.attr.ui.oRTab1.removeSelections();
 

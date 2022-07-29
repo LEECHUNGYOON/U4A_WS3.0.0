@@ -117,32 +117,18 @@
         //검색조건 필드 Suggest 등록 처리.
         oAPP.fn.setUiSuggest(oSearch, "iconListSearch");
 
+        //검색 아이콘 선택 이벤트.
+        oSearch.attachSearch(function(oEvent){
+            //아이콘 검색 처리.
+            lf_search(this, oTab);
+            
+        }); //검색 아이콘 선택 이벤트.
+
+
         //검색 이벤트.
         oSearch.attachLiveChange(function(){
-            
-            //결과리스트 바인딩 정보 얻기.
-            var l_bind = oTab.getBinding("items");
-
-            //바인딩 정보를 얻지 못한 경우 exit.
-            if(typeof l_bind === "undefined"){return;}
-
-            //검색조건 입력값 얻기.
-            var l_val = this.getValue();
-
-            //검색조건 값이 입력안된 경우 필터 해제 처리.
-            if(l_val === ""){
-                l_bind.filter();
-                return;
-            }            
-
-            var lt_filter = [];
-
-            lt_filter.push(new sap.ui.model.Filter({path:"nam",operator:"Contains",value1:l_val}));
-            lt_filter.push(new sap.ui.model.Filter({path:"src",operator:"Contains",value1:l_val}));
-
-            //model 필터 처리.
-            l_bind.filter([new sap.ui.model.Filter(lt_filter,false)]);
-
+            //아이콘 검색 처리.
+            lf_search(this, oTab);
 
         }); //검색 이벤트.
 
@@ -217,5 +203,36 @@
 
 
     };  //아이콘 리스트 팝업.
+
+
+
+
+    //아이콘 검색 처리.
+    function lf_search(oSearch, oTab){
+
+        //결과리스트 바인딩 정보 얻기.
+        var l_bind = oTab.getBinding("items");
+
+        //바인딩 정보를 얻지 못한 경우 exit.
+        if(typeof l_bind === "undefined"){return;}
+
+        //검색조건 입력값 얻기.
+        var l_val = oSearch.getValue();
+
+        //검색조건 값이 입력안된 경우 필터 해제 처리.
+        if(l_val === ""){
+            l_bind.filter();
+            return;
+        }            
+
+        var lt_filter = [];
+
+        lt_filter.push(new sap.ui.model.Filter({path:"nam",operator:"Contains",value1:l_val}));
+        lt_filter.push(new sap.ui.model.Filter({path:"src",operator:"Contains",value1:l_val}));
+
+        //model 필터 처리.
+        l_bind.filter([new sap.ui.model.Filter(lt_filter,false)]);
+
+    }   //아이콘 검색 처리.
 
 })();

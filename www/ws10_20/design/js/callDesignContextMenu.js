@@ -500,17 +500,13 @@
             oAPP.fn.delDesc(is_tree.OBJID);
 
             //해당 UI의 바인딩처리 수집건 제거 처리.
-            for(var i=0, l=oAPP.attr.prev[is_tree.OBJID]._T_0015.length; i<l; i++){
-                //바인딩 처리건이 아닌경우 SKIP.
-                if(oAPP.attr.prev[is_tree.OBJID]._T_0015[i].ISBND !== "X"){continue;}
-
-                //바인딩 처리건인경우 UI에 N건 정보 수집 됐다면 해제 처리.
-                oAPP.fn.attrUnbindProp(oAPP.attr.prev[is_tree.OBJID]._T_0015[i]);
-
-            }
+            oAPP.fn.designUnbindLine(is_tree);
 
             //미리보기 UI destroy 처리.
             oAPP.attr.ui.frame.contentWindow.destroyUIPreView(is_tree.OBJID);
+
+            //팝업 수집건에서 해당 UI 제거 처리.
+            oAPP.fn.removeCollectPopup(is_tree.OBJID);
 
             //미리보기 UI 수집항목에서 해당 OBJID건 삭제.
             delete oAPP.attr.prev[is_tree.OBJID];
