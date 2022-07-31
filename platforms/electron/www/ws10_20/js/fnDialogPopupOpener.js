@@ -435,6 +435,8 @@
 
         function lf_move() {
 
+            debugger;
+
             var screen = REMOTE.screen,
                 oCurrWinBounds = CURRWIN.getBounds(),
 
@@ -446,12 +448,23 @@
                 inc2 = Math.round(def2 * iFactor);
 
             var oCurrWinBounds = CURRWIN.getBounds();
-
+            var aa = parent.REMOTE.screen.screenToDipRect(CURRWIN, oCurrWinBounds);
+            var bb = parent.REMOTE.screen.dipToScreenRect(CURRWIN, oCurrWinBounds);
+            var cc = parent.REMOTE.screen.dipToScreenRect(null, {x:oCurrWinBounds.width, y:30, width: 390, height: 60});
+            
             oCurrWinBounds.y += inc;
 
-            // oCurrWinBounds.x += 380;
+            // oCurrWinBounds.x = (bb.x + bb.width) - inc2;
+            oCurrWinBounds.x = bb.width - inc2;
+            
+            // oCurrWinBounds.x += 380; 
             // oCurrWinBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - 390;
-            oCurrWinBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - inc2;
+            // oCurrWinBounds.x = (aa.x - def2) + aa.width;          
+            // oCurrWinBounds.x = (oCurrWinBounds.x - inc2) + oCurrWinBounds.width;
+            // oCurrWinBounds.x = (oCurrWinBounds.width - inc2) + oCurrWinBounds.x;
+            // oCurrWinBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - 0;
+            // oCurrWinBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - inc2;
+            // oCurrWinBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - inc2;
             // oCurrWinBounds.x = ((oCurrWinBounds.x * ) + oCurrWinBounds.width) - inc2;
 
             oBrowserWindow.setBounds(oCurrWinBounds);

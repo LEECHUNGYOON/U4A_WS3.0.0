@@ -429,71 +429,8 @@
         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
         if (bIsPressClearBtn) {
 
-            debugger;
-
             var oInput = oEvent.getSource();
             oInput.suggest(true);
-
-            // oInput.getBinding("suggestionItems").filter();
-
-            // oInput.fireSuggest({
-            //     suggestValue: ""
-            // });
-
-            return;
-
-            if (oInput._oSuggest && oInput._oSuggest.isOpen()) {
-                oInput._oSuggest.close();
-            }
-
-            if (document.activeElement && document.activeElement.blur) {
-                document.activeElement.blur();
-            }
-
-            setTimeout(() => {
-
-                oInput.focus();
-
-                // oInput.fireSuggest();
-
-            }, 100);
-
-
-            // oInput.fireSuggest();
-
-            // document.body.focus();
-
-            // oInput.focus();
-
-            // oInput.fireSuggest();
-
-
-            // var oInput = oEvent.getSource();
-
-            // if (oInput._oSuggest) {
-
-            //     if (oInput._oSuggest.isOpen()) {
-            //         oInput._oSuggest.close();
-            //     }
-
-            //     oInput._oSuggest.open();
-
-            // }
-
-            // if (document.activeElement && document.activeElement.blur) {
-            //     document.activeElement.blur();
-            // }
-
-            // oInput.setValue("");
-            // oInput.focus();
-            // oInput.fireSuggest();
-
-            // if (oInput._oSuggest) {
-            //     oInput._oSuggest.open();
-            // }
-            // // debugger;
-
-
 
             return;
         }
@@ -562,77 +499,13 @@
      ************************************************************************/
     oAPP.events.ev_AppInputChange = function (oEvent) {
 
-        debugger;
-
-
-        var oInput = oEvent.getSource();
-
         oEvent.preventDefault();
 
         var sValue = oEvent.getParameter("value");
-        // if (!sValue) {
-        //     return;
-        // }
-
+    
         var sValueUpper = sValue.toUpperCase();
 
         oEvent.getSource().setValue(sValueUpper);
-
-        // oInput.fireSuggest();
-
-
-
-
-
-
-        // var oInput = oEvent.getSource();
-
-        // oInput.f
-
-        // var sValue = oInput.getValue();
-
-
-
-        // var aFilters = [];
-
-        // if(sValue == ""){
-        //     oInput.getBinding("suggestionItems").filter();
-        //     return;
-        // }
-
-
-        // if (sValue !== "") {
-
-        //     aFilters = [
-        //         new sap.ui.model.Filter([
-        //             new sap.ui.model.Filter("APPID", sap.ui.model.FilterOperator.Contains, sValue.toUpperCase())
-        //         ], false)
-        //     ];
-
-        //     this.getBinding("suggestionItems").filter(aFilters);
-        // }
-
-        // this.suggest(true);
-
-
-
-
-
-
-
-
-
-
-        // oEvent.preventDefault();
-
-        // var sValue = oEvent.getParameter("value");
-        // if (!sValue) {
-        //     return;
-        // }
-
-        // var sValueUpper = sValue.toUpperCase();
-
-        // oEvent.getSource().setValue(sValueUpper);
 
     }; // end of oAPP.events.ev_AppInputChange
 

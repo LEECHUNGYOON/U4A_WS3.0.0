@@ -379,7 +379,7 @@
                 return;
             }
 
-            return "";
+            return false;
         }
 
         // 같은 세션의 브라우저 갯수 체크
@@ -391,11 +391,6 @@
             // 네트워크가 차단됐을 경우는 그냥 끈다.
             if (!oAPP.attr.bIsNwActive) {
                 oAPP.main.fnBeforeunload("");
-                return;
-            }
-
-            // Busy가 켜져 있는 상태에서는 창을 못닫는다.
-            if (parent.getBusy() == "X") {
                 return;
             }
 
@@ -432,12 +427,5 @@
         oAPP.main.fnBeforeunload('X');
 
     }
-
-
-
-
-
-
-
 
 })(window, oAPP);

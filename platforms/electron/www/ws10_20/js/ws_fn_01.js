@@ -820,6 +820,7 @@
 
         // 10번 페이지 Application Name SearchField의 Key down Event
         oAppNmInput.attachBrowserEvent("keydown", oAPP.fn.fnWs10AppInputKeyDownEvent);
+        oAppNmInput.attachBrowserEvent("dblclick", oAPP.fn.fnWs10AppInputdblclickEvent);
         oAppNmInput.attachBrowserEvent("mousedown", () => {
             console.log("mouseup!!");
 
@@ -838,7 +839,7 @@
             oAppNmInput.suggest(true);
 
         });
-   
+
 
         return [
             oForm
@@ -1035,6 +1036,31 @@
         oAppInput.fireSearch();
 
     }; // end of oAPP.fn.fnWs10AppInputKeyDownEvent
+
+    /************************************************************************
+     * 10번 페이지 Application Name SearchField의 Doubble click Event
+     * - 더블 클릭 시, 텍스트 블럭을 잡는 목적
+     ************************************************************************/
+    oAPP.fn.fnWs10AppInputdblclickEvent = (oEvent) => {
+
+        var oAppInput = sap.ui.getCore().byId("AppNmInput"),
+            oInput = oAppInput.getInputElement();
+
+        if (!oAppInput || !oInput) {
+            return;
+        }
+
+        var sValue = oAppInput.getValue();
+        if (sValue == "") {
+            return;
+        }
+
+        var iValueLength = sValue.length;
+
+        oInput.setSelectionRange(0, iValueLength);
+
+
+    }; // end of oAPP.fn.fnWs10AppInputdblclickEvent
 
     /************************************************************************
      * 20번 페이지 Header Toolbar Content
