@@ -1438,12 +1438,10 @@ let oAPP = (function () {
         $('#content').css({
             "display": "none"
         });
-        debugger;
+
         // 테마 설정
         oAPP.fn.fnP13nCreateTheme().then((oThemeInfo) => {
             
-            debugger;
-
             // 테마 정보를 저장한다.
             parent.setThemeInfo(oThemeInfo);
 

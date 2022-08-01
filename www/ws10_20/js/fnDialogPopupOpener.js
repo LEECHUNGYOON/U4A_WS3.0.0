@@ -818,7 +818,9 @@
 
         oBrowserOptions.title = "U4A Help Documents";
         oBrowserOptions.width = 350;
+        oBrowserOptions.minWidth = 350;
         oBrowserOptions.height = 500;
+        oBrowserOptions.minHeight = 500;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
