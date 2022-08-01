@@ -199,7 +199,7 @@
 
         var sServerIP = oRowData.SERVIP,
             sInsNo = oRowData.INSNO,
-            sServerUrl = "http://" + sServerIP + ":80" + sInsNo + "/zu4a_wbc";
+            sServerUrl = "http://" + sServerIP + ":80" + sInsNo + "/zu4a_wbc/u4a_ipcmain";
 
         var oFormData = new FormData();
         oFormData.append("SYSCHK", 'X');

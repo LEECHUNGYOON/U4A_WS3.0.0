@@ -70,25 +70,25 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        // 팝업 위치를 부모 위치에 배치시킨다.
-        var oParentBounds = CURRWIN.getBounds(),
-            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-            oWinScreen = window.screen,
-            iAvailLeft = oWinScreen.availLeft;
+        // // 팝업 위치를 부모 위치에 배치시킨다.
+        // var oParentBounds = CURRWIN.getBounds(),
+        //     xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+        //     yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+        //     oWinScreen = window.screen,
+        //     iAvailLeft = oWinScreen.availLeft;
 
-        if (xPos < iAvailLeft) {
-            xPos = iAvailLeft;
-        }
+        // if (xPos < iAvailLeft) {
+        //     xPos = iAvailLeft;
+        // }
 
-        if (yPos < 0) {
-            yPos = 0;
-        };
+        // if (yPos < 0) {
+        //     yPos = 0;
+        // };
 
-        oBrowserWindow.setBounds({
-            x: xPos,
-            y: yPos
-        });
+        // oBrowserWindow.setBounds({
+        //     x: xPos,
+        //     y: yPos
+        // });
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
@@ -100,6 +100,8 @@
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            oAPP.fn.fnFindPopupOpenSetBounds(oBrowserWindow, oBrowserOptions);
 
             var oFindData = {
                 oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보
@@ -120,7 +122,7 @@
 
             // IPCMAIN 이벤트 해제
             IPCMAIN.off(`${BROWSKEY}--find`, oAPP.fn.fnIpcMain_Find);
-            IPCMAIN.off(`${BROWSKEY}--find--controller`, oAPP.fn.fnIpcMain_Find_Controller);            
+            IPCMAIN.off(`${BROWSKEY}--find--controller`, oAPP.fn.fnIpcMain_Find_Controller);
             IPCMAIN.off(`${BROWSKEY}--find--data--refresh`, oAPP.fn.fnIpcMain_Find_Data_Refresh);
 
             oBrowserWindow = null;
@@ -137,6 +139,30 @@
         IPCMAIN.on(`${BROWSKEY}--find--data--refresh`, oAPP.fn.fnIpcMain_Find_Data_Refresh);
 
     }; // end of oAPP.fn.fnFindPopupOpen
+
+    oAPP.fn.fnFindPopupOpenSetBounds = (oBrowserWindow, oBrowserOptions) => {
+
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = CURRWIN.getBounds(),
+            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
+
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
+        }
+
+        if (yPos < 0) {
+            yPos = 0;
+        };
+
+        oBrowserWindow.setBounds({
+            x: xPos,
+            y: yPos
+        });
+
+    };
 
     /**************************************************************************
      * Find Popup에서 전달 받은 UI 정보를 가지고 WS20에 표시를 해준다.

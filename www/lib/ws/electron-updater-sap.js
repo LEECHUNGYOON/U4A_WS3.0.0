@@ -34,8 +34,8 @@ let __updateFilename = "",
 let __sap_id_pw = ""; //WS3.0 이관후 삭제대상!!!
 
 // sap 서버 통신 url 
-let _sURL_V = `${HOST}/ZU4A_WBC/UPDATE_CHECK`,
-    _sURL_U = `${HOST}/ZU4A_WBC/WS_UPDATE_FILE_GET`;
+let _sURL_V = `${HOST}/zu4a_wbc/u4a_ipcmain/update_check`,
+    _sURL_U = `${HOST}/zu4a_wbc/u4a_ipcmain/ws_update_file_get`;
 
 //----------------------------------------------------------------//
 // 로컬 전역 펑션 

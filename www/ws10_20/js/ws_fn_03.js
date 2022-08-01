@@ -977,7 +977,8 @@
         var oMetadata = parent.getMetadata(),
             sServerHost = oMetadata.HOST,
             oUserInfo = parent.getUserInfo(),
-            sUrl = `${sServerHost}/zu4a_wbc/ping_check?sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.MANDT}&sap-language=${oUserInfo.LANGU}`;
+            sUrl = `${sServerHost}/zu4a_wbc/u4a_ipcmain/ping_check?sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.MANDT}&sap-language=${oUserInfo.LANGU}`;
+            // sUrl = `${sServerHost}/zu4a_wbc/ping_check?sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.MANDT}&sap-language=${oUserInfo.LANGU}`;
 
         var xhr = new XMLHttpRequest();
         xhr.withCredentials = true;

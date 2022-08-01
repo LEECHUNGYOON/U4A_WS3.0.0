@@ -1475,6 +1475,9 @@
   //UI design tree 라인 선택 이벤트.
   oAPP.fn.designTreeItemPress = function(is_tree, iIndex, UIATK, TYPE, f_cb){
 
+    //이전 선택한 UI의 선택 표현 CSS 제거 처리.
+    oAPP.attr.ui.frame.contentWindow.oWS.sMark.fn_removeMark();
+
     //UI Info 영역 갱신 처리.
     oAPP.fn.setUIInfo(is_tree);
 

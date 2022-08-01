@@ -368,17 +368,17 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     // 3. 서버 URL을 구한다.
     oWS.utill.fn.getServerPath = function () {
 
-        if (!oWS.oServerInfo) {
-            return;
-        }
+        // if (!oWS.oServerInfo) {
+        //     return;
+        // }
 
-        var oServerInfo = oWS.oServerInfo,
-            sServerUrl = oServerInfo.SERVERIP,
-            sInstanceNo = oServerInfo.INSTANCENO,
-            sServicePath = "http://" + sServerUrl + ":80" + sInstanceNo + "/zu4a_wbc";
+        // var oServerInfo = oWS.oServerInfo,
+        //     sServerUrl = oServerInfo.SERVERIP,
+        //     sInstanceNo = oServerInfo.INSTANCENO,
+        //     sServicePath = "http://" + sServerUrl + ":80" + sInstanceNo + "/zu4a_wbc/u4a_ipcmain";
 
-        var sServerHost = getServerHost();
-        sServicePath = sServerHost + "/zu4a_wbc";
+        var sServerHost = getServerHost(),
+        sServicePath = sServerHost + "/zu4a_wbc/u4a_ipcmain";
 
         return sServicePath;
 
