@@ -246,7 +246,7 @@
         // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
         oAPP.fn.fnKillUserSession(lf_success);
 
-        function lf_success() {            
+        function lf_success() {
 
             /**
              * 페이지 이동 시, CHANGE 모드였다면 현재 APP의 Lock Object를 해제한다.
@@ -431,15 +431,15 @@
      ************************************************************************/
     oAPP.fn.fnSetAppChangeMode = function () {
 
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
         var oAppInfo = parent.getAppInfo(),
             sCurrPage = parent.getCurrPage();
 
         var oFormData = new FormData();
         oFormData.append("APPID", oAppInfo.APPID);
         oFormData.append("ISEDIT", 'X');
-
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
 
         // 서버에서 App 정보를 구한다.
         ajax_init_prc(oFormData, lf_success);
@@ -470,13 +470,11 @@
             // 현재 떠있는 Electron Browser들 전체 닫는 function
             oAPP.fn.fnChildWindowClose();
 
-            // 푸터 메시지 처리            
-            // var sMsg = oAPP.common.fnGetMsgClassTxt("0013"); // "Switch to edit mode."
-            var sMsg = oAPP.common.fnGetMsgClsTxt("020"); // "Switch to edit mode."
-
-            oAPP.common.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
-
             oAPP.fn.setUIAreaEditable(); // Change Mode 모드로 변환
+
+            // 푸터 메시지 처리                        
+            var sMsg = oAPP.common.fnGetMsgClsTxt("020"); // "Switch to edit mode."
+            oAPP.common.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
 
         }
 

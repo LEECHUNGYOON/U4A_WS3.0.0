@@ -63,32 +63,12 @@
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
 
-        var aAttrData = oAPP.fn.getAttrChangedData(), // attribute 정보
-            aServerEventList = oAPP.fn.getServerEventList(); // 서버 이벤트 리스트
+        var aAttrData = oAPP.fn.getAttrChangedData(); // attribute 정보
+        // aServerEventList = oAPP.fn.getServerEventList(); // 서버 이벤트 리스트
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
-
-        // // 팝업 위치를 부모 위치에 배치시킨다.
-        // var oParentBounds = CURRWIN.getBounds(),
-        //     xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-        //     yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-        //     oWinScreen = window.screen,
-        //     iAvailLeft = oWinScreen.availLeft;
-
-        // if (xPos < iAvailLeft) {
-        //     xPos = iAvailLeft;
-        // }
-
-        // if (yPos < 0) {
-        //     yPos = 0;
-        // };
-
-        // oBrowserWindow.setBounds({
-        //     x: xPos,
-        //     y: yPos
-        // });
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
@@ -100,20 +80,26 @@
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
+            
+            // 서버이벤트 리스트를 구한다.
+            oAPP.fn.getServerEventList(function (aServerEventList) {
 
-            oAPP.fn.fnFindPopupOpenSetBounds(oBrowserWindow, oBrowserOptions);
+                var oFindData = {
+                    oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보
+                    oThemeInfo: oThemeInfo, // 테마 개인화 정보
+                    aAttrData: aAttrData,
+                    aServEvtData: aServerEventList,
+                    aT_0022: oAPP.DATA.LIB.T_0022
+                };
 
-            var oFindData = {
-                oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보
-                oThemeInfo: oThemeInfo, // 테마 개인화 정보
-                aAttrData: aAttrData,
-                aServEvtData: aServerEventList,
-                aT_0022: oAPP.DATA.LIB.T_0022
-            };
+                oBrowserWindow.webContents.send('if-find-info', oFindData);
 
-            oBrowserWindow.webContents.send('if-find-info', oFindData);
+                oBrowserWindow.setOpacity(1.0);
 
-            oBrowserWindow.setOpacity(1.0);
+                // Find Popup을 부모창 가운데에 표시
+                oAPP.fn.fnFindPopupOpenSetBounds(oBrowserWindow, oBrowserOptions);
+
+            });
 
         });
 
@@ -140,6 +126,9 @@
 
     }; // end of oAPP.fn.fnFindPopupOpen
 
+    /**************************************************************************
+     * Find Popup을 부모창 가운데에 표시
+     * ************************************************************************/
     oAPP.fn.fnFindPopupOpenSetBounds = (oBrowserWindow, oBrowserOptions) => {
 
         // 팝업 위치를 부모 위치에 배치시킨다.
@@ -162,7 +151,7 @@
             y: yPos
         });
 
-    };
+    }; // end of oAPP.fn.fnFindPopupOpenSetBounds
 
     /**************************************************************************
      * Find Popup에서 전달 받은 UI 정보를 가지고 WS20에 표시를 해준다.

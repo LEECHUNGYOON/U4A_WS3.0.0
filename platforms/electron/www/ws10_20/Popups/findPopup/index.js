@@ -203,10 +203,10 @@ let oAPP = parent.oAPP;
 
                     contentRight: [
 
-                        new sap.m.Button({
-                            icon: "sap-icon://refresh",
-                            press: oAPP.fn.fnFindDataRefresh
-                        })
+                        // new sap.m.Button({
+                        //     icon: "sap-icon://refresh",
+                        //     press: oAPP.fn.fnFindDataRefresh
+                        // })
 
                     ]
 

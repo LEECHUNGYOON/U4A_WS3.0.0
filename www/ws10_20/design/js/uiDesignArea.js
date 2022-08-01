@@ -1485,6 +1485,11 @@
     //선택한 ui에 해당하는 attr로 갱신 처리.
     oAPP.fn.updateAttrList(is_tree.UIOBK, is_tree.OBJID, UIATK, TYPE, f_cb);
 
+    var l_OBJID;
+    //이전 예외처리 UI가 존재하는경우.
+    if(oAPP.attr.UA015UI){
+      l_OBJID = oAPP.attr.UA015UI._OBJID;
+    }
 
     //미리보기 화면 갱신 처리.
     oAPP.attr.ui.frame.contentWindow.refreshPreview(is_tree);
@@ -1493,9 +1498,16 @@
     //팝업 호출건 강제 종료 처리.
     oAPP.attr.ui.frame.contentWindow.closePopup();
 
+    //이전 예외처리 UI와 미리보기 갱신 이후 예외처리 UI가 다른경우.
+    var l_refresh = false;
+    if(typeof l_OBJID !== "undefined" && oAPP.attr.UA015UI && oAPP.attr.UA015UI._OBJID !== l_OBJID){
+      //선택처리를 UI updated이후 수행하도록 flag 처리.
+      l_refresh = true;      
+    }
 
     //미리보기 ui 선택 처리
-    oAPP.attr.ui.frame.contentWindow.selPreviewUI(is_tree.OBJID);
+    oAPP.attr.ui.frame.contentWindow.selPreviewUI(is_tree.OBJID, l_refresh);
+
 
 
     //tree의 first visible row 변경이 필요한경우 하위 로직 수행.

@@ -58,14 +58,19 @@
             return;
         }
 
-        if (oAPP.fn.fnFindPopupOpen) {
-            oAPP.fn.fnFindPopupOpen();
-            return;
-        }
+        // 서버이벤트 리스트를 구한다.
+        // oAPP.fn.getServerEventList(function (aServerEventList) {
 
-        oAPP.loadJs("fnFindPopupOpen", function () {
-            oAPP.fn.fnFindPopupOpen();
-        });
+            if (oAPP.fn.fnFindPopupOpen) {
+                oAPP.fn.fnFindPopupOpen();
+                return;
+            }
+
+            oAPP.loadJs("fnFindPopupOpen", function () {
+                oAPP.fn.fnFindPopupOpen();
+            });
+
+        // });
 
     }; // end of oAPP.fn.fnFindPopupOpener
 
@@ -422,6 +427,13 @@
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
+            lf_move();
+
+        });
+
+        oBrowserWindow.webContents.on("dom-ready", function () {
+
+            console.log("dom-ready");
             lf_move();
 
         });
