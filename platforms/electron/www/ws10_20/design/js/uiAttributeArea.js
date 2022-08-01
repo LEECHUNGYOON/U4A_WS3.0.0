@@ -3979,6 +3979,13 @@
       }
     }
 
+    //display상태인경우.
+    if(oAPP.attr.oModel.oData.IS_EDIT === false){
+      //attribute 초기화 비활성.
+      ls_uiinfo.vis02 = false;
+      
+    }
+
     oAPP.attr.oModel.oData.uiinfo = ls_uiinfo;
     oAPP.attr.oModel.refresh();
 

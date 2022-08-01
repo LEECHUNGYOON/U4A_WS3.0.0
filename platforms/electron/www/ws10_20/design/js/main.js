@@ -264,7 +264,7 @@
 
       //서버 호출.
       sendAjax(oAPP.attr.servNm + "/getAppData", oFormData, function(param){
-        
+
         for(var i=param.APPDATA.T_0014.length-1; i>=0; i--){
           
           //StyleCSS, HTMLCode, ScriptCode UI가 존재하는경우.
@@ -481,6 +481,9 @@
           //css 미리보기 적용건 해제 처리.
           oAPP.fn.prevStyleClassApply([]);
 
+          //attribute 초기화버튼 비활성처리.
+          oAPP.attr.oModel.oData.uiinfo.vis02 = false;
+
           //모델 갱신 처리.
           oAPP.attr.oModel.refresh();
 
@@ -551,8 +554,16 @@
 
     //model, 미리보기 정보 제거.
     oAPP.fn.removeContent = function(){
+
       //미리보기 화면 제거.
       oAPP.attr.ui.frame.contentWindow.removePreviewPage();
+
+      //미리보기 테마 초기화(sap_fiori_3로 설정함).
+      oAPP.attr.ui.frame.contentWindow.setPreviewUiTheme("sap_fiori_3");
+      
+      //미리보기 css 제거 처리.
+      oAPP.attr.ui.frame.contentWindow.setCSSLink([],true);
+      oAPP.attr.ui.frame.contentWindow.setCSSSource("");      
       
       //design tree 선택 처리 해제
       oAPP.attr.ui.oLTree1.clearSelection();
@@ -583,6 +594,7 @@
 
       //application 정보 제거.
       delete oAPP.DATA.APPDATA;
+      
 
       oAPP.attr.oModel.refresh();
 
