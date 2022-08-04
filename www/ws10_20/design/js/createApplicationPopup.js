@@ -69,7 +69,11 @@
           return l_err;
         }
 
+        oModel.setData({"CREATE":ls_appl});
+
       } //application 생성전 입력값 점검.
+
+
 
       //standard package 입력 여부 점검.
       function lf_chkPackageStandard(is_appl){
@@ -342,7 +346,9 @@
           labelSpanL: 3,
           labelSpanM: 3,
           labelSpanS: 12,
-          singleContainerFullSize: false
+          columnsL: 1,
+          singleContainerFullSize: false,
+          adjustLabelSpan: false,
         }),
         formContainers: [
           new sap.ui.layout.form.FormContainer({
@@ -403,11 +409,15 @@
         ]
       });
 
+
       //application 생성처리를 위한 서버 호출.
       function lf_createAppData(){
         
         //생성전 화면 lock 처리.
         sap.ui.getCore().lock();
+
+        //busy dialog close.
+        oAPP.common.fnSetBusyDialog(true);
 
         var l_create = oModel.getProperty("/CREATE");
         var l_appdata = {};
@@ -450,7 +460,7 @@
           //dialog 종료 처리.
           lf_closeDialog(true);
 
-        },"", true, "POST", function(e){
+        },null, true, "POST", function(e){
           //오류 발생시 lock 해제.
           sap.ui.getCore().unlock();
   
@@ -512,7 +522,7 @@
           oModel.setProperty("/CREATE", is_create);
 
 
-        },"", true, "POST", function(e){
+        },null, true, "POST", function(e){
           //오류 발생시 lock 해제.
           sap.ui.getCore().unlock();
   
@@ -523,71 +533,161 @@
 
 
       // Application 생성 Dialog
-      var oCreateDialog = new sap.m.Dialog({
-        draggable: true,
-        resizable: true,
-        contentWidth: "50%",
-        title: "UI5 Application Create Option Selection",
-        titleAlignment: "Center",
-        icon: "sap-icon://document",
-        buttons: [
-          new sap.m.Button({
-            type: "Accept",
-            icon: "sap-icon://accept",
-            press : function(){
-
-              //생성전 화면 lock 처리.
-              sap.ui.getCore().lock();
-
-              //busy dialog true.
-              oAPP.common.fnSetBusyDialog(true);
-
-              //application 생성 처리전 입력값 점검.
-              if( lf_chkValue() === true){
-
-                //입력값 오류 발생시 lock해제.
-                sap.ui.getCore().unlock();
-
-                //busy dialog close.
-                oAPP.common.fnSetBusyDialog(false);
-                return;
-              }
-
-              //application 생성 처리.
-              lf_createAppData();
-
-            }
-          }),
-          new sap.m.Button({
-            type: "Reject",
-            icon: "sap-icon://decline",
-            press: lf_closeDialog
-          }),
-        ],
-
-        content: [
-          oCreateDialogForm
-        ]
-
-      });
+      var oCreateDialog = new sap.m.Dialog({draggable: true, resizable: true,
+        contentWidth: "50%", contentHeight: "40%", verticalScrolling: false});
 
 
+      //toolbar.
       var oTool = new sap.m.Toolbar();
       oCreateDialog.setCustomHeader(oTool);
       
+      //application 생성팝업 title.
       var oTitle = new sap.m.Title({text:"UI5 Application Create Option Selection"});
-
       oTool.addContent(oTitle);
 
       oTool.addContent(new sap.m.ToolbarSpacer());
 
       //우상단 닫기버튼.
-      var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject"});
+      var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip:"Close Popup"});
       oTool.addContent(oBtn0);
 
       //닫기 버튼 선택 이벤트.
       oBtn0.attachPress(function(){
         
+        lf_closeDialog();
+
+      });
+
+      var oHbox1 = new sap.m.HBox({height:"100%", width:"100%", direction:"Column", renderType:"Bare", justifyContent:"SpaceBetween"});
+      oCreateDialog.addContent(oHbox1);
+
+      oHbox1.addItem(oCreateDialogForm);
+
+      var oFoot = new sap.m.Toolbar({content:[new sap.m.ToolbarSpacer()]});
+      oHbox1.addItem(oFoot);
+      oFoot.addStyleClass("sapUiTinyMargin");
+
+      //application 로컬로 생성하기 버튼.
+      var oLocal = new sap.m.Button({text:"Local Object", icon:"sap-icon://sys-monitor", tooltip:"Create Local U4A Application"});
+      oFoot.addContent(oLocal);
+
+      //로컬로 생성하기 버튼 선택 이벤트.
+      oLocal.attachPress(function(){
+
+        //생성전 화면 lock 처리.
+        sap.ui.getCore().lock();
+
+        //busy dialog true.
+        oAPP.common.fnSetBusyDialog(true);
+
+        var l_create = oModel.getProperty("/CREATE");
+
+        if(!l_create){
+          //모델정보를 얻지 못한경우 화면 unlock 처리 후 exit.
+          sap.ui.getCore().unlock();
+          
+          //busy dialog true.
+          oAPP.common.fnSetBusyDialog(false);
+
+          return;
+
+        }
+        
+        //로컬로 생성하고자 package명을 $TMP로 고정 후 CTS 번호 입력란 잠금 처리 및 CTS번호 초기화.
+        l_create.PACKG = "$TMP";
+        l_create.REQNR_edit = false; //Request No. 잠금 처리.
+        l_create.REQNR_requ = false; //Request No. 필수입력 false 처리
+        l_create.REQNR = "";   //기존 입력 Request No. 초기화.
+        l_create.REQTX = "";   //기존 입력 Request Desc. 초기화.
+
+        oModel.setProperty("/CREATE", l_create);
+
+
+        //application 생성 처리전 입력값 점검.
+        if( lf_chkValue() === true){
+
+          //입력값 오류 발생시 lock해제.
+          sap.ui.getCore().unlock();
+
+          //busy dialog close.
+          oAPP.common.fnSetBusyDialog(false);
+          return;
+        }
+
+        //입력값 오류 발생시 lock해제.
+        sap.ui.getCore().unlock();
+
+        //busy dialog close.
+        oAPP.common.fnSetBusyDialog(false);
+
+        //생성전 확인팝업 호출.
+        parent.showMessage(sap, 30, "I", appid + " 어플리케이션을 생성하시겠습니까?", function(param){
+          
+          //YES를 선택하지 않은경우 EXIT.
+          if(param !== "YES"){return;}
+          
+          //application 생성 처리.
+          lf_createAppData();
+
+        }); //생성전 확인팝업 호출.
+
+
+      }); //로컬로 생성하기 버튼 선택 이벤트.
+
+
+
+      oFoot.addContent(new sap.m.ToolbarSeparator());
+
+      //application 생성버튼.
+      var oCreate = new sap.m.Button({text:"Create", type: "Accept", icon: "sap-icon://accept", tooltip:"Create U4A Application"});
+      oFoot.addContent(oCreate);
+
+      //application 생성버튼 선택 이벤트.
+      oCreate.attachPress(function(){
+
+        //생성전 화면 lock 처리.
+        sap.ui.getCore().lock();
+
+        //busy dialog true.
+        oAPP.common.fnSetBusyDialog(true);
+
+        //application 생성 처리전 입력값 점검.
+        if( lf_chkValue() === true){
+
+          //입력값 오류 발생시 lock해제.
+          sap.ui.getCore().unlock();
+
+          //busy dialog close.
+          oAPP.common.fnSetBusyDialog(false);
+          return;
+        }
+
+
+        //입력값 오류 발생시 lock해제.
+        sap.ui.getCore().unlock();
+
+        //busy dialog close.
+        oAPP.common.fnSetBusyDialog(false);
+
+        //생성전 확인팝업 호출.
+        parent.showMessage(sap, 30, "I", appid + " 어플리케이션을 생성하시겠습니까?", function(param){
+          
+          //YES를 선택하지 않은경우 EXIT.
+          if(param !== "YES"){return;}
+          
+          //application 생성 처리.
+          lf_createAppData();
+
+        }); //생성전 확인팝업 호출.
+
+      }); //application 생성버튼 선택 이벤트.
+
+      //application 생성팝업 종료 버튼.
+      var oClose = new sap.m.Button({text:"Close", type: "Reject", icon: "sap-icon://decline", tooltip:"Close Popup"});
+      oFoot.addContent(oClose);
+
+      //닫기 버튼 선택 이벤트.
+      oClose.attachPress(function(){
         lf_closeDialog();
 
       });
@@ -598,7 +698,9 @@
       //default 정보 바인딩.
       lf_setDefaultVal();
 
+      //팝업 호출.
       oCreateDialog.open();
 
-  };
+  };  //application 생성시 추가 입력정보 팝업 호출.
+
 })();

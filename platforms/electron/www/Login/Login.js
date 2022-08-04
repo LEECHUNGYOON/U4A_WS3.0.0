@@ -152,8 +152,6 @@ let oAPP = (function () {
      ************************************************************************/
     oAPP.fn.fnLoadBootStrapSetting = () => {
 
-        debugger;
-
         let oThemeInfo = parent.getThemeInfo(); // theme 정보
 
         var oSettings = oAPP.fn.fnGetSettingsInfo(),
@@ -1415,6 +1413,8 @@ let oAPP = (function () {
         }
 
         var oUserInfo = jQuery.extend({}, oResult, oLogInData);
+
+        oUserInfo.WSVER = APP.getVersion();
 
         // 로그인 유저의 아이디/패스워드를 저장해둔다.    
         parent.setUserInfo(oUserInfo);

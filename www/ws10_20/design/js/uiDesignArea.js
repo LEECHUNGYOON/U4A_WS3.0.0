@@ -125,8 +125,13 @@
       var ls_drag = l_ctxt.getProperty();
       if(!ls_drag){return;}
 
-      //DRAG한 UI의 라이브러리명 정보 세팅(Runtime Class Navigator 기능에서 사용)
-      event.dataTransfer.setData("rtmcls", ls_drag.UILIB);
+      //실제 라이브러리의 정보 검색.
+      var ls_0022 = oAPP.DATA.LIB.T_0022.find( a => a.UIOBK === ls_drag.UIOBK);
+
+      if(ls_0022){
+        //DRAG한 UI의 라이브러리명 정보 세팅(Runtime Class Navigator 기능에서 사용)
+        event.dataTransfer.setData("rtmcls", ls_0022.LIBNM);
+      }
 
       //DRAG한 UI ID 정보 세팅.
       event.dataTransfer.setData("text/plain", ls_drag.OBJID + "|" + oAPP.attr.DnDRandKey);
@@ -221,6 +226,44 @@
 
     }); //접힘 이벤트
 
+    // //구분자 추가.
+    // oLTBar1.addContent(new sap.m.ToolbarSeparator());
+
+    // //UI 검색 버튼.
+    // oLBtn6 = new sap.m.Button({icon:"sap-icon://search", tooltip:"Find UI"});
+    // oLTBar1.addContent(oLBtn6);
+
+    // oLBtn6.attachPress(function(){
+
+    //   var pop1 = new sap.m.ResponsivePopover({showHeader:false});
+
+    //   var inp1 = new sap.m.Input();
+    //   pop1.addContent(inp1);
+
+    //   inp1.attachChange(function(){
+    //     var l_bind = oAPP.attr.ui.oLTree1.getBinding();
+    //     if(!l_bind){return;}
+
+    //     var l_val = this.getValue();
+        
+    //     if(l_val === ""){
+    //       l_bind.filter();
+    //     }
+
+    //     l_bind.filter(new sap.ui.model.Filter({path:"OBJID", operator:"Contains",value1:l_val}));
+
+    //   });
+      
+    //   var h1 = new sap.m.HBox({width:"100%", renderType:"Bare"});
+    //   pop1.addContent(h1);
+    //   h1.addItem(new sap.m.Button({icon:"sap-icon://accept", type:"Accept", width:"100%"}));
+    //   h1.addItem(new sap.m.Button({icon:"sap-icon://refresh", type:"Neutral", width:"100%"}));
+
+    //   pop1.openBy(this);
+
+
+    // });
+
 
     //구분자 추가.
     oLTBar1.addContent(new sap.m.ToolbarSeparator({visible:"{/IS_EDIT}"}));
@@ -236,6 +279,8 @@
       oAPP.fn.designClearCheckAll();
 
     }); //전체 선택 헤제 버튼 이벤트.
+
+
 
 
     //구분자 추가.
@@ -1268,10 +1313,10 @@
         l_dropIndex = oAPP.attr.prev[i_drop.POBID][l_funcnm](oAPP.attr.prev[i_drop.OBJID]);
 
         //drag건 미리보기 위치이동.
-        oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(i_drag.OBJID, i_drag.UILIB, i_drag.POBID, i_drag.PUIOK, i_drag.UIATT, l_dropIndex, i_drag.UIOBK);
+        oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(i_drag.OBJID, i_drag.UILIB, i_drag.POBID, i_drag.PUIOK, i_drag.UIATT, l_dropIndex, i_drag.ISMLB, i_drag.UIOBK);
 
         //drop건 미리보기 위치이동.
-        oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(i_drop.OBJID, i_drop.UILIB, i_drop.POBID, i_drop.PUIOK, i_drop.UIATT,l_dragIndex, i_drop.UIOBK);
+        oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(i_drop.OBJID, i_drop.UILIB, i_drop.POBID, i_drop.PUIOK, i_drop.UIATT,l_dragIndex, i_drop.ISMLB, i_drop.UIOBK);
 
         //drop index가 drag index보다 큰경우.
       }else{
@@ -1295,10 +1340,10 @@
         l_dropIndex = oAPP.attr.prev[i_drop.POBID][l_funcnm](oAPP.attr.prev[i_drop.OBJID]);
 
         //drop건 미리보기 위치이동.
-        oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(i_drop.OBJID, i_drop.UILIB, i_drop.POBID, i_drop.PUIOK, i_drop.UIATT, l_dragIndex, i_drop.UIOBK);
+        oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(i_drop.OBJID, i_drop.UILIB, i_drop.POBID, i_drop.PUIOK, i_drop.UIATT, l_dragIndex, i_drop.ISMLB, i_drop.UIOBK);
 
         //drag건 미리보기 위치이동.
-        oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(i_drag.OBJID, i_drag.UILIB, i_drag.POBID, i_drag.PUIOK, i_drag.UIATT, l_dropIndex, i_drag.UIOBK);
+        oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(i_drag.OBJID, i_drag.UILIB, i_drag.POBID, i_drag.PUIOK, i_drag.UIATT, l_dropIndex, i_drag.ISMLB, i_drag.UIOBK);
 
       }
 
@@ -1485,12 +1530,6 @@
     //선택한 ui에 해당하는 attr로 갱신 처리.
     oAPP.fn.updateAttrList(is_tree.UIOBK, is_tree.OBJID, UIATK, TYPE, f_cb);
 
-    var l_OBJID;
-    //이전 예외처리 UI가 존재하는경우.
-    if(oAPP.attr.UA015UI){
-      l_OBJID = oAPP.attr.UA015UI._OBJID;
-    }
-
     //미리보기 화면 갱신 처리.
     oAPP.attr.ui.frame.contentWindow.refreshPreview(is_tree);
 
@@ -1498,16 +1537,8 @@
     //팝업 호출건 강제 종료 처리.
     oAPP.attr.ui.frame.contentWindow.closePopup();
 
-    //이전 예외처리 UI와 미리보기 갱신 이후 예외처리 UI가 다른경우.
-    var l_refresh = false;
-    if(typeof l_OBJID !== "undefined" && oAPP.attr.UA015UI && oAPP.attr.UA015UI._OBJID !== l_OBJID){
-      //선택처리를 UI updated이후 수행하도록 flag 처리.
-      l_refresh = true;      
-    }
-
     //미리보기 ui 선택 처리
-    oAPP.attr.ui.frame.contentWindow.selPreviewUI(is_tree.OBJID, l_refresh);
-
+    oAPP.attr.ui.frame.contentWindow.selPreviewUI(is_tree.OBJID);
 
 
     //tree의 first visible row 변경이 필요한경우 하위 로직 수행.

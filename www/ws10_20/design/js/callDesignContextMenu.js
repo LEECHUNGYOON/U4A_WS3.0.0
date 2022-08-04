@@ -644,10 +644,10 @@
             }
 
             //미리보기 갱신 처리.
-            oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(ls_tree.OBJID, ls_tree.UILIB, ls_tree.POBID, ls_tree.PUIOK, ls_tree.UIATT, l_cnt, ls_tree.UIOBK);
+            oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(ls_tree.OBJID, ls_tree.UILIB, ls_tree.POBID, ls_tree.PUIOK, ls_tree.UIATT, l_cnt, ls_tree.ISMLB, ls_tree.UIOBK);
 
             //미리보기 ui 선택.
-            oAPP.attr.ui.frame.contentWindow.selPreviewUI(ls_tree.OBJID);
+            //oAPP.attr.ui.frame.contentWindow.selPreviewUI(ls_tree.OBJID);
 
         }
 
@@ -976,6 +976,91 @@
         } //붙여넣기 callback 이벤트.
 
 
+        //붙여넣기 정보의 OTR ALIAS검색.
+        function lf_getOTRtext(param, i_cdata, bKeep){
+
+            //붙여넣기 처리하려는 정보의 OTR ALIAS 수집 처리.
+            function lf_getOTRAlise(is_tree){
+                //ATTR 정보가 존재하지 않는경우 EXIT.
+                if(is_tree._T_0015.length === 0){return;}
+
+                //ATTR 정보를 기준으로 OTR ALIAS 수집 처리.
+                for(var i=0, l=is_tree._T_0015.length; i<l; i++){
+
+                    //프로퍼티, 바인딩처리안됨, 입력값이 $OTR:로 시작함.
+                    if(is_tree._T_0015[i].UIATY === "1" && 
+                        is_tree._T_0015[i].ISBND !== "X" && 
+                        is_tree._T_0015[i].UIATV.substr(0,5) === "$OTR:"){
+                        
+                        //ALIAS 정보 수집.
+                        lt_alise.push(is_tree._T_0015[i].UIATV.substr(5));
+                    }
+
+                }
+
+            }   //붙여넣기 처리하려는 정보의 OTR ALIAS 수집 처리.
+
+            
+            
+            //TREE를 기준으로 하위를 탐색하며, OTR ALIAS정보 수집.
+            function lf_getOTRAlisetree(is_tree){
+                //CHILD가 존재하는경우 CHILD의 OTR ALIAS정보 수집을 위한 탐색.
+                if(is_tree.zTREE.length.length !== 0){
+                    for(var i=0, l=is_tree.zTREE.length; i<l; i++){
+                        lf_getOTRAlisetree(is_tree.zTREE[i]);
+                    }
+                }
+
+                //현재 TREE에 OTR정보가 존재하는지 수집 처리.
+                lf_getOTRAlise(is_tree);
+
+            }   //TREE를 기준으로 하위를 탐색하며, OTR ALIAS정보 수집.
+
+            var lt_alise = [];
+
+            //붙여넣기 정보에서 OTR ALIAS 수집.
+            lf_getOTRAlisetree(i_cdata);
+
+            //수집된 OTR ALIAS 정보가 없는경우 EXIT.
+            if(lt_alise.length === 0){
+                lf_paste_cb(param, i_cdata, bKeep);
+                return;
+            }
+            
+            //화면 잠금 처리.
+            oAPP.fn.designAreaLockUnlock(true);
+
+            var oFormData = new FormData();
+            oFormData.append("ALIAS", JSON.stringify(lt_alise));
+
+            //수집된 OTR ALIAS가 존재하는경우 서버에서 OTR ALIAS에 해당하는 TEXT 검색.
+            sendAjax(oAPP.attr.servNm + "/getOTRTextsAlias", oFormData, function(oRet){
+
+                //화면 잠금 해제처리.
+                oAPP.fn.designAreaLockUnlock(true);
+
+                if(oRet.RETCD === "E"){
+                    //메시지 출력.
+                    parent.showMessage(sap, 10, "W", oRet.RTMSG);
+                    
+                }
+
+                //서버에서 구성한 OTR ALISE에 해당하는 TEXT 정보 매핑.
+                oAPP.DATA.APPDATA.T_OTR = oRet.T_OTR;
+
+                //복사된 정보  붙여넣기 처리.
+                lf_paste_cb(param, i_cdata, bKeep);
+
+            }, "X", true, "POST", function(e){
+                //오류 발생시 lock 해제.
+                oAPP.fn.designAreaLockUnlock();
+              
+            });  //수집된 OTR ALIAS가 존재하는경우 서버에서 OTR ALIAS에 해당하는 TEXT 검색.
+
+
+
+        }   //붙여넣기 정보의 OTR ALIAS검색.
+
 
         //AGGR 선택 팝업의 CALLBACK FUNCTION.
         function lf_aggrPopup_cb(param, i_cdata){
@@ -1006,7 +1091,8 @@
             //복사한 UI에 바인딩, 이벤트 정보가 존재하지 않는경우.
             if(lf_chkBindNEvent(i_cdata) !== true){
                 //복사된 ui 붙여넣기 처리.
-                lf_paste_cb(param, i_cdata, false);
+                //lf_paste_cb(param, i_cdata, false);
+                lf_getOTRtext(param, i_cdata, false);
                 return;
             }
 
@@ -1014,7 +1100,8 @@
             //trial 버전인경우.
             if(parent.getIsTrial()){
                 //복사된 바인딩 정보, 서버이벤트 정보 제거 상태로 붙여넣기 처리.
-                lf_paste_cb(param, i_cdata, false);
+                //lf_paste_cb(param, i_cdata, false);
+                lf_getOTRtext(param, i_cdata, false);
                 return;
             }
             
@@ -1035,9 +1122,10 @@
                 }
 
                 //복사된 ui 붙여넣기 처리.
-                lf_paste_cb(param, i_cdata, l_flag);
+                //lf_paste_cb(param, i_cdata, l_flag);
+                lf_getOTRtext(param, i_cdata, l_flag);
 
-            });
+            }); //바인딩, 서버이벤트 초기화 여부 확인 팝업 호출.
 
 
         }   //AGGR 선택 팝업의 CALLBACK FUNCTION.
@@ -1061,7 +1149,9 @@
             if(typeof is_tree.zTREE !== "undefined" && is_tree.zTREE.length !== 0){
 
                 for(var i=0, l=is_tree.zTREE.length; i<l; i++){
-                    return lf_chkBindNEvent(is_tree.zTREE[i]);
+                    var l_found = lf_chkBindNEvent(is_tree.zTREE[i]);
+
+                    if(l_found){return true;}
                 }
 
             }

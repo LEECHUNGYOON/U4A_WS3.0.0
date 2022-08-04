@@ -888,6 +888,20 @@
                                 new sap.ui.layout.form.FormElement({
                                     label: new sap.m.Label({
                                         design: "Bold",
+                                        text: "WS Ver"
+                                    }), // end of label
+
+                                    fields: [
+                                        new sap.m.Text({
+                                            text: "{WSVER}"
+                                        })
+                                    ] // end of fields
+
+                                }), // end of sap.ui.layout.form.FormElement
+
+                                new sap.ui.layout.form.FormElement({
+                                    label: new sap.m.Label({
+                                        design: "Bold",
                                         text: "Client"
                                     }), // end of label
 

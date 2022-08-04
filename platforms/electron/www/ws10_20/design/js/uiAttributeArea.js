@@ -22,9 +22,14 @@
     var oRCTool = new sap.m.Toolbar();
     oRCtn1.setToolbar(oRCTool);
 
-      
+    //tree 선택 라인의 아이콘 표현.
+    var oRAvatar1 = new sap.m.Avatar({src:"{/uiinfo/src}", displayShape:"Square",displaySize:"Custom", customDisplaySize:"20px"});
+    oRCTool.addContent(oRAvatar1);
+    
+    //tree 선택 라인의 UIOBJECT명.
     var oRTitle1 = new sap.m.Title({text:"{/uiinfo/OBJID}"});
     oRCTool.addContent(oRTitle1);
+    
 
     oRCTool.addContent(new sap.m.ToolbarSpacer());
 
@@ -1621,6 +1626,11 @@
     if(ls_uiinfo.OBJID_stat === "Error"){
       oAPP.attr.oModel.setProperty("/uiinfo", ls_uiinfo);
       parent.showMessage(sap, 10, "E", ls_uiinfo.OBJID_stxt);
+      return;
+    }
+
+    //이전에 입력한 이름과 지금 입력한 이름이 같으면 exit.
+    if(ls_uiinfo.OBJID === ls_uiinfo.OBJID_bf){
       return;
     }
 
@@ -3964,6 +3974,8 @@
     ls_uiinfo.vis01 = false;  //UI Library & sample 비활성.
 
     ls_uiinfo.vis02 = false;  //attribute 초기화 비활성.
+
+    ls_uiinfo.src = is_tree.UICON;  //아이콘 바인딩 필드.
 
     //DOCUMENT가 아닌경우(UI인경우)만 UI정보 검색.
     if(is_tree.OBJID !== "ROOT"){
