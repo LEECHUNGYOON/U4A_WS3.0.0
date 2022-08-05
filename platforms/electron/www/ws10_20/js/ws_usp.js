@@ -9,6 +9,7 @@
     "use strict";
 
     oAPP.fn.fnCreateWs30 = (fnCallback) => {
+
         debugger;
 
         // 30번 페이지 존재 유무 체크
@@ -34,12 +35,13 @@
             return;
         }
 
-        var oCustomHeader = oAPP.fn.fnGetCustomHeaderWs30();
+        var oCustomHeader = oAPP.fn.fnGetCustomHeaderWs30(),
+            oSubHeader = oAPP.fn.fnGetSubHeaderWs30();
 
         var oWs30 = new sap.m.Page("WS30", {
             title: "WS30!!!",
-
-            customHeader : oCustomHeader
+            customHeader: oCustomHeader,
+            subHeader: oSubHeader,
 
 
 
@@ -49,7 +51,23 @@
 
     }; // end of oAPP.fn.fnInitRenderingWs30
 
+    /************************************************************************
+     * [WS30] Custom Header
+     ************************************************************************/
     oAPP.fn.fnGetCustomHeaderWs30 = () => {
+
+        return new sap.m.Toolbar({
+            content: [
+                
+            ]
+        });
+
+    }; // end of oAPP.fn.fnGetCustomHeaderWs30
+
+    /************************************************************************
+     * [WS30] Sub Header
+     ************************************************************************/
+    oAPP.fn.fnGetSubHeaderWs30 = () => {
 
         return new sap.m.Bar({
             contentLeft: [
