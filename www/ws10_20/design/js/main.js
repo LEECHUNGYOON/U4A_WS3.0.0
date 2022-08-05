@@ -568,6 +568,9 @@
       //design tree 선택 처리 해제
       oAPP.attr.ui.oLTree1.clearSelection();
 
+      // //design tree 필터 해제 처리.
+      // oAPP.fn.designSetFilter("");
+
       //attribute 선택 처리 해제.
       oAPP.attr.ui.oRTab1.removeSelections();
 
@@ -682,17 +685,47 @@
 
     //attribute의 변경된건 수집 처리.
     oAPP.fn.getAttrChangedData = function(){
+      
+      //document인경우 ZTU4A0010 테이블에 존재하는 필드 여부 확인.
+      function lf_chkDocAttr(OBJID, is_0015, is_0010){
+        //ROOT(DOCUMENT) 인경우 하위 로직 수행.
+        if(OBJID !== "ROOT"){return;}
+
+        //UI5 Document 속성 정보 검색.
+        var ls_ua003 = oAPP.DATA.LIB.T_9011.find( a => a.CATCD === "UA003" && a.ITMCD === is_0015.UIATK );
+
+        //UI5 Document 속성 정보를 찾지 못한 경우 EXIT.
+        if(!ls_ua003){return;}
+
+        if(typeof is_0010[ls_ua003.FLD08] === "undefined"){
+          return true;
+        }
+
+      } //document인경우 ZTU4A0010 테이블에 존재하는 필드 여부 확인.
+
+
+
       //UI에 구성한 attr 정보 수집 처리.
       var lt_0015 = [];
 
+      //ROOT(DOCUMENT) 정보 저장건 구성을 위한 ZTU4A0010구조 생성
+      //(ZTU4A0010의 필드 기준으로 ROOT(DOCUMENT)의 15번 저장정보를 구성함).
+      var ls_0010 = oAPP.fn.crtStru0010();
+      
+
       //생성한 UI를 기준으로 ATTRIBUTE 수집건 취합.
       for(var i in oAPP.attr.prev){
-        
+
         //attribute 수집건이 존재하지 않는경우 skip.
         if(oAPP.attr.prev[i]._T_0015.length === 0){continue;}
 
         //attribute 수집건을 기준으로 ZYU4A0015 정보 구성.
         for(var j=0, l2= oAPP.attr.prev[i]._T_0015.length; j<l2; j++){
+
+          //ROOT의 경우 ZTU4A0010 테이블 기준의 필드만 저장 가능.
+          if(lf_chkDocAttr(i, oAPP.attr.prev[i]._T_0015[j], ls_0010) === true){
+            continue;
+          }
           
           //ZSU4A0015 구조 생성.
           var ls_0015 = oAPP.fn.crtStru0015();

@@ -378,7 +378,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         //     sServicePath = "http://" + sServerUrl + ":80" + sInstanceNo + "/zu4a_wbc/u4a_ipcmain";
 
         var sServerHost = getServerHost(),
-        sServicePath = sServerHost + "/zu4a_wbc/u4a_ipcmain";
+            sServicePath = sServerHost + "/zu4a_wbc/u4a_ipcmain";
 
         return sServicePath;
 
@@ -676,9 +676,11 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         /**
          * ----- test start -----
          */
+        function lf_setBound() {
+            var oParentBounds = CURRWIN.getBounds();
+            oBrowserWindow.setBounds(oParentBounds);
+        }
 
-        var oParentBounds = CURRWIN.getBounds();
-        oBrowserWindow.setBounds(oParentBounds);
 
         // var xPos = oBrowserOptions.x + 30,
         //     yPos = oBrowserOptions.x + 30
@@ -750,6 +752,8 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
             oBrowserWindow.webContents.send('if-meta-info', oMetadata);
 
             oBrowserWindow.setOpacity(1.0);
+
+            lf_setBound();
 
         });
 
@@ -870,8 +874,8 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
             bIsBusy = (sIsbusy == "X" ? true : false);
 
-        if(oWS.utill.attr.sap){
-            if(bIsBusy){
+        if (oWS.utill.attr.sap) {
+            if (bIsBusy) {
                 oWS.utill.attr.sap.ui.getCore().lock();
             } else {
                 oWS.utill.attr.sap.ui.getCore().unlock();

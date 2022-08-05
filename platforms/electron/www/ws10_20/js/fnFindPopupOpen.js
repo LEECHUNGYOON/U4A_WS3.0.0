@@ -63,8 +63,7 @@
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
 
-        var aAttrData = oAPP.fn.getAttrChangedData(); // attribute 정보
-        // aServerEventList = oAPP.fn.getServerEventList(); // 서버 이벤트 리스트
+        var aAttrData = oAPP.fn.getAttrChangedData(); // attribute 정보        
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -80,7 +79,7 @@
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
-            
+
             // 서버이벤트 리스트를 구한다.
             oAPP.fn.getServerEventList(function (aServerEventList) {
 
@@ -186,7 +185,23 @@
      * ************************************************************************/
     oAPP.fn.fnIpcMain_Find_Data_Refresh = (events, res) => {
 
-        debugger;
+        oAPP.fn.getServerEventList(function (aServerEventList) {
+            
+            var oSender = events.sender,
+                oWebPref = oSender.getWebPreferences(),
+                sBrowserKey = oWebPref.browserkey;
+
+            var oFindData = {
+                oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보
+                oThemeInfo: parent.getThemeInfo(), // 테마 개인화 정보
+                aAttrData: oAPP.fn.getAttrChangedData(),
+                aServEvtData: aServerEventList,
+                aT_0022: oAPP.DATA.LIB.T_0022
+            };
+
+            oSender.send(`${sBrowserKey}--find--data--refresh--callback`, oFindData);
+
+        });
 
     }; // end of oAPP.fn.fnIpcMain_Find_Data_Refresh
 
@@ -1121,8 +1136,6 @@
      * ************************************************************************/
     oAPP.events.ev_pressFindPopChoice1TblCol1 = function (oEvent) {
 
-        debugger;
-
         var oCtx = oEvent.getSource().getBindingContext(),
             oSelectData = APPCOMMON.fnGetModelProperty(oCtx.sPath);
 
@@ -1135,8 +1148,6 @@
      * ************************************************************************/
     oAPP.events.ev_pressFindPopChoice1TblCol3 = function (oEvent) {
 
-        debugger;
-
         var oCtx = oEvent.getSource().getBindingContext(),
             oSelectData = APPCOMMON.fnGetModelProperty(oCtx.sPath);
 
@@ -1146,8 +1157,6 @@
      * Model Bindig Usage for UI 팝업의 좌측 Properties Usage Bind List "UI ID" Link
      * ************************************************************************/
     oAPP.events.ev_pressFindPopChoice2Tbl1Col1 = function (oEvent) {
-
-        debugger;
 
         var oCtx = oEvent.getSource().getBindingContext(),
             oSelectData = APPCOMMON.fnGetModelProperty(oCtx.sPath);
@@ -1159,8 +1168,6 @@
      * ************************************************************************/
     oAPP.events.ev_pressFindPopChoice2Tbl1Col3 = function (oEvent) {
 
-        debugger;
-
         var oCtx = oEvent.getSource().getBindingContext(),
             oSelectData = APPCOMMON.fnGetModelProperty(oCtx.sPath);
 
@@ -1170,8 +1177,6 @@
      * Model Bindig Usage for UI 팝업의 우측 Aggregations Usage bind Models "UI ID" Link
      * ************************************************************************/
     oAPP.events.ev_pressFindPopChoice2Tbl2Col1 = function (oEvent) {
-
-        debugger;
 
         var oCtx = oEvent.getSource().getBindingContext(),
             oSelectData = APPCOMMON.fnGetModelProperty(oCtx.sPath);
@@ -1183,8 +1188,6 @@
      * ************************************************************************/
     oAPP.events.ev_pressFindPopChoice3Tbl1Col1 = function (oEvent) {
 
-        debugger;
-
         var oCtx = oEvent.getSource().getBindingContext(),
             oSelectData = APPCOMMON.fnGetModelProperty(oCtx.sPath);
 
@@ -1195,8 +1198,6 @@
      * Event JS Where to Use 팝업의 "UI OBJ ID" Link
      * ************************************************************************/
     oAPP.events.ev_pressFindPopChoice4Tbl1Col1 = function (oEvent) {
-
-        debugger;
 
         var oCtx = oEvent.getSource().getBindingContext(),
             oSelectData = APPCOMMON.fnGetModelProperty(oCtx.sPath);

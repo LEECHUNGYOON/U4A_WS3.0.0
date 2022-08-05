@@ -460,7 +460,7 @@
           //dialog 종료 처리.
           lf_closeDialog(true);
 
-        },null, true, "POST", function(e){
+        },"", true, "POST", function(e){
           //오류 발생시 lock 해제.
           sap.ui.getCore().unlock();
   
@@ -522,7 +522,7 @@
           oModel.setProperty("/CREATE", is_create);
 
 
-        },null, true, "POST", function(e){
+        },"", true, "POST", function(e){
           //오류 발생시 lock 해제.
           sap.ui.getCore().unlock();
   

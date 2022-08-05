@@ -52,6 +52,15 @@
     oLTree1.attachBrowserEvent("click",function(){
         window.getSelection().removeAllRanges();
     });
+
+
+    // //tree에 필터처리 됐을때 이벤트.
+    // oLTree1.attachFilter(function(){
+     
+    //   //필터 처리 이후 라인 재선택 처리.
+    //   oAPP.fn.designFilterAfterLineSelection();
+
+    // }); //tree에 필터처리 됐을때 이벤트.
       
 
 
@@ -229,40 +238,28 @@
     // //구분자 추가.
     // oLTBar1.addContent(new sap.m.ToolbarSeparator());
 
-    // //UI 검색 버튼.
+    // //UI FILTER 버튼.
     // oLBtn6 = new sap.m.Button({icon:"sap-icon://search", tooltip:"Find UI"});
     // oLTBar1.addContent(oLBtn6);
 
+    // //UI FILTER 버튼 선택 이벤트.
     // oLBtn6.attachPress(function(){
 
-    //   var pop1 = new sap.m.ResponsivePopover({showHeader:false});
+    //   //필터 팝업이 존재하는경우.
+    //   if(typeof oAPP.fn.callDesignTreeFilterPopup !== "undefined"){
+    //     //필터 팝업 호출.
+    //     oAPP.fn.callDesignTreeFilterPopup(oLBtn6);
+    //     return;
+    //   }
 
-    //   var inp1 = new sap.m.Input();
-    //   pop1.addContent(inp1);
+    //   //필터 팝업이 존재하지 않는경우 js 호출.
+    //   oAPP.fn.getScript("design/js/callDesignTreeFilterPopup",function(){
+    //     //필터 팝업 호출.
+    //     oAPP.fn.callDesignTreeFilterPopup(oLBtn6);
 
-    //   inp1.attachChange(function(){
-    //     var l_bind = oAPP.attr.ui.oLTree1.getBinding();
-    //     if(!l_bind){return;}
+    //   });    
 
-    //     var l_val = this.getValue();
-        
-    //     if(l_val === ""){
-    //       l_bind.filter();
-    //     }
-
-    //     l_bind.filter(new sap.ui.model.Filter({path:"OBJID", operator:"Contains",value1:l_val}));
-
-    //   });
-      
-    //   var h1 = new sap.m.HBox({width:"100%", renderType:"Bare"});
-    //   pop1.addContent(h1);
-    //   h1.addItem(new sap.m.Button({icon:"sap-icon://accept", type:"Accept", width:"100%"}));
-    //   h1.addItem(new sap.m.Button({icon:"sap-icon://refresh", type:"Neutral", width:"100%"}));
-
-    //   pop1.openBy(this);
-
-
-    // });
+    // }); //UI FILTER 버튼 선택 이벤트.
 
 
     //구분자 추가.
@@ -1203,7 +1200,7 @@
         lt_route.push(is_child.positionInParent);
 
         //수집된 경로를 기준으로 child 정보 새로 검색.
-        is_child = lf_getNode();        
+        is_child = lf_getNode();
 
       }
 
@@ -1224,6 +1221,9 @@
 
     //OBJID가 존재하지 않는경우 EXIT.
     if(typeof OBJID === "undefined" || OBJID === null || OBJID === ""){return;}
+
+    // //필터 해제 처리.
+    // oAPP.fn.designSetFilter("");
 
     var lt_route = [], lt_path = [], l_cnt = 0;
 
@@ -2248,5 +2248,41 @@
     }
 
   };  //checkbox 선택처리된 항목 얻기.
+
+
+
+
+  //design tree 필터 처리.
+  oAPP.fn.designSetFilter = function(sVal){
+    
+    //design tree의 바인딩 정보 검색.
+    var l_bind = oAPP.attr.ui.oLTree1.getBinding();
+    if(!l_bind){return;}
+    
+    //입력값이 존재하지 않는경우.
+    if(sVal === ""){
+      //필터 해제 처리.
+      l_bind.filter();
+      return;
+    }
+
+    //입력값으로 design tree filter 처리.
+    l_bind.filter(new sap.ui.model.Filter({path:"OBJID", operator:"Contains",value1:sVal}));
+
+    //tree 전체 펼침 처리.
+    oAPP.attr.ui.oLTree1.expandToLevel(999999999999);
+
+  };  //design tree 필터 처리.
+
+
+
+
+  //필터 처리 이후 라인 재선택 처리.
+  oAPP.fn.designFilterAfterLineSelection = function(){
+
+    var lt_rows = oAPP.attr.ui.oLTree1.getRows();
+
+  };  //필터 처리 이후 라인 재선택 처리.
+
 
 })();

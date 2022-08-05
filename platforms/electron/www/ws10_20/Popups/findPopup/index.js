@@ -161,12 +161,25 @@ let oAPP = parent.oAPP;
             FIND4TABLE: oAPP.fn.fnGetFindData4(),
         };
 
-        var oJsonModel = new sap.ui.model.json.JSONModel();
-        oJsonModel.setData({
-            FIND: oModelData
-        });
 
-        sap.ui.getCore().setModel(oJsonModel);
+        var oCoreModel = sap.ui.getCore().getModel(),
+            oJsonModel = new sap.ui.model.json.JSONModel(),
+            oData = {
+                FIND: oModelData
+            };
+
+        if (oCoreModel == null) {
+
+            sap.ui.getCore().setModel(oJsonModel);
+            oJsonModel.setData(oData);
+
+            return;
+
+        }
+
+        oCoreModel.setData(oData);
+
+        oCoreModel.refresh(true);
 
     }; // end of oAPP.fn.fnInitModelBinding
 
@@ -203,10 +216,10 @@ let oAPP = parent.oAPP;
 
                     contentRight: [
 
-                        // new sap.m.Button({
-                        //     icon: "sap-icon://refresh",
-                        //     press: oAPP.fn.fnFindDataRefresh
-                        // })
+                        new sap.m.Button({
+                            icon: "sap-icon://refresh",
+                            press: oAPP.fn.fnFindDataRefresh
+                        })
 
                     ]
 
@@ -236,16 +249,41 @@ let oAPP = parent.oAPP;
         return new sap.tnt.ToolPage({
             sideContent: new sap.tnt.SideNavigation({
                 item: new sap.tnt.NavigationList({
-                    selectedKey: `{${C_MENU_BIND_PATH}/SELKEY}`,
-                    itemSelect: oAPP.events.ev_sideNaviItemSelection,
-                    items: {
-                        path: `${C_MENU_BIND_PATH}/MENULIST`,
-                        template: new sap.tnt.NavigationListItem({
-                            key: "{key}",
-                            text: "{text}",
-                        })
-                    }
-                })
+                        selectedKey: `{${C_MENU_BIND_PATH}/SELKEY}`,
+                        itemSelect: oAPP.events.ev_sideNaviItemSelection,
+                        items: {
+                            path: `${C_MENU_BIND_PATH}/MENULIST`,
+                            template: new sap.tnt.NavigationListItem({
+                                key: "{key}",
+                                text: "{text}",
+                            })
+                        }
+                    })
+                    .bindProperty("selectedKey", {
+                        parts: [
+                            `${C_MENU_BIND_PATH}/SELKEY`
+                        ],
+                        formatter: function (selectedKey) {
+
+                            if (selectedKey == null) {
+                                return;
+                            }
+
+                            this.setSelectedKey(selectedKey);
+
+                            var oItem = this.getSelectedItem(),
+                                oEvent = {
+                                    key: selectedKey,
+                                    item: oItem
+                                }
+
+                            this.fireItemSelect(oEvent);
+
+                            return selectedKey;
+
+                        }
+
+                    })
             }),
 
             mainContents: new sap.m.NavContainer(C_NAVCON_ID, {
@@ -1014,11 +1052,31 @@ let oAPP = parent.oAPP;
     // Find 정보 갱신
     oAPP.fn.fnFindDataRefresh = () => {
 
-        IPCRENDERER.send(`${BROWSKEY}--find--data--refresh`);
+        oAPP.setBusyIndicator('X');
 
+        oAPP.IPCRENDERER.on(`${oAPP.BROWSKEY}--find--data--refresh--callback`, oAPP.fn.fnIpcRendererFind_data_refresh_callback);
+
+        oAPP.IPCRENDERER.send(`${oAPP.BROWSKEY}--find--data--refresh`);
 
     }; // end of oAPP.fn.fnFindDataRefresh
 
+    oAPP.fn.fnIpcRendererFind_data_refresh_callback = (event, oInfo) => {
+
+        oAPP.IPCRENDERER.off(`${oAPP.BROWSKEY}--find--data--refresh--callback`, oAPP.fn.fnIpcRendererFind_data_refresh_callback);
+
+        oAPP.setBusyIndicator('');
+
+        oAPP.attr.oUserInfo = oInfo.oUserInfo;
+        oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
+        oAPP.attr.aAttrData = oInfo.aAttrData;
+        oAPP.attr.aServEvtData = oInfo.aServEvtData;
+        oAPP.attr.aT_0022 = oInfo.aT_0022;
+
+        oAPP.fn.fnInitModelBinding();
+
+        // sap.ui.getCore().getModel().refresh();
+
+    }; // end of oAPP.fn.fnIpcRendererFind_data_refresh_callback
 
     /**************************************************************************
      *  Find의 TNT 메뉴 선택 시 NavContainer의 afterNav events.
@@ -1172,6 +1230,13 @@ let oAPP = parent.oAPP;
             }, 100);
 
         });
+
+    };
+
+    window.onbeforeunload = function () {
+
+        // IPCRENDERER 이벤트 해제
+        oAPP.IPCRENDERER.off(`${oAPP.BROWSKEY}--find--data--refresh--callback`, oAPP.fn.fnIpcRendererFind_data_refresh_callback);
 
     };
 
