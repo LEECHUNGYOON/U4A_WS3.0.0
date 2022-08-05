@@ -5,7 +5,7 @@
  * - file Desc : ws 메인 
  ************************************************************************/
 
-(function (window, oAPP) {
+(function(window, oAPP) {
     "use strict";
 
     var APPCOMMON = oAPP.common;
@@ -13,7 +13,7 @@
     /**************************************************************************
      * 공통 인스턴스 정의
      **************************************************************************/
-    oAPP.main.fnPredefineGlobalObject = function () {
+    oAPP.main.fnPredefineGlobalObject = function() {
 
         var oMetaData = parent.getMetadata();
 
@@ -31,7 +31,7 @@
     /************************************************************************
      * 접속 Language 에 맞는 메시지 텍스트 읽어오기
      ************************************************************************/
-    oAPP.main.fnOnLoadMessageClass = function () {
+    oAPP.main.fnOnLoadMessageClass = function() {
 
         var FS = parent.FS,
             oUserInfo = parent.getUserInfo();
@@ -89,7 +89,7 @@
     /**************************************************************************
      * U4A WS 메타 정보 구하기
      **************************************************************************/
-    oAPP.main.fnOnInitModelBinding = function () {
+    oAPP.main.fnOnInitModelBinding = function() {
 
         // ModelData
         var oMetaData = {
@@ -170,8 +170,8 @@
     /************************************************************************
      * window Event Handle ..
      ************************************************************************/
-    oAPP.main.fnBeforeunload = function (isClearStorage) {
-
+    oAPP.main.fnBeforeunload = function(isClearStorage) {
+     
         // 설정된 Global Shortcut 단축키 삭제
         oAPP.common.fnRemoveGlobalShortcut();
 
@@ -207,7 +207,12 @@
             sendServerExit(oOptions, () => {
 
                 if (isClearStorage == "X") {
+
                     oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
+
+                    // 서버리스트 포커스 주기
+                    oAPP.fn.fnSetFocusServerList(); // #[ws_fn_04.js]
+
                 }
 
                 window.onbeforeunload = () => {};
@@ -231,7 +236,12 @@
 
             // 브라우저에 내장된 세션 정보를 클리어 한다.
             if (isClearStorage == "X") {
+
                 oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
+
+                // 서버리스트 포커스 주기
+                oAPP.fn.fnSetFocusServerList(); // #[ws_fn_04.js]
+
             }
 
             window.onbeforeunload = () => {};
@@ -249,7 +259,7 @@
     };
 
     // Test..
-    oAPP.main.fnSetLanguage = function () {
+    oAPP.main.fnSetLanguage = function() {
 
         var oUserInfo = parent.getUserInfo(),
             oMetaScript = document.getElementById("sap-ui-bootstrap");
@@ -290,9 +300,9 @@
     /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------
      ************************************************************************/
-    oAPP.main.fnWsStart = function () {
+    oAPP.main.fnWsStart = function() {
 
-        sap.ui.getCore().attachInit(function () {
+        sap.ui.getCore().attachInit(function() {
 
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
@@ -421,6 +431,8 @@
         if (sAction != "YES") {
             return;
         }
+
+        oAPP.fn.fnSetFocusServerList();
 
         // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
         // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
