@@ -162,6 +162,9 @@
                 text: "Release Note",
             }],
             Test10 = [{
+                    key: "Test96",
+                    text: "USP 페이지 생성"
+                }, {
                     key: "Test90",
                     text: "Busy 강제실행"
                 },

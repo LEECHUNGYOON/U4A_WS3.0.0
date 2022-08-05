@@ -1,7 +1,7 @@
 /**************************************************************************                                           
  * ws_fn_04.js
  **************************************************************************/
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     var PATH = parent.PATH,
@@ -33,7 +33,7 @@
             oFormData.append("sap-user", sId);
             oFormData.append("sap-password", sPw);
             oFormData.append("PC_NAME", sComputerName);
-            
+
             sendAjax(
                 sPath,
                 oFormData,
@@ -60,7 +60,7 @@
     /************************************************************************
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSapGuiMultiLoginCheckThen = function(oResult) {
+    oAPP.fn.fnSapGuiMultiLoginCheckThen = function (oResult) {
 
         var oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
             oSettings = parent.require(oSettingsPath),
@@ -100,10 +100,10 @@
 
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
         var vbs = parent.SPAWN('cscript.exe', aParam);
-        vbs.stdout.on("data", function(data) {});
+        vbs.stdout.on("data", function (data) {});
 
         //GUI 세션창이 존재하지않다면 ...
-        vbs.stderr.on("data", function(data) {
+        vbs.stderr.on("data", function (data) {
 
             //VBS 리턴 오류 CODE / MESSAGE 
             var str = data.toString(),
@@ -138,8 +138,8 @@
             ];
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
-            vbs.stdout.on("data", function(data) {});
-            vbs.stderr.on("data", function(data) {
+            vbs.stdout.on("data", function (data) {});
+            vbs.stderr.on("data", function (data) {
 
                 //VBS 리턴 오류 CODE / MESSAGE 
                 var str = data.toString(),
@@ -193,5 +193,20 @@
         oAPP.common.fnSetModelProperty("/SUGG/TCODE", aSuggData);
 
     }; // end of oAPP.fn.fnOnInitTCodeSuggestion
+
+    // 30번 페이지 생성
+    oAPP.fn.fnWs30Creator = (fnCallback) => {
+
+        // Application Copy Popup Open
+        if (oAPP.fn.fnCreateWs30) {
+            oAPP.fn.fnCreateWs30(fnCallback);
+            return;
+        }
+
+        oAPP.loadJs("ws_usp", function () {
+            oAPP.fn.fnCreateWs30(fnCallback);
+        });
+
+    };
 
 })(window, $, oAPP);
