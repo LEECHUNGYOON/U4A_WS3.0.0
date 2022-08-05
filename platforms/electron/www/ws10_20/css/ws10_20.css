@@ -126,6 +126,10 @@ body,
     background-color: transparent;
 }
 
+.u4aWsPage30 > .sapMPageHeader > .sapMIBar {
+    border-bottom: 0px;
+}
+
 
 /************************************************************************************ 
     sap_fiori_3_dark 

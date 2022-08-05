@@ -57,7 +57,7 @@
 
             }
 
-        }).addStyleClass("u4aWsApp");
+        }).addStyleClass("u4aWsApp sapUiSizeCompact");
 
         // 처음 로드 할때 APP NAME Input에 포커스 주기
         oApp.addDelegate({
@@ -824,8 +824,7 @@
         // 10번 페이지 Application Name SearchField의 Key down Event
         oAppNmInput.attachBrowserEvent("keydown", oAPP.fn.fnWs10AppInputKeyDownEvent);
         oAppNmInput.attachBrowserEvent("dblclick", oAPP.fn.fnWs10AppInputdblclickEvent);
-        oAppNmInput.attachBrowserEvent("mousedown", () => {
-            console.log("mouseup!!");
+        oAppNmInput.attachBrowserEvent("mousedown", () => {            
 
             var sValue = oAppNmInput.getValue() || "";
 
@@ -842,7 +841,6 @@
             oAppNmInput.suggest(true);
 
         });
-
 
         return [
             oForm
