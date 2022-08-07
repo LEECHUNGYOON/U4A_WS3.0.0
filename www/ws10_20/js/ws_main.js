@@ -107,6 +107,7 @@
             },
             WS10: oAPP.main.fnGetWs10InitData(),
             WS20: oAPP.main.fnGetWs20InitData(),
+            WS30: {},
             FMSG: {
                 WS10: {
                     ISSHOW: false,
@@ -171,7 +172,7 @@
      * window Event Handle ..
      ************************************************************************/
     oAPP.main.fnBeforeunload = function(isClearStorage) {
-     
+
         // 설정된 Global Shortcut 단축키 삭제
         oAPP.common.fnRemoveGlobalShortcut();
 
@@ -332,7 +333,7 @@
             oAPP.main.fnOnInitModelBinding();
 
             // 초기 화면 그리기
-            oAPP.fn.fnOnInitRendering();
+            oAPP.fn.fnOnInitRendering(); // #[ws_fn_01.js]
 
             // 개인화 정보 설정
             oAPP.fn.fnOnInitP13nSettings(); // #[ws_fn_01.js]

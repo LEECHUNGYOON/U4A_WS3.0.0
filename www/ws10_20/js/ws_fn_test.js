@@ -61,12 +61,9 @@
 
     // usp
     oAPP.fn.fnTest96 = () => {
-
-        oAPP.fn.fnWs30Creator(() => {
-
-            oAPP.fn.fnOnMoveToPage("WS30");
-
-        }); // #[ws_fn_04.js]
+        
+        // 30번 페이지로 이동
+        oAPP.fn.fnMoveToWs30();
 
     };
 

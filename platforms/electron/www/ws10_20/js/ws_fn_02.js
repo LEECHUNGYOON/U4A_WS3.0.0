@@ -2,13 +2,14 @@
  * ws_fn_02.js
  **************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
         REMOTE = parent.REMOTE,
         CURRWIN = REMOTE.getCurrentWindow(),
-        REMOTEMAIN = parent.REMOTEMAIN;
+        REMOTEMAIN = parent.REMOTEMAIN,
+        APPCOMMON = oAPP.common;
 
     /************************************************************************
      * Application Display or Change mode 
@@ -19,7 +20,7 @@
      * @param {Char} ISEDIT
      * - 'X': Edit mode, ' ': Display Mode
      ************************************************************************/
-    oAPP.fn.fnOnEnterDispChangeMode = function (APPID, ISEDIT) {
+    oAPP.fn.fnOnEnterDispChangeMode = function(APPID, ISEDIT) {
 
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
@@ -57,7 +58,7 @@
             if (oAppInfo.MSGTY == "N") {
 
                 // 페이지 푸터 메시지
-                oAPP.common.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
+                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
 
                 // Busy Indicator 닫기
                 parent.setBusy('');
@@ -72,11 +73,11 @@
                 var sMsg = "Editing by " + oAppInfo.APPID;
 
                 // 페이지 푸터 메시지
-                oAPP.common.fnShowFloatingFooterMsg("E", "WS20", sMsg);
+                APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", sMsg);
 
             }
 
-            var oUserInfo = oAPP.common.fnGetModelProperty("/USERINFO"),
+            var oUserInfo = APPCOMMON.fnGetModelProperty("/USERINFO"),
                 ISADM = oUserInfo.ISADM; // Admin 권한 여부
 
             // Admin이 아닌 유저가 Admin App을 열었을 경우 Disply 모드로 변환
@@ -93,16 +94,16 @@
             oWs20.APP = oAppInfo;
 
             // 모델에 데이터 업데이트
-            oAPP.common.fnSetModelProperty("/WS20", oWs20);
+            APPCOMMON.fnSetModelProperty("/WS20", oWs20);
 
             // WS10 페이지의 APPID 입력 필드에 Suggestion을 구성할 데이터를 저장한다.
             oAPP.fn.fnOnSaveAppSuggestion(oAppInfo.APPID);
 
             // 단축키 삭제
-            oAPP.common.removeShortCut("WS10");
+            APPCOMMON.removeShortCut("WS10");
 
             // 단축키 설정
-            oAPP.common.setShortCut("WS20");
+            APPCOMMON.setShortCut("WS20");
 
             // WS20번 페이지로 이동한다.
             oAPP.fn.fnOnMoveToPage("WS20");
@@ -118,7 +119,7 @@
      * - page 명
      * 예) WS10, WS20     
      ************************************************************************/
-    oAPP.fn.fnOnMoveToPage = function (sPgNm) {
+    oAPP.fn.fnOnMoveToPage = function(sPgNm) {
 
         var oApp = sap.ui.getCore().byId("WSAPP");
         if (!oApp) {
@@ -140,7 +141,7 @@
      * @param {String} sAppID  
      * - Application Name      
      ************************************************************************/
-    oAPP.fn.fnOnSaveAppSuggestion = function (sAppID) {
+    oAPP.fn.fnOnSaveAppSuggestion = function(sAppID) {
 
         var FS = parent.FS;
 
@@ -223,7 +224,7 @@
 
         function lf_saveSuggestion() {
 
-            oAPP.common.fnSetModelProperty("/WS10/APPSUGG", oP13nData[sSysID].APPSUGG);
+            APPCOMMON.fnSetModelProperty("/WS10/APPSUGG", oP13nData[sSysID].APPSUGG);
 
             // p13n.json 파일에 APPID Suggestion 정보 저장
             FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData));
@@ -235,7 +236,7 @@
     /************************************************************************
      * WS10 페이지로 이동
      * **********************************************************************/
-    oAPP.fn.fnMoveToWs10 = function () {
+    oAPP.fn.fnMoveToWs10 = function() {
 
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
@@ -267,19 +268,19 @@
             parent.setAppInfo({});
 
             // WS20에 대한 모델 정보 초기화
-            oAPP.common.fnSetModelProperty("/WS20", {});
+            APPCOMMON.fnSetModelProperty("/WS20", {});
 
             // 10번 프로그램으로 이동한다.        
             oAPP.fn.fnOnMoveToPage("WS10");
 
             // 브라우저 상단 메뉴 구성
-            // oAPP.common.fnOnLoadBrowserMenu("WS10");
+            // APPCOMMON.fnOnLoadBrowserMenu("WS10");
 
             // 20번 프로그램 단축키 삭제
-            oAPP.common.removeShortCut("WS20");
+            APPCOMMON.removeShortCut("WS20");
 
             // 10번 프로그램 단축키 설정
-            oAPP.common.setShortCut("WS10");
+            APPCOMMON.setShortCut("WS10");
 
             // Busy 끄기
             parent.setBusy('');
@@ -294,7 +295,7 @@
     /************************************************************************
      * WS20 페이지로 이동
      * **********************************************************************/
-    oAPP.fn.fnMoveToWs20 = function () {
+    oAPP.fn.fnMoveToWs20 = function() {
 
         var oAppInfo = parent.getAppInfo();
 
@@ -326,19 +327,77 @@
     }; // end of oAPP.fn.fnMoveToWs20
 
     /************************************************************************
-     * WS20 페이지로 이동
+     * WS30 페이지로 이동
      * **********************************************************************/
     oAPP.fn.fnMoveToWs30 = () => {
+
+        APPCOMMON.fnShowFloatingFooterMsg("S", "WS30", "Welcome to USP PAGE!!");
+
+        // 단축키 삭제
+        APPCOMMON.removeShortCut("WS10");
+
+        // 단축키 설정
+        APPCOMMON.setShortCut("WS30");
+
+        var aData = [{
+                PARENT: "",
+                CHILD: "/zu4a_wbc",
+                NAME: "/zu4a_wbc",
+                DESC: "ROOT",
+                ISROOT: "X",
+                ISFOLD: "X"
+            },
+            {
+                PARENT: "/zu4a_wbc",
+                CHILD: "/u4a_dynpro",
+                NAME: "/u4a_dynpro",
+                DESC: "",
+                ISROOT: "X",
+                ISFOLD: ""
+            },
+            {
+                PARENT: "/u4a_dynpro",
+                CHILD: "A001",
+                NAME: "TEST1",
+                DESC: "Test Folder1",
+                ISROOT: "",
+                ISFOLD: "X"
+            },
+            {
+                PARENT: "A001",
+                CHILD: "F01",
+                NAME: "text1.txt",
+                DESC: "연습용1",
+                ISROOT: "",
+                ISFOLD: ""
+            },
+            {
+                PARENT: "A001",
+                CHILD: "F02",
+                NAME: "text2.txt",
+                DESC: "연습용2",
+                ISROOT: "",
+                ISFOLD: ""
+            },
+
+        ];
+
+        APPCOMMON.fnSetModelProperty("/WS30/USPTREE", aData);
+
+        var oModel = sap.ui.getCore().getModel();
+
+        oAPP.fn.fnSetTreeJson(oModel, "WS30.USPTREE", "CHILD", "PARENT", "USPTREE");
+
+        var oUspTreeTable = sap.ui.getCore().byId("usptree");
+
+        if (oUspTreeTable && oUspTreeTable.getModel()) {
+            oUspTreeTable.getModel().refresh();
+        }
 
         // 30번 페이지 생성
         oAPP.fn.fnWs30Creator(() => {
 
-            var oApp = sap.ui.getCore().byId("WSAPP");
-            if (!oApp) {
-                return;
-            }
-
-            oApp.to("WS30");
+            oAPP.fn.fnOnMoveToPage("WS30");
 
         });
 
@@ -347,7 +406,7 @@
     /************************************************************************
      * 20 -> 10번 페이지로 이동 시 서버 세션 죽이기 위한 공통 펑션
      * **********************************************************************/
-    oAPP.fn.fnKillUserSession = function (fn_callback) {
+    oAPP.fn.fnKillUserSession = function(fn_callback) {
 
         // var oAppInfo = parent.getAppInfo();
         var SSID = parent.getSSID();
@@ -373,7 +432,7 @@
      * - RETCD : 상태값 (Boolean)
      * - RETMSG: 상태 메시지 (String)
      ************************************************************************/
-    oAPP.fn.fnCheckValidAppName = function (sAppID) {
+    oAPP.fn.fnCheckValidAppName = function(sAppID) {
 
         var oRetData = {
             RETCD: false,
@@ -383,20 +442,20 @@
         var sValue = sAppID;
 
         if (typeof sValue !== "string" || sValue == "") {
-            oRetData.RETMSG = oAPP.common.fnGetMsgClsTxt("050", "Application Name");
+            oRetData.RETMSG = APPCOMMON.fnGetMsgClsTxt("050", "Application Name");
             return oRetData;
         }
 
         // 특수문자 존재 여부 체크
         var reg = /[^\w]/;
         if (reg.test(sValue)) {
-            oRetData.RETMSG = oAPP.common.fnGetMsgClassTxt("0010"); // Do not include special character in Application Name.
+            oRetData.RETMSG = APPCOMMON.fnGetMsgClassTxt("0010"); // Do not include special character in Application Name.
             return oRetData;
         }
 
         // AppID 자릿수가 15 이상일 경우 오류
         if (sValue.length > oAPP.attr.iAppNameMaxLength) {
-            oRetData.RETMSG = oAPP.common.fnGetMsgClsTxt("115"); // "Application ID can only be 15 characters or less !!"         
+            oRetData.RETMSG = APPCOMMON.fnGetMsgClsTxt("115"); // "Application ID can only be 15 characters or less !!"         
             return oRetData;
         }
 
@@ -408,7 +467,7 @@
         // Application 명 시작이 Z 이나 Y로 시작하는지 확인한다.
         if (!bIsStartZ && !bIsStartY) {
 
-            oRetData.RETMSG = oAPP.common.fnGetMsgClsTxt("009"); // "The application ID must start with Z or Y."
+            oRetData.RETMSG = APPCOMMON.fnGetMsgClsTxt("009"); // "The application ID must start with Z or Y."
             return oRetData;
         }
 
@@ -420,7 +479,7 @@
     /************************************************************************
      * Application Name 입력 체크
      ************************************************************************/
-    oAPP.fn.fnCheckAppName = function () {
+    oAPP.fn.fnCheckAppName = function() {
 
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput");
         if (!oAppNmInput) {
@@ -435,7 +494,7 @@
 
         if (oValid.RETCD == false) {
             // 페이지 푸터 메시지
-            oAPP.common.fnShowFloatingFooterMsg("E", sCurrPage, oValid.RETMSG);
+            APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oValid.RETMSG);
             return false;
         }
 
@@ -448,7 +507,7 @@
      * - Lock 여부
      * - Edit or Display 모드 여부
      ************************************************************************/
-    oAPP.fn.fnSetAppChangeMode = function () {
+    oAPP.fn.fnSetAppChangeMode = function() {
 
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
@@ -475,7 +534,7 @@
                 var sMsg = "Editing by " + oAppInfo.APPID;
 
                 // 페이지 푸터 메시지
-                oAPP.common.fnShowFloatingFooterMsg("E", sCurrPage, sMsg);
+                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sMsg);
 
                 return false;
 
@@ -484,7 +543,7 @@
             // App 정보 갱신
             parent.setAppInfo(oAppInfo);
 
-            oAPP.common.fnSetModelProperty("/WS20/APP", oAppInfo);
+            APPCOMMON.fnSetModelProperty("/WS20/APP", oAppInfo);
 
             // 현재 떠있는 Electron Browser들 전체 닫는 function
             oAPP.fn.fnChildWindowClose();
@@ -492,8 +551,8 @@
             oAPP.fn.setUIAreaEditable(); // Change Mode 모드로 변환
 
             // 푸터 메시지 처리                        
-            var sMsg = oAPP.common.fnGetMsgClsTxt("020"); // "Switch to edit mode."
-            oAPP.common.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
+            var sMsg = APPCOMMON.fnGetMsgClsTxt("020"); // "Switch to edit mode."
+            APPCOMMON.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
 
         }
 
@@ -502,7 +561,7 @@
     /************************************************************************
      * WS20 페이지 Lock 풀고 Display Mode로 전환
      * **********************************************************************/
-    oAPP.fn.fnSetAppDisplayMode = function () {
+    oAPP.fn.fnSetAppDisplayMode = function() {
 
         var oAppInfo = parent.getAppInfo(),
             sCurrPage = parent.getCurrPage();
@@ -526,15 +585,15 @@
 
             parent.setAppInfo(RETURN); // Application 정보 갱신
 
-            oAPP.common.fnSetModelProperty("/WS20/APP", RETURN); // 모델 정보 갱신
+            APPCOMMON.fnSetModelProperty("/WS20/APP", RETURN); // 모델 정보 갱신
 
             // 현재 떠있는 Electron Browser들 전체 닫는 function
             oAPP.fn.fnChildWindowClose();
 
-            var sMsg = oAPP.common.fnGetMsgClsTxt("020"); // "Switch to display mode."
+            var sMsg = APPCOMMON.fnGetMsgClsTxt("020"); // "Switch to display mode."
 
             // 푸터 메시지 처리
-            oAPP.common.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
+            APPCOMMON.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
 
             oAPP.fn.setUIAreaEditable(oAppInfo.IS_CHAG); // Display 모드로 변환
 
@@ -551,7 +610,7 @@
      * @param {Function} fnCallback 
      * - 성공시 실행되는 Callback Function 
      ************************************************************************/
-    oAPP.fn.fnCheckAppExists = function (APPID, fnCallback) {
+    oAPP.fn.fnCheckAppExists = function(APPID, fnCallback) {
 
         var oFormData = new FormData();
         oFormData.append("APPID", APPID);
@@ -591,7 +650,7 @@
      * @param {Object} oBrowserOption  
      * - Electron window Browser Option 참고
      ************************************************************************/
-    oAPP.fn.fnExternalOpen = function (oBrowserOptions) {
+    oAPP.fn.fnExternalOpen = function(oBrowserOptions) {
 
         function lf_external_open(oBrowserOptions) {
 
@@ -631,7 +690,7 @@
             // oBrowserWindow.webContents.openDevTools();
 
             // 브라우저가 오픈이 다 되면 타는 이벤트
-            oBrowserWindow.webContents.on('did-finish-load', function () {
+            oBrowserWindow.webContents.on('did-finish-load', function() {
                 // 오픈할 URL 파라미터 전송
                 oBrowserWindow.webContents.send('if-extopen-url', sPath);
             });
@@ -656,7 +715,7 @@
         } // end of lf_success
 
         // 로그인 세션 유지 상태 체크
-        oAPP.common.sendAjaxLoginChk(lf_success);
+        APPCOMMON.sendAjaxLoginChk(lf_success);
 
     }; // end of oAPP.fn.fnExternalOpen
 
@@ -670,7 +729,7 @@
      * - true: Multi Preview로 실행
      * - false: 기본 브라우저 실행  
      ************************************************************************/
-    oAPP.fn.fnOnExecApp = function (APPID, bIsMulti) {
+    oAPP.fn.fnOnExecApp = function(APPID, bIsMulti) {
 
         // 기본 브라우저 설정        
         oAPP.fn.fnOnInitP13nSettings();
@@ -689,7 +748,7 @@
             sPath = `${sHost}/zu4a_imp/ui5multipreview?applid=${APPID}`;
         }
 
-        var oDefBrows = oAPP.common.fnGetModelProperty("/DEFBR"),
+        var oDefBrows = APPCOMMON.fnGetModelProperty("/DEFBR"),
             sSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
 
         // 실행전 명령어 수집
@@ -721,7 +780,7 @@
             sUrl += `&${sParam}`;
         }
 
-        var oDefBrows = oAPP.common.fnGetModelProperty("/DEFBR"),
+        var oDefBrows = APPCOMMON.fnGetModelProperty("/DEFBR"),
             sSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
 
         // 실행전 명령어 수집
@@ -743,7 +802,7 @@
      * @param {*} t PARENT
      * @param {*} z 재구성할 MODEL PATH 명
      *************************************************************************/
-    oAPP.fn.fnSetTreeJson = function (m, p, r, t, z) {
+    oAPP.fn.fnSetTreeJson = function(m, p, r, t, z) {
 
         var lp = p.replace(/[.\[\]]/g, '/');
         lp = lp.replace(/(\/\/)/g, '/');
@@ -784,7 +843,7 @@
     /************************************************************************
      * 현재 떠있는 브라우저 중, 같은 세션의 브라우저의 인스턴스를 구한다.
      ************************************************************************/
-    oAPP.fn.fnGetSameBrowsers = function () {
+    oAPP.fn.fnGetSameBrowsers = function() {
 
         // 1. 현재 떠있는 브라우저 갯수를 구한다.
         var sKey = parent.getSessionKey(),
@@ -883,7 +942,7 @@
      * - Post로 전송할 파라미터
      * - 형식 [{ NAME:"", VALUE:""}, ... ]
      */
-    oAPP.fn.fnCallBrowserOpenPost = function (sUrl, aParams) {
+    oAPP.fn.fnCallBrowserOpenPost = function(sUrl, aParams) {
 
         // dummy로 생성한 form이 있으면 지우고 시작
         var oDummyForm = document.getElementById('dummyform');
@@ -953,7 +1012,7 @@
     /************************************************************************
      * 화면에 떠있는 Dialog 들이 있을 경우 모두 닫는다.
      * **********************************************************************/
-    oAPP.fn.fnCloseAllDialog = function () {
+    oAPP.fn.fnCloseAllDialog = function() {
 
         var $OpenDialogs = $(".sapMDialogOpen"),
             iDialogLen = $OpenDialogs.length;
@@ -983,7 +1042,7 @@
     /************************************************************************
      * Electron Browser들 전체 닫는 function
      ************************************************************************/
-    oAPP.fn.fnChildWindowClose = function () {
+    oAPP.fn.fnChildWindowClose = function() {
 
         var oCurrWin = parent.REMOTE.getCurrentWindow();
         if (oCurrWin.isDestroyed()) {
@@ -1011,7 +1070,7 @@
     /************************************************************************
      * Electron Browser들 전체 활성/비활성화
      ************************************************************************/
-    oAPP.fn.fnChildWindowShow = function (bShow) {
+    oAPP.fn.fnChildWindowShow = function(bShow) {
 
         var oCurrWin = REMOTE.getCurrentWindow();
         if (oCurrWin.isDestroyed()) {
@@ -1063,16 +1122,16 @@
     /************************************************************************
      * WS20 화면에서 떠있는 Dialog, Popup 종류, Electron Browser들 전체 닫는 function
      ************************************************************************/
-    oAPP.fn.fnCloseAllWs20Dialogs = function () {
+    oAPP.fn.fnCloseAllWs20Dialogs = function() {
 
         // Dialog가 있을 경우 닫는다.
         oAPP.fn.fnCloseAllDialog();
 
         // footer 메시지가 열려 있을 경우 닫는다.
-        oAPP.common.fnHideFloatingFooterMsg();
+        APPCOMMON.fnHideFloatingFooterMsg();
 
         // Multi Footer 메시지 영역이 있으면 삭제.
-        oAPP.common.fnMultiFooterMsgClose();
+        APPCOMMON.fnMultiFooterMsgClose();
 
         // Electron Browser들 전체 닫는 function
         oAPP.fn.fnChildWindowClose();

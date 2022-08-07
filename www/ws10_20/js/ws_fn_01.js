@@ -48,7 +48,7 @@
                         break;
 
                     case "WS20":
-                        oAPP.fn.fnMoveToWs20();
+                        oAPP.fn.fnMoveToWs20(); // #[ws_fn_02.js]
                         break;
 
                     default:
@@ -2352,22 +2352,6 @@
 
         return aNewInfo;
 
-    }; // end of oAPP.fn.fnCompareBeforeBrowserInfo
-
-    /************************************************************************
-     * MIME Dialog 관련 로직..
-     ************************************************************************/
-    oAPP.fn.fnMimeDialogOpener = function () {
-
-        if (oAPP.fn.fnMimePopupOpen) {
-            oAPP.fn.fnMimePopupOpen();
-            return;
-        }
-
-        oAPP.loadJs("fnMimePopupOpen", function () {
-            oAPP.fn.fnMimePopupOpen();
-        });
-
-    }; // end of fnMimeDialogHandle
+    }; // end of oAPP.fn.fnCompareBeforeBrowserInfo    
 
 })(window, $, oAPP);

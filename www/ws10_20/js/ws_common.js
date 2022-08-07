@@ -992,11 +992,37 @@
                     }
                 }
 
-            ];
+            ],
+            aShortCutWS30 = [{
+                KEY: "F3", // Find
+                fn: () => {
+
+                    if (sap.ui.getCore().isLocked()) {
+                        console.log("!! 락 걸려서 단축기 실행 불가!!");
+                        return;
+                    }
+
+                    // // 단축키 실행 할지 말지 여부 체크
+                    // var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                    // // X 이면 실행 불가
+                    // if (result == "X") {
+                    //     return;
+                    // }
+
+                    var oBackBtn = sap.ui.getCore().byId("ws30_backBtn");
+                    if (!oBackBtn || !oBackBtn.getEnabled() || !oBackBtn.getVisible()) {
+                        return;
+                    }
+
+                    oBackBtn.firePress();
+                }
+            }];
 
         var oShortcutList = {
             "WS10": aShortCutWS10,
-            "WS20": aShortCutWS20
+            "WS20": aShortCutWS20,
+            "WS30": aShortCutWS30
         };
 
         return oShortcutList[sPgNo];
@@ -1389,7 +1415,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
     xhr.onreadystatechange = function() { // 요청에 대한 콜백
         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
             if (xhr.status === 200 || xhr.status === 201) {
-                
+
                 // 화면 Lock 해제                
                 sap.ui.getCore().unlock();
 
@@ -1434,7 +1460,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
                     // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Login 페이지로 이동.
                     fn_logoff_success('X');
-                    
+
                     return;
 
                 }
