@@ -63,7 +63,7 @@
     oAPP.fn.fnTest96 = () => {
         
         // 30번 페이지로 이동
-        oAPP.fn.fnMoveToWs30();
+        oAPP.fn.fnMoveToWs30(); //#[ws_fn_02.js]
 
     };
 
