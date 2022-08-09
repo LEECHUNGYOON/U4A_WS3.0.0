@@ -376,9 +376,23 @@
         if (!event || event.keyCode !== 13) {
             return;
         }
-
+        
         // 입력한 TCODE 대문자로 변환
         var sTcode = sValue.toUpperCase();
+
+        // 정규식으로 허용된 특수문자 및 T-code 형식 체크
+        var sRegEx = /^[a-zA-Z0-9/_]*$/;
+        if(!sRegEx.test(sTcode)){
+
+            // 메시지 처리 후 리턴
+            var sMsg = "invalid T-Code!";
+
+            APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", sMsg);
+
+            oSrchField.setValue("");
+
+            return;
+        }
 
         // 대문자로 변환한 값 SearchField 에 setValue
         oSrchField.setValue(sTcode);

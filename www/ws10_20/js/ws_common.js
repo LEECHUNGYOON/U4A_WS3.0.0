@@ -1376,6 +1376,23 @@
 
     }; // end of oAPP.common.fnCloseMenuPopover
 
+    /************************************************************************
+     * 확장자만 발췌
+     * **********************************************************************/
+    oAPP.common.fnGetFileExt = (sPath) => {
+
+        if (sPath == null || typeof sPath != "string") {
+            return;
+        }
+    
+    
+        var sExtension = parent.PATH.extname(sPath);
+        sExtension = sExtension.replace('.', '');
+    
+        return sExtension;
+
+    };
+
 })(window, $, oAPP);
 
 // application 초기 정보

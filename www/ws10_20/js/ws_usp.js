@@ -5,14 +5,22 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
+        REMOTE = parent.REMOTE,
         APPCOMMON = oAPP.common,
         APPPATH = parent.APPPATH,
-        PATH = parent.PATH;
+        PATH = parent.PATH,
+        RANDOM = parent.RANDOM,
+        MIMETYPES = parent.MIMETYPES;
 
+    /**
+     * 
+     * 
+     */
+    var gSelectedTreeIndex = -1;
 
     oAPP.fn.fnCreateWs30 = (fnCallback) => {
 
@@ -107,7 +115,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (bIsShow) {
+            formatter: function(bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -252,7 +260,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function (sKey) {
+                            formatter: function(sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -332,7 +340,6 @@
             oAttrPage = fnGetUspAttrPageWs30(),
             oContPage = fnGetUspContPageWs30();
 
-
         return new sap.m.NavContainer("usp_navcon", {
             autoFocus: false,
             pages: [
@@ -354,10 +361,10 @@
 
             oImg = new sap.m.Image({
                 src: sImgSrc,
-            }),
+            }).addStyleClass("u4aWsUspIntroImg"),
 
             oVbox = new sap.m.VBox({
-                renderType: "Bare",
+                // renderType: "Bare",
                 width: "100%",
                 height: "100%",
                 alignItems: sap.m.FlexAlignItems.Center,
@@ -370,6 +377,7 @@
 
         return new sap.m.Page("usp_intro", {
             showHeader: false,
+            enableScrolling: false,
             content: [
                 oVbox
             ]
@@ -448,7 +456,7 @@
                     }),
 
                     template: new sap.m.Text({
-                        text: "{OBJKY}",
+                        text: "{OBDEC}",
                     })
 
                 }),
@@ -460,7 +468,7 @@
                     }),
 
                     template: new sap.m.Text({
-                        text: "{OBJNM}",
+                        text: "{DESCT}",
                     })
 
                 }),
@@ -489,7 +497,7 @@
 
             contextMenu: new sap.m.Menu({
                 items: {
-                    path: "/WS30/USPTREE/CTXMENU",
+                    path: "/WS30/CTXMENU",
                     template: new sap.m.MenuItem({
                         icon: "{ICON}",
                         key: "{KEY}",
@@ -588,60 +596,12 @@
      **************************************************************************/
     function fnGetUspPageWs30() {
 
-        // var sImgSrc = PATH.join(APPPATH, "img", "intro.png"),
-
-        //     oImg = new sap.m.Image({
-        //         src: sImgSrc,
-        //     }),
-
         var oCodeEditor = new sap.ui.codeeditor.CodeEditor({
-                height: "100%",
-                width: "100%",
-                syntaxHints: false,
-                value: "{/WS30/USPDATA/DATA}",
-            });
-            // .bindProperty("visible", {
-            //     parts: [
-            //         "/WS30/USPDATA/VISI"
-            //     ],
-            //     formatter: function (VISI) {
-
-            //         if (VISI !== "DATA") {
-            //             return false;
-            //         }
-
-            //         return true;
-
-            //     }
-
-            // }),
-
-            // oVbox = new sap.m.VBox({
-            //     renderType: "Bare",
-            //     width: "100%",
-            //     height: "100%",
-            //     alignItems: sap.m.FlexAlignItems.Center,
-            //     justifyContent: sap.m.FlexAlignItems.Center,
-            //     items: [
-            //         oImg
-            //     ]
-
-            // }).bindProperty("visible", {
-            //     parts: [
-            //         "/WS30/USPDATA/VISI"
-            //     ],
-            //     formatter: function (VISI) {
-
-            //         // visible 값이 없으면 No data 화면을 보여준다.
-            //         if (!VISI || VISI == "") {
-            //             return true;
-            //         }
-
-            //         return false;
-
-            //     }
-
-            // });
+            height: "100%",
+            width: "100%",
+            syntaxHints: false,
+            value: "{/WS30/USPDATA/DATA}",
+        });
 
         return new sap.m.Page({
             showHeader: false,
@@ -729,6 +689,300 @@
     } // end of fnGetWindowMenuListWS30
 
     /**************************************************************************
+     * [WS30] USP Tree ContextMenu Default 정보
+     **************************************************************************/
+    function fnGetUspTreeDefCtxMenuList() {
+
+        return [{
+                ICON: "",
+                KEY: "K1",
+                TXT: "Expand Subtree",
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "",
+                KEY: "K2",
+                TXT: "Collapse Subtree",
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "",
+                KEY: "K3",
+                TXT: "Create",
+                ENABLED: true,
+                ISSTART: true,
+                VISIBLE: true
+            },
+            {
+                ICON: "",
+                KEY: "K4",
+                TXT: "Delete",
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "",
+                KEY: "K5",
+                TXT: "Download",
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            }
+        ];
+
+    } // end of fnGetUspTreeDefCtxMenuList
+
+    /**************************************************************************
+     * [WS30] USP Tree의 생성 팝업
+     **************************************************************************/
+    function fnCreateUspNodePopup(oTreeTable) {
+
+        var sBindRootPath = "/WS30/USPCRT",
+            iIndex = gSelectedTreeIndex,
+            oCtx = oTreeTable.getContextByIndex(iIndex);
+
+        if (!oCtx) {
+            return;
+        }
+
+        var oData = oTreeTable.getModel().getProperty(oCtx.sPath),
+            oInitData = {
+                TITLE: oData.OBDEC,
+                NAME: "",
+                NAME_VS: "",
+                NAME_VSTXT: "",
+                DESC: "",
+                ISFLD: false
+            };
+
+        // USP 생성 팝업의 초기 데이터 모델 세팅
+        APPCOMMON.fnSetModelProperty(sBindRootPath, oInitData);
+
+        var oDialog = sap.ui.getCore().byId("uspCrNodePopup");
+        if (oDialog) {
+            oDialog.open();
+            return;
+        }
+
+        // USP 생성 팝업의 FORM
+        var oUspCrForm = new sap.ui.layout.form.Form({
+            editable: true,
+            layout: new sap.ui.layout.form.ResponsiveGridLayout({
+                labelSpanXL: 12,
+                labelSpanL: 12,
+                labelSpanM: 12,
+                labelSpanS: 12,
+                singleContainerFullSize: false
+            }),
+
+            formContainers: [
+                new sap.ui.layout.form.FormContainer({
+
+                    formElements: [
+                        new sap.ui.layout.form.FormElement({
+                            label: new sap.m.Label({
+                                required: true,
+                                design: "Bold",
+                                text: "Name"
+                            }),
+                            fields: new sap.m.Input({
+                                value: `{${sBindRootPath}/NAME}`,
+                                valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
+                                // submit: oAPP.events.ev_createMimeFolderEvent
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+
+                                // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
+                                if (VST == null || VST == "") {
+                                    return sap.ui.core.ValueState.None;
+                                }
+
+                                return VST;
+
+                            })
+
+                        }),
+
+                        new sap.ui.layout.form.FormElement({
+                            label: new sap.m.Label({
+                                design: "Bold",
+                                text: "Description"
+                            }),
+                            fields: new sap.m.Input({
+                                value: `{${sBindRootPath}/DESC}`,
+                                // submit: oAPP.events.ev_createMimeFolderEvent
+                            })
+                        }),
+
+                        new sap.ui.layout.form.FormElement({
+                            label: new sap.m.Label({
+                                design: "Bold",
+                                text: "Folder"
+                            }),
+                            fields: new sap.m.CheckBox({
+                                selected: `{${sBindRootPath}/ISFLD}`
+                            })
+                        }),
+
+                    ]
+
+                }),
+
+            ]
+
+        });
+
+        // USP Folder 생성 팝업
+        var oUspCrDlg = new sap.m.Dialog("uspCrNodePopup", {
+            draggable: true,
+            resizable: true,
+            title: `Create [ {${sBindRootPath}/TITLE} ]`,
+            contentWidth: "500px",
+            buttons: [
+                new sap.m.Button({
+                    type: sap.m.ButtonType.Emphasized,
+                    icon: "sap-icon://accept",
+                    press: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
+                }),
+                new sap.m.Button({
+                    type: sap.m.ButtonType.Reject,
+                    icon: "sap-icon://decline",
+                    press: ev_createUspDlgCloseEvent
+                }),
+            ],
+
+            content: [
+                oUspCrForm
+            ],
+
+            afterClose: function() {
+
+                APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
+
+            }
+
+        });
+
+        oUspCrDlg.open();
+
+    } // end of fnCreateUspNodePopup
+
+    /**************************************************************************
+     * [WS30] USP Tree의 Node 삭제
+     **************************************************************************/
+    function fnDeleteUspNode(oTreeTable) {
+
+        var iIndex = gSelectedTreeIndex,
+            oCtx = oTreeTable.getContextByIndex(iIndex),
+            oTreeModel = oTreeTable.getModel(),
+            oTreeData = oTreeModel.getProperty(oCtx.sPath);
+
+        // 질문 메시지
+        var sMsg = ` [ ${oTreeData.OBDEC} ] ` + oAPP.common.fnGetMsgClsTxt("003"); // Do you really want to delete the object?
+
+        // 질문팝업? 삭제하시겠습니까?
+        parent.showMessage(sap, 30, 'W', sMsg, _fnDeleteUspNodeCb.bind(this, oTreeTable));
+
+    } // end of fnDeleteUspNode
+
+    function _fnDeleteUspNodeCb(oTreeTable, oEvent) {
+
+        if (oEvent !== "YES") {
+            return;
+        }
+
+        var iIndex = gSelectedTreeIndex,
+            oCtx = oTreeTable.getContextByIndex(iIndex);
+
+        if (!oCtx) {
+            return;
+        }
+
+        var oTreeModel = oTreeTable.getModel(),
+            oTreeData = oTreeModel.getProperty(oCtx.sPath),
+
+            oResult = _fnFindModelData(oCtx.sPath),
+
+            iFindIndex = oResult.Nodes.findIndex(arr => arr.OBJKY == oTreeData.OBJKY);
+
+        if (iFindIndex == -1) {
+            return;
+        }
+
+        oResult.Nodes.splice(iFindIndex, 1);
+
+        oTreeModel.setProperty(oResult.Path, oResult.Nodes);
+
+        oTreeModel.refresh();
+
+        oTreeTable.clearSelection();
+
+    } // end of _fnDeleteUspNodeCb
+
+    function _fnFindModelData(sPath) {
+
+        var aa = sPath.split("/"),
+            ilen = aa.length,
+            mo = APPCOMMON.fnGetModelProperty("/"),
+            sPath = "",
+            dd;
+
+        for (var i = 0; i < ilen; i++) {
+
+            var tt = aa[i];
+
+            if (tt == "") {
+                continue;
+            }
+
+            if (i <= ilen - 2) {
+                sPath += `/${tt}`;
+            }
+
+            if (!dd) {
+                dd = mo[tt];
+                continue;
+            }
+
+            if (i == ilen - 1) {
+
+                break;
+            }
+
+            dd = dd[tt];
+
+        }
+
+        return {
+            Path: sPath,
+            Nodes: dd
+        };
+
+    } // end of _fnFindModelData
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**************************************************************************
      * [WS30] Back Button Event
      **************************************************************************/
     function ev_pressWs30Back() {
@@ -753,7 +1007,7 @@
     function ev_rowSelectionChange(oEvent) {
 
         // 마우스 우클릭일 경우는 실행하지 않기
-        if ("which" in event) {
+        if (event && "which" in event) {
             if (event.which == 3) {
                 return;
             }
@@ -761,8 +1015,8 @@
 
         var oUspData = {
             DATA: "",
-            // VISI: "",
-            URL: ""
+            URL: "",
+            ISEDIT: "",
         };
 
         APPCOMMON.fnSetModelProperty("/WS30/USPDATA", oUspData);
@@ -783,10 +1037,10 @@
         }
 
         APPCOMMON.fnSetModelProperty("/WS30/USPDATA", {
-            // VISI: "DATA",
-            URL: oData.OBJKY,
-            DATA: oData.DATA
-        });
+            URL: oData.SPATH,
+            DATA: oData.DATA,
+            ISEDIT: "X",
+        });        
 
     } // end of ev_rowSelectionChange
 
@@ -820,92 +1074,223 @@
      **************************************************************************/
     function ev_beforeOpenContextMenu(oEvent) {
 
-        debugger;
-
         var oTreeTable = oEvent.getSource(),
             iSelectRow = oEvent.getParameter("rowIndex"),
             oCtx = oTreeTable.getContextByIndex(iSelectRow);
 
+        if (!oCtx) {
+            return;
+        }
+
+        // 우클릭한 라인 인덱스 값을 글로벌에 잠시 둔다.
+        gSelectedTreeIndex = iSelectRow;
+
         // 우클릭한 라인을 선택 처리 한다.
-        oTreeTable.setSelectedIndex(iSelectRow);
+        // oTreeTable.setSelectedIndex(iSelectRow);
 
         var oRowData = oTreeTable.getModel().getProperty(oCtx.sPath);
 
         // mime tree 의 기본 contextmenu 정보를 구한다. 
         var aCtxMenu = fnGetUspTreeDefCtxMenuList();
 
+        // 우클릭한 위치가 ROOT 일 경우 생성 버튼만 활성화 한다.
+        if (oRowData.OBJKY == "ROOT") {
 
+            aCtxMenu.find(arr => arr.KEY == "K4").ENABLED = false;
+            aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
+
+            APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
+
+            return;
+
+        }
+
+        // 우클릭한 위치가 폴더일 경우
+        if (oRowData.ISFLD == true) {
+
+            aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
+
+            APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
+
+            return;
+
+        }
+
+        // 우클릭한 위치가 파일 레벨인 경우        
+        aCtxMenu.find(arr => arr.KEY == "K3").ENABLED = false;
+
+        APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
 
     } // end of ev_beforeOpenContextMenu
-
-    /**************************************************************************
-     * [WS30] USP Tree ContextMenu Default 정보
-     **************************************************************************/
-    function fnGetUspTreeDefCtxMenuList() {
-
-        return [{
-                ICON: "",
-                KEY: "K1",
-                TXT: "Expand Subtree",
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "",
-                KEY: "K2",
-                TXT: "Collapse Subtree",
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "",
-                KEY: "K3",
-                TXT: "Create Folder",
-                ENABLED: true,
-                ISSTART: true,
-                VISIBLE: true
-            },
-            {
-                ICON: "",
-                KEY: "K4",
-                TXT: "Delete Object",
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "",
-                KEY: "K5",
-                TXT: "Import Mime Object",
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "",
-                KEY: "K6",
-                TXT: "Download Mime Object",
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            }
-        ];
-
-    } // end of fnGetUspTreeDefCtxMenuList
 
     /**************************************************************************
      * [WS30] USP Tree ContextMenu Click Event
      **************************************************************************/
     function ev_UspTreeCtxMenuClick(oEvent) {
 
-        debugger;
+        // contextmenu의 선택한 메뉴 정보를 구한다.
+        var oTreeTable = oEvent.getSource().getParent(),
+            oCtxMenuItm = oEvent.getParameter("item"),
+            sCtxMenuKey = oCtxMenuItm.getProperty("key");
 
+        switch (sCtxMenuKey) {
+            case "K3": // create
 
+                fnCreateUspNodePopup(oTreeTable);
 
+                break;
 
+            case "K4": // delete
+
+                fnDeleteUspNode(oTreeTable);
+
+                break;
+        }
 
     } // end of ev_UspTreeCtxMenuClick
+
+    /**************************************************************************
+     * [WS30] USP Create Node Accept Event
+     **************************************************************************/
+    function ev_createUspNodeAcceptEvent(oTreeTable, oEvent) {
+
+        var sBindRootPath = "/WS30/USPCRT";
+
+        // USP 생성 팝업의 입력 값 구하기
+        var oCrateData = APPCOMMON.fnGetModelProperty(sBindRootPath);
+
+        oCrateData.NAME_VS = "";
+        oCrateData.NAME_VSTXT = "";
+
+        // 생성 팝업 입력값 체크
+        var oResult = _fnCheckCreateNodeData(oCrateData);
+        if (oResult.RETCD == "E") {
+
+            // Value State 설정
+            oCrateData.NAME_VS = sap.ui.core.ValueState.Error;
+            oCrateData.NAME_VSTXT = oResult.RETMSG;
+
+            APPCOMMON.fnSetModelProperty(sBindRootPath, oCrateData, true);
+
+            parent.setSoundMsg("02"); // error sound
+
+            // Footer Msg 출력
+            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RETMSG);
+
+            return;
+        }
+
+        var oCtx = oTreeTable.getContextByIndex(gSelectedTreeIndex);
+        if (!oCtx) {
+            return;
+        }
+
+        var oTreeModel = oTreeTable.getModel(),
+            oRowData = oTreeModel.getProperty(oCtx.sPath);
+
+        // 같은 레벨에서의 이름 중복 확인
+        var oDup = oRowData.USPTREE.find(arr => arr.OBDEC.toLowerCase() == oCrateData.NAME.toLowerCase());
+
+        if (oDup) {
+
+            var sMsg = APPCOMMON.fnGetMsgClsTxt("004"); // Duplicate filename exists.
+
+            // Value State 설정
+            oCrateData.NAME_VS = sap.ui.core.ValueState.Error;
+            oCrateData.NAME_VSTXT = sMsg;
+
+            APPCOMMON.fnSetModelProperty(sBindRootPath, oCrateData, true);
+
+            parent.setSoundMsg("02"); // error sound
+
+            // Footer Msg 출력
+            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", sMsg);
+
+            return;
+
+        }
+
+        var sRandomKey = RANDOM.generateBase30(50),
+            oCopyRowData = jQuery.extend(true, {}, oRowData);
+
+        oCopyRowData.PUJKY = oRowData.OBJKY;
+        oCopyRowData.OBJKY = sRandomKey;
+        oCopyRowData.APPID = oRowData.APPID;
+        oCopyRowData.APPVR = oRowData.APPVR;
+        oCopyRowData.ISFLD = oCrateData.ISFLD;
+        oCopyRowData.OBDEC = oCrateData.NAME;
+        oCopyRowData.DESCT = oCrateData.DESC;
+        oCopyRowData.SPATH = `${oRowData.SPATH}/${oCrateData.NAME}`;
+
+        // 폴더가 아닐 경우 파일 확장자와 MIME TYPE을 구한다.
+        if (oCrateData.ISFLD == false) {
+
+            oCopyRowData.MIME = MIMETYPES.lookup(oCrateData.NAME);
+            oCopyRowData.EXTEN = APPCOMMON.fnGetFileExt(oCrateData.NAME);
+
+        }
+
+        oCopyRowData.USPTREE = [];
+
+        oRowData.USPTREE.push(oCopyRowData);
+
+        oTreeModel.setProperty(oCtx.sPath, oRowData);
+
+        oTreeModel.refresh();
+
+        oTreeTable.expand(gSelectedTreeIndex);
+
+        ev_createUspDlgCloseEvent();
+
+    } // end of ev_createUspNodeAcceptEvent
+
+    function _fnCheckCreateNodeData(oCrateData) {
+
+        var oCheck = {};
+
+        // 입력값 존재 여부 확인
+        if (parent.isEmpty(oCrateData.NAME) === true || parent.isBlank(oCrateData.NAME) === true) {
+
+            oCheck.RETCD = "E";
+            oCheck.RETMSG = "Name is Required!";
+
+            return oCheck;
+
+        }
+
+        // 파일 생성일 경우 파일명에 허용된 확장자인지 체크 한다.
+        if (oCrateData.ISFLD == false) {
+
+            var sCheck = MIMETYPES.lookup(oCrateData.NAME);
+
+            if (typeof sCheck == "boolean" && sCheck == false) {
+
+                oCheck.RETCD = "E";
+                oCheck.RETMSG = "Invalid MimeType! Check the extension of the file name. ex) aaa.txt, aaa.js..";
+
+                return oCheck;
+
+            }
+
+        }
+
+        oCheck.RETCD = "S";
+
+        return oCheck;
+
+    } // end of _fnCheckCreateNodeData
+
+    /**************************************************************************
+     * [WS30] USP Create Dialog Close
+     **************************************************************************/
+    function ev_createUspDlgCloseEvent() {
+
+        var oDialog = sap.ui.getCore().byId("uspCrNodePopup");
+
+        if (oDialog && oDialog.isOpen()) {
+            oDialog.close();
+        }
+
+    } // end of ev_createUspDlgCloseEvent
 
 })(window, $, oAPP);

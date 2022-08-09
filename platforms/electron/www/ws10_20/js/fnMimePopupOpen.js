@@ -1763,6 +1763,10 @@
             iSelectRow = oEvent.getParameter("rowIndex"),
             oCtx = oTreeTable.getContextByIndex(iSelectRow);
 
+        if(!oCtx){
+            return;
+        }
+        
         // 우클릭한 라인을 선택 처리 한다.
         oTreeTable.setSelectedIndex(iSelectRow);
 

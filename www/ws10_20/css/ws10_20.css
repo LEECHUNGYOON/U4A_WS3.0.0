@@ -126,10 +126,18 @@ body,
     background-color: transparent;
 }
 
-.u4aWs30Page > .sapMPageHeader > .sapMIBar {
+.u4aWs30Page>.sapMPageHeader>.sapMIBar {
     border-bottom: 0px;
 }
 
+.u4aWs30Page .u4aWsUspIntroImg {
+    max-width: 100%;
+    height: auto;
+}
+
+.u4aWsApp .u4aWs30Page.sapMPageWithFooter.sapMPageWithFloatingFooter>section {
+	padding-bottom: 0rem;
+}
 
 /************************************************************************************ 
     sap_fiori_3_dark 
@@ -239,7 +247,7 @@ body,
 .sapUiTheme-sap_horizon_dark .u4aWsMimeTreeTable .u4aMimeTreeMyApp .sapMText,
 .sapUiTheme-sap_horizon_dark .u4aWsMimeTreeTable .u4aMimeTreeMyAppChild .sapMText,
 .sapUiTheme-sap_horizon_dark .u4aWsMimeTreeTable .u4aMimeTreeBrightRow .sapMText {
-    color: #fff;   
+    color: #fff;
 }
 
 .sapUiTheme-sap_horizon_dark .u4aWsMimeTreeTable .u4aMimeTreeDarkRow .sapMText {

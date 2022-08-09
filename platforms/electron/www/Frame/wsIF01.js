@@ -16,7 +16,7 @@ function setServerInfo(oServerInfo) {
     oWS.utill.fn.setServerInfo(oServerInfo);
 }
 
-function setBeforeServerInfo(oServerInfo){
+function setBeforeServerInfo(oServerInfo) {
     oWS.utill.fn.setBeforeServerInfo(oServerInfo);
 }
 
@@ -860,4 +860,19 @@ function getHost() {
 
     return oMetadata.HOST;
 
+}
+
+
+/************************************************************************
+ * 공백 여부
+ ************************************************************************/
+function isBlank(s) {
+    return isEmpty(s.trim());
+}
+
+/************************************************************************
+ * 빈값 여부
+ ************************************************************************/
+function isEmpty(s) {
+    return !s.length;
 }
