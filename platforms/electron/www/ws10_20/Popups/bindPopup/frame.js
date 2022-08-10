@@ -43,7 +43,8 @@ let oAPP = (function(window) {
 
         oAPP.attr.T_9011 = oInfo.T_9011;
         oAPP.attr.oAppInfo = oInfo.oAppInfo;
-        oAPP.attr.servNm = oInfo.servNm;        
+        oAPP.attr.servNm = oInfo.servNm;
+        oAPP.attr.DnDRandKey = oInfo.SSID;
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {

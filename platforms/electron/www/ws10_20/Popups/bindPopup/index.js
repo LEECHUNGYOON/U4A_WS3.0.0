@@ -245,9 +245,14 @@ let oAPP = parent.oAPP;
             this.expandToLevel(99999);
         });
 
+        var l_edit = false;
+
+        if(oAPP.attr.oAppInfo.IS_EDIT === "X"){
+            l_edit = true;
+        }
 
         //drag UI 생성.
-        var oDrag = new sap.ui.core.dnd.DragInfo({
+        var oDrag = new sap.ui.core.dnd.DragInfo({enabled:l_edit,
             sourceAggregation: "rows"
         });
         oAPP.attr.oTree.addDragDropConfig(oDrag);
@@ -1312,6 +1317,7 @@ let oAPP = parent.oAPP;
 
     //drag 정보 처리.
     oAPP.fn.setDragStart = function(oEvent){
+
         //drag한 위치의 바인딩 정보 얻기.
         var l_ctxt = oEvent.mParameters.target.getBindingContext();
         if (!l_ctxt) {
@@ -1328,6 +1334,9 @@ let oAPP = parent.oAPP;
 
         //프로세스 코드.
         l_obj.PRCCD = "PRC001";
+
+        //application session key 매핑.
+        l_obj.DnDRandKey = oAPP.attr.DnDRandKey;
 
         //DRAG 한 라인 정보.
         l_obj.IF_DATA = ls_drag;
