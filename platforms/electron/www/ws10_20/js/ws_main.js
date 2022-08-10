@@ -5,7 +5,7 @@
  * - file Desc : ws 메인 
  ************************************************************************/
 
-(function(window, oAPP) {
+(function (window, oAPP) {
     "use strict";
 
     var APPCOMMON = oAPP.common;
@@ -13,7 +13,7 @@
     /**************************************************************************
      * 공통 인스턴스 정의
      **************************************************************************/
-    oAPP.main.fnPredefineGlobalObject = function() {
+    oAPP.main.fnPredefineGlobalObject = function () {
 
         var oMetaData = parent.getMetadata();
 
@@ -31,7 +31,7 @@
     /************************************************************************
      * 접속 Language 에 맞는 메시지 텍스트 읽어오기
      ************************************************************************/
-    oAPP.main.fnOnLoadMessageClass = function() {
+    oAPP.main.fnOnLoadMessageClass = function () {
 
         var FS = parent.FS,
             oUserInfo = parent.getUserInfo();
@@ -89,7 +89,7 @@
     /**************************************************************************
      * U4A WS 메타 정보 구하기
      **************************************************************************/
-    oAPP.main.fnOnInitModelBinding = function() {
+    oAPP.main.fnOnInitModelBinding = function () {
 
         // ModelData
         var oMetaData = {
@@ -171,7 +171,7 @@
     /************************************************************************
      * window Event Handle ..
      ************************************************************************/
-    oAPP.main.fnBeforeunload = function(isClearStorage) {
+    oAPP.main.fnBeforeunload = function (isClearStorage) {
 
         // 설정된 Global Shortcut 단축키 삭제
         oAPP.common.fnRemoveGlobalShortcut();
@@ -260,7 +260,7 @@
     };
 
     // Test..
-    oAPP.main.fnSetLanguage = function() {
+    oAPP.main.fnSetLanguage = function () {
 
         var oUserInfo = parent.getUserInfo(),
             oMetaScript = document.getElementById("sap-ui-bootstrap");
@@ -282,7 +282,9 @@
     oAPP.main.onDragend = () => {
 
         // 20번 페이지 Design영역, Attribute 영역 잔상 제거
-        oAPP.fn.ClearDropEffect();
+        if (oAPP.fn.ClearDropEffect) {
+            oAPP.fn.ClearDropEffect();
+        }
 
         // 미리보기쪽 잔상 제거
         if (oAPP.attr.ui &&
@@ -301,9 +303,9 @@
     /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------
      ************************************************************************/
-    oAPP.main.fnWsStart = function() {
+    oAPP.main.fnWsStart = function () {
 
-        sap.ui.getCore().attachInit(function() {
+        sap.ui.getCore().attachInit(function () {
 
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;

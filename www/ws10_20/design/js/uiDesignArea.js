@@ -40,8 +40,26 @@
       //라인선택이 해제 안된경우 EXIT.
       if(this.getSelectedIndex() !== -1){return;}
 
+      var l_indx = oEvent.mParameters.rowIndex;
+
+      if(typeof oEvent.mParameters.rowIndices !== "undefined" && oEvent.mParameters.rowIndices.length !== 0){
+        l_indx = oEvent.mParameters.rowIndices[0];
+      }
+
       //라인 선택이 해제 된경우 이벤트 발생 라인 선택 처리.
-      this.setSelectedIndex(oEvent.mParameters.rowIndex);
+      this.setSelectedIndex(l_indx);
+
+      var l_bind = oAPP.attr.ui.oLTree1.getBinding();
+      if(!l_bind){return;}
+
+      var l_ctxt = l_bind.getContextByIndex(l_indx);
+      if(!l_ctxt){return;}
+
+      var ls_tree = l_ctxt.getProperty();
+      if(!ls_tree){return;}
+
+      //design tree의 라인 이동 처리.
+      oAPP.fn.desginSetFirstVisibleRow(l_indx, ls_tree);
       
     }); //tree 라인선택 예외처리.
     
@@ -52,15 +70,6 @@
     oLTree1.attachBrowserEvent("click",function(){
         window.getSelection().removeAllRanges();
     });
-
-
-    // //tree에 필터처리 됐을때 이벤트.
-    // oLTree1.attachFilter(function(){
-     
-    //   //필터 처리 이후 라인 재선택 처리.
-    //   oAPP.fn.designFilterAfterLineSelection();
-
-    // }); //tree에 필터처리 됐을때 이벤트.
       
 
 
@@ -235,31 +244,31 @@
 
     }); //접힘 이벤트
 
-    // //구분자 추가.
-    // oLTBar1.addContent(new sap.m.ToolbarSeparator());
+    //구분자 추가.
+    oLTBar1.addContent(new sap.m.ToolbarSeparator());
 
-    // //UI FILTER 버튼.
-    // oLBtn6 = new sap.m.Button({icon:"sap-icon://search", tooltip:"Find UI"});
-    // oLTBar1.addContent(oLBtn6);
+    //UI FILTER 버튼.
+    oLBtn6 = new sap.m.Button({icon:"sap-icon://search", tooltip:"Find UI"});
+    oLTBar1.addContent(oLBtn6);
 
-    // //UI FILTER 버튼 선택 이벤트.
-    // oLBtn6.attachPress(function(){
+    //UI FILTER 버튼 선택 이벤트.
+    oLBtn6.attachPress(function(){
 
-    //   //필터 팝업이 존재하는경우.
-    //   if(typeof oAPP.fn.callDesignTreeFilterPopup !== "undefined"){
-    //     //필터 팝업 호출.
-    //     oAPP.fn.callDesignTreeFilterPopup(oLBtn6);
-    //     return;
-    //   }
+      //필터 팝업이 존재하는경우.
+      if(typeof oAPP.fn.callDesignTreeFilterPopup !== "undefined"){
+        //필터 팝업 호출.
+        oAPP.fn.callDesignTreeFilterPopup(oLBtn6);
+        return;
+      }
 
-    //   //필터 팝업이 존재하지 않는경우 js 호출.
-    //   oAPP.fn.getScript("design/js/callDesignTreeFilterPopup",function(){
-    //     //필터 팝업 호출.
-    //     oAPP.fn.callDesignTreeFilterPopup(oLBtn6);
+      //필터 팝업이 존재하지 않는경우 js 호출.
+      oAPP.fn.getScript("design/js/callDesignTreeFilterPopup",function(){
+        //필터 팝업 호출.
+        oAPP.fn.callDesignTreeFilterPopup(oLBtn6);
 
-    //   });    
+      });    
 
-    // }); //UI FILTER 버튼 선택 이벤트.
+    }); //UI FILTER 버튼 선택 이벤트.
 
 
     //구분자 추가.
@@ -1219,11 +1228,10 @@
 
     } //수집된 path를 기준으로 child를 탐색하며 펼침 처리.
 
+
+
     //OBJID가 존재하지 않는경우 EXIT.
     if(typeof OBJID === "undefined" || OBJID === null || OBJID === ""){return;}
-
-    // //필터 해제 처리.
-    // oAPP.fn.designSetFilter("");
 
     var lt_route = [], lt_path = [], l_cnt = 0;
 
@@ -1235,6 +1243,12 @@
 
     var l_bind = oAPP.attr.ui.oLTree1.getBinding();
     if(!l_bind){return;}
+
+    //이전에 design tree에 필터가 적용됐다면.
+    if(l_bind.aFilters.length !== 0){
+      //필터 해제 처리.
+      oAPP.fn.designSetFilter("");
+    }
         
     //수집한 path를 기준으로 tree 펼첨 처리.
     lf_expand(l_bind._oRootNode.children[0]);
@@ -1523,6 +1537,9 @@
     //이전 선택한 UI의 선택 표현 CSS 제거 처리.
     oAPP.attr.ui.frame.contentWindow.oWS.sMark.fn_removeMark();
 
+    //20번 화면의 drop 잔상 제거 처리.
+    oAPP.fn.ClearDropEffect();
+
     //UI Info 영역 갱신 처리.
     oAPP.fn.setUIInfo(is_tree);
 
@@ -1544,6 +1561,18 @@
     //tree의 first visible row 변경이 필요한경우 하위 로직 수행.
     if(typeof iIndex === "undefined"){return;}
 
+    //design tree의 라인 이동 처리.
+    oAPP.fn.desginSetFirstVisibleRow(iIndex, is_tree);
+
+
+  };  //UI design tree 라인 선택 이벤트.
+
+
+
+
+  //design tree의 라인 이동 처리.
+  oAPP.fn.desginSetFirstVisibleRow = function(iIndex, is_tree){
+
     var lt_ctxt = oAPP.attr.ui.oLTree1._getRowContexts();
 
     if(lt_ctxt.length === 0){
@@ -1558,13 +1587,13 @@
 
       //현재 보여지고 있는 tree에 이동대상 OBJID가 존재하는경우 이동 불필요 EXIT 처리.
       if(lt_ctxt[i].context.getProperty("OBJID") === is_tree.OBJID){return;}
+      
     }    
 
     //해당 아이템으로 focus 처리.
     oAPP.attr.ui.oLTree1.setFirstVisibleRow(iIndex);
 
-
-  };  //UI design tree 라인 선택 이벤트.
+  };  //design tree의 라인 이동 처리.
 
 
 
@@ -2273,16 +2302,6 @@
     oAPP.attr.ui.oLTree1.expandToLevel(999999999999);
 
   };  //design tree 필터 처리.
-
-
-
-
-  //필터 처리 이후 라인 재선택 처리.
-  oAPP.fn.designFilterAfterLineSelection = function(){
-
-    var lt_rows = oAPP.attr.ui.oLTree1.getRows();
-
-  };  //필터 처리 이후 라인 재선택 처리.
 
 
 })();

@@ -24,20 +24,24 @@
         }); //menu item 선택 이벤트.
 
 
+        //CONTEXT MENU 선택한 ATTRIBUTE 명
+        var oMItem0 = new sap.m.MenuItem({key:"M00", icon:"sap-icon://menu2", text:"{/atmenu/UIATT}", enabled:false, startsSection:true});
+        oMenu1.addItem(oMItem0);
+
         //wait off 처리
-        var oMItem1 = new sap.m.MenuItem({key:"M01", icon:"sap-icon://lateness", text:"Turn on or off WAIT mode", visible:"{/atmenu/vis01}"});
+        var oMItem1 = new sap.m.MenuItem({key:"M01", icon:"sap-icon://lateness", text:"Turn on or off WAIT mode", visible:"{/atmenu/vis01}", startsSection:true});
         oMenu1.addItem(oMItem1);
 
         //unbind 처리
-        var oMItem2 = new sap.m.MenuItem({key:"M02", icon:"sap-icon://disconnected", text:"unbind　　　　　　　", visible:"{/atmenu/vis02}"});
+        var oMItem2 = new sap.m.MenuItem({key:"M02", icon:"sap-icon://disconnected", text:"unbind　　　　　　　", visible:"{/atmenu/vis02}", startsSection:true});
         oMenu1.addItem(oMItem2);
 
         //프로퍼티 동일 속성 동기화 처리
-        var oMItem3 = new sap.m.MenuItem({key:"M03", icon:"sap-icon://paste", text:"동일속성 프로퍼티 동기화 설정", visible:"{/atmenu/vis03}"});
+        var oMItem3 = new sap.m.MenuItem({key:"M03", icon:"sap-icon://paste", text:"동일속성 프로퍼티 동기화 설정", visible:"{/atmenu/vis03}", startsSection:true});
         oMenu1.addItem(oMItem3);
         
         //클라이언트 이벤트 해제 처리
-        var oMItem4 = new sap.m.MenuItem({key:"M04", icon:"sap-icon://delete", text:"Remove Event JS Script", visible:"{/atmenu/vis04}"});
+        var oMItem4 = new sap.m.MenuItem({key:"M04", icon:"sap-icon://delete", text:"Remove Event JS Script", visible:"{/atmenu/vis04}", startsSection:true});
         oMenu1.addItem(oMItem4);
 
 
@@ -88,6 +92,9 @@
         var ls_menu = {};
 
         var oModel = oMenu.getModel();
+
+        //context menu 호출한 attribute명.
+        ls_menu.UIATT = is_attr.UIATT;
 
         ls_menu.vis01 = false;  //wait off 처리
         ls_menu.vis02 = false;  //unbind 처리

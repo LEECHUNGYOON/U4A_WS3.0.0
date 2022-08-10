@@ -27,6 +27,7 @@
                     toId = oEvent.getParameter("toId"),
                     oToPage = oEvent.getParameter("to");
 
+                // 화면 Lock 해제
                 sap.ui.getCore().unlock();
 
                 // 현재 페이지의 위치를 저장한다.
@@ -48,11 +49,17 @@
                         break;
 
                     case "WS20":
+
                         oAPP.fn.fnMoveToWs20(); // #[ws_fn_02.js]
+
                         break;
 
-                    default:
+                    case "WS30":
+
+                        oAPP.fn.fnMoveToWs30(); // #[ws_fn_02.js]
+
                         break;
+
                 }
 
             }
@@ -90,6 +97,9 @@
 
         oApp.addPage(WS10);
         oApp.addPage(WS20);
+
+        // 30번 페이지 생성하기
+        oAPP.fn.fnWs30Creator();
 
         oApp.placeAt("content");
 
@@ -824,7 +834,7 @@
         // 10번 페이지 Application Name SearchField의 Key down Event
         oAppNmInput.attachBrowserEvent("keydown", oAPP.fn.fnWs10AppInputKeyDownEvent);
         oAppNmInput.attachBrowserEvent("dblclick", oAPP.fn.fnWs10AppInputdblclickEvent);
-        oAppNmInput.attachBrowserEvent("mousedown", () => {            
+        oAppNmInput.attachBrowserEvent("mousedown", () => {
 
             var sValue = oAppNmInput.getValue() || "";
 

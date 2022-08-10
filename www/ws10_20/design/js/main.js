@@ -22,7 +22,7 @@
     //UI5 Standard Predefined CSS Preview 팝업에서 css 적용건 수집 array.
     oAPP.attr.prevCSS = [];
 
-    //D&D용 랜덤키 생성.
+    //D&D용 랜덤키 광역변수.
     oAPP.attr.DnDRandKey = "";
 
     //sap core 정보 광역화.
@@ -332,8 +332,8 @@
         oAPP.fn.invalidateDesignArea();
 
 
-        //D&D용 랜덤 키 생성.
-        oAPP.attr.DnDRandKey = oAPP.fn.getRandomKey();
+        //세션 랜덤키 얻기.
+        oAPP.attr.DnDRandKey = parent.getSSID();
 
         //wait off 처리.
         //parent.setBusy('');
@@ -568,8 +568,8 @@
       //design tree 선택 처리 해제
       oAPP.attr.ui.oLTree1.clearSelection();
 
-      // //design tree 필터 해제 처리.
-      // oAPP.fn.designSetFilter("");
+      //design tree 필터 해제 처리.
+      oAPP.fn.designSetFilter("");
 
       //attribute 선택 처리 해제.
       oAPP.attr.ui.oRTab1.removeSelections();

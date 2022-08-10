@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -20,17 +20,17 @@
      * 
      * 
      */
-    var gSelectedTreeIndex = -1;
+    var gSelectedTreeIndex = -1,
+        gBeforeSelectedIndex = -1,
+        gBeforeBindPath = "";
 
-    oAPP.fn.fnCreateWs30 = (fnCallback) => {
+    oAPP.fn.fnCreateWs30 = () => {
 
         // 30번 페이지 존재 유무 체크
         var oWs30 = sap.ui.getCore().byId("WS30");
-        if (oWs30 && typeof fnCallback === "function") {
+        if (oWs30) {
 
             fnOnInitLayoutSettings();
-
-            fnCallback();
 
             return;
         }
@@ -39,10 +39,6 @@
         fnOnInitRendering();
 
         fnOnInitLayoutSettings();
-
-        if (typeof fnCallback === "function") {
-            fnCallback();
-        }
 
     }; // end of oAPP.fn.fnCreateWs30
 
@@ -62,7 +58,7 @@
         }
 
         oUspTreeTable.collapseAll();
-        oUspTreeTable.expandToLevel(1);
+        oUspTreeTable.expand(0);
         oUspTreeTable.clearSelection();
         // oUspTreeTable.setSelectedIndex(0);
 
@@ -93,7 +89,7 @@
                     new sap.m.Button({
                         icon: "sap-icon://decline",
                         type: "Reject",
-                        press: oAPP.common.fnHideFloatingFooterMsg
+                        press: APPCOMMON.fnHideFloatingFooterMsg
                     }),
                 ]
             });
@@ -115,7 +111,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -260,7 +256,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -437,9 +433,11 @@
         return new sap.ui.table.TreeTable("usptree", {
 
             // Properties
+            // selectionMode: "None",
             selectionMode: "Single",
             selectionBehavior: "RowOnly",
             visibleRowCountMode: "Auto",
+            rowHeight: 45,
 
             // Aggregations
             layoutData: new sap.ui.layout.SplitterLayoutData("usptreeSplitLayout", {
@@ -455,8 +453,35 @@
                         design: "Bold"
                     }),
 
-                    template: new sap.m.Text({
-                        text: "{OBDEC}",
+                    // template: new sap.m.Text({
+                    //     text: "{OBDEC}",
+                    // })
+
+                    template: new sap.m.HBox({
+                        renderType: "Bare",
+                        items: [
+
+                            new sap.ui.core.Icon({
+                                // src: "{ICONSRC}"
+                                src: "sap-icon://accept",
+                                visible: "{ICONVISI}"
+                            })
+                            .bindProperty("visible", "ICONVISI", function (VISI) {
+
+                                if (!VISI) {
+                                    return false;
+                                }
+
+                                return VISI;
+
+                            })
+                            .addStyleClass("sapUiTinyMarginEnd"),
+
+                            new sap.m.Text({
+                                text: "{OBDEC}",
+                            })
+
+                        ]
                     })
 
                 }),
@@ -512,9 +537,87 @@
 
             // Events
             beforeOpenContextMenu: ev_beforeOpenContextMenu,
-            rowSelectionChange: ev_rowSelectionChange
+            // rowSelectionChange: ev_rowSelectionChange
+            rowSelectionChange: function (oEvent) {
 
-        });
+                var oTreeTable = oEvent.getSource(),
+                    iSelIdx = oTreeTable.getSelectedIndex(),
+                    iRowIndex = oEvent.getParameter("rowIndex");
+
+                if (iSelIdx == iRowIndex) {
+                    return;
+                }
+
+                oTreeTable.setSelectedIndex(iRowIndex);
+
+            }
+
+        }).attachBrowserEvent("dblclick", function (oEvent) {
+
+            var oTarget = oEvent.target,
+                $SelectedRow = $(oTarget).closest(".sapUiTableRow");
+
+            if (!$SelectedRow.length) {
+                return;
+            }
+
+            var oRow = $SelectedRow[0],
+
+                sRowId1 = oRow.getAttribute("data-sap-ui-related"),
+                sRowId2 = oRow.getAttribute("data-sap-ui"),
+                sRowId = "";
+
+            if (sRowId1 == null && sRowId2 == null) {
+                return;
+            }
+
+            if (sRowId1) {
+                sRowId = sRowId1;
+            }
+
+            if (sRowId2) {
+                sRowId = sRowId2;
+            }
+
+            var oRow = sap.ui.getCore().byId(sRowId);
+            if (!oRow) {
+                return;
+            }
+
+            var oCtx = oRow.getBindingContext();
+            if (!oCtx) {
+                return;
+            }
+
+            console.log("로우 클릭!!!");
+
+            debugger;
+
+            if (gBeforeBindPath == oCtx.sPath) {
+                return;
+            }
+
+            var oRowModel = oRow.getModel(),
+                oRowData = oRowModel.getProperty(oCtx.sPath);
+
+            if (oRowData.PUJKY != "" && oRowData.ISFLD == false) {
+
+                var oBeforeRowData = oRowModel.getProperty(gBeforeBindPath);
+                if (oBeforeRowData) {
+                    oBeforeRowData.ICONVISI = false;
+                    oRowModel.setProperty(gBeforeBindPath, oBeforeRowData);
+                }
+
+                // 선택한 index 이전 히스토리 저장
+                gBeforeBindPath = oCtx.sPath;
+
+                oRowData.ICONVISI = true;
+                oRowModel.setProperty(oCtx.sPath, oRowData);
+
+            }
+
+
+        }).addStyleClass("u4aWsUspTree");
 
     } // end of fnGetTreeTableWs30
 
@@ -794,7 +897,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 // submit: oAPP.events.ev_createMimeFolderEvent
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -859,7 +962,7 @@
                 oUspCrForm
             ],
 
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -870,7 +973,6 @@
         oUspCrDlg.open();
 
     } // end of fnCreateUspNodePopup
-
 
     /**************************************************************************
      * [WS30] USP Tree의 Node 삭제
@@ -966,9 +1068,56 @@
     } // end of _fnFindModelData
 
 
+    function fnMoveToWs10() {
+
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
+        // Busy 실행
+        parent.setBusy('X');
+
+        // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
+        oAPP.fn.fnKillUserSession(_fnKillUserSessionCb);
 
 
+    } // end of fnMoveToWs10
 
+    function _fnKillUserSessionCb() {
+
+        /**
+         * 페이지 이동 시, CHANGE 모드였다면 현재 APP의 Lock Object를 해제한다.
+         */
+        var oAppInfo = parent.getAppInfo();
+
+        if (oAppInfo.IS_EDIT == 'X') {
+            ajax_unlock_app(oAppInfo.APPID);
+        }
+
+        // WS20 화면에서 떠있는 Dialog, Popup 종류, Electron Browser들 전체 닫는 function
+        oAPP.fn.fnCloseAllWs20Dialogs();
+
+        // App Info 초기화
+        parent.setAppInfo({});
+
+        // WS20에 대한 모델 정보 초기화
+        APPCOMMON.fnSetModelProperty("/WS30", {});
+
+        // 단축키 삭제
+        APPCOMMON.removeShortCut("WS30");
+
+        // 단축키 설정
+        APPCOMMON.setShortCut("WS10");
+
+        // 10번 페이지로 이동
+        oAPP.fn.fnOnMoveToPage("WS10");
+
+        // Busy 끄기
+        parent.setBusy('');
+
+        // 화면 Lock 해제
+        sap.ui.getCore().unlock();
+
+    } // end of _fnKillUserSessionCb
 
 
 
@@ -988,50 +1137,109 @@
      **************************************************************************/
     function ev_pressWs30Back() {
 
-        // 30번 페이지 모델 초기화
-        APPCOMMON.fnSetModelProperty("/WS30", {});
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
 
-        // 단축키 삭제
-        APPCOMMON.removeShortCut("WS30");
+        // app 정보를 구한다.
+        var oAppInfo = parent.getAppInfo(),
 
-        // 단축키 설정
-        APPCOMMON.setShortCut("WS10");
+            IS_CHAG = oAppInfo.IS_CHAG,
+            IS_EDIT = oAppInfo.IS_EDIT;
 
-        // 10번 페이지로 이동
-        oAPP.fn.fnOnMoveToPage("WS10");
+        // 변경된 데이터가 없거나 display 모드일 경우 묻지도 말고 바로 빠져나간다.
+        if (IS_CHAG != 'X' || IS_EDIT != 'X') {
+
+            // WS10 페이지로 이동        
+            fnMoveToWs10();
+
+            return;
+        }
+
+        var sMsg = "";
+        sMsg = oAPP.common.fnGetMsgClsTxt("118"); // "Application has been changed"
+        sMsg += " \n " + oAPP.common.fnGetMsgClsTxt("119"); // "Save before leaving editor?"    
+
+        // 메시지 질문 팝업을 띄운다.
+        parent.showMessage(sap, 40, 'W', sMsg, ev_pressWs30BackCb);
+
+        // 현재 떠있는 팝업 창들을 잠시 숨긴다.
+        oAPP.fn.fnChildWindowShow(false);
+
+        sap.ui.getCore().unlock();
 
     } // end of ev_pressWs30Back
+
+    function ev_pressWs30BackCb(ACTCD) {
+
+        // 이동을 하지 않는다.
+        if (ACTCD == null || ACTCD == "CANCEL") {
+
+            // 현재 떠있는 팝업 창이 있었고 숨김 처리 되있었다면 다시 활성화 시킨다.
+            oAPP.fn.fnChildWindowShow(true);
+
+            return;
+        }
+
+        // 저장 후 이동한다.
+        if (ACTCD == "YES") {
+
+            sap.ui.getCore().lock();
+
+            var oSaveBtn = sap.ui.getCore().byId("saveBtn");
+            if (!oSaveBtn) {
+                return;
+            }
+
+            // // 저장 로직 수행 한다.
+            // oSaveBtn.firePress({
+            //     ISBACK: "X"
+            // });
+
+            return;
+
+        }
+
+        // WS10 페이지로 이동
+        fnMoveToWs10();
+
+    } // end of ev_pressWs30BackCb
 
     /**************************************************************************
      * [WS30] USP Tree rowSelectionChange
      **************************************************************************/
     function ev_rowSelectionChange(oEvent) {
 
-        debugger;
-        
         // 마우스 우클릭일 경우는 실행하지 않기
-        if ("which" in event) {
+        if (event && "which" in event) {
             if (event.which == 3) {
                 return;
             }
         }
 
-        var oUspData = {
-            DATA: "",
-            URL: "",
-            ISEDIT: "",
-        };
-
-        APPCOMMON.fnSetModelProperty("/WS30/USPDATA", oUspData);
-
         var oTreeTable = oEvent.getSource(),
-            iSelIdx = oTreeTable.getSelectedIndex();
+            iSelIdx = oTreeTable.getSelectedIndex(),
+            iRowIndex = oEvent.getParameter("rowIndex");
 
-        if (iSelIdx == -1) {
+        if (iSelIdx != iRowIndex) {
+            oTreeTable.setSelectedIndex(iRowIndex);
+        }
+
+        if (gBeforeSelectedIndex == iRowIndex) {
             return;
         }
 
-        var oCtx = oTreeTable.getContextByIndex(iSelIdx),
+        // 선택한 index 이전 히스토리 저장
+        gBeforeSelectedIndex = iRowIndex;
+
+        // var oUspData = {
+        //     DATA: "",
+        //     URL: "",
+        //     ISEDIT: "",
+        // };
+
+        // APPCOMMON.fnSetModelProperty("/WS30/USPDATA", oUspData);
+
+        var oCtx = oTreeTable.getContextByIndex(iRowIndex),
             oData = oTreeTable.getModel().getProperty(oCtx.sPath);
 
         // 선택한 위치가 Root 또는 폴더이면 return.
@@ -1079,7 +1287,8 @@
 
         var oTreeTable = oEvent.getSource(),
             iSelectRow = oEvent.getParameter("rowIndex"),
-            oCtx = oTreeTable.getContextByIndex(iSelectRow);
+            oCtx = oTreeTable.getContextByIndex(iSelectRow),
+            oAppInfo = parent.getAppInfo();
 
         if (!oCtx) {
             return;
@@ -1088,16 +1297,53 @@
         // 우클릭한 라인 인덱스 값을 글로벌에 잠시 둔다.
         gSelectedTreeIndex = iSelectRow;
 
-        // 우클릭한 라인을 선택 처리 한다.
-        // oTreeTable.setSelectedIndex(iSelectRow);
-
         var oRowData = oTreeTable.getModel().getProperty(oCtx.sPath);
 
         // mime tree 의 기본 contextmenu 정보를 구한다. 
         var aCtxMenu = fnGetUspTreeDefCtxMenuList();
 
+        // Display 모드 일 경우 
+        if (oAppInfo.IS_EDIT == "") {
+
+            // Display 모드에서의 ContextMenu 구성
+            _ev_beforeOpenContextMenuDisplay(oRowData, aCtxMenu);
+
+            return;
+
+        }
+
+        // Change 모드에서의 ContextMenu 구성
+        _ev_beforeOpenContextMenuChange(oRowData, aCtxMenu);
+
+    } // end of ev_beforeOpenContextMenu
+
+    /**************************************************************************
+     * [WS30] Display 모드에서의 ContextMenu 구성
+     **************************************************************************/
+    function _ev_beforeOpenContextMenuDisplay(oRowData, aCtxMenu) {
+
+        aCtxMenu.find(arr => arr.KEY == "K3").ENABLED = false;
+        aCtxMenu.find(arr => arr.KEY == "K4").ENABLED = false;
+        aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
+
+        // root가 아니면서 폴더가 아닐경우 (파일일 경우에만) 다운로드 버튼을 활성화 한다.
+        if (oRowData.PUJKY != "" && oRowData.ISFLD == false) {
+
+            aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = true;
+
+        }
+
+        APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
+
+    } // end of _ev_beforeOpenContextMenuDisplay
+
+    /**************************************************************************
+     * [WS30] Change 모드에서의 ContextMenu 구성
+     **************************************************************************/
+    function _ev_beforeOpenContextMenuChange(oRowData, aCtxMenu) {
+
         // 우클릭한 위치가 ROOT 일 경우 생성 버튼만 활성화 한다.
-        if (oRowData.OBJKY == "ROOT") {
+        if (oRowData.PUJKY == "") {
 
             aCtxMenu.find(arr => arr.KEY == "K4").ENABLED = false;
             aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
@@ -1124,7 +1370,7 @@
 
         APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
 
-    } // end of ev_beforeOpenContextMenu
+    } // end of _ev_beforeOpenContextMenuChange
 
     /**************************************************************************
      * [WS30] USP Tree ContextMenu Click Event
@@ -1219,10 +1465,11 @@
         oCopyRowData.PUJKY = oRowData.OBJKY;
         oCopyRowData.OBJKY = sRandomKey;
         oCopyRowData.APPID = oRowData.APPID;
-        oCopyRowData.APPVR = oRowData.APPVR;
+        // oCopyRowData.APPVR = oRowData.APPVR;
         oCopyRowData.ISFLD = oCrateData.ISFLD;
         oCopyRowData.OBDEC = oCrateData.NAME;
         oCopyRowData.DESCT = oCrateData.DESC;
+        oCopyRowData.ICONVISI = false;
         oCopyRowData.SPATH = `${oRowData.SPATH}/${oCrateData.NAME}`;
 
         // 폴더가 아닐 경우 파일 확장자와 MIME TYPE을 구한다.
@@ -1241,11 +1488,49 @@
 
         oTreeModel.refresh();
 
+        // 현재 선택한 노드 펼침
         oTreeTable.expand(gSelectedTreeIndex);
+
+        _fnSetTreeTableRowSelect(oTreeModel, oRowData.OBJKY);
+
+        // oTreeTable.setSelectedIndex();
 
         ev_createUspDlgCloseEvent();
 
     } // end of ev_createUspNodeAcceptEvent
+
+    function _fnSetTreeTableRowSelect(oTreeModel, OBJKY) {
+
+        var iSelIndex = 0,
+            oData = oTreeModel.getProperty("/WS30"),
+            aCHILDTREE = oData.USPTREE;
+
+        lf_findNode(aCHILDTREE);
+
+        function lf_findNode(aCHILDTREE) {
+
+            var iTreeCnt = aCHILDTREE.length;
+            if (iTreeCnt == 0) {
+                return;
+            }
+
+            for (var i = 0; i < iTreeCnt; i++) {
+
+                iSelIndex++;
+
+                var oChild = aCHILDTREE[i],
+                    aChild = oChild.USPTREE,
+                    iChildCnt = aChild.length;
+
+                if (iChildCnt != 0) {
+                    lf_findNode(aChild);
+                }
+
+            }
+
+        } // end of lf_findNode
+
+    } // end of _fnSetTreeTableRowSelect
 
     function _fnCheckCreateNodeData(oCrateData) {
 

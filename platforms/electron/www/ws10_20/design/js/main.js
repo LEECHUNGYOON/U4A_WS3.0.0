@@ -568,8 +568,8 @@
       //design tree 선택 처리 해제
       oAPP.attr.ui.oLTree1.clearSelection();
 
-      // //design tree 필터 해제 처리.
-      // oAPP.fn.designSetFilter("");
+      //design tree 필터 해제 처리.
+      oAPP.fn.designSetFilter("");
 
       //attribute 선택 처리 해제.
       oAPP.attr.ui.oRTab1.removeSelections();

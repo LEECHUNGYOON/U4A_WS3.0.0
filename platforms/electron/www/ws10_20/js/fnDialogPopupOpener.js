@@ -364,6 +364,7 @@
                 T_9011: oAPP.DATA.LIB.T_9011,
                 oAppInfo: parent.getAppInfo(),
                 servNm: parent.getServerPath(),
+                oSSID : parent.getSSID()
             };
 
             oBrowserWindow.webContents.send('if_modelBindingPopup', oBindPopupData);

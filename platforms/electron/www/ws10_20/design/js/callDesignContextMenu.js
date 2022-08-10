@@ -21,8 +21,13 @@
 
         }); //menu item 선택 이벤트.
 
+
+        //context menu 제목.
+        var oMItem0 = new this.sap.m.MenuItem({key:"M00", icon:"sap-icon://menu2", text:"{/lcmenu/title}", enabled:false});
+        oMenu1.addItem(oMItem0);
+
         //UI 추가 메뉴
-        var oMItem1 = new this.sap.m.MenuItem({key:"M01", icon:"sap-icon://add", text:"Insert Element", enabled:"{/lcmenu/enab01}"});
+        var oMItem1 = new this.sap.m.MenuItem({key:"M01", icon:"sap-icon://add", text:"Insert Element", enabled:"{/lcmenu/enab01}", startsSection:true});
         oMenu1.addItem(oMItem1);
 
         //UI 삭제 메뉴

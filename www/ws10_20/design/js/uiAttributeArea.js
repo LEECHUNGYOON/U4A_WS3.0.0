@@ -4746,6 +4746,13 @@
       return;
     }
 
+
+    //다른 application의 바인딩 팝업에서 D&D한경우.
+    if(l_json.DnDRandKey !== oAPP.attr.DnDRandKey){
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+      return;
+    }
+
     //kind path가 존재하지 않는경우 exit.
     if(typeof l_json.IF_DATA.KIND_PATH === "undefined"){
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");

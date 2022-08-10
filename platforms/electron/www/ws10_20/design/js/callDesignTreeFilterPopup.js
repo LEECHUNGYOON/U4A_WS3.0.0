@@ -3,7 +3,7 @@
     //design tree 필터 처리 팝업.
     oAPP.fn.callDesignTreeFilterPopup = function(oUi){
 
-        var oPop = new sap.m.ResponsivePopover({showHeader:false});
+        var oPop = new sap.m.ResponsivePopover({showHeader:false, placement:"Auto", contentWidth:"300px"});
 
         //팝업 호출후 이벤트.
         oPop.attachAfterOpen(function(){

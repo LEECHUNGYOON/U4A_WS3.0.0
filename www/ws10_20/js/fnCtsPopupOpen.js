@@ -407,8 +407,12 @@
                 return;
             }
 
-            var oCtx = oRow.getBindingContext(),
-                oRowData = oRow.getModel().getProperty(oCtx.sPath);
+            var oCtx = oRow.getBindingContext();
+            if (!oCtx) {
+                return;
+            }
+
+            var oRowData = oRow.getModel().getProperty(oCtx.sPath);
 
             // 저장 확인 질문 팝업
             parent.showMessage(sap, 30, "I", "Do you want to choose?", lf_msgCallback.bind(oRowData));
