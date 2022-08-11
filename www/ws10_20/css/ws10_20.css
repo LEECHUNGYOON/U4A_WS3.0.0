@@ -143,6 +143,18 @@ body,
 	user-select: none;
 }		
 
+.u4aWs30Page .sapMTB.sapMTBStandard {
+	border-bottom: 0rem;	
+}
+.u4aWs30Page.sapMPage .sapMPageHeader:not(.sapMIBar-CTX):after, 
+.u4aWs30Page.sapMPageWithSubHeader .sapMPageSubHeader:not(.sapMIBar-CTX):after {
+    box-shadow: none;
+}
+
+
+
+
+
 /************************************************************************************ 
     sap_fiori_3_dark 
  ************************************************************************************/

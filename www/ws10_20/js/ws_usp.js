@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -21,48 +21,42 @@
      * 
      */
     var gSelectedTreeIndex = -1,
-        gBeforeSelectedIndex = -1,
-        gBeforeBindPath = "";
+        gBeforeBindPath = "",
+        gISEDIT = "";
 
     oAPP.fn.fnCreateWs30 = () => {
 
         // 30번 페이지 존재 유무 체크
         var oWs30 = sap.ui.getCore().byId("WS30");
         if (oWs30) {
-
-            fnOnInitLayoutSettings();
-
             return;
         }
 
         // 없으면 렌더링부터..
         fnOnInitRendering();
 
-        fnOnInitLayoutSettings();
-
     }; // end of oAPP.fn.fnCreateWs30
 
-    function fnOnInitLayoutSettings() {
+    oAPP.fn.fnOnInitLayoutSettingsWs30 = () => {
 
         var oSplitLayout = sap.ui.getCore().byId("usptreeSplitLayout");
-        if (!oSplitLayout) {
-            return;
+        if (oSplitLayout) {
+            oSplitLayout.setSize("500px");
+            oSplitLayout.setMinSize(500);
         }
-
-        oSplitLayout.setSize("500px");
-        oSplitLayout.setMinSize(500);
 
         var oUspTreeTable = sap.ui.getCore().byId("usptree");
-        if (!oUspTreeTable) {
-            return;
+        if (oUspTreeTable) {
+            oUspTreeTable.collapseAll();
+            oUspTreeTable.clearSelection();
         }
 
-        oUspTreeTable.collapseAll();
-        oUspTreeTable.expand(0);
-        oUspTreeTable.clearSelection();
-        // oUspTreeTable.setSelectedIndex(0);
+        var oWs30Navcon = sap.ui.getCore().byId("usp_navcon");
+        if (oWs30Navcon) {
+            fnOnMoveToPage("USP10");
+        }
 
-    } // end of fnOnInitLayoutSettings
+    }; // end of fnOnInitLayoutSettingsWs30
 
     function fnOnInitRendering() {
 
@@ -111,7 +105,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (bIsShow) {
+            formatter: function(bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -256,7 +250,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function (sKey) {
+                            formatter: function(sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -291,17 +285,190 @@
      ************************************************************************/
     function fnGetSubHeaderWs30() {
 
+        var sBindRootPath = "/WS30/APP";
+
+        var oBackBtn = new sap.m.Button("ws30_backBtn", {
+                icon: "sap-icon://nav-back",
+                press: ev_pressWs30Back
+            }),
+
+            oAppIdTxt = new sap.m.Title({
+                text: `{${sBindRootPath}/APPID}`
+            }).addStyleClass("sapUiSmallMarginEnd"), // APPID
+
+            oAppModeTxt = new sap.m.Title("ws30_appModeTxt")
+            .bindProperty("text", {
+
+                parts: [
+                    `${sBindRootPath}/IS_EDIT`,
+                ],
+                formatter: (IS_EDIT) => {
+                    return IS_EDIT == "X" ? "Change" : "Display";
+                }
+
+            }).addStyleClass("sapUiSmallMarginEnd"), // Change or Display Text	
+
+            oAppActTxt = new sap.m.Title("ws30_appActTxt")
+            .bindProperty("text", {
+
+                parts: [
+                    `${sBindRootPath}/ACTST`,
+                ],
+                formatter: (ACTST) => {
+                    return ACTST == "A" ? "Active" : "Inactive";
+                }
+
+            }).addStyleClass("sapUiSmallMarginEnd"), // Activate or inactivate Text
+
+            oNewWindowBtn = new sap.m.Button("ws30_newWindowBtn", {
+                icon: "sap-icon://create",
+                tooltip: "New Window (Ctrl+N)",
+                press: oAPP.events.ev_NewWindow
+            });
+
         return new sap.m.OverflowToolbar({
             content: [
-                new sap.m.Button("ws30_backBtn", {
-                    icon: "sap-icon://nav-back",
-                    press: ev_pressWs30Back
-                })
-            ]
+                oBackBtn,
+                oAppIdTxt,
+                oAppModeTxt,
+                oAppActTxt,
 
+                new sap.m.ToolbarSeparator(),
+
+                oNewWindowBtn
+
+            ]
         });
 
     } // end of fnGetCustomHeaderWs30
+
+
+    /************************************************************************
+     * [WS30] Page Toolbar Buttons
+     ************************************************************************/
+    function fnGetUspPageToolbarButtonsWs30() {
+
+        var sBindRootPath = "/WS30/APP",
+            sVisiBindPath = "/WS30/APP/IS_EDIT";
+
+        // visible 바인딩 프로퍼티 설정
+        function lf_bindPropForVisible(bIsDispMode) {
+
+            if (bIsDispMode == null) {
+                return false;
+            }
+
+            var sId = this.getId(),
+                bIsDisp = (bIsDispMode == "X" ? true : false);
+
+            switch (sId) {
+                case "ws30_changeModeBtn":
+                    return !bIsDisp;
+
+                default:
+                    return bIsDisp;
+            }
+
+        } // end of lf_bindPropForVisible
+
+        var oDisplayModeBtn = new sap.m.Button("ws30_displayModeBtn", {
+                icon: "sap-icon://display",
+                tooltip: "Display <--> Change (Ctrl+F1)",
+                // press: ev_pressDisplayModeBtn
+            }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible)
+            .addStyleClass("u4aWs20DisplayModeBtn"),
+
+            oChangeModeBtn = new sap.m.Button("ws30_changeModeBtn", {
+                icon: "sap-icon://edit",
+                tooltip: "Display <--> Change (Ctrl+F1)",
+                // press: ev_pressDisplayModeBtn
+            }).bindProperty("visible", {
+                parts: [{
+                        path: "/USERINFO/USER_AUTH/IS_DEV" // 개발자 권한 여부
+                    },
+                    {
+                        path: "/USERINFO/ISADM"
+                    },
+                    {
+                        path: `${sBindRootPath}/ADMIN_APP` // "ADMIN App 여부"
+                    },
+                    {
+                        path: sVisiBindPath
+                    },
+
+                ],
+                formatter: (IS_DEV, ISADM, ADMIN_APP, IS_EDIT) => {
+
+                    // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
+                    if (IS_DEV != "D") {
+                        return false;
+                    }
+
+                    // Admin이 아닌 유저가 Admin App을 열었을 경우 버튼 비활성화
+                    if (ISADM != "X" && ADMIN_APP == "X") {
+                        return false;
+                    }
+
+                    let bIsDisp = (IS_EDIT == "X" ? true : false);
+                    return !bIsDisp;
+
+                }
+            }),
+
+            oActivateBtn = new sap.m.Button("ws30_activateBtn", {
+                icon: "sap-icon://activate",
+                tooltip: "Activate (Ctrl+F3)",
+                // press: ev_pressActivateBtn,
+            }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible),
+
+            oSaveBtn = new sap.m.Button("ws30_saveBtn", {
+                icon: "sap-icon://save",
+                tooltip: "Save (Ctrl+S)",
+                press: ev_pressSaveBtn,
+            })
+            // .bindProperty("enabled", sVisiBindPath, lf_bindPropForVisible)
+            .bindProperty("visible", {
+                parts: [{
+                    path: "/USERINFO/USER_AUTH/IS_DEV"
+                }, {
+                    path: sVisiBindPath
+                }],
+                formatter: (IS_DEV, IS_EDIT) => {
+
+                    // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
+                    if (IS_DEV != "D" || IS_EDIT != "X") {
+                        return false;
+                    }
+
+                    return true;
+
+                }
+            }),
+
+            oControllerBtn = new sap.m.Button("ws30_controllerBtn", {
+                icon: "sap-icon://developer-settings",
+                text: "Controller (Class Builder)",
+                tooltip: "Controller (Ctrl+F12)",
+                // press: ev_pressControllerBtn
+            });
+
+        return [
+
+            oDisplayModeBtn,
+            oChangeModeBtn,
+
+            new sap.m.ToolbarSeparator(),
+
+            oActivateBtn,
+            oSaveBtn,
+
+            new sap.m.ToolbarSeparator(),
+
+            oControllerBtn
+
+        ];
+
+    }; // end of fnGetUspPageToolbarButtonsWs30
 
     /************************************************************************
      * [WS30] Page Contents
@@ -309,17 +476,38 @@
     function fnGetPageContentWs30() {
 
         var oTreeTab = fnGetUspTreeTableWs30(),
-            oNavCon = fnGetUspNavContainerWs30();
+            oNavCon = fnGetUspNavContainerWs30(),
+            aToolbarButtons = fnGetUspPageToolbarButtonsWs30();
 
         return [
 
-            new sap.ui.layout.Splitter({
-                height: "100%",
+            new sap.m.VBox({
+                renderType: "Bare",
                 width: "100%",
-                contentAreas: [
-                    oTreeTab,
-                    oNavCon
+                height: "100%",
+                items: [
 
+                    new sap.m.OverflowToolbar({
+                        content: aToolbarButtons
+                    }),
+
+                    new sap.m.Page({
+                        showHeader: false,
+                        content: [
+
+                            new sap.ui.layout.Splitter({
+                                height: "100%",
+                                width: "100%",
+                                contentAreas: [
+                                    oTreeTab,
+                                    oNavCon
+
+                                ]
+                            })
+
+                        ]
+
+                    })
                 ]
             })
 
@@ -333,14 +521,14 @@
     function fnGetUspNavContainerWs30() {
 
         var oIntroPage = fnGetUspIntroPageWs30(),
-            oAttrPage = fnGetUspAttrPageWs30(),
+            // oAttrPage = fnGetUspAttrPageWs30(),
             oContPage = fnGetUspContPageWs30();
 
         return new sap.m.NavContainer("usp_navcon", {
             autoFocus: false,
             pages: [
                 oIntroPage,
-                oAttrPage,
+                // oAttrPage,
                 oContPage
 
             ]
@@ -371,7 +559,7 @@
 
             });
 
-        return new sap.m.Page("usp_intro", {
+        return new sap.m.Page("USP10", {
             showHeader: false,
             enableScrolling: false,
             content: [
@@ -404,7 +592,7 @@
         var oPanel = fnGetUspPanelWs30(),
             oPage = fnGetUspPageWs30();
 
-        return new sap.m.Page("usp_cont", {
+        return new sap.m.Page("USP20", {
             showHeader: false,
             content: [
 
@@ -466,7 +654,7 @@
                                 src: "sap-icon://accept",
                                 visible: "{ICONVISI}"
                             })
-                            .bindProperty("visible", "ICONVISI", function (VISI) {
+                            .bindProperty("visible", "ICONVISI", function(VISI) {
 
                                 if (!VISI) {
                                     return false;
@@ -502,6 +690,7 @@
             rows: {
                 path: "/WS30/USPTREE",
                 parameters: {
+                    numberOfExpandedLevels: 1,
                     arrayNames: ['USPTREE']
                 }
             },
@@ -538,7 +727,7 @@
             // Events
             beforeOpenContextMenu: ev_beforeOpenContextMenu,
             // rowSelectionChange: ev_rowSelectionChange
-            rowSelectionChange: function (oEvent) {
+            rowSelectionChange: function(oEvent) {
 
                 var oTreeTable = oEvent.getSource(),
                     iSelIdx = oTreeTable.getSelectedIndex(),
@@ -552,74 +741,9 @@
 
             }
 
-        }).attachBrowserEvent("dblclick", function (oEvent) {
+        }).attachBrowserEvent("dblclick", ev_uspTreeItemDblClickEvent).addStyleClass("u4aWsUspTree");
 
-            var oTarget = oEvent.target,
-                $SelectedRow = $(oTarget).closest(".sapUiTableRow");
-
-            if (!$SelectedRow.length) {
-                return;
-            }
-
-            var oRow = $SelectedRow[0],
-
-                sRowId1 = oRow.getAttribute("data-sap-ui-related"),
-                sRowId2 = oRow.getAttribute("data-sap-ui"),
-                sRowId = "";
-
-            if (sRowId1 == null && sRowId2 == null) {
-                return;
-            }
-
-            if (sRowId1) {
-                sRowId = sRowId1;
-            }
-
-            if (sRowId2) {
-                sRowId = sRowId2;
-            }
-
-            var oRow = sap.ui.getCore().byId(sRowId);
-            if (!oRow) {
-                return;
-            }
-
-            var oCtx = oRow.getBindingContext();
-            if (!oCtx) {
-                return;
-            }
-
-            console.log("로우 클릭!!!");
-
-            debugger;
-
-            if (gBeforeBindPath == oCtx.sPath) {
-                return;
-            }
-
-            var oRowModel = oRow.getModel(),
-                oRowData = oRowModel.getProperty(oCtx.sPath);
-
-            if (oRowData.PUJKY != "" && oRowData.ISFLD == false) {
-
-                var oBeforeRowData = oRowModel.getProperty(gBeforeBindPath);
-                if (oBeforeRowData) {
-                    oBeforeRowData.ICONVISI = false;
-                    oRowModel.setProperty(gBeforeBindPath, oBeforeRowData);
-                }
-
-                // 선택한 index 이전 히스토리 저장
-                gBeforeBindPath = oCtx.sPath;
-
-                oRowData.ICONVISI = true;
-                oRowModel.setProperty(oCtx.sPath, oRowData);
-
-            }
-
-
-        }).addStyleClass("u4aWsUspTree");
-
-    } // end of fnGetTreeTableWs30
+    } // end of fnGetTreeTableWs30    
 
     /**************************************************************************
      * [WS30] Usp Panel
@@ -628,7 +752,7 @@
 
         // Usp Url
         var oUrlInput = new sap.m.Input({
-                value: "{/WS30/USPDATA/URL}",
+                value: "{/WS30/USPDATA/SPATH}",
                 editable: false
             }).addStyleClass("sapUiTinyMarginEnd"),
 
@@ -700,10 +824,69 @@
     function fnGetUspPageWs30() {
 
         var oCodeEditor = new sap.ui.codeeditor.CodeEditor({
-            height: "100%",
-            width: "100%",
-            syntaxHints: false,
-            value: "{/WS30/USPDATA/DATA}",
+                height: "100%",
+                width: "100%",
+                syntaxHints: true,
+                type: "{/WS30/USPDATA/EXTEN}",
+                value: "{/WS30/USPDATA/CONTENT}",
+                change: ev_codeEditorChange
+            })
+            .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding)
+            .bindProperty("type", "/WS30/USPDATA/EXTEN", function(EXTEN) {
+
+                this.setSyntaxHints(true);
+
+                switch (EXTEN) {
+
+                    case "js":
+                        return "javascript";
+
+                    case "ts":
+                        return "typescript";
+
+                    case "css":
+                        return "css";
+
+                    case "htm":
+                    case "html":
+                        return "html";
+
+                    case "vbs":
+                        return "vbscript";
+
+                    case "xml":
+                        return "xml";
+
+                    case "svg":
+                        return "svg";
+
+                    case "txt":
+                        return "text";
+
+                    default:
+
+                        this.setSyntaxHints(false);
+
+                        return;
+
+                }
+
+            });
+
+
+        oCodeEditor.addDelegate({
+            onAfterRendering: function(oControl) {
+
+                var oEditor = oControl.srcControl,
+                    _oAceEditor = oEditor._oEditor;
+
+                if (!_oAceEditor) {
+                    return;
+                }
+
+                _oAceEditor.setFontSize(20);
+
+            }
         });
 
         return new sap.m.Page({
@@ -897,7 +1080,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 // submit: oAPP.events.ev_createMimeFolderEvent
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -962,7 +1145,7 @@
                 oUspCrForm
             ],
 
-            afterClose: function () {
+            afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -1076,9 +1259,15 @@
         // Busy 실행
         parent.setBusy('X');
 
+        // 글로벌 변수 초기화
+        gBeforeBindPath = "";
+
+        gSelectedTreeIndex = -1;
+
+        oAPP.fn.fnOnInitLayoutSettingsWs30();
+
         // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
         oAPP.fn.fnKillUserSession(_fnKillUserSessionCb);
-
 
     } // end of fnMoveToWs10
 
@@ -1087,7 +1276,7 @@
         /**
          * 페이지 이동 시, CHANGE 모드였다면 현재 APP의 Lock Object를 해제한다.
          */
-        var oAppInfo = parent.getAppInfo();
+        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
 
         if (oAppInfo.IS_EDIT == 'X') {
             ajax_unlock_app(oAppInfo.APPID);
@@ -1119,11 +1308,36 @@
 
     } // end of _fnKillUserSessionCb
 
+    //tree -> tab으로 변환.
+    function _parseTree2Tab(e, sArrName) {
+        var a = [],
+            t = function(e) {
+                $.each(e, function(e, o) {
+                    o[sArrName] && (t(o[sArrName]),
+                        delete o[sArrName]);
+                    a.push(o);
+                })
+            };
+        t(JSON.parse(JSON.stringify(e)));
+        return a;
+
+    } //tree -> tab으로 변환.
 
 
+    // //tree -> tab으로 변환.
+    // function _parseTree2Tab(e) {
+    //     var a = [],
+    //         t = function(e) {
+    //             $.each(e, function(e, o) {
+    //                 o.USPTREE && (t(o.USPTREE),
+    //                     delete o.USPTREE);
+    //                 a.push(o);
+    //             })
+    //         };
+    //     t(JSON.parse(JSON.stringify(e)));
+    //     return a;
 
-
-
+    // } //tree -> tab으로 변환.
 
 
 
@@ -1133,15 +1347,188 @@
 
 
     /**************************************************************************
+     * [WS30] Tree Table 더블클릭 이벤트
+     **************************************************************************/
+    function ev_uspTreeItemDblClickEvent(oEvent) {
+
+        var oTarget = oEvent.target,
+            $SelectedRow = $(oTarget).closest(".sapUiTableRow");
+
+        if (!$SelectedRow.length) {
+            return;
+        }
+
+        var oRow = $SelectedRow[0],
+
+            sRowId1 = oRow.getAttribute("data-sap-ui-related"),
+            sRowId2 = oRow.getAttribute("data-sap-ui"),
+            sRowId = "";
+
+        if (sRowId1 == null && sRowId2 == null) {
+            return;
+        }
+
+        if (sRowId1) {
+            sRowId = sRowId1;
+        }
+
+        if (sRowId2) {
+            sRowId = sRowId2;
+        }
+
+        var oRow = sap.ui.getCore().byId(sRowId);
+        if (!oRow) {
+            return;
+        }
+
+        var oCtx = oRow.getBindingContext();
+        if (!oCtx) {
+            return;
+        }
+
+        if (gBeforeBindPath == oCtx.sPath) {
+            return;
+        }
+
+        console.log("로우 더블 클릭!!!");
+
+        var oRowModel = oRow.getModel(),
+            oRowData = oRowModel.getProperty(oCtx.sPath);
+
+        // 선택한 Row 가 ROOT 또는 폴더 이면 빠져나감.
+        if (oRowData.PUJKY == "" || oRowData.ISFLD == "X") {
+            return;
+        }
+
+        var sServerPath = parent.getServerPath(),
+            sPath = `${sServerPath}/usp_get_object_line_data`;
+
+        var oFormData = new FormData();
+        oFormData.append("sData", JSON.stringify(oRowData));
+
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
+        sendAjax(sPath, oFormData, _fnLineSelectCb.bind(oRow));
+
+    } // end of ev_uspTreeItemDblClickEvent
+
+    function _fnLineSelectCb(oResult) {
+
+        if (oResult.RETCD == "E") {
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            parent.setBusy("");
+
+            parent.setSoundMsg("02"); // error sound
+
+            // Footer Msg 출력
+            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+
+            return;
+
+        }
+
+        // app 정보를 구한다.
+        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+            IS_EDIT = oAppInfo.IS_EDIT;
+
+        if (IS_EDIT == "X") {
+
+            if (gISEDIT == "X") {
+
+                // 질문 팝업 ( 저장되지 않은거 다 날라간다 그래도 OK?)
+
+                // return;
+
+            } else {
+                gISEDIT = "X";
+            }
+
+        }
+
+        var oRow = this,
+            oRowModel = oRow.getModel(),
+            oCtx = oRow.getBindingContext(),
+            sCurrBindPath = oCtx.getPath();
+
+        // 리턴받은 라인 정보로 업데이트
+        var oResultRowData = oResult.S_HEAD;
+        oResultRowData.ICONVISI = true;
+
+        // 현재 선택한 좌측 트리 데이터 업데이트
+        oRowModel.setProperty(sCurrBindPath, oResultRowData);
+
+        // 우측 컨텐츠 영역 모델 데이터 설정
+        var oContent = {
+            OBJKY: oResultRowData.OBJKY,
+            EXTEN: oResultRowData.EXTEN,
+            CONTENT: oResult.CONTENT,
+            SPATH: oResultRowData.SPATH
+        }
+
+        APPCOMMON.fnSetModelProperty("/WS30/USPDATA", oContent);
+
+        fnOnMoveToPage("USP20");
+
+        // 이전에 선택한 라인이 있다면 해당 라인 선택 아이콘 표시 해제
+        var oBeforeRowData = oRowModel.getProperty(gBeforeBindPath);
+        if (oBeforeRowData) {
+            oBeforeRowData.ICONVISI = false;
+            oRowModel.setProperty(gBeforeBindPath, oBeforeRowData);
+        }
+
+        // 선택한 index 이전 히스토리 저장
+        gBeforeBindPath = sCurrBindPath;
+
+        // 화면 Lock 해제
+        sap.ui.getCore().unlock();
+
+        parent.setBusy("");
+
+
+
+
+
+
+
+
+
+
+    } // end of _fnLineSelectCb
+
+    /**************************************************************************
+     * [WS30] USP PAGE 우측영역 페이지 이동
+     **************************************************************************/
+    function fnOnMoveToPage(sPage) {
+
+        var oUspNav = sap.ui.getCore().byId("usp_navcon");
+        if (!oUspNav) {
+            return;
+        }
+
+        oUspNav.to(sPage);
+
+    } // end of fnOnMoveToPage
+
+    /**************************************************************************
      * [WS30] Back Button Event
      **************************************************************************/
     function ev_pressWs30Back() {
+
+        fnMoveBack_Ws30_To_Ws10();
+
+    } // end of ev_pressWs30Back
+
+    function fnMoveBack_Ws30_To_Ws10() {
 
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
 
         // app 정보를 구한다.
-        var oAppInfo = parent.getAppInfo(),
+        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
 
             IS_CHAG = oAppInfo.IS_CHAG,
             IS_EDIT = oAppInfo.IS_EDIT;
@@ -1160,16 +1547,15 @@
         sMsg += " \n " + oAPP.common.fnGetMsgClsTxt("119"); // "Save before leaving editor?"    
 
         // 메시지 질문 팝업을 띄운다.
-        parent.showMessage(sap, 40, 'W', sMsg, ev_pressWs30BackCb);
+        parent.showMessage(sap, 40, 'W', sMsg, fnMoveBack_Ws30_To_Ws10Cb);
 
         // 현재 떠있는 팝업 창들을 잠시 숨긴다.
         oAPP.fn.fnChildWindowShow(false);
 
         sap.ui.getCore().unlock();
+    }
 
-    } // end of ev_pressWs30Back
-
-    function ev_pressWs30BackCb(ACTCD) {
+    function fnMoveBack_Ws30_To_Ws10Cb(ACTCD) {
 
         // 이동을 하지 않는다.
         if (ACTCD == null || ACTCD == "CANCEL") {
@@ -1288,7 +1674,7 @@
         var oTreeTable = oEvent.getSource(),
             iSelectRow = oEvent.getParameter("rowIndex"),
             oCtx = oTreeTable.getContextByIndex(iSelectRow),
-            oAppInfo = parent.getAppInfo();
+            oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
 
         if (!oCtx) {
             return;
@@ -1327,7 +1713,7 @@
         aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
 
         // root가 아니면서 폴더가 아닐경우 (파일일 경우에만) 다운로드 버튼을 활성화 한다.
-        if (oRowData.PUJKY != "" && oRowData.ISFLD == false) {
+        if (oRowData.PUJKY != "" && oRowData.ISFLD == "") {
 
             aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = true;
 
@@ -1355,7 +1741,7 @@
         }
 
         // 우클릭한 위치가 폴더일 경우
-        if (oRowData.ISFLD == true) {
+        if (oRowData.ISFLD == "X") {
 
             aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
 
@@ -1383,6 +1769,7 @@
             sCtxMenuKey = oCtxMenuItm.getProperty("key");
 
         switch (sCtxMenuKey) {
+
             case "K3": // create
 
                 fnCreateUspNodePopup(oTreeTable);
@@ -1417,14 +1804,14 @@
 
             // Value State 설정
             oCrateData.NAME_VS = sap.ui.core.ValueState.Error;
-            oCrateData.NAME_VSTXT = oResult.RETMSG;
+            oCrateData.NAME_VSTXT = oResult.RTMSG;
 
             APPCOMMON.fnSetModelProperty(sBindRootPath, oCrateData, true);
 
             parent.setSoundMsg("02"); // error sound
 
             // Footer Msg 출력
-            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RETMSG);
+            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
 
             return;
         }
@@ -1465,8 +1852,7 @@
         oCopyRowData.PUJKY = oRowData.OBJKY;
         oCopyRowData.OBJKY = sRandomKey;
         oCopyRowData.APPID = oRowData.APPID;
-        // oCopyRowData.APPVR = oRowData.APPVR;
-        oCopyRowData.ISFLD = oCrateData.ISFLD;
+        oCopyRowData.ISFLD = oCrateData.ISFLD ? "X" : "";
         oCopyRowData.OBDEC = oCrateData.NAME;
         oCopyRowData.DESCT = oCrateData.DESC;
         oCopyRowData.ICONVISI = false;
@@ -1491,46 +1877,9 @@
         // 현재 선택한 노드 펼침
         oTreeTable.expand(gSelectedTreeIndex);
 
-        _fnSetTreeTableRowSelect(oTreeModel, oRowData.OBJKY);
-
-        // oTreeTable.setSelectedIndex();
-
         ev_createUspDlgCloseEvent();
 
     } // end of ev_createUspNodeAcceptEvent
-
-    function _fnSetTreeTableRowSelect(oTreeModel, OBJKY) {
-
-        var iSelIndex = 0,
-            oData = oTreeModel.getProperty("/WS30"),
-            aCHILDTREE = oData.USPTREE;
-
-        lf_findNode(aCHILDTREE);
-
-        function lf_findNode(aCHILDTREE) {
-
-            var iTreeCnt = aCHILDTREE.length;
-            if (iTreeCnt == 0) {
-                return;
-            }
-
-            for (var i = 0; i < iTreeCnt; i++) {
-
-                iSelIndex++;
-
-                var oChild = aCHILDTREE[i],
-                    aChild = oChild.USPTREE,
-                    iChildCnt = aChild.length;
-
-                if (iChildCnt != 0) {
-                    lf_findNode(aChild);
-                }
-
-            }
-
-        } // end of lf_findNode
-
-    } // end of _fnSetTreeTableRowSelect
 
     function _fnCheckCreateNodeData(oCrateData) {
 
@@ -1540,7 +1889,7 @@
         if (parent.isEmpty(oCrateData.NAME) === true || parent.isBlank(oCrateData.NAME) === true) {
 
             oCheck.RETCD = "E";
-            oCheck.RETMSG = "Name is Required!";
+            oCheck.RTMSG = "Name is Required!";
 
             return oCheck;
 
@@ -1554,7 +1903,7 @@
             if (typeof sCheck == "boolean" && sCheck == false) {
 
                 oCheck.RETCD = "E";
-                oCheck.RETMSG = "Invalid MimeType! Check the extension of the file name. ex) aaa.txt, aaa.js..";
+                oCheck.RTMSG = "Invalid MimeType! Check the extension of the file name. ex) aaa.txt, aaa.js..";
 
                 return oCheck;
 
@@ -1580,5 +1929,127 @@
         }
 
     } // end of ev_createUspDlgCloseEvent
+
+    /**************************************************************************
+     * [WS30] Save Button
+     **************************************************************************/
+    function ev_pressSaveBtn(oEvent) {
+
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
+        var oAppData = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+            aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
+
+        // 저장 구조
+        var oSaveData = {
+            APPID: oAppData.APPID,
+            TRKORR: "",
+            IS_ACT: "",
+            S_CONTENT: {},
+            T_TREE: []
+        };
+
+        var oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA");
+        if (oContent) {
+            oSaveData.S_CONTENT = oContent;
+        }
+
+        // TREE -> Array
+        var aParseTree = _parseTree2Tab(aTreeData, "USPTREE");
+
+        oSaveData.T_TREE = aParseTree;
+
+        var sServerPath = parent.getServerPath(),
+            sPath = `${sServerPath}/usp_save_active_appdata`;
+
+        var oFormData = new FormData();
+        oFormData.append("APPDATA", JSON.stringify(oSaveData));
+
+        sendAjax(sPath, oFormData, _fnSaveCallback);
+
+    } // end of ev_pressSaveBtn
+
+    /**************************************************************************
+     * [WS30] 저장 콜백
+     **************************************************************************/
+    function _fnSaveCallback(oResult) {
+
+        // 화면 Lock 해제
+        sap.ui.getCore().unlock();
+
+        parent.setBusy("");
+
+        // Critical 오류
+        if (oResult.RETCD == "Z") {
+
+            parent.setSoundMsg("02"); // error sound
+
+            return;
+
+        }
+
+        if (oResult.RETCD == "E") {
+
+            parent.setSoundMsg("02"); // error sound
+
+            // Footer Msg 출력
+            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+
+            return;
+        }
+
+        // Footer Msg 출력
+        APPCOMMON.fnShowFloatingFooterMsg("S", "WS30", oResult.RTMSG);
+
+    } // end of _fnSaveCallback
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Application Change 모드 변경
+    function setAppChange(bIsChange) {
+
+        if (typeof bIsChange !== "string") {
+            return;
+        }
+
+        if (bIsChange != 'X' && bIsChange != '') {
+            return;
+        }
+
+        // 어플리케이션 정보 가져오기
+        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+
+        // 어플리케이션 정보에 변경 플래그 
+        oAppInfo.IS_CHAG = bIsChange;
+
+        if (bIsChange == "X") {
+            oAppInfo.ACTST = "I";
+        }
+
+        APPCOMMON.fnSetModelProperty("/WS30/APP", oAppInfo);
+
+    } // end of setAppChange
+
+
+    /**************************************************************************
+     * [WS30] codeeditor Change Event
+     **************************************************************************/
+    function ev_codeEditorChange(oEvent) {
+
+        setAppChange("X");
+
+    } // end of ev_codeEditorChange
 
 })(window, $, oAPP);

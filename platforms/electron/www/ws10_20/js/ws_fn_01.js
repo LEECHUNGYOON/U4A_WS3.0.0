@@ -56,6 +56,8 @@
 
                     case "WS30":
 
+                        oAPP.fn.fnOnInitLayoutSettingsWs30();
+
                         oAPP.fn.fnMoveToWs30(); // #[ws_fn_02.js]
 
                         break;

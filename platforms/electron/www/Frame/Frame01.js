@@ -447,6 +447,10 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
             delete oWS.utill.attr.oAppInfo;
         }
 
+        if(!oAppInfo){
+            return;
+        }
+
         // Object가 빈값이면 리턴 (초기화 일 경우).
         if (Object.keys(oAppInfo).length === 0 &&
             JSON.stringify(oAppInfo) === JSON.stringify({})) {
