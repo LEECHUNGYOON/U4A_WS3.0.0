@@ -910,8 +910,7 @@
 
         var sPath = parent.getServerPath() + '/save_active_appdata',
             oFormData = new FormData();
-
-        // 저장 하고 activate 할 경우
+        
         var ISBACK = oEvent.getParameter("ISBACK"), // 저장후 뒤로 갈 경우 (20 -> 10)
             ISDISP = oEvent.getParameter("ISDISP"), // 저장후 Display 모드로 전환일 경우            
             TRKORR = oEvent.getParameter("TRKORR");

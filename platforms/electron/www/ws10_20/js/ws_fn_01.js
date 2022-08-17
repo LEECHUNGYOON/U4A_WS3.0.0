@@ -23,9 +23,7 @@
             autoFocus: false,
             afterNavigate: function (oEvent) {
 
-                var fromId = oEvent.getParameter("fromId"),
-                    toId = oEvent.getParameter("toId"),
-                    oToPage = oEvent.getParameter("to");
+                var toId = oEvent.getParameter("toId");                   
 
                 // 화면 Lock 해제
                 sap.ui.getCore().unlock();
@@ -34,6 +32,7 @@
                 parent.setCurrPage(toId);
 
                 switch (toId) {
+
                     case "WS10":
 
                         parent.setBusy('');

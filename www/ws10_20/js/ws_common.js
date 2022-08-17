@@ -640,7 +640,6 @@
 
                     }
                 },
-
                 {
                     KEY: "F3", // Back Button
                     fn: () => {
@@ -994,30 +993,145 @@
 
             ],
             aShortCutWS30 = [{
-                KEY: "F3", // Find
-                fn: () => {
+                    KEY: "Ctrl+F4",
+                    fn: () => {
 
-                    if (sap.ui.getCore().isLocked()) {
-                        console.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
+                        console.log("ws30/Ctrl+F4 key in!!");
+
                     }
+                },
+                {
+                    KEY: "F3",
+                    fn: () => {
 
-                    // // 단축키 실행 할지 말지 여부 체크
-                    // var result = oAPP.common.fnShortCutExeAvaliableCheck();
+                        if (sap.ui.getCore().isLocked()) {
+                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
 
-                    // // X 이면 실행 불가
-                    // if (result == "X") {
-                    //     return;
-                    // }
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
 
-                    var oBackBtn = sap.ui.getCore().byId("ws30_backBtn");
-                    if (!oBackBtn || !oBackBtn.getEnabled() || !oBackBtn.getVisible()) {
-                        return;
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oBackBtn = sap.ui.getCore().byId("ws30_backBtn");
+                        if (!oBackBtn || !oBackBtn.getEnabled() || !oBackBtn.getVisible()) {
+                            return;
+                        }
+
+                        oBackBtn.firePress();
                     }
+                }, {
+                    KEY: "Ctrl+F1", // Display or Change Button
+                    fn: () => {
 
-                    oBackBtn.firePress();
+                        if (sap.ui.getCore().isLocked()) {
+                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oChangeModeBtn = sap.ui.getCore().byId("ws30_changeModeBtn"),
+                            oDisplayBtn = sap.ui.getCore().byId("ws30_displayModeBtn");
+
+                        if (!oChangeModeBtn && !oDisplayBtn) {
+                            return;
+                        }
+
+                        var bIsChgVisi = oChangeModeBtn.getVisible(),
+                            bIsDisVisi = oDisplayBtn.getVisible();
+
+                        if (bIsChgVisi == true) {
+                            oChangeModeBtn.focus();
+                            oChangeModeBtn.firePress();
+                            return;
+                        }
+
+                        if (bIsDisVisi == true) {
+                            oDisplayBtn.focus();
+                            oDisplayBtn.firePress();
+                            return;
+                        }
+
+                    }
+                }, {
+                    KEY: "Ctrl+F3", // Activate Button
+                    fn: () => {
+
+                        if (sap.ui.getCore().isLocked()) {
+                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oActivateBtn = sap.ui.getCore().byId("ws30_activateBtn");
+
+                        if (!oActivateBtn || !oActivateBtn.getEnabled() || !oActivateBtn.getVisible()) {
+                            return;
+                        }
+
+                        oActivateBtn.focus();
+                        oActivateBtn.firePress();
+                    }
+                }, {
+                    KEY: "Ctrl+S", // Save Button
+                    fn: () => {
+
+                        if (sap.ui.getCore().isLocked()) {
+                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+                        if (!oSaveBtn || !oSaveBtn.getEnabled() || !oSaveBtn.getVisible()) {
+                            return;
+                        }
+
+                        oSaveBtn.focus();
+                        oSaveBtn.firePress();
+                    }
                 }
-            }];
+            ];
 
         var oShortcutList = {
             "WS10": aShortCutWS10,
@@ -1384,11 +1498,11 @@
         if (sPath == null || typeof sPath != "string") {
             return;
         }
-    
-    
+
+
         var sExtension = parent.PATH.extname(sPath);
         sExtension = sExtension.replace('.', '');
-    
+
         return sExtension;
 
     };

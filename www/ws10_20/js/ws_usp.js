@@ -20,10 +20,12 @@
      * 
      * 
      */
-    var gSelectedTreeIndex = -1,
-        gBeforeBindPath = "",
-        gISEDIT = "";
+    var gSelectedTreeIndex = -1, // 우클릭 Context menu Index
+        goBeforeSelect; // 이전에 선택한 Row 정보
 
+    /************************************************************************
+     * [WS30] 30번 페이지 생성
+     ************************************************************************/
     oAPP.fn.fnCreateWs30 = () => {
 
         // 30번 페이지 존재 유무 체크
@@ -37,6 +39,9 @@
 
     }; // end of oAPP.fn.fnCreateWs30
 
+    /************************************************************************
+     * [WS30] Layout 초기 설정
+     ************************************************************************/
     oAPP.fn.fnOnInitLayoutSettingsWs30 = () => {
 
         var oSplitLayout = sap.ui.getCore().byId("usptreeSplitLayout");
@@ -56,8 +61,94 @@
             fnOnMoveToPage("USP10");
         }
 
+        // 이전에 선택한 라인이 있다면 해당 라인 선택 아이콘 표시 해제
+        var sBeforeBindPath = "";
+        if (goBeforeSelect) {
+            sBeforeBindPath = goBeforeSelect.BINDPATH;
+
+            // 이전에 선택된 정보 초기화 
+            goBeforeSelect = undefined;
+
+        }
+
+        var oBeforeRowData = APPCOMMON.fnGetModelProperty(sBeforeBindPath);
+        if (oBeforeRowData) {
+            oBeforeRowData.ICONVISI = false;
+            APPCOMMON.fnSetModelProperty(sBeforeBindPath, oBeforeRowData);
+        }
+
     }; // end of fnOnInitLayoutSettingsWs30
 
+    /************************************************************************
+     * [WS30] Code Editor Key Press Callback Event
+     ************************************************************************/
+    oAPP.fn.fnAttachKeyPressEventCodeEditorWs30 = () => {
+
+        if (event && event.keyCode) {
+
+            if (event.ctrlKey || event.altKey) {
+                return;
+            }
+
+            console.log(event.code);
+
+            switch (event.keyCode) {
+                case 16: // Shift
+                case 17: // Ctrl
+                case 18: // Alt
+                case 19: // Pause
+                case 20: // Caps Lock
+                case 25: // ControlRight
+
+                case 27: // esc
+                case 33: // Page Up
+                case 34: // Page Down
+                case 35: // End
+                case 36: // Home
+                case 37: // Arrow Left
+                case 38: // Arrow Up
+                case 39: // Arrow Right
+                case 40: // Arrow Down
+
+                case 45: // Insert
+
+                case 91: // Windows
+                case 93: // ContextMenu
+
+                case 112: // F1
+                case 113: // F2
+                case 114: // F3
+                case 115: // F4
+                case 116: // F5
+                case 117: // F6
+                case 118: // F7
+                case 119: // F8
+                case 120: // F9
+                case 121: // F10
+                case 122: // F11
+                case 123: // F12
+
+                case 144: // Num Lock
+                case 145: // ScrollLock
+
+                    return;
+
+            }
+
+        }
+
+        setAppChange("X");
+
+        console.log("codeeditor change!!");
+
+        // code editor keyPress 이벤트 해제
+        fnKeyPressEditorEvent("");
+
+    }; // end of oAPP.fn.fnAttachKeyPressEventCodeEditorWs30
+
+    /************************************************************************
+     * [WS30] 초기 화면 그리기
+     ************************************************************************/
     function fnOnInitRendering() {
 
         var oApp = sap.ui.getCore().byId("WSAPP");
@@ -342,7 +433,6 @@
 
     } // end of fnGetCustomHeaderWs30
 
-
     /************************************************************************
      * [WS30] Page Toolbar Buttons
      ************************************************************************/
@@ -374,14 +464,14 @@
         var oDisplayModeBtn = new sap.m.Button("ws30_displayModeBtn", {
                 icon: "sap-icon://display",
                 tooltip: "Display <--> Change (Ctrl+F1)",
-                // press: ev_pressDisplayModeBtn
-            }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible)
-            .addStyleClass("u4aWs20DisplayModeBtn"),
+                press: ev_pressDisplayModeBtn
+            }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible),
+
 
             oChangeModeBtn = new sap.m.Button("ws30_changeModeBtn", {
                 icon: "sap-icon://edit",
                 tooltip: "Display <--> Change (Ctrl+F1)",
-                // press: ev_pressDisplayModeBtn
+                press: ev_pressDisplayModeBtn
             }).bindProperty("visible", {
                 parts: [{
                         path: "/USERINFO/USER_AUTH/IS_DEV" // 개발자 권한 여부
@@ -457,7 +547,7 @@
             oDisplayModeBtn,
             oChangeModeBtn,
 
-            new sap.m.ToolbarSeparator(),
+            new sap.m.ToolbarSeparator().bindProperty("visible", sVisiBindPath, lf_bindPropForVisible),
 
             oActivateBtn,
             oSaveBtn,
@@ -726,7 +816,6 @@
 
             // Events
             beforeOpenContextMenu: ev_beforeOpenContextMenu,
-            // rowSelectionChange: ev_rowSelectionChange
             rowSelectionChange: function(oEvent) {
 
                 var oTreeTable = oEvent.getSource(),
@@ -823,13 +912,13 @@
      **************************************************************************/
     function fnGetUspPageWs30() {
 
-        var oCodeEditor = new sap.ui.codeeditor.CodeEditor({
+        var oCodeEditor = new sap.ui.codeeditor.CodeEditor("ws30_codeeditor", {
                 height: "100%",
                 width: "100%",
                 syntaxHints: true,
                 type: "{/WS30/USPDATA/EXTEN}",
                 value: "{/WS30/USPDATA/CONTENT}",
-                change: ev_codeEditorChange
+                // liveChange: ev_codeEditorLiveChange
             })
             .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding)
             .bindProperty("type", "/WS30/USPDATA/EXTEN", function(EXTEN) {
@@ -872,7 +961,6 @@
                 }
 
             });
-
 
         oCodeEditor.addDelegate({
             onAfterRendering: function(oControl) {
@@ -991,6 +1079,14 @@
                 ICON: "",
                 KEY: "K2",
                 TXT: "Collapse Subtree",
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "",
+                KEY: "K6",
+                TXT: "Test Service",
                 ENABLED: true,
                 ISSTART: false,
                 VISIBLE: true
@@ -1207,6 +1303,36 @@
 
         oTreeTable.clearSelection();
 
+        var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+        oSaveBtn.firePress();
+
+        // 이전에 선택된 라인이 없다면 빠져나감.
+        if (!goBeforeSelect) {
+            return;
+        }
+
+        /**
+         * 삭제된 대상 중, 우측에 보고 있던 CONTENT가 있다면 클리어 시키고 Intro 페이지로 이동
+         */
+
+        // 삭제대상 삭제 후의 Tree 데이터를 수집한다.
+        var oTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
+
+        // TREE -> Array로 변환
+        var aParseTree = _parseTree2Tab(oTreeData, "USPTREE");
+
+        // 이전에 선택된 Key가 있다면 그냥 빠져나간다.
+        var oFind = aParseTree.find(arr => arr.OBJKY == goBeforeSelect.OBJKY);
+        if (oFind) {
+            return;
+        }
+
+        // 이전에 선택된 정보 초기화 
+        goBeforeSelect = undefined;
+
+        // Intro Page 로 이동
+        fnOnMoveToPage("USP10");
+
     } // end of _fnDeleteUspNodeCb
 
     function _fnFindModelData(sPath) {
@@ -1259,12 +1385,15 @@
         // Busy 실행
         parent.setBusy('X');
 
-        // 글로벌 변수 초기화
-        gBeforeBindPath = "";
-
+        // // 글로벌 변수 초기화
+        goBeforeSelect = undefined;
         gSelectedTreeIndex = -1;
 
+        // 30번 레이아웃 초기 설정
         oAPP.fn.fnOnInitLayoutSettingsWs30();
+
+        // code editor KeyPress 이벤트 설정
+        fnKeyPressEditorEvent("");
 
         // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
         oAPP.fn.fnKillUserSession(_fnKillUserSessionCb);
@@ -1284,9 +1413,6 @@
 
         // WS20 화면에서 떠있는 Dialog, Popup 종류, Electron Browser들 전체 닫는 function
         oAPP.fn.fnCloseAllWs20Dialogs();
-
-        // App Info 초기화
-        parent.setAppInfo({});
 
         // WS20에 대한 모델 정보 초기화
         APPCOMMON.fnSetModelProperty("/WS30", {});
@@ -1322,24 +1448,6 @@
         return a;
 
     } //tree -> tab으로 변환.
-
-
-    // //tree -> tab으로 변환.
-    // function _parseTree2Tab(e) {
-    //     var a = [],
-    //         t = function(e) {
-    //             $.each(e, function(e, o) {
-    //                 o.USPTREE && (t(o.USPTREE),
-    //                     delete o.USPTREE);
-    //                 a.push(o);
-    //             })
-    //         };
-    //     t(JSON.parse(JSON.stringify(e)));
-    //     return a;
-
-    // } //tree -> tab으로 변환.
-
-
 
 
 
@@ -1386,7 +1494,12 @@
             return;
         }
 
-        if (gBeforeBindPath == oCtx.sPath) {
+        var sBeforeBindPath = "";
+        if (goBeforeSelect) {
+            sBeforeBindPath = goBeforeSelect.BINDPATH;
+        }
+
+        if (sBeforeBindPath == oCtx.sPath) {
             return;
         }
 
@@ -1400,6 +1513,56 @@
             return;
         }
 
+        // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
+        var IS_CHAG = getAppChange();
+        if (IS_CHAG == 'X') {
+
+            var sMsg = oAPP.common.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
+            parent.showMessage(sap, 30, 'W', sMsg, _fnSaveBeforeLeavEditMsgCb.bind(this, oRow));
+
+            return;
+
+        }
+
+        // Tree Table Row 데이터 구하기
+        fnUspTreeTableRowSelect(oRow);
+
+    } // end of ev_uspTreeItemDblClickEvent
+
+    function _fnSaveBeforeLeavEditMsgCb(oRow, oEvent) {
+
+        // esc 누르면 null로 됨.
+        if (oEvent == null) {
+            return;
+        }
+
+        if (oEvent !== "YES") {
+
+            // 앱 변경 사항 플래그 설정
+            setAppChange("");
+
+            // code editor key press 이벤트 설정
+            fnKeyPressEditorEvent("X");
+
+            // Tree Table Row 데이터 구하기
+            fnUspTreeTableRowSelect(oRow);
+
+            return;
+        }
+
+        var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+        oSaveBtn.firePress({
+            ISROW: oRow
+        });
+
+    } // end of _fnSaveBeforeLeavEditMsgCb
+
+    function fnUspTreeTableRowSelect(oRow) {
+
+        var oCtx = oRow.getBindingContext(),
+            oRowModel = oRow.getModel(),
+            oRowData = oRowModel.getProperty(oCtx.sPath);
+
         var sServerPath = parent.getServerPath(),
             sPath = `${sServerPath}/usp_get_object_line_data`;
 
@@ -1411,7 +1574,8 @@
 
         sendAjax(sPath, oFormData, _fnLineSelectCb.bind(oRow));
 
-    } // end of ev_uspTreeItemDblClickEvent
+    } // end of fnTreeTableRowSelect
+
 
     function _fnLineSelectCb(oResult) {
 
@@ -1428,24 +1592,6 @@
             APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
 
             return;
-
-        }
-
-        // app 정보를 구한다.
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
-            IS_EDIT = oAppInfo.IS_EDIT;
-
-        if (IS_EDIT == "X") {
-
-            if (gISEDIT == "X") {
-
-                // 질문 팝업 ( 저장되지 않은거 다 날라간다 그래도 OK?)
-
-                // return;
-
-            } else {
-                gISEDIT = "X";
-            }
 
         }
 
@@ -1471,31 +1617,30 @@
 
         APPCOMMON.fnSetModelProperty("/WS30/USPDATA", oContent);
 
+        // Content Page로 이동
         fnOnMoveToPage("USP20");
 
-        // 이전에 선택한 라인이 있다면 해당 라인 선택 아이콘 표시 해제
-        var oBeforeRowData = oRowModel.getProperty(gBeforeBindPath);
-        if (oBeforeRowData) {
-            oBeforeRowData.ICONVISI = false;
-            oRowModel.setProperty(gBeforeBindPath, oBeforeRowData);
+        var sBeforeBindPath = "";
+        if (goBeforeSelect) {
+            sBeforeBindPath = goBeforeSelect.BINDPATH;
         }
 
-        // 선택한 index 이전 히스토리 저장
-        gBeforeBindPath = sCurrBindPath;
+        // 이전에 선택한 라인이 있다면 해당 라인 선택 아이콘 표시 해제
+        var oBeforeRowData = oRowModel.getProperty(sBeforeBindPath);
+        if (oBeforeRowData) {
+            oBeforeRowData.ICONVISI = false;
+            oRowModel.setProperty(sBeforeBindPath, oBeforeRowData);
+        }
+
+        goBeforeSelect = {
+            BINDPATH: sCurrBindPath,
+            OBJKY: oResultRowData.OBJKY
+        };
 
         // 화면 Lock 해제
         sap.ui.getCore().unlock();
 
         parent.setBusy("");
-
-
-
-
-
-
-
-
-
 
     } // end of _fnLineSelectCb
 
@@ -1512,6 +1657,52 @@
         oUspNav.to(sPage);
 
     } // end of fnOnMoveToPage
+
+    /**************************************************************************
+     * [WS30] 선택한 USP 브라우저 실행
+     **************************************************************************/
+    function fnTestServiceWs30(oTreeTable) {
+
+        var iIndex = gSelectedTreeIndex,
+            oCtx = oTreeTable.getContextByIndex(iIndex);
+
+        if (!oCtx) {
+            return;
+        }
+
+        var sBindPath = oCtx.getPath(),
+            oTreeData = oTreeTable.getModel().getProperty(sBindPath),
+            sServicePath = oTreeData.SPATH,
+            sServerHost = parent.getHost(),
+            sServiceUrl = sServerHost + sServicePath;
+
+        var SPAWN = parent.SPAWN, // pc 제어하는 api
+            aComm = []; // 명령어 수집
+
+        var oDefBrows = APPCOMMON.fnGetModelProperty("/DEFBR"),
+            sSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
+
+        // 실행전 명령어 수집
+        aComm.push(sServiceUrl);
+
+        // APP 실행		
+        SPAWN(sSelectedBrows.INSPATH, aComm);
+
+    } // end of fnTestServiceWs30
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**************************************************************************
      * [WS30] Back Button Event
@@ -1571,15 +1762,15 @@
 
             sap.ui.getCore().lock();
 
-            var oSaveBtn = sap.ui.getCore().byId("saveBtn");
+            var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
             if (!oSaveBtn) {
                 return;
             }
 
-            // // 저장 로직 수행 한다.
-            // oSaveBtn.firePress({
-            //     ISBACK: "X"
-            // });
+            // 저장 로직 수행 한다.
+            oSaveBtn.firePress({
+                ISBACK: "X"
+            });
 
             return;
 
@@ -1589,57 +1780,6 @@
         fnMoveToWs10();
 
     } // end of ev_pressWs30BackCb
-
-    /**************************************************************************
-     * [WS30] USP Tree rowSelectionChange
-     **************************************************************************/
-    function ev_rowSelectionChange(oEvent) {
-
-        // 마우스 우클릭일 경우는 실행하지 않기
-        if (event && "which" in event) {
-            if (event.which == 3) {
-                return;
-            }
-        }
-
-        var oTreeTable = oEvent.getSource(),
-            iSelIdx = oTreeTable.getSelectedIndex(),
-            iRowIndex = oEvent.getParameter("rowIndex");
-
-        if (iSelIdx != iRowIndex) {
-            oTreeTable.setSelectedIndex(iRowIndex);
-        }
-
-        if (gBeforeSelectedIndex == iRowIndex) {
-            return;
-        }
-
-        // 선택한 index 이전 히스토리 저장
-        gBeforeSelectedIndex = iRowIndex;
-
-        // var oUspData = {
-        //     DATA: "",
-        //     URL: "",
-        //     ISEDIT: "",
-        // };
-
-        // APPCOMMON.fnSetModelProperty("/WS30/USPDATA", oUspData);
-
-        var oCtx = oTreeTable.getContextByIndex(iRowIndex),
-            oData = oTreeTable.getModel().getProperty(oCtx.sPath);
-
-        // 선택한 위치가 Root 또는 폴더이면 return.
-        if (oData.ISROOT == "X" || oData.ISFLD == "X") {
-            return;
-        }
-
-        APPCOMMON.fnSetModelProperty("/WS30/USPDATA", {
-            URL: oData.SPATH,
-            DATA: oData.DATA,
-            ISEDIT: "X",
-        });
-
-    } // end of ev_rowSelectionChange
 
     /**************************************************************************
      * [WS30] USP Url Clipboard Copy
@@ -1711,11 +1851,14 @@
         aCtxMenu.find(arr => arr.KEY == "K3").ENABLED = false;
         aCtxMenu.find(arr => arr.KEY == "K4").ENABLED = false;
         aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
+        aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
 
-        // root가 아니면서 폴더가 아닐경우 (파일일 경우에만) 다운로드 버튼을 활성화 한다.
+        // root가 아니면서 폴더가 아닐경우 (파일일 경우에만) 
+        // 다운로드 버튼, Test Service 버튼을 활성화 한다.
         if (oRowData.PUJKY != "" && oRowData.ISFLD == "") {
 
             aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = true;
+            aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = true;
 
         }
 
@@ -1733,6 +1876,7 @@
 
             aCtxMenu.find(arr => arr.KEY == "K4").ENABLED = false;
             aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
+            aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
 
             APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
 
@@ -1744,6 +1888,7 @@
         if (oRowData.ISFLD == "X") {
 
             aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
+            aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
 
             APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
 
@@ -1781,6 +1926,13 @@
                 fnDeleteUspNode(oTreeTable);
 
                 break;
+
+            case "K6": // Test Service
+
+                fnTestServiceWs30(oTreeTable);
+
+                break;
+
         }
 
     } // end of ev_UspTreeCtxMenuClick
@@ -1877,10 +2029,17 @@
         // 현재 선택한 노드 펼침
         oTreeTable.expand(gSelectedTreeIndex);
 
+        // 생성 팝업 닫기
         ev_createUspDlgCloseEvent();
+
+        // 앱 변경 사항 플래그 설정
+        setAppChange('X');
 
     } // end of ev_createUspNodeAcceptEvent
 
+    /**************************************************************************
+     * [WS30] 생성 팝업 입력값 체크
+     **************************************************************************/
     function _fnCheckCreateNodeData(oCrateData) {
 
         var oCheck = {};
@@ -1935,16 +2094,36 @@
      **************************************************************************/
     function ev_pressSaveBtn(oEvent) {
 
+        // 푸터 메시지가 있을 경우 닫기
+        APPCOMMON.fnHideFloatingFooterMsg();
+
+        var oLocalEvent = new sap.ui.base.Event(),
+            oNewEvent = jQuery.extend(true, oLocalEvent, oEvent);
+
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
 
         var oAppData = APPCOMMON.fnGetModelProperty("/WS30/APP"),
-            aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
+            aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
+
+            TRKORR = oEvent.getParameter("TRKORR");
+
+        var sReqNo = "";
+
+        // 기존에 CTS 번호가 있을 경우
+        if (oAppData.REQNO != "") {
+            sReqNo = oAppData.REQNO;
+        }
+
+        // CTS 팝업에서 선택한 CTS 번호가 있을 경우.
+        if (TRKORR) {
+            sReqNo = TRKORR;
+        }
 
         // 저장 구조
         var oSaveData = {
             APPID: oAppData.APPID,
-            TRKORR: "",
+            TRKORR: sReqNo,
             IS_ACT: "",
             S_CONTENT: {},
             T_TREE: []
@@ -1966,7 +2145,14 @@
         var oFormData = new FormData();
         oFormData.append("APPDATA", JSON.stringify(oSaveData));
 
-        sendAjax(sPath, oFormData, _fnSaveCallback);
+        var oParam = {
+            ISBACK: oEvent.getParameter("ISBACK"),
+            ISROW: oEvent.getParameter("ISROW"),
+            ISDISP: oEvent.getParameter("ISDISP"),
+            NEWEVT: oNewEvent
+        };
+
+        sendAjax(sPath, oFormData, _fnSaveCallback.bind(oParam));
 
     } // end of ev_pressSaveBtn
 
@@ -1999,23 +2185,259 @@
             return;
         }
 
+        // 앱 변경 사항 플래그 설정
+        setAppChange("");
+
+        // code editor KeyPress 이벤트 설정
+        fnKeyPressEditorEvent("X");
+
         // Footer Msg 출력
         APPCOMMON.fnShowFloatingFooterMsg("S", "WS30", oResult.RTMSG);
 
+        // 전달 받은 파라미터 확인 점검..
+        var oParam = this,
+            oNewEvent = oParam.NEWEVT;
+
+        // WS20 페이지 Lock 풀고 Display Mode로 전환
+        if (oParam.ISDISP == 'X') {
+
+            fnSetAppDisplayMode();
+
+            return;
+        }
+
+        // EDIT 모드에서 다른 CONTENT 선택시 저장하고 넘어가려는 경우
+        if (oParam.ISROW) {
+
+            // Row Select 
+            fnUspTreeTableRowSelect(oParam.ISROW);
+
+            return;
+        }
+
+        // 저장 하고 10번으로 이동할 경우
+        if (oParam.ISBACK == "X") {
+
+            // WS10 페이지로 이동
+            fnMoveToWs10();
+
+            return;
+        }
+
     } // end of _fnSaveCallback
 
+    /************************************************************************
+     * [WS30] Display Mode Button press Event
+     ************************************************************************/
+    function ev_pressDisplayModeBtn(oEvent) {
+
+        var oBindAppData = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+            oAppInfo = jQuery.extend(true, {}, oBindAppData); // APP 정보
+
+        // edit 모드 -> display 모드
+        if (oAppInfo.IS_EDIT == "X") {
+
+            // 변경된 값이 있는데 Display 모드로 갈려고 할 경우 메시지 팝업 보여준다.		
+            if (oAppInfo.IS_CHAG == 'X') {
+
+                // 메시지 팝업 띄울 때 Child window 가 있으면 Hide 시킨다.
+                APPCOMMON.fnIsChildWindowShow(false);
+
+                var sMsg = "";
+                sMsg = APPCOMMON.fnGetMsgClsTxt("118"); // "Application has been changed"
+                sMsg += " \n " + APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
+
+                parent.showMessage(sap, 40, 'W', sMsg, lf_MsgCallback);
+                return;
+            }
+
+            // WS30 페이지 정보 갱신            
+            fnSetAppDisplayMode();
+
+            return;
+        }
+
+        // display 모드 -> edit 모드
+        fnSetAppChangeMode();
+
+        /** 
+         *  Local Function...
+         */
+        function lf_MsgCallback(ACTCD) {
+
+            // child window(각종 Editor창 등..) 가 있었을 경우, 메시지 팝업 뜬 상태에서 어떤 버튼이라도 누른 후에는 
+            // child window를 활성화 한다.
+            oAPP.common.fnIsChildWindowShow(true);
+
+            // 이동을 하지 않는다.
+            if (ACTCD == null || ACTCD == "CANCEL") {
+                return;
+            }
+
+            // 저장 후 Display 모드로 이동한다.
+            if (ACTCD == "YES") {
+
+                // 저장 로직 수행
+                var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+                oSaveBtn.firePress({
+                    ISDISP: 'X'
+                });
+
+                return;
+
+            }
+
+            // WS20 페이지 정보 갱신
+            fnSetAppDisplayMode();
+
+        } // end of lf_MsgCallback
+
+    }; // end of oAPP.events.ev_pressDisplayModeBtn
+
+    function lf_saveActiveCtsPopup(oEvent) {
+
+        var lo_Event = oEvent;
+
+        // CTS Popup을 Open 한다.
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+
+            var oEvent = this,
+                IS_ACT = oEvent.getParameter("IS_ACT");
+
+            oEvent.mParameters.TRKORR = oResult.TRKORR;
+
+            if (IS_ACT == 'X') {
+                ev_pressActivateBtn(oEvent);
+                return;
+            }
+
+            ev_pressSaveBtn(oEvent);
+
+        }.bind(lo_Event));
+
+    }
+
+    /************************************************************************
+     * [WS30] change -> display mode 
+     ************************************************************************/
+    function fnSetAppDisplayMode() {
+
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
+        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+            sCurrPage = parent.getCurrPage();
+
+        var oFormData = new FormData();
+        oFormData.append("APPID", oAppInfo.APPID);
+
+        // Lock을 해제한다.
+        ajax_unlock_app(oAppInfo.APPID, lf_success);
+
+        function lf_success(RETURN) {
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            parent.setBusy('');
+
+            if (RETURN.RTCOD == 'E') {
+                // 오류..1
+                parent.showMessage(sap, 20, RETURN.RTCOD, RETURN.RTMSG);
+                return;
+            }
+
+            RETURN.IS_EDIT = ""; // Display Mode FLAG
+            RETURN.IS_CHAG = "";
+
+            APPCOMMON.fnSetModelProperty("/WS30/APP", RETURN, true); // 모델 정보 갱신
+
+            // 현재 떠있는 Electron Browser들 전체 닫는 function
+            oAPP.fn.fnChildWindowClose();
+
+            var sMsg = APPCOMMON.fnGetMsgClsTxt("020"); // "Switch to display mode."
+
+            // 푸터 메시지 처리
+            APPCOMMON.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
+
+            // code editor KeyPress 이벤트 해제
+            fnKeyPressEditorEvent("");
+
+            // 30번 페이지 레이아웃 초기 설정
+            oAPP.fn.fnOnInitLayoutSettingsWs30();
+
+        }
+
+    } // end of fnSetAppDisplayMode
+
+    /************************************************************************
+     * [WS30] display -> change mode 
+     ************************************************************************/
+    function fnSetAppChangeMode() {
+
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
+        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+            sCurrPage = parent.getCurrPage();
+
+        var oFormData = new FormData();
+        oFormData.append("APPID", oAppInfo.APPID);
+        oFormData.append("ISEDIT", 'X');
+
+        // 서버에서 App 정보를 구한다.
+        ajax_init_prc(oFormData, lf_success);
+
+        function lf_success(oAppInfo) {
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            parent.setBusy('');
+
+            if (oAppInfo.IS_EDIT != "X") {
+
+                var sMsg = "Editing by " + oAppInfo.APPID;
+
+                // 페이지 푸터 메시지
+                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sMsg);
+
+                return false;
+
+            }
+
+            APPCOMMON.fnSetModelProperty("/WS30/APP", oAppInfo);
+
+            // 현재 떠있는 Electron Browser들 전체 닫는 function
+            oAPP.fn.fnChildWindowClose();
+
+            // 푸터 메시지 처리                        
+            var sMsg = APPCOMMON.fnGetMsgClsTxt("020"); // "Switch to edit mode."
+            APPCOMMON.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
+
+            // code editor KeyPress 이벤트 설정
+            fnKeyPressEditorEvent("X");
+
+            // 30번 페이지 레이아웃 초기 설정
+            oAPP.fn.fnOnInitLayoutSettingsWs30();
+
+        }
+
+    } // end of fnSetAppChangeMode
 
 
+    /**************************************************************************
+     * [WS30] Application Change 여부 구하기
+     **************************************************************************/
+    function getAppChange() {
 
+        // 어플리케이션 정보 가져오기
+        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
 
+        // 어플리케이션 정보에 변경 플래그 
+        return oAppInfo.IS_CHAG;
 
-
-
-
-
-
-
-
+    } // end of getAppChange
 
     // Application Change 모드 변경
     function setAppChange(bIsChange) {
@@ -2040,16 +2462,48 @@
 
         APPCOMMON.fnSetModelProperty("/WS30/APP", oAppInfo);
 
-    } // end of setAppChange
+    } // end of setAppChange    
+
+    /**
+     * 
+     * 원본   
+     */
+    // function fnKeyPressEditorEvent(IsAttach) {
+
+    //     var oCodeEditor = sap.ui.getCore().byId("ws30_codeeditor");
+    //     if (!oCodeEditor) {
+    //         return;
+    //     }
+
+    //     if (IsAttach == "X") {
+    //         // oCodeEditor.attachBrowserEvent("keypress", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+    //         oCodeEditor.attachBrowserEvent("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+    //         return;
+    //     }
+
+    //     // oCodeEditor.detachBrowserEvent("keypress", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+    //     oCodeEditor.detachBrowserEvent("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+
+    // } // end of fnAttachKeyPressEditorEvent
+
+    function fnKeyPressEditorEvent(IsAttach) {
+
+        var oCodeEditor = sap.ui.getCore().byId("ws30_codeeditor"),
+            oEditorDom = oCodeEditor._oEditor.textInput.getElement();
+        if (!oCodeEditor || !oEditorDom) {
+            return;
+        }
 
 
-    /**************************************************************************
-     * [WS30] codeeditor Change Event
-     **************************************************************************/
-    function ev_codeEditorChange(oEvent) {
+        if (IsAttach == "X") {
 
-        setAppChange("X");
+            oEditorDom.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
 
-    } // end of ev_codeEditorChange
+            return;
+        }
+
+        oEditorDom.removeEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+
+    } // end of fnAttachKeyPressEditorEvent
 
 })(window, $, oAPP);

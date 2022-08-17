@@ -376,6 +376,7 @@
         function _fnCallback(oResult) {
 
             if (oResult.RETCD != "S") {
+
                 debugger;
                 //  [Critical] 메시지 팝업 띄우고 확인 누르면 10번으로 강제 이동
                 // 세션, 락 등등 처리 후 이동
@@ -398,71 +399,23 @@
                 oUspTreeTable.getModel().refresh();
             }
 
+            var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+            if (oAppInfo.IS_EDIT == "X") {
+                
+                var oCodeEditor = sap.ui.getCore().byId("ws30_codeeditor"),
+                    oEditorDom = oCodeEditor._oEditor.textInput.getElement();
+
+                if (oCodeEditor && oEditorDom) {
+                    oEditorDom.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+                    // oCodeEditor.attachBrowserEvent("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+                }
+
+            }
 
             // 화면 Lock 해제
             sap.ui.getCore().unlock();
 
             parent.setBusy('');
-
-            return;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            APPCOMMON.fnShowFloatingFooterMsg("S", "WS30", "Welcome to USP PAGE!!");
-
-            // 단축키 삭제
-            APPCOMMON.removeShortCut("WS10");
-
-            // 단축키 설정
-            APPCOMMON.setShortCut("WS30");
-
-            var aData = [{
-                    PUJKY: "",
-                    OBJKY: "ROOT",
-                    APPVR: "",
-                    OBDEC: "/zu4a/usp/ytest01",
-                    DESCT: "ROOT",
-                    EXTEN: "",
-                    MIME: "",
-                    SPATH: "/zu4a/usp/ytest01",
-                    APPID: "ytest01",
-                    ISFLD: "",
-                },
-
-            ];
-
-            var oUspData = {
-                DATA: "",
-                URL: "",
-                ISEDIT: ""
-            };
-
-            APPCOMMON.fnSetModelProperty("/WS30/USPDATA", oUspData);
-
-            APPCOMMON.fnSetModelProperty("/WS30/USPTREE", T_DATA);
-
-            var oModel = sap.ui.getCore().getModel();
-
-            oAPP.fn.fnSetTreeJson(oModel, "WS30.USPTREE", "OBJKY", "PUJKY", "USPTREE");
-
-            var oUspTreeTable = sap.ui.getCore().byId("usptree");
-
-            if (oUspTreeTable && oUspTreeTable.getModel()) {
-                oUspTreeTable.getModel().refresh();
-            }
 
         }
 
