@@ -789,11 +789,11 @@
                     content: [
                         new sap.m.Button({
                             icon: "sap-icon://expand-group",
-                            // press: oAPP.events.ev_MimeTreeTableExpand
+                            press: ev_UspTreeTableExpand
                         }),
                         new sap.m.Button({
                             icon: "sap-icon://collapse-group",
-                            // press: oAPP.events.ev_MimeTreeTableCollapse
+                            press: ev_UspTreeTableCollapse
                         }),
                     ]
                 })
@@ -1103,6 +1103,14 @@
                 ICON: "",
                 KEY: "K4",
                 TXT: "Delete",
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "",
+                KEY: "K7",
+                TXT: "Rename",
                 ENABLED: true,
                 ISSTART: false,
                 VISIBLE: true
@@ -1448,6 +1456,100 @@
         return a;
 
     } //tree -> tab으로 변환.
+
+    /**************************************************************************
+     * [WS30] USP Tree의 File Download
+     **************************************************************************/
+    function fnOnDownloadUspFiles() {
+
+        var oTreeTable = sap.ui.getCore().byId("usptree");
+        if (!oTreeTable) {
+            return;
+        }
+
+        var iIndex = gSelectedTreeIndex,
+            oCtx = oTreeTable.getContextByIndex(iIndex);
+
+        if (!oCtx) {
+            return;
+        }
+
+        let ZIPLIB = parent.require("zip-lib"),
+            ZIP = new ZIPLIB.Zip();
+
+        // TREE -> Array
+        // var aParseTree = _parseTree2Tab([oTreeData], "USPTREE");
+
+        debugger;
+
+        var aOBJKY = [];
+
+        var oTreeData = oCtx.getModel().getProperty(oCtx.getPath());
+
+        aOBJKY.push({
+            OBJKY: oTreeData.OBJKY
+        });
+
+        var iChildLength = oTreeData.USPTREE.length;
+
+        if (iChildLength == 0) {
+
+            // sendAjax...  
+            var oJsonData = JSON.stringify(aOBJKY);
+
+            return;
+
+        }
+
+        function lf_collectObjKey(aChildTree) {
+
+            var iChildLength = aChildTree.length;
+            if (iChildLength == 0) {
+                return;
+            }
+
+            for (var i = 0; i < iChildLength; i++) {
+
+                var oChild = aChildTree[i],
+                    aChild = oChild.USPTREE,
+                    iChildCnt = aChild.length;
+
+                aOBJKY.push({
+                    OBJKY: oChild.OBJKY
+                });
+
+                if (iChildCnt == 0) {
+                    continue;
+                }
+
+                lf_collectObjKey(aChild);
+
+            }
+
+        }
+
+        lf_collectObjKey(oTreeData.USPTREE);
+
+        var oJsonData = JSON.stringify(aOBJKY);
+
+    } // end of fnOnDownloadUspFiles
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1852,6 +1954,7 @@
         aCtxMenu.find(arr => arr.KEY == "K4").ENABLED = false;
         aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
         aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
+        aCtxMenu.find(arr => arr.KEY == "K7").ENABLED = false;
 
         // root가 아니면서 폴더가 아닐경우 (파일일 경우에만) 
         // 다운로드 버튼, Test Service 버튼을 활성화 한다.
@@ -1875,8 +1978,9 @@
         if (oRowData.PUJKY == "") {
 
             aCtxMenu.find(arr => arr.KEY == "K4").ENABLED = false;
-            aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
+            // aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
             aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
+            aCtxMenu.find(arr => arr.KEY == "K7").ENABLED = false;
 
             APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
 
@@ -1887,7 +1991,7 @@
         // 우클릭한 위치가 폴더일 경우
         if (oRowData.ISFLD == "X") {
 
-            aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
+            // aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
             aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
 
             APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
@@ -1904,6 +2008,119 @@
     } // end of _ev_beforeOpenContextMenuChange
 
     /**************************************************************************
+     * [WS30] Usp Tree Table 펼치기 이벤트
+     **************************************************************************/
+    function ev_UspTreeTableExpand(oEvent) {
+
+        var oTreeTable = oEvent.getSource().getParent().getParent();
+        if (!oTreeTable) {
+            return;
+        }
+
+        // tree table 펼침 공통 메소드
+        fnCommonUspTreeTableExpand(oTreeTable);
+
+    } // end of ev_UspTreeTableExpand
+
+    /**************************************************************************
+     * [WS30] Usp Tree Table 접기 이벤트
+     **************************************************************************/
+    function ev_UspTreeTableCollapse(oEvent) {
+
+        var oTreeTable = oEvent.getSource().getParent().getParent();
+        if (!oTreeTable) {
+            return;
+        }
+
+        fnCommonUspTreeTableCollapse(oTreeTable);
+
+    } // end of ev_MimeTreeTableCollapse
+
+    function fnCommonUspTreeTableExpand(oTreeTable, gIndex) {
+
+        var iSelIdx = -1;
+        if (typeof gIndex !== "undefined") {
+
+            iSelIdx = gIndex;
+
+        } else {
+
+            iSelIdx = oTreeTable.getSelectedIndex();
+
+        }
+
+        var oCtx = oTreeTable.getContextByIndex(iSelIdx);
+        if (!oCtx) {
+            return;
+        }
+
+        var oData = oTreeTable.getModel().getProperty(oCtx.sPath);
+
+        if (oData.PUJKY == "") {
+            oTreeTable.expandToLevel(99);
+            return;
+        }
+
+        var aCHILDTREE = oData.USPTREE,
+            iTreeCnt = aCHILDTREE.length;
+
+        var iSelIndex = iSelIdx;
+
+        if (iTreeCnt >= 0) {
+            oTreeTable.expand(iSelIndex);
+        }
+
+        function lf_expand(aCHILDTREE) {
+
+            var iTreeCnt = aCHILDTREE.length;
+            if (iTreeCnt == 0) {
+                return;
+            }
+
+            for (var i = 0; i < iTreeCnt; i++) {
+
+                iSelIndex++;
+
+                var oChild = aCHILDTREE[i],
+                    aChild = oChild.USPTREE,
+                    iChildCnt = aChild.length;
+
+                if (iChildCnt != 0) {
+                    oTreeTable.expand(iSelIndex);
+                    lf_expand(aChild);
+                }
+
+            }
+
+        } // end of lf_expand
+
+        lf_expand(aCHILDTREE);
+
+    }; // end of fnCommonMimeTreeTableExpand
+
+    function fnCommonUspTreeTableCollapse(oTreeTable, gIndex) {
+
+        var iSelIdx = -1;
+        if (typeof gIndex !== "undefined") {
+
+            iSelIdx = gIndex;
+
+        } else {
+
+            iSelIdx = oTreeTable.getSelectedIndex();
+
+        }
+
+        var oCtx = oTreeTable.getContextByIndex(iSelIdx);
+        if (!oCtx) {
+            return;
+        }
+
+        oTreeTable.collapse(iSelIdx);
+
+    }; // end of oAPP.fn.fnCommonMimeTreeTableCollapse
+
+    /**************************************************************************
      * [WS30] USP Tree ContextMenu Click Event
      **************************************************************************/
     function ev_UspTreeCtxMenuClick(oEvent) {
@@ -1915,6 +2132,19 @@
 
         switch (sCtxMenuKey) {
 
+            case "K1": // Expand Subtree
+
+                // tree table 펼침 공통 메소드
+                fnCommonUspTreeTableExpand(oTreeTable, gSelectedTreeIndex);
+
+                break;
+
+            case "K2": // Collapse Subtree
+
+                fnCommonUspTreeTableCollapse(oTreeTable, gSelectedTreeIndex);
+
+                break;
+
             case "K3": // create
 
                 fnCreateUspNodePopup(oTreeTable);
@@ -1924,6 +2154,12 @@
             case "K4": // delete
 
                 fnDeleteUspNode(oTreeTable);
+
+                break;
+
+            case "K5": // File Down
+
+                fnOnDownloadUspFiles();
 
                 break;
 
@@ -2505,5 +2741,9 @@
         oEditorDom.removeEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
 
     } // end of fnAttachKeyPressEditorEvent
+
+
+
+
 
 })(window, $, oAPP);

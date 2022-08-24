@@ -343,7 +343,9 @@
 
         var aShortCutWS10 = [{
                     KEY: "F11", // FullScreen
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
                             bIsFull = oCurrWin.isFullScreen();
@@ -353,7 +355,9 @@
                     }
                 }, {
                     KEY: "Ctrl+Shift+F", // textSearchPopup
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         // 단축키 실행 할지 말지 여부 체크
                         var result = oAPP.common.fnShortCutExeAvaliableCheck();
@@ -368,7 +372,9 @@
                     }
                 }, {
                     KEY: "Ctrl+F12", // Application Create
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         // 단축키 실행 할지 말지 여부 체크
                         var result = oAPP.common.fnShortCutExeAvaliableCheck();
@@ -389,7 +395,9 @@
                 },
                 {
                     KEY: "Ctrl+Shift+F1", // Application Change
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         // 커서 포커스 날리기
                         if (document.activeElement && document.activeElement.blur) {
@@ -420,7 +428,9 @@
                 },
                 {
                     KEY: "Ctrl+F10", // Application Delete
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -446,7 +456,9 @@
                 },
                 {
                     KEY: "Shift+F11", // Application Copy
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -472,7 +484,9 @@
                 },
                 {
                     KEY: "F7", // Display Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         // 커서 포커스 날리기
                         if (document.activeElement && document.activeElement.blur) {
@@ -506,7 +520,9 @@
                 },
                 {
                     KEY: "F8", // Application Execution
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -532,7 +548,9 @@
                 },
                 {
                     KEY: "Ctrl+F1", // Example Open
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -558,7 +576,9 @@
                 },
                 {
                     KEY: "Ctrl+F3", // Multi Preview
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -586,7 +606,9 @@
             ],
             aShortCutWS20 = [{
                     KEY: "F11", // FullScreen
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
                             bIsFull = oCurrWin.isFullScreen();
@@ -596,7 +618,9 @@
                     }
                 }, {
                     KEY: "Ctrl+Shift+F", // textSearchPopup
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -616,7 +640,9 @@
                     }
                 }, {
                     KEY: "Ctrl+F2", // Syntax Check Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -642,7 +668,9 @@
                 },
                 {
                     KEY: "F3", // Back Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -683,7 +711,9 @@
                 },
                 {
                     KEY: "Ctrl+F1", // Display or Change Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -729,7 +759,9 @@
                 },
                 {
                     KEY: "Ctrl+F3", // Activate Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -760,8 +792,27 @@
                     }
                 },
                 {
+                    /****************************************************************************************************
+                     * shortcut library bug,
+                     ****************************************************************************************************
+                     * Ctrl + F4 키를 누르면 Ctrl + S 이벤트를 발생시키는 버그를 발견하여,
+                     * Ctrl + F4 키를 눌렀다면 이벤트 전파 방지를 하여 Ctrl + S 이벤트를
+                     * 타지 않게 하기 위함.               
+                     ****************************************************************************************************/
+                    KEY: "Ctrl+F4",
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        console.log("ws30/Ctrl+F4 key in!!");
+
+                    }
+                },
+                {
                     KEY: "Ctrl+S", // Save Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -792,7 +843,9 @@
                 },
                 {
                     KEY: "Ctrl+Shift+F12", // Mime Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -817,7 +870,9 @@
                 },
                 {
                     KEY: "Ctrl+F12", // Controller Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -842,7 +897,9 @@
                 },
                 {
                     KEY: "F8", // Application Execution Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -867,7 +924,9 @@
                 },
                 {
                     KEY: "Ctrl+F5", // Multi Preview Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -892,7 +951,9 @@
                 },
                 {
                     KEY: "Ctrl+Shift+F10", // Icon List Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -917,7 +978,9 @@
                 },
                 {
                     KEY: "Shift+F1", // Add Server Event Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -942,7 +1005,9 @@
                 },
                 {
                     KEY: "F9", // Runtime Class Navigator Event Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -967,7 +1032,9 @@
                 },
                 {
                     KEY: "Ctrl+F", // Find
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -992,9 +1059,19 @@
                 }
 
             ],
-            aShortCutWS30 = [{
+            aShortCutWS30 = [
+                /****************************************************************************************************
+                 * shortcut library bug,
+                 ****************************************************************************************************
+                 * Ctrl + F4 키를 누르면 Ctrl + S 이벤트를 발생시키는 버그를 발견하여,
+                 * Ctrl + F4 키를 눌렀다면 이벤트 전파 방지를 하여 Ctrl + S 이벤트를
+                 * 타지 않게 하기 위함.               
+                 ****************************************************************************************************/
+                {
                     KEY: "Ctrl+F4",
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         console.log("ws30/Ctrl+F4 key in!!");
 
@@ -1002,7 +1079,9 @@
                 },
                 {
                     KEY: "F3",
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -1026,7 +1105,9 @@
                     }
                 }, {
                     KEY: "Ctrl+F1", // Display or Change Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -1071,7 +1152,9 @@
                     }
                 }, {
                     KEY: "Ctrl+F3", // Activate Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -1102,7 +1185,9 @@
                     }
                 }, {
                     KEY: "Ctrl+S", // Save Button
-                    fn: () => {
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
                             console.log("!! 락 걸려서 단축기 실행 불가!!");
