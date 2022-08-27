@@ -1497,7 +1497,7 @@
 
     } // end of fnOnDownloadUspFiles
 
-    function _fnFineDownUspFile(oResult) {       
+    function _fnFineDownUspFile(oResult) {
 
         if (oResult.RETCD == "E") {
 
@@ -1531,18 +1531,25 @@
             throw new Error("Usp Data Type Error! Please Contact Administrator!");
         }
 
-        let ZIPLIB = parent.require("zip-lib"),
-            ZIP = new ZIPLIB.Zip();
+        var ZIP = new require('node-zip')();
 
         var oUspData = aUspData.find(a => a.OBJKY === oSelectedUspData.OBJKY);
         if (!oUspData) {
             return;
-        }
+        }       
 
-        if(oSelectedUspData.ISFLD == "X"){
+        // if (oSelectedUspData.ISFLD == "X") {
 
-        }
+        //     var sRootPath = oUspData.SPATH;
 
+        //     // ZIP.file('test.file', 'hello there');
+        // }
+
+
+        // var data = ZIP.generate({
+        //     base64: false,
+        //     compression: 'DEFLATE'
+        // });
 
     } // end of _fnFineDownUspFile
 
