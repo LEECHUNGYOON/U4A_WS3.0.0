@@ -62,6 +62,7 @@
     "fs-extra": "^10.1.0",
     "mime-types": "^2.1.35",
     "node-cmd": "^5.0.0",
+    "node-zip": "^1.1.1",
     "random-key": "^0.3.2",
     "regedit": "^5.0.0",
     "yamljs": "^0.3.0",
