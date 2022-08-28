@@ -5,11 +5,14 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
         REMOTE = parent.REMOTE,
+        FS = parent.FS,
+        SHELL = parent.SHELL,
+        APP = parent.APP,
         APPCOMMON = oAPP.common,
         APPPATH = parent.APPPATH,
         PATH = parent.PATH,
@@ -196,7 +199,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (bIsShow) {
+            formatter: function(bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -341,7 +344,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function (sKey) {
+                            formatter: function(sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -744,7 +747,7 @@
                                 src: "sap-icon://accept",
                                 visible: "{ICONVISI}"
                             })
-                            .bindProperty("visible", "ICONVISI", function (VISI) {
+                            .bindProperty("visible", "ICONVISI", function(VISI) {
 
                                 if (!VISI) {
                                     return false;
@@ -816,7 +819,7 @@
 
             // Events
             beforeOpenContextMenu: ev_beforeOpenContextMenu,
-            rowSelectionChange: function (oEvent) {
+            rowSelectionChange: function(oEvent) {
 
                 var oTreeTable = oEvent.getSource(),
                     iSelIdx = oTreeTable.getSelectedIndex(),
@@ -921,7 +924,7 @@
                 // liveChange: ev_codeEditorLiveChange
             })
             .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding)
-            .bindProperty("type", "/WS30/USPDATA/EXTEN", function (EXTEN) {
+            .bindProperty("type", "/WS30/USPDATA/EXTEN", function(EXTEN) {
 
                 this.setSyntaxHints(true);
 
@@ -963,7 +966,7 @@
             });
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function (oControl) {
+            onAfterRendering: function(oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1184,7 +1187,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 // submit: oAPP.events.ev_createMimeFolderEvent
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1249,7 +1252,7 @@
                 oUspCrForm
             ],
 
-            afterClose: function () {
+            afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -1445,8 +1448,8 @@
     //tree -> tab으로 변환.
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function (e) {
-                $.each(e, function (e, o) {
+            t = function(e) {
+                $.each(e, function(e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -1476,14 +1479,24 @@
 
         var oSelectedUspData = oCtx.getModel().getProperty(oCtx.getPath());
 
-        debugger;
+        var aUspData = [];
 
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
-            sServerPath = parent.getServerPath(),
+        // 선택한 USP Node가 폴더가 아닌 경우만 수집
+        if (oSelectedUspData.ISFLD !== "X") {
+            aUspData.push(oSelectedUspData);
+        }
+
+        fnUspTreeFileCollect(aUspData, oSelectedUspData);
+
+        if (aUspData.length == 0) {
+            return;
+        }
+
+        var sServerPath = parent.getServerPath(),
             sPath = `${sServerPath}/usp_get_file_data`;
 
         var oFormData = new FormData();
-        oFormData.append("APPID", oAppInfo.APPID);
+        oFormData.append("USPDATA", JSON.stringify(aUspData));
 
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
@@ -1493,11 +1506,36 @@
             SelectedUspData: oSelectedUspData
         };
 
-        sendAjax(sPath, oFormData, _fnFineDownUspFile.bind(oBindParam));
+        // sendAjax(sPath, oFormData, _fnFineDownUspFile.bind(oBindParam));
+        sendAjax(sPath, oFormData, _fnGetFileContents.bind(oBindParam));
 
     } // end of fnOnDownloadUspFiles
 
-    function _fnFineDownUspFile(oResult) {
+    function fnUspTreeFileCollect(aUspData, oSelectedUspData) {
+
+        var iChildCnt = oSelectedUspData.USPTREE.length;
+        if (iChildCnt == 0) {
+            return;
+        }
+
+        for (var i = 0; i < iChildCnt; i++) {
+
+            var oChild = oSelectedUspData.USPTREE[i];
+            if (oChild.ISFLD !== "X") {
+                aUspData.push(oChild);
+            }
+
+            if (oChild.USPTREE.length == 0) {
+                continue;
+            }
+
+            fnUspTreeFileCollect(aUspData, oChild);
+
+        }
+
+    } // end of fnUspTreeFileCollect
+
+    function _fnGetFileContents(oResult) {
 
         if (oResult.RETCD == "E") {
 
@@ -1520,42 +1558,104 @@
 
         parent.setBusy("");
 
-        debugger;
-
-        var oBindParam = this,
-            oSelectedUspData = oBindParam.SelectedUspData,
-            aUspData = oResult.USPDATA;
+        var aUspData = oResult.USPDATA;
 
         // Array 타입이 아니면 리턴
         if (aUspData instanceof Array == false) {
             throw new Error("Usp Data Type Error! Please Contact Administrator!");
         }
 
-        var ZIP = new require('node-zip')();
+        var ZIP = new parent.require('node-zip')();
 
-        var oUspData = aUspData.find(a => a.OBJKY === oSelectedUspData.OBJKY);
-        if (!oUspData) {
-            return;
-        }       
+        var iUspDataLength = aUspData.length;
 
-        // if (oSelectedUspData.ISFLD == "X") {
+        for (var i = 0; i < iUspDataLength; i++) {
 
-        //     var sRootPath = oUspData.SPATH;
+            var oUspData = aUspData[i],
+                sFilePath = oUspData.SPATH;
 
-        //     // ZIP.file('test.file', 'hello there');
-        // }
+            sFilePath = sFilePath.replace("/zu4a/usp", "");
 
+            ZIP.file(sFilePath, oUspData.CONTENT);
 
-        // var data = ZIP.generate({
-        //     base64: false,
-        //     compression: 'DEFLATE'
-        // });
+        }
 
-    } // end of _fnFineDownUspFile
+        var data = ZIP.generate({
+            base64: false,
+            compression: 'DEFLATE'
+        });
 
+        var sFileName = "";
 
+        _fnUspFileDown(sFileName, data);
 
+        // FS.writeFileSync('test.zip', data, 'binary');
 
+    } // end of _fnGetFileContents
+
+    function _fnUspFileDown(sFileName, data) {
+
+        let defaultDownPath = APP.getPath("downloads");
+
+        // 이전에 지정한 파일 다운 폴더 경로가 있을 경우 해당 경로 띄우기.
+        if (!!oAPP.attr._filedownFolderPath) {
+            defaultDownPath = oAPP.attr._filedownPath;
+        }
+
+        // 다운받을 폴더 지정하는 팝업에 대한 Option
+        var options = {
+            // See place holder 1 in above image
+            title: "File Download",
+
+            // See place holder 2 in above image            
+            defaultPath: defaultDownPath,
+
+            properties: ['openDirectory', 'dontAddToRecent']
+
+        };
+
+        var oFilePathPromise = REMOTE.dialog.showOpenDialog(REMOTE.getCurrentWindow(), options);
+
+        oFilePathPromise.then((oPaths) => {
+
+            if (oPaths.canceled) {
+                return;
+            }
+
+            var fileName = sFileName,
+
+                //파일 Path 와 파일 명 조합 
+                folderPath = oPaths.filePaths[0],
+                filePath = folderPath + "\\" + fileName; //폴더 경로 + 파일명
+
+            // 방금 선택한 폴더 경로를 저장
+            oAPP.attr._filedownFolderPath = folderPath;
+
+            var fileReader = new FileReader();
+            fileReader.onload = function(event) {
+
+                var arrayBuffer = event.target.result,
+                    buffer = parent.Buffer.from(arrayBuffer);
+
+                //PC DOWNLOAD 
+                FS.writeFile(filePath, buffer, {}, (err, res) => {
+
+                    if (err) {
+                        return;
+                    }
+
+                    // 파일 다운받은 폴더를 오픈한다.
+                    SHELL.showItemInFolder(filePath);
+
+                });
+
+            };
+
+            fileReader.readAsArrayBuffer(data);
+
+        });
+
+    }
 
 
 
@@ -2288,7 +2388,7 @@
 
         oTreeModel.setProperty(oCtx.sPath, oRowData);
 
-        oTreeModel.refresh();
+        oTreeModel.refresh(true);
 
         // 현재 선택한 노드 펼침
         oTreeTable.expand(gSelectedTreeIndex);
@@ -2563,7 +2663,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oEvent = this,
                 IS_ACT = oEvent.getParameter("IS_ACT");
