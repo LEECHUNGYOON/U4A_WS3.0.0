@@ -5,13 +5,13 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
         REMOTE = parent.REMOTE,
         FS = parent.FS,
-        SHELL = parent.SHELL,
+        SHELL = REMOTE.shell,
         APP = parent.APP,
         APPCOMMON = oAPP.common,
         APPPATH = parent.APPPATH,
@@ -25,6 +25,8 @@
      */
     var gSelectedTreeIndex = -1, // 우클릭 Context menu Index
         goBeforeSelect; // 이전에 선택한 Row 정보
+
+    var gfTableScrollEvent;
 
     /************************************************************************
      * [WS30] 30번 페이지 생성
@@ -199,7 +201,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -344,7 +346,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -747,7 +749,7 @@
                                 src: "sap-icon://accept",
                                 visible: "{ICONVISI}"
                             })
-                            .bindProperty("visible", "ICONVISI", function(VISI) {
+                            .bindProperty("visible", "ICONVISI", function (VISI) {
 
                                 if (!VISI) {
                                     return false;
@@ -819,19 +821,14 @@
 
             // Events
             beforeOpenContextMenu: ev_beforeOpenContextMenu,
-            rowSelectionChange: function(oEvent) {
+            // rowSelectionChange: function (oEvent) {
 
-                var oTreeTable = oEvent.getSource(),
-                    iSelIdx = oTreeTable.getSelectedIndex(),
-                    iRowIndex = oEvent.getParameter("rowIndex");
+            //     // var oTreeTable = oEvent.getSource(),
+            //     //     iSelIdx = oTreeTable.getSelectedIndex();                 
 
-                if (iSelIdx == iRowIndex) {
-                    return;
-                }
+            //     // oTreeTable.removeSelectionInterval(iSelIdx, iSelIdx);
 
-                oTreeTable.setSelectedIndex(iRowIndex);
-
-            }
+            // }
 
         }).attachBrowserEvent("dblclick", ev_uspTreeItemDblClickEvent).addStyleClass("u4aWsUspTree");
 
@@ -924,7 +921,7 @@
                 // liveChange: ev_codeEditorLiveChange
             })
             .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding)
-            .bindProperty("type", "/WS30/USPDATA/EXTEN", function(EXTEN) {
+            .bindProperty("type", "/WS30/USPDATA/EXTEN", function (EXTEN) {
 
                 this.setSyntaxHints(true);
 
@@ -966,7 +963,7 @@
             });
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function(oControl) {
+            onAfterRendering: function (oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1186,8 +1183,9 @@
                             fields: new sap.m.Input({
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
+                                submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
                                 // submit: oAPP.events.ev_createMimeFolderEvent
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1207,7 +1205,7 @@
                             }),
                             fields: new sap.m.Input({
                                 value: `{${sBindRootPath}/DESC}`,
-                                // submit: oAPP.events.ev_createMimeFolderEvent
+                                submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
                             })
                         }),
 
@@ -1217,7 +1215,7 @@
                                 text: "Folder"
                             }),
                             fields: new sap.m.CheckBox({
-                                selected: `{${sBindRootPath}/ISFLD}`
+                                selected: `{${sBindRootPath}/ISFLD}`,
                             })
                         }),
 
@@ -1252,7 +1250,7 @@
                 oUspCrForm
             ],
 
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -1448,8 +1446,8 @@
     //tree -> tab으로 변환.
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function(e) {
-                $.each(e, function(e, o) {
+            t = function (e) {
+                $.each(e, function (e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -1477,18 +1475,23 @@
             return;
         }
 
-        var oSelectedUspData = oCtx.getModel().getProperty(oCtx.getPath());
-
-        var aUspData = [];
+        // 선택한 Node 정보 구하기
+        var oSelectedUspData = oCtx.getModel().getProperty(oCtx.getPath()),
+            aUspData = [];
 
         // 선택한 USP Node가 폴더가 아닌 경우만 수집
         if (oSelectedUspData.ISFLD !== "X") {
             aUspData.push(oSelectedUspData);
         }
 
-        fnUspTreeFileCollect(aUspData, oSelectedUspData);
+        // download 대상 Usp File 수집
+        fnUspTreeDownloadFileCollect(aUspData, oSelectedUspData);
 
+        // Download 대상 File이 없는 경우.
         if (aUspData.length == 0) {
+
+            // Download 대상 File이 없습니다. 메시지 토스트 처리..
+
             return;
         }
 
@@ -1506,12 +1509,15 @@
             SelectedUspData: oSelectedUspData
         };
 
-        // sendAjax(sPath, oFormData, _fnFineDownUspFile.bind(oBindParam));
         sendAjax(sPath, oFormData, _fnGetFileContents.bind(oBindParam));
 
     } // end of fnOnDownloadUspFiles
 
-    function fnUspTreeFileCollect(aUspData, oSelectedUspData) {
+    function fnUspTreeDownloadFileCollect(aUspData, oSelectedUspData) {
+
+        if (!oSelectedUspData.USPTREE) {
+            return;
+        }
 
         var iChildCnt = oSelectedUspData.USPTREE.length;
         if (iChildCnt == 0) {
@@ -1520,16 +1526,24 @@
 
         for (var i = 0; i < iChildCnt; i++) {
 
+            if (!oSelectedUspData.USPTREE) {
+                return;
+            }
+
             var oChild = oSelectedUspData.USPTREE[i];
             if (oChild.ISFLD !== "X") {
                 aUspData.push(oChild);
             }
 
-            if (oChild.USPTREE.length == 0) {
+            // if(!oChild.USPTREE){
+            //     continue;
+            // }
+
+            if (!oChild.USPTREE || oChild.USPTREE.length == 0) {
                 continue;
             }
 
-            fnUspTreeFileCollect(aUspData, oChild);
+            fnUspTreeDownloadFileCollect(aUspData, oChild);
 
         }
 
@@ -1565,31 +1579,45 @@
             throw new Error("Usp Data Type Error! Please Contact Administrator!");
         }
 
-        var ZIP = new parent.require('node-zip')();
-
-        var iUspDataLength = aUspData.length;
+        var ZIP = new parent.require('node-zip')(),
+            iUspDataLength = aUspData.length;
 
         for (var i = 0; i < iUspDataLength; i++) {
 
             var oUspData = aUspData[i],
-                sFilePath = oUspData.SPATH;
+                sFilePath = oUspData.SPATH,
+                sMimeType = oUspData.MIME,
+                sFilePath = sFilePath.replace("/zu4a/usp", "");
 
-            sFilePath = sFilePath.replace("/zu4a/usp", "");
+
+            // Mime type 이 Image 인 경우 Base64로 압축한다.
+            if (sMimeType.startsWith("image")) {
+
+                var sContent = oUspData.CONTENT,
+                    aSplit = sContent.split(",");
+
+                if (aSplit.length > 1) {
+                    sContent = aSplit[1];
+                }
+
+                var ImgBuffer = parent.base64ToArrayBuffer(sContent);
+                ZIP.file(sFilePath, ImgBuffer);
+
+                continue;
+            }
 
             ZIP.file(sFilePath, oUspData.CONTENT);
 
         }
 
         var data = ZIP.generate({
-            base64: false,
-            compression: 'DEFLATE'
+            type: "blob",
         });
 
-        var sFileName = "";
+        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+            sFileName = `${oAppInfo.APPID}.zip`;
 
         _fnUspFileDown(sFileName, data);
-
-        // FS.writeFileSync('test.zip', data, 'binary');
 
     } // end of _fnGetFileContents
 
@@ -1632,7 +1660,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function(event) {
+            fileReader.onload = function (event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -1656,33 +1684,6 @@
         });
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**************************************************************************
      * [WS30] Tree Table 더블클릭 이벤트
@@ -1787,6 +1788,9 @@
 
     } // end of _fnSaveBeforeLeavEditMsgCb
 
+    /**************************************************************************
+     * [WS30] Tree Table Row 데이터 구하기
+     **************************************************************************/
     function fnUspTreeTableRowSelect(oRow) {
 
         var oCtx = oRow.getBindingContext(),
@@ -1802,10 +1806,13 @@
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
 
-        sendAjax(sPath, oFormData, _fnLineSelectCb.bind(oRow));
+        var oParam = {
+            oRow: oRow,
+        }
+
+        sendAjax(sPath, oFormData, _fnLineSelectCb.bind(oParam));
 
     } // end of fnTreeTableRowSelect
-
 
     function _fnLineSelectCb(oResult) {
 
@@ -1825,10 +1832,15 @@
 
         }
 
-        var oRow = this,
+        var oParam = this,
+            oRow = oParam.oRow,
+            oTable = oRow.getParent(),
+            iRowIndex = oRow.getIndex(),
             oRowModel = oRow.getModel(),
             oCtx = oRow.getBindingContext(),
             sCurrBindPath = oCtx.getPath();
+
+        oTable.setSelectedIndex(iRowIndex);
 
         // 리턴받은 라인 정보로 업데이트
         var oResultRowData = oResult.S_HEAD;
@@ -1919,20 +1931,6 @@
         SPAWN(sSelectedBrows.INSPATH, aComm);
 
     } // end of fnTestServiceWs30
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**************************************************************************
      * [WS30] Back Button Event
@@ -2050,6 +2048,16 @@
             return;
         }
 
+        // // wheel 이벤트 막기
+        // var aa = oTreeTable.getDomRef("tableCCnt");
+        // aa.onwheel = function(e){
+
+        //     oTreeTable.setFirstVisibleRow(iSelectRow);
+         
+        // };
+
+        oTreeTable.setSelectedIndex(iSelectRow);
+
         // 우클릭한 라인 인덱스 값을 글로벌에 잠시 둔다.
         gSelectedTreeIndex = iSelectRow;
 
@@ -2080,7 +2088,7 @@
 
         aCtxMenu.find(arr => arr.KEY == "K3").ENABLED = false;
         aCtxMenu.find(arr => arr.KEY == "K4").ENABLED = false;
-        aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
+        // aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
         aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
         aCtxMenu.find(arr => arr.KEY == "K7").ENABLED = false;
 
@@ -2088,7 +2096,7 @@
         // 다운로드 버튼, Test Service 버튼을 활성화 한다.
         if (oRowData.PUJKY != "" && oRowData.ISFLD == "") {
 
-            aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = true;
+            // aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = true;
             aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = true;
 
         }
@@ -2275,6 +2283,19 @@
 
             case "K3": // create
 
+                // Usp 생성 시, 현재 Change가 된 상태인지 확인.
+                // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
+                var IS_CHAG = getAppChange();
+                if (IS_CHAG == 'X') {
+
+                    var sMsg = oAPP.common.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
+                    // parent.showMessage(sap, 30, 'W', sMsg, _fnSaveBeforeLeavEditMsgCb.bind(this, oRow));
+                    parent.showMessage(sap, 30, 'W', sMsg, _fnCreateUspBeforeAppChangeMsgCB.bind(this, oTreeTable));
+
+                    return;
+
+                }
+
                 fnCreateUspNodePopup(oTreeTable);
 
                 break;
@@ -2300,6 +2321,70 @@
         }
 
     } // end of ev_UspTreeCtxMenuClick
+
+    /**************************************************************************
+     * [WS30] USP 생성 전 APP Change가 있을 경우 메시지 팝업 콜백 이벤트
+     **************************************************************************/
+    function _fnCreateUspBeforeAppChangeMsgCB(oTreeTable, oEvent) {
+
+        // esc 누르면 null로 됨.
+        if (oEvent == null) {
+            return;
+        }
+
+        // 취소했을 경우.
+        if (oEvent !== "YES") {
+
+            // 앱 변경 사항 플래그 설정
+            setAppChange("");
+
+            // code editor key press 이벤트 설정
+            fnKeyPressEditorEvent("X");
+
+            // 이전에 선택 표시된 USP Tree Node 선택 해제
+            fnOnUspTreeUnSelect();
+
+            // 우측 에디터 영역을 메인 페이지로 이동
+            fnOnMoveToPage("USP10");
+
+            // USP 생성 팝업 띄우기
+            fnCreateUspNodePopup(oTreeTable);
+
+            // // 앱 변경 플래그
+            // setAppChange("X");
+
+            return;
+        }
+
+        var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+        oSaveBtn.firePress({
+            ISCRT: "X"
+        });
+
+    }
+
+    /**************************************************************************
+     * [WS30] 이전에 선택 표시된 USP Tree Node 선택 해제
+     **************************************************************************/
+    function fnOnUspTreeUnSelect() {
+
+        // 이전에 선택한 라인이 있다면 해당 라인 선택 아이콘 표시 해제
+        var sBeforeBindPath = "";
+        if (goBeforeSelect) {
+            sBeforeBindPath = goBeforeSelect.BINDPATH;
+
+            // 이전에 선택된 정보 초기화 
+            goBeforeSelect = undefined;
+
+        }
+
+        var oBeforeRowData = APPCOMMON.fnGetModelProperty(sBeforeBindPath);
+        if (oBeforeRowData) {
+            oBeforeRowData.ICONVISI = false;
+            APPCOMMON.fnSetModelProperty(sBeforeBindPath, oBeforeRowData);
+        }
+
+    } // end of fnOnUspTreeUnSelect
 
     /**************************************************************************
      * [WS30] USP Create Node Accept Event
@@ -2390,14 +2475,65 @@
 
         oTreeModel.refresh(true);
 
+        // // 앱 변경 플래그 설정
+        // setAppChange("X");
+
         // 현재 선택한 노드 펼침
         oTreeTable.expand(gSelectedTreeIndex);
 
-        // 생성 팝업 닫기
-        ev_createUspDlgCloseEvent();
+        setTimeout(lfFindRow, 0);
 
-        // 앱 변경 사항 플래그 설정
-        setAppChange('X');
+        // setTimeOut 호출 횟수 수집 (maximum call stack 방지)
+        var iSetTimeOutCallCount = 0;
+
+        function lfFindRow() {
+
+            var aRows = oTreeTable.getRows(),
+                iRowLength = aRows.length;
+
+            for (var i = 0; i < iRowLength; i++) {
+
+                var oRow = aRows[i],
+                    oCtx = oRow.getBindingContext();
+
+                if (!oCtx) {
+                    continue;
+                }
+
+                var sOBJKY = oCtx.getObject("OBJKY");
+                if (sOBJKY !== oCopyRowData.OBJKY) {
+                    continue;
+                }
+
+                // Intro Page 로 이동
+                fnOnMoveToPage("USP10");
+
+                debugger;
+
+                var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+                oSaveBtn.firePress({
+                    ISROW: aRows[i]
+                });
+
+                // 생성 팝업 닫기
+                ev_createUspDlgCloseEvent();
+
+                return;
+
+            }
+
+            // // 무한 호출 방지
+            // if (iSetTimeOutCallCount > 1) {
+            //     return;
+            // }
+
+            oTreeTable.setFirstVisibleRow(iRowLength);
+
+            setTimeout(lfFindRow, 0);
+
+            iSetTimeOutCallCount++;
+
+        }
 
     } // end of ev_createUspNodeAcceptEvent
 
@@ -2513,7 +2649,8 @@
             ISBACK: oEvent.getParameter("ISBACK"),
             ISROW: oEvent.getParameter("ISROW"),
             ISDISP: oEvent.getParameter("ISDISP"),
-            NEWEVT: oNewEvent
+            NEWEVT: oNewEvent,
+            ISCRT: oEvent.getParameter("ISCRT"),
         };
 
         sendAjax(sPath, oFormData, _fnSaveCallback.bind(oParam));
@@ -2573,10 +2710,24 @@
         // EDIT 모드에서 다른 CONTENT 선택시 저장하고 넘어가려는 경우
         if (oParam.ISROW) {
 
+            debugger;
+
+            var oRow = oParam.ISROW,
+                ISFLD = oRow.getBindingContext().getObject("ISFLD"),
+                iRowIndex = oRow.getIndex(),
+                oTable = oRow.getParent();
+
+            oTable.setSelectedIndex(iRowIndex);
+
+            if (ISFLD == "X") {
+                return;
+            }
+
             // Row Select 
-            fnUspTreeTableRowSelect(oParam.ISROW);
+            fnUspTreeTableRowSelect(oRow);
 
             return;
+
         }
 
         // 저장 하고 10번으로 이동할 경우
@@ -2584,6 +2735,17 @@
 
             // WS10 페이지로 이동
             fnMoveToWs10();
+
+            return;
+        }
+
+        // 저장 하고 신규 생성 버튼 일 경우.
+        if (oParam.ISCRT == "X") {
+
+            var oUspTreeTable = sap.ui.getCore().byId("usptree");
+            if (oUspTreeTable) {
+                fnCreateUspNodePopup(oUspTreeTable);
+            }
 
             return;
         }
@@ -2663,7 +2825,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this,
                 IS_ACT = oEvent.getParameter("IS_ACT");
@@ -2828,28 +2990,6 @@
 
     } // end of setAppChange    
 
-    /**
-     * 
-     * 원본   
-     */
-    // function fnKeyPressEditorEvent(IsAttach) {
-
-    //     var oCodeEditor = sap.ui.getCore().byId("ws30_codeeditor");
-    //     if (!oCodeEditor) {
-    //         return;
-    //     }
-
-    //     if (IsAttach == "X") {
-    //         // oCodeEditor.attachBrowserEvent("keypress", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
-    //         oCodeEditor.attachBrowserEvent("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
-    //         return;
-    //     }
-
-    //     // oCodeEditor.detachBrowserEvent("keypress", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
-    //     oCodeEditor.detachBrowserEvent("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
-
-    // } // end of fnAttachKeyPressEditorEvent
-
     function fnKeyPressEditorEvent(IsAttach) {
 
         var oCodeEditor = sap.ui.getCore().byId("ws30_codeeditor"),
@@ -2869,9 +3009,5 @@
         oEditorDom.removeEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
 
     } // end of fnAttachKeyPressEditorEvent
-
-
-
-
 
 })(window, $, oAPP);
