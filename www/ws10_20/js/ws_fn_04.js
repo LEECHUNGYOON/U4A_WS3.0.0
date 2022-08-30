@@ -75,15 +75,20 @@
 
         var oServerInfo = parent.getServerInfo(),
             oAppInfo = parent.getAppInfo(),
-            oUserInfo = parent.getUserInfo();
+            oUserInfo = parent.getUserInfo();        
+
+        var METHNM = this.METHNM,
+            INDEX = this.INDEX,
+            TCODE = this.TCODE,
+            oParamAppInfo = this.oAppInfo;
+
+        if(oParamAppInfo){
+            oAppInfo = oParamAppInfo;
+        }
 
         if (!oAppInfo) {
             return;
         }
-
-        var METHNM = this.METHNM,
-            INDEX = this.INDEX,
-            TCODE = this.TCODE;
 
         var aParam = [
             sNewSessionVbsFullPath, // VBS 파일 경로

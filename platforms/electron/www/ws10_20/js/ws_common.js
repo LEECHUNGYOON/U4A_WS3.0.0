@@ -1356,13 +1356,20 @@
      * - 클래스의 메소드 명
      * @param {String} INDEX
      * - 클래스 메소드 내의 소스 인덱스
+     * @param {String} TCODE (반드시 METHNM, INDEX 파라미터는 null 처리 하고 사용 할 것.)
+     * - SAP Transaction Code 
+     * @param {String} oAppInfo (AppInfo를 던지고 싶을때 사용)
+     * - APP Info
      ************************************************************************/
-    oAPP.common.execControllerClass = function(METHNM, INDEX, TCODE) {
+    oAPP.common.execControllerClass = function(METHNM, INDEX, TCODE, oAppInfo) {
+
+        debugger;
 
         var oParam = {
             METHNM: (METHNM == null ? "" : METHNM),
             INDEX: (INDEX == null ? "0" : INDEX),
             TCODE: (typeof TCODE == "undefined" ? "" : TCODE),
+            oAppInfo : oAppInfo
         };
 
         //#[ws_fn_04.js] SAPGUI 멀티 로그인 여부 체크
