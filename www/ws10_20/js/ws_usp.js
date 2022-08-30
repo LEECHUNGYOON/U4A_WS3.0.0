@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -176,7 +176,9 @@
                     new sap.m.Text({
                         text: "{" + sFmsgBindRootPath + "/TXT}"
                     }),
+
                     new sap.m.ToolbarSpacer(),
+
                     new sap.m.Button({
                         icon: "sap-icon://decline",
                         type: "Reject",
@@ -202,7 +204,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (bIsShow) {
+            formatter: function(bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -347,7 +349,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function (sKey) {
+                            formatter: function(sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -400,7 +402,7 @@
                     type: sap.m.ButtonType.Reject,
                     press: oAPP.events.ev_Logout
                 })
-                
+
             ]
 
         });
@@ -451,10 +453,66 @@
                 icon: "sap-icon://create",
                 tooltip: "New Window (Ctrl+N)",
                 press: oAPP.events.ev_NewWindow
-            });
+            }),
+
+            oSapIcon = new sap.ui.core.Icon({
+                src: "sap-icon://sap-logo-shape"
+            }),
+
+            oSapTCodeInput = new sap.m.SearchField({
+
+                // properties
+                width: "200px",
+                placeholder: "SAP T-CODE",
+                showSearchButton: false,
+                enableSuggestions: true,
+
+                // aggregations
+                suggestionItems: {
+                    path: "/SUGG/TCODE",
+                    sorter: "{ path : '/SUGG/TCODE/TCODE' }",
+                    template: new sap.m.SuggestionItem({
+                        // key: "{TCODE}",
+                        text: "{TCODE}",
+                    })
+                },
+
+                // events
+                search: (oEvent) => {                
+
+                    var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+                    oEvent.mParameters.oAppInfo = oAppInfo;
+
+                    oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
+                },
+                suggest: function(oEvent) {
+
+                    var sValue = oEvent.getParameter("suggestValue"),
+                        aFilters = [];
+
+                    if (sValue) {
+
+                        aFilters = [
+                            new sap.ui.model.Filter([
+                                new sap.ui.model.Filter("TCODE", function(sText) {
+                                    return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
+                                }),
+                            ], false)
+                        ];
+
+                    }
+
+                    this.getBinding("suggestionItems").filter(aFilters);
+                    this.suggest();
+
+                },
+
+            }).addStyleClass("u4aWs30sapTcodeInput");
 
         return new sap.m.OverflowToolbar({
+
             content: [
+
                 oBackBtn,
                 oAppIdTxt,
                 oAppModeTxt,
@@ -462,9 +520,16 @@
 
                 new sap.m.ToolbarSeparator(),
 
-                oNewWindowBtn
+                oNewWindowBtn,
+
+                new sap.m.ToolbarSpacer(),
+
+                oSapIcon,
+
+                oSapTCodeInput
 
             ]
+
         });
 
     } // end of fnGetCustomHeaderWs30
@@ -780,7 +845,7 @@
                                     src: "sap-icon://accept",
                                     visible: "{ICONVISI}"
                                 })
-                                .bindProperty("visible", "ICONVISI", function (VISI) {
+                                .bindProperty("visible", "ICONVISI", function(VISI) {
 
                                     if (!VISI) {
                                         return false;
@@ -933,7 +998,7 @@
                 // liveChange: ev_codeEditorLiveChange
             })
             .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding)
-            .bindProperty("type", "/WS30/USPDATA/EXTEN", function (EXTEN) {
+            .bindProperty("type", "/WS30/USPDATA/EXTEN", function(EXTEN) {
 
                 this.setSyntaxHints(true);
 
@@ -975,7 +1040,7 @@
             });
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function (oControl) {
+            onAfterRendering: function(oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1197,7 +1262,7 @@
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
                                 // submit: oAPP.events.ev_createMimeFolderEvent
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1262,7 +1327,7 @@
                 oUspCrForm
             ],
 
-            afterClose: function () {
+            afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -1460,8 +1525,8 @@
     //tree -> tab으로 변환.
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function (e) {
-                $.each(e, function (e, o) {
+            t = function(e) {
+                $.each(e, function(e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -1673,7 +1738,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function (event) {
+            fileReader.onload = function(event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -2925,7 +2990,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oEvent = this,
                 IS_ACT = oEvent.getParameter("IS_ACT");

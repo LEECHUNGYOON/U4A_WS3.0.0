@@ -7,7 +7,8 @@
     var PATH = parent.PATH,
         APP = parent.APP,
         REMOTE = parent.REMOTE,
-        APPPATH = parent.APPPATH;
+        APPPATH = parent.APPPATH,
+        APPCOMMON = oAPP.common;
 
     // REMOTE = parent.REMOTE,
     // REMOTEMAIN = parent.REMOTEMAIN,
@@ -86,9 +87,9 @@
             oAppInfo = oParamAppInfo;
         }
 
-        if (!oAppInfo) {
-            return;
-        }
+        // if (!oAppInfo) {
+        //     return;
+        // }
 
         var aParam = [
             sNewSessionVbsFullPath, // VBS 파일 경로
@@ -198,7 +199,7 @@
             return;
         }
 
-        oAPP.common.fnSetModelProperty("/SUGG/TCODE", aSuggData);
+        APPCOMMON.fnSetModelProperty("/SUGG/TCODE", aSuggData);
 
     }; // end of oAPP.fn.fnOnInitTCodeSuggestion
 

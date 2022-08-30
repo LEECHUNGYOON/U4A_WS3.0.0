@@ -346,11 +346,12 @@
     // }; // end of oAPP.events.ev_pressFooterMsgColListItem  
 
     /************************************************************************
-     * WS20의 멀티 메시지 리스트 아이템 클릭 이벤트
+     * WS20 TCode 엔터 이벤트
      ************************************************************************/
     oAPP.events.ev_pressTcodeInputSubmit = (oEvent) => {
 
         var oSrchField = oEvent.getSource(),
+            oAppInfo = oEvent.getParameter("oAppInfo"),
             sValue = oEvent.getParameter("query"),
             bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
 
@@ -358,7 +359,7 @@
 
             oSrchField.setValue("");
 
-            oEvent.getSource().fireSuggest();
+            oSrchField.fireSuggest();
 
             // oEvent.getSource().suggest();
 
@@ -405,7 +406,7 @@
 
         APPCOMMON.fnSetModelProperty("/SUGG/TCODE", aNewSugg);
 
-        APPCOMMON.execControllerClass(null, null, sTcode);
+        APPCOMMON.execControllerClass(null, null, sTcode, oAppInfo);
 
     }; // end of oAPP.events.ev_pressTcodeInputSubmit
 

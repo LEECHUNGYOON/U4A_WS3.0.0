@@ -1363,8 +1363,6 @@
      ************************************************************************/
     oAPP.common.execControllerClass = function(METHNM, INDEX, TCODE, oAppInfo) {
 
-        debugger;
-
         var oParam = {
             METHNM: (METHNM == null ? "" : METHNM),
             INDEX: (INDEX == null ? "0" : INDEX),
