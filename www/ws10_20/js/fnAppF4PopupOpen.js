@@ -300,6 +300,16 @@
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 design: ENUM_LABEL_DESIGN_BOLD,
+                                text: "Web Application Type",
+                            }),
+                            fields: new sap.m.Input({
+                                value: "{APPTY}",
+                                submit: oAPP.events.ev_AppF4Search
+                            })
+                        }),
+                        new sap.ui.layout.form.FormElement({
+                            label: new sap.m.Label({
+                                design: ENUM_LABEL_DESIGN_BOLD,
                                 text: "Maximum No. of Hits",
                             }),
                             fields: new sap.m.Input({
@@ -683,7 +693,7 @@
                     demandPopin: true,
                     minScreenWidth: "1000px",
                     header: new sap.m.Label({
-                        text: "App. CVer.",
+                        text: "App Type",
                     }),
                 }),
             ],

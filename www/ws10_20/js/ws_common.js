@@ -1088,6 +1088,11 @@
                             return;
                         }
 
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
                         // 단축키 실행 할지 말지 여부 체크
                         var result = oAPP.common.fnShortCutExeAvaliableCheck();
 
@@ -1367,7 +1372,7 @@
             METHNM: (METHNM == null ? "" : METHNM),
             INDEX: (INDEX == null ? "0" : INDEX),
             TCODE: (typeof TCODE == "undefined" ? "" : TCODE),
-            oAppInfo : oAppInfo
+            oAppInfo: oAppInfo
         };
 
         //#[ws_fn_04.js] SAPGUI 멀티 로그인 여부 체크

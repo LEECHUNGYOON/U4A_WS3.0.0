@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -205,7 +205,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (bIsShow) {
+            formatter: function(bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -350,7 +350,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function (sKey) {
+                            formatter: function(sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -486,7 +486,7 @@
 
                     oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
                 },
-                suggest: function (oEvent) {
+                suggest: function(oEvent) {
 
                     var sValue = oEvent.getParameter("suggestValue"),
                         aFilters = [];
@@ -495,7 +495,7 @@
 
                         aFilters = [
                             new sap.ui.model.Filter([
-                                new sap.ui.model.Filter("TCODE", function (sText) {
+                                new sap.ui.model.Filter("TCODE", function(sText) {
                                     return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                 }),
                             ], false)
@@ -934,7 +934,7 @@
                                             return;
                                         }
 
-                                        if(PUJKY == ""){
+                                        if (PUJKY == "") {
                                             return true;
                                         }
 
@@ -1110,7 +1110,7 @@
                 // liveChange: ev_codeEditorLiveChange
             })
             .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding)
-            .bindProperty("type", "/WS30/USPDATA/EXTEN", function (EXTEN) {
+            .bindProperty("type", "/WS30/USPDATA/EXTEN", function(EXTEN) {
 
                 this.setSyntaxHints(true);
 
@@ -1152,7 +1152,7 @@
             });
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function (oControl) {
+            onAfterRendering: function(oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1374,7 +1374,7 @@
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
                                 // submit: oAPP.events.ev_createMimeFolderEvent
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1439,7 +1439,7 @@
                 oUspCrForm
             ],
 
-            afterClose: function () {
+            afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -1648,8 +1648,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function (e) {
-                $.each(e, function (e, o) {
+            t = function(e) {
+                $.each(e, function(e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -1880,7 +1880,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function (event) {
+            fileReader.onload = function(event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -2313,6 +2313,9 @@
 
             // -메시지 출력
             parent.showMessage(sap, 10, "E", sMsg);
+
+            parent.setSoundMsg("02"); // error sound
+
             return;
         }
 
@@ -2321,6 +2324,9 @@
 
             // -메시지 출력
             parent.showMessage(sap, 10, "E", sMsg);
+
+            parent.setSoundMsg("02"); // error sound
+
             return;
         }
 
@@ -2945,7 +2951,7 @@
         }
 
         // 공백 입력 확인
-        var blank_pattern = /[\s]/g;
+        var blank_pattern = /[\s]/gi;
         if (blank_pattern.test(oCrateData.NAME) == true) {
 
             oCheck.RETCD = "E";
@@ -2961,6 +2967,17 @@
 
             oCheck.RETCD = "E";
             oCheck.RTMSG = "It must not contain special characters."; // 특수문자를 포함할 수 없습니다.
+
+            return oCheck;
+
+        }
+        
+        // 영문 또는 숫자만 허용체크
+        var engNum = /^[a-zA-Z]+[a-z0-9A-Z|_]/;
+        if (engNum.test(oCrateData.NAME) == false) {
+
+            oCheck.RETCD = "E";
+            oCheck.RTMSG = " Only English(upper and lower case)+ numbers can be entered and only English can be the first character.";
 
             return oCheck;
 
@@ -3016,11 +3033,8 @@
         sap.ui.getCore().lock();
 
         var oAppData = APPCOMMON.fnGetModelProperty("/WS30/APP"),
-            aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
-
-            TRKORR = oEvent.getParameter("TRKORR");
-
-        var sReqNo = "";
+            TRKORR = oEvent.getParameter("TRKORR"),
+            sReqNo = "";
 
         // 기존에 CTS 번호가 있을 경우
         if (oAppData.REQNO != "") {
@@ -3045,6 +3059,20 @@
         if (oContent) {
             oSaveData.S_CONTENT = oContent;
         }
+
+        // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
+        if (goBeforeSelect) {
+
+            var oBindBeforeSelect = APPCOMMON.fnGetModelProperty(goBeforeSelect.BINDPATH),
+                oBeforeSelect = jQuery.extend(true, {}, oBindBeforeSelect);
+
+            oBeforeSelect.DESCT = oContent.DESCT;
+
+            APPCOMMON.fnSetModelProperty(goBeforeSelect.BINDPATH, oBeforeSelect);
+
+        }
+
+        var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
 
         // TREE -> Array
         var aParseTree = _parseTree2Tab(aTreeData, "USPTREE");
@@ -3257,7 +3285,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oEvent = this,
                 IS_ACT = oEvent.getParameter("IS_ACT");
@@ -3360,6 +3388,8 @@
                 // 페이지 푸터 메시지
                 APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sMsg);
 
+                parent.setSoundMsg("02"); // error sound
+
                 return false;
 
             }
@@ -3371,6 +3401,7 @@
 
             // 푸터 메시지 처리                        
             var sMsg = APPCOMMON.fnGetMsgClsTxt("020"); // "Switch to edit mode."
+
             APPCOMMON.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
 
             // code editor KeyPress 이벤트 설정
