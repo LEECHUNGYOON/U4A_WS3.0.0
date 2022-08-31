@@ -1088,7 +1088,6 @@
 
         oInput.setSelectionRange(0, iValueLength);
 
-
     }; // end of oAPP.fn.fnWs10AppInputdblclickEvent
 
     /************************************************************************

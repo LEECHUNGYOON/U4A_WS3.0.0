@@ -360,12 +360,7 @@
             oSrchField.setValue("");
 
             oSrchField.fireSuggest();
-
-            // oEvent.getSource().suggest();
-
-            // debugger;
-
-            // oSrchField.setValue(sValue);
+   
             return;
         }
 

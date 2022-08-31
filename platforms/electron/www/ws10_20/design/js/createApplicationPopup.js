@@ -123,6 +123,9 @@
         //UI5 UI Theme
         ls_appl.UITHM = "sap_fiori_3";
 
+        //Web Application Type
+        ls_appl.APPTY = "M";
+
         //Package
         ls_appl.PACKG = "";
 
@@ -175,6 +178,11 @@
                           {KEY:"sap_fiori_3_dark",TEXT:"sap_fiori_3_dark"},
                           {KEY:"sap_fiori_3_hcb",TEXT:"sap_fiori_3_hcb"},
                           {KEY:"sap_fiori_3_hcw",TEXT:"sap_fiori_3_hcw"},
+                          ];
+
+        //Web Application Type DDLB 리스트.
+        ls_appl.T_APPTY = [{KEY:"M",TEXT:"Mobile Web"},
+                           {KEY:"U",TEXT:"U4A Server Page"}
                           ];
 
 
@@ -244,6 +252,20 @@
 
       oSelTheme.bindAggregation("items", {
         path: "/CREATE/T_UITHM",
+        template: new sap.ui.core.Item({
+          key : "{KEY}",
+          text : "{TEXT}"
+        })
+      });
+
+
+      //Web Application Type
+      var oSelType = new sap.m.Select({
+        selectedKey: "{/CREATE/APPTY}"
+      });
+
+      oSelType.bindAggregation("items", {
+        path: "/CREATE/T_APPTY",
         template: new sap.ui.core.Item({
           key : "{KEY}",
           text : "{TEXT}"
@@ -384,6 +406,13 @@
               }),
               new sap.ui.layout.form.FormElement({
                 label : new sap.m.Label({
+                  design: "Bold",
+                  text: "Web Application Type",
+                }),
+                fields : oSelType
+              }),
+              new sap.ui.layout.form.FormElement({
+                label : new sap.m.Label({
                   required: true,
                   design: "Bold",
                   text: "Package",
@@ -412,7 +441,7 @@
 
       //application 생성처리를 위한 서버 호출.
       function lf_createAppData(){
-        
+
         //생성전 화면 lock 처리.
         sap.ui.getCore().lock();
 
@@ -421,21 +450,30 @@
 
         var l_create = oModel.getProperty("/CREATE");
         var l_appdata = {};
-        l_appdata.APPID = appid;
-        l_appdata.APPNM = l_create.APPNM;
-        l_appdata.LANGU = l_create.LANGU;
-        l_appdata.CODPG = l_create.CODPG;
-        l_appdata.UITHM = l_create.UITHM;
-        l_appdata.PACKG = l_create.PACKG;
-        l_appdata.REQNR = l_create.REQNR;
+        l_appdata.APPID = appid;          //Web Application ID
+        l_appdata.APPNM = l_create.APPNM; //Web Application Name
+        l_appdata.LANGU = l_create.LANGU; //Language Key
+        l_appdata.APPTY = l_create.APPTY; //Web Application Type
+        l_appdata.CODPG = l_create.CODPG; //Identifier for Character Format (UTF-8, UCS-2, ...)
+        l_appdata.UITHM = l_create.UITHM; //UI5 UI Theme
+        l_appdata.PACKG = l_create.PACKG; //Package
+        l_appdata.REQNR = l_create.REQNR; //Request/Task
 
+        //default application 생성 path.
+        var l_path = "/createAppData";
+
+        //Web Application Type을 U4A Server Page로 설정한경우.
+        if(l_appdata.APPTY === "U"){
+          //U4A Server Page 생성 path로 변경.
+          l_path = "/USP_CREATEAPPDATA";
+        }
 
         //application명 서버전송 데이터 구성.
         var oFormData = new FormData();
         oFormData.append("APPDATA", JSON.stringify(l_appdata));
 
         //application 생성을 위한 서버 호출.
-        sendAjax(parent.getServerPath() + "/createAppData",oFormData, function(ret){
+        sendAjax(parent.getServerPath() + l_path, oFormData, function(ret){
 
           //서버에서 클라이언트 도착 후 화면 잠금 해제 처리.
           sap.ui.getCore().unlock();

@@ -8,3 +8,24 @@ APPCOMMON.fnGetMsgClsTxt("002");
 
 - 컨트롤러 클래스 실행 패턴
 oAPP.common.execControllerClass = function(METHNM, INDEX, TCODE, oAppInfo) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 30번 페이지에서 자주 쓰는 공통 메소드
+
+_fnFindUspTreeItem(OBJKY);    
+- OBJKY를 가지고 Tree Item 구하는 공통 메소드
