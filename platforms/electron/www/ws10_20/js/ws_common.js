@@ -1106,7 +1106,9 @@
                             return;
                         }
 
+                        oBackBtn.focus();
                         oBackBtn.firePress();
+                        
                     }
                 }, {
                     KEY: "Ctrl+F1", // Display or Change Button
