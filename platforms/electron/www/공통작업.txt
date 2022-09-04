@@ -12,6 +12,18 @@ oAPP.common.execControllerClass = function(METHNM, INDEX, TCODE, oAppInfo) {
 
 
 
+- Tree Data 를 Array로 변환
+_parseTree2Tab(aUspTreeData, "USPTREE");
+
+
+- Array => TreeModel
+APPCOMMON.fnSetModelProperty("/WS30/USPTREE", oResult.T_DATA);
+
+var oModel = sap.ui.getCore().getModel();
+
+oAPP.fn.fnSetTreeJson(oModel, "WS30.USPTREE", "OBJKY", "PUJKY", "USPTREE");
+
+
 
 
 
