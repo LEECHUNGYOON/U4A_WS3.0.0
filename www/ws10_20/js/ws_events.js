@@ -427,26 +427,12 @@
      ************************************************************************/
     oAPP.events.ev_AppValueHelp = function (oEvent) {
 
-        var oSrchField = oEvent.getSource(),
-            sValue = oEvent.getParameter("query"),
-            bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
-
+        var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
         if (bIsPressClearBtn) {
 
-            oSrchField.setValue("");
+            var oInput = oEvent.getSource();
+            oInput.suggest(true);
 
-            oSrchField.fireSuggest();
-
-            return;
-
-
-            // var oInput = oEvent.getSource();
-            // oInput.suggest(true);
-
-            // return;
-        }
-
-        if (sValue == "") {
             return;
         }
 
@@ -467,7 +453,9 @@
 
         sSapId = sSapId.toUpperCase();
 
-        // SearchHelp 실행 시, 필요한 Application 정보 데이터를 구한다.    
+        // SearchHelp 실행 시, 필요한 Application 정보 데이터를 구한다. 
+        var APPCOMMON = oAPP.common;
+
         var oAppInput = oEvent.getSource(),
             sAppId = APPCOMMON.fnGetModelProperty("/WS10/APPID");
 
