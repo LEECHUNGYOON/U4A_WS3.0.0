@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -89,7 +89,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function () {
+    oAPP.fn.fnOnResizeWs30 = function() {
 
         console.log("resize30!!!");
 
@@ -226,7 +226,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (bIsShow) {
+            formatter: function(bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -371,7 +371,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function (sKey) {
+                            formatter: function(sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -507,7 +507,7 @@
 
                     oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
                 },
-                suggest: function (oEvent) {
+                suggest: function(oEvent) {
 
                     var sValue = oEvent.getParameter("suggestValue"),
                         aFilters = [];
@@ -516,7 +516,7 @@
 
                         aFilters = [
                             new sap.ui.model.Filter([
-                                new sap.ui.model.Filter("TCODE", function (sText) {
+                                new sap.ui.model.Filter("TCODE", function(sText) {
                                     return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                 }),
                             ], false)
@@ -1302,7 +1302,7 @@
                             }),
                             fields: new sap.m.CheckBox({
                                 editable: false
-                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
+                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
 
                                 if (ISFLD == "X") {
                                     return true;
@@ -1350,7 +1350,7 @@
             .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function (oControl) {
+            onAfterRendering: function(oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1672,7 +1672,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1737,7 +1737,7 @@
                 oUspCrForm
             ],
 
-            afterClose: function () {
+            afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -1800,13 +1800,21 @@
         var sMsg = ` [ ${oTreeData.OBDEC} ] ` + APPCOMMON.fnGetMsgClsTxt("003"); // Do you really want to delete the object?
 
         // 질문팝업? 삭제하시겠습니까?
-        parent.showMessage(sap, 30, 'W', sMsg, _fnDeleteUspNodeCb.bind(this, oTreeTable));
+        parent.showMessage(sap, 40, 'W', sMsg, _fnDeleteUspNodeCb.bind(this, oTreeTable));
+
+        // 현재 떠있는 팝업 창들을 잠시 숨긴다.
+        oAPP.fn.fnChildWindowShow(false);
 
     } // end of fnDeleteUspNode
 
     function _fnDeleteUspNodeCb(oTreeTable, oEvent) {
 
-        if (oEvent == null || oEvent !== "YES") {
+        // 동작 취소.
+        if (oEvent !== "YES") {
+
+            // 현재 떠있는 팝업 창이 있었고 숨김 처리 되있었다면 다시 활성화 시킨다.
+            oAPP.fn.fnChildWindowShow(true);
+
             return;
         }
 
@@ -1967,8 +1975,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function (e) {
-                $.each(e, function (e, o) {
+            t = function(e) {
+                $.each(e, function(e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2199,7 +2207,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function (event) {
+            fileReader.onload = function(event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -2995,7 +3003,10 @@
                 if (IS_CHAG == 'X') {
 
                     var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
-                    parent.showMessage(sap, 30, 'W', sMsg, _fnCreateUspAppChangeMsgCB.bind(this, oTreeTable));
+                    parent.showMessage(sap, 40, 'W', sMsg, _fnCreateUspAppChangeMsgCB.bind(this, oTreeTable));
+
+                    // 현재 떠있는 팝업 창들을 잠시 숨긴다.
+                    oAPP.fn.fnChildWindowShow(false);
 
                     return;
 
@@ -3026,7 +3037,11 @@
                     if (!oFind) {
 
                         var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
-                        parent.showMessage(sap, 30, 'W', sMsg, _fnDeleteUspAppChangeMsgCB.bind(this, oTreeTable));
+
+                        parent.showMessage(sap, 40, 'W', sMsg, _fnDeleteUspAppChangeMsgCB.bind(this, oTreeTable));
+
+                        // 현재 떠있는 팝업 창들을 잠시 숨긴다.
+                        oAPP.fn.fnChildWindowShow(false);
 
                         return;
 
@@ -3052,13 +3067,21 @@
 
             case "K7": // Rename
 
+                sap.m.MessageToast.show("준비중입니다.");
+
+                return;
+
                 // Usp 생성 시, 현재 Change가 된 상태인지 확인.
                 // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
                 var IS_CHAG = getAppChange();
                 if (IS_CHAG == 'X') {
 
                     var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
-                    parent.showMessage(sap, 30, 'W', sMsg, _fnRenameUspAppChangeMsgCB.bind(this, oTreeTable));
+
+                    parent.showMessage(sap, 40, 'W', sMsg, _fnRenameUspAppChangeMsgCB.bind(this, oTreeTable));
+
+                    // 현재 떠있는 팝업 창들을 잠시 숨긴다.
+                    oAPP.fn.fnChildWindowShow(false);
 
                     return;
 
@@ -3077,12 +3100,16 @@
      **************************************************************************/
     function _fnCreateUspAppChangeMsgCB(oTreeTable, oEvent) {
 
-        // esc 누르면 null로 됨.
-        if (oEvent == null) {
+        // 동작 취소
+        if (oEvent == null || oEvent == "CANCEL") {
+
+            // 현재 떠있는 팝업 창이 있었고 숨김 처리 되있었다면 다시 활성화 시킨다.
+            oAPP.fn.fnChildWindowShow(true);
+
             return;
         }
 
-        // 취소했을 경우.
+        // 아니오 일 경우
         if (oEvent !== "YES") {
 
             // 앱 변경 사항 플래그 설정
@@ -3123,8 +3150,12 @@
      **************************************************************************/
     function _fnRenameUspAppChangeMsgCB(oTreeTable, oEvent) {
 
-        // esc 누르면 null로 됨.
-        if (oEvent == null) {
+        // 동작 취소.
+        if (oEvent == null || oEvent == "CANCEL") {
+
+            // 현재 떠있는 팝업 창이 있었고 숨김 처리 되있었다면 다시 활성화 시킨다.
+            oAPP.fn.fnChildWindowShow(true);
+
             return;
         }
 
@@ -3169,8 +3200,12 @@
      **************************************************************************/
     function _fnDeleteUspAppChangeMsgCB(oTreeTable, oEvent) {
 
-        // esc 누르면 null로 됨.  
-        if (oEvent == null) {
+        // 동작 취소.
+        if (oEvent == null || oEvent == "CANCEL") {
+
+            // 현재 떠있는 팝업 창이 있었고 숨김 처리 되있었다면 다시 활성화 시킨다.
+            oAPP.fn.fnChildWindowShow(true);
+
             return;
         }
 
@@ -3531,7 +3566,8 @@
         }
 
         // 영문 또는 숫자만 허용체크
-        var engNum = /^[a-zA-Z]+[a-z0-9A-Z|_]/;
+        // var engNum = /^[a-zA-Z]+[a-z0-9A-Z|_]/;
+        var engNum = /^[a-zA-Z]|^[a-zA-Z]+[a-z0-9A-Z|_]/;
         if (engNum.test(oCrateData.NAME) == false) {
 
             oCheck.RETCD = "E";
@@ -3793,7 +3829,7 @@
 
                 return;
 
-            case "RN": // 저장 후 Rename 프로세스 일 경우.
+            case "RN": // 저장 후 Rename 프로세스 일 경우.             
 
                 fnRenameUspNodePopup(oTreeTable);
 
@@ -3892,7 +3928,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oEvent = this,
                 IS_ACT = oEvent.getParameter("IS_ACT");
