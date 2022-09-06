@@ -3659,14 +3659,16 @@
             aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE");
         }
 
+        debugger;
+        
         var iUspTreeLength = aUspTreeData.length;
 
         // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
-        if (goBeforeSelect && oContent) {
+        var oBeforeSelectData = aUspTreeData.find(arr => arr.ICONVISI == true);
 
-            var oBindBeforeSelect = APPCOMMON.fnGetModelProperty(goBeforeSelect.BINDPATH);
+        if (oBeforeSelectData) {
 
-            var sOBJKY = oBindBeforeSelect.OBJKY;
+            var sOBJKY = oBeforeSelectData.OBJKY;
 
             for (var i = 0; i < iUspTreeLength; i++) {
 
@@ -3683,7 +3685,31 @@
 
             oSaveData.S_CONTENT = oContent;
 
-        }
+        }     
+
+        // // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
+        // if (goBeforeSelect && oContent) {
+
+        //     var oBindBeforeSelect = APPCOMMON.fnGetModelProperty(goBeforeSelect.BINDPATH);
+
+        //     var sOBJKY = oBindBeforeSelect.OBJKY;
+
+        //     for (var i = 0; i < iUspTreeLength; i++) {
+
+        //         var oUspTreeItem = aUspTreeData[i];
+        //         if (oUspTreeItem.OBJKY != sOBJKY) {
+        //             continue;
+        //         }
+
+        //         oUspTreeItem.DESCT = oContent.DESCT;
+
+        //         break;
+
+        //     }
+
+        //     oSaveData.S_CONTENT = oContent;
+
+        // }
 
         oSaveData.T_TREE = aUspTreeData;
 
@@ -3692,6 +3718,8 @@
 
         var oFormData = new FormData();
         oFormData.append("APPDATA", JSON.stringify(oSaveData));
+
+        return;
 
         sendAjax(sPath, oFormData, _fnSaveCallback.bind(oNewEvent));
 

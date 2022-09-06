@@ -3662,11 +3662,11 @@
         var iUspTreeLength = aUspTreeData.length;
 
         // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
-        if (goBeforeSelect && oContent) {
+        var oBeforeSelectData = aUspTreeData.find(arr => arr.ICONVISI == true);
 
-            var oBindBeforeSelect = APPCOMMON.fnGetModelProperty(goBeforeSelect.BINDPATH);
+        if (oBeforeSelectData) {
 
-            var sOBJKY = oBindBeforeSelect.OBJKY;
+            var sOBJKY = oBeforeSelectData.OBJKY;
 
             for (var i = 0; i < iUspTreeLength; i++) {
 
@@ -3683,7 +3683,31 @@
 
             oSaveData.S_CONTENT = oContent;
 
-        }
+        }     
+
+        // // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
+        // if (goBeforeSelect && oContent) {
+
+        //     var oBindBeforeSelect = APPCOMMON.fnGetModelProperty(goBeforeSelect.BINDPATH);
+
+        //     var sOBJKY = oBindBeforeSelect.OBJKY;
+
+        //     for (var i = 0; i < iUspTreeLength; i++) {
+
+        //         var oUspTreeItem = aUspTreeData[i];
+        //         if (oUspTreeItem.OBJKY != sOBJKY) {
+        //             continue;
+        //         }
+
+        //         oUspTreeItem.DESCT = oContent.DESCT;
+
+        //         break;
+
+        //     }
+
+        //     oSaveData.S_CONTENT = oContent;
+
+        // }
 
         oSaveData.T_TREE = aUspTreeData;
 
@@ -3692,6 +3716,8 @@
 
         var oFormData = new FormData();
         oFormData.append("APPDATA", JSON.stringify(oSaveData));
+
+        return;
 
         sendAjax(sPath, oFormData, _fnSaveCallback.bind(oNewEvent));
 
@@ -3779,20 +3805,29 @@
 
         // ******** 저장 성공 시 ******** //
 
-        // 이전 선택한 Node 정보를 구한다.        
-        var oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"); // 우측 컨텐츠 데이터를 읽는다.
+        // Tree 데이터를 Array로 변환한다.
+        // array find로 ICONVISI == true를 찾는다.
+        // 우측 컨텐츠 데이터 중, DESCT를 적용한다.
+        // 다시 Array를 Tree 모델 데이터로 변환한다.
+        // 모델에 다시 바인딩 한다.
+    
 
-        // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
-        if (goBeforeSelect && oContent) {
 
-            var oBindBeforeSelectData = APPCOMMON.fnGetModelProperty(goBeforeSelect.BINDPATH),
-                oBindBeforeSelectDataCp = jQuery.extend(true, {}, oBindBeforeSelectData);
 
-            oBindBeforeSelectDataCp.DESCT = oContent.DESCT;
+        // // 이전 선택한 Node 정보를 구한다.        
+        // var oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"); // 우측 컨텐츠 데이터를 읽는다.
 
-            APPCOMMON.fnSetModelProperty(goBeforeSelect.BINDPATH, oBindBeforeSelectDataCp, true);
+        // // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
+        // if (goBeforeSelect && oContent) {
 
-        }
+        //     var oBindBeforeSelectData = APPCOMMON.fnGetModelProperty(goBeforeSelect.BINDPATH),
+        //         oBindBeforeSelectDataCp = jQuery.extend(true, {}, oBindBeforeSelectData);
+
+        //     oBindBeforeSelectDataCp.DESCT = oContent.DESCT;
+
+        //     APPCOMMON.fnSetModelProperty(goBeforeSelect.BINDPATH, oBindBeforeSelectDataCp, true);
+
+        // }
 
         // 앱 변경 사항 플래그 설정
         setAppChange("");
