@@ -1818,6 +1818,8 @@
             return;
         }
 
+        debugger;
+        
         var iIndex = gSelectedTreeIndex,
             oSelectedCtx = oTreeTable.getContextByIndex(iIndex),
             oDelRowData = oSelectedCtx.getModel().getProperty(oSelectedCtx.getPath());
@@ -1825,6 +1827,7 @@
         if (!oSelectedCtx) {
             return;
         }
+
 
         var sOBJKY = oDelRowData.OBJKY;
 
@@ -1850,13 +1853,14 @@
 
         }
 
-        var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
-        oSaveBtn.firePress({
-            AFPRC: "_D",
-            oTreeTable: oTreeTable,
-            oDelRowData: oSelectedCtx,
-            TREEDATA: aSaveTreeData,
-        });
+
+        // var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+        // oSaveBtn.firePress({
+        //     AFPRC: "_D",
+        //     oTreeTable: oTreeTable,
+        //     oDelRowData: oSelectedCtx,
+        //     TREEDATA: aSaveTreeData,
+        // });
 
     } // end of _fnDeleteUspNodeCb
 
@@ -3018,36 +3022,36 @@
 
             case "K4": // delete
 
-                // Usp 삭제 시, 현재 Change가 된 상태인지 확인.
-                // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
-                var IS_CHAG = getAppChange();
+                // // Usp 삭제 시, 현재 Change가 된 상태인지 확인.
+                // // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
+                // var IS_CHAG = getAppChange();
 
-                if (IS_CHAG == "X") {
+                // if (IS_CHAG == "X") {
 
-                    var iIndex = gSelectedTreeIndex,
-                        oCtx = oTreeTable.getContextByIndex(iIndex),
-                        oBeforeSelectTreeData = oCtx.getModel().getProperty(oCtx.sPath);
+                //     var iIndex = gSelectedTreeIndex,
+                //         oCtx = oTreeTable.getContextByIndex(iIndex),
+                //         oBeforeSelectTreeData = oCtx.getModel().getProperty(oCtx.sPath);
 
-                    // TREE -> Array로 변환
-                    var aParseTree = _parseTree2Tab([oBeforeSelectTreeData], "USPTREE"),
-                        oBindBeforeSelect = APPCOMMON.fnGetModelProperty(goBeforeSelect.BINDPATH);
+                //     // TREE -> Array로 변환
+                //     var aParseTree = _parseTree2Tab([oBeforeSelectTreeData], "USPTREE"),
+                //         oBindBeforeSelect = APPCOMMON.fnGetModelProperty(goBeforeSelect.BINDPATH);
 
-                    // 삭제할 위치 내에 변경된 Node가 포함되지 않았다면 삭제 전 변경된 Node를 저장할 것인지 질문 팝업후 빠져나감.
-                    var oFind = aParseTree.find(arr => arr.OBJKY == oBindBeforeSelect.OBJKY);
-                    if (!oFind) {
+                //     // 삭제할 위치 내에 변경된 Node가 포함되지 않았다면 삭제 전 변경된 Node를 저장할 것인지 질문 팝업후 빠져나감.
+                //     var oFind = aParseTree.find(arr => arr.OBJKY == oBindBeforeSelect.OBJKY);
+                //     if (!oFind) {
 
-                        var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
+                //         var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
 
-                        parent.showMessage(sap, 40, 'W', sMsg, _fnDeleteUspAppChangeMsgCB.bind(this, oTreeTable));
+                //         parent.showMessage(sap, 40, 'W', sMsg, _fnDeleteUspAppChangeMsgCB.bind(this, oTreeTable));
 
-                        // 현재 떠있는 팝업 창들을 잠시 숨긴다.
-                        oAPP.fn.fnChildWindowShow(false);
+                //         // 현재 떠있는 팝업 창들을 잠시 숨긴다.
+                //         oAPP.fn.fnChildWindowShow(false);
 
-                        return;
+                //         return;
 
-                    }
+                //     }
 
-                }
+                // }
 
                 fnDeleteUspNode(oTreeTable);
 
@@ -3195,55 +3199,55 @@
 
     } // end of _fnRenameUspAppChangeMsgCB
 
-    /**************************************************************************
-     * [WS30] USP 삭제 전 APP Change가 있을 경우 메시지 팝업 콜백 이벤트
-     **************************************************************************/
-    function _fnDeleteUspAppChangeMsgCB(oTreeTable, oEvent) {
+    // /**************************************************************************
+    //  * [WS30] USP 삭제 전 APP Change가 있을 경우 메시지 팝업 콜백 이벤트
+    //  **************************************************************************/
+    // function _fnDeleteUspAppChangeMsgCB(oTreeTable, oEvent) {
 
-        // 동작 취소.
-        if (oEvent == null || oEvent == "CANCEL") {
+    //     // 동작 취소.
+    //     if (oEvent == null || oEvent == "CANCEL") {
 
-            // 현재 떠있는 팝업 창이 있었고 숨김 처리 되있었다면 다시 활성화 시킨다.
-            oAPP.fn.fnChildWindowShow(true);
+    //         // 현재 떠있는 팝업 창이 있었고 숨김 처리 되있었다면 다시 활성화 시킨다.
+    //         oAPP.fn.fnChildWindowShow(true);
 
-            return;
-        }
+    //         return;
+    //     }
 
-        // 취소했을 경우.
-        if (oEvent !== "YES") {
+    //     // 취소했을 경우.
+    //     if (oEvent !== "YES") {
 
-            // 앱 변경 사항 플래그 설정
-            setAppChange("");
+    //         // 앱 변경 사항 플래그 설정
+    //         setAppChange("");
 
-            // code editor key press 이벤트 설정
-            fnCodeEditorKeyPressEvent("X");
+    //         // code editor key press 이벤트 설정
+    //         fnCodeEditorKeyPressEvent("X");
 
-            // 이전에 선택 표시된 USP Tree Node 선택 해제
-            fnOnUspTreeUnSelect();
+    //         // 이전에 선택 표시된 USP Tree Node 선택 해제
+    //         fnOnUspTreeUnSelect();
 
-            // 우측 에디터 영역을 메인 페이지로 이동
-            fnOnMoveToPage("USP10");
+    //         // 우측 에디터 영역을 메인 페이지로 이동
+    //         fnOnMoveToPage("USP10");
 
-            // Usp 삭제 팝업 띄우기
-            fnDeleteUspNode(oTreeTable);
+    //         // Usp 삭제 팝업 띄우기
+    //         fnDeleteUspNode(oTreeTable);
 
-            return;
+    //         return;
 
-        }
+    //     }
 
-        // 좌측 트리 데이터를 구한다.
-        var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
-            aUspTreeData = jQuery.extend(true, [], aTreeData),
-            aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE");
+    //     // 좌측 트리 데이터를 구한다.
+    //     var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
+    //         aUspTreeData = jQuery.extend(true, [], aTreeData),
+    //         aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE");
 
-        var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
-        oSaveBtn.firePress({
-            AFPRC: "D",
-            TREEDATA: aUspTreeData,
-            oTreeTable: oTreeTable
-        });
+    //     var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+    //     oSaveBtn.firePress({
+    //         AFPRC: "D",
+    //         TREEDATA: aUspTreeData,
+    //         oTreeTable: oTreeTable
+    //     });
 
-    } // end of _fnDeleteUspAppChangeMsgCB
+    // } // end of _fnDeleteUspAppChangeMsgCB
 
     /**************************************************************************
      * [WS30] 이전에 선택 표시된 USP Tree Node 선택 해제
@@ -3659,8 +3663,6 @@
             aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE");
         }
 
-        debugger;
-        
         var iUspTreeLength = aUspTreeData.length;
 
         // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
@@ -3807,20 +3809,29 @@
 
         // ******** 저장 성공 시 ******** //
 
-        // 이전 선택한 Node 정보를 구한다.        
-        var oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"); // 우측 컨텐츠 데이터를 읽는다.
+        // Tree 데이터를 Array로 변환한다.
+        // array find로 ICONVISI == true를 찾는다.
+        // 우측 컨텐츠 데이터 중, DESCT를 적용한다.
+        // 다시 Array를 Tree 모델 데이터로 변환한다.
+        // 모델에 다시 바인딩 한다.
+    
 
-        // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
-        if (goBeforeSelect && oContent) {
 
-            var oBindBeforeSelectData = APPCOMMON.fnGetModelProperty(goBeforeSelect.BINDPATH),
-                oBindBeforeSelectDataCp = jQuery.extend(true, {}, oBindBeforeSelectData);
 
-            oBindBeforeSelectDataCp.DESCT = oContent.DESCT;
+        // // 이전 선택한 Node 정보를 구한다.        
+        // var oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"); // 우측 컨텐츠 데이터를 읽는다.
 
-            APPCOMMON.fnSetModelProperty(goBeforeSelect.BINDPATH, oBindBeforeSelectDataCp, true);
+        // // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
+        // if (goBeforeSelect && oContent) {
 
-        }
+        //     var oBindBeforeSelectData = APPCOMMON.fnGetModelProperty(goBeforeSelect.BINDPATH),
+        //         oBindBeforeSelectDataCp = jQuery.extend(true, {}, oBindBeforeSelectData);
+
+        //     oBindBeforeSelectDataCp.DESCT = oContent.DESCT;
+
+        //     APPCOMMON.fnSetModelProperty(goBeforeSelect.BINDPATH, oBindBeforeSelectDataCp, true);
+
+        // }
 
         // 앱 변경 사항 플래그 설정
         setAppChange("");
@@ -3851,11 +3862,11 @@
 
                 return;
 
-            case "D": // 저장 후 삭제 프로세스가 삭제 일 경우.
+            // case "D": // 저장 후 삭제 프로세스가 삭제 일 경우.
 
-                fnDeleteUspNode(oTreeTable);
+            //     fnDeleteUspNode(oTreeTable);
 
-                return;
+            //     return;
 
             case "RN": // 저장 후 Rename 프로세스 일 경우.             
 
