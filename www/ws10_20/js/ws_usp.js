@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -89,7 +89,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function() {
+    oAPP.fn.fnOnResizeWs30 = function () {
 
         console.log("resize30!!!");
 
@@ -226,7 +226,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -371,7 +371,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -507,7 +507,7 @@
 
                     oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
                 },
-                suggest: function(oEvent) {
+                suggest: function (oEvent) {
 
                     var sValue = oEvent.getParameter("suggestValue"),
                         aFilters = [];
@@ -516,7 +516,7 @@
 
                         aFilters = [
                             new sap.ui.model.Filter([
-                                new sap.ui.model.Filter("TCODE", function(sText) {
+                                new sap.ui.model.Filter("TCODE", function (sText) {
                                     return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                 }),
                             ], false)
@@ -1302,7 +1302,7 @@
                             }),
                             fields: new sap.m.CheckBox({
                                 editable: false
-                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
+                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                                 if (ISFLD == "X") {
                                     return true;
@@ -1350,7 +1350,7 @@
             .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function(oControl) {
+            onAfterRendering: function (oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1672,7 +1672,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1737,7 +1737,7 @@
                 oUspCrForm
             ],
 
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -1819,7 +1819,7 @@
         }
 
         debugger;
-        
+
         var iIndex = gSelectedTreeIndex,
             oSelectedCtx = oTreeTable.getContextByIndex(iIndex),
             oDelRowData = oSelectedCtx.getModel().getProperty(oSelectedCtx.getPath());
@@ -1839,7 +1839,7 @@
 
         var iUspTreeLength = aUspTreeData.length;
 
-        var aSaveTreeData = [];
+        var aDeleteTreeData = [];
 
         for (var i = 0; i < iUspTreeLength; i++) {
 
@@ -1849,10 +1849,26 @@
                 continue;
             }
 
-            aSaveTreeData.push(oTreeData);
+            aDeleteTreeData.push(oTreeData);
 
         }
 
+        debugger;
+
+        var sServerPath = parent.getServerPath(),
+            sPath = `${sServerPath}/usp_page_del`;
+
+        var oFormData = new FormData();
+        oFormData.append("USPDATA", JSON.stringify(aDeleteTreeData));
+
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
+        sendAjax(sPath, oFormData, _fnDeleteUspNodeSuccessCb);
+
+
+        // // 서버에서 실제 Content 데이터를 구한다.
+        // sendAjax(sPath, oFormData, _fnGetFileContents.bind(oBindParam));
 
         // var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
         // oSaveBtn.firePress({
@@ -1863,6 +1879,19 @@
         // });
 
     } // end of _fnDeleteUspNodeCb
+
+
+    function _fnDeleteUspNodeSuccessCb(oResult){
+
+        debugger;
+
+
+
+
+
+
+
+    } // end of _fnDeleteUspNodeSuccessCb
 
     function _fnFindModelData(sPath) {
 
@@ -1979,8 +2008,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function(e) {
-                $.each(e, function(e, o) {
+            t = function (e) {
+                $.each(e, function (e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2211,7 +2240,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function(event) {
+            fileReader.onload = function (event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -3687,7 +3716,7 @@
 
             oSaveData.S_CONTENT = oContent;
 
-        }     
+        }
 
         // // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
         // if (goBeforeSelect && oContent) {
@@ -3814,7 +3843,7 @@
         // 우측 컨텐츠 데이터 중, DESCT를 적용한다.
         // 다시 Array를 Tree 모델 데이터로 변환한다.
         // 모델에 다시 바인딩 한다.
-    
+
 
 
 
@@ -3862,11 +3891,11 @@
 
                 return;
 
-            // case "D": // 저장 후 삭제 프로세스가 삭제 일 경우.
+                // case "D": // 저장 후 삭제 프로세스가 삭제 일 경우.
 
-            //     fnDeleteUspNode(oTreeTable);
+                //     fnDeleteUspNode(oTreeTable);
 
-            //     return;
+                //     return;
 
             case "RN": // 저장 후 Rename 프로세스 일 경우.             
 
@@ -3967,7 +3996,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this,
                 IS_ACT = oEvent.getParameter("IS_ACT");
