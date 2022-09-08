@@ -1881,10 +1881,29 @@
     } // end of _fnDeleteUspNodeCb
 
 
-    function _fnDeleteUspNodeSuccessCb(oResult){
+    function _fnDeleteUspNodeSuccessCb(oResult) {
 
         debugger;
 
+        // 오류 일 경우.
+        if (oResult.RETCD == "E") {
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            parent.setBusy("");
+
+            parent.setSoundMsg("02"); // error sound
+
+            // 작업표시줄 깜빡임
+            CURRWIN.flashFrame(true);
+
+            // Footer Msg 출력
+            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+
+            return;
+
+        }
 
 
 
