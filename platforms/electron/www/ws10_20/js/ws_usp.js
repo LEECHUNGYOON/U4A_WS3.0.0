@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -25,11 +25,11 @@
      * 
      */
     var gSelectedTreeIndex = -1, // 우클릭 Context menu Index
-        goBeforeSelect; // 이전에 선택한 Row 정보
+        // goBeforeSelect; // 이전에 선택한 Row 정보
 
-    var gaDblClickHistory = []; // Node 더블클릭 히스토리
+        gaDblClickHistory = [], // Node 더블클릭 히스토리
 
-    var gfSelectRowUpdate;
+        gfSelectRowUpdate; // Ui Table RowUpdated Global function
 
     /************************************************************************
      * [WS30] 30번 페이지 생성
@@ -70,7 +70,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function () {
+    oAPP.fn.fnOnResizeWs30 = function() {
 
         console.log("resize30!!!");
 
@@ -165,9 +165,9 @@
             return;
         }
 
-        var sFmsgBindRootPath = "/FMSG/WS30";
+        var sFmsgBindRootPath = "/FMSG/WS30",
 
-        var oCustomHeader = fnGetCustomHeaderWs30(),
+            oCustomHeader = fnGetCustomHeaderWs30(),
             oSubHeader = fnGetSubHeaderWs30(),
             aPageContent = fnGetPageContentWs30(),
             oMsgFooter = new sap.m.OverflowToolbar({
@@ -207,7 +207,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (bIsShow) {
+            formatter: function(bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -230,10 +230,10 @@
      ************************************************************************/
     function fnGetCustomHeaderWs30() {
 
-        var sBindRoot = "/WMENU/WS30";
+        var sBindRoot = "/WMENU/WS30",
 
-        //10번 페이지 윈도우 메뉴 정보
-        var aWMenu30 = fnGetWindowMenuWS30(),
+            //10번 페이지 윈도우 메뉴 정보
+            aWMenu30 = fnGetWindowMenuWS30(),
             oMenuList = fnGetWindowMenuListWS30();
 
         oMenuList.HEADER = aWMenu30;
@@ -352,7 +352,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function (sKey) {
+                            formatter: function(sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -417,9 +417,9 @@
      ************************************************************************/
     function fnGetSubHeaderWs30() {
 
-        var sBindRootPath = "/WS30/APP";
+        var sBindRootPath = "/WS30/APP",
 
-        var oBackBtn = new sap.m.Button("ws30_backBtn", {
+            oBackBtn = new sap.m.Button("ws30_backBtn", {
                 icon: "sap-icon://nav-back",
                 press: ev_pressWs30Back
             }),
@@ -488,7 +488,7 @@
 
                     oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
                 },
-                suggest: function (oEvent) {
+                suggest: function(oEvent) {
 
                     var sValue = oEvent.getParameter("suggestValue"),
                         aFilters = [];
@@ -497,7 +497,7 @@
 
                         aFilters = [
                             new sap.ui.model.Filter([
-                                new sap.ui.model.Filter("TCODE", function (sText) {
+                                new sap.ui.model.Filter("TCODE", function(sText) {
                                     return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                 }),
                             ], false)
@@ -794,190 +794,190 @@
      **************************************************************************/
     function fnGetUspDocPageContentWs30() {
 
-        var sBindRoot = "/WS30/USPDATA";
+        var sBindRoot = "/WS30/USPDATA",
 
-        var oForm = new sap.ui.layout.form.Form({
-            editable: true,
-            layout: new sap.ui.layout.form.ResponsiveGridLayout({
-                labelSpanL: 12,
-                labelSpanM: 12,
-                labelSpanS: 12,
-            }),
-
-            formContainers: [
-                new sap.ui.layout.form.FormContainer({
-                    formElements: [
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Web Application ID"
-                            }),
-                            fields: new sap.m.Input({
-                                editable: false,
-                                value: `{${sBindRoot}/APPID}`
-                            })
-                        }),
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Web Application Name"
-                            }),
-                            fields: new sap.m.Input({
-                                value: `{${sBindRoot}/DESCT}`,
-                                change: ev_UspDescInputChangeEvent
-                            }).bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding)
-                        }),
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Request/Task"
-                            }),
-                            fields: new sap.m.Input({
-                                editable: false,
-                                value: `{${sBindRoot}/REQNO}`
-                            })
-                        }),
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Language Key"
-                            }),
-                            fields: new sap.m.Input({
-                                editable: false,
-                                value: `{${sBindRoot}/LANGU}`
-                            })
-                        }),
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Code Page"
-                            }),
-                            fields: new sap.m.Input({
-                                editable: false,
-                                value: `{${sBindRoot}/CODPG}`
-                            })
-                        }),
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Dev. Package"
-                            }),
-                            fields: new sap.m.Input({
-                                editable: false,
-                                value: `{${sBindRoot}/PACKG}`
-                            })
-                        }),
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Assigned Class Object ID"
-                            }),
-                            fields: new sap.m.Input({
-                                editable: false,
-                                value: `{${sBindRoot}/CLSID}`
-                            })
-                        }),
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Program ID in Requests and Tasks"
-                            }),
-                            fields: new sap.m.Input({
-                                editable: false,
-                                value: `{${sBindRoot}/PGMID}`
-                            })
-                        }),
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Object Type"
-                            }),
-                            fields: new sap.m.Input({
-                                editable: false,
-                                value: `{${sBindRoot}/OBJTY}`
-                            })
-                        }),
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Authorization Group"
-                            }),
-                            fields: new sap.m.Input({
-                                editable: false,
-                                value: `{${sBindRoot}/AUTHG}`
-                            })
-                        }),
-
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Create User"
-                            }),
-                            fields: new sap.m.Input({
-                                editable: false,
-                                value: `{${sBindRoot}/ERUSR}`
-                            })
-                        }),
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Create Date"
-                            }),
-                            fields: new sap.m.Input({
-                                editable: false,
-                                value: `{${sBindRoot}/ERDAT}`
-                            })
-                        }),
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Create Time"
-                            }),
-                            fields: new sap.m.Input({
-                                editable: false,
-                                value: `{${sBindRoot}/ERTIM}`
-                            })
-                        }),
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Change User"
-                            }),
-                            fields: new sap.m.Input({
-                                editable: false,
-                                value: `{${sBindRoot}/AEUSR}`
-                            })
-                        }),
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Change Date"
-                            }),
-                            fields: new sap.m.Input({
-                                editable: false,
-                                value: `{${sBindRoot}/AEDAT}`
-                            })
-                        }),
-                        new sap.ui.layout.form.FormElement({
-                            label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Change Time"
-                            }),
-                            fields: new sap.m.Input({
-                                editable: false,
-                                value: `{${sBindRoot}/AETIM}`
-                            })
-                        }),
-
-
-
-
-
-
-                    ]
+            oForm = new sap.ui.layout.form.Form({
+                editable: true,
+                layout: new sap.ui.layout.form.ResponsiveGridLayout({
+                    labelSpanL: 12,
+                    labelSpanM: 12,
+                    labelSpanS: 12,
                 }),
-            ]
-        });
+
+                formContainers: [
+                    new sap.ui.layout.form.FormContainer({
+                        formElements: [
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Web Application ID"
+                                }),
+                                fields: new sap.m.Input({
+                                    editable: false,
+                                    value: `{${sBindRoot}/APPID}`
+                                })
+                            }),
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Web Application Name"
+                                }),
+                                fields: new sap.m.Input({
+                                    value: `{${sBindRoot}/DESCT}`,
+                                    change: ev_UspDescInputChangeEvent
+                                }).bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding)
+                            }),
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Request/Task"
+                                }),
+                                fields: new sap.m.Input({
+                                    editable: false,
+                                    value: `{${sBindRoot}/REQNO}`
+                                })
+                            }),
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Language Key"
+                                }),
+                                fields: new sap.m.Input({
+                                    editable: false,
+                                    value: `{${sBindRoot}/LANGU}`
+                                })
+                            }),
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Code Page"
+                                }),
+                                fields: new sap.m.Input({
+                                    editable: false,
+                                    value: `{${sBindRoot}/CODPG}`
+                                })
+                            }),
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Dev. Package"
+                                }),
+                                fields: new sap.m.Input({
+                                    editable: false,
+                                    value: `{${sBindRoot}/PACKG}`
+                                })
+                            }),
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Assigned Class Object ID"
+                                }),
+                                fields: new sap.m.Input({
+                                    editable: false,
+                                    value: `{${sBindRoot}/CLSID}`
+                                })
+                            }),
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Program ID in Requests and Tasks"
+                                }),
+                                fields: new sap.m.Input({
+                                    editable: false,
+                                    value: `{${sBindRoot}/PGMID}`
+                                })
+                            }),
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Object Type"
+                                }),
+                                fields: new sap.m.Input({
+                                    editable: false,
+                                    value: `{${sBindRoot}/OBJTY}`
+                                })
+                            }),
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Authorization Group"
+                                }),
+                                fields: new sap.m.Input({
+                                    editable: false,
+                                    value: `{${sBindRoot}/AUTHG}`
+                                })
+                            }),
+
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Create User"
+                                }),
+                                fields: new sap.m.Input({
+                                    editable: false,
+                                    value: `{${sBindRoot}/ERUSR}`
+                                })
+                            }),
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Create Date"
+                                }),
+                                fields: new sap.m.Input({
+                                    editable: false,
+                                    value: `{${sBindRoot}/ERDAT}`
+                                })
+                            }),
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Create Time"
+                                }),
+                                fields: new sap.m.Input({
+                                    editable: false,
+                                    value: `{${sBindRoot}/ERTIM}`
+                                })
+                            }),
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Change User"
+                                }),
+                                fields: new sap.m.Input({
+                                    editable: false,
+                                    value: `{${sBindRoot}/AEUSR}`
+                                })
+                            }),
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Change Date"
+                                }),
+                                fields: new sap.m.Input({
+                                    editable: false,
+                                    value: `{${sBindRoot}/AEDAT}`
+                                })
+                            }),
+                            new sap.ui.layout.form.FormElement({
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Change Time"
+                                }),
+                                fields: new sap.m.Input({
+                                    editable: false,
+                                    value: `{${sBindRoot}/AETIM}`
+                                })
+                            }),
+
+
+
+
+
+
+                        ]
+                    }),
+                ]
+            });
 
         return [
 
@@ -1049,71 +1049,42 @@
                             renderType: "Bare",
                             items: [
 
-                                // new sap.ui.core.Icon({
-                                //     // src: "{ICONSRC}"
-                                //     src: "sap-icon://accept",
-                                //     visible: "{ICONVISI}"
-                                // })
-                                // .bindProperty("visible", "ICONVISI", function (VISI) {
-
-                                //     if (!VISI) {
-                                //         return false;
-                                //     }
-
-                                //     return VISI;
-
-                                // })
-                                // .addStyleClass("sapUiTinyMarginEnd"),
-
-                                // new sap.ui.core.Icon({
-                                //     // src: "{ICONSRC}"
-                                //     src: "sap-icon://accept",
-                                //     visible: "{ICONVISI}"
-                                // })
-                                // .bindProperty("src", {
-                                //     parts: [
-                                //         "ICONVISI",
-                                //     ],
-                                //     formatter: (ICONVISI) => {
-
-                                //         var sIconSrc = "sap-icon://accept";
-
-                                //         if (ICONVISI == true) {
-                                //             return sIconSrc;
-                                //         }
-
-                                //         return oAPP.fn.fnGetSapIconPath("ICON_SPACE");
-
-                                //     }
-
-                                // })
-                                // .bindProperty("visible", "PUJKY", function (PUJKY) {
-
-                                //     if (PUJKY == null) {
-                                //         return;
-                                //     }
-
-                                //     if (PUJKY == "") {
-                                //         return false;
-                                //     }
-
-                                //     return true;
-
-                                // })
-                                // .addStyleClass("sapUiTinyMarginEnd"),
-
                                 new sap.m.Image({
                                     width: "10px"
                                 })
+                                // .bindProperty("src", "ICONVISI", function(ICONVISI) {                                    
+
+                                //     var oRow = this.getParent().getParent();
+                                //     if (oRow instanceof sap.ui.table.Row == true) {
+
+                                //         oRow.removeStyleClass("sapUiTableRowSel");
+
+                                //         if (ICONVISI == true) {
+                                //             oRow.addStyleClass("sapUiTableRowSel");
+                                //         }
+                                //     }
+
+                                //     var sIconSrc = "ICON_SPACE";
+
+                                //     if (ICONVISI == true) {
+
+                                //         sIconSrc = "ICON_CHECKED";
+
+                                //     }
+
+                                //     return oAPP.fn.fnGetSapIconPath(sIconSrc);
+
+                                // })
                                 .bindProperty("src", {
                                     parts: [
                                         "ICONVISI",
                                     ],
-                                    formatter: (ICONVISI) => {
+                                    formatter: function(ICONVISI) {
 
                                         var sIconSrc = "ICON_SPACE";
 
                                         if (ICONVISI == true) {
+
                                             sIconSrc = "ICON_CHECKED";
 
                                         }
@@ -1121,7 +1092,6 @@
                                         return oAPP.fn.fnGetSapIconPath(sIconSrc);
 
                                     }
-
                                 })
                                 .bindProperty("visible", {
                                     parts: [
@@ -1137,11 +1107,6 @@
                                         if (PUJKY == "") {
                                             return true;
                                         }
-
-                                        // // Root 또는 폴더일 경우 아이콘 이미지를 숨긴다
-                                        // if (PUJKY == "" || ISFLD == "X") {
-                                        //     return false;
-                                        // }
 
                                         return true;
 
@@ -1211,6 +1176,16 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
+                rowSelectionChange: function(oEvent) {
+
+                    var iRowIndex = oEvent.getParameter("rowIndex"),
+                        oTable = oEvent.getSource();
+
+                    if (oTable.getSelectedIndex() == -1) {
+                        oTable.setSelectedIndex(iRowIndex);
+                    }
+
+                }
 
             })
             .attachBrowserEvent("dblclick", ev_uspTreeItemDblClickEvent)
@@ -1223,10 +1198,10 @@
      **************************************************************************/
     function fnGetUspPanelWs30() {
 
-        var sBindRoot = "/WS30/USPDATA";
+        var sBindRoot = "/WS30/USPDATA",
 
-        // Usp Url
-        var oUrlInput = new sap.m.Input({
+            // Usp Url
+            oUrlInput = new sap.m.Input({
                 value: `{${sBindRoot}/SPATH}`,
                 editable: false
             }).addStyleClass("sapUiTinyMarginEnd"),
@@ -1283,7 +1258,7 @@
                             }),
                             fields: new sap.m.CheckBox({
                                 editable: false
-                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
+                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
 
                                 if (ISFLD == "X") {
                                     return true;
@@ -1331,7 +1306,7 @@
             .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function (oControl) {
+            onAfterRendering: function(oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1653,7 +1628,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1718,7 +1693,7 @@
                 oUspCrForm
             ],
 
-            afterClose: function () {
+            afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -1764,7 +1739,6 @@
             return;
         }
 
-
     } // end of fnRenameUspNodePopup
 
     /**************************************************************************
@@ -1775,13 +1749,13 @@
         var iIndex = gSelectedTreeIndex,
             oCtx = oTreeTable.getContextByIndex(iIndex),
             oTreeModel = oTreeTable.getModel(),
-            oTreeData = oTreeModel.getProperty(oCtx.sPath);
+            oTreeData = oTreeModel.getProperty(oCtx.sPath),
 
-        // 질문 메시지
-        var sMsg = ` [ ${oTreeData.OBDEC} ] ` + APPCOMMON.fnGetMsgClsTxt("003"); // Do you really want to delete the object?
+            // 질문 메시지
+            sMsg = ` [ ${oTreeData.OBDEC} ] ` + APPCOMMON.fnGetMsgClsTxt("003"); // Do you really want to delete the object?
 
         // 질문팝업? 삭제하시겠습니까?
-        parent.showMessage(sap, 40, 'W', sMsg, _fnDeleteUspNodeCb.bind(this, oTreeTable));
+        parent.showMessage(sap, 30, 'W', sMsg, _fnDeleteUspNodeCb.bind(this, oTreeTable));
 
         // 현재 떠있는 팝업 창들을 잠시 숨긴다.
         oAPP.fn.fnChildWindowShow(false);
@@ -1807,19 +1781,21 @@
         }
 
         var oDelRowData = oSelectedCtx.getModel().getProperty(oSelectedCtx.getPath()),
-            oDeleteTreeData = jQuery.extend(true, {}, oDelRowData);
+            oDeleteTreeData = jQuery.extend(true, {}, oDelRowData),
 
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
-        var aDeleteTreeData = _parseTree2Tab([oDeleteTreeData], "USPTREE"),
+            oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+            aDeleteTreeData = _parseTree2Tab([oDeleteTreeData], "USPTREE"),
+
             oSendData = {
                 DELTREE: aDeleteTreeData,
                 APPID: oAppInfo.APPID
-            };
+            },
 
-        var sServerPath = parent.getServerPath(),
-            sPath = `${sServerPath}/usp_page_del`;
+            sServerPath = parent.getServerPath(),
+            sPath = `${sServerPath}/usp_page_del`,
 
-        var oFormData = new FormData();
+            oFormData = new FormData();
+
         oFormData.append("USPDATA", JSON.stringify(oSendData));
 
         // 화면 Lock 걸기
@@ -1836,13 +1812,13 @@
 
     function _fnDeleteUspNodeSuccessCb(oResult) {
 
+        // 화면 Lock 해제
+        sap.ui.getCore().unlock();
+
+        parent.setBusy("");
+
         // 오류 일 경우.
         if (oResult.RETCD == "E") {
-
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            parent.setBusy("");
 
             parent.setSoundMsg("02"); // error sound
 
@@ -1856,20 +1832,16 @@
 
         }
 
+        // 삭제 성공 후 앱 변경 플래그 해제
         setAppChange("");
 
         // Footer Msg 출력
         APPCOMMON.fnShowFloatingFooterMsg("S", "WS30", oResult.RTMSG);
 
         var oParam = this,
-            oTreeTable = oParam.oTreeTable;
+            oTreeTable = oParam.oTreeTable,
 
-        // 화면 Lock 해제
-        sap.ui.getCore().unlock();
-
-        parent.setBusy("");
-
-        var iIndex = gSelectedTreeIndex,
+            iIndex = gSelectedTreeIndex,
             oSelectedCtx = oTreeTable.getContextByIndex(iIndex);
 
         if (!oSelectedCtx) {
@@ -2032,8 +2004,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function (e) {
-                $.each(e, function (e, o) {
+            t = function(e) {
+                $.each(e, function(e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2264,7 +2236,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function (event) {
+            fileReader.onload = function(event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -2495,7 +2467,8 @@
 
         // 위에서 병합한 데이터를 복사해서 우측 Content 영역을 복사할 Object 생성
         var oUspData = jQuery.extend(true, {}, oResultRowData);
-        oUspData.CONTENT = oResult.CONTENT;
+
+        oResultRowData.CONTENT = oUspData.CONTENT = oResult.CONTENT;
 
         // 현재 선택한 좌측 트리 데이터 업데이트
         oRowModel.setProperty(sCurrBindPath, oResultRowData);
@@ -3080,24 +3053,22 @@
 
             case "K4": // delete
 
-                debugger;
-
                 // Usp 삭제 시, 현재 Change가 된 상태인지 확인.
                 // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
                 var IS_CHAG = getAppChange();
                 if (IS_CHAG == "X") {
 
                     var aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
-                        oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
+                        oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData),
 
-                    var iIndex = gSelectedTreeIndex,
+                        iIndex = gSelectedTreeIndex,
                         oCtx = oTreeTable.getContextByIndex(iIndex),
-                        oSelectTreeData = oCtx.getModel().getProperty(oCtx.sPath);
+                        oSelectTreeData = oCtx.getModel().getProperty(oCtx.sPath),
 
-                    // TREE -> Array로 변환
-                    var aParseTree = _parseTree2Tab([oSelectTreeData], "USPTREE");
+                        // TREE -> Array로 변환
+                        aParseTree = _parseTree2Tab([oSelectTreeData], "USPTREE"),
 
-                    var oFind = aParseTree.find(arr => arr.OBJKY == (oBindBeforeSelect ? oBindBeforeSelect.OBJKY : ""));
+                        oFind = aParseTree.find(arr => arr.OBJKY == (oBindBeforeSelect ? oBindBeforeSelect.OBJKY : ""));
 
                     if (!oFind) {
 
@@ -3111,40 +3082,6 @@
                         return;
 
                     }
-
-
-
-
-
-
-
-
-                    // var aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
-                    //     oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
-
-                    // // var iIndex = gSelectedTreeIndex,
-                    // //     oCtx = oTreeTable.getContextByIndex(iIndex),
-                    // //     oBeforeSelectTreeData = oCtx.getModel().getProperty(oCtx.sPath);
-
-                    // // TREE -> Array로 변환
-                    // var aParseTree = _parseTree2Tab([oBindBeforeSelect], "USPTREE");
-                    // // oBindBeforeSelect = APPCOMMON.fnGetModelProperty(goBeforeSelect.BINDPATH);
-
-                    // // 삭제할 위치 내에 변경된 Node가 포함되지 않았다면 삭제 전 변경된 Node를 저장할 것인지 질문 팝업후 빠져나감.
-                    // // var oFind = aParseTree.find(arr => arr.OBJKY == oBindBeforeSelect ? oBindBeforeSelect.OBJKY : "");
-                    // var oFind = aParseTree.find(arr => arr.OBJKY == (oBindBeforeSelect ? oBindBeforeSelect.OBJKY : ""));
-                    // if (!oFind) {
-
-                    //     var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
-
-                    //     parent.showMessage(sap, 40, 'W', sMsg, _fnDeleteUspAppChangeMsgCB.bind(this, oTreeTable));
-
-                    //     // 현재 떠있는 팝업 창들을 잠시 숨긴다.
-                    //     oAPP.fn.fnChildWindowShow(false);
-
-                    //     return;
-
-                    // }
 
                 }
 
@@ -3233,9 +3170,10 @@
         // 좌측 트리 데이터를 구한다.
         var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
             aUspTreeData = jQuery.extend(true, [], aTreeData),
-            aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE");
+            aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE"),
 
-        var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+            oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+
         oSaveBtn.firePress({
             AFPRC: "C",
             TREEDATA: aUspTreeData,
@@ -3283,9 +3221,10 @@
         // 좌측 트리 데이터를 구한다.
         var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
             aUspTreeData = jQuery.extend(true, [], aTreeData),
-            aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE");
+            aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE"),
 
-        var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+            oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+
         oSaveBtn.firePress({
             AFPRC: "RN",
             TREEDATA: aUspTreeData,
@@ -3311,17 +3250,33 @@
         // 취소했을 경우.
         if (oEvent !== "YES") {
 
+            // 이전에 선택 표시된 Node 정보 구하기
+            var oTreeModel = oTreeTable.getModel(),
+                aUspTreeData = oTreeModel.getProperty("/WS30/USPTREE");
+
+            var oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
+            if (oBindBeforeSelect) {
+
+                var oUspData = APPCOMMON.fnGetModelProperty("/WS30/USPDATA");
+
+                oUspData.DESCT = oBindBeforeSelect.DESCT;
+                oUspData.CONTENT = oBindBeforeSelect.CONTENT;
+
+                oTreeModel.refresh();
+
+            }
+
             // 앱 변경 사항 플래그 설정
             setAppChange("");
 
             // code editor key press 이벤트 설정
             fnCodeEditorKeyPressEvent("X");
 
-            // 이전에 선택 표시된 USP Tree Node 선택 해제
-            fnOnUspTreeUnSelect();
+            // // 이전에 선택 표시된 USP Tree Node 선택 해제
+            // fnOnUspTreeUnSelect();
 
-            // 우측 에디터 영역을 메인 페이지로 이동
-            fnOnMoveToPage("USP10");
+            // // 우측 에디터 영역을 메인 페이지로 이동
+            // fnOnMoveToPage("USP10");
 
             // Usp 삭제 팝업 띄우기
             fnDeleteUspNode(oTreeTable);
@@ -3333,10 +3288,11 @@
         // 좌측 트리 데이터를 구한다.
         var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
             aUspTreeData = jQuery.extend(true, [], aTreeData),
-            aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE");
+            aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE"),
 
-        // 저장 후 삭제 프로세스를 태운다.
-        var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+            // 저장 후 삭제 프로세스를 태운다.
+            oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+
         oSaveBtn.firePress({
             AFPRC: "D",
             TREEDATA: aUspTreeData,
@@ -3760,7 +3716,7 @@
 
             // 작업표시줄 깜빡임
             CURRWIN.flashFrame(true);
-          
+
             parent.showMessage(sap, 20, 'E', oResult.RTMSG, fnCallback);
 
             function fnCallback() {
@@ -4007,7 +3963,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oEvent = this,
                 IS_ACT = oEvent.getParameter("IS_ACT");
