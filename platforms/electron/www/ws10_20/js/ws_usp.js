@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -65,31 +65,12 @@
             oUspTreeTable.attachRowsUpdated(ev_rowsUpdated);
         }
 
-        // var oWs30Navcon = sap.ui.getCore().byId("usp_navcon");
-        // if (oWs30Navcon) {
-        //     // fnOnMoveToPage("USP10");
-        // }
-
         // 이전에 선택한 라인이 있다면 해당 라인 선택 아이콘 표시 해제
-        var sBeforeBindPath = "";
-        if (goBeforeSelect) {
-            sBeforeBindPath = goBeforeSelect.BINDPATH;
-
-            // 이전에 선택된 정보 초기화 
-            goBeforeSelect = undefined;
-
-        }
-
-        var oBeforeRowData = APPCOMMON.fnGetModelProperty(sBeforeBindPath);
-        if (oBeforeRowData) {
-            oBeforeRowData.ICONVISI = false;
-            APPCOMMON.fnSetModelProperty(sBeforeBindPath, oBeforeRowData);
-        }
-
+        fnOnUspTreeUnSelect();
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function() {
+    oAPP.fn.fnOnResizeWs30 = function () {
 
         console.log("resize30!!!");
 
@@ -226,7 +207,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -371,7 +352,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -507,7 +488,7 @@
 
                     oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
                 },
-                suggest: function(oEvent) {
+                suggest: function (oEvent) {
 
                     var sValue = oEvent.getParameter("suggestValue"),
                         aFilters = [];
@@ -516,7 +497,7 @@
 
                         aFilters = [
                             new sap.ui.model.Filter([
-                                new sap.ui.model.Filter("TCODE", function(sText) {
+                                new sap.ui.model.Filter("TCODE", function (sText) {
                                     return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                 }),
                             ], false)
@@ -1302,7 +1283,7 @@
                             }),
                             fields: new sap.m.CheckBox({
                                 editable: false
-                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
+                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                                 if (ISFLD == "X") {
                                     return true;
@@ -1350,7 +1331,7 @@
             .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function(oControl) {
+            onAfterRendering: function (oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1672,7 +1653,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1737,7 +1718,7 @@
                 oUspCrForm
             ],
 
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -1825,8 +1806,6 @@
             return;
         }
 
-        debugger;
-
         var oDelRowData = oSelectedCtx.getModel().getProperty(oSelectedCtx.getPath()),
             oDeleteTreeData = jQuery.extend(true, {}, oDelRowData);
 
@@ -1842,7 +1821,6 @@
 
         var oFormData = new FormData();
         oFormData.append("USPDATA", JSON.stringify(oSendData));
-        // oFormData.append("USPDATA", JSON.stringify(aDeleteTreeData));
 
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
@@ -1852,71 +1830,6 @@
         }
 
         sendAjax(sPath, oFormData, _fnDeleteUspNodeSuccessCb.bind(oParam));
-
-
-
-
-
-
-        return;
-
-
-
-
-
-
-        // 좌측 트리 데이터를 구한다.
-        var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
-            aUspTreeData = jQuery.extend(true, [], aTreeData);
-
-        aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE");
-
-        var iUspTreeLength = aUspTreeData.length;
-
-        var aDeleteTreeData = [];
-
-        for (var i = 0; i < iUspTreeLength; i++) {
-
-            var oTreeData = aUspTreeData[i];
-
-            if (oTreeData.OBJKY != sOBJKY && oTreeData.PUJKY != sOBJKY) {
-                continue;
-            }
-
-            // if (oTreeData.OBJKY == sOBJKY || oTreeData.PUJKY == sOBJKY) {
-            //     continue;
-            // }
-
-            aDeleteTreeData.push(oTreeData);
-
-        }
-
-        debugger;
-
-        return;
-
-        var sServerPath = parent.getServerPath(),
-            sPath = `${sServerPath}/usp_page_del`;
-
-        var oFormData = new FormData();
-        oFormData.append("USPDATA", JSON.stringify(aDeleteTreeData));
-
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
-        sendAjax(sPath, oFormData, _fnDeleteUspNodeSuccessCb);
-
-
-        // // 서버에서 실제 Content 데이터를 구한다.
-        // sendAjax(sPath, oFormData, _fnGetFileContents.bind(oBindParam));
-
-        // var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
-        // oSaveBtn.firePress({
-        //     AFPRC: "_D",
-        //     oTreeTable: oTreeTable,
-        //     oDelRowData: oSelectedCtx,
-        //     TREEDATA: aSaveTreeData,
-        // });
 
     } // end of _fnDeleteUspNodeCb
 
@@ -1943,10 +1856,10 @@
 
         }
 
+        setAppChange("");
+
         // Footer Msg 출력
         APPCOMMON.fnShowFloatingFooterMsg("S", "WS30", oResult.RTMSG);
-
-        debugger;
 
         var oParam = this,
             oTreeTable = oParam.oTreeTable;
@@ -2063,7 +1976,7 @@
         parent.setBusy('X');
 
         // 글로벌 변수 초기화
-        goBeforeSelect = undefined;
+        // goBeforeSelect = undefined;
         gSelectedTreeIndex = -1;
 
         // // 30번 레이아웃 초기 설정
@@ -2119,8 +2032,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function(e) {
-                $.each(e, function(e, o) {
+            t = function (e) {
+                $.each(e, function (e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2351,7 +2264,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function(event) {
+            fileReader.onload = function (event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -2417,13 +2330,26 @@
             return;
         }
 
-        var sBeforeBindPath = "";
-        if (goBeforeSelect) {
-            sBeforeBindPath = goBeforeSelect.BINDPATH;
-        }
+        // var sBeforeBindPath = "";
+        // if (goBeforeSelect) {
+        //     sBeforeBindPath = goBeforeSelect.BINDPATH;
+        // }
 
-        if (sBeforeBindPath == oCtx.sPath) {
-            return;
+        // if (sBeforeBindPath == oCtx.sPath) {
+        //     return;
+        // }
+
+        var aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
+        if (aUspTreeData) {
+
+            // 이전에 선택한 라인 값을 구한다.
+            var oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
+            var sCurrOBJKY = oCtx.getObject("OBJKY");
+
+            if (oBindBeforeSelect && oBindBeforeSelect.OBJKY == sCurrOBJKY) {
+                return;
+            }
+
         }
 
         // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
@@ -2527,6 +2453,9 @@
 
         }
 
+        // 이전에 선택한 라인이 있다면 해당 라인 선택 아이콘 표시 해제
+        fnOnUspTreeUnSelect();
+
         var oParam = this,
             oRow = oParam.oRow,
             oTable = oRow.getParent(),
@@ -2572,25 +2501,6 @@
         oRowModel.setProperty(sCurrBindPath, oResultRowData);
 
         APPCOMMON.fnSetModelProperty("/WS30/USPDATA", oUspData);
-
-        // 이전에 선택한 Node가 있는지 확인
-        var sBeforeBindPath = "";
-        if (goBeforeSelect) {
-            sBeforeBindPath = goBeforeSelect.BINDPATH;
-        }
-
-        // 이전에 선택한 라인이 있다면 해당 라인 선택 아이콘 표시 해제
-        var oBeforeRowData = oRowModel.getProperty(sBeforeBindPath);
-        if (oBeforeRowData) {
-            oBeforeRowData.ICONVISI = false;
-            oRowModel.setProperty(sBeforeBindPath, oBeforeRowData);
-        }
-
-        // 현재 선택한 Node를 글로벌에 저장
-        goBeforeSelect = {
-            BINDPATH: sCurrBindPath,
-            OBJKY: oResultRowData.OBJKY
-        };
 
         // 화면 Lock 해제
         sap.ui.getCore().unlock();
@@ -3170,6 +3080,8 @@
 
             case "K4": // delete
 
+                debugger;
+
                 // Usp 삭제 시, 현재 Change가 된 상태인지 확인.
                 // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
                 var IS_CHAG = getAppChange();
@@ -3178,16 +3090,15 @@
                     var aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
                         oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
 
-                    // var iIndex = gSelectedTreeIndex,
-                    //     oCtx = oTreeTable.getContextByIndex(iIndex),
-                    //     oBeforeSelectTreeData = oCtx.getModel().getProperty(oCtx.sPath);
+                    var iIndex = gSelectedTreeIndex,
+                        oCtx = oTreeTable.getContextByIndex(iIndex),
+                        oSelectTreeData = oCtx.getModel().getProperty(oCtx.sPath);
 
                     // TREE -> Array로 변환
-                    var aParseTree = _parseTree2Tab([oBindBeforeSelect], "USPTREE");
-                    // oBindBeforeSelect = APPCOMMON.fnGetModelProperty(goBeforeSelect.BINDPATH);
+                    var aParseTree = _parseTree2Tab([oSelectTreeData], "USPTREE");
 
-                    // 삭제할 위치 내에 변경된 Node가 포함되지 않았다면 삭제 전 변경된 Node를 저장할 것인지 질문 팝업후 빠져나감.
-                    var oFind = aParseTree.find(arr => arr.OBJKY == oBindBeforeSelect ? oBindBeforeSelect.OBJKY : "");
+                    var oFind = aParseTree.find(arr => arr.OBJKY == (oBindBeforeSelect ? oBindBeforeSelect.OBJKY : ""));
+
                     if (!oFind) {
 
                         var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
@@ -3200,6 +3111,40 @@
                         return;
 
                     }
+
+
+
+
+
+
+
+
+                    // var aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
+                    //     oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
+
+                    // // var iIndex = gSelectedTreeIndex,
+                    // //     oCtx = oTreeTable.getContextByIndex(iIndex),
+                    // //     oBeforeSelectTreeData = oCtx.getModel().getProperty(oCtx.sPath);
+
+                    // // TREE -> Array로 변환
+                    // var aParseTree = _parseTree2Tab([oBindBeforeSelect], "USPTREE");
+                    // // oBindBeforeSelect = APPCOMMON.fnGetModelProperty(goBeforeSelect.BINDPATH);
+
+                    // // 삭제할 위치 내에 변경된 Node가 포함되지 않았다면 삭제 전 변경된 Node를 저장할 것인지 질문 팝업후 빠져나감.
+                    // // var oFind = aParseTree.find(arr => arr.OBJKY == oBindBeforeSelect ? oBindBeforeSelect.OBJKY : "");
+                    // var oFind = aParseTree.find(arr => arr.OBJKY == (oBindBeforeSelect ? oBindBeforeSelect.OBJKY : ""));
+                    // if (!oFind) {
+
+                    //     var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
+
+                    //     parent.showMessage(sap, 40, 'W', sMsg, _fnDeleteUspAppChangeMsgCB.bind(this, oTreeTable));
+
+                    //     // 현재 떠있는 팝업 창들을 잠시 숨긴다.
+                    //     oAPP.fn.fnChildWindowShow(false);
+
+                    //     return;
+
+                    // }
 
                 }
 
@@ -3354,8 +3299,6 @@
      **************************************************************************/
     function _fnDeleteUspAppChangeMsgCB(oTreeTable, oEvent) {
 
-        debugger;
-
         // 동작 취소.
         if (oEvent == null || oEvent == "CANCEL") {
 
@@ -3407,21 +3350,24 @@
      **************************************************************************/
     function fnOnUspTreeUnSelect() {
 
-        // 이전에 선택한 라인이 있다면 해당 라인 선택 아이콘 표시 해제
-        var sBeforeBindPath = "";
-        if (goBeforeSelect) {
-            sBeforeBindPath = goBeforeSelect.BINDPATH;
-
-            // 이전에 선택된 정보 초기화 
-            goBeforeSelect = undefined;
-
+        var aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
+        if (!aUspTreeData) {
+            return;
         }
 
-        var oBeforeRowData = APPCOMMON.fnGetModelProperty(sBeforeBindPath);
-        if (oBeforeRowData) {
-            oBeforeRowData.ICONVISI = false;
-            APPCOMMON.fnSetModelProperty(sBeforeBindPath, oBeforeRowData);
+        if (aUspTreeData instanceof Array == false) {
+            return;
         }
+
+        // 이전에 선택 표시된 Node 정보 구하기
+        var oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
+        if (!oBindBeforeSelect) {
+            return;
+        }
+
+        oBindBeforeSelect.ICONVISI = false;
+
+        sap.ui.getCore().getModel().refresh();
 
     } // end of fnOnUspTreeUnSelect
 
@@ -3563,62 +3509,6 @@
         oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
 
     } // end of _fnCreateUspNode
-
-    // /**************************************************************************
-    //  * [WS30] 삭제된 Usp Node 화면에 반영
-    //  **************************************************************************/
-    // function _fnDeleteUspNode(oEvent) {
-
-    //     var oTreeTable = oEvent.getParameter("oTreeTable"),
-    //         oCtx = oEvent.getParameter("oDelRowData");
-
-    //     var oTreeModel = oTreeTable.getModel(),
-    //         oTreeData = oTreeModel.getProperty(oCtx.sPath),
-
-    //         oResult = _fnFindModelData(oCtx.sPath),
-
-    //         iFindIndex = oResult.Nodes.findIndex(arr => arr.OBJKY == oTreeData.OBJKY);
-
-    //     if (iFindIndex == -1) {
-    //         return;
-    //     }
-
-    //     oResult.Nodes.splice(iFindIndex, 1);
-
-    //     oTreeModel.setProperty(oResult.Path, oResult.Nodes);
-
-    //     oTreeModel.refresh();
-
-    //     oTreeTable.clearSelection();
-
-    //     // 이전에 선택된 라인이 없다면 빠져나감.
-    //     if (!goBeforeSelect) {
-    //         return;
-    //     }
-
-    //     /**
-    //      * 삭제된 대상 중, 우측에 보고 있던 CONTENT가 있다면 클리어 시키고 Intro 페이지로 이동
-    //      */
-
-    //     // 삭제대상 삭제 후의 Tree 데이터를 수집한다.
-    //     var oTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
-
-    //     // TREE -> Array로 변환
-    //     var aParseTree = _parseTree2Tab(oTreeData, "USPTREE");
-
-    //     // 이전에 선택된 Key가 있다면 그냥 빠져나간다.
-    //     var oFind = aParseTree.find(arr => arr.OBJKY == goBeforeSelect.OBJKY);
-    //     if (oFind) {
-    //         return;
-    //     }
-
-    //     // 이전에 선택된 정보 초기화 
-    //     goBeforeSelect = undefined;
-
-    //     // Intro Page 로 이동
-    //     fnOnMoveToPage("USP10");
-
-    // } // end of _fnDeleteUspNode
 
     function ev_selectRowUpdated(oRowData, oEvent) {
 
@@ -3805,8 +3695,6 @@
             T_TREE: []
         };
 
-        debugger;
-
         // 우측 컨텐츠 데이터를 읽는다.
         var oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"),
             aUspTreeData = oEvent.getParameter("TREEDATA");
@@ -3872,12 +3760,7 @@
 
             // 작업표시줄 깜빡임
             CURRWIN.flashFrame(true);
-
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            parent.setBusy('');
-
+          
             parent.showMessage(sap, 20, 'E', oResult.RTMSG, fnCallback);
 
             function fnCallback() {
@@ -3895,8 +3778,6 @@
 
         if (oResult.RETCD == "E") {
 
-            setAppChange("");
-
             parent.setSoundMsg("02"); // error sound
 
             // 작업표시줄 깜빡임
@@ -3909,13 +3790,16 @@
 
         }
 
+        // 저장 성공 후 앱 상태 변경 플래그 해제
+        setAppChange("");
+
         // 전달 받은 파라미터 확인 점검..
         var oEvent = this,
             pAFPRC = oEvent.getParameter("AFPRC"),
             pISBACK = oEvent.getParameter("ISBACK"),
             pISROW = oEvent.getParameter("ISROW"),
             pISDISP = oEvent.getParameter("ISDISP"),
-            pTREEDATA = oEvent.getParameter("TREEDATA"),
+            // pTREEDATA = oEvent.getParameter("TREEDATA"),
             oTreeTable = oEvent.getParameter("oTreeTable");
 
         // WS20 페이지 Lock 풀고 Display Mode로 전환
@@ -3933,6 +3817,23 @@
             fnMoveToWs10();
 
             return;
+
+        }
+
+        // EDIT 모드에서 다른 CONTENT 선택시 저장하고 넘어가려는 경우
+        if (pISROW) {
+
+            var oRow = pISROW,
+                iRowIndex = oRow.getIndex(),
+                oTable = oRow.getParent();
+
+            oTable.setSelectedIndex(iRowIndex);
+
+            // Row Select 
+            fnUspTreeTableRowSelect(oRow);
+
+            return;
+
         }
 
         // ******** 저장 성공 시 ******** //
@@ -3950,13 +3851,8 @@
         // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
         var oBeforeSelectData = _fnGetSelectedUspTreeData(aUspTreeData);
         if (oBeforeSelectData) {
-
             oBeforeSelectData.DESCT = oContent.DESCT;
-
         }
-
-        // 앱 변경 사항 플래그 설정
-        setAppChange("");
 
         // code editor KeyPress 이벤트 설정
         fnCodeEditorKeyPressEvent("X");
@@ -3978,12 +3874,6 @@
 
                 return;
 
-                // case "_D": // 삭제 일 경우.
-
-                //     _fnDeleteUspNode(oEvent);
-
-                //     return;
-
             case "D": // 저장 후 삭제 프로세스가 삭제 일 경우.
 
                 fnDeleteUspNode(oTreeTable);
@@ -3995,22 +3885,6 @@
                 fnRenameUspNodePopup(oTreeTable);
 
                 return;
-
-        }
-
-        // EDIT 모드에서 다른 CONTENT 선택시 저장하고 넘어가려는 경우
-        if (pISROW) {
-
-            var oRow = pISROW,
-                iRowIndex = oRow.getIndex(),
-                oTable = oRow.getParent();
-
-            oTable.setSelectedIndex(iRowIndex);
-
-            // Row Select 
-            fnUspTreeTableRowSelect(oRow);
-
-            return;
 
         }
 
@@ -4133,7 +4007,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this,
                 IS_ACT = oEvent.getParameter("IS_ACT");
