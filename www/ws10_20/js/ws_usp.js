@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -84,7 +84,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function () {
+    oAPP.fn.fnOnResizeWs30 = function() {
 
         console.log("resize30!!!");
 
@@ -221,7 +221,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (bIsShow) {
+            formatter: function(bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -366,7 +366,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function (sKey) {
+                            formatter: function(sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -502,7 +502,7 @@
 
                     oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
                 },
-                suggest: function (oEvent) {
+                suggest: function(oEvent) {
 
                     var sValue = oEvent.getParameter("suggestValue"),
                         aFilters = [];
@@ -511,7 +511,7 @@
 
                         aFilters = [
                             new sap.ui.model.Filter([
-                                new sap.ui.model.Filter("TCODE", function (sText) {
+                                new sap.ui.model.Filter("TCODE", function(sText) {
                                     return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                 }),
                             ], false)
@@ -1093,7 +1093,7 @@
                                     parts: [
                                         "ICONVISI",
                                     ],
-                                    formatter: function (ICONVISI) {
+                                    formatter: function(ICONVISI) {
 
                                         var sIconSrc = "ICON_SPACE";
 
@@ -1190,7 +1190,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function (oEvent) {
+                rowSelectionChange: function(oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1272,7 +1272,7 @@
                             }),
                             fields: new sap.m.CheckBox({
                                 editable: false
-                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
+                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
 
                                 if (ISFLD == "X") {
                                     return true;
@@ -1320,7 +1320,7 @@
             .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function (oControl) {
+            onAfterRendering: function(oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1666,7 +1666,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1731,7 +1731,7 @@
                 oUspCrForm
             ],
 
-            afterClose: function () {
+            afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -2041,8 +2041,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function (e) {
-                $.each(e, function (e, o) {
+            t = function(e) {
+                $.each(e, function(e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2273,7 +2273,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function (event) {
+            fileReader.onload = function(event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -2305,9 +2305,10 @@
     function ev_uspTreeItemDblClickEvent(oEvent) {
 
         var oTarget = oEvent.target,
+            $oTreeIcon = $(oTarget).closest(".sapUiTableTreeIcon"),
             $SelectedRow = $(oTarget).closest(".sapUiTableRow");
 
-        if (!$SelectedRow.length) {
+        if ($oTreeIcon.length || !$SelectedRow.length) {
             return;
         }
 
@@ -4065,7 +4066,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oEvent = this,
                 IS_ACT = oEvent.getParameter("IS_ACT");
