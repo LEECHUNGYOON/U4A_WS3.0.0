@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -42,10 +42,24 @@
             return;
         }
 
+        // fnOnloadLibrary();
+
         // 없으면 렌더링부터..
         fnOnInitRendering();
 
     }; // end of oAPP.fn.fnCreateWs30
+
+    // function fnOnloadLibrary() {
+
+    //     let aUspLib = [{
+    //         URL: "./js/ws_usp_01.js",
+    //         MIMETYPE: "script"
+    //     }];
+
+    //     // 초기 JS Load
+    //     oAPP.loadLibrary(aUspLib, 0);
+
+    // }; // end of fnOnloadLibrary
 
     /************************************************************************
      * [WS30] Layout 초기 설정
@@ -70,7 +84,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function() {
+    oAPP.fn.fnOnResizeWs30 = function () {
 
         console.log("resize30!!!");
 
@@ -207,7 +221,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -352,7 +366,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -488,7 +502,7 @@
 
                     oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
                 },
-                suggest: function(oEvent) {
+                suggest: function (oEvent) {
 
                     var sValue = oEvent.getParameter("suggestValue"),
                         aFilters = [];
@@ -497,7 +511,7 @@
 
                         aFilters = [
                             new sap.ui.model.Filter([
-                                new sap.ui.model.Filter("TCODE", function(sText) {
+                                new sap.ui.model.Filter("TCODE", function (sText) {
                                     return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                 }),
                             ], false)
@@ -1079,7 +1093,7 @@
                                     parts: [
                                         "ICONVISI",
                                     ],
-                                    formatter: function(ICONVISI) {
+                                    formatter: function (ICONVISI) {
 
                                         var sIconSrc = "ICON_SPACE";
 
@@ -1176,7 +1190,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function(oEvent) {
+                rowSelectionChange: function (oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1258,7 +1272,7 @@
                             }),
                             fields: new sap.m.CheckBox({
                                 editable: false
-                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
+                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                                 if (ISFLD == "X") {
                                     return true;
@@ -1306,7 +1320,7 @@
             .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function(oControl) {
+            onAfterRendering: function (oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1512,7 +1526,7 @@
     function fnGetUspTreeDefCtxMenuList() {
 
         return [{
-                ICON: "",
+                ICON: "sap-icon://expand-group",
                 KEY: "K1",
                 TXT: "Expand Subtree",
                 ENABLED: true,
@@ -1520,7 +1534,7 @@
                 VISIBLE: true
             },
             {
-                ICON: "",
+                ICON: "sap-icon://collapse-group",
                 KEY: "K2",
                 TXT: "Collapse Subtree",
                 ENABLED: true,
@@ -1528,7 +1542,7 @@
                 VISIBLE: true
             },
             {
-                ICON: "",
+                ICON: "sap-icon://internet-browser",
                 KEY: "K6",
                 TXT: "Test Service",
                 ENABLED: true,
@@ -1536,7 +1550,7 @@
                 VISIBLE: true
             },
             {
-                ICON: "",
+                ICON: "sap-icon://write-new",
                 KEY: "K3",
                 TXT: "Create",
                 ENABLED: true,
@@ -1544,7 +1558,7 @@
                 VISIBLE: true
             },
             {
-                ICON: "",
+                ICON: "sap-icon://delete",
                 KEY: "K4",
                 TXT: "Delete",
                 ENABLED: true,
@@ -1552,7 +1566,7 @@
                 VISIBLE: true
             },
             {
-                ICON: "",
+                ICON: "sap-icon://edit",
                 KEY: "K7",
                 TXT: "Rename",
                 ENABLED: true,
@@ -1560,11 +1574,35 @@
                 VISIBLE: true
             },
             {
-                ICON: "",
+                ICON: "sap-icon://navigation-up-arrow",
+                KEY: "K8",
+                TXT: "Up",
+                ENABLED: true,
+                ISSTART: true,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://navigation-down-arrow",
+                KEY: "K9",
+                TXT: "Down",
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://outdent",
+                KEY: "K10",
+                TXT: "Move Position",
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://download",
                 KEY: "K5",
                 TXT: "Download",
                 ENABLED: true,
-                ISSTART: false,
+                ISSTART: true,
                 VISIBLE: true
             }
         ];
@@ -1628,7 +1666,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1693,7 +1731,7 @@
                 oUspCrForm
             ],
 
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -1832,9 +1870,6 @@
 
         }
 
-        // 삭제 성공 후 앱 변경 플래그 해제
-        setAppChange("");
-
         // Footer Msg 출력
         APPCOMMON.fnShowFloatingFooterMsg("S", "WS30", oResult.RTMSG);
 
@@ -1864,6 +1899,8 @@
 
             var oFind = aDeleteTreeData.find(arr => arr.OBJKY == oBindBeforeSelect.OBJKY);
             if (oFind) {
+
+                setAppChange("");
 
                 // Intro Page 로 이동
                 fnOnMoveToPage("USP10");
@@ -2004,8 +2041,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function(e) {
-                $.each(e, function(e, o) {
+            t = function (e) {
+                $.each(e, function (e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2236,7 +2273,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function(event) {
+            fileReader.onload = function (event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -2797,6 +2834,9 @@
         // aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
         aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
         aCtxMenu.find(arr => arr.KEY == "K7").ENABLED = false;
+        aCtxMenu.find(arr => arr.KEY == "K8").ENABLED = false;
+        aCtxMenu.find(arr => arr.KEY == "K9").ENABLED = false;
+        aCtxMenu.find(arr => arr.KEY == "K10").ENABLED = false;
 
         // root가 아니면서 폴더가 아닐경우 (파일일 경우에만) 
         // 다운로드 버튼, Test Service 버튼을 활성화 한다.
@@ -2823,6 +2863,9 @@
             // aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
             aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
             aCtxMenu.find(arr => arr.KEY == "K7").ENABLED = false;
+            aCtxMenu.find(arr => arr.KEY == "K8").ENABLED = false;
+            aCtxMenu.find(arr => arr.KEY == "K9").ENABLED = false;
+            aCtxMenu.find(arr => arr.KEY == "K10").ENABLED = false;
 
             APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
 
@@ -3053,37 +3096,37 @@
 
             case "K4": // delete
 
-                // Usp 삭제 시, 현재 Change가 된 상태인지 확인.
-                // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
-                var IS_CHAG = getAppChange();
-                if (IS_CHAG == "X") {
+                // // Usp 삭제 시, 현재 Change가 된 상태인지 확인.
+                // // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
+                // var IS_CHAG = getAppChange();
+                // if (IS_CHAG == "X") {
 
-                    var aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
-                        oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData),
+                //     var aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
+                //         oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData),
 
-                        iIndex = gSelectedTreeIndex,
-                        oCtx = oTreeTable.getContextByIndex(iIndex),
-                        oSelectTreeData = oCtx.getModel().getProperty(oCtx.sPath),
+                //         iIndex = gSelectedTreeIndex,
+                //         oCtx = oTreeTable.getContextByIndex(iIndex),
+                //         oSelectTreeData = oCtx.getModel().getProperty(oCtx.sPath),
 
-                        // TREE -> Array로 변환
-                        aParseTree = _parseTree2Tab([oSelectTreeData], "USPTREE"),
+                //         // TREE -> Array로 변환
+                //         aParseTree = _parseTree2Tab([oSelectTreeData], "USPTREE"),
 
-                        oFind = aParseTree.find(arr => arr.OBJKY == (oBindBeforeSelect ? oBindBeforeSelect.OBJKY : ""));
+                //         oFind = aParseTree.find(arr => arr.OBJKY == (oBindBeforeSelect ? oBindBeforeSelect.OBJKY : ""));
 
-                    if (!oFind) {
+                //     if (!oFind) {
 
-                        var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
+                //         var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
 
-                        parent.showMessage(sap, 40, 'W', sMsg, _fnDeleteUspAppChangeMsgCB.bind(this, oTreeTable));
+                //         parent.showMessage(sap, 40, 'W', sMsg, _fnDeleteUspAppChangeMsgCB.bind(this, oTreeTable));
 
-                        // 현재 떠있는 팝업 창들을 잠시 숨긴다.
-                        oAPP.fn.fnChildWindowShow(false);
+                //         // 현재 떠있는 팝업 창들을 잠시 숨긴다.
+                //         oAPP.fn.fnChildWindowShow(false);
 
-                        return;
+                //         return;
 
-                    }
+                //     }
 
-                }
+                // }
 
                 fnDeleteUspNode(oTreeTable);
 
@@ -3127,6 +3170,14 @@
 
                 break;
 
+            case "K8": // Up
+
+                debugger;
+
+                fnUspTreeNodeMoveUp(oTreeTable, gSelectedTreeIndex);
+
+                break;
+
         }
 
     } // end of ev_UspTreeCtxMenuClick
@@ -3148,17 +3199,36 @@
         // 아니오 일 경우
         if (oEvent !== "YES") {
 
-            // 앱 변경 사항 플래그 설정
-            setAppChange("");
+            // // 이전에 선택 표시된 Node 정보 구하기
+            // var oTreeModel = oTreeTable.getModel(),
+            //     aUspTreeData = oTreeModel.getProperty("/WS30/USPTREE");
 
-            // code editor key press 이벤트 설정
-            fnCodeEditorKeyPressEvent("X");
+            // var oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
+            // if (oBindBeforeSelect) {
 
-            // 이전에 선택 표시된 USP Tree Node 선택 해제
-            fnOnUspTreeUnSelect();
+            //     var oUspData = APPCOMMON.fnGetModelProperty("/WS30/USPDATA");
 
-            // 우측 에디터 영역을 메인 페이지로 이동
-            fnOnMoveToPage("USP10");
+            //     oUspData.DESCT = oBindBeforeSelect.DESCT;
+            //     oUspData.CONTENT = oBindBeforeSelect.CONTENT;
+
+            //     oTreeModel.refresh();
+
+            // }
+
+            // // 앱 변경 사항 플래그 설정
+            // setAppChange("");
+
+            // // code editor key press 이벤트 설정
+            // fnCodeEditorKeyPressEvent("X");
+
+            // // 이전에 선택 표시된 USP Tree Node 선택 해제
+            // fnOnUspTreeUnSelect();
+
+            // // 우측 에디터 영역을 메인 페이지로 이동
+            // fnOnMoveToPage("USP10");
+
+            // 저장 취소
+            _fnSaveCancel(oTreeTable);
 
             // USP 생성 팝업 띄우기
             fnCreateUspNodePopup(oTreeTable);
@@ -3251,32 +3321,35 @@
         if (oEvent !== "YES") {
 
             // 이전에 선택 표시된 Node 정보 구하기
-            var oTreeModel = oTreeTable.getModel(),
-                aUspTreeData = oTreeModel.getProperty("/WS30/USPTREE");
+            // var oTreeModel = oTreeTable.getModel(),
+            //     aUspTreeData = oTreeModel.getProperty("/WS30/USPTREE");
 
-            var oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
-            if (oBindBeforeSelect) {
+            // var oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
+            // if (oBindBeforeSelect) {
 
-                var oUspData = APPCOMMON.fnGetModelProperty("/WS30/USPDATA");
+            //     var oUspData = APPCOMMON.fnGetModelProperty("/WS30/USPDATA");
 
-                oUspData.DESCT = oBindBeforeSelect.DESCT;
-                oUspData.CONTENT = oBindBeforeSelect.CONTENT;
+            //     oUspData.DESCT = oBindBeforeSelect.DESCT;
+            //     oUspData.CONTENT = oBindBeforeSelect.CONTENT;
 
-                oTreeModel.refresh();
+            //     oTreeModel.refresh();
 
-            }
+            // }
 
-            // 앱 변경 사항 플래그 설정
-            setAppChange("");
+            // // 앱 변경 사항 플래그 설정
+            // setAppChange("");
 
-            // code editor key press 이벤트 설정
-            fnCodeEditorKeyPressEvent("X");
+            // // code editor key press 이벤트 설정
+            // fnCodeEditorKeyPressEvent("X");
 
             // // 이전에 선택 표시된 USP Tree Node 선택 해제
             // fnOnUspTreeUnSelect();
 
             // // 우측 에디터 영역을 메인 페이지로 이동
             // fnOnMoveToPage("USP10");
+
+            // 저장 취소
+            _fnSaveCancel(oTreeTable);
 
             // Usp 삭제 팝업 띄우기
             fnDeleteUspNode(oTreeTable);
@@ -3300,6 +3373,35 @@
         });
 
     } // end of _fnDeleteUspAppChangeMsgCB
+
+    /**************************************************************************
+     * [WS30] 저장 취소 공통 메소드
+     **************************************************************************/
+    function _fnSaveCancel(oTreeTable) {
+
+        // 이전에 선택 표시된 Node 정보 구하기
+        var oTreeModel = oTreeTable.getModel(),
+            aUspTreeData = oTreeModel.getProperty("/WS30/USPTREE");
+
+        var oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
+        if (oBindBeforeSelect) {
+
+            var oUspData = APPCOMMON.fnGetModelProperty("/WS30/USPDATA");
+
+            oUspData.DESCT = oBindBeforeSelect.DESCT;
+            oUspData.CONTENT = oBindBeforeSelect.CONTENT;
+
+            oTreeModel.refresh();
+
+        }
+
+        // 앱 변경 사항 플래그 설정
+        setAppChange("");
+
+        // code editor key press 이벤트 설정
+        fnCodeEditorKeyPressEvent("X");
+
+    } // end of _fnSaveCancel
 
     /**************************************************************************
      * [WS30] 이전에 선택 표시된 USP Tree Node 선택 해제
@@ -3776,22 +3878,6 @@
 
         }
 
-        // EDIT 모드에서 다른 CONTENT 선택시 저장하고 넘어가려는 경우
-        if (pISROW) {
-
-            var oRow = pISROW,
-                iRowIndex = oRow.getIndex(),
-                oTable = oRow.getParent();
-
-            oTable.setSelectedIndex(iRowIndex);
-
-            // Row Select 
-            fnUspTreeTableRowSelect(oRow);
-
-            return;
-
-        }
-
         // ******** 저장 성공 시 ******** //
 
         // Tree 데이터를 Array로 변환한다.
@@ -3841,6 +3927,22 @@
                 fnRenameUspNodePopup(oTreeTable);
 
                 return;
+
+        }
+
+        // EDIT 모드에서 다른 CONTENT 선택시 저장하고 넘어가려는 경우
+        if (pISROW) {
+
+            var oRow = pISROW,
+                iRowIndex = oRow.getIndex(),
+                oTable = oRow.getParent();
+
+            oTable.setSelectedIndex(iRowIndex);
+
+            // Row Select 
+            fnUspTreeTableRowSelect(oRow);
+
+            return;
 
         }
 
@@ -3963,7 +4065,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this,
                 IS_ACT = oEvent.getParameter("IS_ACT");
@@ -4178,5 +4280,6 @@
         setAppChange("X");
 
     } // end of ev_codeeditorPrettyPrint
+
 
 })(window, $, oAPP);

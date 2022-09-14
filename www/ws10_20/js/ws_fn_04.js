@@ -76,14 +76,14 @@
 
         var oServerInfo = parent.getServerInfo(),
             oAppInfo = parent.getAppInfo(),
-            oUserInfo = parent.getUserInfo();        
+            oUserInfo = parent.getUserInfo();
 
         var METHNM = this.METHNM,
             INDEX = this.INDEX,
             TCODE = this.TCODE,
             oParamAppInfo = this.oAppInfo;
 
-        if(oParamAppInfo){
+        if (oParamAppInfo) {
             oAppInfo = oParamAppInfo;
         }
 
@@ -250,6 +250,19 @@
         oAPP.loadJs("ws_usp", function () {
             oAPP.fn.fnCreateWs30();
         });
+
+        // let aUspLib = [{
+        //     URL: "./js/ws_usp.js",
+        //     MIMETYPE: "script"
+        // }, {
+        //     URL: "./js/ws_usp_01.js",
+        //     MIMETYPE: "script"
+        // }];
+
+        // // 초기 JS Load
+        // oAPP.loadLibrary(aUspLib, 0, function () {
+        //     oAPP.fn.fnCreateWs30();
+        // });
 
     };
 

@@ -126,6 +126,9 @@ let oAPP = (function (window) {
             success: function (e) {
 
                 if (scripts.length - 1 <= index) {
+
+                    if (fnCallback) fnCallback();
+                    
                     return;
                 }
 

@@ -9,7 +9,8 @@
 
     let REMOTE = parent.REMOTE,
         APPCOMMON = oAPP.common,
-        REMOTEMAIN = parent.REMOTEMAIN;
+        REMOTEMAIN = parent.REMOTEMAIN,
+        CURRWIN = REMOTE.getCurrentWindow();
 
     /************************************************************************
      * App 생성팝업
@@ -142,6 +143,15 @@
                     return;
                 }
 
+                // 삭제 어플리케이션이 USP 일 경우.
+                if (oAppInfo.APPTY == "U") {
+
+                    oAPP.fn.fnSetUspAppDelete(oAppInfo);
+
+                    return;
+
+                }
+
                 // 화면 Lock 걸기
                 sap.ui.getCore().lock();
 
@@ -214,6 +224,54 @@
         }
 
     }; // end of oAPP.fn.fnSetAppDelete
+
+    /************************************************************************
+     * USP App 삭제하러 서버 호출
+     ************************************************************************/
+    oAPP.fn.fnSetUspAppDelete = function (oAppInfo) {
+
+        var sPath = parent.getServerPath() + '/usp_app_delete',
+            oFormData = new FormData();
+
+        var oDelAppInfo = {
+            APPID: oAppInfo.APPID,
+            TRKORR: oAppInfo.REQNO,
+        };
+
+        oFormData.append("APPDATA", JSON.stringify(oDelAppInfo));
+
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
+        parent.setBusy('X');
+
+        sendAjax(sPath, oFormData, function (oResult) {
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            parent.setBusy("");
+
+            // 스크립트가 있으면 eval 처리
+            if (oResult.SCRIPT) {
+                eval(oResult.SCRIPT);
+            }
+
+            // 오류 일 경우.
+            if (oResult.RETCD == "E") {
+
+                parent.setSoundMsg("02"); // error sound
+
+                // 작업표시줄 깜빡임
+                CURRWIN.flashFrame(true);
+
+                return;
+
+            }
+
+        });
+
+    } // end of oAPP.fn.fnSetUspAppDelete
 
     /************************************************************************
      * App 복사
