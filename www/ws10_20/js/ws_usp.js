@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -84,7 +84,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function() {
+    oAPP.fn.fnOnResizeWs30 = function () {
 
         console.log("resize30!!!");
 
@@ -221,7 +221,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -366,7 +366,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -502,7 +502,7 @@
 
                     oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
                 },
-                suggest: function(oEvent) {
+                suggest: function (oEvent) {
 
                     var sValue = oEvent.getParameter("suggestValue"),
                         aFilters = [];
@@ -511,7 +511,7 @@
 
                         aFilters = [
                             new sap.ui.model.Filter([
-                                new sap.ui.model.Filter("TCODE", function(sText) {
+                                new sap.ui.model.Filter("TCODE", function (sText) {
                                     return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                 }),
                             ], false)
@@ -625,7 +625,7 @@
             oActivateBtn = new sap.m.Button("ws30_activateBtn", {
                 icon: "sap-icon://activate",
                 tooltip: "Activate (Ctrl+F3)",
-                // press: ev_pressActivateBtn,
+                press: ev_pressActivateBtn,
             }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible),
 
             oSaveBtn = new sap.m.Button("ws30_saveBtn", {
@@ -1066,21 +1066,21 @@
                                 new sap.m.Image({
                                     width: "10px"
                                 })
-                                // .bindProperty("src", "ICONVISI", function(ICONVISI) {                                    
+                                // .bindProperty("src", "ISSEL", function(ISSEL) {                                    
 
                                 //     var oRow = this.getParent().getParent();
                                 //     if (oRow instanceof sap.ui.table.Row == true) {
 
                                 //         oRow.removeStyleClass("sapUiTableRowSel");
 
-                                //         if (ICONVISI == true) {
+                                //         if (ISSEL == true) {
                                 //             oRow.addStyleClass("sapUiTableRowSel");
                                 //         }
                                 //     }
 
                                 //     var sIconSrc = "ICON_SPACE";
 
-                                //     if (ICONVISI == true) {
+                                //     if (ISSEL == true) {
 
                                 //         sIconSrc = "ICON_CHECKED";
 
@@ -1091,13 +1091,13 @@
                                 // })
                                 .bindProperty("src", {
                                     parts: [
-                                        "ICONVISI",
+                                        "ISSEL",
                                     ],
-                                    formatter: function(ICONVISI) {
+                                    formatter: function (ISSEL) {
 
                                         var sIconSrc = "ICON_SPACE";
 
-                                        if (ICONVISI == true) {
+                                        if (ISSEL == true) {
 
                                             sIconSrc = "ICON_CHECKED";
 
@@ -1190,7 +1190,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function(oEvent) {
+                rowSelectionChange: function (oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1272,7 +1272,7 @@
                             }),
                             fields: new sap.m.CheckBox({
                                 editable: false
-                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
+                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                                 if (ISFLD == "X") {
                                     return true;
@@ -1320,7 +1320,7 @@
             .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function(oControl) {
+            onAfterRendering: function (oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1666,7 +1666,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1731,7 +1731,7 @@
                 oUspCrForm
             ],
 
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -1792,15 +1792,21 @@
             // 질문 메시지
             sMsg = ` [ ${oTreeData.OBDEC} ] ` + APPCOMMON.fnGetMsgClsTxt("003"); // Do you really want to delete the object?
 
+        var oParam = {
+            oTreeTable: oTreeTable
+        };
+
         // 질문팝업? 삭제하시겠습니까?
-        parent.showMessage(sap, 30, 'W', sMsg, _fnDeleteUspNodeCb.bind(this, oTreeTable));
+        parent.showMessage(sap, 30, 'W', sMsg, _fnDeleteUspNodeCb.bind(this, oParam));
 
         // 현재 떠있는 팝업 창들을 잠시 숨긴다.
         oAPP.fn.fnChildWindowShow(false);
 
     } // end of fnDeleteUspNode
 
-    function _fnDeleteUspNodeCb(oTreeTable, oEvent) {
+    function _fnDeleteUspNodeCb(oParam, oEvent) {
+
+        var oTreeTable = oParam.oTreeTable;
 
         // 동작 취소.
         if (oEvent !== "YES") {
@@ -1825,8 +1831,8 @@
             aDeleteTreeData = _parseTree2Tab([oDeleteTreeData], "USPTREE"),
 
             oSendData = {
-                DELTREE: aDeleteTreeData,
-                APPID: oAppInfo.APPID
+                APPID: oAppInfo.APPID,
+                T_TREE: aDeleteTreeData
             },
 
             sServerPath = parent.getServerPath(),
@@ -1834,7 +1840,7 @@
 
             oFormData = new FormData();
 
-        oFormData.append("USPDATA", JSON.stringify(oSendData));
+        oFormData.append("APPDATA", JSON.stringify(oSendData));
 
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
@@ -1847,8 +1853,10 @@
 
     } // end of _fnDeleteUspNodeCb
 
-
     function _fnDeleteUspNodeSuccessCb(oResult) {
+
+        var oParam = this,
+            oTreeTable = oParam.oTreeTable;
 
         // 화면 Lock 해제
         sap.ui.getCore().unlock();
@@ -1873,10 +1881,7 @@
         // Footer Msg 출력
         APPCOMMON.fnShowFloatingFooterMsg("S", "WS30", oResult.RTMSG);
 
-        var oParam = this,
-            oTreeTable = oParam.oTreeTable,
-
-            iIndex = gSelectedTreeIndex,
+        var iIndex = gSelectedTreeIndex,
             oSelectedCtx = oTreeTable.getContextByIndex(iIndex);
 
         if (!oSelectedCtx) {
@@ -2041,8 +2046,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function(e) {
-                $.each(e, function(e, o) {
+            t = function (e) {
+                $.each(e, function (e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2273,7 +2278,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function(event) {
+            fileReader.onload = function (event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -2481,7 +2486,7 @@
 
         // 리턴받은 라인 정보
         var oResultRowData = oResult.S_HEAD;
-        oResultRowData.ICONVISI = true;
+        oResultRowData.ISSEL = true;
 
         // 서버에서 리턴 받은 라인 정보와 바인딩 되어있는 데이터를 병합
         oResultRowData = jQuery.extend(true, oRowBindData, oResultRowData);
@@ -2685,21 +2690,21 @@
      **************************************************************************/
     function ev_AppExec() {
 
-        // var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
 
-        // // Inactivate 상태일 경우
-        // if (oAppInfo.ACTST == "I") {
+        // Inactivate 상태일 경우 실행하지 않는다
+        if (oAppInfo.ACTST == "I") {
 
-        //     // 작업표시줄 깜빡임
-        //     CURRWIN.flashFrame(true);
+            // 작업표시줄 깜빡임
+            CURRWIN.flashFrame(true);
 
-        //     var sMsg = APPCOMMON.fnGetMsgClsTxt("031"); // "Only in activity state !!!"
+            var sMsg = APPCOMMON.fnGetMsgClsTxt("031"); // "Only in activity state !!!"
 
-        //     // 페이지 푸터 메시지
-        //     APPCOMMON.fnShowFloatingFooterMsg("W", "WS30", sMsg);
+            // 페이지 푸터 메시지
+            APPCOMMON.fnShowFloatingFooterMsg("W", "WS30", sMsg);
 
-        //     return;
-        // }
+            return;
+        }
 
         var oUspData = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"),
             sMsg = "application cannot be execution.";
@@ -3173,9 +3178,7 @@
 
             case "K8": // Up
 
-                debugger;
-
-                fnUspTreeNodeMoveUp(oTreeTable, gSelectedTreeIndex);
+                oAPP.fn.fnUspTreeNodeMoveUp(oTreeTable, gSelectedTreeIndex);
 
                 break;
 
@@ -3424,7 +3427,7 @@
             return;
         }
 
-        oBindBeforeSelect.ICONVISI = false;
+        oBindBeforeSelect.ISSEL = false;
 
         sap.ui.getCore().getModel().refresh();
 
@@ -3508,7 +3511,7 @@
         oNewRowData.ISFLD = oCrateData.ISFLD ? "X" : "";
         oNewRowData.OBDEC = oCrateData.NAME;
         oNewRowData.DESCT = oCrateData.DESC;
-        oNewRowData.ICONVISI = false;
+        oNewRowData.ISSEL = false;
         oNewRowData.SPATH = `${oRowData.SPATH}/${oCrateData.NAME}`;
 
         // 폴더가 아닐 경우 파일 확장자와 MIME TYPE을 구한다.
@@ -3718,9 +3721,28 @@
     } // end of ev_createUspDlgCloseEvent
 
     /**************************************************************************
+     * [WS30] Activate Button
+     **************************************************************************/
+    function ev_pressActivateBtn() {
+
+        var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+        if (!oSaveBtn) {
+            return;
+        }
+
+        oSaveBtn.firePress({
+            IS_ACT: "X"
+        });
+
+    } // end of ev_pressActivateBtn
+
+    /**************************************************************************
      * [WS30] Save Button
      **************************************************************************/
     function ev_pressSaveBtn(oEvent) {
+
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
 
         // 푸터 메시지가 있을 경우 닫기
         APPCOMMON.fnHideFloatingFooterMsg();
@@ -3728,10 +3750,8 @@
         var oLocalEvent = new sap.ui.base.Event(),
             oNewEvent = jQuery.extend(true, oLocalEvent, oEvent);
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
         var oAppData = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+            IS_ACT = oEvent.getParameter("IS_ACT"),
             TRKORR = oEvent.getParameter("TRKORR"),
             sReqNo = "";
 
@@ -3749,7 +3769,7 @@
         var oSaveData = {
             APPID: oAppData.APPID,
             TRKORR: sReqNo,
-            IS_ACT: "",
+            IS_ACT: IS_ACT || "",
             S_CONTENT: {},
             T_TREE: []
         };
@@ -3767,7 +3787,7 @@
         var iUspTreeLength = aUspTreeData.length;
 
         // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
-        var oBeforeSelectData = aUspTreeData.find(arr => arr.ICONVISI == true);
+        var oBeforeSelectData = aUspTreeData.find(arr => arr.ISSEL == true);
 
         if (oBeforeSelectData) {
 
@@ -3842,11 +3862,22 @@
             // 작업표시줄 깜빡임
             CURRWIN.flashFrame(true);
 
+            // 서버에서 만든 스크립트가 있다면 eval 처리.
+            if (oResult.SCRIPT) {
+                eval(oResult.SCRIPT);
+                return;
+            }
+
             // Footer Msg 출력
             APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
 
             return;
 
+        }
+
+        // 서버에서 만든 스크립트가 있다면 eval 처리.
+        if (oResult.SCRIPT) {
+            eval(oResult.SCRIPT);
         }
 
         // 저장 성공 후 앱 상태 변경 플래그 해제
@@ -3858,10 +3889,17 @@
             pISBACK = oEvent.getParameter("ISBACK"),
             pISROW = oEvent.getParameter("ISROW"),
             pISDISP = oEvent.getParameter("ISDISP"),
-            // pTREEDATA = oEvent.getParameter("TREEDATA"),
+            pIS_ACT = oEvent.getParameter("IS_ACT"),
             oTreeTable = oEvent.getParameter("oTreeTable");
 
-        // WS20 페이지 Lock 풀고 Display Mode로 전환
+        // Activate로 들어왔을 경우 상단에 APP 상태 정보 변경
+        if (pIS_ACT == "X") {
+
+            setAppActive("X");
+
+        }
+
+        // WS30 페이지 Lock 풀고 Display Mode로 전환
         if (pISDISP == 'X') {
 
             fnSetAppDisplayMode();
@@ -3878,14 +3916,6 @@
             return;
 
         }
-
-        // ******** 저장 성공 시 ******** //
-
-        // Tree 데이터를 Array로 변환한다.
-        // array find로 ICONVISI == true를 찾는다.
-        // 우측 컨텐츠 데이터 중, DESCT를 적용한다.
-        // 다시 Array를 Tree 모델 데이터로 변환한다.
-        // 모델에 다시 바인딩 한다.
 
         // 우측 컨텐츠 데이터를 읽는다.
         var oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"),
@@ -3969,7 +3999,7 @@
 
             var oTreeItem = aUspTreeData[i];
 
-            if (oTreeItem.ICONVISI == true) {
+            if (oTreeItem.ISSEL == true) {
 
                 return oTreeItem;
 
@@ -4066,17 +4096,27 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
-            var oEvent = this,
-                IS_ACT = oEvent.getParameter("IS_ACT");
+            var oEvent = this;
+            // IS_ACT = oEvent.getParameter("IS_ACT");
 
             oEvent.mParameters.TRKORR = oResult.TRKORR;
 
-            if (IS_ACT == 'X') {
-                ev_pressActivateBtn(oEvent);
-                return;
-            }
+            // if (IS_ACT == 'X') {
+
+            //     oEvent.mParameters.IS_ACT = "X";
+
+            //     ev_pressSaveBtn(oEvent);
+
+            //     // var oActivateBtn = sap.ui.getCore().byId("ws30_activateBtn");
+            //     // if(oActivateBtn){
+            //     //     oActivateBtn.firePress();
+            //     // }
+            //     // ev_pressActivateBtn(oEvent);
+
+            //     return;
+            // }
 
             ev_pressSaveBtn(oEvent);
 
@@ -4236,7 +4276,35 @@
 
         APPCOMMON.fnSetModelProperty("/WS30/APP", oAppInfo);
 
-    } // end of setAppChange    
+    } // end of setAppChange
+
+    /**************************************************************************
+     * [WS30] Application Activate 상태 변경
+     * 
+     * @param {Char1} bIsActivate (X: true, '': false)
+     * - Application Activate 상태 변경
+     **************************************************************************/
+    function setAppActive(bIsActivate) {
+
+        if (typeof bIsActivate !== "string") {
+            return;
+        }
+
+        if (bIsActivate != 'X' && bIsActivate != '') {
+            return;
+        }
+
+        // 어플리케이션 정보 가져오기
+        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+
+        // Activate가 성공했으면 APP 상태코드 값 변경
+        if (bIsActivate == "X") {
+            oAppInfo.ACTST = "A";
+        }
+
+        APPCOMMON.fnSetModelProperty("/WS30/APP", oAppInfo);
+
+    } // end of setAppActive
 
     /**************************************************************************
      * [WS30] code editor keyPress 이벤트 해제

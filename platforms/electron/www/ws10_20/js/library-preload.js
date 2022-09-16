@@ -110,6 +110,14 @@ let oAPP = (function (window) {
             MIMETYPE: "script"
         },
         {
+            URL: "./js/ws_usp.js",
+            MIMETYPE: "script"
+        },
+        {
+            URL: "./js/ws_usp_01.js",
+            MIMETYPE: "script"
+        },
+        {
             URL: "./js/ws_main.js",
             MIMETYPE: "script"
         },

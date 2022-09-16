@@ -146,14 +146,11 @@
                 // 삭제 어플리케이션이 USP 일 경우.
                 if (oAppInfo.APPTY == "U") {
 
-                    oAPP.fn.fnSetUspAppDelete(oAppInfo);
+                    oAPP.fn.fnSetUspAppDelete();
 
                     return;
 
-                }
-
-                // 화면 Lock 걸기
-                sap.ui.getCore().lock();
+                }             
 
                 // 어플리케이션 삭제하러 서버 호출
                 oAPP.fn.fnSetAppDelete();
@@ -169,6 +166,11 @@
      ************************************************************************/
     oAPP.fn.fnSetAppDelete = function (oParam) {
 
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
+        parent.setBusy('X');
+
         // application 존재 여부 체크
         var oBindData = APPCOMMON.fnGetModelProperty("/WS10"),
             sAppId = oBindData.APPID;
@@ -182,14 +184,12 @@
 
         oFormData.append("APPID", sAppId);
 
-        parent.setBusy('X');
-
         sendAjax(sPath, oFormData, function (oResult) {
 
             // 화면 Lock 해제
             sap.ui.getCore().unlock();
 
-            parent.setBusy('');
+            parent.setBusy("");
 
             // 스크립트가 있으면 eval 처리
             if (oResult.SCRIPT) {
@@ -228,25 +228,37 @@
     /************************************************************************
      * USP App 삭제하러 서버 호출
      ************************************************************************/
-    oAPP.fn.fnSetUspAppDelete = function (oAppInfo) {
+    oAPP.fn.fnSetUspAppDelete = function (oParam) {
 
-        var sPath = parent.getServerPath() + '/usp_app_delete',
-            oFormData = new FormData();
-
-        var oDelAppInfo = {
-            APPID: oAppInfo.APPID,
-            TRKORR: oAppInfo.REQNO,
-        };
-
-        oFormData.append("APPDATA", JSON.stringify(oDelAppInfo));
+        debugger;
 
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
 
         parent.setBusy('X');
 
+        // application 존재 여부 체크
+        var oBindData = APPCOMMON.fnGetModelProperty("/WS10"),
+            sAppId = oBindData.APPID;
+
+        var sPath = parent.getServerPath() + '/usp_app_delete',
+            oFormData = new FormData();
+
+        var oDelAppInfo = {
+            APPID: sAppId,
+            TRKORR: "",
+        };
+
+        if (typeof oParam != "undefined") {
+            oDelAppInfo.TRKORR = oParam.TRKORR;
+        }
+
+        oFormData.append("APPDATA", JSON.stringify(oDelAppInfo));
+
         sendAjax(sPath, oFormData, function (oResult) {
 
+            debugger;
+            
             // 화면 Lock 해제
             sap.ui.getCore().unlock();
 
@@ -270,6 +282,18 @@
             }
 
         });
+
+        // APP 삭제 전용 Cts Popup
+        function lf_appDelCtsPopup() {
+
+            // CTS Popup을 Open 한다.
+            oAPP.fn.fnCtsPopupOpener(function (oResult) {
+
+                oAPP.fn.fnSetUspAppDelete(oResult);
+
+            });
+
+        }
 
     } // end of oAPP.fn.fnSetUspAppDelete
 
@@ -864,6 +888,11 @@
      ************************************************************************/
     oAPP.events.ev_pressActivateBtn = function (oEvent) {
 
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
+        parent.setBusy("X");
+
         // 푸터 메시지가 있을 경우 닫기
         APPCOMMON.fnHideFloatingFooterMsg();
 
@@ -875,8 +904,15 @@
 
         if (iexceplength !== 0) {
 
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            parent.setBusy("");
+
             oAPP.fn.fnMultiFooterMsg(T_excep);
+
             return;
+
         }
 
         oEvent.mParameters.IS_ACT = "X";
@@ -907,9 +943,6 @@
         oFormData.append("IS_ACT", 'X');
         oFormData.append("APPDATA", JSON.stringify(oAPP.fn.getSaveData()));
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
         // Ajax 서버 호출
         sendAjax(sPath, oFormData, function (oResult) {
 
@@ -928,13 +961,22 @@
                 // 작업표시줄 깜빡임
                 oCurrWin.flashFrame(true);
 
-                eval(oResult.SCRIPT);
+                // 서버에서 만든 스크립트가 있다면 eval 처리.
+                if (oResult.SCRIPT) {
+                    eval(oResult.SCRIPT);
+                    return;
+                }
 
+                // Footer Msg 출력
+                APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", oResult.RTMSG);
                 return;
 
             }
 
-            eval(oResult.SCRIPT);
+            // 서버에서 만든 스크립트가 있다면 eval 처리.
+            if (oResult.SCRIPT) {
+                eval(oResult.SCRIPT);
+            }
 
             // change Flag 초기화
             var oAppInfo = jQuery.extend(true, {}, parent.getAppInfo());
@@ -960,6 +1002,9 @@
      * Save Button Event
      ************************************************************************/
     oAPP.events.ev_pressSaveBtn = function (oEvent) {
+
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
 
         // 푸터 메시지가 있을 경우 닫기
         APPCOMMON.fnHideFloatingFooterMsg();
@@ -992,9 +1037,6 @@
 
         oFormData.append("APPDATA", JSON.stringify(oAPP.fn.getSaveData()));
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
         // Ajax 서버 호출
         sendAjax(sPath, oFormData, lf_getAppInfo);
 
@@ -1023,13 +1065,23 @@
                 // 작업표시줄 깜빡임
                 oCurrWin.flashFrame(true);
 
-                eval(oResult.SCRIPT);
+                // 서버에서 만든 스크립트가 있다면 eval 처리.
+                if (oResult.SCRIPT) {
+                    eval(oResult.SCRIPT);
+                    return;
+                }
+
+                // Footer Msg 출력
+                APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", oResult.RTMSG);
 
                 return;
 
             }
 
-            eval(oResult.SCRIPT);
+            // 서버에서 만든 스크립트가 있다면 eval 처리.
+            if (oResult.SCRIPT) {
+                eval(oResult.SCRIPT);
+            }
 
             // 저장후 10번 페이지로 이동이면..
             if (ISBACK == 'X') {

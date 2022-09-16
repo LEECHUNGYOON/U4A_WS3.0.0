@@ -247,9 +247,11 @@
             return;
         }
 
-        oAPP.loadJs("ws_usp", function () {
-            oAPP.fn.fnCreateWs30();
-        });
+        oAPP.fn.fnCreateWs30();
+
+        // oAPP.loadJs("ws_usp", function () {
+        //     oAPP.fn.fnCreateWs30();
+        // });
 
         // let aUspLib = [{
         //     URL: "./js/ws_usp.js",
