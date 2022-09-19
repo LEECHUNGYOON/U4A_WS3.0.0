@@ -20,7 +20,7 @@ Rem *********************
 Rem *** Public Sector ***
 Rem *********************
 
-	Public HostIP, SID, SNO, MANDT, BNAME, PASS, LANGU, APPID, METHD, SPOSI, ISEDT, ISMLGN, MAXSS, ConnStr, W_system ,TCODE
+	Public HostIP, SID, SNO, MANDT, BNAME, PASS, LANGU, APPID, METHD, SPOSI, ISEDT, ISMLGN, MAXSS, ConnStr, W_system
 	         
 	Public objWSH, objSapGui, objAppl, objConn, objSess
 	
@@ -94,15 +94,14 @@ Function GetArg()
 	METHD  = WScript.arguments.Item(8) '네비게이션 대상 이벤트 메소드 (*옵션)
 	SPOSI  = WScript.arguments.Item(9) '네비게이션 대상 이벤트 메소드 소스 라인번호 (*옵션)
 	ISEDT  = WScript.arguments.Item(10) '수정모드 여부(예 : X, 아니오 : 공백)
-	TCODE  = WScript.arguments.Item(11) 'SAP TCODE
-	
+
 	REM ** 다중 로그인 여부 **
 	REM    1: SAP GUI 다중 로그인 정보 없음, 
 	REM    2: SAP GUI 다중 로그인 정보 있음(* 시스템 허용)
 	REM    X: SAP GUI 다중 로그인 시스템 허용 안함
-	ISMLGN = WScript.arguments.Item(12) 
+	ISMLGN = WScript.arguments.Item(11) 
 	
-	MAXSS = CInt(WScript.arguments.Item(13)) '시스템 허용 최대 세션수
+	MAXSS = CInt(WScript.arguments.Item(12)) '시스템 허용 최대 세션수
 	
 End Function
 
@@ -291,10 +290,10 @@ Function call_ZU4A_CTRL_PROXY()
 
     Dim LV_PARA, LV_ENC
     
-	'objSess.findById("wnd[0]/tbar[0]/okcd").text = "/NZU4A_CTRL_PROXY"
+	'objSess.findById("wnd[0]/tbar[0]/okcd").text = "/N/U4A/CTRL_PROXY"
 	'objSess.findById("wnd[0]/tbar[0]/btn[0]").press
-    'objSess.SendCommand ("/nZU4A_CTRL_PROXY")
-	objSess.SendCommand ("/n/U4A/CTRL_PROXY")
+    objSess.SendCommand ("/n/U4A/CTRL_PROXY")
+
 	'objSess.findById("wnd[0]/usr/txtPA_APPID").text = APPID
 	'objSess.findById("wnd[0]/usr/txtPA_EVTMT").text = METHD
 	'objSess.findById("wnd[0]/usr/txtPA_POSI").text = SPOSI
@@ -309,7 +308,7 @@ Function call_ZU4A_CTRL_PROXY()
 	
 	'objSess.findById("wnd[0]/tbar[1]/btn[8]").press
 
-    LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE
+    LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT
 	
 	LV_ENC = Base64Encode(LV_PARA)
 

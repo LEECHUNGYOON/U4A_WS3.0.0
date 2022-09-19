@@ -2028,7 +2028,7 @@
         oAPP.attr.ui.frame.contentWindow.delUIObjPreView(it_tree[i].OBJID, it_tree[i].POBID, it_tree[i].PUIOK, it_tree[i].UIATT, it_tree[i].ISMLB, it_tree[i].UIOBK);
 
         //미리보기 UI destroy 처리.
-        oAPP.attr.ui.frame.contentWindow.destroyUIPreView(it_tree[i].OBJID, it_tree[i].POBID);
+        oAPP.attr.ui.frame.contentWindow.destroyUIPreView(it_tree[i].OBJID);
 
         //UI수집건에 해당 UI 제거 처리.
         delete oAPP.attr.prev[it_tree[i].OBJID];

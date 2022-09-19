@@ -293,8 +293,8 @@ Function call_ZU4A_CTRL_PROXY()
     
 	'objSess.findById("wnd[0]/tbar[0]/okcd").text = "/NZU4A_CTRL_PROXY"
 	'objSess.findById("wnd[0]/tbar[0]/btn[0]").press
-    objSess.SendCommand ("/nZU4A_CTRL_PROXY")
-
+    'objSess.SendCommand ("/nZU4A_CTRL_PROXY")
+	objSess.SendCommand ("/n/U4A/CTRL_PROXY")
 	'objSess.findById("wnd[0]/usr/txtPA_APPID").text = APPID
 	'objSess.findById("wnd[0]/usr/txtPA_EVTMT").text = METHD
 	'objSess.findById("wnd[0]/usr/txtPA_POSI").text = SPOSI

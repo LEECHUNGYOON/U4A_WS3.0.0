@@ -20,8 +20,8 @@ Rem *********************
 Rem *** Public Sector ***
 Rem *********************
 
-	Public HostIP, SID, SNO, MANDT, BNAME, PASS, LANGU, APPID, METHD, SPOSI, ISEDT, ISMLGN, MAXSS, ConnStr, W_system ,TCODE
-	         
+	Public HOSTIP, SVPORT, MSSEVR, MSPORT, SAPRUT, SID, MANDT, BNAME, PASS, LANGU, APPID, METHD, SPOSI, ISEDT, ISMLGN, MAXSS, ConnStr, W_system
+	
 	Public objWSH, objSapGui, objAppl, objConn, objSess
 	
 Rem ****************************
@@ -81,34 +81,61 @@ Function MyASC(OneChar)
   
 End Function
 
+
 '외부에서 전달된 Arguments 얻기
 Function GetArg()
-	HostIP = WScript.arguments.Item(0) '연결 Host IP (*필수)
-	SID    = WScript.arguments.Item(1) '연결 SID (*필수)
-	SNO    = WScript.arguments.Item(2) '연결 SNo (*필수)
-	MANDT  = WScript.arguments.Item(3) '로그온 클라이언트 (*필수)
-	BNAME  = WScript.arguments.Item(4) '로그온 SAP ID (*필수)
-	PASS   = WScript.arguments.Item(5) '로그온 SAP ID 비번 (*필수)
-	LANGU  = WScript.arguments.Item(6) '로그온 언어키 (*필수)
-	APPID  = WScript.arguments.Item(7) 'U4A APP ID (*필수)
-	METHD  = WScript.arguments.Item(8) '네비게이션 대상 이벤트 메소드 (*옵션)
-	SPOSI  = WScript.arguments.Item(9) '네비게이션 대상 이벤트 메소드 소스 라인번호 (*옵션)
-	ISEDT  = WScript.arguments.Item(10) '수정모드 여부(예 : X, 아니오 : 공백)
-	TCODE  = WScript.arguments.Item(11) 'SAP TCODE
+	HOSTIP = WScript.arguments.Item(0) '연결 Host IP (*필수) => EX) 10.10.10.10 또는 EEQ 
+	SVPORT = WScript.arguments.Item(1) 'Service Port (*필수) => EX) 3200
+	SID    = WScript.arguments.Item(2) '연결 SID (*필수) => EX) U4A
+	
+    MSSEVR = WScript.arguments.Item(3) 'Message Server (*옵션) => EX) 10.10.10.10 또는 msg.server.com
+	MSPORT = WScript.arguments.Item(4) 'Message Server Port (*옵션) => EX) 3600
+	SAPRUT = WScript.arguments.Item(5) 'SAP Route (*옵션) => EX) /H/10.10.10.10/S/3299
+	
+	MANDT  = WScript.arguments.Item(6) '로그온 클라이언트 (*필수) => EX) 800
+	BNAME  = WScript.arguments.Item(7) '로그온 SAP ID (*필수)	 => EX) USER
+	PASS   = WScript.arguments.Item(8) '로그온 SAP ID 비번 (*필수) => EX) Password
+	LANGU  = WScript.arguments.Item(9) '로그온 언어키 (*필수)   => EX) KO
+	
+	APPID  = WScript.arguments.Item(10) 'U4A APP ID (*필수) => EX) ZU4A_TS0010
+	METHD  = WScript.arguments.Item(11) '네비게이션 대상 이벤트 메소드 (*옵션) => EX) EV_TEST
+	SPOSI  = WScript.arguments.Item(12) '네비게이션 대상 이벤트 메소드 소스 라인번호 (*옵션) => EX) 100
+	ISEDT  = WScript.arguments.Item(13) '수정모드 여부(예 : X, 아니오 : 공백) 
 	
 	REM ** 다중 로그인 여부 **
 	REM    1: SAP GUI 다중 로그인 정보 없음, 
 	REM    2: SAP GUI 다중 로그인 정보 있음(* 시스템 허용)
 	REM    X: SAP GUI 다중 로그인 시스템 허용 안함
-	ISMLGN = WScript.arguments.Item(12) 
-	
-	MAXSS = CInt(WScript.arguments.Item(13)) '시스템 허용 최대 세션수
+	ISMLGN = WScript.arguments.Item(14) 
+ 
+ 	MAXSS = CInt(WScript.arguments.Item(15)) '시스템 허용 최대 세션수
 	
 End Function
 
+
 'SAP GUI 연결 문자열 설정
 Function SetConnStr()
-	ConnStr = "/H/" & HostIP & "/S/32" & SNO
+
+	If SAPRUT <> "" Then
+		ConnStr = SAPRUT
+
+	End If
+
+	IF MSSEVR <> "" Then
+		if HOSTIP <> "" Then
+			ConnStr = ConnStr & "/M/" & MSSEVR & "/S/" & MSPORT & "/G/" & HOSTIP
+
+		Else
+			ConnStr = ConnStr & "/M/" & MSSEVR & "/S/" & MSPORT & "/G/SPACE"
+
+		End If
+
+	Else
+		ConnStr = ConnStr & "/H/" & HOSTIP & "/S/" & SVPORT
+
+	End If
+
+'MsgBox ConnStr
 
 End Function
 
@@ -144,7 +171,7 @@ End Function
 
 
 '로그인 Session 카운트 점검
-Function Chk_Session_Cnt() 
+Function Chk_Session_Cnt()
 
 	Dim W_syst, W_conn, W_Sess
 	Dim a
@@ -286,15 +313,16 @@ Function SAP_Login()
 
 End Function
 
+
 'APP 컨트롤러 클래서 네비게이션 처리
 Function call_ZU4A_CTRL_PROXY()
 
     Dim LV_PARA, LV_ENC
     
-	'objSess.findById("wnd[0]/tbar[0]/okcd").text = "/NZU4A_CTRL_PROXY"
+	'objSess.findById("wnd[0]/tbar[0]/okcd").text = "/N/U4A/CTRL_PROXY"
 	'objSess.findById("wnd[0]/tbar[0]/btn[0]").press
-    'objSess.SendCommand ("/nZU4A_CTRL_PROXY")
-	objSess.SendCommand ("/n/U4A/CTRL_PROXY")
+    objSess.SendCommand ("/n/U4A/CTRL_PROXY")
+
 	'objSess.findById("wnd[0]/usr/txtPA_APPID").text = APPID
 	'objSess.findById("wnd[0]/usr/txtPA_EVTMT").text = METHD
 	'objSess.findById("wnd[0]/usr/txtPA_POSI").text = SPOSI
@@ -309,7 +337,7 @@ Function call_ZU4A_CTRL_PROXY()
 	
 	'objSess.findById("wnd[0]/tbar[1]/btn[8]").press
 
-    LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE
+    LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT
 	
 	LV_ENC = Base64Encode(LV_PARA)
 
@@ -332,7 +360,6 @@ Function ERR_RET(isECD, isEMSG)
 	Err.Raise 999, "Error Occurred", LV_RET
 	
 End Function
-
 
 Rem **************************************
 Rem *** End Of Function implementation ***
@@ -386,11 +413,11 @@ Sub StartSAPGUI
 	  
         LV_RET = SAP_Login()
 
-        If LV_RET <> "S" Then		
-            'MsgBox "Login failed!!", vbCritical, "Error!!"           
+        If LV_RET <> "S" Then
+            'MsgBox "Login failed!!", vbCritical, "Error!!"            
             'Exit Sub
-            LV_ERR = ERR_RET("E02", "Login failed!!")
-
+			LV_ERR = ERR_RET("E02", "Login failed!!")
+            
         End If
 
 		LV_RET = Attach_Session() '로그인 세션 연결

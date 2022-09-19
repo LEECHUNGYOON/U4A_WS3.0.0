@@ -126,6 +126,15 @@
         //Web Application Type
         ls_appl.APPTY = "M";
 
+        //DEFAULT DDLB 활성화.
+        ls_appl.APPTY_edit = true;
+
+        //접속한 서버 SID가 U4A HANA 서버가 아닌경우.
+        if(parent.getServerInfo().SYSID !== "UHA"){
+          //Web Application Type을 선택 불가 처리.
+          ls_appl.APPTY_edit = false;
+        }
+
         //Package
         ls_appl.PACKG = "";
 
@@ -261,7 +270,8 @@
 
       //Web Application Type
       var oSelType = new sap.m.Select({
-        selectedKey: "{/CREATE/APPTY}"
+        selectedKey: "{/CREATE/APPTY}",
+        enabled: "{/CREATE/APPTY_edit}"
       });
 
       oSelType.bindAggregation("items", {
