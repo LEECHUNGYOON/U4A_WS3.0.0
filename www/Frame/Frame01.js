@@ -24,7 +24,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     MIMETYPES = require('mime-types'),
     POWERMONITOR = REMOTE.require('electron').powerMonitor,
     COMPUTERNAME = process.env.COMPUTERNAME;
-
+    
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 // REGEDIT.setExternalVBSLocation('resources/regedit/vbs');

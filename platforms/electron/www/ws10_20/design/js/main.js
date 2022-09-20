@@ -514,14 +514,26 @@
       //라이브러리 수집 object 초기화.
       oAPP.DATA.LIB = {};
 
+      //meta 정보 검색.
+      var l_meta = parent.getMetadata();
+
+      //DEFAULT 라이브러리 TABLE 명 구성(ZTU4AXXXX)
+      var l_tabPreFix = "ZTU4A";
+
+      //해당 서버의 NAME SPACE가 적용된경우.
+      if(l_meta && l_meta.IS_NAME_SPACE === "X"){
+        // (/U4A/TXXXX) 형식의 라이브러리 테이블명 구성.
+        l_tabPreFix = "/U4A/T";
+      }
+
       //검색 대상 라이브러리 정보 구성.
       var lt_lib = [];
-      lt_lib.push({tabnm:"ZTU4A9011",alias:"T_9011",END:"",ERROR:""});
-      lt_lib.push({tabnm:"ZTU4A0020",alias:"T_0020",END:"",ERROR:""});
-      lt_lib.push({tabnm:"ZTU4A0022",alias:"T_0022",END:"",ERROR:""});
-      lt_lib.push({tabnm:"ZTU4A0023",alias:"T_0023",END:"",ERROR:""});
-      lt_lib.push({tabnm:"ZTU4A0024",alias:"T_0024",END:"",ERROR:""});
-      lt_lib.push({tabnm:"ZTU4A0027",alias:"T_0027",END:"",ERROR:""});
+      lt_lib.push({tabnm:l_tabPreFix + "9011",alias:"T_9011",END:"",ERROR:""});
+      lt_lib.push({tabnm:l_tabPreFix + "0020",alias:"T_0020",END:"",ERROR:""});
+      lt_lib.push({tabnm:l_tabPreFix + "0022",alias:"T_0022",END:"",ERROR:""});
+      lt_lib.push({tabnm:l_tabPreFix + "0023",alias:"T_0023",END:"",ERROR:""});
+      lt_lib.push({tabnm:l_tabPreFix + "0024",alias:"T_0024",END:"",ERROR:""});
+      lt_lib.push({tabnm:l_tabPreFix + "0027",alias:"T_0027",END:"",ERROR:""});
 
 
       //구성된 라이브러리 정보를 기준으로 검색.

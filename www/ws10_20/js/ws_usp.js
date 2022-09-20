@@ -1806,7 +1806,7 @@
 
     function _fnDeleteUspNodeCb(oParam, oEvent) {
 
-        var oTreeTable = oParam.oTreeTable;
+        debugger;
 
         // 동작 취소.
         if (oEvent !== "YES") {
@@ -1817,7 +1817,8 @@
             return;
         }
 
-        var iIndex = gSelectedTreeIndex,
+        var oTreeTable = oParam.oTreeTable,
+            iIndex = gSelectedTreeIndex,
             oSelectedCtx = oTreeTable.getContextByIndex(iIndex);
 
         if (!oSelectedCtx) {
@@ -1826,9 +1827,9 @@
 
         var oDelRowData = oSelectedCtx.getModel().getProperty(oSelectedCtx.getPath()),
             oDeleteTreeData = jQuery.extend(true, {}, oDelRowData),
+            aDeleteTreeData = _parseTree2Tab([oDeleteTreeData], "USPTREE"),
 
-            oAppData = APPCOMMON.fnGetModelProperty("/WS30/APP"),
-            aDeleteTreeData = _parseTree2Tab([oDeleteTreeData], "USPTREE");
+            oAppData = APPCOMMON.fnGetModelProperty("/WS30/APP");
 
         var sReqNo = "";
 
@@ -1839,11 +1840,11 @@
 
         // CTS 팝업에서 선택한 CTS 번호가 있을 경우.
         if (oParam.TRKORR) {
-            sReqNo = TRKORR;
+            sReqNo = oParam.TRKORR;
         }
 
         var oSendData = {
-                APPID: oAppInfo.APPID,
+                APPID: oAppData.APPID,
                 TRKORR: sReqNo,
                 T_TREE: aDeleteTreeData,
                 TU4A0010: oAppData
@@ -1870,6 +1871,8 @@
     } // end of _fnDeleteUspNodeCb
 
     function _fnDeleteUspNodeSuccessCb(oResult) {
+
+        debugger;
 
         var oParam = this,
             oTreeTable = oParam.oTreeTable;
@@ -1949,10 +1952,22 @@
             aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
             oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
 
+        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"), // App 정보
+            oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"); // 우측 컨텐츠 데이터
+
+        // APP 업데이트 정보 갱신
+        oAppInfo = Object.assign(oAppInfo, oResult.S_RETURN);
+
         /**
          * 삭제된 대상 중, 우측에 보고 있던 CONTENT가 있다면 클리어 시키고 Intro 페이지로 이동
          */
         if (oBindBeforeSelect) {
+
+            // 우측에 활성화 되어 있는 Content가 Root 정보 일 경우.
+            var bIsRoot = oBeforeSelectData.PUJKY === "" ? true : false;
+            if (bIsRoot) {
+                oContent = Object.assign(oContent, oResult.S_RETURN);
+            }
 
             var oFind = aDeleteTreeData.find(arr => arr.OBJKY == oBindBeforeSelect.OBJKY);
             if (oFind) {
@@ -1985,12 +2000,19 @@
 
     function lf_appDelCtsPopup(oParam) {
 
+        debugger;
+
         // CTS Popup을 Open 한다.
         oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
-            oEvent.mParameters.TRKORR = oResult.TRKORR;
+            var oParam = this;
 
-        });
+            oParam.TRKORR = oResult.TRKORR;
+
+            _fnDeleteUspNodeCb(oParam, oParam.oEvent)
+
+
+        }.bind(oParam));
 
     } // end of lf_appDelCtsPopup
 
@@ -3563,7 +3585,8 @@
 
         }
 
-        var sRandomKey = RANDOM.generateBase30(50),
+        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+            sRandomKey = oAppInfo.APPID + "|" + RANDOM.generateBase30(34),
             oNewRowData = jQuery.extend(true, {}, oRowData);
 
         oNewRowData = _fnClearNewRowData(oNewRowData);
@@ -3986,14 +4009,14 @@
             oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"), // 우측 컨텐츠 데이터
             aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"); // 좌측 Tree 데이터
 
+        // APP 업데이트 정보 갱신
+        oAppInfo = Object.assign(oAppInfo, oResult.S_RETURN);
+
         // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
         var oBeforeSelectData = _fnGetSelectedUspTreeData(aUspTreeData);
         if (oBeforeSelectData) {
 
             oBeforeSelectData.DESCT = oContent.DESCT;
-
-            // APP 업데이트 정보 갱신
-            oAppInfo = Object.assign(oAppInfo, oResult.S_RETURN);
 
             // 우측에 활성화 되어 있는 Content가 Root 정보 일 경우.
             var bIsRoot = oBeforeSelectData.PUJKY === "" ? true : false;
