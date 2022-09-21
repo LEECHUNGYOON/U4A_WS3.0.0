@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -84,7 +84,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function () {
+    oAPP.fn.fnOnResizeWs30 = function() {
 
         console.log("resize30!!!");
 
@@ -221,7 +221,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (bIsShow) {
+            formatter: function(bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -366,7 +366,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function (sKey) {
+                            formatter: function(sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -502,7 +502,7 @@
 
                     oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
                 },
-                suggest: function (oEvent) {
+                suggest: function(oEvent) {
 
                     var sValue = oEvent.getParameter("suggestValue"),
                         aFilters = [];
@@ -511,7 +511,7 @@
 
                         aFilters = [
                             new sap.ui.model.Filter([
-                                new sap.ui.model.Filter("TCODE", function (sText) {
+                                new sap.ui.model.Filter("TCODE", function(sText) {
                                     return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                 }),
                             ], false)
@@ -848,7 +848,7 @@
                                 }),
                                 fields: new sap.m.Input({
                                     editable: false,
-                                    value: `{${sBindRoot}/REQNO}`
+                                    value: `{${sBindRoot}/REQNR}`
                                 })
                             }),
                             new sap.ui.layout.form.FormElement({
@@ -1093,7 +1093,7 @@
                                     parts: [
                                         "ISSEL",
                                     ],
-                                    formatter: function (ISSEL) {
+                                    formatter: function(ISSEL) {
 
                                         var sIconSrc = "ICON_SPACE";
 
@@ -1190,7 +1190,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function (oEvent) {
+                rowSelectionChange: function(oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1272,7 +1272,7 @@
                             }),
                             fields: new sap.m.CheckBox({
                                 editable: false
-                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
+                            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
 
                                 if (ISFLD == "X") {
                                     return true;
@@ -1320,7 +1320,7 @@
             .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function (oControl) {
+            onAfterRendering: function(oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1666,7 +1666,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1731,7 +1731,7 @@
                 oUspCrForm
             ],
 
-            afterClose: function () {
+            afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -1805,6 +1805,8 @@
     } // end of fnDeleteUspNode
 
     function _fnDeleteUspNodeCb(oParam, oEvent) {
+        
+        debugger;
 
         var oTreeTable = oParam.oTreeTable;
 
@@ -1831,6 +1833,7 @@
             aDeleteTreeData = _parseTree2Tab([oDeleteTreeData], "USPTREE"),
 
             oSendData = {
+                TRKORR: oParam.TRKORR || "",
                 APPID: oAppInfo.APPID,
                 T_TREE: aDeleteTreeData
             },
@@ -1846,7 +1849,8 @@
         sap.ui.getCore().lock();
 
         var oParam = {
-            oTreeTable: oTreeTable
+            oTreeTable: oTreeTable,
+            oEvent: oEvent
         }
 
         sendAjax(sPath, oFormData, _fnDeleteUspNodeSuccessCb.bind(oParam));
@@ -1871,12 +1875,23 @@
             // 작업표시줄 깜빡임
             CURRWIN.flashFrame(true);
 
+             // 서버에서 만든 스크립트가 있다면 eval 처리.
+             if (oResult.SCRIPT) {
+                eval(oResult.SCRIPT);
+                return;
+            }
+
             // Footer Msg 출력
             APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
 
             return;
 
         }
+
+        // 서버에서 만든 스크립트가 있다면 eval 처리.
+        if (oResult.SCRIPT) {
+            eval(oResult.SCRIPT);
+        }        
 
         // Footer Msg 출력
         APPCOMMON.fnShowFloatingFooterMsg("S", "WS30", oResult.RTMSG);
@@ -1930,6 +1945,19 @@
         oTreeTable.clearSelection();
 
     } // end of _fnDeleteUspNodeSuccessCb
+
+    function lf_appDelCtsPopup(oParam) {
+
+        // CTS Popup을 Open 한다.
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+
+            oParam.TRKORR = oResult.TRKORR;
+       
+            _fnDeleteUspNodeCb(oParam, oParam.oEvent);
+
+        });
+
+    }
 
     function _fnFindModelData(sPath) {
 
@@ -2046,8 +2074,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function (e) {
-                $.each(e, function (e, o) {
+            t = function(e) {
+                $.each(e, function(e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2278,7 +2306,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function (event) {
+            fileReader.onload = function(event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -3756,8 +3784,8 @@
             sReqNo = "";
 
         // 기존에 CTS 번호가 있을 경우
-        if (oAppData.REQNO != "") {
-            sReqNo = oAppData.REQNO;
+        if (oAppData.REQNR != "") {
+            sReqNo = oAppData.REQNR;
         }
 
         // CTS 팝업에서 선택한 CTS 번호가 있을 경우.
@@ -3771,7 +3799,8 @@
             TRKORR: sReqNo,
             IS_ACT: IS_ACT || "",
             S_CONTENT: {},
-            T_TREE: []
+            T_TREE: [],
+            TU4A0010: oAppData
         };
 
         // 우측 컨텐츠 데이터를 읽는다.
@@ -3826,6 +3855,18 @@
      * [WS30] 저장 콜백
      **************************************************************************/
     function _fnSaveCallback(oResult) {
+
+        debugger;
+
+         // 전달 받은 파라미터 확인 점검..
+         var oEvent = this,
+         oNewEvent = oEvent,
+         pAFPRC = oEvent.getParameter("AFPRC"),
+         pISBACK = oEvent.getParameter("ISBACK"),
+         pISROW = oEvent.getParameter("ISROW"),
+         pISDISP = oEvent.getParameter("ISDISP"),
+         pIS_ACT = oEvent.getParameter("IS_ACT"),
+         oTreeTable = oEvent.getParameter("oTreeTable");
 
         // 화면 Lock 해제
         sap.ui.getCore().unlock();
@@ -3883,14 +3924,7 @@
         // 저장 성공 후 앱 상태 변경 플래그 해제
         setAppChange("");
 
-        // 전달 받은 파라미터 확인 점검..
-        var oEvent = this,
-            pAFPRC = oEvent.getParameter("AFPRC"),
-            pISBACK = oEvent.getParameter("ISBACK"),
-            pISROW = oEvent.getParameter("ISROW"),
-            pISDISP = oEvent.getParameter("ISDISP"),
-            pIS_ACT = oEvent.getParameter("IS_ACT"),
-            oTreeTable = oEvent.getParameter("oTreeTable");
+       
 
         // Activate로 들어왔을 경우 상단에 APP 상태 정보 변경
         if (pIS_ACT == "X") {
@@ -3917,15 +3951,33 @@
 
         }
 
-        // 우측 컨텐츠 데이터를 읽는다.
-        var oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"),
-            aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
+        debugger;
+
+        var oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"), // 우측 컨텐츠 데이터를 읽는다.
+            oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"), // APP 정보
+            aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"); // 좌측 TREE 정보
+
+        // 서버에서 리턴 받은 앱 변경자, 변경 시간, 앱 버전, CTS 번호 등의 정보를 업데이트 한다.    
+        oAppInfo = Object.assign(oAppInfo, oResult.S_RETURN);
 
         // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
         var oBeforeSelectData = _fnGetSelectedUspTreeData(aUspTreeData);
+
         if (oBeforeSelectData) {
+
             oBeforeSelectData.DESCT = oContent.DESCT;
+
+            // 우측에 활성화 되어 있는 Content 정보가 ROOT 정보 라면..
+            var bIsRoot = oBeforeSelectData.PUJKY === "" ? true : false;
+            if (bIsRoot) {
+                // 우측 컨텐트 영역과 좌측 Root에 정보 업데이트
+                oContent = Object.assign(oContent, oResult.S_RETURN);
+                oBeforeSelectData = Object.assign(oBeforeSelectData, oResult.S_RETURN);
+            }
+
         }
+
+        sap.ui.getCore().getModel().refresh();
 
         // code editor KeyPress 이벤트 설정
         fnCodeEditorKeyPressEvent("X");
@@ -4096,7 +4148,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oEvent = this;
             // IS_ACT = oEvent.getParameter("IS_ACT");

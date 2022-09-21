@@ -230,8 +230,6 @@
      ************************************************************************/
     oAPP.fn.fnSetUspAppDelete = function (oParam) {
 
-        debugger;
-
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
 
@@ -257,8 +255,6 @@
 
         sendAjax(sPath, oFormData, function (oResult) {
 
-            debugger;
-            
             // 화면 Lock 해제
             sap.ui.getCore().unlock();
 
