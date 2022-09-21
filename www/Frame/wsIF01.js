@@ -642,7 +642,7 @@ function setCleanHtml(msgtxt) {
     /* 추출된 문자열의 첫번째와 마지막의 개행 문자를 제거하기 */
     msgtxt = msgtxt.replace(/(^\n|\n$)/igm, "");
 
-    msgtxt = msgtxt.replace(/\n/g, '<br>');
+    // msgtxt = msgtxt.replace(/\n/g, '<br>');
 
     /* Table 태그가 있을 경우 원래 위치로 replace 수행 */
     if (aTableTag.length != 0) {

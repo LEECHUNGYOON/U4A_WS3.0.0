@@ -765,8 +765,11 @@ let oAPP = (function () {
 
                 } else {
 
-                    parent.showMessage(null, 99, "E", xhr.responseText);
+                    var sCleanHtml = parent.setCleanHtml(xhr.response);
+
+                    parent.showMessage(null, 99, "E", sCleanHtml);
                     parent.setBusy('');
+                    
                 }
             }
         };

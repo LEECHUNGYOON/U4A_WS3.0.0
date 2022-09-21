@@ -1,7 +1,7 @@
 /**************************************************************************                                           
  * ws_fn_04.js
  **************************************************************************/
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     var PATH = parent.PATH,
@@ -62,15 +62,23 @@
     /************************************************************************
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSapGuiMultiLoginCheckThen = function (oResult) {
+    oAPP.fn.fnSapGuiMultiLoginCheckThen = function(oResult) {
 
-        var oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
+        var oMetadata = parent.getMetadata(),
+            oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
             oSettings = parent.require(oSettingsPath),
             oVbsInfo = oSettings.vbs,
             sVbsPath = oVbsInfo.rootPath,
             sVbsFileName = oVbsInfo.controllerClassVbs,
-            sNewSessionVbs = oVbsInfo.newSessionVbs,
-            sAppPath = APP.getPath("userData"),
+            sNewSessionVbs = oVbsInfo.newSessionVbs;
+
+        // 서버가 신규 네임 스페이스 적용 서버가 아닌경우
+        if (oMetadata.IS_NAME_SPACE !== "X") {
+            sVbsFileName = "asis_" + sVbsFileName;
+            sNewSessionVbs = "asis_" + sNewSessionVbs;
+        }
+
+        var sAppPath = APP.getPath("userData"),
             sVbsFullPath = PATH.join(sAppPath, sVbsPath, sVbsFileName),
             sNewSessionVbsFullPath = PATH.join(sAppPath, sVbsPath, sNewSessionVbs);
 
@@ -86,10 +94,6 @@
         if (oParamAppInfo) {
             oAppInfo = oParamAppInfo;
         }
-
-        // if (!oAppInfo) {
-        //     return;
-        // }
 
         var aParam = [
             sNewSessionVbsFullPath, // VBS 파일 경로
@@ -107,12 +111,12 @@
 
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
         var vbs = parent.SPAWN('cscript.exe', aParam);
-        vbs.stdout.on("data", function (data) {
+        vbs.stdout.on("data", function(data) {
             console.log(data.toString());
         });
 
         //GUI 세션창이 존재하지않다면 ...
-        vbs.stderr.on("data", function (data) {
+        vbs.stderr.on("data", function(data) {
 
             //VBS 리턴 오류 CODE / MESSAGE 
             var str = data.toString(),
@@ -147,8 +151,8 @@
             ];
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
-            vbs.stdout.on("data", function (data) {});
-            vbs.stderr.on("data", function (data) {
+            vbs.stdout.on("data", function(data) {});
+            vbs.stderr.on("data", function(data) {
 
                 //VBS 리턴 오류 CODE / MESSAGE 
                 var str = data.toString(),

@@ -1663,7 +1663,7 @@
                                 design: "Bold",
                                 text: "Name"
                             }),
-                            fields: new sap.m.Input({
+                            fields: new sap.m.Input("ws30_crname", {
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
@@ -1711,10 +1711,14 @@
 
         // USP Folder 생성 팝업
         var oUspCrDlg = new sap.m.Dialog("uspCrNodePopup", {
+
+            // properties
             draggable: true,
             resizable: true,
             title: `Create [ {${sBindRootPath}/TITLE} ]`,
             contentWidth: "500px",
+
+            // aggregations
             buttons: [
                 new sap.m.Button({
                     type: sap.m.ButtonType.Emphasized,
@@ -1732,6 +1736,10 @@
                 oUspCrForm
             ],
 
+            // association
+            initialFocus: "ws30_crname",
+
+            // events
             afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
@@ -1807,8 +1815,6 @@
 
     function _fnDeleteUspNodeCb(oParam, oEvent) {
 
-        debugger;
-
         // 동작 취소.
         if (oEvent !== "YES") {
 
@@ -1872,8 +1878,6 @@
     } // end of _fnDeleteUspNodeCb
 
     function _fnDeleteUspNodeSuccessCb(oResult) {
-
-        debugger;
 
         var oParam = this,
             oTreeTable = oParam.oTreeTable;
@@ -2001,8 +2005,6 @@
 
     function lf_appDelCtsPopup(oParam) {
 
-        debugger;
-
         // CTS Popup을 Open 한다.
         oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
@@ -2010,8 +2012,7 @@
 
             oParam.TRKORR = oResult.TRKORR;
 
-            _fnDeleteUspNodeCb(oParam, oParam.oEvent)
-
+            _fnDeleteUspNodeCb(oParam, oParam.oEvent);
 
         }.bind(oParam));
 
@@ -2653,7 +2654,7 @@
             APPCOMMON.fnShowFloatingFooterMsg("W", "WS30", sMsg);
 
             return;
-        }        
+        }
 
         var sBindPath = oCtx.getPath(),
             oTreeData = oTreeTable.getModel().getProperty(sBindPath),
@@ -3208,38 +3209,6 @@
 
             case "K4": // delete
 
-                // // Usp 삭제 시, 현재 Change가 된 상태인지 확인.
-                // // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
-                // var IS_CHAG = getAppChange();
-                // if (IS_CHAG == "X") {
-
-                //     var aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
-                //         oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData),
-
-                //         iIndex = gSelectedTreeIndex,
-                //         oCtx = oTreeTable.getContextByIndex(iIndex),
-                //         oSelectTreeData = oCtx.getModel().getProperty(oCtx.sPath),
-
-                //         // TREE -> Array로 변환
-                //         aParseTree = _parseTree2Tab([oSelectTreeData], "USPTREE"),
-
-                //         oFind = aParseTree.find(arr => arr.OBJKY == (oBindBeforeSelect ? oBindBeforeSelect.OBJKY : ""));
-
-                //     if (!oFind) {
-
-                //         var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
-
-                //         parent.showMessage(sap, 40, 'W', sMsg, _fnDeleteUspAppChangeMsgCB.bind(this, oTreeTable));
-
-                //         // 현재 떠있는 팝업 창들을 잠시 숨긴다.
-                //         oAPP.fn.fnChildWindowShow(false);
-
-                //         return;
-
-                //     }
-
-                // }
-
                 fnDeleteUspNode(oTreeTable);
 
                 break;
@@ -3413,76 +3382,76 @@
 
     } // end of _fnRenameUspAppChangeMsgCB
 
-    /**************************************************************************
-     * [WS30] USP 삭제 전 APP Change가 있을 경우 메시지 팝업 콜백 이벤트
-     **************************************************************************/
-    function _fnDeleteUspAppChangeMsgCB(oTreeTable, oEvent) {
+    // /**************************************************************************
+    //  * [WS30] USP 삭제 전 APP Change가 있을 경우 메시지 팝업 콜백 이벤트
+    //  **************************************************************************/
+    // function _fnDeleteUspAppChangeMsgCB(oTreeTable, oEvent) {
 
-        // 동작 취소.
-        if (oEvent == null || oEvent == "CANCEL") {
+    //     // 동작 취소.
+    //     if (oEvent == null || oEvent == "CANCEL") {
 
-            // 현재 떠있는 팝업 창이 있었고 숨김 처리 되있었다면 다시 활성화 시킨다.
-            oAPP.fn.fnChildWindowShow(true);
+    //         // 현재 떠있는 팝업 창이 있었고 숨김 처리 되있었다면 다시 활성화 시킨다.
+    //         oAPP.fn.fnChildWindowShow(true);
 
-            return;
-        }
+    //         return;
+    //     }
 
-        // 취소했을 경우.
-        if (oEvent !== "YES") {
+    //     // 취소했을 경우.
+    //     if (oEvent !== "YES") {
 
-            // 이전에 선택 표시된 Node 정보 구하기
-            // var oTreeModel = oTreeTable.getModel(),
-            //     aUspTreeData = oTreeModel.getProperty("/WS30/USPTREE");
+    //         // 이전에 선택 표시된 Node 정보 구하기
+    //         // var oTreeModel = oTreeTable.getModel(),
+    //         //     aUspTreeData = oTreeModel.getProperty("/WS30/USPTREE");
 
-            // var oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
-            // if (oBindBeforeSelect) {
+    //         // var oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
+    //         // if (oBindBeforeSelect) {
 
-            //     var oUspData = APPCOMMON.fnGetModelProperty("/WS30/USPDATA");
+    //         //     var oUspData = APPCOMMON.fnGetModelProperty("/WS30/USPDATA");
 
-            //     oUspData.DESCT = oBindBeforeSelect.DESCT;
-            //     oUspData.CONTENT = oBindBeforeSelect.CONTENT;
+    //         //     oUspData.DESCT = oBindBeforeSelect.DESCT;
+    //         //     oUspData.CONTENT = oBindBeforeSelect.CONTENT;
 
-            //     oTreeModel.refresh();
+    //         //     oTreeModel.refresh();
 
-            // }
+    //         // }
 
-            // // 앱 변경 사항 플래그 설정
-            // setAppChange("");
+    //         // // 앱 변경 사항 플래그 설정
+    //         // setAppChange("");
 
-            // // code editor key press 이벤트 설정
-            // fnCodeEditorKeyPressEvent("X");
+    //         // // code editor key press 이벤트 설정
+    //         // fnCodeEditorKeyPressEvent("X");
 
-            // // 이전에 선택 표시된 USP Tree Node 선택 해제
-            // fnOnUspTreeUnSelect();
+    //         // // 이전에 선택 표시된 USP Tree Node 선택 해제
+    //         // fnOnUspTreeUnSelect();
 
-            // // 우측 에디터 영역을 메인 페이지로 이동
-            // fnOnMoveToPage("USP10");
+    //         // // 우측 에디터 영역을 메인 페이지로 이동
+    //         // fnOnMoveToPage("USP10");
 
-            // 저장 취소
-            _fnSaveCancel(oTreeTable);
+    //         // 저장 취소
+    //         _fnSaveCancel(oTreeTable);
 
-            // Usp 삭제 팝업 띄우기
-            fnDeleteUspNode(oTreeTable);
+    //         // Usp 삭제 팝업 띄우기
+    //         fnDeleteUspNode(oTreeTable);
 
-            return;
+    //         return;
 
-        }
+    //     }
 
-        // 좌측 트리 데이터를 구한다.
-        var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
-            aUspTreeData = jQuery.extend(true, [], aTreeData),
-            aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE"),
+    //     // 좌측 트리 데이터를 구한다.
+    //     var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
+    //         aUspTreeData = jQuery.extend(true, [], aTreeData),
+    //         aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE"),
 
-            // 저장 후 삭제 프로세스를 태운다.
-            oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+    //         // 저장 후 삭제 프로세스를 태운다.
+    //         oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
 
-        oSaveBtn.firePress({
-            AFPRC: "D",
-            TREEDATA: aUspTreeData,
-            oTreeTable: oTreeTable
-        });
+    //     oSaveBtn.firePress({
+    //         AFPRC: "D",
+    //         TREEDATA: aUspTreeData,
+    //         oTreeTable: oTreeTable
+    //     });
 
-    } // end of _fnDeleteUspAppChangeMsgCB
+    // } // end of _fnDeleteUspAppChangeMsgCB
 
     /**************************************************************************
      * [WS30] 저장 취소 공통 메소드
@@ -3649,7 +3618,6 @@
 
     } // end of ev_createUspNodeAcceptEvent
 
-
     /**************************************************************************
      * [WS30] 신규 생성된 Usp Node 화면에 반영
      **************************************************************************/
@@ -3726,15 +3694,12 @@
             oTreeTable.fireRowsUpdated(oEvent, oRowData);
         }, 0);
 
-
     } // end of ev_selectRowUpdated
 
     function _fnClearNewRowData(oRowData) {
 
         for (var i in oRowData) {
-
             oRowData[i] = "";
-
         }
 
         return oRowData;

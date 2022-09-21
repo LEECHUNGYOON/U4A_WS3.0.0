@@ -332,7 +332,7 @@ let oAPP = parent.oAPP;
             sInstNm = "LO_" + sObjNm, // ABAP 클래스의 인스턴스 명
             sCopyText = "DATA " + sInstNm + " TYPE REF TO " + sClsNm + ". \n"; // ABAP 클래스 선언문
 
-        var oMetadata = APP.attr.oMetadata;
+        var oMetadata = oAPP.attr.oMetadata;
 
         // 신규 NAMESPACE 대상인 경우.
         if (oMetadata && oMetadata.IS_NAME_SPACE == "X") {
@@ -428,7 +428,7 @@ let oAPP = parent.oAPP;
      * 조회된 Runtime Class List의 Row 더블클릭 이벤트
      ************************************************************************/
     oAPP.events.ev_runtimeClassListDblclickEvent = function(oEvent) {
-
+        
         var oTarget = oEvent.target,
             $SelectedRow = $(oTarget).closest(".sapMListTblRow");
 
