@@ -5,7 +5,7 @@
  * - file Desc : CTS POPUP
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     /************************************************************************
@@ -27,7 +27,7 @@
      * @param {Function} fnCallback
      * - CTS 팝업에서 CTS 번호 선택한 값 전달하기 위한 callback function
      ************************************************************************/
-    oAPP.fn.fnCtsPopupOpen = function (fnCallback) {
+    oAPP.fn.fnCtsPopupOpen = function(fnCallback) {
 
         if (typeof GfnCtsCallback !== "undefined") {
             GfnCtsCallback = undefined;
@@ -71,7 +71,7 @@
 
                     new sap.m.Button({
                         icon: "sap-icon://decline",
-                        press: function () {
+                        press: function() {
 
                             oCtsDialog.close();
 
@@ -89,7 +89,7 @@
                 new sap.m.Button({
                     type: sap.m.ButtonType.Emphasized,
                     icon: "sap-icon://accept",
-                    press: function () {
+                    press: function() {
                         oAPP.events.ev_CtsPopupAccept();
                     }
                 }),
@@ -107,7 +107,7 @@
                 new sap.m.Button({
                     type: sap.m.ButtonType.Reject,
                     icon: "sap-icon://decline",
-                    press: function () {
+                    press: function() {
 
                         oCtsDialog.close();
 
@@ -118,6 +118,7 @@
             // Events
             beforeOpen: oAPP.events.ev_CtsDlgBeforeOpen,
             afterOpen: oAPP.events.ev_GetCtsDialogAfterOpen,
+            afterClose: oAPP.events.ev_CtsDlgAfterClose,
 
         }).addStyleClass("sapUiContentPadding");
 
@@ -130,7 +131,7 @@
     /************************************************************************
      * CTS 팝업의 컨텐츠 영역 UI Object
      ************************************************************************/
-    oAPP.fn.fnGetCtsContents = function () {
+    oAPP.fn.fnGetCtsContents = function() {
 
         var oCtsPanel = oAPP.fn.fnGetCtsDlgPanel(),
             oCtsTreeTable = oAPP.fn.fnGetCtsDlgTreeTable();
@@ -216,7 +217,7 @@
     /************************************************************************
      * CTS 팝업의 Panel 영역 UI Object
      ************************************************************************/
-    oAPP.fn.fnGetCtsDlgPanel = function () {
+    oAPP.fn.fnGetCtsDlgPanel = function() {
 
         var oCtsForm = oAPP.fn.fnGetCtsDlgForm();
 
@@ -239,7 +240,7 @@
     /************************************************************************
      * CTS 팝업의 Panel 영역 UI Object
      ************************************************************************/
-    oAPP.fn.fnGetCtsDlgForm = function () {
+    oAPP.fn.fnGetCtsDlgForm = function() {
 
         // MIME Folder 생성 팝업의 FORM
         var oCtsForm = new sap.ui.layout.form.Form({
@@ -297,7 +298,7 @@
     /************************************************************************
      * CTS 팝업의 TreeTable 영역 UI Object
      ************************************************************************/
-    oAPP.fn.fnGetCtsDlgTreeTable = function () {
+    oAPP.fn.fnGetCtsDlgTreeTable = function() {
 
         var oCtsTreeTable = new sap.ui.table.Table(C_CTS_TB_ID, {
             selectionMode: sap.ui.table.SelectionMode.Single,
@@ -375,7 +376,7 @@
 
         });
 
-        oCtsTreeTable.attachBrowserEvent("dblclick", function (oEvent) {
+        oCtsTreeTable.attachBrowserEvent("dblclick", function(oEvent) {
 
             var oTarget = oEvent.target,
                 $SelectedRow = $(oTarget).closest(".sapUiTableRow");
@@ -449,7 +450,7 @@
     /************************************************************************
      * CTS 정보 가져오기 성공 function
      ************************************************************************/
-    oAPP.fn.fnGetCtsDataSucc = function (oResult) {
+    oAPP.fn.fnGetCtsDataSucc = function(oResult) {
 
         parent.setBusy('');
 
@@ -480,7 +481,7 @@
     /************************************************************************
      * CTS 정보 가져오기 실패 function
      ************************************************************************/
-    oAPP.fn.fnGetCtsDataErr = function () {
+    oAPP.fn.fnGetCtsDataErr = function() {
 
         parent.setBusy('');
 
@@ -491,7 +492,7 @@
     /************************************************************************
      * CTS 신규 생성 Dialog
      ************************************************************************/
-    oAPP.fn.fnNewCtsPopUpOpen = function () {
+    oAPP.fn.fnNewCtsPopUpOpen = function() {
 
         var oCtsDialog = sap.ui.getCore().byId(C_CTS_NEW_DLG_ID);
 
@@ -531,7 +532,7 @@
 
                     new sap.m.Button({
                         icon: "sap-icon://decline",
-                        press: function () {
+                        press: function() {
 
                             var oDialog = sap.ui.getCore().byId(C_CTS_NEW_DLG_ID);
                             if (oDialog == null) {
@@ -564,7 +565,7 @@
     /************************************************************************
      * CTS 신규 생성 Dialog의 Contents..
      ************************************************************************/
-    oAPP.fn.fnGetCtsNewContents = function () {
+    oAPP.fn.fnGetCtsNewContents = function() {
 
         var oForm1 = oAPP.fn.fngetCtsNewForm1(),
             oForm2 = oAPP.fn.fngetCtsNewForm2(),
@@ -581,7 +582,7 @@
 
     }; // end of oAPP.fn.fnGetCtsNewContents
 
-    oAPP.fn.fngetCtsNewForm1 = function () {
+    oAPP.fn.fngetCtsNewForm1 = function() {
 
         return new sap.ui.layout.form.Form({
             editable: true,
@@ -623,7 +624,7 @@
 
     };
 
-    oAPP.fn.fngetCtsNewForm2 = function () {
+    oAPP.fn.fngetCtsNewForm2 = function() {
 
         return new sap.ui.layout.form.Form({
             editable: true,
@@ -735,7 +736,7 @@
 
     };
 
-    oAPP.fn.fngetCtsNewForm3 = function () {
+    oAPP.fn.fngetCtsNewForm3 = function() {
 
 
     };
@@ -744,7 +745,7 @@
     /************************************************************************
      * CTS 신규 생성 Dialog의 AfterOpen 이벤트
      ************************************************************************/
-    oAPP.events.ev_ctsNewDlgAfterOpen = function () {
+    oAPP.events.ev_ctsNewDlgAfterOpen = function() {
 
         var oUserInfo = parent.getUserInfo();
 
@@ -769,7 +770,7 @@
     /************************************************************************
      * Cts Dialog의 Accept 버튼
      * **********************************************************************/
-    oAPP.events.ev_CtsPopupAccept = function () {
+    oAPP.events.ev_CtsPopupAccept = function() {
 
         var oCtsInfo = APPCOMMON.fnGetModelProperty("/CTS/CTSHEAD");
 
@@ -804,7 +805,7 @@
     /************************************************************************
      * Cts Tree Table Row Select Event
      * **********************************************************************/
-    oAPP.events.ev_CtsTreeTableRowSelect = function (oEvent) {
+    oAPP.events.ev_CtsTreeTableRowSelect = function(oEvent) {
 
         var oTable = oEvent.getSource(),
             iSelIdx = oEvent.getParameter("rowIndex");
@@ -863,7 +864,7 @@
     /************************************************************************
      * CTS 팝업을 띄우기 전 Dialog 초기화 및 Busy Indicator 켜기
      ************************************************************************/
-    oAPP.events.ev_CtsDlgBeforeOpen = function () {
+    oAPP.events.ev_CtsDlgBeforeOpen = function() {
 
         var oCts = {
             ISBUSY: true,
@@ -877,7 +878,7 @@
     /************************************************************************
      * CTS 팝업을 띄운 후 CTS 정보 불러오는 로직
      ************************************************************************/
-    oAPP.events.ev_GetCtsDialogAfterOpen = function () {
+    oAPP.events.ev_GetCtsDialogAfterOpen = function() {
 
         var oTable = sap.ui.getCore().byId(C_CTS_TB_ID);
         if (oTable != null) {
@@ -893,5 +894,16 @@
         sendAjax(sPath, oFormData, oAPP.fn.fnGetCtsDataSucc, null, null, 'POST', oAPP.fn.fnGetCtsDataErr);
 
     }; // end of oAPP.events.ev_GetCtsDialogAfterOpen    
+
+    /************************************************************************
+     * CTS 팝업을 닫은 후 이벤트
+     ************************************************************************/
+    oAPP.events.ev_CtsDlgAfterClose = function() {
+
+        // CTS 팝업을 닫으면 CTS 모델을 초기화 한다.
+        APPCOMMON.fnSetModelProperty(C_BIND_ROOT_PATH, undefined);
+
+    }; // end of oAPP.events.ev_CtsDlgAfterClose
+
 
 })(window, $, oAPP);

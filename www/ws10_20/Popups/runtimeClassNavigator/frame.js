@@ -42,6 +42,7 @@ let oAPP = (function (window) {
 
         oAPP.attr.oUserInfo = oInfo.oUserInfo; // 접속 로그인 정보
         oAPP.attr.oThemeInfo = oInfo.oThemeInfo; // 테마 개인화 정보
+        oAPP.attr.oMetadata = oInfo.oMetadata; // Sap 접속 System Meta 정보
 
         let aRuntimeData = oInfo.aRuntimeData;
 
@@ -50,8 +51,14 @@ let oAPP = (function (window) {
             return;
         }
 
-        var iRuntimeCnt = aRuntimeData.length,
-            sPrefixClassNm = "ZCL_U4A_",
+        var sPrefixClassNm = "ZCL_U4A_";
+
+        // 신규 NAMESPACE 대상인 경우.
+        if(oAPP.attr.oMetadata && oAPP.attr.oMetadata.IS_NAME_SPACE == "X"){
+            sPrefixClassNm = "/U4A/CL_";
+        }
+
+        var iRuntimeCnt = aRuntimeData.length,            
             aRuntime = [];
 
         // Runtime Class 정보 구성

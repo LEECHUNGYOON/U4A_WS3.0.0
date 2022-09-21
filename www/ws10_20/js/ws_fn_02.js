@@ -97,7 +97,7 @@
 
             // USP Application 일 경우
             if (oAppInfo.APPTY == "U") {
-
+                
                 // WS10 페이지의 APPID 입력 필드에 Suggestion을 구성할 데이터를 저장한다.
                 oAPP.fn.fnOnSaveAppSuggestion(oAppInfo.APPID);
 

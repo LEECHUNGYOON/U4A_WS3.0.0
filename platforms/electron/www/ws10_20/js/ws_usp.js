@@ -497,7 +497,8 @@
                 // events
                 search: (oEvent) => {
 
-                    var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+                    var oAppInfo = fnGetAppInfo();
+
                     oEvent.mParameters.oAppInfo = oAppInfo;
 
                     oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
@@ -848,7 +849,7 @@
                                 }),
                                 fields: new sap.m.Input({
                                     editable: false,
-                                    value: `{${sBindRoot}/REQNR}`
+                                    value: `{${sBindRoot}/REQNO}`
                                 })
                             }),
                             new sap.ui.layout.form.FormElement({
@@ -1829,7 +1830,7 @@
             oDeleteTreeData = jQuery.extend(true, {}, oDelRowData),
             aDeleteTreeData = _parseTree2Tab([oDeleteTreeData], "USPTREE"),
 
-            oAppData = APPCOMMON.fnGetModelProperty("/WS30/APP");
+            oAppData = fnGetAppInfo();
 
         var sReqNo = "";
 
@@ -1952,7 +1953,7 @@
             aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
             oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
 
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"), // App 정보
+        var oAppInfo = fnGetAppInfo(), // App 정보
             oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"); // 우측 컨텐츠 데이터
 
         // APP 업데이트 정보 갱신
@@ -1964,7 +1965,7 @@
         if (oBindBeforeSelect) {
 
             // 우측에 활성화 되어 있는 Content가 Root 정보 일 경우.
-            var bIsRoot = oBeforeSelectData.PUJKY === "" ? true : false;
+            var bIsRoot = oBindBeforeSelect.PUJKY === "" ? true : false;
             if (bIsRoot) {
                 oContent = Object.assign(oContent, oResult.S_RETURN);
             }
@@ -2003,7 +2004,7 @@
         debugger;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oParam = this;
 
@@ -2097,7 +2098,7 @@
         /**
          * 페이지 이동 시, CHANGE 모드였다면 현재 APP의 Lock Object를 해제한다.
          */
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+        var oAppInfo = fnGetAppInfo();
 
         if (oAppInfo.IS_EDIT == 'X') {
             ajax_unlock_app(oAppInfo.APPID);
@@ -2312,7 +2313,7 @@
             type: "blob",
         });
 
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+        var oAppInfo = fnGetAppInfo(),
             sFileName = `${oAppInfo.APPID.toLowerCase()}`;
 
         _fnUspFileDown(sFileName, data);
@@ -2581,7 +2582,7 @@
         if (bIsRoot) {
 
             // Root 일 경우는 APP 정보 까지 Object 복사한다.
-            oResultRowData = jQuery.extend(true, oResultRowData, APPCOMMON.fnGetModelProperty("/WS30/APP"));
+            oResultRowData = jQuery.extend(true, oResultRowData, fnGetAppInfo());
 
             //Root 일 경우 Document 페이지로 이동한다.
             fnOnMoveToPage("USP30");
@@ -2636,6 +2637,24 @@
             return;
         }
 
+        var oAppInfo = fnGetAppInfo();
+
+        // Inactivate 상태일 경우 실행하지 않는다
+        if (oAppInfo.ACTST == "I") {
+
+            parent.setSoundMsg("02"); // error sound
+
+            // 작업표시줄 깜빡임
+            CURRWIN.flashFrame(true);
+
+            var sMsg = APPCOMMON.fnGetMsgClsTxt("031"); // "Only in activity state !!!"
+
+            // 페이지 푸터 메시지
+            APPCOMMON.fnShowFloatingFooterMsg("W", "WS30", sMsg);
+
+            return;
+        }        
+
         var sBindPath = oCtx.getPath(),
             oTreeData = oTreeTable.getModel().getProperty(sBindPath),
             sServicePath = oTreeData.SPATH;
@@ -2669,7 +2688,7 @@
         sap.ui.getCore().lock();
 
         // app 정보를 구한다.
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+        var oAppInfo = fnGetAppInfo(),
 
             IS_CHAG = oAppInfo.IS_CHAG,
             IS_EDIT = oAppInfo.IS_EDIT;
@@ -2764,7 +2783,7 @@
      **************************************************************************/
     function ev_pressControllerBtn() {
 
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+        var oAppInfo = fnGetAppInfo();
 
         APPCOMMON.execControllerClass(null, null, null, oAppInfo);
 
@@ -2775,10 +2794,12 @@
      **************************************************************************/
     function ev_AppExec() {
 
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+        var oAppInfo = fnGetAppInfo();
 
         // Inactivate 상태일 경우 실행하지 않는다
         if (oAppInfo.ACTST == "I") {
+
+            parent.setSoundMsg("02"); // error sound
 
             // 작업표시줄 깜빡임
             CURRWIN.flashFrame(true);
@@ -2854,7 +2875,7 @@
         var oTreeTable = oEvent.getSource(),
             iSelectRow = oEvent.getParameter("rowIndex"),
             oCtx = oTreeTable.getContextByIndex(iSelectRow),
-            oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+            oAppInfo = fnGetAppInfo();
 
         if (!oCtx) {
             return;
@@ -3585,7 +3606,7 @@
 
         }
 
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+        var oAppInfo = fnGetAppInfo(),
             sRandomKey = oAppInfo.APPID + "|" + RANDOM.generateBase30(34),
             oNewRowData = jQuery.extend(true, {}, oRowData);
 
@@ -3836,14 +3857,14 @@
         var oLocalEvent = new sap.ui.base.Event(),
             oNewEvent = jQuery.extend(true, oLocalEvent, oEvent);
 
-        var oAppData = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+        var oAppData = fnGetAppInfo(),
             IS_ACT = oEvent.getParameter("IS_ACT"),
             TRKORR = oEvent.getParameter("TRKORR"),
             sReqNo = "";
 
         // 기존에 CTS 번호가 있을 경우
-        if (oAppData.REQNR != "") {
-            sReqNo = oAppData.REQNR;
+        if (oAppData.REQNO != "") {
+            sReqNo = oAppData.REQNO;
         }
 
         // CTS 팝업에서 선택한 CTS 번호가 있을 경우.
@@ -4005,7 +4026,7 @@
 
         }
 
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"), // App 정보
+        var oAppInfo = fnGetAppInfo(), // App 정보
             oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"), // 우측 컨텐츠 데이터
             aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"); // 좌측 Tree 데이터
 
@@ -4132,7 +4153,7 @@
      ************************************************************************/
     function ev_pressDisplayModeBtn(oEvent) {
 
-        var oBindAppData = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+        var oBindAppData = fnGetAppInfo(),
             oAppInfo = jQuery.extend(true, {}, oBindAppData); // APP 정보
 
         // edit 모드 -> display 모드
@@ -4236,7 +4257,7 @@
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
 
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+        var oAppInfo = fnGetAppInfo(),
             sCurrPage = parent.getCurrPage();
 
         var oFormData = new FormData();
@@ -4289,7 +4310,7 @@
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
 
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+        var oAppInfo = fnGetAppInfo(),
             sCurrPage = parent.getCurrPage();
 
         var oFormData = new FormData();
@@ -4345,7 +4366,7 @@
     function getAppChange() {
 
         // 어플리케이션 정보 가져오기
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+        var oAppInfo = fnGetAppInfo();
 
         // 어플리케이션 정보에 변경 플래그 
         return oAppInfo.IS_CHAG;
@@ -4369,7 +4390,7 @@
         }
 
         // 어플리케이션 정보 가져오기
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+        var oAppInfo = fnGetAppInfo();
 
         // 어플리케이션 정보에 변경 플래그 
         oAppInfo.IS_CHAG = bIsChange;
@@ -4399,7 +4420,7 @@
         }
 
         // 어플리케이션 정보 가져오기
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+        var oAppInfo = fnGetAppInfo();
 
         // Activate가 성공했으면 APP 상태코드 값 변경
         if (bIsActivate == "X") {
@@ -4453,6 +4474,15 @@
         setAppChange("X");
 
     } // end of ev_codeeditorPrettyPrint
+
+    /**************************************************************************
+     * [WS30] App 정보 가져오기.
+     **************************************************************************/
+    function fnGetAppInfo() {
+
+        return APPCOMMON.fnGetModelProperty("/WS30/APP");
+
+    } // end of fnGetAppInfo
 
 
 })(window, $, oAPP);

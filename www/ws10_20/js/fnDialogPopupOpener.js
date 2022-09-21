@@ -1190,7 +1190,8 @@
             var oRuntimeInfo = {
                 oUserInfo: oUserInfo,
                 oThemeInfo: oThemeInfo,
-                aRuntimeData: oAPP.DATA.LIB.T_0022
+                aRuntimeData: oAPP.DATA.LIB.T_0022,
+                oMetadata : parent.getMetadata()
             };
 
             // 오픈할 URL 파라미터 전송
