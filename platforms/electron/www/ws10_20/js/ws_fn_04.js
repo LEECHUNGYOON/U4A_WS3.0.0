@@ -1,7 +1,7 @@
 /**************************************************************************                                           
  * ws_fn_04.js
  **************************************************************************/
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     var PATH = parent.PATH,
@@ -62,7 +62,7 @@
     /************************************************************************
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSapGuiMultiLoginCheckThen = function(oResult) {
+    oAPP.fn.fnSapGuiMultiLoginCheckThen = function (oResult) {
 
         var oMetadata = parent.getMetadata(),
             oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
@@ -95,15 +95,20 @@
             oAppInfo = oParamAppInfo;
         }
 
+        // App 정보가 없다면 빈 Object로 초기화..
+        if (!oAppInfo) {
+            oAppInfo = {};
+        }
+
         var aParam = [
             sNewSessionVbsFullPath, // VBS 파일 경로
             oServerInfo.SYSTEMID, // SYSTEM ID  
             oServerInfo.CLIENT, // CLIENT
             oUserInfo.ID.toUpperCase(), // SAP ID    
-            oAppInfo.APPID, // Application Name
+            oAppInfo.APPID || "", // Application Name
             (typeof METHNM == "undefined" ? "" : METHNM),
             (typeof INDEX == "undefined" ? "0" : INDEX),
-            oAppInfo.IS_EDIT, // Edit or Display Mode
+            oAppInfo.IS_EDIT || "", // Edit or Display Mode
             TCODE || "", // T-CODE
             // oResult.RTVAL, // SAPGUI Multi Login Check Value
             oResult.MAXSS, // 최대 세션창 갯수
@@ -111,12 +116,12 @@
 
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
         var vbs = parent.SPAWN('cscript.exe', aParam);
-        vbs.stdout.on("data", function(data) {
+        vbs.stdout.on("data", function (data) {
             console.log(data.toString());
         });
 
         //GUI 세션창이 존재하지않다면 ...
-        vbs.stderr.on("data", function(data) {
+        vbs.stderr.on("data", function (data) {
 
             //VBS 리턴 오류 CODE / MESSAGE 
             var str = data.toString(),
@@ -141,18 +146,18 @@
                 oUserInfo.ID.toUpperCase(), // SAP ID    
                 oUserInfo.PW, // SAP PW
                 oServerInfo.LANGU, // LANGUAGE
-                oAppInfo.APPID, // Application Name
+                oAppInfo.APPID || "", // Application Name
                 (typeof METHNM == "undefined" ? "" : METHNM),
                 (typeof INDEX == "undefined" ? "0" : INDEX),
-                oAppInfo.IS_EDIT, // Edit or Display Mode,
+                oAppInfo.IS_EDIT || "", // Edit or Display Mode,
                 TCODE || "", // T-CODE
                 oResult.RTVAL, // SAPGUI Multi Login Check Value
                 oResult.MAXSS, // 최대 세션창 갯수
             ];
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
-            vbs.stdout.on("data", function(data) {});
-            vbs.stderr.on("data", function(data) {
+            vbs.stdout.on("data", function (data) {});
+            vbs.stderr.on("data", function (data) {
 
                 //VBS 리턴 오류 CODE / MESSAGE 
                 var str = data.toString(),
