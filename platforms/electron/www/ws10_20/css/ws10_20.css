@@ -152,7 +152,9 @@ body,
 }
 
 
-
+.u4aWsUspTree .u4aWsTreeTableSelected {
+    background-color: var(--sapContent_Illustrative_Color20) !important;
+}
 
 
 /************************************************************************************ 

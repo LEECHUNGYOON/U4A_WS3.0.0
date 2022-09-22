@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -84,7 +84,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function () {
+    oAPP.fn.fnOnResizeWs30 = function() {
 
         console.log("resize30!!!");
 
@@ -221,7 +221,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (bIsShow) {
+            formatter: function(bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -404,7 +404,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function (sKey) {
+                            formatter: function(sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -1024,6 +1024,7 @@
 
                 // Properties
                 // selectionMode: "None",
+                // selectionMode: "MultiToggle",
                 selectionMode: "Single",
                 selectionBehavior: "RowOnly",
                 visibleRowCountMode: "Auto",
@@ -1077,7 +1078,7 @@
                                     parts: [
                                         "ISSEL",
                                     ],
-                                    formatter: function (ISSEL) {
+                                    formatter: function(ISSEL) {
 
                                         var sIconSrc = "ICON_SPACE";
 
@@ -1141,6 +1142,50 @@
                         arrayNames: ['USPTREE']
                     }
                 },
+
+                rowSettingsTemplate: new sap.ui.table.RowSettings()
+                    .bindProperty("highlight", "ISSEL", function(ISSEL) {
+
+                        var def = sap.ui.core.MessageType.None,
+                            oRow = this.getParent();
+
+                        if (ISSEL == true) {
+                            def = sap.ui.core.MessageType.Information;                         
+                        }
+
+                        // Row가 있을 경우
+                        if (oRow instanceof sap.ui.table.Row == true) {
+
+                            // Row의 Dom이 있을 경우
+                            var oRowDom = oRow.getDomRef();
+                            if (oRowDom) {
+
+                                oRowDom.classList.remove("u4aWsTreeTableSelected");
+
+                                if (ISSEL == true) {
+                                    oRowDom.classList.add("u4aWsTreeTableSelected");
+                                }
+
+                            }
+
+                        }
+
+                        return def;
+
+
+                    })
+                    .bindProperty("highlightText", "ISSEL", function(ISSEL) {
+
+                        var def = "";
+
+                        if (ISSEL == true) {
+                            def = "selected!";
+                        }
+
+
+                        return def;
+
+                    }),
                 extension: [
                     new sap.m.OverflowToolbar({
                         content: [
@@ -1174,7 +1219,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function (oEvent) {
+                rowSelectionChange: function(oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1223,7 +1268,7 @@
 
             oIsFolderCheckbox = new sap.m.CheckBox({
                 editable: false
-            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
+            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
 
                 if (ISFLD == "X") {
                     return true;
@@ -1289,7 +1334,7 @@
                                 ]
                             })
 
-                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function (ISFLD) {
+                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function(ISFLD) {
 
                             // 폴더가 아닐 경우에만 보여준다.
                             if (ISFLD != "X") {
@@ -1337,7 +1382,7 @@
             .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function (oControl) {
+            onAfterRendering: function(oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1684,7 +1729,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1768,7 +1813,7 @@
             initialFocus: "ws30_crname",
 
             // events
-            afterClose: function () {
+            afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -2034,7 +2079,7 @@
     function lf_appDelCtsPopup(oParam) {
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oParam = this;
 
@@ -2161,8 +2206,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function (e) {
-                $.each(e, function (e, o) {
+            t = function(e) {
+                $.each(e, function(e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2393,7 +2438,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function (event) {
+            fileReader.onload = function(event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -3882,7 +3927,7 @@
         var oSaveData = {
             APPID: oAppData.APPID,
             TRKORR: sReqNo,
-            PRCCD : PRCCD || "02",
+            PRCCD: PRCCD || "02",
             IS_ACT: IS_ACT || "",
             S_CONTENT: {},
             T_TREE: [],
@@ -4228,7 +4273,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oEvent = this;
             // IS_ACT = oEvent.getParameter("IS_ACT");
