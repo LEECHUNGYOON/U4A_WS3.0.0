@@ -1139,7 +1139,7 @@
     // oSApp.addContentArea(oAPP.attr.ui.oDesignPreview);
 
     //우측 페이지(attribute 영역)
-    oAPP.attr.ui.oDesignAttr = new sap.f.DynamicPage("designAttr", {preserveHeaderStateOnScroll:true,layoutData:new sap.ui.layout.SplitterLayoutData({size:"30%",minSize:300})});
+    oAPP.attr.ui.oDesignAttr = new sap.f.DynamicPage("designAttr", {preserveHeaderStateOnScroll:false,layoutData:new sap.ui.layout.SplitterLayoutData({size:"30%",minSize:300})});
     // oSApp.addContentArea(oAPP.attr.ui.oDesignAttr);
 
 

@@ -1156,16 +1156,10 @@
                         // Row가 있을 경우
                         if (oRow instanceof sap.ui.table.Row == true) {
 
-                            // Row의 Dom이 있을 경우
-                            var oRowDom = oRow.getDomRef();
-                            if (oRowDom) {
+                            oRow.removeStyleClass("u4aWsTreeTableSelected");
 
-                                oRowDom.classList.remove("u4aWsTreeTableSelected");
-
-                                if (ISSEL == true) {
-                                    oRowDom.classList.add("u4aWsTreeTableSelected");
-                                }
-
+                            if (ISSEL == true) {
+                                oRow.addStyleClass("u4aWsTreeTableSelected");
                             }
 
                         }
@@ -1173,7 +1167,7 @@
                         return def;
 
                     }),
-                    
+
                 extension: [
                     new sap.m.OverflowToolbar({
                         content: [
@@ -1220,7 +1214,17 @@
 
             })
             .attachBrowserEvent("dblclick", ev_uspTreeItemDblClickEvent)
-            .addStyleClass("u4aWsUspTree");
+            .addStyleClass("u4aWsUspTree")
+            .addDelegate({
+                onAfterRendering: function (oEvent) {
+
+                    var oTableModel = oEvent.srcControl.getModel();
+                    if (oTableModel) {
+                        oTableModel.refresh(true);
+                    }
+
+                }
+            });
 
     } // end of fnGetTreeTableWs30
 
@@ -1384,6 +1388,32 @@
             }
         });
 
+        var oCodeEditorToolbarBindProperty = {
+            parts: [
+                "/WS30/APP/IS_EDIT",
+                "/WS30/USPDATA/PUJKY",
+                "/WS30/USPDATA/ISFLD",
+            ],
+            formatter: (IS_EDIT, PUJKY, ISFLD) => {
+
+                if (IS_EDIT != "X") {
+                    return false;
+                }
+
+                if (PUJKY == "") {
+                    return false;
+                }
+
+                if (ISFLD == "X") {
+                    return false;
+                }
+
+                return true;
+
+            }
+        };
+
+
         return new sap.m.Page({
             showHeader: true,
             showFooter: false,
@@ -1396,34 +1426,17 @@
                 ],
 
                 contentRight: [
+
+                    new sap.m.Button({
+                        text: "Pattern",
+                        press: ev_codeeditorPattern
+                    }).bindProperty("enabled", jQuery.extend(true, {}, oCodeEditorToolbarBindProperty)),
+
                     new sap.m.Button("ws30_codeeditor_prettyBtn", {
                         text: "Pretty Print",
                         press: ev_codeeditorPrettyPrint,
                         tooltip: "Pretty Print (Shift + F1)",
-                    }).bindProperty("enabled", {
-                        parts: [
-                            "/WS30/APP/IS_EDIT",
-                            "/WS30/USPDATA/PUJKY",
-                            "/WS30/USPDATA/ISFLD",
-                        ],
-                        formatter: (IS_EDIT, PUJKY, ISFLD) => {
-
-                            if (IS_EDIT != "X") {
-                                return false;
-                            }
-
-                            if (PUJKY == "") {
-                                return false;
-                            }
-
-                            if (ISFLD == "X") {
-                                return false;
-                            }
-
-                            return true;
-
-                        }
-                    })
+                    }).bindProperty("enabled", jQuery.extend(true, {}, oCodeEditorToolbarBindProperty))
                 ]
 
             }),
@@ -3833,9 +3846,23 @@
         // 파일 생성일 경우 파일명에 허용된 확장자인지 체크 한다.
         if (oCrateData.ISFLD == false) {
 
+            // 파일명에 확장자가 있는지 체크..            
+            var path = oCrateData.NAME;
+            let file = path.substring(path.lastIndexOf('\\') + 1, path.length);
+
+            let filename;
+            let exp;
+            if (file.indexOf('.') >= 0) {
+                filename = file.substring(0, file.lastIndexOf('.'));
+                exp = file.substring(file.lastIndexOf('.') + 1, file.length);
+            } else {
+                filename = file;
+                exp = '';
+            }
+
             var sCheck = MIMETYPES.lookup(oCrateData.NAME);
 
-            if (typeof sCheck == "boolean" && sCheck == false) {
+            if ((typeof sCheck == "boolean" && sCheck == false) || exp == '') {
 
                 oCheck.RETCD = "E";
                 oCheck.RTMSG = "Invalid MimeType! Check the extension of the file name. ex) aaa.txt, aaa.js..";
@@ -4514,6 +4541,15 @@
         setAppChange("X");
 
     } // end of ev_codeeditorPrettyPrint
+
+    /**************************************************************************
+     * [WS30] Content 영역의 Code Editor Pattern Popover
+     **************************************************************************/
+    function ev_codeeditorPattern() {
+
+
+
+    } // end of ev_codeeditorPattern
 
     /**************************************************************************
      * [WS30] App 정보 가져오기.

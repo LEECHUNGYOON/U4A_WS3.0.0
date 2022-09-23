@@ -2,8 +2,11 @@
   //우측 페이지(attribute 영역) 구성
   oAPP.fn.uiAttributeArea = function(oRPage){
     
+    var oRDynTitle = new sap.f.DynamicPageTitle();
+    oRPage.setTitle(oRDynTitle);
+
     //sap.f.DynamicPage의 header 영역 UI 생성.
-    var oRDynHead = new sap.f.DynamicPageHeader();
+    var oRDynHead = new sap.f.DynamicPageHeader({pinnable:true});
     oRPage.setHeader(oRDynHead);
 
     /************************************************************************
@@ -16,7 +19,7 @@
     oRDynHead.addContent(oRFm);
 
     //우상단 UI명, UI Description 영역
-    var oRCtn1 = new sap.ui.layout.form.FormContainer({title:"{/uiinfo/OBJID}",expandable:true});
+    var oRCtn1 = new sap.ui.layout.form.FormContainer({title:"{/uiinfo/OBJID}"});
     oRFm.addFormContainer(oRCtn1);
 
     var oRCTool = new sap.m.Toolbar();
@@ -47,26 +50,29 @@
       oAPP.fn.attrCallUiSample();
     });
 
-    //UI INFO 영역 접힘/펼침 버튼.
-    var oRLibBtn3 = new sap.m.Button({icon:"sap-icon://collapse-group",tooltip:"Expand/Collapse"});
-    oRCTool.addContent(oRLibBtn3);
 
-    oRLibBtn3.attachPress(function(){
-      //UI INFO 영역 접힘/펼침 처리.
-      switch (oRCtn1.getExpanded()) {
-        case true:
-            oRCtn1.setExpanded(false);
-            oRLibBtn3.setIcon("sap-icon://expand-group");
-          break;
-        case false:
-            oRCtn1.setExpanded(true);
-            oRLibBtn3.setIcon("sap-icon://collapse-group");
-            break;
-        default:
-          break;
-      }
-    });
+    // //UI INFO 영역 접힘/펼침 버튼.
+    // var oRLibBtn3 = new sap.m.Button({icon:"sap-icon://collapse-group",tooltip:"Expand/Collapse"});
+    // oRCTool.addContent(oRLibBtn3);
 
+    // oRLibBtn3.attachPress(function(){
+    //   //UI INFO 영역 접힘/펼침 처리.
+    //   switch (oRCtn1.getExpanded()) {
+    //     case true:
+    //         oRCtn1.setExpanded(false);
+    //         oRLibBtn3.setIcon("sap-icon://expand-group");
+    //       break;
+    //     case false:
+    //         oRCtn1.setExpanded(true);
+    //         oRLibBtn3.setIcon("sap-icon://collapse-group");
+    //         break;
+    //     default:
+    //       break;
+    //   }
+    // });
+
+    //dynamic page title의 접힘 영역에 toolbar를 복사하여 추가 처리.
+    oRDynTitle.addSnappedContent(oRCTool.clone());
 
 
     var oRElm1 = new sap.ui.layout.form.FormElement({label:new sap.m.Label({text:"Object id",design:"Bold"})});
