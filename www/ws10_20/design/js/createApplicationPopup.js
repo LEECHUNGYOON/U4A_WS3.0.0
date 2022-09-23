@@ -381,6 +381,7 @@
           columnsL: 1,
           singleContainerFullSize: false,
           adjustLabelSpan: false,
+          backgroundDesign:"Transparent"
         }),
         formContainers: [
           new sap.ui.layout.form.FormContainer({
@@ -583,7 +584,8 @@
       // Application 생성 Dialog
       var oCreateDialog = new sap.m.Dialog({draggable: true, resizable: true,
         contentWidth: "50%", contentHeight: "40%", verticalScrolling: false});
-
+      
+      oCreateDialog.addStyleClass("sapUiSizeCompact");
 
       //toolbar.
       var oTool = new sap.m.Toolbar();
@@ -606,13 +608,16 @@
 
       });
 
-      var oHbox1 = new sap.m.HBox({height:"100%", width:"100%", direction:"Column", renderType:"Bare", justifyContent:"SpaceBetween"});
-      oCreateDialog.addContent(oHbox1);
+      //var oHbox1 = new sap.m.HBox({height:"100%", width:"100%", direction:"Column", renderType:"Bare", justifyContent:"SpaceBetween"});
+      var oPage1 = new sap.m.Page({showHeader:false});
+      oCreateDialog.addContent(oPage1);
 
-      oHbox1.addItem(oCreateDialogForm);
+      //oHbox1.addItem(oCreateDialogForm);
+      oPage1.addContent(oCreateDialogForm);
 
       var oFoot = new sap.m.Toolbar({content:[new sap.m.ToolbarSpacer()]});
-      oHbox1.addItem(oFoot);
+      //oHbox1.addItem(oFoot);
+      oPage1.setFooter(oFoot);
       oFoot.addStyleClass("sapUiTinyMargin");
 
       //application 로컬로 생성하기 버튼.
