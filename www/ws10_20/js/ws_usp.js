@@ -28,6 +28,7 @@
         // goBeforeSelect; // 이전에 선택한 Row 정보
 
         gaDblClickHistory = [], // Node 더블클릭 히스토리
+        gaFileExtendImgList = [], // 파일 확장자 이미지 경로
 
         gfSelectRowUpdate; // Ui Table RowUpdated Global function
 
@@ -42,24 +43,50 @@
             return;
         }
 
-        // fnOnloadLibrary();
+        // 파일 확장자 이미지 경로 구하기
+        fnGetFileExtendImgList()
+            .then(function() {
 
-        // 없으면 렌더링부터..
-        fnOnInitRendering();
+                // 없으면 렌더링부터..
+                fnOnInitRendering();
+
+            })
+            .catch(function() {
+
+                // 없으면 렌더링부터..
+                fnOnInitRendering();
+
+            });
 
     }; // end of oAPP.fn.fnCreateWs30
 
-    // function fnOnloadLibrary() {
+    /************************************************************************
+     * [WS30] 파일 확장자 이미지 경로 구하기
+     ************************************************************************/
+    function fnGetFileExtendImgList() {
 
-    //     let aUspLib = [{
-    //         URL: "./js/ws_usp_01.js",
-    //         MIMETYPE: "script"
-    //     }];
+        return new Promise(function(resolve, reject) {
 
-    //     // 초기 JS Load
-    //     oAPP.loadLibrary(aUspLib, 0);
+            var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
-    // }; // end of fnOnloadLibrary
+            FS.readdir(svgFolder, (err, files) => {
+
+                if (err) {
+                    console.log(err);
+                    reject();
+                    return;
+                }
+
+                gaFileExtendImgList = files;
+
+                resolve();
+
+            });
+
+
+        });
+
+    } // end of fnGetFileExtendImgList
 
     /************************************************************************
      * [WS30] Layout 초기 설정
@@ -692,6 +719,7 @@
 
                     new sap.m.Page({
                         showHeader: false,
+                        enableScrolling: false,
                         content: [
 
                             new sap.ui.layout.Splitter({
@@ -1046,49 +1074,85 @@
 
                         template: new sap.m.HBox({
                             renderType: "Bare",
+                            alignItems: "Center",
                             items: [
 
-                                // new sap.m.Image({
-                                //     width: "10px"
-                                // })                                
-                                // .bindProperty("src", {
-                                //     parts: [
-                                //         "ISSEL",
-                                //     ],
-                                //     formatter: function (ISSEL) {
+                                new sap.m.Image({
+                                    width: "20px"
+                                })
+                                .bindProperty("src", {
+                                    parts: [
+                                        "ISFLD",
+                                        "EXTEN"
+                                    ],
+                                    formatter: function(ISFLD, EXTEN) {
 
-                                //         var sIconSrc = "ICON_SPACE";
+                                        var iFileImgListLength = gaFileExtendImgList.length;
+                                        if (iFileImgListLength == 0) {
+                                            return;
+                                        }
 
-                                //         if (ISSEL == true) {
+                                        // SVG 폴더 경로
+                                        var svgFolder = PATH.join(APP.getAppPath(), "svg"),
+                                            sIconPath = "";
 
-                                //             sIconSrc = "ICON_CHECKED";
+                                        // 폴더일 경우 폴더 아이콘
+                                        if (ISFLD == "X") {
 
-                                //         }
+                                            sIconPath = svgFolder + "/folder.svg";
 
-                                //         return oAPP.fn.fnGetSapIconPath(sIconSrc);
+                                            return sIconPath;
 
-                                //     }
-                                // })
-                                // .bindProperty("visible", {
-                                //     parts: [
-                                //         "PUJKY",
-                                //         "ISFLD"
-                                //     ],
-                                //     formatter: (PUJKY, ISFLD) => {
+                                        }
 
-                                //         if (PUJKY == null || ISFLD == null) {
-                                //             return;
-                                //         }
+                                        if (!EXTEN) {
+                                            return;
+                                        }
 
-                                //         if (PUJKY == "") {
-                                //             return true;
-                                //         }
+                                        var sFind = gaFileExtendImgList.find((elem) => {
 
-                                //         return true;
+                                            if (elem.startsWith(EXTEN.toLowerCase()) == true) {
+                                                return elem;
+                                            }
 
-                                //     }
+                                        });
 
-                                // }).addStyleClass("sapUiTinyMarginEnd"),
+                                        // SVG 폴더 경로에 해당 파일 확장자가 없으면 알수 없는 파일 아이콘
+                                        if (!sFind) {
+
+                                            sIconPath = svgFolder + "/file.svg";
+
+                                            return sIconPath;
+
+                                        }
+
+                                        // SVG 폴더 경로에 해당 파일 확장자가 있을 경우
+                                        sIconPath = svgFolder + "/" + sFind;
+
+                                        return sIconPath;
+
+                                    }
+                                })
+                                .bindProperty("visible", {
+                                    parts: [
+                                        "PUJKY",
+                                        "ISFLD"
+                                    ],
+                                    formatter: (PUJKY, ISFLD) => {
+
+                                        if (PUJKY == null || ISFLD == null) {
+                                            return;
+                                        }
+
+                                        if (PUJKY == "") {
+                                            return true;
+                                        }
+
+                                        return true;
+
+                                    }
+
+                                }).addStyleClass("sapUiTinyMarginEnd"),
 
                                 new sap.m.Text({
                                     text: "{OBDEC}",
@@ -1198,8 +1262,6 @@
                     var oTable = oEvent.srcControl,
                         oTableModel = oTable.getModel();
 
-                        debugger;
-                        
                     if (oTableModel) {
                         oTableModel.refresh(true);
                     }
