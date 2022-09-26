@@ -252,7 +252,7 @@
 
                 parent.setBusy("");
 
-                if(param.RETCD === "E" && param.SCRIPT !== ""){
+                if(param.RETCD === "E" && (typeof param.SCRIPT !== "undefined" && param.SCRIPT !== "")){
                     eval(param.SCRIPT);
                     return;
                 }

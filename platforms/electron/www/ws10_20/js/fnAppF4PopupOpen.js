@@ -26,6 +26,15 @@
             ISTRIAL: bIsTrial, // Trial 여부 플래그
             // APPLIST1: aAPPLIST,
             TAB1: oTab1_Data,
+            aAPPTY: [{
+                    KEY: "M",
+                    TEXT: "Mobile Web"
+                },
+                {
+                    KEY: "U",
+                    TEXT: "U4A Server Page"
+                }
+            ],
             APPF4HIER: null
         };
 
@@ -302,10 +311,47 @@
                                 design: ENUM_LABEL_DESIGN_BOLD,
                                 text: "Web Application Type",
                             }),
-                            fields: new sap.m.Input({
-                                value: "{APPTY}",
-                                submit: oAPP.events.ev_AppF4Search
+                            fields: new sap.m.Select({
+                                selectedKey: "{APPTY}",
+                                showSecondaryValues: true,
+                                items: {
+                                    path: `${C_BIND_ROOT_PATH}/aAPPTY`,
+                                    template: new sap.ui.core.ListItem({
+                                        key: "{KEY}",
+                                        text: "{KEY}",
+                                        additionalText: "{TEXT}"
+                                    })
+                                },
+                                change: function (oEvent) {
+
+                                    var oSelectedItem = oEvent.getParameter("selectedItem"),
+                                        sSelectedKey = oSelectedItem.getProperty("key");
+
+                                    oAPP.attr.gAPPTY = sSelectedKey;
+
+                                    oAPP.events.ev_AppF4Search();
+
+                                }
+
+                            }).bindProperty("enabled", {
+                                parts: [
+                                    "APPTY"
+                                ],
+                                formatter: (APPTY) => {
+
+                                    if (!APPTY) {
+                                        return false;
+                                    }
+
+                                    return true;
+
+                                }
                             })
+
+                            // fields: new sap.m.Input({
+                            //     value: "{APPTY}",
+                            //     submit: oAPP.events.ev_AppF4Search
+                            // })
                         }),
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({

@@ -32,6 +32,7 @@
      * @param {String}  [oOptions.initCond.PACKG] Package
      * @param {String}  [oOptions.initCond.APPID] Application ID
      * @param {String}  [oOptions.initCond.APPNM] Application Desc
+     * @param {String}  [oOptions.initCond.APPTY] Application Type
      * @param {String}  [oOptions.initCond.ERUSR] Create User
      * @param {Int}     [oOptions.initCond.HITS]  Max Count
      ************************************************************************/

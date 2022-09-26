@@ -925,11 +925,13 @@
 
         var oHeaderToolbar = new sap.m.OverflowToolbar({
                 content: aHeaderToolbarContents
-            }).addStyleClass("sapTntToolHeader u4aWsWindowMenuToolbar"),
+            // }).addStyleClass("sapTntToolHeader u4aWsWindowMenuToolbar"),
+            }).addStyleClass("u4aWsWindowMenuToolbar"),
 
             oSubHeaderToolbar = new sap.m.OverflowToolbar({
                 content: aSubHeaderToolbarContents,
-            }).addStyleClass("u4aWs10_HeaderToolbar sapTntToolHeader"),
+            // }).addStyleClass("u4aWs10_HeaderToolbar sapTntToolHeader"),
+            }).addStyleClass("u4aWs10_HeaderToolbar"),
 
             oMsgFooter = new sap.m.OverflowToolbar({
                 content: [
@@ -1921,7 +1923,8 @@
 
         var oToolHeader = new sap.m.OverflowToolbar({
             content: aSubHeaderToolbarContents
-        }).addStyleClass("u4aWs20_HeaderToolbar sapTntToolHeader");
+        // }).addStyleClass("u4aWs20_HeaderToolbar sapTntToolHeader");
+        }).addStyleClass("u4aWs20_HeaderToolbar");
 
         return new sap.m.Page("WS20_MAIN", {
             customHeader: oToolHeader,

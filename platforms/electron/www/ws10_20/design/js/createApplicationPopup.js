@@ -190,7 +190,7 @@
                           ];
 
         //Web Application Type DDLB 리스트.
-        ls_appl.T_APPTY = [{KEY:"M",TEXT:"Mobile Web"},
+        ls_appl.T_APPTY = [{KEY:"M",TEXT:"U4A Application"},
                            {KEY:"U",TEXT:"U4A Server Page"}
                           ];
 

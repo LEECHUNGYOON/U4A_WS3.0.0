@@ -5,7 +5,7 @@
  * - file Desc : Application Copy Popup Open
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     /************************************************************************
@@ -23,7 +23,7 @@
     /************************************************************************
      * Application Copy Popup Open
      ************************************************************************/
-    oAPP.fn.fnAppCopyPopupOpen = function(sAppId) {
+    oAPP.fn.fnAppCopyPopupOpen = function (sAppId) {
 
         // 푸터 메시지가 있을 경우 닫기
         APPCOMMON.fnHideFloatingFooterMsg();
@@ -163,7 +163,7 @@
     /************************************************************************
      * 어플리케이션 복사 수행
      ************************************************************************/
-    oAPP.fn.fnSetAppCopy = function(oParam) {
+    oAPP.fn.fnSetAppCopy = function (oParam) {
 
         var sPath = parent.getServerPath() + '/app_copy',
             oFormData = new FormData();
@@ -183,13 +183,22 @@
 
         parent.setBusy('X');
 
-        sendAjax(sPath, oFormData, function(oResult) {
+        sendAjax(sPath, oFormData, function (oResult) {
 
             parent.setBusy('');
 
-            // 스크립트가 있으면 eval 처리
-            if (oResult.SCRIPT) {
-                eval(oResult.SCRIPT);
+            if (oResult.RETCD == "E") {
+
+                // 스크립트가 있으면 eval 처리
+                if (oResult.SCRIPT) {
+                    eval(oResult.SCRIPT);
+                    return;
+                }
+
+                parent.showMessage(sap, 20, 'E', oResult.RTMSG);
+
+                return;
+
             }
 
             // APP 복사가 성공이면 복사 팝업을 닫는다.
@@ -198,13 +207,21 @@
                 lf_AppCopyPopupClose();
             }
 
+            // 스크립트가 있으면 eval 처리
+            if (oResult.SCRIPT) {
+                eval(oResult.SCRIPT);
+                return;
+            }
+
+            parent.showMessage(sap, 20, 'S', oResult.RTMSG);
+
         });
 
         // APP 복사 전용 Cts Popup
         function lf_appCopyCtsPopup() {
 
             // CTS Popup을 Open 한다.
-            oAPP.fn.fnCtsPopupOpener(function(oResult) {
+            oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
                 oAPP.fn.fnSetAppCopy(oResult);
 
@@ -217,7 +234,7 @@
     /************************************************************************
      * Application Copy Dialog Target ID Input Change Event
      ************************************************************************/
-    oAPP.events.ev_AppCopyDlgTargetInpChgEvt = function(oEvent) {
+    oAPP.events.ev_AppCopyDlgTargetInpChgEvt = function (oEvent) {
 
         var oInput = oEvent.getSource(),
             sInputValue = oInput.getValue();
@@ -233,7 +250,7 @@
     /************************************************************************
      * Application Copy Dialog After Close Event
      ************************************************************************/
-    oAPP.events.ev_AppCopyDlgAfterClose = function() {
+    oAPP.events.ev_AppCopyDlgAfterClose = function () {
 
         // Application Copy Dialog Close
         lf_AppCopyPopupClose();
@@ -243,7 +260,7 @@
     /************************************************************************
      * Application Copy OK Button Event
      ************************************************************************/
-    oAPP.events.ev_AppCopyDlgOK = function() {
+    oAPP.events.ev_AppCopyDlgOK = function () {
 
         var oModelData = APPCOMMON.fnGetModelProperty(C_BIND_ROOT_PATH),
             sTargetId = oModelData.TARGETID;
@@ -289,7 +306,7 @@
         oFormData.append("APPID", sTargetId);
 
         // 복사 대상 APP 명 존재 유무 확인하여 없으면 복사 수행.
-        ajax_init_prc(oFormData, function(oResult) {
+        ajax_init_prc(oFormData, function (oResult) {
 
             // 복사대상 어플리케이션이 존재 하는지 유무 확인
             var bIsAppExists = lf_getAppInfo(oResult);
@@ -308,7 +325,7 @@
     /************************************************************************
      * Application Copy Cancel Button Event
      ************************************************************************/
-    oAPP.events.ev_AppCopyDlgCancel = function(oEvent) {
+    oAPP.events.ev_AppCopyDlgCancel = function (oEvent) {
 
         // Application Copy Dialog Close
         lf_AppCopyPopupClose();
@@ -318,9 +335,9 @@
     /************************************************************************
      * Package Search Help Popup valueHelp Event
      ************************************************************************/
-    oAPP.events.ev_packageSchpEvt = function(oEvent) {
+    oAPP.events.ev_packageSchpEvt = function (oEvent) {
 
-        oAPP.fn.fnPackgSchpPopupOpener(function(oResult) {
+        oAPP.fn.fnPackgSchpPopupOpener(function (oResult) {
 
             var sPackage = oResult.DEVCLASS;
 

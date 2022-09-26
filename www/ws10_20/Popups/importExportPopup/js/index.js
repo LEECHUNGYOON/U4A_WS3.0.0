@@ -205,9 +205,10 @@ const oAPP = {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
 
-                if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (xhr.readyState == XMLHttpRequest.DONE) {                    
 
                     try {
+
                         //서버에서 요청받은 Data 
                         var sData = JSON.parse(xhr.response);
 
@@ -220,7 +221,13 @@ const oAPP = {
                     } catch (e) {
 
                         if (xhr.getResponseHeader('RETCD') !== "S") {
-                            oAPP.remote.dialog.showErrorBox('An error has occurred', 'During the download process there is a critical problem');
+
+                            var Lmsg = xhr.getResponseHeader('RTMSG');
+                            if(Lmsg == ""){
+                                Lmsg = 'During the download process there is a critical problem';
+                            }
+
+                            oAPP.remote.dialog.showErrorBox('An error has occurred', Lmsg);
                             oAPP.oWIN.close();
                             return;
                         }

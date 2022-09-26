@@ -397,6 +397,7 @@
 
             }
 
+            // USP 좌측 Tree 구성
             APPCOMMON.fnSetModelProperty("/WS30/USPTREE", oResult.T_DATA);
 
             var oModel = sap.ui.getCore().getModel();

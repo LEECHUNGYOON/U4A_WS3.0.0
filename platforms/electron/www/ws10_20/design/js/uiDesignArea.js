@@ -247,28 +247,29 @@
     //구분자 추가.
     oLTBar1.addContent(new sap.m.ToolbarSeparator());
 
-    //UI FILTER 버튼.
-    oLBtn6 = new sap.m.Button({icon:"sap-icon://search", tooltip:"Find UI"});
-    oLTBar1.addContent(oLBtn6);
+    //필터 버튼은 개선 필요에 의해 주석처리함.
+    // //UI FILTER 버튼.
+    // oLBtn6 = new sap.m.Button({icon:"sap-icon://search", tooltip:"Find UI"});
+    // oLTBar1.addContent(oLBtn6);
 
-    //UI FILTER 버튼 선택 이벤트.
-    oLBtn6.attachPress(function(){
+    // //UI FILTER 버튼 선택 이벤트.
+    // oLBtn6.attachPress(function(){
 
-      //필터 팝업이 존재하는경우.
-      if(typeof oAPP.fn.callDesignTreeFilterPopup !== "undefined"){
-        //필터 팝업 호출.
-        oAPP.fn.callDesignTreeFilterPopup(oLBtn6);
-        return;
-      }
+    //   //필터 팝업이 존재하는경우.
+    //   if(typeof oAPP.fn.callDesignTreeFilterPopup !== "undefined"){
+    //     //필터 팝업 호출.
+    //     oAPP.fn.callDesignTreeFilterPopup(oLBtn6);
+    //     return;
+    //   }
 
-      //필터 팝업이 존재하지 않는경우 js 호출.
-      oAPP.fn.getScript("design/js/callDesignTreeFilterPopup",function(){
-        //필터 팝업 호출.
-        oAPP.fn.callDesignTreeFilterPopup(oLBtn6);
+    //   //필터 팝업이 존재하지 않는경우 js 호출.
+    //   oAPP.fn.getScript("design/js/callDesignTreeFilterPopup",function(){
+    //     //필터 팝업 호출.
+    //     oAPP.fn.callDesignTreeFilterPopup(oLBtn6);
 
-      });    
+    //   });    
 
-    }); //UI FILTER 버튼 선택 이벤트.
+    // }); //UI FILTER 버튼 선택 이벤트.
 
 
     //구분자 추가.

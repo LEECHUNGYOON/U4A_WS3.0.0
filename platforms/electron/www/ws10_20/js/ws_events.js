@@ -541,6 +541,11 @@
             value: oAppInput.getValue()
         });
 
+        // Global APPTY 변수가 없다면 기본 "M" 타입으로 설정.
+        if(!oAPP.attr.gAPPTY){
+            oAPP.attr.gAPPTY = "M";
+        }
+        
         // APP 검색 팝업 옵션
         var oOptions = {
             autoSearch: true,
@@ -548,11 +553,12 @@
                 PACKG: "",
                 APPID: sAppId,
                 APPNM: "",
+                APPTY: oAPP.attr.gAPPTY,
                 ERUSR: sSapId,
                 HITS: 500,
             }
         };
-
+     
         // APP 검색 팝업
         oAPP.fn.fnAppF4PopupOpener(oOptions, fnAppF4DataCallback);
 

@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -45,13 +45,13 @@
 
         // 파일 확장자 이미지 경로 구하기
         fnGetFileExtendImgList()
-            .then(function() {
+            .then(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
 
             })
-            .catch(function() {
+            .catch(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
@@ -65,7 +65,7 @@
      ************************************************************************/
     function fnGetFileExtendImgList() {
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
@@ -111,7 +111,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function() {
+    oAPP.fn.fnOnResizeWs30 = function () {
 
         console.log("resize30!!!");
 
@@ -248,7 +248,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -431,7 +431,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -1085,7 +1085,7 @@
                                         "ISFLD",
                                         "EXTEN"
                                     ],
-                                    formatter: function(ISFLD, EXTEN) {
+                                    formatter: function (ISFLD, EXTEN) {
 
                                         var iFileImgListLength = gaFileExtendImgList.length;
                                         if (iFileImgListLength == 0) {
@@ -1185,7 +1185,7 @@
                 },
 
                 rowSettingsTemplate: new sap.ui.table.RowSettings()
-                    .bindProperty("highlight", "ISSEL", function(ISSEL) {
+                    .bindProperty("highlight", "ISSEL", function (ISSEL) {
 
                         var def = sap.ui.core.MessageType.None,
                             oRow = this.getParent();
@@ -1242,7 +1242,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function(oEvent) {
+                rowSelectionChange: function (oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1251,13 +1251,13 @@
                         oTable.setSelectedIndex(iRowIndex);
                     }
 
-                }
+                },
 
             })
             .attachBrowserEvent("dblclick", ev_uspTreeItemDblClickEvent)
             .addStyleClass("u4aWsUspTree")
             .addDelegate({
-                onAfterRendering: function(oEvent) {
+                onAfterRendering: function (oEvent) {
 
                     var oTable = oEvent.srcControl,
                         oTableModel = oTable.getModel();
@@ -1303,7 +1303,7 @@
 
             oIsFolderCheckbox = new sap.m.CheckBox({
                 editable: false
-            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
+            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                 if (ISFLD == "X") {
                     return true;
@@ -1369,7 +1369,7 @@
                                 ]
                             })
 
-                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function(ISFLD) {
+                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                             // 폴더가 아닐 경우에만 보여준다.
                             if (ISFLD != "X") {
@@ -1417,7 +1417,7 @@
             .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function(oControl) {
+            onAfterRendering: function (oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1773,7 +1773,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1857,7 +1857,7 @@
             initialFocus: "ws30_crname",
 
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -2103,7 +2103,7 @@
 
         }
 
-        var oResult = _fnFindModelData(oSelectedCtx.sPath),
+        var oResult = oAPP.fn._fnFindModelData(oSelectedCtx.sPath),
             iFindIndex = oResult.Nodes.findIndex(arr => arr.OBJKY == oDeleteTreeData.OBJKY);
 
         if (iFindIndex == -1) {
@@ -2123,7 +2123,7 @@
     function lf_appDelCtsPopup(oParam) {
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oParam = this;
 
@@ -2135,7 +2135,7 @@
 
     } // end of lf_appDelCtsPopup
 
-    function _fnFindModelData(sPath) {
+    oAPP.fn._fnFindModelData = (sPath) => {
 
         var aa = sPath.split("/"),
             ilen = aa.length,
@@ -2174,7 +2174,7 @@
             Nodes: dd
         };
 
-    } // end of _fnFindModelData
+    }; // end of oAPP.fn._fnFindModelData
 
     /**************************************************************************
      * [WS30] USP 페이지에서 10번 페이지로 이동
@@ -2250,8 +2250,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function(e) {
-                $.each(e, function(e, o) {
+            t = function (e) {
+                $.each(e, function (e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2482,7 +2482,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function(event) {
+            fileReader.onload = function (event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -2681,7 +2681,7 @@
             iRowIndex = oRow.getIndex(),
             oRowModel = oRow.getModel(),
             oCtx = oRow.getBindingContext(),
-            sCurrBindPath = oCtx.getPath();
+            sCurrBindPath = oCtx.getPath();      
 
         oTable.setSelectedIndex(iRowIndex);
 
@@ -2694,13 +2694,23 @@
 
         // 서버에서 리턴 받은 라인 정보와 바인딩 되어있는 데이터를 병합
         oResultRowData = jQuery.extend(true, oRowBindData, oResultRowData);
-        // oResultRowData = Object.assign(oRowBindData, oResultRowData);
 
         // 선택한 위치가 Root 여부
         if (bIsRoot) {
+            
+            // 현재 APP 정보를 구한다.
+            var oAppInfo = fnGetAppInfo();
+            
+            oResultRowData.S_0010.REQNO = oResultRowData.REQNO;
+
+            // 서버에서 리턴 받은 10번 테이블 정보로 머지 한다.
+            oAppInfo = Object.assign(oAppInfo, oResultRowData.S_0010);
+
+            // APP 정보 갱신
+            APPCOMMON.fnSetModelProperty("/WS30/APP", oAppInfo);
 
             // Root 일 경우는 APP 정보 까지 Object 복사한다.
-            oResultRowData = jQuery.extend(true, oResultRowData, fnGetAppInfo());
+            oResultRowData = jQuery.extend(true, oResultRowData, oAppInfo);
 
             //Root 일 경우 Document 페이지로 이동한다.
             fnOnMoveToPage("USP30");
@@ -4018,6 +4028,7 @@
                     continue;
                 }
 
+                oUspTreeItem.CODPG = oContent.CODPG;
                 oUspTreeItem.DESCT = oContent.DESCT;
 
                 break;
@@ -4326,12 +4337,15 @@
 
     }; // end of oAPP.events.ev_pressDisplayModeBtn
 
+    /****************************************************************************************
+     * [WS30] Save or Activate 시 서버에서 판단하여 CTS를 적용해야할 경우 Eval 수행하는 function 
+     ****************************************************************************************/
     function lf_saveActiveCtsPopup(oEvent) {
 
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this;
             // IS_ACT = oEvent.getParameter("IS_ACT");
@@ -4472,6 +4486,9 @@
 
     /**************************************************************************
      * [WS30] Application Change 여부 구하기
+     **************************************************************************
+     * @return {Char1} IS_CHAG (X: true, '': false)
+     * - Application Change 모드 여부
      **************************************************************************/
     function getAppChange() {
 
@@ -4485,7 +4502,7 @@
 
     /**************************************************************************
      * [WS30] Application Change 모드 변경
-     * 
+     **************************************************************************
      * @param {Char1} bIsChange (X: true, '': false)
      * - Application Change 모드 여부
      **************************************************************************/

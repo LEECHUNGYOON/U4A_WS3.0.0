@@ -19,11 +19,13 @@
     oRDynHead.addContent(oRFm);
 
     //우상단 UI명, UI Description 영역
-    var oRCtn1 = new sap.ui.layout.form.FormContainer({title:"{/uiinfo/OBJID}"});
+    //var oRCtn1 = new sap.ui.layout.form.FormContainer({title:"{/uiinfo/OBJID}"});
+    var oRCtn1 = new sap.ui.layout.form.FormContainer();
     oRFm.addFormContainer(oRCtn1);
 
     var oRCTool = new sap.m.Toolbar();
-    oRCtn1.setToolbar(oRCTool);
+    //oRCtn1.setToolbar(oRCTool);
+    oRDynTitle.addExpandedContent(oRCTool);
 
     //tree 선택 라인의 아이콘 표현.
     var oRAvatar1 = new sap.m.Avatar({src:"{/uiinfo/src}", displayShape:"Square",displaySize:"Custom", customDisplaySize:"20px"});
