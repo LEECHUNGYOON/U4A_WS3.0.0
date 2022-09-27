@@ -187,7 +187,7 @@
 
         }
 
-        setAppChange("X");
+        oAPP.fn.setAppChangeWs30("X");
 
         console.log("codeeditor change!!");
 
@@ -1992,65 +1992,67 @@
 
         sendAjax(sPath, oFormData, _fnDeleteUspNodeSuccessCb.bind(oParam));
 
-    } // end of _fnDeleteUspNodeCb
+    } // end of _fnDeleteUspNodeCb    
 
     function _fnDeleteUspNodeSuccessCb(oResult) {
-
-        var oParam = this,
-            oTreeTable = oParam.oTreeTable;
 
         // 화면 Lock 해제
         sap.ui.getCore().unlock();
 
         parent.setBusy("");
 
-        // Critical 오류
-        if (oResult.RETCD == "Z") {
+        // JSON Parse 오류 일 경우
+        if (typeof oResult !== "object") {
 
-            parent.setSoundMsg("02"); // error sound
+            var sMsg = "[usp_page_del] JSON Parse Error";
 
-            // 작업표시줄 깜빡임
-            CURRWIN.flashFrame(true);
-
-            parent.showMessage(sap, 20, 'E', oResult.RTMSG, fnCallback);
-
-            function fnCallback() {
-
-                //  [Critical] 메시지 팝업 띄우고 확인 누르면 10번으로 강제 이동
-                // 세션, 락 등등 처리 후 이동
-                // 서버 세션이 죽었다면 오류 메시지 뿌리고 10번 화면으로 이동한다.
-                oAPP.fn.fnMoveFromWs30ToWs10();
-
-            }
+            // Critical Error
+            oAPP.fn.fnCriticalErrorWs30({
+                RTMSG: sMsg
+            });
 
             return;
 
         }
 
-        // 오류 일 경우.
-        if (oResult.RETCD == "E") {
+        var oParam = this,
+            oTreeTable = oParam.oTreeTable;
 
-            parent.setSoundMsg("02"); // error sound
+        // Normal or Critical Error!
+        switch (oResult.RETCD) {
 
-            // 작업표시줄 깜빡임
-            CURRWIN.flashFrame(true);
+            case "Z":
 
-            // 서버에서 만든 스크립트가 있다면 eval 처리.
-            if (oResult.SCRIPT) {
-                eval(oResult.SCRIPT);
+                // [WS30] Critical Error
+                oAPP.fn.fnCriticalErrorWs30(oResult);
+
                 return;
-            }
 
-            // Footer Msg 출력
-            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+            case "E":
 
-            return;
+                parent.setSoundMsg("02"); // error sound
+
+                // 작업표시줄 깜빡임
+                CURRWIN.flashFrame(true);
+
+                // 서버에서 만든 스크립트가 있다면 eval 처리.
+                if (oResult.SCRIPT) {
+                    eval(oResult.SCRIPT);
+                    return;
+                }
+
+                // Footer Msg 출력
+                APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+
+                return;
 
         }
 
         // 서버에서 만든 스크립트가 있다면 eval 처리.
         if (oResult.SCRIPT) {
+
             eval(oResult.SCRIPT);
+
         } else {
 
             // Footer Msg 출력
@@ -2094,7 +2096,7 @@
             var oFind = aDeleteTreeData.find(arr => arr.OBJKY == oBindBeforeSelect.OBJKY);
             if (oFind) {
 
-                setAppChange("");
+                oAPP.fn.setAppChangeWs30("");
 
                 // Intro Page 로 이동
                 fnOnMoveToPage("USP10");
@@ -2177,13 +2179,30 @@
     }; // end of oAPP.fn._fnFindModelData
 
     /**************************************************************************
-     * [WS30] USP 페이지에서 10번 페이지로 이동
+     * [WS30] Critical Error
      **************************************************************************/
-    oAPP.fn.fnMoveFromWs30ToWs10 = () => {
+    oAPP.fn.fnCriticalErrorWs30 = (oResult) => {
 
-        fnMoveToWs10();
+        parent.setSoundMsg("02"); // error sound
 
-    }; // end of oAPP.fn.fnMoveFromWs30ToWs10
+        // 작업표시줄 깜빡임
+        CURRWIN.flashFrame(true);
+
+        parent.showMessage(sap, 20, 'E', oResult.RTMSG, fnCallback);
+
+        function fnCallback() {
+
+            //  [Critical] 메시지 팝업 띄우고 확인 누르면 10번으로 강제 이동
+            // 세션, 락 등등 처리 후 이동
+            // 서버 세션이 죽었다면 오류 메시지 뿌리고 10번 화면으로 이동한다.           
+            // fnMoveToWs10();
+
+            // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Login 페이지로 이동.
+            fn_logoff_success('X');
+
+        }
+
+    }; // end of oAPP.fn.fnCriticalErrorWs30
 
     function fnMoveToWs10() {
 
@@ -2366,23 +2385,52 @@
      **************************************************************************/
     function _fnGetFileContents(oResult) {
 
-        if (oResult.RETCD == "E") {
+        // 화면 Lock 해제
+        sap.ui.getCore().unlock();
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
+        parent.setBusy("");
 
-            parent.setBusy("");
+        // JSON Parse 오류 일 경우
+        if (typeof oResult !== "object") {
 
-            parent.setSoundMsg("02"); // error sound
+            var sMsg = "[usp_get_file_data] JSON Parse Error";
 
-            // 작업표시줄 깜빡임
-            CURRWIN.flashFrame(true);
-
-            // Footer Msg 출력
-            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+            // Critical Error
+            oAPP.fn.fnCriticalErrorWs30({
+                RTMSG: sMsg
+            });
 
             return;
 
+        }
+
+        // Normal or Critical Error!
+        switch (oResult.RETCD) {
+
+            case "Z":
+
+                // [WS30] Critical Error
+                oAPP.fn.fnCriticalErrorWs30(oResult);
+
+                return;
+
+            case "E":
+
+                parent.setSoundMsg("02"); // error sound
+
+                // 작업표시줄 깜빡임
+                CURRWIN.flashFrame(true);
+
+                // 서버에서 만든 스크립트가 있다면 eval 처리.
+                if (oResult.SCRIPT) {
+                    eval(oResult.SCRIPT);
+                    return;
+                }
+
+                // Footer Msg 출력
+                APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+
+                return;
         }
 
         // 화면 Lock 해제
@@ -2549,15 +2597,6 @@
             return;
         }
 
-        // var sBeforeBindPath = "";
-        // if (goBeforeSelect) {
-        //     sBeforeBindPath = goBeforeSelect.BINDPATH;
-        // }
-
-        // if (sBeforeBindPath == oCtx.sPath) {
-        //     return;
-        // }
-
         var aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
         if (aUspTreeData) {
 
@@ -2572,7 +2611,7 @@
         }
 
         // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
-        var IS_CHAG = getAppChange();
+        var IS_CHAG = getAppChangeWs30();
         if (IS_CHAG == 'X') {
 
             var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
@@ -2606,7 +2645,7 @@
         if (oEvent !== "YES") {
 
             // 앱 변경 사항 플래그 설정
-            setAppChange("");
+            oAPP.fn.setAppChangeWs30("");
 
             // code editor key press 이벤트 설정
             fnCodeEditorKeyPressEvent("X");
@@ -2637,8 +2676,12 @@
         var sServerPath = parent.getServerPath(),
             sPath = `${sServerPath}/usp_get_object_line_data`;
 
+        var oSendData = {
+            S_HEAD: oRowData
+        };
+
         var oFormData = new FormData();
-        oFormData.append("sData", JSON.stringify(oRowData));
+        oFormData.append("sData", JSON.stringify(oSendData));
 
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
@@ -2653,22 +2696,51 @@
 
     function _fnLineSelectCb(oResult) {
 
-        if (oResult.RETCD == "E") {
+        // 화면 Lock 해제
+        sap.ui.getCore().unlock();
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
+        parent.setBusy("");
 
-            parent.setBusy("");
+        // JSON Parse 오류 일 경우
+        if (typeof oResult !== "object") {
 
-            parent.setSoundMsg("02"); // error sound
+            var sMsg = "[usp_get_object_line_data] JSON Parse Error";
 
-            // 작업표시줄 깜빡임
-            CURRWIN.flashFrame(true);
-
-            // Footer Msg 출력
-            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+            // Critical Error
+            oAPP.fn.fnCriticalErrorWs30({
+                RTMSG: sMsg
+            });
 
             return;
+
+        }
+
+        // Normal or Critical Error
+        switch (oResult.RETCD) {
+
+            case "Z":
+
+                // Critical Error
+                oAPP.fn.fnCriticalErrorWs30(oResult);
+
+                return;
+
+            case "E":
+
+                sap.ui.getCore().unlock(); // 화면 Lock 해제
+
+                parent.setBusy(""); // Busy 종료
+
+                parent.setSoundMsg("02"); // error sound
+
+                // 작업표시줄 깜빡임
+                CURRWIN.flashFrame(true);
+
+                // Footer Msg 출력
+                APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+
+                return;
+
 
         }
 
@@ -2681,7 +2753,7 @@
             iRowIndex = oRow.getIndex(),
             oRowModel = oRow.getModel(),
             oCtx = oRow.getBindingContext(),
-            sCurrBindPath = oCtx.getPath();      
+            sCurrBindPath = oCtx.getPath();
 
         oTable.setSelectedIndex(iRowIndex);
 
@@ -2697,14 +2769,14 @@
 
         // 선택한 위치가 Root 여부
         if (bIsRoot) {
-            
+
             // 현재 APP 정보를 구한다.
             var oAppInfo = fnGetAppInfo();
-            
-            oResultRowData.S_0010.REQNO = oResultRowData.REQNO;
+
+            // oResultRowData.S_0010.REQNO = oResultRowData.REQNO;
 
             // 서버에서 리턴 받은 10번 테이블 정보로 머지 한다.
-            oAppInfo = Object.assign(oAppInfo, oResultRowData.S_0010);
+            oAppInfo = Object.assign(oAppInfo, oResult.S_APPINFO);
 
             // APP 정보 갱신
             APPCOMMON.fnSetModelProperty("/WS30/APP", oAppInfo);
@@ -2797,7 +2869,7 @@
     function ev_UspDescInputChangeEvent() {
 
         // 앱 변경 플래그
-        setAppChange("X");
+        oAPP.fn.setAppChangeWs30("X");
 
     } // end of ev_UspDescInputChangeEvent
 
@@ -2807,7 +2879,7 @@
     function ev_UspCharsetInputChangeEvent() {
 
         // 앱 변경 플래그
-        setAppChange("X");
+        oAPP.fn.setAppChangeWs30("X");
 
     } // end of ev_UspCharsetInputChangeEvent
 
@@ -2851,7 +2923,8 @@
         oAPP.fn.fnChildWindowShow(false);
 
         sap.ui.getCore().unlock();
-    }
+
+    } // end fofnMoveBack_Ws30_To_Ws10
 
     function fnMoveBack_Ws30_To_Ws10Cb(ACTCD) {
 
@@ -3327,7 +3400,7 @@
 
                 // Usp 생성 시, 현재 Change가 된 상태인지 확인.
                 // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
-                var IS_CHAG = getAppChange();
+                var IS_CHAG = getAppChangeWs30();
                 if (IS_CHAG == 'X') {
 
                     var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
@@ -3370,7 +3443,7 @@
 
                 // Usp 생성 시, 현재 Change가 된 상태인지 확인.
                 // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
-                var IS_CHAG = getAppChange();
+                var IS_CHAG = getAppChangeWs30();
                 if (IS_CHAG == 'X') {
 
                     var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
@@ -3390,13 +3463,133 @@
 
             case "K8": // Up
 
+                // // Usp 생성 시, 현재 Change가 된 상태인지 확인.
+                // // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
+                // var IS_CHAG = getAppChangeWs30();
+                // if (IS_CHAG == 'X') {
+
+                //     var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
+
+                //     parent.showMessage(sap, 40, 'W', sMsg, _fnUspTreeNodeMoveUpCB.bind(this, oTreeTable));
+
+                //     // 현재 떠있는 팝업 창들을 잠시 숨긴다.
+                //     oAPP.fn.fnChildWindowShow(false);
+
+                //     return;
+
+                // }
+
                 oAPP.fn.fnUspTreeNodeMoveUp(oTreeTable, gSelectedTreeIndex);
+
+                break;
+
+            case "K9": // Down
+
+                // // Usp 생성 시, 현재 Change가 된 상태인지 확인.
+                // // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
+                // var IS_CHAG = getAppChangeWs30();
+                // if (IS_CHAG == 'X') {
+
+                //     var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
+
+                //     parent.showMessage(sap, 40, 'W', sMsg, _fnUspTreeNodeMoveDownCB.bind(this, oTreeTable));
+
+                //     // 현재 떠있는 팝업 창들을 잠시 숨긴다.
+                //     oAPP.fn.fnChildWindowShow(false);
+
+                //     return;
+
+                // }
+
+                oAPP.fn.fnUspTreeNodeMoveDown(oTreeTable, gSelectedTreeIndex);
 
                 break;
 
         }
 
     } // end of ev_UspTreeCtxMenuClick
+
+    /**************************************************************************
+     * [WS30] USP Tree Item의 위로로 이동 전 APP Change가 있을 경우 메시지 팝업 콜백 이벤트
+     **************************************************************************/
+    function _fnUspTreeNodeMoveUpCB(oTreeTable, oEvent) {
+
+        // 동작 취소
+        if (oEvent == null || oEvent == "CANCEL") {
+
+            // 현재 떠있는 팝업 창이 있었고 숨김 처리 되있었다면 다시 활성화 시킨다.
+            oAPP.fn.fnChildWindowShow(true);
+
+            return;
+        }
+
+        // 아니오 일 경우
+        if (oEvent !== "YES") {
+
+            // 저장 취소
+            _fnSaveCancel(oTreeTable);
+
+            oAPP.fn.fnUspTreeNodeMoveUp(oTreeTable, gSelectedTreeIndex);
+
+            return;
+
+        }
+
+        // 좌측 트리 데이터를 구한다.
+        var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
+            aUspTreeData = jQuery.extend(true, [], aTreeData),
+            aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE"),
+
+            oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+
+        oSaveBtn.firePress({
+            AFPRC: "UP",
+            TREEDATA: aUspTreeData,
+            oTreeTable: oTreeTable
+        });
+
+    } // end of _fnUspTreeNodeMoveUpCB
+
+    /**************************************************************************
+     * [WS30] USP Tree Item의 아래로 이동 전 APP Change가 있을 경우 메시지 팝업 콜백 이벤트
+     **************************************************************************/
+    function _fnUspTreeNodeMoveDownCB(oTreeTable, oEvent) {
+
+        // 동작 취소
+        if (oEvent == null || oEvent == "CANCEL") {
+
+            // 현재 떠있는 팝업 창이 있었고 숨김 처리 되있었다면 다시 활성화 시킨다.
+            oAPP.fn.fnChildWindowShow(true);
+
+            return;
+        }
+
+        // 아니오 일 경우
+        if (oEvent !== "YES") {
+
+            // 저장 취소
+            _fnSaveCancel(oTreeTable);
+
+            oAPP.fn.fnUspTreeNodeMoveDown(oTreeTable, gSelectedTreeIndex);
+
+            return;
+
+        }
+
+        // 좌측 트리 데이터를 구한다.
+        var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
+            aUspTreeData = jQuery.extend(true, [], aTreeData),
+            aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE"),
+
+            oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+
+        oSaveBtn.firePress({
+            AFPRC: "DOWN",
+            TREEDATA: aUspTreeData,
+            oTreeTable: oTreeTable
+        });
+
+    } // end of _fnUspTreeNodeMoveDownCB
 
     /**************************************************************************
      * [WS30] USP 생성 전 APP Change가 있을 경우 메시지 팝업 콜백 이벤트
@@ -3414,34 +3607,6 @@
 
         // 아니오 일 경우
         if (oEvent !== "YES") {
-
-            // // 이전에 선택 표시된 Node 정보 구하기
-            // var oTreeModel = oTreeTable.getModel(),
-            //     aUspTreeData = oTreeModel.getProperty("/WS30/USPTREE");
-
-            // var oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
-            // if (oBindBeforeSelect) {
-
-            //     var oUspData = APPCOMMON.fnGetModelProperty("/WS30/USPDATA");
-
-            //     oUspData.DESCT = oBindBeforeSelect.DESCT;
-            //     oUspData.CONTENT = oBindBeforeSelect.CONTENT;
-
-            //     oTreeModel.refresh();
-
-            // }
-
-            // // 앱 변경 사항 플래그 설정
-            // setAppChange("");
-
-            // // code editor key press 이벤트 설정
-            // fnCodeEditorKeyPressEvent("X");
-
-            // // 이전에 선택 표시된 USP Tree Node 선택 해제
-            // fnOnUspTreeUnSelect();
-
-            // // 우측 에디터 영역을 메인 페이지로 이동
-            // fnOnMoveToPage("USP10");
 
             // 저장 취소
             _fnSaveCancel(oTreeTable);
@@ -3486,7 +3651,7 @@
         if (oEvent !== "YES") {
 
             // 앱 변경 사항 플래그 설정
-            setAppChange("");
+            oAPP.fn.setAppChangeWs30("");
 
             // code editor key press 이벤트 설정
             fnCodeEditorKeyPressEvent("X");
@@ -3553,7 +3718,7 @@
     //         // }
 
     //         // // 앱 변경 사항 플래그 설정
-    //         // setAppChange("");
+    //         // oAPP.fn.setAppChangeWs30("");
 
     //         // // code editor key press 이벤트 설정
     //         // fnCodeEditorKeyPressEvent("X");
@@ -3612,7 +3777,7 @@
         }
 
         // 앱 변경 사항 플래그 설정
-        setAppChange("");
+        oAPP.fn.setAppChangeWs30("");
 
         // code editor key press 이벤트 설정
         fnCodeEditorKeyPressEvent("X");
@@ -4056,6 +4221,25 @@
      **************************************************************************/
     function _fnSaveCallback(oResult) {
 
+        // 화면 Lock 해제
+        sap.ui.getCore().unlock();
+
+        parent.setBusy("");
+
+        // JSON Parse 오류 일 경우
+        if (typeof oResult !== "object") {
+
+            var sMsg = "[usp_save_active_appdata] JSON Parse Error";
+
+            // Critical Error
+            oAPP.fn.fnCriticalErrorWs30({
+                RTMSG: sMsg
+            });
+
+            return;
+
+        }
+
         // 전달 받은 파라미터 확인 점검..
         var oEvent = this,
             oNewEvent = oEvent,
@@ -4066,61 +4250,49 @@
             pIS_ACT = oEvent.getParameter("IS_ACT"),
             oTreeTable = oEvent.getParameter("oTreeTable");
 
-        // 화면 Lock 해제
-        sap.ui.getCore().unlock();
+        // Normal or Critical Error!
+        switch (oResult.RETCD) {
 
-        parent.setBusy("");
+            case "Z":
 
-        // Critical 오류
-        if (oResult.RETCD == "Z") {
+                // [WS30] Critical Error
+                oAPP.fn.fnCriticalErrorWs30(oResult);
 
-            parent.setSoundMsg("02"); // error sound
-
-            // 작업표시줄 깜빡임
-            CURRWIN.flashFrame(true);
-
-            parent.showMessage(sap, 20, 'E', oResult.RTMSG, fnCallback);
-
-            function fnCallback() {
-
-                //  [Critical] 메시지 팝업 띄우고 확인 누르면 10번으로 강제 이동
-                // 세션, 락 등등 처리 후 이동
-                // 서버 세션이 죽었다면 오류 메시지 뿌리고 10번 화면으로 이동한다.
-                oAPP.fn.fnMoveFromWs30ToWs10();
-
-            }
-
-            return;
-
-        }
-
-        if (oResult.RETCD == "E") {
-
-            parent.setSoundMsg("02"); // error sound
-
-            // 작업표시줄 깜빡임
-            CURRWIN.flashFrame(true);
-
-            // 서버에서 만든 스크립트가 있다면 eval 처리.
-            if (oResult.SCRIPT) {
-                eval(oResult.SCRIPT);
                 return;
-            }
 
-            // Footer Msg 출력
-            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+            case "E":
 
-            return;
+                parent.setSoundMsg("02"); // error sound
 
+                // 작업표시줄 깜빡임
+                CURRWIN.flashFrame(true);
+
+                // 서버에서 만든 스크립트가 있다면 eval 처리.
+                if (oResult.SCRIPT) {
+                    eval(oResult.SCRIPT);
+                    return;
+                }
+
+                // Footer Msg 출력
+                APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+
+                return;
         }
 
         // 서버에서 만든 스크립트가 있다면 eval 처리.
         if (oResult.SCRIPT) {
+
             eval(oResult.SCRIPT);
+
+        } else {
+
+            // Footer Msg 출력
+            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+
         }
 
         // 저장 성공 후 앱 상태 변경 플래그 해제
-        setAppChange("");
+        oAPP.fn.setAppChangeWs30("");
 
         // Activate로 들어왔을 경우 상단에 APP 상태 정보 변경
         if (pIS_ACT == "X") {
@@ -4205,6 +4377,17 @@
 
                 return;
 
+            case "UP": // 저장 후 선택한 Node를 위로 이동할 경우.
+
+                oAPP.fn.fnUspTreeNodeMoveUp(oTreeTable, gSelectedTreeIndex);
+
+                return;
+
+            case "DOWN": // 저장 후 선택한 Node를 아래로 이동할 경우.
+
+                oAPP.fn.fnUspTreeNodeMoveDown(oTreeTable, gSelectedTreeIndex);
+
+                return;
         }
 
         // EDIT 모드에서 다른 CONTENT 선택시 저장하고 넘어가려는 경우
@@ -4490,7 +4673,7 @@
      * @return {Char1} IS_CHAG (X: true, '': false)
      * - Application Change 모드 여부
      **************************************************************************/
-    function getAppChange() {
+    function getAppChangeWs30() {
 
         // 어플리케이션 정보 가져오기
         var oAppInfo = fnGetAppInfo();
@@ -4498,7 +4681,7 @@
         // 어플리케이션 정보에 변경 플래그 
         return oAppInfo.IS_CHAG;
 
-    } // end of getAppChange
+    } // end of getAppChangeWs30
 
     /**************************************************************************
      * [WS30] Application Change 모드 변경
@@ -4506,7 +4689,7 @@
      * @param {Char1} bIsChange (X: true, '': false)
      * - Application Change 모드 여부
      **************************************************************************/
-    function setAppChange(bIsChange) {
+    oAPP.fn.setAppChangeWs30 = (bIsChange) => {
 
         if (typeof bIsChange !== "string") {
             return;
@@ -4514,6 +4697,21 @@
 
         if (bIsChange != 'X' && bIsChange != '') {
             return;
+        }
+
+
+        if (bIsChange == "") {
+
+            if (oAPP.attr.oBeforeUspTreeData) {
+
+                debugger;
+
+                APPCOMMON.fnSetModelProperty("/WS30/USPTREE", oAPP.attr.oBeforeUspTreeData, true);
+
+                delete oAPP.attr.oBeforeUspTreeData;
+
+            }
+
         }
 
         // 어플리케이션 정보 가져오기
@@ -4528,7 +4726,7 @@
 
         APPCOMMON.fnSetModelProperty("/WS30/APP", oAppInfo);
 
-    } // end of setAppChange
+    }; // end of oAPP.fn.setAppChangeWs30
 
     /**************************************************************************
      * [WS30] Application Activate 상태 변경
@@ -4598,7 +4796,7 @@
         oCodeEditor.focus();
 
         // 앱 변경 플래그
-        setAppChange("X");
+        oAPP.fn.setAppChangeWs30("X");
 
     } // end of ev_codeeditorPrettyPrint
 

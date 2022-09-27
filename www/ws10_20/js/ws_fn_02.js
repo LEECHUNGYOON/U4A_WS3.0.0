@@ -70,18 +70,20 @@
             // Change 모드로 들어왔는데 APP가 Lock 걸려 있는 경우.
             if (ISEDIT == "X" && oAppInfo.IS_EDIT == "") {
 
-                var sMsg = "Editing by " + oAppInfo.APPID;
+                // var sMsg = "Editing by " + oAppInfo.APPID;
 
                 // USP Application 일 경우
                 if (oAppInfo.APPTY == "U") {
 
                     // 페이지 푸터 메시지
-                    APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", sMsg);
+                    // APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", sMsg);
+                    APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oAppInfo.MESSAGE);
 
                 } else {
 
                     // 페이지 푸터 메시지
-                    APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", sMsg);
+                    // APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", sMsg);
+                    APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", oAppInfo.MESSAGE);
 
                 }
 
@@ -97,7 +99,7 @@
 
             // USP Application 일 경우
             if (oAppInfo.APPTY == "U") {
-                
+
                 // WS10 페이지의 APPID 입력 필드에 Suggestion을 구성할 데이터를 저장한다.
                 oAPP.fn.fnOnSaveAppSuggestion(oAppInfo.APPID);
 
@@ -374,6 +376,23 @@
         sendAjax(sInitPath, oFormData, _fnCallback);
 
         function _fnCallback(oResult) {
+            
+            // Critical Error
+            if (oResult.RETCD == "Z") {
+
+                // 화면 Lock 해제
+                sap.ui.getCore().unlock();
+
+                parent.setBusy('');
+
+                //  [Critical] 메시지 팝업 띄우고 확인 누르면 10번으로 강제 이동
+                // 세션, 락 등등 처리 후 이동
+                // 서버 세션이 죽었다면 오류 메시지 뿌리고 10번 화면으로 이동한다.
+                oAPP.fn.fnCriticalErrorWs30(oResult);
+
+                return;
+
+            }
 
             if (oResult.RETCD != "S") {
 
@@ -389,7 +408,7 @@
                     //  [Critical] 메시지 팝업 띄우고 확인 누르면 10번으로 강제 이동
                     // 세션, 락 등등 처리 후 이동
                     // 서버 세션이 죽었다면 오류 메시지 뿌리고 10번 화면으로 이동한다.
-                    oAPP.fn.fnMoveFromWs30ToWs10();
+                    oAPP.fn.fnCriticalErrorWs30(oResult);
 
                 }
 

@@ -24,14 +24,13 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     MIMETYPES = require('mime-types'),
     POWERMONITOR = REMOTE.require('electron').powerMonitor,
     COMPUTERNAME = process.env.COMPUTERNAME;
-    
+
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 // REGEDIT.setExternalVBSLocation('resources/regedit/vbs');
 
 // 오디오 자동실행 오류 정책 회피
 APP.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
-
 
 POWERMONITOR.setMaxListeners(100);
 IPCMAIN.setMaxListeners(100);
@@ -43,7 +42,7 @@ IPCMAIN.setMaxListeners(100);
 var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에서 parent로 접근이 안됨.)
     oWS = {};
 
-(function(oWS) {
+(function (oWS) {
     "use strict";
 
     oWS.utill = {};
@@ -85,7 +84,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
      */
 
     // 1. 메시지 호출
-    oWS.utill.fn.showMessage = function(oUI5, KIND, TYPE, MSG, fn_callback) {
+    oWS.utill.fn.showMessage = function (oUI5, KIND, TYPE, MSG, fn_callback) {
 
         /**
          * # oUI5
@@ -334,7 +333,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     }; // end of oWS.utill.fn.showMessage
 
     // 2. 서버 정보를 구한다.
-    oWS.utill.fn.getServerInfo = function() {
+    oWS.utill.fn.getServerInfo = function () {
 
         if (!oWS.oServerInfo) {
             return;
@@ -367,7 +366,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     };
 
     // 3. 서버 URL을 구한다.
-    oWS.utill.fn.getServerPath = function() {
+    oWS.utill.fn.getServerPath = function () {
 
         // if (!oWS.oServerInfo) {
         //     return;
@@ -386,7 +385,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     };
 
     // 4. 서버 호스트를 구한다.
-    oWS.utill.fn.getServerHost = function() {
+    oWS.utill.fn.getServerHost = function () {
 
         if (!oWS.oServerInfo) {
             return;
@@ -406,7 +405,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     };
 
     // 4. Page 이동
-    oWS.utill.fn.onMoveToPage = function(sMovePath) {
+    oWS.utill.fn.onMoveToPage = function (sMovePath) {
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {
@@ -431,23 +430,23 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     };
 
     // 5. Electron Instance return.
-    oWS.utill.fn.getElectronRemote = function() {
+    oWS.utill.fn.getElectronRemote = function () {
         return REMOTE;
     };
 
     // 6. NODE JS 'require' return.
-    oWS.utill.fn.getRequire = function() {
+    oWS.utill.fn.getRequire = function () {
         return require;
     };
 
     // 7. Application 정보 저장
-    oWS.utill.fn.setAppInfo = function(oAppInfo) {
+    oWS.utill.fn.setAppInfo = function (oAppInfo) {
 
         if (oWS.utill.attr.oAppInfo) {
             delete oWS.utill.attr.oAppInfo;
         }
 
-        if(!oAppInfo){
+        if (!oAppInfo) {
             return;
         }
 
@@ -501,7 +500,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     };
 
     // 8. AppID 및 Create, Change, Display 모드 정보 구하기
-    oWS.utill.fn.getAppInfo = function() {
+    oWS.utill.fn.getAppInfo = function () {
 
         if (!oWS.utill.attr.oAppInfo) {
             return;
@@ -512,12 +511,12 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     };
 
     // 9. SAP Icon Image Path 만들어주는 function
-    oWS.utill.fn.getSapIconPath = function(sIconName) {
+    oWS.utill.fn.getSapIconPath = function (sIconName) {
         return oWS.utill.attr.paths.SAPICONPATH + sIconName + ".gif";
     };
 
     // 10. Window Header Menu Setting
-    oWS.utill.fn.setBrowserMenu = function(aTemplate) {
+    oWS.utill.fn.setBrowserMenu = function (aTemplate) {
 
         var oCurrWin = REMOTE.getCurrentWindow(),
             MENU = REMOTE.Menu;
@@ -533,12 +532,12 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     };
 
     // 11. 현재 dirname 구하기
-    oWS.utill.fn.getDirName = function() {
+    oWS.utill.fn.getDirName = function () {
         return __dirname;
     };
 
     // 12. Page Path 구하기
-    oWS.utill.fn.getPath = function(sPagePath) {
+    oWS.utill.fn.getPath = function (sPagePath) {
 
         var sPath = oWS.utill.attr.paths[sPagePath];
         if (!sPath) {
@@ -594,7 +593,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     // }; // end of oWS.utill.fn.ajax
 
     // 14. 서버에서 App 정보를 구한다.
-    oWS.utill.fn.getAppDataFromServer = function(oFormData, fn_callback) {
+    oWS.utill.fn.getAppDataFromServer = function (oFormData, fn_callback) {
 
         var sPath = getServerPath() + '/INIT_PRC';
 
@@ -609,7 +608,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     }; // end of oWS.utill.fn.getAppDataFromServer
 
     // 15. 새창 띄우기
-    oWS.utill.fn.onNewWindow = function() {
+    oWS.utill.fn.onNewWindow = function () {
 
         const WINDOWSTATE = REMOTE.require('electron-window-state');
 
@@ -665,7 +664,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         // oBrowserWindow.webContents.openDevTools();        
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oSAPServerInfo = getServerInfo();
 
@@ -708,7 +707,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
      *  - A : +
      *  - D : -  
      */
-    oWS.utill.fn.setSessionCount = function(TYPE) {
+    oWS.utill.fn.setSessionCount = function (TYPE) {
         return;
 
         var sFoldPath = PATH.join(__dirname, '../conf/'),
@@ -806,6 +805,27 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
             bIsBusy = (sIsbusy == "X" ? true : false);
 
+
+        // Cursor Focus Handle
+        if (bIsBusy) {
+
+            if (document.activeElement && document.activeElement.blur) {
+                oWS.utill.attr.beforeActiveElement = document.activeElement;
+                document.activeElement.blur();
+            }
+
+        } else {
+
+            if (oWS.utill.attr.beforeActiveElement) {
+
+                oWS.utill.attr.beforeActiveElement.focus();
+
+                delete oWS.utill.attr.beforeActiveElement;
+
+            }
+
+        }
+
         if (oWS.utill.attr.sap) {
             if (bIsBusy) {
                 oWS.utill.attr.sap.ui.getCore().lock();
@@ -845,12 +865,12 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     }; // end of oWS.utill.fn.setBusy
 
     // 현재 Busy Indicator 상태를 리턴해준다.
-    oWS.utill.fn.getBusy = function() {
+    oWS.utill.fn.getBusy = function () {
         return oWS.utill.attr.isBusy;
     };
 
     // 20. Page Loading 실행
-    oWS.utill.fn.showLoadingPage = function(bIsShow) {
+    oWS.utill.fn.showLoadingPage = function (bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
         if (!oLoadPg) {
@@ -1143,6 +1163,6 @@ IPCRENDERER.on('if-meta-info', (event, res) => {
 
 });
 
-window.onload = function() {
+window.onload = function () {
     showLoadingPage('');
 };

@@ -1688,8 +1688,6 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
                 if (oReturn == "") {
 
-                    //fn_logoff_success('X');
-
                     oReturn = JSON.stringify({});
                 }
 
@@ -1700,6 +1698,27 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
                     if (typeof fn_success == "function") {
                         fn_success(xhr.response);
+                    }
+
+                    return;
+
+                }
+
+                // Critical Error 일 경우 로그아웃 처리
+                if (oResult.RETCD == "Z") {
+
+                    // 화면 Lock 해제
+                    sap.ui.getCore().unlock();
+
+                    parent.setBusy("");
+
+                    parent.showMessage(sap, 20, 'E', oResult.RTMSG, fn_criticalError);
+
+                    function fn_criticalError() {
+
+                        // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Login 페이지로 이동.
+                        fn_logoff_success('X');
+
                     }
 
                     return;

@@ -150,7 +150,7 @@
 
                     return;
 
-                }             
+                }
 
                 // 어플리케이션 삭제하러 서버 호출
                 oAPP.fn.fnSetAppDelete();
@@ -542,10 +542,10 @@
         });
 
         // Global APPTY 변수가 없다면 기본 "M" 타입으로 설정.
-        if(!oAPP.attr.gAPPTY){
+        if (!oAPP.attr.gAPPTY) {
             oAPP.attr.gAPPTY = "M";
         }
-        
+
         // APP 검색 팝업 옵션
         var oOptions = {
             autoSearch: true,
@@ -554,11 +554,12 @@
                 APPID: sAppId,
                 APPNM: "",
                 APPTY: oAPP.attr.gAPPTY,
+                EXPAGE: "WS10",
                 ERUSR: sSapId,
                 HITS: 500,
             }
         };
-     
+
         // APP 검색 팝업
         oAPP.fn.fnAppF4PopupOpener(oOptions, fnAppF4DataCallback);
 

@@ -335,23 +335,26 @@
 
                             }).bindProperty("enabled", {
                                 parts: [
-                                    "APPTY"
+                                    "APPTY",
+                                    "EXPAGE"
                                 ],
-                                formatter: (APPTY) => {
+                                formatter: (APPTY, EXPAGE) => {
 
-                                    if (!APPTY) {
+                                    if (!APPTY || !EXPAGE) {
                                         return false;
                                     }
+
+                                    // WS10번 페이지가 아니면 Application Type을 Disable 처리한다.
+                                    if(EXPAGE != "WS10"){
+                                        return false;
+                                    }
+
 
                                     return true;
 
                                 }
                             })
 
-                            // fields: new sap.m.Input({
-                            //     value: "{APPTY}",
-                            //     submit: oAPP.events.ev_AppF4Search
-                            // })
                         }),
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
