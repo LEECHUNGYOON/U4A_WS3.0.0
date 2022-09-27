@@ -579,10 +579,13 @@
 
             if (oAppInfo.IS_EDIT != "X") {
 
-                var sMsg = "Editing by " + oAppInfo.APPID;
-
                 // 페이지 푸터 메시지
-                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sMsg);
+                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
+                
+                // var sMsg = "Editing by " + oAppInfo.APPID;
+
+                // // 페이지 푸터 메시지
+                // APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sMsg);
 
                 return false;
 
