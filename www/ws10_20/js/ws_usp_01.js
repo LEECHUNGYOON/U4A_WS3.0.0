@@ -28,19 +28,19 @@
             oAPP.attr.oBeforeUspTreeData = jQuery.extend(true, [], oCtxModel.getProperty("/WS30/USPTREE"));
 
         }
-
-        // 선택한 Node를 위로 이동 후 모델 업데이트
+        
+        // 선택한 Node를 Array에서 추출
         var aItem = oResult.Nodes.splice(iFindIndex, 1);
 
+        // 선택한 Node를 이전 위치에서 위로 이동 시킨다.
         oResult.Nodes.splice(iFindIndex - 1, 0, aItem[0]);
 
+        // 변경한 정보를 갱신한다.
         oCtxModel.setProperty(oResult.Path, oResult.Nodes);
 
-        // oCtxModel.refresh();
-
-        // Tree Table RowUpdated Event 걸기
+        // 이동된 Node에 선택 표시를 하기 위한 Tree Table RowUpdated Event 걸기
         gfSelectRowUpdate = ev_setSelectedRowUpdated.bind(this, aItem[0]);
-
+        
         oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
 
         // 앱 변경 플래그
