@@ -28,7 +28,7 @@
             TAB1: oTab1_Data,
             aAPPTY: [{
                     KEY: "M",
-                    TEXT: "Mobile Web"
+                    TEXT: "U4A Application"
                 },
                 {
                     KEY: "U",

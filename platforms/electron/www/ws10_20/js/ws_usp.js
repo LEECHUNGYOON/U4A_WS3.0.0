@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -45,13 +45,13 @@
 
         // 파일 확장자 이미지 경로 구하기
         fnGetFileExtendImgList()
-            .then(function() {
+            .then(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
 
             })
-            .catch(function() {
+            .catch(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
@@ -65,7 +65,7 @@
      ************************************************************************/
     function fnGetFileExtendImgList() {
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
@@ -111,7 +111,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function() {
+    oAPP.fn.fnOnResizeWs30 = function () {
 
         console.log("resize30!!!");
 
@@ -248,7 +248,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -431,7 +431,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -717,7 +717,7 @@
                         content: aToolbarButtons
                     }),
 
-                    new sap.m.Page({
+                    new sap.m.Page("PP", {
                         showHeader: false,
                         enableScrolling: false,
                         content: [
@@ -838,9 +838,9 @@
                                     design: "Bold",
                                     text: "Web Application ID"
                                 }),
-                                fields: new sap.m.Input({
-                                    editable: false,
-                                    value: `{${sBindRoot}/APPID}`
+                                fields: new sap.m.Text({
+                                    // editable: false,
+                                    text: `{${sBindRoot}/APPID}`
                                 })
                             }),
                             new sap.ui.layout.form.FormElement({
@@ -850,6 +850,7 @@
                                 }),
                                 fields: new sap.m.Input({
                                     value: `{${sBindRoot}/DESCT}`,
+                                    maxLength: 40,
                                     change: ev_UspDescInputChangeEvent
                                 }).bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding)
                             }),
@@ -1085,7 +1086,7 @@
                                         "ISFLD",
                                         "EXTEN"
                                     ],
-                                    formatter: function(ISFLD, EXTEN) {
+                                    formatter: function (ISFLD, EXTEN) {
 
                                         var iFileImgListLength = gaFileExtendImgList.length;
                                         if (iFileImgListLength == 0) {
@@ -1184,8 +1185,8 @@
                     }
                 },
 
-                rowSettingsTemplate: new sap.ui.table.RowSettings()
-                    .bindProperty("highlight", "ISSEL", function(ISSEL) {
+                rowSettingsTemplate: new sap.ui.table.RowSettings("rs")
+                    .bindProperty("highlight", "ISSEL", function (ISSEL) {
 
                         var def = sap.ui.core.MessageType.None,
                             oRow = this.getParent();
@@ -1242,7 +1243,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function(oEvent) {
+                rowSelectionChange: function (oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1257,14 +1258,18 @@
             .attachBrowserEvent("dblclick", ev_uspTreeItemDblClickEvent)
             .addStyleClass("u4aWsUspTree")
             .addDelegate({
-                onAfterRendering: function(oEvent) {
+                onAfterRendering: function (oEvent) {
 
-                    var oTable = oEvent.srcControl,
-                        oTableModel = oTable.getModel();
+                    var aa = sap.ui.getCore().byId("rs");
 
-                    if (oTableModel) {
-                        oTableModel.refresh(true);
-                    }
+                    aa.invalidate();
+
+                    // var oTable = oEvent.srcControl,
+                    //     oTableModel = oTable.getModel();
+
+                    // if (oTableModel) {
+                    //     oTableModel.refresh(true);
+                    // }
 
                 }
             });
@@ -1303,7 +1308,7 @@
 
             oIsFolderCheckbox = new sap.m.CheckBox({
                 editable: false
-            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
+            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                 if (ISFLD == "X") {
                     return true;
@@ -1369,7 +1374,7 @@
                                 ]
                             })
 
-                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function(ISFLD) {
+                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                             // 폴더가 아닐 경우에만 보여준다.
                             if (ISFLD != "X") {
@@ -1417,7 +1422,7 @@
             .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function(oControl) {
+            onAfterRendering: function (oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1773,7 +1778,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1857,7 +1862,7 @@
             initialFocus: "ws30_crname",
 
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -2125,7 +2130,7 @@
     function lf_appDelCtsPopup(oParam) {
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oParam = this;
 
@@ -2269,8 +2274,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function(e) {
-                $.each(e, function(e, o) {
+            t = function (e) {
+                $.each(e, function (e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2530,7 +2535,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function(event) {
+            fileReader.onload = function (event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -4513,7 +4518,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this;
             // IS_ACT = oEvent.getParameter("IS_ACT");

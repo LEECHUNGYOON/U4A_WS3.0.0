@@ -1,4 +1,4 @@
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     var gfSelectRowUpdate;
@@ -7,6 +7,8 @@
      * [WS30] USP Tree의 위로 이동
      **************************************************************************/
     oAPP.fn.fnUspTreeNodeMoveUp = (oTreeTable, pIndex) => {
+
+        debugger;
 
         var oSelectedCtx = oTreeTable.getContextByIndex(pIndex), // 현재 선택한 Node
             oCtxModel = oSelectedCtx.getModel(),
@@ -34,7 +36,7 @@
 
         oCtxModel.setProperty(oResult.Path, oResult.Nodes);
 
-        oCtxModel.refresh();
+        // oCtxModel.refresh();
 
         // Tree Table RowUpdated Event 걸기
         gfSelectRowUpdate = ev_setSelectedRowUpdated.bind(this, aItem[0]);
@@ -51,6 +53,8 @@
      **************************************************************************/
     oAPP.fn.fnUspTreeNodeMoveDown = (oTreeTable, pIndex) => {
 
+        debugger;
+
         var oSelectedCtx = oTreeTable.getContextByIndex(pIndex), // 현재 선택한 Node
             oCtxModel = oSelectedCtx.getModel(),
             sSelectedBindPath = oSelectedCtx.sPath, // 현재 선택한 Node의 바인딩 패스
@@ -64,16 +68,17 @@
             return;
         }
 
-        var aItem = oResult.Nodes.splice(iFindIndex, 1);
+        var aSelectedItem = oResult.Nodes.splice(iFindIndex, 1),
+            aBeforeItem = oResult.Nodes.splice(iFindIndex - 1, 1);
 
-        oResult.Nodes.splice(iFindIndex + 1, 0, aItem[0]);
+        oResult.Nodes.splice(iFindIndex + 1, 0, aSelectedItem[0]);
 
         oCtxModel.setProperty(oResult.Path, oResult.Nodes);
 
-        oCtxModel.refresh();
+        // oCtxModel.refresh();
 
         // Tree Table RowUpdated Event 걸기
-        gfSelectRowUpdate = ev_setSelectedRowUpdated.bind(this, aItem[0]);
+        gfSelectRowUpdate = ev_setSelectedRowUpdated.bind(this, aSelectedItem[0]);
 
         oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
 
@@ -83,6 +88,8 @@
     }; // end of oAPP.fn.fnUspTreeNodeMoveDown
 
     function ev_setSelectedRowUpdated(oRowData, oEvent) {
+
+        debugger;
 
         var oTreeTable = oEvent.getSource(),
             aRows = oTreeTable.getRows(),
