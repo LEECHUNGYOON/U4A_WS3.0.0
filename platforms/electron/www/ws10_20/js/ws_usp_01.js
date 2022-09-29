@@ -3,12 +3,62 @@
 
     var gfSelectRowUpdate;
 
+    /***************************************************************************************
+     * [WS30] USP TREE에서 현재 선택한 Node의 상위 또는 하위 형제 Node의 접힘 펼침 정보를 구한다.
+     *************************************************************************************** 
+     * @param {sap.ui.table.TreeTable} oTreeTable
+     * - 좌측 Usp Tree Instance
+     * 
+     * @param {Array} aNodes
+     * - 현재 선택한 Node의 형제들 정보
+     * 
+     * @param {Integer} iCurrIndex
+     * - 현재 선택한 Node의 Index 정보
+     * 
+     * @param {Boolean} bIsUp
+     * - 현재 선택한 Node의 상위 형제의 펼침 상태 정보를 구할지에 대한 정보
+     * - ex) true : 상위 펼침 상태 정보
+     *       false: 하위 펼침 상태 정보
+     * 
+     * @return {Boolean} 
+     * - true : 펼침
+     * - false: 접힘
+     ***************************************************************************************/
+    function fnIsExpandedNode(oTreeTable, aNodes, iCurrIndex, bIsUp) {
+
+        var oUpNode = (bIsUp == true ? aNodes[iCurrIndex - 1] : aNodes[iCurrIndex + 1]),
+            aRows = oTreeTable.getRows(),
+            iRowLength = aRows.length;
+
+        for (var i = 0; i < iRowLength; i++) {
+
+            var oRow = aRows[i],
+                oRowCtx = oRow.getBindingContext();
+
+            if (!oRowCtx) {
+                continue;
+            }
+
+            if (oUpNode.OBJKY !== oRowCtx.getObject("OBJKY")) {
+                continue;
+            }
+
+            return oTreeTable.isExpanded(i);
+
+        }
+
+    } // end of fnIsExpandedUpNode
+
     /**************************************************************************
      * [WS30] USP Tree의 위로 이동
+     **************************************************************************
+     * @param {sap.ui.table.TreeTable} oTreeTable
+     * - 좌측 Usp Tree Instance
+     * 
+     * @param {Integer} pIndex
+     * - 현재 선택한 Node의 Index 정보
      **************************************************************************/
     oAPP.fn.fnUspTreeNodeMoveUp = (oTreeTable, pIndex) => {
-
-        debugger;
 
         var oSelectedCtx = oTreeTable.getContextByIndex(pIndex), // 현재 선택한 Node
             oCtxModel = oSelectedCtx.getModel(),
@@ -28,19 +78,30 @@
             oAPP.attr.oBeforeUspTreeData = jQuery.extend(true, [], oCtxModel.getProperty("/WS30/USPTREE"));
 
         }
-        
-        // 선택한 Node를 Array에서 추출
-        var aItem = oResult.Nodes.splice(iFindIndex, 1);
+
+        debugger;
+
+        // 상위로 이동하려는 Node의 접힘/펼침 상태를 구한다.
+        var bIsMeNodeExpand = oTreeTable.isExpanded(pIndex),
+            bIsUpNodeExpand = fnIsExpandedNode(oTreeTable, oResult.Nodes, iFindIndex, true);
+
+        var aItem = oResult.Nodes.splice(iFindIndex, 1),
+            oMeItem = aItem[0], // 선택한 Node를 추출
+            oUpItem = oResult.Nodes[iFindIndex - 1]; // 선택한 Node의 상위 node를 추출
+
+        // 각 Node 별 펼침 접힘 상태 저장    
+        oMeItem._ISEXP = bIsMeNodeExpand;
+        oUpItem._ISEXP = bIsUpNodeExpand;
 
         // 선택한 Node를 이전 위치에서 위로 이동 시킨다.
-        oResult.Nodes.splice(iFindIndex - 1, 0, aItem[0]);
+        oResult.Nodes.splice(iFindIndex - 1, 0, oMeItem);
 
         // 변경한 정보를 갱신한다.
         oCtxModel.setProperty(oResult.Path, oResult.Nodes);
 
         // 이동된 Node에 선택 표시를 하기 위한 Tree Table RowUpdated Event 걸기
-        gfSelectRowUpdate = ev_setSelectedRowUpdated.bind(this, aItem[0]);
-        
+        gfSelectRowUpdate = ev_setSelectedRowUpdated.bind(this, oMeItem, oUpItem);
+
         oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
 
         // 앱 변경 플래그
@@ -87,13 +148,18 @@
 
     }; // end of oAPP.fn.fnUspTreeNodeMoveDown
 
-    function ev_setSelectedRowUpdated(oRowData, oEvent) {
+    function ev_setSelectedRowUpdated(oMeItem, oUpItem, oEvent) {
+
+        console.log("attachRowUpdated");
 
         debugger;
 
         var oTreeTable = oEvent.getSource(),
             aRows = oTreeTable.getRows(),
             iRowLength = aRows.length;
+
+        var bIsFind1 = false,
+            bIsFind2 = false;
 
         for (var i = 0; i < iRowLength; i++) {
 
@@ -105,32 +171,65 @@
             }
 
             var sOBJKY = oCtx.getObject("OBJKY");
-            if (sOBJKY !== oRowData.OBJKY) {
-                continue;
+
+            if (sOBJKY === oMeItem.OBJKY) {
+
+                if (oMeItem._ISEXP && oMeItem._ISEXP == true) {
+                    oRow.expand(i);
+                } else {
+                    oRow.collapse(i);
+                }
+
+                var iIndex = oRow.getIndex();
+
+                oTreeTable.setSelectedIndex(iIndex);
+
+                bIsFind1 = true;
+
             }
 
-            var iIndex = oRow.getIndex();
+            if (sOBJKY === oUpItem.OBJKY) {
 
-            oTreeTable.setSelectedIndex(iIndex);
+                if (oUpItem._ISEXP && oUpItem._ISEXP == true) {
+                    oRow.expand(i);
+                } else {
+                    oRow.collapse(i);
+                }
 
-            oTreeTable.detachRowsUpdated(gfSelectRowUpdate);
+                bIsFind2 = true;
+            }
 
-            gfSelectRowUpdate = undefined;
+            // if (sOBJKY !== oMeItem.OBJKY) {
+            //     continue;
+            // }
 
-            return;
+            if (bIsFind1 == true && bIsFind2 == true) {
+
+                oTreeTable.detachRowsUpdated(gfSelectRowUpdate);
+
+                gfSelectRowUpdate = undefined;
+
+                return;
+
+            }
+
         }
 
-        if (!gfSelectRowUpdate.iRowLength) {
-            gfSelectRowUpdate.iRowLength = iRowLength;
-        } else {
-            gfSelectRowUpdate.iRowLength += iRowLength;
+        if (bIsFind1 == false) {
+
+            if (!gfSelectRowUpdate.iRowLength) {
+                gfSelectRowUpdate.iRowLength = iRowLength;
+            } else {
+                gfSelectRowUpdate.iRowLength += iRowLength;
+            }
+
+            oTreeTable.setFirstVisibleRow(gfSelectRowUpdate.iRowLength);
+
+            setTimeout(() => {
+                oTreeTable.fireRowsUpdated(oEvent, oMeItem, oUpItem);
+            }, 0);
+
         }
-
-        oTreeTable.setFirstVisibleRow(gfSelectRowUpdate.iRowLength);
-
-        setTimeout(() => {
-            oTreeTable.fireRowsUpdated(oEvent, oRowData);
-        }, 0);
 
     } // end of ev_setSelectedRowUpdated
 

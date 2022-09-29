@@ -27,9 +27,11 @@ body,
 .sapMObjStatusText {
     font-family: "72", "72full", Arial, Helvetica, sans-serif;
 }
+
 .sapMBtn {
     font-weight: bold;
 }
+
 .sapMDialog>.sapMDialogTitle:focus::after {
     border: none !important;
 }
@@ -166,6 +168,7 @@ body,
 .sapUiSizeCompact .u4aWs20Page .sapTntToolPage .sapTntToolPageHeader .sapTntToolHeader.sapMTB {
     height: 2.75rem;
 }
+
 .u4aWs20Page .sapTntToolPage .sapTntToolPageHeaderWrapper {
     box-shadow: none;
 }
@@ -327,3 +330,4 @@ body,
 .u4aAppF4IconTabbar .sapMITBContent {
     height: calc(100% - 2rem);
 }
+

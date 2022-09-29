@@ -163,11 +163,31 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                 switch (TYPE) {
 
+                    case "S":
+
+                        setSoundMsg("01"); // success
+
+                        oMsgBoxOpts.title = "Success";
+
+                        oUI5.m.MessageBox.success(newMsg, oMsgBoxOpts);
+
+                        break;
+
                     case "I":
 
                         oMsgBoxOpts.title = "Information";
 
                         oUI5.m.MessageBox.information(newMsg, oMsgBoxOpts);
+
+                        break;
+
+                    case "W":
+
+                        setSoundMsg("02"); // error
+
+                        oMsgBoxOpts.title = "Warning";
+
+                        oUI5.m.MessageBox.warning(newMsg, oMsgBoxOpts);
 
                         break;
 
@@ -202,6 +222,16 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                 switch (TYPE) {
 
+                    case "S":
+
+                        setSoundMsg("01"); // success
+
+                        oMsgBoxOpts.title = "Success";
+
+                        oUI5.m.MessageBox.success(newMsg, oMsgBoxOpts);
+
+                        break;
+
                     case "I":
 
                         oMsgBoxOpts.title = "Information";
@@ -211,6 +241,8 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
                         break;
 
                     case "W":
+
+                        setSoundMsg("02"); // error
 
                         oMsgBoxOpts.title = "Warning";
 
@@ -248,6 +280,16 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
                 };
 
                 switch (TYPE) {
+
+                    case "S":
+
+                        setSoundMsg("01"); // success
+
+                        oMsgBoxOpts.title = "Success";
+
+                        oUI5.m.MessageBox.success(newMsg, oMsgBoxOpts);
+
+                        break;
 
                     case "I":
 
