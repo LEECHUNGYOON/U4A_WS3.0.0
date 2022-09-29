@@ -1,4 +1,4 @@
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     var gfSelectRowUpdate;
@@ -26,7 +26,7 @@
      ***************************************************************************************/
     function fnIsExpandedNode(oTreeTable, aNodes, iCurrIndex, bIsUp) {
 
-        var oUpNode = (bIsUp == true ? aNodes[iCurrIndex - 1] : aNodes[iCurrIndex + 1]),
+        var oMoveNode = (bIsUp == true ? aNodes[iCurrIndex - 1] : aNodes[iCurrIndex + 1]),
             aRows = oTreeTable.getRows(),
             iRowLength = aRows.length;
 
@@ -39,7 +39,7 @@
                 continue;
             }
 
-            if (oUpNode.OBJKY !== oRowCtx.getObject("OBJKY")) {
+            if (oMoveNode.OBJKY !== oRowCtx.getObject("OBJKY")) {
                 continue;
             }
 
@@ -100,7 +100,7 @@
         oCtxModel.setProperty(oResult.Path, oResult.Nodes);
 
         // 이동된 Node에 선택 표시를 하기 위한 Tree Table RowUpdated Event 걸기
-        gfSelectRowUpdate = ev_setSelectedRowUpdated.bind(this, oMeItem, oUpItem);
+        gfSelectRowUpdate = ev_uspTreeNodeMoveAndSelectedRowUpdated.bind(this, oMeItem, oUpItem);
 
         oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
 
@@ -129,17 +129,34 @@
             return;
         }
 
-        var aSelectedItem = oResult.Nodes.splice(iFindIndex, 1),
-            aBeforeItem = oResult.Nodes.splice(iFindIndex - 1, 1);
+        // USPTREE 이전 데이터 수집
+        if (!oAPP.attr.oBeforeUspTreeData) {
 
-        oResult.Nodes.splice(iFindIndex + 1, 0, aSelectedItem[0]);
+            oAPP.attr.oBeforeUspTreeData = jQuery.extend(true, [], oCtxModel.getProperty("/WS30/USPTREE"));
 
+        }
+
+        // 하위로 이동하려는 Node의 접힘/펼침 상태를 구한다.
+        var bIsMeNodeExpand = oTreeTable.isExpanded(pIndex),
+            bIsUpNodeExpand = fnIsExpandedNode(oTreeTable, oResult.Nodes, iFindIndex, false);
+
+        var aItem = oResult.Nodes.splice(iFindIndex, 1),
+            oMeItem = aItem[0], // 선택한 Node를 추출
+            // oDownItem = oResult.Nodes[iFindIndex + 1]; // 선택한 Node의 하위 node를 추출
+            oDownItem = oResult.Nodes[iFindIndex]; // 선택한 Node의 하위 node를 추출
+
+        // 각 Node 별 펼침 접힘 상태 저장    
+        oMeItem._ISEXP = bIsMeNodeExpand;
+        oDownItem._ISEXP = bIsUpNodeExpand;
+
+        // 선택한 Node를 이전 위치에서 아래로 이동 시킨다.
+        oResult.Nodes.splice(iFindIndex + 1, 0, oMeItem);
+
+        // 변경한 정보를 갱신한다.
         oCtxModel.setProperty(oResult.Path, oResult.Nodes);
 
-        // oCtxModel.refresh();
-
-        // Tree Table RowUpdated Event 걸기
-        gfSelectRowUpdate = ev_setSelectedRowUpdated.bind(this, aSelectedItem[0]);
+        // 이동된 Node에 선택 표시를 하기 위한 Tree Table RowUpdated Event 걸기
+        gfSelectRowUpdate = ev_uspTreeNodeMoveAndSelectedRowUpdated.bind(this, oMeItem, oDownItem);
 
         oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
 
@@ -148,7 +165,7 @@
 
     }; // end of oAPP.fn.fnUspTreeNodeMoveDown
 
-    function ev_setSelectedRowUpdated(oMeItem, oUpItem, oEvent) {
+    function ev_uspTreeNodeMoveAndSelectedRowUpdated(oMeItem, oMoveItem, oEvent) {
 
         console.log("attachRowUpdated");
 
@@ -170,41 +187,53 @@
                 continue;
             }
 
+            // Row의 Object Key
             var sOBJKY = oCtx.getObject("OBJKY");
 
+            // 전체 Row를 검색하여 현재 선택한 Node 또는 이동하려는 Node 둘다 같지 않다면 다음 Row로 건너뛴다.
+            if (sOBJKY !== oMeItem.OBJKY && sOBJKY !== oMoveItem.OBJKY) {
+                continue;
+            }
+
+            // 현재 순서의 Row와 선택한 Row가 같을 경우 
             if (sOBJKY === oMeItem.OBJKY) {
 
+                // 이동 전 선택한 Row의 접힘/펼침 상태에 따라 그대로 적용해준다.
                 if (oMeItem._ISEXP && oMeItem._ISEXP == true) {
                     oRow.expand(i);
                 } else {
                     oRow.collapse(i);
                 }
 
+                // 현재 순서의 Row Index를 구한다.
                 var iIndex = oRow.getIndex();
 
+                // 현재 순서의 Row에 라인선택 설정
                 oTreeTable.setSelectedIndex(iIndex);
 
+                // 현재 선택한 Row를 찾았다는 플래그
                 bIsFind1 = true;
 
             }
 
-            if (sOBJKY === oUpItem.OBJKY) {
+            // 현재 순서의 Row와 이동하려는 Row가 같을 경우 
+            if (sOBJKY === oMoveItem.OBJKY) {
 
-                if (oUpItem._ISEXP && oUpItem._ISEXP == true) {
+                // 이동하려는 Row의 접힘/펼침 상태에 따라 그대로 적용해준다.
+                if (oMoveItem._ISEXP && oMoveItem._ISEXP == true) {
                     oRow.expand(i);
                 } else {
                     oRow.collapse(i);
                 }
 
+                // 이동하려는 Row를 찾았다는 플래그
                 bIsFind2 = true;
             }
 
-            // if (sOBJKY !== oMeItem.OBJKY) {
-            //     continue;
-            // }
-
+            // 현재 선택한 Row와 이동하려는 Row 둘다 찾은 경우 
             if (bIsFind1 == true && bIsFind2 == true) {
 
+                // RowUpdate 이벤트를 해제 한다.
                 oTreeTable.detachRowsUpdated(gfSelectRowUpdate);
 
                 gfSelectRowUpdate = undefined;
@@ -215,6 +244,7 @@
 
         }
 
+        // 현재 선택한 Row를 찾지 못한 경우
         if (bIsFind1 == false) {
 
             if (!gfSelectRowUpdate.iRowLength) {
@@ -223,15 +253,16 @@
                 gfSelectRowUpdate.iRowLength += iRowLength;
             }
 
+            // 스크롤을 이동하여 다시 찾는다.
             oTreeTable.setFirstVisibleRow(gfSelectRowUpdate.iRowLength);
 
             setTimeout(() => {
-                oTreeTable.fireRowsUpdated(oEvent, oMeItem, oUpItem);
+                oTreeTable.fireRowsUpdated(oEvent, oMeItem, oMoveItem);
             }, 0);
 
         }
 
-    } // end of ev_setSelectedRowUpdated
+    } // end of ev_uspTreeNodeMoveAndSelectedRowUpdated
 
     /**************************************************************************
      * [WS30] USP Tree의 이전 선택한 UspTree Data 글로벌 변수 초기화
