@@ -144,6 +144,8 @@
 
     function ev_uspTreeNodeMoveAndSelectedRowUpdated(oMeItem, oEvent) {
 
+        debugger;
+        
         console.log("ev_uspTreeNodeMoveAndSelectedRowUpdated");
 
         var oTreeTable = oEvent.getSource(),

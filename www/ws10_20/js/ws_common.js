@@ -1059,7 +1059,19 @@
                 }
 
             ],
-            aShortCutWS30 = [
+            aShortCutWS30 = [{
+                    KEY: "F11", // FullScreen
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
+                            bIsFull = oCurrWin.isFullScreen();
+
+                        oCurrWin.setFullScreen(!bIsFull);
+
+                    }
+                },
                 /****************************************************************************************************
                  * shortcut library bug,
                  ****************************************************************************************************
