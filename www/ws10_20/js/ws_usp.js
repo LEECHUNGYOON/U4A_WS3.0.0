@@ -1255,20 +1255,63 @@
                 },
                 rowsUpdated: (oEvent) => {
 
+                    // debugger;
+
                     console.log("[Table] rowsUpdated Event");
 
-                    var oTreeTable = oEvent.getSource();
+                    // var oTreeTable = oEvent.getSource();
 
-                    // 선택한 Node에 스타일 클래스 적용
-                    _fnUspTreeSelectedNodeAddStyleClass(oTreeTable);
+                    _fnUspTreeRowUpdate(oEvent);
 
-                }
+                    // // 선택한 Node에 스타일 클래스 적용
+                    // _fnUspTreeSelectedNodeAddStyleClass(oTreeTable);
+
+                },
+                // toggleOpenState: (oEvent) => {
+
+                //     // 현재 노드의 접힘 펼침 상태를 모델에 저장한다.
+                //     var bIsExpand = oEvent.getParameter("expanded"),
+                //         oRowCtx = oEvent.getParameter("rowContext"),
+                //         oRowData = oRowCtx.getModel().getProperty(oRowCtx.getPath());
+
+                //     oRowData._ISEXP = bIsExpand;
+
+                //     oRowCtx.getModel().refresh();
+
+                // }
 
             })
             .attachBrowserEvent("dblclick", ev_uspTreeItemDblClickEvent)
+            .attachRowsUpdated(_fnAttachRowUpdate)
             .addStyleClass("u4aWsUspTree");
 
     } // end of fnGetTreeTableWs30
+
+    function _fnAttachRowUpdate(oEvent) {
+
+        console.log("_fnAttachRowUpdate");
+
+        var oTreeTable = oEvent.getSource(),
+            aRows = oTreeTable.getRows(),
+            iRowLength = aRows.length;
+
+        for (var i = 0; i < iRowLength; i++) {
+
+            var oRow = aRows[i],
+                oCtx = oRow.getBindingContext();
+
+            if (!oCtx) {
+                continue;
+            }
+
+            var oRowData = oCtx.getModel().getProperty(oCtx.getPath()),
+                bIsExpand = oTreeTable.isExpanded(i);
+
+            oRowData._ISEXP = bIsExpand;
+
+        }
+
+    } // end of _fnAttachRowUpdate
 
     /**************************************************************************
      * [WS30] 선택한 Node에 스타일 클래스 적용
@@ -1307,6 +1350,45 @@
         }
 
     } // end of _fnUspTreeSelectedNodeAddStyleClass
+
+    /**************************************************************************
+     * [WS30] Usp Tree의 RowsUpdated 이벤트
+     **************************************************************************/
+    function _fnUspTreeRowUpdate(oEvent) {
+
+        var oTreeTable = oEvent.getSource(),
+            aRows = oTreeTable.getRows(),
+            iRowLength = aRows.length;
+
+        if (iRowLength < 0) {
+            return;
+        }
+
+        for (var i = 0; i < iRowLength; i++) {
+
+            // Row의 Instance를 구한다.
+            var oRow = aRows[i];
+
+            // 일단 css 클래스를 지우고 본다.
+            oRow.removeStyleClass("u4aWsTreeTableSelected");
+
+            // 바인딩 정보가 없으면 빠져나간다.
+            var oRowCtx = oRow.getBindingContext();
+            if (!oRowCtx) {
+                continue;
+            }
+
+            var oRowData = oRowCtx.getModel().getProperty(oRowCtx.getPath());
+
+            // 바인딩 데이터 중 선택 플래그가 있을 경우에만 css 클래스를 적용한다.
+            var ISSEL = oRowData.ISSEL;
+            if (ISSEL) {
+                oRow.addStyleClass("u4aWsTreeTableSelected");
+            }
+
+        }
+
+    } // end of _fnUspTreeRowUpdate
 
     /**************************************************************************
      * [WS30] Usp Panel
@@ -3300,10 +3382,10 @@
             return;
         }
 
-        var oData = oTreeTable.getModel().getProperty(oCtx.sPath);
+        var oData = oCtx.getModel().getProperty(oCtx.getPath());
 
         if (oData.PUJKY == "") {
-            oTreeTable.expandToLevel(99);
+            oTreeTable.expandToLevel(99);          
             return;
         }
 
@@ -3343,43 +3425,7 @@
         lf_expand(aCHILDTREE);
 
     }; // end of fnCommonMimeTreeTableExpand
-
-    // function _fnFindUspTreeItem(OBJKY) {
-
-    //     var aUspTree = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
-    //     if (!aUspTree) {
-    //         return;
-    //     }
-
-    //     var oFindUspData = lf_findRecursive(aUspTree);
-
-    //     // 재귀호출 펑션
-    //     function lf_findRecursive(aUspTree) {
-
-    //         var iTreeLength = aUspTree.length;
-    //         if (iTreeLength == 0) {
-    //             return;
-    //         }
-
-    //         for (var i = 0; i < iTreeLength; i++) {
-
-    //             var oChild = aUspTree[i],
-    //                 aChild = oChild.USPTREE,
-    //                 iChildCnt = aChild.length;
-
-    //             if (oChild.OBJKY != OBJKY) {
-    //                 continue;
-    //             }
-
-
-
-    //         }
-
-
-    //     }
-
-    // } // end of _fnFindUspTreeItem
-
+    
     /**************************************************************************
      * [WS30] Usp Tree Table 접기 공통 이벤트
      **************************************************************************/
