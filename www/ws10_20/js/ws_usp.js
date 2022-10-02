@@ -103,7 +103,10 @@
         if (oUspTreeTable) {
             oUspTreeTable.collapseAll();
             oUspTreeTable.clearSelection();
-            oUspTreeTable.attachRowsUpdated(ev_rowsUpdated);
+
+            // 화면 처음 로딩 시, Root Node의 정보를 구한다.
+            oUspTreeTable.attachRowsUpdated(ev_getRootNodeRowsUpdated);
+
         }
 
         // 이전에 선택한 라인이 있다면 해당 라인 선택 아이콘 표시 해제
@@ -1260,27 +1263,30 @@
                     var oRowCtx = oEvent.getParameter("rowContext"),
                         bIsExpanded = oEvent.getParameter("expanded"),
                         oRowData = oRowCtx.getModel().getProperty(oRowCtx.getPath());
-                        oRowData._ISEXP = bIsExpanded;
+                    oRowData._ISEXP = bIsExpanded;
 
                 },
                 rowsUpdated: (oEvent) => {
 
                     console.log("[Table] rowsUpdated Event");
 
-                    _fnUspTreeRowUpdate(oEvent);
+                    // Usp Tree의 선택된 Row에 색깔 표시
+                    _fnUspTreeSelectedRowMark(oEvent);
 
                 },
 
             })
             .attachBrowserEvent("dblclick", ev_uspTreeItemDblClickEvent)
-            .attachRowsUpdated(_fnExpandCollapseRowUpdate)
             .addStyleClass("u4aWsUspTree");
 
     } // end of fnGetTreeTableWs30
+    
+    /**************************************************************************
+     * [WS30] UspTree Node의 접힘/펼침 상태 값을 모델에 저장
+     **************************************************************************/
+    function _fnUspNodeExpCollStatusMarkFlagToModel(oEvent) {
 
-    function _fnExpandCollapseRowUpdate(oEvent) {
-
-        console.log("[Table] _fnExpandCollapseRowUpdate");
+        console.log("_fnUspNodeExpCollStatusMarkFlagToModel");
 
         var oTreeTable = oEvent.getSource(),
             aRows = oTreeTable.getRows(),
@@ -1308,12 +1314,12 @@
 
         }
 
-    } // end of _fnExpandCollapseRowUpdate
+    } // end of _fnUspNodeExpCollStatusMarkFlagToModel
 
     /**************************************************************************
-     * [WS30] Usp Tree의 RowsUpdated 이벤트
+     * [WS30] Usp Tree의 선택된 Row에 색깔 표시
      **************************************************************************/
-    function _fnUspTreeRowUpdate(oEvent) {
+    function _fnUspTreeSelectedRowMark(oEvent) {
 
         var oTreeTable = oEvent.getSource(),
             aRows = oTreeTable.getRows(),
@@ -1341,6 +1347,7 @@
 
             // 바인딩 데이터 중 선택 플래그가 있을 경우에만 css 클래스를 적용한다.
             var ISSEL = oRowData.ISSEL;
+
             if (ISSEL) {
                 oRow.addStyleClass("u4aWsTreeTableSelected");
             }
@@ -3038,9 +3045,9 @@
     } // end of ev_pressWs30BackCb
 
     /**************************************************************************
-     * [WS30] Usp Tree rowsUpdate Event
+     * [WS30] 화면 처음 로딩 시, Usp Tree의 Root 정보를 구한다
      **************************************************************************/
-    function ev_rowsUpdated(oEvent) {
+    function ev_getRootNodeRowsUpdated(oEvent) {
 
         var oTable = oEvent.getSource(),
             aRows = oTable.getRows(),
@@ -3061,9 +3068,9 @@
         // Tree Table Row 데이터 구하기
         fnUspTreeTableRowSelect(oRow);
 
-        oTable.detachRowsUpdated(ev_rowsUpdated);
+        oTable.detachRowsUpdated(ev_getRootNodeRowsUpdated);
 
-    } // end of ev_rowsUpdated
+    } // end of ev_getRootNodeRowsUpdated
 
     /**************************************************************************
      * [WS30] Usp runtime Class Controller Event
@@ -3159,6 +3166,8 @@
      **************************************************************************/
     function ev_beforeOpenContextMenu(oEvent) {
 
+        console.log("Context Menu");
+
         var oTreeTable = oEvent.getSource(),
             iSelectRow = oEvent.getParameter("rowIndex"),
             oCtx = oTreeTable.getContextByIndex(iSelectRow),
@@ -3205,6 +3214,9 @@
         // Change 모드에서의 ContextMenu 구성
         _ev_beforeOpenContextMenuChange(oRowData, aCtxMenu);
 
+        // [test] UspTree Node의 접힘/펼침 상태 값을 모델에 저장
+        oTreeTable.attachRowsUpdated(_fnUspNodeExpCollStatusMarkFlagToModel);
+
     } // end of ev_beforeOpenContextMenu
 
     /**************************************************************************
@@ -3212,10 +3224,15 @@
      **************************************************************************/
     function ev_UspTreeCtxMenuClosed(oEvent) {
 
+        console.log("contextMenu Close");
+
         var oTreeTable = sap.ui.getCore().byId("usptree");
         if (!oTreeTable) {
             return;
         }
+
+        // [test] UspTree Node의 접힘/펼침 상태 값을 모델에 저장
+        oTreeTable.detachRowsUpdated(_fnUspNodeExpCollStatusMarkFlagToModel);
 
         // USP TREE 마우스 휠 이벤트 풀기
         var aa = oTreeTable.getDomRef("tableCCnt");
@@ -3962,13 +3979,17 @@
         // 현재 선택한 노드 펼침
         oTreeTable.expand(gSelectedTreeIndex);
 
-        gfSelectRowUpdate = ev_selectRowUpdated.bind(this, oNewRowData);
+        // USP 신규 생성된 Row에 선택 표시
+        gfSelectRowUpdate = ev_selectMarkNewRowUpdated.bind(this, oNewRowData);
 
         oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
 
     } // end of _fnCreateUspNode
 
-    function ev_selectRowUpdated(oRowData, oEvent) {
+    /**************************************************************************
+     * [WS30] USP 신규 생성된 Row에 선택 표시
+     **************************************************************************/
+    function ev_selectMarkNewRowUpdated(oRowData, oEvent) {
 
         var oTreeTable = oEvent.getSource(),
             aRows = oTreeTable.getRows(),
@@ -3995,6 +4016,7 @@
 
             gfSelectRowUpdate = undefined;
 
+            // 신규 생성된 Node의 Content 정보를 구한다.
             fnUspTreeTableRowSelect(oRow);
 
             // 생성 팝업 닫기

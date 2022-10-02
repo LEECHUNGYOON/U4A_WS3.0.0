@@ -60,6 +60,8 @@
      **************************************************************************/
     oAPP.fn.fnUspTreeNodeMoveUp = (oTreeTable, pIndex) => {
 
+        console.log("Tree Node Up");
+
         var oSelectedCtx = oTreeTable.getContextByIndex(pIndex), // 현재 선택한 Node
             oCtxModel = oSelectedCtx.getModel(),
             sSelectedBindPath = oSelectedCtx.sPath, // 현재 선택한 Node의 바인딩 패스
@@ -88,10 +90,13 @@
         // 변경한 정보를 갱신한다.
         oCtxModel.setProperty(oResult.Path, oResult.Nodes);
 
-        // 이동된 Node에 선택 표시를 하기 위한 Tree Table RowUpdated Event 걸기
-        gfSelectRowUpdate = ev_uspTreeNodeMoveAndSelectedRowUpdated.bind(this, oMeItem);
+        // 모델에 저장되어 있는 현재 노드의 접힘/펼침 플래그에 따라 현재 트리 테이블에 상태 적용
+        oTreeTable.attachRowsUpdated(_fnUspNodeExpCollFromModel);    
 
-        oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
+        // // 이동된 Node에 선택 표시를 하기 위한 Tree Table RowUpdated Event 걸기
+        // gfSelectRowUpdate = ev_uspTreeNodeMoveAndSelectedRowUpdated.bind(this, oMeItem);
+
+        // oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
 
         // 앱 변경 플래그
         oAPP.fn.setAppChangeWs30("X");
@@ -102,6 +107,8 @@
      * [WS30] USP Tree의 아래로 이동
      **************************************************************************/
     oAPP.fn.fnUspTreeNodeMoveDown = (oTreeTable, pIndex) => {
+
+        console.log("Tree Node Down");
 
         var oSelectedCtx = oTreeTable.getContextByIndex(pIndex), // 현재 선택한 Node
             oCtxModel = oSelectedCtx.getModel(),
@@ -132,20 +139,73 @@
         // 변경한 정보를 갱신한다.
         oCtxModel.setProperty(oResult.Path, oResult.Nodes);
 
-        // 이동된 Node에 선택 표시를 하기 위한 Tree Table RowUpdated Event 걸기
-        gfSelectRowUpdate = ev_uspTreeNodeMoveAndSelectedRowUpdated.bind(this, oMeItem);
+        // 모델에 저장되어 있는 현재 노드의 접힘/펼침 플래그에 따라 현재 트리 테이블에 상태 적용
+        oTreeTable.attachRowsUpdated(_fnUspNodeExpCollFromModel);
 
-        oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
+        setTimeout(function () {
+
+            // 이동된 Node에 선택 표시를 하기 위한 Tree Table RowUpdated Event 걸기
+            gfSelectRowUpdate = ev_uspTreeNodeMoveAndSelectedRowUpdated.bind(this, oMeItem);
+
+            oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
+
+        }, 0);
+
+        // // 이동된 Node에 선택 표시를 하기 위한 Tree Table RowUpdated Event 걸기
+        // gfSelectRowUpdate = ev_uspTreeNodeMoveAndSelectedRowUpdated.bind(this, oMeItem);
+
+        // oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
 
         // 앱 변경 플래그
         oAPP.fn.setAppChangeWs30("X");
 
     }; // end of oAPP.fn.fnUspTreeNodeMoveDown
 
+    /**************************************************************************
+     * [WS30] 모델에 저장되어 있는 현재 노드의 접힘/펼침 플래그에 따라 현재 트리 테이블에 상태 적용
+     **************************************************************************/
+    function _fnUspNodeExpCollFromModel(oEvent) {
+
+        console.log("_fnUspNodeExpCollFromModel");
+
+        var oTreeTable = oEvent.getSource(),
+            aRows = oTreeTable.getRows(),
+            iRowLength = aRows.length;
+
+        for (var i = 0; i < iRowLength; i++) {
+
+            var oRow = aRows[i],
+                oCtx = oRow.getBindingContext();
+
+            if (!oCtx) {
+                continue;
+            }
+
+            var oRowData = oCtx.getModel().getProperty(oCtx.getPath());
+
+            if (oRowData.ISFLD != "X") {
+                oRow.collapse(i);
+                continue;
+            }
+
+            var bIsExpand = oRowData._ISEXP;
+            if (bIsExpand) {
+                oRow.expand(i);
+                continue;
+            }
+
+            oRow.collapse(i);
+
+        }
+
+        oTreeTable.detachRowsUpdated(_fnUspNodeExpCollFromModel);
+
+    } // end of _fnUspNodeExpCollFromModel
+
     function ev_uspTreeNodeMoveAndSelectedRowUpdated(oMeItem, oEvent) {
 
         debugger;
-        
+
         console.log("ev_uspTreeNodeMoveAndSelectedRowUpdated");
 
         var oTreeTable = oEvent.getSource(),
@@ -171,6 +231,8 @@
             // 현재 순서의 Row와 선택한 Row가 같을 경우 
             if (sOBJKY === oMeItem.OBJKY) {
 
+                debugger;
+
                 bIsFind1 = true;
 
                 // 현재 순서의 Row Index를 구한다.
@@ -181,18 +243,18 @@
 
             }
 
-            if (oRowData.ISFLD != "X") {
-                oRow.collapse(i);
-                continue;
-            }
+            // if (oRowData.ISFLD != "X") {
+            //     oRow.collapse(i);
+            //     continue;
+            // }
 
-            var bIsExpand = oRowData._ISEXP;
-            if (bIsExpand) {
-                oRow.expand(i);
-                continue;                
-            }
+            // var bIsExpand = oRowData._ISEXP;
+            // if (bIsExpand) {
+            //     oRow.expand(i);
+            //     continue;
+            // }
 
-            oRow.collapse(i);
+            // oRow.collapse(i);
 
         }
 

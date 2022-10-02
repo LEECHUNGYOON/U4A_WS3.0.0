@@ -384,7 +384,7 @@
             oBrowserWindow.setOpacity(1.0);
 
         });
-
+        
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
             oBrowserWindow = null;
