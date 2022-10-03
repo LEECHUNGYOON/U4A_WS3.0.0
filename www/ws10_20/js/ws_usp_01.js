@@ -60,12 +60,77 @@
      * 
      * @param {Integer} pIndex
      * - 현재 선택한 Node의 Index 정보
+     * 
+     * @param {Integer} pMoveIndex
+     * - 이동할 Index
      **************************************************************************/
-    oAPP.fn.fnUspTreeNodeMoveUp = (oTreeTable, pIndex) => {
+    oAPP.fn.fnSetUspTreeNodeMove = (oTreeTable, pSelIndex, pMoveIndex) => {
+
+        console.log("Tree Node Move Position");
+
+        var oSelectedCtx = oTreeTable.getContextByIndex(pSelIndex), // 현재 선택한 Node
+            oCtxModel = oSelectedCtx.getModel(),
+
+            sSelectedBindPath = oSelectedCtx.sPath, // 현재 선택한 Node의 바인딩 패스
+            oSelectedData = oCtxModel.getProperty(sSelectedBindPath), // 현재 선택한 Node에 바인딩된 데이터
+
+            oResult = oAPP.fn._fnFindModelData(sSelectedBindPath),
+            iFindIndex = oResult.Nodes.findIndex(arr => arr.OBJKY == oSelectedData.OBJKY);
+
+        // 이동하려는 Node의 위치와 이동할 Index가 같으면 이동할 필요가 없으므로 빠져나간다.
+        if (iFindIndex == (pMoveIndex - 1)) {
+            return;
+        }
+
+        // USPTREE 이전 데이터 수집
+        if (!oAPP.attr.oBeforeUspTreeData) {
+
+            oAPP.attr.oBeforeUspTreeData = jQuery.extend(true, [], oCtxModel.getProperty("/WS30/USPTREE"));
+
+        }
+
+        var iNodeLength = oResult.Nodes.length, // 같은 노드의 갯수
+            iMoveIndex = pMoveIndex; // 이동 하려는 위치
+
+        // 이동하려는 위치가 노드의 갯수보다 클 경우에는 
+        // 이동하려는 위치값을 노드의 총 갯수로 지정
+        if (iNodeLength <= pMoveIndex) {
+            iMoveIndex = iNodeLength;
+        }
+
+        var aItem = oResult.Nodes.splice(iFindIndex, 1),
+            oMeItem = aItem[0]; // 선택한 Node를 추출
+
+        // 선택한 Node를 이전 위치에서 위로 이동 시킨다.
+        oResult.Nodes.splice(iMoveIndex - 1, 0, oMeItem);
+
+        // 변경한 정보를 갱신한다.
+        oCtxModel.setProperty(oResult.Path, oResult.Nodes, oSelectedCtx, true);
+
+        // 이동한 Node에 선택 표시를 하기 위한 이벤트 걸기
+        gfSelectRowUpdate = _fnUspNodeSetSelectedIndex.bind(this, oMeItem);
+
+        oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
+
+        // 앱 변경 플래그
+        oAPP.fn.setAppChangeWs30("X");
+
+    }; // end of oAPP.fn.fnSetUspTreeNodeMove
+
+    /**************************************************************************
+     * [WS30] USP Tree의 위로 이동
+     **************************************************************************
+     * @param {sap.ui.table.TreeTable} oTreeTable
+     * - 좌측 Usp Tree Instance
+     * 
+     * @param {Integer} pIndex
+     * - 현재 선택한 Node의 Index 정보
+     **************************************************************************/
+    oAPP.fn.fnUspTreeNodeMoveUp = (oTreeTable, pSelIndex) => {
 
         console.log("Tree Node Up");
 
-        var oSelectedCtx = oTreeTable.getContextByIndex(pIndex), // 현재 선택한 Node
+        var oSelectedCtx = oTreeTable.getContextByIndex(pSelIndex), // 현재 선택한 Node
             oCtxModel = oSelectedCtx.getModel(),
             sSelectedBindPath = oSelectedCtx.sPath, // 현재 선택한 Node의 바인딩 패스
             oSelectedData = oCtxModel.getProperty(sSelectedBindPath), // 현재 선택한 Node에 바인딩된 데이터
@@ -77,50 +142,20 @@
             return;
         }
 
-        // USPTREE 이전 데이터 수집
-        if (!oAPP.attr.oBeforeUspTreeData) {
+        var pMoveIndex = iFindIndex;
 
-            oAPP.attr.oBeforeUspTreeData = jQuery.extend(true, [], oCtxModel.getProperty("/WS30/USPTREE"));
-
-        }
-
-        var aItem = oResult.Nodes.splice(iFindIndex, 1),
-            oMeItem = aItem[0]; // 선택한 Node를 추출
-
-        // 선택한 Node를 이전 위치에서 위로 이동 시킨다.
-        oResult.Nodes.splice(iFindIndex - 1, 0, oMeItem);
-
-        // 변경한 정보를 갱신한다.
-        oCtxModel.setProperty(oResult.Path, oResult.Nodes, oSelectedCtx, true);
-        // oCtxModel.setProperty(oResult.Path, oResult.Nodes);
-
-        gfSelectRowUpdate = _fnUspNodeSetSelectedIndex.bind(this, oMeItem);
-
-        oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
-
-        // gfSelectRowUpdate = _fnUspNodeExpCollFromModel.bind(this, oMeItem);
-
-        // // 모델에 저장되어 있는 현재 노드의 접힘/펼침 플래그에 따라 현재 트리 테이블에 상태 적용
-        // oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
-
-        // // 이동된 Node에 선택 표시를 하기 위한 Tree Table RowUpdated Event 걸기
-        // gfSelectRowUpdate = ev_uspTreeNodeMoveAndSelectedRowUpdated.bind(this, oMeItem);
-
-        // oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
-
-        // 앱 변경 플래그
-        oAPP.fn.setAppChangeWs30("X");
+        oAPP.fn.fnSetUspTreeNodeMove(oTreeTable, pSelIndex, pMoveIndex);
 
     }; // end of oAPP.fn.fnUspTreeNodeMoveUp    
 
     /**************************************************************************
      * [WS30] USP Tree의 아래로 이동
      **************************************************************************/
-    oAPP.fn.fnUspTreeNodeMoveDown = (oTreeTable, pIndex) => {
+    oAPP.fn.fnUspTreeNodeMoveDown = (oTreeTable, pSelIndex) => {
 
         console.log("Tree Node Down");
 
-        var oSelectedCtx = oTreeTable.getContextByIndex(pIndex), // 현재 선택한 Node
+        var oSelectedCtx = oTreeTable.getContextByIndex(pSelIndex), // 현재 선택한 Node
             oCtxModel = oSelectedCtx.getModel(),
             sSelectedBindPath = oSelectedCtx.sPath, // 현재 선택한 Node의 바인딩 패스
             oSelectedData = oCtxModel.getProperty(sSelectedBindPath), // 현재 선택한 Node에 바인딩된 데이터
@@ -133,49 +168,9 @@
             return;
         }
 
-        // USPTREE 이전 데이터 수집
-        if (!oAPP.attr.oBeforeUspTreeData) {
+        var pMoveIndex = iFindIndex + 2;
 
-            oAPP.attr.oBeforeUspTreeData = jQuery.extend(true, [], oCtxModel.getProperty("/WS30/USPTREE"));
-
-        }
-
-        var aItem = oResult.Nodes.splice(iFindIndex, 1),
-            oMeItem = aItem[0];
-
-        // 선택한 Node를 이전 위치에서 아래로 이동 시킨다.
-        oResult.Nodes.splice(iFindIndex + 1, 0, oMeItem);
-
-        // 변경한 정보를 갱신한다.
-        oCtxModel.setProperty(oResult.Path, oResult.Nodes, oSelectedCtx, true);
-        // oCtxModel.setProperty(oResult.Path, oResult.Nodes, true);
-
-
-        gfSelectRowUpdate = _fnUspNodeSetSelectedIndex.bind(this, oMeItem);
-
-        oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
-
-        // gfSelectRowUpdate = _fnUspNodeExpCollFromModel.bind(this, oMeItem);
-
-        // // 모델에 저장되어 있는 현재 노드의 접힘/펼침 플래그에 따라 현재 트리 테이블에 상태 적용
-        // oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
-
-        // setTimeout(function () {
-
-        //     // 이동된 Node에 선택 표시를 하기 위한 Tree Table RowUpdated Event 걸기
-        //     gfSelectRowUpdate = ev_uspTreeNodeMoveAndSelectedRowUpdated.bind(this, oMeItem);
-
-        //     oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
-
-        // }, 0);
-
-        // // 이동된 Node에 선택 표시를 하기 위한 Tree Table RowUpdated Event 걸기
-        // gfSelectRowUpdate = ev_uspTreeNodeMoveAndSelectedRowUpdated.bind(this, oMeItem);
-
-        // oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
-
-        // 앱 변경 플래그
-        oAPP.fn.setAppChangeWs30("X");
+        oAPP.fn.fnSetUspTreeNodeMove(oTreeTable, pSelIndex, pMoveIndex);
 
     }; // end of oAPP.fn.fnUspTreeNodeMoveDown
 
@@ -197,8 +192,6 @@
     function _fnUspNodeExpCollFromModel(oMeItem, oEvent) {
 
         console.log("_fnUspNodeExpCollFromModel");
-
-        debugger;
 
         var oTreeTable = oEvent.getSource(),
             aRows = oTreeTable.getRows(),
@@ -382,89 +375,6 @@
 
     } // end of _fnUspNodeSetSelectedIndex
 
-    // function ev_uspTreeNodeMoveAndSelectedRowUpdated(oMeItem, oEvent) {
-
-    //     debugger;
-
-    //     console.log("ev_uspTreeNodeMoveAndSelectedRowUpdated");
-
-    //     var oTreeTable = oEvent.getSource(),
-    //         aRows = oTreeTable.getRows(),
-    //         iRowLength = aRows.length;
-
-    //     var bIsFind1 = false;
-
-    //     for (var i = 0; i < iRowLength; i++) {
-
-    //         var oRow = aRows[i],
-    //             oCtx = oRow.getBindingContext();
-
-    //         if (!oCtx) {
-    //             continue;
-    //         }
-
-    //         var oRowData = oCtx.getModel().getProperty(oCtx.getPath()),
-
-    //             // Row의 Object Key            
-    //             sOBJKY = oRowData.OBJKY;
-
-    //         // 현재 순서의 Row와 선택한 Row가 같을 경우 
-    //         if (sOBJKY === oMeItem.OBJKY) {
-
-    //             debugger;
-
-    //             bIsFind1 = true;
-
-    //             // 현재 순서의 Row Index를 구한다.
-    //             var iIndex = oRow.getIndex();
-
-    //             // 현재 순서의 Row에 라인선택 설정
-    //             oTreeTable.setSelectedIndex(iIndex);
-
-    //         }
-
-    //         // if (oRowData.ISFLD != "X") {
-    //         //     oRow.collapse(i);
-    //         //     continue;
-    //         // }
-
-    //         // var bIsExpand = oRowData._ISEXP;
-    //         // if (bIsExpand) {
-    //         //     oRow.expand(i);
-    //         //     continue;
-    //         // }
-
-    //         // oRow.collapse(i);
-
-    //     }
-
-    //     // 현재 선택한 Row를 찾은 경우 
-    //     if (bIsFind1 == true) {
-
-    //         // RowUpdate 이벤트를 해제 한다.
-    //         oTreeTable.detachRowsUpdated(gfSelectRowUpdate);
-
-    //         gfSelectRowUpdate = undefined;
-
-    //         return;
-
-    //     }
-
-    //     if (!gfSelectRowUpdate.iRowLength) {
-    //         gfSelectRowUpdate.iRowLength = iRowLength;
-    //     } else {
-    //         gfSelectRowUpdate.iRowLength += iRowLength;
-    //     }
-
-    //     // 스크롤을 이동하여 다시 찾는다.
-    //     oTreeTable.setFirstVisibleRow(gfSelectRowUpdate.iRowLength);
-
-    //     setTimeout(() => {
-    //         oTreeTable.fireRowsUpdated(oEvent, oMeItem);
-    //     }, 0);
-
-    // } // end of ev_uspTreeNodeMoveAndSelectedRowUpdated
-
     /**************************************************************************
      * [WS30] USP Tree의 이전 선택한 UspTree Data 글로벌 변수 초기화
      **************************************************************************/
@@ -490,7 +400,10 @@
 
         var oData = oTreeTable.getModel().getProperty(oCtx.sPath),
             oInitData = {
-                STEPVAL: 1
+                SELIDX: pIndex,
+                STEPVAL: 1,
+                STEPVS: sap.ui.core.ValueState.None,
+                STEPVST: ""
             };
 
         // USP 생성 팝업의 초기 데이터 모델 세팅
@@ -514,10 +427,9 @@
 
             // aggregations
             buttons: [
-                new sap.m.Button({
+                new sap.m.Button("ws30_movePosOk", {
                     type: sap.m.ButtonType.Emphasized,
                     icon: "sap-icon://accept",
-                    // press: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
                     press: ev_uspTreeNodeMovePosition.bind(this, oTreeTable)
                 }),
                 new sap.m.Button({
@@ -529,10 +441,11 @@
 
             content: [
                 new sap.m.StepInput("ws30_step", {
-                    // width: "200px",
                     required: true,
                     min: 1,
                     value: `{${sBindRootPath}/STEPVAL}`,
+                    valueState: `{${sBindRootPath}/STEPVS}`,
+                    valueStateText: `{${sBindRootPath}/STEPVST}`,
                 }).attachBrowserEvent("keydown", ev_uspTreeNodeStepInputEnter)
             ],
 
@@ -565,15 +478,38 @@
 
     } // end of ev_uspTreeNodeMovePosPopupClose
 
-    function ev_uspTreeNodeMovePosition(oTable, oEvent) {
+    /**************************************************************************
+     * [WS30] USP Move Position Popup 확인 버튼 이벤트
+     **************************************************************************/
+    function ev_uspTreeNodeMovePosition(oTable) {
 
-        debugger;
+        const sMovePosModelPath = "/WS30/MOVEPOS";
 
+        var oMovePos = APPCOMMON.fnGetModelProperty(sMovePosModelPath),
+            iSelIndex = oMovePos.SELIDX,
+            iStepValue = oMovePos.STEPVAL;
+
+        if (iStepValue <= 0) {
+
+            sap.ui.getCore().byId("ws30_step").focus();
+
+            oMovePos.STEPVS = sap.ui.core.ValueState.Error;
+            oMovePos.STEPVST = "Enter a number with a minimum value of 1";
+
+            APPCOMMON.fnSetModelProperty(sMovePosModelPath, oMovePos);
+
+            return;
+        }
+
+        oAPP.fn.fnSetUspTreeNodeMove(oTable, iSelIndex, iStepValue);
 
         ev_uspTreeNodeMovePosPopupClose();
 
     } // end of ev_uspTreeNodeMovePosition
 
+    /**************************************************************************
+     * [WS30] USP Move Position Step Input Enter 이벤트
+     **************************************************************************/
     function ev_uspTreeNodeStepInputEnter(oEvent) {
 
         var iKeyCode = oEvent.keyCode;
@@ -582,24 +518,13 @@
             return;
         }
 
-        var oInputDom = oEvent.currentTarget,
-            sInputId = oInputDom.id,
-            oStepInput = sap.ui.getCore().byId(sInputId);
-
-        if (!oStepInput) {
+        var oBtn = sap.ui.getCore().byId("ws30_movePosOk");
+        if (!oBtn) {
             return;
         }
 
         setTimeout(function() {
-
-            debugger;
-
-            var value = oStepInput.getValue();
-
-
-            ev_uspTreeNodeMovePosPopupClose();
-
-
+            oBtn.firePress();
         }, 0);
 
     } // end of ev_uspTreeNodeStepInputEnter
