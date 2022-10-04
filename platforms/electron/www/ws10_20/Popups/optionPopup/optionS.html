@@ -216,9 +216,8 @@
 
                             //wait on
                             fn_WaitMode(true);
-
-                            oUI5.NVCNT.destroyPages();
-                            // oUI5.NVCNT.removeAllPages();
+                            
+                            oUI5.NVCNT.removeAllPages();
 
                             var sLine = e.oSource.getModel().mContexts[e.oSource
                                 .oBindingContexts.undefined.sPath].getProperty();

@@ -1,4 +1,4 @@
-(function (oNavCon, oNavConList) {
+(function(oNavCon, oNavConList) {
     "use strict";
 
     const
@@ -69,10 +69,11 @@
     /************************************************************************
      * Github 연결을 시도 하여 on-premise 인지 CDN인지 확인
      ************************************************************************/
-    oAPP.fn.fnConnectionGithubThen = function (oReturn) {
+    oAPP.fn.fnConnectionGithubThen = function(fnCallback, oReturn) {
 
-        // CDN Option Page 그리기
-        oAPP.fn.fnInitRendering(oReturn);
+        if (typeof fnCallback === "function") {
+            fnCallback(oReturn);
+        }
 
         // Busy Indicator Off
         oAPP.fn.fnSetBusy(false);
@@ -105,13 +106,27 @@
                 ]
             }),
 
-            oSwitch = new sap.m.Switch()
-            .bindProperty("state", `${sBindRoot}/ISCDN`, function (ISCDN) {
+            oSwitch = new sap.m.Switch({
+                change: (oEvent) => {
 
-                let bIsCdn = (ISCDN == "X" ? true : false);
+                    var bState = oEvent.getParameter("state"),
+                        sConvState = (bState ? "X" : "");
 
-                return bIsCdn;
+                    oAPP.ui.oPage.getModel().setProperty(`${sBindRoot}/ISCDN`, sConvState);
 
+                }
+            })
+            .bindProperty("state", {
+                parts: [
+                    `${sBindRoot}/ISCDN`
+                ],
+                formatter: (ISCDN) => {
+
+                    let bIsCdn = (ISCDN == "X" ? true : false);
+
+                    return bIsCdn;
+
+                }
             }).bindProperty("enabled", {
                 parts: [
                     `${sBindRoot}/ISPING`
@@ -168,7 +183,9 @@
                 ]
             }),
 
-            oPage = new sap.m.Page("ws_opt_page", {
+            oJsonModel = new sap.ui.model.json.JSONModel(),
+
+            oPage = new sap.m.Page({
                 showHeader: false,
                 icon: "sap-icon://download-from-cloud",
                 title: "CDN Settings",
@@ -177,9 +194,7 @@
                 ],
                 footer: oFooter
 
-            }).addStyleClass("sapUiContentPadding"),
-
-            oJsonModel = new sap.ui.model.json.JSONModel();
+            }).addStyleClass("sapUiContentPadding");
 
         oJsonModel.setData({
             OPTS: {
@@ -190,6 +205,8 @@
         oPage.setModel(oJsonModel);
 
         oNavCon.addPage(oPage);
+
+        oAPP.ui.oPage = oPage;
 
     }; // end of oAPP.fn.fnInitRendering
 
@@ -217,22 +234,20 @@
             return;
         }
 
-        debugger;
-        
-        var oPage = sap.ui.getCore().byId("ws_opt_page");
-        if(!oPage){
+        var oPage = oAPP.ui.oPage;
+        if (oPage instanceof sap.m.Page === false) {
             return;
         }
 
         var oModel = oPage.getModel();
-        if(!oModel){
+        if (!oModel) {
             return;
         }
 
-        var oModelData = oModel.getBindingContext().getObject();
+        var oModelData = oModel.getData();
 
 
-     
+
 
 
     }; // end of oAPP.fn.fnPressApplyCB
@@ -241,10 +256,33 @@
      * 화면 Loading Mode 설정 
      ************************************************************************/
     oAPP.fn.fnSetBusy = (a) => {
+
         oNavCon.setBusy(a);
         oNavConList.setBusy(a);
+        
     }; // end of oAPP.fn.fnSetBusy  
 
-    oAPP.fn.fnConnectionGithub().then(oAPP.fn.fnConnectionGithubThen.bind(this));
+    /************************************************************************
+     * CDN 여부 확인
+     ************************************************************************/
+    oAPP.fn.fnCheckConnectionCDN = (fnCallback) => {
+
+        oAPP.fn.fnConnectionGithub().then(oAPP.fn.fnConnectionGithubThen.bind(this, fnCallback));
+
+    }; // end of oAPP.fn.fnCheckConnectionCDN
+
+
+
+
+
+
+
+
+    oAPP.fn.fnCheckConnectionCDN(function(oReturn) {
+
+        // CDN Option Page 그리기
+        oAPP.fn.fnInitRendering(oReturn);
+
+    });
 
 })(oUI5.NVCNT, oUI5.NAVIGATIONLIST);

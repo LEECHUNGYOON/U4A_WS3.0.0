@@ -1,4 +1,5 @@
 const oAPP = {
+    ui: {},
     fn: {},
     attr: {},
     onStart: function () {
