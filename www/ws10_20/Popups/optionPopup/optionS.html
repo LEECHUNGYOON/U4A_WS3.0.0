@@ -74,7 +74,8 @@
                 sReleaseResource = `../../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
                 bIsDev = oSettings.isDev,
                 oBootStrap = oSetting_UI5.bootstrap,
-                oUserInfo = oAPP.attr.oUserInfo,
+                // oUserInfo = oAPP.attr.oUserInfo,
+                oUserInfo = oAPP.IF_DATA.oUserInfo,
                 sLangu = oUserInfo.LANGU;
 
             var oScript = document.createElement("script");
@@ -88,7 +89,7 @@
             // 로그인 Language 적용
             oScript.setAttribute('data-sap-ui-theme', oAPP.IF_DATA.THEME_INFO.THEME);
             oScript.setAttribute("data-sap-ui-language", sLangu);
-            oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.core, sap.tnt");
+            oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.core, sap.tnt, sap.f");
 
             // 개발일때와 release 할 때의 Bootstrip 경로 분기
             if (bIsDev) {
@@ -133,15 +134,15 @@
                     //Menu JSON
                     let sMenuData = JSON.parse(data);
 
-                    console.log(2);
-
-
                     //******************************************************************//
                     // 내부 사용 펑션 
                     //*****************************************************************//  
 
                     //화면 Loading Mode 설정 
                     function fn_WaitMode(a) {
+
+                        console.log("!!Busy: " + a);
+
                         oUI5.NVCNT.setBusy(a);
                         oUI5.NAVIGATIONLIST.setBusy(a);
 
@@ -150,9 +151,6 @@
                     //******************************************************************//
                     // Menu ui 생성
                     //*****************************************************************//            
-
-
-                    console.log(3);
 
                     //sap.ui.getCore().applyTheme(oAPP.IF_DATA.THEME_INFO.THEME);
 
@@ -218,14 +216,15 @@
 
                             //wait on
                             fn_WaitMode(true);
-
+                            
                             oUI5.NVCNT.removeAllPages();
+
                             var sLine = e.oSource.getModel().mContexts[e.oSource
                                 .oBindingContexts.undefined.sPath].getProperty();
                             var Lpath = oAPP.path.join(oAPP.__dirname, '/js/' + sLine
                                 .MCODE + '.js');
                             jQuery.getScript(Lpath, function () {
-                                fn_WaitMode(false); /*wait off*/
+                                // fn_WaitMode(false); /*wait off*/
                             });
 
                         }

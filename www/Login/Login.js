@@ -1054,7 +1054,7 @@ let oAPP = (function () {
 
         return new Promise((resolve, reject) => {
 
-            var oSettings = oAPP.fn.fnGetSettingsInfo(),
+            var oSettings = fnGetSettingsInfo(),
                 oGitSettings = oSettings.GITHUB,
                 sGitDevKey = oGitSettings.devKey,
                 sLatestUrl = oGitSettings.latestUrl
@@ -1090,6 +1090,8 @@ let oAPP = (function () {
      * Github 연결을 시도 하여 on-premise 인지 CDN인지 확인
      ************************************************************************/
     oAPP.fn.fnConnectionGithubThen = function (oReturn) {
+
+        parent.setIsCDN(oReturn.ISCDN);
 
         // on-premise 일 경우 업데이트 URL을 서버쪽으로 바라본다.
         if (oReturn.ISCDN != "X") {

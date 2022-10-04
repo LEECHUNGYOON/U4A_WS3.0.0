@@ -761,25 +761,29 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        // 팝업 위치를 부모 위치에 배치시킨다.
-        var oParentBounds = CURRWIN.getBounds(),
-            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-            oWinScreen = window.screen,
-            iAvailLeft = oWinScreen.availLeft;
+        function lf_setBounds() {
 
-        if (xPos < iAvailLeft) {
-            xPos = iAvailLeft;
+            // 팝업 위치를 부모 위치에 배치시킨다.
+            var oParentBounds = CURRWIN.getBounds(),
+                xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+                yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+                oWinScreen = window.screen,
+                iAvailLeft = oWinScreen.availLeft;
+
+            if (xPos < iAvailLeft) {
+                xPos = iAvailLeft;
+            }
+
+            if (yPos < 0) {
+                yPos = 0;
+            };
+
+            oBrowserWindow.setBounds({
+                x: xPos,
+                y: yPos
+            });
+
         }
-
-        if (yPos < 0) {
-            yPos = 0;
-        };
-
-        oBrowserWindow.setBounds({
-            x: xPos,
-            y: yPos
-        });
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
@@ -787,22 +791,29 @@
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oOptionData = {
                 oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보
+                oServerInfo: parent.getServerInfo(),
+                SYSID: sSysID,
+                THEME_INFO: oThemeInfo,
+                ISCDN: parent.getIsCDN()
             };
 
             oBrowserWindow.webContents.send('if-ws-options-info', oOptionData);
-            oBrowserWindow.webContents.send('option-initData', {
-                SYSID: sSysID,
-                THEME_INFO: oThemeInfo
-            });
+
+            // oBrowserWindow.webContents.send('option-initData', {
+            //     SYSID: sSysID,
+            //     THEME_INFO: oThemeInfo,                
+            // });
 
             oBrowserWindow.setOpacity(1.0);
+
+            lf_setBounds();
 
         });
 
@@ -1192,7 +1203,7 @@
                 oUserInfo: oUserInfo,
                 oThemeInfo: oThemeInfo,
                 aRuntimeData: oAPP.DATA.LIB.T_0022,
-                oMetadata : parent.getMetadata()
+                oMetadata: parent.getMetadata()
             };
 
             // 오픈할 URL 파라미터 전송

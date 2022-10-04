@@ -1,5 +1,6 @@
 { "AT_MENU" : 
 	[ 
-		{"MCODE":"ThemeSetting", "DESC":"Theme Settings",  "ICON":"sap-icon://palette"}
+		{"MCODE":"ThemeSetting", "DESC":"Theme Settings",  "ICON":"sap-icon://palette"},
+		{"MCODE":"CdnSetting", "DESC":"CDN Settings",  "ICON":"sap-icon://download-from-cloud"}
 	]
 }
