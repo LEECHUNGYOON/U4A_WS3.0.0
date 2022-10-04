@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -45,13 +45,13 @@
 
         // 파일 확장자 이미지 경로 구하기
         fnGetFileExtendImgList()
-            .then(function() {
+            .then(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
 
             })
-            .catch(function() {
+            .catch(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
@@ -65,7 +65,7 @@
      ************************************************************************/
     function fnGetFileExtendImgList() {
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
@@ -114,7 +114,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function() {
+    oAPP.fn.fnOnResizeWs30 = function () {
 
         console.log("resize30!!!");
 
@@ -251,7 +251,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -434,7 +434,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -1089,7 +1089,7 @@
                                         "ISFLD",
                                         "EXTEN"
                                     ],
-                                    formatter: function(ISFLD, EXTEN) {
+                                    formatter: function (ISFLD, EXTEN) {
 
                                         var iFileImgListLength = gaFileExtendImgList.length;
                                         if (iFileImgListLength == 0) {
@@ -1221,7 +1221,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function(oEvent) {
+                rowSelectionChange: function (oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1365,7 +1365,7 @@
 
             oIsFolderCheckbox = new sap.m.CheckBox({
                 editable: false
-            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
+            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                 if (ISFLD == "X") {
                     return true;
@@ -1431,7 +1431,7 @@
                                 ]
                             })
 
-                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function(ISFLD) {
+                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                             // 폴더가 아닐 경우에만 보여준다.
                             if (ISFLD != "X") {
@@ -1479,7 +1479,7 @@
             .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function(oControl) {
+            onAfterRendering: function (oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1835,7 +1835,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1919,7 +1919,7 @@
             initialFocus: "ws30_crname",
 
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -2187,7 +2187,7 @@
     function lf_appDelCtsPopup(oParam) {
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oParam = this;
 
@@ -2331,8 +2331,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function(e) {
-                $.each(e, function(e, o) {
+            t = function (e) {
+                $.each(e, function (e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2592,7 +2592,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function(event) {
+            fileReader.onload = function (event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -2654,12 +2654,14 @@
             return;
         }
 
-        var oCtx = oRow.getBindingContext();
-        if (!oCtx) {
+        // 바인딩 정보가 없으면 빠져나간다.
+        if (oRow.isEmpty()) {
             return;
         }
 
-        var aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
+        var oCtx = oRow.getBindingContext(),
+            aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
+
         if (aUspTreeData) {
 
             // 이전에 선택한 라인 값을 구한다.
@@ -2706,14 +2708,24 @@
         // 취소인 경우.
         if (oEvent !== "YES") {
 
+            var oUspTree = oRow.getParent(),
+                oRowData = oRow.getBindingContext().getObject();
+
             // 앱 변경 사항 플래그 설정
             oAPP.fn.setAppChangeWs30("");
 
             // code editor key press 이벤트 설정
             fnCodeEditorKeyPressEvent("X");
 
-            // Tree Table Row 데이터 구하기
-            fnUspTreeTableRowSelect(oRow);
+            // 좌측 Usp Tree 정보에 변경한 내역이 있을 경우 마지막 저장한 상태로 복원한다.
+            oAPP.fn.fnResetUspTree();
+
+            gfSelectRowUpdate = _fnResetUspTreeRowsUpdated.bind(this, oRowData)
+
+            oUspTree.attachRowsUpdated(gfSelectRowUpdate);
+
+            // // Tree Table Row 데이터 구하기            
+            // fnUspTreeTableRowSelect(oRow);
 
             return;
 
@@ -2725,6 +2737,78 @@
         });
 
     } // end of _fnSaveBeforeLeavEditMsgCb
+
+    /************************************************************************************************************
+     * [WS30] App Change 모드 후 저장 팝업에서 취소 했을 경우 모델 원복 후 Tree Table의 RowsUpdated 이벤트
+     ************************************************************************************************************/
+    function _fnResetUspTreeRowsUpdated(oMeItem, oEvent) {
+
+        console.log("_fnResetUspTree");
+
+        var oTreeTable = oEvent.getSource(),
+            aRows = oTreeTable.getRows(),
+            iRowLength = aRows.length;
+
+        for (var i = 0; i < iRowLength; i++) {
+
+            var oRow = aRows[i];
+
+            if (oRow.isEmpty()) {
+                break;
+            }
+
+            var oCtx = oRow.getBindingContext(),
+                oRowData = oCtx.getModel().getProperty(oCtx.getPath()),
+
+                // Row의 Object Key            
+                sOBJKY = oRowData.OBJKY;
+
+            // 현재 순서의 Row와 선택한 Row가 같을 경우 
+            if (sOBJKY === oMeItem.OBJKY) {
+
+                // RowUpdate 이벤트를 해제 한다.
+                oTreeTable.detachRowsUpdated(gfSelectRowUpdate);
+
+                gfSelectRowUpdate = undefined;
+
+                fnUspTreeTableRowSelect(oRow);
+
+                return;
+
+            }
+
+        }
+
+        // 호출 횟수 count
+        if (typeof gfSelectRowUpdate._callCount === "undefined") {
+            gfSelectRowUpdate._callCount = 0;
+        } else {
+            gfSelectRowUpdate._callCount++;
+        }
+
+        // 혹시라도 RowUpdate 호출 횟수가 5회 이상이면 
+        // 무한루프를 막기 위한 조치..
+        if (gfSelectRowUpdate._callCount >= 5) {
+            oTreeTable.detachRowsUpdated(gfSelectRowUpdate);
+            gfSelectRowUpdate = undefined;
+            return;
+        }
+
+        if (typeof gfSelectRowUpdate.iRowLength === "undefined") {
+            gfSelectRowUpdate.iRowLength = 0;
+        } else {
+            gfSelectRowUpdate.iRowLength += iRowLength;
+        }
+
+        // 스크롤을 이동하여 다시 찾는다.
+        oTreeTable.setFirstVisibleRow(gfSelectRowUpdate.iRowLength);
+
+        setTimeout(() => {
+            oTreeTable.fireRowsUpdated(oEvent, oMeItem);
+        }, 0);
+
+
+    } // end of _fnResetUspTreeRowsUpdated
 
     /**************************************************************************
      * [WS30] Tree Table Row 데이터 구하기
@@ -3028,14 +3112,15 @@
 
         var oTable = oEvent.getSource(),
             aRows = oTable.getRows(),
-            oRow = aRows[0],
-            oCtx = oRow.getBindingContext();
+            oRow = aRows[0];
 
-        if (!oCtx) {
+        // 바인딩 정보가 없으면 빠져나간다.
+        if (oRow.isEmpty()) {
             return;
         }
 
-        var oRowBindData = oCtx.getModel().getProperty(oCtx.getPath()),
+        var oCtx = oRow.getBindingContext(),
+            oRowBindData = oCtx.getModel().getProperty(oCtx.getPath()),
             bIsRoot = oRowBindData.PUJKY === "" ? true : false;
 
         if (!bIsRoot) {
@@ -3702,14 +3787,8 @@
 
         }
 
-        //  이전 선택한 Tree Node가 있는 경우 현재 좌측 트리 데이터를 갱신한다.
-        if (oAPP.attr.oBeforeUspTreeData) {
-
-            APPCOMMON.fnSetModelProperty("/WS30/USPTREE", oAPP.attr.oBeforeUspTreeData, true);
-
-            delete oAPP.attr.oBeforeUspTreeData;
-
-        }
+        // 좌측 Usp Tree 정보에 변경한 내역이 있을 경우 마지막 저장한 상태로 복원한다.
+        oAPP.fn.fnResetUspTree();
 
         // 앱 변경 사항 플래그 설정
         oAPP.fn.setAppChangeWs30("");
@@ -3761,6 +3840,12 @@
         // 생성 팝업 입력값 체크
         var oResult = _fnCheckCreateNodeData(oCrateData);
         if (oResult.RETCD == "E") {
+
+            // 오류난 Input에 focus를 줘서 ValueState Text가 잘 보이도록 만든다.
+            var oCrnameInput = sap.ui.getCore().byId("ws30_crname");
+            if (oCrnameInput) {
+                oCrnameInput.focus();
+            }
 
             // Value State 설정
             oCrateData.NAME_VS = sap.ui.core.ValueState.Error;
@@ -3898,14 +3983,16 @@
 
         for (var i = 0; i < iRowLength; i++) {
 
-            var oRow = aRows[i],
-                oCtx = oRow.getBindingContext();
+            var oRow = aRows[i];
 
-            if (!oCtx) {
+            // 바인딩 정보가 없으면 빠져나간다.
+            if (oRow.isEmpty()) {
                 continue;
             }
 
-            var sOBJKY = oCtx.getObject("OBJKY");
+            var oCtx = oRow.getBindingContext(),
+                sOBJKY = oCtx.getObject("OBJKY");
+
             if (sOBJKY !== oRowData.OBJKY) {
                 continue;
             }
@@ -4240,8 +4327,8 @@
         // 저장 성공 후 앱 상태 변경 플래그 해제
         oAPP.fn.setAppChangeWs30("");
 
-        // 이전 선택한 UspTree Data 글로벌 변수 초기화
-        oAPP.fn.fnClearOnBeforeSelectUspTreeData();
+        // 마지막 저장 전의 Usp Tree 정보를 초기화 한다.
+        oAPP.fn.fnClearOnBeforeUspTreeData();
 
         // Activate로 들어왔을 경우 상단에 APP 상태 정보 변경
         if (pIS_ACT == "X") {
@@ -4478,7 +4565,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this;
             // IS_ACT = oEvent.getParameter("IS_ACT");

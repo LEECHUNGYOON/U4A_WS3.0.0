@@ -1,4 +1,4 @@
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
 
@@ -94,8 +94,13 @@
 
         // 이동하려는 위치가 노드의 갯수보다 클 경우에는 
         // 이동하려는 위치값을 노드의 총 갯수로 지정
-        if (iNodeLength <= pMoveIndex) {
+        if (iNodeLength <= pMoveIndex - 1) {
             iMoveIndex = iNodeLength;
+        }
+
+        // 최종적으로 현재 이동하려는 노드와 이동할 index가 같으면 빠져나간다.
+        if (iFindIndex == (iMoveIndex - 1)) {
+            return;
         }
 
         var aItem = oResult.Nodes.splice(iFindIndex, 1),
@@ -221,7 +226,7 @@
                     bIsAttach = true;
 
                     // test
-                    setTimeout(function() {
+                    setTimeout(function () {
                         oTreeTable.fireRowsUpdated(oEvent, oMeItem); //test
                     }, 0);
 
@@ -242,7 +247,7 @@
 
                     bIsAttach = true;
 
-                    setTimeout(function() {
+                    setTimeout(function () {
                         oTreeTable.fireRowsUpdated(oEvent, oMeItem); //test
                     }, 0);
 
@@ -258,7 +263,7 @@
             if (bExpAble && bIsExp) {
                 bIsAttach = true;
 
-                setTimeout(function() {
+                setTimeout(function () {
                     oTreeTable.fireRowsUpdated(oEvent, oMeItem); //test
                 }, 0);
 
@@ -378,13 +383,15 @@
     /**************************************************************************
      * [WS30] USP Tree의 이전 선택한 UspTree Data 글로벌 변수 초기화
      **************************************************************************/
-    oAPP.fn.fnClearOnBeforeSelectUspTreeData = () => {
+    oAPP.fn.fnClearOnBeforeUspTreeData = () => {
 
-        if (oAPP.attr.oBeforeUspTreeData) {
-            delete oAPP.attr.oBeforeUspTreeData;
+        if (!oAPP.attr.oBeforeUspTreeData) {
+            return;
         }
 
-    }; // end of oAPP.fn.fnClearOnBeforeSelectUspTreeData
+        delete oAPP.attr.oBeforeUspTreeData;
+
+    }; // end of oAPP.fn.fnClearOnBeforeUspTreeData
 
     /**************************************************************************
      * [WS30] USP Tree의 Node 이동 팝업
@@ -452,8 +459,24 @@
             // association
             initialFocus: "ws30_step",
 
+            afterOpen: function (oEvent) {
+
+                var oStepInput = sap.ui.getCore().byId("ws30_step");
+                if (!oStepInput) {
+                    return;
+                }
+
+                var oInputDom = oStepInput.getDomRef("input-inner");
+                if (!oInputDom) {
+                    return;
+                }
+
+                oInputDom.select();
+
+            },
+
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -464,6 +487,22 @@
         oDialog.open();
 
     }; // end of oAPP.fn.fnUspTreeNodeMovePosition
+
+    /**************************************************************************
+     * [WS30] Usp Tree 데이터를 마지막 저장한 데이터로 복원한다.
+     **************************************************************************/
+    oAPP.fn.fnResetUspTree = () => {
+
+        if (!oAPP.attr.oBeforeUspTreeData) {
+            return;
+        }
+
+        APPCOMMON.fnSetModelProperty("/WS30/USPTREE", oAPP.attr.oBeforeUspTreeData, true);
+
+        // 마지막 저장 전의 Usp Tree 정보를 초기화 한다.
+        oAPP.fn.fnClearOnBeforeUspTreeData();
+
+    }; // end of oAPP.fn.fnResetUspTree
 
     /**************************************************************************
      * [WS30] USP Move Position Popup Close
@@ -523,7 +562,7 @@
             return;
         }
 
-        setTimeout(function() {
+        setTimeout(function () {
             oBtn.firePress();
         }, 0);
 
