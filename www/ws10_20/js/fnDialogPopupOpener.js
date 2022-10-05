@@ -758,13 +758,13 @@
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
 
         // 브라우저 오픈
-        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
         function lf_setBounds() {
 
             // 팝업 위치를 부모 위치에 배치시킨다.
-            var oParentBounds = CURRWIN.getBounds(),
+            let oParentBounds = CURRWIN.getBounds(),
                 xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
                 yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
                 oWinScreen = window.screen,
@@ -788,20 +788,21 @@
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
-        var sUrlPath = parent.getPath(sPopupName);
+        let sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        oBrowserWindow.webContents.openDevTools();
+        // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
-            var oOptionData = {
+            let oOptionData = {
+                BROWSKEY: BROWSKEY, // 브라우저 고유키 
                 oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보
-                oServerInfo: parent.getServerInfo(),
-                SYSID: sSysID,
-                THEME_INFO: oThemeInfo,
-                ISCDN: parent.getIsCDN()
+                oServerInfo: parent.getServerInfo(), // 서버 정보
+                SYSID: sSysID, // System ID
+                THEME_INFO: oThemeInfo, // 테마 정보
+                ISCDN: parent.getIsCDN() // CDN 여부
             };
 
             oBrowserWindow.webContents.send('if-ws-options-info', oOptionData);
@@ -817,12 +818,20 @@
 
         });
 
+
+        let lf_IpcMainCdnSave = oAPP.fn.fnIpcMain_cdn_save;
+
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
 
+            IPCMAIN.off(`${BROWSKEY}-cdn-save`, lf_IpcMainCdnSave);
+  
             oBrowserWindow = null;
 
         });
+
+        // IPCMAIN 이벤트        
+        IPCMAIN.on(`${BROWSKEY}-cdn-save`, lf_IpcMainCdnSave);
 
     }; // end of oAPP.fn.fnWsOptionsPopupOpener
 
@@ -863,7 +872,7 @@
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
         // 팝업 위치를 부모 위치에 배치시킨다.
-        var oParentBounds = CURRWIN.getBounds(),
+        let oParentBounds = CURRWIN.getBounds(),
             xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
             yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
             oWinScreen = window.screen,
@@ -893,7 +902,7 @@
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
-            var oDocuData = {
+            let oDocuData = {
                 oUserInfo: parent.getUserInfo(),
                 oThemeInfo: oThemeInfo, // 테마 개인화 정보               
             };

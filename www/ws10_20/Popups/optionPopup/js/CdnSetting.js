@@ -1,9 +1,10 @@
-(function(oNavCon, oNavConList) {
+(function (oNavCon, oNavConList) {
     "use strict";
 
     const
         REMOTE = oAPP.remote,
-        OCTOKIT = REMOTE.require("@octokit/core").Octokit;
+        OCTOKIT = REMOTE.require("@octokit/core").Octokit,
+        BINDROOT = "/OPTS/CDN";
 
     jQuery.sap.require("sap.m.MessageBox");
 
@@ -69,7 +70,7 @@
     /************************************************************************
      * Github 연결을 시도 하여 on-premise 인지 CDN인지 확인
      ************************************************************************/
-    oAPP.fn.fnConnectionGithubThen = function(fnCallback, oReturn) {
+    oAPP.fn.fnConnectionGithubThen = function (fnCallback, oReturn) {
 
         if (typeof fnCallback === "function") {
             fnCallback(oReturn);
@@ -85,11 +86,20 @@
      ************************************************************************/
     oAPP.fn.fnInitRendering = (oReturn) => {
 
-        let sBindRoot = "/OPTS/CDN",
+
+        let sMoreTxt = "U4A WS 3.0 Application Upgrade Infrastructure setting. \n\n";
+        sMoreTxt += "If you Available External Internet Connection and You Want to always upgrade for latest version\n\n You can choice CDN Setting Switch Button turn On. \n\n";
+        sMoreTxt += "If you want to only Upgrade for on-premise, You can choice CDN Setting Switch Button turn off.\n\n\n";
+
+        sMoreTxt += "U4A WS 3.0 Application Upgrade 환경설정 \n\n";
+        sMoreTxt += "외부망 연결이 가능하고, 항상 최신버전으로 업그레이드를 원할 경우, CDN Setting 스위치 버튼을 On으로 저장하세요. \n\n";
+        sMoreTxt += "만약, 외부망 연결이 불가능한 환경이거나, SAP 서버에 설치되어 있는 버전으로만 업그레이드를 원할 경우 CDN Setting 스위치 버튼을 Off로 저장하세요.";
+
+        let sBindRoot = BINDROOT,
             oModelData = {
-                TITLE: "CDN Settings",
-                DESC: "bulla~~ bulla~~~",
-                MORE: "bulla~~ bulla~~~ bulla~~~ bulla~~~ bulla~~~",
+                TITLE: "CDN Setting",
+                DESC: "U4A WS 3.0 Application Upgrade Setting.",
+                MORE: sMoreTxt,
                 ISCDN: oAPP.IF_DATA.ISCDN,
                 ISPING: oReturn.ISCDN
             },
@@ -148,11 +158,23 @@
                 ]
             }).addStyleClass("sapUiSmallMarginTop sapUiSmallMarginBeginEnd"),
 
+            oPanel = new sap.m.Panel({
+                expandable: true,
+                expanded: true,
+                headerText: "More Info",
+                content: [
+                    new sap.m.Text({
+                        text: `{${sBindRoot}/MORE}`
+                    })
+                ]
+            }).addStyleClass("sapUiTinyMarginTop"),
+
             oGridList = new sap.f.GridList({
                 items: [
                     new sap.f.GridListItem({
                         content: [
-                            oHbox
+                            oHbox,
+                            oPanel
                         ]
                     })
                 ]
@@ -161,6 +183,45 @@
             oFooter = new sap.m.Bar({
 
                 contentRight: [
+
+                    new sap.m.Button({
+                        icon: "sap-icon://refresh",
+                        text: "Refresh",
+                        press: (oEvent) => {
+
+                            oAPP.fn.fnSetBusy(true);
+
+                            // 외부망 접속이 되는지 확인한다.
+                            oAPP.fn.fnCheckConnectionCDN(function (oReturn) {
+
+                                // 외부망 접속 가능 여부 값을 모델에 저장한다.
+                                oAPP.ui.oPage.getModel().setProperty(`${sBindRoot}/ISPING`, oReturn.ISCDN, true);
+
+                                oAPP.fn.fnSetBusy(false);
+
+                                // 외부망 접속이 안될 경우
+                                if (oReturn.ISCDN == "") {
+
+                                    let sMsg = "Check your network to see if an external network connection is available.";
+
+                                    // 외부망 접속을 확인하세요 메시지 팝업
+                                    sap.m.MessageBox.error(sMsg, {
+                                        title: "Error", // default
+                                        onClose: null, // default
+                                        styleClass: "", // default
+                                        actions: sap.m.MessageBox.Action.CLOSE, // default
+                                        emphasizedAction: null, // default
+                                        initialFocus: null, // default
+                                        textDirection: sap.ui.core.TextDirection.Inherit // default
+                                    });
+
+                                }
+
+                            });
+
+                        }
+                    }),
+
                     new sap.m.Button({
                         icon: "sap-icon://accept",
                         text: "Apply",
@@ -228,11 +289,10 @@
 
     }; // end of oAPP.fn.fnPressApply
 
+    /************************************************************************
+     * IPCRENDERER를 이용하여 CDN Setting 저장 
+     ************************************************************************/
     oAPP.fn.fnPressApplyCB = (oAction) => {
-
-        if (oAction !== "OK") {
-            return;
-        }
 
         var oPage = oAPP.ui.oPage;
         if (oPage instanceof sap.m.Page === false) {
@@ -244,13 +304,44 @@
             return;
         }
 
-        var oModelData = oModel.getData();
+        // 저장 팝업에서 취소 눌렀을 경우 기 저장된 값으로 변경
+        if (oAction !== "OK") {
+            oModel.setProperty(`${BINDROOT}/ISCDN`, oAPP.IF_DATA.ISCDN);
+            return;
+        }
 
+        var oModelData = oModel.getProperty(BINDROOT);
 
+        // CDN 여부를 저장 하기 위해 메인렌더러에 CDN 여부 값을 전송
+        oAPP.ipcRenderer.send(`${oAPP.IF_DATA.BROWSKEY}-cdn-save`, {
+            ISCDN: oModelData.ISCDN,
+            BROWSKEY: oAPP.IF_DATA.BROWSKEY
+        });
 
+        oAPP.fn.fnSetBusy(true);
 
+        // CDN 저장 결과 Callback 이벤트를 건다.
+        oAPP.ipcRenderer.on(`${oAPP.IF_DATA.BROWSKEY}-cdn-save-callback`, oAPP.fn.IpcRendererCdnSaveCallback);
 
     }; // end of oAPP.fn.fnPressApplyCB
+
+    /************************************************************************
+     * CDN 저장 후 콜백
+     ************************************************************************/
+    oAPP.fn.IpcRendererCdnSaveCallback = (oEvent, oRes) => {
+
+        oAPP.IF_DATA.ISCDN = oRes.ISCDN;
+
+        oAPP.ipcRenderer.off(`${oAPP.IF_DATA.BROWSKEY}-cdn-save-callback`, oAPP.fn.IpcRendererCdnSaveCallback);
+
+        oAPP.fn.fnSetBusy(false);
+
+        // 성공 메시지..
+        sap.m.MessageToast.show("complete", {
+            duration: 10000
+        });
+
+    }; // end of oAPP.fn.IpcRendererCdnSaveCallback
 
     /************************************************************************
      * 화면 Loading Mode 설정 
@@ -259,7 +350,7 @@
 
         oNavCon.setBusy(a);
         oNavConList.setBusy(a);
-        
+
     }; // end of oAPP.fn.fnSetBusy  
 
     /************************************************************************
@@ -278,7 +369,7 @@
 
 
 
-    oAPP.fn.fnCheckConnectionCDN(function(oReturn) {
+    oAPP.fn.fnCheckConnectionCDN(function (oReturn) {
 
         // CDN Option Page 그리기
         oAPP.fn.fnInitRendering(oReturn);

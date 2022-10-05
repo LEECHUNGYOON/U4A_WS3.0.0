@@ -152,7 +152,7 @@
 
         // 여러창일때 나를 제외한 윈도우를 닫고 싶을때 이벤트 해제 
         parent.IPCMAIN.off('if-browser-close', oAPP.fn.fnIpcMain_if_browser_close);
-        
+
     };
 
     /************************************************************************
@@ -285,5 +285,23 @@
 
 
     };
+
+    /************************************************************************
+     * 전체 브라우저에 공통으로 타는 DragEnd 이벤트
+     ************************************************************************/
+    oAPP.fn.fnIpcMain_cdn_save = function (oEvent, oRes) {
+
+        let BROWSKEY = oRes.BROWSKEY,
+            ISCDN = oRes.ISCDN;
+
+        parent.setIsCDN(ISCDN);
+
+        oEvent.reply(`${BROWSKEY}-cdn-save-callback`, {
+            RETCD: "S",
+            RTMSG: "Success!",
+            ISCDN: ISCDN
+        });
+
+    }; // end of oAPP.fn.fnIpcMain_cdn_save
 
 })(window, $, oAPP);

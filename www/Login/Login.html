@@ -161,7 +161,6 @@
                 color: #ecececeb;
             }
         }
-
     </style>
 </head>
 
@@ -169,16 +168,21 @@
 
 <body class="sapUiBody">
 
-    <div id="content"
-         style="display:none;"
-         class="u4aWsContent"></div>
+    <div id="content" style="display:none;" class="u4aWsContent"></div>
 
     <!-- Page Loading Start -->
     <!-- <div id="u4a_main_load" class="u4a_loaders u4a_loadersInactive">
         <span class="u4a_loader u4a_loader-bars"> <span></span> </span> Loading...
     </div> -->
     <!-- Page Loading End -->
-
+    <script>
+        function onError(message, url, line, col, errorObj) {
+            parent.showMessage(null, 99, "E", `${message}\n${url}, ${line}:${col}`);
+            // alert(`${message}\n${url}, ${line}:${col}`);
+        }
+        window.onerror = onError;
+        document.onerror = onError;
+    </script>
     <script src="Login.js"></script>
     <script src="Login_trial.js"></script>
 </body>

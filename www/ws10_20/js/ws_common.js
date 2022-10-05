@@ -1644,6 +1644,35 @@
 
     };
 
+    /************************************************************************
+     * 잘못된 Url 호출 또는 현재 버전에 지원되지 않는 서비스를 호출 하는 경우 오류 메시지
+     ************************************************************************/
+    oAPP.common.fnUnsupportedServiceUrlCall = (u4a_status, sResponse) => {
+
+        var oResult = JSON.parse(sResponse);
+
+        //오류 메시지 출력.
+        parent.showMessage(sap, 20, oResult.RETCD, oResult.RTMSG);
+
+        switch (u4a_status) {
+            case "UA0001":
+
+
+
+
+
+
+
+
+                break;
+
+            default:
+
+                break;
+        }
+
+    }; // end of oAPP.common.fnUnsupportedServiceUrlCall
+
 })(window, $, oAPP);
 
 // application 초기 정보
@@ -1686,6 +1715,17 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
                 // 화면 Lock 해제                
                 sap.ui.getCore().unlock();
+
+                let u4a_status = xhr.getResponseHeader("u4a_status");
+                if (u4a_status) {
+
+                    parent.setBusy("");
+
+                    // 잘못된 url 이거나 지원하지 않는 기능 처리
+                    oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, xhr.response);
+
+                    return;
+                }
 
                 if (xhr.responseType == 'blob') {
                     if (typeof fn_success == "function") {
@@ -1893,6 +1933,10 @@ function ajax_logoff() {
 // 로그오프 성공시 타는 펑션
 function fn_logoff_success(TYPE) {
 
+    // 서버 끊어졌다는 electron Popup을 띄운다.
+    fnServerDisconnectionMsgPopup();
+
+    // 브라우저 창 다 죽인다.    
     fnServerSessionClose();
 
     if (!TYPE) {
@@ -2020,3 +2064,14 @@ function sendServerExit(oOptions, fnCallback) {
     xhttp.send();
 
 };
+
+/************************************************************************
+ * 서버 끊어질때 새창으로 메시지 처리
+ ************************************************************************/
+function fnServerDisconnectionMsgPopup() {
+
+
+    
+
+
+} // end of fnServerDisconnectionMsgPopup

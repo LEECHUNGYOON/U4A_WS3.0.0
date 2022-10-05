@@ -191,6 +191,10 @@
                     key: "Test97",
                     text: "개발툴"
                 },
+                {
+                    key: "Test94",
+                    text: "잘못된 서버 호출"
+                },
             ];
 
         return {

@@ -1054,7 +1054,7 @@ let oAPP = (function () {
 
         return new Promise((resolve, reject) => {
 
-            var oSettings = fnGetSettingsInfo(),
+            var oSettings = oAPP.fn.fnGetSettingsInfo(),
                 oGitSettings = oSettings.GITHUB,
                 sGitDevKey = oGitSettings.devKey,
                 sLatestUrl = oGitSettings.latestUrl

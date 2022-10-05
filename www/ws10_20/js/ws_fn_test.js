@@ -61,9 +61,23 @@
 
     // usp
     oAPP.fn.fnTest96 = () => {
-        
+
         // 30번 페이지로 이동
         oAPP.fn.fnMoveToWs30(); //#[ws_fn_02.js]
+
+    };
+
+    oAPP.fn.fnTest94 = () => {
+
+        var sPath = parent.getServerPath() + "/ttt";
+
+        sendAjax(sPath, undefined, (oReturn) => {
+
+            if (typeof fnCallback == "function") {
+                fnCallback(oReturn);
+            }
+
+        });
 
     };
 
