@@ -1659,11 +1659,14 @@
                 text: "New Window"
             }, {
                 key: "WMENU30_02",
-                text: "Close Browser"
+                text: "Close Window"
             }, {
                 key: "WMENU30_03",
                 text: "Options"
             }, {
+                key: "WMENU30_04",
+                text: "Logoff",
+            },{
                 key: "WMENU30_04",
                 text: "Release Note",
             }],

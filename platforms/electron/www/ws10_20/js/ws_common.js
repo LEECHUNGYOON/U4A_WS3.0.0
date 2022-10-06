@@ -1673,6 +1673,15 @@
 
     }; // end of oAPP.common.fnUnsupportedServiceUrlCall
 
+    /************************************************************************
+     * 공통 헤더 메뉴의 Admin 버튼 이벤트
+     ************************************************************************/
+    oAPP.common.fnAdminHeaderMenu = () => {
+
+        sap.m.MessageToast.show("준비중입니다.");
+
+    }; // end of oAPP.common.fnAdminHeaderMenu
+
 })(window, $, oAPP);
 
 // application 초기 정보
@@ -1933,6 +1942,10 @@ function ajax_logoff() {
 // 로그오프 성공시 타는 펑션
 function fn_logoff_success(TYPE) {
 
+    // 서버 끊어졌다는 electron Popup을 띄운다.
+    fnServerDisconnectionMsgPopup();
+
+    // 브라우저 창 다 죽인다.    
     fnServerSessionClose();
 
     if (!TYPE) {
@@ -2060,3 +2073,14 @@ function sendServerExit(oOptions, fnCallback) {
     xhttp.send();
 
 };
+
+/************************************************************************
+ * 서버 끊어질때 새창으로 메시지 처리
+ ************************************************************************/
+function fnServerDisconnectionMsgPopup() {
+
+
+
+
+
+} // end of fnServerDisconnectionMsgPopup

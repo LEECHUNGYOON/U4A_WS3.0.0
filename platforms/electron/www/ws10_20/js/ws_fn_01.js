@@ -160,18 +160,26 @@
             }],
 
             aWMENU30 = [{
-                key: "WMENU30_01",
-                text: "New Window"
-            }, {
-                key: "WMENU30_02",
-                text: "Close Browser"
-            }, {
-                key: "WMENU30_03",
-                text: "Options"
-            }, {
-                key: "WMENU30_04",
-                text: "Release Note",
-            }],
+                    key: "WMENU30_01",
+                    text: "New Window"
+                }, {
+                    key: "WMENU30_02",
+                    text: "Close Window"
+                }, {
+                    key: "WMENU30_03",
+                    text: "Options"
+                },
+                {
+                    key: "WMENU30_04",
+                    text: "Logoff",
+                }, {
+                    key: "WMENU30_05",
+                    text: "Release Note",
+                }, {
+                    key: "WMENU30_06",
+                    text: "Administrator",
+                }
+            ],
             Test10 = [{
                     key: "Test96",
                     text: "USP 페이지 생성"
@@ -268,33 +276,32 @@
 
             aWMENU40 = [{
                     key: "WMENU40_01",
-                    text: "New Browser",
+                    text: "New Window",
                     enabled: true,
                 },
                 {
                     key: "WMENU40_02",
-                    text: "Close Browser",
+                    text: "Close Window",
                     enabled: true,
-
                 },
                 {
-                    key: "WMENU40_05",
+                    key: "WMENU40_03",
                     text: "Options",
                     enabled: true,
                 },
-                // {
-                //     key: "WMENU40_03",
-                //     text: "User Profile",
-                //     enabled: true,
-                // },
                 {
                     key: "WMENU40_04",
                     text: "Logoff",
                     enabled: true,
                 },
                 {
-                    key: "WMENU40_06",
+                    key: "WMENU40_05",
                     text: "Release Note",
+                    enabled: true,
+                },
+                {
+                    key: "WMENU40_06",
+                    text: "Administrator",
                     enabled: true,
                 }
             ],
@@ -929,12 +936,12 @@
 
         var oHeaderToolbar = new sap.m.OverflowToolbar({
                 content: aHeaderToolbarContents
-            // }).addStyleClass("sapTntToolHeader u4aWsWindowMenuToolbar"),
+                // }).addStyleClass("sapTntToolHeader u4aWsWindowMenuToolbar"),
             }).addStyleClass("u4aWsWindowMenuToolbar"),
 
             oSubHeaderToolbar = new sap.m.OverflowToolbar({
                 content: aSubHeaderToolbarContents,
-            // }).addStyleClass("u4aWs10_HeaderToolbar sapTntToolHeader"),
+                // }).addStyleClass("u4aWs10_HeaderToolbar sapTntToolHeader"),
             }).addStyleClass("u4aWs10_HeaderToolbar"),
 
             oMsgFooter = new sap.m.OverflowToolbar({
@@ -1927,7 +1934,7 @@
 
         var oToolHeader = new sap.m.OverflowToolbar({
             content: aSubHeaderToolbarContents
-        // }).addStyleClass("u4aWs20_HeaderToolbar sapTntToolHeader");
+            // }).addStyleClass("u4aWs20_HeaderToolbar sapTntToolHeader");
         }).addStyleClass("u4aWs20_HeaderToolbar");
 
         return new sap.m.Page("WS20_MAIN", {

@@ -1673,6 +1673,15 @@
 
     }; // end of oAPP.common.fnUnsupportedServiceUrlCall
 
+    /************************************************************************
+     * 공통 헤더 메뉴의 Admin 버튼 이벤트
+     ************************************************************************/
+    oAPP.common.fnAdminHeaderMenu = () => {
+
+        sap.m.MessageToast.show("준비중입니다.");
+
+    }; // end of oAPP.common.fnAdminHeaderMenu
+
 })(window, $, oAPP);
 
 // application 초기 정보
@@ -2071,7 +2080,7 @@ function sendServerExit(oOptions, fnCallback) {
 function fnServerDisconnectionMsgPopup() {
 
 
-    
+
 
 
 } // end of fnServerDisconnectionMsgPopup

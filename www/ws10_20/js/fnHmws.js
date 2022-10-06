@@ -390,7 +390,7 @@
     }; // end of oAPP.fn.fnWS10WMENU30_01
 
     /************************************************************************
-     * [WS10] Close Browser
+     * [WS10] Close Window
      ************************************************************************/
     oAPP.fn.fnWS10WMENU30_02 = function () {
 
@@ -419,9 +419,23 @@
     }; // end of oAPP.fn.fnWS10WMENU30_03
 
     /************************************************************************
-     * [WS10] Release Note..
+     * [WS10] Logoff
      ************************************************************************/
     oAPP.fn.fnWS10WMENU30_04 = () => {
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        oAPP.events.ev_Logout();
+
+    }; // end of oAPP.fn.fnWS10WMENU30_04
+
+    /************************************************************************
+     * [WS10] Release Note..
+     ************************************************************************/
+    oAPP.fn.fnWS10WMENU30_05 = () => {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -431,6 +445,20 @@
         oAPP.fn.fnReleaseNotePopupOpener();
 
     }; // end of oAPP.fn.fnWS10WMENU30_04
+
+    /************************************************************************
+     * [WS10] administrator
+     ************************************************************************/
+    oAPP.fn.fnWS10WMENU30_06 = () => {
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        oAPP.common.fnAdminHeaderMenu();
+
+    }; // end of oAPP.fn.fnWS10WMENU30_05
 
     /************************************************************************
      * [WS20] Theme Designer
@@ -609,7 +637,7 @@
     }; // end of oAPP.fn.fnWS20WMENU40_01
 
     /************************************************************************
-     * [WS20] Close Browser
+     * [WS20] Close Window
      ************************************************************************/
     oAPP.fn.fnWS20WMENU40_02 = function () {
 
@@ -624,7 +652,7 @@
     }; // end of oAPP.fn.fnWS20WMENU40_02
 
     /************************************************************************
-     * [WS20] User Profile
+     * [WS20] Options
      ************************************************************************/
     oAPP.fn.fnWS20WMENU40_03 = function () {
 
@@ -632,6 +660,8 @@
         if (parent.getBusy() == 'X') {
             return;
         }
+
+        oAPP.fn.fnWsOptionsPopupOpener();
 
     }; // end of oAPP.fn.fnWS20WMENU40_03
 
@@ -652,7 +682,7 @@
     /************************************************************************
      * [WS20] Release Note..
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU40_06 = () => {
+    oAPP.fn.fnWS20WMENU40_05 = () => {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -661,21 +691,21 @@
 
         oAPP.fn.fnReleaseNotePopupOpener();
 
-    }; // end of oAPP.fn.fnWS20WMENU40_06
+    }; // end of oAPP.fn.fnWS20WMENU40_05
 
     /************************************************************************
-     * [WS20] Options...
+     * [WS20] Administrator
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU40_05 = () => {
+    oAPP.fn.fnWS20WMENU40_06 = () => {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
             return;
         }
 
-        oAPP.fn.fnWsOptionsPopupOpener();
+        oAPP.common.fnAdminHeaderMenu();
 
-    }; // end of oAPP.fn.fnWS20WMENU40_05
+    }; // end of oAPP.fn.fnWS20WMENU40_06
 
     /************************************************************************
      * [WS20] U4A Help Document
@@ -832,7 +862,7 @@
     /************************************************************************
      * 잘못된 Url 호출 테스트
      ************************************************************************/
-     oAPP.fn.fnWS10Test94 = function () {
+    oAPP.fn.fnWS10Test94 = function () {
 
         oAPP.fn.fnTest94();
 
