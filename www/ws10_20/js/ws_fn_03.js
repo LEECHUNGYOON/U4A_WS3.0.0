@@ -256,7 +256,7 @@
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
 
             // JSON 파일 형식의 Setting 정보를 읽는다..
-            oSettings = require(sSettingsJsonPath);
+            oSettings = parent.require(sSettingsJsonPath);
         if (!oSettings) {
             return;
         }

@@ -1,4 +1,7 @@
 {
+	"SYSADMIN" : {
+		"AUTHKEY": "c2hvd21ldGhlbW9uZXk="
+	},
 	"UI5": {
 		"version": "v11024",		
 		"testResource": "https://sapui5.hana.ondemand.com/1.103.0/resources/sap-ui-core.js",

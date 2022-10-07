@@ -17,6 +17,10 @@
         APPPATH = APP.getAppPath(),
         APPCOMMON = oAPP.common;
 
+
+    const
+        SYSADM_BIND_ROOT = "/SYSADM";
+
     /************************************************************************
      * Child Window를 활성/비활성 처리 한다.
      * **********************************************************************
@@ -1678,9 +1682,159 @@
      ************************************************************************/
     oAPP.common.fnAdminHeaderMenu = () => {
 
-        sap.m.MessageToast.show("준비중입니다.");
+        // sap.m.MessageToast.show("준비중입니다.");
+
+        let oAdminDialog = sap.ui.getCore().byId("admDlg");
+
+        // Dialog가 이미 만들어졌을 경우
+        if (oAdminDialog) {
+
+            // 이미 오픈 되있다면 return.
+            if (oAdminDialog.isOpen()) {
+                return;
+            }
+
+            oAdminDialog.open();
+            return;
+
+        }
+
+        // 실행 브라우저 선택 팝업
+        let oDialog = new sap.m.Dialog("admDlg", {
+
+            // Properties
+            draggable: true,
+            resizable: true,
+
+            // Aggregations
+            customHeader: new sap.m.Bar({
+                contentLeft: [
+                    new sap.m.Title({
+                        text: "Admimistrator"
+                    }).addStyleClass("sapUiTinyMarginBegin"),
+                ]
+            }),
+
+            content: [
+
+                new sap.m.Input({
+                    // width: "200px",
+                    type: sap.m.InputType.Password,
+                    value: `{${SYSADM_BIND_ROOT}/PW}`,
+                    valueState: `{${SYSADM_BIND_ROOT}/VS}`,
+                    valueStateText: `{${SYSADM_BIND_ROOT}/VST}`,
+                    submit: () => {
+                        oAPP.common.fnAdminSubmit();
+                    }
+                }).bindProperty("valueState", {
+                    parts: [
+                        `{${SYSADM_BIND_ROOT}/VS}`,
+                    ],
+                    formatter: (VS) => {
+
+                        if (!VS) {
+                            return sap.ui.core.ValueState.None;
+                        }
+
+                    }
+                })
+
+            ],
+
+
+            // new sap.m.Toolbar({
+            //     content: [
+            //         new sap.m.ToolbarSpacer(),
+
+            //         new sap.ui.core.Icon({
+            //             src: "sap-icon://internet-browser"
+            //         }),
+
+            //         new sap.m.Title({
+            //             text: "Select Default Browser"
+            //         }).addStyleClass("sapUiTinyMarginBegin"),
+
+            //         new sap.m.ToolbarSpacer(),
+
+            //         new sap.m.Button({
+            //             icon: "sap-icon://decline",
+            //             press: function () {
+
+            //                 var oDialog = sap.ui.getCore().byId("selBrwsDlg");
+            //                 if (oDialog == null) {
+            //                     return;
+            //                 }
+
+            //                 if (oDialog.isOpen()) {
+            //                     oDialog.close();
+            //                 }
+
+            //             }
+            //         })
+            //     ]
+            // }),
+
+            buttons: [
+                new sap.m.Button({
+                    type: sap.m.ButtonType.Emphasized,
+                    icon: "sap-icon://accept",
+                    press: () => {
+                        oAPP.common.fnAdminSubmit();
+                    }
+                }),
+                new sap.m.Button({
+                    type: sap.m.ButtonType.Reject,
+                    icon: "sap-icon://decline",
+                    press: () => {
+
+                        oDialog.close();
+
+                    }
+                }),
+            ],
+            afterClose: () => {
+
+                oAPP.common.fnSetModelProperty(`${SYSADM_BIND_ROOT}/PW`, "");
+
+            }
+
+        }).addStyleClass("sapUiContentPadding");
+
+        oDialog.open();
 
     }; // end of oAPP.common.fnAdminHeaderMenu
+
+    oAPP.common.fnAdminSubmit = () => {
+
+        debugger;
+
+        APPCOMMON.fnSetModelProperty(`${SYSADM_BIND_ROOT}/VS`, "");
+        APPCOMMON.fnSetModelProperty(`${SYSADM_BIND_ROOT}/VST`, "");
+
+
+        let sAdminPw = APPCOMMON.fnGetModelProperty(`${SYSADM_BIND_ROOT}/PW`);
+        if (!sAdminPw) {
+
+            var sMsg = "비밀번호를 입력하세요.";
+
+            APPCOMMON.fnSetModelProperty(`${SYSADM_BIND_ROOT}/VS`, sap.ui.core.ValueState.Error);
+            APPCOMMON.fnSetModelProperty(`${SYSADM_BIND_ROOT}/VST`, sMsg);
+
+            return;
+
+        }
+
+        // trial 버전이 아닐때만 수행
+        var oWsSettings = oAPP.fn.fnGetSettingsInfo(),
+            oSYSADMIN = oWsSettings.SYSADMIN,
+            sAuthKey = oSYSADMIN.AUTHKEY,
+            sKeyEnc = atob(sAuthKey);
+
+
+
+
+
+    };
 
 })(window, $, oAPP);
 

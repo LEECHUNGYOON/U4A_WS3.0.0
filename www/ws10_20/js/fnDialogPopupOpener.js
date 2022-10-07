@@ -825,7 +825,7 @@
         oBrowserWindow.on('closed', () => {
 
             IPCMAIN.off(`${BROWSKEY}-cdn-save`, lf_IpcMainCdnSave);
-  
+
             oBrowserWindow = null;
 
         });
@@ -1739,7 +1739,7 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = CURRWIN;
-        // oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.width = 1200;
 
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -1808,8 +1808,6 @@
 
         function lf_ui5css_getData(event, res) {
 
-            debugger;
-
             var sType = res.TYPE,
                 bIsSave = (sType == "S" ? true : false),
                 aCSSList = res.DATA;
@@ -1820,5 +1818,193 @@
 
 
     }; // end of oAPP.fn.fnUI5PredefinedCssPopupOpener
+
+    /************************************************************************
+     * [WS20] Application ShortCut Download
+     ************************************************************************/
+    oAPP.fn.fnAppShortCutDownPopupOpener = () => {
+
+        // 실행할 브라우저가 없다면 오류 후 빠져나감.    
+        let aDefBr = APPCOMMON.fnGetModelProperty("/DEFBR"),
+            sMsg = "";
+
+        // 뭔가 크게 잘못된 경우
+        if (aDefBr instanceof Array == false) {
+
+            sMsg = "설치된 브라우저 정보를 찾을 수 없습니다.";
+
+            parent.showMessage(sap, 20, 'E', sMsg);
+
+            return;
+        }
+
+        // Chrome 브라우저 설치 유무 확인
+        let oChrome = aDefBr.find(elem => elem.NAME === "CHROME") || {};        
+        if (!oChrome || !oChrome.ENABLED) {
+
+            sMsg = "Chrome Browser가 설치 되어 있는지 확인하세요!";
+
+            parent.showMessage(sap, 20, 'E', sMsg);
+
+            return;
+        }
+
+        let oMsEdge = aDefBr.find(elem => elem.NAME === "MSEDGE") || {};
+        if (!oMsEdge || !oMsEdge.ENABLED) {
+
+            sMsg = "MS Edge Browser가 설치 되어 있는지 확인하세요!";
+
+            parent.showMessage(sap, 20, 'E', sMsg);
+
+            return;
+        }
+
+        let sWinObjType = "SHORTCUTPOP";
+
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
+        if (oResult.ISOPEN) {
+            return;
+        }
+
+        debugger;
+        
+        let SESSKEY = parent.getSessionKey(),
+            BROWSKEY = parent.getBrowserKey(),
+            oUserInfo = parent.getUserInfo(),
+            sUrl = parent.getPath(sWinObjType);
+
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보      
+
+        // 브라우저 옵션 설정
+        let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.title = "Short Cut Creator";
+        oBrowserOptions.show = false;
+        oBrowserOptions.skipTaskbar = false;
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.modal = true;
+        oBrowserOptions.minimizable = false;
+        oBrowserOptions.maximizable = false;
+
+        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL; //테마별 색상 처리               
+        oBrowserOptions.height = 900;
+        oBrowserOptions.width = 800;
+
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+
+        let oSettings = oAPP.fn.getSettingsInfo(),
+            oSetting_UI5 = oSettings.UI5,
+            sVersion = oSetting_UI5.version,
+            sTestResource = oSetting_UI5.testResource,
+            sReleaseResource = `../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
+            bIsDev = oSettings.isDev;
+
+        //==* 기본 config 정보 
+        var S_config = {};
+
+        //기능 처리 클라이언트 <-> 서버 통신 서비스 HOST        
+        S_config.SHOST = parent.getServerPath();
+
+        //서버 HOST        
+        S_config.BASE_SHOST = parent.getHost();
+
+        //UI5 기본 정보
+        S_config.UI5_INFO = {};
+
+        //Lib path
+        if (bIsDev) {
+            S_config.UI5_INFO.src = sTestResource;
+        } else {
+            S_config.UI5_INFO.src = sReleaseResource;
+        }
+
+        //Lib 접속 언어        
+        S_config.UI5_INFO.language = oUserInfo.LANGU;
+
+        //Lib 테마        
+        S_config.UI5_INFO.theme = oThemeInfo.THEME;
+
+        //==*브라우져 설처 경로 
+        let T_info = [];
+
+        var S_info = {};
+        S_info.TYPE = "CR";
+        S_info.PATH = oChrome.INSPATH;
+        T_info.push(S_info);
+
+
+        var S_info = {};
+        S_info.TYPE = "MS_EDGE";
+        S_info.PATH = oMsEdge.INSPATH;
+        T_info.push(S_info);
+
+        // 브라우저 오픈
+        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        function lf_setBounds() {
+
+            // 팝업 위치를 부모 위치에 배치시킨다.
+            let oParentBounds = CURRWIN.getBounds(),
+                xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+                yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+                oWinScreen = window.screen,
+                iAvailLeft = oWinScreen.availLeft;
+
+            if (xPos < iAvailLeft) {
+                xPos = iAvailLeft;
+            }
+
+            if (yPos < 0) {
+                yPos = 0;
+            };
+
+            oBrowserWindow.setBounds({
+                x: xPos,
+                y: yPos
+            });
+
+        }
+
+        // 브라우저 상단 메뉴 없애기        
+        oBrowserWindow.setMenu(null);
+
+        oBrowserWindow.loadURL(sUrl);
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            oBrowserWindow.show();
+
+            var oSendData = {
+                browserInfo: T_info,
+                config: S_config
+            };
+
+            // 오픈할 URL 파라미터 전송
+            oBrowserWindow.webContents.send('if_APP_shortcutCreator', oSendData);
+
+            // 팝업 위치를 부모 위치에 배치시킨다.
+            lf_setBounds();            
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {           
+
+            oBrowserWindow = null;
+
+        });     
+
+
+    }; // end of oAPP.fn.fnAppShortCutDownPopupOpener
 
 })(window, $, oAPP);
