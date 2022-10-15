@@ -148,7 +148,7 @@
 
                 // code editor keyPress 이벤트 해제
                 fnCodeEditorKeyPressEvent("");
-                
+
                 return;
             }
 
@@ -875,9 +875,8 @@
                                     design: "Bold",
                                     text: "Request/Task"
                                 }),
-                                fields: new sap.m.Input({
-                                    editable: false,
-                                    value: `{${sBindRoot}/REQNO}`
+                                fields: new sap.m.Text({
+                                    text: `{${sBindRoot}/REQNO}`
                                 })
                             }),
                             new sap.ui.layout.form.FormElement({
@@ -885,9 +884,8 @@
                                     design: "Bold",
                                     text: "Language Key"
                                 }),
-                                fields: new sap.m.Input({
-                                    editable: false,
-                                    value: `{${sBindRoot}/LANGU}`
+                                fields: new sap.m.Text({
+                                    text: `{${sBindRoot}/LANGU}`
                                 })
                             }),
                             new sap.ui.layout.form.FormElement({
@@ -895,9 +893,8 @@
                                     design: "Bold",
                                     text: "Code Page"
                                 }),
-                                fields: new sap.m.Input({
-                                    editable: false,
-                                    value: `{${sBindRoot}/CODPG}`
+                                fields: new sap.m.Text({
+                                    text: `{${sBindRoot}/CODPG}`
                                 })
                             }),
                             new sap.ui.layout.form.FormElement({
@@ -905,9 +902,8 @@
                                     design: "Bold",
                                     text: "Dev. Package"
                                 }),
-                                fields: new sap.m.Input({
-                                    editable: false,
-                                    value: `{${sBindRoot}/PACKG}`
+                                fields: new sap.m.Text({
+                                    text: `{${sBindRoot}/PACKG}`
                                 })
                             }),
                             new sap.ui.layout.form.FormElement({
@@ -915,9 +911,8 @@
                                     design: "Bold",
                                     text: "Assigned Class Object ID"
                                 }),
-                                fields: new sap.m.Input({
-                                    editable: false,
-                                    value: `{${sBindRoot}/CLSID}`
+                                fields: new sap.m.Text({
+                                    text: `{${sBindRoot}/CLSID}`
                                 })
                             }),
                             new sap.ui.layout.form.FormElement({
@@ -925,9 +920,8 @@
                                     design: "Bold",
                                     text: "Program ID in Requests and Tasks"
                                 }),
-                                fields: new sap.m.Input({
-                                    editable: false,
-                                    value: `{${sBindRoot}/PGMID}`
+                                fields: new sap.m.Text({
+                                    text: `{${sBindRoot}/PGMID}`
                                 })
                             }),
                             new sap.ui.layout.form.FormElement({
@@ -935,9 +929,8 @@
                                     design: "Bold",
                                     text: "Object Type"
                                 }),
-                                fields: new sap.m.Input({
-                                    editable: false,
-                                    value: `{${sBindRoot}/OBJTY}`
+                                fields: new sap.m.Text({
+                                    text: `{${sBindRoot}/OBJTY}`
                                 })
                             }),
                             new sap.ui.layout.form.FormElement({
@@ -945,9 +938,8 @@
                                     design: "Bold",
                                     text: "Authorization Group"
                                 }),
-                                fields: new sap.m.Input({
-                                    editable: false,
-                                    value: `{${sBindRoot}/AUTHG}`
+                                fields: new sap.m.Text({
+                                    text: `{${sBindRoot}/AUTHG}`
                                 })
                             }),
 
@@ -956,9 +948,8 @@
                                     design: "Bold",
                                     text: "Create User"
                                 }),
-                                fields: new sap.m.Input({
-                                    editable: false,
-                                    value: `{${sBindRoot}/ERUSR}`
+                                fields: new sap.m.Text({
+                                    text: `{${sBindRoot}/ERUSR}`
                                 })
                             }),
                             new sap.ui.layout.form.FormElement({
@@ -966,9 +957,8 @@
                                     design: "Bold",
                                     text: "Create Date"
                                 }),
-                                fields: new sap.m.Input({
-                                    editable: false,
-                                    value: `{${sBindRoot}/ERDAT}`
+                                fields: new sap.m.Text({
+                                    text: `{${sBindRoot}/ERDAT}`
                                 })
                             }),
                             new sap.ui.layout.form.FormElement({
@@ -976,9 +966,8 @@
                                     design: "Bold",
                                     text: "Create Time"
                                 }),
-                                fields: new sap.m.Input({
-                                    editable: false,
-                                    value: `{${sBindRoot}/ERTIM}`
+                                fields: new sap.m.Text({
+                                    text: `{${sBindRoot}/ERTIM}`
                                 })
                             }),
                             new sap.ui.layout.form.FormElement({
@@ -986,9 +975,8 @@
                                     design: "Bold",
                                     text: "Change User"
                                 }),
-                                fields: new sap.m.Input({
-                                    editable: false,
-                                    value: `{${sBindRoot}/AEUSR}`
+                                fields: new sap.m.Text({
+                                    text: `{${sBindRoot}/AEUSR}`
                                 })
                             }),
                             new sap.ui.layout.form.FormElement({
@@ -996,9 +984,8 @@
                                     design: "Bold",
                                     text: "Change Date"
                                 }),
-                                fields: new sap.m.Input({
-                                    editable: false,
-                                    value: `{${sBindRoot}/AEDAT}`
+                                fields: new sap.m.Text({
+                                    text: `{${sBindRoot}/AEDAT}`
                                 })
                             }),
                             new sap.ui.layout.form.FormElement({
@@ -1006,16 +993,10 @@
                                     design: "Bold",
                                     text: "Change Time"
                                 }),
-                                fields: new sap.m.Input({
-                                    editable: false,
-                                    value: `{${sBindRoot}/AETIM}`
+                                fields: new sap.m.Text({
+                                    text: `{${sBindRoot}/AETIM}`
                                 })
                             }),
-
-
-
-
-
 
                         ]
                     }),
@@ -1023,10 +1004,7 @@
             });
 
         return [
-
             oForm
-
-
         ];
 
     } // end of fnGetUspDocPageContentWs30
@@ -1043,16 +1021,49 @@
             showHeader: false,
             content: [
 
-                new sap.ui.layout.Splitter({
+                new sap.m.VBox({
                     height: "100%",
-                    width: "100%",
-                    orientation: "Vertical",
-                    contentAreas: [
-                        oPanel,
-                        oPage
-                    ]
+                    renderType: sap.m.FlexRendertype.Bare,
+                    items: [
 
+                        new sap.m.VBox({
+                            renderType: sap.m.FlexRendertype.Bare,
+                            items: [
+                                oPanel
+                            ]
+                        }),
+                        new sap.m.VBox({
+                            height: "100%",
+                            renderType: sap.m.FlexRendertype.Bare,
+                            items: [
+                                oPage
+                            ]
+                        }),
+
+                    ]
                 })
+
+
+                // new sap.m.VBox({
+                //     height: "100%",
+                //     renderType: "Bare",
+                //     items: [
+                //         oPanel,
+                //         oPage
+                //     ]
+
+                // })
+
+                // new sap.ui.layout.Splitter({
+                //     height: "100%",
+                //     width: "100%",
+                //     orientation: "Vertical",
+                //     contentAreas: [
+                //         oPanel,
+                //         oPage
+                //     ]
+
+                // })
 
             ]
 
@@ -1461,15 +1472,22 @@
         });
 
         return new sap.m.Panel("uspPanel", {
-
+            expandable: true,
+            expanded: true,
             headerText: "Properties",
+
             content: [
                 oForm
             ],
-            layoutData: new sap.ui.layout.SplitterLayoutData({
-                size: "200px",
-                minSize: 200
+
+            layoutData: new sap.m.FlexItemData({
+                styleClass: "sapUiTinyMarginBottom"
             })
+            
+            // layoutData: new sap.ui.layout.SplitterLayoutData({
+            //     size: "200px",
+            //     minSize: 200
+            // })
 
         });
 

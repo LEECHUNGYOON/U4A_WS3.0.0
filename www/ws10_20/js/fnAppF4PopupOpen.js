@@ -826,7 +826,7 @@
 
         sendAjax(sPath, oFormData, lf_AppInfo);
 
-        function lf_AppInfo(oAppInfo) {
+        function lf_AppInfo(aAppInfo) {
 
             // 검색 결과 모델 업데이트
             var oModelData = sap.ui.getCore().getModel().getData();
@@ -837,7 +837,18 @@
 
             var sAppListBindPath = C_BIND_ROOT_PATH + "/TAB1/APPLIST";
 
-            APPCOMMON.fnSetModelProperty(sAppListBindPath, oAppInfo);
+            // APPID 기준으로 오름차순 정렬해주기
+            let iAppInfoLength = aAppInfo.length;
+            if(iAppInfoLength > 0){
+
+                aAppInfo.sort(function(a, b) { 
+                    return a.APPID < b.APPID ? -1 : a.APPID > b.APPID ? 1 : 0;
+             
+                });
+
+            }
+
+            APPCOMMON.fnSetModelProperty(sAppListBindPath, aAppInfo);
 
             parent.setBusy('');
 
