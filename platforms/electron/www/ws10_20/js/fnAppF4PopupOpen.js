@@ -837,6 +837,7 @@
 
             var sAppListBindPath = C_BIND_ROOT_PATH + "/TAB1/APPLIST";
 
+            // APPID 기준으로 오름차순 정렬해주기
             let iAppInfoLength = aAppInfo.length;
             if(iAppInfoLength > 0){
 
