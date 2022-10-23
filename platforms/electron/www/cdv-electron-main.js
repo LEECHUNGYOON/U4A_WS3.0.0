@@ -88,13 +88,14 @@ function createWindow() {
         icon: appIcon,
         alwaysOnTop: true,
         transparent: true,
+        show: false,
         frame: false,
         movable: true,
         resizable: false,
-        width: 800,
+        width: 850,
         height: 500,
-        minWidth: 800,
-        minHeight: 500        
+        minWidth: 850,
+        minHeight: 500,        
     });
 
     // browserWindowOpts.webPreferences.preload = path.join(app.getAppPath(), 'cdv-electron-preload.js');
@@ -108,8 +109,12 @@ function createWindow() {
     // const loadUrl = cdvUrl.includes('://') ? cdvUrl : `${basePath}/${cdvUrl}`;
     const loadUrlOpts = Object.assign({}, cdvElectronSettings.browserWindowInstance.loadURL.options);
 
-    const loadUrl = `${__dirname}\\intro.html`;
+    const loadUrl = `${__dirname}\\intro2.html`;
     mainWindow.loadURL(loadUrl, loadUrlOpts);
+
+    mainWindow.once('ready-to-show', () => {
+        mainWindow.show();
+    })
 
     // Open the DevTools.
     // if (cdvElectronSettings.browserWindow.webPreferences.devTools) {

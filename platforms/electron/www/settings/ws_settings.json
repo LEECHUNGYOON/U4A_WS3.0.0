@@ -1,63 +1,70 @@
 {
-	"SYSADMIN" : {
-		"AUTHKEY": "c2hvd21ldGhlbW9uZXk="
-	},
-	"UI5": {
-		"version": "v11024",		
-		"testResource": "https://sapui5.hana.ondemand.com/1.103.0/resources/sap-ui-core.js",
-		"bootstrap": {
-			"data-sap-ui-language": "EN",
-			"data-sap-ui-noDuplicateIds": "true",
-			"data-sap-ui-preload": "async",
-			"data-sap-ui-compatVersion": "edge",
-			"data-sap-ui-theme": "sap_horizon_dark",
-			"data-sap-ui-libs": "sap.m"
-		}
-	},
-	"GITHUB": {
-		"devKey" : "Z2hwX1gxRUhyMW0xTkZlUnhpbnRCVkF4cHd2aG82c1FlNjJyaU1IMw==",
-		"OWNER": "LEECHUNGYOON",
-		"REPO": "U4A_WS3.0.0",
-		"latestUrl" : "https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest"
-	},	
-	"defaultTheme": "sap_horizon_dark",
-	"defaultBackgroundColor": "#12171c",
-	"requireFolders": [
-		"p13n",
-		"p13n\\theme",
-		"p13n\\suggestion",
-		"help",
-		"help\\u4a_help",
-		"ext_api",
-		"ext_api\\vbs"
-	],
-	"requireFiles": [
-		"p13n\\p13n.json",		
-		"p13n\\login.json",
-		"p13n\\ServerInfo.json",
-		"p13n\\zoom.json",
-		"p13n\\suggestion\\events.json",
-		"p13n\\suggestion\\tcode.json"
-	],
-	"vbs": {
-		"rootPath": "ext_api\\vbs",
-		"controllerClassVbs": "sapgui_ws.vbs",
-		"newSessionVbs" : "newSESSTION.vbs"
-	},
-	"path": {
-		"u4aHelpDocFolderPath": "help\\u4a_help",
-		"u4aHelpDocFilePath": "help\\u4a_help\\U4A.zip"
-	},	
-	"isDev": true,
-	"isTrial": false,
-	"trialServerInfo": {
-		"ID": "soccerhs",
-		"PW" : "cjddbs12",
-		"SERVERIP" : "www.u4aide.com",
-		"INSTANCENO": "00",
-		"SYSTEMID": "U4A",
-		"CLIENT": "800",
-		"LANGU": "EN",
-		"SYSID": "U4A"
-	}
+    "SYSADMIN": {
+        "AUTHKEY": "c2hvd21ldGhlbW9uZXk="
+    },
+    "UI5": {
+        "version": "v11024",
+        "testResource": "https://sapui5.hana.ondemand.com/1.106.0/resources/sap-ui-core.js",
+        "bootstrap": {
+            "data-sap-ui-language": "EN",
+            "data-sap-ui-noDuplicateIds": "true",
+            "data-sap-ui-preload": "async",
+            "data-sap-ui-compatVersion": "edge",
+            "data-sap-ui-theme": "sap_horizon_dark",
+            "data-sap-ui-libs": "sap.m"
+        }
+    },
+    "GITHUB": {
+        "devKey": "Z2hwX1gxRUhyMW0xTkZlUnhpbnRCVkF4cHd2aG82c1FlNjJyaU1IMw==",
+        "OWNER": "LEECHUNGYOON",
+        "REPO": "U4A_WS3.0.0",
+        "latestUrl": "https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest"
+    },
+    "defaultTheme": "sap_horizon_dark",
+    "defaultBackgroundColor": "#12171c",
+    "requireFolders": [
+        "p13n",
+        "p13n\\theme",
+        "p13n\\suggestion",
+        "help",
+        "help\\u4a_help",
+        "ext_api",
+        "ext_api\\vbs"
+    ],
+    "requireFiles": [
+        "p13n\\p13n.json",
+        "p13n\\login.json",
+        "p13n\\ServerInfo.json",
+        "p13n\\ServerInfo-v2.json",
+        "p13n\\zoom.json",
+        "p13n\\suggestion\\events.json",
+        "p13n\\suggestion\\tcode.json"
+    ],
+    "vbs": {
+        "rootPath": "ext_api\\vbs",
+        "controllerClassVbs": "sapgui_ws.vbs",
+        "newSessionVbs": "newSESSTION.vbs"
+    },
+    "path": {
+        "u4aHelpDocFolderPath": "help\\u4a_help",
+        "u4aHelpDocFilePath": "help\\u4a_help\\U4A.zip"
+    },
+    "regPaths": {
+        "chrome": "",
+        "edge": "",
+        "ie": "",
+        "saplogon": "HKCU\\SOFTWARE\\SAP\\SAPLogon\\LandscapeFilesLastUsed"
+    },
+    "isDev": true,
+    "isTrial": false,
+    "trialServerInfo": {
+        "ID": "soccerhs",
+        "PW": "cjddbs12",
+        "SERVERIP": "www.u4aide.com",
+        "INSTANCENO": "00",
+        "SYSTEMID": "U4A",
+        "CLIENT": "800",
+        "LANGU": "EN",
+        "SYSID": "U4A"
+    }
 }

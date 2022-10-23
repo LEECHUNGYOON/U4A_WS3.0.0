@@ -344,6 +344,7 @@
         oBrowserOptions.y = mainWindowState.y;
         oBrowserOptions.width = mainWindowState.width;
         oBrowserOptions.height = mainWindowState.height;
+        // oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0;
         oWebPreferences.partition = SESSKEY;
         oWebPreferences.browserkey = BROWSERKEY;
@@ -359,6 +360,10 @@
         mainWindowState.manage(oBrowserWindow);
 
         oBrowserWindow.loadURL(PATHINFO.MAINFRAME);
+
+        // oBrowserWindow.once('ready-to-show', () => {
+        //     oBrowserWindow.show();
+        // });
 
         // oBrowserWindow.webContents.openDevTools();
 
@@ -384,7 +389,7 @@
             oBrowserWindow.setOpacity(1.0);
 
         });
-        
+
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
             oBrowserWindow = null;

@@ -1,0 +1,57 @@
+html,body {
+    height: 100%;    
+}
+body {
+    margin: 0px;    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.serverList {
+  color: white;
+  background: #444753;
+  border-radius: 5px;
+  padding: 20px;
+  height: 770px;
+  width: 260px;
+  float: left;
+  overflow-y: auto;
+}
+.name {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+ol, ul {
+list-style: none;
+}
+.serverList ul {
+  padding: 20px;
+  height: 770px;       
+}
+.serverList li {      
+  margin-bottom: 10px;
+  border-bottom: 1px solid #fff;
+  border-top: 1px solid #fff;
+  padding-bottom: 10px;
+  cursor: pointer;
+}
+.serverList li::after {
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
+}
+div, ul, li {
+  margin: 0;
+  padding: 0;        
+  border: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+}

@@ -43,6 +43,7 @@ module.exports = (() => {
         BROWSERSETTINGS: PATH.join(APPPATH, '/settings/BrowserWindow/BrowserWindow-settings.json'),
         WSSETTINGS: PATH.join(APPPATH, "settings", "ws_settings.json"),
         SERVERLIST: PATH.join(APPPATH, '/ServerList/ServerFrame.html'),
+        SERVERLIST_v2: PATH.join(APPPATH, '/ServerList_v2/ServerFrame.html'),
         COMMONCSS: PATH.join(APPPATH, "css", "common.css"),
         AUTOUPDSAP: PATH.join(APPPATH, "lib", "ws", "electron-updater-sap.js"),
         
@@ -50,6 +51,7 @@ module.exports = (() => {
         CLIPBOARD: PATH.join(USERDATA, "clipboard.json"),
         THEME: PATH.join(USERDATA, "p13n", "theme"),
         P13N: PATH.join(USERDATA, "p13n", "p13n.json"),
+        SERVERINFO_V2: PATH.join(USERDATA, "p13n", "ServerInfo-v2.json"),
 
         // Popup Paths..
         ERRPAGE: PATH.join(POPUP_ROOT, "errPageEditorPopup", "errorPageEditorFrame.html"),
