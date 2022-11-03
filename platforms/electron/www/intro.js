@@ -217,14 +217,14 @@
 
         // 브라우저 상단 메뉴 없애기
         oWin.setMenu(null);
+        
+        if (process.env.COMPUTERNAME.toUpperCase().startsWith("YOON") == true) {
+            oWin.loadURL(PATHINFO.SERVERLIST_v2);
+        } else {
+            oWin.loadURL(PATHINFO.SERVERLIST);
+        }
 
-        // if (process.env.COMPUTERNAME.startsWith("YOON") == true) {
-        //     oWin.loadURL(PATHINFO.SERVERLIST_v2);
-        // } else {
-        //     oWin.loadURL(PATHINFO.SERVERLIST);
-        // }
-
-        oWin.loadURL(PATHINFO.SERVERLIST);
+        // oWin.loadURL(PATHINFO.SERVERLIST);
 
         oWin.webContents.openDevTools();
 
