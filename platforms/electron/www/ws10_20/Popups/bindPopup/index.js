@@ -564,6 +564,9 @@ let oAPP = parent.oAPP;
             return;
         }
 
+        //부모가 ROOT인경우 EXIT.(바인딩 가능한건은 STRU-FIELD or TABLE-FIELD만 가능)
+        if(is_tree.PARENT === "Attribute"){return;}
+
         //현재 라인이 STRING_TABLE인경우 STRING_TABLE FLAG RETURN.
         if (is_tree.EXP_TYP === "STR_TAB") {
             return true;
