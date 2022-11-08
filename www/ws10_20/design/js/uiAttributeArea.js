@@ -4887,6 +4887,12 @@
           return;
         }
 
+        //STRING_TABLE이지만 부모가 ROOT인경우 EXIT.(바인딩 가능한건은 STRU-FIELD or TABLE-FIELD만 가능)
+        if(l_json.IF_DATA.EXP_TYP === "STR_TAB" && l_json.IF_DATA.PARENT === "Attribute"){
+          oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+          return;
+        }
+
         if(typeof lt_split2 !== "undefined"){
           //마지막 필드 제거(마지막필드는 string_table이므로)
           lt_split2.splice(lt_split2.length - 1, 1);
