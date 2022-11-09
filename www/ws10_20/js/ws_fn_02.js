@@ -47,8 +47,9 @@
         // 서버에서 App 정보를 구한다.
         ajax_init_prc(oFormData, lf_success);
 
+      
         function lf_success(oAppInfo) {
-
+         
             var sCurrPage = parent.getCurrPage();
 
             // application 이 없을 경우 메시지 처리.

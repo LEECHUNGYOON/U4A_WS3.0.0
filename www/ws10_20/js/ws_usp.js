@@ -1362,7 +1362,7 @@
 
         }
 
-    } // end of _fnUspTreeRowUpdate
+    } // end of _fnUspTreeSelectedRowMark
 
     /**************************************************************************
      * [WS30] Usp Panel
@@ -2956,7 +2956,7 @@
 
         // 선택한 위치가 Root 여부
         if (bIsRoot) {
-
+            
             // 현재 APP 정보를 구한다.
             var oAppInfo = fnGetAppInfo();
 

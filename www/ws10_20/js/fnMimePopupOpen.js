@@ -23,8 +23,6 @@
 
     oAPP.fn.fnMimePopupOpen = function () {
 
-        debugger;
-
         if(oAppInfo){
             oAppInfo = undefined;
         }
@@ -37,6 +35,7 @@
         let oWs30App = oAPP.common.fnGetModelProperty("/WS30/APP");
         if(oWs30App){
             oAppInfo = jQuery.extend(true, {}, oWs30App);
+            oAPP.common.fnSetModelProperty("/WS20", {});
         }
 
         // 푸터 메시지가 있을 경우 닫기
@@ -1657,7 +1656,7 @@
         lf_createMimeFile();
 
         function lf_createMimeFile(sReqNo) {
-
+            
             // 현재 APP 정보
             // var oAppInfo = parent.getAppInfo();
 
