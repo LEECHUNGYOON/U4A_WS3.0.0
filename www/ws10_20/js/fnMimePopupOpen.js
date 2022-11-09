@@ -19,7 +19,25 @@
     const
         C_DIALOG_ID = "u4aMimeTreeDlg";
 
+    var oAppInfo;
+
     oAPP.fn.fnMimePopupOpen = function () {
+
+        debugger;
+
+        if(oAppInfo){
+            oAppInfo = undefined;
+        }
+
+        let oWs20App = oAPP.common.fnGetModelProperty("/WS20/APP");
+        if(oWs20App){
+            oAppInfo = jQuery.extend(true, {}, oWs20App);
+        }
+
+        let oWs30App = oAPP.common.fnGetModelProperty("/WS30/APP");
+        if(oWs30App){
+            oAppInfo = jQuery.extend(true, {}, oWs30App);
+        }
 
         // 푸터 메시지가 있을 경우 닫기
         oAPP.common.fnHideFloatingFooterMsg();
@@ -362,7 +380,12 @@
      ************************************************************************/
     oAPP.fn.fnGetMimeTreeData = function () {
 
-        var oAppInfo = parent.getAppInfo();
+        // var oAppInfo = parent.getAppInfo();
+
+        // // WS20에 app 정보가 없다면 Usp App 정보를 가져온다.
+        // if (!oAppInfo) {
+        //     oAppInfo = oAPP.common.fnGetModelProperty("/WS30/APP");
+        // }
 
         //MIME 데이터 구하기..
         var sPath = parent.getServerPath() + '/getmimetree?APPID=' + oAppInfo.APPID;
@@ -420,7 +443,7 @@
 
             //현재 application에 해당하는 폴더가 존재하지 않는경우.
             if (oResult.MIMETREE.findIndex(a => a.MYAPP === "X") === -1) {
-                
+
                 // 오류 사운드 실행
                 parent.setSoundMsg('02'); // sap sound(error)
 
@@ -1636,7 +1659,7 @@
         function lf_createMimeFile(sReqNo) {
 
             // 현재 APP 정보
-            var oAppInfo = parent.getAppInfo();
+            // var oAppInfo = parent.getAppInfo();
 
             // 트리 테이블에 선택한 라인의 모델 정보를 구한다.
             var iIndex = oTreeTable.getSelectedIndex(),
@@ -1763,15 +1786,15 @@
             iSelectRow = oEvent.getParameter("rowIndex"),
             oCtx = oTreeTable.getContextByIndex(iSelectRow);
 
-        if(!oCtx){
+        if (!oCtx) {
             return;
         }
-        
+
         // 우클릭한 라인을 선택 처리 한다.
         oTreeTable.setSelectedIndex(iSelectRow);
 
-        var oRowData = oTreeTable.getModel().getProperty(oCtx.sPath),
-            oAppInfo = parent.getAppInfo();
+        var oRowData = oTreeTable.getModel().getProperty(oCtx.sPath);
+            // oAppInfo = parent.getAppInfo();
 
         // mime tree 의 기본 contextmenu 정보를 구한다. 
         var aCtxMenu = oAPP.fn.fnGetMimeTreeDefCtxMenuList();
@@ -2040,7 +2063,7 @@
         function lf_createMimeFolder(sReqNo) {
 
             // 현재 APP 정보
-            var oAppInfo = parent.getAppInfo();
+            // var oAppInfo = parent.getAppInfo();
 
             // 마임 폴더 생성 정보
             var oCrFldInfo = {

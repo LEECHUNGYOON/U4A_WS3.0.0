@@ -679,6 +679,13 @@
                 }
             }),
 
+            oMimeBtn = new sap.m.Button({
+                icon: "sap-icon://picture",
+                text: "MIME Repository",
+                tooltip: "MIME Repository (Ctrl+Shift+F12)",
+                press: oAPP.events.ev_pressMimeBtn
+            }).addStyleClass("u4aWs20MimeBtn"),
+
             oControllerBtn = new sap.m.Button("ws30_controllerBtn", {
                 icon: "sap-icon://developer-settings",
                 text: "Controller (Class Builder)",
@@ -704,7 +711,7 @@
             oSaveBtn,
 
             new sap.m.ToolbarSeparator(),
-
+            oMimeBtn,
             oControllerBtn,
             oAppExecBtn
 
