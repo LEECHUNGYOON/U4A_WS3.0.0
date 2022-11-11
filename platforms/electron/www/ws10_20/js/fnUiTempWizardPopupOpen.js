@@ -12,6 +12,8 @@
         C_TMPL_WZD_DLG_ID = "u4aWsTmplWzdDlg",
         C_TMPL_WZD1_ID = "u4aWsTmplWzd1",
         C_TMPL_WZD2_ID = "u4aWsTmplWzd2",
+        C_TMPL_WZD3_ID = "u4aWsTmplWzd3",
+
         C_TMPL_NAVCON_ID = "u4aWsTmplWzdNavCon",
         C_TMPL_BIND_ROOT = "/WS20/TMPLWZD",
 
@@ -39,6 +41,8 @@
     var G_TreeFlag = {};
 
     oAPP.fn.fnUiTempWizardPopupOpen = function(oTempData) {
+        
+        debugger;
 
         G_TreeFlag = {
             bIsPChk: false,
@@ -152,7 +156,7 @@
 
         var oModelData = {
             MASTER: oModel,
-            TNTMENU: {
+            TNTMENU: {                  // 좌측 Menu List
                 SELKEY: C_TMPL_WZD1_ID,
                 MENULIST: [{
                     key: C_TMPL_WZD1_ID,
@@ -161,6 +165,10 @@
                 }, {
                     key: C_TMPL_WZD2_ID,
                     text: "Forms Ui Create",
+                    enabled: false,
+                }, {
+                    key: C_TMPL_WZD3_ID,
+                    text: "Report Ui Create",
                     enabled: false,
                 }]
             },
@@ -192,12 +200,12 @@
 
         // 모델 유형이 Table 또는 Structure 구조가 있는지 확인
         var sTab = oModel.T_MINFO.find(element => element == "T"),
-            sStr = oModel.T_MINFO.find(element => element == "S");
+            sStr = oModel.T_MINFO.find(element => element == "S");          
 
         // Table 유형이 있을 경우 활성화 플래그
-        if (sTab != null) {
+        if (sTab != null) {           
 
-            oModelData.TNTMENU.MENULIST[0].enabled = true;
+            // oModelData.TNTMENU.MENULIST[0].enabled = true;
             oModelData.TABLEUI.enabled = true;
 
         }
@@ -205,10 +213,17 @@
         // Structure 유형이 있을 경우 활성화 플래그
         if (sStr != null) {
 
-            oModelData.TNTMENU.MENULIST[1].enabled = true;
+            // oModelData.TNTMENU.MENULIST[1].enabled = true;
             oModelData.FORMUI.enabled = true;
 
         }
+
+        // // 테이블과 스트럭쳐 둘 다 있을 경우
+        // if(sTab !== null && sStr !== null){
+
+        //     oModelData.TNTMENU.MENULIST[3].enabled = true;
+
+        // }
 
         // UI Template Type별 UI Choice Combobox Data 구성
         var iUiChoiceLength = oModel.S_TMPL.length;
@@ -395,7 +410,17 @@
                                 icon: "sap-icon://color-fill",
                                 key: "{key}",
                                 text: "{text}",
-                                enabled: "{enabled}"
+                                // enabled: "{enabled}"
+                            }).bindProperty("enabled", {
+                                parts: [
+                                    `${C_TMPL_BIND_ROOT}/MASTER`,
+                                    `key`
+                                ],
+                                formatter: (MASTER, key) => {
+
+                                    debugger;
+
+                                }
                             })
                         }
                     })

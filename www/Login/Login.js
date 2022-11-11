@@ -769,7 +769,7 @@ let oAPP = (function () {
 
                     parent.showMessage(null, 99, "E", sCleanHtml);
                     parent.setBusy('');
-                    
+
                 }
             }
         };
@@ -1446,7 +1446,7 @@ let oAPP = (function () {
 
         // 테마 설정
         oAPP.fn.fnP13nCreateTheme().then((oThemeInfo) => {
-            
+
             // 테마 정보를 저장한다.
             parent.setThemeInfo(oThemeInfo);
 
@@ -1871,14 +1871,13 @@ let oAPP = (function () {
             // trial 버전 확인
             var oWsSettings = oAPP.fn.fnGetSettingsInfo();
 
+            // 자연스러운 로딩
+            oAPP.fn.fnOnSmoothLoading();
+
             // trial 버전 로그인 페이지를 그린다.
             if (oWsSettings.isTrial) {
 
                 oAPP.fn.fnOnTrialLoginPageRendering();
-
-                // 자연스러운 로딩
-                oAPP.fn.fnOnSmoothLoading();
-
                 return;
             }
 
@@ -1887,9 +1886,6 @@ let oAPP = (function () {
 
             // 로그인 페이지 초기 렌더링
             oAPP.fn.fnOnInitRendering();
-
-            // 자연스러운 로딩
-            oAPP.fn.fnOnSmoothLoading();
 
         });
 
@@ -1920,14 +1916,12 @@ fnSetBusy('X');
 
 oAPP.fn.fnLoadBootStrapSetting();
 
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
 
     // Default Browser check
-    oAPP.fn.fnCheckIstalledBrowser().then(() => {
+    await oAPP.fn.fnCheckIstalledBrowser();
 
-        oAPP.fn.fnAttachInit();
-
-    });
+    oAPP.fn.fnAttachInit();
 
 });
 

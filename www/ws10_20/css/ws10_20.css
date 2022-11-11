@@ -242,6 +242,10 @@ body,
     color: #ABE2AB;
 }
 
+.u4aWsTmplWzdAttrActive .sapTntNavLIItem>.sapUiIcon {
+    color: var(--sapContent_Illustrative_Color12);
+}
+
 /* CSS Link Add Popup */
 .sapUiTheme-sap_fiori_3_dark .u4aWsCssJsLinkAddStatSuccess {
     color: #107e3e;
