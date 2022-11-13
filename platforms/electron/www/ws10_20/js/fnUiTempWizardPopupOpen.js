@@ -19,6 +19,8 @@
 
         C_TMPL_WZD1_MODEL_TABLE_ID = `${C_TMPL_WZD1_ID}--table`,
         C_TMPL_WZD2_MODEL_TABLE_ID = `${C_TMPL_WZD2_ID}--table`,
+        C_TMPL_WZD3_MODEL_TABLE1_ID = `${C_TMPL_WZD3_ID}--table1`,
+        C_TMPL_WZD3_MODEL_TABLE2_ID = `${C_TMPL_WZD3_ID}--table2`,
 
         C_TMPL_WZD1_STEP1_ID = `${C_TMPL_WZD1_ID}--step1`,
         C_TMPL_WZD1_STEP2_ID = `${C_TMPL_WZD1_ID}--step2`,
@@ -28,8 +30,17 @@
         C_TMPL_WZD2_STEP2_ID = `${C_TMPL_WZD2_ID}--step2`,
         C_TMPL_WZD2_STEP3_ID = `${C_TMPL_WZD2_ID}--step3`,
 
+        C_TMPL_WZD3_STEP1_ID = `${C_TMPL_WZD3_ID}--step1`,
+        C_TMPL_WZD3_STEP2_ID = `${C_TMPL_WZD3_ID}--step2`,
+        C_TMPL_WZD3_STEP3_ID = `${C_TMPL_WZD3_ID}--step3`,
+        C_TMPL_WZD3_STEP4_ID = `${C_TMPL_WZD3_ID}--step4`,
+        C_TMPL_WZD3_STEP5_ID = `${C_TMPL_WZD3_ID}--step5`,
+        C_TMPL_WZD3_STEP6_ID = `${C_TMPL_WZD3_ID}--step6`,
+
         C_TMPL_WZD1_MODEL_TABLE = `${C_TMPL_BIND_ROOT}/MODELTABLE1`,
-        C_TMPL_WZD2_MODEL_TABLE = `${C_TMPL_BIND_ROOT}/MODELTABLE2`;
+        C_TMPL_WZD2_MODEL_TABLE = `${C_TMPL_BIND_ROOT}/MODELTABLE2`,
+        C_TMPL_WZD3_MODEL_TABLE3 = `${C_TMPL_BIND_ROOT}/MODELTABLE3`,
+        C_TMPL_WZD3_MODEL_TABLE4 = `${C_TMPL_BIND_ROOT}/MODELTABLE4`;
 
     const
         REMOTE = parent.REMOTE,
@@ -41,8 +52,6 @@
     var G_TreeFlag = {};
 
     oAPP.fn.fnUiTempWizardPopupOpen = function(oTempData) {
-        
-        debugger;
 
         G_TreeFlag = {
             bIsPChk: false,
@@ -85,7 +94,7 @@
 
             }
 
-        }).addStyleClass(C_TMPL_BIND_ROOT);
+        }).addStyleClass(C_TMPL_WZD_DLG_ID);
 
         oTmplWzdDlg.bindElement(C_TMPL_BIND_ROOT);
 
@@ -112,7 +121,8 @@
         oWizard1.setCurrentStep(C_TMPL_WZD1_STEP1_ID);
 
         // wizard popup create button 숨기기
-        APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, false);
+        fnWizardCreateBtnVisible(false);
+        // APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, false);
 
         // Model 정보 테이블 초기화
         APPCOMMON.fnSetModelProperty(C_TMPL_WZD1_MODEL_TABLE, []);
@@ -143,11 +153,39 @@
         oWizard2.setCurrentStep(C_TMPL_WZD2_STEP1_ID);
 
         // wizard popup create button 숨기기
-        APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, false);
+        fnWizardCreateBtnVisible(false);
+        // APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, false);
 
         APPCOMMON.fnSetModelProperty(C_TMPL_WZD2_MODEL_TABLE, []);
 
     }; // end of oAPP.fn.fnSetWizard2PopupInit
+
+    /**************************************************************************
+     *  Report Template Wizard 초기화
+     **************************************************************************/
+    oAPP.fn.fnSetWizard3PopupInit = () => {
+
+        var oWizard = sap.ui.getCore().byId(C_TMPL_WZD3_ID);
+        if (oWizard == null) {
+            return;
+        }
+
+        var sCurrStep = oWizard.getCurrentStep();
+        if (sCurrStep == null || sCurrStep == C_TMPL_WZD3_STEP1_ID) {
+            return;
+        }
+
+        // 첫번째 스텝으로 이동 시킨다.
+        oWizard.setCurrentStep(C_TMPL_WZD3_STEP1_ID);
+
+        // wizard popup create button 숨기기
+        fnWizardCreateBtnVisible(false);
+        // APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, false);
+
+        APPCOMMON.fnSetModelProperty(C_TMPL_WZD3_MODEL_TABLE3, [], true);
+        APPCOMMON.fnSetModelProperty(C_TMPL_WZD3_MODEL_TABLE4, [], true);
+
+    }; // end of oAPP.fn.fnSetWizard3PopupInit
 
     /**************************************************************************
      *  UI Template Wizard Model Bindig
@@ -156,7 +194,7 @@
 
         var oModelData = {
             MASTER: oModel,
-            TNTMENU: {                  // 좌측 Menu List
+            TNTMENU: { // 좌측 Menu List
                 SELKEY: C_TMPL_WZD1_ID,
                 MENULIST: [{
                     key: C_TMPL_WZD1_ID,
@@ -168,18 +206,11 @@
                     enabled: false,
                 }, {
                     key: C_TMPL_WZD3_ID,
-                    text: "Report Ui Create",
+                    text: "Report Template Create",
                     enabled: false,
                 }]
             },
             UICHOICE: { // UI Choice DropDown 구조
-                S: {
-                    selectedKey: "",
-                    ITEM: [{
-                        key: "",
-                        text: ""
-                    }]
-                },
                 T: {
                     selectedKey: "",
                     ITEM: [{
@@ -187,43 +218,21 @@
                         text: ""
                     }]
                 },
-            },
-            TABLEUI: {
-                enabled: false, // Table Ui Create 영역 활성화 flag
-            },
-            FORMUI: {
-                enabled: false // FORM UI Create 영역 활성화 flag
+                S: {
+                    selectedKey: "",
+                    ITEM: [{
+                        key: "",
+                        text: ""
+                    }]
+                },
+                A: {
+                    selectedKeyT: "",
+                    selectedKeyS: "",
+                }
             },
             TREEVISI: false, // tree table 선택시 컬럼 visible flag
             CRBTN_VISI: false, // wizard popup의 Create Button visible
         };
-
-        // 모델 유형이 Table 또는 Structure 구조가 있는지 확인
-        var sTab = oModel.T_MINFO.find(element => element == "T"),
-            sStr = oModel.T_MINFO.find(element => element == "S");          
-
-        // Table 유형이 있을 경우 활성화 플래그
-        if (sTab != null) {           
-
-            // oModelData.TNTMENU.MENULIST[0].enabled = true;
-            oModelData.TABLEUI.enabled = true;
-
-        }
-
-        // Structure 유형이 있을 경우 활성화 플래그
-        if (sStr != null) {
-
-            // oModelData.TNTMENU.MENULIST[1].enabled = true;
-            oModelData.FORMUI.enabled = true;
-
-        }
-
-        // // 테이블과 스트럭쳐 둘 다 있을 경우
-        // if(sTab !== null && sStr !== null){
-
-        //     oModelData.TNTMENU.MENULIST[3].enabled = true;
-
-        // }
 
         // UI Template Type별 UI Choice Combobox Data 구성
         var iUiChoiceLength = oModel.S_TMPL.length;
@@ -397,7 +406,8 @@
         var C_MENU_BIND_PATH = `${C_TMPL_BIND_ROOT}/TNTMENU`;
 
         var oWizard1 = oAPP.fn.fnGetTempWizardContents1(),
-            oWizard2 = oAPP.fn.fnGetTempWizardContents2();
+            oWizard2 = oAPP.fn.fnGetTempWizardContents2(),
+            oWizard3 = oAPP.fn.fnGetTempWizardContents3();
 
         return new sap.tnt.ToolPage({
             sideContent: new sap.tnt.SideNavigation({
@@ -418,7 +428,59 @@
                                 ],
                                 formatter: (MASTER, key) => {
 
-                                    debugger;
+                                    let bEnabled = false; // 메뉴 활성화 여부
+
+                                    let bIsTab = false, // 테이블 존재 여부
+                                        bIsStr = false, // 스트럭처 존재 여부
+                                        bIsAll = false; // 둘다 존재 여부
+
+                                    var sTab = MASTER.T_MINFO.find(element => element == "T"),
+                                        sStr = MASTER.T_MINFO.find(element => element == "S");
+
+                                    // 테이블이 있는지 확인
+                                    if (sTab) {
+                                        bIsTab = true;
+                                    }
+
+                                    // 스트럭처가 있는지 확인
+                                    if (sStr) {
+                                        bIsStr = true;
+                                    }
+
+
+                                    // 테이블 && 스트럭처가 있는지 확인
+                                    if (bIsTab && bIsStr) {
+                                        bIsAll = true;
+                                    }
+
+                                    switch (key) {
+                                        case C_TMPL_WZD1_ID:
+
+                                            if (bIsTab) {
+                                                bEnabled = true;
+                                            }
+
+                                            break;
+
+                                        case C_TMPL_WZD2_ID:
+
+                                            if (bIsStr) {
+                                                bEnabled = true;
+                                            }
+
+                                            break;
+
+                                        case C_TMPL_WZD3_ID:
+
+                                            if (bIsAll) {
+                                                bEnabled = true;
+                                            }
+
+                                            break;
+
+                                    }
+
+                                    return bEnabled;
 
                                 }
                             })
@@ -487,7 +549,6 @@
 
                     // Table UI Create Page
                     new sap.m.Page(`${C_TMPL_WZD1_ID}--page`, {
-                        title: "Table UI Create",
                         content: [
                             oWizard1
                         ]
@@ -495,9 +556,15 @@
 
                     // Forms UI Create Page
                     new sap.m.Page(`${C_TMPL_WZD2_ID}--page`, {
-                        title: "Forms UI Create",
                         content: [
                             oWizard2
+                        ]
+                    }),
+
+                    // Report UI Create Page
+                    new sap.m.Page(`${C_TMPL_WZD3_ID}--page`, {
+                        content: [
+                            oWizard3
                         ]
                     }),
 
@@ -534,6 +601,25 @@
      ************************************************************************/
     oAPP.fn.fnGetTempWizardContent1WzdSteps = function() {
 
+        let oEnabledBindProperty = {
+            parts: [
+                `${C_TMPL_BIND_ROOT}/MASTER`
+            ],
+            formatter: (MASTER) => {
+
+                let bEnabled = false;
+
+                var sTab = MASTER.T_MINFO.find(element => element == "T");
+                if (sTab) {
+                    bEnabled = true;
+                }
+
+                return bEnabled;
+            }
+
+        };
+
+
         var oModelInfoTable = oAPP.fn.fnGetModelInfoTable1();
 
         return [
@@ -548,7 +634,6 @@
                                 // properties
                                 selectedKey: "{UICHOICE/T/selectedKey}",
                                 width: "300px",
-                                enabled: "{TABLEUI/enabled}",
 
                                 // events
                                 change: oAPP.events.ev_tmplWzd1SelectChangeEvent,
@@ -562,7 +647,7 @@
                                     })
                                 }
 
-                            })
+                            }).bindProperty("enabled", jQuery.extend(true, {}, oEnabledBindProperty))
 
                         ]
                     })
@@ -576,12 +661,12 @@
 
                         // properties
                         text: "Model Select",
-                        enabled: "{TABLEUI/enabled}",
+                        // enabled: "{TABLEUI/enabled}",
 
                         // events
                         press: oAPP.events.ev_tmplWzd1ModelSelectBtn
 
-                    }),
+                    }).bindProperty("enabled", jQuery.extend(true, {}, oEnabledBindProperty)),
 
                 ]
 
@@ -591,7 +676,6 @@
 
                 // properties
                 title: `Model Information   [{MODELTABLE1/MODEL}]`,
-
 
                 // Aggregations
                 content: [
@@ -627,7 +711,7 @@
             // Events
             rowSelectionChange: oAPP.events.ev_tmplWzd1_ModelInfoTable_RowSelection
 
-        });
+        }).addStyleClass("sapUiSizeCompact");
 
     }; // end of oAPP.fn.fnGetModelInfoTable1
 
@@ -655,10 +739,38 @@
             // Events
             rowSelectionChange: oAPP.events.ev_tmplWzd2_ModelInfoTable_RowSelection
 
-        });
+        }).addStyleClass("sapUiSizeCompact");
 
     }; // end of oAPP.fn.fnGetModelInfoTable2
 
+    /************************************************************************
+     * Report Ui Create 에 대한 Form Ui Model 정보를 보여주는 테이블
+     ************************************************************************/
+    oAPP.fn.fnGetModelInfoTable3 = () => {
+
+        var aColumns = oAPP.fn.fnGetModelInfoTable2Columns();
+
+        return new sap.ui.table.Table(C_TMPL_WZD3_MODEL_TABLE1_ID, {
+
+            // Properties
+            visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Fixed,
+            visibleRowCount: 15,
+            selectionMode: sap.ui.table.SelectionMode.MultiToggle,
+            selectionBehavior: sap.ui.table.SelectionBehavior.RowSelector,
+
+            // Aggregations
+            columns: aColumns,
+            rows: {
+                path: `${C_TMPL_WZD3_MODEL_TABLE3}/T_OUTAB`,
+            },
+
+            // Events
+            // rowSelectionChange: oAPP.events.ev_tmplWzd2_ModelInfoTable_RowSelection
+
+        }).addStyleClass("sapUiSizeCompact");
+
+
+    }; // end of oAPP.fn.fnGetModelInfoTable3
 
     /************************************************************************
      * Table Ui Create 에 대한 Model 정보를 보여주는 테이블의 컬럼 정보
@@ -1017,7 +1129,8 @@
     }; // end of oAPP.fn.fnGetModelInfoTable2Columns
 
     /************************************************************************
-     * Table Ui Create의 바인딩 팝업에서 선택한 테이블의 컬럼정보를 서버에서 구한 후의 callback
+     * Table Ui Create의 바인딩 팝업에서 
+     * 선택한 테이블의 컬럼정보를 서버에서 구한 후의 callback
      ************************************************************************/
     oAPP.fn.fnGetTmplWzd1ModelSuccess = function(oResult) {
 
@@ -1069,7 +1182,8 @@
         oWizard.setCurrentStep(C_TMPL_WZD1_STEP3_ID);
 
         // wizard popup create button 활성화
-        APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, true);
+        fnWizardCreateBtnVisible(true);
+        // APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, true);
 
         var oTable = sap.ui.getCore().byId(C_TMPL_WZD1_MODEL_TABLE_ID);
         if (oTable == null) {
@@ -1082,7 +1196,8 @@
     }; // end of oAPP.fn.fnGetTmplWzd1ModelSuccess
 
     /************************************************************************
-     * Form Ui Create의 바인딩 팝업에서 선택한 테이블의 컬럼정보를 서버에서 구한 후의 callback
+     * Form Ui Create의 바인딩 팝업에서 
+     * 선택한 테이블의 컬럼정보를 서버에서 구한 후의 callback
      ************************************************************************/
     oAPP.fn.fnGetTmplWzd2ModelSuccess = function(oResult) {
 
@@ -1134,7 +1249,8 @@
         oWizard.setCurrentStep(C_TMPL_WZD2_STEP3_ID);
 
         // wizard popup create button 활성화
-        APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, true);
+        fnWizardCreateBtnVisible(true);
+        // APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, true);
 
         var oTable = sap.ui.getCore().byId(C_TMPL_WZD2_MODEL_TABLE_ID);
         if (oTable == null) {
@@ -1144,8 +1260,77 @@
         // 테이블 전체 선택
         oTable.selectAll();
 
+    }; // end of oAPP.fn.fnGetTmplWzd2ModelSuccess    
 
-    }; // end of oAPP.fn.fnGetTmplWzd1ModelSuccess
+    /************************************************************************
+     * Report Ui Create의 바인딩 팝업에서 
+     * 선택한 테이블의 컬럼정보를 서버에서 구한 후의 callback
+     ************************************************************************/
+    oAPP.fn.fnGetTmplWzd3ModelSuccess = function(oResult) {
+
+        parent.setBusy("");
+
+        var oParam = this;
+
+        if (oResult.RETCD != "S") {
+            parent.showMessage(sap, 10, "E", oResult.RTMSG);
+            return;
+        }
+
+        // 컬럼 정보 리스트에서 UI Type Select DDLB용 데이터를 수집
+        var aDDLB = oAPP.fn.fnGetDDLBInfo(oParam.UIFND),
+            iDDLBlength = aDDLB.length;
+
+        if (iDDLBlength <= 0) {
+            throw new Error("Model DDLB Not found!");
+        }
+
+        // Model 정보 테이블의 각 아이템에 DDLB 정보를 저장한다.
+        var aOutTab = oResult.T_OTAB,
+            iOutTabLength = aOutTab.length;
+
+        if (iOutTabLength <= 0) {
+            return;
+        }
+
+        for (var i = 0; i < iOutTabLength; i++) {
+
+            var oItem = aOutTab[i];
+            oItem.UILIST = aDDLB;
+
+        }
+
+        var oTableModel = {
+            MODEL: oParam.MODEL, // 바인딩 팝업에서 선택한 모델의 테이블 명
+            T_OUTAB: aOutTab // 모델의 컬럼 정보 테이블에서 선택한 Row Data
+        };
+
+        APPCOMMON.fnSetModelProperty(C_TMPL_WZD3_MODEL_TABLE3, oTableModel);
+
+        var oWizard = sap.ui.getCore().byId(C_TMPL_WZD3_ID);
+        if (oWizard == null) {
+            return;
+        }
+
+
+        // oWizard.setShowNextButton(true);
+        // oWizard.setFinishButtonText("next");
+
+        // Model Info Step으로 이동
+        oWizard.setCurrentStep(C_TMPL_WZD3_STEP3_ID);
+
+        // // wizard popup create button 활성화
+        // APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, true);
+
+        var oTable = sap.ui.getCore().byId(C_TMPL_WZD3_MODEL_TABLE1_ID);
+        if (oTable == null) {
+            return;
+        }
+
+        // 테이블 전체 선택
+        oTable.selectAll();
+
+    }; // end of oAPP.fn.fnGetTmplWzd3ModelSuccess
 
     /************************************************************************
      * Forms Ui Create 에 대한 wizard
@@ -1167,6 +1352,24 @@
      ************************************************************************/
     oAPP.fn.fnGetTempWizardContent2WzdSteps = function() {
 
+        let oEnabledBindProperty = {
+            parts: [
+                `${C_TMPL_BIND_ROOT}/MASTER`
+            ],
+            formatter: (MASTER) => {
+
+                let bEnabled = false;
+
+                let sStr = MASTER.T_MINFO.find(element => element == "S");
+                if (sStr) {
+                    bEnabled = true;
+                }
+
+                return bEnabled;
+
+            }
+        };
+
         var oModelInfoTable = oAPP.fn.fnGetModelInfoTable2();
 
         return [
@@ -1187,7 +1390,7 @@
                                         text: "{OBJNM}",
                                     })
                                 }
-                            })
+                            }).bindProperty("enabled", jQuery.extend(true, {}, oEnabledBindProperty))
 
                         ]
                     })
@@ -1197,38 +1400,138 @@
             new sap.m.WizardStep(C_TMPL_WZD2_STEP2_ID, {
                 title: "Model Select",
                 content: [
+
                     new sap.m.Button({
-
-                        // properties
                         text: "Model Select",
-                        enabled: "{FORMUI/enabled}",
-
-                        // events
                         press: oAPP.events.ev_tmplWzd2ModelSelectBtn
-
-                    }),
+                    }).bindProperty("enabled", jQuery.extend(true, {}, oEnabledBindProperty)),
 
                 ]
 
             }),
 
             new sap.m.WizardStep(C_TMPL_WZD2_STEP3_ID, {
+                title: `Model Information   [{MODELTABLE2/MODEL}]`,
+                content: [
+                    oModelInfoTable
+                ],
+            })
+
+        ];
+
+    }; // end of oAPP.fn.fnGetTempWizardContent2WzdSteps
+
+    /************************************************************************
+     * Report Ui Create 에 대한 wizard
+     ************************************************************************/
+    oAPP.fn.fnGetTempWizardContents3 = function() {
+
+        let aSteps = oAPP.fn.fnGetTempWizardContent3WzdSteps();
+
+        return new sap.m.Wizard(C_TMPL_WZD3_ID, {
+            showNextButton: false,
+            backgroundDesign: sap.m.PageBackgroundDesign.Solid,
+            steps: aSteps
+        });
+
+    }; // end of oAPP.fn.fnGetTempWizardContents3
+
+    /************************************************************************
+     * Report Ui Create 에 대한 wizard Steps
+     ************************************************************************/
+    oAPP.fn.fnGetTempWizardContent3WzdSteps = () => {
+
+        let oEnabledBindPropertyS = {
+                parts: [
+                    `${C_TMPL_BIND_ROOT}/MASTER`
+                ],
+                formatter: (MASTER) => {
+
+                    let bEnabled = false;
+
+                    let sStr = MASTER.T_MINFO.find(element => element == "S");
+                    if (sStr) {
+                        bEnabled = true;
+                    }
+
+                    return bEnabled;
+
+                }
+            },
+            oEnabledBindPropertyT = {
+                parts: [
+                    `${C_TMPL_BIND_ROOT}/MASTER`
+                ],
+                formatter: (MASTER) => {
+
+                    let bEnabled = false;
+
+                    var sTab = MASTER.T_MINFO.find(element => element == "T");
+                    if (sTab) {
+                        bEnabled = true;
+                    }
+
+                    return bEnabled;
+                }
+
+            };
+
+        var oFormUiTable = oAPP.fn.fnGetModelInfoTable3();
+
+        return [
+            new sap.m.WizardStep(C_TMPL_WZD3_STEP1_ID, {
+                title: "Form UI Choice",
+                content: [
+                    new sap.m.VBox({
+                        renderType: sap.m.FlexRendertype.Bare,
+                        items: [
+                            new sap.m.Select({
+                                selectedKey: "{UICHOICE/A/selectedKeyS}",
+                                width: "300px",
+                                change: oAPP.events.ev_tmplWzd3SelectChangeEvent,
+                                items: {
+                                    path: "UICHOICE/S/ITEM",
+                                    template: new sap.ui.core.ListItem({
+                                        key: "{OBJNM}",
+                                        text: "{OBJNM}",
+                                    })
+                                }
+                            }).bindProperty("enabled", jQuery.extend(true, {}, oEnabledBindPropertyS))
+
+                        ]
+                    })
+                ]
+            }),
+
+            new sap.m.WizardStep(C_TMPL_WZD3_STEP2_ID, {
+                title: "Form Ui Model Select",
+                content: [
+
+                    new sap.m.Button({
+                        text: "Form Ui Model Select",
+                        press: oAPP.events.ev_tmplWzd3ModelSelectBtn
+                    }).bindProperty("enabled", jQuery.extend(true, {}, oEnabledBindPropertyS)),
+
+                ]
+
+            }),
+
+            new sap.m.WizardStep(C_TMPL_WZD3_STEP3_ID, {
 
                 // properties
-                title: `Model Information   [{MODELTABLE2/MODEL}]`,
-
+                title: `Form Ui Model Information   [{MODELTABLE3/MODEL}]`,
 
                 // Aggregations
                 content: [
-                    oModelInfoTable
+                    oFormUiTable
                 ],
 
             })
 
         ];
 
-    }; // end of oAPP.fn.fnGetTempWizardContent2WzdSteps   
 
+    }; // end of oAPP.fn.fnGetTempWizardContent3WzdSteps
 
     /************************************************************************
      * Table Ui Create의 Tree Table의 [Parent] Check Box 에서
@@ -1318,7 +1621,7 @@
      * Table Ui Create의 Model Select Popup Callback
      ************************************************************************/
     oAPP.fn.fnTmplWzd1ModelSelectPopupCallback = function(bIsBind, oResult) {
-
+        
         if (!bIsBind) {
             return;
         }
@@ -1399,6 +1702,48 @@
 
     }; // end of oAPP.fn.fnTmplWzd1ModelSelectPopupCallback    
 
+    /************************************************************************
+     * Report Ui Create의 Form Ui Model Select Popup Callback
+     ************************************************************************/
+    oAPP.fn.fnTmplWzd3ModelSelectPopupCallback = function(bIsBind, oResult) {
+
+        if (!bIsBind) {
+            return;
+        }
+
+        var oTableModel = APPCOMMON.fnGetModelProperty(`${C_TMPL_BIND_ROOT}/UICHOICE/S`),
+            oSelectedKey = APPCOMMON.fnGetModelProperty(`${C_TMPL_BIND_ROOT}/UICHOICE/A`),
+            aTableModelItems = oTableModel.ITEM,
+            sSelectedKey = oSelectedKey.selectedKeyS;
+
+        if (sSelectedKey == "") {
+            return;
+        }
+
+        var oUiFind = aTableModelItems.find(element => element.OBJNM == sSelectedKey);
+
+        var sModelName = oResult.CHILD, // Bind 팝업에서 선택한 Model 명
+            oAppInfo = parent.getAppInfo(), // app 정보            
+            sServerPath = parent.getServerPath(),
+            sTempWzdService = PATH.join(sServerPath, "ui_temp_wzd"),
+            oParam = {
+                UIFND: oUiFind.UIFND, // UI Choice 
+                MODEL: sModelName, // Bind Popup에서 선택한 테이블명
+                CLSID: oAppInfo.CLSID // 런타임클래스 ID
+            };
+
+        var oFormData = new FormData();
+        oFormData.append("ACTCD", "WZD_GET_FLD_INFO");
+        oFormData.append("MODEL", oParam.MODEL);
+        oFormData.append("CLSID", oParam.CLSID);
+        oFormData.append("UIFND", oParam.UIFND);
+
+        parent.setBusy("X");
+
+        // 현재 선택한 모델의 컬럼 정보를 구하러 서버 호출
+        sendAjax(sTempWzdService, oFormData, oAPP.fn.fnGetTmplWzd3ModelSuccess.bind(oParam));
+
+    }; // end of oAPP.fn.fnTmplWzd1ModelSelectPopupCallback
 
     /************************************************************************
      * Table Ui Create의 Model Select Popup Callback
@@ -1557,7 +1902,7 @@
      ************************************************************************/
     oAPP.fn.fnSetTmplWzd1TableAllRowEnable = function(bIsEnableAll) {
 
-        var aTableData = APPCOMMON.fnGetModelProperty(`${C_TMPL_BIND_ROOT}/MODELTABLE1/T_OUTAB`),
+        var aTableData = APPCOMMON.fnGetModelProperty(`${C_TMPL_WZD1_MODEL_TABLE}/T_OUTAB`),
             sUiChioce = APPCOMMON.fnGetModelProperty(`${C_TMPL_BIND_ROOT}/UICHOICE/T/selectedKey`);
 
         if (aTableData == null) {
@@ -1594,7 +1939,7 @@
 
         }
 
-        APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/MODELTABLE1/T_OUTAB`, aTableData);
+        APPCOMMON.fnSetModelProperty(`${C_TMPL_WZD1_MODEL_TABLE}/T_OUTAB`, aTableData);
 
     }; // end of oAPP.fn.fnSetTmplWzd1TableAllRowEnable
 
@@ -1603,7 +1948,7 @@
      ************************************************************************/
     oAPP.fn.fnSetTmplWzd2TableAllRowEnable = function(bIsEnableAll) {
 
-        var sModelPath = `${C_TMPL_BIND_ROOT}/MODELTABLE2`,
+        var sModelPath = C_TMPL_WZD2_MODEL_TABLE,
             aTableData = APPCOMMON.fnGetModelProperty(`${sModelPath}/T_OUTAB`);
 
         if (aTableData == null) {
@@ -1650,7 +1995,7 @@
      ************************************************************************/
     oAPP.events.ev_tmplwzdAfterNavicon = function(oEvent) {
 
-        var toId = oEvent.getParameter("toId"), // 이동 하려는 페이지 id
+        let toId = oEvent.getParameter("toId"), // 이동 하려는 페이지 id
             toWzd = toId.split("--", 1)[0], // 이동 하려는 페이지의 wizard id
             oToWzd = sap.ui.getCore().byId(toWzd);
 
@@ -1658,16 +2003,21 @@
             return;
         }
 
-        var toCurrStep = oToWzd.getCurrentStep(), // 이동하려는 페이지의 wizard 현재 스텝
+        let toCurrStep = oToWzd.getCurrentStep(), // 이동하려는 페이지의 wizard 현재 스텝
             aAllSteps = oToWzd.getSteps(), // 이동하려는 페이지 wizard에 있는 전체 스텝         
-            iSteplength = aAllSteps.length;
+            iSteplength = aAllSteps.length,
+            bIsCrBtnShow = false;
 
         if (iSteplength <= 0) {
+
+            // wizard popup create button 활성 / 비활성화   
+            fnWizardCreateBtnVisible(bIsCrBtnShow);
+            // APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, bIsCrBtnShow);
+
             return;
         }
 
-        var oLastStep = aAllSteps[iSteplength - 1], // 이동하려는 페이지 wizard의 마지막 스텝
-            bIsCrBtnShow = false;
+        let oLastStep = aAllSteps[iSteplength - 1]; // 이동하려는 페이지 wizard의 마지막 스텝
 
         // 이동하려는 페이지 wizard의 현재 스텝이 마지막 스텝과 동일하다면 하단의 Create 버튼 활성화
         if (toCurrStep == oLastStep.sId) {
@@ -1675,7 +2025,8 @@
         }
 
         // wizard popup create button 활성 / 비활성화   
-        APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, bIsCrBtnShow);
+        fnWizardCreateBtnVisible(bIsCrBtnShow);
+        // APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, bIsCrBtnShow);
 
     }; // end of oAPP.events.ev_tmplwzdAfterNavicon
 
@@ -1795,7 +2146,8 @@
         }
 
         // wizard popup create button 숨기기        
-        APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, false);
+        fnWizardCreateBtnVisible(false);
+        // APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, false);
 
         // Model Info Table의 체크 박스 전체 해제
         var oBindInfoTable = sap.ui.getCore().byId(C_TMPL_WZD1_MODEL_TABLE_ID);
@@ -1858,6 +2210,22 @@
         oAPP.fn.fnBindPopupOpener("UI Template wizard", "S", oAPP.fn.fnTmplWzd2ModelSelectPopupCallback);
 
     }; // end of oAPP.events.ev_tmplWzd2ModelSelectBtn    
+
+    /************************************************************************
+     * Report Ui Create의 Form Ui Model Select Button Event
+     ************************************************************************/
+    oAPP.events.ev_tmplWzd3ModelSelectBtn = function() {
+
+        // UI Choice를 하지 않은 경우 빠져나간다.
+        var sUiFind = APPCOMMON.fnGetModelProperty(`${C_TMPL_BIND_ROOT}/UICHOICE/A/selectedKeyS`);
+        if (sUiFind == "") {
+            return;
+        }
+
+        // Bind Popup을 Open 한다.
+        oAPP.fn.fnBindPopupOpener("UI Template wizard", "S", oAPP.fn.fnTmplWzd3ModelSelectPopupCallback);
+
+    }; // end of oAPP.events.ev_tmplWzd3ModelSelectBtn    
 
     /************************************************************************
      * Wizard 생성 버튼
@@ -2052,8 +2420,9 @@
             return;
         }
 
-        // wizard popup create button 숨기기        
-        APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, false);
+        // wizard popup create button 숨기기     
+        fnWizardCreateBtnVisible(false);
+        // APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, false);
 
         // Model Info Table의 체크 박스 전체 해제
         var oBindInfoTable = sap.ui.getCore().byId(C_TMPL_WZD2_MODEL_TABLE_ID);
@@ -2079,6 +2448,43 @@
     }; // end of oAPP.events.ev_tmplWzd2SelectChangeEvent
 
     /************************************************************************
+     * Report Ui Create의 UI Choice Select Event
+     ************************************************************************/
+    oAPP.events.ev_tmplWzd3SelectChangeEvent = (oEvent) => {
+
+        var oWizard = sap.ui.getCore().byId(C_TMPL_WZD3_ID);
+        if (oWizard == null) {
+            return;
+        }
+
+        // wizard popup create button 숨기기        
+        fnWizardCreateBtnVisible(false);
+        // APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, false);
+
+        // Model Info Table의 체크 박스 전체 해제
+        var oBindInfoTable = sap.ui.getCore().byId(C_TMPL_WZD3_MODEL_TABLE1_ID);
+        if (oBindInfoTable) {
+            oBindInfoTable.clearSelection();
+        }
+
+        // UI Choice DDLB에서 선택한 값을 구한다.
+        var oSelectedItem = oEvent.getParameter("selectedItem"),
+            sSelectedItemKey = oSelectedItem.getProperty("key");
+
+        // 선택한 값이 없으면 wizard UI의 첫번째 step으로 이동
+        if (sSelectedItemKey == "") {
+
+            // 초기화
+            oAPP.fn.fnSetWizard3PopupInit();
+            return;
+        }
+
+        // Model 선택 Step으로 이동
+        oWizard.setCurrentStep(C_TMPL_WZD3_STEP2_ID);
+
+    }; // end of oAPP.events.ev_tmplWzd3SelectChangeEvent
+
+    /************************************************************************
      * UI TEMPLATE WIZARD Dialog After Open Event
      ************************************************************************/
     oAPP.events.ev_UiTempWizardAfterOpen = function(oEvent) {
@@ -2094,6 +2500,7 @@
 
         oAPP.fn.fnSetWizard1PopupInit();
         oAPP.fn.fnSetWizard2PopupInit();
+        oAPP.fn.fnSetWizard3PopupInit();
 
     }; // end of oAPP.events.ev_UiTempWizardAfterClose
 
@@ -2103,14 +2510,25 @@
     oAPP.events.ev_sideNaviItemSelection = function(oEvent) {
 
         var oSelectedItem = oEvent.getParameter("item"),
-            sItemKey = oSelectedItem.getProperty("key");
+            sItemKey = oSelectedItem.getProperty("key"),
+            sTitle = oSelectedItem.getProperty("text");
 
         var oNavCon = sap.ui.getCore().byId(C_TMPL_NAVCON_ID);
         if (oNavCon == null) {
             return;
         }
 
+        let sPageId = `${sItemKey}--page`;
+
         oNavCon.to(`${sItemKey}--page`);
+
+        // 선택한 메뉴명을 페이지 타이틀에 보여준다.
+        let oPage = sap.ui.getCore().byId(sPageId);
+        if (!oPage) {
+            return;
+        }
+
+        oPage.setTitle(sTitle);
 
     }; // end of oAPP.events.ev_sideNaviItemSelection      
 
@@ -2277,5 +2695,19 @@
         oTable.getModel().refresh();
 
     }; // end of oAPP.events.ev_tmplWzd2_ModelInfoTable_RowSelection  
+
+
+
+
+
+
+
+
+    function fnWizardCreateBtnVisible(bIsVisi) {
+
+        // wizard popup create button 숨기기
+        APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/CRBTN_VISI`, bIsVisi);
+
+    }
 
 })(window, $, oAPP);

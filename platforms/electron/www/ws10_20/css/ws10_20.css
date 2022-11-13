@@ -242,10 +242,6 @@ body,
     color: #ABE2AB;
 }
 
-.u4aWsTmplWzdAttrActive .sapTntNavLIItem>.sapUiIcon {
-    color: var(--sapContent_Illustrative_Color12);
-}
-
 /* CSS Link Add Popup */
 .sapUiTheme-sap_fiori_3_dark .u4aWsCssJsLinkAddStatSuccess {
     color: #107e3e;
@@ -320,18 +316,20 @@ body,
 /************************************************************************************ 
     default
  ************************************************************************************/
-
 /* Mime Repository Dialog */
 .u4aWsMimeTreeTable .u4aMimeTreeMyApp.sapUiTableContentRow,
 .u4aWsMimeTreeTable .u4aMimeTreeMyApp.sapUiTableContentRow.sapUiTableRowHvr {
     background-color: #eaecee;
 }
 
-
-
+/* App F4 Popup */
 .u4aAppF4IconTabbar,
 .u4aAppF4IconTabbar .sapMITBContainerContent,
 .u4aAppF4IconTabbar .sapMITBContent {
     height: calc(100% - 2rem);
 }
 
+/* UI Template Wizard */
+.u4aWsTmplWzdDlg .u4aWsTmplWzdAttrActive .sapTntNavLIItem .sapUiIcon {
+    color: var(--sapContent_Illustrative_Color12);
+}

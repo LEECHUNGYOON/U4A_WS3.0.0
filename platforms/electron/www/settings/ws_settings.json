@@ -4,7 +4,7 @@
     },
     "UI5": {
         "version": "v11024",
-        "testResource": "https://sapui5.hana.ondemand.com/1.106.0/resources/sap-ui-core.js",
+        "testResource": "https://sapui5.hana.ondemand.com/1.107.1/resources/sap-ui-core.js",
         "bootstrap": {
             "data-sap-ui-language": "EN",
             "data-sap-ui-noDuplicateIds": "true",
