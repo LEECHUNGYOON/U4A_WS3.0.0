@@ -456,7 +456,7 @@
 
         });
 
-        function lf_move(a, b) {
+        function lf_move() {
 
             // // 팝업 위치를 부모 위치에 배치시킨다.
             var oParentBounds = CURRWIN.getBounds();
@@ -519,127 +519,153 @@
 
         REMOTE.screen.on('display-metrics-changed', lf_screenChange);
 
-        // return;
-
-        // var oCurrWinBounds = CURRWIN.getBounds();
-
-        // var iFactor = REMOTE.screen.getDisplayMatching(oCurrWinBounds).scaleFactor,
-        //     oNewCurrWinBounds = REMOTE.screen.screenToDipRect(CURRWIN, oCurrWinBounds),
-        //     oNewBrowserWindow = REMOTE.screen.screenToDipRect(oBrowserWindow, oBrowserWindow.getBounds()),
-        //     oNewCurrWinBounds1 = REMOTE.screen.dipToScreenRect(CURRWIN, oCurrWinBounds),
-        //     oNewBrowserWindow1 = REMOTE.screen.dipToScreenRect(oBrowserWindow, oBrowserWindow.getBounds()),
-        //     oCalcBound = REMOTE.screen.screenToDipRect(null, {
-        //         x: 0,
-        //         y: 30,
-        //         width: 390,
-        //         height: 60
-        //     }),
-        //     oCalcBound1 = REMOTE.screen.dipToScreenRect(null, {
-        //         x: 0,
-        //         y: 30,
-        //         width: 390,
-        //         height: 60
-        //     });
-
-        // var oBound = {
-        //     // x: (oNewCurrWinBounds.x + oNewCurrWinBounds.width) - oNewBrowserWindow1.width,
-        //     x: (oNewCurrWinBounds1.x + oNewCurrWinBounds1.width) - oCalcBound1.width,
-        //     y: oNewCurrWinBounds1.y,
-        //     // y: oNewCurrWinBounds1.y + oCalcBound.y,
-        //     // y: oNewCurrWinBounds.y + oCalcBound.y,
-        //     width: oNewBrowserWindow1.width,
-        //     height: oNewBrowserWindow1.height
-        // }
-
-        // oBrowserWindow.setBounds(oCurrWinBounds);
-
-        // var zz2 = REMOTE.screen.screenToDipRect(null, {
-        //     x: oCurrWinBounds.x,
-        //     y: 30,
-        //     width: oBrowserOptions.width,
-        //     height: oBrowserOptions.height
-        // });
-
-        // oCurrWinBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - zz2.width;
-        // oCurrWinBounds.y = zz2.y;
-
-
-
-
-        // var zz1 = REMOTE.screen.dipToScreenRect(null, {
-        //     x: 0,
-        //     y: 0,
-        //     width: oBrowserOptions.width,
-        //     height: oBrowserOptions.height
-        // });
-
-
-
-
-
-
-        // var screen = REMOTE.screen,
-        //     oCurrWinBounds = CURRWIN.getBounds(),
-
-        //     iFactor = screen.getDisplayMatching(oCurrWinBounds).scaleFactor,
-
-        //     def = 30,
-        //     def2 = 390,
-        //     inc = Math.round(def * iFactor),
-        //     inc2 = Math.round(def2 * iFactor);
-
-        // var oCurrWinBounds = CURRWIN.getBounds();
-        // var aa = parent.REMOTE.screen.screenToDipRect(CURRWIN, oCurrWinBounds);
-        // var bb = parent.REMOTE.screen.dipToScreenRect(CURRWIN, oCurrWinBounds);
-        // var cc = parent.REMOTE.screen.dipToScreenRect(null, {x:oCurrWinBounds.width, y:30, width: 390, height: 60});
-
-        // oCurrWinBounds.y += inc;
-
-        // // oCurrWinBounds.x = (bb.x + bb.width) - inc2;
-        // oCurrWinBounds.x = bb.width - inc2;
-
-        // oCurrWinBounds.x += 380; 
-        // oCurrWinBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - 390;
-        // oCurrWinBounds.x = (aa.x - def2) + aa.width;          
-        // oCurrWinBounds.x = (oCurrWinBounds.x - inc2) + oCurrWinBounds.width;
-        // oCurrWinBounds.x = (oCurrWinBounds.width - inc2) + oCurrWinBounds.x;
-        // oCurrWinBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - 0;
-        // oCurrWinBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - inc2;
-        // oCurrWinBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - inc2;
-        // oCurrWinBounds.x = ((oCurrWinBounds.x * ) + oCurrWinBounds.width) - inc2;
-
-
-
-        // var width = 390;
-        // var width_inc = Math.round(width * iFactor);
-
-
-        // console.log("eeee");
-
-        // var oNewBounds = {};
-        // oNewBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - 390;
-        // // oNewBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - width_inc;
-        // // oNewBounds.y = oCurrWinBounds.y + inc;
-        // oNewBounds.y = (oCurrWinBounds.y - window.screen.availTop) + inc;
-
-        // oBrowserWindow.setBounds(oNewBounds);
-
-        // oNewBounds.y = oCurrWinBounds.y + 30;
-
-
-
-
-        // // oNewBounds.x = (oCurrWinBounds.x + oCurrWinBounds.width) - 390;
-        // // oNewBounds.y = oCurrWinBounds.y;
-
-        // // oNewBounds.y = oCurrWinBounds.y + 30;
-
-
-        // oBrowserWindow.setBounds(oCurrWinBounds);
-
-        // // oBrowserWindow.setBounds({x : oCurrWinBounds.x, y: oCurrWinBounds.y});
-
     }; // end of oAPP.fn.fnTextSearchPopupOpener
+
+    /************************************************************************
+     * Design Tree의 UI 검색 팝업
+     ************************************************************************/
+    oAPP.fn.fnDesignTreeFindUiPopupOpen = (fnSearch, fnCancel) => {
+
+        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        var sPopupName = "DESIGNTREEUISRCH";
+
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        if (oResult.ISOPEN) {
+            return;
+        }
+
+        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        // oBrowserOptions.titleBarStyle = "hidden";
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.width = 380;
+        oBrowserOptions.minWidth = 380;
+        oBrowserOptions.height = 60;
+        oBrowserOptions.minHeight = 60;
+
+        oBrowserOptions.frame = false;
+        oBrowserOptions.transparent = true;
+        oBrowserOptions.center = false;
+        oBrowserOptions.resizable = false;
+        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
+
+        // 브라우저 오픈
+        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+
+        var sUrlPath = parent.getPath(sPopupName);
+        oBrowserWindow.loadURL(sUrlPath);
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        function lf_move() {
+
+            // 팝업 위치를 부모 위치에 배치시킨다.          
+            var oParentBounds = CURRWIN.getBounds();
+            oBrowserWindow.setBounds({
+                x: Math.round(oParentBounds.x + 170),
+                y: Math.round(oParentBounds.y + 190),
+
+                // x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
+                // y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+            });
+
+        }
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+            lf_move();
+        });
+
+        oBrowserWindow.webContents.on("dom-ready", function () {
+            lf_move();
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+
+            if (typeof fnCancel == "function") {
+                fnCancel();
+            }
+
+            oBrowserWindow = null;
+
+            // 각종 이벤트 끄기
+            lf_off();
+
+        });
+
+        // 각종 이벤트 끄기
+        function lf_off() {
+
+            CURRWIN.off("move", lf_move);
+            CURRWIN.off("resize", lf_move);
+            CURRWIN.off("maximize", lf_move);
+            CURRWIN.off("unmaximize", lf_move);
+
+            CURRWIN.off("moved", lf_move);
+            CURRWIN.off("will-move", lf_move);
+            CURRWIN.off("restore", lf_move);
+            CURRWIN.off("resized", lf_move);
+            CURRWIN.off("will-resize", lf_move);
+            CURRWIN.off("enter-full-screen", lf_move);
+            CURRWIN.off("leave-full-screen", lf_move);
+
+            REMOTE.screen.off('display-metrics-changed', lf_screenChange);
+
+        }
+
+        lf_off();
+
+        /**
+         * 브라우저 사이즈 변경, 이동 이벤트 걸기
+         * 팝업이 부모 창 특정 위치에 따라다니는 효과
+         */
+        CURRWIN.on('move', lf_move);
+        CURRWIN.on('resize', lf_move);
+        CURRWIN.on('maximize', lf_move);
+        CURRWIN.on('unmaximize', lf_move);
+
+        CURRWIN.on('moved', lf_move);
+        CURRWIN.on('will-move', lf_move);
+        CURRWIN.on('restore', lf_move);
+        CURRWIN.on('resized', lf_move);
+        CURRWIN.on('will-resize', lf_move);
+        CURRWIN.on('enter-full-screen', lf_move);
+        CURRWIN.on('leave-full-screen', lf_move);
+
+        function lf_screenChange() {
+            lf_move();
+        }
+
+        // Display 해상도가 변경 되었을때 발생하는 이벤트
+        REMOTE.screen.on('display-metrics-changed', lf_screenChange);
+
+        // IPCMAIN 이벤트 (팝업과 Interface 용)
+        IPCMAIN.on(`${BROWSKEY}--designTextSearch`, lf_DesignTextSearch);
+
+        function lf_DesignTextSearch(event, res) {
+
+            if (typeof fnSearch == "function") {
+                fnSearch(res);
+            }
+
+        }
+
+    }; // end of oAPP.fn.fnDesignTreeFindUiPopupOpen
 
     /************************************************************************
      * Document Popup Open
@@ -1839,7 +1865,7 @@
         }
 
         // Chrome 브라우저 설치 유무 확인
-        let oChrome = aDefBr.find(elem => elem.NAME === "CHROME") || {};        
+        let oChrome = aDefBr.find(elem => elem.NAME === "CHROME") || {};
         if (!oChrome || !oChrome.ENABLED) {
 
             sMsg = "Chrome Browser가 설치 되어 있는지 확인하세요!";
@@ -1868,7 +1894,7 @@
         }
 
         debugger;
-        
+
         let SESSKEY = parent.getSessionKey(),
             BROWSKEY = parent.getBrowserKey(),
             oUserInfo = parent.getUserInfo(),
@@ -1993,16 +2019,16 @@
             oBrowserWindow.webContents.send('if_APP_shortcutCreator', oSendData);
 
             // 팝업 위치를 부모 위치에 배치시킨다.
-            lf_setBounds();            
+            lf_setBounds();
 
         });
 
         // 브라우저를 닫을때 타는 이벤트
-        oBrowserWindow.on('closed', () => {           
+        oBrowserWindow.on('closed', () => {
 
             oBrowserWindow = null;
 
-        });     
+        });
 
 
     }; // end of oAPP.fn.fnAppShortCutDownPopupOpener
