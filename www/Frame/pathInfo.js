@@ -53,7 +53,7 @@ module.exports = (() => {
         P13N: PATH.join(USERDATA, "p13n", "p13n.json"),
         SERVERINFO_V2: PATH.join(USERDATA, "p13n", "ServerInfo-v2.json"),
 
-        // Popup Paths..
+        // Popup Paths..        
         ERRPAGE: PATH.join(POPUP_ROOT, "errPageEditorPopup", "errorPageEditorFrame.html"),
         UIFIND: PATH.join(POPUP_ROOT, "findPopup", "frame.html"),
         RTMCLS: PATH.join(POPUP_ROOT, "runtimeClassNavigator", "frame.html"), // runtime class navigator  
@@ -71,7 +71,7 @@ module.exports = (() => {
         UI5CSSPOP: PATH.join(POPUP_ROOT, "ui5CssPopup", "frame.html"),
         SHORTCUTPOP: PATH.join(POPUP_ROOT, "ShortCutCreator", "index.html"),
         DESIGNTREEUISRCH: PATH.join(POPUP_ROOT, "designTreeUiSearchPopup", "index.html"),
-        VIDEOREC: PATH.join(POPUP_ROOT, "ScreenRecord", "index.html"),
+        VIDEOREC: PATH.join(POPUP_ROOT, "ScreenRecord", "ScreenRecording.js"),
 
         // Suggestion Json Path..
         EVENTSUGG: PATH.join(SUGG_ROOT, "events.json"),

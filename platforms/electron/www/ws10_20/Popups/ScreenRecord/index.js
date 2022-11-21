@@ -119,12 +119,20 @@ oAPP = {
               
         if(sources.length == 0){ return; }
 
+        // let aaa = sources.filter(e => e.name === "Screen 1");
+
+
+        // for (let index = 0; index < sources.length; index++) {
+        //     console.log(sources[index]);          
+        // }
+
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: false,
                 video: {
                     mandatory: {
                         chromeMediaSource: 'desktop',
+                        // chromeMediaSourceId: aaa[0].id,
                         chromeMediaSourceId: sources[0].id,
                         minWidth: 600,
                         maxWidth: screen.availWidth - 200, 

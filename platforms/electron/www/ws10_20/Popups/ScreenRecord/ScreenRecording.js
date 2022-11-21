@@ -22,11 +22,25 @@
 
 
 /* ================================================================= */
+/* 글로벌 변수 
+/* ================================================================= */
+
+let goRecordPopup;
+
+
+/* ================================================================= */
 /* Export Module Function - 스크린 레코딩 시작
 /* ================================================================= */
 exports.start = async function(REMOTE){
+
+    debugger;
     
     //예외처리: 한번 실행점검 
+
+        if(goRecordPopup){            
+            goRecordPopup.focus();
+            return;
+        }
 
         var op = {
             "height": screen.availHeight,
@@ -73,7 +87,11 @@ exports.start = async function(REMOTE){
         oWIN.on("close", ()=>{
             //debugger;
 
+            goRecordPopup = null;
+
         });
+
+        goRecordPopup = oWIN;
 
         REMOTE.require('@electron/remote/main').enable(oWIN.webContents);
 

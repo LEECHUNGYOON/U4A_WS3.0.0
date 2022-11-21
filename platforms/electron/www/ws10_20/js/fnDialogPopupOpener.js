@@ -2038,11 +2038,21 @@
      ************************************************************************/
     oAPP.fn.fnOpenVideoRecord = () => {
 
+        debugger;
+        
+        var oVideoPopup = oAPP.attr.videoRecordPopup;
 
+        if (oVideoPopup) {
+            oVideoPopup.start(REMOTE);
+            return;
+        }
 
-        alert("비디오 녹화!!");
+        let sWinObjType = "VIDEOREC",
+            sUrl = parent.getPath(sWinObjType);        
 
+        oAPP.attr.videoRecordPopup = parent.require(sUrl);
 
+        oAPP.attr.videoRecordPopup.start(REMOTE);
 
     }; // end of oAPP.fn.fnOpenVideoRecord
 
