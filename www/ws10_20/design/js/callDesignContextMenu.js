@@ -543,7 +543,7 @@
 
             //삭제 이후 이전 선택처리 정보 얻기.
             var l_prev = oAPP.fn.designGetPreviousTreeItem(ls_tree.OBJID);
-
+            
             //선택라인의 삭제대상 OBJECT 제거 처리.
             lf_deleteTreeLine(ls_tree);
             
@@ -557,6 +557,9 @@
                 //부모에서 현재 삭제 대상건 제거.
                 ls_parent.zTREE.splice(l_fIndx, 1);
             }
+
+            //미리보기의 직접 입력 가능한 UI의 직접 입력건 반영처리.
+            oAPP.fn.previewSetStrAggr(ls_tree);
             
             //모델 갱신 처리.
             oAPP.attr.oModel.refresh(true);
@@ -1210,20 +1213,18 @@
         var l_cdata = l_cpoied[0].DATA;
 
 
-        //복사한 UI가 이미 존재하는경우 붙여넣기 skip 처리.
+        //복사한 UI가 이미 존재하는경우 붙여넣기 skip 처리.(공통코드 UA039에 해당하는 UI는 APP당 1개만 존재 가능)
         if(oAPP.fn.designChkUnique(l_cdata.UIOBK) === true){
             return;
         }
 
-        //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.
+        //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.(공통코드 UA040에 해당하는 UI는 특정 UI 하위에만 존재가능)
         if(oAPP.fn.designChkHiddenAreaUi(l_cdata.UIOBK, ls_tree.UIOBK) === true){
             return;
-        }
-        
+        }    
 
         //aggregation 선택 팝업 호출.
         if(typeof oAPP.fn.aggrSelectPopup !== "undefined"){
-
             oAPP.fn.aggrSelectPopup(l_cdata, ls_tree, lf_aggrPopup_cb);
             return;
         }
@@ -1242,27 +1243,38 @@
     //ui 사용처 리스트 메뉴.
     oAPP.fn.contextMenuUiWhereUse = function(){
 
-        //context menu를 호출한 라인의 OBJID 얻기.
-        var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
-        
-        //DOCUMENT영역에 PASTE한경우 EXIT.
-        if(l_OBJID === "ROOT"){
-            return;
-        }
+        //123 Do you want to continue?
+        var l_msg = "Do you want to continue?";
 
-        //OBJID에 해당하는 TREE 정보 얻기.
-        var ls_tree = oAPP.fn.getTreeData(l_OBJID);
+        //사용처 확인전 질문팝업 호출.
+        parent.showMessage(sap, 30, "I", l_msg, function(param){
 
-        //aggregation 선택 팝업 호출.
-        if(typeof oAPP.fn.callUiWhereUsePopup !== "undefined"){
+            //YES를 선택하지 않은경우 EXIT.
+            if(param !== "YES"){return;}
 
-            oAPP.fn.callUiWhereUsePopup(ls_tree);
-            return;
-        }
+            //context menu를 호출한 라인의 OBJID 얻기.
+            var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
+            
+            //DOCUMENT영역에 PASTE한경우 EXIT.
+            if(l_OBJID === "ROOT"){
+                return;
+            }
 
-        //aggregation 선택 팝업이 존재하지 않는경우 js load후 호출.
-        oAPP.fn.getScript("design/js/callUiWhereUsePopup",function(){
-            oAPP.fn.callUiWhereUsePopup(ls_tree);
+            //OBJID에 해당하는 TREE 정보 얻기.
+            var ls_tree = oAPP.fn.getTreeData(l_OBJID);
+
+            //aggregation 선택 팝업 호출.
+            if(typeof oAPP.fn.callUiWhereUsePopup !== "undefined"){
+
+                oAPP.fn.callUiWhereUsePopup(ls_tree);
+                return;
+            }
+
+            //aggregation 선택 팝업이 존재하지 않는경우 js load후 호출.
+            oAPP.fn.getScript("design/js/callUiWhereUsePopup",function(){
+                oAPP.fn.callUiWhereUsePopup(ls_tree);
+            });
+
         });
 
     };  //ui 사용처 리스트 메뉴.

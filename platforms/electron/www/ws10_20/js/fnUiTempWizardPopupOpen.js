@@ -3341,53 +3341,11 @@
             oTableResult
         ];
 
-        // oAPP.fn.designWizardCallback(aResult, lf_callback);
-
-        // // Model Table
-        // var oTable = sap.ui.getCore().byId(C_TMPL_WZD3_MODEL_TABLE1_ID);
-        // if (oTable == null) {
-        //     return;
-        // }
-
-        // // Model Table에 선택된 라인을 구한다.
-        // var aSelectIdx = oTable.getSelectedIndices(),
-        //     iSelectIdxLength = aSelectIdx.length;
-
-        // if (iSelectIdxLength <= 0) {
-        //     parent.showMessage(sap, 10, "E", "라인을 선택하세요.");
-        //     return;
-        // }
-
-        // // 현재 바인딩 된 모델에서 선택된 라인의 데이터를 수집한다.
-        // var oModelData = APPCOMMON.fnGetModelProperty(C_TMPL_BIND_ROOT),
-        //     oModelTable = oModelData.MODELTABLE3,
-        //     aTableData = oModelTable.T_OUTAB,
-        //     sUiChioce = oModelData.UICHOICE.A.selectedKeyS;
-
-        // var aSelectRows = [];
-
-        // for (var i = 0; i < iSelectIdxLength; i++) {
-
-        //     var iIdx = aSelectIdx[i];
-
-        //     aSelectRows.push(aTableData[iIdx]);
-
-        // }
-
-        // // POSITION 기준으로 정렬
-        // aSelectRows = aSelectRows.sort(function(a, b) {
-        //     return a["POSIT"] - b["POSIT"];
-        // });
-
-        // // Table Wizard 정보 구성
-        // var oComplete = {
-        //     uName: sUiChioce, // Table 명 (sap.m.Table..)
-        //     mName: oModelTable.MODEL, // 모델명 (GT_OUTAB..)
-        //     selTab: aSelectRows, // 바인딩된 테이블에서 선택한 Row 데이터
-        //     uiDDLB: oModelData.MASTER.T_UIDDLB // Dropdown Data..
-        // };
+        oAPP.fn.designWizardCallback(aResult, lf_callback);
 
         function lf_callback(oReturn) {
+
+            debugger;
 
             // Busy Dialog를 끈다.
             APPCOMMON.fnSetBusyDialog(false);

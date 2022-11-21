@@ -111,6 +111,9 @@
 
         // 이전에 선택한 라인이 있다면 해당 라인 선택 아이콘 표시 해제
         fnOnUspTreeUnSelect();
+        
+        // Usp Tree RowsUpdate 이벤트 걸기
+        oUspTreeTable.attachRowsUpdated(oAPP.fn.fnAttachRowsUpdateInit);
 
     }; // end of fnOnInitLayoutSettingsWs30
 
@@ -1273,20 +1276,34 @@
                 //     oRowData._ISEXP = bIsExpanded;
 
                 // },
-                rowsUpdated: (oEvent) => {
+                // rowsUpdated: oAPP.fn.fnAttachRowsUpdateInit
+                // (oEvent) => {
 
-                    console.log("[Table] rowsUpdated Event");
+                //     console.log("[Table] rowsUpdated Event");
 
-                    // // Usp Tree의 선택된 Row에 색깔 표시
-                    _fnUspTreeSelectedRowMark(oEvent);
+                //     // // Usp Tree의 선택된 Row에 색깔 표시
+                //     _fnUspTreeSelectedRowMark(oEvent);
 
-                },
+                // },
 
             })
+            // .attachRowsUpdated(gfSelectRowUpdate)
             .attachBrowserEvent("dblclick", ev_uspTreeItemDblClickEvent)
             .addStyleClass("u4aWsUspTree");
 
     } // end of fnGetTreeTableWs30
+
+     /**************************************************************************
+     * [WS30] Usp 화면 진입시 UspTree에 RowsUpdate 이벤트 걸기
+     **************************************************************************/
+    oAPP.fn.fnAttachRowsUpdateInit = () => {
+
+        console.log("[Table] rowsUpdated Event");
+
+        // // Usp Tree의 선택된 Row에 색깔 표시
+        _fnUspTreeSelectedRowMark();
+
+    }; // end of oAPP.fn.fnAttachRowsUpdateInit
 
     // /**************************************************************************
     //  * [WS30] UspTree Node의 접힘/펼침 상태 값을 모델에 저장
@@ -1327,10 +1344,15 @@
     /**************************************************************************
      * [WS30] Usp Tree의 선택된 Row에 색깔 표시
      **************************************************************************/
-    function _fnUspTreeSelectedRowMark(oEvent) {
+    function _fnUspTreeSelectedRowMark() {
 
-        var oTreeTable = oEvent.getSource(),
-            aRows = oTreeTable.getRows(),
+        // var oTreeTable = oEvent.getSource(),
+        var oTreeTable = sap.ui.getCore().byId("usptree");
+        if(!oTreeTable){
+            return;
+        }
+
+        var aRows = oTreeTable.getRows(),
             iRowLength = aRows.length;
 
         if (iRowLength < 0) {

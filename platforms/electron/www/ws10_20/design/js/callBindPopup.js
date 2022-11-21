@@ -45,12 +45,14 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
             it_tree[i].enable = true;
             it_tree[i].stat_src = "sap-icon://status-positive";
             it_tree[i].stat_color = "#01DF3A";
+            it_tree[i].highlight = "Success";
 
             //현재 TABLE이 바인딩 팝업 호출건의 PATH와 동일하다면.
             if(it_tree[i].CHILD === oAPP.attr.oBindDialog._is_attr.UIATV){
               //선택됨 icon 처리.
               it_tree[i].stat_src = "sap-icon://accept";
               it_tree[i].stat_color = "#1589FF";
+              it_tree[i].highlight = "Information";
             }
 
             continue;
@@ -62,12 +64,14 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
             it_tree[i].enable = true;
             it_tree[i].stat_src = "sap-icon://status-positive";
             it_tree[i].stat_color = "#01DF3A";
+            it_tree[i].highlight = "Success";
 
             //현재 TABLE이 바인딩 팝업 호출건의 PATH와 동일하다면.
             if(it_tree[i].CHILD === oAPP.attr.oBindDialog._is_attr.UIATV){
               //선택됨 icon 처리.
               it_tree[i].stat_src = "sap-icon://accept";
               it_tree[i].stat_color = "#1589FF";
+              it_tree[i].highlight = "Information";
             }
 
             continue;
@@ -83,6 +87,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
             //N건 바인딩 필드 아이콘 표현.
             it_tree[i].stat_src = "sap-icon://share-2";
             it_tree[i].stat_color = "#FBB917";
+            it_tree[i].highlight = "Warning";
 
             var lt_child = l_model.oData.TREE.filter( a => a.PARENT === it_tree[i].CHILD );
             lf_setBindEnable(lt_child, l_path, l_model, it_tree[i].KIND);
@@ -96,7 +101,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
           }
 
           //aggregation인경우 첫번째 만나는 TABLE은 선택 가능 처리 후 하위 정보 활성화 SKIP.
-          if(oAPP.attr.oBindDialog._CARDI === "T" && l_path === it_tree[i].CHILD){
+          //if(oAPP.attr.oBindDialog._CARDI === "T" && l_path === it_tree[i].CHILD){
+          if(oAPP.attr.oBindDialog._CARDI === "T" && l_path && l_path.substr(0,it_tree[i].CHILD.length) === it_tree[i].CHILD){
 
             var lt_child = l_model.oData.TREE.filter( a => a.PARENT === it_tree[i].CHILD && a.KIND !== "E" );
             lf_setBindEnable(lt_child, l_path, l_model, it_tree[i].KIND);
@@ -113,6 +119,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
               it_tree[i].enable = true;
               it_tree[i].stat_src = "sap-icon://status-positive";
               it_tree[i].stat_color = "#01DF3A";
+              it_tree[i].highlight = "Success";
             }            
 
             //현재 TABLE이 바인딩 팝업 호출건의 PATH와 동일하다면.
@@ -120,6 +127,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
               //선택됨 icon 처리.
               it_tree[i].stat_src = "sap-icon://accept";
               it_tree[i].stat_color = "#1589FF";
+              it_tree[i].highlight = "Information";
             }            
 
             continue;
@@ -140,6 +148,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
             it_tree[i].enable = true;
             it_tree[i].stat_src = "sap-icon://status-positive";
             it_tree[i].stat_color = "#01DF3A";
+            it_tree[i].highlight = "Success";
           }
 
           //현재 path의 하위 path정보 얻기.
@@ -175,12 +184,14 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
             it_tree[i].enable = true;
             it_tree[i].stat_src = "sap-icon://status-positive";
             it_tree[i].stat_color = "#01DF3A";
+            it_tree[i].highlight = "Success";
 
             //현재 path가 이전 바인딩값과 동일한 경우.
             if(it_tree[i].CHILD === oAPP.attr.oBindDialog._is_attr.UIATV){
               //선택됨 icon 처리.
               it_tree[i].stat_src = "sap-icon://accept";
               it_tree[i].stat_color = "#1589FF";
+              it_tree[i].highlight = "Information";
 
               //이전 선택한 바인딩 상세정보가 존재하는경우.
               if(oAPP.attr.oBindDialog._is_attr.MPROP !== ""){
@@ -201,10 +212,19 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
 
   //서버에서 바인딩 attr 정보 얻은 이후 popup open
-  function lf_openPopup(){
+  function lf_openPopup(bRefresh){
 
     //binding popup open
-    oAPP.attr.oBindDialog.open();
+    if(bRefresh !== true){
+      oAPP.attr.oBindDialog.open();
+    }
+
+    if(bRefresh === true){
+      oAPP.attr.oBindDialog._oModel.oData.T_MPROP = [];
+      oAPP.attr.oBindDialog._oModel.oData.TREE = [];
+      oAPP.attr.oBindDialog._oModel.oData.zTREE = [];
+      oAPP.attr.oBindDialog._oModel.refresh();
+    }
 
     //화면 잠금 처리.
     oAPP.attr.oBindDialog._oModel.setProperty("/busy",true);
@@ -262,6 +282,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
         //n건 바인딩 처리된 UI인지 여부 확인.
         var l_path = oAPP.fn.getParentAggrBind(oAPP.attr.prev[oAPP.attr.oBindDialog._is_attr.OBJID]);
 
+        //현재 UI의 라인 정보 얻기.
+        var ls_tree = oAPP.fn.getTreeData(oAPP.attr.oBindDialog._is_attr.OBJID);
 
         //바인딩 팝업을 호출한 attribute정보가 sap.m.Tree의 parent, child인경우.
         if(oAPP.attr.oBindDialog._is_attr.UIATK === "EXT00001190" ||  //parent
@@ -283,6 +305,10 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
           //rows aggregation에 바인딩된 정보 매핑.
           l_path = oAPP.attr.prev[oAPP.attr.oBindDialog._is_attr.OBJID].__PARENT._MODEL["rows"];
 
+        }else if(ls_tree && (ls_tree.PUIATK === "AT000022249" || ls_tree.PUIATK === "AT000022258")){
+          //sap.ui.table.Table(sap.ui.table.TreeTable)의 rowSettingsTemplate aggregation에 속한 UI인경우.
+          //부모의 rows aggregation의 path 정보 얻기.
+          l_path = oAPP.attr.prev[ls_tree.POBID]._MODEL["rows"];
         }
 
         //2레벨의 TABLE, STRUCTURE정보만 발췌.
@@ -486,7 +512,14 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
             //해당 라인 펼침 처리.
             oAPP.attr.oBindDialog._oTree.expand(l_cnt);
 
-            lf_expand(T_TREE[i].zTREE);
+            var l_return = lf_expand(T_TREE[i].zTREE);
+
+            //해당 라인을 찾아 선택 처리 한경우.
+            if(l_return === true){
+              //loop exit.
+              return l_return;
+            }
+
             continue;
 
           }
@@ -505,10 +538,13 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
 
         //현재 TREE의 PATH가 바인딩 팝업 호출시 이전 바인딩 PATH정보와 동일한건인경우.
-        if(oAPP.attr.oBindDialog._is_attr.UIATV === T_TREE[i].CHILD){
+        if(L_UIATV === T_TREE[i].CHILD){
           //TREE TABLE의 해당 라인 선택 처리.
           oAPP.attr.oBindDialog._oTree.setSelectedIndex(l_cnt);
-          continue;
+
+          //해당 라인 위치로 이동 처리.
+          oAPP.attr.oBindDialog._oTree.setFirstVisibleRow(l_cnt);
+          return true;
         }
 
         if(T_TREE[i].KIND ==="E"){continue;}
@@ -516,7 +552,13 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
         //현재 TREE의 PATH와 이전 바인딩 PATH가 부합되는경우 해당 라인 펼침 처리.
         oAPP.attr.oBindDialog._oTree.expand(l_cnt);
 
-        lf_expand(T_TREE[i].zTREE);
+        var l_return = lf_expand(T_TREE[i].zTREE);
+
+        //해당 라인을 찾아 선택 처리 한경우.
+        if(l_return === true){
+          //loop exit.
+          return l_return;
+        }
 
       }
 
@@ -999,7 +1041,21 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   //tree 전체접힘 이벤트
   oToolBtn2.attachPress(function(){
     oAPP.attr.oBindDialog._oTree.collapseAll();
+    oAPP.attr.oBindDialog._oTree.expand(0);
   });
+
+  oTool.addContent(new sap.m.ToolbarSeparator());
+
+  //갱신 버튼.
+  var oToolBtn5 = new sap.m.Button({text:"Refresh", icon:"sap-icon://refresh",
+    type:"Emphasized", busyIndicatorDelay:1, busy:"{/busy}", tooltip:"Refresh"});
+  oTool.addContent(oToolBtn5);
+
+  //갱신 버튼 선택 이벤트.
+  oToolBtn5.attachPress(function(){
+    lf_openPopup(true);
+  });
+
 
   oTool.addContent(new sap.m.ToolbarSeparator());
 
@@ -1038,6 +1094,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
     rowHeight:30,
     rowSelectionChange:lf_selTabRow
   }); //바인딩 tree 정보.
+
+  oTree.setRowSettingsTemplate(new sap.ui.table.RowSettings({highlight:"{highlight}"}));
 
 
   //TREE 스크롤 이벤트.

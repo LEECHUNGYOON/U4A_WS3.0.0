@@ -46,7 +46,16 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack){
   //이동위치 입력필드.
   var oStepInp = new sap.m.StepInput({min:1, max:"{/move/max}", value:"{/move/pos}"});
   oDlg.addContent(oStepInp);
-  
+
+  //입력필드 keydown 이벤트.
+  oStepInp.attachBrowserEvent('keydown',function(){
+    //엔터 입력이 아닌경우 EXIT.
+    if(window.event.keyCode === 13){
+      //확인버튼으로 포커스 이동 처리.
+      oBtn1.focus();  
+    }
+
+  });
 
   //이동위치 slider.
   var oSlide = new sap.m.Slider({min:1, max:"{/move/max}", value:"{/move/pos}", enableTickmarks:true});

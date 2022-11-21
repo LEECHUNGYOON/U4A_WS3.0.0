@@ -16,6 +16,10 @@
     if(lt_sel.length === 0){
       //오류 메시지 출력.
       parent.showMessage(sap, 10, "I", "이동 가능한 aggregation이 존재하지 않습니다.");
+
+      //tree drop effect 초기화 처리(ctrl 누르고 drop시 복사를 위한 광역변수값).
+      oAPP.attr.ui.oLTree1.__dropEffect = "";
+
       return;
     }
 
@@ -54,6 +58,8 @@
 
     //닫기 버튼 선택 이벤트.
     oBtn0.attachPress(function(){
+      //tree drop effect 초기화 처리(ctrl 누르고 drop시 복사를 위한 광역변수값).
+      oAPP.attr.ui.oLTree1.__dropEffect = "";
       
       oDlg1.close();
       oDlg1.destroy();
@@ -105,6 +111,10 @@
 
     //닫기버튼 이벤트
     oBtn2.attachPress(function(){
+
+      //tree drop effect 초기화 처리(ctrl 누르고 drop시 복사를 위한 광역변수값).
+      oAPP.attr.ui.oLTree1.__dropEffect = "";
+
       oDlg1.close();
       oDlg1.destroy();
       //001	Cancel operation

@@ -223,6 +223,26 @@
       return;
     }
 
+    //직접 입력 가능한 aggregation인경우 해당 aggregation에 child UI가 존재하는지 여부 확인.
+    if(is_attr.UIATK.indexOf("_1") !== -1){
+
+      //현재 선택 라인 정보 얻기.
+      var ls_tree = oAPP.fn.getTreeData(is_attr.OBJID);
+
+      //직접 입력 가능 aggr의 임시 key 부분 제거.
+      var l_UIATK = is_attr.UIATK.replaceAll("_1", "");
+
+      if(ls_tree.zTREE.length !== 0){
+        //직접 입력 가능한 aggr에 UI가 존재하는지 여부 확인.
+        var l_child = ls_tree.zTREE.find( a => a.PUIATK === l_UIATK );
+
+        //UI가 존재하는경우 EXIT.
+        if(l_child){return;}
+
+      }
+
+    }
+
     //default property
     var l_uiaty = "1";
 
@@ -322,6 +342,35 @@
     }
     
   };  //미리보기 화면 UI의 프로퍼티 변경 처리.
+
+
+
+
+  //직접 입력 가능한 aggregation의 UI가 제거될때 이전 직접 입력건 존재시 해당 값으로 세팅.
+  oAPP.fn.previewSetStrAggr = function(is_tree){
+
+    //EMBED AGGREGATION의 UI ATTRIBUTE KEY가 없다면 EXIT.
+    if(is_tree.PUIATK === ""){return;}
+
+    //부모 UI정보가 없다면 EXIT.
+    if(is_tree.POBID === ""){return;}
+    if(!oAPP.attr.prev[is_tree.POBID]){return;}
+
+    //부모 UI의 ATTR 변경건 정보가 없다면 EXIT.
+    if(!oAPP.attr.prev[is_tree.POBID]._T_0015){return;}
+    if(oAPP.attr.prev[is_tree.POBID]._T_0015.length === 0){return;}
+
+    //부모 ATTR 변경건중 직접 입력 가능한 AGGR 입력건 존재 여부 확인.
+    var ls_0015 = oAPP.attr.prev[is_tree.POBID]._T_0015.find( a=> a.UIATK === is_tree.PUIATK + "_1" );
+
+    //직접 입력가능한 AGGR 입력건이 존재하지 않는경우 EXIT.
+    if(!ls_0015){return;}
+
+    //존재하는경우 미리보기 변경처리.
+    oAPP.fn.previewUIsetProp(ls_0015);
+
+
+  };  //직접 입력 가능한 aggregation의 UI가 제거될때 이전 직접 입력건 존재시 해당 값으로 세팅.
 
 
 

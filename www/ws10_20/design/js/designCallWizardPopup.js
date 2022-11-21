@@ -79,38 +79,35 @@
      * @param {function} fnCallback - callback function.
      ************************************************************************/
     oAPP.fn.designWizardCallback = function(oReturn, fnCallback){
-
-        //aggregation 선택 팝업 callback function.
-        function lf_aggrCallback(aggr){
-
-            //busy dialog open.
-            oAPP.common.fnSetBusyDialog(true);
+        
+        //ui 생성 처리.
+        function lf_createUI(oPram, aggr, is_parent){
 
             //wizard 생성 유형에 따른 분기.
-            switch (oReturn.uName) {
+            switch (oPram.uName) {
                 case "sap.m.Table":
                     //wizard m table 생성 처리.
-                    oAPP.fn.designWizardMTable(oReturn, aggr);
+                    oAPP.fn.designWizardMTable(oPram, aggr, is_parent);
                     break;
                 
                 case "sap.ui.table.Table":
                     //wizard ui table 생성 처리.
-                    oAPP.fn.designWizardUiTable(oReturn, aggr);
+                    oAPP.fn.designWizardUiTable(oPram, aggr, is_parent);
                     break;
 
                 case "sap.ui.table.TreeTable":
                     //wizard ui tree table 생성 처리.
-                    oAPP.fn.designWizardUiTreeTable(oReturn, aggr);
+                    oAPP.fn.designWizardUiTreeTable(oPram, aggr, is_parent);
                     break;
 
                 case "LayoForm_01":
                     //wizard form UI 생성 처리.
-                    oAPP.fn.designWizardUiLayotForm01(oReturn, aggr);
+                    oAPP.fn.designWizardUiLayotForm01(oPram, aggr, is_parent);
                     break;
 
                 case "SimpleForm":
                     //wizard simple form 생성 처리.
-                    oAPP.fn.designWizardUiLayotSimpleForm(oReturn, aggr);
+                    oAPP.fn.designWizardUiLayotSimpleForm(oPram, aggr, is_parent);
                     break;
 
                 default:
@@ -118,6 +115,45 @@
 
             }   //wizard 생성 유형에 따른 분기.
 
+
+        }   //ui 생성 처리.
+
+
+
+        //aggregation 선택 팝업 callback function.
+        function lf_aggrCallback(aggr){
+            
+            //busy dialog open.
+            oAPP.common.fnSetBusyDialog(true);
+
+            //선택한 라인의 tree 정보 얻기.
+            var ls_parent = oAPP.fn.designGetSelectedTreeItem();
+
+            //전달받은 파라메터가 array가 아닌경우.
+            if(Array.isArray(oReturn) === false){
+                //UI 생성 처리.
+                lf_createUI(oReturn, aggr, ls_parent);
+                
+            }else if(Array.isArray(oReturn) === true){
+                //wizard로 반복하여 UI를 추가하는경우 MODEL된 AGGREGATION에는 추가 불가.
+                if(typeof oAPP.attr.prev[ls_parent.OBJID]._MODEL[aggr.UIATT] !== "undefined"){
+                    //성공 FLAG 처리.
+                    ls_ret.SUBRC = "E";
+                    ls_ret.MSG = "model binding 처리된 aggregation에는 추가할 수 없습니다.";
+
+                    //WIZARD 팝업의 CALLBACK FUNCTION.
+                    fnCallback(ls_ret);
+                    return;
+                }
+
+                //전달받은 파라메터가 array인경우.
+                for(var i=0, l=oReturn.length; i<l; i++){
+                    //라인별로 UI 생성 처리.
+                    lf_createUI(oReturn[i], aggr, ls_parent);
+
+                }
+
+            }
 
             //성공 FLAG 처리.
             ls_ret.SUBRC = "S";
@@ -130,9 +166,24 @@
         }   //aggregation 선택 팝업 callback function.
 
 
+        //입력 파라메터가 array가 아닌경우.
+        if(Array.isArray(oReturn) === false){
+            //선택값에 대한 가능여부 점검.
+            var ls_ret = oAPP.fn.designChkSelLine(oReturn.uName);
 
-        //선택값에 대한 가능여부 점검.
-        var ls_ret = oAPP.fn.designChkSelLine(oReturn.uName);
+        }else if(Array.isArray(oReturn) === true){
+            //입력 파라메터가 array 유형인경우.
+            for(var i=0, l=oReturn.length; i<l; i++){
+                //각 라인별로 가능여부 점검.
+                var ls_ret = oAPP.fn.designChkSelLine(oReturn[i]);
+                
+                //오류가 발생한 경우 점검 중단.
+                if(ls_ret.SUBRC === "E"){break;}
+
+            }
+
+        }
+        
 
         //선택건 점검 오류가 발생한 경우 오류 FLAG, 메시지 RETURN 후 EXIT.
         if(ls_ret.SUBRC === "E"){
@@ -142,37 +193,47 @@
         
         var ls_0014 = oAPP.fn.crtStru0014();
 
-        //wizard 생성 유형에 따른 분기.
-        switch (oReturn.uName) {
-            case "sap.m.Table":
-                //sap.m.Table의 UI OBJECT KEY 매핑.
-                ls_0014.UIOBK = "UO00447";
-                break;
+        //입력 파라메터가 array가 아닌경우.
+        if(Array.isArray(oReturn) === false){
+            //wizard 생성 유형에 따른 분기.
+            switch (oReturn.uName) {
+                case "sap.m.Table":
+                    //sap.m.Table의 UI OBJECT KEY 매핑.
+                    ls_0014.UIOBK = "UO00447";
+                    break;
+                
+                case "sap.ui.table.Table":
+                    //sap.ui.table.Table의 UI OBJECT KEY 매핑.
+                    ls_0014.UIOBK = "UO01139";
+                    break;
+
+                case "sap.ui.table.TreeTable":
+                    //sap.ui.table.TreeTable의 UI OBJECT KEY 매핑.
+                    ls_0014.UIOBK = "UO01142";
+                    break;
+
+                case "LayoForm_01":
+                    //sap.ui.layout.form.Form의 UI OBJECT KEY 매핑.
+                    ls_0014.UIOBK = "UO01001";
+                    break;
+
+                case "SimpleForm":
+                    //sap.ui.layout.form.SimpleForm의 UI OBJECT KEY 매핑.
+                    ls_0014.UIOBK = "UO01010";
+                    break;
+
+                default:
+                    break;
+
+            }   //wizard 생성 유형에 따른 분기.
+
+        }else if(Array.isArray(oReturn) === true){
+            //입력 파라메터가 array인경우.
+
+            //sap.ui.core.Control로 UI OBJECT KEY 매핑.
+            ls_0014.UIOBK = "UO00863";
             
-            case "sap.ui.table.Table":
-                //sap.ui.table.Table의 UI OBJECT KEY 매핑.
-                ls_0014.UIOBK = "UO01139";
-                break;
-
-            case "sap.ui.table.TreeTable":
-                //sap.ui.table.TreeTable의 UI OBJECT KEY 매핑.
-                ls_0014.UIOBK = "UO01142";
-                break;
-
-            case "LayoForm_01":
-                //sap.ui.layout.form.Form의 UI OBJECT KEY 매핑.
-                ls_0014.UIOBK = "UO01001";
-                break;
-
-            case "SimpleForm":
-                //sap.ui.layout.form.SimpleForm의 UI OBJECT KEY 매핑.
-                ls_0014.UIOBK = "UO01010";
-                break;
-
-            default:
-                break;
-
-        }   //wizard 생성 유형에 따른 분기.
+        }
         
         //선택한 라인의 tree 정보 얻기.
         var ls_tree = oAPP.fn.designGetSelectedTreeItem();
@@ -190,9 +251,7 @@
         oAPP.fn.getScript("design/js/aggrSelectPopup",function(){
             oAPP.fn.aggrSelectPopup(ls_0014, ls_tree, lf_aggrCallback);
 
-        });
-
-        
+        });        
 
     };  //위자드 팝업 callback 처리.
 
@@ -334,19 +393,16 @@
      * **********************************************************************
      * @param {object} oReturn - wizard 팝업에서 선택한 정보.
      * @param {object} aggr - 부모에 추가될 영역의 aggregation 정보.
+     * @param {object} is_parent - 선택 라인 정보.
      ************************************************************************/
-    oAPP.fn.designWizardMTable = function(oReturn, aggr){
-
-        //선택한 라인의 tree 정보 얻기.
-        var ls_parent = oAPP.fn.designGetSelectedTreeItem();
-        
+    oAPP.fn.designWizardMTable = function(oReturn, aggr, is_parent){
 
         //sap.m.Table의 items에 바인딩 정보 구성.
         var lt_0015 = [];
         lt_0015.push(oAPP.fn.setUiAttr("AT000005907", oReturn.mName, "X"));
 
         //sap.m.Table UI 생성.
-        var ls_tab = oAPP.fn.createUiLine(ls_parent, "UO00447", aggr.UIATK, lt_0015);
+        var ls_tab = oAPP.fn.createUiLine(is_parent, "UO00447", aggr.UIATK, lt_0015);
 
         //sap.m.ColumnListItem UI 생성.
         var ls_item = oAPP.fn.createUiLine(ls_tab, "UO00255", "AT000005907");
@@ -411,18 +467,16 @@
      * **********************************************************************
      * @param {object} oReturn - wizard 팝업에서 선택한 정보.
      * @param {object} aggr - 부모에 추가될 영역의 aggregation 정보.
+     * @param {object} is_parent - 선택 라인 정보.
      ************************************************************************/
-    oAPP.fn.designWizardUiTable = function(oReturn, aggr){
-
-        //선택한 라인의 tree 정보 얻기.
-        var ls_parent = oAPP.fn.designGetSelectedTreeItem();
+    oAPP.fn.designWizardUiTable = function(oReturn, aggr, is_parent){
 
         //sap.ui.table.Table의 rows에 바인딩 정보 구성.
         var lt_0015 = [];
         lt_0015.push(oAPP.fn.setUiAttr("AT000013068", oReturn.mName, "X"));
 
         //sap.ui.table.Table UI 생성.
-        var ls_tab = oAPP.fn.createUiLine(ls_parent, "UO01139", aggr.UIATK, lt_0015);
+        var ls_tab = oAPP.fn.createUiLine(is_parent, "UO01139", aggr.UIATK, lt_0015);
 
         //sap.ui.table.Row UI 생성.
         oAPP.fn.createUiLine(ls_tab, "UO01131", "AT000013068");
@@ -487,11 +541,9 @@
      * **********************************************************************
      * @param {object} oReturn - wizard 팝업에서 선택한 정보.
      * @param {object} aggr - 부모에 추가될 영역의 aggregation 정보.
+     * @param {object} is_parent - 선택 라인 정보.
      ************************************************************************/
-    oAPP.fn.designWizardUiTreeTable = function(oReturn, aggr){
-
-        //선택한 라인의 tree 정보 얻기.
-        var ls_parent = oAPP.fn.designGetSelectedTreeItem();
+    oAPP.fn.designWizardUiTreeTable = function(oReturn, aggr, is_parent){
 
         //sap.ui.table.Table의 rows에 바인딩 정보 구성.
         var lt_0015 = [];
@@ -508,7 +560,7 @@
         lt_0015.push(oAPP.fn.setUiAttr("EXT00001193", oReturn.mName + "-" + ls_sel.FNAME, "X"));
 
         //sap.ui.table.Table UI 생성.
-        var ls_tab = oAPP.fn.createUiLine(ls_parent, "UO01142", aggr.UIATK, lt_0015);
+        var ls_tab = oAPP.fn.createUiLine(is_parent, "UO01142", aggr.UIATK, lt_0015);
 
         //sap.ui.table.Row UI 생성.
         oAPP.fn.createUiLine(ls_tab, "UO01131", "AT000013146");
@@ -573,19 +625,16 @@
      * **********************************************************************
      * @param {object} oReturn - wizard 팝업에서 선택한 정보.
      * @param {object} aggr - 부모에 추가될 영역의 aggregation 정보.
+     * @param {object} is_parent - 선택 라인 정보.
      ************************************************************************/
-    oAPP.fn.designWizardUiLayotForm01 = function(oReturn, aggr){
-
-        //선택한 라인의 tree 정보 얻기.
-        var ls_parent = oAPP.fn.designGetSelectedTreeItem();
-
+    oAPP.fn.designWizardUiLayotForm01 = function(oReturn, aggr, is_parent){
 
         var lt_0015 = [];
         //editable 프로퍼티 true로 구성.
         lt_0015.push(oAPP.fn.setUiAttr("AT000012587", "true", ""));
 
         //sap.ui.layout.form.Form UI 생성.
-        var ls_form = oAPP.fn.createUiLine(ls_parent, "UO01001", aggr.UIATK, lt_0015);
+        var ls_form = oAPP.fn.createUiLine(is_parent, "UO01001", aggr.UIATK, lt_0015);
 
         //sap.ui.layout.form.ResponsiveGridLayout UI 생성.
         oAPP.fn.createUiLine(ls_form, "UO01008", "AT000012591");
@@ -652,19 +701,16 @@
      * **********************************************************************
      * @param {object} oReturn - wizard 팝업에서 선택한 정보.
      * @param {object} aggr - 부모에 추가될 영역의 aggregation 정보.
+     * @param {object} is_parent - 선택 라인 정보.
      ************************************************************************/
-    oAPP.fn.designWizardUiLayotSimpleForm = function(oReturn, aggr){
-
-        //선택한 라인의 tree 정보 얻기.
-        var ls_parent = oAPP.fn.designGetSelectedTreeItem();
-
+    oAPP.fn.designWizardUiLayotSimpleForm = function(oReturn, aggr, is_parent){
 
         var lt_0015 = [];
         //editable 프로퍼티 true로 구성.
         lt_0015.push(oAPP.fn.setUiAttr("AT000012709", "true", ""));
 
         //sap.ui.layout.form.SimpleForm UI 생성.
-        var ls_form = oAPP.fn.createUiLine(ls_parent, "UO01010", aggr.UIATK, lt_0015);
+        var ls_form = oAPP.fn.createUiLine(is_parent, "UO01010", aggr.UIATK, lt_0015);
 
 
         //wizard에서 선택한 필드를 기준으로 UI 생성 처리.

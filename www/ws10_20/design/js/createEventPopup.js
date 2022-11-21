@@ -173,7 +173,7 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
         oModel.setProperty("/event", ls_event);
 
         //busy dialog 정보 얻기.
-        var oBusy = sap.ui.getCore().byId('u4aWsBusyDialog');
+        var oBusy = sap.ui.getCore().byId("u4aWsBusyDialog");
 
         if(oBusy && oBusy.oPopup){
           //busy dialog의 이전 focus된 정보 초기화.

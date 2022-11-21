@@ -336,7 +336,7 @@
         oAPP.attr.DnDRandKey = parent.getSSID();
 
         //wait off 처리.
-        //parent.setBusy('');
+        //parent.setBusy("");
 
       }, "X", true, "POST", function(e){
         //오류 발생시 lock 해제.
@@ -429,13 +429,16 @@
             oAPP.DATA.LIB.T_0022[i].LIBNM = oAPP.DATA.LIB.T_0022[i].UIOMD.replace(/\//g, ".");
           }
 
+          //코드마스터 정보 코드별로 재구성 처리.
+          oAPP.fn.setCodeMasterData();
+
           //어플리케이션 정보 구성을 위한 서버 호출.
           oAPP.fn.getAppData();
           return;
         }
 
         //해당 DB의 검색이 완료된경우 하위 로직 SKIP.
-        if(param.END === "X"){          
+        if(param.END === "X"){
           return;
         }
 
@@ -760,6 +763,34 @@
 
 
 
+    //코드마스터정보 코드별로 재구성 처리.
+    oAPP.fn.setCodeMasterData = function(){
+	
+      oAPP.attr.S_CODE = {};
+      
+      //코드마스터 데이터가 존재하지 않는경우 EXIT.
+      if(oAPP.DATA.LIB.T_9011.length === 0){
+        return;
+      }
+      
+      //코드마스터 전체 검색건을 코드별로 수집 처리.
+      for(var i=0, l=oAPP.DATA.LIB.T_9011.length; i<l; i++){		
+        
+        //해당 코드가 수집되지 않았다면 수집 ARRAY 구성.
+        if(typeof oAPP.attr.S_CODE[oAPP.DATA.LIB.T_9011[i].CATCD] === "undefined"){
+          oAPP.attr.S_CODE[oAPP.DATA.LIB.T_9011[i].CATCD] = [];
+        }
+        
+        //코드에 해당하는 데이터 수집 처리.
+        oAPP.attr.S_CODE[oAPP.DATA.LIB.T_9011[i].CATCD].push(oAPP.DATA.LIB.T_9011[i]);
+        
+      }	
+      
+    };  //END OF oAPP.fn.setCodeMasterData //코드마스터정보 코드별로 재구성 처리.
+
+
+
+
     //UI DOM을 기준으로 UI instance 정보 얻기.
     oAPP.fn.getUiInstanceDOM = function(oDom,oCore){
 
@@ -959,7 +990,7 @@
 
 
     //ui suggestion 저장 처리.
-    oAPP.fn.saveUiSuggest = function(sSuggName, sVal, iCnt){
+    oAPP.fn.saveUiSuggest = function(sSuggName, sVal, iCnt, oUi){
 
       //이전 suggestion항목 얻기.
       var lt_sugg = oAPP.fn.fnSuggestionRead(sSuggName) || [];
@@ -983,6 +1014,16 @@
 
       //suggestion 저장 처리.
       oAPP.fn.fnSuggestionSave(sSuggName, lt_sugg);
+
+
+      //모델 갱신을 위한 UI정보가 입력되지 않은경우 exit.
+      if(!oUi){return;}
+
+      //대상 ui의 모델정보 얻기.
+      var l_model = oUi.getModel(sSuggName);
+
+      //모델 갱신 처리.
+      l_model.setData({t_sugg:lt_sugg});
 
     };  //ui suggestion 저장 처리.
 

@@ -14,14 +14,14 @@
      * **********************************************************************
      ************************************************************************/
     //ui info form.
-    var oRFm = new sap.ui.layout.form.Form({editable:true,
-      layout: new sap.ui.layout.form.ResponsiveGridLayout({labelSpanL:12,labelSpanM:12,columnsL:1})});
-    oRDynHead.addContent(oRFm);
+    // var oRFm = new sap.ui.layout.form.Form({editable:true,
+    //   layout: new sap.ui.layout.form.ResponsiveGridLayout({labelSpanL:12,labelSpanM:12,columnsL:1})});
+    // oRDynHead.addContent(oRFm);
 
-    //우상단 UI명, UI Description 영역
-    //var oRCtn1 = new sap.ui.layout.form.FormContainer({title:"{/uiinfo/OBJID}"});
-    var oRCtn1 = new sap.ui.layout.form.FormContainer();
-    oRFm.addFormContainer(oRCtn1);
+    // //우상단 UI명, UI Description 영역
+    // //var oRCtn1 = new sap.ui.layout.form.FormContainer({title:"{/uiinfo/OBJID}"});
+    // var oRCtn1 = new sap.ui.layout.form.FormContainer();
+    // oRFm.addFormContainer(oRCtn1);
 
     var oRCTool = new sap.m.Toolbar();
     //oRCtn1.setToolbar(oRCTool);
@@ -38,9 +38,16 @@
 
     oRCTool.addContent(new sap.m.ToolbarSpacer());
 
-    //라이브러리명 link.
-    var oRLibLink = new sap.m.Link({text:"{/uiinfo/UILIB}",visible:"{/uiinfo/vis01}",tooltip:"UI5 library Reference"});
-    oRCTool.addContent(oRLibLink);
+    //라이브러리명 text.
+    var oRLibText = new sap.m.Text({text:"{/uiinfo/UILIB}",visible:"{/uiinfo/vis01}",tooltip:"UI5 library Reference"});
+    oRCTool.addContent(oRLibText);
+
+    //라이브러리 더블클릭 이벤트.
+    oRLibText.attachBrowserEvent("dblclick", function(){
+      //라이브러리명 복사 처리.
+      oAPP.fn.attrCopyText(this.getText());
+
+    });
 
     //라이브러리 sample 버튼.
     var oRLibBtn2 = new sap.m.Button({icon:"sap-icon://example",visible:"{/uiinfo/vis01}",tooltip:"UI Sample"});
@@ -76,14 +83,66 @@
     //dynamic page title의 접힘 영역에 toolbar를 복사하여 추가 처리.
     oRDynTitle.addSnappedContent(oRCTool.clone());
 
+    // var oRElm1 = new sap.ui.layout.form.FormElement({label:new sap.m.Label({text:"Object id",design:"Bold"})});
+    // oRCtn1.addFormElement(oRElm1);
 
-    var oRElm1 = new sap.ui.layout.form.FormElement({label:new sap.m.Label({text:"Object id",design:"Bold"})});
-    oRCtn1.addFormElement(oRElm1);
+    // //OBJID 입력필드
+    // var oRInp1 = new sap.m.Input({value:"{/uiinfo/OBJID}",editable:"{/uiinfo/edit01}",
+    //   enabled:"{/IS_EDIT}",valueState:"{/uiinfo/OBJID_stat}",valueStateText:"{/uiinfo/OBJID_stxt}",
+    //   layoutData:new sap.ui.layout.GridData({span:"XL11 L11 M11 S11"})});
+    // oRElm1.addField(oRInp1);
+
+    // //OBJID를 변경 이벤트.
+    // oRInp1.attachChange(function(oEvent){
+    //   //OBJID 변경건 처리.
+    //   oAPP.fn.attrChnageOBJID();
+
+    // }); //OBJID를 변경 이벤트.
+
+    // //OBJID 복사 버튼.
+    // var oRBtn0 = new sap.m.Button({icon:"sap-icon://copy", layoutData:new sap.ui.layout.GridData({span:"XL1 L1 M1 S1"})});
+    // oRElm1.addField(oRBtn0);
+
+    // //OBJID 복사 버튼 선택 이벤트.
+    // oRBtn0.attachPress(function(){
+    //   //라이브러리명 복사 처리.
+    //   oAPP.fn.attrCopyText(oRInp1.getValue());
+    // }); //OBJID 복사 버튼 선택 이벤트.
+
+
+
+    // var oRElm2 = new sap.ui.layout.form.FormElement({label:new sap.m.Label({text:"Descriptions",design:"Bold"})});
+    // oRCtn1.addFormElement(oRElm2);
+
+    // //Description 입력 TextArea
+    // var oRTAr1 = new sap.m.TextArea({width:"100%",rows:4,value:"{/uiinfo/DESC}",editable:"{/uiinfo/edit02}",enabled:"{/IS_EDIT}"});
+    // oRElm2.addField(oRTAr1);
+
+
+    // //Description 변경 이벤트.
+    // oRTAr1.attachChange(function(){
+    //   //Description 등록처리.
+    //   oAPP.fn.setDesc(oRInp1.getValue(), this.getValue());
+
+    //   //화면에서 UI추가, 이동, 삭제 및 attr 변경시 변경 flag 처리.
+    //   oAPP.fn.setChangeFlag();
+
+    // }); //Description 변경 이벤트.
+
+
+    
+    var oRGrid = new sap.ui.layout.Grid({defaultSpan:"XL12 L12 M12 S12", vSpacing:0, hSpacing:0.5});
+    oRDynHead.addContent(oRGrid);
+
+    oRGrid.addStyleClass("sapUiTinyNegativeMarginBeginEnd");
+
+    oRGrid.addContent(new sap.m.Label({text:"Object id",design:"Bold"}));
 
     //OBJID 입력필드
     var oRInp1 = new sap.m.Input({value:"{/uiinfo/OBJID}",editable:"{/uiinfo/edit01}",
-      enabled:"{/IS_EDIT}",valueState:"{/uiinfo/OBJID_stat}",valueStateText:"{/uiinfo/OBJID_stxt}"});
-    oRElm1.addField(oRInp1);
+      enabled:"{/IS_EDIT}",valueState:"{/uiinfo/OBJID_stat}",valueStateText:"{/uiinfo/OBJID_stxt}",
+      layoutData:new sap.ui.layout.GridData({span:"XL11 L11 M11 S11"})});
+    oRGrid.addContent(oRInp1);
 
     //OBJID를 변경 이벤트.
     oRInp1.attachChange(function(oEvent){
@@ -93,13 +152,23 @@
     }); //OBJID를 변경 이벤트.
 
 
+    //OBJID 복사 버튼.
+    var oRBtn0 = new sap.m.Button({icon:"sap-icon://copy", width:"100%",
+      layoutData:new sap.ui.layout.GridData({span:"XL1 L1 M1 S1"})});
+    oRGrid.addContent(oRBtn0);
 
-    var oRElm2 = new sap.ui.layout.form.FormElement({label:new sap.m.Label({text:"Descriptions",design:"Bold"})});
-    oRCtn1.addFormElement(oRElm2);
+    //OBJID 복사 버튼 선택 이벤트.
+    oRBtn0.attachPress(function(){
+      //라이브러리명 복사 처리.
+      oAPP.fn.attrCopyText(oRInp1.getValue());
+    }); //OBJID 복사 버튼 선택 이벤트.
+
+
+    oRGrid.addContent(new sap.m.Label({text:"Descriptions",design:"Bold"}));
 
     //Description 입력 TextArea
     var oRTAr1 = new sap.m.TextArea({width:"100%",rows:4,value:"{/uiinfo/DESC}",editable:"{/uiinfo/edit02}",enabled:"{/IS_EDIT}"});
-    oRElm2.addField(oRTAr1);
+    oRGrid.addContent(oRTAr1);
 
 
     //Description 변경 이벤트.
@@ -111,7 +180,6 @@
       oAPP.fn.setChangeFlag();
 
     }); //Description 변경 이벤트.
-
 
 
     /************************************************************************
@@ -1480,10 +1548,10 @@
     //enum정보가 구성된경우 exit.
     if(typeof is_attr.T_DDLB !== "undefined" && is_attr.T_DDLB.length !== 0){return;}
 
-    var l_UIATT = is_attr.UIATT.toUpperCase();
-
-    //프로퍼티명에 COLOR가 포함안되는경우 exit.
-    if(l_UIATT.indexOf("COLOR") === -1){return;}
+    //현재 프로퍼티가 color 관련 프로퍼티가 아닌경우 exit.
+    if(oAPP.fn.attrIsColorProp(is_attr) !== true){
+      return;
+    }
 
     jQuery.sap.require("sap.ui.unified.ColorPickerPopover");
 
@@ -1503,6 +1571,11 @@
 
     //f4 help선택 위치에 color picker 팝업 open처리.
     oColPic.openBy(oEvent.oSource);
+
+    //이전에 선택한 색상 코드가 존재하는경우 팝업에 마킹 처리.
+    if(is_attr.UIATV !== ""){
+      oColPic.setColorString(is_attr.UIATV);
+    }
 
     //하위 로직 skip처리를 위한 flag return.
     return true;
@@ -1540,11 +1613,10 @@
     //enum정보가 구성된경우 exit.
     if(typeof is_attr.T_DDLB !== "undefined" && is_attr.T_DDLB.length !== 0){return;}
 
-    var l_UIATT = is_attr.UIATT.toUpperCase();
-
-    //프로퍼티명에 COLOR가 포함안되는경우 exit.
-    if(l_UIATT.indexOf("ICON") === -1 && l_UIATT.indexOf("IMAGE") === -1 && l_UIATT.indexOf("SRC") === -1){return;}
-
+    //현재 프로퍼티가 icon 관련 프로퍼티가 아닌 경우exit.
+    if(oAPP.fn.attrIsIconProp(is_attr) !== true){
+      return;
+    }
 
     //icon list popup function이 존재하는 경우.
     if(typeof oAPP.fn.callIconListPopup !== "undefined"){
@@ -2380,6 +2452,62 @@
 
 
 
+  //프로퍼티가 아이콘관련 프로퍼티인지 여부 확인.
+  oAPP.fn.attrIsIconProp = function(is_attr){
+
+    //PROPERTY가 아닌경우, 바인딩처리된경우 EXIT. 
+    if(is_attr.UIATY !== "1"){return;}
+
+    var l_UIATT = is_attr.UIATT.toUpperCase();
+
+    //프로퍼티명에 ICON 관련 키워드가 포함안되는경우 exit.
+    if(l_UIATT.indexOf("ICON") === -1 && l_UIATT.indexOf("IMAGE") === -1 && l_UIATT.indexOf("SRC") === -1){return;}
+
+    //type이 int, float, boolean유형은 처리 하지 않음.
+    if(is_attr.UIADT === "int" || is_attr.UIADT === "float" || is_attr.UIADT === "boolean"){return;}
+
+    //프로퍼티 타입이 width, height 관련 타입인경우 exit.
+    if(is_attr.UIADT === "sap.ui.core.CSSSize"){return;}
+
+    //프로퍼티 타입이 색상관련 타입인경우 exit.
+    if(is_attr.UIADT === "sap.ui.core.CSSColor"){return;}
+
+    //아이콘 관련 프로퍼티임 flag return.
+    return true;
+
+  };  //프로퍼티가 아이콘관련 프로퍼티인지 여부 확인.
+
+
+
+
+  //프로퍼티가 컬러관련 프로퍼티인지 여부 확인.
+  oAPP.fn.attrIsColorProp = function(is_attr){
+
+    //PROPERTY가 아닌경우, 바인딩처리된경우 EXIT. 
+    if(is_attr.UIATY !== "1"){return;}
+
+    var l_UIATT = is_attr.UIATT.toUpperCase();
+
+    //프로퍼티명에 컬러 관련 키워드가 포함안되는경우 exit.
+    if(l_UIATT.indexOf("COLOR") === -1){return;}
+
+    //type이 int, float, boolean유형은 처리 하지 않음.
+    if(is_attr.UIADT === "int" || is_attr.UIADT === "float" || is_attr.UIADT === "boolean"){return;}
+
+    //프로퍼티 타입이 width, height 관련 타입인경우 exit.
+    if(is_attr.UIADT === "sap.ui.core.CSSSize"){return;}
+
+    //프로퍼티 타입이 아이콘 관련 타입인경우 exit.
+    if(is_attr.UIADT === "sap.ui.core.URI"){return;}    
+
+    //컬러관련 프로퍼티임 flag return.
+    return true;
+
+  };  //프로퍼티가 컬러관련 프로퍼티인지 여부 확인.
+
+
+
+
   //프로퍼티의 입력필드 f4 help 설정 여부.
   oAPP.fn.attrSetShowValueHelp = function(is_attr){
     //deflaut f4 help 버튼 비활성 처리.
@@ -2394,15 +2522,19 @@
     //DDLB가 설정된 경우 EXIT.
     if(typeof is_attr.T_DDLB !== "undefined" && is_attr.T_DDLB.length !== 0){return;}
 
-    var l_UIATT = is_attr.UIATT.toUpperCase();
+    //프로퍼티가 아이콘관련 프로퍼티인지 여부 확인.
+    if(oAPP.fn.attrIsIconProp(is_attr) === true){
+      //f4 help 버튼 활성화.
+      is_attr.showF4 = true;
+      return;
+    }
 
-    //프로퍼티명에 COLOR, ICON이 없는경우 EXIT.
-    if(l_UIATT.indexOf("COLOR") === -1 && l_UIATT.indexOf("ICON") === -1 && 
-      l_UIATT.indexOf("IMAGE") === -1 && l_UIATT.indexOf("SRC") === -1){return;}
-
-    //f4 help 버튼 활성화.
-    is_attr.showF4 = true;
-
+    //프로퍼티가 컬러관련 프로퍼티인지 여부 확인.
+    if(oAPP.fn.attrIsColorProp(is_attr) === true){
+      //f4 help 버튼 활성화.
+      is_attr.showF4 = true;
+    }
+    
   };  //프로퍼티의 입력필드 f4 help 설정 여부.
 
 
@@ -3707,6 +3839,8 @@
 
     function lf_setAttr(T_EVT){
 
+      oAPP.attr.oModel.oData.T_ATTR = [];
+
       oAPP.attr.T_EVT = T_EVT;
 
       //file uploader UI의 uploaderUrl 프로퍼티 예외처리.
@@ -4784,6 +4918,9 @@
 
     var l_isTree = false;
 
+    //현재 UI의 라인 정보 얻기.
+    var ls_tree = oAPP.fn.getTreeData(ls_attr.OBJID);
+
     //drop한 프로퍼티가 attribute정보가 sap.m.Tree의 parent, child인경우.
     if(ls_attr.UIATK === "EXT00001190" ||  //parent
       ls_attr.UIATK === "EXT00001191"){   //child
@@ -4808,6 +4945,12 @@
 
       //rows aggregation에 바인딩된 정보 매핑.
       l_path = oAPP.attr.prev[ls_attr.OBJID].__PARENT._MODEL["rows"];
+
+      l_isTree = true;
+
+    }else if(ls_tree.PUIATK === "AT000022249" || ls_tree.PUIATK === "AT000022258"){
+      //sap.ui.table.Table(sap.ui.table.TreeTable)의 rowSettingsTemplate aggregation에 속한 UI인경우.
+      l_path = oAPP.attr.prev[ls_tree.POBID]._MODEL["rows"];
 
       l_isTree = true;
 
@@ -5108,5 +5251,23 @@
     }); //서버에서 SAMPLE 정보 검색.
 
   };  //샘플 팝업 호출.
+
+
+
+
+  //text 복사(ctrl + c) 처리.
+  oAPP.fn.attrCopyText =function(sText){
+    
+    //text 정보가 없는경우 exit.
+    if(!sText || sText === ""){return;}
+
+    //ui 라이브러리명 복사 처라.
+    parent.setClipBoardTextCopy(sText);
+
+    //메시지 처리.
+    parent.showMessage(sap, 10, "I", sText + " copied.");
+
+  };  //text 복사(ctrl + c) 처리.
+
 
 })();
