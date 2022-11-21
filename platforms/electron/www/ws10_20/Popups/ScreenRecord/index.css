@@ -1,0 +1,376 @@
+* {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+*:focus {
+  outline: none;
+}
+
+html,
+body {
+  height: 100%;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  /*background-color: #222;*/
+}
+
+
+/*========================================= */
+/* 씨인                          */
+/*========================================= */
+
+.signature-on {
+  background-color: rgba(0, 0, 0, 0.01);
+
+}
+
+.signature-off {
+  opacity: 0;
+
+}
+
+.signature-component {
+  text-align: left;
+  display: inline-block;
+  max-width: 100%;
+}
+.signature-component h1 {
+  margin-bottom: 0;
+}
+.signature-component h2 {
+  margin: 0;
+  font-size: 100%;
+}
+.signature-component button {
+  padding: 1em;
+  /* background: transparent; */
+  box-shadow: 2px 2px 4px #777;
+  margin-top: 0.5em;
+  border: 1px solid #777;
+  font-size: 1rem;
+}
+.signature-component button.toggle {
+  background: rgba(255, 0, 0, 0.2);
+}
+.signature-component canvas {
+  display: block;
+  position: relative;
+  border: 1px solid;
+}
+.signature-component img {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+
+/*========================================= */
+/* WINDOW 드로잉 초기화 버튼                 */
+/*========================================= */
+.drow-initial {
+  position: absolute;
+  top: 63%;
+  right: 0;
+  left: 6%;
+
+}
+
+.drow-initial-Button {
+  
+  zoom:0.9;
+	box-shadow: 0px 10px 14px -7px #276873;
+	background:linear-gradient(to bottom, #599bb3 5%, #408c99 100%);
+	background-color:#599bb3;
+	border-radius:8px;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:20px;
+	font-weight:bold;
+	padding:13px 32px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #3d768a;
+}
+.drow-initial-Button :hover {
+	background:linear-gradient(to bottom, #408c99 5%, #599bb3 100%);
+	background-color:#408c99;
+}
+.drow-initial-Button :active {
+	position:relative;
+	top:1px;
+}
+
+
+/*========================================= */
+/* 레코딩 화면 종료 버튼                      */
+/*========================================= */
+.recording-close {
+  position: absolute;
+  top: 81%;
+  right: 0;
+  left: 6%;
+
+}
+
+.recording-close-Button {
+  
+  zoom:0.9;
+	box-shadow: 0px 10px 14px -7px #801b54;
+  background: linear-gradient(to bottom, #801b54 5%, #801b54 100%);
+	background-color:#801b54;
+	border-radius:8px;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:20px;
+	font-weight:bold;
+	padding:13px 32px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #801b54;
+}
+.recording-close :hover {
+	background: linear-gradient(to bottom, #420808 5%, #4e0303 100%);
+	background-color:#450714;
+}
+.recording-close :active {
+  position:relative;
+	top:1px;
+}
+
+
+
+
+/*========================================= */
+/* WINDOW 드로잉 설정 체크박스               */
+/*========================================= */
+.drow-checkbox {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 5%;
+}
+
+.drow-checkbox input.drow-checkbox1{
+  font-size: 1em;
+  width: 1.25em; /* 너비 설정 */
+  height: 1.25em; /* 높이 설정 */
+  vertical-align: middle;
+  zoom: 1.4 !important;
+}
+.drow-checkbox input.drow-checkbox1 + label{ /* 라벨 텍스트 크기와 수직 정렬 맞춤 */
+  font-size: 20px;
+  color: white;
+  vertical-align: middle;
+}
+
+/*========================================= */
+/* 레코딩 관련 css                           */
+/*========================================= */
+
+#app-cover {
+  z-index: 100000000000;
+  position: fixed;
+  zoom:0.5;
+  top: 85%;
+  right: 0;
+  bottom: 0;
+  left: 93%;
+  width: 270px;
+  background:black;
+  overflow-y: auto;
+}
+
+#app-box {
+  
+  position: absolute;
+  top: 30%;
+  right: 31%;
+  left: 0%;
+  width: 155px;
+  margin: -70px auto 0 auto;
+}
+
+#toggle-button {
+  width: 50px;
+  height: 100px;
+  background-color: #fff;
+  border-radius: 100px;
+  cursor: pointer;
+}
+
+#toggle-button:before {
+  content: "";
+  position: absolute;
+  top: 56px;
+  bottom: 6px;
+  left: 6px;
+  width: 38px;
+  opacity: 1;
+  background-color: #bcbcbc;
+  border-radius: 100px;
+  transition: 0.3s linear all;
+}
+
+#toggle-button.moveup:before {
+  top: 56px;
+  bottom: 6px;
+  background-color: #ff4f4f;
+  -webkit-animation: moveup-1 0.3s linear forwards, moveup-2 0.3s linear 0.6s forwards,
+    blink 1s ease-in-out 0.9s infinite;
+          animation: moveup-1 0.3s linear forwards, moveup-2 0.3s linear 0.6s forwards,
+    blink 1s ease-in-out 0.9s infinite;
+}
+
+#toggle-button.movedown:before {
+  top: 6px;
+  bottom: 56px;
+  background-color: #bcbcbc;
+  -webkit-animation: movedown-1 0.3s linear 0s forwards,
+    movedown-2 0.3s linear 0.6s forwards;
+          animation: movedown-1 0.3s linear 0s forwards,
+    movedown-2 0.3s linear 0.6s forwards;
+}
+
+@-webkit-keyframes moveup-1 {
+  0% {
+    top: 56px;
+  }
+  100% {
+    top: 6px;
+  }
+}
+
+@keyframes moveup-1 {
+  0% {
+    top: 56px;
+  }
+  100% {
+    top: 6px;
+  }
+}
+
+@-webkit-keyframes moveup-2 {
+  0% {
+    bottom: 6px;
+  }
+  100% {
+    bottom: 56px;
+  }
+}
+
+@keyframes moveup-2 {
+  0% {
+    bottom: 6px;
+  }
+  100% {
+    bottom: 56px;
+  }
+}
+
+@-webkit-keyframes movedown-1 {
+  0% {
+    bottom: 56px;
+  }
+  100% {
+    bottom: 6px;
+  }
+}
+
+@keyframes movedown-1 {
+  0% {
+    bottom: 56px;
+  }
+  100% {
+    bottom: 6px;
+  }
+}
+
+@-webkit-keyframes movedown-2 {
+  0% {
+    top: 6px;
+  }
+  100% {
+    top: 56px;
+  }
+}
+
+@keyframes movedown-2 {
+  0% {
+    top: 6px;
+  }
+  100% {
+    top: 56px;
+  }
+}
+
+@-webkit-keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#recorder-data {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 93px;
+  margin-top: -42px;
+}
+
+.rec-text {
+  color: #656565;
+  font-size: 30px;
+  line-height: 1;
+  transition: 0.3s ease color;
+  cursor: pointer;
+}
+
+.rec-text.active {
+  color: #fff;
+}
+
+#active-text {
+  margin-bottom: 16px;
+}
+
+#active-text.lspace {
+  letter-spacing: 2px;
+}
+
+#hint {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+  background-color: #272727;
+}

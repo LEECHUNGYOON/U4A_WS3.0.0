@@ -3320,8 +3320,6 @@
      ************************************************************************/
     oAPP.events.ev_tmplWzd3Complete = () => {
 
-        debugger;
-
         // Report Template의 Form 정보를 구한다.
         let oFormResult = oAPP.fn.fnGetTmplWzd3FormComplete();
         if (oFormResult.RETCD && oFormResult.RETCD == "E") {
@@ -3361,8 +3359,6 @@
             oAPP.events.pressUiTempWizardDialogClose();
 
         }
-
-        // oAPP.fn.designWizardCallback(oComplete, lf_callback);
 
     }; // end of oAPP.events.ev_tmplWzd3Complete
 

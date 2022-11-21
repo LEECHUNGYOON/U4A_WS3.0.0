@@ -3320,8 +3320,6 @@
      ************************************************************************/
     oAPP.events.ev_tmplWzd3Complete = () => {
 
-        debugger;
-
         // Report Template의 Form 정보를 구한다.
         let oFormResult = oAPP.fn.fnGetTmplWzd3FormComplete();
         if (oFormResult.RETCD && oFormResult.RETCD == "E") {
@@ -3334,14 +3332,15 @@
         if (oTableResult.RETCD && oTableResult.RETCD == "E") {
             parent.showMessage(sap, 10, "E", oTableResult.RTMSG);
             return;
+        }        
+    
+        let oResult = {
+            uName: "ReportTemplate",
+            oSearch: oFormResult,
+            oList: oTableResult
         }
 
-        let aResult = [
-            oFormResult,
-            oTableResult
-        ];
-
-        oAPP.fn.designWizardCallback(aResult, lf_callback);
+        oAPP.fn.designWizardCallback(oResult, lf_callback);
 
         function lf_callback(oReturn) {
 
@@ -3360,8 +3359,6 @@
             oAPP.events.pressUiTempWizardDialogClose();
 
         }
-
-        // oAPP.fn.designWizardCallback(oComplete, lf_callback);
 
     }; // end of oAPP.events.ev_tmplWzd3Complete
 

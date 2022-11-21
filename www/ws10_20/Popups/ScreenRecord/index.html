@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>screen recording</title>
+    <link rel="stylesheet" href="index.css">
+
+  </head>
+<body style="margin:0px;padding:0px;overflow:hidden">
+
+  <!-- partial:index.partial.html -->
+  <div id="app-cover">
+
+    <!--레코딩 선택 영역-->
+    <div id="app-box">
+      <div id="toggle-button" class="clickable"></div>
+      <div id="recorder-data">
+        <div id="active-text" class="clickable rec-text">Record</div>
+        <div id="stop-text" class="clickable rec-text active">Stop</div>
+      </div>
+    </div>
+
+    <!--드로잉 가능 여부 체크박스-->
+    <div class="drow-checkbox" style="display:none;">
+      <input type="checkbox" name="check1" id="check1" value="1" class="drow-checkbox1">
+      <label for="check1">드로잉 여부</label>
+    </div>
+
+    <!--드로잉 값 초기화 버튼-->
+    <div class="drow-initial">
+      <a href="#" class="drow-initial-Button" style="display:none;">드로잉 초기화</a>
+   
+    </div>
+
+    <!--레코딩 화면 종료 버튼-->
+    <div class="recording-close">
+      <a href="#" class="recording-close-Button" >레코딩 창 종료</a>
+   
+    </div>
+
+  </div>
+
+  <div id="SIGN_CTNR" class="signature-off" style="z-index: 100000;">
+  <canvas id="signature-pad" width="1000" height="500"></canvas>
+  </div>
+  
+  <script src="underscore.min.js"></script> 
+  <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script>  -->
+  <!-- partial -->
+  <script  src="index.js"></script>
+
+</body>
+</html>

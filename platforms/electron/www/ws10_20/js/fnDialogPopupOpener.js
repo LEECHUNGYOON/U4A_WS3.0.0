@@ -2033,4 +2033,18 @@
 
     }; // end of oAPP.fn.fnAppShortCutDownPopupOpener
 
+    /************************************************************************
+     * [Header Menu] 비디오 녹화 팝업
+     ************************************************************************/
+    oAPP.fn.fnOpenVideoRecord = () => {
+
+
+
+        alert("비디오 녹화!!");
+
+
+
+    }; // end of oAPP.fn.fnOpenVideoRecord
+
+
 })(window, $, oAPP);

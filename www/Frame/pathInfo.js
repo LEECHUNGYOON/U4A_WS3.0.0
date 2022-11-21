@@ -71,6 +71,7 @@ module.exports = (() => {
         UI5CSSPOP: PATH.join(POPUP_ROOT, "ui5CssPopup", "frame.html"),
         SHORTCUTPOP: PATH.join(POPUP_ROOT, "ShortCutCreator", "index.html"),
         DESIGNTREEUISRCH: PATH.join(POPUP_ROOT, "designTreeUiSearchPopup", "index.html"),
+        VIDEOREC: PATH.join(POPUP_ROOT, "ScreenRecord", "index.html"),
 
         // Suggestion Json Path..
         EVENTSUGG: PATH.join(SUGG_ROOT, "events.json"),

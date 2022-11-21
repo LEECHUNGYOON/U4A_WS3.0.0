@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -45,13 +45,13 @@
 
         // 파일 확장자 이미지 경로 구하기
         fnGetFileExtendImgList()
-            .then(function() {
+            .then(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
 
             })
-            .catch(function() {
+            .catch(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
@@ -65,7 +65,7 @@
      ************************************************************************/
     function fnGetFileExtendImgList() {
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
@@ -104,6 +104,9 @@
             oUspTreeTable.collapseAll();
             oUspTreeTable.clearSelection();
 
+            // Usp Tree RowsUpdate 이벤트 걸기
+            oUspTreeTable.attachRowsUpdated(oAPP.fn.fnAttachRowsUpdateInit);
+
             // 화면 처음 로딩 시, Root Node의 정보를 구한다.
             oUspTreeTable.attachRowsUpdated(ev_getRootNodeRowsUpdated);
 
@@ -111,13 +114,10 @@
 
         // 이전에 선택한 라인이 있다면 해당 라인 선택 아이콘 표시 해제
         fnOnUspTreeUnSelect();
-        
-        // Usp Tree RowsUpdate 이벤트 걸기
-        oUspTreeTable.attachRowsUpdated(oAPP.fn.fnAttachRowsUpdateInit);
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function() {
+    oAPP.fn.fnOnResizeWs30 = function () {
 
         console.log("resize30!!!");
 
@@ -267,7 +267,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -450,7 +450,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -1123,7 +1123,7 @@
                                         "ISFLD",
                                         "EXTEN"
                                     ],
-                                    formatter: function(ISFLD, EXTEN) {
+                                    formatter: function (ISFLD, EXTEN) {
 
                                         var iFileImgListLength = gaFileExtendImgList.length;
                                         if (iFileImgListLength == 0) {
@@ -1255,7 +1255,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function(oEvent) {
+                rowSelectionChange: function (oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1293,7 +1293,7 @@
 
     } // end of fnGetTreeTableWs30
 
-     /**************************************************************************
+    /**************************************************************************
      * [WS30] Usp 화면 진입시 UspTree에 RowsUpdate 이벤트 걸기
      **************************************************************************/
     oAPP.fn.fnAttachRowsUpdateInit = () => {
@@ -1348,7 +1348,7 @@
 
         // var oTreeTable = oEvent.getSource(),
         var oTreeTable = sap.ui.getCore().byId("usptree");
-        if(!oTreeTable){
+        if (!oTreeTable) {
             return;
         }
 
@@ -1418,7 +1418,7 @@
 
             oIsFolderCheckbox = new sap.m.CheckBox({
                 editable: false
-            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
+            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                 if (ISFLD == "X") {
                     return true;
@@ -1484,7 +1484,7 @@
                                 ]
                             })
 
-                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function(ISFLD) {
+                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                             // 폴더가 아닐 경우에만 보여준다.
                             if (ISFLD != "X") {
@@ -1512,7 +1512,7 @@
             layoutData: new sap.m.FlexItemData({
                 styleClass: "sapUiTinyMarginBottom"
             })
-            
+
             // layoutData: new sap.ui.layout.SplitterLayoutData({
             //     size: "200px",
             //     minSize: 200
@@ -1539,7 +1539,7 @@
             .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function(oControl) {
+            onAfterRendering: function (oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -1712,6 +1712,9 @@
         var aWMENU20 = [{
                 key: "WMENU20_01",
                 text: "Select Browser Type"
+            },{
+                key: "WMENU20_03",
+                text: "Video Record"
             }],
 
             aWMENU30 = [{
@@ -1727,7 +1730,7 @@
                 key: "WMENU30_04",
                 text: "Logoff",
             }, {
-                key: "WMENU30_04",
+                key: "WMENU30_05",
                 text: "Release Note",
             }],
 
@@ -1898,7 +1901,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1982,7 +1985,7 @@
             initialFocus: "ws30_crname",
 
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -2250,7 +2253,7 @@
     function lf_appDelCtsPopup(oParam) {
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oParam = this;
 
@@ -2387,6 +2390,12 @@
         // 화면 Lock 해제
         sap.ui.getCore().unlock();
 
+        let oUspTreeTable = sap.ui.getCore().byId("usptree");
+        if (oUspTreeTable) {
+            // RowUpdate 이벤트를 해제 한다.
+            oUspTreeTable.detachRowsUpdated(oAPP.fn.fnAttachRowsUpdateInit);
+        }
+
     } // end of _fnKillUserSessionCb
 
     /**************************************************************************
@@ -2394,8 +2403,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function(e) {
-                $.each(e, function(e, o) {
+            t = function (e) {
+                $.each(e, function (e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2655,7 +2664,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function(event) {
+            fileReader.onload = function (event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -2978,7 +2987,7 @@
 
         // 선택한 위치가 Root 여부
         if (bIsRoot) {
-            
+
             // 현재 APP 정보를 구한다.
             var oAppInfo = fnGetAppInfo();
 
@@ -4628,7 +4637,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this;
             // IS_ACT = oEvent.getParameter("IS_ACT");

@@ -157,6 +157,10 @@
             aWMENU20 = [{
                 key: "WMENU20_01",
                 text: "Select Browser Type"
+            },
+            {
+                key: "WMENU20_03",
+                text: "Video Record"
             }],
 
             aWMENU30 = [{
@@ -244,7 +248,12 @@
                     key: "WMENU20_02",
                     text: "OTR Manager",
                     enabled: true,
-                }
+                },
+                {
+                    key: "WMENU20_03",
+                    text: "Video Record",
+                    enabled: true,
+                },
             ],
 
             aWMENU30 = [{
