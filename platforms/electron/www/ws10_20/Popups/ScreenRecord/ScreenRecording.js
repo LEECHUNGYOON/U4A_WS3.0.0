@@ -81,7 +81,7 @@ exports.start = async function(REMOTE){
         oWIN.loadURL(url);
 	    oWIN.webContents.on('did-finish-load', function () {
             oWIN.show();
-            oWIN.webContents.openDevTools();
+            // oWIN.webContents.openDevTools();
         });
 
         oWIN.on("close", ()=>{

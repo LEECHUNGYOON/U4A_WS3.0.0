@@ -133,6 +133,7 @@ function gfn_crtUI_Main() {
     }, this);
 
     oHandle.UI.PAGE.addContent(TIMELINE);
+    oHandle.UI.TIMELINE = TIMELINE;
     APP.placeAt("Content");
 
 }
@@ -140,6 +141,8 @@ function gfn_crtUI_Main() {
 // 릴리즈 노트 라인 아이템 구성 
 function gfn_crtUI_Item(oParent) {
 
+    debugger;
+    
     switch (oHandle.isCDN) {
         case "X":
             gfn_crtUI_Item_GITHUB(oParent);
@@ -155,6 +158,8 @@ function gfn_crtUI_Item(oParent) {
 
 // 릴리즈 노트 라인 아이템 구성 - SAP 
 function gfn_crtUI_Item_SAP(oParent) {
+    
+    debugger;
 
     let oformData = new FormData();
     oformData.append('VER', oHandle.curVER);
@@ -218,12 +223,13 @@ function gfn_crtUI_Item_SAP(oParent) {
 
                 //waiting off
                 oHandle.UI.PAGE.setBusy(false);
-
+                oHandle.UI.TIMELINE.setBusy(false);
 
             } catch (err) {
 
                 //waiting off
                 oHandle.UI.PAGE.setBusy(false);
+                oHandle.UI.TIMELINE.setBusy(false);
 
             }
 
@@ -304,7 +310,7 @@ async function gfn_crtUI_Item_GITHUB(oParent) {
 
     //waiting off
     oHandle.UI.PAGE.setBusy(false);
-
+    oHandle.UI.TIMELINE.setBusy(false);
 
 
 }

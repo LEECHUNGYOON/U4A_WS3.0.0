@@ -33,8 +33,6 @@ let goRecordPopup;
 /* ================================================================= */
 exports.start = async function(REMOTE){
 
-    debugger;
-    
     //예외처리: 한번 실행점검 
 
         if(goRecordPopup){            
@@ -81,7 +79,7 @@ exports.start = async function(REMOTE){
         oWIN.loadURL(url);
 	    oWIN.webContents.on('did-finish-load', function () {
             oWIN.show();
-            oWIN.webContents.openDevTools();
+            // oWIN.webContents.openDevTools();
         });
 
         oWIN.on("close", ()=>{
