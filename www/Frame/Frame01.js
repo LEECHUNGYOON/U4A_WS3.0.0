@@ -670,6 +670,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
             oBrowserOptions = JSON.parse(JSON.stringify(oDefaultOption.browserWindow));
 
         oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.show = false;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
@@ -679,12 +680,15 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         oBrowserOptions.y = mainWindowState.y;
         oBrowserOptions.width = mainWindowState.width;
         oBrowserOptions.height = mainWindowState.height;
+        oBrowserOptions.minWidth = 1000;
+        oBrowserOptions.minHeight = 800;
 
-        var oParentBounds = CURRWIN.getBounds();
-        oBrowserOptions.x = oParentBounds.x + 30;
-        oBrowserOptions.y = oParentBounds.y + 30;
-        oBrowserOptions.width = oParentBounds.width;
-        oBrowserOptions.height = oParentBounds.height;
+
+        // var oParentBounds = CURRWIN.getBounds();
+        // oBrowserOptions.x = oParentBounds.x + 30;
+        // oBrowserOptions.y = oParentBounds.y + 30;
+        // oBrowserOptions.width = oParentBounds.width;
+        // oBrowserOptions.height = oParentBounds.height;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -694,8 +698,19 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
          * ----- test start -----
          */
         function lf_setBound() {
+            // var oParentBounds = CURRWIN.getBounds();
+            // oBrowserWindow.setBounds(oParentBounds);
+
+            let oBrowserOptions = {};
+
             var oParentBounds = CURRWIN.getBounds();
-            oBrowserWindow.setBounds(oParentBounds);
+            oBrowserOptions.x = oParentBounds.x + 30;
+            oBrowserOptions.y = oParentBounds.y + 30;
+            oBrowserOptions.width = oParentBounds.width;
+            oBrowserOptions.height = oParentBounds.height;
+
+            oBrowserWindow.setBounds(oBrowserOptions);
+
         }
 
         // 브라우저 상단 메뉴 없애기
@@ -726,7 +741,9 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
             oBrowserWindow.setOpacity(1.0);
 
-            // lf_setBound();
+            lf_setBound();
+
+            oBrowserWindow.show();
 
         });
 

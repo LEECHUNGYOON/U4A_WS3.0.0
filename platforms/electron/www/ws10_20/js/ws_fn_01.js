@@ -55,6 +55,11 @@
 
                     case "WS30":
 
+                        var oSplitLayout = sap.ui.getCore().byId("usptreeSplitLayout");
+                        if (oSplitLayout) {
+                            oSplitLayout.setSize("500px");
+                        }
+
                         oAPP.fn.fnOnInitLayoutSettingsWs30();
 
                         oAPP.fn.fnMoveToWs30(); // #[ws_fn_02.js]

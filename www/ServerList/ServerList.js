@@ -335,16 +335,15 @@
             oWebPreferences = oBrowserOptions.webPreferences,
             oThemeInfo = oSAPServerInfo.oThemeInfo;
 
-        // oBrowserOptions.backgroundColor = "#1c2228";
-        // oBrowserOptions.backgroundColor = "#f7f7f7";
-        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
-
         // 브라우저 윈도우 기본 사이즈
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.x = mainWindowState.x;
         oBrowserOptions.y = mainWindowState.y;
         oBrowserOptions.width = mainWindowState.width;
         oBrowserOptions.height = mainWindowState.height;
-        // oBrowserOptions.show = false;
+        oBrowserOptions.minWidth = 1000,
+        oBrowserOptions.minHeight = 800,
+        oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0;
         oWebPreferences.partition = SESSKEY;
         oWebPreferences.browserkey = BROWSERKEY;
@@ -388,6 +387,8 @@
 
             oBrowserWindow.setOpacity(1.0);
 
+            oBrowserWindow.show();
+            
         });
 
         // 브라우저를 닫을때 타는 이벤트

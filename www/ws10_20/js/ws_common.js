@@ -5,7 +5,7 @@
  * - file Desc : ws 공통 스크립트
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     oAPP.common = {};
@@ -28,7 +28,7 @@
      * - true : child window 보이기
      * - false : child window 숨김
      * **********************************************************************/
-    oAPP.common.fnIsChildWindowShow = function (bIsShow) {
+    oAPP.common.fnIsChildWindowShow = function(bIsShow) {
 
         var oCurrWin = REMOTE.getCurrentWindow(),
             aChild = oCurrWin.getChildWindows(),
@@ -62,7 +62,7 @@
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.common.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
+    oAPP.common.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -80,7 +80,7 @@
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.common.fnGetModelProperty = function (sModelPath) {
+    oAPP.common.fnGetModelProperty = function(sModelPath) {
         return sap.ui.getCore().getModel().getProperty(sModelPath);
     };
 
@@ -93,7 +93,7 @@
      * @return {String}
      * - Message Text
      ************************************************************************/
-    oAPP.common.fnGetMsgClassTxt = function (sMsgNum) {
+    oAPP.common.fnGetMsgClassTxt = function(sMsgNum) {
 
         // 메시지 클래스 내용이 없으면 리턴
         if (!oAPP.attr.oMsgClass) {
@@ -116,7 +116,7 @@
 
     }; // end of oAPP.common.fnGetMsgClassTxt
 
-    oAPP.common.fnTestGetMsgClsText = (sMsgCls, sMsgNum, p1, p2, p3, p4) => {
+    oAPP.common.fnGetMsgClsText = (sMsgCls, sMsgNum, p1, p2, p3, p4) => {
 
         // Metadata에서 메시지 클래스 정보를 구한다.
         var oMeta = parent.getMetadata(),
@@ -127,10 +127,70 @@
             return;
         }
 
-        
+        let sDefLangu = "E"; // default language    
 
+        // 현재 접속한 언어로 메시지를 찾는다.
+        let oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sLangu && a.MSGNR == sMsgNum);
 
+        // 현재 접속한 언어로 메시지를 못찾은 경우
+        if (!oMsgTxt) {
 
+            // 접속한 언어가 영어일 경우 빠져나간다.
+            if (sDefLangu == sLangu) {
+                return;
+            }
+
+            // 접속한 언어가 영어가 아닌데 메시지를 못찾으면 영어로 찾는다.
+            oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sDefLangu && a.MSGNR == sMsgNum);
+
+            // 그래도 없다면 빠져나간다.
+            if (!oMsgTxt) {
+                return;
+            }
+
+        }
+
+        var sText = oMsgTxt.TEXT,
+            aWithParam = [];
+
+        // 파라미터로 전달 받은 Replace Text 수집
+        aWithParam.push(p1 == null ? "" : p1);
+        aWithParam.push(p2 == null ? "" : p2);
+        aWithParam.push(p3 == null ? "" : p3);
+        aWithParam.push(p4 == null ? "" : p4);
+
+        var iWithParamLenth = aWithParam.length;
+        if (iWithParamLenth == 0) {
+            return sText;
+        }
+
+        // 메시지 클래스 텍스트에서 "& + 숫자" (예: &1) 값이 있는 것부터 순차적으로 치환한다.
+        for (var i = 0; i < iWithParamLenth; i++) {
+
+            var index = i + 1,
+                sParamTxt = aWithParam[i];
+
+            var sRegEx = "&" + index,
+                oRegExp = new RegExp(sRegEx, "g");
+
+            sText = sText.replace(oRegExp, sParamTxt);
+
+        }
+
+        sText = sText.replace(new RegExp("&\\d+", "g"), "");
+
+        // 메시지 클래스 텍스트에서 "&" 를 앞에서 부터 순차적으로 치환한다."
+        for (var i = 0; i < iWithParamLenth; i++) {
+
+            var sParamTxt = aWithParam[i];
+
+            sText = sText.replace(new RegExp("&", "i"), sParamTxt);
+
+        }
+
+        sText = sText.replace(new RegExp("&", "g"), "");
+
+        return sText;
 
     }; // end of oAPP.common.fnTestGetMsgClsText
 
@@ -146,7 +206,7 @@
      * @return {String}
      * - Message Text
      ************************************************************************/
-    oAPP.common.fnGetMsgClsTxt = function (sMsgNum, p1, p2, p3, p4) {
+    oAPP.common.fnGetMsgClsTxt = function(sMsgNum, p1, p2, p3, p4) {
 
         // Metadata에서 메시지 클래스 정보를 구한다.
         var oMeta = parent.getMetadata(),
@@ -213,14 +273,14 @@
     /************************************************************************
      * z-Index 구하기
      * **********************************************************************/
-    oAPP.common.fnGetZIndex = function () {
+    oAPP.common.fnGetZIndex = function() {
         return sap.ui.core.Popup.getNextZIndex();
     };
 
     /************************************************************************
      * 각 페이지 이동 시 푸터 메시지가 있으면 숨김처리
      ************************************************************************/
-    oAPP.common.fnHideFloatingFooterMsg = function () {
+    oAPP.common.fnHideFloatingFooterMsg = function() {
 
         if (oAPP.attr.footerMsgTimeout) {
             clearTimeout(oAPP.attr.footerMsgTimeout);
@@ -235,7 +295,7 @@
     /************************************************************************
      * 멀티 푸터 메시지 닫기
      ************************************************************************/
-    oAPP.common.fnMultiFooterMsgClose = function () {
+    oAPP.common.fnMultiFooterMsgClose = function() {
 
         var sPopupName = "ERRMSGPOP";
 
@@ -260,7 +320,7 @@
      * 예) WS10, WS20
      * @param {String} MSG  
      ************************************************************************/
-    oAPP.common.fnShowFloatingFooterMsg = function (TYPE, POS, MSG) {
+    oAPP.common.fnShowFloatingFooterMsg = function(TYPE, POS, MSG) {
 
         sap.ui.getCore().unlock();
 
@@ -312,7 +372,7 @@
         }
 
         // timeout 시간이 도래되면 Footer Message를 지운다.
-        oAPP.attr.footerMsgTimeout = setTimeout(function () {
+        oAPP.attr.footerMsgTimeout = setTimeout(function() {
 
             oAPP.common.fnHideFloatingFooterMsg();
 
@@ -361,7 +421,7 @@
     /*************************************************************************
      * Shortcut 설정
      **************************************************************************/
-    oAPP.common.getShortCutList = function (sPgNo) {
+    oAPP.common.getShortCutList = function(sPgNo) {
 
         var aShortCutWS10 = [{
                     KEY: "F11", // FullScreen
@@ -1304,7 +1364,7 @@
      * - page 명
      * 예) WS10, WS20     
      ************************************************************************/
-    oAPP.common.setShortCut = function (sPgNo) {
+    oAPP.common.setShortCut = function(sPgNo) {
 
         var oShortcut = oAPP.attr.oShortcut;
 
@@ -1328,7 +1388,7 @@
      * - page 명
      * 예) WS10, WS20     
      ************************************************************************/
-    oAPP.common.removeShortCut = function (sPgNo) {
+    oAPP.common.removeShortCut = function(sPgNo) {
 
         var oShortcut = oAPP.attr.oShortcut;
 
@@ -1348,7 +1408,7 @@
     /************************************************************************
      * 로그인 상태 체크
      ************************************************************************/
-    oAPP.common.sendAjaxLoginChk = function (fnCallback) {
+    oAPP.common.sendAjaxLoginChk = function(fnCallback) {
 
         var sPath = parent.getServerPath() + "/wsloginchk";
 
@@ -1378,7 +1438,7 @@
      *      BrowserWindow Instance
      *  
      ************************************************************************/
-    oAPP.common.getCheckAlreadyOpenWindow = function (OBJTY) {
+    oAPP.common.getCheckAlreadyOpenWindow = function(OBJTY) {
 
         var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
             aChildWin = oCurrWin.getChildWindows(), // 현재 window의 child window           
@@ -1430,7 +1490,7 @@
      * @param {String} oAppInfo (AppInfo를 던지고 싶을때 사용)
      * - APP Info
      ************************************************************************/
-    oAPP.common.execControllerClass = function (METHNM, INDEX, TCODE, oAppInfo) {
+    oAPP.common.execControllerClass = function(METHNM, INDEX, TCODE, oAppInfo) {
 
         var oParam = {
             METHNM: (METHNM == null ? "" : METHNM),
@@ -1472,7 +1532,7 @@
     /************************************************************************
      * APP 전체 대상 글로벌 Shortcut 지정하기
      * **********************************************************************/
-    oAPP.common.fnSetGlobalShortcut = function () {
+    oAPP.common.fnSetGlobalShortcut = function() {
 
         var oShortcut = oAPP.attr.oShortcut;
 
@@ -1532,7 +1592,7 @@
     /************************************************************************
      * APP 전체 대상 글로벌 Shortcut 삭제
      * **********************************************************************/
-    oAPP.common.fnRemoveGlobalShortcut = function () {
+    oAPP.common.fnRemoveGlobalShortcut = function() {
 
         var oShortcut = parent.GLOBALSHORTCUT;
 
@@ -1546,7 +1606,7 @@
      * 
      * @param {Function} fnExecFunc 
      */
-    oAPP.common.fnSetBusyDialog = function (bIsOpen) {
+    oAPP.common.fnSetBusyDialog = function(bIsOpen) {
 
         const BusyDialogID = "u4aWsBusyDialog";
 
@@ -1581,7 +1641,7 @@
 
                 // properties
                 showHeader: false,
-                escapeHandler: function () {
+                escapeHandler: function() {
 
 
                 },
@@ -1969,7 +2029,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
     var xhr = new XMLHttpRequest();
 
-    xhr.onreadystatechange = function () { // 요청에 대한 콜백
+    xhr.onreadystatechange = function() { // 요청에 대한 콜백
         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
             if (xhr.status === 200 || xhr.status === 201) {
 
@@ -2142,7 +2202,7 @@ function ajax_logoff() {
     var sPath = parent.getServerPath() + '/logoff';
 
     var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function () { // 요청에 대한 콜백
+    xhr.onreadystatechange = function() { // 요청에 대한 콜백
         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
 
             if (xhr.status === 200 || xhr.status === 201) {
@@ -2304,7 +2364,7 @@ function sendServerExit(oOptions, fnCallback) {
     parent.setBusy('X');
 
     var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
+    xhttp.onreadystatechange = function() {
         if (this.readyState == 4) {
 
             if (typeof fnCallback === "function") {
