@@ -72,6 +72,7 @@ module.exports = (() => {
         SHORTCUTPOP: PATH.join(POPUP_ROOT, "ShortCutCreator", "index.html"),
         DESIGNTREEUISRCH: PATH.join(POPUP_ROOT, "designTreeUiSearchPopup", "index.html"),
         VIDEOREC: PATH.join(POPUP_ROOT, "ScreenRecord", "ScreenRecording.js"),
+        WINHIDE : PATH.join(POPUP_ROOT, "winShowHidePopup", "index.html"),
 
         // Suggestion Json Path..
         EVENTSUGG: PATH.join(SUGG_ROOT, "events.json"),

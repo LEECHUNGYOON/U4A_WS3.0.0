@@ -155,13 +155,14 @@
             ],
 
             aWMENU20 = [{
-                key: "WMENU20_01",
-                text: "Select Browser Type"
-            },
-            {
-                key: "WMENU20_03",
-                text: "Video Record"
-            }],
+                    key: "WMENU20_01",
+                    text: "Select Browser Type"
+                },
+                {
+                    key: "WMENU20_03",
+                    text: "Video Record"
+                }
+            ],
 
             aWMENU30 = [{
                     key: "WMENU30_01",
@@ -575,38 +576,6 @@
 
         oAPP.wmenu.WS10 = oMenuUI;
 
-        var oSapIcon = new sap.ui.core.Icon({
-                src: "sap-icon://sap-logo-shape"
-            }),
-
-            oSapTCodeInput = new sap.m.SearchField({
-
-                // properties
-                width: "200px",
-                placeholder: "SAP T-CODE",
-                showSearchButton: false,
-                enableSuggestions: true,
-
-                // aggregations
-                suggestionItems: {
-                    path: "/SUGG/TCODE",
-                    sorter: "{ path : '/SUGG/TCODE/TCODE' }",
-                    template: new sap.m.SuggestionItem({
-                        // key: "{TCODE}",
-                        text: "{TCODE}",
-                    })
-                },
-
-                // events
-                search: (oEvent) => {
-                    oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
-                },
-                suggest: (oEvent) => {
-                    oAPP.events.ev_suggestSapTcode(oEvent);
-                }
-
-            }).addStyleClass("u4aWs20sapTcodeInput");
-
         return [
 
             new sap.m.HBox({
@@ -644,38 +613,9 @@
 
             new sap.m.ToolbarSpacer(),
 
-            oSapIcon,
+            // 상단 공통 헤더 버튼
+            oAPP.common.fnGetCommonHeaderButtons()
 
-            oSapTCodeInput,
-
-            // Browser Pin Button
-            new sap.m.OverflowToolbarToggleButton({
-                icon: "sap-icon://pushpin-off",
-                pressed: "{/SETTING/ISPIN}",
-                tooltip: "Browser Pin",
-                press: oAPP.events.ev_windowPinBtn
-            }),
-
-            // zoom 기능
-            new sap.m.Button({
-                icon: "sap-icon://zoom-in",
-                press: oAPP.events.ev_pressZoomBtn,
-                tooltip: "zoom",
-            }),
-
-            // 검색 버튼
-            new sap.m.Button({
-                icon: "sap-icon://search",
-                tooltip: "window Text Search",
-                press: oAPP.events.ev_winTxtSrchWS10
-            }),
-
-            // Logoff 버튼
-            new sap.m.Button({
-                icon: "sap-icon://log",
-                type: sap.m.ButtonType.Reject,
-                press: oAPP.events.ev_Logout
-            })
         ];
 
     }; // end of oAPP.fn.fnGetHeaderToolbarContentWs10
@@ -1497,38 +1437,6 @@
 
         oAPP.wmenu.WS20 = oMenuUI;
 
-        var oSapIcon = new sap.ui.core.Icon({
-                src: "sap-icon://sap-logo-shape"
-            }),
-
-            oSapTCodeInput = new sap.m.SearchField({
-
-                // properties
-                width: "200px",
-                placeholder: "SAP T-CODE",
-                showSearchButton: false,
-                enableSuggestions: true,
-
-                // aggregations
-                suggestionItems: {
-                    path: "/SUGG/TCODE",
-                    sorter: "{ path : '/SUGG/TCODE/TCODE' }",
-                    template: new sap.m.SuggestionItem({
-                        // key: "{TCODE}",
-                        text: "{TCODE}",
-                    })
-                },
-
-                // events
-                search: (oEvent) => {
-                    oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
-                },
-                suggest: (oEvent) => {
-                    oAPP.events.ev_suggestSapTcode(oEvent);
-                }
-
-            }).addStyleClass("u4aWs10sapTcodeInput");
-
         return new sap.m.Page("WS20", {
             showHeader: true,
             enableScrolling: false,
@@ -1569,105 +1477,8 @@
 
                     new sap.m.ToolbarSpacer(),
 
-                    oSapIcon,
-
-                    oSapTCodeInput,
-
-                    // Browser Pin Button
-                    new sap.m.OverflowToolbarToggleButton({
-                        icon: "sap-icon://pushpin-off",
-                        pressed: "{/SETTING/ISPIN}",
-                        press: oAPP.events.ev_windowPinBtn
-                    }),
-
-                    // zoom 기능
-                    new sap.m.Button({
-                        icon: "sap-icon://zoom-in",
-                        press: oAPP.events.ev_pressZoomBtn,
-                        tooltip: "zoom",
-                    }),
-
-                    /*****************************************************************************
-                     * 20번 상단 Text Search -- START
-                     *****************************************************************************/
-                    // // search Input
-                    // new sap.m.Input("txtSrchInputWS20", {
-                    //     width: "50px",
-                    //     value: "{/WS20/SRCHTXT/INPUT_VALUE}",
-                    //     visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                    //     placeholder: "Text Search..",
-                    //     liveChange: oAPP.events.ev_winTxtSrchLibChgWS20
-                    // })
-                    // .addStyleClass("sapUiSizeCompact u4aWsWinTxtSrchInput")
-                    // .addDelegate({
-                    //     onAfterRendering: function (oEvent) {
-
-                    //         var oInput = oEvent.srcControl;
-                    //         if (oInput == null) {
-                    //             return;
-                    //         }
-
-                    //         oInput.$().animate({
-                    //             minWidth: "200px"
-                    //         }, 300, "linear");
-
-                    //     }
-
-                    // }),
-
-                    // // 검색 결과 텍스트
-                    // new sap.m.Text({
-                    //     text: "{/WS20/SRCHTXT/COUNT}",
-                    // }).addStyleClass("sapUiTinyMarginBegin"),
-
-                    // new sap.m.ToolbarSeparator({
-                    //     visible: "{/WS20/SRCHTXT/INPUT_VISI}"
-                    // }),
-
-                    // // up 버튼
-                    // new sap.m.Button({
-                    //     icon: "sap-icon://navigation-up-arrow",
-                    //     visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                    // }),
-
-                    // // down 버튼
-                    // new sap.m.Button({
-                    //     icon: "sap-icon://navigation-down-arrow",
-                    //     visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                    // }),
-
-                    // // search 닫기
-                    // new sap.m.Button({
-                    //     icon: "sap-icon://decline",
-                    //     visible: "{/WS20/SRCHTXT/INPUT_VISI}",
-                    //     press: oAPP.events.ev_winTxtSrchClsWS20
-                    // }),
-
-                    // 검색 버튼
-                    new sap.m.Button({
-                        icon: "sap-icon://search",
-                        tooltip: "window Text Search",
-                        press: oAPP.events.ev_winTxtSrchWS20
-                    }),
-                    // .bindProperty("visible", "/WS20/SRCHTXT/INPUT_VISI", function (bIsVisi) {
-
-                    //     if (bIsVisi == null) {
-                    //         return false;
-                    //     }
-
-                    //     return !bIsVisi;
-
-                    // }),
-
-                    /*****************************************************************************
-                     * 20번 상단 Text Search -- END
-                     *****************************************************************************/
-                    // logoff 버튼
-                    new sap.m.Button({
-                        icon: "sap-icon://log",
-                        type: sap.m.ButtonType.Reject,
-                        press: oAPP.events.ev_Logout
-                    }),
+                    // 상단 공통 헤더 버튼
+                    oAPP.common.fnGetCommonHeaderButtons()
 
                 ] // end of custom header content
 

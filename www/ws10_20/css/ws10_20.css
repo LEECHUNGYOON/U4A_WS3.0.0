@@ -333,3 +333,14 @@ body,
 .u4aWsTmplWzdDlg .u4aWsTmplWzdAttrActive .sapTntNavLIItem .sapUiIcon {
     color: var(--sapContent_Illustrative_Color12);
 }
+
+.u4aWsCommonHeaderArea .sapMFlexItem {
+    margin: 0 0 0 0.5rem;
+}
+
+
+
+
+.ace_print-margin {
+    visibility: hidden !important;
+}

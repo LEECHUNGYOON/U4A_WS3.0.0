@@ -1898,8 +1898,6 @@
             return;
         }
 
-        debugger;
-
         let SESSKEY = parent.getSessionKey(),
             BROWSKEY = parent.getBrowserKey(),
             oUserInfo = parent.getUserInfo(),

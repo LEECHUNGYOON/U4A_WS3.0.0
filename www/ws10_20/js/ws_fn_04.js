@@ -6,6 +6,7 @@
 
     var PATH = parent.PATH,
         APP = parent.APP,
+        REMOTEMAIN = parent.REMOTEMAIN,
         REMOTE = parent.REMOTE,
         APPPATH = parent.APPPATH,
         APPCOMMON = oAPP.common;
@@ -247,7 +248,9 @@
 
     }; // end of oAPP.fn.fnSetFocusServerList
 
-    // 30번 페이지 생성
+    /************************************************************************
+     * 30번 페이지 생성
+     ************************************************************************/
     oAPP.fn.fnWs30Creator = () => {
 
         // Application Copy Popup Open
@@ -258,23 +261,87 @@
 
         oAPP.fn.fnCreateWs30();
 
-        // oAPP.loadJs("ws_usp", function () {
-        //     oAPP.fn.fnCreateWs30();
-        // });
+    }; // end of oAPP.fn.fnWs30Creator
 
-        // let aUspLib = [{
-        //     URL: "./js/ws_usp.js",
-        //     MIMETYPE: "script"
-        // }, {
-        //     URL: "./js/ws_usp_01.js",
-        //     MIMETYPE: "script"
-        // }];
+    /************************************************************************
+     * 윈도우의 프레임을 투명하게 만들고 배경을 선택할 수 있게 만드는 기능
+     ************************************************************************/
+    oAPP.fn.fnSetHideWindow = () => {
 
-        // // 초기 JS Load
-        // oAPP.loadLibrary(aUspLib, 0, function () {
-        //     oAPP.fn.fnCreateWs30();
-        // });
+        let win = REMOTE.getCurrentWindow();
 
-    };
+        win.setOpacity(0.3);
+
+        // 윈도우에 클릭 이벤트 무시 여부
+        win.setIgnoreMouseEvents(true);
+
+        win.setAlwaysOnTop(true);
+
+        // 투명하게 된 화면을 복원하는 기능이 있는 팝업
+        oAPP.fn.fnOpenHideWindowControlPopup();    
+
+    }; // end of oAPP.fn.fnSetToggleFrameWindow
+
+    /************************************************************************
+     * 투명하게 된 화면을 복원하는 기능이 있는 팝업
+     ************************************************************************/
+    oAPP.fn.fnOpenHideWindowControlPopup = () => {
+
+        let win = REMOTE.getCurrentWindow();
+
+        var oBrowserOptions = {
+            "height": 100,
+            "width": 100,
+            "resizable": false,
+            "alwaysOnTop": true,
+            "maximizable": false,
+            "minimizable": false,
+            "frame": false,
+            "parent": win,
+            "webPreferences": {
+                "devTools": true,
+                "nodeIntegration": true,
+                "enableRemoteModule": true,
+                "contextIsolation": false,
+                "webSecurity": false,
+                "nativeWindowOpen": true,
+            }
+        };
+
+        // 브라우저 오픈
+        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+
+        // 실행할 URL 적용
+        var sUrlPath = parent.getPath("WINHIDE");
+
+        oBrowserWindow.loadURL(sUrlPath);
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        let bIsPin = APPCOMMON.fnGetModelProperty("/SETTING/ISPIN");
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            let oSendData = {
+                ISPIN: bIsPin
+            };
+
+            oBrowserWindow.webContents.send('if_showHidePopup', oSendData);
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+
+            oBrowserWindow = null;  
+
+        });
+
+    }; // end of oAPP.fn.fnOpenHideWindowControlPopup
 
 })(window, $, oAPP);

@@ -33,8 +33,6 @@ let goRecordPopup;
 /* ================================================================= */
 exports.start = async function(REMOTE){
 
-    debugger;
-    
     //예외처리: 한번 실행점검 
 
         if(goRecordPopup){            

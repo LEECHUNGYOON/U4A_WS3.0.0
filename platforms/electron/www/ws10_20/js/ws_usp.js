@@ -400,44 +400,6 @@
 
         oAPP.wmenu.WS30 = oMenuUI;
 
-        var oSapIcon = new sap.ui.core.Icon({
-                src: "sap-icon://sap-logo-shape"
-            }),
-
-            oSapTCodeInput = new sap.m.SearchField({
-
-                // properties
-                width: "200px",
-                placeholder: "SAP T-CODE",
-                showSearchButton: false,
-                enableSuggestions: true,
-
-                // aggregations
-                suggestionItems: {
-                    path: "/SUGG/TCODE",
-                    sorter: "{ path : '/SUGG/TCODE/TCODE' }",
-                    template: new sap.m.SuggestionItem({
-                        // key: "{TCODE}",
-                        text: "{TCODE}",
-                    })
-                },
-
-                // events
-                search: (oEvent) => {
-
-                    var oAppInfo = fnGetAppInfo();
-
-                    oEvent.mParameters.oAppInfo = oAppInfo;
-
-                    oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
-
-                },
-                suggest: (oEvent) => {
-                    oAPP.events.ev_suggestSapTcode(oEvent);
-                }
-
-            }).addStyleClass("u4aWs30sapTcodeInput");
-
         return new sap.m.OverflowToolbar({
             content: [
                 new sap.m.HBox({
@@ -475,38 +437,8 @@
 
                 new sap.m.ToolbarSpacer(),
 
-                oSapIcon,
-
-                oSapTCodeInput,
-
-                // Browser Pin Button
-                new sap.m.OverflowToolbarToggleButton({
-                    icon: "sap-icon://pushpin-off",
-                    pressed: "{/SETTING/ISPIN}",
-                    tooltip: "Browser Pin",
-                    press: oAPP.events.ev_windowPinBtn
-                }),
-
-                // zoom 기능
-                new sap.m.Button({
-                    icon: "sap-icon://zoom-in",
-                    press: oAPP.events.ev_pressZoomBtn,
-                    tooltip: "zoom",
-                }),
-
-                // 검색 버튼
-                new sap.m.Button({
-                    icon: "sap-icon://search",
-                    tooltip: "window Text Search",
-                    press: oAPP.events.ev_winTxtSrchWS10
-                }),
-
-                // Logoff 버튼
-                new sap.m.Button({
-                    icon: "sap-icon://log",
-                    type: sap.m.ButtonType.Reject,
-                    press: oAPP.events.ev_Logout
-                })
+                // 상단 공통 헤더 버튼
+                oAPP.common.fnGetCommonHeaderButtons()
 
             ]
 
@@ -1712,7 +1644,7 @@
         var aWMENU20 = [{
                 key: "WMENU20_01",
                 text: "Select Browser Type"
-            },{
+            }, {
                 key: "WMENU20_03",
                 text: "Video Record"
             }],
