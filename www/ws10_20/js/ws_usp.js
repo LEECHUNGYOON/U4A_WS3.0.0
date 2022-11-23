@@ -1460,18 +1460,7 @@
      **************************************************************************/
     function fnGetUspPageWs30() {
 
-        var oCodeEditor = new sap.ui.codeeditor.CodeEditor("ws30_codeeditor", {
-                height: "100%",
-                width: "100%",
-                syntaxHints: true,
-                type: "{/WS30/USPDATA/EXTEN}",
-                value: "{/WS30/USPDATA/CONTENT}",
-            })
-            .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding)
-            .bindProperty("type", "/WS30/USPDATA/EXTEN", _fnCodeEditorBindPropertyType)
-            .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
-
-        oCodeEditor.addDelegate({
+        let oCodeeditorDelegate = {
             onAfterRendering: function(oControl) {
 
                 var oEditor = oControl.srcControl,
@@ -1484,7 +1473,23 @@
                 _oAceEditor.setFontSize(20);
 
             }
-        });
+        };
+
+        var oCodeEditor = new sap.ui.codeeditor.CodeEditor("ws30_codeeditor", {
+                height: "100%",
+                width: "100%",
+                syntaxHints: true,
+                type: "{/WS30/USPDATA/EXTEN}",
+                value: "{/WS30/USPDATA/CONTENT}",
+            })
+            .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding)
+            .bindProperty("type", "/WS30/USPDATA/EXTEN", _fnCodeEditorBindPropertyType)
+            .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
+
+        oCodeEditor.addDelegate(jQuery.extend(true, {}, oCodeeditorDelegate));
+
+        let oCodeEditorClone = oCodeEditor.clone();
+        oCodeEditorClone.addDelegate(jQuery.extend(true, {}, oCodeeditorDelegate));
 
         var oCodeEditorToolbarBindProperty = {
             parts: [
@@ -1551,7 +1556,16 @@
 
             content: [
                 // oVbox,
-                oCodeEditor
+                // oCodeEditor
+                new sap.ui.layout.Splitter("uspCodeeditorSplit",{
+                    height: "100%",
+                    width: "100%",
+                    contentAreas: [
+                        oCodeEditor,
+                        oCodeEditorClone
+
+                    ]
+                })
             ]
 
         });
