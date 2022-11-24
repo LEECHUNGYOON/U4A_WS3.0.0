@@ -55,9 +55,25 @@
 
                     case "WS30":
 
+                        // usp tree 부분 split 영역 
                         var oSplitLayout = sap.ui.getCore().byId("usptreeSplitLayout");
                         if (oSplitLayout) {
                             oSplitLayout.setSize("500px");
+                        }
+
+                        var oCodeEditorSplit = sap.ui.getCore().byId("uspCodeeditorSplit");
+                        if(oCodeEditorSplit){
+                            oCodeEditorSplit.setOrientation("Horizontal");
+                        }
+
+                        var oCodeEditorSplitLayoutData = sap.ui.getCore().byId("codeEditorSplitLayout");
+                        if(oCodeEditorSplitLayoutData){
+                            oCodeEditorSplitLayoutData.setSize("0px");
+                        }
+
+                        let oPanel = sap.ui.getCore().byId("uspPanel");
+                        if (oPanel) {
+                            oPanel.setExpanded(true);
                         }
 
                         oAPP.fn.fnOnInitLayoutSettingsWs30();

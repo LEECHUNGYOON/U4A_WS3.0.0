@@ -7,77 +7,86 @@ oAPP = {
 //====================================================//    
   onStart: ()=> {
     oAPP.remote = require('@electron/remote');
+    oAPP.ipcRenderer = require('electron').ipcRenderer;
     oAPP.fs = oAPP.remote.require('fs');
     oAPP.path = oAPP.remote.require('path');
     oAPP.desktopCapturer = oAPP.remote.require('electron').desktopCapturer;
+    oAPP.SCREEN_ID = "";
 
-    //초기값 설정 
-    oAPP.onInitData();
+    //window 로딩 완료 이벤트 
+    oAPP.ipcRenderer.on('IF-REC-READY', async (event, data) => {
 
-    //Window 화면에 서명패드 
-    oAPP.onSignaturePad();
+        //사용자 선택 모니터(Screen) ID
+        oAPP.SCREEN_ID = data.SCREEN_ID;
+    
+        //초기값 설정 
+        oAPP.onInitData();
 
-    //레코딩 화면 구성 
-    oAPP.onScrCreate();
+        //Window 화면에 서명패드 
+        oAPP.onSignaturePad();
 
-    //드로잉 설정 여부 체크박스 이벤트 
-    document.getElementsByClassName("drow-checkbox")[0].addEventListener("click", (e)=>{
+        //레코딩 화면 구성 
+        oAPP.onScrCreate();
 
-          var isCHK = document.getElementById("check1").checked;
-              console.log(isCHK);
+        //드로잉 설정 여부 체크박스 이벤트 
+        document.getElementsByClassName("drow-checkbox")[0].addEventListener("click", (e)=>{
 
-              //드로잉 체크박스 값에 따른 드로잉 초기화 버튼 활성/비활성 처리
-              if(isCHK){  //드로잉 설정
+              var isCHK = document.getElementById("check1").checked;
+                  console.log(isCHK);
 
-                  //드로잉 초기화 버튼 활성 
-                  setTimeout(() => {
-                    document.getElementsByClassName("drow-initial-Button")[0].style.display = "";
-                  }, 0); 
+                  //드로잉 체크박스 값에 따른 드로잉 초기화 버튼 활성/비활성 처리
+                  if(isCHK){  //드로잉 설정
+
+                      //드로잉 초기화 버튼 활성 
+                      setTimeout(() => {
+                        document.getElementsByClassName("drow-initial-Button")[0].style.display = "";
+                      }, 0); 
+                      
+                      //드로잉 설정 레이어 활성 
+                      setTimeout(() => {
+                        document.getElementById("SIGN_CTNR").className = "signature-on";
+                      }, 0);
                   
-                  //드로잉 설정 레이어 활성 
-                  setTimeout(() => {
-                    document.getElementById("SIGN_CTNR").className = "signature-on";
-                  }, 0);
-              
 
-              }else{     //드로잉 해제 
+                  }else{     //드로잉 해제 
 
-                  setTimeout(() => {
-                    document.getElementsByClassName("drow-initial-Button")[0].style.display = "none"; //해제
-                  }, 0);
-                  
-                  //드로잉 설정해제 
-                  setTimeout(() => {
-                    document.getElementById("SIGN_CTNR").className = "signature-off";
-                  }, 0);
+                      setTimeout(() => {
+                        document.getElementsByClassName("drow-initial-Button")[0].style.display = "none"; //해제
+                      }, 0);
+                      
+                      //드로잉 설정해제 
+                      setTimeout(() => {
+                        document.getElementById("SIGN_CTNR").className = "signature-off";
+                      }, 0);
 
-                  //드로잉 값 초기화 
-                  setTimeout(() => {
-                    oAPP.signaturePad.clear();
-                  }, 0);
-                
-              }
+                      //드로잉 값 초기화 
+                      setTimeout(() => {
+                        oAPP.signaturePad.clear();
+                      }, 0);
+                    
+                  }
 
-    });
+        });
 
 
-    //드로잉 초기화 버튼 이벤트 
-    document.getElementsByClassName("drow-initial-Button")[0].addEventListener("click", (e)=>{
-        e.preventDefault();
-        oAPP.signaturePad.clear();
+        //드로잉 초기화 버튼 이벤트 
+        document.getElementsByClassName("drow-initial-Button")[0].addEventListener("click", (e)=>{
+            e.preventDefault();
+            oAPP.signaturePad.clear();
 
-    });
+        });
 
 
-    //레코딩 종료  
-    document.getElementsByClassName("recording-close-Button")[0].addEventListener("click", (e)=>{
-        e.preventDefault();
-        //윈도우 종료 
-        oAPP.remote.getCurrentWindow().close();
+        //레코딩 종료  
+        document.getElementsByClassName("recording-close-Button")[0].addEventListener("click", (e)=>{
+            e.preventDefault();
+            //윈도우 종료 
+            oAPP.remote.getCurrentWindow().close();
+
+        });
 
     });
     
-
   },
 
 //====================================================//
@@ -103,7 +112,7 @@ oAPP = {
 //====================================================//
 //[펑션] 레코딩 시작 
 //====================================================// 
-  onRecordStart: ()=>{
+  onRecordStart: async ()=>{
 
       //드로잉 여부 체크박스 해제 
       setTimeout(() => { document.getElementById("check1").checked = false; }, 0);  
@@ -114,26 +123,14 @@ oAPP = {
       //드로잉 설정해제 
       setTimeout(() => { document.getElementById("SIGN_CTNR").className = "signature-off"; }, 0); 
 
-      //미디어 소스 정보 추출 
-      oAPP.desktopCapturer.getSources({ types: ['window', 'screen'] }).then(async sources => {
-              
-        if(sources.length == 0){ return; }
-
-        // let aaa = sources.filter(e => e.name === "Screen 1");
-
-
-        // for (let index = 0; index < sources.length; index++) {
-        //     console.log(sources[index]);          
-        // }
-
+      //미디어 스트림 객체 생성 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: false,
                 video: {
                     mandatory: {
                         chromeMediaSource: 'desktop',
-                        // chromeMediaSourceId: aaa[0].id,
-                        chromeMediaSourceId: sources[0].id,
+                        chromeMediaSourceId: oAPP.SCREEN_ID,
                         minWidth: 600,
                         maxWidth: screen.availWidth - 200, 
                         minHeight: 500,
@@ -148,18 +145,28 @@ oAPP = {
             _onHandleError(e);
         }
 
-      });
-
-
     //미디어 오류 
     function _onHandleError (e) {
-            console.log(e);
+      
+      var EMSG = e.toString();
+      console.error("동영상 수행 오류 => " + EMSG);
+      var oMsgPop = oAPP.remote.dialog.showMessageBox(oAPP.remote.getCurrentWindow(), {
+        title: 'Application Error',
+        type: 'error',
+        defaultId: 1,
+        message: 'Video recording error => ' + EMSG,
+        buttons: ["close"],
+       })
+       .then((e)=>{
+            window.close();
+          
+       });
+
     }
                 
     //미디어 스트림
     async function _onHandleStream (stream) {
 
-       
         //저장처리 파일명 구성  
         var fileName = oAPP.onRandom(20) + "_" +oAPP.onDateTime() + ".mp4";
         //var fileName = oAPP.onRandom(20) + "_" +oAPP.onDateTime() + ".webm";

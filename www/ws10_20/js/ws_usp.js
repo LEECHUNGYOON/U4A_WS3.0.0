@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -45,13 +45,13 @@
 
         // 파일 확장자 이미지 경로 구하기
         fnGetFileExtendImgList()
-            .then(function() {
+            .then(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
 
             })
-            .catch(function() {
+            .catch(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
@@ -65,7 +65,7 @@
      ************************************************************************/
     function fnGetFileExtendImgList() {
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
@@ -93,12 +93,6 @@
      ************************************************************************/
     oAPP.fn.fnOnInitLayoutSettingsWs30 = () => {
 
-        // var oSplitLayout = sap.ui.getCore().byId("usptreeSplitLayout");
-        // if (oSplitLayout) {
-        //     oSplitLayout.setSize("500px");
-        //     // oSplitLayout.setMinSize(500);
-        // }
-
         var oUspTreeTable = sap.ui.getCore().byId("usptree");
         if (oUspTreeTable) {
             oUspTreeTable.collapseAll();
@@ -118,7 +112,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function() {
+    oAPP.fn.fnOnResizeWs30 = function () {
 
         console.log("resize30!!!");
 
@@ -268,7 +262,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -413,7 +407,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -1056,7 +1050,7 @@
                                         "ISFLD",
                                         "EXTEN"
                                     ],
-                                    formatter: function(ISFLD, EXTEN) {
+                                    formatter: function (ISFLD, EXTEN) {
 
                                         var iFileImgListLength = gaFileExtendImgList.length;
                                         if (iFileImgListLength == 0) {
@@ -1188,7 +1182,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function(oEvent) {
+                rowSelectionChange: function (oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1351,7 +1345,7 @@
 
             oIsFolderCheckbox = new sap.m.CheckBox({
                 editable: false
-            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
+            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                 if (ISFLD == "X") {
                     return true;
@@ -1417,7 +1411,7 @@
                                 ]
                             })
 
-                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function(ISFLD) {
+                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                             // 폴더가 아닐 경우에만 보여준다.
                             if (ISFLD != "X") {
@@ -1446,11 +1440,6 @@
                 styleClass: "sapUiTinyMarginBottom"
             })
 
-            // layoutData: new sap.ui.layout.SplitterLayoutData({
-            //     size: "200px",
-            //     minSize: 200
-            // })
-
         });
 
     } // end of fnGetUspPanelWs30    
@@ -1460,62 +1449,102 @@
      **************************************************************************/
     function fnGetUspPageWs30() {
 
-        let oCodeeditorDelegate = {
-            onAfterRendering: function(oControl) {
+        let lfCodeeditorDelegate = () => { // codeeditor Delegate
 
-                var oEditor = oControl.srcControl,
-                    _oAceEditor = oEditor._oEditor;
+                return {
 
-                if (!_oAceEditor) {
-                    return;
-                }
+                    onAfterRendering: function (oControl) {
 
-                _oAceEditor.setFontSize(20);
+                        var oEditor = oControl.srcControl,
+                            _oAceEditor = oEditor._oEditor;
 
-            }
-        };
+                        if (!_oAceEditor) {
+                            return;
+                        }
 
-        var oCodeEditor = new sap.ui.codeeditor.CodeEditor("ws30_codeeditor", {
-                height: "100%",
-                width: "100%",
-                syntaxHints: true,
-                type: "{/WS30/USPDATA/EXTEN}",
-                value: "{/WS30/USPDATA/CONTENT}",
-            })
+                        _oAceEditor.setFontSize(20);
+
+                    }
+                };
+
+            },
+            lfCodeeditorAttribute = () => { // codeeditor 속성 정보
+
+                return {
+                    height: "100%",
+                    width: "100%",
+                    syntaxHints: true,
+                    type: "{/WS30/USPDATA/EXTEN}",
+                    value: "{/WS30/USPDATA/CONTENT}",
+                };
+
+            };
+
+        var oCodeEditor = new sap.ui.codeeditor.CodeEditor("ws30_codeeditor", lfCodeeditorAttribute())
             .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding)
             .bindProperty("type", "/WS30/USPDATA/EXTEN", _fnCodeEditorBindPropertyType)
             .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
-        oCodeEditor.addDelegate(jQuery.extend(true, {}, oCodeeditorDelegate));
+        oCodeEditor.addDelegate(lfCodeeditorDelegate());
 
         let oCodeEditorClone = oCodeEditor.clone();
-        oCodeEditorClone.addDelegate(jQuery.extend(true, {}, oCodeeditorDelegate));
+        oCodeEditorClone.addDelegate(lfCodeeditorDelegate());
 
-        var oCodeEditorToolbarBindProperty = {
-            parts: [
-                "/WS30/APP/IS_EDIT",
-                "/WS30/USPDATA/PUJKY",
-                "/WS30/USPDATA/ISFLD",
-            ],
-            formatter: (IS_EDIT, PUJKY, ISFLD) => {
+        oCodeEditor.setLayoutData(new sap.ui.layout.SplitterLayoutData("codeEditorSplitLayout", {
+            size: "0px",
+        }));
 
-                if (IS_EDIT != "X") {
-                    return false;
+        let lfCodeeditorBindProperty = () => {
+
+            return {
+
+                parts: [
+                    "/WS30/APP/IS_EDIT",
+                    "/WS30/USPDATA/PUJKY",
+                    "/WS30/USPDATA/ISFLD",
+                ],
+                formatter: (IS_EDIT, PUJKY, ISFLD) => {
+
+                    if (IS_EDIT != "X") {
+                        return false;
+                    }
+
+                    if (PUJKY == "") {
+                        return false;
+                    }
+
+                    if (ISFLD == "X") {
+                        return false;
+                    }
+
+                    return true;
+
                 }
+            };
 
-                if (PUJKY == "") {
-                    return false;
-                }
-
-                if (ISFLD == "X") {
-                    return false;
-                }
-
-                return true;
-
-            }
         };
 
+        oAPP.attr.oCodeEditor1 = oCodeEditor;
+        oAPP.attr.oCodeEditor2 = oCodeEditorClone;
+
+        /**
+         * 코드 에디터 입력한 값 동기화
+         */
+        oCodeEditor.attachBrowserEvent("keyup", () => {
+
+            let value = oCodeEditor._oEditor.getValue();
+
+            oCodeEditorClone._oEditor.setValue(value);
+
+        });
+
+        oCodeEditorClone.attachBrowserEvent("keyup", () => {
+
+            let value = oCodeEditorClone._oEditor.getValue();
+
+            oCodeEditor._oEditor.setValue(value);
+
+        });
 
         return new sap.m.Page({
             showHeader: true,
@@ -1531,6 +1560,13 @@
                 contentRight: [
 
                     new sap.m.Button({
+                        icon: "sap-icon://rotate",
+                        text: "Split Orientation Change",
+                        tooltip: "Split Orientation Change",
+                        press: ev_codeeditorSplitOrientationChange
+                    }).bindProperty("enabled", lfCodeeditorBindProperty()),
+
+                    new sap.m.Button({
                         icon: "sap-icon://full-screen",
                         text: "Full Screen",
                         tooltip: "Editor Full Screen Mode",
@@ -1542,14 +1578,14 @@
                         text: "Pattern",
                         tooltip: "Source Pattern",
                         press: ev_codeeditorPattern
-                    }).bindProperty("enabled", jQuery.extend(true, {}, oCodeEditorToolbarBindProperty)),
+                    }).bindProperty("enabled", lfCodeeditorBindProperty()),
 
                     new sap.m.Button("ws30_codeeditor_prettyBtn", {
                         icon: "sap-icon://indent",
                         text: "Pretty Print",
                         tooltip: "Pretty Print (Shift + F1)",
                         press: ev_codeeditorPrettyPrint,
-                    }).bindProperty("enabled", jQuery.extend(true, {}, oCodeEditorToolbarBindProperty))
+                    }).bindProperty("enabled", lfCodeeditorBindProperty())
                 ]
 
             }),
@@ -1557,7 +1593,7 @@
             content: [
                 // oVbox,
                 // oCodeEditor
-                new sap.ui.layout.Splitter("uspCodeeditorSplit",{
+                new sap.ui.layout.Splitter("uspCodeeditorSplit", {
                     height: "100%",
                     width: "100%",
                     contentAreas: [
@@ -1566,11 +1602,34 @@
 
                     ]
                 })
+                .addStyleClass("uspCodeeditorSplit")
+                .bindProperty("visible", _fnCodeEditorBindPropertyVisible())
+                .addDelegate({
+                    onAfterRendering: () => {
+
+                        let $Split = $(".uspCodeeditorSplit .sapUiLoSplitterBar");
+
+                        $Split.off("dblclick", _fnDoubleClickSplitbar);
+                        $Split.on("dblclick", _fnDoubleClickSplitbar);
+
+                        // let oCodeEditorSplit = sap.ui.getCore().byId("uspCodeeditorSplit");
+
+                        // // console.log("uspCodeeditorSplit addDelegate");
+                        // console.log("page addDelegate");
+                    }
+
+                })
+
             ]
 
         });
 
     } // end of fnGetUspPageWs30  
+
+    function _fnDoubleClickSplitbar(e) {
+        debugger;
+
+    }
 
     function _fnCodeEditorBindPropertyVisible() {
 
@@ -1858,7 +1917,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -1942,7 +2001,7 @@
             initialFocus: "ws30_crname",
 
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -2210,7 +2269,7 @@
     function lf_appDelCtsPopup(oParam) {
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oParam = this;
 
@@ -2360,8 +2419,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function(e) {
-                $.each(e, function(e, o) {
+            t = function (e) {
+                $.each(e, function (e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2621,7 +2680,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function(event) {
+            fileReader.onload = function (event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -4594,7 +4653,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this;
             // IS_ACT = oEvent.getParameter("IS_ACT");
@@ -4846,7 +4905,7 @@
         }
 
         let oEditor = oCodeEditor._oEditor,
-            oCursorPos = oEditor.getCursorPosition();        
+            oCursorPos = oEditor.getCursorPosition();
 
         oCodeEditor.prettyPrint();
 
@@ -4876,9 +4935,44 @@
      **************************************************************************/
     function ev_codeeditorFullscreen() {
 
+        let oSplitLayout = sap.ui.getCore().byId("usptreeSplitLayout");
+        if (oSplitLayout) {
+            oSplitLayout.setSize("0px");
+        }
 
+        let oPanel = sap.ui.getCore().byId("uspPanel");
+        if (oPanel) {
+            oPanel.setExpanded(false);
+        }
 
     } // end of ev_codeeditorFullscreen
+
+    /**************************************************************************
+     * [WS30] Content 영역의 Code Editor 화면 분할 변경
+     **************************************************************************/
+    function ev_codeeditorSplitOrientationChange() {
+
+        let oCodeEditorSplit = sap.ui.getCore().byId("uspCodeeditorSplit");
+        if (!oCodeEditorSplit) {
+            return;
+        }
+
+        let oCodeEditorSplitLayoutData = sap.ui.getCore().byId("codeEditorSplitLayout");
+        if (!oCodeEditorSplitLayoutData) {
+            return;
+        }
+
+        oCodeEditorSplitLayoutData.setSize("0px");
+
+        let sOrientation = oCodeEditorSplit.getOrientation();
+        if (sOrientation == sap.ui.core.Orientation.Horizontal) {
+            oCodeEditorSplit.setOrientation(sap.ui.core.Orientation.Vertical);
+            return;
+        }
+
+        oCodeEditorSplit.setOrientation(sap.ui.core.Orientation.Horizontal);
+
+    } // end of ev_codeeditorSplitOrientationChange
 
     /**************************************************************************
      * [WS30] App 정보 가져오기.
