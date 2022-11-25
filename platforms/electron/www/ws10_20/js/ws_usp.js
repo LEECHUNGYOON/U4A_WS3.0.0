@@ -1607,10 +1607,33 @@
                 .addDelegate({
                     onAfterRendering: () => {
 
-                        let $Split = $(".uspCodeeditorSplit .sapUiLoSplitterBar");
+                        debugger;
 
-                        $Split.off("dblclick", _fnDoubleClickSplitbar);
-                        $Split.on("dblclick", _fnDoubleClickSplitbar);
+                        let $sp = $(".uspCodeeditorSplit .sapUiLoSplitter>.sapUiLoSplitterBar:focus::after");
+
+                        let $Split = $(".uspCodeeditorSplit .sapUiLoSplitterBar");
+                        if(!$Split.length){
+                            return;
+                        }
+
+                        let oSplitbar = $Split[0];
+
+                        oSplitbar.onclick = () => {};
+
+                        oSplitbar.onclick = () => {
+
+
+                            console.log("bar click!!");
+
+                        }
+
+                        // // oSplitbar.removeEventListener("click", _fnDoubleClickSplitbar);
+                        // // oSplitbar.addEventListener("click", _fnDoubleClickSplitbar);
+
+                        // $Split.off("click", _fnDoubleClickSplitbar);
+                        // $Split.on("click", _fnDoubleClickSplitbar);
+                        
+                        // console.log("splitbar dblclick on!!");
 
                         // let oCodeEditorSplit = sap.ui.getCore().byId("uspCodeeditorSplit");
 
