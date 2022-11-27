@@ -61,16 +61,19 @@
                             oSplitLayout.setSize("500px");
                         }
 
+                        // content 영역 split orientation 초기화
                         var oCodeEditorSplit = sap.ui.getCore().byId("uspCodeeditorSplit");
                         if(oCodeEditorSplit){
                             oCodeEditorSplit.setOrientation("Horizontal");
                         }
 
+                        // content 영역 split size 초기화
                         var oCodeEditorSplitLayoutData = sap.ui.getCore().byId("codeEditorSplitLayout");
                         if(oCodeEditorSplitLayoutData){
                             oCodeEditorSplitLayoutData.setSize("0px");
                         }
 
+                        // content 영역 상단 패널 펼치기
                         let oPanel = sap.ui.getCore().byId("uspPanel");
                         if (oPanel) {
                             oPanel.setExpanded(true);

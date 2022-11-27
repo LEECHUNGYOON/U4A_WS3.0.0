@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -45,13 +45,13 @@
 
         // 파일 확장자 이미지 경로 구하기
         fnGetFileExtendImgList()
-            .then(function () {
+            .then(function() {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
 
             })
-            .catch(function () {
+            .catch(function() {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
@@ -65,7 +65,7 @@
      ************************************************************************/
     function fnGetFileExtendImgList() {
 
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
@@ -112,7 +112,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function () {
+    oAPP.fn.fnOnResizeWs30 = function() {
 
         console.log("resize30!!!");
 
@@ -262,7 +262,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (bIsShow) {
+            formatter: function(bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -407,7 +407,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function (sKey) {
+                            formatter: function(sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -956,6 +956,7 @@
 
         return new sap.m.Page("USP20", {
             showHeader: false,
+            enableScrolling: false,
             content: [
 
                 new sap.m.VBox({
@@ -1050,7 +1051,7 @@
                                         "ISFLD",
                                         "EXTEN"
                                     ],
-                                    formatter: function (ISFLD, EXTEN) {
+                                    formatter: function(ISFLD, EXTEN) {
 
                                         var iFileImgListLength = gaFileExtendImgList.length;
                                         if (iFileImgListLength == 0) {
@@ -1182,7 +1183,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function (oEvent) {
+                rowSelectionChange: function(oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1345,7 +1346,7 @@
 
             oIsFolderCheckbox = new sap.m.CheckBox({
                 editable: false
-            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
+            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
 
                 if (ISFLD == "X") {
                     return true;
@@ -1411,7 +1412,7 @@
                                 ]
                             })
 
-                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function (ISFLD) {
+                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function(ISFLD) {
 
                             // 폴더가 아닐 경우에만 보여준다.
                             if (ISFLD != "X") {
@@ -1453,7 +1454,7 @@
 
                 return {
 
-                    onAfterRendering: function (oControl) {
+                    onAfterRendering: function(oControl) {
 
                         var oEditor = oControl.srcControl,
                             _oAceEditor = oEditor._oEditor;
@@ -1546,49 +1547,52 @@
 
         });
 
+        let oHeaderToolbar = new sap.m.Bar({
+
+            contentLeft: [
+                new sap.m.Title({
+                    text: "{/WS30/USPDATA/OBDEC}"
+                })
+            ],
+
+            contentRight: [
+
+                new sap.m.Button({
+                    icon: "sap-icon://rotate",
+                    text: "Split Orientation Change",
+                    tooltip: "Split Orientation Change",
+                    press: ev_codeeditorSplitOrientationChange
+                }).bindProperty("enabled", lfCodeeditorBindProperty()),
+
+                new sap.m.Button({
+                    icon: "sap-icon://full-screen",
+                    text: "Full Screen",
+                    tooltip: "Editor Full Screen Mode",
+                    press: ev_codeeditorFullscreen
+                }),
+
+                new sap.m.Button({
+                    icon: "sap-icon://syntax",
+                    text: "Pattern",
+                    tooltip: "Source Pattern",
+                    press: ev_codeeditorPattern
+                }).bindProperty("enabled", lfCodeeditorBindProperty()),
+
+                new sap.m.Button("ws30_codeeditor_prettyBtn", {
+                    icon: "sap-icon://indent",
+                    text: "Pretty Print",
+                    tooltip: "Pretty Print (Shift + F1)",
+                    press: ev_codeeditorPrettyPrint,
+                }).bindProperty("enabled", lfCodeeditorBindProperty())
+            ]
+
+        });
+
         return new sap.m.Page({
             showHeader: true,
             showFooter: false,
-            customHeader: new sap.m.Bar({
-
-                contentLeft: [
-                    new sap.m.Title({
-                        text: "{/WS30/USPDATA/OBDEC}"
-                    })
-                ],
-
-                contentRight: [
-
-                    new sap.m.Button({
-                        icon: "sap-icon://rotate",
-                        text: "Split Orientation Change",
-                        tooltip: "Split Orientation Change",
-                        press: ev_codeeditorSplitOrientationChange
-                    }).bindProperty("enabled", lfCodeeditorBindProperty()),
-
-                    new sap.m.Button({
-                        icon: "sap-icon://full-screen",
-                        text: "Full Screen",
-                        tooltip: "Editor Full Screen Mode",
-                        press: ev_codeeditorFullscreen
-                    }),
-
-                    new sap.m.Button({
-                        icon: "sap-icon://syntax",
-                        text: "Pattern",
-                        tooltip: "Source Pattern",
-                        press: ev_codeeditorPattern
-                    }).bindProperty("enabled", lfCodeeditorBindProperty()),
-
-                    new sap.m.Button("ws30_codeeditor_prettyBtn", {
-                        icon: "sap-icon://indent",
-                        text: "Pretty Print",
-                        tooltip: "Pretty Print (Shift + F1)",
-                        press: ev_codeeditorPrettyPrint,
-                    }).bindProperty("enabled", lfCodeeditorBindProperty())
-                ]
-
-            }),
+            enableScrolling: false,
+            customHeader: oHeaderToolbar,
 
             content: [
                 // oVbox,
@@ -1602,46 +1606,9 @@
 
                     ]
                 })
-                .addStyleClass("uspCodeeditorSplit")
                 .bindProperty("visible", _fnCodeEditorBindPropertyVisible())
-                .addDelegate({
-                    onAfterRendering: () => {
-
-                        debugger;
-
-                        let $sp = $(".uspCodeeditorSplit .sapUiLoSplitter>.sapUiLoSplitterBar:focus::after");
-
-                        let $Split = $(".uspCodeeditorSplit .sapUiLoSplitterBar");
-                        if(!$Split.length){
-                            return;
-                        }
-
-                        let oSplitbar = $Split[0];
-
-                        oSplitbar.onclick = () => {};
-
-                        oSplitbar.onclick = () => {
-
-
-                            console.log("bar click!!");
-
-                        }
-
-                        // // oSplitbar.removeEventListener("click", _fnDoubleClickSplitbar);
-                        // // oSplitbar.addEventListener("click", _fnDoubleClickSplitbar);
-
-                        // $Split.off("click", _fnDoubleClickSplitbar);
-                        // $Split.on("click", _fnDoubleClickSplitbar);
-                        
-                        // console.log("splitbar dblclick on!!");
-
-                        // let oCodeEditorSplit = sap.ui.getCore().byId("uspCodeeditorSplit");
-
-                        // // console.log("uspCodeeditorSplit addDelegate");
-                        // console.log("page addDelegate");
-                    }
-
-                })
+                .attachBrowserEvent("dblclick", _fnDoubleClickSplitbar)
+                .addStyleClass("uspCodeeditorSplit sapUiSmallMarginBottom")
 
             ]
 
@@ -1650,7 +1617,20 @@
     } // end of fnGetUspPageWs30  
 
     function _fnDoubleClickSplitbar(e) {
-        debugger;
+
+        let oSplitLayoutData = sap.ui.getCore().byId("codeEditorSplitLayout"),
+            oTarget = e.target,
+            bIsSplitBar = $(oTarget).hasClass("uspCodeeditorSplit");
+
+        if (!oSplitLayoutData || !bIsSplitBar) {
+            return;
+        }
+
+        oSplitLayoutData.setSize("0px");
+
+        // if (oSplitLayoutData && bIsSplitBar) {            
+        //     oSplitLayoutData.setSize("0px");
+        // }
 
     }
 
@@ -1940,7 +1920,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -2024,7 +2004,7 @@
             initialFocus: "ws30_crname",
 
             // events
-            afterClose: function () {
+            afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -2292,7 +2272,7 @@
     function lf_appDelCtsPopup(oParam) {
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oParam = this;
 
@@ -2442,8 +2422,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function (e) {
-                $.each(e, function (e, o) {
+            t = function(e) {
+                $.each(e, function(e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2703,7 +2683,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function (event) {
+            fileReader.onload = function(event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -4676,7 +4656,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oEvent = this;
             // IS_ACT = oEvent.getParameter("IS_ACT");
@@ -4900,20 +4880,51 @@
      **************************************************************************/
     function fnCodeEditorKeyPressEvent(IsAttach) {
 
-        var oCodeEditor = sap.ui.getCore().byId("ws30_codeeditor"),
-            oEditorDom = oCodeEditor._oEditor.textInput.getElement();
-        if (!oCodeEditor || !oEditorDom) {
+        let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor");
+        if (!oCodeEditor1) {
             return;
         }
+
+        let oCodeEditor2 = oAPP.attr.oCodeEditor2;
+        if (!oCodeEditor2) {
+            return;
+        }
+
+        let oEditorDom1 = oCodeEditor1._oEditor.textInput.getElement(),
+            oEditorDom2 = oCodeEditor2._oEditor.textInput.getElement();
 
         if (IsAttach == "X") {
 
-            oEditorDom.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+            oEditorDom1.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+            oEditorDom2.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
 
             return;
         }
 
-        oEditorDom.removeEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+        oEditorDom1.removeEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+        oEditorDom2.removeEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+
+
+
+
+        // oAPP.attr.oCodeEditor2
+
+
+        // var oCodeEditor = sap.ui.getCore().byId("ws30_codeeditor"),
+        //     oEditorDom = oCodeEditor._oEditor.textInput.getElement();
+
+        // if (!oCodeEditor || !oEditorDom) {
+        //     return;
+        // }
+
+        // if (IsAttach == "X") {
+
+        //     oEditorDom.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+
+        //     return;
+        // }
+
+        // oEditorDom.removeEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
 
     } // end of fnCodeEditorKeyPressEvent
 
@@ -4989,7 +5000,7 @@
 
         let sOrientation = oCodeEditorSplit.getOrientation();
         if (sOrientation == sap.ui.core.Orientation.Horizontal) {
-            oCodeEditorSplit.setOrientation(sap.ui.core.Orientation.Vertical);
+            oCodeEditorSplit.setOrientation(sap.ui.core.Orientation.Vertical);            
             return;
         }
 
