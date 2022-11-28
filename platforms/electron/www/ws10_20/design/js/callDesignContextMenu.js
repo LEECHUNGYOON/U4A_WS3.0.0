@@ -13,8 +13,12 @@
 
         //menu item 선택 이벤트.
         oMenu1.attachItemSelected(function(oEvent){
+
+            //이벤트 발생 x, y 좌표값 얻기.
+            var ls_pos = oAPP.fn.getMousePosition();
+
             //메뉴 item선택건에 따른 기능 분기 처리.
-            oAPP.fn.contextMenuItemPress(oEvent);
+            oAPP.fn.contextMenuItemPress(oEvent, ls_pos.x, ls_pos.y);
 
             //메뉴 선택 후 popup종료 처리.
             oAPP.fn.contextMenuClosePopup(oMenu1);
@@ -93,7 +97,7 @@
 
 
     //메뉴 item선택건에 따른 기능 분기 처리.
-    oAPP.fn.contextMenuItemPress = function(oEvent){
+    oAPP.fn.contextMenuItemPress = function(oEvent, i_x, i_y){
         
         //선택한 menu item의 KEY 정보 얻기.
         var l_key = oEvent.mParameters.item.getKey();
@@ -118,7 +122,7 @@
                 break;
             
             case "M05": //UI move Position
-                oAPP.fn.contextMenuUiMovePosition();
+                oAPP.fn.contextMenuUiMovePosition(i_x, i_y);
                 break;
             
             case "M06": //copy 메뉴.
@@ -672,7 +676,7 @@
 
     
     //UI 위치 이동 처리.
-    oAPP.fn.contextMenuUiMovePosition = function(){
+    oAPP.fn.contextMenuUiMovePosition = function(i_x, i_y){
 
         //CALL BACK FUNCTION.
         function lf_callback(pos){
@@ -693,17 +697,16 @@
         //현재 UI가 부모의 몇번째에 위치해있는지 확인.
         var l_pos = l_parent.zTREE.findIndex( a => a.OBJID === ls_tree.OBJID ) + 1;
                 
-        
         //UI위치 이동 function이 존재하는경우 호출 처리.
         if(typeof oAPP.fn.uiMovePosition !== "undefined"){
-            oAPP.fn.uiMovePosition(ls_tree.OBJID, l_pos, l_parent.zTREE.length, lf_callback);
+            oAPP.fn.uiMovePosition(ls_tree.OBJID, l_pos, l_parent.zTREE.length, lf_callback, i_x, i_y);
             return;
 
         }
 
         //UI위치 이동 function이 존재하지 않는경우 js 호출 후 function 호출.
         oAPP.fn.getScript("design/js/uiMovePosition",function(){
-            oAPP.fn.uiMovePosition(ls_tree.OBJID, l_pos, l_parent.zTREE.length, lf_callback);
+            oAPP.fn.uiMovePosition(ls_tree.OBJID, l_pos, l_parent.zTREE.length, lf_callback, i_x, i_y);
         });
 
     };  //UI 위치 이동 처리.
@@ -1221,17 +1224,20 @@
         //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.(공통코드 UA040에 해당하는 UI는 특정 UI 하위에만 존재가능)
         if(oAPP.fn.designChkHiddenAreaUi(l_cdata.UIOBK, ls_tree.UIOBK) === true){
             return;
-        }    
+        }
+
+        //이벤트 발생 x, y 좌표값 얻기.
+        var l_pos = oAPP.fn.getMousePosition();
 
         //aggregation 선택 팝업 호출.
         if(typeof oAPP.fn.aggrSelectPopup !== "undefined"){
-            oAPP.fn.aggrSelectPopup(l_cdata, ls_tree, lf_aggrPopup_cb);
+            oAPP.fn.aggrSelectPopup(l_cdata, ls_tree, lf_aggrPopup_cb, l_pos.x, l_pos.y);
             return;
         }
 
         //aggregation 선택 팝업이 존재하지 않는경우 js load후 호출.
         oAPP.fn.getScript("design/js/aggrSelectPopup",function(){
-            oAPP.fn.aggrSelectPopup(l_cdata, ls_tree, lf_aggrPopup_cb);
+            oAPP.fn.aggrSelectPopup(l_cdata, ls_tree, lf_aggrPopup_cb, l_pos.x, l_pos.y);
         });
 
 

@@ -1,6 +1,7 @@
 (function(){
-  oAPP.fn.aggrSelectPopup = function(i_drag, i_drop, retfunc){
-
+  
+  //AGGREGATION 선택 팝업.
+  oAPP.fn.aggrSelectPopup = function(i_drag, i_drop, retfunc, i_x, i_y){
 
     //입력 UI의 UI 가능 AGGREGATION 정보 얻기.
     var lt_sel = oAPP.fn.chkAggrRelation(i_drop.UIOBK, i_drop.OBJID, i_drag.UIOBK);
@@ -34,6 +35,20 @@
     var oDlg1 = new sap.m.Dialog({draggable:true});
     oDlg1.addStyleClass("sapUiSizeCompact");
 
+    //DIALOG OPEN전 이벤트.
+    oDlg1.attachBeforeOpen(function(oEvent){
+      
+      //X, Y 좌표값이 존재하지 않는경우 EXIT.
+      if(typeof i_x === "undefined"){return;}
+      if(typeof i_y === "undefined"){return;}
+
+      //x, y 좌표에 의해 dialog 위치를 변경하기 위한 처리.
+      this._bDisableRepositioning = true;    
+      this._oManuallySetPosition = {x:i_x, y:i_y};
+      this.oPopup.setPosition("begin top", {top:i_x, left:i_y}, oAPP.attr.ui.oLTree1, "0 0");
+
+    }); //DIALOG OPEN전 이벤트.
+
     //dialog open 이후 이벤트.
     oDlg1.attachAfterOpen(function(){
       //ddlb에 focus 처리.
@@ -48,7 +63,9 @@
     var oTool = new sap.m.Toolbar();
     oDlg1.setCustomHeader(oTool);
 
-    oTool.addContent(new sap.m.Title({text:"Aggregation List - " + i_drop.OBJID}));
+    var oTitle = new sap.m.Title({text:"Aggregation List - " + i_drop.OBJID});
+    oTitle.addStyleClass("sapUiTinyMarginBegin");
+    oTool.addContent(oTitle);
 
     oTool.addContent(new sap.m.ToolbarSpacer());
 
@@ -123,6 +140,6 @@
 
     oDlg1.open();
 
-  };
+  };  //AGGREGATION 선택 팝업.
 
 })();

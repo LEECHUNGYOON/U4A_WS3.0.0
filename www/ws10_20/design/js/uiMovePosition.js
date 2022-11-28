@@ -1,5 +1,5 @@
 //UI move Position 메뉴 선택시 팝업 UI
-oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack){
+oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack, i_x, i_y){
 
   //dialog 종료.
   function lf_close(){
@@ -8,10 +8,26 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack){
     oDlg.destroy();
 
   }
-
+  
   //ui 위치이동 dialog UI 생성.
   sap.ui.getCore().loadLibrary("sap.m");
-  var oDlg = new sap.m.Dialog({draggable:true, resizable:true});
+  oDlg = new sap.m.Dialog({draggable:true, resizable:true, horizontalScrolling:false, verticalScrolling:false});
+  oDlg.addStyleClass("sapUiSizeCompact");
+
+  //DIALOG OPEN전 이벤트.
+  oDlg1.attachBeforeOpen(function(oEvent){
+      
+    //X, Y 좌표값이 존재하지 않는경우 EXIT.
+    if(typeof i_x === "undefined"){return;}
+    if(typeof i_y === "undefined"){return;}
+
+    //x, y 좌표에 의해 dialog 위치를 변경하기 위한 처리.
+    this._bDisableRepositioning = true;    
+    this._oManuallySetPosition = {x:i_x, y:i_y};
+    this.oPopup.setPosition("begin top", {top:i_x, left:i_y}, oAPP.attr.ui.oLTree1, "0 0");
+
+  }); //DIALOG OPEN전 이벤트.
+  
 
   //MODEL 생성.
   var oMdl = new sap.ui.model.json.JSONModel();
@@ -20,7 +36,9 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack){
   var oTool = new sap.m.Toolbar();
   oDlg.setCustomHeader(oTool);
 
-  oTool.addContent(new sap.m.Title({text:"Move Position - " + OBJID}));
+  var oTitle = new sap.m.Title({text:"Move Position - " + OBJID});
+  oTitle.addStyleClass("sapUiTinyMarginBegin");
+  oTool.addContent(oTitle);
 
   oTool.addContent(new sap.m.ToolbarSpacer());
 
@@ -39,13 +57,18 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack){
 
   });
 
+  oGrid = new sap.ui.layout.Grid({defaultSpan:"XL12 L12 M12 S12",vSpacing:0.5, hSpacing:0.5});
+  oGrid.addStyleClass("sapUiTinyMarginTopBottom");
+  oDlg.addContent(oGrid);
+
+
   //최대 이동 위치 label.
   var oLab1 = new sap.m.Label({text:"Max " + max , design:"Bold"});
-  oDlg.addContent(oLab1);
+  oGrid.addContent(oLab1);
 
   //이동위치 입력필드.
   var oStepInp = new sap.m.StepInput({min:1, max:"{/move/max}", value:"{/move/pos}"});
-  oDlg.addContent(oStepInp);
+  oGrid.addContent(oStepInp);
 
   //입력필드 keydown 이벤트.
   oStepInp.attachBrowserEvent('keydown',function(){
@@ -59,7 +82,7 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack){
 
   //이동위치 slider.
   var oSlide = new sap.m.Slider({min:1, max:"{/move/max}", value:"{/move/pos}", enableTickmarks:true});
-  oDlg.addContent(oSlide);
+  oGrid.addContent(oSlide);
 
   //확인 버튼
   var oBtn1 = new sap.m.Button({icon:"sap-icon://accept", type:"Accept"});

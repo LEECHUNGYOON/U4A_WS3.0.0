@@ -2161,16 +2161,18 @@
       return;
     }
 
+    //이벤트 발생 x, y 좌표값 얻기.
+    var l_pos = oAPP.fn.getMousePosition();
 
     //aggregation 선택 팝업 호출 처리.
     if(typeof oAPP.fn.aggrSelectPopup !== "undefined"){
-      oAPP.fn.aggrSelectPopup(l_drag, l_drop, oAPP.fn.drop_cb);
+      oAPP.fn.aggrSelectPopup(l_drag, l_drop, oAPP.fn.drop_cb, l_pos.x, l_pos.y);
       return;
     }
 
     //aggregation 선택 팝업 호출 처리.
     oAPP.fn.getScript("design/js/aggrSelectPopup",function(){
-      oAPP.fn.aggrSelectPopup(l_drag, l_drop, oAPP.fn.drop_cb);
+      oAPP.fn.aggrSelectPopup(l_drag, l_drop, oAPP.fn.drop_cb, l_pos.x, l_pos.y);
     });
 
   };  //drop 처리 function.

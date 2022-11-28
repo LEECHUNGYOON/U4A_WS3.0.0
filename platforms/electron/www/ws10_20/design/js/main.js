@@ -1027,6 +1027,36 @@
 
     };  //ui suggestion 저장 처리.
 
+    
+
+    
+    //이벤트 발생시 마우스의 x, y 좌표 값 얻기.
+    oAPP.fn.getMousePosition = function(){
+      
+      var l_x, l_y;
+
+      //미리보기에서 이벤트가 발생한 경우.
+      if (oAPP.attr.ui.frame.contentWindow.event){
+        //iframe의 위치 정보 얻기.
+        var l_rect1 = oAPP.attr.ui.frame.getBoundingClientRect();
+
+        //미리보기에서 발생한 이벤트 좌표 + iframe의 좌표값 계산.
+        l_x = oAPP.attr.ui.frame.contentWindow.event.clientX + l_rect1.x;
+        l_y = oAPP.attr.ui.frame.contentWindow.event.clientY + l_rect1.y;
+      
+      }else if(window.event){
+        //그외 영역에서 이벤트가 발생한경우.
+        l_x = window.event.clientX;
+        l_y = window.event.clientY;
+
+      }
+
+      //x, y 좌표값 return.
+      return {x:l_x, y:l_y};
+
+
+    };  //이벤트 발생시 마우스의 x, y 좌표 값 얻기.
+
 
 
 
