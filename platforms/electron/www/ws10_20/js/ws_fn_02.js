@@ -47,9 +47,9 @@
         // 서버에서 App 정보를 구한다.
         ajax_init_prc(oFormData, lf_success);
 
-      
+
         function lf_success(oAppInfo) {
-         
+
             var sCurrPage = parent.getCurrPage();
 
             // application 이 없을 경우 메시지 처리.
@@ -377,7 +377,7 @@
         sendAjax(sInitPath, oFormData, _fnCallback);
 
         function _fnCallback(oResult) {
-            
+
             // Critical Error
             if (oResult.RETCD == "Z") {
 
@@ -582,7 +582,7 @@
 
                 // 페이지 푸터 메시지
                 APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
-                
+
                 // var sMsg = "Editing by " + oAppInfo.APPID;
 
                 // // 페이지 푸터 메시지
@@ -1109,12 +1109,24 @@
         }
 
         for (var i = 0; i < iChildCnt; i++) {
+
             var oChild = aChild[i];
             if (oChild.isDestroyed()) {
                 continue;
             }
 
+            let oWebCon = oChild.webContents,
+                oWebPref = oWebCon.getWebPreferences(),
+                sOBJTY = oWebPref.OBJTY;
+
+            // child window 닫을 때 예외 팝업 체크
+            let bIsHideExp = oAPP.fn.fnCheckPopupHideException(sOBJTY);
+            if (bIsHideExp) {
+                continue;
+            }
+
             oChild.close();
+
         }
 
     }; // end of oAPP.fn.fnChildWindowClose
@@ -1145,6 +1157,16 @@
                 continue;
             }
 
+            let oWebCon = oChild.webContents,
+                oWebPref = oWebCon.getWebPreferences(),
+                sOBJTY = oWebPref.OBJTY;
+
+            // child window들 활성 or 비활성 시 예외 대상 팝업 체크
+            let bIsHideExp = oAPP.fn.fnCheckPopupHideException(sOBJTY);
+            if (bIsHideExp) {
+                continue;
+            }
+
             var isVisible = oChild.isVisible();
 
             // 숨기려는 경우
@@ -1170,6 +1192,23 @@
         }
 
     }; // end of oAPP.fn.fnChildWindowShow
+
+    /************************************************************************
+     * Electron Browser 활성 or 비활성 예외 대상 체크
+     ************************************************************************/
+    oAPP.fn.fnCheckPopupHideException = (OBJTY) => {
+
+        let aExceptionList = [
+            "VIDEOREC"
+        ];
+
+        if (!OBJTY) {
+            return false;
+        }
+
+        return (aExceptionList.find(element => element == OBJTY) == null ? false : true);
+
+    }; // end of oAPP.fn.fnCheckPopupHideException
 
     /************************************************************************
      * WS20 화면에서 떠있는 Dialog, Popup 종류, Electron Browser들 전체 닫는 function

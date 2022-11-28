@@ -270,33 +270,20 @@
 
         let win = REMOTE.getCurrentWindow();
 
-        win.setOpacity(0.3);
-
         // 윈도우에 클릭 이벤트 무시 여부
         win.setIgnoreMouseEvents(true);
 
         win.setAlwaysOnTop(true);
 
-        // 투명하게 된 화면을 복원하는 기능이 있는 팝업
-        oAPP.fn.fnOpenHideWindowControlPopup();    
-
-    }; // end of oAPP.fn.fnSetToggleFrameWindow
-
-    /************************************************************************
-     * 투명하게 된 화면을 복원하는 기능이 있는 팝업
-     ************************************************************************/
-    oAPP.fn.fnOpenHideWindowControlPopup = () => {
-
-        let win = REMOTE.getCurrentWindow();
-
         var oBrowserOptions = {
-            "height": 100,
-            "width": 100,
+            "height": 120,
+            "width": 288,
             "resizable": false,
             "alwaysOnTop": true,
             "maximizable": false,
             "minimizable": false,
             "frame": false,
+            "transparent" : true,
             "parent": win,
             "webPreferences": {
                 "devTools": true,
@@ -320,15 +307,13 @@
 
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
-
-        let bIsPin = APPCOMMON.fnGetModelProperty("/SETTING/ISPIN");
+        // oBrowserWindow.webContents.openDevTools();       
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
             let oSendData = {
-                ISPIN: bIsPin
+                DEFAULT_OPACITY: 0.3
             };
 
             oBrowserWindow.webContents.send('if_showHidePopup', oSendData);
@@ -338,10 +323,20 @@
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
 
-            oBrowserWindow = null;  
+            let bIsPin = APPCOMMON.fnGetModelProperty("/SETTING/ISPIN");
+
+            win.focus();
+            win.setOpacity(1);
+            win.setIgnoreMouseEvents(false);
+
+            if (!bIsPin) {
+                win.setAlwaysOnTop(false);
+            }
+
+            oBrowserWindow = null;
 
         });
 
-    }; // end of oAPP.fn.fnOpenHideWindowControlPopup
+    }; // end of oAPP.fn.fnSetToggleFrameWindow
 
 })(window, $, oAPP);

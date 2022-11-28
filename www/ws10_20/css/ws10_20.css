@@ -340,6 +340,10 @@ body,
 
 
 
+.sapUiLoSplitterV.uspCodeeditorSplit .sapUiLoSplitterContent {
+    display: block !important;
+}
+
 
 .ace_print-margin {
     visibility: hidden !important;

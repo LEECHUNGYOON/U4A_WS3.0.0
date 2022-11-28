@@ -8,26 +8,38 @@
 
     oAPP.IPCRENDERER.on('if_showHidePopup', (events, oInfo) => {
 
-        oAPP.info = oInfo;
+        const DEFAULT_OPACITY = oInfo.DEFAULT_OPACITY;
+
+        let oRange = document.getElementById("range");
+        if (oRange) {
+            oRange.value = DEFAULT_OPACITY * 100;
+        }
+
+        let oCurrWin = oAPP.REMOTE.getCurrentWindow(),
+            oParentWin = oCurrWin.getParentWindow();
+
+        oParentWin.setOpacity(DEFAULT_OPACITY);
 
     });
 
     oAPP.close = () => {
 
-        let bIsPin = oAPP.info.ISPIN,
-            oCurrWin = oAPP.REMOTE.getCurrentWindow(),
+        let oCurrWin = oAPP.REMOTE.getCurrentWindow();
+        oCurrWin.close();
+
+    };
+
+    oAPP.sliderChange = (e) => {
+
+        let oCurrWin = oAPP.REMOTE.getCurrentWindow(),
             oParentWin = oCurrWin.getParentWindow();
 
-        oParentWin.setOpacity(1);
-        oParentWin.setIgnoreMouseEvents(false);
+        let iValue = parseInt(e.value),
+            opa = iValue / 100;
 
-        if (!bIsPin) {
-            oParentWin.setAlwaysOnTop(false);
-        }
+        oParentWin = oCurrWin.getParentWindow();
 
-        oParentWin.focus();
-
-        oCurrWin.close();
+        oParentWin.setOpacity(opa);
 
     };
 

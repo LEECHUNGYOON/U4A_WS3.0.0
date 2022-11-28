@@ -218,7 +218,6 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
             "transparent": true,
             "frame": false,
             "parent": REMOTE.getCurrentWindow(),
-
             "webPreferences":{
                 "devTools": true,
                 "nodeIntegration": true,
@@ -226,7 +225,8 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
                 "contextIsolation": false,
                 "webSecurity": false,
                 "nativeWindowOpen": true,
-                "DISPNM" : "VIDEOSCREEN"
+                "DISPNM" : "VIDEOSCREEN",
+                "OBJTY" : "VIDEOREC",
             }              
 
         };
