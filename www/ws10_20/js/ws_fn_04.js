@@ -268,22 +268,101 @@
      ************************************************************************/
     oAPP.fn.fnSetHideWindow = () => {
 
-        let win = REMOTE.getCurrentWindow();
+        var op = {
+             "height": 120,
+             "width": 288,
+            "acceptFirstMouse": true,
+            "alwaysOnTop": true,
+            "maximizable": false,
+            "minimizable": false,
+            "show": true,
+            // "resizable": false,
+            "transparent": true,
+            "frame": false,
+            //"titleBarStyle": "hidden",
+            "parent": parent.REMOTE.getCurrentWindow(),
+
+            "webPreferences": {
+                "devTools": true,
+                "nodeIntegration": true,
+                "enableRemoteModule": true,
+                "contextIsolation": false,
+                "webSecurity": false,
+                "nativeWindowOpen": true
+            }
+
+        };
+
+        let win = parent.REMOTE.getCurrentWindow();
 
         // 윈도우에 클릭 이벤트 무시 여부
         win.setIgnoreMouseEvents(true);
-
         win.setAlwaysOnTop(true);
 
+        var oWIN = new parent.REMOTE.BrowserWindow(op);
+
+        oWIN.loadURL(parent.PATH.join(parent.REMOTE.app.getAppPath(), "ws10_20/Popups/winShowHidePopup/index.html"));
+
+        oWIN.webContents.on('did-finish-load', function () {
+            oWIN.show();
+
+            let oSendData = {
+                DEFAULT_OPACITY: 0.3
+            };
+
+            oWIN.webContents.send('if_showHidePopup', oSendData);
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oWIN.on('closed', () => {
+
+            let bIsPin = APPCOMMON.fnGetModelProperty("/SETTING/ISPIN");
+
+            parent.REMOTE.getCurrentWindow().focus();
+            parent.REMOTE.getCurrentWindow().setOpacity(1);
+            parent.REMOTE.getCurrentWindow().setIgnoreMouseEvents(false);
+
+            if (!bIsPin) {
+                parent.REMOTE.getCurrentWindow().setAlwaysOnTop(false);
+            }
+
+            oWIN = null;
+
+        });
+
+        parent.REMOTE.require('@electron/remote/main').enable(oWIN.webContents);
+
+        return;
+
+
+
+
+
+
+
+
+        
+        // let win = parent.REMOTE.getCurrentWindow();
+
+        // 윈도우에 클릭 이벤트 무시 여부
+        //win.setIgnoreMouseEvents(true);
+
+        //win.setAlwaysOnTop(true);
+
         var oBrowserOptions = {
-            "height": 120,
-            "width": 288,
+            // "height": 120,
+            // "width": 288,
+            "height": 400,
+            "width": 400,
+            "acceptFirstMouse": true,
             "resizable": false,
             "alwaysOnTop": true,
             "maximizable": false,
             "minimizable": false,
+            "show": true,
             "frame": false,
-            "transparent" : true,
+            "transparent": false,
             "parent": win,
             "webPreferences": {
                 "devTools": true,
@@ -296,27 +375,33 @@
         };
 
         // 브라우저 오픈
-        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
-        REMOTEMAIN.enable(oBrowserWindow.webContents);
+        var oBrowserWindow = new parent.REMOTE.BrowserWindow(oBrowserOptions);
 
         // 브라우저 상단 메뉴 없애기
-        oBrowserWindow.setMenu(null);
+        // oBrowserWindow.setMenu(null);
+        // oBrowserWindow.setMenuBarVisibility(false);
 
         // 실행할 URL 적용
-        var sUrlPath = parent.getPath("WINHIDE");
+        var sUrlPath = parent.PATH.join(parent.REMOTE.app.getAppPath(), "ws10_20/Popups/winShowHidePopup/test1.html");
+        // var sUrlPath = parent.getPath("WINHIDE2");
+        // var sUrlPath = parent.getPath("WINHIDE");        
 
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();       
+        return;
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            oBrowserWindow.show();
 
             let oSendData = {
                 DEFAULT_OPACITY: 0.3
             };
 
             oBrowserWindow.webContents.send('if_showHidePopup', oSendData);
+
+            oBrowserWindow.webContents.openDevTools();
 
         });
 
@@ -336,6 +421,9 @@
             oBrowserWindow = null;
 
         });
+
+        parent.REMOTE.require('@electron/remote/main').enable(oBrowserWindow.webContents);
+        // REMOTEMAIN.enable(oBrowserWindow.webContents);
 
     }; // end of oAPP.fn.fnSetToggleFrameWindow
 

@@ -13,6 +13,7 @@ html,
 body {
   height: 100%;
   min-height: 100%;
+
 }
 
 body {
@@ -20,6 +21,63 @@ body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   /*background-color: #222;*/
 }
+
+/*========================================= */
+/* Text area                                */
+/*========================================= */
+
+.cl_textareaAREA {
+
+  position: absolute;
+  top: 2%;
+  right: 0;
+  left: 6%;
+
+}
+
+.cl_textarea:focus {
+  background: none repeat scroll 0 0 #ff00e9;
+  outline-width: 0;
+}
+
+
+/* TextArea 버튼  */
+.textarea-open {
+  position: absolute;
+  top: 66%;
+  right: 0;
+  left: 6%;
+
+}
+
+.textarea-open-Button {
+  
+  zoom: 0.9;
+  box-shadow: 0px 10px 14px -7px #375bea;
+  background: linear-gradient(to bottom, #1582d2 5%, #10a0dc 100%);
+  background-color: #1cbde8;
+  border-radius: 8px;
+  display: inline-block;
+  cursor: pointer;
+  color: #ffffff;
+  font-family: Arial;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 13px 32px;
+  text-decoration: none;
+  text-shadow: 0px 1px 0px #801b54;
+
+}
+.textarea-open :hover {
+	background: linear-gradient(to bottom, #078ff0 5%, #0a28ee 100%);
+	background-color:#1cbde8;
+}
+.textarea-open :active {
+  position:relative;
+	top:1px;
+}
+
+
 
 
 /*========================================= */
@@ -76,7 +134,8 @@ body {
 /*========================================= */
 .drow-initial {
   position: absolute;
-  top: 63%;
+  /*top: 63%;*/
+  top: 51%;
   right: 0;
   left: 6%;
 
@@ -154,7 +213,8 @@ body {
 /*========================================= */
 .drow-checkbox {
   position: absolute;
-  top: 50%;
+  /*top: 50%;*/
+  top: 40%;
   right: 0;
   left: 5%;
 }
@@ -180,7 +240,8 @@ body {
   z-index: 100000000000;
   position: fixed;
   zoom:0.5;
-  top: 85%;
+  /* top: 85%; */
+  top: 80%;
   right: 0;
   bottom: 0;
   left: 93%;
@@ -190,9 +251,11 @@ body {
 }
 
 #app-box {
-  
+  /*background-color: rgba(0, 0, 0, 0.5);*/
+  z-index: 100000000000;
   position: absolute;
-  top: 30%;
+  /* top: 30%; */
+  top: 25%;
   right: 31%;
   left: 0%;
   width: 155px;

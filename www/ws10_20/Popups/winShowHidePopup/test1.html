@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html style="-webkit-app-region: drag;">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+.slidecontainer {
+  width: 100%;
+}
+
+.slider {
+
+  width: 100%;
+  height: 25px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+
+
+</style>
+</head>
+<body>
+
+<div>
+    <img src="http://www.u4ainfo.com/img/logo.png"  width="300" height="300" /> <br><br>
+
+</div>
+ 
+
+<div class="slidecontainer" >
+  <p>Default range slider:</p>
+  <div style="-webkit-app-region: no-drag;">
+  <input type="range" min="1" max="100" value="50">
+  </div>
+  
+  <div style="-webkit-app-region: no-drag;">
+    <input type="button" value="종료" />
+  </div>
+
+</div>
+
+</body>
+</html>

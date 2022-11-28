@@ -73,6 +73,7 @@ module.exports = (() => {
         DESIGNTREEUISRCH: PATH.join(POPUP_ROOT, "designTreeUiSearchPopup", "index.html"),
         VIDEOREC: PATH.join(POPUP_ROOT, "ScreenRecord", "ScreenRecording.js"),
         WINHIDE : PATH.join(POPUP_ROOT, "winShowHidePopup", "index.html"),
+        WINHIDE2 : PATH.join(POPUP_ROOT, "winShowHidePopup", "test1.html"),
 
         // Suggestion Json Path..
         EVENTSUGG: PATH.join(SUGG_ROOT, "events.json"),

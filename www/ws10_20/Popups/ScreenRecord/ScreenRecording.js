@@ -148,10 +148,10 @@ async function _chk_MultiScr(REMOTE){
         oWIN.webContents.on('did-finish-load', function () {
             oWIN.show();
 
-            //개발모드일 경우만 .. 콘솔창 수행
-            if(!REMOTE.app.isPackaged){
-                oWIN.webContents.openDevTools();
-            }   
+            // //개발모드일 경우만 .. 콘솔창 수행
+            // if(!REMOTE.app.isPackaged){
+            //     oWIN.webContents.openDevTools();
+            // }   
 
             //전송 값 구성 
             var opt = {"LOAD_THEME": LOAD_THEME };
@@ -202,13 +202,28 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
         const electron = REMOTE.require('electron');
         let displays = electron.screen.getAllDisplays();
 
-        let fineDisp = displays.filter(e =>e.id == sINFO.SELECT_SCR.DISPLAY_ID);
+       //선택 디스플레이 찾기 
+        let selDisp = displays.filter(e =>e.id == sINFO.SELECT_SCR.DISPLAY_ID);
+
+        //pc에 입장에 메인 모니터 찾기
+        let mainDisp = displays.filter(e =>e.internal == true); 
+
+        //주모니터 정보를 찾지못햇다면 
+        if(mainDisp.length == 0){
+            var dispInfo = {};
+            dispInfo.bounds = {};
+            dispInfo.bounds.x = selDisp[0].bounds.x;
+            dispInfo.bounds.y = selDisp[0].bounds.y;
+            dispInfo.bounds.height = selDisp[0].bounds.height;
+            dispInfo.bounds.width  = selDisp[0].bounds.width;
+            mainDisp.push(dispInfo);
+        }
 
         var op = {
-            "x":fineDisp[0].bounds.x,
-            "y":fineDisp[0].bounds.y,
-            "height": fineDisp[0].bounds.height,
-            "width": fineDisp[0].bounds.width,
+            "x":mainDisp[0].bounds.x,
+            "y":mainDisp[0].bounds.y,
+            "height": mainDisp[0].bounds.height,
+            "width":  mainDisp[0].bounds.width,
             "resizable": false,
             "fullscreenable": true,
             "alwaysOnTop":true,
@@ -232,7 +247,7 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
         };
 
         //부모 디비깅 창 임시 닫기
-        REMOTE.getCurrentWindow().closeDevTools();
+        //REMOTE.getCurrentWindow().closeDevTools();
 
         var oWIN = new REMOTE.BrowserWindow(op);
         oWIN.setMenuBarVisibility(false);
@@ -243,15 +258,34 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
         var url = `file://${__dirname}/index.html`;
         oWIN.loadURL(url);
 	    oWIN.webContents.on('did-finish-load', function () {
-            oWIN.show();
 
-            // //개발모드일 경우만 .. 콘솔창 수행
-            // if(!REMOTE.app.isPackaged){
-            //     oWIN.webContents.openDevTools();
-            // }   
-  
-            oParams = {"SCREEN_ID": sINFO.SELECT_SCR.SCREEN_ID};
-            oWIN.webContents.send('IF-REC-READY', oParams);
+            setTimeout(() => {
+                
+                var sBoundInfo = oWIN.getBounds();
+
+                sBoundInfo.x = selDisp[0].bounds.x;
+                sBoundInfo.y = selDisp[0].bounds.y;
+    
+                sBoundInfo.height = selDisp[0].bounds.height - 70;
+                sBoundInfo.width  = selDisp[0].bounds.width - 5;
+
+                oWIN.setBounds(sBoundInfo);
+
+                setTimeout(() => {
+                    
+                    oParams = {
+                        "SCREEN_ID": sINFO.SELECT_SCR.SCREEN_ID,
+                        "SCREEN_DISPLAY_ID": sINFO.SELECT_SCR.DISPLAY_ID
+                      };
+
+                    oWIN.webContents.send('IF-REC-READY', oParams);
+
+                }, 100);
+
+            }, 100);
+
+            oWIN.show();
+            oWIN.webContents.openDevTools();
 
         });
 

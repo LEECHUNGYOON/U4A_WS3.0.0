@@ -28,6 +28,7 @@ oAPP = {
         //레코딩 화면 구성 
         oAPP.onScrCreate();
 
+
         //드로잉 설정 여부 체크박스 이벤트 
         document.getElementsByClassName("drow-checkbox")[0].addEventListener("click", (e)=>{
 
@@ -85,6 +86,99 @@ oAPP = {
 
         });
 
+        //TextArea 추가 버튼 이벤트 설정  
+        document.getElementsByClassName("textarea-open-Button")[0].addEventListener("click", (e)=>{
+          e.preventDefault();
+
+          return;
+
+          let oDIV_TOP = document.createElement("div");
+              //oDIV_TOP.setAttribute("id","shhong");
+              oDIV_TOP.style.position = "absolute";
+              oDIV_TOP.style.top = "50px";
+              oDIV_TOP.style.left = "50px";
+
+
+          let oDIV_01  = document.createElement("div");
+              oDIV_01.setAttribute("for","comment_text");
+              oDIV_01.setAttribute("style","background:blue; color:white; height:30px; width:200px; cursor:pointer;");
+
+          let oSPAN_01 = document.createElement("span");
+              oSPAN_01.innerText = "drag area";
+              oSPAN_01.setAttribute("style","margin-left:10px;");
+
+              oDIV_01.appendChild(oSPAN_01);
+              oDIV_TOP.appendChild(oDIV_01);
+
+          let oTXTAREA_01 = document.createElement("textarea");
+              oTXTAREA_01.setAttribute("style","min-width:100px; position: absolute; cursor:pointer; z-Index:100000;");
+              oTXTAREA_01.setAttribute("id","comment_text");
+              oTXTAREA_01.setAttribute("name","comment_text");
+              oTXTAREA_01.setAttribute("row","6");
+              oTXTAREA_01.setAttribute("cols","50");
+              oTXTAREA_01.setAttribute("placeholder","This is an awesome comment box");
+
+              oDIV_TOP.appendChild(oTXTAREA_01);
+
+
+              oDIV_01.onmousedown = function(event) {
+                      event.preventDefault();
+                      oDIV_01.style.position = 'absolute';
+              
+                      oDIV_01.style.zIndex = 100000;
+              
+                      document.body.appendChild(oDIV_01);
+              
+                      moveAt(event.pageX, event.pageY);
+              
+                      oDIV_01.addEventListener('mousemove', onMouseMove);
+              
+                      oDIV_01.onmouseup = function() {
+                              event.preventDefault();
+                              oDIV_01.removeEventListener('mousemove', onMouseMove);
+                              oDIV_01.onmouseup = null;
+                      };
+  
+              };
+            
+              oDIV_01.ondragstart = function() {
+                  return false;
+              };
+          
+  
+              function moveAt(pageX, pageY) {
+                  
+                  var offwidth  = oDIV_01.offsetWidth;
+                  var offHeight = oDIV_01.offsetHeight;
+  
+                  var left = pageX - offwidth  / 2 + 'px';
+                  var top  = pageY - offHeight / 2 + 'px';
+                  
+                  oDIV_01.style.left = left;
+                  oDIV_01.style.top  = top;
+  
+                  var left2 = pageX - offwidth  / 2 + 'px';
+                  var top2  = pageY - offHeight / 2;
+                      top2  = top2  + 30;
+                      top2  = top2 + "px";
+  
+                      oTXTAREA_01.style.left = left2;
+                      oTXTAREA_01.style.top  = top2;
+      
+              }
+  
+              function onMouseMove(event) {
+                      event.preventDefault();
+                      moveAt(event.pageX, event.pageY);
+              }
+
+
+              document.body.appendChild(oDIV_TOP);
+
+
+        });
+
+
     });
     
   },
@@ -98,6 +192,9 @@ oAPP = {
         oSIGN.setAttribute("width",  screen.availWidth);
         oSIGN.setAttribute("height", screen.availHeight);
    
+        oAPP.saveDirectory = oAPP.path.join(process.env.APPDATA, oAPP.remote.app.name, "video");
+        
+        return;
 
     //레코딩 비디오파일 저장 폴더 경로
     if(process.env.LOCALAPPDATA !== ""){
@@ -118,7 +215,10 @@ oAPP = {
       setTimeout(() => { document.getElementById("check1").checked = false; }, 0);  
       
       //드로잉 체크박스 활성 
-      setTimeout(() => { document.getElementsByClassName("drow-checkbox")[0].style.display = ""; }, 0);  
+      setTimeout(() => { document.getElementsByClassName("drow-checkbox")[0].style.display = ""; }, 0);
+      
+      //Text Area 생성 버튼 활성 
+      setTimeout(() => { document.getElementsByClassName("textarea-open")[0].style.display = ""; }, 0);  
 
       //드로잉 설정해제 
       setTimeout(() => { document.getElementById("SIGN_CTNR").className = "signature-off"; }, 0); 
@@ -220,6 +320,11 @@ oAPP = {
       setTimeout(() => { document.getElementById("check1").checked = false;
                          document.getElementsByClassName("drow-checkbox")[0].style.display = "none";
                       }, 0);
+
+
+      //TextArea 추가 버튼 숨김 처리 
+      setTimeout(() => { document.getElementsByClassName("textarea-open")[0].style.display = "none"; }, 0); 
+
  
       //드로잉 초기화 버튼 숨김 처리
       setTimeout(() => { document.getElementsByClassName("drow-initial-Button")[0].style.display = "none"; }, 0); 
