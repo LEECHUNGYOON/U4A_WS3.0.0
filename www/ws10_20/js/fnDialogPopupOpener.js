@@ -5,7 +5,7 @@
  * - file Desc : 각종 Dialog Popup Opener
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -36,14 +36,14 @@
      * @param {String}  [oOptions.initCond.ERUSR] Create User
      * @param {Int}     [oOptions.initCond.HITS]  Max Count
      ************************************************************************/
-    oAPP.fn.fnAppF4PopupOpener = function (oOptions, fnAppF4DataCallback) {
+    oAPP.fn.fnAppF4PopupOpener = function(oOptions, fnAppF4DataCallback) {
 
         if (oAPP.fn.fnAppF4PopupOpen) {
             oAPP.fn.fnAppF4PopupOpen(oOptions, fnAppF4DataCallback);
             return;
         }
 
-        oAPP.loadJs("fnAppF4PopupOpen", function () {
+        oAPP.loadJs("fnAppF4PopupOpen", function() {
             oAPP.fn.fnAppF4PopupOpen(oOptions, fnAppF4DataCallback);
         });
 
@@ -52,7 +52,7 @@
     /************************************************************************
      * WS20의 찾기 버튼 팝업 실행시켜 주는 메소드
      ************************************************************************/
-    oAPP.fn.fnFindPopupOpener = function () {
+    oAPP.fn.fnFindPopupOpener = function() {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -67,7 +67,7 @@
             return;
         }
 
-        oAPP.loadJs("fnFindPopupOpen", function () {
+        oAPP.loadJs("fnFindPopupOpen", function() {
             oAPP.fn.fnFindPopupOpen();
         });
 
@@ -78,14 +78,14 @@
     /************************************************************************
      * WS20의 MIME Dialog Opener
      ************************************************************************/
-    oAPP.fn.fnMimeDialogOpener = function () {
+    oAPP.fn.fnMimeDialogOpener = function() {
 
         if (oAPP.fn.fnMimePopupOpen) {
             oAPP.fn.fnMimePopupOpen();
             return;
         }
 
-        oAPP.loadJs("fnMimePopupOpen", function () {
+        oAPP.loadJs("fnMimePopupOpen", function() {
             oAPP.fn.fnMimePopupOpen();
         });
 
@@ -94,7 +94,7 @@
     /************************************************************************
      * WS20의 CSS & JS Link Add 팝업 실행시켜 주는 메소드
      ************************************************************************/
-    oAPP.fn.fnCssJsLinkAddPopupOpener = function (TYPE) {
+    oAPP.fn.fnCssJsLinkAddPopupOpener = function(TYPE) {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -106,7 +106,7 @@
             return;
         }
 
-        oAPP.loadJs("fnCssJsLinkAddPopupOpen", function () {
+        oAPP.loadJs("fnCssJsLinkAddPopupOpen", function() {
             oAPP.fn.fnCssJsLinkAddPopupOpen(TYPE);
         });
 
@@ -115,7 +115,7 @@
     /************************************************************************
      * WS20의 Web Security 팝업 실행시켜 주는 메소드
      ************************************************************************/
-    oAPP.fn.fnWebSecurityPopupOpener = function () {
+    oAPP.fn.fnWebSecurityPopupOpener = function() {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -127,7 +127,7 @@
             return;
         }
 
-        oAPP.loadJs("fnWebSecurityPopupOpen", function () {
+        oAPP.loadJs("fnWebSecurityPopupOpen", function() {
             oAPP.fn.fnWebSecurityPopupOpen();
         });
 
@@ -136,7 +136,7 @@
     /************************************************************************
      * WS20의 Client Event 팝업 실행시켜 주는 메소드
      ************************************************************************/
-    oAPP.fn.fnClientEditorPopupOpener = function (TYPE, PARAM, fnCallback) {
+    oAPP.fn.fnClientEditorPopupOpener = function(TYPE, PARAM, fnCallback) {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -148,7 +148,7 @@
             return;
         }
 
-        oAPP.loadJs("fnClientEditorPopupOpen", function () {
+        oAPP.loadJs("fnClientEditorPopupOpen", function() {
             oAPP.fn.fnClientEditorPopupOpen(TYPE, PARAM, fnCallback);
         });
 
@@ -157,7 +157,7 @@
     /************************************************************************
      * WS20의 Error Page Editor 팝업 실행시켜 주는 메소드
      ************************************************************************/
-    oAPP.fn.fnErrorPageEditorPopupOpener = function () {
+    oAPP.fn.fnErrorPageEditorPopupOpener = function() {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -170,7 +170,7 @@
             return;
         }
 
-        oAPP.loadJs("fnErrorPageEditorPopupOpen", function () {
+        oAPP.loadJs("fnErrorPageEditorPopupOpen", function() {
             oAPP.fn.fnErrorPageEditorPopupOpen();
         });
 
@@ -182,7 +182,7 @@
      * @param {String} sAppId  
      * - 복사할 APPID
      * **********************************************************************/
-    oAPP.fn.fnAppCopyPopupOpener = function (sAppId) {
+    oAPP.fn.fnAppCopyPopupOpener = function(sAppId) {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -195,7 +195,7 @@
             return;
         }
 
-        oAPP.loadJs("fnAppCopyPopupOpen", function () {
+        oAPP.loadJs("fnAppCopyPopupOpen", function() {
             oAPP.fn.fnAppCopyPopupOpen(sAppId);
         });
 
@@ -207,7 +207,7 @@
      * @param {function} fnCallback  
      * - Package 정보 Search Help Popup 호출후 선택한 Package 값 리턴 콜백 메소드
      * **********************************************************************/
-    oAPP.fn.fnPackgSchpPopupOpener = function (fnCallback) {
+    oAPP.fn.fnPackgSchpPopupOpener = function(fnCallback) {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -220,7 +220,7 @@
             return;
         }
 
-        $.getScript("design/js/callF4HelpPopup.js", function () {
+        $.getScript("design/js/callF4HelpPopup.js", function() {
             //f4 help 팝업 function load 이후 팝업 호출.
             oAPP.fn.callF4HelpPopup("DEVCLASS", "DEVCLASS", [], [], fnCallback);
         });
@@ -233,14 +233,14 @@
      * @param {Object} oTempData  
      * - Ui Template 관련 정보
      * **********************************************************************/
-    oAPP.fn.fnUiTempWizardPopupOpener = function (oTempData) {
+    oAPP.fn.fnUiTempWizardPopupOpener = function(oTempData) {
 
         if (oAPP.fn.fnUiTempWizardPopupOpen) {
             oAPP.fn.fnUiTempWizardPopupOpen(oTempData);
             return;
         }
 
-        oAPP.loadJs("fnUiTempWizardPopupOpen", function () {
+        oAPP.loadJs("fnUiTempWizardPopupOpen", function() {
             oAPP.fn.fnUiTempWizardPopupOpen(oTempData);
         });
 
@@ -252,14 +252,14 @@
      * @param {function} lf_success  
      * - CTS popup 실행 후 선택한 CTS 값 리턴 콜백 메소드
      * **********************************************************************/
-    oAPP.fn.fnCtsPopupOpener = function (lf_success) {
+    oAPP.fn.fnCtsPopupOpener = function(lf_success) {
 
         if (oAPP.fn.fnCtsPopupOpen) {
             oAPP.fn.fnCtsPopupOpen(lf_success);
             return;
         }
 
-        oAPP.loadJs("fnCtsPopupOpen", function () {
+        oAPP.loadJs("fnCtsPopupOpen", function() {
             oAPP.fn.fnCtsPopupOpen(lf_success);
         });
 
@@ -278,7 +278,7 @@
      * @param {function} fnCallback
      * - Callback function
      * **********************************************************************/
-    oAPP.fn.fnBindPopupOpener = function (sTitle, sKind, fnCallback) {
+    oAPP.fn.fnBindPopupOpener = function(sTitle, sKind, fnCallback) {
 
         //대상 function이 존재하는경우 호출 처리.
         if (typeof oAPP.fn.callBindPopup !== "undefined") {
@@ -287,7 +287,7 @@
         }
 
         //대상 function이 존재하지 않는경우 script 호출.
-        oAPP.fn.getScript("design/js/callBindPopup", function () {
+        oAPP.fn.getScript("design/js/callBindPopup", function() {
             oAPP.fn.callBindPopup(sTitle, sKind, fnCallback);
         });
 
@@ -328,34 +328,6 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        function lf_setBounds() {
-
-            // 팝업 위치를 부모 위치에 배치시킨다.
-            var oParentBounds = CURRWIN.getBounds(),
-                xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-                yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-                oWinScreen = window.screen,
-                iAvailLeft = oWinScreen.availLeft;
-
-            if (xPos < iAvailLeft) {
-                xPos = iAvailLeft;
-            }
-
-            if (oParentBounds.y > yPos) {
-                yPos = oParentBounds.y + 10;
-            }
-
-            // if (yPos < 0) {
-            //     yPos = 0;
-            // };
-
-            oBrowserWindow.setBounds({
-                x: xPos,
-                y: yPos
-            });
-
-        } // end of lf_setBounds
-
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
@@ -365,12 +337,16 @@
 
         // oBrowserWindow.webContents.openDevTools();
 
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
-            lf_setBounds();
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oBindPopupData = {
                 oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보 (필수)
@@ -387,7 +363,8 @@
 
             oBrowserWindow.setOpacity(1.0);
 
-            lf_setBounds();
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -401,9 +378,38 @@
     }; // end of oAPP.fn.fnBindWindowPopupOpener
 
     /************************************************************************
+     * 부모 윈도우 위치의 가운데 배치한다.
+     ************************************************************************/
+    oAPP.fn.setParentCenterBounds = (oBrowserWindow, oBrowserOptions) => {
+
+        let oCurrWin = REMOTE.getCurrentWindow();
+
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = oCurrWin.getBounds(),
+            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
+
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
+        }
+
+        if (oParentBounds.y > yPos) {
+            yPos = oParentBounds.y + 10;
+        }
+
+        oBrowserWindow.setBounds({
+            x: xPos,
+            y: yPos
+        });
+
+    }; // end of oAPP.fn.setParentCenterBounds
+
+    /************************************************************************
      * Text 검색 팝업 (electron 기능)
      ************************************************************************/
-    oAPP.fn.fnTextSearchPopupOpener = function () {
+    oAPP.fn.fnTextSearchPopupOpener = function() {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -456,7 +462,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             oBrowserWindow.show();
 
@@ -464,7 +470,7 @@
 
         });
 
-        oBrowserWindow.webContents.on("dom-ready", function () {
+        oBrowserWindow.webContents.on("dom-ready", function() {
 
             lf_move();
 
@@ -472,8 +478,10 @@
 
         function lf_move() {
 
+            let oCurrWin = REMOTE.getCurrentWindow();
+
             // // 팝업 위치를 부모 위치에 배치시킨다.
-            var oParentBounds = CURRWIN.getBounds(),
+            var oParentBounds = oCurrWin.getBounds(),
                 oBrowserBounds = oBrowserWindow.getBounds();
 
             let xPos = (oParentBounds.x + oParentBounds.width) - 390,
@@ -490,18 +498,46 @@
 
         }
 
+        // 부모 창이 움직일려고 할때 타는 이벤트
+        function lf_will_move() {
+
+            oBrowserWindow.hide();
+
+            lf_move();
+
+        }
+
+        // 부모 창이 움직임 완료 되었을 때 타는 이벤트
+        function lf_moved() {
+
+            oBrowserWindow.show();
+
+            lf_move();
+
+        }
+
         function lf_off() {
 
-            CURRWIN.off("move", lf_move);
-            CURRWIN.off("resize", lf_move);
             CURRWIN.off("maximize", lf_move);
             CURRWIN.off("unmaximize", lf_move);
 
-            CURRWIN.off("moved", lf_move);
-            CURRWIN.off("will-move", lf_move);
+            CURRWIN.off('will-move', lf_will_move);
+            CURRWIN.off("move", lf_move);
+            CURRWIN.off('moved', lf_moved);
+
+            // CURRWIN.off("moved", lf_move);
+            // CURRWIN.off("will-move", lf_move);
+
+            CURRWIN.off('will-resize', lf_will_move);
+            CURRWIN.off('resize', lf_move);
+            CURRWIN.off('resized', lf_moved);
+
+            // CURRWIN.off("will-resize", lf_move);
+            // CURRWIN.off("resize", lf_move);
+            // CURRWIN.off("resized", lf_move);
+
             CURRWIN.off("restore", lf_move);
-            CURRWIN.off("resized", lf_move);
-            CURRWIN.off("will-resize", lf_move);
+
             CURRWIN.off("enter-full-screen", lf_move);
             CURRWIN.off("leave-full-screen", lf_move);
 
@@ -509,20 +545,28 @@
 
         }
 
-
         lf_off();
 
 
-        CURRWIN.on('move', lf_move);
-        CURRWIN.on('resize', lf_move);
         CURRWIN.on('maximize', lf_move);
         CURRWIN.on('unmaximize', lf_move);
 
-        CURRWIN.on('moved', lf_move);
-        CURRWIN.on('will-move', lf_move);
+        // CURRWIN.on('moved', lf_move);
+        // CURRWIN.on('will-move', lf_move);  
+
+        CURRWIN.on('will-move', lf_will_move);
+        CURRWIN.on('move', lf_move);
+        CURRWIN.on('moved', lf_moved);
+
+        CURRWIN.on('will-resize', lf_will_move);
+        CURRWIN.on('resize', lf_move);
+        CURRWIN.on('resized', lf_moved);
+
+        // CURRWIN.on('will-resize', lf_move);
+        // CURRWIN.on('resize', lf_move);
+        // CURRWIN.on('resized', lf_move);        
+
         CURRWIN.on('restore', lf_move);
-        CURRWIN.on('resized', lf_move);
-        CURRWIN.on('will-resize', lf_move);
         CURRWIN.on('enter-full-screen', lf_move);
         CURRWIN.on('leave-full-screen', lf_move);
 
@@ -609,11 +653,11 @@
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
             lf_move();
         });
 
-        oBrowserWindow.webContents.on("dom-ready", function () {
+        oBrowserWindow.webContents.on("dom-ready", function() {
             lf_move();
         });
 
@@ -693,7 +737,7 @@
     /************************************************************************
      * Document Popup Open
      ************************************************************************/
-    oAPP.fn.fnDocuPopupOpener = function () {
+    oAPP.fn.fnDocuPopupOpener = function() {
 
         var sPopupName = "APPDOCU";
 
@@ -713,6 +757,7 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.show = false;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -722,26 +767,6 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        // 팝업 위치를 부모 위치에 배치시킨다.
-        var oParentBounds = CURRWIN.getBounds(),
-            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-            oWinScreen = window.screen,
-            iAvailLeft = oWinScreen.availLeft;
-
-        if (xPos < iAvailLeft) {
-            xPos = iAvailLeft;
-        }
-
-        if (yPos < 0) {
-            yPos = 0;
-        };
-
-        oBrowserWindow.setBounds({
-            x: xPos,
-            y: yPos
-        });
-
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
@@ -750,8 +775,16 @@
 
         // oBrowserWindow.webContents.openDevTools();
 
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oDocuData = {
                 USERINFO: parent.getUserInfo(),
@@ -762,7 +795,12 @@
 
             oBrowserWindow.webContents.send('if-appdocu-info', oDocuData);
 
+            oBrowserWindow.show();
+
             oBrowserWindow.setOpacity(1.0);
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -811,34 +849,6 @@
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        function lf_setBounds() {
-
-            // 팝업 위치를 부모 위치에 배치시킨다.
-            let oParentBounds = CURRWIN.getBounds(),
-                xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-                yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-                oWinScreen = window.screen,
-                iAvailLeft = oWinScreen.availLeft;
-
-            if (xPos < iAvailLeft) {
-                xPos = iAvailLeft;
-            }
-
-            if (oParentBounds.y > yPos) {
-                yPos = oParentBounds.y + 10;
-            }
-
-            // if (yPos < 0) {
-            //     yPos = 0;
-            // };
-
-            oBrowserWindow.setBounds({
-                x: xPos,
-                y: yPos
-            });
-
-        }
-
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
@@ -848,11 +858,14 @@
         // oBrowserWindow.webContents.openDevTools();
 
         oBrowserWindow.once('ready-to-show', () => {
-            lf_setBounds();
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             let oOptionData = {
                 BROWSKEY: BROWSKEY, // 브라우저 고유키 
@@ -869,7 +882,8 @@
 
             oBrowserWindow.setOpacity(1.0);
 
-            lf_setBounds();
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -927,34 +941,6 @@
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        function lf_setBounds() {
-
-            // 팝업 위치를 부모 위치에 배치시킨다.
-            let oParentBounds = CURRWIN.getBounds(),
-                xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-                yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-                oWinScreen = window.screen,
-                iAvailLeft = oWinScreen.availLeft;
-
-            if (xPos < iAvailLeft) {
-                xPos = iAvailLeft;
-            }
-
-            if (oParentBounds.y > yPos) {
-                yPos = oParentBounds.y + 10;
-            }
-
-            // if (yPos < 0) {
-            //     yPos = 0;
-            // };
-
-            oBrowserWindow.setBounds({
-                x: xPos,
-                y: yPos
-            });
-
-        } // end of lf_setBounds
-
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
@@ -964,11 +950,14 @@
         // oBrowserWindow.webContents.openDevTools();
 
         oBrowserWindow.once('ready-to-show', () => {
-            lf_setBounds();
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             let oDocuData = {
                 oUserInfo: parent.getUserInfo(),
@@ -981,7 +970,8 @@
 
             oBrowserWindow.setOpacity(1.0);
 
-            lf_setBounds();
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -1046,7 +1036,6 @@
 
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.title = sFlag;
-        // oBrowserOptions.opacity = 0.0;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
@@ -1056,34 +1045,6 @@
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
-
-        function lf_setBounds() {
-
-            // 팝업 위치를 부모 위치에 배치시킨다.
-            var oParentBounds = CURRWIN.getBounds(),
-                xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-                yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-                oWinScreen = window.screen,
-                iAvailLeft = oWinScreen.availLeft;
-
-            if (xPos < iAvailLeft) {
-                xPos = iAvailLeft;
-            }
-
-            if (oParentBounds.y > yPos) {
-                yPos = oParentBounds.y + 10;
-            }
-
-            // if (yPos < 0) {
-            //     yPos = 0;
-            // };
-
-            oBrowserWindow.setBounds({
-                x: xPos,
-                y: yPos
-            });
-
-        } // end of lf_setBounds
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
@@ -1105,19 +1066,21 @@
         // oBrowserWindow.webContents.openDevTools();
 
         oBrowserWindow.once('ready-to-show', () => {
-            lf_setBounds();
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             oBrowserWindow.webContents.send("export_import-INITDATA", oSendData);
 
             oBrowserWindow.show();
 
-            // oBrowserWindow.setOpacity(1.0);
-
-            lf_setBounds();
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -1184,34 +1147,6 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        function lf_setBounds() {
-
-            // 팝업 위치를 부모 위치에 배치시킨다.
-            var oParentBounds = CURRWIN.getBounds(),
-                xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-                yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-                oWinScreen = window.screen,
-                iAvailLeft = oWinScreen.availLeft;
-
-            if (xPos < iAvailLeft) {
-                xPos = iAvailLeft;
-            }
-
-            if (oParentBounds.y > yPos) {
-                yPos = oParentBounds.y + 10;
-            }
-
-            // if (yPos < 0) {
-            //     yPos = 0;
-            // };
-
-            oBrowserWindow.setBounds({
-                x: xPos,
-                y: yPos
-            });
-
-        } // end of lf_setBounds
-
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
@@ -1225,11 +1160,14 @@
         // oBrowserWindow.webContents.openDevTools();
 
         oBrowserWindow.once('ready-to-show', () => {
-            lf_setBounds();
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             oBrowserWindow.webContents.send("if-about-u4a", oSendData);
 
@@ -1237,7 +1175,8 @@
 
             oBrowserWindow.setOpacity(1.0);
 
-            lf_setBounds();
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -1290,34 +1229,6 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        function lf_setBounds() {
-
-            // 팝업 위치를 부모 위치에 배치시킨다.
-            var oParentBounds = CURRWIN.getBounds(),
-                xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-                yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-                oWinScreen = window.screen,
-                iAvailLeft = oWinScreen.availLeft;
-
-            if (xPos < iAvailLeft) {
-                xPos = iAvailLeft;
-            }
-
-            if (oParentBounds.y > yPos) {
-                yPos = oParentBounds.y + 10;
-            }
-
-            // if (yPos < 0) {
-            //     yPos = 0;
-            // };
-
-            oBrowserWindow.setBounds({
-                x: xPos,
-                y: yPos
-            });
-
-        } // end of lf_setBounds
-
         // 브라우저 상단 메뉴 없애기        
         oBrowserWindow.setMenu(null);
 
@@ -1326,11 +1237,14 @@
         // oBrowserWindow.webContents.openDevTools();
 
         oBrowserWindow.once('ready-to-show', () => {
-            lf_setBounds();
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oRuntimeInfo = {
                 oUserInfo: oUserInfo,
@@ -1346,7 +1260,8 @@
 
             oBrowserWindow.setOpacity(1.0);
 
-            lf_setBounds();
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -1388,6 +1303,7 @@
 
         oBrowserOptions.title = "U4A Workspace: Font Style";
         oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -1398,26 +1314,6 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        // 팝업 위치를 부모 위치에 배치시킨다.
-        var oParentBounds = CURRWIN.getBounds(),
-            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-            oWinScreen = window.screen,
-            iAvailLeft = oWinScreen.availLeft;
-
-        if (xPos < iAvailLeft) {
-            xPos = iAvailLeft;
-        }
-
-        if (yPos < 0) {
-            yPos = 0;
-        };
-
-        oBrowserWindow.setBounds({
-            x: xPos,
-            y: yPos
-        });
-
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
@@ -1425,10 +1321,23 @@
 
         // oBrowserWindow.webContents.openDevTools();
 
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
+
+            oBrowserWindow.show();
 
             oBrowserWindow.setOpacity(1.0);
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -1473,6 +1382,8 @@
         oBrowserOptions.title = "Icon List";
         oBrowserOptions.url = sPath;
         oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.show = false;
+        oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
@@ -1485,7 +1396,7 @@
     /************************************************************************
      * WS20의 하단 멀티 푸터 메시지 처리
      * **********************************************************************/
-    oAPP.fn.fnMultiFooterMsg = function (aMsg) {
+    oAPP.fn.fnMultiFooterMsg = function(aMsg) {
 
         var sPopupName = "ERRMSGPOP";
 
@@ -1503,6 +1414,7 @@
 
         oBrowserOptions.title = "Error Message Popup";
         oBrowserOptions.center = true;
+        oBrowserOptions.show = true;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.titleBarStyle = "hidden";
@@ -1517,25 +1429,25 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        // 팝업 위치를 부모 위치에 배치시킨다.
-        var oParentBounds = CURRWIN.getBounds(),
-            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-            oWinScreen = window.screen,
-            iAvailLeft = oWinScreen.availLeft;
+        // // 팝업 위치를 부모 위치에 배치시킨다.
+        // var oParentBounds = CURRWIN.getBounds(),
+        //     xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+        //     yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+        //     oWinScreen = window.screen,
+        //     iAvailLeft = oWinScreen.availLeft;
 
-        if (xPos < iAvailLeft) {
-            xPos = iAvailLeft;
-        }
+        // if (xPos < iAvailLeft) {
+        //     xPos = iAvailLeft;
+        // }
 
-        if (yPos < 0) {
-            yPos = 0;
-        };
+        // if (yPos < 0) {
+        //     yPos = 0;
+        // };
 
-        oBrowserWindow.setBounds({
-            x: xPos,
-            y: yPos
-        });
+        // oBrowserWindow.setBounds({
+        //     x: xPos,
+        //     y: yPos
+        // });
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
@@ -1545,8 +1457,16 @@
 
         // oBrowserWindow.webContents.openDevTools();
 
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oSendData = {
                 oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보
@@ -1556,7 +1476,12 @@
 
             oBrowserWindow.webContents.send('if-errmsg-info', oSendData);
 
+            oBrowserWindow.show();
+
             oBrowserWindow.setOpacity(1.0);
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -1578,7 +1503,7 @@
     /************************************************************************
      * WS20의 UI Property 도움말
      * **********************************************************************/
-    oAPP.fn.fnPropertyHelpPopup = function (sUrl) {
+    oAPP.fn.fnPropertyHelpPopup = function(sUrl) {
 
         var sWinObjType = "PROPHELP",
             sPath = parent.getServerPath() + "/external_open?URL=" + encodeURIComponent(sUrl + "&WS=X");
@@ -1625,7 +1550,7 @@
             return;
         }
 
-        oAPP.loadJs("fnEditorPopupOpen", function () {
+        oAPP.loadJs("fnEditorPopupOpen", function() {
             oAPP.fn.fnEditorPopupOpen(oEditorInfo, sSearchValue);
         });
 
@@ -1669,34 +1594,6 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        function lf_setBounds() {
-
-            // 팝업 위치를 부모 위치에 배치시킨다.
-            var oParentBounds = CURRWIN.getBounds(),
-                xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-                yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-                oWinScreen = window.screen,
-                iAvailLeft = oWinScreen.availLeft;
-
-            if (xPos < iAvailLeft) {
-                xPos = iAvailLeft;
-            }
-
-            if (oParentBounds.y > yPos) {
-                yPos = oParentBounds.y + 10;
-            }
-
-            // if (yPos < 0) {
-            //     yPos = 0;
-            // };
-
-            oBrowserWindow.setBounds({
-                x: xPos,
-                y: yPos
-            });
-
-        } // end of lf_setBounds
-
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
@@ -1706,11 +1603,14 @@
         // oBrowserWindow.webContents.openDevTools();
 
         oBrowserWindow.once('ready-to-show', () => {
-            lf_setBounds();
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oData = {
                 USERINFO: parent.getUserInfo(), // User 정보
@@ -1725,7 +1625,8 @@
 
             oBrowserWindow.setOpacity(1.0);
 
-            lf_setBounds();
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -1758,7 +1659,7 @@
             return;
         }
 
-        $.getScript("design/js/callDesignLayoutChangePopup.js", function () {
+        $.getScript("design/js/callDesignLayoutChangePopup.js", function() {
             oAPP.fn.callDesignLayoutChangePopup();
         });
 
@@ -1791,6 +1692,7 @@
 
         oBrowserOptions.title = "OTR Manager";
         oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
@@ -1803,26 +1705,6 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        // 팝업 위치를 부모 위치에 배치시킨다.
-        var oParentBounds = CURRWIN.getBounds(),
-            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-            oWinScreen = window.screen,
-            iAvailLeft = oWinScreen.availLeft;
-
-        if (xPos < iAvailLeft) {
-            xPos = iAvailLeft;
-        }
-
-        if (yPos < 0) {
-            yPos = 0;
-        };
-
-        oBrowserWindow.setBounds({
-            x: xPos,
-            y: yPos
-        });
-
         // 브라우저 상단 메뉴 없애기        
         oBrowserWindow.setMenu(null);
 
@@ -1830,8 +1712,16 @@
 
         // oBrowserWindow.webContents.openDevTools();
 
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oSendData = {
                 oUserInfo: oUserInfo,
@@ -1844,7 +1734,12 @@
             // 오픈할 URL 파라미터 전송
             oBrowserWindow.webContents.send('if_OTRF4HelpPopup', oSendData);
 
+            oBrowserWindow.show();
+
             oBrowserWindow.setOpacity(1.0);
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -1882,6 +1777,7 @@
 
         oBrowserOptions.title = "UI5 Predefined CSS";
         oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
@@ -1895,26 +1791,6 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        // 팝업 위치를 부모 위치에 배치시킨다.
-        var oParentBounds = CURRWIN.getBounds(),
-            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-            oWinScreen = window.screen,
-            iAvailLeft = oWinScreen.availLeft;
-
-        if (xPos < iAvailLeft) {
-            xPos = iAvailLeft;
-        }
-
-        if (yPos < 0) {
-            yPos = 0;
-        };
-
-        oBrowserWindow.setBounds({
-            x: xPos,
-            y: yPos
-        });
-
         // 브라우저 상단 메뉴 없애기        
         oBrowserWindow.setMenu(null);
 
@@ -1922,8 +1798,16 @@
 
         // oBrowserWindow.webContents.openDevTools();
 
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oSendData = {
                 BROWSKEY: BROWSKEY,
@@ -1936,7 +1820,12 @@
             // 오픈할 URL 파라미터 전송
             oBrowserWindow.webContents.send('if-ui5css-info', oSendData);
 
+            oBrowserWindow.show();
+
             oBrowserWindow.setOpacity(1.0);
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -2024,8 +1913,9 @@
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.title = "Short Cut Creator";
+        oBrowserOptions.title = "ShortCut Creator";
         oBrowserOptions.show = false;
+        oBrowserOptions.opacity = 1.0;
         oBrowserOptions.skipTaskbar = false;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.modal = true;
@@ -2091,30 +1981,6 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        function lf_setBounds() {
-
-            // 팝업 위치를 부모 위치에 배치시킨다.
-            let oParentBounds = CURRWIN.getBounds(),
-                xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-                yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-                oWinScreen = window.screen,
-                iAvailLeft = oWinScreen.availLeft;
-
-            if (xPos < iAvailLeft) {
-                xPos = iAvailLeft;
-            }
-
-            if (yPos < 0) {
-                yPos = 0;
-            };
-
-            oBrowserWindow.setBounds({
-                x: xPos,
-                y: yPos
-            });
-
-        }
-
         // 브라우저 상단 메뉴 없애기        
         oBrowserWindow.setMenu(null);
 
@@ -2122,10 +1988,16 @@
 
         // oBrowserWindow.webContents.openDevTools();
 
-        // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
 
-            oBrowserWindow.show();
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oSendData = {
                 browserInfo: T_info,
@@ -2135,8 +2007,12 @@
             // 오픈할 URL 파라미터 전송
             oBrowserWindow.webContents.send('if_APP_shortcutCreator', oSendData);
 
-            // 팝업 위치를 부모 위치에 배치시킨다.
-            lf_setBounds();
+            oBrowserWindow.show();
+
+            oBrowserWindow.setOpacity(1.0);
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
