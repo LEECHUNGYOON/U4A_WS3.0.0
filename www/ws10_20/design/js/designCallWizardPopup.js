@@ -20,8 +20,8 @@
 
         //선택한 라인이 존재하지 않는경우 오류 메시지 처리.
         if(l_indx === -1){
-            //073 &1 does not exist.
-            parent.showMessage(sap, 10, "E", "Selected line does not exist.");
+            //268	Selected line does not exists.
+            parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", ""));
             return;
         }
 
@@ -30,8 +30,9 @@
 
         //DOCUMENT를 선택한 경우 오류 메시지 처리.
         if(ls_tree.OBJID === "ROOT"){
+            //A36	ROOT
             //056	& is not the target location.
-            parent.showMessage(sap, 10, "E", "DOCUMENT is not the target location.");
+            parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "056", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A36"), "", "", ""));
             return;
         }
 
@@ -144,7 +145,8 @@
                     if(typeof oAPP.attr.prev[ls_parent.OBJID]._MODEL[aggr.UIATT] !== "undefined"){
                         //성공 FLAG 처리.
                         ls_ret.SUBRC = "E";
-                        ls_ret.MSG = "model binding 처리된 aggregation에는 추가할 수 없습니다.";
+                        //279	model binding 처리된 aggregation에는 추가할 수 없습니다.
+                        ls_ret.MSG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "279", "", "", "", "");
 
                         //WIZARD 팝업의 CALLBACK FUNCTION.
                         fnCallback(ls_ret);
@@ -170,7 +172,8 @@
 
                 //성공 FLAG 처리.
                 ls_ret.SUBRC = "S";
-                ls_ret.MSG = "UI 생성처리 성공";
+                //005	Job finished.
+                ls_ret.MSG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", "");
 
                 //WIZARD 팝업의 CALLBACK FUNCTION.
                 fnCallback(ls_ret);
@@ -860,17 +863,20 @@
         var ls_bar = oAPP.fn.createUiLine(ls_toolbar, "UO00244", "AT000004580");
 
 
+        //A74  Search Condition
         var lt_0015 = [];
         //text 프로퍼티구성.
-        lt_0015.push(oAPP.fn.setUiAttr("AT000006128", "검색조건", ""));
+        lt_0015.push(oAPP.fn.setUiAttr("AT000006128", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A74", "", "", "", ""), ""));
 
         //sap.m.Title UI 생성하여 contentLeft영역에 추가.
         oAPP.fn.createUiLine(ls_bar, "UO00458", "AT000002659", lt_0015);
 
 
         var lt_0015 = [];
+
+        //A75  Search
         //text 프로퍼티 구성.
-        lt_0015.push(oAPP.fn.setUiAttr("AT000002730", "조회", ""));
+        lt_0015.push(oAPP.fn.setUiAttr("AT000002730", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A75", "", "", "", ""), ""));
 
         //type 프로퍼티 구성.
         lt_0015.push(oAPP.fn.setUiAttr("AT000002731", "Emphasized", ""));
@@ -907,9 +913,10 @@
 
         //expanded 프로퍼티 true로 구성.
         lt_0015.push(oAPP.fn.setUiAttr("AT000005015", "true", ""));
-        
+
+        //A73  Search Result
         //headerText
-        lt_0015.push(oAPP.fn.setUiAttr("AT000005011", "결과리스트", ""));
+        lt_0015.push(oAPP.fn.setUiAttr("AT000005011", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A73", "", "", "", ""), ""));
 
         //sap.m.Panel UI 생성.
         return oAPP.fn.createUiLine(is_parent, "UO00393", aggr.UIATK, lt_0015);

@@ -211,20 +211,22 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
         //주모니터 정보를 찾지못햇다면 
         if(mainDisp.length == 0){
             var dispInfo = {};
-            dispInfo.bounds = {};
-            dispInfo.bounds.x = selDisp[0].bounds.x;
-            dispInfo.bounds.y = selDisp[0].bounds.y;
+            dispInfo.bounds        = {};
+            dispInfo.bounds.x      = selDisp[0].bounds.x;
+            dispInfo.bounds.y      = selDisp[0].bounds.y;
             dispInfo.bounds.height = selDisp[0].bounds.height;
             dispInfo.bounds.width  = selDisp[0].bounds.width;
+            dispInfo.scaleFactor   = selDisp[0].scaleFactor;
             mainDisp.push(dispInfo);
         }
+       
 
         var op = {
             "x":mainDisp[0].bounds.x,
             "y":mainDisp[0].bounds.y,
             "height": mainDisp[0].bounds.height,
             "width":  mainDisp[0].bounds.width,
-            "resizable": false,
+            "resizable": true,
             "fullscreenable": true,
             "alwaysOnTop":true,
             "maximizable": false,
@@ -266,10 +268,27 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
                 sBoundInfo.x = selDisp[0].bounds.x;
                 sBoundInfo.y = selDisp[0].bounds.y;
     
-                sBoundInfo.height = selDisp[0].bounds.height - 70;
-                sBoundInfo.width  = selDisp[0].bounds.width - 5;
+                sBoundInfo.height = selDisp[0].bounds.height - 10;
+                sBoundInfo.width  = selDisp[0].bounds.width;
 
-                oWIN.setBounds(sBoundInfo);
+                //사용자 선택 모니터 비율이 100% 인경우 
+                if(selDisp[0].scaleFactor == 1){
+
+                    //주모니터 비율이 100% 경우
+                    if(mainDisp[0].scaleFactor == 1){
+                        oWIN.setBounds(sBoundInfo);
+                    }else{
+                    //주모니터 비율이 100% 아닌 경우 
+                        oWIN.setBounds(sBoundInfo);
+                        oWIN.setBounds(sBoundInfo);
+                    }
+
+                }else{
+                    //사용자 선택 모니터 비율이 100% 아닌 경우  
+                    oWIN.setBounds(sBoundInfo);
+                    oWIN.setBounds(sBoundInfo);
+
+                }
 
                 setTimeout(() => {
                     
@@ -285,7 +304,7 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
             }, 100);
 
             oWIN.show();
-            oWIN.webContents.openDevTools();
+            //oWIN.webContents.openDevTools();
 
         });
 

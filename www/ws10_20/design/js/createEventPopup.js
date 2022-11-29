@@ -12,7 +12,7 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
     if(bSkipMsg === true){return;}
 
     //001	Cancel operation
-    parent.showMessage(sap,10, "I", "Cancel operation");
+    parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
 
   } //팝업 종료.
 
@@ -35,14 +35,18 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
     //이벤트 메소드명을 입력하지 않은경우.
     if(ls_event.meth === ""){
       ls_event.meth_stat = "Error";
-      ls_event.meth_text = "Method Name dose not exits.";
+      //A34	Method Name
+      //196	&1 does not exist.
+      ls_event.meth_text = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "196", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A34"), "", "", "");
       l_erflag = true;  //오류 flag 매핑.
     }
 
     //이벤트 메소드 description을 입력하지 않은경우.
     if(ls_event.desc === ""){
       ls_event.desc_stat = "Error";
-      ls_event.desc_text = "Description dose not exists.";
+      //A35	Description
+      //196	&1 does not exist.
+      ls_event.desc_text = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "196", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35"), "", "", "");
       l_erflag = true;  //오류 flag 매핑.
     }
 
@@ -78,14 +82,18 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
     var reg = /[^\w]/;
     if(reg.test(ls_event.meth) === true){
       ls_event.meth_stat = "Error";
-      ls_event.meth_text = "Special characters are not allowed.";
+
+      //278	Special characters are not allowed.
+      ls_event.meth_text = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "278", "", "", "", "");
       l_erflag = true;  //오류 flag 매핑.
     }
 
     //오류건이 존재하는 경우.
     if(l_erflag === true){
       oModel.setProperty("/event", ls_event);
-      parent.showMessage(sap, 20, "E", "Check valid value.");
+      
+      //274	Check input value.
+      parent.showMessage(sap, 20, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "274", "", "", "", ""));
       return l_erflag;
     }
 
@@ -284,10 +292,12 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
   
   //팝업 title 설정.
   function lf_setTitle(){
-    var l_title = "Server Event Create";
+
+    //B09  Server Event Create
+    var l_title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B09", "", "", "", "");
 
     if(typeof is_attr !== "undefined"){
-      l_title = "Server Event Create - " + is_attr.UIATT;
+      l_title = l_title + " - " + is_attr.UIATT;
     }
 
     return l_title;
@@ -312,15 +322,20 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
   oDlg.setCustomHeader(oTool);
 
   
+  //팝업 타이틀 텍스트.
+  var l_txt = lf_setTitle();
   
-  var oTitle = new sap.m.Title({text:lf_setTitle()});
-
+  //팝업 타이틀.
+  var oTitle = new sap.m.Title({text:l_txt, tooltip:l_txt});
+  oTitle.addStyleClass("sapUiTinyMarginBegin");
   oTool.addContent(oTitle);
 
   oTool.addContent(new sap.m.ToolbarSpacer());
 
+  //A39  Close
   //우상단 닫기버튼.
-  var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip: "Close"});
+  var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", 
+    tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
   oTool.addContent(oBtn0);
 
   //닫기 버튼 선택 이벤트.
@@ -338,15 +353,18 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
 
   var oForm = new sap.ui.layout.form.Form({
     editable:true,
-    layout: new sap.ui.layout.form.ResponsiveGridLayout()
+    layout: new sap.ui.layout.form.ResponsiveGridLayout({labelSpanM:3})
   });
   oDlg.addContent(oForm);
 
   var oFmCont = new sap.ui.layout.form.FormContainer();
   oForm.addFormContainer(oFmCont);
 
+  //A34  Method Name
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A34", "", "", "", "");
+
   var oFmElem1 = new sap.ui.layout.form.FormElement({
-    label : new sap.m.Label({design:"Bold",text:"Method Name",required:true})
+    label : new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt, required:true})
   });
   oFmCont.addFormElement(oFmElem1);
 
@@ -370,9 +388,11 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
   //Method Name 입력필드 Suggestion 등록 처리.
   oAPP.fn.setUiSuggest(oFmInp1, "crtServEvtMethName");
 
+  //A35  Description
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35", "", "", "", "");
 
   var oFmElem2 = new sap.ui.layout.form.FormElement({
-    label : new sap.m.Label({design:"Bold",text:"Description",required:true})
+    label : new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt, required:true})
   });
   oFmCont.addFormElement(oFmElem2);
 
@@ -397,8 +417,10 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
   oAPP.fn.setUiSuggest(oFmInp2, "crtServEvtMethDesc");
 
 
+  //A01  Create
   //이벤트 생성 버튼.
-  var oBtn1 = new sap.m.Button({type:"Accept",icon:"sap-icon://accept", tooltip: "Create"});
+  var oBtn1 = new sap.m.Button({type:"Accept", icon:"sap-icon://accept", 
+    tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01", "", "", "", "")});
   oDlg.addButton(oBtn1);
 
   //이벤트 생성 이벤트
@@ -428,9 +450,10 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
   }); //이벤트 생성 이벤트
 
 
-
+  //A39  Close
   //팝업 종료 버튼.
-  var oBtn2 = new sap.m.Button({type:"Reject",icon:"sap-icon://decline", tooltip: "Close"});
+  var oBtn2 = new sap.m.Button({type:"Reject", icon:"sap-icon://decline", 
+    tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
   oDlg.addButton(oBtn2);
 
   //팝업 종료 이벤트.
@@ -439,8 +462,8 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
   });
 
 
-  oModel.setData({"event":{"meth":"","desc":"",
-    "meth_stat":"None","meth_text":"","desc_stat":"None","desc_text":""}},true);
+  oModel.setData({"event":{"meth":"", "desc":"",
+    "meth_stat":"None", "meth_text":"", "desc_stat":"None", "desc_text":""}},true);
 
 
   //dialog 호출시 이벤트.

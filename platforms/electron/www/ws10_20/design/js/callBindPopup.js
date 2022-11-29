@@ -214,6 +214,9 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   //서버에서 바인딩 attr 정보 얻은 이후 popup open
   function lf_openPopup(bRefresh){
 
+    //tree table의 필터 해제 처리.
+    lf_resetFilter();
+
     //binding popup open
     if(bRefresh !== true){
       oAPP.attr.oBindDialog.open();
@@ -270,7 +273,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
         l_model.refresh(true);
 
         //바인딩 필드가 존재하지 않음 메시지 처리.
-        parent.showMessage(sap, 10, "E", "Binding attributes dose not exist.");
+        //265	Binding attributes does not exist.
+        parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "265", "", "", "", ""));
 
         return;
 
@@ -625,10 +629,10 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
       lt_split = is_tree.MPROP.split("|");
     }
 
-    //nozero 불가능 항목.
+    //nozero 불가능 항목.(C:char, g:string)
     var l_nozero = "Cg";
 
-    //number format 가능항목.
+    //number format 가능항목.(I:int, P: P TYPE)
     var l_numfmt = "IP";
 
     for(var i=0, l=lt_ua028.length, l_cnt=0; i<l; i++){
@@ -799,7 +803,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
       //선택한 라인이 존재하지 않는경우.
       if(l_indx === -1){
-        parent.showMessage(sap, 10, "E", "Select field information for Binding.");
+        //081	Select field information for Binding.
+        parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "081", "", "", "", ""));
         return true;
       }
 
@@ -807,7 +812,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
     //선택 가능한 라인인지 여부 확인.
     if(is_tree.enable !== true){
-      parent.showMessage(sap, 10, "E", "해당 라인은 선택할 수 없습니다.");
+      //266	This line cannot be selected.
+      parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "266", "", "", "", ""));
       return true;
     }
 
@@ -828,7 +834,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
       //Reference Field name이 존재하지 않는경우.
       if(ls_P05.val === ""){
         ls_P05.stat = "Error";
-        ls_P05.statTxt = "If Bind type is selected, Reference Field name is required.";
+        //267	If Bind type is selected, Reference Field name is required.
+        ls_P05.statTxt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "267", "", "", "", "");
 
         parent.showMessage(sap, 10, "E", ls_P05.statTxt);
         return true;
@@ -909,7 +916,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
       //선택한 라인이 존재하지 않는경우.
       if(l_indx === -1){
-        parent.showMessage(sap, 10, "E", "선택한 라인이 존재하지 않습니다.");
+        //268	Selected line does not exists.
+        parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", ""));
         return true;
       }
 
@@ -947,7 +955,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
     //팝업종료 처리.
     lf_closePopup();
 
-  }
+  } //bind 버튼 선택 이벤트.
 
   //unbind 버튼 선택 이벤트.
   function lf_unbindBtnEvt(){
@@ -956,7 +964,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
     //팝업종료 처리.
     lf_closePopup();
-  }
+
+  } //unbind 버튼 선택 이벤트.
 
 
   //입력 파라메터 설정.
@@ -983,13 +992,13 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
       var l_UIATY = "";
 
       switch (CARDI) {
-        case "F":
-        case "R":
-        case "ST":
+        case "F": //단일 필드
+        case "R": //range table
+        case "ST":  //string table
           l_UIATY = "1";
           break;
         
-        case "T":
+        case "T": //table.
           l_UIATY = "3";
           break;
       
@@ -1001,7 +1010,25 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
       oAPP.attr.oBindDialog._is_attr = oAPP.attr.oModel.oData.T_ATTR.find ( a=> a.UIATK === UIATK && a.UIATY === l_UIATY );
     }
 
-  }
+  } //입력 파라메터 설정.
+
+
+
+  //tree table의 필터 해제 처리.
+  function lf_resetFilter(){
+
+    //tree table의 컬럼 정보 얻기.
+    var lt_col = oAPP.attr.oBindDialog._oTree.getColumns();
+
+    if(lt_col.length === 0){return;}
+
+    for(var i=0, l=lt_col.length; i<l; i++){
+      //컬럼별로 필터 해제 처리.
+      oAPP.attr.oBindDialog._oTree.filter(lt_col[i]);
+
+    }
+
+  } //tree table의 필터 해제 처리.
 
 
   //binding 팝업 정보가 존재하는 경우.
@@ -1022,10 +1049,12 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   //바인딩 tree toolabar 정보.
   var oTool = new sap.m.Toolbar();
 
+  //A46	Expand All
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A46", "", "", "", "");
 
   //전체펼침
-  var oToolBtn1 = new sap.m.Button({text:"Expand All",icon:"sap-icon://expand-all",
-    type:"Emphasized",busy:"{/busy}",busyIndicatorDelay:1,tooltip:"Expand"});
+  var oToolBtn1 = new sap.m.Button({text:l_txt, icon:"sap-icon://expand-all",
+    type:"Emphasized", busy:"{/busy}", busyIndicatorDelay:1, tooltip:l_txt});
   oTool.addContent(oToolBtn1);
 
   //tree 전체펼침 이벤트
@@ -1033,9 +1062,13 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
     oAPP.attr.oBindDialog._oTree.expandToLevel(99999);
   });
 
+
+  //A47	Collapse All
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A47", "", "", "", "");
+
   //전체접힘
-  var oToolBtn2 = new sap.m.Button({text:"Collapse All",icon:"sap-icon://collapse-all",
-    type:"Emphasized",busy:"{/busy}",busyIndicatorDelay:1,tooltip:"Collapse"});
+  var oToolBtn2 = new sap.m.Button({text:l_txt, icon:"sap-icon://collapse-all",
+    type:"Emphasized", busy:"{/busy}", busyIndicatorDelay:1, tooltip:l_txt});
   oTool.addContent(oToolBtn2);
 
   //tree 전체접힘 이벤트
@@ -1046,9 +1079,13 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
   oTool.addContent(new sap.m.ToolbarSeparator());
 
+
+  //A48	Refresh
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A48", "", "", "", "");
+
   //갱신 버튼.
-  var oToolBtn5 = new sap.m.Button({text:"Refresh", icon:"sap-icon://refresh",
-    type:"Emphasized", busyIndicatorDelay:1, busy:"{/busy}", tooltip:"Refresh"});
+  var oToolBtn5 = new sap.m.Button({text:l_txt, icon:"sap-icon://refresh",
+    type:"Emphasized", busyIndicatorDelay:1, busy:"{/busy}", tooltip:l_txt});
   oTool.addContent(oToolBtn5);
 
   //갱신 버튼 선택 이벤트.
@@ -1059,9 +1096,13 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
   oTool.addContent(new sap.m.ToolbarSeparator());
 
+
+  //A49	Bind
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A49", "", "", "", "");
+
   //bind
-  var oToolBtn3 = new sap.m.Button({text:"Bind",icon:"sap-icon://connected",
-    type:"Accept",enabled:"{/edit}",busy:"{/busy}",busyIndicatorDelay:1, tooltip:"Bind"});
+  var oToolBtn3 = new sap.m.Button({text:l_txt, icon:"sap-icon://connected",
+    type:"Accept", enabled:"{/edit}", busy:"{/busy}", busyIndicatorDelay:1, tooltip:l_txt});
   oTool.addContent(oToolBtn3);
 
   //bind 버튼 이벤트
@@ -1071,9 +1112,13 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
   });
 
+
+  //A43	Unbind
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A43", "", "", "", "");
+
   //unbind
-  var oToolBtn4 = new sap.m.Button({text:"Unbind",icon:"sap-icon://disconnected",
-    type:"Reject",enabled:"{/edit}",busy:"{/busy}",busyIndicatorDelay:1, tooltip:"Unbind"});
+  var oToolBtn4 = new sap.m.Button({text:l_txt, icon:"sap-icon://disconnected",
+    type:"Reject", enabled:"{/edit}", busy:"{/busy}", busyIndicatorDelay:1, tooltip:l_txt});
   oTool.addContent(oToolBtn4);
 
   //unbind 버튼 선택 이벤트
@@ -1095,6 +1140,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
     rowSelectionChange:lf_selTabRow
   }); //바인딩 tree 정보.
 
+  //바인딩 가능여부 표현 UI.
   oTree.setRowSettingsTemplate(new sap.ui.table.RowSettings({highlight:"{highlight}"}));
 
 
@@ -1136,29 +1182,40 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   });
 
 
-  var oLay1 = new sap.ui.layout.SplitterLayoutData({size:"{/width}",resizable:"{/resize}"});
+  var oLay1 = new sap.ui.layout.SplitterLayoutData({size:"{/width}", resizable:"{/resize}"});
   oTree.setLayoutData(oLay1);
 
+  //A50	Object Name
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A50", "", "", "", "");
+
+  //필드명 column.
   var oTreeCol1 = new sap.ui.table.Column({
     filterProperty:"NTEXT",
-    label:new sap.m.Label({text:"Object Name",design:"Bold"}),
-    template: new sap.m.Text({text:"{NTEXT}"})
+    label:new sap.m.Label({text:l_txt, design:"Bold", tooltip:l_txt}),
+    template: new sap.m.Text({text:"{NTEXT}", tooltip:"{CHILD}"})
   });
   oTree.addColumn(oTreeCol1);
 
+
+  //A51	Type
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A51", "", "", "", "");
+
+  //type column.
   var oTreeCol2 = new sap.ui.table.Column({
     filterProperty: "TYPE",
-    label:new sap.m.Label({text:"Type",design:"Bold"})
+    label:new sap.m.Label({text:l_txt, design:"Bold", tooltip:l_txt})
   });
 
-  var oCol2Hbox1 = new sap.m.HBox({alignItems:"Center",renderType:"Bare"});
+  var oCol2Hbox1 = new sap.m.HBox({alignItems:"Center", renderType:"Bare"});
 
-  var oHbox1Icon1 = new sap.ui.core.Icon({ src:"{stat_src}",color:"{stat_color}" });
+  //바인딩 가능여부 아이콘.
+  var oHbox1Icon1 = new sap.ui.core.Icon({ src:"{stat_src}", color:"{stat_color}" });
   oHbox1Icon1.addStyleClass("sapUiTinyMarginEnd");
 
   oCol2Hbox1.addItem(oHbox1Icon1);
 
-  var oHbox1Txt1 = new sap.m.Text({text:"{TYPE}"});
+  //data type.
+  var oHbox1Txt1 = new sap.m.Text({text:"{TYPE}", tooltip:"{DATATYPE}"});
   oCol2Hbox1.addItem(oHbox1Txt1);
 
   oTreeCol2.setTemplate(oCol2Hbox1);
@@ -1166,10 +1223,15 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
   oTree.addColumn(oTreeCol2);
 
+
+  //A35	Description
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35", "", "", "", "");
+
+  //필드 description column.
   var oTreeCol3 = new sap.ui.table.Column({
     filterProperty: "DESCR",
-    label:new sap.m.Label({text:"Description",design:"Bold"}),
-    template: new sap.m.Text({text:"{DESCR}"})
+    label:new sap.m.Label({text:l_txt, design:"Bold", tooltip:l_txt}),
+    template: new sap.m.Text({text:"{DESCR}", tooltip:"{DESCR}"})
   });
   oTree.addColumn(oTreeCol3);
 
@@ -1179,7 +1241,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   });
   oTree.addColumn(oTreeCol4);*/
 
-  oTree.bindAggregation("rows",{path:"/zTREE",template:new sap.ui.table.Row(),parameters: {arrayNames: ["zTREE"]}});
+  oTree.bindAggregation("rows",{path:"/zTREE",template:new sap.ui.table.Row(), parameters: {arrayNames: ["zTREE"]}});
 
 
   //바인딩 추가속성 정보 table.
@@ -1202,28 +1264,36 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   });
 
 
+  //A52	Property
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A52", "", "", "", "");
+
   //추가바인딩 속성의 Property 컬럼.
   var oTabCol1 = new sap.ui.table.Column({
-    label:new sap.m.Label({text:"Property",design:"Bold"}),
-    template: new sap.m.Text({text:"{prop}"})
+    label:new sap.m.Label({text:l_txt, design:"Bold", tooltip:l_txt}),
+    template: new sap.m.Text({text:"{prop}", tooltip:"{prop}"})
   });
   oTab.addColumn(oTabCol1);
 
+
+  //A53	Value
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A53", "", "", "", "");
+
   //추가바인딩 속성의 value 컬럼.
   var oTabCol2 = new sap.ui.table.Column({
-    label:new sap.m.Label({text:"Value",design:"Bold"}),
-    template: new sap.m.Text({text:"{val}"})
+    label:new sap.m.Label({text:l_txt, design:"Bold", tooltip:l_txt})
   });
   oTab.addColumn(oTabCol2);
 
-  var oTabCol2HBox1 = new sap.m.HBox({justifyContent:"Center",renderType:"Bare",direction:"Column"});
+  var oTabCol2HBox1 = new sap.m.HBox({justifyContent:"Center", renderType:"Bare", direction:"Column"});
   oTabCol2.setTemplate(oTabCol2HBox1);
 
-  var oTabCol2Txt1 = new sap.m.Text({text:"{val}",visible:"{txt_vis}"});
+  //바인딩 추가 속성정보 text UI.
+  var oTabCol2Txt1 = new sap.m.Text({text:"{val}", tooltip:"{val}", visible:"{txt_vis}"});
   oTabCol2HBox1.addItem(oTabCol2Txt1);
 
-  var oTabCol2Inp1 = new sap.m.Input({value:"{val}",visible:"{inp_vis}",
-    editable:"{edit}",maxLength:"{maxlen}",valueState:"{stat}",valueStateText:"{statTxt}",enabled:"{/edit}"});
+  //바인딩 추가 속성정보 INPUT UI.
+  var oTabCol2Inp1 = new sap.m.Input({value:"{val}", tooltip:"{val}", visible:"{inp_vis}",
+    editable:"{edit}", maxLength:"{maxlen}", valueState:"{stat}", valueStateText:"{statTxt}", enabled:"{/edit}"});
   oTabCol2HBox1.addItem(oTabCol2Inp1);
 
   //바인딩 추가속성 정보 input 값변경 이벤트
@@ -1242,8 +1312,9 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
   });
 
-  var oTabCol2Sel1 = new sap.m.Select({selectedKey:"{val}",visible:"{sel_vis}",
-    editable:"{edit}",valueState:"{stat}",valueStateText:"{statTxt}",enabled:"{/edit}"});
+  //바인딩 추가속성정보 DDLB UI.
+  var oTabCol2Sel1 = new sap.m.Select({selectedKey:"{val}", tooltip:"{val}", visible:"{sel_vis}",
+    editable:"{edit}", valueState:"{stat}", valueStateText:"{statTxt}", enabled:"{/edit}"});
   oTabCol2HBox1.addItem(oTabCol2Sel1);
 
   //바인딩 추가속성 정보 DDLB 선택 이벤트.
@@ -1293,14 +1364,17 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
   var oTool0 = new sap.m.Toolbar();
 
-  var oTitle = new sap.m.Title({text:"Aggregation List"});
-
+  var oTitle = new sap.m.Title();
+  oTitle.addStyleClass("sapUiTinyMarginBegin");
   oTool0.addContent(oTitle);
 
   oTool0.addContent(new sap.m.ToolbarSpacer());
 
+  //A39	Close
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "");
+
   //우상단 닫기버튼.
-  var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip: "Close"});
+  var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip: l_txt});
   oTool0.addContent(oBtn0);
 
   //닫기 버튼 선택 이벤트.
@@ -1310,7 +1384,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
   });
 
-  oTabCol2Sel1.bindAggregation("items",{path:"T_DDLB",
+  oTabCol2Sel1.bindAggregation("items", {path:"T_DDLB",
     template:new sap.ui.core.Item({key:"{KEY}",text:"{TEXT}"}),
     templateShareable:true
   });
@@ -1332,12 +1406,12 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
       buttons: [
         new sap.m.Button({
           type: "Reject",
-          tooltip: "Close",
+          tooltip: l_txt,
           icon: "sap-icon://decline",
           press: function(){
             lf_closePopup(); 
             //001	Cancel operation
-            parent.showMessage(sap,10, "I", "Cancel operation");
+            parent.showMessage(sap,10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
           }
         }),
       ],
@@ -1360,7 +1434,5 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
     //서버에서 바인딩 attr 정보 얻은 이후 popup open
     oAPP.attr.oBindDialog.open();
-
-
 
 };

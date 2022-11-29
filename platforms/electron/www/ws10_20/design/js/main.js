@@ -398,7 +398,8 @@
         if(param.ERROR === "X"){
 
           is_tab.ERROR = param.ERROR;
-          parent.showMessage(sap, 20, "E", "Fail to Library load.");
+          //281	Fail to Library load.
+          parent.showMessage(sap, 20, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "281", "", "", "", ""));
           return;
         }
 
@@ -922,7 +923,13 @@
         ls_err.GRCOD   = "PROG";
         ls_err.TYPE    = "E";
         ls_err.FNAME   = "";
-        ls_err.DESC    = "When the UI Table property “AutoColumnResize” value is “true”, it must be “true” in “autoResizable” among the column properties.";
+        
+        //296  When the UI Table property “AutoColumnResize” value is “true”,
+        ls_err.DESC    = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "296", "", "", "", "");
+
+        //297  it must be “true” in “autoResizable” among the column properties.
+        ls_err.DESC    += " " + oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "297", "", "", "", "");
+
         ls_err.LINE    = "0";
         ls_err.METHOD  = "";
         ls_err.OBJID   = lt_tab[i].OBJID;
@@ -1202,7 +1209,8 @@
     oSApp.setModel(oAPP.attr.oModel);
 
     //좌측 페이지(UI Design 영역)
-    oAPP.attr.ui.oDesignTree = new sap.m.Page("designTree", {enableScrolling:false,showHeader:false,layoutData:new sap.ui.layout.SplitterLayoutData({size:"25%",minSize:300})});
+    oAPP.attr.ui.oDesignTree = new sap.m.Page("designTree", {enableScrolling:false, showHeader:false,
+      layoutData:new sap.ui.layout.SplitterLayoutData({size:"25%",minSize:300})});
     // oSApp.addContentArea(oAPP.attr.ui.oDesignTree);
 
     //가운데 페이지(미리보기 영역)
@@ -1210,7 +1218,8 @@
     // oSApp.addContentArea(oAPP.attr.ui.oDesignPreview);
 
     //우측 페이지(attribute 영역)
-    oAPP.attr.ui.oDesignAttr = new sap.f.DynamicPage("designAttr", {preserveHeaderStateOnScroll:false,layoutData:new sap.ui.layout.SplitterLayoutData({size:"30%",minSize:300})});
+    oAPP.attr.ui.oDesignAttr = new sap.f.DynamicPage("designAttr", {preserveHeaderStateOnScroll:false,
+      layoutData:new sap.ui.layout.SplitterLayoutData({size:"30%",minSize:300})});
     // oSApp.addContentArea(oAPP.attr.ui.oDesignAttr);
 
 

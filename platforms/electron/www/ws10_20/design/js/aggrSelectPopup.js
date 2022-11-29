@@ -16,7 +16,8 @@
     //선택가능 aggregation리스트가 존재하지 않는경우.
     if(lt_sel.length === 0){
       //오류 메시지 출력.
-      parent.showMessage(sap, 10, "I", "이동 가능한 aggregation이 존재하지 않습니다.");
+      //262	이동 가능한 aggregation이 존재하지 않습니다.
+      parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "262", "", "", "", ""));
 
       //tree drop effect 초기화 처리(ctrl 누르고 drop시 복사를 위한 광역변수값).
       oAPP.attr.ui.oLTree1.__dropEffect = "";
@@ -63,14 +64,16 @@
     var oTool = new sap.m.Toolbar();
     oDlg1.setCustomHeader(oTool);
 
-    var oTitle = new sap.m.Title({text:"Aggregation List - " + i_drop.OBJID});
+    //A38	Aggregation List
+    var oTitle = new sap.m.Title({text:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A38", "", "", "", "") + " - " + i_drop.OBJID});
     oTitle.addStyleClass("sapUiTinyMarginBegin");
     oTool.addContent(oTitle);
 
     oTool.addContent(new sap.m.ToolbarSpacer());
 
+    //A39	Close
     //우상단 닫기버튼.
-    var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject"});
+    var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
     oTool.addContent(oBtn0);
 
     //닫기 버튼 선택 이벤트.
@@ -81,7 +84,7 @@
       oDlg1.close();
       oDlg1.destroy();
       //001	Cancel operation
-      parent.showMessage(sap,10, "I", "Cancel operation");
+      parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
 
     });
 
@@ -103,8 +106,11 @@
     });
 
 
+    //A40	Confirm
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A40", "", "", "", "");
+
     //확인버튼
-    var oBtn1 = new sap.m.Button({icon: "sap-icon://accept",text: "Confirm",type: "Accept"});
+    var oBtn1 = new sap.m.Button({icon: "sap-icon://accept", text:l_txt, type:"Accept", tooltip:l_txt});
     oDlg1.addButton(oBtn1);
 
     oBtn1.attachPress(function(){
@@ -122,8 +128,11 @@
     });
 
 
+    //A41	Cancel
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A41", "", "", "", "");
+
     //닫기버튼
-    var oBtn2 = new sap.m.Button({icon: "sap-icon://decline",text: "Cancel",type: "Reject"});
+    var oBtn2 = new sap.m.Button({icon: "sap-icon://decline", text:l_txt, type: "Reject", tooltip:l_txt});
     oDlg1.addButton(oBtn2);
 
     //닫기버튼 이벤트
@@ -135,7 +144,7 @@
       oDlg1.close();
       oDlg1.destroy();
       //001	Cancel operation
-      parent.showMessage(sap,10, "I", "Cancel operation");
+      parent.showMessage(sap,10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
     });
 
     oDlg1.open();

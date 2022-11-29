@@ -22,6 +22,7 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
 
       //검색조건 라벨 text 구성.
       oLb.setText(l_lbtx);
+      oLb.setTooltip(l_lbtx);
 
       //form에 label 추가.
       oForm.addContent(oLb);
@@ -33,17 +34,17 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
       switch (it_fdesc[i].DATATYPE){
         case "D":
           // DATE TYPE인경우.
-          var oSFld = new sap.m.DatePicker({valueFormat:"yyyyMMdd",displayFormat:"yyyy.MM.dd"});
+          var oSFld = new sap.m.DatePicker({valueFormat:"yyyyMMdd", displayFormat:"yyyy.MM.dd"});
           break;
 
         case "T":
           // TIME인경우.
-          var oSFld = new sap.m.TimePicker({valueFormat:"HHmmss",displayFormat:"HH:mm:ss"});
+          var oSFld = new sap.m.TimePicker({valueFormat:"HHmmss", displayFormat:"HH:mm:ss"});
           break;
 
         default:
           // DEFAULT INPUT필드.
-          var oSFld = new sap.m.Input({type:"Text",valueLiveUpdate:true,maxLength:it_fdesc[i].OUTPUTLEN});
+          var oSFld = new sap.m.Input({valueLiveUpdate:true, maxLength:it_fdesc[i].OUTPUTLEN});
 
           //enter event
           oSFld.attachSubmit(function(){ LF_getServerData();});
@@ -59,7 +60,8 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
       }
 
       //검색조건 필드 바인딩 처리.
-      oSFld.bindProperty(l_prop,{path:"/param/" + l_path});
+      oSFld.bindProperty(l_prop, {path:"/param/" + l_path});
+      oSFld.bindProperty("tooltip", {path:"/param/" + l_path});
 
       //form에 검색필드 추가.
       oForm.addContent(oSFld);
@@ -69,8 +71,8 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
 
       //기본값이 구성된 경우.
       if(l_dfval !== ""){
-        oSFld.setProperty(l_prop,l_dfval);
-        oSFld.updateProperty(l_prop,true);
+        oSFld.setProperty(l_prop, l_dfval);
+        oSFld.updateProperty(l_prop, true);
       }
 
     }
@@ -100,6 +102,7 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
 
       //header text 구성.
       oLab.setText(l_txt);
+      oLab.setTooltip(l_txt);
 
       //column에 header text UI추가.
       oCol.setLabel(oLab);
@@ -112,19 +115,19 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
       // ABAP TYPE에 따른 로직 분기.
       switch(it_fdesc[i].DATATYPE){
         case "DATS":  //DATE 타입인경우.
-        l_type = "D";
-        l_len = 8;
-        break;
+          l_type = "D";
+          l_len = 8;
+          break;
 
         case "TIMS":  //TIME 타입인경우.
-        l_type = "T";
-        l_len = 6;
-        break;
+          l_type = "T";
+          l_len = 6;
+          break;
 
         default:  //DEFAULT는 STRING.
-        l_type = "STRING";
-        l_len = 0;
-        break;
+          l_type = "STRING";
+          l_len = 0;
+          break;
 
       }
 
@@ -132,7 +135,7 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
 
       //필드명에 /가 있다면 x로 변환 처리.
       if(l_path.indexOf("/") !== -1){
-        l_path = l_path.replace(/\//g, "X");
+        l_path = l_path.replace(/\//g, "x");
       }
 
       //TABLE CELL 출력 TEXT UI.
@@ -197,13 +200,16 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
         //BUSY OFF.
         parent.setBusy(false);
 
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A73", "", "", "", "");
         
         if(param.TEXT[0].NAME == "REFDATA"){
 
           modeloTable.oData.TF4LIST = [];
           var visiRow = Number(param.TEXT[1].VALUE);
-          var Ltext = "Search Result : " + visiRow;
+          //A73	Search Result
+          var Ltext = l_txt + " : " + visiRow;
           ZF4SH_LBresult.setText(Ltext);
+          ZF4SH_LBresult.setTooltip(Ltext);
           if(visiRow > 5){oPanel.setExpanded(false);}
           if(visiRow > 10){visiRow = 10;}
           var jsonData = param.TEXT[0].VALUE;
@@ -212,7 +218,9 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
 
         //~조회 data 처리 누락이라면 ..
         if(param.TEXT[0].NAME == "NOTFOUND"){
-          ZF4SH_LBresult.setText("Search Result : 0");
+          //A73	Search Result
+          ZF4SH_LBresult.setText(l_txt + " : 0");
+          ZF4SH_LBresult.setTooltip(l_txt + " : 0");
 
           modeloTable.oData.TF4LIST = [];
           modeloTable.refresh();
@@ -339,14 +347,19 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
   var oTool = new sap.m.Toolbar();
   oDialog.setCustomHeader(oTool);
   
-  var oTitle = new sap.m.Title({text:"Search Help"});
+  //A26	Search Help
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A26", "", "", "", "");
 
+  var oTitle = new sap.m.Title({text:l_txt, tooltip:l_txt});
+  oTitle.addStyleClass("sapUiTinyMarginBegin");
   oTool.addContent(oTitle);
 
   oTool.addContent(new sap.m.ToolbarSpacer());
 
+  //A39	Close
   //우상단 닫기버튼.
-  var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject"});
+  var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", 
+    tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
   oTool.addContent(oBtn0);
 
   //닫기 버튼 선택 이벤트.
@@ -355,7 +368,7 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
     oDialog.close();
     oDialog.destroy();
     //001	Cancel operation
-    parent.showMessage(sap,10, "I", "Cancel operation");
+    parent.showMessage(sap,10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
 
   });
 
@@ -378,9 +391,14 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
     var ZF4SH_select = new sap.m.Select({selectedKey:l_f4_def,busyIndicatorDelay:1});
 
     //-include f4 help select 선택 이벤트 설정
-    ZF4SH_select.attachEvent("change",function(oEvent){
-      //title 변경 처리.
-      ZF4SH_LBresult.setText("Search Result : 0");
+    ZF4SH_select.attachEvent("change", function(oEvent){
+
+      //A73	Search Result
+      var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A73", "", "", "", "");
+
+      //title 변경 처리.      
+      ZF4SH_LBresult.setText(l_txt + " : 0");
+      ZF4SH_LBresult.setTooltip(l_txt + " : 0");
       var slekey = l_f4_def = ZF4SH_select.getSelectedKey();
       var sleid  = ZF4SH_select.getSelectedItemId();
       var sletxt = document.getElementById(sleid).innerText;
@@ -425,8 +443,11 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
   var oHbox1 = new sap.m.HBox({height:"100%", direction:"Column", renderType:"Bare"});
   oDialog.addContent(oHbox1);
 
+  //A74	Search Condition
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A74", "", "", "", "");
+
   //검색조건 panel.
-  var oPanel = new sap.m.Panel({expandable:true, expanded:true, headerText:"Selection"});
+  var oPanel = new sap.m.Panel({expandable:true, expanded:true, headerText:l_txt, tooltip:l_txt});
   oHbox1.addItem(oPanel);
 
   var SerchOVtoolbar = new sap.m.OverflowToolbar({width:"100%"});
@@ -434,14 +455,15 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
 
   //검색버튼 label.
   var SerLB = new sap.m.Label({
-    design:"Bold",
-    required:false,text:"Selection"});
+    design:"Bold", required:false, text:l_txt, tooltip:l_txt});
   SerchOVtoolbar.addContent(SerLB);
+
+  //A75	Search
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A75", "", "", "", "");
 
   //검색 버튼.
   var SerchBT1 = new sap.m.Button({
-    icon:"sap-icon://search",
-    text:"Search",type:"Emphasized",busyIndicatorDelay:1
+    icon:"sap-icon://search", text:l_txt, tooltip:l_txt, type:"Emphasized", busyIndicatorDelay:1
   });
 
   //검색버튼 선택 이벤트.
@@ -471,20 +493,27 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
 
   var ZF4SH_ovtoolbar = new sap.m.OverflowToolbar({width:"100%"});
 
+  //A76	Maximum No, of Hits
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A76", "", "", "", "");
+
   //Maximum No, of Hits label.
-  var olb01 = new sap.m.Label({design:"Bold",text:"Maximum No, of Hits"});
+  var olb01 = new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt});
   ZF4SH_ovtoolbar.addContent(olb01);
 
   //max Hits
-  var ZF4SH_input01 = new sap.m.Input({type:"Number",width:"60px"});
+  var ZF4SH_input01 = new sap.m.Input({type:"Number", width:"60px"});
 
   //최대 검색건수 설정.
   ZF4SH_input01.setValue(200);
   ZF4SH_ovtoolbar.addContent(ZF4SH_input01);
   ZF4SH_ovtoolbar.addContent(new sap.m.ToolbarSpacer());
 
+
+  //A73	Search Result
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A73", "", "", "", "");
+
   //결과 건수 text
-  var ZF4SH_LBresult = new sap.m.Label({design:"Bold",text:"Search Result : 0"});
+  var ZF4SH_LBresult = new sap.m.Label({design:"Bold",text:l_txt + " : 0", tooltip: l_txt  + " : 0"});
   ZF4SH_ovtoolbar.addContent(ZF4SH_LBresult);
 
   //F4 테이블 툴바 ui 생성
@@ -553,17 +582,20 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
   });
 
 
-  oTable.bindAggregation("rows",{path:"/TF4LIST",template:new sap.ui.table.Row()});
+  oTable.bindAggregation("rows", {path:"/TF4LIST", template:new sap.ui.table.Row()});
 
   //~출력리스트 컬럼 구성 텍스트 UI 생성
   lf_setTableColumn(l_f4_def, IT_FIELDDESCR);
 
+  
+  //A39	Close
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "");
 
   //~종료 버튼
-  var oClose = new sap.m.Button({icon:"sap-icon://cancel",text:"close",type:"Reject"});
+  var oClose = new sap.m.Button({icon:"sap-icon://cancel", text:l_txt, tooltip:l_txt, type:"Reject"});
 
   //종료버튼 선택 이벤트.
-  oClose.attachEvent("press",function(oEvent){
+  oClose.attachEvent("press", function(oEvent){
 
     oDialog.close();
     oDialog.destroy();

@@ -17,15 +17,20 @@
 
         var oTool0 = new sap.m.Toolbar();
         oDlg.setCustomHeader(oTool0);
+
+        //A77	UI5 Icon List
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A77", "", "", "", "") + " - " + UIATT;
         
-        var oTitle = new sap.m.Title({text:"UI5 Icon List - " + UIATT});
-    
+        var oTitle = new sap.m.Title({text:l_txt, tooltip:l_txt});
+        oTitle.addStyleClass("sapUiTinyMarginBegin");
         oTool0.addContent(oTitle);
     
         oTool0.addContent(new sap.m.ToolbarSpacer());
-    
+            
+        //A39	Close
         //우상단 닫기버튼.
-        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject"});
+        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject",
+            tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
         oTool0.addContent(oBtn0);
 
         //닫기 버튼 선택 이벤트.
@@ -33,7 +38,7 @@
         
             oDlg.close();
             //001	Cancel operation
-            parent.showMessage(sap,10, "I", "Cancel operation");
+            parent.showMessage(sap,10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
     
         });
 
@@ -64,11 +69,12 @@
 
 
         //icon List UI 생성.
-        var oTab = new sap.m.Table({growing:true, growingScrollToLoad:true, alternateRowColors:true,sticky:["HeaderToolbar"]});
+        var oTab = new sap.m.Table({growing:true, growingScrollToLoad:true, alternateRowColors:true, sticky:["HeaderToolbar"]});
+        oTab.addStyleClass("sapUiTinyMargin");
         oDlg.addContent(oTab);
 
         //아이콘 선택(더블클릭) 이벤트.
-        oTab.attachBrowserEvent("dblclick",function(oEvent){
+        oTab.attachBrowserEvent("dblclick", function(oEvent){
 
             //callback function이 존재하지 않는경우 exit.
             if(typeof retfunc === "undefined"){return;}
@@ -98,7 +104,8 @@
             oDlg.close();
 
             //메시지 처리.
-            parent.showMessage(sap, 10, "I", ls_icon.src + " selected.");
+            //271	&1 has been selected.
+            parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "271", ls_icon.src, "", "", ""));
 
             //메뉴 잠금 해제 처리.
 
@@ -110,8 +117,11 @@
         var oTool = new sap.m.Toolbar();
         oTab.setHeaderToolbar(oTool);
 
+        //A78	Search Icon
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A78", "", "", "", "");
+
         //검색조건 필드.
-        var oSearch = new sap.m.SearchField({placeholder:"Search Icon"});
+        var oSearch = new sap.m.SearchField({placeholder:l_txt, tooltip:l_txt});
         oTool.addContent(oSearch);
 
         //검색조건 필드 Suggest 등록 처리.
@@ -135,8 +145,8 @@
 
 
         //List Item UI 생성.
-        var oCItem = new sap.m.ColumnListItem({vAlign:"Middle"});
-        oTab.bindAggregation("items",{path:"/T_ICON",template:oCItem});
+        var oCItem = new sap.m.ColumnListItem({vAlign:"Middle", tooltip:"{src}"});
+        oTab.bindAggregation("items", {path:"/T_ICON", template:oCItem});
 
         //icon 컬럼.
         var oCol1 = new sap.m.Column({width:"50px"});
@@ -152,15 +162,17 @@
 
 
         //icon.
-        var oIcon = new sap.ui.core.Icon({size:"30px",src:"{src}"});
+        var oIcon = new sap.ui.core.Icon({size:"30px", src:"{src}"});
         oCItem.addCell(oIcon);
 
         //icon text.
         var oText = new sap.m.Text({text:"{src}"});
         oCItem.addCell(oText);
 
+        //A79	Copy Text
         //copy 버튼.
-        var oCopy = new sap.m.Button({text:"Copy text", icon:"sap-icon://copy"});
+        var oCopy = new sap.m.Button({icon:"sap-icon://copy", 
+            text:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A79", "", "", "", "")});
         oCItem.addCell(oCopy);
 
         //copy 버튼 선택 이벤트.
@@ -173,14 +185,17 @@
             parent.setClipBoardTextCopy(ls_icon.src);
 
             //메시지 처리.
-            parent.showMessage(sap, 10, "I", ls_icon.src + " copied.");
+            //272	&1 has been copied.
+            parent.showMessage(sap, 10, "S", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "272", ls_icon.src, "", "", ""));
 
         }); //copy 버튼 선택 이벤트.
 
 
+        //A39	Close
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "");
 
         //닫기 버튼.
-        var oClose = new sap.m.Button({text:"Close",icon:"sap-icon://decline",type:"Reject"});
+        var oClose = new sap.m.Button({text:l_txt, tooltip:l_txt, icon:"sap-icon://decline", type:"Reject"});
         oDlg.addButton(oClose);
 
         //닫기버튼 이벤트.

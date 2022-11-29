@@ -28,20 +28,36 @@
         var oMItem0 = new sap.m.MenuItem({key:"M00", icon:"sap-icon://menu2", text:"{/atmenu/UIATT}", enabled:false, startsSection:true});
         oMenu1.addItem(oMItem0);
 
+
+        //A42	Turn on or off WAIT mode
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A42", "", "", "", "");
+
         //wait off 처리
-        var oMItem1 = new sap.m.MenuItem({key:"M01", icon:"sap-icon://lateness", text:"Turn on or off WAIT mode", visible:"{/atmenu/vis01}", startsSection:true});
+        var oMItem1 = new sap.m.MenuItem({key:"M01", icon:"sap-icon://lateness", text:l_txt, tooltip:l_txt, visible:"{/atmenu/vis01}", startsSection:true});
         oMenu1.addItem(oMItem1);
 
+
+        //A43	Unbind
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A43", "", "", "", "");
+
         //unbind 처리
-        var oMItem2 = new sap.m.MenuItem({key:"M02", icon:"sap-icon://disconnected", text:"unbind　　　　　　　", visible:"{/atmenu/vis02}", startsSection:true});
+        var oMItem2 = new sap.m.MenuItem({key:"M02", icon:"sap-icon://disconnected", text:l_txt + "　　　　　　　", tooltip:l_txt, visible:"{/atmenu/vis02}", startsSection:true});
         oMenu1.addItem(oMItem2);
 
+
+        //A44	동일속성 프로퍼티 동기화 설정
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A44", "", "", "", "");
+
         //프로퍼티 동일 속성 동기화 처리
-        var oMItem3 = new sap.m.MenuItem({key:"M03", icon:"sap-icon://paste", text:"동일속성 프로퍼티 동기화 설정", visible:"{/atmenu/vis03}", startsSection:true});
+        var oMItem3 = new sap.m.MenuItem({key:"M03", icon:"sap-icon://paste", text:l_txt, tooltip:l_txt, visible:"{/atmenu/vis03}", startsSection:true});
         oMenu1.addItem(oMItem3);
-        
+
+
+        //A45	Remove Event JS Script
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A45", "", "", "", "");
+
         //클라이언트 이벤트 해제 처리
-        var oMItem4 = new sap.m.MenuItem({key:"M04", icon:"sap-icon://delete", text:"Remove Event JS Script", visible:"{/atmenu/vis04}", startsSection:true});
+        var oMItem4 = new sap.m.MenuItem({key:"M04", icon:"sap-icon://delete", text:l_txt, tooltip:l_txt, visible:"{/atmenu/vis04}", startsSection:true});
         oMenu1.addItem(oMItem4);
 
 
@@ -259,7 +275,8 @@
         var ls_attr = oModel.getProperty("/attr");
 
         //UNBIND 처리여부 확인 팝업 호출.
-        parent.showMessage(sap, 30, "I", "Do you want to unbind?",function(param){
+        //263	Do you want to continue unbind?
+        parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "263", "", "", "", ""),function(param){
             //YES를 선택하지 않은경우 EXIT.
             if(param !== "YES"){return;}
 
@@ -268,8 +285,8 @@
                 //unbind 처리.
                 oAPP.fn.attrSetUnbindProp(ls_attr);
 
-                //5 Job finished.
-                parent.showMessage(sap, 10, "I", "Job finished.");
+                //005	Job finished.
+                parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
 
                 return;
             }
@@ -285,8 +302,8 @@
                 //TREE의 PARENT, CHILD 프로퍼티 예외처리.
                 oAPP.fn.attrUnbindTree(ls_attr);
 
-                //5 Job finished.
-                parent.showMessage(sap, 10, "I", "Job finished.");
+                //005 Job finished.
+                parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
             }
 
         }); //UNBIND 처리여부 확인 팝업 호출.
@@ -307,7 +324,8 @@
 
         
         //클라이언트 이벤트 삭제전 확인 팝업 호출.
-        parent.showMessage(sap, 30, "I", "Remove Event Javascript source?",function(param){
+        //264	Remove Event Javascript source?
+        parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "264", "", "", "", ""),function(param){
             
             //YES를 선택하지 않은경우 EXIT.
             if(param !== "YES"){return;}
@@ -328,8 +346,8 @@
             //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
             oAPP.fn.attrChangeProc(ls_attr, "", false, true);
 
-            //5 Job finished.
-            parent.showMessage(sap, 10, "I", "Job finished.");
+            //005 Job finished.
+            parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
 
         });
 

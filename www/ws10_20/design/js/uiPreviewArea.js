@@ -451,7 +451,7 @@
     //HTML content에 입력한 정보가 존재하는경우 return.
     l_find = JSON.stringify(l_find.DATA);
 
-    return l_find.substr(1,l_find.length-2);
+    return l_find.substr(1, l_find.length - 2);
 
   };  //sap.ui.core.HTML UI의 content 프로퍼티 입력건 검색.
 
@@ -911,7 +911,8 @@
     //CHECKBOX 선택건이 존재하지 않는경우.
     if(lt_OBJID.length === 0){
       //오류 메시지 처리.
-      parent.showMessage(sap, 20, "I", "체크박스 선택건이 존재하지 않습니다.");
+      //286	Check box not selected.
+      parent.showMessage(sap, 20, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "286", "", "", "", ""));
       return;
 
     }

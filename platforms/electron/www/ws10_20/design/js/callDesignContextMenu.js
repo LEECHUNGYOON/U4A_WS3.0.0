@@ -30,44 +30,84 @@
         var oMItem0 = new this.sap.m.MenuItem({key:"M00", icon:"sap-icon://menu2", text:"{/lcmenu/title}", enabled:false});
         oMenu1.addItem(oMItem0);
 
+        
+        //A54	Insert Element
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A54", "", "", "", "");
+
         //UI 추가 메뉴
-        var oMItem1 = new this.sap.m.MenuItem({key:"M01", icon:"sap-icon://add", text:"Insert Element", enabled:"{/lcmenu/enab01}", startsSection:true});
+        var oMItem1 = new this.sap.m.MenuItem({key:"M01", icon:"sap-icon://add", text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab01}", startsSection:true});
         oMenu1.addItem(oMItem1);
 
+
+        //A03	Delete
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03", "", "", "", "");
+
         //UI 삭제 메뉴
-        var oMItem2 = new this.sap.m.MenuItem({key:"M02", icon:"sap-icon://delete", text:"Delete", enabled:"{/lcmenu/enab02}"});
+        var oMItem2 = new this.sap.m.MenuItem({key:"M02", icon:"sap-icon://delete", text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab02}"});
         oMenu1.addItem(oMItem2);
 
+        
+        //A55	Up
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A55", "", "", "", "");
+
         //UI up
-        var oMItem3 = new this.sap.m.MenuItem({key:"M03", icon:"sap-icon://navigation-up-arrow", text:"Up", enabled:"{/lcmenu/enab03}",startsSection:true});
+        var oMItem3 = new this.sap.m.MenuItem({key:"M03", icon:"sap-icon://navigation-up-arrow", text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab03}",startsSection:true});
         oMenu1.addItem(oMItem3);
 
+
+        //A56	Down
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A56", "", "", "", "");
+
         //UI down
-        var oMItem4 = new this.sap.m.MenuItem({key:"M04", icon:"sap-icon://navigation-down-arrow", text:"Down",enabled:"{/lcmenu/enab04}"});
+        var oMItem4 = new this.sap.m.MenuItem({key:"M04", icon:"sap-icon://navigation-down-arrow", text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab04}"});
         oMenu1.addItem(oMItem4);
 
+
+        //A57	Move Position
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A57", "", "", "", "");
+
         //UI move Position
-        var oMItem5 = new this.sap.m.MenuItem({key:"M05", icon:"sap-icon://outdent", text:"Move Position",enabled:"{/lcmenu/enab05}"});
+        var oMItem5 = new this.sap.m.MenuItem({key:"M05", icon:"sap-icon://outdent", text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab05}"});
         oMenu1.addItem(oMItem5);
 
+
+        //A04	Copy
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A04", "", "", "", "");
+
         //copy 메뉴.
-        var oMItem6 = new this.sap.m.MenuItem({key:"M06", icon:"sap-icon://copy", text:"Copy",enabled:"{/lcmenu/enab06}",startsSection:true});
+        var oMItem6 = new this.sap.m.MenuItem({key:"M06", icon:"sap-icon://copy", text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab06}", startsSection:true});
         oMenu1.addItem(oMItem6);
 
+
+        //A58	Paste
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A58", "", "", "", "");
+
         //paste 메뉴.
-        var oMItem7 = new this.sap.m.MenuItem({key:"M07", icon:"sap-icon://paste", text:"Paste", enabled:"{/lcmenu/enab07}"});
+        var oMItem7 = new this.sap.m.MenuItem({key:"M07", icon:"sap-icon://paste", text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab07}"});
         oMenu1.addItem(oMItem7);
+
+
+        //A59	UI Where use
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A59", "", "", "", "");
         
         //UI where use 메뉴.
-        var oMItem8 = new this.sap.m.MenuItem({key:"M08", icon:"sap-icon://search", text:"UI Where use", startsSection:true, enabled:"{/lcmenu/enab08}"});
+        var oMItem8 = new this.sap.m.MenuItem({key:"M08", icon:"sap-icon://search", text:l_txt, tooltip:l_txt, startsSection:true, enabled:"{/lcmenu/enab08}"});
         oMenu1.addItem(oMItem8);
 
+
+        //A60	Admin
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A60", "", "", "", "");
+
         //관리자 메뉴.
-        var oMItem9 = new this.sap.m.MenuItem({key:"M09", icon:"sap-icon://paste", text:"관리자", startsSection:true});
+        var oMItem9 = new this.sap.m.MenuItem({key:"M09", icon:"sap-icon://paste", text:l_txt, tooltip:l_txt, startsSection:true});
         oMenu1.addItem(oMItem9);
 
+
+        //A61	Register Wizard Template
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A61", "", "", "", "");
+
         //관리자 서브 메뉴.
-        var oMItem10 = new this.sap.m.MenuItem({key:"M10", icon:"sap-icon://paste", text:"Wizard Template 등록"});
+        var oMItem10 = new this.sap.m.MenuItem({key:"M10", icon:"sap-icon://paste", text:l_txt, tooltip:l_txt});
         oMItem9.addItem(oMItem10);
 
 
@@ -278,7 +318,7 @@
         //부모의 대상 aggregation에 이미 UI가 추가된경우 오류 처리(0:1 aggregation의 경우 1개의 UI만 추가 가능).
         if(ISMLB === "" && l_indx !== -1){
             //022	Can not specify more than one object in the corresponding Aggrigation.
-            parent.showMessage(sap, 10, "W", "Can not specify more than one object in the corresponding Aggrigation.");
+            parent.showMessage(sap, 10, "W", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "022", "", "", "", ""));
 
             //오류 flag return
             return true;
@@ -295,7 +335,7 @@
             if(typeof ls_0015 !== "undefined" && ls_0015.UIATV !== "" && ls_0015.ISBND === "X" && l_indx !== -1){
 
                 //021	The object is already specified in Aggrigation.
-                parent.showMessage(sap, 10, "W", "The object is already specified in Aggrigation.");
+                parent.showMessage(sap, 10, "W", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "021", "", "", "", ""));
 
                 //오류 flag return
                 return true;
@@ -342,7 +382,7 @@
             if(typeof ls_0015 !== "undefined" && ls_0015.UIATV !== "" && ls_0015.ISBND === "X" & l_cnt >= 2){
                 l_cnt = 1;
                 //021	The object is already specified in Aggrigation.
-                parent.showMessage(sap, 10, "W", "The object is already specified in Aggrigation.");
+                parent.showMessage(sap, 10, "W", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "021", "", "", "", ""));
             }
 
             //공통코드 미리보기 UI Property 고정값 정보 검색.
@@ -525,7 +565,8 @@
   
   
         //UI삭제전 확인 팝업 호출. 메시지!!
-        parent.showMessage(sap, 30, "I", "선택한 라인을 삭제하시겠습니까?.",function(oEvent){
+        //003	Do you really want to delete the object?
+        parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "003", "", "", "", ""),function(oEvent){
             
             //확인 팝업에서 YES를 선택한 경우 하위 로직 수행.
             if(oEvent !== "YES"){return;}
@@ -1079,8 +1120,9 @@
             //이동 가능한 aggregation 정보가 존재하지 않는경우.
             if(typeof param === "undefined"){
                 //오류 메시지 출력.
-                parent.showMessage(sap, 10, "I", "붙여넣기가 가능한 aggregation이 존재하지 않습니다.");
-                return;                
+                //269	붙여넣기가 가능한 aggregation이 존재하지 않습니다.
+                parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "269", "", "", "", ""));
+                return;
             }
 
             //UI가 입력 가능한 카디널리티 여부 확인.
@@ -1116,10 +1158,15 @@
                 return;
             }
             
+            //116	Copy and paste application is different.
+            var l_msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "116", "", "", "", "");
+
+            //117	Do you want to keep the binding?.
+            l_msg += oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "117", "", "", "", "");
 
             //복사한 UI의 APPLICATION이 현재 APPLICATION과 다른 경우.
             //바인딩, 서버이벤트 초기화 여부 확인 팝업 호출.
-            parent.showMessage(sap, 40, "I", "Copy and paste application is different.Do you want to keep the binding?.",function(oEvent){
+            parent.showMessage(sap, 40, "I", l_msg, function(oEvent){
 
                 //취소를 한경우 exit.
                 if(oEvent === "CANCEL"){return;}
@@ -1249,11 +1296,9 @@
     //ui 사용처 리스트 메뉴.
     oAPP.fn.contextMenuUiWhereUse = function(){
 
-        //123 Do you want to continue?
-        var l_msg = "Do you want to continue?";
-
         //사용처 확인전 질문팝업 호출.
-        parent.showMessage(sap, 30, "I", l_msg, function(param){
+        //123 Do you want to continue?
+        parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "123", "", "", "", ""), function(param){
 
             //YES를 선택하지 않은경우 EXIT.
             if(param !== "YES"){return;}

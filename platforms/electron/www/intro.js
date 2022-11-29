@@ -202,9 +202,7 @@
             oBrowserWindow = JSON.parse(JSON.stringify(oBrowserOptions.browserWindow));
 
         oBrowserWindow.backgroundColor = "#1c2228";
-
         oBrowserWindow.webPreferences.OBJTY = "SERVERLIST";
-
         oBrowserWindow.show = false;
 
         // 인트로 화면 닫기

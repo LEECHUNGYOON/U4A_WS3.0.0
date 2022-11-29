@@ -634,7 +634,7 @@
     //생성 count 파라메터가 존재하는경우 2개 이상을 입력했다면 오류 flag 처리.
     if(typeof iCnt !== "undefined" && iCnt >= 2){
       //130	Target API and UI &1 does not allow one or more assign.
-      parent.showMessage(sap,10, "E", "Target API and UI " + ls_UA039.FLD01 +  " does not allow one or more assign.");
+      parent.showMessage(sap,10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "130", ls_UA039.FLD01, "", "", ""));
       return true;
     }
 
@@ -647,7 +647,7 @@
     if(lt_tree.findIndex( a => a.UIOBK === UIOBK) !== -1){
       //추가 됐다면 존재함 flag return.
       //130	Target API and UI &1 does not allow one or more assign.
-      parent.showMessage(sap,10, "E", "Target API and UI " + ls_UA039.FLD01 +  " does not allow one or more assign.");
+      parent.showMessage(sap,10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "130", ls_UA039.FLD01, "", "", ""));
       return true;
     }
 
@@ -669,7 +669,7 @@
     //U4A_HIDDEN_AREA DIV 영역에 추가대상건인경우 추가 가능한 부모 UI OBJECT KEY가 다르다면.
     if(ls_UA040.FLD04 !== PUIOK){
       //131	Target API and UI &1 can only target Location &2.
-      parent.showMessage(sap, 10, "E", "Target API and UI " + ls_UA040.FLD03 +  " can only target Location " + ls_UA040.FLD06 );
+      parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "131", ls_UA040.FLD03, ls_UA040.FLD06, "", "") );
       return true;
 
     }
@@ -2289,7 +2289,8 @@
     //체크박스 선택건 존재여부 확인.
     if(oAPP.fn.designCheckedLine(true) !== true){
       //존재하지 않는경우 오류 메시지 처리.
-      parent.showMessage(sap, 20, "I", "체크박스 선택건이 존재하지 않습니다.");
+      //286	Check box not selected.
+      parent.showMessage(sap, 20, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "286", "", "", "", ""));
       return;
 
     }
@@ -2314,7 +2315,8 @@
 
 
     //삭제전 확인팝업 호출.
-    parent.showMessage(sap, 30, "I", "선택한 라인을 삭제하시겠습니까?.",function(oEvent){
+    //003	Do you really want to delete the object?
+    parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "003", "", "", "", ""), function(oEvent){
 
       //YES를 선택하지 않은경우 EXIT.
       if(oEvent !== "YES"){return;}

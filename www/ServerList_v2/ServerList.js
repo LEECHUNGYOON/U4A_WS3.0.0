@@ -22,7 +22,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function(oAPP) {
+(function (oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -42,6 +42,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      * ------------------------ [ Server List Start ] ------------------------
      * **********************************************************************/
     oAPP.fn.fnOnMainStart = () => {
+
+        oAPP.setBusy(true);
 
         jQuery.sap.require("sap.m.MessageBox");
 
@@ -142,7 +144,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
         }
 
-        if(!oAPP.isWatch){
+        if (!oAPP.isWatch) {
             FS.watch(sLandscapeFilePath, oAPP.fn.fnSapLogonFileChange);
             oAPP.isWatch = true;
         }
@@ -159,8 +161,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     oAPP.fn.fnSapLogonFileChange = (current, previous) => {
 
-        debugger;
-
         oAPP.fn.fnOnListupSapLogon();
 
     };
@@ -173,7 +173,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 결과 리스트
         oAPP.fn.fnGetSAPLogonLandscapeList();
 
-        //test
+        // WorkSpace Tree 구조 만들기
         oAPP.fn.fnGetSAPLogonWorkspace();
 
         oAPP.setBusy(false);
@@ -217,6 +217,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of oAPP.fn.fnReadSAPLogonData
 
+    /************************************************************************
+     * 레지스트리에 등록된 SAPLogon xml 파일 정보를 JSON 데이터로 변환
+     ************************************************************************/
     oAPP.fn.fnGetSAPLogonLandscapeList = () => {
 
         var oSAPLogonLandscape = oAPP.data.SAPLogon;
@@ -256,6 +259,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 oServiceAttr = oService._attributes;
 
             if (oServiceAttr == null) {
+                continue;
+            }
+
+            // shortcut은 제외
+            if (oServiceAttr.shortcut && oServiceAttr.shortcut == "1") {
                 continue;
             }
 
@@ -341,18 +349,41 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnOnInitRendering = () => {
 
         var oApp = new sap.m.App(),
-            oTable = oAPP.fn.fnGetSAPLogonListTable(),
-            oTreeTable = oAPP.fn.fnTestGetTreeTable(),
+            oTreeTable = oAPP.fn.fnGetWorkSpaceTreeTable(), // 좌측 폴더 Tree
+            oTable = oAPP.fn.fnGetSAPLogonListTable(), // 우측 서버 리스트 테이블
+            oPage1 = new sap.m.Page({
+                showHeader: false,
+                layoutData: new sap.ui.layout.SplitterLayoutData({
+                    size: "0px",
+                    minSize: 0
+                }),
+                content: [
+                    oTreeTable
+                ]
+
+            }),
+            oPage2 = new sap.m.Page({
+                showHeader: false,
+                layoutData: new sap.ui.layout.SplitterLayoutData({
+                    size: "0px",
+                    minSize: 0
+                }),
+                content: [
+                    oTable
+                ]
+
+            }),
             oMainPage = new sap.m.Page({
-                title: "SAPLogon Landscape List",
+                enableScrolling: false,
+                title: "SAPLogon Workspace View",
                 content: [
                     new sap.ui.layout.Splitter({
                         height: "100%",
                         width: "100%",
 
                         contentAreas: [
-                            oTreeTable,
-                            oTable
+                            oPage1,
+                            oPage2
                         ]
 
                     }),
@@ -365,8 +396,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of oAPP.fn.fnOnInitRendering
 
-    // [test] Workspace Tree Table
-    oAPP.fn.fnTestGetTreeTable = () => {
+    // Workspace Tree Table
+    oAPP.fn.fnGetWorkSpaceTreeTable = () => {
 
         return new sap.ui.table.TreeTable("WorkTree", {
 
@@ -376,10 +407,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             alternateRowColors: true,
             columnHeaderVisible: false,
             visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
-            layoutData: new sap.ui.layout.SplitterLayoutData({
-                size: "300px",
-                minSize: 300
-            }),
+            // layoutData: new sap.ui.layout.SplitterLayoutData({
+            //     size: "300px",
+            //     minSize: 300
+            // }),
             columns: [
                 new sap.ui.table.Column({
                     // width: "600px",
@@ -400,7 +431,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         });
 
-    }; // end of oAPP.fn.fnTestGetTreeTable
+    }; // end of oAPP.fn.fnGetWorkSpaceTreeTable
 
     // WorkSpace Tree Item Select Event
     oAPP.fn.fnPressWorkSpaceTreeItem = (oEvent) => {
@@ -470,7 +501,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of oAPP.fn.fnPressWorkSpaceTreeItem
 
-    // [test] WorkSpace Tree 구조 만들기
+    /************************************************************************
+     * WorkSpace Tree 구조 만들기
+     ************************************************************************/
     oAPP.fn.fnGetSAPLogonWorkspace = () => {
 
         var aWorkSpace = oAPP.data.SAPLogon.LandscapeFile.Workspaces.Workspace;
@@ -484,6 +517,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             }]
         };
 
+        // 각 Node 별 데이터 정렬
         oWorkSpace.Node = oAPP.fn.fnWorkSpaceSort(oWorkSpace.Node);
 
         var oCoreModel = sap.ui.getCore().getModel();
@@ -494,6 +528,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of oAPP.fn.fnGetSAPLogonWorkspace
 
+    /************************************************************************
+     * 각 Node 별 데이터 정렬
+     ************************************************************************/
     oAPP.fn.fnWorkSpaceSort = (aNode) => {
 
         var iNodeLength = aNode.length;

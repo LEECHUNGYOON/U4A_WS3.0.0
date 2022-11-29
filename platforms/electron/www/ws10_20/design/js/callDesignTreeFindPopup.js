@@ -177,7 +177,7 @@
 			//오류 메시지 처리.
             //174 Target object can not be found.
 			//parent.showMessage(sap, 10, "E", "Target object can not be found.");
-            sap.m.MessageToast.show("Target object can not be found.",{of:oUi, my:"center top"});
+            sap.m.MessageToast.show(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "174", "", "", "", ""), {of:oUi, my:"center top"});
 
             //모델 갱신 처리.
             oAPP.attr.oModel.refresh();
@@ -220,7 +220,8 @@
         //검색조건이 변경되어 재검색된 경우.
         if(bRefresh === true){
             //검색 건수 메시지 출력.
-            parent.showMessage(sap, 10, "S", "Match results : " + gs_find.T_TREE.length);
+            //270	Match results : &1.
+            parent.showMessage(sap, 10, "S", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "270", gs_find.T_TREE.length, "", "", ""));
 
             //tree 전체 펼침 처리.
             oAPP.attr.ui.oLTree1.expandToLevel(999999999999);
@@ -346,13 +347,17 @@
         var oTool = new sap.m.Toolbar();
         oPop.setCustomHeader(oTool);
 
-        var oTitle = new sap.m.Title({text:"Find UI"});
+        //A70	Find UI
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A70", "", "", "", "");
+        var oTitle = new sap.m.Title({text:l_txt, tooltip:l_txt});
         oTitle.addStyleClass("sapUiTinyMarginBegin");
         oTool.addContent(oTitle);
 
         oTool.addContent(new sap.m.ToolbarSpacer());
 
-        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip: "Close"});
+        //A39	Close
+        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", 
+            tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
         oTool.addContent(oBtn0);
 
         //닫기 버튼 선택 이벤트.
@@ -365,8 +370,11 @@
         var oGrid = new sap.ui.layout.Grid({defaultSpan:"XL6 L6 M6 S12", hSpacing:0.5, vSpacing:0});
         oPop.addContent(oGrid);
 
+        //294	Please enter search criteria.
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "294", "", "", "", "");
+
         //검색조건 필드.
-        var oInp = new sap.m.Input({placeholder:"Please enter search criteria.",
+        var oInp = new sap.m.Input({placeholder:l_txt, tooltip:l_txt, 
             layoutData: new sap.ui.layout.GridData({span:"XL8 L8 M8 S8"})});
         oGrid.addContent(oInp);
 
@@ -409,9 +417,11 @@
         // oAPP.fn.setUiSuggest(oInp, "designTreeFindUIInpit");
 
 
+        //A68	Filter Value
         //검색 버튼.
         var oBtn1 = new sap.m.Button({icon:"sap-icon://accept", type:"Accept", width:"100%",
-            tooltip:"Filter Value", layoutData: new sap.ui.layout.GridData({span:"XL4 L4 M4 S4"})});
+            tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A68", "", "", "", ""), 
+            layoutData: new sap.ui.layout.GridData({span:"XL4 L4 M4 S4"})});
             oGrid.addContent(oBtn1);
 
         //검색 버튼 선택 이벤트.
@@ -424,9 +434,12 @@
             
         }); //검색 버튼 선택 이벤트.
         
+
+        //A71	Search equal value
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A71", "", "", "", "");
         
         //equal 검색 체크박스.
-        var oChk1 = new sap.m.CheckBox({text:"Search equal value", tooltip:"Search equal value",
+        var oChk1 = new sap.m.CheckBox({text:l_txt, tooltip:l_txt,
             layoutData: new sap.ui.layout.GridData({span:"XL4 L4 M4 S4"})});
         oGrid.addContent(oChk1);
 
@@ -437,8 +450,11 @@
         }); //equal 검색 체크박스 선택 이벤트.
 
 
+        //A72	Direction Up
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A72", "", "", "", "");
+
         //아래로 검색 체크박스(input의 enter이벤트, 검색버튼 선택시 적용)
-        var oChk2 = new sap.m.CheckBox({text:"direction up", tooltip:"Direction Up", 
+        var oChk2 = new sap.m.CheckBox({text:l_txt, tooltip:l_txt, 
             layoutData: new sap.ui.layout.GridData({span:"XL4 L4 M4 S4"})});
         oGrid.addContent(oChk2);
 
@@ -449,8 +465,10 @@
         }); //아래로 검색 체크박스 선택 이벤트.
 
 
+        //A55	Up
         //위로 검색 버튼.
-        var oBtn3 = new sap.m.Button({icon:"sap-icon://arrow-top", tooltip:"up", width:"100%",
+        var oBtn3 = new sap.m.Button({icon:"sap-icon://arrow-top", width:"100%",
+            tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A55", "", "", "", ""), 
             layoutData: new sap.ui.layout.GridData({span:"XL2 L2 M2 S2"})});
         oGrid.addContent(oBtn3);
 
@@ -466,8 +484,10 @@
         }); //위로 검색 버튼 선택 이벤트.
 
 
+        //A56	Down
         //아래로 검색 버튼.
-        var oBtn4 = new sap.m.Button({icon:"sap-icon://arrow-bottom",tooltip:"down", width:"100%",
+        var oBtn4 = new sap.m.Button({icon:"sap-icon://arrow-bottom", width:"100%",
+            tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A56", "", "", "", ""), 
             layoutData: new sap.ui.layout.GridData({span:"XL2 L2 M2 S2"})});
         oGrid.addContent(oBtn4);
 

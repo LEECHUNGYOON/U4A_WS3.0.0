@@ -11,7 +11,7 @@
    ************************************************************************/
     oAPP.fn.callDynListPopup = function(sName, sTitle, it_param, f_callBack){
 
-        var oDlg = new sap.m.Dialog({draggable: true,resizable: true, busyIndicatorDelay:1,
+        var oDlg = new sap.m.Dialog({draggable: true, resizable: true, busyIndicatorDelay:1,
             verticalScrolling:false, contentWidth:"40%", contentHeight:"40%"});
 
         oDlg.attachBeforeOpen(function(){
@@ -28,6 +28,7 @@
         
         
         var oTitle = new sap.m.Title();
+        oTitle.addStyleClass("sapUiTinyMarginBegin");
         oTool.addContent(oTitle);
 
         if(typeof sTitle !== "undefined"){
@@ -35,9 +36,11 @@
         }        
     
         oTool.addContent(new sap.m.ToolbarSpacer());
-    
+        
+        //A39	Close
         //우상단 닫기버튼.
-        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip:"Close"});
+        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", 
+            tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
         oTool.addContent(oBtn0);
 
         //닫기 버튼 선택 이벤트.
@@ -46,7 +49,7 @@
             oDlg.close();
 
             //001	Cancel operation
-            parent.showMessage(sap, 10, "I", "Cancel operation");
+            parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
     
         }); //닫기 버튼 선택 이벤트.
 
@@ -129,13 +132,16 @@
         //입력 파라메터 기준으로 컬럼 생성.
         for(var i=0, l=param.T_LIST.length; i<l; i++){
 
+            var l_fld = "{" + param.T_LIST[i].FIELD + "}";
+
             //컬럼 ui 생성 처리.
-            var oCol = new sap.ui.table.Column({template:new sap.m.Text({text:"{" + param.T_LIST[i].FIELD + "}"})});
+            var oCol = new sap.ui.table.Column({template:new sap.m.Text({text:l_fld, tooltip:l_fld})});
             oTab.addColumn(oCol);
 
             //컬럼 label 생성 처리.
             var oLab = new sap.m.Label();
             oLab.setText(param.T_LIST[i].TEXT);
+            oLab.setTooltip(param.T_LIST[i].TEXT);
             oCol.setLabel(oLab);
 
         }
@@ -177,7 +183,7 @@
         oDlg.close();
 
         //005	Job finished.
-        parent.showMessage(sap, 10, "I", "Job finished.");
+        parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
 
 
     }   //table 더블클릭 이벤트.

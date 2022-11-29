@@ -4,7 +4,8 @@
     oAPP.fn.changeAppPackagePopup = function(APPID){
 
         //라이브러리 로드.
-        sap.ui.getCore().loadLibraries(["sap.m", "sap.ui.layout"]);
+        sap.ui.getCore().loadLibrary("sap.m");
+        sap.ui.getCore().loadLibrary("sap.ui.layout");
 
         //application의 package 변경 dialog UI 생성.
         var oDlg = new sap.m.Dialog({draggable:true, resizable:true, contentWidth:"50%"});
@@ -21,15 +22,21 @@
         //popup toolbar UI 생성.
         var oTool = new sap.m.Toolbar();
         oDlg.setCustomHeader(oTool);
+
+        //A93	Application Package Change
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A93", "", "", "", "");
         
         //popup title UI 생성.
-        var oTitle = new sap.m.Title({text:"Application Package Change"});
+        var oTitle = new sap.m.Title({text:l_txt, tooltip:l_txt});
+        oTitle.addStyleClass("sapUiTinyMarginBegin");
         oTool.addContent(oTitle);
 
         oTool.addContent(new sap.m.ToolbarSpacer());
 
+        //A39	Close
         //우상단 닫기버튼.
-        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject"});
+        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", 
+            tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
         oTool.addContent(oBtn0);
 
         //닫기버튼 선택 이벤트.
@@ -48,8 +55,11 @@
         var oCont = new sap.ui.layout.form.FormContainer();
         oForm.addFormContainer(oCont);
 
+        //A90	Web Application ID
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A90", "", "", "", "");
+
         //form element UI 생성.
-        oElem1 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", text:"Application ID"})});
+        oElem1 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});
         oCont.addFormElement(oElem1);
 
         //application 명 출력 input UI 생성.
@@ -57,8 +67,11 @@
         oElem1.addField(oInp1);
 
 
+        //A94	Current Package
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A94", "", "", "", "");
+
         //form element UI 생성.
-        oElem2 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", text:"Current Package"})});
+        oElem2 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});
         oCont.addFormElement(oElem2);
 
         //현재 package명 출력 input UI 생성.
@@ -66,8 +79,11 @@
         oElem2.addField(oInp2);
 
 
+        //A95	New Package
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A95", "", "", "", "");
+
         //form element UI 생성.
-        oElem3 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", required:true, text:"New Package"})});
+        oElem3 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", required:true, text:l_txt, tooltip:l_txt})});
         oCont.addFormElement(oElem3);
 
         //신규 package 명 입력 input UI 생성.
@@ -89,8 +105,11 @@
         }); //신규 package 명 f4 help 선택 이벤트.
 
 
+        //A96	Change Request No.
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A96", "", "", "", "");
+
         //form element UI 생성.
-        oElem4 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", required:true, text:"Change Request No."})});
+        oElem4 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", required:true, text:l_txt, tooltip:l_txt})});
         oCont.addFormElement(oElem4);
 
         //change Request No. 출력 input UI 생성.
@@ -111,8 +130,11 @@
         });
 
 
+        //A97	Change Package
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A97", "", "", "", "");
+
         //package 변경 확인 버튼.
-        var oBtn1 = new sap.m.Button({text:"Change Package", icon:"sap-icon://journey-change", type:"Accept"});
+        var oBtn1 = new sap.m.Button({text:l_txt, tooltip:l_txt, icon:"sap-icon://journey-change", type:"Accept"});
         oDlg.addButton(oBtn1);
 
         //package 변경버튼 선택 이벤트.
@@ -121,8 +143,11 @@
         });
 
 
+        //A39	Close
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "");
+
         //닫기버튼.
-        var oBtn2 = new sap.m.Button({text:"Close", icon:"sap-icon://decline", type:"Reject"});
+        var oBtn2 = new sap.m.Button({text:l_txt, tooltip:l_txt, icon:"sap-icon://decline", type:"Reject"});
         oDlg.addButton(oBtn2);
 
         //닫기버튼 선택 이벤트.
@@ -223,7 +248,8 @@
         if(lf_chkValue(oModel, l_bind) === true){return;}
 
         //변경전 확인팝업 호출.
-        parent.showMessage(sap, 30, "I", "Process package changes.Do you want to proceed?",function(oEvent){
+        //273	Package will be changed. Do you want to continue?
+        parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "273", "", "", "", ""), function(oEvent){
 
             //YES를 선택하지 않은경우 EXIT.
             if(oEvent !== "YES"){return;}
@@ -265,7 +291,7 @@
                 }
 
                 //성공시 메시지 처리.
-                oAPP.common.fnShowFloatingFooterMsg("S", "WS10",param.RTMSG);
+                oAPP.common.fnShowFloatingFooterMsg("S", "WS10", param.RTMSG);
 
                 //팝업 종료 처리.
                 lf_closePopup(oDlg);
@@ -296,7 +322,10 @@
 
             //package 미입력 오류 표시.
             i_bind.NEWPK_vs = "Error";
-            i_bind.NEWPK_tx = "Package is required.";
+
+            //A22	Package
+            //050	& is required.
+            i_bind.NEWPK_tx = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "050", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A22", "", "", "", ""), "", "", "");
         }
 
         //local package를 입력한경우.
@@ -306,7 +335,9 @@
 
             //package 미입력 오류 표시.
             i_bind.NEWPK_vs = "Error";
-            i_bind.NEWPK_tx = "Local package cannot be entered.";
+
+            //229	Local package cannot be entered.            
+            i_bind.NEWPK_tx = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "229", "", "", "", "");
         }
 
         //이전 package와 동일한 package를 입력한 경우.
@@ -316,7 +347,9 @@
 
             //package 미입력 오류 표시.
             i_bind.NEWPK_vs = "Error";
-            i_bind.NEWPK_tx = "Entered the same package as the previous package.";
+            
+            //295	Entered the same package as the previous package.
+            i_bind.NEWPK_tx = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "295", "", "", "", "");
         }
 
         //Change request No.를 입력하지 않은경우.
@@ -326,7 +359,11 @@
 
             //Change request No. 미입력 오류 표시.
             i_bind.CREQN_vs = "Error";
-            i_bind.CREQN_tx = "Change request No. is required.";
+            
+            //A96	Change Request No.
+            //050	& is required.
+            i_bind.CREQN_tx = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "050", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A96", "", "", "", ""), "", "", "");
+
         }
 
 

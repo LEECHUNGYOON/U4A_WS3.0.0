@@ -44,6 +44,7 @@ body {
 /* TextArea 버튼  */
 .textarea-open {
   position: absolute;
+  display: none;
   top: 66%;
   right: 0;
   left: 6%;
@@ -135,7 +136,7 @@ body {
 .drow-initial {
   position: absolute;
   /*top: 63%;*/
-  top: 51%;
+  top: 200px;
   right: 0;
   left: 6%;
 
@@ -173,7 +174,7 @@ body {
 /*========================================= */
 .recording-close {
   position: absolute;
-  top: 81%;
+  top: 270px;
   right: 0;
   left: 6%;
 
@@ -214,7 +215,7 @@ body {
 .drow-checkbox {
   position: absolute;
   /*top: 50%;*/
-  top: 40%;
+  top: 150px;
   right: 0;
   left: 5%;
 }
@@ -241,11 +242,13 @@ body {
   position: fixed;
   zoom:0.5;
   /* top: 85%; */
-  top: 80%;
+  /*top: 80%; */
+  top:10px;
   right: 0;
   bottom: 0;
   left: 93%;
   width: 270px;
+  height:350px;
   background:black;
   overflow-y: auto;
 }
@@ -255,7 +258,7 @@ body {
   z-index: 100000000000;
   position: absolute;
   /* top: 30%; */
-  top: 25%;
+  top: 100px;
   right: 31%;
   left: 0%;
   width: 155px;

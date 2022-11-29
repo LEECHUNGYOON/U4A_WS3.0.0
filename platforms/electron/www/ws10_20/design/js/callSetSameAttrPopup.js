@@ -11,7 +11,8 @@
         //동일한 attribute 항목이 존재하지 않는경우.
         if(lt_list.length === 0){
             //메시지 처리.
-            parent.showMessage(sap, 10, "W", "처리대상건이 존재하지 않습니다.");
+            //055	Processing does not exist.
+            parent.showMessage(sap, 10, "W", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "055", "", "", "", ""));
             return;
         }
 
@@ -27,12 +28,19 @@
         var oTool = new sap.m.Toolbar();
         oDlg.setCustomHeader(oTool);
 
-        oTool.addContent(new sap.m.Title({text:"Property replace all"}));
+        //A80	Property replace all
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A80", "", "", "", "");
+
+        var oTitle = new sap.m.Title({text:l_txt, tooltip:l_txt});
+        oTitle.addStyleClass("sapUiTinyMarginBegin");
+        oTool.addContent(oTitle);
 
         oTool.addContent(new sap.m.ToolbarSpacer());
 
+        //A39	Close
         //우상단 닫기버튼.
-        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject"});
+        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", 
+            tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
         oTool.addContent(oBtn0);
 
         //닫기 버튼 선택 이벤트.
@@ -57,65 +65,94 @@
         var oCont = new sap.ui.layout.form.FormContainer();
         oForm.addFormContainer(oCont);
 
+        //A81	Attribute ID
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A81", "", "", "", "");
+
         //ATTRIBUTE 명.
-        var oElem1 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", text:"Attribute ID"})});
+        var oElem1 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});
         oElem1.addField(new sap.m.Text({text:"{/UIATT}"}));
         oCont.addFormElement(oElem1);
 
+
+        //A82	Attribute Type
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A82", "", "", "", "");
+
         //ATTRIBUTE TYPE.
-        var oElem2 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", text:"Attribute Type"})});
+        var oElem2 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});
         oElem2.addField(new sap.m.Text({text:"{/UIADT}"}));
         oCont.addFormElement(oElem2);
 
+
+        //A83	Change value
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A83", "", "", "", "");
+
         //해당 ATTRIBUTE의 입력값.
-        var oElem3 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", text:"Change value"})});        
+        var oElem3 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});        
         oCont.addFormElement(oElem3);
 
 
         //동일속성 프로퍼티 출력 테이블.
-        var oTab1 = new sap.ui.table.Table({selectionBehavior:"Row",rowHeight:30,
-            visibleRowCountMode:"Auto",layoutData:new sap.m.FlexItemData({growFactor:1})});
+        var oTab1 = new sap.ui.table.Table({selectionBehavior:"Row", rowHeight:30,
+            visibleRowCountMode:"Auto", layoutData:new sap.m.FlexItemData({growFactor:1})});
         oVbox1.addItem(oTab1);
 
 
+        //A84	UI Object ID
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A84", "", "", "", "");
+
         //UI OBJECT ID(TABLE1) 컬럼.
         var oCol1 = new sap.ui.table.Column({sortProperty:"OBJID", filterProperty:"OBJID",
-        label: new sap.m.Label({design:"Bold", text:"UI Object ID"})});
+        label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});
         oCol1.setTemplate(new sap.m.Text({text:"{OBJID}"}));
         oTab1.addColumn(oCol1);
 
 
+        //A53	Value
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A53", "", "", "", "");
+
         //해당 프로퍼티의 입력값 컬럼.
         var oCol2 = new sap.ui.table.Column({sortProperty:"UIATV", filterProperty:"UIATV", 
-            label: new sap.m.Label({design:"Bold", text:"Value"})});
+            label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});
         oCol2.setTemplate(new sap.m.Text({text:"{UIATV}"}));
         oTab1.addColumn(oCol2);
 
 
+        //A85	UI Object Module
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A85", "", "", "", "");
+
         //UI 라이브러리명(sap.m.Table) 컬럼.
         var oCol3 = new sap.ui.table.Column({sortProperty:"UILIB", filterProperty:"UILIB", 
-            label: new sap.m.Label({design:"Bold", text:"UI Object Module"})});
+            label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});
         oCol3.setTemplate(new sap.m.Text({text:"{UILIB}"}));
         oTab1.addColumn(oCol3);
 
 
+        //A86	UI Object Key
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A86", "", "", "", "");
+
         //UI OBJECT KEY 컬럼(UO01139) 컬럼.
         var oCol4 = new sap.ui.table.Column({sortProperty:"UIOBK", filterProperty:"UIOBK", 
-            label: new sap.m.Label({design:"Bold", text:"UI Object Key"})});
+            label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});
         oCol4.setTemplate(new sap.m.Text({text:"{UIOBK}"}));
         oTab1.addColumn(oCol4);
 
 
+        //A87	Parent UI Object ID
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A87", "", "", "", "");
+
         //부모 라이브러리명(sap.m.Page) 컬럼.
         var oCol5 = new sap.ui.table.Column({sortProperty:"POBID", filterProperty:"POBID", 
-            label: new sap.m.Label({design:"Bold", text:"Parent UI Object ID"})});
+            label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});
         oCol5.setTemplate(new sap.m.Text({text:"{POBID}"}));
         oTab1.addColumn(oCol5);
+        
 
+        //A88	Parent Object Module
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A88", "", "", "", "");
 
         //부모 UI OBJECT KEY 컬럼(UO00389) 컬럼.
         var oCol6 = new sap.ui.table.Column({sortProperty:"PUIOK", filterProperty:"PUIOK", 
-            label: new sap.m.Label({design:"Bold", text:"Parent Object Module"})});
+            label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});
         oCol6.setTemplate(new sap.m.Text({text:"{PUIOK}"}));
         oTab1.addColumn(oCol6);
 
@@ -124,8 +161,11 @@
         oTab1.bindAggregation("rows",{path:"/T_LIST",template: new sap.ui.table.Row()});
 
 
+        //A40	Confirm
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A40", "", "", "", "");
+
         //확인 버튼.
-        var oBtn1 = new sap.m.Button({icon: "sap-icon://accept",text: "Confirm",type: "Accept"});
+        var oBtn1 = new sap.m.Button({icon: "sap-icon://accept",text:l_txt, tooltip:l_txt, type: "Accept"});
         oDlg.addButton(oBtn1);
 
         //확인버튼 선택 이벤트.
@@ -135,8 +175,11 @@
         });
 
 
+        //A41	Cancel
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A41", "", "", "", "");
+
         //팝업 종료 버튼.
-        var oBtn2 = new sap.m.Button({icon: "sap-icon://decline",text: "Cancel",type: "Reject"});
+        var oBtn2 = new sap.m.Button({icon: "sap-icon://decline", text:l_txt, tooltip:l_txt, type: "Reject"});
         oDlg.addButton(oBtn2);
 
 
@@ -194,12 +237,12 @@
                 var oSel = new sap.m.Select({selectedKey:"{/UIATV}"});
                 oElem3.addField(oSel);
 
-                oSel.bindAggregation("items",{path:"/T_DDLB", template: new sap.ui.core.Item({key:"{KEY}",text:"{TEXT}"})});
+                oSel.bindAggregation("items", {path:"/T_DDLB", template: new sap.ui.core.Item({key:"{KEY}",text:"{TEXT}"})});
 
             }else{
                 //일반 입력 필드인경우.
 
-                var oInp = new sap.m.Input({value:"{/UIATV}",showValueHelp:"{/showF4}"});
+                var oInp = new sap.m.Input({value:"{/UIATV}", showValueHelp:"{/showF4}"});
                 oElem3.addField(oInp);
 
                 //input f4 help 이벤트.
@@ -219,14 +262,10 @@
             //프로퍼티 명.
             ls_binfo.UIATT = is_attr.UIATT;
 
-            var l_UIATT = is_attr.UIATT.toUpperCase();
-
             //프로퍼티명에 COLOR, ICON이 keyword가 존재하는경우.
-            if(l_UIATT.indexOf("COLOR") !== -1 || l_UIATT.indexOf("ICON") !== -1 ||
-                l_UIATT.indexOf("IMAGE") !== -1 || l_UIATT.indexOf("SRC") !== -1){
-                    //input의 f4 help icon 활성화.
-                    ls_binfo.showF4 = true;
-
+            if(oAPP.fn.attrIsIconProp(is_attr) === true || oAPP.fn.attrIsColorProp(is_attr) === true){
+                //input의 f4 help icon 활성화.
+                ls_binfo.showF4 = true;
             }
 
             //프로퍼티 타입.
@@ -305,10 +344,8 @@
         //색상 선택 팝업 호출건 처리.
         function callInputF4HelpColor(oUi){
 
-            var l_UIATK = is_attr.UIATT.toUpperCase();
-
             //프로퍼티명에 COLOR이 포함안된경우 EXIT.
-            if(l_UIATK.indexOf("COLOR") === -1){return;}
+            if(oAPP.fn.attrIsColorProp(is_attr) !== true){return;}
 
             jQuery.sap.require("sap.ui.unified.ColorPickerPopover");
 
@@ -346,13 +383,8 @@
 
             }   //아이콘 선택 팝업 callback function.
 
-            var l_UIATT = is_attr.UIATT.toUpperCase();
-
             //프로퍼티명에 COLOR가 포함안되는경우 exit.
-            if(l_UIATT.indexOf("ICON") === -1 && l_UIATT.indexOf("IMAGE") === -1 &&
-                l_UIATT.indexOf("SRC") === -1){
-                return;
-            }
+            if(oAPP.fn.attrIsIconProp(is_attr) !== true){return;}
 
             //icon list popup function이 존재하는 경우.
             if(typeof oAPP.fn.callIconListPopup !== "undefined"){
@@ -513,7 +545,7 @@
             if(bSkipMsg === true){return;}
 
             //001	Cancel operation
-            parent.showMessage(sap,10, "I", "Cancel operation");
+            parent.showMessage(sap,10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
 
         }   //팝업 종료처리.
 
@@ -527,8 +559,8 @@
 
             //라인선택건이 존재하지 않는경우.
             if(lt_sel.length === 0){
-                //001	Cancel operation
-                parent.showMessage(sap,10, "E", "선택된 라인이 존재하지 않습니다.");
+                //268	Selected line does not exists.
+                parent.showMessage(sap,10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", ""));
                 return;
             }
 
@@ -603,12 +635,9 @@
             lf_close(true);
 
             //005	Job finished.
-            parent.showMessage(sap,10, "S", "Job finished.");
+            parent.showMessage(sap, 10, "S", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
 
-
-        }
-
-
+        }   //동일 ATTRIBUTE 동기화 처리.
 
     };  //동일 ATTRIBUTE 동기화 처리 팝업.
     

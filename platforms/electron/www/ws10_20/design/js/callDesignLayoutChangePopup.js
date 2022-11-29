@@ -1,5 +1,14 @@
 (function(){
 
+    //A65	Design Tree
+    const C_DESIGNTREE = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A65", "", "", "", "");
+
+    //A66	Attribute
+    const C_ATTRIBUTE = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A66", "", "", "", "");
+
+    //A67	Preview
+    const C_PREVIEW = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A67", "", "", "", "");
+
     //디자인 레이아웃 변경 팝업.
     oAPP.fn.callDesignLayoutChangePopup = function(){
 
@@ -21,12 +30,19 @@
         var oTool = new sap.m.Toolbar();
         oDlg.setCustomHeader(oTool);
 
-        oTool.addContent(new sap.m.Title({text:"Change Layout"}));
+        //A62	Change Layout
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A62", "", "", "", "");
+
+        var oTitle = new sap.m.Title({text:l_txt, tooltip:l_txt});
+        oTitle.addStyleClass("sapUiTinyMarginBegin");
+        oTool.addContent(oTitle);
 
         oTool.addContent(new sap.m.ToolbarSpacer());
 
+        //A39	Close
         //우상단 닫기버튼.
-        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject"});
+        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", 
+            tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
         oTool.addContent(oBtn0);
 
         //닫기 버튼 선택 이벤트.
@@ -41,7 +57,7 @@
         sap.m.GenericTile.getMetadata().dnd.draggable = true;
         sap.m.GenericTile.getMetadata().dnd.droppable = true;
 
-        var oTile1 = new sap.m.GenericTile({header:"{NAME}", headerImage:"{IMAGE}", state:"Disabled"});
+        var oTile1 = new sap.m.GenericTile({header:"{NAME}", headerImage:"{IMAGE}", state:"Disabled", tooltip:"{NAME}"});
         oTile1.addStyleClass("sapUiTinyMargin");
 
         //drag UI 생성.
@@ -65,45 +81,55 @@
         oDlg.bindAggregation("content",{path:"/T_LAYOUT", template:oTile1});
 
 
+        //A63	Default
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A63", "", "", "", "");
 
         //초기화 버튼.
-        var oBtn1 = new sap.m.Button({text:"Default", icon:"sap-icon://reset", type:"Emphasized",tooltip:"Default"});
+        var oBtn1 = new sap.m.Button({text:l_txt, icon:"sap-icon://reset", type:"Emphasized", tooltip:l_txt});
         oDlg.addButton(oBtn1);
 
 
         //초기화 버튼 선택 이벤트.
         oBtn1.attachPress(function(){
             //초기화 처리.
-            var lt_layout = [{NAME:"designTree", IMAGE:"sap-icon://text-align-right", POSIT:0, UIID:"oDesignTree", SID:"designTree"},
-                            {NAME:"Preview", IMAGE:"sap-icon://header", POSIT:1, UIID:"oDesignPreview", SID:"designPreview"},
-                            {NAME:"Attribute", IMAGE:"sap-icon://customize", POSIT:2, UIID:"oDesignAttr", SID:"designAttr"}];
+            var lt_layout = [{NAME:C_DESIGNTREE, IMAGE:"sap-icon://text-align-right", POSIT:0, UIID:"oDesignTree", SID:"designTree"},
+                            {NAME:C_PREVIEW, IMAGE:"sap-icon://header", POSIT:1, UIID:"oDesignPreview", SID:"designPreview"},
+                            {NAME:C_ATTRIBUTE, IMAGE:"sap-icon://customize", POSIT:2, UIID:"oDesignAttr", SID:"designAttr"}];
                 
             //layout 데이터 바인딩.
             oMdl.setData({T_LAYOUT:lt_layout});
 
-        });
+        }); //초기화 버튼 선택 이벤트.
 
+
+        //A64	Save
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A64", "", "", "", "");
 
         //저장버튼.
-        var oBtn2 = new sap.m.Button({text:"Save", icon:"sap-icon://save", type:"Accept",tooltip:"Save"});
+        var oBtn2 = new sap.m.Button({text:l_txt, icon:"sap-icon://save", type:"Accept", tooltip:l_txt});
         oDlg.addButton(oBtn2);
 
         //저장버튼 선택 이벤트.
         oBtn2.attachPress(function(){
             //저장 처리.
-            lf_save(oDlg, oMdl);            
-        });
+            lf_save(oDlg, oMdl);
 
+        }); //저장버튼 선택 이벤트.
+
+
+        //A39	Close
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "");
 
         //팝업 종료 버튼.
-        var oBtn3 = new sap.m.Button({text:"Close", type:"Reject",icon:"sap-icon://decline", tooltip:"Close"});
+        var oBtn3 = new sap.m.Button({text:l_txt, type:"Reject",icon:"sap-icon://decline", tooltip:l_txt});
         oDlg.addButton(oBtn3);
 
         //팝업 종료버튼 선택 이벤트.
         oBtn3.attachPress(function(){
             //팝업 종료처리.
             lf_close(oDlg);
-        });
+
+        }); //팝업 종료버튼 선택 이벤트.
 
 
         //팝업 호출.
@@ -123,7 +149,7 @@
         if(bSkip){return;}
 
         //001	Cancel operation
-        parent.showMessage(sap,10, "I", "Cancel operation");
+        parent.showMessage(sap,10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
 
     }   //팝업 종료 처리.
 
@@ -133,10 +159,9 @@
     //저장 처리.
     function lf_save(oDlg, oMdl){
 
-        //010	Do you want to save it?
-
         //저장전 확인 팝업 호출.
-        parent.showMessage(sap, 30, "I", "Do you want to save it?", function(param){
+        //010	Do you want to save it?
+        parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "010", "", "", "", ""), function(param){
 
             if(param !== "YES"){return;}
 
@@ -220,9 +245,9 @@
 
         //이전에 저장한 정보가 없다면 default로 세팅.
         if(!lt_layout){
-            lt_layout = [{NAME:"designTree", IMAGE:"sap-icon://text-align-right", POSIT:0, UIID:"oDesignTree", SID:"designTree"},
-                        {NAME:"Preview", IMAGE:"sap-icon://header", POSIT:1, UIID:"oDesignPreview", SID:"designPreview"},
-                        {NAME:"Attribute", IMAGE:"sap-icon://customize", POSIT:2, UIID:"oDesignAttr", SID:"designAttr"}];
+            lt_layout = [{NAME:C_DESIGNTREE, IMAGE:"sap-icon://text-align-right", POSIT:0, UIID:"oDesignTree", SID:"designTree"},
+                        {NAME:C_PREVIEW, IMAGE:"sap-icon://header", POSIT:1, UIID:"oDesignPreview", SID:"designPreview"},
+                        {NAME:C_ATTRIBUTE, IMAGE:"sap-icon://customize", POSIT:2, UIID:"oDesignAttr", SID:"designAttr"}];
         }
         
         //layout 데이터 바인딩.

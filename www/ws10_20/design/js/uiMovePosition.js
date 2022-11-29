@@ -15,7 +15,7 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack, i_x, i_y){
   oDlg.addStyleClass("sapUiSizeCompact");
 
   //DIALOG OPEN전 이벤트.
-  oDlg1.attachBeforeOpen(function(oEvent){
+  oDlg.attachBeforeOpen(function(oEvent){
       
     //X, Y 좌표값이 존재하지 않는경우 EXIT.
     if(typeof i_x === "undefined"){return;}
@@ -53,7 +53,7 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack, i_x, i_y){
     lf_close();
     
     //001	Cancel operation
-    parent.showMessage(sap,10, "I", "Cancel operation");
+    parent.showMessage(sap,10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
 
   });
 
@@ -95,7 +95,8 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack, i_x, i_y){
 
     //0 미만인경우 or max값을 초과한경우.
     if(l_pos < 0 || l_pos > max){
-      parent.showMessage(sap, 10, "I", "잘못된 위치를 입력했습니다.");
+      //274	Check input value.
+      parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "274", "", "", "", ""));
       return;
     }
 
@@ -118,7 +119,7 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack, i_x, i_y){
     lf_close();
     
     //001	Cancel operation
-    parent.showMessage(sap,10, "I", "Cancel operation");
+    parent.showMessage(sap,10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
 
   });
 

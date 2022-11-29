@@ -38,7 +38,9 @@
         //Web Application Name 이 입력되지 않은경우.
         if(ls_appl.APPNM === ""){
           ls_appl.APPNM_stat = "Error";
-          ls_appl.APPNM_stxt = "Application Name is required entry value.";
+          //A33	Application name
+          //014	& is required entry value.
+          ls_appl.APPNM_stxt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "014", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A33"), "", "", "");
           l_err = true;
         }
 
@@ -46,7 +48,9 @@
         //Package가 입력되지 않은 경우.
         if(ls_appl.PACKG === ""){
           ls_appl.PACKG_stat = "Error";
-          ls_appl.PACKG_stxt = "Package is required entry value.";
+          //A22	Package
+          //014	& is required entry value.
+          ls_appl.PACKG_stxt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "014", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A22"), "", "", "");
           l_err = true;
         }
 
@@ -58,14 +62,16 @@
         //개발 패키지를 입력한경우 CTS번호를 입력하지 않은경우.
         if(ls_appl.PACKG !== "$TMP" && ls_appl.PACKG !== "" && ls_appl.REQNR === ""){
           ls_appl.REQNR_stat = "Error";
-          ls_appl.REQNR_stxt = "If not a local object, Request No. is required entry value.";
+          //277	If not a local object, Request No. is required entry value.
+          ls_appl.REQNR_stxt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "277", "", "", "", "");
           l_err = true;
         }
 
         //입력값에 오류 사항이 존재하는 경우 exit.
         if(l_err === true){
           oModel.setData({"CREATE":ls_appl});
-          parent.showMessage(sap, 20, "E", "Check input value.");
+          //274	Check input value.
+          parent.showMessage(sap, 20, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "274", "", "", "", ""));
           return l_err;
         }
 
@@ -85,7 +91,8 @@
           is_appl.PACKG.substr(0,1) !== "Z"){
 
             is_appl.PACKG_stat = "Error";
-            is_appl.PACKG_stxt = "Standard package cannot be entered.";
+            //275	Standard package cannot be entered.
+            is_appl.PACKG_stxt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "275", "", "", "", "");
 
             //오류 flag return.
             return true;
@@ -210,7 +217,7 @@
         if(bSkipMsg === true){return;}
         
         //001	Cancel operation
-        parent.showMessage(sap,10, "I", "Cancel operation");
+        parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
 
       }
 
@@ -242,7 +249,7 @@
           selectedKey: "{/CREATE/CODPG}",
           valueState:"{/CREATE/CODPG_stat}",
           valueStateText:"{/CREATE/CODPG_stxt}"
-        });
+      });
 
       oSelFormat.bindAggregation("items", {
         path: "/CREATE/T_CODPG",
@@ -370,6 +377,31 @@
         editable:false
       });
 
+      //A91  Web Application Name
+      var l_txt1 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91", "", "", "", "");
+
+      //A98  Language Key
+      var l_txt2 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A98", "", "", "", "");
+
+      //A99  Character Format
+      var l_txt3 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A99", "", "", "", "");
+
+      //B01  UI5 UI Theme
+      var l_txt4 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B01", "", "", "", "");
+
+      //B02  Web Application Type
+      var l_txt5 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B02", "", "", "", "");
+      
+      //A22  Package
+      var l_txt6 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A22", "", "", "", "");
+
+      //B03  Request No
+      var l_txt7 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B03", "", "", "", "");
+
+      //B04  Request Desc.
+      var l_txt8 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B04", "", "", "", "");
+
+
 
       var oCreateDialogForm = new sap.ui.layout.form.Form({
         editable: true,
@@ -390,35 +422,40 @@
                 label : new sap.m.Label({
                   required: true,
                   design: "Bold",
-                  text: "Web Application Name"
+                  text: l_txt1,
+                  tooltip:l_txt1
                 }),
                 fields : oInpDesc
               }),
               new sap.ui.layout.form.FormElement({
                 label : new sap.m.Label({
                   design: "Bold",
-                  text: "Language Key"
+                  text: l_txt2,
+                  tooltip:l_txt2
                 }),
                 fields : oInpLang
               }),
               new sap.ui.layout.form.FormElement({
                 label : new sap.m.Label({
                   design: "Bold",
-                  text: "Character Format"
+                  text: l_txt3,
+                  tooltip:l_txt3
                 }),
                 fields : oSelFormat
               }),
               new sap.ui.layout.form.FormElement({
                 label : new sap.m.Label({
                   design: "Bold",
-                  text: "UI5 UI Theme",
+                  text: l_txt4,
+                  tooltip:l_txt4
                 }),
                 fields : oSelTheme
               }),
               new sap.ui.layout.form.FormElement({
                 label : new sap.m.Label({
                   design: "Bold",
-                  text: "Web Application Type",
+                  text: l_txt5,
+                  tooltip:l_txt5
                 }),
                 fields : oSelType
               }),
@@ -426,21 +463,24 @@
                 label : new sap.m.Label({
                   required: true,
                   design: "Bold",
-                  text: "Package",
+                  text: l_txt6,
+                  tooltip:l_txt6
                 }),
                 fields : oInpPack
               }),
               new sap.ui.layout.form.FormElement({
                 label : new sap.m.Label({
                   design: "Bold",
-                  text: "Request No.",
+                  text: l_txt7,
+                  tooltip:l_txt7
                 }),
                 fields : oInpReqNo
               }),
               new sap.ui.layout.form.FormElement({
                 label : new sap.m.Label({
                   design: "Bold",
-                  text: "Request Desc.",
+                  text: l_txt8,
+                  tooltip:l_txt8
                 }),
                 fields : oInpReqTx
               })
@@ -590,15 +630,21 @@
       //toolbar.
       var oTool = new sap.m.Toolbar();
       oCreateDialog.setCustomHeader(oTool);
+
+      //B05  UI5 Application Create Option Selection
+      var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B05", "", "", "", "");
       
       //application 생성팝업 title.
-      var oTitle = new sap.m.Title({text:"UI5 Application Create Option Selection"});
+      var oTitle = new sap.m.Title({text:l_txt, tooltip:l_txt});
+      oTitle.addStyleClass("sapUiTinyMarginBegin");
       oTool.addContent(oTitle);
 
       oTool.addContent(new sap.m.ToolbarSpacer());
 
+      //A39  Close
       //우상단 닫기버튼.
-      var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip:"Close Popup"});
+      var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", 
+        tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
       oTool.addContent(oBtn0);
 
       //닫기 버튼 선택 이벤트.
@@ -620,8 +666,12 @@
       oPage1.setFooter(oFoot);
       oFoot.addStyleClass("sapUiTinyMargin");
 
+      //B06  Local Object
+      //B07  Create Local Application
       //application 로컬로 생성하기 버튼.
-      var oLocal = new sap.m.Button({text:"Local Object", icon:"sap-icon://sys-monitor", tooltip:"Create Local U4A Application"});
+      var oLocal = new sap.m.Button({icon:"sap-icon://sys-monitor", 
+        text:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B06", "", "", "", ""),
+        tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B07", "", "", "", "")});
       oFoot.addContent(oLocal);
 
       //로컬로 생성하기 버튼 선택 이벤트.
@@ -674,7 +724,8 @@
         oAPP.common.fnSetBusyDialog(false);
 
         //생성전 확인팝업 호출.
-        parent.showMessage(sap, 30, "I", appid + " 어플리케이션을 생성하시겠습니까?", function(param){
+        //276	Create &1 application?
+        parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "276", appid, "", "", ""), function(param){
           
           //YES를 선택하지 않은경우 EXIT.
           if(param !== "YES"){return;}
@@ -691,8 +742,12 @@
 
       oFoot.addContent(new sap.m.ToolbarSeparator());
 
+      //A01  Create
+      //B08  Create Application
       //application 생성버튼.
-      var oCreate = new sap.m.Button({text:"Create", type: "Accept", icon: "sap-icon://accept", tooltip:"Create U4A Application"});
+      var oCreate = new sap.m.Button({type: "Accept", icon: "sap-icon://accept",
+        text:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01", "", "", "", ""), 
+        tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B08", "", "", "", "")});
       oFoot.addContent(oCreate);
 
       //application 생성버튼 선택 이벤트.
@@ -723,7 +778,8 @@
         oAPP.common.fnSetBusyDialog(false);
 
         //생성전 확인팝업 호출.
-        parent.showMessage(sap, 30, "I", appid + " 어플리케이션을 생성하시겠습니까?", function(param){
+        //276	Create &1 application?
+        parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "276", appid, "", "", ""), function(param){
           
           //YES를 선택하지 않은경우 EXIT.
           if(param !== "YES"){return;}
@@ -735,8 +791,12 @@
 
       }); //application 생성버튼 선택 이벤트.
 
+
+      //A39  Close
+      var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "");
+
       //application 생성팝업 종료 버튼.
-      var oClose = new sap.m.Button({text:"Close", type: "Reject", icon: "sap-icon://decline", tooltip:"Close Popup"});
+      var oClose = new sap.m.Button({text:l_txt, type: "Reject", icon: "sap-icon://decline", tooltip:l_txt});
       oFoot.addContent(oClose);
 
       //닫기 버튼 선택 이벤트.

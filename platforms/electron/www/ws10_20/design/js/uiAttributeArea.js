@@ -28,7 +28,7 @@
     oRDynTitle.addExpandedContent(oRCTool);
 
     //tree 선택 라인의 아이콘 표현.
-    var oRAvatar1 = new sap.m.Avatar({src:"{/uiinfo/src}", displayShape:"Square",displaySize:"Custom", customDisplaySize:"20px"});
+    var oRAvatar1 = new sap.m.Avatar({src:"{/uiinfo/src}", displayShape:"Square", displaySize:"Custom", customDisplaySize:"20px"});
     oRCTool.addContent(oRAvatar1);
     
     //tree 선택 라인의 UIOBJECT명.
@@ -38,8 +38,10 @@
 
     oRCTool.addContent(new sap.m.ToolbarSpacer());
 
+    //B15  UI5 library Reference
     //라이브러리명 text.
-    var oRLibText = new sap.m.Text({text:"{/uiinfo/UILIB}",visible:"{/uiinfo/vis01}",tooltip:"UI5 library Reference"});
+    var oRLibText = new sap.m.Text({text:"{/uiinfo/UILIB}",visible:"{/uiinfo/vis01}", 
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B15", "", "", "", "")});
     oRCTool.addContent(oRLibText);
 
     //라이브러리 더블클릭 이벤트.
@@ -49,8 +51,10 @@
 
     });
 
+    //B16  UI Sample
     //라이브러리 sample 버튼.
-    var oRLibBtn2 = new sap.m.Button({icon:"sap-icon://example",visible:"{/uiinfo/vis01}",tooltip:"UI Sample"});
+    var oRLibBtn2 = new sap.m.Button({icon:"sap-icon://example",visible:"{/uiinfo/vis01}",
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B16", "", "", "", "")});
     oRCTool.addContent(oRLibBtn2);
 
     //라이브러리 sample 버튼 선택 이벤트.
@@ -136,11 +140,14 @@
 
     oRGrid.addStyleClass("sapUiTinyNegativeMarginBeginEnd");
 
-    oRGrid.addContent(new sap.m.Label({text:"Object id",design:"Bold"}));
+    //A84  UI Object ID
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A84", "", "", "", "");
+
+    oRGrid.addContent(new sap.m.Label({text:l_txt, tooltip:l_txt, design:"Bold"}));
 
     //OBJID 입력필드
-    var oRInp1 = new sap.m.Input({value:"{/uiinfo/OBJID}",editable:"{/uiinfo/edit01}",
-      enabled:"{/IS_EDIT}",valueState:"{/uiinfo/OBJID_stat}",valueStateText:"{/uiinfo/OBJID_stxt}",
+    var oRInp1 = new sap.m.Input({value:"{/uiinfo/OBJID}", editable:"{/uiinfo/edit01}",
+      enabled:"{/IS_EDIT}", valueState:"{/uiinfo/OBJID_stat}", valueStateText:"{/uiinfo/OBJID_stxt}",
       layoutData:new sap.ui.layout.GridData({span:"XL11 L11 M11 S11"})});
     oRGrid.addContent(oRInp1);
 
@@ -152,8 +159,10 @@
     }); //OBJID를 변경 이벤트.
 
 
+    //A04  Copy
     //OBJID 복사 버튼.
     var oRBtn0 = new sap.m.Button({icon:"sap-icon://copy", width:"100%",
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A04", "", "", "", ""),
       layoutData:new sap.ui.layout.GridData({span:"XL1 L1 M1 S1"})});
     oRGrid.addContent(oRBtn0);
 
@@ -161,13 +170,17 @@
     oRBtn0.attachPress(function(){
       //라이브러리명 복사 처리.
       oAPP.fn.attrCopyText(oRInp1.getValue());
+
     }); //OBJID 복사 버튼 선택 이벤트.
 
+    //A35  Description
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35", "", "", "", "");
 
-    oRGrid.addContent(new sap.m.Label({text:"Descriptions",design:"Bold"}));
+    oRGrid.addContent(new sap.m.Label({text:l_txt, tooltip:l_txt, design:"Bold"}));
 
     //Description 입력 TextArea
-    var oRTAr1 = new sap.m.TextArea({width:"100%",rows:4,value:"{/uiinfo/DESC}",editable:"{/uiinfo/edit02}",enabled:"{/IS_EDIT}"});
+    var oRTAr1 = new sap.m.TextArea({width:"100%", rows:4, value:"{/uiinfo/DESC}", 
+      editable:"{/uiinfo/edit02}", enabled:"{/IS_EDIT}"});
     oRGrid.addContent(oRTAr1);
 
 
@@ -192,7 +205,7 @@
     oAPP.attr.ui.oRTab1 = oRTab1;
 
     //table 더블클릭 이벤트 처리.
-    oAPP.attr.ui.oRTab1.attachBrowserEvent("dblclick",function(oEvent){
+    oAPP.attr.ui.oRTab1.attachBrowserEvent("dblclick", function(oEvent){
       //table의 더블클릭에 따른 이벤트 처리.
       oAPP.fn.attrDblclickEvent(oEvent);
 
@@ -203,6 +216,7 @@
     if(typeof oAPP.fn.callAttrContextMenu !== "undefined"){
       //context menu ui 생성 처리.
       oAPP.attr.ui.oAttrMenu = oAPP.fn.callAttrContextMenu();
+
     }else{
       //context menu ui 생성 function이 존재하지 않는경우 script 호출.
       oAPP.fn.getScript("design/js/callAttrContextMenu",function(){
@@ -238,8 +252,12 @@
     var oRTTool = new sap.m.Toolbar();
     oRTab1.setHeaderToolbar(oRTTool);
 
+    //B17  Reset
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B17", "", "", "", "");
+
     //attribute 초기화 버튼.
-    var oRTBtn1 = new sap.m.Button({text:"Reset", icon:"sap-icon://reset", type:"Accept", enabled:"{/IS_EDIT}", visible:"{/uiinfo/vis02}"});
+    var oRTBtn1 = new sap.m.Button({text:l_txt, tooltip:l_txt, icon:"sap-icon://reset", 
+      type:"Accept", enabled:"{/IS_EDIT}", visible:"{/uiinfo/vis02}"});
     oRTTool.addContent(oRTBtn1);
 
     oRTBtn1.attachPress(function(){
@@ -258,30 +276,30 @@
     oRTab1.addColumn(oRCol2);
 
     //attribute 첫번째 아이콘(바인딩, 서버 이벤트)
-    var oRCol3 = new sap.m.Column({width:"40px",hAlign:"Center"});
+    var oRCol3 = new sap.m.Column({width:"40px", hAlign:"Center"});
     oRTab1.addColumn(oRCol3);
 
     //attribute 두번째 아이콘(프로퍼티 help, 클라이언트 이벤트)
-    var oRCol4 = new sap.m.Column({width:"40px",hAlign:"Center"});
+    var oRCol4 = new sap.m.Column({width:"40px", hAlign:"Center"});
     oRTab1.addColumn(oRCol4);
 
     //attribute 출력 List Item.
     var oRListItem1 = new sap.m.ColumnListItem();
 
     //attribute명.
-    var oRObjStat1 = new sap.m.ObjectStatus({text:"{UIATT}",icon:"{UIATT_ICON}"});
+    var oRObjStat1 = new sap.m.ObjectStatus({text:"{UIATT}", icon:"{UIATT_ICON}"});
     oRListItem1.addCell(oRObjStat1);
 
     //context menu 호출 위치를 알기위한 custom data 매핑.
     oRObjStat1.addCustomData(new sap.ui.core.CustomData({key:"AT01"}));
 
     //attribute 입력 hbox
-    var oRHbox1 = new sap.m.HBox({width:"100%",direction:"Column",renderType:"Bare",alignItems:"Center"});
+    var oRHbox1 = new sap.m.HBox({width:"100%", direction:"Column", renderType:"Bare", alignItems:"Center"});
     oRListItem1.addCell(oRHbox1);
 
     //attribute 직접입력 필드
-    var oRInp2 = new sap.m.Input({value:"{UIATV}", editable:"{edit}",visible:"{inp_visb}", tooltip:"{UIATV}",
-      showValueHelp:"{showF4}",enabled:"{/IS_EDIT}",valueState:"{valst}",valueStateText:"{valtx}"});
+    var oRInp2 = new sap.m.Input({value:"{UIATV}", editable:"{edit}", visible:"{inp_visb}", tooltip:"{UIATV}",
+      showValueHelp:"{showF4}", enabled:"{/IS_EDIT}", valueState:"{valst}", valueStateText:"{valtx}"});
     oRHbox1.addItem(oRInp2);
 
     //attr 입력필드 이벤트.
@@ -303,9 +321,9 @@
 
 
     //Attribute DDLB UI
-    var oRSel1 = new sap.m.ComboBox({showSecondaryValues:true,width:"100%",selectedKey:"{UIATV}", tooltip:"{UIATV}",
-      editable:"{edit}",visible:"{sel_visb}",enabled:"{/IS_EDIT}",tooltip:"{UIATV}",value:"{comboval}",
-      valueState:"{valst}",valueStateText:"{valtx}"});
+    var oRSel1 = new sap.m.ComboBox({showSecondaryValues:true, width:"100%", selectedKey:"{UIATV}", tooltip:"{UIATV}",
+      editable:"{edit}", visible:"{sel_visb}", enabled:"{/IS_EDIT}", tooltip:"{UIATV}", value:"{comboval}",
+      valueState:"{valst}", valueStateText:"{valtx}"});
 
     //DDLB 선택 이벤트.
     oRSel1.attachChange(function(){
@@ -319,12 +337,12 @@
 
 
     //DDLB ITEM.
-    var oRItm1 = new sap.ui.core.ListItem({key:"{KEY}",text:"{TEXT}",additionalText:"{DESC}"});
-    oRSel1.bindAggregation("items",{path:"T_DDLB",template:oRItm1,templateShareable:true});
+    var oRItm1 = new sap.ui.core.ListItem({key:"{KEY}", text:"{TEXT}", additionalText:"{DESC}"});
+    oRSel1.bindAggregation("items", {path:"T_DDLB", template:oRItm1, templateShareable:true});
     oRHbox1.addItem(oRSel1);
 
     //Attribute Button UI
-    var oRBtn1 = new sap.m.Button({icon:"sap-icon://popup-window",width:"100%",type:"Attention",text:"{UIATV}",visible:"{btn_visb}"});
+    var oRBtn1 = new sap.m.Button({icon:"sap-icon://popup-window", width:"100%", type:"Attention", text:"{UIATV}",visible:"{btn_visb}"});
     oRHbox1.addItem(oRBtn1);
 
     //버튼 선택 이벤트.
@@ -336,8 +354,8 @@
 
 
     //Attribute checkbox UI
-    var oRChk1 = new sap.m.CheckBox({selected:"{UIATV_c}",editable:"{edit}",visible:"{chk_visb}",
-      enabled:"{/IS_EDIT}",valueState:"{valst}"});
+    var oRChk1 = new sap.m.CheckBox({selected:"{UIATV_c}", editable:"{edit}", visible:"{chk_visb}",
+      enabled:"{/IS_EDIT}", valueState:"{valst}"});
     oRHbox1.addItem(oRChk1);
 
     //체크박스 선택 이벤트
@@ -349,7 +367,7 @@
 
 
     //바인딩(서버 이벤트) 아이콘
-    var oRIcon1 = new sap.ui.core.Icon({src:"{icon1_src}",color:"{icon1_color}",visible:"{icon1_visb}"});
+    var oRIcon1 = new sap.ui.core.Icon({src:"{icon1_src}", color:"{icon1_color}", visible:"{icon1_visb}", tooltip:"{icon1_ttip}"});
     oRListItem1.addCell(oRIcon1);
 
     //바인딩(서버 이벤트) 아이콘 선택 이벤트
@@ -363,7 +381,7 @@
     oRIcon1.addCustomData(new sap.ui.core.CustomData({key:"AT03"}));
 
     //help(script 이벤트) 아이콘
-    var oRIcon2 = new sap.ui.core.Icon({src:"{icon2_src}",color:"{icon2_color}",visible:"{icon2_visb}"});
+    var oRIcon2 = new sap.ui.core.Icon({src:"{icon2_src}", color:"{icon2_color}", visible:"{icon2_visb}", tooltip:"{icon2_ttip}"});
     oRListItem1.addCell(oRIcon2);
 
     oRIcon2.addStyleClass("sapUiLargeMarginEnd");
@@ -381,7 +399,7 @@
 
 
     //attribute출력 tab에 바인딩 처리.
-    oRTab1.bindAggregation("items",{path:"/T_ATTR",template:oRListItem1});
+    oRTab1.bindAggregation("items", {path:"/T_ATTR", template:oRListItem1});
 
   };  //우측 페이지(attribute 영역) 구성
 
@@ -540,9 +558,10 @@
   oAPP.fn.attrResetAttr = function(){
 
     //112	Resets all properties to their default values.
-    //113	The registered value will be lost. Do you want to proceed?
-    var l_msg = "Resets all properties to their default values." + "\n" + 
-      "The registered value will be lost. Do you want to proceed?";
+    var l_msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "112", "", "", "", "") + " \n ";
+
+    //113  The registered value will be lost. Do you want to proceed?
+    l_msg += oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "113", "", "", "", "");
 
     //초기화전 확인팝업 호출.
     parent.showMessage(sap, 30, "I", l_msg, function(param){
@@ -658,7 +677,12 @@
     //trial 인경우 exit.
     if(oAPP.fn.fnOnCheckIsTrial()){return;}
 
-    var l_title = "Data Binding / Unbinding - Property : " + is_attr.UIATT;
+    //B18  Data Binding / Unbinding
+    var l_title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B18", "", "", "", "") + " - ";
+
+    //A52  Property
+    l_title += oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A52", "", "", "", "") + " : " + is_attr.UIATT;
+
     var l_CARDI = "F";
 
     //SELECT OPTION2의 VALUE에 바인딩처리 하는경우.
@@ -705,8 +729,12 @@
     //aggregation 바인딩 처리 가능여부 점검.
     if(oAPP.fn.attrChkBindAggrPossible(is_attr)){return;}
 
+    //B18  Data Binding / Unbinding
+    var l_title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B18", "", "", "", "") + " - ";
 
-    var l_title = "Data Binding / Unbinding - Aggregation : " + is_attr.UIATT;
+    //B19  Aggregation
+    l_title += oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B19", "", "", "", "") + " : " + is_attr.UIATT;
+
     var l_CARDI = "T";
 
     //대상 function이 존재하는경우 호출 처리.
@@ -971,11 +999,10 @@
       return;
     }
 
-    var l_msg = "autoGrowing을 설정할 경우 이전에 설정한 서버이벤트 및 클라이언트 이벤트가 초기화 됩니다. " + 
-                "진행하시겠습니까?";
 
+    //283	autoGrowing을 설정할 경우 이전에 설정한 서버이벤트 및 클라이언트 이벤트가 초기화 됩니다. 진행하시겠습니까?
     //autoGrowing을 true로 설정한 경우 확인 팝업 호출.
-    parent.showMessage(sap, 30, "I", l_msg, function(param){
+    parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "283", "", "", "", ""), function(param){
 
       //질문 팝업에서 YES를 누르지 않은경우(취소한경우)
       if(param !== "YES"){
@@ -1289,8 +1316,10 @@
 
       //HTML editor 입력건 존재여부 확인.
       l_chk = oAPP.DATA.APPDATA.T_CEVT.findIndex( a => a.OBJTY === "HM" && a.OBJID === l_objid) !== -1 ? true : false;
-
-      l_msg = "HTML Editor에 입력한 정보가 존재합니다. 바인딩 처리를 진행하시겠습니까?";
+      
+      //284	HTML Editor에 입력한 정보가 존재합니다. 바인딩 처리를 진행하시겠습니까?
+      l_msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "284", "", "", "", "");
+      
 
     //HTML editor 팝업전 호출한 경우.
     }else if(bFlag === false){
@@ -1300,7 +1329,8 @@
         l_chk = true;
       }
 
-      l_msg = "바인딩 정보가 존재합니다. HTML Source 입력처리를 진행하시겠습니까?";
+      //285	바인딩 정보가 존재합니다. HTML Source 입력처리를 진행하시겠습니까?
+      l_msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "285", "", "", "", "");
 
     }
 
@@ -1520,7 +1550,7 @@
     //f4 help팝업을 load한경우.
     if(typeof oAPP.fn.callF4HelpPopup !== "undefined"){
       //f4 help 팝업 호출.
-      oAPP.fn.callF4HelpPopup(ls_ua003.FLD05,ls_ua003.FLD05,[],[],lf_returnDOC);
+      oAPP.fn.callF4HelpPopup(ls_ua003.FLD05, ls_ua003.FLD05, [], [], lf_returnDOC);
       //하위 로직 skip처리를 위한 flag return.
       return true;
     }
@@ -1528,7 +1558,7 @@
     //f4help 팝업을 load하지 못한경우.
     oAPP.fn.getScript("design/js/callF4HelpPopup",function(){
         //f4 help 팝업 function load 이후 팝업 호출.
-        oAPP.fn.callF4HelpPopup(ls_ua003.FLD05,ls_ua003.FLD05,[],[],lf_returnDOC);
+        oAPP.fn.callF4HelpPopup(ls_ua003.FLD05, ls_ua003.FLD05, [], [], lf_returnDOC);
     });
 
     //하위 로직 skip처리를 위한 flag return.
@@ -1679,7 +1709,8 @@
     //OBJID의 첫번째 문자가 숫자인경우 오류 처리.
     if(isNaN(ls_uiinfo.OBJID.substr(0,1)) !== true){
       ls_uiinfo.OBJID_stat = "Error";
-      ls_uiinfo.OBJID_stxt = "Object ID cannot start with a number.";
+      //091	Can not start with a numeric value.
+      ls_uiinfo.OBJID_stxt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "091", "", "", "", "");
       l_sep = "\r\n";
     }
 
@@ -1688,7 +1719,8 @@
     //특수문자가 입력된경우 오류 처리.
     if(reg.test(ls_uiinfo.OBJID) === true){
       ls_uiinfo.OBJID_stat = "Error";
-      ls_uiinfo.OBJID_stxt = ls_uiinfo.OBJID_stxt + l_sep + "Cannot enter special characters in the object ID.";
+      //278	Special characters are not allowed.
+      ls_uiinfo.OBJID_stxt = ls_uiinfo.OBJID_stxt + l_sep + oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "278", "", "", "", "");
       l_sep = "\r\n";
     }
 
@@ -1698,7 +1730,8 @@
       //tree design영역에 중복된 OBJID건 존재하는경우.
       if(typeof oAPP.fn.getTreeData(ls_uiinfo.OBJID) !== "undefined"){
         ls_uiinfo.OBJID_stat = "Error";
-        ls_uiinfo.OBJID_stxt = ls_uiinfo.OBJID_stxt + l_sep + "Duplicate object ID cannot be entered.";
+        //069	Duplicate values exist.
+        ls_uiinfo.OBJID_stxt = ls_uiinfo.OBJID_stxt + l_sep + oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "069", "", "", "", "");
       }
     }
 
@@ -1800,7 +1833,7 @@
 
     }
 
-  };
+  };  //클라이언트 이벤트의 OBJECT ID 변경 처리.
 
 
 
@@ -2089,8 +2122,14 @@
       if(typeof oAPP.attr.prev[is_attr.OBJID]._BIND_AGGR[is_attr.UIATT] !== "undefined" && 
         oAPP.attr.prev[is_attr.OBJID]._BIND_AGGR[is_attr.UIATT].length !== 0){
 
+          //122	Change the model, the binding that exists in the child is initialized.
+          var l_msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "122", "", "", "", "");
+
+          //123	Do you want to continue?
+          l_msg += oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "123", "", "", "", "");
+
           //확인 팝업 호출.
-          parent.showMessage(sap, 30, "I", "하위 바인딩 정보도 초기화 됩니다. 그래도 진행하시겠습니까?", function(param){
+          parent.showMessage(sap, 30, "I", l_msg, function(param){
             
             //확인팝업에서 YES를 안누른경우 EXIT.
             if(param !== "YES"){return;}
@@ -2128,8 +2167,14 @@
     //이전 바인딩 정보가 존재하는경우.
     if(is_attr.UIATV !== "" && is_attr.ISBND === "X"){
 
+      //122	Change the model, the binding that exists in the child is initialized.
+      var l_msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "122", "", "", "", "");
+
+      //123	Do you want to continue?
+      l_msg += oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "123", "", "", "", "");
+
       //확인 팝업 호출.
-      parent.showMessage(sap, 30, "I", "하위 바인딩 정보도 초기화 됩니다. 그래도 진행하시겠습니까?", function(param){
+      parent.showMessage(sap, 30, "I", l_msg, function(param){
         
         //확인팝업에서 YES를 안누른경우 EXIT.
         if(param !== "YES"){return;}
@@ -2180,7 +2225,13 @@
       //aggregation의 경우 확인 팝업 호출 후 바인딩 해제 처리.
       if(is_attr.UIATY === "3"){
 
-        parent.showMessage(sap, 30, "I", "하위 바인딩 정보도 초기화 됩니다. 그래도 진행하시겠습니까?", function(param){
+        //122	Change the model, the binding that exists in the child is initialized.
+        var l_msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "122", "", "", "", "");
+
+        //123	Do you want to continue?
+        l_msg += oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "123", "", "", "", "");
+
+        parent.showMessage(sap, 30, "I", l_msg, function(param){
 
           if(param !== "YES"){return;}
 
@@ -2210,7 +2261,13 @@
     //aggregation의 경우 확인 팝업 호출 후 바인딩 해제 처리.
     if(is_attr.UIATY === "3" && is_attr.UIATV !== ""){
 
-      parent.showMessage(sap, 30, "I", "하위 바인딩 정보도 초기화 됩니다. 그래도 진행하시겠습니까?", function(param){
+      //122	Change the model, the binding that exists in the child is initialized.
+      var l_msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "122", "", "", "", "");
+
+      //123	Do you want to continue?
+      l_msg += oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "123", "", "", "", "");
+
+      parent.showMessage(sap, 30, "I", l_msg, function(param){
         
         if(param !== "YES"){return;}
 
@@ -2561,7 +2618,9 @@
 
         //현재 aggregation에 2개 이상의 UI가 추가된경우.
         if(lt_filter.length >= 2){
-          parent.showMessage(sap, 10, "E", "If you have one or more child objects, you can not specify a model.");
+
+          //023	If you have one or more child objects, you can not specify a model.
+          parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "023", "", "", "", ""));
           return;
         }
 
@@ -2593,7 +2652,12 @@
 
     switch(is_attr.UIATY){
       case "1": //property
-        l_title = "Data Binding / Unbinding - Property";
+        //B18  Data Binding / Unbinding
+        l_title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B18", "", "", "", "") + " - ";
+
+        //A52  Property
+        l_title += oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A52", "", "", "", "");
+
         l_CARDI = "F";
 
         //SELECT OPTION2의 VALUE에 바인딩처리 하는경우.
@@ -2610,8 +2674,13 @@
 
         break;
 
-        case "3": //Aggregation
-        l_title = "Data Binding / Unbinding - Aggregation";
+      case "3": //Aggregation
+        //B18  Data Binding / Unbinding
+        l_title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B18", "", "", "", "") + " - ";
+
+        //B19  Aggregation
+        l_title += oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B19", "", "", "", "");
+
         l_CARDI = "T";
         break;
 
@@ -2988,6 +3057,9 @@
   oAPP.fn.attrChkTreeProp = function(is_attr){
     var l_UIATK = "";
 
+    //B19  Aggregation
+    var l_msg = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B19", "", "", "", "");
+
     //attribute key에 따른 로직 분기.
     switch(is_attr.UIATK){
       case "EXT00001190":   //sap.m.Tree의 parent
@@ -2995,6 +3067,7 @@
 
         //items Aggregation의 attribute key 매핑.
         l_UIATK = "AT000006260";
+        l_msg = l_msg + " items";
         break;
 
       case "EXT00001192":   //sap.ui.table.TreeTable의 parent
@@ -3002,6 +3075,7 @@
 
         //rows Aggregation의 attribute key 매핑.
         l_UIATK = "AT000013146";
+        l_msg = l_msg + " rows";
         break;
 
       default:
@@ -3020,7 +3094,8 @@
     if(!ls_attr || ls_attr.UIATV === ""){
 
       is_attr.valst = "Error";
-      is_attr.valtx = "Model information does not exist in Aggregation items.";
+      //054	Model information does not exist in &.
+      is_attr.valtx = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "054", l_msg, "", "", "");
       oAPP.attr.oModel.refresh();
 
       //Model information does not exist in Aggregation items.
@@ -3064,7 +3139,7 @@
     //f4 help팝업을 load한경우.
     if(typeof oAPP.fn.callF4HelpPopup !== "undefined"){
       //f4 help 팝업 호출.
-      oAPP.fn.callF4HelpPopup("DD_SHLP","DD_SHLP",[],[],lf_returnDOC);
+      oAPP.fn.callF4HelpPopup("DD_SHLP", "DD_SHLP", [], [], lf_returnDOC);
       //하위로직 skip처리를 위한 flag return
       return true;
     }
@@ -3072,7 +3147,7 @@
     //f4help 팝업을 load하지 못한경우.
     oAPP.fn.getScript("design/js/callF4HelpPopup",function(){
         //f4 help 팝업 function load 이후 팝업 호출.
-        oAPP.fn.callF4HelpPopup("DD_SHLP","DD_SHLP",[],[],lf_returnDOC);
+        oAPP.fn.callF4HelpPopup("DD_SHLP", "DD_SHLP", [], [], lf_returnDOC);
     });
 
     //하위로직 skip처리를 위한 flag return
@@ -3117,11 +3192,12 @@
     if(ls_attr.UIATV === ""){
       ls_attr.valst = "Error";
 
+      //A37	Search Help ID
       //053	Value & is missing.
-      ls_attr.valtx = "Value DDIC Search Help ID is missing";
+      ls_attr.valtx = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "053", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A37"), "", "", "");
 
       //005	Job finished.
-      parent.showMessage(sap, 10, "E", "Value DDIC Search Help ID is missing");
+      parent.showMessage(sap, 10, "E", ls_attr.valtx);
 
       //모델 갱신 처리.
       oAPP.attr.oModel.refresh();
@@ -3130,7 +3206,8 @@
       return true;
     }
 
-    var l_title = ls_attr.UIATV + " Field List";
+    //A28  Field List
+    var l_title = ls_attr.UIATV + " " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A28", "", "", "", "");
 
     //동적 리스트 팝업이 존재하는경우.
     if(typeof oAPP.fn.callDynListPopup !== "undefined"){
@@ -5144,7 +5221,8 @@
     //현재 aggregation에 2개 이상의 UI가 추가된경우.
     if(lt_filter.length >= 2){
       if(!bSkipMsg){
-        parent.showMessage(sap, 10, "E", "If you have one or more child objects, you can not specify a model.");
+        //023	If you have one or more child objects, you can not specify a model.
+        parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "023", "", "", "", ""));
       }
       
       //오류 FLAG RETURN.
@@ -5265,7 +5343,8 @@
     parent.setClipBoardTextCopy(sText);
 
     //메시지 처리.
-    parent.showMessage(sap, 10, "I", sText + " copied.");
+    //272	&1 has been copied.
+    parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "272", sText, "", "", ""));
 
   };  //text 복사(ctrl + c) 처리.
 

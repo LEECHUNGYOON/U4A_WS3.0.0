@@ -13,7 +13,8 @@
     var lt_sel = oAPP.DATA.LIB.T_0023.filter(a => a.UIOBK === UIOBK && a.UIATY === "3" && a.ISDEP !== "X" );
 
     if(lt_sel.length === 0){
-      parent.showMessage(sap,10,"W", "입력 가능한 Aggregation이 존재하지 않습니다.");
+      //280	입력 가능한 Aggregation이 존재하지 않습니다.
+      parent.showMessage(sap, 10, "W", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "280", "", "", "", ""));
       return;
     }
 
@@ -22,6 +23,7 @@
     for(var i in ls_sel){
       ls_sel[i] = "";
     }
+
     //Aggregation DDLB에 빈값 라인 추가.
     lt_sel.splice(0,0,ls_sel);
 
@@ -59,7 +61,7 @@
       oDlg.close();
       oDlg.destroy();
       //001	Cancel operation
-      parent.showMessage(sap,10, "I", "Cancel operation");
+      parent.showMessage(sap,10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
 
     });
 
@@ -364,7 +366,8 @@
 
       //선택한 라인이 없는경우 오류 처리.
       if(l_sidx === -1){
-        parent.showMessage(sap, 20, "E", "라인을 선택해 주십시오.");
+        //268	Selected line does not exists.
+        parent.showMessage(sap, 20, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", ""));
         return;
       }
             
@@ -382,7 +385,7 @@
       oDlg.close();
       oDlg.destroy();
       //001	Cancel operation
-      parent.showMessage(sap,10, "I", "Cancel operation");
+      parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
     });
 
     oDlg.open();

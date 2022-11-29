@@ -683,13 +683,6 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         oBrowserOptions.minWidth = 1000;
         oBrowserOptions.minHeight = 800;
 
-
-        // var oParentBounds = CURRWIN.getBounds();
-        // oBrowserOptions.x = oParentBounds.x + 30;
-        // oBrowserOptions.y = oParentBounds.y + 30;
-        // oBrowserOptions.width = oParentBounds.width;
-        // oBrowserOptions.height = oParentBounds.height;
-
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
@@ -698,8 +691,6 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
          * ----- test start -----
          */
         function lf_setBound() {
-            // var oParentBounds = CURRWIN.getBounds();
-            // oBrowserWindow.setBounds(oParentBounds);
 
             let oBrowserOptions = {};
 
@@ -718,10 +709,20 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
         oBrowserWindow.loadURL(parent.getPath("MAINFRAME"));
 
-        // oBrowserWindow.webContents.openDevTools();        
+        // oBrowserWindow.webContents.openDevTools();    
+
+        oBrowserWindow.once('ready-to-show', () => {
+
+            console.log('ready-to-show');
+
+            lf_setBound();
+
+        });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            console.log('did-finish-load');
 
             var oSAPServerInfo = getServerInfo();
 
@@ -739,11 +740,11 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
             // 브라우저가 오픈되면서 부모가 가지고 있는 메타 관련 정보들을 전달한다.
             oBrowserWindow.webContents.send('if-meta-info', oMetadata);
 
+            oBrowserWindow.show();
+
             oBrowserWindow.setOpacity(1.0);
 
             lf_setBound();
-
-            oBrowserWindow.show();
 
         });
 
