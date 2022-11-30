@@ -65,7 +65,9 @@
     oDlg1.setCustomHeader(oTool);
 
     //A38	Aggregation List
-    var oTitle = new sap.m.Title({text:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A38", "", "", "", "") + " - " + i_drop.OBJID});
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A38", "", "", "", "") + " - " + i_drop.OBJID;
+
+    var oTitle = new sap.m.Title({text:l_txt, tooltip:l_txt});
     oTitle.addStyleClass("sapUiTinyMarginBegin");
     oTool.addContent(oTitle);
 
@@ -73,7 +75,8 @@
 
     //A39	Close
     //우상단 닫기버튼.
-    var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
+    var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", 
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
     oTool.addContent(oBtn0);
 
     //닫기 버튼 선택 이벤트.
@@ -92,8 +95,8 @@
     //aggregation ddlb 구성.
     var oSel1 = new sap.m.Select({width:"100%"});
 
-    var oItm1 = new sap.ui.core.Item({key:"{UIATK}",text:"{UIATT}"});
-    oSel1.bindAggregation("items",{path:"/T_SEL",template:oItm1});
+    var oItm1 = new sap.ui.core.Item({key:"{UIATK}", text:"{UIATT}"});
+    oSel1.bindAggregation("items", {path:"/T_SEL", template:oItm1});
     
     oDlg1.addContent(oSel1);
 

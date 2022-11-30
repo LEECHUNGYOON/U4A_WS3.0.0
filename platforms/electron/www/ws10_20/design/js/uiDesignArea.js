@@ -10,7 +10,7 @@
     //design tree UI.
     var oLTree1 = new sap.ui.table.TreeTable({selectionMode:"Single", selectionBehavior:"RowOnly",
       columnHeaderVisible:false, visibleRowCountMode:"Auto", alternateRowColors:true, rowHeight:40});
-      oLPage.addContent(oLTree1);
+    oLPage.addContent(oLTree1);
 
 
     //tree item 선택 이벤트.
@@ -80,19 +80,19 @@
     var oLCol1 = new sap.ui.table.Column({autoResizable:true});
     oLTree1.addColumn(oLCol1);
 
-    var oLHbox1 = new sap.m.HBox({width:"100%",alignItems:"Center", justifyContent:"SpaceBetween",wrap:"NoWrap"});
+    var oLHbox1 = new sap.m.HBox({width:"100%", alignItems:"Center", justifyContent:"SpaceBetween", wrap:"NoWrap"});
     oLCol1.setTemplate(oLHbox1);
 
-    var oLHbox2 = new sap.m.HBox({renderType:"Bare",alignItems:"Center"});
+    var oLHbox2 = new sap.m.HBox({renderType:"Bare", alignItems:"Center"});
     oLHbox1.addItem(oLHbox2);
     // oLCol1.setTemplate(oLHbox2);
 
     //라인 선택 checkbox
-    var oChk1 = new sap.m.CheckBox({visible:"{chk_visible}",selected:"{chk}"});
+    var oChk1 = new sap.m.CheckBox({visible:"{chk_visible}", selected:"{chk}"});
     oLHbox2.addItem(oChk1);
 
     //UI 아이콘
-    var oImage = new sap.m.Image({src:"{UICON}",width:"19px",visible:"{icon_visible}"});
+    var oImage = new sap.m.Image({src:"{UICON}", width:"19px", visible:"{icon_visible}"});
     oLHbox2.addItem(oImage);
 
     oImage.addStyleClass("sapUiTinyMarginEnd");
@@ -224,8 +224,10 @@
     var oLTBar1 = new sap.m.Toolbar();
     oLTree1.setToolbar(oLTBar1);
 
+    //B21  Expand
     //펼침 버튼.
-    var oLBtn1 = new sap.m.Button({icon:"sap-icon://expand-group", tooltip:"Expand"});
+    var oLBtn1 = new sap.m.Button({icon:"sap-icon://expand-group", 
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B21", "", "", "", "")});
     oLTBar1.addContent(oLBtn1);
 
     //펼침 이벤트.
@@ -238,8 +240,10 @@
 
 
 
+    //B22  Collapse
     //접힘 버튼.
-    var oLBtn2 = new sap.m.Button({icon:"sap-icon://collapse-group", tooltip:"Collapse"});
+    var oLBtn2 = new sap.m.Button({icon:"sap-icon://collapse-group", 
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B22", "", "", "", "")});
     oLTBar1.addContent(oLBtn2);
 
     //접힘 버튼 선택 이벤트.
@@ -253,8 +257,10 @@
     oLTBar1.addContent(new sap.m.ToolbarSeparator());
 
     
+    //A70  Find UI
     //UI FILTER 버튼.
-    oLBtn6 = new sap.m.Button({icon:"sap-icon://search", tooltip:"Find UI"});
+    oLBtn6 = new sap.m.Button({icon:"sap-icon://search", 
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A70", "", "", "", "")});
     oLTBar1.addContent(oLBtn6);
 
     //UI FILTER 버튼 선택 이벤트.
@@ -279,8 +285,10 @@
     oLTBar1.addContent(new sap.m.ToolbarSeparator({visible:"{/IS_EDIT}"}));
 
 
+    //B23  Clear selection
     //전체선택 해제 버튼.
-    var oLBtn5 = new sap.m.Button({icon:"sap-icon://multiselect-none", visible:"{/IS_EDIT}", tooltip:"Deselect All"});
+    var oLBtn5 = new sap.m.Button({icon:"sap-icon://multiselect-none", visible:"{/IS_EDIT}", 
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B23", "", "", "", "")});
     oLTBar1.addContent(oLBtn5);
 
     //전체 선택 헤제 버튼 이벤트.
@@ -292,12 +300,13 @@
 
 
 
-
     //구분자 추가.
     oLTBar1.addContent(new sap.m.ToolbarSeparator({visible:"{/IS_EDIT}"}));
 
+    //A03  Delete
     //삭제 버튼.
-    var oLBtn3 = new sap.m.Button({icon:"sap-icon://delete",visible:"{/IS_EDIT}", tooltip:"Delete", type:"Reject"});
+    var oLBtn3 = new sap.m.Button({icon:"sap-icon://delete", visible:"{/IS_EDIT}", type:"Reject",
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03", "", "", "", "")});
     oLTBar1.addContent(oLBtn3);
 
     //삭제버튼 선택 이벤트
@@ -313,8 +322,10 @@
     oLTBar1.addContent(new sap.m.ToolbarSeparator({visible:"{/IS_EDIT}"}));
 
 
+    //B24  UI Template Wizard
     //wizard 버튼 추가.
-    var oLBtn4 = new sap.m.Button({icon:"sap-icon://responsive", visible:"{/IS_EDIT}", tooltip:"Wizard", type:"Accept"});
+    var oLBtn4 = new sap.m.Button({icon:"sap-icon://responsive", visible:"{/IS_EDIT}", type:"Accept",
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B24", "", "", "", "")});
     oLTBar1.addContent(oLBtn4);
 
 
@@ -393,7 +404,7 @@
     }); //design tree 스크롤 이벤트.
 
 
-    oLTree1.bindAggregation("rows",{path:"/zTREE",template:new sap.ui.table.Row(),parameters:{arrayNames:["zTREE"]}});
+    oLTree1.bindAggregation("rows", {path:"/zTREE", template:new sap.ui.table.Row(), parameters:{arrayNames:["zTREE"]}});
 
     
     //tree의 라인 선택 표시를 위한 UI 추가.
@@ -441,19 +452,20 @@
     //선택한 라인이 존재하지 않는경우 오류 메시지 처리.
     if(l_indx === -1){
       ls_ret.SUBRC = "E";
-      //073 &1 does not exist.
-      ls_ret.MSG = "Selected line does not exist.";
+      //268  Selected line does not exists.
+      ls_ret.MSG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", "");
       return ls_ret;
     }
 
     //선택 라인의 tree 정보 얻기.
     var ls_tree = oAPP.attr.ui.oLTree1.getContextByIndex(l_indx).getProperty();
 
-    //DOCUMENT를 선택한 경우 오류 메시지 처리.
+    //ROOT를 선택한 경우 오류 메시지 처리.
     if(ls_tree.OBJID === "ROOT"){
       ls_ret.SUBRC = "E";
+      //A36  ROOT
       //056	& is not the target location.
-      ls_ret.MSG = "DOCUMENT is not the target location.";
+      ls_ret.MSG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "056", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A36", "", "", "", ""), "", "", "");
       return ls_ret;
 
     }
@@ -493,7 +505,8 @@
     //UI를 추가 가능한 Aggregation 존재여부 확인.
     if(oAPP.fn.chkAggrRelation(ls_tree.UIOBK, ls_tree.OBJID, l_UIOBK).length === 0){
       ls_ret.SUBRC = "E";
-      ls_ret.MSG = "추가 가능한 Aggregation이 존재하지 않습니다.";
+      //280  입력 가능한 Aggregation이 존재하지 않습니다.
+      ls_ret.MSG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "280", "", "", "", "");
 
       //오류 정보 RETURN.
       return ls_ret;
@@ -554,7 +567,7 @@
     for(var i=0, l = lt_0023.length; i<l; i++){
 
       //get aggregation명 얻기.
-      var l_agrnm = oAPP.fn.getUIAttrFuncName(oAPP.attr.prev[tOBJID], "3", lt_0023[i].UIATT,"_sGetter");
+      var l_agrnm = oAPP.fn.getUIAttrFuncName(oAPP.attr.prev[tOBJID], "3", lt_0023[i].UIATT, "_sGetter");
 
       //해당 aggregation의 child 정보 얻기.
       var l_child = oAPP.attr.prev[tOBJID][l_agrnm]();
@@ -669,7 +682,7 @@
     //U4A_HIDDEN_AREA DIV 영역에 추가대상건인경우 추가 가능한 부모 UI OBJECT KEY가 다르다면.
     if(ls_UA040.FLD04 !== PUIOK){
       //131	Target API and UI &1 can only target Location &2.
-      parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "131", ls_UA040.FLD03, ls_UA040.FLD06, "", "") );
+      parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "131", ls_UA040.FLD03, ls_UA040.FLD06, "", ""));
       return true;
 
     }
@@ -946,7 +959,7 @@
       if(typeof l_node === "undefined"){return;}
 
       //선택한 라인에서 파생된건이 아닌경우 exit.
-      if(l_group !== l_node.groupID.substr(0,l_group.length)){return;}
+      if(l_group !== l_node.groupID.substr(0, l_group.length)){return;}
       
       //현재 node의 child가 존재, 해당 node가 펼쳐져있지 않다면.
       if(l_node.isLeaf === false && l_node.nodeState.expanded === false){
@@ -1093,8 +1106,7 @@
     //원본 UI의 HTML정보, 클라이언트 이벤트가 없는경우 exit.
     if(lt_event.length === 0){return;}
 
-    var ls_copy = {},
-        l_objid = "";
+    var ls_copy = {};
 
     //원본 UI의 HTML정보, 클라이언트 이벤트 기준으로 복사처리.
     for(var i=0, l=lt_event.length; i<l; i++){
@@ -1485,8 +1497,10 @@
         if(!l_ctxt){continue;}
 
         if(l_ctxt.getProperty("OBJID") !== ls_copy.OBJID){continue;}
-          
-        sap.m.MessageToast.show("UI Copied.",{of:lt_row[i].getDomRef(), my:"center top"});
+
+        //272  &1 has been copied.
+        sap.m.MessageToast.show(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "272", "UI", "", "", ""),
+          {of:lt_row[i].getDomRef(), my:"center top"});
         return;
       }
 
@@ -1499,18 +1513,13 @@
 
 
   //drop callback 이벤트.
-  oAPP.fn.drop_cb = function(param, i_drag, i_drop, bIsCopy){
+  oAPP.fn.drop_cb = function(param, i_drag, i_drop){
 
     //tree에 매핑된 광역변수 로컬에 매핑.
     var l_effect = oAPP.attr.ui.oLTree1.__dropEffect;
 
     //tree에 매핑된 광역 변수 초기화.
     oAPP.attr.ui.oLTree1.__dropEffect = "";
-
-    //ctrl을 누르고 drag한경우(복사 처리를 하는경우)
-    if(l_effect === "Copy"){
-      console.log("copy ui");
-    }
 
     //선택가능 aggregation리스트가 존재하지 않는경우, drag, drop의 부모, aggregation이 동일한경우.
     if(typeof param === "undefined" && i_drag.POBID === i_drop.POBID && i_drag.UIATK === i_drop.UIATK){
@@ -1597,6 +1606,9 @@
 
       //변경 FLAG 처리.
       oAPP.fn.setChangeFlag();
+
+      //005  Job finished.
+      parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
       
       return;
 
@@ -1718,6 +1730,9 @@
 
     //변경 FLAG 처리.
     oAPP.fn.setChangeFlag();
+
+    //005  Job finished.
+    parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
 
   }; //drop callback 이벤트.
 
@@ -1990,8 +2005,8 @@
         lf_setDropEnable(is_child.zTREE[i], it_0027, bChild);
       }
 
-
     } //design tree영역의 drop 가능여부 판단 내부 function.
+
 
     //화면 편집상태가 아닌경우 exit.
     if(oAPP.attr.oModel.oData.IS_EDIT !== true){return;}
@@ -2332,6 +2347,9 @@
 
       //변경 FLAG 처리.
       oAPP.fn.setChangeFlag();
+
+      //005  Job finished.
+      parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
 
     });
 

@@ -200,13 +200,13 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
         //BUSY OFF.
         parent.setBusy(false);
 
+        //A73	Search Result
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A73", "", "", "", "");
         
         if(param.TEXT[0].NAME == "REFDATA"){
 
           modeloTable.oData.TF4LIST = [];
           var visiRow = Number(param.TEXT[1].VALUE);
-          //A73	Search Result
           var Ltext = l_txt + " : " + visiRow;
           ZF4SH_LBresult.setText(Ltext);
           ZF4SH_LBresult.setTooltip(Ltext);
@@ -218,7 +218,6 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
 
         //~조회 data 처리 누락이라면 ..
         if(param.TEXT[0].NAME == "NOTFOUND"){
-          //A73	Search Result
           ZF4SH_LBresult.setText(l_txt + " : 0");
           ZF4SH_LBresult.setTooltip(l_txt + " : 0");
 

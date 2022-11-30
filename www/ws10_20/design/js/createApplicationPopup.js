@@ -377,6 +377,55 @@
         editable:false
       });
 
+      
+      //하위 추가 속성 정보 icon tab.
+      var oIconTab = new sap.m.IconTabBar();
+
+      //B26  Data Set
+      var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B26", "", "", "", "");
+      var oFilter1 = new sap.m.IconTabFilter({key:"K01", text:l_txt, tooltip:l_txt});
+      oIconTab.addItem(oFilter1);
+
+      //Database View(table) form 정보.
+      var oForm1 = new sap.ui.layout.form.Form({editable:true, 
+        layout:new sap.ui.layout.form.ResponsiveGridLayout({labelSpanXL:3, labelSpanL:4, columnsL:2,
+          labelSpanM:4, singleContainerFullSize:false, adjustLabelSpan:false})});
+      oFilter1.addContent(oForm1);
+        
+      var oCont1 = new sap.ui.layout.form.FormContainer();
+      oForm1.addFormContainer(oCont1);
+      
+      //B27  Object Type
+      var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B27", "", "", "", "") ;
+
+      var oElem1 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});
+      oCont1.addFormElement(oElem1);
+
+      var oRG01 = new sap.m.RadioButtonGroup({columns:2});
+      oElem1.addField(oRG01);
+
+      //B28  Database View
+      var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B28", "", "", "", "");
+
+      var oRb01 = new sap.m.RadioButton({text:l_txt, tooltip:l_txt});
+      oRb01.addStyleClass("sapUiTinyMarginEnd");
+      oRG01.addButton(oRb01);
+
+      //B29  Transparent Table
+      var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B29", "", "", "", "");
+
+      var oRb02 = new sap.m.RadioButton({text:l_txt, tooltip:l_txt});
+      oRG01.addButton(oRb02);
+
+      //A50  Object Name
+      var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A50", "", "", "", "");
+
+      var oElem2 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});
+      oCont1.addFormElement(oElem2);
+
+      var oInp1 = new sap.m.Input({showValueHelp:true});
+      oElem2.addField(oInp1);
+
       //A91  Web Application Name
       var l_txt1 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91", "", "", "", "");
 
@@ -405,12 +454,13 @@
 
       var oCreateDialogForm = new sap.ui.layout.form.Form({
         editable: true,
+        width:"100%",
         layout : new sap.ui.layout.form.ResponsiveGridLayout({
-          labelSpanXL: 2,
-          labelSpanL: 3,
-          labelSpanM: 3,
+          labelSpanXL: 3,
+          labelSpanL: 4,
+          labelSpanM: 4,
           labelSpanS: 12,
-          columnsL: 1,
+          columnsL:1,
           singleContainerFullSize: false,
           adjustLabelSpan: false,
           backgroundDesign:"Transparent"
@@ -421,41 +471,41 @@
               new sap.ui.layout.form.FormElement({
                 label : new sap.m.Label({
                   required: true,
-                  design: "Bold",
-                  text: l_txt1,
-                  tooltip:l_txt1
+                  design: "Bold", 
+                  text: l_txt1,     //A91  Web Application Name
+                  tooltip:l_txt1    //A91  Web Application Name
                 }),
                 fields : oInpDesc
               }),
               new sap.ui.layout.form.FormElement({
                 label : new sap.m.Label({
                   design: "Bold",
-                  text: l_txt2,
-                  tooltip:l_txt2
+                  text: l_txt2,     //A98  Language Key
+                  tooltip:l_txt2    //A98  Language Key
                 }),
                 fields : oInpLang
               }),
               new sap.ui.layout.form.FormElement({
                 label : new sap.m.Label({
                   design: "Bold",
-                  text: l_txt3,
-                  tooltip:l_txt3
+                  text: l_txt3,     //A99  Character Format
+                  tooltip:l_txt3    //A99  Character Format
                 }),
                 fields : oSelFormat
               }),
               new sap.ui.layout.form.FormElement({
                 label : new sap.m.Label({
                   design: "Bold",
-                  text: l_txt4,
-                  tooltip:l_txt4
+                  text: l_txt4,     //B01  UI5 UI Theme
+                  tooltip:l_txt4    //B01  UI5 UI Theme
                 }),
                 fields : oSelTheme
               }),
               new sap.ui.layout.form.FormElement({
                 label : new sap.m.Label({
                   design: "Bold",
-                  text: l_txt5,
-                  tooltip:l_txt5
+                  text: l_txt5,     //B02  Web Application Type
+                  tooltip:l_txt5    //B02  Web Application Type
                 }),
                 fields : oSelType
               }),
@@ -463,29 +513,38 @@
                 label : new sap.m.Label({
                   required: true,
                   design: "Bold",
-                  text: l_txt6,
-                  tooltip:l_txt6
+                  text: l_txt6,     //A22  Package
+                  tooltip:l_txt6    //A22  Package
                 }),
                 fields : oInpPack
               }),
               new sap.ui.layout.form.FormElement({
                 label : new sap.m.Label({
                   design: "Bold",
-                  text: l_txt7,
-                  tooltip:l_txt7
+                  text: l_txt7,     //B03  Request No
+                  tooltip:l_txt7    //B03  Request No
                 }),
                 fields : oInpReqNo
               }),
               new sap.ui.layout.form.FormElement({
                 label : new sap.m.Label({
                   design: "Bold",
-                  text: l_txt8,
-                  tooltip:l_txt8
+                  text: l_txt8,     //B04  Request Desc.
+                  tooltip:l_txt8    //B04  Request Desc.
                 }),
                 fields : oInpReqTx
-              })
+              })              
             ]
-          }),
+          })
+          // ,
+          // new sap.ui.layout.form.FormContainer({
+          //   formElements : [
+          //     new sap.ui.layout.form.FormElement({                
+          //       fields : oIconTab
+          //     })
+          //   ]
+          // })
+
         ]
       });
 
@@ -660,6 +719,9 @@
 
       //oHbox1.addItem(oCreateDialogForm);
       oPage1.addContent(oCreateDialogForm);
+
+
+
 
       var oFoot = new sap.m.Toolbar({content:[new sap.m.ToolbarSpacer()]});
       //oHbox1.addItem(oFoot);

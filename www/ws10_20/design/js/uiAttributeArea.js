@@ -32,7 +32,7 @@
     oRCTool.addContent(oRAvatar1);
     
     //tree 선택 라인의 UIOBJECT명.
-    var oRTitle1 = new sap.m.Title({text:"{/uiinfo/OBJID}"});
+    var oRTitle1 = new sap.m.Title({text:"{/uiinfo/OBJID}", tooltip:"{/uiinfo/OBJID}"});
     oRCTool.addContent(oRTitle1);
     
 
@@ -40,7 +40,7 @@
 
     //B15  UI5 library Reference
     //라이브러리명 text.
-    var oRLibText = new sap.m.Text({text:"{/uiinfo/UILIB}",visible:"{/uiinfo/vis01}", 
+    var oRLibText = new sap.m.Text({text:"{/uiinfo/UILIB}", visible:"{/uiinfo/vis01}", 
       tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B15", "", "", "", "")});
     oRCTool.addContent(oRLibText);
 
@@ -53,7 +53,7 @@
 
     //B16  UI Sample
     //라이브러리 sample 버튼.
-    var oRLibBtn2 = new sap.m.Button({icon:"sap-icon://example",visible:"{/uiinfo/vis01}",
+    var oRLibBtn2 = new sap.m.Button({icon:"sap-icon://example", visible:"{/uiinfo/vis01}",
       tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B16", "", "", "", "")});
     oRCTool.addContent(oRLibBtn2);
 
@@ -146,7 +146,7 @@
     oRGrid.addContent(new sap.m.Label({text:l_txt, tooltip:l_txt, design:"Bold"}));
 
     //OBJID 입력필드
-    var oRInp1 = new sap.m.Input({value:"{/uiinfo/OBJID}", editable:"{/uiinfo/edit01}",
+    var oRInp1 = new sap.m.Input({value:"{/uiinfo/OBJID}", tooltip:"{/uiinfo/OBJID}", editable:"{/uiinfo/edit01}",
       enabled:"{/IS_EDIT}", valueState:"{/uiinfo/OBJID_stat}", valueStateText:"{/uiinfo/OBJID_stxt}",
       layoutData:new sap.ui.layout.GridData({span:"XL11 L11 M11 S11"})});
     oRGrid.addContent(oRInp1);
@@ -180,7 +180,7 @@
 
     //Description 입력 TextArea
     var oRTAr1 = new sap.m.TextArea({width:"100%", rows:4, value:"{/uiinfo/DESC}", 
-      editable:"{/uiinfo/edit02}", enabled:"{/IS_EDIT}"});
+      tooltip:"{/uiinfo/DESC}", editable:"{/uiinfo/edit02}", enabled:"{/IS_EDIT}"});
     oRGrid.addContent(oRTAr1);
 
 
@@ -3434,8 +3434,10 @@
           //DDLB visible 처리.
           ls_0015.sel_visb = true;
 
+          //B20  Circle
           //Touch style DDLB 항목 구성.
-          ls_0015.T_DDLB = [{KEY:"",TEXT:""},{KEY:"circle_ripple",TEXT:"원형"}];
+          ls_0015.T_DDLB = [{KEY:"", TEXT:""}, 
+            {KEY:"circle_ripple", TEXT:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B20", "", "", "", "")}];
 
           break;
 
@@ -3546,7 +3548,7 @@
 
     //default value가 없는경우 ddlb에 빈라인 추가.
     if(DEFVL === ""){
-      lt_ddlb.push({KEY:"",TEXT:""});
+      lt_ddlb.push({KEY:"", TEXT:""});
     }
 
     //검색한 enum항목을 기준으로 ddlb 항목 구성.
@@ -3838,7 +3840,7 @@
     //서버이벤트 호출전 lock처리.
     oAPP.fn.designAreaLockUnlock(true);
 
-    var lt_ddlb = [{KEY:"",TEXT:"",DESC:""}];
+    var lt_ddlb = [{KEY:"", TEXT:"", DESC:""}];
 
     //클래스명 서버 전송 데이터에 구성.
     var oFormData = new FormData();
@@ -4057,7 +4059,7 @@
         }
 
         //바인딩처리된경우 하위 로직 수행.
-        if(ls_0015.ISBND !== "X" ){continue;}
+        if(ls_0015.ISBND !== "X"){continue;}
 
         // //바인딩 구성정보 매핑.
         // oAPP.attr.oModel.oData.T_ATTR[i].ISBND = ls_0015.ISBND;
@@ -4133,30 +4135,30 @@
     var l_bind = oAPP.attr.ui.oRTab1.getBinding("items");
 
     //attribute 영역 그룹핑 처리.
-    l_bind.sort([new sap.ui.model.Sorter("UIATY",false,function(oContext){
+    l_bind.sort([new sap.ui.model.Sorter("UIATY", false, function(oContext){
       var text, key = oContext.getProperty("UIATY");
 
       switch(key){
         case "1":
-          text = "Property";
+          text = "Properties";
           break;
 
         case "2":
-          text = "Event";
+          text = "Events";
           break;
 
         case "3":
-          text = "Aggregation";
+          text = "Aggregations";
           break;
 
         case "6":
-          text = "Embed Aggregation";
+          text = "Embedded Aggregations";
           break;
       }
 
       return {key:key, text:text};
 
-    }),new sap.ui.model.Sorter("UIATK",false)]);
+    }),new sap.ui.model.Sorter("UIATK", false)]);
 
   };  //attribute 영역 그룹핑 처리.
 
@@ -4198,16 +4200,12 @@
 
     //DOCUMENT가 아닌경우(UI인경우)만 UI정보 검색.
     if(is_tree.OBJID !== "ROOT"){
-
+      //UI Library & sample 활성.
       ls_uiinfo.vis01 = true;
 
+      //attribute 초기화 활성.
       ls_uiinfo.vis02 = true;
 
-      var ls_0022 = oAPP.DATA.LIB.T_0022.find( a => a.UIOBK === is_tree.UIOBK);
-
-      if(ls_0022.UHREF !== ""){
-        ls_uiinfo.SAMPLE = "UI5 library Sample call";
-      }
     }
 
     //display상태인경우.
@@ -4633,9 +4631,8 @@
 
     }
 
-
-
   };  // attribute 예외처리
+
 
 
 
@@ -4700,7 +4697,7 @@
     //default 입력 가능 처리.
     is_attr.edit = true;
 
-  };
+  };  //attribute 입력 가능 여부 설정.
 
 
 
@@ -4918,7 +4915,8 @@
 
     //drop UI를 얻지 못한 경우 exit.
     if(!l_row){
-      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+      //214  Unable to bind.
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
       return;
     }
 
@@ -4927,7 +4925,8 @@
 
     //바인딩 정보가 존재하지 않는경우 exit.
     if(!l_ctxt){
-      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+      //214  Unable to bind.
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
       return;
     }
 
@@ -4936,7 +4935,8 @@
 
     //drop 불가능한 경우 exit.
     if(!ls_attr.dropEnable){
-      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+      //214  Unable to bind.
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
       return;
     }
 
@@ -4946,7 +4946,8 @@
 
     //drag 정보를 얻지 못한 경우 exit.
     if(typeof l_json === "undefined" || l_json === ""){
-      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+      //214  Unable to bind.
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
       return;
     }
 
@@ -4955,38 +4956,44 @@
       l_json = JSON.parse(l_json);
 
     }catch(e){
-      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+      //265	Binding attributes does not exist.
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "265", "", "", "", ""));
       return;
     }
 
     //바인딩 팝업에서 drag한게 아닌경우 exit.
     if(l_json.PRCCD !== "PRC001"){
-      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+      //265	Binding attributes does not exist.
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "265", "", "", "", ""));
       return;
     }
 
 
     //다른 application의 바인딩 팝업에서 D&D한경우.
     if(l_json.DnDRandKey !== oAPP.attr.DnDRandKey){
-      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+      //214  Unable to bind.
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
       return;
     }
 
     //kind path가 존재하지 않는경우 exit.
     if(typeof l_json.IF_DATA.KIND_PATH === "undefined"){
-      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+      //265	Binding attributes does not exist.
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "265", "", "", "", ""));
       return;
     }
 
     //바인딩 팝업에서 최상위를 drag한경우, structure를 drag한경우 exit.
     if(l_json.IF_DATA.KIND === "" || l_json.IF_DATA.KIND === "S"){
-      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+      //214  Unable to bind.
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
       return;
     }
 
     //aggregation인경우 TABLE을 DROP하지 않았다면.
     if(ls_attr.UIATY === "3" && l_json.IF_DATA.KIND !== "T" ){
-      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+      //214  Unable to bind.
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
       return;
     }
 
@@ -5035,7 +5042,8 @@
 
     //tree의 parent, child에 drop한경우 n건 바인딩 정보가 존재하지 않는경우.
     if(l_isTree && !l_path){
-      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+      //214  Unable to bind.
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
       return;
     }
 
@@ -5047,13 +5055,15 @@
 
       //현재 UI가 N건 바인딩처리된건이 아닌경우 EXIT.
       if(typeof l_path === "undefined" || l_path === "" || l_path === null){
-        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+        //214  Unable to bind.
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
         return;
       }
 
       //현재 UI가 N건 바인딩 처리됐다면 
       if(l_path !== l_json.IF_DATA.CHILD.substr(0, l_path.length)){
-        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+        //214  Unable to bind.
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
         return;
       }
 
@@ -5075,7 +5085,8 @@
       if(ls_attr.UIATK === "EXT00001161"){
         //drag한 필드가 range table이 아닌경우 exit.
         if(l_json.IF_DATA.EXP_TYP !== "RANGE_TAB"){
-          oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+          //214  Unable to bind.
+          oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
           return;
         }
 
@@ -5086,7 +5097,8 @@
 
           //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
           if(lt_split2.findIndex( a=> a === "T" ) !== -1){
-            oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+            //214  Unable to bind.
+            oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
             return;
           }
 
@@ -5103,13 +5115,15 @@
       if((ls_attr.ISMLB === "X" && (ls_attr.UIADT !== "int" && ls_attr.UIADT !== "float"))){
         //string_table이 아닌경우 exit.
         if(l_json.IF_DATA.EXP_TYP !== "STR_TAB"){
-          oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+          //214  Unable to bind.
+          oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
           return;
         }
 
         //STRING_TABLE이지만 부모가 ROOT인경우 EXIT.(바인딩 가능한건은 STRU-FIELD or TABLE-FIELD만 가능)
         if(l_json.IF_DATA.EXP_TYP === "STR_TAB" && l_json.IF_DATA.PARENT === "Attribute"){
-          oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+          //214  Unable to bind.
+          oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
           return;
         }
 
@@ -5119,7 +5133,8 @@
 
           //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
           if(lt_split2.findIndex( a=> a === "T" ) !== -1){
-            oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+            //214  Unable to bind.
+            oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
             return;
           }
 
@@ -5133,20 +5148,23 @@
 
       //일반 프로퍼티의 경우 Elementary Type 이 아닌경우 EXIT.
       if(l_json.IF_DATA.KIND !== "E"){
-        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+        //214  Unable to bind.
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
         return;
       }
 
       //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
       if(typeof lt_split2 !== "undefined" && lt_split2.findIndex( a=> a === "T" ) !== -1){
-        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+        //214  Unable to bind.
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
         return;
       }
 
 
       //tree인경우 n건 바인딩 path와 다른 경우 exit.
       if(l_isTree && l_path && l_path !== l_json.IF_DATA.CHILD.substr(0, l_path.length)){
-        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+        //214  Unable to bind.
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
         return;
       }
 
@@ -5162,14 +5180,16 @@
 
     //AGGREGATION인경우 N건 들어가는 AGGREGATION이 아닌경우 EXIT.
     if(ls_attr.UIATY === "3" && ls_attr.ISMLB !== "X"){
-      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+      //214  Unable to bind.
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
       return;
     }
 
     
     //AGGREGATION에 string_table을 drop한경우.
     if(ls_attr.UIATY === "3" && l_json.IF_DATA.EXP_TYP === "STR_TAB"){
-      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+      //214  Unable to bind.
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
       return;
     }
 
@@ -5179,7 +5199,8 @@
 
       //aggregation 바인딩 처리 가능여부 점검.
       if(oAPP.fn.attrChkBindAggrPossible(ls_attr, true)){
-        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+        //214  Unable to bind.
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
         return;
       }
 
@@ -5189,7 +5210,8 @@
 
         //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
         if(lt_split2.findIndex( a=> a === "T" ) !== -1){
-          oAPP.common.fnShowFloatingFooterMsg("E", "WS20", "impossible.");
+          //214  Unable to bind.
+          oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
           return;
         }
 

@@ -16,7 +16,10 @@
 
     oTool.addContent(new sap.m.ToolbarSpacer());
 
-    var oBtn = new sap.m.Button({icon:"sap-icon://refresh"});
+    //B17  Reset
+    //미리보기 확대 축소 초기화.
+    var oBtn = new sap.m.Button({icon:"sap-icon://refresh", 
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B17", "", "", "", "")});
     oTool.addContent(oBtn);
 
     oBtn.attachPress(function(){
@@ -24,7 +27,8 @@
       oAPP.attr.ui.frame.contentWindow.setPreviewZoom(1);
     })
 
-    var oSlid = new sap.m.Slider({width:"200px",min:0.1,max:2,step:0.1,value:1});
+    //미리보기 확대 축소 비율 조절 slider.
+    var oSlid = new sap.m.Slider({width:"200px", min:0.1, max:2, step:0.1, value:1});
     oTool.addContent(oSlid);
 
     //slider변경 이벤트
@@ -32,7 +36,7 @@
 
       oAPP.attr.ui.frame.contentWindow.setPreviewZoom(this.getValue());
 
-    });
+    }); //slider변경 이벤트
 
 
   };  //가운데 페이지(미리보기 영역) 구성
@@ -195,12 +199,12 @@
     
       default:
         break;
-    }
-
-    
+    }    
 
   };  //프로퍼티 설정 skip 처리 항목.
-  
+
+
+
 
   //미리보기 화면 UI의 프로퍼티 변경 처리.
   oAPP.fn.previewUIsetProp = function(is_attr){
@@ -504,7 +508,9 @@
     var oChart = oAPP.attr.prev[OBJID]._c;
     
     //미리보기에 출력할 차트 DATA 구성.
-    oChart.dataProvider = [{"f1": "sample01","f2": 10},{"f1": "sample02","f2": 20},{"f1": "sample03","f2": 30}];
+    oChart.dataProvider = [{"f1":"sample01", "f2":10},
+                           {"f1":"sample02", "f2":20},
+                           {"f1":"sample03", "f2":30}];
 
     oChart.categoryField = "f1";
 
@@ -545,8 +551,9 @@
     var oChart = oAPP.attr.prev[OBJID]._c;
     
     //미리보기에 출력할 차트 DATA 구성.
-    oChart.dataProvider = [{"f1":"sample01","f2":10,"f3":30},
-      {"f1":"sample02","f2":20,"f3":20},{"f1":"sample03","f2":30,"f3":10}];
+    oChart.dataProvider = [{"f1":"sample01", "f2":10, "f3":30},
+                           {"f1":"sample02", "f2":20, "f3":20},
+                           {"f1":"sample03", "f2":30, "f3":10}];
 
     oChart.categoryField = "f1";
 
@@ -605,8 +612,9 @@
     var oChart = oAPP.attr.prev[OBJID]._c;
     
     //미리보기에 출력할 차트 DATA 구성.
-    oChart.dataProvider = [{"f1":"sample01","f2":10,"f3":30},
-      {"f1":"sample02","f2":20,"f3":20},{"f1":"sample03","f2":30,"f3":10}];
+    oChart.dataProvider = [{"f1":"sample01", "f2":10, "f3":30},
+                           {"f1":"sample02", "f2":20, "f3":20},
+                           {"f1":"sample03", "f2":30, "f3":10}];
 
     oChart.categoryField = "f1";
 
@@ -659,8 +667,9 @@
     var oChart = oAPP.attr.prev[OBJID]._c;
     
     //미리보기에 출력할 차트 DATA 구성.
-    oChart.dataProvider = [{"f1":"sample01","f2":10,"f3":30},
-      {"f1":"sample02","f2":20,"f3":20},{"f1":"sample03","f2":30,"f3":10}];
+    oChart.dataProvider = [{"f1":"sample01", "f2":10, "f3":30},
+                           {"f1":"sample02", "f2":20, "f3":20},
+                           {"f1":"sample03", "f2":30, "f3":10}];
 
     oChart.categoryField = "f1";
 
@@ -702,7 +711,9 @@
     var oChart = oAPP.attr.prev[OBJID]._c;
     
     //미리보기에 출력할 차트 DATA 구성.
-    oChart.dataProvider = [{"f1": "sample01","f2": 10},{"f1": "sample02","f2": 20},{"f1": "sample03","f2": 30}];
+    oChart.dataProvider = [{"f1":"sample01", "f2":10},
+                           {"f1":"sample02", "f2":20},
+                           {"f1":"sample03", "f2":30}];
 
     oChart.titleField = "f1";
     oChart.valueField = "f2";
@@ -824,7 +835,7 @@
       //검색에 성공한 경우 TEXT 정보 RETURN.
       l_text = param.TEXT;
       
-    },"",false);
+    },"", false);
 
     return l_text;
 
@@ -891,7 +902,6 @@
         oAPP.attr.prev[oAPP.attr.prevCSS[i].OBJID].setStyleClass(oAPP.attr.prevCSS[i].UIATV);
       }
 
-
     } //이전 선택한 건에 대해서 CSS 원복 처리.
 
 
@@ -912,7 +922,7 @@
     if(lt_OBJID.length === 0){
       //오류 메시지 처리.
       //286	Check box not selected.
-      parent.showMessage(sap, 20, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "286", "", "", "", ""));
+      parent.showMessage(sap, 20, "W", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "286", "", "", "", ""));
       return;
 
     }

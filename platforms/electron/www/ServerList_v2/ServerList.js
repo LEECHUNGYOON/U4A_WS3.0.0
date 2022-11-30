@@ -50,13 +50,27 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 초기 화면 먼저 그리기
         oAPP.fn.fnOnInitRendering();
 
-        setTimeout(() => {
+        setTimeout(async () => {
 
+            // 기 저장된 SAPLogon 정보를 구한다.
+            await oAPP.fn.fnGetSavedSapLogon();
+
+            // 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
             oAPP.fn.fnOnListupSapLogon();
 
         }, 1000);
 
     }; // end of oAPP.fn.fnOnMainStart
+
+    oAPP.fn.fnGetSavedSapLogon = () => {
+
+        return new Promise((resolve) => {
+
+            resolve();
+
+        });
+
+    }; // end of oAPP.fn.fnGetSavedSapLogon
 
     oAPP.fn.fnOnListupSapLogon = () => {
 
@@ -587,6 +601,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             alternateRowColors: true,
             autoPopinMode: true,
             headerToolbar: oToolbar,
+            mode: sap.m.ListMode.SingleSelectMaster,
             sticky: [sap.m.Sticky.ColumnHeaders],
             columns: [
 
@@ -716,19 +731,186 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      ************************************************************************/
     oAPP.fn.fnPressEdit = () => {
 
-        debugger;
-        
         let oTable = sap.ui.getCore().byId("serverlist_table");
         if (!oTable) {
             return;
         }
 
+        // 선택한 라인 체크
         let oSelectedItem = oTable.getSelectedItem();
+        if (!oSelectedItem) {
+            return;
+        }
 
+        // 선택한 라인의 바인딩 정보 체크
+        let oCtx = oSelectedItem.getBindingContext();
+        if (!oCtx) {
+            return;
+        }
 
+        // 선택한 라인의 바인딩 데이터
+        let oCtxData = oCtx.getProperty(oCtx.getPath());
 
+        oAPP.fn.fnEditDialogOpen(oCtxData);
 
     }; // end of oAPP.fn.fnPressEdit
+
+    /************************************************************************
+     * 서버 리스트 수정 팝업
+     ************************************************************************/
+    oAPP.fn.fnEditDialogOpen = (oCtxData) => {
+
+        debugger;
+
+        const
+            sPOPID = "editPopup",
+            sBINDROOT = "/SAVEDATA";
+
+        var oDialog = sap.ui.getCore().byId(sPOPID);
+        if (oDialog) {
+
+            oDialog.open();
+
+            return;
+        }
+
+        let oForm = new sap.ui.layout.form.Form({
+            editable: true,
+            layout: new sap.ui.layout.form.ResponsiveGridLayout({
+                labelSpanXL: 12,
+                labelSpanL: 12,
+                labelSpanM: 12,
+                labelSpanS: 12,
+                singleContainerFullSize: false
+            }),
+
+            formContainers: [
+
+                new sap.ui.layout.form.FormContainer({
+                    formElements: [
+
+                        new sap.ui.layout.form.FormElement({
+                            label: new sap.m.Label({
+                                required: true,
+                                design: "Bold",
+                                text: "Protocol"
+                            }),
+                            fields: new sap.m.Select({
+                                selectedKey: `{${sBINDROOT}/protocol}`,
+                                items: [
+                                    new sap.ui.core.Item({
+                                        key: "http",
+                                        text: "http"
+                                    }),
+                                    new sap.ui.core.Item({
+                                        key: "https",
+                                        text: "https"
+                                    })
+                                ]
+                            })
+                        }),
+
+                        new sap.ui.layout.form.FormElement({
+                            label: new sap.m.Label({
+                                required: true,
+                                design: "Bold",
+                                text: "Host"
+                            }),
+                            fields: new sap.m.Input({
+                                value: `{${sBINDROOT}/host}`
+                            })
+                        }),
+
+                        new sap.ui.layout.form.FormElement({
+                            label: new sap.m.Label({
+                                required: true,
+                                design: "Bold",
+                                text: "Port"
+                            }),
+                            fields: new sap.m.Input({
+                                maxLength: 5,
+                                type: sap.m.InputType.Number,
+                                value: `{${sBINDROOT}/port}`
+                            })
+                        }),
+
+                    ] // end of formElements
+
+                }),
+
+            ] // end of formContainers
+
+        });
+
+        var oDialog = new sap.m.Dialog(sPOPID, {
+            // properties
+            draggable: true,
+            resizable: true,
+            title: "{/SERVER/name}",
+            contentWidth: "500px",
+
+            // aggregations
+            buttons: [
+                new sap.m.Button({
+                    type: sap.m.ButtonType.Emphasized,
+                    icon: "sap-icon://accept",
+                    press: () => {
+
+                        debugger;
+
+                    }
+                }),
+                new sap.m.Button({
+                    type: sap.m.ButtonType.Reject,
+                    icon: "sap-icon://decline",
+                    press: () => {
+
+                        let oDialog = sap.ui.getCore().byId(sPOPID);
+                        if (!oDialog) {
+                            return;
+                        }
+
+                        oDialog.close();
+
+                    }
+                }),
+            ],
+
+            content: [
+                oForm
+            ],
+
+            // association
+            // initialFocus: "ws30_crname",
+            // events
+      
+            afterClose: () => {
+
+                let oDialog = sap.ui.getCore().byId(sPOPID);
+                if (!oDialog) {
+                    return;
+                }
+
+                let oDialogModel = oDialog.getModel();
+
+                oDialogModel.setProperty(sBINDROOT, {});
+
+            }
+
+        });
+
+
+        let oJsonModel = new sap.ui.model.json.JSONModel();
+        oJsonModel.setData({
+            SERVER: oCtxData,
+            SAVEDATA: {}
+        });
+
+        oDialog.setModel(oJsonModel);
+
+        oDialog.open();
+
+    }; // end of oAPP.fn.fnEditDialogOpen
 
     oAPP.fn.fnPressServerListItem = (oEvent) => {
 
@@ -759,17 +941,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         debugger;
 
-        // 선택한 서버정보가 sap shortcut 이면..
-
-        if (!oBindData.domain) {
 
 
-
-
-
-            return;
-
-        }
 
     }; // end of oAPP.fn.fnPressServerListItem
 

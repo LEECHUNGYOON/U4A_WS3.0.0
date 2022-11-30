@@ -36,14 +36,19 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack, i_x, i_y){
   var oTool = new sap.m.Toolbar();
   oDlg.setCustomHeader(oTool);
 
-  var oTitle = new sap.m.Title({text:"Move Position - " + OBJID});
+  //A57  Move Position
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A57", "", "", "", "") + " - " + OBJID;
+
+  var oTitle = new sap.m.Title({text:l_txt, tooltip:l_txt});
   oTitle.addStyleClass("sapUiTinyMarginBegin");
   oTool.addContent(oTitle);
 
   oTool.addContent(new sap.m.ToolbarSpacer());
 
+  //A39  Close
   //우상단 닫기버튼.
-  var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject"});
+  var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", 
+    tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
   oTool.addContent(oBtn0);
 
   //닫기 버튼 선택 이벤트.
@@ -53,17 +58,20 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack, i_x, i_y){
     lf_close();
     
     //001	Cancel operation
-    parent.showMessage(sap,10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
+    parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
 
   });
 
-  oGrid = new sap.ui.layout.Grid({defaultSpan:"XL12 L12 M12 S12",vSpacing:0.5, hSpacing:0.5});
+  oGrid = new sap.ui.layout.Grid({defaultSpan:"XL12 L12 M12 S12", vSpacing:0.5, hSpacing:0.5});
   oGrid.addStyleClass("sapUiTinyMarginTopBottom");
   oDlg.addContent(oGrid);
 
 
+  //B25  Max
+  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B25", "", "", "", "") + max;
+
   //최대 이동 위치 label.
-  var oLab1 = new sap.m.Label({text:"Max " + max , design:"Bold"});
+  var oLab1 = new sap.m.Label({text:l_txt, tooltip:l_txt, design:"Bold"});
   oGrid.addContent(oLab1);
 
   //이동위치 입력필드.
@@ -71,21 +79,24 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack, i_x, i_y){
   oGrid.addContent(oStepInp);
 
   //입력필드 keydown 이벤트.
-  oStepInp.attachBrowserEvent('keydown',function(){
+  oStepInp.attachBrowserEvent('keydown', function(){
     //엔터 입력이 아닌경우 EXIT.
     if(window.event.keyCode === 13){
       //확인버튼으로 포커스 이동 처리.
       oBtn1.focus();  
     }
 
-  });
+  }); //입력필드 keydown 이벤트.
+
 
   //이동위치 slider.
   var oSlide = new sap.m.Slider({min:1, max:"{/move/max}", value:"{/move/pos}", enableTickmarks:true});
   oGrid.addContent(oSlide);
 
+  //A40  Confirm
   //확인 버튼
-  var oBtn1 = new sap.m.Button({icon:"sap-icon://accept", type:"Accept"});
+  var oBtn1 = new sap.m.Button({icon:"sap-icon://accept", type:"Accept", 
+    tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A40", "", "", "", "")});
   oDlg.addButton(oBtn1);
 
   //확인 버튼 선택 이벤트.
@@ -106,10 +117,13 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack, i_x, i_y){
     //dialog 종료.
     lf_close();
 
-  });
+  }); //확인 버튼 선택 이벤트.
 
+
+  //A39  Close
   //닫기 버튼
-  var oBtn2 = new sap.m.Button({icon:"sap-icon://decline",type:"Reject"});
+  var oBtn2 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", 
+    tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
   oDlg.addButton(oBtn2);
 
   //닫기 버튼 선택 이벤트.
@@ -121,9 +135,10 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack, i_x, i_y){
     //001	Cancel operation
     parent.showMessage(sap,10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
 
-  });
+  }); //닫기 버튼 선택 이벤트.
 
-  oMdl.setData({"move":{"pos":pos,"max":max}});
+
+  oMdl.setData({"move":{"pos":pos, "max":max}});
 
   //dailog 호출전 이벤트.
   oDlg.attachAfterOpen(function(){
@@ -135,8 +150,10 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack, i_x, i_y){
 
     l_dom.select();
 
-  });
+  }); //dailog 호출전 이벤트.
 
+  
+  //팝업 호출.
   oDlg.open();
 
 

@@ -1729,9 +1729,7 @@
     /************************************************************************
      * 잘못된 Url 호출 또는 현재 버전에 지원되지 않는 서비스를 호출 하는 경우 오류 메시지
      ************************************************************************/
-    oAPP.common.fnUnsupportedServiceUrlCall = (u4a_status, sResponse) => {
-
-        var oResult = JSON.parse(sResponse);
+    oAPP.common.fnUnsupportedServiceUrlCall = (u4a_status, oResult) => {      
 
         //오류 메시지 출력.
         parent.showMessage(sap, 20, oResult.RETCD, oResult.RTMSG);
@@ -2020,6 +2018,24 @@ function fnCriticalError() {
 
 }
 
+// JSON Parse Error
+function fnJsonParseError(e){
+
+    console.error(e);
+
+    // JSON parse 오류 일 경우는 critical 오류로 판단하여 메시지 팝업 호출 후 창 닫게 만든다.
+
+    // 화면 Lock 해제
+    sap.ui.getCore().unlock();
+
+    parent.setBusy("");
+
+    let sErrmsg = "Critical Error 관리자에게 문의 하세요. \n\n " + e.toString();
+
+    parent.showMessage(sap, 20, "E", sErrmsg, fnCriticalError);
+
+}
+
 function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob) {
 
     // Default Values
@@ -2049,8 +2065,14 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
                     parent.setBusy("");
 
+                    var oResult = JSON.parse(xhr.response);
+
                     // 잘못된 url 이거나 지원하지 않는 기능 처리
-                    oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, xhr.response);
+                    oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, oResult);
+
+                    if (typeof fn_success == "function") {
+                        fn_success(oResult);
+                    }
 
                     return;
                 }
