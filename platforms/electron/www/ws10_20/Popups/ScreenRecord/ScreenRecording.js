@@ -180,6 +180,32 @@ async function _chk_MultiScr(REMOTE){
 }
 
 
+function _fnSetParentCenterBounds(oBrowserWindow, oBrowserOptions){
+
+    let oCurrWin = REMOTE.getCurrentWindow();
+
+    // 팝업 위치를 부모 위치에 배치시킨다.
+    var oParentBounds = oCurrWin.getBounds(),
+        xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+        yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+        oWinScreen = window.screen,
+        iAvailLeft = oWinScreen.availLeft;
+
+    if (xPos < iAvailLeft) {
+        xPos = iAvailLeft;
+    }
+
+    if (oParentBounds.y > yPos) {
+        yPos = oParentBounds.y + 10;
+    }
+
+    oBrowserWindow.setBounds({
+        x: xPos,
+        y: yPos
+    });         
+
+}
+
 /* ================================================================= */
 /* Export Module Function - 스크린 레코딩 시작
 /* ================================================================= */
@@ -259,6 +285,14 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
 
         var url = `file://${__dirname}/index.html`;
         oWIN.loadURL(url);
+
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oWIN.once('ready-to-show', () => {
+           
+            _fnSetParentCenterBounds(oWIN, op);
+
+        });
+
 	    oWIN.webContents.on('did-finish-load', function () {
 
             setTimeout(() => {
@@ -304,6 +338,9 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
             }, 100);
 
             oWIN.show();
+
+            _fnSetParentCenterBounds(oWIN, op);
+            
             //oWIN.webContents.openDevTools();
 
         });

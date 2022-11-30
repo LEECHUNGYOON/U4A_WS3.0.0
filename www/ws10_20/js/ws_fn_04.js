@@ -1,7 +1,7 @@
 /**************************************************************************                                           
  * ws_fn_04.js
  **************************************************************************/
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     var PATH = parent.PATH,
@@ -63,7 +63,7 @@
     /************************************************************************
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSapGuiMultiLoginCheckThen = function(oResult) {
+    oAPP.fn.fnSapGuiMultiLoginCheckThen = function (oResult) {
 
         var oMetadata = parent.getMetadata(),
             oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
@@ -117,12 +117,12 @@
 
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
         var vbs = parent.SPAWN('cscript.exe', aParam);
-        vbs.stdout.on("data", function(data) {
+        vbs.stdout.on("data", function (data) {
             console.log(data.toString());
         });
 
         //GUI 세션창이 존재하지않다면 ...
-        vbs.stderr.on("data", function(data) {
+        vbs.stderr.on("data", function (data) {
 
             //VBS 리턴 오류 CODE / MESSAGE 
             var str = data.toString(),
@@ -157,8 +157,8 @@
             ];
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
-            vbs.stdout.on("data", function(data) {});
-            vbs.stderr.on("data", function(data) {
+            vbs.stdout.on("data", function (data) {});
+            vbs.stderr.on("data", function (data) {
 
                 //VBS 리턴 오류 CODE / MESSAGE 
                 var str = data.toString(),
@@ -364,7 +364,8 @@
             "alwaysOnTop": true,
             "maximizable": false,
             "minimizable": false,
-            "show": true,
+            // "show": true,
+            // "opacity": 0.0,
             "frame": false,
             "transparent": true,
             "parent": win,
@@ -392,10 +393,18 @@
 
         oBrowserWindow.loadURL(sUrlPath);
 
-        // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        // oBrowserWindow.webContents.openDevTools();
 
-            oBrowserWindow.show();
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             let oSendData = {
                 DEFAULT_OPACITY: 0.3
@@ -403,7 +412,12 @@
 
             oBrowserWindow.webContents.send('if_showHidePopup', oSendData);
 
-            // oBrowserWindow.webContents.openDevTools();
+            oBrowserWindow.show();
+
+            // oBrowserWindow.setOpacity(1.0);
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         });
 

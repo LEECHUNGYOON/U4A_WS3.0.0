@@ -1414,7 +1414,7 @@
 
         oBrowserOptions.title = "Error Message Popup";
         oBrowserOptions.center = true;
-        oBrowserOptions.show = true;
+        oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.titleBarStyle = "hidden";
@@ -1428,26 +1428,6 @@
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
-
-        // // 팝업 위치를 부모 위치에 배치시킨다.
-        // var oParentBounds = CURRWIN.getBounds(),
-        //     xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-        //     yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-        //     oWinScreen = window.screen,
-        //     iAvailLeft = oWinScreen.availLeft;
-
-        // if (xPos < iAvailLeft) {
-        //     xPos = iAvailLeft;
-        // }
-
-        // if (yPos < 0) {
-        //     yPos = 0;
-        // };
-
-        // oBrowserWindow.setBounds({
-        //     x: xPos,
-        //     y: yPos
-        // });
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
@@ -1508,11 +1488,11 @@
         var sWinObjType = "PROPHELP",
             sPath = parent.getServerPath() + "/external_open?URL=" + encodeURIComponent(sUrl + "&WS=X");
 
-        // 테스트 목적임.
-        if (typeof sUrl !== "string") {
-            var testUrl = "/ZU4A_ACS/U4A_API_DOCUMENT?VER=1.77.2&CLSNM=sap.m.Page&GUBUN=1&PROPID=showFooter&UIOBK=UO00389";
-            sPath = parent.getServerPath() + "/external_open?URL=" + encodeURIComponent(testUrl + "&WS=X");
-        }
+        // // 테스트 목적임.
+        // if (typeof sUrl !== "string") {
+        //     var testUrl = "/ZU4A_ACS/U4A_API_DOCUMENT?VER=1.77.2&CLSNM=sap.m.Page&GUBUN=1&PROPID=showFooter&UIOBK=UO00389";
+        //     sPath = parent.getServerPath() + "/external_open?URL=" + encodeURIComponent(testUrl + "&WS=X");
+        // }
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
@@ -1913,7 +1893,7 @@
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.title = "Short Cut Creator";
+        oBrowserOptions.title = "ShortCut Creator";
         oBrowserOptions.show = false;
         oBrowserOptions.opacity = 1.0;
         oBrowserOptions.skipTaskbar = false;
@@ -1998,8 +1978,6 @@
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function() {
-
-            oBrowserWindow.show();
 
             var oSendData = {
                 browserInfo: T_info,

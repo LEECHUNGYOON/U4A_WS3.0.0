@@ -58,6 +58,7 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.show = false;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -77,6 +78,14 @@
 
         // oBrowserWindow.webContents.openDevTools();
 
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
@@ -93,12 +102,14 @@
 
                 oBrowserWindow.webContents.send('if-find-info', oFindData);
 
-                oBrowserWindow.setOpacity(1.0);
-
-                // Find Popup을 부모창 가운데에 표시
-                oAPP.fn.fnFindPopupOpenSetBounds(oBrowserWindow, oBrowserOptions);
-
             });
+
+            oBrowserWindow.show();
+
+            oBrowserWindow.setOpacity(1.0);
+
+            // Find Popup을 부모창 가운데에 표시
+            oAPP.fn.fnFindPopupOpenSetBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -186,7 +197,7 @@
     oAPP.fn.fnIpcMain_Find_Data_Refresh = (events, res) => {
 
         oAPP.fn.getServerEventList(function (aServerEventList) {
-            
+
             var oSender = events.sender,
                 oWebPref = oSender.getWebPreferences(),
                 sBrowserKey = oWebPref.browserkey;

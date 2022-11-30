@@ -44,6 +44,7 @@
         oBrowserOptions.title = sBrowserTitle;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.show = false;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -54,25 +55,25 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        // 팝업 위치를 부모 위치에 배치시킨다.
-        var oParentBounds = CURRWIN.getBounds(),
-            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-            oWinScreen = window.screen,
-            iAvailLeft = oWinScreen.availLeft;
+        // // 팝업 위치를 부모 위치에 배치시킨다.
+        // var oParentBounds = CURRWIN.getBounds(),
+        //     xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+        //     yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+        //     oWinScreen = window.screen,
+        //     iAvailLeft = oWinScreen.availLeft;
 
-        if (xPos < iAvailLeft) {
-            xPos = iAvailLeft;
-        }
+        // if (xPos < iAvailLeft) {
+        //     xPos = iAvailLeft;
+        // }
 
-        if (yPos < 0) {
-            yPos = 0;
-        };
+        // if (yPos < 0) {
+        //     yPos = 0;
+        // };
 
-        oBrowserWindow.setBounds({
-            x: xPos,
-            y: yPos
-        });
+        // oBrowserWindow.setBounds({
+        //     x: xPos,
+        //     y: yPos
+        // });
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
@@ -81,6 +82,14 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         // oBrowserWindow.webContents.openDevTools();
+
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -94,7 +103,12 @@
 
             oBrowserWindow.webContents.send('if-editor-info', oEditorInfo);
 
+            oBrowserWindow.show();
+
             oBrowserWindow.setOpacity(1.0);
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -171,6 +185,8 @@
 
         oBrowserOptions.title = "Error Page Preview";
         oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.show = false;
+        oBrowserOptions.opacity = 1.0;
         oBrowserOptions.devTools = false;
         oBrowserOptions.parent = oCurrWin;
 
@@ -183,30 +199,37 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        // 팝업 위치를 부모 위치에 배치시킨다.
-        var oParentBounds = oCurrWin.getBounds(),
-            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-            oWinScreen = window.screen,
-            iAvailLeft = oWinScreen.availLeft;
-
-        if (xPos < iAvailLeft) {
-            xPos = iAvailLeft;
-        }
-
-        if (yPos < 0) {
-            yPos = 0;
-        };
-
-        oBrowserWindow.setBounds({
-            x: xPos,
-            y: yPos
-        });        
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
         oBrowserWindow.loadURL("data:text/html;charset=utf-8," + encodeURI(oSaveData.HTML));
+
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
+        oBrowserWindow.webContents.on('did-finish-load', () => {
+
+            oBrowserWindow.show();
+
+            oBrowserWindow.setOpacity(1.0);
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+
+            oBrowserWindow = null;
+
+        });
 
     };
 

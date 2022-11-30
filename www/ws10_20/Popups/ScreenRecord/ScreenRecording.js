@@ -179,7 +179,6 @@ async function _chk_MultiScr(REMOTE){
     });
 }
 
-
 /* ================================================================= */
 /* Export Module Function - 스크린 레코딩 시작
 /* ================================================================= */
@@ -259,6 +258,7 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
 
         var url = `file://${__dirname}/index.html`;
         oWIN.loadURL(url);
+      
 	    oWIN.webContents.on('did-finish-load', function () {
 
             setTimeout(() => {
@@ -304,6 +304,7 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
             }, 100);
 
             oWIN.show();
+            
             //oWIN.webContents.openDevTools();
 
         });
