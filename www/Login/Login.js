@@ -904,7 +904,7 @@ let oAPP = (function () {
         // 개인화 파일에 저장된 CDN 허용 여부 플래그를 구한다.
         // var bIsCDN = oAPP.fn.fnGetIsCDN();
         var bIsCDN = parent.getIsCDN();
-
+        
         // CDN 허용 여부 플래그가 저장되지 않았을 경우.
         if (typeof bIsCDN == "undefined") {
 

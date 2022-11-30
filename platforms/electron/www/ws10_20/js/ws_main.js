@@ -344,7 +344,7 @@
             oAPP.fn.fnServerSession();
 
             // DOM 감지
-            oAPP.fn.fnSetMutationObserver();
+            oAPP.fn.fnSetMutationObserver(); // #[ws_fn_03.js]
 
             // Loading Page
             parent.showLoadingPage('');
