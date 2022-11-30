@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .recording {
+            position: absolute;
+            margin-top: 5px;
+            margin-left: 5px;
+        }
+        
+        .recordingOutBox {
+            width: 50px;
+            height: 50px;
+            background-color: rgb(138, 138, 138);
+            border-radius: 50px;
+            position: relative;
+            animation: outBox 1.5s linear infinite;
+        }
+        
+        .recordingInBox {
+            width: 30px;
+            height: 30px;
+            border-radius: 40px;
+            background: #FF0000;
+            box-shadow: inset -2px -2px 8px #730000, inset 2px 2px 8px #FFFFFF;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: inBox 1.5s linear infinite;
+        }
+        
+        @keyframes outBox {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+                background-color: rgb(138, 138, 138, 0.5);
+            }
+            100% {
+                transform: scale(1);
+                background-color: rgb(138, 138, 138);
+            }
+        }
+        
+        @keyframes inBox {
+            0% {
+                background: #630000;
+                box-shadow: 0px 0px 0px 0px #FF0000, inset -2px -2px 5px #000000, inset 2px 2px 5px #FFFFFF;
+            }
+            50% {
+                background-color: #ff0000;
+                box-shadow: 0px 0px 10px 3px #FF0000, inset -2px -2px 5px #530000, inset 2px 2px 5px #FFFFFF;
+            }
+            100% {
+                background: #630000;
+                box-shadow: 0px 0px 0px 0px #FF0000, inset -2px -2px 5px #000000, inset 2px 2px 5px #FFFFFF;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="recording">
+        <div class="recordingOutBox">
+            <div class="recordingInBox">
+                <div class="recordingCenterBox"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

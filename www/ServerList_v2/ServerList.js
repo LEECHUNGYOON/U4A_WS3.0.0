@@ -354,8 +354,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oPage1 = new sap.m.Page({
                 showHeader: false,
                 layoutData: new sap.ui.layout.SplitterLayoutData({
-                    size: "0px",
-                    minSize: 0
+                    size: "30%",
                 }),
                 content: [
                     oTreeTable
@@ -365,8 +364,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oPage2 = new sap.m.Page({
                 showHeader: false,
                 layoutData: new sap.ui.layout.SplitterLayoutData({
-                    size: "0px",
-                    minSize: 0
+
                 }),
                 content: [
                     oTable
@@ -577,13 +575,28 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of oAPP.fn.fnWorkSpaceSort
 
-    // 로그온 정보 테이블 그리기
+    /************************************************************************
+     * 서버 리스트 테이블 그리기
+     ************************************************************************/
     oAPP.fn.fnGetSAPLogonListTable = () => {
 
-        return new sap.m.Table({
+        let oToolbar = oAPP.fn.fnGetSAPLogonListTableToolbar();
+
+        return new sap.m.Table("serverlist_table", {
             fixedLayout: false,
+            alternateRowColors: true,
+            autoPopinMode: true,
+            headerToolbar: oToolbar,
             sticky: [sap.m.Sticky.ColumnHeaders],
             columns: [
+
+                new sap.m.Column({
+                    width: "150px",
+                    header: new sap.m.Label({
+                        design: sap.m.LabelDesign.Bold,
+                        text: "status"
+                    })
+                }),
 
                 new sap.m.Column({
                     header: new sap.m.Label({
@@ -623,6 +636,40 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     type: sap.m.ListType.Active,
                     cells: [
 
+                        new sap.m.ObjectStatus({
+                            icon: "sap-icon://circle-task-2",
+                        }).bindProperty("text", {
+                            parts: [
+                                "ISSAVE"
+                            ],
+                            formatter: (ISSAVE) => {
+
+                                let sStatusTxt = "Not Saved";
+
+                                if (ISSAVE == true) {
+                                    sStatusTxt = "Saved";
+                                }
+
+                                return sStatusTxt;
+
+                            }
+                        }).bindProperty("state", {
+                            parts: [
+                                "ISSAVE"
+                            ],
+                            formatter: (ISSAVE) => {
+
+                                let sState = sap.ui.core.ValueState.None;
+
+                                if (ISSAVE == true) {
+                                    sState = sap.ui.core.ValueState.Success;
+                                }
+
+                                return sState;
+
+                            }
+                        }).addStyleClass("u4aWsServerList"),
+
                         new sap.m.Text({
                             text: "{name}"
                         }),
@@ -643,6 +690,45 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }).attachBrowserEvent("dblclick", oAPP.fn.fnPressServerListItem);
 
     }; // end of oAPP.fn.fnGetSAPLogonListTable
+
+    /************************************************************************
+     * 서버 리스트 테이블의 헤더 툴바 영역
+     ************************************************************************/
+    oAPP.fn.fnGetSAPLogonListTableToolbar = () => {
+
+        return new sap.m.Toolbar({
+            content: [
+                new sap.m.Button({
+                    icon: "sap-icon://edit",
+                    press: (oEvent) => {
+
+                        oAPP.fn.fnPressEdit();
+
+                    }
+                })
+            ]
+        });
+
+    }; // end of oAPP.fn.fnGetSAPLogonListTableToolbar
+
+    /************************************************************************
+     * 서버 리스트 수정 버튼
+     ************************************************************************/
+    oAPP.fn.fnPressEdit = () => {
+
+        debugger;
+        
+        let oTable = sap.ui.getCore().byId("serverlist_table");
+        if (!oTable) {
+            return;
+        }
+
+        let oSelectedItem = oTable.getSelectedItem();
+
+
+
+
+    }; // end of oAPP.fn.fnPressEdit
 
     oAPP.fn.fnPressServerListItem = (oEvent) => {
 

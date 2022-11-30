@@ -28,6 +28,32 @@ let oScreenWindow,
 /* 내부 펑션 
 /* ================================================================= */
 
+// 부모창 가운데에 배치하는 펑션
+function _setParentCenterBounds(oBrowserWindow, oBrowserOptions){
+
+    let oCurrWin = REMOTE.getCurrentWindow();
+
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = oCurrWin.getBounds(),
+            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
+
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
+        }
+
+        if (oParentBounds.y > yPos) {
+            yPos = oParentBounds.y + 10;
+        }
+
+        oBrowserWindow.setBounds({
+            x: xPos,
+            y: yPos
+        });
+
+}
 
 //모니터(screen) 정보 추출 
 async function _getMonitorScrInfo(REMOTE){
@@ -92,10 +118,11 @@ async function _chk_MultiScr(REMOTE){
         }
 
         var Lwidth = 300 * T_INFO.length;
-
+        
+        // [이청윤]
         //멀티 모니터 일 경우는 
         //모니터(screen) 선택 팝업호출 
-        var op = {
+        var op = {            
             "height": 300,
             "width": Lwidth,
             "resizable": false,
@@ -145,9 +172,20 @@ async function _chk_MultiScr(REMOTE){
         
         var url = `file://${__dirname}/ScrList.html`;
         oWIN.loadURL(url);
-        oWIN.webContents.on('did-finish-load', function () {
-            oWIN.show();
 
+        // oWIN.webContents.openDevTools();
+
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oWIN.once('ready-to-show', () => {
+
+            // 부모창 가운데에 띄우기
+            _setParentCenterBounds(oWIN, op);           
+
+        });
+
+        oWIN.webContents.on('did-finish-load', function () {          
+
+            oWIN.show();
             // //개발모드일 경우만 .. 콘솔창 수행
             // if(!REMOTE.app.isPackaged){
             //     oWIN.webContents.openDevTools();
@@ -157,6 +195,10 @@ async function _chk_MultiScr(REMOTE){
             var opt = {"LOAD_THEME": LOAD_THEME };
 
             oWIN.webContents.send('IF-chkScrList', opt);
+
+            // 부모창 가운데에 띄우기
+            _setParentCenterBounds(oWIN, op);  
+
 
         });
 
@@ -177,33 +219,6 @@ async function _chk_MultiScr(REMOTE){
 
 
     });
-}
-
-
-function _fnSetParentCenterBounds(oBrowserWindow, oBrowserOptions){
-
-    let oCurrWin = REMOTE.getCurrentWindow();
-
-    // 팝업 위치를 부모 위치에 배치시킨다.
-    var oParentBounds = oCurrWin.getBounds(),
-        xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-        yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-        oWinScreen = window.screen,
-        iAvailLeft = oWinScreen.availLeft;
-
-    if (xPos < iAvailLeft) {
-        xPos = iAvailLeft;
-    }
-
-    if (oParentBounds.y > yPos) {
-        yPos = oParentBounds.y + 10;
-    }
-
-    oBrowserWindow.setBounds({
-        x: xPos,
-        y: yPos
-    });         
-
 }
 
 /* ================================================================= */
@@ -236,6 +251,7 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
 
         //주모니터 정보를 찾지못햇다면 
         if(mainDisp.length == 0){
+            /*
             var dispInfo = {};
             dispInfo.bounds        = {};
             dispInfo.bounds.x      = selDisp[0].bounds.x;
@@ -244,16 +260,25 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
             dispInfo.bounds.width  = selDisp[0].bounds.width;
             dispInfo.scaleFactor   = selDisp[0].scaleFactor;
             mainDisp.push(dispInfo);
+            */
+            var dispInfo = {};
+            dispInfo.bounds        = {};
+            dispInfo.bounds.x      = selDisp[0].bounds.x;
+            dispInfo.bounds.y      = selDisp[0].bounds.y;
+            dispInfo.bounds.height = selDisp[0].bounds.height;
+            dispInfo.bounds.width  = selDisp[0].bounds.width;
+            dispInfo.scaleFactor   = selDisp[0].scaleFactor;
+            mainDisp.push(dispInfo);
+
         }
-       
 
         var op = {
             "x":mainDisp[0].bounds.x,
             "y":mainDisp[0].bounds.y,
             "height": mainDisp[0].bounds.height,
             "width":  mainDisp[0].bounds.width,
-            "resizable": true,
-            "fullscreenable": true,
+            //"resizable": true,
+            //"fullscreenable": true,
             "alwaysOnTop":true,
             "maximizable": false,
             "minimizable": false,
@@ -275,7 +300,7 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
         };
 
         //부모 디비깅 창 임시 닫기
-        //REMOTE.getCurrentWindow().closeDevTools();
+        // REMOTE.getCurrentWindow().closeDevTools();
 
         var oWIN = new REMOTE.BrowserWindow(op);
         oWIN.setMenuBarVisibility(false);
@@ -283,70 +308,56 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
         // 현재 창을 잠시 글로벌에 둔다.
         oScreenWindow = oWIN;
 
-        var url = `file://${__dirname}/index.html`;
+        var url = `file://${__dirname}/recoding.html`;
         oWIN.loadURL(url);
 
-        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
-        oWIN.once('ready-to-show', () => {
-           
-            _fnSetParentCenterBounds(oWIN, op);
+        // [이청윤]
+        // oWIN.webContents.openDevTools();
 
+        oWIN.once('ready-to-show', () => {
+            oWIN.show();
+            var sBoundInfo = oWIN.getBounds();
+
+            sBoundInfo.x = selDisp[0].bounds.x;
+            sBoundInfo.y = selDisp[0].bounds.y;
+
+            sBoundInfo.height = selDisp[0].bounds.height - 30;
+            sBoundInfo.width  = selDisp[0].bounds.width;
+
+            oWIN.setBounds(sBoundInfo);
+            
         });
 
-	    oWIN.webContents.on('did-finish-load', function () {
+	    oWIN.webContents.on('did-finish-load', () => {
+           
+            var sBoundInfo = oWIN.getBounds();
 
-            setTimeout(() => {
-                
-                var sBoundInfo = oWIN.getBounds();
+            sBoundInfo.x = selDisp[0].bounds.x;
+            sBoundInfo.y = selDisp[0].bounds.y;
 
-                sBoundInfo.x = selDisp[0].bounds.x;
-                sBoundInfo.y = selDisp[0].bounds.y;
-    
-                sBoundInfo.height = selDisp[0].bounds.height - 10;
-                sBoundInfo.width  = selDisp[0].bounds.width;
+            sBoundInfo.height = selDisp[0].bounds.height - 30;
+            sBoundInfo.width  = selDisp[0].bounds.width;
 
-                //사용자 선택 모니터 비율이 100% 인경우 
-                if(selDisp[0].scaleFactor == 1){
+            oWIN.setBounds(sBoundInfo);
 
-                    //주모니터 비율이 100% 경우
-                    if(mainDisp[0].scaleFactor == 1){
-                        oWIN.setBounds(sBoundInfo);
-                    }else{
-                    //주모니터 비율이 100% 아닌 경우 
-                        oWIN.setBounds(sBoundInfo);
-                        oWIN.setBounds(sBoundInfo);
-                    }
+            var oParams = {
+                "SCREEN_ID": sINFO.SELECT_SCR.SCREEN_ID,
+                "SCREEN_DISPLAY_ID": sINFO.SELECT_SCR.DISPLAY_ID
+              };
 
-                }else{
-                    //사용자 선택 모니터 비율이 100% 아닌 경우  
-                    oWIN.setBounds(sBoundInfo);
-                    oWIN.setBounds(sBoundInfo);
+            oWIN.webContents.send('IF-REC-READY', oParams);
 
-                }
+            // oWIN.webContents.openDevTools();
 
-                setTimeout(() => {
-                    
-                    oParams = {
-                        "SCREEN_ID": sINFO.SELECT_SCR.SCREEN_ID,
-                        "SCREEN_DISPLAY_ID": sINFO.SELECT_SCR.DISPLAY_ID
-                      };
-
-                    oWIN.webContents.send('IF-REC-READY', oParams);
-
-                }, 100);
-
-            }, 100);
-
-            oWIN.show();
-
-            _fnSetParentCenterBounds(oWIN, op);
-            
-            //oWIN.webContents.openDevTools();
-
+            //개발모드일 경우만 .. 콘솔창 수행
+            //if(!REMOTE.app.isPackaged){
+                //oWIN.webContents.openDevTools();
+            //}
+        
         });
 
         oWIN.on("close", ()=>{
-            //debugger;
+            debugger;
 
             // 글로벌 변수 초기화
             oScreenWindow = null;

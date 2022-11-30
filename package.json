@@ -65,6 +65,7 @@
     "node-zip": "^1.1.1",
     "random-key": "^0.3.2",
     "regedit": "^5.0.0",
+    "systeminformation": "^5.15.1",
     "xml-js": "^1.6.11",
     "yamljs": "^0.3.0",
     "zip-lib": "^0.7.3"

@@ -221,10 +221,10 @@
         // } else {
         //     oWin.loadURL(PATHINFO.SERVERLIST);
         // }
-
-        oWin.loadURL(PATHINFO.SERVERLIST);
-
+        
         // oWin.webContents.openDevTools();
+
+        oWin.loadURL(PATHINFO.SERVERLIST);        
 
         oWin.webContents.on('did-finish-load', function() {
 

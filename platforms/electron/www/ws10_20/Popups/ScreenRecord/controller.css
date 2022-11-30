@@ -22,113 +22,6 @@ body {
   /*background-color: #222;*/
 }
 
-/*========================================= */
-/* Text area                                */
-/*========================================= */
-
-.cl_textareaAREA {
-
-  position: absolute;
-  top: 2%;
-  right: 0;
-  left: 6%;
-
-}
-
-.cl_textarea:focus {
-  background: none repeat scroll 0 0 #ff00e9;
-  outline-width: 0;
-}
-
-
-/* TextArea 버튼  */
-.textarea-open {
-  position: absolute;
-  display: none;
-  top: 66%;
-  right: 0;
-  left: 6%;
-
-}
-
-.textarea-open-Button {
-  
-  zoom: 0.9;
-  box-shadow: 0px 10px 14px -7px #375bea;
-  background: linear-gradient(to bottom, #1582d2 5%, #10a0dc 100%);
-  background-color: #1cbde8;
-  border-radius: 8px;
-  display: inline-block;
-  cursor: pointer;
-  color: #ffffff;
-  font-family: Arial;
-  font-size: 20px;
-  font-weight: bold;
-  padding: 13px 32px;
-  text-decoration: none;
-  text-shadow: 0px 1px 0px #801b54;
-
-}
-.textarea-open :hover {
-	background: linear-gradient(to bottom, #078ff0 5%, #0a28ee 100%);
-	background-color:#1cbde8;
-}
-.textarea-open :active {
-  position:relative;
-	top:1px;
-}
-
-
-
-
-/*========================================= */
-/* 씨인                          */
-/*========================================= */
-
-.signature-on {
-  background-color: rgba(0, 0, 0, 0.01);
-
-}
-
-.signature-off {
-  opacity: 0;
-
-}
-
-.signature-component {
-  text-align: left;
-  display: inline-block;
-  max-width: 100%;
-}
-.signature-component h1 {
-  margin-bottom: 0;
-}
-.signature-component h2 {
-  margin: 0;
-  font-size: 100%;
-}
-.signature-component button {
-  padding: 1em;
-  /* background: transparent; */
-  box-shadow: 2px 2px 4px #777;
-  margin-top: 0.5em;
-  border: 1px solid #777;
-  font-size: 1rem;
-}
-.signature-component button.toggle {
-  background: rgba(255, 0, 0, 0.2);
-}
-.signature-component canvas {
-  display: block;
-  position: relative;
-  border: 1px solid;
-}
-.signature-component img {
-  position: absolute;
-  left: 0;
-  top: 0;
-}
-
 
 /*========================================= */
 /* WINDOW 드로잉 초기화 버튼                 */
@@ -207,8 +100,6 @@ body {
 }
 
 
-
-
 /*========================================= */
 /* WINDOW 드로잉 설정 체크박스               */
 /*========================================= */
@@ -239,16 +130,20 @@ body {
 
 #app-cover {
   z-index: 100000000000;
-  position: fixed;
-  zoom:0.5;
+  /*position: fixed;*/
+   zoom:0.65; 
   /* top: 85%; */
   /*top: 80%; */
+
+  /*
   top:10px;
   right: 0;
   bottom: 0;
   left: 93%;
   width: 270px;
   height:350px;
+  */
+  height:100%;
   background:black;
   overflow-y: auto;
 }
@@ -258,8 +153,8 @@ body {
   z-index: 100000000000;
   position: absolute;
   /* top: 30%; */
-  top: 100px;
-  right: 31%;
+  top: 80px;
+  right: 40%;
   left: 0%;
   width: 155px;
   margin: -70px auto 0 auto;
