@@ -5,7 +5,7 @@
  * - file Desc : ws 메인 
  ************************************************************************/
 
-(function (window, oAPP) {
+(function(window, oAPP) {
     "use strict";
 
     var APPCOMMON = oAPP.common;
@@ -13,7 +13,7 @@
     /**************************************************************************
      * 공통 인스턴스 정의
      **************************************************************************/
-    oAPP.main.fnPredefineGlobalObject = function () {
+    oAPP.main.fnPredefineGlobalObject = function() {
 
         var oMetaData = parent.getMetadata();
 
@@ -28,27 +28,27 @@
 
     }; // end of fnPredefineGlobalObject  
 
-    /************************************************************************
-     * 접속 Language 에 맞는 메시지 텍스트 읽어오기
-     ************************************************************************/
-    oAPP.main.fnOnLoadMessageClass = function () {
+    // /************************************************************************
+    //  * 접속 Language 에 맞는 메시지 텍스트 읽어오기
+    //  ************************************************************************/
+    // oAPP.main.fnOnLoadMessageClass = function() {
 
-        var FS = parent.FS,
-            oUserInfo = parent.getUserInfo();
+    //     var FS = parent.FS,
+    //         oUserInfo = parent.getUserInfo();
 
-        var sMsgFileFolderPath = parent.getPath("MSG"),
-            sMsgFilePath = sMsgFileFolderPath + "\\" + oUserInfo.LANGU + ".json";
+    //     var sMsgFileFolderPath = parent.getPath("MSG"),
+    //         sMsgFilePath = sMsgFileFolderPath + "\\" + oUserInfo.LANGU + ".json";
 
-        if (FS.existsSync(sMsgFilePath) == false) {
-            return;
-        }
+    //     if (FS.existsSync(sMsgFilePath) == false) {
+    //         return;
+    //     }
 
-        var sMsgData = FS.readFileSync(sMsgFilePath, 'utf-8'),
-            oMsgData = JSON.parse(sMsgData);
+    //     var sMsgData = FS.readFileSync(sMsgFilePath, 'utf-8'),
+    //         oMsgData = JSON.parse(sMsgData);
 
-        oAPP.attr.oMsgClass = oMsgData;
+    //     oAPP.attr.oMsgClass = oMsgData;
 
-    }; // end of oAPP.main.fnOnLoadMessageClass
+    // }; // end of oAPP.main.fnOnLoadMessageClass
 
     /**************************************************************************
      * [WS10] 모델 데이터 기본세팅
@@ -89,7 +89,7 @@
     /**************************************************************************
      * U4A WS 메타 정보 구하기
      **************************************************************************/
-    oAPP.main.fnOnInitModelBinding = function () {
+    oAPP.main.fnOnInitModelBinding = function() {
 
         // ModelData
         var oMetaData = {
@@ -175,7 +175,7 @@
     /************************************************************************
      * window Event Handle ..
      ************************************************************************/
-    oAPP.main.fnBeforeunload = function (isClearStorage) {
+    oAPP.main.fnBeforeunload = function(isClearStorage) {
 
         // 설정된 Global Shortcut 단축키 삭제
         oAPP.common.fnRemoveGlobalShortcut();
@@ -264,7 +264,7 @@
     };
 
     // Test..
-    oAPP.main.fnSetLanguage = function () {
+    oAPP.main.fnSetLanguage = function() {
 
         var oUserInfo = parent.getUserInfo(),
             oMetaScript = document.getElementById("sap-ui-bootstrap");
@@ -307,9 +307,9 @@
     /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------
      ************************************************************************/
-    oAPP.main.fnWsStart = function () {
+    oAPP.main.fnWsStart = function() {
 
-        sap.ui.getCore().attachInit(function () {
+        sap.ui.getCore().attachInit(function() {
 
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
@@ -326,8 +326,8 @@
             // Test..(UI5 bootstrap tag의 Language 값 설정 테스트)
             oAPP.main.fnSetLanguage();
 
-            // 접속 Language에 맞는 메시지 정보 읽어오기
-            oAPP.main.fnOnLoadMessageClass();
+            // // 접속 Language에 맞는 메시지 정보 읽어오기
+            // oAPP.main.fnOnLoadMessageClass();
 
             // 브라우저 상단 메뉴를 없앤다.
             parent.setBrowserMenu(null);
@@ -413,8 +413,11 @@
 
             // Logout 메시지 Open 여부 Flag
             oAPP.attr.isBrowserCloseLogoutMsgOpen = 'X';
-
-            var sMsg = oAPP.common.fnGetMsgClassTxt("0001"); // "Unsaved data will be lost. \n Do you want to log off?";        
+            
+            // Unsaved data will be lost.
+            // Do you want to log off?
+            var sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "301", "", "", "", "");
+            sMsg += " \n " + oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "302", "", "", "", "");
 
             // 질문 팝업?
             parent.showMessage(sap, 30, 'I', sMsg, lf_MsgCallback);

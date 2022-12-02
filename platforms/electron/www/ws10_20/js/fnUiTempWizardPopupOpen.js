@@ -972,25 +972,7 @@
                     min: 0,
                     width: "100%",
                     enabled: "{enabled}"
-                }).bindProperty("value", {
-                    parts: [
-                        "POSIT",
-                        "enabled"
-                    ],
-                    formatter: (iPos, bEnabled) => {
-
-                        if (bEnabled == null) {
-                            return iPos;
-                        }
-
-                        if (bEnabled == false) {
-                            return 0;
-                        }
-
-                        return iPos;
-
-                    }
-                })
+                })                
 
             }).bindProperty("visible", `${C_TMPL_BIND_ROOT}/${C_TMPL_WZD1_ID}/TREEVISI`, function(bIsVisi) {
                 return !bIsVisi;
@@ -1122,25 +1104,8 @@
                     min: 0,
                     width: "100%",
                     enabled: "{enabled}"
-                }).bindProperty("value", {
-                    parts: [
-                        "POSIT",
-                        "enabled"
-                    ],
-                    formatter: (iPos, bEnabled) => {
-
-                        if (bEnabled == null) {
-                            return iPos;
-                        }
-
-                        if (bEnabled == false) {
-                            return 0;
-                        }
-
-                        return iPos;
-
-                    }
                 })
+                
             }),
 
             new sap.ui.table.Column({
@@ -1269,25 +1234,7 @@
                     min: 0,
                     width: "100%",
                     enabled: "{enabled}"
-                }).bindProperty("value", {
-                    parts: [
-                        "POSIT",
-                        "enabled"
-                    ],
-                    formatter: (iPos, bEnabled) => {
-
-                        if (bEnabled == null) {
-                            return iPos;
-                        }
-
-                        if (bEnabled == false) {
-                            return 0;
-                        }
-
-                        return iPos;
-
-                    }
-                })
+                })                
             }),
 
             new sap.ui.table.Column({
@@ -1483,31 +1430,11 @@
                     design: EnumLabelDesignBold
                 }),
                 template: new sap.m.StepInput({
-                        // value: "{POSIT}",
+                        value: "{POSIT}",
                         min: 0,
                         width: "100%",
                         enabled: "{enabled}"
-                    })
-                    .bindProperty("value", {
-                        parts: [
-                            "POSIT",
-                            "enabled"
-                        ],
-                        formatter: (iPos, bEnabled) => {
-
-                            if (bEnabled == null) {
-                                return iPos;
-                            }
-
-                            if (bEnabled == false) {
-                                return 0;
-                            }
-
-                            return iPos;
-
-                        }
-
-                    })
+                    })                    
 
             }).bindProperty("visible", `${C_TMPL_BIND_ROOT}/${C_TMPL_WZD3_ID}/TREEVISI`, function(bIsVisi) {
                 return !bIsVisi;

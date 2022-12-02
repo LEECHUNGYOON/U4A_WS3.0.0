@@ -603,7 +603,10 @@
         // Logout 버튼으로 Logout을 시도 했다는 Flag      
         oAPP.attr.isBrowserCloseLogoutMsgOpen = "X";
 
-        var sMsg = APPCOMMON.fnGetMsgClassTxt("0001"); // "Unsaved data will be lost. \n Do you want to log off?";        
+        // Unsaved data will be lost.
+        // Do you want to log off?
+        var sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "301", "", "", "", "");
+        sMsg += " \n " + oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "302", "", "", "", "");
 
         // 질문 팝업?
         parent.showMessage(sap, 30, 'I', sMsg, lf_MsgCallback);

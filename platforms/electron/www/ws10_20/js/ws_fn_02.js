@@ -490,21 +490,22 @@
 
         var sValue = sAppID;
 
+        // Application name is required.
         if (typeof sValue !== "string" || sValue == "") {
-            oRetData.RETMSG = APPCOMMON.fnGetMsgClsTxt("050", "Application Name");
+            oRetData.RETMSG = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "050", APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A33"));
             return oRetData;
         }
 
         // 특수문자 존재 여부 체크
         var reg = /[^\w]/;
         if (reg.test(sValue)) {
-            oRetData.RETMSG = APPCOMMON.fnGetMsgClassTxt("0010"); // Do not include special character in Application Name.
+            oRetData.RETMSG = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "278", "", "", "", ""); // Special characters are not allowed.
             return oRetData;
         }
 
         // AppID 자릿수가 15 이상일 경우 오류
         if (sValue.length > oAPP.attr.iAppNameMaxLength) {
-            oRetData.RETMSG = APPCOMMON.fnGetMsgClsTxt("115"); // "Application ID can only be 15 characters or less !!"         
+            oRetData.RETMSG = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "115", "", "", "", ""); // Application ID can only be 15 characters or less !!  
             return oRetData;
         }
 
@@ -516,9 +517,12 @@
         // Application 명 시작이 Z 이나 Y로 시작하는지 확인한다.
         if (!bIsStartZ && !bIsStartY) {
 
-            oRetData.RETMSG = APPCOMMON.fnGetMsgClsTxt("009"); // "The application ID must start with Z or Y."
+            oRetData.RETMSG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "009", "", "", "", ""); // The application ID must start with Z or Y.
             return oRetData;
         }
+
+
+
 
         oRetData.RETCD = true;
         return oRetData;

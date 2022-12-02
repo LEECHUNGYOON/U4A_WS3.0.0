@@ -163,7 +163,8 @@
 
         FS.writeFileSync(sClipboardJsonPath, JSON.stringify(oCopiedData));
 
-        var sMsg = oAPP.common.fnGetMsgClassTxt("0017"); // "Clipboard Copy Success!"
+        // Clipboard Copy Success!
+        var sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "303", "", "", "", "");
 
         parent.showMessage(sap, 10, 'S', sMsg);
 

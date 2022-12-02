@@ -84,37 +84,37 @@
         return sap.ui.getCore().getModel().getProperty(sModelPath);
     };
 
-    /************************************************************************
-     * 메시지 클래스 번호에 해당하는 메시지 리턴
-     * **********************************************************************
-     * @param {String} sMsgNum  
-     * - Message Class Number
-     * 
-     * @return {String}
-     * - Message Text
-     ************************************************************************/
-    oAPP.common.fnGetMsgClassTxt = function (sMsgNum) {
+    // /************************************************************************
+    //  * 메시지 클래스 번호에 해당하는 메시지 리턴
+    //  * **********************************************************************
+    //  * @param {String} sMsgNum  
+    //  * - Message Class Number
+    //  * 
+    //  * @return {String}
+    //  * - Message Text
+    //  ************************************************************************/
+    // oAPP.common.fnGetMsgClassTxt = function (sMsgNum) {
 
-        // 메시지 클래스 내용이 없으면 리턴
-        if (!oAPP.attr.oMsgClass) {
-            return;
-        }
+    //     // 메시지 클래스 내용이 없으면 리턴
+    //     if (!oAPP.attr.oMsgClass) {
+    //         return;
+    //     }
 
-        // 파라미터 타입이 String이 아니면 리턴
-        if (typeof sMsgNum !== "string") {
-            return;
-        }
+    //     // 파라미터 타입이 String이 아니면 리턴
+    //     if (typeof sMsgNum !== "string") {
+    //         return;
+    //     }
 
-        var sRetMsg = oAPP.attr.oMsgClass[sMsgNum];
+    //     var sRetMsg = oAPP.attr.oMsgClass[sMsgNum];
 
-        // 메시지 클래스 번호에 해당하는 메시지가 없으면 리턴
-        if (!sRetMsg) {
-            return;
-        }
+    //     // 메시지 클래스 번호에 해당하는 메시지가 없으면 리턴
+    //     if (!sRetMsg) {
+    //         return;
+    //     }
 
-        return sRetMsg;
+    //     return sRetMsg;
 
-    }; // end of oAPP.common.fnGetMsgClassTxt
+    // }; // end of oAPP.common.fnGetMsgClassTxt
 
     oAPP.common.fnGetMsgClsText = (sMsgCls, sMsgNum, p1, p2, p3, p4) => {
 
