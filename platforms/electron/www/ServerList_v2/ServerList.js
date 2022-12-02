@@ -3,6 +3,7 @@
  **************************************************************************/
 let oAPP = parent.oAPP;
 
+
 const
     require = parent.require,
     REMOTE = oAPP.REMOTE,
@@ -12,12 +13,16 @@ const
     APP = REMOTE.app,
     REGEDIT = require('regedit'),
     APPPATH = APP.getAppPath(),
+    USERDATA = APP.getPath("userData"),
     XMLJS = require('xml-js'),
     FS = REMOTE.require('fs'),
 
     PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
     SETTINGS = require(PATHINFO.WSSETTINGS);
 
+const
+    sPOPID = "editPopup",
+    sBINDROOT = "/SAVEDATA";
 
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
@@ -30,9 +35,16 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         sap.ui.core.BusyIndicator.iDEFAULT_DELAY_MS = 0;
 
         if (bIsBusy) {
+
+            // 화면 Lock 걸기
+            sap.ui.getCore().lock();
+
             sap.ui.core.BusyIndicator.show();
             return;
         }
+
+        // 화면 Lock 해제
+        sap.ui.getCore().unlock();
 
         sap.ui.core.BusyIndicator.hide();
 
@@ -748,26 +760,33 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
         }
 
-        // 선택한 라인의 바인딩 데이터
-        let oCtxData = oCtx.getProperty(oCtx.getPath());
-
-        oAPP.fn.fnEditDialogOpen(oCtxData);
+        oAPP.fn.fnEditDialogOpen(oCtx);
 
     }; // end of oAPP.fn.fnPressEdit
 
     /************************************************************************
      * 서버 리스트 수정 팝업
      ************************************************************************/
-    oAPP.fn.fnEditDialogOpen = (oCtxData) => {
+    oAPP.fn.fnEditDialogOpen = (oCtx) => {
 
-        debugger;
+        // 선택한 라인의 바인딩 데이터
+        let oCtxData = oCtx.getProperty(oCtx.getPath());
 
-        const
-            sPOPID = "editPopup",
-            sBINDROOT = "/SAVEDATA";
+        let oJsonModel = new sap.ui.model.json.JSONModel();
+        oJsonModel.setData({
+            SERVER: oCtxData,
+            oCtx: oCtx,
+            SAVEDATA: {
+                protocol: "http",
+                host: "",
+                port: ""
+            },
+        });
 
         var oDialog = sap.ui.getCore().byId(sPOPID);
         if (oDialog) {
+
+            oDialog.setModel(oJsonModel);
 
             oDialog.open();
 
@@ -856,7 +875,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     icon: "sap-icon://accept",
                     press: () => {
 
-                        debugger;
+                        oAPP.fn.fnPressSave();
 
                     }
                 }),
@@ -883,7 +902,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             // association
             // initialFocus: "ws30_crname",
             // events
-      
+
             afterClose: () => {
 
                 let oDialog = sap.ui.getCore().byId(sPOPID);
@@ -899,18 +918,143 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         });
 
-
-        let oJsonModel = new sap.ui.model.json.JSONModel();
-        oJsonModel.setData({
-            SERVER: oCtxData,
-            SAVEDATA: {}
-        });
-
         oDialog.setModel(oJsonModel);
 
         oDialog.open();
 
     }; // end of oAPP.fn.fnEditDialogOpen
+
+    oAPP.fn.fnPressSave = async () => {
+
+        oAPP.setBusy(true);
+
+        let oDialog = sap.ui.getCore().byId(sPOPID);
+        if (!oDialog) {
+            oAPP.setBusy(false);
+            return;
+        }
+
+        let oModel = oDialog.getModel(),
+            oModelData = oModel.getData(),
+            oServer = oModelData.SERVER,
+            oSaveData = oModelData.SAVEDATA,
+            oCtx = oModelData.oCtx;
+
+        let oValid = await oAPP.fn.fnCheckValid(oSaveData);
+        if (oValid.RETCD == "E") {
+
+            // 오류 메시지 출력
+
+            oAPP.setBusy(false);
+            return;
+
+        }
+
+        // 입력한 데이터를 로컬 JSON 파일에 저장한다.
+        let oLocalSaveData = {
+            uuid: oServer.uuid,
+            protocol: oSaveData.protocol,
+            host: oSaveData.host,
+            port: oSaveData.port,
+        };
+
+        debugger;
+
+        // 
+
+        let sPathInfoUrl = PATH.join(APPPATH, "Frame", "pathInfo.js");
+
+        let oPathInfo = require(sPathInfoUrl);
+
+        // 로컬에 저장된 서버리스트 정보 JSON PATH
+        let sLocalJsonPath = oPathInfo.SERVERINFO_V2 || "";
+
+        // 파일 존재 유무 확인
+        let bIsFileExist = FS.existsSync(sLocalJsonPath);
+        if (!bIsFileExist) {
+
+            // 파일이 없습니다 오류
+
+            return;
+        }
+
+        // JSON 파일을 읽는다.
+        let aSavedJsonData = REMOTE.require(sLocalJsonPath);
+
+        // JSON 파일 읽어보니 Array 타입이 아닌경우
+        if (!Array.isArray(aSavedJsonData)) {
+
+            // p13n.json 파일에 APPID Suggestion 정보 저장
+            FS.writeFileSync(sLocalJsonPath, JSON.stringify([oLocalSaveData]));
+
+            // 저장 완료 메시지!
+            oAPP.setBusy(false);
+
+            return;
+
+        }
+
+        aSavedJsonData.push(oLocalSaveData);
+
+
+
+        oAPP.setBusy(false);
+
+    }; // end of oAPP.fn.fnPressSave
+
+    oAPP.fn.fnWriteFile = (path, file, option) => {
+
+        let oDefaultOptions = {
+            encoding: "utf-8",
+            mode: 0o777,
+            flag: "w"
+        };
+
+        let oOptions = Object.assign(oDefaultOptions, option);
+
+        return new Promise((resolve) => {
+
+            FS.writeFile(path, file, oOptions, (err) => {
+
+                // 오류시
+                if (err) {
+
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+
+                    return;
+                }
+
+                // 성공시
+                resolve({
+                    RETCD: "S"
+                });
+
+            });
+
+            // mode: 0o777
+        });
+
+    };
+
+    oAPP.fn.fnCheckValid = (oSaveData) => {
+
+        return new Promise((resolve) => {
+
+            setTimeout(() => {
+
+                resolve({
+                    RETCD: "S"
+                });
+
+            }, 1000);
+
+
+        });
+
+    }; // end of oAPP.fn.fnCheckValid
 
     oAPP.fn.fnPressServerListItem = (oEvent) => {
 

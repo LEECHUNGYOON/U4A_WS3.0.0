@@ -5,7 +5,7 @@
  * - file Desc : ws 메인 
  ************************************************************************/
 
-(function(window, oAPP) {
+(function (window, oAPP) {
     "use strict";
 
     var APPCOMMON = oAPP.common;
@@ -13,7 +13,7 @@
     /**************************************************************************
      * 공통 인스턴스 정의
      **************************************************************************/
-    oAPP.main.fnPredefineGlobalObject = function() {
+    oAPP.main.fnPredefineGlobalObject = function () {
 
         var oMetaData = parent.getMetadata();
 
@@ -31,7 +31,7 @@
     /************************************************************************
      * 접속 Language 에 맞는 메시지 텍스트 읽어오기
      ************************************************************************/
-    oAPP.main.fnOnLoadMessageClass = function() {
+    oAPP.main.fnOnLoadMessageClass = function () {
 
         var FS = parent.FS,
             oUserInfo = parent.getUserInfo();
@@ -89,7 +89,7 @@
     /**************************************************************************
      * U4A WS 메타 정보 구하기
      **************************************************************************/
-    oAPP.main.fnOnInitModelBinding = function() {
+    oAPP.main.fnOnInitModelBinding = function () {
 
         // ModelData
         var oMetaData = {
@@ -139,10 +139,12 @@
      **************************************************************************/
     oAPP.main.fnGetWs20SideMenuItemList = () => {
 
+        let sText = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B31", "", "", "", "");
+
         return [{
             key: "MENUITEM_10",
             icon: "sap-icon://screen-split-three",
-            text: "Split Position Change",
+            text: sText, // "Split Position Change",
             visible: true
         }];
     };
@@ -152,10 +154,12 @@
      **************************************************************************/
     oAPP.main.fnGetWs20SideMenuFixItemList = () => {
 
+        let sText = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B32", "", "", "", "");
+
         return [{
             key: "FIXITM_10",
             icon: "sap-icon://it-system",
-            text: "System Infomation",
+            text: sText, //"System Infomation",
             visible: true
         }];
 
@@ -171,7 +175,7 @@
     /************************************************************************
      * window Event Handle ..
      ************************************************************************/
-    oAPP.main.fnBeforeunload = function(isClearStorage) {
+    oAPP.main.fnBeforeunload = function (isClearStorage) {
 
         // 설정된 Global Shortcut 단축키 삭제
         oAPP.common.fnRemoveGlobalShortcut();
@@ -260,7 +264,7 @@
     };
 
     // Test..
-    oAPP.main.fnSetLanguage = function() {
+    oAPP.main.fnSetLanguage = function () {
 
         var oUserInfo = parent.getUserInfo(),
             oMetaScript = document.getElementById("sap-ui-bootstrap");
@@ -303,9 +307,9 @@
     /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------
      ************************************************************************/
-    oAPP.main.fnWsStart = function() {
+    oAPP.main.fnWsStart = function () {
 
-        sap.ui.getCore().attachInit(function() {
+        sap.ui.getCore().attachInit(function () {
 
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;

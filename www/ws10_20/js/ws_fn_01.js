@@ -98,8 +98,10 @@
 
                 if (parent.oWS.utill.attr.ISINIT == null) {
 
+                    let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "299", "","","","");
+
                     // 페이지 푸터 메시지                    
-                    oAPP.common.fnShowFloatingFooterMsg("S", "WS10", "Welcome to U4A Workspace!");
+                    oAPP.common.fnShowFloatingFooterMsg("S", "WS10", sMsg /*"Welcome to U4A Workspace!"*/);
 
                     parent.oWS.utill.attr.ISINIT = 'X';
 
