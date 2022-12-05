@@ -876,8 +876,6 @@ function setConsoleLogObserver(fnConsole) {
  ************************************************************************/
 function showCriticalErrorDialog(sErrorMsg) {
 
-    debugger;
-    
     DIALOG.showMessageBox(CURRWIN, {
         title: "[Critical Error] - The system will be shut down.",
         message: sErrorMsg,

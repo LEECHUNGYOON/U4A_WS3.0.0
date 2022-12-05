@@ -4,9 +4,12 @@
 <head>
     <title>U4A Workspace #Main</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type"
+          content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible"
+          content="IE=Edge" />
     <!-- 테스트용 -->
     <!-- <script id="sap-ui-bootstrap" src="https://openui5.hana.ondemand.com/resources/sap-ui-core.js"
         data-sap-ui-language="EN" data-sap-ui-preload="async" data-sap-ui-compatversion="edge"
@@ -26,9 +29,12 @@
             }'>
     </script> -->
 
-    <link rel="stylesheet" href="./css/ws10_20.css">
-    <link rel="stylesheet" href="../css/jquery-ui.min.css">
-    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet"
+          href="./css/ws10_20.css">
+    <link rel="stylesheet"
+          href="../css/jquery-ui.min.css">
+    <link rel="stylesheet"
+          href="../css/common.css">
 
     <style>
         .sapMPageFloatingFooter .sapUiHidden {
@@ -43,17 +49,54 @@
 </head>
 
 <body class="sapUiBody">
-    <div id="content" style="display: none;" class="u4aWsContent"></div>
+    <div id="content"
+         style="display: none;"
+         class="u4aWsContent"></div>
 
     <script>
-        function onError(message, url, line, col, errorObj) {          
+        let bIsError = false;
 
-            // 메시지 처리.. 
-            parent.showMessage(null, 99, "E", `${message}\n${url}, ${line}:${col}`);
+        function onError(message, url, line, col, errorObj) {
 
-            // alert();
+            if (bIsError) {
+                return;
+            }
+
+            bIsError = true;
+
+            // console log 감지
+            setConsoleLogObserver(console);
+
+            let sErrMsg = `${message}\n${url}, ${line}:${col}`;
+
+            // critical 오류이므로 창을 다 닫는다.
+            parent.showCriticalErrorDialog(sErrMsg);
+
+            // // 메시지 처리.. 
+            // parent.showMessage(null, 99, "E", `${message}\n${url}, ${line}:${col}`);
 
         }
+
+        function onunhandledrejection(event) {
+
+            if (bIsError) {
+                return;
+            }
+
+            bIsError = true;
+
+            // console log 감지
+            setConsoleLogObserver(console);
+
+            let sErrorMsg = event.reson.toString();
+
+            // critical 오류이므로 창을 다 닫는다.
+            parent.showCriticalErrorDialog(sErrorMsg);
+
+        }
+
+        window.removeEventListener("unhandledrejection", onunhandledrejection);
+        window.addEventListener("unhandledrejection", onunhandledrejection);
 
         window.onerror = onError;
         document.onerror = onError;

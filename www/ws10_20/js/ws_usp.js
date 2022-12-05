@@ -1751,6 +1751,9 @@
             }, {
                 key: "WMENU30_05",
                 text: "Release Note",
+            }, {
+                key: "WMENU30_07",
+                text: "Error log",
             }],
 
             aWMENU50 = [{
