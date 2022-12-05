@@ -22,6 +22,7 @@ const
 
 const
     sPOPID = "editPopup",
+    sSERVER_TBL_ID = "serverlist_table",
     sBINDROOT = "/SAVEDATA";
 
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
@@ -460,34 +461,36 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     // WorkSpace Tree Item Select Event
     oAPP.fn.fnPressWorkSpaceTreeItem = (oEvent) => {
 
-        var oRowCtx = oEvent.getParameter("rowContext");
+        let oRowCtx = oEvent.getParameter("rowContext");
         if (oRowCtx == null) {
             return;
         }
 
-        var oTable = oEvent.getSource(),
+        let oTable = oEvent.getSource(),
             oTableModel = oTable.getModel(),
             iSelIndx = oTable.getSelectedIndex();
 
+        // 선택된 라인이 없을 경우 우측 리스트 모델 초기화
         if (iSelIndx == -1) {
             oTableModel.setProperty("/SAPLogonItems", []);
             return;
         }
 
         var sBindPath = oRowCtx.sPath,
-            oSelectData = oTableModel.getProperty(sBindPath),
-            oSelectItem = oSelectData.Item;
+            oSelectItemData = oTableModel.getProperty(sBindPath),
+            oSelectSubItem = oSelectItemData.Item;
 
-        if (typeof oSelectItem == "undefined") {
+        // 선택된 라인에 해당하는 서버 리스트 값이 없을 경우 우측 리스트 모델 초기화
+        if (typeof oSelectSubItem == "undefined") {
             oTableModel.setProperty("/SAPLogonItems", []);
             return;
 
         }
 
-        var iSelectItemLength = oSelectData.Item.length;
+        var iSelectSubItemLength = oSelectSubItem.length;
 
         // 선택한 Tree Item이 없을 경우 우측 테이블 클리어
-        if (!oSelectItem) {
+        if (!oSelectSubItem) {
             oTableModel.setProperty("/SAPLogonItems", []);
             return;
         }
@@ -495,29 +498,56 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         var aServerList = oTableModel.getProperty("/ServerList"),
             aItemList = [];
 
-        // Item이 배열이 아닌 경우        
-        if (typeof iSelectItemLength == "undefined") {
+        let aSavedAllData = [];
 
-            var oFindItem = aServerList.find(element => element.uuid == oSelectItem._attributes.serviceid);
+        // 기 저장된 값 전체를 구한다.
+        let oSavedAllReturn = oAPP.fn.fnGetSavedServerListDataAll();
+        if (oSavedAllReturn.RETCD == "S") {
+            aSavedAllData = oSavedAllReturn.RETDATA;
+        }
+
+        // Item이 배열이 아닌 경우 (폴더의 하위 서버 정보 데이터가 1건만 있을 경우 object로 저장되어 있음.)       
+        if (typeof iSelectSubItemLength == "undefined") {
+
+            var oFindItem = aServerList.find(element => element.uuid == oSelectSubItem._attributes.serviceid);
             if (oFindItem) {
-                aItemList.push(oFindItem);
+
+                let oFindCopyItem = jQuery.extend(true, {}, oFindItem);
+
+                // 기 저장된 서버 정보가 있을 경우 저장 플래그를 심는다.
+                let oSavedData = aSavedAllData.find(element => element.uuid == oFindCopyItem.uuid);
+                if (oSavedData) {
+                    oFindCopyItem.ISSAVE = true;
+                }
+
+                aItemList.push(oFindCopyItem);
                 oTableModel.setProperty("/SAPLogonItems", aItemList);
             }
 
             return;
         }
 
-        for (var i = 0; i < iSelectItemLength; i++) {
+        // 기 저장된 서버 호스트 정보가 있을 경우 저장 플래그를 심는다.
+        for (var i = 0; i < iSelectSubItemLength; i++) {
 
-            var oItem = oSelectData.Item[i],
+            var oItem = oSelectItemData.Item[i], // 현재 선택된 메뉴의 서브 아이템
                 sServiceid = oItem._attributes.serviceid;
 
+            // 저장된 서버 호스트 정보를 찾는다.
             var oFindItem = aServerList.find(element => element.uuid == sServiceid);
             if (!oFindItem) {
                 continue;
             }
 
-            aItemList.push(oFindItem);
+            // 저장된 서버 호스트 정보가 있다면 저장 플래그를 심는다.
+            let oFindCopyItem = jQuery.extend(true, {}, oFindItem),
+                oSavedData = aSavedAllData.find(element => element.uuid == oFindCopyItem.uuid);
+
+            if (oSavedData) {
+                oFindCopyItem.ISSAVE = true;
+            }
+
+            aItemList.push(oFindCopyItem);
 
         }
 
@@ -608,13 +638,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         let oToolbar = oAPP.fn.fnGetSAPLogonListTableToolbar();
 
-        return new sap.m.Table("serverlist_table", {
+        return new sap.m.Table(sSERVER_TBL_ID, {
             fixedLayout: false,
             alternateRowColors: true,
             autoPopinMode: true,
             headerToolbar: oToolbar,
             mode: sap.m.ListMode.SingleSelectMaster,
-            sticky: [sap.m.Sticky.ColumnHeaders],
+            sticky: [sap.m.Sticky.ColumnHeaders, sap.m.Sticky.HeaderToolbar],
             columns: [
 
                 new sap.m.Column({
@@ -743,7 +773,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      ************************************************************************/
     oAPP.fn.fnPressEdit = () => {
 
-        let oTable = sap.ui.getCore().byId("serverlist_table");
+        let oTable = sap.ui.getCore().byId(sSERVER_TBL_ID);
         if (!oTable) {
             return;
         }
@@ -770,10 +800,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnEditDialogOpen = (oCtx) => {
 
         // 선택한 라인의 바인딩 데이터
-        let oCtxData = oCtx.getProperty(oCtx.getPath());
+        let oCtxData = oCtx.getProperty(oCtx.getPath()),
+            oJsonModel = new sap.ui.model.json.JSONModel();
 
-        let oJsonModel = new sap.ui.model.json.JSONModel();
-        oJsonModel.setData({
+        let oModelData = {
             SERVER: oCtxData,
             oCtx: oCtx,
             SAVEDATA: {
@@ -781,7 +811,21 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 host: "",
                 port: ""
             },
-        });
+        };
+
+        // 이미 저장된 데이터가 있다면 저장된값으로 팝업을 띄운다
+        let oSavedData = oAPP.fn.fnGetSavedServerListData(oCtxData.uuid);
+        if (oSavedData.RETCD == "S") {
+
+            let oFindData = oSavedData.RETDATA;
+
+            oModelData.SAVEDATA.protocol = oFindData.protocol;
+            oModelData.SAVEDATA.host = oFindData.host;
+            oModelData.SAVEDATA.port = oFindData.port;
+
+        }
+
+        oJsonModel.setData(oModelData);
 
         var oDialog = sap.ui.getCore().byId(sPOPID);
         if (oDialog) {
@@ -836,7 +880,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                 text: "Host"
                             }),
                             fields: new sap.m.Input({
-                                value: `{${sBINDROOT}/host}`
+                                value: `{${sBINDROOT}/host}`,
+                                submit: () => {
+                                    oAPP.fn.fnPressSave();
+                                }
                             })
                         }),
 
@@ -849,7 +896,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                             fields: new sap.m.Input({
                                 maxLength: 5,
                                 type: sap.m.InputType.Number,
-                                value: `{${sBINDROOT}/port}`
+                                value: `{${sBINDROOT}/port}`,
+                                submit: () => {
+                                    oAPP.fn.fnPressSave();
+                                }
                             })
                         }),
 
@@ -924,6 +974,122 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of oAPP.fn.fnEditDialogOpen
 
+    /************************************************************************
+     * 기 저장된 Server 정보 중 uuid 와 같은 데이터를 구한다.
+     ************************************************************************/
+    oAPP.fn.fnGetSavedServerListData = (pUUID) => {
+
+        // 로컬에 저장된 서버리스트 정보 JSON PATH
+        let sPathInfoUrl = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            oPathInfo = require(sPathInfoUrl),
+            sLocalJsonPath = oPathInfo.SERVERINFO_V2 || "";
+
+        // 파일 존재 유무 확인
+        let bIsFileExist = FS.existsSync(sLocalJsonPath);
+        if (!bIsFileExist) {
+
+            // 파일이 없습니다 오류
+            return {
+                RETCD: "E",
+                RTMSG: "ServerList file not exists."
+            };
+
+        }
+
+        // JSON 파일을 읽는다.
+        // let aSavedJsonData = REMOTE.require(sLocalJsonPath);
+        let sReadFileData = FS.readFileSync(sLocalJsonPath, 'utf-8') || JSON.stringify(""),
+            aSavedJsonData = JSON.parse(sReadFileData);
+
+        // JSON 파일 읽어보니 Array 타입이 아닌경우
+        if (!Array.isArray(aSavedJsonData)) {
+
+            return {
+                RETCD: "E",
+                RTMSG: "not exists save file."
+            };
+
+        }
+
+        let oFindData = aSavedJsonData.find(elem => elem.uuid == pUUID);
+        if (!oFindData) {
+
+            return {
+                RETCD: "E",
+                RTMSG: "not exists save file."
+            };
+
+        }
+
+        return {
+            RETCD: "S",
+            RETDATA: oFindData
+        };
+
+    }; // end of oAPP.fn.fnGetSavedServerListData
+
+    /************************************************************************
+     * 기 저장된 서버리스트 데이터 전체를 구한다.
+     ************************************************************************/
+    oAPP.fn.fnGetSavedServerListDataAll = () => {
+
+        // 로컬에 저장된 서버리스트 정보 JSON PATH
+        let sPathInfoUrl = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            oPathInfo = require(sPathInfoUrl),
+            sLocalJsonPath = oPathInfo.SERVERINFO_V2 || "";
+
+        // 파일 존재 유무 확인
+        let bIsFileExist = FS.existsSync(sLocalJsonPath);
+        if (!bIsFileExist) {
+
+            // 파일이 없습니다 오류
+            return {
+                RETCD: "E",
+                RTMSG: "ServerList file not exists."
+            };
+
+        }
+
+        // JSON 파일을 읽는다.        
+        let sReadFileData = FS.readFileSync(sLocalJsonPath, 'utf-8') || JSON.stringify(""),
+            aSavedJsonData = JSON.parse(sReadFileData);
+
+        // JSON 파일 읽어보니 Array 타입이 아닌경우
+        if (!Array.isArray(aSavedJsonData)) {
+
+            return {
+                RETCD: "E",
+                RTMSG: "not exists save file."
+            };
+
+        }
+
+        return {
+            RETCD: "S",
+            RETDATA: aSavedJsonData
+        };
+
+    }; // end of oAPP.fn.fnGetSavedServerListDataAll
+
+    /************************************************************************
+     * 서버 리스트 저장/수정 팝업 닫기
+     ************************************************************************/
+    oAPP.fn.fnEditDialogClose = () => {
+
+        let oDialog = sap.ui.getCore().byId(sPOPID);
+        if (!oDialog) {
+            return;
+        }
+
+        if (oDialog.isOpen()) {
+            oDialog.close();
+        }
+
+    }; // end of oAPP.fn.fnEditDialogClose
+
+    /************************************************************************
+     * 서버 리스트 저장
+     ************************************************************************/
     oAPP.fn.fnPressSave = async () => {
 
         oAPP.setBusy(true);
@@ -938,12 +1104,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oModelData = oModel.getData(),
             oServer = oModelData.SERVER,
             oSaveData = oModelData.SAVEDATA,
-            oCtx = oModelData.oCtx;
+            oCtx = oModelData.oCtx,
+            sBindPath = oCtx.getPath();
 
         let oValid = await oAPP.fn.fnCheckValid(oSaveData);
         if (oValid.RETCD == "E") {
 
             // 오류 메시지 출력
+            oAPP.fn.fnShowMessageBox(oValid.RETCD, oValid.RTMSG);
 
             oAPP.setBusy(false);
             return;
@@ -958,47 +1126,106 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             port: oSaveData.port,
         };
 
-        debugger;
-
-        // 
-
-        let sPathInfoUrl = PATH.join(APPPATH, "Frame", "pathInfo.js");
-
-        let oPathInfo = require(sPathInfoUrl);
-
         // 로컬에 저장된 서버리스트 정보 JSON PATH
-        let sLocalJsonPath = oPathInfo.SERVERINFO_V2 || "";
+        let sPathInfoUrl = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            oPathInfo = require(sPathInfoUrl),
+            sLocalJsonPath = oPathInfo.SERVERINFO_V2 || "";
 
         // 파일 존재 유무 확인
         let bIsFileExist = FS.existsSync(sLocalJsonPath);
         if (!bIsFileExist) {
 
             // 파일이 없습니다 오류
+            oAPP.fn.fnShowMessageBox("E", "server List file not exists.");
+
+            oAPP.setBusy(false);
 
             return;
         }
 
-        // JSON 파일을 읽는다.
-        let aSavedJsonData = REMOTE.require(sLocalJsonPath);
+        // JSON 파일을 읽는다.          
+        let sReadFileData = FS.readFileSync(sLocalJsonPath, 'utf-8') || JSON.stringify(""),
+            aSavedJsonData = JSON.parse(sReadFileData);
 
         // JSON 파일 읽어보니 Array 타입이 아닌경우
         if (!Array.isArray(aSavedJsonData)) {
 
-            // p13n.json 파일에 APPID Suggestion 정보 저장
-            FS.writeFileSync(sLocalJsonPath, JSON.stringify([oLocalSaveData]));
+            // 입력한 서버 호스트 정보를 로컬 JSON 파일로 저장한다.
+            let oWriteFileResult = await oAPP.fn.fnWriteFile(sLocalJsonPath, JSON.stringify([oLocalSaveData]));
+            if (oWriteFileResult.RETCD != "S") {
+
+                // 파일 저장에 실패 했을 경우 오류메시지 출력후 빠져나간다.
+                oAPP.fn.fnShowMessageBox("E", oWriteFileResult.RTMSG);
+
+                oAPP.setBusy(false);
+
+                return;
+
+            }
+
+            // 저장여부 플래그 값을 저장한다.
+            var oCtxData = oCtx.getProperty(sBindPath);
+            oCtxData.ISSAVE = true;
+
+            oCtx.getModel().setProperty(sBindPath, oCtxData);
+
+            // dialog를 닫는다.
+            oAPP.fn.fnEditDialogClose();
+
+            oAPP.setBusy(false);
 
             // 저장 완료 메시지!
-            oAPP.setBusy(false);
+            oAPP.fn.fnShowMessageBox("S", "saved Success!");
+
+            // 테이블 Row 선택 표시 해제
+            let oTable = sap.ui.getCore().byId(sSERVER_TBL_ID);
+            if (oTable) {
+                oTable.removeSelections(true);
+            }
+
+            return;
+
+        } // JSON 파일 읽어보니 Array 타입이 아닌경우 -- end 
+
+        let oFindData = aSavedJsonData.find(elem => elem.uuid == oLocalSaveData.uuid);
+        if (oFindData) {
+
+            // 입력한 데이터가 이미 저장되어 있었다면 overwrite를 한다.            
+            oFindData = Object.assign(oFindData, oLocalSaveData);
+
+        } else { // 기존에 저장된게 없다면 Append
+            aSavedJsonData.push(oLocalSaveData);
+        }
+
+        // 파일 저장에 실패 했을 경우 오류메시지 출력후 빠져나간다.
+        let oWriteFileResult = await oAPP.fn.fnWriteFile(sLocalJsonPath, JSON.stringify(aSavedJsonData));
+        if (oWriteFileResult.RETCD != "S") {
+
+            // 파일 저장에 실패 했을 경우 오류메시지 출력후 빠져나간다.
+            oAPP.fn.fnShowMessageBox("E", oWriteFileResult.RTMSG);
 
             return;
 
         }
 
-        aSavedJsonData.push(oLocalSaveData);
+        // 저장여부 플래그 값을 저장한다.
+        var oCtxData = oCtx.getProperty(sBindPath);
+        oCtxData.ISSAVE = true;
+        oCtx.getModel().setProperty(sBindPath, oCtxData);
 
-
+        // dialog를 닫는다.
+        oAPP.fn.fnEditDialogClose();
 
         oAPP.setBusy(false);
+
+        // 저장 완료 메시지!
+        oAPP.fn.fnShowMessageBox("S", "saved Success!");
+
+        // 테이블 Row 선택 표시 해제
+        let oTable = sap.ui.getCore().byId(sSERVER_TBL_ID);
+        if (oTable) {
+            oTable.removeSelections(true);
+        }
 
     }; // end of oAPP.fn.fnPressSave
 
@@ -1010,7 +1237,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             flag: "w"
         };
 
-        let oOptions = Object.assign(oDefaultOptions, option);
+        let oOptions = Object.assign({}, oDefaultOptions, option);
 
         return new Promise((resolve) => {
 
@@ -1056,6 +1283,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of oAPP.fn.fnCheckValid
 
+    /************************************************************************
+     * 서버리스트 더블 클릭 이벤트
+     ************************************************************************/
     oAPP.fn.fnPressServerListItem = (oEvent) => {
 
         var oTarget = oEvent.target,
@@ -1089,6 +1319,55 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
 
     }; // end of oAPP.fn.fnPressServerListItem
+
+    /************************************************************************
+     * 메시지 박스 공통 function
+     ************************************************************************/
+    oAPP.fn.fnShowMessageBox = (TYPE, sMsg, fnCallback) => {
+
+        let fnCloseCallback = (oAction) => {
+
+            if (typeof fnCallback === "function") {
+                fnCallback(oAction);
+            }
+
+        };
+
+        switch (TYPE) {
+
+            case "S":
+
+                sap.m.MessageBox.success(sMsg, {
+                    title: "Success", // default
+                    onClose: fnCloseCallback, // default
+                    styleClass: "", // default
+                    actions: sap.m.MessageBox.Action.OK, // default
+                    emphasizedAction: sap.m.MessageBox.Action.OK, // default
+                    initialFocus: null, // default
+                    textDirection: sap.ui.core.TextDirection.Inherit // default
+                });
+
+                break;
+
+            case "E": // 에러 박스
+
+                sap.m.MessageBox.error(sMsg, {
+                    title: "Error", // default
+                    onClose: fnCloseCallback, // default
+                    styleClass: "", // default
+                    actions: sap.m.MessageBox.Action.CLOSE, // default
+                    emphasizedAction: null, // default
+                    initialFocus: null, // default
+                    textDirection: sap.ui.core.TextDirection.Inherit // default
+                });
+
+                break;
+
+            default:
+                break;
+        }
+
+    }; // end of oAPP.fn.fnShowMessageBox
 
 })(oAPP);
 

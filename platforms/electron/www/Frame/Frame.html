@@ -57,7 +57,20 @@
     </audio>
 
     <script>
+
+        var bIsError = false;
+
         function onError(message, url, line, col, errorObj) {
+
+            if(bIsError){
+                return;
+            }
+
+            bIsError = true;
+            
+            // console log 감지
+            setConsoleLogObserver(console);
+
             showMessage(null, 99, "E", `${message}\n${url}, ${line}:${col}`);
             // alert(`${message}\n${url}, ${line}:${col}`);
         }

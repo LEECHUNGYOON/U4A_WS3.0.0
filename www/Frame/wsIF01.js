@@ -862,6 +862,41 @@ function getHost() {
 
 }
 
+/************************************************************************
+ * console log 감지
+ ************************************************************************/
+function setConsoleLogObserver(fnConsole) {
+
+    WSLOG.start(REMOTE, fnConsole);
+
+} // end of setConsoleLogObserver
+
+/************************************************************************
+ * critical 오류 팝업
+ ************************************************************************/
+function showCriticalErrorDialog(sErrorMsg) {
+
+    DIALOG.showMessageBox(CURRWIN, {
+        title: "[Critical Error] - The system will be shut down.",
+        message: sErrorMsg,
+        type: "error"
+    }).then(() => {
+
+        let oWs_frame = document.getElementById("ws_frame");
+        if (!oWs_frame) {
+            return;
+        }
+
+        let oFrameWin = oWs_frame.contentWindow;
+        if (!oFrameWin) {
+            return;
+        }
+
+        oFrameWin.fn_logoff_success("X");
+
+    });
+
+} // end of showCriticalErrorDialog
 
 /************************************************************************
  * 공백 여부

@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -45,13 +45,13 @@
 
         // 파일 확장자 이미지 경로 구하기
         fnGetFileExtendImgList()
-            .then(function() {
+            .then(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
 
             })
-            .catch(function() {
+            .catch(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
@@ -65,7 +65,7 @@
      ************************************************************************/
     function fnGetFileExtendImgList() {
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
@@ -112,7 +112,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function() {
+    oAPP.fn.fnOnResizeWs30 = function () {
 
         console.log("resize30!!!");
 
@@ -262,7 +262,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -407,7 +407,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -1051,7 +1051,7 @@
                                         "ISFLD",
                                         "EXTEN"
                                     ],
-                                    formatter: function(ISFLD, EXTEN) {
+                                    formatter: function (ISFLD, EXTEN) {
 
                                         var iFileImgListLength = gaFileExtendImgList.length;
                                         if (iFileImgListLength == 0) {
@@ -1183,7 +1183,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function(oEvent) {
+                rowSelectionChange: function (oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1346,7 +1346,7 @@
 
             oIsFolderCheckbox = new sap.m.CheckBox({
                 editable: false
-            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
+            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                 if (ISFLD == "X") {
                     return true;
@@ -1412,7 +1412,7 @@
                                 ]
                             })
 
-                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function(ISFLD) {
+                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                             // 폴더가 아닐 경우에만 보여준다.
                             if (ISFLD != "X") {
@@ -1454,7 +1454,7 @@
 
                 return {
 
-                    onAfterRendering: function(oControl) {
+                    onAfterRendering: function (oControl) {
 
                         var oEditor = oControl.srcControl,
                             _oAceEditor = oEditor._oEditor;
@@ -1920,7 +1920,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -2004,7 +2004,7 @@
             initialFocus: "ws30_crname",
 
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -2227,7 +2227,7 @@
             oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"); // 우측 컨텐츠 데이터
 
         // APP 업데이트 정보 갱신
-        oAppInfo = Object.assign(oAppInfo, oResult.S_RETURN);
+        oAppInfo = Object.assign({}, oAppInfo, oResult.S_RETURN);
 
         /**
          * 삭제된 대상 중, 우측에 보고 있던 CONTENT가 있다면 클리어 시키고 Intro 페이지로 이동
@@ -2237,7 +2237,7 @@
             // 우측에 활성화 되어 있는 Content가 Root 정보 일 경우.
             var bIsRoot = oBindBeforeSelect.PUJKY === "" ? true : false;
             if (bIsRoot) {
-                oContent = Object.assign(oContent, oResult.S_RETURN);
+                oContent = Object.assign({}, oContent, oResult.S_RETURN);
             }
 
             var oFind = aDeleteTreeData.find(arr => arr.OBJKY == oBindBeforeSelect.OBJKY);
@@ -2272,7 +2272,7 @@
     function lf_appDelCtsPopup(oParam) {
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oParam = this;
 
@@ -2422,8 +2422,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function(e) {
-                $.each(e, function(e, o) {
+            t = function (e) {
+                $.each(e, function (e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2683,7 +2683,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function(event) {
+            fileReader.onload = function (event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -3011,7 +3011,7 @@
             var oAppInfo = fnGetAppInfo();
 
             // 서버에서 리턴 받은 10번 테이블 정보로 머지 한다.
-            oAppInfo = Object.assign(oAppInfo, oResult.S_APPINFO);
+            oAppInfo = Object.assign({}, oAppInfo, oResult.S_APPINFO);
 
             // APP 정보 갱신
             APPCOMMON.fnSetModelProperty("/WS30/APP", oAppInfo);
@@ -4451,7 +4451,7 @@
             aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"); // 좌측 Tree 데이터
 
         // APP 업데이트 정보 갱신
-        oAppInfo = Object.assign(oAppInfo, oResult.S_RETURN);
+        oAppInfo = Object.assign({}, oAppInfo, oResult.S_RETURN);
 
         // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
         var oBeforeSelectData = _fnGetSelectedUspTreeData(aUspTreeData);
@@ -4464,8 +4464,8 @@
             var bIsRoot = oBeforeSelectData.PUJKY === "" ? true : false;
             if (bIsRoot) {
                 // 우측 컨텐트 영역과 좌측 Root에 정보 업데이트
-                oContent = Object.assign(oContent, oResult.S_RETURN);
-                oBeforeSelectData = Object.assign(oBeforeSelectData, oResult.S_RETURN);
+                oContent = Object.assign({}, oContent, oResult.S_RETURN);
+                oBeforeSelectData = Object.assign({}, oBeforeSelectData, oResult.S_RETURN);
             }
 
         }
@@ -4656,7 +4656,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this;
             // IS_ACT = oEvent.getParameter("IS_ACT");
@@ -5000,7 +5000,7 @@
 
         let sOrientation = oCodeEditorSplit.getOrientation();
         if (sOrientation == sap.ui.core.Orientation.Horizontal) {
-            oCodeEditorSplit.setOrientation(sap.ui.core.Orientation.Vertical);            
+            oCodeEditorSplit.setOrientation(sap.ui.core.Orientation.Vertical);
             return;
         }
 

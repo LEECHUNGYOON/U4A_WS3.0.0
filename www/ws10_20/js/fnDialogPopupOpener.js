@@ -1351,7 +1351,7 @@
     /************************************************************************
      * Icon List Popup Opener
      ************************************************************************/
-    oAPP.fn.fnIconListPopupOpener = () => {
+    oAPP.fn.fnIconListPopupOpener = () => {        
 
         var sWinObjType = "ICONLIST",
             sHost = parent.getServerHost(),

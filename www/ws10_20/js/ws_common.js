@@ -123,8 +123,8 @@
             sLangu = oMeta.LANGU,
             aMsgClsTxt = oMeta["MSGCLS"];
 
-        if (!aMsgClsTxt || !aMsgClsTxt.length) {
-            return;
+        if (!aMsgClsTxt || !aMsgClsTxt.length) {            
+            return sMsgCls + "|" + sMsgNum;
         }
 
         let sDefLangu = "E"; // default language    
@@ -137,7 +137,8 @@
 
             // 접속한 언어가 영어일 경우 빠져나간다.
             if (sDefLangu == sLangu) {
-                return;
+                return sMsgCls + "|" + sMsgNum;
+                
             }
 
             // 접속한 언어가 영어가 아닌데 메시지를 못찾으면 영어로 찾는다.
@@ -145,7 +146,7 @@
 
             // 그래도 없다면 빠져나간다.
             if (!oMsgTxt) {
-                return;
+                return sMsgCls + "|" + sMsgNum;
             }
 
         }

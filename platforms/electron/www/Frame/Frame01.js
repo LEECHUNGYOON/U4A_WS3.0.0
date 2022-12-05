@@ -23,7 +23,8 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     CURRWIN = REMOTE.getCurrentWindow(),
     MIMETYPES = require('mime-types'),
     POWERMONITOR = REMOTE.require('electron').powerMonitor,
-    COMPUTERNAME = process.env.COMPUTERNAME;
+    COMPUTERNAME = process.env.COMPUTERNAME,
+    WSLOG = require(PATH.join(APPPATH, "ws10_20", "js", "ws_log.js"));
 
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);

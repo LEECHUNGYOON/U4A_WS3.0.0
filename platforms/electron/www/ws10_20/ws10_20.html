@@ -46,7 +46,7 @@
     <div id="content" style="display: none;" class="u4aWsContent"></div>
 
     <script>
-        function onError(message, url, line, col, errorObj) {
+        function onError(message, url, line, col, errorObj) {          
 
             // 메시지 처리.. 
             parent.showMessage(null, 99, "E", `${message}\n${url}, ${line}:${col}`);
