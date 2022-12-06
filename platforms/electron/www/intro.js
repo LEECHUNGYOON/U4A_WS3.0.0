@@ -4,7 +4,7 @@
  * - Application Intro
  **************************************************************************/
 
-(function() {
+(function () {
     "use strict";
 
     let oAPP = {};
@@ -23,7 +23,7 @@
         RANDOM = require("random-key"),
         PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));
 
-    oAPP.fn.fnOnDeviceReady = function() {
+    oAPP.fn.fnOnDeviceReady = function () {
 
         // 현재 버전 보여주기
         oAPP.fn.fnDisplayCurrentVersion();
@@ -120,7 +120,7 @@
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oMetadata = {
                 SERVERINFO: oServerInfo,
@@ -194,7 +194,7 @@
     /************************************************************************
      * 서버 리스트를 오픈한다.
      ************************************************************************/
-    oAPP.fn.fnOpenServerList = function() {        
+    oAPP.fn.fnOpenServerList = function () {
 
         // Electron Browser Default Options        
         var sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
@@ -215,18 +215,18 @@
 
         // 브라우저 상단 메뉴 없애기
         oWin.setMenu(null);
-        
-        // if (process.env.COMPUTERNAME.toUpperCase().startsWith("YOON") == true) {
-        //     oWin.loadURL(PATHINFO.SERVERLIST_v2);
-        // } else {
-        //     oWin.loadURL(PATHINFO.SERVERLIST);
-        // }
-        
-        // oWin.webContents.openDevTools();
 
-        oWin.loadURL(PATHINFO.SERVERLIST);        
+        if (process.env.COMPUTERNAME.toUpperCase().startsWith("YOON") == true) {
+            oWin.loadURL(PATHINFO.SERVERLIST_v2);
+        } else {
+            oWin.loadURL(PATHINFO.SERVERLIST);
+        }
 
-        oWin.webContents.on('did-finish-load', function() {
+        oWin.webContents.openDevTools();
+
+        // oWin.loadURL(PATHINFO.SERVERLIST);        
+
+        oWin.webContents.on('did-finish-load', function () {
 
             oWin.webContents.send('window-id', oWin.id);
 
@@ -254,7 +254,7 @@
      * 2. 설치 경로는 WS가 설치된 userData
      *    예) C:\Users\[UserName]\AppData\Roaming\com.u4a_ws.app
      ************************************************************************/
-    oAPP.fn.setInitInstall = function(fnCallback) {
+    oAPP.fn.setInitInstall = function (fnCallback) {
 
         var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
@@ -280,9 +280,9 @@
                 continue;
             }
 
-            aPromise.push(new Promise(function(resolve, reject) {
+            aPromise.push(new Promise(function (resolve, reject) {
 
-                FS.mkdir(sFullPath, oMkdirOptions, function(err) {
+                FS.mkdir(sFullPath, oMkdirOptions, function (err) {
 
                     if (err) {
                         reject(err.toString());
@@ -312,7 +312,7 @@
                 FS.writeFile(sFileFullPath, JSON.stringify(""), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         reject(err.toString());
@@ -332,9 +332,9 @@
         aPromise.push(oHelpDocuPromise);
 
         // 상위 폴더를 생성 후 끝나면 실행
-        Promise.all(aPromise).then(function(values) {
+        Promise.all(aPromise).then(function (values) {
 
-            oAPP.fn.copyVbsToLocalFolder(function(oResult) {
+            oAPP.fn.copyVbsToLocalFolder(function (oResult) {
 
                 if (oResult.RETCD == 'E') {
                     alert(oResult.MSG);
@@ -345,7 +345,7 @@
 
             });
 
-        }).catch(function(err) {
+        }).catch(function (err) {
 
             alert(err.toString());
 
@@ -356,7 +356,7 @@
     /************************************************************************
      * build된 폴더에서 vbs 파일을 로컬 폴더로 복사한다.
      ************************************************************************/
-    oAPP.fn.copyVbsToLocalFolder = function(fnCallback) {
+    oAPP.fn.copyVbsToLocalFolder = function (fnCallback) {
 
         var sVbsFolderPath = PATH.join(APPPATH, "vbs"),
             aVbsFolderList = FS.readdirSync(sVbsFolderPath),
@@ -394,7 +394,7 @@
 
             fnCallback(oResult);
 
-        }).catch(function(err) {
+        }).catch(function (err) {
 
             oResult.RETCD = 'E';
             oResult.MSG = err.toString();
@@ -405,7 +405,7 @@
 
     }; // end of oAPP.fn.copyVbsToLocalFolder
 
-    oAPP.fn.copyVbsPromise = function(sFile, sVbsOrigPath) {
+    oAPP.fn.copyVbsPromise = function (sFile, sVbsOrigPath) {
 
         var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
@@ -417,11 +417,11 @@
 
             FS.copy(sVbsOrigPath, sVbsFullPath, {
                 overwrite: true,
-            }).then(function() {
+            }).then(function () {
 
                 resolve("X");
 
-            }).catch(function(err) {
+            }).catch(function (err) {
 
                 reject(err.toString());
 
@@ -479,11 +479,11 @@
             //1. Document File을 복사한다.
             FS.copy(sHelpDocOriginFile, sHelpDocTargetPath, {
                 overwrite: true,
-            }).then(function() {
+            }).then(function () {
 
                 resolve();
 
-            }).catch(function(err) {
+            }).catch(function (err) {
                 reject(err.toString());
             });
 
@@ -506,7 +506,7 @@
             let ZIP = require("zip-lib"),
                 UNZIP = new ZIP.Unzip({
                     // Called before an item is extracted.
-                    onEntry: function(event) {
+                    onEntry: function (event) {
                         console.log(event.entryCount, event.entryName);
                     }
                 });
@@ -514,11 +514,11 @@
             UNZIP.extract(sHelpDocTargetPath, sHelpDocFolderPath, {
                     overwrite: true
                 })
-                .then(function() {
+                .then(function () {
 
                     resolve();
 
-                }, function(err) {
+                }, function (err) {
 
                     reject(err.toString());
 

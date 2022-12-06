@@ -3322,7 +3322,7 @@
      **************************************************************************/
     function ev_beforeOpenContextMenu(oEvent) {
 
-        console.log("Context Menu");
+        zconsole.log("Context Menu");
 
         var oTreeTable = oEvent.getSource(),
             iSelectRow = oEvent.getParameter("rowIndex"),
@@ -3380,7 +3380,7 @@
      **************************************************************************/
     function ev_UspTreeCtxMenuClosed(oEvent) {
 
-        console.log("contextMenu Close");
+        zconsole.log("contextMenu Close");
 
         var oTreeTable = sap.ui.getCore().byId("usptree");
         if (!oTreeTable) {

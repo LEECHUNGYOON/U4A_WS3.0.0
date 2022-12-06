@@ -13,9 +13,7 @@ self.onmessage = function(e) {
 
     receiveData *= 60;
     receiveData *= 1000;
-    
-    // console.log(receiveData);
-
+   
     if(this.workTimeout){
         clearTimeout(this.workTimeout);
         this.workTimeout = null;

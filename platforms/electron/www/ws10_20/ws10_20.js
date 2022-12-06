@@ -30,7 +30,10 @@
                 oAPP.attr.zoomSetTimeOut = setTimeout(() => {
 
                     oAPP.fn.setPersonWinZoom("S");
-                    console.log("zoom 저장!!");
+                    // console.log();
+
+                    zconsole.log("zoom 저장!!");
+
 
                 }, 500);
 

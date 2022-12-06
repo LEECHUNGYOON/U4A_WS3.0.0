@@ -5,6 +5,9 @@
  * - file Desc : ws 공통 스크립트
  ************************************************************************/
 
+let zconsole = {};
+zconsole.APP = parent.REMOTE.app;
+
 (function (window, $, oAPP) {
     "use strict";
 
@@ -123,7 +126,7 @@
             sLangu = oMeta.LANGU,
             aMsgClsTxt = oMeta["MSGCLS"];
 
-        if (!aMsgClsTxt || !aMsgClsTxt.length) {            
+        if (!aMsgClsTxt || !aMsgClsTxt.length) {
             return sMsgCls + "|" + sMsgNum;
         }
 
@@ -138,7 +141,7 @@
             // 접속한 언어가 영어일 경우 빠져나간다.
             if (sDefLangu == sLangu) {
                 return sMsgCls + "|" + sMsgNum;
-                
+
             }
 
             // 접속한 언어가 영어가 아닌데 메시지를 못찾으면 영어로 찾는다.
@@ -2075,7 +2078,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
                     }
 
                     // 잘못된 url 이거나 지원하지 않는 기능 처리
-                    oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, oResult);                 
+                    oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, oResult);
 
                     return;
                 }
@@ -2408,13 +2411,45 @@ function sendServerExit(oOptions, fnCallback) {
 
 };
 
-/************************************************************************
- * 서버 끊어질때 새창으로 메시지 처리
- ************************************************************************/
-function fnServerDisconnectionMsgPopup() {
 
+zconsole.log = (sConsole) => {
 
+    const
+        APP = zconsole.APP;
 
+    // 빌드 상태에서는 실행하지 않음.
+    if (APP.isPackaged) {
+        return;
+    }
 
+    console.log("[zconsole]: " + sConsole);
 
-} // end of fnServerDisconnectionMsgPopup
+};
+
+zconsole.error = (sConsole) => {
+
+    const
+        APP = zconsole.APP;
+
+    // 빌드 상태에서는 실행하지 않음.
+    if (APP.isPackaged) {
+        return;
+    }
+
+    console.error("[zconsole]: " + sConsole);
+
+};
+
+zconsole.warn = (sConsole) => {
+
+    const
+        APP = zconsole.APP;
+
+    // 빌드 상태에서는 실행하지 않음.
+    if (APP.isPackaged) {
+        return;
+    }
+
+    console.warn("[zconsole]: " + sConsole);
+
+};
