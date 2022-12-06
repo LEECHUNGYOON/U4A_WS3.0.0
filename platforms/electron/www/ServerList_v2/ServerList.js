@@ -3,7 +3,6 @@
  **************************************************************************/
 let oAPP = parent.oAPP;
 
-
 const
     require = parent.require,
     REMOTE = oAPP.REMOTE,
@@ -28,7 +27,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function (oAPP) {
+(function(oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -146,16 +145,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             oAPP.fn.fnShowMessageBox("E", sMsg);
 
-            // sap.m.MessageBox.error(sMsg, {
-            //     title: "Error", // default
-            //     onClose: null, // default
-            //     styleClass: "", // default
-            //     actions: sap.m.MessageBox.Action.CLOSE, // default
-            //     emphasizedAction: null, // default
-            //     initialFocus: null, // default
-            //     textDirection: sap.ui.core.TextDirection.Inherit // default
-            // });
-
             return;
         }
 
@@ -169,16 +158,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             // 오류 메시지 출력
             oAPP.fn.fnShowMessageBox("E", sMsg);
 
-            // sap.m.MessageBox.error(sMsg, {
-            //     title: "Error", // default
-            //     onClose: null, // default
-            //     styleClass: "", // default
-            //     actions: sap.m.MessageBox.Action.CLOSE, // default
-            //     emphasizedAction: null, // default
-            //     initialFocus: null, // default
-            //     textDirection: sap.ui.core.TextDirection.Inherit // default
-            // });
-
             return;
         }
 
@@ -187,9 +166,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             FS.watch(sLandscapeFilePath, oAPP.fn.fnSapLogonFileChange);
             oAPP.isWatch = true;
         }
-
-        // // SAPLogon xml 파일 내용 변경을 감지한다.
-        // FS.watch(sLandscapeFilePath, oAPP.fn.fnSapLogonFileChange);
 
         // xml 정보를 읽는다
         oAPP.fn.fnReadSAPLogonData("LandscapeFile", sLandscapeFilePath)
@@ -212,6 +188,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      ************************************************************************/
     oAPP.fn.fnReadSAPLogonDataThen = (oResult) => {
 
+        if (oAPP.data.SAPLogon[oResult.fileName]) {
+            oAPP.data.SAPLogon[oResult.fileName] = undefined;
+        }
+
         // Landscape 정보를 글로벌 object에 저장
         oAPP.data.SAPLogon[oResult.fileName] = oResult.Result;
 
@@ -221,9 +201,32 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // WorkSpace Tree 구조 만들기
         oAPP.fn.fnGetSAPLogonWorkspace();
 
+        // 데이터 갱신 후 화면도 갱신
+        oAPP.fn.fnSetRefreshSelectTreeItem();
+
         oAPP.setBusy(false);
 
     }; // end of oAPP.fn.fnReadSAPLogonDataThen
+
+    oAPP.fn.fnSetRefreshSelectTreeItem = () => {
+
+        let oTreeTable = sap.ui.getCore().byId("WorkTree");
+        if (!oTreeTable) {
+            return;
+        }
+
+        let aSelectedIndex = oTreeTable.getSelectedIndices(),
+            iSelectIndexLength = aSelectedIndex.length;
+
+        if (iSelectIndexLength == 0) {
+            return;
+        }
+
+        oTreeTable.clearSelection();
+
+        oTreeTable.setSelectionInterval(aSelectedIndex[0], aSelectedIndex[0]);
+
+    }; // end of oAPP.fn.fnSetRefreshSelectTreeItem
 
     /************************************************************************
      * 레지스트리에 등록된 SAPLogon xml 파일 정보를 JSON 데이터로 변환
@@ -356,8 +359,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         var oCoreModel = sap.ui.getCore().getModel();
         if (oCoreModel) {
-            oCoreModel.setProperty("ServerList", aBindData);
-            oCoreModel.refresh();
+            oCoreModel.setProperty("/ServerList", aBindData);
+            // oCoreModel.refresh(true);
             return;
         }
 
@@ -378,7 +381,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // alert(oError);
 
-    };
+    }; // end of oAPP.fn.fnGetRegInfoForSAPLogonError
 
     oAPP.fn.fnPromiseError = (oError) => {
 
@@ -388,7 +391,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // alert(oError);
 
-    };
+    }; // end of oAPP.fn.fnPromiseError
 
     // 초기 화면 그리기
     oAPP.fn.fnOnInitRendering = () => {
@@ -470,13 +473,36 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 },
             },
 
-            rowSelectionChange: oAPP.fn.fnPressWorkSpaceTreeItem
+            rowSelectionChange: (oEvent) => {
+
+                // 좌측 트리 선택 이벤트
+                oAPP.fn.fnPressWorkSpaceTreeItem(oEvent);
+
+                // 우측 서버 리스트 전체 선택 해제
+                oAPP.fn.fnServerListUnselect();
+
+            }
+
 
         });
 
     }; // end of oAPP.fn.fnGetWorkSpaceTreeTable
 
-    // WorkSpace Tree Item Select Event
+    /************************************************************************
+     * 우측 서버 리스트 전체 선택 해제
+     ************************************************************************/
+    oAPP.fn.fnServerListUnselect = () => {
+
+        let oTable = sap.ui.getCore().byId(sSERVER_TBL_ID);
+        if (oTable) {
+            oTable.removeSelections();
+        }
+
+    }; // end of oAPP.fn.fnServerListUnselect
+
+    /************************************************************************
+     * WorkSpace Tree Item Select Event
+     ************************************************************************/
     oAPP.fn.fnPressWorkSpaceTreeItem = (oEvent) => {
 
         let oRowCtx = oEvent.getParameter("rowContext");
@@ -821,11 +847,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         let oCtxData = oCtx.getProperty(oCtx.getPath()),
             oJsonModel = new sap.ui.model.json.JSONModel();
 
-        var DEF_VS_STATE = {            
+        var DEF_VS_STATE = {
             host_vs: sap.ui.core.ValueState.None,
-            host_vst: "잘못넣었다 이거야",            
+            host_vst: "",
             port_vs: sap.ui.core.ValueState.None,
-            port_vst: "너도 잘못"
+            port_vst: ""
         };
 
         let oModelData = {
@@ -835,13 +861,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 protocol: "http",
                 host: "",
                 port: "",
-                vs: {
-                    host_vs: sap.ui.core.ValueState.Error,
-                    host_vst: "잘못넣었다 이거야",
-                    // port_vs: sap.ui.core.ValueState.Error,
-                    port_vs: sap.ui.core.ValueState.Error,
-                    port_vst: "너도 잘못"
-                }
             },
             DEF_VS: jQuery.extend(true, {}, DEF_VS_STATE),
             VS_STATE: jQuery.extend(true, {}, DEF_VS_STATE),
@@ -865,7 +884,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         if (oDialog) {
 
             oDialog.setModel(oJsonModel);
-            oDialog.getModel().refresh(true);
             oDialog.open();
 
             return;
@@ -913,8 +931,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                 design: "Bold",
                                 text: "Host"
                             }),
-                            fields: new sap.m.Input({
-                                value: `{${sBINDROOT}/host}`,                             
+                            fields: new sap.m.Input("hostInput", {
+                                value: `{${sBINDROOT}/host}`,
                                 valueState: "{/VS_STATE/host_vs}",
                                 valueStateText: "{/VS_STATE/host_vst}",
                                 submit: () => {
@@ -928,7 +946,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                 design: "Bold",
                                 text: "Port"
                             }),
-                            fields: new sap.m.Input({
+                            fields: new sap.m.Input("portInput", {
                                 maxLength: 5,
                                 type: sap.m.InputType.Number,
                                 value: `{${sBINDROOT}/port}`,
@@ -988,7 +1006,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             ],
 
             // association
-            // initialFocus: "ws30_crname",
+            initialFocus: "hostInput",
             // events
 
             afterClose: () => {
@@ -1007,7 +1025,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         });
 
         oDialog.setModel(oJsonModel);
-        oDialog.bindElement("/");
+        // oDialog.bindElement("/");
         oDialog.open();
 
     }; // end of oAPP.fn.fnEditDialogOpen
@@ -1145,17 +1163,18 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oCtx = oModelData.oCtx,
             sBindPath = oCtx.getPath();
 
-        debugger;
-
         let oDefault_VS = oModel.getProperty("/DEF_VS");
         oModel.setProperty("/VS_STATE", oDefault_VS);
-        oModel.refresh(true);
+        // oModel.refresh(true);
 
         let oValid = await oAPP.fn.fnCheckValid(oSaveData, oModel);
         if (oValid.RETCD == "E") {
 
             // 오류 메시지 출력
             // oAPP.fn.fnShowMessageBox(oValid.RETCD, oValid.RTMSG);
+
+            // 오류 사운드
+            oAPP.setSoundMsg("02");
 
             oAPP.setBusy(false);
 
@@ -1321,6 +1340,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         return new Promise((resolve) => {
 
+            var oHostInput = sap.ui.getCore().byId("hostInput"),
+                oPortInput = sap.ui.getCore().byId("portInput");
+
             let sHost = oSaveData.host,
                 VS_STATE = {
                     host_vs: sap.ui.core.ValueState.None,
@@ -1342,9 +1364,17 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 VS_STATE.host_vst = oResult.RTMSG;
 
                 oModel.setProperty("/VS_STATE", VS_STATE);
-                oModel.refresh(true);
+                // oModel.refresh(true);
 
                 resolve(oResult);
+
+                // Host 입력 input에 포커스를 준다.
+                setTimeout(() => {
+                    if (oHostInput) {
+                        oHostInput.focus();
+                    }
+                }, 0);
+
 
                 return;
             }
@@ -1354,7 +1384,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 var oResult = {
                     RETCD: "E",
-                    RTMSG: "[host] Do not include Empty string!"
+                    RTMSG: "Do not include Empty string!"
                 };
 
                 // Value State
@@ -1362,13 +1392,31 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 VS_STATE.host_vst = oResult.RTMSG;
 
                 oModel.setProperty("/VS_STATE", VS_STATE);
-                oModel.refresh(true);
+                // oModel.refresh(true);
 
                 resolve(oResult);
+
+                // Host 입력 input에 포커스를 준다.
+                setTimeout(() => {
+                    if (oHostInput) {
+                        oHostInput.focus();
+                    }
+                }, 0);
 
                 return;
 
             }
+
+
+            // 등록한 서버에 접속을 시도한다.
+
+
+
+
+
+            
+
+
 
             resolve({
                 RETCD: "S"
@@ -1442,6 +1490,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     textDirection: sap.ui.core.TextDirection.Inherit // default
                 });
 
+                // 성공 사운드
+                oAPP.setSoundMsg("01");
+
                 break;
 
             case "E": // 에러 박스
@@ -1455,6 +1506,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     initialFocus: null, // default
                     textDirection: sap.ui.core.TextDirection.Inherit // default
                 });
+
+                // 오류 사운드
+                oAPP.setSoundMsg("02");
 
                 break;
 
