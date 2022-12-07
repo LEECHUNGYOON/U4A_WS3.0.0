@@ -1,7 +1,7 @@
 /**************************************************************************                                           
  * ws_fn_04.js
  **************************************************************************/
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     var PATH = parent.PATH,
@@ -63,10 +63,8 @@
     /************************************************************************
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSapGuiMultiLoginCheckThen = function (oResult) {
-
-        debugger;
-
+    oAPP.fn.fnSapGuiMultiLoginCheckThen = function(oResult) {
+       
         var oMetadata = parent.getMetadata(),
             oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
             oSettings = parent.require(oSettingsPath),
@@ -86,6 +84,7 @@
             sNewSessionVbsFullPath = PATH.join(sAppPath, sVbsPath, sNewSessionVbs);
 
         var oServerInfo = parent.getServerInfo(),
+            oSvrInfoDetail = oServerInfo.SERVER_INFO_DETAIL,
             oAppInfo = parent.getAppInfo(),
             oUserInfo = parent.getUserInfo();
 
@@ -119,12 +118,12 @@
 
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
         var vbs = parent.SPAWN('cscript.exe', aParam);
-        vbs.stdout.on("data", function (data) {
+        vbs.stdout.on("data", function(data) {
             console.log(data.toString());
         });
 
         //GUI 세션창이 존재하지않다면 ...
-        vbs.stderr.on("data", function (data) {
+        vbs.stderr.on("data", function(data) {
 
             //VBS 리턴 오류 CODE / MESSAGE 
             var str = data.toString(),
@@ -140,27 +139,47 @@
 
             }
 
+            // var aParam = [
+            //     sVbsFullPath, // VBS 파일 경로
+            //     oServerInfo.SERVERIP, // Server IP
+            //     oServerInfo.SYSTEMID, // SYSTEM ID
+            //     oServerInfo.INSTANCENO, // INSTANCE Number
+            //     oServerInfo.CLIENT, // CLIENT
+            //     oUserInfo.ID.toUpperCase(), // SAP ID    
+            //     oUserInfo.PW, // SAP PW
+            //     oServerInfo.LANGU, // LANGUAGE
+            //     oAppInfo.APPID || "", // Application Name
+            //     (typeof METHNM == "undefined" ? "" : METHNM),
+            //     (typeof INDEX == "undefined" ? "0" : INDEX),
+            //     oAppInfo.IS_EDIT || "", // Edit or Display Mode,
+            //     TCODE || "", // T-CODE
+            //     oResult.RTVAL, // SAPGUI Multi Login Check Value
+            //     oResult.MAXSS, // 최대 세션창 갯수
+            // ];
+
             var aParam = [
                 sVbsFullPath, // VBS 파일 경로
-                oServerInfo.SERVERIP, // Server IP
-                oServerInfo.SYSTEMID, // SYSTEM ID
-                oServerInfo.INSTANCENO, // INSTANCE Number
-                oServerInfo.CLIENT, // CLIENT
-                oUserInfo.ID.toUpperCase(), // SAP ID    
-                oUserInfo.PW, // SAP PW
-                oServerInfo.LANGU, // LANGUAGE
+                oSvrInfoDetail.host,
+                oSvrInfoDetail.port,
+                oSvrInfoDetail.systemid,
+                (oSvrInfoDetail.msgsvr && oSvrInfoDetail.msgsvr.host ? oSvrInfoDetail.msgsvr.host : ""),
+                (oSvrInfoDetail.msgsvr && oSvrInfoDetail.msgsvr.port ? oSvrInfoDetail.msgsvr.port : ""),
+                (oSvrInfoDetail.router && oSvrInfoDetail.router.router ? oSvrInfoDetail.router.router : ""),
+                oUserInfo.CLIENT,
+                oUserInfo.UNAME,
+                oUserInfo.PW,
+                oUserInfo.LANGU,
                 oAppInfo.APPID || "", // Application Name
                 (typeof METHNM == "undefined" ? "" : METHNM),
                 (typeof INDEX == "undefined" ? "0" : INDEX),
                 oAppInfo.IS_EDIT || "", // Edit or Display Mode,
-                TCODE || "", // T-CODE
                 oResult.RTVAL, // SAPGUI Multi Login Check Value
                 oResult.MAXSS, // 최대 세션창 갯수
             ];
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
-            vbs.stdout.on("data", function (data) {});
-            vbs.stderr.on("data", function (data) {
+            vbs.stdout.on("data", function(data) {});
+            vbs.stderr.on("data", function(data) {
 
                 //VBS 리턴 오류 CODE / MESSAGE 
                 var str = data.toString(),
@@ -406,7 +425,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             let oSendData = {
                 DEFAULT_OPACITY: 0.3
