@@ -65,6 +65,8 @@
      ************************************************************************/
     oAPP.fn.fnSapGuiMultiLoginCheckThen = function (oResult) {
 
+        debugger;
+
         var oMetadata = parent.getMetadata(),
             oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
             oSettings = parent.require(oSettingsPath),

@@ -222,7 +222,7 @@
             oWin.loadURL(PATHINFO.SERVERLIST);
         }
 
-        oWin.webContents.openDevTools();
+        // oWin.webContents.openDevTools();
 
         // oWin.loadURL(PATHINFO.SERVERLIST);        
 

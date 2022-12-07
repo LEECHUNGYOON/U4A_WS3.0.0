@@ -17,9 +17,13 @@ const
     FS = REMOTE.require('fs'),
 
     PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
-    SETTINGS = require(PATHINFO.WSSETTINGS);
+    SETTINGS = require(PATHINFO.WSSETTINGS),
+    XHR = new XMLHttpRequest();
+
+XHR.withCredentials = true;
 
 const
+    sZU4A_WBC_URL = "/zu4a_wbc/u4a_ipcmain",
     sPOPID = "editPopup",
     sSERVER_TBL_ID = "serverlist_table",
     sBINDROOT = "/SAVEDATA";
@@ -27,7 +31,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function(oAPP) {
+(function (oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -40,6 +44,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             sap.ui.getCore().lock();
 
             sap.ui.core.BusyIndicator.show();
+
             return;
         }
 
@@ -50,6 +55,126 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of oAPP.fn.setBusy
 
+    oAPP.setBusyDialog = (bIsBusy, bIsCancelBtnHide) => {
+
+        if (bIsBusy) {
+            oAPP.BUSYDIALOG.open();
+        } else {
+            oAPP.BUSYDIALOG.close();
+        }
+
+        // busy dialog 에 cancel 버튼을 숨기고 싶을 경우
+        let bIsHidden = bIsCancelBtnHide || false;
+        oAPP.BUSYDIALOG.setShowCancelButton(!bIsHidden);
+
+    }; // end of oAPP.setBusyDialog
+
+    /**************************************************************************
+     * 초기 로딩 시, 필요한 인스턴스 생성
+     **************************************************************************/
+    oAPP.fn.fnOnInitInstanceCreate = () => {
+
+        oAPP.BUSYDIALOG = new sap.m.BusyDialog({
+            // title: "Server Connection",
+            // titleAlignment: sap.m.TitleAlignment.Center,
+            text: "Connecting...",
+            // customIcon: "sap-icon://connected",
+            showCancelButton: true,
+            close: function () {
+                XHR.abort();
+            }
+        });
+
+    }; // end of fnOnInitInstanceCreate
+
+    /**************************************************************************
+     * ajax 호출 펑션
+     **************************************************************************/
+    oAPP.fn.sendAjax = (sUrl, oFormData, fnSuccess, fnError, fnCancel) => {
+
+        // ajax call 취소할 경우..
+        XHR.onabort = function () {
+
+            if (typeof fnCancel == "function") {
+                fnCancel();
+            }
+
+        };
+
+        // ajax call 실패 할 경우
+        XHR.onerror = function () {
+
+            if (typeof fnError == "function") {
+                fnError();
+            }
+
+        };
+
+        XHR.onreadystatechange = function (a, b, c, d, e) { // 요청에 대한 콜백         
+
+            if (XHR.readyState === XHR.DONE) { // 요청이 완료되면
+                if (XHR.status === 200 || XHR.status === 201) {
+
+                    if (typeof fnSuccess == "function") {
+                        fnSuccess(XHR.responseText);
+                    }
+
+                }
+            }
+
+        };
+
+        try {
+
+            XHR.open('POST', sUrl, true);
+
+        } catch (e) {
+
+            if (typeof fnError == "function") {
+                fnError(e.message);
+            }
+
+            return;
+        }
+
+        XHR.send(oFormData);
+
+    }; // end of fnSendAjax
+
+    /************************************************************************
+     * 서버 연결 확인
+     ************************************************************************/
+    oAPP.fn.fnCheckServerConnection = (sUrl, oFormData) => {
+
+        return new Promise((resolve) => {
+
+            oAPP.fn.sendAjax(
+                sUrl,
+                oFormData,
+                (res) => { // success
+                    resolve({
+                        RETCD: "S",
+                        RESPONSE: res,
+                        RTMSG: "connection success!"
+                    });
+                },
+                () => { // error
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: "Connection Fail!"
+                    });
+                },
+                (res) => { // cancel
+                    resolve({
+                        RETCD: "C",
+                        RTMSG: "Cancel Operation"
+                    });
+                });
+
+        });
+
+    }; // end of oAPP.fn.fnCheckConnection
+
     /************************************************************************
      * ------------------------ [ Server List Start ] ------------------------
      * **********************************************************************/
@@ -58,6 +183,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oAPP.setBusy(true);
 
         jQuery.sap.require("sap.m.MessageBox");
+
+        // 초기 로딩 시, 필요한 인스턴스 생성
+        oAPP.fn.fnOnInitInstanceCreate();
 
         // 초기 화면 먼저 그리기
         oAPP.fn.fnOnInitRendering();
@@ -1167,6 +1295,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oModel.setProperty("/VS_STATE", oDefault_VS);
         // oModel.refresh(true);
 
+        // 입력값 정합성 체크
         let oValid = await oAPP.fn.fnCheckValid(oSaveData, oModel);
         if (oValid.RETCD == "E") {
 
@@ -1181,6 +1310,39 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
 
         }
+
+        // // 서버 호출 URL 구성
+        // let sProtocol = oSaveData.protocol,
+        //     sHost = oSaveData.host,
+        //     sPort = oSaveData.port,
+        //     sUrl = `${sProtocol}://${sHost}`;
+
+        // if (sPort != "") {
+        //     sUrl += `:${sPort}`;
+        // }
+
+        // sUrl += sZU4A_WBC_URL;
+
+        // var oFormData = new FormData();
+        // oFormData.append("SYSCHK", 'X');
+
+        // // busy dialog 실행
+        // oAPP.setBusyDialog(true, true);
+
+        // // 입력한 데이터가 실제로 서버에 연결되는지 Ping을 날려본다.      
+        // let oResult = await oAPP.fn.fnCheckServerConnection(sUrl, oFormData);
+
+        // // busy dialog 종료
+        // oAPP.setBusyDialog(false, true);
+
+        // if (oResult.RETCD != "S") {
+
+        //     oAPP.fn.fnShowMessageBox("E", "please check url or network status!");
+        //     oAPP.setBusy(false);
+
+        //     return;
+
+        // }
 
         // 입력한 데이터를 로컬 JSON 파일에 저장한다.
         let oLocalSaveData = {
@@ -1238,8 +1400,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             oAPP.setBusy(false);
 
-            // 저장 완료 메시지!
-            oAPP.fn.fnShowMessageBox("S", "saved Success!");
+            // 성공 사운드
+            oAPP.setSoundMsg("01");
+
+            sap.m.MessageToast.show("saved Success!");
+
+            // // 저장 완료 메시지!
+            // oAPP.fn.fnShowMessageBox("S", "saved Success!");
 
             // // 테이블 Row 선택 표시 해제
             // let oTable = sap.ui.getCore().byId(sSERVER_TBL_ID);
@@ -1282,8 +1449,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oAPP.setBusy(false);
 
-        // 저장 완료 메시지!
-        oAPP.fn.fnShowMessageBox("S", "saved Success!");
+        // 성공 사운드
+        oAPP.setSoundMsg("01");
+
+        sap.m.MessageToast.show("saved Success!");
+
+        // // 저장 완료 메시지!
+        // oAPP.fn.fnShowMessageBox("S", "saved Success!");
 
         // // 테이블 Row 선택 표시 해제
         // let oTable = sap.ui.getCore().byId(sSERVER_TBL_ID);
@@ -1414,7 +1586,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
 
 
-            
+
 
 
 
@@ -1429,7 +1601,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     /************************************************************************
      * 서버리스트 더블 클릭 이벤트
      ************************************************************************/
-    oAPP.fn.fnPressServerListItem = (oEvent) => {
+    oAPP.fn.fnPressServerListItem = async (oEvent) => {
 
         var oTarget = oEvent.target,
             $SelectedRow = $(oTarget).closest(".sapMListTblRow");
@@ -1454,14 +1626,290 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oCoreModel = sap.ui.getCore().getModel(),
             oBindData = oCoreModel.getProperty(sBindPath);
 
-        console.log(oBindData);
+        // 기 저장되지 않았다면 등록 팝업을 호출해준다.
+        if (!oBindData.ISSAVE) {
+            oAPP.fn.fnEditDialogOpen(oCtx);
+            return;
+        }
 
-        debugger;
+        let sUUID = oBindData.uuid,
+            oSavedData = oAPP.fn.fnGetSavedServerListData(sUUID);
 
+        // 기 저장되지 않았다면 등록 팝업을 호출해준다.
+        if (oSavedData.RETCD == "E") {
+            oAPP.fn.fnEditDialogOpen(oCtx);
+            return;
+        }
 
+        let oRetData = oSavedData.RETDATA,
+            sProtocol = oRetData.protocol,
+            sHost = oRetData.host,
+            sPort = oRetData.port,
+            sUrl = `${sProtocol}://${sHost}`;
 
+        if (sPort != "") {
+            sUrl += `:${sPort}`;
+        }
+
+        sUrl += sZU4A_WBC_URL;
+
+        var oFormData = new FormData();
+        oFormData.append("SYSCHK", 'X');
+
+        // busy dialog 실행
+        oAPP.setBusyDialog(true);
+
+        // 서버에 연결되는지 Ping을 날려본다.    
+        let oResult = await oAPP.fn.fnCheckServerConnection(sUrl, oFormData);
+
+        // busy dialog 종료
+        oAPP.setBusyDialog(false);
+
+        // Busy Dialog 에서 취소 버튼을 눌렀을 경우
+        if (oResult.RETCD == "C") {
+
+            sap.m.MessageToast.show(oResult.RTMSG);
+            return;
+        }
+
+        // 접속 성공이 아니면 오류 메시지
+        if (oResult.RETCD != "S") {
+
+            // 오류 메시지
+            oAPP.fn.fnShowMessageBox("E", oResult.RTMSG);
+            return;
+        }
+
+        // 서버에서 응답한 값을 JSON 파싱 해본다.
+        let oResponse;
+        try {
+
+            let sResponse = oResult.RESPONSE;
+
+            oResponse = JSON.parse(sResponse);
+
+            if (oResponse.TYPE != "S") {
+
+                oAPP.fn.fnShowMessageBox("E", oResponse.MSG);
+                return;
+            }
+
+        } catch (error) { // JSON 파싱 오류가 발생할 경우
+
+            // critical error please contact administrator.
+            let sMsg = "critical error please contact administrator.";
+
+            oAPP.fn.fnShowMessageBox("E", sMsg);
+
+            return;
+
+        }
+
+        // 서버 정보
+        var oSAPServerInfo = {
+            NAME: oBindData.name,
+            SERVER_INFO: oRetData,
+            SERVER_INFO_DETAIL: oBindData,
+            // SERVERIP: oItemData.SERVIP,
+            INSTANCENO: oBindData.insno,
+            SYSTEMID: oBindData.systemid,
+            CLIENT: "",
+            LANGU: "",
+            SYSID: oBindData.systemid
+        };
+
+        if (oResponse && oResponse.SYSINFO) {
+            oSAPServerInfo.CLIENT = oResponse.SYSINFO.CLIENT;
+            oSAPServerInfo.LANGU = oResponse.SYSINFO.LANGU;
+        }
+
+        // 사용자 테마 정보를 읽어온다.
+        let oP13nThemeInfo = await fnP13nCreateTheme(oBindData.systemid);
+        if (oP13nThemeInfo.RETCD == "S") {
+            oSAPServerInfo.oThemeInfo = oP13nThemeInfo.RTDATA;
+        }
+
+        fnLoginPage(oSAPServerInfo);
 
     }; // end of oAPP.fn.fnPressServerListItem
+
+    /**************************************************************************
+     * 서버 체크 성공시 로그인 팝업 실행하기
+     **************************************************************************/
+    function fnLoginPage(oSAPServerInfo) {
+
+        const WINDOWSTATE = REMOTE.require('electron-window-state');
+
+        // 창 크기 기본값 설정
+        let mainWindowState = WINDOWSTATE({
+            defaultWidth: 800,
+            defaultHeight: 800
+        });
+
+        var SESSKEY = RANDOM.generate(40),
+            BROWSERKEY = RANDOM.generate(10);
+
+        // Browser Options..        
+        var sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow),
+            oWebPreferences = oBrowserOptions.webPreferences,
+            oThemeInfo = oSAPServerInfo.oThemeInfo;
+
+        // 브라우저 윈도우 기본 사이즈
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+        oBrowserOptions.x = mainWindowState.x;
+        oBrowserOptions.y = mainWindowState.y;
+        oBrowserOptions.width = mainWindowState.width;
+        oBrowserOptions.height = mainWindowState.height;
+        oBrowserOptions.minWidth = 1000;
+        oBrowserOptions.minHeight = 800;
+        oBrowserOptions.show = false;
+        oBrowserOptions.opacity = 0.0;
+        oWebPreferences.partition = SESSKEY;
+        oWebPreferences.browserkey = BROWSERKEY;
+
+        // 브라우저 오픈
+        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+
+        // 브라우저 윈도우 기본 사이즈 감지
+        mainWindowState.manage(oBrowserWindow);
+
+        oBrowserWindow.loadURL(PATHINFO.MAINFRAME);
+
+        // oBrowserWindow.once('ready-to-show', () => {
+        //     oBrowserWindow.show();
+        // });
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            var oMetadata = {
+                SERVERINFO: oSAPServerInfo,
+                THEMEINFO: oSAPServerInfo.oThemeInfo, // 테마 개인화 정보
+                EXEPAGE: "LOGIN",
+                SESSIONKEY: SESSKEY,
+                BROWSERKEY: BROWSERKEY
+            };
+
+            // 메타 정보를 보낸다.
+            oBrowserWindow.webContents.send('if-meta-info', oMetadata);
+
+            oBrowserWindow.setOpacity(1.0);
+
+            oBrowserWindow.show();
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+            oBrowserWindow = null;
+        });
+
+    } // end of fnLoginPage
+
+    function fnP13nCreateTheme(SYSID) {
+
+        return new Promise((resolve) => {
+
+            let sSysID = SYSID,
+                sThemeJsonPath = PATH.join(USERDATA, "p13n", "theme", `${sSysID}.json`);
+
+            // default Theme setting    
+            let oWsSettings = fnGetSettingsInfo(),
+                oDefThemeInfo = {
+                    THEME: oWsSettings.defaultTheme,
+                    BGCOL: oWsSettings.defaultBackgroundColor
+                };
+
+            // SYSTEM ID 테마 정보 JSON 파일 유무 확인
+            if (!FS.existsSync(sThemeJsonPath)) {
+
+                // 테마 정보가 없으면 신규 파일 생성 후 기본 테마 정보 전달
+                FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
+                    encoding: "utf8",
+                    mode: 0o777 // 올 권한
+                }, function (err) {
+
+                    if (err) {
+                        resolve({
+                            RETCD: "E",
+                            RTMSG: err.toString()
+                        });
+                        // reject(err.toString());
+                        return;
+                    }
+
+                    resolve({
+                        RETCD: "S",
+                        RTMSG: "",
+                        RTDATA: oDefThemeInfo
+                    });
+                    // resolve(oDefThemeInfo);
+
+                });
+
+                return;
+            }
+
+            // // 테마 정보가 있을 경우 바로 읽어서 전달
+            // var oThemeInfo1 = parent.require(sThemeJsonPath);
+            // resolve(oThemeInfo1);
+            FS.readFile(sThemeJsonPath, {
+                encoding: "utf8",
+            }, (err, data) => {
+
+                if (err) {
+                    // reject(err.toString());
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTMSG: "",
+                    RTDATA: JSON.parse(data)
+                });
+
+                // resolve(JSON.parse(data));
+
+            });
+
+        });
+
+    } // end of fnP13nCreateTheme
+
+    /************************************************************************
+     * WS의 설정 정보를 구한다.
+     ************************************************************************/
+    function fnGetSettingsInfo() {
+
+        // Browser Window option
+        var sSettingsJsonPath = PATHINFO.WSSETTINGS,
+
+            // JSON 파일 형식의 Setting 정보를 읽는다..
+            oSettings = parent.require(sSettingsJsonPath);
+        if (!oSettings) {
+            return;
+        }
+
+        return oSettings;
+
+    } // end of fnGetSettingsInfo
 
     /************************************************************************
      * 메시지 박스 공통 function

@@ -856,9 +856,11 @@ function getP13nData(sName) {
  ************************************************************************/
 function getHost() {
 
-    var oMetadata = getMetadata();
+    return getServerHost();
 
-    return oMetadata.HOST;
+    // var oMetadata = getMetadata();
+
+    // return oMetadata.HOST;
 
 }
 

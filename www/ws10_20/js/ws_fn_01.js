@@ -788,6 +788,10 @@
                     var oInput = oEvent.getSource(),
                         sValue = oInput.getValue();
 
+                    if(typeof sValue == "string" && sValue.length > 0 && sValue !== ""){
+                        oInput.setValue(sValue.toUpperCase());
+                    }                       
+
                     var aFilters = [];
 
                     oInput.getBinding("suggestionItems").filter();

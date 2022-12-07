@@ -411,15 +411,6 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     // 3. 서버 URL을 구한다.
     oWS.utill.fn.getServerPath = function () {
 
-        // if (!oWS.oServerInfo) {
-        //     return;
-        // }
-
-        // var oServerInfo = oWS.oServerInfo,
-        //     sServerUrl = oServerInfo.SERVERIP,
-        //     sInstanceNo = oServerInfo.INSTANCENO,
-        //     sServicePath = "http://" + sServerUrl + ":80" + sInstanceNo + "/zu4a_wbc/u4a_ipcmain";
-
         var sServerHost = getServerHost(),
             sServicePath = sServerHost + "/zu4a_wbc/u4a_ipcmain";
 
@@ -430,14 +421,25 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     // 4. 서버 호스트를 구한다.
     oWS.utill.fn.getServerHost = function () {
 
-        if (!oWS.oServerInfo) {
+        let oWS_ServerInfo = oWS.oServerInfo;
+        if (!oWS_ServerInfo) {
             return;
         }
 
-        var oServerInfo = oWS.oServerInfo,
-            oMetadata = parent.getMetadata(),
-            sInstanceNo = oServerInfo.INSTANCENO,
-            sServicePath = "http://" + oServerInfo.SERVERIP + ":80" + sInstanceNo;
+        let oServerInfo = oWS_ServerInfo.SERVER_INFO,
+            sProtocol = oServerInfo.protocol,
+            sHost = oServerInfo.host,
+            sPort = oServerInfo.port;
+
+        let sServicePath = `${sProtocol}://${sHost}`;
+        if (sPort != "") {
+            sServicePath += `:${sPort}`;
+        }
+
+        // var oServerInfo = oWS.oServerInfo,
+        //     oMetadata = parent.getMetadata(),
+        //     sInstanceNo = oServerInfo.INSTANCENO,
+        //     sServicePath = "http://" + oServerInfo.SERVERIP + ":80" + sInstanceNo;
 
         // if (oMetadata.HOST) {
         //     return oMetadata.HOST;
