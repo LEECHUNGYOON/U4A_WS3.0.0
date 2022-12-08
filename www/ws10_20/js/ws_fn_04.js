@@ -64,7 +64,9 @@
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
     oAPP.fn.fnSapGuiMultiLoginCheckThen = function(oResult) {
-       
+        
+        debugger;
+        
         var oMetadata = parent.getMetadata(),
             oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
             oSettings = parent.require(oSettingsPath),

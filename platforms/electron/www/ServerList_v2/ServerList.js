@@ -336,6 +336,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of oAPP.fn.fnReadSAPLogonDataThen
 
+    /************************************************************************
+     * 좌측 workspace의 Tree Item을 선택 해제 후 재선택하여 Refresh 효과를 준다.
+     ************************************************************************/
     oAPP.fn.fnSetRefreshSelectTreeItem = () => {
 
         let oTreeTable = sap.ui.getCore().byId("WorkTree");
@@ -524,7 +527,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     // 초기 화면 그리기
     oAPP.fn.fnOnInitRendering = () => {
 
-        var oApp = new sap.m.App(),
+        var oApp = new sap.m.App({
+                autoFocus: false,
+            }),
             oTreeTable = oAPP.fn.fnGetWorkSpaceTreeTable(), // 좌측 폴더 Tree
             oTable = oAPP.fn.fnGetSAPLogonListTable(), // 우측 서버 리스트 테이블
             oPage1 = new sap.m.Page({
@@ -873,10 +878,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                             ],
                             formatter: (ISSAVE) => {
 
-                                let sStatusTxt = "Not Saved";
+                                let sStatusTxt = "Inactivate";
 
                                 if (ISSAVE == true) {
-                                    sStatusTxt = "Saved";
+                                    sStatusTxt = "Activate";
                                 }
 
                                 return sStatusTxt;
@@ -930,11 +935,15 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 new sap.m.Button({
                     icon: "sap-icon://edit",
                     press: (oEvent) => {
-
                         oAPP.fn.fnPressEdit();
-
                     }
-                })
+                }),
+                new sap.m.Button({
+                    icon: "sap-icon://delete",
+                    press: (oEvent) => {
+                        oAPP.fn.fnPressDelete();
+                    }
+                }),
             ]
         });
 
@@ -965,6 +974,112 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oAPP.fn.fnEditDialogOpen(oCtx);
 
     }; // end of oAPP.fn.fnPressEdit
+
+    /************************************************************************
+     * 서버 리스트 삭제 버튼
+     ************************************************************************/
+    oAPP.fn.fnPressDelete = async () => {
+
+        let oTable = sap.ui.getCore().byId(sSERVER_TBL_ID);
+        if (!oTable) {
+            return;
+        }
+
+        // 선택한 라인 체크
+        let oSelectedItem = oTable.getSelectedItem();
+        if (!oSelectedItem) {
+            return;
+        }
+
+        // 선택한 라인의 바인딩 정보 체크
+        let oCtx = oSelectedItem.getBindingContext();
+        if (!oCtx) {
+            return;
+        }
+
+        // 선택한 라인의 바인딩 데이터
+        let oCtxData = oCtx.getProperty(oCtx.getPath());
+
+        if (!oCtxData.ISSAVE) {
+            return;
+        }
+
+        let oResult = await new Promise((resolve) => {
+
+            // 삭제 메시지 팝업
+            let sMsg = "Do you want to Delete?";
+
+            oAPP.fn.fnShowMessageBox("C", sMsg, fnCallback);
+
+            function fnCallback(sAction) {
+
+                resolve(sAction);
+
+            }
+
+        });
+
+        if (oResult != "OK") {
+            return;
+        }
+
+        debugger;
+
+        // 기 저장된 전체 목록을 구한다.
+        let oSavedData = oAPP.fn.fnGetSavedServerListDataAll();
+        if (oSavedData.RETCD !== "S") {
+
+            oAPP.fn.fnShowMessageBox(oSavedData.RETCD, oSavedData.RTMSG);
+            return;
+        }
+
+        // 전체 목록 중 삭제 대상 데이터를 찾는다.
+        let aSavedData = oSavedData.RETDATA,
+            iDelIndex = aSavedData.findIndex(elem => elem.uuid == oCtxData.uuid);
+
+        if (iDelIndex < 0) {
+            return;
+        }
+
+        // 로컬에 저장된 서버리스트 정보 JSON PATH
+        let sPathInfoUrl = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            oPathInfo = require(sPathInfoUrl),
+            sLocalJsonPath = oPathInfo.SERVERINFO_V2 || "";
+
+        // 파일 존재 유무 확인
+        let bIsFileExist = FS.existsSync(sLocalJsonPath);
+        if (!bIsFileExist) {
+
+            // 파일이 없습니다 오류
+            oAPP.fn.fnShowMessageBox("E", "server List file not exists. restart now!");
+
+            return;
+
+        }
+
+        // 선택한 데이터 삭제
+        aSavedData.splice(iDelIndex, 1);
+
+        // 입력한 서버 호스트 정보를 로컬 JSON 파일로 저장한다.
+        let oWriteFileResult = await oAPP.fn.fnWriteFile(sLocalJsonPath, JSON.stringify(aSavedData));
+        if (oWriteFileResult.RETCD != "S") {
+
+            // 파일 저장에 실패 했을 경우 오류메시지 출력후 빠져나간다.
+            oAPP.fn.fnShowMessageBox("E", oWriteFileResult.RTMSG);
+
+            return;
+
+        }
+
+        // 성공 사운드
+        oAPP.setSoundMsg("01");
+
+        sap.m.MessageToast.show("Delete Success!");
+
+        // 좌측 workspace 트리 테이블을 갱신한다.
+        oAPP.fn.fnSetRefreshSelectTreeItem();
+
+    }; // end of oAPP.fn.fnPressDelete
 
     /************************************************************************
      * 서버 리스트 수정 팝업
@@ -1311,39 +1426,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         }
 
-        // // 서버 호출 URL 구성
-        // let sProtocol = oSaveData.protocol,
-        //     sHost = oSaveData.host,
-        //     sPort = oSaveData.port,
-        //     sUrl = `${sProtocol}://${sHost}`;
-
-        // if (sPort != "") {
-        //     sUrl += `:${sPort}`;
-        // }
-
-        // sUrl += sZU4A_WBC_URL;
-
-        // var oFormData = new FormData();
-        // oFormData.append("SYSCHK", 'X');
-
-        // // busy dialog 실행
-        // oAPP.setBusyDialog(true, true);
-
-        // // 입력한 데이터가 실제로 서버에 연결되는지 Ping을 날려본다.      
-        // let oResult = await oAPP.fn.fnCheckServerConnection(sUrl, oFormData);
-
-        // // busy dialog 종료
-        // oAPP.setBusyDialog(false, true);
-
-        // if (oResult.RETCD != "S") {
-
-        //     oAPP.fn.fnShowMessageBox("E", "please check url or network status!");
-        //     oAPP.setBusy(false);
-
-        //     return;
-
-        // }
-
         // 입력한 데이터를 로컬 JSON 파일에 저장한다.
         let oLocalSaveData = {
             uuid: oServer.uuid,
@@ -1580,16 +1662,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             }
 
 
-            // 등록한 서버에 접속을 시도한다.
-
-
-
-
-
-
-
-
-
             resolve({
                 RETCD: "S"
             });
@@ -1688,11 +1760,23 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             oResponse = JSON.parse(sResponse);
 
+            let oSysInfo = oResponse.SYSINFO;
+
             if (oResponse.TYPE != "S") {
 
                 oAPP.fn.fnShowMessageBox("E", oResponse.MSG);
                 return;
             }
+
+            // 등록한 Server 정보와 실제 서버의 SYSID가 다를 경우 어떻게 할지 상의 후 주석 풀기
+            // if (!oSysInfo || !oSysInfo.SYSID || oSysInfo.SYSID != oBindData.systemid) {
+
+            //     let sMsg = `System ID is different. \n Connection System ID: [${oBindData.systemid}], System ID for host URL: [${oSysInfo.SYSID}]`;
+
+            //     oAPP.fn.fnShowMessageBox("E", sMsg);
+
+            //     return;
+            // }
 
         } catch (error) { // JSON 파싱 오류가 발생할 경우
 
@@ -1926,7 +2010,24 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         switch (TYPE) {
 
-            case "S":
+            case "C": // confirm
+
+                sap.m.MessageBox.confirm(sMsg, {
+                    title: "Confirm", // default
+                    onClose: fnCloseCallback, // default
+                    styleClass: "", // default
+                    actions: [
+                        sap.m.MessageBox.Action.OK,
+                        sap.m.MessageBox.Action.CANCEL
+                    ], // default
+                    emphasizedAction: sap.m.MessageBox.Action.OK, // default
+                    initialFocus: null, // default
+                    textDirection: sap.ui.core.TextDirection.Inherit // default
+                });
+
+                break;
+
+            case "S": // success
 
                 sap.m.MessageBox.success(sMsg, {
                     title: "Success", // default
@@ -1943,7 +2044,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 break;
 
-            case "E": // 에러 박스
+            case "E": // error
 
                 sap.m.MessageBox.error(sMsg, {
                     title: "Error", // default
@@ -1960,7 +2061,34 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 break;
 
+            case "W":
+
+                sap.m.MessageBox.warning(sMsg, {
+                    title: "Warning", // default
+                    onClose: fnCloseCallback, // default
+                    styleClass: "", // default
+                    actions: sap.m.MessageBox.Action.OK, // default
+                    emphasizedAction: sap.m.MessageBox.Action.OK, // default
+                    initialFocus: null, // default
+                    textDirection: sap.ui.core.TextDirection.Inherit // default
+                });
+
+                break;
+
+
             default:
+
+                sap.m.MessageBox.show(sMsg, {
+                    icon: sap.m.MessageBox.Icon.NONE, // default
+                    title: "", // default
+                    actions: sap.m.MessageBox.Action.OK, // default
+                    emphasizedAction: sap.m.MessageBox.Action.OK, // default
+                    onClose: fnCloseCallback, // default                                  
+                    styleClass: "", // default
+                    initialFocus: null, // default
+                    textDirection: sap.ui.core.TextDirection.Inherit // default
+                });
+
                 break;
         }
 

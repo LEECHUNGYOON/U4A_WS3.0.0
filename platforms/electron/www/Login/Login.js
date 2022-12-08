@@ -1274,6 +1274,8 @@ let oAPP = (function () {
             // 권한이 있으면 성공적으로 로그인 후 10번으로 이동
             oAPP.fn.fnOnLoginSuccess(oResultData);
 
+            parent.CURRWIN.setTitle("U4A Workspace - #Main");
+
         });
 
     }; // end of oAPP.fn.fnCheckVersionFinished    
@@ -1944,6 +1946,8 @@ window.addEventListener("beforeunload", oAPP.fn.fnOnBeforeUnload, false);
 
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    parent.CURRWIN.setTitle("U4A Workspace - #Login");
 
     // 브라우저 zoom 레벨을 수정 한 후 로그인 페이지로 이동 시 기본 zoom 레벨 적용
     parent.WEBFRAME.setZoomLevel(0);

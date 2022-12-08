@@ -510,17 +510,17 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
          * Change or Display,
          * Activate or Inactivate 에 대한 Desc 설정
          */
-        if (oAppInfo.IS_EDIT == 'X') {
-            oAppInfo.MODETXT = "Change";
-        } else {
-            oAppInfo.MODETXT = "Display";
-        }
+        // if (oAppInfo.IS_EDIT == 'X') {
+        //     oAppInfo.MODETXT = "Change";
+        // } else {
+        //     oAppInfo.MODETXT = "Display";
+        // }
 
-        if (oAppInfo.ACTST == "A") {
-            oAppInfo.ISACTTXT = "Active";
-        } else {
-            oAppInfo.ISACTTXT = "Inactive";
-        }
+        // if (oAppInfo.ACTST == "A") {
+        //     oAppInfo.ISACTTXT = "Active";
+        // } else {
+        //     oAppInfo.ISACTTXT = "Inactive";
+        // }
 
         // Global AppInfo에 저장
         oWS.utill.attr.oAppInfo = oAppInfo;

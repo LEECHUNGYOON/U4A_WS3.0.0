@@ -65,7 +65,7 @@
             bIsError = true;
 
             // console log 감지
-            setConsoleLogObserver(console);
+            parent.setConsoleLogObserver(console);
 
             let sErrMsg = `${message}\n${url}, ${line}:${col}`;
 
@@ -86,7 +86,7 @@
             bIsError = true;
 
             // console log 감지
-            setConsoleLogObserver(console);
+            parent.setConsoleLogObserver(console);
 
             let sErrorMsg = event.reson.toString();
 

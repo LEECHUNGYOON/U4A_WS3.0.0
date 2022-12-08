@@ -446,6 +446,12 @@
      ************************************************************************/
     function fnGetSubHeaderWs30() {
 
+        // Message Class Text
+        let sChangeTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02", "", "", "", ""), // Change
+            sDispTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05", "", "", "", ""), // Display
+            sActiveTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B66", "", "", "", ""), // Activate,
+            sInactTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B67", "", "", "", ""); // Inactivate             
+
         var sBindRootPath = "/WS30/APP",
 
             oBackBtn = new sap.m.Button("ws30_backBtn", {
@@ -459,24 +465,39 @@
 
             oAppModeTxt = new sap.m.Title("ws30_appModeTxt")
             .bindProperty("text", {
-
                 parts: [
                     `${sBindRootPath}/IS_EDIT`,
                 ],
                 formatter: (IS_EDIT) => {
-                    return IS_EDIT == "X" ? "Change" : "Display";
+                    return IS_EDIT == "X" ? sChangeTxt : sDispTxt;
                 }
 
             }).addStyleClass("sapUiSmallMarginEnd"), // Change or Display Text	
 
             oAppActTxt = new sap.m.Title("ws30_appActTxt")
             .bindProperty("text", {
-
                 parts: [
                     `${sBindRootPath}/ACTST`,
+                    `${sBindRootPath}/IS_EDIT`,
+                    `${sBindRootPath}/APPID`,
                 ],
-                formatter: (ACTST) => {
-                    return ACTST == "A" ? "Active" : "Inactive";
+                formatter: (ACTST, IS_EDIT, APPID) => {
+
+                    if (!APPID) {
+                        return;
+                    }
+
+                    // 브라우저 타이틀을 구성한다.
+                    let sModeTxt = IS_EDIT == "X" ? sChangeTxt : sDispTxt,
+                        sActTxt = ACTST == "A" ? sActiveTxt : sInactTxt;
+
+                    let sTitle = "U4A Workspace - #";
+                    sTitle += `${APPID} ${sModeTxt} ${sActTxt}`;
+
+                    parent.CURRWIN.setTitle(sTitle);
+
+
+                    return ACTST == "A" ? sActTxt : sInactTxt;
                 }
 
             }).addStyleClass("sapUiSmallMarginEnd"), // Activate or inactivate Text
@@ -2412,11 +2433,13 @@
         // 화면 Lock 해제
         sap.ui.getCore().unlock();
 
+        // RowUpdate 이벤트를 해제 한다.
         let oUspTreeTable = sap.ui.getCore().byId("usptree");
         if (oUspTreeTable) {
-            // RowUpdate 이벤트를 해제 한다.
             oUspTreeTable.detachRowsUpdated(oAPP.fn.fnAttachRowsUpdateInit);
         }
+
+        parent.CURRWIN.setTitle("U4A Workspace - #Main");
 
     } // end of _fnKillUserSessionCb
 
