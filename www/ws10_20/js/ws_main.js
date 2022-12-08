@@ -351,13 +351,7 @@
             oAPP.fn.fnSetMutationObserver(); // #[ws_fn_03.js]
 
             // Loading Page
-            parent.showLoadingPage('');
-
-            setTimeout(() => {
-
-                $('#content').fadeIn(1000, 'linear');
-
-            }, 100);
+            parent.showLoadingPage('');         
 
             // 서버 호스트 등록 여부 체크
             oAPP.fn.fnCheckServerHost(); // #[ws_fn_03.js]

@@ -65,8 +65,6 @@
      ************************************************************************/
     oAPP.fn.fnSapGuiMultiLoginCheckThen = function(oResult) {
         
-        debugger;
-        
         var oMetadata = parent.getMetadata(),
             oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
             oSettings = parent.require(oSettingsPath),
@@ -175,6 +173,7 @@
                 (typeof METHNM == "undefined" ? "" : METHNM),
                 (typeof INDEX == "undefined" ? "0" : INDEX),
                 oAppInfo.IS_EDIT || "", // Edit or Display Mode,
+                TCODE || "", // T-CODE
                 oResult.RTVAL, // SAPGUI Multi Login Check Value
                 oResult.MAXSS, // 최대 세션창 갯수
             ];

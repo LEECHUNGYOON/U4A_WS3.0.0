@@ -204,6 +204,7 @@
         oBrowserWindow.backgroundColor = "#1c2228";
         oBrowserWindow.webPreferences.OBJTY = "SERVERLIST";
         oBrowserWindow.show = false;
+        oBrowserOptions.opacity = 0.0;
 
         // 인트로 화면 닫기
         let oCurrWindow = REMOTE.getCurrentWindow();
@@ -233,16 +234,18 @@
         oWin.webContents.on('did-finish-load', function () {
 
             oWin.webContents.send('window-id', oWin.id);
+           
+            oWin.setOpacity(1.0);
 
-            oWin.show();
+            oWin.show();           
 
             oCurrWindow.close();
 
         });
 
-        oWin.once('ready-to-show', () => {
-            oWin.show();
-        })
+        // oWin.once('ready-to-show', () => {
+        //     oWin.show();
+        // })
 
         oWin.on('closed', () => {
             oWin = null;

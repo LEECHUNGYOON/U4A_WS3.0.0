@@ -31,7 +31,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function (oAPP) {
+(function(oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -80,7 +80,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             text: "Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function () {
+            close: function() {
                 XHR.abort();
             }
         });
@@ -93,7 +93,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.sendAjax = (sUrl, oFormData, fnSuccess, fnError, fnCancel) => {
 
         // ajax call 취소할 경우..
-        XHR.onabort = function () {
+        XHR.onabort = function() {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -102,7 +102,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // ajax call 실패 할 경우
-        XHR.onerror = function () {
+        XHR.onerror = function() {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -110,7 +110,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         };
 
-        XHR.onreadystatechange = function (a, b, c, d, e) { // 요청에 대한 콜백         
+        XHR.onreadystatechange = function(a, b, c, d, e) { // 요청에 대한 콜백         
 
             if (XHR.readyState === XHR.DONE) { // 요청이 완료되면
                 if (XHR.status === 200 || XHR.status === 201) {
@@ -180,8 +180,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      * **********************************************************************/
     oAPP.fn.fnOnMainStart = () => {
 
-        oAPP.setBusy(true);
-
         jQuery.sap.require("sap.m.MessageBox");
 
         // 초기 로딩 시, 필요한 인스턴스 생성
@@ -193,27 +191,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
         oAPP.fn.fnOnListupSapLogon();
 
-        // setTimeout(async () => {
-
-        //     // // 기 저장된 SAPLogon 정보를 구한다.
-        //     // await oAPP.fn.fnGetSavedSapLogon();
-
-        //     // 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
-        //     oAPP.fn.fnOnListupSapLogon();
-
-        // }, 1000);
-
     }; // end of oAPP.fn.fnOnMainStart
-
-    // oAPP.fn.fnGetSavedSapLogon = () => {
-
-    //     return new Promise((resolve) => {
-
-    //         resolve();
-
-    //     });
-
-    // }; // end of oAPP.fn.fnGetSavedSapLogon
 
     /************************************************************************
      * 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
@@ -572,6 +550,16 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oApp.addPage(oMainPage);
         oApp.placeAt("content");
+
+        oApp.addEventDelegate({
+            onAfterRendering: function() {
+
+                setTimeout(() => {
+                    $('#content').fadeIn(300, 'linear');
+                }, 300);
+
+            }
+        });
 
     }; // end of oAPP.fn.fnOnInitRendering
 
@@ -1877,7 +1865,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -1924,7 +1912,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         resolve({

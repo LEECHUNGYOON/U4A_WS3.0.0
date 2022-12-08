@@ -20,7 +20,7 @@ Rem *********************
 Rem *** Public Sector ***
 Rem *********************
 
-	Public HOSTIP, SVPORT, MSSEVR, MSPORT, SAPRUT, SID, MANDT, BNAME, PASS, LANGU, APPID, METHD, SPOSI, ISEDT, ISMLGN, MAXSS, ConnStr, W_system
+	Public HOSTIP, SVPORT, MSSEVR, MSPORT, SAPRUT, SID, MANDT, BNAME, PASS, LANGU, APPID, METHD, SPOSI, ISEDT, ISMLGN, MAXSS, ConnStr, W_system, TCODE
 	
 	Public objWSH, objSapGui, objAppl, objConn, objSess
 	
@@ -101,14 +101,14 @@ Function GetArg()
 	METHD  = WScript.arguments.Item(11) '네비게이션 대상 이벤트 메소드 (*옵션) => EX) EV_TEST
 	SPOSI  = WScript.arguments.Item(12) '네비게이션 대상 이벤트 메소드 소스 라인번호 (*옵션) => EX) 100
 	ISEDT  = WScript.arguments.Item(13) '수정모드 여부(예 : X, 아니오 : 공백) 
-	
+	TCODE  = WScript.arguments.Item(14) 'SAP TCODE
 	REM ** 다중 로그인 여부 **
 	REM    1: SAP GUI 다중 로그인 정보 없음, 
 	REM    2: SAP GUI 다중 로그인 정보 있음(* 시스템 허용)
 	REM    X: SAP GUI 다중 로그인 시스템 허용 안함
-	ISMLGN = WScript.arguments.Item(14) 
+	ISMLGN = WScript.arguments.Item(15) 
  
- 	MAXSS = CInt(WScript.arguments.Item(15)) '시스템 허용 최대 세션수
+ 	MAXSS = CInt(WScript.arguments.Item(16)) '시스템 허용 최대 세션수
 	
 End Function
 
@@ -337,7 +337,7 @@ Function call_ZU4A_CTRL_PROXY()
 	
 	'objSess.findById("wnd[0]/tbar[1]/btn[8]").press
 
-    LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT
+    LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE
 	
 	LV_ENC = Base64Encode(LV_PARA)
 

@@ -599,6 +599,14 @@ let oAPP = (function () {
         oApp.addPage(oLoginPage);
         oApp.placeAt("content");
 
+        oApp.addEventDelegate({
+            onAfterRendering : function(){
+
+                oAPP.fn.fnOnSmoothLoading();
+
+            }
+        });
+
     }; // end of oAPP.fn.fnOnInitRendering   
 
     /************************************************************************
@@ -1516,9 +1524,7 @@ let oAPP = (function () {
      ************************************************************************/
     oAPP.fn.fnOnSmoothLoading = () => {
 
-        setTimeout(() => {
-            $('#content').fadeIn(1000, 'linear');
-        }, 100);
+        $('#content').fadeIn(100, 'linear');
 
     }; // end of oAPP.fn.fnOnSmoothLoading     
 
@@ -1873,8 +1879,8 @@ let oAPP = (function () {
             // trial 버전 확인
             var oWsSettings = oAPP.fn.fnGetSettingsInfo();
 
-            // 자연스러운 로딩
-            oAPP.fn.fnOnSmoothLoading();
+            // // 자연스러운 로딩
+            // oAPP.fn.fnOnSmoothLoading();
 
             // trial 버전 로그인 페이지를 그린다.
             if (oWsSettings.isTrial) {
