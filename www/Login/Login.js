@@ -913,41 +913,41 @@ let oAPP = (function () {
         // var bIsCDN = oAPP.fn.fnGetIsCDN();
         var bIsCDN = parent.getIsCDN();
         
-        // CDN 허용 여부 플래그가 저장되지 않았을 경우.
-        if (typeof bIsCDN == "undefined") {
+        // // CDN 허용 여부 플래그가 저장되지 않았을 경우.
+        // if (typeof bIsCDN == "undefined") {
 
-            parent.setBusy("");
+        //     parent.setBusy("");
 
-            parent.showMessage(sap, 30, "I", "Do you want to allow CDN Auto Update?", lf_msgCallback.bind(this));
+        //     parent.showMessage(sap, 30, "I", "Do you want to allow CDN Auto Update?", lf_msgCallback.bind(this));
 
-            function lf_msgCallback(sAction) {
+        //     function lf_msgCallback(sAction) {
 
-                parent.setBusy("X");
+        //         parent.setBusy("X");
 
-                var YES = sap.m.MessageBox.Action.YES,
-                    bIsAction = (sAction == YES ? "X" : "");
+        //         var YES = sap.m.MessageBox.Action.YES,
+        //             bIsAction = (sAction == YES ? "X" : "");
 
-                // CDN 허용여부 플래그 값을 개인화 폴더에 저장한다.
-                // oAPP.fn.fnSetIsCDN(bIsAction);
-                parent.setIsCDN(bIsAction);
+        //         // CDN 허용여부 플래그 값을 개인화 폴더에 저장한다.
+        //         // oAPP.fn.fnSetIsCDN(bIsAction);
+        //         parent.setIsCDN(bIsAction);
 
-                // CDN 허용일 경우 GitHub에 Ping을 수행.
-                if (bIsAction == "X") {
+        //         // CDN 허용일 경우 GitHub에 Ping을 수행.
+        //         if (bIsAction == "X") {
 
-                    oAPP.fn.fnConnectionGithub().then(oAPP.fn.fnConnectionGithubThen.bind(this));
+        //             oAPP.fn.fnConnectionGithub().then(oAPP.fn.fnConnectionGithubThen.bind(this));
 
-                    return;
+        //             return;
 
-                }
+        //         }
 
-                // CDN 허용이 아닐 경우 sap 서버에 최신 버전 체크 후 있다면 다운받기
-                oAPP.fn.fnSetAutoUpdateForSAP().then(oAPP.fn.fnSetAutoUpdateForSAPThen.bind(this));
+        //         // CDN 허용이 아닐 경우 sap 서버에 최신 버전 체크 후 있다면 다운받기
+        //         oAPP.fn.fnSetAutoUpdateForSAP().then(oAPP.fn.fnSetAutoUpdateForSAPThen.bind(this));
 
-            } // end of lf_msgCallback
+        //     } // end of lf_msgCallback
 
-            return;
+        //     return;
 
-        }
+        // }
 
         // CDN 플래그가 저장되어 있고, CDN 허용일 경우 GitHub에 Ping을 수행.
         if (bIsCDN == "X") {

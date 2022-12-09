@@ -31,7 +31,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function(oAPP) {
+(function (oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -80,7 +80,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             text: "Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function() {
+            close: function () {
                 XHR.abort();
             }
         });
@@ -93,7 +93,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.sendAjax = (sUrl, oFormData, fnSuccess, fnError, fnCancel) => {
 
         // ajax call 취소할 경우..
-        XHR.onabort = function() {
+        XHR.onabort = function () {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -102,7 +102,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // ajax call 실패 할 경우
-        XHR.onerror = function() {
+        XHR.onerror = function () {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -110,7 +110,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         };
 
-        XHR.onreadystatechange = function(a, b, c, d, e) { // 요청에 대한 콜백         
+        XHR.onreadystatechange = function (a, b, c, d, e) { // 요청에 대한 콜백         
 
             if (XHR.readyState === XHR.DONE) { // 요청이 완료되면
                 if (XHR.status === 200 || XHR.status === 201) {
@@ -532,7 +532,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             }),
             oMainPage = new sap.m.Page({
                 enableScrolling: false,
-                title: "SAPLogon Workspace View",
+                title: "U4A Workspace Logon Pad",
                 content: [
                     new sap.ui.layout.Splitter({
                         height: "100%",
@@ -552,7 +552,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function() {
+            onAfterRendering: function () {
 
                 setTimeout(() => {
                     $('#content').fadeIn(300, 'linear');
@@ -816,29 +816,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     width: "150px",
                     header: new sap.m.Label({
                         design: sap.m.LabelDesign.Bold,
-                        text: "status"
+                        text: "STATUS"
                     })
                 }),
 
                 new sap.m.Column({
                     header: new sap.m.Label({
                         design: sap.m.LabelDesign.Bold,
-                        text: "name"
-                    })
-                }),
-
-                new sap.m.Column({
-                    hAlign: sap.ui.core.TextAlign.Center,
-                    header: new sap.m.Label({
-                        design: sap.m.LabelDesign.Bold,
-                        text: "systemid"
-                    })
-                }),
-
-                new sap.m.Column({
-                    header: new sap.m.Label({
-                        design: sap.m.LabelDesign.Bold,
-                        text: "host"
+                        text: "SERVER NAME"
                     })
                 }),
 
@@ -846,7 +831,22 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     hAlign: sap.ui.core.TextAlign.Center,
                     header: new sap.m.Label({
                         design: sap.m.LabelDesign.Bold,
-                        text: "insno"
+                        text: "SID"
+                    })
+                }),
+
+                new sap.m.Column({
+                    header: new sap.m.Label({
+                        design: sap.m.LabelDesign.Bold,
+                        text: "HOST(Or IP)"
+                    })
+                }),
+
+                new sap.m.Column({
+                    hAlign: sap.ui.core.TextAlign.Center,
+                    header: new sap.m.Label({
+                        design: sap.m.LabelDesign.Bold,
+                        text: "SNO"
                     })
                 }),
 
@@ -866,10 +866,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                             ],
                             formatter: (ISSAVE) => {
 
-                                let sStatusTxt = "Inactivate";
+                                let sStatusTxt = "Inactive";
 
                                 if (ISSAVE == true) {
-                                    sStatusTxt = "Activate";
+                                    sStatusTxt = "Active";
                                 }
 
                                 return sStatusTxt;
@@ -1757,14 +1757,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             }
 
             // 등록한 Server 정보와 실제 서버의 SYSID가 다를 경우 어떻게 할지 상의 후 주석 풀기
-            // if (!oSysInfo || !oSysInfo.SYSID || oSysInfo.SYSID != oBindData.systemid) {
+            if (!oSysInfo || !oSysInfo.SYSID || oSysInfo.SYSID != oBindData.systemid) {
 
-            //     let sMsg = `System ID is different. \n Connection System ID: [${oBindData.systemid}], System ID for host URL: [${oSysInfo.SYSID}]`;
+                let sMsg = `System ID is different. \n Connection System ID: [${oBindData.systemid}], System ID for host URL: [${oSysInfo.SYSID}]`;
 
-            //     oAPP.fn.fnShowMessageBox("E", sMsg);
+                oAPP.fn.fnShowMessageBox("E", sMsg);
 
-            //     return;
-            // }
+                return;
+            }
 
         } catch (error) { // JSON 파싱 오류가 발생할 경우
 
@@ -1865,7 +1865,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -1912,7 +1912,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         resolve({

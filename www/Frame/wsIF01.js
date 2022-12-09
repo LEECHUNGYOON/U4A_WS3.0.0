@@ -60,10 +60,10 @@ function getAppInfo() {
     return oWS.utill.fn.getAppInfo();
 }
 
-// 9. SAP ICON Path
-function getSapIconPath(sIconName) {
-    return oWS.utill.fn.getSapIconPath(sIconName);
-}
+// // 9. SAP ICON Path // oAPP.fn.fnGetSapIconPath()으로 대체함
+// function getSapIconPath(sIconName) {
+//     return oWS.utill.fn.getSapIconPath(sIconName);
+// }
 
 // 10. Window Header Menu Setting
 function setBrowserMenu(aTemplate) {

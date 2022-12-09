@@ -95,6 +95,7 @@
         var oMetaData = {
             METADATA: parent.getMetadata(),
             USERINFO: parent.getUserInfo(),
+            SERVERINFO: parent.getServerInfo(),
             SUGG: {
                 TCODE: []
             },

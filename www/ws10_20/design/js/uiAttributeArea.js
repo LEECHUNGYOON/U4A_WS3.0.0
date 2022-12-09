@@ -1523,7 +1523,7 @@
             l_fldnm = "P_GROUP";
             break;
 
-          defalut:
+          default:
             return;
 
         }
@@ -1547,10 +1547,17 @@
       return;
     }
 
+    var l_func;
+
+    //edit 상태인경우 callback function 매핑.
+    if(oAPP.attr.oModel.oData.IS_EDIT === true){
+      l_func = lf_returnDOC;
+    }
+
     //f4 help팝업을 load한경우.
     if(typeof oAPP.fn.callF4HelpPopup !== "undefined"){
       //f4 help 팝업 호출.
-      oAPP.fn.callF4HelpPopup(ls_ua003.FLD05, ls_ua003.FLD05, [], [], lf_returnDOC);
+      oAPP.fn.callF4HelpPopup(ls_ua003.FLD05, ls_ua003.FLD05, [], [], l_func);
       //하위 로직 skip처리를 위한 flag return.
       return true;
     }
@@ -1558,7 +1565,7 @@
     //f4help 팝업을 load하지 못한경우.
     oAPP.fn.getScript("design/js/callF4HelpPopup",function(){
         //f4 help 팝업 function load 이후 팝업 호출.
-        oAPP.fn.callF4HelpPopup(ls_ua003.FLD05, ls_ua003.FLD05, [], [], lf_returnDOC);
+        oAPP.fn.callF4HelpPopup(ls_ua003.FLD05, ls_ua003.FLD05, [], [], l_func);
     });
 
     //하위 로직 skip처리를 위한 flag return.
@@ -3133,13 +3140,20 @@
       oAPP.fn.attrChangeProc(is_attr);
 
     } //f4 help callback function.
+    
+    
+    var l_func;
 
+    //edit인경우 callback function 매핑.
+    if(oAPP.attr.oModel.oData.IS_EDIT === true){
+      l_func = lf_returnDOC;
 
+    }
 
     //f4 help팝업을 load한경우.
     if(typeof oAPP.fn.callF4HelpPopup !== "undefined"){
       //f4 help 팝업 호출.
-      oAPP.fn.callF4HelpPopup("DD_SHLP", "DD_SHLP", [], [], lf_returnDOC);
+      oAPP.fn.callF4HelpPopup("DD_SHLP", "DD_SHLP", [], [], l_func);
       //하위로직 skip처리를 위한 flag return
       return true;
     }
@@ -3147,7 +3161,7 @@
     //f4help 팝업을 load하지 못한경우.
     oAPP.fn.getScript("design/js/callF4HelpPopup",function(){
         //f4 help 팝업 function load 이후 팝업 호출.
-        oAPP.fn.callF4HelpPopup("DD_SHLP", "DD_SHLP", [], [], lf_returnDOC);
+        oAPP.fn.callF4HelpPopup("DD_SHLP", "DD_SHLP", [], [], l_func);
     });
 
     //하위로직 skip처리를 위한 flag return

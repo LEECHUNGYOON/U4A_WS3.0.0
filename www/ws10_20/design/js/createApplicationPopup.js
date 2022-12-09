@@ -2,6 +2,29 @@
   //application 생성시 추가 입력정보 팝업 호출.
   oAPP.fn.createApplicationPopup = function(appid){
 
+      //js 파일 load
+      function lf_getScript(fname, callbackFunc, bSync){
+        //js 파일 load
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            eval(this.responseText);
+            callbackFunc();
+          }
+        };
+
+        var l_async = true;
+        if(bSync === true){
+          l_async = false;
+        }
+
+        xhttp.open("GET", fname + ".js", l_async);
+        xhttp.send();
+
+      } //js 파일 load
+
+
+
       //valueState 바인딩 필드 초기화.
       function lf_resetValueStateField(cs_appl){
 
@@ -22,7 +45,6 @@
         cs_appl.REQNR_stxt = null;  //Request No.
 
       } //valueState 바인딩 필드 초기화.
-
 
 
 
@@ -69,13 +91,13 @@
 
         //입력값에 오류 사항이 존재하는 경우 exit.
         if(l_err === true){
-          oModel.setData({"CREATE":ls_appl});
+          oModel.setProperty("/CREATE", ls_appl);
           //274	Check input value.
           parent.showMessage(sap, 20, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "274", "", "", "", ""));
           return l_err;
         }
 
-        oModel.setData({"CREATE":ls_appl});
+        oModel.setProperty("/CREATE", ls_appl);
 
       } //application 생성전 입력값 점검.
 
@@ -99,7 +121,6 @@
         }
 
       } //standard package 입력 여부 점검.
-
 
 
 
@@ -135,12 +156,6 @@
 
         //DEFAULT DDLB 활성화.
         ls_appl.APPTY_edit = true;
-
-        //접속한 서버 SID가 U4A HANA 서버가 아닌경우.
-        if(parent.getServerInfo().SYSID !== "UHA"){
-          //Web Application Type을 선택 불가 처리.
-          ls_appl.APPTY_edit = false;
-        }
 
         //Package
         ls_appl.PACKG = "";
@@ -202,10 +217,9 @@
                           ];
 
 
-        oModel.setData({"CREATE":ls_appl});
+        oModel.setData({"CREATE":ls_appl, "DATASET":{"RB01":true, "RB02":false, "TABNM":"", "TABTX":"","FLIST":"", "enab01":true}});
 
       } //초기값 설정.
-
 
 
 
@@ -219,7 +233,429 @@
         //001	Cancel operation
         parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
 
-      }
+      } //dialog 종료 처리.
+
+
+
+      //dataset 파라메터 추가 처리.
+      function lf_setDatasetParam(APPTY, oForm){
+
+        //U4A 어플리케이션 생성건이 아닌경우 EXIT.
+        if(APPTY !== "M"){return;}
+
+        //dataset 추가 속성 정보 얻기.
+        var l_dataset = oModel.getProperty("/DATASET");
+
+        //DATASET의 VIEW(TABLE)이 입력되지 않은경우 EXIT.
+        if(l_dataset.TABNM === ""){return;}
+
+        var l_param = {};
+
+        //view(table)명.
+        l_param.TABNM = l_dataset.TABNM;
+
+        //검색조건 필드 항목.
+        l_param.FLIST = l_dataset.FLIST;
+
+        //radio를 선택한건에 따른 유형 분기.
+        switch (true) {
+          case l_dataset.RB01:
+              //DATABASE VIEW를 선택한 경우.
+              l_param.TABTY = "V";
+              break;
+          
+          case l_dataset.RB02:
+              //TRASNPARENT TABLE을 선택한 경우.
+              l_param.TABTY = "T";
+              break;
+      
+          default:
+              break;
+        }
+
+        //dataset 파라메터 추가.
+        oForm.append("DATASET", JSON.stringify(l_param));
+
+        //DATASET의 VIEW(TABLE) TEMPLATE 정보 얻기.
+        var l_layo = parent.require(parent.PATH.join(parent.REMOTE.app.getAppPath(), "ws10_20", "design", "template", "dataset", "databaseview_layo01.json"));
+
+        if(!l_layo){return;}
+
+        oForm.append("DATASET_LAYO", JSON.stringify(l_layo));
+        
+
+      } //dataset 파라메터 추가 처리.
+
+
+
+      //application 생성처리를 위한 서버 호출.
+      function lf_createAppData(){
+
+        //생성전 화면 lock 처리.
+        sap.ui.getCore().lock();
+
+        //busy dialog close.
+        oAPP.common.fnSetBusyDialog(true);
+
+        var l_create = oModel.getProperty("/CREATE");
+        var l_appdata = {};
+        l_appdata.APPID = appid;          //Web Application ID
+        l_appdata.APPNM = l_create.APPNM; //Web Application Name
+        l_appdata.LANGU = l_create.LANGU; //Language Key
+        l_appdata.APPTY = l_create.APPTY; //Web Application Type
+        l_appdata.CODPG = l_create.CODPG; //Identifier for Character Format (UTF-8, UCS-2, ...)
+        l_appdata.UITHM = l_create.UITHM; //UI5 UI Theme
+        l_appdata.PACKG = l_create.PACKG; //Package
+        l_appdata.REQNR = l_create.REQNR; //Request/Task
+
+        //default application 생성 path.
+        var l_path = "/createAppData";
+
+        //Web Application Type을 U4A Server Page로 설정한경우.
+        if(l_appdata.APPTY === "U"){
+          //U4A Server Page 생성 path로 변경.
+          l_path = "/USP_CREATEAPPDATA";
+        }
+
+
+        //application명 서버전송 데이터 구성.
+        var oFormData = new FormData();
+        oFormData.append("APPDATA", JSON.stringify(l_appdata));
+
+        //dataset 파라메터 추가 처리.
+        lf_setDatasetParam(l_appdata.APPTY, oFormData);
+
+
+        //application 생성을 위한 서버 호출.
+        sendAjax(parent.getServerPath() + l_path, oFormData, function(ret){
+
+          //서버에서 클라이언트 도착 후 화면 잠금 해제 처리.
+          sap.ui.getCore().unlock();
+
+          //busy dialog close.
+          oAPP.common.fnSetBusyDialog(false);
+          
+          //application 생성중 오류가 발생한 경우.
+          if(ret.RETCD === "E"){
+            //오류 메시지 출력.
+            parent.showMessage(sap, 20, "E", ret.RTMSG);
+
+            //wait off 처리.
+            parent.setBusy("");
+
+            return;
+          }
+
+          //생성 처리 성공 이후 work space UI editor 화면으로 이동 처리.
+          onAppCrAndChgMode(appid);
+
+          //dialog 종료 처리.
+          lf_closeDialog(true);
+
+        },"", true, "POST", function(e){
+          //오류 발생시 lock 해제.
+          sap.ui.getCore().unlock();
+  
+        }); //application 생성을 위한 서버 호출.
+
+      } //application 생성처리를 위한 서버 호출.
+
+      
+
+      //입력 package 점검 function.
+      function lf_chkPackage(is_create){
+        //application명 서버전송 데이터 구성.
+        
+        //서버호출전 화면 잠금 처리.
+        sap.ui.getCore().lock();
+
+        //busy dialog open.
+        oAPP.common.fnSetBusyDialog(true);
+
+        var oFormData = new FormData();
+        oFormData.append("PACKG", is_create.PACKG);
+
+        //package 입력건 점검을 위한 서버 호출.
+        sendAjax(parent.getServerPath() + "/chkPackage", oFormData, function(ret){
+
+          //서버에서 클라이언트 도착 후 화면 잠금 해제 처리.
+          sap.ui.getCore().unlock();
+
+          //busy dialog close.
+          oAPP.common.fnSetBusyDialog(false);
+
+          //잘못된 PACKAGE를 입력한 경우.
+          if(ret.ERFLG === "X"){
+            is_create.PACKG_stat = "Error"; 
+            is_create.PACKG_stxt = ret.ERMSG;
+            oModel.setProperty("/CREATE", is_create);
+
+            //오류 메시지 처리.
+            parent.showMessage(sap, 20, "E", ret.ERMSG);
+            
+            return;
+          }
+
+          //로컬 PACKAGE를 입력한 경우.
+          if(ret.ISLOCAL === "X"){
+            is_create.REQNR_edit = false; //Request No. 잠금 처리.
+            is_create.REQNR_requ = false; //Request No. 필수입력 false 처리
+            is_create.REQNR = "";   //기존 입력 Request No. 초기화.
+            is_create.REQTX = "";   //기존 입력 Request Desc. 초기화.
+            
+          //로컬 package가 아닌경우.
+          }else if(ret.ISLOCAL === ""){
+
+            is_create.REQNR_edit = true; //Request No. edit 처리.
+            is_create.REQNR_requ = true; //Request No. 필수입력 처리
+          }
+
+          //모델 갱신 처리.
+          oModel.setProperty("/CREATE", is_create);
+
+
+        },"", true, "POST", function(e){
+          //오류 발생시 lock 해제.
+          sap.ui.getCore().unlock();
+  
+        }); //package 입력건 점검을 위한 서버 호출.
+
+      } //입력 package 점검 function.
+
+
+
+      //어플리케이션 생성 처리.
+      async function lf_createApplication(bIsLocal){
+
+        //생성전 화면 lock 처리.
+        sap.ui.getCore().lock();
+
+        //busy dialog true.
+        oAPP.common.fnSetBusyDialog(true);
+
+        var l_create = oModel.getProperty("/CREATE");
+
+        if(!l_create){
+          //모델정보를 얻지 못한경우 화면 unlock 처리 후 exit.
+          sap.ui.getCore().unlock();
+          
+          //busy dialog true.
+          oAPP.common.fnSetBusyDialog(false);
+
+          return;
+
+        }
+
+
+        //로컬로 생성하는경우.
+        if(bIsLocal === true){
+          //로컬로 생성하고자 package명을 $TMP로 고정 후 CTS 번호 입력란 잠금 처리 및 CTS번호 초기화.
+          l_create.PACKG = "$TMP";
+          l_create.REQNR_edit = false; //Request No. 잠금 처리.
+          l_create.REQNR_requ = false; //Request No. 필수입력 false 처리
+          l_create.REQNR = "";   //기존 입력 Request No. 초기화.
+          l_create.REQTX = "";   //기존 입력 Request Desc. 초기화.
+
+          oModel.setProperty("/CREATE", l_create);
+
+        }
+        
+
+        //application 생성 처리전 입력값 점검.
+        if( lf_chkValue() === true){
+
+          //입력값 오류 발생시 lock해제.
+          sap.ui.getCore().unlock();
+
+          //busy dialog close.
+          oAPP.common.fnSetBusyDialog(false);
+          return;
+        }
+
+        //VIEW(TABLE)명 입력값 얻기.
+        var l_TABNM = oModel.getProperty("/DATASET/TABNM");
+
+        //입력값 오류 발생시 lock해제.
+        sap.ui.getCore().unlock();
+
+        //busy dialog close.
+        oAPP.common.fnSetBusyDialog(false);
+
+
+        //VIEW(TABLE)명을 입력했다면 검색필드 선택 팝업 호출.
+        if(l_TABNM !== ""){
+          
+          //필드 리스트 POPUP정보가 존재하지 않는경우 JS READ.
+          if(typeof oAPP.fn._DATASET === "undefined"){
+            oAPP.fn._DATASET = parent.require(parent.PATH.join(parent.REMOTE.app.getAppPath(), "ws10_20", "design", "js", "callDataSetFieldListPopop.js"));
+          }
+
+          //DATASET을 설정한 경우 입력 OBJECT NAME의 검색조건 리스트 정보 얻기.
+          var ls_return = await oAPP.fn._DATASET.callDataSetFieldListPopop(oModel.getProperty("/DATASET"), oAPP);
+
+          //필드 리스트 팝업에서 오류가 발생한 경우 exit.
+          if(ls_return.RETCD === "E"){
+            return;
+          }
+          
+          //필드 리스트 정보 매핑(없는경우 빈값으로 매핑)
+          oModel.setProperty("/DATASET/FLIST", ls_return.FLIST || "");
+
+        }
+
+        //생성전 확인팝업 호출.
+        //276	Create &1 application?
+        parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "276", appid, "", "", ""), function(param){
+          
+          //YES를 선택하지 않은경우 EXIT.
+          if(param !== "YES"){return;}
+          
+          //application 생성 처리.
+          lf_createAppData();
+
+        }); //생성전 확인팝업 호출.
+
+
+      } //어플리케이션 생성 처리.
+
+
+
+      //object name f4 help 이벤트.
+      function lf_ObjNameF4Help(){
+        
+        // f4 help callback function.
+        function lf_callback(param){
+          //파라메터를 전달받지 못한 경우 exit.
+          if(!param){return;}
+
+          //파라메터의 필드명에 해당하는 값 매핑.
+          oInp1.setValue(param[l_fldnm]);
+          oInp1.setDescription(param["DDTEXT"]);
+
+        } // f4 help callback function.
+
+
+        //모델의 바인딩 값 얻기.
+        var ls_data = oModel.getProperty("/DATASET");
+
+        var l_f4help = "";
+        var l_fldnm = "";
+
+        //라디오 버튼 선택건에 따른 로직분기.
+        switch(true){
+          case ls_data.RB01: 
+            //Database view를 선택한 경우 view 검색 f4 help명.
+            l_f4help = "SGENCLP_SRC_DB_VIEW";
+            l_fldnm = "VIEWNAME";
+            break;
+
+          case ls_data.RB02:
+            //Transparent Table를 선택한 경우 table 검색 f4 help명.
+            l_f4help = "SGENCLP_SRC_TAB";
+            l_fldnm = "TABNAME";
+            break;
+        }
+
+        //f4 help팝업을 load한경우.
+        if(typeof oAPP.fn.callF4HelpPopup !== "undefined"){
+          //f4 help 팝업 호출.
+          oAPP.fn.callF4HelpPopup(l_f4help, l_f4help, [], [], lf_callback);
+          //하위 로직 skip처리를 위한 flag return.
+          return true;
+        }
+
+        //f4help 팝업을 load하지 못한경우.
+        lf_getScript("design/js/callF4HelpPopup",function(){
+            //f4 help 팝업 function load 이후 팝업 호출.
+            oAPP.fn.callF4HelpPopup(l_f4help, l_f4help, [], [], lf_callback);
+        });
+
+
+      } //object name f4 help 이벤트.
+
+
+
+      //package 입력값 변경 이벤트.
+      function lf_packageChangeEvent(){
+        
+        //화면 입력정보 얻기.
+        var l_create = oModel.getProperty("/CREATE");
+
+        //오류 출력 필드 초기화.
+        lf_resetValueStateField(l_create);
+        
+        //default Request No. 입력불가능, 필수 해제처리.
+        l_create.REQNR_edit = false;
+        l_create.REQNR_requ = false;
+
+        //패키지명이 입력되지 않은경우 exit.
+        if(l_create.PACKG === ""){
+          oModel.setProperty("/CREATE", l_create);
+          return;
+        }
+        
+        //입력 패키지명 대문자 변환 처리.
+        l_create.PACKG = l_create.PACKG.toUpperCase();
+
+        //로컬 패키지를 입력한 경우.
+        if(l_create.PACKG === "$TMP"){
+          l_create.REQNR = "";   //기존 입력 Request No. 초기화.
+          l_create.REQTX = "";   //기존 입력 Request Desc. 초기화.
+          oModel.setProperty("/CREATE", l_create);
+          return;
+        }
+       
+
+        //standard package를 입력한 경우.
+        if(lf_chkPackageStandard(l_create) === true){
+          oModel.setProperty("/CREATE", l_create);
+          return;
+        }
+
+
+        //로컬 PACKAGE를 입력하지 않은경우 Y,Z으로 입력한 PACKAGE의 정합성 점검.
+        lf_chkPackage(l_create);
+
+      } //package 입력값 변경 이벤트.
+
+
+
+      //DATASET 화면 제어 처리.
+      function lf_setDatasetLayout(){
+
+        //APPLICATION TYPE 입력값 얻기.
+        var l_APPTY = oModel.getProperty("/CREATE/APPTY");
+
+        //default 화면 잠금 처리.
+        var l_enab = false;
+
+        //APPLICATION TYPE을 U4A APPLICATION으로 입력한 경우.
+        if(l_APPTY === "M"){
+          //화면 입력 가능 처리.
+          l_enab = true;
+        }
+
+        return l_enab;
+
+      } //DATASET 화면 제어 처리.
+
+
+
+      //DATASET 바인딩 값 초기화.
+      function lf_resetDatasetVal(){
+        //DATASET 화면 제어 처리 값 얻기.
+        var l_enab = lf_setDatasetLayout();
+
+        //dataset 입력값 초기화 처리.
+        oModel.setProperty("/DATASET", {"RB01":true, "RB02":false, "TABNM":"", "TABTX":"","FLIST":"", "enab01":l_enab});
+
+      } //DATASET 바인딩 값 초기화.
+
+
+      /************************************************************************
+       * application 생성 팝업 화면 구성 영역.
+       * **********************************************************************
+       ************************************************************************/
 
       //Web Application Name Input Field
       var oInpDesc = new sap.m.Input({
@@ -281,6 +717,13 @@
         enabled: "{/CREATE/APPTY_edit}"
       });
 
+      //application type 변경 이벤트.
+      oSelType.attachChange(function(){
+        //dataset 입력값 초기화 처리.
+        lf_resetDatasetVal();
+
+      });
+
       oSelType.bindAggregation("items", {
         path: "/CREATE/T_APPTY",
         template: new sap.ui.core.Item({
@@ -300,45 +743,9 @@
 
       //package 입력값 변경 이벤트.
       oInpPack.attachChange(function(){
-
-        //화면 입력정보 얻기.
-        var l_create = oModel.getProperty("/CREATE");
-
-        //오류 출력 필드 초기화.
-        lf_resetValueStateField(l_create);
         
-        //default Request No. 입력불가능, 필수 해제처리.
-        l_create.REQNR_edit = false;
-        l_create.REQNR_requ = false;
-
-        //패키지명이 입력되지 않은경우 exit.
-        if(l_create.PACKG === ""){
-          oModel.setProperty("/CREATE", l_create);
-          return;
-        }
-        
-        //입력 패키지명 대문자 변환 처리.
-        l_create.PACKG = l_create.PACKG.toUpperCase();
-
-        //로컬 패키지를 입력한 경우.
-        if(l_create.PACKG === "$TMP"){
-          l_create.REQNR = "";   //기존 입력 Request No. 초기화.
-          l_create.REQTX = "";   //기존 입력 Request Desc. 초기화.
-          oModel.setProperty("/CREATE", l_create);
-          return;
-        }
-       
-
-        //standard package를 입력한 경우.
-        if(lf_chkPackageStandard(l_create) === true){
-          oModel.setProperty("/CREATE", l_create);
-          return;
-        }
-
-
-        //로컬 PACKAGE를 입력하지 않은경우 Y,Z으로 입력한 PACKAGE의 정합성 점검.
-        lf_chkPackage(l_create);
-
+        //package 입력값 변경 이벤트.
+        lf_packageChangeEvent();
 
       }); //package 입력값 변경 이벤트.
 
@@ -407,14 +814,14 @@
       //B28  Database View
       var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B28", "", "", "", "");
 
-      var oRb01 = new sap.m.RadioButton({text:l_txt, tooltip:l_txt});
+      var oRb01 = new sap.m.RadioButton({text:l_txt, tooltip:l_txt, selected:"{/DATASET/RB01}", enabled:"{/DATASET/enab01}"});
       oRb01.addStyleClass("sapUiTinyMarginEnd");
       oRG01.addButton(oRb01);
 
       //B29  Transparent Table
       var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B29", "", "", "", "");
 
-      var oRb02 = new sap.m.RadioButton({text:l_txt, tooltip:l_txt});
+      var oRb02 = new sap.m.RadioButton({text:l_txt, tooltip:l_txt, selected:"{/DATASET/RB02}", enabled:"{/DATASET/enab01}"});
       oRG01.addButton(oRb02);
 
       //A50  Object Name
@@ -423,8 +830,27 @@
       var oElem2 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});
       oCont1.addFormElement(oElem2);
 
-      var oInp1 = new sap.m.Input({showValueHelp:true});
+      //OBJECT NAME INPUT FIELD(VIEW, TABLE명 입력필드.)
+      var oInp1 = new sap.m.Input({showValueHelp:true, fieldWidth:"40%", value:"{/DATASET/TABNM}", 
+        description:"{/DATASET/TABTX}", enabled:"{/DATASET/enab01}"});
       oElem2.addField(oInp1);
+
+      //OBJECT NAME change 이벤트.
+      oInp1.attachChange(function(){
+
+        //VIEW(TABLE) 입력건 대문자 변환 처리.
+        this.setValue(this.getValue().toUpperCase());
+
+      }); //OBJECT NAME change 이벤트.
+
+      //OBJECT NAME F4 HELP 이벤트.
+      oInp1.attachValueHelpRequest(function(){
+
+        //OBJECT NAME F4 HELP 이벤트.
+        lf_ObjNameF4Help();
+
+      }); //OBJECT NAME F4 HELP 이벤트.
+
 
       //A91  Web Application Name
       var l_txt1 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91", "", "", "", "");
@@ -451,7 +877,6 @@
       var l_txt8 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B04", "", "", "", "");
 
 
-
       var oCreateDialogForm = new sap.ui.layout.form.Form({
         editable: true,
         width:"100%",
@@ -460,7 +885,7 @@
           labelSpanL: 4,
           labelSpanM: 4,
           labelSpanS: 12,
-          columnsL:1,
+          columnsL:2,
           singleContainerFullSize: false,
           adjustLabelSpan: false,
           backgroundDesign:"Transparent"
@@ -535,154 +960,22 @@
                 fields : oInpReqTx
               })              
             ]
+          }),
+          new sap.ui.layout.form.FormContainer({
+            formElements : [
+              new sap.ui.layout.form.FormElement({                
+                fields : oIconTab
+              })
+            ]
           })
-          // ,
-          // new sap.ui.layout.form.FormContainer({
-          //   formElements : [
-          //     new sap.ui.layout.form.FormElement({                
-          //       fields : oIconTab
-          //     })
-          //   ]
-          // })
-
         ]
       });
-
-
-      //application 생성처리를 위한 서버 호출.
-      function lf_createAppData(){
-
-        //생성전 화면 lock 처리.
-        sap.ui.getCore().lock();
-
-        //busy dialog close.
-        oAPP.common.fnSetBusyDialog(true);
-
-        var l_create = oModel.getProperty("/CREATE");
-        var l_appdata = {};
-        l_appdata.APPID = appid;          //Web Application ID
-        l_appdata.APPNM = l_create.APPNM; //Web Application Name
-        l_appdata.LANGU = l_create.LANGU; //Language Key
-        l_appdata.APPTY = l_create.APPTY; //Web Application Type
-        l_appdata.CODPG = l_create.CODPG; //Identifier for Character Format (UTF-8, UCS-2, ...)
-        l_appdata.UITHM = l_create.UITHM; //UI5 UI Theme
-        l_appdata.PACKG = l_create.PACKG; //Package
-        l_appdata.REQNR = l_create.REQNR; //Request/Task
-
-        //default application 생성 path.
-        var l_path = "/createAppData";
-
-        //Web Application Type을 U4A Server Page로 설정한경우.
-        if(l_appdata.APPTY === "U"){
-          //U4A Server Page 생성 path로 변경.
-          l_path = "/USP_CREATEAPPDATA";
-        }
-
-        //application명 서버전송 데이터 구성.
-        var oFormData = new FormData();
-        oFormData.append("APPDATA", JSON.stringify(l_appdata));
-
-        //application 생성을 위한 서버 호출.
-        sendAjax(parent.getServerPath() + l_path, oFormData, function(ret){
-
-          //서버에서 클라이언트 도착 후 화면 잠금 해제 처리.
-          sap.ui.getCore().unlock();
-
-          //busy dialog close.
-          oAPP.common.fnSetBusyDialog(false);
-          
-          //application 생성중 오류가 발생한 경우.
-          if(ret.RETCD === "E"){
-            //오류 메시지 출력.
-            parent.showMessage(sap, 20, "E", ret.RTMSG);
-
-            //wait off 처리.
-            parent.setBusy("");
-
-            return;
-          }
-
-          //생성 처리 성공 이후 work space UI editor 화면으로 이동 처리.
-          onAppCrAndChgMode(appid);
-
-          //dialog 종료 처리.
-          lf_closeDialog(true);
-
-        },"", true, "POST", function(e){
-          //오류 발생시 lock 해제.
-          sap.ui.getCore().unlock();
-  
-        }); //application 생성을 위한 서버 호출.
-
-      } //application 생성처리를 위한 서버 호출.
-
-      
-
-      //입력 package 점검 function.
-      function lf_chkPackage(is_create){
-        //application명 서버전송 데이터 구성.
-        
-        //서버호출전 화면 잠금 처리.
-        sap.ui.getCore().lock();
-
-        //busy dialog open.
-        oAPP.common.fnSetBusyDialog(true);
-
-        var oFormData = new FormData();
-        oFormData.append("PACKG", is_create.PACKG);
-
-        //package 입력건 점검을 위한 서버 호출.
-        sendAjax(parent.getServerPath() + "/chkPackage",oFormData, function(ret){
-
-          //서버에서 클라이언트 도착 후 화면 잠금 해제 처리.
-          sap.ui.getCore().unlock();
-
-          //busy dialog close.
-          oAPP.common.fnSetBusyDialog(false);
-
-          //잘못된 PACKAGE를 입력한 경우.
-          if(ret.ERFLG === "X"){
-            is_create.PACKG_stat = "Error"; 
-            is_create.PACKG_stxt = ret.ERMSG;
-            oModel.setProperty("/CREATE", is_create);
-
-            //오류 메시지 처리.
-            parent.showMessage(sap, 20, "E", ret.ERMSG);
-            
-            return;
-          }
-
-          //로컬 PACKAGE를 입력한 경우.
-          if(ret.ISLOCAL === "X"){
-            is_create.REQNR_edit = false; //Request No. 잠금 처리.
-            is_create.REQNR_requ = false; //Request No. 필수입력 false 처리
-            is_create.REQNR = "";   //기존 입력 Request No. 초기화.
-            is_create.REQTX = "";   //기존 입력 Request Desc. 초기화.
-            
-          //로컬 package가 아닌경우.
-          }else if(ret.ISLOCAL === ""){
-
-            is_create.REQNR_edit = true; //Request No. edit 처리.
-            is_create.REQNR_requ = true; //Request No. 필수입력 처리
-          }
-
-          //모델 갱신 처리.
-          oModel.setProperty("/CREATE", is_create);
-
-
-        },"", true, "POST", function(e){
-          //오류 발생시 lock 해제.
-          sap.ui.getCore().unlock();
-  
-        }); //package 입력건 점검을 위한 서버 호출.
-
-      } //입력 package 점검 function.
 
 
 
       // Application 생성 Dialog
       var oCreateDialog = new sap.m.Dialog({draggable: true, resizable: true,
-        contentWidth: "50%", contentHeight: "40%", verticalScrolling: false});
+        contentWidth: "50%", contentHeight: "60%", verticalScrolling: false});
       
       oCreateDialog.addStyleClass("sapUiSizeCompact");
 
@@ -708,10 +1001,10 @@
 
       //닫기 버튼 선택 이벤트.
       oBtn0.attachPress(function(){
-        
+        //팝업 종료 처리.
         lf_closeDialog();
 
-      });
+      }); //닫기 버튼 선택 이벤트.
 
       //var oHbox1 = new sap.m.HBox({height:"100%", width:"100%", direction:"Column", renderType:"Bare", justifyContent:"SpaceBetween"});
       var oPage1 = new sap.m.Page({showHeader:false});
@@ -719,7 +1012,6 @@
 
       //oHbox1.addItem(oCreateDialogForm);
       oPage1.addContent(oCreateDialogForm);
-
 
 
 
@@ -738,69 +1030,10 @@
 
       //로컬로 생성하기 버튼 선택 이벤트.
       oLocal.attachPress(function(){
-
-        //생성전 화면 lock 처리.
-        sap.ui.getCore().lock();
-
-        //busy dialog true.
-        oAPP.common.fnSetBusyDialog(true);
-
-        var l_create = oModel.getProperty("/CREATE");
-
-        if(!l_create){
-          //모델정보를 얻지 못한경우 화면 unlock 처리 후 exit.
-          sap.ui.getCore().unlock();
-          
-          //busy dialog true.
-          oAPP.common.fnSetBusyDialog(false);
-
-          return;
-
-        }
-        
-        //로컬로 생성하고자 package명을 $TMP로 고정 후 CTS 번호 입력란 잠금 처리 및 CTS번호 초기화.
-        l_create.PACKG = "$TMP";
-        l_create.REQNR_edit = false; //Request No. 잠금 처리.
-        l_create.REQNR_requ = false; //Request No. 필수입력 false 처리
-        l_create.REQNR = "";   //기존 입력 Request No. 초기화.
-        l_create.REQTX = "";   //기존 입력 Request Desc. 초기화.
-
-        oModel.setProperty("/CREATE", l_create);
-
-
-        //application 생성 처리전 입력값 점검.
-        if( lf_chkValue() === true){
-
-          //입력값 오류 발생시 lock해제.
-          sap.ui.getCore().unlock();
-
-          //busy dialog close.
-          oAPP.common.fnSetBusyDialog(false);
-          return;
-        }
-
-        //입력값 오류 발생시 lock해제.
-        sap.ui.getCore().unlock();
-
-        //busy dialog close.
-        oAPP.common.fnSetBusyDialog(false);
-
-        //생성전 확인팝업 호출.
-        //276	Create &1 application?
-        parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "276", appid, "", "", ""), function(param){
-          
-          //YES를 선택하지 않은경우 EXIT.
-          if(param !== "YES"){return;}
-          
-          //application 생성 처리.
-          lf_createAppData();
-
-        }); //생성전 확인팝업 호출.
-
+        //application 로컬로 생성 처리.
+        lf_createApplication(true);
 
       }); //로컬로 생성하기 버튼 선택 이벤트.
-
-
 
       oFoot.addContent(new sap.m.ToolbarSeparator());
 
@@ -814,42 +1047,8 @@
 
       //application 생성버튼 선택 이벤트.
       oCreate.attachPress(function(){
-
-        //생성전 화면 lock 처리.
-        sap.ui.getCore().lock();
-
-        //busy dialog true.
-        oAPP.common.fnSetBusyDialog(true);
-
-        //application 생성 처리전 입력값 점검.
-        if( lf_chkValue() === true){
-
-          //입력값 오류 발생시 lock해제.
-          sap.ui.getCore().unlock();
-
-          //busy dialog close.
-          oAPP.common.fnSetBusyDialog(false);
-          return;
-        }
-
-
-        //입력값 오류 발생시 lock해제.
-        sap.ui.getCore().unlock();
-
-        //busy dialog close.
-        oAPP.common.fnSetBusyDialog(false);
-
-        //생성전 확인팝업 호출.
-        //276	Create &1 application?
-        parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "276", appid, "", "", ""), function(param){
-          
-          //YES를 선택하지 않은경우 EXIT.
-          if(param !== "YES"){return;}
-          
-          //application 생성 처리.
-          lf_createAppData();
-
-        }); //생성전 확인팝업 호출.
+        //application 생성 처리.
+        lf_createApplication();
 
       }); //application 생성버튼 선택 이벤트.
 
@@ -865,7 +1064,8 @@
       oClose.attachPress(function(){
         lf_closeDialog();
 
-      });
+      }); //닫기 버튼 선택 이벤트.
+
 
       var oModel = new sap.ui.model.json.JSONModel();
       oCreateDialog.setModel(oModel);

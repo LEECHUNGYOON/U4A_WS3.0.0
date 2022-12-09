@@ -555,10 +555,10 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
     };
 
-    // 9. SAP Icon Image Path 만들어주는 function
-    oWS.utill.fn.getSapIconPath = function (sIconName) {
-        return oWS.utill.attr.paths.SAPICONPATH + sIconName + ".gif";
-    };
+    // // 9. SAP Icon Image Path 만들어주는 function  ## oAPP.fn.fnGetSapIconPath(); 으로 대체함 
+    // oWS.utill.fn.getSapIconPath = function (sIconName) {
+    //     return oWS.utill.attr.paths.SAPICONPATH + sIconName + ".gif";
+    // };
 
     // 10. Window Header Menu Setting
     oWS.utill.fn.setBrowserMenu = function (aTemplate) {

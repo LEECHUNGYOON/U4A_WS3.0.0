@@ -1495,7 +1495,7 @@ zconsole.APP = parent.REMOTE.app;
      * - APP Info
      ************************************************************************/
     oAPP.common.execControllerClass = function (METHNM, INDEX, TCODE, oAppInfo) {
-
+        
         var oParam = {
             METHNM: (METHNM == null ? "" : METHNM),
             INDEX: (INDEX == null ? "0" : INDEX),
@@ -2153,7 +2153,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
                 // error 콜백이 있다면 호출
                 if (typeof fn_error == "function") {
                     fn_error();
-                }
+                }           
 
                 var sCleanHtml = parent.setCleanHtml(xhr.response);
 
@@ -2279,8 +2279,8 @@ function ajax_logoff() {
 // 로그오프 성공시 타는 펑션
 function fn_logoff_success(TYPE) {
 
-    // 서버 끊어졌다는 electron Popup을 띄운다.
-    fnServerDisconnectionMsgPopup();
+    // // 서버 끊어졌다는 electron Popup을 띄운다.
+    // fnServerDisconnectionMsgPopup();
 
     // 브라우저 창 다 죽인다.    
     fnServerSessionClose();
@@ -2327,11 +2327,7 @@ function fnServerSessionClose() {
         BROWSKEY: parent.getBrowserKey()
     });
 
-    oAPP.main.fnDetachBeforeunloadEvent();
-
-    // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
-    // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
-    oAPP.main.fnBeforeunload();
+    oAPP.main.fnDetachBeforeunloadEvent();    
 
     // 브라우저에 내장된 세션 정보를 클리어 한다.
     oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
@@ -2348,6 +2344,10 @@ function fnServerSessionClose() {
         oAPP.attr._oServerWorker.terminate();
         delete oAPP.attr._oServerWorker;
     }
+
+    // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
+    // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
+    oAPP.main.fnBeforeunload();
 
 }
 

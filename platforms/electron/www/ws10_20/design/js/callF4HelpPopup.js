@@ -150,6 +150,26 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
 
 
 
+  //UI DOM을 기준으로 UI instance 정보 얻기.
+  function lf_getUiInstanceDOM(oDom){
+
+    //DOM 정보가 존재하지 않는경우 exit.
+    if(typeof oDom === "undefined"){return;}
+
+    //DOM id로부터 UI정보 검색.
+    var l_ui = sap.ui.getCore().byId(oDom.id);
+
+    //UI를 찾은경우 해당 UI정보 return
+    if(typeof l_ui !== "undefined"){
+      return l_ui;
+    }
+
+    //UI정보를 찾지못한 경우 상위 부모를 탐색하며 UI instance정보 검색.
+    return lf_getUiInstanceDOM(oDom.parentElement);
+
+  } //UI DOM을 기준으로 UI instance 정보 얻기.
+
+
   //-검색 서버 조회 전송 처리 스크립트 펑션 생성
   function LF_getServerData(){
 
@@ -555,11 +575,8 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
     //CALLBACK FUNCTION이 존재하지 않는경우 exit.
     if(typeof f_clientCallbak === "undefined"){return;}
 
-    //edit 상태가 아닌경우 exit.
-    if(oAPP.attr.oModel.oData.IS_EDIT === false){return;}
-
     //이벤트 발생 UI 정보 얻기.
-    var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target, sap.ui.getCore());
+    var l_ui = lf_getUiInstanceDOM(oEvent.target);
 
     //UI정보를 얻지 못한 경우 exit.
     if(!l_ui){return;}

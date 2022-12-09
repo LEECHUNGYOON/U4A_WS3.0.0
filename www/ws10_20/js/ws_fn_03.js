@@ -853,6 +853,9 @@
         }
 
         var oServerInfoPopup = new sap.m.ResponsivePopover("serverInfoPopover", {
+            resizable: true,
+            // contentWidth: "300px",
+            placement: sap.m.PlacementType.Auto,
 
             customHeader: new sap.m.Toolbar({
                 content: [
@@ -870,7 +873,7 @@
             content: [
 
                 new sap.ui.layout.form.Form({
-                    width: "300px",
+                    // width: "300px",
                     editable: true,
 
                     layout: new sap.ui.layout.form.ResponsiveGridLayout({
@@ -894,7 +897,7 @@
 
                                     fields: [
                                         new sap.m.Text({
-                                            text: "{WSVER}"
+                                            text: "{/USERINFO/WSVER}"
                                         })
                                     ] // end of fields
 
@@ -908,7 +911,7 @@
 
                                     fields: [
                                         new sap.m.Text({
-                                            text: "{CLIENT}"
+                                            text: "{/USERINFO/CLIENT}"
                                         })
                                     ] // end of fields
 
@@ -922,7 +925,7 @@
 
                                     fields: [
                                         new sap.m.Text({
-                                            text: "{SYSID}"
+                                            text: "{/USERINFO/SYSID}"
                                         })
                                     ] // end of fields
 
@@ -935,9 +938,7 @@
                                     }), // end of label
 
                                     fields: [
-                                        new sap.m.Text({
-                                            // text: "{ID}"
-                                        }).bindProperty("text", "ID", function (sId) {
+                                        new sap.m.Text().bindProperty("text", "/USERINFO/ID", function (sId) {
 
                                             if (typeof sId !== "string") {
                                                 return "";
@@ -958,7 +959,32 @@
 
                                     fields: [
                                         new sap.m.Text({
-                                            text: "{LANGU}"
+                                            text: "{/USERINFO/LANGU}"
+                                        })
+                                    ] // end of fields
+
+                                }), // end of sap.ui.layout.form.FormElement
+
+                                new sap.ui.layout.form.FormElement({
+                                    label: new sap.m.Label({
+                                        design: "Bold",
+                                        text: "Host"
+                                    }), // end of label
+
+                                    fields: [
+                                        new sap.m.Text().bindProperty("text", {
+                                            parts: [
+                                                "/SERVERINFO/SERVER_INFO"
+                                            ],
+                                            formatter: (SERVERINFO) => {
+
+                                                if (!SERVERINFO) {
+                                                    return;
+                                                }
+
+                                                return SERVERINFO.host;
+
+                                            }
                                         })
                                     ] // end of fields
 
@@ -976,7 +1002,7 @@
 
         }); // end of popover
 
-        oServerInfoPopup.bindElement("/USERINFO");
+        // oServerInfoPopup.bindElement("/USERINFO");
 
         oServerInfoPopup.openBy(oSelectedItem);
 
@@ -989,11 +1015,10 @@
 
         parent.setBusy("X");
 
-        var oMetadata = parent.getMetadata(),
-            sServerHost = oMetadata.HOST,
+        let sServerHost = parent.getServerHost(),
+            sServerPath = parent.getServerPath(),
             oUserInfo = parent.getUserInfo(),
-            sUrl = `${sServerHost}/zu4a_wbc/u4a_ipcmain/ping_check?sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.MANDT}&sap-language=${oUserInfo.LANGU}`;
-            // sUrl = `${sServerHost}/zu4a_wbc/ping_check?sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.MANDT}&sap-language=${oUserInfo.LANGU}`;
+            sUrl = `${sServerPath}/ping_check?sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.MANDT}&sap-language=${oUserInfo.LANGU}`;
 
         var xhr = new XMLHttpRequest();
         xhr.withCredentials = true;
@@ -1001,18 +1026,16 @@
         // ajax call 실패 할 경우
         xhr.onerror = function () {
 
-            var oServerInfo = parent.getServerInfo();
             var sTitle = "Host File Check",
                 sIllustType = "sapIllus-SimpleReload",
                 sIllustSize = "Dialog",
                 sDesc = "호스트를 등록하세요!!\n\n";
 
-            sDesc += "Server IP : " + oServerInfo.SERVERIP + "\n";
             sDesc += "Server Host : " + sServerHost;
 
             oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, () => {
 
-                fn_logoff_success();
+                fn_logoff_success("X");
 
             });
 
@@ -1025,6 +1048,26 @@
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
+                    let u4a_status = xhr.getResponseHeader("u4a_status");
+                    if (u4a_status) {
+
+                        parent.setBusy("");
+
+                        oAPP.common.fnSetBusyDialog(false);
+
+                        try {
+                            var oResult = JSON.parse(xhr.response);
+                        } catch (error) {
+                            fnJsonParseError(error);
+                            return;
+                        }
+
+                        // 잘못된 url 이거나 지원하지 않는 기능 처리
+                        oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, oResult);
+
+                        return;
+                    }
+
                     parent.setBusy("");
 
                 }
@@ -1036,6 +1079,8 @@
 
             xhr.open('GET', sUrl, true);
 
+            xhr.send();
+
         } catch (e) {
 
             parent.showMessage(null, 99, "E", e.message);
@@ -1043,10 +1088,9 @@
             parent.setBusy("");
 
             return;
+
         }
-
-        xhr.send();
-
+      
     }; // end of oAPP.fn.fnCheckServerHost
 
 })(window, $, oAPP);

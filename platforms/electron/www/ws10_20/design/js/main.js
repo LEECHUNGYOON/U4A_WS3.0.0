@@ -25,6 +25,8 @@
     //D&D용 랜덤키 광역변수.
     oAPP.attr.DnDRandKey = "";
 
+    oAPP.attr.POSIT = 0;
+
     //sap core 정보 광역화.
     oAPP.attr.oCore = sap.ui.getCore();
 
@@ -182,7 +184,7 @@
 
 
     //js 파일 load
-    oAPP.fn.getScript = function(fname,callbackFunc,bSync){
+    oAPP.fn.getScript = function(fname, callbackFunc, bSync){
       var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
@@ -624,7 +626,7 @@
 
 
     //순번 정보(POSIT) 재정의 재귀호출 function
-    oAPP.fn.setUIPOSIT = function(it_tree, cnt){
+    oAPP.fn.setUIPOSIT = function(it_tree){
 
       if(!it_tree || it_tree.length === 0){return;}
 
@@ -632,16 +634,16 @@
       for(var i=0, l=it_tree.length; i<l; i++){
 
         //순번 + 1
-        cnt += 1;
+        oAPP.attr.POSIT += 1;
 
         //순번정보 매핑.
-        it_tree[i].POSIT = cnt;
+        it_tree[i].POSIT = oAPP.attr.POSIT;
 
       } //TREE 디자인 영역의 같은 레벨 기준으로 순번 설정.
 
       //CHILD UI가 존재하는 경우 재귀호출 탐색하며 순번 매핑.
       for(var i=0, l=it_tree.length; i<l; i++){
-        oAPP.fn.setUIPOSIT(it_tree[i].zTREE, cnt);
+        oAPP.fn.setUIPOSIT(it_tree[i].zTREE);
 
       }
 
@@ -653,12 +655,21 @@
     //UI 저장 정보 구성.
     oAPP.fn.getSaveData = function(){
 
+      oAPP.attr.POSIT = 0;
+
       //UI POSTION 정보 재매핑 처리.
-      oAPP.fn.setUIPOSIT(oAPP.attr.oModel.oData.zTREE, 0);
+      oAPP.fn.setUIPOSIT(oAPP.attr.oModel.oData.zTREE);
+
+      oAPP.attr.POSIT = 0;
 
       
       //design tree 정보를 기준으로 ZY04A0014 저장 정보 구성.
       var lt_0014 = oAPP.fn.parseTree2Tab(oAPP.attr.oModel.oData.zTREE);
+
+      //POSITION 으로 정렬처리.
+      lt_0014.sort(function(a,b){
+        return a.POSIT - b.POSIT;
+      });
       
 
       //어플리케이션 정보 테이블 구조 생성.

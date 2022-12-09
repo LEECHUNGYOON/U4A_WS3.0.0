@@ -46,7 +46,7 @@ let oAPP = (function (window) {
             oLoadPg.classList.add("u4a_loadersInactive");
         }
 
-    };
+    };  
 
     /************************************************************************
      * 현재 팝업 닫기
@@ -99,22 +99,69 @@ let oAPP = (function (window) {
 
     }; // end of oAPP.fn.fnPredefinedCssSave
 
+    // [서버에서 호출함] 페이지 7번에 대한 FormData 구성
+    oAPP.GET_FORMDATA_M7 = (oFormData) => {
+
+        // sap icon 경로 전달
+        let oIconUrl = oAPP.attr.oIconUrl;
+        for (const key in oIconUrl) {
+            if (Object.hasOwnProperty.call(oIconUrl, key)) {
+                const element = oIconUrl[key];
+                
+                oFormData.append(key, element);
+
+            }
+        }
+
+        return oFormData;
+
+    }; // end of oAPP.M7
+
     /************************************************************************
      * IPCRENDERER Events..
      ************************************************************************/
     oAPP.IPCRENDERER.on('if-ui5css-info', (events, oInfo) => {
 
-        var oWs_frame = document.getElementById("ws_frame");
+        let oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {
             return;
         }
+      
+        oAPP.attr.BROWSERKEY = oInfo.BROWSKEY;  // 브라우저 키
+        oAPP.attr.oIconUrl = oInfo.oIconUrl; // SAP ICON PATH
 
-        // 브라우저 키
-        oAPP.attr.BROWSERKEY = oInfo.BROWSKEY;
+        let oIconUrl = oInfo.oIconUrl, // sap icon url
+            sThemeName = oInfo.oThemeInfo.THEME, // 테마정보
+            sUrl = oInfo.sServerPath + "/getui5_pre_css"; // 서버 호출 url
 
-        var sUrl = oInfo.sServerPath + "/getui5_pre_css?LIBPATH=" + oInfo.sServerBootStrapUrl;
+        // 서버로 던질 파라미터
+        let oParam = {
+            LIBPATH: decodeURIComponent(oInfo.sServerBootStrapUrl), // post로 쏠때는 url path 같은 경우 encoding 안해야함.
+            THEME: sThemeName,
+            ICON_LED_RED: oIconUrl.ICON_LED_RED,
+            ICON_LED_GREEN: oIconUrl.ICON_LED_GREEN
+        };
+        
+        let oForm = document.getElementById("ws_form");
+        oForm.setAttribute("action", sUrl);
 
-        oWs_frame.src = sUrl;
+        for (const key in oParam) {
+            if (Object.hasOwnProperty.call(oParam, key)) {
+
+                const element = oParam[key];
+
+                let oInput = document.createElement("input");
+                oInput.setAttribute("type", "hidden");
+                oInput.setAttribute("name", key);
+                oInput.setAttribute("value", element);
+                oForm.appendChild(oInput);
+
+            }
+        }
+
+        oForm.submit();
+
+        // oWs_frame.src = sUrl;
 
         oWs_frame.onload = () => {
 
