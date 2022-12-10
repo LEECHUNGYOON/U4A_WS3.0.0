@@ -854,7 +854,7 @@
 
         var oServerInfoPopup = new sap.m.ResponsivePopover("serverInfoPopover", {
             resizable: true,
-            // contentWidth: "300px",
+            contentWidth: "300px",
             placement: sap.m.PlacementType.Auto,
 
             customHeader: new sap.m.Toolbar({

@@ -215,6 +215,7 @@
                 }, {
                     key: "WMENU30_06",
                     text: "Administrator",
+                    visible: false,
                 }, {
                     key: "WMENU30_07",
                     text: "Error Log",
@@ -348,6 +349,7 @@
                     key: "WMENU40_06",
                     text: "Administrator",
                     enabled: true,
+                    visible: false,
                 },
                 {
                     key: "WMENU40_07",
@@ -529,12 +531,16 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    visible: "{visible}",
+                    enabled: "{enabled}",
                     items: {
                         path: "items",
                         templateShareable: true,
                         template: new sap.m.MenuItem({
                             key: "{key}",
-                            text: "{text}"
+                            text: "{text}",
+                            visible: "{visible}",
+                            enabled: "{enabled}",
                         }).bindProperty("enabled", "key", oAPP.fn.fnWs10HeaderMenuEnableBinding)
                     }
                 }).bindProperty("enabled", "key", oAPP.fn.fnWs10HeaderMenuEnableBinding)
@@ -548,12 +554,16 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    visible: "{visible}",
+                    enabled: "{enabled}",
                     items: {
                         path: "items",
                         templateShareable: true,
                         template: new sap.m.MenuItem({
                             key: "{key}",
-                            text: "{text}"
+                            text: "{text}",
+                            visible: "{visible}",
+                            enabled: "{enabled}",
                         })
                     }
                 })
@@ -567,12 +577,16 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    visible: "{visible}",
+                    enabled: "{enabled}",
                     items: {
                         path: "items",
                         templateShareable: true,
                         template: new sap.m.MenuItem({
                             key: "{key}",
-                            text: "{text}"
+                            text: "{text}",
+                            visible: "{visible}",
+                            enabled: "{enabled}",
                         })
                     }
                 })
@@ -586,12 +600,16 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    visible: "{visible}",
+                    enabled: "{enabled}",
                     items: {
                         path: "items",
                         templateShareable: true,
                         template: new sap.m.MenuItem({
                             key: "{key}",
-                            text: "{text}"
+                            text: "{text}",
+                            visible: "{visible}",
+                            enabled: "{enabled}",
                         })
                     }
                 })
@@ -1346,6 +1364,7 @@
                     key: "{key}",
                     text: "{text}",
                     enabled: "{enabled}",
+                    visible: "{visible}",
                     items: {
                         path: "items",
                         templateShareable: true,
@@ -1353,6 +1372,7 @@
                             key: "{key}",
                             text: "{text}",
                             enabled: "{enabled}",
+                            visible: "{visible}",
                         })
                     }
                 })
@@ -1368,6 +1388,7 @@
                     key: "{key}",
                     text: "{text}",
                     enabled: "{enabled}",
+                    visible: "{visible}",
                     items: {
                         path: "items",
                         templateShareable: true,
@@ -1375,6 +1396,7 @@
                             key: "{key}",
                             text: "{text}",
                             enabled: "{enabled}",
+                            visible: "{visible}",
                         })
                     }
                 })
@@ -1389,7 +1411,8 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
-                    // enabled: "{enabled}",
+                    visible: "{visible}",
+                    enabled: "{enabled}",
                     items: {
                         path: "items",
                         templateShareable: true,
@@ -1397,6 +1420,7 @@
                             key: "{key}",
                             text: "{text}",
                             enabled: "{enabled}",
+                            visible: "{visible}",
                         })
                     }
                 }).bindProperty("enabled", {
@@ -1441,6 +1465,7 @@
                     key: "{key}",
                     text: "{text}",
                     enabled: "{enabled}",
+                    visible: "{visible}",
                     items: {
                         path: "items",
                         templateShareable: true,
@@ -1448,6 +1473,7 @@
                             key: "{key}",
                             text: "{text}",
                             enabled: "{enabled}",
+                            visible: "{visible}",
                         })
                     }
                 })
@@ -1463,6 +1489,7 @@
                     key: "{key}",
                     text: "{text}",
                     enabled: "{enabled}",
+                    visible: "{visible}",
                     items: {
                         path: "items",
                         templateShareable: true,
@@ -1470,6 +1497,7 @@
                             key: "{key}",
                             text: "{text}",
                             enabled: "{enabled}",
+                            visible: "{visible}",
                         })
                     }
                 })
@@ -1485,6 +1513,7 @@
                     key: "{key}",
                     text: "{text}",
                     enabled: "{enabled}",
+                    visible: "{visible}",
                     items: {
                         path: "items",
                         templateShareable: true,
@@ -1492,6 +1521,7 @@
                             key: "{key}",
                             text: "{text}",
                             enabled: "{enabled}",
+                            visible: "{visible}",
                         })
                     }
                 })

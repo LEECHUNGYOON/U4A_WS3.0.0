@@ -119,7 +119,7 @@
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
         var vbs = parent.SPAWN('cscript.exe', aParam);
         vbs.stdout.on("data", function(data) {
-            console.log(data.toString());
+            zconsole.log(data.toString());
         });
 
         //GUI 세션창이 존재하지않다면 ...
