@@ -1,7 +1,7 @@
 {
   "main": "cdv-electron-main.js",
   "name": "com.u4a_ws3.app",
-  "displayName": "u4a_ws3",
+  "displayName": "U4A Workspace",
   "version": "3.2.3",
   "description": "A U4A IDE Platform RnD Team application that responds to the deviceready event.",
   "homepage": "https://www.u4ainfo.com",

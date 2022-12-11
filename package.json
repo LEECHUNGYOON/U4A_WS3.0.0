@@ -1,6 +1,6 @@
 {
   "name": "com.u4a_ws3.app",
-  "displayName": "u4a_ws3",
+  "displayName": "U4A Workspace",
   "description": "A U4A IDE Platform R&D Team application that responds to the deviceready event.",
   "main": "index.js",
   "scripts": {

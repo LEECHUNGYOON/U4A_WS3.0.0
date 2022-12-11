@@ -11,7 +11,7 @@ function onLoadBootStrapSetting() {
         oSetting_UI5 = oSettings.UI5,
         sVersion = oSetting_UI5.version,
         sTestResource = oSetting_UI5.testResource,
-        sReleaseResource = `../../../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
+        sReleaseResource = `../../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
         bIsDev = oSettings.isDev,
         oBootStrap = oSetting_UI5.bootstrap,
         oUserInfo = oAPP.attr.oUserInfo,

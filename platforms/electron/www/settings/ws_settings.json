@@ -3,7 +3,7 @@
         "AUTHKEY": "c2hvd21ldGhlbW9uZXk="
     },
     "UI5": {
-        "version": "v11024",
+        "version": "v11071",
         "testResource": "https://sapui5.hana.ondemand.com/1.107.1/resources/sap-ui-core.js",
         "bootstrap": {
             "data-sap-ui-language": "EN",
