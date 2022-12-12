@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="../css/common.css">
     <!-- <link rel="stylesheet" href="./style.css"> -->
-    
+
 
     <style>
         html,
@@ -177,12 +177,18 @@
     </div> -->
     <!-- Page Loading End -->
     <script>
-        function onError(message, url, line, col, errorObj) {
-            parent.showMessage(null, 99, "E", `${message}\n${url}, ${line}:${col}`);
-            // alert(`${message}\n${url}, ${line}:${col}`);
-        }
-        window.onerror = onError;
-        document.onerror = onError;
+        /************************************************************************
+         * onError 관련 공통 로직
+         ************************************************************************/
+
+        // 오류 로그 감지
+        parent.WSLOG.start(parent.REMOTE, console);
+
+        window.removeEventListener("unhandledrejection", parent.onunhandledrejection);
+        window.addEventListener("unhandledrejection", parent.onunhandledrejection);
+
+        window.onerror = parent.onError;
+        document.onerror = parent.onError;
     </script>
     <script src="Login.js"></script>
     <script src="Login_trial.js"></script>

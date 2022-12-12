@@ -36,6 +36,10 @@ APP.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 POWERMONITOR.setMaxListeners(100);
 IPCMAIN.setMaxListeners(100);
 
+// [R&D 전용 console.log]
+var zconsole = {};
+zconsole.APP = APP;
+
 /**
  *  ## oWS WS
  */

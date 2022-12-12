@@ -4,6 +4,8 @@
  * - file Name : Login.js
  * - file Desc : WS Login Page
  ************************************************************************/
+// [R&D 전용 console.log]
+let zconsole = parent.zconsole;
 
 let oAPP = (function () {
     "use strict";
@@ -24,6 +26,9 @@ let oAPP = (function () {
         autoUpdaterServerUrl = `${SERVPATH}/update_check`,
         OCTOKIT = REMOTE.require("@octokit/core").Octokit,
         GlobalShortCut = REMOTE.globalShortcut;
+
+    // 오류 로그 감지    
+    parent.WSLOG.start(parent.REMOTE, console);
 
     let oAPP = {};
     oAPP.fn = {};
@@ -600,7 +605,7 @@ let oAPP = (function () {
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering : function(){
+            onAfterRendering: function () {
 
                 oAPP.fn.fnOnSmoothLoading();
 
@@ -912,7 +917,7 @@ let oAPP = (function () {
         // 개인화 파일에 저장된 CDN 허용 여부 플래그를 구한다.
         // var bIsCDN = oAPP.fn.fnGetIsCDN();
         var bIsCDN = parent.getIsCDN();
-        
+
         // // CDN 허용 여부 플래그가 저장되지 않았을 경우.
         // if (typeof bIsCDN == "undefined") {
 
@@ -1936,7 +1941,7 @@ window.addEventListener("load", async () => {
 window.addEventListener("beforeunload", () => {
 
     window.removeEventListener("online", oAPP.fn.fnNetworkCheckerOnline);
-    window.removeEventListener("offline", oAPP.fn.fnNetworkCheckerOffline);
+    window.removeEventListener("offline", oAPP.fn.fnNetworkCheckerOffline);  
 
 });
 
@@ -1948,22 +1953,15 @@ window.addEventListener("offline", oAPP.fn.fnNetworkCheckerOffline, false);
 
 window.addEventListener("beforeunload", oAPP.fn.fnOnBeforeUnload, false);
 
+document.addEventListener('DOMContentLoaded', function () {   
 
-
-
-document.addEventListener('DOMContentLoaded', function () {
-
+    // 브라우저 타이틀 변경
     parent.CURRWIN.setTitle("U4A Workspace - #Login");
 
     // 브라우저 zoom 레벨을 수정 한 후 로그인 페이지로 이동 시 기본 zoom 레벨 적용
     parent.WEBFRAME.setZoomLevel(0);
 
-    console.log("DOMContentLoaded_1");
-
 });
-
-
-
 
 function isBlank(s) {
     return isEmpty(s.trim());

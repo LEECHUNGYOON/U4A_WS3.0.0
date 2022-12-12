@@ -277,13 +277,13 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
             "y":mainDisp[0].bounds.y,
             "height": mainDisp[0].bounds.height,
             "width":  mainDisp[0].bounds.width,
-            //"resizable": true,
+            "resizable": false,
             //"fullscreenable": true,
             "alwaysOnTop":true,
             "maximizable": false,
             "minimizable": false,
             "show":false,
-            "transparent": true,
+            "transparent": false,
             "frame": false,
             "parent": REMOTE.getCurrentWindow(),
             "webPreferences":{
@@ -316,12 +316,13 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
 
         oWIN.once('ready-to-show', () => {
             oWIN.show();
+            oWIN.setOpacity(0);
             var sBoundInfo = oWIN.getBounds();
 
             sBoundInfo.x = selDisp[0].bounds.x;
             sBoundInfo.y = selDisp[0].bounds.y;
 
-            sBoundInfo.height = selDisp[0].bounds.height - 30;
+            sBoundInfo.height = selDisp[0].bounds.height;
             sBoundInfo.width  = selDisp[0].bounds.width;
 
             oWIN.setBounds(sBoundInfo);
@@ -335,7 +336,7 @@ exports.start = async function(REMOTE, P_THEME = "sap_horizon_dark"){
             sBoundInfo.x = selDisp[0].bounds.x;
             sBoundInfo.y = selDisp[0].bounds.y;
 
-            sBoundInfo.height = selDisp[0].bounds.height - 30;
+            sBoundInfo.height = selDisp[0].bounds.height;
             sBoundInfo.width  = selDisp[0].bounds.width;
 
             oWIN.setBounds(sBoundInfo);

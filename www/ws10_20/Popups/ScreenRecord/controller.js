@@ -10,20 +10,26 @@ oAPP = {
       oAPP.fs     = oAPP.remote.require('fs');
       oAPP.path   = oAPP.remote.require('path');
       oAPP.WIN    = oAPP.remote.getCurrentWindow();
+      oAPP.SCREEN = oAPP.remote.screen;
       oAPP.PARENT = oAPP.WIN.getParentWindow();
       oAPP.SSID = "";
+
+      //모니터 파워 종료 event 
+      oAPP.SCREEN.on("display-removed", ()=>{ 
+        oAPP.remote.getCurrentWindow().close();
+        
+      });  
+
+      //oAPP.WIN.webContents.openDevTools();
 
       oAPP.ipcRenderer.on('IF-REC-CONTROLLER', async (event, data) => {
 
           //레코딩 윈도우 영역 <=> 현재 윈도우 송수신 I/F 세션 ID 
           oAPP.SSID = data.SSID;
 
-          let OS = oAPP.remote.require("systeminformation");
-
-          let oSysinfo = await OS.osInfo();          
-
-          //OS Verstion WIN10, WIN11...          
-          oAPP.OS_VER = oSysinfo.distro.toUpperCase();
+          //OS Verstion WIN10, WIN11...
+          oAPP.OS_VER = oAPP.remote.require('os').version();
+          oAPP.OS_VER = oAPP.OS_VER.toUpperCase();
 
           //컨트롤러 - 레코딩 on/off 버튼 이벤트 설정 
           oAPP.onSetREC_Switch();
@@ -41,10 +47,11 @@ oAPP = {
   onSetETC_Controlle : ()=> {  
 
         //드로잉 설정 여부 체크박스 이벤트 
-        document.getElementsByClassName("drow-checkbox")[0].addEventListener("click", (e)=>{
+        document.getElementsByClassName("drow-checkbox1")[0].addEventListener("click", (e)=>{
 
-            var isCHK = document.getElementById("check1").checked;
-
+            //var isCHK = document.getElementById("check1").checked;
+            var isCHK = e.currentTarget.checked;
+            
               //드로잉 체크박스 값에 따른 드로잉 초기화 버튼 활성/비활성 처리
               if(isCHK){  //드로잉 설정
 

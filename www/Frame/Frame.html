@@ -2,45 +2,27 @@
 <html>
 
 <head>
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta http-equiv="Content-Type"
-          content="text/html;charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible"
-          content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <title>U4A Workspace</title>
     <meta charset="utf-8">
-    <link rel="stylesheet"
-          href="./css/frame.css">
+    <link rel="stylesheet" href="./css/frame.css">
 </head>
 
 <body>
     <!-- <body> -->
     <!-- <iframe id="ws_frame" name="ws_frame" style="border:none;width:100%;height:100%;" allow="autoplay 'src'; fullscreen">  -->
-    <iframe id="ws_frame"
-            name="ws_frame"
-            style="border:none;width:100%;height:100%;"
-            allow="autoplay 'src';">
+    <iframe id="ws_frame" name="ws_frame" style="border:none;width:100%;height:100%;" allow="autoplay 'src';">
     </iframe>
 
     <!-- Busy Indicator Start -->
-    <div id="u4aWsBusyIndicator"
-         data-sap-ui-popup="id-1622786200065-234"
-         class="u4aWsBusyIndicator sapUiUserSelectable"
-         style="position: absolute; visibility: hidden; display: block; top: 0px; height: 100%; width: 100%; left: 0px;">
-        <div class="sapUiBusy"
-             tabindex="0"
-             role="progressbar"
-             alt=""
-             title="Please wait"></div>
+    <div id="u4aWsBusyIndicator" data-sap-ui-popup="id-1622786200065-234" class="u4aWsBusyIndicator sapUiUserSelectable"
+        style="position: absolute; visibility: hidden; display: block; top: 0px; height: 100%; width: 100%; left: 0px;">
+        <div class="sapUiBusy" tabindex="0" role="progressbar" alt="" title="Please wait"></div>
         <div class="sapUiLocalBusyIndicator sapUiLocalBusyIndicatorSizeBig sapUiLocalBusyIndicatorFade"
-             role="progressbar"
-             aria-valuemin="0"
-             aria-valuemax="100"
-             aria-valuetext="Busy"
-             alt=""
-             tabindex="0"
-             title="Please wait">
+            role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuetext="Busy" alt="" tabindex="0"
+            title="Please wait">
             <div class="sapUiLocalBusyIndicatorAnimation sapUiLocalBusyIndicatorAnimStandard">
                 <div></div>
                 <div></div>
@@ -51,33 +33,140 @@
     <!-- Busy Indicator End -->
 
     <!-- Network 연결 해제 시 띄울 Loading Bar -->
-    <div id="u4a_neterr"
-         class="u4a_neterr u4a_neterrInactive"
-         tabindex="-1">
-        <svg class="wifi"
-             viewBox="0 0 40 32">
+    <div id="u4a_neterr" class="u4a_neterr u4a_neterrInactive" tabindex="-1">
+        <svg class="wifi" viewBox="0 0 40 32">
             <path d="M17.98 28.12c0-1.1.9-2.02 2.02-2.02s2.02.9 2.02 2.02-.9 2.02-2.02 2.02-2.02-.9-2.02-2.02" />
-            <path d="M20 18.02c3.34 0 6.37 1.36 8.57 3.55l-2.86 2.86c-1.45-1.46-3.47-2.37-5.7-2.37s-4.25.9-5.7 2.37l-2.87-2.86c2.2-2.2 5.23-3.55 8.57-3.55" />
-            <path d="M5.7 15.86c3.83-3.82 8.9-5.92 14.3-5.92s10.47 2.1 14.3 5.92l-2.87 2.85C28.38 15.67 24.33 14 20 14s-8.38 1.68-11.43 4.73L5.7 15.87" />
-            <path d="M31 4.08c3.38 1.43 6.4 3.47 9 6.06L37.14 13C32.56 8.42 26.48 5.9 20 5.9S7.44 8.42 2.86 13L0 10.14c2.6-2.6 5.62-4.63 9-6.06 3.48-1.47 7.18-2.22 11-2.22s7.52.74 11 2.22" />
+            <path
+                d="M20 18.02c3.34 0 6.37 1.36 8.57 3.55l-2.86 2.86c-1.45-1.46-3.47-2.37-5.7-2.37s-4.25.9-5.7 2.37l-2.87-2.86c2.2-2.2 5.23-3.55 8.57-3.55" />
+            <path
+                d="M5.7 15.86c3.83-3.82 8.9-5.92 14.3-5.92s10.47 2.1 14.3 5.92l-2.87 2.85C28.38 15.67 24.33 14 20 14s-8.38 1.68-11.43 4.73L5.7 15.87" />
+            <path
+                d="M31 4.08c3.38 1.43 6.4 3.47 9 6.06L37.14 13C32.56 8.42 26.48 5.9 20 5.9S7.44 8.42 2.86 13L0 10.14c2.6-2.6 5.62-4.63 9-6.06 3.48-1.47 7.18-2.22 11-2.22s7.52.74 11 2.22" />
         </svg>
         <div id="u4a_loaders_msg">Network Disconnect....</div>
     </div>
 
     <!-- Page Loading Start -->
-    <div id="u4a_main_load"
-         class="u4a_loaders u4a_loadersInactive">
+    <div id="u4a_main_load" class="u4a_loaders u4a_loadersInactive">
         <!-- <span class="u4a_loader u4a_loader-bars"> <span></span> </span> Loading... -->
         <div class="cl_ring">LOADING<span class="cl_ringArea"></span></div>
     </div>
     <!-- Page Loading End -->
 
-    <audio id="u4aWsAudio"
-           style="visibility: hidden;">
+    <audio id="u4aWsAudio" style="visibility: hidden;">
     </audio>
 
+    <script src="../cordova.js"></script>
+
     <script>
+        /************************************************************************
+         * onError 관련 공통 로직
+         ************************************************************************/
+        var REMOTE = require('@electron/remote'),
+            PATH = REMOTE.require('path'),
+            DIALOG = REMOTE.require('electron').dialog,
+            CURRWIN = REMOTE.getCurrentWindow(),
+            APP = REMOTE.app,
+            APPPATH = APP.getAppPath(),
+            WSLOG = require(PATH.join(APPPATH, "ws10_20", "js", "ws_log.js"));
+
+        // 오류 로그 감지
+        WSLOG.start(REMOTE, console);
+
+        // 무한 루프 오류 방지 flag
         var bIsError = false;
+
+        function sendServerExit1(oOptions, fnCallback) {
+
+            var sUrl = oOptions.URL,
+                oFormData = oOptions.FORMDATA;
+
+            parent.setBusy('X');
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4) {
+
+                    if (typeof fnCallback === "function") {
+                        fnCallback(this);
+                    }
+
+                }
+            };
+
+            xhttp.open("POST", sUrl, true);
+
+            if (oFormData instanceof FormData == true) {
+                xhttp.send(oFormData);
+                return;
+            }
+
+            xhttp.send();
+
+        };
+
+        /************************************************************************
+         * critical 오류 팝업
+         ************************************************************************/
+        function showCriticalErrorDialog(sErrorMsg) {
+
+            DIALOG.showMessageBox(CURRWIN, {
+                title: "[Critical Error] - The system will be shut down.",
+                message: sErrorMsg,
+                type: "error"
+            }).then(() => {
+
+                // var sUrl = parent.getServerPath() + "/logoff";
+
+                // var option = {
+                //     URL: sUrl
+                // };
+
+                // sendServerExit1(option, () => {
+
+                //     let oWs_frame = document.getElementById("ws_frame");
+                //     if (!oWs_frame) {
+                //         return;
+                //     }
+
+                //     let oFrameWin = oWs_frame.contentWindow;
+                //     if (!oFrameWin) {
+                //         return;
+                //     }
+
+                //     if (oFrameWin.fn_logoff_success) {
+                //         oFrameWin.fn_logoff_success("X");
+                //     }
+
+                //     window.onbeforeunload = null;
+
+                //     top.window.close();
+
+                // });
+
+
+
+                return;
+
+                let oWs_frame = document.getElementById("ws_frame");
+                if (!oWs_frame) {
+                    return;
+                }
+
+                let oFrameWin = oWs_frame.contentWindow;
+                if (!oFrameWin) {
+                    return;
+                }
+
+                if (oFrameWin.fn_logoff_success) {
+                    oFrameWin.fn_logoff_success("X");
+                }
+
+                APP.exit();
+
+            });
+
+        } // end of showCriticalErrorDialog    
 
         function onError(message, url, line, col, errorObj) {
 
@@ -87,16 +176,13 @@
 
             bIsError = true;
 
-            // console log 감지
-            setConsoleLogObserver(console);
-
             let sErrMsg = `${message}\n${url}, ${line}:${col}`;
+
+            console.error(sErrMsg);
 
             // critical 오류이므로 창을 다 닫는다.
             showCriticalErrorDialog(sErrMsg);
 
-            // showMessage(null, 99, "E", `${message}\n${url}, ${line}:${col}`);
-            // alert(`${message}\n${url}, ${line}:${col}`);
         }
 
         function onunhandledrejection(event) {
@@ -107,24 +193,22 @@
 
             bIsError = true;
 
-            // console log 감지
-            setConsoleLogObserver(console);
-
             let sErrorMsg = event.reson.toString();
+
+            console.error(sErrorMsg);
 
             // critical 오류이므로 창을 다 닫는다.
             showCriticalErrorDialog(sErrorMsg);
 
         }
 
-        window.removeEventListener("unhandledrejection", onunhandledrejection);
-        window.addEventListener("unhandledrejection", onunhandledrejection);
-
         window.onerror = onError;
         document.onerror = onError;
+
+        window.removeEventListener("unhandledrejection", onunhandledrejection);
+        window.addEventListener("unhandledrejection", onunhandledrejection);
     </script>
 
-    <script src="../cordova.js"></script>
     <script src="Frame01.js"></script>
     <script src="wsIF01.js"></script>
 

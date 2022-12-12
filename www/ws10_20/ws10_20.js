@@ -1,3 +1,9 @@
+/************************************************************************
+ * Copyright 2020. INFOCG Inc. all rights reserved. 
+ * ----------------------------------------------------------------------
+ * - file Name : ws10_20.js
+ * - file Desc : U4A Workspace Main Start
+ ************************************************************************/
 ((oAPP) => {
     "use strict";
 
@@ -29,11 +35,9 @@
 
                 oAPP.attr.zoomSetTimeOut = setTimeout(() => {
 
-                    oAPP.fn.setPersonWinZoom("S");
-                    // console.log();
+                    oAPP.fn.setPersonWinZoom("S");                    
 
                     zconsole.log("zoom 저장!!");
-
 
                 }, 500);
 
@@ -47,7 +51,7 @@
      * 화면 보호기 감지 이벤트
      ************************************************************************/
     oAPP.fn.fnAttachPowerMonitorEvent = () => {
-        
+
         var oPowerMonitor = parent.POWERMONITOR;
 
         // 대기모드로 전환 감지 이벤트
@@ -60,12 +64,12 @@
     /************************************************************************
      * 화면 보호기 대기모드로 전환될 때 타는 이벤트
      ************************************************************************/
-    oAPP.fn.fnAttachPowerMonitorLockScreen = () => {     
+    oAPP.fn.fnAttachPowerMonitorLockScreen = () => {
 
         // 세션 타임아웃 체크
         oAPP.fn.fnSessionTimeoutCheck(); // #[ws_fn_03.js]
 
-        console.log("워커가 켜졌다!!");
+        zconsole.log("워커가 켜졌다!!");
 
     }; // end of oAPP.fn.fnAttachPowerMonitorLockScreen
 
@@ -73,7 +77,7 @@
      * 화면 보호기 대기모드가 아닐때 타는 이벤트
      ************************************************************************/
     oAPP.fn.fnAttachPowerMonitorUnLockScreen = () => {
-     
+
         // 이벤트를 받으면 세션 타임을 초기화 한다.
         parent.IPCMAIN.off('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
 
@@ -87,7 +91,7 @@
 
         delete oAPP.attr._oWorker;
 
-        console.log("워커 죽었다!!!!");
+        zconsole.log("워커 죽었다!!!!");
 
     }; // end of oAPP.fn.fnAttachPowerMonitorUnLockScreen    
 
@@ -98,7 +102,5 @@
 
     // 화면 보호기 감지 이벤트
     oAPP.fn.fnAttachPowerMonitorEvent();
-    
-    
 
 })(oAPP);

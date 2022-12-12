@@ -10,13 +10,15 @@ oAPP = {
     oAPP.ipcRenderer = require('electron').ipcRenderer;
     oAPP.fs = oAPP.remote.require('fs');
     oAPP.path = oAPP.remote.require('path');
+    oAPP.WIN  = oAPP.remote.getCurrentWindow();
     oAPP.desktopCapturer = oAPP.remote.require('electron').desktopCapturer;
     oAPP.SCREEN_ID = "";
     oAPP.FILE_PATH = "";  //저장 파일 경로 + 파일명
 
+    
     //window 로딩 완료 이벤트 
     oAPP.ipcRenderer.on('IF-REC-READY', async (event, data) => {
-
+        //oAPP.WIN.webContents.openDevTools();
         //사용자 선택 모니터(Screen) ID
         oAPP.SCREEN_ID = data.SCREEN_ID;
 
@@ -34,18 +36,22 @@ oAPP = {
   },
 
 //====================================================//
-//[펑션] 레코딩 콘트롤러 팝업 호출 
+//[펑션] 레코딩 액티브 표시 화면 호출
 //====================================================//   
   onRecordActive: ()=>{
+
 
     let mainWIN = oAPP.remote.getCurrentWindow();
     var sBound = mainWIN.getBounds();
         sBound = JSON.parse(JSON.stringify(sBound));
 
+    let X = sBound.x + screen.availWidth / 2;
+    
+
       // 컨트롤러 윈도우 
       var op = {
-       "x": sBound.x,
-       "y": sBound.y,      
+        "x": X,
+        "y": sBound.y,      
         "height": 100,
         "width":  100,
         "resizable": false,
@@ -56,6 +62,7 @@ oAPP = {
         "transparent": true,
         "frame": false,
         "parent": oAPP.remote.getCurrentWindow(),
+
         "webPreferences":{
             "devTools": true,
             "nodeIntegration": true,
@@ -77,11 +84,6 @@ oAPP = {
 
           });
 
-          oWIN.on("close", ()=>{
-
-            oWIN = null;
-
-          });
 
   },
 
@@ -90,7 +92,7 @@ oAPP = {
 //====================================================//   
   onControllerOpen :()=>{
 
-    //   oAPP.remote.getCurrentWindow().closeDevTools();
+      //oAPP.remote.getCurrentWindow().closeDevTools();
 
       // (컨트롤러 통신 => 비디오 레코딩) 통신 세션 ID 생성 
       oAPP.SSID = "IF-CONTROLLER-" + oAPP.onRandom(20);
@@ -102,7 +104,6 @@ oAPP = {
       //let mainWIN = oAPP.remote.getCurrentWindow();
       //var sBound = mainWIN.getBounds();
 
-      // [이청윤]
       // 컨트롤러 윈도우 
       var op = {
         //"x": sBound.x,
@@ -116,7 +117,7 @@ oAPP = {
         "alwaysOnTop":true,
         "maximizable": false,
         "minimizable": false,
-        "show": false,
+        "show":true,
         "transparent": false,
         "frame": true,
         "parent": oAPP.remote.getCurrentWindow(),
@@ -137,41 +138,23 @@ oAPP = {
 
       var url = `file://${__dirname}/controller.html`;
           oWIN.loadURL(url);
-
-        //    oWIN.webContents.openDevTools();
-
-          // 브라우저가 활성화 될 준비가 될때 타는 이벤트
-          oWIN.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            _setParentCenterBounds(oWIN, op);
-
+          oWIN.webContents.on('did-finish-load', function () {
             oWIN.show();
-
-          });
-
-          oWIN.webContents.on('did-finish-load', function () {    
-
-            oWIN.webContents.send( 'IF-REC-CONTROLLER', { SSID:oAPP.SSID } );           
-
-             // 부모 위치 가운데 배치한다.
-             _setParentCenterBounds(oWIN, op);             
+            oWIN.webContents.send( 'IF-REC-CONTROLLER', { SSID:oAPP.SSID } );
+            //oWIN.webContents.openDevTools();
 
           });
 
 
           //컨트롤러 윈도우 종료 이벤트시
           oWIN.on("close", ()=>{
-
               debugger;
-              
-            let oCurrWin = oAPP.remote.getCurrentWindow(),
+			  
+			  let oCurrWin = oAPP.remote.getCurrentWindow(),
                 oParentWindow = oCurrWin.getParentWindow();
 
                 oParentWindow.focus();
-
-              
-
+			  
               //레코딩 저장 파일명이 존재시
               if(typeof oAPP.FILE_PATH !== ""){
                 
@@ -179,8 +162,8 @@ oAPP = {
 
                   oAPP.remote.shell.beep();
                   //등록 저장위치 폴더 실행
-                //   oAPP.remote.shell.openPath(oAPP.saveDirectory);
-                    oAPP.remote.shell.showItemInFolder(oAPP.FILE_PATH);
+                  //oAPP.remote.shell.openPath(oAPP.saveDirectory);
+				  oAPP.remote.shell.showItemInFolder(oAPP.FILE_PATH);
                   
                 }
 
@@ -190,8 +173,8 @@ oAPP = {
               oAPP.ipcRenderer.removeListener(oAPP.SSID, oAPP.onIPC_Controller);
 
               // 현재 윈도우 종료
-              oAPP.remote.getCurrentWindow().close();   
-            
+              oAPP.remote.getCurrentWindow().close();
+        
           });
 
           //electron 자원 할당 
@@ -203,35 +186,99 @@ oAPP = {
 //[펑션]  (콘트롤러 => 레코딩) IPC 통신 이벤트 Callback  
 //====================================================//   
 onIPC_Controller :(event, data)=>{  
-
+    
     switch (data.ACTCD) {
       case "01": 
-        //레코딩 시작 
+        //★ 레코딩 시작 
+        oAPP.WIN.setOpacity(0);
         oAPP.onRecordStart();
+
         break;
+
 
       case "02":
-        //레코딩 종료
+        //★ 레코딩 종료
+        oAPP.WIN.setOpacity(0);
+
+        //드로잉 초기화 
+        if(typeof oAPP.signaturePad !== "undefined"){ oAPP.signaturePad.clear(); }
+
+        //드로잉 패드 숨김처리 
+        document.getElementById("SIGN_CTNR").className = "signature-on";
+
+        //레코딩 STOP
         oAPP.onRecordStop();
+
         break;
+
 
       case "03":
-        //드로잉 설정
+        //★ 드로잉 설정
+
+        //sing 라이브러리 로딩
         oAPP.onSignaturePad();
-        document.getElementById("SIGN_CTNR").className = "signature-on";
+
+        const { desktopCapturer } = oAPP.remote.require('electron');
+
+        desktopCapturer.getSources({ types: ['screen'], 
+            thumbnailSize: {
+                width: screen.availWidth,
+                height: screen.availHeight
+            }
+        }).then( sources => {
+
+            let source = undefined;
+
+            //모니터 스크린 찾기 
+            for (let i = 0; i < sources.length; i++) {
+                source = sources[i];
+                if(source.id === oAPP.SCREEN_ID){
+                    break;
+
+                }
+                
+            }
+
+            /*
+            nativeImage = oAPP.remote.require('electron').nativeImage;
+            var imgR = nativeImage.createFromDataURL(source.thumbnail.toDataURL());
+                imgR.resize({quality:"bette"});
+            */
+
+            document.body.style.backgroundImage = "url('" + source.thumbnail.toDataURL() + "')";
+            document.getElementById("SIGN_CTNR").className = "signature-on";
+
+            let Lopacity = 0;
+            let oInterval = setInterval(()=>{
+                Lopacity = Lopacity + 1;
+                oAPP.WIN.setOpacity(Lopacity);
+
+                if(Lopacity >= 1){ clearInterval(oInterval); oInterval = null; }
+
+            },100);
+
+        });    
+
         break;
 
+
       case "04":
-        //드로잉 해제
+        //★ 드로잉 해제
+        debugger;
+        oAPP.WIN.setOpacity(0);
         document.getElementById("SIGN_CTNR").className = "signature-off";
 
         //드로잉 초기화 
         if(typeof oAPP.signaturePad !== "undefined"){ oAPP.signaturePad.clear(); }
+
         break;
 
+
+
       case "05":
-        //드로잉 초기화 
+        //★ 드로잉 초기화 
         if(typeof oAPP.signaturePad !== "undefined"){ oAPP.signaturePad.clear(); }
+
         break;
 
     }
@@ -848,39 +895,6 @@ onIPC_Controller :(event, data)=>{
 
 };
 
-
-// 부모창 가운데에 배치하는 펑션
-function _setParentCenterBounds(oBrowserWindow, oBrowserOptions){
-
-    let oCurrWin = oAPP.remote.getCurrentWindow(),
-        oParentWindow = oCurrWin.getParentWindow();
-
-    // 팝업 위치를 부모 위치에 배치시킨다.
-    var oParentBounds = oParentWindow.getBounds(),
-        xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-        yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2));
-
-    var oScreen = oAPP.remote.screen,
-        oWinScreen = oScreen.getDisplayMatching(oParentBounds),
-        iAvailLeft = oWinScreen.bounds.x;
-
-        // oWinScreen = window.screen,
-        // iAvailLeft = oWinScreen.availLeft;
-
-    if (xPos < iAvailLeft) {
-        xPos = iAvailLeft;
-    }
-
-    if (oParentBounds.y > yPos) {
-        yPos = oParentBounds.y + 10;
-    }
-
-    oBrowserWindow.setBounds({
-        x: xPos,
-        y: yPos
-    });
-
-}
 
 /* ================================================================= */
 /* dom ready

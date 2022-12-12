@@ -4,24 +4,75 @@
  * - Application Intro
  **************************************************************************/
 
+const
+    REMOTE = require('@electron/remote'),    
+    REMOTEMAIN = REMOTE.require('@electron/remote/main'),
+    APP = REMOTE.app,
+    PATH = REMOTE.require('path'),
+    APPPATH = APP.getAppPath(),
+    USERDATA = APP.getPath("userData"),
+    FS = REMOTE.require('fs-extra'),    
+    RANDOM = require("random-key"),        
+    PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
+    WSLOG = require(PATH.join(APPPATH, "ws10_20", "js", "ws_log.js"));
+
 (function () {
     "use strict";
 
     let oAPP = {};
     oAPP.fn = {};
 
-    const
-        REMOTE = require('@electron/remote'),
-        autoUpdater = REMOTE.require("electron-updater").autoUpdater,
-        REMOTEMAIN = REMOTE.require('@electron/remote/main'),
-        APP = REMOTE.app,
-        PATH = REMOTE.require('path'),
-        APPPATH = APP.getAppPath(),
-        USERDATA = APP.getPath("userData"),
-        FS = REMOTE.require('fs-extra'),
-        IPCRENDERER = require('electron').ipcRenderer,
-        RANDOM = require("random-key"),
-        PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));
+    // 오류 로그 감지
+    WSLOG.start(REMOTE, console);
+
+    // [R&D 전용 console.log]
+    var zconsole = {};
+    zconsole.APP = APP;
+
+    /************************************************************************
+     * local console [R&D 전용 console.log]
+     ************************************************************************/
+    zconsole.log = (sConsole) => {
+
+        const
+            APP = zconsole.APP;
+
+        // 빌드 상태에서는 실행하지 않음.
+        if (APP.isPackaged) {
+            return;
+        }
+
+        console.log("[zconsole]: " + sConsole);
+
+    };
+
+    zconsole.error = (sConsole) => {
+
+        const
+            APP = zconsole.APP;
+
+        // 빌드 상태에서는 실행하지 않음.
+        if (APP.isPackaged) {
+            return;
+        }
+
+        console.error("[zconsole]: " + sConsole);
+
+    };
+
+    zconsole.warn = (sConsole) => {
+
+        const
+            APP = zconsole.APP;
+
+        // 빌드 상태에서는 실행하지 않음.
+        if (APP.isPackaged) {
+            return;
+        }
+
+        console.warn("[zconsole]: " + sConsole);
+
+    };
 
     oAPP.fn.fnOnDeviceReady = function () {
 
@@ -217,8 +268,6 @@
         // 브라우저 상단 메뉴 없애기
         oWin.setMenu(null);
 
-       
-
         // if (process.env.COMPUTERNAME.toUpperCase().startsWith("YOON") == true) {
         //     oWin.loadURL(PATHINFO.SERVERLIST_v2);
         // } else {
@@ -226,18 +275,17 @@
         // }
 
         oWin.loadURL(PATHINFO.SERVERLIST_v2);
-        
-        // oWin.webContents.openDevTools();
 
-        // oWin.loadURL(PATHINFO.SERVERLIST);        
+        // server list v2
+        // oWin.webContents.openDevTools();
 
         oWin.webContents.on('did-finish-load', function () {
 
             oWin.webContents.send('window-id', oWin.id);
-           
+
             oWin.setOpacity(1.0);
 
-            oWin.show();           
+            oWin.show();
 
             oCurrWindow.close();
 
@@ -514,7 +562,7 @@
                 UNZIP = new ZIP.Unzip({
                     // Called before an item is extracted.
                     onEntry: function (event) {
-                        console.log(event.entryCount, event.entryName);
+                        zconsole.log(event.entryCount, event.entryName);
                     }
                 });
 
@@ -536,4 +584,5 @@
     }; // end of oAPP.fn.fnCopyHelpDocFileExtract
 
     document.addEventListener('deviceready', oAPP.fn.fnOnDeviceReady, false);
+
 })();

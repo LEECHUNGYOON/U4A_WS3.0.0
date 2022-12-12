@@ -1,7 +1,12 @@
-/**************************************************************************
- * ServerList.js
- **************************************************************************/
-let oAPP = parent.oAPP;
+/************************************************************************
+ * Copyright 2020. INFOCG Inc. all rights reserved. 
+ * ----------------------------------------------------------------------
+ * - file Name : ServerList.js
+ * - file Desc : U4A Workspace Logon Pad
+ ************************************************************************/
+
+let oAPP = parent.oAPP,
+    zconsole = parent.zconsole;
 
 const
     require = parent.require,
@@ -486,7 +491,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oAPP.setBusy(false);
 
-        console.log(oError);
+        zconsole.log(oError);
 
         // alert(oError);
 
@@ -496,7 +501,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oAPP.setBusy(false);
 
-        console.log(oError);
+        zconsole.log(oError);
 
         // alert(oError);
 
@@ -1857,7 +1862,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         //     oBrowserWindow.show();
         // });
 
-        // oBrowserWindow.webContents.openDevTools();
+        oBrowserWindow.webContents.openDevTools();
 
         // no build 일 경우에는 개발자 툴을 실행한다.
         if (!APP.isPackaged) {

@@ -4,7 +4,8 @@
 (function () {
     "use strict";
 
-    let oAPP = parent.oAPP;
+    let oAPP = parent.oAPP,
+        zconsole = parent.zconsole;
 
     let REMOTE = oAPP.REMOTE,
         REMOTEMAIN = oAPP.REMOTEMAIN,

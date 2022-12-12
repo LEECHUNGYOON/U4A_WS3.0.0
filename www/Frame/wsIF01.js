@@ -858,47 +858,43 @@ function getHost() {
 
     return getServerHost();
 
-    // var oMetadata = getMetadata();
-
-    // return oMetadata.HOST;
-
 }
 
-/************************************************************************
- * console log 감지
- ************************************************************************/
-function setConsoleLogObserver(fnConsole) {
+// /************************************************************************
+//  * console log 감지
+//  ************************************************************************/
+// function setConsoleLogObserver(fnConsole) {
 
-    WSLOG.start(REMOTE, fnConsole);
+//     WSLOG.start(REMOTE, fnConsole);
 
-} // end of setConsoleLogObserver
+// } // end of setConsoleLogObserver
 
-/************************************************************************
- * critical 오류 팝업
- ************************************************************************/
-function showCriticalErrorDialog(sErrorMsg) {
+// /************************************************************************
+//  * critical 오류 팝업
+//  ************************************************************************/
+// function showCriticalErrorDialog(sErrorMsg) {
 
-    DIALOG.showMessageBox(CURRWIN, {
-        title: "[Critical Error] - The system will be shut down.",
-        message: sErrorMsg,
-        type: "error"
-    }).then(() => {
+//     DIALOG.showMessageBox(CURRWIN, {
+//         title: "[Critical Error] - The system will be shut down.",
+//         message: sErrorMsg,
+//         type: "error"
+//     }).then(() => {
 
-        let oWs_frame = document.getElementById("ws_frame");
-        if (!oWs_frame) {
-            return;
-        }
+//         let oWs_frame = document.getElementById("ws_frame");
+//         if (!oWs_frame) {
+//             return;
+//         }
 
-        let oFrameWin = oWs_frame.contentWindow;
-        if (!oFrameWin) {
-            return;
-        }
+//         let oFrameWin = oWs_frame.contentWindow;
+//         if (!oFrameWin) {
+//             return;
+//         }
 
-        oFrameWin.fn_logoff_success("X");
+//         oFrameWin.fn_logoff_success("X");
 
-    });
+//     });
 
-} // end of showCriticalErrorDialog
+// } // end of showCriticalErrorDialog
 
 /************************************************************************
  * 공백 여부
@@ -923,3 +919,49 @@ function base64ToArrayBuffer(base64) {
     }
     return bytes.buffer;
 }
+
+
+/************************************************************************
+ * local console [R&D 전용 console.log]
+ ************************************************************************/
+zconsole.log = (sConsole) => {
+
+    const
+        APP = zconsole.APP;
+
+    // 빌드 상태에서는 실행하지 않음.
+    if (APP.isPackaged) {
+        return;
+    }
+
+    console.log("[zconsole]: " + sConsole);
+
+};
+
+zconsole.error = (sConsole) => {
+
+    const
+        APP = zconsole.APP;
+
+    // 빌드 상태에서는 실행하지 않음.
+    if (APP.isPackaged) {
+        return;
+    }
+
+    console.error("[zconsole]: " + sConsole);
+
+};
+
+zconsole.warn = (sConsole) => {
+
+    const
+        APP = zconsole.APP;
+
+    // 빌드 상태에서는 실행하지 않음.
+    if (APP.isPackaged) {
+        return;
+    }
+
+    console.warn("[zconsole]: " + sConsole);
+
+};

@@ -277,6 +277,8 @@ oAPP.fnLoadBootStrapSetting();
 window.addEventListener("load", oAPP.fnWindowOnInitLoad);
 
 document.addEventListener('DOMContentLoaded', function () {
+    
+    zconsole.log("[library-preload.js] === > ws10_20.html");
 
     // var oWin = parent.REMOTE.getCurrentWindow();
 
@@ -284,6 +286,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // parent.fn_setPersonalWinSize(oWin);
 
-    console.log("DOMContentLoaded_2");
+    // console.log("DOMContentLoaded_2");
 
 });

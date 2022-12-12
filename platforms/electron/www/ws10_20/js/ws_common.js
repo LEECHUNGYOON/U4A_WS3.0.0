@@ -4,10 +4,6 @@
  * - file Name : ws_common.js
  * - file Desc : ws 공통 스크립트
  ************************************************************************/
-
-let zconsole = {};
-zconsole.APP = parent.REMOTE.app;
-
 (function (window, $, oAPP) {
     "use strict";
 
@@ -19,7 +15,6 @@ zconsole.APP = parent.REMOTE.app;
         PATH = REMOTE.require('path'),
         APPPATH = APP.getAppPath(),
         APPCOMMON = oAPP.common;
-
 
     const
         SYSADM_BIND_ROOT = "/SYSADM";
@@ -1495,7 +1490,7 @@ zconsole.APP = parent.REMOTE.app;
      * - APP Info
      ************************************************************************/
     oAPP.common.execControllerClass = function (METHNM, INDEX, TCODE, oAppInfo) {
-        
+
         var oParam = {
             METHNM: (METHNM == null ? "" : METHNM),
             INDEX: (INDEX == null ? "0" : INDEX),
@@ -2153,7 +2148,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
                 // error 콜백이 있다면 호출
                 if (typeof fn_error == "function") {
                     fn_error();
-                }           
+                }
 
                 var sCleanHtml = parent.setCleanHtml(xhr.response);
 
@@ -2225,7 +2220,7 @@ function ajax_logoff() {
 
     parent.setBusy('X');
 
-    var sPath = parent.getServerPath() + '/logoff';
+    var sPath = parent.getServerPath() + "/logoff";
 
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () { // 요청에 대한 콜백
@@ -2233,7 +2228,7 @@ function ajax_logoff() {
 
             if (xhr.status === 200 || xhr.status === 201) {
 
-                parent.setBusy('');
+                parent.setBusy("");
 
                 var sRes = xhr.responseText;
 
@@ -2271,7 +2266,7 @@ function ajax_logoff() {
 
     };
 
-    xhr.open('GET', sPath); // 메소드와 주소 설정
+    xhr.open("GET", sPath); // 메소드와 주소 설정
     xhr.send();
 
 } // end of ajax_logoff
@@ -2287,12 +2282,14 @@ function fn_logoff_success(TYPE) {
 
     if (!TYPE) {
 
+        parent.setBusy("");
+
         fnSessionTimeOutDialogOk();
 
         return;
     }
 
-    if (TYPE == 'X') {
+    if (TYPE == "X") {
 
         let sTitle = "Session Timeout",
             sDesc = "Please Try Login Again!",
@@ -2307,7 +2304,7 @@ function fn_logoff_success(TYPE) {
 
     }
 
-    parent.setBusy('');
+    parent.setBusy("");
 
 } // end of fn_logoff_success
 
@@ -2327,13 +2324,13 @@ function fnServerSessionClose() {
         BROWSKEY: parent.getBrowserKey()
     });
 
-    oAPP.main.fnDetachBeforeunloadEvent();    
+    oAPP.main.fnDetachBeforeunloadEvent();
 
     // 브라우저에 내장된 세션 정보를 클리어 한다.
     oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
 
     // 현재 세션에서 파생된 Childwindow를 닫는다.
-    oAPP.fn.fnChildWindowClose();
+    oAPP.fn.fnChildWindowClose(); // #[ws_fn_02.js]
 
     if (oAPP.attr._oWorker && oAPP.attr._oWorker.terminate) {
         oAPP.attr._oWorker.terminate();
@@ -2412,44 +2409,44 @@ function sendServerExit(oOptions, fnCallback) {
 };
 
 
-zconsole.log = (sConsole) => {
+// zconsole.log = (sConsole) => {
 
-    const
-        APP = zconsole.APP;
+//     const
+//         APP = zconsole.APP;
 
-    // 빌드 상태에서는 실행하지 않음.
-    if (APP.isPackaged) {
-        return;
-    }
+//     // 빌드 상태에서는 실행하지 않음.
+//     if (APP.isPackaged) {
+//         return;
+//     }
 
-    console.log("[zconsole]: " + sConsole);
+//     console.log("[zconsole]: " + sConsole);
 
-};
+// };
 
-zconsole.error = (sConsole) => {
+// zconsole.error = (sConsole) => {
 
-    const
-        APP = zconsole.APP;
+//     const
+//         APP = zconsole.APP;
 
-    // 빌드 상태에서는 실행하지 않음.
-    if (APP.isPackaged) {
-        return;
-    }
+//     // 빌드 상태에서는 실행하지 않음.
+//     if (APP.isPackaged) {
+//         return;
+//     }
 
-    console.error("[zconsole]: " + sConsole);
+//     console.error("[zconsole]: " + sConsole);
 
-};
+// };
 
-zconsole.warn = (sConsole) => {
+// zconsole.warn = (sConsole) => {
 
-    const
-        APP = zconsole.APP;
+//     const
+//         APP = zconsole.APP;
 
-    // 빌드 상태에서는 실행하지 않음.
-    if (APP.isPackaged) {
-        return;
-    }
+//     // 빌드 상태에서는 실행하지 않음.
+//     if (APP.isPackaged) {
+//         return;
+//     }
 
-    console.warn("[zconsole]: " + sConsole);
+//     console.warn("[zconsole]: " + sConsole);
 
-};
+// };
