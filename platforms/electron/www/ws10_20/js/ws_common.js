@@ -1409,7 +1409,8 @@
      ************************************************************************/
     oAPP.common.sendAjaxLoginChk = function (fnCallback) {
 
-        var sPath = parent.getServerPath() + "/wsloginchk";
+        // var sPath = parent.getServerPath() + "/wsloginchk";
+        var sPath = parent.getServerPath() + "/ping_check";
 
         sendAjax(sPath, undefined, (oReturn) => {
 

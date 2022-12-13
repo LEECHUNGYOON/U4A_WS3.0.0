@@ -36,6 +36,10 @@
             APPPATH = APP.getAppPath(),
             WSLOG = require(PATH.join(APPPATH, "ws10_20", "js", "ws_log.js"));
 
+        // [R&D 전용 console.log]
+        var zconsole = {};
+        zconsole.APP = APP;
+
         // 오류 로그 감지
         WSLOG.start(REMOTE, console);
 
@@ -53,7 +57,9 @@
                 type: "error"
             }).then(() => {
 
-                APP.exit();
+                CURRWIN.close();
+
+                // APP.exit();
 
             });
 
@@ -84,7 +90,14 @@
 
             bIsError = true;
 
-            let sErrorMsg = event.reson.toString();
+            let sErrorMsg = "";
+            if (event.reason) {
+                sErrorMsg = event.reason.stack.toString();
+            }
+
+            if (sErrorMsg == "") {
+                sErrorMsg = "critical Error!";
+            }
 
             console.error(sErrorMsg);
 

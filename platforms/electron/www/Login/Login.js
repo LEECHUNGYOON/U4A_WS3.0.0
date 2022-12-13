@@ -713,6 +713,7 @@ let oAPP = (function () {
         oFormData.append("sap-password", oLogInData.PW);
         oFormData.append("sap-client", oLogInData.CLIENT);
         oFormData.append("sap-language", oLogInData.LANGU);
+        oFormData.append("SYSID", oLogInData.SYSID);
         oFormData.append("PRCCD", "00");
 
         parent.setBusy('X');
@@ -724,9 +725,11 @@ let oAPP = (function () {
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
+                    debugger;
+
                     var oResult = JSON.parse(xhr.responseText);
                     if (oResult.TYPE == "E") {
-
+                       
                         oPwInput.setValue("");
 
                         // 오류 처리..                   
@@ -736,12 +739,6 @@ let oAPP = (function () {
                         return;
 
                     }
-
-                    // // 실제 접속한 클라이언트 정보를 저장한다.
-                    // var oServerInfo = parent.getServerInfo();
-                    // oServerInfo.CLIENT = oResult.MANDT;
-
-                    // parent.setServerInfo(oServerInfo);
 
                     // 여기까지 온건 로그인 성공했다는 뜻이니까 
                     // 권한 체크를 수행한다.

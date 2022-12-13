@@ -256,6 +256,8 @@ let oAPP = (function (window) {
      ************************************************************************/
     oAPP.fnWindowOnInitLoad = function () {
 
+        debugger;
+        
         // 초기 JS Load
         oAPP.loadLibrary(oAPP.aPreloadScripts, 0);
 
@@ -278,6 +280,8 @@ window.addEventListener("load", oAPP.fnWindowOnInitLoad);
 
 document.addEventListener('DOMContentLoaded', function () {
     
+    debugger;
+
     zconsole.log("[library-preload.js] === > ws10_20.html");
 
     // var oWin = parent.REMOTE.getCurrentWindow();

@@ -2,9 +2,6 @@
  * ServerFrame.js
  **************************************************************************/
 
-// [R&D 전용 console.log]
-var zconsole = {};
-
 (function (window) {
     "use strict";
 
@@ -18,10 +15,7 @@ var zconsole = {};
     oAPP.APP = oAPP.REMOTE.app;
     oAPP.APPPATH = oAPP.APP.getAppPath();
     oAPP.DIALOG = oAPP.REMOTE.require('electron').dialog;
-    oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();   
-
-    // [R&D 전용 console.log]
-    zconsole.APP = oAPP.APP;
+    oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
 
     /************************************************************************
      * local console [R&D 전용 console.log]

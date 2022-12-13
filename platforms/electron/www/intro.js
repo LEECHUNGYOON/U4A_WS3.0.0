@@ -5,16 +5,16 @@
  **************************************************************************/
 
 const
-    REMOTE = require('@electron/remote'),    
+    REMOTE = require('@electron/remote'),
     REMOTEMAIN = REMOTE.require('@electron/remote/main'),
     APP = REMOTE.app,
     PATH = REMOTE.require('path'),
     APPPATH = APP.getAppPath(),
     USERDATA = APP.getPath("userData"),
-    FS = REMOTE.require('fs-extra'),    
-    RANDOM = require("random-key"),        
-    PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
-    WSLOG = require(PATH.join(APPPATH, "ws10_20", "js", "ws_log.js"));
+    FS = REMOTE.require('fs-extra'),
+    RANDOM = require("random-key"),
+    WSLOG = require(PATH.join(APPPATH, "ws10_20", "js", "ws_log.js")),
+    PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));
 
 (function () {
     "use strict";
@@ -27,7 +27,7 @@ const
 
     // [R&D 전용 console.log]
     var zconsole = {};
-    zconsole.APP = APP;
+    zconsole.APP = APP;  
 
     /************************************************************************
      * local console [R&D 전용 console.log]
@@ -273,6 +273,8 @@ const
         // } else {
         //     oWin.loadURL(PATHINFO.SERVERLIST);
         // }
+
+        // oWin.loadURL(PATHINFO.SERVERLIST);
 
         oWin.loadURL(PATHINFO.SERVERLIST_v2);
 

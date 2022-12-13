@@ -37,6 +37,8 @@
         // // 1분 마다 한번씩 서버 호출        
         // iSessionTime = 1 * 60 * 1000;
 
+        debugger;
+        
         var sServerPath = parent.getServerPath() + '/dummycall';
 
         var oSendParam = {

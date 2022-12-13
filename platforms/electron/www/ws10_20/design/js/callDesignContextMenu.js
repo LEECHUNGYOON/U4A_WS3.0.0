@@ -370,6 +370,13 @@
                 return;
             }
             
+
+            //UI의 허용 가능 부모 정보
+            //(특정 UI는 특정 부모에만 존재해야함.)
+            if(oAPP.fn.designChkFixedParentUI(param.E_UIOBJ.UIOBK, ls_tree.UIOBK, param.E_EMB_AGGR.UIATT) === true){
+                return;
+            }
+            
             //context menu 호출 UI의 child 정보가 존재하지 않는경우 생성.
             if(!ls_tree.zTREE){
                 ls_tree.zTREE = [];
@@ -1130,6 +1137,12 @@
                 return;
             }
 
+            //UI의 허용 가능 부모 정보
+            //(특정 UI는 특정 부모에만 존재해야함.)
+            if(oAPP.fn.designChkFixedParentUI(i_cdata.UIOBK, ls_tree.UIOBK, param.UIATT) === true){
+                return;
+            }
+
 
             //application이 같더라도 붙여넣기시 바인딩, 이벤트가 있으면 유지여부 확인팝업 호출에 의한 주석 처리-start.
             // //복사한 UI의 application이 현재 application과 같다면 바인딩 유지하면서 붙여넣기.
@@ -1273,6 +1286,7 @@
             return;
         }
 
+        
         //이벤트 발생 x, y 좌표값 얻기.
         var l_pos = oAPP.fn.getMousePosition();
 

@@ -58,7 +58,8 @@
 
     <script src="../cordova.js"></script>
 
-    <script>
+    <script>       
+
         /************************************************************************
          * onError 관련 공통 로직
          ************************************************************************/
@@ -116,35 +117,33 @@
                 type: "error"
             }).then(() => {
 
-                debugger;
+                // var sUrl = parent.getServerPath() + "/logoff";
 
-                var sUrl = parent.getServerPath() + "/logoff";
+                // var option = {
+                //     URL: sUrl
+                // };
 
-                var option = {
-                    URL: sUrl
-                };
+                // sendServerExit1(option, () => {
 
-                sendServerExit1(option, () => {
+                //     let oWs_frame = document.getElementById("ws_frame");
+                //     if (!oWs_frame) {
+                //         return;
+                //     }
 
-                    let oWs_frame = document.getElementById("ws_frame");
-                    if (!oWs_frame) {
-                        return;
-                    }
+                //     let oFrameWin = oWs_frame.contentWindow;
+                //     if (!oFrameWin) {
+                //         return;
+                //     }
 
-                    let oFrameWin = oWs_frame.contentWindow;
-                    if (!oFrameWin) {
-                        return;
-                    }
+                //     if (oFrameWin.fn_logoff_success) {
+                //         oFrameWin.fn_logoff_success("X");
+                //     }
 
-                    if (oFrameWin.fn_logoff_success) {
-                        oFrameWin.fn_logoff_success("X");
-                    }
+                //     window.onbeforeunload = null;
 
-                    window.onbeforeunload = null;
+                //     top.window.close();
 
-                    top.window.close();
-
-                });
+                // });
 
 
 
@@ -195,7 +194,7 @@
 
             bIsError = true;
 
-            let sErrorMsg = event.reson.toString();
+            let sErrorMsg = event.reason.toString();
 
             console.error(sErrorMsg);
 

@@ -876,7 +876,7 @@
       //B04  Request Desc.
       var l_txt8 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B04", "", "", "", "");
 
-
+      
       var oCreateDialogForm = new sap.ui.layout.form.Form({
         editable: true,
         width:"100%",
@@ -961,9 +961,10 @@
               })              
             ]
           }),
-          new sap.ui.layout.form.FormContainer({
+          //dataset 내용 완성이 안되어있기에 nobuild 상태일때만 화면 활성화 처리.
+          new sap.ui.layout.form.FormContainer({visible:parent.REMOTE.app.isPackaged ? false : true,
             formElements : [
-              new sap.ui.layout.form.FormElement({                
+              new sap.ui.layout.form.FormElement({
                 fields : oIconTab
               })
             ]

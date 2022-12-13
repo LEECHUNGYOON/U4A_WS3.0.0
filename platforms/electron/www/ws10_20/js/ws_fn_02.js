@@ -757,7 +757,7 @@
 
         function lf_success(oReturn) {
 
-            if (oReturn.TYPE != "S") {
+            if (oReturn.RETCD != "S") {
                 return;
             }
 

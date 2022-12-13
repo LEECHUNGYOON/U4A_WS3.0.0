@@ -10,7 +10,7 @@ self.onmessage = function (e) {
 
     var iSessionTime = iSessionTimeMinute * 60 * 1000;
     var oReceiveData = e.data,
-        sServerPath = oReceiveData.SERVPATH;
+        sServerPath = oReceiveData.SERVPATH + "?ACTCD=002";
 
     if (this.workTimeout) {
         clearInterval(this.workTimeout);
@@ -31,7 +31,7 @@ self.onmessage = function (e) {
 
                 if (xhr.status === 200 || xhr.status === 201) {
 
-                    var sRes = xhr.responseText;
+                    var sRes = xhr.response;
 
                     // 로그아웃 버튼으로 호출 된 경우
                     if (sRes == "") {
@@ -51,6 +51,10 @@ self.onmessage = function (e) {
 
                     if (oResult.TYPE == "E") {
 
+                        if (oResult.ACTCD && oResult.ACTCD == "002") {
+                            
+                        }
+
                         //1. 전체 다 닫는다.
                         self.postMessage("");
                         return;
@@ -60,7 +64,7 @@ self.onmessage = function (e) {
                     console.log("server call: " + new Date());
 
                 } else {
-                   
+
                     self.postMessage("");
 
                 }

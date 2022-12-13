@@ -458,7 +458,7 @@
 
         oAPP.fn.fnReleaseNotePopupOpener();
 
-    }; // end of oAPP.fn.fnWS10WMENU30_04
+    }; // end of oAPP.fn.fnWS10WMENU30_05
 
     /************************************************************************
      * [WS10] administrator
@@ -472,9 +472,25 @@
 
         oAPP.common.fnAdminHeaderMenu();
 
-    }; // end of oAPP.fn.fnWS10WMENU30_05
+    }; // end of oAPP.fn.fnWS10WMENU30_06
 
+    /************************************************************************
+     * [WS10] Error log
+     ************************************************************************/
+    oAPP.fn.fnWS10WMENU30_07 = async () => {
 
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        parent.setBusy("X");
+
+        await parent.WSLOG.openLOG(true);
+
+        parent.setBusy("");
+
+    }; // end of oAPP.fn.fnWS10WMENU30_07
 
     /************************************************************************
      * [WS10] U4A Shortcut create
@@ -489,8 +505,6 @@
         oAPP.fn.fnAppShortCutDownPopupOpener();
 
     }; // end of oAPP.fn.fnWS10WMENU10_04_01
-
-
 
     /************************************************************************
      * [WS20] Theme Designer
@@ -752,6 +766,24 @@
         oAPP.common.fnAdminHeaderMenu();
 
     }; // end of oAPP.fn.fnWS20WMENU40_06
+
+    /************************************************************************
+     * [WS20] Error Log
+     ************************************************************************/
+    oAPP.fn.fnWS20WMENU40_07 = async () => {
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        parent.setBusy("X");
+
+        await parent.WSLOG.openLOG(true);
+
+        parent.setBusy("");
+
+    }; // end of oAPP.fn.fnWS20WMENU40_07
 
     /************************************************************************
      * [WS20] U4A Help Document

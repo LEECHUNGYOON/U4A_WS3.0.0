@@ -1215,7 +1215,7 @@
 
         function lf_LoginOk(oReturn) {
 
-            if (oReturn.TYPE != "S") {
+            if (oReturn.RETCD != "S") {
                 parent.setBusy('');
                 return;
             }
@@ -1960,7 +1960,7 @@
 
         function lf_LoginOk(oReturn) {
 
-            if (oReturn.TYPE != "S") {
+            if (oReturn.RETCD != "S") {
                 parent.setBusy('');
                 return;
             }

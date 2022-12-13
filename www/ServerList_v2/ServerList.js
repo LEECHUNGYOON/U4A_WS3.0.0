@@ -1016,8 +1016,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
         }
 
-        debugger;
-
         // 기 저장된 전체 목록을 구한다.
         let oSavedData = oAPP.fn.fnGetSavedServerListDataAll();
         if (oSavedData.RETCD !== "S") {
@@ -1761,24 +1759,23 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 return;
             }
 
-            // 등록한 Server 정보와 실제 서버의 SYSID가 다를 경우 어떻게 할지 상의 후 주석 풀기
-            if (!oSysInfo || !oSysInfo.SYSID || oSysInfo.SYSID != oBindData.systemid) {
+            // // 등록한 Server 정보와 실제 서버의 SYSID가 다를 경우 어떻게 할지 상의 후 주석 풀기
+            // if (!oSysInfo || !oSysInfo.SYSID || oSysInfo.SYSID != oBindData.systemid) {
 
-                let sMsg = `System ID is different. \n Connection System ID: [${oBindData.systemid}], System ID for host URL: [${oSysInfo.SYSID}]`;
+            //     let sMsg = `System ID is different. \n Connection System ID: [${oBindData.systemid}], System ID for host URL: [${oSysInfo.SYSID}]`;
 
-                oAPP.fn.fnShowMessageBox("E", sMsg);
+            //     oAPP.fn.fnShowMessageBox("E", sMsg);
 
-                return;
-            }
+            //     return;
+            // }
 
         } catch (error) { // JSON 파싱 오류가 발생할 경우
 
-            // critical error please contact administrator.
-            let sMsg = "critical error please contact administrator.";
 
-            oAPP.fn.fnShowMessageBox("E", sMsg);
+            // 서버 Ping을 날릴때는 JSON 파싱 오류 무시함.
+            // 사유: 이마트 사례
+            // SSO를 적용한 시스템에서는 RESPONSE를 HTML로 하기 때문.
 
-            return;
 
         }
 
@@ -1795,10 +1792,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             SYSID: oBindData.systemid
         };
 
-        if (oResponse && oResponse.SYSINFO) {
-            oSAPServerInfo.CLIENT = oResponse.SYSINFO.CLIENT;
-            oSAPServerInfo.LANGU = oResponse.SYSINFO.LANGU;
-        }
+        // if (oResponse && oResponse.SYSINFO) {
+        //     oSAPServerInfo.CLIENT = oResponse.SYSINFO.CLIENT;
+        //     oSAPServerInfo.LANGU = oResponse.SYSINFO.LANGU;
+        // }
 
         // 사용자 테마 정보를 읽어온다.
         let oP13nThemeInfo = await fnP13nCreateTheme(oBindData.systemid);

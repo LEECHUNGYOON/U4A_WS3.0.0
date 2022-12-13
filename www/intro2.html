@@ -687,7 +687,8 @@
                         type: "error"
                   }).then(() => {
 
-                        APP.exit();
+                        CURRWIN.close();
+                        // APP.exit();
 
                   });
 
@@ -718,7 +719,14 @@
 
                   bIsError = true;
 
-                  let sErrorMsg = event.reson.toString();
+                  let sErrorMsg = "";
+                  if (event.reason) {
+                        sErrorMsg = event.reason.stack.toString();
+                  }
+
+                  if (sErrorMsg == "") {
+                        sErrorMsg = "critical Error!";
+                  }
 
                   console.error(sErrorMsg);
 

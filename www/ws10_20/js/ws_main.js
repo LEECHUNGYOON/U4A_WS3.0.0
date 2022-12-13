@@ -354,8 +354,8 @@
             // Loading Page
             parent.showLoadingPage('');         
 
-            // 서버 호스트 등록 여부 체크
-            oAPP.fn.fnCheckServerHost(); // #[ws_fn_03.js]
+            // // 서버 호스트 등록 여부 체크
+            // oAPP.fn.fnCheckServerHost(); // #[ws_fn_03.js]
 
             // 공통 IPCMAIN 이벤트 걸기
             oAPP.fn.fnIpcMain_Attach_Event_Handler();

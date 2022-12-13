@@ -671,7 +671,7 @@
 
 
   //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보
-  oAPP.fn.designChkHiddenAreaUi = function(UIOBK, PUIOK){
+  oAPP.fn.designChkHiddenAreaUi = function(UIOBK, PUIOK, UIATT){
 
     //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 여부 확인.
     var ls_UA040 = oAPP.DATA.LIB.T_9011.find( a=> a.CATCD === "UA040" && a.FLD01 === UIOBK && a.FLD07 !== "X" );
@@ -688,6 +688,34 @@
     }
 
   } //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보
+
+
+
+
+  //UI의 허용 가능 부모 정보
+  //(특정 UI는 특정 부모에만 존재해야함.)
+  oAPP.fn.designChkFixedParentUI = function(UIOBK, PUIOK, UIATT){
+
+    //현재 UI가 특정 부모에만 존재해야하는건인지 확인.
+    var lt_UW03 = oAPP.attr.S_CODE.UW03.filter( a=> a.FLD01 === UIOBK && a.FLD06 !== "X" );
+    if(lt_UW03.length === 0){return;}
+
+    //특정부모만 가능한경우 입력 부모 UIOBK가 해당되는지 확인.
+    if(lt_UW03.findIndex( a=> a.FLD03 === PUIOK && a.FLD05 === UIATT) === -1){
+
+      //해당되지 않는다면 오류 메시지 처리.
+      var lt_msg = [];
+      for(var i=0, l=lt_UW03.length; i<l; i++){
+        lt_msg.push(lt_UW03[i].FLD04 + "-" + lt_UW03[i].FLD05);
+      }
+
+      //306	&1 UI is only allowed for &2 parent.
+      parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "306", lt_UW03[0].FLD02, lt_msg.join(", "), "", ""));
+      return true;
+
+    }
+
+  };  //UI의 허용 가능 부모 정보
 
 
 
@@ -1618,6 +1646,13 @@
 
     //UI가 입력 가능한 카디널리티 여부 확인.
     if(oAPP.fn.chkUiCardinality(i_drop, param.UIATK, param.ISMLB) === true){
+      return;
+    }
+
+    
+    //UI의 허용 가능 부모 정보
+    //(특정 UI는 특정 부모에만 존재해야함.)
+    if(oAPP.fn.designChkFixedParentUI(i_drag.UIOBK, i_drop.UIOBK, param.UIATT) === true){
       return;
     }
 
