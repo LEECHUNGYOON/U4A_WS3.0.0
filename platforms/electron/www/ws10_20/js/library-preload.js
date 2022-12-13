@@ -256,8 +256,6 @@ let oAPP = (function (window) {
      ************************************************************************/
     oAPP.fnWindowOnInitLoad = function () {
 
-        debugger;
-        
         // 초기 JS Load
         oAPP.loadLibrary(oAPP.aPreloadScripts, 0);
 
@@ -278,9 +276,7 @@ oAPP.fnLoadBootStrapSetting();
 // Window onload
 window.addEventListener("load", oAPP.fnWindowOnInitLoad);
 
-document.addEventListener('DOMContentLoaded', function () {
-    
-    debugger;
+document.addEventListener('DOMContentLoaded', function () {    
 
     zconsole.log("[library-preload.js] === > ws10_20.html");
 

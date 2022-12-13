@@ -36,7 +36,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function (oAPP) {
+(function(oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -85,7 +85,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             text: "Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function () {
+            close: function() {
                 XHR.abort();
             }
         });
@@ -95,10 +95,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     /**************************************************************************
      * ajax 호출 펑션
      **************************************************************************/
-    oAPP.fn.sendAjax = (sUrl, oFormData, fnSuccess, fnError, fnCancel) => {
+    oAPP.fn.sendAjax = (sUrl, fnSuccess, fnError, fnCancel) => {
 
         // ajax call 취소할 경우..
-        XHR.onabort = function () {
+        XHR.onabort = function() {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -107,7 +107,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // ajax call 실패 할 경우
-        XHR.onerror = function () {
+        XHR.onerror = function() {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -115,19 +115,27 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         };
 
-        XHR.onreadystatechange = function (a, b, c, d, e) { // 요청에 대한 콜백         
+        XHR.onload = function() {
 
-            if (XHR.readyState === XHR.DONE) { // 요청이 완료되면
-                if (XHR.status === 200 || XHR.status === 201) {
-
-                    if (typeof fnSuccess == "function") {
-                        fnSuccess(XHR.responseText);
-                    }
-
-                }
+            if (typeof fnSuccess == "function") {
+                fnSuccess(XHR.response);
             }
 
         };
+
+        // XHR.onreadystatechange = function (a, b, c, d, e) { // 요청에 대한 콜백         
+
+        //     if (XHR.readyState === XHR.DONE) { // 요청이 완료되면
+        //         if (XHR.status === 200 || XHR.status === 201) {
+
+        //             if (typeof fnSuccess == "function") {
+        //                 fnSuccess(XHR.responseText);
+        //             }
+
+        //         }
+        //     }
+
+        // };
 
         try {
 
@@ -142,20 +150,19 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
         }
 
-        XHR.send(oFormData);
+        XHR.send();
 
     }; // end of fnSendAjax
 
     /************************************************************************
      * 서버 연결 확인
      ************************************************************************/
-    oAPP.fn.fnCheckServerConnection = (sUrl, oFormData) => {
+    oAPP.fn.fnCheckServerConnection = (sUrl) => {
 
         return new Promise((resolve) => {
 
             oAPP.fn.sendAjax(
-                sUrl,
-                oFormData,
+                sUrl,                
                 (res) => { // success
                     resolve({
                         RETCD: "S",
@@ -557,7 +564,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function () {
+            onAfterRendering: function() {
 
                 setTimeout(() => {
                     $('#content').fadeIn(300, 'linear');
@@ -1716,14 +1723,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         sUrl += sZU4A_WBC_URL;
 
-        var oFormData = new FormData();
-        oFormData.append("SYSCHK", 'X');
+        // var oFormData = new FormData();
+        // oFormData.append("SYSCHK", 'X');
 
         // busy dialog 실행
         oAPP.setBusyDialog(true);
 
         // 서버에 연결되는지 Ping을 날려본다.    
-        let oResult = await oAPP.fn.fnCheckServerConnection(sUrl, oFormData);
+        let oResult = await oAPP.fn.fnCheckServerConnection(sUrl);
 
         // busy dialog 종료
         oAPP.setBusyDialog(false);
@@ -1743,41 +1750,41 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
         }
 
-        // 서버에서 응답한 값을 JSON 파싱 해본다.
-        let oResponse;
-        try {
+        // // 서버에서 응답한 값을 JSON 파싱 해본다.
+        // let oResponse;
+        // try {
 
-            let sResponse = oResult.RESPONSE;
+        //     let sResponse = oResult.RESPONSE;
 
-            oResponse = JSON.parse(sResponse);
+        //     oResponse = JSON.parse(sResponse);
 
-            let oSysInfo = oResponse.SYSINFO;
+        //     let oSysInfo = oResponse.SYSINFO;
 
-            if (oResponse.TYPE != "S") {
+        //     if (oResponse.TYPE != "S") {
 
-                oAPP.fn.fnShowMessageBox("E", oResponse.MSG);
-                return;
-            }
+        //         oAPP.fn.fnShowMessageBox("E", oResponse.MSG);
+        //         return;
+        //     }
 
-            // // 등록한 Server 정보와 실제 서버의 SYSID가 다를 경우 어떻게 할지 상의 후 주석 풀기
-            // if (!oSysInfo || !oSysInfo.SYSID || oSysInfo.SYSID != oBindData.systemid) {
+        //     // // 등록한 Server 정보와 실제 서버의 SYSID가 다를 경우 어떻게 할지 상의 후 주석 풀기
+        //     // if (!oSysInfo || !oSysInfo.SYSID || oSysInfo.SYSID != oBindData.systemid) {
 
-            //     let sMsg = `System ID is different. \n Connection System ID: [${oBindData.systemid}], System ID for host URL: [${oSysInfo.SYSID}]`;
+        //     //     let sMsg = `System ID is different. \n Connection System ID: [${oBindData.systemid}], System ID for host URL: [${oSysInfo.SYSID}]`;
 
-            //     oAPP.fn.fnShowMessageBox("E", sMsg);
+        //     //     oAPP.fn.fnShowMessageBox("E", sMsg);
 
-            //     return;
-            // }
+        //     //     return;
+        //     // }
 
-        } catch (error) { // JSON 파싱 오류가 발생할 경우
-
-
-            // 서버 Ping을 날릴때는 JSON 파싱 오류 무시함.
-            // 사유: 이마트 사례
-            // SSO를 적용한 시스템에서는 RESPONSE를 HTML로 하기 때문.
+        // } catch (error) { // JSON 파싱 오류가 발생할 경우
 
 
-        }
+        //     // 서버 Ping을 날릴때는 JSON 파싱 오류 무시함.
+        //     // 사유: 이마트 사례
+        //     // SSO를 적용한 시스템에서는 RESPONSE를 HTML로 하기 때문.
+
+
+        // }
 
         // 서버 정보
         var oSAPServerInfo = {
@@ -1867,7 +1874,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -1914,7 +1921,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         resolve({

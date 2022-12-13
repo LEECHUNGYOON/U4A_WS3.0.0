@@ -5,13 +5,13 @@
  * - file Desc : 서버 세션 유지
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     /************************************************************************
      * 서버 세션 유지를 위한 워커 실행
      ************************************************************************/
-    oAPP.fn.fnServerSession = function (bIsForceRun) {
+    oAPP.fn.fnServerSession = function(bIsForceRun) {
 
         // // 강제실행이 아닐 경우
         // if (!bIsForceRun) {
@@ -37,9 +37,8 @@
         // // 1분 마다 한번씩 서버 호출        
         // iSessionTime = 1 * 60 * 1000;
 
-        debugger;
-        
-        var sServerPath = parent.getServerPath() + '/dummycall';
+
+        var sServerPath = parent.getServerPath() + '/dummycall?ACTCD=002';
 
         var oSendParam = {
             SERVPATH: sServerPath
@@ -72,9 +71,26 @@
     // }; // end of oAPP.fn.fnServerSessionTimeOutOnMessage
 
 
-    oAPP.fn.fnServerSessionTimeOut = (e) => {  
+    oAPP.fn.fnServerSessionTimeOut = (oRes) => {
 
-        fn_logoff_success('X');
+        let oData = oRes.data;       
+        
+        console.error(oData.RTMSG);
+
+        const
+            REMOTE = parent.REMOTE,
+            DIALOG = REMOTE.require('electron').dialog,
+            CURRWIN = REMOTE.getCurrentWindow();
+
+        DIALOG.showMessageBox(CURRWIN, {
+            title: "Session Expired",
+            message: oData.RTMSG,
+            type: "error"
+        }).then(() => {
+
+            fn_logoff_success('X');
+
+        });
 
     };
 
