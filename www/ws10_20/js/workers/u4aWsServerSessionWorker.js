@@ -31,8 +31,6 @@ self.onmessage = function(e) {
 
                 if (xhr.status === 200 || xhr.status === 201) {
 
-                    debugger;
-                    
                     var sRes = xhr.response;
 
                     // // 로그아웃 버튼으로 호출 된 경우

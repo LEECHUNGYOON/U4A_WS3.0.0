@@ -36,7 +36,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function(oAPP) {
+(function (oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -85,7 +85,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             text: "Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function() {
+            close: function () {
                 XHR.abort();
             }
         });
@@ -98,7 +98,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.sendAjax = (sUrl, fnSuccess, fnError, fnCancel) => {
 
         // ajax call 취소할 경우..
-        XHR.onabort = function() {
+        XHR.onabort = function () {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -107,7 +107,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // ajax call 실패 할 경우
-        XHR.onerror = function() {
+        XHR.onerror = function () {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -115,7 +115,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         };
 
-        XHR.onload = function() {
+        XHR.onload = function () {
 
             if (typeof fnSuccess == "function") {
                 fnSuccess(XHR.response);
@@ -141,6 +141,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             XHR.open('POST', sUrl, true);
 
+            XHR.withCredentials = false;
+
         } catch (e) {
 
             if (typeof fnError == "function") {
@@ -161,27 +163,53 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         return new Promise((resolve) => {
 
-            oAPP.fn.sendAjax(
-                sUrl,                
-                (res) => { // success
-                    resolve({
-                        RETCD: "S",
-                        RESPONSE: res,
-                        RTMSG: "connection success!"
-                    });
-                },
-                () => { // error
+            var ping = REMOTE.require('ping');
+
+            ping.sys.probe(sUrl, function (isAlive) {
+
+                if (isAlive == null) {
+                    return;
+                }
+
+                if (!isAlive) {
                     resolve({
                         RETCD: "E",
                         RTMSG: "Connection Fail!"
                     });
-                },
-                (res) => { // cancel
-                    resolve({
-                        RETCD: "C",
-                        RTMSG: "Cancel Operation"
-                    });
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    // RESPONSE: res,
+                    RTMSG: "connection success!"
                 });
+
+                return;
+
+            });
+
+            // oAPP.fn.sendAjax(
+            //     sUrl,
+            //     (res) => { // success
+            //         resolve({
+            //             RETCD: "S",
+            //             RESPONSE: res,
+            //             RTMSG: "connection success!"
+            //         });
+            //     },
+            //     () => { // error
+            //         resolve({
+            //             RETCD: "E",
+            //             RTMSG: "Connection Fail!"
+            //         });
+            //     },
+            //     (res) => { // cancel
+            //         resolve({
+            //             RETCD: "C",
+            //             RTMSG: "Cancel Operation"
+            //         });
+            //     });
 
         });
 
@@ -210,12 +238,45 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      ************************************************************************/
     oAPP.fn.fnOnListupSapLogon = () => {
 
+        // 전체 바인딩 모델 clear
+        var oCoreModel = sap.ui.getCore().getModel();
+        if (oCoreModel) {
+            oCoreModel.setProperty("/SAPLogon", {});
+            oCoreModel.setProperty("/ServerList", []);
+            oCoreModel.refresh(true);
+        }
+
+        // 좌측 테이블 선택 라인 표시 
+        oAPP.fn.fnSetRefreshSelectTreeItem();
+
+        // 우측 테이블 모델 클리어
+        oAPP.fn.fnMTableModelClear();
+
         oAPP.setBusy(true);
 
         // 레지스트리에 등록된 SAPLogon 정보를 읽는다.
         oAPP.fn.fnGetRegInfoForSAPLogon().then(oAPP.fn.fnGetRegInfoForSAPLogonThen).catch(oAPP.fn.fnPromiseError);
 
     }; // end of oAPP.fn.fnOnListupSapLogon
+
+    /************************************************************************
+     * 우측 테이블 초기화
+     ************************************************************************/
+    oAPP.fn.fnMTableModelClear = () => {
+
+        let oTable = sap.ui.getCore().byId(sSERVER_TBL_ID);
+        if (!oTable) {
+            return;
+        }
+
+        let oTableModel = oTable.getModel();
+        if (!oTableModel) {
+            return;
+        }
+
+        oTableModel.setProperty("/SAPLogonItems", []);
+
+    }; // end of oAPP.fn.fnMTableModelClear
 
     /************************************************************************
      * 레지스트리에 등록된 SAPLogon 정보를 읽는다.
@@ -257,24 +318,32 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         let oLandscapeFile = oResult.LandscapeFile,
             oLandscapeFileGlobal = oResult.LandscapeFileGlobal;
 
+        let sLandscapeFilePath = oLandscapeFile.value;
+
         if (typeof oLandscapeFile == "undefined") {
 
-            var sMsg = `Does not have exists. [LandscapeFile]`;
+            oAPP.setBusy(false);
 
-            oAPP.fn.fnShowMessageBox("E", sMsg);
+            var sMsg = `Does not have exists. [LandscapeFile] \n Please Restart`;
+
+            oAPP.fn.fnShowMessageBox("E", sMsg, () => {
+                oAPP.fn.fnEditDialogClose();
+            });
 
             return;
         }
 
-        let sLandscapeFilePath = oLandscapeFile.value;
-
         // SAPLogon xml 파일이 존재하지 않을 경우 오류
         if (!FS.existsSync(sLandscapeFilePath)) {
 
-            var sMsg = `Does not have exists. [${sLandscapeFilePath}]`;
+            oAPP.setBusy(false);
+
+            var sMsg = `Does not have exists. [${sLandscapeFilePath}] \n Please Restart`;
 
             // 오류 메시지 출력
-            oAPP.fn.fnShowMessageBox("E", sMsg);
+            oAPP.fn.fnShowMessageBox("E", sMsg, () => {
+                oAPP.fn.fnEditDialogClose();
+            });
 
             return;
         }
@@ -401,6 +470,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
         }
 
+        if (!oLandscapeFile.Services) {
+            return;
+        }
+
         // 서비스 정보(등록된 서버 전체 목록)을 구한다.
         var aServices = oLandscapeFile.Services.Service,
             iServiceLength = aServices.length;
@@ -409,16 +482,33 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
         }
 
-        oAPP.data.SAPLogon.aServices = oLandscapeFile.Services.Service;
+        // 서비스 정보가 있을 경우..
+        if (Array.isArray(aServices) == true) {
+            oAPP.data.SAPLogon.aServices = oLandscapeFile.Services.Service;
+        } else {
+            oAPP.data.SAPLogon.aServices = [aServices];
+        }
 
         // 라우터 정보가 있을 경우..
         if (oLandscapeFile.Routers) {
-            oAPP.data.SAPLogon.aRouters = oLandscapeFile.Routers.Router;
+
+            if (Array.isArray(oLandscapeFile.Routers.Router) == true) {
+                oAPP.data.SAPLogon.aRouters = oLandscapeFile.Routers.Router;
+            } else {
+                oAPP.data.SAPLogon.aRouters = [oLandscapeFile.Routers.Router];
+            }
+
         }
 
         // 메시지 서버 정보가 있을 경우..
         if (oLandscapeFile.Messageservers) {
-            oAPP.data.SAPLogon.aMessageservers = oLandscapeFile.Messageservers.Messageserver;
+
+            if (Array.isArray(oLandscapeFile.Messageservers.Messageserver) == true) {
+                oAPP.data.SAPLogon.aMessageservers = oLandscapeFile.Messageservers.Messageserver;
+            } else {
+                oAPP.data.SAPLogon.aMessageservers = [oLandscapeFile.Messageservers.Messageserver];
+            }
+
         }
 
         var aBindData = [];
@@ -564,7 +654,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function() {
+            onAfterRendering: function () {
 
                 setTimeout(() => {
                     $('#content').fadeIn(300, 'linear');
@@ -1049,7 +1139,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         if (!bIsFileExist) {
 
             // 파일이 없습니다 오류
-            oAPP.fn.fnShowMessageBox("E", "server List file not exists. restart now!");
+            oAPP.fn.fnShowMessageBox("E", "server List file not exists. restart now!", () => {
+                oAPP.fn.fnEditDialogClose();
+            });
 
             return;
 
@@ -1063,7 +1155,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         if (oWriteFileResult.RETCD != "S") {
 
             // 파일 저장에 실패 했을 경우 오류메시지 출력후 빠져나간다.
-            oAPP.fn.fnShowMessageBox("E", oWriteFileResult.RTMSG);
+            oAPP.fn.fnShowMessageBox("E", oWriteFileResult.RTMSG, () => {
+                oAPP.fn.fnEditDialogClose();
+            });
 
             return;
 
@@ -1442,7 +1536,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         if (!bIsFileExist) {
 
             // 파일이 없습니다 오류
-            oAPP.fn.fnShowMessageBox("E", "server List file not exists. restart now!");
+            oAPP.fn.fnShowMessageBox("E", "server List file not exists. restart now!", () => {
+                oAPP.fn.fnEditDialogClose();
+            });
 
             oAPP.setBusy(false);
 
@@ -1461,7 +1557,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             if (oWriteFileResult.RETCD != "S") {
 
                 // 파일 저장에 실패 했을 경우 오류메시지 출력후 빠져나간다.
-                oAPP.fn.fnShowMessageBox("E", oWriteFileResult.RTMSG);
+                oAPP.fn.fnShowMessageBox("E", oWriteFileResult.RTMSG, () => {
+                    oAPP.fn.fnEditDialogClose();
+                });
 
                 oAPP.setBusy(false);
 
@@ -1513,7 +1611,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         if (oWriteFileResult.RETCD != "S") {
 
             // 파일 저장에 실패 했을 경우 오류메시지 출력후 빠져나간다.
-            oAPP.fn.fnShowMessageBox("E", oWriteFileResult.RTMSG);
+            oAPP.fn.fnShowMessageBox("E", oWriteFileResult.RTMSG, () => {
+                oAPP.fn.fnEditDialogClose();
+            });
 
             return;
 
@@ -1721,34 +1821,45 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             sUrl += `:${sPort}`;
         }
 
-        sUrl += sZU4A_WBC_URL;
+        //*************************************************** */
+
+        // debugger;
+
+        // sUrl += sZU4A_WBC_URL;
 
         // var oFormData = new FormData();
         // oFormData.append("SYSCHK", 'X');
 
-        // busy dialog 실행
-        oAPP.setBusyDialog(true);
+        // /sap/public/myssocntl
+        // sUrl += "/sap/public/ping";  
 
-        // 서버에 연결되는지 Ping을 날려본다.    
-        let oResult = await oAPP.fn.fnCheckServerConnection(sUrl);
+        // // busy dialog 실행
+        // oAPP.setBusyDialog(true);
 
-        // busy dialog 종료
-        oAPP.setBusyDialog(false);
+        // // 서버에 연결되는지 Ping을 날려본다.    
+        // let oResult = await oAPP.fn.fnCheckServerConnection(sHost);
 
-        // Busy Dialog 에서 취소 버튼을 눌렀을 경우
-        if (oResult.RETCD == "C") {
+        // // busy dialog 종료
+        // oAPP.setBusyDialog(false);
 
-            sap.m.MessageToast.show(oResult.RTMSG);
-            return;
-        }
+        // // Busy Dialog 에서 취소 버튼을 눌렀을 경우
+        // if (oResult.RETCD == "C") {
 
-        // 접속 성공이 아니면 오류 메시지
-        if (oResult.RETCD != "S") {
+        //     sap.m.MessageToast.show(oResult.RTMSG);
+        //     return;
+        // }
 
-            // 오류 메시지
-            oAPP.fn.fnShowMessageBox("E", oResult.RTMSG);
-            return;
-        }
+        // // 접속 성공이 아니면 오류 메시지
+        // if (oResult.RETCD != "S") {
+
+        //     // 오류 메시지
+        //     oAPP.fn.fnShowMessageBox("E", oResult.RTMSG);
+        //     return;
+        // }
+
+
+        //*************************************************** */
+
 
         // // 서버에서 응답한 값을 JSON 파싱 해본다.
         // let oResponse;
@@ -1866,7 +1977,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         //     oBrowserWindow.show();
         // });
 
-        oBrowserWindow.webContents.openDevTools();
+        // oBrowserWindow.webContents.openDevTools();
 
         // no build 일 경우에는 개발자 툴을 실행한다.
         if (!APP.isPackaged) {
@@ -1874,7 +1985,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -1921,7 +2032,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         resolve({
@@ -1997,7 +2108,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      ************************************************************************/
     oAPP.fn.fnShowMessageBox = (TYPE, sMsg, fnCallback) => {
 
-        let fnCloseCallback = (oAction) => {
+        var fnCloseCallback = (oAction) => {
 
             if (typeof fnCallback === "function") {
                 fnCallback(oAction);
@@ -2011,7 +2122,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 sap.m.MessageBox.confirm(sMsg, {
                     title: "Confirm", // default
-                    onClose: fnCloseCallback, // default
+                    onClose: (oAction) => {
+                        fnCloseCallback(oAction);
+                    }, // default
                     styleClass: "", // default
                     actions: [
                         sap.m.MessageBox.Action.OK,
@@ -2028,7 +2141,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 sap.m.MessageBox.success(sMsg, {
                     title: "Success", // default
-                    onClose: fnCloseCallback, // default
+                    onClose: (oAction) => {
+                        fnCloseCallback(oAction);
+                    }, // default
                     styleClass: "", // default
                     actions: sap.m.MessageBox.Action.OK, // default
                     emphasizedAction: sap.m.MessageBox.Action.OK, // default
@@ -2045,7 +2160,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 sap.m.MessageBox.error(sMsg, {
                     title: "Error", // default
-                    onClose: fnCloseCallback, // default
+                    onClose: (oAction) => {
+                        fnCloseCallback(oAction);
+                    }, // default
                     styleClass: "", // default
                     actions: sap.m.MessageBox.Action.CLOSE, // default
                     emphasizedAction: null, // default
@@ -2062,7 +2179,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 sap.m.MessageBox.warning(sMsg, {
                     title: "Warning", // default
-                    onClose: fnCloseCallback, // default
+                    onClose: (oAction) => {
+                        fnCloseCallback(oAction);
+                    }, // default
                     styleClass: "", // default
                     actions: sap.m.MessageBox.Action.OK, // default
                     emphasizedAction: sap.m.MessageBox.Action.OK, // default
@@ -2080,7 +2199,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     title: "", // default
                     actions: sap.m.MessageBox.Action.OK, // default
                     emphasizedAction: sap.m.MessageBox.Action.OK, // default
-                    onClose: fnCloseCallback, // default                                  
+                    onClose: (oAction) => {
+                        fnCloseCallback(oAction);
+                    }, // default                             
                     styleClass: "", // default
                     initialFocus: null, // default
                     textDirection: sap.ui.core.TextDirection.Inherit // default

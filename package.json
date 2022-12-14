@@ -64,6 +64,7 @@
     "mime-types": "^2.1.35",
     "node-cmd": "^5.0.0",
     "node-zip": "^1.1.1",
+    "ping": "^0.4.2",
     "random-key": "^0.3.2",
     "regedit": "^5.0.0",
     "systeminformation": "^5.15.1",

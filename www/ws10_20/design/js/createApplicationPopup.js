@@ -149,7 +149,7 @@
         ls_appl.CODPG = "utf-8";
 
         //UI5 UI Theme
-        ls_appl.UITHM = "sap_fiori_3";
+        ls_appl.UITHM = "sap_horizon";
 
         //Web Application Type
         ls_appl.APPTY = "M";
@@ -209,6 +209,10 @@
                           {KEY:"sap_fiori_3_dark",TEXT:"sap_fiori_3_dark"},
                           {KEY:"sap_fiori_3_hcb",TEXT:"sap_fiori_3_hcb"},
                           {KEY:"sap_fiori_3_hcw",TEXT:"sap_fiori_3_hcw"},
+                          {KEY:"sap_horizon",TEXT:"sap_horizon"},
+                          {KEY:"sap_horizon_dark",TEXT:"sap_horizon_dark"},
+                          {KEY:"sap_horizon_hcb",TEXT:"sap_horizon_hcb"},
+                          {KEY:"sap_horizon_hcw",TEXT:"sap_horizon_hcw"}
                           ];
 
         //Web Application Type DDLB 리스트.
