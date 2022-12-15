@@ -25,6 +25,7 @@ module.exports = (() => {
         APPPATH = APP.getAppPath(),
         USERDATA = APP.getPath("userData"),
 
+        JS_ROOT = PATH.join(APPPATH, "ws10_20", "js"),
         POPUP_ROOT = PATH.join(APPPATH, "ws10_20", "Popups"),
         P13N_ROOT = PATH.join(USERDATA, "p13n"),
         SUGG_ROOT = PATH.join(P13N_ROOT, "suggestion");
@@ -74,6 +75,9 @@ module.exports = (() => {
         VIDEOREC: PATH.join(POPUP_ROOT, "ScreenRecord", "ScreenRecording.js"),
         WINHIDE : PATH.join(POPUP_ROOT, "winShowHidePopup", "index.html"),
         WINHIDE2 : PATH.join(POPUP_ROOT, "winShowHidePopup", "test1.html"),
+
+        // JS Paths..
+        WSTRYCATCH: PATH.join(JS_ROOT, "ws_trycatch.js"),
 
         // Suggestion Json Path..
         EVENTSUGG: PATH.join(SUGG_ROOT, "events.json"),

@@ -1,383 +1,388 @@
-(function () {
-    "use strict";
+  /************************************************************************
+   * 에러 감지
+   ************************************************************************/
+  var zconsole = parent.WSERR(window, document, console);
 
-    // *--------------------------------------------------------------------*
-    // * ★★-글로벌 variable
-    // *--------------------------------------------------------------------*    
-    var oAPP = parent.oAPP;
+  (function () {
+      "use strict";
 
-    var oFind = {};
-    oFind.Sval = " L_FINDVAL "; //"find value 처음 한번만 대상
-    oFind.aMakers = [];
-    oFind.Range = {};
+      // *--------------------------------------------------------------------*
+      // * ★★-글로벌 variable
+      // *--------------------------------------------------------------------*    
+      var oAPP = parent.oAPP;
 
-    var oTimer = null;
+      var oFind = {};
+      oFind.Sval = " L_FINDVAL "; //"find value 처음 한번만 대상
+      oFind.aMakers = [];
+      oFind.Range = {};
 
-    // ace edit 스타트
-    ace.require("ace/ext/language_tools");
+      var oTimer = null;
 
-    var editor = ace.edit("editor");
+      // ace edit 스타트
+      ace.require("ace/ext/language_tools");
 
-    editor.setOptions({
-        enableBasicAutocompletion: true,
-        enableSnippets: true,
-        enableLiveAutocompletion: false
-    });
+      var editor = ace.edit("editor");
 
-    editor.getSession().setUseWrapMode(true);
-    editor.setHighlightActiveLine(false);
-    editor.setShowPrintMargin(false);
-    editor.session.setMode('ace/mode/text');
-    editor.setTheme("ace/theme/monokai");
-    document.getElementById('editor').style.fontSize = '17px';
-    editor.resize();
-    editor.focus();
+      editor.setOptions({
+          enableBasicAutocompletion: true,
+          enableSnippets: true,
+          enableLiveAutocompletion: false
+      });
 
-    oFind.Range = ace.require("ace/range").Range;
+      editor.getSession().setUseWrapMode(true);
+      editor.setHighlightActiveLine(false);
+      editor.setShowPrintMargin(false);
+      editor.session.setMode('ace/mode/text');
+      editor.setTheme("ace/theme/monokai");
+      document.getElementById('editor').style.fontSize = '17px';
+      editor.resize();
+      editor.focus();
 
-    // "-EDITOR 포커스 아웃 (data 서버 동기화)
-    // L_FOCUS
-    editor.on('focus', function () {
-        LF_messageHIDE();
-    });
+      oFind.Range = ace.require("ace/range").Range;
 
-    editor.on("change", function () {
-        //    "-* find value 정보잇을경우만 대상   
+      // "-EDITOR 포커스 아웃 (data 서버 동기화)
+      // L_FOCUS
+      editor.on('focus', function () {
+          LF_messageHIDE();
+      });
 
-        if (oFind.aMakers.length > 0) {
-            LF_removeALLMarker();
-        }
+      editor.on("change", function () {
+          //    "-* find value 정보잇을경우만 대상   
 
-    });
+          if (oFind.aMakers.length > 0) {
+              LF_removeALLMarker();
+          }
 
-    // *--------------------------------------------------------------------*
-    // * ★★-펑션 설정
-    // *--------------------------------------------------------------------*
+      });
 
-    // 로딩중 활성 & 비활성
-    function lf_setEditorBusy(bIsBusy) {
+      // *--------------------------------------------------------------------*
+      // * ★★-펑션 설정
+      // *--------------------------------------------------------------------*
 
-        var oLoading = document.getElementById("zloading"),
-            oLoadingOverlay = document.getElementById("zzoverlay");
+      // 로딩중 활성 & 비활성
+      function lf_setEditorBusy(bIsBusy) {
 
-        if (!oLoading || !oLoadingOverlay) {
-            return;
-        }
+          var oLoading = document.getElementById("zloading"),
+              oLoadingOverlay = document.getElementById("zzoverlay");
 
-        if (bIsBusy == 'X') {
+          if (!oLoading || !oLoadingOverlay) {
+              return;
+          }
 
-            oLoading.style.visibility = "visible";
-            oLoadingOverlay.style.display = "block";
+          if (bIsBusy == 'X') {
 
-            return;
+              oLoading.style.visibility = "visible";
+              oLoadingOverlay.style.display = "block";
 
-        }
+              return;
 
-        oLoading.style.visibility = "hidden";
-        oLoadingOverlay.style.display = "none";
+          }
 
-    }
+          oLoading.style.visibility = "hidden";
+          oLoadingOverlay.style.display = "none";
 
-    // *-이벤트 버블 및 전파 중지 처리 펑션
-    function gf_u4acancelPropagation(event) {
-        if (event.stopPropagation) {
-            event.stopPropagation();
-        } else {
-            event.cancelBubble = true;
-        }
-    }
+      }
 
-    // *-메시지 팝업
-    function LF_messagePOPUP(txt) {
-        var x = document.getElementById("snackbar");
-        x.innerHTML = txt;
-        x.className = "show";
+      // *-이벤트 버블 및 전파 중지 처리 펑션
+      function gf_u4acancelPropagation(event) {
+          if (event.stopPropagation) {
+              event.stopPropagation();
+          } else {
+              event.cancelBubble = true;
+          }
+      }
 
-        oTimer = setTimeout(function () {
-            clearTimeout(oTimer);
-            oTimer = null;
+      // *-메시지 팝업
+      function LF_messagePOPUP(txt) {
+          var x = document.getElementById("snackbar");
+          x.innerHTML = txt;
+          x.className = "show";
 
-            x.className = x.className.replace("show", "");
-        }, 5000);
+          oTimer = setTimeout(function () {
+              clearTimeout(oTimer);
+              oTimer = null;
 
-    }
+              x.className = x.className.replace("show", "");
+          }, 5000);
 
-    // "-메시지 팝업 종료
-    function LF_messageHIDE() {
-        clearTimeout(oTimer);
-        var x = document.getElementById("snackbar");
-        x.className = x.className.replace("show", "");
+      }
 
-    }
+      // "-메시지 팝업 종료
+      function LF_messageHIDE() {
+          clearTimeout(oTimer);
+          var x = document.getElementById("snackbar");
+          x.className = x.className.replace("show", "");
 
-    // editor 조회/수정 모드 전환 처리 펑션
-    function LF_setEDITOR(CHK) {
+      }
 
-        editor.setReadOnly(true);
+      // editor 조회/수정 모드 전환 처리 펑션
+      function LF_setEDITOR(CHK) {
 
-        // 저장버튼 활성/ 비활성
-        LF_SaveBtnVisible(false);
+          editor.setReadOnly(true);
 
-        if (CHK == "X") {
-            editor.setReadOnly(false);
+          // 저장버튼 활성/ 비활성
+          LF_SaveBtnVisible(false);
 
-            // 저장버튼 활성/ 비활성
-            LF_SaveBtnVisible(true);
-        }
+          if (CHK == "X") {
+              editor.setReadOnly(false);
 
-    }
+              // 저장버튼 활성/ 비활성
+              LF_SaveBtnVisible(true);
+          }
 
-    // 저장버튼 활성/ 비활성
-    function LF_SaveBtnVisible(bIsVisi) {
+      }
 
-        var oBtn = document.getElementById("BTSAVE");
-        if (!oBtn) {
-            return;
-        }
+      // 저장버튼 활성/ 비활성
+      function LF_SaveBtnVisible(bIsVisi) {
 
-        if (bIsVisi) {
-            oBtn.classList.remove("btnHidden");
+          var oBtn = document.getElementById("BTSAVE");
+          if (!oBtn) {
+              return;
+          }
 
-            //editor에 focus가 발생하면 메시지 팝업을 종료 한다.
-            editor.on('focus', function () {
-                LF_messageHIDE();
-            });
-        } else {
-            oBtn.classList.add("btnHidden");
-        }
+          if (bIsVisi) {
+              oBtn.classList.remove("btnHidden");
 
-    }
+              //editor에 focus가 발생하면 메시지 팝업을 종료 한다.
+              editor.on('focus', function () {
+                  LF_messageHIDE();
+              });
+          } else {
+              oBtn.classList.add("btnHidden");
+          }
 
-    // Init
-    function fnOnInit() {
+      }
 
-        editor.resize();
+      // Init
+      function fnOnInit() {
 
-        var oInfo = parent.getEditorInfo(),
-            oAppInfo = oInfo.APPINFO,
-            oEditorInfo = oInfo.EDITORINFO,
-            sSearchValue = oInfo.SRCHVAL, // 검색할 데이터
-            L_EDIT = oAppInfo.IS_EDIT; // edit 여부
+          editor.resize();
 
-        // "-Editor 잠금/편집 처리 여부
-        LF_setEDITOR(L_EDIT);
+          var oInfo = parent.getEditorInfo(),
+              oAppInfo = oInfo.APPINFO,
+              oEditorInfo = oInfo.EDITORINFO,
+              sSearchValue = oInfo.SRCHVAL, // 검색할 데이터
+              L_EDIT = oAppInfo.IS_EDIT; // edit 여부
 
-        // 에디터에 값 세팅하기
-        oAPP.fn.fnSetEditorData(oEditorInfo);
+          // "-Editor 잠금/편집 처리 여부
+          LF_setEDITOR(L_EDIT);
 
-        // 에디터 내의 텍스트 검색할 경우
-        if (sSearchValue == null) {
-            return;
-        }
+          // 에디터에 값 세팅하기
+          oAPP.fn.fnSetEditorData(oEditorInfo);
 
-        // 검색로직 추가 여기다가 텍스트 검색하는 로직 추가 해라..
-        oAPP.fn.fnFindText(sSearchValue);
+          // 에디터 내의 텍스트 검색할 경우
+          if (sSearchValue == null) {
+              return;
+          }
 
+          // 검색로직 추가 여기다가 텍스트 검색하는 로직 추가 해라..
+          oAPP.fn.fnFindText(sSearchValue);
 
 
 
-    } // end of fnOnInit
 
+      } // end of fnOnInit
 
-    // 텍스트 검색
-    oAPP.fn.fnFindText = (sSearchValue) => {
 
-        debugger;
+      // 텍스트 검색
+      oAPP.fn.fnFindText = (sSearchValue) => {
 
-        // //class 선언
-        // .cl_findLine {
-        //     position: absolute;
-        //     background - color: blue;
+          debugger;
 
-        // }
+          // //class 선언
+          // .cl_findLine {
+          //     position: absolute;
+          //     background - color: blue;
 
+          // }
 
-        LF_fineMarker(sSearchValue);
 
+          LF_fineMarker(sSearchValue);
 
-        function LF_fineMarker(v) {
 
-            if (v === "") {
-                return;
-            }
+          function LF_fineMarker(v) {
 
-            // css 명이 space 로 구분되기 때문에 분리해서 찾음 예 => cl_xxx cl_ttt
-            var Tval = v.split(" "),
-                Lmax = Tval.length,
-                i = 0;
+              if (v === "") {
+                  return;
+              }
 
-            for (i = 0; i < Lmax; i++) {
+              // css 명이 space 로 구분되기 때문에 분리해서 찾음 예 => cl_xxx cl_ttt
+              var Tval = v.split(" "),
+                  Lmax = Tval.length,
+                  i = 0;
 
-                if (Tval[i] === "") {
-                    continue;
-                }
+              for (i = 0; i < Lmax; i++) {
 
-                var Info = editor.find(Tval[i]);
-                if (typeof Info === "undefined") {
-                    return;
-                }
+                  if (Tval[i] === "") {
+                      continue;
+                  }
 
-                var oBj = editor.session.addMarker(new oFind.Range(Info.start.row, Info.start.column, Info.end.row, Info.end.column), "cl_findLine", "text");
+                  var Info = editor.find(Tval[i]);
+                  if (typeof Info === "undefined") {
+                      return;
+                  }
 
-                // oFind.aMakers.push(oBj);
+                  var oBj = editor.session.addMarker(new oFind.Range(Info.start.row, Info.start.column, Info.end.row, Info.end.column), "cl_findLine", "text");
 
-                // Info = null;
-                // oBj = null;
+                  // oFind.aMakers.push(oBj);
 
-            }
+                  // Info = null;
+                  // oBj = null;
 
-            // var o = document.getElementById('FINDDEL');
-            // o.style.display = "block";
+              }
 
-        }
+              // var o = document.getElementById('FINDDEL');
+              // o.style.display = "block";
 
-        function LF_removeALLMarker() {
+          }
 
-            var i = 0;
-            var Lmax = oFind.aMakers.length;
-            for (i = 0; i < Lmax; i++) {
-                editor.session.removeMarker(oFind.aMakers[i]);
-            }
+          function LF_removeALLMarker() {
 
-            oFind.aMakers = [];
+              var i = 0;
+              var Lmax = oFind.aMakers.length;
+              for (i = 0; i < Lmax; i++) {
+                  editor.session.removeMarker(oFind.aMakers[i]);
+              }
 
-            // var o = document.getElementById('FINDDEL');
-            // o.style.display = "none";
+              oFind.aMakers = [];
 
-        }
+              // var o = document.getElementById('FINDDEL');
+              // o.style.display = "none";
 
-    }; // end of oAPP.fn.fnFindText
+          }
 
-    oAPP.fn.fnSetEditorData = function (oEditorInfo) {
+      }; // end of oAPP.fn.fnFindText
 
-        // 로딩 실행
-        lf_setEditorBusy('X');
+      oAPP.fn.fnSetEditorData = function (oEditorInfo) {
 
-        // 에디터 Default Mode
-        editor.session.setMode("ace/mode/text");
+          // 로딩 실행
+          lf_setEditorBusy('X');
 
-        // 에디터에 값 세팅
-        editor.setValue(oEditorInfo.DATA);
+          // 에디터 Default Mode
+          editor.session.setMode("ace/mode/text");
 
-        // 에디터 타입에 따른 Mode 설정
-        switch (oEditorInfo.OBJTY) {
-            case "JS":
-                editor.session.setMode("ace/mode/javascript");
-                break;
-            case "HM":
-                editor.session.setMode("ace/mode/html");
-                break;
-            case "CS":
-                editor.session.setMode("ace/mode/css");
-                break;
-        }
+          // 에디터에 값 세팅
+          editor.setValue(oEditorInfo.DATA);
 
-        lf_setEditorBusy('');
+          // 에디터 타입에 따른 Mode 설정
+          switch (oEditorInfo.OBJTY) {
+              case "JS":
+                  editor.session.setMode("ace/mode/javascript");
+                  break;
+              case "HM":
+                  editor.session.setMode("ace/mode/html");
+                  break;
+              case "CS":
+                  editor.session.setMode("ace/mode/css");
+                  break;
+          }
 
-    };
+          lf_setEditorBusy('');
 
-    // 에디터에 입력한 내용 저장
-    oAPP.fn.fnEditorValueSave = function () {
+      };
 
-        // 에디터가 혹시라도 읽기 전용 모드이면 저장하지 않고 빠져나간다.
-        if (editor.getReadOnly()) {
-            return;
-        }
+      // 에디터에 입력한 내용 저장
+      oAPP.fn.fnEditorValueSave = function () {
 
-        //   "메시지 팝업 종료
-        LF_messageHIDE();
+          // 에디터가 혹시라도 읽기 전용 모드이면 저장하지 않고 빠져나간다.
+          if (editor.getReadOnly()) {
+              return;
+          }
 
-        //   "waiting        
-        lf_setEditorBusy('X');
+          //   "메시지 팝업 종료
+          LF_messageHIDE();
 
-        // 에디터 정보, APP 정보, ServerHost 정보를 구한다.
-        var oInfo = parent.getEditorInfo();
+          //   "waiting        
+          lf_setEditorBusy('X');
 
-        var oEditorInfo = oInfo.EDITORINFO,
+          // 에디터 정보, APP 정보, ServerHost 정보를 구한다.
+          var oInfo = parent.getEditorInfo();
 
-            oSaveEditorData = jQuery.extend(true, {}, oEditorInfo);
+          var oEditorInfo = oInfo.EDITORINFO,
 
-        oSaveEditorData.DATA = editor.getValue();
+              oSaveEditorData = jQuery.extend(true, {}, oEditorInfo);
 
-        var BROWSKEY = parent.getBrowserKey();
+          oSaveEditorData.DATA = editor.getValue();
 
-        oAPP.IPCRENDERER.send("if-editor-save", {
-            BROWSKEY: BROWSKEY,
-            IS_CHAG: "X",
-            SAVEDATA: oSaveEditorData
-        });
+          var BROWSKEY = parent.getBrowserKey();
 
-        lf_setEditorBusy('');
+          oAPP.IPCRENDERER.send("if-editor-save", {
+              BROWSKEY: BROWSKEY,
+              IS_CHAG: "X",
+              SAVEDATA: oSaveEditorData
+          });
 
-        LF_messagePOPUP('Complete save processing');
+          lf_setEditorBusy('');
 
-    }; // end of oAPP.fn.fnEditorValueSave
+          LF_messagePOPUP('Complete save processing');
 
-    // *-윈도우 오류
-    window.onerror = function (message, source, lineno, colno, error) {
-        alert("EDIT ERRO:" + message);
-    };
+      }; // end of oAPP.fn.fnEditorValueSave
 
-    //문서 실행
-    $(document).ready(function () {
+      // *-윈도우 오류
+      window.onerror = function (message, source, lineno, colno, error) {
+          alert("EDIT ERRO:" + message);
+      };
 
-        // 클라이언트 세션 유지를 위한 function
-        oAPP.fn.fnKeepClientSession();
+      //문서 실행
+      $(document).ready(function () {
 
-        //윈도우 resize 이벤트
-        $(window).resize(function () {
+          // 클라이언트 세션 유지를 위한 function
+          oAPP.fn.fnKeepClientSession();
 
-            var h = $(window).height() - 60;
-            editor.resize();
+          //윈도우 resize 이벤트
+          $(window).resize(function () {
 
-        });
+              var h = $(window).height() - 60;
+              editor.resize();
 
-        fnOnInit();
+          });
 
-    });
+          fnOnInit();
 
-    window.addEventListener("beforeunload", function () {
+      });
 
-        // 윈도우 클릭 이벤트 해제
-        window.removeEventListener("click", oAPP.fn.fnWindowClickEventListener);
-        window.removeEventListener("keyup", oAPP.fn.fnWindowClickEventListener);
+      window.addEventListener("beforeunload", function () {
 
-    });
+          // 윈도우 클릭 이벤트 해제
+          window.removeEventListener("click", oAPP.fn.fnWindowClickEventListener);
+          window.removeEventListener("keyup", oAPP.fn.fnWindowClickEventListener);
 
-    /************************************************************************
-     * 클라이언트 세션 유지를 위한 function
-     * **********************************************************************/
-    oAPP.fn.fnKeepClientSession = function () {
+      });
 
-        // 브라우저의 세션 키
-        var sSessionKey = parent.getSessionKey();
+      /************************************************************************
+       * 클라이언트 세션 유지를 위한 function
+       * **********************************************************************/
+      oAPP.fn.fnKeepClientSession = function () {
 
-        // 로딩할때 세션 타임 시작을 전체 브라우저에 알린다.
-        oAPP.IPCRENDERER.send("if-session-time", sSessionKey);
+          // 브라우저의 세션 키
+          var sSessionKey = parent.getSessionKey();
 
-        // 윈도우 클릭 이벤트 해제
-        window.removeEventListener("click", oAPP.fn.fnWindowClickEventListener);
-        window.removeEventListener("keyup", oAPP.fn.fnWindowClickEventListener);
+          // 로딩할때 세션 타임 시작을 전체 브라우저에 알린다.
+          oAPP.IPCRENDERER.send("if-session-time", sSessionKey);
 
-        // 윈도우 클릭 이벤트 걸기
-        window.addEventListener("click", oAPP.fn.fnWindowClickEventListener);
-        window.addEventListener("keyup", oAPP.fn.fnWindowClickEventListener);
+          // 윈도우 클릭 이벤트 해제
+          window.removeEventListener("click", oAPP.fn.fnWindowClickEventListener);
+          window.removeEventListener("keyup", oAPP.fn.fnWindowClickEventListener);
 
-    }; // end of oAPP.fn.fnKeepClientSession
+          // 윈도우 클릭 이벤트 걸기
+          window.addEventListener("click", oAPP.fn.fnWindowClickEventListener);
+          window.addEventListener("keyup", oAPP.fn.fnWindowClickEventListener);
 
-    /************************************************************************
-     * 브라우저에서 키보드, 마우스 클릭 이벤트를 감지하여 클라이언트 세션을 유지한다.
-     * **********************************************************************/
-    oAPP.fn.fnWindowClickEventListener = function () {
+      }; // end of oAPP.fn.fnKeepClientSession
 
-        // 브라우저의 세션 키
-        var sSessionKey = parent.getSessionKey();
+      /************************************************************************
+       * 브라우저에서 키보드, 마우스 클릭 이벤트를 감지하여 클라이언트 세션을 유지한다.
+       * **********************************************************************/
+      oAPP.fn.fnWindowClickEventListener = function () {
 
-        // 로딩할때 세션 타임 시작을 전체 브라우저에 알린다.
-        oAPP.IPCRENDERER.send("if-session-time", sSessionKey);
+          // 브라우저의 세션 키
+          var sSessionKey = parent.getSessionKey();
 
-    };
+          // 로딩할때 세션 타임 시작을 전체 브라우저에 알린다.
+          oAPP.IPCRENDERER.send("if-session-time", sSessionKey);
 
-    window.oAPP = oAPP;
+      };
 
-})();
+      window.oAPP = oAPP;
+
+  })();

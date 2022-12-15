@@ -28,10 +28,11 @@ const
 XHR.withCredentials = true;
 
 const
-    sZU4A_WBC_URL = "/zu4a_wbc/u4a_ipcmain",
-    sPOPID = "editPopup",
-    sSERVER_TBL_ID = "serverlist_table",
-    sBINDROOT = "/SAVEDATA";
+    SAPGUIVER = 7700,
+    ZU4A_WBC_URL = "/zu4a_wbc/u4a_ipcmain",
+    POPID = "editPopup",
+    SERVER_TBL_ID = "serverlist_table",
+    BINDROOT = "/SAVEDATA";
 
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
@@ -156,64 +157,64 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of fnSendAjax
 
-    /************************************************************************
-     * 서버 연결 확인
-     ************************************************************************/
-    oAPP.fn.fnCheckServerConnection = (sUrl) => {
+    // /************************************************************************
+    //  * 서버 연결 확인
+    //  ************************************************************************/
+    // oAPP.fn.fnCheckServerConnection = (sUrl) => {
 
-        return new Promise((resolve) => {
+    //     return new Promise((resolve) => {
 
-            var ping = REMOTE.require('ping');
+    //         var ping = REMOTE.require('ping');
 
-            ping.sys.probe(sUrl, function (isAlive) {
+    //         ping.sys.probe(sUrl, function (isAlive) {
 
-                if (isAlive == null) {
-                    return;
-                }
+    //             if (isAlive == null) {
+    //                 return;
+    //             }
 
-                if (!isAlive) {
-                    resolve({
-                        RETCD: "E",
-                        RTMSG: "Connection Fail!"
-                    });
-                    return;
-                }
+    //             if (!isAlive) {
+    //                 resolve({
+    //                     RETCD: "E",
+    //                     RTMSG: "Connection Fail!"
+    //                 });
+    //                 return;
+    //             }
 
-                resolve({
-                    RETCD: "S",
-                    // RESPONSE: res,
-                    RTMSG: "connection success!"
-                });
+    //             resolve({
+    //                 RETCD: "S",
+    //                 // RESPONSE: res,
+    //                 RTMSG: "connection success!"
+    //             });
 
-                return;
+    //             return;
 
-            });
+    //         });
 
-            // oAPP.fn.sendAjax(
-            //     sUrl,
-            //     (res) => { // success
-            //         resolve({
-            //             RETCD: "S",
-            //             RESPONSE: res,
-            //             RTMSG: "connection success!"
-            //         });
-            //     },
-            //     () => { // error
-            //         resolve({
-            //             RETCD: "E",
-            //             RTMSG: "Connection Fail!"
-            //         });
-            //     },
-            //     (res) => { // cancel
-            //         resolve({
-            //             RETCD: "C",
-            //             RTMSG: "Cancel Operation"
-            //         });
-            //     });
+    //         // oAPP.fn.sendAjax(
+    //         //     sUrl,
+    //         //     (res) => { // success
+    //         //         resolve({
+    //         //             RETCD: "S",
+    //         //             RESPONSE: res,
+    //         //             RTMSG: "connection success!"
+    //         //         });
+    //         //     },
+    //         //     () => { // error
+    //         //         resolve({
+    //         //             RETCD: "E",
+    //         //             RTMSG: "Connection Fail!"
+    //         //         });
+    //         //     },
+    //         //     (res) => { // cancel
+    //         //         resolve({
+    //         //             RETCD: "C",
+    //         //             RTMSG: "Cancel Operation"
+    //         //         });
+    //         //     });
 
-        });
+    //     });
 
-    }; // end of oAPP.fn.fnCheckConnection
+    // }; // end of oAPP.fn.fnCheckConnection
 
     /************************************************************************
      * ------------------------ [ Server List Start ] ------------------------
@@ -264,7 +265,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      ************************************************************************/
     oAPP.fn.fnMTableModelClear = () => {
 
-        let oTable = sap.ui.getCore().byId(sSERVER_TBL_ID);
+        let oTable = sap.ui.getCore().byId(SERVER_TBL_ID);
         if (!oTable) {
             return;
         }
@@ -375,6 +376,23 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      ************************************************************************/
     oAPP.fn.fnReadSAPLogonDataThen = (oResult) => {
 
+        // sapgui 버전을 체크한다.
+        let oCheckVer = oAPP.fn.fnCheckSapguiVersion(oResult.Result);
+        if (oCheckVer.RETCD == "E") {
+
+            oAPP.fn.fnShowMessageBox("E", oCheckVer.RTMSG, () => {                
+                
+                APP.exit();
+
+            });
+
+            console.error(oCheckVer.RTMSG);
+
+            oAPP.setBusy(false);
+
+            return;
+        }
+
         if (oAPP.data.SAPLogon[oResult.fileName]) {
             oAPP.data.SAPLogon[oResult.fileName] = undefined;
         }
@@ -383,7 +401,17 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oAPP.data.SAPLogon[oResult.fileName] = oResult.Result;
 
         // 결과 리스트
-        oAPP.fn.fnGetSAPLogonLandscapeList();
+        let oLogonResult = oAPP.fn.fnGetSAPLogonLandscapeList();
+        if (oLogonResult.RETCD == "E") {
+
+            oAPP.fn.fnShowMessageBox("E", oLogonResult.RTMSG);
+
+            console.error(oLogonResult.RTMSG);
+
+            oAPP.setBusy(false);
+
+            return;
+        }
 
         // WorkSpace Tree 구조 만들기
         oAPP.fn.fnGetSAPLogonWorkspace();
@@ -394,6 +422,73 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oAPP.setBusy(false);
 
     }; // end of oAPP.fn.fnReadSAPLogonDataThen
+
+    /************************************************************************
+     * sapgui Version 체크
+     * sapgui 770버전 이하는 지원 불가!!
+     ************************************************************************/
+    oAPP.fn.fnCheckSapguiVersion = (oResult) => {
+
+        // 성공 실패 공통 리턴 구조
+        let oErr = {
+                RETCD: "E",
+                RTMSG: "Server information does not exist in the SAPGUI logon file."
+            },
+            oSucc = {
+                RETCD: "S",
+                RTMSG: ""
+            };
+
+        if (!oResult) {
+            return oErr;
+        }
+
+        // xml의 attribute
+        let oAttribute = oResult._attributes;
+        if (!oAttribute) {
+            return oErr;
+        }
+
+        let sGenerator = oAttribute.generator;
+        if (!sGenerator || sGenerator == "") {
+            return oErr;
+        }
+
+        // 버전 정보를 정규식으로 발췌한다.       
+        // let oRegex = new RegExp(/(v)(.*?)(?=\.)/g, "i"),
+        let oRegex = new RegExp(/(?<=v)(.*?)(?=\.)/g, "i"),
+            aVersion = oRegex.exec(sGenerator);
+
+        // 정규식으로 null 값이면 버전정보가 없다고 간주함.
+        if (aVersion == null) {
+            oErr.RTMSG = "No SAPGUI version information.";
+            return oErr;
+        }
+
+        // 정규식으로 버전 정보를 찾았다면 Array 타입
+        if (Array.isArray(aVersion) == false) {
+            oErr.RTMSG = "No SAPGUI version information.";
+            return oErr;
+        }
+
+        let sVer = aVersion[0],
+            parseVer = parseInt(sVer);
+
+        if (isNaN(parseVer)) {
+
+            oErr.RTMSG = "SAPGUI version information not Found.";
+            return oErr;
+        }
+
+        // 770 보다 낮다면 지원 불가
+        if (parseVer < SAPGUIVER) {
+            oErr.RTMSG = "Not supported lower than SAPGUI 770 versions. \n Please upgrade SAPGUI";
+            return oErr;
+        }
+
+        return oSucc;
+
+    }; // end of oAPP.fn.fnCheckSapguiVersion
 
     /************************************************************************
      * 좌측 workspace의 Tree Item을 선택 해제 후 재선택하여 Refresh 효과를 준다.
@@ -460,18 +555,28 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      ************************************************************************/
     oAPP.fn.fnGetSAPLogonLandscapeList = () => {
 
+        // 성공 실패 공통 리턴 구조
+        let oErr = {
+                RETCD: "E",
+                RTMSG: "Server information does not exist in the SAPGUI logon file."
+            },
+            oSucc = {
+                RETCD: "S",
+                RTMSG: ""
+            };
+
         var oSAPLogonLandscape = oAPP.data.SAPLogon;
         if (oSAPLogonLandscape == null) {
-            return;
+            return oErr;
         }
 
         var oLandscapeFile = oSAPLogonLandscape.LandscapeFile;
         if (oLandscapeFile == null) {
-            return;
+            return oErr;
         }
 
         if (!oLandscapeFile.Services) {
-            return;
+            return oErr;
         }
 
         // 서비스 정보(등록된 서버 전체 목록)을 구한다.
@@ -479,7 +584,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             iServiceLength = aServices.length;
 
         if (iServiceLength == 0) {
-            return;
+            return oErr;
         }
 
         // 서비스 정보가 있을 경우..
@@ -571,8 +676,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         var oCoreModel = sap.ui.getCore().getModel();
         if (oCoreModel) {
             oCoreModel.setProperty("/ServerList", aBindData);
-            // oCoreModel.refresh(true);
-            return;
+            return oSucc;
         }
 
         var oJsonModel = new sap.ui.model.json.JSONModel();
@@ -581,6 +685,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         });
 
         sap.ui.getCore().setModel(oJsonModel);
+
+        return oSucc;
 
     }; // end of oAPP.fn.fnGetSAPLogonLandscapeList
 
@@ -716,7 +822,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      ************************************************************************/
     oAPP.fn.fnServerListUnselect = () => {
 
-        let oTable = sap.ui.getCore().byId(sSERVER_TBL_ID);
+        let oTable = sap.ui.getCore().byId(SERVER_TBL_ID);
         if (oTable) {
             oTable.removeSelections();
         }
@@ -905,7 +1011,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         let oToolbar = oAPP.fn.fnGetSAPLogonListTableToolbar();
 
-        return new sap.m.Table(sSERVER_TBL_ID, {
+        return new sap.m.Table(SERVER_TBL_ID, {
             fixedLayout: false,
             alternateRowColors: true,
             autoPopinMode: true,
@@ -1044,7 +1150,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      ************************************************************************/
     oAPP.fn.fnPressEdit = () => {
 
-        let oTable = sap.ui.getCore().byId(sSERVER_TBL_ID);
+        let oTable = sap.ui.getCore().byId(SERVER_TBL_ID);
         if (!oTable) {
             return;
         }
@@ -1070,7 +1176,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      ************************************************************************/
     oAPP.fn.fnPressDelete = async () => {
 
-        let oTable = sap.ui.getCore().byId(sSERVER_TBL_ID);
+        let oTable = sap.ui.getCore().byId(SERVER_TBL_ID);
         if (!oTable) {
             return;
         }
@@ -1215,7 +1321,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oJsonModel.setData(oModelData);
 
-        var oDialog = sap.ui.getCore().byId(sPOPID);
+        var oDialog = sap.ui.getCore().byId(POPID);
         if (oDialog) {
 
             oDialog.setModel(oJsonModel);
@@ -1246,7 +1352,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                 text: "Protocol"
                             }),
                             fields: new sap.m.Select({
-                                selectedKey: `{${sBINDROOT}/protocol}`,
+                                selectedKey: `{${BINDROOT}/protocol}`,
                                 items: [
                                     new sap.ui.core.Item({
                                         key: "http",
@@ -1267,7 +1373,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                 text: "Host"
                             }),
                             fields: new sap.m.Input("hostInput", {
-                                value: `{${sBINDROOT}/host}`,
+                                value: `{${BINDROOT}/host}`,
                                 valueState: "{/VS_STATE/host_vs}",
                                 valueStateText: "{/VS_STATE/host_vst}",
                                 submit: () => {
@@ -1284,7 +1390,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                             fields: new sap.m.Input("portInput", {
                                 maxLength: 5,
                                 type: sap.m.InputType.Number,
-                                value: `{${sBINDROOT}/port}`,
+                                value: `{${BINDROOT}/port}`,
                                 valueState: "{/VS_STATE/port_vs}",
                                 valueStateText: "{/VS_STATE/port_vs}",
 
@@ -1302,7 +1408,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         });
 
-        var oDialog = new sap.m.Dialog(sPOPID, {
+        var oDialog = new sap.m.Dialog(POPID, {
             // properties
             draggable: true,
             resizable: true,
@@ -1325,7 +1431,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     icon: "sap-icon://decline",
                     press: () => {
 
-                        let oDialog = sap.ui.getCore().byId(sPOPID);
+                        let oDialog = sap.ui.getCore().byId(POPID);
                         if (!oDialog) {
                             return;
                         }
@@ -1346,14 +1452,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             afterClose: () => {
 
-                let oDialog = sap.ui.getCore().byId(sPOPID);
+                let oDialog = sap.ui.getCore().byId(POPID);
                 if (!oDialog) {
                     return;
                 }
 
                 let oDialogModel = oDialog.getModel();
 
-                oDialogModel.setProperty(sBINDROOT, {});
+                oDialogModel.setProperty(BINDROOT, {});
 
             }
 
@@ -1467,7 +1573,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      ************************************************************************/
     oAPP.fn.fnEditDialogClose = () => {
 
-        let oDialog = sap.ui.getCore().byId(sPOPID);
+        let oDialog = sap.ui.getCore().byId(POPID);
         if (!oDialog) {
             return;
         }
@@ -1485,7 +1591,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oAPP.setBusy(true);
 
-        let oDialog = sap.ui.getCore().byId(sPOPID);
+        let oDialog = sap.ui.getCore().byId(POPID);
         if (!oDialog) {
             oAPP.setBusy(false);
             return;
@@ -1587,7 +1693,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             // oAPP.fn.fnShowMessageBox("S", "saved Success!");
 
             // // 테이블 Row 선택 표시 해제
-            // let oTable = sap.ui.getCore().byId(sSERVER_TBL_ID);
+            // let oTable = sap.ui.getCore().byId(SERVER_TBL_ID);
             // if (oTable) {
             //     oTable.removeSelections(true);
             // }
@@ -1638,7 +1744,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // oAPP.fn.fnShowMessageBox("S", "saved Success!");
 
         // // 테이블 Row 선택 표시 해제
-        // let oTable = sap.ui.getCore().byId(sSERVER_TBL_ID);
+        // let oTable = sap.ui.getCore().byId(SERVER_TBL_ID);
         // if (oTable) {
         //     oTable.removeSelections(true);
         // }
@@ -1825,7 +1931,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // debugger;
 
-        // sUrl += sZU4A_WBC_URL;
+        // sUrl += ZU4A_WBC_URL;
 
         // var oFormData = new FormData();
         // oFormData.append("SYSCHK", 'X');

@@ -1,3 +1,10 @@
+let aa = "asdfasdfasdfasdfasdfsdfsdfasdfasdf";
+zconsole.log(aa);
+zconsole.warn(aa);
+zconsole.error(aa);
+
+
+
 var oAPP = {};
 oAPP.attr = {};
 oAPP.fn = {};

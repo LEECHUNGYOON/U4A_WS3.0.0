@@ -3,7 +3,6 @@
  * ----------------------------------------------------------------------
  * - file Name : findPopup/frame.js
  ************************************************************************/
-
 let oAPP = (function (window) {
     "use strict";
 
@@ -84,7 +83,7 @@ let oAPP = (function (window) {
 
         oAPP.IPCMAIN.off(`${oAPP.BROWSKEY}--find--success`, oAPP.fn.fnIpcMainFindSuccess);
 
-    });
+    });    
 
     window.oAPP = oAPP;
 

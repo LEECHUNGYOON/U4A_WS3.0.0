@@ -1,8 +1,12 @@
 /************************************************************************
  * Copyright 2020. INFOCG Inc. all rights reserved. 
  * ----------------------------------------------------------------------
- * - file Name : bindPopup/index.js
+ * - file Name : errMsgPopup/index.js
  ************************************************************************/
+/************************************************************************
+ * 에러 감지
+ ************************************************************************/
+const zconsole = parent.WSERR(window, document, console);
 
 let oAPP = parent.oAPP;
 
@@ -26,7 +30,7 @@ let oAPP = parent.oAPP;
      * model Refresh 유무
      ************************************************************************/
     oAPP.fn.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
-
+        
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
 
@@ -43,7 +47,7 @@ let oAPP = parent.oAPP;
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.fn.fnGetModelProperty = function (sModelPath) {
+    oAPP.fn.fnGetModelProperty = function (sModelPath) {       
 
         return sap.ui.getCore().getModel().getProperty(sModelPath);
 

@@ -1,6 +1,6 @@
 (function (oNavCon, oNavConList) {
     "use strict";
-
+   
     const
         REMOTE = oAPP.remote,
         OCTOKIT = REMOTE.require("@octokit/core").Octokit,
@@ -55,7 +55,7 @@
 
             }).catch((err) => {
 
-                console.log(err);
+                console.error(err);
 
                 resolve({
                     ISCDN: ""
