@@ -18,7 +18,7 @@
             return;
         }
 
-        console.log("시작!! -> " + Math.floor(+new Date() / 1000));
+        zconsole.log("시작!! -> " + Math.floor(+new Date() / 1000));
 
         if (oAPP.attr._oWorker) {
 
@@ -33,7 +33,7 @@
      ************************************************************************/
     oAPP.fn.fnIpcMain_if_exam_move = function (event, res) {
 
-        console.log("fnIpcMain_if_exam_move");
+        zconsole.log("fnIpcMain_if_exam_move");
 
         var oMsg = res,
             MODE = oMsg.MODE,
@@ -160,7 +160,7 @@
      ************************************************************************/
     oAPP.fn.fnIpcMain_if_DragEnd = (event, res) => {
 
-        console.log("Fire!! oAPP.fn.fnIpcMain_if_DragEnd");
+        zconsole.log("Fire!! oAPP.fn.fnIpcMain_if_DragEnd");
 
         oAPP.main.onDragend();
 
@@ -219,14 +219,14 @@
 
                 var iSessionKeyLength = oAPP.attr.aSessionKeys.length;
 
-                console.log(`같은 브라우저 총 갯수 : ${iSameBrowserLength} `);
-                console.log(`수집된 키 총 갯수 : ${iSessionKeyLength} `);
+                zconsole.log(`같은 브라우저 총 갯수 : ${iSameBrowserLength} `);
+                zconsole.log(`수집된 키 총 갯수 : ${iSessionKeyLength} `);
 
                 if (iSameBrowserLength != iSessionKeyLength) {
                     return;
                 }
 
-                console.log("전체 키 수집!!!");
+                zconsole.log("전체 키 수집!!!");
 
                 // 현재 떠있는 브라우저 갯수와 수집된 브라우저 키의 갯수가 동일 하다면..
                 if (iSessionKeyLength == 1) {

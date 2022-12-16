@@ -15,7 +15,7 @@
         C_LINK_TABLE_ID = "CssJsLinkAddPopupTable";
 
     var LINK_TYPE = "",
-        COMMON = oAPP.common;
+        APPCOMMON = oAPP.common;
 
     /************************************************************************
      * CSS & JS Link add Popup Open
@@ -50,7 +50,7 @@
                 return;
         }
 
-        COMMON.fnSetModelProperty(C_LINK_ROOT_PATH, oBindData);
+        APPCOMMON.fnSetModelProperty(C_LINK_ROOT_PATH, oBindData);
 
         var oCssJsLinkAddDlg = sap.ui.getCore().byId(C_DLG_ID);
         if (oCssJsLinkAddDlg) {
@@ -157,7 +157,7 @@
 
         }
 
-        COMMON.fnSetModelProperty(C_LINK_LIST_DATA_ROOT_PATH, aSavedLinkData);
+        APPCOMMON.fnSetModelProperty(C_LINK_LIST_DATA_ROOT_PATH, aSavedLinkData);
 
     }; // end of oAPP.fn.fnGetCssLinkData
 
@@ -190,7 +190,7 @@
 
         }
 
-        COMMON.fnSetModelProperty(C_LINK_LIST_DATA_ROOT_PATH, aSavedLinkData);
+        APPCOMMON.fnSetModelProperty(C_LINK_LIST_DATA_ROOT_PATH, aSavedLinkData);
 
     };
 
@@ -412,7 +412,7 @@
     oAPP.fn.fnCssLinkSave = function() {
 
         // 입력한 Link 정보를 구한다.
-        var aLinkData = COMMON.fnGetModelProperty(C_LINK_LIST_DATA_ROOT_PATH),
+        var aLinkData = APPCOMMON.fnGetModelProperty(C_LINK_LIST_DATA_ROOT_PATH),
             iLinkDataLength = aLinkData.length;
 
         // Link 정보가 하나도 없으면 팝업을 그냥 닫는다.
@@ -433,8 +433,8 @@
 
         }
 
-        var sUrlType = "CSS Link URL",
-            sErrTxt = COMMON.fnGetMsgClsTxt("014", sUrlType), // &1 is required entry value.
+        var sUrlType = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B74"), // CSS Link URL
+            sErrTxt = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "014", sUrlType), // & is required entry value.           
             aSaveData = [],
             aSaveDataString = [],
             bIsErr = false;
@@ -467,7 +467,7 @@
 
         }
 
-        COMMON.fnSetModelProperty(C_LINK_LIST_DATA_ROOT_PATH, aLinkData);
+        APPCOMMON.fnSetModelProperty(C_LINK_LIST_DATA_ROOT_PATH, aLinkData);
 
         if (bIsErr) {
             aSaveData = [];
@@ -493,7 +493,7 @@
     oAPP.fn.fnJsLinkSave = function() {
 
         // 입력한 Link 정보를 구한다.
-        var aLinkData = COMMON.fnGetModelProperty(C_LINK_LIST_DATA_ROOT_PATH),
+        var aLinkData = APPCOMMON.fnGetModelProperty(C_LINK_LIST_DATA_ROOT_PATH),
             iLinkDataLength = aLinkData.length;
 
         // Link 정보가 하나도 없으면 팝업을 그냥 닫는다.
@@ -511,8 +511,8 @@
 
         }
 
-        var sUrlType = "JS Link URL",
-            sErrTxt = COMMON.fnGetMsgClsTxt("014", sUrlType), // &1 is required entry value.
+        var sUrlType = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B75"), // JS Link URL
+            sErrTxt = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "014", sUrlType), // & is required entry value.     
             aSaveData = [],
             bIsErr = false;
 
@@ -541,7 +541,7 @@
 
         }
 
-        COMMON.fnSetModelProperty(C_LINK_LIST_DATA_ROOT_PATH, aLinkData);
+        APPCOMMON.fnSetModelProperty(C_LINK_LIST_DATA_ROOT_PATH, aLinkData);
 
         if (bIsErr) {
             aSaveData = [];
@@ -575,15 +575,15 @@
         oAPP.fn.fnSetCssJsLinkTableClearSelection();
 
         // 신규 Row를 추가한다.
-        var aTableData = COMMON.fnGetModelProperty(C_LINK_LIST_DATA_ROOT_PATH);
+        var aTableData = APPCOMMON.fnGetModelProperty(C_LINK_LIST_DATA_ROOT_PATH);
         if (!aTableData || aTableData.length <= 0) {
-            COMMON.fnSetModelProperty(C_LINK_LIST_DATA_ROOT_PATH, [oNewRow]);
+            APPCOMMON.fnSetModelProperty(C_LINK_LIST_DATA_ROOT_PATH, [oNewRow]);
             return;
         }
 
         aTableData.push(oNewRow);
 
-        COMMON.fnSetModelProperty(C_LINK_LIST_DATA_ROOT_PATH, aTableData);
+        APPCOMMON.fnSetModelProperty(C_LINK_LIST_DATA_ROOT_PATH, aTableData);
 
     }; // end of oAPP.events.ev_pressCssJsLinkAddTableAddRowBtn
 
@@ -604,7 +604,7 @@
             return;
         }
 
-        var aTableData = jQuery.extend(true, [], COMMON.fnGetModelProperty(C_LINK_LIST_DATA_ROOT_PATH));
+        var aTableData = jQuery.extend(true, [], APPCOMMON.fnGetModelProperty(C_LINK_LIST_DATA_ROOT_PATH));
 
         for (var i = 0; i < iSelLenth; i++) {
 
@@ -620,7 +620,7 @@
             aTableData.splice(iFindIndex, 1);
         }
 
-        COMMON.fnSetModelProperty(C_LINK_LIST_DATA_ROOT_PATH, aTableData);
+        APPCOMMON.fnSetModelProperty(C_LINK_LIST_DATA_ROOT_PATH, aTableData);
 
         oCssLinkAddTable.clearSelection();
 

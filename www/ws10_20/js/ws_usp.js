@@ -447,7 +447,7 @@
                 new sap.m.ToolbarSpacer(),
 
                 // 상단 공통 헤더 버튼
-                oAPP.common.fnGetCommonHeaderButtons()
+                APPCOMMON.fnGetCommonHeaderButtons()
 
             ]
 
@@ -461,10 +461,10 @@
     function fnGetSubHeaderWs30() {
 
         // Message Class Text
-        let sChangeTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02", "", "", "", ""), // Change
-            sDispTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05", "", "", "", ""), // Display
-            sActiveTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B66", "", "", "", ""), // Activate,
-            sInactTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B67", "", "", "", ""); // Inactivate             
+        let sChangeTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02"), // Change
+            sDispTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05"), // Display
+            sActiveTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B66"), // Activate,
+            sInactTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B67"); // Inactivate             
 
         var sBindRootPath = "/WS30/APP",
 
@@ -2105,7 +2105,7 @@
             oTreeData = oTreeModel.getProperty(oCtx.sPath),
 
             // 질문 메시지
-            sMsg = ` [ ${oTreeData.OBDEC} ] ` + APPCOMMON.fnGetMsgClsTxt("003"); // Do you really want to delete the object?
+            sMsg = ` [ ${oTreeData.OBDEC} ] ` + APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "003"); // Do you really want to delete the object?
 
         var oParam = {
             oTreeTable: oTreeTable
@@ -2510,8 +2510,11 @@
         // Download 대상 File이 없는 경우.
         if (aUspData.length == 0) {
 
-            // Download 대상 File이 없습니다. 메시지 토스트 처리..
-            var sMsg = APPCOMMON.fnGetMsgClsTxt("073", "Download File");
+            // Download 대상 File이 없습니다. 메시지 토스트 처리..            
+            var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B78"); // Download
+            sMsg = sMsg + " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B79"); // File
+            sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "073", sMsg); // &1 does not exist.
+
             parent.showMessage(sap, 10, "E", sMsg);
 
             return;
@@ -2813,7 +2816,7 @@
         var IS_CHAG = getAppChangeWs30();
         if (IS_CHAG == 'X') {
 
-            var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
+            var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "119"); // Save before leaving editor?
 
             parent.showMessage(sap, 40, 'W', sMsg, _fnSaveBeforeLeavEditMsgCb.bind(this, oRow));
 
@@ -3126,7 +3129,7 @@
             // 작업표시줄 깜빡임
             CURRWIN.flashFrame(true);
 
-            var sMsg = APPCOMMON.fnGetMsgClsTxt("031"); // "Only in activity state !!!"
+            var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "031"); // Only in activity state !!!
 
             // 페이지 푸터 메시지
             APPCOMMON.fnShowFloatingFooterMsg("W", "WS30", sMsg);
@@ -3192,8 +3195,8 @@
         }
 
         var sMsg = "";
-        sMsg = APPCOMMON.fnGetMsgClsTxt("118"); // "Application has been changed"
-        sMsg += " \n " + APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"    
+        sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "118"); // Application has been changed
+        sMsg += " \n " + APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "119"); // Save before leaving editor?
 
         // 메시지 질문 팝업을 띄운다.
         parent.showMessage(sap, 40, 'W', sMsg, fnMoveBack_Ws30_To_Ws10Cb);
@@ -3295,7 +3298,7 @@
             // 작업표시줄 깜빡임
             CURRWIN.flashFrame(true);
 
-            var sMsg = APPCOMMON.fnGetMsgClsTxt("031"); // "Only in activity state !!!"
+            var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "031"); // Only in activity state !!!
 
             // 페이지 푸터 메시지
             APPCOMMON.fnShowFloatingFooterMsg("W", "WS30", sMsg);
@@ -3657,7 +3660,8 @@
                 var IS_CHAG = getAppChangeWs30();
                 if (IS_CHAG == 'X') {
 
-                    var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
+                    var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "119"); // Save before leaving editor?
+
                     parent.showMessage(sap, 40, 'W', sMsg, _fnCreateUspAppChangeMsgCB.bind(this, oTreeTable));
 
                     // 현재 떠있는 팝업 창들을 잠시 숨긴다.
@@ -3700,7 +3704,7 @@
                 var IS_CHAG = getAppChangeWs30();
                 if (IS_CHAG == 'X') {
 
-                    var sMsg = APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
+                    var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "119"); // Save before leaving editor?
 
                     parent.showMessage(sap, 40, 'W', sMsg, _fnRenameUspAppChangeMsgCB.bind(this, oTreeTable));
 
@@ -4012,7 +4016,7 @@
 
         if (oDup) {
 
-            var sMsg = APPCOMMON.fnGetMsgClsTxt("004"); // Duplicate filename exists.
+            var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "004"); // Duplicate filename exists.
 
             // Value State 설정
             oCrateData.NAME_VS = sap.ui.core.ValueState.Error;
@@ -4642,8 +4646,8 @@
                 APPCOMMON.fnIsChildWindowShow(false);
 
                 var sMsg = "";
-                sMsg = APPCOMMON.fnGetMsgClsTxt("118"); // "Application has been changed"
-                sMsg += " \n " + APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
+                sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "118"); // Application has been changed
+                sMsg += " \n " + APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "119"); // Save before leaving editor?
 
                 parent.showMessage(sap, 40, 'W', sMsg, lf_MsgCallback);
                 return;

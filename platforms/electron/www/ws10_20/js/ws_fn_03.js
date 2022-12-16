@@ -2,7 +2,7 @@
  * ws_fn_03.js
  **************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     var PATH = parent.PATH,
@@ -18,7 +18,7 @@
     /************************************************************************
      * 설정된 세션 타임아웃 시간 체크
      * **********************************************************************/
-    oAPP.fn.fnSessionTimeoutCheck = function () {
+    oAPP.fn.fnSessionTimeoutCheck = function() {
 
         setTimeout(() => {
 
@@ -44,13 +44,13 @@
     /************************************************************************
      * Session Time Worker onmessage 이벤트
      * **********************************************************************/
-    oAPP.fn.fnSessionTimeWorkerOnMessage = function (e) {
+    oAPP.fn.fnSessionTimeWorkerOnMessage = function(e) {
 
         if (e.data != "X") {
             return;
         }
 
-        console.log("세션종료!! -> " + Math.floor(+new Date() / 1000));
+        zconsole.log("세션종료!! -> " + Math.floor(+new Date() / 1000));
 
         // 워커 종료
         if (oAPP.attr._oWorker) {
@@ -103,16 +103,16 @@
         }
 
         // //세션타임아웃 후 전체 로그아웃 및 같은 세션 창 전체 닫기
-        // oAPP.common.setSessionTimeout();
+        // APPCOMMON.setSessionTimeout();
 
     }; // end of oAPP.fn.fnSessionTimeWorkerOnMessage
 
     /************************************************************************
      * 클릭 & 키보드 이벤트 발생 시 세션 타임 초기화 시킨다.
      * **********************************************************************/
-    oAPP.fn.fnWindowClickEventListener = function () {
+    oAPP.fn.fnWindowClickEventListener = function() {
 
-        console.log("윈도우 클릭했다!!");
+        zconsole.log("윈도우 클릭했다!!");
 
         var sSessionKey = parent.getSessionKey();
 
@@ -133,7 +133,7 @@
      * @param {Object}  ODATA
      * - 저장하려는 데이터
      ************************************************************************/
-    oAPP.fn.setCopyData = function (sFromKey, aTarget, ODATA) {
+    oAPP.fn.setCopyData = function(sFromKey, aTarget, ODATA) {
 
         var FS = parent.FS,
             sClipboardJsonPath = parent.getPath("CLIPBOARD"),
@@ -164,7 +164,7 @@
         FS.writeFileSync(sClipboardJsonPath, JSON.stringify(oCopiedData));
 
         // Clipboard Copy Success!
-        var sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "303", "", "", "", "");
+        var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "303");
 
         parent.showMessage(sap, 10, 'S', sMsg);
 
@@ -179,7 +179,7 @@
      * @return {Array} 
      * - 붙여 넣을 영역에 해당하는 Copy 데이터들 수집하여 리턴
      ************************************************************************/
-    oAPP.fn.getCopyData = function (sTarget) {
+    oAPP.fn.getCopyData = function(sTarget) {
 
         var FS = parent.FS,
             sClipboardJsonPath = parent.getPath("CLIPBOARD"),
@@ -236,7 +236,7 @@
      * - true  : 해당 영역에 저장된 UI 정보가 있을 경우.
      * - false : 해당 영역에 저장된 UI 정보가 없을 경우.
      ************************************************************************/
-    oAPP.fn.isExistsCopyData = function (sAreaKey) {
+    oAPP.fn.isExistsCopyData = function(sAreaKey) {
 
         var aCopyData = oAPP.fn.getCopyData(sAreaKey);
 
@@ -251,7 +251,7 @@
     /************************************************************************
      * ws의 설정 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.getSettingsInfo = function () {
+    oAPP.fn.getSettingsInfo = function() {
 
         // Browser Window option
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
@@ -269,7 +269,7 @@
     /************************************************************************
      * UI5로 만든 Window Menu를 닫는다.
      ************************************************************************/
-    oAPP.fn.fnWindowMenuClose = function () {
+    oAPP.fn.fnWindowMenuClose = function() {
 
         var $oWMenu = $(".u4aWsWindowMenu"),
             iMenuLength = $oWMenu.length;
@@ -301,7 +301,7 @@
     /************************************************************************
      * U4A R&D 여부
      ************************************************************************/
-    oAPP.fn.fnIsStaff = function () {
+    oAPP.fn.fnIsStaff = function() {
 
         var oUserInfo = parent.getUserInfo(),
             sUserId = oUserInfo.ID.toUpperCase();
@@ -321,7 +321,7 @@
     /************************************************************************
      * 현재 화면에 Open 된 Dialog가 있는지 여부 확인
      ************************************************************************/
-    oAPP.fn.fnCheckIsDialogOpen = function () {
+    oAPP.fn.fnCheckIsDialogOpen = function() {
 
         var $oDialog = $(".sapMDialogOpen"),
             iDialogLength = $oDialog.length;
@@ -337,7 +337,7 @@
     /************************************************************************
      * SAP Icon Image 경로를 주는 펑션
      ************************************************************************/
-    oAPP.fn.fnGetSapIconPath = function (sIcon) {
+    oAPP.fn.fnGetSapIconPath = function(sIcon) {
 
         if (sIcon == null) {
             return;
@@ -349,278 +349,10 @@
 
     }; // end of oAPP.fn.fnGetSapIconPath
 
-    // /************************************************************************
-    //  * Application Save & Activate
-    //  ************************************************************************/
-    // oAPP.fn.fnSetAppSaveAndActivate = function(oEvent) {
-
-    //     var ISACT = oEvent.getParameter("ISACT"), // 저장 하고 activate 할 경우
-    //         ISBACK = oEvent.getParameter("ISBACK"), // 저장후 뒤로 갈 경우 (20 -> 10)
-    //         ISDISP = oEvent.getParameter("ISDISP"), // 저장후 Display 모드로 전환일 경우
-    //         TRKORR = oEvent.getParameter("TRKORR"); // CTS 번호
-
-    //     var sPath = parent.getServerPath() + '/saveappdata',
-    //         oFormData = new FormData();
-
-    //     if (ISACT) {
-    //         oFormData.append("IS_ACT", ISACT);
-    //     }
-
-    //     if (TRKORR) {
-    //         oFormData.append("TRKORR", TRKORR);
-    //     }
-
-    //     oFormData.append("APPDATA", JSON.stringify(oAPP.fn.getSaveData()));
-
-    //     // Ajax 서버 호출
-    //     sendAjax(sPath, oFormData, lf_getAppInfo);
-
-    //     // 서버 호출 callback
-    //     function lf_getAppInfo(DATA) {
-
-    //         // 푸터 메시지가 있을 경우 닫기
-    //         oAPP.common.fnHideFloatingFooterMsg();
-
-    //         // Multi Footer 메시지 영역이 있으면 삭제.
-    //         oAPP.events.fnPressMultiFooterMsgCloseBtn();
-
-    //         // 저장후 10번 페이지로 이동이면..
-    //         if (ISBACK == 'X') {
-
-    //             oAPP.fn.fnMoveToWs10();
-
-    //             return;
-    //         }
-
-    //         // Busy 끄기
-    //         parent.setBusy('');
-
-    //         // 오류 일 경우..
-    //         if (DATA.RETCD != 'S') {
-
-    //             // 오류 처리..
-    //             parent.showMessage(sap, 20, 'E', DATA.RTMSG);
-    //             return;
-    //         }
-
-    //         // change Flag 초기화
-    //         var oAppInfo = jQuery.extend(true, {}, parent.getAppInfo());
-    //         oAppInfo.IS_CHAG = '';
-
-    //         var sMsg = "";
-
-    //         // Activate를 누른경우 ISACT 플래그 변경
-    //         if (ISACT == 'X') {
-
-    //             oAppInfo.ACTST = 'A';
-    //             sMsg = oAPP.common.fnGetMsgClsTxt("031"); // "Activity success"
-
-    //         } else {
-
-    //             sMsg = oAPP.common.fnGetMsgClsTxt("002"); // "Saved success"
-
-    //         }
-
-    //         // WS20 페이지 Lock 풀고 Display Mode로 전환
-    //         if (ISDISP == 'X') {
-
-    //             oAPP.fn.fnSetAppDisplayMode();
-    //             return;
-    //         }
-
-    //         oAPP.common.fnShowFloatingFooterMsg('S', "WS20", sMsg);
-
-    //         /**
-    //          * APP 정보 갱신
-    //          */
-    //         parent.setAppInfo(oAppInfo);
-
-    //         oAppInfo = jQuery.extend(true, {}, parent.getAppInfo());
-
-    //         oAPP.common.fnSetModelProperty("/WS20/APP", oAppInfo);
-
-    //     } // end of lf_getAppInfo
-
-    // }; // end of oAPP.fn.fnSetAppSaveAndActivate
-
-    // /************************************************************************
-    //  * 패키지 정보를 확인하여 cts 대상 인지 아닌지 체크한다.
-    //  ************************************************************************/
-    // oAPP.fn.fnCheckAssignPackageAndCts = function(oEvent) {
-
-    //     return new Promise(function(resolve, reject) {
-
-    //         debugger;
-
-    //         var oEvent = this;
-
-    //         var sPath = parent.getServerPath() + '/chkpackage',
-    //             oFormData = new FormData();
-
-    //         var o0010 = oAPP.DATA.APPDATA.S_0010,
-    //             sPackg = o0010.PACKG;
-
-    //         oFormData.append("PACKG", sPackg);
-
-    //         // Ajax 서버 호출
-    //         sendAjax(sPath, oFormData, function(oResult) {
-
-    //             debugger;
-
-    //             parent.setBusy('X');
-
-    //             // 오류가 존재 한다면..
-    //             if (oResult.ERFLG == "X") {
-
-    //                 // 오류 메시지 출력..
-    //                 parent.showMessage(sap, 20, "E", oResult.ERMSG);
-
-    //                 // true: next 프로세스 실행, false: 실행 중지
-    //                 resolve(false);
-
-    //                 return;
-
-    //             }
-
-    //             // 패키지가 local 패키지 일 경우
-    //             if (oResult.ISLOCAL == "X") {
-
-    //                 // true: next 프로세스 실행, false: 실행 중지
-    //                 resolve(true);
-
-    //                 return;
-    //             }
-
-    // CTS Popup을 Open 한다.
-    // oAPP.fn.fnCtsPopupOpener(function(oResult) {
-
-    //     debugger;
-
-    //     var oEvent = this;
-
-    //     oEvent.mParameters.TRKORR = oResult.TRKORR;
-
-    //     // true: next 프로세스 실행, false: 실행 중지
-    //     resolve(true);
-
-    // }.bind(oEvent));
-
-    //         });
-
-    //     }.bind(oEvent));
-
-    // }; // end of oAPP.fn.fnCheckAssignPackageAndCts
-
-    // /************************************************************************
-    //  * 패키지 확인(local인지 아닌지...)
-    //  ************************************************************************/
-    // oAPP.fn.fnCheckIsLocalPackage = function (sPackg) {
-
-    //     return new Promise(function (resolve, reject) {
-
-    //         debugger;
-
-    //         var sPath = parent.getServerPath() + '/chkpackage',
-    //             oFormData = new FormData();
-
-    //         var o0010 = oAPP.DATA.APPDATA.S_0010,
-    //             sPackg = o0010.PACKG;
-
-    //         oFormData.append("PACKG", sPackg);
-
-    //         // Ajax 서버 호출
-    //         sendAjax(sPath, oFormData, function (oResult) {
-
-    //             debugger;
-
-    //             parent.setBusy('X');
-
-    //             resolve(oResult);                
-
-    //         });
-
-    //     });
-
-    // }; // end of oAPP.fn.fnCheckIsLocalPackage
-
-    // /************************************************************************
-    //  * Application ABAP Syntax Check
-    //  ************************************************************************/
-    // oAPP.fn.fnCheckAppSyntax = function() {
-
-    //     // syntax 점검 결과 리턴
-    //     var lf_result = function(oResult) {
-
-    //         var resolve = this;
-
-    //         if (oResult.RETCD == "S") {
-
-    //             // true: 오류가 존재함, false: 오류 없음
-    //             resolve(false);
-    //             return;
-
-    //         }
-
-    //         // 푸터에 오류 리스트를 출력한다.
-    //         oAPP.fn.fnMultiFooterMsg(oResult.DATA);
-
-    //         // true: 오류가 존재함, false: 오류 없음
-    //         resolve(true);
-
-    //     }; // end of lf_result
-
-    //     return new Promise(function(resolve, reject) {
-
-    //         var sPath = parent.getServerPath() + '/chk_ws_syntx',
-    //             oFormData = new FormData();
-
-    //         // 저장할 전체 데이터를 가지고 syntax 점검을 한다.
-    //         var oAPPDATA = oAPP.fn.getSaveData(),
-    //             sAppdataJson = JSON.stringify(oAPPDATA);
-
-    //         oFormData.append("APPDATA", sAppdataJson);
-
-    //         // Ajax 서버 호출
-    //         sendAjax(sPath, oFormData, lf_result.bind(resolve));
-
-    //     });
-
-    // }; // end of oAPP.fn.fnCheckAppSyntax
-
-    // /************************************************************************
-    //  * 서버에서 eval 처리 하는 CTS Popup Open 공통 펑션
-    //  ************************************************************************/
-    // oAPP.fn.fnCtsPopup = function (oEvent) {
-
-    //     debugger;
-
-    //     var lo_Event = oEvent;
-
-    //     // CTS Popup을 Open 한다.
-    //     oAPP.fn.fnCtsPopupOpener(function (oResult) {
-
-    //         debugger;
-
-    //         var oEvent = this,
-    //             IS_ACT = oEvent.getParameter("IS_ACT");
-
-    //         oEvent.mParameters.TRKORR = oResult.TRKORR;
-
-    //         if (IS_ACT == 'X') {
-    //             oAPP.events.ev_pressActivateBtn(IS_ACT);
-    //             return;
-    //         }
-
-    //         oAPP.events.ev_pressSaveBtn(oEvent);
-
-    //     }.bind(lo_Event));
-
-    // }; // end of oAPP.fn.fnCtsPopup
-
     /************************************************************************
      * WS20의 Change or Display 모드에 따른 UI 보이기 숨기기 bindProperty function
      ************************************************************************/
-    oAPP.fn.fnUiVisibleBinding = function (bIsDispMode) {
+    oAPP.fn.fnUiVisibleBinding = function(bIsDispMode) {
 
         if (bIsDispMode == null) {
             return false;
@@ -635,9 +367,9 @@
     /************************************************************************
      * BIND 대상 모델 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.fnGetBindAttrData = function () {
+    oAPP.fn.fnGetBindAttrData = function() {
 
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
 
             var sServerUrl = parent.getServerPath() + '/getBindAttrData',
                 oAppInfo = parent.getAppInfo(),
@@ -645,7 +377,7 @@
 
             oFormData.append("CLSNM", oAppInfo.CLSID);
 
-            sendAjax(sServerUrl, oFormData, function (oRes) {
+            sendAjax(sServerUrl, oFormData, function(oRes) {
 
                 parent.setBusy('');
 
@@ -660,7 +392,7 @@
     /************************************************************************
      * Dom 정보의 변화를 감지
      ************************************************************************/
-    oAPP.fn.fnSetMutationObserver = function () {
+    oAPP.fn.fnSetMutationObserver = function() {
 
         // sap-ui-static 영역만 감지한다.
         var oSapUiStatic = document.getElementById("sap-ui-static");
@@ -669,7 +401,7 @@
         }
 
         // 감시자 인스턴스 만들기
-        var observer = new MutationObserver(function (mutations) {
+        var observer = new MutationObserver(function(mutations) {
 
             // Dialog 가 Open 되면 child window 전체를 숨긴다.
             var $oOpendDialog = $(".sapMDialogOpen");
@@ -745,7 +477,7 @@
             illustrationType: sIllustType,
             additionalContent: new sap.m.Button({
                 text: "OK",
-                press: function () {
+                press: function() {
 
                     let oIllustMsg = sap.ui.getCore().byId("illustMsg");
                     if (oIllustMsg) {
@@ -767,7 +499,7 @@
                 oMsg
             ],
             escapeHandler: () => {}, // esc 키 방지
-            afterClose: function () {
+            afterClose: function() {
 
                 let oIllustMsg = sap.ui.getCore().byId("illustMsg");
                 if (oIllustMsg) {
@@ -793,9 +525,9 @@
             return bIsTrial;
         }
 
-        var sTitle = "Trial Version",
-            sDesc = "Does not Support in this Trial Version.",
-            sIllustType = "tnt-Lock",
+        var sTitle = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C85"), // Trial Version
+            sDesc = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "311"); // Does not Support in this Trial Version.
+        sIllustType = "tnt-Lock",
             sIllustSize = sap.m.IllustratedMessageSize.Spot;
 
         oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize);
@@ -865,7 +597,7 @@
                     }).addStyleClass("sapUiTinyMarginBegin"),
 
                     new sap.m.Title({
-                        text: "Server Information"
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C42") // Server Information
                     })
                 ]
             }),
@@ -891,8 +623,8 @@
 
                                 new sap.ui.layout.form.FormElement({
                                     label: new sap.m.Label({
-                                        design: "Bold",
-                                        text: "WS Ver"
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C43") // WS Version
                                     }), // end of label
 
                                     fields: [
@@ -905,8 +637,8 @@
 
                                 new sap.ui.layout.form.FormElement({
                                     label: new sap.m.Label({
-                                        design: "Bold",
-                                        text: "Client"
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C44") // Client
                                     }), // end of label
 
                                     fields: [
@@ -919,8 +651,8 @@
 
                                 new sap.ui.layout.form.FormElement({
                                     label: new sap.m.Label({
-                                        design: "Bold",
-                                        text: "System ID"
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C45") // System ID
                                     }), // end of label
 
                                     fields: [
@@ -933,12 +665,12 @@
 
                                 new sap.ui.layout.form.FormElement({
                                     label: new sap.m.Label({
-                                        design: "Bold",
-                                        text: "USER"
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C46"), // USER
                                     }), // end of label
 
                                     fields: [
-                                        new sap.m.Text().bindProperty("text", "/USERINFO/ID", function (sId) {
+                                        new sap.m.Text().bindProperty("text", "/USERINFO/ID", function(sId) {
 
                                             if (typeof sId !== "string") {
                                                 return "";
@@ -953,8 +685,8 @@
 
                                 new sap.ui.layout.form.FormElement({
                                     label: new sap.m.Label({
-                                        design: "Bold",
-                                        text: "Language"
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C47") // Language
                                     }), // end of label
 
                                     fields: [
@@ -967,8 +699,8 @@
 
                                 new sap.ui.layout.form.FormElement({
                                     label: new sap.m.Label({
-                                        design: "Bold",
-                                        text: "Host"
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C48") // Host
                                     }), // end of label
 
                                     fields: [
@@ -1008,89 +740,89 @@
 
     }; // end of oAPP.fn.fnWs20SideFIXITM_10
 
-    /************************************************************************
-     * 서버 호스트 등록 여부 체크
-     ************************************************************************/
-    oAPP.fn.fnCheckServerHost = () => {
+    // /************************************************************************
+    //  * 서버 호스트 등록 여부 체크
+    //  ************************************************************************/
+    // oAPP.fn.fnCheckServerHost = () => {
 
-        parent.setBusy("X");
+    //     parent.setBusy("X");
 
-        let sServerHost = parent.getServerHost(),
-            sServerPath = parent.getServerPath(),
-            oUserInfo = parent.getUserInfo(),
-            sUrl = `${sServerPath}/ping_check?sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.MANDT}&sap-language=${oUserInfo.LANGU}`;
+    //     let sServerHost = parent.getServerHost(),
+    //         sServerPath = parent.getServerPath(),
+    //         oUserInfo = parent.getUserInfo(),
+    //         sUrl = `${sServerPath}/ping_check?sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.MANDT}&sap-language=${oUserInfo.LANGU}`;
 
-        var xhr = new XMLHttpRequest();
-        xhr.withCredentials = true;
+    //     var xhr = new XMLHttpRequest();
+    //     xhr.withCredentials = true;
 
-        // ajax call 실패 할 경우
-        xhr.onerror = function () {
+    //     // ajax call 실패 할 경우
+    //     xhr.onerror = function() {
 
-            var sTitle = "Host File Check",
-                sIllustType = "sapIllus-SimpleReload",
-                sIllustSize = "Dialog",
-                sDesc = "호스트를 등록하세요!!\n\n";
+    //         var sTitle = "Host File Check",
+    //             sIllustType = "sapIllus-SimpleReload",
+    //             sIllustSize = "Dialog",
+    //             sDesc = "호스트를 등록하세요!!\n\n";
 
-            sDesc += "Server Host : " + sServerHost;
+    //         sDesc += "Server Host : " + sServerHost;
 
-            oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, () => {
+    //         oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, () => {
 
-                fn_logoff_success("X");
+    //             fn_logoff_success("X");
 
-            });
+    //         });
 
-            parent.setBusy("");
+    //         parent.setBusy("");
 
-        };
+    //     };
 
-        xhr.onreadystatechange = function (a, b, c, d, e) { // 요청에 대한 콜백         
+    //     xhr.onreadystatechange = function(a, b, c, d, e) { // 요청에 대한 콜백         
 
-            if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
-                if (xhr.status === 200 || xhr.status === 201) {
+    //         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
+    //             if (xhr.status === 200 || xhr.status === 201) {
 
-                    let u4a_status = xhr.getResponseHeader("u4a_status");
-                    if (u4a_status) {
+    //                 let u4a_status = xhr.getResponseHeader("u4a_status");
+    //                 if (u4a_status) {
 
-                        parent.setBusy("");
+    //                     parent.setBusy("");
 
-                        oAPP.common.fnSetBusyDialog(false);
+    //                     APPCOMMON.fnSetBusyDialog(false);
 
-                        try {
-                            var oResult = JSON.parse(xhr.response);
-                        } catch (error) {
-                            fnJsonParseError(error);
-                            return;
-                        }
+    //                     try {
+    //                         var oResult = JSON.parse(xhr.response);
+    //                     } catch (error) {
+    //                         fnJsonParseError(error);
+    //                         return;
+    //                     }
 
-                        // 잘못된 url 이거나 지원하지 않는 기능 처리
-                        oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, oResult);
+    //                     // 잘못된 url 이거나 지원하지 않는 기능 처리
+    //                     APPCOMMON.fnUnsupportedServiceUrlCall(u4a_status, oResult);
 
-                        return;
-                    }
+    //                     return;
+    //                 }
 
-                    parent.setBusy("");
+    //                 parent.setBusy("");
 
-                }
-            }
+    //             }
+    //         }
 
-        };
+    //     };
 
-        try {
+    //     try {
 
-            xhr.open('GET', sUrl, true);
+    //         xhr.open('GET', sUrl, true);
 
-            xhr.send();
+    //         xhr.send();
 
-        } catch (e) {
+    //     } catch (e) {
 
-            parent.showMessage(null, 99, "E", e.message);
+    //         parent.showMessage(null, 99, "E", e.message);
 
-            parent.setBusy("");
+    //         parent.setBusy("");
 
-            return;
+    //         return;
 
-        }
-      
-    }; // end of oAPP.fn.fnCheckServerHost
+    //     }
+
+    // }; // end of oAPP.fn.fnCheckServerHost
 
 })(window, $, oAPP);

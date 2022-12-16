@@ -497,13 +497,13 @@
         // 특수문자 존재 여부 체크
         var reg = /[^\w]/;
         if (reg.test(sValue)) {
-            oRetData.RETMSG = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "278", "", "", "", ""); // Special characters are not allowed.
+            oRetData.RETMSG = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "278"); // Special characters are not allowed.
             return oRetData;
         }
 
         // AppID 자릿수가 15 이상일 경우 오류
         if (sValue.length > oAPP.attr.iAppNameMaxLength) {
-            oRetData.RETMSG = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "115", "", "", "", ""); // Application ID can only be 15 characters or less !!  
+            oRetData.RETMSG = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "115"); // Application ID can only be 15 characters or less !!  
             return oRetData;
         }
 
@@ -515,14 +515,12 @@
         // Application 명 시작이 Z 이나 Y로 시작하는지 확인한다.
         if (!bIsStartZ && !bIsStartY) {
 
-            oRetData.RETMSG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "009", "", "", "", ""); // The application ID must start with Z or Y.
+            oRetData.RETMSG = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "009"); // The application ID must start with Z or Y.
             return oRetData;
         }
 
-
-
-
         oRetData.RETCD = true;
+        
         return oRetData;
 
     }; // end of oAPP.fn.fnCheckValidAppName
@@ -604,8 +602,9 @@
 
             oAPP.fn.setUIAreaEditable(); // Change Mode 모드로 변환
 
-            // 푸터 메시지 처리                        
-            var sMsg = APPCOMMON.fnGetMsgClsTxt("020"); // "Switch to edit mode."
+            // 푸터 메시지 처리                                  
+            var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "020"); // Switch to edit mode.
+
             APPCOMMON.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
 
         }
@@ -644,7 +643,7 @@
             // 현재 떠있는 Electron Browser들 전체 닫는 function
             oAPP.fn.fnChildWindowClose();
 
-            var sMsg = APPCOMMON.fnGetMsgClsTxt("020"); // "Switch to display mode."
+            var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "020"); // Switch to edit mode.
 
             // 푸터 메시지 처리
             APPCOMMON.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);

@@ -972,7 +972,7 @@
                     min: 0,
                     width: "100%",
                     enabled: "{enabled}"
-                })                
+                })
 
             }).bindProperty("visible", `${C_TMPL_BIND_ROOT}/${C_TMPL_WZD1_ID}/TREEVISI`, function(bIsVisi) {
                 return !bIsVisi;
@@ -1105,7 +1105,7 @@
                     width: "100%",
                     enabled: "{enabled}"
                 })
-                
+
             }),
 
             new sap.ui.table.Column({
@@ -1234,7 +1234,7 @@
                     min: 0,
                     width: "100%",
                     enabled: "{enabled}"
-                })                
+                })
             }),
 
             new sap.ui.table.Column({
@@ -1430,11 +1430,11 @@
                     design: EnumLabelDesignBold
                 }),
                 template: new sap.m.StepInput({
-                        value: "{POSIT}",
-                        min: 0,
-                        width: "100%",
-                        enabled: "{enabled}"
-                    })                    
+                    value: "{POSIT}",
+                    min: 0,
+                    width: "100%",
+                    enabled: "{enabled}"
+                })
 
             }).bindProperty("visible", `${C_TMPL_BIND_ROOT}/${C_TMPL_WZD3_ID}/TREEVISI`, function(bIsVisi) {
                 return !bIsVisi;
@@ -2484,8 +2484,10 @@
                 RETCD: "",
                 RETMSG: ""
             },
-
-            sErrorMsg = oAPP.common.fnGetMsgClsTxt("050", "parent, child"), // "parent, child is required."
+            
+            sParTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B76"), // Parent
+            sChildTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B77"), // Child
+            sErrorMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "050", sParTxt + ", " + sChildTxt), // & is required.
 
             // parent, child 선택 여부 확인
             oFind1 = aSelectRows.find(element => element.PARENT == "X");
@@ -3259,8 +3261,8 @@
         if (oTableResult.RETCD && oTableResult.RETCD == "E") {
             parent.showMessage(sap, 10, "E", oTableResult.RTMSG);
             return;
-        }        
-    
+        }
+
         let oResult = {
             uName: "ReportTemplate",
             oSearch: oFormResult,

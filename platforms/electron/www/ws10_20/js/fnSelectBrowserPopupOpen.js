@@ -8,6 +8,9 @@
 (function(window, $, oAPP) {
     "use strict";
 
+    const
+        APPCOMMON = oAPP.common;
+
     oAPP.fn.fnSelectBrowserPopupOpen = function() {
 
         var FS = parent.FS,
@@ -26,7 +29,7 @@
             // 개인화 정보
             oP13nData = JSON.parse(sP13nJsonData);
 
-        oAPP.common.fnSetModelProperty("/DEFBR", oP13nData[sSysID].DEFBR);
+        APPCOMMON.fnSetModelProperty("/DEFBR", oP13nData[sSysID].DEFBR);
 
         var oDialog = sap.ui.getCore().byId("selBrwsDlg");
 
@@ -89,23 +92,23 @@
                     }),
 
                     new sap.m.Title({
-                        text : "Select Default Browser"
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C99"), // Select Default Browser
                     }).addStyleClass("sapUiTinyMarginBegin"),
 
                     new sap.m.ToolbarSpacer(),
 
                     new sap.m.Button({
                         icon: "sap-icon://decline",
-                        press: function(){
+                        press: function() {
 
                             var oDialog = sap.ui.getCore().byId("selBrwsDlg");
-                            if(oDialog == null){
+                            if (oDialog == null) {
                                 return;
                             }
 
-                            if(oDialog.isOpen()){
+                            if (oDialog.isOpen()) {
                                 oDialog.close();
-                            }                           
+                            }
 
                         }
                     })
@@ -155,7 +158,7 @@
             // 개인화 정보
             oP13nData = JSON.parse(sP13nJsonData);
 
-        oP13nData[sSysID].DEFBR = oAPP.common.fnGetModelProperty("/DEFBR");
+        oP13nData[sSysID].DEFBR = APPCOMMON.fnGetModelProperty("/DEFBR");
 
         FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData));
 

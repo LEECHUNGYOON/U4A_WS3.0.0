@@ -44,8 +44,7 @@
 
             if (oAppInfo.MSGTY == "") {
 
-                // var sMsg = parent.getMessage("002");
-                var sMsg = APPCOMMON.fnGetMsgClsTxt("035"); // "It is already registered application information."
+                var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "035"); // It is already registered application information.
 
                 // 페이지 푸터 메시지			
                 APPCOMMON.fnShowFloatingFooterMsg("E", "WS10", sMsg);
@@ -133,10 +132,9 @@
             }
 
             // 질문 메시지
-            var sMsg = APPCOMMON.fnGetMsgClsTxt("003"); // Do you really want to delete the object?
+            var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "003"); // Do you really want to delete the object?
 
-            // 질문팝업? 삭제하시겠습니까?
-            // parent.showMessage(sap, 30, 'W', sMsg, oAPP.events.ev_pressWebSecurityDelCB);
+            // 질문팝업? 삭제하시겠습니까?            
             parent.showMessage(sap, 30, 'W', sMsg, function(TYPE) {
 
                 if (TYPE == null || TYPE == "NO") {
@@ -404,7 +402,7 @@
                 // 작업표시줄 깜빡임
                 oCurrWin.flashFrame(true);
 
-                var sMsg = APPCOMMON.fnGetMsgClsTxt("031"); // "Only in activity state !!!"
+                var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "031"); // Only in activity state !!!
 
                 // 페이지 푸터 메시지
                 APPCOMMON.fnShowFloatingFooterMsg("W", sCurrPage, sMsg);
@@ -486,7 +484,7 @@
                 // 작업표시줄 깜빡임
                 oCurrWin.flashFrame(true);
 
-                var sMsg = APPCOMMON.fnGetMsgClsTxt("031"); // "Only in activity state !!!"
+                var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "031"); // Only in activity state !!!
 
                 // 페이지 푸터 메시지
                 APPCOMMON.fnShowFloatingFooterMsg("W", sCurrPage, sMsg);
@@ -605,8 +603,8 @@
 
         // Unsaved data will be lost.
         // Do you want to log off?
-        var sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "301", "", "", "", "");
-        sMsg += " \n " + oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "302", "", "", "", "");
+        var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "301");
+        sMsg += " \n " + APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "302");
 
         // 질문 팝업?
         parent.showMessage(sap, 30, 'I', sMsg, lf_MsgCallback);
@@ -666,8 +664,8 @@
         }
 
         var sMsg = "";
-        sMsg = APPCOMMON.fnGetMsgClsTxt("118"); // "Application has been changed"
-        sMsg += " \n " + APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"    
+        sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "118"); // Application has been changed
+        sMsg += " \n " + APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "119"); // Save before leaving editor?
 
         // 메시지 질문 팝업을 띄운다.
         parent.showMessage(sap, 40, 'W', sMsg, oAPP.events.ev_pageBack_MsgCallBack);
@@ -779,7 +777,8 @@
             // Syntax 오류가 없다면 메시지 처리 후 빠져나간다.
             if (oResult.RETCD != "E") {
 
-                var sMsg = APPCOMMON.fnGetMsgClsTxt("027"); // "No syntax errors found"
+                var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "027"); // No syntax errors found
+
                 APPCOMMON.fnShowFloatingFooterMsg('S', sCurrPage, sMsg);
 
                 parent.setBusy("");
@@ -816,8 +815,8 @@
                 APPCOMMON.fnIsChildWindowShow(false);
 
                 var sMsg = "";
-                sMsg = APPCOMMON.fnGetMsgClsTxt("118"); // "Application has been changed"
-                sMsg += " \n " + APPCOMMON.fnGetMsgClsTxt("119"); // "Save before leaving editor?"
+                sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "118"); // Application has been changed
+                sMsg += " \n " + APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "119"); // Save before leaving editor?
 
                 parent.showMessage(sap, 40, 'W', sMsg, lf_MsgCallback);
                 return;
@@ -984,8 +983,10 @@
 
                 }
 
+                var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "312"); // A Critical error has occurred.
+
                 // Footer Msg 출력
-                APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", "Critical Error!");
+                APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", sMsg);
 
                 return;
 
@@ -1023,7 +1024,7 @@
 
             oAppInfo.ACTST = 'A';
 
-            var sMsg = APPCOMMON.fnGetMsgClsTxt("032"); // "Activity success"
+            var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "032"); // Activity success
 
             APPCOMMON.fnShowFloatingFooterMsg('S', sCurrPage, sMsg);
 
@@ -1141,7 +1142,7 @@
             oAppInfo.IS_CHAG = '';
 
             var sMsg = "";
-            sMsg = APPCOMMON.fnGetMsgClsTxt("002"); // "Saved success"      
+            sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "002"); // Saved success
 
             APPCOMMON.fnShowFloatingFooterMsg('S', sCurrPage, sMsg);
 
@@ -1199,7 +1200,7 @@
         // Inactivate 상태일 경우 실행하지 않는다
         if (sACTST == 'I') {
 
-            sMsg = APPCOMMON.fnGetMsgClsTxt("031"); // "Only in activity state !!!"
+            sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "031"); // Only in activity state !!! 
 
             // 페이지 푸터 메시지
             APPCOMMON.fnShowFloatingFooterMsg("W", sCurrPage, sMsg);
@@ -1224,7 +1225,7 @@
         // Inactivate 상태일 경우 실행하지 않는다
         if (sACTST == 'I') {
 
-            sMsg = APPCOMMON.fnGetMsgClsTxt("031"); // "Only in activity state !!!"
+            sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "031"); // Only in activity state !!!
 
             // 페이지 푸터 메시지
             APPCOMMON.fnShowFloatingFooterMsg("W", sCurrPage, sMsg);

@@ -5,7 +5,7 @@
  * - file Desc : Mime Repository Dialog Popup
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -14,32 +14,33 @@
         APP = parent.APP,
         FS = REMOTE.require('fs'),
         DIALOG = REMOTE.dialog,
-        SHELL = REMOTE.shell;
+        SHELL = REMOTE.shell,
+        APPCOMMON = oAPP.common;
 
     const
         C_DIALOG_ID = "u4aMimeTreeDlg";
 
     var oAppInfo;
 
-    oAPP.fn.fnMimePopupOpen = function () {
+    oAPP.fn.fnMimePopupOpen = function() {
 
-        if(oAppInfo){
+        if (oAppInfo) {
             oAppInfo = undefined;
         }
 
-        let oWs20App = oAPP.common.fnGetModelProperty("/WS20/APP");
-        if(oWs20App){
+        let oWs20App = APPCOMMON.fnGetModelProperty("/WS20/APP");
+        if (oWs20App) {
             oAppInfo = jQuery.extend(true, {}, oWs20App);
         }
 
-        let oWs30App = oAPP.common.fnGetModelProperty("/WS30/APP");
-        if(oWs30App){
+        let oWs30App = APPCOMMON.fnGetModelProperty("/WS30/APP");
+        if (oWs30App) {
             oAppInfo = jQuery.extend(true, {}, oWs30App);
-            oAPP.common.fnSetModelProperty("/WS20", {});
+            APPCOMMON.fnSetModelProperty("/WS20", {});
         }
 
         // 푸터 메시지가 있을 경우 닫기
-        oAPP.common.fnHideFloatingFooterMsg();
+        APPCOMMON.fnHideFloatingFooterMsg();
 
         var oMimeInfo = {
             URL: "",
@@ -54,9 +55,9 @@
         };
 
         // Mime 관련 Default 모델 데이터 초기 세팅
-        oAPP.common.fnSetModelProperty("/WS20/MIME", oMimeInfo); // Mime File 정보	
-        oAPP.common.fnSetModelProperty("/WS20/MIMETREE", null); // Mime Tree Data	
-        oAPP.common.fnSetModelProperty("/WS20/MIMEDATA", oMimeData); // Mime File Data
+        APPCOMMON.fnSetModelProperty("/WS20/MIME", oMimeInfo); // Mime File 정보	
+        APPCOMMON.fnSetModelProperty("/WS20/MIMETREE", null); // Mime Tree Data	
+        APPCOMMON.fnSetModelProperty("/WS20/MIMEDATA", oMimeData); // Mime File Data
 
         // // Mime Tree Data 구하기        
         // oAPP.fn.fnGetMimeTreeData();
@@ -79,14 +80,14 @@
 
             // Mime Url Copy Button
             oUrlCopyBtn = new sap.m.Button({
-                text: "URL Copy",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C21"), // URL Copy
                 press: oAPP.events.ev_pressMimeUrlCopy.bind(this, oUrlInput)
             }),
 
             // Mime Create Date
             oCreateDateInput = new sap.m.Input({
                 editable: false
-            }).bindProperty("value", "/WS20/MIME/ERDAT", function (value) {
+            }).bindProperty("value", "/WS20/MIME/ERDAT", function(value) {
 
                 if (value == null || value == "") {
                     return;
@@ -107,7 +108,7 @@
             // Mime Create Time
             oCreateTimeInput = new sap.m.Input({
                 editable: false
-            }).bindProperty("value", "/WS20/MIME/ERZET", function (value) {
+            }).bindProperty("value", "/WS20/MIME/ERZET", function(value) {
 
                 if (!value || value == "") {
                     return;
@@ -140,11 +141,11 @@
                         formElements: [
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "URL"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C18"), // URL
                                 }),
                                 fields: new sap.m.HBox({
-                                    renderType: "Bare",
+                                    renderType: sap.m.FlexRendertype.Bare,
                                     items: [
                                         oUrlInput,
                                         oUrlCopyBtn
@@ -153,11 +154,11 @@
                             }),
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Create"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"), // Create
                                 }),
                                 fields: new sap.m.HBox({
-                                    renderType: "Bare",
+                                    renderType: sap.m.FlexRendertype.Bare,
                                     items: [
                                         oCreateDateInput,
                                         oCreateTimeInput,
@@ -171,7 +172,7 @@
             }),
 
             oMimePropPanel = new sap.m.Panel({
-                headerText: "Properties",
+                headerText: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C17"), // Properties
                 content: [
                     oMimeform
                 ],
@@ -195,7 +196,7 @@
                                 path: "/WS20/MIMEDATA/VISI"
                             },
                         ],
-                        formatter: function (CONT, VISI) {
+                        formatter: function(CONT, VISI) {
 
                             if (VISI != "IMAGE") {
                                 return;
@@ -206,7 +207,7 @@
                         }
 
                     })
-                    .bindProperty("visible", "/WS20/MIMEDATA/VISI", function (value) {
+                    .bindProperty("visible", "/WS20/MIMEDATA/VISI", function(value) {
 
                         if (value == "IMAGE") {
                             return true;
@@ -230,7 +231,7 @@
                                 path: "/WS20/MIMEDATA/VISI"
                             },
                         ],
-                        formatter: function (CONT, VISI) {
+                        formatter: function(CONT, VISI) {
 
                             if (VISI != "TEXT") {
                                 return;
@@ -240,7 +241,7 @@
 
                         }
                     })
-                    .bindProperty("visible", "/WS20/MIMEDATA/VISI", function (value) {
+                    .bindProperty("visible", "/WS20/MIMEDATA/VISI", function(value) {
 
                         if (value == "TEXT") {
                             return true;
@@ -253,15 +254,15 @@
                     new sap.m.HBox({
                         width: "100%",
                         height: "100%",
-                        alignItems: "Center",
-                        justifyContent: "Center",
+                        alignItems: sap.m.FlexAlignItems.Center,
+                        justifyContent: sap.m.FlexAlignItems.Center,
                         items: [
                             new sap.m.Title({
-                                text: "This file can't be previewed."
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "313"), // This file can't be previewed.
                             })
                         ]
                     })
-                    .bindProperty("visible", "/WS20/MIMEDATA/VISI", function (value) {
+                    .bindProperty("visible", "/WS20/MIMEDATA/VISI", function(value) {
 
                         // visible 값이 없으면 No data 화면을 보여준다.
                         if (!value || value == "") {
@@ -297,7 +298,7 @@
                     }),
 
                     new sap.m.Title({
-                        text: "U4A MIME Repository"
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C26"), // U4A MIME Repository
                     }).addStyleClass("sapUiTinyMarginBegin"),
 
                     new sap.m.ToolbarSpacer(),
@@ -330,7 +331,7 @@
                                 new sap.ui.layout.Splitter({
                                     height: "100%",
                                     width: "100%",
-                                    orientation: "Vertical",
+                                    orientation: sap.ui.core.Orientation.Vertical,
                                     contentAreas: [
                                         oMimePropPanel,
                                         oMimePage
@@ -345,11 +346,11 @@
             ],
 
             // Events
-            afterOpen: function () {
+            afterOpen: function() {
                 // Mime Tree Data 구하기        
                 oAPP.fn.fnGetMimeTreeData();
             },
-            afterClose: function (oEvent) {
+            afterClose: function(oEvent) {
 
                 var oDialog = oEvent.getSource();
                 oDialog.destroy();
@@ -377,13 +378,13 @@
     /************************************************************************
      * Mime Tree Data 구하기
      ************************************************************************/
-    oAPP.fn.fnGetMimeTreeData = function () {
+    oAPP.fn.fnGetMimeTreeData = function() {
 
         // var oAppInfo = parent.getAppInfo();
 
         // // WS20에 app 정보가 없다면 Usp App 정보를 가져온다.
         // if (!oAppInfo) {
-        //     oAppInfo = oAPP.common.fnGetModelProperty("/WS30/APP");
+        //     oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
         // }
 
         //MIME 데이터 구하기..
@@ -414,7 +415,7 @@
             // Mime Tree 데이터에 My APP 표시를 위한 플래그 지정
             oResult.MIMETREE = oAPP.fn.fnSetMimeTreeMyAppFlag(oResult.MIMETREE);
 
-            oAPP.common.fnSetModelProperty("/WS20/MIMETREE", oResult.MIMETREE);
+            APPCOMMON.fnSetModelProperty("/WS20/MIMETREE", oResult.MIMETREE);
 
             var oModel = sap.ui.getCore().getModel();
 
@@ -446,8 +447,11 @@
                 // 오류 사운드 실행
                 parent.setSoundMsg('02'); // sap sound(error)
 
-                //073   &1 does not exist.
-                parent.showMessage(sap, 10, "E", "Current MIME Folder does not exist.");
+                var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D00"); // Current
+                sMsg += " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A30"); // MIME Folder                
+                sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "196", sMsg); // &1 does not exist.
+
+                parent.showMessage(sap, 10, "E", sMsg);
 
             }
 
@@ -458,7 +462,7 @@
     /************************************************************************
      * Mime Tree 에서 현재 어플리케이션에 해당하는 폴더에 포커스 주고 노드를 펼친다.
      ************************************************************************/
-    oAPP.fn.fnSetMimeTreeExpandMyApp = function (oTreeTable) {
+    oAPP.fn.fnSetMimeTreeExpandMyApp = function(oTreeTable) {
 
         var iSelIdx = oTreeTable.getSelectedIndex();
         if (iSelIdx <= 0) {
@@ -522,7 +526,7 @@
     /************************************************************************
      * Mime Tree 데이터에 My APP 표시를 위한 플래그 지정
      ************************************************************************/
-    oAPP.fn.fnSetMimeTreeMyAppFlag = function (aMimeTree) {
+    oAPP.fn.fnSetMimeTreeMyAppFlag = function(aMimeTree) {
 
         var oMyApp = aMimeTree.find(arr => arr.MYAPP == 'X');
         if (!oMyApp) {
@@ -541,7 +545,7 @@
     /************************************************************************
      * Mime Tree 데이터에 My APP 표시를 위한 플래그 지정 재귀 호출 펑션
      ************************************************************************/
-    oAPP.fn.fnSetMimeTreeMyAppFlagRecursive = function (aMimeTree, sChildKey) {
+    oAPP.fn.fnSetMimeTreeMyAppFlagRecursive = function(aMimeTree, sChildKey) {
 
         var aChildren = aMimeTree.filter(arr => arr.PARENT == sChildKey),
             iChildCnt = aChildren.length;
@@ -565,12 +569,12 @@
     /************************************************************************
      * Mime Tree Table 인스턴스 구하기 
      ************************************************************************/
-    oAPP.fn.fnGetMimeTreeTable = function () {
+    oAPP.fn.fnGetMimeTreeTable = function() {
 
         var oTreeTable = new sap.ui.table.TreeTable("mimeTree", {
-            selectionMode: "Single",
-            selectionBehavior: "RowOnly",
-            visibleRowCountMode: "Auto",
+            selectionMode: sap.ui.table.SelectionMode.Single,
+            selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
+            visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
             layoutData: new sap.ui.layout.SplitterLayoutData({
                 size: "500px",
                 minSize: 500
@@ -578,8 +582,8 @@
             columns: [
                 new sap.ui.table.Column({
                     label: new sap.m.Label({
-                        text: "Object Name",
-                        design: "Bold"
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A50"), // Object Name
+                        design: sap.m.LabelDesign.Bold
                     }),
                     template: new sap.m.Text({
                         text: "{NTEXT}",
@@ -612,8 +616,8 @@
                 }),
                 new sap.ui.table.Column({
                     label: new sap.m.Label({
-                        text: "Description",
-                        design: "Bold"
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35"), // Description
+                        design: sap.m.LabelDesign.Bold
                     }),
                     template: new sap.m.Text({
                         text: "{MDESC}"
@@ -657,7 +661,7 @@
 
             beforeOpenContextMenu: oAPP.events.ev_MimeTreeTableContextMenu,
             rowSelectionChange: oAPP.events.ev_MimeTreeTableRowSelect,
-            firstVisibleRowChanged: function (oEvent) {
+            firstVisibleRowChanged: function(oEvent) {
 
                 var oTable = oEvent.getSource();
 
@@ -705,7 +709,7 @@
      * - 'X' : 현재 진입한 APP의 하위 Object 인 경우
      * - ''  : 현재 진입한 APP의 하위 Object 가 아닌 경우
      ************************************************************************/
-    oAPP.fn.fnMimeTreeTableBindingFormatter = function (MYAPP, TYPE, ZLEVEL, MYAPPCHILD) {
+    oAPP.fn.fnMimeTreeTableBindingFormatter = function(MYAPP, TYPE, ZLEVEL, MYAPPCHILD) {
 
         var oRow = this.getParent().getParent();
         if (!oRow) {
@@ -725,7 +729,7 @@
     /************************************************************************
      * mime tree의 binding 값을 확인하여 level, row별 css를 적용한다.
      * **********************************************************************/
-    oAPP.fn.fnMimeTreeTableRowCssApply = function (oRow) {
+    oAPP.fn.fnMimeTreeTableRowCssApply = function(oRow) {
 
         oRow.removeStyleClass("u4aMimeTreeMyApp");
         oRow.removeStyleClass("u4aMimeTreeDarkRow");
@@ -777,7 +781,7 @@
      * @param {Object} oTreeTable  
      * - Mime Tree Table Instance 
      ************************************************************************/
-    oAPP.fn.fnCommonMimeTreeTableExpand = function (oTreeTable) {
+    oAPP.fn.fnCommonMimeTreeTableExpand = function(oTreeTable) {
 
         var iSelIdx = oTreeTable.getSelectedIndex();
         if (iSelIdx == -1) {
@@ -835,7 +839,7 @@
      * @param {Object} oTreeTable  
      * - Mime Tree Table Instance 
      ************************************************************************/
-    oAPP.fn.fnCommonMimeTreeTableCollapse = function (oTreeTable) {
+    oAPP.fn.fnCommonMimeTreeTableCollapse = function(oTreeTable) {
 
         var iSelIdx = oTreeTable.getSelectedIndex();
         if (iSelIdx == -1) {
@@ -852,7 +856,7 @@
      * @param {Object} oTreeTable  
      * - Mime Tree Table Instance 
      ************************************************************************/
-    oAPP.fn.fnMimeTreeCreateFolder = function (oTreeTable) {
+    oAPP.fn.fnMimeTreeCreateFolder = function(oTreeTable) {
 
         var iIndex = oTreeTable.getSelectedIndex(),
             oCtx = oTreeTable.getContextByIndex(iIndex),
@@ -865,7 +869,7 @@
         };
 
         // MIME Folder 생성 팝업의 Input 초기 데이터 모델 세팅
-        oAPP.common.fnSetModelProperty("/WS20/MIMETREE/CRFLD", oMimeFolder);
+        APPCOMMON.fnSetModelProperty("/WS20/MIMETREE/CRFLD", oMimeFolder);
 
         var oDialog = sap.ui.getCore().byId("CrMimeFldDlg");
         if (oDialog) {
@@ -891,8 +895,8 @@
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 required: true,
-                                design: "Bold",
-                                text: "Folder Name"
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D01"), // Folder Name
                             }),
                             fields: new sap.m.Input({
                                 value: "{/WS20/MIMETREE/CRFLD/FLDNM}",
@@ -905,8 +909,8 @@
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 // required: true,
-                                design: "Bold",
-                                text: "Description"
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35"), // Description
                             }),
                             fields: new sap.m.Input({
                                 value: "{/WS20/MIMETREE/CRFLD/DESC}",
@@ -922,13 +926,16 @@
 
         });
 
+        var sTitle = "[U4A] " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A30"); // MIME Folder
+        sTitle += " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"); // Create
+
         // MIME Folder 생성 팝업
         var oCrMimeFldDlg = new sap.m.Dialog("CrMimeFldDlg", {
             draggable: true,
             resizable: true,
             contentWidth: "500px",
             contentHeight: "150px",
-            title: "[U4A] MIME Folder Create",
+            title: sTitle, // [U4A] MIME Folder Create
             titleAlignment: sap.m.TitleAlignment.Center,
             icon: "sap-icon://add-folder",
             buttons: [
@@ -959,10 +966,10 @@
      * @param {Object} oTreeTable  
      * - Mime Tree Table Instance 
      ************************************************************************/
-    oAPP.fn.fnMimeTreeDeleteObject = function (oTreeTable) {
+    oAPP.fn.fnMimeTreeDeleteObject = function(oTreeTable) {
 
         // 질문 팝업?	
-        var sMsg = "삭제 하시겠습니까?";
+        var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "003"); // Do you really want to delete the object?
 
         oAPP.fn.fnMimeCRUD_MessageBox(sMsg, oAPP.fn.fnMimeTreeDeleteCallback.bind(oTreeTable));
 
@@ -977,7 +984,7 @@
      * @param {Function} fnCallback
      * - MessageBox Callback
      ************************************************************************/
-    oAPP.fn.fnMimeCRUD_MessageBox = function (sMsg, fnCallback) {
+    oAPP.fn.fnMimeCRUD_MessageBox = function(sMsg, fnCallback) {
 
         parent.showMessage(sap, 30, 'I', sMsg, fnCallback);
 
@@ -990,7 +997,7 @@
      * - Mime 삭제 MessageBox의 삭제 실행, 취소에 대한 정보
      * - 'YES': 삭제 실행, 'CANCLE': 삭제 취소
      ************************************************************************/
-    oAPP.fn.fnMimeTreeDeleteCallback = function (oResult) {
+    oAPP.fn.fnMimeTreeDeleteCallback = function(oResult) {
 
         if (oResult == null || oResult != "YES") {
             return;
@@ -1049,7 +1056,7 @@
      * @param {Object} oResult  
      * - Mime 삭제 후 결과 정보 
      ************************************************************************/
-    oAPP.fn.fnMimeDeleteSuccess = function (oResult) {
+    oAPP.fn.fnMimeDeleteSuccess = function(oResult) {
 
         parent.setBusy('');
 
@@ -1083,10 +1090,10 @@
      * @param {Object} oTreeTable  
      * - Mime Tree table instance
      ************************************************************************/
-    oAPP.fn.fnMimeTreeAttachFiles = function (oTreeTable) {
+    oAPP.fn.fnMimeTreeAttachFiles = function(oTreeTable) {
 
         // 마임 첨부파일 정보 모델 초기화
-        oAPP.common.fnSetModelProperty("/WS20/MIMETREE/FILEATTACHES", null);
+        APPCOMMON.fnSetModelProperty("/WS20/MIMETREE/FILEATTACHES", null);
 
         var oAttachMimeDlg = sap.ui.getCore().byId("attachMimeDlg"),
             oAttachMimeFileUp = sap.ui.getCore().byId("mimeAttachFileup");
@@ -1100,25 +1107,27 @@
 
         var oFileUploadUI = oAPP.fn.fnGetMimeFileAttachUI(); // file upload 화면 구하기
 
+        var sTitle = "[U4A] " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C33"); // MIME File Attach
+
         // MIME File Attach 생성 팝업
         var oAttachMimeDlg = new sap.m.Dialog("attachMimeDlg", {
             draggable: true,
             resizable: true,
             contentWidth: "500px",
             contentHeight: "300px",
-            title: "[U4A] MIME File Attach",
+            title: sTitle, // [U4A] MIME File Attach
             titleAlignment: sap.m.TitleAlignment.Center,
             icon: "sap-icon://attachment",
             buttons: [
                 new sap.m.Button({
                     type: sap.m.ButtonType.Emphasized,
-                    text: "Save",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A64"), // Save
                     icon: "sap-icon://accept",
                     press: oAPP.events.ev_attachMimeDlgSaveEvent
                 }),
                 new sap.m.Button({
                     type: sap.m.ButtonType.Reject,
-                    text: "Cancel",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A41"), // Cancel
                     icon: "sap-icon://decline",
                     press: oAPP.events.ev_attachMimeDlgCloseEvent
                 }),
@@ -1136,7 +1145,7 @@
     /************************************************************************
      * MIME UPLOAD 팝업의 파일 첨부 및 첨부 결과 화면 만들기
      * **********************************************************************/
-    oAPP.fn.fnGetMimeFileAttachUI = function () {
+    oAPP.fn.fnGetMimeFileAttachUI = function() {
 
         var oFileUploader = oAPP.fn.fnGetMimeTreeFileAttachFileUploader(),
             oTable = oAPP.fn.fnGetMimeTreeFileAttachTable();
@@ -1153,7 +1162,7 @@
     /************************************************************************
      * MIME UPLOAD 팝업의 파일 첨부 UI 만들기
      * **********************************************************************/
-    oAPP.fn.fnGetMimeTreeFileAttachFileUploader = function () {
+    oAPP.fn.fnGetMimeTreeFileAttachFileUploader = function() {
 
         return new sap.ui.unified.FileUploader("mimeAttachFileup", {
             uploadOnChange: false,
@@ -1166,20 +1175,20 @@
     /************************************************************************
      * MIME UPLOAD 팝업의 첨부된 파일 리스트를 표현할 테이블 만들기
      * **********************************************************************/
-    oAPP.fn.fnGetMimeTreeFileAttachTable = function () {
+    oAPP.fn.fnGetMimeTreeFileAttachTable = function() {
 
         return new sap.m.Table({
             columns: [
                 new sap.m.Column({
                     header: new sap.m.Label({
-                        design: "Bold",
-                        text: "File Name"
+                        design: sap.m.LabelDesign.Bold,
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C35") // File Name
                     })
                 }),
                 new sap.m.Column({
                     header: new sap.m.Label({
-                        design: "Bold",
-                        text: "Description"
+                        design: sap.m.LabelDesign.Bold,
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35"), // Description
                     })
                 }),
             ],
@@ -1204,14 +1213,14 @@
     /************************************************************************
      * 선택된 Mime object 다운로드
      * **********************************************************************/
-    oAPP.fn.fnMimeTreeFileDown = function (oTreeTable) {
+    oAPP.fn.fnMimeTreeFileDown = function(oTreeTable) {
 
         var iIndex = oTreeTable.getSelectedIndex(),
             oCtx = oTreeTable.getContextByIndex(iIndex),
             oData = oTreeTable.getModel().getProperty(oCtx.sPath);
 
         // 로그인 유지 여부 체크 후 Mime Repository의 선택한 파일 가져오기
-        oAPP.common.sendAjaxLoginChk(lf_LoginOk);
+        APPCOMMON.sendAjaxLoginChk(lf_LoginOk);
 
         function lf_LoginOk(oReturn) {
 
@@ -1245,7 +1254,7 @@
     /************************************************************************
      * Mime Object (ArrayBuffer) 구하기
      * **********************************************************************/
-    oAPP.fn.fnGetMimeObject = function (sMimePath, fnSuccess) {
+    oAPP.fn.fnGetMimeObject = function(sMimePath, fnSuccess) {
 
         // 서버를 호출하여 Application 정보 검색
         var sPath = parent.getServerPath() + '/getmimeobj',
@@ -1265,7 +1274,7 @@
     /************************************************************************
      * 파일 다운로드 API
      * **********************************************************************/
-    oAPP.fn.fnFileDown = function (sFileName, oMimeObj) {
+    oAPP.fn.fnFileDown = function(sFileName, oMimeObj) {
 
         let defaultDownPath = APP.getPath("downloads");
 
@@ -1274,10 +1283,13 @@
             defaultDownPath = oAPP.attr._filedownPath;
         }
 
+        var sTitle = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B79"); // File
+        sTitle += " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B78"); // Download
+
         // 다운받을 폴더 지정하는 팝업에 대한 Option
         var options = {
             // See place holder 1 in above image
-            title: "File Download",
+            title: sTitle, // File Download,
 
             // See place holder 2 in above image            
             defaultPath: defaultDownPath,
@@ -1304,7 +1316,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function (event) {
+            fileReader.onload = function(event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -1332,12 +1344,12 @@
     /************************************************************************
      * Mime Tree Default Context Menu List
      * **********************************************************************/
-    oAPP.fn.fnGetMimeTreeDefCtxMenuList = function () {
+    oAPP.fn.fnGetMimeTreeDefCtxMenuList = function() {
 
         return [{
                 ICON: "",
                 KEY: "K1",
-                TXT: "Expand Subtree",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C27"), // Expand Subtree
                 ENABLED: true,
                 ISSTART: false,
                 VISIBLE: true
@@ -1345,7 +1357,7 @@
             {
                 ICON: "",
                 KEY: "K2",
-                TXT: "Collapse Subtree",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C28"), // Collapse Subtree
                 ENABLED: true,
                 ISSTART: false,
                 VISIBLE: true
@@ -1353,7 +1365,7 @@
             {
                 ICON: "",
                 KEY: "K3",
-                TXT: "Create Folder",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C29"), // Create Folder
                 ENABLED: true,
                 ISSTART: true,
                 VISIBLE: true
@@ -1361,7 +1373,7 @@
             {
                 ICON: "",
                 KEY: "K4",
-                TXT: "Delete Object",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C30"), // Delete Object
                 ENABLED: true,
                 ISSTART: false,
                 VISIBLE: true
@@ -1369,7 +1381,7 @@
             {
                 ICON: "",
                 KEY: "K5",
-                TXT: "Import Mime Object",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C31"), // Import Mime Object
                 ENABLED: true,
                 ISSTART: false,
                 VISIBLE: true
@@ -1377,7 +1389,7 @@
             {
                 ICON: "",
                 KEY: "K6",
-                TXT: "Download Mime Object",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C32"), // Download Mime Object
                 ENABLED: true,
                 ISSTART: false,
                 VISIBLE: true
@@ -1392,7 +1404,7 @@
      * @param {Object || Buffer Array} DATA  
      * - 선택된 mime object
      ************************************************************************/
-    oAPP.fn.fnSetMimeObjectPreview = function (DATA) {
+    oAPP.fn.fnSetMimeObjectPreview = function(DATA) {
 
         // 파일 사이즈가 0이면 그냥 리턴
         if (DATA.size == 0) {
@@ -1409,7 +1421,7 @@
         }
 
         var reader = new FileReader();
-        reader.onload = function (e) {
+        reader.onload = function(e) {
 
             var result = e.target.result;
 
@@ -1418,7 +1430,7 @@
                 VISI: sExplicitTypeName
             };
 
-            oAPP.common.fnSetModelProperty("/WS20/MIMEDATA", oFileData);
+            APPCOMMON.fnSetModelProperty("/WS20/MIMEDATA", oFileData);
             sap.ui.getCore().getModel().refresh(true);
 
             parent.setBusy('');
@@ -1442,7 +1454,7 @@
      * @param {String} sMimetype  
      * - 선택된 mime object의 mime type
      ************************************************************************/
-    oAPP.fn.fnCheckAllowedMimeTypes = function (sMimetype) {
+    oAPP.fn.fnCheckAllowedMimeTypes = function(sMimetype) {
 
         var aAllowedMimeTypes = [
                 "text/plain",
@@ -1480,7 +1492,7 @@
      * @param {Object} oTreeData  
      * - Mime Tree에 표현될 Mime Tree Data
      ************************************************************************/
-    oAPP.fn.fnMimeFolderCreateSuccess = function (oTreeData) {
+    oAPP.fn.fnMimeFolderCreateSuccess = function(oTreeData) {
 
         var oTreeTable = new sap.ui.getCore().byId("mimeTree");
         if (!oTreeTable) {
@@ -1525,7 +1537,7 @@
     /************************************************************************
      * Mime Repository Popup => Tree Table 펼치기 이벤트
      ************************************************************************/
-    oAPP.events.ev_MimeTreeTableExpand = function (oEvent) {
+    oAPP.events.ev_MimeTreeTableExpand = function(oEvent) {
 
         var oTreeTable = oEvent.getSource().getParent().getParent();
         if (!oTreeTable) {
@@ -1540,7 +1552,7 @@
     /************************************************************************
      * Mime Repository Popup => Tree Table 접기 이벤트
      ************************************************************************/
-    oAPP.events.ev_MimeTreeTableCollapse = function (oEvent) {
+    oAPP.events.ev_MimeTreeTableCollapse = function(oEvent) {
 
         var oTreeTable = oEvent.getSource().getParent().getParent();
         if (!oTreeTable) {
@@ -1554,7 +1566,7 @@
     /************************************************************************
      * Mime Repository Popup => Tree Table 마우스 우클릭 이벤트
      ************************************************************************/
-    oAPP.events.ev_MimeTreeCtxMenuClick = function (oEvent) {
+    oAPP.events.ev_MimeTreeCtxMenuClick = function(oEvent) {
 
         // contextmenu의 선택한 메뉴 정보를 구한다.
         var oTreeTable = oEvent.getSource().getParent(),
@@ -1606,11 +1618,11 @@
     /************************************************************************
      * Mime upload의 파일 첨부시 발생되는 이벤트
      ************************************************************************/
-    oAPP.events.ev_MimeTreeFileAttachChange = function (oEvent) {
+    oAPP.events.ev_MimeTreeFileAttachChange = function(oEvent) {
 
         var sModelPath = "/WS20/MIMETREE/FILEATTACHES";
 
-        var aFiles = oAPP.common.fnGetModelProperty(sModelPath), // 기존에 모델에 저장된 파일 정보
+        var aFiles = APPCOMMON.fnGetModelProperty(sModelPath), // 기존에 모델에 저장된 파일 정보
             aAttachFile = oEvent.getParameter("files"), // 방금 첨부한 파일 정보
             iAttLen = aAttachFile.length,
             aNewFiles = [];
@@ -1625,24 +1637,24 @@
         // 기존에 모델에 저장한 파일 정보가 없을 경우,
         // 방금 첨부한 파일을 모델에 저장한다.
         if (!aFiles) {
-            oAPP.common.fnSetModelProperty(sModelPath, aNewFiles);
+            APPCOMMON.fnSetModelProperty(sModelPath, aNewFiles);
             return;
         }
 
         // 기존 모델에 저장한 파일정보와 방금 첨부한 파일을 합쳐서 모델에 저장한다.
         var aConcatFile = aFiles.concat(aNewFiles);
 
-        oAPP.common.fnSetModelProperty(sModelPath, aConcatFile);
+        APPCOMMON.fnSetModelProperty(sModelPath, aConcatFile);
 
     }; // end of oAPP.events.fnMimeTreeFileAttachChange
 
     /************************************************************************
      * Mime upload의 파일 첨부 후 저장 이벤트
      ************************************************************************/
-    oAPP.events.ev_attachMimeDlgSaveEvent = function () {
+    oAPP.events.ev_attachMimeDlgSaveEvent = function() {
 
         var sModelPath = "/WS20/MIMETREE/FILEATTACHES",
-            aFiles = oAPP.common.fnGetModelProperty(sModelPath);
+            aFiles = APPCOMMON.fnGetModelProperty(sModelPath);
 
         if (!aFiles) {
             return;
@@ -1656,7 +1668,7 @@
         lf_createMimeFile();
 
         function lf_createMimeFile(sReqNo) {
-            
+
             // 현재 APP 정보
             // var oAppInfo = parent.getAppInfo();
 
@@ -1754,7 +1766,7 @@
         // [Server Eval] 마임 폴더 생성 시, cts 팝업을 호출해야 하는 경우.
         function lf_createMimeCts() {
 
-            oAPP.fn.fnCtsPopupOpener(function (oResult) {
+            oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
                 // 마임 폴더를 생성
                 lf_createMimeFile(oResult.TRKORR);
@@ -1768,7 +1780,7 @@
     /************************************************************************
      * Mime upload의 파일 첨부 팝업 닫기 이벤트
      ************************************************************************/
-    oAPP.events.ev_attachMimeDlgCloseEvent = function (oEvent) {
+    oAPP.events.ev_attachMimeDlgCloseEvent = function(oEvent) {
 
         var oDialog = oEvent.getSource().getParent();
         oDialog.close();
@@ -1779,7 +1791,7 @@
     /************************************************************************
      * Mime Repository Popup => MIME Context Menu 이벤트
      ************************************************************************/
-    oAPP.events.ev_MimeTreeTableContextMenu = function (oEvent) {
+    oAPP.events.ev_MimeTreeTableContextMenu = function(oEvent) {
 
         var oTreeTable = oEvent.getSource(),
             iSelectRow = oEvent.getParameter("rowIndex"),
@@ -1793,7 +1805,7 @@
         oTreeTable.setSelectedIndex(iSelectRow);
 
         var oRowData = oTreeTable.getModel().getProperty(oCtx.sPath);
-            // oAppInfo = parent.getAppInfo();
+        // oAppInfo = parent.getAppInfo();
 
         // mime tree 의 기본 contextmenu 정보를 구한다. 
         var aCtxMenu = oAPP.fn.fnGetMimeTreeDefCtxMenuList();
@@ -1815,7 +1827,7 @@
                 aCtxMenu.find(arr => arr.KEY == "K4").ENABLED = false;
                 aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
 
-                oAPP.common.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
+                APPCOMMON.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
 
                 return;
 
@@ -1829,7 +1841,7 @@
 
                     aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
 
-                    oAPP.common.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
+                    APPCOMMON.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
 
                     return;
 
@@ -1841,7 +1853,7 @@
                 aCtxMenu.find(arr => arr.KEY == "K3").ENABLED = false;
                 aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
 
-                oAPP.common.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
+                APPCOMMON.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
 
                 return;
 
@@ -1857,7 +1869,7 @@
                 aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
                 aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
 
-                oAPP.common.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
+                APPCOMMON.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
 
                 return;
             }
@@ -1869,13 +1881,13 @@
             aCtxMenu.find(arr => arr.KEY == "K4").ENABLED = false;
             aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
 
-            oAPP.common.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
+            APPCOMMON.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
 
         }
 
         function lf_mimeDisp() {
 
-            var aMimeTree = oAPP.common.fnGetModelProperty("/WS20/MIMETREE");
+            var aMimeTree = APPCOMMON.fnGetModelProperty("/WS20/MIMETREE");
 
             // 폴더일 경우
             if (oRowData.TYPE == 'F') {
@@ -1889,7 +1901,7 @@
                     aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
                     aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
 
-                    oAPP.common.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
+                    APPCOMMON.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
 
                     return;
 
@@ -1903,7 +1915,7 @@
                 aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
                 aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
 
-                oAPP.common.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
+                APPCOMMON.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
 
                 return;
             }
@@ -1917,7 +1929,7 @@
             aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
             aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = true;
 
-            oAPP.common.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
+            APPCOMMON.fnSetModelProperty("/WS20/MIMETREE/CTXMENU", aCtxMenu);
 
         }
 
@@ -1926,7 +1938,7 @@
     /************************************************************************
      * Mime Repository Popup => 트리 테이블의 row 선택 이벤트
      ************************************************************************/
-    oAPP.events.ev_MimeTreeTableRowSelect = function (oEvent) {
+    oAPP.events.ev_MimeTreeTableRowSelect = function(oEvent) {
 
         // 마우스 우클릭일 경우는 실행하지 않기
         if ("which" in event) {
@@ -1935,8 +1947,8 @@
             }
         }
 
-        oAPP.common.fnSetModelProperty("/WS20/MIME", {});
-        oAPP.common.fnSetModelProperty("/WS20/MIMEDATA", {});
+        APPCOMMON.fnSetModelProperty("/WS20/MIME", {});
+        APPCOMMON.fnSetModelProperty("/WS20/MIMEDATA", {});
 
         sap.ui.getCore().getModel().refresh(true);
 
@@ -1956,7 +1968,7 @@
         }
 
         // 로그인 유지 여부 체크 후 Mime Repository의 선택한 파일 가져오기
-        oAPP.common.sendAjaxLoginChk(lf_LoginOk);
+        APPCOMMON.sendAjaxLoginChk(lf_LoginOk);
 
         function lf_LoginOk(oReturn) {
 
@@ -1972,7 +1984,7 @@
                 ERNAM: oData.ERNAM
             };
 
-            oAPP.common.fnSetModelProperty("/WS20/MIME", oMimeInfo);
+            APPCOMMON.fnSetModelProperty("/WS20/MIME", oMimeInfo);
 
             // Mime Object 구하기
             oAPP.fn.fnGetMimeObject(oMimeInfo.URL, lf_success);
@@ -1993,9 +2005,9 @@
     /************************************************************************
      * Mime Repository Popup => MIME URL Copy Button Event
      ************************************************************************/
-    oAPP.events.ev_pressMimeUrlCopy = function (oInput, oEvent) {
+    oAPP.events.ev_pressMimeUrlCopy = function(oInput, oEvent) {
 
-        var oMimeInfo = oAPP.common.fnGetModelProperty("/WS20/MIME");
+        var oMimeInfo = APPCOMMON.fnGetModelProperty("/WS20/MIME");
         if (!oMimeInfo) {
             return;
         }
@@ -2016,14 +2028,16 @@
 
         $oInputDom[0].setSelectionRange(0, 0);
 
-        parent.showMessage(sap, 10, null, "Clipboard Copy!");
+        var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "303"); // Clipboard Copy Success!
+
+        parent.showMessage(sap, 10, null, sMsg);
 
     }; // end of oAPP.events.ev_pressMimeUrlCopy
 
     /************************************************************************
      * Mime Repository Popup => Cancel Button Event
      ************************************************************************/
-    oAPP.events.ev_MimeDlgCancel = function (oEvent) {
+    oAPP.events.ev_MimeDlgCancel = function(oEvent) {
 
         var oDialog = sap.ui.getCore().byId(C_DIALOG_ID);
         if (oDialog == null) {
@@ -2040,7 +2054,7 @@
     /************************************************************************
      * Mime Repository Popup => MIME Folder 생성 팝업
      ************************************************************************/
-    oAPP.events.ev_createMimeFolderEvent = function (oEvent) {
+    oAPP.events.ev_createMimeFolderEvent = function(oEvent) {
 
         var oDialog = oEvent.getSource().getParent(),
             oDialogModel = oDialog.getModel(),
@@ -2049,9 +2063,13 @@
         if (oData.FLDNM == "") {
 
             oData.FLDNM_VS = "Error";
-            oData.FLDNM_VSTXT = "Folder Name is Require!!";
 
-            oAPP.common.fnSetModelProperty("/WS20/MIMETREE/CRFLD/", oData);
+            var sTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D01"); // Folder Name
+            sTxt = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "050", sTxt); // & is required. 
+
+            oData.FLDNM_VSTXT = sTxt; // Folder Name is required
+
+            APPCOMMON.fnSetModelProperty("/WS20/MIMETREE/CRFLD/", oData);
 
             return;
         }
@@ -2116,7 +2134,7 @@
         // [Server Eval] 마임 폴더 생성 시, cts 팝업을 호출해야 하는 경우.
         function lf_createMimeCts() {
 
-            oAPP.fn.fnCtsPopupOpener(function (oResult) {
+            oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
                 // 마임 폴더를 생성
                 lf_createMimeFolder(oResult.TRKORR);
@@ -2130,7 +2148,7 @@
     /************************************************************************
      * Mime Repository Popup => MIME Folder 생성 팝업 닫기 이벤트
      ************************************************************************/
-    oAPP.events.ev_createMimeFolderCloseEvent = function (oEvent) {
+    oAPP.events.ev_createMimeFolderCloseEvent = function(oEvent) {
 
         oEvent.getSource().getParent().close();
 

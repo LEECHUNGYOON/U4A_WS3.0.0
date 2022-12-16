@@ -83,7 +83,7 @@
             CURRWIN = REMOTE.getCurrentWindow();
 
         DIALOG.showMessageBox(CURRWIN, {
-            title: "Session Expired",
+            title: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "147", "", "", "", ""), // The session has terminated.
             message: oData.RTMSG,
             type: "error"
         }).then(() => {

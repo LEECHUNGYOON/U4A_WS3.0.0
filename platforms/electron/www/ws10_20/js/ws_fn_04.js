@@ -10,15 +10,7 @@
         REMOTE = parent.REMOTE,
         APPPATH = parent.APPPATH,
         APPCOMMON = oAPP.common;
-
-    // REMOTE = parent.REMOTE,
-    // REMOTEMAIN = parent.REMOTEMAIN,
-    // APPCOMMON = oAPP.common,
-    // CURRWIN = REMOTE.getCurrentWindow(),
-    // SESSKEY = parent.getSessionKey(),
-    // BROWSKEY = parent.getBrowserKey(),
-    // IPCMAIN = REMOTE.require('electron').ipcMain;
-
+        
     /************************************************************************
      * SAP GUI 멀티 로그인 체크
      ************************************************************************/

@@ -41,7 +41,7 @@
                         }),
 
                         new sap.m.Title({
-                            text: "[U4A] Web Security Management"
+                            text: "[U4A] " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C86"), // Web Security Management
                         }).addStyleClass("sapUiTinyMarginBegin"),
 
                         new sap.m.ToolbarSpacer(),
@@ -118,12 +118,12 @@
             showHeader: false,
             content: [
                 new sap.m.Panel({
-                    headerText: "Access-Control-Allow-Origin",
+                    headerText: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C89"), // Access-Control-Allow-Origin
                     content: aPanelTopContents
                 }),
 
                 new sap.m.Panel({
-                    headerText: "X-Frame-Options",
+                    headerText: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C87"), // X-Frame-Options
                     content: [
                         oPanelBottomContents
                     ]
@@ -143,15 +143,15 @@
                 buttons: [
                     new sap.m.RadioButton({
                         groupName: "OriginGroup",
-                        text: "Origin: * (Origin Not Assign)"
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C90"), // Origin: * (Origin Not Assign)
                     }),
                     new sap.m.RadioButton({
                         groupName: "OriginGroup",
-                        text: "Currently Accessed Host"
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C91"), // Currently Accessed Host
                     }),
                     new sap.m.RadioButton({
                         groupName: "OriginGroup",
-                        text: "Specific External Host"
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C92"), // Specific External Host
                     }),
                 ],
                 select: oAPP.events.ev_selectAcaRadioButton
@@ -190,7 +190,7 @@
                 alignItems: sap.m.FlexAlignItems.Center,
                 items: [
                     new sap.m.Text({
-                        text: "External Host",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C73"), // External Host URL
                         width: "120px"
                     }),
                     new sap.m.Input({
@@ -296,7 +296,7 @@
 
                     new sap.ui.table.Column({
                         label: new sap.m.Label({
-                            text: "Target URL",
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C71"), // Target Host URL
                             design: sap.m.LabelDesign.Bold
                         }),
                         template: new sap.m.Input({
@@ -341,19 +341,19 @@
                     buttons: [
                         new sap.m.RadioButton({
                             groupName: "xframeGroup",
-                            text: "SameOrigin"
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C93"), // SameOrigin
                         }),
                         new sap.m.RadioButton({
                             groupName: "xframeGroup",
-                            text: "Deny"
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C94"), // Deny
                         }),
                         new sap.m.RadioButton({
                             groupName: "xframeGroup",
-                            text: "Allow-From"
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C95"), // Allow-From
                         }),
                         new sap.m.RadioButton({
                             groupName: "xframeGroup",
-                            text: "None(Not Recommend)"
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C96"), // None(Not Recommend)
                         }),
                     ],
                     select: oAPP.events.ev_selectXfoRadioButton
@@ -441,13 +441,13 @@
         return new sap.m.Toolbar({
             content: [
                 new sap.m.Text({
-                    text: "White List"
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C97"), // White List
                 }),
 
                 new sap.m.ToolbarSpacer(),
 
                 new sap.m.Button({
-                    text: "Add",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C98"), // Add
                     icon: "sap-icon://document",
                     press: oAPP.events.ev_pressXframeOptionAdd
                 })
@@ -459,7 +459,7 @@
                     formatter: lfAddDelBtnBindProp
                 }),
                 new sap.m.Button({
-                    text: "Del",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03"), // Delete
                     icon: "sap-icon://delete",
                     type: sap.m.ButtonType.Negative,
                     press: oAPP.events.ev_pressXframeOptionDel
@@ -662,7 +662,7 @@
      * ************************************************************************/
     oAPP.events.ev_pressWebSecuritySave = function() {
 
-        var sMsg = APPCOMMON.fnGetMsgClsTxt("010"); // Do you want to save it?
+        var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "010"); // Do you want to save it?
 
         // 질문 팝업?
         parent.showMessage(sap, 30, 'I', sMsg, oAPP.events.ev_pressWebSecuritySaveCB);
@@ -717,7 +717,7 @@
         parent.setAppChange('X');
 
         // 저장 성공 메시지
-        var sMsg = APPCOMMON.fnGetMsgClsTxt("002"); // Saved success.
+        var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "002"); // Saved success
         parent.showMessage(sap, 10, null, sMsg);
 
         // web security Dialog를 닫는다.
@@ -730,7 +730,7 @@
      * ************************************************************************/
     oAPP.events.ev_pressWebSecurityDel = function() {
 
-        var sMsg = APPCOMMON.fnGetMsgClsTxt("003"); // Do you really want to delete the object?
+        var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "003"); // Do you really want to delete the object?
 
         // 질문 팝업?
         parent.showMessage(sap, 30, 'W', sMsg, oAPP.events.ev_pressWebSecurityDelCB);
