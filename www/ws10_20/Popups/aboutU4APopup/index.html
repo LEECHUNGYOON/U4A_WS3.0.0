@@ -1,57 +1,71 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>About U4A IDE</title>
 
-    </head>
+<head>
+    <meta charset="utf-8">
+    <title>About U4A IDE</title>
 
-    <body style="margin:0px;padding:0px;overflow:hidden">
+</head>
 
-        <iframe id="mainFRAME"
-                frameborder="0" 
-                style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100%;width:100%;position:absolute;top:0px;left:0px;right:0px;bottom:0px;" >
-        </iframe>  
+<body style="margin:0px;padding:0px;overflow:hidden">
 
-        <script>
+    <iframe id="mainFRAME"
+            frameborder="0"
+            style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100%;width:100%;position:absolute;top:0px;left:0px;right:0px;bottom:0px;">
+    </iframe>
 
-            var SERVPATH = "";
+    <script>
+        /************************************************************************
+         * 에러 감지
+         ************************************************************************/
+        var REMOTE = require('@electron/remote'),
+            PATH = REMOTE.require('path'),
+            APP = REMOTE.app,
+            APPPATH = APP.getAppPath(),
+            PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            PATHINFO = require(PATHINFOURL),
+            WSERR = require(PATHINFO.WSTRYCATCH);
 
-            document.addEventListener('DOMContentLoaded', function () {  
-                
-                let remote = require('@electron/remote');
-                let ipcRenderer = require('electron').ipcRenderer;
-                let oWin = remote.getCurrentWindow();
+        var zconsole = WSERR(window, document, console);
+    </script>
 
-                let path = remote.require('path');
+    <script>
+        var SERVPATH = "";
 
-                oWin.setOverlayIcon(path.join(__dirname, 'U4A_V1.ico'), '');
+        document.addEventListener('DOMContentLoaded', function() {
 
-                //menu 라인 삭제 
-                oWin.setMenu(null);
+            let remote = require('@electron/remote');
+            let ipcRenderer = require('electron').ipcRenderer;
+            let oWin = remote.getCurrentWindow();
 
-                ipcRenderer.on('if-about-u4a', (event, IF_DATA) => {
+            let path = remote.require('path');
 
-                    SERVPATH = IF_DATA.SERVPATH;
+            oWin.setOverlayIcon(path.join(__dirname, 'U4A_V1.ico'), '');
 
-                    let oFrame = document.getElementById("mainFRAME");
+            //menu 라인 삭제 
+            oWin.setMenu(null);
 
-                    oFrame.src = "frame.html";
+            ipcRenderer.on('if-about-u4a', (event, IF_DATA) => {
 
-                });
+                SERVPATH = IF_DATA.SERVPATH;
+
+                let oFrame = document.getElementById("mainFRAME");
+
+                oFrame.src = "frame.html";
 
             });
 
+        });
 
 
-            function gfn_remote(){
 
-                return require('@electron/remote');
+        function gfn_remote() {
 
-            }
+            return require('@electron/remote');
 
+        }
+    </script>
 
-        </script>
-        
-    </body>
+</body>
+
 </html>

@@ -4,9 +4,15 @@
  * - file Name : u4aDocPopup/index.js
  ************************************************************************/
 
+/************************************************************************
+ * 에러 감지
+ ************************************************************************/
+
+var zconsole = parent.WSERR(window, document, console);
+
 let oAPP = parent.oAPP;
 
-(function (window, oAPP) {
+(function(window, oAPP) {
     "use strict";
 
     oAPP.settings = {};
@@ -30,7 +36,7 @@ let oAPP = parent.oAPP;
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.fn.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
+    oAPP.fn.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -48,7 +54,7 @@ let oAPP = parent.oAPP;
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.fn.fnGetModelProperty = function (sModelPath) {
+    oAPP.fn.fnGetModelProperty = function(sModelPath) {
 
         return sap.ui.getCore().getModel().getProperty(sModelPath);
 
@@ -57,7 +63,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * ws의 설정 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.getSettingsInfo = function () {
+    oAPP.fn.getSettingsInfo = function() {
 
         // Browser Window option
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
@@ -75,13 +81,13 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * UI5 BootStrap 
      ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = function () {
+    oAPP.fn.fnLoadBootStrapSetting = function() {
 
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
             sVersion = oSetting_UI5.version,
             sTestResource = oSetting_UI5.testResource,
-            sReleaseResource = `../../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,           
+            sReleaseResource = `../../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
             bIsDev = oSettings.isDev,
             oBootStrap = oSetting_UI5.bootstrap,
             oUserInfo = oAPP.attr.oUserInfo,
@@ -97,7 +103,7 @@ let oAPP = parent.oAPP;
         }
 
         // 로그인 Language 적용
-        oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
+        oScript.setAttribute("data-sap-ui-theme", oThemeInfo.THEME);
         oScript.setAttribute("data-sap-ui-language", sLangu);
         oScript.setAttribute("data-sap-ui-libs", "sap.m");
 
@@ -206,7 +212,7 @@ let oAPP = parent.oAPP;
     }; // end of oAPP.fn.fnGetTable
 
     /************************************************************************
-     * 화면 초기 렌더링
+     * Help Document 파일을 읽는다
      ************************************************************************/
     oAPP.fn.fnGetFileList = () => {
 
@@ -281,9 +287,9 @@ let oAPP = parent.oAPP;
     // // UI5 Boot Strap을 로드 하고 attachInit 한다.
     oAPP.fn.fnLoadBootStrapSetting();
 
-    window.onload = function () {
+    window.onload = function() {
 
-        sap.ui.getCore().attachInit(function () {
+        sap.ui.getCore().attachInit(function() {
 
             // u4a help document의 파일 리스트를 구한다.
             oAPP.fn.fnGetFileList().then((aFileList) => {

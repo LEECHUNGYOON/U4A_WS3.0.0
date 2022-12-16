@@ -3,78 +3,23 @@
  * ************************************************************************
  * - Application Intro
  **************************************************************************/
-
-const
-    REMOTE = require('@electron/remote'),
-    REMOTEMAIN = REMOTE.require('@electron/remote/main'),
-    APP = REMOTE.app,
-    PATH = REMOTE.require('path'),
-    APPPATH = APP.getAppPath(),
-    USERDATA = APP.getPath("userData"),
-    FS = REMOTE.require('fs-extra'),
-    RANDOM = require("random-key"),
-    WSLOG = require(PATH.join(APPPATH, "ws10_20", "js", "ws_log.js")),
-    PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));
-
-(function () {
+(function() {
     "use strict";
 
     let oAPP = {};
     oAPP.fn = {};
 
-    // 오류 로그 감지
-    WSLOG.start(REMOTE, console);
+    const
+        REMOTE = require('@electron/remote'),
+        REMOTEMAIN = REMOTE.require('@electron/remote/main'),
+        APP = REMOTE.app,
+        PATH = REMOTE.require('path'),
+        APPPATH = APP.getAppPath(),
+        USERDATA = APP.getPath("userData"),
+        FS = REMOTE.require('fs-extra'),
+        RANDOM = require("random-key"); 
 
-    // [R&D 전용 console.log]
-    var zconsole = {};
-    zconsole.APP = APP;  
-
-    /************************************************************************
-     * local console [R&D 전용 console.log]
-     ************************************************************************/
-    zconsole.log = (sConsole) => {
-
-        const
-            APP = zconsole.APP;
-
-        // 빌드 상태에서는 실행하지 않음.
-        if (APP.isPackaged) {
-            return;
-        }
-
-        console.log("[zconsole]: " + sConsole);
-
-    };
-
-    zconsole.error = (sConsole) => {
-
-        const
-            APP = zconsole.APP;
-
-        // 빌드 상태에서는 실행하지 않음.
-        if (APP.isPackaged) {
-            return;
-        }
-
-        console.error("[zconsole]: " + sConsole);
-
-    };
-
-    zconsole.warn = (sConsole) => {
-
-        const
-            APP = zconsole.APP;
-
-        // 빌드 상태에서는 실행하지 않음.
-        if (APP.isPackaged) {
-            return;
-        }
-
-        console.warn("[zconsole]: " + sConsole);
-
-    };
-
-    oAPP.fn.fnOnDeviceReady = function () {
+    oAPP.fn.fnOnDeviceReady = function() {
 
         // 현재 버전 보여주기
         oAPP.fn.fnDisplayCurrentVersion();
@@ -171,7 +116,7 @@ const
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oMetadata = {
                 SERVERINFO: oServerInfo,
@@ -245,7 +190,7 @@ const
     /************************************************************************
      * 서버 리스트를 오픈한다.
      ************************************************************************/
-    oAPP.fn.fnOpenServerList = function () {
+    oAPP.fn.fnOpenServerList = function() {
 
         // Electron Browser Default Options        
         var sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
@@ -281,7 +226,7 @@ const
         // server list v2
         // oWin.webContents.openDevTools();
 
-        oWin.webContents.on('did-finish-load', function () {
+        oWin.webContents.on('did-finish-load', function() {
 
             oWin.webContents.send('window-id', oWin.id);
 
@@ -311,7 +256,7 @@ const
      * 2. 설치 경로는 WS가 설치된 userData
      *    예) C:\Users\[UserName]\AppData\Roaming\com.u4a_ws.app
      ************************************************************************/
-    oAPP.fn.setInitInstall = function (fnCallback) {
+    oAPP.fn.setInitInstall = function(fnCallback) {
 
         var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
@@ -337,9 +282,9 @@ const
                 continue;
             }
 
-            aPromise.push(new Promise(function (resolve, reject) {
+            aPromise.push(new Promise(function(resolve, reject) {
 
-                FS.mkdir(sFullPath, oMkdirOptions, function (err) {
+                FS.mkdir(sFullPath, oMkdirOptions, function(err) {
 
                     if (err) {
                         reject(err.toString());
@@ -369,7 +314,7 @@ const
                 FS.writeFile(sFileFullPath, JSON.stringify(""), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         reject(err.toString());
@@ -389,9 +334,9 @@ const
         aPromise.push(oHelpDocuPromise);
 
         // 상위 폴더를 생성 후 끝나면 실행
-        Promise.all(aPromise).then(function (values) {
+        Promise.all(aPromise).then(function(values) {
 
-            oAPP.fn.copyVbsToLocalFolder(function (oResult) {
+            oAPP.fn.copyVbsToLocalFolder(function(oResult) {
 
                 if (oResult.RETCD == 'E') {
                     alert(oResult.MSG);
@@ -402,7 +347,7 @@ const
 
             });
 
-        }).catch(function (err) {
+        }).catch(function(err) {
 
             alert(err.toString());
 
@@ -413,7 +358,7 @@ const
     /************************************************************************
      * build된 폴더에서 vbs 파일을 로컬 폴더로 복사한다.
      ************************************************************************/
-    oAPP.fn.copyVbsToLocalFolder = function (fnCallback) {
+    oAPP.fn.copyVbsToLocalFolder = function(fnCallback) {
 
         var sVbsFolderPath = PATH.join(APPPATH, "vbs"),
             aVbsFolderList = FS.readdirSync(sVbsFolderPath),
@@ -451,7 +396,7 @@ const
 
             fnCallback(oResult);
 
-        }).catch(function (err) {
+        }).catch(function(err) {
 
             oResult.RETCD = 'E';
             oResult.MSG = err.toString();
@@ -462,7 +407,7 @@ const
 
     }; // end of oAPP.fn.copyVbsToLocalFolder
 
-    oAPP.fn.copyVbsPromise = function (sFile, sVbsOrigPath) {
+    oAPP.fn.copyVbsPromise = function(sFile, sVbsOrigPath) {
 
         var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
@@ -474,11 +419,11 @@ const
 
             FS.copy(sVbsOrigPath, sVbsFullPath, {
                 overwrite: true,
-            }).then(function () {
+            }).then(function() {
 
                 resolve("X");
 
-            }).catch(function (err) {
+            }).catch(function(err) {
 
                 reject(err.toString());
 
@@ -536,11 +481,11 @@ const
             //1. Document File을 복사한다.
             FS.copy(sHelpDocOriginFile, sHelpDocTargetPath, {
                 overwrite: true,
-            }).then(function () {
+            }).then(function() {
 
                 resolve();
 
-            }).catch(function (err) {
+            }).catch(function(err) {
                 reject(err.toString());
             });
 
@@ -563,7 +508,7 @@ const
             let ZIP = require("zip-lib"),
                 UNZIP = new ZIP.Unzip({
                     // Called before an item is extracted.
-                    onEntry: function (event) {
+                    onEntry: function(event) {
                         zconsole.log(event.entryCount, event.entryName);
                     }
                 });
@@ -571,11 +516,11 @@ const
             UNZIP.extract(sHelpDocTargetPath, sHelpDocFolderPath, {
                     overwrite: true
                 })
-                .then(function () {
+                .then(function() {
 
                     resolve();
 
-                }, function (err) {
+                }, function(err) {
 
                     reject(err.toString());
 

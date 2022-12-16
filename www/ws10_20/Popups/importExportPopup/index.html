@@ -1,17 +1,36 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>U4A APP import Export</title>
+
+<head>
+    <meta charset="utf-8">
+    <title>U4A APP import Export</title>
 
 
-    </head>
+</head>
 
-    <body>
+<body>
 
-        <!--<img id="LOAD_IMG" src="" style="width:260px; height:260px; display:none;"> -->
-        <img id="LOAD_IMG" src="" style=" display:none;">
+    <!--<img id="LOAD_IMG" src="" style="width:260px; height:260px; display:none;"> -->
+    <img id="LOAD_IMG"
+         src=""
+         style=" display:none;">
 
-        <script src="js/index.js"></script>
-    </body>
+    <script>
+        /************************************************************************
+         * 에러 감지
+         ************************************************************************/
+        var REMOTE = require('@electron/remote'),
+            PATH = REMOTE.require('path'),
+            APP = REMOTE.app,
+            APPPATH = APP.getAppPath(),
+            PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            PATHINFO = require(PATHINFOURL),
+            WSERR = require(PATHINFO.WSTRYCATCH);
+
+        var zconsole = WSERR(window, document, console);
+    </script>
+
+    <script src="js/index.js"></script>
+</body>
+
 </html>

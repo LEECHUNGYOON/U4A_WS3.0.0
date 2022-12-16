@@ -1,39 +1,41 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-            }
-            
-        </style>
-    </head>
-    <body>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible"
+          content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-        <!-- <script id="sap-ui-bootstrap" 
-                src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js" 
-                data-sap-ui-language="EN" 
-                data-sap-ui-preload="async"
-                data-sap-ui-theme="sap_horizon_dark" 
-                data-sap-ui-libs="sap.m,sap.suite.ui.commons,sap.ui.commons,sap.ui.core,sap.ui.layout" 
-                data-sap-ui-noduplicateids="true" >
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
 
-        </script> -->
+<body>
 
-        <div style="position: absolute; right: 10px; bottom: 20px; z-index:2000000">
+    <div style="position: absolute; right: 10px; bottom: 20px; z-index:2000000">
 
-            <img src="space.gif" width="100px" />
+        <img src="space.gif"
+             width="100px" />
 
-        </div>
-       
+    </div>
 
-        <div id="Content"></div>
-        <script src="js/main.js"></script>
 
-    </body>
+    <div id="Content"></div>
+
+    <script>
+        /************************************************************************
+         * 에러 감지
+         ************************************************************************/
+        var zconsole = parent.WSERR(window, document, console);
+    </script>
+    <script src="js/main.js"></script>
+
+</body>
+
 </html>

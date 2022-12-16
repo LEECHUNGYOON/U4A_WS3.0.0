@@ -4,8 +4,6 @@
  * - file Name : Login.js
  * - file Desc : WS Login Page
  ************************************************************************/
-// [R&D 전용 console.log]
-let zconsole = parent.zconsole;
 
 let oAPP = (function () {
     "use strict";

@@ -177,18 +177,21 @@
     </div> -->
     <!-- Page Loading End -->
     <script>
+
         /************************************************************************
-         * onError 관련 공통 로직
+         * 에러 감지
          ************************************************************************/
+         var require = parent.require, 
+            REMOTE = require('@electron/remote'),
+            PATH = REMOTE.require('path'),
+            APP = REMOTE.app,
+            APPPATH = APP.getAppPath(),
+            PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            PATHINFO = require(PATHINFOURL),
+            WSERR = require(PATHINFO.WSTRYCATCH);
 
-        // 오류 로그 감지
-        parent.WSLOG.start(parent.REMOTE, console);
+        var zconsole = WSERR(window, document, console);
 
-        window.removeEventListener("unhandledrejection", parent.onunhandledrejection);
-        window.addEventListener("unhandledrejection", parent.onunhandledrejection);
-
-        window.onerror = parent.onError;
-        document.onerror = parent.onError;
     </script>
     <script src="Login.js"></script>
     <script src="Login_trial.js"></script>

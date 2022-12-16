@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 
-        <style>
-            * {
-                margin: 0;
-                padding: 0;
-            }
-            
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible"
+          content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-            .sapMFlexBox.sapMHBox.sapMFlexBoxJustifyStart.sapMFlexBoxAlignItemsStretch.sapMFlexBoxWrapNoWrap.sapMFlexBoxAlignContentStretch.sapMFlexBoxBGTransparent {
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
 
-                background: white;
-            }
 
-        </style>
-    </head>
-    <body>
+        .sapMFlexBox.sapMHBox.sapMFlexBoxJustifyStart.sapMFlexBoxAlignItemsStretch.sapMFlexBoxWrapNoWrap.sapMFlexBoxAlignContentStretch.sapMFlexBoxBGTransparent {
 
-        <script id="sap-ui-bootstrap" 
+            background: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- <script id="sap-ui-bootstrap" 
                 src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js" 
                 data-sap-ui-language="EN" 
                 data-sap-ui-preload="async"
@@ -29,17 +32,27 @@
                 data-sap-ui-libs="sap.m,sap.suite.ui.commons,sap.ui.commons,sap.ui.core,sap.ui.layout,sap.f,sap.tnt" 
                 data-sap-ui-noduplicateids="true" >
 
-        </script>
+        </script> -->
 
-        <div style="position: absolute; right: 10px; bottom: 20px; z-index:2000000">
+    <div style="position: absolute; right: 10px; bottom: 20px; z-index:2000000">
 
-            <img src="space.gif" width="100px" />
+        <img src="space.gif"
+             width="100px" />
 
-        </div>
-       
+    </div>
 
-        <div id="Content"></div>
-        <script src="js/main_latest.js"></script>
 
-    </body>
+    <div id="Content"></div>
+
+    <script>
+        /************************************************************************
+         * 에러 감지
+         ************************************************************************/
+        var zconsole = parent.WSERR(window, document, console);
+    </script>
+
+    <script src="js/main_latest.js"></script>
+
+</body>
+
 </html>

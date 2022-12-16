@@ -48,7 +48,7 @@
                         break;
 
                     case "WS20":
-
+                        
                         oAPP.fn.fnMoveToWs20(); // #[ws_fn_02.js]
 
                         break;

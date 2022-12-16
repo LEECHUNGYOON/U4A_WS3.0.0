@@ -5,8 +5,7 @@
  * - file Desc : U4A Workspace Logon Pad
  ************************************************************************/
 
-let oAPP = parent.oAPP,
-    zconsole = parent.zconsole;
+let oAPP = parent.oAPP;
 
 const
     require = parent.require,

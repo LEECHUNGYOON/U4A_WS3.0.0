@@ -25,92 +25,18 @@
     <script src="../cordova.js"></script>
 
     <script>
-        /************************************************************************
-         * onError 관련 공통 로직
+         /************************************************************************
+         * 에러 감지
          ************************************************************************/
-        var REMOTE = require('@electron/remote'),
+         var REMOTE = require('@electron/remote'),
             PATH = REMOTE.require('path'),
-            DIALOG = REMOTE.require('electron').dialog,
-            CURRWIN = REMOTE.getCurrentWindow(),
             APP = REMOTE.app,
             APPPATH = APP.getAppPath(),
-            WSLOG = require(PATH.join(APPPATH, "ws10_20", "js", "ws_log.js"));
+            PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            PATHINFO = require(PATHINFOURL),
+            WSERR = require(PATHINFO.WSTRYCATCH);
 
-        // [R&D 전용 console.log]
-        var zconsole = {};
-        zconsole.APP = APP;
-
-        // 오류 로그 감지
-        WSLOG.start(REMOTE, console);
-
-        // 무한 루프 오류 방지 flag
-        var bIsError = false;
-
-        /************************************************************************
-         * critical 오류 팝업
-         ************************************************************************/
-        function showCriticalErrorDialog(sErrorMsg) {
-
-            DIALOG.showMessageBox(CURRWIN, {
-                title: "[Critical Error] - The system will be shut down.",
-                message: sErrorMsg,
-                type: "error"
-            }).then(() => {
-
-                CURRWIN.close();
-
-                // APP.exit();
-
-            });
-
-        } // end of showCriticalErrorDialog    
-
-        function onError(message, url, line, col, errorObj) {
-
-            if (bIsError) {
-                return;
-            }
-
-            bIsError = true;
-
-            let sErrMsg = `${message}\n${url}, ${line}:${col}`;
-
-            console.error(sErrMsg);
-
-            // critical 오류이므로 창을 다 닫는다.
-            showCriticalErrorDialog(sErrMsg);
-
-        }
-
-        function onunhandledrejection(event) {
-
-            if (bIsError) {
-                return;
-            }
-
-            bIsError = true;
-
-            let sErrorMsg = "";
-            if (event.reason) {
-                sErrorMsg = event.reason.stack.toString();
-            }
-
-            if (sErrorMsg == "") {
-                sErrorMsg = "critical Error!";
-            }
-
-            console.error(sErrorMsg);
-
-            // critical 오류이므로 창을 다 닫는다.
-            showCriticalErrorDialog(sErrorMsg);
-
-        }
-
-        window.removeEventListener("unhandledrejection", onunhandledrejection);
-        window.addEventListener("unhandledrejection", onunhandledrejection);
-
-        window.onerror = onError;
-        document.onerror = onError;
+        var zconsole = WSERR(window, document, console);
     </script>
 
     <script src="ServerFrame.js"></script>

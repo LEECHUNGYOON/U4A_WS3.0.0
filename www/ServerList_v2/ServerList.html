@@ -20,17 +20,10 @@
       <div id="content" style="display:none;"></div>
 
       <script>
-            /************************************************************************
-             * onError 관련 공통 로직
-             ************************************************************************/
-            // 오류 로그 감지
-            parent.WSLOG.start(parent.REMOTE, console);
-
-            window.removeEventListener("unhandledrejection", parent.onunhandledrejection);
-            window.addEventListener("unhandledrejection", parent.onunhandledrejection);
-
-            window.onerror = parent.onError;
-            document.onerror = parent.onError;
+      /************************************************************************
+      * 에러 감지
+      ************************************************************************/
+      var zconsole = parent.WSERR(window, document, console);
       </script>
 
       <script src="ServerList.js"></script>

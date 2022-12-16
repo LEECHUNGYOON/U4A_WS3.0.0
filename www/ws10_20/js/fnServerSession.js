@@ -38,14 +38,14 @@
         // iSessionTime = 1 * 60 * 1000;
 
 
-        var sServerPath = parent.getServerPath() + '/dummycall?ACTCD=002';
+        var sServerPath = parent.getServerPath() + "/dummycall?ACTCD=002";
 
         var oSendParam = {
             SERVPATH: sServerPath
         };
 
         // 설정된 세션 timeout 시간 도래 여부를 체크하기 위한 워커 생성
-        oAPP.attr._oServerWorker = new Worker('./js/workers/u4aWsServerSessionWorker.js');
+        oAPP.attr._oServerWorker = new Worker("./js/workers/u4aWsServerSessionWorker.js");
 
         // Session Time Worker onmessage 이벤트
         // oAPP.attr._oServerWorker.onmessage = oAPP.fn.fnServerSessionTimeOutOnMessage;
@@ -79,7 +79,7 @@
 
         const
             REMOTE = parent.REMOTE,
-            DIALOG = REMOTE.require('electron').dialog,
+            DIALOG = REMOTE.require("electron").dialog,
             CURRWIN = REMOTE.getCurrentWindow();
 
         DIALOG.showMessageBox(CURRWIN, {
@@ -88,7 +88,7 @@
             type: "error"
         }).then(() => {
 
-            fn_logoff_success('X');
+            fn_logoff_success("X");
 
         });
 

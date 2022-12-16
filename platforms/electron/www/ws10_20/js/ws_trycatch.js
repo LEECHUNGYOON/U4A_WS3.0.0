@@ -1,4 +1,4 @@
-module.exports = function (window, document, console) {
+module.exports = function(window, document, console) {
 
     /************************************************************************
      * onError 관련 공통 로직
@@ -35,7 +35,7 @@ module.exports = function (window, document, console) {
             type: "error"
         }).then(() => {
 
-            console.error(sErrorMsg);
+            bIsError = false;
 
             CURRWIN.close();
 
@@ -51,7 +51,7 @@ module.exports = function (window, document, console) {
 
         bIsError = true;
 
-        let sErrMsg = `${message}\n${url}, ${line}:${col}`;
+        let sErrMsg = `[onError]: ${message}\n${url}, ${line}:${col}`;
 
         console.error(sErrMsg);
 
@@ -70,7 +70,7 @@ module.exports = function (window, document, console) {
 
         let sErrorMsg = "";
         if (event.reason) {
-            sErrorMsg = event.reason.stack.toString();
+            sErrorMsg = "[onunhandledrejection]: " + event.reason.stack.toString();
         }
 
         if (sErrorMsg == "") {
@@ -133,7 +133,6 @@ module.exports = function (window, document, console) {
     window.addEventListener("unhandledrejection", onunhandledrejection);
 
     window.onerror = onError;
-    document.onerror = onError;
 
     return zconsole;
 

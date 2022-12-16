@@ -376,7 +376,7 @@ function onLoadBusyIndicator() {
     oBrowserWindow.loadURL(sIndicatorPath);
 
     // 브라우저가 오픈이 다 되면 타는 이벤트
-    oBrowserWindow.webContents.on('did-finish-load', function () {
+    oBrowserWindow.webContents.on('did-finish-load', function() {
         oBrowserWindow.setContentBounds(oCurrWin.getBounds());
     });
 
@@ -404,7 +404,7 @@ function fn_onWinMove(on, oWin) {
 
     if (typeof oWin.__fnWinMove === "undefined") {
 
-        oWin.__fnWinMove = function () {
+        oWin.__fnWinMove = function() {
 
             fn_setWinMinSize(oWin);
 
@@ -620,7 +620,7 @@ function setCleanHtml(msgtxt) {
     /* Table Tag만 따로 수집한다 */
     var aTableTag = [];
 
-    msgtxt = msgtxt.replace(/(<table>|<table)(\s|\S)*?<\/table>/igm, function (full) {
+    msgtxt = msgtxt.replace(/(<table>|<table)(\s|\S)*?<\/table>/igm, function(full) {
 
         var iTableCnt = aTableTag.length;
 
@@ -860,42 +860,6 @@ function getHost() {
 
 }
 
-// /************************************************************************
-//  * console log 감지
-//  ************************************************************************/
-// function setConsoleLogObserver(fnConsole) {
-
-//     WSLOG.start(REMOTE, fnConsole);
-
-// } // end of setConsoleLogObserver
-
-// /************************************************************************
-//  * critical 오류 팝업
-//  ************************************************************************/
-// function showCriticalErrorDialog(sErrorMsg) {
-
-//     DIALOG.showMessageBox(CURRWIN, {
-//         title: "[Critical Error] - The system will be shut down.",
-//         message: sErrorMsg,
-//         type: "error"
-//     }).then(() => {
-
-//         let oWs_frame = document.getElementById("ws_frame");
-//         if (!oWs_frame) {
-//             return;
-//         }
-
-//         let oFrameWin = oWs_frame.contentWindow;
-//         if (!oFrameWin) {
-//             return;
-//         }
-
-//         oFrameWin.fn_logoff_success("X");
-
-//     });
-
-// } // end of showCriticalErrorDialog
-
 /************************************************************************
  * 공백 여부
  ************************************************************************/
@@ -910,6 +874,9 @@ function isEmpty(s) {
     return !s.length;
 }
 
+/************************************************************************
+ * CONV Base64 -> ArrayBuffer
+ ************************************************************************/
 function base64ToArrayBuffer(base64) {
     var binary_string = window.atob(base64);
     var len = binary_string.length;
@@ -920,6 +887,60 @@ function base64ToArrayBuffer(base64) {
     return bytes.buffer;
 }
 
+/************************************************************************
+ * 같은 세션의 브라우저 인스턴스 구하기
+ ************************************************************************/
+function getSameBrowsers() {
+
+    // 1. 현재 떠있는 브라우저 갯수를 구한다.
+    var sKey = getSessionKey(),
+        oMeBrows = REMOTE.getCurrentWindow(), // 현재 나의 브라우저
+        aBrowserList = REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
+        iBrowsLen = aBrowserList.length;
+
+    var iSamekeys = 0,
+        aSameBrows = [];
+
+    for (var i = 0; i < iBrowsLen; i++) {
+
+        var oBrows = aBrowserList[i];
+        if (oBrows.isDestroyed()) {
+            continue;
+        }
+
+        var oWebCon = oBrows.webContents,
+            oWebPref = oWebCon.getWebPreferences();
+
+        // 팝업같은 경우는 카운트 하지 않는다.
+        if (oWebPref.OBJTY) {
+            continue;
+        };
+
+        // session 정보가 없으면 skip.
+        var sSessionKey = oWebPref.partition;
+        if (!sSessionKey) {
+            continue;
+        }
+
+        // 브라우저가 내 자신이라면 skip.
+        if (oBrows.id == oMeBrows.id) {
+            // oMeBrowser = oBrows;
+            continue;
+        }
+
+        // 현재 브라우저의 session key 와 동일하지 않으면 (다른 서버창) skip.
+        if (sKey != sSessionKey) {
+            continue;
+        }
+
+        // 같은 세션키를 가진 브라우저 갯수를 카운트한다.
+        iSamekeys++;
+        aSameBrows.push(oBrows);
+    }
+
+    return aSameBrows;
+
+}
 
 /************************************************************************
  * local console [R&D 전용 console.log]
