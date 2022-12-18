@@ -5,7 +5,7 @@
  * - file Desc : Error Page Editor
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -18,7 +18,7 @@
         APPCOMMON = oAPP.common;
 
 
-    oAPP.fn.fnErrorPageEditorPopupOpen = function () {
+    oAPP.fn.fnErrorPageEditorPopupOpen = function() {
 
         let sPopupName = "ERRPAGE";
 
@@ -92,7 +92,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oEditorInfo = {
                 APPINFO: oAppInfo,
@@ -132,7 +132,7 @@
     /************************************************************************
      * Error Page Editor 팝업의 저장 버튼 이벤트를 수행하기 위한 IPCMAIN 이벤트
      * **********************************************************************/
-    oAPP.fn.fnIpcMain_ErrorPageEditorSave = function (event, res) {
+    oAPP.fn.fnIpcMain_ErrorPageEditorSave = function(event, res) {
 
         var BROWSKEY = parent.getBrowserKey();
 
@@ -159,7 +159,7 @@
     /************************************************************************
      * Error Page Editor 팝업의 미리보기 IPCMAIN 이벤트
      * **********************************************************************/
-    oAPP.fn.fnIpcMain_ErrorPagePreview = function (event, res) {
+    oAPP.fn.fnIpcMain_ErrorPagePreview = function(event, res) {
 
         var sWinObjType = "ERRPAGEPREV";
 
@@ -183,7 +183,11 @@
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.title = "Error Page Preview";
+        let sTitle = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B63"); // Error Page Editor
+        sTitle += " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A67"); // Preview
+
+        // oBrowserOptions.title = "Error Page Preview";
+        oBrowserOptions.title = sTitle;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.show = false;
         oBrowserOptions.opacity = 1.0;

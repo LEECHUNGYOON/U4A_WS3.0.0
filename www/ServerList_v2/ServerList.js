@@ -36,7 +36,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function (oAPP) {
+(function(oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -85,7 +85,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             text: "Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function () {
+            close: function() {
                 XHR.abort();
             }
         });
@@ -98,7 +98,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.sendAjax = (sUrl, fnSuccess, fnError, fnCancel) => {
 
         // ajax call 취소할 경우..
-        XHR.onabort = function () {
+        XHR.onabort = function() {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -107,7 +107,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // ajax call 실패 할 경우
-        XHR.onerror = function () {
+        XHR.onerror = function() {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -115,27 +115,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         };
 
-        XHR.onload = function () {
+        XHR.onload = function() {
 
             if (typeof fnSuccess == "function") {
                 fnSuccess(XHR.response);
             }
 
         };
-
-        // XHR.onreadystatechange = function (a, b, c, d, e) { // 요청에 대한 콜백         
-
-        //     if (XHR.readyState === XHR.DONE) { // 요청이 완료되면
-        //         if (XHR.status === 200 || XHR.status === 201) {
-
-        //             if (typeof fnSuccess == "function") {
-        //                 fnSuccess(XHR.responseText);
-        //             }
-
-        //         }
-        //     }
-
-        // };
 
         try {
 
@@ -232,6 +218,174 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oAPP.fn.fnOnListupSapLogon();
 
     }; // end of oAPP.fn.fnOnMainStart
+
+    oAPP.fn.fnAttachRowsUpdateOnce = (oControl) => {
+
+        // p13n.json을 읽어서 마지막 저장된 ITEM이 있는지 확인한다.
+        let sP13nPath = PATHINFO.P13N; // UUID를 저장할 P13N JSON 파일 경로
+
+        // P13N JSON 파일이 있는지 확인한다.
+        if (!FS.existsSync(sP13nPath)) {
+            return;
+        }
+
+        let sP13nData = FS.readFileSync(sP13nPath, "utf-8"),
+            oP13nData = JSON.parse(sP13nData);
+
+        if (oP13nData == "") {
+            return;
+        }
+
+        if (!oP13nData.SERVERINFO) {
+            return;
+        }
+
+        let oServerInfo = oP13nData.SERVERINFO,
+            sUUID = oServerInfo.UUID;
+
+        let oTreeTable = oControl.getSource(),
+            oTreeModel = oTreeTable.getModel();
+
+        if (!oTreeModel) {
+            return;
+        }
+
+        let oTreeModelData = oTreeModel.getProperty("/SAPLogon");
+        if (!oTreeModelData) {
+            return;
+        }
+
+        debugger;
+
+        let aStack = [],
+            aNode = oTreeModelData.Node;
+
+        // 마지막 선택한 Node의 위치를 찾는다.
+        _fnFindLastSelectedItem(aNode, sUUID, aStack);
+
+        // 찾지 못했다면 빠져나간다.
+        let iStackLength = aStack.length;
+        if (iStackLength == 0) {
+            return;
+        }
+
+        // 트리 테이블에 선택한 Node를 표시 한다.
+        _fnSetSelectedTreeItem(oTreeTable, aStack);
+
+    }; // end of oAPP.fn.fnAttachRowsUpdateOnce
+
+    function _fnFindLastSelectedItem(aNode, pUUID, aStack) {
+
+        debugger;
+
+        let iNodeLength = aNode.length;
+
+        for (let index = 0; index < iNodeLength; index++) {
+
+            const element = aNode[index];
+
+            // uuid가 없다면 하위 노드를 찾는다.
+            if (element._attributes && !element._attributes.uuid) {
+
+                const aChildNode = element.Node;
+
+                // 자식 노드가 Array라면..
+                if (Array.isArray(aChildNode) == true) {
+
+                    _fnFindLastSelectedItem(aChildNode, pUUID, aStack);
+
+                    continue;
+                    
+                }
+
+                // 자식 노드가 Array가 아니라면.(더이상 자식은 없다)
+                if (Array.isArray(aChildNode) == false) {
+
+                    const sChildUUID = aChildNode._attributes.uuid;
+
+                    if (sChildUUID !== pUUID) {
+                        continue;
+                    }
+
+                    aStack.push(sChildUUID);
+
+                }
+
+
+
+            }
+
+
+
+            // if (element._attributes && !element._attributes.uuid) {
+
+            //     _fnFindLastSelectedItem(element.Node, pUUID, aStack);
+
+            //     return;
+
+            // }
+
+            // let uuid = element._attributes.uuid;
+
+            // aStack.push(uuid);
+
+
+
+        }
+
+    } // end of _fnFindLastSelectedItem
+
+    function _fnSetSelectedTreeItem(oTreeTable, aStack) {
+
+        debugger;
+
+        var aRows = oTreeTable.getRows(),
+            iRowLength = aRows.length;
+
+        if (iRowLength < 0) {
+            return;
+        }
+
+        let iStackLength = aStack.length;
+        for (let index = 0; index < iStackLength; index++) {
+
+            const element = aStack[index];
+
+            for (var i = 0; i < iRowLength; i++) {
+
+                // Row의 Instance를 구한다.
+                var oRow = aRows[i];
+
+                // 바인딩 정보가 없으면 빠져나간다.
+                if (oRow.isEmpty()) {
+                    continue;
+                }
+
+                var oRowCtx = oRow.getBindingContext(),
+                    oRowData = oRowCtx.getModel().getProperty(oRowCtx.getPath());
+
+                if (oRowData._attributes && !oRowData._attributes.uuid) {
+                    continue;
+                }
+
+                let sUUID = oRowData._attributes.uuid;
+                if (sUUID == element) {
+
+                    let iRowindex = oRow.getIndex();
+
+                    oTreeTable.setSelectedIndex(iRowindex);
+
+                    return;
+                }
+
+                debugger;
+
+            }
+
+        }
+
+    } // end of _fnSetSelectedTreeItem
+
 
     /************************************************************************
      * 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
@@ -379,8 +533,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         let oCheckVer = oAPP.fn.fnCheckSapguiVersion(oResult.Result);
         if (oCheckVer.RETCD == "E") {
 
-            oAPP.fn.fnShowMessageBox("E", oCheckVer.RTMSG, () => {                
-                
+            oAPP.fn.fnShowMessageBox("E", oCheckVer.RTMSG, () => {
+
                 APP.exit();
 
             });
@@ -403,7 +557,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         let oLogonResult = oAPP.fn.fnGetSAPLogonLandscapeList();
         if (oLogonResult.RETCD == "E") {
 
-            oAPP.fn.fnShowMessageBox("E", oLogonResult.RTMSG);
+            // oAPP.fn.fnShowMessageBox("E", oLogonResult.RTMSG);
 
             console.error(oLogonResult.RTMSG);
 
@@ -413,14 +567,20 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // WorkSpace Tree 구조 만들기
-        oAPP.fn.fnGetSAPLogonWorkspace();
+        oAPP.fn.fnCreateWorkspaceTree();
+
+        // Tree Node 펼치기
+        var oTreeTable = sap.ui.getCore().byId("WorkTree");
+        if (oTreeTable) {
+            oTreeTable.expandToLevel(1);
+        }
 
         // 데이터 갱신 후 화면도 갱신
         oAPP.fn.fnSetRefreshSelectTreeItem();
 
         oAPP.setBusy(false);
 
-    }; // end of oAPP.fn.fnReadSAPLogonDataThen
+    }; // end of oAPP.fn.fnReadSAPLogonDataThen    
 
     /************************************************************************
      * sapgui Version 체크
@@ -481,7 +641,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 770 보다 낮다면 지원 불가
         if (parseVer < SAPGUIVER) {
-            oErr.RTMSG = "Not supported lower than SAPGUI 770 versions. \n Please upgrade SAPGUI";
+            oErr.RTMSG = "Not supported lower than SAPGUI 770 versions. \n Please upgrade SAPGUI 770 or Higher";
             return oErr;
         }
 
@@ -579,12 +739,16 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 서비스 정보(등록된 서버 전체 목록)을 구한다.
-        var aServices = oLandscapeFile.Services.Service,
-            iServiceLength = aServices.length;
-
-        if (iServiceLength == 0) {
+        var aServices = oLandscapeFile.Services.Service;
+        if (!aServices) {
             return oErr;
         }
+
+        //     iServiceLength = aServices.length;
+
+        // if (iServiceLength == 0) {
+        //     return oErr;
+        // }
 
         // 서비스 정보가 있을 경우..
         if (Array.isArray(aServices) == true) {
@@ -615,7 +779,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         }
 
-        var aBindData = [];
+        var aBindData = [],
+            aServices = oAPP.data.SAPLogon.aServices,
+            iServiceLength = aServices.length;
+
         for (var i = 0; i < iServiceLength; i++) {
 
             var oService = aServices[i],
@@ -759,7 +926,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function () {
+            onAfterRendering: function() {
 
                 setTimeout(() => {
                     $('#content').fadeIn(300, 'linear');
@@ -773,7 +940,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     // Workspace Tree Table
     oAPP.fn.fnGetWorkSpaceTreeTable = () => {
 
-        return new sap.ui.table.TreeTable("WorkTree", {
+        let oWorkTree = new sap.ui.table.TreeTable("WorkTree", {
 
             // properties
             selectionMode: sap.ui.table.SelectionMode.Single,
@@ -811,8 +978,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             }
 
-
         });
+
+        oWorkTree.attachEventOnce("rowsUpdated", oAPP.fn.fnAttachRowsUpdateOnce);
+
+        return oWorkTree;
 
     }; // end of oAPP.fn.fnGetWorkSpaceTreeTable
 
@@ -852,11 +1022,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oSelectItemData = oTableModel.getProperty(sBindPath),
             oSelectSubItem = oSelectItemData.Item;
 
+        // 선택한 라인 위치를 개인화 파일에 저장한다.
+        oAPP.fn.fnSetSaveSelectedItemPosition(oSelectItemData);
+
         // 선택된 라인에 해당하는 서버 리스트 값이 없을 경우 우측 리스트 모델 초기화
         if (typeof oSelectSubItem == "undefined") {
             oTableModel.setProperty("/SAPLogonItems", []);
             return;
-
         }
 
         var iSelectSubItemLength = oSelectSubItem.length;
@@ -928,9 +1100,80 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     }; // end of oAPP.fn.fnPressWorkSpaceTreeItem
 
     /************************************************************************
+     * 선택한 라인 위치를 개인화 파일에 저장한다.
+     ************************************************************************/
+    oAPP.fn.fnSetSaveSelectedItemPosition = (oSelectItemData) => {
+
+        if (!oSelectItemData) {
+            return;
+        }
+
+        if (!oSelectItemData._attributes) {
+            return;
+        }
+
+        // 선택한 라인의 UUID를 구한다.
+        let oSelectedItem = oSelectItemData._attributes,
+            sUUID = oSelectedItem.uuid, // 선택한 UUID
+            sP13nPath = PATHINFO.P13N; // UUID를 저장할 P13N JSON 파일 경로
+
+        // P13N JSON 파일이 있는지 확인한다.
+        if (!FS.existsSync(sP13nPath)) {
+            FS.writeFileSync(sP13nPath, JSON.stringify(""), {
+                encoding: "utf8",
+                mode: 0o777 // 올 권한
+            }); // 없으면 생성
+        }
+
+        let sP13nData = FS.readFileSync(sP13nPath, "utf-8"),
+            oP13nData = JSON.parse(sP13nData);
+
+        if (oP13nData == "") {
+            oP13nData = {};
+        }
+
+        if (!oP13nData.SERVERINFO) {
+            oP13nData.SERVERINFO = {};
+        }
+
+        let oServerInfo = oP13nData.SERVERINFO;
+
+        oServerInfo.UUID = sUUID;
+
+        FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData), {
+            encoding: "utf8",
+            mode: 0o777 // 올 권한
+        }); // 없으면 생성
+
+
+
+
+
+
+        // FS.writeFile(sFileFullPath, JSON.stringify(""), {
+        //     encoding: "utf8",
+        //     mode: 0o777 // 올 권한
+        // }, function(err) {
+
+        //     if (err) {
+        //         reject(err.toString());
+        //         return;
+        //     }
+
+        //     resolve();
+
+        // });
+
+
+        // let sP13nPath = PATH.join(USERDATA, "p13n", "p13n.json");
+
+
+    }; // end of oAPP.fn.fnSetSaveSelectedItemPosition
+
+    /************************************************************************
      * WorkSpace Tree 구조 만들기
      ************************************************************************/
-    oAPP.fn.fnGetSAPLogonWorkspace = () => {
+    oAPP.fn.fnCreateWorkspaceTree = () => {
 
         var aWorkSpace = oAPP.data.SAPLogon.LandscapeFile.Workspaces.Workspace;
 
@@ -949,10 +1192,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty("/SAPLogon", oWorkSpace);
 
-        var oTreeTable = sap.ui.getCore().byId("WorkTree");
-        oTreeTable.expandToLevel(1);
-
-    }; // end of oAPP.fn.fnGetSAPLogonWorkspace
+    }; // end of oAPP.fn.fnCreateWorkspaceTree
 
     /************************************************************************
      * 각 Node 별 데이터 정렬
@@ -2090,7 +2330,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -2137,7 +2377,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         resolve({
