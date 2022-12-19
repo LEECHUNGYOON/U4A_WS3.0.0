@@ -782,7 +782,7 @@ let oAPP = (function () {
                         return;
                     }
 
-                    var sCleanHtml = parent.setCleanHtml(xhr.response);                  
+                    var sCleanHtml = parent.setCleanHtml(xhr.response);
 
                     parent.showMessage(null, 99, "E", sCleanHtml);
                     parent.setBusy('');
@@ -1456,7 +1456,14 @@ let oAPP = (function () {
 
         // Metadata 정보 세팅 (서버 호스트명.. 또는 메시지 클래스 데이터 등..)
         if (oResult.META) {
+
             parent.setMetadata(oResult.META);
+
+            // 메시지 클래스 정보가 있다면 APPDATA 경로에 버전별로 JSON파일을 만든다.
+            if (oResult.META.MSGCLS) {
+                oAPP.fn.fnWriteMsgClsJson(oResult.META.MSGCLS);
+            }
+
         }
 
         $('#content').css({
@@ -1478,7 +1485,34 @@ let oAPP = (function () {
 
         });
 
-    }; // end of oAPP.fn.fnOnLoginSuccess
+    }; // end of oAPP.fn.fnOnLoginSuccess   
+
+    /************************************************************************
+     * 메시지 클래스 정보를 버전별로 APPDATA 경로에 JSON 파일을 만든다.
+     ************************************************************************/
+    oAPP.fn.fnWriteMsgClsJson = (oMsgCls) => {
+
+        // APPPATH 경로를 구한다.
+        let oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID,
+            sJsonFolderPath = PATH.join(USERDATA, "msgcls", sSysID),
+            sJsonPath = PATH.join(sJsonFolderPath, "msgcls.json");
+
+        if (!FS.existsSync(sJsonFolderPath)) {
+            FS.mkdirSync(sJsonFolderPath, {
+                recursive: true,
+                mode: 0o777 // 올 권한	
+            });
+        }
+
+        let sMsgCls = JSON.stringify(oMsgCls);
+
+        FS.writeFileSync(sJsonPath, sMsgCls, {
+            encoding: "utf8",
+            mode: 0o777 // 올 권한
+        });
+
+    }; // end of oAPP.fn.fnWriteMsgClsJson
 
     /************************************************************************
      * 테마 정보 저장

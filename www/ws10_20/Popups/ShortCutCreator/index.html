@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>APP Shortcut Creator</title>
-    </head>
 
-    <body style="margin:0px;padding:0px;overflow:hidden">
+<head>
+    <meta charset="utf-8">
+    <title>APP Shortcut Creator</title>
+</head>
 
-        <iframe id="mainFRAME"
-                src="" 
-                frameborder="0" 
-                style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100%;width:100%;position:absolute;top:0px;left:0px;right:0px;bottom:0px;" >
-        </iframe>  
+<body style="margin:0px;padding:0px;overflow:hidden">
 
-        <script>
+    <iframe id="mainFRAME" src="" frameborder="0"
+        style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100%;width:100%;position:absolute;top:0px;left:0px;right:0px;bottom:0px;">
+    </iframe>
+
+    <script>
         /************************************************************************
          * 에러 감지
          ************************************************************************/
@@ -26,48 +25,133 @@
             WSERR = require(PATHINFO.WSTRYCATCH);
 
         var zconsole = WSERR(window, document, console);
-        
-        </script>
+    </script>
 
-        <script>
+    <script>
+        const oAPP = {
+            attr: {},
+            common: {},
+            onStart: function () {
+                this.remote = require('@electron/remote');
+                this.ipcMain = this.remote.require('electron').ipcMain;
+                this.ipcRenderer = require('electron').ipcRenderer;
+                this.fs = this.remote.require('fs');
+                this.path = this.remote.require('path');
+                this.SHELL = oAPP.remote.require('electron').shell;
+                this.browserInfo = [];
+                this.config = {};
 
-            const oAPP = {
-                onStart:function(){
-                    this.remote = require('@electron/remote');
-                    this.ipcMain = this.remote.require('electron').ipcMain;
-                    this.ipcRenderer = require('electron').ipcRenderer;
-                    this.fs = this.remote.require('fs');
-                    this.path = this.remote.require('path');
-                    this.SHELL = oAPP.remote.require('electron').shell;
-                    this.browserInfo = [];
-                    this.config = {};
-                    
-                    //호출처 I/F Data 추출 
-                    this.ipcRenderer.on('if_APP_shortcutCreator', (event, data) => {
+                //호출처 I/F Data 추출 
+                this.ipcRenderer.on('if_APP_shortcutCreator', (event, data) => {
 
-                        //I/F Data 
-                        oAPP.browserInfo = data.browserInfo;
-                        oAPP.config      = data.config;
-                        
-                        document.getElementById("mainFRAME").src = "frame.html";
-                        
-                    });
+                    //I/F Data 
+                    oAPP.browserInfo = data.browserInfo;
+                    oAPP.config = data.config;
+                    oAPP.attr.oMetadata = data.oMetadata;
+
+                    document.getElementById("mainFRAME").src = "frame.html";
+
+                });
+
+            }
+        };
+
+        oAPP.common.fnGetMsgClsText = (sMsgCls, sMsgNum, p1, p2, p3, p4) => {
+
+            // Metadata에서 메시지 클래스 정보를 구한다.
+            var oMeta = getMetadata(),
+                sLangu = oMeta.LANGU,
+                aMsgClsTxt = oMeta["MSGCLS"];
+
+            if (!aMsgClsTxt || !aMsgClsTxt.length) {
+                return sMsgCls + "|" + sMsgNum;
+            }
+
+            let sDefLangu = "E"; // default language    
+
+            // 현재 접속한 언어로 메시지를 찾는다.
+            let oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sLangu && a.MSGNR == sMsgNum);
+
+            // 현재 접속한 언어로 메시지를 못찾은 경우
+            if (!oMsgTxt) {
+
+                // 접속한 언어가 영어일 경우 빠져나간다.
+                if (sDefLangu == sLangu) {
+                    return sMsgCls + "|" + sMsgNum;
 
                 }
-            };
 
-            //Stat 
-            oAPP.onStart();
+                // 접속한 언어가 영어가 아닌데 메시지를 못찾으면 영어로 찾는다.
+                oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sDefLangu && a.MSGNR == sMsgNum);
 
-            //부모 -> 자식 자원할당
-            function gfn_remote(){
-
-                return oAPP;
+                // 그래도 없다면 빠져나간다.
+                if (!oMsgTxt) {
+                    return sMsgCls + "|" + sMsgNum;
+                }
 
             }
 
+            var sText = oMsgTxt.TEXT,
+                aWithParam = [];
 
-        </script>
-        
-    </body>
+            // 파라미터로 전달 받은 Replace Text 수집
+            aWithParam.push(p1 == null ? "" : p1);
+            aWithParam.push(p2 == null ? "" : p2);
+            aWithParam.push(p3 == null ? "" : p3);
+            aWithParam.push(p4 == null ? "" : p4);
+
+            var iWithParamLenth = aWithParam.length;
+            if (iWithParamLenth == 0) {
+                return sText;
+            }
+
+            // 메시지 클래스 텍스트에서 "& + 숫자" (예: &1) 값이 있는 것부터 순차적으로 치환한다.
+            for (var i = 0; i < iWithParamLenth; i++) {
+
+                var index = i + 1,
+                    sParamTxt = aWithParam[i];
+
+                var sRegEx = "&" + index,
+                    oRegExp = new RegExp(sRegEx, "g");
+
+                sText = sText.replace(oRegExp, sParamTxt);
+
+            }
+
+            sText = sText.replace(new RegExp("&\\d+", "g"), "");
+
+            // 메시지 클래스 텍스트에서 "&" 를 앞에서 부터 순차적으로 치환한다."
+            for (var i = 0; i < iWithParamLenth; i++) {
+
+                var sParamTxt = aWithParam[i];
+
+                sText = sText.replace(new RegExp("&", "i"), sParamTxt);
+
+            }
+
+            sText = sText.replace(new RegExp("&", "g"), "");
+
+            return sText;
+
+        }; // end of oAPP.common.fnTestGetMsgClsText
+
+        function getMetadata() {
+
+            return oAPP.attr.oMetadata;
+
+        }
+
+        //Stat 
+        oAPP.onStart();
+
+        //부모 -> 자식 자원할당
+        function gfn_remote() {
+
+            return oAPP;
+
+        }
+    </script>
+
+</body>
+
 </html>

@@ -1194,6 +1194,8 @@
      ************************************************************************/
     oAPP.fn.fnRuntimeClassNaviPopupOpener = () => {
 
+        debugger;
+        
         var sWinObjType = "RTMCLS";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
@@ -1218,7 +1220,7 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.parent = CURRWIN;
+        // oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
 
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -1234,7 +1236,7 @@
 
         oBrowserWindow.loadURL(sUrl);
 
-        // oBrowserWindow.webContents.openDevTools();
+        oBrowserWindow.webContents.openDevTools();
 
         oBrowserWindow.once('ready-to-show', () => {
 
@@ -1974,7 +1976,7 @@
 
         oBrowserWindow.loadURL(sUrl);
 
-        // oBrowserWindow.webContents.openDevTools();
+        oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -1989,7 +1991,8 @@
 
             var oSendData = {
                 browserInfo: T_info,
-                config: S_config
+                config: S_config,
+                oMetadata : parent.getMetadata()
             };
 
             // 오픈할 URL 파라미터 전송

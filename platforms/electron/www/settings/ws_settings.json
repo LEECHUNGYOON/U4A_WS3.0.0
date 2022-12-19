@@ -23,6 +23,7 @@
     "defaultTheme": "sap_horizon_dark",
     "defaultBackgroundColor": "#12171c",
     "requireFolders": [
+        "msgcls",
         "p13n",
         "p13n\\theme",
         "p13n\\suggestion",

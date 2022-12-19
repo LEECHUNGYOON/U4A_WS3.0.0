@@ -139,7 +139,7 @@
                     case "01": //save path 
 
                         var options = {
-                            title: "Save Shortcut Download Directory",
+                            title: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "317"), // Save Shortcut Download Directory.common.fnGetMsgClsText("/U4A/MSG_WS", "317", "", "", "", ""), // Save Shortcut Download Directory
                             // See place holder 4 in above image
                             filters: [
 
@@ -152,7 +152,7 @@
                     case "02": //ICON path 
 
                         var options = {
-                            title: "Select Shortcut ICON",
+                            title: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "318"), // Select Shortcut Icon
                             // See place holder 4 in above image
                             filters: [{
                                 name: 'Images',
@@ -359,13 +359,22 @@
                 oModel.refresh(true);
                 PAGE.scrollTo(30000, 300);
 
+                let sMsg = "";
+
                 if (Lretun === "01") {
-                    sap.m.MessageToast.show('value does not exist in the "NAME" field');
+                    sMsg = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C11"); // Name
+                    sMsg = "'" + sMsg + "'";
+                    sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "319", sMsg); // value does not exist in the &1 Field
+
+                    sap.m.MessageToast.show(sMsg);
+
                     return "E";
                 }
 
                 if (Lretun === "02") {
-                    sap.m.MessageToast.show('Only English and numbers are accepted');
+                    sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "320"); // Only English and numbers are accepted
+
+                    sap.m.MessageToast.show(sMsg);
                     return "E";
                 }
 
@@ -395,10 +404,13 @@
                 }
 
                 jQuery.sap.require('sap.m.MessageBox');
-                sap.m.MessageBox.confirm('Are you sure you want to proceed with creating a shortcut?', (e) => {
+
+                let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "321"); // Are you sure you want to proceed with creating a shortcut?
+                sap.m.MessageBox.confirm(sMsg, (e) => {
 
                     if (e !== "OK") {
-                        sap.m.MessageToast.show('Job Cancel');
+                        let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "161"); // Job canceled.
+                        sap.m.MessageToast.show(sMsg);
                         return;
                     }
 
@@ -519,7 +531,9 @@
                 if (res) {
                     //정상처리
                     jQuery.sap.require('sap.m.MessageBox');
-                    sap.m.MessageBox.show('processing is complete', {
+
+                    let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "322"); // processing is complete
+                    sap.m.MessageBox.show(sMsg, {
                         icon: sap.m.MessageBox.Icon.SUCCESS,
                         title: "success",
                         actions: [sap.m.MessageBox.Action.OK],
@@ -537,9 +551,13 @@
                 } else {
                     //처리 실패
                     jQuery.sap.require('sap.m.MessageBox');
-                    sap.m.MessageBox.show('processing failed', {
+
+                    let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "323"), // processing failed
+                        sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C00"); // fail
+
+                    sap.m.MessageBox.show(sMsg, {
                         icon: sap.m.MessageBox.Icon.ERROR,
-                        title: "failed",
+                        title: sTitle,
                         actions: [sap.m.MessageBox.Action.OK]
 
                     });
@@ -714,7 +732,7 @@
             //== General Information 영역 
             var FORM1 = new sap.ui.layout.form.Form({
                 editable: true,
-                title: "General Infomation",
+                title: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C66"), // General Infomation
                 width: "100%"
             });
             var LAYO1 = new sap.ui.layout.form.ResponsiveGridLayout({
@@ -745,7 +763,7 @@
 
             var FORM1_LABEL1 = new sap.m.Label({
                 design: "Bold",
-                text: "APP ID",
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C67"), // APP ID
                 required: true
             });
             FORM1_ELEMENT1.setLabel(FORM1_LABEL1);
@@ -753,7 +771,7 @@
             var FORM1_INPUT1 = new sap.m.Input({
                 maxLength: 20,
                 showValueHelp: true,
-                placeholder: "U4A Application ID",
+                placeholder: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D09"), // U4A Application ID
                 liveChange: (e) => {
                     var Lval = FORM1_INPUT1.getValue();
                     FORM1_INPUT1.setValue(Lval.toUpperCase());
@@ -770,7 +788,7 @@
 
             var FORM1_LABEL2 = new sap.m.Label({
                 design: "Bold",
-                text: "APP Name"
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C68"), // APP Name
             });
             FORM1_ELEMENT2.setLabel(FORM1_LABEL2);
 
@@ -784,14 +802,18 @@
             var FORM1_ELEMENT3 = new sap.ui.layout.form.FormElement();
             FORM1_CNT3.addFormElement(FORM1_ELEMENT3);
 
+            let sFileNameTxt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C35"); // File Name
             var FORM1_LABEL3 = new sap.m.Label({
                 design: "Bold",
-                text: "File Name"
+                text: sFileNameTxt
             });
             FORM1_ELEMENT3.setLabel(FORM1_LABEL3);
 
+            let sPlace1Txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D10"); // Shortcut
+            sPlace1Txt += " " + sFileNameTxt; // Shortcut File Name
+
             var FORM1_INPUT3 = new sap.m.Input({
-                placeholder: "Shortcut File Name"
+                placeholder: sPlace1Txt
             });
             FORM1_ELEMENT3.addField(FORM1_INPUT3);
 
@@ -804,15 +826,17 @@
 
             var FORM1_LABEL4 = new sap.m.Label({
                 design: "Bold",
-                text: "Save As Path",
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C69"), // Save As Path
                 required: true
             });
             FORM1_ELEMENT4.setLabel(FORM1_LABEL4);
 
+            let sPlace2Txt = sPlace1Txt + " " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D11"); // Shortcut Download Path
+
             var FORM1_INPUT4 = new sap.m.Input({
                 valueHelpOnly: true,
                 showValueHelp: true,
-                placeholder: "Shortcut Download Path",
+                placeholder: sPlace2Txt,
                 valueHelpRequest: fn_select_Path
             });
             FORM1_INPUT4._mtype = "01";
@@ -827,14 +851,15 @@
 
             var FORM1_LABEL5 = new sap.m.Label({
                 design: "Bold",
-                text: "Icon Path"
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C70"), // Icon Path
             });
             FORM1_ELEMENT5.setLabel(FORM1_LABEL5);
 
+            let sPlace3Txt = sPlace1Txt + " " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C70"); // Shortcut Icon Path
             var FORM1_INPUT5 = new sap.m.Input({
                 valueHelpOnly: true,
                 showValueHelp: true,
-                placeholder: "Shortcut ICON Path",
+                placeholder: sPlace3Txt,
                 valueHelpRequest: fn_select_Path
             });
             FORM1_INPUT5._mtype = "02";
@@ -844,7 +869,7 @@
             //== Target Host URL 영역 
             var FORM2 = new sap.ui.layout.form.Form({
                 editable: true,
-                title: "Target Host URL",
+                title: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C71", "", "", "", ""), // Target Host URL,
                 width: "100%"
             });
             var LAYO2 = new sap.ui.layout.form.ResponsiveGridLayout({
@@ -892,23 +917,22 @@
 
             var FORM2_RADIOBUTTON1 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: "Internal Host URL"
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C72", "", "", "", ""), // Internal Host URL
             });
             FORM2_RADIOBUTTON1.addStyleClass("sapUiSmallMarginBegin");
             FORM2_RADIOBUTTONGROUP1.addButton(FORM2_RADIOBUTTON1);
 
             var FORM2_RADIOBUTTON2 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: "External Host URL"
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C73", "", "", "", ""), // External Host URL
             });
             FORM2_RADIOBUTTON2.addStyleClass("sapUiSmallMarginBegin");
             FORM2_RADIOBUTTONGROUP1.addButton(FORM2_RADIOBUTTON2);
 
-
             var FORM2_INPUT1 = new sap.m.Input({
                 enabled: false,
                 value: "",
-                placeholder: "host or domain"
+                placeholder: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D13", "", "", "", ""), // Host or Domain
             });
             FORM2_VBOX1.addItem(FORM2_INPUT1);
 
@@ -916,7 +940,7 @@
             //== Browser Type 영역 
             var FORM3 = new sap.ui.layout.form.Form({
                 editable: true,
-                title: "Browser Type",
+                title: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C74", "", "", "", ""), // Browser Type
                 width: "100%"
             });
             var LAYO3 = new sap.ui.layout.form.ResponsiveGridLayout({
@@ -959,7 +983,7 @@
 
             var FORM3_RADIOBUTTON1 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: "Chrome Browser",
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C75", "", "", "", ""), // Chrome Browser
                 visible: false
             });
             FORM3_RADIOBUTTON1.addStyleClass("sapUiSmallMarginBegin");
@@ -967,18 +991,19 @@
 
             var FORM3_RADIOBUTTON2 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: "IE edge Browser",
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C76", "", "", "", ""), // IE edge Browser
                 visible: false
             });
             FORM3_RADIOBUTTON2.addStyleClass("sapUiSmallMarginBegin");
             FORM3_RADIOBUTTONGROUP1.addButton(FORM3_RADIOBUTTON2);
 
-
+            let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C77", "", "", "", ""); // Browser Option
+            sTitle += "(" + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C75", "", "", "", "") + ")"; // Chrome Browser
 
             //== Browser Option - Chrome 영역 
             var FORM4 = new sap.ui.layout.form.Form({
                 editable: true,
-                title: "Browser Option(Chrome)",
+                title: sTitle,
                 width: "100%",
                 visible: false
             });
@@ -1026,21 +1051,21 @@
 
             var FORM4_RADIOBUTTON1 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: "App Mode"
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C78", "", "", "", ""), // App Mode
             });
             FORM4_RADIOBUTTON1.addStyleClass("sapUiSmallMarginBegin");
             FORM4_RADIOBUTTONGROUP1.addButton(FORM4_RADIOBUTTON1);
 
             var FORM4_RADIOBUTTON2 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: "Full Screen Mode"
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C79", "", "", "", ""), // Full Screen Mode
             });
             FORM4_RADIOBUTTON2.addStyleClass("sapUiSmallMarginBegin");
             FORM4_RADIOBUTTONGROUP1.addButton(FORM4_RADIOBUTTON2);
 
             var FORM4_RADIOBUTTON3 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: "Kiosk Mode"
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C80", "", "", "", ""), // Kiosk Mode
             });
             FORM4_RADIOBUTTON3.addStyleClass("sapUiSmallMarginBegin");
             FORM4_RADIOBUTTONGROUP1.addButton(FORM4_RADIOBUTTON3);
@@ -1052,22 +1077,24 @@
             FORM4_VBOX1.addItem(FORM4_HBOX2);
 
             var FORM4_CHECKBOX1 = new sap.m.CheckBox({
-                text: "Displble Translate Mode"
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C81", "", "", "", ""), // Displble Translate Mode
             });
             FORM4_CHECKBOX1.addStyleClass("sapUiTinyMarginBegin");
             FORM4_HBOX2.addItem(FORM4_CHECKBOX1);
 
             var FORM4_CHECKBOX2 = new sap.m.CheckBox({
-                text: "Secret Mode"
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C82", "", "", "", ""), // Secret Mode
             });
             FORM4_CHECKBOX2.addStyleClass("sapUiTinyMarginBegin");
             FORM4_HBOX2.addItem(FORM4_CHECKBOX2);
 
+            let sTitle1 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C77", "", "", "", ""); // Browser Option
+            sTitle1 += "(" + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C76", "", "", "", "") + ")"; // IE edge Browser
 
             //== Browser Option - IE edge 영역 
             var FORM5 = new sap.ui.layout.form.Form({
                 editable: true,
-                title: "Browser Option(IE edge)",
+                title: sTitle1,
                 width: "100%",
                 visible: false
             });
