@@ -2308,8 +2308,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0;
         oWebPreferences.partition = SESSKEY;
-        oWebPreferences.browserkey = BROWSERKEY;
-        oWebPreferences.SYSID = oSAPServerInfo.SYSID;
+        oWebPreferences.browserkey = BROWSERKEY;        
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);

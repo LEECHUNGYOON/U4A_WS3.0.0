@@ -224,7 +224,7 @@
         oWin.loadURL(PATHINFO.SERVERLIST_v2);
 
         // server list v2
-        oWin.webContents.openDevTools();
+        // oWin.webContents.openDevTools();
 
         oWin.webContents.on('did-finish-load', function() {
 

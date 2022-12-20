@@ -943,6 +943,20 @@ function getSameBrowsers() {
 }
 
 /************************************************************************
+ * electron native object에 접속한 User 정보를 저장한다
+ ************************************************************************/
+function setProcessEnvUserInfo(oUserInfo){
+    process.USERINFO = oUserInfo;
+}
+
+/************************************************************************
+ * 기 저장한 electron native object에 접속 User 정보를 구한다
+ ************************************************************************/
+function getProcessEnvUserInfo(){
+    return process.USERINFO;
+}
+
+/************************************************************************
  * local console [R&D 전용 console.log]
  ************************************************************************/
 zconsole.log = (sConsole) => {

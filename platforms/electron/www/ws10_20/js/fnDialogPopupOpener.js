@@ -5,7 +5,7 @@
  * - file Desc : 각종 Dialog Popup Opener
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -36,14 +36,14 @@
      * @param {String}  [oOptions.initCond.ERUSR] Create User
      * @param {Int}     [oOptions.initCond.HITS]  Max Count
      ************************************************************************/
-    oAPP.fn.fnAppF4PopupOpener = function(oOptions, fnAppF4DataCallback) {
+    oAPP.fn.fnAppF4PopupOpener = function (oOptions, fnAppF4DataCallback) {
 
         if (oAPP.fn.fnAppF4PopupOpen) {
             oAPP.fn.fnAppF4PopupOpen(oOptions, fnAppF4DataCallback);
             return;
         }
 
-        oAPP.loadJs("fnAppF4PopupOpen", function() {
+        oAPP.loadJs("fnAppF4PopupOpen", function () {
             oAPP.fn.fnAppF4PopupOpen(oOptions, fnAppF4DataCallback);
         });
 
@@ -52,7 +52,7 @@
     /************************************************************************
      * WS20의 찾기 버튼 팝업 실행시켜 주는 메소드
      ************************************************************************/
-    oAPP.fn.fnFindPopupOpener = function() {
+    oAPP.fn.fnFindPopupOpener = function () {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -67,7 +67,7 @@
             return;
         }
 
-        oAPP.loadJs("fnFindPopupOpen", function() {
+        oAPP.loadJs("fnFindPopupOpen", function () {
             oAPP.fn.fnFindPopupOpen();
         });
 
@@ -78,14 +78,14 @@
     /************************************************************************
      * WS20의 MIME Dialog Opener
      ************************************************************************/
-    oAPP.fn.fnMimeDialogOpener = function() {
+    oAPP.fn.fnMimeDialogOpener = function () {
 
         if (oAPP.fn.fnMimePopupOpen) {
             oAPP.fn.fnMimePopupOpen();
             return;
         }
 
-        oAPP.loadJs("fnMimePopupOpen", function() {
+        oAPP.loadJs("fnMimePopupOpen", function () {
             oAPP.fn.fnMimePopupOpen();
         });
 
@@ -94,7 +94,7 @@
     /************************************************************************
      * WS20의 CSS & JS Link Add 팝업 실행시켜 주는 메소드
      ************************************************************************/
-    oAPP.fn.fnCssJsLinkAddPopupOpener = function(TYPE) {
+    oAPP.fn.fnCssJsLinkAddPopupOpener = function (TYPE) {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -106,7 +106,7 @@
             return;
         }
 
-        oAPP.loadJs("fnCssJsLinkAddPopupOpen", function() {
+        oAPP.loadJs("fnCssJsLinkAddPopupOpen", function () {
             oAPP.fn.fnCssJsLinkAddPopupOpen(TYPE);
         });
 
@@ -115,7 +115,7 @@
     /************************************************************************
      * WS20의 Web Security 팝업 실행시켜 주는 메소드
      ************************************************************************/
-    oAPP.fn.fnWebSecurityPopupOpener = function() {
+    oAPP.fn.fnWebSecurityPopupOpener = function () {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -127,7 +127,7 @@
             return;
         }
 
-        oAPP.loadJs("fnWebSecurityPopupOpen", function() {
+        oAPP.loadJs("fnWebSecurityPopupOpen", function () {
             oAPP.fn.fnWebSecurityPopupOpen();
         });
 
@@ -136,7 +136,7 @@
     /************************************************************************
      * WS20의 Client Event 팝업 실행시켜 주는 메소드
      ************************************************************************/
-    oAPP.fn.fnClientEditorPopupOpener = function(TYPE, PARAM, fnCallback) {
+    oAPP.fn.fnClientEditorPopupOpener = function (TYPE, PARAM, fnCallback) {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -148,7 +148,7 @@
             return;
         }
 
-        oAPP.loadJs("fnClientEditorPopupOpen", function() {
+        oAPP.loadJs("fnClientEditorPopupOpen", function () {
             oAPP.fn.fnClientEditorPopupOpen(TYPE, PARAM, fnCallback);
         });
 
@@ -157,7 +157,7 @@
     /************************************************************************
      * WS20의 Error Page Editor 팝업 실행시켜 주는 메소드
      ************************************************************************/
-    oAPP.fn.fnErrorPageEditorPopupOpener = function() {
+    oAPP.fn.fnErrorPageEditorPopupOpener = function () {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -170,7 +170,7 @@
             return;
         }
 
-        oAPP.loadJs("fnErrorPageEditorPopupOpen", function() {
+        oAPP.loadJs("fnErrorPageEditorPopupOpen", function () {
             oAPP.fn.fnErrorPageEditorPopupOpen();
         });
 
@@ -182,7 +182,7 @@
      * @param {String} sAppId  
      * - 복사할 APPID
      * **********************************************************************/
-    oAPP.fn.fnAppCopyPopupOpener = function(sAppId) {
+    oAPP.fn.fnAppCopyPopupOpener = function (sAppId) {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -195,7 +195,7 @@
             return;
         }
 
-        oAPP.loadJs("fnAppCopyPopupOpen", function() {
+        oAPP.loadJs("fnAppCopyPopupOpen", function () {
             oAPP.fn.fnAppCopyPopupOpen(sAppId);
         });
 
@@ -207,7 +207,7 @@
      * @param {function} fnCallback  
      * - Package 정보 Search Help Popup 호출후 선택한 Package 값 리턴 콜백 메소드
      * **********************************************************************/
-    oAPP.fn.fnPackgSchpPopupOpener = function(fnCallback) {
+    oAPP.fn.fnPackgSchpPopupOpener = function (fnCallback) {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -220,7 +220,7 @@
             return;
         }
 
-        $.getScript("design/js/callF4HelpPopup.js", function() {
+        $.getScript("design/js/callF4HelpPopup.js", function () {
             //f4 help 팝업 function load 이후 팝업 호출.
             oAPP.fn.callF4HelpPopup("DEVCLASS", "DEVCLASS", [], [], fnCallback);
         });
@@ -233,14 +233,14 @@
      * @param {Object} oTempData  
      * - Ui Template 관련 정보
      * **********************************************************************/
-    oAPP.fn.fnUiTempWizardPopupOpener = function(oTempData) {
+    oAPP.fn.fnUiTempWizardPopupOpener = function (oTempData) {
 
         if (oAPP.fn.fnUiTempWizardPopupOpen) {
             oAPP.fn.fnUiTempWizardPopupOpen(oTempData);
             return;
         }
 
-        oAPP.loadJs("fnUiTempWizardPopupOpen", function() {
+        oAPP.loadJs("fnUiTempWizardPopupOpen", function () {
             oAPP.fn.fnUiTempWizardPopupOpen(oTempData);
         });
 
@@ -252,14 +252,14 @@
      * @param {function} lf_success  
      * - CTS popup 실행 후 선택한 CTS 값 리턴 콜백 메소드
      * **********************************************************************/
-    oAPP.fn.fnCtsPopupOpener = function(lf_success) {
+    oAPP.fn.fnCtsPopupOpener = function (lf_success) {
 
         if (oAPP.fn.fnCtsPopupOpen) {
             oAPP.fn.fnCtsPopupOpen(lf_success);
             return;
         }
 
-        oAPP.loadJs("fnCtsPopupOpen", function() {
+        oAPP.loadJs("fnCtsPopupOpen", function () {
             oAPP.fn.fnCtsPopupOpen(lf_success);
         });
 
@@ -278,7 +278,7 @@
      * @param {function} fnCallback
      * - Callback function
      * **********************************************************************/
-    oAPP.fn.fnBindPopupOpener = function(sTitle, sKind, fnCallback) {
+    oAPP.fn.fnBindPopupOpener = function (sTitle, sKind, fnCallback) {
 
         //대상 function이 존재하는경우 호출 처리.
         if (typeof oAPP.fn.callBindPopup !== "undefined") {
@@ -287,7 +287,7 @@
         }
 
         //대상 function이 존재하지 않는경우 script 호출.
-        oAPP.fn.getScript("design/js/callBindPopup", function() {
+        oAPP.fn.getScript("design/js/callBindPopup", function () {
             oAPP.fn.callBindPopup(sTitle, sKind, fnCallback);
         });
 
@@ -323,6 +323,7 @@
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -346,7 +347,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oBindPopupData = {
                 oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보 (필수)
@@ -409,7 +410,7 @@
     /************************************************************************
      * Text 검색 팝업 (electron 기능)
      ************************************************************************/
-    oAPP.fn.fnTextSearchPopupOpener = function() {
+    oAPP.fn.fnTextSearchPopupOpener = function () {
 
         // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
         if (parent.getBusy() == 'X') {
@@ -444,6 +445,7 @@
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -462,7 +464,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             oBrowserWindow.show();
 
@@ -470,7 +472,7 @@
 
         });
 
-        oBrowserWindow.webContents.on("dom-ready", function() {
+        oBrowserWindow.webContents.on("dom-ready", function () {
 
             lf_move();
 
@@ -625,6 +627,7 @@
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -653,11 +656,11 @@
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
             lf_move();
         });
 
-        oBrowserWindow.webContents.on("dom-ready", function() {
+        oBrowserWindow.webContents.on("dom-ready", function () {
             lf_move();
         });
 
@@ -737,7 +740,7 @@
     /************************************************************************
      * Document Popup Open
      ************************************************************************/
-    oAPP.fn.fnDocuPopupOpener = function() {
+    oAPP.fn.fnDocuPopupOpener = function () {
 
         var sPopupName = "APPDOCU";
 
@@ -762,6 +765,7 @@
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -784,7 +788,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oDocuData = {
                 USERINFO: parent.getUserInfo(),
@@ -844,6 +848,7 @@
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -865,7 +870,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             let oOptionData = {
                 BROWSKEY: BROWSKEY, // 브라우저 고유키 
@@ -936,6 +941,7 @@
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -957,7 +963,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             let oDocuData = {
                 oUserInfo: parent.getUserInfo(),
@@ -1073,7 +1079,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             oBrowserWindow.webContents.send("export_import-INITDATA", oSendData);
 
@@ -1167,7 +1173,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             oBrowserWindow.webContents.send("if-about-u4a", oSendData);
 
@@ -1194,8 +1200,6 @@
      ************************************************************************/
     oAPP.fn.fnRuntimeClassNaviPopupOpener = () => {
 
-        debugger;
-        
         var sWinObjType = "RTMCLS";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
@@ -1220,12 +1224,16 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0;
-        // oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
 
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
+
+        // oBrowserOptions.webPreferences.USERINFO = parent.getProcessEnvUserInfo();
+        // oBrowserOptions.webPreferences.USERINFO1 = parent.process.USERINFO;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -1236,7 +1244,7 @@
 
         oBrowserWindow.loadURL(sUrl);
 
-        oBrowserWindow.webContents.openDevTools();
+        // oBrowserWindow.webContents.openDevTools();
 
         oBrowserWindow.once('ready-to-show', () => {
 
@@ -1246,7 +1254,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oRuntimeInfo = {
                 oUserInfo: oUserInfo,
@@ -1332,7 +1340,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             oBrowserWindow.show();
 
@@ -1398,7 +1406,7 @@
     /************************************************************************
      * WS20의 하단 멀티 푸터 메시지 처리
      * **********************************************************************/
-    oAPP.fn.fnMultiFooterMsg = function(aMsg) {
+    oAPP.fn.fnMultiFooterMsg = function (aMsg) {
 
         var sPopupName = "ERRMSGPOP";
 
@@ -1448,7 +1456,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oSendData = {
                 oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보
@@ -1485,7 +1493,7 @@
     /************************************************************************
      * WS20의 UI Property 도움말
      * **********************************************************************/
-    oAPP.fn.fnPropertyHelpPopup = function(sUrl) {
+    oAPP.fn.fnPropertyHelpPopup = function (sUrl) {
 
         var sWinObjType = "PROPHELP",
             sPath = parent.getServerPath() + "/external_open?URL=" + encodeURIComponent(sUrl + "&WS=X");
@@ -1532,7 +1540,7 @@
             return;
         }
 
-        oAPP.loadJs("fnEditorPopupOpen", function() {
+        oAPP.loadJs("fnEditorPopupOpen", function () {
             oAPP.fn.fnEditorPopupOpen(oEditorInfo, sSearchValue);
         });
 
@@ -1592,7 +1600,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oData = {
                 USERINFO: parent.getUserInfo(), // User 정보
@@ -1641,7 +1649,7 @@
             return;
         }
 
-        $.getScript("design/js/callDesignLayoutChangePopup.js", function() {
+        $.getScript("design/js/callDesignLayoutChangePopup.js", function () {
             oAPP.fn.callDesignLayoutChangePopup();
         });
 
@@ -1703,7 +1711,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oSendData = {
                 oUserInfo: oUserInfo,
@@ -1795,7 +1803,7 @@
         };
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oSendData = {
                 BROWSKEY: BROWSKEY,
@@ -1987,12 +1995,12 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oSendData = {
                 browserInfo: T_info,
                 config: S_config,
-                oMetadata : parent.getMetadata()
+                oMetadata: parent.getMetadata()
             };
 
             // 오픈할 URL 파라미터 전송

@@ -12,7 +12,7 @@ var zconsole = parent.WSERR(window, document, console);
 
 let oAPP = parent.oAPP;
 
-(function(window, oAPP) {
+(function (window, oAPP) {
     "use strict";
 
     oAPP.settings = {};
@@ -36,7 +36,7 @@ let oAPP = parent.oAPP;
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.fn.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
+    oAPP.fn.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -54,7 +54,7 @@ let oAPP = parent.oAPP;
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.fn.fnGetModelProperty = function(sModelPath) {
+    oAPP.fn.fnGetModelProperty = function (sModelPath) {
 
         return sap.ui.getCore().getModel().getProperty(sModelPath);
 
@@ -63,7 +63,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * ws의 설정 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.getSettingsInfo = function() {
+    oAPP.fn.getSettingsInfo = function () {
 
         // Browser Window option
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
@@ -81,7 +81,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * UI5 BootStrap 
      ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = function() {
+    oAPP.fn.fnLoadBootStrapSetting = function () {
 
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
@@ -190,7 +190,7 @@ let oAPP = parent.oAPP;
                     demandPopin: true,
                     minScreenWidth: "Tablet",
                     header: new sap.m.Label({
-                        text: "Document",
+                        text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B65"), // Document
                         design: sap.m.LabelDesign.Bold
                     })
                 })
@@ -217,7 +217,7 @@ let oAPP = parent.oAPP;
     oAPP.fn.fnGetFileList = () => {
 
         return new Promise((resolve, reject) => {
-
+           
             let oSettingsPath = PATH.join(APPPATH, "settings", "ws_settings.json"),
                 oSettings = require(oSettingsPath),
                 sHelpDocFolderPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFolderPath);
@@ -234,7 +234,12 @@ let oAPP = parent.oAPP;
 
                 let iFileLength = aFiles.length;
                 if (iFileLength == 0) {
-                    reject("not Exists Document Files.");
+
+                    let sMsg = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D18"); // Document File
+                    oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "073", sMsg); // &1 does not exist.
+
+                    reject(sMsg);
+
                     return;
                 }
 
@@ -287,9 +292,9 @@ let oAPP = parent.oAPP;
     // // UI5 Boot Strap을 로드 하고 attachInit 한다.
     oAPP.fn.fnLoadBootStrapSetting();
 
-    window.onload = function() {
+    window.onload = function () {
 
-        sap.ui.getCore().attachInit(function() {
+        sap.ui.getCore().attachInit(function () {
 
             // u4a help document의 파일 리스트를 구한다.
             oAPP.fn.fnGetFileList().then((aFileList) => {
@@ -302,21 +307,24 @@ let oAPP = parent.oAPP;
 
             }).catch((e) => {
 
-                alert(e);
+                console.error(e);
+
+                let sTitle = "[Critical Error]: ";
+                sTitle += "Please contact the solution team.";
+
+                let sErrorMsg = e;
+
+                oAPP.DIALOG.showMessageBox(oAPP.CURRWIN, {
+                    title: sTitle,
+                    message: sErrorMsg,
+                    type: "error"
+                }).then(() => {
+
+                    oAPP.CURRWIN.close();
+
+                });
 
             });
-
-            // oAPP.fn.fnInitModelBinding();
-
-            // oAPP.fn.fnInitRendering();
-
-            // oAPP.setBusy('');
-
-            // setTimeout(() => {
-
-            //     $('#content').fadeIn(1000, 'linear');
-
-            // }, 100);
 
         });
 

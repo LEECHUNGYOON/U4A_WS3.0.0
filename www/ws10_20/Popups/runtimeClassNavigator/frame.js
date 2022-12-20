@@ -4,7 +4,7 @@
  * - file Name : runtimeClassNavigator/frame.js
  ************************************************************************/
 
-let oAPP = (function(window) {
+let oAPP = (function (window) {
     "use strict";
 
     let oAPP = {};
@@ -20,7 +20,27 @@ let oAPP = (function(window) {
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
 
-    oAPP.setBusy = function(bIsShow) {
+    const
+        CURRWIN = oAPP.REMOTE.getCurrentWindow(),
+        WEBCON = CURRWIN.webContents,
+        WEBPREF = WEBCON.getWebPreferences(),
+        USERINFO = WEBPREF.USERINFO,
+        USERDATA = oAPP.APP.getPath("userData"),
+        APPPATH = oAPP.APP.getAppPath(),
+        LANGU = USERINFO.LANGU,
+        SYSID = USERINFO.SYSID;
+
+    // util js
+    let sWsMsgPath = oAPP.PATH.join(APPPATH, "ws10_20", "js", "ws_util.js");
+
+    // message class
+    const
+        WSUTIL = require(sWsMsgPath),
+        WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+
+    oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+
+    oAPP.setBusy = function (bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
 
@@ -35,91 +55,6 @@ let oAPP = (function(window) {
         }
 
     };
-
-    oAPP.common.fnGetMsgClsText = (sMsgCls, sMsgNum, p1, p2, p3, p4) => {
-
-        // Metadata에서 메시지 클래스 정보를 구한다.
-        var oMeta = getMetadata(),
-            sLangu = oMeta.LANGU,
-            aMsgClsTxt = oMeta["MSGCLS"];
-
-        if (!aMsgClsTxt || !aMsgClsTxt.length) {
-            return sMsgCls + "|" + sMsgNum;
-        }
-
-        let sDefLangu = "E"; // default language    
-
-        // 현재 접속한 언어로 메시지를 찾는다.
-        let oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sLangu && a.MSGNR == sMsgNum);
-
-        // 현재 접속한 언어로 메시지를 못찾은 경우
-        if (!oMsgTxt) {
-
-            // 접속한 언어가 영어일 경우 빠져나간다.
-            if (sDefLangu == sLangu) {
-                return sMsgCls + "|" + sMsgNum;
-
-            }
-
-            // 접속한 언어가 영어가 아닌데 메시지를 못찾으면 영어로 찾는다.
-            oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sDefLangu && a.MSGNR == sMsgNum);
-
-            // 그래도 없다면 빠져나간다.
-            if (!oMsgTxt) {
-                return sMsgCls + "|" + sMsgNum;
-            }
-
-        }
-
-        var sText = oMsgTxt.TEXT,
-            aWithParam = [];
-
-        // 파라미터로 전달 받은 Replace Text 수집
-        aWithParam.push(p1 == null ? "" : p1);
-        aWithParam.push(p2 == null ? "" : p2);
-        aWithParam.push(p3 == null ? "" : p3);
-        aWithParam.push(p4 == null ? "" : p4);
-
-        var iWithParamLenth = aWithParam.length;
-        if (iWithParamLenth == 0) {
-            return sText;
-        }
-
-        // 메시지 클래스 텍스트에서 "& + 숫자" (예: &1) 값이 있는 것부터 순차적으로 치환한다.
-        for (var i = 0; i < iWithParamLenth; i++) {
-
-            var index = i + 1,
-                sParamTxt = aWithParam[i];
-
-            var sRegEx = "&" + index,
-                oRegExp = new RegExp(sRegEx, "g");
-
-            sText = sText.replace(oRegExp, sParamTxt);
-
-        }
-
-        sText = sText.replace(new RegExp("&\\d+", "g"), "");
-
-        // 메시지 클래스 텍스트에서 "&" 를 앞에서 부터 순차적으로 치환한다."
-        for (var i = 0; i < iWithParamLenth; i++) {
-
-            var sParamTxt = aWithParam[i];
-
-            sText = sText.replace(new RegExp("&", "i"), sParamTxt);
-
-        }
-
-        sText = sText.replace(new RegExp("&", "g"), "");
-
-        return sText;
-
-    }; // end of oAPP.common.fnTestGetMsgClsText
-
-    function getMetadata() {
-
-        return oAPP.attr.oMetadata;
-
-    }
 
     /************************************************************************
      * IPCRENDERER Events..

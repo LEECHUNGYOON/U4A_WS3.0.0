@@ -1438,8 +1438,6 @@ let oAPP = (function () {
 
         var oUserInfo = jQuery.extend({}, oResult, oLogInData);
 
-        oUserInfo.WSVER = APP.getVersion();
-
         // 로그인 유저의 아이디/패스워드를 저장해둔다.    
         parent.setUserInfo(oUserInfo);
 
@@ -1465,6 +1463,19 @@ let oAPP = (function () {
             }
 
         }
+
+        // save data to electron native object(process)
+        let oProcessUserInfo = {
+            CLIENT: oUserInfo.CLIENT,
+            ID : oUserInfo.ID,
+            PW : oUserInfo.PW,
+            SYSID: oUserInfo.SYSID,
+            LANGU: oResult.META.LANGU,
+            LANGU_CNV: oUserInfo.LANGU,
+        };
+
+        // process.env 변수에 접속한 User 정보를 저장한다.
+        parent.setProcessEnvUserInfo(oProcessUserInfo);
 
         $('#content').css({
             "display": "none"

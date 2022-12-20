@@ -2,6 +2,7 @@ const oAPP = {
     ui: {},
     fn: {},
     attr: {},
+    common: {},
     onStart: function () {
         this.remote = require('@electron/remote');
         this.ipcRenderer = require('electron').ipcRenderer;
@@ -35,6 +36,31 @@ const oAPP = {
 
 };
 
+/*******************************************************
+ * 메시지클래스 텍스트 작업 관련 Object -- start
+ *******************************************************/
+const
+    REMOTE = oAPP.REMOTE,
+    PATH = REMOTE.require('path'),
+    CURRWIN = REMOTE.getCurrentWindow(),
+    WEBCON = CURRWIN.webContents,
+    WEBPREF = WEBCON.getWebPreferences(),
+    USERINFO = WEBPREF.USERINFO,
+    APP = REMOTE.app,
+    APPPATH = APP.getAppPath(),
+    LANGU = USERINFO.LANGU,
+    SYSID = USERINFO.SYSID;
+
+const
+    WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+    WSUTIL = require(WSMSGPATH),
+    WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+
+oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+
+/*******************************************************
+ * 메시지클래스 텍스트 작업 관련 Object -- end
+ *******************************************************/
 //Device ready 
 document.addEventListener('DOMContentLoaded', onDeviceReady, false);
 

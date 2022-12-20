@@ -3,8 +3,13 @@
    ************************************************************************/
   var zconsole = parent.WSERR(window, document, console);
 
+  let oAPP = parent.oAPP;
   // const oAPP = parent.fn_getParent();
   // const oWIN = oAPP.remote.getCurrentWindow();
+
+  // 브라우저 title
+  let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B65"); // Document     
+  oAPP.CURRWIN.setTitle(sTitle);
 
   /************************************************************************
    * ws의 설정 정보를 구한다.
@@ -203,9 +208,12 @@
       oPrc.fn_setMsgMove = (t) => {
               oApp.destroy();
 
+              let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B93"); // Error
+              sTitle += " " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B86"); // Information
+
               var oMsg = new sap.m.MessagePage({
-                  title: "Error infomation",
-                  description: "Contact your manager",
+                  title: sTitle,
+                  description: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "192"), // Fatal Error! Please contact your system administrator.
                   text: t,
                   icon: "sap-icon://error"
               });
@@ -270,6 +278,8 @@
           xhr.open("POST", url);
           //xhr.setRequestHeader('Content-Type', 'multipart/form-data');
 
+          let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "324"); // The wrong approach
+
           xhr.onload = function (e) {
 
               oApp.setBusy(false);
@@ -279,7 +289,7 @@
 
               } catch (e) {
                   //크리티컬 메시지 처리 서버에서 JSON 오류라는건 잘못된 경로로 판단함 
-                  oPrc.fn_setMsgMove("The wrong approach");
+                  oPrc.fn_setMsgMove(sMsg);
                   return;
 
               }
@@ -299,7 +309,7 @@
 
                   default:
                       //크리티컬 메시지 처리 서버에서 JSON 오류라는건 잘못된 경로로 판단함 
-                      oPrc.fn_setMsgMove("The wrong approach");
+                      oPrc.fn_setMsgMove(sMsg);
                       return;
                       break;
 
@@ -309,8 +319,9 @@
 
           xhr.onerror = function (e) {
               oApp.setBusy(false);
+
               //크리티컬 메시지 처리 서버에서 JSON 오류라는건 잘못된 경로로 판단함 
-              oPrc.fn_setMsgMove("The wrong approach");
+              oPrc.fn_setMsgMove(sMsg);
 
           };
 
@@ -339,6 +350,8 @@
           oForm.append('sap-password', '1qazxsw2@');  
           */
 
+          let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "324"); // The wrong approach
+
           xhr.open("POST", url);
           xhr.onload = function (e) {
 
@@ -349,7 +362,7 @@
 
               } catch (e) {
                   //크리티컬 메시지 처리 서버에서 JSON 오류라는건 잘못된 경로로 판단함 
-                  oPrc.fn_setMsgMove("The wrong approach");
+                  oPrc.fn_setMsgMove(sMsg);
                   return;
 
               }
@@ -388,7 +401,7 @@
 
                   default:
                       //크리티컬 메시지 처리 서버에서 JSON 오류라는건 잘못된 경로로 판단함 
-                      oPrc.fn_setMsgMove("The wrong approach");
+                      oPrc.fn_setMsgMove(sMsg);
                       return;
                       break;
 
@@ -414,7 +427,7 @@
           xhr.onerror = function () {
               oApp.setBusy(false);
               //크리티컬 메시지 처리 서버에서 JSON 오류라는건 잘못된 경로로 판단함 
-              oPrc.fn_setMsgMove("The wrong approach");
+              oPrc.fn_setMsgMove(sMsg);
 
           };
 
@@ -667,7 +680,7 @@
       //====================================================================================          
       let oSpage = new sap.m.Page({
           enableScrolling: false,
-          title: "Document List",
+          title: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D14"), // Document List
       });
       oApp.addMasterPage(oSpage);
 
@@ -744,7 +757,9 @@
 
               }, 200);
 
-              sap.m.MessageToast.show('document has been created');
+              let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "325"); // document has been created
+
+              sap.m.MessageToast.show(sMsg);
 
 
           }
@@ -763,14 +778,18 @@
 
               if (oNaviList.getItems().length === 0) {
                   oApp.showMaster(true);
-                  sap.m.MessageToast.show('Select the delete line');
+
+                  let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "326"); // Select the delete line
+                  sap.m.MessageToast.show(sMsg);
                   return;
               }
 
+              let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "003"); // Do you really want to delete the object?
+
               //질문팝업 
-              sap.m.MessageBox.information("do you want to delete?", {
+              sap.m.MessageBox.information(sMsg, {
                   actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CLOSE],
-                  emphasizedAction: "Manage Products",
+                  emphasizedAction: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D15"), // Manage Products
                   onClose: function (sAction) {
                       if (sap.m.MessageBox.Action.OK === sAction) {
 
@@ -781,7 +800,8 @@
                           oPrc.fn_delDOCLineData(oPrc.DOCKY);
 
                           //삭제 완료 
-                          sap.m.MessageToast.show('Deletion processing complete');
+                          let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "327"); // Deletion processing complete
+                          sap.m.MessageToast.show(sMsg);
 
                       }
 
@@ -804,14 +824,17 @@
 
               if (oNaviList.getItems().length === 0) {
                   oApp.showMaster(true);
-                  sap.m.MessageToast.show('Saved data does not exist');
+
+                  let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "328"); // Saved data does not exist
+                  sap.m.MessageToast.show(sMsg);
                   return;
               }
 
               //질문팝업 
-              sap.m.MessageBox.information("do you want to save", {
+              let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "010"); // Do you want to save it?
+              sap.m.MessageBox.information(sMsg, {
                   actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CLOSE],
-                  emphasizedAction: "Manage Products",
+                  emphasizedAction: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D15"), // Manage Products
                   onClose: function (sAction) {
                       if (sap.m.MessageBox.Action.OK === sAction) {
                           //저장 처리 
@@ -825,15 +848,11 @@
           }
       });
 
-      debugger;
-
       oTool.addContentLeft(oBTsave);
 
       //toolbar 우측 : 문서 갱신 date/time
       var oTimeStmp = new sap.m.Text();
       oTool.addContentRight(oTimeStmp);
-
-
 
       //content 영역 Page 
       let oMpage = new sap.m.Page({
@@ -845,13 +864,14 @@
       //tool 영역 page 반영 
       oMpage.setCustomHeader(oTool);
 
-
       //제목(타이틀) 
+      let sPlaceholder = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D16"); // Title
+
       var oInput = new sap.m.Input({
           width: "98%",
-          placeholder: "Title..",
+          placeholder: sPlaceholder,
           valueState: "Information",
-          valueStateText: "Document header title field",
+          valueStateText: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D17"), // Document Subject,
           submit: () => {
 
               //변경 여부 지시자 설정 
