@@ -1422,7 +1422,10 @@
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.title = "Error Message Popup";
+        let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B93", "", "", "", ""); // Error
+        sTitle += " " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D24", "", "", "", ""); // Message Popup
+
+        oBrowserOptions.title = sTitle;
         oBrowserOptions.center = true;
         oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0;
@@ -1434,6 +1437,7 @@
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);

@@ -13,7 +13,6 @@ const oAPP = {
         this.__dirname = __dirname;
         this.USERDATA_PATH = this.remote.app.getPath("userData");
 
-
         //WS Main 에서 호출받은 기본 I/F Data 
         oAPP.ipcRenderer.on('if-ws-options-info', (event, data) => {
 
@@ -32,35 +31,38 @@ const oAPP = {
         //     oAPP.attr.oUserInfo = data.oUserInfo; // User 정보(필수)
         // });
 
+        /*******************************************************
+         * 메시지클래스 텍스트 작업 관련 Object -- start
+         *******************************************************/
+        const
+            REMOTE = require('@electron/remote'),
+            PATH = REMOTE.require('path'),
+            CURRWIN = REMOTE.getCurrentWindow(),
+            WEBCON = CURRWIN.webContents,
+            WEBPREF = WEBCON.getWebPreferences(),
+            USERINFO = WEBPREF.USERINFO,
+            APP = REMOTE.app,
+            APPPATH = APP.getAppPath(),
+            LANGU = USERINFO.LANGU,
+            SYSID = USERINFO.SYSID;
+
+        const
+            WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+            WSUTIL = require(WSMSGPATH),
+            WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+
+        oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+
+        /*******************************************************
+         * 메시지클래스 텍스트 작업 관련 Object -- end
+         *******************************************************/
+
     }
 
 };
 
-/*******************************************************
- * 메시지클래스 텍스트 작업 관련 Object -- start
- *******************************************************/
-const
-    REMOTE = oAPP.REMOTE,
-    PATH = REMOTE.require('path'),
-    CURRWIN = REMOTE.getCurrentWindow(),
-    WEBCON = CURRWIN.webContents,
-    WEBPREF = WEBCON.getWebPreferences(),
-    USERINFO = WEBPREF.USERINFO,
-    APP = REMOTE.app,
-    APPPATH = APP.getAppPath(),
-    LANGU = USERINFO.LANGU,
-    SYSID = USERINFO.SYSID;
 
-const
-    WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
-    WSUTIL = require(WSMSGPATH),
-    WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
 
-oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
-
-/*******************************************************
- * 메시지클래스 텍스트 작업 관련 Object -- end
- *******************************************************/
 //Device ready 
 document.addEventListener('DOMContentLoaded', onDeviceReady, false);
 

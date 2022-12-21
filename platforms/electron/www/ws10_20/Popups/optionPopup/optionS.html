@@ -27,7 +27,6 @@
     <div id="content"></div>
 
     <script>
-        
         /************************************************************************
          * 에러 감지
          ************************************************************************/
@@ -219,6 +218,21 @@
                             });
 
                         }
+                    }).bindProperty("text", "MCODE", function (MCODE) {
+
+                        switch (MCODE) {
+                            case "ThemeSetting":
+                                return oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON",
+                                    "D22"); // Theme Setting
+
+                            case "CdnSetting":
+                                return oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON",
+                                    "D19"); // CDN Setting
+
+                            default:
+                                break;
+                        }
+
                     });
 
                     oUI5.NAVIGATIONLIST.bindAggregation('items', {
@@ -253,23 +267,16 @@
                         }
                     });
 
-
                     TOOLHEADER.addContent(oBtMenu);
                     TOOLHEADER.addContent(new sap.m.ToolbarSpacer());
 
-
-
                     oUI5.APP.placeAt("content");
-
 
                     //window 활성 
                     oAPP.remote.getCurrentWindow().show();
 
                     //content 활성 
-                    $('#content').fadeIn(3000);
-
-
-
+                    $('#content').fadeIn(300);
 
 
                 }); //[END] BASE DATA 추출 

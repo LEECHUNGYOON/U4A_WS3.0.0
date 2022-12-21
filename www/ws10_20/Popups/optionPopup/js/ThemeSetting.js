@@ -5,6 +5,8 @@
 
 (function (oCTNR, oCTNRLIST) {
 
+	const APPCOMMON = oAPP.common;
+
 	function fn_WaitMode(a) {
 
 		console.log("Busy: " + a);
@@ -32,7 +34,7 @@
 		showHeader: true,
 		busyIndicatorDelay: 1,
 		busy: false,
-		title: "Theme Selection",
+		title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C65", "", "", "", ""), // Theme Selection
 		enableScrolling: false
 	});
 
@@ -42,7 +44,7 @@
 
 	var oLB = new sap.m.Label({
 		design: "Bold",
-		text: "Select Theme"
+		text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C64", "", "", "", ""), // Select Theme
 	});
 	oSform.addContent(oLB);
 
@@ -104,7 +106,7 @@
 
 	//경고 문구 
 	var oTxt1 = new sap.m.Text({
-		text: "The theme is applied after re-running."
+		text: APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "331", "", "", "", ""), // The theme is applied after re-running.
 	});
 	oTxt1.addStyleClass("sapUiTinyMarginBegin cl_theme_notice_text");
 	oBar.addContentLeft(oTxt1);
@@ -112,7 +114,7 @@
 
 	//테마 등록저장 버튼 생성 
 	var oBut = new sap.m.Button({
-		text: "Apply",
+		text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C63", "", "", "", ""), // Apply
 		type: "Emphasized",
 		icon: "sap-icon://accept",
 		press: function (e) {
@@ -172,11 +174,12 @@
 
 			page.setBusy(false);
 
-			sap.m.MessageToast.show("complete", {
+			let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"); // Options
+			sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "330", sMsg); // &1 has been saved
+
+			sap.m.MessageToast.show(sMsg, {
 				duration: 10000
 			});
-
-
 
 		}
 

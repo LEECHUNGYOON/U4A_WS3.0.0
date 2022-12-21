@@ -5,13 +5,13 @@
  * - file Desc : 서버 세션 유지
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     /************************************************************************
      * 서버 세션 유지를 위한 워커 실행
      ************************************************************************/
-    oAPP.fn.fnServerSession = function(bIsForceRun) {
+    oAPP.fn.fnServerSession = function (bIsForceRun) {
 
         // // 강제실행이 아닐 경우
         // if (!bIsForceRun) {
@@ -73,8 +73,8 @@
 
     oAPP.fn.fnServerSessionTimeOut = (oRes) => {
 
-        let oData = oRes.data;       
-        
+        let oData = oRes.data;
+
         console.error(oData.RTMSG);
 
         const
@@ -91,6 +91,12 @@
             fn_logoff_success("X");
 
         });
+
+        // 세션 타임아웃 시, 워커를 죽인다.
+        if (oAPP.attr._oServerWorker && oAPP.attr._oServerWorker) {
+            oAPP.attr._oServerWorker.terminate();
+            delete oAPP.attr._oServerWorker;
+        }
 
     };
 

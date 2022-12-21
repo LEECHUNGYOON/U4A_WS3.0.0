@@ -1,10 +1,11 @@
 (function (oNavCon, oNavConList) {
     "use strict";
-   
+
     const
         REMOTE = oAPP.remote,
         OCTOKIT = REMOTE.require("@octokit/core").Octokit,
-        BINDROOT = "/OPTS/CDN";
+        BINDROOT = "/OPTS/CDN",
+        APPCOMMON = oAPP.common;
 
     jQuery.sap.require("sap.m.MessageBox");
 
@@ -95,10 +96,12 @@
         sMoreTxt += "외부망 연결이 가능하고, 항상 최신버전으로 업그레이드를 원할 경우, CDN Setting 스위치 버튼을 On으로 저장하세요. \n\n";
         sMoreTxt += "만약, 외부망 연결이 불가능한 환경이거나, SAP 서버에 설치되어 있는 버전으로만 업그레이드를 원할 경우 CDN Setting 스위치 버튼을 Off로 저장하세요.";
 
+        let sDesc = "U4A WS 3.0 " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D20"); // Application Upgrade Setting
+
         let sBindRoot = BINDROOT,
             oModelData = {
-                TITLE: "CDN Setting",
-                DESC: "U4A WS 3.0 Application Upgrade Setting.",
+                TITLE: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D19"), // CDN Setting,
+                DESC: sDesc,
                 MORE: sMoreTxt,
                 ISCDN: oAPP.IF_DATA.ISCDN,
                 ISPING: oReturn.ISCDN
@@ -161,7 +164,7 @@
             oPanel = new sap.m.Panel({
                 expandable: true,
                 expanded: true,
-                headerText: "More Info",
+                headerText: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D21"), // More Info
                 content: [
                     new sap.m.Text({
                         text: `{${sBindRoot}/MORE}`
@@ -186,7 +189,7 @@
 
                     new sap.m.Button({
                         icon: "sap-icon://refresh",
-                        text: "Refresh",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A48"), // Refresh
                         press: (oEvent) => {
 
                             oAPP.fn.fnSetBusy(true);
@@ -202,11 +205,12 @@
                                 // 외부망 접속이 안될 경우
                                 if (oReturn.ISCDN == "") {
 
-                                    let sMsg = "Check your network to see if an external network connection is available.";
+                                    // Check your network to see if an external network connection is available. 
+                                    let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "329");
 
                                     // 외부망 접속을 확인하세요 메시지 팝업
                                     sap.m.MessageBox.error(sMsg, {
-                                        title: "Error", // default
+                                        title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B93"), // Error // default
                                         onClose: null, // default
                                         styleClass: "", // default
                                         actions: sap.m.MessageBox.Action.CLOSE, // default
@@ -224,7 +228,7 @@
 
                     new sap.m.Button({
                         icon: "sap-icon://accept",
-                        text: "Apply",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C63"), // Apply
                         type: sap.m.ButtonType.Emphasized,
                         press: (oEvent) => {
                             oAPP.fn.fnPressApply(oEvent);
@@ -249,7 +253,7 @@
             oPage = new sap.m.Page({
                 showHeader: false,
                 icon: "sap-icon://download-from-cloud",
-                title: "CDN Settings",
+                title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D19"), // CDN Setting
                 content: [
                     oGridList
                 ],
@@ -276,10 +280,10 @@
      ************************************************************************/
     oAPP.fn.fnPressApply = (oEvent) => {
 
-        let sMsg = "do you want to save it?";
+        let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "010"); // Do you want to save it?
 
         sap.m.MessageBox.confirm(sMsg, {
-            title: "Confirm", // default                     
+            title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A40"), // Confirm // default                     
             actions: [
                 sap.m.MessageBox.Action.OK,
                 sap.m.MessageBox.Action.CANCEL
@@ -337,7 +341,10 @@
         oAPP.fn.fnSetBusy(false);
 
         // 성공 메시지..
-        sap.m.MessageToast.show("complete", {
+        let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"); // Options
+        sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "330", sMsg); // &1 has been saved
+
+        sap.m.MessageToast.show(sMsg, {
             duration: 10000
         });
 
@@ -361,13 +368,6 @@
         oAPP.fn.fnConnectionGithub().then(oAPP.fn.fnConnectionGithubThen.bind(this, fnCallback));
 
     }; // end of oAPP.fn.fnCheckConnectionCDN
-
-
-
-
-
-
-
 
     oAPP.fn.fnCheckConnectionCDN(function (oReturn) {
 

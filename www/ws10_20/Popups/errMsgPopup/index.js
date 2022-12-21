@@ -133,12 +133,12 @@ let oAPP = parent.oAPP;
 
         var oToolbar = new sap.m.Toolbar({
                 content: [
-                    // new sap.m.Text({
-                    //     text: "Error Footer Message"
-                    // }),
+                    new sap.m.Text({
+                        text: "Error Footer Message"
+                    }),
                     new sap.m.ObjectStatus({
                         // inverted: true,
-                        text: "Error Footer Message",
+                        text: "Error Message",
                         state: "Error",
                         icon: "sap-icon://alert"
                     }),

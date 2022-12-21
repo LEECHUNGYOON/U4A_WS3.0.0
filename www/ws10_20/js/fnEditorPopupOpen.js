@@ -31,7 +31,10 @@
             SESSKEY = parent.getSessionKey(),
             BROWSKEY = parent.getBrowserKey(),
             oAppInfo = parent.getAppInfo(),
-            sBrowserTitle = oAppInfo.APPID + " - " + oEditInfo.OBJNM + " Editor";
+            // sBrowserTitle = oAppInfo.APPID + " - " + oEditInfo.OBJNM + " Editor";
+            sBrowserTitle = oAppInfo.APPID + " - " + oEditInfo.OBJNM;
+
+        sBrowserTitle += " " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D23"); // Editor
 
         // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(oEditInfo.OBJTY);
@@ -39,8 +42,8 @@
 
             if (oEditInfo.OBJTY == "CS") {
                 lf_webContentSend(oResult.WINDOW, sSearchValue);
-            }            
-        
+            }
+
             return;
 
         }
@@ -60,6 +63,7 @@
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = oEditInfo.OBJTY;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);

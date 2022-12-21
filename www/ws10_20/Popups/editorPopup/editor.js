@@ -18,6 +18,11 @@
 
       var oTimer = null;
 
+      let oBtn = document.getElementById("BTSAVE");
+      if (oBtn) {
+          oBtn.innerHTML = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A64", "", "", "", ""); // Save
+      }
+
       // ace edit 스타트
       ace.require("ace/ext/language_tools");
 
@@ -314,7 +319,10 @@
 
           lf_setEditorBusy('');
 
-          LF_messagePOPUP('Complete save processing');
+          let sMsg = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D23"); // Editor
+          sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "330", sMsg); // &1 has been saved
+
+          LF_messagePOPUP(sMsg);
 
       }; // end of oAPP.fn.fnEditorValueSave
 

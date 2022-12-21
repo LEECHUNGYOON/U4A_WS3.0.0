@@ -1,14 +1,8 @@
-let aa = "asdfasdfasdfasdfasdfsdfsdfasdfasdf";
-zconsole.log(aa);
-zconsole.warn(aa);
-zconsole.error(aa);
-
-
-
 var oAPP = {};
 oAPP.attr = {};
 oAPP.fn = {};
 oAPP.events = {};
+oAPP.common = {};
 
 oAPP.REMOTE = require('@electron/remote');
 oAPP.FS = oAPP.REMOTE.require('fs');
@@ -18,6 +12,27 @@ oAPP.APP = oAPP.REMOTE.app;
 oAPP.PATH = oAPP.REMOTE.require('path');
 oAPP.RANDOM = require("random-key");
 
+/*******************************************************
+ * 메시지클래스 텍스트 작업 관련 Object -- start
+ *******************************************************/
+const
+    CURRWIN = REMOTE.getCurrentWindow(),
+    WEBCON = CURRWIN.webContents,
+    WEBPREF = WEBCON.getWebPreferences(),
+    USERINFO = WEBPREF.USERINFO,
+    LANGU = USERINFO.LANGU,
+    SYSID = USERINFO.SYSID;
+
+const
+    WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+    WSUTIL = require(WSMSGPATH),
+    WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+
+oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+
+/*******************************************************
+ * 메시지클래스 텍스트 작업 관련 Object -- end
+ *******************************************************/
 
 function getEditorInfo() {
     return oAPP.attr.oEditorInfo;
