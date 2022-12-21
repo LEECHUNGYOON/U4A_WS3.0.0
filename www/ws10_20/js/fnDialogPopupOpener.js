@@ -1047,6 +1047,7 @@
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
         oBrowserOptions.modal = true;
         oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -1203,7 +1204,7 @@
         var sWinObjType = "RTMCLS";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = oAPP.common.getCheckAlreadyOpenWindow(sWinObjType);
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
         if (oResult.ISOPEN) {
             return;
         }
@@ -1373,7 +1374,7 @@
             sPath = sServerPath + "/external_open?URL=" + encodeURIComponent(sUrl);
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = oAPP.common.getCheckAlreadyOpenWindow(sWinObjType);
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
         if (oResult.ISOPEN) {
 
             oResult.WINDOW.webContents.send('if-extopen-url', sPath);
@@ -1422,8 +1423,8 @@
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B93", "", "", "", ""); // Error
-        sTitle += " " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D24", "", "", "", ""); // Message Popup
+        let sTitle = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B93"); // Error
+        sTitle += " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D24"); // Message Popup
 
         oBrowserOptions.title = sTitle;
         oBrowserOptions.center = true;
@@ -1499,7 +1500,7 @@
      * **********************************************************************/
     oAPP.fn.fnPropertyHelpPopup = function (sUrl) {
 
-        var sWinObjType = "PROPHELP",
+        var sWinObjType = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D28", "", "", "", ""), // Property Help
             sPath = parent.getServerPath() + "/external_open?URL=" + encodeURIComponent(sUrl + "&WS=X");
 
         // // 테스트 목적임.
@@ -1521,13 +1522,15 @@
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.title = "Property Help";
+        oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D28"); // Property Help
         oBrowserOptions.url = sPath;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
+
 
         oAPP.fn.fnExternalOpen(oBrowserOptions);
 
@@ -1667,7 +1670,7 @@
         var sWinObjType = "U4AOTRPOP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = oAPP.common.getCheckAlreadyOpenWindow(sWinObjType);
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
         if (oResult.ISOPEN) {
             return;
         }
@@ -1752,7 +1755,7 @@
         var sWinObjType = "UI5CSSPOP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = oAPP.common.getCheckAlreadyOpenWindow(sWinObjType);
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
         if (oResult.ISOPEN) {
             return;
         }

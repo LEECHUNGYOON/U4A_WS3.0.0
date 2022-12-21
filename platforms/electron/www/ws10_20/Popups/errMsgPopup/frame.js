@@ -11,6 +11,7 @@ let oAPP = (function (window) {
     oAPP.fn = {};
     oAPP.attr = {};
     oAPP.events = {};
+    oAPP.common = {};
 
     oAPP.REMOTE = require('@electron/remote');
     oAPP.IPCRENDERER = require('electron').ipcRenderer;

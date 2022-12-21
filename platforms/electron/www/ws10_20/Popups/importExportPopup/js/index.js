@@ -1,5 +1,6 @@
 const oAPP = {
-    onStart: function () {
+    common: {},
+    onStart: function() {
         this.remote = require('@electron/remote');
         this.ipcRenderer = require('electron').ipcRenderer;
         this.fs = this.remote.require('fs');
@@ -35,6 +36,32 @@ const oAPP = {
 
         });
 
+        /*******************************************************
+         * 메시지클래스 텍스트 작업 관련 Object -- start
+         *******************************************************/
+        const
+            REMOTE = oAPP.remote,
+            PATH = REMOTE.require('path'),
+            CURRWIN = REMOTE.getCurrentWindow(),
+            WEBCON = CURRWIN.webContents,
+            WEBPREF = WEBCON.getWebPreferences(),
+            USERINFO = WEBPREF.USERINFO,
+            APP = REMOTE.app,
+            APPPATH = APP.getAppPath(),
+            LANGU = USERINFO.LANGU,
+            SYSID = USERINFO.SYSID;
+
+        const
+            WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+            WSUTIL = require(WSMSGPATH),
+            WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+
+        oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+
+        /*******************************************************
+         * 메시지클래스 텍스트 작업 관련 Object -- end
+         *******************************************************/
+
 
     },
     onIMPORT: () => {
@@ -69,7 +96,7 @@ const oAPP = {
             oAPP.FilePath = result.filePaths[0];
 
             //upload 
-            oAPP.fs.readFile(oAPP.FilePath, null, function (err, data) {
+            oAPP.fs.readFile(oAPP.FilePath, null, function(err, data) {
 
                 if (err) {
                     oAPP.remote.dialog.showErrorBox('An error has occurred', 'There is a problem with the uploaded file. Please try again.');
@@ -85,7 +112,7 @@ const oAPP = {
                 oBin = null;
 
                 var xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function () {
+                xhr.onreadystatechange = function() {
 
                     if (xhr.readyState == XMLHttpRequest.DONE) {
 
@@ -203,9 +230,9 @@ const oAPP = {
             let sURL = oAPP.path.join(oAPP.SERVPATH, `app_export_import?ACTCD=EXPORT&APPID=${oAPP.APPID}`);
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
+            xhr.onreadystatechange = function() {
 
-                if (xhr.readyState == XMLHttpRequest.DONE) {                    
+                if (xhr.readyState == XMLHttpRequest.DONE) {
 
                     try {
 
@@ -223,7 +250,7 @@ const oAPP = {
                         if (xhr.getResponseHeader('RETCD') !== "S") {
 
                             var Lmsg = xhr.getResponseHeader('RTMSG');
-                            if(Lmsg == ""){
+                            if (Lmsg == "") {
                                 Lmsg = 'During the download process there is a critical problem';
                             }
 
@@ -235,7 +262,7 @@ const oAPP = {
                         var Lmsg = xhr.getResponseHeader('RTMSG');
 
                         var oBuff = Buffer.from(xhr.response);
-                        oAPP.fs.writeFileSync(oAPP.FilePath, oBuff, null, function (err) {});
+                        oAPP.fs.writeFileSync(oAPP.FilePath, oBuff, null, function(err) {});
 
                         // 파일 다운받은 폴더를 오픈한다.
                         oAPP.SHELL.showItemInFolder(oAPP.FilePath);

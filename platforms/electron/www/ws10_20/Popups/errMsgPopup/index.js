@@ -8,8 +8,9 @@
  ************************************************************************/
 const zconsole = parent.WSERR(window, document, console);
 
-let oAPP = parent.oAPP;
-
+let oAPP = parent.oAPP,
+    APPCOMMON = oAPP.common;
+    
 (function (window, oAPP) {
     "use strict";
 
@@ -38,7 +39,7 @@ let oAPP = parent.oAPP;
             oCoreModel.refresh(true);
         }
 
-    }; // end of oAPP.common.fnSetModelProperty
+    }; // end of APPCOMMON.fnSetModelProperty
 
     /************************************************************************
      * 모델 데이터 get
@@ -133,13 +134,13 @@ let oAPP = parent.oAPP;
 
         var oToolbar = new sap.m.Toolbar({
                 content: [
-                    new sap.m.Text({
-                        text: "Error Footer Message"
-                    }),
+                    // new sap.m.Text({
+                    //     text: "Error Footer Message"
+                    // }),
                     new sap.m.ObjectStatus({
                         // inverted: true,
-                        text: "Error Message",
-                        state: "Error",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D25"), // Error Message
+                        state: sap.ui.core.ValueState.Error,
                         icon: "sap-icon://alert"
                     }),
                     new sap.m.ToolbarSpacer(),
@@ -158,37 +159,37 @@ let oAPP = parent.oAPP;
             .addStyleClass("u4aWsMsgFooter_HeaderToolbar u4aWsWindowHeaderDraggable"),
 
             oTable = new sap.m.Table("footerMsgTable", {
-                sticky: ["ColumnHeaders", "HeaderToolbar"],
+                sticky: [sap.m.Sticky.ColumnHeaders, sap.m.Sticky.HeaderToolbar],
                 fixedLayout: true,
                 headerToolbar: oToolbar,
                 columns: [
                     new sap.m.Column({
                         width: "100px",
-                        hAlign: "Center",
+                        hAlign: sap.ui.core.TextAlign.Center,
                         header: new sap.m.Label({
-                            design: "Bold",
-                            text: "Error Type"
+                            design: sap.m.LabelDesign.Bold,
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D26"), // Error Type
                         })
                     }),
                     new sap.m.Column({
                         width: "80px",
-                        hAlign: "Center",
+                        hAlign: sap.ui.core.TextAlign.Center,
                         header: new sap.m.Label({
-                            design: "Bold",
-                            text: "Line"
+                            design: sap.m.LabelDesign.Bold,
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D27"), // Line
                         })
                     }),
                     new sap.m.Column({
                         header: new sap.m.Label({
-                            design: "Bold",
-                            text: "Description"
+                            design: sap.m.LabelDesign.Bold,
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35"), // Description
                         })
                     }),
                 ],
                 items: {
                     path: "/FMTMSG",
                     template: new sap.m.ColumnListItem({
-                        type: "Active",
+                        type: sap.m.ListType.Active,
                         // press: oAPP.events.ev_pressFooterMsgColListItem,
                         cells: [
                             new sap.m.Text({
