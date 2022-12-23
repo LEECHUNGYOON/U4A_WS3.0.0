@@ -175,6 +175,11 @@
 
             var oSplit = sap.ui.getCore().byId("designSplit");
 
+
+            //attribute의 변경된건 수집 처리.
+            //(미리보기에서 추가한 UI의 속성정보를 미리 광역화)
+            oAPP.fn.getAttrChangedData();
+
             //모든 영역 제거 처리.
             oSplit.removeAllContentAreas();
 

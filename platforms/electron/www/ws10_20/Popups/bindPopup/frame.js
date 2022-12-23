@@ -4,42 +4,20 @@
  * - file Name : bindPopup/frame.js
  ************************************************************************/
 
-let oAPP = (function (window) {
+let oAPP = (function(window) {
     "use strict";
 
     let oAPP = {};
     oAPP.fn = {};
     oAPP.attr = {};
     oAPP.events = {};
-    oAPP.common = {};
 
     oAPP.REMOTE = require('@electron/remote');
     oAPP.IPCRENDERER = require('electron').ipcRenderer;
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
 
-    // 접속 시스템의 언어와 시스템 아이디를 구한다.
-    const
-        CURRWIN = oAPP.REMOTE.getCurrentWindow(),
-        WEBCON = CURRWIN.webContents,
-        WEBPREF = WEBCON.getWebPreferences(),
-        USERINFO = WEBPREF.USERINFO,
-        APPPATH = oAPP.APP.getAppPath(),
-        LANGU = USERINFO.LANGU,
-        SYSID = USERINFO.SYSID;
-
-
-    // util js path 
-    let sWsMsgPath = oAPP.PATH.join(APPPATH, "ws10_20", "js", "ws_util.js");
-
-    // message class
-    const
-        WSUTIL = require(sWsMsgPath),
-        WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
-
-    oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
-
-    oAPP.setBusy = function (bIsShow) {
+    oAPP.setBusy = function(bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
 
