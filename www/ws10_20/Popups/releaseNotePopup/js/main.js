@@ -99,23 +99,26 @@ function gfn_crtUI_Main() {
         busy: false
     });
 
+    let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D29", "", "", "", ""); // U4A WorkSpace
+    sTitle += " 3.0 " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54", "", "", "", ""); // Release Note;    
+
     oHandle.UI.PAGE = new sap.m.Page({
         busyIndicatorDelay: 1,
         busy: true,
-        title: "U4A WorkSpace 3.0 Releases Notes"
+        title: sTitle
     });
     APP.addPage(oHandle.UI.PAGE);
 
     var TIMELINE = new sap.suite.ui.commons.Timeline({
         busyIndicatorDelay: 1,
-        axisOrientation: "Vertical",
-        alignment: "Right",
+        axisOrientation: sap.suite.ui.commons.TimelineAxisOrientation.Vertical,
+        alignment: sap.suite.ui.commons.TimelineAlignment.Right,
         growingThreshold: 5,
         busy: true,
         groupBy: "dateTime",
         groupByType: "Year",
         lazyLoading: false,
-        noDataText: "No release notes",
+        // noDataText: "No release notes",
         enableDoubleSided: false,
         sortOldestFirst: false,
         showSearch: false,

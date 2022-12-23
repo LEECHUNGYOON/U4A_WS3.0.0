@@ -1586,6 +1586,7 @@
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -1772,7 +1773,7 @@
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.title = "UI5 Predefined CSS";
+        oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B58"); // UI5 Predefined CSS
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0;
@@ -1783,6 +1784,7 @@
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -1869,7 +1871,8 @@
         // 뭔가 크게 잘못된 경우
         if (aDefBr instanceof Array == false) {
 
-            sMsg = "설치된 브라우저 정보를 찾을 수 없습니다.";
+            //"설치된 브라우저 정보를 찾을 수 없습니다.";
+            sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "333"); // Installed browser information not found.
 
             parent.showMessage(sap, 20, 'E', sMsg);
 
@@ -1880,7 +1883,9 @@
         let oChrome = aDefBr.find(elem => elem.NAME === "CHROME") || {};
         if (!oChrome || !oChrome.ENABLED) {
 
-            sMsg = "Chrome Browser가 설치 되어 있는지 확인하세요!";
+            //sMsg = "Chrome Browser가 설치 되어 있는지 확인하세요!";
+            sMsg = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C75"); // Chrome Browser
+            sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "334", sMsg); // &1 is not installed.            
 
             parent.showMessage(sap, 20, 'E', sMsg);
 
@@ -1890,7 +1895,9 @@
         let oMsEdge = aDefBr.find(elem => elem.NAME === "MSEDGE") || {};
         if (!oMsEdge || !oMsEdge.ENABLED) {
 
-            sMsg = "MS Edge Browser가 설치 되어 있는지 확인하세요!";
+            //sMsg = "MS Edge Browser가 설치 되어 있는지 확인하세요!";
+            sMsg = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C76"); // IE edge Browser
+            sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "334", sMsg); // &1 is not installed.
 
             parent.showMessage(sap, 20, 'E', sMsg);
 
@@ -1917,7 +1924,7 @@
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.title = "ShortCut Creator";
+        oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D31"); // ShortCut Creator
         oBrowserOptions.show = false;
         oBrowserOptions.opacity = 1.0;
         oBrowserOptions.skipTaskbar = false;
@@ -1934,6 +1941,7 @@
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         let oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
@@ -1991,7 +1999,7 @@
 
         oBrowserWindow.loadURL(sUrl);
 
-        oBrowserWindow.webContents.openDevTools();
+        // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {

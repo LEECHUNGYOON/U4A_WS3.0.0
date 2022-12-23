@@ -117,8 +117,11 @@ function gfn_crtUI_Main() {
     });
     DYNAMICPAGETITLE1.setHeading(HBOX1);
 
+    let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D30", "", "", "", ""); // Version
+    sTitle += " :";
+
     var TITLE1 = new sap.m.Title({
-        text: "Version :",
+        text: sTitle,
         titleStyle: "H4"
     });
     HBOX1.addItem(TITLE1);

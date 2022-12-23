@@ -1,6 +1,6 @@
 const oAPP = {
     attr: {},
-
+    common: {},
     onStart: function () {
 
         this.remote = require('@electron/remote');
@@ -8,8 +8,37 @@ const oAPP = {
         this.PATH = this.remote.require('path');
         this.APP = this.remote.app;
         this.APPPATH = this.APP.getAppPath();
-        this.PATHINFO = require(this.PATH.join(this.APPPATH, "Frame", "pathInfo.js"));        
-        
+        this.PATHINFO = require(this.PATH.join(this.APPPATH, "Frame", "pathInfo.js"));
+
+        /*******************************************************
+         * 메시지클래스 텍스트 작업 관련 Object -- start
+         *******************************************************/
+        const
+            REMOTE = oAPP.remote,
+            PATH = REMOTE.require('path'),
+            CURRWIN = REMOTE.getCurrentWindow(),
+            WEBCON = CURRWIN.webContents,
+            WEBPREF = WEBCON.getWebPreferences(),
+            USERINFO = WEBPREF.USERINFO,
+            APP = REMOTE.app,
+            APPPATH = APP.getAppPath(),
+            LANGU = USERINFO.LANGU,
+            SYSID = USERINFO.SYSID;
+
+        const
+            WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+            WSUTIL = require(WSMSGPATH),
+            WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+
+        oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+
+        /*******************************************************
+         * 메시지클래스 텍스트 작업 관련 Object -- end
+         *******************************************************/
+
+        // 브라우저 타이틀 적용
+        let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"); // Release Note
+        CURRWIN.setTitle(sTitle);
     },
     // CDN 여부 플래그
     fnGetIsCDN: () => {

@@ -242,6 +242,15 @@
                     key: "Test94",
                     text: "잘못된 서버 호출"
                 },
+                {
+                    key: "Test93",
+                    text: "abap 펑션 버젼 확인"
+                },
+                {
+                    key: "Test92",
+                    text: "abap syntax 버젼 확인"
+                },
+
             ];
 
         return {

@@ -689,6 +689,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         oBrowserOptions.height = mainWindowState.height;
         oBrowserOptions.minWidth = 1000;
         oBrowserOptions.minHeight = 800;
+        oBrowserOptions.webPreferences.USERINFO = process.USERINFO;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -1180,6 +1181,7 @@ IPCRENDERER.on('if-meta-info', (event, res) => {
 
     var oMetadata = res;
 
+
     // 메타데이터 정보
     if (oMetadata.METADATA) {
         setMetadata(oMetadata.METADATA);
@@ -1224,6 +1226,19 @@ IPCRENDERER.on('if-meta-info', (event, res) => {
     if (oMetadata.THEMEINFO) {
         setThemeInfo(oMetadata.THEMEINFO);
     }
+
+    // 새창일 경우 process object에 USERINFO 정보를 저장한다.
+    const
+        CURRWIN = REMOTE.getCurrentWindow(),
+        WEBCON = CURRWIN.webContents,
+        WEBPREF = WEBCON.getWebPreferences(),
+        USERINFO = WEBPREF.USERINFO;
+
+    if (USERINFO) {
+        // 새창 띄울 경우 process 
+        setProcessEnvUserInfo(USERINFO);
+    }
+
 
     // // 자연스러운 로딩
     // fnOnSmoothLoading();

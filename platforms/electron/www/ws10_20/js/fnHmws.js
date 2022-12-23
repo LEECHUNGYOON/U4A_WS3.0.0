@@ -883,8 +883,50 @@
 
     }; // end of oAPP.fn.fnWS10Test95
 
+    /************************************************************************
+     * 잘못된 Url 호출 테스트
+     ************************************************************************/
+    oAPP.fn.fnWS10Test94 = function () {
 
+        oAPP.fn.fnTest94();
 
+    }; // end of oAPP.fn.fnWS10Test94
+
+    /************************************************************************
+     * abap 펑션 버젼 확인
+     ************************************************************************/
+    oAPP.fn.fnWS10Test93 = () => {
+
+        let sUrl = "https://www.sapdatasheet.org/abap/func/index-a.html";
+        _callbrowser(sUrl);
+
+    };
+
+    /************************************************************************
+     * abap syntax 버젼 확인
+     ************************************************************************/
+    oAPP.fn.fnWS10Test92 = () => {
+
+        let sUrl = "https://help.sap.com/doc/abapdocu_740_index_htm/7.40/en-US/index.htm";
+        _callbrowser(sUrl);
+
+    };
+
+    function _callbrowser(sUrl) {
+
+        var SPAWN = parent.SPAWN, // pc 제어하는 api
+            aComm = []; // 명령어 수집
+
+        var oDefBrows = APPCOMMON.fnGetModelProperty("/DEFBR"),
+            sSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
+
+        // 실행전 명령어 수집
+        aComm.push(sUrl);
+
+        // APP 실행		
+        SPAWN(sSelectedBrows.INSPATH, aComm);
+
+    }
 
     /************************************************************************
      * Busy 강제실행
@@ -938,16 +980,7 @@
 
         oAPP.fn.fnTest95();
 
-    }; // end of oAPP.fn.fnWS20Test95
-
-    /************************************************************************
-     * 잘못된 Url 호출 테스트
-     ************************************************************************/
-    oAPP.fn.fnWS10Test94 = function () {
-
-        oAPP.fn.fnTest94();
-
-    }; // end of oAPP.fn.fnWS20Test91
+    }; // end of oAPP.fn.fnWS20Test95    
 
     /************************************************************************
      * Property 도움말 테스트
