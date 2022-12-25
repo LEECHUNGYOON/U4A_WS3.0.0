@@ -11,7 +11,7 @@ let zconsole = parent.WSERR(window, document, console);
 
 let oAPP = parent.oAPP;
 
-(function (window, oAPP) {
+(function(window, oAPP) {
     "use strict";
 
     oAPP.settings = {};
@@ -31,7 +31,7 @@ let oAPP = parent.oAPP;
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.fn.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
+    oAPP.fn.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -49,7 +49,7 @@ let oAPP = parent.oAPP;
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.fn.fnGetModelProperty = function (sModelPath) {
+    oAPP.fn.fnGetModelProperty = function(sModelPath) {
 
         return sap.ui.getCore().getModel().getProperty(sModelPath);
 
@@ -58,7 +58,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * ws의 설정 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.getSettingsInfo = function () {
+    oAPP.fn.getSettingsInfo = function() {
 
         // Browser Window option
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
@@ -76,7 +76,7 @@ let oAPP = parent.oAPP;
     // /************************************************************************
     //  * UI5 BootStrap 
     //  ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = function () {
+    oAPP.fn.fnLoadBootStrapSetting = function() {
 
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
@@ -117,7 +117,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 초기 모델 바인딩
      ************************************************************************/
-    oAPP.fn.fnInitModelBinding = function () {
+    oAPP.fn.fnInitModelBinding = function() {
 
         // var oFind2Data = oAPP.fn.fnGetFindData2();
 
@@ -143,14 +143,14 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 화면 초기 렌더링
      ************************************************************************/
-    oAPP.fn.fnInitRendering = function () {
+    oAPP.fn.fnInitRendering = function() {
 
 
 
     }; // end of oAPP.fn.fnInitRendering   
 
     //바인딩 팝업 화면 구성.
-    oAPP.fn.callBindPopup = function () {
+    oAPP.fn.callBindPopup = function() {
 
         //최상위 UI.
         var oApp = new sap.m.App();
@@ -162,7 +162,9 @@ let oAPP = parent.oAPP;
         oApp.setModel(oAPP.attr.oModel);
 
         //바인딩 팝업 table 출력 page.
-        var oPage = new sap.m.Page({enableScrolling:false});
+        var oPage = new sap.m.Page({
+            enableScrolling: false
+        });
         oApp.addPage(oPage);
 
 
@@ -173,17 +175,17 @@ let oAPP = parent.oAPP;
 
         //전체펼침
         var oToolBtn1 = new sap.m.Button({
-            text: "Expand All",
+            text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A46", "", "", "", ""), // Expand All
             icon: "sap-icon://expand-all",
             type: "Emphasized",
             busy: "{/busy}",
-            tooltip: "Expand",
+            tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B21", "", "", "", ""), // Expand
             busyIndicatorDelay: 1
         });
         oTool.addContent(oToolBtn1);
 
         //tree 전체펼침 이벤트
-        oToolBtn1.attachPress(function () {
+        oToolBtn1.attachPress(function() {
 
             oAPP.attr.oTree.expandToLevel(99999);
 
@@ -194,17 +196,17 @@ let oAPP = parent.oAPP;
 
         //전체접힘
         var oToolBtn2 = new sap.m.Button({
-            text: "Collapse All",
+            text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A47", "", "", "", ""), // Collapse All
             icon: "sap-icon://collapse-all",
             type: "Emphasized",
             busy: "{/busy}",
-            tooltip: "Collapse",
+            tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B22", "", "", "", ""), // Collapse
             busyIndicatorDelay: 1
         });
         oTool.addContent(oToolBtn2);
 
         //tree 전체접힘 이벤트
-        oToolBtn2.attachPress(function () {
+        oToolBtn2.attachPress(function() {
             oAPP.attr.oTree.collapseAll();
         });
 
@@ -214,57 +216,64 @@ let oAPP = parent.oAPP;
 
         //갱신버튼
         var oToolBtn3 = new sap.m.Button({
-            text: "Refresh",
+            text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A48", "", "", "", ""), // Refresh
             icon: "sap-icon://refresh",
             type: "Emphasized",
             busy: "{/busy}",
-            tooltip: "Refresh",
+            tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A48", "", "", "", ""), // Refresh
             busyIndicatorDelay: 1
         });
         oTool.addContent(oToolBtn3);
 
         //갱신버튼 이벤트
-        oToolBtn3.attachPress(function () {
+        oToolBtn3.attachPress(function() {
             //서버에서 바인딩 정보 얻기.
             oAPP.fn.getBindFieldInfo();
         });
 
-        
+
         var oSpt1 = new sap.ui.layout.Splitter();
         oPage.addContent(oSpt1);
+
+        let sHelpTxt = "※ ";
+        // Binding Tables or Fields to Properties and Aggregations with drag-drop. 
+        sHelpTxt += oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "336", "", "", "", "");
 
         //바인딩 tree 정보.
         oAPP.attr.oTree = new sap.ui.table.TreeTable({
             selectionMode: "Single",
             selectionBehavior: "RowOnly",
             visibleRowCountMode: "Auto",
-            rowHeight:30,
-            title:new sap.m.Label({text:"※ Table, Field를 Drag하여 Property, Aggregation에 Drop시 바인딩 할 수 있습니다."}),
+            rowHeight: 30,
+            title: new sap.m.Label({
+                text: sHelpTxt
+            }),
             rowSelectionChange: oAPP.fn.selTabRow
         });
         oSpt1.addContentArea(oAPP.attr.oTree);
 
-        
-        oAPP.attr.oTree.attachFilter(function () {
+
+        oAPP.attr.oTree.attachFilter(function() {
             //tee에서 필터 처리시 전체 펼침 처리.
             this.expandToLevel(99999);
         });
 
         var l_edit = false;
 
-        if(oAPP.attr.oAppInfo.IS_EDIT === "X"){
+        if (oAPP.attr.oAppInfo.IS_EDIT === "X") {
             l_edit = true;
         }
 
         //drag UI 생성.
-        var oDrag = new sap.ui.core.dnd.DragInfo({enabled:l_edit,
+        var oDrag = new sap.ui.core.dnd.DragInfo({
+            enabled: l_edit,
             sourceAggregation: "rows"
         });
         oAPP.attr.oTree.addDragDropConfig(oDrag);
 
 
         //drag start 이벤트
-        oDrag.attachDragStart(function (oEvent) {
+        oDrag.attachDragStart(function(oEvent) {
             //drag 처리.
             oAPP.fn.setDragStart(oEvent);
 
@@ -282,7 +291,7 @@ let oAPP = parent.oAPP;
             filterProperty: "NTEXT",
             autoResizable: true,
             label: new sap.m.Label({
-                text: "Object Name",
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A50", "", "", "", ""), // Object Name
                 design: "Bold"
             }),
             template: new sap.m.Text({
@@ -296,7 +305,7 @@ let oAPP = parent.oAPP;
             filterProperty: "TYPE",
             autoResizable: true,
             label: new sap.m.Label({
-                text: "Type",
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A51", "", "", "", ""), // Type
                 design: "Bold"
             })
         });
@@ -326,7 +335,7 @@ let oAPP = parent.oAPP;
             filterProperty: "DESCR",
             autoResizable: true,
             label: new sap.m.Label({
-                text: "Description",
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35", "", "", "", ""), // Description
                 design: "Bold"
             }),
             template: new sap.m.Text({
@@ -366,7 +375,7 @@ let oAPP = parent.oAPP;
             visibleRowCountMode: "Auto",
             width: "100%",
             visible: "{/resize}",
-            rowHeight:30,
+            rowHeight: 30,
             layoutData: new sap.ui.layout.SplitterLayoutData()
         });
         oSpt1.addContentArea(oTab);
@@ -375,7 +384,7 @@ let oAPP = parent.oAPP;
         //추가바인딩 속성의 Property 컬럼.
         var oTabCol1 = new sap.ui.table.Column({
             label: new sap.m.Label({
-                text: "Property",
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A52", "", "", "", ""), // Property
                 design: "Bold"
             }),
             template: new sap.m.Text({
@@ -387,7 +396,7 @@ let oAPP = parent.oAPP;
         //추가바인딩 속성의 value 컬럼.
         var oTabCol2 = new sap.ui.table.Column({
             label: new sap.m.Label({
-                text: "Value",
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A53", "", "", "", ""), // Value
                 design: "Bold"
             }),
             template: new sap.m.Text({
@@ -423,7 +432,7 @@ let oAPP = parent.oAPP;
         oTabCol2HBox1.addItem(oTabCol2Inp1);
 
         //바인딩 추가속성 정보 input 값변경 이벤트
-        oTabCol2Inp1.attachChange(function () {
+        oTabCol2Inp1.attachChange(function() {
             //conversion명 대문자 변환 처리.
             oAPP.fn.setConvNameUpperCase(this);
 
@@ -444,7 +453,7 @@ let oAPP = parent.oAPP;
         oTabCol2HBox1.addItem(oTabCol2Sel1);
 
         //바인딩 추가속성 정보 DDLB 선택 이벤트.
-        oTabCol2Sel1.attachChange(function () {
+        oTabCol2Sel1.attachChange(function() {
             //바인딩 추가속성 정보 DDLB 선택 이벤트.
             oAPP.fn.setAddtBindInfoDDLB(this);
 
@@ -479,15 +488,17 @@ let oAPP = parent.oAPP;
 
 
 
-    };  //바인딩 팝업 화면 구성.
+    }; //바인딩 팝업 화면 구성.
 
 
 
 
     //바인딩 추가 속성값 설정.
-    oAPP.fn.setMPROP = function(){
+    oAPP.fn.setMPROP = function() {
         var l_indx = oAPP.attr.oTree.getSelectedIndex();
-        if(l_indx === -1){return;}
+        if (l_indx === -1) {
+            return;
+        }
 
         var l_ctxt = oAPP.attr.oTree.getContextByIndex(l_indx);
         if (!l_ctxt) {
@@ -496,34 +507,36 @@ let oAPP = parent.oAPP;
 
         var ls_tree = l_ctxt.getProperty();
 
-        if(ls_tree.KIND !== "E"){return;}
+        if (ls_tree.KIND !== "E") {
+            return;
+        }
 
         //Bind type 라인 얻기.
-        var ls_p04 = oAPP.attr.oModel.oData.T_MPROP.find( a=> a.ITMCD === "P04");
-        if(!ls_p04){
+        var ls_p04 = oAPP.attr.oModel.oData.T_MPROP.find(a => a.ITMCD === "P04");
+        if (!ls_p04) {
             oAPP.attr.oModel.setProperty("MPROP", "", l_ctxt);
             return;
         }
 
         //Reference Field name 라인 얻기.
-        var ls_p05 = oAPP.attr.oModel.oData.T_MPROP.find( a=> a.ITMCD === "P05");
-        if(!ls_p05){
+        var ls_p05 = oAPP.attr.oModel.oData.T_MPROP.find(a => a.ITMCD === "P05");
+        if (!ls_p05) {
             oAPP.attr.oModel.setProperty("MPROP", "", l_ctxt);
             return;
         }
 
         //Bind type이 구성된경우 Reference Field name이 존재하지 않는다면.
-        if(ls_p04.val !== "" && ls_p05.val === ""){
+        if (ls_p04.val !== "" && ls_p05.val === "") {
             //추가속성정보 제거 처리.
             oAPP.attr.oModel.setProperty("MPROP", "", l_ctxt);
             return;
         }
 
         //추가속성 세팅된 값을 취합.
-        for(var i=3, l=oAPP.attr.oModel.oData.T_MPROP.length, l_array = []; i<l; i++){
+        for (var i = 3, l = oAPP.attr.oModel.oData.T_MPROP.length, l_array = []; i < l; i++) {
             //바인딩 추가 속성 정보 수집.
             l_array.push(oAPP.attr.oModel.oData.T_MPROP[i].val);
-    
+
         }
 
         //return 파라메터에 바인딩 추가 속성 정보 매핑.
@@ -533,7 +546,7 @@ let oAPP = parent.oAPP;
         oAPP.attr.oModel.setProperty("MPROP", ls_tree.MPROP, l_ctxt);
 
 
-    };  //바인딩 추가 속성값 설정.
+    }; //바인딩 추가 속성값 설정.
 
 
     //conversion명 대문자 변환 처리.
@@ -570,7 +583,9 @@ let oAPP = parent.oAPP;
         }
 
         //부모가 ROOT인경우 EXIT.(바인딩 가능한건은 STRU-FIELD or TABLE-FIELD만 가능)
-        if(is_tree.PARENT === "Attribute"){return;}
+        if (is_tree.PARENT === "Attribute") {
+            return;
+        }
 
         //현재 라인이 STRING_TABLE인경우 STRING_TABLE FLAG RETURN.
         if (is_tree.EXP_TYP === "STR_TAB") {
@@ -650,7 +665,7 @@ let oAPP = parent.oAPP;
 
 
     //바인딩 추가속성정보 메시지 초기화.
-    oAPP.fn.resetMPROPMsg = function () {
+    oAPP.fn.resetMPROPMsg = function() {
 
         if (typeof oAPP.attr.oModel.oData.T_MPROP === "undefined" ||
             oAPP.attr.oModel.oData.T_MPROP.length === 0) {
@@ -668,7 +683,7 @@ let oAPP = parent.oAPP;
 
 
     //tree 구성 function.
-    oAPP.fn.setTreeJson = function (oModel, path, child, parent, treePath) {
+    oAPP.fn.setTreeJson = function(oModel, path, child, parent, treePath) {
 
         //"stru/table" 형식인경우 stru부분 발췌.
         var l_ppath = path.substr(0, path.lastIndexOf("/"));
@@ -716,7 +731,7 @@ let oAPP = parent.oAPP;
 
 
     //tree table 컬럼길이 재조정 처리.
-    oAPP.fn.setTreeAutoResizeCol = function (iTime) {
+    oAPP.fn.setTreeAutoResizeCol = function(iTime) {
 
         setTimeout(() => {
             var lt_col = oAPP.attr.oTree.getColumns();
@@ -732,29 +747,35 @@ let oAPP = parent.oAPP;
         }, iTime);
 
 
-    };  //tree table 컬럼길이 재조정 처리.
+    }; //tree table 컬럼길이 재조정 처리.
 
 
 
 
     //tree drag 처리.
-    oAPP.fn.setTreeDrag = function(){
+    oAPP.fn.setTreeDrag = function() {
 
-        function lf_setDraggable(){
+        function lf_setDraggable() {
             console.log(111);
             var lt_row = oAPP.attr.oTree.getRows();
 
-            if(lt_row.length == 0){return;}
+            if (lt_row.length == 0) {
+                return;
+            }
 
-            for(var i=0, l=lt_row.length; i<l; i++){
-                
+            for (var i = 0, l = lt_row.length; i < l; i++) {
+
                 var l_dom = lt_row[i].getDomRef();
-                if(!l_dom){continue;}
+                if (!l_dom) {
+                    continue;
+                }
 
                 l_dom.draggable = false;
 
                 var l_ctxt = lt_row[i].getBindingContext();
-                if(!l_ctxt){continue;}
+                if (!l_ctxt) {
+                    continue;
+                }
 
                 var l_binfo = l_ctxt.getProperty();
 
@@ -771,7 +792,9 @@ let oAPP = parent.oAPP;
 
         var l_bind = oAPP.attr.oTree.getBinding();
 
-        if(!l_bind){return;}
+        if (!l_bind) {
+            return;
+        }
 
         l_bind.attachChange(lf_setDraggable);
 
@@ -780,13 +803,13 @@ let oAPP = parent.oAPP;
 
 
 
-    };  //tree drag 처리.
+    }; //tree drag 처리.
 
 
     function sendAjax(sPath, oFormData, fn_success) {
 
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () { // 요청에 대한 콜백
+        xhr.onreadystatechange = function() { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
@@ -816,9 +839,9 @@ let oAPP = parent.oAPP;
     // // UI5 Boot Strap을 로드 하고 attachInit 한다.
     oAPP.fn.fnLoadBootStrapSetting();
 
-    window.onload = function () {
+    window.onload = function() {
 
-        sap.ui.getCore().attachInit(function () {
+        sap.ui.getCore().attachInit(function() {
 
             //바인딩 팝업 화면 구성.
             oAPP.fn.callBindPopup();
@@ -837,9 +860,9 @@ let oAPP = parent.oAPP;
 
 
     //추가속성 table layout 설정.
-    oAPP.fn.setAdditLayout = function(is_tree){
+    oAPP.fn.setAdditLayout = function(is_tree) {
 
-        if(!is_tree){
+        if (!is_tree) {
             //좌측 tree 영역 100%으로 설정(우측 바인딩 세부정보 비활성 처리)
             oAPP.attr.oModel.oData.width = "100%";
             oAPP.attr.oModel.oData.resize = false;
@@ -872,7 +895,7 @@ let oAPP = parent.oAPP;
         oAPP.attr.oModel.refresh();
 
 
-    };  //추가속성 table layout 설정.
+    }; //추가속성 table layout 설정.
 
 
 
@@ -1101,21 +1124,24 @@ let oAPP = parent.oAPP;
         oFormData.append("APPID", oAPP.attr.oAppInfo.APPID);
 
         //바인딩 필드 정보 검색.
-        sendAjax(oAPP.attr.servNm + "/getBindAttrData", oFormData, function (param) {
+        sendAjax(oAPP.attr.servNm + "/getBindAttrData", oFormData, function(param) {
 
             var l_model = oAPP.attr.oModel;
 
             //오류가 발생한 경우.
-            if(param.RETCD === "E"){
+            if (param.RETCD === "E") {
                 //오류 메시지 처리.
-                sap.m.MessageToast.show(param.RTMSG,{duration: 3000, at:"center center"});
-                
+                sap.m.MessageToast.show(param.RTMSG, {
+                    duration: 3000,
+                    at: "center center"
+                });
+
                 //tree 정보 공백 처리.
                 l_model.oData.zTREE = [];
 
                 //화면 잠금 해제 처리.
                 l_model.oData.busy = false;
-                
+
                 //모델 정보 바인딩 처리.
                 l_model.refresh(true);
 
@@ -1128,7 +1154,7 @@ let oAPP = parent.oAPP;
             l_model.oData.edit = false;
 
             //workbench 화면이 편집상태인경우.
-            if(oAPP.attr.oAppInfo.IS_EDIT === "X"){
+            if (oAPP.attr.oAppInfo.IS_EDIT === "X") {
                 //화면 편집 가능 flag 처리.
                 l_model.oData.edit = true;
             }
@@ -1145,7 +1171,11 @@ let oAPP = parent.oAPP;
                 l_model.refresh(true);
 
                 // //바인딩 필드가 존재하지 않음 메시지 처리.
-                sap.m.MessageToast.show("Binding attributes dose not exist.", {duration: 3000, at:"center center"});
+                let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "265", "", "", "", ""); // Binding attributes does not exist.
+                sap.m.MessageToast.show(sMsg, {
+                    duration: 3000,
+                    at: "center center"
+                });
 
                 return;
 
@@ -1202,20 +1232,20 @@ let oAPP = parent.oAPP;
         }
 
         for (var i = 0, l = it_tree.length; i < l; i++) {
-            
+
             it_tree[i].isTabField = false;
 
             //table로부터 파생된 필드인경우.
-            if(KIND === "T"){
+            if (KIND === "T") {
                 //table로부터 팡생된 필드임 flag 처리.
                 it_tree[i].isTabField = true;
             }
 
-            if(KIND_PATH === ""){
+            if (KIND_PATH === "") {
                 it_tree[i].KIND_PATH = it_tree[i].KIND;
 
-            }else{
-                
+            } else {
+
                 it_tree[i].KIND_PATH = KIND_PATH + "-" + it_tree[i].KIND;
             }
 
@@ -1324,7 +1354,7 @@ let oAPP = parent.oAPP;
 
 
     //drag 정보 처리.
-    oAPP.fn.setDragStart = function(oEvent){
+    oAPP.fn.setDragStart = function(oEvent) {
 
         //drag한 위치의 바인딩 정보 얻기.
         var l_ctxt = oEvent.mParameters.target.getBindingContext();
@@ -1354,13 +1384,13 @@ let oAPP = parent.oAPP;
         //DRAG한 UI ID 정보 세팅.
         event.dataTransfer.setData("prc001", l_json);
 
-    };  //drag 정보 처리.
+    }; //drag 정보 처리.
 
 
     //drag 종료시 css 잔상 제거.
-    window.ondragend = function(){
+    window.ondragend = function() {
         oAPP.IPCRENDERER.send("if-dragEnd");
-    };  //drag 종료시 css 잔상 제거.
+    }; //drag 종료시 css 잔상 제거.
 
 
 })(window, oAPP);

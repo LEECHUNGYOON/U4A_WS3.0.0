@@ -1,5 +1,6 @@
 
 let oAPP = {
+  common: {},
 //====================================================//
 //[펑션] 스타트 
 //====================================================//    
@@ -8,6 +9,32 @@ let oAPP = {
     oAPP.ipcRenderer = require('electron').ipcRenderer;
     oAPP.desktopCapturer = oAPP.remote.require('electron').desktopCapturer;
     oAPP.LOAD_THEME = "";
+
+    /*******************************************************
+     * 메시지클래스 텍스트 작업 관련 Object -- start
+     *******************************************************/
+    const
+        REMOTE = oAPP.remote,
+        PATH = REMOTE.require('path'),
+        CURRWIN = REMOTE.getCurrentWindow(),
+        WEBCON = CURRWIN.webContents,
+        WEBPREF = WEBCON.getWebPreferences(),
+        USERINFO = WEBPREF.USERINFO,
+        APP = REMOTE.app,
+        APPPATH = APP.getAppPath(),
+        LANGU = USERINFO.LANGU,
+        SYSID = USERINFO.SYSID;
+
+    const
+        WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+        WSUTIL = require(WSMSGPATH),
+        WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+
+    oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+
+    /*******************************************************
+     * 메시지클래스 텍스트 작업 관련 Object -- end
+     *******************************************************/
 
     //window 로딩 완료 이벤트 
     oAPP.ipcRenderer.on('IF-chkScrList', async (event, data) => {

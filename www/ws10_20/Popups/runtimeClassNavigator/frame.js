@@ -4,7 +4,7 @@
  * - file Name : runtimeClassNavigator/frame.js
  ************************************************************************/
 
-let oAPP = (function (window) {
+let oAPP = (function(window) {
     "use strict";
 
     let oAPP = {};
@@ -20,27 +20,33 @@ let oAPP = (function (window) {
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
 
+    /*******************************************************
+     * 메시지클래스 텍스트 작업 관련 Object -- start
+     *******************************************************/
     const
-        CURRWIN = oAPP.REMOTE.getCurrentWindow(),
+        REMOTE = oAPP.REMOTE,
+        PATH = REMOTE.require('path'),
+        CURRWIN = REMOTE.getCurrentWindow(),
         WEBCON = CURRWIN.webContents,
         WEBPREF = WEBCON.getWebPreferences(),
         USERINFO = WEBPREF.USERINFO,
-        USERDATA = oAPP.APP.getPath("userData"),
-        APPPATH = oAPP.APP.getAppPath(),
+        APP = REMOTE.app,
+        APPPATH = APP.getAppPath(),
         LANGU = USERINFO.LANGU,
         SYSID = USERINFO.SYSID;
 
-    // util js
-    let sWsMsgPath = oAPP.PATH.join(APPPATH, "ws10_20", "js", "ws_util.js");
-
-    // message class
     const
-        WSUTIL = require(sWsMsgPath),
+        WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+        WSUTIL = require(WSMSGPATH),
         WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
 
     oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
 
-    oAPP.setBusy = function (bIsShow) {
+    /*******************************************************
+     * 메시지클래스 텍스트 작업 관련 Object -- end
+     *******************************************************/
+
+    oAPP.setBusy = function(bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
 

@@ -86,8 +86,8 @@ oAPP = {
             "show": false,
             "transparent": true,
             "frame": false,
+            "icon": "www/img/logo.png",
             "parent": oAPP.remote.getCurrentWindow(),
-
             "webPreferences": {
                 "devTools": true,
                 "nodeIntegration": true,
@@ -95,7 +95,7 @@ oAPP = {
                 "contextIsolation": false,
                 "webSecurity": false,
                 "nativeWindowOpen": true,
-                "USERINFO" : parent.process.USERINFO
+                "USERINFO" : process.USERINFO
             }
 
         };
@@ -133,7 +133,9 @@ oAPP = {
         // 컨트롤러 윈도우 
         var op = {
             //"x": sBound.x,
-            //"y": sBound.y,      
+            //"y": sBound.y, 
+            "icon": "www/img/logo.png",
+            "title": oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C38", "", "", "", ""), // Controller     
             "height": 280,
             "width": 260,
             "maxHeight": 280,
@@ -147,14 +149,14 @@ oAPP = {
             "transparent": false,
             "frame": true,
             "parent": oAPP.remote.getCurrentWindow(),
-
             "webPreferences": {
                 "devTools": true,
                 "nodeIntegration": true,
                 "enableRemoteModule": true,
                 "contextIsolation": false,
                 "webSecurity": false,
-                "nativeWindowOpen": true
+                "nativeWindowOpen": true,
+                "USERINFO" : process.USERINFO
             }
 
         };
@@ -175,8 +177,7 @@ oAPP = {
 
 
         //컨트롤러 윈도우 종료 이벤트시
-        oWIN.on("close", () => {
-            debugger;
+        oWIN.on("close", () => {            
 
             let oCurrWin = oAPP.remote.getCurrentWindow(),
                 oParentWindow = oCurrWin.getParentWindow();
@@ -380,11 +381,14 @@ oAPP = {
 
             var EMSG = e.toString();
             console.error("동영상 수행 오류 => " + EMSG);
+
+            let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D39", "", "", "", ""); // Video Recording Error
+
             var oMsgPop = oAPP.remote.dialog.showMessageBox(oAPP.remote.getCurrentWindow(), {
-                    title: 'Application Error',
+                    title: sTitle,
                     type: 'error',
                     defaultId: 1,
-                    message: 'Video recording error => ' + EMSG,
+                    message: sTitle + " ==> " + EMSG,
                     buttons: ["close"],
                 })
                 .then((e) => {
@@ -413,7 +417,7 @@ oAPP = {
                     if (err) {
                         return;
                     };
-                    console.log('Saved!');
+                    zconsole.log('Saved!');
                 });
 
             });

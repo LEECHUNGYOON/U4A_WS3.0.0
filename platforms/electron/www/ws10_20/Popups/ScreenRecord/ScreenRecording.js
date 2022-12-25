@@ -175,6 +175,7 @@ async function _chk_MultiScr(REMOTE) {
             "minimizable": false,
             "show": false,
             "modal": true,
+            "icon": "www/img/logo.png",
             "title": oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "335"), // Select the monitor to record video on.,
             "parent": REMOTE.getCurrentWindow(),
 
@@ -282,8 +283,6 @@ async function _chk_MultiScr(REMOTE) {
 /* ================================================================= */
 exports.start = async function (REMOTE, P_THEME = "sap_horizon_dark") {
 
-    debugger;
-    
     //WS3.0 로드된 테마명
     LOAD_THEME = P_THEME;
 
@@ -340,6 +339,7 @@ exports.start = async function (REMOTE, P_THEME = "sap_horizon_dark") {
         "height": mainDisp[0].bounds.height,
         "width": mainDisp[0].bounds.width,
         "resizable": false,
+        "icon": "www/img/logo.png",
         //"fullscreenable": true,
         "alwaysOnTop": true,
         "maximizable": false,
@@ -420,8 +420,7 @@ exports.start = async function (REMOTE, P_THEME = "sap_horizon_dark") {
 
     });
 
-    oWIN.on("close", () => {
-        debugger;
+    oWIN.on("close", () => {        
 
         // 글로벌 변수 초기화
         oScreenWindow = null;

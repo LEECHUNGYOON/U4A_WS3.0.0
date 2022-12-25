@@ -11,11 +11,38 @@ let oAPP = (function(window) {
     oAPP.fn = {};
     oAPP.attr = {};
     oAPP.events = {};
+    oAPP.common = {};
 
     oAPP.REMOTE = require('@electron/remote');
     oAPP.IPCRENDERER = require('electron').ipcRenderer;
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
+
+    /*******************************************************
+     * 메시지클래스 텍스트 작업 관련 Object -- start
+     *******************************************************/
+    const
+        REMOTE = oAPP.REMOTE,
+        PATH = REMOTE.require('path'),
+        CURRWIN = REMOTE.getCurrentWindow(),
+        WEBCON = CURRWIN.webContents,
+        WEBPREF = WEBCON.getWebPreferences(),
+        USERINFO = WEBPREF.USERINFO,
+        APP = REMOTE.app,
+        APPPATH = APP.getAppPath(),
+        LANGU = USERINFO.LANGU,
+        SYSID = USERINFO.SYSID;
+
+    const
+        WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+        WSUTIL = require(WSMSGPATH),
+        WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+
+    oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+
+    /*******************************************************
+     * 메시지클래스 텍스트 작업 관련 Object -- end
+     *******************************************************/
 
     oAPP.setBusy = function(bIsShow) {
 
@@ -43,7 +70,7 @@ let oAPP = (function(window) {
 
         oAPP.attr.T_9011 = oInfo.T_9011;
         oAPP.attr.oAppInfo = oInfo.oAppInfo;
-        oAPP.attr.servNm = oInfo.servNm;        
+        oAPP.attr.servNm = oInfo.servNm;
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {

@@ -11,7 +11,7 @@ let zconsole = parent.WSERR(window, document, console);
 
 let oAPP = parent.oAPP;
 
-(function (window, oAPP) {
+(function(window, oAPP) {
     "use strict";
 
     oAPP.settings = {};
@@ -21,6 +21,7 @@ let oAPP = parent.oAPP;
         require = parent.require;
 
     const
+        APPCOMMON = oAPP.common,
         C_MENU_BIND_PATH = "/FIND",
         C_FIND_MENU1_ID = "M001",
         C_FIND_MENU2_ID = "M002",
@@ -39,7 +40,7 @@ let oAPP = parent.oAPP;
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.fn.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
+    oAPP.fn.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -48,7 +49,7 @@ let oAPP = parent.oAPP;
             oCoreModel.refresh(true);
         }
 
-    }; // end of oAPP.common.fnSetModelProperty
+    }; // end of APPCOMMON.fnSetModelProperty
 
     /************************************************************************
      * 모델 데이터 get
@@ -57,7 +58,7 @@ let oAPP = parent.oAPP;
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.fn.fnGetModelProperty = function (sModelPath) {
+    oAPP.fn.fnGetModelProperty = function(sModelPath) {
 
         return sap.ui.getCore().getModel().getProperty(sModelPath);
 
@@ -66,7 +67,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * ws의 설정 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.getSettingsInfo = function () {
+    oAPP.fn.getSettingsInfo = function() {
 
         // Browser Window option
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
@@ -84,7 +85,7 @@ let oAPP = parent.oAPP;
     // /************************************************************************
     //  * UI5 BootStrap 
     //  ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = function () {
+    oAPP.fn.fnLoadBootStrapSetting = function() {
 
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
@@ -124,7 +125,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * find 대상 모수 데이터 구하기
      ************************************************************************/
-    oAPP.fn.getAttrChangedData = function () {
+    oAPP.fn.getAttrChangedData = function() {
 
         return oAPP.attr.aAttrData;
 
@@ -133,7 +134,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 서버 이벤트 정보 구하기
      ************************************************************************/
-    oAPP.fn.getServerEventList = function () {
+    oAPP.fn.getServerEventList = function() {
 
         return oAPP.attr.aServEvtData;
 
@@ -142,7 +143,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 22번 테이블 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.get0022Data = function () {
+    oAPP.fn.get0022Data = function() {
 
         return oAPP.attr.aT_0022;
 
@@ -152,7 +153,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 초기 모델 바인딩
      ************************************************************************/
-    oAPP.fn.fnInitModelBinding = function () {
+    oAPP.fn.fnInitModelBinding = function() {
 
         var oFind2Data = oAPP.fn.fnGetFindData2();
 
@@ -165,7 +166,6 @@ let oAPP = parent.oAPP;
             FIND3TABLE: oAPP.fn.fnGetFindData3(),
             FIND4TABLE: oAPP.fn.fnGetFindData4(),
         };
-
 
         var oCoreModel = sap.ui.getCore().getModel(),
             oJsonModel = new sap.ui.model.json.JSONModel(),
@@ -191,7 +191,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 화면 초기 렌더링
      ************************************************************************/
-    oAPP.fn.fnInitRendering = function () {
+    oAPP.fn.fnInitRendering = function() {
 
         var oTntPage = oAPP.fn.fnGetFindTntToolPage();
 
@@ -214,7 +214,7 @@ let oAPP = parent.oAPP;
                         }),
 
                         new sap.m.Title({
-                            text: "Find"
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D02"), // Find
                         }),
 
                     ],
@@ -244,7 +244,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 메인 페이지 (tnt ToolPage)
      **************************************************************************/
-    oAPP.fn.fnGetFindTntToolPage = function () {
+    oAPP.fn.fnGetFindTntToolPage = function() {
 
         var oPage1 = oAPP.fn.fnGetFindPage1(), // "UI Where to Use the Event"
             oPage2 = oAPP.fn.fnGetFindPage2(), // "Model Binding Usage For UI"
@@ -268,7 +268,7 @@ let oAPP = parent.oAPP;
                         parts: [
                             `${C_MENU_BIND_PATH}/SELKEY`
                         ],
-                        formatter: function (selectedKey) {
+                        formatter: function(selectedKey) {
 
                             if (selectedKey == null) {
                                 return;
@@ -311,23 +311,23 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 메뉴 리스트
      **************************************************************************/
-    oAPP.fn.fnGetFindMenuList = function () {
+    oAPP.fn.fnGetFindMenuList = function() {
 
         return [{
                 key: C_FIND_MENU1_ID,
-                text: "UI Where to Use the Event"
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D03"), // UI Where to Use the Event
             },
             {
                 key: C_FIND_MENU2_ID,
-                text: "Model Binding Usage For UI"
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D04"), // Model Binding Usage For UI
             },
             {
                 key: C_FIND_MENU3_ID,
-                text: "CSS Style Class Where to Use"
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D05"), // CSS Style Class Where to Use
             },
             {
                 key: C_FIND_MENU4_ID,
-                text: "Event JS Where to Use"
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D06"), // Event JS Where to Use
             },
         ];
 
@@ -336,14 +336,14 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "UI Where to Use the Event" 페이지
      **************************************************************************/
-    oAPP.fn.fnGetFindPage1 = function () {
+    oAPP.fn.fnGetFindPage1 = function() {
 
         var EnumLabelDesignBold = sap.m.LabelDesign.Bold,
             EnumSticky = sap.m.Sticky;
 
         return new sap.m.Page(`${C_FIND_MENU1_ID}--page`, {
             showHeader: true,
-            title: "UI Where to Use the Event",
+            title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D03"), // UI Where to Use the Event
             titleAlignment: sap.m.TitleAlignment.Center,
             content: [
                 new sap.m.Table({
@@ -365,7 +365,7 @@ let oAPP = parent.oAPP;
                         new sap.m.Column({
                             demandPopin: false,
                             header: new sap.m.Label({
-                                text: "Event ID",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C49"), // Event ID
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -375,7 +375,7 @@ let oAPP = parent.oAPP;
                             minScreenWidth: "Desktop",
                             // popinDisplay: sap.m.PopinDisplay.Inline,
                             header: new sap.m.Label({
-                                text: "Event Text",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C52"), // Event Text
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -383,7 +383,7 @@ let oAPP = parent.oAPP;
                         new sap.m.Column({
                             demandPopin: false,
                             header: new sap.m.Label({
-                                text: "Event Target Properties",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C50"), // Event Target Properties
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -391,7 +391,7 @@ let oAPP = parent.oAPP;
                         new sap.m.Column({
                             demandPopin: false,
                             header: new sap.m.Label({
-                                text: "UI OBJ ID",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C51"), // UI OBJ ID
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -439,7 +439,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "Model Binding Usage For UI" 페이지
      **************************************************************************/
-    oAPP.fn.fnGetFindPage2 = function () {
+    oAPP.fn.fnGetFindPage2 = function() {
 
         var oLeftPage = oAPP.fn.fnGetFindPage2_LeftPage(),
             oRightPage = oAPP.fn.fnGetFindPage2_RightPage();
@@ -448,7 +448,7 @@ let oAPP = parent.oAPP;
 
             // properties
             showHeader: true,
-            title: "Model Binding Usage For UI",
+            title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D04"), // Model Binding Usage For UI
             titleAlignment: sap.m.TitleAlignment.Center,
 
             // Aggregations
@@ -481,7 +481,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "Model Binding Usage For UI" 페이지의 Split 중 왼쪽영역
      **************************************************************************/
-    oAPP.fn.fnGetFindPage2_LeftPage = function () {
+    oAPP.fn.fnGetFindPage2_LeftPage = function() {
 
         var EnumLabelDesignBold = sap.m.LabelDesign.Bold,
             EnumSticky = sap.m.Sticky;
@@ -510,7 +510,7 @@ let oAPP = parent.oAPP;
                         new sap.m.Column({
                             demandPopin: false,
                             header: new sap.m.Label({
-                                text: "UI ID",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C53"), // UI ID
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -518,7 +518,7 @@ let oAPP = parent.oAPP;
                         new sap.m.Column({
                             demandPopin: false,
                             header: new sap.m.Label({
-                                text: "UI Attribute ID",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C54"), // UI Attribute ID
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -527,7 +527,7 @@ let oAPP = parent.oAPP;
                             demandPopin: true,
                             minScreenWidth: "10000px",
                             header: new sap.m.Label({
-                                text: "Model full Path",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C57"), // Model full Path
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -535,7 +535,7 @@ let oAPP = parent.oAPP;
                         new sap.m.Column({
                             demandPopin: false,
                             header: new sap.m.Label({
-                                text: "Binding Field",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C55"), // Binding Field
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -543,7 +543,7 @@ let oAPP = parent.oAPP;
                         new sap.m.Column({
                             demandPopin: false,
                             header: new sap.m.Label({
-                                text: "Data Type",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C56"), // Data Type
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -556,7 +556,7 @@ let oAPP = parent.oAPP;
                                 src: "sap-icon://list"
                             }),
                             new sap.m.Text({
-                                text: "Properties Usage Bind List"
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D07"), // Properties Usage Bind List
                             }).addStyleClass("sapUiTinyMarginBegin")
                         ]
                     }),
@@ -586,7 +586,7 @@ let oAPP = parent.oAPP;
                                     parts: [
                                         "UIATV"
                                     ],
-                                    formatter: function (UIATV) {
+                                    formatter: function(UIATV) {
 
                                         if (UIATV == null) {
                                             return "";
@@ -623,7 +623,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "Model Binding Usage For UI" 페이지의 Split 중 오른쪽영역
      **************************************************************************/
-    oAPP.fn.fnGetFindPage2_RightPage = function () {
+    oAPP.fn.fnGetFindPage2_RightPage = function() {
 
         var EnumLabelDesignBold = sap.m.LabelDesign.Bold,
             EnumSticky = sap.m.Sticky;
@@ -651,7 +651,7 @@ let oAPP = parent.oAPP;
                         new sap.m.Column({
                             demandPopin: false,
                             header: new sap.m.Label({
-                                text: "UI ID",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C53"), // UI ID
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -660,7 +660,7 @@ let oAPP = parent.oAPP;
                             demandPopin: true,
                             minScreenWidth: "Desktop",
                             header: new sap.m.Label({
-                                text: "Aggregations ID",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C58"), // Aggregations ID
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -669,7 +669,7 @@ let oAPP = parent.oAPP;
                             demandPopin: true,
                             minScreenWidth: "Desktop",
                             header: new sap.m.Label({
-                                text: "Binding Model",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C59"), // Binding Model
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -683,7 +683,7 @@ let oAPP = parent.oAPP;
                                 src: "sap-icon://list"
                             }),
                             new sap.m.Text({
-                                text: "Aggregations Usage Bind Models"
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D08"), // Aggregations Usage Bind Models
                             }).addStyleClass("sapUiTinyMarginBegin")
                         ]
                     }),
@@ -724,7 +724,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "CSS Style Class Where to Use" 페이지
      **************************************************************************/
-    oAPP.fn.fnGetFindPage3 = function () {
+    oAPP.fn.fnGetFindPage3 = function() {
 
         var EnumLabelDesignBold = sap.m.LabelDesign.Bold,
             EnumSticky = sap.m.Sticky;
@@ -733,7 +733,7 @@ let oAPP = parent.oAPP;
 
             // properties
             showHeader: true,
-            title: "CSS Style Class Where to Use",
+            title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D05"), // CSS Style Class Where to Use
             titleAlignment: sap.m.TitleAlignment.Center,
 
             content: [
@@ -757,7 +757,7 @@ let oAPP = parent.oAPP;
                         new sap.m.Column({
                             demandPopin: false,
                             header: new sap.m.Label({
-                                text: "UI OBJ ID",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C51"), // UI OBJ ID
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -765,7 +765,7 @@ let oAPP = parent.oAPP;
                         new sap.m.Column({
                             demandPopin: false,
                             header: new sap.m.Label({
-                                text: "Style Class Name",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C60"), // Style Class Name
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -801,7 +801,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "Event JS Where to Use" 페이지
      **************************************************************************/
-    oAPP.fn.fnGetFindPage4 = function () {
+    oAPP.fn.fnGetFindPage4 = function() {
 
         var EnumLabelDesignBold = sap.m.LabelDesign.Bold,
             EnumSticky = sap.m.Sticky;
@@ -810,7 +810,7 @@ let oAPP = parent.oAPP;
 
             // properties
             showHeader: true,
-            title: "Event JS Where to Use",
+            title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D06"), // Event JS Where to Use
             titleAlignment: sap.m.TitleAlignment.Center,
 
             content: [
@@ -834,7 +834,7 @@ let oAPP = parent.oAPP;
                         new sap.m.Column({
                             demandPopin: false,
                             header: new sap.m.Label({
-                                text: "UI OBJ ID",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C51"), // UI OBJ ID
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -842,7 +842,7 @@ let oAPP = parent.oAPP;
                         new sap.m.Column({
                             demandPopin: false,
                             header: new sap.m.Label({
-                                text: "UI Event Name",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C61"), // UI Event Name
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -850,7 +850,7 @@ let oAPP = parent.oAPP;
                         new sap.m.Column({
                             demandPopin: false,
                             header: new sap.m.Label({
-                                text: "UI Class",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C62"), // UI Class
                                 design: EnumLabelDesignBold
                             }),
                         }),
@@ -891,7 +891,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "UI Where to Use the Event" Data
      **************************************************************************/
-    oAPP.fn.fnGetFindData1 = function () {
+    oAPP.fn.fnGetFindData1 = function() {
 
         // Attribute 정보를 구한다.
         var aAttrData = oAPP.fn.getAttrChangedData(),
@@ -941,7 +941,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "Model Binding Usage For UI" 페이지의 Split 중 왼쪽영역 데이터
      **************************************************************************/
-    oAPP.fn.fnGetFindData2 = function () {
+    oAPP.fn.fnGetFindData2 = function() {
 
         // Attribute 정보를 구한다.
         var aAttrData = oAPP.fn.getAttrChangedData(),
@@ -981,7 +981,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "CSS Style Class Where to Use" 페이지 데이터
      **************************************************************************/
-    oAPP.fn.fnGetFindData3 = function () {
+    oAPP.fn.fnGetFindData3 = function() {
 
         // Attribute 정보를 구한다.
         var aAttrData = oAPP.fn.getAttrChangedData(),
@@ -1007,7 +1007,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 "Event JS Where to Use" 페이지 데이터
      **************************************************************************/
-    oAPP.fn.fnGetFindData4 = function () {
+    oAPP.fn.fnGetFindData4 = function() {
 
         // Attribute 정보를 구한다.
         var aAttrData = oAPP.fn.getAttrChangedData(),
@@ -1086,7 +1086,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 TNT 메뉴 선택 시 NavContainer의 afterNav events.
      **************************************************************************/
-    oAPP.events.ev_findNavConAfterNav = function (oEvent) {
+    oAPP.events.ev_findNavConAfterNav = function(oEvent) {
 
         var oMovePage = oEvent.getParameter("to"),
             toId = oEvent.getParameter("toId");
@@ -1135,7 +1135,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 TNT 메뉴 선택 이벤트
      **************************************************************************/
-    oAPP.events.ev_sideNaviItemSelection = function (oEvent) {
+    oAPP.events.ev_sideNaviItemSelection = function(oEvent) {
 
         var oSelectedItem = oEvent.getParameter("item"),
             sItemKey = oSelectedItem.getProperty("key");
@@ -1152,7 +1152,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 링크 이벤트들..
      **************************************************************************/
-    oAPP.events.ev_press_Link_Find = function (oEvent) {
+    oAPP.events.ev_press_Link_Find = function(oEvent) {
 
         var oCtx = oEvent.getSource().getBindingContext();
         if (oCtx == null) {
@@ -1181,7 +1181,7 @@ let oAPP = parent.oAPP;
     /**************************************************************************
      *  Find의 링크 이벤트인데 Controller 실행 할 경우.
      **************************************************************************/
-    oAPP.events.ev_press_Link_Find_Controller = function (oEvent) {
+    oAPP.events.ev_press_Link_Find_Controller = function(oEvent) {
 
         var oCtx = oEvent.getSource().getBindingContext();
         if (oCtx == null) {
@@ -1220,9 +1220,9 @@ let oAPP = parent.oAPP;
     // // UI5 Boot Strap을 로드 하고 attachInit 한다.
     oAPP.fn.fnLoadBootStrapSetting();
 
-    window.onload = function () {
+    window.onload = function() {
 
-        sap.ui.getCore().attachInit(function () {
+        sap.ui.getCore().attachInit(function() {
 
             oAPP.fn.fnInitModelBinding();
 
@@ -1231,14 +1231,14 @@ let oAPP = parent.oAPP;
             oAPP.setBusy('');
 
             setTimeout(() => {
-                $('#content').fadeIn(1000, 'linear');
+                $('#content').fadeIn(300, 'linear');
             }, 100);
 
         });
 
     };
 
-    window.onbeforeunload = function () {
+    window.onbeforeunload = function() {
 
         // IPCRENDERER 이벤트 해제
         oAPP.IPCRENDERER.off(`${oAPP.BROWSKEY}--find--data--refresh--callback`, oAPP.fn.fnIpcRendererFind_data_refresh_callback);

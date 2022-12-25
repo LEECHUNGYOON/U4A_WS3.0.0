@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Controller</title>
+    <title></title>
     <link rel="stylesheet" href="controller.css">
 
   </head>
@@ -25,22 +25,37 @@
       <!--드로잉 가능 여부 체크박스-->
       <div class="drow-checkbox" style="display:none;">
         <input type="checkbox" name="check1" id="check1" value="1" class="drow-checkbox1">
-        <label for="check1">드로잉 여부</label>
+        <label id="label_check1" for="check1">드로잉 여부</label>
       </div>
 
 
       <!--드로잉 값 초기화 버튼-->
       <div class="drow-initial">
-        <a href="#" class="drow-initial-Button" style="display:none;">드로잉 초기화</a>
+        <a id="label_a1" href="#" class="drow-initial-Button" style="display:none;">드로잉 초기화</a>
       </div>
 
 
       <!--레코딩 화면 종료 버튼-->
       <div class="recording-close">
-        <a href="#" class="recording-close-Button" >레코딩 창 종료</a>
+        <a id="label_a2" href="#" class="recording-close-Button" >레코딩 창 종료</a>
       </div>
   
     </div>
+
+    <script>
+      /************************************************************************
+       * 에러 감지
+       ************************************************************************/
+      var REMOTE = require('@electron/remote'),
+          PATH = REMOTE.require('path'),
+          APP = REMOTE.app,
+          APPPATH = APP.getAppPath(),
+          PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+          PATHINFO = require(PATHINFOURL),
+          WSERR = require(PATHINFO.WSTRYCATCH);
+
+      var zconsole = WSERR(window, document, console);
+  </script>
 
     <script src="controller.js"></script>
 

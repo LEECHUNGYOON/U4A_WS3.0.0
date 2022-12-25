@@ -117,7 +117,7 @@ function gfn_crtUI_Main() {
     });
     DYNAMICPAGETITLE1.setHeading(HBOX1);
 
-    let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D30", "", "", "", ""); // Version
+    let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D30"); // Version
     sTitle += " :";
 
     var TITLE1 = new sap.m.Title({
@@ -135,7 +135,7 @@ function gfn_crtUI_Main() {
     HBOX1.addItem(oHandle.UI.TITLE2);
 
     var INFOLABEL1 = new sap.tnt.InfoLabel({
-        text: "Latest"
+        text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D42"), // Latest
     });
     INFOLABEL1.addStyleClass("sapUiSmallMarginBegin");
     HBOX1.addItem(INFOLABEL1);

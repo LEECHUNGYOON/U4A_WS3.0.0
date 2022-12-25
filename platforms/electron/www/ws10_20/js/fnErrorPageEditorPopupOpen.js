@@ -35,13 +35,16 @@
             oEditData = oAPP.DATA.APPDATA.S_ERHTML,
             oUserInfo = parent.getUserInfo(),
             oThemeInfo = parent.getThemeInfo(), // theme 정보   
-            sBrowserTitle = "Editor - Customizing the Error Page";
+            // sBrowserTitle = "Editor - Customizing the Error Page";
+
+            sTitle = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D23"); // Editor
+            sTitle += " - " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D32"); // Customizing the Error Page
 
         var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.title = sBrowserTitle;
+        oBrowserOptions.title = sTitle;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.show = false;
@@ -50,6 +53,7 @@
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -198,6 +202,7 @@
         oBrowserOptions.webPreferences.nodeIntegration = false;
         oBrowserOptions.webPreferences.enableRemoteModule = false;
         oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);

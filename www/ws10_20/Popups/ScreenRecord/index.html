@@ -53,6 +53,22 @@
   <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js'></script> -->
   <script src='underscore-min.js'></script>  
   <!-- partial -->
+
+  <script>
+    /************************************************************************
+     * 에러 감지
+     ************************************************************************/
+    var REMOTE = require('@electron/remote'),
+        PATH = REMOTE.require('path'),
+        APP = REMOTE.app,
+        APPPATH = APP.getAppPath(),
+        PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+        PATHINFO = require(PATHINFOURL),
+        WSERR = require(PATHINFO.WSTRYCATCH);
+
+    var zconsole = WSERR(window, document, console);
+</script>
+
   <script  src="index.js"></script>
 
 </body>

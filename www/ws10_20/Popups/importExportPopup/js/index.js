@@ -76,7 +76,7 @@ const oAPP = {
 
         let options = {
             // See place holder 1 in above image
-            title: "U4A Application Import",
+            title: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D36"), // U4A Application Import
 
             // See place holder 4 in above image
             filters: [{
@@ -99,7 +99,12 @@ const oAPP = {
             oAPP.fs.readFile(oAPP.FilePath, null, function(err, data) {
 
                 if (err) {
-                    oAPP.remote.dialog.showErrorBox('An error has occurred', 'There is a problem with the uploaded file. Please try again.');
+
+                    let sErrMsg1 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "337"), // An error has occurred
+                        sErrMsg2 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "339"); // There is a problem with the uploaded file.
+                    sErrMsg2 += " " + oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "338"); // Please try again
+
+                    oAPP.remote.dialog.showErrorBox(sErrMsg1, sErrMsg2);
                     oAPP.oWIN.close();
 
                 }
@@ -116,19 +121,25 @@ const oAPP = {
 
                     if (xhr.readyState == XMLHttpRequest.DONE) {
 
+                        let sErrMsg1 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "337"); // An error has occurred
+
                         try {
                             //서버에서 요청받은 Data 
                             var sData = JSON.parse(xhr.response);
 
                             //오류 발생?
                             if (sData.RETCD === "E") {
-                                oAPP.remote.dialog.showErrorBox('An error has occurred', sData.RTMSG);
+
+                                oAPP.remote.dialog.showErrorBox(sErrMsg1, sData.RTMSG);
                                 oAPP.oWIN.close();
                             }
 
                         } catch (e) {
                             //오류 발생?
-                            oAPP.remote.dialog.showErrorBox('An error has occurred', 'Error updating IMPORT server response');
+
+                            let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "340"); // During Application Import, a server response error occurred.
+
+                            oAPP.remote.dialog.showErrorBox(sErrMsg1, sMsg);
                             oAPP.oWIN.close();
 
                         }
@@ -171,7 +182,10 @@ const oAPP = {
 
         if (APPID === "") {
 
-            oAPP.remote.dialog.showErrorBox('An error has occurred', 'Select the download destination app id');
+            let sErrMsg1 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "337"), // An error has occurred
+                sErrMsg2 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "341"); // Select the download target application ID.
+
+            oAPP.remote.dialog.showErrorBox(sErrMsg1, sErrMsg2);
             oAPP.oWIN.close();
 
         }
@@ -184,10 +198,12 @@ const oAPP = {
         //Application ID 광역 할당 
         oAPP.APPID = APPID;
 
+        let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D37"); // U4A Application Export
+
         // 디렉토리 선택 팝업 옵션 설정 
         let options = {
             // See place holder 1 in above image
-            title: "U4A Application Export - " + oAPP.APPID,
+            title: sTitle + " - " + oAPP.APPID,
 
             // 폴더 
             properties: ['openDirectory', '']
@@ -215,7 +231,7 @@ const oAPP = {
             //기존 파일이 존재한다면 ..
             if (IsfileExt) {
 
-                var LpopMsg = "Same file exists Do you ignore the existing file and proceed?";
+                var LpopMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "342"); // Same file exists Do you ignore the existing file and proceed?
                 var Ret = oAPP.remote.dialog.showMessageBoxSync(oAPP.oWIN, {
                     type: "question",
                     message: LpopMsg,
@@ -241,7 +257,8 @@ const oAPP = {
 
                         //오류 발생?
                         if (sData.RETCD === "E") {
-                            oAPP.remote.dialog.showErrorBox('An error has occurred', sData.RTMSG);
+                            let sErrMsg1 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "337"); // An error has occurred                      
+                            oAPP.remote.dialog.showErrorBox(sErrMsg1, sData.RTMSG);
                             oAPP.oWIN.close();
                         }
 
@@ -251,10 +268,11 @@ const oAPP = {
 
                             var Lmsg = xhr.getResponseHeader('RTMSG');
                             if (Lmsg == "") {
-                                Lmsg = 'During the download process there is a critical problem';
+                                Lmsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "343"); // During the download process there is a critical problem.
                             }
-
-                            oAPP.remote.dialog.showErrorBox('An error has occurred', Lmsg);
+                            
+                            let sErrMsg1 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "337"); // An error has occurred
+                            oAPP.remote.dialog.showErrorBox(sErrMsg1, Lmsg);
                             oAPP.oWIN.close();
                             return;
                         }

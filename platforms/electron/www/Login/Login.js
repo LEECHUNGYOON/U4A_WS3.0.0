@@ -5,7 +5,7 @@
  * - file Desc : WS Login Page
  ************************************************************************/
 
-let oAPP = (function () {
+let oAPP = (function() {
     "use strict";
 
     const
@@ -277,7 +277,7 @@ let oAPP = (function () {
                                     value: "{ID}",
                                     showSearchButton: false,
                                     placeholder: "　",
-                                    suggest: function (oEvent) {
+                                    suggest: function(oEvent) {
 
                                         var sValue = oEvent.getParameter("suggestValue"),
                                             aFilters = [];
@@ -286,7 +286,7 @@ let oAPP = (function () {
 
                                             aFilters = [
                                                 new sap.ui.model.Filter([
-                                                    new sap.ui.model.Filter("ID", function (sText) {
+                                                    new sap.ui.model.Filter("ID", function(sText) {
                                                         return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                                     }),
                                                 ], false)
@@ -298,7 +298,7 @@ let oAPP = (function () {
                                         this.suggest();
 
                                     },
-                                    search: function (oEvent) {
+                                    search: function(oEvent) {
 
                                         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
                                         if (bIsPressClearBtn) {
@@ -400,25 +400,25 @@ let oAPP = (function () {
 
             new sap.m.Button({
                 text: "영선",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("yshong");
                 }
             }),
             new sap.m.Button({
                 text: "성호",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("shhong");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
             new sap.m.Button({
                 text: "은섭",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("pes");
                 }
             }),
             new sap.m.Button({
                 text: "청윤",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("soccerhs");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
@@ -505,7 +505,7 @@ let oAPP = (function () {
                         parts: [
                             "/LOGIN/SYSID"
                         ],
-                        formatter: function (SYSID) {
+                        formatter: function(SYSID) {
 
                             // U4A 서버 일 경우에만 자동 로그인 버튼 보이기
                             switch (SYSID) {
@@ -603,7 +603,7 @@ let oAPP = (function () {
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function () {
+            onAfterRendering: function() {
 
                 oAPP.fn.fnOnSmoothLoading();
 
@@ -722,7 +722,7 @@ let oAPP = (function () {
         var xhr = new XMLHttpRequest();
         xhr.withCredentials = true;
 
-        xhr.onreadystatechange = function () { // 요청에 대한 콜백
+        xhr.onreadystatechange = function() { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
@@ -806,7 +806,7 @@ let oAPP = (function () {
             var sServicePath = parent.getServerPath() + "/chk_u4a_authority";
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () { // 요청에 대한 콜백
+            xhr.onreadystatechange = function() { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -874,7 +874,7 @@ let oAPP = (function () {
             var sServicePath = parent.getServerPath() + "/chk_customer_license";
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () { // 요청에 대한 콜백
+            xhr.onreadystatechange = function() { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -899,7 +899,7 @@ let oAPP = (function () {
     /************************************************************************
      * 고객사 라이센스 체크 성공
      ************************************************************************/
-    oAPP.fn.fnCheckCustomerLisenceThen = function (oLicenseInfo) {
+    oAPP.fn.fnCheckCustomerLisenceThen = function(oLicenseInfo) {
 
         // ISCDS TYPE C LENGTH 1, "on premise : space
         // RETCD TYPE C LENGTH 1, "처리 리턴 코드 : E 오류
@@ -1054,7 +1054,7 @@ let oAPP = (function () {
 
     }; // end of  oAPP.fn.fnSetAutoUpdateForSAP
 
-    oAPP.fn.fnSetAutoUpdateForSAPThen = function () {
+    oAPP.fn.fnSetAutoUpdateForSAPThen = function() {
 
         var oResult = this.oResult,
             oAuthInfo = this.oAuthInfo;
@@ -1106,7 +1106,7 @@ let oAPP = (function () {
     /************************************************************************
      * Github 연결을 시도 하여 on-premise 인지 CDN인지 확인
      ************************************************************************/
-    oAPP.fn.fnConnectionGithubThen = function (oReturn) {
+    oAPP.fn.fnConnectionGithubThen = function(oReturn) {
 
         parent.setIsCDN(oReturn.ISCDN);
 
@@ -1260,7 +1260,7 @@ let oAPP = (function () {
     /************************************************************************
      * 버전 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSetAutoUpdateForCDNThen = function () {
+    oAPP.fn.fnSetAutoUpdateForCDNThen = function() {
 
         var oResult = this.oResult,
             oAuthInfo = this.oAuthInfo;
@@ -1437,6 +1437,8 @@ let oAPP = (function () {
         }
 
         var oUserInfo = jQuery.extend({}, oResult, oLogInData);
+        
+        oUserInfo.WSVER = APP.getVersion();
 
         // 로그인 유저의 아이디/패스워드를 저장해둔다.    
         parent.setUserInfo(oUserInfo);
@@ -1467,8 +1469,8 @@ let oAPP = (function () {
         // save data to electron native object(process)
         let oProcessUserInfo = {
             CLIENT: oUserInfo.CLIENT,
-            ID : oUserInfo.ID,
-            PW : oUserInfo.PW,
+            ID: oUserInfo.ID,
+            PW: oUserInfo.PW,
             SYSID: oUserInfo.SYSID,
             LANGU: oResult.META.LANGU,
             LANGU_CNV: oUserInfo.LANGU,
@@ -1499,31 +1501,78 @@ let oAPP = (function () {
     }; // end of oAPP.fn.fnOnLoginSuccess   
 
     /************************************************************************
-     * 메시지 클래스 정보를 버전별로 APPDATA 경로에 JSON 파일을 만든다.
+     * 메시지 클래스 정보를 SYSTEM ID별, LANGUAGE 별로 JSON을 만든다.
      ************************************************************************/
-    oAPP.fn.fnWriteMsgClsJson = (oMsgCls) => {
+    oAPP.fn.fnWriteMsgClsJson = (aMsgCls) => {
+
+        // Launguage 별로 그룹을 만든다.
+        var oGroup = aMsgCls.reduce((acc, curr) => { // [1]
+            const {
+                SPRSL
+            } = curr; // [2]
+            if (acc[SPRSL]) acc[SPRSL].push(curr); // [3]
+            else acc[SPRSL] = [curr]; // [4]
+            return acc; // [5]
+        }, {}); // [6]
 
         // APPPATH 경로를 구한다.
         let oServerInfo = parent.getServerInfo(),
             sSysID = oServerInfo.SYSID,
-            sJsonFolderPath = PATH.join(USERDATA, "msgcls", sSysID),
-            sJsonPath = PATH.join(sJsonFolderPath, "msgcls.json");
+            sJsonFolderPath = PATH.join(USERDATA, "msgcls", sSysID);
 
-        if (!FS.existsSync(sJsonFolderPath)) {
-            FS.mkdirSync(sJsonFolderPath, {
-                recursive: true,
-                mode: 0o777 // 올 권한	
+        for (const key in oGroup) {
+
+            const element = oGroup[key];
+
+            // SYSTEM ID 별, LANGUAGE 별 폴더가 있는지 확인.
+            const
+                sJsonLanguFolderPath = sJsonFolderPath + "\\" + key,
+                sJsonPath = PATH.join(sJsonLanguFolderPath, "msgcls.json");
+
+            if (!FS.existsSync(sJsonLanguFolderPath)) {
+                FS.mkdirSync(sJsonLanguFolderPath, {
+                    recursive: true,
+                    mode: 0o777 // 올 권한	
+                });
+            }
+
+            let sMsgCls = JSON.stringify(element);
+
+            FS.writeFileSync(sJsonPath, sMsgCls, {
+                encoding: "utf8",
+                mode: 0o777 // 올 권한
             });
+
         }
 
-        let sMsgCls = JSON.stringify(oMsgCls);
-
-        FS.writeFileSync(sJsonPath, sMsgCls, {
-            encoding: "utf8",
-            mode: 0o777 // 올 권한
-        });
-
     }; // end of oAPP.fn.fnWriteMsgClsJson
+
+
+
+    //[-----원본------]
+    // oAPP.fn.fnWriteMsgClsJson = (oMsgCls) => {
+
+    //     // APPPATH 경로를 구한다.
+    //     let oServerInfo = parent.getServerInfo(),
+    //         sSysID = oServerInfo.SYSID,
+    //         sJsonFolderPath = PATH.join(USERDATA, "msgcls", sSysID),
+    //         sJsonPath = PATH.join(sJsonFolderPath, "msgcls.json");
+
+    //     if (!FS.existsSync(sJsonFolderPath)) {
+    //         FS.mkdirSync(sJsonFolderPath, {
+    //             recursive: true,
+    //             mode: 0o777 // 올 권한	
+    //         });
+    //     }
+
+    //     let sMsgCls = JSON.stringify(oMsgCls);
+
+    //     FS.writeFileSync(sJsonPath, sMsgCls, {
+    //         encoding: "utf8",
+    //         mode: 0o777 // 올 권한
+    //     });
+
+    // }; // end of oAPP.fn.fnWriteMsgClsJson
 
     /************************************************************************
      * 테마 정보 저장
@@ -1551,7 +1600,7 @@ let oAPP = (function () {
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         reject(err.toString());
@@ -1814,7 +1863,7 @@ let oAPP = (function () {
     /************************************************************************
      * 네트워크 연결 시 Network Indicator 해제
      * **********************************************************************/
-    oAPP.fn.fnNetworkCheckerOnline = function () {
+    oAPP.fn.fnNetworkCheckerOnline = function() {
 
         // 네트워크 활성화 여부 flag
         oAPP.attr.bIsNwActive = true;
@@ -1828,7 +1877,7 @@ let oAPP = (function () {
     /************************************************************************
      * 네트워크 연결 시 Network Indicator 실행
      * **********************************************************************/
-    oAPP.fn.fnNetworkCheckerOffline = function () {
+    oAPP.fn.fnNetworkCheckerOffline = function() {
 
         // 네트워크 활성화 여부 flag
         oAPP.attr.bIsNwActive = false;
@@ -1842,7 +1891,7 @@ let oAPP = (function () {
     /************************************************************************
      * 개인화 폴더 생성 및 로그인 사용자별 개인화 Object 만들기
      ************************************************************************/
-    oAPP.fn.fnOnP13nFolderCreate = function () {
+    oAPP.fn.fnOnP13nFolderCreate = function() {
 
         var oServerInfo = parent.getServerInfo(),
             sSysID = oServerInfo.SYSID;
@@ -2002,7 +2051,7 @@ window.addEventListener("offline", oAPP.fn.fnNetworkCheckerOffline, false);
 
 window.addEventListener("beforeunload", oAPP.fn.fnOnBeforeUnload, false);
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
 
     // 브라우저 타이틀 변경
     parent.CURRWIN.setTitle("U4A Workspace - #Login");

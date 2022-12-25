@@ -5,6 +5,23 @@ const
     APP = REMOTE.app,
     USERDATA = APP.getPath("userData");
 
+/**
+ * 테스트 -- start
+ */
+const
+    CURRWIN = REMOTE.getCurrentWindow(),
+    WEBCON = CURRWIN.webContents,
+    WEBPREF = WEBCON.getWebPreferences(),
+    USERINFO = WEBPREF.USERINFO;
+
+if (USERINFO) {
+    process.USERINFO = USERINFO;
+}
+
+/**
+ * 테스트 -- end
+ */
+
 
 module.exports = {
 
@@ -57,7 +74,8 @@ module.exports = {
 
             // APPPATH 경로를 구한다.
             let sSysID = this.SYSID,
-                sJsonFolderPath = PATH.join(USERDATA, "msgcls", sSysID),
+                sLangu = this.LANGU,
+                sJsonFolderPath = PATH.join(USERDATA, "msgcls", sSysID, sLangu),
                 sJsonPath = PATH.join(sJsonFolderPath, "msgcls.json");
 
             // 파일이 없을 경우 그냥 빠져나간다.

@@ -3,14 +3,15 @@
  * ----------------------------------------------------------------------
  * - file Name : findPopup/frame.js
  ************************************************************************/
-let oAPP = (function (window) {
+let oAPP = (function(window) {
     "use strict";
 
     let oAPP = {};
     oAPP.fn = {};
     oAPP.attr = {};
     oAPP.events = {};
-
+    oAPP.common = {};
+    
     oAPP.REMOTE = require('@electron/remote');
     oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain;
     oAPP.IPCRENDERER = require('electron').ipcRenderer;
@@ -19,7 +20,33 @@ let oAPP = (function (window) {
     oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
     oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
 
-    oAPP.setBusy = function (bIsShow) {
+    /*******************************************************
+     * 메시지클래스 텍스트 작업 관련 Object -- start
+     *******************************************************/
+    const
+        REMOTE = oAPP.REMOTE,
+        PATH = REMOTE.require('path'),
+        CURRWIN = REMOTE.getCurrentWindow(),
+        WEBCON = CURRWIN.webContents,
+        WEBPREF = WEBCON.getWebPreferences(),
+        USERINFO = WEBPREF.USERINFO,
+        APP = REMOTE.app,
+        APPPATH = APP.getAppPath(),
+        LANGU = USERINFO.LANGU,
+        SYSID = USERINFO.SYSID;
+
+    const
+        WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+        WSUTIL = require(WSMSGPATH),
+        WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+
+    oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+
+    /*******************************************************
+     * 메시지클래스 텍스트 작업 관련 Object -- end
+     *******************************************************/
+
+    oAPP.setBusy = function(bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
 
@@ -35,7 +62,7 @@ let oAPP = (function (window) {
 
     };
 
-    oAPP.setBusyIndicator = function (bIsBusy) {
+    oAPP.setBusyIndicator = function(bIsBusy) {
 
         var oBusy = document.getElementById("u4aWsBusyIndicator");
 
@@ -69,7 +96,7 @@ let oAPP = (function (window) {
 
         oWs_frame.src = "index.html";
 
-    });   
+    });
 
     oAPP.fn.fnIpcMainFindSuccess = () => {
 
@@ -83,7 +110,7 @@ let oAPP = (function (window) {
 
         oAPP.IPCMAIN.off(`${oAPP.BROWSKEY}--find--success`, oAPP.fn.fnIpcMainFindSuccess);
 
-    });    
+    });
 
     window.oAPP = oAPP;
 

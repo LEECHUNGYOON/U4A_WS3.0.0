@@ -286,7 +286,7 @@ async function gfn_crtUI_Item_GITHUB(oParent) {
         if (oHandle.curVER === sLine.tag_name) {
             Licon = "sap-icon://heart";
             Lstat = "Information";
-            Ltitle = "Latest";
+            Ltitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D42", "", "", "", ""); // Latest
         }
 
         var TIMELINEITEM = new sap.suite.ui.commons.TimelineItem({

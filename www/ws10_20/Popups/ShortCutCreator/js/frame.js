@@ -139,7 +139,7 @@
                     case "01": //save path 
 
                         var options = {
-                            title: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "317"), // Save Shortcut Download Directory.common.fnGetMsgClsText("/U4A/MSG_WS", "317", "", "", "", ""), // Save Shortcut Download Directory
+                            title: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "317"), // Save Shortcut Download Directory.common.fnGetMsgClsText("/U4A/MSG_WS", "317"), // Save Shortcut Download Directory
                             // See place holder 4 in above image
                             filters: [
 
@@ -869,7 +869,7 @@
             //== Target Host URL 영역 
             var FORM2 = new sap.ui.layout.form.Form({
                 editable: true,
-                title: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C71", "", "", "", ""), // Target Host URL,
+                title: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C71"), // Target Host URL,
                 width: "100%"
             });
             var LAYO2 = new sap.ui.layout.form.ResponsiveGridLayout({
@@ -917,14 +917,14 @@
 
             var FORM2_RADIOBUTTON1 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C72", "", "", "", ""), // Internal Host URL
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C72"), // Internal Host URL
             });
             FORM2_RADIOBUTTON1.addStyleClass("sapUiSmallMarginBegin");
             FORM2_RADIOBUTTONGROUP1.addButton(FORM2_RADIOBUTTON1);
 
             var FORM2_RADIOBUTTON2 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C73", "", "", "", ""), // External Host URL
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C73"), // External Host URL
             });
             FORM2_RADIOBUTTON2.addStyleClass("sapUiSmallMarginBegin");
             FORM2_RADIOBUTTONGROUP1.addButton(FORM2_RADIOBUTTON2);
@@ -932,7 +932,7 @@
             var FORM2_INPUT1 = new sap.m.Input({
                 enabled: false,
                 value: "",
-                placeholder: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D13", "", "", "", ""), // Host or Domain
+                placeholder: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D13"), // Host or Domain
             });
             FORM2_VBOX1.addItem(FORM2_INPUT1);
 
@@ -940,7 +940,7 @@
             //== Browser Type 영역 
             var FORM3 = new sap.ui.layout.form.Form({
                 editable: true,
-                title: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C74", "", "", "", ""), // Browser Type
+                title: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C74"), // Browser Type
                 width: "100%"
             });
             var LAYO3 = new sap.ui.layout.form.ResponsiveGridLayout({
@@ -983,7 +983,7 @@
 
             var FORM3_RADIOBUTTON1 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C75", "", "", "", ""), // Chrome Browser
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C75"), // Chrome Browser
                 visible: false
             });
             FORM3_RADIOBUTTON1.addStyleClass("sapUiSmallMarginBegin");
@@ -991,14 +991,14 @@
 
             var FORM3_RADIOBUTTON2 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C76", "", "", "", ""), // IE edge Browser
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C76"), // IE edge Browser
                 visible: false
             });
             FORM3_RADIOBUTTON2.addStyleClass("sapUiSmallMarginBegin");
             FORM3_RADIOBUTTONGROUP1.addButton(FORM3_RADIOBUTTON2);
 
-            let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C77", "", "", "", ""); // Browser Option
-            sTitle += "(" + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C75", "", "", "", "") + ")"; // Chrome Browser
+            let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C77"); // Browser Option
+            sTitle += "(" + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C75") + ")"; // Chrome Browser
 
             //== Browser Option - Chrome 영역 
             var FORM4 = new sap.ui.layout.form.Form({
@@ -1051,21 +1051,21 @@
 
             var FORM4_RADIOBUTTON1 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C78", "", "", "", ""), // App Mode
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C78"), // App Mode
             });
             FORM4_RADIOBUTTON1.addStyleClass("sapUiSmallMarginBegin");
             FORM4_RADIOBUTTONGROUP1.addButton(FORM4_RADIOBUTTON1);
 
             var FORM4_RADIOBUTTON2 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C79", "", "", "", ""), // Full Screen Mode
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C79"), // Full Screen Mode
             });
             FORM4_RADIOBUTTON2.addStyleClass("sapUiSmallMarginBegin");
             FORM4_RADIOBUTTONGROUP1.addButton(FORM4_RADIOBUTTON2);
 
             var FORM4_RADIOBUTTON3 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C80", "", "", "", ""), // Kiosk Mode
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C80"), // Kiosk Mode
             });
             FORM4_RADIOBUTTON3.addStyleClass("sapUiSmallMarginBegin");
             FORM4_RADIOBUTTONGROUP1.addButton(FORM4_RADIOBUTTON3);
@@ -1077,19 +1077,19 @@
             FORM4_VBOX1.addItem(FORM4_HBOX2);
 
             var FORM4_CHECKBOX1 = new sap.m.CheckBox({
-                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C81", "", "", "", ""), // Displble Translate Mode
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C81"), // Displble Translate Mode
             });
             FORM4_CHECKBOX1.addStyleClass("sapUiTinyMarginBegin");
             FORM4_HBOX2.addItem(FORM4_CHECKBOX1);
 
             var FORM4_CHECKBOX2 = new sap.m.CheckBox({
-                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C82", "", "", "", ""), // Secret Mode
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C82"), // Secret Mode
             });
             FORM4_CHECKBOX2.addStyleClass("sapUiTinyMarginBegin");
             FORM4_HBOX2.addItem(FORM4_CHECKBOX2);
 
-            let sTitle1 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C77", "", "", "", ""); // Browser Option
-            sTitle1 += "(" + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C76", "", "", "", "") + ")"; // IE edge Browser
+            let sTitle1 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C77"); // Browser Option
+            sTitle1 += "(" + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C76") + ")"; // IE edge Browser
 
             //== Browser Option - IE edge 영역 
             var FORM5 = new sap.ui.layout.form.Form({
@@ -1142,14 +1142,14 @@
 
             var FORM5_RADIOBUTTON1 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: "App Mode"
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C78"), // App Mode
             });
             FORM5_RADIOBUTTON1.addStyleClass("sapUiSmallMarginBegin");
             FORM5_RADIOBUTTONGROUP1.addButton(FORM5_RADIOBUTTON1);
 
             var FORM5_RADIOBUTTON2 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: "Normal Mode"
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D38"), // Normal Mode
             });
             FORM5_RADIOBUTTON2.addStyleClass("sapUiSmallMarginBegin");
             FORM5_RADIOBUTTONGROUP1.addButton(FORM5_RADIOBUTTON2);
@@ -1157,7 +1157,7 @@
 
             //== Additional Parameter(Optional)    
             var PANEL1 = new sap.m.Panel({
-                headerText: "Additional Parameter(Optional)"
+                headerText: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C83"), // Additional Parameter(Optional)
             });
             PAGE.addContent(PANEL1);
 
@@ -1201,7 +1201,9 @@
                     var T_lines = PANEL1_TABLE.getSelectedItems();
 
                     if (T_lines.length == 0) {
-                        sap.m.MessageToast.show('Please select a line');
+
+                        let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268"); // Selected line does not exists.
+                        sap.m.MessageToast.show(sMsg);
                         return;
                     }
 
@@ -1216,14 +1218,14 @@
             PANEL1_TABLE.addColumn(new sap.m.Column({
                 header: new sap.m.Label({
                     design: "Bold",
-                    text: "Name"
+                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C11"), // Name
                 }),
                 width: "200px"
             }));
             PANEL1_TABLE.addColumn(new sap.m.Column({
                 header: new sap.m.Label({
                     design: "Bold",
-                    text: "Value"
+                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A53"), // Value
                 })
             }));
 
@@ -1250,7 +1252,7 @@
 
             var BAR1_BUTTON1 = new sap.m.Button({
                 icon: "sap-icon://save",
-                text: "Save ShortCut",
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C84"), // Save ShortCut
                 type: "Emphasized",
                 press: fn_CreateShortcut
             });
@@ -1258,7 +1260,7 @@
 
             var BAR1_BUTTON2 = new sap.m.Button({
                 icon: "sap-icon://cancel",
-                text: "Cancel",
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A41"), // Cancel
                 type: "Reject",
                 press: fn_close
             });

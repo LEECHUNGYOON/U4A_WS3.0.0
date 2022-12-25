@@ -114,7 +114,7 @@
 
     oAPP.fn.fnOnResizeWs30 = function() {
 
-        console.log("resize30!!!");
+        zconsole.log("resize30!!!");
 
         var oUspTree = sap.ui.getCore().byId("usptree");
         if (!oUspTree) {
@@ -142,7 +142,7 @@
 
                 oAPP.fn.setAppChangeWs30("X");
 
-                console.log("codeeditor change!!");
+                zconsole.log("codeeditor change!!");
 
                 // code editor keyPress 이벤트 해제
                 fnCodeEditorKeyPressEvent("");
@@ -203,7 +203,7 @@
 
         oAPP.fn.setAppChangeWs30("X");
 
-        console.log("codeeditor change!!");
+        zconsole.log("codeeditor change!!");
 
         // code editor keyPress 이벤트 해제
         fnCodeEditorKeyPressEvent("");
@@ -518,7 +518,7 @@
 
             oNewWindowBtn = new sap.m.Button("ws30_newWindowBtn", {
                 icon: "sap-icon://create",
-                tooltip: "New Window (Ctrl+N)",
+                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09") + " (Ctrl+N)", // New Window (Ctrl+N)
                 press: oAPP.events.ev_NewWindow
             });
 
@@ -571,15 +571,18 @@
 
         } // end of lf_bindPropForVisible
 
+        let sDispChgTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05") + " <--> "; // Display
+        sDispChgTxt += APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02") + " (Ctrl+F1)"; // Change
+
         var oDisplayModeBtn = new sap.m.Button("ws30_displayModeBtn", {
                 icon: "sap-icon://display",
-                tooltip: "Display <--> Change (Ctrl+F1)",
+                tooltip: sDispChgTxt,
                 press: ev_pressDisplayModeBtn
             }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible),
 
             oChangeModeBtn = new sap.m.Button("ws30_changeModeBtn", {
                 icon: "sap-icon://edit",
-                tooltip: "Display <--> Change (Ctrl+F1)",
+                tooltip: sDispChgTxt,
                 press: ev_pressDisplayModeBtn
             }).bindProperty("visible", {
                 parts: [{
@@ -616,13 +619,13 @@
 
             oActivateBtn = new sap.m.Button("ws30_activateBtn", {
                 icon: "sap-icon://activate",
-                tooltip: "Activate (Ctrl+F3)",
+                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B73") + " (Ctrl+F3)", // Activate (Ctrl+F3)
                 press: ev_pressActivateBtn,
             }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible),
 
             oSaveBtn = new sap.m.Button("ws30_saveBtn", {
                 icon: "sap-icon://save",
-                tooltip: "Save (Ctrl+S)",
+                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A64") + " (Ctrl+S)", // Save (Ctrl+S)
                 press: ev_pressSaveBtn
             })
             // .bindProperty("enabled", sVisiBindPath, lf_bindPropForVisible)
@@ -646,22 +649,22 @@
 
             oMimeBtn = new sap.m.Button({
                 icon: "sap-icon://picture",
-                text: "MIME Repository",
-                tooltip: "MIME Repository (Ctrl+Shift+F12)",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10"), // MIME Repository
+                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10") + " (Ctrl+Shift+F12)", // MIME Repository (Ctrl+Shift+F12)
                 press: oAPP.events.ev_pressMimeBtn
             }).addStyleClass("u4aWs20MimeBtn"),
 
             oControllerBtn = new sap.m.Button("ws30_controllerBtn", {
                 icon: "sap-icon://developer-settings",
-                text: "Controller (Class Builder)",
-                tooltip: "Controller (Ctrl+F12)",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A11"), // Controller (Class Builder)
+                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C38") + " (Ctrl+F12)", // Controller (Ctrl+F12)
                 press: ev_pressControllerBtn
             }),
 
             oAppExecBtn = new sap.m.Button("ws30_appExecBtn", {
-                text: "Application Execution",
                 icon: "sap-icon://internet-browser",
-                tooltip: "Application Execution (F8)",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06"), // Application Execution                
+                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06") + " (F8)", // Application Execution (F8)
                 press: ev_AppExec
             }).addStyleClass("u4aWs30AppExecBtn");
 
@@ -696,7 +699,7 @@
         return [
 
             new sap.m.VBox({
-                renderType: "Bare",
+                renderType: sap.m.FlexRendertype.Bare,
                 width: "100%",
                 height: "100%",
                 items: [
@@ -796,7 +799,7 @@
 
         return new sap.m.Page("USP30", {
             showHeader: true,
-            title: "Document",
+            title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B65"), // Document
             content: aContent
 
         });
@@ -823,8 +826,8 @@
                         formElements: [
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Web Application ID"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A90", "", "", "", ""), // Web Application ID
                                 }),
                                 fields: new sap.m.Text({
                                     // editable: false,
@@ -833,8 +836,8 @@
                             }),
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Web Application Name"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91", "", "", "", ""), // Web Application Name
                                 }),
                                 fields: new sap.m.Input({
                                     value: `{${sBindRoot}/DESCT}`,
@@ -844,8 +847,8 @@
                             }),
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Request/Task"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C12", "", "", "", ""), // Request/Task
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/REQNO}`
@@ -853,8 +856,8 @@
                             }),
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Language Key"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A98", "", "", "", ""), // Language Key
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/LANGU}`
@@ -862,8 +865,8 @@
                             }),
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Code Page"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C03", "", "", "", ""), // Code Page
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/CODPG}`
@@ -871,8 +874,8 @@
                             }),
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Dev. Package"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C13", "", "", "", ""), // Dev. Package
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/PACKG}`
@@ -880,8 +883,8 @@
                             }),
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Assigned Class Object ID"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A92", "", "", "", ""), // Assigned Class Object ID
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/CLSID}`
@@ -889,8 +892,8 @@
                             }),
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Program ID in Requests and Tasks"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C14", "", "", "", ""), // Program ID in Requests and Tasks
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/PGMID}`
@@ -898,8 +901,8 @@
                             }),
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Object Type"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B27", "", "", "", ""), // Object Type
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/OBJTY}`
@@ -907,8 +910,8 @@
                             }),
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Authorization Group"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C15", "", "", "", ""), // Authorization Group
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/AUTHG}`
@@ -917,8 +920,8 @@
 
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Create User"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C16", "", "", "", ""), // Create User
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/ERUSR}`
@@ -926,8 +929,8 @@
                             }),
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Create Date"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C06", "", "", "", ""), // Create Date
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/ERDAT}`
@@ -935,8 +938,8 @@
                             }),
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Create Time"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C07", "", "", "", ""), // Create Time
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/ERTIM}`
@@ -944,8 +947,8 @@
                             }),
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Change User"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C08", "", "", "", ""), // Change User
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/AEUSR}`
@@ -953,8 +956,8 @@
                             }),
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Change Date"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C09", "", "", "", ""), // Change Date
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/AEDAT}`
@@ -962,8 +965,8 @@
                             }),
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
-                                    design: "Bold",
-                                    text: "Change Time"
+                                    design: sap.m.LabelDesign.Bold,
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C10", "", "", "", ""), // Change Time
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/AETIM}`
@@ -1054,9 +1057,9 @@
                 // Properties
                 // selectionMode: "None",
                 // selectionMode: "MultiToggle",
-                selectionMode: "Single",
-                selectionBehavior: "RowOnly",
-                visibleRowCountMode: "Auto",
+                selectionMode: sap.ui.table.SelectionMode.Single,
+                selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
+                visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
                 rowHeight: 45,
 
                 // Aggregations
@@ -1069,13 +1072,13 @@
 
                     new sap.ui.table.Column({
                         label: new sap.m.Label({
-                            text: "Name",
-                            design: "Bold"
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C11"), // Name
+                            design: sap.m.LabelDesign.Bold
                         }),
 
                         template: new sap.m.HBox({
-                            renderType: "Bare",
-                            alignItems: "Center",
+                            renderType: sap.m.FlexRendertype.Bare,
+                            alignItems: sap.m.FlexAlignItems.Center,
                             items: [
 
                                 new sap.m.Image({
@@ -1166,8 +1169,8 @@
 
                     new sap.ui.table.Column({
                         label: new sap.m.Label({
-                            text: "Description",
-                            design: "Bold"
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35"), // Description
+                            design: sap.m.LabelDesign.Bold
                         }),
 
                         template: new sap.m.Text({
@@ -1364,7 +1367,7 @@
 
             // Mime Url Copy Button
             oUrlCopyBtn = new sap.m.Button({
-                text: "URL Copy",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C21"), // URL Copy
                 press: ev_pressUspUrlCopy.bind(this, oUrlInput)
             }),
 
@@ -1402,11 +1405,11 @@
                     formElements: [
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                design: "Bold",
-                                text: "URL"
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C18"), // URL
                             }),
                             fields: new sap.m.HBox({
-                                renderType: "Bare",
+                                renderType: sap.m.FlexRendertype.Bare,
                                 items: [
                                     oUrlInput,
                                     oUrlCopyBtn
@@ -1416,19 +1419,19 @@
 
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Is Folder?"
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C19"), // Is Folder?
                             }),
                             fields: oIsFolderCheckbox
                         }),
 
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Description"
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35"), // Description
                             }),
                             fields: new sap.m.HBox({
-                                renderType: "Bare",
+                                renderType: sap.m.FlexRendertype.Bare,
                                 items: [
                                     oDescInput // description Input
                                 ]
@@ -1437,11 +1440,11 @@
 
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Charset"
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C20"), // Charset
                             }),
                             fields: new sap.m.HBox({
-                                renderType: "Bare",
+                                renderType: sap.m.FlexRendertype.Bare,
                                 items: [
                                     oCharsetInput // charset Input
                                 ]
@@ -1466,7 +1469,7 @@
         return new sap.m.Panel("uspPanel", {
             expandable: true,
             expanded: true,
-            headerText: "Properties",
+            headerText: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C17"), // Properties
 
             content: [
                 oForm
@@ -1594,29 +1597,31 @@
 
                 new sap.m.Button({
                     icon: "sap-icon://rotate",
-                    text: "Split Orientation Change",
-                    tooltip: "Split Orientation Change",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C22"), // Split Orientation Change
+                    tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C22"), // Split Orientation Change
                     press: ev_codeeditorSplitOrientationChange
                 }).bindProperty("enabled", lfCodeeditorBindProperty()),
 
                 new sap.m.Button({
                     icon: "sap-icon://full-screen",
-                    text: "Full Screen",
-                    tooltip: "Editor Full Screen Mode",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C23"), // Full Screen
+                    // tooltip: "Editor Full Screen Mode",
+                    tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D23") + " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C79"), // Editor Full Screen Mode
                     press: ev_codeeditorFullscreen
                 }),
 
                 new sap.m.Button({
                     icon: "sap-icon://syntax",
-                    text: "Pattern",
-                    tooltip: "Source Pattern",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C24"), // Pattern
+                    tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D46"), // Source Pattern
                     press: ev_codeeditorPattern
                 }).bindProperty("enabled", lfCodeeditorBindProperty()),
 
                 new sap.m.Button("ws30_codeeditor_prettyBtn", {
                     icon: "sap-icon://indent",
-                    text: "Pretty Print",
-                    tooltip: "Pretty Print (Shift + F1)",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25"), // Pretty Print
+                    tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25") + "(Shift + F1)", // Pretty Print
+                    // tooltip: "Pretty Print (Shift + F1)",
                     press: ev_codeeditorPrettyPrint,
                 }).bindProperty("enabled", lfCodeeditorBindProperty())
             ]
@@ -1736,22 +1741,22 @@
 
         return [{
                 key: "WMENU20",
-                text: "Utilities",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B35"), // Utilities
                 icon: "",
             },
             {
                 key: "WMENU30",
-                text: "System",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B36"), // System
                 icon: "",
             },
             {
                 key: "WMENU50",
-                text: "Help",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39"), // Help
                 icon: "",
             },
             {
                 key: "Test10",
-                text: "Test",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B69"), // Test
                 icon: "",
             },
         ];
@@ -1765,39 +1770,39 @@
 
         var aWMENU20 = [{
                 key: "WMENU20_01",
-                text: "Select Browser Type"
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
             }, {
                 key: "WMENU20_03",
-                text: "Video Record"
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
             }],
 
             aWMENU30 = [{
                 key: "WMENU30_01",
-                text: "New Window"
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
             }, {
                 key: "WMENU30_02",
-                text: "Close Window"
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B51"), // Close Window
             }, {
                 key: "WMENU30_03",
-                text: "Options"
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"), // Options
             }, {
                 key: "WMENU30_04",
-                text: "Logoff",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
             }, {
                 key: "WMENU30_05",
-                text: "Release Note",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Notes
             }, {
                 key: "WMENU30_06",
-                text: "Administrator",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
                 visible: false,
             }, {
                 key: "WMENU30_07",
-                text: "Error log",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
             }],
 
             aWMENU50 = [{
                 key: "WMENU50_01",
-                text: "U4A Help Document",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
                 enabled: true,
             }],
 
@@ -1823,7 +1828,7 @@
         return [{
                 ICON: "sap-icon://expand-group",
                 KEY: "K1",
-                TXT: "Expand Subtree",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C27"), // Expand Subtree
                 ENABLED: true,
                 ISSTART: false,
                 VISIBLE: true
@@ -1831,7 +1836,7 @@
             {
                 ICON: "sap-icon://collapse-group",
                 KEY: "K2",
-                TXT: "Collapse Subtree",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C28"), // Collapse Subtree
                 ENABLED: true,
                 ISSTART: false,
                 VISIBLE: true
@@ -1839,7 +1844,7 @@
             {
                 ICON: "sap-icon://internet-browser",
                 KEY: "K6",
-                TXT: "Test Service",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D43"), // Test Service
                 ENABLED: true,
                 ISSTART: false,
                 VISIBLE: true
@@ -1847,7 +1852,7 @@
             {
                 ICON: "sap-icon://write-new",
                 KEY: "K3",
-                TXT: "Create",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"), // Create
                 ENABLED: true,
                 ISSTART: true,
                 VISIBLE: true
@@ -1855,7 +1860,7 @@
             {
                 ICON: "sap-icon://delete",
                 KEY: "K4",
-                TXT: "Delete",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03"), // Delete
                 ENABLED: true,
                 ISSTART: false,
                 VISIBLE: true
@@ -1863,7 +1868,7 @@
             {
                 ICON: "sap-icon://edit",
                 KEY: "K7",
-                TXT: "Rename",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D44"), // Rename
                 ENABLED: true,
                 ISSTART: false,
                 VISIBLE: true
@@ -1871,7 +1876,7 @@
             {
                 ICON: "sap-icon://navigation-up-arrow",
                 KEY: "K8",
-                TXT: "Up",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A55"), // Up
                 ENABLED: true,
                 ISSTART: true,
                 VISIBLE: true
@@ -1879,7 +1884,7 @@
             {
                 ICON: "sap-icon://navigation-down-arrow",
                 KEY: "K9",
-                TXT: "Down",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A56"), // Down
                 ENABLED: true,
                 ISSTART: false,
                 VISIBLE: true
@@ -1887,7 +1892,7 @@
             {
                 ICON: "sap-icon://outdent",
                 KEY: "K10",
-                TXT: "Move Position",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A57"), // Move Position
                 ENABLED: true,
                 ISSTART: false,
                 VISIBLE: true
@@ -1895,7 +1900,7 @@
             {
                 ICON: "sap-icon://download",
                 KEY: "K5",
-                TXT: "Download",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B78"), // Download
                 ENABLED: true,
                 ISSTART: true,
                 VISIBLE: true
@@ -1955,8 +1960,8 @@
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 required: true,
-                                design: "Bold",
-                                text: "Name"
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C11"), // Name
                             }),
                             fields: new sap.m.Input("ws30_crname", {
                                 value: `{${sBindRootPath}/NAME}`,
@@ -1977,8 +1982,8 @@
 
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Description"
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35"), // Description
                             }),
                             fields: new sap.m.Input({
                                 value: `{${sBindRootPath}/DESC}`,
@@ -1988,8 +1993,8 @@
 
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Charset (ex: utf-8, euc-kr..)"
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C20") + " (ex: utf-8, euc-kr..)" // Charset (ex: utf-8, euc-kr..)                               
                             }),
                             fields: new sap.m.Input({
                                 value: `{${sBindRootPath}/CODPG}`,
@@ -1999,8 +2004,8 @@
 
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Folder"
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D45"), // Folder
                             }),
                             fields: new sap.m.CheckBox({
                                 selected: `{${sBindRootPath}/ISFLD}`,
@@ -2015,13 +2020,16 @@
 
         });
 
+        let sTitle = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"); // Create
+        sTitle += ` [ {${sBindRootPath}/TITLE} ]`;
+
         // USP Folder 생성 팝업
         var oUspCrDlg = new sap.m.Dialog("uspCrNodePopup", {
 
             // properties
             draggable: true,
             resizable: true,
-            title: `Create [ {${sBindRootPath}/TITLE} ]`,
+            title: sTitle, //`Create [ {${sBindRootPath}/TITLE} ]`,
             contentWidth: "500px",
 
             // aggregations

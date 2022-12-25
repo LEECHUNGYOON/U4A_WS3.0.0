@@ -4,13 +4,14 @@
  * - file Name : errorPageEditorFrame.js
  ************************************************************************/
 
-let oAPP = (function (window) {
+let oAPP = (function(window) {
     "use strict";
 
     var oAPP = {};
     oAPP.attr = {};
     oAPP.fn = {};
     oAPP.events = {};
+    oAPP.common = {};
 
     oAPP.REMOTE = require('@electron/remote');
     oAPP.FS = oAPP.REMOTE.require('fs');
@@ -20,7 +21,33 @@ let oAPP = (function (window) {
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.RANDOM = require("random-key");
 
-    oAPP.fn.getSessionKey = function () {
+    /*******************************************************
+     * 메시지클래스 텍스트 작업 관련 Object -- start
+     *******************************************************/
+    const
+        REMOTE = oAPP.REMOTE,
+        PATH = REMOTE.require('path'),
+        CURRWIN = REMOTE.getCurrentWindow(),
+        WEBCON = CURRWIN.webContents,
+        WEBPREF = WEBCON.getWebPreferences(),
+        USERINFO = WEBPREF.USERINFO,
+        APP = REMOTE.app,
+        APPPATH = APP.getAppPath(),
+        LANGU = USERINFO.LANGU,
+        SYSID = USERINFO.SYSID;
+
+    const
+        WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+        WSUTIL = require(WSMSGPATH),
+        WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+
+    oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+
+    /*******************************************************
+     * 메시지클래스 텍스트 작업 관련 Object -- end
+     *******************************************************/
+
+    oAPP.fn.getSessionKey = function() {
 
         let oCurrWin = oAPP.REMOTE.getCurrentWindow();
         if (oCurrWin.isDestroyed()) {
@@ -34,7 +61,7 @@ let oAPP = (function (window) {
 
     };
 
-    oAPP.fn.fnGetBrowserKey = function () {
+    oAPP.fn.fnGetBrowserKey = function() {
 
         var oCurrWin = oAPP.REMOTE.getCurrentWindow();
         if (oCurrWin.isDestroyed()) {
@@ -48,7 +75,7 @@ let oAPP = (function (window) {
 
     };
 
-    oAPP.setBusy = function (bIsShow) {
+    oAPP.setBusy = function(bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
 
@@ -64,18 +91,18 @@ let oAPP = (function (window) {
 
     };
 
-    oAPP.fn.fnSetEditorInfo = function (oEditorInfo) {
+    oAPP.fn.fnSetEditorInfo = function(oEditorInfo) {
         oAPP.attr.oEditorInfo = oEditorInfo;
     };
 
-    oAPP.fn.fnGetEditorInfo = function () {
+    oAPP.fn.fnGetEditorInfo = function() {
         return oAPP.attr.oEditorInfo;
     };
 
     /************************************************************************
      * IPCRENDERER Events..
      ************************************************************************/
-    oAPP.IPCRENDERER.on('if-editor-info', function (event, res) {
+    oAPP.IPCRENDERER.on('if-editor-info', function(event, res) {
 
         oAPP.fn.fnSetEditorInfo(res);
 
