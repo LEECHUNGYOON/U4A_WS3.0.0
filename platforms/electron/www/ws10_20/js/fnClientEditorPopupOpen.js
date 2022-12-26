@@ -40,14 +40,14 @@
         switch (OBJTY) {
             case C_JS:
 
-                oBindData.TITLE = "JAVASCRIPT EDITOR";
+                oBindData.TITLE = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B61", "", "", "", ""); // Javascript Editor
                 oBindData.TYPE = "javascript";
 
                 break;
 
             case C_HTML:
 
-                oBindData.TITLE = "HTML EDITOR";
+                oBindData.TITLE = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B62", "", "", "", ""); // HTML Editor
                 oBindData.TYPE = "html";
 
                 break;
@@ -99,7 +99,7 @@
             // Aggregations
             buttons: [
                 new sap.m.Button({
-                    text: "Pretty Print",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25", "", "", "", ""), // Pretty Print
                     press: oAPP.events.ev_pressClientEditorPrettyPrint
                 }).bindProperty("visible", "/WS20/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding),
                 new sap.m.Button({
@@ -340,7 +340,9 @@
 
             GfnEditorCallback('');
 
-            parent.showMessage(sap, 10, "", "saved success!");
+            let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "002", "", "", "", ""); // Saved success
+
+            parent.showMessage(sap, 10, "", sMsg);
 
             return;
 
@@ -367,7 +369,9 @@
         // 어플리케이션 정보에 변경 플래그 
         parent.setAppChange('X');
 
-        parent.showMessage(sap, 10, "", "saved success!");
+        let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "002", "", "", "", ""); // Saved success
+
+        parent.showMessage(sap, 10, "", sMsg);
 
         GfnEditorCallback('X');
 

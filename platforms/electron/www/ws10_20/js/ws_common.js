@@ -2038,6 +2038,8 @@ function fnJsonParseError(e) {
 
 function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob) {
 
+    debugger;
+    
     // Default Values
     var busy = 'X',
         sMeth = 'POST',

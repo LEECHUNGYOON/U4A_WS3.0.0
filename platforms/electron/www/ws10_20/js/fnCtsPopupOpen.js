@@ -64,7 +64,7 @@
                     }),
 
                     new sap.m.Title({
-                        text: "Prompt for Transportable Workbench Request"
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "345", "", "", "", ""), // Prompt for Transportable Workbench Request
                     }).addStyleClass("sapUiTinyMarginBegin"),
 
                     new sap.m.ToolbarSpacer(),

@@ -5,7 +5,7 @@
  * - file Desc : Document의 CSS, JS Link Add Popup
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -20,7 +20,7 @@
     /************************************************************************
      * CSS & JS Link add Popup Open
      ************************************************************************/
-    oAPP.fn.fnCssJsLinkAddPopupOpen = function(TYPE) {
+    oAPP.fn.fnCssJsLinkAddPopupOpen = function (TYPE) {
 
         LINK_TYPE = TYPE;
 
@@ -30,19 +30,25 @@
             TABCOLTXT: "",
         };
 
+        let sCSSLinkTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D49"), // CSS Link
+            sJSLinkTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D50"), // JS Link
+            sMimeUrlTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D51"), // MIME URL
+            sAddTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C98"), // Add
+            sDelTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D52"); // Del
+
         // Type에 따라 모델을 초기화 한다.
         switch (TYPE) {
             case "CSS":
-                oBindData.ADDBTNTXT = "CSS Link Add";
-                oBindData.DELBTNTXT = "CSS Link Del";
-                oBindData.TABCOLTXT = "Link CSS MIME URL";
+                oBindData.ADDBTNTXT = `${sCSSLinkTxt} ${sAddTxt}`; // CSS Link Add
+                oBindData.DELBTNTXT = `${sCSSLinkTxt} ${sDelTxt}`; // CSS Link Del
+                oBindData.TABCOLTXT = `${sCSSLinkTxt} ${sMimeUrlTxt}`; // CSS Link MIME URL;
 
                 break;
 
             case "JS":
-                oBindData.ADDBTNTXT = "JS Link Add";
-                oBindData.DELBTNTXT = "JS Link Del";
-                oBindData.TABCOLTXT = "Link JS MIME URL";
+                oBindData.ADDBTNTXT = `${sJSLinkTxt} ${sAddTxt}`; // "JS Link Add";
+                oBindData.DELBTNTXT = `${sJSLinkTxt} ${sDelTxt}`; //"JS Link Del";
+                oBindData.TABCOLTXT = `${sJSLinkTxt} ${sMimeUrlTxt}`; //"JS Link MIME URL";
 
                 break;
 
@@ -84,7 +90,7 @@
                 new sap.m.Button({
                     type: sap.m.ButtonType.Reject,
                     icon: "sap-icon://decline",
-                    press: function(oEvent) {
+                    press: function (oEvent) {
                         var oDialog = oEvent.getSource().getParent();
                         oDialog.close();
                     }
@@ -94,7 +100,7 @@
             content: [
                 oContents
             ],
-            afterOpen: function() {
+            afterOpen: function () {
 
                 // 테이블에 체크박스가 체크되어 있다면 전체 해제
                 oAPP.fn.fnSetCssJsLinkTableClearSelection();
@@ -111,11 +117,11 @@
                 }
 
             },
-            afterClose: function(oEvent) {
+            afterClose: function (oEvent) {
                 // var oDialog = oEvent.getSource();
                 // oDialog.destroy();
             },
-            escapeHandler: function() {
+            escapeHandler: function () {
                 var oDialog = sap.ui.getCore().byId(C_DLG_ID);
                 if (!oDialog) {
                     return;
@@ -132,7 +138,7 @@
     /************************************************************************
      * CSS Link 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.fnGetCssLinkData = function() {
+    oAPP.fn.fnGetCssLinkData = function () {
 
         var aLinkData = [],
             aSavedLinkData = [];
@@ -164,7 +170,7 @@
     /************************************************************************
      * JS Link 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.fnGetJsLinkData = function() {
+    oAPP.fn.fnGetJsLinkData = function () {
 
         var aLinkData = [],
             aSavedLinkData = [];
@@ -197,7 +203,13 @@
     /************************************************************************
      * CSS & JS Link add Popup의 Header
      ************************************************************************/
-    oAPP.fn.fnCssJsLinkAddPopupCustomHeader = function() {
+    oAPP.fn.fnCssJsLinkAddPopupCustomHeader = function () {
+
+        // Message Class Text
+        let sChangeTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02"), // Change
+            sDispTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05"), // Display
+            sActiveTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B66"), // Activate,
+            sInactTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B67"); // Inactivate 
 
         var oToolbarSpacer = new sap.m.ToolbarSpacer({
             width: "20px"
@@ -213,20 +225,24 @@
                 oToolbarSpacer.clone(),
 
                 new sap.m.Title({
-                    text: "{/WS20/APP/MODETXT}"
+                    // text: "{/WS20/APP/MODETXT}"
+                }).bindProperty("text", "/WS20/APP/IS_EDIT", function(IS_EDIT){
+                    return IS_EDIT == "X" ? sChangeTxt : sDispTxt;
                 }), // Change or Display Text
 
                 oToolbarSpacer.clone(),
 
                 new sap.m.Title({
-                    text: "{/WS20/APP/ISACTTXT}"
+                    // text: "{/WS20/APP/ISACTTXT}"
+                }).bindProperty("text", "/WS20/APP/ACTST", function(ACTST){
+                    return ACTST == "A" ? sActiveTxt : sInactTxt;
                 }), // Activate or inactivate Text
 
                 new sap.m.ToolbarSpacer(),
 
                 new sap.m.Button({
                     icon: "sap-icon://decline",
-                    press: function() {
+                    press: function () {
 
                         var oDialog = sap.ui.getCore().byId(C_DLG_ID);
                         if (oDialog == null) {
@@ -248,7 +264,7 @@
     /************************************************************************
      * CSS & JS Link add Popup의 Contents
      ************************************************************************/
-    oAPP.fn.fnCssJsLinkAddPopupContents = function() {
+    oAPP.fn.fnCssJsLinkAddPopupContents = function () {
 
         var oTable = oAPP.fn.fnCssJsLinkAddPopupTable();
 
@@ -264,7 +280,7 @@
     /************************************************************************
      * CHANGE or DISPLAY 에 따른 버튼 visible 처리 공통 bind Function
      ************************************************************************/
-    oAPP.fn.fnCssJsLinkAddPopupUiVisibleBinding = function(bIsDispMode) {
+    oAPP.fn.fnCssJsLinkAddPopupUiVisibleBinding = function (bIsDispMode) {
 
         if (bIsDispMode == null) {
             return false;
@@ -279,7 +295,7 @@
     /************************************************************************
      * CSS & JS Link add Popup의 Contents
      ************************************************************************/
-    oAPP.fn.fnCssJsLinkAddPopupTable = function() {
+    oAPP.fn.fnCssJsLinkAddPopupTable = function () {
 
         return new sap.ui.table.Table(C_LINK_TABLE_ID, {
                 selectionBehavior: sap.ui.table.SelectionBehavior.Row,
@@ -289,10 +305,10 @@
                         width: "80px",
                         hAlign: sap.ui.core.HorizontalAlign.Center,
                         label: new sap.m.Label({
-                            text: "Status",
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D53"), // Status
                             design: sap.m.LabelDesign.Bold
                         }),
-                        template: new sap.ui.core.Icon({}).bindProperty("src", "STATUS", function(sBindValue) {
+                        template: new sap.ui.core.Icon({}).bindProperty("src", "STATUS", function (sBindValue) {
 
                             if (!sBindValue) {
                                 return;
@@ -351,9 +367,9 @@
                                 press: oAPP.events.ev_pressCssJsLinkAddTableDelRow
                             }),
                             new sap.m.Button({
-                                text: "MIME Repository",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10"), // MIME Repository
                                 icon: "sap-icon://picture",
-                                press: function() {
+                                press: function () {
                                     oAPP.fn.fnMimeDialogOpener();
                                 }
                             }),
@@ -361,7 +377,7 @@
                     }).bindProperty("visible", "/WS20/APP/IS_EDIT", oAPP.fn.fnCssJsLinkAddPopupUiVisibleBinding)
                 ],
             })
-            .bindProperty("selectionMode", "/WS20/APP/IS_EDIT", function(bIsMode) {
+            .bindProperty("selectionMode", "/WS20/APP/IS_EDIT", function (bIsMode) {
 
                 var bIsMode = (bIsMode == "X" ? true : false);
 
@@ -380,7 +396,7 @@
     /************************************************************************
      * CSS & JS Link Popup 닫기 메소드
      ************************************************************************/
-    oAPP.fn.fnCssJsLinkPopupClose = function() {
+    oAPP.fn.fnCssJsLinkPopupClose = function () {
 
         var oCssJsLinkAddDlg = sap.ui.getCore().byId(C_DLG_ID);
         if (typeof oCssJsLinkAddDlg === "undefined") {
@@ -394,7 +410,7 @@
     /************************************************************************
      * CSS, JS Link 테이블에 체크박스가 체크되어 있다면 전체 해제.
      ************************************************************************/
-    oAPP.fn.fnSetCssJsLinkTableClearSelection = function() {
+    oAPP.fn.fnSetCssJsLinkTableClearSelection = function () {
 
         var oCssLinkAddTable = sap.ui.getCore().byId(C_LINK_TABLE_ID);
         if (!oCssLinkAddTable) {
@@ -409,7 +425,7 @@
     /************************************************************************
      * CSS Link 저장
      ************************************************************************/
-    oAPP.fn.fnCssLinkSave = function() {
+    oAPP.fn.fnCssLinkSave = function () {
 
         // 입력한 Link 정보를 구한다.
         var aLinkData = APPCOMMON.fnGetModelProperty(C_LINK_LIST_DATA_ROOT_PATH),
@@ -490,7 +506,7 @@
     /************************************************************************
      * JS Link 저장
      ************************************************************************/
-    oAPP.fn.fnJsLinkSave = function() {
+    oAPP.fn.fnJsLinkSave = function () {
 
         // 입력한 Link 정보를 구한다.
         var aLinkData = APPCOMMON.fnGetModelProperty(C_LINK_LIST_DATA_ROOT_PATH),
@@ -561,7 +577,7 @@
     /************************************************************************
      * CSS & JS Link add Popup의 CSS Link Add 이벤트
      ************************************************************************/
-    oAPP.events.ev_pressCssJsLinkAddTableAddRowBtn = function() {
+    oAPP.events.ev_pressCssJsLinkAddTableAddRowBtn = function () {
 
         var sKey = parent.getRandomKey(10),
             oNewRow = {
@@ -590,7 +606,7 @@
     /************************************************************************
      * CSS & JS Link add Popup의 CSS & JS Link Del 이벤트
      ************************************************************************/
-    oAPP.events.ev_pressCssJsLinkAddTableDelRow = function(TYPE, oEvent) {
+    oAPP.events.ev_pressCssJsLinkAddTableDelRow = function (TYPE, oEvent) {
 
         var oCssLinkAddTable = sap.ui.getCore().byId(C_LINK_TABLE_ID);
         if (!oCssLinkAddTable) {
@@ -629,7 +645,7 @@
     /************************************************************************
      * CSS & JS Link add Popup의 CSS & JS Link 저장 이벤트
      ************************************************************************/
-    oAPP.events.ev_pressCssJsLinkSave = function() {
+    oAPP.events.ev_pressCssJsLinkSave = function () {
 
         switch (LINK_TYPE) {
             case "CSS":

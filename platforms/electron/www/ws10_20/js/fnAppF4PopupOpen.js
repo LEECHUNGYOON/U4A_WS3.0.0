@@ -28,11 +28,11 @@
             TAB1: oTab1_Data,
             aAPPTY: [{
                     KEY: "M",
-                    TEXT: "U4A Application"
+                    TEXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B96"), // U4A Application
                 },
                 {
                     KEY: "U",
-                    TEXT: "U4A Server Page"
+                    TEXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D48"), // U4A Server Page
                 }
             ],
             APPF4HIER: null
@@ -71,6 +71,9 @@
         // tab container 생성
         var oIconTab = oAPP.fn.fnCreateAppF4TabCon();
 
+        let sTitleTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B96"); // U4A Application
+        sTitleTxt += " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A26"); // Search Help
+
         var oAppF4Dialog = new sap.m.Dialog(C_DIALOG_ID, {
 
             // Properties
@@ -93,7 +96,7 @@
                     }),
 
                     new sap.m.Title({
-                        text: "UI5 Application Search Help"
+                        text: sTitleTxt
                     }).addStyleClass("sapUiTinyMarginBegin"),
 
                     new sap.m.ToolbarSpacer(),
@@ -107,7 +110,7 @@
 
             buttons: [
                 new sap.m.Button({
-                    type: "Reject",
+                    type: sap.m.ButtonType.Reject,
                     icon: "sap-icon://decline",
                     press: oAPP.events.ev_AppF4DialogCancel
                 }),
@@ -242,7 +245,7 @@
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 design: ENUM_LABEL_DESIGN_BOLD,
-                                text: "Package"
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A22"), // Package
                             }),
                             fields: new sap.m.Input("appf4_packg", {
                                 value: "{PACKG}",
@@ -265,7 +268,7 @@
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 design: ENUM_LABEL_DESIGN_BOLD,
-                                text: "User Name"
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B95"), // User Name
                             }),
                             fields: new sap.m.Input({
                                 width: "200px",
@@ -289,7 +292,7 @@
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 design: ENUM_LABEL_DESIGN_BOLD,
-                                text: "Web Application ID"
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A90"), // Web Application ID
                             }),
                             fields: new sap.m.Input({
                                 value: "{APPID}",
@@ -299,7 +302,7 @@
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 design: ENUM_LABEL_DESIGN_BOLD,
-                                text: "Web Application Name",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91"), // Web Application Name
                             }),
                             fields: new sap.m.Input({
                                 value: "{APPNM}",
@@ -309,7 +312,7 @@
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 design: ENUM_LABEL_DESIGN_BOLD,
-                                text: "Web Application Type",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B02"), // Web Application Type
                             }),
                             fields: new sap.m.Select({
                                 selectedKey: "{APPTY}",
@@ -345,7 +348,7 @@
                                     }
 
                                     // WS10번 페이지가 아니면 Application Type을 Disable 처리한다.
-                                    if(EXPAGE != "WS10"){
+                                    if (EXPAGE != "WS10") {
                                         return false;
                                     }
 
@@ -359,7 +362,7 @@
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 design: ENUM_LABEL_DESIGN_BOLD,
-                                text: "Maximum No. of Hits",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A76"), // Maximum No, of Hits
                             }),
                             fields: new sap.m.Input({
                                 width: "100px",
@@ -375,7 +378,7 @@
         // form Ui에 대한 바인딩 루트 패스 지정
         oForm.bindElement(`${C_BIND_ROOT_PATH}/TAB1`);
 
-        var sHeaderText = "[U4A] All App.",
+        var sHeaderText = "[U4A] " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B94"), // All App.
 
             oPanel = new sap.m.Panel({
                 headerText: sHeaderText,
@@ -394,11 +397,11 @@
             text: sHeaderText,
             content: [
                 new sap.m.VBox({
-                    renderType: "Bare",
+                    renderType: sap.m.FlexRendertype.Bare,
                     height: "100%",
                     items: [
                         new sap.m.VBox({
-                            renderType: "Bare",
+                            renderType: sap.m.FlexRendertype.Bare,
                             items: [oPanel]
                         }),
                         new sap.m.Page({
@@ -451,7 +454,7 @@
         var ENUM_HORIZONTAL_ALIGN = sap.ui.core.HorizontalAlign,
             sTableBindingPath = `${C_BIND_ROOT_PATH}/APPF4HIER`;
 
-        var sHeaderText = "[U4A] Application Hierarchy By Packages";
+        var sHeaderText = "[U4A] " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B98"); // Application Hierarchy By Packages;
 
         var oTreeTable = new sap.ui.table.TreeTable("appf4tree", {
             selectionMode: sap.ui.table.SelectionMode.Single,
@@ -463,14 +466,14 @@
             columns: [
                 new sap.ui.table.Column({
                     width: "600px",
-                    label: "U4A IDE Solution",
+                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B99"), // U4A IDE Solution
                     template: new sap.m.Text({
                         text: "{APPNM}"
                     }),
                 }),
                 new sap.ui.table.Column({
                     width: "180px",
-                    label: "Identification",
+                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C01"), // Identification
                     template: new sap.m.Text({
                         text: "{APPID}"
                     }),
@@ -478,13 +481,13 @@
                 new sap.ui.table.Column({
                     width: "100px",
                     hAlign: ENUM_HORIZONTAL_ALIGN.Center,
-                    label: "Active Ver.",
+                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C02"), // Active Ver.
                     template: new sap.m.Text().bindProperty("text", "APPVR", lf_nozero),
                 }),
                 new sap.ui.table.Column({
                     width: "100px",
                     hAlign: ENUM_HORIZONTAL_ALIGN.Center,
-                    label: "Code Page",
+                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C03"), // Code Page
                     template: new sap.m.Text({
                         text: "{CODPG}"
                     }),
@@ -492,7 +495,7 @@
                 new sap.ui.table.Column({
                     width: "150px",
                     hAlign: ENUM_HORIZONTAL_ALIGN.Center,
-                    label: "Theme",
+                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C04"), // Theme
                     template: new sap.m.Text({
                         text: "{UITHM}"
                     }),
@@ -500,7 +503,7 @@
                 new sap.ui.table.Column({
                     width: "120px",
                     hAlign: ENUM_HORIZONTAL_ALIGN.Center,
-                    label: "Creator",
+                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C05"), // Creator
                     template: new sap.m.Text({
                         text: "{ERUSR}"
                     }),
@@ -508,19 +511,19 @@
                 new sap.ui.table.Column({
                     width: "120px",
                     hAlign: ENUM_HORIZONTAL_ALIGN.Center,
-                    label: "Create Date",
+                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C06"), // Create Date
                     template: new sap.m.Text().bindProperty("text", "ERDAT", lf_nozero),
                 }),
                 new sap.ui.table.Column({
                     width: "120px",
                     hAlign: ENUM_HORIZONTAL_ALIGN.Center,
-                    label: "Create Time",
+                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C07"), // Create Time
                     template: new sap.m.Text().bindProperty("text", "ERTIM", lf_nozero),
                 }),
                 new sap.ui.table.Column({
                     width: "120px",
                     hAlign: ENUM_HORIZONTAL_ALIGN.Center,
-                    label: "Change User",
+                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C08"), // Change User
                     template: new sap.m.Text({
                         text: "{AEUSR}"
                     }),
@@ -528,13 +531,13 @@
                 new sap.ui.table.Column({
                     width: "120px",
                     hAlign: ENUM_HORIZONTAL_ALIGN.Center,
-                    label: "Change Date",
+                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C09"), // Change Date
                     template: new sap.m.Text().bindProperty("text", "AEDAT", lf_nozero),
                 }),
                 new sap.ui.table.Column({
                     width: "120px",
                     hAlign: ENUM_HORIZONTAL_ALIGN.Center,
-                    label: "Change Time",
+                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C10"), // Change Time
                     template: new sap.m.Text().bindProperty("text", "AETIM", lf_nozero),
                 }),
             ],
@@ -721,28 +724,28 @@
                     demandPopin: true,
                     minScreenWidth: "1000px",
                     header: new sap.m.Label({
-                        text: "User Name",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B95"), // User Name
                     }),
                 }),
                 new sap.m.Column({
                     demandPopin: true,
                     minScreenWidth: "1000px",
                     header: new sap.m.Label({
-                        text: "Web Application ID",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A90"), // Web Application ID
                     }),
                 }),
                 new sap.m.Column({
                     demandPopin: true,
                     minScreenWidth: "1000px",
                     header: new sap.m.Label({
-                        text: "Web Application Name",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91"), // Web Application Name
                     }),
                 }),
                 new sap.m.Column({
                     demandPopin: true,
                     minScreenWidth: "1000px",
                     header: new sap.m.Label({
-                        text: "App Type",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B97"), // App Type
                     }),
                 }),
             ],
@@ -839,11 +842,11 @@
 
             // APPID 기준으로 오름차순 정렬해주기
             let iAppInfoLength = aAppInfo.length;
-            if(iAppInfoLength > 0){
+            if (iAppInfoLength > 0) {
 
-                aAppInfo.sort(function(a, b) { 
+                aAppInfo.sort(function (a, b) {
                     return a.APPID < b.APPID ? -1 : a.APPID > b.APPID ? 1 : 0;
-             
+
                 });
 
             }

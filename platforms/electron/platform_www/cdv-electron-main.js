@@ -32,6 +32,7 @@ const {
 
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('disable-site-isolation-trials');
+app.commandLine.appendSwitch('ignore-certificate-errors');
 
 const remote = require('@electron/remote/main');
 remote.initialize();

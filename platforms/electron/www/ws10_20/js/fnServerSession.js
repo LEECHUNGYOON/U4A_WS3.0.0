@@ -77,20 +77,35 @@
 
         console.error(oData.RTMSG);
 
-        const
-            REMOTE = parent.REMOTE,
-            DIALOG = REMOTE.require("electron").dialog,
-            CURRWIN = REMOTE.getCurrentWindow();
+        // 세션 타임 아웃 팝업을 띄운다.
+        let sTitle = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "147", "", "", "", ""), // The session has terminated.
+            sDesc = oData.RTMSG,
+            sIllustType = "tnt-SessionExpired",
+            sIllustSize = sap.m.IllustratedMessageSize.Dialog;
 
-        DIALOG.showMessageBox(CURRWIN, {
-            title: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "147", "", "", "", ""), // The session has terminated.
-            message: oData.RTMSG,
-            type: "error"
-        }).then(() => {
+        oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, lfSessionTimeOutDialogOk);
+
+        function lfSessionTimeOutDialogOk(){
 
             fn_logoff_success("X");
+            
+        }
 
-        });
+
+        // const    
+        //     REMOTE = parent.REMOTE,
+        //     DIALOG = REMOTE.require("electron").dialog,
+        //     CURRWIN = REMOTE.getCurrentWindow();
+
+        // DIALOG.showMessageBox(CURRWIN, {
+        //     title: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "147", "", "", "", ""), // The session has terminated.
+        //     message: oData.RTMSG,
+        //     type: "error"
+        // }).then(() => {
+
+        //     fn_logoff_success("X");
+
+        // });
 
         // 세션 타임아웃 시, 워커를 죽인다.
         if (oAPP.attr._oServerWorker && oAPP.attr._oServerWorker) {

@@ -58,8 +58,8 @@
                     formElements: [
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Source App. ID"
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B91", "", "", "", ""), // Source App. ID
                             }),
                             fields: new sap.m.Input({
                                 editable: false,
@@ -68,9 +68,9 @@
                         }),
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                design: "Bold",
+                                design: sap.m.LabelDesign.Bold,
                                 required: true,
-                                text: "Target App. ID"
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B92", "", "", "", ""), // Target App. ID
                             }),
                             fields: new sap.m.Input({
                                 value: "{TARGETID}",
@@ -82,8 +82,8 @@
 
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                design: "Bold",
-                                text: "Package",
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A22", "", "", "", ""), // Package
                                 required: true,
                             }),
                             fields: new sap.m.Input({
@@ -121,7 +121,7 @@
                     }),
 
                     new sap.m.Title({
-                        text: "Application Copy"
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B90", "", "", "", ""), // Application Copy
                     }).addStyleClass("sapUiTinyMarginBegin"),
 
                     new sap.m.ToolbarSpacer(),
