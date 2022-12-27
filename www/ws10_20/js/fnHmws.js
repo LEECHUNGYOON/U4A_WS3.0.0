@@ -470,7 +470,7 @@
             return;
         }
 
-        oAPP.common.fnAdminHeaderMenu();
+        APPCOMMON.fnAdminHeaderMenu();
 
     }; // end of oAPP.fn.fnWS10WMENU30_06
 
@@ -763,7 +763,7 @@
             return;
         }
 
-        oAPP.common.fnAdminHeaderMenu();
+        APPCOMMON.fnAdminHeaderMenu();
 
     }; // end of oAPP.fn.fnWS20WMENU40_06
 

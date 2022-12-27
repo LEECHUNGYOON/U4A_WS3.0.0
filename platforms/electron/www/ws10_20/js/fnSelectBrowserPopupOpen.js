@@ -47,7 +47,7 @@
         }
 
         var oVbox = new sap.m.VBox({
-            renderType: "Bare",
+            renderType: sap.m.FlexRendertype.Bare,
             items: [
                 new sap.m.RadioButtonGroup("browserSelectRadioBtn", {
                     buttons: {

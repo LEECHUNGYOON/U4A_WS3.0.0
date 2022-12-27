@@ -286,7 +286,7 @@
                     new sap.ui.table.Column({
                         width: "150px",
                         label: new sap.m.Label({
-                            text: "SID",
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D83", "", "", "", ""), // SID
                             design: sap.m.LabelDesign.Bold
                         }),
                         template: new sap.m.Input({

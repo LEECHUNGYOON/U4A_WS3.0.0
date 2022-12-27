@@ -64,7 +64,7 @@
                     }),
 
                     new sap.m.Title({
-                        text: APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "345", "", "", "", ""), // Prompt for Transportable Workbench Request
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "345"), // Prompt for Transportable Workbench Request
                     }).addStyleClass("sapUiTinyMarginBegin"),
 
                     new sap.m.ToolbarSpacer(),
@@ -140,7 +140,7 @@
             showHeader: false,
             content: [
                 new sap.m.VBox({
-                    renderType: "Bare",
+                    renderType: sap.m.FlexRendertype.Bare,
                     height: "100%",
                     items: [
 
@@ -151,7 +151,7 @@
                             customHeader: new sap.m.Bar({
                                 contentLeft: [
                                     new sap.m.Button({
-                                        text: "refresh",
+                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A48"), // Refresh
                                         icon: "sap-icon://refresh",
                                         type: sap.m.ButtonType.Emphasized,
                                         press: () => {
@@ -262,7 +262,7 @@
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 design: sap.m.LabelDesign.Bold,
-                                text: "Request"
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B03"), // Request No
                             }),
                             fields: new sap.m.Input({
                                 value: "{CTSNO}",
@@ -273,7 +273,7 @@
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 design: sap.m.LabelDesign.Bold,
-                                text: "Short Description"
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D54"), // Short Description
                             }),
                             fields: new sap.m.Input({
                                 value: "{CTSDESC}",
@@ -309,7 +309,7 @@
                     hAlign: sap.ui.core.HorizontalAlign.Center,
                     width: "150px",
                     label: new sap.m.Label({
-                        text: "CTS No",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A21"), // CTS No.
                         design: sap.m.LabelDesign.Bold
                     }),
                     template: new sap.m.Text({
@@ -331,7 +331,7 @@
                     width: "auto",
                     minWidth: 500,
                     label: new sap.m.Label({
-                        text: "Description",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35"), // Description
                         design: sap.m.LabelDesign.Bold
                     }),
                     template: new sap.m.Text({
@@ -343,7 +343,7 @@
                     hAlign: sap.ui.core.HorizontalAlign.Center,
                     width: "150px",
                     label: new sap.m.Label({
-                        text: "Date",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D55"), // Date
                         design: sap.m.LabelDesign.Bold
                     }),
                     template: new sap.m.Text({
@@ -355,7 +355,7 @@
                     hAlign: sap.ui.core.HorizontalAlign.Center,
                     width: "150px",
                     label: new sap.m.Label({
-                        text: "Time",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D56"), // Time
                         design: sap.m.LabelDesign.Bold
                     }),
                     template: new sap.m.Text({
@@ -416,7 +416,8 @@
             var oRowData = oRow.getModel().getProperty(oCtx.sPath);
 
             // 저장 확인 질문 팝업
-            parent.showMessage(sap, 30, "I", "Do you want to choose?", lf_msgCallback.bind(oRowData));
+            let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "346"); // Do you want to choose?
+            parent.showMessage(sap, 30, "I", sMsg, lf_msgCallback.bind(oRowData));
 
             function lf_msgCallback(sAction) {
 
@@ -525,7 +526,7 @@
                     }),
 
                     new sap.m.Title({
-                        text: "Create Request"
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D57"), // Create Request
                     }).addStyleClass("sapUiTinyMarginBegin"),
 
                     new sap.m.ToolbarSpacer(),
@@ -594,20 +595,20 @@
                     formElements: [
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                text: "Request",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B03"), // Request No
                                 design: sap.m.LabelDesign.Bold
                             }),
                             fields: [
                                 new sap.m.Input({
                                     value: "{TRKORR}",
                                     editable: false,
-                                    description: "Workbench request"
+                                    description: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D58"), // Workbench Request
                                 })
                             ]
                         }),
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                text: "Short Description",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D54"), // Short Description
                                 design: sap.m.LabelDesign.Bold
                             }),
                             fields: [
@@ -637,7 +638,7 @@
 
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                text: "Owner",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D59"), // Owner
                                 design: sap.m.LabelDesign.Bold
                             }),
                             fields: [
@@ -653,7 +654,7 @@
 
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                text: "Status",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D53"), // Status
                                 design: sap.m.LabelDesign.Bold
                             }),
                             fields: [
@@ -669,7 +670,7 @@
 
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                text: "Last Changed",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D60"), // Last Changed
                                 design: sap.m.LabelDesign.Bold
                             }),
                             fields: [
@@ -699,7 +700,7 @@
 
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                text: "Source Client",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D61"), // Source Client
                                 design: sap.m.LabelDesign.Bold
                             }),
                             fields: [
@@ -715,7 +716,7 @@
 
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
-                                text: "Target",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D62"), // Target
                                 design: sap.m.LabelDesign.Bold
                             }),
                             fields: [
@@ -775,7 +776,8 @@
         var oCtsInfo = APPCOMMON.fnGetModelProperty("/CTS/CTSHEAD");
 
         if (oCtsInfo.CTSNO == "") {
-            parent.showMessage(sap, 10, null, "라인을 선택하세요.");
+            let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "268"); // Selected line does not exists.
+            parent.showMessage(sap, 10, null, sMsg);
             return;
         }
 
