@@ -123,7 +123,7 @@
 
             xhttp.send();
 
-        };
+        }; // end of sendServerExit
 
         /************************************************************************
          * critical 오류 팝업
@@ -134,7 +134,6 @@
             sTitle += "The system will be shut down."
 
             sErrorMsg = sErrorMsg + " \n ";
-
             sErrorMsg += "Please contact the solution team.";
 
             DIALOG.showMessageBox(CURRWIN, {
@@ -143,8 +142,6 @@
                 type: "error"
             }).then(() => {
 
-                debugger;
-                
                 // Frame window 접근 가능 여부
                 let bIsAccessAvaliable = false,
                 oAPP;

@@ -24,7 +24,7 @@
 
                 oAPP.attr.scale += ev.deltaY * -0.01;
                 oAPP.attr.scale = Math.min(Math.max(-10, oAPP.attr.scale), 10);
-                // console.log(oAPP.attr.scale);
+                
                 web.setZoomLevel(oAPP.attr.scale);
 
                 // zoom 정보 저장

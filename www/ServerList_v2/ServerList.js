@@ -36,7 +36,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function (oAPP) {
+(function(oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -85,7 +85,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             text: "Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function () {
+            close: function() {
                 XHR.abort();
             }
         });
@@ -98,7 +98,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.sendAjax = (sUrl, fnSuccess, fnError, fnCancel) => {
 
         // ajax call 취소할 경우..
-        XHR.onabort = function () {
+        XHR.onabort = function() {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -107,7 +107,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // ajax call 실패 할 경우
-        XHR.onerror = function () {
+        XHR.onerror = function() {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -115,7 +115,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         };
 
-        XHR.onload = function () {
+        XHR.onload = function() {
 
             if (typeof fnSuccess == "function") {
                 fnSuccess(XHR.response);
@@ -141,65 +141,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         XHR.send();
 
     }; // end of fnSendAjax
-
-    // /************************************************************************
-    //  * 서버 연결 확인
-    //  ************************************************************************/
-    // oAPP.fn.fnCheckServerConnection = (sUrl) => {
-
-    //     return new Promise((resolve) => {
-
-    //         var ping = REMOTE.require('ping');
-
-    //         ping.sys.probe(sUrl, function (isAlive) {
-
-    //             if (isAlive == null) {
-    //                 return;
-    //             }
-
-    //             if (!isAlive) {
-    //                 resolve({
-    //                     RETCD: "E",
-    //                     RTMSG: "Connection Fail!"
-    //                 });
-    //                 return;
-    //             }
-
-    //             resolve({
-    //                 RETCD: "S",
-    //                 // RESPONSE: res,
-    //                 RTMSG: "connection success!"
-    //             });
-
-    //             return;
-
-    //         });
-
-    //         // oAPP.fn.sendAjax(
-    //         //     sUrl,
-    //         //     (res) => { // success
-    //         //         resolve({
-    //         //             RETCD: "S",
-    //         //             RESPONSE: res,
-    //         //             RTMSG: "connection success!"
-    //         //         });
-    //         //     },
-    //         //     () => { // error
-    //         //         resolve({
-    //         //             RETCD: "E",
-    //         //             RTMSG: "Connection Fail!"
-    //         //         });
-    //         //     },
-    //         //     (res) => { // cancel
-    //         //         resolve({
-    //         //             RETCD: "C",
-    //         //             RTMSG: "Cancel Operation"
-    //         //         });
-    //         //     });
-
-    //     });
-
-    // }; // end of oAPP.fn.fnCheckConnection
 
     /************************************************************************
      * ------------------------ [ Server List Start ] ------------------------
@@ -255,8 +196,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
         }
 
-        debugger;
-
         let aStack = [],
             aNode = oTreeModelData.Node;
 
@@ -275,8 +214,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     }; // end of oAPP.fn.fnAttachRowsUpdateOnce
 
     function _fnFindLastSelectedItem(aNode, pUUID, aStack) {
-
-        debugger;
 
         let iNodeLength = aNode.length;
 
@@ -311,33 +248,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 }
 
-
-
             }
-
-
-
-            // if (element._attributes && !element._attributes.uuid) {
-
-            //     _fnFindLastSelectedItem(element.Node, pUUID, aStack);
-
-            //     return;
-
-            // }
-
-            // let uuid = element._attributes.uuid;
-
-            // aStack.push(uuid);
-
-
 
         }
 
     } // end of _fnFindLastSelectedItem
 
     function _fnSetSelectedTreeItem(oTreeTable, aStack) {
-
-        debugger;
 
         var aRows = oTreeTable.getRows(),
             iRowLength = aRows.length;
@@ -378,14 +295,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     return;
                 }
 
-                debugger;
-
             }
 
         }
 
     } // end of _fnSetSelectedTreeItem
-
 
     /************************************************************************
      * 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
@@ -613,8 +527,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return oErr;
         }
 
-        // 버전 정보를 정규식으로 발췌한다.       
-        // let oRegex = new RegExp(/(v)(.*?)(?=\.)/g, "i"),
+        // 버전 정보를 정규식으로 발췌한다.               
         let oRegex = new RegExp(/(?<=v)(.*?)(?=\.)/g, "i"),
             aVersion = oRegex.exec(sGenerator);
 
@@ -744,12 +657,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return oErr;
         }
 
-        //     iServiceLength = aServices.length;
-
-        // if (iServiceLength == 0) {
-        //     return oErr;
-        // }
-
         // 서비스 정보가 있을 경우..
         if (Array.isArray(aServices) == true) {
             oAPP.data.SAPLogon.aServices = oLandscapeFile.Services.Service;
@@ -862,8 +769,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         zconsole.log(oError);
 
-        // alert(oError);
-
     }; // end of oAPP.fn.fnGetRegInfoForSAPLogonError
 
     oAPP.fn.fnPromiseError = (oError) => {
@@ -871,8 +776,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oAPP.setBusy(false);
 
         zconsole.log(oError);
-
-        // alert(oError);
 
     }; // end of oAPP.fn.fnPromiseError
 
@@ -926,7 +829,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function () {
+            onAfterRendering: function() {
 
                 setTimeout(() => {
                     $('#content').fadeIn(300, 'linear');
@@ -948,13 +851,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             alternateRowColors: true,
             columnHeaderVisible: false,
             visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
-            // layoutData: new sap.ui.layout.SplitterLayoutData({
-            //     size: "300px",
-            //     minSize: 300
-            // }),
+
+            // aggregations
             columns: [
                 new sap.ui.table.Column({
-                    // width: "600px",
                     label: "Name",
                     template: new sap.m.Text({
                         text: "{_attributes/name}"
@@ -1144,29 +1044,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             encoding: "utf8",
             mode: 0o777 // 올 권한
         }); // 없으면 생성
-
-
-
-
-
-
-        // FS.writeFile(sFileFullPath, JSON.stringify(""), {
-        //     encoding: "utf8",
-        //     mode: 0o777 // 올 권한
-        // }, function(err) {
-
-        //     if (err) {
-        //         reject(err.toString());
-        //         return;
-        //     }
-
-        //     resolve();
-
-        // });
-
-
-        // let sP13nPath = PATH.join(USERDATA, "p13n", "p13n.json");
-
 
     }; // end of oAPP.fn.fnSetSaveSelectedItemPosition
 
@@ -1360,7 +1237,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }).addEventDelegate({
             ondblclick: oAPP.fn.fnPressServerListItem
         });
-        // .attachBrowserEvent("dblclick", oAPP.fn.fnPressServerListItem);
 
     }; // end of oAPP.fn.fnGetSAPLogonListTable
 
@@ -1373,13 +1249,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             content: [
                 new sap.m.Button({
                     icon: "sap-icon://edit",
-                    press: (oEvent) => {
+                    press: () => {
                         oAPP.fn.fnPressEdit();
                     }
                 }),
                 new sap.m.Button({
                     icon: "sap-icon://delete",
-                    press: (oEvent) => {
+                    press: () => {
                         oAPP.fn.fnPressDelete();
                     }
                 }),
@@ -1709,7 +1585,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         });
 
         oDialog.setModel(oJsonModel);
-        // oDialog.bindElement("/");
         oDialog.open();
 
     }; // end of oAPP.fn.fnEditDialogOpen
@@ -1736,8 +1611,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         }
 
-        // JSON 파일을 읽는다.
-        // let aSavedJsonData = REMOTE.require(sLocalJsonPath);
+        // JSON 파일을 읽는다.        
         let sReadFileData = FS.readFileSync(sLocalJsonPath, 'utf-8') || JSON.stringify(""),
             aSavedJsonData = JSON.parse(sReadFileData);
 
@@ -1849,14 +1723,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         let oDefault_VS = oModel.getProperty("/DEF_VS");
         oModel.setProperty("/VS_STATE", oDefault_VS);
-        // oModel.refresh(true);
 
         // 입력값 정합성 체크
         let oValid = await oAPP.fn.fnCheckValid(oSaveData, oModel);
         if (oValid.RETCD == "E") {
-
-            // 오류 메시지 출력
-            // oAPP.fn.fnShowMessageBox(oValid.RETCD, oValid.RTMSG);
 
             // 오류 사운드
             oAPP.setSoundMsg("02");
@@ -1932,15 +1802,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             sap.m.MessageToast.show("saved Success!");
 
-            // // 저장 완료 메시지!
-            // oAPP.fn.fnShowMessageBox("S", "saved Success!");
-
-            // // 테이블 Row 선택 표시 해제
-            // let oTable = sap.ui.getCore().byId(SERVER_TBL_ID);
-            // if (oTable) {
-            //     oTable.removeSelections(true);
-            // }
-
             return;
 
         } // JSON 파일 읽어보니 Array 타입이 아닌경우 -- end 
@@ -1970,7 +1831,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 저장여부 플래그 값을 저장한다.
         var oCtxData = oCtx.getProperty(sBindPath);
+
         oCtxData.ISSAVE = true;
+
         oCtx.getModel().setProperty(sBindPath, oCtxData);
 
         // dialog를 닫는다.
@@ -1982,15 +1845,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oAPP.setSoundMsg("01");
 
         sap.m.MessageToast.show("saved Success!");
-
-        // // 저장 완료 메시지!
-        // oAPP.fn.fnShowMessageBox("S", "saved Success!");
-
-        // // 테이블 Row 선택 표시 해제
-        // let oTable = sap.ui.getCore().byId(SERVER_TBL_ID);
-        // if (oTable) {
-        //     oTable.removeSelections(true);
-        // }
 
     }; // end of oAPP.fn.fnPressSave
 
@@ -2032,7 +1886,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             // mode: 0o777
         });
 
-    };
+    }; // end of oAPP.fn.fnWriteFile
 
     /************************************************************************
      * 입력값 Validation check
@@ -2065,7 +1919,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 VS_STATE.host_vst = oResult.RTMSG;
 
                 oModel.setProperty("/VS_STATE", VS_STATE);
-                // oModel.refresh(true);
 
                 resolve(oResult);
 
@@ -2093,7 +1946,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 VS_STATE.host_vst = oResult.RTMSG;
 
                 oModel.setProperty("/VS_STATE", VS_STATE);
-                // oModel.refresh(true);
 
                 resolve(oResult);
 
@@ -2107,7 +1959,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 return;
 
             }
-
 
             resolve({
                 RETCD: "S"
@@ -2170,99 +2021,17 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             sUrl += `:${sPort}`;
         }
 
-        //*************************************************** */
-
-        // debugger;
-
-        // sUrl += ZU4A_WBC_URL;
-
-        // var oFormData = new FormData();
-        // oFormData.append("SYSCHK", 'X');
-
-        // /sap/public/myssocntl
-        // sUrl += "/sap/public/ping";  
-
-        // // busy dialog 실행
-        // oAPP.setBusyDialog(true);
-
-        // // 서버에 연결되는지 Ping을 날려본다.    
-        // let oResult = await oAPP.fn.fnCheckServerConnection(sHost);
-
-        // // busy dialog 종료
-        // oAPP.setBusyDialog(false);
-
-        // // Busy Dialog 에서 취소 버튼을 눌렀을 경우
-        // if (oResult.RETCD == "C") {
-
-        //     sap.m.MessageToast.show(oResult.RTMSG);
-        //     return;
-        // }
-
-        // // 접속 성공이 아니면 오류 메시지
-        // if (oResult.RETCD != "S") {
-
-        //     // 오류 메시지
-        //     oAPP.fn.fnShowMessageBox("E", oResult.RTMSG);
-        //     return;
-        // }
-
-
-        //*************************************************** */
-
-
-        // // 서버에서 응답한 값을 JSON 파싱 해본다.
-        // let oResponse;
-        // try {
-
-        //     let sResponse = oResult.RESPONSE;
-
-        //     oResponse = JSON.parse(sResponse);
-
-        //     let oSysInfo = oResponse.SYSINFO;
-
-        //     if (oResponse.TYPE != "S") {
-
-        //         oAPP.fn.fnShowMessageBox("E", oResponse.MSG);
-        //         return;
-        //     }
-
-        //     // // 등록한 Server 정보와 실제 서버의 SYSID가 다를 경우 어떻게 할지 상의 후 주석 풀기
-        //     // if (!oSysInfo || !oSysInfo.SYSID || oSysInfo.SYSID != oBindData.systemid) {
-
-        //     //     let sMsg = `System ID is different. \n Connection System ID: [${oBindData.systemid}], System ID for host URL: [${oSysInfo.SYSID}]`;
-
-        //     //     oAPP.fn.fnShowMessageBox("E", sMsg);
-
-        //     //     return;
-        //     // }
-
-        // } catch (error) { // JSON 파싱 오류가 발생할 경우
-
-
-        //     // 서버 Ping을 날릴때는 JSON 파싱 오류 무시함.
-        //     // 사유: 이마트 사례
-        //     // SSO를 적용한 시스템에서는 RESPONSE를 HTML로 하기 때문.
-
-
-        // }
-
         // 서버 정보
         var oSAPServerInfo = {
             NAME: oBindData.name,
             SERVER_INFO: oRetData,
             SERVER_INFO_DETAIL: oBindData,
-            // SERVERIP: oItemData.SERVIP,
             INSTANCENO: oBindData.insno,
             SYSTEMID: oBindData.systemid,
             CLIENT: "",
             LANGU: "",
             SYSID: oBindData.systemid
         };
-
-        // if (oResponse && oResponse.SYSINFO) {
-        //     oSAPServerInfo.CLIENT = oResponse.SYSINFO.CLIENT;
-        //     oSAPServerInfo.LANGU = oResponse.SYSINFO.LANGU;
-        // }
 
         // 사용자 테마 정보를 읽어온다.
         let oP13nThemeInfo = await fnP13nCreateTheme(oBindData.systemid);
@@ -2308,7 +2077,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0;
         oWebPreferences.partition = SESSKEY;
-        oWebPreferences.browserkey = BROWSERKEY;        
+        oWebPreferences.browserkey = BROWSERKEY;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -2322,10 +2091,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oBrowserWindow.loadURL(PATHINFO.MAINFRAME);
 
-        // oBrowserWindow.once('ready-to-show', () => {
-        //     oBrowserWindow.show();
-        // });
-
         // oBrowserWindow.webContents.openDevTools();
 
         // no build 일 경우에는 개발자 툴을 실행한다.
@@ -2334,7 +2099,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -2381,14 +2146,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         resolve({
                             RETCD: "E",
                             RTMSG: err.toString()
                         });
-                        // reject(err.toString());
+
                         return;
                     }
 
@@ -2397,26 +2162,24 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                         RTMSG: "",
                         RTDATA: oDefThemeInfo
                     });
-                    // resolve(oDefThemeInfo);
 
                 });
 
                 return;
             }
 
-            // // 테마 정보가 있을 경우 바로 읽어서 전달
-            // var oThemeInfo1 = parent.require(sThemeJsonPath);
-            // resolve(oThemeInfo1);
+            // 테마 정보가 있을 경우 바로 읽어서 전달
             FS.readFile(sThemeJsonPath, {
                 encoding: "utf8",
             }, (err, data) => {
 
                 if (err) {
-                    // reject(err.toString());
+                    
                     resolve({
                         RETCD: "E",
                         RTMSG: err.toString()
                     });
+
                     return;
                 }
 
@@ -2425,8 +2188,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     RTMSG: "",
                     RTDATA: JSON.parse(data)
                 });
-
-                // resolve(JSON.parse(data));
 
             });
 

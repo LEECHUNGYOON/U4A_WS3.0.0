@@ -197,8 +197,7 @@ let oAPP = (function (window) {
      ************************************************************************/
     oAPP.getBrowserWindowSettingInfo = function () {
 
-        // Browser Window option
-        // var sSettingsJsonPath = PATH.join(APP.getAppPath(), "settings", "/BrowserWindow/BrowserWindow-settings.json"),
+        // Browser Window option        
         var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
 
             // JSON 파일 형식의 Setting 정보를 읽는다..

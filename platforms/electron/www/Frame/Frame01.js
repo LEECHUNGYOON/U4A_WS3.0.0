@@ -28,10 +28,6 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
-// REGEDIT.setExternalVBSLocation('resources/regedit/vbs');
-
-// 오디오 자동실행 오류 정책 회피
-APP.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
 POWERMONITOR.setMaxListeners(100);
 IPCMAIN.setMaxListeners(100);
@@ -509,23 +505,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         if (oAppInfo.IS_CHAG == 'X') {
             oAppInfo.ACTST = "I";
         }
-
-        /**
-         * Change or Display,
-         * Activate or Inactivate 에 대한 Desc 설정
-         */
-        // if (oAppInfo.IS_EDIT == 'X') {
-        //     oAppInfo.MODETXT = "Change";
-        // } else {
-        //     oAppInfo.MODETXT = "Display";
-        // }
-
-        // if (oAppInfo.ACTST == "A") {
-        //     oAppInfo.ISACTTXT = "Active";
-        // } else {
-        //     oAppInfo.ISACTTXT = "Inactive";
-        // }
-
+    
         // Global AppInfo에 저장
         oWS.utill.attr.oAppInfo = oAppInfo;
 
@@ -543,7 +523,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
             }
 
             oAPP.common.fnSetModelProperty("/WS20/APP", oAppInfo);
-            // oSAP.ui.getCore().getModel().setProperty("/WS20", oAppInfo);
+            
         }
 
     };
@@ -1242,7 +1222,6 @@ IPCRENDERER.on('if-meta-info', (event, res) => {
 
     // 타이틀 설정
     CURRWIN.setTitle("U4A Workspace - #Main");
-
     
     // // 자연스러운 로딩
     // fnOnSmoothLoading();
