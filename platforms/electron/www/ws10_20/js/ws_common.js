@@ -193,81 +193,81 @@
 
     }; // end of oAPP.common.fnTestGetMsgClsText
 
-    /************************************************************************
-     * 메타데이터의 메시지 클래스 번호에 해당하는 메시지 리턴 
-     * **********************************************************************
-     * @param {String} sMsgNum  
-     * - Message Class Number
-     * 
-     * @param {String} "P1 P2 P3 P4"
-     * - Replace Text (총 4개만 가능)
-     * 
-     * @return {String}
-     * - Message Text
-     ************************************************************************/
-    oAPP.common.fnGetMsgClsTxt = function (sMsgNum, p1, p2, p3, p4) {
+    // /************************************************************************
+    //  * 메타데이터의 메시지 클래스 번호에 해당하는 메시지 리턴 
+    //  * **********************************************************************
+    //  * @param {String} sMsgNum  
+    //  * - Message Class Number
+    //  * 
+    //  * @param {String} "P1 P2 P3 P4"
+    //  * - Replace Text (총 4개만 가능)
+    //  * 
+    //  * @return {String}
+    //  * - Message Text
+    //  ************************************************************************/
+    // oAPP.common.fnGetMsgClsTxt = function (sMsgNum, p1, p2, p3, p4) {
 
-        // Metadata에서 메시지 클래스 정보를 구한다.
-        var oMeta = parent.getMetadata(),
-            aMsgClsTxt = oMeta["MSGCLS"];
+    //     // Metadata에서 메시지 클래스 정보를 구한다.
+    //     var oMeta = parent.getMetadata(),
+    //         aMsgClsTxt = oMeta["MSGCLS"];
 
-        if (!aMsgClsTxt || !aMsgClsTxt.length) {
-            return;
-        }
+    //     if (!aMsgClsTxt || !aMsgClsTxt.length) {
+    //         return;
+    //     }
 
-        // 메시지 넘버에 해당하는 메시지 클래스 정보를 구한다.
-        var oMsgTxt = aMsgClsTxt.find(a => a.MSGNR == sMsgNum);
-        if (!oMsgTxt) {
-            return;
-        }
+    //     // 메시지 넘버에 해당하는 메시지 클래스 정보를 구한다.
+    //     var oMsgTxt = aMsgClsTxt.find(a => a.MSGNR == sMsgNum);
+    //     if (!oMsgTxt) {
+    //         return;
+    //     }
 
-        var sText = oMsgTxt.TEXT,
-            aWithParam = [];
+    //     var sText = oMsgTxt.TEXT,
+    //         aWithParam = [];
 
-        // 파라미터로 전달 받은 Replace Text 수집
-        aWithParam.push(p1 == null ? "" : p1);
-        aWithParam.push(p2 == null ? "" : p2);
-        aWithParam.push(p3 == null ? "" : p3);
-        aWithParam.push(p4 == null ? "" : p4);
-        // if(p1){ aWithParam.push(p1); }        
-        // if(p2){ aWithParam.push(p2); }
-        // if(p3){ aWithParam.push(p3); }
-        // if(p4){ aWithParam.push(p4); }
+    //     // 파라미터로 전달 받은 Replace Text 수집
+    //     aWithParam.push(p1 == null ? "" : p1);
+    //     aWithParam.push(p2 == null ? "" : p2);
+    //     aWithParam.push(p3 == null ? "" : p3);
+    //     aWithParam.push(p4 == null ? "" : p4);
+    //     // if(p1){ aWithParam.push(p1); }        
+    //     // if(p2){ aWithParam.push(p2); }
+    //     // if(p3){ aWithParam.push(p3); }
+    //     // if(p4){ aWithParam.push(p4); }
 
-        var iWithParamLenth = aWithParam.length;
-        if (iWithParamLenth == 0) {
-            return sText;
-        }
+    //     var iWithParamLenth = aWithParam.length;
+    //     if (iWithParamLenth == 0) {
+    //         return sText;
+    //     }
 
-        // 메시지 클래스 텍스트에서 "& + 숫자" (예: &1) 값이 있는 것부터 순차적으로 치환한다.
-        for (var i = 0; i < iWithParamLenth; i++) {
+    //     // 메시지 클래스 텍스트에서 "& + 숫자" (예: &1) 값이 있는 것부터 순차적으로 치환한다.
+    //     for (var i = 0; i < iWithParamLenth; i++) {
 
-            var index = i + 1,
-                sParamTxt = aWithParam[i];
+    //         var index = i + 1,
+    //             sParamTxt = aWithParam[i];
 
-            var sRegEx = "&" + index,
-                oRegExp = new RegExp(sRegEx, "g");
+    //         var sRegEx = "&" + index,
+    //             oRegExp = new RegExp(sRegEx, "g");
 
-            sText = sText.replace(oRegExp, sParamTxt);
+    //         sText = sText.replace(oRegExp, sParamTxt);
 
-        }
+    //     }
 
-        sText = sText.replace(new RegExp("&\\d+", "g"), "");
+    //     sText = sText.replace(new RegExp("&\\d+", "g"), "");
 
-        // 메시지 클래스 텍스트에서 "&" 를 앞에서 부터 순차적으로 치환한다."
-        for (var i = 0; i < iWithParamLenth; i++) {
+    //     // 메시지 클래스 텍스트에서 "&" 를 앞에서 부터 순차적으로 치환한다."
+    //     for (var i = 0; i < iWithParamLenth; i++) {
 
-            var sParamTxt = aWithParam[i];
+    //         var sParamTxt = aWithParam[i];
 
-            sText = sText.replace(new RegExp("&", "i"), sParamTxt);
+    //         sText = sText.replace(new RegExp("&", "i"), sParamTxt);
 
-        }
+    //     }
 
-        sText = sText.replace(new RegExp("&", "g"), "");
+    //     sText = sText.replace(new RegExp("&", "g"), "");
 
-        return sText;
+    //     return sText;
 
-    }; // end of oAPP.common.fnGetMsgClsTxt
+    // }; // end of oAPP.common.fnGetMsgClsTxt
 
     /************************************************************************
      * z-Index 구하기
@@ -389,7 +389,7 @@
 
         // Busy Indicator가 실행중인지 확인
         if (parent.getBusy() == 'X') {
-            console.log("!! Busy가 켜져 있어서 단축기 실행 불가!!");
+            zconsole.log("!! Busy가 켜져 있어서 단축기 실행 불가!!");
             return "X";
         }
 
@@ -399,7 +399,7 @@
             var sId = oMenuDom.id,
                 oMenu = sap.ui.getCore().byId(sId);
             if (oMenu && oMenu.bOpen) {
-                console.log("!! 메뉴가 떠 있어서 단축기 실행 불가!!");
+                zconsole.log("!! 메뉴가 떠 있어서 단축기 실행 불가!!");
                 return "X";
             }
         }
@@ -407,11 +407,11 @@
         // 현재 Dialog Popup이 실행 되어 있는지 확인.
         var bIsDialogOpen = oAPP.fn.fnCheckIsDialogOpen();
         if (bIsDialogOpen) {
-            console.log("!! Dialog 팝업이 떠 있어서 단축기 실행 불가!!");
+            zconsole.log("!! Dialog 팝업이 떠 있어서 단축기 실행 불가!!");
             return "X";
         }
 
-        console.log("!!___단축기 실행 가능__!!");
+        zconsole.log("!!___단축기 실행 가능__!!");
 
         return "";
 
@@ -514,7 +514,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -542,7 +542,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -606,7 +606,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -634,7 +634,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -662,7 +662,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -704,7 +704,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -726,7 +726,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -754,7 +754,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -797,7 +797,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -845,7 +845,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -885,7 +885,7 @@
 
                         e.stopImmediatePropagation();
 
-                        console.log("ws30/Ctrl+F4 key in!!");
+                        zconsole.log("ws30/Ctrl+F4 key in!!");
 
                     }
                 },
@@ -896,7 +896,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -929,7 +929,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -956,7 +956,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -983,7 +983,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -1010,7 +1010,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -1037,7 +1037,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -1064,7 +1064,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -1091,7 +1091,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -1118,7 +1118,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -1166,7 +1166,7 @@
 
                         e.stopImmediatePropagation();
 
-                        console.log("ws30/Ctrl+F4 key in!!");
+                        zconsole.log("ws30/Ctrl+F4 key in!!");
 
                     }
                 },
@@ -1177,7 +1177,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -1210,7 +1210,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -1257,7 +1257,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -1290,7 +1290,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -1322,7 +1322,7 @@
                         e.stopImmediatePropagation();
 
                         if (sap.ui.getCore().isLocked()) {
-                            console.log("!! 락 걸려서 단축기 실행 불가!!");
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                             return;
                         }
 
@@ -1338,9 +1338,10 @@
                         if (!oBtn || !oBtn.getEnabled() || !oBtn.getVisible()) {
                             return;
                         }
-
-                        oBtn.focus();
+                        
                         oBtn.firePress();
+
+                        // oBtn.focus();
 
                     }
                 }
@@ -1697,13 +1698,13 @@
 
         var oMenu = document.querySelector(".sapMMenu");
         if (oMenu) {
-            // console.log("메뉴 찾았다!");
+            // zconsole.log("메뉴 찾았다!");
             oMenu.style.visibility = "hidden";
         }
 
         var oPopover = document.querySelector(".sapMPopover");
         if (oPopover) {
-            // console.log("팝오버 찾았다!");
+            // zconsole.log("팝오버 찾았다!");
             oPopover.style.visibility = "hidden";
         }
 
@@ -2021,7 +2022,9 @@ function fnCriticalError() {
 // JSON Parse Error
 function fnJsonParseError(e) {
 
-    console.error(e);
+    debugger;
+
+    zconsole.error(e);
 
     // JSON parse 오류 일 경우는 critical 오류로 판단하여 메시지 팝업 호출 후 창 닫게 만든다.
 
@@ -2030,7 +2033,9 @@ function fnJsonParseError(e) {
 
     parent.setBusy("");
 
-    let sErrmsg = "Critical Error 관리자에게 문의 하세요. \n\n " + e.toString();
+    // Fatal Error! Please contact your system administrator.
+    let sErrmsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "192") + " \n \n " + e.toString();
+    // let sErrmsg = "Critical Error 관리자에게 문의 하세요. \n\n " + e.toString();
 
     parent.showMessage(sap, 20, "E", sErrmsg, fnCriticalError);
 
@@ -2216,70 +2221,66 @@ function ajax_unlock_app(APPID, fn_callback) {
 
 } // end of ajax_unlock_app
 
-// logoff
-function ajax_logoff() {
+// // logoff
+// function ajax_logoff() {
 
-    parent.setBusy('X');
+//     debugger;
 
-    var sPath = parent.getServerPath() + "/logoff";
+//     parent.setBusy('X');
 
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function () { // 요청에 대한 콜백
-        if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
+//     var sPath = parent.getServerPath() + "/logoff";
 
-            if (xhr.status === 200 || xhr.status === 201) {
+//     var xhr = new XMLHttpRequest();
+//     xhr.onreadystatechange = function () { // 요청에 대한 콜백
+//         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
 
-                parent.setBusy("");
+//             if (xhr.status === 200 || xhr.status === 201) {
 
-                var sRes = xhr.responseText;
+//                 parent.setBusy("");
 
-                // 로그아웃 버튼으로 호출 된 경우
-                if (sRes == "") {
+//                 var sRes = xhr.response;
 
-                    // 로그오프 성공시 타는 펑션
-                    fn_logoff_success();
+//                 // 로그아웃 버튼으로 호출 된 경우
+//                 if (sRes == "") {
 
-                    return;
+//                     // 로그오프 성공시 타는 펑션
+//                     fn_logoff_success();
 
-                }
+//                     return;
 
-                // 세션이 이미 날라간 경우
-                // SSO 만료일 경우.
-                // 로그인 쪽으로 왔을 경우.
-                var oResult = JSON.parse(sRes);
+//                 }
 
-                if (oResult.TYPE == "E") {
+//                 // 세션이 이미 날라간 경우
+//                 // SSO 만료일 경우.
+//                 // 로그인 쪽으로 왔을 경우.
+//                 var oResult = JSON.parse(sRes);
 
-                    //1. 전체 다 닫는다.
-                    fn_logoff_success("X");
-                    return;
+//                 if (oResult.TYPE == "E") {
 
-                }
+//                     //1. 전체 다 닫는다.
+//                     fn_logoff_success("X");
+//                     return;
 
-            } else {
+//                 }
 
-                // 전체 브라우저를 닫는다.
-                fn_logoff_success("X");
+//             } else {
 
-            }
+//                 // 전체 브라우저를 닫는다.
+//                 fn_logoff_success("X");
 
-        }
+//             }
 
-    };
+//         }
 
-    xhr.open("GET", sPath); // 메소드와 주소 설정
-    xhr.send();
+//     };
 
-} // end of ajax_logoff
+//     xhr.open("GET", sPath); // 메소드와 주소 설정
+//     xhr.send();
+
+// } // end of ajax_logoff
 
 // 로그오프 성공시 타는 펑션
 function fn_logoff_success(TYPE) {
-
-    // // 서버 끊어졌다는 electron Popup을 띄운다.
-    // fnServerDisconnectionMsgPopup();
-
-    // 브라우저 창 다 죽인다.    
-    fnServerSessionClose();
 
     if (!TYPE) {
 
@@ -2292,10 +2293,16 @@ function fn_logoff_success(TYPE) {
 
     if (TYPE == "X") {
 
-        let sTitle = "Session Timeout",
-            sDesc = "Please Try Login Again!",
+        let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D85"), // Session Timeout
+            sDesc = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "349"), // Please Try Login Again!
             sIllustType = "tnt-SessionExpired",
             sIllustSize = sap.m.IllustratedMessageSize.Dialog;
+
+        parent.IPCRENDERER.send('if-browser-close', {
+            ACTCD: "A", // 나를 제외한 나머지는 다 죽인다.
+            SESSKEY: parent.getSessionKey(),
+            BROWSKEY: parent.getBrowserKey()
+        });
 
         oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, fnSessionTimeOutDialogOk);
 
@@ -2306,6 +2313,9 @@ function fn_logoff_success(TYPE) {
     }
 
     parent.setBusy("");
+
+    // 브라우저 창 다 죽인다.    
+    fnServerSessionClose();
 
 } // end of fn_logoff_success
 
@@ -2327,9 +2337,6 @@ function fnServerSessionClose() {
 
     oAPP.main.fnDetachBeforeunloadEvent();
 
-    // 브라우저에 내장된 세션 정보를 클리어 한다.
-    oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
-
     // 현재 세션에서 파생된 Childwindow를 닫는다.
     oAPP.fn.fnChildWindowClose(); // #[ws_fn_02.js]
 
@@ -2345,14 +2352,17 @@ function fnServerSessionClose() {
 
     // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
     // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
-    oAPP.main.fnBeforeunload();
+    oAPP.main.fnBeforeunload("X");
 
 }
 
 function fnSessionTimeOutDialogOk() {
 
-    // 로그인페이지로 이동..			
-    parent.onMoveToPage("LOGIN");
+    // // 로그인페이지로 이동..			
+    // parent.onMoveToPage("LOGIN");
+
+    // 브라우저 창 다 죽인다.    
+    fnServerSessionClose();
 
 }
 
@@ -2420,7 +2430,7 @@ function sendServerExit(oOptions, fnCallback) {
 //         return;
 //     }
 
-//     console.log("[zconsole]: " + sConsole);
+//     zconsole.log("[zconsole]: " + sConsole);
 
 // };
 
@@ -2434,7 +2444,7 @@ function sendServerExit(oOptions, fnCallback) {
 //         return;
 //     }
 
-//     console.error("[zconsole]: " + sConsole);
+//     zconsole.error("[zconsole]: " + sConsole);
 
 // };
 
@@ -2448,6 +2458,6 @@ function sendServerExit(oOptions, fnCallback) {
 //         return;
 //     }
 
-//     console.warn("[zconsole]: " + sConsole);
+//     zconsole.warn("[zconsole]: " + sConsole);
 
 // };

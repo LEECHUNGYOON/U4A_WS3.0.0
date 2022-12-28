@@ -188,7 +188,7 @@
                 // onBeforeunload event 해제
                 oAPP.main.fnDetachBeforeunloadEvent();
 
-                oCurrWin.close();
+                oAPP.main.fnBeforeunload("");             
 
                 break;
 

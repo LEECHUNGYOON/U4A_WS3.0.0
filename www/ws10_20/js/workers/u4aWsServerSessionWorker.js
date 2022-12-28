@@ -4,7 +4,7 @@
  * - Server Session Worker
  **************************************************************************/
 
-self.onmessage = function(e) {
+self.onmessage = function (e) {
 
     const iSessionTimeMinute = 10;
 
@@ -26,26 +26,14 @@ self.onmessage = function(e) {
     this.sendAjax = (sServerPath) => {
 
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() { // 요청에 대한 콜백
+        xhr.onreadystatechange = function () { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
 
                 if (xhr.status === 200 || xhr.status === 201) {
 
-                    var sRes = xhr.response;
-
-                    // // 로그아웃 버튼으로 호출 된 경우
-                    // if (sRes == "") {
-
-                    //     self.postMessage("");
-                    //     // 로그오프 성공시 타는 펑션
-                    //     // fn_logoff_success();
-
-                    //     return;
-
-                    // }
-
                     let oResult,
-                        sMsg;
+                        sMsg,
+                        sRes = xhr.response;
 
                     try {
 
@@ -113,7 +101,7 @@ self.onmessage = function(e) {
         xhr.open('GET', sServerPath); // 메소드와 주소 설정
         xhr.send();
 
-    } // end of ajax_logoff
+    } // end of sendAjax
 
     this.sendAjax(sServerPath);
 

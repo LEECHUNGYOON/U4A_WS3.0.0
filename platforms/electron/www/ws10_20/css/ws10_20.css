@@ -117,7 +117,7 @@ body,
 } */
 
 .sapTntToolHeader.sapMTB {
-    height: 2.75rem;
+    height: 2.775rem;
 }
 
 .sapMPageFooterControlShow.sapUiHidden {
@@ -347,4 +347,11 @@ body,
 
 .ace_print-margin {
     visibility: hidden !important;
+}
+
+
+.u4aWsDropArea {
+    /* border: 1rem solid black; */
+    border: .0625rem solid;
+    border-style: dashed !important;
 }

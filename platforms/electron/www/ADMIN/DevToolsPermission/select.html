@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+<body style="margin:0px;padding:0px;overflow:hidden">
+
+    <button onclick="fn_test1()">파일업로드 형식</button>
+
+    <button onclick="fn_test2()">수기입력 형식</button>
+
+    <script>
+
+        let oAPP = {};
+
+        document.addEventListener('DOMContentLoaded', ()=> {  
+            oAPP.remote = require('@electron/remote');
+            oAPP.ipcRenderer = require('electron').ipcRenderer;
+
+        });
+
+
+        function fn_test1(){
+            
+            var oWIN  = oAPP.remote.getCurrentWindow();
+            var oPWIN = oWIN.getParentWindow();
+            oPWIN.webContents.send("IF-DevToolsPermission-SELECT", {"ACTCD":"01"});
+
+            oWIN.close();
+
+        }
+
+
+        function fn_test2(){
+            
+            var oWIN  = oAPP.remote.getCurrentWindow();
+            var oPWIN = oWIN.getParentWindow();
+            oPWIN.webContents.send("IF-DevToolsPermission-SELECT", {"ACTCD":"02", "ENCRYPT": "3Q6Me/xoqm3fo4s/RtiX8jyfAXN1AUA0yTZzVFPbtDuz0Cmss0Y7YF25uldyKLtgFDU6k1MDgr1cMBSJ3Z4hKg=="});
+            //oPWIN.webContents.send("IF-DevToolsPermission-SELECT", {"ACTCD":"02", "ENCRYPT": "qsSSSS"});
+            oWIN.close();
+
+        }
+
+    </script>
+
+</body>
+</html>

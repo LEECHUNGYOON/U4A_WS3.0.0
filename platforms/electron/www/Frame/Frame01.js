@@ -41,9 +41,11 @@ zconsole.APP = APP;
  */
 
 var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에서 parent로 접근이 안됨.)
-    oWS = {};
+    oWS = {},
+    oAPP = {};
+    oAPP.common = {};
 
-(function(oWS) {
+(function (oWS) {
     "use strict";
 
     oWS.utill = {};
@@ -84,34 +86,36 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
      * ## Function 
      */
 
-    // 1. 메시지 호출
-    oWS.utill.fn.showMessage = function(oUI5, KIND, TYPE, MSG, fn_callback) {
 
-        /**
-         * # oUI5
-         * - (instance) sap
-         *  
-         * # KIND
-         * - 10: MessageToast
-         * - 20: MessageBox (1 button: OK)
-         * - 30: MessageBox (2 button: YES, NO)
-         * - 40: MessageBox (3 button: YES, NO, CANCLE)     
-         * - 99: Electron Message
-         * 
-         * # TYPE     
-         * - S : success
-         * - E : error
-         * - W : warning
-         * - I : information
-         * 
-         * # MSG
-         * - (string) Message
-         */
+    /** 
+     * 1. 메시지 호출
+     * 
+     * # oUI5
+     * - (instance) sap
+     *  
+     * # KIND
+     * - 10: MessageToast
+     * - 20: MessageBox (1 button: OK)
+     * - 30: MessageBox (2 button: YES, NO)
+     * - 40: MessageBox (3 button: YES, NO, CANCLE)     
+     * - 99: Electron Message
+     * 
+     * # TYPE     
+     * - S : success
+     * - E : error
+     * - W : warning
+     * - I : information
+     * 
+     * # MSG
+     * - (string) Message
+     */
+    oWS.utill.fn.showMessage = function (oUI5, KIND, TYPE, MSG, fn_callback) {      
 
         // 메시지가 Array 일 경우 개행 문자를 넣는다.
         var newMsg = "";
 
-        if (MSG instanceof Array) {
+        // if (MSG instanceof Array) {
+        if (Array.isArray(MSG)) {
 
             var iMsgcnt = MSG.length;
 
@@ -168,7 +172,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("01"); // success
 
-                        oMsgBoxOpts.title = "Success";
+                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D86"); // Success
 
                         oUI5.m.MessageBox.success(newMsg, oMsgBoxOpts);
 
@@ -176,7 +180,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                     case "I":
 
-                        oMsgBoxOpts.title = "Information";
+                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B86"); // Information
 
                         oUI5.m.MessageBox.information(newMsg, oMsgBoxOpts);
 
@@ -186,7 +190,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("02"); // error
 
-                        oMsgBoxOpts.title = "Warning";
+                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B89"); // Warning
 
                         oUI5.m.MessageBox.warning(newMsg, oMsgBoxOpts);
 
@@ -196,7 +200,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("02"); // error
 
-                        oMsgBoxOpts.title = "Error";
+                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B93"); // Error
 
                         oUI5.m.MessageBox.error(newMsg, oMsgBoxOpts);
 
@@ -227,7 +231,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("01"); // success
 
-                        oMsgBoxOpts.title = "Success";
+                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D86"); // Success
 
                         oUI5.m.MessageBox.success(newMsg, oMsgBoxOpts);
 
@@ -235,7 +239,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                     case "I":
 
-                        oMsgBoxOpts.title = "Information";
+                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B86"); // Information
 
                         oUI5.m.MessageBox.information(newMsg, oMsgBoxOpts);
 
@@ -245,7 +249,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("02"); // error
 
-                        oMsgBoxOpts.title = "Warning";
+                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B89"); // Warning
 
                         oUI5.m.MessageBox.warning(newMsg, oMsgBoxOpts);
 
@@ -255,7 +259,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("02"); // error
 
-                        oMsgBoxOpts.title = "Error";
+                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B93"); // Error
 
                         oUI5.m.MessageBox.error(newMsg, oMsgBoxOpts);
 
@@ -286,7 +290,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("01"); // success
 
-                        oMsgBoxOpts.title = "Success";
+                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D86"); // Success
 
                         oUI5.m.MessageBox.success(newMsg, oMsgBoxOpts);
 
@@ -294,7 +298,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                     case "I":
 
-                        oMsgBoxOpts.title = "Information";
+                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B86"); // Information
 
                         oUI5.m.MessageBox.information(newMsg, oMsgBoxOpts);
 
@@ -302,7 +306,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                     case "W":
 
-                        oMsgBoxOpts.title = "Warning";
+                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B89"); // Warning
 
                         oUI5.m.MessageBox.warning(newMsg, oMsgBoxOpts);
 
@@ -312,7 +316,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("02"); // error
 
-                        oMsgBoxOpts.title = "Error";
+                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B93"); // Error
 
                         oUI5.m.MessageBox.error(newMsg, oMsgBoxOpts);
 
@@ -326,11 +330,13 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                 var oCurrView = REMOTE.getCurrentWindow();
 
+                let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D29"); // U4A WorkSpace
+
                 switch (TYPE) {
                     case "I":
                         DIALOG.showMessageBox(oCurrView, {
                             type: "info",
-                            title: "U4A Workspace",
+                            title: sTitle,
                             message: newMsg
                         });
                         break;
@@ -338,7 +344,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
                     case "W":
                         DIALOG.showMessageBox(oCurrView, {
                             type: "warning",
-                            title: "U4A Workspace",
+                            title: sTitle,
                             message: newMsg
                         });
                         break;
@@ -349,7 +355,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         DIALOG.showMessageBox(oCurrView, {
                             type: "error",
-                            title: "U4A Workspace",
+                            title: sTitle,
                             message: newMsg
                         });
 
@@ -376,7 +382,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     }; // end of oWS.utill.fn.showMessage
 
     // 2. 서버 정보를 구한다.
-    oWS.utill.fn.getServerInfo = function() {
+    oWS.utill.fn.getServerInfo = function () {
 
         if (!oWS.oServerInfo) {
             return;
@@ -409,7 +415,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     };
 
     // 3. 서버 URL을 구한다.
-    oWS.utill.fn.getServerPath = function() {
+    oWS.utill.fn.getServerPath = function () {
 
         var sServerHost = getServerHost(),
             sServicePath = sServerHost + "/zu4a_wbc/u4a_ipcmain";
@@ -419,7 +425,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     };
 
     // 4. 서버 호스트를 구한다.
-    oWS.utill.fn.getServerHost = function() {
+    oWS.utill.fn.getServerHost = function () {
 
         let oWS_ServerInfo = oWS.oServerInfo;
         if (!oWS_ServerInfo) {
@@ -435,22 +441,13 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         if (sPort != "") {
             sServicePath += `:${sPort}`;
         }
-
-        // var oServerInfo = oWS.oServerInfo,
-        //     oMetadata = parent.getMetadata(),
-        //     sInstanceNo = oServerInfo.INSTANCENO,
-        //     sServicePath = "http://" + oServerInfo.SERVERIP + ":80" + sInstanceNo;
-
-        // if (oMetadata.HOST) {
-        //     return oMetadata.HOST;
-        // }
-
+ 
         return sServicePath;
 
     };
 
     // 4. Page 이동
-    oWS.utill.fn.onMoveToPage = function(sMovePath) {
+    oWS.utill.fn.onMoveToPage = function (sMovePath) {
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {
@@ -462,10 +459,6 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
             return;
         }
 
-        // // LOGIN 페이지로 이동할 경우 상단 메뉴를 없앤다.
-        // var oCurrWin = REMOTE.getCurrentWindow();
-        // oCurrWin.setMenuBarVisibility(true);
-
         if (sMovePath == "LOGIN") {
             delete oWS.utill.attr.ISINIT;
         }
@@ -475,17 +468,17 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     };
 
     // 5. Electron Instance return.
-    oWS.utill.fn.getElectronRemote = function() {
+    oWS.utill.fn.getElectronRemote = function () {
         return REMOTE;
     };
 
     // 6. NODE JS 'require' return.
-    oWS.utill.fn.getRequire = function() {
+    oWS.utill.fn.getRequire = function () {
         return require;
     };
 
     // 7. Application 정보 저장
-    oWS.utill.fn.setAppInfo = function(oAppInfo) {
+    oWS.utill.fn.setAppInfo = function (oAppInfo) {
 
         if (oWS.utill.attr.oAppInfo) {
             delete oWS.utill.attr.oAppInfo;
@@ -505,7 +498,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         if (oAppInfo.IS_CHAG == 'X') {
             oAppInfo.ACTST = "I";
         }
-    
+
         // Global AppInfo에 저장
         oWS.utill.attr.oAppInfo = oAppInfo;
 
@@ -523,13 +516,13 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
             }
 
             oAPP.common.fnSetModelProperty("/WS20/APP", oAppInfo);
-            
+
         }
 
     };
 
     // 8. AppID 및 Create, Change, Display 모드 정보 구하기
-    oWS.utill.fn.getAppInfo = function() {
+    oWS.utill.fn.getAppInfo = function () {
 
         if (!oWS.utill.attr.oAppInfo) {
             return;
@@ -545,7 +538,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     // };
 
     // 10. Window Header Menu Setting
-    oWS.utill.fn.setBrowserMenu = function(aTemplate) {
+    oWS.utill.fn.setBrowserMenu = function (aTemplate) {
 
         var oCurrWin = REMOTE.getCurrentWindow(),
             MENU = REMOTE.Menu;
@@ -561,12 +554,12 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     };
 
     // 11. 현재 dirname 구하기
-    oWS.utill.fn.getDirName = function() {
+    oWS.utill.fn.getDirName = function () {
         return __dirname;
     };
 
     // 12. Page Path 구하기
-    oWS.utill.fn.getPath = function(sPagePath) {
+    oWS.utill.fn.getPath = function (sPagePath) {
 
         var sPath = oWS.utill.attr.paths[sPagePath];
         if (!sPath) {
@@ -577,52 +570,8 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
     };
 
-    // // 13. ajax 통신 (FormData, success callback)
-    // oWS.utill.fn.sendAjax = function (sPath, oFormData, fn_success) {
-
-    //     // Busy Indicator 실행
-    //     setBusy('X');
-
-    //     var xhr = new XMLHttpRequest();
-    //     xhr.onreadystatechange = function () { // 요청에 대한 콜백
-    //         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
-    //             if (xhr.status === 200 || xhr.status === 201) {
-
-    //                 var oReturn = xhr.responseText;
-
-    //                 if (oReturn == "") {
-    //                     oReturn = JSON.stringify({});
-    //                 }
-
-    //                 try {
-
-    //                     var oResult = JSON.parse(oReturn);
-
-    //                     fn_success(oResult);
-
-    //                 } catch (e) {
-
-    //                     setErrorPage(oReturn);
-    //                     setBusy('');
-
-    //                 }
-
-    //             } else {
-
-    //                 setErrorPage(oReturn);
-    //                 setBusy('');
-
-    //             }
-    //         }
-    //     };
-
-    //     xhr.open('POST', sPath); // 메소드와 주소 설정
-    //     xhr.send(oFormData); // 요청 전송 
-
-    // }; // end of oWS.utill.fn.ajax
-
     // 14. 서버에서 App 정보를 구한다.
-    oWS.utill.fn.getAppDataFromServer = function(oFormData, fn_callback) {
+    oWS.utill.fn.getAppDataFromServer = function (oFormData, fn_callback) {
 
         var sPath = getServerPath() + '/INIT_PRC';
 
@@ -637,7 +586,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     }; // end of oWS.utill.fn.getAppDataFromServer
 
     // 15. 새창 띄우기
-    oWS.utill.fn.onNewWindow = function() {
+    oWS.utill.fn.onNewWindow = function () {
 
         const WINDOWSTATE = REMOTE.require('electron-window-state');
 
@@ -675,10 +624,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
-
-        /**
-         * ----- test start -----
-         */
+      
         function lf_setBound() {
 
             let oBrowserOptions = {};
@@ -709,7 +655,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             console.log('did-finish-load');
 
@@ -756,7 +702,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
      *  - A : +
      *  - D : -  
      */
-    oWS.utill.fn.setSessionCount = function(TYPE) {
+    oWS.utill.fn.setSessionCount = function (TYPE) {
         return;
 
         var sFoldPath = PATH.join(__dirname, '../conf/'),
@@ -914,12 +860,12 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     }; // end of oWS.utill.fn.setBusy
 
     // 현재 Busy Indicator 상태를 리턴해준다.
-    oWS.utill.fn.getBusy = function() {
+    oWS.utill.fn.getBusy = function () {
         return oWS.utill.attr.isBusy;
     };
 
     // 20. Page Loading 실행
-    oWS.utill.fn.showLoadingPage = function(bIsShow) {
+    oWS.utill.fn.showLoadingPage = function (bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
         if (!oLoadPg) {
@@ -1222,12 +1168,12 @@ IPCRENDERER.on('if-meta-info', (event, res) => {
 
     // 타이틀 설정
     CURRWIN.setTitle("U4A Workspace - #Main");
-    
+
     // // 자연스러운 로딩
     // fnOnSmoothLoading();
 
 });
 
-window.onload = function() {
+window.onload = function () {
     showLoadingPage('');
 };

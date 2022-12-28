@@ -288,7 +288,7 @@
             // 메시지 처리 후 리턴            
             var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "062", sTcode); // & invalid transaction ID.
 
-            APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", sMsg);
+            APPCOMMON.fnShowShowFloatingFooterMsg("E", "WS20", sMsg);
 
             oSrchField.setValue("");
 

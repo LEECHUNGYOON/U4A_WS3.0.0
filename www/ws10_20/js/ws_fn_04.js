@@ -1,7 +1,7 @@
 /**************************************************************************                                           
  * ws_fn_04.js
  **************************************************************************/
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     var PATH = parent.PATH,
@@ -10,7 +10,7 @@
         REMOTE = parent.REMOTE,
         APPPATH = parent.APPPATH,
         APPCOMMON = oAPP.common;
-        
+
     /************************************************************************
      * SAP GUI 멀티 로그인 체크
      ************************************************************************/
@@ -55,8 +55,8 @@
     /************************************************************************
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSapGuiMultiLoginCheckThen = function(oResult) {
-        
+    oAPP.fn.fnSapGuiMultiLoginCheckThen = function (oResult) {
+
         var oMetadata = parent.getMetadata(),
             oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
             oSettings = parent.require(oSettingsPath),
@@ -110,12 +110,12 @@
 
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
         var vbs = parent.SPAWN('cscript.exe', aParam);
-        vbs.stdout.on("data", function(data) {
+        vbs.stdout.on("data", function (data) {
             zconsole.log(data.toString());
         });
 
         //GUI 세션창이 존재하지않다면 ...
-        vbs.stderr.on("data", function(data) {
+        vbs.stderr.on("data", function (data) {
 
             //VBS 리턴 오류 CODE / MESSAGE 
             var str = data.toString(),
@@ -171,8 +171,8 @@
             ];
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
-            vbs.stdout.on("data", function(data) {});
-            vbs.stderr.on("data", function(data) {
+            vbs.stdout.on("data", function (data) {});
+            vbs.stderr.on("data", function (data) {
 
                 //VBS 리턴 오류 CODE / MESSAGE 
                 var str = data.toString(),
@@ -418,7 +418,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             let oSendData = {
                 DEFAULT_OPACITY: 0.3
@@ -453,5 +453,277 @@
         });
 
     }; // end of oAPP.fn.fnSetToggleFrameWindow
+
+
+    // 개발자 툴 열기
+    oAPP.fn.fnOpenDevTool = () => {
+
+        const
+            DIALOG_ID = "u4aAdminDevToolDlg";
+
+        // 초기 모델 설정
+        let oModelData = {
+                KEY: "",
+                RDBTNINDEX: 0,
+                FNAME: "",
+                RDLIST: [{
+                        text: "Key In"
+                    },
+                    {
+                        text: "File Drag"
+                    },
+                    {
+                        text: "Attach File"
+                    },
+                ]
+            },
+            oJsonModel = new sap.ui.model.json.JSONModel();
+
+        oJsonModel.setData(oModelData);
+
+        // 이미 Dialog가 그려진게 있다면 Open한다.
+        var oDialog = sap.ui.getCore().byId(DIALOG_ID);
+        if (oDialog) {
+
+            oDialog.setModel(oJsonModel);
+
+            oDialog.open();
+
+            return;
+        }
+
+        var oDialog = new sap.m.Dialog(DIALOG_ID, {
+            title: "Administrator DevTool",
+            icon: "sap-icon://key-user-settings",
+            contentWidth: "500px",
+            draggable: true,
+            resizable: true,
+            customHeader: new sap.m.Bar({
+                contentLeft: [
+                    new sap.ui.core.Icon({
+                        src: "sap-icon://key-user-settings",
+                    }),
+                    new sap.m.Title({
+                        text: "Administrator OpenDevTool"
+                    })
+                ],
+                contentRight: [
+
+                    new sap.m.Button({
+                        type: sap.m.ButtonType.Reject,
+                        icon: "sap-icon://decline",
+                        press: function (oEvent) {
+
+                            var oDialog = sap.ui.getCore().byId(DIALOG_ID);
+                            if (oDialog) {
+                                oDialog.close();
+                            }
+
+                        }
+                    }),
+                ]
+            }),
+            content: [
+
+                new sap.m.RadioButtonGroup({
+                    columns: 3,
+                    selectedIndex: "{/RDBTNINDEX}",
+                    buttons: {
+                        path: "/RDLIST",
+                        template: new sap.m.RadioButton({
+                            text: "{text}"
+                        })
+                    },
+                    // buttons: [
+                    //     new sap.m.RadioButton({
+                    //         text: "Key In"
+                    //     }),
+                    //     new sap.m.RadioButton({
+                    //         text: "File Drag"
+                    //     }),
+                    //     new sap.m.RadioButton({
+                    //         text: "Attach File"
+                    //     }),
+                    // ],
+                    select: (oEvent) => {
+
+                        let iSelectedIndex = oEvent.getParameter("selectedIndex");
+                        if (iSelectedIndex == 2) {
+                            oAPP.fn.fnOpenDevToolFileAttach();
+                            return;
+                        }
+
+                    }
+                }),
+
+                // 수기 입력 
+                new sap.m.Input({
+                    value: "{/KEY}",
+                    submit: () => {
+                        oAPP.fn.fnSetOpenDevToolSubmit();
+                    }
+                }).bindProperty("visible", "/RDBTNINDEX", function (INDEX) {
+
+                    if (INDEX !== 0) {
+                        return false;
+                    }
+
+                    this.getModel().setProperty("/FNAME", "");
+
+                    return true;
+
+                }),
+
+                // 파일 드래그 앤 드롭 영역
+                new sap.m.HBox({
+                    renderType: sap.m.FlexRendertype.Bare,
+                    height: "100px",
+                    alignItems: sap.m.FlexAlignItems.Center,
+                    justifyContent: sap.m.FlexAlignItems.Center,
+                    dragDropConfig: [
+                        new sap.ui.core.dnd.DropInfo({
+                            drop: (oEvent) => {
+                                oAPP.fn.fnOpenDevToolFileDrop(oEvent);
+                            }
+                        }),
+                    ],
+                    items: [
+                        new sap.m.Text({
+                            text: "Drop the File!"
+                        })
+                    ]
+                }).bindProperty("visible", "/RDBTNINDEX", function (INDEX) {
+
+                    if (INDEX !== 1) {
+                        return false;
+                    }
+
+                    this.getModel().setProperty("/KEY", "");
+
+                    return true;
+
+                }).addStyleClass("u4aWsDropArea")
+
+            ],
+            buttons: [
+
+                new sap.m.Button({
+                    type: sap.m.ButtonType.Reject,
+                    icon: "sap-icon://decline",
+                    press: function (oEvent) {
+
+                        var oDialog = sap.ui.getCore().byId(DIALOG_ID);
+                        if (oDialog) {
+                            oDialog.close();
+                        }
+
+                    }
+                }),
+
+            ]
+
+        });
+
+        oDialog.addStyleClass("sapUiContentPadding");
+
+        oDialog.setModel(oJsonModel);
+
+        oDialog.open();
+
+    }; // end of oAPP.fn.fnOpenDevTool
+
+    oAPP.fn.fnOpenDevToolFileDrop = (oEvent) => {
+
+        let oBrowserEvent = oEvent.getParameter("browserEvent"),
+            oDataTransfer = oBrowserEvent.dataTransfer,
+            aFiles = oDataTransfer.files,
+            iFileLength = aFiles.length;
+
+        if (iFileLength == 0) {
+            return;
+        }
+
+        let oFile = aFiles[0];
+
+        let oFileReader = new FileReader();
+        oFileReader.onload = (event) => {
+
+            let sFileText = event.target.result;
+
+            oAPP.fn.fnSetOpenDevTool(sFileText);
+
+        };
+
+        oFileReader.readAsText(oFile);
+
+    }; // end of oAPP.fn.fnOpenDevToolFileDrop
+
+    oAPP.fn.fnSetOpenDevToolSubmit = () => {
+
+        const
+            DIALOG_ID = "u4aAdminDevToolDlg";
+
+        let oDialog = sap.ui.getCore().byId(DIALOG_ID);
+        if (!oDialog) {
+            return;
+        }
+
+        let oDialogModel = oDialog.getModel();
+        if (!oDialogModel) {
+            return;
+        }
+
+        let oModelData = oDialogModel.getData(),
+            sKeyIn = oModelData.KEY;
+
+        oAPP.fn.fnSetOpenDevTool(sKeyIn);
+
+    }; // end of oAPP.fn.fnSetOpenDevToolSubmit
+
+    oAPP.fn.fnOpenDevToolFileAttach = async () => {
+
+        const
+            DIALOG_ID = "u4aAdminDevToolDlg";
+
+        let oDialog = sap.ui.getCore().byId(DIALOG_ID);
+        if (!oDialog) {
+            return;
+        }
+
+        let oDEVTOOL = parent.require(PATH.join(APPPATH, "ADMIN", "DevToolsPermission", "index.js")),
+            sRETURN = await oDEVTOOL.excute01(REMOTE);
+
+        debugger;
+
+        if (sRETURN.RETCD !== "S") {
+            parent.showMessage(sap, 20, sRETURN.RETCD, sRETURN.RTMSG);
+        }
+
+        oDialog.close();
+
+    }; // end of oAPP.fn.fnOpenDevToolFileAttach
+
+    oAPP.fn.fnSetOpenDevTool = async (sText) => {
+
+        const
+            DIALOG_ID = "u4aAdminDevToolDlg";
+
+        let oDialog = sap.ui.getCore().byId(DIALOG_ID);
+        if (!oDialog) {
+            return;
+        }
+
+        let oDEVTOOL = parent.require(PATH.join(APPPATH, "ADMIN", "DevToolsPermission", "index.js")),
+            sRETURN = await oDEVTOOL.excute02(REMOTE, sText);
+
+        debugger;
+
+        if (sRETURN.RETCD !== "S") {
+            parent.showMessage(sap, 20, sRETURN.RETCD, sRETURN.RTMSG);
+        }
+
+        oDialog.close();
+
+    }; // end of oAPP.fn.fnSetOpenDevTool
 
 })(window, $, oAPP);

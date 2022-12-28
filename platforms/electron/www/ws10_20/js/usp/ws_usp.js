@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -45,13 +45,13 @@
 
         // 파일 확장자 이미지 경로 구하기
         fnGetFileExtendImgList()
-            .then(function() {
+            .then(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
 
             })
-            .catch(function() {
+            .catch(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
@@ -65,7 +65,7 @@
      ************************************************************************/
     function fnGetFileExtendImgList() {
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
@@ -112,7 +112,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function() {
+    oAPP.fn.fnOnResizeWs30 = function () {
 
         zconsole.log("resize30!!!");
 
@@ -262,7 +262,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -421,7 +421,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -1089,7 +1089,7 @@
                                         "ISFLD",
                                         "EXTEN"
                                     ],
-                                    formatter: function(ISFLD, EXTEN) {
+                                    formatter: function (ISFLD, EXTEN) {
 
                                         var iFileImgListLength = gaFileExtendImgList.length;
                                         if (iFileImgListLength == 0) {
@@ -1221,7 +1221,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function(oEvent) {
+                rowSelectionChange: function (oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1384,7 +1384,7 @@
 
             oIsFolderCheckbox = new sap.m.CheckBox({
                 editable: false
-            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
+            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                 if (ISFLD == "X") {
                     return true;
@@ -1450,7 +1450,7 @@
                                 ]
                             })
 
-                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function(ISFLD) {
+                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                             // 폴더가 아닐 경우에만 보여준다.
                             if (ISFLD != "X") {
@@ -1492,7 +1492,7 @@
 
                 return {
 
-                    onAfterRendering: function(oControl) {
+                    onAfterRendering: function (oControl) {
 
                         var oEditor = oControl.srcControl,
                             _oAceEditor = oEditor._oEditor;
@@ -1526,8 +1526,12 @@
 
         oCodeEditor.addDelegate(lfCodeeditorDelegate());
 
-        let oCodeEditorClone = oCodeEditor.clone();
+        let oCodeEditorClone = oCodeEditor.clone("clone1");
         oCodeEditorClone.addDelegate(lfCodeeditorDelegate());
+
+        // CodeEditor 각각의 고유 CSS 클래스를 적용한다.
+        oCodeEditor.addStyleClass("u4aUspCodeeditor1");
+        oCodeEditorClone.addStyleClass("u4aUspCodeeditor2");
 
         oCodeEditor.setLayoutData(new sap.ui.layout.SplitterLayoutData("codeEditorSplitLayout", {
             size: "0px",
@@ -1573,7 +1577,7 @@
 
             let value = oCodeEditor._oEditor.getValue();
 
-            oCodeEditorClone._oEditor.setValue(value);
+            oCodeEditorClone._oEditor.setValue(value, 1);
 
         });
 
@@ -1581,7 +1585,7 @@
 
             let value = oCodeEditorClone._oEditor.getValue();
 
-            oCodeEditor._oEditor.setValue(value);
+            oCodeEditor._oEditor.setValue(value, 1);
 
         });
 
@@ -1967,7 +1971,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -2054,7 +2058,7 @@
             initialFocus: "ws30_crname",
 
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -2322,7 +2326,7 @@
     function lf_appDelCtsPopup(oParam) {
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oParam = this;
 
@@ -2474,8 +2478,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function(e) {
-                $.each(e, function(e, o) {
+            t = function (e) {
+                $.each(e, function (e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2738,7 +2742,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function(event) {
+            fileReader.onload = function (event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -4712,7 +4716,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this;
             // IS_ACT = oEvent.getParameter("IS_ACT");
@@ -4960,28 +4964,6 @@
         oEditorDom1.removeEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
         oEditorDom2.removeEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
 
-
-
-
-        // oAPP.attr.oCodeEditor2
-
-
-        // var oCodeEditor = sap.ui.getCore().byId("ws30_codeeditor"),
-        //     oEditorDom = oCodeEditor._oEditor.textInput.getElement();
-
-        // if (!oCodeEditor || !oEditorDom) {
-        //     return;
-        // }
-
-        // if (IsAttach == "X") {
-
-        //     oEditorDom.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
-
-        //     return;
-        // }
-
-        // oEditorDom.removeEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
-
     } // end of fnCodeEditorKeyPressEvent
 
     /**************************************************************************
@@ -4989,25 +4971,58 @@
      **************************************************************************/
     function ev_codeeditorPrettyPrint() {
 
-        var oCodeEditor = sap.ui.getCore().byId("ws30_codeeditor");
-        if (!oCodeEditor) {
+        let oActiveDom = document.activeElement;
+        if (!oActiveDom) {
             return;
         }
 
-        let oEditor = oCodeEditor._oEditor,
-            oCursorPos = oEditor.getCursorPosition();
+        let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
+            oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
 
-        oCodeEditor.prettyPrint();
+        // 에디터가 둘중에 하나라도 없다면 빠져나감.
+        if (!oCodeEditor1 || !oCodeEditor2) {
+            return;
+        }
 
-        oCodeEditor.focus();
+        let oEditor1 = oCodeEditor1._oEditor,
+            oEditor2 = oCodeEditor2._oEditor;
 
-        oEditor.selection.$setSelection(oCursorPos.row, oCursorPos.column, oCursorPos.row, oCursorPos.column);
+        // 현재 커서의 위치가 어떤 에디터인지 확인
+        let $oCodeeditor1 = $(oActiveDom).closest(".u4aUspCodeeditor1"),
+            $oCodeeditor2 = $(oActiveDom).closest(".u4aUspCodeeditor2");
 
-        // oEditor.selection.moveCursorTo(oCursorPos.row, oCursorPos.row, true);
-        // oEditor.moveCursorToPosition(oCursorPos);
+        // 커서가 왼쪽 에디터에 있었을 경우
+        if ($oCodeeditor1.length !== 0) {
 
-        // 앱 변경 플래그
-        oAPP.fn.setAppChangeWs30("X");
+            let oCursorPos = oEditor1.getCursorPosition();
+
+            oCodeEditor1.prettyPrint();
+
+            oCodeEditor1.focus();
+
+            oEditor1.selection.$setSelection(oCursorPos.row, oCursorPos.column, oCursorPos.row, oCursorPos.column);
+            
+            oAPP.fn.setAppChangeWs30("X");
+
+            return;
+        }
+
+        // 커서가 오른쪽 에디터에 있었을 경우
+        if ($oCodeeditor2.length !== 0) {
+
+            let oCursorPos = oEditor2.getCursorPosition();
+
+            oCodeEditor2.prettyPrint();
+
+            oCodeEditor2.focus();
+
+            oEditor2.selection.$setSelection(oCursorPos.row, oCursorPos.column, oCursorPos.row, oCursorPos.column);
+         
+            oAPP.fn.setAppChangeWs30("X");
+
+            return;
+
+        }
 
     } // end of ev_codeeditorPrettyPrint
 

@@ -78,7 +78,7 @@
         console.error(oData.RTMSG);
 
         // 세션 타임 아웃 팝업을 띄운다.
-        let sTitle = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "147", "", "", "", ""), // The session has terminated.
+        let sTitle = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "147"), // The session has terminated.
             sDesc = oData.RTMSG,
             sIllustType = "tnt-SessionExpired",
             sIllustSize = sap.m.IllustratedMessageSize.Dialog;

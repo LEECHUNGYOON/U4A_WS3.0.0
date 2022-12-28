@@ -376,7 +376,7 @@ function onLoadBusyIndicator() {
     oBrowserWindow.loadURL(sIndicatorPath);
 
     // 브라우저가 오픈이 다 되면 타는 이벤트
-    oBrowserWindow.webContents.on('did-finish-load', function() {
+    oBrowserWindow.webContents.on('did-finish-load', function () {
         oBrowserWindow.setContentBounds(oCurrWin.getBounds());
     });
 
@@ -404,7 +404,7 @@ function fn_onWinMove(on, oWin) {
 
     if (typeof oWin.__fnWinMove === "undefined") {
 
-        oWin.__fnWinMove = function() {
+        oWin.__fnWinMove = function () {
 
             fn_setWinMinSize(oWin);
 
@@ -620,7 +620,7 @@ function setCleanHtml(msgtxt) {
     /* Table Tag만 따로 수집한다 */
     var aTableTag = [];
 
-    msgtxt = msgtxt.replace(/(<table>|<table)(\s|\S)*?<\/table>/igm, function(full) {
+    msgtxt = msgtxt.replace(/(<table>|<table)(\s|\S)*?<\/table>/igm, function (full) {
 
         var iTableCnt = aTableTag.length;
 
@@ -945,14 +945,31 @@ function getSameBrowsers() {
 /************************************************************************
  * electron native object에 접속한 User 정보를 저장한다
  ************************************************************************/
-function setProcessEnvUserInfo(oUserInfo){
+function setProcessEnvUserInfo(oUserInfo) {
+
     process.USERINFO = oUserInfo;
+
+    const      
+        PATH = REMOTE.require('path'),                 
+        USERINFO = process.USERINFO
+        APP = REMOTE.app,
+        APPPATH = APP.getAppPath(),
+        LANGU = USERINFO.LANGU,
+        SYSID = USERINFO.SYSID;
+
+    const
+        WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+        WSUTIL = require(WSMSGPATH),
+        WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+
+    oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+
 }
 
 /************************************************************************
  * 기 저장한 electron native object에 접속 User 정보를 구한다
  ************************************************************************/
-function getProcessEnvUserInfo(){
+function getProcessEnvUserInfo() {
     return process.USERINFO;
 }
 
@@ -1001,81 +1018,81 @@ zconsole.warn = (sConsole) => {
 
 };
 
-function fnGetMsgClsText(sMsgCls, sMsgNum, p1, p2, p3, p4) {
+// function fnGetMsgClsText(sMsgCls, sMsgNum, p1, p2, p3, p4) {
 
-    // Metadata에서 메시지 클래스 정보를 구한다.
-    var oMeta = getMetadata(),
-        sLangu = oMeta.LANGU,
-        aMsgClsTxt = oMeta["MSGCLS"];
+//     // Metadata에서 메시지 클래스 정보를 구한다.
+//     var oMeta = getMetadata(),
+//         sLangu = oMeta.LANGU,
+//         aMsgClsTxt = oMeta["MSGCLS"];
 
-    if (!aMsgClsTxt || !aMsgClsTxt.length) {
-        return sMsgCls + "|" + sMsgNum;
-    }
+//     if (!aMsgClsTxt || !aMsgClsTxt.length) {
+//         return sMsgCls + "|" + sMsgNum;
+//     }
 
-    let sDefLangu = "E"; // default language    
+//     let sDefLangu = "E"; // default language    
 
-    // 현재 접속한 언어로 메시지를 찾는다.
-    let oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sLangu && a.MSGNR == sMsgNum);
+//     // 현재 접속한 언어로 메시지를 찾는다.
+//     let oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sLangu && a.MSGNR == sMsgNum);
 
-    // 현재 접속한 언어로 메시지를 못찾은 경우
-    if (!oMsgTxt) {
+//     // 현재 접속한 언어로 메시지를 못찾은 경우
+//     if (!oMsgTxt) {
 
-        // 접속한 언어가 영어일 경우 빠져나간다.
-        if (sDefLangu == sLangu) {
-            return sMsgCls + "|" + sMsgNum;
+//         // 접속한 언어가 영어일 경우 빠져나간다.
+//         if (sDefLangu == sLangu) {
+//             return sMsgCls + "|" + sMsgNum;
 
-        }
+//         }
 
-        // 접속한 언어가 영어가 아닌데 메시지를 못찾으면 영어로 찾는다.
-        oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sDefLangu && a.MSGNR == sMsgNum);
+//         // 접속한 언어가 영어가 아닌데 메시지를 못찾으면 영어로 찾는다.
+//         oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sDefLangu && a.MSGNR == sMsgNum);
 
-        // 그래도 없다면 빠져나간다.
-        if (!oMsgTxt) {
-            return sMsgCls + "|" + sMsgNum;
-        }
+//         // 그래도 없다면 빠져나간다.
+//         if (!oMsgTxt) {
+//             return sMsgCls + "|" + sMsgNum;
+//         }
 
-    }
+//     }
 
-    var sText = oMsgTxt.TEXT,
-        aWithParam = [];
+//     var sText = oMsgTxt.TEXT,
+//         aWithParam = [];
 
-    // 파라미터로 전달 받은 Replace Text 수집
-    aWithParam.push(p1 == null ? "" : p1);
-    aWithParam.push(p2 == null ? "" : p2);
-    aWithParam.push(p3 == null ? "" : p3);
-    aWithParam.push(p4 == null ? "" : p4);
+//     // 파라미터로 전달 받은 Replace Text 수집
+//     aWithParam.push(p1 == null ? "" : p1);
+//     aWithParam.push(p2 == null ? "" : p2);
+//     aWithParam.push(p3 == null ? "" : p3);
+//     aWithParam.push(p4 == null ? "" : p4);
 
-    var iWithParamLenth = aWithParam.length;
-    if (iWithParamLenth == 0) {
-        return sText;
-    }
+//     var iWithParamLenth = aWithParam.length;
+//     if (iWithParamLenth == 0) {
+//         return sText;
+//     }
 
-    // 메시지 클래스 텍스트에서 "& + 숫자" (예: &1) 값이 있는 것부터 순차적으로 치환한다.
-    for (var i = 0; i < iWithParamLenth; i++) {
+//     // 메시지 클래스 텍스트에서 "& + 숫자" (예: &1) 값이 있는 것부터 순차적으로 치환한다.
+//     for (var i = 0; i < iWithParamLenth; i++) {
 
-        var index = i + 1,
-            sParamTxt = aWithParam[i];
+//         var index = i + 1,
+//             sParamTxt = aWithParam[i];
 
-        var sRegEx = "&" + index,
-            oRegExp = new RegExp(sRegEx, "g");
+//         var sRegEx = "&" + index,
+//             oRegExp = new RegExp(sRegEx, "g");
 
-        sText = sText.replace(oRegExp, sParamTxt);
+//         sText = sText.replace(oRegExp, sParamTxt);
 
-    }
+//     }
 
-    sText = sText.replace(new RegExp("&\\d+", "g"), "");
+//     sText = sText.replace(new RegExp("&\\d+", "g"), "");
 
-    // 메시지 클래스 텍스트에서 "&" 를 앞에서 부터 순차적으로 치환한다."
-    for (var i = 0; i < iWithParamLenth; i++) {
+//     // 메시지 클래스 텍스트에서 "&" 를 앞에서 부터 순차적으로 치환한다."
+//     for (var i = 0; i < iWithParamLenth; i++) {
 
-        var sParamTxt = aWithParam[i];
+//         var sParamTxt = aWithParam[i];
 
-        sText = sText.replace(new RegExp("&", "i"), sParamTxt);
+//         sText = sText.replace(new RegExp("&", "i"), sParamTxt);
 
-    }
+//     }
 
-    sText = sText.replace(new RegExp("&", "g"), "");
+//     sText = sText.replace(new RegExp("&", "g"), "");
 
-    return sText;
+//     return sText;
 
-} // end of oAPP.common.fnTestGetMsgClsText
+// } // end of oAPP.common.fnTestGetMsgClsText
