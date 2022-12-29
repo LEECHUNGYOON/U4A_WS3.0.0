@@ -10,7 +10,7 @@ var zconsole = parent.WSERR(window, document, console);
 
 let oAPP = parent.oAPP;
 
-(function(window, oAPP) {
+(function (window, oAPP) {
     "use strict";
 
     oAPP.settings = {};
@@ -31,7 +31,7 @@ let oAPP = parent.oAPP;
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.fn.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
+    oAPP.fn.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -49,7 +49,7 @@ let oAPP = parent.oAPP;
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.fn.fnGetModelProperty = function(sModelPath) {
+    oAPP.fn.fnGetModelProperty = function (sModelPath) {
 
         return sap.ui.getCore().getModel().getProperty(sModelPath);
 
@@ -58,7 +58,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * ws의 설정 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.getSettingsInfo = function() {
+    oAPP.fn.getSettingsInfo = function () {
 
         // Browser Window option
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
@@ -76,7 +76,7 @@ let oAPP = parent.oAPP;
     // /************************************************************************
     //  * UI5 BootStrap 
     //  ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = function() {
+    oAPP.fn.fnLoadBootStrapSetting = function () {
 
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
@@ -116,7 +116,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 초기 모델 바인딩
      ************************************************************************/
-    oAPP.fn.fnInitModelBinding = function() {
+    oAPP.fn.fnInitModelBinding = function () {
 
         var oModelData = {
             SRCH: "",
@@ -133,7 +133,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 화면 초기 렌더링
      ************************************************************************/
-    oAPP.fn.fnInitRendering = function() {
+    oAPP.fn.fnInitRendering = function () {
 
         var oApp = new sap.m.App(),
             oPage = new sap.m.Page({
@@ -157,7 +157,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 상단 조회조건 영역(Panel)
      ************************************************************************/
-    oAPP.fn.fnGetSearchPanel = function() {
+    oAPP.fn.fnGetSearchPanel = function () {
 
         return new sap.m.Panel({
             content: [
@@ -195,6 +195,42 @@ let oAPP = parent.oAPP;
                             text: APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "314"), // Drag the UI from the UX Design Area.
                         })
                     ]
+                }).addEventDelegate({
+                    ondragover: () => {
+
+                        //focus된 dom focus 해제 처리.
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
+                        if (l_dom === null || l_dom.length === 0) {
+                            return;
+                        }
+
+                        let oDom = l_dom[0];
+
+                        oDom.classList.remove("u4aWsDisplayNone");
+
+                    },
+                    ondragleave: () => {
+
+                        //focus된 dom focus 해제 처리.
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
+                        if (l_dom === null || l_dom.length === 0) {
+                            return;
+                        }
+
+                        let oDom = l_dom[0];
+
+                        oDom.classList.remove("u4aWsDisplayNone");
+                        oDom.classList.add("u4aWsDisplayNone");
+
+                    }
                 }).addStyleClass("sapUiSmallMarginTop u4aWsRuntimeDropArea")
 
             ]
@@ -205,7 +241,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 하단 조회조건 영역(m.Table)
      ************************************************************************/
-    oAPP.fn.fnGetResultTable = function() {
+    oAPP.fn.fnGetResultTable = function () {
 
         var StickyEnum = sap.m.Sticky;
 
@@ -290,7 +326,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * runtime Class 검색
      ************************************************************************/
-    oAPP.fn.fnRuntimeSearch = function(bIsDrop) {
+    oAPP.fn.fnRuntimeSearch = function (bIsDrop) {
 
         var FilterOperator = sap.ui.model.FilterOperator;
 
@@ -333,7 +369,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 선택한 Row의 정보를 클립보드 복사
      ************************************************************************/
-    oAPP.fn.fnSetClipBoardCopyRowData = function(oRowData) {
+    oAPP.fn.fnSetClipBoardCopyRowData = function (oRowData) {
 
         var sClsNm = oRowData.CLASS, // 런타임 클래스명
             sObjNm = oRowData.UIOBJ.toUpperCase(), // UI 명(대문자)
@@ -394,7 +430,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * Runtime Class 검색 버튼 이벤트
      ************************************************************************/
-    oAPP.events.ev_runTimeClassSearchBtn = function(oEvent) {
+    oAPP.events.ev_runTimeClassSearchBtn = function (oEvent) {
 
         var bIsDrop = oEvent.getParameter('ISDROP'); // Drop 여부
 
@@ -405,7 +441,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * Runtime Class 실시간 검색 이벤트
      ************************************************************************/
-    oAPP.events.ev_runTimeClassLiveSearch = function() {
+    oAPP.events.ev_runTimeClassLiveSearch = function () {
 
         oAPP.fn.fnRuntimeSearch();
 
@@ -414,7 +450,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * UX Design 영역에서 UI를 Drag 하여 Runtime Class 검색
      ************************************************************************/
-    oAPP.events.fnRuntimeDropEvent = function(oEvent) {
+    oAPP.events.fnRuntimeDropEvent = function (oEvent) {
 
         var oBrowserEvent = oEvent.getParameter("browserEvent"),
             sDragData = oBrowserEvent.dataTransfer.getData("rtmcls");
@@ -438,7 +474,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 조회된 Runtime Class List의 Row 더블클릭 이벤트
      ************************************************************************/
-    oAPP.events.ev_runtimeClassListDblclickEvent = function(oEvent) {
+    oAPP.events.ev_runtimeClassListDblclickEvent = function (oEvent) {
 
         var oTarget = oEvent.target,
             $SelectedRow = $(oTarget).closest(".sapMListTblRow");
@@ -469,9 +505,9 @@ let oAPP = parent.oAPP;
     // // UI5 Boot Strap을 로드 하고 attachInit 한다.
     oAPP.fn.fnLoadBootStrapSetting();
 
-    window.onload = function() {
+    window.onload = function () {
 
-        sap.ui.getCore().attachInit(function() {
+        sap.ui.getCore().attachInit(function () {
 
             oAPP.fn.fnInitModelBinding();
 

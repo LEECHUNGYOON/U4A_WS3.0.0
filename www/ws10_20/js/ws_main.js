@@ -5,7 +5,7 @@
  * - file Desc : ws 메인 
  ************************************************************************/
 
-(function(window, oAPP) {
+(function (window, oAPP) {
     "use strict";
 
     var APPCOMMON = oAPP.common;
@@ -13,7 +13,7 @@
     /**************************************************************************
      * 공통 인스턴스 정의
      **************************************************************************/
-    oAPP.main.fnPredefineGlobalObject = function() {
+    oAPP.main.fnPredefineGlobalObject = function () {
 
         var oMetaData = parent.getMetadata();
 
@@ -89,7 +89,7 @@
     /**************************************************************************
      * U4A WS 메타 정보 구하기
      **************************************************************************/
-    oAPP.main.fnOnInitModelBinding = function() {
+    oAPP.main.fnOnInitModelBinding = function () {
 
         // ModelData
         var oMetaData = {
@@ -176,7 +176,7 @@
     /************************************************************************
      * window Event Handle ..
      ************************************************************************/
-    oAPP.main.fnBeforeunload = function(isClearStorage) {
+    oAPP.main.fnBeforeunload = function (isClearStorage) {
 
         // 설정된 Global Shortcut 단축키 삭제
         oAPP.common.fnRemoveGlobalShortcut();
@@ -265,7 +265,7 @@
     };
 
     // Test..
-    oAPP.main.fnSetLanguage = function() {
+    oAPP.main.fnSetLanguage = function () {
 
         var oUserInfo = parent.getUserInfo(),
             oMetaScript = document.getElementById("sap-ui-bootstrap");
@@ -308,9 +308,9 @@
     /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------
      ************************************************************************/
-    oAPP.main.fnWsStart = function() {
+    oAPP.main.fnWsStart = function () {
 
-        sap.ui.getCore().attachInit(function() {
+        sap.ui.getCore().attachInit(function () {
 
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
@@ -352,7 +352,7 @@
             oAPP.fn.fnSetMutationObserver(); // #[ws_fn_03.js]
 
             // Loading Page
-            parent.showLoadingPage('');         
+            parent.showLoadingPage('');
 
             // // 서버 호스트 등록 여부 체크
             // oAPP.fn.fnCheckServerHost(); // #[ws_fn_03.js]
@@ -373,11 +373,89 @@
 
     window.ondragend = (e) => {
 
-        console.log('ondragend');
+        console.log('ondragend!!!');
 
         oAPP.main.onDragend();
 
     };
+
+    // /**
+    //  * 테스트
+    //  * @returns 
+    //  */
+    // // window.ondragover = () => {
+    // window.addEventListener("dragover", () => {
+
+    //     console.log('ondragover!!!');
+
+    //     //focus된 dom focus 해제 처리.
+    //     if (document.activeElement && document.activeElement.blur) {
+    //         document.activeElement.blur();
+    //     }
+
+    //     var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
+    //     if (l_dom === null || l_dom.length === 0) {
+    //         return;
+    //     }
+
+    //     let oDom = l_dom[0];
+    //     oDom.classList.remove("u4aWsDisplayNone");
+    // });
+
+    // /**
+    //  * 테스트
+    //  * @returns 
+    //  */
+    // // window.ondragleave = () => {
+    // window.addEventListener("dragleave", () => {
+
+    //     console.log('ondragleave!!!');
+
+    //     oAPP.main.onDragend();
+
+    //     //focus된 dom focus 해제 처리.
+    //     if (document.activeElement && document.activeElement.blur) {
+    //         document.activeElement.blur();
+    //     }
+
+    //     var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
+    //     if (l_dom === null || l_dom.length === 0) {
+    //         return;
+    //     }
+
+    //     let oDom = l_dom[0];
+
+    //     oDom.classList.remove("u4aWsDisplayNone");
+    //     oDom.classList.add("u4aWsDisplayNone");
+
+    // });
+
+    /**
+     * 테스트
+     * @returns 
+     */
+    // window.ondragstart = () => {
+    window.addEventListener("dragstart", () => {
+
+        console.log('ondragstart!!!');
+
+        oAPP.main.onDragend();
+
+        //focus된 dom focus 해제 처리.
+        if (document.activeElement && document.activeElement.blur) {
+            document.activeElement.blur();
+        }
+
+        var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
+        if (l_dom === null || l_dom.length === 0) {
+            return;
+        }
+
+        let oDom = l_dom[0];
+
+        oDom.classList.remove("u4aWsDisplayNone");
+
+    });
 
     // 브라우저 닫기, window.close() 실행시 타는 이벤트
     window.onbeforeunload = () => {
@@ -408,7 +486,7 @@
 
             // Logout 메시지 Open 여부 Flag
             oAPP.attr.isBrowserCloseLogoutMsgOpen = 'X';
-            
+
             // Unsaved data will be lost.
             // Do you want to log off?
             var sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "301", "", "", "", "");

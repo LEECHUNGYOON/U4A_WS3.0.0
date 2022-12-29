@@ -28,16 +28,21 @@
     <div id="content" style="display: none;" class="u4aWsContent"></div>
 
     <script>
-        
         // [R&D 전용 console.log]
         let zconsole = parent.zconsole;
 
         /************************************************************************
          * onError 관련 공통 로직
          ************************************************************************/
+        const APP = parent.APP;
 
-        // 오류 로그 감지
-        parent.WSLOG.start(parent.REMOTE, console);
+        if (APP.isPackaged) {
+            // 오류 로그 감지
+            parent.WSLOG.start(parent.REMOTE, console);
+        }
+
+        // // 오류 로그 감지
+        // parent.WSLOG.start(parent.REMOTE, console);
 
         window.onerror = parent.onError;
         document.onerror = parent.onError;

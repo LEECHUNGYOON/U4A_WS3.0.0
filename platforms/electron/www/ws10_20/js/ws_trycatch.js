@@ -1,4 +1,4 @@
-module.exports = function(window, document, console) {
+module.exports = function (window, document, console) {
 
     /************************************************************************
      * onError 관련 공통 로직
@@ -15,8 +15,13 @@ module.exports = function(window, document, console) {
     var zconsole = {};
     zconsole.APP = APP;
 
-    // 오류 로그 감지
-    WSLOG.start(REMOTE, console);
+    if (APP.isPackaged) {
+        // 오류 로그 감지
+        WSLOG.start(REMOTE, console);
+    }
+
+    // // 오류 로그 감지
+    // WSLOG.start(REMOTE, console);
 
     // 무한 루프 오류 방지 flag
     var bIsError = false;

@@ -454,8 +454,9 @@
 
     }; // end of oAPP.fn.fnSetToggleFrameWindow
 
-
-    // 개발자 툴 열기
+    /************************************************************************
+     * [Admin] OpenDevTool Popup Open
+     ************************************************************************/
     oAPP.fn.fnOpenDevTool = () => {
 
         const
@@ -573,7 +574,6 @@
                     return true;
 
                 }),
-
                 // 파일 드래그 앤 드롭 영역
                 new sap.m.HBox({
                     renderType: sap.m.FlexRendertype.Bare,
@@ -602,6 +602,35 @@
 
                     return true;
 
+                }).addEventDelegate({
+                    ondragover: () => {
+
+                        var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
+                        if (l_dom === null || l_dom.length === 0) {
+                            return;
+                        }
+
+                        let oDom = l_dom[0];
+
+                        let iLastZIndex = sap.ui.core.Popup.getLastZIndex() + 1;
+                        oDom.style.zIndex = iLastZIndex;
+
+                        oDom.classList.remove("u4aWsDisplayNone");
+
+                    },
+                    ondragleave: () => {
+
+                        var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
+                        if (l_dom === null || l_dom.length === 0) {
+                            return;
+                        }
+
+                        let oDom = l_dom[0];
+
+                        oDom.classList.remove("u4aWsDisplayNone");
+                        oDom.classList.add("u4aWsDisplayNone");
+
+                    }
                 }).addStyleClass("u4aWsDropArea")
 
             ],
@@ -620,7 +649,31 @@
                     }
                 }),
 
-            ]
+            ],
+
+            afterOpen: () => {
+
+                // /**
+                //  * - Drag & Drop 영역 테두리 표시가 처음에는 잘 되다가
+                //  * 두번째 팝업에서는 테두리 표시가 안나오는 문제
+                //  * 
+                //  * 팝업은 새로 띄울때마다 z-index가 증가하는데
+                //  * 원인은 잔상 테두리의 Z-index가 처음 표시할때 기준으로 고정되버려서
+                //  * 팝업 오픈할때 Drag & Drop 영역 테두리가 있다면 z-index를 올려주는 로직 추가
+                //  */
+
+                // var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
+                // if (l_dom === null || l_dom.length === 0) {
+                //     return;
+                // }
+
+                // let oDom = l_dom[0];
+                
+                // let iZIndex = sap.ui.core.Popup.getLastZIndex() + 1;
+                // oDom.style.zIndex = iZIndex;
+
+            }
+
 
         });
 
@@ -632,6 +685,9 @@
 
     }; // end of oAPP.fn.fnOpenDevTool
 
+    /************************************************************************
+     * [Admin] OpenDevTool 팝업의 파일 Drop
+     ************************************************************************/
     oAPP.fn.fnOpenDevToolFileDrop = (oEvent) => {
 
         let oBrowserEvent = oEvent.getParameter("browserEvent"),
@@ -658,6 +714,9 @@
 
     }; // end of oAPP.fn.fnOpenDevToolFileDrop
 
+    /************************************************************************
+     * [Admin] OpenDevTool Key In
+     ************************************************************************/
     oAPP.fn.fnSetOpenDevToolSubmit = () => {
 
         const
@@ -680,6 +739,9 @@
 
     }; // end of oAPP.fn.fnSetOpenDevToolSubmit
 
+    /************************************************************************
+     * [Admin] OpenDevTool의 파일 첨부
+     ************************************************************************/
     oAPP.fn.fnOpenDevToolFileAttach = async () => {
 
         const
@@ -693,8 +755,6 @@
         let oDEVTOOL = parent.require(PATH.join(APPPATH, "ADMIN", "DevToolsPermission", "index.js")),
             sRETURN = await oDEVTOOL.excute01(REMOTE);
 
-        debugger;
-
         if (sRETURN.RETCD !== "S") {
             parent.showMessage(sap, 20, sRETURN.RETCD, sRETURN.RTMSG);
         }
@@ -703,6 +763,9 @@
 
     }; // end of oAPP.fn.fnOpenDevToolFileAttach
 
+    /************************************************************************
+     * [Admin] 입력한 Key 의 유효성 점검 후 OpenDevTool 열기
+     ************************************************************************/
     oAPP.fn.fnSetOpenDevTool = async (sText) => {
 
         const
@@ -715,8 +778,6 @@
 
         let oDEVTOOL = parent.require(PATH.join(APPPATH, "ADMIN", "DevToolsPermission", "index.js")),
             sRETURN = await oDEVTOOL.excute02(REMOTE, sText);
-
-        debugger;
 
         if (sRETURN.RETCD !== "S") {
             parent.showMessage(sap, 20, sRETURN.RETCD, sRETURN.RTMSG);

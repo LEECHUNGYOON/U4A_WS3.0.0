@@ -13,3 +13,7 @@
     position: -webkit-sticky;
     z-index: 1;
 }
+
+.u4aWsDisplayNone {
+    display: none !important;
+}

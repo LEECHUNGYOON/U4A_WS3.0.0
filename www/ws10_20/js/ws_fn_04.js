@@ -454,8 +454,9 @@
 
     }; // end of oAPP.fn.fnSetToggleFrameWindow
 
-
-    // 개발자 툴 열기
+    /************************************************************************
+     * [Admin] OpenDevTool Popup Open
+     ************************************************************************/
     oAPP.fn.fnOpenDevTool = () => {
 
         const
@@ -573,7 +574,6 @@
                     return true;
 
                 }),
-
                 // 파일 드래그 앤 드롭 영역
                 new sap.m.HBox({
                     renderType: sap.m.FlexRendertype.Bare,
@@ -602,6 +602,35 @@
 
                     return true;
 
+                }).addEventDelegate({
+                    ondragover: () => {
+
+                        var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
+                        if (l_dom === null || l_dom.length === 0) {
+                            return;
+                        }
+
+                        let oDom = l_dom[0];
+
+                        let iLastZIndex = sap.ui.core.Popup.getLastZIndex() + 1;
+                        oDom.style.zIndex = iLastZIndex;
+
+                        oDom.classList.remove("u4aWsDisplayNone");
+
+                    },
+                    ondragleave: () => {
+
+                        var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
+                        if (l_dom === null || l_dom.length === 0) {
+                            return;
+                        }
+
+                        let oDom = l_dom[0];
+
+                        oDom.classList.remove("u4aWsDisplayNone");
+                        oDom.classList.add("u4aWsDisplayNone");
+
+                    }
                 }).addStyleClass("u4aWsDropArea")
 
             ],
@@ -632,6 +661,9 @@
 
     }; // end of oAPP.fn.fnOpenDevTool
 
+    /************************************************************************
+     * [Admin] OpenDevTool 팝업의 파일 Drop
+     ************************************************************************/
     oAPP.fn.fnOpenDevToolFileDrop = (oEvent) => {
 
         let oBrowserEvent = oEvent.getParameter("browserEvent"),
@@ -658,6 +690,9 @@
 
     }; // end of oAPP.fn.fnOpenDevToolFileDrop
 
+    /************************************************************************
+     * [Admin] OpenDevTool Key In
+     ************************************************************************/
     oAPP.fn.fnSetOpenDevToolSubmit = () => {
 
         const
@@ -680,6 +715,9 @@
 
     }; // end of oAPP.fn.fnSetOpenDevToolSubmit
 
+    /************************************************************************
+     * [Admin] OpenDevTool의 파일 첨부
+     ************************************************************************/
     oAPP.fn.fnOpenDevToolFileAttach = async () => {
 
         const
@@ -693,8 +731,6 @@
         let oDEVTOOL = parent.require(PATH.join(APPPATH, "ADMIN", "DevToolsPermission", "index.js")),
             sRETURN = await oDEVTOOL.excute01(REMOTE);
 
-        debugger;
-
         if (sRETURN.RETCD !== "S") {
             parent.showMessage(sap, 20, sRETURN.RETCD, sRETURN.RTMSG);
         }
@@ -703,6 +739,9 @@
 
     }; // end of oAPP.fn.fnOpenDevToolFileAttach
 
+    /************************************************************************
+     * [Admin] 입력한 Key 의 유효성 점검 후 OpenDevTool 열기
+     ************************************************************************/
     oAPP.fn.fnSetOpenDevTool = async (sText) => {
 
         const
@@ -715,8 +754,6 @@
 
         let oDEVTOOL = parent.require(PATH.join(APPPATH, "ADMIN", "DevToolsPermission", "index.js")),
             sRETURN = await oDEVTOOL.excute02(REMOTE, sText);
-
-        debugger;
 
         if (sRETURN.RETCD !== "S") {
             parent.showMessage(sap, 20, sRETURN.RETCD, sRETURN.RTMSG);

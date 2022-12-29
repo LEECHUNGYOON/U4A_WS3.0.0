@@ -61,8 +61,6 @@ function fn_decrypt(CryptoJS, encryptData) {
 
     const aes128Iv = "";
 
-    debugger;
-
     var cipher = CryptoJS.AES.decrypt(encryptData, CryptoJS.enc.Utf8.parse(AES128SECRETKEY), {
         iv: CryptoJS.enc.Utf8.parse(aes128Iv), // [Enter IV (Optional) 지정 방식]
         padding: CryptoJS.pad.Pkcs7,
@@ -78,7 +76,18 @@ function fn_decrypt(CryptoJS, encryptData) {
 
     }
 
-    let Ldecrypt = cipher.toString(CryptoJS.enc.Utf8);
+    let Ldecrypt = "";
+    
+    // soccerhs: 오류 예외 처리
+    try {
+        Ldecrypt = cipher.toString(CryptoJS.enc.Utf8);
+    } catch (error) {
+        return {
+            "RETCD": "E",
+            "RTMSG": MSGCLS.M01
+        };
+    }
+
 
     //복호화 실패 
     if (Ldecrypt === "") {
