@@ -649,31 +649,7 @@
                     }
                 }),
 
-            ],
-
-            afterOpen: () => {
-
-                // /**
-                //  * - Drag & Drop 영역 테두리 표시가 처음에는 잘 되다가
-                //  * 두번째 팝업에서는 테두리 표시가 안나오는 문제
-                //  * 
-                //  * 팝업은 새로 띄울때마다 z-index가 증가하는데
-                //  * 원인은 잔상 테두리의 Z-index가 처음 표시할때 기준으로 고정되버려서
-                //  * 팝업 오픈할때 Drag & Drop 영역 테두리가 있다면 z-index를 올려주는 로직 추가
-                //  */
-
-                // var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
-                // if (l_dom === null || l_dom.length === 0) {
-                //     return;
-                // }
-
-                // let oDom = l_dom[0];
-                
-                // let iZIndex = sap.ui.core.Popup.getLastZIndex() + 1;
-                // oDom.style.zIndex = iZIndex;
-
-            }
-
+            ]
 
         });
 

@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -45,13 +45,13 @@
 
         // 파일 확장자 이미지 경로 구하기
         fnGetFileExtendImgList()
-            .then(function () {
+            .then(function() {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
 
             })
-            .catch(function () {
+            .catch(function() {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
@@ -65,7 +65,7 @@
      ************************************************************************/
     function fnGetFileExtendImgList() {
 
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
@@ -112,7 +112,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function () {
+    oAPP.fn.fnOnResizeWs30 = function() {
 
         zconsole.log("resize30!!!");
 
@@ -262,7 +262,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (bIsShow) {
+            formatter: function(bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -421,7 +421,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function (sKey) {
+                            formatter: function(sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -1089,7 +1089,7 @@
                                         "ISFLD",
                                         "EXTEN"
                                     ],
-                                    formatter: function (ISFLD, EXTEN) {
+                                    formatter: function(ISFLD, EXTEN) {
 
                                         var iFileImgListLength = gaFileExtendImgList.length;
                                         if (iFileImgListLength == 0) {
@@ -1221,7 +1221,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function (oEvent) {
+                rowSelectionChange: function(oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1384,7 +1384,7 @@
 
             oIsFolderCheckbox = new sap.m.CheckBox({
                 editable: false
-            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
+            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
 
                 if (ISFLD == "X") {
                     return true;
@@ -1450,7 +1450,7 @@
                                 ]
                             })
 
-                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function (ISFLD) {
+                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function(ISFLD) {
 
                             // 폴더가 아닐 경우에만 보여준다.
                             if (ISFLD != "X") {
@@ -1492,7 +1492,7 @@
 
                 return {
 
-                    onAfterRendering: function (oControl) {
+                    onAfterRendering: function(oControl) {
 
                         var oEditor = oControl.srcControl,
                             _oAceEditor = oEditor._oEditor;
@@ -1796,13 +1796,17 @@
                 key: "WMENU30_05",
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Notes
             }, {
-                key: "WMENU30_06",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
-                visible: false,
-            }, {
                 key: "WMENU30_07",
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
-            }],
+            }, {
+                key: "WMENU30_06",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
+                visible: true,
+                items: [{
+                    key: "WMENU30_06_01",
+                    text: "DevTool"
+                }, ],
+            }, ],
 
             aWMENU50 = [{
                 key: "WMENU50_01",
@@ -1826,6 +1830,20 @@
 
     /**************************************************************************
      * [WS30] USP Tree ContextMenu Default 정보
+     * 
+     * -- Menu List --
+     * K1: Expand Subtree
+     * K2: Collapse Subtree
+     * K3: Create
+     * K4: Delete
+     * K5: Download
+     * K6: Test Service
+     * K7: Rename
+     * K8: Up
+     * K9: Down
+     * K10: Move Position
+     * K11: new window usp Page
+     * K12: Upload
      **************************************************************************/
     function fnGetUspTreeDefCtxMenuList() {
 
@@ -1849,6 +1867,14 @@
                 ICON: "sap-icon://internet-browser",
                 KEY: "K6",
                 TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D43"), // Test Service
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://popup-window",
+                KEY: "K11",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
                 ENABLED: true,
                 ISSTART: false,
                 VISIBLE: true
@@ -1902,13 +1928,22 @@
                 VISIBLE: true
             },
             {
+                ICON: "sap-icon://upload",
+                KEY: "K12",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D88"), // Upload
+                ENABLED: true,
+                ISSTART: true,
+                VISIBLE: true
+            },
+            {
                 ICON: "sap-icon://download",
                 KEY: "K5",
                 TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B78"), // Download
                 ENABLED: true,
-                ISSTART: true,
+                ISSTART: false,
                 VISIBLE: true
-            }
+            },
+
         ];
 
     } // end of fnGetUspTreeDefCtxMenuList
@@ -1971,7 +2006,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -2058,7 +2093,7 @@
             initialFocus: "ws30_crname",
 
             // events
-            afterClose: function () {
+            afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -2326,7 +2361,7 @@
     function lf_appDelCtsPopup(oParam) {
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oParam = this;
 
@@ -2478,8 +2513,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function (e) {
-                $.each(e, function (e, o) {
+            t = function(e) {
+                $.each(e, function(e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2493,12 +2528,7 @@
     /**************************************************************************
      * [WS30] USP Tree의 File Download
      **************************************************************************/
-    function fnOnDownloadUspFiles() {
-
-        var oTreeTable = sap.ui.getCore().byId("usptree");
-        if (!oTreeTable) {
-            return;
-        }
+    function fnOnDownloadUspFiles(oTreeTable) {
 
         var iIndex = gSelectedTreeIndex,
             oCtx = oTreeTable.getContextByIndex(iIndex);
@@ -2742,7 +2772,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function (event) {
+            fileReader.onload = function(event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -3457,22 +3487,21 @@
      **************************************************************************/
     function _ev_beforeOpenContextMenuDisplay(oRowData, aCtxMenu) {
 
-        aCtxMenu.find(arr => arr.KEY == "K3").ENABLED = false;
-        aCtxMenu.find(arr => arr.KEY == "K4").ENABLED = false;
-        // aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
-        aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
-        aCtxMenu.find(arr => arr.KEY == "K7").ENABLED = false;
-        aCtxMenu.find(arr => arr.KEY == "K8").ENABLED = false;
-        aCtxMenu.find(arr => arr.KEY == "K9").ENABLED = false;
-        aCtxMenu.find(arr => arr.KEY == "K10").ENABLED = false;
+        aCtxMenu.find(arr => arr.KEY == "K3").ENABLED = false; // Create
+        aCtxMenu.find(arr => arr.KEY == "K4").ENABLED = false; // Delete        
+        aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false; // Test Service
+        aCtxMenu.find(arr => arr.KEY == "K7").ENABLED = false; // Rename
+        aCtxMenu.find(arr => arr.KEY == "K8").ENABLED = false; // Up
+        aCtxMenu.find(arr => arr.KEY == "K9").ENABLED = false; // Down
+        aCtxMenu.find(arr => arr.KEY == "K10").ENABLED = false; // Move Position
+        aCtxMenu.find(arr => arr.KEY == "K11").ENABLED = false; // new window usp Page
 
         // root가 아니면서 폴더가 아닐경우 (파일일 경우에만) 
         // 다운로드 버튼, Test Service 버튼을 활성화 한다.
         if (oRowData.PUJKY != "" && oRowData.ISFLD == "") {
 
-            // aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = true;
-            aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = true;
-
+            aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = true; // Test Service
+            aCtxMenu.find(arr => arr.KEY == "K11").ENABLED = true; // new window usp Page
         }
 
         APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
@@ -3487,13 +3516,13 @@
         // 우클릭한 위치가 ROOT 일 경우 생성 버튼만 활성화 한다.
         if (oRowData.PUJKY == "") {
 
-            aCtxMenu.find(arr => arr.KEY == "K4").ENABLED = false;
-            // aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
-            aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
-            aCtxMenu.find(arr => arr.KEY == "K7").ENABLED = false;
-            aCtxMenu.find(arr => arr.KEY == "K8").ENABLED = false;
-            aCtxMenu.find(arr => arr.KEY == "K9").ENABLED = false;
-            aCtxMenu.find(arr => arr.KEY == "K10").ENABLED = false;
+            aCtxMenu.find(arr => arr.KEY == "K4").ENABLED = false; // Delete            
+            aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false; // Test Service
+            aCtxMenu.find(arr => arr.KEY == "K7").ENABLED = false; // Rename
+            aCtxMenu.find(arr => arr.KEY == "K8").ENABLED = false; // Up
+            aCtxMenu.find(arr => arr.KEY == "K9").ENABLED = false; // Down
+            aCtxMenu.find(arr => arr.KEY == "K10").ENABLED = false; // Move Position
+            aCtxMenu.find(arr => arr.KEY == "K11").ENABLED = false; // new window usp Page
 
             APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
 
@@ -3504,8 +3533,8 @@
         // 우클릭한 위치가 폴더일 경우
         if (oRowData.ISFLD == "X") {
 
-            // aCtxMenu.find(arr => arr.KEY == "K5").ENABLED = false;
-            aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false;
+            aCtxMenu.find(arr => arr.KEY == "K6").ENABLED = false; // Test Service
+            aCtxMenu.find(arr => arr.KEY == "K11").ENABLED = false; // new window usp Page
 
             APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
 
@@ -3514,7 +3543,7 @@
         }
 
         // 우클릭한 위치가 파일 레벨인 경우        
-        aCtxMenu.find(arr => arr.KEY == "K3").ENABLED = false;
+        aCtxMenu.find(arr => arr.KEY == "K3").ENABLED = false; // Create
 
         APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
 
@@ -3641,7 +3670,20 @@
 
     /**************************************************************************
      * [WS30] USP Tree ContextMenu Click Event
-     **************************************************************************/
+     **************************************************************************
+     * K1: Expand Subtree
+     * K2: Collapse Subtree
+     * K3: Create
+     * K4: Delete
+     * K5: Download
+     * K6: Test Service
+     * K7: Rename
+     * K8: Up
+     * K9: Down
+     * K10: Move Position
+     * K11: new window usp Page
+     * K12: Upload
+     ***************************************************************************/
     function ev_UspTreeCtxMenuClick(oEvent) {
 
         // contextmenu의 선택한 메뉴 정보를 구한다.
@@ -3695,7 +3737,7 @@
 
             case "K5": // File Down
 
-                fnOnDownloadUspFiles();
+                fnOnDownloadUspFiles(oTreeTable);
 
                 break;
 
@@ -3747,6 +3789,24 @@
 
                 oAPP.fn.fnUspTreeNodeMovePosition(oTreeTable, gSelectedTreeIndex);
 
+                break;
+
+            case "K11": // new window
+                
+                oAPP.fn.fnUspNewWindow(oTreeTable, gSelectedTreeIndex);
+
+                // sap.m.MessageToast.show("준비중입니다.");
+
+                break;
+
+                // case "K12": // Upload
+
+                //     sap.m.MessageToast.show("준비중입니다.");
+
+                //     break;
+
+            default:
+                sap.m.MessageToast.show("준비중입니다.");
                 break;
 
         }
@@ -4716,7 +4776,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oEvent = this;
             // IS_ACT = oEvent.getParameter("IS_ACT");
@@ -5001,7 +5061,7 @@
             oCodeEditor1.focus();
 
             oEditor1.selection.$setSelection(oCursorPos.row, oCursorPos.column, oCursorPos.row, oCursorPos.column);
-            
+
             oAPP.fn.setAppChangeWs30("X");
 
             return;
@@ -5017,7 +5077,7 @@
             oCodeEditor2.focus();
 
             oEditor2.selection.$setSelection(oCursorPos.row, oCursorPos.column, oCursorPos.row, oCursorPos.column);
-         
+
             oAPP.fn.setAppChangeWs30("X");
 
             return;

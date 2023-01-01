@@ -75,7 +75,8 @@ module.exports = (() => {
         VIDEOREC: PATH.join(POPUP_ROOT, "ScreenRecord", "ScreenRecording.js"),
         WINHIDE : PATH.join(POPUP_ROOT, "winShowHidePopup", "index.html"),
         WINHIDE2 : PATH.join(POPUP_ROOT, "winShowHidePopup", "test1.html"),
-
+        USPNEW : PATH.join(POPUP_ROOT, "uspNewPopup", "frame.html"),
+        
         // JS Paths..
         WSTRYCATCH: PATH.join(JS_ROOT, "ws_trycatch.js"),
 

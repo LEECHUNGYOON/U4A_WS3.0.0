@@ -1,8 +1,15 @@
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
 
-    const APPCOMMON = oAPP.common;
+    const
+        APPCOMMON = oAPP.common,
+        SESSKEY = parent.getSessionKey(),
+        BROWSKEY = parent.getBrowserKey(),
+        CURRWIN = parent.CURRWIN,
+        REMOTE = parent.REMOTE,
+        REMOTEMAIN = parent.REMOTEMAIN,
+        IPCMAIN = parent.IPCMAIN;
 
     var gfSelectRowUpdate;
 
@@ -226,7 +233,7 @@
                     bIsAttach = true;
 
                     // test
-                    setTimeout(function () {
+                    setTimeout(function() {
                         oTreeTable.fireRowsUpdated(oEvent, oMeItem); //test
                     }, 0);
 
@@ -247,7 +254,7 @@
 
                     bIsAttach = true;
 
-                    setTimeout(function () {
+                    setTimeout(function() {
                         oTreeTable.fireRowsUpdated(oEvent, oMeItem); //test
                     }, 0);
 
@@ -263,7 +270,7 @@
             if (bExpAble && bIsExp) {
                 bIsAttach = true;
 
-                setTimeout(function () {
+                setTimeout(function() {
                     oTreeTable.fireRowsUpdated(oEvent, oMeItem); //test
                 }, 0);
 
@@ -459,7 +466,7 @@
             // association
             initialFocus: "ws30_step",
 
-            afterOpen: function (oEvent) {
+            afterOpen: function(oEvent) {
 
                 var oStepInput = sap.ui.getCore().byId("ws30_step");
                 if (!oStepInput) {
@@ -476,7 +483,7 @@
             },
 
             // events
-            afterClose: function () {
+            afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -503,6 +510,107 @@
         oAPP.fn.fnClearOnBeforeUspTreeData();
 
     }; // end of oAPP.fn.fnResetUspTree
+
+
+    /**************************************************************************
+     * [WS30] USP New Window
+     **************************************************************************/
+    oAPP.fn.fnUspNewWindow = (oTreeTable, pIndex) => {
+
+        let oCtx = oTreeTable.getContextByIndex(pIndex),
+            oTreeModel = oTreeTable.getModel(),
+            oTreeData = oTreeModel.getProperty(oCtx.sPath),
+            oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+
+            sSpath = oTreeData.SPATH, // Usp Page Path
+            sChanelID = BROWSKEY + sSpath; // IPC 통신 채널 ID 
+
+        sChanelID = btoa(sChanelID);
+
+        let oThemeInfo = parent.getThemeInfo(), // theme 정보  
+            sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.title = sSpath;
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.show = false;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+
+        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.CHANNELID = sChanelID;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
+
+        // 브라우저 오픈
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+
+        var sUrlPath = parent.getPath("USPNEW");
+        oBrowserWindow.loadURL(sUrlPath);
+
+        // oBrowserWindow.webContents.openDevTools();
+
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function() {
+
+            let oSendData = {
+                APPINFO: oAppInfo,
+                oUserInfo: parent.getUserInfo(),
+                BROWSKEY: BROWSKEY,
+                oThemeInfo: oThemeInfo,
+                CHANNELID: sChanelID
+            };
+
+            oBrowserWindow.webContents.send('if-uspnew', oSendData);
+
+            oBrowserWindow.show();
+
+            oBrowserWindow.setOpacity(1.0);
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+
+            // IPCMAIN 이벤트 해제
+            IPCMAIN.removeListener(sChanelID, oAPP.fn.fnUspNewWindowIPCEvent);
+
+            oBrowserWindow = null;
+
+        });
+
+
+        IPCMAIN.on(sChanelID, oAPP.fn.fnUspNewWindowIPCEvent);
+
+    }; // end of oAPP.fn.fnUspNewWindow
+
+
+    oAPP.fn.fnUspNewWindowIPCEvent = (res, data) => {
+
+        debugger;
+
+
+    }; // end of oAPP.fn.fnUspNewWindowIPCEvent
+
+
+
 
     /**************************************************************************
      * [WS30] USP Move Position Popup Close
@@ -562,7 +670,7 @@
             return;
         }
 
-        setTimeout(function () {
+        setTimeout(function() {
             oBtn.firePress();
         }, 0);
 
