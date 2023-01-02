@@ -1338,7 +1338,7 @@
                         if (!oBtn || !oBtn.getEnabled() || !oBtn.getVisible()) {
                             return;
                         }
-                        
+
                         oBtn.firePress();
 
                         // oBtn.focus();
@@ -2014,8 +2014,10 @@ function ajax_init_prc(oFormData, fn_callback) {
 // critical 오류
 function fnCriticalError() {
 
+    debugger;
+
     // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Login 페이지로 이동.
-    fn_logoff_success('X');
+    fn_logoff_success("");
 
 }
 
@@ -2042,6 +2044,26 @@ function fnJsonParseError(e) {
 }
 
 function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob) {
+
+    // 접속 서버가 HTTP Only 일 경우 서버 호출 시 ID, PW를 파라미터에 붙인다.
+    let oUserInfo = parent.getUserInfo();
+    if (oUserInfo && oUserInfo.HTTP_ONLY == "1") {
+
+        if (oFormData && oFormData instanceof FormData == true) {
+
+            oFormData.append("sap-user", oUserInfo.ID);
+            oFormData.append("sap-password", oUserInfo.PW);
+            oFormData.append("sap-client", oUserInfo.CLIENT);
+            oFormData.append("sap-language", oUserInfo.LANGU);
+
+        }
+
+        // POST 방식이 아닐 경우 호출 URL 파라미터에 ID, PW를 붙인다.
+        if(meth && meth !== "POST"){
+            sPath += `?sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.CLIENT}&sap-language=${oUserInfo.LANGU}`;
+        }
+
+    }
 
     // Default Values
     var busy = 'X',
@@ -2221,64 +2243,6 @@ function ajax_unlock_app(APPID, fn_callback) {
 
 } // end of ajax_unlock_app
 
-// // logoff
-// function ajax_logoff() {
-
-//     debugger;
-
-//     parent.setBusy('X');
-
-//     var sPath = parent.getServerPath() + "/logoff";
-
-//     var xhr = new XMLHttpRequest();
-//     xhr.onreadystatechange = function () { // 요청에 대한 콜백
-//         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
-
-//             if (xhr.status === 200 || xhr.status === 201) {
-
-//                 parent.setBusy("");
-
-//                 var sRes = xhr.response;
-
-//                 // 로그아웃 버튼으로 호출 된 경우
-//                 if (sRes == "") {
-
-//                     // 로그오프 성공시 타는 펑션
-//                     fn_logoff_success();
-
-//                     return;
-
-//                 }
-
-//                 // 세션이 이미 날라간 경우
-//                 // SSO 만료일 경우.
-//                 // 로그인 쪽으로 왔을 경우.
-//                 var oResult = JSON.parse(sRes);
-
-//                 if (oResult.TYPE == "E") {
-
-//                     //1. 전체 다 닫는다.
-//                     fn_logoff_success("X");
-//                     return;
-
-//                 }
-
-//             } else {
-
-//                 // 전체 브라우저를 닫는다.
-//                 fn_logoff_success("X");
-
-//             }
-
-//         }
-
-//     };
-
-//     xhr.open("GET", sPath); // 메소드와 주소 설정
-//     xhr.send();
-
-// } // end of ajax_logoff
-
 // 로그오프 성공시 타는 펑션
 function fn_logoff_success(TYPE) {
 
@@ -2394,6 +2358,14 @@ function sendServerExit(oOptions, fnCallback) {
 
     var sUrl = oOptions.URL,
         oFormData = oOptions.FORMDATA;
+
+    let oLogInData = parent.getUserInfo();
+    if(oLogInData.HTTP_ONLY == "1"){
+        oFormData.append("sap-user", oLogInData.ID);
+        oFormData.append("sap-password", oLogInData.PW);
+        oFormData.append("sap-client", oLogInData.CLIENT);
+        oFormData.append("sap-language", oLogInData.LANGU);
+    }
 
     parent.setBusy('X');
 

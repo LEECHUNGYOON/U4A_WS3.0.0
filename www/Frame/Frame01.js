@@ -43,7 +43,7 @@ zconsole.APP = APP;
 var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에서 parent로 접근이 안됨.)
     oWS = {},
     oAPP = {};
-    oAPP.common = {};
+oAPP.common = {};
 
 (function (oWS) {
     "use strict";
@@ -109,7 +109,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
      * # MSG
      * - (string) Message
      */
-    oWS.utill.fn.showMessage = function (oUI5, KIND, TYPE, MSG, fn_callback) {      
+    oWS.utill.fn.showMessage = function (oUI5, KIND, TYPE, MSG, fn_callback) {
 
         // 메시지가 Array 일 경우 개행 문자를 넣는다.
         var newMsg = "";
@@ -138,6 +138,25 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
         // UI5 필요한 라이브러리를 로드한다.
         lf_loadLibrary(oUI5);
+
+        // 메시지 타입별 텍스트
+        let oMsgcls = {
+                S: "Success",
+                E: "Error",
+                I: "Information",
+                W: "Warning",
+                WORKSPACE: "U4A WorkSpace"
+            },
+            APPCOMMON = oAPP.common;
+
+        // 로그인 후 메시지 정보를 읽었을 경우 접속 언어에 맞게 텍스트 변경
+        if (APPCOMMON && APPCOMMON.fnGetMsgClsText) {
+            oMsgcls.S = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D86"); // Success
+            oMsgcls.E = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B93"); // Error
+            oMsgcls.I = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B86"); // Information
+            oMsgcls.W = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B89"); // Warning
+            oMsgcls.WORKSPACE = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D29"); // U4A WorkSpace
+        }
 
         switch (KIND) {
 
@@ -172,7 +191,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("01"); // success
 
-                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D86"); // Success
+                        oMsgBoxOpts.title = oMsgcls.S; // Success
 
                         oUI5.m.MessageBox.success(newMsg, oMsgBoxOpts);
 
@@ -180,7 +199,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                     case "I":
 
-                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B86"); // Information
+                        oMsgBoxOpts.title = oMsgcls.I; // Information
 
                         oUI5.m.MessageBox.information(newMsg, oMsgBoxOpts);
 
@@ -190,7 +209,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("02"); // error
 
-                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B89"); // Warning
+                        oMsgBoxOpts.title = oMsgcls.W; // Warning
 
                         oUI5.m.MessageBox.warning(newMsg, oMsgBoxOpts);
 
@@ -200,7 +219,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("02"); // error
 
-                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B93"); // Error
+                        oMsgBoxOpts.title = oMsgcls.E; // Error
 
                         oUI5.m.MessageBox.error(newMsg, oMsgBoxOpts);
 
@@ -231,7 +250,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("01"); // success
 
-                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D86"); // Success
+                        oMsgBoxOpts.title = oMsgcls.S; // Success
 
                         oUI5.m.MessageBox.success(newMsg, oMsgBoxOpts);
 
@@ -239,7 +258,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                     case "I":
 
-                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B86"); // Information
+                        oMsgBoxOpts.title = oMsgcls.I; // Information
 
                         oUI5.m.MessageBox.information(newMsg, oMsgBoxOpts);
 
@@ -249,7 +268,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("02"); // error
 
-                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B89"); // Warning
+                        oMsgBoxOpts.title = oMsgcls.W; // Warning
 
                         oUI5.m.MessageBox.warning(newMsg, oMsgBoxOpts);
 
@@ -259,7 +278,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("02"); // error
 
-                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B93"); // Error
+                        oMsgBoxOpts.title = oMsgcls.E; // Error
 
                         oUI5.m.MessageBox.error(newMsg, oMsgBoxOpts);
 
@@ -290,7 +309,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("01"); // success
 
-                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D86"); // Success
+                        oMsgBoxOpts.title = oMsgcls.S; // Success
 
                         oUI5.m.MessageBox.success(newMsg, oMsgBoxOpts);
 
@@ -298,7 +317,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                     case "I":
 
-                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B86"); // Information
+                        oMsgBoxOpts.title = oMsgcls.I; // Information
 
                         oUI5.m.MessageBox.information(newMsg, oMsgBoxOpts);
 
@@ -306,7 +325,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                     case "W":
 
-                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B89"); // Warning
+                        oMsgBoxOpts.title = oMsgcls.W; // Warning
 
                         oUI5.m.MessageBox.warning(newMsg, oMsgBoxOpts);
 
@@ -316,7 +335,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                         setSoundMsg("02"); // error
 
-                        oMsgBoxOpts.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B93"); // Error
+                        oMsgBoxOpts.title = oMsgcls.W; // Error
 
                         oUI5.m.MessageBox.error(newMsg, oMsgBoxOpts);
 
@@ -330,7 +349,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
 
                 var oCurrView = REMOTE.getCurrentWindow();
 
-                let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D29"); // U4A WorkSpace
+                let sTitle = oMsgcls.WORKSPACE; // U4A WorkSpace
 
                 switch (TYPE) {
                     case "I":
@@ -441,7 +460,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         if (sPort != "") {
             sServicePath += `:${sPort}`;
         }
- 
+
         return sServicePath;
 
     };
@@ -624,7 +643,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
-      
+
         function lf_setBound() {
 
             let oBrowserOptions = {};

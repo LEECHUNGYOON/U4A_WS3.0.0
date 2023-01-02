@@ -1184,6 +1184,53 @@
 
 
 
+    //UI의 drop 가능 css 제거 처리.
+    oAPP.fn.clearDropEffectUI = function(oUi){
+
+      if(!oUi || !oUi.addEventDelegate){return;}
+
+      oUi.addEventDelegate({
+        ondragover:function(oEvent){
+          console.log(22222);
+          //focus된 dom focus 해제 처리.
+          if (document.activeElement && document.activeElement.blur) {
+            document.activeElement.blur();
+          }
+  
+          var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
+          if (l_dom === null || l_dom.length === 0) {
+            return;
+          }
+  
+          let oDom = l_dom[0];
+  
+          oDom.classList.remove("u4aWsDisplayNone");
+  
+        },
+        ondragleave:function(oEvent){
+          console.log(33333);
+          //focus된 dom focus 해제 처리.
+          if (document.activeElement && document.activeElement.blur) {
+            document.activeElement.blur();
+          }
+  
+          var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
+          if (l_dom === null || l_dom.length === 0) {
+              return;
+          }
+  
+          let oDom = l_dom[0];
+  
+          oDom.classList.remove("u4aWsDisplayNone");
+          oDom.classList.add("u4aWsDisplayNone");
+  
+        }
+      });
+
+    };  //UI의 drop 가능 css 제거 처리.
+
+
+
 
     //디자인 area의 잠금/잠금해제 처리.
     oAPP.fn.designAreaLockUnlock = function(bLock){

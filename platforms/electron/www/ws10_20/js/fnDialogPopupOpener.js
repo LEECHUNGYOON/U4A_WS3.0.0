@@ -777,7 +777,7 @@
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -1057,6 +1057,7 @@
         oBrowserWindow.setMenu(null);
 
         var oSendData = {
+            USERINFO : parent.getUserInfo(),
             BROWSKEY: BROWSKEY,
             SERVPATH: sServerPath,
             PRCCD: sFlag,
@@ -1625,11 +1626,6 @@
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
-
-        oBrowserWindow.webContents.on("if-aaa", () => {
-            debugger;
 
         });
 

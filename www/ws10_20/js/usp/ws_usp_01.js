@@ -517,6 +517,8 @@
      **************************************************************************/
     oAPP.fn.fnUspNewWindow = (oTreeTable, pIndex) => {
 
+        debugger;
+        
         let oCtx = oTreeTable.getContextByIndex(pIndex),
             oTreeModel = oTreeTable.getModel(),
             oTreeData = oTreeModel.getProperty(oCtx.sPath),
@@ -554,7 +556,7 @@
         let sUrlPath = parent.getPath("USPNEW");
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -569,6 +571,7 @@
 
             let oSendData = {
                 APPINFO: oAppInfo,
+                TREEDATA: oTreeData,
                 oUserInfo: parent.getUserInfo(),
                 BROWSKEY: BROWSKEY,
                 oThemeInfo: oThemeInfo,

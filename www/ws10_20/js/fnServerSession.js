@@ -37,11 +37,12 @@
         // // 1분 마다 한번씩 서버 호출        
         // iSessionTime = 1 * 60 * 1000;
 
-
-        var sServerPath = parent.getServerPath() + "/dummycall?ACTCD=002";
+        // var sServerPath = parent.getServerPath() + "/dummycall?ACTCD=002";
+        var sServerPath = parent.getServerPath() + "/dummycall";
 
         var oSendParam = {
-            SERVPATH: sServerPath
+            SERVPATH: sServerPath,
+            USERINFO : parent.getUserInfo()
         };
 
         // 설정된 세션 timeout 시간 도래 여부를 체크하기 위한 워커 생성
@@ -87,7 +88,7 @@
 
         function lfSessionTimeOutDialogOk(){
 
-            fn_logoff_success("X");
+            fn_logoff_success("");
             
         }
 

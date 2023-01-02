@@ -1,6 +1,6 @@
 const oAPP = {
     common: {},
-    onStart: function() {
+    onStart: function () {
         this.remote = require('@electron/remote');
         this.ipcRenderer = require('electron').ipcRenderer;
         this.fs = this.remote.require('fs');
@@ -18,6 +18,7 @@ const oAPP = {
 
             this.BROWSKEY = IF_DATA.BROWSKEY;
             this.SERVPATH = IF_DATA.SERVPATH;
+            this.USERINFO = IF_DATA.USERINFO;
 
             switch (IF_DATA.PRCCD) {
                 case "IMPORT": // U4A Application 등록 
@@ -88,7 +89,7 @@ const oAPP = {
 
         //file 선택 팝업 실행 
         oAPP.remote.dialog.showOpenDialog(oAPP.oWIN, options).then(result => {
-
+            debugger;
             if (result.canceled) {
                 oAPP.oWIN.close();
             }
@@ -96,7 +97,7 @@ const oAPP = {
             oAPP.FilePath = result.filePaths[0];
 
             //upload 
-            oAPP.fs.readFile(oAPP.FilePath, null, function(err, data) {
+            oAPP.fs.readFile(oAPP.FilePath, null, function (err, data) {
 
                 if (err) {
 
@@ -116,8 +117,16 @@ const oAPP = {
                 oformData.append('files', oBin, oAPP.path.basename(oAPP.FilePath));
                 oBin = null;
 
+                // 로그인 정보가 있을 경우
+                let oLogInData = oAPP.USERINFO;
+                if (oLogInData && oLogInData.HTTP_ONLY == "1") {
+
+                    sURL += `&sap-user=${oLogInData.ID}&sap-password=${oLogInData.PW}&sap-client=${oLogInData.CLIENT}&sap-language=${oLogInData.LANGU}`;
+             
+                }
+
                 var xhr = new XMLHttpRequest();
-                xhr.onreadystatechange = function() {
+                xhr.onreadystatechange = function () {
 
                     if (xhr.readyState == XMLHttpRequest.DONE) {
 
@@ -128,7 +137,8 @@ const oAPP = {
                             var sData = JSON.parse(xhr.response);
 
                             //오류 발생?
-                            if (sData.RETCD === "E") {
+                            if (sData.RETCD !== "S") {
+                            // if (sData.RETCD === "E") {
 
                                 oAPP.remote.dialog.showErrorBox(sErrMsg1, sData.RTMSG);
                                 oAPP.oWIN.close();
@@ -212,6 +222,8 @@ const oAPP = {
         //file 선택 팝업 실행 
         oAPP.remote.dialog.showOpenDialog(oAPP.oWIN, options).then(result => {
 
+            debugger;
+            
             if (result.canceled) {
                 oAPP.oWIN.close();
             }
@@ -245,8 +257,19 @@ const oAPP = {
 
             let sURL = oAPP.path.join(oAPP.SERVPATH, `app_export_import?ACTCD=EXPORT&APPID=${oAPP.APPID}`);
 
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() {
+            var xhr = new XMLHttpRequest(),
+                oformData = new FormData();
+
+            // 로그인 정보가 있을 경우
+            let oLogInData = oAPP.USERINFO;
+            if (oLogInData && oLogInData.HTTP_ONLY == "1") {
+                oformData.append("sap-user", oLogInData.ID);
+                oformData.append("sap-password", oLogInData.PW);
+                oformData.append("sap-client", oLogInData.CLIENT);
+                oformData.append("sap-language", oLogInData.LANGU);
+            }
+
+            xhr.onreadystatechange = function () {
 
                 if (xhr.readyState == XMLHttpRequest.DONE) {
 
@@ -270,7 +293,7 @@ const oAPP = {
                             if (Lmsg == "") {
                                 Lmsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "343"); // During the download process there is a critical problem.
                             }
-                            
+
                             let sErrMsg1 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "337"); // An error has occurred
                             oAPP.remote.dialog.showErrorBox(sErrMsg1, Lmsg);
                             oAPP.oWIN.close();
@@ -280,7 +303,7 @@ const oAPP = {
                         var Lmsg = xhr.getResponseHeader('RTMSG');
 
                         var oBuff = Buffer.from(xhr.response);
-                        oAPP.fs.writeFileSync(oAPP.FilePath, oBuff, null, function(err) {});
+                        oAPP.fs.writeFileSync(oAPP.FilePath, oBuff, null, function (err) {});
 
                         // 파일 다운받은 폴더를 오픈한다.
                         oAPP.SHELL.showItemInFolder(oAPP.FilePath);
@@ -301,9 +324,10 @@ const oAPP = {
 
             };
 
-            xhr.open('GET', sURL, true);
+            xhr.open('POST', sURL, true);
+            // xhr.open('GET', sURL, true);
             xhr.responseType = "arraybuffer";
-            xhr.send(null);
+            xhr.send(oformData);
 
 
         });

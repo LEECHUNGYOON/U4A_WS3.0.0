@@ -127,6 +127,11 @@
     var oLTDrag1 = new sap.ui.core.dnd.DragInfo({sourceAggregation:"rows"});
     oAPP.attr.ui.oLTree1.addDragDropConfig(oLTDrag1);
 
+
+    //design tree의 drop css 제거 처리 기능 추가.
+    oAPP.fn.clearDropEffectUI(oAPP.attr.ui.oLTree1);
+
+
     //drop UI 생성.
     var oLTDrop1 = new sap.ui.core.dnd.DropInfo({targetAggregation:"rows"});
     oAPP.attr.ui.oLTree1.addDragDropConfig(oLTDrop1);
@@ -2601,6 +2606,6 @@
     oAPP.attr.ui.oLTree1.expandToLevel(999999999999);
 
   };  //design tree 필터 처리.
-
+  
 
 })();

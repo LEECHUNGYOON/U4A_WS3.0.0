@@ -755,6 +755,9 @@ let oAPP = (function () {
 
                     }
 
+                    // HTTP ONLY 값을 글로벌에 저장
+                    oAPP.attr.HTTPONLY = oResult.HTTP_ONLY;
+                    oAPP.attr.LOGIN = oLogInData;
 
                     // 여기까지 온건 로그인 성공했다는 뜻이니까 
                     // 권한 체크를 수행한다.
@@ -824,6 +827,19 @@ let oAPP = (function () {
 
             var sServicePath = parent.getServerPath() + "/chk_u4a_authority";
 
+            var oFormData = new FormData();
+
+            if (oAPP.attr.HTTPONLY && oAPP.attr.HTTPONLY == "1") {
+
+                let oLogInData = oAPP.attr.LOGIN;
+
+                oFormData.append("sap-user", oLogInData.ID);
+                oFormData.append("sap-password", oLogInData.PW);
+                oFormData.append("sap-client", oLogInData.CLIENT);
+                oFormData.append("sap-language", oLogInData.LANGU);
+
+            }
+
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
@@ -875,10 +891,11 @@ let oAPP = (function () {
                 }
             };
 
-            xhr.open('GET', sServicePath); // 메소드와 주소 설정
+            xhr.open('POST', sServicePath); // 메소드와 주소 설정
+            // xhr.open('GET', sServicePath); // 메소드와 주소 설정
             // xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
             xhr.withCredentials = true;
-            xhr.send(); // 요청 전송   
+            xhr.send(oFormData); // 요청 전송   
 
         }); // end of promise
 
@@ -909,11 +926,23 @@ let oAPP = (function () {
 
             var sServicePath = parent.getServerPath() + "/chk_customer_license";
 
+            var oFormData = new FormData();
+
+            if (oAPP.attr.HTTPONLY && oAPP.attr.HTTPONLY == "1") {
+
+                let oLogInData = oAPP.attr.LOGIN;
+
+                oFormData.append("sap-user", oLogInData.ID);
+                oFormData.append("sap-password", oLogInData.PW);
+                oFormData.append("sap-client", oLogInData.CLIENT);
+                oFormData.append("sap-language", oLogInData.LANGU);
+
+            }
+
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
-
 
                         try {
 
@@ -942,9 +971,9 @@ let oAPP = (function () {
                 }
             };
 
-            xhr.open('GET', sServicePath); // 메소드와 주소 설정
+            xhr.open('POST', sServicePath); // 메소드와 주소 설정
             xhr.withCredentials = true;
-            xhr.send(); // 요청 전송   
+            xhr.send(oFormData); // 요청 전송   
 
         });
 
@@ -1099,10 +1128,16 @@ let oAPP = (function () {
                 resolve();
             });
 
+            // 서버 HTTPONLY 정보 및 로그인 정보
+            let oServerInfo = {
+                HTTPONLY: oAPP.attr.HTTPONLY,
+                LOGIN : oAPP.attr.LOGIN
+            };
+
             let sVersion = REMOTE.app.getVersion();
 
             // 자동 업데이트 체크
-            autoUpdaterSAP.checkForUpdates(sVersion);
+            autoUpdaterSAP.checkForUpdates(sVersion, oServerInfo);
 
         });
 

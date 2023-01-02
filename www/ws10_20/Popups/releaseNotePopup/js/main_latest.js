@@ -29,7 +29,7 @@ function onLoadBootStrapSetting() {
     // 로그인 Language 적용
     oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
     oScript.setAttribute("data-sap-ui-language", sLangu);
-    oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.suite.ui.commons, sap.ui.commons, sap.ui.core, sap.ui.layout");
+    oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.suite.ui.commons, sap.ui.commons, sap.ui.core, sap.ui.layout, sap.f, sap.tnt");
 
     // 개발일때와 release 할 때의 Bootstrip 경로 분기
     if (bIsDev) {
@@ -43,6 +43,7 @@ function onLoadBootStrapSetting() {
 } // end of onLoadBootStrapSetting
 
 document.addEventListener('DOMContentLoaded', () => {
+    debugger;
 
     //electron API 오브젝트 
     oAPP = parent.fn_getParent();
@@ -75,6 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener("load", () => {
+
+    debugger;
 
     //UI5 Start 
     sap.ui.getCore().attachInit(function () {
@@ -206,9 +209,26 @@ function gfn_crtUI_Item() {
 // 릴리즈 노트 라인 아이템 구성 - SAP 
 function gfn_crtUI_Item_SAP() {
 
+    debugger;
+
     let oformData = new FormData();
     oformData.append('VER', oHandle.curVER);
     oformData.append('ISADM', oAPP.ISADM);
+
+    // User Info가 있을 경우.
+    if (oAPP.attr.oUserInfo) {
+
+        // Server 설정이 HTTP ONLY 일 경우 서버 호출 시 
+        // ID, PW를 던진다.
+        let oLogInData = oAPP.attr.oUserInfo;
+        if (oLogInData.HTTP_ONLY && oLogInData.HTTP_ONLY == "1") {
+            oformData.append("sap-user", oLogInData.ID);
+            oformData.append("sap-password", oLogInData.PW);
+            oformData.append("sap-client", oLogInData.CLIENT);
+            oformData.append("sap-language", oLogInData.LANGU);
+
+        }
+    }
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", oHandle.sapURL, true);

@@ -240,7 +240,7 @@ exports.autoUpdaterSAP = {
     },
 
     //== 점검 수행 ==
-    checkForUpdates: function (appVer) {
+    checkForUpdates: function (appVer, oServerInfo) {
 
         __jobCnt = 0;
         __total = 0;
@@ -257,8 +257,24 @@ exports.autoUpdaterSAP = {
             message: "check version"
         });
 
+        var oFormData = new FormData();
+
+        if (oServerInfo && oServerInfo.HTTPONLY && oServerInfo.HTTPONLY == "1") {
+
+            let oLogInData = oServerInfo.LOGIN;
+
+            oFormData.append("sap-user", oLogInData.ID);
+            oFormData.append("sap-password", oLogInData.PW);
+            oFormData.append("sap-client", oLogInData.CLIENT);
+            oFormData.append("sap-language", oLogInData.LANGU);
+
+        }
+
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", _sURL_V, true);
+
+        xhr.open("POST", _sURL_V, true);
+        // xhr.open("GET", _sURL_V, true);
+
         xhr.onreadystatechange = function (oEvent) {
             if (xhr.readyState == XMLHttpRequest.DONE) {
 
@@ -312,13 +328,13 @@ exports.autoUpdaterSAP = {
 
         };
 
-        xhr.send();
+        xhr.send(oFormData);
 
     },
     quitAndInstall: function () {
 
         if (__downPath !== "") {
-            
+
             // 재실행 할 파일경로를 지정한다.
             REMOTE.app.relaunch({
                 execPath: __downPath

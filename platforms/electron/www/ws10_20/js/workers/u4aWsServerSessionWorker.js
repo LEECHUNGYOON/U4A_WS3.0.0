@@ -10,7 +10,8 @@ self.onmessage = function (e) {
 
     var iSessionTime = iSessionTimeMinute * 60 * 1000;
     var oReceiveData = e.data,
-        sServerPath = oReceiveData.SERVPATH;
+        sServerPath = oReceiveData.SERVPATH,
+        oUserInfo = oReceiveData.USERINFO;
 
     if (this.workTimeout) {
         clearInterval(this.workTimeout);
@@ -24,6 +25,20 @@ self.onmessage = function (e) {
     }, iSessionTime);
 
     this.sendAjax = (sServerPath) => {
+
+        var oFormData = new FormData();
+
+        if (oUserInfo && oUserInfo.HTTP_ONLY && oUserInfo.HTTP_ONLY == "1") {
+
+            let oLogInData = oUserInfo;
+
+            oFormData.append("sap-user", oLogInData.ID);
+            oFormData.append("sap-password", oLogInData.PW);
+            oFormData.append("sap-client", oLogInData.CLIENT);
+            oFormData.append("sap-language", oLogInData.LANGU);
+            oFormData.append("ACTCD", "002");
+
+        }
 
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () { // 요청에 대한 콜백
@@ -98,8 +113,8 @@ self.onmessage = function (e) {
 
         };
 
-        xhr.open('GET', sServerPath); // 메소드와 주소 설정
-        xhr.send();
+        xhr.open('POST', sServerPath); // 메소드와 주소 설정
+        xhr.send(oFormData);
 
     } // end of sendAjax
 

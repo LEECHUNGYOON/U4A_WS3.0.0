@@ -204,6 +204,9 @@
     oRPage.setContent(oRTab1);
     oAPP.attr.ui.oRTab1 = oRTab1;
 
+    //attribute table의 drop css 제거 처리 기능 추가.
+    oAPP.fn.clearDropEffectUI(oRTab1);
+
     //table 더블클릭 이벤트 처리.
     oAPP.attr.ui.oRTab1.attachBrowserEvent("dblclick", function(oEvent){
       //table의 더블클릭에 따른 이벤트 처리.

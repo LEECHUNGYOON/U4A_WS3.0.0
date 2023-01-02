@@ -344,6 +344,18 @@
           oForm.append('APPID', oPrc.APPID);
           oForm.append('ACTCD', 'GET');
 
+          debugger;
+          
+          // User정보가 있고, 서버 설정이 HTTP Only 일 경우,
+          // 파라미터에 ID, PW를 붙인다.
+          let oLogInData = oAPP.attr.oUserInfo;
+          if(oLogInData && oLogInData.HTTP_ONLY == "1"){
+            oForm.append("sap-user", oLogInData.ID);
+            oForm.append("sap-password", oLogInData.PW);
+            oForm.append("sap-client", oLogInData.CLIENT);
+            oForm.append("sap-language", oLogInData.LANGU);
+          }
+
           /*
           oForm.append('sap-client', '800'); 
           oForm.append('sap-user', 'shhong');

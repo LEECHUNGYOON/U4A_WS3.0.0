@@ -1,0 +1,31 @@
+directories:
+  output: C:\Users\USER\Documents\GitHub\U4A_WS3.0.0\platforms\electron\build
+  buildResources: C:\Users\USER\Documents\GitHub\U4A_WS3.0.0\platforms\electron\build-res
+  app: C:\Users\USER\Documents\GitHub\U4A_WS3.0.0\platforms\electron\www
+artifactName: ${productName}-Setup-${version}.${ext}
+win:
+  icon: installer.png
+  target:
+    - target: nsis
+      arch:
+        - x64
+publish:
+  provider: github
+files:
+  - filter:
+      - '**/*'
+      - ./node_modules/**/*
+      - ./package.json
+extraResources:
+  - filter:
+      - ./node_modules/**/*
+      - ./node_modules/@electron/remote/**
+  - from: node_modules/regedit/vbs
+    to: regedit/vbs
+    filter:
+      - '**/*'
+appId: com.u4a_ws3.app
+productName: U4A Workspace
+electronVersion: 14.0.0
+electronDownload:
+  version: 14.0.0

@@ -4,7 +4,7 @@
 
     //미리보기 영역 구성.
     var oMfrm1 = new sap.ui.core.HTML({content:"<div style='width:100%; height:100%; overflow:hidden;'>" +
-      "<iframe id='prevHTML' style='width:100%; height:100%;' frameborder=0 " +
+      "<iframe id='prevHTML' name='prevHTML' style='width:100%; height:100%;' frameborder=0 " +
       "framespacing=0 marginheight=0 marginwidth=0 ></iframe></div>"});
     oMPage.addContent(oMfrm1);
 
@@ -48,21 +48,66 @@
   //미리보기 iframe 영역 구성.
   oAPP.fn.loadPreviewFrame = function(){
 
+
+    function lf_setParam(oForm, name, value){
+
+      var iput = document.createElement("input");
+          iput.setAttribute("name", name);
+          iput.setAttribute("value", value);
+          iput.setAttribute("type", "hidden");
+          oForm.appendChild(iput);
+
+    }
+    
+    debugger;
+
     //미리보기 html 정보가 로드되지 않은경우.
     if(!oAPP.attr.ui.frame || !oAPP.attr.ui.frame.contentWindow){
       oAPP.attr.ui.frame = document.getElementById("prevHTML");
 
       var l_info = parent.getUserInfo();
 
-      //미리보기 서버 URL 정보 구성.
-      oAPP.attr.ui.frame.src = parent.getHost() + "/zu4a_wbc/u4a_ipcmain/getPrevHTML?" +
-        "sap-client=" + l_info.CLIENT +  
-        "&sap-language=" + l_info.LANGU + 
-        "&sap-user=" + l_info.ID +
-        "&sap-password=" + l_info.PW +
-        "&LIBPATH=" + oAPP.fn.getBootStrapUrl() + 
-        "&LIBRARY=" + oAPP.fn.getUi5Libraries(true) +
-        "&THEME=" + encodeURIComponent(oAPP.DATA.APPDATA.S_0010.UITHM);
+      var oform = document.createElement("form");
+      oform.setAttribute("id",     "prvSendForm");
+      oform.setAttribute("target", oAPP.attr.ui.frame.id);
+      oform.setAttribute("method", "POST");
+      oform.setAttribute("action", parent.getHost() + "/zu4a_wbc/u4a_ipcmain/getPrevHTML");
+      oform.style.display = "none";
+
+      //client 파라메터 추가.
+      lf_setParam(oform, "sap-client", l_info.CLIENT);
+
+      //접속 언어 파라메터 추가.
+      lf_setParam(oform, "sap-language", l_info.LANGU);
+
+      //SAP 접속 ID 파라메터 추가.
+      lf_setParam(oform, "sap-user", l_info.ID);
+
+      //SAP 접속 PW 파라메터 추가.
+      lf_setParam(oform, "sap-password", l_info.PW);
+
+      //라이브러리 bootstrap 경로 파라메터 추가.
+      lf_setParam(oform, "LIBPATH", oAPP.fn.getBootStrapUrl());
+
+      //LOAD 대상 LIBRARY 항목 파라메터 추가.
+      lf_setParam(oform, "LIBRARY", oAPP.fn.getUi5Libraries(true));
+
+      //미리보기 THEME 정보 파라메터 추가.
+      lf_setParam(oform, "THEME", oAPP.DATA.APPDATA.S_0010.UITHM);
+      
+      document.body.appendChild(oform);
+
+      oform.submit();
+      
+      // //미리보기 서버 URL 정보 구성.
+      // oAPP.attr.ui.frame.src = parent.getHost() + "/zu4a_wbc/u4a_ipcmain/getPrevHTML?" +
+      //   "sap-client=" + l_info.CLIENT +  
+      //   "&sap-language=" + l_info.LANGU + 
+      //   "&sap-user=" + l_info.ID +
+      //   "&sap-password=" + l_info.PW +
+      //   "&LIBPATH=" + oAPP.fn.getBootStrapUrl() + 
+      //   "&LIBRARY=" + oAPP.fn.getUi5Libraries(true) +
+      //   "&THEME=" + encodeURIComponent(oAPP.DATA.APPDATA.S_0010.UITHM);
 
       return;
 
@@ -112,7 +157,8 @@
     }
 
     if(bFirst){
-      return encodeURIComponent(lt_lib.join(","));
+      //return encodeURIComponent(lt_lib.join(","));
+      return lt_lib.join(",");
     }
 
     return lt_lib;
@@ -132,7 +178,8 @@
       && a.FLD06 === "X" );
 
     if(typeof ls_ua025 !== "undefined"){
-      return encodeURIComponent(ls_ua025.FLD04 + ls_ua025.FLD05);
+      // return encodeURIComponent(ls_ua025.FLD04 + ls_ua025.FLD05);
+      return ls_ua025.FLD04 + ls_ua025.FLD05;
     }
 
     //-2차 필터 패키지
@@ -141,7 +188,8 @@
       && a.FLD06 === "X" );
 
     if(typeof ls_ua025 !== "undefined"){
-      return encodeURIComponent(ls_ua025.FLD04 + ls_ua025.FLD05);
+      // return encodeURIComponent(ls_ua025.FLD04 + ls_ua025.FLD05);
+      return ls_ua025.FLD04 + ls_ua025.FLD05;
     }
 
     //-3차 필터 전체대상
@@ -149,7 +197,8 @@
       && a.FLD01 === "WOK" && a.FLD06 === "X" );
 
     if(typeof ls_ua025 !== "undefined"){
-      return encodeURIComponent(ls_ua025.FLD04 + ls_ua025.FLD05);
+      // return encodeURIComponent(ls_ua025.FLD04 + ls_ua025.FLD05);
+      return ls_ua025.FLD04 + ls_ua025.FLD05;
     }
 
   };  //UI5 bootstrap URL정보 얻기.

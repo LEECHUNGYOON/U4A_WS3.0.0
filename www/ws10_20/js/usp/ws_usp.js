@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -45,13 +45,13 @@
 
         // 파일 확장자 이미지 경로 구하기
         fnGetFileExtendImgList()
-            .then(function() {
+            .then(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
 
             })
-            .catch(function() {
+            .catch(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
@@ -65,7 +65,7 @@
      ************************************************************************/
     function fnGetFileExtendImgList() {
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
@@ -112,7 +112,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function() {
+    oAPP.fn.fnOnResizeWs30 = function () {
 
         zconsole.log("resize30!!!");
 
@@ -262,7 +262,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -421,7 +421,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -1089,7 +1089,7 @@
                                         "ISFLD",
                                         "EXTEN"
                                     ],
-                                    formatter: function(ISFLD, EXTEN) {
+                                    formatter: function (ISFLD, EXTEN) {
 
                                         var iFileImgListLength = gaFileExtendImgList.length;
                                         if (iFileImgListLength == 0) {
@@ -1221,7 +1221,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function(oEvent) {
+                rowSelectionChange: function (oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1254,7 +1254,10 @@
 
             })
             // .attachRowsUpdated(gfSelectRowUpdate)
-            .attachBrowserEvent("dblclick", ev_uspTreeItemDblClickEvent)
+            // .attachBrowserEvent("dblclick", ev_uspTreeItemDblClickEvent)
+            .addEventDelegate({
+                ondblclick: ev_uspTreeItemDblClickEvent
+            })
             .addStyleClass("u4aWsUspTree");
 
     } // end of fnGetTreeTableWs30
@@ -1384,7 +1387,7 @@
 
             oIsFolderCheckbox = new sap.m.CheckBox({
                 editable: false
-            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
+            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                 if (ISFLD == "X") {
                     return true;
@@ -1450,7 +1453,7 @@
                                 ]
                             })
 
-                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function(ISFLD) {
+                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                             // 폴더가 아닐 경우에만 보여준다.
                             if (ISFLD != "X") {
@@ -1492,7 +1495,7 @@
 
                 return {
 
-                    onAfterRendering: function(oControl) {
+                    onAfterRendering: function (oControl) {
 
                         var oEditor = oControl.srcControl,
                             _oAceEditor = oEditor._oEditor;
@@ -1573,21 +1576,42 @@
         /**
          * 코드 에디터 입력한 값 동기화
          */
-        oCodeEditor.attachBrowserEvent("keyup", () => {
 
-            let value = oCodeEditor._oEditor.getValue();
+        oCodeEditor.addEventDelegate({
+            onkeyup: () => {
 
-            oCodeEditorClone._oEditor.setValue(value, 1);
+                let value = oCodeEditor._oEditor.getValue();
 
+                oCodeEditorClone._oEditor.setValue(value, 1);
+
+            }
         });
 
-        oCodeEditorClone.attachBrowserEvent("keyup", () => {
+        oCodeEditorClone.addEventDelegate({
+            onkeyup: () => {
 
-            let value = oCodeEditorClone._oEditor.getValue();
+                let value = oCodeEditorClone._oEditor.getValue();
 
-            oCodeEditor._oEditor.setValue(value, 1);
+                oCodeEditor._oEditor.setValue(value, 1);
 
+            }
         });
+
+        // oCodeEditor.attachBrowserEvent("keyup", () => {
+
+        //     let value = oCodeEditor._oEditor.getValue();
+
+        //     oCodeEditorClone._oEditor.setValue(value, 1);
+
+        // });
+
+        // oCodeEditorClone.attachBrowserEvent("keyup", () => {
+
+        //     let value = oCodeEditorClone._oEditor.getValue();
+
+        //     oCodeEditor._oEditor.setValue(value, 1);
+
+        // });
 
         let oHeaderToolbar = new sap.m.Bar({
 
@@ -1608,8 +1632,7 @@
 
                 new sap.m.Button({
                     icon: "sap-icon://full-screen",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C23"), // Full Screen
-                    // tooltip: "Editor Full Screen Mode",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C23"), // Full Screen                    
                     tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D23") + " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C79"), // Editor Full Screen Mode
                     press: ev_codeeditorFullscreen
                 }),
@@ -1624,8 +1647,7 @@
                 new sap.m.Button("ws30_codeeditor_prettyBtn", {
                     icon: "sap-icon://indent",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25"), // Pretty Print
-                    tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25") + "(Shift + F1)", // Pretty Print
-                    // tooltip: "Pretty Print (Shift + F1)",
+                    tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25") + "(Shift + F1)", // Pretty Print                    
                     press: ev_codeeditorPrettyPrint,
                 }).bindProperty("enabled", lfCodeeditorBindProperty())
             ]
@@ -1671,11 +1693,7 @@
         }
 
         oSplitLayoutData.setSize("0px");
-
-        // if (oSplitLayoutData && bIsSplitBar) {            
-        //     oSplitLayoutData.setSize("0px");
-        // }
-
+   
     }
 
     function _fnCodeEditorBindPropertyVisible() {
@@ -2006,7 +2024,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -2093,7 +2111,7 @@
             initialFocus: "ws30_crname",
 
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -2361,7 +2379,7 @@
     function lf_appDelCtsPopup(oParam) {
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oParam = this;
 
@@ -2513,8 +2531,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function(e) {
-                $.each(e, function(e, o) {
+            t = function (e) {
+                $.each(e, function (e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -2772,7 +2790,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function(event) {
+            fileReader.onload = function (event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -3792,7 +3810,7 @@
                 break;
 
             case "K11": // new window
-                
+
                 oAPP.fn.fnUspNewWindow(oTreeTable, gSelectedTreeIndex);
 
                 // sap.m.MessageToast.show("준비중입니다.");
@@ -4776,7 +4794,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this;
             // IS_ACT = oEvent.getParameter("IS_ACT");

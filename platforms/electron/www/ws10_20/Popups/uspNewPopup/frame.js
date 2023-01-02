@@ -83,11 +83,12 @@ let oAPP = (function(window) {
      ************************************************************************/
     oAPP.IPCRENDERER.on('if-uspnew', (events, oInfo) => {
 
-        oAPP.attr.APPINFO = oInfo.oAppInfo;
+        oAPP.attr.APPINFO = oInfo.APPINFO;
         oAPP.attr.BROWSKEY = oInfo.BROWSKEY;
         oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
         oAPP.attr.CHANNELID = oInfo.CHANNELID;
         oAPP.attr.oUserInfo = oInfo.oUserInfo;
+        oAPP.attr.TREEDATA = oInfo.TREEDATA;
         
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {

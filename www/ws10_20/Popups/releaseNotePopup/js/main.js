@@ -144,8 +144,6 @@ function gfn_crtUI_Main() {
 // 릴리즈 노트 라인 아이템 구성 
 function gfn_crtUI_Item(oParent) {
 
-    debugger;
-    
     switch (oHandle.isCDN) {
         case "X":
             gfn_crtUI_Item_GITHUB(oParent);
@@ -161,12 +159,25 @@ function gfn_crtUI_Item(oParent) {
 
 // 릴리즈 노트 라인 아이템 구성 - SAP 
 function gfn_crtUI_Item_SAP(oParent) {
-    
-    debugger;
 
     let oformData = new FormData();
     oformData.append('VER', oHandle.curVER);
     oformData.append('ISADM', oAPP.ISADM);
+
+    // User Info가 있을 경우.
+    if (oAPP.attr.oUserInfo) {
+
+        // Server 설정이 HTTP ONLY 일 경우 서버 호출 시 
+        // ID, PW를 던진다.
+        let oLogInData = oAPP.attr.oUserInfo;
+        if (oLogInData.HTTP_ONLY && oLogInData.HTTP_ONLY == "1") {
+            oformData.append("sap-user", oLogInData.ID);
+            oformData.append("sap-password", oLogInData.PW);
+            oformData.append("sap-client", oLogInData.CLIENT);
+            oformData.append("sap-language", oLogInData.LANGU);
+
+        }
+    }
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", oHandle.sapURL, true);
@@ -175,7 +186,7 @@ function gfn_crtUI_Item_SAP(oParent) {
         if (xhr.readyState == XMLHttpRequest.DONE) {
 
             try {
-                
+
                 debugger;
 
                 var T_DATA = JSON.parse(xhr.response);
