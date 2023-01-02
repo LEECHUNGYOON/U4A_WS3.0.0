@@ -27,7 +27,7 @@ const {
     app,
     BrowserWindow,
     protocol,
-    ipcMain
+    ipcMain    
 } = require('electron');
 
 app.disableHardwareAcceleration();
@@ -36,6 +36,7 @@ app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('disable-site-isolation-trials');
 app.commandLine.appendSwitch('ignore-certificate-errors'); // https 인증서 오류 무시
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required'); // 오디오 자동실행 오류 정책 회피
+app.commandLine.appendSwitch('document.domain','u4arnd.com');
 
 const remote = require('@electron/remote/main');
 remote.initialize();
@@ -99,7 +100,7 @@ function createWindow() {
         width: 850,
         height: 500,
         minWidth: 850,
-        minHeight: 500,        
+        minHeight: 500,
     });
 
     // browserWindowOpts.webPreferences.preload = path.join(app.getAppPath(), 'cdv-electron-preload.js');

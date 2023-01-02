@@ -10,14 +10,14 @@
     oAPP.fn = {};
 
     const
-        REMOTE = require('@electron/remote'),
+        REMOTE = require('@electron/remote'),       
         REMOTEMAIN = REMOTE.require('@electron/remote/main'),
         APP = REMOTE.app,
         PATH = REMOTE.require('path'),
         APPPATH = APP.getAppPath(),
         USERDATA = APP.getPath("userData"),
         FS = REMOTE.require('fs-extra'),
-        RANDOM = require("random-key"); 
+        RANDOM = require("random-key");
 
     oAPP.fn.fnOnDeviceReady = function() {
 
@@ -52,7 +52,7 @@
 
         });
 
-    }; // end of oAPP.fn.fnOnStart
+    }; // end of oAPP.fn.fnOnStart   
 
     /************************************************************************
      * Trial 버전의 로그인 페이지로 이동한다.
@@ -94,7 +94,7 @@
 
         // 인트로 화면 닫기
         let oCurrWindow = REMOTE.getCurrentWindow();
-        oCurrWindow.hide();
+        oCurrWindow.hide();       
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);

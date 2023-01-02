@@ -10,6 +10,7 @@ let oAPP = parent.oAPP;
 const
     require = parent.require,
     REMOTE = oAPP.REMOTE,
+    // session = REMOTE.require('electron').session,
     REMOTEMAIN = REMOTE.require('@electron/remote/main'),
     RANDOM = REMOTE.require("random-key"),
     PATH = REMOTE.require('path'),
@@ -2043,6 +2044,28 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of oAPP.fn.fnPressServerListItem
 
+    // session samesite 회피
+    function configureSession(oBrowserWindow) {
+
+        let webcon = oBrowserWindow.webContents,
+            session = webcon.session;
+
+        const filter = {
+            urls: ["http://*/*", "https://*/*"]
+        };
+
+        session.webRequest.onHeadersReceived(filter, (details, callback) => {
+            const cookies = (details.responseHeaders['set-cookie'] || []).map(cookie => cookie.replace('SameSite=Strict', 'SameSite=None'));
+            if (cookies.length > 0) {
+                details.responseHeaders['set-cookie'] = cookies;
+            }
+            callback({
+                cancel: false,
+                responseHeaders: details.responseHeaders
+            });
+        });
+    }
+
     /**************************************************************************
      * 서버 체크 성공시 로그인 팝업 실행하기
      **************************************************************************/
@@ -2116,6 +2139,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             oBrowserWindow.show();
 
+            // session samesite 회피
+            configureSession(oBrowserWindow);
+
         });
 
         // 브라우저를 닫을때 타는 이벤트
@@ -2174,7 +2200,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             }, (err, data) => {
 
                 if (err) {
-                    
+
                     resolve({
                         RETCD: "E",
                         RTMSG: err.toString()
