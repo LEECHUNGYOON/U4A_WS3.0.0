@@ -2359,25 +2359,26 @@ function sendServerExit(oOptions, fnCallback) {
     var sUrl = oOptions.URL,
         oFormData = oOptions.FORMDATA;
 
-    let oLogInData = parent.getUserInfo();
-    if (oLogInData.HTTP_ONLY == "1") {
+    // let oLogInData = parent.getUserInfo();
+    // if (oLogInData.HTTP_ONLY == "1") {
 
-        // formdata가 있을 경우
-        if (oFormData) {         
-            oFormData.append("sap-user", oLogInData.ID);
-            oFormData.append("sap-password", oLogInData.PW);
-            oFormData.append("sap-client", oLogInData.CLIENT);
-            oFormData.append("sap-language", oLogInData.LANGU);
-        } else {
-            // formdate가 없으면 url에 ID,PW를 파라미터로 전송
-            sUrl += `?sap-user=${oLogInData.ID}&sap-password=${oLogInData.PW}&sap-client=${oLogInData.CLIENT}&sap-language=${oLogInData.LANGU}`;
-        }
+    //     // formdata가 있을 경우
+    //     if (oFormData) {         
+    //         oFormData.append("sap-user", oLogInData.ID);
+    //         oFormData.append("sap-password", oLogInData.PW);
+    //         oFormData.append("sap-client", oLogInData.CLIENT);
+    //         oFormData.append("sap-language", oLogInData.LANGU);
+    //     } else {
+    //         // formdate가 없으면 url에 ID,PW를 파라미터로 전송
+    //         sUrl += `?sap-user=${oLogInData.ID}&sap-password=${oLogInData.PW}&sap-client=${oLogInData.CLIENT}&sap-language=${oLogInData.LANGU}`;
+    //     }
 
-    }
+    // }
 
     parent.setBusy('X');
 
     var xhttp = new XMLHttpRequest();
+
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4) {
 
@@ -2389,7 +2390,7 @@ function sendServerExit(oOptions, fnCallback) {
     };
 
     xhttp.open("POST", sUrl, true);
-  
+
     if (oFormData instanceof FormData == true) {
         xhttp.send(oFormData);
         return;

@@ -460,6 +460,8 @@
     // 브라우저 닫기, window.close() 실행시 타는 이벤트
     window.onbeforeunload = () => {
         
+        debugger;
+        
         // Logout 메시지가 이미 떠 있다면 창을 못닫게 한다.
         if (oAPP.attr.isBrowserCloseLogoutMsgOpen == 'X') {
 

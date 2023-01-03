@@ -87,20 +87,8 @@ function configureSession() {
 
     session.defaultSession.webRequest.onHeadersReceived(filter, (details, callback) => {
 
-        let cookies = (details.responseHeaders['set-cookie'] || []).map((cookie) => {
-
-            if (cookie.indexOf("SameSite=OFF") > 0 || cookie.indexOf("SameSite=None") > 0) {
-                return;
-            }
-
-            let sCookie = cookie;
-
-            sCookie = sCookie.replace('SameSite=Strict', 'SameSite=None');
-            sCookie = sCookie.replace('SameSite=Lax', 'SameSite=None');
-
-            return sCookie;
-
-        });
+        var cookies = (details.responseHeaders['set-cookie'] || []).map(cookie => cookie.replace('SameSite=Strict', 'SameSite=None'));
+        // cookies = (details.responseHeaders['set-cookie'] || []).map(cookie => cookie.replace('SameSite=Lax', 'SameSite=None'));
 
         if (cookies.length > 0) {
             details.responseHeaders['set-cookie'] = cookies;
@@ -143,7 +131,7 @@ function createWindow() {
     browserWindowOpts.webPreferences.contextIsolation = false;
 
     // samesite 회피
-    configureSession();
+    // configureSession();
 
     mainWindow = new BrowserWindow(browserWindowOpts);
     remote.enable(mainWindow.webContents);
