@@ -27,7 +27,8 @@ const {
     app,
     BrowserWindow,
     protocol,
-    ipcMain    
+    ipcMain,
+    session
 } = require('electron');
 
 app.disableHardwareAcceleration();
@@ -36,7 +37,6 @@ app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('disable-site-isolation-trials');
 app.commandLine.appendSwitch('ignore-certificate-errors'); // https 인증서 오류 무시
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required'); // 오디오 자동실행 오류 정책 회피
-app.commandLine.appendSwitch('document.domain','u4arnd.com');
 
 const remote = require('@electron/remote/main');
 remote.initialize();
@@ -78,6 +78,42 @@ if (!isFileProtocol) {
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
+// samesite 회피
+function configureSession() {
+
+    const filter = {
+        urls: ["http://*/*", "https://*/*"]
+    };
+
+    session.defaultSession.webRequest.onHeadersReceived(filter, (details, callback) => {
+
+        let cookies = (details.responseHeaders['set-cookie'] || []).map((cookie) => {
+
+            if (cookie.indexOf("SameSite=OFF") > 0 || cookie.indexOf("SameSite=None") > 0) {
+                return;
+            }
+
+            let sCookie = cookie;
+
+            sCookie = sCookie.replace('SameSite=Strict', 'SameSite=None');
+            sCookie = sCookie.replace('SameSite=Lax', 'SameSite=None');
+
+            return sCookie;
+
+        });
+
+        if (cookies.length > 0) {
+            details.responseHeaders['set-cookie'] = cookies;
+        }
+
+        callback({
+            cancel: false,
+            responseHeaders: details.responseHeaders
+        });
+
+    });
+}
+
 function createWindow() {
     // Create the browser window.
     let appIcon;
@@ -105,6 +141,9 @@ function createWindow() {
 
     // browserWindowOpts.webPreferences.preload = path.join(app.getAppPath(), 'cdv-electron-preload.js');
     browserWindowOpts.webPreferences.contextIsolation = false;
+
+    // samesite 회피
+    configureSession();
 
     mainWindow = new BrowserWindow(browserWindowOpts);
     remote.enable(mainWindow.webContents);

@@ -37,7 +37,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function(oAPP) {
+(function (oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -86,7 +86,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             text: "Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function() {
+            close: function () {
                 XHR.abort();
             }
         });
@@ -99,7 +99,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.sendAjax = (sUrl, fnSuccess, fnError, fnCancel) => {
 
         // ajax call 취소할 경우..
-        XHR.onabort = function() {
+        XHR.onabort = function () {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -108,7 +108,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // ajax call 실패 할 경우
-        XHR.onerror = function() {
+        XHR.onerror = function () {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -116,7 +116,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         };
 
-        XHR.onload = function() {
+        XHR.onload = function () {
 
             if (typeof fnSuccess == "function") {
                 fnSuccess(XHR.response);
@@ -830,7 +830,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function() {
+            onAfterRendering: function () {
 
                 setTimeout(() => {
                     $('#content').fadeIn(300, 'linear');
@@ -2055,16 +2055,33 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         session.webRequest.onHeadersReceived(filter, (details, callback) => {
-            const cookies = (details.responseHeaders['set-cookie'] || []).map(cookie => cookie.replace('SameSite=Strict', 'SameSite=None'));
+
+            let cookies = (details.responseHeaders['set-cookie'] || []).map((cookie) => {
+
+                if (cookie.indexOf("SameSite=OFF") > 0 || cookie.indexOf("SameSite=None") > 0) {
+                    return;
+                }
+
+                let sCookie = cookie;
+
+                sCookie = sCookie.replace('SameSite=Strict', 'SameSite=None');
+                sCookie = sCookie.replace('SameSite=Lax', 'SameSite=None');
+
+                return sCookie;
+
+            });
+           
             if (cookies.length > 0) {
                 details.responseHeaders['set-cookie'] = cookies;
             }
+
             callback({
                 cancel: false,
                 responseHeaders: details.responseHeaders
             });
         });
-    }
+
+    } // end of configureSession
 
     /**************************************************************************
      * 서버 체크 성공시 로그인 팝업 실행하기
@@ -2114,7 +2131,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oBrowserWindow.loadURL(PATHINFO.MAINFRAME);
 
-        oBrowserWindow.webContents.openDevTools();
+        // oBrowserWindow.webContents.openDevTools();
 
         // no build 일 경우에는 개발자 툴을 실행한다.
         if (!APP.isPackaged) {
@@ -2122,7 +2139,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -2172,7 +2189,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         resolve({
