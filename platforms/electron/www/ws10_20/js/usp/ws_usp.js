@@ -1673,7 +1673,10 @@
                     ]
                 })
                 .bindProperty("visible", _fnCodeEditorBindPropertyVisible())
-                .attachBrowserEvent("dblclick", _fnDoubleClickSplitbar)
+                .addEventDelegate({
+                    ondblclick: _fnDoubleClickSplitbar
+                })
+                // .attachBrowserEvent("dblclick", _fnDoubleClickSplitbar)
                 .addStyleClass("uspCodeeditorSplit sapUiSmallMarginBottom")
 
             ]
@@ -1693,7 +1696,7 @@
         }
 
         oSplitLayoutData.setSize("0px");
-   
+
     }
 
     function _fnCodeEditorBindPropertyVisible() {
@@ -3767,9 +3770,9 @@
 
             case "K7": // Rename
 
-                sap.m.MessageToast.show("준비중입니다.");
+                // sap.m.MessageToast.show("준비중입니다.");
 
-                return;
+                // return;
 
                 // Usp 생성 시, 현재 Change가 된 상태인지 확인.
                 // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
@@ -3890,17 +3893,20 @@
         // 취소했을 경우.
         if (oEvent !== "YES") {
 
-            // 앱 변경 사항 플래그 설정
-            oAPP.fn.setAppChangeWs30("");
+            // // 앱 변경 사항 플래그 설정
+            // oAPP.fn.setAppChangeWs30("");
 
-            // code editor key press 이벤트 설정
-            fnCodeEditorKeyPressEvent("X");
+            // // code editor key press 이벤트 설정
+            // fnCodeEditorKeyPressEvent("X");
 
-            // 이전에 선택 표시된 USP Tree Node 선택 해제
-            fnOnUspTreeUnSelect();
+            // // 이전에 선택 표시된 USP Tree Node 선택 해제
+            // fnOnUspTreeUnSelect();
 
-            // 우측 에디터 영역을 메인 페이지로 이동
-            fnOnMoveToPage("USP10");
+            // // 우측 에디터 영역을 메인 페이지로 이동
+            // fnOnMoveToPage("USP10");
+
+            // 저장 취소 공통 메소드
+            _fnSaveCancel(oTreeTable);
 
             // USP 생성 팝업 띄우기
             fnRenameUspNodePopup(oTreeTable);
@@ -5018,6 +5024,8 @@
      **************************************************************************/
     function fnCodeEditorKeyPressEvent(IsAttach) {
 
+        debugger;
+        
         let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor");
         if (!oCodeEditor1) {
             return;
