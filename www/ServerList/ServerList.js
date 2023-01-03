@@ -1,7 +1,7 @@
 /**************************************************************************
  * ServerList.js
  **************************************************************************/
-(function() {
+(function () {
     "use strict";
 
     let oAPP = parent.oAPP;
@@ -312,6 +312,45 @@
 
     } // end of fnServerCheckCancel
 
+    // session samesite 회피
+    function configureSession(oBrowserWindow) {
+
+        let webcon = oBrowserWindow.webContents,
+            session = webcon.session;
+
+        const filter = {
+            urls: ["http://*/*", "https://*/*"]
+        };
+
+        session.webRequest.onHeadersReceived(filter, (details, callback) => {
+
+            let cookies = (details.responseHeaders['set-cookie'] || []).map((cookie) => {
+
+                if (cookie.indexOf("SameSite=OFF") > 0 || cookie.indexOf("SameSite=None") > 0) {
+                    return;
+                }
+
+                let sCookie = cookie;
+
+                sCookie = sCookie.replace('SameSite=Strict', 'SameSite=None');
+                sCookie = sCookie.replace('SameSite=Lax', 'SameSite=None');
+
+                return sCookie;
+
+            });
+
+            if (cookies.length > 0) {
+                details.responseHeaders['set-cookie'] = cookies;
+            }
+
+            callback({
+                cancel: false,
+                responseHeaders: details.responseHeaders
+            });
+        });
+
+    } // end of configureSession
+
     /**************************************************************************
      * 서버 체크 성공시 로그인 팝업 실행하기
      **************************************************************************/
@@ -373,7 +412,7 @@
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -387,6 +426,9 @@
             oBrowserWindow.webContents.send('if-meta-info', oMetadata);
 
             oBrowserWindow.setOpacity(1.0);
+
+            // session samesite 회피
+            configureSession(oBrowserWindow);
 
         });
 
@@ -403,7 +445,7 @@
     function fnSendAjax(sUrl, oFormData, fnSuccess, fnError, fnCancel) {
 
         // ajax call 취소할 경우..
-        xhr.onabort = function() {
+        xhr.onabort = function () {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -412,7 +454,7 @@
         };
 
         // ajax call 실패 할 경우
-        xhr.onerror = function() {
+        xhr.onerror = function () {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -420,7 +462,7 @@
 
         };
 
-        xhr.onreadystatechange = function(a, b, c, d, e) { // 요청에 대한 콜백         
+        xhr.onreadystatechange = function (a, b, c, d, e) { // 요청에 대한 콜백         
 
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
@@ -469,7 +511,7 @@
                     new sap.m.Button({
                         icon: "sap-icon://decline",
                         tooltip: "{/MSGCLS/0019}", // cancel
-                        press: function(oEvent) {
+                        press: function (oEvent) {
 
                             var oDialog = oEvent.getSource().getParent();
 
@@ -480,7 +522,7 @@
                 ]
 
             })
-            .bindProperty("title", "/SERVDLG/TRCOD", function(TITLE) {
+            .bindProperty("title", "/SERVDLG/TRCOD", function (TITLE) {
 
                 if (!TITLE) {
                     return;
@@ -569,7 +611,7 @@
                                 maxLength: 3,
                                 required: true,
                                 submit: ev_pressServerInfoSaveSubmit,
-                                liveChange: function(oEvent) {
+                                liveChange: function (oEvent) {
 
                                     var sValue = oEvent.getParameter("value");
 
@@ -1036,7 +1078,7 @@
             text: fnGetLanguClassTxt("0023"), //"Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function() {
+            close: function () {
                 xhr.abort();
             }
         });
@@ -1205,7 +1247,7 @@
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         reject(err.toString());
@@ -1247,7 +1289,7 @@
      * **********************************************************************/
     function fnOnInit() {
 
-        sap.ui.getCore().attachInit(function() {
+        sap.ui.getCore().attachInit(function () {
 
             // 초기값 바인딩
             fnOnInitBinding();
