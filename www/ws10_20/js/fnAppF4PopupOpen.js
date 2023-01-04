@@ -598,56 +598,109 @@
             ]
         });
 
-        oTreeTable.attachBrowserEvent("dblclick", function (oEvent) {
+        oTreeTable.addEventDelegate({
+            ondblclick: function (oEvent) {
 
-            var oTarget = oEvent.target,
-                $SelectedRow = $(oTarget).closest(".sapUiTableRow");
+                var oTarget = oEvent.target,
+                    $SelectedRow = $(oTarget).closest(".sapUiTableRow");
 
-            if (!$SelectedRow.length) {
-                return;
+                if (!$SelectedRow.length) {
+                    return;
+                }
+
+                var oRow = $SelectedRow[0],
+
+                    sRowId1 = oRow.getAttribute("data-sap-ui-related"),
+                    sRowId2 = oRow.getAttribute("data-sap-ui"),
+                    sRowId = "";
+
+                if (sRowId1 == null && sRowId2 == null) {
+                    return;
+                }
+
+                if (sRowId1) {
+                    sRowId = sRowId1;
+                }
+
+                if (sRowId2) {
+                    sRowId = sRowId2;
+                }
+
+                var oRow = sap.ui.getCore().byId(sRowId);
+                if (!oRow) {
+                    return;
+                }
+
+                var oCtx = oRow.getBindingContext(),
+                    oRowData = oRow.getModel().getProperty(oCtx.sPath);
+
+                if (oRowData.APPID == "ROOT" || oRowData.PACKG == "ROOT") {
+                    return;
+                }
+
+                if (typeof GfnCallback == "function") {
+                    GfnCallback(oRowData);
+                }
+
+                var oAppF4Dialog = sap.ui.getCore().byId("AppF4Dialog");
+                if (oAppF4Dialog) {
+                    oAppF4Dialog.close();
+                    return;
+                }
+
             }
-
-            var oRow = $SelectedRow[0],
-
-                sRowId1 = oRow.getAttribute("data-sap-ui-related"),
-                sRowId2 = oRow.getAttribute("data-sap-ui"),
-                sRowId = "";
-
-            if (sRowId1 == null && sRowId2 == null) {
-                return;
-            }
-
-            if (sRowId1) {
-                sRowId = sRowId1;
-            }
-
-            if (sRowId2) {
-                sRowId = sRowId2;
-            }
-
-            var oRow = sap.ui.getCore().byId(sRowId);
-            if (!oRow) {
-                return;
-            }
-
-            var oCtx = oRow.getBindingContext(),
-                oRowData = oRow.getModel().getProperty(oCtx.sPath);
-
-            if (oRowData.APPID == "ROOT" || oRowData.PACKG == "ROOT") {
-                return;
-            }
-
-            if (typeof GfnCallback == "function") {
-                GfnCallback(oRowData);
-            }
-
-            var oAppF4Dialog = sap.ui.getCore().byId("AppF4Dialog");
-            if (oAppF4Dialog) {
-                oAppF4Dialog.close();
-                return;
-            }
-
         });
+
+        // oTreeTable.attachBrowserEvent("dblclick", function (oEvent) {
+
+        //     var oTarget = oEvent.target,
+        //         $SelectedRow = $(oTarget).closest(".sapUiTableRow");
+
+        //     if (!$SelectedRow.length) {
+        //         return;
+        //     }
+
+        //     var oRow = $SelectedRow[0],
+
+        //         sRowId1 = oRow.getAttribute("data-sap-ui-related"),
+        //         sRowId2 = oRow.getAttribute("data-sap-ui"),
+        //         sRowId = "";
+
+        //     if (sRowId1 == null && sRowId2 == null) {
+        //         return;
+        //     }
+
+        //     if (sRowId1) {
+        //         sRowId = sRowId1;
+        //     }
+
+        //     if (sRowId2) {
+        //         sRowId = sRowId2;
+        //     }
+
+        //     var oRow = sap.ui.getCore().byId(sRowId);
+        //     if (!oRow) {
+        //         return;
+        //     }
+
+        //     var oCtx = oRow.getBindingContext(),
+        //         oRowData = oRow.getModel().getProperty(oCtx.sPath);
+
+        //     if (oRowData.APPID == "ROOT" || oRowData.PACKG == "ROOT") {
+        //         return;
+        //     }
+
+        //     if (typeof GfnCallback == "function") {
+        //         GfnCallback(oRowData);
+        //     }
+
+        //     var oAppF4Dialog = sap.ui.getCore().byId("AppF4Dialog");
+        //     if (oAppF4Dialog) {
+        //         oAppF4Dialog.close();
+        //         return;
+        //     }
+
+        // });
 
         return oItem;
 
@@ -772,35 +825,37 @@
 
         });
 
-        oTable.attachBrowserEvent("dblclick", function (oEvent) {
+        oTable.addEventDelegate({
+            ondblclick: function (oEvent) {
 
-            var oTarget = oEvent.target,
-                $SelectedRow = $(oTarget).closest(".sapMListTblRow");
+                var oTarget = oEvent.target,
+                    $SelectedRow = $(oTarget).closest(".sapMListTblRow, .sapMListTblSubRow");
 
-            if (!$SelectedRow.length) {
-                return;
+                if (!$SelectedRow.length) {
+                    return;
+                }
+
+                var oRow = $SelectedRow[0],
+                    oSelectedRow = sap.ui.getCore().byId(oRow.id);
+
+                if (!oSelectedRow) {
+                    return;
+                }
+
+                var oCtx = oSelectedRow.getBindingContext(),
+                    oRowData = oSelectedRow.getModel().getProperty(oCtx.sPath);
+
+                if (typeof GfnCallback == "function") {
+                    GfnCallback(oRowData);
+                }
+
+                var oAppF4Dialog = sap.ui.getCore().byId("AppF4Dialog");
+                if (oAppF4Dialog) {
+                    oAppF4Dialog.close();
+                    return;
+                }
+
             }
-
-            var oRow = $SelectedRow[0],
-                oSelectedRow = sap.ui.getCore().byId(oRow.id);
-
-            if (!oSelectedRow) {
-                return;
-            }
-
-            var oCtx = oSelectedRow.getBindingContext(),
-                oRowData = oSelectedRow.getModel().getProperty(oCtx.sPath);
-
-            if (typeof GfnCallback == "function") {
-                GfnCallback(oRowData);
-            }
-
-            var oAppF4Dialog = sap.ui.getCore().byId("AppF4Dialog");
-            if (oAppF4Dialog) {
-                oAppF4Dialog.close();
-                return;
-            }
-
         });
 
         return oTable;

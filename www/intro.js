@@ -440,7 +440,7 @@
 
         return new Promise((resolve, reject) => {
 
-            let lf_err = (e) => {
+            let lf_err = (err) => {
                     reject(err.toString());
                 },
 

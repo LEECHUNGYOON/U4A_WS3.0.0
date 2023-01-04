@@ -1907,7 +1907,7 @@
             sAuthKey = oSYSADMIN.AUTHKEY,
             sKeyEnc = atob(sAuthKey);
 
-    };
+    }; // end of oAPP.common.fnAdminSubmit
 
     /************************************************************************
      * 전체 화면 상단 공통 버튼
@@ -1990,7 +1990,26 @@
             ]
         }).addStyleClass("u4aWsCommonHeaderArea");
 
-    };
+    }; // end of oAPP.common.fnGetCommonHeaderButtons
+
+    /**
+     * 주어진 시간 동안 멈추기
+     * @param {Integer} iTime 멈추는 시간 (ms)
+     * @returns 
+     */
+    oAPP.common.fnSleep = async (iTime) => {
+
+        return new Promise((resolve) => {
+
+            setTimeout(() => {
+
+                resolve();
+
+            }, iTime);
+
+        });
+
+    }; // end of oAPP.common.fnSleep
 
 })(window, $, oAPP);
 
@@ -2354,7 +2373,7 @@ function fn_PropHelpPopup(sUrl) {
 
 }
 
-function sendServerExit(oOptions, fnCallback) {
+async function sendServerExit(oOptions, fnCallback) {
 
     var sUrl = oOptions.URL,
         oFormData = oOptions.FORMDATA;
@@ -2362,23 +2381,62 @@ function sendServerExit(oOptions, fnCallback) {
     // let oLogInData = parent.getUserInfo();
     // if (oLogInData.HTTP_ONLY == "1") {
 
-    //     // formdata가 있을 경우
-    //     if (oFormData) {         
-    //         oFormData.append("sap-user", oLogInData.ID);
-    //         oFormData.append("sap-password", oLogInData.PW);
-    //         oFormData.append("sap-client", oLogInData.CLIENT);
-    //         oFormData.append("sap-language", oLogInData.LANGU);
-    //     } else {
-    //         // formdate가 없으면 url에 ID,PW를 파라미터로 전송
-    //         sUrl += `?sap-user=${oLogInData.ID}&sap-password=${oLogInData.PW}&sap-client=${oLogInData.CLIENT}&sap-language=${oLogInData.LANGU}`;
-    //     }
+    //     sUrl += `?sap-user=${oLogInData.ID}&sap-password=${oLogInData.PW}&sap-client=${oLogInData.CLIENT}&sap-language=${oLogInData.LANGU}`;
+
+    //     // // formdata가 있을 경우
+    //     // if (oFormData) {         
+    //     //     sUrl += `?sap-user=${oLogInData.ID}&sap-password=${oLogInData.PW}&sap-client=${oLogInData.CLIENT}&sap-language=${oLogInData.LANGU}`;
+    //     //     // oFormData.append("sap-user", oLogInData.ID);
+    //     //     // oFormData.append("sap-password", oLogInData.PW);
+    //     //     // oFormData.append("sap-client", oLogInData.CLIENT);
+    //     //     // oFormData.append("sap-language", oLogInData.LANGU);
+    //     // } else {
+    //     //     // formdate가 없으면 url에 ID,PW를 파라미터로 전송
+    //     //     sUrl += `?sap-user=${oLogInData.ID}&sap-password=${oLogInData.PW}&sap-client=${oLogInData.CLIENT}&sap-language=${oLogInData.LANGU}`;
+    //     // }
 
     // }
 
     parent.setBusy('X');
 
+    if (oFormData && oFormData.get) {
+        var Url = sUrl + "?APPID=" + oFormData.get("APPID") + "&SSID=" + oFormData.get("SSID");
+        navigator.sendBeacon(Url);
+    } else {
+        //비콘 날려 
+        // var Url = sUrl + "?APPID=" + oFormData.get("APPID") + "&SSID=" + oFormData.get("SSID");
+
+        navigator.sendBeacon(sUrl);
+    }
+
+    await oAPP.common.fnSleep(500);
+
+    if (typeof fnCallback === "function") {
+        fnCallback();
+    }
+
+    return;
+
     var xhttp = new XMLHttpRequest();
 
+    xhttp.timeout = 30000;
+    xhttp.onload = (e) => {
+        if (typeof fnCallback === "function") {
+            fnCallback(this);
+        }
+    };
+    xhttp.onerror = (e) => {
+        if (typeof fnCallback === "function") {
+            fnCallback(this);
+        }
+    };
+    xhttp.ontimeout = () => {
+        if (typeof fnCallback === "function") {
+            fnCallback(this);
+        }
+    };
+
+    /*
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4) {
 
@@ -2388,8 +2446,11 @@ function sendServerExit(oOptions, fnCallback) {
 
         }
     };
+    */
 
     xhttp.open("POST", sUrl, true);
+
+    xhttp.withCredentials = true;
 
     if (oFormData instanceof FormData == true) {
         xhttp.send(oFormData);

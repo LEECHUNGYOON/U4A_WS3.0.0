@@ -87,8 +87,20 @@ function configureSession() {
 
     session.defaultSession.webRequest.onHeadersReceived(filter, (details, callback) => {
 
-        var cookies = (details.responseHeaders['set-cookie'] || []).map(cookie => cookie.replace('SameSite=Strict', 'SameSite=None'));
-        // cookies = (details.responseHeaders['set-cookie'] || []).map(cookie => cookie.replace('SameSite=Lax', 'SameSite=None'));
+        let cookies = (details.responseHeaders['set-cookie'] || []).map((cookie) => {
+
+            if (cookie.indexOf("SameSite=OFF") > 0 || cookie.indexOf("SameSite=None") > 0) {
+                return cookie;
+            }
+
+            let sCookie = cookie;
+
+            sCookie = sCookie.replace('SameSite=Strict', 'SameSite=None');
+            sCookie = sCookie.replace('SameSite=Lax', 'SameSite=None');
+
+            return sCookie;
+
+        });
 
         if (cookies.length > 0) {
             details.responseHeaders['set-cookie'] = cookies;
@@ -131,7 +143,7 @@ function createWindow() {
     browserWindowOpts.webPreferences.contextIsolation = false;
 
     // samesite 회피
-    // configureSession();
+    configureSession();
 
     mainWindow = new BrowserWindow(browserWindowOpts);
     remote.enable(mainWindow.webContents);
@@ -173,6 +185,29 @@ function configureProtocol() {
     protocol.interceptFileProtocol('file', (_, cb) => {
         cb(null);
     });
+}
+
+
+/**
+ * single instance lock 요청
+ * 
+ * 프로그램을 한 프로세스만 켜지도록 만드는 작업.
+ */
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+    app.quit();
+} else {
+    app.on('second-instance', () => {
+        // Someone tried to run a second instance, we should focus our window.
+        if (mainWindow) {
+            if (mainWindow.isMinimized() || !mainWindow.isVisible()) {
+                mainWindow.show();
+            }
+            mainWindow.focus();
+        }
+    });
+
 }
 
 // This method will be called when Electron has finished

@@ -827,7 +827,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A90", "", "", "", ""), // Web Application ID
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A90"), // Web Application ID
                                 }),
                                 fields: new sap.m.Text({
                                     // editable: false,
@@ -837,7 +837,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91", "", "", "", ""), // Web Application Name
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91"), // Web Application Name
                                 }),
                                 fields: new sap.m.Input({
                                     value: `{${sBindRoot}/DESCT}`,
@@ -848,7 +848,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C12", "", "", "", ""), // Request/Task
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C12"), // Request/Task
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/REQNO}`
@@ -857,7 +857,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A98", "", "", "", ""), // Language Key
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A98"), // Language Key
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/LANGU}`
@@ -866,7 +866,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C03", "", "", "", ""), // Code Page
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C03"), // Code Page
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/CODPG}`
@@ -875,7 +875,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C13", "", "", "", ""), // Dev. Package
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C13"), // Dev. Package
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/PACKG}`
@@ -884,7 +884,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A92", "", "", "", ""), // Assigned Class Object ID
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A92"), // Assigned Class Object ID
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/CLSID}`
@@ -893,7 +893,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C14", "", "", "", ""), // Program ID in Requests and Tasks
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C14"), // Program ID in Requests and Tasks
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/PGMID}`
@@ -902,7 +902,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B27", "", "", "", ""), // Object Type
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B27"), // Object Type
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/OBJTY}`
@@ -911,7 +911,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C15", "", "", "", ""), // Authorization Group
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C15"), // Authorization Group
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/AUTHG}`
@@ -921,7 +921,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C16", "", "", "", ""), // Create User
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C16"), // Create User
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/ERUSR}`
@@ -930,7 +930,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C06", "", "", "", ""), // Create Date
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C06"), // Create Date
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/ERDAT}`
@@ -939,7 +939,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C07", "", "", "", ""), // Create Time
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C07"), // Create Time
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/ERTIM}`
@@ -948,7 +948,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C08", "", "", "", ""), // Change User
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C08"), // Change User
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/AEUSR}`
@@ -957,7 +957,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C09", "", "", "", ""), // Change Date
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C09"), // Change Date
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/AEDAT}`
@@ -966,7 +966,7 @@
                             new sap.ui.layout.form.FormElement({
                                 label: new sap.m.Label({
                                     design: sap.m.LabelDesign.Bold,
-                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C10", "", "", "", ""), // Change Time
+                                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C10"), // Change Time
                                 }),
                                 fields: new sap.m.Text({
                                     text: `{${sBindRoot}/AETIM}`
@@ -2133,34 +2133,262 @@
 
         debugger;
 
-        var sBindRootPath = "/WS30/USPRNM",
-            iIndex = gSelectedTreeIndex,
+        var iIndex = gSelectedTreeIndex,
             oCtx = oTreeTable.getContextByIndex(iIndex);
 
         if (!oCtx) {
             return;
         }
 
-        var oData = oCtx.getModel().getProperty(oCtx.getPath()),
-            oInitData = {
-                TITLE: oData.OBDEC,
-                NAME: "",
-                NAME_VS: "",
-                NAME_VSTXT: "",
-                DESC: "",
-                ISFLD: false
-            };
+        var oData = oCtx.getModel().getProperty(oCtx.getPath());
 
-        // USP 생성 팝업의 초기 데이터 모델 세팅
-        APPCOMMON.fnSetModelProperty(sBindRootPath, oInitData);
+        let oBindData = {};
+        oBindData = jQuery.extend(true, {}, oData);
 
-        var oDialog = sap.ui.getCore().byId("uspCrNodePopup");
+        var oDialog = sap.ui.getCore().byId("uspRNPopup");
         if (oDialog) {
+
+            let oDialogModel = oDialog.getModel();
+            oDialogModel.setData(oBindData);
+
             oDialog.open();
+
             return;
         }
 
+        // USP 생성 팝업의 FORM
+        var oUspRNForm = new sap.ui.layout.form.Form({
+            editable: true,
+            layout: new sap.ui.layout.form.ResponsiveGridLayout({
+                labelSpanXL: 12,
+                labelSpanL: 12,
+                labelSpanM: 12,
+                labelSpanS: 12,
+                singleContainerFullSize: false
+            }),
+
+            formContainers: [
+                new sap.ui.layout.form.FormContainer({
+
+                    formElements: [
+                        new sap.ui.layout.form.FormElement({
+                            label: new sap.m.Label({
+                                required: false,
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C18") // URL
+                            }),
+                            fields: new sap.m.Input({
+                                value: "{/SPATH}",
+                                editable: false,
+                                enabled: false,
+                            })
+                        }),
+
+                        new sap.ui.layout.form.FormElement({
+                            label: new sap.m.Label({
+                                required: false,
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D92") // Old Name
+                            }),
+                            fields: new sap.m.Input({
+                                value: "{/OBDEC}",
+                                editable: false,
+                                enabled: false,
+                            })
+                        }),
+
+                        new sap.ui.layout.form.FormElement({
+                            label: new sap.m.Label({
+                                required: true,
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D93"), // New Name
+                            }),
+                            fields: new sap.m.Input("ws30_rename_new", {
+                                value: "{/NEWNAME}",
+                                valueStateText: "{/NAME_VSTXT}",
+                                submit: () => {
+                                    fnRenameSubmit();
+                                }
+                            }).bindProperty("valueState", "/NAME_VS", function (VST) {
+
+                                // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
+                                if (VST == null || VST == "") {
+                                    return sap.ui.core.ValueState.None;
+                                }
+
+                                return VST;
+
+                            })
+                        }),
+
+                    ]
+
+                }),
+
+            ]
+
+        }); // end of form
+
+        let oJsonModel = new sap.ui.model.json.JSONModel();
+        oJsonModel.setData(oBindData);
+
+        // USP Folder 생성 팝업
+        new sap.m.Dialog("uspRNPopup", {
+
+            // properties
+            draggable: true,
+            resizable: true,
+            title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D44"), // Rename
+            contentWidth: "500px",
+
+            // aggregations
+            buttons: [
+                new sap.m.Button({
+                    type: sap.m.ButtonType.Emphasized,
+                    icon: "sap-icon://accept",
+                    press: (oEvent) => {
+
+                        fnRenameSubmit();
+                    }
+                }),
+                new sap.m.Button({
+                    type: sap.m.ButtonType.Reject,
+                    icon: "sap-icon://decline",
+                    press: () => {
+
+                        var oDialog = sap.ui.getCore().byId("uspRNPopup");
+
+                        if (oDialog && oDialog.isOpen()) {
+                            oDialog.close();
+                        }
+
+                    }
+                }),
+            ],
+
+            content: [
+                oUspRNForm
+            ],
+
+            // association
+            initialFocus: "ws30_rename_new",
+
+            // events
+            afterClose: function () {
+
+                let oDialog = sap.ui.getCore().byId("uspRNPopup"),
+                    oDialogModel = oDialog.getModel();
+
+                if (!oDialogModel) {
+                    return;
+                }
+
+                oDialogModel.setProperty("/", {});
+
+            }
+
+        }).setModel(oJsonModel).open();
+
     } // end of fnRenameUspNodePopup
+
+    function fnRenameSubmit() {
+
+        let oDialog = sap.ui.getCore().byId("uspRNPopup");
+        if (!oDialog) {
+            return;
+        }
+
+        let oDialogModel = oDialog.getModel();
+        if (!oDialogModel) {
+            return;
+        }
+
+        debugger;
+
+        let oModelData = oDialogModel.getData(),
+            oBindData = jQuery.extend(true, {}, oModelData),
+            sNewName = oBindData.NEWNAME;
+
+        // 생성 팝업 입력값 체크
+        var oResult = _fnCheckCreateNodeData({
+            NAME: sNewName
+        });
+
+        if (oResult.RETCD == "E") {
+
+            // 오류난 Input에 focus를 줘서 ValueState Text가 잘 보이도록 만든다.
+            var oInput = sap.ui.getCore().byId("ws30_rename_new");
+            if (oInput) {
+                oInput.focus();
+            }
+
+            // Value State 설정
+            oBindData.NAME_VS = sap.ui.core.ValueState.Error;
+            oBindData.NAME_VSTXT = oResult.RTMSG;
+
+            oDialogModel.setData(oBindData);
+            oDialogModel.refresh(true);
+
+            parent.setSoundMsg("02"); // error sound
+
+            // 작업표시줄 깜빡임
+            CURRWIN.flashFrame(true);
+
+            // Footer Msg 출력
+            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+
+            return;
+
+        }
+
+        let oTreeTable = sap.ui.getCore().byId("usptree");
+        if (!oTreeTable) {
+            return;
+        }
+
+        var oCtx = oTreeTable.getContextByIndex(gSelectedTreeIndex);
+        if (!oCtx) {
+            return;
+        }
+
+        var oTreeModel = oTreeTable.getModel(),
+            oRowData = oTreeModel.getProperty(oCtx.sPath);
+
+        // 같은 레벨에서의 이름 중복 확인
+        var oDup = oRowData.USPTREE.find(arr => arr.OBDEC.toLowerCase() == oBindData.NEWNAME.toLowerCase());
+
+        if (oDup) {
+
+            var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "004"); // Duplicate filename exists.
+
+            // Value State 설정
+            oBindData.NAME_VS = sap.ui.core.ValueState.Error;
+            oBindData.NAME_VSTXT = sMsg;
+
+            oDialogModel.setData(oBindData);
+            oDialogModel.refresh(true);
+
+            // APPCOMMON.fnSetModelProperty(sBindRootPath, oCrateData, true);
+
+            parent.setSoundMsg("02"); // error sound
+
+            // 작업표시줄 깜빡임
+            CURRWIN.flashFrame(true);
+
+            // Footer Msg 출력
+            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", sMsg);
+
+            return;
+
+        }
+
+
+        debugger;
+
+
+
+
+    } // end of fnRenameSubmit
 
     /**************************************************************************
      * [WS30] USP Tree의 Node 삭제
@@ -5024,8 +5252,6 @@
      **************************************************************************/
     function fnCodeEditorKeyPressEvent(IsAttach) {
 
-        debugger;
-        
         let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor");
         if (!oCodeEditor1) {
             return;
