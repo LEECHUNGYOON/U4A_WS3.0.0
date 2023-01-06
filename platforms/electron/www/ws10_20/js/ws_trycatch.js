@@ -31,6 +31,19 @@ module.exports = function (window, document, console) {
      ************************************************************************/
     function showCriticalErrorDialog(sErrorMsg) {
 
+        // 무한루프 오류 방지 Flag
+        // 오류가 한번이라도 발생되었다면 그 다음 오류는 무시
+        if (bIsError == true) {
+            return;
+        }
+
+        bIsError = true;
+
+        // //[임시 -- start] 오류 발생시 디버깅 창을 오픈한다.
+        // let oWebContents = CURRWIN.webContents;
+        // oWebContents.openDevTools();
+        // //[임시 -- end]
+
         let sTitle = "[Critical Error]: ";
         sTitle += "Please contact the solution team.";
 
@@ -48,13 +61,8 @@ module.exports = function (window, document, console) {
 
     } // end of showCriticalErrorDialog    
 
+    // window onError 오류
     function onError(message, url, line, col, errorObj) {
-
-        if (bIsError) {
-            return;
-        }
-
-        bIsError = true;
 
         let sErrMsg = `[onError]: ${message}\n${url}, ${line}:${col}`;
 
@@ -65,13 +73,8 @@ module.exports = function (window, document, console) {
 
     }
 
+    // 비동기 오류
     function onunhandledrejection(event) {
-
-        if (bIsError) {
-            return;
-        }
-
-        bIsError = true;
 
         let sErrorMsg = "";
         if (event.reason) {

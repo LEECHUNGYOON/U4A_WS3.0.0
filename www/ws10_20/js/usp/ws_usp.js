@@ -32,6 +32,13 @@
 
         gfSelectRowUpdate; // Ui Table RowUpdated Global function
 
+
+
+    /**
+     * Bind root paths
+     */
+    const RENAME_BINDROOT = "/WS30/USPRN";
+
     /************************************************************************
      * [WS30] 30번 페이지 생성
      ************************************************************************/
@@ -2131,25 +2138,29 @@
      **************************************************************************/
     function fnRenameUspNodePopup(oTreeTable) {
 
-        debugger;
-
-        var iIndex = gSelectedTreeIndex,
+        // 테이블의 선택한 라인의 바인딩 데이터를 구한다.
+        let iIndex = gSelectedTreeIndex,
             oCtx = oTreeTable.getContextByIndex(iIndex);
 
         if (!oCtx) {
             return;
         }
 
-        var oData = oCtx.getModel().getProperty(oCtx.getPath());
+        let oData = oCtx.getModel().getProperty(oCtx.getPath()),
+            oBindData = {
+                PRC: {
+                    NAME_VSTXT: "",
+                    NAME_VS: sap.ui.core.ValueState.None
+                }
+            };
 
-        let oBindData = {};
-        oBindData = jQuery.extend(true, {}, oData);
+        oBindData.BINDDATA = jQuery.extend(true, {}, oData);
+
+        // USP 생성 팝업의 초기 데이터 모델 세팅
+        APPCOMMON.fnSetModelProperty(RENAME_BINDROOT, oBindData);
 
         var oDialog = sap.ui.getCore().byId("uspRNPopup");
         if (oDialog) {
-
-            let oDialogModel = oDialog.getModel();
-            oDialogModel.setData(oBindData);
 
             oDialog.open();
 
@@ -2178,7 +2189,7 @@
                                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C18") // URL
                             }),
                             fields: new sap.m.Input({
-                                value: "{/SPATH}",
+                                value: `{${RENAME_BINDROOT}/BINDDATA/SPATH}`,
                                 editable: false,
                                 enabled: false,
                             })
@@ -2191,9 +2202,27 @@
                                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D92") // Old Name
                             }),
                             fields: new sap.m.Input({
-                                value: "{/OBDEC}",
+                                value: `{${RENAME_BINDROOT}/BINDDATA/OBDEC}`,
                                 editable: false,
                                 enabled: false,
+                            })
+                        }),
+
+                        new sap.ui.layout.form.FormElement({
+                            label: new sap.m.Label({
+                                design: sap.m.LabelDesign.Bold,
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C19"), // Is Folder?
+                            }),
+                            fields: new sap.m.CheckBox({
+                                editable: false,
+                            }).bindProperty("selected", `${RENAME_BINDROOT}/BINDDATA/ISFLD`, function (ISFLD) {
+
+                                if (ISFLD == "X") {
+                                    return true;
+                                }
+
+                                return false;
+
                             })
                         }),
 
@@ -2204,12 +2233,12 @@
                                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D93"), // New Name
                             }),
                             fields: new sap.m.Input("ws30_rename_new", {
-                                value: "{/NEWNAME}",
-                                valueStateText: "{/NAME_VSTXT}",
+                                value: `{${RENAME_BINDROOT}/BINDDATA/NEWNAME}`,
+                                valueStateText: `{${RENAME_BINDROOT}/PRC/NAME_VSTXT}`,
                                 submit: () => {
                                     fnRenameSubmit();
                                 }
-                            }).bindProperty("valueState", "/NAME_VS", function (VST) {
+                            }).bindProperty("valueState", `${RENAME_BINDROOT}/PRC/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -2229,9 +2258,6 @@
 
         }); // end of form
 
-        let oJsonModel = new sap.ui.model.json.JSONModel();
-        oJsonModel.setData(oBindData);
-
         // USP Folder 생성 팝업
         new sap.m.Dialog("uspRNPopup", {
 
@@ -2246,7 +2272,7 @@
                 new sap.m.Button({
                     type: sap.m.ButtonType.Emphasized,
                     icon: "sap-icon://accept",
-                    press: (oEvent) => {
+                    press: () => {
 
                         fnRenameSubmit();
                     }
@@ -2276,21 +2302,19 @@
             // events
             afterClose: function () {
 
-                let oDialog = sap.ui.getCore().byId("uspRNPopup"),
-                    oDialogModel = oDialog.getModel();
+                // USP 생성 팝업의 초기 데이터 모델 세팅
+                APPCOMMON.fnSetModelProperty(RENAME_BINDROOT, {});
 
-                if (!oDialogModel) {
-                    return;
-                }
-
-                oDialogModel.setProperty("/", {});
 
             }
 
-        }).setModel(oJsonModel).open();
+        }).open();
 
     } // end of fnRenameUspNodePopup
 
+    /**************************************************************************
+     * [WS30] USP Tree의 Rename
+     **************************************************************************/
     function fnRenameSubmit() {
 
         let oDialog = sap.ui.getCore().byId("uspRNPopup");
@@ -2298,21 +2322,30 @@
             return;
         }
 
-        let oDialogModel = oDialog.getModel();
-        if (!oDialogModel) {
+        // USP 생성 팝업의 초기 데이터 모델 세팅
+        let oModelData = APPCOMMON.fnGetModelProperty(RENAME_BINDROOT),
+            oModelCopyData = jQuery.extend(true, {}, oModelData);
+
+        let oBindData = oModelCopyData.BINDDATA,
+            oPrc = oModelCopyData.PRC;
+
+        // 기존이름과 변경할 이름이 같다면 그냥 빠져나간다.
+        if (oBindData.OBDEC == oBindData.NEWNAME) {
+
+            // Value State 설정
+            oPrc.NAME_VS = sap.ui.core.ValueState.Error;
+            oPrc.NAME_VSTXT = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "363"); // Same file exists.
+
+            APPCOMMON.fnSetModelProperty(`${RENAME_BINDROOT}/PRC`, oPrc);
+
             return;
         }
 
-        debugger;
-
-        let oModelData = oDialogModel.getData(),
-            oBindData = jQuery.extend(true, {}, oModelData),
-            sNewName = oBindData.NEWNAME;
+        oBindData.NAME = oBindData.NEWNAME;
+        oBindData.ISFLD = oBindData.ISFLD == "X" ? true : false;
 
         // 생성 팝업 입력값 체크
-        var oResult = _fnCheckCreateNodeData({
-            NAME: sNewName
-        });
+        var oResult = _fnCheckCreateNodeData(oBindData);
 
         if (oResult.RETCD == "E") {
 
@@ -2323,19 +2356,15 @@
             }
 
             // Value State 설정
-            oBindData.NAME_VS = sap.ui.core.ValueState.Error;
-            oBindData.NAME_VSTXT = oResult.RTMSG;
+            oPrc.NAME_VS = sap.ui.core.ValueState.Error;
+            oPrc.NAME_VSTXT = oResult.RTMSG;
 
-            oDialogModel.setData(oBindData);
-            oDialogModel.refresh(true);
+            APPCOMMON.fnSetModelProperty(`${RENAME_BINDROOT}/PRC`, oPrc);
 
             parent.setSoundMsg("02"); // error sound
 
             // 작업표시줄 깜빡임
             CURRWIN.flashFrame(true);
-
-            // Footer Msg 출력
-            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
 
             return;
 
@@ -2351,39 +2380,35 @@
             return;
         }
 
-        var oTreeModel = oTreeTable.getModel(),
-            oRowData = oTreeModel.getProperty(oCtx.sPath);
+        debugger;
+
+        // 같은 레벨의 형제들 찾기
+        var oResult = oAPP.fn._fnFindModelData(oCtx.sPath),
+            oDup = oResult.Nodes.find(arr => arr.OBDEC.toLowerCase() == oBindData.NEWNAME.toLowerCase());
 
         // 같은 레벨에서의 이름 중복 확인
-        var oDup = oRowData.USPTREE.find(arr => arr.OBDEC.toLowerCase() == oBindData.NEWNAME.toLowerCase());
-
         if (oDup) {
 
             var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "004"); // Duplicate filename exists.
 
             // Value State 설정
-            oBindData.NAME_VS = sap.ui.core.ValueState.Error;
-            oBindData.NAME_VSTXT = sMsg;
+            oPrc.NAME_VS = sap.ui.core.ValueState.Error;
+            oPrc.NAME_VSTXT = sMsg;
 
-            oDialogModel.setData(oBindData);
-            oDialogModel.refresh(true);
-
-            // APPCOMMON.fnSetModelProperty(sBindRootPath, oCrateData, true);
+            APPCOMMON.fnSetModelProperty(`${RENAME_BINDROOT}/PRC`, oPrc);
 
             parent.setSoundMsg("02"); // error sound
 
             // 작업표시줄 깜빡임
             CURRWIN.flashFrame(true);
 
-            // Footer Msg 출력
-            APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", sMsg);
-
             return;
 
         }
 
 
-        debugger;
+        // 서버 호출 해서 변경 로직 수행 실시~!!!!!!!!!!!
+
 
 
 
@@ -4505,54 +4530,89 @@
      **************************************************************************/
     function _fnCheckCreateNodeData(oCrateData) {
 
-        var oCheck = {};
+        let oCheck = {};
+
+        let sName = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C11"), // Name
+            sNameRequiredMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "050", sName); // & is required.
 
         // 입력값 존재 여부 확인
+        if (!oCrateData || !oCrateData.NAME) {
+
+            oCheck.RETCD = "E";
+            oCheck.RTMSG = sNameRequiredMsg; //"Name is Required!";
+
+            return oCheck;
+        }
+
+        // 입력값 공백 여부 확인
         if (parent.isEmpty(oCrateData.NAME) === true || parent.isBlank(oCrateData.NAME) === true) {
 
             oCheck.RETCD = "E";
-            oCheck.RTMSG = "Name is Required!";
+            oCheck.RTMSG = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "358"); // 공백문자를 포함할 수 없습니다.
 
             return oCheck;
 
         }
 
         // 공백 입력 확인
-        var blank_pattern = /[\s]/gi;
+        let blank_pattern = /[\s]/gi;
         if (blank_pattern.test(oCrateData.NAME) == true) {
 
             oCheck.RETCD = "E";
-            oCheck.RTMSG = "It must not contain whitespace characters."; // 공백문자를 포함할 수 없습니다.
+            oCheck.RTMSG = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "358"); // 공백문자를 포함할 수 없습니다.
 
             return oCheck;
 
         }
 
-        // 특수문자가 있는 경우
-        var special_pattern = /[`~!@#$%^&*|\\\'\";:\/?]/gi;
+        // 특수문자 전체
+        // var regExp = /[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+
+
+        // 특수문자가 있는 경우 (허용 특수문자 ==> 언더바[_] 또는 점[.])
+        var special_pattern = /[\{\}\[\]\/?,;:|\)*~`!^\-+<>@\#$%&\\\=\(\'\"]/gi;
         if (special_pattern.test(oCrateData.NAME) == true) {
 
             oCheck.RETCD = "E";
-            oCheck.RTMSG = "It must not contain special characters."; // 특수문자를 포함할 수 없습니다.
+            oCheck.RTMSG = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "359"); // 특수문자를 포함할 수 없습니다.
 
             return oCheck;
 
         }
 
-        // 영문 또는 숫자만 허용체크
+        // 영문으로 시작해서 숫자 및 _ 만 허용 
         // var engNum = /^[a-zA-Z]+[a-z0-9A-Z|_]/;
         var engNum = /^[a-zA-Z]|^[a-zA-Z]+[a-z0-9A-Z|_]/;
         if (engNum.test(oCrateData.NAME) == false) {
 
+            let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "362"); // You can only English can be the first character
+            sMsg += " \n " + APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "361"); // You can only English + numbers can be entered
+
             oCheck.RETCD = "E";
-            oCheck.RTMSG = " Only English(upper and lower case)+ numbers can be entered and only English can be the first character.";
+            oCheck.RTMSG = sMsg;
+            // oCheck.RTMSG = "Only English + numbers can be entered and only English can be the first character.";
 
             return oCheck;
 
         }
 
-        // 파일 생성일 경우 파일명에 허용된 확장자인지 체크 한다.
-        if (oCrateData.ISFLD == false) {
+        // 폴더 일 경우 특수문자 체크
+        if (oCrateData.ISFLD == true) {
+
+            // 폴더일 경우 추가 특수문자 체크 
+            var special_pattern = /[.]/gi;
+            if (special_pattern.test(oCrateData.NAME) == true) {
+
+                oCheck.RETCD = "E";
+                oCheck.RTMSG = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "359"); // 특수문자를 포함할 수 없습니다.
+
+                return oCheck;
+
+            }
+
+        }
+        // 파일 일 경우 파일명 체크
+        else {
 
             // 파일명에 확장자가 있는지 체크..            
             var path = oCrateData.NAME;
@@ -4572,8 +4632,11 @@
 
             if ((typeof sCheck == "boolean" && sCheck == false) || exp == '') {
 
+                let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "360");
+                sMsg += " ex) aaa.txt, aaa.js..";
+
                 oCheck.RETCD = "E";
-                oCheck.RTMSG = "Invalid MimeType! Check the extension of the file name. ex) aaa.txt, aaa.js..";
+                oCheck.RTMSG = sMsg; // Invalid MimeType! Check the extension of the file name. ex) aaa.txt, aaa.js..";
 
                 return oCheck;
 
