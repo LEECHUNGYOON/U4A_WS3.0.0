@@ -453,8 +453,8 @@
 
                 if (oEditorDom1 && oEditorDom2) {
                     oEditorDom1.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
-                    oEditorDom2.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);                    
-                }              
+                    oEditorDom2.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+                }
 
             }
 
@@ -492,11 +492,15 @@
      * @param {String} sAppID  
      * - Application Name
      * 
+     * @param {Boolean} bAppMaxLengthCheck Application Length Check를 할지 말지 여부
+     * - true: Application Length Check를 하지 않는다.
+     * - false or undefined : Application Length Check를 한다
+     * 
      * @returns {Object}
      * - RETCD : 상태값 (Boolean)
      * - RETMSG: 상태 메시지 (String)
      ************************************************************************/
-    oAPP.fn.fnCheckValidAppName = function(sAppID) {
+    oAPP.fn.fnCheckValidAppName = function(sAppID, bAppMaxLengthCheck) {
 
         var oRetData = {
             RETCD: false,
@@ -518,10 +522,16 @@
             return oRetData;
         }
 
-        // AppID 자릿수가 15 이상일 경우 오류
-        if (sValue.length > oAPP.attr.iAppNameMaxLength) {
-            oRetData.RETMSG = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "115"); // Application ID can only be 15 characters or less !!  
-            return oRetData;
+        // 20230107 Application Name의 길이를 체크해야 할 경우에만 수행
+        // Create, Copy일 경우에만 Application Name의 길이를 체크함!!
+        if (bAppMaxLengthCheck) {
+
+            // AppID 자릿수가 15 이상일 경우 오류
+            if (sValue.length > oAPP.attr.iAppNameMaxLength) {
+                oRetData.RETMSG = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "115"); // Application ID can only be 15 characters or less !!  
+                return oRetData;
+            }
+
         }
 
         var sValueUpper = sValue.toUpperCase(),
@@ -544,8 +554,14 @@
 
     /************************************************************************
      * Application Name 입력 체크
+     * **********************************************************************
+     * @param {Boolean} bAppMaxLengthCheck Application Name의 Max Length 체크 수행 여부
+     * - true: App Name Maxlength Check 수행함
+     * - false or undefined : App Name Maxlength Check 수행 안함
+     * 
+     * @returns {Boolean} 
      ************************************************************************/
-    oAPP.fn.fnCheckAppName = function() {
+    oAPP.fn.fnCheckAppName = function(bAppMaxLengthCheck) {
 
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput");
         if (!oAppNmInput) {
@@ -556,7 +572,7 @@
             sCurrPage = parent.getCurrPage();
 
         // 어플리케이션 명 정합성 체크
-        var oValid = oAPP.fn.fnCheckValidAppName(sValue);
+        var oValid = oAPP.fn.fnCheckValidAppName(sValue, bAppMaxLengthCheck);
 
         if (oValid.RETCD == false) {
             // 페이지 푸터 메시지

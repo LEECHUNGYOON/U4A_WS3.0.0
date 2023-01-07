@@ -20,7 +20,10 @@
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
 
-        var bCheckAppNm = oAPP.fn.fnCheckAppName();
+        // Create, Copy일 경우에만 App Name MaxLength Check 해야함!!
+        let bAppMaxLengthCheck = true;
+
+        var bCheckAppNm = oAPP.fn.fnCheckAppName(bAppMaxLengthCheck);
         if (!bCheckAppNm) {
             return;
         }
@@ -294,7 +297,7 @@
     /************************************************************************
      * App 복사
      ************************************************************************/
-    oAPP.events.ev_AppCopy = function(oEvent) {
+    oAPP.events.ev_AppCopy = function() {
 
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
@@ -305,8 +308,11 @@
             return;
         }
 
+        // Create, Copy일 경우에만 App Name MaxLength Check 해야함!!
+        let bAppMaxLengthCheck = true;
+
         // 어플리케이션 명 입력 유무 및 데이터 정합성 체크
-        var bCheckAppNm = oAPP.fn.fnCheckAppName();
+        var bCheckAppNm = oAPP.fn.fnCheckAppName(bAppMaxLengthCheck);
         if (!bCheckAppNm) {
             sap.ui.getCore().unlock();
             return;
@@ -365,7 +371,7 @@
     /************************************************************************
      * App 실행
      ************************************************************************/
-    oAPP.events.ev_AppExec = function(oEvent) {
+    oAPP.events.ev_AppExec = function() {
 
         var bCheckAppNm = oAPP.fn.fnCheckAppName();
         if (!bCheckAppNm) {
