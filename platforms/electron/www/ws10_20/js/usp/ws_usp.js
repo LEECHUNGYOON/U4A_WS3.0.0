@@ -1619,7 +1619,22 @@
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C22"), // Split Orientation Change
                     tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C22"), // Split Orientation Change
                     press: ev_codeeditorSplitOrientationChange
-                }).bindProperty("enabled", lfCodeeditorBindProperty()),
+                })
+                // .bindProperty("enabled", lfCodeeditorBindProperty()),
+                .bindProperty("enabled", {
+                    parts: [
+                        "/WS30/USPDATA/ISFLD",
+                    ],
+                    formatter: (ISFLD) => {
+
+                        if (ISFLD == "X") {
+                            return false;
+                        }
+
+                        return true;
+
+                    }
+                }),
 
                 new sap.m.Button({
                     icon: "sap-icon://full-screen",
@@ -2412,7 +2427,8 @@
 
         // 같은 레벨의 형제들 찾기
         var oResult = oAPP.fn._fnFindModelData(oCtx.sPath),
-            oDup = oResult.Nodes.find(arr => arr.OBDEC.toLowerCase() == oBindData.NEWNAME.toLowerCase());
+            // oDup = oResult.Nodes.find(arr => arr.OBDEC.toLowerCase() == oBindData.NEWNAME.toLowerCase());
+            oDup = oResult.Nodes.find(arr => arr.OBDEC == oBindData.NEWNAME);
 
         // 같은 레벨에서의 이름 중복 확인
         if (oDup) {
@@ -3614,6 +3630,8 @@
 
         oTable.detachRowsUpdated(ev_getRootNodeRowsUpdated);
 
+        oTable.focus();
+
     } // end of ev_getRootNodeRowsUpdated
 
     /**************************************************************************
@@ -4051,10 +4069,6 @@
 
             case "K7": // Rename
 
-                // sap.m.MessageToast.show("준비중입니다.");
-
-                // return;
-
                 // Usp 생성 시, 현재 Change가 된 상태인지 확인.
                 // 변경 사항이 존재 할 경우 질문 팝업 띄우기.
                 var IS_CHAG = getAppChangeWs30();
@@ -4389,8 +4403,8 @@
             oRowData = oTreeModel.getProperty(oCtx.sPath);
 
         // 같은 레벨에서의 이름 중복 확인
-        var oDup = oRowData.USPTREE.find(arr => arr.OBDEC.toLowerCase() == oCrateData.NAME.toLowerCase());
-
+        // var oDup = oRowData.USPTREE.find(arr => arr.OBDEC.toLowerCase() == oCrateData.NAME.toLowerCase());
+        var oDup = oRowData.USPTREE.find(arr => arr.OBDEC == oCrateData.NAME);
         if (oDup) {
 
             var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "004"); // Duplicate filename exists.

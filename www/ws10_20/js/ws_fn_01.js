@@ -49,7 +49,7 @@
 
                     case "WS20":
 
-                        oAPP.fn.fnMoveToWs20(); // #[ws_fn_02.js]
+                        oAPP.fn.fnMoveToWs20(); // #[ws_fn_02.js]                 
 
                         break;
 
@@ -79,7 +79,7 @@
                             oPanel.setExpanded(true);
                         }
 
-                        oAPP.fn.fnOnInitLayoutSettingsWs30();
+                        oAPP.fn.fnOnInitLayoutSettingsWs30(); // #[ws_usp.js]
 
                         oAPP.fn.fnMoveToWs30(); // #[ws_fn_02.js]
 
