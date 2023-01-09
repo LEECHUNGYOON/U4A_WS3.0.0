@@ -166,7 +166,7 @@
             if(param !== "YES"){return;}
 
             //화면 잠금 처리.
-            oAPP.fn.designAreaLockUnlock(true);
+            //oAPP.fn.designAreaLockUnlock(true);
 
             //POSITION 으로 정렬처리.
             oMdl.oData.T_LAYOUT.sort(function(a,b){
@@ -179,20 +179,19 @@
             //모든 영역 제거 처리.
             oSplit.removeAllContentAreas();
 
-            //첫번째 영역 붙이기.
-            setTimeout(function(){oSplit.addContentArea(oAPP.attr.ui[oMdl.oData.T_LAYOUT[0].UIID]);}, 0);
-
-            //두번째 영역 붙이기.
-            setTimeout(function(){oSplit.addContentArea(oAPP.attr.ui[oMdl.oData.T_LAYOUT[1].UIID]);}, 0);
-
-            //세번째 영역 붙이기.
-            setTimeout(function(){oSplit.addContentArea(oAPP.attr.ui[oMdl.oData.T_LAYOUT[2].UIID]);}, 0);
+            //구성한 정보를 기준으로 화면 구성 처리.
+            for(var i=0, l=oMdl.oData.T_LAYOUT.length; i<l; i++){
+                oSplit.addContentArea(oAPP.attr.ui[oMdl.oData.T_LAYOUT[i].UIID]);
+            }
 
             //팝업 종료 처리.
             lf_close(oDlg, true);
 
             //구성한 design layout 정보 저장 처리.
             parent.setP13nData("designLayout", oMdl.oData.T_LAYOUT);
+
+            //미리보기 영역 재구성.
+            setTimeout(function(){oAPP.fn.loadPreviewFrame(true);}, 100);
 
         }); //저장전 확인 팝업 호출.
         

@@ -164,12 +164,18 @@
             visible: true
         }];
 
-    };    
+    };
 
     /************************************************************************
      * window Event Handle ..
      ************************************************************************/
     oAPP.main.fnBeforeunload = function (isClearStorage) {
+
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
+        // Busy를 킨다.
+        parent.setBusy("X");
 
         // 설정된 Global Shortcut 단축키 삭제
         oAPP.common.fnRemoveGlobalShortcut();
@@ -220,6 +226,12 @@
 
             });
 
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            // Busy를 끈다.
+            parent.setBusy("");
+
             return;
 
         }
@@ -246,6 +258,13 @@
             window.onbeforeunload = () => {};
 
             top.window.close();
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            // Busy를 끈다.
+            parent.setBusy("");
+
 
         });
 
@@ -452,7 +471,7 @@
 
     // 브라우저 닫기, window.close() 실행시 타는 이벤트
     window.onbeforeunload = () => {
-        
+
         // Logout 메시지가 이미 떠 있다면 창을 못닫게 한다.
         if (oAPP.attr.isBrowserCloseLogoutMsgOpen == 'X') {
 

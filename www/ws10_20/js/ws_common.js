@@ -2014,19 +2014,33 @@
 })(window, $, oAPP);
 
 // application 초기 정보
-function ajax_init_prc(oFormData, fn_callback) {
+function ajax_init_prc(oFormData, fn_callback, fn_fail) {
 
     var sPath = parent.getServerPath() + '/init_prc';
 
     parent.setBusy('X');
 
-    sendAjax(sPath, oFormData, (oReturn) => {
+    // function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob) {
 
-        if (typeof fn_callback == "function") {
-            fn_callback(oReturn);
+    sendAjax(
+        sPath,
+        oFormData,
+        (oReturn) => { // success
+
+            if (typeof fn_callback == "function") {
+                fn_callback(oReturn);
+            }
+
+        },
+        null,
+        null,
+        null,
+        (oReturn) => { // fail
+            if (typeof fn_fail == "function") {
+                fn_fail(oReturn);
+            }
         }
-
-    });
+    );
 
 } // end of ajax_init_prc
 
@@ -2198,16 +2212,22 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
                 }
 
                 var sCleanHtml = parent.setCleanHtml(xhr.response);
+                if (sCleanHtml == "") {
+                    sCleanHtml = "Server connection fail!!"
+                }
 
                 parent.showMessage(sap, 20, 'E', sCleanHtml, fn_callback);
 
                 function fn_callback() {
-
+                    
                     // 화면에 떠있는 Dialog 들이 있을 경우 모두 닫는다.
                     oAPP.fn.fnCloseAllWs20Dialogs();
 
-                    // 10번 페이지로 이동
-                    oAPP.fn.fnOnMoveToPage("WS10");
+                    // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Login 페이지로 이동.
+                    fn_logoff_success("");                    
+
+                    // // 10번 페이지로 이동
+                    // oAPP.fn.fnOnMoveToPage("WS10");
 
                 }
 

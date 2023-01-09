@@ -1191,7 +1191,7 @@
 
       oUi.addEventDelegate({
         ondragover:function(oEvent){
-          console.log(22222);
+
           //focus된 dom focus 해제 처리.
           if (document.activeElement && document.activeElement.blur) {
             document.activeElement.blur();
@@ -1208,7 +1208,7 @@
   
         },
         ondragleave:function(oEvent){
-          console.log(33333);
+
           //focus된 dom focus 해제 처리.
           if (document.activeElement && document.activeElement.blur) {
             document.activeElement.blur();
