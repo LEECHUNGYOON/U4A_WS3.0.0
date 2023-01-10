@@ -819,6 +819,16 @@ oAPP.common = {};
 
             bIsBusy = (sIsbusy == "X" ? true : false);
 
+        // 현재 Busy Indicator 상태정보를 글로벌 변수에 저장한다.
+        oWS.utill.attr.isBusy = sIsbusy;
+
+        if (oWS.utill.attr.sap) {
+            if (bIsBusy) {
+                oWS.utill.attr.sap.ui.getCore().lock();
+            } else {
+                oWS.utill.attr.sap.ui.getCore().unlock();
+            }
+        }
 
         // Cursor Focus Handle
         if (bIsBusy) {
@@ -839,17 +849,6 @@ oAPP.common = {};
             }
 
         }
-
-        if (oWS.utill.attr.sap) {
-            if (bIsBusy) {
-                oWS.utill.attr.sap.ui.getCore().lock();
-            } else {
-                oWS.utill.attr.sap.ui.getCore().unlock();
-            }
-        }
-
-        // 현재 Busy Indicator 상태정보를 글로벌 변수에 저장한다.
-        oWS.utill.attr.isBusy = sIsbusy;
 
         // 작업표시줄에 ProgressBar 실행
         setProgressBar("S", bIsBusy);

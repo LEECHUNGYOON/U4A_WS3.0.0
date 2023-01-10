@@ -73,7 +73,7 @@
      **************************************************************************/
     oAPP.fn.fnSetUspTreeNodeMove = (oTreeTable, pSelIndex, pMoveIndex) => {
 
-        console.log("Tree Node Move Position");
+        zconsole.log("Tree Node Move Position");
 
         var oSelectedCtx = oTreeTable.getContextByIndex(pSelIndex), // 현재 선택한 Node
             oCtxModel = oSelectedCtx.getModel(),

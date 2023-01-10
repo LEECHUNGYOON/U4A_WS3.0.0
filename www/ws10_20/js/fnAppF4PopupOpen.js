@@ -867,12 +867,19 @@
      ************************************************************************/
     oAPP.events.ev_AppF4Search = function () {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         var sAppF4BindPath = C_BIND_ROOT_PATH + "/TAB1";
 
         // 검색 조건 구하기
         var oSrchCond = APPCOMMON.fnGetModelProperty(sAppF4BindPath);
 
         if (!oSrchCond) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -908,7 +915,8 @@
 
             APPCOMMON.fnSetModelProperty(sAppListBindPath, aAppInfo);
 
-            parent.setBusy('');
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         }
 

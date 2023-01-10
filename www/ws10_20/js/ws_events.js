@@ -2,7 +2,7 @@
  * ws_events.js
  **************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     oAPP.events = {};
@@ -15,16 +15,20 @@
     /************************************************************************
      * App 생성팝업
      ************************************************************************/
-    oAPP.events.ev_AppCreate = function() {
+    oAPP.events.ev_AppCreate = function () {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // Create, Copy일 경우에만 App Name MaxLength Check 해야함!!
         let bAppMaxLengthCheck = true;
 
         var bCheckAppNm = oAPP.fn.fnCheckAppName(bAppMaxLengthCheck);
         if (!bCheckAppNm) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -40,11 +44,6 @@
 
         function lf_success(oAppInfo) {
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            parent.setBusy('');
-
             if (oAppInfo.MSGTY == "") {
 
                 var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "035"); // It is already registered application information.
@@ -52,20 +51,33 @@
                 // 페이지 푸터 메시지			
                 APPCOMMON.fnShowFloatingFooterMsg("E", "WS10", sMsg);
 
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
 
             if (!oAPP.fn.createApplicationPopup) {
 
-                $.getScript("design/js/createApplicationPopup.js", function() {
+                // Application 생성 팝업 띄우기
+                $.getScript("design/js/createApplicationPopup.js", function () {
+
                     oAPP.fn.createApplicationPopup(sAppID);
+
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
+
                 });
 
                 return;
 
             }
 
+            // Application 생성 팝업 띄우기
             oAPP.fn.createApplicationPopup(sAppID);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         }
 
@@ -74,10 +86,10 @@
     /************************************************************************
      * App 수정
      ************************************************************************/
-    oAPP.events.ev_AppChange = function() {
+    oAPP.events.ev_AppChange = function () {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
             sAppID = oAppNmInput.getValue();
@@ -89,20 +101,22 @@
     /************************************************************************
      * App 삭제
      ************************************************************************/
-    oAPP.events.ev_AppDelete = function() {
+    oAPP.events.ev_AppDelete = function () {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
-            sap.ui.getCore().unlock();
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
             return;
         }
 
         var bCheckAppNm = oAPP.fn.fnCheckAppName();
         if (!bCheckAppNm) {
-            sap.ui.getCore().unlock();
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
             return;
         }
 
@@ -115,11 +129,6 @@
 
         function lf_result(RESULT) {
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            parent.setBusy('');
-
             var oAppInfo = RESULT.RETURN,
                 oCurrWin = REMOTE.getCurrentWindow(),
                 sCurrPage = parent.getCurrPage();
@@ -131,27 +140,43 @@
 
                 APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
 
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
             // 질문 메시지
             var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "003"); // Do you really want to delete the object?
 
             // 질문팝업? 삭제하시겠습니까?            
-            parent.showMessage(sap, 30, 'W', sMsg, function(TYPE) {
+            parent.showMessage(sap, 30, 'W', sMsg, function (TYPE) {
 
                 if (TYPE == null || TYPE == "NO") {
                     return;
                 }
 
+                // busy 키고 Lock 걸기
+                oAPP.common.fnSetBusyLock("X");
+
                 // 삭제 어플리케이션이 USP 일 경우.
                 if (oAppInfo.APPTY == "U") {
 
+                    // busy 키고 Lock 걸기
+                    oAPP.common.fnSetBusyLock("X");
+
+                    // 어플리케이션 삭제하러 서버 호출
                     oAPP.fn.fnSetUspAppDelete();
 
                     return;
 
                 }
+
+                // busy 키고 Lock 걸기
+                oAPP.common.fnSetBusyLock("X");
 
                 // 어플리케이션 삭제하러 서버 호출
                 oAPP.fn.fnSetAppDelete();
@@ -165,7 +190,7 @@
     /************************************************************************
      * App 삭제하러 서버 호출
      ************************************************************************/
-    oAPP.fn.fnSetAppDelete = function(oParam) {
+    oAPP.fn.fnSetAppDelete = function (oParam) {
 
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
@@ -185,12 +210,7 @@
 
         oFormData.append("APPID", sAppId);
 
-        sendAjax(sPath, oFormData, function(oResult) {
-
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            parent.setBusy("");
+        sendAjax(sPath, oFormData, function (oResult) {
 
             // 스크립트가 있으면 eval 처리
             if (oResult.SCRIPT) {
@@ -207,8 +227,18 @@
                 // 작업표시줄 깜빡임
                 oCurrWin.flashFrame(true);
 
+                // 화면 Lock 해제
+                sap.ui.getCore().unlock();
+
+                parent.setBusy("");
+
                 return;
             }
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            parent.setBusy("");
 
         });
 
@@ -216,7 +246,7 @@
         function lf_appDelCtsPopup() {
 
             // CTS Popup을 Open 한다.
-            oAPP.fn.fnCtsPopupOpener(function(oResult) {
+            oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
                 oAPP.fn.fnSetAppDelete(oResult);
 
@@ -229,12 +259,10 @@
     /************************************************************************
      * USP App 삭제하러 서버 호출
      ************************************************************************/
-    oAPP.fn.fnSetUspAppDelete = function(oParam) {
+    oAPP.fn.fnSetUspAppDelete = function (oParam) {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
-        parent.setBusy('X');
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // application 존재 여부 체크
         var oBindData = APPCOMMON.fnGetModelProperty("/WS10"),
@@ -254,12 +282,7 @@
 
         oFormData.append("APPDATA", JSON.stringify(oDelAppInfo));
 
-        sendAjax(sPath, oFormData, function(oResult) {
-
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            parent.setBusy("");
+        sendAjax(sPath, oFormData, function (oResult) {
 
             // 스크립트가 있으면 eval 처리
             if (oResult.SCRIPT) {
@@ -274,9 +297,15 @@
                 // 작업표시줄 깜빡임
                 CURRWIN.flashFrame(true);
 
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
 
             }
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         });
 
@@ -284,7 +313,7 @@
         function lf_appDelCtsPopup() {
 
             // CTS Popup을 Open 한다.
-            oAPP.fn.fnCtsPopupOpener(function(oResult) {
+            oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
                 oAPP.fn.fnSetUspAppDelete(oResult);
 
@@ -297,14 +326,17 @@
     /************************************************************************
      * App 복사
      ************************************************************************/
-    oAPP.events.ev_AppCopy = function() {
+    oAPP.events.ev_AppCopy = function () {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
-            sap.ui.getCore().unlock();
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -314,7 +346,8 @@
         // 어플리케이션 명 입력 유무 및 데이터 정합성 체크
         var bCheckAppNm = oAPP.fn.fnCheckAppName(bAppMaxLengthCheck);
         if (!bCheckAppNm) {
-            sap.ui.getCore().unlock();
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
             return;
         }
 
@@ -327,10 +360,6 @@
 
         function lf_result(RESULT) {
 
-            sap.ui.getCore().unlock();
-
-            parent.setBusy('');
-
             var oAppInfo = RESULT.RETURN,
                 oCurrWin = REMOTE.getCurrentWindow(),
                 sCurrPage = parent.getCurrPage();
@@ -342,12 +371,17 @@
 
                 APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
 
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
                 return;
 
             }
 
             // Application 복사 팝업을 띄운다
             oAPP.fn.fnAppCopyPopupOpener(sAppID);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         }
 
@@ -356,10 +390,10 @@
     /************************************************************************
      * App 조회
      ************************************************************************/
-    oAPP.events.ev_AppDisplay = function(oEvent) {
+    oAPP.events.ev_AppDisplay = function (oEvent) {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
             sAppID = oAppNmInput.getValue();
@@ -371,10 +405,15 @@
     /************************************************************************
      * App 실행
      ************************************************************************/
-    oAPP.events.ev_AppExec = function() {
+    oAPP.events.ev_AppExec = function () {
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         var bCheckAppNm = oAPP.fn.fnCheckAppName();
         if (!bCheckAppNm) {
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
             return;
         }
 
@@ -386,8 +425,6 @@
 
         function lf_result(RESULT) {
 
-            parent.setBusy('');
-
             var oAppInfo = RESULT.RETURN,
                 oCurrWin = REMOTE.getCurrentWindow(),
                 sCurrPage = parent.getCurrPage();
@@ -398,6 +435,12 @@
                 oCurrWin.flashFrame(true);
 
                 APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
+
+                // 화면 Lock 해제
+                sap.ui.getCore().unlock();
+
+                // Busy를 끈다.
+                parent.setBusy("");
 
                 return;
             }
@@ -413,10 +456,22 @@
                 // 페이지 푸터 메시지
                 APPCOMMON.fnShowFloatingFooterMsg("W", sCurrPage, sMsg);
 
+                // 화면 Lock 해제
+                sap.ui.getCore().unlock();
+
+                // Busy를 끈다.
+                parent.setBusy("");
+
                 return;
             }
 
             oAPP.fn.fnOnExecApp(sAppID);
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            // Busy를 끈다.
+            parent.setBusy("");
 
         }
 
@@ -425,7 +480,7 @@
     /************************************************************************
      * Example 실행
      ************************************************************************/
-    oAPP.events.ev_AppExam = function(oEvent) {
+    oAPP.events.ev_AppExam = function (oEvent) {
 
         var oCurrWin = REMOTE.getCurrentWindow(),
             SESSKEY = parent.getSessionKey(),
@@ -453,10 +508,15 @@
     /************************************************************************
      * App 모바일 미리보기
      ************************************************************************/
-    oAPP.events.ev_MultiPrev = function(oEvent) {
+    oAPP.events.ev_MultiPrev = function () {
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         var bCheckAppNm = oAPP.fn.fnCheckAppName();
         if (!bCheckAppNm) {
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
             return;
         }
 
@@ -468,8 +528,6 @@
 
         function lf_result(RESULT) {
 
-            parent.setBusy('');
-
             var oAppInfo = RESULT.RETURN,
                 oCurrWin = REMOTE.getCurrentWindow(),
                 sCurrPage = parent.getCurrPage();
@@ -480,6 +538,12 @@
                 oCurrWin.flashFrame(true);
 
                 APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
+
+                // 화면 Lock 해제
+                sap.ui.getCore().unlock();
+
+                // Busy를 끈다.
+                parent.setBusy("");
 
                 return;
             }
@@ -495,10 +559,22 @@
                 // 페이지 푸터 메시지
                 APPCOMMON.fnShowFloatingFooterMsg("W", sCurrPage, sMsg);
 
+                // 화면 Lock 해제
+                sap.ui.getCore().unlock();
+
+                // Busy를 끈다.
+                parent.setBusy("");
+
                 return;
             }
 
             oAPP.fn.fnOnExecApp(sAppID, true);
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            // Busy를 끈다.
+            parent.setBusy("");
 
         }
 
@@ -507,7 +583,7 @@
     /************************************************************************
      * Application Name Input Search Help(F4)
      ************************************************************************/
-    oAPP.events.ev_AppValueHelp = function(oEvent) {
+    oAPP.events.ev_AppValueHelp = function (oEvent) {
 
         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
         if (bIsPressClearBtn) {
@@ -578,7 +654,7 @@
     /************************************************************************
      * new Window
      ************************************************************************/
-    oAPP.events.ev_NewWindow = function() {
+    oAPP.events.ev_NewWindow = function () {
 
         parent.onNewWindow();
 
@@ -587,7 +663,7 @@
     /************************************************************************
      * Application Name Input Change Event
      ************************************************************************/
-    oAPP.events.ev_AppInputChange = function(oEvent) {
+    oAPP.events.ev_AppInputChange = function (oEvent) {
 
         oEvent.preventDefault();
 
@@ -602,7 +678,7 @@
     /************************************************************************
      * logout
      ************************************************************************/
-    oAPP.events.ev_Logout = function() {
+    oAPP.events.ev_Logout = function () {
 
         // Logout 버튼으로 Logout을 시도 했다는 Flag      
         oAPP.attr.isBrowserCloseLogoutMsgOpen = "X";
@@ -649,10 +725,10 @@
     /************************************************************************
      * ws main 페이지로 이동
      ************************************************************************/
-    oAPP.events.ev_pageBack = function(oEvent) {
+    oAPP.events.ev_pageBack = function (oEvent) {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // app 정보를 구한다.
         var oAppInfo = parent.getAppInfo(),
@@ -679,14 +755,15 @@
         // 현재 떠있는 팝업 창들을 잠시 숨긴다.
         oAPP.fn.fnChildWindowShow(false);
 
-        sap.ui.getCore().unlock();
+        // busy 끄고 Lock 풀기
+        oAPP.common.fnSetBusyLock("");
 
     }; // end of oAPP.events.ev_pageBack
 
     /************************************************************************
      * WS10 으로 화면 이동 전에 질문 팝업 callback function
      ************************************************************************/
-    oAPP.events.ev_pageBack_MsgCallBack = function(ACTCD) {
+    oAPP.events.ev_pageBack_MsgCallBack = function (ACTCD) {
 
         // 이동을 하지 않는다.
         if (ACTCD == null || ACTCD == "CANCEL") {
@@ -700,10 +777,14 @@
         // 저장 후 이동한다.
         if (ACTCD == "YES") {
 
-            sap.ui.getCore().lock();
+            // busy 키고 Lock 걸기
+            oAPP.common.fnSetBusyLock("X");
 
             var oSaveBtn = sap.ui.getCore().byId("saveBtn");
             if (!oSaveBtn) {
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
                 return;
             }
 
@@ -724,7 +805,7 @@
     /************************************************************************
      * side navigation Menu click
      ************************************************************************/
-    oAPP.events.ev_pressSideNavMenu = function(oEvent) {
+    oAPP.events.ev_pressSideNavMenu = function (oEvent) {
 
         var oSelectedItem = oEvent.getParameter("item"),
             sItemKey = oSelectedItem.getProperty("key"),
@@ -745,7 +826,13 @@
     /************************************************************************
      * Syntax Check Button Event
      ************************************************************************/
-    oAPP.events.ev_pressSyntaxCheckBtn = function(oEvent) {
+    oAPP.events.ev_pressSyntaxCheckBtn = function (oEvent) {
+
+        // 화면 Lock 걸기
+        sap.ui.getCore().lock();
+
+        // Busy를 킨다.
+        parent.setBusy("X");
 
         // 현재 떠있는 브라우저
         var oCurrWin = REMOTE.getCurrentWindow(),
@@ -768,6 +855,12 @@
             // 작업표시줄 깜빡임
             oCurrWin.flashFrame(true);
 
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            // Busy를 끈다.
+            parent.setBusy("");
+
             return;
         }
 
@@ -787,6 +880,10 @@
 
                 APPCOMMON.fnShowFloatingFooterMsg('S', sCurrPage, sMsg);
 
+                // 화면 Lock 해제
+                sap.ui.getCore().unlock();
+
+                // Busy를 끈다.
                 parent.setBusy("");
 
                 return;
@@ -797,17 +894,20 @@
             // 작업표시줄 깜빡임
             oCurrWin.flashFrame(true);
 
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            // Busy를 끈다.
             parent.setBusy("");
 
         });
-        // sendAjax(sPath, oFormData, function(oResult) {
 
     }; // end of oAPP.events.ev_pressSyntaxCheckBtn
 
     /************************************************************************
      * Display or Change Button Event
      ************************************************************************/
-    oAPP.events.ev_pressDisplayModeBtn = function(oEvent) {
+    oAPP.events.ev_pressDisplayModeBtn = function (oEvent) {
 
         var oAppInfo = jQuery.extend(true, {}, parent.getAppInfo()); // APP 정보
 
@@ -823,6 +923,9 @@
                 var sMsg = "";
                 sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "118"); // Application has been changed
                 sMsg += " \n " + APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "119"); // Save before leaving editor?
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 parent.showMessage(sap, 40, 'W', sMsg, lf_MsgCallback);
                 return;
@@ -842,12 +945,19 @@
          */
         function lf_MsgCallback(ACTCD) {
 
+            // busy 키고 Lock 걸기
+            oAPP.common.fnSetBusyLock("X");
+
             // child window(각종 Editor창 등..) 가 있었을 경우, 메시지 팝업 뜬 상태에서 어떤 버튼이라도 누른 후에는 
             // child window를 활성화 한다.
             APPCOMMON.fnIsChildWindowShow(true);
 
             // 이동을 하지 않는다.
             if (ACTCD == null || ACTCD == "CANCEL") {
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
 
@@ -876,7 +986,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this,
                 IS_ACT = oEvent.getParameter("IS_ACT");
@@ -897,12 +1007,10 @@
     /************************************************************************
      * Activate Button Event
      ************************************************************************/
-    oAPP.events.ev_pressActivateBtn = function(oEvent) {
+    oAPP.events.ev_pressActivateBtn = function (oEvent) {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
-        parent.setBusy("X");
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // 푸터 메시지가 있을 경우 닫기
         APPCOMMON.fnHideFloatingFooterMsg();
@@ -915,12 +1023,10 @@
 
         if (iexceplength !== 0) {
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            parent.setBusy("");
-
             oAPP.fn.fnMultiFooterMsg(T_excep);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
             return;
 
@@ -955,14 +1061,11 @@
         oFormData.append("APPDATA", JSON.stringify(oAPP.fn.getSaveData()));
 
         // Ajax 서버 호출
-        sendAjax(sPath, oFormData, function(oResult) {
+        sendAjax(sPath, oFormData, function (oResult) {
 
             // 현재 떠있는 브라우저
             var oCurrWin = REMOTE.getCurrentWindow(),
                 sCurrPage = parent.getCurrPage();
-
-            // Busy 끄기
-            parent.setBusy('');
 
             if (typeof oResult == "string" || typeof oResult != "object") {
 
@@ -985,6 +1088,9 @@
 
                     console.error(error);
 
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
+
                     return;
 
                 }
@@ -993,6 +1099,9 @@
 
                 // Footer Msg 출력
                 APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", sMsg);
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
 
@@ -1008,12 +1117,20 @@
 
                 // 서버에서 만든 스크립트가 있다면 eval 처리.
                 if (oResult.SCRIPT) {
+
                     eval(oResult.SCRIPT);
+
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
+
                     return;
                 }
 
                 // Footer Msg 출력
                 APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", oResult.RTMSG);
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
 
@@ -1040,6 +1157,9 @@
 
             APPCOMMON.fnSetModelProperty("/WS20/APP", oAppInfo);
 
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
         });
 
     }; // end of oAPP.events.ev_pressActivateBtn   
@@ -1047,10 +1167,10 @@
     /************************************************************************
      * Save Button Event
      ************************************************************************/
-    oAPP.events.ev_pressSaveBtn = function(oEvent) {
+    oAPP.events.ev_pressSaveBtn = function (oEvent) {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // 푸터 메시지가 있을 경우 닫기
         APPCOMMON.fnHideFloatingFooterMsg();
@@ -1093,9 +1213,6 @@
             var oCurrWin = REMOTE.getCurrentWindow(),
                 sCurrPage = parent.getCurrPage();
 
-            // Busy 끄기
-            parent.setBusy('');
-
             // 푸터 메시지가 있을 경우 닫기
             APPCOMMON.fnHideFloatingFooterMsg();
 
@@ -1113,12 +1230,20 @@
 
                 // 서버에서 만든 스크립트가 있다면 eval 처리.
                 if (oResult.SCRIPT) {
+
                     eval(oResult.SCRIPT);
+
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
+
                     return;
                 }
 
                 // Footer Msg 출력
                 APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", oResult.RTMSG);
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
 
@@ -1133,6 +1258,10 @@
             if (ISBACK == 'X') {
 
                 oAPP.fn.fnMoveToWs10();
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
 
@@ -1140,6 +1269,10 @@
             if (ISDISP == 'X') {
 
                 oAPP.fn.fnSetAppDisplayMode();
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
 
@@ -1161,6 +1294,9 @@
 
             APPCOMMON.fnSetModelProperty("/WS20/APP", oAppInfo);
 
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
         } // end of lf_getAppInfo      
 
     }; // end of oAPP.events.ev_pressSaveBtn
@@ -1168,7 +1304,7 @@
     /************************************************************************
      * MIME Button Event
      ************************************************************************/
-    oAPP.events.ev_pressMimeBtn = function(oEvent) {
+    oAPP.events.ev_pressMimeBtn = function () {
 
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
@@ -1182,7 +1318,7 @@
     /************************************************************************
      * Controller Button Event
      ************************************************************************/
-    oAPP.events.ev_pressControllerBtn = function(oEvent) {
+    oAPP.events.ev_pressControllerBtn = function () {
 
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
@@ -1196,7 +1332,7 @@
     /************************************************************************
      * Application Execution Button Event
      ************************************************************************/
-    oAPP.events.ev_pressAppExecBtn = function(oEvent) {
+    oAPP.events.ev_pressAppExecBtn = function (oEvent) {
 
         var oAppInfo = parent.getAppInfo(),
             sCurrPage = parent.getCurrPage(),
@@ -1221,7 +1357,7 @@
     /************************************************************************
      * Multi Preview Button Event
      ************************************************************************/
-    oAPP.events.ev_pressMultiPrevBtn = function(oEvent) {
+    oAPP.events.ev_pressMultiPrevBtn = function (oEvent) {
 
         var oAppInfo = parent.getAppInfo(),
             sCurrPage = parent.getCurrPage(),
@@ -1246,7 +1382,7 @@
     /************************************************************************
      * IconList Button Event
      ************************************************************************/
-    oAPP.events.ev_pressIconListBtn = function(oEvent) {
+    oAPP.events.ev_pressIconListBtn = function (oEvent) {
 
         oAPP.fn.fnIconListPopupOpener();
 
@@ -1255,7 +1391,7 @@
     /************************************************************************
      * Add Server Event Button Event
      ************************************************************************/
-    oAPP.events.ev_pressAddEventBtn = function(oEvent) {
+    oAPP.events.ev_pressAddEventBtn = function (oEvent) {
 
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
@@ -1263,7 +1399,7 @@
         }
 
         if (!oAPP.fn.createEventPopup) {
-            oAPP.fn.getScript("design/js/createEventPopup", function() {
+            oAPP.fn.getScript("design/js/createEventPopup", function () {
                 oAPP.fn.createEventPopup();
             });
 
@@ -1277,7 +1413,7 @@
     /************************************************************************
      * Runtime Class Navigator Button
      ************************************************************************/
-    oAPP.events.ev_pressRuntimeBtn = function() {
+    oAPP.events.ev_pressRuntimeBtn = function () {
 
         oAPP.fn.fnRuntimeClassNaviPopupOpener();
 
@@ -1286,7 +1422,7 @@
     /************************************************************************
      * 세션 끊기..
      ************************************************************************/
-    oAPP.events.ev_LogoutTest = function() {
+    oAPP.events.ev_LogoutTest = function () {
 
         var sPath = parent.getServerPath() + '/logoff';
 

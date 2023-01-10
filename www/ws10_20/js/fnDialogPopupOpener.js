@@ -777,7 +777,7 @@
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        oBrowserWindow.webContents.openDevTools();
+        // oBrowserWindow.webContents.openDevTools();
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -1233,9 +1233,6 @@
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sWinObjType;
         oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
-
-        // oBrowserOptions.webPreferences.USERINFO = parent.getProcessEnvUserInfo();
-        // oBrowserOptions.webPreferences.USERINFO1 = parent.process.USERINFO;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);

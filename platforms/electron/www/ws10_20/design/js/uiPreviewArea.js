@@ -39,6 +39,17 @@
     }); //slider변경 이벤트
 
 
+    //미리보기 전체화면 스위치.
+    //C23	Full Screen
+    oBtnFull = new sap.m.Switch({tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C23", "", "", "", "")});
+    oTool.addContent(oBtnFull);
+
+    //미리보기 전체화면 스위치 변경 이벤트.
+    oBtnFull.attachChange(function(){
+      oAPP.fn.prevFullScreen(this.getState());
+    });//미리보기 전체화면 스위치 변경 이벤트.
+
+
   };  //가운데 페이지(미리보기 영역) 구성
 
 
@@ -46,7 +57,7 @@
 
 
   //미리보기 iframe 영역 구성.
-  oAPP.fn.loadPreviewFrame = function(){
+  oAPP.fn.loadPreviewFrame = function(bReset){
 
 
     function lf_setParam(oForm, name, value){
@@ -57,6 +68,12 @@
           iput.setAttribute("type", "hidden");
           oForm.appendChild(iput);
 
+    }
+
+    //초기화 처리 하는경우.
+    if(bReset === true){
+      //frame 정보 초기화.
+      oAPP.attr.ui.frame = null;
     }
     
     //미리보기 html 정보가 로드되지 않은경우.
@@ -1088,6 +1105,45 @@
     }
 
   };  //미리보기 css 적용 처리.
+
+
+
+  //미리보기 전체화면 처리.
+  oAPP.fn.prevFullScreen = function(bState){
+
+    //default design tree 영역 설정.
+    var l_treeSize = "25%";
+    var l_treeMinSize = 300;
+    var l_treeResize = true;
+
+    //default attr 영역 설정.
+    var l_attrSize = "30%";
+    var l_attrMinSize = 300;
+    var l_attrResize = true;
+
+    //미리보기 전체화면을 설정한 경우.
+    if(bState === true){
+      //design tree 영역 최소화.
+      l_treeSize = "0px";
+      l_treeMinSize = 0;
+      l_treeResize = false;
+
+      //attr 영역 최소화.
+      l_attrSize = "0px";
+      l_attrMinSize = 0;
+      l_attrResize = false;
+
+    }    
+    
+    oAPP.attr.ui.oDesignTree.getLayoutData().setSize(l_treeSize);
+    oAPP.attr.ui.oDesignTree.getLayoutData().setMinSize(l_treeMinSize);
+    oAPP.attr.ui.oDesignTree.getLayoutData().setResizable(l_treeResize);
+
+    oAPP.attr.ui.oDesignAttr.getLayoutData().setSize(l_treeSize);
+    oAPP.attr.ui.oDesignAttr.getLayoutData().setMinSize(l_treeMinSize);
+    oAPP.attr.ui.oDesignAttr.getLayoutData().setResizable(l_attrResize);
+
+  };  //미리보기 전체화면 처리.
 
 
 })();

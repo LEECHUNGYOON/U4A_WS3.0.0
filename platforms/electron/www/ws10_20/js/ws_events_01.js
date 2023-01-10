@@ -39,7 +39,7 @@
      ************************************************************************/
     oAPP.events.ev_winTxtSrchWS10 = function (oEvent) {
 
-        oAPP.fn.fnTextSearchPopupOpener();       
+        oAPP.fn.fnTextSearchPopupOpener();
 
     }; // end of oAPP.events.ev_winTxtSrchWS10
 
@@ -332,7 +332,7 @@
         }
 
         oInput.getBinding("suggestionItems").filter(aFilters);
-        oInput.suggest(); 
+        oInput.suggest();
 
     };
 

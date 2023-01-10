@@ -44,15 +44,21 @@
 
     var oTool = new sap.m.Toolbar();
     oDlg.setCustomHeader(oTool);
+
+    //A38	Aggregation List
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A38", "", "", "", "");
     
-    var oTitle = new sap.m.Title({text:"Aggregation List"});
+    var oTitle = new sap.m.Title({text:l_txt, tooltip:l_txt});
+    oTitle.addStyleClass("sapUiTinyMarginBegin");
 
     oTool.addContent(oTitle);
 
     oTool.addContent(new sap.m.ToolbarSpacer());
 
     //우상단 닫기버튼.
-    var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip:"Close"});
+    //A39	Close
+    var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", 
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
     oTool.addContent(oBtn0);
 
     //닫기 버튼 선택 이벤트.
@@ -66,7 +72,7 @@
     });
 
 
-    var oVbox1 = new sap.m.VBox({height:"100%",renderType:"Bare"});
+    var oVbox1 = new sap.m.VBox({height:"100%", renderType:"Bare"});
     oDlg.addContent(oVbox1);
 
     //dialog 타이틀 설정.
@@ -84,7 +90,7 @@
     oVbox1.addItem(oFrm1);
 
     var oRspLay1 = new sap.ui.layout.form.ResponsiveGridLayout(
-      {singleContainerFullSize:false,adjustLabelSpan:false,labelSpanL:4,labelSpanM:4,columnsL:2});
+      {singleContainerFullSize:false, adjustLabelSpan:false, labelSpanL:4, labelSpanM:4, columnsL:2});
 
     oFrm1.setLayout(oRspLay1);
 
