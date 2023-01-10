@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -52,13 +52,13 @@
 
         // 파일 확장자 이미지 경로 구하기
         fnGetFileExtendImgList()
-            .then(function() {
+            .then(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
 
             })
-            .catch(function() {
+            .catch(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
@@ -72,7 +72,7 @@
      ************************************************************************/
     function fnGetFileExtendImgList() {
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
@@ -119,7 +119,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function() {
+    oAPP.fn.fnOnResizeWs30 = function () {
 
         zconsole.log("resize30!!!");
 
@@ -269,7 +269,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -428,7 +428,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -1096,7 +1096,7 @@
                                         "ISFLD",
                                         "EXTEN"
                                     ],
-                                    formatter: function(ISFLD, EXTEN) {
+                                    formatter: function (ISFLD, EXTEN) {
 
                                         var iFileImgListLength = gaFileExtendImgList.length;
                                         if (iFileImgListLength == 0) {
@@ -1228,7 +1228,7 @@
 
                 // Events
                 beforeOpenContextMenu: ev_beforeOpenContextMenu,
-                rowSelectionChange: function(oEvent) {
+                rowSelectionChange: function (oEvent) {
 
                     var iRowIndex = oEvent.getParameter("rowIndex"),
                         oTable = oEvent.getSource();
@@ -1394,7 +1394,7 @@
 
             oIsFolderCheckbox = new sap.m.CheckBox({
                 editable: false
-            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
+            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                 if (ISFLD == "X") {
                     return true;
@@ -1460,7 +1460,7 @@
                                 ]
                             })
 
-                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function(ISFLD) {
+                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                             // 폴더가 아닐 경우에만 보여준다.
                             if (ISFLD != "X") {
@@ -1502,7 +1502,7 @@
 
                 return {
 
-                    onAfterRendering: function(oControl) {
+                    onAfterRendering: function (oControl) {
 
                         var oEditor = oControl.srcControl,
                             _oAceEditor = oEditor._oEditor;
@@ -2018,7 +2018,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -2128,7 +2128,7 @@
             initialFocus: "ws30_crname",
 
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -2222,7 +2222,7 @@
                             }),
                             fields: new sap.m.CheckBox({
                                 editable: false,
-                            }).bindProperty("selected", `${RENAME_BINDROOT}/BINDDATA/ISFLD`, function(ISFLD) {
+                            }).bindProperty("selected", `${RENAME_BINDROOT}/BINDDATA/ISFLD`, function (ISFLD) {
 
                                 if (ISFLD == "X") {
                                     return true;
@@ -2245,7 +2245,7 @@
                                 submit: () => {
                                     fnRenameSubmit();
                                 }
-                            }).bindProperty("valueState", `${RENAME_BINDROOT}/PRC/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${RENAME_BINDROOT}/PRC/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -2328,7 +2328,7 @@
             initialFocus: "ws30_rename_new",
 
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 // USP 생성 팝업의 초기 데이터 모델 세팅
                 APPCOMMON.fnSetModelProperty(RENAME_BINDROOT, {});
@@ -2460,6 +2460,9 @@
             oTreeTable: oTreeTable
         };
 
+        // busy 끄고 Lock 풀기
+        oAPP.common.fnSetBusyLock("");
+
         // 질문팝업? 삭제하시겠습니까?
         parent.showMessage(sap, 30, 'W', sMsg, _fnDeleteUspNodeCb.bind(this, oParam));
 
@@ -2486,6 +2489,9 @@
         if (!oSelectedCtx) {
             return;
         }
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         var oDelRowData = oSelectedCtx.getModel().getProperty(oSelectedCtx.getPath()),
             oDeleteTreeData = jQuery.extend(true, {}, oDelRowData),
@@ -2519,9 +2525,6 @@
 
         oFormData.append("APPDATA", JSON.stringify(oSendData));
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
         var oParam = {
             oTreeTable: oTreeTable,
             TRKORR: sReqNo,
@@ -2534,11 +2537,6 @@
 
     function _fnDeleteUspNodeSuccessCb(oResult) {
 
-        // 화면 Lock 해제
-        sap.ui.getCore().unlock();
-
-        parent.setBusy("");
-
         // JSON Parse 오류 일 경우
         if (typeof oResult !== "object") {
 
@@ -2548,6 +2546,9 @@
             oAPP.fn.fnCriticalErrorWs30({
                 RTMSG: sMsg
             });
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
             return;
 
@@ -2564,6 +2565,9 @@
                 // [WS30] Critical Error
                 oAPP.fn.fnCriticalErrorWs30(oResult);
 
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
 
             case "E":
@@ -2576,11 +2580,18 @@
                 // 서버에서 만든 스크립트가 있다면 eval 처리.
                 if (oResult.SCRIPT) {
                     eval(oResult.SCRIPT);
+
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
+
                     return;
                 }
 
                 // Footer Msg 출력
                 APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
 
@@ -2602,6 +2613,10 @@
             oSelectedCtx = oTreeTable.getContextByIndex(iIndex);
 
         if (!oSelectedCtx) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -2647,6 +2662,10 @@
             iFindIndex = oResult.Nodes.findIndex(arr => arr.OBJKY == oDeleteTreeData.OBJKY);
 
         if (iFindIndex == -1) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -2658,12 +2677,15 @@
 
         oTreeTable.clearSelection();
 
+        // busy 끄고 Lock 풀기
+        oAPP.common.fnSetBusyLock("");
+
     } // end of _fnDeleteUspNodeSuccessCb
 
     function lf_appDelCtsPopup(oParam) {
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oParam = this;
 
@@ -2815,8 +2837,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function(e) {
-                $.each(e, function(e, o) {
+            t = function (e) {
+                $.each(e, function (e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -3074,7 +3096,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function(event) {
+            fileReader.onload = function (event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -3651,7 +3673,7 @@
         }
 
         var oUspData = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"),
-            sMsg = "application cannot be execution.";
+            sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "364"); // Application cannot be execution.
 
         if (!oUspData) {
 
@@ -4345,6 +4367,9 @@
      **************************************************************************/
     function ev_createUspNodeAcceptEvent(oTreeTable, oEvent) {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         var sBindRootPath = "/WS30/USPCRT";
 
         // USP 생성 팝업의 입력 값 구하기
@@ -4377,11 +4402,18 @@
             // Footer Msg 출력
             APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
 
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
         var oCtx = oTreeTable.getContextByIndex(gSelectedTreeIndex);
         if (!oCtx) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -4408,6 +4440,9 @@
 
             // Footer Msg 출력
             APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", sMsg);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
             return;
 
@@ -4470,6 +4505,10 @@
             oCtx = oTreeTable.getContextByIndex(iIndex);
 
         if (!oCtx) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -4485,6 +4524,9 @@
         gfSelectRowUpdate = ev_selectMarkNewRowUpdated.bind(this, oNewRowData);
 
         oTreeTable.attachRowsUpdated(gfSelectRowUpdate);
+
+        // busy 끄고 Lock 풀기
+        oAPP.common.fnSetBusyLock("");
 
     } // end of _fnCreateUspNode
 
@@ -4696,8 +4738,15 @@
      **************************************************************************/
     function ev_pressActivateBtn(oEvent) {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
         if (!oSaveBtn) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -4712,8 +4761,8 @@
      **************************************************************************/
     function ev_pressSaveBtn(oEvent) {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // 푸터 메시지가 있을 경우 닫기
         APPCOMMON.fnHideFloatingFooterMsg();
@@ -4802,11 +4851,6 @@
      **************************************************************************/
     function _fnSaveCallback(oResult) {
 
-        // 화면 Lock 해제
-        sap.ui.getCore().unlock();
-
-        parent.setBusy("");
-
         // JSON Parse 오류 일 경우
         if (typeof oResult !== "object") {
 
@@ -4818,6 +4862,9 @@
             oAPP.fn.fnCriticalErrorWs30({
                 RTMSG: sMsg
             });
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
             return;
 
@@ -4843,6 +4890,9 @@
                 // [WS30] Critical Error
                 oAPP.fn.fnCriticalErrorWs30(oResult);
 
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
 
             case "E":
@@ -4854,12 +4904,20 @@
 
                 // 서버에서 만든 스크립트가 있다면 eval 처리.
                 if (oResult.SCRIPT) {
+
                     eval(oResult.SCRIPT);
+
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
+
                     return;
                 }
 
                 // Footer Msg 출력
                 APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
         }
@@ -4896,6 +4954,9 @@
 
             fnSetAppDisplayMode();
 
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -4904,6 +4965,9 @@
 
             // WS10 페이지로 이동
             fnMoveToWs10();
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
             return;
 
@@ -4993,9 +5057,15 @@
             // Row Select 
             fnUspTreeTableRowSelect(oRow);
 
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
 
         }
+
+        // busy 끄고 Lock 풀기
+        oAPP.common.fnSetBusyLock("");
 
     } // end of _fnSaveCallback
 
@@ -5048,6 +5118,9 @@
      ************************************************************************/
     function ev_pressDisplayModeBtn(oEvent) {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         var oBindAppData = fnGetAppInfo(),
             oAppInfo = jQuery.extend(true, {}, oBindAppData); // APP 정보
 
@@ -5065,11 +5138,18 @@
                 sMsg += " \n " + APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "119"); // Save before leaving editor?
 
                 parent.showMessage(sap, 40, 'W', sMsg, lf_MsgCallback);
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
 
             // WS30 페이지 정보 갱신            
             fnSetAppDisplayMode();
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
             return;
         }
@@ -5091,6 +5171,9 @@
                 return;
             }
 
+            // busy 키고 Lock 걸기
+            oAPP.common.fnSetBusyLock("X");
+
             // 저장 후 Display 모드로 이동한다.
             if (ACTCD == "YES") {
 
@@ -5107,6 +5190,9 @@
             // WS20 페이지 정보 갱신
             fnSetAppDisplayMode();
 
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
         } // end of lf_MsgCallback
 
     }; // end of oAPP.events.ev_pressDisplayModeBtn
@@ -5119,7 +5205,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this;
             // IS_ACT = oEvent.getParameter("IS_ACT");
@@ -5152,8 +5238,8 @@
      ************************************************************************/
     function fnSetAppDisplayMode() {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         var oAppInfo = fnGetAppInfo(),
             sCurrPage = parent.getCurrPage();
@@ -5166,14 +5252,13 @@
 
         function lf_success(RETURN) {
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            parent.setBusy('');
-
             if (RETURN.RTCOD == 'E') {
                 // 오류..1
                 parent.showMessage(sap, 20, RETURN.RTCOD, RETURN.RTMSG);
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
 
@@ -5196,6 +5281,9 @@
             // 30번 페이지 레이아웃 초기 설정
             oAPP.fn.fnOnInitLayoutSettingsWs30();
 
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
         }
 
     } // end of fnSetAppDisplayMode
@@ -5205,8 +5293,8 @@
      ************************************************************************/
     function fnSetAppChangeMode() {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         var oAppInfo = fnGetAppInfo(),
             sCurrPage = parent.getCurrPage();
@@ -5220,11 +5308,6 @@
 
         function lf_success(oAppInfo) {
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            parent.setBusy('');
-
             if (oAppInfo.IS_EDIT != "X") {
 
                 // 페이지 푸터 메시지
@@ -5236,6 +5319,10 @@
                 // APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sMsg);
 
                 parent.setSoundMsg("02"); // error sound
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
 
                 return false;
 
@@ -5256,6 +5343,9 @@
 
             // 30번 페이지 레이아웃 초기 설정
             oAPP.fn.fnOnInitLayoutSettingsWs30();
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         }
 

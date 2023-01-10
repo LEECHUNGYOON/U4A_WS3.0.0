@@ -16,7 +16,7 @@
     //tree item 선택 이벤트.
     oLTree1.attachCellClick(function(oEvent){
       //attr 및 미리보기 갱신 전 화면 잠금 처리.
-      oAPP.fn.designAreaLockUnlock(true);   
+      oAPP.fn.designAreaLockUnlock(true);
     
       //데이터 출력 라인을 선택하지 않은경우 exit.
       if(!oEvent.mParameters.rowBindingContext){
@@ -1172,6 +1172,9 @@
 
   //tree item 선택 처리
   oAPP.fn.setSelectTreeItem = function(OBJID, UIATK, TYPE, f_cb){
+
+    //tree item 선택 처리전 화면 잠금 처리.
+    oAPP.fn.designAreaLockUnlock(true);
     
     //tree를 탐색하며 ROOT로부터 입력 OBJID 까지의 PATH 정보 구성
     function lf_getTreePath(it_tree){
@@ -1286,7 +1289,12 @@
 
 
     //OBJID가 존재하지 않는경우 EXIT.
-    if(typeof OBJID === "undefined" || OBJID === null || OBJID === ""){return;}
+    if(typeof OBJID === "undefined" || OBJID === null || OBJID === ""){
+      
+      //화면 잠금 해제 처리.
+      oAPP.fn.designAreaLockUnlock();
+      return;
+    }
 
     var lt_route = [], lt_path = [], l_cnt = 0;
 
@@ -1294,10 +1302,18 @@
     lf_getTreePath(oAPP.attr.oModel.oData.zTREE);
 
     //path 정보를 수집하지 않은경우 exit.
-    if(lt_path.length === 0){return;}
+    if(lt_path.length === 0){
+      //화면 잠금 해제 처리.
+      oAPP.fn.designAreaLockUnlock();
+      return;
+    }
 
     var l_bind = oAPP.attr.ui.oLTree1.getBinding();
-    if(!l_bind){return;}
+    if(!l_bind){
+      //화면 잠금 해제 처리.
+      oAPP.fn.designAreaLockUnlock();
+      return;
+    }
 
     //이전에 design tree에 필터가 적용됐다면.
     if(l_bind.aFilters.length !== 0){
@@ -1824,7 +1840,7 @@
 
 
   //UI design tree 라인 선택 이벤트.
-  oAPP.fn.designTreeItemPress = function(is_tree, iIndex, UIATK, TYPE, f_cb){
+  oAPP.fn.designTreeItemPress = async function(is_tree, iIndex, UIATK, TYPE, f_cb){
 
     //이전 선택한 UI의 선택 표현 CSS 제거 처리.
     oAPP.attr.ui.frame.contentWindow.oWS.sMark.fn_removeMark();
@@ -1837,7 +1853,8 @@
 
 
     //선택한 ui에 해당하는 attr로 갱신 처리.
-    oAPP.fn.updateAttrList(is_tree.UIOBK, is_tree.OBJID, UIATK, TYPE, f_cb);
+    await oAPP.fn.updateAttrList(is_tree.UIOBK, is_tree.OBJID, UIATK, TYPE, f_cb);
+
 
     //미리보기 화면 갱신 처리.
     oAPP.attr.ui.frame.contentWindow.refreshPreview(is_tree);
