@@ -22,14 +22,15 @@
      ************************************************************************/
     oAPP.fn.fnOnEnterDispChangeMode = function (APPID, ISEDIT) {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         var bCheckAppNm = oAPP.fn.fnCheckAppName();
         if (!bCheckAppNm) {
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+            
             return;
         }
 
@@ -47,7 +48,6 @@
         // 서버에서 App 정보를 구한다.
         ajax_init_prc(oFormData, lf_success);
 
-
         function lf_success(oAppInfo) {
 
             let sCurrPage = parent.getCurrPage();
@@ -58,11 +58,8 @@
                 // 페이지 푸터 메시지
                 APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
-
-                // Busy Indicator 닫기
-                parent.setBusy('');
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
 
@@ -112,6 +109,9 @@
                 // WS20번 페이지로 이동한다.
                 oAPP.fn.fnOnMoveToPage("WS30");
 
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
 
             }
@@ -138,6 +138,9 @@
 
             // WS20번 페이지로 이동한다.
             oAPP.fn.fnOnMoveToPage("WS20");
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         } // end of lf_success
 

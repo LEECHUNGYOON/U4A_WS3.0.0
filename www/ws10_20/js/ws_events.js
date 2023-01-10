@@ -17,14 +17,18 @@
      ************************************************************************/
     oAPP.events.ev_AppCreate = function () {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // Create, Copy일 경우에만 App Name MaxLength Check 해야함!!
         let bAppMaxLengthCheck = true;
 
         var bCheckAppNm = oAPP.fn.fnCheckAppName(bAppMaxLengthCheck);
         if (!bCheckAppNm) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -40,11 +44,6 @@
 
         function lf_success(oAppInfo) {
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            parent.setBusy('');
-
             if (oAppInfo.MSGTY == "") {
 
                 var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "035"); // It is already registered application information.
@@ -52,20 +51,33 @@
                 // 페이지 푸터 메시지			
                 APPCOMMON.fnShowFloatingFooterMsg("E", "WS10", sMsg);
 
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
 
             if (!oAPP.fn.createApplicationPopup) {
 
+                // Application 생성 팝업 띄우기
                 $.getScript("design/js/createApplicationPopup.js", function () {
+
                     oAPP.fn.createApplicationPopup(sAppID);
+
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
+
                 });
 
                 return;
 
             }
 
+            // Application 생성 팝업 띄우기
             oAPP.fn.createApplicationPopup(sAppID);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         }
 
@@ -76,8 +88,8 @@
      ************************************************************************/
     oAPP.events.ev_AppChange = function () {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
             sAppID = oAppNmInput.getValue();
@@ -91,18 +103,20 @@
      ************************************************************************/
     oAPP.events.ev_AppDelete = function () {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
-            sap.ui.getCore().unlock();
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
             return;
         }
 
         var bCheckAppNm = oAPP.fn.fnCheckAppName();
         if (!bCheckAppNm) {
-            sap.ui.getCore().unlock();
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
             return;
         }
 
@@ -126,20 +140,14 @@
 
                 APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
-
-                // Busy를 끈다.
-                parent.setBusy("");
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
             }
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            // Busy를 끈다.
-            parent.setBusy("");
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
             // 질문 메시지
             var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "003"); // Do you really want to delete the object?
@@ -151,20 +159,24 @@
                     return;
                 }
 
-                // 화면 Lock 걸기
-                sap.ui.getCore().lock();
-
-                // Busy를 킨다.
-                parent.setBusy("X");
+                // busy 키고 Lock 걸기
+                oAPP.common.fnSetBusyLock("X");
 
                 // 삭제 어플리케이션이 USP 일 경우.
                 if (oAppInfo.APPTY == "U") {
 
+                    // busy 키고 Lock 걸기
+                    oAPP.common.fnSetBusyLock("X");
+
+                    // 어플리케이션 삭제하러 서버 호출
                     oAPP.fn.fnSetUspAppDelete();
 
                     return;
 
                 }
+
+                // busy 키고 Lock 걸기
+                oAPP.common.fnSetBusyLock("X");
 
                 // 어플리케이션 삭제하러 서버 호출
                 oAPP.fn.fnSetAppDelete();
@@ -249,10 +261,8 @@
      ************************************************************************/
     oAPP.fn.fnSetUspAppDelete = function (oParam) {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
-        parent.setBusy('X');
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // application 존재 여부 체크
         var oBindData = APPCOMMON.fnGetModelProperty("/WS10"),
@@ -287,19 +297,15 @@
                 // 작업표시줄 깜빡임
                 CURRWIN.flashFrame(true);
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
-
-                parent.setBusy("");
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
 
             }
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            parent.setBusy("");
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         });
 
@@ -322,15 +328,15 @@
      ************************************************************************/
     oAPP.events.ev_AppCopy = function () {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
-        // Busy를 킨다.
-        parent.setBusy("X");
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
-            sap.ui.getCore().unlock();
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -340,7 +346,8 @@
         // 어플리케이션 명 입력 유무 및 데이터 정합성 체크
         var bCheckAppNm = oAPP.fn.fnCheckAppName(bAppMaxLengthCheck);
         if (!bCheckAppNm) {
-            sap.ui.getCore().unlock();
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
             return;
         }
 
@@ -364,12 +371,8 @@
 
                 APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
-
-                // Busy를 끈다.
-                parent.setBusy("");
-
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
                 return;
 
             }
@@ -377,11 +380,8 @@
             // Application 복사 팝업을 띄운다
             oAPP.fn.fnAppCopyPopupOpener(sAppID);
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            // Busy를 끈다.
-            parent.setBusy("");
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         }
 
@@ -392,8 +392,8 @@
      ************************************************************************/
     oAPP.events.ev_AppDisplay = function (oEvent) {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
             sAppID = oAppNmInput.getValue();
@@ -407,16 +407,15 @@
      ************************************************************************/
     oAPP.events.ev_AppExec = function () {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         var bCheckAppNm = oAPP.fn.fnCheckAppName();
         if (!bCheckAppNm) {
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
             return;
         }
-
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
-        // Busy를 킨다.
-        parent.setBusy("X");
 
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
             sAppID = oAppNmInput.getValue();
@@ -509,18 +508,17 @@
     /************************************************************************
      * App 모바일 미리보기
      ************************************************************************/
-    oAPP.events.ev_MultiPrev = function (oEvent) {
+    oAPP.events.ev_MultiPrev = function () {
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         var bCheckAppNm = oAPP.fn.fnCheckAppName();
         if (!bCheckAppNm) {
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
             return;
         }
-
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
-        // Busy를 킨다.
-        parent.setBusy("X");
 
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
             sAppID = oAppNmInput.getValue();
@@ -729,8 +727,8 @@
      ************************************************************************/
     oAPP.events.ev_pageBack = function (oEvent) {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // app 정보를 구한다.
         var oAppInfo = parent.getAppInfo(),
@@ -757,7 +755,8 @@
         // 현재 떠있는 팝업 창들을 잠시 숨긴다.
         oAPP.fn.fnChildWindowShow(false);
 
-        sap.ui.getCore().unlock();
+        // busy 끄고 Lock 풀기
+        oAPP.common.fnSetBusyLock("");
 
     }; // end of oAPP.events.ev_pageBack
 
@@ -778,10 +777,14 @@
         // 저장 후 이동한다.
         if (ACTCD == "YES") {
 
-            sap.ui.getCore().lock();
+            // busy 키고 Lock 걸기
+            oAPP.common.fnSetBusyLock("X");
 
             var oSaveBtn = sap.ui.getCore().byId("saveBtn");
             if (!oSaveBtn) {
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
                 return;
             }
 
@@ -921,6 +924,9 @@
                 sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "118"); // Application has been changed
                 sMsg += " \n " + APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "119"); // Save before leaving editor?
 
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 parent.showMessage(sap, 40, 'W', sMsg, lf_MsgCallback);
                 return;
             }
@@ -939,12 +945,19 @@
          */
         function lf_MsgCallback(ACTCD) {
 
+            // busy 키고 Lock 걸기
+            oAPP.common.fnSetBusyLock("X");
+
             // child window(각종 Editor창 등..) 가 있었을 경우, 메시지 팝업 뜬 상태에서 어떤 버튼이라도 누른 후에는 
             // child window를 활성화 한다.
             APPCOMMON.fnIsChildWindowShow(true);
 
             // 이동을 하지 않는다.
             if (ACTCD == null || ACTCD == "CANCEL") {
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
 
@@ -996,10 +1009,8 @@
      ************************************************************************/
     oAPP.events.ev_pressActivateBtn = function (oEvent) {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
-        parent.setBusy("X");
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // 푸터 메시지가 있을 경우 닫기
         APPCOMMON.fnHideFloatingFooterMsg();
@@ -1014,10 +1025,8 @@
 
             oAPP.fn.fnMultiFooterMsg(T_excep);
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            parent.setBusy("");
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
             return;
 
@@ -1079,11 +1088,8 @@
 
                     console.error(error);
 
-                    // 화면 Lock 해제
-                    sap.ui.getCore().unlock();
-
-                    // Busy를 끈다.
-                    parent.setBusy("");
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
 
                     return;
 
@@ -1094,11 +1100,8 @@
                 // Footer Msg 출력
                 APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", sMsg);
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
-
-                // Busy를 끈다.
-                parent.setBusy("");
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
 
@@ -1114,13 +1117,11 @@
 
                 // 서버에서 만든 스크립트가 있다면 eval 처리.
                 if (oResult.SCRIPT) {
+
                     eval(oResult.SCRIPT);
 
-                    // 화면 Lock 해제
-                    sap.ui.getCore().unlock();
-
-                    // Busy를 끈다.
-                    parent.setBusy("");
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
 
                     return;
                 }
@@ -1128,11 +1129,8 @@
                 // Footer Msg 출력
                 APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", oResult.RTMSG);
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
-
-                // Busy를 끈다.
-                parent.setBusy("");
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
 
@@ -1159,11 +1157,8 @@
 
             APPCOMMON.fnSetModelProperty("/WS20/APP", oAppInfo);
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            // Busy를 끈다.
-            parent.setBusy("");
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         });
 
@@ -1174,11 +1169,8 @@
      ************************************************************************/
     oAPP.events.ev_pressSaveBtn = function (oEvent) {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
-        // Busy를 킨다.
-        parent.setBusy("X");
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // 푸터 메시지가 있을 경우 닫기
         APPCOMMON.fnHideFloatingFooterMsg();
@@ -1238,13 +1230,11 @@
 
                 // 서버에서 만든 스크립트가 있다면 eval 처리.
                 if (oResult.SCRIPT) {
+
                     eval(oResult.SCRIPT);
 
-                    // 화면 Lock 해제
-                    sap.ui.getCore().unlock();
-
-                    // Busy를 끈다.
-                    parent.setBusy("");
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
 
                     return;
                 }
@@ -1252,11 +1242,8 @@
                 // Footer Msg 출력
                 APPCOMMON.fnShowFloatingFooterMsg("E", "WS20", oResult.RTMSG);
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
-
-                // Busy를 끈다.
-                parent.setBusy("");
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
 
@@ -1272,11 +1259,8 @@
 
                 oAPP.fn.fnMoveToWs10();
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
-
-                // Busy를 끈다.
-                parent.setBusy("");
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
             }
@@ -1286,11 +1270,8 @@
 
                 oAPP.fn.fnSetAppDisplayMode();
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
-
-                // Busy를 끈다.
-                parent.setBusy("");
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
             }
@@ -1313,11 +1294,8 @@
 
             APPCOMMON.fnSetModelProperty("/WS20/APP", oAppInfo);
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            // Busy를 끈다.
-            parent.setBusy("");
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         } // end of lf_getAppInfo      
 
@@ -1326,7 +1304,7 @@
     /************************************************************************
      * MIME Button Event
      ************************************************************************/
-    oAPP.events.ev_pressMimeBtn = function (oEvent) {
+    oAPP.events.ev_pressMimeBtn = function () {
 
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
@@ -1340,7 +1318,7 @@
     /************************************************************************
      * Controller Button Event
      ************************************************************************/
-    oAPP.events.ev_pressControllerBtn = function (oEvent) {
+    oAPP.events.ev_pressControllerBtn = function () {
 
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {

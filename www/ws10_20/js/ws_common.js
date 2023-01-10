@@ -321,8 +321,6 @@
      ************************************************************************/
     oAPP.common.fnShowFloatingFooterMsg = function (TYPE, POS, MSG) {
 
-        sap.ui.getCore().unlock();
-
         oAPP.common.fnHideFloatingFooterMsg();
 
         var oMsg = {};
@@ -1993,6 +1991,33 @@
     }; // end of oAPP.common.fnGetCommonHeaderButtons
 
     /**
+     * Busy & Lock
+     * @param {CHAR1} isbusy "X", ""
+     */
+    oAPP.common.fnSetBusyLock = (isbusy) => {
+
+        let bIsbusy = (isbusy == "X" ? true : false);
+
+        if (bIsbusy) {
+
+            // 화면 Lock 걸기
+            sap.ui.getCore().lock();
+
+            // Busy를 킨다.
+            parent.setBusy("X");
+
+            return;
+        }
+
+        // 화면 Lock 해제
+        sap.ui.getCore().unlock();
+
+        // Busy를 끈다.
+        parent.setBusy("");
+
+    }; // end of oAPP.common.fnSetBusyLock
+
+    /**
      * 주어진 시간 동안 멈추기
      * @param {Integer} iTime 멈추는 시간 (ms)
      * @returns 
@@ -2219,12 +2244,12 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
                 parent.showMessage(sap, 20, 'E', sCleanHtml, fn_callback);
 
                 function fn_callback() {
-                    
+
                     // 화면에 떠있는 Dialog 들이 있을 경우 모두 닫는다.
                     oAPP.fn.fnCloseAllWs20Dialogs();
 
                     // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Login 페이지로 이동.
-                    fn_logoff_success("");                    
+                    fn_logoff_success("");
 
                     // // 10번 페이지로 이동
                     // oAPP.fn.fnOnMoveToPage("WS10");
