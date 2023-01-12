@@ -49,7 +49,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             // 화면 Lock 걸기
             sap.ui.getCore().lock();
 
-            sap.ui.core.BusyIndicator.show();
+            sap.ui.core.BusyIndicator.show(0);
 
             return;
         }
