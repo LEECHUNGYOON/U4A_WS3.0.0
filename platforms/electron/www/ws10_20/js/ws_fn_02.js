@@ -109,9 +109,6 @@
                 // WS20번 페이지로 이동한다.
                 oAPP.fn.fnOnMoveToPage("WS30");
 
-                // busy 끄고 Lock 풀기
-                oAPP.common.fnSetBusyLock("");
-
                 return;
 
             }
@@ -138,9 +135,6 @@
 
             // WS20번 페이지로 이동한다.
             oAPP.fn.fnOnMoveToPage("WS20");
-
-            // busy 끄고 Lock 풀기
-            oAPP.common.fnSetBusyLock("");
 
         } // end of lf_success
 
