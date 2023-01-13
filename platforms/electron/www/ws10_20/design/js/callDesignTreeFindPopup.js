@@ -331,6 +331,9 @@
             //design tree UI 마킹 초기화 처리.
             lf_designRemoveFilterUI();
 
+            //단축키 잠금 해제 처리.
+            oAPP.fn.setShortcutLock();
+
         }); //팝업 종료 전 이벤트.
 
         //팝업 호출후 이벤트.
@@ -340,6 +343,12 @@
 
             //팝업 호출 후 검색조건 필드에 포커스 처리.
             oInp.focus();
+
+            //화면 잠금 해제 처리.
+            oAPP.fn.designAreaLockUnlock();
+            
+            //단축키 잠금 처리.
+            oAPP.fn.setShortcutLock(true);
 
         }); //팝업 호출후 이벤트.
         

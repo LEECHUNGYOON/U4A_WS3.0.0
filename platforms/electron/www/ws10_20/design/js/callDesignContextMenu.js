@@ -349,7 +349,10 @@
     
     //UI 추가 메뉴 선택 처리.
     oAPP.fn.contextMenuInsertUI = function(){
-      
+        
+        //단축키 잠금 처리.
+        oAPP.fn.setShortcutLock(true);
+
         //UI 추가.
         function lf_setChild(param){
 
@@ -545,7 +548,10 @@
 
     //contet menu UI삭제 메뉴 선택 이벤트.
     oAPP.fn.contextMenuDeleteUI = function(){
-  
+
+        //단축키 잠금 처리.
+        oAPP.fn.setShortcutLock(true);
+        
         //선택라인의 삭제대상 OBJECT 제거 처리.
         function lf_deleteTreeLine(is_tree){
             
@@ -584,10 +590,14 @@
   
         //UI삭제전 확인 팝업 호출. 메시지!!
         //003	Do you really want to delete the object?
-        parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "003", "", "", "", ""),function(oEvent){
+        parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "003", "", "", "", ""), function(oEvent){
             
             //확인 팝업에서 YES를 선택한 경우 하위 로직 수행.
-            if(oEvent !== "YES"){return;}
+            if(oEvent !== "YES"){
+                //화면 unlock 처리.
+                oAPP.fn.designAreaLockUnlock();                
+                return;
+            }
 
             //화면 lock 처리.
             oAPP.fn.designAreaLockUnlock(true);
@@ -638,6 +648,7 @@
 
             //화면 unlock 처리.
             oAPP.fn.designAreaLockUnlock();
+
   
         }); //UI삭제전 확인 팝업 호출.
   
@@ -746,6 +757,9 @@
     //UI 위치 이동 처리.
     oAPP.fn.contextMenuUiMovePosition = function(i_x, i_y){
 
+        //단축키 잠금 처리.
+        oAPP.fn.setShortcutLock(true);
+
         //CALL BACK FUNCTION.
         function lf_callback(pos){
             //대상 위치로 UI 이동 처리.
@@ -836,6 +850,8 @@
         
         //DOCUMENT, APP에서 COPY한경우 EXIT.
         if(ls_tree.OBJID === "ROOT" || ls_tree.OBJID === "APP"){
+            //화면 unlock 처리.
+            oAPP.fn.designAreaLockUnlock();
             return;
         }
 
@@ -847,7 +863,6 @@
 
         //현재 라인 정보를 복사 처리.
         oAPP.fn.setCopyData("U4AWSuiDesignArea", ["U4AWSuiDesignArea"], ls_tree);
-
 
         //화면 lock 처리.
         oAPP.fn.designAreaLockUnlock();
@@ -1067,7 +1082,6 @@
 
             //화면 잠금 처리.
             oAPP.fn.designAreaLockUnlock(true);
-
             
             //붙여넣기 처리하려는 정보의 OTR ALIAS 수집 처리.
             function lf_getOTRAlise(is_tree){
@@ -1127,6 +1141,7 @@
                 //화면 잠금 처리.
                 oAPP.fn.designAreaLockUnlock(true);
 
+
                 if(oRet.RETCD === "E"){
                     //메시지 출력.
                     parent.showMessage(sap, 10, "W", oRet.RTMSG);
@@ -1146,29 +1161,38 @@
             });  //수집된 OTR ALIAS가 존재하는경우 서버에서 OTR ALIAS에 해당하는 TEXT 검색.
 
 
-
         }   //붙여넣기 정보의 OTR ALIAS검색.
 
 
         //AGGR 선택 팝업의 CALLBACK FUNCTION.
         function lf_aggrPopup_cb(param, i_cdata){
 
+            //화면 잠금 처리.
+            oAPP.fn.designAreaLockUnlock(true);
+
             //이동 가능한 aggregation 정보가 존재하지 않는경우.
             if(typeof param === "undefined"){
                 //오류 메시지 출력.
                 //269	붙여넣기가 가능한 aggregation이 존재하지 않습니다.
                 parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "269", "", "", "", ""));
+
+                //lock 해제.
+                oAPP.fn.designAreaLockUnlock();
                 return;
             }
 
             //UI가 입력 가능한 카디널리티 여부 확인.
             if(oAPP.fn.chkUiCardinality(ls_tree, param.UIATK, param.ISMLB) === true){
+                //오류 발생시 lock 해제.
+                oAPP.fn.designAreaLockUnlock();
                 return;
             }
 
             //UI의 허용 가능 부모 정보
             //(특정 UI는 특정 부모에만 존재해야함.)
             if(oAPP.fn.designChkFixedParentUI(i_cdata.UIOBK, ls_tree.UIOBK, param.UIATT) === true){
+                //오류 발생시 lock 해제.
+                oAPP.fn.designAreaLockUnlock();
                 return;
             }
 
@@ -1206,12 +1230,25 @@
             //117	Do you want to keep the binding?.
             l_msg += oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "117", "", "", "", "");
 
+            //lock 해제.
+            oAPP.fn.designAreaLockUnlock();
+
+            //단축키 잠금 처리.
+            oAPP.fn.setShortcutLock(true);
+
             //복사한 UI의 APPLICATION이 현재 APPLICATION과 다른 경우.
             //바인딩, 서버이벤트 초기화 여부 확인 팝업 호출.
             parent.showMessage(sap, 40, "I", l_msg, function(oEvent){
 
+                //화면 잠금 처리.
+                oAPP.fn.designAreaLockUnlock(true);
+
                 //취소를 한경우 exit.
-                if(oEvent === "CANCEL"){return;}
+                if(oEvent === "CANCEL"){
+                    //화면 잠금 해제 처리.
+                    oAPP.fn.designAreaLockUnlock();
+                    return;
+                }
 
                 //default 바인딩, 서버이벤트 해제 처리.
                 var l_flag = false;
@@ -1276,9 +1313,13 @@
 
         }
 
+        //단축키 잠금 처리.
+        oAPP.fn.setShortcutLock(true);
 
         //편집 불가능 상태일때는 exit.
         if(oAPP.attr.oModel.oData.IS_EDIT !== true){
+            //단축키 잠금 해제 처리.
+            oAPP.fn.setShortcutLock();
             return;
         }
 
@@ -1287,6 +1328,8 @@
         
         //DOCUMENT영역에 PASTE한경우 EXIT.
         if(l_OBJID === "ROOT"){
+            //단축키 잠금 해제 처리.
+            oAPP.fn.setShortcutLock();
             return;
         }
 
@@ -1298,6 +1341,8 @@
 
         //붙여넣기 정보가 존재하지 않는경우.
         if(!l_cpoied){
+            //단축키 잠금 해제 처리.
+            oAPP.fn.setShortcutLock();
             return;
         }
 
@@ -1307,11 +1352,15 @@
 
         //복사한 UI가 이미 존재하는경우 붙여넣기 skip 처리.(공통코드 UA039에 해당하는 UI는 APP당 1개만 존재 가능)
         if(oAPP.fn.designChkUnique(l_cdata.UIOBK) === true){
+            //단축키 잠금 해제 처리.
+            oAPP.fn.setShortcutLock();
             return;
         }
 
         //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.(공통코드 UA040에 해당하는 UI는 특정 UI 하위에만 존재가능)
         if(oAPP.fn.designChkHiddenAreaUi(l_cdata.UIOBK, ls_tree.UIOBK) === true){
+            //단축키 잠금 해제 처리.
+            oAPP.fn.setShortcutLock();
             return;
         }
 
@@ -1338,33 +1387,44 @@
 
     //ui 사용처 리스트 메뉴.
     oAPP.fn.contextMenuUiWhereUse = function(){
+        
+        //단축키 잠금 처리.
+        oAPP.fn.setShortcutLock(true);
 
         //사용처 확인전 질문팝업 호출.
         //123 Do you want to continue?
         parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "123", "", "", "", ""), function(param){
 
+            //화면 lock 처리.
+            oAPP.fn.designAreaLockUnlock(true);
+
             //YES를 선택하지 않은경우 EXIT.
-            if(param !== "YES"){return;}
+            if(param !== "YES"){                
+                //화면 unlock 처리.
+                oAPP.fn.designAreaLockUnlock();
+                return;
+            }
 
             //context menu를 호출한 라인의 OBJID 얻기.
             var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
             
             //DOCUMENT영역에 PASTE한경우 EXIT.
             if(l_OBJID === "ROOT"){
+                //화면 unlock 처리.
+                oAPP.fn.designAreaLockUnlock();
                 return;
             }
 
             //OBJID에 해당하는 TREE 정보 얻기.
             var ls_tree = oAPP.fn.getTreeData(l_OBJID);
 
-            //aggregation 선택 팝업 호출.
+            //ui 사용처 팝업 function이 존재하는경우 즉시 호출.
             if(typeof oAPP.fn.callUiWhereUsePopup !== "undefined"){
-
                 oAPP.fn.callUiWhereUsePopup(ls_tree);
                 return;
             }
 
-            //aggregation 선택 팝업이 존재하지 않는경우 js load후 호출.
+            //ui 사용처 팝업 function이 존재하지 않는경우 js 로드 후 호출.
             oAPP.fn.getScript("design/js/callUiWhereUsePopup",function(){
                 oAPP.fn.callUiWhereUsePopup(ls_tree);
             });

@@ -1259,8 +1259,8 @@
 
                 oAPP.fn.fnMoveToWs10();
 
-                // busy 끄고 Lock 풀기
-                oAPP.common.fnSetBusyLock("");
+                // // busy 끄고 Lock 풀기
+                // oAPP.common.fnSetBusyLock("");
 
                 return;
             }
@@ -1270,8 +1270,8 @@
 
                 oAPP.fn.fnSetAppDisplayMode();
 
-                // busy 끄고 Lock 풀기
-                oAPP.common.fnSetBusyLock("");
+                // // busy 끄고 Lock 풀기
+                // oAPP.common.fnSetBusyLock("");
 
                 return;
             }

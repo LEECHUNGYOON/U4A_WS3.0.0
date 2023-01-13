@@ -91,6 +91,9 @@
 
     //대상 ui 사용처 리스트 검색.
     function lf_getWhereUseList(oDlg, oModel, is_tree){
+        
+        //화면 lock 처리.
+        oAPP.fn.designAreaLockUnlock(true);
 
         //busy on.
         oModel.setData({busy:true});
@@ -107,12 +110,6 @@
         //사용처 리스트 검색.
         sendAjax(oAPP.attr.servNm + "/uiWhereUseList", oFormData, function(param){
 
-            //busy off.
-            oModel.setData({busy:false});
-
-            //busy dialog close.
-            oAPP.common.fnSetBusyDialog(false);
-
             //사용처 리스트 검색에 오류가 발생한 경우.
             if(param.RETCD === "E"){
                 //오류 메시지 출력.
@@ -121,6 +118,15 @@
 
             //결과정보 바인딩.
             oModel.setData({T_DATA:param.T_DATA},true);
+            
+            //busy off.
+            oModel.setData({busy:false});
+
+            //busy dialog close.
+            oAPP.common.fnSetBusyDialog(false);
+
+            //화면 unlock 처리.
+            oAPP.fn.designAreaLockUnlock();
 
         },""); //사용처 리스트 검색.
 
