@@ -577,14 +577,21 @@
     oAPP.fn.designAreaLockUnlock = function(bLock){
 
       //잠금 flag 처리된경우.
-      if(bLock){
+      if(bLock){        
+        //단축키도 같이 잠금 처리.
+        oAPP.fn.setShortcutLock(true);
+
         //화면 잠금 처리.
         oAPP.attr.oCore.lock();
+
         return;
       }
 
       //잠금 flag가 없는경우 잠금 해제 처리.      
       oAPP.attr.oCore.unlock();
+      
+      //단축키도 같이 잠금 햐제 처리.
+      oAPP.fn.setShortcutLock();
 
     };  //디자인 area의 잠금/잠금해제 처리.
 

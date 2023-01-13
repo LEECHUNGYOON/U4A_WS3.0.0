@@ -282,7 +282,7 @@
              */
             var oAppInfo = parent.getAppInfo();
 
-            if (oAppInfo.IS_EDIT == 'X') {
+            if (oAppInfo && oAppInfo.IS_EDIT == 'X') {
                 ajax_unlock_app(oAppInfo.APPID);
             }
 

@@ -579,14 +579,9 @@
       if(param !== "YES"){
         //화면 잠금 해제 처리.
         oAPP.fn.designAreaLockUnlock();
-        
-        //단축키 잠금 해제 처리.
-        oAPP.fn.setShortcutLock(false);
-
         return;
 
       }
-
 
       //현재 ATTRIBUTE 항목중 PROPERTY 항목에 대해 직접 입력하여 값을 변경했다면, DEFAULT 값으로 초기화 처리.
       for(var i=0, l=oAPP.attr.oModel.oData.T_ATTR.length; i<l; i++){
@@ -634,13 +629,13 @@
       //모델 갱신 처리.
       oAPP.attr.oModel.refresh(true);
 
+      //변경 FLAG 처리.
+      oAPP.fn.setChangeFlag();
+
       //화면 잠금 해제 처리.
       oAPP.fn.designAreaLockUnlock();
 
-      //단축키 잠금 해제 처리.
-      oAPP.fn.setShortcutLock(false);
-
-    });
+    }); //초기화전 확인팝업 호출.
 
 
   };  //attribute 초기화 기능.
