@@ -166,7 +166,7 @@
             if(param !== "YES"){return;}
 
             //화면 잠금 처리.
-            //oAPP.fn.designAreaLockUnlock(true);
+            oAPP.fn.designAreaLockUnlock(true);
 
             //POSITION 으로 정렬처리.
             oMdl.oData.T_LAYOUT.sort(function(a,b){
@@ -191,7 +191,13 @@
             parent.setP13nData("designLayout", oMdl.oData.T_LAYOUT);
 
             //미리보기 영역 재구성.
-            setTimeout(function(){oAPP.fn.loadPreviewFrame(true);}, 100);
+            setTimeout(function(){
+                oAPP.fn.loadPreviewFrame(true);
+
+                //화면 잠금 해제 처리.
+                oAPP.fn.designAreaLockUnlock();
+
+            }, 100);
 
         }); //저장전 확인 팝업 호출.
         

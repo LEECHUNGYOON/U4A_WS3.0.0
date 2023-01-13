@@ -52,7 +52,7 @@ module.exports = function (window, document, console) {
             message: sErrorMsg,
             type: "error"
         }).then(() => {
-
+  
             bIsError = false;
 
             CURRWIN.close();

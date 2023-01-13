@@ -353,8 +353,13 @@
         //UI 추가.
         function lf_setChild(param){
 
+            //화면 lock 처리.
+            oAPP.fn.designAreaLockUnlock(true);
+
             //UI가 입력 가능한 카디널리티 여부 확인.
             if(oAPP.fn.chkUiCardinality(ls_tree, param.E_EMB_AGGR.UIATK, param.E_EMB_AGGR.ISMLB) === true){
+                //화면 unlock 처리.
+                oAPP.fn.designAreaLockUnlock();
                 return;
             }
 
@@ -362,11 +367,15 @@
 
             //[워크벤치] 특정 API / UI 에 대한 중복 대상 관리 여부 확인.
             if(oAPP.fn.designChkUnique(param.E_UIOBJ.UIOBK, l_cnt) === true){        
+                //화면 unlock 처리.
+                oAPP.fn.designAreaLockUnlock();
                 return;
             }
 
             //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.
             if(oAPP.fn.designChkHiddenAreaUi(param.E_UIOBJ.UIOBK, ls_tree.UIOBK) === true){
+                //화면 unlock 처리.
+                oAPP.fn.designAreaLockUnlock();
                 return;
             }
             
@@ -374,13 +383,15 @@
             //UI의 허용 가능 부모 정보
             //(특정 UI는 특정 부모에만 존재해야함.)
             if(oAPP.fn.designChkFixedParentUI(param.E_UIOBJ.UIOBK, ls_tree.UIOBK, param.E_EMB_AGGR.UIATT) === true){
+                //화면 unlock 처리.
+                oAPP.fn.designAreaLockUnlock();
                 return;
             }
             
             //context menu 호출 UI의 child 정보가 존재하지 않는경우 생성.
             if(!ls_tree.zTREE){
                 ls_tree.zTREE = [];
-            }            
+            }
 
             //부모 UI의 입력한 AGGREGATION정보 얻기.
             var ls_0015 = oAPP.attr.prev[ls_tree.OBJID]._T_0015.find( a => a.UIATK === param.E_EMB_AGGR.UIATK && a.UIATY === "3" );
@@ -577,6 +588,9 @@
             
             //확인 팝업에서 YES를 선택한 경우 하위 로직 수행.
             if(oEvent !== "YES"){return;}
+
+            //화면 lock 처리.
+            oAPP.fn.designAreaLockUnlock(true);
             
             //context menu를 호출한 라인의 OBJID 얻기.
             var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
@@ -621,6 +635,9 @@
 
             //변경 FLAG 처리.
             oAPP.fn.setChangeFlag();
+
+            //화면 unlock 처리.
+            oAPP.fn.designAreaLockUnlock();
   
         }); //UI삭제전 확인 팝업 호출.
   
@@ -632,6 +649,9 @@
 
     //ui 이동처리 function
     oAPP.fn.contextMenuUiMove = function(sign, pos){
+
+        //화면 lock 처리.
+        oAPP.fn.designAreaLockUnlock(true);
 
         //context menu를 호출한 라인의 OBJID 얻기.
         var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
@@ -805,6 +825,9 @@
 
 
 
+        //화면 lock 처리.
+        oAPP.fn.designAreaLockUnlock(true);
+
         //context menu를 호출한 라인의 OBJID 얻기.
         var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
 
@@ -824,6 +847,10 @@
 
         //현재 라인 정보를 복사 처리.
         oAPP.fn.setCopyData("U4AWSuiDesignArea", ["U4AWSuiDesignArea"], ls_tree);
+
+
+        //화면 lock 처리.
+        oAPP.fn.designAreaLockUnlock();
 
 
     };  //context menu ui복사처리.
@@ -1038,6 +1065,10 @@
         //붙여넣기 정보의 OTR ALIAS검색.
         function lf_getOTRtext(param, i_cdata, bKeep){
 
+            //화면 잠금 처리.
+            oAPP.fn.designAreaLockUnlock(true);
+
+            
             //붙여넣기 처리하려는 정보의 OTR ALIAS 수집 처리.
             function lf_getOTRAlise(is_tree){
                 //ATTR 정보가 존재하지 않는경우 EXIT.
@@ -1086,8 +1117,6 @@
                 return;
             }
             
-            //화면 잠금 처리.
-            oAPP.fn.designAreaLockUnlock(true);
 
             var oFormData = new FormData();
             oFormData.append("ALIAS", JSON.stringify(lt_alise));
@@ -1095,7 +1124,7 @@
             //수집된 OTR ALIAS가 존재하는경우 서버에서 OTR ALIAS에 해당하는 TEXT 검색.
             sendAjax(oAPP.attr.servNm + "/getOTRTextsAlias", oFormData, function(oRet){
 
-                //화면 잠금 해제처리.
+                //화면 잠금 처리.
                 oAPP.fn.designAreaLockUnlock(true);
 
                 if(oRet.RETCD === "E"){

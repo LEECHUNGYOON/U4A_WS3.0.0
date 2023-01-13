@@ -190,6 +190,9 @@
           if (this.readyState == 4 && this.status == 200) {
             eval(this.responseText);
             callbackFunc();
+          }else{
+            //화면 잠금 해제 처리.
+            oAPP.fn.designAreaLockUnlock();
           }
         };
 
@@ -568,7 +571,14 @@
     };  //화면에서 UI추가, 이동, 삭제 및 attr 변경시 변경 flag 처리.
 
 
-    
+
+    //단축키 잠금 처리 기능.
+    //true = 잠금, false = 잠금 해제.
+    oAPP.fn.setShortcutLock = function(bLock){
+      oAPP.attr.isShortcutLock = bLock;
+
+    };  //단축키 잠금 처리 기능.
+
 
     //model, 미리보기 정보 제거.
     oAPP.fn.removeContent = function(){

@@ -146,6 +146,7 @@ function createWindow() {
     configureSession();
 
     mainWindow = new BrowserWindow(browserWindowOpts);
+    mainWindow.webContents.setFrameRate(10);
     remote.enable(mainWindow.webContents);
 
     // Load a local HTML file or a remote URL.
