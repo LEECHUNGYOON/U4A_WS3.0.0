@@ -2134,8 +2134,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oBrowserWindow.loadURL(PATHINFO.MAINFRAME);
 
-        oBrowserWindow.webContents.openDevTools();
-
         // no build 일 경우에는 개발자 툴을 실행한다.
         if (!APP.isPackaged) {
             oBrowserWindow.webContents.openDevTools();
