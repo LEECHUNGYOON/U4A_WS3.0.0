@@ -75,9 +75,6 @@
             WSLOG.start(REMOTE, console);
         }
 
-        // // 오류 로그 감지
-        // WSLOG.start(REMOTE, console);
-
         // 무한 루프 오류 방지 flag
         var bIsError = false;
 
@@ -139,10 +136,6 @@
                 message: sErrorMsg,
                 type: "error"
             }).then(() => {
-
-                // [임시] ---- 추후 삭제!!
-                return;
-                // [임시] ---- 추후 삭제!!
 
                 bIsError = false;
 

@@ -135,13 +135,12 @@
             var l_fld = "{" + param.T_LIST[i].FIELD + "}";
 
             //컬럼 ui 생성 처리.
-            var oCol = new sap.ui.table.Column({template:new sap.m.Text({text:l_fld, tooltip:l_fld})});
+            var oCol = new sap.ui.table.Column({template:new sap.m.Text({text:l_fld})});
             oTab.addColumn(oCol);
 
             //컬럼 label 생성 처리.
             var oLab = new sap.m.Label();
             oLab.setText(param.T_LIST[i].TEXT);
-            oLab.setTooltip(param.T_LIST[i].TEXT);
             oCol.setLabel(oLab);
 
         }

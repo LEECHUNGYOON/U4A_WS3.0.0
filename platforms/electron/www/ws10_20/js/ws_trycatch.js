@@ -52,11 +52,7 @@ module.exports = function (window, document, console) {
             message: sErrorMsg,
             type: "error"
         }).then(() => {
-
-            // [임시] ---- 추후 삭제!!
-            return;
-            // [임시] ---- 추후 삭제!!
-
+  
             bIsError = false;
 
             CURRWIN.close();

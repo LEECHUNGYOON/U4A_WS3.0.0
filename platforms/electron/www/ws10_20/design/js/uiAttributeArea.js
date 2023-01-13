@@ -560,6 +560,9 @@
   //attribute 초기화 기능.
   oAPP.fn.attrResetAttr = function(){
 
+    //단축키 잠금 처리.
+    oAPP.fn.setShortcutLock(true);
+
     //112	Resets all properties to their default values.
     var l_msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "112", "", "", "", "") + " \n ";
 
@@ -569,8 +572,21 @@
     //초기화전 확인팝업 호출.
     parent.showMessage(sap, 30, "I", l_msg, function(param){
 
+      //화면 잠금 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+
       //YES를 선택하지 않은경우 EXIT.
-      if(param !== "YES"){return;}
+      if(param !== "YES"){
+        //화면 잠금 해제 처리.
+        oAPP.fn.designAreaLockUnlock();
+        
+        //단축키 잠금 해제 처리.
+        oAPP.fn.setShortcutLock(false);
+
+        return;
+
+      }
+
 
       //현재 ATTRIBUTE 항목중 PROPERTY 항목에 대해 직접 입력하여 값을 변경했다면, DEFAULT 값으로 초기화 처리.
       for(var i=0, l=oAPP.attr.oModel.oData.T_ATTR.length; i<l; i++){
@@ -617,6 +633,12 @@
 
       //모델 갱신 처리.
       oAPP.attr.oModel.refresh(true);
+
+      //화면 잠금 해제 처리.
+      oAPP.fn.designAreaLockUnlock();
+
+      //단축키 잠금 해제 처리.
+      oAPP.fn.setShortcutLock(false);
 
     });
 

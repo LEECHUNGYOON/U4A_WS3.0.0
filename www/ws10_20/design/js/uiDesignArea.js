@@ -270,17 +270,26 @@
 
     //UI FILTER 버튼 선택 이벤트.
     oLBtn6.attachPress(function(){
+
+      //화면 잠금 처리.
+      oAPP.fn.designAreaLockUnlock(true);
       
       if(typeof oAPP.fn.callDesignTreeFindPopup !== "undefined"){
         //검색 팝업 호출.
         oAPP.fn.callDesignTreeFindPopup(oLBtn6);
+
+        //화면 잠금 해제 처리.
+        oAPP.fn.designAreaLockUnlock();
         return;
       }
 
       oAPP.fn.getScript("design/js/callDesignTreeFindPopup",function(){
         //검색 팝업 호출.
         oAPP.fn.callDesignTreeFindPopup(oLBtn6);
-
+        
+        //화면 잠금 해제 처리.
+        oAPP.fn.designAreaLockUnlock();
+        
       });
 
     }); //UI FILTER 버튼 선택 이벤트.
@@ -869,6 +878,8 @@
 
     } //체크박스 선택 해제 재귀호출 function.
 
+    //화면 잠금 처리.
+    oAPP.fn.designAreaLockUnlock(true);
 
     //ROOT를 시작으로 하위를 탐색하며 checkbox 선택 해제 처리.
     lf_clearChkRec(oAPP.attr.oModel.oData.zTREE[0]);
@@ -876,6 +887,8 @@
     //모델 갱신 처리.
     oAPP.attr.oModel.refresh();
 
+    //화면 잠금 해제 처리.
+    oAPP.fn.designAreaLockUnlock();
 
   };  //체크박스 전체 선택 해제 처리.
 
@@ -982,6 +995,9 @@
   //tree item 펼침 처리.
   oAPP.fn.expandTreeItem = function(){
 
+    //화면 잠금 처리.
+    oAPP.fn.designAreaLockUnlock(true);
+
     //선택한 라인을 기준으로 하위를 탐색하며 펼침 처리.
     function lf_expand(){
 
@@ -1024,6 +1040,10 @@
 
     //선택한 라인을 기준으로 하위를 탐색하며 펼침 처리.
     lf_expand();
+
+
+    //화면 잠금 해제 처리.
+    oAPP.fn.designAreaLockUnlock();
 
 
   };  //tree item 펼침 처리.
@@ -1564,6 +1584,9 @@
   //drop callback 이벤트.
   oAPP.fn.drop_cb = function(param, i_drag, i_drop){
 
+    //화면 잠금 처리.
+    oAPP.fn.designAreaLockUnlock(true);
+
     //tree에 매핑된 광역변수 로컬에 매핑.
     var l_effect = oAPP.attr.ui.oLTree1.__dropEffect;
 
@@ -1667,6 +1690,8 @@
 
     //UI가 입력 가능한 카디널리티 여부 확인.
     if(oAPP.fn.chkUiCardinality(i_drop, param.UIATK, param.ISMLB) === true){
+      //화면 잠금 해제 처리.
+      oAPP.fn.designAreaLockUnlock();
       return;
     }
 
@@ -1674,6 +1699,8 @@
     //UI의 허용 가능 부모 정보
     //(특정 UI는 특정 부모에만 존재해야함.)
     if(oAPP.fn.designChkFixedParentUI(i_drag.UIOBK, i_drop.UIOBK, param.UIATT) === true){
+      //화면 잠금 해제 처리.
+      oAPP.fn.designAreaLockUnlock();
       return;
     }
 
@@ -1688,13 +1715,21 @@
     var l_parent = oAPP.fn.getTreeData(i_drag.POBID);
 
     //drag UI의 부모 UI를 찾지 못한 경우 EXIT.
-    if(typeof l_parent === "undefined"){return;}
+    if(typeof l_parent === "undefined"){
+      //화면 잠금 해제 처리.
+      oAPP.fn.designAreaLockUnlock();
+      return;
+    }
 
     //DRAG한 UI의 부모에서 DRAG UI의 INDEX 얻기.
     var l_indx = l_parent.zTREE.findIndex( a=> a.OBJID === i_drag.OBJID);
 
     //INDEX정보를 찾지 못한 경우 EXIT.
-    if(l_indx === -1){return;}
+    if(l_indx === -1){
+      //화면 잠금 해제 처리.
+      oAPP.fn.designAreaLockUnlock();
+      return;
+    }
 
     //DRAG UI의 부모에서 DRAG UI정보 제거.
     l_parent.zTREE.splice(l_indx, 1);
@@ -2393,6 +2428,9 @@
       //YES를 선택하지 않은경우 EXIT.
       if(oEvent !== "YES"){return;}
 
+      //화면 잠금 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+
       //선택 라인 삭제 처리.
       lf_delSelLine(oAPP.attr.oModel.oData.zTREE);
 
@@ -2403,10 +2441,11 @@
       oAPP.fn.setSelectTreeItem(l_objid);
 
       //변경 FLAG 처리.
-      oAPP.fn.setChangeFlag();
+      oAPP.fn.setChangeFlag();      
 
       //005  Job finished.
       parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
+
 
     });
 

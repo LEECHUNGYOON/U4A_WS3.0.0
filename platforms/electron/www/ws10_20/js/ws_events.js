@@ -377,11 +377,11 @@
 
             }
 
-            // Application 복사 팝업을 띄운다
-            oAPP.fn.fnAppCopyPopupOpener(sAppID);
-
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
+
+            // Application 복사 팝업을 띄운다
+            oAPP.fn.fnAppCopyPopupOpener(sAppID);
 
         }
 

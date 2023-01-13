@@ -38,20 +38,20 @@ let oAPP = (function () {
      *  @ !! 위에서 부터 Default 값 우선 순위 브라우저임!! @@
      */
     oAPP.attr.aDefaultBrowsers = [{
-            NAME: "CHROME",
-            DESC: "Google Chrome Browser",
-            REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"
-        },
-        {
-            NAME: "MSEDGE",
-            DESC: "Microsoft Edge",
-            REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe"
-        },
-        {
-            NAME: "IE",
-            DESC: "Microsoft Internet Explorer",
-            REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\IEXPLORE.EXE"
-        },
+        NAME: "CHROME",
+        DESC: "Google Chrome Browser",
+        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"
+    },
+    {
+        NAME: "MSEDGE",
+        DESC: "Microsoft Edge",
+        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe"
+    },
+    {
+        NAME: "IE",
+        DESC: "Microsoft Internet Explorer",
+        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\IEXPLORE.EXE"
+    },
     ];
 
     oAPP.fn.getDefaultBrowserInfo = () => {
@@ -537,52 +537,52 @@ let oAPP = (function () {
 
         return new sap.m.Page({
 
-                // properties
-                showHeader: false,
-                showFooter: true,
-                backgroundDesign: sap.m.PageBackgroundDesign.Transparent,
+            // properties
+            showHeader: false,
+            showFooter: true,
+            backgroundDesign: sap.m.PageBackgroundDesign.Transparent,
 
-                // aggregations
-                content: [
+            // aggregations
+            content: [
 
-                    new sap.m.VBox({
+                new sap.m.VBox({
 
-                        // properties
-                        alignItems: sap.m.FlexAlignItems.Center,
-                        renderType: sap.m.FlexRendertype.Bare,
-                        alignItems: sap.m.FlexAlignItems.Center,
-                        justifyContent: sap.m.FlexJustifyContent.Center,
-                        width: "100%",
-                        height: "100%",
+                    // properties
+                    alignItems: sap.m.FlexAlignItems.Center,
+                    renderType: sap.m.FlexRendertype.Bare,
+                    alignItems: sap.m.FlexAlignItems.Center,
+                    justifyContent: sap.m.FlexJustifyContent.Center,
+                    width: "100%",
+                    height: "100%",
 
-                        // Aggregations
-                        items: [
-                            oFcard
-                        ]
-
-                    })
-
-                ],
-                footer: new sap.m.Toolbar({
-                    content: [
-                        new sap.m.Text({
-                            text: "Copyright 2022. Infocg inc. all rights reserved."
-                        }),
-
-                        new sap.m.ToolbarSpacer(),
-
-                        // new sap.m.Text({
-                        //     text: "CLIENT: {/LOGIN/CLIENT}"
-                        // }),
-
-                        new sap.m.Text({
-                            text: "SYSID: {/LOGIN/SYSID}"
-                        }),
-
+                    // Aggregations
+                    items: [
+                        oFcard
                     ]
-                }).addStyleClass("sapUiSizeCompact")
 
-            })
+                })
+
+            ],
+            footer: new sap.m.Toolbar({
+                content: [
+                    new sap.m.Text({
+                        text: "Copyright 2022. Infocg inc. all rights reserved."
+                    }),
+
+                    new sap.m.ToolbarSpacer(),
+
+                    // new sap.m.Text({
+                    //     text: "CLIENT: {/LOGIN/CLIENT}"
+                    // }),
+
+                    new sap.m.Text({
+                        text: "SYSID: {/LOGIN/SYSID}"
+                    }),
+
+                ]
+            }).addStyleClass("sapUiSizeCompact")
+
+        })
             .bindElement("/LOGIN")
             .addStyleClass("u4aWsLoginPage");
 
@@ -633,15 +633,15 @@ let oAPP = (function () {
             sId = (bIsRemember ? oRememberInfo && oRememberInfo.ID || "" : "");
 
         var oLoginData = {
-                CLIENT: sClient,
-                // ID: sRememberId,
-                ID: sId,
-                PW: "",
-                LANGU: sLangu,
-                SYSID: oServerInfo.SYSID,
-                REMEMBER: bIsRemember,
-                IDSUGG: []
-            },
+            CLIENT: sClient,
+            // ID: sRememberId,
+            ID: sId,
+            PW: "",
+            LANGU: sLangu,
+            SYSID: oServerInfo.SYSID,
+            REMEMBER: bIsRemember,
+            IDSUGG: []
+        },
 
             oBusyPopInit = {
                 TITLE: "Checking for updates...",
@@ -1131,7 +1131,7 @@ let oAPP = (function () {
             // 서버 HTTPONLY 정보 및 로그인 정보
             let oServerInfo = {
                 HTTPONLY: oAPP.attr.HTTPONLY,
-                LOGIN : oAPP.attr.LOGIN
+                LOGIN: oAPP.attr.LOGIN
             };
 
             let sVersion = REMOTE.app.getVersion();
@@ -1419,28 +1419,28 @@ let oAPP = (function () {
 
         new sap.m.Dialog(sDialogId, {
 
-                // properties
-                showHeader: false,
-                horizontalScrolling: false,
-                verticalScrolling: false,
+            // properties
+            showHeader: false,
+            horizontalScrolling: false,
+            verticalScrolling: false,
 
-                // aggregations
-                content: [
-                    oIllustMsg,
+            // aggregations
+            content: [
+                oIllustMsg,
 
-                    new sap.m.HBox({
-                        renderType: "Bare",
-                        items: [
-                            oProgressbar
-                        ]
-                    }),
+                new sap.m.HBox({
+                    renderType: "Bare",
+                    items: [
+                        oProgressbar
+                    ]
+                }),
 
-                ],
+            ],
 
-                // Events
-                escapeHandler: () => {}, // esc 키 방지
+            // Events
+            escapeHandler: () => { }, // esc 키 방지
 
-            })
+        })
             .addStyleClass(sDialogId)
             .bindElement("/BUSYPOP")
             .open();
@@ -2117,7 +2117,7 @@ fnSetBusy('X');
 oAPP.fn.fnLoadBootStrapSetting();
 
 window.addEventListener("load", async () => {
-
+  
     // Default Browser check
     await oAPP.fn.fnCheckIstalledBrowser();
 
