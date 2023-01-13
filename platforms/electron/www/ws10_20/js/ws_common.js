@@ -571,11 +571,6 @@
 
                 e.stopImmediatePropagation();
 
-                // 커서 포커스 날리기
-                if (document.activeElement && document.activeElement.blur) {
-                    document.activeElement.blur();
-                }
-
                 // lock 걸기
                 sap.ui.getCore().lock();
 
@@ -595,6 +590,11 @@
                 if (!oDisplayBtn || !oDisplayBtn.getEnabled() || !oDisplayBtn.getVisible()) {
                     sap.ui.getCore().unlock();
                     return;
+                }
+
+                // 커서 포커스 날리기
+                if (document.activeElement && document.activeElement.blur) {
+                    document.activeElement.blur();
                 }
 
                 oDisplayBtn.firePress();
@@ -760,11 +760,6 @@
                         return;
                     }
 
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
-                    }
-
                     // lock 걸기
                     sap.ui.getCore().lock();
 
@@ -786,6 +781,11 @@
                         return;
                     }
 
+                    // 커서 포커스 날리기
+                    if (document.activeElement && document.activeElement.blur) {
+                        document.activeElement.blur();
+                    }
+
                     oBackBtn.focus();
                     oBackBtn.firePress();
 
@@ -803,11 +803,6 @@
                         return;
                     }
 
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
-                    }
-
                     // 단축키 실행 할지 말지 여부 체크
                     var result = oAPP.common.fnShortCutExeAvaliableCheck();
 
@@ -821,6 +816,11 @@
 
                     if (!oChangeModeBtn && !oDisplayBtn) {
                         return;
+                    }
+
+                    // 커서 포커스 날리기
+                    if (document.activeElement && document.activeElement.blur) {
+                        document.activeElement.blur();
                     }
 
                     var bIsChgVisi = oChangeModeBtn.getVisible(),
@@ -851,11 +851,6 @@
                         return;
                     }
 
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
-                    }
-
                     // 단축키 실행 할지 말지 여부 체크
                     var result = oAPP.common.fnShortCutExeAvaliableCheck();
 
@@ -868,6 +863,11 @@
 
                     if (!oActivateBtn || !oActivateBtn.getEnabled() || !oActivateBtn.getVisible()) {
                         return;
+                    }
+
+                    // 커서 포커스 날리기
+                    if (document.activeElement && document.activeElement.blur) {
+                        document.activeElement.blur();
                     }
 
                     oActivateBtn.focus();
@@ -902,11 +902,6 @@
                         return;
                     }
 
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
-                    }
-
                     // 단축키 실행 할지 말지 여부 체크
                     var result = oAPP.common.fnShortCutExeAvaliableCheck();
 
@@ -918,6 +913,11 @@
                     var oSaveBtn = sap.ui.getCore().byId("saveBtn");
                     if (!oSaveBtn || !oSaveBtn.getEnabled() || !oSaveBtn.getVisible()) {
                         return;
+                    }
+
+                    // 커서 포커스 날리기
+                    if (document.activeElement && document.activeElement.blur) {
+                        document.activeElement.blur();
                     }
 
                     oSaveBtn.focus();
@@ -1191,14 +1191,14 @@
                         return;
                     }
 
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
-                    }
-
                     var oBackBtn = sap.ui.getCore().byId("ws30_backBtn");
                     if (!oBackBtn || !oBackBtn.getEnabled() || !oBackBtn.getVisible()) {
                         return;
+                    }
+
+                    // 커서 포커스 날리기
+                    if (document.activeElement && document.activeElement.blur) {
+                        document.activeElement.blur();
                     }
 
                     oBackBtn.focus();
@@ -1224,11 +1224,6 @@
                         return;
                     }
 
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
-                    }
-
                     var oChangeModeBtn = sap.ui.getCore().byId("ws30_changeModeBtn"),
                         oDisplayBtn = sap.ui.getCore().byId("ws30_displayModeBtn");
 
@@ -1238,6 +1233,11 @@
 
                     var bIsChgVisi = oChangeModeBtn.getVisible(),
                         bIsDisVisi = oDisplayBtn.getVisible();
+
+                    // 커서 포커스 날리기
+                    if (document.activeElement && document.activeElement.blur) {
+                        document.activeElement.blur();
+                    }
 
                     if (bIsChgVisi == true) {
                         oChangeModeBtn.focus();
@@ -1263,11 +1263,6 @@
                         return;
                     }
 
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
-                    }
-
                     // 단축키 실행 할지 말지 여부 체크
                     var result = oAPP.common.fnShortCutExeAvaliableCheck();
 
@@ -1280,6 +1275,11 @@
 
                     if (!oActivateBtn || !oActivateBtn.getEnabled() || !oActivateBtn.getVisible()) {
                         return;
+                    }
+
+                    // 커서 포커스 날리기
+                    if (document.activeElement && document.activeElement.blur) {
+                        document.activeElement.blur();
                     }
 
                     oActivateBtn.focus();
@@ -1296,11 +1296,6 @@
                         return;
                     }
 
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
-                    }
-
                     // 단축키 실행 할지 말지 여부 체크
                     var result = oAPP.common.fnShortCutExeAvaliableCheck();
 
@@ -1312,6 +1307,11 @@
                     var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
                     if (!oSaveBtn || !oSaveBtn.getEnabled() || !oSaveBtn.getVisible()) {
                         return;
+                    }
+
+                    // 커서 포커스 날리기
+                    if (document.activeElement && document.activeElement.blur) {
+                        document.activeElement.blur();
                     }
 
                     oSaveBtn.focus();
@@ -1342,8 +1342,6 @@
                     }
 
                     oBtn.firePress();
-
-                    // oBtn.focus();
 
                 }
             }
