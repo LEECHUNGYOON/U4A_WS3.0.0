@@ -271,24 +271,23 @@
     //UI FILTER 버튼 선택 이벤트.
     oLBtn6.attachPress(function(){
 
+      //단축키 잠금 처리.
+      oAPP.fn.setShortcutLock(true);
+
       //화면 잠금 처리.
       oAPP.fn.designAreaLockUnlock(true);
-      
+
+
       if(typeof oAPP.fn.callDesignTreeFindPopup !== "undefined"){
         //검색 팝업 호출.
         oAPP.fn.callDesignTreeFindPopup(oLBtn6);
 
-        //화면 잠금 해제 처리.
-        oAPP.fn.designAreaLockUnlock();
         return;
       }
 
       oAPP.fn.getScript("design/js/callDesignTreeFindPopup",function(){
         //검색 팝업 호출.
-        oAPP.fn.callDesignTreeFindPopup(oLBtn6);
-        
-        //화면 잠금 해제 처리.
-        oAPP.fn.designAreaLockUnlock();
+        oAPP.fn.callDesignTreeFindPopup(oLBtn6);        
         
       });
 
@@ -2339,6 +2338,12 @@
   //멀티 삭제 처리.
   oAPP.fn.designTreeMultiDeleteItem = function(){
     
+    //화면 잠금 처리.
+    oAPP.fn.designAreaLockUnlock(true);
+
+    //단축키 잠금 처리.
+    oAPP.fn.setShortcutLock(true);
+
     //선택라인 삭제처리.
     function lf_delSelLine(it_tree){
 
@@ -2398,6 +2403,13 @@
       //존재하지 않는경우 오류 메시지 처리.
       //286	Check box not selected.
       parent.showMessage(sap, 20, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "286", "", "", "", ""));
+
+      //화면 잠금 해제 처리.
+      oAPP.fn.designAreaLockUnlock();
+
+      //단축키 잠금 해제 처리.
+      oAPP.fn.setShortcutLock();
+
       return;
 
     }
@@ -2420,16 +2432,26 @@
       l_objid = "ROOT";
     }
 
+    //화면 잠금 해제 처리.
+    oAPP.fn.designAreaLockUnlock();
 
     //삭제전 확인팝업 호출.
     //003	Do you really want to delete the object?
     parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "003", "", "", "", ""), function(oEvent){
 
       //YES를 선택하지 않은경우 EXIT.
-      if(oEvent !== "YES"){return;}
+      if(oEvent !== "YES"){
+        //단축키 잠금 해제 처리.
+        oAPP.fn.setShortcutLock();
+        return;
+      }
+
 
       //화면 잠금 처리.
       oAPP.fn.designAreaLockUnlock(true);
+
+      //단축키 잠금 처리.
+      oAPP.fn.setShortcutLock(true);
 
       //선택 라인 삭제 처리.
       lf_delSelLine(oAPP.attr.oModel.oData.zTREE);
@@ -2445,6 +2467,9 @@
 
       //005  Job finished.
       parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
+
+      //단축키 잠금 해제 처리.
+      oAPP.fn.setShortcutLock();
 
 
     });

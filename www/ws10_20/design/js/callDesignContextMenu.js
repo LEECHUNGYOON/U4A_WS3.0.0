@@ -1058,6 +1058,9 @@
             //변경 FLAG 처리.
             oAPP.fn.setChangeFlag();
 
+            //단축키 잠금 해제 처리.
+            oAPP.fn.setShortcutLock();
+
 
         } //붙여넣기 callback 이벤트.
 
@@ -1067,6 +1070,9 @@
 
             //화면 잠금 처리.
             oAPP.fn.designAreaLockUnlock(true);
+
+            //단축키 잠금 처리.
+            oAPP.fn.setShortcutLock(true);
 
             
             //붙여넣기 처리하려는 정보의 OTR ALIAS 수집 처리.
@@ -1124,8 +1130,12 @@
             //수집된 OTR ALIAS가 존재하는경우 서버에서 OTR ALIAS에 해당하는 TEXT 검색.
             sendAjax(oAPP.attr.servNm + "/getOTRTextsAlias", oFormData, function(oRet){
 
+                //단축키 잠금 처리.
+                oAPP.fn.setShortcutLock(true);
+
                 //화면 잠금 처리.
                 oAPP.fn.designAreaLockUnlock(true);
+
 
                 if(oRet.RETCD === "E"){
                     //메시지 출력.
@@ -1142,6 +1152,9 @@
             }, "X", true, "POST", function(e){
                 //오류 발생시 lock 해제.
                 oAPP.fn.designAreaLockUnlock();
+
+                //단축키 잠금 해제 처리.
+                oAPP.fn.setShortcutLock();
               
             });  //수집된 OTR ALIAS가 존재하는경우 서버에서 OTR ALIAS에 해당하는 TEXT 검색.
 
@@ -1153,22 +1166,44 @@
         //AGGR 선택 팝업의 CALLBACK FUNCTION.
         function lf_aggrPopup_cb(param, i_cdata){
 
+            //단축키 잠금 처리.
+            oAPP.fn.setShortcutLock(true);
+
+            //화면 잠금 처리.
+            oAPP.fn.designAreaLockUnlock(true);
+
             //이동 가능한 aggregation 정보가 존재하지 않는경우.
             if(typeof param === "undefined"){
                 //오류 메시지 출력.
                 //269	붙여넣기가 가능한 aggregation이 존재하지 않습니다.
                 parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "269", "", "", "", ""));
+
+                //lock 해제.
+                oAPP.fn.designAreaLockUnlock();
+
+                //단축키 잠금 해제 처리.
+                oAPP.fn.setShortcutLock();
                 return;
             }
 
             //UI가 입력 가능한 카디널리티 여부 확인.
             if(oAPP.fn.chkUiCardinality(ls_tree, param.UIATK, param.ISMLB) === true){
+                //오류 발생시 lock 해제.
+                oAPP.fn.designAreaLockUnlock();
+
+                //단축키 잠금 해제 처리.
+                oAPP.fn.setShortcutLock();
                 return;
             }
 
             //UI의 허용 가능 부모 정보
             //(특정 UI는 특정 부모에만 존재해야함.)
             if(oAPP.fn.designChkFixedParentUI(i_cdata.UIOBK, ls_tree.UIOBK, param.UIATT) === true){
+                //오류 발생시 lock 해제.
+                oAPP.fn.designAreaLockUnlock();
+
+                //단축키 잠금 해제 처리.
+                oAPP.fn.setShortcutLock();
                 return;
             }
 
@@ -1206,12 +1241,28 @@
             //117	Do you want to keep the binding?.
             l_msg += oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "117", "", "", "", "");
 
+            //lock 해제.
+            oAPP.fn.designAreaLockUnlock();
+
             //복사한 UI의 APPLICATION이 현재 APPLICATION과 다른 경우.
             //바인딩, 서버이벤트 초기화 여부 확인 팝업 호출.
             parent.showMessage(sap, 40, "I", l_msg, function(oEvent){
 
+                //단축키 잠금 처리.
+                oAPP.fn.setShortcutLock(true);
+
+                //화면 잠금 처리.
+                oAPP.fn.designAreaLockUnlock(true);
+
                 //취소를 한경우 exit.
-                if(oEvent === "CANCEL"){return;}
+                if(oEvent === "CANCEL"){
+                    //단축키 잠금 해제 처리.
+                    oAPP.fn.setShortcutLock();
+
+                    //화면 잠금 해제 처리.
+                    oAPP.fn.designAreaLockUnlock();
+                    return;
+                }
 
                 //default 바인딩, 서버이벤트 해제 처리.
                 var l_flag = false;

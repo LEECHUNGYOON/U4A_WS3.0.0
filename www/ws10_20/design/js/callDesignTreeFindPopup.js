@@ -341,6 +341,12 @@
             //팝업 호출 후 검색조건 필드에 포커스 처리.
             oInp.focus();
 
+            //화면 잠금 해제 처리.
+            oAPP.fn.designAreaLockUnlock();
+
+            //단축키 잠금 해제 처리.
+            oAPP.fn.setShortcutLock();
+
         }); //팝업 호출후 이벤트.
         
 
