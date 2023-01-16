@@ -10,7 +10,7 @@
     oAPP.fn = {};
 
     const
-        REMOTE = require('@electron/remote'),       
+        REMOTE = require('@electron/remote'),
         REMOTEMAIN = REMOTE.require('@electron/remote/main'),
         APP = REMOTE.app,
         PATH = REMOTE.require('path'),
@@ -94,7 +94,7 @@
 
         // 인트로 화면 닫기
         let oCurrWindow = REMOTE.getCurrentWindow();
-        oCurrWindow.hide();       
+        oCurrWindow.hide();
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -225,6 +225,12 @@
 
         // server list v2
         // oWin.webContents.openDevTools();
+        // no build 일 경우에는 개발자 툴을 실행한다.
+
+        // if (!APP.isPackaged) {
+        //     oWin.webContents.openDevTools();
+        // }
+
 
         oWin.webContents.on('did-finish-load', function() {
 
