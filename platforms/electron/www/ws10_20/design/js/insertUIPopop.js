@@ -32,8 +32,8 @@
     sap.ui.getCore().loadLibrary("sap.ui.table");
     sap.ui.getCore().loadLibrary("sap.m");
 
-    var oDlg = new sap.m.Dialog({resizable:true,draggable:true,
-      contentWidth:"50%",contentHeight:"60%",verticalScrolling:false});
+    var oDlg = new sap.m.Dialog({resizable:true, draggable:true,
+      contentWidth:"50%", contentHeight:"60%", verticalScrolling:false});
     oDlg.addStyleClass("sapUiSizeCompact");
 
     //dialog open이후 이벤트.
@@ -67,7 +67,7 @@
       oDlg.close();
       oDlg.destroy();
       //001	Cancel operation
-      parent.showMessage(sap,10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
+      parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
 
     });
 
@@ -78,7 +78,14 @@
     //dialog 타이틀 설정.
     var ls_0022 = oAPP.DATA.LIB.T_0022.find( a => a.UIOBK === UIOBK);
     if(ls_0022){
-      oTitle.setText("UI Object Select - " + ls_0022.UIOBJ);
+
+      //D97  UI Object Select
+      var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D97", "", "", "", "");
+
+      oTitle.setText(l_txt + " - " + ls_0022.UIOBJ);
+
+      oTitle.setTooltip(l_txt + " - " + ls_0022.UIOBJ);
+
     }
 
     var oMdl = new sap.ui.model.json.JSONModel();
@@ -100,7 +107,10 @@
     var oFrmElem1 = new sap.ui.layout.form.FormElement();
     oFrmCont1.addFormElement(oFrmElem1);
 
-    var oLab1 = new sap.m.Label({design: "Bold",text: "Aggregation Name"});
+    //D98  Aggregation Name
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D98", "", "", "", "");
+
+    var oLab1 = new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt});
     oFrmElem1.setLabel(oLab1);
 
     var oSel1 = new sap.m.Select({width:"100%"});
@@ -110,7 +120,7 @@
     oSel1.attachChange(function(){
 
       oMdl.oData.T_LIST = [];
-      oMdl.setData({"T_LIST":[]},true);
+      oMdl.setData({"T_LIST":[]}, true);
 
       //테이블 라인선택 초기화.
       oTab1.clearSelection();
@@ -203,17 +213,23 @@
 
 
 
-    var oItm1 = new sap.ui.core.Item({key:"{UIATK}",text:"{UIATT}"});
-    oSel1.bindAggregation("items",{path:"/T_SEL",template:oItm1});
+    var oItm1 = new sap.ui.core.Item({key:"{UIATK}", text:"{UIATT}"});
+    oSel1.bindAggregation("items", {path:"/T_SEL", template:oItm1});
 
     var oFrmElem2 = new sap.ui.layout.form.FormElement({visible:false});
     oFrmCont1.addFormElement(oFrmElem2);
 
-    var oLab2 = new sap.m.Label({design: "Bold",text: "Generated Cnt"});
+    //D99  Generated Cnt
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D99", "", "", "", "");
+
+    var oLab2 = new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt});
     oFrmElem2.setLabel(oLab2);
 
+    //B25  Max
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B25", "", "", "", "");
+
     //UI 추가 건수 입력필드.
-    var oInp1 = new sap.m.Input({type:"Number", maxLength:CV_MAX_LEN, value:1,description:"Max : " + CV_MAX_CNT});
+    var oInp1 = new sap.m.Input({type:"Number", maxLength:CV_MAX_LEN, value:1, description:l_txt + " : " + CV_MAX_CNT});
     oFrmElem2.addField(oInp1);
 
     //UI 추가 건수 입력필드 변경 이벤트.
@@ -252,7 +268,10 @@
     var oFrmElem3 = new sap.ui.layout.form.FormElement();
     oFrmCont1.addFormElement(oFrmElem3);
 
-    var oLab9 = new sap.m.Label({design: "Bold",text: "UI Object"});
+    //E01  UI Object
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E01", "", "", "", "");
+
+    var oLab9 = new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt});
     oFrmElem3.setLabel(oLab9);
 
     var oInp2 = new sap.m.Input();
@@ -270,7 +289,7 @@
 
         var l_filter;
         if(l_val !== ""){
-          l_filter = new sap.ui.model.Filter({path:"UIOBJ",operator:"Contains",value1:l_val});
+          l_filter = new sap.ui.model.Filter({path:"UIOBJ", operator:"Contains", value1:l_val});
         }
 
         l_bind.filter(l_filter);
@@ -281,8 +300,8 @@
 
 
     //결과 테이블
-    var oTab1 = new sap.ui.table.Table({selectionMode: "Single",selectionBehavior:"Row",rowHeight:30,
-      visibleRowCountMode:"Auto",layoutData:new sap.m.FlexItemData({growFactor:1})});
+    var oTab1 = new sap.ui.table.Table({selectionMode:"Single", selectionBehavior:"Row", rowHeight:30,
+      visibleRowCountMode:"Auto", layoutData:new sap.m.FlexItemData({growFactor:1})});
 
     //테이블 스크롤 이벤트.
     oTab1.attachFirstVisibleRowChanged(function(){
@@ -291,10 +310,10 @@
     });
 
     //table 더블클릭 이벤트.
-    oTab1.attachBrowserEvent("dblclick",function(oEvent){
+    oTab1.attachBrowserEvent("dblclick", function(oEvent){
 
       //이벤트 발생 UI 정보 얻기.
-      var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target,sap.ui.getCore());
+      var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target, sap.ui.getCore());
 
       //UI정보를 얻지 못한 경우 exit.
       if(!l_ui){return;}
@@ -314,56 +333,74 @@
 
     oVbox1.addItem(oTab1);
 
-    var oCol1 = new sap.ui.table.Column({hAlign:"Center",width:"80px"});
+    var oCol1 = new sap.ui.table.Column({hAlign:"Center", width:"80px"});
     oTab1.addColumn(oCol1);
 
-    var oImage = new sap.m.Image({src:"{UICON}",width:"19px"});
+    var oImage = new sap.m.Image({src:"{UICON}", width:"19px"});
     oCol1.setTemplate(oImage);
 
-    var oLab4 = new sap.m.Label({design: "Bold",text: "Img"});
+    //E02  Icon
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E02", "", "", "", "");
+
+    var oLab4 = new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt});
     oCol1.setLabel(oLab4);
 
-    var oCol2 = new sap.ui.table.Column({autoResizable:true,filterProperty:"UIOBJ",sortProperty:"UIOBJ"});
+    var oCol2 = new sap.ui.table.Column({autoResizable:true, filterProperty:"UIOBJ", sortProperty:"UIOBJ"});
     oTab1.addColumn(oCol2);
 
-    var oLab3 = new sap.m.Label({design: "Bold",text: "UI Object"});
+    //E01  UI Object
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E01", "", "", "", "");
+
+    var oLab3 = new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt});
     oCol2.setLabel(oLab3);
 
     var oTxt1 = new sap.m.Text({text:"{UIOBJ}"});
     oCol2.setTemplate(oTxt1);
 
-    var oCol3 = new sap.ui.table.Column({autoResizable:true,filterProperty:"UIOMD",sortProperty:"UIOMD"});
+    var oCol3 = new sap.ui.table.Column({autoResizable:true, filterProperty:"UIOMD", sortProperty:"UIOMD"});
     oTab1.addColumn(oCol3);
 
-    var oLab6 = new sap.m.Label({design: "Bold",text: "UI Object(Fullname)"});
+    //E03  UI Object(Fullname)
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E03", "", "", "", "");
+
+    var oLab6 = new sap.m.Label({design: "Bold",text:l_txt, tooltip:l_txt});
     oCol3.setLabel(oLab6);
 
     var oTxt2 = new sap.m.Text({text:"{UIOMD}"});
     oCol3.setTemplate(oTxt2);
 
-    var oCol4 = new sap.ui.table.Column({hAlign:"Center",width:"120px",filterProperty:"UIOBK",sortProperty:"UIOBK"});
+    var oCol4 = new sap.ui.table.Column({hAlign:"Center", width:"120px", filterProperty:"UIOBK", sortProperty:"UIOBK"});
     oTab1.addColumn(oCol4);
 
-    var oLab7 = new sap.m.Label({design: "Bold",text: "UI Key"});
+    //E04  UI Key
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E04", "", "", "", "");
+
+    var oLab7 = new sap.m.Label({design: "Bold", text:l_txt, tooltip:l_txt});
     oCol4.setLabel(oLab7);
 
     var oTxt4 = new sap.m.Text({text:"{UIOBK}"});
     oCol4.setTemplate(oTxt4);
 
-    var oCol5 = new sap.ui.table.Column({hAlign:"Center",width:"80px"});
+    var oCol5 = new sap.ui.table.Column({hAlign:"Center", width:"80px"});
     oTab1.addColumn(oCol5);
 
-    var oLab8 = new sap.m.Label({design: "Bold",text: "UI Info"});
+    //E05  UI Info
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E05", "", "", "", "");
+
+    var oLab8 = new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt});
     oCol5.setLabel(oLab8);
 
-    var oIcon2 = new sap.ui.core.Icon({src:"sap-icon://sys-help",height:"20px"});
+    var oIcon2 = new sap.ui.core.Icon({src:"sap-icon://sys-help", height:"20px"});
     oCol5.setTemplate(oIcon2);
 
     var oRow1 = new sap.ui.table.Row();
-    oTab1.bindAggregation("rows",{path:"/T_LIST",template:oRow1});
+    oTab1.bindAggregation("rows", {path:"/T_LIST",template:oRow1});
+
+    //A40  Confirm
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A40", "", "", "", "");
 
     //확인 버튼
-    var oBtn1 = new sap.m.Button({icon: "sap-icon://accept",text: "Confirm",type: "Accept", tooltip:"Confirm"});
+    var oBtn1 = new sap.m.Button({icon:"sap-icon://accept", text:l_txt, tooltip:l_txt, type:"Accept"});
     oDlg.addButton(oBtn1);
 
     oBtn1.attachPress(function(){
@@ -383,9 +420,11 @@
 
     });
 
+    //A41  Cancel
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A41", "", "", "", "");
 
     //종료버튼
-    var oBtn2 = new sap.m.Button({icon: "sap-icon://decline",text: "Cancel",type: "Reject", tooltip:"Cancel"});
+    var oBtn2 = new sap.m.Button({icon:"sap-icon://decline", text:l_txt, type:"Reject", tooltip:l_txt});
     oDlg.addButton(oBtn2);
     oBtn2.attachPress(function(){
       oDlg.close();

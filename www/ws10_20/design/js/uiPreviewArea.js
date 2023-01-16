@@ -113,7 +113,7 @@
       document.body.appendChild(oform);
 
       oform.submit();
-      
+ 
       // //미리보기 서버 URL 정보 구성.
       // oAPP.attr.ui.frame.src = parent.getHost() + "/zu4a_wbc/u4a_ipcmain/getPrevHTML?" +
       //   "sap-client=" + l_info.CLIENT +  
