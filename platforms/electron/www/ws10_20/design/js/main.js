@@ -326,15 +326,17 @@
         //design tree 선택 처리 해제
         oAPP.attr.ui.oLTree1.clearSelection();
 
+
         //attribute 선택 처리 해제.
         oAPP.attr.ui.oRTab1.removeSelections();
+        
+
+        //design 영역 invalidate 처리.
+        oAPP.fn.invalidateDesignArea();
 
 
         //미리보기 화면 구성.
         oAPP.fn.loadPreviewFrame();
-
-        //design 영역 invalidate 처리.
-        oAPP.fn.invalidateDesignArea();
 
 
         //세션 랜덤키 얻기.
@@ -611,25 +613,6 @@
     //model, 미리보기 정보 제거.
     oAPP.fn.removeContent = function(){
 
-      //20230116 pes -start.
-      //미리보기 src 초기화.
-      //미리보기 frame를 유지하며 ui만 제거하는 로직을 대체하여 frame 자체를 초기화 하는 내용을 추가함.
-      oAPP.attr.ui.frame.src = "";
-
-      //미리보기 frame 초기화.
-      oAPP.attr.ui.frame = null;
-
-      //미리보기 화면을 제거하는 시간이 오래 걸림에 따라 frame를 유지하며 ui만 제거 하는 로직 주석처리.
-      // //미리보기 화면 제거.
-      // oAPP.attr.ui.frame.contentWindow.removePreviewPage();
-
-      // //미리보기 테마 초기화(sap_fiori_3로 설정함).
-      // oAPP.attr.ui.frame.contentWindow.setPreviewUiTheme("sap_fiori_3");
-      
-      // //미리보기 css 제거 처리.
-      // oAPP.attr.ui.frame.contentWindow.setCSSLink([],true);
-      // oAPP.attr.ui.frame.contentWindow.setCSSSource("");
-      //20230116 pes -end.
       
       //design tree 선택 처리 해제
       oAPP.attr.ui.oLTree1.clearSelection();
@@ -666,6 +649,35 @@
       
 
       oAPP.attr.oModel.refresh();
+
+      
+      
+      //20230116 pes -start.
+      //미리보기 src 초기화.
+      //미리보기 frame를 유지하며 ui만 제거하는 로직을 대체하여 frame 자체를 초기화 하는 내용을 추가함.
+      document.getElementById("prevHTML").src = "";
+      document.getElementById("prevHTML").style.display = "none";
+
+      delete oAPP.attr.ui._page1;
+      delete oAPP.attr.ui._hbox1;
+      delete oAPP.attr.ui.oMenu;
+
+      //oAPP.attr.ui.frame.src = "";
+
+      //미리보기 frame 초기화.
+      oAPP.attr.ui.frame = null;
+
+      //미리보기 화면을 제거하는 시간이 오래 걸림에 따라 frame를 유지하며 ui만 제거 하는 로직 주석처리.
+      // //미리보기 화면 제거.
+      // oAPP.attr.ui.frame.contentWindow.removePreviewPage();
+
+      // //미리보기 테마 초기화(sap_fiori_3로 설정함).
+      // oAPP.attr.ui.frame.contentWindow.setPreviewUiTheme("sap_fiori_3");
+      
+      // //미리보기 css 제거 처리.
+      // oAPP.attr.ui.frame.contentWindow.setCSSLink([],true);
+      // oAPP.attr.ui.frame.contentWindow.setCSSSource("");
+      //20230116 pes -end.
 
 
     };  //model, 미리보기 정보 제거.
