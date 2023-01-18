@@ -171,7 +171,7 @@
             ];
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
-            vbs.stdout.on("data", function (data) {});
+            vbs.stdout.on("data", function (data) { });
             vbs.stderr.on("data", function (data) {
 
                 //VBS 리턴 오류 CODE / MESSAGE 
@@ -282,80 +282,13 @@
      ************************************************************************/
     oAPP.fn.fnSetHideWindow = () => {
 
-        // var op = {
-        //      "height": 120,
-        //      "width": 288,
-        //     "acceptFirstMouse": true,
-        //     "alwaysOnTop": true,
-        //     "maximizable": false,
-        //     "minimizable": false,
-        //     "show": true,
-        //     // "resizable": false,
-        //     "transparent": true,
-        //     "frame": false,
-        //     //"titleBarStyle": "hidden",
-        //     "parent": parent.REMOTE.getCurrentWindow(),
+        let sPopupName = "WINSHOWHIDE";
 
-        //     "webPreferences": {
-        //         "devTools": true,
-        //         "nodeIntegration": true,
-        //         "enableRemoteModule": true,
-        //         "contextIsolation": false,
-        //         "webSecurity": false,
-        //         "nativeWindowOpen": true
-        //     }
-
-        // };
-
-        // let win = parent.REMOTE.getCurrentWindow();
-
-        // // 윈도우에 클릭 이벤트 무시 여부
-        // win.setIgnoreMouseEvents(true);
-        // win.setAlwaysOnTop(true);
-
-        // var oWIN = new parent.REMOTE.BrowserWindow(op);
-
-        // oWIN.loadURL(parent.PATH.join(parent.REMOTE.app.getAppPath(), "ws10_20/Popups/winShowHidePopup/index.html"));
-
-        // oWIN.webContents.on('did-finish-load', function () {
-        //     oWIN.show();
-
-        //     let oSendData = {
-        //         DEFAULT_OPACITY: 0.3
-        //     };
-
-        //     oWIN.webContents.send('if_showHidePopup', oSendData);
-
-        // });
-
-        // // 브라우저를 닫을때 타는 이벤트
-        // oWIN.on('closed', () => {
-
-        //     let bIsPin = APPCOMMON.fnGetModelProperty("/SETTING/ISPIN");
-
-        //     parent.REMOTE.getCurrentWindow().focus();
-        //     parent.REMOTE.getCurrentWindow().setOpacity(1);
-        //     parent.REMOTE.getCurrentWindow().setIgnoreMouseEvents(false);
-
-        //     if (!bIsPin) {
-        //         parent.REMOTE.getCurrentWindow().setAlwaysOnTop(false);
-        //     }
-
-        //     oWIN = null;
-
-        // });
-
-        // parent.REMOTE.require('@electron/remote/main').enable(oWIN.webContents);
-
-        // return;
-
-
-
-
-
-
-
-
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        if (oResult.ISOPEN) {
+            return;
+        }
 
         let win = parent.REMOTE.getCurrentWindow();
 
@@ -384,6 +317,7 @@
             "transparent": true,
             "parent": win,
             "webPreferences": {
+                "OBJTY": sPopupName,
                 "devTools": true,
                 "nodeIntegration": true,
                 "enableRemoteModule": true,
@@ -406,6 +340,11 @@
         var sUrlPath = parent.getPath("WINHIDE");
 
         oBrowserWindow.loadURL(sUrlPath);
+
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // oBrowserWindow.webContents.openDevTools();
 
@@ -464,20 +403,20 @@
 
         // 초기 모델 설정
         let oModelData = {
-                KEY: "",
-                RDBTNINDEX: 0,
-                FNAME: "",
-                RDLIST: [{
-                        text: "Key In"
-                    },
-                    {
-                        text: "File Drag"
-                    },
-                    {
-                        text: "Attach File"
-                    },
-                ]
+            KEY: "",
+            RDBTNINDEX: 0,
+            FNAME: "",
+            RDLIST: [{
+                text: "Key In"
             },
+            {
+                text: "File Drag"
+            },
+            {
+                text: "Attach File"
+            },
+            ]
+        },
             oJsonModel = new sap.ui.model.json.JSONModel();
 
         oJsonModel.setData(oModelData);

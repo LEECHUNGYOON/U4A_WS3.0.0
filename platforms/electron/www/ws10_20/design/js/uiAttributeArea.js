@@ -4080,11 +4080,7 @@
 
           //embed Aggregation 정보 검색.
           if(OBJID !== "APP"){
-            if(typeof oAPP.attr.prev[OBJID] === "undefined" || typeof oAPP.attr.prev[OBJID]._T_0015 === "undefined"){
-              parent.REMOTE.getCurrentWindow().webContents.openDevTools();
-              alert(oAPP.attr.appInfo.APPID + " " + OBJID);
-            }
-
+            
             var ls_0015 = oAPP.fn.crtStru0015();
             oAPP.fn.moveCorresponding(oAPP.attr.prev[OBJID]._T_0015.find( a=> a.OBJID === OBJID && a.UIATY === "6"), ls_0015);
 
@@ -4108,11 +4104,6 @@
 
           //대상 UI에 매핑되어있는 프로퍼티, 이벤트 항목에 대한건 ATTRIBUTE영역에 매핑.
           for(var i=0, l=oAPP.attr.oModel.oData.T_ATTR.length; i<l; i++){
-
-            if(typeof oAPP.attr.prev[OBJID] === "undefined" || typeof oAPP.attr.prev[OBJID]._T_0015 === "undefined"){
-              parent.REMOTE.getCurrentWindow().webContents.openDevTools();
-              alert(oAPP.attr.appInfo.APPID + " " + OBJID);
-            }
 
             //대상 UI에 해당하는 입력건 검색.
             var ls_0015 = oAPP.attr.prev[OBJID]._T_0015.find( a => a.UIATK === oAPP.attr.oModel.oData.T_ATTR[i].UIATK && 
