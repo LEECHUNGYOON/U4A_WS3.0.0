@@ -1334,6 +1334,9 @@ let oAPP = (function () {
 
                 setTimeout(() => {
 
+                    // 업데이트가 완료되면 기존 CDN 체크를 해제 한다.
+                    parent.setIsCDN(""); 
+                    
                     autoUpdater.quitAndInstall(); //<--- 자동 인스톨 
 
                 }, 3000);

@@ -477,7 +477,8 @@
             }
         },
         {
-            KEY: "Ctrl+Shift+F1", // Application Change
+            // KEY: "Ctrl+Shift+F1", // Application Change
+            KEY: "F6", // Application Change
             fn: (e) => {
 
                 e.stopImmediatePropagation();

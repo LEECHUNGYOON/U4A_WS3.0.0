@@ -777,7 +777,7 @@
             oAppChangeBtn = new sap.m.Button("appChangeBtn", {
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02"), // Change
                 icon: "sap-icon://edit",
-                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02") + " (Ctrl+Shift+F1)", // Change (Ctrl+Shift+F1)",
+                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02") + " (F6)", // Change (F6)",
                 press: oAPP.events.ev_AppChange
             })
             .bindProperty("visible", jQuery.extend(true, {}, lo_bindPropForVisible))
