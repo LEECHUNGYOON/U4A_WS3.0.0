@@ -2649,6 +2649,7 @@
             var oFind = aDeleteTreeData.find(arr => arr.OBJKY == oBindBeforeSelect.OBJKY);
             if (oFind) {
 
+                // 앱 변경 사항 플래그 설정
                 oAPP.fn.setAppChangeWs30("");
 
                 // Intro Page 로 이동
@@ -5012,23 +5013,35 @@
 
                 _fnCreateUspNode(oEvent);
 
+                // busy 키고 Lock 걸기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
 
             case "C": // 저장 후 프로세스가 신규 생성일 경우.
 
                 fnCreateUspNodePopup(oTreeTable);
 
+                // busy 키고 Lock 걸기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
 
-            case "D": // 저장 후 삭제 프로세스가 삭제 일 경우.
+            case "D": // 저장 후 프로세스가 삭제 일 경우.
 
                 fnDeleteUspNode(oTreeTable);
 
+                // busy 키고 Lock 걸기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
 
-            case "RN": // 저장 후 Rename 프로세스 일 경우.             
+            case "RN": // 저장 후 프로세스가 Rename 일 경우.             
 
                 fnRenameUspNodePopup(oTreeTable);
+
+                // busy 키고 Lock 걸기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
 
