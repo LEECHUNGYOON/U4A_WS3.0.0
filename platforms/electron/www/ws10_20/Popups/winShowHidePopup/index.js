@@ -1,62 +1,126 @@
+/************************************************************************
+ * Copyright 2020. INFOCG Inc. all rights reserved. 
+ * ----------------------------------------------------------------------
+ * - file Name : winShowHidePopup/index.js
+ ************************************************************************/
 
-document.addEventListener('DOMContentLoaded', () => {
+/************************************************************************
+ * 에러 감지
+ ************************************************************************/
+var zconsole = parent.WSERR(window, document, console);
 
-    (() => {
-        "use strict";
+let oAPP = parent.oAPP;
 
-        window.oAPP = {};
+(function (window, oAPP) {
+    "use strict";
 
-        oAPP.REMOTE = require('@electron/remote');
-        oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
-        oAPP.PARWIN = oAPP.CURRWIN.getParentWindow();
-        oAPP.IPCRENDERER = require('electron').ipcRenderer;
+    const
+        PATH = parent.PATH,
+        APP = parent.APP,
+        APPCOMMON = oAPP.common,
+        require = parent.require;
 
-        oAPP.IPCRENDERER.on('if_showHidePopup', (events, oInfo) => {
+    /************************************************************************
+     * ws의 설정 정보를 구한다.
+     ************************************************************************/
+    oAPP.fn.getSettingsInfo = function () {
 
-            const DEFAULT_OPACITY = oInfo.DEFAULT_OPACITY;
+        // Browser Window option
+        var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
 
-            let oRange = document.getElementById("range");
-            if (oRange) {
-                oRange.value = DEFAULT_OPACITY * 100;
-            }
+            // JSON 파일 형식의 Setting 정보를 읽는다..
+            oSettings = require(sSettingsJsonPath);
+        if (!oSettings) {
+            return;
+        }
 
-            let oCurrWin = oAPP.REMOTE.getCurrentWindow(),
-                oParentWin = oCurrWin.getParentWindow();
+        return oSettings;
 
-            oParentWin.setOpacity(DEFAULT_OPACITY);
+    }; // end of oAPP.fn.getSettingsInfo
+
+    // /************************************************************************
+    //  * UI5 BootStrap 
+    //  ************************************************************************/
+    oAPP.fn.fnLoadBootStrapSetting = function () {
+
+        var oSettings = oAPP.fn.getSettingsInfo(),
+            oSetting_UI5 = oSettings.UI5,
+            sVersion = oSetting_UI5.version,
+            sTestResource = oSetting_UI5.testResource,
+            sReleaseResource = `../../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
+            bIsDev = oSettings.isDev,
+            oBootStrap = oSetting_UI5.bootstrap,
+            oUserInfo = oAPP.attr.oUserInfo,
+            oThemeInfo = oAPP.attr.oThemeInfo,
+            sLangu = oUserInfo.LANGU;
+
+        var oScript = document.createElement("script");
+        oScript.id = "sap-ui-bootstrap";
+
+        // 공통 속성 적용
+        for (const key in oBootStrap) {
+            oScript.setAttribute(key, oBootStrap[key]);
+        }
+
+        // 로그인 Language 적용
+        oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
+        oScript.setAttribute("data-sap-ui-language", sLangu);
+        oScript.setAttribute("data-sap-ui-libs", "sap.m");
+
+        // 개발일때와 release 할 때의 Bootstrip 경로 분기
+        if (bIsDev) {
+            oScript.setAttribute("src", sTestResource);
+        } else {
+            oScript.setAttribute("src", sReleaseResource);
+        }
+
+        document.head.appendChild(oScript);
+
+    }; // end of fnLoadBootStrapSetting
+
+    oAPP.fn.onStart = () => {
+
+        sap.ui.getCore().attachInit(() => {
+
+            oAPP.fn.onInitRendering();
+
+
 
         });
 
-        oAPP.close = () => {
+    };
 
-            let oCurrWin = oAPP.REMOTE.getCurrentWindow();
-            oCurrWin.close();
+    oAPP.fn.onInitRendering = () => {
 
-        };
+        let oApp = new sap.m.App({
 
-        oAPP.sliderChange = (e) => {
+            }),
+            oPage = new sap.m.Page({
+                customHeader: new sap.m.Toolbar({
+                    content: [
+                        new sap.m.ToolbarSpacer(),
+                        new sap.m.Button({
+                            text: "닫기"
+                        })
+                    ]
+                }).addStyleClass("u4aWsWinShowHideToolbar"),
+                content: [
+                    new sap.m.Input()
+                ]
+            });
 
-            oAPP.PARWIN.setIgnoreMouseEvents(true);
+        oApp.addPage(oPage);
+        oApp.placeAt("content");
 
-            let oCurrWin = oAPP.REMOTE.getCurrentWindow(),
-                oParentWin = oCurrWin.getParentWindow();
+    }; // end of oAPP.fn.onInitRendering
 
-            let iValue = parseInt(e.value),
-                opa = iValue / 100;
+    oAPP.fn.fnLoadBootStrapSetting();
 
-            oParentWin = oCurrWin.getParentWindow();
+    window.onload = () => {
 
-            oParentWin.setOpacity(opa);
-
-            if(opa == 1){
-                oAPP.PARWIN.setIgnoreMouseEvents(false);
-                return;
-            }
-
-        };
-
-    })();
+        oAPP.fn.onStart();
 
 
+    };
 
-});
+})(window, oAPP);
