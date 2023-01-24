@@ -11,7 +11,7 @@ var zconsole = parent.WSERR(window, document, console);
 
 let oAPP = parent.oAPP;
 
-(function (window, oAPP) {
+(function(window, oAPP) {
     "use strict";
 
     const
@@ -23,7 +23,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * ws의 설정 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.getSettingsInfo = function () {
+    oAPP.fn.getSettingsInfo = function() {
 
         // Browser Window option
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
@@ -38,10 +38,10 @@ let oAPP = parent.oAPP;
 
     }; // end of oAPP.fn.getSettingsInfo
 
-    // /************************************************************************
-    //  * UI5 BootStrap 
-    //  ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = function () {
+    /************************************************************************
+     * UI5 BootStrap Settings
+     ************************************************************************/
+    oAPP.fn.fnLoadBootStrapSetting = function() {
 
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
@@ -78,39 +78,96 @@ let oAPP = parent.oAPP;
 
     }; // end of fnLoadBootStrapSetting
 
+    /************************************************************************
+     * Application Start!!
+     ************************************************************************/
     oAPP.fn.onStart = () => {
 
         sap.ui.getCore().attachInit(() => {
 
             oAPP.fn.onInitRendering();
 
-
-
         });
 
-    };
+    }; // end of oAPP.fn.onStart    
 
+    /************************************************************************
+     * Init Rendering
+     ************************************************************************/
     oAPP.fn.onInitRendering = () => {
 
         let oApp = new sap.m.App({
-
+                autoFocus: false
             }),
             oPage = new sap.m.Page({
+                backgroundDesign: sap.m.PageBackgroundDesign.List,
                 customHeader: new sap.m.Toolbar({
                     content: [
+                        new sap.ui.core.Icon({
+                            src: "sap-icon://hide"
+                        }),
+                        new sap.m.Title({
+                            text: "window through slider"
+                        }),
+
                         new sap.m.ToolbarSpacer(),
+
                         new sap.m.Button({
-                            text: "닫기"
+                            type: sap.m.ButtonType.Negative,
+                            icon: "sap-icon://decline",
+                            press: () => {
+
+                                let oCurrWin = oAPP.REMOTE.getCurrentWindow();
+                                oCurrWin.close();
+
+                            }
                         })
                     ]
                 }).addStyleClass("u4aWsWinShowHideToolbar"),
                 content: [
-                    new sap.m.Input()
-                ]
+                    new sap.m.VBox({
+                        height: "100%",
+                        renderType: sap.m.FlexRendertype.Bare,
+                        alignItems: sap.m.FlexAlignItems.Center,
+                        items: [
+
+                            new sap.m.Slider({
+                                value: oAPP.attr.DEFAULT_OPACITY * 100,
+                                liveChange: (oEvent) => {
+
+                                    oAPP.PARWIN.setIgnoreMouseEvents(true);
+
+                                    let oCurrWin = oAPP.REMOTE.getCurrentWindow(),
+                                        oParentWin = oCurrWin.getParentWindow();
+
+                                    let iValue = oEvent.getParameter("value"),
+                                        opa = iValue / 100;
+
+                                    oParentWin.setOpacity(opa);
+
+                                    if (opa == 1) {
+                                        oAPP.PARWIN.setIgnoreMouseEvents(false);
+                                        return;
+                                    }
+
+                                }
+
+                            })
+
+                        ] // end of vbox items
+                    }),
+
+                ] // end of page content
+
             });
 
         oApp.addPage(oPage);
         oApp.placeAt("content");
+
+        oPage.addStyleClass("sapUiContentPadding");
+        // oApp.addStyleClass("sapUiSizeCompact");
+
+        oAPP.PARWIN.setOpacity(oAPP.attr.DEFAULT_OPACITY);
 
     }; // end of oAPP.fn.onInitRendering
 
@@ -122,5 +179,6 @@ let oAPP = parent.oAPP;
 
 
     };
+
 
 })(window, oAPP);
