@@ -171,7 +171,7 @@
             ];
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
-            vbs.stdout.on("data", function (data) {});
+            vbs.stdout.on("data", function (data) { });
             vbs.stderr.on("data", function (data) {
 
                 //VBS 리턴 오류 CODE / MESSAGE 
@@ -295,28 +295,28 @@
             BROWSKEY = parent.getBrowserKey(),
             oUserInfo = parent.getUserInfo();
 
-        // // 윈도우에 클릭 이벤트 무시 여부
-        // win.setIgnoreMouseEvents(true);
+        // 윈도우에 클릭 이벤트 무시 여부
+        win.setIgnoreMouseEvents(true);
 
-        // win.setAlwaysOnTop(true);
+        win.setAlwaysOnTop(true);
 
         var oBrowserOptions = {
             "height": 120,
             "width": 288,
             "maxWidth": 288,
-            "maxHeight": 120,
             "minWidth": 288,
-            "minHeight": 120,
-            // "height": 400,
-            // "width": 400,
+
+            "maxHeight": 180,
+            "minHeight": 180,
+
+            // "maxHeight": 120,
+            // "minHeight": 120,           
+
             "backgroundColor": oThemeInfo.BGCOL,
             "acceptFirstMouse": true,
-            // "resizable": false,
             "alwaysOnTop": true,
             "maximizable": false,
             "minimizable": false,
-            // "show": true,
-            // "opacity": 0.0,
             "frame": false,
             "transparent": true,
             "parent": win,
@@ -416,20 +416,20 @@
 
         // 초기 모델 설정
         let oModelData = {
-                KEY: "",
-                RDBTNINDEX: 0,
-                FNAME: "",
-                RDLIST: [{
-                        text: "Key In"
-                    },
-                    {
-                        text: "File Drag"
-                    },
-                    {
-                        text: "Attach File"
-                    },
-                ]
+            KEY: "",
+            RDBTNINDEX: 0,
+            FNAME: "",
+            RDLIST: [{
+                text: "Key In"
             },
+            {
+                text: "File Drag"
+            },
+            {
+                text: "Attach File"
+            },
+            ]
+        },
             oJsonModel = new sap.ui.model.json.JSONModel();
 
         oJsonModel.setData(oModelData);

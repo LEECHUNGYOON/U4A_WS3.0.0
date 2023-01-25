@@ -11,7 +11,7 @@ var zconsole = parent.WSERR(window, document, console);
 
 let oAPP = parent.oAPP;
 
-(function(window, oAPP) {
+(function (window, oAPP) {
     "use strict";
 
     const
@@ -23,7 +23,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * ws의 설정 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.getSettingsInfo = function() {
+    oAPP.fn.getSettingsInfo = function () {
 
         // Browser Window option
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
@@ -41,7 +41,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * UI5 BootStrap Settings
      ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = function() {
+    oAPP.fn.fnLoadBootStrapSetting = function () {
 
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
@@ -97,8 +97,8 @@ let oAPP = parent.oAPP;
     oAPP.fn.onInitRendering = () => {
 
         let oApp = new sap.m.App({
-                autoFocus: false
-            }),
+            autoFocus: false
+        }),
             oPage = new sap.m.Page({
                 backgroundDesign: sap.m.PageBackgroundDesign.List,
                 customHeader: new sap.m.Toolbar({
@@ -107,7 +107,7 @@ let oAPP = parent.oAPP;
                             src: "sap-icon://hide"
                         }),
                         new sap.m.Title({
-                            text: "window through slider"
+                            text: "window Hide Slider"
                         }),
 
                         new sap.m.ToolbarSpacer(),
@@ -131,7 +131,7 @@ let oAPP = parent.oAPP;
                         alignItems: sap.m.FlexAlignItems.Center,
                         items: [
 
-                            new sap.m.Slider({
+                            new sap.m.Slider("opaSlider", {
                                 value: oAPP.attr.DEFAULT_OPACITY * 100,
                                 liveChange: (oEvent) => {
 
@@ -152,6 +152,36 @@ let oAPP = parent.oAPP;
 
                                 }
 
+                            }),
+
+                            new sap.m.HBox({
+                                renderType: sap.m.FlexRendertype.Bare,
+                                justifyContent: sap.m.FlexJustifyContent.SpaceBetween,
+                                width: "100%",
+                                items: [
+
+                                    new sap.m.Button({
+                                        text: "20",
+                                        press: _pressOpacityButton
+                                    }),
+                                    new sap.m.Button({
+                                        text: "40",
+                                        press: _pressOpacityButton
+                                    }),
+
+                                    new sap.m.Button({
+                                        text: "60",
+                                        press: _pressOpacityButton
+                                    }),
+                                    new sap.m.Button({
+                                        text: "80",
+                                        press: _pressOpacityButton
+                                    }),
+                                    new sap.m.Button({
+                                        text: "100",
+                                        press: _pressOpacityButton
+                                    }),
+                                ]
                             })
 
                         ] // end of vbox items
@@ -170,6 +200,30 @@ let oAPP = parent.oAPP;
         oAPP.PARWIN.setOpacity(oAPP.attr.DEFAULT_OPACITY);
 
     }; // end of oAPP.fn.onInitRendering
+
+    function _pressOpacityButton(oEvent) {
+
+        debugger;
+
+        let oBtn = oEvent.getSource(),
+            sValue = oBtn.getText(),
+            iSliderValue = parseInt(sValue),
+            iValue = parseInt(iSliderValue) / 100;
+
+        let oSlider = sap.ui.getCore().byId("opaSlider");
+        if (oSlider) {
+            oSlider.setValue(iSliderValue);
+        }
+
+        oAPP.PARWIN.setOpacity(iValue);
+
+        oAPP.PARWIN.setIgnoreMouseEvents(true);
+
+        if (iValue == 1) {
+            oAPP.PARWIN.setIgnoreMouseEvents(false);
+        }
+
+    }
 
     oAPP.fn.fnLoadBootStrapSetting();
 

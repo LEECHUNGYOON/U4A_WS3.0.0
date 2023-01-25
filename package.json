@@ -31,7 +31,7 @@
     "url": "git+https://github.com/LEECHUNGYOON/U4A_WS3.0.0.git"
   },
   "build": {
-    "artifactName": "${productName}-Setup-${version}.${ext}",
+    "artifactName": "U4A-Workspace-Setup-${version}.${ext}",
     "win": {},
     "publish": {
       "provider": "github"
