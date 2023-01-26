@@ -494,12 +494,13 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.url = sPath;
-        oBrowserOptions.title = "Example Open";
+        oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A07"); // Example Open
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.modal = true;
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
+        oBrowserOptions.webPreferences.OBJTY = "EXAMPLE"
 
         oAPP.fn.fnExternalOpen(oBrowserOptions);
 

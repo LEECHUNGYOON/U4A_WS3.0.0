@@ -2,33 +2,33 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta charset="utf-8">
-    <style>
-        .u4aWsWinShowHideToolbar:not(.sapMBtn) {
-            -webkit-app-region: drag;
-        }
 
-        .u4aWsWinShowHideToolbar .sapMBtn {
-            -webkit-app-region: no-drag;
-        }
-        
-    </style>
 </head>
+<style>
+    html,
+    body {
+        height: 100%;
+    }
 
-<body class="sapUiBody">
+    body {
+        margin: 0px;
+        overflow: hidden;
+    }
+</style>
 
-    <div id="content"></div>
+<body>
+    <iframe id="ws_frame" name="ws_frame" style="border:none;width:100%;height:100%;" allowfullscreen>
+    </iframe>
 
     <script>
         /************************************************************************
          * 에러 감지
          ************************************************************************/
-        var require = parent.require,
-            REMOTE = require('@electron/remote'),
+        var REMOTE = require('@electron/remote'),
             PATH = REMOTE.require('path'),
             APP = REMOTE.app,
             APPPATH = APP.getAppPath(),
@@ -39,8 +39,7 @@
         var zconsole = WSERR(window, document, console);
     </script>
 
-    <script src="index.js"></script>
-
+    <script src="frame.js"></script>
 </body>
 
 </html>

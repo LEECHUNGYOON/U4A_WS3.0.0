@@ -7,6 +7,7 @@
 
     const
         REMOTE = parent.REMOTE,
+        APP = parent.APP,
         CURRWIN = REMOTE.getCurrentWindow(),
         REMOTEMAIN = parent.REMOTEMAIN,
         APPCOMMON = oAPP.common;
@@ -30,7 +31,7 @@
 
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
-            
+
             return;
         }
 
@@ -265,7 +266,7 @@
      * WS10 페이지로 이동
      * **********************************************************************/
     oAPP.fn.fnMoveToWs10 = function () {
-        
+
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
 
@@ -309,15 +310,12 @@
 
             parent.CURRWIN.setTitle("U4A Workspace - #Main");
 
-            // Busy 끄기
-            parent.setBusy("");
-
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
+            // busy 끄고 Lock 끄기
+            oAPP.common.fnSetBusyLock("");     
 
         } // end of lf_success
 
-    }; // end of oAPP.fn.fnMoveToWs10
+    }; // end of oAPP.fn.fnMoveToWs10    
 
     /************************************************************************
      * WS20 페이지로 이동
@@ -776,7 +774,10 @@
 
             oBrowserWindow.loadURL(sExtOpenHtmlUrl);
 
-            // oBrowserWindow.webContents.openDevTools();
+            // // no build 일 경우에는 개발자 툴을 실행한다.
+            // if (!APP.isPackaged) {
+            //     oBrowserWindow.webContents.openDevTools();
+            // }
 
             // 브라우저가 활성화 될 준비가 될때 타는 이벤트
             oBrowserWindow.once('ready-to-show', () => {
@@ -1255,7 +1256,8 @@
     oAPP.fn.fnCheckPopupHideException = (OBJTY) => {
 
         let aExceptionList = [
-            "VIDEOREC"
+            "VIDEOREC",
+            "EXAMPLE"
         ];
 
         if (!OBJTY) {

@@ -259,7 +259,6 @@
 
         }
 
-
     }; // end of oAPP.fn.fnSetFocusServerList
 
     /************************************************************************
@@ -290,7 +289,11 @@
             return;
         }
 
-        let win = parent.REMOTE.getCurrentWindow();
+        let win = parent.REMOTE.getCurrentWindow(),
+            oThemeInfo = parent.getThemeInfo(), // theme 정보 
+            SESSKEY = parent.getSessionKey(),
+            BROWSKEY = parent.getBrowserKey(),
+            oUserInfo = parent.getUserInfo();
 
         // 윈도우에 클릭 이벤트 무시 여부
         win.setIgnoreMouseEvents(true);
@@ -301,18 +304,19 @@
             "height": 120,
             "width": 288,
             "maxWidth": 288,
-            "maxHeight": 120,
             "minWidth": 288,
-            "minHeight": 120,
-            // "height": 400,
-            // "width": 400,
+
+            "maxHeight": 180,
+            "minHeight": 180,
+
+            // "maxHeight": 120,
+            // "minHeight": 120,           
+
+            "backgroundColor": oThemeInfo.BGCOL,
             "acceptFirstMouse": true,
-            // "resizable": false,
             "alwaysOnTop": true,
             "maximizable": false,
             "minimizable": false,
-            // "show": true,
-            // "opacity": 0.0,
             "frame": false,
             "transparent": true,
             "parent": win,
@@ -324,14 +328,19 @@
                 "contextIsolation": false,
                 "webSecurity": false,
                 "nativeWindowOpen": true,
+                "partition": SESSKEY,
+                "browserkey": BROWSKEY,
+                "USERINFO": parent.process.USERINFO
             }
         };
 
         // 브라우저 오픈
         var oBrowserWindow = new parent.REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
+
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
+
         // oBrowserWindow.setMenuBarVisibility(false);
 
         // 실행할 URL 적용
@@ -341,7 +350,7 @@
 
         oBrowserWindow.loadURL(sUrlPath);
 
-        // no build 일 경우에는 개발자 툴을 실행한다.
+        // // no build 일 경우에는 개발자 툴을 실행한다.
         // if (!APP.isPackaged) {
         //     oBrowserWindow.webContents.openDevTools();
         // }
@@ -354,13 +363,17 @@
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
+            oBrowserWindow.show();
+
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
             let oSendData = {
-                DEFAULT_OPACITY: 0.3
+                DEFAULT_OPACITY: 0.3,
+                oUserInfo: oUserInfo,
+                oThemeInfo: oThemeInfo,
             };
 
             oBrowserWindow.webContents.send('if_showHidePopup', oSendData);

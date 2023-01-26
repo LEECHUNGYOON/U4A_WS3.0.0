@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html style="-webkit-app-region: drag;">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+        }
+
+        html {
+            width: 100%;
+            height: 100%;
+            /* background-image: url(example.png);
+            background-repeat: no-repeat;
+            background-size: cover; */
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .range_slide {  
+            width: 288px;           
+            height: 116px;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            background: #EFEFEF;
+            box-shadow: 2px 3px 10px #000000, inset         -2px -2px 5px #5e5e5e, inset 4px 4px 5px #ffffff;
+            border-radius: 10px;
+        }
+
+        .slide_header {
+            width: 100%;
+            height: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #cccccc;
+        }
+
+        .slide_header .dragArea {
+            width: calc(100% - 25px);
+            height: 100%;
+            border-radius: 10px 0 0 0;
+        }
+
+        .slide_header button {
+            width: 25px;
+            height: 25px;
+            border: none;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+            padding: 0 10px;
+            box-sizing: content-box;
+            background-color: transparent;
+        }
+
+        .slide_body {
+            width: 100%;
+            height: calc(100% - 40px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+        }
+
+        .range_slide input {
+            width: 100%;
+            height: 30px;
+            border-radius: 25px;
+            -webkit-appearance: none;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 30px;
+            cursor: pointer;
+            box-shadow: 0px 0px 0px #000000;
+            background: linear-gradient(270deg, #FF9900 0%, #CC00FF 51.56%, #515151 100%);
+            border-radius: 25px;
+            border: 0px solid #000101;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            height: 35px;
+            width: 35px;
+            border-radius: 25px;
+            background: #000000;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -2px;
+        }
+
+        /* .dragArea {
+            -webkit-app-region: drag;
+        } */
+
+        /* .range_slide,
+        .slide_body,
+        .slide_header,
+        .close_btn {
+            -webkit-app-region: no-drag;
+        } */
+    </style>
+
+
+
+</head>
+
+<body>
+    <!--
+    <div>
+        <img src="http://www.u4ainfo.com/img/logo.png"  width="300" height="300" /> <br><br>
+    </div>
+    <br>
+    -->
+
+    
+    <div class="range_slide">
+        <div class="slide_header">
+            <div class="dragArea"></div>
+            <button class="close_btn" style="-webkit-app-region: no-drag;" onclick="oAPP.close();">
+                <svg width="25" height="25" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="9.56426" y="3.46376" width="1.23248" height="8.62739" rx="0.616242"
+                        transform="rotate(45 9.56426 3.46376)" fill="#CC00FF" />
+                    <rect x="10.4358" y="9.56424" width="1.23248" height="8.62739" rx="0.616242"
+                        transform="rotate(135 10.4358 9.56424)" fill="#CC00FF" />
+                </svg>
+            </button>
+        </div>
+        <div class="slide_body" style="-webkit-app-region: no-drag;">
+            <svg width="30" height="29" viewBox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M5.46492 0L6.02047 1.85185C6.31929 1.91124 6.60034 2.01994 6.85479 2.16912C6.87018 2.16036 6.88604 2.1521 6.90238 2.14435L8.64689 1.31801L7.82054 3.06251C7.81433 3.07562 7.80778 3.08843 7.80091 3.10092C7.95765 3.35913 8.07232 3.6457 8.13539 3.95114L9.96492 4.5L8.13539 5.04886C8.07232 5.35429 7.95766 5.64087 7.80092 5.89907C7.80779 5.91156 7.81434 5.92436 7.82055 5.93747L8.64689 7.68197L6.90239 6.85563C6.88605 6.84789 6.87019 6.83962 6.85481 6.83087C6.60036 6.98005 6.3193 7.08876 6.02047 7.14815L5.46492 9L4.90583 7.13637C4.62282 7.07381 4.3565 6.96685 4.11455 6.82316C4.09508 6.83482 4.07481 6.84567 4.05374 6.85565L2.30924 7.68199L3.13558 5.93749C3.14556 5.91642 3.15641 5.89615 3.16807 5.87669C3.01962 5.62673 2.91037 5.35077 2.84879 5.05727L0.991211 4.5L2.84879 3.94273C2.90859 3.6577 3.01335 3.38922 3.15531 3.14503C3.13843 3.11906 3.12303 3.09155 3.10929 3.06253L2.28295 1.31803L4.02745 2.14437C4.05323 2.15659 4.07783 2.17011 4.10121 2.18481C4.3467 2.03711 4.61761 1.92734 4.90583 1.86363L5.46492 0Z"
+                    fill="#515151" />
+            </svg>
+            <input type="range" id="range" oninput="oAPP.sliderChange(this);">
+            <svg width="35" height="35" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M7.45618 0L8.3821 3.08642C8.88013 3.1854 9.34855 3.36657 9.77264 3.6152C9.79827 3.6006 9.82472 3.58682 9.85196 3.57392L12.7595 2.19668L11.3822 5.10419C11.3719 5.12604 11.361 5.14738 11.3495 5.1682C11.6107 5.59854 11.8018 6.07617 11.907 6.58524L14.9562 7.5L11.907 8.41476C11.8018 8.92382 11.6107 9.40145 11.3495 9.83178C11.361 9.8526 11.3719 9.87393 11.3822 9.89578L12.7595 12.8033L9.85196 11.426C9.82473 11.4131 9.7983 11.3994 9.77267 11.3848C9.34858 11.6334 8.88014 11.8146 8.3821 11.9136L7.45618 15L6.52436 11.8939C6.05269 11.7897 5.60882 11.6114 5.20556 11.3719C5.17312 11.3914 5.13933 11.4094 5.10422 11.4261L2.19672 12.8033L3.57396 9.89581C3.59059 9.86071 3.60867 9.82692 3.62809 9.79448C3.38069 9.37789 3.1986 8.91795 3.09596 8.42879L0 7.5L3.09596 6.57121C3.19564 6.09617 3.37024 5.6487 3.60683 5.24171C3.5787 5.19843 3.55304 5.15258 3.53013 5.10422L2.15289 2.19672L5.06039 3.57396C5.10337 3.59431 5.14436 3.61685 5.18333 3.64135C5.59249 3.39518 6.044 3.21223 6.52436 3.10605L7.45618 0Z"
+                    fill="#FF9900" />
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        /************************************************************************
+         * 에러 감지
+        ************************************************************************/
+        var REMOTE = require('@electron/remote'),
+            PATH = REMOTE.require('path'),
+            APP = REMOTE.app,
+            APPPATH = APP.getAppPath(),
+            PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            PATHINFO = require(PATHINFOURL),
+            WSERR = require(PATHINFO.WSTRYCATCH);
+
+        var zconsole = WSERR(window, document, console);
+    </script>
+    
+    <script src="index.js"></script>
+    
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+        }
+
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .range_slide {
+            width: 288px;
+            height: 116px;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            background: #EFEFEF;
+            box-shadow: 2px 3px 10px #000000, inset -2px -2px 5px #5e5e5e, inset 4px 4px 5px #ffffff;
+            border-radius: 10px;
+        }
+
+        .slide_header {
+            -webkit-app-region: drag;
+            width: 100%;
+            height: 40px;
+            display: flex;
+            justify-content: end;
+            align-items: center;
+            border-bottom: 1px solid #cccccc;
+            padding: 5px 15px;
+        }
+
+        .slide_header button {
+            width: 25px;
+            height: 25px;
+            border: none;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .slide_body {
+            width: 100%;
+            height: calc(100% - 40px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+        }
+
+        .range_slide input {
+            width: 100%;
+            height: 30px;
+            border-radius: 25px;
+            -webkit-appearance: none;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 30px;
+            cursor: pointer;
+            box-shadow: 0px 0px 0px #000000;
+            background: linear-gradient(270deg, #FF9900 0%, #CC00FF 51.56%, #515151 100%);
+            border-radius: 25px;
+            border: 0px solid #000101;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            height: 35px;
+            width: 35px;
+            border-radius: 25px;
+            background: #000000;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -2px;
+        }
+      
+    </style>
+</head>
+
+<body>
+    <div class="range_slide">
+        <div class="slide_header">
+            <button onclick="oAPP.close();">
+                <svg width="25" height="25" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="9.56426" y="3.46376" width="1.23248" height="8.62739" rx="0.616242"
+                        transform="rotate(45 9.56426 3.46376)" fill="#CC00FF" />
+                    <rect x="10.4358" y="9.56424" width="1.23248" height="8.62739" rx="0.616242"
+                        transform="rotate(135 10.4358 9.56424)" fill="#CC00FF" />
+                </svg>
+            </button>
+        </div>
+        <div class="slide_body">
+            <svg width="30" height="29" viewBox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M5.46492 0L6.02047 1.85185C6.31929 1.91124 6.60034 2.01994 6.85479 2.16912C6.87018 2.16036 6.88604 2.1521 6.90238 2.14435L8.64689 1.31801L7.82054 3.06251C7.81433 3.07562 7.80778 3.08843 7.80091 3.10092C7.95765 3.35913 8.07232 3.6457 8.13539 3.95114L9.96492 4.5L8.13539 5.04886C8.07232 5.35429 7.95766 5.64087 7.80092 5.89907C7.80779 5.91156 7.81434 5.92436 7.82055 5.93747L8.64689 7.68197L6.90239 6.85563C6.88605 6.84789 6.87019 6.83962 6.85481 6.83087C6.60036 6.98005 6.3193 7.08876 6.02047 7.14815L5.46492 9L4.90583 7.13637C4.62282 7.07381 4.3565 6.96685 4.11455 6.82316C4.09508 6.83482 4.07481 6.84567 4.05374 6.85565L2.30924 7.68199L3.13558 5.93749C3.14556 5.91642 3.15641 5.89615 3.16807 5.87669C3.01962 5.62673 2.91037 5.35077 2.84879 5.05727L0.991211 4.5L2.84879 3.94273C2.90859 3.6577 3.01335 3.38922 3.15531 3.14503C3.13843 3.11906 3.12303 3.09155 3.10929 3.06253L2.28295 1.31803L4.02745 2.14437C4.05323 2.15659 4.07783 2.17011 4.10121 2.18481C4.3467 2.03711 4.61761 1.92734 4.90583 1.86363L5.46492 0Z"
+                    fill="#515151" />
+            </svg>
+            <input type="range" id="range" oninput="oAPP.sliderChange(this);">
+            <svg width="35" height="35" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M7.45618 0L8.3821 3.08642C8.88013 3.1854 9.34855 3.36657 9.77264 3.6152C9.79827 3.6006 9.82472 3.58682 9.85196 3.57392L12.7595 2.19668L11.3822 5.10419C11.3719 5.12604 11.361 5.14738 11.3495 5.1682C11.6107 5.59854 11.8018 6.07617 11.907 6.58524L14.9562 7.5L11.907 8.41476C11.8018 8.92382 11.6107 9.40145 11.3495 9.83178C11.361 9.8526 11.3719 9.87393 11.3822 9.89578L12.7595 12.8033L9.85196 11.426C9.82473 11.4131 9.7983 11.3994 9.77267 11.3848C9.34858 11.6334 8.88014 11.8146 8.3821 11.9136L7.45618 15L6.52436 11.8939C6.05269 11.7897 5.60882 11.6114 5.20556 11.3719C5.17312 11.3914 5.13933 11.4094 5.10422 11.4261L2.19672 12.8033L3.57396 9.89581C3.59059 9.86071 3.60867 9.82692 3.62809 9.79448C3.38069 9.37789 3.1986 8.91795 3.09596 8.42879L0 7.5L3.09596 6.57121C3.19564 6.09617 3.37024 5.6487 3.60683 5.24171C3.5787 5.19843 3.55304 5.15258 3.53013 5.10422L2.15289 2.19672L5.06039 3.57396C5.10337 3.59431 5.14436 3.61685 5.18333 3.64135C5.59249 3.39518 6.044 3.21223 6.52436 3.10605L7.45618 0Z"
+                    fill="#FF9900" />
+            </svg>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+
+</body>
+
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta charset="utf-8">
+</head>
+<style>
+    html,
+    body {
+        height: 100%;
+    }
+
+    body {
+        margin: 0px;
+        overflow: hidden;
+    }
+</style>
+
+<body>
+
+
+    <button style="width: 100px; height:100px;" onclick="oAPP.close();">
+
+        끄기
+
+    </button>
+    <script src="index.js"></script>
+</body>
+
+</html> -->
