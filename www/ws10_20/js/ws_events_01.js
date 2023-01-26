@@ -288,7 +288,11 @@
             // 메시지 처리 후 리턴            
             var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "062", sTcode); // & invalid transaction ID.
 
-            APPCOMMON.fnShowShowFloatingFooterMsg("E", "WS20", sMsg);
+            // 현재 페이지의 위치를 구한다.
+            let sCurrPage = parent.getCurrPage();
+
+            // 페이지 위치에 맞는 플로팅 메시지를 뿌린다.
+            APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sMsg);
 
             oSrchField.setValue("");
 
