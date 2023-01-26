@@ -2356,17 +2356,14 @@
             return;
         }
 
-        debugger;
-
-        // USP 생성 팝업의 초기 데이터 모델 세팅
+        // Rename 바인딩 데이터를 구한다.
         let oModelData = APPCOMMON.fnGetModelProperty(RENAME_BINDROOT),
             oModelCopyData = jQuery.extend(true, {}, oModelData);
 
         let oBindData = oModelCopyData.BINDDATA,
             oPrc = oModelCopyData.PRC;
 
-        // 기존이름과 변경할 이름이 같다면 그냥 빠져나간다.
-        // if (oBindData.OBDEC.toLowerCase() == oBindData.NEWNAME.toLowerCase()) {
+        // 기존이름과 변경할 이름이 같다면 그냥 빠져나간다.        
         if (oBindData.OBDEC == oBindData.NEWNAME) {
 
             // busy 끄고 Lock 끄기
@@ -2391,7 +2388,7 @@
         oBindData.NAME = oBindData.NEWNAME;
         oBindData.ISFLD = oBindData.ISFLD == "X" ? true : false;
 
-        // 생성 팝업 입력값 체크
+        // Rename 입력값 체크
         var oResult = _fnCheckCreateNodeData(oBindData);
 
         if (oResult.RETCD == "E") {
@@ -2442,10 +2439,7 @@
         var oResult = oAPP.fn._fnFindModelData(oCtx.sPath),
             oDup = oResult.Nodes.find(arr => arr.OBDEC.toLowerCase() == oBindData.NEWNAME.toLowerCase());
 
-        debugger;
-
-
-        // 같은 레벨에서의 이름 중복 확인
+        // 같은 레벨에서의 나를 제외한 이름 중복 확인
         if (oDup && oDup.OBJKY !== oBindData.OBJKY) {
 
             // busy 끄고 Lock 끄기
@@ -2498,8 +2492,6 @@
 
         }
 
-        debugger;
-
         // 변경된 Path 위치 구하기
         var aBeforePathSplit = oBindData.SPATH.split("/"),
             iBeforePathSplitLength = aBeforePathSplit.length;
@@ -2532,6 +2524,7 @@
 
             }
 
+            // 변경된 Path로 재구성
             let newPath = "";
             for (var j = 0; j < iPathSplitLength; j++) {
 

@@ -32,7 +32,7 @@
      *  Electron IPCMAIN의 Exam 팝업에서 샘플 리스트의 WorkBench Move 버튼 실행 시 수행 되는 이벤트
      ************************************************************************/
     oAPP.fn.fnIpcMain_if_exam_move = function (event, res) {
-
+        
         zconsole.log("fnIpcMain_if_exam_move");
 
         var oMsg = res,

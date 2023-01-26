@@ -73,7 +73,9 @@ window.addEventListener('message', function (e) {
 
         case "B":
 
-            oCurrWin.close();
+            // oCurrWin.close();
+            oCurrWin.hide();            
+
             break;
     }
 
