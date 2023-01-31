@@ -270,6 +270,9 @@
       //서버 호출.
       sendAjax(oAPP.attr.servNm + "/getAppData", oFormData, function(param){
 
+        //application정보 구성전 화면 잠금 처리.
+        oAPP.fn.designAreaLockUnlock(true);
+
         for(var i=param.APPDATA.T_0014.length-1; i>=0; i--){
           
           //StyleCSS, HTMLCode, ScriptCode UI가 존재하는경우.
@@ -905,8 +908,6 @@
 
       //ui table 예외처리 프로퍼티 점검.
       oAPP.fn.chkExcepUiTable(lt_err);
-
-
 
       //오류 점검 결과 RETURN.
       return lt_err;

@@ -188,7 +188,8 @@ let oAPP = parent.oAPP;
         sap.ui.getCore().attachInit(function () {
 
             //바인딩 팝업 화면 구성.
-            oAPP.fn.callOTRListPopup("ZHU4A_OTR_INF", "ZHU4A_OTR_INF", [], []);
+            //oAPP.fn.callOTRListPopup("ZHU4A_OTR_INF", "ZHU4A_OTR_INF", [], []);
+			oAPP.fn.callOTRListPopup("/U4A/H_OTR_INF", "/U4A/H_OTR_INF", [], []);
 
             // oAPP.fn.fnInitModelBinding();
 
@@ -237,17 +238,17 @@ let oAPP = parent.oAPP;
 			switch (it_fdesc[i].DATATYPE){
 				case "D":
 					// DATE TYPE인경우.
-					var oSFld = new sap.m.DatePicker({valueFormat:"yyyyMMdd",displayFormat:"yyyy.MM.dd"});
+					var oSFld = new sap.m.DatePicker({valueFormat:"yyyyMMdd", displayFormat:"yyyy.MM.dd"});
 					break;
 
 				case "T":
 					// TIME인경우.
-					var oSFld = new sap.m.TimePicker({valueFormat:"HHmmss",displayFormat:"HH:mm:ss"});
+					var oSFld = new sap.m.TimePicker({valueFormat:"HHmmss", displayFormat:"HH:mm:ss"});
 					break;
 
 				default:
 					// DEFAULT INPUT필드.
-					var oSFld = new sap.m.Input({type:"Text",valueLiveUpdate:true,maxLength:it_fdesc[i].OUTPUTLEN});
+					var oSFld = new sap.m.Input({type:"Text", valueLiveUpdate:true, maxLength:it_fdesc[i].OUTPUTLEN});
 
 					//enter event
 					oSFld.attachSubmit(function(){ LF_getServerData();});
@@ -263,7 +264,7 @@ let oAPP = parent.oAPP;
 			}
 
 			//검색조건 필드 바인딩 처리.
-			oSFld.bindProperty(l_prop,{path:"/param/" + l_path});
+			oSFld.bindProperty(l_prop, {path:"/param/" + l_path});
 
 			//form에 검색필드 추가.
 			oForm.addContent(oSFld);
@@ -273,11 +274,11 @@ let oAPP = parent.oAPP;
 
 			//기본값이 구성된 경우.
 			if(l_dfval !== ""){
-				oSFld.setProperty(l_prop,l_dfval);
-				oSFld.updateProperty(l_prop,true);
+				oSFld.setProperty(l_prop, l_dfval);
+				oSFld.updateProperty(l_prop, true);
 			}
 
-			}
+		}
 
 	  }   //검색조건 필드 구성.
 
@@ -378,12 +379,15 @@ let oAPP = parent.oAPP;
 		//검색조건에 따른 결과 리스트 검색을 위한 서버 호출.
 		sendAjax(oAPP.attr.servNm + "/f4serverData", oFormData, function(param){
 			//~조회 정보 존재시 data 처리
+
+			//A73  Search Result
+			var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A73", "", "", "", "");
 			
 			if(param.TEXT[0].NAME == "REFDATA"){
 
 			  modeloTable.oData.TF4LIST = [];
 			  var visiRow = Number(param.TEXT[1].VALUE);
-			  var Ltext = "Search Result : " + visiRow;
+			  var Ltext = l_txt + " : " + visiRow;
 			  ZF4SH_LBresult.setText(Ltext);
 			  if(visiRow > 5){oPanel.setExpanded(false);}
 			  if(visiRow > 10){visiRow = 10;}
@@ -393,7 +397,7 @@ let oAPP = parent.oAPP;
 
 			//~조회 data 처리 누락이라면 ..
 			if(param.TEXT[0].NAME == "NOTFOUND"){
-			  ZF4SH_LBresult.setText("Search Result : 0");
+			  ZF4SH_LBresult.setText(l_txt + " : 0");
 
 			  modeloTable.oData.TF4LIST = [];
 			  modeloTable.refresh();
@@ -457,8 +461,11 @@ let oAPP = parent.oAPP;
 	  var oApp = new sap.m.App();
 	  oApp.placeAt("content");
 
+	  //366  Alias can be copied by double-clicking the result list.
+	  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "366", "", "", "", "");
+
 	  //dialog 생성.
-	  var oPage = new sap.m.Page({title:"※ 결과리스트를 더블클릭하여 Alias를 복사할 수 있습니다."});
+	  var oPage = new sap.m.Page({title:l_txt});
 	  oApp.addPage(oPage);  
 	  oPage.addStyleClass("sapUiSizeCompact");
 
@@ -467,27 +474,36 @@ let oAPP = parent.oAPP;
 	  var oHbox1 = new sap.m.HBox({height:"100%", direction:"Column", renderType:"Bare"});
 	  oPage.addContent(oHbox1);
 
+	  //D47  Selection
+	  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D47", "", "", "", "");
+
 	  //검색조건 panel.
-	  var oPanel = new sap.m.Panel({expandable:true, expanded:true, headerText:"Selection"});
+	  var oPanel = new sap.m.Panel({expandable:true, expanded:true, headerText:l_txt});
 	  oHbox1.addItem(oPanel);
 
 	  var SerchOVtoolbar = new sap.m.OverflowToolbar({width:"100%"});
 	  oPanel.setHeaderToolbar(SerchOVtoolbar);
 
+	  //D47  Selection
+	  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D47", "", "", "", "");
+
 	  //검색버튼 label.
 	  var SerLB = new sap.m.Label({
-		design:"Bold",
-		required:false,text:"Selection"});
+		design:"Bold", required:false, text:l_txt, tooltip:l_txt});
 	  SerchOVtoolbar.addContent(SerLB);
+
+
+	  //A75  Search
+	  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A75", "", "", "", "");
 
 	  //검색 버튼.
 	  var SerchBT1 = new sap.m.Button({
 		icon:"sap-icon://search",
-		text:"Search",type:"Emphasized",busyIndicatorDelay:1
+		text:l_txt, tooltip:l_txt, type:"Emphasized", busyIndicatorDelay:1
 	  });
 
 	  //검색버튼 선택 이벤트.
-	  SerchBT1.attachEvent("press",function(oEvent){
+	  SerchBT1.attachEvent("press", function(oEvent){
 		LF_getServerData();
 	  });
 
@@ -495,8 +511,8 @@ let oAPP = parent.oAPP;
 
 	  //~조회필드 FORM 영역 생성
 	  var oForm = new sap.ui.layout.form.SimpleForm({
-		columnsM:1,editable:true,singleContainerFullSize:false,
-		labelSpanL:3,labelSpanM:3,adjustLabelSpan:false,
+		columnsM:1, editable:true, singleContainerFullSize:false,
+		labelSpanL:3, labelSpanM:3, adjustLabelSpan:false,
 		layout:"ResponsiveGridLayout"});
 	  oPanel.addContent(oForm);
 
@@ -513,20 +529,26 @@ let oAPP = parent.oAPP;
 
 	  var ZF4SH_ovtoolbar = new sap.m.OverflowToolbar({width:"100%"});
 
+	  //A76  Maximum No, of Hits
+	  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A76", "", "", "", "");
+
 	  //Maximum No, of Hits label.
-	  var olb01 = new sap.m.Label({design:"Bold",text:"Maximum No, of Hits"});
+	  var olb01 = new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt});
 	  ZF4SH_ovtoolbar.addContent(olb01);
 
 	  //max Hits
-	  var ZF4SH_input01 = new sap.m.Input({type:"Number",width:"60px"});
+	  var ZF4SH_input01 = new sap.m.Input({type:"Number", width:"60px"});
 
 	  //최대 검색건수 설정.
 	  ZF4SH_input01.setValue(200);
 	  ZF4SH_ovtoolbar.addContent(ZF4SH_input01);
 	  ZF4SH_ovtoolbar.addContent(new sap.m.ToolbarSpacer());
 
+	  //A73  Search Result
+	  var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A73", "", "", "", "");
+
 	  //결과 건수 text
-	  var ZF4SH_LBresult = new sap.m.Label({design:"Bold",text:"Search Result : 0"});
+	  var ZF4SH_LBresult = new sap.m.Label({design:"Bold", text:l_txt + " : 0"});
 	  ZF4SH_ovtoolbar.addContent(ZF4SH_LBresult);
 
 
@@ -535,7 +557,7 @@ let oAPP = parent.oAPP;
 		layoutData: new sap.m.FlexItemData({growFactor:1})});
 
 	  //table 더블클릭 이벤트.
-	  oTable.attachBrowserEvent("dblclick",function(oEvent){
+	  oTable.attachBrowserEvent("dblclick", function(oEvent){
 
 		//이벤트 발생 UI 정보 얻기.
 		var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target, sap.ui.getCore());
@@ -552,11 +574,22 @@ let oAPP = parent.oAPP;
 		var ls_line = l_ctxt.getProperty();
 		if(!ls_line){return;}
 
+
+		//alias가 없는경우 메시지 처리 후 exit.
+		if(!ls_line.ALIAS_NAME || ls_line.ALIAS_NAME === ""){
+			//E07  Alias
+			//196  &1 does not exist.
+			sap.m.MessageToast.show(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "196", 
+				oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E07", "", "", "", ""), "", "", ""));
+			return;
+		}
+
 		//OTR 클립보드 복사 처리.
 		oAPP.fn.setClipBoardTextCopy("$OTR:" + ls_line.ALIAS_NAME);
 
+		//E06  copied
 		//메시지 처리.
-		sap.m.MessageToast.show("$OTR:" + ls_line.ALIAS_NAME + " copied.");
+		sap.m.MessageToast.show("$OTR:" + ls_line.ALIAS_NAME + " " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E06", "", "", "", ""));
 
 	  }); //table 더블클릭 이벤트.
 
@@ -569,7 +602,7 @@ let oAPP = parent.oAPP;
 	  oTable.setModel(modeloTable);
 
 
-	  oTable.bindAggregation("rows",{path:"/TF4LIST",template:new sap.ui.table.Row()});
+	  oTable.bindAggregation("rows", {path:"/TF4LIST", template:new sap.ui.table.Row()});
 
 	  //~출력리스트 컬럼 구성 텍스트 UI 생성
 	  lf_setTableColumn(I_SHLPNAME, IT_FIELDDESCR);
