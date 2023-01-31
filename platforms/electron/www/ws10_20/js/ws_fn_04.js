@@ -65,11 +65,11 @@
             sVbsFileName = oVbsInfo.controllerClassVbs,
             sNewSessionVbs = oVbsInfo.newSessionVbs;
 
-        // 서버가 신규 네임 스페이스 적용 서버가 아닌경우
-        if (oMetadata.IS_NAME_SPACE !== "X") {
-            sVbsFileName = "asis_" + sVbsFileName;
-            sNewSessionVbs = "asis_" + sNewSessionVbs;
-        }
+        // // 서버가 신규 네임 스페이스 적용 서버가 아닌경우
+        // if (oMetadata.IS_NAME_SPACE !== "X") {
+        //     sVbsFileName = "asis_" + sVbsFileName;
+        //     sNewSessionVbs = "asis_" + sNewSessionVbs;
+        // }
 
         var sAppPath = APP.getPath("userData"),
             sVbsFullPath = PATH.join(sAppPath, sVbsPath, sVbsFileName),
