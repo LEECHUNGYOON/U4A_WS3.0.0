@@ -13,7 +13,9 @@
 
         //icon popup UI 생성.
         var oDlg = new sap.m.Dialog({resizable:true, draggable:true,
-          contentWidth:"500px", contentHeight:"40%", horizontalScrolling:false});
+          contentWidth:"650px", contentHeight:"40%", horizontalScrolling:false});
+
+        oDlg.addStyleClass("sapUiContentPadding");
 
         var oTool0 = new sap.m.Toolbar();
         oDlg.setCustomHeader(oTool0);
@@ -69,8 +71,8 @@
 
 
         //icon List UI 생성.
-        var oTab = new sap.m.Table({growing:true, growingScrollToLoad:true, alternateRowColors:true, sticky:["HeaderToolbar"]});
-        oTab.addStyleClass("sapUiTinyMargin");
+        var oTab = new sap.m.List({growing:true, growingScrollToLoad:true, sticky:["HeaderToolbar"]});
+        // oTab.addStyleClass("sapUiTinyMargin");
         oDlg.addContent(oTab);
 
         //아이콘 선택(더블클릭) 이벤트.
@@ -112,16 +114,19 @@
         }); //아이콘 선택(더블클릭) 이벤트.
 
 
+        //365  Double-click the line in the icon list to add an icon.
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "365", "", "", "", "");
 
         //검색조건 toolbar영역.
-        var oTool = new sap.m.Toolbar();
+        var oTool = new sap.m.Toolbar({content:[new sap.m.Text({text:l_txt, tooltip:l_txt}), new sap.m.ToolbarSpacer()]});
         oTab.setHeaderToolbar(oTool);
+
 
         //A78	Search Icon
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A78", "", "", "", "");
 
         //검색조건 필드.
-        var oSearch = new sap.m.SearchField({placeholder:l_txt, tooltip:l_txt});
+        var oSearch = new sap.m.SearchField({width:"200px", placeholder:l_txt, tooltip:l_txt});
         oTool.addContent(oSearch);
 
         //검색조건 필드 Suggest 등록 처리.
@@ -145,35 +150,31 @@
 
 
         //List Item UI 생성.
-        var oCItem = new sap.m.ColumnListItem({vAlign:"Middle", tooltip:"{src}"});
+        var oCItem = new sap.m.CustomListItem({tooltip:"{src}"});
         oTab.bindAggregation("items", {path:"/T_ICON", template:oCItem});
 
-        //icon 컬럼.
-        var oCol1 = new sap.m.Column({width:"50px"});
-        oTab.addColumn(oCol1);
 
-        //icon명 컬럼.
-        var oCol2 = new sap.m.Column();
-        oTab.addColumn(oCol2);
-
-        //copy 버튼 컬럼.
-        var oCol3 = new sap.m.Column({width:"120px"});
-        oTab.addColumn(oCol3);
-
+        var oHbox = new sap.m.HBox({width:"60%", renderType:"Bare", alignItems:"Center"});
+        oCItem.addContent(oHbox);
 
         //icon.
         var oIcon = new sap.ui.core.Icon({size:"30px", src:"{src}"});
-        oCItem.addCell(oIcon);
+        oIcon.addStyleClass("sapUiTinyMarginEnd");
+        // oCItem.addCell(oIcon);
+        oHbox.addItem(oIcon);
 
         //icon text.
-        var oText = new sap.m.Text({text:"{src}"});
-        oCItem.addCell(oText);
+        var oText = new sap.m.Text({text:"{src}",width:"100%"});
+        oText.addStyleClass("sapUiTinyMarginEnd");
+        // oCItem.addCell(oText);
+        oHbox.addItem(oText);
 
         //A79	Copy Text
         //copy 버튼.
         var oCopy = new sap.m.Button({icon:"sap-icon://copy", 
             text:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A79", "", "", "", "")});
-        oCItem.addCell(oCopy);
+        // oCItem.addCell(oCopy);
+        oHbox.addItem(oCopy);
 
         //copy 버튼 선택 이벤트.
         oCopy.attachPress(function(){

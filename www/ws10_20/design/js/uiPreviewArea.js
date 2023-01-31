@@ -258,6 +258,16 @@
       case "EXT00002379": //sap.f.DynamicPage useBackToTopButton
       case "EXT00002382": //sap.ui.table.Column markCellColor
       case "EXT00002394": //sap.m.Input preventKeypad
+      case "EXT00002451": //sap.m.ComboBox preventKeypad
+      case "EXT00002452": //sap.m.DatePicker preventKeypad
+      case "EXT00002453": //sap.m.DateRangeSelection preventKeypad
+      case "EXT00002454": //sap.m.DateTimePicker preventKeypad
+      case "EXT00002455": //sap.m.MaskInput preventKeypad
+      case "EXT00002456": //sap.m.MultiComboBox preventKeypad
+      case "EXT00002457": //sap.m.MultiInput preventKeypad
+      case "EXT00002458": //sap.m.SearchField preventKeypad
+      case "EXT00002459": //sap.m.TextArea preventKeypad
+      case "EXT00002460": //sap.m.TimePicker preventKeypad
         
         return true;
     
@@ -288,6 +298,14 @@
 
     //dragAble, dropAble 프로퍼티의 경우 처리할건이 존재하지 않기에 exit 처리.
     if(is_attr.UIASN === "DRAGABLE" || is_attr.UIASN === "DROPABLE"){
+      return;
+    }
+
+    
+    //20230119 PES.
+    //미리보기 고정값에 해당하는 프로퍼티를 변경한 경우 미리보기 적용 SKIP 처리.
+    //(미리보기에서 프로퍼티를 고정하는 이유는 미리보기에서 오류가 발생할 수 있기때문임)
+    if(oAPP.attr.S_CODE.UA018.findIndex( a => a.FLD05 === is_attr.UIOBK && a.FLD02 === is_attr.UIATT ) !== -1){
       return;
     }
 
