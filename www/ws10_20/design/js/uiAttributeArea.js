@@ -5446,4 +5446,18 @@
   };  //text 복사(ctrl + c) 처리.
 
 
+
+
+  //우 상단 UI OBJECT 영역 펼침/접힘 처리.
+  oAPP.fn.attrHeaderExpanded = function(bExpand){
+    //우측 DynamicPage UI정보 얻기.
+    var l_ui = sap.ui.getCore().byId('designAttr');
+    if(!l_ui){return;}
+
+    //HEADER 펼침/접힘 처리.
+    l_ui.setHeaderExpanded(bExpand);
+
+  };  //우 상단 UI OBJECT 영역 펼침/접힘 처리.
+
+
 })();
