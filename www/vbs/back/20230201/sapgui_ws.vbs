@@ -102,7 +102,6 @@ Function GetArg()
 	SPOSI  = WScript.arguments.Item(12) '네비게이션 대상 이벤트 메소드 소스 라인번호 (*옵션) => EX) 100
 	ISEDT  = WScript.arguments.Item(13) '수정모드 여부(예 : X, 아니오 : 공백) 
 	TCODE  = WScript.arguments.Item(14) 'SAP TCODE
-
 	REM ** 다중 로그인 여부 **
 	REM    1: SAP GUI 다중 로그인 정보 없음, 
 	REM    2: SAP GUI 다중 로그인 정보 있음(* 시스템 허용)
@@ -167,21 +166,6 @@ Function ChkEnaScript()
 
 	RegPath = "HKCU\SOFTWARE\SAP\SAPGUI Front\SAP Frontend Server\Security\WarnOnConnection"
 	objWSH.RegWrite RegPath, "0", "REG_DWORD"
-	
-End Function
-
-
-'T-Code Proxy 호출 후 실행 파라메터 설정(레지스트리 기준)
-Function SetParamTCP()
-
-    Dim LV_PARA, LV_ENC
-	
-    LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE
-	
-	LV_ENC = Base64Encode(LV_PARA)
-
-	RegPath = "HKCU\SOFTWARE\U4A\WS\TCProxy\ActionParam"
-	objWSH.RegWrite RegPath, LV_ENC, "REG_SZ"
 	
 End Function
 
@@ -337,9 +321,8 @@ Function call_ZU4A_CTRL_PROXY()
     
 	'objSess.findById("wnd[0]/tbar[0]/okcd").text = "/N/U4A/CTRL_PROXY"
 	'objSess.findById("wnd[0]/tbar[0]/btn[0]").press
-    
-	objSess.SendCommand ("/n/U4A/CTRL_PROXY")
-    
+    objSess.SendCommand ("/n/U4A/CTRL_PROXY")
+
 	'objSess.findById("wnd[0]/usr/txtPA_APPID").text = APPID
 	'objSess.findById("wnd[0]/usr/txtPA_EVTMT").text = METHD
 	'objSess.findById("wnd[0]/usr/txtPA_POSI").text = SPOSI
@@ -354,12 +337,12 @@ Function call_ZU4A_CTRL_PROXY()
 	
 	'objSess.findById("wnd[0]/tbar[1]/btn[8]").press
 
-    'LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE
+    LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE
 	
-	'LV_ENC = Base64Encode(LV_PARA)
+	LV_ENC = Base64Encode(LV_PARA)
 
-    'objSess.findById("wnd[0]/usr/txtPA_PARM").text = LV_ENC
-    'objSess.findById("wnd[0]/tbar[1]/btn[8]").press
+    objSess.findById("wnd[0]/usr/txtPA_PARM").text = LV_ENC
+    objSess.findById("wnd[0]/tbar[1]/btn[8]").press
 
 End Function
 
@@ -471,9 +454,7 @@ Sub StartSAPGUI
 		LV_ERR = ERR_RET("E01", "The maximum number of sessions has been reached.")
 		
 	End If
-		
-    SetParamTCP()          '실행 파라메터 레지스트리 등록
-
+	
 	call_ZU4A_CTRL_PROXY() 'APP 컨트롤러 클래스 네비게이션 호출 실행
 	
 End Sub
