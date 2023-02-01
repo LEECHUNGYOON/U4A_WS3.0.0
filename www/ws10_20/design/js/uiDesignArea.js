@@ -578,6 +578,9 @@
       //get aggregation명 얻기.
       var l_agrnm = oAPP.fn.getUIAttrFuncName(oAPP.attr.prev[tOBJID], "3", lt_0023[i].UIATT, "_sGetter");
 
+      //대상 UI의 AGGREGATION이 존재하지 않는경우 SKIP.
+      if(!l_agrnm || !oAPP.attr.prev[tOBJID][l_agrnm]){continue;}
+
       //해당 aggregation의 child 정보 얻기.
       var l_child = oAPP.attr.prev[tOBJID][l_agrnm]();
 
@@ -1874,11 +1877,17 @@
   //UI design tree 라인 선택 이벤트.
   oAPP.fn.designTreeItemPress = async function(is_tree, iIndex, UIATK, TYPE, f_cb){
 
+    //우 상단 DynamicPage header 영역 펼침 처리.
+    oAPP.fn.attrHeaderExpanded(true);
+
+
     //이전 선택한 UI의 선택 표현 CSS 제거 처리.
     oAPP.attr.ui.frame.contentWindow.oWS.sMark.fn_removeMark();
 
+
     //20번 화면의 drop 잔상 제거 처리.
     oAPP.fn.ClearDropEffect();
+
 
     //UI Info 영역 갱신 처리.
     oAPP.fn.setUIInfo(is_tree);
@@ -1895,12 +1904,14 @@
     //팝업 호출건 강제 종료 처리.
     oAPP.attr.ui.frame.contentWindow.closePopup();
 
+
     //미리보기 ui 선택 처리
     oAPP.attr.ui.frame.contentWindow.selPreviewUI(is_tree.OBJID);
 
 
     //tree의 first visible row 변경이 필요한경우 하위 로직 수행.
     if(typeof iIndex === "undefined"){return;}
+
 
     //design tree의 라인 이동 처리.
     oAPP.fn.desginSetFirstVisibleRow(iIndex, is_tree);
