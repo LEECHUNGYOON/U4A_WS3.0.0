@@ -47,11 +47,13 @@ module.exports = (() => {
         SERVERLIST_v2: PATH.join(APPPATH, '/ServerList_v2/ServerFrame.html'),
         COMMONCSS: PATH.join(APPPATH, "css", "common.css"),
         AUTOUPDSAP: PATH.join(APPPATH, "lib", "ws", "electron-updater-sap.js"),
-        
+      
+
         // User Data Paths..
         CLIPBOARD: PATH.join(USERDATA, "clipboard.json"),
         THEME: PATH.join(USERDATA, "p13n", "theme"),
         P13N: PATH.join(USERDATA, "p13n", "p13n.json"),
+        P13N_ROOT: P13N_ROOT,
         SERVERINFO_V2: PATH.join(USERDATA, "p13n", "ServerInfo-v2.json"),
 
         // Popup Paths..        
@@ -73,12 +75,13 @@ module.exports = (() => {
         SHORTCUTPOP: PATH.join(POPUP_ROOT, "ShortCutCreator", "index.html"),
         DESIGNTREEUISRCH: PATH.join(POPUP_ROOT, "designTreeUiSearchPopup", "index.html"),
         VIDEOREC: PATH.join(POPUP_ROOT, "ScreenRecord", "ScreenRecording.js"),
-        WINHIDE : PATH.join(POPUP_ROOT, "winShowHidePopup", "frame.html"),
-        WINHIDE2 : PATH.join(POPUP_ROOT, "winShowHidePopup", "test1.html"),
-        USPNEW : PATH.join(POPUP_ROOT, "uspNewPopup", "frame.html"),
-        
+        WINHIDE: PATH.join(POPUP_ROOT, "winShowHidePopup", "frame.html"),
+        WINHIDE2: PATH.join(POPUP_ROOT, "winShowHidePopup", "test1.html"),
+        USPNEW: PATH.join(POPUP_ROOT, "uspNewPopup", "frame.html"),
+
         // JS Paths..
         WSTRYCATCH: PATH.join(JS_ROOT, "ws_trycatch.js"),
+        U4AHELP: PATH.join(APPPATH, "help", "u4a_helpdoc", "main.js"),
 
         // Suggestion Json Path..
         EVENTSUGG: PATH.join(SUGG_ROOT, "events.json"),

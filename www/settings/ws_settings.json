@@ -56,7 +56,7 @@
         "ie": "",
         "saplogon": "HKCU\\SOFTWARE\\SAP\\SAPLogon\\LandscapeFilesLastUsed"
     },
-    "isDev": false,
+    "isDev": true,
     "isTrial": false,
     "trialServerInfo": {
         "ID": "soccerhs",
