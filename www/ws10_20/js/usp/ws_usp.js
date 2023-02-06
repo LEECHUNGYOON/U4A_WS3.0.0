@@ -1620,21 +1620,21 @@
                     tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C22"), // Split Orientation Change
                     press: ev_codeeditorSplitOrientationChange
                 })
-                // .bindProperty("enabled", lfCodeeditorBindProperty()),
-                .bindProperty("enabled", {
-                    parts: [
-                        "/WS30/USPDATA/ISFLD",
-                    ],
-                    formatter: (ISFLD) => {
+                    // .bindProperty("enabled", lfCodeeditorBindProperty()),
+                    .bindProperty("enabled", {
+                        parts: [
+                            "/WS30/USPDATA/ISFLD",
+                        ],
+                        formatter: (ISFLD) => {
 
-                        if (ISFLD == "X") {
-                            return false;
+                            if (ISFLD == "X") {
+                                return false;
+                            }
+
+                            return true;
+
                         }
-
-                        return true;
-
-                    }
-                }),
+                    }),
 
                 new sap.m.Button({
                     icon: "sap-icon://full-screen",
@@ -2348,7 +2348,6 @@
                 // USP 생성 팝업의 초기 데이터 모델 세팅
                 APPCOMMON.fnSetModelProperty(RENAME_BINDROOT, {});
 
-
             }
 
         }).open();
@@ -2359,6 +2358,8 @@
      * [WS30] USP Tree의 Rename
      **************************************************************************/
     async function fnRenameSubmit() {
+
+        debugger;
 
         // busy 키고 Lock 키기
         oAPP.common.fnSetBusyLock("X");
@@ -2513,15 +2514,16 @@
             iBeforePathSplitLength = aBeforePathSplit.length;
 
         // 변경할 자식요소들 구하기
-        var aTreeData = oCtx.getProperty(oCtx.getPath()),
-            aUspTreeData = jQuery.extend(true, {}, aTreeData);
+        let aChildData = oCtx.getProperty(oCtx.getPath()),
+            aChildDataCopy = jQuery.extend(true, {}, aChildData);
 
-        aUspTreeData = _parseTree2Tab([aUspTreeData], "USPTREE");
-        let iTreeDataLength = aUspTreeData.length;
+        aChildDataCopy = _parseTree2Tab([aChildDataCopy], "USPTREE");
 
-        for (var i = 0; i < iTreeDataLength; i++) {
+        let iChildDataLength = aChildDataCopy.length;
 
-            var oTreeItem = aUspTreeData[i],
+        for (var i = 0; i < iChildDataLength; i++) {
+
+            var oTreeItem = aChildDataCopy[i],
                 sPath = oTreeItem.SPATH,
                 aPathSplit = sPath.split("/"),
                 iPathSplitLength = aPathSplit.length;
@@ -2562,12 +2564,133 @@
 
         }
 
+        /*************************************************************************
+         * 변경된 데이터 말기
+         *************************************************************************/
 
-        // 변경된 데이터 말기
+        debugger;
+
+        let aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
+            aUspTreeDataCopy = jQuery.extend(true, [], aUspTreeData);
+
+        aUspTreeDataCopy = _parseTree2Tab(aUspTreeDataCopy, "USPTREE");
+
+        for (var i = 0; i < iChildDataLength; i++) {
+
+            var oTreeItem = aChildDataCopy[i];
+
+            let iFound = aUspTreeDataCopy.findIndex(elem => elem.OBJKY == oTreeItem.OBJKY);
+            if (iFound == -1) {
+                continue;
+            }
+
+            aUspTreeDataCopy.splice(iFound, 1);
+
+            aUspTreeDataCopy.splice(iFound, 0, oTreeItem);
+
+        }
+
+        var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+        oSaveBtn.firePress({
+            AFPRC: "_RN",
+            PRCCD: "03", // 01: CREATE, 02: SAVE, 03: RENAME
+            oTreeTable: oTreeTable,
+            TREEDATA: aUspTreeDataCopy,
+        });
+
+        // // busy 키고 Lock 걸기
+        // oAPP.common.fnSetBusyLock("X");
+
+        // // 푸터 메시지가 있을 경우 닫기
+        // APPCOMMON.fnHideFloatingFooterMsg();
+
+        // var oLocalEvent = new sap.ui.base.Event(),
+        //     oNewEvent = jQuery.extend(true, oLocalEvent, oEvent);
+
+        // var oAppData = fnGetAppInfo(),
+        //     IS_ACT = oEvent.getParameter("IS_ACT"),
+        //     TRKORR = oEvent.getParameter("TRKORR"),
+        //     PRCCD = oEvent.getParameter("PRCCD"),
+        //     sReqNo = "";
+
+        // // 기존에 CTS 번호가 있을 경우
+        // if (oAppData.REQNO != "") {
+        //     sReqNo = oAppData.REQNO;
+        // }
+
+        // // CTS 팝업에서 선택한 CTS 번호가 있을 경우.
+        // if (TRKORR) {
+        //     sReqNo = TRKORR;
+        // }
+
+        // // 저장 구조
+        // var oSaveData = {
+        //     APPID: oAppData.APPID,
+        //     TRKORR: sReqNo,
+        //     PRCCD: PRCCD || "02",
+        //     IS_ACT: IS_ACT || "",
+        //     S_CONTENT: {},
+        //     T_TREE: [],
+        //     TU4A0010: oAppData
+        // };
+
+        // // 우측 컨텐츠 데이터를 읽는다.
+        // var oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"),
+        //     aUspTreeData = oEvent.getParameter("TREEDATA");
+
+        // if (!aUspTreeData) {
+        //     var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
+        //     aUspTreeData = jQuery.extend(true, [], aTreeData);
+        //     aUspTreeData = _parseTree2Tab(aUspTreeData, "USPTREE");
+        // }
+
+        // var iUspTreeLength = aUspTreeData.length;
+
+        // // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
+        // var oBeforeSelectData = aUspTreeData.find(arr => arr.ISSEL == true);
+
+        // if (oBeforeSelectData) {
+
+        //     var sOBJKY = oBeforeSelectData.OBJKY;
+
+        //     for (var i = 0; i < iUspTreeLength; i++) {
+
+        //         var oUspTreeItem = aUspTreeData[i];
+        //         if (oUspTreeItem.OBJKY != sOBJKY) {
+        //             continue;
+        //         }
+
+        //         oUspTreeItem.CODPG = oContent.CODPG;
+        //         oUspTreeItem.DESCT = oContent.DESCT;
+
+        //         break;
+
+        //     }
+
+        //     oSaveData.S_CONTENT = oContent;
+
+        // }
+
+        // oSaveData.T_TREE = aUspTreeData;
+
+        // var sServerPath = parent.getServerPath(),
+        //     sPath = `${sServerPath}/usp_save_active_appdata`;
+
+        // var oFormData = new FormData();
+        // oFormData.append("APPDATA", JSON.stringify(oSaveData));
+
+        // sendAjax(sPath, oFormData, _fnSaveCallback.bind(oNewEvent));
+
+
+
+
+
+
+
 
 
         // test
-        oAPP.common.fnSetBusyLock("");
+        // oAPP.common.fnSetBusyLock("");
 
 
         // 서버 호출 해서 변경 로직 수행 실시~!!!!!!!!!!!
@@ -4342,6 +4465,8 @@
 
         }
 
+        // 저장 후 생성 팝업띄우는 프로세스일 경우.
+
         // 좌측 트리 데이터를 구한다.
         var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
             aUspTreeData = jQuery.extend(true, [], aTreeData),
@@ -4663,7 +4788,7 @@
         var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
         oSaveBtn.firePress({
             AFPRC: "_C",
-            PRCCD: "01",
+            PRCCD: "01", // 01: Create, 02: SAVE, 03: RENAME
             oTreeTable: oTreeTable,
             oNewRowData: oNewRowData,
             TREEDATA: aUspTreeData,
@@ -5181,8 +5306,8 @@
         // code editor KeyPress 이벤트 설정
         fnCodeEditorKeyPressEvent("X");
 
-        // Footer Msg 출력
-        APPCOMMON.fnShowFloatingFooterMsg("S", "WS30", oResult.RTMSG);
+        // // Footer Msg 출력
+        // APPCOMMON.fnShowFloatingFooterMsg("S", "WS30", sMsg);
 
         switch (pAFPRC) {
 
@@ -5190,7 +5315,7 @@
 
                 _fnCreateUspNode(oEvent);
 
-                // busy 키고 Lock 걸기
+                // busy 끄고 Lock 풀기
                 oAPP.common.fnSetBusyLock("");
 
                 return;
@@ -5199,7 +5324,7 @@
 
                 fnCreateUspNodePopup(oTreeTable);
 
-                // busy 키고 Lock 걸기
+                // busy 끄고 Lock 풀기
                 oAPP.common.fnSetBusyLock("");
 
                 return;
@@ -5208,8 +5333,14 @@
 
                 fnDeleteUspNode(oTreeTable);
 
-                // busy 키고 Lock 걸기
+                // busy 끄고 Lock 풀기
                 oAPP.common.fnSetBusyLock("");
+
+                return;
+
+            case "_RN": //rename 일 경우.
+
+                fnRenameUspNode(oEvent);
 
                 return;
 
@@ -5217,7 +5348,7 @@
 
                 fnRenameUspNodePopup(oTreeTable);
 
-                // busy 키고 Lock 걸기
+                // busy 끄고 Lock 풀기
                 oAPP.common.fnSetBusyLock("");
 
                 return;
@@ -5258,6 +5389,34 @@
         oAPP.common.fnSetBusyLock("");
 
     } // end of _fnSaveCallback
+
+    function fnRenameUspNode(oEvent) {
+
+        debugger;
+
+        let oTreeTable = oEvent.getParameter("oTreeTable"),
+            aTreeData = oEvent.getParameter("TREEDATA");
+
+        var iIndex = gSelectedTreeIndex,
+            oCtx = oTreeTable.getContextByIndex(iIndex);
+
+        if (!oCtx) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            return;
+            
+        }
+
+        // Rename 팝업 닫기
+
+
+
+        // busy 끄고 Lock 풀기
+        oAPP.common.fnSetBusyLock("");
+
+    } // end of fnRenameUspNode
 
     /************************************************************************
      * [WS30] 현재 활성화 되어 있는 Usp Data 를 구한다.
