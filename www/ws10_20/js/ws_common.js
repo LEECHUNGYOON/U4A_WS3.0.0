@@ -1494,11 +1494,18 @@
      ************************************************************************/
     oAPP.common.execControllerClass = function (METHNM, INDEX, TCODE, oAppInfo) {
 
+        debugger;
+
+        // [로직추가] 현재 떠있는 전체 창에 비지를 킨다.
+        // busy 키고 Lock 키기
+        oAPP.common.fnSetBusyLock("X");
+
         var oParam = {
             METHNM: (METHNM == null ? "" : METHNM),
             INDEX: (INDEX == null ? "0" : INDEX),
             TCODE: (typeof TCODE == "undefined" ? "" : TCODE),
-            oAppInfo: oAppInfo
+            oAppInfo: oAppInfo,
+            BROWSKEY: parent.getBrowserKey() // 브라우저 키
         };
 
         //#[ws_fn_04.js] SAPGUI 멀티 로그인 여부 체크
@@ -1506,8 +1513,14 @@
             .then(oAPP.fn.fnSapGuiMultiLoginCheckThen.bind(oParam))
             .catch((result) => {
 
-                // 메시지 처리...
-                parent.showMessage(sap, 10, 'E', result.RTMSG);
+                // [로직추가] 현재 떠있는 전체 창에 비지를 끈다
+                // busy 끄고 Lock 끄기
+                oAPP.common.fnSetBusyLock("");
+
+                if (result && result.RTMSG) {
+                    // 메시지 처리...
+                    parent.showMessage(sap, 10, 'E', result.RTMSG);
+                }
 
             });
 

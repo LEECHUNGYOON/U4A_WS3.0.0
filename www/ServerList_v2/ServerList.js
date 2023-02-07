@@ -442,7 +442,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     /************************************************************************
      * SAP LOGIN XML 파일 읽기 성공
      ************************************************************************/
-    oAPP.fn.fnReadSAPLogonDataThen = (oResult) => {
+    oAPP.fn.fnReadSAPLogonDataThen = async (oResult) => {
 
         // sapgui 버전을 체크한다.
         let oCheckVer = oAPP.fn.fnCheckSapguiVersion(oResult.Result);
@@ -461,10 +461,30 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
         }
 
+        let SAPGUIVER = oCheckVer.RTVER,
+            sRegPath1 = "HKCU\\SOFTWARE\\U4A\\WS\\GUIVer",
+            sRegPath2 = "HKCU\\SOFTWARE\\U4A\\WS\\cSession";
+
+        const Regedit = parent.require('regedit').promisified;
+
+        // 레지스트리 폴더 생성
+        await Regedit.createKey([sRegPath1]);
+        await Regedit.createKey([sRegPath2]);
+
+        // 레지스트리 데이터 저장
+        await Regedit.putValue({
+            "HKCU\\SOFTWARE\\U4A\\WS\\GUIVer": {
+                "GUIVer": {
+                    value: SAPGUIVER,
+                    type: "REG_DEFAULT"
+                }
+            }
+        });
+
         if (oAPP.data.SAPLogon[oResult.fileName]) {
             oAPP.data.SAPLogon[oResult.fileName] = undefined;
         }
-
+        
         // Landscape 정보를 글로벌 object에 저장
         oAPP.data.SAPLogon[oResult.fileName] = oResult.Result;
 
@@ -528,9 +548,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return oErr;
         }
 
+        // // 버전 정보를 정규식으로 발췌한다.               
+        // let oRegex = new RegExp(/(?<=v)(.*?)(?=\.)/g, "i"),
+        //     aVersion = oRegex.exec(sGenerator);
+
         // 버전 정보를 정규식으로 발췌한다.               
-        let oRegex = new RegExp(/(?<=v)(.*?)(?=\.)/g, "i"),
-            aVersion = oRegex.exec(sGenerator);
+        let sVerRegex = /(?<=v)(.*)/g,
+            aVersion = sGenerator.match(sVerRegex);
 
         // 정규식으로 null 값이면 버전정보가 없다고 간주함.
         if (aVersion == null) {
@@ -558,6 +582,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oErr.RTMSG = "Not supported lower than SAPGUI 770 versions. \n Please upgrade SAPGUI 770 or Higher";
             return oErr;
         }
+
+        // SAPGUI 버전을 리턴한다.
+        oSucc.RTVER = sVer;
 
         return oSucc;
 
@@ -766,6 +793,17 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     oAPP.fn.fnGetRegInfoForSAPLogonError = (oError) => {
 
+        let sMsg = oError.toString();
+
+        sMsg += " \n Please contects U4A Solution Team!";
+
+        // 파일 저장에 실패 했을 경우 오류메시지 출력후 빠져나간다.
+        oAPP.fn.fnShowMessageBox("E", sMsg, () => {
+
+            APP.exit();
+
+        });
+
         oAPP.setBusy(false);
 
         zconsole.log(oError);
@@ -773,6 +811,17 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     }; // end of oAPP.fn.fnGetRegInfoForSAPLogonError
 
     oAPP.fn.fnPromiseError = (oError) => {
+
+        let sMsg = oError.toString();
+
+        sMsg += " \n Please contects U4A Solution Team!";
+
+        // 파일 저장에 실패 했을 경우 오류메시지 출력후 빠져나간다.
+        oAPP.fn.fnShowMessageBox("E", sMsg, () => {
+
+            APP.exit();
+
+        });
 
         oAPP.setBusy(false);
 
@@ -814,6 +863,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 content: [
                     new sap.ui.layout.Splitter({
                         height: "100%",
+
                         width: "100%",
 
                         contentAreas: [

@@ -143,9 +143,25 @@ End Function
 
 'SAP GUI Logon Pad 경로 얻기(레지스트리 기준)
 Function GetSAPGuiPath()
-	RegPath = "HKCR\SapFront.App\protocol\StdFileEditing\server\"
-	'GetSAPGuiPath = objWSH.regread(RegPath) 'SAP GUI Logon Path
-	GetSAPGuiPath = Replace(objWSH.regread(RegPath),"saplgpad.exe","saplogon.exe")
+    Dim LV_VER
+	
+	'실행 SAP GUI 버전 점검(U4A WS3.0에서 등록한 값 기준)
+	RegPath = "HKCU\SOFTWARE\U4A\WS\GUIVer\"
+	LV_VER = Left( objWSH.regread("HKCU\SOFTWARE\U4A\WS\GUIVer\"), 2 )
+
+    rem SAP GUI 버전에 따른 로직 분기
+    Select Case LV_VER    
+	'770 인 경우
+	CASE "70", "77"
+		RegPath = "HKCR\SapFront.App\protocol\StdFileEditing\server\"
+		GetSAPGuiPath = Replace(objWSH.regread(RegPath),"saplgpad.exe","saplogon.exe")
+	
+	'880 이상 인 경우
+	Case Else
+	    RegPath = "HKCR\SapFront.App\protocol\StdFileEditing\server"	
+	    GetSAPGuiPath = Replace(objWSH.regread(RegPath),"FrontEnd","FrontEnd\SAPGUI")
+	
+	End Select
 	
 End Function
 
