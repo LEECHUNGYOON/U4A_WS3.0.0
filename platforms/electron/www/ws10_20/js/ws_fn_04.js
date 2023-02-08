@@ -67,6 +67,8 @@
         // sapgui 실행시, 레지스트리에 브라우저키를 저장하고 삭제 시점을 감지한다.
         await oAPP.fn.fnSapGuiRegistryParamCheck();
 
+        debugger;
+
         var oMetadata = parent.getMetadata(),
             oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
             oSettings = parent.require(oSettingsPath),
@@ -94,7 +96,6 @@
             INDEX = this.INDEX,
             TCODE = this.TCODE,
             BROWSKEY = this.BROWSKEY, // 브라우저 키
-            SYSID = oServerInfo.SYSID,
             oParamAppInfo = this.oAppInfo;
 
         if (oParamAppInfo) {
@@ -175,16 +176,11 @@
 
             vbs.stderr.on("data", function (data) {
 
+                // 이전에 돌고 있는 인터벌이 혹시나 있으면 삭제
                 _clearIntervalSapGuiCheck();
 
-                let oSendData = {
-                    PRCCD: "02",
-                    CLIENT: oServerInfo.CLIENT,
-                    SYSID: oServerInfo.SYSID,
-                };
-              
-                // 같은 client && SYSID 창에 일러스트 메시지를 뿌린다!!
-                IPCRENDERER.send("if-browser-interconnection", oSendData);
+                // 같은 SYSID && CLIENT에 해당하는 브라우저에 IPC를 전송하여 IllustedMsgDialog를 끈다. 
+                _sendIpcRendererIllustedMsgDlgClose();
 
                 // // busy 끄고 Lock 끄기
                 // oAPP.common.fnSetBusyLock("");
@@ -209,6 +205,31 @@
         });
 
     }; // end of oAPP.fn.fnSapGuiMultiLoginCheckThen
+
+    // 이전에 돌고 있는 인터벌이 혹시나 있으면 삭제
+    function _clearIntervalSapGuiCheck() {
+
+        if (oAPP.attr.sapguiInterval) {
+            clearInterval(oAPP.attr.sapguiInterval);
+            delete oAPP.attr.sapguiInterval;
+        }
+
+    } // end of _clearIntervalSapGuiCheck
+
+    // 같은 SYSID && CLIENT에 해당하는 브라우저에 IPC를 전송하여 IllustedMsgDialog를 끈다. 
+    function _sendIpcRendererIllustedMsgDlgClose() {
+
+        let oServerInfo = parent.getServerInfo(),
+            oSendData = {
+                PRCCD: "02",
+                CLIENT: oServerInfo.CLIENT,
+                SYSID: oServerInfo.SYSID,
+            };
+
+        // 같은 client && SYSID 창에 일러스트 메시지를 뿌린다!!
+        parent.IPCRENDERER.send("if-browser-interconnection", oSendData);
+
+    }
 
     /************************************************************************
      * SAP GUI VBS 실행 시 저장한 Registry 값이 있는지 확인
@@ -238,7 +259,7 @@
             await Regedit.putValue(oRegData);
 
             // 이전에 돌고 있는 인터벌이 혹시나 있으면 삭제
-            lf_ClearInterval();
+            _clearIntervalSapGuiCheck();
 
             oAPP.attr.sapguiInterval = setInterval(async () => {
 
@@ -250,7 +271,10 @@
                 if (!oSession) {
 
                     // 인터벌 끄고 비지를 끈다.
-                    lf_ClearInterval();
+                    _clearIntervalSapGuiCheck();
+
+                    // 같은 SYSID && CLIENT에 해당하는 브라우저에 IPC를 전송하여 IllustedMsgDialog를 끈다. 
+                    _sendIpcRendererIllustedMsgDlgClose();
 
                     //[로직추가] 레지스트리 오류 메시지 출력!!!
                     // // busy 끄고 Lock 끄기
@@ -265,12 +289,15 @@
                 if (!oSession) {
 
                     // 인터벌 끄고 비지를 끈다.
-                    lf_ClearInterval();
+                    _clearIntervalSapGuiCheck();
+
+                    // 같은 SYSID && CLIENT에 해당하는 브라우저에 IPC를 전송하여 IllustedMsgDialog를 끈다. 
+                    _sendIpcRendererIllustedMsgDlgClose();
 
                     // //[로직추가] 레지스트리 오류 메시지 출력!!!
                     // // busy 끄고 Lock 끄기
                     // oAPP.common.fnSetBusyLock("");
-                    sap.m.MessageToast.show("레지스트리 오류!!!!");
+                    // sap.m.MessageToast.show("레지스트리 오류!!!!");
                     return;
                 }
 
@@ -285,44 +312,19 @@
                 // 현재 떠있는 전체 창에 비지를 끈다!!!
                 // // busy 끄고 Lock 끄기
                 // oAPP.common.fnSetBusyLock("");
-                lf_ClearInterval();
+                // 인터벌 죽이기
+                _clearIntervalSapGuiCheck();
+
+                // 같은 SYSID && CLIENT에 해당하는 브라우저에 IPC를 전송하여 IllustedMsgDialog를 끈다. 
+                _sendIpcRendererIllustedMsgDlgClose();
 
             }, 1000);
 
             resolve();
 
-            // [로컬펑션] sapgui interval 삭제
-            function lf_ClearInterval() {
-
-                _clearIntervalSapGuiCheck();
-
-                let oServerInfo = parent.getServerInfo(),
-                    oSendData = {
-                        PRCCD: "02",
-                        CLIENT: oServerInfo.CLIENT,
-                        SYSID: oServerInfo.SYSID,
-                    };
-
-                // 같은 client && SYSID 창에 일러스트 메시지를 뿌린다!!
-                parent.IPCRENDERER.send("if-browser-interconnection", oSendData);
-
-            }
-
         });
 
-    }; // end of oAPP.fn.fnSapGuiRegistryParamCheck
-
-    // Sapgui vbs 실행 시 Registry에 저장된 키값이 존재하는지
-    // 체크를 하기 위하여 수행한 Interval을 삭제하는 private function
-    function _clearIntervalSapGuiCheck(){
-
-        if (oAPP.attr.sapguiInterval) {
-            clearInterval(oAPP.attr.sapguiInterval);
-            delete oAPP.attr.sapguiInterval;
-        }
-
-    } // end of _clearIntervalSapGuiCheck
-
+    }; // end of oAPP.fn.fnSapGuiRegistryParamCheck 
 
     /************************************************************************
      * 브라우저에 내장된 세션 정보를 클리어 한다.
@@ -545,20 +547,20 @@
 
         // 초기 모델 설정
         let oModelData = {
-            KEY: "",
-            RDBTNINDEX: 0,
-            FNAME: "",
-            RDLIST: [{
-                text: "Key In"
+                KEY: "",
+                RDBTNINDEX: 0,
+                FNAME: "",
+                RDLIST: [{
+                        text: "Key In"
+                    },
+                    {
+                        text: "File Drag"
+                    },
+                    {
+                        text: "Attach File"
+                    },
+                ]
             },
-            {
-                text: "File Drag"
-            },
-            {
-                text: "Attach File"
-            },
-            ]
-        },
             oJsonModel = new sap.ui.model.json.JSONModel();
 
         oJsonModel.setData(oModelData);
