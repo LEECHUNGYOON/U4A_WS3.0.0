@@ -20,7 +20,7 @@ Rem *********************
 Rem *** Public Sector ***
 Rem *********************
 
-	Public HOSTIP, SVPORT, MSSEVR, MSPORT, SAPRUT, SID, MANDT, BNAME, PASS, LANGU, APPID, METHD, SPOSI, ISEDT, ISMLGN, MAXSS, ConnStr, W_system, TCODE
+	Public HOSTIP, SVPORT, MSSEVR, MSPORT, SAPRUT, SID, MANDT, BNAME, PASS, LANGU, APPID, METHD, SPOSI, ISEDT, ISMLGN, MAXSS, ConnStr, W_system, TCODE, ESID
 	
 	Public objWSH, objSapGui, objAppl, objConn, objSess
 	
@@ -111,6 +111,8 @@ Function GetArg()
  
  	MAXSS = CInt(WScript.arguments.Item(16)) '시스템 허용 최대 세션수
 	
+	ESID  = WScript.arguments.Item(17) 'Electron JS 호출처 세션 ID
+	
 End Function
 
 
@@ -169,6 +171,9 @@ End Function
 'SAP GUI "Enable scripting" 플래그 점검 및 설정(레지스트리 기준)
 Function ChkEnaScript()
 
+	RegPath = "HKCU\SOFTWARE\SAP\SAPGUI Front\SAP Frontend Server\Scripting\ShowNativeWinDlgs"
+	objWSH.RegWrite RegPath, "0", "REG_DWORD"
+	
 	RegPath = "HKCU\SOFTWARE\SAP\SAPGUI Front\SAP Frontend Server\Security\DefaultAction"
 	objWSH.RegWrite RegPath, "0", "REG_DWORD"
 
@@ -183,7 +188,7 @@ Function ChkEnaScript()
 
 	RegPath = "HKCU\SOFTWARE\SAP\SAPGUI Front\SAP Frontend Server\Security\WarnOnConnection"
 	objWSH.RegWrite RegPath, "0", "REG_DWORD"
-	
+		
 End Function
 
 
@@ -192,7 +197,7 @@ Function SetParamTCP()
 
     Dim LV_PARA, LV_ENC
 	
-    LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE
+    LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE & "|" & ESID
 	
 	LV_ENC = Base64Encode(LV_PARA)
 

@@ -9,7 +9,8 @@
         REMOTEMAIN = parent.REMOTEMAIN,
         REMOTE = parent.REMOTE,
         APPPATH = parent.APPPATH,
-        APPCOMMON = oAPP.common;
+        APPCOMMON = oAPP.common,
+        IPCRENDERER = parent.IPCRENDERER;
 
     /************************************************************************
      * SAP GUI 멀티 로그인 체크
@@ -56,103 +57,15 @@
 
         });
 
-    }; // end of oAPP.fn.fnSapGuiMultiLoginCheck
-
-    oAPP.fn.fnSapGuiRegistryParamCheck = async () => {
-
-        debugger;
-        
-        const
-            Regedit = parent.require('regedit').promisified,
-            sRegPath = "HKCU\\SOFTWARE\\U4A\\WS\\cSession",
-            BROWSKEY = parent.getBrowserKey();
-
-        // 레지스트리 폴더 생성
-        await Regedit.createKey([sRegPath]);
-
-        let oRegData = {};
-        oRegData[sRegPath] = {};
-        oRegData[sRegPath][BROWSKEY] = {
-            value: "1",
-            type: "REG_SZ"
-        };
-
-        // 레지스트리 데이터 저장
-        await Regedit.putValue(oRegData);
-
-        // 이전에 돌고 있는 인터벌이 혹시나 있으면 삭제
-        lf_ClearInterval();
-
-        oAPP.attr.sapguiInterval = setInterval(async () => {
-
-            // 레지스트리 목록을 구한다
-            const oResult = await Regedit.list(sRegPath);
-
-            console.log(oResult);
-
-            // 레지스트리의 값 중, 현재 브라우저 키의 정보가 있는지 확인한다.
-            let oSession = oResult[sRegPath];
-            if (!oSession) {
-
-                // 인터벌 끄고 비지를 끈다.
-                lf_ClearInterval();
-
-                //[로직추가] 레지스트리 오류 메시지 출력!!!
-                // busy 끄고 Lock 끄기
-                oAPP.common.fnSetBusyLock("");
-                sap.m.MessageToast.show("레지스트리 오류!!!!");
-
-                return;
-
-            }
-
-            let oSessionValue = oResult[sRegPath].values;
-            if (!oSession) {
-
-                // 인터벌 끄고 비지를 끈다.
-                lf_ClearInterval();
-
-                //[로직추가] 레지스트리 오류 메시지 출력!!!
-                // busy 끄고 Lock 끄기
-                oAPP.common.fnSetBusyLock("");
-                sap.m.MessageToast.show("레지스트리 오류!!!!");
-                return;
-            }
-
-            // 레지스트리에 키값이 존재한다면 아직 SAPGUI가 안뜬 상태이므로 여기서 빠져나가서
-            // 다시 인터벌을 돌게한다.
-            let oSessionKey = oSessionValue[BROWSKEY];
-            if (oSessionKey) {
-                return;
-            }
-
-            // [로직추가] 레지스트리에 저장한 키값이 삭제되었다면 인터벌을 중지시키고
-            // 현재 떠있는 전체 창에 비지를 끈다!!!
-            // busy 끄고 Lock 끄기
-            oAPP.common.fnSetBusyLock("");
-            lf_ClearInterval();
-
-        }, 3000);
-
-        // [로컬펑션] sapgui interval 삭제
-        function lf_ClearInterval() {
-
-            if (oAPP.attr.sapguiInterval) {
-                clearInterval(oAPP.attr.sapguiInterval);
-                delete oAPP.attr.sapguiInterval;
-            }
-
-        }
-
-    }; // end of oAPP.fn.fnSapGuiRegistryParamCheck
+    }; // end of oAPP.fn.fnSapGuiMultiLoginCheck    
 
     /************************************************************************
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSapGuiMultiLoginCheckThen = function (oResult) {
+    oAPP.fn.fnSapGuiMultiLoginCheckThen = async function (oResult) {
 
         // sapgui 실행시, 레지스트리에 브라우저키를 저장하고 삭제 시점을 감지한다.
-        oAPP.fn.fnSapGuiRegistryParamCheck();
+        await oAPP.fn.fnSapGuiRegistryParamCheck();
 
         var oMetadata = parent.getMetadata(),
             oSettingsPath = PATH.join(APPPATH, "settings") + "\\ws_settings.json",
@@ -262,8 +175,19 @@
 
             vbs.stderr.on("data", function (data) {
 
-                // busy 끄고 Lock 끄기
-                oAPP.common.fnSetBusyLock("");
+                _clearIntervalSapGuiCheck();
+
+                let oSendData = {
+                    PRCCD: "02",
+                    CLIENT: oServerInfo.CLIENT,
+                    SYSID: oServerInfo.SYSID,
+                };
+              
+                // 같은 client && SYSID 창에 일러스트 메시지를 뿌린다!!
+                IPCRENDERER.send("if-browser-interconnection", oSendData);
+
+                // // busy 끄고 Lock 끄기
+                // oAPP.common.fnSetBusyLock("");
 
                 //VBS 리턴 오류 CODE / MESSAGE 
                 var str = data.toString(),
@@ -285,6 +209,120 @@
         });
 
     }; // end of oAPP.fn.fnSapGuiMultiLoginCheckThen
+
+    /************************************************************************
+     * SAP GUI VBS 실행 시 저장한 Registry 값이 있는지 확인
+     ************************************************************************/
+    oAPP.fn.fnSapGuiRegistryParamCheck = async () => {
+
+        return new Promise(async (resolve) => {
+
+            debugger;
+
+            const
+                Regedit = parent.require('regedit').promisified,
+                sRegPath = "HKCU\\SOFTWARE\\U4A\\WS\\cSession",
+                BROWSKEY = parent.getBrowserKey();
+
+            // 레지스트리 폴더 생성
+            await Regedit.createKey([sRegPath]);
+
+            let oRegData = {};
+            oRegData[sRegPath] = {};
+            oRegData[sRegPath][BROWSKEY] = {
+                value: "1",
+                type: "REG_SZ"
+            };
+
+            // 레지스트리 데이터 저장
+            await Regedit.putValue(oRegData);
+
+            // 이전에 돌고 있는 인터벌이 혹시나 있으면 삭제
+            lf_ClearInterval();
+
+            oAPP.attr.sapguiInterval = setInterval(async () => {
+
+                // 레지스트리 목록을 구한다
+                const oResult = await Regedit.list(sRegPath);
+
+                // 레지스트리의 값 중, 현재 브라우저 키의 정보가 있는지 확인한다.
+                let oSession = oResult[sRegPath];
+                if (!oSession) {
+
+                    // 인터벌 끄고 비지를 끈다.
+                    lf_ClearInterval();
+
+                    //[로직추가] 레지스트리 오류 메시지 출력!!!
+                    // // busy 끄고 Lock 끄기
+                    // oAPP.common.fnSetBusyLock("");
+                    // sap.m.MessageToast.show("레지스트리 오류!!!!");
+
+                    return;
+
+                }
+
+                let oSessionValue = oResult[sRegPath].values;
+                if (!oSession) {
+
+                    // 인터벌 끄고 비지를 끈다.
+                    lf_ClearInterval();
+
+                    // //[로직추가] 레지스트리 오류 메시지 출력!!!
+                    // // busy 끄고 Lock 끄기
+                    // oAPP.common.fnSetBusyLock("");
+                    sap.m.MessageToast.show("레지스트리 오류!!!!");
+                    return;
+                }
+
+                // 레지스트리에 키값이 존재한다면 아직 SAPGUI가 안뜬 상태이므로 여기서 빠져나가서
+                // 다시 인터벌을 돌게한다.
+                let oSessionKey = oSessionValue[BROWSKEY];
+                if (oSessionKey) {
+                    return;
+                }
+
+                // [로직추가] 레지스트리에 저장한 키값이 삭제되었다면 인터벌을 중지시키고
+                // 현재 떠있는 전체 창에 비지를 끈다!!!
+                // // busy 끄고 Lock 끄기
+                // oAPP.common.fnSetBusyLock("");
+                lf_ClearInterval();
+
+            }, 1000);
+
+            resolve();
+
+            // [로컬펑션] sapgui interval 삭제
+            function lf_ClearInterval() {
+
+                _clearIntervalSapGuiCheck();
+
+                let oServerInfo = parent.getServerInfo(),
+                    oSendData = {
+                        PRCCD: "02",
+                        CLIENT: oServerInfo.CLIENT,
+                        SYSID: oServerInfo.SYSID,
+                    };
+
+                // 같은 client && SYSID 창에 일러스트 메시지를 뿌린다!!
+                parent.IPCRENDERER.send("if-browser-interconnection", oSendData);
+
+            }
+
+        });
+
+    }; // end of oAPP.fn.fnSapGuiRegistryParamCheck
+
+    // Sapgui vbs 실행 시 Registry에 저장된 키값이 존재하는지
+    // 체크를 하기 위하여 수행한 Interval을 삭제하는 private function
+    function _clearIntervalSapGuiCheck(){
+
+        if (oAPP.attr.sapguiInterval) {
+            clearInterval(oAPP.attr.sapguiInterval);
+            delete oAPP.attr.sapguiInterval;
+        }
+
+    } // end of _clearIntervalSapGuiCheck
+
 
     /************************************************************************
      * 브라우저에 내장된 세션 정보를 클리어 한다.

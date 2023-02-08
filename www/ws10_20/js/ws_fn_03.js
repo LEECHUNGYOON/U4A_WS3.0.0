@@ -460,17 +460,28 @@
      ************************************************************************/
     oAPP.fn.fnShowIllustMsgDialog = (sTitle, sDesc, sIllustType, sIllustSize, fnCallback) => {
 
-        var oDialog = sap.ui.getCore().byId("illustMsg");
+        let oIllustMsg = sap.ui.getCore().byId("u4aWsIllustMsg"),
+            oDialog = sap.ui.getCore().byId("illustMsg");
+
         if (oDialog) {
 
             if (!oDialog.isOpen()) {
                 oDialog.open();
+
+                let oIllustMeta = oIllustMsg.getMetadata(),
+                    oIllustProperties = oIllustMeta.getProperties();
+
+                oIllustMsg.setTitle(sTitle || (oIllustProperties.title && oIllustProperties.title.defaultValue));
+                oIllustMsg.setDescription(sDesc || (oIllustProperties.description && oIllustProperties.description.defaultValue));
+                oIllustMsg.setIllustrationType(sIllustType || (oIllustProperties.illustrationType && oIllustProperties.illustrationType.defaultValue));
+                oIllustMsg.setIllustrationSize(sIllustSize || (oIllustProperties.illustrationSize && oIllustProperties.illustrationSize.defaultValue));                
+
             }
 
             return;
         }
 
-        let oMsg = new sap.m.IllustratedMessage({
+        let oMsg = new sap.m.IllustratedMessage("u4aWsIllustMsg", {
             title: sTitle,
             description: sDesc,
             illustrationSize: sIllustSize,
@@ -507,6 +518,7 @@
                 }
 
             }
+            
         }).open();
 
     }; // end of oAPP.fn.fnShowIllustMsgDialog

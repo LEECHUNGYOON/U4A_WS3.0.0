@@ -338,17 +338,13 @@ body,
     margin: 0 0 0 0.5rem;
 }
 
-
-
 .sapUiLoSplitterV.uspCodeeditorSplit .sapUiLoSplitterContent {
     display: block !important;
 }
 
-
 .ace_print-margin {
     visibility: hidden !important;
 }
-
 
 .u4aWsDropArea {
     /* border: 1rem solid black; */
@@ -358,4 +354,8 @@ body,
 
 .u4aWsDisplayNone {
     display: none !important;
+}
+
+.u4aWsProgressDialog--illustMsg.sapMIllustratedMessage.sapMIllustratedMessage-Dialog .sapMIllustratedMessageDescription {
+    margin-bottom: 0rem;
 }

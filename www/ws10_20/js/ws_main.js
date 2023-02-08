@@ -370,7 +370,7 @@
             // oAPP.fn.fnCheckServerHost(); // #[ws_fn_03.js]
 
             // 공통 IPCMAIN 이벤트 걸기
-            oAPP.fn.fnIpcMain_Attach_Event_Handler();
+            oAPP.fn.fnIpcMain_Attach_Event_Handler(); // #[ws_fn_ipc.js]
 
 
         }); // end of attachInit

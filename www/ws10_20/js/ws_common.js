@@ -11,6 +11,7 @@
 
     const
         REMOTE = parent.REMOTE,
+        IPCRENDERER = parent.IPCRENDERER,
         APP = REMOTE.app,
         PATH = REMOTE.require('path'),
         APPPATH = APP.getAppPath(),
@@ -1494,11 +1495,23 @@
      ************************************************************************/
     oAPP.common.execControllerClass = function (METHNM, INDEX, TCODE, oAppInfo) {
 
-        debugger;
+        let oServerInfo = parent.getServerInfo();
 
-        // [로직추가] 현재 떠있는 전체 창에 비지를 킨다.
-        // busy 키고 Lock 키기
-        oAPP.common.fnSetBusyLock("X");
+        // IPCREDERER로 같은 client && SYSID 창에 일러스트 메시지를 뿌린다!!
+        let oSendData = {
+            PRCCD: "01",
+            CLIENT: oServerInfo.CLIENT,
+            SYSID: oServerInfo.SYSID,
+            OPTIONS: {
+                title: "SAPGUI Execution",
+                description: "SAPGUI를 실행합니다 잠시만 기다려주세요.",
+                illustrationType: "tnt-Radar",
+                illustrationSize: sap.m.IllustratedMessageSize.Dialog
+            }
+        };
+
+        // 같은 client && SYSID 창에 일러스트 메시지를 뿌린다!!
+        parent.IPCRENDERER.send("if-browser-interconnection", oSendData);
 
         var oParam = {
             METHNM: (METHNM == null ? "" : METHNM),
@@ -1513,9 +1526,14 @@
             .then(oAPP.fn.fnSapGuiMultiLoginCheckThen.bind(oParam))
             .catch((result) => {
 
-                // [로직추가] 현재 떠있는 전체 창에 비지를 끈다
-                // busy 끄고 Lock 끄기
-                oAPP.common.fnSetBusyLock("");
+                debugger;
+                
+                // [로직추가] 현재 떠있는 전체 창에 비지를 끈다                
+                // oAPP.common.fnIllustMsgDialogClose();
+                // 같은 client && SYSID 창에 일러스트 메시지를 뿌린다!!
+                oSendData.PRCCD = "02";
+
+                parent.IPCRENDERER.send("if-browser-interconnection", oSendData);
 
                 if (result && result.RTMSG) {
                     // 메시지 처리...
@@ -2050,7 +2068,216 @@
 
         });
 
-    }; // end of oAPP.common.fnSleep
+    }; // end of oAPP.common.fnSleep    
+
+    /**
+     * ProgressDialog
+     * 
+     * @param {Object} oOptions 
+     * title
+     * description
+     * illustrationType
+     * percentValue
+     * displayValue
+     */
+    oAPP.common.fnProgressDialogOpen = (oOptions) => {
+
+        var sDialogId = "u4aWsProgressDialog",
+            sIllustId = "u4aWsIllustMsg",
+            sPrgressId = "u4aWsProg";
+
+        var oDialog = sap.ui.getCore().byId(sDialogId),
+            oIllustMsg = sap.ui.getCore().byId(sIllustId),
+            oProgressbar = sap.ui.getCore().byId(sPrgressId);
+
+        if (oDialog && typeof oOptions === "object") {
+
+            oIllustMsg.setTitle(oOptions.title || "");
+            oIllustMsg.setDescription(oOptions.description || "");
+            oIllustMsg.setIllustrationType(oOptions.illustrationType || "NoSearchResults");
+
+            oProgressbar.setPercentValue(oOptions.percentValue || 0);
+            oProgressbar.setDisplayValue(oOptions.displayValue || "");
+
+            oDialog.open();
+
+            return;
+        }
+
+        var oIllustMsg = new sap.m.IllustratedMessage(sIllustId, {
+            // title: "{TITLE}",
+            // description: "　",
+            illustrationSize: sap.m.IllustratedMessageSize.Dialog,
+            // illustrationType: "{ILLUSTTYPE}"
+
+        }).addStyleClass(`${sDialogId}--illustMsg`);
+
+        jQuery.sap.require("sap.m.ProgressIndicator");
+        var oProgressbar = new sap.m.ProgressIndicator(sPrgressId, {
+            visible: true,
+            // percentValue: "{PERVALUE}",
+            displayOnly: true,
+            state: "Success",
+            // displayValue: "Downloading... {PERVALUE}%"
+        }).addStyleClass("sapUiSmallMarginBeginEnd sapUiMediumMarginBottom");
+
+        new sap.m.Dialog(sDialogId, {
+
+            // properties
+            showHeader: false,
+            horizontalScrolling: false,
+            verticalScrolling: false,
+
+            // aggregations
+            content: [
+                oIllustMsg,
+
+                new sap.m.HBox({
+                    renderType: "Bare",
+                    items: [
+                        oProgressbar
+                    ]
+                }),
+
+            ],
+            afterClose: () => {
+
+                let oProg = new sap.ui.getCore().byId(sPrgressId);
+                if (!oProg) {
+                    return;
+                }
+
+                oProg.setPercentValue(0);
+                oProg.setDisplayValue("");
+
+            },
+            // Events
+            escapeHandler: () => { }, // esc 키 방지
+
+        })
+            .addStyleClass(sDialogId)
+            .open();
+
+        var oDialog = sap.ui.getCore().byId(sDialogId),
+            oIllustMsg = sap.ui.getCore().byId(sIllustId),
+            oProgressbar = sap.ui.getCore().byId(sPrgressId);
+
+        oIllustMsg.setTitle(oOptions.title || "");
+        oIllustMsg.setDescription(oOptions.description || "");
+        oIllustMsg.setIllustrationType(oOptions.illustrationType || "NoSearchResults");
+
+        oProgressbar.setPercentValue(oOptions.percentValue || 0);
+        oProgressbar.setDisplayValue(oOptions.displayValue || "");
+
+    }; // end of oAPP.common.fnProgressDialog
+
+    /**
+     * ProgressDialog Close
+     */
+    oAPP.common.fnProgressDialogClose = () => {
+
+        var oDialog = sap.ui.getCore().byId("u4aWsProgressDialog");
+        if (oDialog) {
+            oDialog.close();
+        }
+
+    }; // end of oAPP.common.fnProgressDialogClose
+
+
+    /**
+     * IllustMessage Dialog Open
+     * @param {*} options 
+     * title
+     * description
+     * illustrationType
+     * illustrationSize
+     */
+    oAPP.common.fnIllustMsgDialogOpen = (oOptions) => {
+
+        debugger;
+
+        var sDialogId = "u4aWsIllustedMsgDialog",
+            sIllustId = "u4aWsIllustedMsg";
+
+        var oDialog = sap.ui.getCore().byId(sDialogId),
+            oIllustMsg = sap.ui.getCore().byId(sIllustId);
+
+        if (oDialog && typeof oOptions === "object") {
+
+            lf_setIllustMsg(oIllustMsg, oOptions);
+
+            oDialog.open();
+
+            return;
+        }
+
+        var oIllustMsg = new sap.m.IllustratedMessage(sIllustId).addStyleClass(`${sDialogId}--illustMsg`);
+
+        new sap.m.Dialog(sDialogId, {
+
+            // properties
+            showHeader: false,
+            horizontalScrolling: false,
+            verticalScrolling: false,
+
+            // aggregations
+            content: [
+                oIllustMsg,
+            ],
+            afterClose: () => {
+
+                var oIllustMsg = sap.ui.getCore().byId(sIllustId);
+                if (!oIllustMsg) {
+                    return;
+                }
+
+                let oOptions = {
+                    title: "",
+                    description: "",
+                    illustrationType: "NoSearchResults",
+                    illustrationSize: sap.m.IllustratedMessageSize.Auto
+                };
+
+                lf_setIllustMsg(oIllustMsg, oOptions);
+
+            },
+            // Events
+            escapeHandler: () => { }, // esc 키 방지
+
+        })
+            .addStyleClass(sDialogId)
+            .open();
+
+        var oIllustMsg = sap.ui.getCore().byId(sIllustId);
+
+        lf_setIllustMsg(oIllustMsg, oOptions);
+
+        function lf_setIllustMsg(oIllustMsg, oOptions) {
+
+            oIllustMsg.setTitle(oOptions.title || "");
+            oIllustMsg.setDescription(oOptions.description || "");
+            oIllustMsg.setIllustrationType(oOptions.illustrationType || "NoSearchResults");
+            oIllustMsg.setIllustrationSize(oOptions.illustrationSize || sap.m.IllustratedMessageSize.Auto);
+
+        }
+
+    }; // end of oAPP.common.fnIllustMsgDialogOpen
+
+    /**
+     * IllustMessage Dialog Close     
+     */
+    oAPP.common.fnIllustMsgDialogClose = () => {
+
+        var sDialogId = "u4aWsIllustedMsgDialog",
+            oDialog = sap.ui.getCore().byId(sDialogId);
+
+        if (!oDialog) {
+            return;
+        }
+
+        oDialog.close();
+
+    }; // end of oAPP.common.fnIllustMsgDialogClose
 
 })(window, $, oAPP);
 

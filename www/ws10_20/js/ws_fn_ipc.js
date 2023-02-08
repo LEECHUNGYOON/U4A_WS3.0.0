@@ -5,6 +5,9 @@
 (function (window, $, oAPP) {
     "use strict";
 
+    const
+        IPCRENDERER = parent.IPCRENDERER;
+
     /************************************************************************
      * Electron IPCMAIN의 세션 타임 체크 관련 이벤트
      ************************************************************************/
@@ -32,7 +35,7 @@
      *  Electron IPCMAIN의 Exam 팝업에서 샘플 리스트의 WorkBench Move 버튼 실행 시 수행 되는 이벤트
      ************************************************************************/
     oAPP.fn.fnIpcMain_if_exam_move = function (event, res) {
-        
+
         zconsole.log("fnIpcMain_if_exam_move");
 
         var oMsg = res,
@@ -134,6 +137,12 @@
         // 전체 브라우저에 공통으로 타는 DragEnd 이벤트
         parent.IPCMAIN.on('if-dragEnd', oAPP.fn.fnIpcMain_if_DragEnd);
 
+        // 여러창일때 나를 제외한 윈도우를 닫고 싶을때 
+        parent.IPCMAIN.on('if-browser-close', oAPP.fn.fnIpcMain_if_browser_close);
+
+        // 브라우저간 IPC 통신
+        parent.IPCMAIN.on('if-browser-interconnection', oAPP.fn.fnIpcMain_browser_interconnection);
+
     }; // end of oAPP.fn.fnIpcMain_Attach_Event_Handler
 
     /************************************************************************
@@ -152,6 +161,9 @@
 
         // 여러창일때 나를 제외한 윈도우를 닫고 싶을때 이벤트 해제 
         parent.IPCMAIN.off('if-browser-close', oAPP.fn.fnIpcMain_if_browser_close);
+
+        // 브라우저간 IPC 통신
+        parent.IPCMAIN.off('if-browser-interconnection', oAPP.fn.fnIpcMain_browser_interconnection);
 
     };
 
@@ -188,7 +200,7 @@
                 // onBeforeunload event 해제
                 oAPP.main.fnDetachBeforeunloadEvent();
 
-                oAPP.main.fnBeforeunload("");             
+                oAPP.main.fnBeforeunload("");
 
                 break;
 
@@ -303,5 +315,43 @@
         });
 
     }; // end of oAPP.fn.fnIpcMain_cdn_save
+
+    /************************************************************************
+     * 전체 브라우저간 통신
+     ************************************************************************/
+    oAPP.fn.fnIpcMain_browser_interconnection = (oEvent, oRes) => {
+
+        let oServerInfo = parent.getServerInfo(),
+            PRCCD = oRes.PRCCD,
+            SYSID = oRes.SYSID,
+            CLIENT = oRes.CLIENT,
+            OPTIONS = oRes.OPTIONS;
+
+        switch (PRCCD) {
+            case "01": // 같은 SYSID & CLIENT에 ILLUST 메시지 팝업 오픈
+
+                if (oServerInfo.SYSID !== SYSID || oServerInfo.CLIENT !== CLIENT) {
+                    return;
+                }
+
+                oAPP.common.fnIllustMsgDialogOpen(OPTIONS);
+
+                break;
+
+            case "02": // 같은 SYSID & CLIENT에 ILLUST 메시지 팝업 닫기
+
+                if (oServerInfo.SYSID !== SYSID || oServerInfo.CLIENT !== CLIENT) {
+                    return;
+                }
+
+                oAPP.common.fnIllustMsgDialogClose();
+
+                break;
+
+            default:
+                break;
+        }
+
+    }; // end of oAPP.fn.fnIpcMain_browser_interconnection
 
 })(window, $, oAPP);

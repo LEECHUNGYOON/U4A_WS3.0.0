@@ -30,14 +30,15 @@
 /* ***************************************************************** */
 /* 내부 광역 변수  
 /* ***************************************************************** */
-
 const GS_MSG = {
     M01: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "367", "", "", "", ""), //"Help Document 처리 통신 오류",
     M02: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "368", "", "", "", ""), //"Help Document 다운로드 처리 과정에서 해더 정보 누락되었습니다",
     M03: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "369", "", "", "", ""), //"Help Document 분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다.",
     M04: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "370", "", "", "", ""), //"Help Document 분할 다운로드 처리 과정에서 오류 발생",
     M05: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "371", "", "", "", ""), //"처리 완료",
-    M06: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "372", "", "", "", "") //"Help Document 버젼 파일 생성중 오류 발생"
+    M06: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "372", "", "", "", ""), //"Help Document 버젼 파일 생성중 오류 발생",
+    M07: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44", "", "", "", ""), // U4A Help Document
+    M08: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B78", "", "", "", ""), // Download
 };
 
 let GV_HOST = parent.getHost();
@@ -51,7 +52,7 @@ async function gfn_fileDel(oFS, PATH) {
     return new Promise((resolve, reject) => {
 
         try {
-            oFS.unlink(PATH, (e) => {});
+            oFS.unlink(PATH, (e) => { });
         } catch (error) {
 
         }
@@ -65,8 +66,8 @@ async function gfn_fileDel(oFS, PATH) {
 async function gfn_FileMove(oFS, NEW_PATH, OLD_PATH) {
     return new Promise((resolve, reject) => {
 
-        oFS.rename(OLD_PATH, NEW_PATH, function(err) {
-            if (err) {}
+        oFS.rename(OLD_PATH, NEW_PATH, function (err) {
+            if (err) { }
 
             resolve();
 
@@ -78,7 +79,7 @@ async function gfn_FileMove(oFS, NEW_PATH, OLD_PATH) {
 //Help document 해더 정보 추출
 async function gfn_getHeadData() {
     return new Promise((resolve, reject) => {
-        
+
         var LV_URL = GV_HOST + "/zu4a_wbc/u4a_ipcmain/U4A_HELP_DOC_WS30?PRCCD=HEAD";
         var xhttp = new XMLHttpRequest();
         xhttp.onerror = (e) => {
@@ -140,10 +141,100 @@ async function gfn_file_existence(oFS, FOLD_PATH, CHK_FNAME) {
 
 }
 
+// 프로그레스바 다이얼로그 열기
+function gfn_openProgressDialogOpen() {
+
+    let oFrame = document.getElementById("ws_frame");
+    if (!oFrame) {
+        return;
+    }
+
+    let oConWin = oFrame.contentWindow;
+    if (!oConWin || !oConWin.oAPP) {
+        return;
+    }
+
+    let oAPP = oConWin.oAPP,
+        sTitle = `${GS_MSG.M07} ${GS_MSG.M08}`;
+
+    let oInitOptions = {
+        description: sTitle,
+        // title: sTitle,
+        illustrationType: "tnt-Systems",
+    };
+
+    oAPP.common.fnProgressDialogOpen(oInitOptions);
+
+} // end of gfn_openProgressDialog
+
+// 프로그레스바 다이얼로그 닫기
+function gfn_closeProgressDialog() {
+
+    let oFrame = document.getElementById("ws_frame");
+    if (!oFrame) {
+        return;
+    }
+
+    let oConWin = oFrame.contentWindow;
+    if (!oConWin || !oConWin.oAPP) {
+        return;
+    }
+
+    let oAPP = oConWin.oAPP;
+    if (!oAPP) {
+        return;
+    }
+
+    oAPP.common.fnProgressDialogClose();
+
+} // end of gfn_closeProgressDialog
+
+function gfn_setProgressbar(iValue, iTotalValue) {
+
+    let oFrame = document.getElementById("ws_frame");
+    if (!oFrame) {
+        return;
+    }
+
+    let oConWin = oFrame.contentWindow;
+    if (!oConWin || !oConWin.sap) {
+        return;
+    }
+
+    // sap 인스턴스 여부 확인
+    let sap = oConWin.sap;
+    if (!sap) {
+        return;
+    }
+
+    // 혹시나 나눗셈 할때 0으로 나누는지 확인
+    if (!isFinite(iValue / iTotalValue)) {
+        return;
+    }
+
+    let sPerValue = (iValue / iTotalValue) * 100,
+        sPrgressId = "u4aWsProg",
+        oProgressbar = sap.ui.getCore().byId(sPrgressId);
+
+    if (!oProgressbar) {
+        return;
+    }
+
+    sPerValue = sPerValue.toFixed(2);
+
+    oProgressbar.setPercentValue(sPerValue);
+
+    let sMsg = `${GS_MSG.M08}.....${sPerValue}%`;
+
+    oProgressbar.setDisplayValue(sMsg);
+
+} // end of gfn_setProgressbar
+
+
 /*=================================================================== */
 // Export Module Function - Help document 서버 Data 추출후 다운로드 처리
 /*=================================================================== */
-exports.Excute = async function(REMOTE, DOWN_ROOT_PATH) {
+exports.Excute = async function (REMOTE, DOWN_ROOT_PATH) {
     //REMOTE         : electron remote 오브젝트 
     //HEAD_DATA      : Help document 해더 Data => getHeadData <- 이 펑션에서 추출한 Data
     //DOWN_ROOT_PATH : 다운로드 처리할 폴더 경로 
@@ -152,7 +243,6 @@ exports.Excute = async function(REMOTE, DOWN_ROOT_PATH) {
 
         //Help document 해더 정보 추출
         let HEAD_DATA = await gfn_getHeadData();
-
 
         //Help Document 다운로드 처리 과정에서 해더 정보 누락되었습니다
         if (typeof HEAD_DATA !== "object") {
@@ -245,6 +335,13 @@ exports.Excute = async function(REMOTE, DOWN_ROOT_PATH) {
         await gfn_fileDel(oFS, LV_TMP_DOWN_PATH);
 
 
+        //프로그레스 UI OPEN
+        gfn_openProgressDialogOpen();
+
+        // HEAD_DATA.DATA.SPCNT < TOTAL 
+
+
+
         //Help Document 다운로드 분할 Data 추출 
         function lfn_getdata() {
 
@@ -252,20 +349,29 @@ exports.Excute = async function(REMOTE, DOWN_ROOT_PATH) {
 
             var LV_RELKY_X = LV_RELKY.toString().padStart(4, '0');
             LV_RELKY_X = LV_RINDX + LV_RELKY_X;
-            
+
             var LV_URL = GV_HOST + "/zu4a_wbc/u4a_ipcmain/U4A_HELP_DOC_WS30?PRCCD=ITEM" + "&RELKY=" + LV_RELKY_X;
             var xhttp = new XMLHttpRequest();
             xhttp.onerror = (e) => {
+
+                //프로그레스 ERROR 종료 처리 
+                gfn_closeProgressDialog();
+
                 resolve({
                     RETCD: "E",
                     RTMSG: GS_MSG.M01
                 });
             }; //통신오류
             xhttp.ontimeout = () => {
+
+                //프로그레스 ERROR 종료 처리 
+                gfn_closeProgressDialog();
+
                 resolve({
                     RETCD: "E",
                     RTMSG: GS_MSG.M01
                 });
+
             }; //통신오류
             xhttp.onload = async (e) => {
 
@@ -273,6 +379,9 @@ exports.Excute = async function(REMOTE, DOWN_ROOT_PATH) {
 
                 switch (status) {
                     case "ERR": //오류일 경우
+
+                        //프로그레스 ERROR 종료 처리 
+                        gfn_closeProgressDialog();
 
                         //"Help Document 분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다."
                         resolve({
@@ -282,8 +391,11 @@ exports.Excute = async function(REMOTE, DOWN_ROOT_PATH) {
                         break;
 
 
-                    case "END": //추출 완료
-                        debugger;
+                    case "END": //추출 완료                        
+
+                        //프로그레스 ERROR 종료 처리 
+                        gfn_closeProgressDialog();
+
                         //서버측에 응답코드가 실제 Data 미존재? 아님 처리 완료? 알수 없기에
                         //Temp 폴더에 파일여부를 확인해본다 미존재하면 서버측에 Data가 없는것으로 추측함
                         if (!await gfn_file_existence(oFS, LV_TMP_ROOT_PATH, HEAD_DATA.DATA.LOCFN)) {
@@ -324,9 +436,16 @@ exports.Excute = async function(REMOTE, DOWN_ROOT_PATH) {
                         //Help Document 다운로드 분할 Data 다운로드
                         var LS_RET = await lfn_download(e.target.response, LV_TMP_DOWN_PATH);
                         if (LS_RET.RETCD === "E") {
+
+                            //프로그레스 ERROR 종료 처리                             
+                            gfn_closeProgressDialog();
+
                             resolve(LS_RET);
                             return;
                         }
+
+                        //프로그레스바 증가 로직삽입
+                        gfn_setProgressbar(LV_RELKY, HEAD_DATA.DATA.SPCNT);
 
                         //[재수행] Help Document 다운로드 분할 Data 추출 
                         lfn_getdata();
@@ -334,6 +453,9 @@ exports.Excute = async function(REMOTE, DOWN_ROOT_PATH) {
                         break;
 
                     default: //오류로 간주
+
+                        //프로그레스 ERROR 종료 처리 
+                        gfn_closeProgressDialog();
 
                         //"Help Document 분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다."
                         resolve({
@@ -358,7 +480,7 @@ exports.Excute = async function(REMOTE, DOWN_ROOT_PATH) {
         //분할 다운로드
         async function lfn_download(BIN, PATH) {
             return new Promise((resolve, reject) => {
-                oFS.appendFile(PATH, Buffer.from(BIN), function(err) {
+                oFS.appendFile(PATH, Buffer.from(BIN), function (err) {
 
                     if (err) {
                         //Help Document 다운로드 처리 과정에서 오류 발생

@@ -16,7 +16,7 @@ Rem *******************************************************
 Rem *********************
 Rem *** Public Sector ***
 Rem *********************
-	Public SID, MANDT, BNAME, APPID, METHD, SPOSI, ISEDT, MAXSS, TCODE
+	Public SID, MANDT, BNAME, APPID, METHD, SPOSI, ISEDT, MAXSS, TCODE, ESID
 	Public objWSH, objSapGui, objAppl, objConn, objSess, W_system, Lac, Lcc, Ecp, Msc 
 	
 	Public sDIM()
@@ -87,7 +87,7 @@ Function SetParamTCP()
 	
     Set objWSH = CreateObject("WScript.Shell")
 
-	LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE
+	LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE & "|" & ESID
     
 	LV_ENC = Base64Encode(LV_PARA)
 	
@@ -109,8 +109,9 @@ Function GetArg()
 	ISEDT  = WScript.arguments.Item(6) '수정모드 여부(예 : X, 아니오 : 공백) 
 	TCODE  = WScript.arguments.Item(7) 'SAP TCODE
     MAXSS  = CInt(WScript.arguments.Item(8)) '시스템 허용 최대 세션수
-	
-    W_system = SID & MANDT & BNAME '로그인 점검 대상 시스템(SID + 클라이언트 + 사용자ID)
+	ESID  = WScript.arguments.Item(9) 'Electron JS 호출처 세션 ID
+    
+	W_system = SID & MANDT & BNAME '로그인 점검 대상 시스템(SID + 클라이언트 + 사용자ID)
  
 End Function
 
