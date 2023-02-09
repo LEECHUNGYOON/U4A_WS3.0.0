@@ -1511,7 +1511,7 @@
         };
 
         // 같은 client && SYSID 창에 일러스트 메시지를 뿌린다!!
-        parent.IPCRENDERER.send("if-browser-interconnection", oSendData);
+        parent.IPCRENDERER.send("if-browser-interconnection", oSendData); // #[ws_fn_ipc.js]
 
         var oParam = {
             METHNM: (METHNM == null ? "" : METHNM),
@@ -1525,8 +1525,6 @@
         oAPP.fn.fnSapGuiMultiLoginCheck()
             .then(oAPP.fn.fnSapGuiMultiLoginCheckThen.bind(oParam))
             .catch((result) => {
-
-                debugger;
                 
                 // [로직추가] 현재 떠있는 전체 창에 비지를 끈다                
                 // oAPP.common.fnIllustMsgDialogClose();
@@ -2104,21 +2102,16 @@
             return;
         }
 
-        var oIllustMsg = new sap.m.IllustratedMessage(sIllustId, {
-            // title: "{TITLE}",
-            // description: "　",
+        var oIllustMsg = new sap.m.IllustratedMessage(sIllustId, {            
             illustrationSize: sap.m.IllustratedMessageSize.Dialog,
-            // illustrationType: "{ILLUSTTYPE}"
-
         }).addStyleClass(`${sDialogId}--illustMsg`);
 
         jQuery.sap.require("sap.m.ProgressIndicator");
+        
         var oProgressbar = new sap.m.ProgressIndicator(sPrgressId, {
-            visible: true,
-            // percentValue: "{PERVALUE}",
+            visible: true,            
             displayOnly: true,
-            state: "Success",
-            // displayValue: "Downloading... {PERVALUE}%"
+            state: "Success",            
         }).addStyleClass("sapUiSmallMarginBeginEnd sapUiMediumMarginBottom");
 
         new sap.m.Dialog(sDialogId, {
