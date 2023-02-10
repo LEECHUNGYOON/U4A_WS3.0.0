@@ -1503,8 +1503,8 @@
             CLIENT: oServerInfo.CLIENT,
             SYSID: oServerInfo.SYSID,
             OPTIONS: {
-                title: "SAPGUI Execution",
-                description: "SAPGUI를 실행합니다 잠시만 기다려주세요.",
+                title: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "374"), // SAPGUI Launch
+                description: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "373"), // Please wait a few minutes.
                 illustrationType: "tnt-Radar",
                 illustrationSize: sap.m.IllustratedMessageSize.Dialog
             }
@@ -1525,9 +1525,7 @@
         oAPP.fn.fnSapGuiMultiLoginCheck()
             .then(oAPP.fn.fnSapGuiMultiLoginCheckThen.bind(oParam))
             .catch((result) => {
-                
-                // [로직추가] 현재 떠있는 전체 창에 비지를 끈다                
-                // oAPP.common.fnIllustMsgDialogClose();
+
                 // 같은 client && SYSID 창에 일러스트 메시지를 뿌린다!!
                 oSendData.PRCCD = "02";
 
@@ -2102,16 +2100,16 @@
             return;
         }
 
-        var oIllustMsg = new sap.m.IllustratedMessage(sIllustId, {            
+        var oIllustMsg = new sap.m.IllustratedMessage(sIllustId, {
             illustrationSize: sap.m.IllustratedMessageSize.Dialog,
         }).addStyleClass(`${sDialogId}--illustMsg`);
 
         jQuery.sap.require("sap.m.ProgressIndicator");
-        
+
         var oProgressbar = new sap.m.ProgressIndicator(sPrgressId, {
-            visible: true,            
+            visible: true,
             displayOnly: true,
-            state: "Success",            
+            state: "Success",
         }).addStyleClass("sapUiSmallMarginBeginEnd sapUiMediumMarginBottom");
 
         new sap.m.Dialog(sDialogId, {

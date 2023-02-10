@@ -1,7 +1,7 @@
 /**************************************************************************                                           
  * ws_fn_04.js
  **************************************************************************/
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     var PATH = parent.PATH,
@@ -62,7 +62,7 @@
     /************************************************************************
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSapGuiMultiLoginCheckThen = async function(oResult) {
+    oAPP.fn.fnSapGuiMultiLoginCheckThen = async function (oResult) {
 
         // sapgui 실행시, 레지스트리에 브라우저키를 저장하고 삭제 시점을 감지한다.
         await oAPP.fn.fnSapGuiRegistryParamCheck();
@@ -122,13 +122,13 @@
 
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
         var vbs = parent.SPAWN('cscript.exe', aParam);
-        vbs.stdout.on("data", function(data) {
+        vbs.stdout.on("data", function (data) {
 
 
         });
 
         //GUI 세션창이 존재하지않다면 ...
-        vbs.stderr.on("data", function(data) {
+        vbs.stderr.on("data", function (data) {
 
             //VBS 리턴 오류 CODE / MESSAGE 
             var str = data.toString(),
@@ -167,12 +167,12 @@
             ];
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
-            vbs.stdout.on("data", function(data) {
+            vbs.stdout.on("data", function (data) {
 
 
             });
 
-            vbs.stderr.on("data", function(data) {
+            vbs.stderr.on("data", function (data) {
 
                 // 이전에 돌고 있는 인터벌이 혹시나 있으면 삭제
                 _clearIntervalSapGuiCheck();
@@ -209,11 +209,6 @@
             delete oAPP.attr.sapguiInterval;
         }
 
-        // if (oAPP.attr.sapguiMaxTimeout) {
-        //     clearTimeout(oAPP.attr.sapguiMaxTimeout);
-        //     delete oAPP.attr.sapguiMaxTimeout;
-        // }
-
     } // end of _clearIntervalSapGuiCheck
 
     // 같은 SYSID && CLIENT에 해당하는 브라우저에 IPC를 전송하여 IllustedMsgDialog를 끈다. 
@@ -226,7 +221,7 @@
                 SYSID: oServerInfo.SYSID,
             };
 
-        // 같은 client && SYSID 창에 일러스트 메시지를 뿌린다!!
+        // 같은 client && SYSID 창에 IllustedMsgDialog를 닫는다
         parent.IPCRENDERER.send("if-browser-interconnection", oSendData);
 
     } // end of _sendIpcRendererIllustedMsgDlgClose
@@ -235,6 +230,13 @@
      * SAP GUI VBS 실행 시 저장한 Registry 값이 있는지 확인
      ************************************************************************/
     oAPP.fn.fnSapGuiRegistryParamCheck = async () => {
+
+        let oServerInfo = parent.getServerInfo(),
+            oSendData = {
+                PRCCD: "03",
+                CLIENT: oServerInfo.CLIENT,
+                SYSID: oServerInfo.SYSID,
+            };
 
         return new Promise(async (resolve) => {
 
@@ -273,10 +275,14 @@
 
                 iCurrTime += 1;
 
-                if (oIllustMsg) {
+                if (oIllustMsg) {                    
 
                     let sDesc = `${sIllustDesc}..........(${iCurrTime} / ${iMaxTime})`;
-                    oIllustMsg.setDescription(sDesc);
+
+                    oSendData.MSG = sDesc;
+
+                    // 같은 client && SYSID 창에 일러스트 메시지를 뿌린다!!
+                    parent.IPCRENDERER.send("if-browser-interconnection", oSendData);
 
                 }
 
@@ -338,17 +344,6 @@
                 _sendIpcRendererIllustedMsgDlgClose();
 
             }, 1000); // end of oAPP.attr.sapguiInterval
-
-            // // 30초 뒤에도 dialog가 닫히지 않았다면 강제로 닫아준다.
-            // oAPP.attr.sapguiMaxTimeout = setTimeout(() => {
-
-            //     // 인터벌 죽이기
-            //     _clearIntervalSapGuiCheck();
-
-            //     // 같은 SYSID && CLIENT에 해당하는 브라우저에 IPC를 전송하여 IllustedMsgDialog를 끈다. 
-            //     _sendIpcRendererIllustedMsgDlgClose();
-
-            // }, 20000);
 
             resolve();
 
@@ -529,7 +524,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             let oSendData = {
                 DEFAULT_OPACITY: 0.3,
@@ -577,20 +572,20 @@
 
         // 초기 모델 설정
         let oModelData = {
-                KEY: "",
-                RDBTNINDEX: 0,
-                FNAME: "",
-                RDLIST: [{
-                        text: "Key In"
-                    },
-                    {
-                        text: "File Drag"
-                    },
-                    {
-                        text: "Attach File"
-                    },
-                ]
+            KEY: "",
+            RDBTNINDEX: 0,
+            FNAME: "",
+            RDLIST: [{
+                text: "Key In"
             },
+            {
+                text: "File Drag"
+            },
+            {
+                text: "Attach File"
+            },
+            ]
+        },
             oJsonModel = new sap.ui.model.json.JSONModel();
 
         oJsonModel.setData(oModelData);
@@ -626,7 +621,7 @@
                     new sap.m.Button({
                         type: sap.m.ButtonType.Reject,
                         icon: "sap-icon://decline",
-                        press: function(oEvent) {
+                        press: function (oEvent) {
 
                             var oDialog = sap.ui.getCore().byId(DIALOG_ID);
                             if (oDialog) {
@@ -676,7 +671,7 @@
                     submit: () => {
                         oAPP.fn.fnSetOpenDevToolSubmit();
                     }
-                }).bindProperty("visible", "/RDBTNINDEX", function(INDEX) {
+                }).bindProperty("visible", "/RDBTNINDEX", function (INDEX) {
 
                     if (INDEX !== 0) {
                         return false;
@@ -705,7 +700,7 @@
                             text: "Drop the File!"
                         })
                     ]
-                }).bindProperty("visible", "/RDBTNINDEX", function(INDEX) {
+                }).bindProperty("visible", "/RDBTNINDEX", function (INDEX) {
 
                     if (INDEX !== 1) {
                         return false;
@@ -752,7 +747,7 @@
                 new sap.m.Button({
                     type: sap.m.ButtonType.Reject,
                     icon: "sap-icon://decline",
-                    press: function(oEvent) {
+                    press: function (oEvent) {
 
                         var oDialog = sap.ui.getCore().byId(DIALOG_ID);
                         if (oDialog) {

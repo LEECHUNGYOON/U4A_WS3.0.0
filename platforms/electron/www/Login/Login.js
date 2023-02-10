@@ -1125,7 +1125,50 @@ let oAPP = (function () {
 
             //오류
             autoUpdaterSAP.on('update-error-sap', (e) => {
-                resolve();
+
+                // 메시지 팝업을 띄운다.
+                // 다운로드 중 오류가 발생하였습니다.
+                // 재시작 하시겠습니까?
+                let sMsg = "Error occurred while U4A Workspace Updating! \n ";
+                sMsg += "Do you want to restart? \n \n";
+                sMsg += sap.m.MessageBox.Action.RETRY + ": Application Restart \n \n ";
+                sMsg += sap.m.MessageBox.Action.CLOSE + ": Application Close \n \n ";
+                sMsg += sap.m.MessageBox.Action.IGNORE + ": Ignoring updates and then running the program";
+
+                sap.m.MessageBox.error(sMsg, {
+                    title: "U4A Workspace Update Error",
+                    initialFocus: sap.m.MessageBox.Action.RETRY,
+                    emphasizedAction: sap.m.MessageBox.Action.RETRY,
+                    onClose: function (oEvent) {
+
+                        switch (oEvent) {
+                            case "RETRY": // 앱 재시작
+
+                                APP.relaunch();
+                                APP.exit();
+
+                                return;
+
+                            case "CLOSE":  // 앱 종료
+
+                                APP.exit();
+
+                                return;
+
+                            case "IGNORE": // 무시하고 진행
+
+                                resolve();
+
+                                return;
+
+                        }
+
+                    },
+
+                    actions: [sap.m.MessageBox.Action.RETRY, sap.m.MessageBox.Action.CLOSE, sap.m.MessageBox.Action.IGNORE]
+
+                });
+
             });
 
             // 서버 HTTPONLY 정보 및 로그인 정보
@@ -1308,7 +1351,48 @@ let oAPP = (function () {
 
             autoUpdater.on('error', (err) => {
 
-                resolve();
+                // 메시지 팝업을 띄운다.
+                // 다운로드 중 오류가 발생하였습니다.
+                // 재시작 하시겠습니까?
+                let sMsg = "Error occurred while U4A Workspace Updating! \n ";
+                sMsg += "Do you want to restart? \n \n";
+                sMsg += sap.m.MessageBox.Action.RETRY + ": Application Restart \n \n ";
+                sMsg += sap.m.MessageBox.Action.CLOSE + ": Application Close \n \n ";
+                sMsg += sap.m.MessageBox.Action.IGNORE + ": Ignoring updates and then running the program";
+
+                sap.m.MessageBox.error(sMsg, {
+                    title: "U4A Workspace Update Error",
+                    initialFocus: sap.m.MessageBox.Action.RETRY,
+                    emphasizedAction: sap.m.MessageBox.Action.RETRY,
+                    onClose: function (oEvent) {
+
+                        switch (oEvent) {
+                            case "RETRY": // 앱 재시작
+
+                                APP.relaunch();
+                                APP.exit();
+
+                                return;
+
+                            case "CLOSE":  // 앱 종료
+
+                                APP.exit();
+
+                                return;
+
+                            case "IGNORE": // 무시하고 진행
+
+                                resolve();
+
+                                return;
+
+                        }
+
+                    },
+
+                    actions: [sap.m.MessageBox.Action.RETRY, sap.m.MessageBox.Action.CLOSE, sap.m.MessageBox.Action.IGNORE]
+
+                });
 
                 console.log('에러가 발생하였습니다. 에러내용 : ' + err);
 
@@ -1335,8 +1419,8 @@ let oAPP = (function () {
                 setTimeout(() => {
 
                     // 업데이트가 완료되면 기존 CDN 체크를 해제 한다.
-                    parent.setIsCDN(""); 
-                    
+                    parent.setIsCDN("");
+
                     autoUpdater.quitAndInstall(); //<--- 자동 인스톨 
 
                 }, 3000);
@@ -2059,6 +2143,8 @@ let oAPP = (function () {
 
         sap.ui.getCore().attachInit(() => {
 
+            jQuery.sap.require("sap.m.MessageBox");
+
             // Shortcut 설정
             oAPP.fn.fnSetShortCut();
 
@@ -2120,7 +2206,7 @@ fnSetBusy('X');
 oAPP.fn.fnLoadBootStrapSetting();
 
 window.addEventListener("load", async () => {
-  
+
     // Default Browser check
     await oAPP.fn.fnCheckIstalledBrowser();
 

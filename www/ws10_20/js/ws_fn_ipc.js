@@ -2,7 +2,7 @@
  * ws_fn_ipc.js
  **************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -12,7 +12,7 @@
     /************************************************************************
      * Electron IPCMAIN의 세션 타임 체크 관련 이벤트
      ************************************************************************/
-    oAPP.fn.fnIpcMain_if_session_time = function(event, res) {
+    oAPP.fn.fnIpcMain_if_session_time = function (event, res) {
 
         var iSessionTime = oAPP.attr.iSessionTimeout; // 세션 타임아웃 시간
         // var iSessionTime = 0.1;
@@ -35,7 +35,7 @@
     /************************************************************************
      *  Electron IPCMAIN의 Exam 팝업에서 샘플 리스트의 WorkBench Move 버튼 실행 시 수행 되는 이벤트
      ************************************************************************/
-    oAPP.fn.fnIpcMain_if_exam_move = function(event, res) {
+    oAPP.fn.fnIpcMain_if_exam_move = function (event, res) {
 
         zconsole.log("fnIpcMain_if_exam_move");
 
@@ -302,7 +302,7 @@
     /************************************************************************
      * 전체 브라우저에 공통으로 타는 DragEnd 이벤트
      ************************************************************************/
-    oAPP.fn.fnIpcMain_cdn_save = function(oEvent, oRes) {
+    oAPP.fn.fnIpcMain_cdn_save = function (oEvent, oRes) {
 
         let BROWSKEY = oRes.BROWSKEY,
             ISCDN = oRes.ISCDN;
@@ -334,6 +334,12 @@
             case "02": // 같은 SYSID & CLIENT에 ILLUST 메시지 팝업 닫기
 
                 oAPP.fn.fnIpcMain_browser_interconnection_02(oRes);
+
+                return;
+
+            case "03": // 같은 SYSID & CLIENT에 ILLUST 메시지 변경
+
+                oAPP.fn.fnIpcMain_browser_interconnection_03(oRes);
 
                 return;
 
@@ -380,8 +386,33 @@
             return;
         }
 
-        oAPP.common.fnIllustMsgDialogClose();
+        APPCOMMON.fnIllustMsgDialogClose();
 
     }; // end of oAPP.fn.fnIpcMain_browser_interconnection_01
+
+    /************************************************************************
+     * 전체 브라우저간 통신
+     * **********************************************************************
+     * # PRCCD: 03
+     *   - 같은 SYSID & CLIENT에 ILLUST 메시지 변경
+     ************************************************************************/
+    oAPP.fn.fnIpcMain_browser_interconnection_03 = (oRes) => {
+
+        let oServerInfo = parent.getServerInfo(),
+            SYSID = oRes.SYSID,
+            CLIENT = oRes.CLIENT,
+            sMsg = oRes.MSG;
+
+        if (oServerInfo.SYSID !== SYSID || oServerInfo.CLIENT !== CLIENT) {
+            return;
+        }
+
+        let oIllustMsg = sap.ui.getCore().byId("u4aWsIllustedMsg");
+
+        if (oIllustMsg) {
+            oIllustMsg.setDescription(sMsg);
+        }
+
+    }; // end of oAPP.fn.fnIpcMain_browser_interconnection_03
 
 })(window, $, oAPP);
