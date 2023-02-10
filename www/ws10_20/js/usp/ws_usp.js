@@ -1592,7 +1592,7 @@
                 })
                     .bindProperty("visible", _fnCodeEditorBindPropertyVisible())
                     .addEventDelegate({
-                        ondblclick: _fnDoubleClickSplitbar
+                        ondblclick: _fnDoubleClickSplitbar,           
                     })
                     .addStyleClass("uspCodeeditorSplit sapUiSmallMarginBottom")
 
