@@ -161,9 +161,9 @@ function createWindow() {
         mainWindow.show();
     })
 
-    // Open the DevTools.
-    // if (cdvElectronSettings.browserWindow.webPreferences.devTools) {
-    // mainWindow.webContents.openDevTools();
+    // // Open the DevTools.  
+    // if (!app.isPackaged) {
+    //     mainWindow.webContents.openDevTools();
     // }
 
     // Emitted when the window is closed.

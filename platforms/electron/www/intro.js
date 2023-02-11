@@ -17,7 +17,13 @@
         APPPATH = APP.getAppPath(),
         USERDATA = APP.getPath("userData"),
         FS = REMOTE.require('fs-extra'),
+        REGEDIT = require('regedit'),
+        PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
+        SETTINGS = require(PATHINFO.WSSETTINGS),
         RANDOM = require("random-key");
+
+    const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
+    REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     oAPP.fn.fnOnDeviceReady = function() {
 
@@ -26,9 +32,12 @@
 
         oAPP.fn.fnOnStart();
 
-    }; // end of oAPP.fn.fnOnDeviceReady 
+    }; // end of oAPP.fn.fnOnDeviceReady     
 
-    oAPP.fn.fnOnStart = () => {
+    oAPP.fn.fnOnStart = async () => {
+
+        // 레지스트리 관련작업
+        await _registryRelated();
 
         // 초기 설치(기본 폴더, vbs 옮기기 등등)
         oAPP.fn.setInitInstall(() => {
@@ -335,9 +344,9 @@
 
         }
 
-        let oHelpDocuPromise = oAPP.fn.fnInstallHelpDocument();
+        // let oHelpDocuPromise = oAPP.fn.fnInstallHelpDocument();
 
-        aPromise.push(oHelpDocuPromise);
+        // aPromise.push(oHelpDocuPromise);
 
         // 상위 폴더를 생성 후 끝나면 실행
         Promise.all(aPromise).then(function(values) {
@@ -535,6 +544,198 @@
         }); // end of promise
 
     }; // end of oAPP.fn.fnCopyHelpDocFileExtract
+
+
+
+
+
+
+
+
+    /**
+     * Private functions
+     */
+
+    /************************************************************************
+     * 레지스트리 키의 List를 구한다.
+     ************************************************************************/
+    function _getRegeditList(sRegPath) {
+
+        return new Promise((resolve) => {
+
+            REGEDIT.list(sRegPath, (err, result) => {
+
+                if (err) {
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTDATA: result
+                });
+
+            });
+
+        });
+
+    } // end of _getRegeditList
+
+    /************************************************************************
+     * 레지스트리의 키값 생성
+     ************************************************************************/
+    function _regeditCreateKey(aKeys) {
+
+        return new Promise((resolve) => {
+
+            REGEDIT.createKey(aKeys, (err) => {
+
+                if (err) {
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTMSG: "success!!"
+                });
+
+            });
+
+
+        });
+
+    } // end of _regeditCreateKey
+
+    /************************************************************************
+     * 레지스트리의 값을 지우는 function
+     ************************************************************************/
+    function _regeditDeleteValue(aValues) {
+
+        return new Promise((resolve) => {
+
+            REGEDIT.deleteValue(aValues, (err) => {
+
+                if (err) {
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTMSG: "success!!"
+                });
+
+            });
+
+        });
+
+    } // end of _deleteRegeditKey
+
+    /************************************************************************
+     * 레지스트리의 cSession에 가비지가 있으면 클리어
+     ************************************************************************/
+    function _cSessionClear() {
+
+        return new Promise(async (resolve) => {
+
+            let sRegPath = SETTINGS.regPaths,
+                cSessionPath = sRegPath.cSession;
+
+            let oRegData = await _getRegeditList(cSessionPath);
+            if (oRegData.RETCD == "E") {
+                resolve();
+                return;
+            }
+
+            let cSessionReg = oRegData.RTDATA[cSessionPath];
+            if (!cSessionReg) {
+                resolve();
+                return;
+            }
+
+            let cSessionVal = cSessionReg.values,
+                aValues = [];
+
+            for (const i in cSessionVal) {
+                aValues.push(`${cSessionPath}\\${i}`);
+            }
+
+            if (aValues.length == 0) {
+                resolve();
+                return;
+            }
+
+            // cSession에 있는 값들을 지운다.
+            await _regeditDeleteValue(aValues);
+
+            resolve();
+
+        });
+
+    } // end of _cSessionClear
+
+    /************************************************************************
+     * 초기 레지스트리 폴더 생성
+     ************************************************************************/
+    function _initCreateRegistryFolders() {
+
+        return new Promise(async (resolve) => {
+
+            let aKeys = [];
+
+            let sRegPath = SETTINGS.regPaths;
+
+            aKeys.push(sRegPath.systems);
+            aKeys.push(sRegPath.LogonSettings);
+
+            await _regeditCreateKey(aKeys);
+
+            resolve();
+
+        });
+
+    } // end of _initCreateRegistryFolders
+
+    /************************************************************************
+     * 레지스트리 관련작업
+     ************************************************************************/
+    async function _registryRelated() {
+
+        return new Promise(async (resolve) => {
+
+            // 초기 레지스트리 폴더 생성
+            await _initCreateRegistryFolders();
+
+            // 레지스트리의 cSession에 가비지값 제거
+            await _cSessionClear();
+
+
+            /**
+             * 레지스트리관련 로직 확장은 아래에 쭉 추가하면 됨
+             */
+
+
+
+
+
+
+            resolve();
+
+        });
+
+
+    } // end of _checkRegistry
 
     document.addEventListener('deviceready', oAPP.fn.fnOnDeviceReady, false);
 

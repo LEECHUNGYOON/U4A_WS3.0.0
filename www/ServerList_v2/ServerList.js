@@ -37,7 +37,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function (oAPP) {
+(function(oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -86,7 +86,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             text: "Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function () {
+            close: function() {
                 XHR.abort();
             }
         });
@@ -99,7 +99,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.sendAjax = (sUrl, fnSuccess, fnError, fnCancel) => {
 
         // ajax call 취소할 경우..
-        XHR.onabort = function () {
+        XHR.onabort = function() {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -108,7 +108,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // ajax call 실패 할 경우
-        XHR.onerror = function () {
+        XHR.onerror = function() {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -116,7 +116,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         };
 
-        XHR.onload = function () {
+        XHR.onload = function() {
 
             if (typeof fnSuccess == "function") {
                 fnSuccess(XHR.response);
@@ -484,7 +484,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         if (oAPP.data.SAPLogon[oResult.fileName]) {
             oAPP.data.SAPLogon[oResult.fileName] = undefined;
         }
-        
+
         // Landscape 정보를 글로벌 object에 저장
         oAPP.data.SAPLogon[oResult.fileName] = oResult.Result;
 
@@ -525,9 +525,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-            RETCD: "E",
-            RTMSG: "Server information does not exist in the SAPGUI logon file."
-        },
+                RETCD: "E",
+                RTMSG: "Server information does not exist in the SAPGUI logon file."
+            },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -657,9 +657,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-            RETCD: "E",
-            RTMSG: "Server information does not exist in the SAPGUI logon file."
-        },
+                RETCD: "E",
+                RTMSG: "Server information does not exist in the SAPGUI logon file."
+            },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -833,8 +833,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnOnInitRendering = () => {
 
         var oApp = new sap.m.App({
-            autoFocus: false,
-        }),
+                autoFocus: false,
+            }),
             oTreeTable = oAPP.fn.fnGetWorkSpaceTreeTable(), // 좌측 폴더 Tree
             oTable = oAPP.fn.fnGetSAPLogonListTable(), // 우측 서버 리스트 테이블
             oPage1 = new sap.m.Page({
@@ -880,7 +880,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function () {
+            onAfterRendering: function() {
 
                 setTimeout(() => {
                     $('#content').fadeIn(300, 'linear');
@@ -1053,7 +1053,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     /************************************************************************
      * 선택한 라인 위치를 개인화 파일에 저장한다.
      ************************************************************************/
-    oAPP.fn.fnSetSaveSelectedItemPosition = (oSelectItemData) => {
+    oAPP.fn.fnSetSaveSelectedItemPosition = async (oSelectItemData) => {
 
         if (!oSelectItemData) {
             return;
@@ -1066,35 +1066,56 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 선택한 라인의 UUID를 구한다.
         let oSelectedItem = oSelectItemData._attributes,
             sUUID = oSelectedItem.uuid, // 선택한 UUID
-            sP13nPath = PATHINFO.P13N; // UUID를 저장할 P13N JSON 파일 경로
+            LastSelectedNodeKey = sUUID;          
 
-        // P13N JSON 파일이 있는지 확인한다.
-        if (!FS.existsSync(sP13nPath)) {
-            FS.writeFileSync(sP13nPath, JSON.stringify(""), {
-                encoding: "utf8",
-                mode: 0o777 // 올 권한
-            }); // 없으면 생성
-        }
+        let oWsSettings = fnGetSettingsInfo(),
+            oRegPaths = oWsSettings.regPaths,
+            sSettingsPath = oRegPaths.LogonSettings;
 
-        let sP13nData = FS.readFileSync(sP13nPath, "utf-8"),
-            oP13nData = JSON.parse(sP13nData);
+        let oRegData = {};
+        oRegData[sSettingsPath] = {};
+        oRegData[sSettingsPath]["LastSelectedNodeKey"] = {
+            value: LastSelectedNodeKey,
+            type: "REG_SZ"
+        };
 
-        if (oP13nData == "") {
-            oP13nData = {};
-        }
+        const RegeditPromisified = parent.require('regedit').promisified;
 
-        if (!oP13nData.SERVERINFO) {
-            oP13nData.SERVERINFO = {};
-        }
+        // 레지스트리 데이터 저장
+        await RegeditPromisified.putValue(oRegData);
 
-        let oServerInfo = oP13nData.SERVERINFO;
+        // return;
 
-        oServerInfo.UUID = sUUID;
 
-        FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData), {
-            encoding: "utf8",
-            mode: 0o777 // 올 권한
-        }); // 없으면 생성
+
+
+        // // P13N JSON 파일이 있는지 확인한다.
+        // if (!FS.existsSync(sP13nPath)) {
+        //     FS.writeFileSync(sP13nPath, JSON.stringify(""), {
+        //         encoding: "utf8",
+        //         mode: 0o777 // 올 권한
+        //     }); // 없으면 생성
+        // }
+
+        // let sP13nData = FS.readFileSync(sP13nPath, "utf-8"),
+        //     oP13nData = JSON.parse(sP13nData);
+
+        // if (oP13nData == "") {
+        //     oP13nData = {};
+        // }
+
+        // if (!oP13nData.SERVERINFO) {
+        //     oP13nData.SERVERINFO = {};
+        // }
+
+        // let oServerInfo = oP13nData.SERVERINFO;
+
+        // oServerInfo.UUID = sUUID;
+
+        // FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData), {
+        //     encoding: "utf8",
+        //     mode: 0o777 // 올 권한
+        // }); // 없으면 생성
 
     }; // end of oAPP.fn.fnSetSaveSelectedItemPosition
 
@@ -2090,9 +2111,91 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oSAPServerInfo.oThemeInfo = oP13nThemeInfo.RTDATA;
         }
 
+        // 선택한 정보를 레지스트리에 저장한다.
+        await _registSelectedSystemInfo(oSAPServerInfo);
+
         fnLoginPage(oSAPServerInfo);
 
     }; // end of oAPP.fn.fnPressServerListItem
+
+    function _registSelectedSystemInfo(oServerInfo) {
+
+        const RegeditPromisified = parent.require('regedit').promisified;
+
+        return new Promise(async (resolve) => {
+
+            let oWorkTree = sap.ui.getCore().byId("WorkTree");
+            if (!oWorkTree) {
+                resolve();
+                return;
+            }
+
+            let iSelIdx = oWorkTree.getSelectedIndex(),
+                oCtx = oWorkTree.getContextByIndex(iSelIdx);
+
+            if (!oCtx) {
+                resolve();
+                return;
+            }
+
+            let oCtxData = oCtx.getModel().getProperty(oCtx.getPath()),
+                LastSelectedNodeKey = oCtxData._attributes.uuid;
+
+            let oWsSettings = fnGetSettingsInfo(),
+                oRegPaths = oWsSettings.regPaths,
+                sSystemPath = oRegPaths.systems,
+                sSettingsPath = oRegPaths.LogonSettings;
+
+            let sCreatePath = `${sSystemPath}\\${oServerInfo.SYSID}`,
+                aKeys = [sCreatePath];
+
+            // 레지스트리 폴더 생성
+            await _regeditCreateKey(aKeys);
+
+            let oRegData = {};
+            oRegData[sSettingsPath] = {};
+            oRegData[sSettingsPath]["LastSelectedNodeKey"] = {
+                value: LastSelectedNodeKey,
+                type: "REG_SZ"
+            };
+
+            // 레지스트리 데이터 저장
+            await RegeditPromisified.putValue(oRegData);
+
+            resolve();
+
+        });
+
+    } // end of _registSelectedSystemInfo
+
+    /************************************************************************
+     * 레지스트리의 키값 생성
+     ************************************************************************/
+    function _regeditCreateKey(aKeys) {
+
+        return new Promise((resolve) => {
+
+            REGEDIT.createKey(aKeys, (err) => {
+
+                if (err) {
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTMSG: "success!!"
+                });
+
+            });
+
+
+        });
+
+    } // end of _regeditCreateKey
 
     // session samesite 회피
     function configureSession(oBrowserWindow) {
@@ -2190,7 +2293,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -2240,7 +2343,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         resolve({

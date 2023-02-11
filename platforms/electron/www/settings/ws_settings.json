@@ -54,7 +54,11 @@
         "chrome": "",
         "edge": "",
         "ie": "",
-        "saplogon": "HKCU\\SOFTWARE\\SAP\\SAPLogon\\LandscapeFilesLastUsed"
+        "saplogon": "HKCU\\SOFTWARE\\SAP\\SAPLogon\\LandscapeFilesLastUsed",
+        "u4aws": "HKCU\\SOFTWARE\\U4A\\WS",
+        "cSession": "HKCU\\SOFTWARE\\U4A\\WS\\cSession",
+        "systems": "HKCU\\SOFTWARE\\U4A\\WS\\Systems",        
+        "LogonSettings": "HKCU\\SOFTWARE\\U4A\\WS\\WSLogon\\Settings"
     },
     "isDev": true,
     "isTrial": false,
