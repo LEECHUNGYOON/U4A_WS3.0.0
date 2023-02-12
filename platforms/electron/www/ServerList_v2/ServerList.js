@@ -161,56 +161,102 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of oAPP.fn.fnOnMainStart
 
-    oAPP.fn.fnAttachRowsUpdateOnce = (oControl) => {
+    oAPP.fn.fnAttachRowsUpdateOnce = async (oControl) => {
 
-        // p13n.json을 읽어서 마지막 저장된 ITEM이 있는지 확인한다.
-        let sP13nPath = PATHINFO.P13N; // UUID를 저장할 P13N JSON 파일 경로
+        debugger;
 
-        // P13N JSON 파일이 있는지 확인한다.
-        if (!FS.existsSync(sP13nPath)) {
-            return;
-        }
-
-        let sP13nData = FS.readFileSync(sP13nPath, "utf-8"),
-            oP13nData = JSON.parse(sP13nData);
-
-        if (oP13nData == "") {
-            return;
-        }
-
-        if (!oP13nData.SERVERINFO) {
-            return;
-        }
-
-        let oServerInfo = oP13nData.SERVERINFO,
-            sUUID = oServerInfo.UUID;
-
-        let oTreeTable = oControl.getSource(),
-            oTreeModel = oTreeTable.getModel();
+        let oWorkTree = oControl.getSource(),
+            oTreeModel = oWorkTree.getModel();
 
         if (!oTreeModel) {
             return;
         }
+
+        let oWsSettings = fnGetSettingsInfo(),
+            oRegPaths = oWsSettings.regPaths,
+            sLogonSettingsPath = oRegPaths.LogonSettings;
+
+        var oResult = await _getRegeditList([sLogonSettingsPath]);
+        if (oResult.RETCD == "E") {
+            return;
+        }
+
+        let oRegData = oResult.RTDATA[sLogonSettingsPath];
+        if (!oRegData) {
+            return;
+        }
+
+        let oValues = oRegData.values["LastSelectedNodeKey"];
+        if (!oValues) {
+            return;
+        }
+
+        let sLastSelectNodeKey = oValues.value; // 마지막 선택한 노드 키
+
+
+
 
         let oTreeModelData = oTreeModel.getProperty("/SAPLogon");
         if (!oTreeModelData) {
             return;
         }
 
-        let aStack = [],
-            aNode = oTreeModelData.Node;
 
-        // 마지막 선택한 Node의 위치를 찾는다.
-        _fnFindLastSelectedItem(aNode, sUUID, aStack);
 
-        // 찾지 못했다면 빠져나간다.
-        let iStackLength = aStack.length;
-        if (iStackLength == 0) {
-            return;
-        }
 
-        // 트리 테이블에 선택한 Node를 표시 한다.
-        _fnSetSelectedTreeItem(oTreeTable, aStack);
+
+
+
+
+
+        // // p13n.json을 읽어서 마지막 저장된 ITEM이 있는지 확인한다.
+        // let sP13nPath = PATHINFO.P13N; // UUID를 저장할 P13N JSON 파일 경로
+
+        // // P13N JSON 파일이 있는지 확인한다.
+        // if (!FS.existsSync(sP13nPath)) {
+        //     return;
+        // }
+
+        // let sP13nData = FS.readFileSync(sP13nPath, "utf-8"),
+        //     oP13nData = JSON.parse(sP13nData);
+
+        // if (oP13nData == "") {
+        //     return;
+        // }
+
+        // if (!oP13nData.SERVERINFO) {
+        //     return;
+        // }
+
+        // let oServerInfo = oP13nData.SERVERINFO,
+        //     sUUID = oServerInfo.UUID;
+
+        // let oTreeTable = oControl.getSource(),
+        //     oTreeModel = oTreeTable.getModel();
+
+        // if (!oTreeModel) {
+        //     return;
+        // }
+
+        // let oTreeModelData = oTreeModel.getProperty("/SAPLogon");
+        // if (!oTreeModelData) {
+        //     return;
+        // }
+
+        // let aStack = [],
+        //     aNode = oTreeModelData.Node;
+
+        // // 마지막 선택한 Node의 위치를 찾는다.
+        // _fnFindLastSelectedItem(aNode, sUUID, aStack);
+
+        // // 찾지 못했다면 빠져나간다.
+        // let iStackLength = aStack.length;
+        // if (iStackLength == 0) {
+        //     return;
+        // }
+
+        // // 트리 테이블에 선택한 Node를 표시 한다.
+        // _fnSetSelectedTreeItem(oTreeTable, aStack);
 
     }; // end of oAPP.fn.fnAttachRowsUpdateOnce
 
@@ -461,9 +507,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
         }
 
+        let oWsSettings = fnGetSettingsInfo(),
+            oRegPaths = oWsSettings.regPaths,
+            sGUIVerPath = oRegPaths.GUIVer,
+            cSessionPath = oRegPaths.cSession;
+
         let SAPGUIVER = oCheckVer.RTVER,
-            sRegPath1 = "HKCU\\SOFTWARE\\U4A\\WS\\GUIVer",
-            sRegPath2 = "HKCU\\SOFTWARE\\U4A\\WS\\cSession";
+            sRegPath1 = sGUIVerPath, // "HKCU\\SOFTWARE\\U4A\\WS\\GUIVer",
+            sRegPath2 = cSessionPath; // "HKCU\\SOFTWARE\\U4A\\WS\\cSession";
 
         const Regedit = parent.require('regedit').promisified;
 
@@ -931,7 +982,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         });
 
-        // oWorkTree.attachEventOnce("rowsUpdated", oAPP.fn.fnAttachRowsUpdateOnce);
+        oWorkTree.attachEventOnce("rowsUpdated", oAPP.fn.fnAttachRowsUpdateOnce);
 
         return oWorkTree;
 
@@ -1066,7 +1117,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 선택한 라인의 UUID를 구한다.
         let oSelectedItem = oSelectItemData._attributes,
             sUUID = oSelectedItem.uuid, // 선택한 UUID
-            LastSelectedNodeKey = sUUID;          
+            LastSelectedNodeKey = sUUID;
 
         let oWsSettings = fnGetSettingsInfo(),
             oRegPaths = oWsSettings.regPaths,
@@ -2167,6 +2218,31 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         });
 
     } // end of _registSelectedSystemInfo
+
+    function _getRegeditList(aPaths) {
+
+        return new Promise((resolve) => {
+
+            REGEDIT.list(aPaths, (err, result) => {
+
+                if (err) {
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTDATA: result
+                });
+
+            });
+
+        });
+
+    } // end of _getRegeditList
 
     /************************************************************************
      * 레지스트리의 키값 생성
