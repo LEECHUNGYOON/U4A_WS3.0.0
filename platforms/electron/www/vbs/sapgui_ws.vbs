@@ -188,7 +188,13 @@ Function ChkEnaScript()
 
 	RegPath = "HKCU\SOFTWARE\SAP\SAPGUI Front\SAP Frontend Server\Security\WarnOnConnection"
 	objWSH.RegWrite RegPath, "0", "REG_DWORD"
-		
+
+	RegPath = "HKCU\SOFTWARE\SAP\SAPGUI Front\SAP Frontend Server\Window\Maximize"
+	objWSH.RegWrite RegPath, "1", "REG_DWORD"
+
+	RegPath = "HKCU\SOFTWARE\SAP\SAPGUI Front\SAP Frontend Server\Window\Minimize"
+	objWSH.RegWrite RegPath, "0", "REG_DWORD"
+	
 End Function
 
 
@@ -332,7 +338,7 @@ Function SAP_Login()
     
 	'objSess.findById("wnd[0]").resizeWorkingPane 113,33,false
 	objSess.findById("wnd[0]").JumpForward
-	objSess.findById("wnd[0]").maximize
+	'objSess.findById("wnd[0]").maximize
 	objSess.findById("wnd[0]/usr/txtRSYST-MANDT").Text = MANDT
 	objSess.findById("wnd[0]/usr/txtRSYST-BNAME").Text = BNAME
 	objSess.findById("wnd[0]/usr/pwdRSYST-BCODE").Text = PASS

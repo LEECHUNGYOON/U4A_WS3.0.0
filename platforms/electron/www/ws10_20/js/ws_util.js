@@ -183,4 +183,86 @@ module.exports = {
     },
     /************** end of Class (MessageClassText) ***************/
 
+    /************************************************************************
+     * Array를 Tree 구조로 변환
+     ************************************************************************  
+     * 예) parseArrayToTree(oModel, "WS20.MIMETREE", "CHILD", "PARENT", "MIMETREE");
+     * 
+     * @param {*} m Core Model Instance
+     * @param {*} p Tree를 구성할 원본 Model Path (Deep 은 [.] 점으로 구분)
+     * @param {*} r CHILD
+     * @param {*} t PARENT
+     * @param {*} z 재구성할 MODEL PATH 명
+     *************************************************************************/
+    parseArrayToTree: function (m, p, r, t, z) {
+
+        var lp = p.replace(/[.\[\]]/g, '/');
+        lp = lp.replace(/(\/\/)/g, '/');
+
+        z = z.replace(/[\/]/g, 'x');
+        r = r.replace(/[\/]/g, 'x');
+        t = t.replace(/[\/]/g, 'x');
+
+        var lp2 = lp.substr(0, lp.lastIndexOf('/'));
+
+        var tm = m.getProperty('/' + lp);
+
+        var tm2 = m.getProperty('/' + lp2);
+
+        if (!tm || tm.length === 0) {
+            tm2[z] = [];
+            m.refresh();
+            return;
+        }
+
+        var y = JSON.stringify(tm);
+
+        var n = JSON.parse(y);
+
+        for (var e, h, u, a = [], c = {}, o = 0, f = n.length; f > o; o++) {
+            e = n[o],
+                h = e[r],
+                u = e[t] || 0,
+                c[h] = c[h] || [],
+                e[z] = c[h],
+                0 != u ? (c[u] = c[u] || [], c[u].push(e)) : a.push(e);
+        }
+
+        tm2[z] = a;
+
+    }, // end of oAPP.fn.fnSetTreeJson
+
+    /************************************************************************
+    * Tree구조를 Array 구조로 변환
+    ************************************************************************  
+    * 예) parseTreeToArray(aUspTreeData, "USPTREE"),
+    * 
+    * @param {Array} Tree 구조로 되어 있는 Array
+    * @param {String} Child 이름
+    *************************************************************************/
+    parseTreeToArray: function (e, sArrName) {
+
+        var a = [],
+            t = function (e) {
+
+                e.forEach((o, e) => {
+
+                    o[sArrName] && (t(o[sArrName]),
+                        delete o[sArrName]);
+                    a.push(o);
+
+                });
+
+                // $.each(e, function (e, o) {
+                //     o[sArrName] && (t(o[sArrName]),
+                //         delete o[sArrName]);
+                //     a.push(o);
+                // })
+
+            };
+        t(JSON.parse(JSON.stringify(e)));
+        return a;
+
+    }, // end of parseTreeToArray
+
 };

@@ -85,7 +85,10 @@ Function SetParamTCP()
 
     Dim LV_PARA, LV_ENC
 	
-    Set objWSH = CreateObject("WScript.Shell")
+	If Not IsObject(objWSH) Then
+	   Set objWSH = CreateObject("WScript.Shell")
+	   
+	End If
 
 	LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE & "|" & ESID
     
@@ -93,6 +96,12 @@ Function SetParamTCP()
 	
 	RegPath = "HKCU\SOFTWARE\U4A\WS\TCProxy\ActionParam"
 	objWSH.RegWrite RegPath, LV_ENC, "REG_SZ"
+	
+	RegPath = "HKCU\SOFTWARE\SAP\SAPGUI Front\SAP Frontend Server\Window\Maximize"
+	objWSH.RegWrite RegPath, "1", "REG_DWORD"
+
+	RegPath = "HKCU\SOFTWARE\SAP\SAPGUI Front\SAP Frontend Server\Window\Minimize"
+	objWSH.RegWrite RegPath, "0", "REG_DWORD"
 	
 End Function
 
@@ -157,7 +166,8 @@ Function call_ZU4A_CTRL_PROXY()
 	WScript.Sleep 1000
 
     GetLastCHDV()
-	
+
+	objSess.findById("wnd[0]").maximize
     objSess.SendCommand ("/n/U4A/CTRL_PROXY")
 
     'LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE
@@ -306,7 +316,7 @@ sub newSESSIONexe
 	End If
 	
     GetCHDV() '최종 세션값 얻기
-			
+			   			
     SetParamTCP()          '실행 파라메터 레지스트리 등록
 
 	call_ZU4A_CTRL_PROXY() 'APP 컨트롤러 클래스 네비게이션 호출 실행

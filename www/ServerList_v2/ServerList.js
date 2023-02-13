@@ -12,7 +12,6 @@ const
     REMOTE = oAPP.REMOTE,
     // session = REMOTE.require('electron').session,
     REMOTEMAIN = REMOTE.require('@electron/remote/main'),
-    RANDOM = REMOTE.require("random-key"),
     PATH = REMOTE.require('path'),
     APP = REMOTE.app,
     REGEDIT = require('regedit'),
@@ -20,6 +19,7 @@ const
     USERDATA = APP.getPath("userData"),
     XMLJS = require('xml-js'),
     FS = REMOTE.require('fs'),
+    RANDOM = require("random-key"),
 
     PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
     SETTINGS = require(PATHINFO.WSSETTINGS),
@@ -37,7 +37,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function(oAPP) {
+(function (oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -86,7 +86,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             text: "Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function() {
+            close: function () {
                 XHR.abort();
             }
         });
@@ -99,7 +99,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.sendAjax = (sUrl, fnSuccess, fnError, fnCancel) => {
 
         // ajax call 취소할 경우..
-        XHR.onabort = function() {
+        XHR.onabort = function () {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -108,7 +108,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // ajax call 실패 할 경우
-        XHR.onerror = function() {
+        XHR.onerror = function () {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -116,7 +116,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         };
 
-        XHR.onload = function() {
+        XHR.onload = function () {
 
             if (typeof fnSuccess == "function") {
                 fnSuccess(XHR.response);
@@ -163,8 +163,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     oAPP.fn.fnAttachRowsUpdateOnce = async (oControl) => {
 
-        debugger;
-
         let oWorkTree = oControl.getSource(),
             oTreeModel = oWorkTree.getModel();
 
@@ -176,7 +174,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oRegPaths = oWsSettings.regPaths,
             sLogonSettingsPath = oRegPaths.LogonSettings;
 
-        var oResult = await _getRegeditList([sLogonSettingsPath]);
+        // 레지스트리에 Logon setting 정보를 읽는다.
+        let oResult = await _getRegeditList([sLogonSettingsPath]);
         if (oResult.RETCD == "E") {
             return;
         }
@@ -186,164 +185,248 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
         }
 
+        // 마지막 선택한 노드의 키값을 구한다.
         let oValues = oRegData.values["LastSelectedNodeKey"];
         if (!oValues) {
             return;
         }
 
-        let sLastSelectNodeKey = oValues.value; // 마지막 선택한 노드 키
+        let sLastSelectNodeKey = oValues.value, // 마지막 선택한 노드 키
+            oTreeModelData = oTreeModel.getProperty("/SAPLogon");
 
-        let oTreeModelData = oTreeModel.getProperty("/SAPLogon");
         if (!oTreeModelData) {
             return;
         }
 
+        let aPaths = [];
 
+        // 마지막 선택한 노드를 찾았는지 여부 플래그
+        oAPP.bFindNode = false;
 
+        // 마지막 선택한 경로의 패스를 만든다.
+        _findLastSelectedPath(oTreeModelData.Node, sLastSelectNodeKey, aPaths);
 
+        let iRowIndex = 0;
 
+        let iPathLength = aPaths.length;
+        for (var i = 0; i < iPathLength; i++) {
 
+            const sPath = aPaths[i];
 
+            let oTreeBinding = oWorkTree.getBinding(),
+                iTreeLength = oTreeBinding.getLength();
 
+            for (var j = iRowIndex; j < iTreeLength; j++) {
 
-        // // p13n.json을 읽어서 마지막 저장된 ITEM이 있는지 확인한다.
-        // let sP13nPath = PATHINFO.P13N; // UUID를 저장할 P13N JSON 파일 경로
+                let oNode = oTreeBinding.getNodeByIndex(j),
+                    oCtx = oNode.context,
+                    sUUID = oCtx.getProperty("_attributes/uuid");
 
-        // // P13N JSON 파일이 있는지 확인한다.
-        // if (!FS.existsSync(sP13nPath)) {
-        //     return;
-        // }
+                if (sUUID !== sPath) {
+                    continue;
+                }
+                
+                // 마지막 선택한 노드를 찾지 못한 경우에만 expand 하고
+                // 찾은 경우는 하지 않는다.
+                if (j !== iPathLength - 1) {
 
-        // let sP13nData = FS.readFileSync(sP13nPath, "utf-8"),
-        //     oP13nData = JSON.parse(sP13nData);
+                    let oNodeState = oNode.nodeState,
+                        bIsExpanded = oNodeState.expanded;
 
-        // if (oP13nData == "") {
-        //     return;
-        // }
+                    if (!bIsExpanded) {
+                        oWorkTree.expand(j);
+                    }
 
-        // if (!oP13nData.SERVERINFO) {
-        //     return;
-        // }
+                }
 
-        // let oServerInfo = oP13nData.SERVERINFO,
-        //     sUUID = oServerInfo.UUID;
+                iRowIndex = j + 1;
 
-        // let oTreeTable = oControl.getSource(),
-        //     oTreeModel = oTreeTable.getModel();
+                break;
 
-        // if (!oTreeModel) {
-        //     return;
-        // }
+            }
 
-        // let oTreeModelData = oTreeModel.getProperty("/SAPLogon");
-        // if (!oTreeModelData) {
-        //     return;
-        // }
+        }
 
-        // let aStack = [],
-        //     aNode = oTreeModelData.Node;
-
-        // // 마지막 선택한 Node의 위치를 찾는다.
-        // _fnFindLastSelectedItem(aNode, sUUID, aStack);
-
-        // // 찾지 못했다면 빠져나간다.
-        // let iStackLength = aStack.length;
-        // if (iStackLength == 0) {
-        //     return;
-        // }
-
-        // // 트리 테이블에 선택한 Node를 표시 한다.
-        // _fnSetSelectedTreeItem(oTreeTable, aStack);
+        oWorkTree.setSelectedIndex(iRowIndex - 1);
 
     }; // end of oAPP.fn.fnAttachRowsUpdateOnce
 
-    function _fnFindLastSelectedItem(aNode, pUUID, aStack) {
 
-        let iNodeLength = aNode.length;
+    function _findLastSelectedPath(aTreeData, sLastSelectNodeKey, aPaths) {
 
-        for (let index = 0; index < iNodeLength; index++) {
+        if (!Array.isArray(aTreeData) && typeof aTreeData === "object") {
 
-            const element = aNode[index];
+            var uuid = aTreeData._attributes.uuid;
 
-            // uuid가 없다면 하위 노드를 찾는다.
-            if (element._attributes && !element._attributes.uuid) {
-
-                const aChildNode = element.Node;
-
-                // 자식 노드가 Array라면..
-                if (Array.isArray(aChildNode) == true) {
-
-                    _fnFindLastSelectedItem(aChildNode, pUUID, aStack);
-
-                    continue;
-
-                }
-
-                // 자식 노드가 Array가 아니라면.(더이상 자식은 없다)
-                if (Array.isArray(aChildNode) == false) {
-
-                    const sChildUUID = aChildNode._attributes.uuid;
-
-                    if (sChildUUID !== pUUID) {
-                        continue;
-                    }
-
-                    aStack.push(sChildUUID);
-
-                }
-
+            if (uuid === sLastSelectNodeKey) {
+                aPaths.push(uuid);
+                oAPP.bFindNode = true;
+                return;
             }
+
+            if (!aTreeData.Node) {
+                return;
+            }
+
+            if (uuid) {
+                aPaths.push(uuid);
+            }
+
+            _findLastSelectedPath(aTreeData.Node, sLastSelectNodeKey, aPaths);
+
+            // 이미 찾았다면 빠져나감.
+            if (oAPP.bFindNode == true) {
+                return;
+            }
+
+            aPaths.pop();
+            return;
 
         }
 
-    } // end of _fnFindLastSelectedItem
-
-    function _fnSetSelectedTreeItem(oTreeTable, aStack) {
-
-        var aRows = oTreeTable.getRows(),
-            iRowLength = aRows.length;
-
-        if (iRowLength < 0) {
+        let iTreeLength = aTreeData.length;
+        if (iTreeLength == 0) {
             return;
         }
 
-        let iStackLength = aStack.length;
-        for (let index = 0; index < iStackLength; index++) {
+        for (var i = 0; i < iTreeLength; i++) {
 
-            const element = aStack[index];
+            // 이미 찾았다면 빠져나감.
+            if (oAPP.bFindNode == true) {
+                return;
+            }
 
-            for (var i = 0; i < iRowLength; i++) {
+            const elem = aTreeData[i];
 
-                // Row의 Instance를 구한다.
-                var oRow = aRows[i];
+            if (!elem._attributes) {
+                continue;
+            }
 
-                // 바인딩 정보가 없으면 빠져나간다.
-                if (oRow.isEmpty()) {
-                    continue;
-                }
+            if (!elem._attributes.uuid) {
 
-                var oRowCtx = oRow.getBindingContext(),
-                    oRowData = oRowCtx.getModel().getProperty(oRowCtx.getPath());
-
-                if (oRowData._attributes && !oRowData._attributes.uuid) {
-                    continue;
-                }
-
-                let sUUID = oRowData._attributes.uuid;
-                if (sUUID == element) {
-
-                    let iRowindex = oRow.getIndex();
-
-                    oTreeTable.setSelectedIndex(iRowindex);
-
+                if (elem.Node) {
+                    _findLastSelectedPath(elem.Node, sLastSelectNodeKey, aPaths);
                     return;
                 }
 
+                continue;
+
             }
+
+            if (elem._attributes.uuid === sLastSelectNodeKey) {
+                aPaths.push(elem._attributes.uuid);
+                oAPP.bFindNode = true;
+                return;
+            }
+
+            if (!elem.Node) {
+                continue;
+            }
+
+            if (elem._attributes.uuid) {
+                aPaths.push(elem._attributes.uuid);
+            }
+
+            _findLastSelectedPath(elem.Node, sLastSelectNodeKey, aPaths);
+
+            // 이미 찾았다면 빠져나감.
+            if (oAPP.bFindNode == true) {
+                return;
+            }
+
+            aPaths.pop();
 
         }
 
-    } // end of _fnSetSelectedTreeItem
+    }
+
+    // function _fnFindLastSelectedItem(aNode, pUUID, aStack) {
+
+    //     let iNodeLength = aNode.length;
+
+    //     for (let index = 0; index < iNodeLength; index++) {
+
+    //         const element = aNode[index];
+
+    //         // uuid가 없다면 하위 노드를 찾는다.
+    //         if (element._attributes && !element._attributes.uuid) {
+
+    //             const aChildNode = element.Node;
+
+    //             // 자식 노드가 Array라면..
+    //             if (Array.isArray(aChildNode) == true) {
+
+    //                 _fnFindLastSelectedItem(aChildNode, pUUID, aStack);
+
+    //                 continue;
+
+    //             }
+
+    //             // 자식 노드가 Array가 아니라면.(더이상 자식은 없다)
+    //             if (Array.isArray(aChildNode) == false) {
+
+    //                 const sChildUUID = aChildNode._attributes.uuid;
+
+    //                 if (sChildUUID !== pUUID) {
+    //                     continue;
+    //                 }
+
+    //                 aStack.push(sChildUUID);
+
+    //             }
+
+    //         }
+
+    //     }
+
+    // } // end of _fnFindLastSelectedItem
+
+    // function _fnSetSelectedTreeItem(oTreeTable, aStack) {
+
+    //     var aRows = oTreeTable.getRows(),
+    //         iRowLength = aRows.length;
+
+    //     if (iRowLength < 0) {
+    //         return;
+    //     }
+
+    //     let iStackLength = aStack.length;
+    //     for (let index = 0; index < iStackLength; index++) {
+
+    //         const element = aStack[index];
+
+    //         for (var i = 0; i < iRowLength; i++) {
+
+    //             // Row의 Instance를 구한다.
+    //             var oRow = aRows[i];
+
+    //             // 바인딩 정보가 없으면 빠져나간다.
+    //             if (oRow.isEmpty()) {
+    //                 continue;
+    //             }
+
+    //             var oRowCtx = oRow.getBindingContext(),
+    //                 oRowData = oRowCtx.getModel().getProperty(oRowCtx.getPath());
+
+    //             if (oRowData._attributes && !oRowData._attributes.uuid) {
+    //                 continue;
+    //             }
+
+    //             let sUUID = oRowData._attributes.uuid;
+    //             if (sUUID == element) {
+
+    //                 let iRowindex = oRow.getIndex();
+
+    //                 oTreeTable.setSelectedIndex(iRowindex);
+
+    //                 return;
+    //             }
+
+    //         }
+
+    //     }
+
+    // } // end of _fnSetSelectedTreeItem
 
     /************************************************************************
      * 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
@@ -573,9 +656,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-                RETCD: "E",
-                RTMSG: "Server information does not exist in the SAPGUI logon file."
-            },
+            RETCD: "E",
+            RTMSG: "Server information does not exist in the SAPGUI logon file."
+        },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -705,9 +788,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-                RETCD: "E",
-                RTMSG: "Server information does not exist in the SAPGUI logon file."
-            },
+            RETCD: "E",
+            RTMSG: "Server information does not exist in the SAPGUI logon file."
+        },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -881,8 +964,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnOnInitRendering = () => {
 
         var oApp = new sap.m.App({
-                autoFocus: false,
-            }),
+            autoFocus: false,
+        }),
             oTreeTable = oAPP.fn.fnGetWorkSpaceTreeTable(), // 좌측 폴더 Tree
             oTable = oAPP.fn.fnGetSAPLogonListTable(), // 우측 서버 리스트 테이블
             oPage1 = new sap.m.Page({
@@ -928,7 +1011,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function() {
+            onAfterRendering: function () {
 
                 setTimeout(() => {
                     $('#content').fadeIn(300, 'linear');
@@ -1172,21 +1255,21 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      ************************************************************************/
     oAPP.fn.fnCreateWorkspaceTree = () => {
 
-        var aWorkSpace = oAPP.data.SAPLogon.LandscapeFile.Workspaces.Workspace;
-
-        var oWorkSpace = {
-            Node: [{
-                _attributes: {
-                    name: "Workspace",
-                },
-                Node: aWorkSpace
-            }]
-        };
+        let aWorkSpace = oAPP.data.SAPLogon.LandscapeFile.Workspaces.Workspace,
+            oWorkSpace = {
+                Node: [{
+                    _attributes: {
+                        name: "Workspace",
+                        uuid: "WorkspaceROOT"
+                    },
+                    Node: aWorkSpace
+                }]
+            };
 
         // 각 Node 별 데이터 정렬
         oWorkSpace.Node = oAPP.fn.fnWorkSpaceSort(oWorkSpace.Node);
 
-        var oCoreModel = sap.ui.getCore().getModel();
+        let oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty("/SAPLogon", oWorkSpace);
 
     }; // end of oAPP.fn.fnCreateWorkspaceTree
@@ -2366,7 +2449,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -2416,7 +2499,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         resolve({

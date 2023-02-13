@@ -81,6 +81,7 @@ module.exports = (() => {
 
         // JS Paths..
         WSTRYCATCH: PATH.join(JS_ROOT, "ws_trycatch.js"),
+        WSUTIL: PATH.join(JS_ROOT, "ws_util.js"),
         U4AHELP: PATH.join(APPPATH, "help", "u4a_helpdoc", "main.js"),
 
         // Suggestion Json Path..
