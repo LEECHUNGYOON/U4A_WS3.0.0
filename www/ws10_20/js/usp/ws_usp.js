@@ -18,6 +18,8 @@
         PATH = parent.PATH,
         RANDOM = parent.RANDOM,
         CURRWIN = REMOTE.getCurrentWindow(),
+        PATHINFO = parent.require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
+        WSUTIL = parent.require(PATHINFO.WSUTIL),
         MIMETYPES = parent.MIMETYPES;
 
     /**
@@ -1592,7 +1594,7 @@
                 })
                     .bindProperty("visible", _fnCodeEditorBindPropertyVisible())
                     .addEventDelegate({
-                        ondblclick: _fnDoubleClickSplitbar,           
+                        ondblclick: _fnDoubleClickSplitbar,
                     })
                     .addStyleClass("uspCodeeditorSplit sapUiSmallMarginBottom")
 
@@ -2274,14 +2276,6 @@
 
         // busy 키고 Lock 키기
         oAPP.common.fnSetBusyLock("X");
-
-        // let oDialog = sap.ui.getCore().byId("uspRNPopup");
-        // if (!oDialog) {
-
-        //     // busy 끄고 Lock 끄기
-        //     oAPP.common.fnSetBusyLock("");
-        //     return;
-        // }
 
         // Rename 바인딩 데이터를 구한다.
         let oModelData = APPCOMMON.fnGetModelProperty(RENAME_BINDROOT),
@@ -4226,9 +4220,9 @@
 
             case "K11": // new window
 
-                oAPP.fn.fnUspNewWindow(oTreeTable, gSelectedTreeIndex);
+                // oAPP.fn.fnUspNewWindow(oTreeTable, gSelectedTreeIndex);
 
-                // sap.m.MessageToast.show("준비중입니다.");
+                sap.m.MessageToast.show("준비중입니다.");
 
                 break;
 
@@ -5203,8 +5197,9 @@
         debugger;
 
         let oTreeTable = oEvent.getParameter("oTreeTable"),
-            aChangedData = oEvent.getParameter("oTreeTable"),
-            aTreeData = oEvent.getParameter("CHANGEDATA");
+            oTreeModel = oTreeTable.getModel(),
+            aChangedData = oEvent.getParameter("CHANGEDATA"),
+            aTreeData = oEvent.getParameter("TREEDATA");
 
         var iIndex = gSelectedTreeIndex,
             oCtx = oTreeTable.getContextByIndex(iIndex);
@@ -5218,6 +5213,14 @@
 
         }
 
+        aTreeData = aTreeData.concat(aChangedData);
+
+        var oResult = oAPP.fn._fnFindModelData(oCtx.getPath());
+
+        // // USP 좌측 Tree 구성
+        // APPCOMMON.fnSetModelProperty("/TEMP/USPTREE", aChangedData);
+
+        // WSUTIL.parseArrayToTree(oTreeModel, "TEMP.USPTREE", "OBJKY", "PUJKY", "USPTREE");
 
 
 

@@ -240,7 +240,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 }
 
                 iRowIndex = j + 1;
-
+          
                 break;
 
             }

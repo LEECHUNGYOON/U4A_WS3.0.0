@@ -92,7 +92,7 @@
     oAPP.main.fnOnInitModelBinding = function () {
 
         // ModelData
-        var oMetaData = {
+        var oMetaData = {           
             METADATA: parent.getMetadata(),
             USERINFO: parent.getUserInfo(),
             SERVERINFO: parent.getServerInfo(),
@@ -220,7 +220,7 @@
 
                 }
 
-                window.onbeforeunload = () => {};
+                window.onbeforeunload = () => { };
 
                 top.window.close();
 
@@ -255,7 +255,7 @@
 
             }
 
-            window.onbeforeunload = () => {};
+            window.onbeforeunload = () => { };
 
             top.window.close();
 
@@ -272,7 +272,7 @@
 
     oAPP.main.fnDetachBeforeunloadEvent = () => {
 
-        window.onbeforeunload = () => {};
+        window.onbeforeunload = () => { };
 
     };
 
