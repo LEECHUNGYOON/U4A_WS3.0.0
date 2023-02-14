@@ -519,7 +519,7 @@
     oAPP.fn.fnUspNewWindow = (oTreeTable, pIndex) => {
 
         debugger;
-        
+
         let oCtx = oTreeTable.getContextByIndex(pIndex),
             oTreeModel = oTreeTable.getModel(),
             oTreeData = oTreeModel.getProperty(oCtx.sPath),
@@ -556,11 +556,11 @@
 
         let sUrlPath = parent.getPath("USPNEW");
         oBrowserWindow.loadURL(sUrlPath);
-        
+
         // no build 일 경우에는 개발자 툴을 실행한다.
         if (!APP.isPackaged) {
             oBrowserWindow.webContents.openDevTools();
-        }        
+        }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -614,10 +614,7 @@
         debugger;
 
 
-    }; // end of oAPP.fn.fnUspNewWindowIPCEvent
-
-
-
+    }; // end of oAPP.fn.fnUspNewWindowIPCEvent    
 
     /**************************************************************************
      * [WS30] USP Move Position Popup Close

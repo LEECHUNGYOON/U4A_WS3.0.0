@@ -2887,6 +2887,63 @@
     }; // end of oAPP.fn._fnFindModelData
 
     /**************************************************************************
+     * [WS30] USP TREE의 Row 선택 효과 주기 
+     **************************************************************************/
+    oAPP.fn.fnUspSetSelectedRow = (oRow) => {
+
+        if (!oRow) {
+            return;
+        }
+
+        if (oRow instanceof sap.ui.table.Row == false) {
+            return;
+        }
+
+        let oTreeTable = sap.ui.getCore().byId("usptree");
+        if (!oTreeTable) {
+            return;
+        }
+
+        let oCtx = oRow.getBindingContext();
+        if (!oCtx) {
+            return;
+        }
+
+        let aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
+        if (!aUspTreeData || Array.isArray(aUspTreeData) === false) {
+            return;
+        }
+
+        // 이전에 선택한 라인 값을 구한다.
+        let oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData),
+            sCurrOBJKY = oCtx.getObject("OBJKY");
+
+        if (oBindBeforeSelect && oBindBeforeSelect.OBJKY == sCurrOBJKY) {
+            return;
+        }
+
+        // 이전에 선택한 라인이 있다면 해당 라인 선택 아이콘 표시 해제
+        fnOnUspTreeUnSelect();
+
+        // 테이블에 선택 효과 제거
+        oTreeTable.clearSelection();
+
+        let iRowIndex = oRow.getIndex(),
+            oRowModel = oRow.getModel(),
+            sCurrBindPath = oCtx.getPath(),
+            oRowBindData = oRowModel.getProperty(sCurrBindPath);
+
+        // 바인딩된 Row 데이터의 선택 플래그 적용
+        oRowBindData.ISSEL = true;
+
+        // Tree Table에 선택 효과 적용
+        oTreeTable.setSelectedIndex(iRowIndex);
+
+        oRowModel.refresh();
+
+    }; // end of oAPP.fn.fnUspSetSelectedRow
+
+    /**************************************************************************
      * [WS30] Critical Error
      **************************************************************************/
     oAPP.fn.fnCriticalErrorWs30 = (oResult) => {
@@ -3274,6 +3331,8 @@
      * [WS30] Tree Table 더블클릭 이벤트
      **************************************************************************/
     function ev_uspTreeItemDblClickEvent(oEvent) {
+        
+        debugger;
 
         var oTarget = oEvent.target,
             $oTreeIcon = $(oTarget).closest(".sapUiTableTreeIcon"),
@@ -5246,7 +5305,8 @@
             aTreeData = oEvent.getParameter("TREEDATA"); // 전체 Tree Data Array
 
         var iSelectedIndex = gSelectedTreeIndex,
-            oSelectedCtx = oTreeTable.getContextByIndex(iSelectedIndex);
+            oSelectedCtx = oTreeTable.getContextByIndex(iSelectedIndex),
+            oRow = oTreeTable.getRows()[iSelectedIndex];
 
         if (!oSelectedCtx) {
 
@@ -5258,12 +5318,22 @@
         }
 
         let aTreeDataCopy = jQuery.extend(true, [], aTreeData), // 테이블 전체 데이터 복사
-            aChangedDataCopy = jQuery.extend(true, [], aChangedData), // 변경 대상 데이터 복사
-            oChangedModelData = _fnChangedDataToTreeModel(aTreeDataCopy, aChangedDataCopy); // 합쳐서 트리구조 모델데이터 만든거
-
-
-        let oChangeNodeData = oAPP.fn._fnFindModelData2(oChangedModelData, oSelectedCtx.getPath()),
-            aNodes = oChangeNodeData.Nodes;
+            aChangedDataCopy = jQuery.extend(true, [], aChangedData), // 이름이 변경된 데이터 복사
+            
+            /** 
+             * A : 트리테이블의 전체 데이터
+             * B : 전체 데이터 중, 이름이 변경된 데이터와 같은키를 가진 이전 데이터
+             * C : 이름이 변경된 데이터
+             * 
+             * (A - B) + C 
+             */
+            oMergedModelData = _fnChangedDataToTreeModel(aTreeDataCopy, aChangedDataCopy), 
+            
+            /**
+             * 트리구조 모델데이터 만든거에서 선택한 데이터만 구한다.
+             */
+            oChangeNodeData = oAPP.fn._fnFindModelData2(oMergedModelData, oSelectedCtx.getPath()), 
+            aNodes = oChangeNodeData.Nodes; // 선택된 노드의 형제들
 
         let oOBJKY = oSelectedCtx.getObject("OBJKY"),
             oFoundNode = aNodes.find(elem => elem.OBJKY === oOBJKY);
@@ -5280,14 +5350,26 @@
         oSelectedCtx.getModel().setProperty(oSelectedCtx.getPath(), oFoundNode);
         oSelectedCtx.getModel().refresh();
 
+        // // 현재 위치를 선택효과를 준다.
+        // oAPP.fn.fnUspSetSelectedRow(oRow);
+
+
+        // // 우측에
+
+
+
+
+
         // Rename 팝업 닫기
         var oDialog = sap.ui.getCore().byId("uspRNPopup");
         if (oDialog) {
             oDialog.close();
         }
 
+        fnUspTreeTableRowSelect(oRow);
+
         // busy 끄고 Lock 풀기
-        oAPP.common.fnSetBusyLock("");
+        // oAPP.common.fnSetBusyLock("");
 
     } // end of fnRenameUspNode
 
