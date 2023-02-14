@@ -926,7 +926,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         let sMsg = oError.toString();
 
-        sMsg += " \n Please contects U4A Solution Team!";
+        sMsg += " \n Please contact U4A Solution Team!";
 
         // 파일 저장에 실패 했을 경우 오류메시지 출력후 빠져나간다.
         oAPP.fn.fnShowMessageBox("E", sMsg, () => {
@@ -945,7 +945,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         let sMsg = oError.toString();
 
-        sMsg += " \n Please contects U4A Solution Team!";
+        sMsg += " \n Please contact U4A Solution Team!";
 
         // 파일 저장에 실패 했을 경우 오류메시지 출력후 빠져나간다.
         oAPP.fn.fnShowMessageBox("E", sMsg, () => {
