@@ -210,7 +210,7 @@
             var aTargetData = oKeyData.TARGET;
 
             // Target 데이터가 Array 타입이 아니면 continue..
-            if (aTargetData instanceof Array == false) {
+            if (Array.isArray(aTargetData) == false) {
                 continue;
             }
 

@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -22,10 +22,6 @@
         WSUTIL = parent.require(PATHINFO.WSUTIL),
         MIMETYPES = parent.MIMETYPES;
 
-    /**
-     * 
-     * 
-     */
     var gSelectedTreeIndex = -1, // 우클릭 Context menu Index
         // goBeforeSelect; // 이전에 선택한 Row 정보
 
@@ -33,8 +29,6 @@
         gaFileExtendImgList = [], // 파일 확장자 이미지 경로
 
         gfSelectRowUpdate; // Ui Table RowUpdated Global function
-
-
 
     /**
      * Bind root paths
@@ -54,13 +48,13 @@
 
         // 파일 확장자 이미지 경로 구하기
         fnGetFileExtendImgList()
-            .then(function() {
+            .then(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
 
             })
-            .catch(function() {
+            .catch(function () {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
@@ -74,7 +68,7 @@
      ************************************************************************/
     function fnGetFileExtendImgList() {
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
@@ -121,7 +115,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function() {
+    oAPP.fn.fnOnResizeWs30 = function () {
 
         zconsole.log("resize30!!!");
 
@@ -271,7 +265,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(bIsShow) {
+            formatter: function (bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -430,7 +424,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function(sKey) {
+                            formatter: function (sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -487,43 +481,43 @@
             }).addStyleClass("sapUiSmallMarginEnd"), // APPID
 
             oAppModeTxt = new sap.m.Title("ws30_appModeTxt")
-            .bindProperty("text", {
-                parts: [
-                    `${sBindRootPath}/IS_EDIT`,
-                ],
-                formatter: (IS_EDIT) => {
-                    return IS_EDIT == "X" ? sChangeTxt : sDispTxt;
-                }
-
-            }).addStyleClass("sapUiSmallMarginEnd"), // Change or Display Text	
-
-            oAppActTxt = new sap.m.Title("ws30_appActTxt")
-            .bindProperty("text", {
-                parts: [
-                    `${sBindRootPath}/ACTST`,
-                    `${sBindRootPath}/IS_EDIT`,
-                    `${sBindRootPath}/APPID`,
-                ],
-                formatter: (ACTST, IS_EDIT, APPID) => {
-
-                    if (!APPID) {
-                        return;
+                .bindProperty("text", {
+                    parts: [
+                        `${sBindRootPath}/IS_EDIT`,
+                    ],
+                    formatter: (IS_EDIT) => {
+                        return IS_EDIT == "X" ? sChangeTxt : sDispTxt;
                     }
 
-                    // 브라우저 타이틀을 구성한다.
-                    let sModeTxt = IS_EDIT == "X" ? sChangeTxt : sDispTxt,
-                        sActTxt = ACTST == "A" ? sActiveTxt : sInactTxt;
+                }).addStyleClass("sapUiSmallMarginEnd"), // Change or Display Text	
 
-                    let sTitle = "U4A Workspace - #";
-                    sTitle += `${APPID} ${sModeTxt} ${sActTxt}`;
+            oAppActTxt = new sap.m.Title("ws30_appActTxt")
+                .bindProperty("text", {
+                    parts: [
+                        `${sBindRootPath}/ACTST`,
+                        `${sBindRootPath}/IS_EDIT`,
+                        `${sBindRootPath}/APPID`,
+                    ],
+                    formatter: (ACTST, IS_EDIT, APPID) => {
 
-                    parent.CURRWIN.setTitle(sTitle);
+                        if (!APPID) {
+                            return;
+                        }
+
+                        // 브라우저 타이틀을 구성한다.
+                        let sModeTxt = IS_EDIT == "X" ? sChangeTxt : sDispTxt,
+                            sActTxt = ACTST == "A" ? sActiveTxt : sInactTxt;
+
+                        let sTitle = "U4A Workspace - #";
+                        sTitle += `${APPID} ${sModeTxt} ${sActTxt}`;
+
+                        parent.CURRWIN.setTitle(sTitle);
 
 
-                    return ACTST == "A" ? sActTxt : sInactTxt;
-                }
+                        return ACTST == "A" ? sActTxt : sInactTxt;
+                    }
 
-            }).addStyleClass("sapUiSmallMarginEnd"), // Activate or inactivate Text
+                }).addStyleClass("sapUiSmallMarginEnd"), // Activate or inactivate Text
 
             oNewWindowBtn = new sap.m.Button("ws30_newWindowBtn", {
                 icon: "sap-icon://create",
@@ -584,10 +578,10 @@
         sDispChgTxt += APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02") + " (Ctrl+F1)"; // Change
 
         var oDisplayModeBtn = new sap.m.Button("ws30_displayModeBtn", {
-                icon: "sap-icon://display",
-                tooltip: sDispChgTxt,
-                press: ev_pressDisplayModeBtn
-            }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible),
+            icon: "sap-icon://display",
+            tooltip: sDispChgTxt,
+            press: ev_pressDisplayModeBtn
+        }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible),
 
             oChangeModeBtn = new sap.m.Button("ws30_changeModeBtn", {
                 icon: "sap-icon://edit",
@@ -595,17 +589,17 @@
                 press: ev_pressDisplayModeBtn
             }).bindProperty("visible", {
                 parts: [{
-                        path: "/USERINFO/USER_AUTH/IS_DEV" // 개발자 권한 여부
-                    },
-                    {
-                        path: "/USERINFO/ISADM"
-                    },
-                    {
-                        path: `${sBindRootPath}/ADMIN_APP` // "ADMIN App 여부"
-                    },
-                    {
-                        path: sVisiBindPath
-                    },
+                    path: "/USERINFO/USER_AUTH/IS_DEV" // 개발자 권한 여부
+                },
+                {
+                    path: "/USERINFO/ISADM"
+                },
+                {
+                    path: `${sBindRootPath}/ADMIN_APP` // "ADMIN App 여부"
+                },
+                {
+                    path: sVisiBindPath
+                },
 
                 ],
                 formatter: (IS_DEV, ISADM, ADMIN_APP, IS_EDIT) => {
@@ -637,24 +631,24 @@
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A64") + " (Ctrl+S)", // Save (Ctrl+S)
                 press: ev_pressSaveBtn
             })
-            // .bindProperty("enabled", sVisiBindPath, lf_bindPropForVisible)
-            .bindProperty("visible", {
-                parts: [{
-                    path: "/USERINFO/USER_AUTH/IS_DEV"
-                }, {
-                    path: sVisiBindPath
-                }],
-                formatter: (IS_DEV, IS_EDIT) => {
+                // .bindProperty("enabled", sVisiBindPath, lf_bindPropForVisible)
+                .bindProperty("visible", {
+                    parts: [{
+                        path: "/USERINFO/USER_AUTH/IS_DEV"
+                    }, {
+                        path: sVisiBindPath
+                    }],
+                    formatter: (IS_DEV, IS_EDIT) => {
 
-                    // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
-                    if (IS_DEV != "D" || IS_EDIT != "X") {
-                        return false;
+                        // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
+                        if (IS_DEV != "D" || IS_EDIT != "X") {
+                            return false;
+                        }
+
+                        return true;
+
                     }
-
-                    return true;
-
-                }
-            }),
+                }),
 
             oMimeBtn = new sap.m.Button({
                 icon: "sap-icon://picture",
@@ -1067,79 +1061,79 @@
                             new sap.m.Image({
                                 width: "20px"
                             })
-                            .bindProperty("src", {
-                                parts: [
-                                    "ISFLD",
-                                    "EXTEN"
-                                ],
-                                formatter: function(ISFLD, EXTEN) {
+                                .bindProperty("src", {
+                                    parts: [
+                                        "ISFLD",
+                                        "EXTEN"
+                                    ],
+                                    formatter: function (ISFLD, EXTEN) {
 
-                                    var iFileImgListLength = gaFileExtendImgList.length;
-                                    if (iFileImgListLength == 0) {
-                                        return;
-                                    }
-
-                                    // SVG 폴더 경로
-                                    var svgFolder = PATH.join(APP.getAppPath(), "svg"),
-                                        sIconPath = "";
-
-                                    // 폴더일 경우 폴더 아이콘
-                                    if (ISFLD == "X") {
-
-                                        sIconPath = svgFolder + "/folder.svg";
-
-                                        return sIconPath;
-
-                                    }
-
-                                    if (!EXTEN) {
-                                        return;
-                                    }
-
-                                    var sFind = gaFileExtendImgList.find((elem) => {
-
-                                        if (elem.startsWith(EXTEN.toLowerCase()) == true) {
-                                            return elem;
+                                        var iFileImgListLength = gaFileExtendImgList.length;
+                                        if (iFileImgListLength == 0) {
+                                            return;
                                         }
 
-                                    });
+                                        // SVG 폴더 경로
+                                        var svgFolder = PATH.join(APP.getAppPath(), "svg"),
+                                            sIconPath = "";
 
-                                    // SVG 폴더 경로에 해당 파일 확장자가 없으면 알수 없는 파일 아이콘
-                                    if (!sFind) {
+                                        // 폴더일 경우 폴더 아이콘
+                                        if (ISFLD == "X") {
 
-                                        sIconPath = svgFolder + "/file.svg";
+                                            sIconPath = svgFolder + "/folder.svg";
+
+                                            return sIconPath;
+
+                                        }
+
+                                        if (!EXTEN) {
+                                            return;
+                                        }
+
+                                        var sFind = gaFileExtendImgList.find((elem) => {
+
+                                            if (elem.startsWith(EXTEN.toLowerCase()) == true) {
+                                                return elem;
+                                            }
+
+                                        });
+
+                                        // SVG 폴더 경로에 해당 파일 확장자가 없으면 알수 없는 파일 아이콘
+                                        if (!sFind) {
+
+                                            sIconPath = svgFolder + "/file.svg";
+
+                                            return sIconPath;
+
+                                        }
+
+                                        // SVG 폴더 경로에 해당 파일 확장자가 있을 경우
+                                        sIconPath = svgFolder + "/" + sFind;
 
                                         return sIconPath;
 
                                     }
+                                })
+                                .bindProperty("visible", {
+                                    parts: [
+                                        "PUJKY",
+                                        "ISFLD"
+                                    ],
+                                    formatter: (PUJKY, ISFLD) => {
 
-                                    // SVG 폴더 경로에 해당 파일 확장자가 있을 경우
-                                    sIconPath = svgFolder + "/" + sFind;
+                                        if (PUJKY == null || ISFLD == null) {
+                                            return;
+                                        }
 
-                                    return sIconPath;
+                                        if (PUJKY == "") {
+                                            return true;
+                                        }
 
-                                }
-                            })
-                            .bindProperty("visible", {
-                                parts: [
-                                    "PUJKY",
-                                    "ISFLD"
-                                ],
-                                formatter: (PUJKY, ISFLD) => {
-
-                                    if (PUJKY == null || ISFLD == null) {
-                                        return;
-                                    }
-
-                                    if (PUJKY == "") {
                                         return true;
+
                                     }
 
-                                    return true;
-
-                                }
-
-                            }).addStyleClass("sapUiTinyMarginEnd"),
+                                }).addStyleClass("sapUiTinyMarginEnd"),
 
                             new sap.m.Text({
                                 text: "{OBDEC}",
@@ -1204,7 +1198,7 @@
 
             // Events
             beforeOpenContextMenu: ev_beforeOpenContextMenu,
-            rowSelectionChange: function(oEvent) {
+            rowSelectionChange: function (oEvent) {
 
                 var iRowIndex = oEvent.getParameter("rowIndex"),
                     oTable = oEvent.getSource();
@@ -1307,11 +1301,11 @@
                 value: `{${sBindRoot}/CODPG}`,
                 change: ev_UspCharsetInputChangeEvent
             })
-            .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding),
+                .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding),
 
             oIsFolderCheckbox = new sap.m.CheckBox({
                 editable: false
-            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
+            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                 if (ISFLD == "X") {
                     return true;
@@ -1377,7 +1371,7 @@
                                 ]
                             })
 
-                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function(ISFLD) {
+                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function (ISFLD) {
 
                             // 폴더가 아닐 경우에만 보여준다.
                             if (ISFLD != "X") {
@@ -1417,23 +1411,23 @@
 
         let lfCodeeditorDelegate = () => { // codeeditor Delegate
 
-                return {
+            return {
 
-                    onAfterRendering: function(oControl) {
+                onAfterRendering: function (oControl) {
 
-                        var oEditor = oControl.srcControl,
-                            _oAceEditor = oEditor._oEditor;
+                    var oEditor = oControl.srcControl,
+                        _oAceEditor = oEditor._oEditor;
 
-                        if (!_oAceEditor) {
-                            return;
-                        }
-
-                        _oAceEditor.setFontSize(20);
-
+                    if (!_oAceEditor) {
+                        return;
                     }
-                };
 
-            },
+                    _oAceEditor.setFontSize(20);
+
+                }
+            };
+
+        },
             lfCodeeditorAttribute = () => { // codeeditor 속성 정보
 
                 return {
@@ -1502,23 +1496,24 @@
          */
 
         oCodeEditor.addEventDelegate({
-            onkeyup: () => {
+            onkeyup: _fnCodeeditorKeyupEvent,
+            oncontextmenu: _fnCodeeditorContextMenuEvent,
 
-                let value = oCodeEditor._oEditor.getValue();
+            // (oEvent) => {
 
-                oCodeEditorClone._oEditor.setValue(value, 1);
+            //     debugger;
 
-            }
+            //     let value = oCodeEditor._oEditor.getValue();
+
+            //     oCodeEditorClone._oEditor.setValue(value, 1);
+
+            // }
         });
 
         oCodeEditorClone.addEventDelegate({
-            onkeyup: () => {
+            onkeyup: _fnCodeeditorKeyupEvent,
+            oncontextmenu: _fnCodeeditorContextMenuEvent,
 
-                let value = oCodeEditorClone._oEditor.getValue();
-
-                oCodeEditor._oEditor.setValue(value, 1);
-
-            }
         });
 
         let oHeaderToolbar = new sap.m.Bar({
@@ -1558,12 +1553,12 @@
                     press: ev_codeeditorFullscreen
                 }),
 
-                new sap.m.Button({
-                    icon: "sap-icon://syntax",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C24"), // Pattern
-                    tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D46"), // Source Pattern
-                    press: ev_codeeditorPattern
-                }).bindProperty("enabled", lfCodeeditorBindProperty()),
+                // new sap.m.Button({
+                //     icon: "sap-icon://syntax",
+                //     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C24"), // Pattern
+                //     tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D46"), // Source Pattern
+                //     press: ev_codeeditorPattern
+                // }).bindProperty("enabled", lfCodeeditorBindProperty()),
 
                 new sap.m.Button("ws30_codeeditor_prettyBtn", {
                     icon: "sap-icon://indent",
@@ -1592,11 +1587,11 @@
 
                     ]
                 })
-                .bindProperty("visible", _fnCodeEditorBindPropertyVisible())
-                .addEventDelegate({
-                    ondblclick: _fnDoubleClickSplitbar,
-                })
-                .addStyleClass("uspCodeeditorSplit sapUiSmallMarginBottom")
+                    .bindProperty("visible", _fnCodeEditorBindPropertyVisible())
+                    .addEventDelegate({
+                        ondblclick: _fnDoubleClickSplitbar,
+                    })
+                    .addStyleClass("uspCodeeditorSplit sapUiSmallMarginBottom")
 
             ]
 
@@ -1604,6 +1599,103 @@
 
     } // end of fnGetUspPageWs30  
 
+    /************************************************************************
+     * [WS30] Codeeditor Keyup Event
+     ************************************************************************/
+    function _fnCodeeditorKeyupEvent(oEvent) {
+
+        let oCurrTarget = oEvent.currentTarget;
+        if (!oCurrTarget) {
+            return;
+        }
+
+        let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
+            oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
+
+        // 에디터가 둘중에 하나라도 없다면 빠져나감.
+        if (!oCodeEditor1 || !oCodeEditor2) {
+            return;
+        }
+
+        let oEditor1 = oCodeEditor1._oEditor,
+            oEditor2 = oCodeEditor2._oEditor;
+
+        // 현재 커서의 위치가 어떤 에디터인지 확인
+        let $oCodeeditor1 = $(oCurrTarget).closest(".u4aUspCodeeditor1"),
+            $oCodeeditor2 = $(oCurrTarget).closest(".u4aUspCodeeditor2");
+
+        // 현재 키 입력한 위치가 왼쪽 에디터에 있었을 경우
+        if ($oCodeeditor1.length !== 0) {
+
+            let value = oEditor1.getValue();
+
+            oEditor2.setValue(value, 1);
+
+            return;
+
+        }
+
+        // 현재 키 입력한 위치가 오른쪽 에디터에 있었을 경우
+        if ($oCodeeditor2.length !== 0) {
+
+            let value = oEditor2.getValue();
+
+            oEditor1.setValue(value, 1);
+
+            return;
+
+        }
+
+    } // end of _fnCodeeditorKeyupEvent
+
+    /************************************************************************
+     * [WS30] Codeeditor ContextMenu Event
+     ************************************************************************/
+    function _fnCodeeditorContextMenuEvent(oEvent) {
+
+        let oCurrTarget = oEvent.currentTarget;
+        if (!oCurrTarget) {
+            return;
+        }
+
+        let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
+            oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
+
+        // 에디터가 둘중에 하나라도 없다면 빠져나감.
+        if (!oCodeEditor1 || !oCodeEditor2) {
+            return;
+        }
+
+        let oEditor1 = oCodeEditor1._oEditor,
+            oEditor2 = oCodeEditor2._oEditor;
+
+        // 현재 커서의 위치가 어떤 에디터인지 확인
+        let $oCodeeditor1 = $(oCurrTarget).closest(".u4aUspCodeeditor1"),
+            $oCodeeditor2 = $(oCurrTarget).closest(".u4aUspCodeeditor2");
+
+        // 현재 키 입력한 위치가 왼쪽 에디터에 있었을 경우
+        if ($oCodeeditor1.length !== 0) {
+
+            oAPP.fn.fnUspCodeeditorContextMenuOpen(oEvent, oCodeEditor1);
+
+            return;
+
+        }
+
+        // 현재 키 입력한 위치가 오른쪽 에디터에 있었을 경우
+        if ($oCodeeditor2.length !== 0) {
+
+            oAPP.fn.fnUspCodeeditorContextMenuOpen(oEvent, oCodeEditor2);
+
+            return;
+
+        }
+
+    } // end of _fnCodeeditorContextMenuEvent
+
+    /************************************************************************
+     * [WS30] Codeeditor splitbar 더블클릭 이벤트
+     ************************************************************************/
     function _fnDoubleClickSplitbar(e) {
 
         let oSplitLayoutData = sap.ui.getCore().byId("codeEditorSplitLayout"),
@@ -1616,8 +1708,11 @@
 
         oSplitLayoutData.setSize("0px");
 
-    }
+    } // end of _fnDoubleClickSplitbar
 
+    /************************************************************************
+     * [WS30] Codeeditor Visible 관련 바인딩 Object 리턴
+     ************************************************************************/
     function _fnCodeEditorBindPropertyVisible() {
 
         return {
@@ -1637,6 +1732,9 @@
 
     } // end of _fnCodeEditorBindPropertyVisible
 
+    /************************************************************************
+     * [WS30] Codeeditor Property Type
+     ************************************************************************/
     function _fnCodeEditorBindPropertyType(EXTEN) {
 
         this.setSyntaxHints(true);
@@ -1684,25 +1782,25 @@
     function fnGetWindowMenuWS30() {
 
         return [{
-                key: "WMENU20",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B35"), // Utilities
-                icon: "",
-            },
-            {
-                key: "WMENU30",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B36"), // System
-                icon: "",
-            },
-            {
-                key: "WMENU50",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39"), // Help
-                icon: "",
-            },
-            {
-                key: "Test10",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B69"), // Test
-                icon: "",
-            },
+            key: "WMENU20",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B35"), // Utilities
+            icon: "",
+        },
+        {
+            key: "WMENU30",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B36"), // System
+            icon: "",
+        },
+        {
+            key: "WMENU50",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39"), // Help
+            icon: "",
+        },
+        {
+            key: "Test10",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B69"), // Test
+            icon: "",
+        },
         ];
 
     } // end of fnGetWindowMenuWS30
@@ -1713,12 +1811,12 @@
     function fnGetWindowMenuListWS30() {
 
         var aWMENU20 = [{
-                key: "WMENU20_01",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
-            }, {
-                key: "WMENU20_03",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
-            }],
+            key: "WMENU20_01",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
+        }, {
+            key: "WMENU20_03",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
+        }],
 
             aWMENU30 = [{
                 key: "WMENU30_01",
@@ -1745,8 +1843,8 @@
                 items: [{
                     key: "WMENU30_06_01",
                     text: "DevTool"
-                }, ],
-            }, ],
+                },],
+            },],
 
             aWMENU50 = [{
                 key: "WMENU50_01",
@@ -1788,101 +1886,101 @@
     function fnGetUspTreeDefCtxMenuList() {
 
         return [{
-                ICON: "sap-icon://expand-group",
-                KEY: "K1",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C27"), // Expand Subtree
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "sap-icon://collapse-group",
-                KEY: "K2",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C28"), // Collapse Subtree
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "sap-icon://internet-browser",
-                KEY: "K6",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D43"), // Test Service
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "sap-icon://popup-window",
-                KEY: "K11",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "sap-icon://write-new",
-                KEY: "K3",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"), // Create
-                ENABLED: true,
-                ISSTART: true,
-                VISIBLE: true
-            },
-            {
-                ICON: "sap-icon://delete",
-                KEY: "K4",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03"), // Delete
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "sap-icon://edit",
-                KEY: "K7",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D44"), // Rename
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "sap-icon://navigation-up-arrow",
-                KEY: "K8",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A55"), // Up
-                ENABLED: true,
-                ISSTART: true,
-                VISIBLE: true
-            },
-            {
-                ICON: "sap-icon://navigation-down-arrow",
-                KEY: "K9",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A56"), // Down
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "sap-icon://outdent",
-                KEY: "K10",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A57"), // Move Position
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "sap-icon://upload",
-                KEY: "K12",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D88"), // Upload
-                ENABLED: true,
-                ISSTART: true,
-                VISIBLE: true
-            },
-            {
-                ICON: "sap-icon://download",
-                KEY: "K5",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B78"), // Download
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
+            ICON: "sap-icon://expand-group",
+            KEY: "K1",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C27"), // Expand Subtree
+            ENABLED: true,
+            ISSTART: false,
+            VISIBLE: true
+        },
+        {
+            ICON: "sap-icon://collapse-group",
+            KEY: "K2",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C28"), // Collapse Subtree
+            ENABLED: true,
+            ISSTART: false,
+            VISIBLE: true
+        },
+        {
+            ICON: "sap-icon://internet-browser",
+            KEY: "K6",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D43"), // Test Service
+            ENABLED: true,
+            ISSTART: false,
+            VISIBLE: true
+        },
+        {
+            ICON: "sap-icon://popup-window",
+            KEY: "K11",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
+            ENABLED: true,
+            ISSTART: false,
+            VISIBLE: true
+        },
+        {
+            ICON: "sap-icon://write-new",
+            KEY: "K3",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"), // Create
+            ENABLED: true,
+            ISSTART: true,
+            VISIBLE: true
+        },
+        {
+            ICON: "sap-icon://delete",
+            KEY: "K4",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03"), // Delete
+            ENABLED: true,
+            ISSTART: false,
+            VISIBLE: true
+        },
+        {
+            ICON: "sap-icon://edit",
+            KEY: "K7",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D44"), // Rename
+            ENABLED: true,
+            ISSTART: false,
+            VISIBLE: true
+        },
+        {
+            ICON: "sap-icon://navigation-up-arrow",
+            KEY: "K8",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A55"), // Up
+            ENABLED: true,
+            ISSTART: true,
+            VISIBLE: true
+        },
+        {
+            ICON: "sap-icon://navigation-down-arrow",
+            KEY: "K9",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A56"), // Down
+            ENABLED: true,
+            ISSTART: false,
+            VISIBLE: true
+        },
+        {
+            ICON: "sap-icon://outdent",
+            KEY: "K10",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A57"), // Move Position
+            ENABLED: true,
+            ISSTART: false,
+            VISIBLE: true
+        },
+        {
+            ICON: "sap-icon://upload",
+            KEY: "K12",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D88"), // Upload
+            ENABLED: true,
+            ISSTART: true,
+            VISIBLE: true
+        },
+        {
+            ICON: "sap-icon://download",
+            KEY: "K5",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B78"), // Download
+            ENABLED: true,
+            ISSTART: false,
+            VISIBLE: true
+        },
 
         ];
 
@@ -1946,7 +2044,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -2056,7 +2154,7 @@
             initialFocus: "ws30_crname",
 
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -2150,7 +2248,7 @@
                             }),
                             fields: new sap.m.CheckBox({
                                 editable: false,
-                            }).bindProperty("selected", `${RENAME_BINDROOT}/BINDDATA/ISFLD`, function(ISFLD) {
+                            }).bindProperty("selected", `${RENAME_BINDROOT}/BINDDATA/ISFLD`, function (ISFLD) {
 
                                 if (ISFLD == "X") {
                                     return true;
@@ -2173,7 +2271,7 @@
                                 submit: () => {
                                     fnRenameSubmit();
                                 }
-                            }).bindProperty("valueState", `${RENAME_BINDROOT}/PRC/NAME_VS`, function(VST) {
+                            }).bindProperty("valueState", `${RENAME_BINDROOT}/PRC/NAME_VS`, function (VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -2256,7 +2354,7 @@
             initialFocus: "ws30_rename_new",
 
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 // USP 생성 팝업의 초기 데이터 모델 세팅
                 APPCOMMON.fnSetModelProperty(RENAME_BINDROOT, {});
@@ -2271,8 +2369,6 @@
      * [WS30] USP Tree의 Rename
      **************************************************************************/
     async function fnRenameSubmit() {
-
-        debugger;
 
         // busy 키고 Lock 키기
         oAPP.common.fnSetBusyLock("X");
@@ -2618,11 +2714,11 @@
         }
 
         var oSendData = {
-                APPID: oAppData.APPID,
-                TRKORR: sReqNo,
-                T_TREE: aDeleteTreeData,
-                TU4A0010: oAppData
-            },
+            APPID: oAppData.APPID,
+            TRKORR: sReqNo,
+            T_TREE: aDeleteTreeData,
+            TU4A0010: oAppData
+        },
 
             sServerPath = parent.getServerPath(),
             sPath = `${sServerPath}/usp_page_del`,
@@ -2736,10 +2832,9 @@
             oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
 
         var oAppInfo = fnGetAppInfo(), // App 정보
-            oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"); // 우측 컨텐츠 데이터
 
-        // APP 업데이트 정보 갱신
-        oAppInfo = Object.assign({}, oAppInfo, oResult.S_RETURN);
+            // APP 업데이트 정보 갱신
+            oAppInfo = Object.assign({}, oAppInfo, oResult.S_RETURN);
 
         /**
          * 삭제된 대상 중, 우측에 보고 있던 CONTENT가 있다면 클리어 시키고 Intro 페이지로 이동
@@ -2792,7 +2887,7 @@
     function lf_appDelCtsPopup(oParam) {
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oParam = this;
 
@@ -3042,8 +3137,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function(e) {
-                $.each(e, function(e, o) {
+            t = function (e) {
+                $.each(e, function (e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -3212,7 +3307,7 @@
         var aUspData = oResult.USPDATA;
 
         // Array 타입이 아니면 리턴
-        if (aUspData instanceof Array == false) {
+        if (Array.isArray(aUspData) == false) {
             throw new Error("Usp Data Type Error! Please Contact Administrator!");
         }
 
@@ -3301,7 +3396,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function(event) {
+            fileReader.onload = function (event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -3331,8 +3426,6 @@
      * [WS30] Tree Table 더블클릭 이벤트
      **************************************************************************/
     function ev_uspTreeItemDblClickEvent(oEvent) {
-        
-        debugger;
 
         var oTarget = oEvent.target,
             $oTreeIcon = $(oTarget).closest(".sapUiTableTreeIcon"),
@@ -4011,7 +4104,7 @@
 
         // USP TREE 마우스 휠 이벤트 풀기
         var aa = oTreeTable.getDomRef("tableCCnt");
-        aa.onwheel = () => {};
+        aa.onwheel = () => { };
 
     } // end of ev_UspTreeCtxMenuClosed
 
@@ -4028,6 +4121,7 @@
         aCtxMenu.find(arr => arr.KEY == "K9").ENABLED = false; // Down
         aCtxMenu.find(arr => arr.KEY == "K10").ENABLED = false; // Move Position
         aCtxMenu.find(arr => arr.KEY == "K11").ENABLED = false; // new window usp Page
+        aCtxMenu.find(arr => arr.KEY == "K12").ENABLED = false; // Upload        
 
         // root가 아니면서 폴더가 아닐경우 (파일일 경우에만) 
         // 다운로드 버튼, Test Service 버튼을 활성화 한다.
@@ -4055,7 +4149,7 @@
             aCtxMenu.find(arr => arr.KEY == "K8").ENABLED = false; // Up
             aCtxMenu.find(arr => arr.KEY == "K9").ENABLED = false; // Down
             aCtxMenu.find(arr => arr.KEY == "K10").ENABLED = false; // Move Position
-            aCtxMenu.find(arr => arr.KEY == "K11").ENABLED = false; // new window usp Page
+            aCtxMenu.find(arr => arr.KEY == "K11").ENABLED = false; // new window usp Page            
 
             APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
 
@@ -4077,6 +4171,7 @@
 
         // 우클릭한 위치가 파일 레벨인 경우        
         aCtxMenu.find(arr => arr.KEY == "K3").ENABLED = false; // Create
+        aCtxMenu.find(arr => arr.KEY == "K12").ENABLED = false; // Upload      
 
         APPCOMMON.fnSetModelProperty("/WS30/CTXMENU", aCtxMenu);
 
@@ -4328,11 +4423,11 @@
 
                 break;
 
-                // case "K12": // Upload
+            // case "K12": // Upload
 
-                //     sap.m.MessageToast.show("준비중입니다.");
+            //     sap.m.MessageToast.show("준비중입니다.");
 
-                //     break;
+            //     break;
 
             default:
                 sap.m.MessageToast.show("준비중입니다.");
@@ -4553,7 +4648,7 @@
             return;
         }
 
-        if (aUspTreeData instanceof Array == false) {
+        if (Array.isArray(aUspTreeData) == false) {
             return;
         }
 
@@ -5259,17 +5354,17 @@
 
                 return;
 
-                // case "UP": // 저장 후 선택한 Node를 위로 이동할 경우.
+            // case "UP": // 저장 후 선택한 Node를 위로 이동할 경우.
 
-                //     oAPP.fn.fnUspTreeNodeMoveUp(oTreeTable, gSelectedTreeIndex);
+            //     oAPP.fn.fnUspTreeNodeMoveUp(oTreeTable, gSelectedTreeIndex);
 
-                //     return;
+            //     return;
 
-                // case "DOWN": // 저장 후 선택한 Node를 아래로 이동할 경우.
+            // case "DOWN": // 저장 후 선택한 Node를 아래로 이동할 경우.
 
-                //     oAPP.fn.fnUspTreeNodeMoveDown(oTreeTable, gSelectedTreeIndex);
+            //     oAPP.fn.fnUspTreeNodeMoveDown(oTreeTable, gSelectedTreeIndex);
 
-                //     return;
+            //     return;
         }
 
         // EDIT 모드에서 다른 CONTENT 선택시 저장하고 넘어가려는 경우
@@ -5296,30 +5391,27 @@
 
     } // end of _fnSaveCallback
 
+    /**************************************************************************
+     * [WS30] USP Tree의 Rename 작업 실행
+     **************************************************************************/
     function fnRenameUspNode(oEvent) {
-
-        debugger;
 
         let oTreeTable = oEvent.getParameter("oTreeTable"),
             aChangedData = oEvent.getParameter("CHANGEDATA"), // Rename 변경 대상 Array
             aTreeData = oEvent.getParameter("TREEDATA"); // 전체 Tree Data Array
 
-        var iSelectedIndex = gSelectedTreeIndex,
-            oSelectedCtx = oTreeTable.getContextByIndex(iSelectedIndex),
-            oRow = oTreeTable.getRows()[iSelectedIndex];
+        let iSelectedIndex = gSelectedTreeIndex,
+            oSelectedCtx = oTreeTable.getContextByIndex(iSelectedIndex);
 
         if (!oSelectedCtx) {
-
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
-
             return;
-
         }
 
         let aTreeDataCopy = jQuery.extend(true, [], aTreeData), // 테이블 전체 데이터 복사
             aChangedDataCopy = jQuery.extend(true, [], aChangedData), // 이름이 변경된 데이터 복사
-            
+
             /** 
              * A : 트리테이블의 전체 데이터
              * B : 전체 데이터 중, 이름이 변경된 데이터와 같은키를 가진 이전 데이터
@@ -5327,12 +5419,12 @@
              * 
              * (A - B) + C 
              */
-            oMergedModelData = _fnChangedDataToTreeModel(aTreeDataCopy, aChangedDataCopy), 
-            
+            oMergedModelData = _fnChangedDataToTreeModel(aTreeDataCopy, aChangedDataCopy),
+
             /**
              * 트리구조 모델데이터 만든거에서 선택한 데이터만 구한다.
              */
-            oChangeNodeData = oAPP.fn._fnFindModelData2(oMergedModelData, oSelectedCtx.getPath()), 
+            oChangeNodeData = oAPP.fn._fnFindModelData2(oMergedModelData, oSelectedCtx.getPath()),
             aNodes = oChangeNodeData.Nodes; // 선택된 노드의 형제들
 
         let oOBJKY = oSelectedCtx.getObject("OBJKY"),
@@ -5347,35 +5439,44 @@
 
         }
 
+        // 우측에 활성화 되어 있는 content 데이터가 존재 할 경우.
+        let aUspTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE"),
+            oBeforeSelectData = _fnGetSelectedUspTreeData(aUspTreeData);
+        if (oBeforeSelectData) {
+
+            // 우측에 활성화 되어 있는 content 데이터가 이름 변경된 대상에 포함되는지 확인
+            let oFound = aChangedDataCopy.find(elem => elem.OBJKY === oBeforeSelectData.OBJKY);
+            if (oFound) {
+
+                // APPCOMMON.fnSetModelProperty("/WS30/USPDATA/SPATH", oFound.SPATH);
+                APPCOMMON.fnSetModelProperty("/WS30/USPDATA", oFound);
+
+            }
+
+        }
+
         oSelectedCtx.getModel().setProperty(oSelectedCtx.getPath(), oFoundNode);
         oSelectedCtx.getModel().refresh();
 
-        // // 현재 위치를 선택효과를 준다.
-        // oAPP.fn.fnUspSetSelectedRow(oRow);
-
-
-        // // 우측에
-
-
-
-
-
         // Rename 팝업 닫기
-        var oDialog = sap.ui.getCore().byId("uspRNPopup");
+        let oDialog = sap.ui.getCore().byId("uspRNPopup");
         if (oDialog) {
             oDialog.close();
         }
 
-        fnUspTreeTableRowSelect(oRow);
+        // busy 끄고 Lock 풀기            
+        oAPP.common.fnSetBusyLock("");
 
-        // busy 끄고 Lock 풀기
-        // oAPP.common.fnSetBusyLock("");
+        // // Tree Table Row 데이터 구하기
+        // fnUspTreeTableRowSelect(oRow);
 
     } // end of fnRenameUspNode
 
+    /**************************************************************************
+    * [WS30] USP Tree 전체 모델 데이터에서 변경 대상과 같은 기존 데이터를 삭제 후
+    * 변경 대상을 추가하여 모델화 하기
+    **************************************************************************/
     function _fnChangedDataToTreeModel(aTreeData, aChangedData) {
-
-        debugger;
 
         // 기존 전체 테이블 데이터 중에서 변경 대상 데이터와 같은 키인것 제거
         let iChangedDataLength = aChangedData.length;
@@ -5424,7 +5525,7 @@
     function _fnGetSelectedUspTreeData(aUspTreeData) {
 
         // 전달받은 파라미터값이 Array 가 아니면 빠져나감.
-        if (aUspTreeData instanceof Array == false) {
+        if (Array.isArray(aUspTreeData) === false) {
             return;
         }
 
@@ -5451,6 +5552,7 @@
                 continue;
             }
 
+            // 기 선택된 Node를 찾는다.
             var oSelItem = _fnGetSelectedUspTreeData(aChild);
             if (!oSelItem) {
                 continue;
@@ -5554,7 +5656,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this;
             // IS_ACT = oEvent.getParameter("IS_ACT");
@@ -5868,14 +5970,14 @@
 
     } // end of ev_codeeditorPrettyPrint
 
-    /**************************************************************************
-     * [WS30] Content 영역의 Code Editor Pattern Popover
-     **************************************************************************/
-    function ev_codeeditorPattern() {
+    // /**************************************************************************
+    //  * [WS30] Content 영역의 Code Editor Pattern Popover
+    //  **************************************************************************/
+    // function ev_codeeditorPattern() {        
 
+    //     oAPP.fn.fnUspPatternPopupOpen();
 
-
-    } // end of ev_codeeditorPattern
+    // } // end of ev_codeeditorPattern
 
     /**************************************************************************
      * [WS30] Content 영역의 Code Editor Full Screen

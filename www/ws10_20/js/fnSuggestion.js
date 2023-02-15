@@ -33,7 +33,7 @@
             sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
             aSuggData = JSON.parse(sJsonData);
 
-        if (aSuggData instanceof Array == false) {
+        if (Array.isArray(aSuggData) == false) {
             aSuggData = [];
         }
 
@@ -90,7 +90,7 @@
             sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
             aSuggData = JSON.parse(sJsonData);
 
-        if (aSuggData instanceof Array == false) {
+        if (Array.isArray(aSuggData) == false) {
             return [];
         }
 

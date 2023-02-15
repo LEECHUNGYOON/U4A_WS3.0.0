@@ -175,7 +175,7 @@
 
         // 에디터 데이터가 Array 가 아니면 빠져나감.
         var aEditorData = oAPP.DATA.APPDATA.T_EDIT;
-        if (!aEditorData instanceof Array) {
+        if (!Array.isArray(aEditorData)) {
             return;
         }
 
@@ -198,7 +198,7 @@
 
         // 에디터 데이터가 Array 가 아니면 빠져나감.
         var aEditorData = oAPP.DATA.APPDATA.T_EDIT;
-        if (!aEditorData instanceof Array) {
+        if (!Array.isArray(aEditorData)) {
             return;
         }
 

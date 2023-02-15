@@ -74,7 +74,7 @@ let oAPP = (function(window) {
         let aRuntimeData = oInfo.aRuntimeData;
 
         // 전달받은 Runtime 데이터가 Array 형식이 아니면 리턴.
-        if (aRuntimeData instanceof Array == false) {
+        if (Array.isArray(aRuntimeData) == false) {
             return;
         }
 

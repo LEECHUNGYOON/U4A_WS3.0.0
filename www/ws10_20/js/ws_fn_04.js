@@ -377,9 +377,8 @@
 
         var aSuggData = oAPP.fn.fnSuggestionRead(sSuggName);
 
-        if (aSuggData instanceof Array == false) {
+        if (Array.isArray(aSuggData) == false) {
             oAPP.fn.fnSuggestionSave(sSuggName, []);
-
             return;
         }
 

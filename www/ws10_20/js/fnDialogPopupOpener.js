@@ -1893,7 +1893,7 @@
             sMsg = "";
 
         // 뭔가 크게 잘못된 경우
-        if (aDefBr instanceof Array == false) {
+        if (Array.isArray(aDefBr) == false) {
 
             //"설치된 브라우저 정보를 찾을 수 없습니다.";
             sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "333"); // Installed browser information not found.

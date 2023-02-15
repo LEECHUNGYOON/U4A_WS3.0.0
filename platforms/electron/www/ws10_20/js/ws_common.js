@@ -64,6 +64,10 @@
     oAPP.common.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
+        if(!oCoreModel){
+            return;
+        }
+
         oCoreModel.setProperty(sModelPath, oModelData);
 
         if (bIsRefresh) {
@@ -80,8 +84,15 @@
      * 예) /WS10/APPDATA
      ************************************************************************/
     oAPP.common.fnGetModelProperty = function (sModelPath) {
-        return sap.ui.getCore().getModel().getProperty(sModelPath);
-    };
+
+        let oCoreModel = sap.ui.getCore().getModel();
+        if (!oCoreModel) {
+            return;
+        }
+
+        return oCoreModel.getProperty(sModelPath);
+        
+    }; // end of oAPP.common.fnGetModelProperty
 
     // /************************************************************************
     //  * 메시지 클래스 번호에 해당하는 메시지 리턴

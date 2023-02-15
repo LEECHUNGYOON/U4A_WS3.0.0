@@ -371,7 +371,7 @@
                         }
 
                         // white list가 있는 경우
-                        if (aWhit != null && aWhit instanceof Array == true) {
+                        if (aWhit != null && Array.isArray(aWhit) == true) {
 
                             // X-Frame-Option이 "Allow-From" 이 아니면서 white list가 있는 경우는
                             // white list 데이터를 전부 지운다.
