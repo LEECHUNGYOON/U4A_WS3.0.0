@@ -5,7 +5,7 @@
  * - file Desc : u4a ws usp
  ************************************************************************/
 
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -48,13 +48,13 @@
 
         // 파일 확장자 이미지 경로 구하기
         fnGetFileExtendImgList()
-            .then(function () {
+            .then(function() {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
 
             })
-            .catch(function () {
+            .catch(function() {
 
                 // 없으면 렌더링부터..
                 fnOnInitRendering();
@@ -68,7 +68,7 @@
      ************************************************************************/
     function fnGetFileExtendImgList() {
 
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
@@ -115,7 +115,7 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
-    oAPP.fn.fnOnResizeWs30 = function () {
+    oAPP.fn.fnOnResizeWs30 = function() {
 
         zconsole.log("resize30!!!");
 
@@ -143,6 +143,7 @@
             // 붙여넣기로 입력한 경우 APP Change 플래그 적용
             if (event.ctrlKey && event.keyCode == 86) {
 
+                // 앱 변경 사항 플래그 설정
                 oAPP.fn.setAppChangeWs30("X");
 
                 zconsole.log("codeeditor change!!");
@@ -204,6 +205,7 @@
 
         }
 
+        // 앱 변경 사항 플래그 설정
         oAPP.fn.setAppChangeWs30("X");
 
         zconsole.log("codeeditor change!!");
@@ -265,7 +267,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function (bIsShow) {
+            formatter: function(bIsShow) {
 
                 if (bIsShow == null) {
                     return false;
@@ -424,7 +426,7 @@
                             parts: [
                                 "key"
                             ],
-                            formatter: function (sKey) {
+                            formatter: function(sKey) {
 
                                 if (sKey == null) {
                                     return false;
@@ -1066,7 +1068,7 @@
                                     "ISFLD",
                                     "EXTEN"
                                 ],
-                                formatter: function (ISFLD, EXTEN) {
+                                formatter: function(ISFLD, EXTEN) {
 
                                     var iFileImgListLength = gaFileExtendImgList.length;
                                     if (iFileImgListLength == 0) {
@@ -1198,7 +1200,7 @@
 
             // Events
             beforeOpenContextMenu: ev_beforeOpenContextMenu,
-            rowSelectionChange: function (oEvent) {
+            rowSelectionChange: function(oEvent) {
 
                 var iRowIndex = oEvent.getParameter("rowIndex"),
                     oTable = oEvent.getSource();
@@ -1305,7 +1307,7 @@
 
             oIsFolderCheckbox = new sap.m.CheckBox({
                 editable: false
-            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function (ISFLD) {
+            }).bindProperty("selected", `${sBindRoot}/ISFLD`, function(ISFLD) {
 
                 if (ISFLD == "X") {
                     return true;
@@ -1371,7 +1373,7 @@
                                 ]
                             })
 
-                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function (ISFLD) {
+                        }).bindProperty("visible", `${sBindRoot}/ISFLD`, function(ISFLD) {
 
                             // 폴더가 아닐 경우에만 보여준다.
                             if (ISFLD != "X") {
@@ -1413,7 +1415,7 @@
 
                 return {
 
-                    onAfterRendering: function (oControl) {
+                    onAfterRendering: function(oControl) {
 
                         var oEditor = oControl.srcControl,
                             _oAceEditor = oEditor._oEditor;
@@ -1498,22 +1500,11 @@
         oCodeEditor.addEventDelegate({
             onkeyup: _fnCodeeditorKeyupEvent,
             oncontextmenu: _fnCodeeditorContextMenuEvent,
-
-            // (oEvent) => {
-
-            //     debugger;
-
-            //     let value = oCodeEditor._oEditor.getValue();
-
-            //     oCodeEditorClone._oEditor.setValue(value, 1);
-
-            // }
         });
 
         oCodeEditorClone.addEventDelegate({
             onkeyup: _fnCodeeditorKeyupEvent,
             oncontextmenu: _fnCodeeditorContextMenuEvent,
-
         });
 
         let oHeaderToolbar = new sap.m.Bar({
@@ -1665,9 +1656,6 @@
         if (!oCodeEditor1 || !oCodeEditor2) {
             return;
         }
-
-        let oEditor1 = oCodeEditor1._oEditor,
-            oEditor2 = oCodeEditor2._oEditor;
 
         // 현재 커서의 위치가 어떤 에디터인지 확인
         let $oCodeeditor1 = $(oCurrTarget).closest(".u4aUspCodeeditor1"),
@@ -2044,7 +2032,7 @@
                                 value: `{${sBindRootPath}/NAME}`,
                                 valueStateText: `{${sBindRootPath}/NAME_VSTXT}`,
                                 submit: ev_createUspNodeAcceptEvent.bind(this, oTreeTable)
-                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function (VST) {
+                            }).bindProperty("valueState", `${sBindRootPath}/NAME_VS`, function(VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -2154,7 +2142,7 @@
             initialFocus: "ws30_crname",
 
             // events
-            afterClose: function () {
+            afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -2248,7 +2236,7 @@
                             }),
                             fields: new sap.m.CheckBox({
                                 editable: false,
-                            }).bindProperty("selected", `${RENAME_BINDROOT}/BINDDATA/ISFLD`, function (ISFLD) {
+                            }).bindProperty("selected", `${RENAME_BINDROOT}/BINDDATA/ISFLD`, function(ISFLD) {
 
                                 if (ISFLD == "X") {
                                     return true;
@@ -2271,7 +2259,7 @@
                                 submit: () => {
                                     fnRenameSubmit();
                                 }
-                            }).bindProperty("valueState", `${RENAME_BINDROOT}/PRC/NAME_VS`, function (VST) {
+                            }).bindProperty("valueState", `${RENAME_BINDROOT}/PRC/NAME_VS`, function(VST) {
 
                                 // 바인딩 필드에 값이 없으면 ValueState의 기본값으로 리턴
                                 if (VST == null || VST == "") {
@@ -2354,7 +2342,7 @@
             initialFocus: "ws30_rename_new",
 
             // events
-            afterClose: function () {
+            afterClose: function() {
 
                 // USP 생성 팝업의 초기 데이터 모델 세팅
                 APPCOMMON.fnSetModelProperty(RENAME_BINDROOT, {});
@@ -2887,7 +2875,7 @@
     function lf_appDelCtsPopup(oParam) {
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oParam = this;
 
@@ -3137,8 +3125,8 @@
      **************************************************************************/
     function _parseTree2Tab(e, sArrName) {
         var a = [],
-            t = function (e) {
-                $.each(e, function (e, o) {
+            t = function(e) {
+                $.each(e, function(e, o) {
                     o[sArrName] && (t(o[sArrName]),
                         delete o[sArrName]);
                     a.push(o);
@@ -3396,7 +3384,7 @@
             oAPP.attr._filedownFolderPath = folderPath;
 
             var fileReader = new FileReader();
-            fileReader.onload = function (event) {
+            fileReader.onload = function(event) {
 
                 var arrayBuffer = event.target.result,
                     buffer = parent.Buffer.from(arrayBuffer);
@@ -5307,9 +5295,6 @@
         // code editor KeyPress 이벤트 설정
         fnCodeEditorKeyPressEvent("X");
 
-        // // Footer Msg 출력
-        // APPCOMMON.fnShowFloatingFooterMsg("S", "WS30", sMsg);
-
         switch (pAFPRC) {
 
             case "_C": // 신규 생성일 경우.     
@@ -5354,17 +5339,6 @@
 
                 return;
 
-                // case "UP": // 저장 후 선택한 Node를 위로 이동할 경우.
-
-                //     oAPP.fn.fnUspTreeNodeMoveUp(oTreeTable, gSelectedTreeIndex);
-
-                //     return;
-
-                // case "DOWN": // 저장 후 선택한 Node를 아래로 이동할 경우.
-
-                //     oAPP.fn.fnUspTreeNodeMoveDown(oTreeTable, gSelectedTreeIndex);
-
-                //     return;
         }
 
         // EDIT 모드에서 다른 CONTENT 선택시 저장하고 넘어가려는 경우
@@ -5656,7 +5630,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function (oResult) {
+        oAPP.fn.fnCtsPopupOpener(function(oResult) {
 
             var oEvent = this;
             // IS_ACT = oEvent.getParameter("IS_ACT");
@@ -5929,8 +5903,12 @@
 
         // 단축키로 실행하지 않았을 경우
         if (!bIsShortCut) {
+
             oCodeEditor1.prettyPrint();
             oCodeEditor2.prettyPrint();
+
+            // 앱 변경 사항 플래그 설정
+            oAPP.fn.setAppChangeWs30("X");
             return;
         }
 
@@ -5957,6 +5935,7 @@
 
             oEditor1.selection.$setSelection(oCursorPos.row, oCursorPos.column, oCursorPos.row, oCursorPos.column);
 
+            // 앱 변경 사항 플래그 설정
             oAPP.fn.setAppChangeWs30("X");
 
             return;
@@ -5973,6 +5952,7 @@
 
             oEditor2.selection.$setSelection(oCursorPos.row, oCursorPos.column, oCursorPos.row, oCursorPos.column);
 
+            // 앱 변경 사항 플래그 설정
             oAPP.fn.setAppChangeWs30("X");
 
             return;

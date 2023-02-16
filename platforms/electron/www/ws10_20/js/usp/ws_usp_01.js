@@ -1,4 +1,4 @@
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
 
@@ -234,7 +234,7 @@
                     bIsAttach = true;
 
                     // test
-                    setTimeout(function () {
+                    setTimeout(function() {
                         oTreeTable.fireRowsUpdated(oEvent, oMeItem); //test
                     }, 0);
 
@@ -255,7 +255,7 @@
 
                     bIsAttach = true;
 
-                    setTimeout(function () {
+                    setTimeout(function() {
                         oTreeTable.fireRowsUpdated(oEvent, oMeItem); //test
                     }, 0);
 
@@ -271,7 +271,7 @@
             if (bExpAble && bIsExp) {
                 bIsAttach = true;
 
-                setTimeout(function () {
+                setTimeout(function() {
                     oTreeTable.fireRowsUpdated(oEvent, oMeItem); //test
                 }, 0);
 
@@ -467,7 +467,7 @@
             // association
             initialFocus: "ws30_step",
 
-            afterOpen: function (oEvent) {
+            afterOpen: function(oEvent) {
 
                 var oStepInput = sap.ui.getCore().byId("ws30_step");
                 if (!oStepInput) {
@@ -484,7 +484,7 @@
             },
 
             // events
-            afterClose: function () {
+            afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -570,7 +570,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             let oSendData = {
                 APPINFO: oAppInfo,
@@ -614,117 +614,36 @@
 
     }; // end of oAPP.fn.fnUspNewWindowIPCEvent    
 
+    /**************************************************************************
+     * [WS30] USP Codeeditor ContextMenu Open
+     **************************************************************************/
     oAPP.fn.fnUspCodeeditorContextMenuOpen = (oEvent, oCodeEditor) => {
 
-        let sMenuId = "uspCDECtxMenu",
-            oCurrTarget = oEvent.currentTarget,
-            oEditorRect = oCurrTarget.getBoundingClientRect(),
-            mouseOffsetX = oEvent.clientX,
-            mouseoffsetY = oEvent.clientY,
-            offsetX = mouseOffsetX - oEditorRect.x,
-            offsetY = mouseoffsetY - oEditorRect.y,
-            sOffset = `${offsetX} ${offsetY}`;
+        let sMenuId = "uspCDECtxMenu";
 
         var oCtxMenu = sap.ui.getCore().byId(sMenuId);
-        if (oCtxMenu) {            
+        if (oCtxMenu) {
             oCtxMenu.openAsContextMenu(oEvent, oCodeEditor);
             return;
         }
 
         var oCtxMenu = new sap.m.Menu(sMenuId, {
             items: [
-                new sap.m.MenuItem({ key: "001", text: "패턴1" }),
-                new sap.m.MenuItem({ key: "002", text: "패턴2" }),
+                new sap.m.MenuItem({
+                    key: "001",
+                    text: "패턴1"
+                }),
+                new sap.m.MenuItem({
+                    key: "002",
+                    text: "패턴2"
+                }),
             ]
         }).addStyleClass("u4aWsWindowMenu");
 
         oCtxMenu.openAsContextMenu(oEvent, oCodeEditor);
 
 
-    };
-
-    // /**************************************************************************
-    //  * [WS30] USP Pattern Dialog open
-    //  **************************************************************************/
-    // oAPP.fn.fnUspPatternPopupOpen = () => {
-
-    //     let sDialogId = "uspPatternPopup";
-
-    //     var oDialog = sap.ui.getCore().byId(sDialogId);
-    //     if (oDialog) {
-    //         oDialog.open();
-    //         return;
-    //     }
-
-    //     // Application 생성 Dialog
-    //     var oDialog = new sap.m.Dialog(sDialogId, {
-
-    //         // Properties
-    //         draggable: true,
-    //         resizable: true,
-    //         contentWidth: "100%",
-    //         contentHeight: "100%",
-
-    //         // Aggregations
-    //         customHeader: new sap.m.Toolbar({
-    //             content: [
-    //                 new sap.m.ToolbarSpacer(),
-
-    //                 new sap.ui.core.Icon({
-    //                     src: "sap-icon://syntax"
-    //                 }),
-
-    //                 new sap.m.Title({
-    //                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D46"), // Source Pattern
-    //                 }).addStyleClass("sapUiTinyMarginBegin"),
-
-    //                 new sap.m.ToolbarSpacer(),
-
-    //                 new sap.m.Button({
-    //                     type: sap.m.ButtonType.Reject,
-    //                     icon: "sap-icon://decline",
-    //                     press: _fnUspPatternDialogClose
-    //                 })
-    //             ]
-    //         }),
-
-    //         buttons: [
-    //             new sap.m.Button({
-    //                 type: sap.m.ButtonType.Reject,
-    //                 icon: "sap-icon://decline",
-    //                 press: _fnUspPatternDialogClose
-    //             }),
-    //         ],
-
-
-
-
-
-
-
-
-    //     });
-
-
-
-
-
-    // }; // end of oAPP.fn.fnUspPatternPopupOpen
-
-    /**************************************************************************
-     * [WS30] USP Pattern Dialog close
-     **************************************************************************/
-    function _fnUspPatternDialogClose() {
-
-        let sDialogId = "uspPatternPopup";
-
-        var oDialog = sap.ui.getCore().byId(sDialogId);
-        if (oDialog) {
-            oDialog.close();
-            return;
-        }
-
-    } // end of _fnUspPatternDialogClose
+    }; // end of oAPP.fn.fnUspCodeeditorContextMenuOpen      
 
     /**************************************************************************
      * [WS30] USP Move Position Popup Close
@@ -755,7 +674,7 @@
             sap.ui.getCore().byId("ws30_step").focus();
 
             oMovePos.STEPVS = sap.ui.core.ValueState.Error;
-            oMovePos.STEPVST = "Enter a number with a minimum value of 1";
+            oMovePos.STEPVST = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "375"); // Please enter a numeric value of 1 or more.
 
             APPCOMMON.fnSetModelProperty(sMovePosModelPath, oMovePos);
 
@@ -784,7 +703,7 @@
             return;
         }
 
-        setTimeout(function () {
+        setTimeout(function() {
             oBtn.firePress();
         }, 0);
 
