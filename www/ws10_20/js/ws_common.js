@@ -1354,7 +1354,9 @@
                         return;
                     }
 
-                    oBtn.firePress();
+                    oBtn.firePress({
+                        ISSHORTCUT: "X"
+                    });
 
                 }
             }

@@ -481,43 +481,43 @@
             }).addStyleClass("sapUiSmallMarginEnd"), // APPID
 
             oAppModeTxt = new sap.m.Title("ws30_appModeTxt")
-                .bindProperty("text", {
-                    parts: [
-                        `${sBindRootPath}/IS_EDIT`,
-                    ],
-                    formatter: (IS_EDIT) => {
-                        return IS_EDIT == "X" ? sChangeTxt : sDispTxt;
-                    }
+            .bindProperty("text", {
+                parts: [
+                    `${sBindRootPath}/IS_EDIT`,
+                ],
+                formatter: (IS_EDIT) => {
+                    return IS_EDIT == "X" ? sChangeTxt : sDispTxt;
+                }
 
-                }).addStyleClass("sapUiSmallMarginEnd"), // Change or Display Text	
+            }).addStyleClass("sapUiSmallMarginEnd"), // Change or Display Text	
 
             oAppActTxt = new sap.m.Title("ws30_appActTxt")
-                .bindProperty("text", {
-                    parts: [
-                        `${sBindRootPath}/ACTST`,
-                        `${sBindRootPath}/IS_EDIT`,
-                        `${sBindRootPath}/APPID`,
-                    ],
-                    formatter: (ACTST, IS_EDIT, APPID) => {
+            .bindProperty("text", {
+                parts: [
+                    `${sBindRootPath}/ACTST`,
+                    `${sBindRootPath}/IS_EDIT`,
+                    `${sBindRootPath}/APPID`,
+                ],
+                formatter: (ACTST, IS_EDIT, APPID) => {
 
-                        if (!APPID) {
-                            return;
-                        }
-
-                        // 브라우저 타이틀을 구성한다.
-                        let sModeTxt = IS_EDIT == "X" ? sChangeTxt : sDispTxt,
-                            sActTxt = ACTST == "A" ? sActiveTxt : sInactTxt;
-
-                        let sTitle = "U4A Workspace - #";
-                        sTitle += `${APPID} ${sModeTxt} ${sActTxt}`;
-
-                        parent.CURRWIN.setTitle(sTitle);
-
-
-                        return ACTST == "A" ? sActTxt : sInactTxt;
+                    if (!APPID) {
+                        return;
                     }
 
-                }).addStyleClass("sapUiSmallMarginEnd"), // Activate or inactivate Text
+                    // 브라우저 타이틀을 구성한다.
+                    let sModeTxt = IS_EDIT == "X" ? sChangeTxt : sDispTxt,
+                        sActTxt = ACTST == "A" ? sActiveTxt : sInactTxt;
+
+                    let sTitle = "U4A Workspace - #";
+                    sTitle += `${APPID} ${sModeTxt} ${sActTxt}`;
+
+                    parent.CURRWIN.setTitle(sTitle);
+
+
+                    return ACTST == "A" ? sActTxt : sInactTxt;
+                }
+
+            }).addStyleClass("sapUiSmallMarginEnd"), // Activate or inactivate Text
 
             oNewWindowBtn = new sap.m.Button("ws30_newWindowBtn", {
                 icon: "sap-icon://create",
@@ -578,10 +578,10 @@
         sDispChgTxt += APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02") + " (Ctrl+F1)"; // Change
 
         var oDisplayModeBtn = new sap.m.Button("ws30_displayModeBtn", {
-            icon: "sap-icon://display",
-            tooltip: sDispChgTxt,
-            press: ev_pressDisplayModeBtn
-        }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible),
+                icon: "sap-icon://display",
+                tooltip: sDispChgTxt,
+                press: ev_pressDisplayModeBtn
+            }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible),
 
             oChangeModeBtn = new sap.m.Button("ws30_changeModeBtn", {
                 icon: "sap-icon://edit",
@@ -589,17 +589,17 @@
                 press: ev_pressDisplayModeBtn
             }).bindProperty("visible", {
                 parts: [{
-                    path: "/USERINFO/USER_AUTH/IS_DEV" // 개발자 권한 여부
-                },
-                {
-                    path: "/USERINFO/ISADM"
-                },
-                {
-                    path: `${sBindRootPath}/ADMIN_APP` // "ADMIN App 여부"
-                },
-                {
-                    path: sVisiBindPath
-                },
+                        path: "/USERINFO/USER_AUTH/IS_DEV" // 개발자 권한 여부
+                    },
+                    {
+                        path: "/USERINFO/ISADM"
+                    },
+                    {
+                        path: `${sBindRootPath}/ADMIN_APP` // "ADMIN App 여부"
+                    },
+                    {
+                        path: sVisiBindPath
+                    },
 
                 ],
                 formatter: (IS_DEV, ISADM, ADMIN_APP, IS_EDIT) => {
@@ -631,24 +631,24 @@
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A64") + " (Ctrl+S)", // Save (Ctrl+S)
                 press: ev_pressSaveBtn
             })
-                // .bindProperty("enabled", sVisiBindPath, lf_bindPropForVisible)
-                .bindProperty("visible", {
-                    parts: [{
-                        path: "/USERINFO/USER_AUTH/IS_DEV"
-                    }, {
-                        path: sVisiBindPath
-                    }],
-                    formatter: (IS_DEV, IS_EDIT) => {
+            // .bindProperty("enabled", sVisiBindPath, lf_bindPropForVisible)
+            .bindProperty("visible", {
+                parts: [{
+                    path: "/USERINFO/USER_AUTH/IS_DEV"
+                }, {
+                    path: sVisiBindPath
+                }],
+                formatter: (IS_DEV, IS_EDIT) => {
 
-                        // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
-                        if (IS_DEV != "D" || IS_EDIT != "X") {
-                            return false;
-                        }
-
-                        return true;
-
+                    // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
+                    if (IS_DEV != "D" || IS_EDIT != "X") {
+                        return false;
                     }
-                }),
+
+                    return true;
+
+                }
+            }),
 
             oMimeBtn = new sap.m.Button({
                 icon: "sap-icon://picture",
@@ -1061,79 +1061,79 @@
                             new sap.m.Image({
                                 width: "20px"
                             })
-                                .bindProperty("src", {
-                                    parts: [
-                                        "ISFLD",
-                                        "EXTEN"
-                                    ],
-                                    formatter: function (ISFLD, EXTEN) {
+                            .bindProperty("src", {
+                                parts: [
+                                    "ISFLD",
+                                    "EXTEN"
+                                ],
+                                formatter: function (ISFLD, EXTEN) {
 
-                                        var iFileImgListLength = gaFileExtendImgList.length;
-                                        if (iFileImgListLength == 0) {
-                                            return;
-                                        }
+                                    var iFileImgListLength = gaFileExtendImgList.length;
+                                    if (iFileImgListLength == 0) {
+                                        return;
+                                    }
 
-                                        // SVG 폴더 경로
-                                        var svgFolder = PATH.join(APP.getAppPath(), "svg"),
-                                            sIconPath = "";
+                                    // SVG 폴더 경로
+                                    var svgFolder = PATH.join(APP.getAppPath(), "svg"),
+                                        sIconPath = "";
 
-                                        // 폴더일 경우 폴더 아이콘
-                                        if (ISFLD == "X") {
+                                    // 폴더일 경우 폴더 아이콘
+                                    if (ISFLD == "X") {
 
-                                            sIconPath = svgFolder + "/folder.svg";
-
-                                            return sIconPath;
-
-                                        }
-
-                                        if (!EXTEN) {
-                                            return;
-                                        }
-
-                                        var sFind = gaFileExtendImgList.find((elem) => {
-
-                                            if (elem.startsWith(EXTEN.toLowerCase()) == true) {
-                                                return elem;
-                                            }
-
-                                        });
-
-                                        // SVG 폴더 경로에 해당 파일 확장자가 없으면 알수 없는 파일 아이콘
-                                        if (!sFind) {
-
-                                            sIconPath = svgFolder + "/file.svg";
-
-                                            return sIconPath;
-
-                                        }
-
-                                        // SVG 폴더 경로에 해당 파일 확장자가 있을 경우
-                                        sIconPath = svgFolder + "/" + sFind;
+                                        sIconPath = svgFolder + "/folder.svg";
 
                                         return sIconPath;
 
                                     }
-                                })
-                                .bindProperty("visible", {
-                                    parts: [
-                                        "PUJKY",
-                                        "ISFLD"
-                                    ],
-                                    formatter: (PUJKY, ISFLD) => {
 
-                                        if (PUJKY == null || ISFLD == null) {
-                                            return;
+                                    if (!EXTEN) {
+                                        return;
+                                    }
+
+                                    var sFind = gaFileExtendImgList.find((elem) => {
+
+                                        if (elem.startsWith(EXTEN.toLowerCase()) == true) {
+                                            return elem;
                                         }
 
-                                        if (PUJKY == "") {
-                                            return true;
-                                        }
+                                    });
 
-                                        return true;
+                                    // SVG 폴더 경로에 해당 파일 확장자가 없으면 알수 없는 파일 아이콘
+                                    if (!sFind) {
+
+                                        sIconPath = svgFolder + "/file.svg";
+
+                                        return sIconPath;
 
                                     }
 
-                                }).addStyleClass("sapUiTinyMarginEnd"),
+                                    // SVG 폴더 경로에 해당 파일 확장자가 있을 경우
+                                    sIconPath = svgFolder + "/" + sFind;
+
+                                    return sIconPath;
+
+                                }
+                            })
+                            .bindProperty("visible", {
+                                parts: [
+                                    "PUJKY",
+                                    "ISFLD"
+                                ],
+                                formatter: (PUJKY, ISFLD) => {
+
+                                    if (PUJKY == null || ISFLD == null) {
+                                        return;
+                                    }
+
+                                    if (PUJKY == "") {
+                                        return true;
+                                    }
+
+                                    return true;
+
+                                }
+
+                            }).addStyleClass("sapUiTinyMarginEnd"),
 
                             new sap.m.Text({
                                 text: "{OBDEC}",
@@ -1301,7 +1301,7 @@
                 value: `{${sBindRoot}/CODPG}`,
                 change: ev_UspCharsetInputChangeEvent
             })
-                .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding),
+            .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding),
 
             oIsFolderCheckbox = new sap.m.CheckBox({
                 editable: false
@@ -1411,23 +1411,23 @@
 
         let lfCodeeditorDelegate = () => { // codeeditor Delegate
 
-            return {
+                return {
 
-                onAfterRendering: function (oControl) {
+                    onAfterRendering: function (oControl) {
 
-                    var oEditor = oControl.srcControl,
-                        _oAceEditor = oEditor._oEditor;
+                        var oEditor = oControl.srcControl,
+                            _oAceEditor = oEditor._oEditor;
 
-                    if (!_oAceEditor) {
-                        return;
+                        if (!_oAceEditor) {
+                            return;
+                        }
+
+                        _oAceEditor.setFontSize(20);
+
                     }
+                };
 
-                    _oAceEditor.setFontSize(20);
-
-                }
-            };
-
-        },
+            },
             lfCodeeditorAttribute = () => { // codeeditor 속성 정보
 
                 return {
@@ -1587,11 +1587,11 @@
 
                     ]
                 })
-                    .bindProperty("visible", _fnCodeEditorBindPropertyVisible())
-                    .addEventDelegate({
-                        ondblclick: _fnDoubleClickSplitbar,
-                    })
-                    .addStyleClass("uspCodeeditorSplit sapUiSmallMarginBottom")
+                .bindProperty("visible", _fnCodeEditorBindPropertyVisible())
+                .addEventDelegate({
+                    ondblclick: _fnDoubleClickSplitbar,
+                })
+                .addStyleClass("uspCodeeditorSplit sapUiSmallMarginBottom")
 
             ]
 
@@ -1782,25 +1782,25 @@
     function fnGetWindowMenuWS30() {
 
         return [{
-            key: "WMENU20",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B35"), // Utilities
-            icon: "",
-        },
-        {
-            key: "WMENU30",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B36"), // System
-            icon: "",
-        },
-        {
-            key: "WMENU50",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39"), // Help
-            icon: "",
-        },
-        {
-            key: "Test10",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B69"), // Test
-            icon: "",
-        },
+                key: "WMENU20",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B35"), // Utilities
+                icon: "",
+            },
+            {
+                key: "WMENU30",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B36"), // System
+                icon: "",
+            },
+            {
+                key: "WMENU50",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39"), // Help
+                icon: "",
+            },
+            {
+                key: "Test10",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B69"), // Test
+                icon: "",
+            },
         ];
 
     } // end of fnGetWindowMenuWS30
@@ -1811,12 +1811,12 @@
     function fnGetWindowMenuListWS30() {
 
         var aWMENU20 = [{
-            key: "WMENU20_01",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
-        }, {
-            key: "WMENU20_03",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
-        }],
+                key: "WMENU20_01",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
+            }, {
+                key: "WMENU20_03",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
+            }],
 
             aWMENU30 = [{
                 key: "WMENU30_01",
@@ -1843,8 +1843,8 @@
                 items: [{
                     key: "WMENU30_06_01",
                     text: "DevTool"
-                },],
-            },],
+                }, ],
+            }, ],
 
             aWMENU50 = [{
                 key: "WMENU50_01",
@@ -1886,101 +1886,101 @@
     function fnGetUspTreeDefCtxMenuList() {
 
         return [{
-            ICON: "sap-icon://expand-group",
-            KEY: "K1",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C27"), // Expand Subtree
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://collapse-group",
-            KEY: "K2",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C28"), // Collapse Subtree
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://internet-browser",
-            KEY: "K6",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D43"), // Test Service
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://popup-window",
-            KEY: "K11",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://write-new",
-            KEY: "K3",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"), // Create
-            ENABLED: true,
-            ISSTART: true,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://delete",
-            KEY: "K4",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03"), // Delete
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://edit",
-            KEY: "K7",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D44"), // Rename
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://navigation-up-arrow",
-            KEY: "K8",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A55"), // Up
-            ENABLED: true,
-            ISSTART: true,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://navigation-down-arrow",
-            KEY: "K9",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A56"), // Down
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://outdent",
-            KEY: "K10",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A57"), // Move Position
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://upload",
-            KEY: "K12",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D88"), // Upload
-            ENABLED: true,
-            ISSTART: true,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://download",
-            KEY: "K5",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B78"), // Download
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
+                ICON: "sap-icon://expand-group",
+                KEY: "K1",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C27"), // Expand Subtree
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://collapse-group",
+                KEY: "K2",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C28"), // Collapse Subtree
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://internet-browser",
+                KEY: "K6",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D43"), // Test Service
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://popup-window",
+                KEY: "K11",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://write-new",
+                KEY: "K3",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"), // Create
+                ENABLED: true,
+                ISSTART: true,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://delete",
+                KEY: "K4",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03"), // Delete
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://edit",
+                KEY: "K7",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D44"), // Rename
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://navigation-up-arrow",
+                KEY: "K8",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A55"), // Up
+                ENABLED: true,
+                ISSTART: true,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://navigation-down-arrow",
+                KEY: "K9",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A56"), // Down
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://outdent",
+                KEY: "K10",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A57"), // Move Position
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://upload",
+                KEY: "K12",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D88"), // Upload
+                ENABLED: true,
+                ISSTART: true,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://download",
+                KEY: "K5",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B78"), // Download
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
 
         ];
 
@@ -2714,11 +2714,11 @@
         }
 
         var oSendData = {
-            APPID: oAppData.APPID,
-            TRKORR: sReqNo,
-            T_TREE: aDeleteTreeData,
-            TU4A0010: oAppData
-        },
+                APPID: oAppData.APPID,
+                TRKORR: sReqNo,
+                T_TREE: aDeleteTreeData,
+                TU4A0010: oAppData
+            },
 
             sServerPath = parent.getServerPath(),
             sPath = `${sServerPath}/usp_page_del`,
@@ -4104,7 +4104,7 @@
 
         // USP TREE 마우스 휠 이벤트 풀기
         var aa = oTreeTable.getDomRef("tableCCnt");
-        aa.onwheel = () => { };
+        aa.onwheel = () => {};
 
     } // end of ev_UspTreeCtxMenuClosed
 
@@ -4423,11 +4423,11 @@
 
                 break;
 
-            // case "K12": // Upload
+                // case "K12": // Upload
 
-            //     sap.m.MessageToast.show("준비중입니다.");
+                //     sap.m.MessageToast.show("준비중입니다.");
 
-            //     break;
+                //     break;
 
             default:
                 sap.m.MessageToast.show("준비중입니다.");
@@ -5354,17 +5354,17 @@
 
                 return;
 
-            // case "UP": // 저장 후 선택한 Node를 위로 이동할 경우.
+                // case "UP": // 저장 후 선택한 Node를 위로 이동할 경우.
 
-            //     oAPP.fn.fnUspTreeNodeMoveUp(oTreeTable, gSelectedTreeIndex);
+                //     oAPP.fn.fnUspTreeNodeMoveUp(oTreeTable, gSelectedTreeIndex);
 
-            //     return;
+                //     return;
 
-            // case "DOWN": // 저장 후 선택한 Node를 아래로 이동할 경우.
+                // case "DOWN": // 저장 후 선택한 Node를 아래로 이동할 경우.
 
-            //     oAPP.fn.fnUspTreeNodeMoveDown(oTreeTable, gSelectedTreeIndex);
+                //     oAPP.fn.fnUspTreeNodeMoveDown(oTreeTable, gSelectedTreeIndex);
 
-            //     return;
+                //     return;
         }
 
         // EDIT 모드에서 다른 CONTENT 선택시 저장하고 넘어가려는 경우
@@ -5473,9 +5473,9 @@
     } // end of fnRenameUspNode
 
     /**************************************************************************
-    * [WS30] USP Tree 전체 모델 데이터에서 변경 대상과 같은 기존 데이터를 삭제 후
-    * 변경 대상을 추가하여 모델화 하기
-    **************************************************************************/
+     * [WS30] USP Tree 전체 모델 데이터에서 변경 대상과 같은 기존 데이터를 삭제 후
+     * 변경 대상을 추가하여 모델화 하기
+     **************************************************************************/
     function _fnChangedDataToTreeModel(aTreeData, aChangedData) {
 
         // 기존 전체 테이블 데이터 중에서 변경 대상 데이터와 같은 키인것 제거
@@ -5913,12 +5913,7 @@
     /**************************************************************************
      * [WS30] Content 영역의 Code Editor Pretty Print 기능
      **************************************************************************/
-    function ev_codeeditorPrettyPrint() {
-
-        let oActiveDom = document.activeElement;
-        if (!oActiveDom) {
-            return;
-        }
+    function ev_codeeditorPrettyPrint(oEvent) {
 
         let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
             oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
@@ -5929,7 +5924,23 @@
         }
 
         let oEditor1 = oCodeEditor1._oEditor,
-            oEditor2 = oCodeEditor2._oEditor;
+            oEditor2 = oCodeEditor2._oEditor,
+            bIsShortCut = oEvent.getParameter("ISSHORTCUT");
+
+        // 단축키로 실행하지 않았을 경우
+        if (!bIsShortCut) {
+            oCodeEditor1.prettyPrint();
+            oCodeEditor2.prettyPrint();
+            return;
+        }
+
+        /**
+         * 단축키로 실행했을 경우 하위로직 수행
+         */
+        let oActiveDom = document.activeElement;
+        if (!oActiveDom) {
+            return;
+        }
 
         // 현재 커서의 위치가 어떤 에디터인지 확인
         let $oCodeeditor1 = $(oActiveDom).closest(".u4aUspCodeeditor1"),
