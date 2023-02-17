@@ -2,7 +2,7 @@
  * Login01.js
  **************************************************************************/
 
-var oAPP = (function() {
+var oAPP = (function () {
     "use strict";
 
     var oAPP = {};
@@ -13,20 +13,20 @@ var oAPP = (function() {
      *  @ !! 위에서 부터 Default 값 우선 순위 브라우저임!! @@
      */
     oAPP.attr.aDefaultBrowsers = [{
-            NAME: "CHROME",
-            DESC: "Google Chrome Browser",
-            REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"
-        },
-        {
-            NAME: "MSEDGE",
-            DESC: "Microsoft Edge",
-            REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe"
-        },
-        {
-            NAME: "IE",
-            DESC: "Microsoft Internet Explorer",
-            REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\IEXPLORE.EXE"
-        },
+        NAME: "CHROME",
+        DESC: "Google Chrome Browser",
+        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"
+    },
+    {
+        NAME: "MSEDGE",
+        DESC: "Microsoft Edge",
+        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe"
+    },
+    {
+        NAME: "IE",
+        DESC: "Microsoft Internet Explorer",
+        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\IEXPLORE.EXE"
+    },
     ];
 
     function getDefaultBrowserInfo() {
@@ -90,6 +90,8 @@ var oAPP = (function() {
 
     oAPP.fn_submit = () => {
 
+        debugger;
+        
         var oId = document.getElementById("idInput"),
             oPw = document.getElementById("pwInput"),
             oClient = document.getElementById("clientInput"),
@@ -120,13 +122,32 @@ var oAPP = (function() {
         parent.setBusy('X');
 
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() { // 요청에 대한 콜백
+        xhr.onreadystatechange = function () { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
-                    parent.setBusy('');
+                    debugger;
 
-                    var oResult = JSON.parse(xhr.responseText);
+                    parent.setBusy("");
+
+                    // 서버 통신 중, u4a_status가 있을 경우 오류
+                    let u4a_status = xhr.getResponseHeader("u4a_status");
+                    if (u4a_status) {
+
+                        try {
+                            var oResult = JSON.parse(xhr.response);
+                        } catch (error) {
+                            fnJsonParseError(error);
+                            return;
+                        }
+
+                        // 잘못된 url 이거나 지원하지 않는 기능 처리                        
+                        parent.showMessage(sap, 20, oResult.RETCD, oResult.RTMSG);
+
+                        return;
+                    }
+
+                    var oResult = JSON.parse(xhr.response);
                     if (oResult.TYPE == "E") {
 
                         // 오류 처리..                   
@@ -153,6 +174,25 @@ var oAPP = (function() {
         xhr.send(oFormData); // 요청 전송 
 
     }; // end of oAPP.fn_submit
+
+    // JSON Parse Error
+    function fnJsonParseError(e) {
+
+        zconsole.error(e);
+
+        // JSON parse 오류 일 경우는 critical 오류로 판단하여 메시지 팝업 호출 후 창 닫게 만든다.
+
+        // 화면 Lock 해제
+        sap.ui.getCore().unlock();
+
+        parent.setBusy("");
+
+        // Fatal Error! Please contact your system administrator.
+        let sErrmsg = "Fatal Error! Please contact your system administrator \n \n " + e.toString();
+
+        parent.showMessage(sap, 20, "E", sErrmsg);
+
+    }
 
     oAPP.onLoginSuccess = (oResult) => {
 
@@ -280,7 +320,7 @@ var oAPP = (function() {
 
     };
 
-    oAPP.fnStaffLogin = function(id, pw) {
+    oAPP.fnStaffLogin = function (id, pw) {
 
         var oId = document.getElementById("idInput"),
             oPw = document.getElementById("pwInput");
@@ -297,7 +337,7 @@ var oAPP = (function() {
 
 })();
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
     // parent.fn_onWinMove(false, parent.REMOTE.getCurrentWindow());
 
