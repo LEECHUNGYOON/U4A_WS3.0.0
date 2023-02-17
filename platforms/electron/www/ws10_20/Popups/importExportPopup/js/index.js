@@ -15,7 +15,7 @@ const oAPP = {
 
         //WS Main 에서 호출받은 기본 I/F Data 
         this.ipcRenderer.on('export_import-INITDATA', (event, IF_DATA) => {
-
+            
             this.BROWSKEY = IF_DATA.BROWSKEY;
             this.SERVPATH = IF_DATA.SERVPATH;
             this.USERINFO = IF_DATA.USERINFO;
@@ -89,7 +89,7 @@ const oAPP = {
 
         //file 선택 팝업 실행 
         oAPP.remote.dialog.showOpenDialog(oAPP.oWIN, options).then(result => {
-            debugger;
+            
             if (result.canceled) {
                 oAPP.oWIN.close();
             }
@@ -222,8 +222,6 @@ const oAPP = {
         //file 선택 팝업 실행 
         oAPP.remote.dialog.showOpenDialog(oAPP.oWIN, options).then(result => {
 
-            debugger;
-            
             if (result.canceled) {
                 oAPP.oWIN.close();
             }
@@ -290,7 +288,7 @@ const oAPP = {
                         if (xhr.getResponseHeader('RETCD') !== "S") {
 
                             var Lmsg = xhr.getResponseHeader('RTMSG');
-                            if (Lmsg == "") {
+                            if (Lmsg == "" || Lmsg == null) {
                                 Lmsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "343"); // During the download process there is a critical problem.
                             }
 

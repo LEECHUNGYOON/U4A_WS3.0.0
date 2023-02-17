@@ -1024,7 +1024,7 @@
      * - EXPORT : Application Export
      * **********************************************************************/
     oAPP.fn.fnWsImportExportPopupOpener = (sFlag) => {
-
+        
         let sPopupName = "IMPEXPPOP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
@@ -1097,8 +1097,11 @@
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
-
+        //  // no build 일 경우에는 개발자 툴을 실행한다.
+        //  if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
+        
         oBrowserWindow.once('ready-to-show', () => {
 
             // 부모 위치 가운데 배치한다.
@@ -1814,12 +1817,11 @@
         oBrowserWindow.setMenu(null);
 
         oBrowserWindow.loadURL(sUrl);
-
-        // oBrowserWindow.webContents.openDevTools();
+        
         // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {

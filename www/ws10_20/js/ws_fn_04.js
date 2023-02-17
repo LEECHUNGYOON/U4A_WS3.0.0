@@ -67,7 +67,7 @@
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
     oAPP.fn.fnSapGuiMultiLoginCheckThen = async function(oResult) {
-
+        
         // sapgui 실행시, 레지스트리에 브라우저키를 저장하고 삭제 시점을 감지한다.
         await oAPP.fn.fnSapGuiRegistryParamCheck();
 

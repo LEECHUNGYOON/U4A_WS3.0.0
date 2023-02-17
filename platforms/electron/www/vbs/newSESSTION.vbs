@@ -90,7 +90,8 @@ Function SetParamTCP()
 	   
 	End If
 
-	LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE & "|" & ESID
+	'LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE & "|" & ESID
+	LV_PARA = APPID & "|" & METHD & "|" & SPOSI & "|" & ISEDT & "|" & TCODE & "|" & WScript.arguments.Item(9)
     
 	LV_ENC = Base64Encode(LV_PARA)
 	

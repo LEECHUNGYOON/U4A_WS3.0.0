@@ -68,7 +68,7 @@ module.exports = function (window, document, console) {
 
         console.error(sErrMsg);
 
-        // critical 오류이므로 창을 다 닫는다.
+        // critical 오류이므로 창을 닫는다.
         showCriticalErrorDialog(sErrMsg);
 
     }
@@ -87,7 +87,7 @@ module.exports = function (window, document, console) {
 
         console.error(sErrorMsg);
 
-        // critical 오류이므로 창을 다 닫는다.
+        // critical 오류이므로 창을 닫는다.
         showCriticalErrorDialog(sErrorMsg);
 
     }
