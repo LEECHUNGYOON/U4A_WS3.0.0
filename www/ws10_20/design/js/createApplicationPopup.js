@@ -1,4 +1,12 @@
 (function(){
+
+
+  const LAYOUT_IMG1 = parent.PATH.join(parent.REMOTE.app.getAppPath(), "ws10_20", "design", "image", "image01.jpg");
+  const LAYOUT_IMG2 = parent.PATH.join(parent.REMOTE.app.getAppPath(), "ws10_20", "design", "image", "image02.jpg");
+  const LAYOUT_IMG3 = parent.PATH.join(parent.REMOTE.app.getAppPath(), "ws10_20", "design", "image", "image03.jpg");
+  const LAYOUT_IMG4 = parent.PATH.join(parent.REMOTE.app.getAppPath(), "ws10_20", "design", "image", "image04.jpg");
+
+
   //application 생성시 추가 입력정보 팝업 호출.
   oAPP.fn.createApplicationPopup = function(appid){
 
@@ -50,7 +58,11 @@
 
       //application 생성전 입력값 점검.
       function lf_chkValue(){
+
         var ls_appl = oModel.getProperty("/CREATE");
+
+        //VIEW(TABLE)명 입력값 얻기.
+        var l_TABNM = oModel.getProperty("/DATASET/TABNM");
 
         //valueState 바인딩 필드 초기화.
         lf_resetValueStateField(ls_appl);
@@ -58,7 +70,8 @@
         var l_err = false;
 
         //Web Application Name 이 입력되지 않은경우.
-        if(ls_appl.APPNM === ""){
+        //(dataset의 Object Name입력됐다면 view, table의 desc를 Web Application Name으로 대체.)
+        if(ls_appl.APPNM === "" && l_TABNM === ""){
           ls_appl.APPNM_stat = "Error";
           //A33	Application name
           //014	& is required entry value.
@@ -221,7 +234,9 @@
                           ];
 
 
-        oModel.setData({"CREATE":ls_appl, "DATASET":{"RB01":true, "RB02":false, "TABNM":"", "TABTX":"","FLIST":"", "enab01":true}});
+        oModel.setData({"CREATE":ls_appl, "DATASET":{"RB01":true, "RB02":false, 
+          "TABNM":"", "TABTX":"","FLIST":"", "SCCNT":0, "enab01":true, 
+          "imgsrc":LAYOUT_IMG1}});
 
       } //초기값 설정.
 
@@ -260,6 +275,9 @@
 
         //검색조건 필드 항목.
         l_param.FLIST = l_dataset.FLIST;
+
+        //검색조건 컬럼 숫자 매핑.
+        l_param.SCCNT = l_dataset.SCCNT + 1;
 
         //radio를 선택한건에 따른 유형 분기.
         switch (true) {
@@ -501,9 +519,15 @@
           if(ls_return.RETCD === "E"){
             return;
           }
-          
+
           //필드 리스트 정보 매핑(없는경우 빈값으로 매핑)
           oModel.setProperty("/DATASET/FLIST", ls_return.FLIST || "");
+
+          //Web Application Name을 입력하지 않은경우.
+          if(l_create.APPNM === ""){
+            //VIEW(TABLE)의 DESC를 매핑.
+            oModel.setProperty("/CREATE/APPNM", ls_return.TDESC);
+          }
 
         }
 
@@ -651,9 +675,39 @@
         var l_enab = lf_setDatasetLayout();
 
         //dataset 입력값 초기화 처리.
-        oModel.setProperty("/DATASET", {"RB01":true, "RB02":false, "TABNM":"", "TABTX":"","FLIST":"", "enab01":l_enab});
+        oModel.setProperty("/DATASET", {"RB01":true, "RB02":false, "TABNM":"", 
+          "TABTX":"","FLIST":"", "SCCNT":0, "enab01":l_enab, 
+          "imgsrc":LAYOUT_IMG1});
 
       } //DATASET 바인딩 값 초기화.
+
+
+
+      //라디오 버튼 선택에 따른 이미지 변경 처리.
+      function lf_setSearchLayoutImage(){
+        var l_SCCNT = oModel.getProperty("/DATASET/SCCNT");
+
+        var l_imgsrc = "";
+
+        //라디오 선택건에 따른 이미지 src 분기.
+        switch(l_SCCNT){
+          case 0: //1 column
+            l_imgsrc = LAYOUT_IMG1;
+            break;
+          case 1: //2 columns
+            l_imgsrc = LAYOUT_IMG2;
+            break;
+          case 2: //3 columns
+            l_imgsrc = LAYOUT_IMG3;
+            break;
+          case 3: //4 columns
+            l_imgsrc = LAYOUT_IMG4;
+            break;
+        }
+
+        oModel.setProperty("/DATASET/imgsrc", l_imgsrc);
+
+      } //라디오 버튼 선택에 따른 이미지 변경 처리.
 
 
       /************************************************************************
@@ -854,6 +908,38 @@
         lf_ObjNameF4Help();
 
       }); //OBJECT NAME F4 HELP 이벤트.
+      
+      //E09  Search Layout
+      var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E09", "", "", "", "");
+
+      var oElem3 = new sap.ui.layout.form.FormElement({label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});
+      oCont1.addFormElement(oElem3);
+
+      var oHbox3 = new sap.m.HBox({direction:"Column"});
+      oElem3.addField(oHbox3);
+
+      //검색조건 layout 선택 radio button group.
+      var oRG02 = new sap.m.RadioButtonGroup({columns:4,selectedIndex:"{/DATASET/SCCNT}", enabled:"{/DATASET/enab01}",
+        buttons:[
+        new sap.m.RadioButton({text:"One Column"}),
+        new sap.m.RadioButton({text:"Two Columns"}),
+        new sap.m.RadioButton({text:"Three Columns"}),
+        new sap.m.RadioButton({text:"Four Columns"})
+      ]});
+
+      oHbox3.addItem(oRG02);
+
+      //라디오 버튼 그룹 선택 이벤트.
+      oRG02.attachSelect(function(){
+        //라디오 버튼 선택에 따른 이미지 변경 처리.
+        lf_setSearchLayoutImage();
+      });
+      
+      var oImg = new sap.m.Image({src:"{/DATASET/imgsrc}", height:"200px",
+        detailBox:new sap.m.LightBox({imageContent:new sap.m.LightBoxItem({imageSrc:"{/DATASET/imgsrc}"})})});
+      oHbox3.addItem(oImg);
+      
+      
 
 
       //A91  Web Application Name

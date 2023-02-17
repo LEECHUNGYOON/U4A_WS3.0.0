@@ -3490,6 +3490,15 @@
 
         case "DH001025": //Request/Task
           ls_0015.UIATV = oAPP.attr.appInfo.REQNO;
+          //기본 input visible 처리.
+          ls_0015.inp_visb = true;
+          break;
+
+        case "DH001104": //Session stateful type
+          //DDLB visible 처리.
+          ls_0015.sel_visb = true;
+          ls_0015.T_DDLB = lf_DDLB("UA052", "FLD02", "ITMCD", "FLD01");
+          break;
 
         default:
           //기본 input visible 처리.
