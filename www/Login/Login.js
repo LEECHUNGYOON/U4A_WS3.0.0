@@ -9,8 +9,9 @@ let oAPP = (function () {
     "use strict";
 
     const
-        require = parent.require,
+        require = parent.require,        
         REMOTE = parent.REMOTE,
+        CURRWIN = REMOTE.getCurrentWindow(),
         APPPATH = parent.APPPATH,
         PATH = parent.PATH,
         REGEDIT = parent.REGEDIT,

@@ -644,6 +644,9 @@ oAPP.common = {};
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
         function lf_setBound() {
 
             let oBrowserOptions = {};
@@ -674,9 +677,7 @@ oAPP.common = {};
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
-
-            console.log('did-finish-load');
+        oBrowserWindow.webContents.on('did-finish-load', function () {            
 
             var oSAPServerInfo = getServerInfo();
 
@@ -1126,7 +1127,6 @@ IPCRENDERER.on('if-meta-info', (event, res) => {
 
     var oMetadata = res;
 
-
     // 메타데이터 정보
     if (oMetadata.METADATA) {
         setMetadata(oMetadata.METADATA);
@@ -1187,7 +1187,9 @@ IPCRENDERER.on('if-meta-info', (event, res) => {
     // 타이틀 설정
     CURRWIN.setTitle("U4A Workspace - #Main");
 
-    // // 자연스러운 로딩
+    // CURRWIN.show();
+
+    // // 자연스러운 로딩   
     // fnOnSmoothLoading();
 
 });

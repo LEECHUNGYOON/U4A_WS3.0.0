@@ -9,8 +9,9 @@ let oAPP = (function () {
     "use strict";
 
     const
-        require = parent.require,
+        require = parent.require,        
         REMOTE = parent.REMOTE,
+        CURRWIN = REMOTE.getCurrentWindow(),
         APPPATH = parent.APPPATH,
         PATH = parent.PATH,
         REGEDIT = parent.REGEDIT,
@@ -1431,48 +1432,6 @@ let oAPP = (function () {
 
     }; // end of oAPP.fn.fnConnectionGithubThen
 
-    // /************************************************************************
-    //  * 개인화 파일에 저장된 CDN 허용 여부 플래그를 구한다.
-    //  ************************************************************************/
-    // oAPP.fn.fnGetIsCDN = () => {
-
-    //     // 서버 접속 정보
-    //     var oServerInfo = parent.getServerInfo(),
-    //         sSysID = oServerInfo.SYSID;
-
-    //     // P13N 파일 Path
-    //     var sP13nPath = parent.getPath("P13N"),
-    //         sP13nJsonData = FS.readFileSync(sP13nPath, 'utf-8'),
-
-    //         // 개인화 정보
-    //         oP13nData = JSON.parse(sP13nJsonData);
-
-    //     return oP13nData[sSysID].ISCDN;
-
-    // }; // end of oAPP.fn.fnGetIsCDN
-
-    // /************************************************************************
-    //  * 개인화 파일에 저장된 CDN 허용 여부 플래그를 저장한다.
-    //  ************************************************************************/
-    // oAPP.fn.fnSetIsCDN = (bIsCDN) => {
-
-    //     // 서버 접속 정보
-    //     var oServerInfo = parent.getServerInfo(),
-    //         sSysID = oServerInfo.SYSID;
-
-    //     // P13N 파일 Path
-    //     var sP13nPath = parent.getPath("P13N"),
-    //         sP13nJsonData = FS.readFileSync(sP13nPath, 'utf-8'),
-
-    //         // 개인화 정보
-    //         oP13nData = JSON.parse(sP13nJsonData);
-
-    //     oP13nData[sSysID].ISCDN = bIsCDN;
-
-    //     FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData));
-
-    // }; // end of oAPP.fn.fnSetIsCDN
-
     /************************************************************************
      * WS Version을 확인한다.
      ************************************************************************/
@@ -1773,11 +1732,7 @@ let oAPP = (function () {
             oResult.META.HOST = `http://${oTrialServerInfo.SERVERIP}:80${oTrialServerInfo.INSTANCENO}`;
 
         } else {
-
-            // ID 저장 체크 박스값 저장
-            // oAPP.fn.fnSaveRememberCheck(oLogInData.REMEMBER);                      
-            // oAPP.fn.fnSaveRememberCheck(oLogInData);
-
+         
             // Remember 정보 저장
             oAPP.fn.fnSaveRemember(oLogInData);
 
