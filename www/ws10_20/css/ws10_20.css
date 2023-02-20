@@ -4,6 +4,10 @@ body,
     height: 100%;
 }
 
+.u4aWsApp.sapUiSizeCompact .sapMPageWithFooter.sapMPageWithFloatingFooter>section{
+    padding-bottom: 0rem;
+}
+
 .sapMSticky .sapMTableTH {
     top: 0;
     position: sticky;
