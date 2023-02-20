@@ -47,7 +47,7 @@ module.exports = (() => {
         SERVERLIST_v2: PATH.join(APPPATH, '/ServerList_v2/ServerFrame.html'),
         COMMONCSS: PATH.join(APPPATH, "css", "common.css"),
         AUTOUPDSAP: PATH.join(APPPATH, "lib", "ws", "electron-updater-sap.js"),
-      
+        PATTERN: PATH.join(JS_ROOT, "usp", "pattern"),
 
         // User Data Paths..
         CLIPBOARD: PATH.join(USERDATA, "clipboard.json"),
@@ -83,6 +83,7 @@ module.exports = (() => {
         WSTRYCATCH: PATH.join(JS_ROOT, "ws_trycatch.js"),
         WSUTIL: PATH.join(JS_ROOT, "ws_util.js"),
         U4AHELP: PATH.join(APPPATH, "help", "u4a_helpdoc", "main.js"),
+        USP_PATTERN_JS: PATH.join(JS_ROOT, "usp", "pattern", "usp_pattern.js"),
 
         // Suggestion Json Path..
         EVENTSUGG: PATH.join(SUGG_ROOT, "events.json"),

@@ -92,7 +92,8 @@
     oAPP.main.fnOnInitModelBinding = function () {
 
         // ModelData
-        var oMetaData = {           
+        var oMetaData = {
+            PATTN: {}, // 패턴 정보
             METADATA: parent.getMetadata(),
             USERINFO: parent.getUserInfo(),
             SERVERINFO: parent.getServerInfo(),
@@ -322,7 +323,7 @@
      ************************************************************************/
     oAPP.main.fnWsStart = function () {
 
-        sap.ui.getCore().attachInit(function () {            
+        sap.ui.getCore().attachInit(async function () {
 
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
@@ -338,9 +339,6 @@
 
             // Test..(UI5 bootstrap tag의 Language 값 설정 테스트)
             oAPP.main.fnSetLanguage();
-
-            // // 접속 Language에 맞는 메시지 정보 읽어오기
-            // oAPP.main.fnOnLoadMessageClass();
 
             // 브라우저 상단 메뉴를 없앤다.
             parent.setBrowserMenu(null);
@@ -372,6 +370,8 @@
             // 공통 IPCMAIN 이벤트 걸기
             oAPP.fn.fnIpcMain_Attach_Event_Handler(); // #[ws_fn_ipc.js]
 
+            // 패턴 정보 읽기
+            await oAPP.fn.fnReadDefaultPattern(); // #[ws_fn_04.js]
 
         }); // end of attachInit
 

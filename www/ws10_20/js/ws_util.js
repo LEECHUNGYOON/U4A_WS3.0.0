@@ -265,4 +265,58 @@ module.exports = {
 
     }, // end of parseTreeToArray
 
+    readDir: (sFolderPath) => {
+
+        return new Promise(async (resolve) => {
+
+            FS.readdir(sFolderPath, (err, files) => {
+
+                if (err) {
+
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTDATA: files
+                });
+
+            });
+
+        });
+
+    }, // end of readdir
+
+    readFile: (sFilePath) => {
+
+        return new Promise(async (resolve) => {
+
+            FS.readFile(sFilePath, "utf-8", (err, data) => {
+
+                if (err) {
+
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTDATA: data
+                });
+
+            });
+
+        });
+
+    }, // end of readFile
+
 };

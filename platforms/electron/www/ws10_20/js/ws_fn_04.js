@@ -1,7 +1,7 @@
 /**************************************************************************                                           
  * ws_fn_04.js
  **************************************************************************/
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -14,6 +14,7 @@
         APPCOMMON = oAPP.common,
         IPCRENDERER = parent.IPCRENDERER,
         PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
+        WSUTIL = parent.require(PATHINFO.WSUTIL),
         SETTINGS = require(PATHINFO.WSSETTINGS);
 
     /************************************************************************
@@ -66,8 +67,8 @@
     /************************************************************************
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSapGuiMultiLoginCheckThen = async function(oResult) {
-        
+    oAPP.fn.fnSapGuiMultiLoginCheckThen = async function (oResult) {
+
         // sapgui 실행시, 레지스트리에 브라우저키를 저장하고 삭제 시점을 감지한다.
         await oAPP.fn.fnSapGuiRegistryParamCheck();
 
@@ -126,13 +127,13 @@
 
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
         var vbs = parent.SPAWN('cscript.exe', aParam);
-        vbs.stdout.on("data", function(data) {
+        vbs.stdout.on("data", function (data) {
 
 
         });
 
         //GUI 세션창이 존재하지않다면 ...
-        vbs.stderr.on("data", function(data) {
+        vbs.stderr.on("data", function (data) {
 
             //VBS 리턴 오류 CODE / MESSAGE 
             var str = data.toString(),
@@ -171,12 +172,12 @@
             ];
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
-            vbs.stdout.on("data", function(data) {
+            vbs.stdout.on("data", function (data) {
 
 
             });
 
-            vbs.stderr.on("data", function(data) {
+            vbs.stderr.on("data", function (data) {
 
                 // 이전에 돌고 있는 인터벌이 혹시나 있으면 삭제
                 _clearIntervalSapGuiCheck();
@@ -246,7 +247,7 @@
 
             const
                 Regedit = parent.require('regedit').promisified,
-                sRegPath = SETTINGS.regPaths.cSession,                
+                sRegPath = SETTINGS.regPaths.cSession,
                 BROWSKEY = parent.getBrowserKey();
 
             // 레지스트리 폴더 생성
@@ -527,7 +528,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             let oSendData = {
                 DEFAULT_OPACITY: 0.3,
@@ -575,20 +576,20 @@
 
         // 초기 모델 설정
         let oModelData = {
-                KEY: "",
-                RDBTNINDEX: 0,
-                FNAME: "",
-                RDLIST: [{
-                        text: "Key In"
-                    },
-                    {
-                        text: "File Drag"
-                    },
-                    {
-                        text: "Attach File"
-                    },
-                ]
+            KEY: "",
+            RDBTNINDEX: 0,
+            FNAME: "",
+            RDLIST: [{
+                text: "Key In"
             },
+            {
+                text: "File Drag"
+            },
+            {
+                text: "Attach File"
+            },
+            ]
+        },
             oJsonModel = new sap.ui.model.json.JSONModel();
 
         oJsonModel.setData(oModelData);
@@ -624,7 +625,7 @@
                     new sap.m.Button({
                         type: sap.m.ButtonType.Reject,
                         icon: "sap-icon://decline",
-                        press: function(oEvent) {
+                        press: function (oEvent) {
 
                             var oDialog = sap.ui.getCore().byId(DIALOG_ID);
                             if (oDialog) {
@@ -674,7 +675,7 @@
                     submit: () => {
                         oAPP.fn.fnSetOpenDevToolSubmit();
                     }
-                }).bindProperty("visible", "/RDBTNINDEX", function(INDEX) {
+                }).bindProperty("visible", "/RDBTNINDEX", function (INDEX) {
 
                     if (INDEX !== 0) {
                         return false;
@@ -703,7 +704,7 @@
                             text: "Drop the File!"
                         })
                     ]
-                }).bindProperty("visible", "/RDBTNINDEX", function(INDEX) {
+                }).bindProperty("visible", "/RDBTNINDEX", function (INDEX) {
 
                     if (INDEX !== 1) {
                         return false;
@@ -750,7 +751,7 @@
                 new sap.m.Button({
                     type: sap.m.ButtonType.Reject,
                     icon: "sap-icon://decline",
-                    press: function(oEvent) {
+                    press: function (oEvent) {
 
                         var oDialog = sap.ui.getCore().byId(DIALOG_ID);
                         if (oDialog) {
@@ -873,5 +874,53 @@
         oDialog.close();
 
     }; // end of oAPP.fn.fnSetOpenDevTool
+
+    /************************************************************************
+    * 기본 패턴을 읽어서 모델에 저장하기
+    ************************************************************************/
+    oAPP.fn.fnReadDefaultPattern = () => {
+
+        return new Promise(async (resolve) => {
+
+            resolve();
+
+            return;
+            
+            // 기본 패턴을 읽는다.
+            let sPatternPath = parent.getPath("PATTERN");
+
+            let oResult = await WSUTIL.readDir(sPatternPath);
+
+            if (oResult.RETCD == "E") {
+                resolve();
+                return;
+            }
+
+            let aPatternList = oResult.RTDATA,
+                iPattLength = aPatternList.length;
+
+            for (var i = 0; i < iPattLength; i++) {
+
+                const sPatternFileName = aPatternList[i];
+
+                let sPatternFullPath = PATH.join(sPatternPath, sPatternFileName);
+
+                let oResult = await WSUTIL.readFile(sPatternFullPath);
+
+                debugger;
+
+
+
+
+            }
+
+
+
+
+            resolve();
+
+        });
+
+    }; // end of oAPP.fn.fnReadDefaultPattern
 
 })(window, $, oAPP);

@@ -146,7 +146,7 @@ function createWindow() {
     configureSession();
 
     mainWindow = new BrowserWindow(browserWindowOpts);
-    mainWindow.webContents.setFrameRate(10);
+    mainWindow.webContents.setFrameRate(50);
     remote.enable(mainWindow.webContents);
 
     // Load a local HTML file or a remote URL.
@@ -154,7 +154,7 @@ function createWindow() {
     // const loadUrl = cdvUrl.includes('://') ? cdvUrl : `${basePath}/${cdvUrl}`;
     const loadUrlOpts = Object.assign({}, cdvElectronSettings.browserWindowInstance.loadURL.options);
 
-    const loadUrl = `${__dirname}\\intro2.html`;
+    const loadUrl = `${__dirname}\\intro3.html`;
     mainWindow.loadURL(loadUrl, loadUrlOpts);
 
     mainWindow.once('ready-to-show', () => {

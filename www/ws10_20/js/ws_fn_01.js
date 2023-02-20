@@ -12,6 +12,7 @@
         FS = parent.FS,
         APP = parent.APP,
         USERDATA = parent.USERDATA,
+        APPPATH = parent.APPPATH,
         WEBFRAME = parent.WEBFRAME;
 
     function _checkExamPopup() {
@@ -1013,7 +1014,12 @@
                         ]
                     }),
                 ]
+            }),
+
+            oHtml = new sap.ui.core.HTML({
+                content: _getWs10ContentHtml()
             });
+
 
         // 10번 페이지 Application Name SearchField의 Key down Event
         oAppNmInput.attachBrowserEvent("keydown", oAPP.fn.fnWs10AppInputKeyDownEvent);
@@ -1037,10 +1043,43 @@
         });
 
         return [
-            oForm
+            new sap.m.VBox({
+                height: "100%",
+                width: "100%",
+                renderType: "Bare",
+                items: [
+                    new sap.m.Page({
+                        showHeader: false,
+                        enableScrolling: false,
+                        content: [
+                            new sap.m.VBox({
+                                height: "100%",
+                                width: "100%",
+                                renderType: "Bare",
+                                items: [
+                                    oForm,
+                                    oHtml
+                                ]
+                            }),
+                        ]
+                    }),
+
+                ]
+            }),
         ];
 
     }; // end of oAPP.fn.fnGetPageContentWs10    
+
+    function _getWs10ContentHtml() {
+
+        let sHtmlPath = PATH.join(APPPATH, "ws10_20", "ws10_content", "ws10_content.html");
+
+
+        let aa = `<iframe src=${sHtmlPath} style="width:100%;height:100%;border:0px;"></iframe>`;
+        return aa;
+        // return FS.readFileSync(sHtmlPath);
+
+    }
 
     /************************************************************************
      * 10번 페이지 화면 그리기
@@ -1083,6 +1122,7 @@
 
         var oWs10Page = new sap.m.Page("WS10", {
             titleAlignment: sap.m.TitleAlignment.Center,
+            enableScrolling: false,
             subHeader: oSubHeaderToolbar,
             customHeader: oHeaderToolbar,
             content: aPageContent,
