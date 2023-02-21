@@ -1649,57 +1649,66 @@
      ************************************************************************/
     function _fnCodeeditorContextMenuEvent(oEvent) {
 
-        /**
-         * Electron ContextMenu
-         */
+        // /**
+        //  * Electron ContextMenu
+        //  */
         
-        const
-            MENU = REMOTE.Menu,
-            PATTJS = parent.require(parent.getPath("USP_PATTERN_JS"));
+        // const
+        //     MENU = REMOTE.Menu,
+        //     PATTJS = parent.require(parent.getPath("USP_PATTERN_JS"));
 
-        let T_MENU = PATTJS.getMenu(oAPP);
+        // let T_MENU = PATTJS.getMenu(oAPP);
 
-        var oMenu = MENU.buildFromTemplate(T_MENU);
-        oMenu.popup();
+        // var oMenu = MENU.buildFromTemplate(T_MENU);
+        // oMenu.popup();
 
+        // 컨트롤키 누르고 마우스 우클릭이면 전체 팝업을 띄운다.
+        if(oEvent.ctrlKey){
+
+
+
+            return;
+        }
+
+        debugger;
 
         /**
          * 원본
          */
-        // let oCurrTarget = oEvent.currentTarget;
-        // if (!oCurrTarget) {
-        //     return;
-        // }
+        let oCurrTarget = oEvent.currentTarget;
+        if (!oCurrTarget) {
+            return;
+        }
 
-        // let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
-        //     oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
+        let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
+            oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
 
-        // // 에디터가 둘중에 하나라도 없다면 빠져나감.
-        // if (!oCodeEditor1 || !oCodeEditor2) {
-        //     return;
-        // }
+        // 에디터가 둘중에 하나라도 없다면 빠져나감.
+        if (!oCodeEditor1 || !oCodeEditor2) {
+            return;
+        }
 
-        // // 현재 커서의 위치가 어떤 에디터인지 확인
-        // let $oCodeeditor1 = $(oCurrTarget).closest(".u4aUspCodeeditor1"),
-        //     $oCodeeditor2 = $(oCurrTarget).closest(".u4aUspCodeeditor2");
+        // 현재 커서의 위치가 어떤 에디터인지 확인
+        let $oCodeeditor1 = $(oCurrTarget).closest(".u4aUspCodeeditor1"),
+            $oCodeeditor2 = $(oCurrTarget).closest(".u4aUspCodeeditor2");
 
-        // // 현재 키 입력한 위치가 왼쪽 에디터에 있었을 경우
-        // if ($oCodeeditor1.length !== 0) {
+        // 현재 키 입력한 위치가 왼쪽 에디터에 있었을 경우
+        if ($oCodeeditor1.length !== 0) {
 
-        //     oAPP.fn.fnUspCodeeditorContextMenuOpen(oEvent, oCodeEditor1);
+            oAPP.fn.fnUspCodeeditorContextMenuOpen(oEvent, oCodeEditor1);
 
-        //     return;
+            return;
 
-        // }
+        }
 
-        // // 현재 키 입력한 위치가 오른쪽 에디터에 있었을 경우
-        // if ($oCodeeditor2.length !== 0) {
+        // 현재 키 입력한 위치가 오른쪽 에디터에 있었을 경우
+        if ($oCodeeditor2.length !== 0) {
 
-        //     oAPP.fn.fnUspCodeeditorContextMenuOpen(oEvent, oCodeEditor2);
+            oAPP.fn.fnUspCodeeditorContextMenuOpen(oEvent, oCodeEditor2);
 
-        //     return;
+            return;
 
-        // }
+        }
 
     } // end of _fnCodeeditorContextMenuEvent
 

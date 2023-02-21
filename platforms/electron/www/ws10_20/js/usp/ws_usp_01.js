@@ -627,14 +627,14 @@
             return;
         }
 
-        var oCtxMenu = new sap.m.Menu(sMenuId, {
+        var oCtxMenu = new sap.ui.unified.Menu(sMenuId, {
             items: [
-                new sap.m.MenuItem({
-                    key: "001",
+                new sap.ui.unified.MenuItem({
+                    // key: "001",
                     text: "패턴1"
                 }),
-                new sap.m.MenuItem({
-                    key: "002",
+                new sap.ui.unified.MenuItem({
+                    // key: "002",
                     text: "패턴2"
                 }),
             ]

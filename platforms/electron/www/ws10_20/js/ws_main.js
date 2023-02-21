@@ -373,7 +373,7 @@
             // 패턴 정보 읽기
             await oAPP.fn.fnReadDefaultPattern(); // #[ws_fn_04.js]
 
-
+            // 자연스러운 로딩
             sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function(){
                 
                 if (!parent.oWS.utill.attr.UIUpdated){
@@ -384,8 +384,7 @@
 
                     parent.oWS.utill.attr.UIUpdated = "X";
 
-                }
-                
+                }                
 
             });
 
