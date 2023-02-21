@@ -19,8 +19,8 @@
         IPCMAIN = parent.IPCMAIN,
         SESSKEY = parent.getSessionKey(),
         BROWSKEY = parent.getBrowserKey(),
+        WSUTIL = parent.require(parent.PATHINFO.WSUTIL),
         APPCOMMON = oAPP.common;
-
 
     /************************************************************************
      * APP 검색 Popup 
@@ -886,7 +886,10 @@
 
             oBrowserWindow.show();
 
-            oBrowserWindow.setOpacity(1.0);
+            // oBrowserWindow.setOpacity(1.0);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
@@ -909,6 +912,95 @@
         IPCMAIN.on(`${BROWSKEY}-cdn-save`, lf_IpcMainCdnSave);
 
     }; // end of oAPP.fn.fnWsOptionsPopupOpener
+
+    /************************************************************************
+     * USP PATTERN POPUP
+     ************************************************************************/
+    oAPP.fn.fnUspPatternPopupOpener = (menu, currentWindow, keyboardEvent) => {
+
+        let sPopupName = "PATTPOPUP";
+
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        if (oResult.ISOPEN) {
+            return;
+        }
+
+        let oServerInfo = parent.getServerInfo(), // 서버 정보
+            sSysID = oServerInfo.SYSID, // System ID
+            oThemeInfo = parent.getThemeInfo(), // 테마 개인화 정보
+            oMenuInfo = { // 선택한 패턴 메뉴 정보
+                KEY: menu.key
+            };
+
+        // Browswer Options
+        let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D46"); // Source Pattern
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.show = false;
+        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
+
+        // 브라우저 오픈
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+
+        let sUrlPath = parent.getPath(sPopupName);
+        oBrowserWindow.loadURL(sUrlPath);
+
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
+
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            let oOptionData = {
+                BROWSKEY: BROWSKEY, // 브라우저 고유키 
+                oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보
+                oServerInfo: parent.getServerInfo(), // 서버 정보
+                SYSID: sSysID, // System ID
+                oThemeInfo: oThemeInfo, // 테마 정보
+                oMenuInfo : oMenuInfo // 선택한 패턴 메뉴
+            };
+
+            oBrowserWindow.webContents.send('if-usp-pattern-info', oOptionData);
+
+            oBrowserWindow.show();
+
+            // oBrowserWindow.setOpacity(1.0);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
+    }; // end of oAPP.fn.fnUspPatternPopupOpener
 
     /************************************************************************
      * U4A Help Document Popup Opener
@@ -1024,7 +1116,7 @@
      * - EXPORT : Application Export
      * **********************************************************************/
     oAPP.fn.fnWsImportExportPopupOpener = (sFlag) => {
-        
+
         let sPopupName = "IMPEXPPOP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
@@ -1101,7 +1193,7 @@
         //  if (!APP.isPackaged) {
         //     oBrowserWindow.webContents.openDevTools();
         // }
-        
+
         oBrowserWindow.once('ready-to-show', () => {
 
             // 부모 위치 가운데 배치한다.
@@ -1817,7 +1909,7 @@
         oBrowserWindow.setMenu(null);
 
         oBrowserWindow.loadURL(sUrl);
-        
+
         // no build 일 경우에는 개발자 툴을 실행한다.
         // if (!APP.isPackaged) {
         //     oBrowserWindow.webContents.openDevTools();

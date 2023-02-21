@@ -18,6 +18,8 @@ if (USERINFO) {
     process.USERINFO = USERINFO;
 }
 
+let oAPP = {};
+
 /**
  * 테스트 -- end
  */
@@ -230,7 +232,7 @@ module.exports = {
 
         tm2[z] = a;
 
-    }, // end of oAPP.fn.fnSetTreeJson
+    }, // end of parseArrayToTree
 
     /************************************************************************
     * Tree구조를 Array 구조로 변환
@@ -292,6 +294,10 @@ module.exports = {
 
     }, // end of readdir
 
+    /**
+     * File 읽기
+     * @param {String} sFilePath 
+     */
     readFile: (sFilePath) => {
 
         return new Promise(async (resolve) => {
@@ -318,5 +324,38 @@ module.exports = {
         });
 
     }, // end of readFile
+
+    /**
+     * Electron Browser Window Open 시 Opacity를 이용하여 자연스러운 동작 연출
+     * @param {BrowserWindow} oBrowserWindow 
+     */
+    setBrowserOpacity: function (oBrowserWindow) {
+
+        let iOpa = 0.0,
+            iInterval;
+
+        if (iInterval) {
+            clearInterval(iInterval);
+        }
+
+        iInterval = setInterval(() => {
+
+            if (iOpa > 1) {
+
+                if (iInterval) {
+                    oBrowserWindow.setOpacity(1.0);
+                    clearInterval(iInterval);                    
+                }
+
+                return;
+            }
+
+            iOpa += 0.02;
+
+            oBrowserWindow.setOpacity(iOpa);
+
+        }, 10);
+
+    }, // end of setBrowserOpacity
 
 };

@@ -20,6 +20,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     APPPATH = APP.getAppPath(),
     USERDATA = APP.getPath("userData"),
     PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
+    WSUTIL = parent.require(PATHINFO.WSUTIL),
     CURRWIN = REMOTE.getCurrentWindow(),
     MIMETYPES = require('mime-types'),
     POWERMONITOR = REMOTE.require('electron').powerMonitor,
@@ -141,12 +142,12 @@ oAPP.common = {};
 
         // 메시지 타입별 텍스트
         let oMsgcls = {
-                S: "Success",
-                E: "Error",
-                I: "Information",
-                W: "Warning",
-                WORKSPACE: "U4A WorkSpace"
-            },
+            S: "Success",
+            E: "Error",
+            I: "Information",
+            W: "Warning",
+            WORKSPACE: "U4A WorkSpace"
+        },
             APPCOMMON = oAPP.common;
 
         // 로그인 후 메시지 정보를 읽었을 경우 접속 언어에 맞게 텍스트 변경
@@ -677,7 +678,7 @@ oAPP.common = {};
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {            
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oSAPServerInfo = getServerInfo();
 
@@ -697,7 +698,34 @@ oAPP.common = {};
 
             oBrowserWindow.show();
 
-            oBrowserWindow.setOpacity(1.0);
+            let iOpa = 0.0;
+
+            if (oAPP.iInterval) {
+                clearInterval(oAPP.iInterval);
+                delete oAPP.iInterval;
+            }
+
+            oAPP.iInterval = setInterval(() => {
+
+                if (iOpa > 1) {
+
+                    if (oAPP.iInterval) {
+                        oBrowserWindow.setOpacity(1.0);
+                        clearInterval(oAPP.iInterval);
+                        delete oAPP.iInterval;
+
+                    }
+
+                    return;
+                }
+
+                iOpa += 0.1;
+
+                oBrowserWindow.setOpacity(iOpa);
+
+            }, 30);
+
+            // oBrowserWindow.setOpacity(1.0);
 
             lf_setBound();
 
@@ -769,8 +797,8 @@ oAPP.common = {};
 
         // 세션 갯수 초기값
         var oConf = {
-                sessionCnt: 1,
-            },
+            sessionCnt: 1,
+        },
 
             oConfJson = JSON.stringify(oConf);
 

@@ -165,9 +165,9 @@
 
                     parent.oWS.utill.attr.ISINIT = 'X';
 
-                    setTimeout(() => {
-                        $('#content').fadeIn(300, 'linear');
-                    }, 300);
+                    // setTimeout(() => {
+                    //     $('#content').fadeIn(300, 'linear');
+                    // }, 300);
 
                 }
 
@@ -1054,7 +1054,7 @@
                         showHeader: false,
                         enableScrolling: false,
                         content: [
-                            oHtml,
+                            // oHtml,
                         ]
                     }),
                 ]

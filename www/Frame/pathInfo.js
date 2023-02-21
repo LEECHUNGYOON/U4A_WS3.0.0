@@ -78,12 +78,13 @@ module.exports = (() => {
         WINHIDE: PATH.join(POPUP_ROOT, "winShowHidePopup", "frame.html"),
         WINHIDE2: PATH.join(POPUP_ROOT, "winShowHidePopup", "test1.html"),
         USPNEW: PATH.join(POPUP_ROOT, "uspNewPopup", "frame.html"),
+        PATTPOPUP: PATH.join(POPUP_ROOT, "patternPopup", "frame.html"),
 
         // JS Paths..
         WSTRYCATCH: PATH.join(JS_ROOT, "ws_trycatch.js"),
         WSUTIL: PATH.join(JS_ROOT, "ws_util.js"),
         U4AHELP: PATH.join(APPPATH, "help", "u4a_helpdoc", "main.js"),
-        USP_PATTERN_JS: PATH.join(JS_ROOT, "usp", "pattern", "usp_pattern.js"),
+        USP_PATTERN_JS: PATH.join(JS_ROOT, "usp", "usp_pattern.js"),
 
         // Suggestion Json Path..
         EVENTSUGG: PATH.join(SUGG_ROOT, "events.json"),

@@ -64,7 +64,7 @@
     oAPP.common.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
-        if(!oCoreModel){
+        if (!oCoreModel) {
             return;
         }
 
@@ -91,7 +91,7 @@
         }
 
         return oCoreModel.getProperty(sModelPath);
-        
+
     }; // end of oAPP.common.fnGetModelProperty
 
     // /************************************************************************
@@ -2077,8 +2077,8 @@
 
         });
 
-    }; // end of oAPP.common.fnSleep    
-
+    }; // end of oAPP.common.fnSleep
+    
     /**
      * ProgressDialog
      * 

@@ -324,7 +324,7 @@
     oAPP.main.fnWsStart = function () {
 
         sap.ui.getCore().attachInit(async function () {
-
+            
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
 
@@ -372,6 +372,22 @@
 
             // 패턴 정보 읽기
             await oAPP.fn.fnReadDefaultPattern(); // #[ws_fn_04.js]
+
+
+            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function(){
+                
+                if (!parent.oWS.utill.attr.UIUpdated){
+
+                    setTimeout(() => {
+                        $('#content').fadeIn(300, 'linear');
+                    }, 300);
+
+                    parent.oWS.utill.attr.UIUpdated = "X";
+
+                }
+                
+
+            });
 
         }); // end of attachInit
 

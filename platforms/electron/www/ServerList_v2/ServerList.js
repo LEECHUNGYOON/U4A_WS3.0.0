@@ -22,6 +22,7 @@ const
     RANDOM = require("random-key"),
 
     PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
+    WSUTIL = parent.require(PATHINFO.WSUTIL),
     SETTINGS = require(PATHINFO.WSSETTINGS),
     XHR = new XMLHttpRequest();
 
@@ -37,7 +38,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function(oAPP) {
+(function (oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -86,7 +87,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             text: "Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function() {
+            close: function () {
                 XHR.abort();
             }
         });
@@ -99,7 +100,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.sendAjax = (sUrl, fnSuccess, fnError, fnCancel) => {
 
         // ajax call 취소할 경우..
-        XHR.onabort = function() {
+        XHR.onabort = function () {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -108,7 +109,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // ajax call 실패 할 경우
-        XHR.onerror = function() {
+        XHR.onerror = function () {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -116,7 +117,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         };
 
-        XHR.onload = function() {
+        XHR.onload = function () {
 
             if (typeof fnSuccess == "function") {
                 fnSuccess(XHR.response);
@@ -656,9 +657,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-                RETCD: "E",
-                RTMSG: "Server information does not exist in the SAPGUI logon file."
-            },
+            RETCD: "E",
+            RTMSG: "Server information does not exist in the SAPGUI logon file."
+        },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -788,9 +789,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-                RETCD: "E",
-                RTMSG: "Server information does not exist in the SAPGUI logon file."
-            },
+            RETCD: "E",
+            RTMSG: "Server information does not exist in the SAPGUI logon file."
+        },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -964,8 +965,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnOnInitRendering = () => {
 
         var oApp = new sap.m.App({
-                autoFocus: false,
-            }),
+            autoFocus: false,
+        }),
             oTreeTable = oAPP.fn.fnGetWorkSpaceTreeTable(), // 좌측 폴더 Tree
             oTable = oAPP.fn.fnGetSAPLogonListTable(), // 우측 서버 리스트 테이블
             oPage1 = new sap.m.Page({
@@ -1011,7 +1012,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function() {
+            onAfterRendering: function () {
 
                 setTimeout(() => {
                     $('#content').fadeIn(300, 'linear');
@@ -2436,7 +2437,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
         let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
-        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);       
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
@@ -2452,7 +2453,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -2463,11 +2464,12 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             };
 
             // 메타 정보를 보낸다.
-            oBrowserWindow.webContents.send('if-meta-info', oMetadata);          
+            oBrowserWindow.webContents.send('if-meta-info', oMetadata);
 
             oBrowserWindow.show();
 
-            oBrowserWindow.setOpacity(1.0);
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // session samesite 회피
             configureSession(oBrowserWindow);
@@ -2506,7 +2508,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         resolve({

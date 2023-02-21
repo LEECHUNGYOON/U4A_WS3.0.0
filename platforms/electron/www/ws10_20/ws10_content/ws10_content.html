@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <div class="u4aWsmainContent">
+    <div id ="u4aWsmainContent" class="u4aWsmainContent">
         <div class="u4aWsrocket">
             <svg class="u4aWsrocketBody" width="396" height="194" viewBox="0 0 396 194" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g filter="url(#filter0_iii_52_25)">
@@ -410,6 +410,22 @@
 
     <script>
         window.onload = function() {
+            
+            // 테마 기본색에 맞는 컬러를 배경색에 적용한다.
+            let oMainContent = document.getElementById("u4aWsmainContent");
+            if(oMainContent){
+
+                if(parent?.parent?.getThemeInfo()){
+
+                    let oThemeInfo = parent.parent.getThemeInfo(),
+                        sThemeColor = oThemeInfo.BGCOL || "#FFFFFF";
+                        oMainContent.style.backgroundColor = sThemeColor;
+
+                }
+
+            }
+
+           
             var flag = document.getElementById('u4aWsflag');
             drawFlag(flag, 320, 0, 40);
             var timer = waveFlag(flag, 20, 10, 50, 200, -0.1);
