@@ -53,14 +53,13 @@ let oAPP = (function (window) {
      ************************************************************************/
     oAPP.IPCRENDERER.on('if-usp-pattern-info', (events, oInfo) => {
 
-        debugger;
 
         oAPP.attr.BROWSKEY = oInfo.BROWSKEY;
         oAPP.attr.oUserInfo = oInfo.oUserInfo;
         oAPP.attr.oServerInfo = oInfo.oServerInfo;
         oAPP.attr.SYSID = oInfo.SYSID;
         oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
-        oAPP.attr.oMenuInfo = oInfo.oMenuInfo;
+        // oAPP.attr.oMenuInfo = oInfo.oMenuInfo;
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {

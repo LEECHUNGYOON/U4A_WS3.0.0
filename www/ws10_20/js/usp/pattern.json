@@ -1,0 +1,16 @@
+[
+    { "PKEY": "", "CKEY": "PTN001", "DESC": "Default Pattern" },
+    { "PKEY": "PTN001", "CKEY": "PTN001_P001", "DESC": "HTML" },
+    { "PKEY": "PTN001_P001", "CKEY": "PTN001_P001_001", "DESC": "HTML 기본패턴", "ACTCD" : "01" },
+    { "PKEY": "PTN001_P001", "CKEY": "PTN001_P001_002", "DESC": "FORM 기본패턴", "ACTCD" : "01" },
+    { "PKEY": "PTN001_P001", "CKEY": "PTN001_P001_003", "DESC": "Iframe 기본패턴", "ACTCD" : "01" },
+    { "PKEY": "PTN001_P001", "CKEY": "PTN001_P001_004", "DESC": "UI5 기본패턴", "ACTCD" : "01" },
+
+    { "PKEY": "PTN001", "CKEY": "PTN001_P002", "DESC": "JS" },
+    { "PKEY": "PTN001_P002", "CKEY": "PTN001_P002_001", "DESC": "JS 기본 패턴", "ACTCD" : "02" },    
+    { "PKEY": "PTN001_P002", "CKEY": "PTN001_P002_002", "DESC": "즉시실행함수 패턴", "ACTCD" : "02" },    
+    { "PKEY": "PTN001_P002", "CKEY": "PTN001_P002_003", "DESC": "Module js 패턴", "ACTCD" : "02" },    
+    { "PKEY": "PTN001_P002", "CKEY": "PTN001_P002_004", "DESC": "윈도우 이벤트 패턴", "ACTCD" : "02" },
+
+    { "PKEY": "", "CKEY": "PTN002", "DESC": "Custom Pattern" }
+]

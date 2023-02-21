@@ -916,7 +916,7 @@
     /************************************************************************
      * USP PATTERN POPUP
      ************************************************************************/
-    oAPP.fn.fnUspPatternPopupOpener = (menu, currentWindow, keyboardEvent) => {
+    oAPP.fn.fnUspPatternPopupOpener = () => {
 
         let sPopupName = "PATTPOPUP";
 
@@ -928,10 +928,10 @@
 
         let oServerInfo = parent.getServerInfo(), // 서버 정보
             sSysID = oServerInfo.SYSID, // System ID
-            oThemeInfo = parent.getThemeInfo(), // 테마 개인화 정보
-            oMenuInfo = { // 선택한 패턴 메뉴 정보
-                KEY: menu.key
-            };
+            oThemeInfo = parent.getThemeInfo(); // 테마 개인화 정보
+            // oMenuInfo = { // 선택한 패턴 메뉴 정보
+            //     KEY: menu.key
+            // };
 
         // Browswer Options
         let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
@@ -983,7 +983,7 @@
                 oServerInfo: parent.getServerInfo(), // 서버 정보
                 SYSID: sSysID, // System ID
                 oThemeInfo: oThemeInfo, // 테마 정보
-                oMenuInfo : oMenuInfo // 선택한 패턴 메뉴
+                // oMenuInfo : oMenuInfo // 선택한 패턴 메뉴
             };
 
             oBrowserWindow.webContents.send('if-usp-pattern-info', oOptionData);

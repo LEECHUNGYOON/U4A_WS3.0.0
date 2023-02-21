@@ -5,7 +5,7 @@
  * - file Desc : ws 메인 
  ************************************************************************/
 
-(function (window, oAPP) {
+(function(window, oAPP) {
     "use strict";
 
     var APPCOMMON = oAPP.common;
@@ -13,7 +13,7 @@
     /**************************************************************************
      * 공통 인스턴스 정의
      **************************************************************************/
-    oAPP.main.fnPredefineGlobalObject = function () {
+    oAPP.main.fnPredefineGlobalObject = function() {
 
         var oMetaData = parent.getMetadata();
 
@@ -86,14 +86,27 @@
 
     }; // end of oAPP.main.fnGetWs20InitData
 
+    function _getUspPatternInfo() {
+
+        debugger;
+        
+        let sUspRootPath = parent.getPath("USP_ROOT"),
+            sPatternJsonPath = parent.PATH.join(sUspRootPath, "pattern.json"),
+            oPatternJson = parent.require(sPatternJsonPath);
+
+        return oPatternJson;
+
+
+    } // end of _getUspPatternInfo
+
     /**************************************************************************
      * U4A WS 메타 정보 구하기
      **************************************************************************/
-    oAPP.main.fnOnInitModelBinding = function () {
+    oAPP.main.fnOnInitModelBinding = function() {
 
         // ModelData
         var oMetaData = {
-            PATTN: {}, // 패턴 정보
+            PATTN: _getUspPatternInfo(), // USP 패턴 정보
             METADATA: parent.getMetadata(),
             USERINFO: parent.getUserInfo(),
             SERVERINFO: parent.getServerInfo(),
@@ -170,7 +183,7 @@
     /************************************************************************
      * window Event Handle ..
      ************************************************************************/
-    oAPP.main.fnBeforeunload = function (isClearStorage) {
+    oAPP.main.fnBeforeunload = function(isClearStorage) {
 
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
@@ -221,7 +234,7 @@
 
                 }
 
-                window.onbeforeunload = () => { };
+                window.onbeforeunload = () => {};
 
                 top.window.close();
 
@@ -256,7 +269,7 @@
 
             }
 
-            window.onbeforeunload = () => { };
+            window.onbeforeunload = () => {};
 
             top.window.close();
 
@@ -273,12 +286,12 @@
 
     oAPP.main.fnDetachBeforeunloadEvent = () => {
 
-        window.onbeforeunload = () => { };
+        window.onbeforeunload = () => {};
 
     };
 
     // Test..
-    oAPP.main.fnSetLanguage = function () {
+    oAPP.main.fnSetLanguage = function() {
 
         var oUserInfo = parent.getUserInfo(),
             oMetaScript = document.getElementById("sap-ui-bootstrap");
@@ -321,10 +334,10 @@
     /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------
      ************************************************************************/
-    oAPP.main.fnWsStart = function () {
+    oAPP.main.fnWsStart = function() {
 
-        sap.ui.getCore().attachInit(async function () {
-            
+        sap.ui.getCore().attachInit(async function() {
+
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
 
@@ -374,9 +387,9 @@
             await oAPP.fn.fnReadDefaultPattern(); // #[ws_fn_04.js]
 
             // 자연스러운 로딩
-            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function(){
-                
-                if (!parent.oWS.utill.attr.UIUpdated){
+            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function() {
+
+                if (!parent.oWS.utill.attr.UIUpdated) {
 
                     setTimeout(() => {
                         $('#content').fadeIn(300, 'linear');
@@ -384,7 +397,7 @@
 
                     parent.oWS.utill.attr.UIUpdated = "X";
 
-                }                
+                }
 
             });
 

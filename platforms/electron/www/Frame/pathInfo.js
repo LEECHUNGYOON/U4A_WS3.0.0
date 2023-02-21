@@ -25,8 +25,8 @@ module.exports = (() => {
         APPPATH = APP.getAppPath(),
         USERDATA = APP.getPath("userData"),
 
-        JS_ROOT = PATH.join(APPPATH, "ws10_20", "js"),
-        POPUP_ROOT = PATH.join(APPPATH, "ws10_20", "Popups"),
+        JS_ROOT = PATH.join(APPPATH, "ws10_20", "js"),        
+        POPUP_ROOT = PATH.join(APPPATH, "ws10_20", "Popups"),        
         P13N_ROOT = PATH.join(USERDATA, "p13n"),
         SUGG_ROOT = PATH.join(P13N_ROOT, "suggestion");
 
@@ -48,6 +48,7 @@ module.exports = (() => {
         COMMONCSS: PATH.join(APPPATH, "css", "common.css"),
         AUTOUPDSAP: PATH.join(APPPATH, "lib", "ws", "electron-updater-sap.js"),
         PATTERN: PATH.join(JS_ROOT, "usp", "pattern"),
+        USP_ROOT : PATH.join(APPPATH, "ws10_20", "js", "usp"),
 
         // User Data Paths..
         CLIPBOARD: PATH.join(USERDATA, "clipboard.json"),

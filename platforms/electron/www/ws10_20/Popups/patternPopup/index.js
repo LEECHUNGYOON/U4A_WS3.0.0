@@ -11,7 +11,7 @@ let zconsole = parent.WSERR(window, document, console);
 
 let oAPP = parent.oAPP;
 
-(function (window, oAPP) {
+(function(window, oAPP) {
     "use strict";
 
     oAPP.settings = {};
@@ -31,7 +31,7 @@ let oAPP = parent.oAPP;
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.fn.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
+    oAPP.fn.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -49,7 +49,7 @@ let oAPP = parent.oAPP;
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.fn.fnGetModelProperty = function (sModelPath) {
+    oAPP.fn.fnGetModelProperty = function(sModelPath) {
 
         return sap.ui.getCore().getModel().getProperty(sModelPath);
 
@@ -58,7 +58,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * ws의 설정 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.getSettingsInfo = function () {
+    oAPP.fn.getSettingsInfo = function() {
 
         // Browser Window option
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
@@ -76,7 +76,7 @@ let oAPP = parent.oAPP;
     // /************************************************************************
     //  * UI5 BootStrap 
     //  ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = function () {
+    oAPP.fn.fnLoadBootStrapSetting = function() {
 
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
@@ -116,7 +116,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 초기 모델 바인딩
      ************************************************************************/
-    oAPP.fn.fnInitModelBinding = function () {
+    oAPP.fn.fnInitModelBinding = function() {
 
         var oCoreModel = sap.ui.getCore().getModel(),
             oJsonModel = new sap.ui.model.json.JSONModel(),
@@ -143,11 +143,11 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 화면 초기 렌더링
      ************************************************************************/
-    oAPP.fn.fnInitRendering = function () {
+    oAPP.fn.fnInitRendering = function() {
 
         var oApp = new sap.m.App({
-            autoFocus: false,
-        }),
+                autoFocus: false,
+            }),
             oPage = new sap.m.Page({
 
                 // properties
@@ -300,7 +300,7 @@ let oAPP = parent.oAPP;
         let oCodeEditor = new sap.ui.codeeditor.CodeEditor();
 
         oCodeEditor.addEventDelegate({
-            onAfterRendering: function (oControl) {
+            onAfterRendering: function(oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -353,9 +353,9 @@ let oAPP = parent.oAPP;
     // // UI5 Boot Strap을 로드 하고 attachInit 한다.
     oAPP.fn.fnLoadBootStrapSetting();
 
-    window.onload = function () {
+    window.onload = function() {
 
-        sap.ui.getCore().attachInit(async function () {
+        sap.ui.getCore().attachInit(async function() {
 
             debugger;
 
@@ -366,7 +366,7 @@ let oAPP = parent.oAPP;
             oAPP.fn.fnInitRendering();
 
             // 패턴 파일들을 읽어온다.
-            await oAPP.fn.fnGetPatternFiles();
+            // await oAPP.fn.fnGetPatternFiles();
 
 
 
@@ -379,13 +379,22 @@ let oAPP = parent.oAPP;
             /**
              * 무조건 맨 마지막에 수행 되어야 함!!
              */
-            setTimeout(() => {
+            // 자연스러운 로딩
+            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function() {
 
-                $('#content').fadeIn(300, 'linear');
+                if (!oAPP.attr.UIUpdated) {
 
-                oAPP.setBusy("");
+                    setTimeout(() => {
+                        $('#content').fadeIn(300, 'linear');
+                    }, 300);
 
-            }, 100);
+                    oAPP.attr.UIUpdated = "X";
+
+                    oAPP.setBusy("");
+
+                }
+
+            });
 
         });
 
