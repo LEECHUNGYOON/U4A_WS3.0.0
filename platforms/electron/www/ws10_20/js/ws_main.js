@@ -5,7 +5,7 @@
  * - file Desc : ws 메인 
  ************************************************************************/
 
-(function(window, oAPP) {
+(function (window, oAPP) {
     "use strict";
 
     var APPCOMMON = oAPP.common;
@@ -13,7 +13,7 @@
     /**************************************************************************
      * 공통 인스턴스 정의
      **************************************************************************/
-    oAPP.main.fnPredefineGlobalObject = function() {
+    oAPP.main.fnPredefineGlobalObject = function () {
 
         var oMetaData = parent.getMetadata();
 
@@ -84,29 +84,15 @@
             }
         };
 
-    }; // end of oAPP.main.fnGetWs20InitData
-
-    function _getUspPatternInfo() {
-
-        debugger;
-        
-        let sUspRootPath = parent.getPath("USP_ROOT"),
-            sPatternJsonPath = parent.PATH.join(sUspRootPath, "pattern.json"),
-            oPatternJson = parent.require(sPatternJsonPath);
-
-        return oPatternJson;
-
-
-    } // end of _getUspPatternInfo
+    }; // end of oAPP.main.fnGetWs20InitData    
 
     /**************************************************************************
      * U4A WS 메타 정보 구하기
      **************************************************************************/
-    oAPP.main.fnOnInitModelBinding = function() {
+    oAPP.main.fnOnInitModelBinding = function () {
 
         // ModelData
         var oMetaData = {
-            PATTN: _getUspPatternInfo(), // USP 패턴 정보
             METADATA: parent.getMetadata(),
             USERINFO: parent.getUserInfo(),
             SERVERINFO: parent.getServerInfo(),
@@ -183,7 +169,7 @@
     /************************************************************************
      * window Event Handle ..
      ************************************************************************/
-    oAPP.main.fnBeforeunload = function(isClearStorage) {
+    oAPP.main.fnBeforeunload = function (isClearStorage) {
 
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
@@ -234,7 +220,7 @@
 
                 }
 
-                window.onbeforeunload = () => {};
+                window.onbeforeunload = () => { };
 
                 top.window.close();
 
@@ -269,7 +255,7 @@
 
             }
 
-            window.onbeforeunload = () => {};
+            window.onbeforeunload = () => { };
 
             top.window.close();
 
@@ -286,12 +272,12 @@
 
     oAPP.main.fnDetachBeforeunloadEvent = () => {
 
-        window.onbeforeunload = () => {};
+        window.onbeforeunload = () => { };
 
     };
 
     // Test..
-    oAPP.main.fnSetLanguage = function() {
+    oAPP.main.fnSetLanguage = function () {
 
         var oUserInfo = parent.getUserInfo(),
             oMetaScript = document.getElementById("sap-ui-bootstrap");
@@ -334,9 +320,9 @@
     /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------
      ************************************************************************/
-    oAPP.main.fnWsStart = function() {
+    oAPP.main.fnWsStart = function () {
 
-        sap.ui.getCore().attachInit(async function() {
+        sap.ui.getCore().attachInit(async function () {
 
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
@@ -360,7 +346,7 @@
             oAPP.common.fnSetGlobalShortcut();
 
             // 초기 모델 바인딩
-            oAPP.main.fnOnInitModelBinding();
+            oAPP.main.fnOnInitModelBinding();           
 
             // 초기 화면 그리기
             oAPP.fn.fnOnInitRendering(); // #[ws_fn_01.js]
@@ -377,17 +363,11 @@
             // Loading Page
             parent.showLoadingPage('');
 
-            // // 서버 호스트 등록 여부 체크
-            // oAPP.fn.fnCheckServerHost(); // #[ws_fn_03.js]
-
             // 공통 IPCMAIN 이벤트 걸기
-            oAPP.fn.fnIpcMain_Attach_Event_Handler(); // #[ws_fn_ipc.js]
-
-            // 패턴 정보 읽기
-            await oAPP.fn.fnReadDefaultPattern(); // #[ws_fn_04.js]
+            oAPP.fn.fnIpcMain_Attach_Event_Handler(); // #[ws_fn_ipc.js]           
 
             // 자연스러운 로딩
-            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function() {
+            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function () {
 
                 if (!parent.oWS.utill.attr.UIUpdated) {
 

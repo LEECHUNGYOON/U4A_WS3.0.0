@@ -2,7 +2,7 @@
  * ws_fn_01.js
  **************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -59,11 +59,11 @@
     /************************************************************************
      * 초기 화면 그리기
      ************************************************************************/
-    oAPP.fn.fnOnInitRendering = function() {
+    oAPP.fn.fnOnInitRendering = function () {
 
         var oApp = new sap.m.NavContainer("WSAPP", {
             autoFocus: false,
-            afterNavigate: function(oEvent) {
+            afterNavigate: function (oEvent) {
 
                 var toId = oEvent.getParameter("toId");
 
@@ -77,7 +77,8 @@
 
                     case "WS10":
 
-                        parent.setBusy('');
+                        // busy 끄고 Lock 끄기
+                        oAPP.common.fnSetBusyLock("");
 
                         // 10번 페이지로 넘어 올때 APP NAME Input에 포커스 주기
                         var oAppNmInput = sap.ui.getCore().byId("AppNmInput");
@@ -99,32 +100,6 @@
                         break;
 
                     case "WS30":
-
-                        // usp tree 부분 split 영역 
-                        var oSplitLayout = sap.ui.getCore().byId("usptreeSplitLayout");
-                        if (oSplitLayout) {
-                            oSplitLayout.setSize("500px");
-                        }
-
-                        // content 영역 split orientation 초기화
-                        var oCodeEditorSplit = sap.ui.getCore().byId("uspCodeeditorSplit");
-                        if (oCodeEditorSplit) {
-                            oCodeEditorSplit.setOrientation("Horizontal");
-                        }
-
-                        // content 영역 split size 초기화
-                        var oCodeEditorSplitLayoutData = sap.ui.getCore().byId("codeEditorSplitLayout");
-                        if (oCodeEditorSplitLayoutData) {
-                            oCodeEditorSplitLayoutData.setSize("0px");
-                        }
-
-                        // content 영역 상단 패널 펼치기
-                        let oPanel = sap.ui.getCore().byId("uspPanel");
-                        if (oPanel) {
-                            oPanel.setExpanded(true);
-                        }
-
-                        oAPP.fn.fnOnInitLayoutSettingsWs30(); // #[ws_usp.js]
 
                         oAPP.fn.fnMoveToWs30(); // #[ws_fn_02.js]
 
@@ -154,14 +129,14 @@
         // 처음 로드 할때 APP NAME Input에 포커스 주기
         oApp.addEventDelegate({
 
-            onAfterRendering: function() {
+            onAfterRendering: function () {
 
                 if (parent.oWS.utill.attr.ISINIT == null) {
 
                     let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "299");
 
                     // 페이지 푸터 메시지                    
-                    APPCOMMON.fnShowFloatingFooterMsg("S", "WS10", sMsg /*"Welcome to U4A Workspace!"*/ );
+                    APPCOMMON.fnShowFloatingFooterMsg("S", "WS10", sMsg /*"Welcome to U4A Workspace!"*/);
 
                     parent.oWS.utill.attr.ISINIT = 'X';
 
@@ -187,127 +162,127 @@
     /************************************************************************
      * 10번 페이지 Window Menu List
      ************************************************************************/
-    oAPP.fn.fnGetWindowMenuListWS10 = function() {
+    oAPP.fn.fnGetWindowMenuListWS10 = function () {
 
         var aWMENU10 = [{
-                    key: "WMENU10_01",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B40"), // App. Package Change
-                },
-                {
-                    key: "WMENU10_02",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B41"), // App. Import/Export
-                    items: [{
-                            key: "WMENU10_02_01",
-                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B42"), // App. Importing
-                        },
-                        {
-                            key: "WMENU10_02_02",
-                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B43"), // App. Exporting
-                        }
-                    ]
-                },
-                {
-                    key: "WMENU10_03",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
-                },
-                {
-                    key: "WMENU10_04",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B45"), // Shortcut Manager
-                    items: [{
-                            key: "WMENU10_04_01",
-                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B46"), // U4A Shortcut Create
-                        },
-                        {
-                            key: "WMENU10_04_02",
-                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B47"), // QR Code Maker
-                        }
-                    ]
-                },
-                {
-                    key: "WMENU10_05",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B48"), // About U4A WS IDE
-                },
-            ],
+            key: "WMENU10_01",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B40"), // App. Package Change
+        },
+        {
+            key: "WMENU10_02",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B41"), // App. Import/Export
+            items: [{
+                key: "WMENU10_02_01",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B42"), // App. Importing
+            },
+            {
+                key: "WMENU10_02_02",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B43"), // App. Exporting
+            }
+            ]
+        },
+        {
+            key: "WMENU10_03",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
+        },
+        {
+            key: "WMENU10_04",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B45"), // Shortcut Manager
+            items: [{
+                key: "WMENU10_04_01",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B46"), // U4A Shortcut Create
+            },
+            {
+                key: "WMENU10_04_02",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B47"), // QR Code Maker
+            }
+            ]
+        },
+        {
+            key: "WMENU10_05",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B48"), // About U4A WS IDE
+        },
+        ],
 
             aWMENU20 = [{
-                    key: "WMENU20_01",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
-                },
-                {
-                    key: "WMENU20_03",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
-                }
+                key: "WMENU20_01",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
+            },
+            {
+                key: "WMENU20_03",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
+            }
             ],
 
             aWMENU30 = [{
-                    key: "WMENU30_01",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
-                }, {
-                    key: "WMENU30_02",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B51"), // Close Window
-                }, {
-                    key: "WMENU30_03",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"), // Options
+                key: "WMENU30_01",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
+            }, {
+                key: "WMENU30_02",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B51"), // Close Window
+            }, {
+                key: "WMENU30_03",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"), // Options
+            },
+            {
+                key: "WMENU30_04",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
+            }, {
+                key: "WMENU30_05",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Note
+            }, {
+                key: "WMENU30_07",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
+            }, {
+                key: "WMENU30_06",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
+                items: [{
+                    key: "WMENU30_06_01",
+                    text: "DevTool"
                 },
-                {
-                    key: "WMENU30_04",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
-                }, {
-                    key: "WMENU30_05",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Note
-                }, {
-                    key: "WMENU30_07",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
-                }, {
-                    key: "WMENU30_06",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
-                    items: [{
-                            key: "WMENU30_06_01",
-                            text: "DevTool"
-                        },
 
-                    ],
-                    visible: true,
-                },
+                ],
+                visible: true,
+            },
             ],
 
             aWMENU50 = [{
                 key: "WMENU50_01",
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
                 enabled: true,
-            }, ],
+            },],
 
             Test10 = [{
-                    key: "Test96",
-                    text: "USP 페이지 생성"
-                }, {
-                    key: "Test90",
-                    text: "Busy 강제실행"
-                },
-                {
-                    key: "Test99",
-                    text: "Busy 강제종료"
-                },
-                {
-                    key: "Test98",
-                    text: "세션 끊기"
-                },
-                {
-                    key: "Test97",
-                    text: "개발툴"
-                },
-                {
-                    key: "Test94",
-                    text: "잘못된 서버 호출"
-                },
-                {
-                    key: "Test93",
-                    text: "abap 펑션 버젼 확인"
-                },
-                {
-                    key: "Test92",
-                    text: "abap syntax 버젼 확인"
-                },
+                key: "Test96",
+                text: "USP 페이지 생성"
+            }, {
+                key: "Test90",
+                text: "Busy 강제실행"
+            },
+            {
+                key: "Test99",
+                text: "Busy 강제종료"
+            },
+            {
+                key: "Test98",
+                text: "세션 끊기"
+            },
+            {
+                key: "Test97",
+                text: "개발툴"
+            },
+            {
+                key: "Test94",
+                text: "잘못된 서버 호출"
+            },
+            {
+                key: "Test93",
+                text: "abap 펑션 버젼 확인"
+            },
+            {
+                key: "Test92",
+                text: "abap syntax 버젼 확인"
+            },
 
             ];
 
@@ -324,155 +299,155 @@
     /************************************************************************
      * 20번 페이지 Window Menu List
      ************************************************************************/
-    oAPP.fn.fnGetWindowMenuListWS20 = function() {
+    oAPP.fn.fnGetWindowMenuListWS20 = function () {
 
         var aWMENU10 = [{
-                    key: "WMENU10_01",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B56"), // Theme Designer
-                    enabled: false,
-                }, {
-                    key: "WMENU10_02",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B57"), // Font Style Wizard
-                    enabled: true,
-                },
-                {
-                    key: "WMENU10_03",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B58"), // UI5 Predefined CSS
-                    enabled: true,
-                }
-            ],
+            key: "WMENU10_01",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B56"), // Theme Designer
+            enabled: false,
+        }, {
+            key: "WMENU10_02",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B57"), // Font Style Wizard
+            enabled: true,
+        },
+        {
+            key: "WMENU10_03",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B58"), // UI5 Predefined CSS
+            enabled: true,
+        }
+        ],
 
             aWMENU20 = [{
-                    key: "WMENU20_01",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
-                    enabled: true,
-                },
-                {
-                    key: "WMENU20_02",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B59"), // OTR Manager
-                    enabled: true,
-                },
-                {
-                    key: "WMENU20_03",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
-                    enabled: true,
-                },
+                key: "WMENU20_01",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
+                enabled: true,
+            },
+            {
+                key: "WMENU20_02",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B59"), // OTR Manager
+                enabled: true,
+            },
+            {
+                key: "WMENU20_03",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
+                enabled: true,
+            },
             ],
 
             aWMENU30 = [{
-                    key: "WMENU30_01",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B60"), // CSS Editor
-                    enabled: true,
-                },
-                {
-                    key: "WMENU30_02",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B61"), // Javascript Editor
-                    enabled: true,
-                },
-                {
-                    key: "WMENU30_03",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B62"), // HTML Editor
-                    enabled: true,
-                },
-                {
-                    key: "WMENU30_04",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B63"), // Error Page Editor
-                    enabled: true,
-                },
-                {
-                    key: "WMENU30_05",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B64"), // Skeleton Scr Setting
-                    enabled: true,
-                }
+                key: "WMENU30_01",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B60"), // CSS Editor
+                enabled: true,
+            },
+            {
+                key: "WMENU30_02",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B61"), // Javascript Editor
+                enabled: true,
+            },
+            {
+                key: "WMENU30_03",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B62"), // HTML Editor
+                enabled: true,
+            },
+            {
+                key: "WMENU30_04",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B63"), // Error Page Editor
+                enabled: true,
+            },
+            {
+                key: "WMENU30_05",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B64"), // Skeleton Scr Setting
+                enabled: true,
+            }
             ],
 
             aWMENU40 = [{
-                    key: "WMENU40_01",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
-                    enabled: true,
-                },
-                {
-                    key: "WMENU40_02",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B51"), // Close Window
-                    enabled: true,
-                },
-                {
-                    key: "WMENU40_03",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"), // Options
-                    enabled: true,
-                },
-                {
-                    key: "WMENU40_04",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
-                    enabled: true,
-                },
-                {
-                    key: "WMENU40_05",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Note
-                    enabled: true,
-                },
-                {
-                    key: "WMENU40_07",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
-                    enabled: true,
-                },
-                {
-                    key: "WMENU40_06",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
-                    enabled: true,
-                    visible: true,
-                    items: [{
-                        key: "WMENU40_06_01",
-                        text: "DevTool"
-                    }, ],
-                },
+                key: "WMENU40_01",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
+                enabled: true,
+            },
+            {
+                key: "WMENU40_02",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B51"), // Close Window
+                enabled: true,
+            },
+            {
+                key: "WMENU40_03",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"), // Options
+                enabled: true,
+            },
+            {
+                key: "WMENU40_04",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
+                enabled: true,
+            },
+            {
+                key: "WMENU40_05",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Note
+                enabled: true,
+            },
+            {
+                key: "WMENU40_07",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
+                enabled: true,
+            },
+            {
+                key: "WMENU40_06",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
+                enabled: true,
+                visible: true,
+                items: [{
+                    key: "WMENU40_06_01",
+                    text: "DevTool"
+                },],
+            },
             ],
 
             aWMENU50 = [{
-                    key: "WMENU50_01",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
-                    enabled: true,
-                },
-                // {
-                //      key: "WMENU50_02",
-                //      text: "Settings",
-                //      enabled: true,
-                //  },
-                {
-                    key: "WMENU50_03",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B65"), // Document
-                    enabled: true,
-                }
+                key: "WMENU50_01",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
+                enabled: true,
+            },
+            // {
+            //      key: "WMENU50_02",
+            //      text: "Settings",
+            //      enabled: true,
+            //  },
+            {
+                key: "WMENU50_03",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B65"), // Document
+                enabled: true,
+            }
             ],
 
             Test20 = [{
-                    key: "Test90",
-                    text: "Busy 강제실행",
-                },
-                {
-                    key: "Test99",
-                    text: "Busy 강제종료",
-                },
-                {
-                    key: "Test98",
-                    text: "세션 끊기",
-                },
-                {
-                    key: "Test97",
-                    text: "개발툴",
-                },
-                {
-                    key: "Test95",
-                    text: "CTS Popup",
-                },
-                {
-                    key: "Test91",
-                    text: "Prop Help",
-                },
-                {
-                    key: "Test96",
-                    text: "스크립트 오류",
-                },
+                key: "Test90",
+                text: "Busy 강제실행",
+            },
+            {
+                key: "Test99",
+                text: "Busy 강제종료",
+            },
+            {
+                key: "Test98",
+                text: "세션 끊기",
+            },
+            {
+                key: "Test97",
+                text: "개발툴",
+            },
+            {
+                key: "Test95",
+                text: "CTS Popup",
+            },
+            {
+                key: "Test91",
+                text: "Prop Help",
+            },
+            {
+                key: "Test96",
+                text: "스크립트 오류",
+            },
 
                 // {
                 //     key: "doc01",
@@ -494,33 +469,33 @@
     /**************************************************************************
      * WS10 페이지의 윈도우 메뉴 정보
      **************************************************************************/
-    oAPP.fn.fnGetWindowMenuWS10 = function() {
+    oAPP.fn.fnGetWindowMenuWS10 = function () {
 
         return [{
-                key: "WMENU10",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B34"), //"Extras",
-                icon: "",
-            },
-            {
-                key: "WMENU20",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B35"), // Utilities 
-                icon: "",
-            },
-            {
-                key: "WMENU30",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B36"), //"System"
-                icon: "",
-            },
-            {
-                key: "WMENU50",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39"), // Help
-                icon: "",
-            },
-            {
-                key: "Test10",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B69"), // Test
-                icon: "",
-            },
+            key: "WMENU10",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B34"), //"Extras",
+            icon: "",
+        },
+        {
+            key: "WMENU20",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B35"), // Utilities 
+            icon: "",
+        },
+        {
+            key: "WMENU30",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B36"), //"System"
+            icon: "",
+        },
+        {
+            key: "WMENU50",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39"), // Help
+            icon: "",
+        },
+        {
+            key: "Test10",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B69"), // Test
+            icon: "",
+        },
         ];
 
     }; // end of oAPP.main.fnGetWindowMenuWS10
@@ -528,38 +503,38 @@
     /**************************************************************************
      * WS20 페이지의 윈도우 메뉴 정보
      **************************************************************************/
-    oAPP.fn.fnGetWindowMenuWS20 = function() {
+    oAPP.fn.fnGetWindowMenuWS20 = function () {
 
         return [{
-                key: "WMENU10",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B37"), // Style Class
-                icon: "",
-            },
-            {
-                key: "WMENU20",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B35"), // Utilities
-                icon: "",
-            },
-            {
-                key: "WMENU30",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B38"), // Edit
-                icon: "",
-            },
-            {
-                key: "WMENU40",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B36"), // System
-                icon: "",
-            },
-            {
-                key: "WMENU50",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39"), // Help
-                icon: "",
-            },
-            {
-                key: "Test20",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B69"), // Test
-                icon: "",
-            },
+            key: "WMENU10",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B37"), // Style Class
+            icon: "",
+        },
+        {
+            key: "WMENU20",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B35"), // Utilities
+            icon: "",
+        },
+        {
+            key: "WMENU30",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B38"), // Edit
+            icon: "",
+        },
+        {
+            key: "WMENU40",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B36"), // System
+            icon: "",
+        },
+        {
+            key: "WMENU50",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39"), // Help
+            icon: "",
+        },
+        {
+            key: "Test20",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B69"), // Test
+            icon: "",
+        },
         ];
 
     }; // end of oAPP.main.fnGetWindowMenuWS20
@@ -589,7 +564,7 @@
     /************************************************************************
      * 10번 페이지 Header Toolbar Contents
      ************************************************************************/
-    oAPP.fn.fnGetHeaderToolbarContentWs10 = function() {
+    oAPP.fn.fnGetHeaderToolbarContentWs10 = function () {
 
         var sBindRoot = "/WMENU/WS10";
 
@@ -755,7 +730,7 @@
                         parts: [
                             "key"
                         ],
-                        formatter: function(sKey) {
+                        formatter: function (sKey) {
 
                             if (sKey == null) {
                                 return false;
@@ -790,13 +765,13 @@
     /************************************************************************
      * 10번 페이지 Sub Header Toolbar Contents
      ************************************************************************/
-    oAPP.fn.fnGetSubHeaderToolbarContentWs10 = function() {
+    oAPP.fn.fnGetSubHeaderToolbarContentWs10 = function () {
 
         var lo_bindPropForVisible = {
             parts: [{
                 path: "/USERINFO/USER_AUTH/IS_DEV"
             }],
-            formatter: function(isDev) {
+            formatter: function (isDev) {
 
                 if (isDev != "D") {
                     return false;
@@ -811,11 +786,11 @@
          * Transaction Buttons
          */
         var oAppCreateBtn = new sap.m.Button("appCreateBtn", {
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"), // Create
-                icon: "sap-icon://document",
-                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01") + " (Ctrl+F12)", // Create (Ctrl+F12),
-                press: oAPP.events.ev_AppCreate
-            })
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"), // Create
+            icon: "sap-icon://document",
+            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01") + " (Ctrl+F12)", // Create (Ctrl+F12),
+            press: oAPP.events.ev_AppCreate
+        })
             .bindProperty("visible", jQuery.extend(true, {}, lo_bindPropForVisible))
             .addStyleClass("u4aWs10AppCreateBtn"),
 
@@ -825,8 +800,8 @@
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02") + " (F6)", // Change (F6)",
                 press: oAPP.events.ev_AppChange
             })
-            .bindProperty("visible", jQuery.extend(true, {}, lo_bindPropForVisible))
-            .addStyleClass("u4aWs10AppChangeBtn"),
+                .bindProperty("visible", jQuery.extend(true, {}, lo_bindPropForVisible))
+                .addStyleClass("u4aWs10AppChangeBtn"),
 
             oAppDelBtn = new sap.m.Button("appDelBtn", {
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03"), // Delete
@@ -835,8 +810,8 @@
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03") + " (Ctrl+F10)", // Delete (Ctrl+F10)
                 press: oAPP.events.ev_AppDelete
             })
-            .bindProperty("visible", jQuery.extend(true, {}, lo_bindPropForVisible))
-            .addStyleClass("u4aWs10AppDelBtn"),
+                .bindProperty("visible", jQuery.extend(true, {}, lo_bindPropForVisible))
+                .addStyleClass("u4aWs10AppDelBtn"),
 
             oAppCopyBtn = new sap.m.Button("appCopyBtn", {
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A04"), // Copy
@@ -844,8 +819,8 @@
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A04") + " (Shift+F11)", // Copy (Shift+F11)
                 press: oAPP.events.ev_AppCopy
             })
-            .bindProperty("visible", jQuery.extend(true, {}, lo_bindPropForVisible))
-            .addStyleClass("u4aWs10AppCopyBtn"),
+                .bindProperty("visible", jQuery.extend(true, {}, lo_bindPropForVisible))
+                .addStyleClass("u4aWs10AppCopyBtn"),
 
             oDisplayBtn = new sap.m.Button("displayBtn", {
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05"), // Display
@@ -910,83 +885,83 @@
     /************************************************************************
      * 10번 페이지 Contents
      ************************************************************************/
-    oAPP.fn.fnGetPageContentWs10 = function() {
+    oAPP.fn.fnGetPageContentWs10 = function () {
 
         var oAppNmInput = new sap.m.SearchField("AppNmInput", {
-                value: "{/WS10/APPID}",
-                change: oAPP.events.ev_AppInputChange,
-                search: oAPP.events.ev_AppValueHelp,
-                liveChange: (oEvent) => {
+            value: "{/WS10/APPID}",
+            change: oAPP.events.ev_AppInputChange,
+            search: oAPP.events.ev_AppValueHelp,
+            liveChange: (oEvent) => {
 
-                    var oInput = oEvent.getSource(),
-                        sValue = oInput.getValue();
+                var oInput = oEvent.getSource(),
+                    sValue = oInput.getValue();
 
-                    if (typeof sValue == "string" && sValue.length > 0 && sValue !== "") {
-                        oInput.setValue(sValue.toUpperCase());
-                    }
+                if (typeof sValue == "string" && sValue.length > 0 && sValue !== "") {
+                    oInput.setValue(sValue.toUpperCase());
+                }
 
-                    var aFilters = [];
+                var aFilters = [];
 
-                    oInput.getBinding("suggestionItems").filter();
+                oInput.getBinding("suggestionItems").filter();
+
+                aFilters = [
+                    new sap.ui.model.Filter([
+                        new sap.ui.model.Filter("APPID", sap.ui.model.FilterOperator.Contains, sValue.toUpperCase())
+                    ], false)
+                ];
+
+                oInput.getBinding("suggestionItems").filter(aFilters);
+
+                oInput.suggest(true);
+
+            },
+            suggest: function (oEvent) {
+
+                var sValue = oEvent.getParameter("suggestValue"),
+                    aFilters = [];
+
+                if (sValue) {
 
                     aFilters = [
                         new sap.ui.model.Filter([
-                            new sap.ui.model.Filter("APPID", sap.ui.model.FilterOperator.Contains, sValue.toUpperCase())
+                            new sap.ui.model.Filter("APPID", function (sText) {
+                                return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
+                            }),
                         ], false)
                     ];
 
-                    oInput.getBinding("suggestionItems").filter(aFilters);
-
-                    oInput.suggest(true);
-
-                },
-                suggest: function(oEvent) {
-
-                    var sValue = oEvent.getParameter("suggestValue"),
-                        aFilters = [];
-
-                    if (sValue) {
-
-                        aFilters = [
-                            new sap.ui.model.Filter([
-                                new sap.ui.model.Filter("APPID", function(sText) {
-                                    return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
-                                }),
-                            ], false)
-                        ];
-
-                    }
-
-                    this.getBinding("suggestionItems").filter(aFilters);
-                    this.suggest();
-
-
-                    // var sValue = oEvent.getParameter("suggestValue") || "";
-
-                    // var aFilters = [];
-
-                    // aFilters = [
-                    //     new sap.ui.model.Filter([
-                    //         new sap.ui.model.Filter("APPID", sap.ui.model.FilterOperator.Contains, sValue.toUpperCase())
-                    //     ], false)
-                    // ];
-
-                    // this.getBinding("suggestionItems").filter();
-                    // this.getBinding("suggestionItems").filter(aFilters);
-
-                    // this.suggest(true);
-
-                },
-                enableSuggestions: true,
-                suggestionItems: {
-                    path: "/WS10/APPSUGG",
-                    sorter: "{ path : '/WS10/APPSUGG/APPID' }",
-                    template: new sap.m.SuggestionItem({
-                        key: "{APPID}",
-                        text: "{APPID}",
-                    })
                 }
-            }),
+
+                this.getBinding("suggestionItems").filter(aFilters);
+                this.suggest();
+
+
+                // var sValue = oEvent.getParameter("suggestValue") || "";
+
+                // var aFilters = [];
+
+                // aFilters = [
+                //     new sap.ui.model.Filter([
+                //         new sap.ui.model.Filter("APPID", sap.ui.model.FilterOperator.Contains, sValue.toUpperCase())
+                //     ], false)
+                // ];
+
+                // this.getBinding("suggestionItems").filter();
+                // this.getBinding("suggestionItems").filter(aFilters);
+
+                // this.suggest(true);
+
+            },
+            enableSuggestions: true,
+            suggestionItems: {
+                path: "/WS10/APPSUGG",
+                sorter: "{ path : '/WS10/APPSUGG/APPID' }",
+                template: new sap.m.SuggestionItem({
+                    key: "{APPID}",
+                    text: "{APPID}",
+                })
+            }
+        }),
 
             oForm = new sap.ui.layout.form.Form({
                 editable: true,
@@ -1077,7 +1052,7 @@
     /************************************************************************
      * 10번 페이지 화면 그리기
      ************************************************************************/
-    oAPP.fn.fnOnInitRenderingWS10 = function() {
+    oAPP.fn.fnOnInitRenderingWS10 = function () {
 
         var sFmsgBindRootPath = "/FMSG/WS10";
 
@@ -1086,9 +1061,9 @@
             aPageContent = oAPP.fn.fnGetPageContentWs10();
 
         var oHeaderToolbar = new sap.m.OverflowToolbar({
-                content: aHeaderToolbarContents
-                // }).addStyleClass("sapTntToolHeader u4aWsWindowMenuToolbar"),
-            }).addStyleClass("u4aWsWindowMenuToolbar"),
+            content: aHeaderToolbarContents
+            // }).addStyleClass("sapTntToolHeader u4aWsWindowMenuToolbar"),
+        }).addStyleClass("u4aWsWindowMenuToolbar"),
 
             oSubHeaderToolbar = new sap.m.OverflowToolbar({
                 content: aSubHeaderToolbarContents,
@@ -1125,7 +1100,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(isshow) {
+            formatter: function (isshow) {
 
                 if (isshow == null) {
                     return false;
@@ -1147,7 +1122,7 @@
      * 10번 페이지 Application Name SearchField의 Key down Event
      * F4 펑션 키를 눌렀을 때 F4 Help를 띄우기 목적인 이벤트
      ************************************************************************/
-    oAPP.fn.fnWs10AppInputKeyDownEvent = function(event) {
+    oAPP.fn.fnWs10AppInputKeyDownEvent = function (event) {
 
         var bIsLock = sap.ui.getCore().isLocked();
 
@@ -1295,7 +1270,7 @@
     /************************************************************************
      * 20번 페이지 Header Toolbar Content
      ************************************************************************/
-    oAPP.fn.fnGetHeaderToolbarContentWs20 = function() {
+    oAPP.fn.fnGetHeaderToolbarContentWs20 = function () {
 
         let sChangeTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02"), // Change
             sDispTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05"), // Display
@@ -1306,15 +1281,15 @@
         var sBindRoot = "/WMENU/WS20";
 
         var oBackBtn = new sap.m.Button("backBtn", {
-                icon: "sap-icon://nav-back",
-                press: oAPP.events.ev_pageBack
-            }),
+            icon: "sap-icon://nav-back",
+            press: oAPP.events.ev_pageBack
+        }),
 
             oAppIdTxt = new sap.m.Title({
                 text: "{/WS20/APP/APPID}"
             }), // APPID
 
-            oAppModeTxt = new sap.m.Title("appModeTxt").bindProperty("text", "/WS20/APP/IS_EDIT", function(IS_EDIT) {
+            oAppModeTxt = new sap.m.Title("appModeTxt").bindProperty("text", "/WS20/APP/IS_EDIT", function (IS_EDIT) {
 
                 return IS_EDIT == "X" ? sChangeTxt : sDispTxt;
 
@@ -1362,7 +1337,7 @@
             oNewWin = new sap.m.Button("ws20_newWinBtn", {
                 icon: "sap-icon://create",
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B71") + " (Ctrl+N)", // New Browser (Ctrl+N)",
-                press: function() {
+                press: function () {
                     parent.onNewWindow();
                 }
             }).addStyleClass("u4aWs20NewWin");
@@ -1400,7 +1375,7 @@
     /************************************************************************
      * 20번 페이지 화면 그리기
      ************************************************************************/
-    oAPP.fn.fnOnInitRenderingWS20 = function() {
+    oAPP.fn.fnOnInitRenderingWS20 = function () {
 
         var sFmsgBindRootPath = "/FMSG/WS20";
 
@@ -1705,7 +1680,7 @@
                                 parts: [
                                     "key"
                                 ],
-                                formatter: function(sKey) {
+                                formatter: function (sKey) {
 
                                     if (sKey == null) {
                                         return false;
@@ -1748,7 +1723,7 @@
             parts: [
                 sFmsgBindRootPath + "/ISSHOW"
             ],
-            formatter: function(isshow) {
+            formatter: function (isshow) {
 
                 if (isshow == null) {
                     return false;
@@ -1767,7 +1742,7 @@
     /************************************************************************
      * 20번 페이지 Sub Header Toolbar
      ************************************************************************/
-    oAPP.fn.fnGetSubHeaderToolbarContentWs20 = function() {
+    oAPP.fn.fnGetSubHeaderToolbarContentWs20 = function () {
 
         // visible 바인딩 프로퍼티 설정
         function lf_bindPropForVisible(bIsDispMode) {
@@ -1795,10 +1770,10 @@
         var sVisiBindPath = "/WS20/APP/IS_EDIT";
 
         var oSyntaxCheckBtn = new sap.m.Button("syntaxCheckBtn", {
-                icon: "sap-icon://validate",
-                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B72") + " (Ctrl+F2)", // Syntax Check (Ctrl+F2)
-                press: oAPP.events.ev_pressSyntaxCheckBtn
-            }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible)
+            icon: "sap-icon://validate",
+            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B72") + " (Ctrl+F2)", // Syntax Check (Ctrl+F2)
+            press: oAPP.events.ev_pressSyntaxCheckBtn
+        }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible)
             .addStyleClass("u4aWs20SyntaxCheckBtn"),
 
             oDisplayModeBtn = new sap.m.Button("displayModeBtn", {
@@ -1806,7 +1781,7 @@
                 tooltip: sDispChgTxt,
                 press: oAPP.events.ev_pressDisplayModeBtn
             }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible)
-            .addStyleClass("u4aWs20DisplayModeBtn"),
+                .addStyleClass("u4aWs20DisplayModeBtn"),
 
             oChangeModeBtn = new sap.m.Button("changeModeBtn", {
                 icon: "sap-icon://edit",
@@ -1814,17 +1789,17 @@
                 press: oAPP.events.ev_pressDisplayModeBtn
             }).bindProperty("visible", {
                 parts: [{
-                        path: "/USERINFO/USER_AUTH/IS_DEV" // 개발자 권한 여부
-                    },
-                    {
-                        path: "/USERINFO/ISADM"
-                    },
-                    {
-                        path: "/WS20/APP/ADMIN_APP" // "ADMIN App 여부"
-                    },
-                    {
-                        path: sVisiBindPath
-                    },
+                    path: "/USERINFO/USER_AUTH/IS_DEV" // 개발자 권한 여부
+                },
+                {
+                    path: "/USERINFO/ISADM"
+                },
+                {
+                    path: "/WS20/APP/ADMIN_APP" // "ADMIN App 여부"
+                },
+                {
+                    path: sVisiBindPath
+                },
 
                 ],
                 formatter: (IS_DEV, ISADM, ADMIN_APP, IS_EDIT) => {
@@ -1850,32 +1825,32 @@
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B73") + " (Ctrl+F3)", // Activate (Ctrl+F3)
                 press: oAPP.events.ev_pressActivateBtn,
             }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible)
-            .addStyleClass("u4aWs20ActivateBtn"),
+                .addStyleClass("u4aWs20ActivateBtn"),
 
             oSaveBtn = new sap.m.Button("saveBtn", {
                 icon: "sap-icon://save",
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A64") + " (Ctrl+S)", // Save (Ctrl+S)
                 press: oAPP.events.ev_pressSaveBtn,
             })
-            // .bindProperty("enabled", sVisiBindPath, lf_bindPropForVisible)
-            .bindProperty("visible", {
-                parts: [{
-                    path: "/USERINFO/USER_AUTH/IS_DEV"
-                }, {
-                    path: sVisiBindPath
-                }],
-                formatter: (IS_DEV, IS_EDIT) => {
+                // .bindProperty("enabled", sVisiBindPath, lf_bindPropForVisible)
+                .bindProperty("visible", {
+                    parts: [{
+                        path: "/USERINFO/USER_AUTH/IS_DEV"
+                    }, {
+                        path: sVisiBindPath
+                    }],
+                    formatter: (IS_DEV, IS_EDIT) => {
 
-                    // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
-                    if (IS_DEV != "D" || IS_EDIT != "X") {
-                        return false;
+                        // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
+                        if (IS_DEV != "D" || IS_EDIT != "X") {
+                            return false;
+                        }
+
+                        return true;
+
                     }
-
-                    return true;
-
-                }
-            })
-            .addStyleClass("u4aWs20SaveBtn"),
+                })
+                .addStyleClass("u4aWs20SaveBtn"),
 
             oMimeBtn = new sap.m.Button("mimeBtn", {
                 icon: "sap-icon://picture",
@@ -1918,7 +1893,7 @@
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A13") + " (Shift+F1)", // Add Event Method (Shift+F1)
                 press: oAPP.events.ev_pressAddEventBtn
             }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible)
-            .addStyleClass("u4aWs20AddEventBtn"),
+                .addStyleClass("u4aWs20AddEventBtn"),
 
             oRuntimeBtn = new sap.m.Button("runtimeBtn", {
                 icon: "sap-icon://functional-location",
@@ -1940,8 +1915,8 @@
             oChangeModeBtn, // Change Button
 
             new sap.m.ToolbarSeparator()
-            .bindProperty("visible", {
-                parts: [{
+                .bindProperty("visible", {
+                    parts: [{
                         path: "/USERINFO/USER_AUTH/IS_DEV" // 개발자 권한 여부
                     },
                     {
@@ -1954,23 +1929,23 @@
                         path: sVisiBindPath
                     },
 
-                ],
-                formatter: (IS_DEV, ISADM, ADMIN_APP) => {
+                    ],
+                    formatter: (IS_DEV, ISADM, ADMIN_APP) => {
 
-                    // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
-                    if (IS_DEV != "D") {
-                        return false;
+                        // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
+                        if (IS_DEV != "D") {
+                            return false;
+                        }
+
+                        // Admin이 아닌 유저가 Admin App을 열었을 경우 버튼 비활성화
+                        if (ISADM != "X" && ADMIN_APP == "X") {
+                            return false;
+                        }
+
+                        return true;
+
                     }
-
-                    // Admin이 아닌 유저가 Admin App을 열었을 경우 버튼 비활성화
-                    if (ISADM != "X" && ADMIN_APP == "X") {
-                        return false;
-                    }
-
-                    return true;
-
-                }
-            }),
+                }),
             // .bindProperty("visible", "/USERINFO/USER_AUTH/IS_DEV", (IS_DEV) => {
 
             //     if (IS_DEV == "D") {
@@ -2001,7 +1976,7 @@
     /************************************************************************
      * 20번 페이지 Tnt Tool page 의 main contents 영역 그리기
      ************************************************************************/
-    oAPP.fn.fnOnInitRenderingWS20Main = function() {
+    oAPP.fn.fnOnInitRenderingWS20Main = function () {
 
         /**
          * Transaction Buttons
@@ -2025,7 +2000,7 @@
     /************************************************************************
      * Personalization Settings..(개인화 설정)
      ************************************************************************/
-    oAPP.fn.fnOnInitP13nSettings = function() {
+    oAPP.fn.fnOnInitP13nSettings = function () {
 
         // 개인화 폴더 생성 및 로그인 사용자별 개인화 Object 만들기
         oAPP.fn.fnOnP13nFolderCreate();
@@ -2047,7 +2022,7 @@
     /************************************************************************
      * 개인화 폴더 생성 및 로그인 사용자별 개인화 Object 만들기
      ************************************************************************/
-    oAPP.fn.fnOnP13nFolderCreate = function() {
+    oAPP.fn.fnOnP13nFolderCreate = function () {
 
         var oServerInfo = parent.getServerInfo(),
             sSysID = oServerInfo.SYSID;
@@ -2101,7 +2076,7 @@
     /************************************************************************
      * 브라우저 zoom 정보 생성
      ************************************************************************/
-    oAPP.fn.fnOnP13nBrowserZoom = function() {
+    oAPP.fn.fnOnP13nBrowserZoom = function () {
 
         var sZoomFileName = PATH.join(USERDATA, "p13n", "zoom.json"), // zoom 파일 경로
             oZoomData = parent.require(sZoomFileName);
@@ -2208,7 +2183,7 @@
     /************************************************************************
      * 사용자 개인화(윈도우 ZOOM) 설정팝업 
      ************************************************************************/
-    oAPP.fn.setBrowserZoomZero = function() {
+    oAPP.fn.setBrowserZoomZero = function () {
 
         WEBFRAME.setZoomLevel(0);
 
@@ -2217,7 +2192,7 @@
     /************************************************************************
      * 개인화 정보를 읽어서 WS10 페이지의 APP Name Input에 Suggestion 설정하기
      ************************************************************************/
-    oAPP.fn.fnGetP13nWs10AppSuggetion = function() {
+    oAPP.fn.fnGetP13nWs10AppSuggetion = function () {
 
         var FS = parent.FS;
 
@@ -2249,7 +2224,7 @@
     /************************************************************************
      * 입력한 APPID를 개인화 데이터로 저장
      ************************************************************************/
-    oAPP.fn.fnSetP13nWs10AppSuggetion = function(APPID) {
+    oAPP.fn.fnSetP13nWs10AppSuggetion = function (APPID) {
 
         var FS = parent.FS;
 
@@ -2299,7 +2274,7 @@
     /************************************************************************
      * Default Browser 개인화 설정
      ************************************************************************/
-    oAPP.fn.fnOnP13nExeDefaultBrowser = function() {
+    oAPP.fn.fnOnP13nExeDefaultBrowser = function () {
 
         var FS = parent.FS;
 
@@ -2348,7 +2323,7 @@
     /************************************************************************
      * 현재 Local PC에 설치된 Browser 정보 구하기
      ************************************************************************/
-    oAPP.fn.fnGetExecBrowserInfo = function() {
+    oAPP.fn.fnGetExecBrowserInfo = function () {
 
         var aBrowserInfo = [],
             aDefaultBrowsInfo = parent.getDefaultBrowserInfo(),
@@ -2412,7 +2387,7 @@
      * @param {Array} aCurrentInfo 
      * - 현재 Local PC에 설치된 브라우저의 정보
      ************************************************************************/
-    oAPP.fn.fnCompareBeforeBrowserInfo = function(aBeforeInfo, aCurrentInfo) {
+    oAPP.fn.fnCompareBeforeBrowserInfo = function (aBeforeInfo, aCurrentInfo) {
 
         var iBeforeCnt = aBeforeInfo.length,
             iCurrCnt = aCurrentInfo.length;

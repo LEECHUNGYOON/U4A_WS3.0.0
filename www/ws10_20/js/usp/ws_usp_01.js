@@ -1,16 +1,24 @@
-(function(window, $, oAPP) {
+/************************************************************************
+ * Copyright 2020. INFOCG Inc. all rights reserved. 
+ * ----------------------------------------------------------------------
+ * - file Name : ws_usp_01.js
+ * - file Desc : u4a ws usp sub
+ ************************************************************************/
+(function (window, $, oAPP) {
     "use strict";
-
 
     const
         APPCOMMON = oAPP.common,
         APP = parent.APP,
+        FS = parent.FS,
         SESSKEY = parent.getSessionKey(),
         BROWSKEY = parent.getBrowserKey(),
         CURRWIN = parent.CURRWIN,
         REMOTE = parent.REMOTE,
         REMOTEMAIN = parent.REMOTEMAIN,
-        IPCMAIN = parent.IPCMAIN;
+        PATH = parent.PATH,
+        IPCMAIN = parent.IPCMAIN,
+        WSUTIL = parent.WSUTIL;
 
     var gfSelectRowUpdate;
 
@@ -234,7 +242,7 @@
                     bIsAttach = true;
 
                     // test
-                    setTimeout(function() {
+                    setTimeout(function () {
                         oTreeTable.fireRowsUpdated(oEvent, oMeItem); //test
                     }, 0);
 
@@ -255,7 +263,7 @@
 
                     bIsAttach = true;
 
-                    setTimeout(function() {
+                    setTimeout(function () {
                         oTreeTable.fireRowsUpdated(oEvent, oMeItem); //test
                     }, 0);
 
@@ -271,7 +279,7 @@
             if (bExpAble && bIsExp) {
                 bIsAttach = true;
 
-                setTimeout(function() {
+                setTimeout(function () {
                     oTreeTable.fireRowsUpdated(oEvent, oMeItem); //test
                 }, 0);
 
@@ -467,7 +475,7 @@
             // association
             initialFocus: "ws30_step",
 
-            afterOpen: function(oEvent) {
+            afterOpen: function (oEvent) {
 
                 var oStepInput = sap.ui.getCore().byId("ws30_step");
                 if (!oStepInput) {
@@ -484,7 +492,7 @@
             },
 
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -570,7 +578,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             let oSendData = {
                 APPINFO: oAppInfo,
@@ -612,12 +620,187 @@
         debugger;
 
 
-    }; // end of oAPP.fn.fnUspNewWindowIPCEvent    
+    }; // end of oAPP.fn.fnUspNewWindowIPCEvent   
+
+    /************************************************************************
+     * 설치 폴더에 있는 기본 패턴을 읽어서 모델에 저장하기
+     ************************************************************************/
+    oAPP.fn.fnReadDefaultPattern = () => {
+
+        return new Promise(async (resolve) => {
+
+            // 기본 패턴이 있는 폴더목록을 읽는다.            
+            let sPatternPath = PATH.join(parent.USERDATA, "usp", "pattern", "files"),
+                oResult = await WSUTIL.readDir(sPatternPath);
+
+            if (oResult.RETCD == "E") {
+                resolve(oResult);
+                return;
+            }
+
+            // 폴더 목록의 파일들을 읽어서 리턴해준다.
+            let aPatternList = oResult.RTDATA,
+                iPattLength = aPatternList.length,
+                aPatternInfo = [];
+
+            for (var i = 0; i < iPattLength; i++) {
+
+                let sFileName = aPatternList[i],
+                    sFileKey = sFileName.split(".")[0],
+                    sFilePath = sPatternPath + "\\" + sFileName;
+
+                let oFileDataResult = await WSUTIL.readFile(sFilePath);
+                if (oFileDataResult.RETCD == "E") {
+                    continue;
+                }
+
+                let sFileData = oFileDataResult.RTDATA,
+                    oPatternInfo = {
+                        KEY: sFileKey,
+                        DATA: sFileData
+                    };
+
+                aPatternInfo.push(oPatternInfo);
+
+            }
+
+            if (aPatternInfo.length == 0) {
+                resolve({
+                    RETCD: "E",
+                    // RTMSG: "데이터 없음"
+                });
+                return;
+            }
+
+            resolve({
+                RETCD: "S",
+                RTMSG: "",
+                RTDATA: aPatternInfo
+            });
+
+        });
+
+    }; // end of oAPP.fn.fnReadDefaultPattern
+
+    oAPP.fn.fnSaveUspPatternCtxMenuInfoLocalFolder = () => {
+
+        return new Promise(async (resolve) => {
+
+            // 이미 usp pattern 정보를 가져왔는지 확인
+            let oPatternData = oAPP.common.fnGetModelProperty("/PATTN");
+            if (oPatternData) {
+                resolve();
+                return;
+            }
+
+            // 파일 확장자에 맞는 SVG 아이콘 정보를 가져온다.
+            let oIconResult = await parent.WSUTIL.getFileExtSvgIcons();
+            if (oIconResult.RETCD == "E") {
+                resolve();
+                return;
+            }
+
+            // 각 확장자에 맞는 svg 경로를 구한다.
+            let aIcons = oIconResult.RTDATA,
+                oHtmlIconInfo = aIcons.find(elem => elem.EXTNM === "html") || "",
+                oJsIconInfo = aIcons.find(elem => elem.EXTNM === "js") || "",
+
+                // 테스트 목적
+                sUi5IconUrl = "https://sap.github.io/ui5-webcomponents/assets/images/ui5-logo.png";
+
+            // 테스트 목적임!!!!
+            if (parent.APP.isPackaged) {
+                sUi5IconUrl = "";
+            }
+
+            let aPatternJson = [
+                { "PKEY": "", "CKEY": "PATT001", "DESC": "Default Pattern" },
+                { "PKEY": "PATT001", "CKEY": "PTN001", "DESC": "HTML", "ICON": oHtmlIconInfo.ICONPATH },
+                { "PKEY": "PTN001", "CKEY": "PTN001_001", "DESC": "HTML 기본패턴", "ACTCD": "01" },
+                { "PKEY": "PTN001", "CKEY": "PTN001_002", "DESC": "FORM 기본패턴", "ACTCD": "01" },
+                { "PKEY": "PTN001", "CKEY": "PTN001_003", "DESC": "Iframe 기본패턴", "ACTCD": "01" },
+                { "PKEY": "PTN001", "CKEY": "PTN001_004", "DESC": "UI5 기본패턴", "ACTCD": "01", "ICON": sUi5IconUrl },
+                { "PKEY": "PTN001_004", "CKEY": "PTN001_004_001", "DESC": "UI5 BootStrap", "ACTCD": "01" },
+
+                { "PKEY": "PATT001", "CKEY": "PTN002", "DESC": "JS", "ICON": oJsIconInfo.ICONPATH },
+                { "PKEY": "PTN002", "CKEY": "PTN002_001", "DESC": "JS 기본 패턴", "ACTCD": "02" },
+                { "PKEY": "PTN002", "CKEY": "PTN002_002", "DESC": "즉시실행함수 패턴", "ACTCD": "02" },
+                { "PKEY": "PTN002", "CKEY": "PTN002_003", "DESC": "Module js 패턴", "ACTCD": "02" },
+                { "PKEY": "PTN002", "CKEY": "PTN002_004", "DESC": "윈도우 이벤트 패턴", "ACTCD": "02" },
+
+                { "PKEY": "", "CKEY": "PATT002", "DESC": "Custom Pattern", "ISSTART": true },
+                { "PKEY": "", "CKEY": "PATT003", "DESC": "Custom Pattern Save", "ICON": "sap-icon://save" },
+            ];
+
+            // JSON 모델 정보를 앱 설치 폴더의 패턴 폴더에 저장한다.
+            // 기본 패턴이 있는 폴더목록을 읽는다.            
+            let sPatternRootPath = PATH.join(parent.USERDATA, "usp", "pattern"),
+                sPatternJsonPath = PATH.join(sPatternRootPath, "pattern.json"),
+                sPatternJsonData = JSON.stringify(aPatternJson);
+
+            // 패턴 정보를 JSON으로 말아서 앱 설치 폴더에 저장
+            await parent.WSUTIL.fsWriteFile(sPatternJsonPath, sPatternJsonData);
+
+            resolve();
+
+        });
+
+    }; // end of oAPP.fn.fnSaveUspPatternCtxMenuInfoLocalFolder
+
+    /**************************************************************************
+     * Usp Pattern 정보를 바인딩한다.
+     **************************************************************************/
+    oAPP.fn.fnModelBindingUspPattern = () => {
+
+        return new Promise(async (resolve) => {
+
+            let sPatternRootPath = PATH.join(parent.USERDATA, "usp", "pattern"),
+                sPatternJsonPath = PATH.join(sPatternRootPath, "pattern.json"),
+                sPatternJson = FS.readFileSync(sPatternJsonPath, 'utf-8'),
+                aPatternJson = JSON.parse(sPatternJson);
+
+            let oPattDataResult = await oAPP.fn.fnReadDefaultPattern();
+            if (oPattDataResult?.RETCD == "S") {
+
+                let aPatternData = oPattDataResult.RTDATA,
+                    iPatternDataLength = aPatternData.length;
+
+                for (var i = 0; i < iPatternDataLength; i++) {
+
+                    let oPatternData = aPatternData[i];
+
+                    let oPattern = aPatternJson.find(elem => elem.CKEY == oPatternData.KEY);
+                    if (!oPattern) {
+                        continue;
+                    }
+
+                    oPattern.DATA = oPatternData.DATA;
+
+                }
+
+            }
+
+            oAPP.common.fnSetModelProperty("/PATTN", aPatternJson);
+
+            let oModel = sap.ui.getCore().getModel();
+            parent.WSUTIL.parseArrayToTree(oModel, "PATTN", "CKEY", "PKEY", "PATTN");
+
+            resolve();
+
+        });
+
+    } // end of oAPP.fn.fnModelBindingUspPattern
 
     /**************************************************************************
      * [WS30] USP Codeeditor ContextMenu Open
      **************************************************************************/
     oAPP.fn.fnUspCodeeditorContextMenuOpen = (oEvent, oCodeEditor) => {
+
+        if (oAPP.attr.oCtxMenuClickEditor) {
+            delete oAPP.attr.oCtxMenuClickEditor;
+        }
+
+        oAPP.attr.oCtxMenuClickEditor = oCodeEditor;
 
         let sMenuId = "uspCDECtxMenu";
 
@@ -627,23 +810,82 @@
             return;
         }
 
-        var oCtxMenu = new sap.ui.unified.Menu(sMenuId, {
-            items: [
-                new sap.ui.unified.MenuItem({
-                    // key: "001",
-                    text: "패턴1"
-                }),
-                new sap.ui.unified.MenuItem({
-                    // key: "002",
-                    text: "패턴2"
-                }),
-            ]
-        }).addStyleClass("u4aWsWindowMenu");
+        var oCtxMenu = new sap.m.Menu({
+            itemSelected: (oEvent) => {
+
+                // USP Pattern Contextmenu Event
+                oAPP.fn.fnUspPatternContextMenuClick(oEvent);
+
+            },
+            items: {
+                path: "/PATTN",
+                template: new sap.m.MenuItem({
+                    key: "{CKEY}",
+                    text: "{DESC}",
+                    startsSection: "{ISSTART}",
+                    icon: "{ICON}",
+                    tooltip: "{DATA}",
+                    items: {
+                        path: "PATTN",
+                        templateShareable: true,
+                        template: new sap.m.MenuItem({
+                            key: "{CKEY}",
+                            text: "{DESC}",
+                            startsSection: "{ISSTART}",
+                            icon: "{ICON}",
+                            tooltip: "{DATA}",
+                            items: {
+                                path: "PATTN",
+                                templateShareable: true,
+                                template: new sap.m.MenuItem({
+                                    key: "{CKEY}",
+                                    text: "{DESC}",
+                                    startsSection: "{ISSTART}",
+                                    icon: "{ICON}",
+                                    tooltip: "{DATA}",
+                                    items: {
+                                        path: "PATTN",
+                                        templateShareable: true,
+                                        template: new sap.m.MenuItem({
+                                            key: "{CKEY}",
+                                            text: "{DESC}",
+                                            startsSection: "{ISSTART}",
+                                            icon: "{ICON}",
+                                            tooltip: "{DATA}",
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+        }).addStyleClass("u4aWsUspPatternMenu");
+
+        let aPatterns = oAPP.common.fnGetModelProperty("/PATTN"),
+            oModel = new sap.ui.model.json.JSONModel();
+
+        oModel.setData({ PATTN: aPatterns });
+
+        oCtxMenu.setModel(oModel);
 
         oCtxMenu.openAsContextMenu(oEvent, oCodeEditor);
 
-
     }; // end of oAPP.fn.fnUspCodeeditorContextMenuOpen      
+
+    /**************************************************************************
+     * [WS30] USP Pattern Context Menu Event
+     **************************************************************************/
+    oAPP.fn.fnUspPatternContextMenuClick = (oEvent) => {
+
+        debugger;
+
+        let oEditor = oAPP.attr.oCtxMenuClickEditor;
+
+
+
+
+    }; // end of oAPP.fn.fnUspPatternContextMenuClick
 
     /**************************************************************************
      * [WS30] USP Move Position Popup Close
@@ -703,7 +945,7 @@
             return;
         }
 
-        setTimeout(function() {
+        setTimeout(function () {
             oBtn.firePress();
         }, 0);
 

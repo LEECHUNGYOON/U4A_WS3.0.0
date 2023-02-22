@@ -267,11 +267,8 @@
      * **********************************************************************/
     oAPP.fn.fnMoveToWs10 = function () {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
-        // Busy 실행
-        parent.setBusy('X');
+        // busy 키고 Lock 키기
+        oAPP.common.fnSetBusyLock("X");
 
         // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
         oAPP.fn.fnKillUserSession(lf_success, lf_success);
@@ -311,7 +308,7 @@
             parent.CURRWIN.setTitle("U4A Workspace - #Main");
 
             // busy 끄고 Lock 끄기
-            oAPP.common.fnSetBusyLock("");     
+            oAPP.common.fnSetBusyLock("");
 
         } // end of lf_success
 
@@ -354,17 +351,49 @@
     /************************************************************************
      * WS30 페이지로 이동
      * **********************************************************************/
-    oAPP.fn.fnMoveToWs30 = () => {
+    oAPP.fn.fnMoveToWs30 = async () => {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // busy 키고 Lock 키기
+        oAPP.common.fnSetBusyLock("X");
 
-        var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+        // usp tree 부분 split 영역 
+        let oSplitLayout = sap.ui.getCore().byId("usptreeSplitLayout");
+        if (oSplitLayout) {
+            oSplitLayout.setSize("500px");
+        }
 
-        var sServerPath = parent.getServerPath(),
+        // content 영역 split orientation 초기화
+        let oCodeEditorSplit = sap.ui.getCore().byId("uspCodeeditorSplit");
+        if (oCodeEditorSplit) {
+            oCodeEditorSplit.setOrientation("Horizontal");
+        }
+
+        // content 영역 split size 초기화
+        let oCodeEditorSplitLayoutData = sap.ui.getCore().byId("codeEditorSplitLayout");
+        if (oCodeEditorSplitLayoutData) {
+            oCodeEditorSplitLayoutData.setSize("0px");
+        }
+
+        // content 영역 상단 패널 펼치기
+        let oPanel = sap.ui.getCore().byId("uspPanel");
+        if (oPanel) {
+            oPanel.setExpanded(true);
+        }
+
+        // USP 초기 레이아웃 설정
+        oAPP.fn.fnOnInitLayoutSettingsWs30(); // #[ws_usp.js]
+
+        // USP 패턴 관련 Context Menu 정보를 앱 설치폴더에 저장한다.
+        await oAPP.fn.fnSaveUspPatternCtxMenuInfoLocalFolder(); // #[ws_usp_01.js]
+
+        // USP 기본 패턴 Pattern 읽어오기
+        await oAPP.fn.fnModelBindingUspPattern(); // #[ws_usp_01.js]
+
+        let oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+            sServerPath = parent.getServerPath(),
             sInitPath = `${sServerPath}/usp_init_prc`;
 
-        var oFormData = new FormData();
+        let oFormData = new FormData();
         oFormData.append("APPID", oAppInfo.APPID);
 
         sendAjax(sInitPath, oFormData, _fnCallback);
@@ -374,10 +403,8 @@
             // Critical Error
             if (oResult.RETCD == "Z") {
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
-
-                parent.setBusy('');
+                // busy 끄고 Lock 끄기
+                oAPP.common.fnSetBusyLock("");
 
                 //  [Critical] 메시지 팝업 띄우고 확인 누르면 10번으로 강제 이동
                 // 세션, 락 등등 처리 후 이동
@@ -390,10 +417,8 @@
 
             if (oResult.RETCD != "S") {
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
-
-                parent.setBusy('');
+                // busy 끄고 Lock 끄기
+                oAPP.common.fnSetBusyLock("");
 
                 parent.showMessage(sap, 20, 'E', oResult.RTMSG, fnCallback);
 
@@ -413,18 +438,18 @@
             // USP 좌측 Tree 구성
             APPCOMMON.fnSetModelProperty("/WS30/USPTREE", oResult.T_DATA);
 
-            var oModel = sap.ui.getCore().getModel();
+            let oModel = sap.ui.getCore().getModel();
 
             oAPP.fn.fnSetTreeJson(oModel, "WS30.USPTREE", "OBJKY", "PUJKY", "USPTREE");
 
-            var oUspTreeTable = sap.ui.getCore().byId("usptree");
+            let oUspTreeTable = sap.ui.getCore().byId("usptree");
 
             if (oUspTreeTable && oUspTreeTable.getModel()) {
                 oUspTreeTable.getModel().refresh();
             }
 
             // APP가 EDIT모드라면 Codeeditor에 키다운 이벤트를 실행한다.
-            var oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+            let oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
             if (oAppInfo.IS_EDIT == "X") {
 
                 let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
@@ -453,10 +478,8 @@
 
             }
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            parent.setBusy('');
+            // busy 끄고 Lock 끄기
+            oAPP.common.fnSetBusyLock("");
 
         }
 
@@ -468,11 +491,11 @@
     oAPP.fn.fnKillUserSession = function (fn_callback, fn_fail) {
 
         // var oAppInfo = parent.getAppInfo();
-        var SSID = parent.getSSID();
+        let SSID = parent.getSSID();
 
         parent.setSSID("");
 
-        var oFormData = new FormData();
+        let oFormData = new FormData();
         oFormData.append("SSID", SSID);
         oFormData.append("EXIT", 'X');
 

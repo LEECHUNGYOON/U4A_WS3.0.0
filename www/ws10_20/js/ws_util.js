@@ -1,6 +1,6 @@
 const
     REMOTE = require('@electron/remote'),
-    FS = REMOTE.require('fs'),
+    FS = require('fs-extra'),
     PATH = REMOTE.require('path'),
     APP = REMOTE.app,
     USERDATA = APP.getPath("userData");
@@ -267,6 +267,13 @@ module.exports = {
 
     }, // end of parseTreeToArray
 
+    /**
+     * 전달받은 경로의 디렉토리 정보를 구한다.
+     * 
+     * @param {String} sFolderPath 
+     * - 읽을려는 폴더 경로
+     * @returns {Object} { RETCD : "성공여부", RTDATA: "폴더내부의 정보리스트"}
+     */
     readDir: (sFolderPath) => {
 
         return new Promise(async (resolve) => {
@@ -296,7 +303,9 @@ module.exports = {
 
     /**
      * File 읽기
-     * @param {String} sFilePath 
+     * 
+     * @param {String} sFilePath
+     * - 읽을려는 파일의 경로
      */
     readFile: (sFilePath) => {
 
@@ -344,7 +353,7 @@ module.exports = {
 
                 if (iInterval) {
                     oBrowserWindow.setOpacity(1.0);
-                    clearInterval(iInterval);                    
+                    clearInterval(iInterval);
                 }
 
                 return;
@@ -357,5 +366,118 @@ module.exports = {
         }, 10);
 
     }, // end of setBrowserOpacity
+
+    /**
+     * 파일 확장자 svg icon 목록
+     * @returns [{EXTNM : "확장자명", ICONPATH : "파일경로"}]
+     */
+    getFileExtSvgIcons: () => {
+
+        return new Promise((resolve) => {
+
+            var svgFolder = PATH.join(APP.getAppPath(), "svg");
+
+            FS.readdir(svgFolder, (err, aFiles) => {
+
+                if (err) {
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    })
+                    return;
+                }
+
+                let iFileLength = aFiles.length,
+                    aFileExtInfo = [];
+
+                for (var i = 0; i < iFileLength; i++) {
+
+                    let sFileFullName = aFiles[i],
+                        sFileName = sFileFullName.split(".")[0],
+                        oFileExtInfo = {
+                            EXTNM: sFileName,
+                            ICONPATH: svgFolder + "\\" + sFileFullName
+                        };
+
+                    aFileExtInfo.push(oFileExtInfo);
+
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTDATA: aFileExtInfo
+                });
+
+            });
+
+
+        });
+
+    }, // end of getFileExtSvgIcons
+
+    /**
+     * 폴더 및 파일 복사
+     * 
+     * @param {String} sSource 
+     * - 복사 대상 원본 폴더 및 파일 경로
+     * 
+     * @param {String} sTarget 
+     * - 복사 위치 폴더 및 파일 경로
+     * 
+     * @param {Object} options
+     * - 옵션정보는 Nodejs의 fs 참조
+     */
+    fsCopy: (sSource, sTarget, options) => {
+
+        return new Promise((resolve) => {
+
+            FS.copy(sSource, sTarget, options).then(function () {
+
+                resolve({
+                    RETCD: "S",
+                    RTMSG: ""
+                });
+
+            }).catch(function (err) {
+
+                resolve({
+                    RETCD: "E",
+                    RTMSG: err.toString()
+                });
+
+            });
+
+
+        });
+
+    }, // end of fsCopy
+
+
+    /**
+     * 파일 쓰기 
+     * - 아래 파라미터는 nodejs의 fs 참조
+     * @param {*} file 
+     * @param {*} data 
+     * @param {*} options      
+     */
+    fsWriteFile: (file, data, options = {}) => {
+
+        return new Promise(async (resolve) => {
+
+            FS.writeFile(file, data, options, (err) => {
+
+                if (err) {
+                    resolve({ RETCD: "E", RTMSG: err.toString() });
+                    return;
+                }
+
+                resolve({ RETCD: "S", RTMSG: "" });
+
+            });
+
+
+        });
+
+    }, // end of fsWriteFile
 
 };
