@@ -4,10 +4,11 @@
  * - file Name : ws_usp_01.js
  * - file Desc : u4a ws usp sub
  ************************************************************************/
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
-    const APPCOMMON = oAPP.common,
+    const
+        APPCOMMON = oAPP.common,
         APP = parent.APP,
         FS = parent.FS,
         SESSKEY = parent.getSessionKey(),
@@ -350,7 +351,7 @@
             // association
             initialFocus: "ws30_step",
 
-            afterOpen: function(oEvent) {
+            afterOpen: function (oEvent) {
 
                 var oStepInput = sap.ui.getCore().byId("ws30_step");
                 if (!oStepInput) {
@@ -367,7 +368,7 @@
             },
 
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -453,7 +454,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             let oSendData = {
                 APPINFO: oAppInfo,
@@ -557,7 +558,7 @@
     oAPP.fn.fnSaveUspPatternCtxMenuInfoLocalFolder = () => {
 
         return new Promise(async (resolve) => { // 이미 usp pattern 정보를 가져왔는지 확인
-            let oPatternData = oAPP.common.fnGetModelProperty("/PATTN");
+            let oPatternData = APPCOMMON.fnGetModelProperty("/PATTN");
             if (oPatternData) {
                 resolve();
                 return;
@@ -584,79 +585,74 @@
             }
 
             let aPatternJson = [{
-                    "PKEY": "",
-                    "CKEY": "PATT001",
-                    "DESC": "Default Pattern"
-                },
-                {
-                    "PKEY": "PATT001",
-                    "CKEY": "PTN001",
-                    "DESC": "HTML",
-                    "ICON": oHtmlIconInfo.ICONPATH
-                },
-                {
-                    "PKEY": "PTN001",
-                    "CKEY": "PTN001_001",
-                    "DESC": "HTML 기본패턴",
-                    "ACTCD": "01"
-                },
-                {
-                    "PKEY": "PTN001",
-                    "CKEY": "PTN001_002",
-                    "DESC": "FORM 기본패턴",
-                    "ACTCD": "01"
-                }, {
-                    "PKEY": "PTN001",
-                    "CKEY": "PTN001_003",
-                    "DESC": "Iframe 기본패턴",
-                    "ACTCD": "01"
-                }, {
-                    "PKEY": "PTN001",
-                    "CKEY": "PTN001_004",
-                    "DESC": "UI5 기본패턴",
-                    "ACTCD": "01",
-                    "ICON": sUi5IconUrl
-                }, {
-                    "PKEY": "PTN001_004",
-                    "CKEY": "PTN001_004_001",
-                    "DESC": "UI5 BootStrap",
-                    "ACTCD": "01"
-                }, {
-                    "PKEY": "PATT001",
-                    "CKEY": "PTN002",
-                    "DESC": "JS",
-                    "ICON": oJsIconInfo.ICONPATH
-                }, {
-                    "PKEY": "PTN002",
-                    "CKEY": "PTN002_001",
-                    "DESC": "JS 기본 패턴",
-                    "ACTCD": "02"
-                }, {
-                    "PKEY": "PTN002",
-                    "CKEY": "PTN002_002",
-                    "DESC": "즉시실행함수 패턴",
-                    "ACTCD": "02"
-                }, {
-                    "PKEY": "PTN002",
-                    "CKEY": "PTN002_003",
-                    "DESC": "Module js 패턴",
-                    "ACTCD": "02"
-                }, {
-                    "PKEY": "PTN002",
-                    "CKEY": "PTN002_004",
-                    "DESC": "윈도우 이벤트 패턴",
-                    "ACTCD": "02"
-                }, {
-                    "PKEY": "",
-                    "CKEY": "PATT002",
-                    "DESC": "Custom Pattern",
-                    "ISSTART": true
-                }, {
-                    "PKEY": "",
-                    "CKEY": "PATT003",
-                    "DESC": "Custom Pattern Save",
-                    "ICON": "sap-icon://save"
-                },
+                "PKEY": "",
+                "CKEY": "PATT001",
+                "DESC": "Default Pattern"
+            },
+            {
+                "PKEY": "PATT001",
+                "CKEY": "PTN001",
+                "DESC": "HTML",
+                "ICON": oHtmlIconInfo.ICONPATH
+            },
+            {
+                "PKEY": "PTN001",
+                "CKEY": "PTN001_001",
+                "DESC": "HTML 기본패턴",
+                "ACTCD": "01"
+            },
+            {
+                "PKEY": "PTN001",
+                "CKEY": "PTN001_002",
+                "DESC": "FORM 기본패턴",
+                "ACTCD": "01"
+            }, {
+                "PKEY": "PTN001",
+                "CKEY": "PTN001_003",
+                "DESC": "Iframe 기본패턴",
+                "ACTCD": "01"
+            }, {
+                "PKEY": "PTN001",
+                "CKEY": "PTN001_004",
+                "DESC": "UI5 기본패턴",
+                "ACTCD": "01",
+                "ICON": sUi5IconUrl
+            }, {
+                "PKEY": "PTN001_004",
+                "CKEY": "PTN001_004_001",
+                "DESC": "UI5 BootStrap",
+                "ACTCD": "01"
+            }, {
+                "PKEY": "PATT001",
+                "CKEY": "PTN002",
+                "DESC": "JS",
+                "ICON": oJsIconInfo.ICONPATH
+            }, {
+                "PKEY": "PTN002",
+                "CKEY": "PTN002_001",
+                "DESC": "JS 기본 패턴",
+                "ACTCD": "02"
+            }, {
+                "PKEY": "PTN002",
+                "CKEY": "PTN002_002",
+                "DESC": "즉시실행함수 패턴",
+                "ACTCD": "02"
+            }, {
+                "PKEY": "PTN002",
+                "CKEY": "PTN002_003",
+                "DESC": "Module js 패턴",
+                "ACTCD": "02"
+            }, {
+                "PKEY": "PTN002",
+                "CKEY": "PTN002_004",
+                "DESC": "윈도우 이벤트 패턴",
+                "ACTCD": "02"
+            }, {
+                "PKEY": "",
+                "CKEY": "PATT002",
+                "DESC": "Custom Pattern",
+                "ISSTART": true
+            }
             ];
 
             // JSON 모델 정보를 앱 설치 폴더의 패턴 폴더에 저장한다.
@@ -715,7 +711,7 @@
 
             }
 
-            oAPP.common.fnSetModelProperty("/PATTN", aPatternJson);
+            APPCOMMON.fnSetModelProperty("/PATTN", aPatternJson);
 
             let oModel = sap.ui.getCore().getModel();
             parent.WSUTIL.parseArrayToTree(oModel, "PATTN", "CKEY", "PKEY", "PATTN");
@@ -742,7 +738,14 @@
 
         var oCtxMenu = sap.ui.getCore().byId(sMenuId);
         if (oCtxMenu) {
+
+            let oUspAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+                oCtxMenuModel = oCtxMenu.getModel();
+
+            oCtxMenuModel.setProperty("/APPINFO", oUspAppInfo);
+
             oCtxMenu.openAsContextMenu(oEvent, oCodeEditor);
+
             return;
         }
 
@@ -796,30 +799,27 @@
             }
         }).addStyleClass("u4aWsUspPatternMenu");
 
-        let aPatterns = oAPP.common.fnGetModelProperty("/PATTN"),
+        let aPatterns = APPCOMMON.fnGetModelProperty("/PATTN"),
+            oUspAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
             oModel = new sap.ui.model.json.JSONModel();
 
         oModel.setData({
-            PATTN: aPatterns
+            PATTN: aPatterns,
+            APPINFO: oUspAppInfo
         });
 
         oCtxMenu.setModel(oModel);
 
         oCtxMenu.openAsContextMenu(oEvent, oCodeEditor);
 
-    };
-    // end of oAPP.fn.fnUspCodeeditorContextMenuOpen
+    }; // end of oAPP.fn.fnUspCodeeditorContextMenuOpen
 
     /**************************************************************************
      * [WS30] USP Pattern Context Menu Event
      **************************************************************************/
     oAPP.fn.fnUspPatternContextMenuClick = (oEvent) => {
 
-        let oCodeEditor = oAPP.attr.oCtxMenuClickEditor;
-        if (!oCodeEditor) {
-            return;
-        }
-
+        // 선택한 ContextMenu 정보를 구한다.
         let oSelectMenuItem = oEvent.getParameter("item"),
             oCtx = oSelectMenuItem.getBindingContext();
 
@@ -827,23 +827,85 @@
             return;
         }
 
+        // 현재 어플리케이션의 change 모드 여부를 확인한다.
+        let oAppInfo = oCtx.getProperty("/APPINFO"),
+            bIsEdit = (oAppInfo.IS_EDIT == "X" ? true : false);
+
+        // 어플리케이션이 change 모드가 아니면 빠져나감.
+        if (!bIsEdit) {
+            return;
+        }
+
+        // 마우스 우클릭한 위치의 Editor 정보를 구한다.
+        let oCodeEditor = oAPP.attr.oCtxMenuClickEditor;
+        if (!oCodeEditor) {
+            return;
+        }
+
         let oBindData = oCtx.getProperty(oCtx.getPath()),
+            oEditor = oCodeEditor._oEditor,
+            oCursorPos = oEditor.getCursorPosition(),
             sInsertTxt = oBindData.DATA;
 
         if (!sInsertTxt) {
             return;
         }
 
-        let oEditor = oCodeEditor._oEditor,
-            oCursorPos = oEditor.getCursorPosition();
-
+        // Editor에 선택한 패턴을 출력해준다.
         oEditor.session.insert(oCursorPos, sInsertTxt);
+
+        // Editor에 변경 이벤트를 발생시킨다.
+        oCodeEditor.fireChange({
+            value: oEditor.session.getValue()
+        });
 
         // 앱 변경 사항 플래그 설정
         oAPP.fn.setAppChangeWs30("X");
 
-    };
-    // end of oAPP.fn.fnUspPatternContextMenuClick
+    }; // end of oAPP.fn.fnUspPatternContextMenuClick
+
+    /**************************************************************************
+     * [WS30] 단축키로 save 및 active 시 마지막 선택한 커서의 위치가 에디터였다면 
+     * 해당 에디터로 포커스를 준다!!
+     **************************************************************************/
+    oAPP.fn.fnLastActivateElementFocus = () => {
+
+        debugger;
+
+        /**
+         * 단축키로 실행했을 경우 하위로직 수행
+         */
+        let oActiveDom = oAPP.attr.beforeActiveElement;
+        if (!oActiveDom) {
+            return;
+        }
+
+        let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
+            oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
+
+        // 에디터가 둘중에 하나라도 없다면 빠져나감.
+        if (!oCodeEditor1 || !oCodeEditor2) {
+            return;
+        }
+
+        // 이전 포커스의 위치 정보를 지운다.
+        delete oAPP.attr.beforeActiveElement;
+
+        // 현재 커서의 위치가 어떤 에디터인지 확인
+        let $oCodeeditor1 = $(oActiveDom).closest(".u4aUspCodeeditor1");
+
+        // 커서가 왼쪽 에디터에 있었을 경우
+        if ($oCodeeditor1.length !== 0) {
+
+            oCodeEditor1.focus();
+
+            return;
+
+        }
+
+        oCodeEditor2.focus();
+
+    }; // end of oAPP.fn.fnLastActivateElementFocus
 
     /**************************************************************************
      * [WS30] USP Move Position Popup Close
@@ -856,8 +918,7 @@
             oDialog.close();
         }
 
-    }
-    // end of ev_uspTreeNodeMovePosPopupClose
+    } // end of ev_uspTreeNodeMovePosPopupClose
 
     /**************************************************************************
      * [WS30] USP Move Position Popup 확인 버튼 이벤트
@@ -905,7 +966,7 @@
             return;
         }
 
-        setTimeout(function() {
+        setTimeout(function () {
             oBtn.firePress();
         }, 0);
 

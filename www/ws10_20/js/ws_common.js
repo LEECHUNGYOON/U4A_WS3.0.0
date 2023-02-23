@@ -1269,6 +1269,13 @@
                 KEY: "Ctrl+F3", // Activate Button
                 fn: (e) => {
 
+                    // Active 버튼 누르기 전 커서의 위치를 저장한다.
+                    if (oAPP.attr.beforeActiveElement) {
+                        delete oAPP.attr.beforeActiveElement;
+                    }
+
+                    oAPP.attr.beforeActiveElement = document.activeElement;
+
                     e.stopImmediatePropagation();
 
                     if (sap.ui.getCore().isLocked()) {
@@ -1301,6 +1308,13 @@
             }, {
                 KEY: "Ctrl+S", // Save Button
                 fn: (e) => {
+
+                    // Active 버튼 누르기 전 커서의 위치를 저장한다.
+                    if (oAPP.attr.beforeActiveElement) {
+                        delete oAPP.attr.beforeActiveElement;
+                    }
+
+                    oAPP.attr.beforeActiveElement = document.activeElement;
 
                     e.stopImmediatePropagation();
 
@@ -2078,7 +2092,7 @@
         });
 
     }; // end of oAPP.common.fnSleep
-    
+
     /**
      * ProgressDialog
      * 

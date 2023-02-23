@@ -1040,7 +1040,7 @@
 
     function _getWs10ContentHtml() {
 
-        let sHtmlPath = PATH.join(APPPATH, "ws10_20", "ws10_content", "ws10_content.html");
+        let sHtmlPath = PATH.join(APPPATH, "ws10_20", "ws10_content", "intro.html");
 
 
         let aa = `<iframe src=${sHtmlPath} style="width:100%;height:100%;border:0px;"></iframe>`;

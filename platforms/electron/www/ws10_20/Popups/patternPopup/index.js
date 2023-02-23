@@ -229,13 +229,15 @@ let oAPP = parent.oAPP;
      ************************************************************************/
     function _getMainPageContents() {
 
-        let oPatternListTbl = _getPatternListTable(), // 좌측 테이블
-            oPatternCodePage = _getPatternCodePage(), // 우측 페이지
+        let oLeftPage = _getPatternListPage(), // 좌측 페이지
+            oPatternListTbl = _getPatternListTable(), // 좌측 테이블
+            oPatternCodePage = _getPatternCodePage(), // 우측 페이지          
             oSplitter = new sap.ui.layout.Splitter({
                 height: "100%",
                 width: "100%",
                 contentAreas: [
-                    oPatternListTbl,
+                    oLeftPage,
+                    // oPatternListTbl,
                     oPatternCodePage
 
                 ]
@@ -244,12 +246,19 @@ let oAPP = parent.oAPP;
         return [
             oSplitter
 
-
-
-
         ]
 
     } // end of _getMainPageContents
+
+    function _getPatternListPage(){
+
+        return new sap.m.Page({
+            
+
+
+        });
+
+    } // end of _getPatternListPage
 
     /************************************************************************
      * 패턴 목록 테이블

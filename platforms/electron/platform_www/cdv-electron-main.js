@@ -31,7 +31,7 @@ const {
     session
 } = require('electron');
 
-app.disableHardwareAcceleration();
+// app.disableHardwareAcceleration();
 
 // 참고 https://www.electronjs.org/docs/latest/api/command-line-switches
 app.commandLine.appendSwitch('disable-site-isolation-trials');
@@ -146,7 +146,7 @@ function createWindow() {
     configureSession();
 
     mainWindow = new BrowserWindow(browserWindowOpts);
-    mainWindow.webContents.setFrameRate(50);
+    // mainWindow.webContents.setFrameRate(50);
     remote.enable(mainWindow.webContents);
 
     // Load a local HTML file or a remote URL.
