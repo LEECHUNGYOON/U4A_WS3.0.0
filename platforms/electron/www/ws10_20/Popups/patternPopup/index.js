@@ -164,65 +164,63 @@ let oAPP = parent.oAPP;
 
     }; // end of oAPP.fn.fnInitRendering
 
-    /************************************************************************
-     * 선택한 메뉴에 맞는 패턴 파일들을 읽어온다.
-     ************************************************************************/
-    oAPP.fn.fnGetPatternFiles = () => {
+    // /************************************************************************
+    //  * 선택한 메뉴에 맞는 패턴 파일들을 읽어온다.
+    //  ************************************************************************/
+    // oAPP.fn.fnGetPatternFiles = () => {
 
-        return new Promise(async (resolve) => {
+    //     return new Promise(async (resolve) => {
 
-            let oMenuInfo = oAPP.attr.oMenuInfo;
-            if (!oMenuInfo) {
-                resolve();
-                return;
-            }
+    //         let oMenuInfo = oAPP.attr.oMenuInfo;
+    //         if (!oMenuInfo) {
+    //             resolve();
+    //             return;
+    //         }
 
-            debugger;
+    //         let sPatternRootFolderPath = parent.PATHINFO.PATTERN,
+    //             oDirInfo = await parent.WSUTIL.readDir(sPatternRootFolderPath);
 
-            let sPatternRootFolderPath = parent.PATHINFO.PATTERN,
-                oDirInfo = await parent.WSUTIL.readDir(sPatternRootFolderPath);
+    //         if (oDirInfo.RETCD == "E") {
+    //             resolve();
+    //             return;
+    //         }
 
-            if (oDirInfo.RETCD == "E") {
-                resolve();
-                return;
-            }
+    //         let aFolderList = oDirInfo.RTDATA;
+    //         if (Array.isArray(aFolderList) == false) {
+    //             resolve();
+    //             return;
+    //         }
 
-            let aFolderList = oDirInfo.RTDATA;
-            if (Array.isArray(aFolderList) == false) {
-                resolve();
-                return;
-            }
+    //         let iFolderLength = aFolderList.length;
+    //         if (iFolderLength < 0) {
+    //             resolve();
+    //             return;
+    //         }
 
-            let iFolderLength = aFolderList.length;
-            if (iFolderLength < 0) {
-                resolve();
-                return;
-            }
+    //         let oData = {};
+    //         for (var i = 0; i < iFolderLength; i++) {
 
-            let oData = {};
-            for (var i = 0; i < iFolderLength; i++) {
+    //             let sFolderName = aFolderList[i];
 
-                let sFolderName = aFolderList[i];
+    //             oData[sFolderName] = [];
 
-                oData[sFolderName] = [];
+    //             let sChildFolderPath = PATH.join(sPatternRootFolderPath, sFolderName),
+    //                 oDirInfo = await parent.WSUTIL.readDir(sChildFolderPath);
 
-                let sChildFolderPath = PATH.join(sPatternRootFolderPath, sFolderName),
-                    oDirInfo = await parent.WSUTIL.readDir(sChildFolderPath);
+    //             if (oDirInfo.RETCD == "E") {
+    //                 continue;
+    //             }
 
-                if (oDirInfo.RETCD == "E") {
-                    continue;
-                }
+    //             oData[sFolderName] = oDirInfo.RTDATA;
 
-                oData[sFolderName] = oDirInfo.RTDATA;
+    //         }
 
-            }
+    //         oAPP.fn.fnSetModelProperty("/CUS_PAT", oData);
 
-            oAPP.fn.fnSetModelProperty("/CUS_PAT", oData);
+    //         resolve();
+    //     });
 
-            resolve();
-        });
-
-    }; // end of oAPP.fn.fnGetPatternFiles
+    // }; // end of oAPP.fn.fnGetPatternFiles
 
     /************************************************************************
      * 패턴 메인 페이지

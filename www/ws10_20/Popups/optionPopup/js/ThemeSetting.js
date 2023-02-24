@@ -53,16 +53,25 @@
 	});
 
 	oSelect.addItem(new sap.ui.core.Item({
-		key: "sap_belize_plus",
-		text: "sap_belize_plus"
-	}));
-	oSelect.addItem(new sap.ui.core.Item({
 		key: "sap_horizon_dark",
 		text: "sap_horizon_dark"
 	}));
 	oSelect.addItem(new sap.ui.core.Item({
 		key: "sap_horizon",
 		text: "sap_horizon"
+	}));
+	oSelect.addItem(new sap.ui.core.Item({
+		key: "sap_fiori_3_dark",
+		text: "sap_fiori_3_dark"
+	}));
+	oSelect.addItem(new sap.ui.core.Item({
+		key: "sap_fiori_3",
+		text: "sap_fiori_3"
+	}));
+
+	oSelect.addItem(new sap.ui.core.Item({
+		key: "sap_belize_plus",
+		text: "sap_belize_plus"
 	}));
 	oSelect.addItem(new sap.ui.core.Item({
 		key: "sap_belize",
@@ -127,7 +136,7 @@
 
 			switch (sData.THEME) {
 				case "sap_belize_plus":
-					sData.BGCOL = "#2f3c48";
+					sData.BGCOL = "#fafafa";
 
 					break;
 
@@ -137,13 +146,21 @@
 					break;
 
 				case "sap_horizon":
-					sData.BGCOL = "#fff";
+					sData.BGCOL = "#f5f6f7";
 
 					break;
 
 				case "sap_belize":
-					sData.BGCOL = "#4d6377";
+					sData.BGCOL = "#fafafa";
 
+					break;
+
+				case "sap_fiori_3":
+					sData.BGCOL = "#f7f7f7";
+					break;
+
+				case "sap_fiori_3_dark":
+					sData.BGCOL = "#1c2228";
 					break;
 
 				default:

@@ -416,7 +416,7 @@ module.exports = {
     }, // end of getFileExtSvgIcons
 
     /**
-     * 폴더 및 파일 복사
+     * 폴더 및 파일 복사 [deprecated] 빌드시 버그있음!!!!! 사용 금지!! 
      * 
      * @param {String} sSource 
      * - 복사 대상 원본 폴더 및 파일 경로
@@ -451,7 +451,6 @@ module.exports = {
         });
 
     }, // end of fsCopy
-
 
     /**
      * 파일 쓰기 

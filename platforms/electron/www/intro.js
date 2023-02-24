@@ -16,6 +16,7 @@
         PATH = REMOTE.require('path'),
         APPPATH = APP.getAppPath(),
         USERDATA = APP.getPath("userData"),
+
         FS = REMOTE.require('fs-extra'),
         REGEDIT = require('regedit'),
         PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
@@ -451,102 +452,102 @@
 
     }; // end of oAPP.fn.copyVbsPromise
 
-    /************************************************************************
-     * U4A help document를 로컬에 설치한다.
-     ************************************************************************/
-    oAPP.fn.fnInstallHelpDocument = () => {
+    // /************************************************************************
+    //  * U4A help document를 로컬에 설치한다.
+    //  ************************************************************************/
+    // oAPP.fn.fnInstallHelpDocument = () => {
 
-        return new Promise((resolve, reject) => {
+    //     return new Promise((resolve, reject) => {
 
-            let lf_err = (err) => {
-                reject(err.toString());
-            },
+    //         let lf_err = (err) => {
+    //             reject(err.toString());
+    //         },
 
-                // 파일 압축 풀기 성공 콜백
-                lf_FileExtractSuccess = () => {
-                    resolve();
-                },
+    //             // 파일 압축 풀기 성공 콜백
+    //             lf_FileExtractSuccess = () => {
+    //                 resolve();
+    //             },
 
-                // copy 성공 콜백
-                lf_CopySuccess = () => {
+    //             // copy 성공 콜백
+    //             lf_CopySuccess = () => {
 
-                    oAPP.fn.fnCopyHelpDocFileExtract()
-                        .then(lf_FileExtractSuccess)
-                        .catch(lf_err);
-                };
+    //                 oAPP.fn.fnCopyHelpDocFileExtract()
+    //                     .then(lf_FileExtractSuccess)
+    //                     .catch(lf_err);
+    //             };
 
-            // help docu file 복사    
-            oAPP.fn.fnCopyHelpDocFile()
-                .then(lf_CopySuccess)
-                .catch(lf_err);
+    //         // help docu file 복사    
+    //         oAPP.fn.fnCopyHelpDocFile()
+    //             .then(lf_CopySuccess)
+    //             .catch(lf_err);
 
-        }); // end of promise
+    //     }); // end of promise
 
-    }; // end of oAPP.fn.fnInstallHelpDocument
+    // }; // end of oAPP.fn.fnInstallHelpDocument
 
-    /************************************************************************
-     * U4A help document 파일을 로컬에 복사
-     ************************************************************************/
-    oAPP.fn.fnCopyHelpDocFile = () => {
+    // /************************************************************************
+    //  * U4A help document 파일을 로컬에 복사
+    //  ************************************************************************/
+    // oAPP.fn.fnCopyHelpDocFile = () => {
 
-        return new Promise((resolve, reject) => {
+    //     return new Promise((resolve, reject) => {
 
-            var oSettingsPath = PATHINFO.WSSETTINGS,
-                oSettings = require(oSettingsPath),
-                sHelpDocOriginFile = PATH.join(APPPATH, oSettings.path.u4aHelpDocFilePath),
-                sHelpDocTargetPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFilePath);
+    //         var oSettingsPath = PATHINFO.WSSETTINGS,
+    //             oSettings = require(oSettingsPath),
+    //             sHelpDocOriginFile = PATH.join(APPPATH, oSettings.path.u4aHelpDocFilePath),
+    //             sHelpDocTargetPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFilePath);
 
-            //1. Document File을 복사한다.
-            FS.copy(sHelpDocOriginFile, sHelpDocTargetPath, {
-                overwrite: true,
-            }).then(function () {
+    //         //1. Document File을 복사한다.
+    //         FS.copy(sHelpDocOriginFile, sHelpDocTargetPath, {
+    //             overwrite: true,
+    //         }).then(function () {
 
-                resolve();
+    //             resolve();
 
-            }).catch(function (err) {
-                reject(err.toString());
-            });
+    //         }).catch(function (err) {
+    //             reject(err.toString());
+    //         });
 
-        });
+    //     });
 
-    }; // end of oAPP.fn.fnCopyHelpDocFile
+    // }; // end of oAPP.fn.fnCopyHelpDocFile
 
-    /************************************************************************
-     * U4A help document 파일을 로컬에 복사
-     ************************************************************************/
-    oAPP.fn.fnCopyHelpDocFileExtract = () => {
+    // /************************************************************************
+    //  * U4A help document 파일을 로컬에 복사
+    //  ************************************************************************/
+    // oAPP.fn.fnCopyHelpDocFileExtract = () => {
 
-        return new Promise((resolve, reject) => {
+    //     return new Promise((resolve, reject) => {
 
-            var oSettingsPath = PATHINFO.WSSETTINGS,
-                oSettings = require(oSettingsPath),
-                sHelpDocFolderPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFolderPath),
-                sHelpDocTargetPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFilePath);
+    //         var oSettingsPath = PATHINFO.WSSETTINGS,
+    //             oSettings = require(oSettingsPath),
+    //             sHelpDocFolderPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFolderPath),
+    //             sHelpDocTargetPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFilePath);
 
-            let ZIP = require("zip-lib"),
-                UNZIP = new ZIP.Unzip({
-                    // Called before an item is extracted.
-                    onEntry: function (event) {
-                        zconsole.log(event.entryCount, event.entryName);
-                    }
-                });
+    //         let ZIP = require("zip-lib"),
+    //             UNZIP = new ZIP.Unzip({
+    //                 // Called before an item is extracted.
+    //                 onEntry: function (event) {
+    //                     zconsole.log(event.entryCount, event.entryName);
+    //                 }
+    //             });
 
-            UNZIP.extract(sHelpDocTargetPath, sHelpDocFolderPath, {
-                overwrite: true
-            })
-                .then(function () {
+    //         UNZIP.extract(sHelpDocTargetPath, sHelpDocFolderPath, {
+    //             overwrite: true
+    //         })
+    //             .then(function () {
 
-                    resolve();
+    //                 resolve();
 
-                }, function (err) {
+    //             }, function (err) {
 
-                    reject(err.toString());
+    //                 reject(err.toString());
 
-                });
+    //             });
 
-        }); // end of promise
+    //     }); // end of promise
 
-    }; // end of oAPP.fn.fnCopyHelpDocFileExtract
+    // }; // end of oAPP.fn.fnCopyHelpDocFileExtract
 
 
 
@@ -750,20 +751,47 @@
      ************************************************************************/
     function _uspPatternFileDown() {
 
-        return new Promise(async (resolve) => {            
-           
+        return new Promise(async (resolve) => {
+
             let sPattnFolderSourcePath = PATHINFO.PATTERN,
                 sPattnFolderTargetPath = PATH.join(USERDATA, "usp", "pattern", "files"),
                 oOptions = {
                     overwrite: true,
                 };
 
-            // 앱내에 있는 USP 기본 패턴 폴더를 앱 설치 폴더내에 복사한다.
-            await WSUTIL.fsCopy(sPattnFolderSourcePath, sPattnFolderTargetPath, oOptions);
+            const isExists = FS.existsSync(sPattnFolderTargetPath);
+            if (!isExists) {
+                FS.mkdirSync(sPattnFolderTargetPath, { recursive: true });
+            }
+
+            var ncp = require('ncp').ncp;
+
+            ncp.limit = 16; // 한번에 처리하는 수?  
+
+            ncp(sPattnFolderSourcePath, sPattnFolderTargetPath, function (err) {
+
+                if (err) {
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTMSG: ""
+                });
+
+            });
+
+            // // 앱내에 있는 USP 기본 패턴 폴더를 앱 설치 폴더내에 복사한다.
+            // await WSUTIL.fsCopy(sPattnFolderSourcePath, sPattnFolderTargetPath, oOptions);
 
             resolve();
 
-        }); 
+        });
 
     } // end of _uspPatternFileDown
 
