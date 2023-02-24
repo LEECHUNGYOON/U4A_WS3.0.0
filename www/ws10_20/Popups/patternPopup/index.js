@@ -151,10 +151,13 @@ let oAPP = parent.oAPP;
             oPage = new sap.m.Page({
 
                 // properties
-                showHeader: false,
+                showHeader: true,
                 enableScrolling: false,
 
-                content: _getMainPageContents()
+                // aggregations
+                content: _getMainPageContents(),
+                footer: _getMainPageFooter(),
+
 
             }).addStyleClass("");
 
@@ -228,16 +231,14 @@ let oAPP = parent.oAPP;
     function _getMainPageContents() {
 
         let oLeftPage = _getPatternListPage(), // 좌측 페이지
-            oPatternListTbl = _getPatternListTable(), // 좌측 테이블
-            oPatternCodePage = _getPatternCodePage(), // 우측 페이지          
+            oRightPage = _getPatternContentPage(), // 우측 페이지                   
             oSplitter = new sap.ui.layout.Splitter({
+                orientation: sap.ui.core.Orientation.Horizontal,
                 height: "100%",
                 width: "100%",
                 contentAreas: [
                     oLeftPage,
-                    // oPatternListTbl,
-                    oPatternCodePage
-
+                    oRightPage
                 ]
             });
 
@@ -248,48 +249,154 @@ let oAPP = parent.oAPP;
 
     } // end of _getMainPageContents
 
-    function _getPatternListPage(){
+    function _getMainPageFooter() {
+
+        return new sap.m.Bar({
+            contentRight: [
+                new sap.m.Button({
+                    icon: "sap-icon://message-success",
+                }),
+                new sap.m.Button({
+                    icon: "sap-icon://decline",
+                })
+            ]
+        });
+
+    } // end of _getMainPageFooter
+
+    function _getPatternListPage() {
 
         return new sap.m.Page({
-            
 
+            // properties
+            showHeader: false,
+            enableScrolling: false,
+
+            // aggregations
+            content: _getPatternListPageContent(),
+            layoutData: new sap.ui.layout.SplitterLayoutData({
+                size: "500px",
+            })
 
         });
 
     } // end of _getPatternListPage
 
-    /************************************************************************
-     * 패턴 목록 테이블
-     ************************************************************************/
-    function _getPatternListTable() {
+    function _getPatternListPageContent() {
 
-        return new sap.ui.table.Table({
+        let oDefaultPatternTable = _getDefaultPatternTable(),
+            oCustomPatternTable = _getCustomPatternTable();
 
+        return [
+
+            new sap.ui.layout.Splitter({
+                orientation: sap.ui.core.Orientation.Vertical,
+                contentAreas: [
+                    oDefaultPatternTable,
+                    oCustomPatternTable
+                ],
+
+                resize: (oEvent) => {
+
+                    let oUspDefPattLayoData = sap.ui.getCore().byId("uspDefPattLayoutData"),
+                        oUspCustPattLayoData = sap.ui.getCore().byId("uspCustPattLayoutData");
+
+                    if (!oUspDefPattLayoData || !oUspCustPattLayoData) {
+                        return;
+                    }
+
+                    let sSize = "auto";
+
+                    oUspDefPattLayoData.setSize(sSize);
+                    oUspCustPattLayoData.setSize(sSize);
+
+                }
+            })
+
+        ];
+
+    } // end of _getPatternListPageContent
+
+    function _getDefaultPatternTable() {
+
+        return new sap.ui.table.TreeTable({
+
+            // properties
             selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
             visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
             selectionMode: sap.ui.table.SelectionMode.Single,
 
-            // Aggregations
-            layoutData: new sap.ui.layout.SplitterLayoutData({
-                size: "500px",
-            }),
+            // aggregations
+            extension: [
+                new sap.m.Bar({
+                    contentLeft: [
+                        new sap.m.Title({
+                            text: "Default Patterns"
+                        })
+                    ]
+                })
+            ],
 
+            layoutData: new sap.ui.layout.SplitterLayoutData("uspDefPattLayoutData"),
             columns: [
+                new sap.ui.table.Column(),
+                new sap.ui.table.Column(),
+            ]
 
+        })
+
+    } // end of _getDefaultPatternTable
+
+    function _getCustomPatternTable() {
+
+        return new sap.ui.table.Table({
+
+            // properties
+            selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
+            visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
+            selectionMode: sap.ui.table.SelectionMode.Single,
+
+            // aggregations
+            extension: [
+                new sap.m.Bar({
+                    contentLeft: [
+                        new sap.m.Title({
+                            text: "Custom Patterns"
+                        })
+                    ],
+                    contentRight: [
+                        new sap.m.Button({
+                            type: sap.m.ButtonType.Emphasized,
+                            icon: "sap-icon://save",
+                            press: ev_pressCustomSave
+                        }),
+                        new sap.m.Button({
+                            type: sap.m.ButtonType.Negative,
+                            icon: "sap-icon://delete",
+                            press: ev_pressCustomDelete
+                        }),
+                    ]
+                })
+            ],
+
+            layoutData: new sap.ui.layout.SplitterLayoutData("uspCustPattLayoutData"),
+            columns: [
+                new sap.ui.table.Column(),
+                new sap.ui.table.Column(),
             ]
 
         });
 
-
-    } // end of _getPatternListTable
+    } // end of _getCustomPatternTable
 
     /************************************************************************
      * 패턴 코드 페이지
      ************************************************************************/
-    function _getPatternCodePage() {
+    function _getPatternContentPage() {
 
         return new sap.m.Page({
             showHeader: true,
+            enableScrolling: true,
             customHeader: new sap.m.Bar({
                 contentLeft: [
                     new sap.m.Title({
@@ -325,10 +432,23 @@ let oAPP = parent.oAPP;
 
             oCodeEditor
 
-
         ];
 
     } // end of _getPatternCodePageContent
+
+
+
+    function ev_pressCustomSave() {
+
+
+
+    } // end of ev_pressCustomSave
+
+    function ev_pressCustomDelete() {
+
+
+
+    } // end of ev_pressCustomDelete
 
     oAPP.setBusy = (isBusy) => {
 
