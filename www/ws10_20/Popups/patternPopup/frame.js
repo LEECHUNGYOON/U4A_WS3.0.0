@@ -59,7 +59,8 @@ let oAPP = (function (window) {
         oAPP.attr.oServerInfo = oInfo.oServerInfo;
         oAPP.attr.SYSID = oInfo.SYSID;
         oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
-        // oAPP.attr.oMenuInfo = oInfo.oMenuInfo;
+        oAPP.attr.sDefaultPatternJsonPath = oInfo.sDefaultPatternJsonPath;
+        oAPP.attr.sCustomPatternJsonPath = oInfo.sCustomPatternJsonPath;
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {

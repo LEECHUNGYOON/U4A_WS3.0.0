@@ -753,7 +753,7 @@
 
         return new Promise(async (resolve) => {
 
-            let sPattnFolderSourcePath = PATHINFO.PATTERN,
+            let sPattnFolderSourcePath = PATHINFO.PATTERN_ROOT,
                 sPattnFolderTargetPath = PATH.join(USERDATA, "usp", "pattern", "files"),
                 oOptions = {
                     overwrite: true,

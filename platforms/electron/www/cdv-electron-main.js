@@ -31,12 +31,15 @@ const {
     session
 } = require('electron');
 
-// app.disableHardwareAcceleration();
+app.disableHardwareAcceleration();
+
 
 // 참고 https://www.electronjs.org/docs/latest/api/command-line-switches
 app.commandLine.appendSwitch('disable-site-isolation-trials');
 app.commandLine.appendSwitch('ignore-certificate-errors'); // https 인증서 오류 무시
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required'); // 오디오 자동실행 오류 정책 회피
+
+// app.commandLine.appendSwitch('force_high_performance_gpu'); // gpu 사용
 
 const remote = require('@electron/remote/main');
 remote.initialize();

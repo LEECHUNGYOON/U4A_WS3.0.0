@@ -18,7 +18,8 @@ let oAPP = parent.oAPP;
 
     let PATH = oAPP.PATH,
         APP = oAPP.APP,
-        require = parent.require;
+        require = parent.require,
+        FS = require("fs-extra");
 
     /************************************************************************
      * 모델 데이터 set
@@ -118,17 +119,32 @@ let oAPP = parent.oAPP;
      ************************************************************************/
     oAPP.fn.fnInitModelBinding = function() {
 
+        let sDefPattJson = FS.readFileSync(oAPP.attr.sDefaultPatternJsonPath, 'utf-8'),
+            sCustPattJson = FS.readFileSync(oAPP.attr.sCustomPatternJsonPath, 'utf-8');
+
+        let aDefPattJson,
+            aCustPattJson;
+
+        try {
+            aDefPattJson = JSON.parse(sDefPattJson);
+            aCustPattJson = JSON.parse(sCustPattJson);
+        } catch (error) {
+            throw new Error(error);
+        }
+
         var oCoreModel = sap.ui.getCore().getModel(),
             oJsonModel = new sap.ui.model.json.JSONModel(),
             oData = {
-                DEF_PAT: {},
-                CUS_PAT: {}
+                DEF_PAT: aDefPattJson,
+                CUS_PAT: aCustPattJson
             };
 
         if (oCoreModel == null) {
 
             sap.ui.getCore().setModel(oJsonModel);
             oJsonModel.setData(oData);
+
+            parent.WSUTIL.parseArrayToTree(oJsonModel, "DEF_PAT", "CKEY", "PKEY", "DEF_PAT");
 
             return;
 
@@ -137,6 +153,8 @@ let oAPP = parent.oAPP;
         oCoreModel.setData(oData);
 
         oCoreModel.refresh(true);
+
+        parent.WSUTIL.parseArrayToTree(oJsonModel, "DEF_PAT", "CKEY", "PKEY", "DEF_PAT");
 
     }; // end of oAPP.fn.fnInitModelBinding
 
@@ -307,7 +325,7 @@ let oAPP = parent.oAPP;
 
                     let sSize = "auto";
 
-                    oUspDefPattLayoData.setSize(sSize);
+                    // oUspDefPattLayoData.setSize(sSize);
                     oUspCustPattLayoData.setSize(sSize);
 
                 }
@@ -325,6 +343,9 @@ let oAPP = parent.oAPP;
             selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
             visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
             selectionMode: sap.ui.table.SelectionMode.Single,
+            minAutoRowCount: 1,
+            alternateRowColors: true,
+            columnHeaderVisible: false,
 
             // aggregations
             extension: [
@@ -339,9 +360,19 @@ let oAPP = parent.oAPP;
 
             layoutData: new sap.ui.layout.SplitterLayoutData("uspDefPattLayoutData"),
             columns: [
-                new sap.ui.table.Column(),
-                new sap.ui.table.Column(),
-            ]
+                new sap.ui.table.Column({
+                    label: "Name",
+                    template: new sap.m.Text({
+                        text: "{DESC}"
+                    }),
+                }),                
+            ],
+            rows: {
+                path: "/DEF_PAT",
+                parameters: {
+                    arrayNames: ['DEF_PAT']
+                },
+            },
 
         })
 
@@ -355,6 +386,9 @@ let oAPP = parent.oAPP;
             selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
             visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
             selectionMode: sap.ui.table.SelectionMode.Single,
+            minAutoRowCount: 1,
+            alternateRowColors: true,
+            columnHeaderVisible: false,
 
             // aggregations
             extension: [
@@ -381,9 +415,16 @@ let oAPP = parent.oAPP;
 
             layoutData: new sap.ui.layout.SplitterLayoutData("uspCustPattLayoutData"),
             columns: [
-                new sap.ui.table.Column(),
-                new sap.ui.table.Column(),
-            ]
+                new sap.ui.table.Column({
+                    label: "Name",
+                    template: new sap.m.Text({
+                        text: "{DESC}"
+                    }),
+                }),       
+            ],
+            rows: {
+                path: "/CUS_PAT"              
+            },
 
         });
 

@@ -4,7 +4,7 @@
  * - file Name : ws_usp_01.js
  * - file Desc : u4a ws usp sub
  ************************************************************************/
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -351,7 +351,7 @@
             // association
             initialFocus: "ws30_step",
 
-            afterOpen: function (oEvent) {
+            afterOpen: function(oEvent) {
 
                 var oStepInput = sap.ui.getCore().byId("ws30_step");
                 if (!oStepInput) {
@@ -368,7 +368,7 @@
             },
 
             // events
-            afterClose: function () {
+            afterClose: function() {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -402,8 +402,6 @@
      * [WS30] USP New Window
      **************************************************************************/
     oAPP.fn.fnUspNewWindow = (oTreeTable, pIndex) => {
-
-        debugger;
 
         let oCtx = oTreeTable.getContextByIndex(pIndex),
             oTreeModel = oTreeTable.getModel(),
@@ -454,7 +452,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             let oSendData = {
                 APPINFO: oAppInfo,
@@ -500,10 +498,11 @@
     /************************************************************************
      * 설치 폴더에 있는 기본 패턴을 읽어서 모델에 저장하기
      ************************************************************************/
-    oAPP.fn.fnReadDefaultPattern = () => {
+    oAPP.fn.fnReadDefaultPatternFiles = () => {
 
-        return new Promise(async (resolve) => { // 기본 패턴이 있는 폴더목록을 읽는다.
-            let sPatternPath = PATH.join(parent.USERDATA, "usp", "pattern", "files"),
+        return new Promise(async (resolve) => {
+
+            let sPatternPath = parent.getPath("PATTERN_ROOT"),
                 oResult = await WSUTIL.readDir(sPatternPath);
 
             if (oResult.RETCD == "E") {
@@ -555,14 +554,16 @@
 
     }; // end of oAPP.fn.fnReadDefaultPattern
 
-    oAPP.fn.fnSaveUspPatternCtxMenuInfoLocalFolder = () => {
+    /**************************************************************************
+     * Usp 기본 패턴을 앱 설치 폴더에 JSON으로 저장
+     **************************************************************************/
+    oAPP.fn.fnSaveUspPattern = () => {
 
-        return new Promise(async (resolve) => { // 이미 usp pattern 정보를 가져왔는지 확인
-            let oPatternData = APPCOMMON.fnGetModelProperty("/PATTN");
-            if (oPatternData) {
-                resolve();
-                return;
-            }
+        return new Promise(async (resolve) => {
+
+            /**
+             * Default Pattern
+             */
 
             // 파일 확장자에 맞는 SVG 아이콘 정보를 가져온다.
             let oIconResult = await parent.WSUTIL.getFileExtSvgIcons();
@@ -585,91 +586,109 @@
             }
 
             let aPatternJson = [{
-                "PKEY": "",
-                "CKEY": "PATT001",
-                "DESC": "Default Pattern"
-            },
-            {
-                "PKEY": "PATT001",
-                "CKEY": "PTN001",
-                "DESC": "HTML",
-                "ICON": oHtmlIconInfo.ICONPATH
-            },
-            {
-                "PKEY": "PTN001",
-                "CKEY": "PTN001_001",
-                "DESC": "HTML 기본패턴",
-                "ACTCD": "01"
-            },
-            {
-                "PKEY": "PTN001",
-                "CKEY": "PTN001_002",
-                "DESC": "FORM 기본패턴",
-                "ACTCD": "01"
-            }, {
-                "PKEY": "PTN001",
-                "CKEY": "PTN001_003",
-                "DESC": "Iframe 기본패턴",
-                "ACTCD": "01"
-            }, {
-                "PKEY": "PTN001",
-                "CKEY": "PTN001_004",
-                "DESC": "UI5 기본패턴",
-                "ACTCD": "01",
-                "ICON": sUi5IconUrl
-            }, {
-                "PKEY": "PTN001_004",
-                "CKEY": "PTN001_004_001",
-                "DESC": "UI5 BootStrap",
-                "ACTCD": "01"
-            }, {
-                "PKEY": "PATT001",
-                "CKEY": "PTN002",
-                "DESC": "JS",
-                "ICON": oJsIconInfo.ICONPATH
-            }, {
-                "PKEY": "PTN002",
-                "CKEY": "PTN002_001",
-                "DESC": "JS 기본 패턴",
-                "ACTCD": "02"
-            }, {
-                "PKEY": "PTN002",
-                "CKEY": "PTN002_002",
-                "DESC": "즉시실행함수 패턴",
-                "ACTCD": "02"
-            }, {
-                "PKEY": "PTN002",
-                "CKEY": "PTN002_003",
-                "DESC": "Module js 패턴",
-                "ACTCD": "02"
-            }, {
-                "PKEY": "PTN002",
-                "CKEY": "PTN002_004",
-                "DESC": "윈도우 이벤트 패턴",
-                "ACTCD": "02"
-            }, {
+                    "PKEY": "",
+                    "CKEY": "PATT001",
+                    "DESC": "Default Pattern"
+                },
+                {
+                    "PKEY": "PATT001",
+                    "CKEY": "PTN001",
+                    "DESC": "HTML",
+                    "ICON": oHtmlIconInfo.ICONPATH
+                },
+                {
+                    "PKEY": "PTN001",
+                    "CKEY": "PTN001_001",
+                    "DESC": "HTML 기본패턴",
+                    "ACTCD": "01"
+                },
+                {
+                    "PKEY": "PTN001",
+                    "CKEY": "PTN001_002",
+                    "DESC": "FORM 기본패턴",
+                    "ACTCD": "01"
+                }, {
+                    "PKEY": "PTN001",
+                    "CKEY": "PTN001_003",
+                    "DESC": "Iframe 기본패턴",
+                    "ACTCD": "01"
+                }, {
+                    "PKEY": "PTN001",
+                    "CKEY": "PTN001_004",
+                    "DESC": "UI5 기본패턴",
+                    "ACTCD": "01",
+                    "ICON": sUi5IconUrl
+                }, {
+                    "PKEY": "PTN001_004",
+                    "CKEY": "PTN001_004_001",
+                    "DESC": "UI5 BootStrap",
+                    "ACTCD": "01"
+                }, {
+                    "PKEY": "PATT001",
+                    "CKEY": "PTN002",
+                    "DESC": "JS",
+                    "ICON": oJsIconInfo.ICONPATH
+                }, {
+                    "PKEY": "PTN002",
+                    "CKEY": "PTN002_001",
+                    "DESC": "JS 기본 패턴",
+                    "ACTCD": "02"
+                }, {
+                    "PKEY": "PTN002",
+                    "CKEY": "PTN002_002",
+                    "DESC": "즉시실행함수 패턴",
+                    "ACTCD": "02"
+                }, {
+                    "PKEY": "PTN002",
+                    "CKEY": "PTN002_003",
+                    "DESC": "Module js 패턴",
+                    "ACTCD": "02"
+                }, {
+                    "PKEY": "PTN002",
+                    "CKEY": "PTN002_004",
+                    "DESC": "윈도우 이벤트 패턴",
+                    "ACTCD": "02"
+                }
+            ];
+
+            // JSON 모델 정보를 앱 설치 폴더의 패턴 폴더에 저장한다.
+            // 추후 업그레이드를 감안하여 무조건 Overwrite를 한다.            
+            let sPatternJsonPath = parent.getPath("DEF_PATT"),
+                sPatternJsonData = JSON.stringify(aPatternJson);
+
+            // 기본 패턴 정보를 JSON으로 말아서 앱 설치 폴더에 저장
+            await parent.WSUTIL.fsWriteFile(sPatternJsonPath, sPatternJsonData);
+
+            /**
+             * Custom Pattern Init chenck
+             */
+
+            // 커스텀 패턴 파일이 없으면 신규 생성
+            let sCustomPatternJsonPath = parent.getPath("CUST_PATT"),
+                bIsFileExist = FS.existsSync(sCustomPatternJsonPath);
+
+            if (bIsFileExist) {
+                resolve();
+                return;
+            }
+
+            let aCustomPattern = [{
                 "PKEY": "",
                 "CKEY": "PATT002",
                 "DESC": "Custom Pattern",
                 "ISSTART": true
-            }
-            ];
+            }];
 
-            // JSON 모델 정보를 앱 설치 폴더의 패턴 폴더에 저장한다.
-            // 기본 패턴이 있는 폴더목록을 읽는다.
-            let sPatternRootPath = PATH.join(parent.USERDATA, "usp", "pattern"),
-                sPatternJsonPath = PATH.join(sPatternRootPath, "pattern.json"),
-                sPatternJsonData = JSON.stringify(aPatternJson);
+            let sCustomPatternJsonData = JSON.stringify(aCustomPattern);
 
-            // 패턴 정보를 JSON으로 말아서 앱 설치 폴더에 저장
-            await parent.WSUTIL.fsWriteFile(sPatternJsonPath, sPatternJsonData);
+            // 기본 패턴 정보를 JSON으로 말아서 앱 설치 폴더에 저장
+            await parent.WSUTIL.fsWriteFile(sCustomPatternJsonPath, sCustomPatternJsonData);
 
             resolve();
 
         });
 
-    };
-    // end of oAPP.fn.fnSaveUspPatternCtxMenuInfoLocalFolder
+    }; // end of oAPP.fn.fnSaveUspDefaultPattern
 
     /**************************************************************************
      * Usp Pattern 정보를 바인딩한다.
@@ -678,11 +697,13 @@
 
         return new Promise(async (resolve) => {
 
-            let sPatternRootPath = PATH.join(parent.USERDATA, "usp", "pattern"),
-                sPatternJsonPath = PATH.join(sPatternRootPath, "pattern.json"),
-                sPatternJson = FS.readFileSync(sPatternJsonPath, 'utf-8');
+            let sPatternJsonPath = parent.getPath("DEF_PATT"),
+                sCustomPatternJsonPath = parent.getPath("CUST_PATT"),
+                sPatternJson = FS.readFileSync(sPatternJsonPath, 'utf-8'),
+                sCustomPatternJson = FS.readFileSync(sCustomPatternJsonPath, 'utf-8');
 
-            let aPatternJson;
+            let aPatternJson,
+                aCustmPatternJson;
 
             try {
                 aPatternJson = JSON.parse(sPatternJson);
@@ -690,7 +711,8 @@
                 throw new Error(error);
             }
 
-            let oPattDataResult = await oAPP.fn.fnReadDefaultPattern();
+            // 앱 내에 설치되어 있는 기본 패턴 정보의 파일을 읽어서 모델에 매칭 시킨다.
+            let oPattDataResult = await oAPP.fn.fnReadDefaultPatternFiles();
             if (oPattDataResult.RETCD == "S") {
 
                 let aPatternData = oPattDataResult.RTDATA,
@@ -710,6 +732,14 @@
                 }
 
             }
+
+            try {
+                aCustmPatternJson = JSON.parse(sCustomPatternJson);
+            } catch (error) {
+                throw new Error(error);
+            }
+
+            aPatternJson = aPatternJson.concat(aCustmPatternJson);
 
             APPCOMMON.fnSetModelProperty("/PATTN", aPatternJson);
 
@@ -870,8 +900,6 @@
      **************************************************************************/
     oAPP.fn.fnLastActivateElementFocus = () => {
 
-        debugger;
-
         /**
          * 단축키로 실행했을 경우 하위로직 수행
          */
@@ -966,7 +994,7 @@
             return;
         }
 
-        setTimeout(function () {
+        setTimeout(function() {
             oBtn.firePress();
         }, 0);
 
