@@ -29,7 +29,9 @@ module.exports = (() => {
         POPUP_ROOT = PATH.join(APPPATH, "ws10_20", "Popups"),
         P13N_ROOT = PATH.join(USERDATA, "p13n"),
         SUGG_ROOT = PATH.join(P13N_ROOT, "suggestion"),
-        PATTERN_ROOT = PATH.join(USERDATA, "usp", "pattern");
+        USP_ROOT = PATH.join(APPPATH, "ws10_20", "js", "usp"),
+        PATTERN_ROOT = PATH.join(USP_ROOT, "pattern"),
+        USERDATA_PATTERN_ROOT = PATH.join(USERDATA, "usp", "pattern");
 
     return {
 
@@ -48,8 +50,9 @@ module.exports = (() => {
         SERVERLIST_v2: PATH.join(APPPATH, '/ServerList_v2/ServerFrame.html'),
         COMMONCSS: PATH.join(APPPATH, "css", "common.css"),
         AUTOUPDSAP: PATH.join(APPPATH, "lib", "ws", "electron-updater-sap.js"),
-        PATTERN_ROOT: PATH.join(USERDATA, "usp", "pattern"),
-        USP_ROOT: PATH.join(APPPATH, "ws10_20", "js", "usp"),
+        PATTERN_ROOT: PATTERN_ROOT,
+        USERDATA_PATT_FILES: PATH.join(USERDATA_PATTERN_ROOT, "default_pattern_files"),
+        USP_ROOT: USP_ROOT,
 
         // User Data Paths..
         CLIPBOARD: PATH.join(USERDATA, "clipboard.json"),
@@ -85,13 +88,14 @@ module.exports = (() => {
         // JS Paths..
         WSTRYCATCH: PATH.join(JS_ROOT, "ws_trycatch.js"),
         WSUTIL: PATH.join(JS_ROOT, "ws_util.js"),
+        USP_UTIL: PATH.join(USP_ROOT, "ws_usp_util.js"), 
         U4AHELP: PATH.join(APPPATH, "help", "u4a_helpdoc", "main.js"),
 
         // Json Path..
         EVENTSUGG: PATH.join(SUGG_ROOT, "events.json"),
         TCODESUGG: PATH.join(SUGG_ROOT, "tcode.json"),
-        DEF_PATT: PATH.join(PATTERN_ROOT, "default_pattern.json"), // usp default pattern file
-        CUST_PATT: PATH.join(PATTERN_ROOT, "custom_pattern.json"), // usp custom pattern file
+        DEF_PATT: PATH.join(USERDATA_PATTERN_ROOT, "default_pattern.json"), // usp default pattern file
+        CUST_PATT: PATH.join(USERDATA_PATTERN_ROOT, "custom_pattern.json"), // usp custom pattern file
 
     };
 

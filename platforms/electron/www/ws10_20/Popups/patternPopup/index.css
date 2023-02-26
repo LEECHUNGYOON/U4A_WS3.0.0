@@ -1,3 +1,13 @@
 .ace_print-margin {
     visibility: hidden !important;
 }
+
+
+.uspCustPattTreeTbl .sapUiTableFtr {
+    padding-left: 0rem;
+    padding-right: 0rem;
+}
+
+.uspCustPattTreeTbl .sapMBarRight {
+    padding-right: 0rem;
+}

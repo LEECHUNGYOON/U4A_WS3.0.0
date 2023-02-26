@@ -185,64 +185,6 @@ let oAPP = parent.oAPP;
 
     }; // end of oAPP.fn.fnInitRendering
 
-    // /************************************************************************
-    //  * 선택한 메뉴에 맞는 패턴 파일들을 읽어온다.
-    //  ************************************************************************/
-    // oAPP.fn.fnGetPatternFiles = () => {
-
-    //     return new Promise(async (resolve) => {
-
-    //         let oMenuInfo = oAPP.attr.oMenuInfo;
-    //         if (!oMenuInfo) {
-    //             resolve();
-    //             return;
-    //         }
-
-    //         let sPatternRootFolderPath = parent.PATHINFO.PATTERN,
-    //             oDirInfo = await parent.WSUTIL.readDir(sPatternRootFolderPath);
-
-    //         if (oDirInfo.RETCD == "E") {
-    //             resolve();
-    //             return;
-    //         }
-
-    //         let aFolderList = oDirInfo.RTDATA;
-    //         if (Array.isArray(aFolderList) == false) {
-    //             resolve();
-    //             return;
-    //         }
-
-    //         let iFolderLength = aFolderList.length;
-    //         if (iFolderLength < 0) {
-    //             resolve();
-    //             return;
-    //         }
-
-    //         let oData = {};
-    //         for (var i = 0; i < iFolderLength; i++) {
-
-    //             let sFolderName = aFolderList[i];
-
-    //             oData[sFolderName] = [];
-
-    //             let sChildFolderPath = PATH.join(sPatternRootFolderPath, sFolderName),
-    //                 oDirInfo = await parent.WSUTIL.readDir(sChildFolderPath);
-
-    //             if (oDirInfo.RETCD == "E") {
-    //                 continue;
-    //             }
-
-    //             oData[sFolderName] = oDirInfo.RTDATA;
-
-    //         }
-
-    //         oAPP.fn.fnSetModelProperty("/CUS_PAT", oData);
-
-    //         resolve();
-    //     });
-
-    // }; // end of oAPP.fn.fnGetPatternFiles
-
     /************************************************************************
      * 패턴 메인 페이지
      ************************************************************************/
@@ -337,7 +279,7 @@ let oAPP = parent.oAPP;
 
     function _getDefaultPatternTable() {
 
-        return new sap.ui.table.TreeTable({
+        return new sap.ui.table.TreeTable("uspDefPattTreeTbl", {
 
             // properties
             selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
@@ -346,19 +288,8 @@ let oAPP = parent.oAPP;
             minAutoRowCount: 1,
             alternateRowColors: true,
             columnHeaderVisible: false,
-            expandToLevel: 1,
 
-            // aggregations
-            extension: [
-                new sap.m.Bar({
-                    contentLeft: [
-                        new sap.m.Title({
-                            text: "Default Patterns"
-                        })
-                    ]
-                })
-            ],
-
+            // aggregations            
             layoutData: new sap.ui.layout.SplitterLayoutData("uspDefPattLayoutData"),
             columns: [
                 new sap.ui.table.Column({
@@ -366,7 +297,7 @@ let oAPP = parent.oAPP;
                     template: new sap.m.Text({
                         text: "{DESC}"
                     }),
-                }),                
+                }),
             ],
             rows: {
                 path: "/DEF_PAT",
@@ -375,13 +306,15 @@ let oAPP = parent.oAPP;
                 },
             },
 
-        })
+            rowSelectionChange: ev_DefPattRowSelectionChange
+
+        }).addStyleClass("uspDefPattTreeTbl");
 
     } // end of _getDefaultPatternTable
 
     function _getCustomPatternTable() {
 
-        return new sap.ui.table.Table({
+        return new sap.ui.table.Table("uspCustPattTreeTbl", {
 
             // properties
             selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
@@ -392,27 +325,20 @@ let oAPP = parent.oAPP;
             columnHeaderVisible: false,
 
             // aggregations
-            extension: [
-                new sap.m.Bar({
-                    contentLeft: [
-                        new sap.m.Title({
-                            text: "Custom Patterns"
-                        })
-                    ],
-                    contentRight: [
-                        new sap.m.Button({
-                            type: sap.m.ButtonType.Emphasized,
-                            icon: "sap-icon://save",
-                            press: ev_pressCustomSave
-                        }),
-                        new sap.m.Button({
-                            type: sap.m.ButtonType.Negative,
-                            icon: "sap-icon://delete",
-                            press: ev_pressCustomDelete
-                        }),
-                    ]
-                })
-            ],
+            footer: new sap.m.Bar({
+                contentRight: [
+                    new sap.m.Button({
+                        type: sap.m.ButtonType.Emphasized,
+                        icon: "sap-icon://create-form",
+                        press: ev_pressCustomPatternCreate
+                    }),
+                    new sap.m.Button({
+                        type: sap.m.ButtonType.Negative,
+                        icon: "sap-icon://delete",
+                        press: ev_pressCustomPatternDelete
+                    }),
+                ]
+            }),
 
             layoutData: new sap.ui.layout.SplitterLayoutData("uspCustPattLayoutData"),
             columns: [
@@ -421,13 +347,15 @@ let oAPP = parent.oAPP;
                     template: new sap.m.Text({
                         text: "{DESC}"
                     }),
-                }),       
+                }),
             ],
             rows: {
-                path: "/CUS_PAT"              
+                path: "/CUS_PAT"
             },
 
-        });
+            rowSelectionChange: ev_CustPattRowSelectionChange
+
+        }).addStyleClass("uspCustPattTreeTbl");
 
     } // end of _getCustomPatternTable
 
@@ -479,18 +407,90 @@ let oAPP = parent.oAPP;
     } // end of _getPatternCodePageContent
 
 
+    /************************************************************************
+     * 커스텀 패턴 생성 이벤트
+     ************************************************************************/
+    function ev_pressCustomPatternCreate(oEvent) {
 
-    function ev_pressCustomSave() {
-
+        debugger;
 
 
     } // end of ev_pressCustomSave
 
-    function ev_pressCustomDelete() {
+    /************************************************************************
+     * 커스텀 패턴 삭제 이벤트
+     ************************************************************************/
+    function ev_pressCustomPatternDelete(oEvent) {
+
+        debugger;
 
 
 
     } // end of ev_pressCustomDelete
+
+    /************************************************************************
+     * 커스텀 패턴 선택 이벤트
+     ************************************************************************/
+    function ev_CustPattRowSelectionChange(oEvent) {
+
+        let oTable = oEvent.getSource(),
+            oRowCtx = oEvent.getParameter("rowContext"),
+            iRowIndex = oEvent.getParameter("rowIndex"),
+            iSelectedIndex = oTable.getSelectedIndex();
+
+        debugger;
+
+        if (iSelectedIndex < 0) {
+            oTable.setSelectionInterval(iRowIndex, 1);
+        }
+
+        let oSelectedRowData = oRowCtx.getProperty(oRowCtx.getPath());
+
+        if (oSelectedRowData.TYPE === "ROOT") {
+            return;
+        }
+
+        if (!oSelectedRowData.DATA) {
+            return;
+        }
+
+
+        debugger;
+
+
+    } // end of ev_CustPattRowSelectionChange
+
+    /************************************************************************
+     * 기본 패턴 선택 이벤트
+     ************************************************************************/
+    function ev_DefPattRowSelectionChange(oEvent) {
+
+        let oTable = oEvent.getSource(),
+            oRowCtx = oEvent.getParameter("rowContext"),
+            iRowIndex = oEvent.getParameter("rowIndex"),
+            iSelectedIndex = oTable.getSelectedIndex();
+
+        debugger;
+
+        if (iSelectedIndex < 0) {
+            oTable.setSelectionInterval(iRowIndex, 1);
+        }
+
+        let oSelectedRowData = oRowCtx.getProperty(oRowCtx.getPath());
+
+        if (oSelectedRowData.TYPE === "ROOT") {
+            return;
+        }
+
+        if (!oSelectedRowData.DATA) {
+            return;
+        }
+
+        debugger;
+
+
+    } // end of ev_DefPattRowSelectionChange  
+
 
     oAPP.setBusy = (isBusy) => {
 
@@ -534,11 +534,10 @@ let oAPP = parent.oAPP;
 
             oAPP.fn.fnInitRendering();
 
-            // 패턴 파일들을 읽어온다.
-            // await oAPP.fn.fnGetPatternFiles();
-
-
-
+            let oTable = sap.ui.getCore().byId("uspDefPattTreeTbl");
+            if (oTable) {
+                oTable.expandToLevel(1);
+            }
 
 
 

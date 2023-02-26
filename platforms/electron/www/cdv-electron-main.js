@@ -149,7 +149,7 @@ function createWindow() {
     configureSession();
 
     mainWindow = new BrowserWindow(browserWindowOpts);
-    // mainWindow.webContents.setFrameRate(50);
+    mainWindow.webContents.setFrameRate(50);
     remote.enable(mainWindow.webContents);
 
     // Load a local HTML file or a remote URL.
@@ -164,9 +164,9 @@ function createWindow() {
         mainWindow.show();
     })
 
-    // // Open the DevTools.  
+    // // // Open the DevTools.  
     // if (!app.isPackaged) {
-        // mainWindow.webContents.openDevTools();
+    //     mainWindow.webContents.openDevTools();
     // }
 
     // Emitted when the window is closed.

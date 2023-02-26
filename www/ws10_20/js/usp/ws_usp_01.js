@@ -20,6 +20,7 @@
         IPCMAIN = parent.IPCMAIN,
         WSUTIL = parent.WSUTIL;
 
+
     var gfSelectRowUpdate;
 
     // /***************************************************************************************
@@ -495,64 +496,64 @@
     };
     // end of oAPP.fn.fnUspNewWindowIPCEvent
 
-    /************************************************************************
-     * 설치 폴더에 있는 기본 패턴을 읽어서 모델에 저장하기
-     ************************************************************************/
-    oAPP.fn.fnReadDefaultPatternFiles = () => {
+    // /************************************************************************
+    //  * 설치 폴더에 있는 기본 패턴을 읽어서 모델에 저장하기
+    //  ************************************************************************/
+    // oAPP.fn.fnReadDefaultPatternFiles = () => {
 
-        return new Promise(async (resolve) => {
+    //     return new Promise(async (resolve) => {
 
-            let sPatternPath = parent.getPath("PATTERN_ROOT"),
-                oResult = await WSUTIL.readDir(sPatternPath);
+    //         let sPatternPath = parent.getPath("PATTERN_ROOT"),
+    //             oResult = await WSUTIL.readDir(sPatternPath);
 
-            if (oResult.RETCD == "E") {
-                resolve(oResult);
-                return;
-            }
+    //         if (oResult.RETCD == "E") {
+    //             resolve(oResult);
+    //             return;
+    //         }
 
-            // 폴더 목록의 파일들을 읽어서 리턴해준다.
-            let aPatternList = oResult.RTDATA,
-                iPattLength = aPatternList.length,
-                aPatternInfo = [];
+    //         // 폴더 목록의 파일들을 읽어서 리턴해준다.
+    //         let aPatternList = oResult.RTDATA,
+    //             iPattLength = aPatternList.length,
+    //             aPatternInfo = [];
 
-            for (var i = 0; i < iPattLength; i++) {
+    //         for (var i = 0; i < iPattLength; i++) {
 
-                let sFileName = aPatternList[i],
-                    sFileKey = sFileName.split(".")[0],
-                    sFilePath = sPatternPath + "\\" + sFileName;
+    //             let sFileName = aPatternList[i],
+    //                 sFileKey = sFileName.split(".")[0],
+    //                 sFilePath = sPatternPath + "\\" + sFileName;
 
-                let oFileDataResult = await WSUTIL.readFile(sFilePath);
-                if (oFileDataResult.RETCD == "E") {
-                    continue;
-                }
+    //             let oFileDataResult = await WSUTIL.readFile(sFilePath);
+    //             if (oFileDataResult.RETCD == "E") {
+    //                 continue;
+    //             }
 
-                let sFileData = oFileDataResult.RTDATA,
-                    oPatternInfo = {
-                        KEY: sFileKey,
-                        DATA: sFileData
-                    };
+    //             let sFileData = oFileDataResult.RTDATA,
+    //                 oPatternInfo = {
+    //                     KEY: sFileKey,
+    //                     DATA: sFileData
+    //                 };
 
-                aPatternInfo.push(oPatternInfo);
+    //             aPatternInfo.push(oPatternInfo);
 
-            }
+    //         }
 
-            if (aPatternInfo.length == 0) {
-                resolve({
-                    RETCD: "E",
-                    // RTMSG: "데이터 없음"
-                });
-                return;
-            }
+    //         if (aPatternInfo.length == 0) {
+    //             resolve({
+    //                 RETCD: "E",
+    //                 // RTMSG: "데이터 없음"
+    //             });
+    //             return;
+    //         }
 
-            resolve({
-                RETCD: "S",
-                RTMSG: "",
-                RTDATA: aPatternInfo
-            });
+    //         resolve({
+    //             RETCD: "S",
+    //             RTMSG: "",
+    //             RTDATA: aPatternInfo
+    //         });
 
-        });
+    //     });
 
-    }; // end of oAPP.fn.fnReadDefaultPattern
+    // }; // end of oAPP.fn.fnReadDefaultPattern
 
     /**************************************************************************
      * Usp 기본 패턴을 앱 설치 폴더에 JSON으로 저장
@@ -588,9 +589,9 @@
             let aPatternJson = [{
                     "PKEY": "",
                     "CKEY": "PATT001",
+                    "TYPE": "ROOT",
                     "DESC": "Default Pattern"
-                },
-                {
+                }, {
                     "PKEY": "PATT001",
                     "CKEY": "PTN001",
                     "DESC": "HTML",
@@ -675,6 +676,7 @@
             let aCustomPattern = [{
                 "PKEY": "",
                 "CKEY": "PATT002",
+                "TYPE": "ROOT",
                 "DESC": "Custom Pattern",
                 "ISSTART": true
             }];
@@ -695,7 +697,7 @@
      **************************************************************************/
     oAPP.fn.fnModelBindingUspPattern = () => {
 
-        return new Promise(async (resolve) => {
+        return new Promise(async (resolve) => {            
 
             let sPatternJsonPath = parent.getPath("DEF_PATT"),
                 sCustomPatternJsonPath = parent.getPath("CUST_PATT"),
@@ -712,7 +714,7 @@
             }
 
             // 앱 내에 설치되어 있는 기본 패턴 정보의 파일을 읽어서 모델에 매칭 시킨다.
-            let oPattDataResult = await oAPP.fn.fnReadDefaultPatternFiles();
+            let oPattDataResult = await parent.USP_UTIL.readDefaultPatternFiles();
             if (oPattDataResult.RETCD == "S") {
 
                 let aPatternData = oPattDataResult.RTDATA,

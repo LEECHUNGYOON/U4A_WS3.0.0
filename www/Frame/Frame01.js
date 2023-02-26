@@ -21,6 +21,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     USERDATA = APP.getPath("userData"),
     PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
     WSUTIL = parent.require(PATHINFO.WSUTIL),
+    USP_UTIL = parent.require(PATHINFO.USP_UTIL),
     CURRWIN = REMOTE.getCurrentWindow(),
     MIMETYPES = require('mime-types'),
     POWERMONITOR = REMOTE.require('electron').powerMonitor,
