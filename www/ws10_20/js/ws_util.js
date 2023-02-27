@@ -196,7 +196,7 @@ module.exports = {
      * @param {*} t PARENT
      * @param {*} z 재구성할 MODEL PATH 명
      *************************************************************************/
-    parseArrayToTree: function (m, p, r, t, z) {
+    parseArrayToTree: function(m, p, r, t, z) {
 
         var lp = p.replace(/[.\[\]]/g, '/');
         lp = lp.replace(/(\/\/)/g, '/');
@@ -235,17 +235,17 @@ module.exports = {
     }, // end of parseArrayToTree
 
     /************************************************************************
-    * Tree구조를 Array 구조로 변환
-    ************************************************************************  
-    * 예) parseTreeToArray(aUspTreeData, "USPTREE"),
-    * 
-    * @param {Array} Tree 구조로 되어 있는 Array
-    * @param {String} Child 이름
-    *************************************************************************/
-    parseTreeToArray: function (e, sArrName) {
+     * Tree구조를 Array 구조로 변환
+     ************************************************************************  
+     * 예) parseTreeToArray(aUspTreeData, "USPTREE"),
+     * 
+     * @param {Array} Tree 구조로 되어 있는 Array
+     * @param {String} Child 이름
+     *************************************************************************/
+    parseTreeToArray: function(e, sArrName) {
 
         var a = [],
-            t = function (e) {
+            t = function(e) {
 
                 e.forEach((o, e) => {
 
@@ -338,7 +338,7 @@ module.exports = {
      * Electron Browser Window Open 시 Opacity를 이용하여 자연스러운 동작 연출
      * @param {BrowserWindow} oBrowserWindow 
      */
-    setBrowserOpacity: function (oBrowserWindow) {
+    setBrowserOpacity: function(oBrowserWindow) {
 
         let iOpa = 0.0,
             iInterval;
@@ -431,14 +431,14 @@ module.exports = {
 
         return new Promise((resolve) => {
 
-            FS.copy(sSource, sTarget, options).then(function () {
+            FS.copy(sSource, sTarget, options).then(function() {
 
                 resolve({
                     RETCD: "S",
                     RTMSG: ""
                 });
 
-            }).catch(function (err) {
+            }).catch(function(err) {
 
                 resolve({
                     RETCD: "E",
@@ -466,11 +466,17 @@ module.exports = {
             FS.writeFile(file, data, options, (err) => {
 
                 if (err) {
-                    resolve({ RETCD: "E", RTMSG: err.toString() });
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
                     return;
                 }
 
-                resolve({ RETCD: "S", RTMSG: "" });
+                resolve({
+                    RETCD: "S",
+                    RTMSG: ""
+                });
 
             });
 
@@ -478,5 +484,57 @@ module.exports = {
         });
 
     }, // end of fsWriteFile
+
+    fsStat: (sFilePath) => {
+
+        return new Promise(async (resolve) => {
+
+            FS.stat(sFilePath, (err, stats) => {
+
+                if (err) {
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTMSG: "",
+                    RTDATA: stats
+                });
+
+            });
+
+        });
+
+
+    }, // end of fsStat
+
+    fsRemove: (sRemovePath) => {
+
+        return new Promise(async (resolve) => {
+
+            FS.remove(sRemovePath, (err) => {
+
+                if (err) {
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTMSG: ""
+                });
+
+            });
+
+        });
+
+    }, // end of fsRemove
 
 };

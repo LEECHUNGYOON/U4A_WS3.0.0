@@ -57,7 +57,7 @@
         oCol1.setTemplate(oTxt1);
 
 
-        //A91	Web Application Name
+        //A91	APP Description
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91", "", "", "", "");
 
         var oCol2 = new sap.ui.table.Column({sortProperty:"APPNM", filterProperty:"APPNM", 

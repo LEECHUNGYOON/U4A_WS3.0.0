@@ -441,8 +441,14 @@ let oAPP = parent.oAPP;
         debugger;
 
         if (iSelectedIndex < 0) {
-            oTable.setSelectionInterval(iRowIndex, 1);
+            oTable.setSelectionInterval(iRowIndex, iRowIndex);
         }
+
+        if (oAPP.attr.iCustLastIndex == iRowIndex) {
+            return;
+        }
+
+        oAPP.attr.iCustLastIndex = iRowIndex;
 
         let oSelectedRowData = oRowCtx.getProperty(oRowCtx.getPath());
 

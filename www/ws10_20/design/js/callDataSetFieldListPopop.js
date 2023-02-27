@@ -87,13 +87,6 @@ async function lf_chkdataset(is_dataSet){
             //wait off 처리.
             parent.setBusy("");
             
-            //application 생성중 오류가 발생한 경우.
-            if(ret.RETCD === "E"){
-                //오류 메시지 출력.
-                parent.showMessage(sap, 20, "E", ret.RTMSG);
-
-            }
-
             //async function 결과 return.
             resolve(ret);
 
@@ -140,6 +133,26 @@ exports.callDataSetFieldListPopop = async function(is_dataSet, oAPP){
         //B30  Choose Search Field
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B30", "", "", "", "");
 
+        //검색조건 컬럼 radio 선택건에 따른 title 추가.
+        switch(is_dataSet.SCCNT){
+            case 0:
+                //E12	One Column
+                l_txt = l_txt + " - " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E12", "", "", "", "");
+                break;
+            case 1:
+                //E13	Two Columns
+                l_txt = l_txt + " - " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E13", "", "", "", "");
+                break;
+            case 2:
+                //E14	Three Columns
+                l_txt = l_txt + " - " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E14", "", "", "", "");;
+                break;
+            case 3:
+                //E15	Four Columns
+                l_txt = l_txt + " - " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E15", "", "", "", "");
+                break;
+        }
+
         //팝업 상단 타이틀.
         var oTitle = new sap.m.Title({text:l_txt, tooltip:l_txt});
         oTitle.addStyleClass("sapUiTinyMarginBegin");
@@ -158,7 +171,8 @@ exports.callDataSetFieldListPopop = async function(is_dataSet, oAPP){
             //팝업 종료 처리.
             lf_close(oDlg);
 
-            resolve({RETCD:"E"});
+            //001	Cancel operation
+            resolve({RETCD:"C", RTMSG:oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", "")});
 
         }); //팝업 상단 닫기버튼 선택 이벤트.
 
@@ -196,7 +210,8 @@ exports.callDataSetFieldListPopop = async function(is_dataSet, oAPP){
             //팝업 종료 처리.
             lf_close(oDlg);
 
-            resolve({RETCD:"E"});
+            //001	Cancel operation
+            resolve({RETCD:"C", RTMSG:oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", "")});
 
         }); //취소버튼 선택 이벤트.
 
@@ -290,25 +305,34 @@ exports.callDataSetFieldListPopop = async function(is_dataSet, oAPP){
         }); //체크박스 선택 이벤트.
 
 
+        //D68  Field Name
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D68", "", "", "", "");
+
         //필드명 컬럼.
         var oCol2 = new sap.ui.table.Column({
-            label:new sap.m.Label({design:"Bold", text:"Field Name"}),
+            label:new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt}),
             template:new sap.m.Text({text:"{FLDNM}", tooltip:"{FLDNM}"}),
             sortProperty:"FLDNM", filterProperty:"FLDNM"
         });
         oTab.addColumn(oCol2);
 
+        //E16  Key Field
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E16", "", "", "", "");
+
         //key 여부 컬럼.
         var oCol3 = new sap.ui.table.Column({
             width:"80px", hAlign:"Center",
-            label:new sap.m.Label({design:"Bold", text:"Key Field"}),
+            label:new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt}),
             template:new sap.m.CheckBox({selected:"{isKey}", enabled:false})
         });
         oTab.addColumn(oCol3);
 
+        //A35  Description
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35", "", "", "", "");
+
         //필드내역 컬럼.
         var oCol4 = new sap.ui.table.Column({
-            label:new sap.m.Label({design:"Bold", text:"Field Desc."}),
+            label:new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt}),
             template:new sap.m.Text({text:"{FLDTX}", tooltip:"{FLDTT}"}),
             sortProperty:"FLDTX", filterProperty:"FLDTX"
         });

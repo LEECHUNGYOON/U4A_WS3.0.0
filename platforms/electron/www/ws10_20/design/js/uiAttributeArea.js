@@ -1,4 +1,11 @@
 (function(){
+
+  //ATTR 필수 입력 표현 아이콘.
+  const C_ATTR_REQ_ICON = "sap-icon://favorite";
+
+  //ATTR 필수 입력 표현 아이콘 색상.
+  const C_ATTR_REQ_ICON_COLOR = "#c14646";
+
   //우측 페이지(attribute 영역) 구성
   oAPP.fn.uiAttributeArea = function(oRPage){
     
@@ -289,9 +296,17 @@
     //attribute 출력 List Item.
     var oRListItem1 = new sap.m.ColumnListItem();
 
+    var oRHbox0 = new sap.m.HBox({width:"100%", renderType:"Bare", alignItems:"Center"});
+    oRListItem1.addCell(oRHbox0);
+
     //attribute명.
     var oRObjStat1 = new sap.m.ObjectStatus({text:"{UIATT}", icon:"{UIATT_ICON}"});
-    oRListItem1.addCell(oRObjStat1);
+    oRObjStat1.addStyleClass("sapUiTinyMarginEnd");
+    oRHbox0.addItem(oRObjStat1);
+
+    //필수 attr 표현 아이콘.
+    var oRIcon0 = new sap.ui.core.Icon({src:"{icon0_src}", color:"{icon0_color}", visible:"{icon0_visb}", tooltip:"{icon0_ttip}", size:"12px"});
+    oRHbox0.addItem(oRIcon0);
 
     //context menu 호출 위치를 알기위한 custom data 매핑.
     oRObjStat1.addCustomData(new sap.ui.core.CustomData({key:"AT01"}));
@@ -3326,14 +3341,17 @@
   oAPP.fn.attrCreateAttrBindField = function(is_0015){
 
     //아이콘 활성여부 필드.
+    is_0015.icon0_visb = false;  //attribute 필수 입력 표현 아이콘 invisible.
     is_0015.icon1_visb = false;  //바인딩(서버이벤트) 아이콘 invisible
     is_0015.icon2_visb = false;  //help(클라이언트이벤트) 아이콘 invisible
 
     //아이콘 src 필드.
+    is_0015.icon0_src = undefined;  //attribute 필수 입력 표현 아이콘 필드.
     is_0015.icon1_src = undefined;  //바인딩(서버이벤트) 아이콘 필드
     is_0015.icon2_src = undefined;  //help(클라이언트이벤트) 아이콘 필드
 
     //아이콘 색상 필드.
+    is_0015.icon0_color = undefined;  //attribute 필수 입력 표현 아이콘 색상 필드.
     is_0015.icon1_color = undefined;  //바인딩(서버이벤트) 색상 필드
     is_0015.icon2_color = undefined;  //help(클라이언트이벤트) 색상 필드
 
@@ -4182,6 +4200,9 @@
 
             //icon 처리.
             oAPP.fn.setExcepAttr(oAPP.attr.oModel.oData.T_ATTR[i]);
+
+            //필수 입력 ATTR의 필수 입력 표현 처리.
+            oAPP.fn.attrSetRequireIcon(oAPP.attr.oModel.oData.T_ATTR[i]);
             
             //attr 라인에 따른 style 처리.
             oAPP.fn.attrSetLineStyle(oAPP.attr.oModel.oData.T_ATTR[i]);
@@ -5467,6 +5488,32 @@
     l_ui.setHeaderExpanded(bExpand);
 
   };  //우 상단 UI OBJECT 영역 펼침/접힘 처리.
+
+
+
+  //attribute의 필수 입력 표현 처리.
+  oAPP.fn.attrSetRequireIcon = function(is_attr){
+
+    //필수 입력 대상 attr 여부 확인.
+    if(oAPP.attr.S_CODE.UA035.findIndex( a => a.FLD04 === is_attr.UIATK && a.FLD05 === "X" ) !== -1){
+      //필수 입력 아이콘 활성화.
+      is_attr.icon0_visb = true;
+      is_attr.icon0_src = C_ATTR_REQ_ICON;
+      is_attr.icon0_color = C_ATTR_REQ_ICON_COLOR;
+      return;
+    }
+
+
+    //필수 입력 대상 이벤트 여부 확인.
+    if(oAPP.attr.S_CODE.UA038.findIndex( a => a.FLD04 === is_attr.UIATK && a.FLD05 === "X" ) !== -1){
+      //필수 입력 아이콘 활성화.
+      is_attr.icon0_visb = true;
+      is_attr.icon0_src = C_ATTR_REQ_ICON;
+      is_attr.icon0_color = C_ATTR_REQ_ICON_COLOR;
+      return;
+    }
+
+  };  //attribute의 필수 입력 표현 처리.
 
 
 })();

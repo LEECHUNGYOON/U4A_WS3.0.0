@@ -34,6 +34,15 @@
     }); //tree item 선택 이벤트.
 
 
+
+    //tree 접힘/펼침 이벤트.
+    oLTree1.attachToggleOpenState(function(){
+      //drop 가능여부 css 처리.
+      oAPP.fn.designSetDropStyle();
+
+    }); //tree 접힘/펼침 이벤트.
+
+
     
     //tree 라인선택 예외처리.
     oLTree1.attachRowSelectionChange(function(oEvent){
@@ -62,12 +71,12 @@
       oAPP.fn.desginSetFirstVisibleRow(l_indx, ls_tree);
       
     }); //tree 라인선택 예외처리.
-    
 
-    
+
+
     //TREE TABLE이 아닌 다른 영역을 더블클릭 이후 ROW 선택시
     // 선택되지 않는 문제 해결을 위한 예외처리 로직.
-    oLTree1.attachBrowserEvent("click",function(){
+    oLTree1.attachBrowserEvent("click", function(){
         window.getSelection().removeAllRanges();
     });
       
@@ -183,7 +192,7 @@
       //drag UI가 다른라인에 올라갔을때 이벤트.
       oAPP.fn.designDragEnter(oEvent);
 
-    });
+    }); //drag UI가 다른라인에 올라갔을때 이벤트.
 
 
 
@@ -198,7 +207,7 @@
         //copy 표시.
         l_effect = "Copy";
       }
-      
+
       //drop effect 설정.
       this.setDropEffect(l_effect);
 
@@ -214,7 +223,7 @@
 
       if(!oEvent.mParameters.droppedControl){return;}
 
-      var l_drop = oModel.getProperty("",oEvent.mParameters.droppedControl.getBindingContext());
+      var l_drop = oModel.getProperty("", oEvent.mParameters.droppedControl.getBindingContext());
 
       //DROP 처리.
       oAPP.fn.UIDrop(oEvent, l_drop.OBJID);
@@ -421,6 +430,66 @@
 
 
   };  //좌측 페이지(UI Design 영역) 구성.
+
+
+
+
+  //design tree의 drag over 이벤트.
+  oAPP.fn.designDragOver = function(oEvent){
+
+    //현재 ui의 하단에 drag가 된 상황이면.
+    if(oEvent.mParameters.dropPosition === "After"){
+      
+      //drag over한 ui 정보 얻기.
+      var l_row = oEvent.mParameters.dragSession.getDropControl();
+      if(!l_row){return;}
+
+      //drag over한 UI의 바인딩 정보 얻기.
+      var l_ctxt = l_row.getBindingContext();
+      if(!l_ctxt){return;}
+
+      var l_dragover = l_ctxt.getProperty();
+
+
+      //DRAG한 UI의 OBJID 매핑건이 없는경우 EXIT.
+      if(!oAPP.attr.ui.oLTree1.__isdragOBJID){
+        oEvent.oSource.setDropEffect("None");
+        return;
+      }
+
+      //OBJID에 해당하는 TREE 라인 정보 얻기.
+      l_drag = oAPP.fn.getTreeData(oAPP.attr.ui.oLTree1.__isdragOBJID);
+      if(!l_drag){
+        oEvent.oSource.setDropEffect("None");
+        return;
+      }
+
+      //내 밑에 들어갈 수 없다면 drop 불가 처리.
+      if(oAPP.fn.chkAggrRelation(l_dragover.UIOBK, l_dragover.OBJID, l_drag.UIOBK).length === 0){
+        oEvent.oSource.setDropEffect("None");
+        return;
+      }
+
+    }
+    
+
+    //default move 표시.
+    var l_effect = "Move";
+
+    //컨트롤키 눌렀다면.
+    if(event.ctrlKey){
+      //copy 표시.
+      l_effect = "Copy";
+    }
+    
+    //drop effect 설정.
+    oEvent.oSource.setDropEffect(l_effect);
+
+    //tree에 drop effect 설정.
+    oAPP.attr.ui.oLTree1.__dropEffect = l_effect;
+
+
+  };  //design tree의 drag over 이벤트.
 
 
 
@@ -777,14 +846,11 @@
     oAPP.fn.setTreeDnDEnable(oAPP.attr.oModel.oData.zTREE[0]);
     oAPP.attr.oModel.refresh();
 
-    var lt_item = oAPP.attr.ui.oLTree1.getRows();
+    //drag 종료시 drop 불가능 css 제거 처리.
+    oAPP.fn.designSetDropStyle(true);
 
+    //DRAG START 구분자 제거.
     delete oAPP.attr.ui.oLTree1.__isdragStarted;
-
-    for(var i=0, l=lt_item.length; i<l;i++){
-      //drag 종료시 drop 불가능 css 제거 처리.
-      lt_item[i].removeStyleClass("u4aWsDisableTreeDrop");
-    }
 
     //미리보기 영역 drop 영역 표시 잔상 제거.
     oAPP.attr.ui.frame.contentWindow.prevClearDropEffect();
@@ -2121,11 +2187,16 @@
 
 
 
-  //drop 가능여부 style 처리.
-  oAPP.fn.designSetDropStyle = function(){
+
+  /************************************************************************
+   * drop 가능여부 style 처리.
+   * **********************************************************************
+   * @param {boolean} bClear - css 제거 flag.(remove 후 다시 설정하지 않음)
+   ************************************************************************/
+  oAPP.fn.designSetDropStyle = function(bClear){
 
     //drag가 시작되지 않은경우 exit.
-    if(!oAPP.attr.ui.oLTree1.__isdragStarted){return;};
+    if(!oAPP.attr.ui.oLTree1.__isdragStarted){return;}
 
     var lt_row = oAPP.attr.ui.oLTree1.getRows();
     if(lt_row.length === 0){return;}
@@ -2136,6 +2207,9 @@
     for(var i=0, l=lt_row.length; i<l; i++){
       //기존 style 제거 처리.
       lt_row[i].removeStyleClass("u4aWsDisableTreeDrop");
+
+      //css를 삭제 하는경우 하위 로직 skip.
+      if(bClear){continue;}
 
       //해당 row에 binding context정보가 존재하지 않는경우 skip.
       if(!lt_ctxt[i] || !lt_ctxt[i].context){
@@ -2161,21 +2235,21 @@
   oAPP.fn.designDragEnter = function(oEvent){
     var l_row = oEvent.mParameters.dragSession.getDropControl();
     if(!l_row){
-      oEvent.preventDefault(true);
+      oEvent.preventDefault();
       return;
     }
 
     var l_ctxt = l_row.getBindingContext();
 
     if(!l_ctxt){
-      oEvent.preventDefault(true);
+      oEvent.preventDefault();
       return;
     }
 
     var l_drop_enable = l_ctxt.getProperty("drop_enable");
-
+    
     if(!l_drop_enable){
-      oEvent.preventDefault(true);
+      oEvent.preventDefault();
       return;
     }
 
@@ -2206,33 +2280,35 @@
 
 
 
-  //drop 처리 function.
-  oAPP.fn.UIDrop = function(oEvent, i_OBJID){
+  //DnD 가능여부 확인.
+  oAPP.fn.chkDnDPossible = function(it_tree, OBJID){
 
-    //DnD 가능여부 확인.
-    function lf_chkDnDpossible(it_tree, OBJID){
+    if(it_tree.length === 0){return;}
       
-      if(it_tree.length === 0){return;}
-      
-      //drag UI의 child에 drop UI가 존재하는지 여부 확인.
-      var l_indx =  it_tree.findIndex( a=> a.OBJID === OBJID );
+    //drag UI의 child에 drop UI가 존재하는지 여부 확인.
+    var l_indx =  it_tree.findIndex( a=> a.OBJID === OBJID );
 
-      //존재하는경우 이동불가 flag return.
-      if(l_indx !== -1){return true;}
+    //존재하는경우 이동불가 flag return.
+    if(l_indx !== -1){return true;}
 
-      //존재하지 않는경우 하위를 탐색하며 drop UI가 존재하는지 여부 확인.
-      for(var i=0, l=it_tree.length; i<l; i++){
-        //재귀호출을 통해 drop UI가 존재하는경우.
-        if(lf_chkDnDpossible(it_tree[i].zTREE, OBJID)){
-          //이동불가 flag return.
-          return true;
-        }
+    //존재하지 않는경우 하위를 탐색하며 drop UI가 존재하는지 여부 확인.
+    for(var i=0, l=it_tree.length; i<l; i++){
+      //재귀호출을 통해 drop UI가 존재하는경우.
+      if(oAPP.fn.chkDnDPossible(it_tree[i].zTREE, OBJID)){
+        //이동불가 flag return.
+        return true;
       }
+    }
 
-    } //DnD 가능여부 확인.
+  };  //DnD 가능여부 확인.
 
-    if(!i_OBJID){return;}
 
+
+
+  //drag한 UI의 OBJID 정보 얻기.
+  oAPP.fn.getDragOBJID = function(oEvent){
+
+    if(!oEvent?.mParameters?.browserEvent?.dataTransfer?.getData){return;}
 
     //미리보기 영역에서 drag처리한 UI명 + D&D random key 얻기.
     var l_dnd = oEvent.mParameters.browserEvent.dataTransfer.getData("text/plain");
@@ -2251,7 +2327,24 @@
     if(lt_split[1] !== oAPP.attr.DnDRandKey){return;}
 
     //OBJID 부분 발췌.
-    var l_objid = lt_split[0];
+    return l_objid = lt_split[0];
+
+
+  };  //drag한 UI의 OBJID 정보 얻기.
+
+
+
+
+  //drop 처리 function.
+  oAPP.fn.UIDrop = function(oEvent, i_OBJID){
+
+    if(!i_OBJID){return;}
+
+    //dragUI의 OBJID 얻기.
+    var l_objid = oAPP.fn.getDragOBJID(oEvent);
+
+    //OBJID를 얻지 못한 경우 EXIT.
+    if(!l_objid){return;}
 
     //ui 구성정보에서 직접 검색.
     l_drag = oAPP.fn.getTreeData(l_objid);
@@ -2272,7 +2365,7 @@
     }
 
     //DRAG UI와 DROP UI의 이동 가능 여부 점검.
-    if(lf_chkDnDpossible(l_drag.zTREE, l_drop.OBJID)){
+    if(oAPP.fn.chkDnDPossible(l_drag.zTREE, l_drop.OBJID)){
       return;
     }
 

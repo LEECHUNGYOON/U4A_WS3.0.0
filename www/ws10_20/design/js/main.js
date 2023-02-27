@@ -443,6 +443,9 @@
           //코드마스터 정보 코드별로 재구성 처리.
           oAPP.fn.setCodeMasterData();
 
+          //UI 프로퍼티에 대한 Value 필수항목 대상 추가 정의.
+          oAPP.fn.setCodeMasterDataUA035();
+
           //어플리케이션 정보 구성을 위한 서버 호출.
           oAPP.fn.getAppData();
           return;
@@ -863,6 +866,19 @@
       
     };  //END OF oAPP.fn.setCodeMasterData //코드마스터정보 코드별로 재구성 처리.
 
+
+
+
+    //UI 프로퍼티에 대한 Value 필수항목 대상 추가 정의.
+    oAPP.fn.setCodeMasterDataUA035 = function(){
+
+      oAPP.attr.S_CODE.UA035.push({CATCD:"UA035", ITMCD:"CK90000001", FLD01:"SelectOption2", FLD02:"UO99992", FLD03:"value", FLD04:"EXT00001161", FLD05:"X"});
+      oAPP.attr.S_CODE.UA035.push({CATCD:"UA035", ITMCD:"CK90000002", FLD01:"Tree", FLD02:"UO00467", FLD03:"Parent", FLD04:"EXT00001190", FLD05:"X"});
+      oAPP.attr.S_CODE.UA035.push({CATCD:"UA035", ITMCD:"CK90000003", FLD01:"Tree", FLD02:"UO00467", FLD03:"Child", FLD04:"EXT00001191", FLD05:"X"});
+      oAPP.attr.S_CODE.UA035.push({CATCD:"UA035", ITMCD:"CK90000004", FLD01:"TreeTable", FLD02:"UO01142", FLD03:"Parent", FLD04:"EXT00001192", FLD05:"X"});
+      oAPP.attr.S_CODE.UA035.push({CATCD:"UA035", ITMCD:"CK90000004", FLD01:"TreeTable", FLD02:"UO01142", FLD03:"Child", FLD04:"EXT00001193", FLD05:"X"});
+     
+    };  //UI 프로퍼티에 대한 Value 필수항목 대상 추가 정의.
 
 
 

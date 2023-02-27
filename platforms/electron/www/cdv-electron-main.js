@@ -164,7 +164,7 @@ function createWindow() {
         mainWindow.show();
     })
 
-    // // // Open the DevTools.  
+    // Open the DevTools.  
     // if (!app.isPackaged) {
     //     mainWindow.webContents.openDevTools();
     // }

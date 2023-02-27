@@ -38,7 +38,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function (oAPP) {
+(function(oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -87,7 +87,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             text: "Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function () {
+            close: function() {
                 XHR.abort();
             }
         });
@@ -100,7 +100,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.sendAjax = (sUrl, fnSuccess, fnError, fnCancel) => {
 
         // ajax call 취소할 경우..
-        XHR.onabort = function () {
+        XHR.onabort = function() {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -109,7 +109,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // ajax call 실패 할 경우
-        XHR.onerror = function () {
+        XHR.onerror = function() {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -117,7 +117,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         };
 
-        XHR.onload = function () {
+        XHR.onload = function() {
 
             if (typeof fnSuccess == "function") {
                 fnSuccess(XHR.response);
@@ -481,12 +481,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         return new Promise((resolve, reject) => {
 
-            let sSaplogonPath = SETTINGS.regPaths.saplogon;
+            let sSaplogonPath = SETTINGS.regPaths.saplogon,
+                sErrMsg = "Please Check the SAPGUI is Installed and whether saved Server is exsists!";
 
             REGEDIT.list(sSaplogonPath, (err, result) => {
 
                 if (err) {
-                    reject(err.toString());
+
+                    reject(sErrMsg);
                     return;
                 }
 
@@ -494,7 +496,12 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 var oSapLogon = result[sSaplogonPath];
 
                 if (typeof oSapLogon == "undefined" || oSapLogon.exists == false) {
-                    reject(`Does not have exists. [${sSaplogonPath}]`);
+
+                    // reject(`Does not have exists. [${sSaplogonPath}]`);
+
+                    // let sMsg = "Please Check the SAPGUI is Installed and whether saved Server is exsists!";
+
+                    reject(sErrMsg);
                     return;
                 }
 
@@ -512,17 +519,17 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnGetRegInfoForSAPLogonThen = (oResult) => {
 
         let oLandscapeFile = oResult.LandscapeFile,
-            oLandscapeFileGlobal = oResult.LandscapeFileGlobal;
-
-        let sLandscapeFilePath = oLandscapeFile.value;
+            oLandscapeFileGlobal = oResult.LandscapeFileGlobal,
+            sLandscapeFilePath = oLandscapeFile.value,
+            sErrMsg = "Please Check the SAPGUI is Installed and whether saved Server is exsists!";
 
         if (typeof oLandscapeFile == "undefined") {
 
             oAPP.setBusy(false);
 
-            var sMsg = `Does not have exists. [LandscapeFile] \n Please Restart`;
+            // var sMsg = `Does not have exists. [LandscapeFile] \n Please Restart`;           
 
-            oAPP.fn.fnShowMessageBox("E", sMsg, () => {
+            oAPP.fn.fnShowMessageBox("E", sErrMsg, () => {
                 oAPP.fn.fnEditDialogClose();
             });
 
@@ -534,10 +541,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             oAPP.setBusy(false);
 
-            var sMsg = `Does not have exists. [${sLandscapeFilePath}] \n Please Restart`;
+            // var sMsg = `Does not have exists. [${sLandscapeFilePath}] \n Please Restart`;
+            // let sMsg = "Please Check the SAPGUI is Installed and whether saved Server is exsists!";
 
             // 오류 메시지 출력
-            oAPP.fn.fnShowMessageBox("E", sMsg, () => {
+            oAPP.fn.fnShowMessageBox("E", sErrMsg, () => {
                 oAPP.fn.fnEditDialogClose();
             });
 
@@ -657,9 +665,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-            RETCD: "E",
-            RTMSG: "Server information does not exist in the SAPGUI logon file."
-        },
+                RETCD: "E",
+                RTMSG: "Server information does not exist in the SAPGUI logon file."
+            },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -789,9 +797,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-            RETCD: "E",
-            RTMSG: "Server information does not exist in the SAPGUI logon file."
-        },
+                RETCD: "E",
+                RTMSG: "Server information does not exist in the SAPGUI logon file."
+            },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -965,8 +973,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnOnInitRendering = () => {
 
         var oApp = new sap.m.App({
-            autoFocus: false,
-        }),
+                autoFocus: false,
+            }),
             oTreeTable = oAPP.fn.fnGetWorkSpaceTreeTable(), // 좌측 폴더 Tree
             oTable = oAPP.fn.fnGetSAPLogonListTable(), // 우측 서버 리스트 테이블
             oPage1 = new sap.m.Page({
@@ -1012,7 +1020,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function () {
+            onAfterRendering: function() {
 
                 setTimeout(() => {
                     $('#content').fadeIn(300, 'linear');
@@ -2453,7 +2461,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -2508,7 +2516,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         resolve({
