@@ -72,7 +72,7 @@
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
-            FS.readdir(svgFolder, (err, files) => {
+            FS.readdir(svgFolder, { withFileTypes: false }, (err, files) => {
 
                 if (err) {
                     console.log(err);
@@ -1526,7 +1526,7 @@
         oCodeEditor.addEventDelegate({
             onkeyup: _fnCodeeditorKeyupEvent,
             oncontextmenu: (oEvent) => {
-                // _fnCodeeditorContextMenuEvent(oEvent);
+                _fnCodeeditorContextMenuEvent(oEvent);
             }
 
         });
@@ -1534,7 +1534,7 @@
         oCodeEditorClone.addEventDelegate({
             onkeyup: _fnCodeeditorKeyupEvent,
             oncontextmenu: (oEvent) => {
-                // _fnCodeeditorContextMenuEvent(oEvent);
+                _fnCodeeditorContextMenuEvent(oEvent);
             }
         });
 
@@ -1874,7 +1874,7 @@
                 }, {
                     key: "WMENU30_06_03",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
-                }, 
+                },
                 ],
             },],
 

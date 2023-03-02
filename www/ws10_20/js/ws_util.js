@@ -196,7 +196,7 @@ module.exports = {
      * @param {*} t PARENT
      * @param {*} z 재구성할 MODEL PATH 명
      *************************************************************************/
-    parseArrayToTree: function(m, p, r, t, z) {
+    parseArrayToTree: function (m, p, r, t, z) {
 
         var lp = p.replace(/[.\[\]]/g, '/');
         lp = lp.replace(/(\/\/)/g, '/');
@@ -242,10 +242,10 @@ module.exports = {
      * @param {Array} Tree 구조로 되어 있는 Array
      * @param {String} Child 이름
      *************************************************************************/
-    parseTreeToArray: function(e, sArrName) {
+    parseTreeToArray: function (e, sArrName) {
 
         var a = [],
-            t = function(e) {
+            t = function (e) {
 
                 e.forEach((o, e) => {
 
@@ -278,7 +278,7 @@ module.exports = {
 
         return new Promise(async (resolve) => {
 
-            FS.readdir(sFolderPath, (err, files) => {
+            FS.readdir(sFolderPath, { withFileTypes: false }, (err, files) => {
 
                 if (err) {
 
@@ -338,7 +338,7 @@ module.exports = {
      * Electron Browser Window Open 시 Opacity를 이용하여 자연스러운 동작 연출
      * @param {BrowserWindow} oBrowserWindow 
      */
-    setBrowserOpacity: function(oBrowserWindow) {
+    setBrowserOpacity: function (oBrowserWindow) {
 
         let iOpa = 0.0,
             iInterval;
@@ -377,7 +377,7 @@ module.exports = {
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
-            FS.readdir(svgFolder, (err, aFiles) => {
+            FS.readdir(svgFolder, { withFileTypes: false }, (err, aFiles) => {
 
                 if (err) {
                     resolve({
@@ -431,14 +431,14 @@ module.exports = {
 
         return new Promise((resolve) => {
 
-            FS.copy(sSource, sTarget, options).then(function() {
+            FS.copy(sSource, sTarget, options).then(function () {
 
                 resolve({
                     RETCD: "S",
                     RTMSG: ""
                 });
 
-            }).catch(function(err) {
+            }).catch(function (err) {
 
                 resolve({
                     RETCD: "E",
