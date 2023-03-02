@@ -303,6 +303,8 @@
         var oMenuUI = {};
 
         // WS30 페이지의 윈도우 메뉴 구성
+
+        // utilities
         oMenuUI.WMENU20 = new sap.m.Menu({
             itemSelected: oAPP.events.ev_pressWmenuItemWS10,
             items: {
@@ -326,6 +328,7 @@
             }
         }).addStyleClass("u4aWsWindowMenu");
 
+        // System
         oMenuUI.WMENU30 = new sap.m.Menu({
             itemSelected: oAPP.events.ev_pressWmenuItemWS10,
             items: {
@@ -1858,19 +1861,21 @@
                 key: "WMENU30_04",
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
             }, {
-                key: "WMENU30_05",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Notes
-            }, {
-                key: "WMENU30_07",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
-            }, {
                 key: "WMENU30_06",
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
                 visible: true,
                 items: [{
                     key: "WMENU30_06_01",
                     text: "DevTool"
-                },],
+                },
+                {
+                    key: "WMENU30_06_02",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Notes
+                }, {
+                    key: "WMENU30_06_03",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
+                }, 
+                ],
             },],
 
             aWMENU50 = [{

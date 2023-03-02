@@ -444,21 +444,7 @@
 
         oAPP.events.ev_Logout();
 
-    }; // end of oAPP.fn.fnWS10WMENU30_04
-
-    /************************************************************************
-     * [WS10] Release Note..
-     ************************************************************************/
-    oAPP.fn.fnWS10WMENU30_05 = () => {
-
-        // Busy Indicator가 실행중이면 빠져나간다.
-        if (parent.getBusy() == 'X') {
-            return;
-        }
-
-        oAPP.fn.fnReleaseNotePopupOpener();
-
-    }; // end of oAPP.fn.fnWS10WMENU30_05
+    }; // end of oAPP.fn.fnWS10WMENU30_04    
 
     /************************************************************************
      * [WS10] administrator
@@ -489,9 +475,23 @@
     }; // end of oAPP.fn.fnWS10WMENU30_06_01
 
     /************************************************************************
+     * [WS10] Release Note..
+     ************************************************************************/
+    oAPP.fn.fnWS10WMENU30_06_02 = () => {
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        oAPP.fn.fnReleaseNotePopupOpener();
+
+    }; // end of oAPP.fn.fnWS10WMENU30_06_02
+
+    /************************************************************************
      * [WS10] Error log
      ************************************************************************/
-    oAPP.fn.fnWS10WMENU30_07 = async () => {
+    oAPP.fn.fnWS10WMENU30_06_03 = async () => {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -770,7 +770,7 @@
     /************************************************************************
      * [WS20] Release Note..
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU40_05 = () => {
+    oAPP.fn.fnWS20WMENU40_06_02 = () => {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -779,7 +779,7 @@
 
         oAPP.fn.fnReleaseNotePopupOpener();
 
-    }; // end of oAPP.fn.fnWS20WMENU40_05
+    }; // end of oAPP.fn.fnWS20WMENU40_06_02
 
     // /************************************************************************
     //  * [WS20] Administrator
@@ -812,7 +812,7 @@
     /************************************************************************
      * [WS20] Error Log
      ************************************************************************/
-    oAPP.fn.fnWS20WMENU40_07 = async () => {
+    oAPP.fn.fnWS20WMENU40_06_03 = async () => {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -825,7 +825,7 @@
 
         parent.setBusy("");
 
-    }; // end of oAPP.fn.fnWS20WMENU40_07
+    }; // end of oAPP.fn.fnWS20WMENU40_06_03
 
     /************************************************************************
      * [WS20] U4A Help Document
