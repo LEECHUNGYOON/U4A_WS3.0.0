@@ -1526,7 +1526,7 @@
         oCodeEditor.addEventDelegate({
             onkeyup: _fnCodeeditorKeyupEvent,
             oncontextmenu: (oEvent) => {
-                _fnCodeeditorContextMenuEvent(oEvent);
+                // _fnCodeeditorContextMenuEvent(oEvent);
             }
 
         });
@@ -1534,7 +1534,7 @@
         oCodeEditorClone.addEventDelegate({
             onkeyup: _fnCodeeditorKeyupEvent,
             oncontextmenu: (oEvent) => {
-                _fnCodeeditorContextMenuEvent(oEvent);
+                // _fnCodeeditorContextMenuEvent(oEvent);
             }
         });
 
