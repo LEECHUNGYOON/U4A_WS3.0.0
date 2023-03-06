@@ -330,6 +330,10 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
@@ -337,7 +341,10 @@
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -363,7 +370,10 @@
 
             oBrowserWindow.show();
 
-            oBrowserWindow.setOpacity(1.0);
+            // oBrowserWindow.setOpacity(1.0);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
@@ -439,6 +449,7 @@
 
         oBrowserOptions.frame = false;
         // oBrowserOptions.show = false;
+        // oBrowserOptions.opacity = 0.0;
         oBrowserOptions.transparent = true;
         oBrowserOptions.center = false;
         oBrowserOptions.resizable = false;
@@ -455,10 +466,14 @@
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
+        // 실행할 URL 적용
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         oBrowserWindow.once('ready-to-show', () => {
             lf_move();
@@ -468,6 +483,9 @@
         oBrowserWindow.webContents.on('did-finish-load', function() {
 
             oBrowserWindow.show();
+
+            // // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            // WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             lf_move();
 
@@ -772,13 +790,21 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
+        // 실행할 URL 적용
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -802,7 +828,10 @@
 
             oBrowserWindow.show();
 
-            oBrowserWindow.setOpacity(1.0);
+            // oBrowserWindow.setOpacity(1.0);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
@@ -855,13 +884,21 @@
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
+        // 실행할 URL 적용
         let sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
 
         oBrowserWindow.once('ready-to-show', () => {
 
@@ -954,6 +991,7 @@
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
         let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
         oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
@@ -1304,7 +1342,10 @@
 
             oBrowserWindow.show();
 
-            oBrowserWindow.setOpacity(1.0);
+            // oBrowserWindow.setOpacity(1.0);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
@@ -1325,23 +1366,22 @@
      ************************************************************************/
     oAPP.fn.fnRuntimeClassNaviPopupOpener = () => {
 
-        var sWinObjType = "RTMCLS";
+        let sPopupName = "RTMCLS";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             return;
         }
 
-        var SESSKEY = parent.getSessionKey(),
+        let SESSKEY = parent.getSessionKey(),
             BROWSKEY = parent.getBrowserKey(),
-            oUserInfo = parent.getUserInfo(),
-            sUrl = parent.getPath(sWinObjType);
+            oUserInfo = parent.getUserInfo();
 
         let oThemeInfo = parent.getThemeInfo(); // theme 정보      
 
         // 브라우저 옵션 설정
-        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+        let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
@@ -1354,19 +1394,27 @@
 
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
-        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
         oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
-        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        // 브라우저 상단 메뉴 없애기        
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+        // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
-        oBrowserWindow.loadURL(sUrl);
+        let sUrlPath = parent.getPath(sPopupName);
+        oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         oBrowserWindow.once('ready-to-show', () => {
 
@@ -1390,7 +1438,10 @@
 
             oBrowserWindow.show();
 
-            oBrowserWindow.setOpacity(1.0);
+            // oBrowserWindow.setOpacity(1.0);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
@@ -1409,10 +1460,10 @@
      ************************************************************************/
     oAPP.fn.fnFontStyleWizardPopupOpener = () => {
 
-        var sWinObjType = "FONTSTYLE";
+        let sPopupName = "FONTSTYLE";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             return;
         }
@@ -1440,7 +1491,7 @@
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.nodeIntegration = false;
-        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -1466,7 +1517,10 @@
 
             oBrowserWindow.show();
 
-            oBrowserWindow.setOpacity(1.0);
+            // oBrowserWindow.setOpacity(1.0);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
@@ -1530,17 +1584,17 @@
      * **********************************************************************/
     oAPP.fn.fnMultiFooterMsg = function(aMsg) {
 
-        var sPopupName = "ERRMSGPOP";
+        let sPopupName = "ERRMSGPOP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             oResult.WINDOW.close();
         }
 
         let oThemeInfo = parent.getThemeInfo(); // theme 정보 
 
-        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+        let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
@@ -1562,16 +1616,23 @@
         oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
-        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
-        var sUrlPath = parent.getPath(sPopupName);
+        let sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -1594,7 +1655,10 @@
 
             oBrowserWindow.show();
 
-            oBrowserWindow.setOpacity(1.0);
+            // oBrowserWindow.setOpacity(1.0);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
@@ -1647,11 +1711,12 @@
         oBrowserOptions.url = sPath;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.show = false;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sWinObjType;
         oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
-
 
         oAPP.fn.fnExternalOpen(oBrowserOptions);
 
@@ -1679,17 +1744,17 @@
      * **********************************************************************/
     oAPP.fn.fnReleaseNotePopupOpener = () => {
 
-        var sPopupName = "RELNOTEPOP";
+        let sPopupName = "RELNOTEPOP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             return;
         }
 
         let oThemeInfo = parent.getThemeInfo(); // theme 정보  
 
-        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+        let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
@@ -1710,16 +1775,23 @@
         oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
-        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
-        var sUrlPath = parent.getPath(sPopupName);
+        let sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         oBrowserWindow.once('ready-to-show', () => {
 
@@ -1731,7 +1803,7 @@
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function() {
 
-            var oData = {
+            let oData = {
                 USERINFO: parent.getUserInfo(), // User 정보
                 oThemeInfo: oThemeInfo, // 테마 개인화 정보                
                 ISCDN: parent.getIsCDN(), // CDN 허용 여부,
@@ -1742,7 +1814,10 @@
 
             oBrowserWindow.show();
 
-            oBrowserWindow.setOpacity(1.0);
+            // oBrowserWindow.setOpacity(1.0);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
@@ -1784,23 +1859,22 @@
      ************************************************************************/
     oAPP.fn.fnOtrManagerPopupOpener = () => {
 
-        var sWinObjType = "U4AOTRPOP";
+        let sPopupName = "U4AOTRPOP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             return;
         }
 
-        var SESSKEY = parent.getSessionKey(),
+        let SESSKEY = parent.getSessionKey(),
             BROWSKEY = parent.getBrowserKey(),
-            oUserInfo = parent.getUserInfo(),
-            sUrl = parent.getPath(sWinObjType);
+            oUserInfo = parent.getUserInfo();
 
         let oThemeInfo = parent.getThemeInfo(); // theme 정보      
 
         // 브라우저 옵션 설정
-        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+        let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
@@ -1813,19 +1887,27 @@
 
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
-        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
         oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
-        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
         // 브라우저 상단 메뉴 없애기        
         oBrowserWindow.setMenu(null);
 
-        oBrowserWindow.loadURL(sUrl);
+        let sUrlPath = parent.getPath(sPopupName);
+        oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -1838,7 +1920,7 @@
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function() {
 
-            var oSendData = {
+            let oSendData = {
                 oUserInfo: oUserInfo,
                 oThemeInfo: oThemeInfo,
                 T_9011: oAPP.DATA.LIB.T_9011,
@@ -1851,7 +1933,10 @@
 
             oBrowserWindow.show();
 
-            oBrowserWindow.setOpacity(1.0);
+            // oBrowserWindow.setOpacity(1.0);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
@@ -1870,23 +1955,21 @@
      ************************************************************************/
     oAPP.fn.fnUI5PredefinedCssPopupOpener = () => {
 
-        var sWinObjType = "UI5CSSPOP";
+        let sPopupName = "UI5CSSPOP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             return;
         }
 
-        var SESSKEY = parent.getSessionKey(),
+        let SESSKEY = parent.getSessionKey(),
             BROWSKEY = parent.getBrowserKey(),
             oUserInfo = parent.getUserInfo(),
-            sUrl = parent.getPath(sWinObjType);
-
-        let oThemeInfo = parent.getThemeInfo(); // theme 정보      
+            oThemeInfo = parent.getThemeInfo(); // theme 정보      
 
         // 브라우저 옵션 설정
-        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+        let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
@@ -1900,17 +1983,22 @@
 
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
-        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
         oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
-        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
         // 브라우저 상단 메뉴 없애기        
         oBrowserWindow.setMenu(null);
 
-        oBrowserWindow.loadURL(sUrl);
+        let sUrlPath = parent.getPath(sPopupName);
+        oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
         // if (!APP.isPackaged) {
@@ -1948,7 +2036,10 @@
 
             oBrowserWindow.show();
 
-            oBrowserWindow.setOpacity(1.0);
+            // oBrowserWindow.setOpacity(1.0);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
@@ -1975,7 +2066,6 @@
             oAPP.fn.prevStyleClassApply(aCSSList, bIsSave);
 
         }
-
 
     }; // end of oAPP.fn.fnUI5PredefinedCssPopupOpener
 
@@ -2024,19 +2114,18 @@
             return;
         }
 
-        let sWinObjType = "SHORTCUTPOP";
+        let sPopupName = "SHORTCUTPOP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             return;
         }
 
         let SESSKEY = parent.getSessionKey(),
             BROWSKEY = parent.getBrowserKey(),
-            oUserInfo = parent.getUserInfo(),
-            sUrl = parent.getPath(sWinObjType);
-
+            oUserInfo = parent.getUserInfo();
+           
         let oThemeInfo = parent.getThemeInfo(); // theme 정보      
 
         // 브라우저 옵션 설정
@@ -2046,7 +2135,7 @@
 
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D31"); // ShortCut Creator
         oBrowserOptions.show = false;
-        oBrowserOptions.opacity = 1.0;
+        oBrowserOptions.opacity = 0.0;
         oBrowserOptions.skipTaskbar = false;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.modal = true;
@@ -2060,7 +2149,7 @@
 
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
-        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
         oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         let oSettings = oAPP.fn.getSettingsInfo(),
@@ -2114,12 +2203,20 @@
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
         // 브라우저 상단 메뉴 없애기        
         oBrowserWindow.setMenu(null);
 
-        oBrowserWindow.loadURL(sUrl);
+        let sUrlPath = parent.getPath(sPopupName);
+        oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -2143,7 +2240,10 @@
 
             oBrowserWindow.show();
 
-            oBrowserWindow.setOpacity(1.0);
+            // oBrowserWindow.setOpacity(1.0);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);

@@ -1,7 +1,7 @@
 /**************************************************************************                                           
  * ws_fn_04.js
  **************************************************************************/
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     const
@@ -67,7 +67,7 @@
     /************************************************************************
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSapGuiMultiLoginCheckThen = async function (oResult) {
+    oAPP.fn.fnSapGuiMultiLoginCheckThen = async function(oResult) {
 
         // sapgui 실행시, 레지스트리에 브라우저키를 저장하고 삭제 시점을 감지한다.
         await oAPP.fn.fnSapGuiRegistryParamCheck();
@@ -127,13 +127,13 @@
 
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
         var vbs = parent.SPAWN('cscript.exe', aParam);
-        vbs.stdout.on("data", function (data) {
+        vbs.stdout.on("data", function(data) {
 
 
         });
 
         //GUI 세션창이 존재하지않다면 ...
-        vbs.stderr.on("data", function (data) {
+        vbs.stderr.on("data", function(data) {
 
             //VBS 리턴 오류 CODE / MESSAGE 
             var str = data.toString(),
@@ -172,12 +172,12 @@
             ];
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
-            vbs.stdout.on("data", function (data) {
+            vbs.stdout.on("data", function(data) {
 
 
             });
 
-            vbs.stderr.on("data", function (data) {
+            vbs.stderr.on("data", function(data) {
 
                 // 이전에 돌고 있는 인터벌이 혹시나 있으면 삭제
                 _clearIntervalSapGuiCheck();
@@ -471,7 +471,8 @@
 
             // "maxHeight": 120,
             // "minHeight": 120,           
-
+            // "show": false,
+            // "opacity": 0.0,
             "backgroundColor": oThemeInfo.BGCOL,
             "acceptFirstMouse": true,
             "alwaysOnTop": true,
@@ -498,6 +499,13 @@
         var oBrowserWindow = new parent.REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
+        // oBrowserWindow.setOpacity(0.0);
+        oBrowserWindow.hide();
+
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
@@ -515,20 +523,16 @@
         //     oBrowserWindow.webContents.openDevTools();
         // }
 
-        // oBrowserWindow.webContents.openDevTools();
-
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
-            oBrowserWindow.show();
-
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             let oSendData = {
                 DEFAULT_OPACITY: 0.3,
@@ -538,12 +542,15 @@
 
             oBrowserWindow.webContents.send('if_showHidePopup', oSendData);
 
-            oBrowserWindow.show();
-
-            // oBrowserWindow.setOpacity(1.0);
+            // oBrowserWindow.setOpacity(1.0);            
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+            // // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            // WSUTIL.setBrowserOpacity(oBrowserWindow);
+
+            oBrowserWindow.show();
 
         });
 
@@ -576,20 +583,20 @@
 
         // 초기 모델 설정
         let oModelData = {
-            KEY: "",
-            RDBTNINDEX: 0,
-            FNAME: "",
-            RDLIST: [{
-                text: "Key In"
+                KEY: "",
+                RDBTNINDEX: 0,
+                FNAME: "",
+                RDLIST: [{
+                        text: "Key In"
+                    },
+                    {
+                        text: "File Drag"
+                    },
+                    {
+                        text: "Attach File"
+                    },
+                ]
             },
-            {
-                text: "File Drag"
-            },
-            {
-                text: "Attach File"
-            },
-            ]
-        },
             oJsonModel = new sap.ui.model.json.JSONModel();
 
         oJsonModel.setData(oModelData);
@@ -625,7 +632,7 @@
                     new sap.m.Button({
                         type: sap.m.ButtonType.Reject,
                         icon: "sap-icon://decline",
-                        press: function (oEvent) {
+                        press: function(oEvent) {
 
                             var oDialog = sap.ui.getCore().byId(DIALOG_ID);
                             if (oDialog) {
@@ -675,7 +682,7 @@
                     submit: () => {
                         oAPP.fn.fnSetOpenDevToolSubmit();
                     }
-                }).bindProperty("visible", "/RDBTNINDEX", function (INDEX) {
+                }).bindProperty("visible", "/RDBTNINDEX", function(INDEX) {
 
                     if (INDEX !== 0) {
                         return false;
@@ -704,7 +711,7 @@
                             text: "Drop the File!"
                         })
                     ]
-                }).bindProperty("visible", "/RDBTNINDEX", function (INDEX) {
+                }).bindProperty("visible", "/RDBTNINDEX", function(INDEX) {
 
                     if (INDEX !== 1) {
                         return false;
@@ -751,7 +758,7 @@
                 new sap.m.Button({
                     type: sap.m.ButtonType.Reject,
                     icon: "sap-icon://decline",
-                    press: function (oEvent) {
+                    press: function(oEvent) {
 
                         var oDialog = sap.ui.getCore().byId(DIALOG_ID);
                         if (oDialog) {

@@ -3,8 +3,10 @@
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible"
+          content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <style>
         * {
@@ -110,10 +112,10 @@
 
         function gfn_BootstrapLoad() {
 
-            sap.ui.getCore().attachInit(function () {
+            sap.ui.getCore().attachInit(function() {
 
                 //BASE DATA 추출 
-                oAPP.fs.readFile(oAPP.path.join(oAPP.__dirname, 'json/MenuList.json'), 'utf8', function (err,
+                oAPP.fs.readFile(oAPP.path.join(oAPP.__dirname, 'json/MenuList.json'), 'utf8', function(err,
                     data) {
                     if (err) {
                         return console.error(err);
@@ -202,32 +204,31 @@
                         icon: {
                             path: "ICON"
                         },
-                        select: function (e) {
+                        select: function(e) {
 
                             //wait on
                             fn_WaitMode(true);
 
                             oUI5.NVCNT.removeAllPages();
 
-                            var sLine = e.oSource.getModel().mContexts[e.oSource
-                                .oBindingContexts.undefined.sPath].getProperty();
-                            var Lpath = oAPP.path.join(oAPP.__dirname, '/js/' + sLine
-                                .MCODE + '.js');
-                            jQuery.getScript(Lpath, function () {
+                            var sLine = e.oSource.getModel().mContexts[e.oSource.oBindingContexts.undefined.sPath].getProperty();
+                            var Lpath = oAPP.path.join(oAPP.__dirname, '/js/' + sLine.MCODE + '.js');
+                            jQuery.getScript(Lpath, function() {
                                 // fn_WaitMode(false); /*wait off*/
                             });
 
                         }
-                    }).bindProperty("text", "MCODE", function (MCODE) {
+                    }).bindProperty("text", "MCODE", function(MCODE) {
 
                         switch (MCODE) {
                             case "ThemeSetting":
-                                return oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON",
-                                    "D22"); // Theme Setting
+                                return oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D22"); // Theme Setting
 
                             case "CdnSetting":
-                                return oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON",
-                                    "D19"); // CDN Setting
+                                return oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D19"); // CDN Setting
+
+                            case "LanguTrans":
+                                return oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E17"); // Language Translate
 
                             default:
                                 break;
@@ -256,7 +257,7 @@
                     var oBtMenu = new sap.m.Button({
                         icon: "sap-icon://menu2",
                         type: "Transparent",
-                        press: function (e) {
+                        press: function(e) {
                             if (TOOLPAGE.getSideExpanded()) {
                                 TOOLPAGE.setSideExpanded(false);
 

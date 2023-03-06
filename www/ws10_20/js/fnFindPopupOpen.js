@@ -106,7 +106,10 @@
 
             oBrowserWindow.show();
 
-            oBrowserWindow.setOpacity(1.0);
+            // oBrowserWindow.setOpacity(1.0);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // Find Popup을 부모창 가운데에 표시
             oAPP.fn.fnFindPopupOpenSetBounds(oBrowserWindow, oBrowserOptions);
