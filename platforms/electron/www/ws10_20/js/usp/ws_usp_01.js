@@ -4,7 +4,7 @@
  * - file Name : ws_usp_01.js
  * - file Desc : u4a ws usp sub
  ************************************************************************/
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -352,7 +352,7 @@
             // association
             initialFocus: "ws30_step",
 
-            afterOpen: function(oEvent) {
+            afterOpen: function (oEvent) {
 
                 var oStepInput = sap.ui.getCore().byId("ws30_step");
                 if (!oStepInput) {
@@ -369,7 +369,7 @@
             },
 
             // events
-            afterClose: function() {
+            afterClose: function () {
 
                 APPCOMMON.fnSetModelProperty(sBindRootPath, {}, true);
 
@@ -453,7 +453,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             let oSendData = {
                 APPINFO: oAppInfo,
@@ -496,67 +496,8 @@
     };
     // end of oAPP.fn.fnUspNewWindowIPCEvent
 
-    // /************************************************************************
-    //  * 설치 폴더에 있는 기본 패턴을 읽어서 모델에 저장하기
-    //  ************************************************************************/
-    // oAPP.fn.fnReadDefaultPatternFiles = () => {
-
-    //     return new Promise(async (resolve) => {
-
-    //         let sPatternPath = parent.getPath("PATTERN_ROOT"),
-    //             oResult = await WSUTIL.readDir(sPatternPath);
-
-    //         if (oResult.RETCD == "E") {
-    //             resolve(oResult);
-    //             return;
-    //         }
-
-    //         // 폴더 목록의 파일들을 읽어서 리턴해준다.
-    //         let aPatternList = oResult.RTDATA,
-    //             iPattLength = aPatternList.length,
-    //             aPatternInfo = [];
-
-    //         for (var i = 0; i < iPattLength; i++) {
-
-    //             let sFileName = aPatternList[i],
-    //                 sFileKey = sFileName.split(".")[0],
-    //                 sFilePath = sPatternPath + "\\" + sFileName;
-
-    //             let oFileDataResult = await WSUTIL.readFile(sFilePath);
-    //             if (oFileDataResult.RETCD == "E") {
-    //                 continue;
-    //             }
-
-    //             let sFileData = oFileDataResult.RTDATA,
-    //                 oPatternInfo = {
-    //                     KEY: sFileKey,
-    //                     DATA: sFileData
-    //                 };
-
-    //             aPatternInfo.push(oPatternInfo);
-
-    //         }
-
-    //         if (aPatternInfo.length == 0) {
-    //             resolve({
-    //                 RETCD: "E",
-    //                 // RTMSG: "데이터 없음"
-    //             });
-    //             return;
-    //         }
-
-    //         resolve({
-    //             RETCD: "S",
-    //             RTMSG: "",
-    //             RTDATA: aPatternInfo
-    //         });
-
-    //     });
-
-    // }; // end of oAPP.fn.fnReadDefaultPattern
-
     /**************************************************************************
-     * Usp 기본 패턴을 앱 설치 폴더에 JSON으로 저장
+     * Usp 패턴을 앱 설치 폴더에 JSON으로 저장
      **************************************************************************/
     oAPP.fn.fnSaveUspPattern = () => {
 
@@ -566,125 +507,53 @@
              * Default Pattern
              */
 
-            // 파일 확장자에 맞는 SVG 아이콘 정보를 가져온다.
-            let oIconResult = await parent.WSUTIL.getFileExtSvgIcons();
-            if (oIconResult.RETCD == "E") {
-                resolve();
-                return;
-            }
+            // Usp 기본 패턴 정보를 구한다.
+            let oDefPattDataResult = await parent.USP_UTIL.getDefaultPatternData(),
+                aDefPattData = oDefPattDataResult.RTDATA,
+                sDefPattJsonPath = parent.getPath("DEF_PATT"),
+                sDefPattJsonData = JSON.stringify(aDefPattData);
 
-            // 각 확장자에 맞는 svg 경로를 구한다.
-            let aIcons = oIconResult.RTDATA,
-                oHtmlIconInfo = aIcons.find(elem => elem.EXTNM === "html") || "",
-                oJsIconInfo = aIcons.find(elem => elem.EXTNM === "js") || "",
-
-                // 테스트 목적
-                sUi5IconUrl = "https://sap.github.io/ui5-webcomponents/assets/images/ui5-logo.png";
-
-            // 테스트 목적임!!!!
-            if (parent.APP.isPackaged) {
-                sUi5IconUrl = "";
-            }
-
-            let aPatternJson = [{
-                    "PKEY": "",
-                    "CKEY": "PATT001",
-                    "TYPE": "ROOT",
-                    "DESC": "Default Pattern"
-                }, {
-                    "PKEY": "PATT001",
-                    "CKEY": "PTN001",
-                    "DESC": "HTML",
-                    "ICON": oHtmlIconInfo.ICONPATH
-                },
-                {
-                    "PKEY": "PTN001",
-                    "CKEY": "PTN001_001",
-                    "DESC": "HTML 기본패턴",
-                    "ACTCD": "01"
-                },
-                {
-                    "PKEY": "PTN001",
-                    "CKEY": "PTN001_002",
-                    "DESC": "FORM 기본패턴",
-                    "ACTCD": "01"
-                }, {
-                    "PKEY": "PTN001",
-                    "CKEY": "PTN001_003",
-                    "DESC": "Iframe 기본패턴",
-                    "ACTCD": "01"
-                }, {
-                    "PKEY": "PTN001",
-                    "CKEY": "PTN001_004",
-                    "DESC": "UI5 기본패턴",
-                    "ACTCD": "01",
-                    "ICON": sUi5IconUrl
-                }, {
-                    "PKEY": "PTN001_004",
-                    "CKEY": "PTN001_004_001",
-                    "DESC": "UI5 BootStrap",
-                    "ACTCD": "01"
-                }, {
-                    "PKEY": "PATT001",
-                    "CKEY": "PTN002",
-                    "DESC": "JS",
-                    "ICON": oJsIconInfo.ICONPATH
-                }, {
-                    "PKEY": "PTN002",
-                    "CKEY": "PTN002_001",
-                    "DESC": "JS 기본 패턴",
-                    "ACTCD": "02"
-                }, {
-                    "PKEY": "PTN002",
-                    "CKEY": "PTN002_002",
-                    "DESC": "즉시실행함수 패턴",
-                    "ACTCD": "02"
-                }, {
-                    "PKEY": "PTN002",
-                    "CKEY": "PTN002_003",
-                    "DESC": "Module js 패턴",
-                    "ACTCD": "02"
-                }, {
-                    "PKEY": "PTN002",
-                    "CKEY": "PTN002_004",
-                    "DESC": "윈도우 이벤트 패턴",
-                    "ACTCD": "02"
-                }
-            ];
-
-            // JSON 모델 정보를 앱 설치 폴더의 패턴 폴더에 저장한다.
-            // 추후 업그레이드를 감안하여 무조건 Overwrite를 한다.            
-            let sPatternJsonPath = parent.getPath("DEF_PATT"),
-                sPatternJsonData = JSON.stringify(aPatternJson);
-
-            // 기본 패턴 정보를 JSON으로 말아서 앱 설치 폴더에 저장
-            await parent.WSUTIL.fsWriteFile(sPatternJsonPath, sPatternJsonData);
+            // Usp 기본 패턴 정보를 Json 파일로 저장한다.
+            await parent.WSUTIL.fsWriteFile(sDefPattJsonPath, sDefPattJsonData);
 
             /**
-             * Custom Pattern Init chenck
+             * Custom Pattern
              */
 
-            // 커스텀 패턴 파일이 없으면 신규 생성
-            let sCustomPatternJsonPath = parent.getPath("CUST_PATT"),
-                bIsFileExist = FS.existsSync(sCustomPatternJsonPath);
+            let aCustomPatternInitData = parent.USP_UTIL.getCustomPatternInitData(),
+                sCustPattJsonData = JSON.stringify(aCustomPatternInitData);
 
+            // 커스텀 패턴 파일이 없으면 신규 생성
+            let sCustPattJsonPath = parent.getPath("CUST_PATT"),
+                bIsFileExist = FS.existsSync(sCustPattJsonPath);
+
+            debugger;
+
+            // 이미 저장되어 있다면 커스텀 패턴의 Root만 언어에 맞는 텍스트로 변경한다.
             if (bIsFileExist) {
-                resolve();
-                return;
+
+                let sCustomPatternJson = FS.readFileSync(sCustPattJsonPath, 'utf-8'), // 커스텀 패턴 Json Data
+                    aCustomPatternJsonData = JSON.parse(sCustomPatternJson); // Custom Pattern Json Parse
+
+                let iFindIdx = aCustomPatternJsonData.findIndex(elem => elem.TYPE === "ROOT");
+                if (iFindIdx >= 0) {
+
+                    aCustomPatternJsonData[iFindIdx] = aCustomPatternInitData[0];
+
+                    sCustPattJsonData = JSON.stringify(aCustomPatternJsonData);
+
+                }
+
+                // let oCustPattRoot = aCustomPatternJson.findIndex(elem => elem.TYPE === "ROOT");
+                // if (oCustPattRoot) {
+                //     oCustPattRoot = aCustomPattern[0];
+                //     sCustPattJsonData = JSON.stringify(aCustomPattern);
+                // }
+
             }
 
-            let aCustomPattern = [{
-                "PKEY": "",
-                "CKEY": "PATT002",
-                "TYPE": "ROOT",
-                "DESC": "Custom Pattern",
-                "ISSTART": true
-            }];
-
-            let sCustomPatternJsonData = JSON.stringify(aCustomPattern);
-
-            // 기본 패턴 정보를 JSON으로 말아서 앱 설치 폴더에 저장
-            await parent.WSUTIL.fsWriteFile(sCustomPatternJsonPath, sCustomPatternJsonData);
+            // 커스텀 패턴 정보를 JSON으로 말아서 앱 설치 폴더에 저장
+            await parent.WSUTIL.fsWriteFile(sCustPattJsonPath, sCustPattJsonData);
 
             resolve();
 
@@ -697,53 +566,28 @@
      **************************************************************************/
     oAPP.fn.fnModelBindingUspPattern = () => {
 
-        return new Promise(async (resolve) => {            
+        return new Promise(async (resolve) => {
 
-            let sPatternJsonPath = parent.getPath("DEF_PATT"),
-                sCustomPatternJsonPath = parent.getPath("CUST_PATT"),
-                sPatternJson = FS.readFileSync(sPatternJsonPath, 'utf-8'),
-                sCustomPatternJson = FS.readFileSync(sCustomPatternJsonPath, 'utf-8');
+            let sPatternJsonPath = parent.getPath("DEF_PATT"), // 기본 패턴 경로
+                sCustomPatternJsonPath = parent.getPath("CUST_PATT"), // 커스텀 패턴 경로
+                sPatternJson = FS.readFileSync(sPatternJsonPath, 'utf-8'), // 기본 패턴 JSON Data
+                sCustomPatternJson = FS.readFileSync(sCustomPatternJsonPath, 'utf-8'); // 커스텀 패턴 Json Data
 
             let aPatternJson,
-                aCustmPatternJson;
+                aCustmPatternJson,
+                aPatternMerge;
 
             try {
-                aPatternJson = JSON.parse(sPatternJson);
+                aPatternJson = JSON.parse(sPatternJson); // 기본 패턴 Json Parse
+                aCustmPatternJson = JSON.parse(sCustomPatternJson); // Custom Pattern Json Parse
             } catch (error) {
                 throw new Error(error);
             }
 
-            // 앱 내에 설치되어 있는 기본 패턴 정보의 파일을 읽어서 모델에 매칭 시킨다.
-            let oPattDataResult = await parent.USP_UTIL.readDefaultPatternFiles();
-            if (oPattDataResult.RETCD == "S") {
+            // 기본 패턴과 커스텀 패턴을 합친다.
+            aPatternMerge = aPatternJson.concat(aCustmPatternJson);
 
-                let aPatternData = oPattDataResult.RTDATA,
-                    iPatternDataLength = aPatternData.length;
-
-                for (var i = 0; i < iPatternDataLength; i++) {
-
-                    let oPatternData = aPatternData[i];
-
-                    let oPattern = aPatternJson.find(elem => elem.CKEY == oPatternData.KEY);
-                    if (!oPattern) {
-                        continue;
-                    }
-
-                    oPattern.DATA = oPatternData.DATA;
-
-                }
-
-            }
-
-            try {
-                aCustmPatternJson = JSON.parse(sCustomPatternJson);
-            } catch (error) {
-                throw new Error(error);
-            }
-
-            aPatternJson = aPatternJson.concat(aCustmPatternJson);
-
-            APPCOMMON.fnSetModelProperty("/PATTN", aPatternJson);
+            APPCOMMON.fnSetModelProperty("/PATTN", aPatternMerge);
 
             let oModel = sap.ui.getCore().getModel();
             parent.WSUTIL.parseArrayToTree(oModel, "PATTN", "CKEY", "PKEY", "PATTN");
@@ -996,7 +840,7 @@
             return;
         }
 
-        setTimeout(function() {
+        setTimeout(function () {
             oBtn.firePress();
         }, 0);
 

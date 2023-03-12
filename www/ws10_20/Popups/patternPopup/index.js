@@ -11,7 +11,7 @@ let zconsole = parent.WSERR(window, document, console);
 
 let oAPP = parent.oAPP;
 
-(function(window, oAPP) {
+(function (window, oAPP) {
     "use strict";
 
     oAPP.settings = {};
@@ -32,7 +32,7 @@ let oAPP = parent.oAPP;
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.fn.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
+    oAPP.fn.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -50,7 +50,7 @@ let oAPP = parent.oAPP;
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.fn.fnGetModelProperty = function(sModelPath) {
+    oAPP.fn.fnGetModelProperty = function (sModelPath) {
 
         return sap.ui.getCore().getModel().getProperty(sModelPath);
 
@@ -59,7 +59,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * ws의 설정 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.getSettingsInfo = function() {
+    oAPP.fn.getSettingsInfo = function () {
 
         // Browser Window option
         var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
@@ -77,7 +77,7 @@ let oAPP = parent.oAPP;
     // /************************************************************************
     //  * UI5 BootStrap 
     //  ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = function() {
+    oAPP.fn.fnLoadBootStrapSetting = function () {
 
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
@@ -117,10 +117,10 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 초기 모델 바인딩
      ************************************************************************/
-    oAPP.fn.fnInitModelBinding = function() {
+    oAPP.fn.fnInitModelBinding = function () {
 
-        let sDefPattJson = FS.readFileSync(oAPP.attr.sDefaultPatternJsonPath, 'utf-8'),
-            sCustPattJson = FS.readFileSync(oAPP.attr.sCustomPatternJsonPath, 'utf-8');
+        let sDefPattJson = FS.readFileSync(oAPP.attr.sDefaultPatternJsonPath, 'utf-8'), // Usp 기본 패턴
+            sCustPattJson = FS.readFileSync(oAPP.attr.sCustomPatternJsonPath, 'utf-8'); // Usp 커스텀 패턴
 
         let aDefPattJson,
             aCustPattJson;
@@ -135,6 +135,8 @@ let oAPP = parent.oAPP;
         var oCoreModel = sap.ui.getCore().getModel(),
             oJsonModel = new sap.ui.model.json.JSONModel(),
             oData = {
+                CUST_CR_DLG: {}, // Custom Pattern 생성 팝업 모델
+                CONTENT: {},
                 DEF_PAT: aDefPattJson,
                 CUS_PAT: aCustPattJson
             };
@@ -146,6 +148,8 @@ let oAPP = parent.oAPP;
 
             parent.WSUTIL.parseArrayToTree(oJsonModel, "DEF_PAT", "CKEY", "PKEY", "DEF_PAT");
 
+            oJsonModel.refresh();
+
             return;
 
         }
@@ -154,18 +158,18 @@ let oAPP = parent.oAPP;
 
         oCoreModel.refresh(true);
 
-        parent.WSUTIL.parseArrayToTree(oJsonModel, "DEF_PAT", "CKEY", "PKEY", "DEF_PAT");
+        parent.WSUTIL.parseArrayToTree(oCoreModel, "DEF_PAT", "CKEY", "PKEY", "DEF_PAT");
 
     }; // end of oAPP.fn.fnInitModelBinding
 
     /************************************************************************
      * 화면 초기 렌더링
      ************************************************************************/
-    oAPP.fn.fnInitRendering = function() {
+    oAPP.fn.fnInitRendering = function () {
 
         var oApp = new sap.m.App({
-                autoFocus: false,
-            }),
+            autoFocus: false,
+        }),
             oPage = new sap.m.Page({
 
                 // properties
@@ -267,7 +271,6 @@ let oAPP = parent.oAPP;
 
                     let sSize = "auto";
 
-                    // oUspDefPattLayoData.setSize(sSize);
                     oUspCustPattLayoData.setSize(sSize);
 
                 }
@@ -287,16 +290,22 @@ let oAPP = parent.oAPP;
             selectionMode: sap.ui.table.SelectionMode.Single,
             minAutoRowCount: 1,
             alternateRowColors: true,
-            columnHeaderVisible: false,
+            columnHeaderVisible: true,
 
             // aggregations            
             layoutData: new sap.ui.layout.SplitterLayoutData("uspDefPattLayoutData"),
             columns: [
                 new sap.ui.table.Column({
-                    label: "Name",
-                    template: new sap.m.Text({
-                        text: "{DESC}"
-                    }),
+                    label: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E10"), // Default Pattern
+                    template: new sap.m.Text().bindProperty("text", {
+                        parts: [
+                            "TYPE",
+                            "DESC"
+                        ],
+                        formatter: function (TYPE, DESC) {
+                            return (TYPE === "ROOT" ? `${DESC} Root` : DESC);
+                        }
+                    })
                 }),
             ],
             rows: {
@@ -322,7 +331,7 @@ let oAPP = parent.oAPP;
             selectionMode: sap.ui.table.SelectionMode.Single,
             minAutoRowCount: 1,
             alternateRowColors: true,
-            columnHeaderVisible: false,
+            columnHeaderVisible: true,
 
             // aggregations
             footer: new sap.m.Bar({
@@ -330,12 +339,17 @@ let oAPP = parent.oAPP;
                     new sap.m.Button({
                         type: sap.m.ButtonType.Emphasized,
                         icon: "sap-icon://create-form",
-                        press: ev_pressCustomPatternCreate
+                        press: function (oEvent) {
+                            ev_pressCustomPatternCreate(oEvent);
+                        }
                     }),
                     new sap.m.Button({
                         type: sap.m.ButtonType.Negative,
                         icon: "sap-icon://delete",
-                        press: ev_pressCustomPatternDelete
+                        press: function (oEvent) {
+                            ev_pressCustomPatternDelete(oEvent);
+                        }
+
                     }),
                 ]
             }),
@@ -343,10 +357,16 @@ let oAPP = parent.oAPP;
             layoutData: new sap.ui.layout.SplitterLayoutData("uspCustPattLayoutData"),
             columns: [
                 new sap.ui.table.Column({
-                    label: "Name",
-                    template: new sap.m.Text({
-                        text: "{DESC}"
-                    }),
+                    label: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E11"), // Custom Pattern
+                    template: new sap.m.Text().bindProperty("text", {
+                        parts: [
+                            "TYPE",
+                            "DESC"
+                        ],
+                        formatter: function (TYPE, DESC) {
+                            return (TYPE === "ROOT" ? `${DESC} Root` : DESC);
+                        }
+                    })
                 }),
             ],
             rows: {
@@ -370,7 +390,7 @@ let oAPP = parent.oAPP;
             customHeader: new sap.m.Bar({
                 contentLeft: [
                     new sap.m.Title({
-                        text: "aaaaaa"
+                        text: "{/CONTENT/DESC}"
                     })
                 ],
             }),
@@ -381,10 +401,14 @@ let oAPP = parent.oAPP;
 
     function _getPatternCodePageContent() {
 
-        let oCodeEditor = new sap.ui.codeeditor.CodeEditor();
+        let oCodeEditor = new sap.ui.codeeditor.CodeEditor("pattCodeEditor", {
+            editable: false,
+            syntaxHints: false,
+            value: "{/CONTENT/DATA}"
+        });
 
         oCodeEditor.addEventDelegate({
-            onAfterRendering: function(oControl) {
+            onAfterRendering: function (oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -406,16 +430,92 @@ let oAPP = parent.oAPP;
 
     } // end of _getPatternCodePageContent
 
+    /************************************************************************
+     * 커스텀 패턴 생성 팝업의 content
+     ************************************************************************/
+    function _getCustPattCreateDlgContent() {
+
+
+
+
+
+        return [
+
+
+
+
+        ];
+
+    } // end of _getCustPattCreateDlgContent
 
     /************************************************************************
      * 커스텀 패턴 생성 이벤트
      ************************************************************************/
     function ev_pressCustomPatternCreate(oEvent) {
 
-        debugger;
+        let sDlgTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E11"); // Custom Pattern
+        sDlgTitle += " " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"); // Create
 
+        oAPP.fn.fnSetModelProperty("/CUST_CR_DLG/TITLE", sDlgTitle);
+
+        let sDialogId = "uspCustPattCreateDlg";
+
+        var oDialog = sap.ui.getCore().byId(sDialogId);
+        if (oDialog) {
+            oDialog.open();
+            return;
+        }
+
+        var oDialog = new sap.m.Dialog(sDialogId, {
+
+            // properties
+            draggable: true,
+            resizable: true,
+            contentWidth: "100%",
+            contentHeight: "100%",
+
+            // aggregations
+            customHeader: new sap.m.Bar({
+                contentLeft: [
+                    new sap.m.Title({
+                        text: "{/CUST_CR_DLG/TITLE}"
+                    }).addStyleClass("sapUiTinyMarginBegin"),
+                ],
+
+                contentRight: [
+                    new sap.m.Button({
+                        icon: "sap-icon://decline",
+                        press: function (oEvent) {
+                            ev_CustCreateDialogClose(oEvent);
+                        }
+
+                    })
+                ]
+            }),
+
+            content: _getCustPattCreateDlgContent()
+
+        });
+
+        oDialog.open();
 
     } // end of ev_pressCustomSave
+
+    /************************************************************************
+     * 커스텀 패턴 생성팝업 닫기 이벤트
+     ************************************************************************/
+    function ev_CustCreateDialogClose() {
+
+        let sDialogId = "uspCustPattCreateDlg";
+
+        let oDialog = sap.ui.getCore().byId(sDialogId);
+        if (!oDialog) {
+            return;
+        }
+
+        oDialog.close();
+
+    } // end of ev_CustCreateDialogClose
 
     /************************************************************************
      * 커스텀 패턴 삭제 이벤트
@@ -433,22 +533,26 @@ let oAPP = parent.oAPP;
      ************************************************************************/
     function ev_CustPattRowSelectionChange(oEvent) {
 
-        let oTable = oEvent.getSource(),
+        let oDefPattTable = sap.ui.getCore().byId("uspDefPattTreeTbl"),
+            oTable = oEvent.getSource(),
             oRowCtx = oEvent.getParameter("rowContext"),
             iRowIndex = oEvent.getParameter("rowIndex"),
             iSelectedIndex = oTable.getSelectedIndex();
 
-        debugger;
+        oAPP.fn.fnSetModelProperty("/CONTENT", {});
+
+        if (!oRowCtx) {
+            return;
+        }
+
+        // 커스텀 패턴 Row 선택 시, Default 패턴 Row 전체 선택 해제
+        if (oDefPattTable) {
+            oDefPattTable.clearSelection();
+        }
 
         if (iSelectedIndex < 0) {
             oTable.setSelectionInterval(iRowIndex, iRowIndex);
         }
-
-        if (oAPP.attr.iCustLastIndex == iRowIndex) {
-            return;
-        }
-
-        oAPP.attr.iCustLastIndex = iRowIndex;
 
         let oSelectedRowData = oRowCtx.getProperty(oRowCtx.getPath());
 
@@ -460,9 +564,7 @@ let oAPP = parent.oAPP;
             return;
         }
 
-
-        debugger;
-
+        oAPP.fn.fnSetModelProperty("/CONTENT", oSelectedRowData);
 
     } // end of ev_CustPattRowSelectionChange
 
@@ -471,15 +573,25 @@ let oAPP = parent.oAPP;
      ************************************************************************/
     function ev_DefPattRowSelectionChange(oEvent) {
 
-        let oTable = oEvent.getSource(),
+        let oCustPattTable = sap.ui.getCore().byId("uspCustPattTreeTbl"),
+            oTable = oEvent.getSource(),
             oRowCtx = oEvent.getParameter("rowContext"),
             iRowIndex = oEvent.getParameter("rowIndex"),
             iSelectedIndex = oTable.getSelectedIndex();
 
-        debugger;
+        oAPP.fn.fnSetModelProperty("/CONTENT", {});
+
+        if (!oRowCtx) {
+            return;
+        }
+
+        // 기본 패턴 Row 선택 시, 커스텀 패턴 테이블 전체 선택 해제
+        if (oCustPattTable) {
+            oCustPattTable.clearSelection();
+        }
 
         if (iSelectedIndex < 0) {
-            oTable.setSelectionInterval(iRowIndex, 1);
+            oTable.setSelectionInterval(iRowIndex, iRowIndex);
         }
 
         let oSelectedRowData = oRowCtx.getProperty(oRowCtx.getPath());
@@ -492,8 +604,7 @@ let oAPP = parent.oAPP;
             return;
         }
 
-        debugger;
-
+        oAPP.fn.fnSetModelProperty("/CONTENT", oSelectedRowData);
 
     } // end of ev_DefPattRowSelectionChange  
 
@@ -528,33 +639,26 @@ let oAPP = parent.oAPP;
     // // UI5 Boot Strap을 로드 하고 attachInit 한다.
     oAPP.fn.fnLoadBootStrapSetting();
 
-    window.onload = function() {
+    window.onload = function () {
 
-        sap.ui.getCore().attachInit(async function() {
-
-            debugger;
+        sap.ui.getCore().attachInit(function () {
 
             oAPP.setBusy("X");
 
-            oAPP.fn.fnInitModelBinding();
-
             oAPP.fn.fnInitRendering();
+
+            oAPP.fn.fnInitModelBinding();
 
             let oTable = sap.ui.getCore().byId("uspDefPattTreeTbl");
             if (oTable) {
                 oTable.expandToLevel(1);
             }
 
-
-
-
-
-
             /**
              * 무조건 맨 마지막에 수행 되어야 함!!
              */
             // 자연스러운 로딩
-            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function() {
+            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function () {
 
                 if (!oAPP.attr.UIUpdated) {
 

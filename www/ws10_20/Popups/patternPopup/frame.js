@@ -34,12 +34,11 @@ let oAPP = (function (window) {
         APPPATH = APP.getAppPath(),
         LANGU = USERINFO.LANGU,
         SYSID = USERINFO.SYSID,
-        PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));
-        
+        PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));        
 
     const
-        WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
-        WSUTIL = require(WSMSGPATH),
+        WSUTIL_PATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+        WSUTIL = require(WSUTIL_PATH),
         WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
 
     oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
