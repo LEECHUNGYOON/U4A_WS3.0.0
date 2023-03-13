@@ -84,9 +84,15 @@ async function gf_waiting(t = 0){
 
 
 //[펑션] 초기값 설정
-function gf_initData(){
+function gf_initData(oLoginInfo){
 
         debugger;
+
+        let oSettings = getSettingsInfo(),
+            oGitInfo = oSettings.GITHUB,
+            sGitAuth =  atob(oGitInfo.devKey),
+            sPatch_repo_url = oGitInfo.PATCH_REPO_URL,
+            sServerHost = getHost();
 
         Octokit = REMOTE.require("@octokit/core").Octokit;
 
@@ -96,7 +102,7 @@ function gf_initData(){
         ADMIN.SAP = {};
         ADMIN.SAP.ID   = "shhong";
         ADMIN.SAP.PW   = "2wsxzaq1!";
-        ADMIN.SAP.HOST = "http://u4arnd.com:8000";        
+        ADMIN.SAP.HOST = sServerHost;       
         ADMIN.SAP.URL  = ADMIN.SAP.HOST + "/zu4a_wbc/u4a_ipcmain/WS_SUPPORT_PATCH";
 
         if(REMOTE.app.isPackaged){
@@ -107,12 +113,12 @@ function gf_initData(){
 
         //git config
         ADMIN.GIT = {};
-        ADMIN.GIT.AUTH = "GITAUTH"
+        ADMIN.GIT.AUTH = sGitAuth;
         ADMIN.GIT.BASE_PATH  = "https://api.github.com/repos/hongsungho1/test";
 
         if(REMOTE.app.isPackaged){
-            ADMIN.GIT.AUTH = "GITAUTH";
-            ADMIN.GIT.BASE_PATH  = "https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0_SP";        
+            ADMIN.GIT.AUTH = sGitAuth;
+            ADMIN.GIT.BASE_PATH  = sPatch_repo_url;        
         }
 
 }
@@ -598,7 +604,7 @@ exports.on = function(evtnm, CB){
 };
 
 //업데이트 점검 시작 
-exports.checkForUpdates = async function(remote, iscdn = false, versn, splev = 0){
+exports.checkForUpdates = async function(remote, iscdn = false, versn, splev = 0, oLoginInfo){
 
         debugger;
 
@@ -612,7 +618,7 @@ exports.checkForUpdates = async function(remote, iscdn = false, versn, splev = 0
 
 
         //초기값 설정
-        gf_initData();
+        gf_initData(oLoginInfo);
 
    
         //업데이트 방식에 따른 분기

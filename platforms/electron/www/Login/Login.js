@@ -2285,7 +2285,7 @@ let oAPP = (function () {
         var oModel = sap.ui.getCore().getModel();
 
         let sSupportPackageCheckerPath = parent.getPath("WS_SP_UPD"),
-            spAutoUpdater = require(sSupportPackageCheckerPath);    
+            spAutoUpdater = require(sSupportPackageCheckerPath);
 
         spAutoUpdater.on("checking-for-update-SP", (e) => {
             console.log("업데이트 확인중");
@@ -2331,7 +2331,7 @@ let oAPP = (function () {
 
             //app 재실행 
             debugger;
-            
+
             resolve();
 
         });
@@ -2343,13 +2343,14 @@ let oAPP = (function () {
         let bIsCDN = (oParam.ISCDN == "X" ? true : false),
             sAppVer = `v${APP.getVersion()}`,
             oSettings = oAPP.fn.fnGetSettingsInfo(),
-            sPatch_level = oSettings.patch_level;
+            sPatch_level = oSettings.patch_level,
+            oLoginInfo = sap.ui.getCore().getModel().getProperty("/LOGIN");
 
-        spAutoUpdater.checkForUpdates(REMOTE, bIsCDN, sAppVer, sPatch_level);
+        spAutoUpdater.checkForUpdates(REMOTE, bIsCDN, sAppVer, sPatch_level, oLoginInfo);
 
     }; // end of oAPP.fn.fnCheckSupportPackageVersion
 
-    /************************************************************************
+    /************************************************************************s
      *---------------------[ U4A WS Login Page Start ] ----------------------
      ************************************************************************/
     oAPP.fn.fnAttachInit = () => {
