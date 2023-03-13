@@ -50,6 +50,7 @@ module.exports = (() => {
         SERVERLIST_v2: PATH.join(APPPATH, '/ServerList_v2/ServerFrame.html'),
         COMMONCSS: PATH.join(APPPATH, "css", "common.css"),
         AUTOUPDSAP: PATH.join(APPPATH, "lib", "ws", "electron-updater-sap.js"),
+        WS_SP_UPD : PATH.join(APPPATH, "lib", "ws", "SupportPackageChecker", "index.js"),
         PATTERN_ROOT: PATTERN_ROOT,
         USERDATA_PATT_FILES: PATH.join(USERDATA_PATTERN_ROOT, "default_pattern_files"),
         USP_ROOT: USP_ROOT,

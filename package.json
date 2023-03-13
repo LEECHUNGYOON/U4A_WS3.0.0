@@ -31,6 +31,8 @@
     "url": "git+https://github.com/LEECHUNGYOON/U4A_WS3.0.0.git"
   },
   "build": {
+    "copyright" : "Copyright 2020. INFOCG Inc. all rights reserved.",
+    "asar": false,
     "artifactName": "U4A-Workspace-Setup-${version}.${ext}",
     "win": {},
     "publish": {

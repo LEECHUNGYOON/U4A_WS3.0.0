@@ -9,7 +9,7 @@ let oAPP = (function () {
     "use strict";
 
     const
-        require = parent.require,        
+        require = parent.require,
         REMOTE = parent.REMOTE,
         CURRWIN = REMOTE.getCurrentWindow(),
         APPPATH = parent.APPPATH,
@@ -1476,9 +1476,19 @@ let oAPP = (function () {
 
             autoUpdater.on('update-not-available', (info) => {
 
-                resolve();
+                let oParam = {
+                    ISCDN: "X",
+                };
+
+                // WS Support Package Version Check
+                oAPP.fn.fnCheckSupportPackageVersion(resolve, oParam);
+
+                // resolve();
 
                 console.log("현재 최신버전입니다.");
+
+                // 업데이트가 완료되면 기존 CDN 체크를 해제 한다.
+                parent.setIsCDN("");
 
             });
 
@@ -1732,7 +1742,7 @@ let oAPP = (function () {
             oResult.META.HOST = `http://${oTrialServerInfo.SERVERIP}:80${oTrialServerInfo.INSTANCENO}`;
 
         } else {
-         
+
             // Remember 정보 저장
             oAPP.fn.fnSaveRemember(oLogInData);
 
@@ -2264,6 +2274,80 @@ let oAPP = (function () {
         GlobalShortCut.unregisterAll();
 
     };
+
+    /************************************************************************
+     * WS Support Package Version Check
+     ************************************************************************/
+    oAPP.fn.fnCheckSupportPackageVersion = (resolve, oParam) => {
+
+        debugger;
+
+        var oModel = sap.ui.getCore().getModel();
+
+        let sSupportPackageCheckerPath = parent.getPath("WS_SP_UPD"),
+            spAutoUpdater = require(sSupportPackageCheckerPath);    
+
+        spAutoUpdater.on("checking-for-update-SP", (e) => {
+            console.log("업데이트 확인중");
+        });
+
+        spAutoUpdater.on("update-available-SP", (e) => {
+            console.log("업데이트 항목이 존재합니다");
+        });
+
+        spAutoUpdater.on("update-not-available-SP", (e) => {
+
+            console.log("현재 최신버전입니다.");
+
+            resolve();
+
+        });
+
+        spAutoUpdater.on("download-progress-SP", (e) => {
+
+            if (oParam.ISCDN == "X") {
+
+
+
+
+
+
+                return;
+
+            }
+
+            //CDN 인 경우                    
+            //팝업인데 ......
+
+            //CND 아닌경우 
+            // e.detail.file_info.TOTAL  <-- 모수 
+            //e.detail.file_info.TRANSFERRED <-- 현재 진행중 갯수 
+
+            // consols.TRANSFERRED);
+
+        });
+
+        spAutoUpdater.on("update-downloaded-SP", (e) => {
+
+            //app 재실행 
+            debugger;
+            
+            resolve();
+
+        });
+
+        spAutoUpdater.on("update-error-SP", (e) => {
+            console.log("오류 " + e.detail.message);
+        });
+
+        let bIsCDN = (oParam.ISCDN == "X" ? true : false),
+            sAppVer = `v${APP.getVersion()}`,
+            oSettings = oAPP.fn.fnGetSettingsInfo(),
+            sPatch_level = oSettings.patch_level;
+
+        spAutoUpdater.checkForUpdates(REMOTE, bIsCDN, sAppVer, sPatch_level);
+
+    }; // end of oAPP.fn.fnCheckSupportPackageVersion
 
     /************************************************************************
      *---------------------[ U4A WS Login Page Start ] ----------------------

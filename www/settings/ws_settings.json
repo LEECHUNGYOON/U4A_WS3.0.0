@@ -19,7 +19,8 @@
         "devKey": "Z2hwX1gxRUhyMW0xTkZlUnhpbnRCVkF4cHd2aG82c1FlNjJyaU1IMw==",
         "OWNER": "LEECHUNGYOON",
         "REPO": "U4A_WS3.0.0",
-        "latestUrl": "https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest"
+        "latestUrl": "https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest",
+        "PATCH_REPO_URL": "https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0_SP"
     },
     "defaultTheme": "sap_horizon_dark",
     "defaultBackgroundColor": "#12171c",
