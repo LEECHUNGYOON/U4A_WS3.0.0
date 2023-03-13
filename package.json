@@ -56,6 +56,8 @@
   "dependencies": {
     "@electron/remote": "^2.0.8",
     "@octokit/core": "^3.6.0",
+    "adm-zip": "^0.5.10",
+    "arraybuffer-to-buffer": "^0.0.7",
     "child_process": "^1.0.2",
     "cordova": "^11.1.0",
     "electron-log": "^4.4.8",
