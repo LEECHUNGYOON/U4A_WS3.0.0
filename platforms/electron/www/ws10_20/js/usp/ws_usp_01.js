@@ -527,8 +527,6 @@
             let sCustPattJsonPath = parent.getPath("CUST_PATT"),
                 bIsFileExist = FS.existsSync(sCustPattJsonPath);
 
-            debugger;
-
             // 이미 저장되어 있다면 커스텀 패턴의 Root만 언어에 맞는 텍스트로 변경한다.
             if (bIsFileExist) {
 
@@ -543,12 +541,6 @@
                     sCustPattJsonData = JSON.stringify(aCustomPatternJsonData);
 
                 }
-
-                // let oCustPattRoot = aCustomPatternJson.findIndex(elem => elem.TYPE === "ROOT");
-                // if (oCustPattRoot) {
-                //     oCustPattRoot = aCustomPattern[0];
-                //     sCustPattJsonData = JSON.stringify(aCustomPattern);
-                // }
 
             }
 

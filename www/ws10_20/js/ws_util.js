@@ -537,4 +537,18 @@ module.exports = {
 
     }, // end of fsRemove
 
+    getRandomKey : function(iLength){
+
+        const RANDOM = require("random-key");
+
+        let iDefLength = 50;
+
+        if(iLength){
+            iDefLength = iLength;
+        }
+
+        return RANDOM.generateBase30(iDefLength);
+
+    } // end of getRandomKey
+
 };

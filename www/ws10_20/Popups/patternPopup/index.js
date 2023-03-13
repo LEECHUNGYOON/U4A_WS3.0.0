@@ -147,6 +147,7 @@ let oAPP = parent.oAPP;
             oJsonModel.setData(oData);
 
             parent.WSUTIL.parseArrayToTree(oJsonModel, "DEF_PAT", "CKEY", "PKEY", "DEF_PAT");
+            parent.WSUTIL.parseArrayToTree(oJsonModel, "CUS_PAT", "CKEY", "PKEY", "CUS_PAT");
 
             oJsonModel.refresh();
 
@@ -159,6 +160,7 @@ let oAPP = parent.oAPP;
         oCoreModel.refresh(true);
 
         parent.WSUTIL.parseArrayToTree(oCoreModel, "DEF_PAT", "CKEY", "PKEY", "DEF_PAT");
+        parent.WSUTIL.parseArrayToTree(oCoreModel, "CUS_PAT", "CKEY", "PKEY", "CUS_PAT");
 
     }; // end of oAPP.fn.fnInitModelBinding
 
@@ -323,7 +325,7 @@ let oAPP = parent.oAPP;
 
     function _getCustomPatternTable() {
 
-        return new sap.ui.table.Table("uspCustPattTreeTbl", {
+        return new sap.ui.table.TreeTable("uspCustPattTreeTbl", {
 
             // properties
             selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
@@ -370,7 +372,10 @@ let oAPP = parent.oAPP;
                 }),
             ],
             rows: {
-                path: "/CUS_PAT"
+                path: "/CUS_PAT",
+                parameters: {
+                    arrayNames: ['CUS_PAT']
+                },
             },
 
             rowSelectionChange: ev_CustPattRowSelectionChange
@@ -435,18 +440,130 @@ let oAPP = parent.oAPP;
      ************************************************************************/
     function _getCustPattCreateDlgContent() {
 
+        var oForm = new sap.ui.layout.form.Form({
+            editable: true,
+            layout: new sap.ui.layout.form.ResponsiveGridLayout({
+                labelSpanXL: 2,
+                labelSpanL: 3,
+                labelSpanM: 3,
+                labelSpanS: 12,
+                singleContainerFullSize: true
+            }),
 
+            formContainers: [
+                new sap.ui.layout.form.FormContainer({
+                    formElements: [
+                        new sap.ui.layout.form.FormElement({
+                            label: new sap.m.Label({
+                                design: sap.m.LabelDesign.Bold,
+                                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D16") // Title
+                            }),
+                            fields: new sap.m.Input("custPattCrTitleInput", {
+                                value: "{/CUST_CR_DLG/TITLE}",
+                                valueState: "{/CUST_CR_DLG/TITLE_VS}",
+                                valueStateText: "{/CUST_CR_DLG/TITLE_VSTXT}"
+                            }).bindProperty("valueState", "/CUST_CR_DLG/TITLE_VS", function (TITLE_VS) {
+                                return TITLE_VS || sap.ui.core.ValueState.None;
+                            })
 
+                        }),
+                        new sap.ui.layout.form.FormElement({
+                            label: new sap.m.Label({
+                                design: sap.m.LabelDesign.Bold,
+                                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E18") // Content Type
+                            }),
+                            fields: new sap.m.Select({
+                                selectedKey: "{/CUST_CR_DLG/CONT_TYPE}",
+                                items: {
+                                    path: "/CUST_CR_DLG/aContentTypes",
+                                    template: new sap.ui.core.Item({
+                                        key: "{KEY}",
+                                        text: "{TEXT}"
+                                    })
+                                }
+                            })
+                        })
+                    ]
+                })
+            ]
 
+        });
+
+        let oCodeEditor = new sap.ui.codeeditor.CodeEditor("uspCustomCreateCodeeditor", {
+            editable: true,
+            syntaxHints: true,
+            type: "{/CUST_CR_DLG/CONT_TYPE}",
+            value: "{/CUST_CR_DLG/DATA}"
+        });
+
+        oCodeEditor.addEventDelegate({
+
+            onAfterRendering: function (oControl) {
+
+                var oEditor = oControl.srcControl,
+                    _oAceEditor = oEditor._oEditor;
+
+                if (!_oAceEditor) {
+                    return;
+                }
+
+                _oAceEditor.setFontSize(20);
+
+            }
+
+        });
+
+        let oToolbar = new sap.m.Bar({
+            contentLeft: [
+                new sap.m.Button({
+                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25"), // Pretty Print
+                    press: function (oEvent) {
+                        ev_pressCustPattCreatePrettyPrint(oEvent);
+                    }
+                })
+            ],
+            layoutData: new sap.m.FlexItemData({
+                order: 0,
+                growFactor: 0,
+                shrinkFactor: 0
+            })
+        });
 
         return [
-
-
-
+            new sap.m.Page({
+                showHeader: false,
+                enableScrolling: false,
+                content: [
+                    new sap.m.VBox({
+                        renderType: sap.m.FlexRendertype.Bare,
+                        width: "100%",
+                        height: "100%",
+                        items: [
+                            oForm,
+                            oToolbar,
+                            oCodeEditor
+                        ]
+                    }),
+                ]
+            }),
 
         ];
 
     } // end of _getCustPattCreateDlgContent
+
+    /************************************************************************
+     * 커스텀 패턴 생성 팝업의 CodeEditor에 Pretty Print 기능
+     ************************************************************************/
+    function ev_pressCustPattCreatePrettyPrint() {
+
+        let oCodeEditor = sap.ui.getCore().byId("uspCustomCreateCodeeditor");
+        if (!oCodeEditor) {
+            return;
+        }
+
+        oCodeEditor.prettyPrint();
+
+    } // end of ev_pressCustPattCreatePrettyPrint
 
     /************************************************************************
      * 커스텀 패턴 생성 이벤트
@@ -456,7 +573,43 @@ let oAPP = parent.oAPP;
         let sDlgTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E11"); // Custom Pattern
         sDlgTitle += " " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"); // Create
 
-        oAPP.fn.fnSetModelProperty("/CUST_CR_DLG/TITLE", sDlgTitle);
+        let aContentTypes = [{
+            KEY: "text",
+            EXTEN: "txt",
+            TEXT: "text",
+        }, {
+            KEY: "html",
+            EXTEN: "html",
+            TEXT: "html",
+        }, {
+            KEY: "javascript",
+            EXTEN: "js",
+            TEXT: "javascript",
+        },
+        {
+            KEY: "css",
+            EXTEN: "css",
+            TEXT: "css",
+        },
+        {
+            KEY: "json",
+            EXTEN: "json",
+            TEXT: "json",
+        },
+        {
+            KEY: "xml",
+            EXTEN: "xml",
+            TEXT: "xml",
+        }];
+
+        let oCreateInfo = {
+            HEADER_TITLE: sDlgTitle,
+            CONT_TYPE: "text",
+            aContentTypes: aContentTypes
+        };
+
+        oAPP.fn.fnSetModelProperty("/CUST_CR_DLG", {});
+        oAPP.fn.fnSetModelProperty("/CUST_CR_DLG", oCreateInfo);
 
         let sDialogId = "uspCustPattCreateDlg";
 
@@ -473,25 +626,54 @@ let oAPP = parent.oAPP;
             resizable: true,
             contentWidth: "100%",
             contentHeight: "100%",
+            verticalScrolling: false,
+            horizontalScrolling: false,
 
             // aggregations
             customHeader: new sap.m.Bar({
                 contentLeft: [
                     new sap.m.Title({
-                        text: "{/CUST_CR_DLG/TITLE}"
+                        text: "{/CUST_CR_DLG/HEADER_TITLE}"
                     }).addStyleClass("sapUiTinyMarginBegin"),
                 ],
 
                 contentRight: [
+
                     new sap.m.Button({
+                        type: sap.m.ButtonType.Emphasized,
+                        icon: "sap-icon://save",
+                        press: function (oEvent) {
+                            ev_CustCreateDlgSave(oEvent);
+                        }
+                    }),
+
+                    new sap.m.Button("uspCustPattCreateDlgCloseBtn", {
+                        type: sap.m.ButtonType.Reject,
                         icon: "sap-icon://decline",
                         press: function (oEvent) {
                             ev_CustCreateDialogClose(oEvent);
                         }
-
                     })
                 ]
             }),
+
+            buttons: [
+                new sap.m.Button({
+                    type: sap.m.ButtonType.Emphasized,
+                    icon: "sap-icon://save",
+                    press: function (oEvent) {
+                        ev_CustCreateDlgSave(oEvent);
+                    }
+                }),
+
+                new sap.m.Button({
+                    type: sap.m.ButtonType.Reject,
+                    icon: "sap-icon://decline",
+                    press: function (oEvent) {
+                        ev_CustCreateDialogClose(oEvent);
+                    }
+                })
+            ],
 
             content: _getCustPattCreateDlgContent()
 
@@ -499,7 +681,81 @@ let oAPP = parent.oAPP;
 
         oDialog.open();
 
-    } // end of ev_pressCustomSave
+    } // end of ev_pressCustomPatternCreate
+
+    /************************************************************************
+     * 커스텀 패턴 생성팝업 저장 이벤트
+     ************************************************************************/
+    function ev_CustCreateDlgSave() {
+
+        debugger;
+
+        let oCreateInfo = oAPP.fn.fnGetModelProperty("/CUST_CR_DLG");
+
+        oCreateInfo.TITLE_VS = "";
+        oCreateInfo.TITLE_VSTXT = "";
+
+        oAPP.fn.fnSetModelProperty("/CUST_CR_DLG", oCreateInfo);
+
+        // Title 입력 여부 확인
+        if (!oCreateInfo.TITLE) {
+
+            let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "014", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D16")); // title is required entry value
+
+            oCreateInfo.TITLE_VS = sap.ui.core.ValueState.Error;
+            oCreateInfo.TITLE_VSTXT = sMsg;
+
+            oAPP.fn.fnSetModelProperty("/CUST_CR_DLG", oCreateInfo);
+
+            setTimeout(() => {
+
+                let oCrInput = sap.ui.getCore().byId("custPattCrTitleInput");
+                if (oCrInput) {
+                    oCrInput.focus();
+                }
+
+            }, 0);
+
+            return;
+
+        }
+
+        // 기 저장된 커스텀 데이터를 구한다.
+        let sCustomJson = FS.readFileSync(oAPP.attr.sCustomPatternJsonPath, "utf-8"),
+            aCustomData;
+
+        try {
+            aCustomData = JSON.parse(sCustomJson);
+        } catch (error) {
+            throw new Error(error);
+        }
+
+        // 신규 커스텀 데이터를 저장한다.
+        let sKey = parent.WSUTIL.getRandomKey(),
+            oNewCustomPatternData = {
+                PKEY: "PATT002",
+                CKEY: sKey,
+                TITLE: oCreateInfo.TITLE,
+                DATA: oCreateInfo.DATA,
+                CONT_TYPE: oCreateInfo.CONT_TYPE
+            };
+
+        aCustomData.push(oNewCustomPatternData);
+
+        let sNewCustomJsonData = JSON.stringify(aCustomData);
+
+        FS.writeFileSync(oAPP.attr.sCustomPatternJsonPath, sNewCustomJsonData, "utf-8");
+
+        parent.WSUTIL.parseTreeToArray(aCustomData, "CUS_PAT");
+
+        // oAPP.fn.fnSetModelProperty("/CUS_PAT", aCustomData);
+
+        // let oCloseBtn = sap.ui.getCore().byId("uspCustPattCreateDlgCloseBtn");
+        // if (oCloseBtn) {
+        //     oCloseBtn.firePress();
+        // }
+
+    } // end of ev_CustCreatef
 
     /************************************************************************
      * 커스텀 패턴 생성팝업 닫기 이벤트
@@ -523,7 +779,6 @@ let oAPP = parent.oAPP;
     function ev_pressCustomPatternDelete(oEvent) {
 
         debugger;
-
 
 
     } // end of ev_pressCustomDelete

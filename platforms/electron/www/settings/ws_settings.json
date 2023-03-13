@@ -1,4 +1,5 @@
 {
+    "patch_level" : "00001",
     "SYSADMIN": {
         "AUTHKEY": "c2hvd21ldGhlbW9uZXk="
     },
@@ -73,5 +74,5 @@
         "CLIENT": "800",
         "LANGU": "EN",
         "SYSID": "U4A"
-    }
+    }    
 }
