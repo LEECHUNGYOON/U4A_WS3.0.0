@@ -683,7 +683,7 @@ let oAPP = (function () {
     /************************************************************************
      * 로그인 버튼 클릭
      ************************************************************************/
-    oAPP.events.ev_login = () => {     
+    oAPP.events.ev_login = () => {
 
         let oCoreModel = sap.ui.getCore().getModel();
         if (oCoreModel == null) {
@@ -2309,9 +2309,10 @@ let oAPP = (function () {
      ************************************************************************/
     oAPP.fn.fnCheckSupportPackageVersion = (resolve, oParam) => {
 
-        debugger;
-
-        var oModel = sap.ui.getCore().getModel();
+        let oModel = sap.ui.getCore().getModel();
+        oModel.setProperty("/BUSYPOP/PROGVISI", true, true);
+        oModel.setProperty("/BUSYPOP/TITLE", "Downloading...", true);
+        oModel.setProperty("/BUSYPOP/PERVALUE", 0, true);
 
         let sSupportPackageCheckerPath = parent.getPath("WS_SP_UPD"),
             spAutoUpdater = require(sSupportPackageCheckerPath);
@@ -2321,6 +2322,17 @@ let oAPP = (function () {
         });
 
         spAutoUpdater.on("update-available-SP", (e) => {
+
+            // 로그인 페이지의 Opacity를 적용한다.
+            $('.u4aWsLoginFormFcard').animate({
+                opacity: "0.3"
+            }, 500, "linear");
+
+            // Version Check Dialog를 띄운다.
+            oAPP.fn.fnVersionCheckDialogOpen();
+
+            parent.setBusy("");
+
             console.log("업데이트 항목이 존재합니다");
         });
 
@@ -2334,43 +2346,111 @@ let oAPP = (function () {
 
         spAutoUpdater.on("download-progress-SP", (e) => {
 
+            oModel.setProperty("/BUSYPOP/TITLE", "Downloading...", true);
+
             if (oParam.ISCDN == "X") {
 
+                let iPer = 0;
+                oAPP.attr.progressInterval = setInterval(() => {
 
+                    if(iPer >= 100){
+                        iPer = 0;
+                    }
 
+                    oModel.setProperty("/BUSYPOP/PERVALUE", iPer, true);
+                    iPer += 10;
 
-
+                }, 20);
 
                 return;
-
             }
 
-            //CDN 인 경우                    
-            //팝업인데 ......
+            let iTotal = e.detail.file_info.TOTAL,
+                iCurr = e.detail.file_info.TRANSFERRED;
 
-            //CND 아닌경우 
-            // e.detail.file_info.TOTAL  <-- 모수 
-            //e.detail.file_info.TRANSFERRED <-- 현재 진행중 갯수 
+            let iPer = parseFloat(iCurr / iTotal * 100).toFixed(2);
 
-            // consols.TRANSFERRED);
+            oModel.setProperty("/BUSYPOP/PERVALUE", iPer, true);
 
         });
 
         spAutoUpdater.on("update-downloaded-SP", (e) => {
 
-            debugger;
+            if(oAPP.attr.progressInterval){
+                clearInterval(oAPP.attr.progressInterval);
+                delete oAPP.attr.progressInterval;
+            }
+            
+            oModel.setProperty("/BUSYPOP/TITLE", "Update Complete! Restarting...", true);
 
-            //app 재실행             
-            APP.relaunch();
-            APP.exit();            
+            oModel.setProperty("/BUSYPOP/ILLUSTTYPE", "sapIllus-SuccessHighFive", true);
 
-            // resolve();
+            console.log('업데이트가 완료되었습니다.');
+
+            setTimeout(() => {
+
+                if (oParam.ISCDN == "X") {
+
+                    // 업데이트가 완료되면 기존 CDN 체크를 해제 한다.
+                    parent.setIsCDN("");
+
+                }
+
+                //app 재실행             
+                APP.relaunch();
+                APP.exit();
+
+            }, 3000);
 
         });
 
         spAutoUpdater.on("update-error-SP", (e) => {
-            console.log("오류 " + e.detail.message);
-            resolve();
+
+            // 메시지 팝업을 띄운다.
+            // 다운로드 중 오류가 발생하였습니다.
+            // 재시작 하시겠습니까?
+            let sMsg = "Error occurred while U4A Workspace Updating! \n ";
+            sMsg += "Do you want to restart? \n \n";
+            sMsg += sap.m.MessageBox.Action.RETRY + ": Application Restart \n \n ";
+            sMsg += sap.m.MessageBox.Action.CLOSE + ": Application Close \n \n ";
+            sMsg += sap.m.MessageBox.Action.IGNORE + ": Ignoring updates and then running the program";
+
+            sap.m.MessageBox.error(sMsg, {
+                title: "U4A Workspace Update Error",
+                initialFocus: sap.m.MessageBox.Action.RETRY,
+                emphasizedAction: sap.m.MessageBox.Action.RETRY,
+                onClose: function (oEvent) {
+
+                    switch (oEvent) {
+                        case "RETRY": // 앱 재시작
+
+                            APP.relaunch();
+                            APP.exit();
+
+                            return;
+
+                        case "CLOSE":  // 앱 종료
+
+                            APP.exit();
+
+                            return;
+
+                        case "IGNORE": // 무시하고 진행
+
+                            resolve();
+
+                            return;
+
+                    }
+
+                },
+
+                actions: [sap.m.MessageBox.Action.RETRY, sap.m.MessageBox.Action.CLOSE, sap.m.MessageBox.Action.IGNORE]
+
+            });
+
+            console.log('에러가 발생하였습니다. 에러내용 : ' + err);
+
         });
 
         let bIsCDN = (oParam.ISCDN == "X" ? true : false),
