@@ -683,9 +683,7 @@ let oAPP = (function () {
     /************************************************************************
      * 로그인 버튼 클릭
      ************************************************************************/
-    oAPP.events.ev_login = () => {
-
-        debugger;
+    oAPP.events.ev_login = () => {     
 
         let oCoreModel = sap.ui.getCore().getModel();
         if (oCoreModel == null) {
@@ -727,6 +725,25 @@ let oAPP = (function () {
         xhr.onreadystatechange = function () { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
+
+                    let u4a_status = xhr.getResponseHeader("u4a_status");
+                    if (u4a_status) {
+
+                        parent.setBusy("");
+                        // oAPP.common.fnSetBusyDialog(false);
+                        var oResult;
+                        try {
+                            oResult = JSON.parse(xhr.response);
+                        } catch (error) {
+                            // fnJsonParseError(error);
+                            return;
+                        }
+
+                        // // 잘못된 url 이거나 지원하지 않는 기능 처리
+                        // oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, oResult);
+
+                        return;
+                    }
 
                     var oResult;
 
@@ -1267,7 +1284,14 @@ let oAPP = (function () {
             //현재 최신버전입니다
             autoUpdaterSAP.on('update-not-available-sap', (e) => {
 
-                resolve();
+                // resolve();
+
+                let oParam = {
+                    ISCDN: "",
+                };
+
+                // WS Support Package Version Check
+                oAPP.fn.fnCheckSupportPackageVersion(resolve, oParam);
 
             });
 
@@ -2334,15 +2358,19 @@ let oAPP = (function () {
 
         spAutoUpdater.on("update-downloaded-SP", (e) => {
 
-            //app 재실행 
             debugger;
 
-            resolve();
+            //app 재실행             
+            APP.relaunch();
+            APP.exit();            
+
+            // resolve();
 
         });
 
         spAutoUpdater.on("update-error-SP", (e) => {
             console.log("오류 " + e.detail.message);
+            resolve();
         });
 
         let bIsCDN = (oParam.ISCDN == "X" ? true : false),

@@ -1,5 +1,5 @@
 {
-    "patch_level" : "00001",
+    "patch_level" : "00000",
     "SYSADMIN": {
         "AUTHKEY": "c2hvd21ldGhlbW9uZXk="
     },
@@ -19,8 +19,9 @@
         "devKey": "Z2hwX3k4bGR0VUlLZ2lzTEc0cXM3RkFlQ3Fmd0ZqN1ozazNKNmZsMw==",
         "OWNER": "LEECHUNGYOON",
         "REPO": "U4A_WS3.0.0",
-        "latestUrl": "https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest",
-        "PATCH_REPO_URL": "https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0_SP"
+        "PATCH_REPO" : "U4A_WS3.0.0_SP",
+        "PATCH_REPO_URL": "https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0_SP",
+        "latestUrl": "https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest"        
     },
     "defaultTheme": "sap_horizon_dark",
     "defaultBackgroundColor": "#12171c",

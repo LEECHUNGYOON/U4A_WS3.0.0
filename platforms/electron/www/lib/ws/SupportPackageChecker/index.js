@@ -122,8 +122,8 @@ async function gf_waiting(t = 0){
 //[펑션] 초기값 설정
 function gf_initData(oLoginInfo){
 
-		debugger;
-		
+        debugger;
+
 		let oSettings = getSettingsInfo(),
             oGitInfo = oSettings.GITHUB,
             sGitAuth =  atob(oGitInfo.devKey),
@@ -149,6 +149,8 @@ function gf_initData(oLoginInfo){
 
         ADMIN.SAP.ID   = "";
         ADMIN.SAP.PW   = "";
+
+        ADMIN.GIT = {};
 
         if(REMOTE.app.isPackaged){
             ADMIN.GIT.AUTH       = sGitAuth;
@@ -364,7 +366,7 @@ async function gf_download_SAP(PATCH){
                         try {
                             var zip = new ADMZIP(LV_TMP_DOWN_NODE);
                         } catch (err) {
-                            resolve({RETCD:"E", RTMSG:"압축 파일 미존재"});
+                            resolve({RETCD:"W", RTMSG:"압축 파일 미존재"});
                             return;
                         }
 
@@ -638,9 +640,7 @@ exports.on = function(evtnm, CB){
 };
 
 //업데이트 점검 시작 
-exports.checkForUpdates = async function(remote, iscdn = false, versn, splev = 0, oLoginInfo){
-		
-		debugger;
+exports.checkForUpdates = async function(remote, iscdn = false, versn, splev = 0, oLoginInfo){	
 		
         //업데이트 확인중 
         document.dispatchEvent(new CustomEvent('checking-for-update-SP', {detail: {message:GS_MSG.M15} })); 
@@ -651,11 +651,9 @@ exports.checkForUpdates = async function(remote, iscdn = false, versn, splev = 0
         VERSN  = versn;          //WS3.0 버젼(current) 
         SPLEV  = Number(splev);  //패치 번호(current)
 
-
         //초기값 설정
         gf_initData(oLoginInfo);
 
-   
         //업데이트 방식에 따른 분기
         switch (ISCDN) {
             case true: //GIT
