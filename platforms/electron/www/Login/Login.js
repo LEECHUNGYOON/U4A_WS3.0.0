@@ -2360,7 +2360,7 @@ let oAPP = (function () {
                     oModel.setProperty("/BUSYPOP/PERVALUE", iPer, true);
                     iPer += 10;
 
-                }, 20);
+                }, 100);
 
                 return;
             }
@@ -2380,7 +2380,8 @@ let oAPP = (function () {
                 clearInterval(oAPP.attr.progressInterval);
                 delete oAPP.attr.progressInterval;
             }
-            
+            oModel.setProperty("/BUSYPOP/PERVALUE", 100, true);
+
             oModel.setProperty("/BUSYPOP/TITLE", "Update Complete! Restarting...", true);
 
             oModel.setProperty("/BUSYPOP/ILLUSTTYPE", "sapIllus-SuccessHighFive", true);

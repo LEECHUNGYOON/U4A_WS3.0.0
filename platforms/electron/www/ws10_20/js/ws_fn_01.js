@@ -1033,9 +1033,9 @@
                             new sap.m.Button({text: "SP_00001", press: function(){
                                 alert("SP_00001!!!");
                             }}),
-                            new sap.m.Button({text: "SP_00002", press: function(){
-                                alert("SP_00002!!!");
-                            }})
+                            // new sap.m.Button({text: "SP_00002", press: function(){
+                            //     alert("SP_00002!!!");
+                            // }})
                         ]
                     }),
                 ]

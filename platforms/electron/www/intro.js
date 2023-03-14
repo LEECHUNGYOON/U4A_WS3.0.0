@@ -192,13 +192,17 @@
         let sVersion = APP.getVersion();
 
         // WS 세팅 정보
-        var oWsSettings = oAPP.fn.fnGetSettingsInfo();
+        let oWsSettings = oAPP.fn.fnGetSettingsInfo();
 
         // Trial 버전 여부 확인
         if (oWsSettings.isTrial) {
             oVerTxt.innerHTML = `Trial version`;
             return;
         }
+
+        let iSupportPatch = Number(oWsSettings.patch_level || 0);
+
+        sVersion += `&emsp;SP Ver. ${iSupportPatch}`;
 
         oVerTxt.innerHTML = `version ${sVersion}`;
 
