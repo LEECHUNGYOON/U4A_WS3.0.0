@@ -680,7 +680,12 @@ let oAPP = (function () {
 
     }; // end of oAPP.fn.fnOnInitModelBinding
 
+    /************************************************************************
+     * 로그인 버튼 클릭
+     ************************************************************************/
     oAPP.events.ev_login = () => {
+
+        debugger;
 
         let oCoreModel = sap.ui.getCore().getModel();
         if (oCoreModel == null) {

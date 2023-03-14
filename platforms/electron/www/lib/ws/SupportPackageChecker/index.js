@@ -4,31 +4,54 @@
 */
 /* ***************************************************************** */
 /* ***************************************************************** */
-/* 사용 예시 
-    var spAutoUpdater = require(oAPP.path.join(__dirname, 'SupportPackageChecker/index.js'));
-    
-    spAutoUpdater.on("checking-for-update-SP", (e)=>{ debugger; });
 
-    spAutoUpdater.on("update-available-SP", (e)=>{ debugger; });
+/* 
+    설치 nodejs 
+    npm gh-release-assets 
+    npm adm-zip
+    npm arraybuffer-to-buffer
 
-    spAutoUpdater.on("update-not-available-SP", (e)=>{ debugger; });
-
-    spAutoUpdater.on("download-progress-SP", (e)=>{ debugger; });
-    
-    spAutoUpdater.on("update-downloaded-SP", (e)=>{ debugger; });
-
-    spAutoUpdater.on("update-error-SP", (e)=>{ debugger; });
-    
-    
-    await spAutoUpdater.checkForUpdates(oAPP.remote, true, "v3.3.6", "00001");
-
-    console.log(11);
-
-
-      
 */
 
-debugger;
+/* 사용 예시 
+
+  var spAutoUpdater = require(oAPP.path.join(__dirname, 'SupportPackageChecker/index.js'));
+    
+      spAutoUpdater.on("checking-for-update-SP", (e)=>{ console.log("업데이트 확인중"); debugger; });
+   
+      spAutoUpdater.on("update-available-SP", (e)=>{ console.log("업데이트 항목이 존재합니다"); debugger; });
+   
+      spAutoUpdater.on("update-not-available-SP", (e)=>{ console.log("현재 최신버전입니다."); debugger; });
+   
+      spAutoUpdater.on("download-progress-SP", (e)=>{
+
+                   CDN 인 경우                    
+                   팝업인데 ......
+
+                  CDN 아닌경우 
+                  e.detail.file_info.TOTAL  <-- 모수 
+                  e.detail.file_info.TRANSFERRED <-- 현재 진행중 갯수 
+ 
+                   console.log("다운로드중");  
+      });
+      
+      spAutoUpdater.on("update-downloaded-SP", (e)=>{  
+
+        //app 재실행 
+        //debugger; 
+      });
+   
+      spAutoUpdater.on("update-error-SP", (e)=>{ console.log("오류 " + e.detail.message);  debugger; });
+      
+      파라메터 설명 
+      1. electron remote
+      2. CDN  = true; SAP  = false;
+      3. WS.30 현재 버젼 
+      4. WS.30 현재 패치 번호
+    
+      spAutoUpdater.checkForUpdates(oAPP.remote, false, "v3.3.6", "00003");
+
+*/
 
 /* ***************************************************************** */
 /* ***************************************************************** */
@@ -46,12 +69,25 @@ let ADMZIP  = undefined;
 
 
 const GS_MSG = {
-    M01 : "Help Document 처리 통신 오류",
-    M02 : "Help Document 다운로드 처리 과정에서 해더 정보 누락되었습니다",
-    M03 : "분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다.",
-    M04 : "Help Document 분할 다운로드 처리 과정에서 오류 발생",
+    M01 : "처리 통신 오류",
+    M02 : "다운로드 처리 과정에서 해더 정보 누락되었습니다",
+    M03 : "(패치) 분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다.",
+    M04 : "(패치) 분할 다운로드 처리 과정에서 오류 발생",
     M05 : "처리 완료",
-    M06 : "Help Document 버젼 파일 생성중 오류 발생"
+    M06 : "버젼 파일 생성중 오류 발생",
+    M07 : "패치 정보 추출시 SAP 서버 통신 실패!! \n 관리자 문의 \n 현재창 종료 합니다",
+    M08 : "WS 빌드버전 과 업데이트 패치에 등록되있는 WS 빌드버전이 상이 합니다  \n 관리자에게 문의하세요",
+    M09 : "다운로드중",
+    M10 : "패치 압축 파일을 푸는 과정에 문제가 발생하였습니다 \n 관리자에게 문의하세요",
+    M11 : "(패치) \n GIT 서비스 통신 오류 발생 \n 관리자에게 문의바람!!",
+    M12 : "(패치) GIT 다운로드 파일이 존재하지않습니다", 
+    M13 : "GIT (app.zip) 패치 파일 추출하는동안 오류 발생 \n 관리자에게 문의!!",
+    M14 : "GIT (node_modules.zip) 패치 파일 추출하는동안 오류 발생 \n 관리자에게 문의!!",
+    M15 : "(패치) 업데이트 확인중",
+    M16 : "(패치) 현재 최신버전입니다.",
+    M17 : "(패치) 업데이트 항목이 존재합니다",
+    M18 : "(패치) 업데이트가 완료되었습니다."
+    
 };
 
 
@@ -86,39 +122,37 @@ async function gf_waiting(t = 0){
 //[펑션] 초기값 설정
 function gf_initData(oLoginInfo){
 
-        debugger;
-
-        let oSettings = getSettingsInfo(),
+		debugger;
+		
+		let oSettings = getSettingsInfo(),
             oGitInfo = oSettings.GITHUB,
             sGitAuth =  atob(oGitInfo.devKey),
             sPatch_repo_url = oGitInfo.PATCH_REPO_URL,
             sServerHost = getHost();
-
+			
         Octokit = REMOTE.require("@octokit/core").Octokit;
 
         ADMIN.PATCH_SEP = "💛";
 
         //sap config
         ADMIN.SAP = {};
-        ADMIN.SAP.ID   = "shhong";
-        ADMIN.SAP.PW   = "2wsxzaq1!";
-        ADMIN.SAP.HOST = sServerHost;       
+        //ADMIN.SAP.ID   = "shhong";
+        //ADMIN.SAP.PW   = "2wsxzaq1!";
+        ADMIN.SAP.HOST = sServerHost;      
         ADMIN.SAP.URL  = ADMIN.SAP.HOST + "/zu4a_wbc/u4a_ipcmain/WS_SUPPORT_PATCH";
 
         if(REMOTE.app.isPackaged){
-            ADMIN.SAP.ID  = "U4AIDE";
-            ADMIN.SAP.PW  = "$u4aRnd$";
+            //ADMIN.SAP.ID  = "U4AIDE";
+            //ADMIN.SAP.PW  = "$u4aRnd$";
          
         }
 
-        //git config
-        ADMIN.GIT = {};
-        ADMIN.GIT.AUTH = sGitAuth;
-        ADMIN.GIT.BASE_PATH  = "https://api.github.com/repos/hongsungho1/test";
+        ADMIN.SAP.ID   = "";
+        ADMIN.SAP.PW   = "";
 
         if(REMOTE.app.isPackaged){
-            ADMIN.GIT.AUTH = sGitAuth;
-            ADMIN.GIT.BASE_PATH  = sPatch_repo_url;        
+            ADMIN.GIT.AUTH       = sGitAuth;
+            ADMIN.GIT.BASE_PATH  = sPatch_repo_url;    
         }
 
 }
@@ -142,14 +176,14 @@ async function gf_chkPatch_SAP(){
         xhttp.onload  = (e)=>{ 
 
             if(e.target.status != 200 || e.target.response === ""){
-                resolve({RETCD:"E",RTMSG:"버젼 정보 추출시 SAP 서버 통신 실패!! \n 관리자 문의 \n 현재창 종료 합니다"});
+                resolve({RETCD:"E",RTMSG:GS_MSG.M07}); //패치 정보 추출시 SAP 서버 통신 실패!! \n 관리자 문의 \n 현재창 종료 합니다
                 return;
             }
 
             try {
                 var LS_DATA = JSON.parse(e.target.response);
             } catch (err) {
-                resolve({RETCD:"E",RTMSG:"버젼 정보 추출시 SAP 서버 통신 실패!! \n 관리자 문의 \n 현재창 종료 합니다"});
+                resolve({RETCD:"E",RTMSG:GS_MSG.M07}); //패치 정보 추출시 SAP 서버 통신 실패!! \n 관리자 문의 \n 현재창 종료 합니다
                 return;
                 
             }
@@ -161,7 +195,7 @@ async function gf_chkPatch_SAP(){
 
             //WS3.0 버젼
             if(LS_DATA.VERSN != VERSN){
-                resolve({RETCD:"E", RTMSG:"WS 빌드버젼에 문제가 발생하였습니다 \n 관리자에게 문의하세요"});
+                resolve({RETCD:"E",RTMSG:GS_MSG.M08}); //WS 빌드버전 과 업데이트 패치에 등록되있는 WS 빌드버전이 상이 합니다  \n 관리자에게 문의하세요
                 return;
 
             }
@@ -177,7 +211,7 @@ async function gf_chkPatch_SAP(){
         };
 
         xhttp.onerror = (e)=>{ 
-            resolve({RETCD:"E",RTMSG:"버젼 정보 추출시 SAP 서버 통신 실패!! \n 관리자 문의 \n 현재창 종료 합니다"}); 
+            resolve({RETCD:"E",RTMSG:GS_MSG.M07}); //패치 정보 추출시 SAP 서버 통신 실패!! \n 관리자 문의 \n 현재창 종료 합니다
 
         };  
 
@@ -202,7 +236,7 @@ async function gf_download_SAP(PATCH){
             LS_FILE_INFO.TRANSFERRED = 0;
  
         //이벤트 트리거 - 다운로드중
-        document.dispatchEvent(new CustomEvent('download-progress-SP', {detail: { message: '다운로드중', file_info:LS_FILE_INFO } }));
+        document.dispatchEvent(new CustomEvent('download-progress-SP', {detail: { message: GS_MSG.M09, file_info:LS_FILE_INFO } }));
 
 
         //(APP)다운로드 파일 경로 설정 
@@ -220,17 +254,17 @@ async function gf_download_SAP(PATCH){
             var LV_URL = ADMIN.SAP.URL + "?PRCCD=02" + "&RELID=SP" + "&RELKY=" + LV_RELKY_X;
 
             var xhttp = new XMLHttpRequest();
-            xhttp.onerror   = (e)=>{ resolve({RETCD:"E", RTMSG:GS_MSG.M01});   }; //통신오류
-            xhttp.ontimeout = ()=> { resolve({RETCD:"E",  RTMSG:GS_MSG.M01 }); }; //통신오류
+            xhttp.onerror   = (e)=>{ resolve({RETCD:"E", RTMSG:GS_MSG.M07});   }; //패치 정보 추출시 SAP 서버 통신 실패!! \n 관리자 문의 \n 현재창 종료 합니다
+            xhttp.ontimeout = ()=> { resolve({RETCD:"E",  RTMSG:GS_MSG.M07 }); }; //패치 정보 추출시 SAP 서버 통신 실패!! \n 관리자 문의 \n 현재창 종료 합니다
+
             xhttp.onload    = async (e)=>{  
 
-            
                 var status = e.target.getResponseHeader("u4a_status");
 
                 switch (status) {
                     case "ERR": //오류일 경우
                         
-                        //분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다."
+                        //(패치) 분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다."
                         resolve({RETCD:"E",  RTMSG:GS_MSG.M03 });
                         break;
 
@@ -241,14 +275,14 @@ async function gf_download_SAP(PATCH){
                         try {
                             var zip = new ADMZIP(LV_TMP_DOWN_APP);
                         } catch (err) {
-                            resolve({RETCD:"E", RTMSG:"압축 파일 미존재"});
+                            resolve({RETCD:"E", RTMSG:GS_MSG.M10}); //패치 압축 파일을 푸는 과정에 문제가 발생하였습니다 \n 관리자에게 문의하세요
                             return;
                         }
 
                         try {
                             zip.extractAllTo(process.resourcesPath, true);
                         } catch (err) {
-                            resolve({RETCD:"E", RTMSG:"압축 파일 미존재"});
+                            resolve({RETCD:"E", RTMSG:GS_MSG.M10}); //패치 압축 파일을 푸는 과정에 문제가 발생하였습니다 \n 관리자에게 문의하세요
                             return;
                         }
 
@@ -267,8 +301,8 @@ async function gf_download_SAP(PATCH){
 
                         LS_FILE_INFO.TRANSFERRED = LS_FILE_INFO.TRANSFERRED + 1;
 
-                        //이벤트 트리거 - 다운로드중
-                        document.dispatchEvent(new CustomEvent('download-progress-SP', {detail: { message: '다운로드중', file_info:LS_FILE_INFO } }));
+                        //이벤트 트리거 - 다운로드중...
+                        document.dispatchEvent(new CustomEvent('download-progress-SP', {detail: { message: GS_MSG.M09, file_info:LS_FILE_INFO } }));
                         
                         //파일 다운로드 (분할)
                         var LS_RET = await Lfn_download(e.target.response, LV_TMP_DOWN_APP);
@@ -355,7 +389,7 @@ async function gf_download_SAP(PATCH){
                         LS_FILE_INFO.TRANSFERRED = LS_FILE_INFO.TRANSFERRED + 1;
 
                         //이벤트 트리거 - 다운로드중
-                        document.dispatchEvent(new CustomEvent('download-progress-SP', {detail: { message: '다운로드중', file_info:LS_FILE_INFO } }));
+                        document.dispatchEvent(new CustomEvent('download-progress-SP', {detail: { message: GS_MSG.M09, file_info:LS_FILE_INFO } }));
                         
 
                         var LS_RET = await Lfn_download(e.target.response, LV_TMP_DOWN_NODE);
@@ -372,7 +406,7 @@ async function gf_download_SAP(PATCH){
 
                     default: //오류로 간주
 
-                        //"Help Document 분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다."
+                        //(패치) 분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다."
                         resolve({RETCD:"E",  RTMSG:GS_MSG.M03 });
                         break;
 
@@ -395,7 +429,7 @@ async function gf_download_SAP(PATCH){
                 FS.appendFile(PATH, Buffer.from(BIN), function (err) {
 
                     if (err) {
-                        //Help Document 다운로드 처리 과정에서 오류 발생
+                        //(패치) 분할 다운로드 처리 과정에서 오류 발생
                         resolve({RETCD:"E", RTMSG:GS_MSG.M04});
                         return;
                     }
@@ -426,7 +460,7 @@ async function gf_chkPatch_GIT(){
             var ROOT = await octokit.request('GET ' + ADMIN.GIT.BASE_PATH + '/releases/latest', {});
 
         } catch (err) {
-            res({RETCD:"E", RTMSG:"[패치정보 추출] \n GIT 서비스 통신 오류 발생 \n 관리자에게 문의바람!!"});
+            res({RETCD:"E", RTMSG:GS_MSG.M11}); //(패치) \n GIT 서비스 통신 오류 발생 \n 관리자에게 문의바람!!
             return;
             
         }
@@ -443,7 +477,7 @@ async function gf_chkPatch_GIT(){
 
         //현재 WS3.0 빌드 버젼과 업데이트 패치에 등록된 WS3.0 버젼이 다르다면 치명적 오류 !!!
         if(LT_PATCH[0] !== VERSN){
-            res({RETCD:"E", RTMSG:"WS 빌드버젼에 문제가 발생하였습니다 \n 관리자에게 문의하세요"});
+            res({RETCD:"E", RTMSG:GS_MSG.M08}); //WS 빌드버전 과 업데이트 패치에 등록되있는 WS 빌드버전이 상이 합니다  \n 관리자에게 문의하세요
             return;
 
         }
@@ -473,14 +507,14 @@ async function gf_download_GIT(){
             var ROOT = await octokit.request('GET ' + ADMIN.GIT.BASE_PATH + '/releases/latest', {});
 
         } catch (err) {
-            res({RETCD:"E", RTMSG:"[패치정보 추출] \n GIT 서비스 통신 오류 발생 \n 관리자에게 문의바람!!"});
+            res({RETCD:"E", RTMSG:GS_MSG.M11}); //(패치) \n GIT 서비스 통신 오류 발생 \n 관리자에게 문의바람!!
             return;
             
         }
 
   
-        //이벤트 트리거 - 다운로드중
-        document.dispatchEvent(new CustomEvent('download-progress-SP', {detail: { message: '다운로드중', file_info:ROOT.data.assets } })); 
+        //이벤트 트리거 - 다운로드중..
+        document.dispatchEvent(new CustomEvent('download-progress-SP', {detail: { message: GS_MSG.M09, file_info:ROOT.data.assets } })); 
 
 
         /* ========================================================================= */
@@ -490,7 +524,7 @@ async function gf_download_GIT(){
 
         //app.zip 다운로드 파일 누락이라면..
         if(LT_FILTER.length == 0){
-            res({RETCD:"E", RTMSG:"GIT 다운로드 파일이 존재하지않습니다"});
+            res({RETCD:"E", RTMSG:GS_MSG.M12}); //(패치) GIT 다운로드 파일이 존재하지않습니다
             return;
         }
 
@@ -500,7 +534,7 @@ async function gf_download_GIT(){
         try {
             var LS_FILE_INFO = await octokit.request('GET ' + LS_INFO.browser_download_url, {});
         } catch (err) {
-            res({RETCD:"E", RTMSG:"GIT (app.zip) 패치 파일 추출하는동안 오류 발생 관리자에게 문의!!"});
+            res({RETCD:"E", RTMSG:GS_MSG.M13}); //GIT (app.zip) 패치 파일 추출하는동안 오류 발생 관리자에게 문의!!
             return;
             
         }
@@ -523,14 +557,14 @@ async function gf_download_GIT(){
         try {
             var zip = new ADMZIP(LV_DOWN_PATH);
         } catch (err) {
-            res({RETCD:"E", RTMSG:"압축 파일 미존재"});
+            res({RETCD:"E", RTMSG:GS_MSG.M10}); //패치 압축 파일을 푸는 과정에 문제가 발생하였습니다 \n 관리자에게 문의하세요
             return;
         }
 
         try {
             zip.extractAllTo(process.resourcesPath, true);
         } catch (err) {
-            res({RETCD:"E", RTMSG:"압축 파일 미존재"});
+            res({RETCD:"E", RTMSG:GS_MSG.M10}); //패치 압축 파일을 푸는 과정에 문제가 발생하였습니다 \n 관리자에게 문의하세요
             return;
         }
         
@@ -554,7 +588,7 @@ async function gf_download_GIT(){
         try {
             var LS_FILE_INFO = await octokit.request('GET ' + LS_INFO.browser_download_url, {});
         } catch (err) {
-            res({RETCD:"E", RTMSG:"GIT (node_modules.zip) 패치 파일 추출하는동안 오류 발생 관리자에게 문의!!"});
+            res({RETCD:"E", RTMSG:GS_MSG.M14}); //GIT (node_modules.zip) 패치 파일 추출하는동안 오류 발생 관리자에게 문의!!
             return;
             
         }
@@ -573,14 +607,14 @@ async function gf_download_GIT(){
         try {
             var zip = new ADMZIP(LV_DOWN_PATH);
         } catch (err) {
-            res({RETCD:"E", RTMSG:"압축 파일 미존재"});
+            res({RETCD:"E", RTMSG:GS_MSG.M10}); //패치 압축 파일을 푸는 과정에 문제가 발생하였습니다 \n 관리자에게 문의하세요
             return;
         }
 
         try {
             zip.extractAllTo(process.resourcesPath, true);
         } catch (err) {
-            res({RETCD:"E", RTMSG:"압축 파일 미존재"});
+            res({RETCD:"E", RTMSG:GS_MSG.M10}); //패치 압축 파일을 푸는 과정에 문제가 발생하였습니다 \n 관리자에게 문의하세요
             return;
         }
         
@@ -605,10 +639,11 @@ exports.on = function(evtnm, CB){
 
 //업데이트 점검 시작 
 exports.checkForUpdates = async function(remote, iscdn = false, versn, splev = 0, oLoginInfo){
-
-        debugger;
-
-        document.dispatchEvent(new CustomEvent('checking-for-update-SP', {detail: {message: '업데이트 확인중'} })); 
+		
+		debugger;
+		
+        //업데이트 확인중 
+        document.dispatchEvent(new CustomEvent('checking-for-update-SP', {detail: {message:GS_MSG.M15} })); 
 
         //electron resource
         REMOTE = remote;       
@@ -641,7 +676,7 @@ exports.checkForUpdates = async function(remote, iscdn = false, versn, splev = 0
 
         //업데이트 항목이 없을 경우 
         if(!LS_CHKER.ISPATCH){
-            document.dispatchEvent(new CustomEvent('update-not-available-SP', {detail: {message: '현재 최신버전입니다.'} }));
+            document.dispatchEvent(new CustomEvent('update-not-available-SP', {detail: {message: GS_MSG.M16} })); //현재 최신버전입니다.
             return; 
         }
 
@@ -653,7 +688,7 @@ exports.checkForUpdates = async function(remote, iscdn = false, versn, splev = 0
         
 
         //이벤트 트리거 - 업데이트 항목 존재 
-        document.dispatchEvent(new CustomEvent('update-available-SP', {detail: {message: '업데이트 항목이 존재합니다'} })); 
+        document.dispatchEvent(new CustomEvent('update-available-SP', {detail: {message: GS_MSG.M17} }));  //업데이트 항목이 존재합니다
 
 
         //업데이트 방식에 따른 분기

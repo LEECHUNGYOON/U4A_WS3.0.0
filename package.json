@@ -31,7 +31,7 @@
     "url": "git+https://github.com/LEECHUNGYOON/U4A_WS3.0.0.git"
   },
   "build": {
-    "copyright" : "Copyright 2020. INFOCG Inc. all rights reserved.",
+    "copyright": "Copyright 2020. INFOCG Inc. all rights reserved.",
     "asar": false,
     "artifactName": "U4A-Workspace-Setup-${version}.${ext}",
     "win": {},
@@ -66,6 +66,7 @@
     "electron-updater": "^5.0.1",
     "electron-window-state": "^5.0.3",
     "fs-extra": "^10.1.0",
+    "gh-release-assets": "^2.0.1",
     "mime-types": "^2.1.35",
     "ncp": "^2.0.0",
     "node-cmd": "^5.0.0",
