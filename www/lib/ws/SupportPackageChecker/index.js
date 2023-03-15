@@ -86,9 +86,13 @@ const GS_MSG = {
     M15 : "(패치) 업데이트 확인중",
     M16 : "(패치) 현재 최신버전입니다.",
     M17 : "(패치) 업데이트 항목이 존재합니다",
-    M18 : "(패치) 업데이트가 완료되었습니다."
+    M18 : "(패치) 업데이트가 완료되었습니다.",
+    M19 : "(패치) 업데이트 설치중",
+    M20 : "app.asar 소스 압축해제 하는 과정에서 오류가 발생하였습니다",
+    M21 : "app.asar 소스 압축 하는 과정에서 오류가 발생하였습니다"
     
 };
+
 
 
 /* ***************************************************************** */
@@ -629,6 +633,75 @@ async function gf_download_GIT(){
     });
 }
 
+
+//[펑션] asar 소스파일 압축해제 처리 
+async function fn_asarDecompress(){
+    return new Promise(async (res, rej) => {
+        debugger;
+        let asar = REMOTE.require("asar");
+
+        //압축 해제 원복 처리할 폴더 생성
+        var LV_APP_PATH = PATH.join(process.resourcesPath, "app");
+        FS.mkdirSync(LV_APP_PATH);
+
+
+        //압축 소스(asar) file 경로 구성  
+        var LV_ASAR_PATH = PATH.join(process.resourcesPath, "app.asar");
+
+        //압축 해제(소스 원복)
+        try {
+            await asar.extractAll(LV_ASAR_PATH, LV_APP_PATH);
+        } catch (err) {
+            res({RETCD:"E", RTMSG:GS_MSG.M20}); //app.asar 소스 압축해제 하는 과정에서 오류가 발생하였습니다
+            return;
+        }
+
+        res({RETCD:"S", RTMSG:""});
+        
+    });
+}
+
+
+
+
+//[펑션] asar 소스파일 압축 처리 
+async function fn_asarCompress(){
+    return new Promise(async (res, rej) => {
+
+        //이벤트 트리거 - 업데이트 설치중 
+        document.dispatchEvent(new CustomEvent('update-install-SP', {detail: {message:GS_MSG.M19} })); 
+
+        //기다려 
+        await gf_waiting(500);
+
+        let asar = REMOTE.require("asar");
+
+        //소스 압축 대상 처리할 폴더 경로 설정 
+        var LV_APP_PATH  = PATH.join(process.resourcesPath, "app");
+
+        //소스 압축 파일 생성 경로 설정 
+        var LV_ASAR_PATH = PATH.join(process.resourcesPath, "app.asar");
+
+        try {
+            await asar.createPackage(LV_APP_PATH, LV_ASAR_PATH);
+        } catch (err) {
+            res({RETCD:"E", RTMSG:GS_MSG.M21}); //app.asar 소스 압축 하는 과정에서 오류가 발생하였습니다
+            return;
+        }
+
+        //압축 해제한 폴더 삭제 처리 
+        FS.rmdir(LV_APP_PATH, {
+            recursive: true, force: true
+        }, (error) => {
+
+        });
+
+        res({RETCD:"S", RTMSG:""});
+
+    });
+}
+
+
 /* ================================================================= */
 /* Export Module Function 
 /* ================================================================= */
@@ -689,6 +762,14 @@ exports.checkForUpdates = async function(remote, iscdn = false, versn, splev = 0
         document.dispatchEvent(new CustomEvent('update-available-SP', {detail: {message: GS_MSG.M17} }));  //업데이트 항목이 존재합니다
 
 
+        //asar 소스파일 압축해제 처리 
+        var LS_STATUS = await fn_asarDecompress();
+
+        if(LS_STATUS.RETCD === "E"){
+            document.dispatchEvent(new CustomEvent('update-error-SP', { detail: { message: LS_STATUS.RTMSG } }));
+            return;
+        }
+
         //업데이트 방식에 따른 분기
         switch (ISCDN) {
             case true: //GIT
@@ -700,6 +781,15 @@ exports.checkForUpdates = async function(remote, iscdn = false, versn, splev = 0
                 break;
         }
 
+        if(LS_STATUS.RETCD === "E"){
+            document.dispatchEvent(new CustomEvent('update-error-SP', { detail: { message: LS_STATUS.RTMSG } }));
+            return;
+        }
+
+        
+        //asar 소스파일 압축 처리 
+        var LS_STATUS = await fn_asarCompress();
+        
         if(LS_STATUS.RETCD === "E"){
             document.dispatchEvent(new CustomEvent('update-error-SP', { detail: { message: LS_STATUS.RTMSG } }));
             return;

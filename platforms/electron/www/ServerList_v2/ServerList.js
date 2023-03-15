@@ -2493,6 +2493,19 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oBrowserWindow = null;
         });
 
+
+        // oBrowserWindow.on("focus", () => {
+
+         
+
+        // });
+
+        // oBrowserWindow.on("blur", () => {
+
+         
+        // });       
+
+
     } // end of fnLoginPage
 
     function fnP13nCreateTheme(SYSID) {

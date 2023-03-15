@@ -32,7 +32,7 @@
   },
   "build": {
     "copyright": "Copyright 2020. INFOCG Inc. all rights reserved.",
-    "asar": false,
+    "asar": true,
     "artifactName": "U4A-Workspace-Setup-${version}.${ext}",
     "win": {},
     "publish": {

@@ -648,14 +648,16 @@ let oAPP = (function () {
                 TITLE: "Checking for updates...",
                 ILLUSTTYPE: "sapIllus-BeforeSearch",
                 PROGVISI: false,
-                PERVALUE: 0
+                PERVALUE: 0,
+                ANIMATION: true
             },
 
             oBusyPopData = {
                 TITLE: "Checking for updates...",
                 ILLUSTTYPE: "sapIllus-BeforeSearch",
                 PROGVISI: false,
-                PERVALUE: 0
+                PERVALUE: 0,
+                ANIMATION: true
             };
 
 
@@ -1664,7 +1666,6 @@ let oAPP = (function () {
             description: "　",
             illustrationSize: sap.m.IllustratedMessageSize.Dialog,
             illustrationType: "{ILLUSTTYPE}"
-
         }).addStyleClass(`${sDialogId}--illustMsg`);
 
         jQuery.sap.require("sap.m.ProgressIndicator");
@@ -1674,6 +1675,8 @@ let oAPP = (function () {
             displayOnly: true,
             state: "Success",
             displayValue: "Downloading... {PERVALUE}%"
+        }).bindProperty("displayAnimation", "ANIMATION", function (ANIMATION) {
+            return ANIMATION === false ? false : true;
         }).addStyleClass("sapUiSmallMarginBeginEnd sapUiMediumMarginBottom");
 
         new sap.m.Dialog(sDialogId, {
@@ -2309,10 +2312,15 @@ let oAPP = (function () {
      ************************************************************************/
     oAPP.fn.fnCheckSupportPackageVersion = (resolve, oParam) => {
 
-        let oModel = sap.ui.getCore().getModel();
-        oModel.setProperty("/BUSYPOP/PROGVISI", true, true);
-        oModel.setProperty("/BUSYPOP/TITLE", "Downloading...", true);
-        oModel.setProperty("/BUSYPOP/PERVALUE", 0, true);
+        let oModel = sap.ui.getCore().getModel(),
+            oModelData = oModel.getProperty("/BUSYPOP");
+
+        oModelData.ANIMATION = true;
+        oModelData.PROGVISI = true;
+        oModelData.TITLE = "Downloading...";
+        oModelData.PERVALUE = 0;
+
+        oModel.setProperty("/BUSYPOP", oModelData, true);
 
         let sSupportPackageCheckerPath = parent.getPath("WS_SP_UPD"),
             spAutoUpdater = require(sSupportPackageCheckerPath);
@@ -2344,23 +2352,15 @@ let oAPP = (function () {
 
         });
 
+        // 다운로드 중
         spAutoUpdater.on("download-progress-SP", (e) => {
 
-            oModel.setProperty("/BUSYPOP/TITLE", "Downloading...", true);
+            oModel.setProperty("/BUSYPOP/TITLE", "Support Patch Downloading...", true);
 
             if (oParam.ISCDN == "X") {
 
-                let iPer = 0;
-                oAPP.attr.progressInterval = setInterval(() => {
-
-                    if(iPer >= 100){
-                        iPer = 0;
-                    }
-
-                    oModel.setProperty("/BUSYPOP/PERVALUE", iPer, true);
-                    iPer += 10;
-
-                }, 100);
+                // Progress Bar 실행
+                _supportPackageVersionCheckDialogProgressStart();
 
                 return;
             }
@@ -2374,13 +2374,21 @@ let oAPP = (function () {
 
         });
 
+        // 다운로드 후, asar 압축 및 인스톨
+        spAutoUpdater.on("update-install-SP", (e) => {
+
+            oModel.setProperty("/BUSYPOP/TITLE", "Support Patch Installing...", true);
+
+            // Progress Bar 실행
+            _supportPackageVersionCheckDialogProgressStart();
+
+        });
+
+        // 다운로드 완료시
         spAutoUpdater.on("update-downloaded-SP", (e) => {
 
-            if(oAPP.attr.progressInterval){
-                clearInterval(oAPP.attr.progressInterval);
-                delete oAPP.attr.progressInterval;
-            }
-            oModel.setProperty("/BUSYPOP/PERVALUE", 100, true);
+            // Progress Bar 종료
+            _supportPackageVersionCheckDialogProgressEnd();
 
             oModel.setProperty("/BUSYPOP/TITLE", "Update Complete! Restarting...", true);
 
@@ -2405,6 +2413,7 @@ let oAPP = (function () {
 
         });
 
+        // 업데이트 중 오류 발생
         spAutoUpdater.on("update-error-SP", (e) => {
 
             // 메시지 팝업을 띄운다.
@@ -2463,6 +2472,59 @@ let oAPP = (function () {
         spAutoUpdater.checkForUpdates(REMOTE, bIsCDN, sAppVer, sPatch_level, oLoginInfo);
 
     }; // end of oAPP.fn.fnCheckSupportPackageVersion
+
+    function _supportPackageVersionCheckDialogProgressStart() {
+
+        if (oAPP.attr.progressInterval) {
+            clearInterval(oAPP.attr.progressInterval);
+            delete oAPP.attr.progressInterval;
+        }
+
+        let oModel = sap.ui.getCore().getModel();
+
+        let iPer = 0;
+
+        oAPP.attr.progressInterval = setInterval(function () {
+
+            iPer += 1;
+
+            oModel.setProperty("/BUSYPOP/PERVALUE", iPer, true);
+
+            if (iPer >= 100) {                
+
+                if (oAPP.attr.progressInterval) {
+                    clearInterval(oAPP.attr.progressInterval);
+                    delete oAPP.attr.progressInterval;
+
+                    setTimeout(function () {
+                        _supportPackageVersionCheckDialogProgressStart();
+                    }, 500);
+
+                    return;
+                }
+
+            }
+
+        }, 20);
+
+    } // end of _supportPackageVersionCheckDialogProgressStart
+
+    function _supportPackageVersionCheckDialogProgressEnd() {
+
+        let oModel = sap.ui.getCore().getModel(),
+            oModelData = oModel.getProperty("/BUSYPOP");
+
+        if (oAPP.attr.progressInterval) {
+            clearInterval(oAPP.attr.progressInterval);
+            delete oAPP.attr.progressInterval;
+        }
+
+        oModelData.PERVALUE = 100;
+        oModelData.ANIMATION = false;
+
+        oModel.setProperty("/BUSYPOP", oModelData, true);
+
+    } // end of _supportPackageVersionCheckDialogProgressEnd
 
     /************************************************************************s
      *---------------------[ U4A WS Login Page Start ] ----------------------
