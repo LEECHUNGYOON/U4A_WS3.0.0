@@ -39,6 +39,14 @@
     //DIALOG OPEN전 이벤트.
     oDlg1.attachBeforeOpen(function(oEvent){
       
+      //팝업 호출전 모달 해제.
+      //insert ui 팝업에서 D&D를 통해 UI를 추가하는 과정에서 modal 여부를 변경하기에
+      //aggregation 선택팝업이 호출될때 최상위가 되기위해 modal을 재설정함.
+      if(this.oPopup){
+        this.oPopup.setModal(false);
+      }
+
+
       //X, Y 좌표값이 존재하지 않는경우 EXIT.
       if(typeof i_x === "undefined"){return;}
       if(typeof i_y === "undefined"){return;}
@@ -52,6 +60,14 @@
 
     //dialog open 이후 이벤트.
     oDlg1.attachAfterOpen(function(){
+
+      //팝업 호출전 모달 재설정.
+      //insert ui 팝업에서 D&D를 통해 UI를 추가하는 과정에서 modal 여부를 변경하기에
+      //aggregation 선택팝업이 호출될때 최상위가 되기위해 modal을 재설정함.
+      if(this.oPopup){
+        this.oPopup.setModal(true);
+      }
+
       //ddlb에 focus 처리.
       oSel1.focus();
     });

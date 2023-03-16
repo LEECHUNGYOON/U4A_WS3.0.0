@@ -170,14 +170,16 @@ let oAPP = parent.oAPP;
         var oTool = new sap.m.Toolbar();
         oPage.setCustomHeader(oTool);
 
+        //A46  Expand All
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A46", "", "", "", "");
 
         //전체펼침
         var oToolBtn1 = new sap.m.Button({
-            text: "Expand All",
+            text: l_txt,
             icon: "sap-icon://expand-all",
             type: "Emphasized",
             busy: "{/busy}",
-            tooltip: "Expand",
+            tooltip: l_txt,
             busyIndicatorDelay: 1
         });
         oTool.addContent(oToolBtn1);
@@ -192,13 +194,16 @@ let oAPP = parent.oAPP;
 
         });
 
+        //A47  Collapse All
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A47", "", "", "", "");
+
         //전체접힘
         var oToolBtn2 = new sap.m.Button({
-            text: "Collapse All",
+            text: l_txt,
             icon: "sap-icon://collapse-all",
             type: "Emphasized",
             busy: "{/busy}",
-            tooltip: "Collapse",
+            tooltip: l_txt,
             busyIndicatorDelay: 1
         });
         oTool.addContent(oToolBtn2);
@@ -211,14 +216,16 @@ let oAPP = parent.oAPP;
 
         oTool.addContent(new sap.m.ToolbarSeparator());
 
+        //A48  Refresh
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A48", "", "", "", "");
 
         //갱신버튼
         var oToolBtn3 = new sap.m.Button({
-            text: "Refresh",
+            text: l_txt,
             icon: "sap-icon://refresh",
             type: "Emphasized",
             busy: "{/busy}",
-            tooltip: "Refresh",
+            tooltip: l_txt,
             busyIndicatorDelay: 1
         });
         oTool.addContent(oToolBtn3);
@@ -233,13 +240,16 @@ let oAPP = parent.oAPP;
         var oSpt1 = new sap.ui.layout.Splitter();
         oPage.addContent(oSpt1);
 
+        //376	Table, Field를 Drag하여 Property, Aggregation에 Drop시 바인딩 할 수 있습니다.
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "376", "", "", "", "");
+
         //바인딩 tree 정보.
         oAPP.attr.oTree = new sap.ui.table.TreeTable({
             selectionMode: "Single",
             selectionBehavior: "RowOnly",
             visibleRowCountMode: "Auto",
-            rowHeight:30,
-            title:new sap.m.Label({text:"※ Table, Field를 Drag하여 Property, Aggregation에 Drop시 바인딩 할 수 있습니다."}),
+            rowHeight:30,            
+            title:new sap.m.Label({text:l_txt, tooltip:l_txt}),
             rowSelectionChange: oAPP.fn.selTabRow
         });
         oSpt1.addContentArea(oAPP.attr.oTree);
@@ -277,12 +287,16 @@ let oAPP = parent.oAPP;
         });
         oAPP.attr.oTree.setLayoutData(oLay1);
 
+        //A50  Object Name
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A50", "", "", "", "");
+
         //바인딩 필드 정보 컬럼.
         var oTreeCol1 = new sap.ui.table.Column({
             filterProperty: "NTEXT",
             autoResizable: true,
             label: new sap.m.Label({
-                text: "Object Name",
+                text: l_txt,
+                tooltip: l_txt,
                 design: "Bold"
             }),
             template: new sap.m.Text({
@@ -291,12 +305,16 @@ let oAPP = parent.oAPP;
         });
         oAPP.attr.oTree.addColumn(oTreeCol1);
 
+        //A51  Type
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A51", "", "", "", "");
+
         //바인딩 필드 타입 컬럼.
         var oTreeCol2 = new sap.ui.table.Column({
             filterProperty: "TYPE",
             autoResizable: true,
             label: new sap.m.Label({
-                text: "Type",
+                text: l_txt,
+                tooltip: l_txt,
                 design: "Bold"
             })
         });
@@ -320,13 +338,16 @@ let oAPP = parent.oAPP;
         });
         oCol2Hbox1.addItem(oHbox1Txt1);
 
+        //A35  Description
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35", "", "", "", "");
 
         //필드 description 컬럼.
         var oTreeCol3 = new sap.ui.table.Column({
             filterProperty: "DESCR",
             autoResizable: true,
             label: new sap.m.Label({
-                text: "Description",
+                text: l_txt,
+                tooltip: l_txt,
                 design: "Bold"
             }),
             template: new sap.m.Text({
@@ -371,11 +392,14 @@ let oAPP = parent.oAPP;
         });
         oSpt1.addContentArea(oTab);
 
+        //A52  Property
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A52", "", "", "", "");
 
         //추가바인딩 속성의 Property 컬럼.
         var oTabCol1 = new sap.ui.table.Column({
             label: new sap.m.Label({
-                text: "Property",
+                text: l_txt,
+                tooltip: l_txt,
                 design: "Bold"
             }),
             template: new sap.m.Text({
@@ -383,11 +407,15 @@ let oAPP = parent.oAPP;
             })
         });
         oTab.addColumn(oTabCol1);
+        
+        //A53  Value
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A53", "", "", "", "");
 
         //추가바인딩 속성의 value 컬럼.
         var oTabCol2 = new sap.ui.table.Column({
             label: new sap.m.Label({
-                text: "Value",
+                text: l_txt,
+                tooltip: l_txt,
                 design: "Bold"
             }),
             template: new sap.m.Text({

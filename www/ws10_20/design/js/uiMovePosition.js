@@ -1,8 +1,11 @@
 //UI move Position 메뉴 선택시 팝업 UI
-oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack, i_x, i_y){
+oAPP.fn.uiMovePosition = function(is_parent, OBJID, pos, max, f_callBack, i_x, i_y){
 
   //dialog 종료.
   function lf_close(){
+
+    //이동 가능한 위치 최상단에 이동 처리 표시.
+    oAPP.fn.designMoveMark(is_parent, OBJID, 1, true);
 
     oDlg.close();
     oDlg.destroy();
@@ -78,6 +81,25 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack, i_x, i_y){
   var oStepInp = new sap.m.StepInput({min:1, max:"{/move/max}", value:"{/move/pos}"});
   oGrid.addContent(oStepInp);
 
+  oStepInp.attachChange(function(){
+
+    //step input의 입력값 얻기.
+    var l_pos = this.getValue();
+
+    //0보다 작은경우 0으로 고정.
+    if(l_pos < 1){
+      l_pos = 1;
+
+    }else if(l_pos > max){
+      //max값보다 큰경우 max값으로 고정.
+      l_pos = max;
+    }
+
+    //slider 선택건에 해당하는 위치 표시 처리.
+    oAPP.fn.designMoveMark(is_parent, OBJID, l_pos);
+
+  });
+
   //입력필드 keydown 이벤트.
   oStepInp.attachBrowserEvent('keydown', function(){
     //엔터 입력이 아닌경우 EXIT.
@@ -92,6 +114,11 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack, i_x, i_y){
   //이동위치 slider.
   var oSlide = new sap.m.Slider({min:1, max:"{/move/max}", value:"{/move/pos}", enableTickmarks:true});
   oGrid.addContent(oSlide);
+
+  oSlide.attachLiveChange(function(){
+    //slider 선택건에 해당하는 위치 표시 처리.
+    oAPP.fn.designMoveMark(is_parent, OBJID, this.getValue());
+  });
 
   //A40  Confirm
   //확인 버튼
@@ -144,6 +171,9 @@ oAPP.fn.uiMovePosition = function(OBJID, pos, max, f_callBack, i_x, i_y){
   oDlg.attachAfterOpen(function(){
     //입력필드에 focus 처리.
     oStepInp.focus();
+
+    //이동 가능한 위치 최상단에 이동 처리 표시.
+    oAPP.fn.designMoveMark(is_parent, OBJID, pos);
 
     var l_dom = oStepInp.getDomRef("input-inner");
     if(!l_dom || !l_dom.select){return;}

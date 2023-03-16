@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <title>Document</title> -->
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <div class="content">
+        <div id="bindingPopUp" class="contentArea">
+            <h1 class="helpTitle">
+                Binding PopUp
+            </h1>
+            <div class="overview">
+                우측 상단의 Binding Popup 버튼을 통해 쉽게 바인딩 할 수 있다.
+            </div>
+            <div class="contents">
+                1. Binding Popup 버튼 클릭.
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/bindingPopUp.png" alt="Binding">
+            </div>
+            <div class="contents">
+                2. 바인딩 리스트 팝업을 불러온다.
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/bindingPopUp2.png" alt="bindingPopUp">
+            </div>
+            <div class="contents">
+                3. 바인딩 리스트를 Drag하여 Property나 Aggregation에 Drop시 바인딩 할 수 있다.
+            </div>
+            <div class="contentsImg">
+                <video class="desc" autoplay muted loop>
+                    <source src="./../../video/biningDrag.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+        <div id="focusCtrl" class="contentArea">
+            <h1 class="helpTitle">
+                Ctrl + ↑ or ↓
+            </h1>
+            <div class="overview">
+                'focus' 되어있는 입력 필드에서 간단하게 다음 필드로 'focus'가 이동한다.
+            </div>
+            <div class="contents">
+                1. 입력 필드가 'focus'되어있는 상태에서 Ctrl을 누른상태로 상,하 방향키를 누른다.
+            </div>
+            <div class="contentsImg">
+                <video class="desc" autoplay muted loop>
+                    <source src="./../../video/keyboardmode.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+        <div id="sameProperty" class="contentArea">
+            <h1 class="helpTitle">
+                동일속성 프로퍼티 동기화 설정
+            </h1>
+            <div class="overview">
+                n개의 UI의 동일속성 프로퍼티를 간단하게 변경할 수 있다.
+            </div>
+            <div class="contents">
+                1. 변경하고자 하는 프로퍼티의 입력 필드에 마우스 우 클릭 후 동일속성 프로퍼티 동기화 설정 클릭.
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/sameProperty.png" alt="sameProperty">
+            </div>
+            <div class="contents">
+                2. 속성 변경 팝업이 보여진다.
+            </div>
+            <div class="contentsImg flex">
+                <img src="./../../image/sameProperty3.png" alt="sameProperty">
+                <ul>
+                    <li>
+                        ① 변경할 값 선택
+                    </li>
+                    <li>
+                        ② 변경할 UI 체크(전체 또는 일부)
+                    </li>
+                    <li>
+                        ③ Confirm(확인)버튼 클릭
+                    </li>
+                </ul>
+            </div>
+            <div class="contents">
+                3. 미리보기 영역에 변경된 프로퍼티 적용.<br>(버튼의 타입 속성이 변경된 것을 확인)
+            </div>
+            <div class="contentsImg flex">
+                <img src="./../../image/sameProperty2.png" alt="sameProperty">
+            </div>
+        </div>
+        <div id="waitingOnOff" class="contentArea">
+            <h1 class="helpTitle">
+                이벤트 발생 시 Wating on or off
+            </h1>
+            <div class="overview">
+                사용자에 따라 이벤트의 waiting을 on 또는 off로 변경 할 수 있다.<br>(기본 세팅 on)
+            </div>
+            <div class="contents">
+                1. waiting을 off로 변경 할 이벤트 명에 마우스 우 클릭 후 'Turn on or off WAIT mode' 클릭.
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/waitingPopUp.png" alt="waitingPopup">
+            </div>
+            <div class="contents">
+                2. 변경 된 이벤트 명의 좌측 체크박스 변경 확인.
+            </div>
+            <div class="contentsImg bottomargin">
+                <img src="./../../image/waitingOff.png" alt="waitingPopup">
+            </div>
+            <div class="contentsImg">
+                <video class="desc" autoplay muted loop>
+                    <source src="./../../video/waiting_off.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="contents">
+                3. waiting을 on로 변경 할 이벤트 명에 동일하게 실행 후 변경 확인.
+            </div>
+            <div class="contentsImg bottomargin">
+                <img src="./../../image/waitingOn.png" alt="waitingPopup">
+            </div>
+            <div class="contentsImg">
+                <video class="desc" autoplay muted loop>
+                    <source src="./../../video/waiting_on.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+        <div id="propertyReset" class="contentArea">
+            <h1 class="helpTitle">
+                프로퍼티 초기화
+            </h1>
+            <div class="overview">
+                변경 한 프로퍼티 값을 초기화 하고 싶은 경우 Reset 버튼을 통해 초기화 할 수 있다.<br>(입력 필드에 바인딩 된 값은 초기화 버튼을 클릭해도 삭제되지 않는다.)
+            </div>
+            <div class="contents">
+                1. 프로퍼티 최초 화면 &gt 프로퍼티 변경 화면 &gt Reset버튼 클릭 후 초기화 화면.
+            </div>
+            <div class="contentsImg flex">
+                <img src="./../../image/resetButton.png" alt="resetBt">
+                <!-- <img class="width25" src="./../../image/resetButton2.png" alt="resetBt">
+                <img class="width25" src="./../../image/resetButton3.png" alt="resetBt"> -->
+            </div>
+            <!-- <div class="contents">
+                2. 프로퍼티 변경 화면
+            </div>
+            <div class="contentsImg">
+            </div>
+            <div class="contents">
+                3. Reset 버튼 클릭 후 프로퍼티 초기화 화면
+            </div>
+            <div class="contentsImg">
+            </div> -->
+        </div>
+        <div id="serverEvent" class="contentArea">
+            <h1 class="helpTitle">
+                서버 이벤트 네비게이션
+            </h1>
+            <div class="overview">
+                서버 이벤트 더블클릭 시 SAP GUI가 실행 되면서 해당 화면으로 네비게이션 한다.
+            </div>
+            <div class="contents">
+                1. 생성된 서버 이벤트를 더블클릭.
+            </div>
+            <div class="contentsImg bottomargin">
+                <img src="./../../image/serverEvent.png" alt="serverEvent">
+            </div>
+            <div class="contentsImg">
+                <video class="desc" autoplay muted loop>
+                    <source src="./../../video/server_eventOpen1.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="contents">
+                2. 해당 SAP GUI화면 실행.
+            </div>
+            <div class="contentsImg">
+                <video class="desc" autoplay muted loop>
+                    <source src="./../../video/server_eventOpen2.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+        <div id="cssEditor" class="contentArea">
+            <h1 class="helpTitle">
+                CSS 편집기 호출
+            </h1>
+            <div class="overview">
+                상단 bar의 Edit버튼이 아닌 프로퍼티의 StyleClass 값을 더블클릭 해도 CSS 편집기가 호출 된다.<br>(단 바인딩이 아닌 직접 입력시에만)
+            </div>
+            <div class="contents">
+                1. StyleClass 입력 필드 더블 클릭.
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/cssEditor.png" alt="cssEditor">
+            </div>
+            <div class="contents">
+                2. CSS 편집기 호출된다.
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/cssEditor2.png" alt="cssEditor">
+            </div>
+        </div>
+        <div id="unBinding" class="contentArea">
+            <h1 class="helpTitle">
+                Unbinding
+            </h1>
+            <div class="overview">
+                Context Menu의 Unbinding을 통해 간단하게 바인딩을 해제할 수 있다.<br>(UI의 하위요소들 중 Aggregation에 바인딩했던 'Table'로부터 파생된 바인딩 path를 다 풀어준다.)
+            </div>
+            <div class="contents">
+                1. 바인딩 된 입력 필드에 마우스 우 클릭 후 Unbind 클릭.
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/unbinding.png" alt="unbinding">
+            </div>
+            <div class="contents">
+                2. 바인딩 해제 확인 팝업이 뜬다.
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/unbinding2.png" alt="unbinding">
+            </div>
+            <div class="contents">
+                3. "Yes"버튼 클릭 시 바인딩 해제.
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/unbinding3.png" alt="unbinding">
+            </div>
+        </div>
+        <div id="otr" class="contentArea">
+            <h1 class="helpTitle">
+                OTR(Online Text Repository)
+            </h1>
+            <div class="overview">
+                
+            </div>
+            <div class="contents">
+                1. 프로퍼티에 $OTR: + OTR alias 를 조합하여 사용할 수 있다.<br>(ex. $OTR: + Y_YJH/KEYBOARD111)
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/otr1.png" alt="otr">
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/otr3.png" alt="otr">
+            </div>
+            <div class="contents">
+                2. 미리보기 영역에 텍스트만 적용된 것을 확인 할 수 있다.
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/otr2.png" alt="otr">
+            </div>
+        </div>
+    </div>
+    <script src="./index.js"></script>
+</body>
+</html>

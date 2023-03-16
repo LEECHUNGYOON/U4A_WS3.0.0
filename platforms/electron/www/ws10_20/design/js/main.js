@@ -1261,6 +1261,21 @@
 
 
 
+
+    //입력 언어에 따른 language Conversion값 return.
+    oAPP.fn.convLanguage = function(i_lang){
+
+      //대문자 전환(ko-kr => KO-KR)
+      var l_lang = i_lang.toUpperCase();
+
+      //구분자 분리(KO-KR => KO) 후 앞의 언어키를 return
+      //(구분자가 없는경우는 없는대로 return 처리 EN => EN)
+      return l_lang.split("-")[0];
+
+    };  //window의 언어에 따른 language Conversion값 return.
+
+
+
     //UI의 drop 가능 css 제거 처리.
     oAPP.fn.clearDropEffectUI = function(oUi){
 
@@ -1327,7 +1342,7 @@
 
     //좌측 페이지(UI Design 영역)
     oAPP.attr.ui.oDesignTree = new sap.m.Page("designTree", {enableScrolling:false, showHeader:false,
-      layoutData:new sap.ui.layout.SplitterLayoutData({size:"25%",minSize:300})});
+      layoutData:new sap.ui.layout.SplitterLayoutData({size:"25%", minSize:300})});
     // oSApp.addContentArea(oAPP.attr.ui.oDesignTree);
 
     //가운데 페이지(미리보기 영역)
@@ -1336,7 +1351,7 @@
 
     //우측 페이지(attribute 영역)
     oAPP.attr.ui.oDesignAttr = new sap.f.DynamicPage("designAttr", {preserveHeaderStateOnScroll:false,
-      layoutData:new sap.ui.layout.SplitterLayoutData({size:"30%",minSize:300})});
+      layoutData:new sap.ui.layout.SplitterLayoutData({size:"30%", minSize:300})});
     // oSApp.addContentArea(oAPP.attr.ui.oDesignAttr);
 
 

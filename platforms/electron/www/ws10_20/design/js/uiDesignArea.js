@@ -223,14 +223,17 @@
 
       if(!oEvent.mParameters.droppedControl){return;}
 
-      var l_drop = oModel.getProperty("", oEvent.mParameters.droppedControl.getBindingContext());
+      //DROP한 라인 정보 얻기.
+      var ls_drop = oEvent.mParameters.droppedControl.getBindingContext()?.getProperty();
+      if(!ls_drop){return;}
 
-      //DROP 처리.
-      oAPP.fn.UIDrop(oEvent, l_drop.OBJID);
+      //미리보기, design tree에서 D&D 했다면 DROP 처리.
+      if(oAPP.fn.UIDrop(oEvent, ls_drop.OBJID)){return;}
 
+      //UI Insert popup에서 Drop했다면 UI 추가 처리.
+      oAPP.fn.designUIDropInsertPopup(oEvent, ls_drop.OBJID);
 
     }); //drop 이벤트.
-
     
 
 
@@ -363,6 +366,38 @@
       });
       
     }); //wizard 버튼 선택 이벤트.
+
+
+    oLTBar1.addContent(new sap.m.ToolbarSpacer());
+
+    //B39	Help
+    //도움말 버튼.
+    var oLBtn5 = new sap.m.Button({icon:"sap-icon://question-mark", 
+      // visible:parent.REMOTE.app.isPackaged ? false : true,
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39", "", "", "", "")});
+    oLTBar1.addContent(oLBtn5);
+
+    //도움말 버튼 선택 이벤트.
+    oLBtn5.attachPress(function(){
+
+      var l_ui = this;
+
+      //attribute 도움말 팝업 function이 존재하는경우.
+      if(typeof oAPP.fn.callTooltipsPopup !== "undefined"){
+        //attribute 도움말 팝업 호출.
+        //E21  Design Area
+        oAPP.fn.callTooltipsPopup(l_ui, "designTooltip", "E21");
+        return;
+      }
+
+      //attribute 도움말 팝업 function이 존재하지 않는경우 script 호출.
+      oAPP.fn.getScript("design/js/callTooltipsPopup",function(){
+        //attribute 도움말 팝업 호출.
+        //E21  Design Area
+        oAPP.fn.callTooltipsPopup(l_ui, "designTooltip", "E21");
+      });
+
+    }); //도움말 버튼 선택 이벤트.
 
 
     //context menu ui 생성 function이 존재하는경우.
@@ -1048,7 +1083,7 @@
     } //child를 탐색하며 OBJID의 위치 정보 확인.
 
 
-    //TREE를 탐색하며 입력 OJBID의 INDEX 정보 찾기.
+    //TREE를 탐색하며 입력 OBJID의 INDEX 정보 찾기.
     return lf_findItem(oAPP.attr.oModel.oData.zTREE);
 
 
@@ -2103,7 +2138,11 @@
 
 
 
-  //drop 가능여부 처리.
+  /************************************************************************
+   * drop 가능여부 처리.
+   * **********************************************************************
+   * @param {object} is_tree - drag를 시작한 tree라인 정보
+   ************************************************************************/
   oAPP.fn.setDropEnable = function(is_tree){
 
     //design tree영역의 drop 가능여부 판단 내부 function.
@@ -2257,11 +2296,14 @@
 
 
 
-  //design tree item drag 시작 이벤트.
+
+  /************************************************************************
+   * design tree item drag 시작 이벤트.
+   * **********************************************************************
+   * @param {object} OBJID - drag를 시작한 tree라인 정보
+   ************************************************************************/
   oAPP.fn.designTreeDragStart = function(is_tree){
     
-    if(!is_tree){return;}
-
     //DRAG 시작됨 FLAG 처리.
     oAPP.attr.ui.oLTree1.__isdragStarted = true;
 
@@ -2305,29 +2347,34 @@
 
 
 
-  //drag한 UI의 OBJID 정보 얻기.
-  oAPP.fn.getDragOBJID = function(oEvent){
+  //drag한 UI의 파라메터 정보 얻기.
+  oAPP.fn.getDragParam = function(oEvent, sArea){
 
     if(!oEvent?.mParameters?.browserEvent?.dataTransfer?.getData){return;}
 
-    //미리보기 영역에서 drag처리한 UI명 + D&D random key 얻기.
+    //미리보기 영역에서 drag처리한 UI명(OBJID or UIOBK) + D&D random key 얻기.( + drag 영역)
     var l_dnd = oEvent.mParameters.browserEvent.dataTransfer.getData("text/plain");
 
     //입력받은 정보가 존재하지 않는경우 exit.
     if(!l_dnd){return;}
 
-    //OBJID|D&D random key 로 조합된 형식 분리.
+    //OBJID or UIOBK|D&D random key 로 조합된 형식 분리.
     var lt_split = l_dnd.split("|");
 
     //조합된 형식이 아닌경우 exit.
     if(lt_split.length < 2){return;}
 
+    //drag 영역 판단 파라메터가 존재하는경우 해당 영역에서 drag 하지 않았다면 exit.
+    if(sArea && lt_split[2] !== sArea){
+      return;
+    }
+
     //D&D random key가 현재 D&D random key와 다른경우 exit.
     //(다른 창에서 Drag하여 현재 창에 Drop한 경우 drop 불가처리를 위함)
     if(lt_split[1] !== oAPP.attr.DnDRandKey){return;}
 
-    //OBJID 부분 발췌.
-    return l_objid = lt_split[0];
+    //OBJID  or UIOBK 부분 발췌.
+    return lt_split[0];
 
 
   };  //drag한 UI의 OBJID 정보 얻기.
@@ -2341,7 +2388,7 @@
     if(!i_OBJID){return;}
 
     //dragUI의 OBJID 얻기.
-    var l_objid = oAPP.fn.getDragOBJID(oEvent);
+    var l_objid = oAPP.fn.getDragParam(oEvent);
 
     //OBJID를 얻지 못한 경우 EXIT.
     if(!l_objid){return;}
@@ -2375,13 +2422,15 @@
     //aggregation 선택 팝업 호출 처리.
     if(typeof oAPP.fn.aggrSelectPopup !== "undefined"){
       oAPP.fn.aggrSelectPopup(l_drag, l_drop, oAPP.fn.drop_cb, l_pos.x, l_pos.y);
-      return;
+      return true;
     }
 
     //aggregation 선택 팝업 호출 처리.
     oAPP.fn.getScript("design/js/aggrSelectPopup",function(){
       oAPP.fn.aggrSelectPopup(l_drag, l_drop, oAPP.fn.drop_cb, l_pos.x, l_pos.y);
     });
+
+    return true;
 
   };  //drop 처리 function.
 
@@ -2533,10 +2582,21 @@
     //단축키 잠금 처리.
     oAPP.fn.setShortcutLock(true);
 
+    var lt_OBJID = [];
+
+    //CHECKBOX 선택건 수집 처리.
+    oAPP.fn.designGetCheckedLine(true, lt_OBJID);
+
+    //378  &1 rows has been selected.
+    //003	Do you really want to delete the object?
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "378", lt_OBJID.length, "", "", "") + "\n" +
+      oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "003", "", "", "", "");
+
+    lt_OBJID = [];
 
     //삭제전 확인팝업 호출.
     //003	Do you really want to delete the object?
-    parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "003", "", "", "", ""), function(oEvent){
+    parent.showMessage(sap, 30, "I", l_txt, function(oEvent){
 
       //YES를 선택하지 않은경우 EXIT.
       if(oEvent !== "YES"){
@@ -2781,6 +2841,339 @@
     oAPP.attr.ui.oLTree1.expandToLevel(999999999999);
 
   };  //design tree 필터 처리.
+
+
+
+  //design tree의 move position 마크 처리.
+  oAPP.fn.designMoveMark = function(is_parent, OBJID, pos, bReset){
+
+    for(var i=0, l=is_parent.zTREE.length; i<l; i++){
+
+      //초기화 처리 flag가 입력된경우 표현 제거.
+      if(bReset === true){
+        is_parent.zTREE[i].highlight = "None";
+        continue;
+      }
+
+      //이동 가능 UI에 대한 표현 처리.
+      is_parent.zTREE[i].highlight = "Indication04";
+
+      //이동 대상 OBJID인경우.
+      if(is_parent.zTREE[i].OBJID === OBJID){
+        is_parent.zTREE[i].highlight = "Indication08";
+      }
+
+      //MOVE 대상 INDEX 인경우.
+      if(i + 1 === pos){
+        is_parent.zTREE[i].highlight = "Indication02";
+      }
+
+    }
+
+    //초기화 처리가 아닌경우 OBJID에 해당하는 라인으로 scroll 처리.
+    if(!bReset){
+      oAPP.fn.designSetScrollPosOBJID(is_parent.zTREE[pos-1].OBJID);
+    }
+
+    oAPP.attr.oModel.refresh();
+    
+  };  //design tree의 move position 마크 처리.
+
+
+
+
+  //design tree의 OBJID에 해당하는 라인으로 scroll 처리.
+  //(화면에 OBJID가 존재하는경우 scroll 처리 안함)
+  oAPP.fn.designSetScrollPosOBJID = function(OBJID){
+
+    //tree의 child를 탐색하며 OBJID에 해당하는 라인 검색.
+    function lf_findPos(oNode){
+
+      //context 정보가 없다면 exit.
+      if(!oNode?.context){return true;}
+
+      //position + 1.
+      l_pos++;
+
+      //대상 라인을 찾은경우 exit.
+      if(oNode.context.getProperty("OBJID") === OBJID){
+        return true;
+      }      
+      
+      if(oNode.children.length === 0){return;}
+
+      //child가 존재한다면 하위를 탐색하며 OBJID에 해당하는 라인 검색.
+      for(var i=0, l=oNode.children.length; i<l; i++){
+        
+        //CHILD에 해당 하는 라인인경우 position 계산 후 exit.
+        if(oNode?.children[i]?.context?.getProperty("OBJID") === OBJID){
+          l_pos++;
+          return true;
+        }
+
+        //해당 라인이 펼쳐지지 않았다면 position 계산 후 하위 탐색 skip.
+        if(!oNode?.children[i]?.nodeState?.expanded){
+          l_pos++;
+          continue;
+        }        
+
+        //해당 라인이 펼쳐져 있다면 하위를 탐색하며 OBJID에 해당하는건 탐색.
+        if(lf_findPos(oNode.children[i])){
+          return true;
+        }
+
+      }
+
+    } //tree의 child를 탐색하며 OBJID에 해당하는 라인 검색.
+
+    
+    //현재 화면에 표현된 ROW정보 얻기.
+    var lt_row = oAPP.attr.ui.oLTree1.getRows();
+
+    if(lt_row.length === 0){return;}
+
+    //화면에 표현된 ROW에 입력 OBJID가 해당되는지 확인.
+    for(var i=0, l=lt_row.length; i<l; i++){
+      
+      var l_ctxt = lt_row[i].getBindingContext();
+      if(!l_ctxt){return;}
+
+      //현재 화면에 표현된 UI에 입력된 OBJID가 포함되면 SCROLL을 이동할 필요가 없기에 EXIT.
+      if(l_ctxt.getProperty("OBJID") === OBJID){return;}
+
+    }
+
+    //화면에 표현된 ROW에 OBJID가 해당되지 않는다면.
+
+    //바인딩 정보 얻기.
+    var l_bind = oAPP.attr.ui.oLTree1.getBinding("rows");
+    if(!l_bind){return;}
+
+    var l_pos = -1;
+
+    //scroll 이동 position 계산처리.
+    lf_findPos(l_bind._oRootNode.children[0]);
+
+    //position 계산에 실패한경우 exit.
+    if(l_pos === -1){return;}
+
+    if(oAPP.attr.ui.oLTree1.getFirstVisibleRow() < l_pos){
+      l_pos = l_pos - oAPP.attr.ui.oLTree1.getVisibleRowCount() + 1;
+    }
+
+    //해당 라인으로 이동 처리.
+    oAPP.attr.ui.oLTree1.setFirstVisibleRow(l_pos);
+
+  };  //design tree의 OBJID에 해당하는 라인으로 scroll 처리.
+
+
+
+
+  //UI 추가.
+  oAPP.fn.designAddUIObject = function(is_tree, is_0022, is_0023, i_cnt){
+
+    //화면 lock 처리.
+    oAPP.fn.designAreaLockUnlock(true);
+
+    //UI가 입력 가능한 카디널리티 여부 확인.
+    if(oAPP.fn.chkUiCardinality(is_tree, is_0023.UIATK, is_0023.ISMLB) === true){
+      //화면 unlock 처리.
+      oAPP.fn.designAreaLockUnlock();
+      return;
+    }
+
+    var l_cnt = i_cnt;
+
+    //[워크벤치] 특정 API / UI 에 대한 중복 대상 관리 여부 확인.
+    if(oAPP.fn.designChkUnique(is_0022.UIOBK, l_cnt) === true){        
+      //화면 unlock 처리.
+      oAPP.fn.designAreaLockUnlock();
+      return;
+    }
+
+    //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.
+    if(oAPP.fn.designChkHiddenAreaUi(is_0022.UIOBK, is_tree.UIOBK) === true){
+      //화면 unlock 처리.
+      oAPP.fn.designAreaLockUnlock();
+      return;
+    }
+    
+
+    //UI의 허용 가능 부모 정보
+    //(특정 UI는 특정 부모에만 존재해야함.)
+    if(oAPP.fn.designChkFixedParentUI(is_0022.UIOBK, is_tree.UIOBK, is_0023.UIATT) === true){
+      //화면 unlock 처리.
+      oAPP.fn.designAreaLockUnlock();
+      return;
+    }
+    
+    //context menu 호출 UI의 child 정보가 존재하지 않는경우 생성.
+    if(!is_tree.zTREE){
+      is_tree.zTREE = [];
+    }
+
+    //부모 UI의 입력한 AGGREGATION정보 얻기.
+    var ls_0015 = oAPP.attr.prev[is_tree.OBJID]._T_0015.find( a => a.UIATK === is_0023.UIATK && a.UIATY === "3" );
+
+    //대상 AGGREGATION에 바인딩 처리된경우 추가하고자 하는 UI를 2개 이상 입력했다면 알림 메시지, UI는 1개만 추가되게 처리.
+    if(typeof ls_0015 !== "undefined" && ls_0015.UIATV !== "" && ls_0015.ISBND === "X" & l_cnt >= 2){
+      l_cnt = 1;
+      //021	The object is already specified in Aggrigation.
+      parent.showMessage(sap, 10, "W", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "021", "", "", "", ""));
+    }
+
+
+    //UI 반복 횟수만큼 그리기.
+    for(var i=0; i<l_cnt; i++){
+
+      //14번 저장 구조 생성.
+      var l_14 = oAPP.fn.crtStru0014();
+
+      //바인딩 처리 필드 생성.
+      oAPP.fn.crtTreeBindField(l_14);
+
+
+      l_14.APPID = oAPP.attr.appInfo.APPID;
+      l_14.GUINR = oAPP.attr.appInfo.GUINR;
+
+      //UI명 구성.
+      l_14.OBJID = oAPP.fn.setOBJID(is_0022.UIOBJ);
+      l_14.POBID = is_tree.OBJID;
+      l_14.UIOBK = is_0022.UIOBK;
+      l_14.PUIOK = is_tree.UIOBK;
+
+      l_14.UIATK = is_0023.UIATK;
+      l_14.UIATT = is_0023.UIATT;
+      l_14.UIASN = is_0023.UIASN;
+      l_14.UIATY = is_0023.UIATY;
+      l_14.UIADT = is_0023.UIADT;
+      l_14.UIADS = is_0023.UIADS;
+      l_14.ISMLB = is_0023.ISMLB;
+
+      l_14.UIFND = is_0022.UIFND;
+      l_14.PUIATK = is_0023.UIATK;
+      l_14.UILIB = is_0022.LIBNM;
+      l_14.ISEXT = is_0022.ISEXT;
+      l_14.TGLIB = is_0022.TGLIB;
+
+      l_14.ISECP = is_0022.ISECP;
+
+      //UI ICON 구성.
+      l_14.UICON = oAPP.fn.fnGetSapIconPath(is_0022.UICON);
+
+      //tree embeded aggregation 아이콘 표현.
+      oAPP.fn.setTreeAggrIcon(l_14);
+
+      //default 아이콘 비활성 처리.
+      l_14.icon_visible = false;
+
+      //아이콘이 존재하는 경우 아이콘 활성 처리.
+      if(typeof l_14.UICON !== "undefined" && l_14.UICON !== ""){
+        l_14.icon_visible = true;
+      }
+
+      //context menu 호출 라인의 child에 추가한 UI정보 수집.
+      is_tree.zTREE.push(l_14);
+
+      var ls_0015 = oAPP.fn.crtStru0015();
+      
+      //embed aggregation 정보 구성.
+      ls_0015.APPID = oAPP.attr.appInfo.APPID;
+      ls_0015.GUINR = oAPP.attr.appInfo.GUINR;
+      ls_0015.OBJID = l_14.OBJID;
+      ls_0015.UIOBK = is_0022.UIOBK;
+      ls_0015.UIATK = is_0023.UIATK;
+      ls_0015.UILIK = is_0022.UILIK;
+      ls_0015.UIATT = is_0023.UIATT;
+      ls_0015.UIASN = is_0023.UIASN;
+      ls_0015.UIADT = is_0023.UIADT;
+      ls_0015.UIATY = "6";
+      ls_0015.ISMLB = is_0023.ISMLB;
+      ls_0015.ISEMB = "X";
+
+
+      //미리보기 UI 추가
+      oAPP.attr.ui.frame.contentWindow.addUIObjPreView(l_14.OBJID, l_14.UIOBK, l_14.UILIB, 
+        l_14.UIFND, l_14.POBID, l_14.PUIOK, is_0023.UIATT, [ls_0015], 
+        oAPP.attr.S_CODE.UA018, oAPP.attr.S_CODE.UA032, oAPP.attr.S_CODE.UA030, 
+        oAPP.attr.S_CODE.UA026, oAPP.attr.S_CODE.UA050);
+
+      //aggregation 정보 초기화.
+      ls_0015 = {};
+
+      //file uploader UI의 uploaderUrl 프로퍼티 예외처리.
+      oAPP.fn.attrUploadUrlException(l_14.OBJID, l_14.UIOBK);
+
+    } //UI 반복 횟수만큼 그리기.
+    
+
+    //MODEL 갱신 처리.
+    oAPP.attr.oModel.refresh();
+
+    //design tree의 tree binding 정보 갱신 처리.
+    var l_bind = oAPP.attr.ui.oLTree1.getBinding();
+    l_bind._buildTree(0,oAPP.fn.designGetTreeItemCount());
+
+    //신규로 생성된 UI의 미리보기에서 UI 선택 처리를 위한 FLAG 처리.
+    //oAPP.attr.prev[l_14.OBJID].__isnew = "X";
+
+    //메뉴 선택 tree 위치 펼침 처리.
+    oAPP.fn.setSelectTreeItem(l_14.OBJID);
+
+    //변경 FLAG 처리.
+    oAPP.fn.setChangeFlag();
+
+  }; //UI 추가.
+
+
+
+
+  //UI Insert popup에서 Drop했다면 UI 추가 처리.
+  oAPP.fn.designUIDropInsertPopup = function(oEvent, OBJID){
+
+    //UI 추가.
+    function lf_setChild(is_0023){
+
+      var ls_0022 = oAPP.DATA.LIB.T_0022.find( a=> a.UIOBK === l_UIOBK && a.ISDEP !== "X" && a.ISSTP !== "X" );
+
+      //UI 추가 처리 FUNCTION 호출.
+      oAPP.fn.designAddUIObject(ls_drop, ls_0022, is_0023, l_cnt);
+
+    } //UI 추가.
+
+  
+    //insertUIPopup에서 D&D 했다면 drag한 UIOBK 정보 얻기.
+    var l_UIOBK = oAPP.fn.getDragParam(oEvent, "callUIInsertPopup");
+    if(!l_UIOBK){return;}
+
+    var lt_split = l_UIOBK.split("_");
+
+    l_UIOBK = lt_split[0];
+
+    var l_cnt = parseInt(lt_split[1]);
+
+    //이벤트 발생 라인 정보 얻기.
+    ls_drop = oAPP.fn.getTreeData(OBJID);
+    if(!ls_drop){return;}
+
+    //이벤트 발생 x, y 좌표값 얻기.
+    var l_pos = oAPP.fn.getMousePosition();
+
+    //aggregation 선택 팝업 호출.
+    if(typeof oAPP.fn.aggrSelectPopup !== "undefined"){
+        oAPP.fn.aggrSelectPopup({UIOBK:l_UIOBK}, ls_drop, lf_setChild, l_pos.x, l_pos.y);
+        return true;
+    }
+
+    //aggregation 선택 팝업이 존재하지 않는경우 js load후 호출.
+    oAPP.fn.getScript("design/js/aggrSelectPopup",function(){
+        oAPP.fn.aggrSelectPopup({UIOBK:l_UIOBK}, ls_drop, lf_setChild, l_pos.x, l_pos.y);
+    });
+
+    return true;
+
+  };  //UI Insert popup에서 Drop했다면 UI 추가 처리.
+
   
 
 })();

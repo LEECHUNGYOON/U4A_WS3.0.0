@@ -1843,6 +1843,9 @@ let oAPP = (function () {
 
             parent.showLoadingPage('');
 
+            // // Floating Menu를 오픈한다.
+            // oAPP.fn.fnFloatingMenuOpen();
+
         });
 
     }; // end of oAPP.fn.fnOnLoginSuccess   
@@ -2377,6 +2380,9 @@ let oAPP = (function () {
         // 다운로드 후, asar 압축 및 인스톨
         spAutoUpdater.on("update-install-SP", (e) => {
 
+            // Progress Bar 종료
+            _supportPackageVersionCheckDialogProgressEnd();
+
             oModel.setProperty("/BUSYPOP/TITLE", "Support Patch Installing...", true);
 
             // Progress Bar 실행
@@ -2474,9 +2480,27 @@ let oAPP = (function () {
 
     }; // end of oAPP.fn.fnCheckSupportPackageVersion
 
+    oAPP.fn.fnFloatingMenuOpen = () => {
+
+        var sFloatingMenuJsPath = parent.getPath("FLTMENU"),
+            oFloatMenu = require(sFloatingMenuJsPath),
+            oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID;
+
+        oFloatMenu.open(REMOTE, screen, APPPATH, sSysID);
+
+        // let sFloatingMenuJsPath = parent.getPath("FLTMENU"),
+        //     oFloatMenu = require(sFloatingMenuJsPath),
+        //     oServerInfo = parent.getServerInfo(),
+        //     sSysID = oServerInfo.SYSID;
+
+        // oFloatMenu.open(REMOTE, screen, APPPATH, sSysID);
+
+    }; // end of oAPP.fn.fnFloatingMenuOpen
+
     function _supportPackageVersionCheckDialogProgressStart() {
 
-        if (oAPP.attr.progressInterval) {
+        if (typeof oAPP.attr.progressInterval !== "undefined") {
             clearInterval(oAPP.attr.progressInterval);
             delete oAPP.attr.progressInterval;
         }
@@ -2491,9 +2515,9 @@ let oAPP = (function () {
 
             oModel.setProperty("/BUSYPOP/PERVALUE", iPer, true);
 
-            if (iPer >= 100) {                
+            if (iPer >= 100) {
 
-                if (oAPP.attr.progressInterval) {
+                if (typeof oAPP.attr.progressInterval !== "undefined") {
                     clearInterval(oAPP.attr.progressInterval);
                     delete oAPP.attr.progressInterval;
 
@@ -2515,7 +2539,7 @@ let oAPP = (function () {
         let oModel = sap.ui.getCore().getModel(),
             oModelData = oModel.getProperty("/BUSYPOP");
 
-        if (oAPP.attr.progressInterval) {
+        if (typeof oAPP.attr.progressInterval !== "undefined") {
             clearInterval(oAPP.attr.progressInterval);
             delete oAPP.attr.progressInterval;
         }

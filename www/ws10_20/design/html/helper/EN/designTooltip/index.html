@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <title>Document</title> -->
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <div class="content">
+        <div id="rootAttribute" class="contentArea">
+            <h1 class="helpTitle">
+                ROOT 속성
+            </h1>
+            <div class="overview">
+                ROOT의 속성정보를 확인할 수 있다.
+                <!-- ROOT의 속성을 변경/추가할 때 UX Design영역의 ROOT를 클릭하면 대상 Attribute 영역이 변경. -->
+            </div>
+            <div class="contents">
+                1. UX Design 영역의 ROOT 클릭.
+                <!-- 1. ROOT를 클릭하면 Attribute영역이 ROOT에 대한 내용으로 변경. -->
+            </div>
+            <div class="contentsImg">
+                <!-- <img src="./../../image/root_attribure.png" alt="root_attribure"> -->
+                <video class="desc" autoplay muted loop>
+                    <source src="./../../video/root_attribute1.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="contents">
+                2. Attribute영역이 ROOT 내용으로 변경.
+            </div>
+            <div class="contentsImg">
+                <video class="desc" autoplay muted loop>
+                    <source src="./../../video/root_attribute2.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+        <div id="rootContextMenu" class="contentArea">
+            <h1 class="helpTitle">
+                ROOT CONTEXT MENU
+            </h1>
+            <div class="overview">
+                ROOT에서 마우스 우 클릭 시 CONTEXT MENU가 나타나지만 비활성화 상태로 보인다.(Admin 제외)
+            </div>
+            <div class="contents">
+                1. ROOT에서 마우스 우 클릭을 하면 비활성화 상태의 CONTEXT MENU가 보인다. 
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/no_insert_ui.png" alt="no_insert_ui">
+                <!-- <video class="desc" autoplay muted loop>
+                    <source src="./../../video/root_contextMenu.mp4" type="video/mp4">
+                </video> -->
+            </div>
+        </div>
+        <div id="createUI" class="contentArea">
+            <h1 class="helpTitle">
+                UI 생성
+            </h1>
+            <div class="overview">
+                Insert Element로 필요한 UI를 생성할 수 있다.<br>(ROOT 또는 FLEXITEMDATA와 같은 UI제외)
+            </div>
+            <div class="contents">
+                1. 작업할 UI에 마우스 우 클릭 후 CONTEXT MENU의 Insert Element 클릭.
+                <!-- 1. 대상 UI 마우스 오른쪽 클릭하면  CONTEXT MENU의 Insert Element 클릭 -->
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/insert_ui1.png" alt="insert_ui">
+            </div>
+            <div class="contents">
+                2. “UI 선택/추가” 기능 Pop-Up이 표시된다.
+            </div>
+            <div class="contentsImg flex">
+                <img src="./../../image/insert_ui2.png" alt="insert_ui2">
+                <ul>
+                    <li>
+                        ② Aggregation 선택
+                        <!-- ② 대상 Aggregation 선택 -->
+                    </li>
+                    <li>
+                        ③ UI 검색
+                        <!-- ③ 대상 UI 검색 -->
+                    </li>
+                    <li>
+                        ④ List에서 추가할 UI 선택
+                        <!-- ④ List에서 대상 UI 선택 -->
+                    </li>
+                    <li>
+                        ⑤ Confirm(확인)버튼 클릭
+                    </li>
+                </ul>
+            </div>
+            <div class="contents">
+                3. 미리보기 영역에 UI 생성.
+                <!-- 3. 미리보기 영역에 생성 UI추가. -->
+                <!-- 3. 미리보기 영역에도 생성 UI추가. -->
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/insert_ui3.png" alt="insert_ui3">
+            </div>
+        </div>
+        <div id="dragDrop" class="contentArea">
+            <h1 class="helpTitle">
+                UI DRAG & DROP
+            </h1>
+            <div class="overview">
+                이동시킬 UI를 다른 UI의 하위 요소로 이동할 수 있다.
+                <!-- Drag한 UI를 Drop한 UI의 하위 요소로 이동할 수 있음. -->
+            </div>
+            <div class="contents">
+                1. 이동시킬 UI를 Drag하여 다른 UI에 Drop.<br>(단, 하위 요소에 추가 가능한 Aggregation이 있는 UI만 가능)
+            </div>
+            <div class="contentsImg">
+                <video class="desc" autoplay muted loop>
+                    <source src="./../../video/ui_drag_drop.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="contents">
+                2. 미리보기 영역에 대상 UI 이동.
+            </div>
+            <div class="contentsImg">
+                <video class="desc" autoplay muted loop>
+                    <source src="./../../video/ui_drag_drop2.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+        <div id="ctrlDragDrop" class="contentArea">
+            <h1 class="helpTitle">
+                UI CTRL + DRAG & DROP
+            </h1>
+            <div class="overview">
+                UI를 다른 UI의 하위 요소로 복사할 수 있다.
+                <!-- Drag한 UI를 Drop할 UI의 하위 요소로 복사할 수 있음. -->
+            </div>
+            <div class="contents">
+                1. Ctrl을 누른 상태로 UI를 Drag하여 다른 UI에 Drop.<br>(단, 하위 요소에 추가 가능한 Aggregation이 있는 UI만 가능)
+                <!-- 1. Ctrl을 누른 상태로 이동시키고자 하는 UI를 다른 UI에 Drag & Drop.<br>(단, 하위 요소에 추가 가능한 Aggregation이 있는 UI만 가능) -->
+            </div>
+            <div class="contentsImg">
+                <video class="desc" autoplay muted loop>
+                    <source src="./../../video/ctrl_drag_drop.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="contents">
+                2. 미리보기 영역에 대상 UI 복사.
+            </div>
+            <div class="contentsImg">
+                <video class="desc" autoplay muted loop>
+                    <source src="./../../video/ctrl_drag_drop2.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+        <div id="copyPaste" class="contentArea">
+            <h1 class="helpTitle">
+                UI 다른 어플리케이션에 COPY & PASTE
+            </h1>
+            <div class="overview">
+                현재 어플리케이션에서 UI를 복사해 다른 어플리케이션의 UI에 붙여넣을 수 있다.
+            </div>
+            <div class="contents">
+                1. 복사하려는 UI를 마우스 우 클릭한 후 Copy 클릭.
+            </div>
+            <div class="contentsImg">
+                <video class="desc" autoplay muted loop>
+                    <source src="./../../video/ui_copy.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="contents">
+                2. 다른 어플리케이션에서 작업하려는 UI를 마우스 우 클릭한 후 Paste 클릭.
+            </div>
+            <div class="contentsImg">
+                <video class="desc" autoplay muted loop>
+                    <source src="./../../video/ui_copy2.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+    </div>
+    <script src="./index.js"></script>
+</body>
+</html>

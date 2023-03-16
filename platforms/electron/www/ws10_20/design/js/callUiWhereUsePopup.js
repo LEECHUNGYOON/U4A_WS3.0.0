@@ -117,11 +117,8 @@
             }
 
             //결과정보 바인딩.
-            oModel.setData({T_DATA:param.T_DATA},true);
+            oModel.setData({T_DATA:param.T_DATA, busy:false},true);
             
-            //busy off.
-            oModel.setData({busy:false});
-
             //busy dialog close.
             oAPP.common.fnSetBusyDialog(false);
 

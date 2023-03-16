@@ -50,6 +50,36 @@
     });//미리보기 전체화면 스위치 변경 이벤트.
 
 
+    //B39	Help
+    //도움말 버튼.
+    var oLBtnHelp = new sap.m.Button({icon:"sap-icon://question-mark", 
+      // visible:parent.REMOTE.app.isPackaged ? false : true,
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39", "", "", "", "")});
+    oTool.addContent(oLBtnHelp);
+
+    //도움말 버튼 선택 이벤트.
+    oLBtnHelp.attachPress(function(){
+
+      var l_ui = this;
+
+      //attribute 도움말 팝업 function이 존재하는경우.
+      if(typeof oAPP.fn.callTooltipsPopup !== "undefined"){
+        //attribute 도움말 팝업 호출.
+        //E22  Preview Area
+        oAPP.fn.callTooltipsPopup(l_ui, "prevTooltip", "E22");
+        return;
+      }
+
+      //attribute 도움말 팝업 function이 존재하지 않는경우 script 호출.
+      oAPP.fn.getScript("design/js/callTooltipsPopup",function(){
+        //attribute 도움말 팝업 호출.
+        //E22  Preview Area
+        oAPP.fn.callTooltipsPopup(l_ui, "prevTooltip", "E22");
+      });
+
+    }); //도움말 버튼 선택 이벤트.
+
+
   };  //가운데 페이지(미리보기 영역) 구성
 
 
@@ -396,7 +426,13 @@
       var l_UIATV = "";
 
       if(typeof ls_cevt !== "undefined"){
-        l_UIATV = ls_cevt.DATA;
+        //20230303 pes.
+        //sap.ui.core.HTML의 content에 입력값을 반영하는 과정에서
+        //ls_cevt.DATA 안에 HTML tag가 없이 text만이 존재할때 
+        //.이 있으면 오류가 나는 문제가 있기에 <div> tag로 감싸는 로직 추가.
+        //(HTML.setContent("asdasd.")); -> HTML.setContent("<div>" + "asdasd." + "</div>"));
+        //l_UIATV = ls_cevt.DATA;        
+        l_UIATV = "<div>" + ls_cevt.DATA + "</div>";
       }
 
       oAPP.attr.prev[is_attr.OBJID][l_propnm](l_UIATV);

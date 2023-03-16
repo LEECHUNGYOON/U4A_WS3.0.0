@@ -38,6 +38,7 @@
 
     //dialog open이후 이벤트.
     oDlg.attachAfterOpen(function(){
+      oDlg.setInitialFocus("");
       //aggregation name ddlb 선택 처리.
       oSel1.focus();
     });
@@ -137,7 +138,10 @@
       var l_skey = oSel1.getSelectedKey();
 
       //빈값을 선택한 경우 exit.
-      if(l_skey === ""){return;}
+      if(l_skey === ""){
+        oFrmElem2.setVisible(false);
+        return;
+      }
 
       //DDLB선택건에 해당하는 라인정보 얻기.
       var ls_sel = oMdl.oData.T_SEL.find(a => a.UIATK === l_skey);
@@ -194,7 +198,7 @@
 
         ls_list.UICON = oAPP.fn.fnGetSapIconPath(ls_0022.UICON);
         ls_list.UIOBJ = ls_0022.UIOBJ;
-        ls_list.UIOMD = ls_0022.UIOMD;
+        ls_list.LIBNM = ls_0022.LIBNM;
         ls_list.UIOBK = ls_0022.UIOBK;
 
 
@@ -229,7 +233,8 @@
     var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B25", "", "", "", "");
 
     //UI 추가 건수 입력필드.
-    var oInp1 = new sap.m.Input({type:"Number", maxLength:CV_MAX_LEN, value:1, description:l_txt + " : " + CV_MAX_CNT});
+    // var oInp1 = new sap.m.Input({type:"Number", maxLength:CV_MAX_LEN, value:1, description:l_txt + " : " + CV_MAX_CNT});
+    var oInp1 = new sap.m.StepInput({max:CV_MAX_CNT, min:1, value:1, description:l_txt + " : " + CV_MAX_CNT});
     oFrmElem2.addField(oInp1);
 
     //UI 추가 건수 입력필드 변경 이벤트.
@@ -244,15 +249,20 @@
         return;
       }
 
-      //문자 제거.
-      l_val = l_val.replace(/[^0-9.]/g, "");
+      // //문자 제거.
+      // l_val = l_val.replace(/[^0-9.]/g, "");
 
       //숫자로 변환 처리.
       l_val = parseInt(l_val);
 
-      //10건이상을 입력했다면 MAX 10으로 설정.
+      //100건이상을 입력했다면 MAX 100으로 설정.
       if(l_val > CV_MAX_CNT){
         l_val = CV_MAX_CNT;
+      }
+
+      //1보다 작은값 입력식 1로 설정.
+      if(l_val < 1){
+        l_val = 1;
       }
 
       //세팅된 값을 재 매핑 처리.
@@ -261,7 +271,6 @@
       oInp2.focus();
 
     }); //UI 추가 건수 입력필드 변경 이벤트.
-
 
 
 
@@ -298,7 +307,6 @@
 
 
 
-
     //결과 테이블
     var oTab1 = new sap.ui.table.Table({selectionMode:"Single", selectionBehavior:"Row", rowHeight:30,
       visibleRowCountMode:"Auto", layoutData:new sap.m.FlexItemData({growFactor:1})});
@@ -328,10 +336,29 @@
       lf_selectUi(l_ctxt.getProperty());
 
 
-    }); //tree 더블클릭 이벤트.
+    }); //tree 더블클릭 이벤트.   
 
 
     oVbox1.addItem(oTab1);
+
+    
+    var oLTDrag1 = new sap.ui.core.dnd.DragInfo({sourceAggregation:"rows"});
+    oTab1.addDragDropConfig(oLTDrag1);
+
+    //drag start 이벤트
+    oLTDrag1.attachDragStart(function(oEvent){
+      //결과리스트 table 라인 drag start 처리.
+      lf_rowDragStart(oEvent, oDlg, oInp1);
+
+    }); //drag start 이벤트
+    
+
+    //drag end 이벤트
+    oLTDrag1.attachDragEnd(function(oEvent){      
+      //결과리스트 table 라인 drag end 처리.
+      lf_rowDragEnd(oDlg);
+
+    }); //drag end 이벤트
 
     var oCol1 = new sap.ui.table.Column({hAlign:"Center", width:"80px"});
     oTab1.addColumn(oCol1);
@@ -357,7 +384,7 @@
     var oTxt1 = new sap.m.Text({text:"{UIOBJ}"});
     oCol2.setTemplate(oTxt1);
 
-    var oCol3 = new sap.ui.table.Column({autoResizable:true, filterProperty:"UIOMD", sortProperty:"UIOMD"});
+    var oCol3 = new sap.ui.table.Column({autoResizable:true, filterProperty:"LIBNM", sortProperty:"LIBNM"});
     oTab1.addColumn(oCol3);
 
     //E03  UI Object(Fullname)
@@ -366,7 +393,7 @@
     var oLab6 = new sap.m.Label({design: "Bold",text:l_txt, tooltip:l_txt});
     oCol3.setLabel(oLab6);
 
-    var oTxt2 = new sap.m.Text({text:"{UIOMD}"});
+    var oTxt2 = new sap.m.Text({text:"{LIBNM}"});
     oCol3.setTemplate(oTxt2);
 
     var oCol4 = new sap.ui.table.Column({hAlign:"Center", width:"120px", filterProperty:"UIOBK", sortProperty:"UIOBK"});
@@ -381,7 +408,7 @@
     var oTxt4 = new sap.m.Text({text:"{UIOBK}"});
     oCol4.setTemplate(oTxt4);
 
-    var oCol5 = new sap.ui.table.Column({hAlign:"Center", width:"80px"});
+    var oCol5 = new sap.ui.table.Column({hAlign:"Center", width:"80px", visible:false});
     oTab1.addColumn(oCol5);
 
     //E05  UI Info
@@ -417,8 +444,8 @@
       //선택 처리건에 대한 return.
       lf_selectUi(oTab1.getContextByIndex(l_sidx).getProperty());
 
-
     });
+
 
     //A41  Cancel
     var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A41", "", "", "", "");
@@ -440,26 +467,24 @@
 
     //UI 선택처리 FUNCTION.
     function lf_selectUi(is_UI){
-
-      var l_ret = {};
-
+      
+      //aggregation ddlb 선택 Key 값 얻기.
       var l_selky = oSel1.getSelectedKey();
 
       //ddlb 선택한정보(23번 테이블 구조)
-      l_ret.E_EMB_AGGR = oAPP.DATA.LIB.T_0023.find(a => a.UIATK === l_selky);
-
+      var ls_0023 = oAPP.DATA.LIB.T_0023.find(a => a.UIATK === l_selky);
       
       //리스트 선택정보(22번 테이블 구조)
-      l_ret.E_UIOBJ = oAPP.DATA.LIB.T_0022.find( a=> a.UIOBK === is_UI.UIOBK );
+      var ls_0022 = oAPP.DATA.LIB.T_0022.find( a=> a.UIOBK === is_UI.UIOBK );
 
       //리스트에서 선택한 ui가 갖고 있는 aggr 정보(23번 테이블)
-      l_ret.E_AGGRT = oAPP.DATA.LIB.T_0023.filter(a => a.UIOBK === l_ret.E_UIOBJ.UIOBK && a.UIATY === "3" && a.ISDEP !== "X");
+      var lt_0023 = oAPP.DATA.LIB.T_0023.filter(a => a.UIOBK === ls_0022.UIOBK && a.UIATY === "3" && a.ISDEP !== "X");
 
       //반복해서 만들 ui 갯수
-      l_ret.E_CRTCNT = oInp1.getValue();
+      var l_cnt = parseInt(oInp1.getValue());
 
       //ui 검색필드 suggest 정보 저장 처리.
-      oAPP.fn.saveUiSuggest("insertUiName", l_ret.E_UIOBJ.UIOBJ, 10)
+      oAPP.fn.saveUiSuggest("insertUiName", ls_0022.UIOBJ, 10);
 
 
       //팝업 종료.
@@ -467,11 +492,63 @@
       oDlg.destroy();
 
       //return parameter 전달.
-      retFunc(l_ret);
+      retFunc(ls_0022, ls_0023, l_cnt, lt_0023);
 
 
     } //UI 선택처리 FUNCTION.
 
-  };
+  };  //UI 생성 팝업
+
+
+  //결과리스트 table 라인 drag start 처리.
+  function lf_rowDragStart(oEvent, oDlg, oInp1){
+    
+    //drag한 위치의 바인딩 정보 얻기.
+    var l_ctxt = oEvent.mParameters.target.getBindingContext();
+    if(!l_ctxt){return;}
+
+    //drag한 TREE 정보 얻기.
+    var ls_drag = l_ctxt.getProperty();
+    if(!ls_drag){return;}
+
+    //실제 라이브러리의 정보 검색.
+    var ls_0022 = oAPP.DATA.LIB.T_0022.find( a => a.UIOBK === ls_drag.UIOBK);
+
+    if(ls_0022){
+      //DRAG한 UI의 라이브러리명 정보 세팅(Runtime Class Navigator 기능에서 사용)
+      event.dataTransfer.setData("rtmcls", ls_0022.LIBNM);
+    }
+
+    //반복해서 만들 ui 갯수
+    var l_cnt = parseInt(oInp1.getValue());
+
+    //DRAG한 UI 정보 세팅.
+    event.dataTransfer.setData("text/plain", ls_0022.UIOBK + "_" + l_cnt + "|" + oAPP.attr.DnDRandKey + "|callUIInsertPopup");
+
+    //drag 시작시 drop 가능건에 대한 제어 처리.
+    oAPP.fn.designTreeDragStart({OBJID:undefined, UIOBK:ls_drag.UIOBK});
+
+    if(!oDlg.oPopup){return;}
+
+    oDlg.focus();
+
+    oDlg.oPopup.setModal(false);
+
+  } //결과리스트 table 라인 drag start 처리.
+
+
+
+  //결과리스트 table 라인 drag end 처리.
+  function lf_rowDragEnd(oDlg){
+    
+    //drag 종료 처리.
+    oAPP.fn.designDragEnd();
+
+    if(!oDlg.oPopup){return;}
+
+    oDlg.oPopup.setModal(true);
+
+  } //결과리스트 table 라인 drag end 처리.
+   
 
 })();

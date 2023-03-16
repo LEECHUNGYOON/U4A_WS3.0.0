@@ -386,7 +386,7 @@
         // if (!oAppInfo) {
         //     oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
         // }
-
+        
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
 

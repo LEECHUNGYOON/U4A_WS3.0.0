@@ -91,6 +91,7 @@ module.exports = (() => {
         WSUTIL: PATH.join(JS_ROOT, "ws_util.js"),
         USP_UTIL: PATH.join(USP_ROOT, "ws_usp_util.js"), 
         U4AHELP: PATH.join(APPPATH, "help", "u4a_helpdoc", "main.js"),
+        FLTMENU: PATH.join(APPPATH, "floatingMenu", "js", "handle.js"),
 
         // Json Path..
         EVENTSUGG: PATH.join(SUGG_ROOT, "events.json"),

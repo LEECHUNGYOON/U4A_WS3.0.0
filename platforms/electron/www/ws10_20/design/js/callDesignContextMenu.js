@@ -27,7 +27,8 @@
 
 
         //context menu 제목.
-        var oMItem0 = new this.sap.m.MenuItem({key:"M00", icon:"sap-icon://menu2", text:"{/lcmenu/title}", enabled:false});
+        var oMItem0 = new this.sap.m.MenuItem({key:"M00", icon:"sap-icon://menu2", 
+            text:"{/lcmenu/title}", enabled:false});
         oMenu1.addItem(oMItem0);
 
         
@@ -35,7 +36,8 @@
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A54", "", "", "", "");
 
         //UI 추가 메뉴
-        var oMItem1 = new this.sap.m.MenuItem({key:"M01", icon:"sap-icon://add", text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab01}", startsSection:true});
+        var oMItem1 = new this.sap.m.MenuItem({key:"M01", icon:"sap-icon://add", 
+            text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab01}", startsSection:true});
         oMenu1.addItem(oMItem1);
 
 
@@ -43,7 +45,8 @@
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03", "", "", "", "");
 
         //UI 삭제 메뉴
-        var oMItem2 = new this.sap.m.MenuItem({key:"M02", icon:"sap-icon://delete", text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab02}"});
+        var oMItem2 = new this.sap.m.MenuItem({key:"M02", icon:"sap-icon://delete", 
+            text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab02}"});
         oMenu1.addItem(oMItem2);
 
         
@@ -51,7 +54,8 @@
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A55", "", "", "", "");
 
         //UI up
-        var oMItem3 = new this.sap.m.MenuItem({key:"M03", icon:"sap-icon://navigation-up-arrow", text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab03}",startsSection:true});
+        var oMItem3 = new this.sap.m.MenuItem({key:"M03", icon:"sap-icon://navigation-up-arrow", 
+            text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab03}",startsSection:true});
         oMenu1.addItem(oMItem3);
 
 
@@ -59,7 +63,8 @@
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A56", "", "", "", "");
 
         //UI down
-        var oMItem4 = new this.sap.m.MenuItem({key:"M04", icon:"sap-icon://navigation-down-arrow", text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab04}"});
+        var oMItem4 = new this.sap.m.MenuItem({key:"M04", icon:"sap-icon://navigation-down-arrow", 
+            text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab04}"});
         oMenu1.addItem(oMItem4);
 
 
@@ -67,7 +72,8 @@
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A57", "", "", "", "");
 
         //UI move Position
-        var oMItem5 = new this.sap.m.MenuItem({key:"M05", icon:"sap-icon://outdent", text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab05}"});
+        var oMItem5 = new this.sap.m.MenuItem({key:"M05", icon:"sap-icon://outdent", 
+            text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab05}"});
         oMenu1.addItem(oMItem5);
 
 
@@ -75,7 +81,8 @@
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A04", "", "", "", "");
 
         //copy 메뉴.
-        var oMItem6 = new this.sap.m.MenuItem({key:"M06", icon:"sap-icon://copy", text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab06}", startsSection:true});
+        var oMItem6 = new this.sap.m.MenuItem({key:"M06", icon:"sap-icon://copy", 
+            text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab06}", startsSection:true});
         oMenu1.addItem(oMItem6);
 
 
@@ -83,7 +90,8 @@
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A58", "", "", "", "");
 
         //paste 메뉴.
-        var oMItem7 = new this.sap.m.MenuItem({key:"M07", icon:"sap-icon://paste", text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab07}"});
+        var oMItem7 = new this.sap.m.MenuItem({key:"M07", icon:"sap-icon://paste", 
+            text:l_txt, tooltip:l_txt, enabled:"{/lcmenu/enab07}"});
         oMenu1.addItem(oMItem7);
 
 
@@ -91,15 +99,28 @@
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A59", "", "", "", "");
         
         //UI where use 메뉴.
-        var oMItem8 = new this.sap.m.MenuItem({key:"M08", icon:"sap-icon://search", text:l_txt, tooltip:l_txt, startsSection:true, enabled:"{/lcmenu/enab08}"});
+        var oMItem8 = new this.sap.m.MenuItem({key:"M08", icon:"sap-icon://search", 
+            text:l_txt, tooltip:l_txt, startsSection:true, enabled:"{/lcmenu/enab08}"});
         oMenu1.addItem(oMItem8);
+
+
+        //E19  My Pattern
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E19", "", "", "", "");
+        
+        //UI 개인화 저장.
+        var oMItem11 = new this.sap.m.MenuItem({key:"M11", icon:"sap-icon://save", 
+            visible:parent.REMOTE.app.isPackaged ? false : true,    //no build mode 일때만 활성화 처리(작업 완료후 해제 필요)
+            text:l_txt, tooltip:l_txt, startsSection:true, enabled:"{/lcmenu/enab11}"});
+        oMenu1.addItem(oMItem11);
 
 
         //A60	Admin
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A60", "", "", "", "");
 
         //관리자 메뉴.
-        var oMItem9 = new this.sap.m.MenuItem({key:"M09", icon:"sap-icon://paste", text:l_txt, tooltip:l_txt, startsSection:true});
+        var oMItem9 = new this.sap.m.MenuItem({key:"M09", icon:"sap-icon://paste", 
+            visible:parent.getUserInfo().ISADM === "X" ? true : false,  //admin인경우만 관리자 메뉴 활성화.
+            text:l_txt, tooltip:l_txt, startsSection:true});
         oMenu1.addItem(oMItem9);
 
 
@@ -107,7 +128,8 @@
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A61", "", "", "", "");
 
         //관리자 서브 메뉴.
-        var oMItem10 = new this.sap.m.MenuItem({key:"M10", icon:"sap-icon://paste", text:l_txt, tooltip:l_txt});
+        var oMItem10 = new this.sap.m.MenuItem({key:"M10", icon:"sap-icon://paste", 
+            text:l_txt, tooltip:l_txt});
         oMItem9.addItem(oMItem10);
 
 
@@ -176,6 +198,10 @@
             case "M08": //UI Where use 메뉴.
                 oAPP.fn.contextMenuUiWhereUse();
                 break;
+            
+            case "M11": //UI 개인화 저장.
+                oAPP.fn.contextMenuP13nDesignPopup();
+                break;
 
         }
 
@@ -206,11 +232,12 @@
         ls_menu.enab06 = false;   //copy 불가
         ls_menu.enab07 = false;   //paste 불가
         ls_menu.enab08 = false;   //UI where used 불가.
+        ls_menu.enab11 = false;   //My Pattern(UI 개인화)default 불가.
 
         //ROOT(DOCUMENT)영역인경우 모든 CONTEXT MENU 비활성 처리.
         if(OBJID === "ROOT"){
-            oModel.setProperty("/lcmenu",ls_menu);
-            oAPP.attr.oModel.setProperty("/lcmenu",ls_menu);
+            oModel.setProperty("/lcmenu", ls_menu);
+            oAPP.attr.oModel.setProperty("/lcmenu", ls_menu);
 
             //TREE ITEM 선택처리.
             oAPP.fn.setSelectTreeItem(OBJID);
@@ -219,6 +246,9 @@
 
         //ROOT가 아닌경우 EDIT 여부와 상관없이 UI WHERE USE 가능.
         ls_menu.enab08 = true; //UI where used 가능.
+
+        //ROOT가 아닌경우 EDIT 여부와 상관없이 My Pattern(UI 개인화) 가능.
+        ls_menu.enab11 = true;
 
         //edit 상태인경우.(APP에서 CONTEXT MENU호출건을 처리하기위함)
         if(oAPP.attr.oModel.oData.IS_EDIT === true){
@@ -231,8 +261,8 @@
 
         //APP에서 menu 호출한 경우 편집 여부에 따라 UI추가, UI붙여넣기 메뉴만 사용 가능.
         if(OBJID === "APP"){
-            oModel.setProperty("/lcmenu",ls_menu);
-            oAPP.attr.oModel.setProperty("/lcmenu",ls_menu);
+            oModel.setProperty("/lcmenu", ls_menu);
+            oAPP.attr.oModel.setProperty("/lcmenu", ls_menu);
 
             //TREE ITEM 선택처리.
             oAPP.fn.setSelectTreeItem(OBJID);
@@ -242,8 +272,8 @@
         //DOCUMENT, APP가 아닌 영역에서 CONTEXT MENU 호출시 display 상태인경우 메뉴 비활성 처리.
         if(oAPP.attr.oModel.oData.IS_EDIT === false){
             ls_menu.enab06 = true; //copy 가능
-            oModel.setProperty("/lcmenu",ls_menu);
-            oAPP.attr.oModel.setProperty("/lcmenu",ls_menu);
+            oModel.setProperty("/lcmenu", ls_menu);
+            oAPP.attr.oModel.setProperty("/lcmenu", ls_menu);
 
             //TREE ITEM 선택처리.
             oAPP.fn.setSelectTreeItem(OBJID);
@@ -289,8 +319,8 @@
         }
 
         //context menu 정보 바인딩.
-        oModel.setProperty("/lcmenu",ls_menu);
-        oAPP.attr.oModel.setProperty("/lcmenu",ls_menu);
+        oModel.setProperty("/lcmenu", ls_menu);
+        oAPP.attr.oModel.setProperty("/lcmenu", ls_menu);
 
         //context menu를 호출한 UI 선택 처리.
         oAPP.fn.setSelectTreeItem(OBJID);
@@ -354,174 +384,13 @@
         oAPP.fn.setShortcutLock(true);
 
         //UI 추가.
-        function lf_setChild(param){
+        function lf_setChild(is_0022, is_0023, i_cnt){
 
-            //화면 lock 처리.
-            oAPP.fn.designAreaLockUnlock(true);
+            //UI 추가 처리 FUNCTION 호출.
+            oAPP.fn.designAddUIObject(ls_tree, is_0022, is_0023, i_cnt);
 
-            //UI가 입력 가능한 카디널리티 여부 확인.
-            if(oAPP.fn.chkUiCardinality(ls_tree, param.E_EMB_AGGR.UIATK, param.E_EMB_AGGR.ISMLB) === true){
-                //화면 unlock 처리.
-                oAPP.fn.designAreaLockUnlock();
-                return;
-            }
+        } //UI 추가.  
 
-            var l_cnt = parseInt(param.E_CRTCNT);
-
-            //[워크벤치] 특정 API / UI 에 대한 중복 대상 관리 여부 확인.
-            if(oAPP.fn.designChkUnique(param.E_UIOBJ.UIOBK, l_cnt) === true){        
-                //화면 unlock 처리.
-                oAPP.fn.designAreaLockUnlock();
-                return;
-            }
-
-            //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.
-            if(oAPP.fn.designChkHiddenAreaUi(param.E_UIOBJ.UIOBK, ls_tree.UIOBK) === true){
-                //화면 unlock 처리.
-                oAPP.fn.designAreaLockUnlock();
-                return;
-            }
-            
-
-            //UI의 허용 가능 부모 정보
-            //(특정 UI는 특정 부모에만 존재해야함.)
-            if(oAPP.fn.designChkFixedParentUI(param.E_UIOBJ.UIOBK, ls_tree.UIOBK, param.E_EMB_AGGR.UIATT) === true){
-                //화면 unlock 처리.
-                oAPP.fn.designAreaLockUnlock();
-                return;
-            }
-            
-            //context menu 호출 UI의 child 정보가 존재하지 않는경우 생성.
-            if(!ls_tree.zTREE){
-                ls_tree.zTREE = [];
-            }
-
-            //부모 UI의 입력한 AGGREGATION정보 얻기.
-            var ls_0015 = oAPP.attr.prev[ls_tree.OBJID]._T_0015.find( a => a.UIATK === param.E_EMB_AGGR.UIATK && a.UIATY === "3" );
-
-            //대상 AGGREGATION에 바인딩 처리된경우 추가하고자 하는 UI를 2개 이상 입력했다면 알림 메시지, UI는 1개만 추가되게 처리.
-            if(typeof ls_0015 !== "undefined" && ls_0015.UIATV !== "" && ls_0015.ISBND === "X" & l_cnt >= 2){
-                l_cnt = 1;
-                //021	The object is already specified in Aggrigation.
-                parent.showMessage(sap, 10, "W", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "021", "", "", "", ""));
-            }
-
-            //공통코드 미리보기 UI Property 고정값 정보 검색.
-            var lt_ua018 = oAPP.DATA.LIB.T_9011.filter( a=> a.CATCD === "UA018");
-            
-            //부모 UI에 추가 불필요 대상 UI 정보 검색.
-            var lt_ua026 = oAPP.DATA.LIB.T_9011.filter( a=> a.CATCD === "UA026" && a.FLD02 !== "X" );
-
-            //UI 프로퍼티 고정값 설정 정보 검색.
-            var lt_ua030 = oAPP.DATA.LIB.T_9011.filter( a=> a.CATCD === "UA030" && a.FLD06 !== "X" );
-
-            //UI 프로퍼티 type 예외처리 정보 검색.
-            var lt_ua032 = oAPP.DATA.LIB.T_9011.filter( a=> a.CATCD === "UA032" && a.FLD06 !== "X" );
-
-            //UI 프로퍼티 type 예외처리 정보 검색.
-            var lt_ua050 = oAPP.DATA.LIB.T_9011.filter( a=> a.CATCD === "UA050" && a.FLD08 !== "X" );
-
-            //UI 반복 횟수만큼 그리기.
-            for(var i=0; i<l_cnt; i++){
-
-                //14번 저장 구조 생성.
-                var l_14 = oAPP.fn.crtStru0014();
-
-                //바인딩 처리 필드 생성.
-                oAPP.fn.crtTreeBindField(l_14);
-
-
-                l_14.APPID = oAPP.attr.appInfo.APPID;
-                l_14.GUINR = oAPP.attr.appInfo.GUINR;
-
-                //UI명 구성.
-                l_14.OBJID = oAPP.fn.setOBJID(param.E_UIOBJ.UIOBJ);
-                l_14.POBID = ls_tree.OBJID;
-                l_14.UIOBK = param.E_UIOBJ.UIOBK;
-                l_14.PUIOK = ls_tree.UIOBK;
-
-                l_14.UIATK = param.E_EMB_AGGR.UIATK;
-                l_14.UIATT = param.E_EMB_AGGR.UIATT;
-                l_14.UIASN = param.E_EMB_AGGR.UIASN;
-                l_14.UIATY = param.E_EMB_AGGR.UIATY;
-                l_14.UIADT = param.E_EMB_AGGR.UIADT;
-                l_14.UIADS = param.E_EMB_AGGR.UIADS;
-                l_14.ISMLB = param.E_EMB_AGGR.ISMLB;
-
-                l_14.UIFND = param.E_UIOBJ.UIFND;
-                l_14.PUIATK = param.E_EMB_AGGR.UIATK;
-                l_14.UILIB = param.E_UIOBJ.LIBNM;
-                l_14.ISEXT = param.E_UIOBJ.ISEXT;
-                l_14.TGLIB = param.E_UIOBJ.TGLIB;
-
-                l_14.ISECP = param.E_UIOBJ.ISECP;
-
-                //UI ICON 구성.
-                l_14.UICON = oAPP.fn.fnGetSapIconPath(param.E_UIOBJ.UICON);
-
-                //tree embeded aggregation 아이콘 표현.
-                oAPP.fn.setTreeAggrIcon(l_14);
-
-                //default 아이콘 비활성 처리.
-                l_14.icon_visible = false;
-
-                //아이콘이 존재하는 경우 아이콘 활성 처리.
-                if(typeof l_14.UICON !== "undefined" && l_14.UICON !== ""){
-                    l_14.icon_visible = true;
-                }
-
-                //context menu 호출 라인의 child에 추가한 UI정보 수집.
-                ls_tree.zTREE.push(l_14);
-
-                var ls_0015 = oAPP.fn.crtStru0015();
-                
-                //embed aggregation 정보 구성.
-                ls_0015.APPID = oAPP.attr.appInfo.APPID;
-                ls_0015.GUINR = oAPP.attr.appInfo.GUINR;
-                ls_0015.OBJID = l_14.OBJID;
-                ls_0015.UIOBK = param.E_UIOBJ.UIOBK;
-                ls_0015.UIATK = param.E_EMB_AGGR.UIATK;
-                ls_0015.UILIK = param.E_UIOBJ.UILIK;
-                ls_0015.UIATT = param.E_EMB_AGGR.UIATT;
-                ls_0015.UIASN = param.E_EMB_AGGR.UIASN;
-                ls_0015.UIADT = param.E_EMB_AGGR.UIADT;
-                ls_0015.UIATY = "6";
-                ls_0015.ISMLB = param.E_EMB_AGGR.ISMLB;
-                ls_0015.ISEMB = "X";
-
-
-                //미리보기 UI 추가
-                oAPP.attr.ui.frame.contentWindow.addUIObjPreView(l_14.OBJID, l_14.UIOBK, l_14.UILIB, 
-                    l_14.UIFND, l_14.POBID, l_14.PUIOK, param.E_EMB_AGGR.UIATT, [ls_0015], lt_ua018, lt_ua032, lt_ua030, lt_ua026, lt_ua050);
-
-                //aggregation 정보 초기화.
-                ls_0015 = {};
-
-                //file uploader UI의 uploaderUrl 프로퍼티 예외처리.
-                oAPP.fn.attrUploadUrlException(l_14.OBJID, l_14.UIOBK);
-
-            } //UI 반복 횟수만큼 그리기.
-            
-  
-            //MODEL 갱신 처리.
-            oAPP.attr.oModel.refresh();
-
-            //design tree의 tree binding 정보 갱신 처리.
-            var l_bind = oAPP.attr.ui.oLTree1.getBinding();
-            l_bind._buildTree(0,oAPP.fn.designGetTreeItemCount());
-
-            //신규로 생성된 UI의 미리보기에서 UI 선택 처리를 위한 FLAG 처리.
-            //oAPP.attr.prev[l_14.OBJID].__isnew = "X";
-
-            //메뉴 선택 tree 위치 펼침 처리.
-            oAPP.fn.setSelectTreeItem(l_14.OBJID);
-
-            //변경 FLAG 처리.
-            oAPP.fn.setChangeFlag();
-
-        } //UI 추가.
-  
-  
 
 
         //context menu를 호출한 라인의 OBJID 얻기.
@@ -546,7 +415,7 @@
 
 
 
-    //contet menu UI삭제 메뉴 선택 이벤트.
+    //context menu UI삭제 메뉴 선택 이벤트.
     oAPP.fn.contextMenuDeleteUI = function(){
 
         //단축키 잠금 처리.
@@ -781,14 +650,14 @@
                 
         //UI위치 이동 function이 존재하는경우 호출 처리.
         if(typeof oAPP.fn.uiMovePosition !== "undefined"){
-            oAPP.fn.uiMovePosition(ls_tree.OBJID, l_pos, l_parent.zTREE.length, lf_callback, i_x, i_y);
+            oAPP.fn.uiMovePosition(l_parent, ls_tree.OBJID, l_pos, l_parent.zTREE.length, lf_callback, i_x, i_y);
             return;
 
         }
 
         //UI위치 이동 function이 존재하지 않는경우 js 호출 후 function 호출.
         oAPP.fn.getScript("design/js/uiMovePosition",function(){
-            oAPP.fn.uiMovePosition(ls_tree.OBJID, l_pos, l_parent.zTREE.length, lf_callback, i_x, i_y);
+            oAPP.fn.uiMovePosition(l_parent, ls_tree.OBJID, l_pos, l_parent.zTREE.length, lf_callback, i_x, i_y);
         });
 
     };  //UI 위치 이동 처리.
@@ -1433,5 +1302,37 @@
 
     };  //ui 사용처 리스트 메뉴.
 
+
+
+
+    //UI 개인화 저장 메뉴.
+    oAPP.fn.contextMenuP13nDesignPopup = function(){
+
+        //context menu를 호출한 라인의 OBJID 얻기.
+        var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
+            
+        //DOCUMENT영역에 PASTE한경우 EXIT.
+        if(l_OBJID === "ROOT"){
+            //화면 unlock 처리.
+            oAPP.fn.designAreaLockUnlock();
+            return;
+        }
+
+        //OBJID에 해당하는 TREE 정보 얻기.
+        var ls_tree = oAPP.fn.getTreeData(l_OBJID);
+
+        //UI 개인화 저장 팝업 function이 존재하는경우 즉시 호출.
+        if(typeof oAPP.fn.callP13nDesignDataPopup !== "undefined"){
+            oAPP.fn.callP13nDesignDataPopup(ls_tree);
+            return;
+        }
+
+        //UI 개인화 저장 팝업 function이 존재하지 않는경우 js 로드 후 호출.
+        oAPP.fn.getScript("design/js/callP13nDesignDataPopup",function(){
+            oAPP.fn.callP13nDesignDataPopup(ls_tree);
+        });
+
+
+    };  //UI 개인화 저장 메뉴.
 
 })();

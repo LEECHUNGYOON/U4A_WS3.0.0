@@ -6,6 +6,9 @@
   //ATTR 필수 입력 표현 아이콘 색상.
   const C_ATTR_REQ_ICON_COLOR = "#c14646";
 
+  //바인딩(서버이벤트) 색상 필드
+  const C_ATTR_BIND_ICON_COLOR = "#dec066";
+
   //우측 페이지(attribute 영역) 구성
   oAPP.fn.uiAttributeArea = function(oRPage){
     
@@ -207,7 +210,8 @@
      * **********************************************************************
      ************************************************************************/
     //attribute table UI.
-    var oRTab1 = new sap.m.Table({mode:"SingleSelectMaster", alternateRowColors:true, sticky:["HeaderToolbar"]});
+    var oRTab1 = new sap.m.Table({mode:"SingleSelectMaster", alternateRowColors:true, 
+      sticky:["HeaderToolbar"], keyboardMode:"Edit"});
     oRPage.setContent(oRTab1);
     oAPP.attr.ui.oRTab1 = oRTab1;
 
@@ -275,6 +279,38 @@
       oAPP.fn.attrResetAttr();
     });
 
+    
+    oRTTool.addContent(new sap.m.ToolbarSpacer());
+
+    //B39	Help
+    //도움말 버튼.
+    var oRTBtn2 = new sap.m.Button({icon:"sap-icon://question-mark", 
+      // visible:parent.REMOTE.app.isPackaged ? false : true,
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39", "", "", "", "")});
+    oRTTool.addContent(oRTBtn2);
+
+    //도움말 버튼 선택 이벤트.
+    oRTBtn2.attachPress(function(){
+
+      var l_ui = this;
+
+      //attribute 도움말 팝업 function이 존재하는경우.
+      if(typeof oAPP.fn.callTooltipsPopup !== "undefined"){
+        //attribute 도움말 팝업 호출.
+        //E23  Attribute Area
+        oAPP.fn.callTooltipsPopup(l_ui, "attrTooltip", "E23");
+        return;
+      }
+
+      //attribute 도움말 팝업 function이 존재하지 않는경우 script 호출.
+      oAPP.fn.getScript("design/js/callTooltipsPopup",function(){
+        //attribute 도움말 팝업 호출.
+        //E23  Attribute Area
+        oAPP.fn.callTooltipsPopup(l_ui, "attrTooltip", "E23");
+      });
+
+    }); //도움말 버튼 선택 이벤트.
+
 
     //attribute명 컬럼.
     //var oRCol1 = new sap.m.Column({width:"30%"});
@@ -300,9 +336,34 @@
     oRListItem1.addCell(oRHbox0);
 
     //attribute명.
-    var oRObjStat1 = new sap.m.ObjectStatus({text:"{UIATT}", icon:"{UIATT_ICON}"});
-    oRObjStat1.addStyleClass("sapUiTinyMarginEnd");
+    var oRObjStat1 = new sap.m.ObjectStatus({text:"{UIATT}", icon:"{UIATT_ICON}", active:true});
+    oRObjStat1.addStyleClass("sapUiTinyMarginEnd u4aAttrObjectStatus");
     oRHbox0.addItem(oRObjStat1);
+
+    //attribute 선택 이벤트.
+    oRObjStat1.attachPress(function(){
+
+      var l_ui = this;
+
+      var l_ctxt = this.getBindingContext();
+      if(!l_ctxt){return;}
+
+      var ls_attr = l_ctxt.getProperty();
+
+      //attribute 설명글 팝업 function이 존재하는경우.
+      if(typeof oAPP.fn.callAttrDescPopup !== "undefined"){
+        //attribute 설명글 팝업 호출.
+        oAPP.fn.callAttrDescPopup(l_ui, ls_attr);
+        return;
+      }
+
+      //attribute 설명글 팝업 function이 존재하지 않는경우 script 호출.
+      oAPP.fn.getScript("design/js/callAttrDescPopup",function(){
+        //attribute 설명글 팝업 호출.
+        oAPP.fn.callAttrDescPopup(l_ui, ls_attr);
+      }); 
+
+    }); //attribute 선택 이벤트.
 
     //필수 attr 표현 아이콘.
     var oRIcon0 = new sap.ui.core.Icon({src:"{icon0_src}", color:"{icon0_color}", visible:"{icon0_visb}", tooltip:"{icon0_ttip}", size:"12px"});
@@ -3641,11 +3702,11 @@
         //바인딩 아이콘 처리
 
         is_attr.icon1_src = "sap-icon://fallback";
-        is_attr.icon1_color = "#dec066";  //바인딩(서버이벤트) 색상 필드
+        is_attr.icon1_color = C_ATTR_BIND_ICON_COLOR;  //바인딩(서버이벤트) 색상 필드
 
         //help 아이콘 처리.
         is_attr.icon2_src = "sap-icon://sys-help";
-        is_attr.icon2_color = "#40baf3";  //바인딩(서버이벤트) 색상 필드
+        is_attr.icon2_color = "#40baf3";  //help(클라이언트이벤트) 색상.
 
         //프로퍼티 아이콘 처리.
         is_attr.UIATT_ICON = "sap-icon://customize";
@@ -3779,7 +3840,7 @@
         if(is_attr.ISMLB === "X"){
           //바인딩 아이콘 처리
           is_attr.icon1_src = "sap-icon://fallback";
-          is_attr.icon1_color = "#dec066";  //바인딩(서버이벤트) 색상 필드
+          is_attr.icon1_color = C_ATTR_BIND_ICON_COLOR;  //바인딩(서버이벤트) 색상 필드
         }
 
         //help 아이콘 처리.
@@ -4091,7 +4152,7 @@
 
             //바인딩 아이콘 처리
             ls_0015.icon1_src = "sap-icon://fallback";
-            ls_0015.icon1_color = "#dec066";  //바인딩 색상 필드
+            ls_0015.icon1_color = C_ATTR_BIND_ICON_COLOR;  //바인딩 색상 필드
 
             //help 아이콘 처리.
             ls_0015.icon2_src = "sap-icon://sys-help";
@@ -4233,6 +4294,33 @@
 
 
 
+  
+  //attribute type에 따른 desc얻기.
+  oAPP.fn.attrUIATYDesc = function(UIATY){
+    switch(UIATY){
+      case "1":
+        return "Properties";
+
+      case "2":
+        return "Events";
+
+      case "3":
+        return "Aggregations";
+      
+      case "4":
+        return "Associations";
+
+      case "6":
+        return "Embedded Aggregations";
+
+      default:
+        return "";
+    }
+
+  };  //attribute type에 따른 desc얻기.
+
+
+
 
   //attribute 영역 그룹핑 처리.
   oAPP.fn.setAttrModelSort = function(){
@@ -4241,27 +4329,9 @@
 
     //attribute 영역 그룹핑 처리.
     l_bind.sort([new sap.ui.model.Sorter("UIATY", false, function(oContext){
-      var text, key = oContext.getProperty("UIATY");
+      var key = oContext.getProperty("UIATY");
 
-      switch(key){
-        case "1":
-          text = "Properties";
-          break;
-
-        case "2":
-          text = "Events";
-          break;
-
-        case "3":
-          text = "Aggregations";
-          break;
-
-        case "6":
-          text = "Embedded Aggregations";
-          break;
-      }
-
-      return {key:key, text:text};
+      return {key:key, text:oAPP.fn.attrUIATYDesc(key)};
 
     }),new sap.ui.model.Sorter("UIATK", false)]);
 
@@ -4625,6 +4695,9 @@
 
   // attribute 예외처리
   oAPP.fn.setExcepAttr = function(is_attr, is_0023){
+    
+    //default help(client event) 아이콘 비활성 처리.
+    is_attr.icon2_visb = false;
 
     //appcontainer의 AppID 프로퍼티인경우.
     if(is_attr.UIATK === "EXT00000030"){
@@ -4632,6 +4705,9 @@
       //상세보기 아이콘 처리.
       is_attr.icon1_src = "sap-icon://inspection";
       is_attr.icon2_src = "sap-icon://delete";
+      
+      //아이콘 활성 처리.
+      is_attr.icon2_visb = true;
 
       return;
     }
@@ -4642,12 +4718,12 @@
        is_attr.UIATK === "EXT00000032" ||  //height
        is_attr.UIATK === "EXT00000033" ){  //width
 
-       //상세보기 아이콘 처리.
-       is_attr.icon1_src = undefined;
-       is_attr.icon2_src = undefined;
-       is_attr.icon1_visb = false;
-       is_attr.icon2_visb = false;
-       return;
+      //상세보기 아이콘 처리.
+      is_attr.icon1_src = undefined;
+      is_attr.icon2_src = undefined;
+      is_attr.icon1_visb = false;
+      is_attr.icon2_visb = false;
+      return;
 
     }
 
@@ -4655,11 +4731,14 @@
     if(is_attr.UIATK === "EXT00001188" ||   //F4HelpID
        is_attr.UIATK === "EXT00001189"){    //F4HelpReturnFIeld
 
-       //상세보기 아이콘 처리.
-       is_attr.icon1_src = "sap-icon://inspection";
-       is_attr.icon2_src = "sap-icon://delete";
+      //상세보기 아이콘 처리.
+      is_attr.icon1_src = "sap-icon://inspection";
+      is_attr.icon2_src = "sap-icon://delete";
 
-       return;
+      //아이콘 활성 처리.
+      is_attr.icon2_visb = true;
+
+      return;
     }
 
 
@@ -4668,11 +4747,11 @@
        is_attr.UIATK === "EXT00001348" ||   //sap.m.Table autoGrowing
        is_attr.UIATK === "EXT00001349"){    //sap.m.List autoGrowing
 
-       //상세보기 아이콘 처리.
-       is_attr.icon1_src = undefined;
-       is_attr.icon2_src = undefined;
-       is_attr.icon1_visb = false;
-       is_attr.icon2_visb = false;
+      //상세보기 아이콘 처리.
+      is_attr.icon1_src = undefined;
+      is_attr.icon2_src = undefined;
+      is_attr.icon1_visb = false;
+      is_attr.icon2_visb = false;
 
        return;
     }
@@ -4684,10 +4763,10 @@
        is_attr.UIATK === "EXT00002379"){    //sap.f.DynamicPage
 
       //상세보기 아이콘 처리.
-       is_attr.icon1_src = undefined;
-       is_attr.icon2_src = undefined;
-       is_attr.icon1_visb = false;
-       is_attr.icon2_visb = false;
+      is_attr.icon1_src = undefined;
+      is_attr.icon2_src = undefined;
+      is_attr.icon1_visb = false;
+      is_attr.icon2_visb = false;
 
       return;
     }
@@ -4698,6 +4777,9 @@
 
       //help 아이콘 -> 상세 아이콘 처리.
       is_attr.icon2_src = "sap-icon://inspection";
+
+      //아이콘 활성 처리.
+      is_attr.icon2_visb = true;
 
       return;
 
@@ -4718,21 +4800,25 @@
 
     //이벤트건인경우.
     if(is_attr.UIATY === "2"){
-       //이벤트가 설정되어있다면 아이콘 색상 처리.
-       if(is_attr.UIATV !== ""){
+
+      //아이콘 활성 처리.
+      is_attr.icon2_visb = true;
+
+      //이벤트가 설정되어있다면 아이콘 색상 처리.
+      if(is_attr.UIATV !== ""){
         is_attr.icon1_color = "#66ff66";  //바인딩(서버이벤트) 색상 필드
-       }
+      }
 
-       //클라이언트 이벤트 존재여부 확인.
-       var l_find = oAPP.DATA.APPDATA.T_CEVT.find( a=> a.OBJID === is_attr.OBJID + is_attr.UIASN );
+      //클라이언트 이벤트 존재여부 확인.
+      var l_find = oAPP.DATA.APPDATA.T_CEVT.find( a=> a.OBJID === is_attr.OBJID + is_attr.UIASN );
 
-       if(typeof l_find !== "undefined"){
+      if(typeof l_find !== "undefined"){
 
-         //클라이언트 이벤트 아이콘, 색상 처리.
-         is_attr.icon2_src = "sap-icon://syntax";
-         is_attr.icon2_color = "#66ff66";  //바인딩(서버이벤트) 색상 필드
+        //클라이언트 이벤트 아이콘, 색상 처리.
+        is_attr.icon2_src = "sap-icon://syntax";
+        is_attr.icon2_color = "#66ff66";  //바인딩(서버이벤트) 색상 필드
 
-       }
+      }
 
     }
 
@@ -5481,7 +5567,7 @@
   //우 상단 UI OBJECT 영역 펼침/접힘 처리.
   oAPP.fn.attrHeaderExpanded = function(bExpand){
     //우측 DynamicPage UI정보 얻기.
-    var l_ui = sap.ui.getCore().byId('designAttr');
+    var l_ui = sap.ui.getCore().byId("designAttr");
     if(!l_ui){return;}
 
     //HEADER 펼침/접힘 처리.

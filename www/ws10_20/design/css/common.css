@@ -1,0 +1,24 @@
+
+.u4aAttrObjectStatus *{
+            
+    text-decoration: unset !important;
+    
+}
+.u4aAttrObjectStatus:hover * {
+    font-weight:bold;
+    text-decoration: underline !important;
+}
+
+.u4aP13nPreview:after {
+    content: "PREVIEW";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%) rotate(-45deg);
+    color: #000000;
+    font-weight: bold;
+    font-size: 92px;
+    opacity: 0.2;
+    filter: blur(1px);
+    letter-spacing: 13px;
+}

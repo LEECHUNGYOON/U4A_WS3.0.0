@@ -685,7 +685,7 @@
         if(oFocusUI){oFocusUI.focus();}
       });
       return l_err;
-    }        
+    } 
 
     oModel.setProperty(l_stru, ls_appl);
 

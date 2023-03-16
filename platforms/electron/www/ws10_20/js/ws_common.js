@@ -2377,7 +2377,16 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
         // POST 방식이 아닐 경우 호출 URL 파라미터에 ID, PW를 붙인다.
         if (meth && meth !== "POST") {
-            sPath += `?sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.CLIENT}&sap-language=${oUserInfo.LANGU}`;
+
+            if(sPath.indexOf("?") == -1){
+                sPath += "?";
+            }
+            else {
+                sPath += "&";
+            }
+
+            sPath += `sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.CLIENT}&sap-language=${oUserInfo.LANGU}`;
+
         }
 
     }

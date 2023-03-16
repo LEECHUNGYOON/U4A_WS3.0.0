@@ -351,6 +351,12 @@
             oAPP.fn.setShortcutLock(true);
 
         }); //팝업 호출후 이벤트.
+
+        //팝업 종료후 이벤트.
+        oPop.attachAfterClose(function(){
+            //팝업 instance 제거.
+            oPop.destroy();
+        });
         
 
         var oTool = new sap.m.Toolbar();
