@@ -1,3 +1,10 @@
+/**
+ * 2023-03-16
+ * 기능 완료 후 아래 JSON 추가할 것
+ * {"MCODE":"LanguTrans", "DESC":"Language Translate",  "ICON":"sap-icon://translate"} <-- json/MenuList.json에 추가할 것 
+ */
+
+
 const oAPP = {
     ui: {},
     fn: {},

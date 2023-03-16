@@ -2423,7 +2423,8 @@ let oAPP = (function () {
             sMsg += "Do you want to restart? \n \n";
             sMsg += sap.m.MessageBox.Action.RETRY + ": Application Restart \n \n ";
             sMsg += sap.m.MessageBox.Action.CLOSE + ": Application Close \n \n ";
-            sMsg += sap.m.MessageBox.Action.IGNORE + ": Ignoring updates and then running the program";
+            sMsg += sap.m.MessageBox.Action.IGNORE + ": Ignoring updates and then running the program \n\n";
+            sMsg += e.message;
 
             sap.m.MessageBox.error(sMsg, {
                 title: "U4A Workspace Update Error",
@@ -2459,7 +2460,7 @@ let oAPP = (function () {
 
             });
 
-            console.log('에러가 발생하였습니다. 에러내용 : ' + err);
+            console.log('에러가 발생하였습니다. 에러내용 : ' + e.message);
 
         });
 

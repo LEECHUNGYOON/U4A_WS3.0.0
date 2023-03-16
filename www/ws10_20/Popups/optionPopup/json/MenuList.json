@@ -1,7 +1,7 @@
 { "AT_MENU" : 
 	[ 
 		{"MCODE":"ThemeSetting", "DESC":"Theme Settings",  "ICON":"sap-icon://palette"},
-		{"MCODE":"CdnSetting", "DESC":"CDN Settings",  "ICON":"sap-icon://download-from-cloud"},
-		{"MCODE":"LanguTrans", "DESC":"Language Translate",  "ICON":"sap-icon://translate"}
+		{"MCODE":"CdnSetting", "DESC":"CDN Settings",  "ICON":"sap-icon://download-from-cloud"}
+		
 	]
 }
