@@ -789,6 +789,8 @@ exports.on = function (evtnm, CB) {
 //업데이트 점검 시작 
 exports.checkForUpdates = async function (remote, iscdn = false, versn, splev = 0, oLoginInfo) {
 
+    debugger;
+    
     //업데이트 확인중 
     document.dispatchEvent(new CustomEvent('checking-for-update-SP', { detail: { message: GS_MSG.M15 } }));
 

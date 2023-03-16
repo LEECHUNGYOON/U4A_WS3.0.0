@@ -2425,6 +2425,8 @@ let oAPP = (function () {
             // 메시지 팝업을 띄운다.
             // 다운로드 중 오류가 발생하였습니다.
             // 재시작 하시겠습니까?
+            parent.setBusy("");
+            
             let sMsg = "Error occurred while U4A Workspace Updating! \n ";
             sMsg += "Do you want to restart? \n \n";
             sMsg += sap.m.MessageBox.Action.RETRY + ": Application Restart \n \n ";
