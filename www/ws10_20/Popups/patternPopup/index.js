@@ -14,11 +14,7 @@ let oAPP = parent.oAPP;
 (function (window, oAPP) {
     "use strict";
 
-    oAPP.settings = {};
-
-    let PATH = oAPP.PATH,
-        APP = oAPP.APP,
-        require = parent.require,
+    let require = parent.require,
         FS = require("fs-extra");
 
     /************************************************************************
@@ -56,30 +52,12 @@ let oAPP = parent.oAPP;
 
     }; // end of oAPP.fn.fnGetModelProperty
 
-    /************************************************************************
-     * ws의 설정 정보를 구한다.
-     ************************************************************************/
-    oAPP.fn.getSettingsInfo = function () {
-
-        // Browser Window option
-        var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
-
-            // JSON 파일 형식의 Setting 정보를 읽는다..
-            oSettings = require(sSettingsJsonPath);
-        if (!oSettings) {
-            return;
-        }
-
-        return oSettings;
-
-    }; // end of oAPP.fn.getSettingsInfo
-
     // /************************************************************************
     //  * UI5 BootStrap 
     //  ************************************************************************/
     oAPP.fn.fnLoadBootStrapSetting = function () {
 
-        var oSettings = oAPP.fn.getSettingsInfo(),
+        var oSettings = oAPP.attr.oSettingInfo,
             oSetting_UI5 = oSettings.UI5,
             sVersion = oSetting_UI5.version,
             sTestResource = oSetting_UI5.testResource,
@@ -89,6 +67,15 @@ let oAPP = parent.oAPP;
             oUserInfo = oAPP.attr.oUserInfo,
             oThemeInfo = oAPP.attr.oThemeInfo,
             sLangu = oUserInfo.LANGU;
+
+        // sTestResource = `file:\\C:\\Temp\\ws_build\\v1\\U4A_WS3.0.0-3.4.0-base\\www\\lib\\ui5\\v11071\\resources\\sap-ui-core.js`;
+        sTestResource = `file://${parent.testPath}/v11071/resources/sap-ui-core.js`;
+
+        // sTestResource = parent.PATH.join(parent.testPath, "v11071", "resources", "sap-ui-core.js");
+        
+        // sTestResource = `file://${parent.PATH.join(parent.testPath, "v11071", "resources", "sap-ui-core.js")}`;
+
+        // alert(sTestResource);
 
         var oScript = document.createElement("script");
         oScript.id = "sap-ui-bootstrap";
@@ -309,6 +296,7 @@ let oAPP = parent.oAPP;
                         }
                     })
                 }),
+
             ],
             rows: {
                 path: "/DEF_PAT",
@@ -370,6 +358,11 @@ let oAPP = parent.oAPP;
                         }
                     })
                 }),
+
+                new sap.ui.table.Column({
+                    label: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E18"), // Content Type
+                    template: new sap.m.Text({ text: "{CONT_TYPE}" })
+                }),
             ],
             rows: {
                 path: "/CUS_PAT",
@@ -424,7 +417,8 @@ let oAPP = parent.oAPP;
 
                 _oAceEditor.setFontSize(20);
 
-            }
+            },
+
         });
 
         return [
@@ -509,6 +503,20 @@ let oAPP = parent.oAPP;
 
                 _oAceEditor.setFontSize(20);
 
+            },
+
+            onkeyup: function (oEvent) {
+
+                /**
+                 * 단축키 설정
+                 */
+
+                // [Shift + F1] Pretty Print 기능
+                if (oEvent.shiftKey && oEvent.keyCode == 112) {
+                    oEvent.srcControl.prettyPrint();
+                    return;
+                }
+
             }
 
         });
@@ -577,6 +585,11 @@ let oAPP = parent.oAPP;
             KEY: "text",
             EXTEN: "txt",
             TEXT: "text",
+        },
+        {
+            KEY: "abap",
+            EXTEN: "abap",
+            TEXT: "abap",
         }, {
             KEY: "html",
             EXTEN: "html",
@@ -688,8 +701,6 @@ let oAPP = parent.oAPP;
      ************************************************************************/
     function ev_CustCreateDlgSave() {
 
-        debugger;
-
         let oCreateInfo = oAPP.fn.fnGetModelProperty("/CUST_CR_DLG");
 
         oCreateInfo.TITLE_VS = "";
@@ -735,25 +746,32 @@ let oAPP = parent.oAPP;
             oNewCustomPatternData = {
                 PKEY: "PATT002",
                 CKEY: sKey,
-                TITLE: oCreateInfo.TITLE,
+                DESC: oCreateInfo.TITLE,
                 DATA: oCreateInfo.DATA,
                 CONT_TYPE: oCreateInfo.CONT_TYPE
             };
 
         aCustomData.push(oNewCustomPatternData);
 
+        // 신규 추가한 데이터를 모델에 반영한다.
+        oAPP.fn.fnSetModelProperty("/CUS_PAT", aCustomData, true);
+
+        // 추가한 데이터를 TREE 형태로 변경
+        let oModel = sap.ui.getCore().getModel();
+
+        parent.WSUTIL.parseArrayToTree(oModel, "CUS_PAT", "CKEY", "PKEY", "CUS_PAT");
+
+        oModel.refresh();
+
+        // 신규 추가한 정보를 JSON으로 변환하여 로컬에 저장
         let sNewCustomJsonData = JSON.stringify(aCustomData);
 
         FS.writeFileSync(oAPP.attr.sCustomPatternJsonPath, sNewCustomJsonData, "utf-8");
 
-        parent.WSUTIL.parseTreeToArray(aCustomData, "CUS_PAT");
-
-        // oAPP.fn.fnSetModelProperty("/CUS_PAT", aCustomData);
-
-        // let oCloseBtn = sap.ui.getCore().byId("uspCustPattCreateDlgCloseBtn");
-        // if (oCloseBtn) {
-        //     oCloseBtn.firePress();
-        // }
+        let oCloseBtn = sap.ui.getCore().byId("uspCustPattCreateDlgCloseBtn");
+        if (oCloseBtn) {
+            oCloseBtn.firePress();
+        }
 
     } // end of ev_CustCreatef
 
@@ -779,6 +797,54 @@ let oAPP = parent.oAPP;
     function ev_pressCustomPatternDelete(oEvent) {
 
         debugger;
+
+        let oCustTable = sap.ui.getCore().byId("uspCustPattTreeTbl");
+        if (!oCustTable) {
+            return;
+        }
+
+        let oTableModel = oCustTable.getModel();
+        if (!oTableModel) {
+            return;
+        }
+
+        let oModelData = oTableModel.getProperty("/CUS_PAT"),
+            aCustData = parent.WSUTIL.parseTreeToArray(oModelData, "CUS_PAT");
+
+        // 선택한 라인이 있는지 확인
+        let aSelIndex = oCustTable.getSelectedIndices(),
+            iSelLength = aSelIndex.length;
+
+        if (iSelLength == 0) {
+            return;
+        }
+
+        for (var i = 0; i < iSelLength; i++) {
+
+            let iSelIdx = aSelIndex[i],
+                oCtx = oCustTable.getContextByIndex(iSelIdx);
+
+            if (!oCtx) {
+                continue;
+            }
+
+            let sCKEY = oCtx.getObject("CKEY");
+
+            let iFindIndex = aCustData.findIndex(elem => elem?.CKEY === sCKEY);
+
+            if (iFindIndex == -1) {
+                continue;
+            }
+
+
+
+
+
+            debugger;
+
+
+        }
+
 
 
     } // end of ev_pressCustomDelete
@@ -904,9 +970,12 @@ let oAPP = parent.oAPP;
 
             oAPP.fn.fnInitModelBinding();
 
-            let oTable = sap.ui.getCore().byId("uspDefPattTreeTbl");
-            if (oTable) {
-                oTable.expandToLevel(1);
+            let oTable1 = sap.ui.getCore().byId("uspDefPattTreeTbl"),
+                oTable2 = sap.ui.getCore().byId("uspCustPattTreeTbl");
+
+            if (oTable1 && oTable2) {
+                oTable1.expandToLevel(1);
+                oTable2.expandToLevel(1);
             }
 
             /**

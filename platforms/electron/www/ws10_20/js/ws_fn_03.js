@@ -474,7 +474,7 @@
                 oIllustMsg.setTitle(sTitle || (oIllustProperties.title && oIllustProperties.title.defaultValue));
                 oIllustMsg.setDescription(sDesc || (oIllustProperties.description && oIllustProperties.description.defaultValue));
                 oIllustMsg.setIllustrationType(sIllustType || (oIllustProperties.illustrationType && oIllustProperties.illustrationType.defaultValue));
-                oIllustMsg.setIllustrationSize(sIllustSize || (oIllustProperties.illustrationSize && oIllustProperties.illustrationSize.defaultValue));                
+                oIllustMsg.setIllustrationSize(sIllustSize || (oIllustProperties.illustrationSize && oIllustProperties.illustrationSize.defaultValue));
 
             }
 
@@ -518,7 +518,7 @@
                 }
 
             }
-            
+
         }).open();
 
     }; // end of oAPP.fn.fnShowIllustMsgDialog
@@ -601,7 +601,7 @@
 
         var oServerInfoPopup = new sap.m.ResponsivePopover("serverInfoPopover", {
             resizable: true,
-            contentWidth: "300px",
+            contentWidth: "350px",
             placement: sap.m.PlacementType.Auto,
 
             customHeader: new sap.m.Toolbar({
@@ -648,6 +648,29 @@
                                         })
                                     ] // end of fields
 
+                                }), // end of sap.ui.layout.form.FormElement
+
+                                new sap.ui.layout.form.FormElement({
+                                    label: new sap.m.Label({
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E26") // Patch Level                                        
+                                    }), // end of label
+
+                                    fields: [
+                                        new sap.m.Text({
+                                            text: "{/USERINFO/WSPATCH_LEVEL}"
+                                        })
+                                    ] // end of fields
+
+                                }).bindProperty("visible", {
+                                    parts: [
+                                        "/USERINFO/WSPATCH_LEVEL"
+                                    ],
+                                    formatter: function () {
+
+                                        return APP.isPackaged;
+
+                                    }
                                 }), // end of sap.ui.layout.form.FormElement
 
                                 new sap.ui.layout.form.FormElement({

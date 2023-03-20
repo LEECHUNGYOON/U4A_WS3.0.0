@@ -243,7 +243,7 @@
 
 
         document.addEventListener('DOMContentLoaded', function () {
-            
+
             setTimeout(() => {
 
                 let PATH = parent.require('path'),
@@ -271,12 +271,19 @@
 
                         }
 
+                        let APP = parent.gfn_remote().app;
+                            bIsPackged = APP.isPackaged,
+                            sWsVer = parent.WSVER;
+
+                        if(bIsPackged){
+                            sWsVer += ` (Patch Level : ${parent.WSPATCH_LEVEL})`;
+                        }
 
                         document.getElementById('LIC_TYPE').innerHTML = sData.DATA.LIC_TYPE;
                         document.getElementById('VER1').innerHTML = sData.DATA.VER1;
                         document.getElementById('VER2').innerHTML = sData.DATA.VER2;
-                        document.getElementById('VER3').innerHTML = parent.gfn_remote().app
-                            .getVersion();
+                        document.getElementById('VER3').innerHTML = sWsVer;
+                        // document.getElementById('VER3').innerHTML = parent.gfn_remote().app.getVersion();
 
 
                     }

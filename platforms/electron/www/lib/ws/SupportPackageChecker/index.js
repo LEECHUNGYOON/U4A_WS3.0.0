@@ -202,8 +202,9 @@ async function gf_chkPatch_SAP() {
             }
 
             //WS3.0 버젼
+            //현재 WS3.0 빌드 버젼과 업데이트 패치에 등록된 WS3.0 버젼이 다르다면 치명적 오류 !!!
             if (LS_DATA.VERSN != VERSN) {
-                resolve({ RETCD: "E", RTMSG: GS_MSG.M08 }); //WS 빌드버전 과 업데이트 패치에 등록되있는 WS 빌드버전이 상이 합니다  \n 관리자에게 문의하세요
+                resolve({ RETCD: "E", RTMSG: GS_MSG.M08 }); //WS 빌드버전 과 업데이트 패치에 등록되있는 WS 빌드버전이 상이 합니다  \n 관리자에게 문의하세요               
                 return;
 
             }
@@ -491,16 +492,13 @@ async function gf_chkPatch_GIT() {
             return;
         }
 
-
         //패치번호 추출 => WS3.0 버젼 + 💛 + 00001 구성된상태
         var LT_PATCH = ROOT.data.tag_name.split(ADMIN.PATCH_SEP);
 
-
         //현재 WS3.0 빌드 버젼과 업데이트 패치에 등록된 WS3.0 버젼이 다르다면 치명적 오류 !!!
         if (LT_PATCH[0] !== VERSN) {
-            res({ RETCD: "E", RTMSG: GS_MSG.M08 }); //WS 빌드버전 과 업데이트 패치에 등록되있는 WS 빌드버전이 상이 합니다  \n 관리자에게 문의하세요
+            res({ RETCD: "E", RTMSG: GS_MSG.M08 }); //WS 빌드버전 과 업데이트 패치에 등록되있는 WS 빌드버전이 상이 합니다  \n 관리자에게 문의하세요            
             return;
-
         }
 
 
@@ -731,7 +729,7 @@ async function fn_asarCompress() {
 
 // 비동기 압축 풀기
 async function onZipExtractAsync(PRCCD, sSourcePath, sTargetPath, pOverwrite = true) {
-    
+
     return new Promise((resolve) => {
 
         try {
@@ -790,7 +788,7 @@ exports.on = function (evtnm, CB) {
 exports.checkForUpdates = async function (remote, iscdn = false, versn, splev = 0, oLoginInfo) {
 
     debugger;
-    
+
     //업데이트 확인중 
     document.dispatchEvent(new CustomEvent('checking-for-update-SP', { detail: { message: GS_MSG.M15 } }));
 
@@ -813,7 +811,6 @@ exports.checkForUpdates = async function (remote, iscdn = false, versn, splev = 
             var LS_CHKER = await gf_chkPatch_SAP();
             break;
     }
-
 
     if (LS_CHKER.RETCD === "E") {
         document.dispatchEvent(new CustomEvent('update-error-SP', { detail: { message: LS_CHKER.RTMSG } }));

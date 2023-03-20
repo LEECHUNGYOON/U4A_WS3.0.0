@@ -30,7 +30,9 @@
     </script>
 
     <script>
-        var SERVPATH = "";
+        var SERVPATH = "",
+            WSVER = "",
+            WSPATCH_LEVEL = "";
 
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -48,6 +50,8 @@
             ipcRenderer.on('if-about-u4a', (event, IF_DATA) => {
 
                 SERVPATH = IF_DATA.SERVPATH;
+                WSVER = IF_DATA.WSVER;
+                WSPATCH_LEVEL = IF_DATA.WSPATCH_LEVEL;
 
                 let oFrame = document.getElementById("mainFRAME");
 

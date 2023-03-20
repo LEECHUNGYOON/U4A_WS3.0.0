@@ -18,8 +18,7 @@ let oAPP = (function (window) {
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
     oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
-    oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
-
+    
     /*******************************************************
      * 메시지클래스 텍스트 작업 관련 Object -- start
      *******************************************************/
@@ -34,7 +33,7 @@ let oAPP = (function (window) {
         APPPATH = APP.getAppPath(),
         LANGU = USERINFO.LANGU,
         SYSID = USERINFO.SYSID,
-        PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));        
+        PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));
 
     const
         WSUTIL_PATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
@@ -52,14 +51,13 @@ let oAPP = (function (window) {
      ************************************************************************/
     oAPP.IPCRENDERER.on('if-usp-pattern-info', (events, oInfo) => {
 
-
-        oAPP.attr.BROWSKEY = oInfo.BROWSKEY;
         oAPP.attr.oUserInfo = oInfo.oUserInfo;
         oAPP.attr.oServerInfo = oInfo.oServerInfo;
-        oAPP.attr.SYSID = oInfo.SYSID;
-        oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
-        oAPP.attr.sDefaultPatternJsonPath = oInfo.sDefaultPatternJsonPath;
-        oAPP.attr.sCustomPatternJsonPath = oInfo.sCustomPatternJsonPath;
+        oAPP.attr.oThemeInfo = oInfo.oThemeInfo;        
+        oAPP.attr.oSettingInfo = require(PATHINFO.WSSETTINGS);
+
+        oAPP.attr.sDefaultPatternJsonPath = PATHINFO.DEF_PATT;
+        oAPP.attr.sCustomPatternJsonPath = PATHINFO.CUST_PATT;
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {

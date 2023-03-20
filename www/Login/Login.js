@@ -1572,12 +1572,16 @@ let oAPP = (function () {
         var oUserInfo = jQuery.extend({}, oResult, oLogInData);
 
         oUserInfo.WSVER = APP.getVersion();
+        oUserInfo.WSPATCH_LEVEL = Number(oWsSettings.patch_level || 0);
 
         // 로그인 유저의 아이디/패스워드를 저장해둔다.    
         parent.setUserInfo(oUserInfo);
 
         // 서버 정보에 실제 로그인한 client, language 정보를 저장한다.       
         var oServerInfo = parent.getServerInfo();
+
+        oServerInfo.WSVER = APP.getVersion();
+        oServerInfo.WSPATCH_LEVEL = Number(oWsSettings.patch_level || 0);
 
         // 서버 Info 이전 값을 저장한다.
         parent.setBeforeServerInfo(jQuery.extend(true, {}, oServerInfo));
@@ -2213,44 +2217,20 @@ let oAPP = (function () {
             // 재시작 하시겠습니까?
             parent.setBusy("");
 
-            let sMsg = "Error occurred while U4A Workspace Updating! \n ";
-            sMsg += "Do you want to restart? \n \n";
-            sMsg += sap.m.MessageBox.Action.RETRY + ": Application Restart \n \n ";
-            sMsg += sap.m.MessageBox.Action.CLOSE + ": Application Close \n \n ";
-            sMsg += sap.m.MessageBox.Action.IGNORE + ": Ignoring updates and then running the program \n\n";
+            let sMsg = "Error occurred while U4A Workspace Support Package Updating! \n \n";
             sMsg += e.message;
 
             sap.m.MessageBox.error(sMsg, {
-                title: "U4A Workspace Update Error",
-                initialFocus: sap.m.MessageBox.Action.RETRY,
-                emphasizedAction: sap.m.MessageBox.Action.RETRY,
+                title: "U4A Workspace Support Package Update Error",
+                initialFocus: sap.m.MessageBox.Action.OK,
+                emphasizedAction: sap.m.MessageBox.Action.OK,
                 onClose: function (oEvent) {
 
-                    switch (oEvent) {
-                        case "RETRY": // 앱 재시작
-
-                            APP.relaunch();
-                            APP.exit();
-
-                            return;
-
-                        case "CLOSE":  // 앱 종료
-
-                            APP.exit();
-
-                            return;
-
-                        case "IGNORE": // 무시하고 진행
-
-                            resolve();
-
-                            return;
-
-                    }
+                    APP.exit();
 
                 },
 
-                actions: [sap.m.MessageBox.Action.RETRY, sap.m.MessageBox.Action.CLOSE, sap.m.MessageBox.Action.IGNORE]
+                actions: [sap.m.MessageBox.Action.OK]
 
             });
 
