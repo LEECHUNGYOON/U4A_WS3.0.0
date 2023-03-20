@@ -497,9 +497,9 @@
     // end of oAPP.fn.fnUspNewWindowIPCEvent
 
     /**************************************************************************
-     * Usp 패턴을 앱 설치 폴더에 JSON으로 저장
+     * Source pattern을 앱 설치 폴더에 JSON으로 저장
      **************************************************************************/
-    oAPP.fn.fnSaveUspPattern = () => {
+    oAPP.fn.fnSaveSourcePattern = () => {
 
         return new Promise(async (resolve) => {
 
@@ -531,7 +531,13 @@
             if (bIsFileExist) {
 
                 let sCustomPatternJson = FS.readFileSync(sCustPattJsonPath, 'utf-8'), // 커스텀 패턴 Json Data
-                    aCustomPatternJsonData = JSON.parse(sCustomPatternJson); // Custom Pattern Json Parse
+                    aCustomPatternJsonData;
+                    
+                try {
+                    aCustomPatternJsonData = JSON.parse(sCustomPatternJson); // Custom Pattern Json Parse    
+                } catch (error) {
+                    throw Error(error);
+                }
 
                 let iFindIdx = aCustomPatternJsonData.findIndex(elem => elem.TYPE === "ROOT");
                 if (iFindIdx >= 0) {
@@ -551,7 +557,7 @@
 
         });
 
-    }; // end of oAPP.fn.fnSaveUspDefaultPattern
+    }; // end of oAPP.fn.fnSaveSourcePattern
 
     /**************************************************************************
      * Usp Pattern 정보를 바인딩한다.

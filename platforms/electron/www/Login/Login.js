@@ -840,183 +840,6 @@ let oAPP = (function () {
 
     }; // end of oAPP.events.ev_login
 
-    // /************************************************************************
-    //  * 로그인 버튼 클릭
-    //  ************************************************************************/
-    // oAPP.events.ev_login = () => {
-
-    //     let oCoreModel = sap.ui.getCore().getModel();
-    //     if (oCoreModel == null) {
-    //         return;
-    //     }
-
-    //     let oLogInData = oCoreModel.getProperty("/LOGIN");
-    //     if (oLogInData == null) {
-    //         return;
-    //     }
-
-    //     parent.setBusy("X");
-
-    //     var oResult = oAPP.fn.fnLoginCheck(oLogInData.ID, oLogInData.PW, oLogInData.CLIENT, oLogInData.LANGU);
-    //     if (oResult.RETCD == 'E') {
-
-    //         // 메시지 처리.. 
-    //         parent.showMessage(null, 99, "E", oResult.MSG);
-
-    //         parent.setBusy("");
-
-    //         return;
-
-    //     }
-
-    //     debugger;
-
-    //     var sServicePath = parent.getServerPath() + "/wsloginchk";
-
-    //     var oFormData = new FormData();
-    //     oFormData.append("sap-user", oLogInData.ID);
-    //     oFormData.append("sap-password", oLogInData.PW);
-    //     oFormData.append("sap-client", oLogInData.CLIENT);
-    //     oFormData.append("sap-language", oLogInData.LANGU);
-    //     oFormData.append("SYSID", oLogInData.SYSID);
-    //     oFormData.append("PRCCD", "00"); // 로그인에서 호출하고 있다는 구분자 (로그인 성공시: [/wsloginchk] 서비스 부분에서 참조하는 파라미터)
-    //     oFormData.append("ACTCD", "001"); // 로그인에서 호출하고 있다는 구분자 (로그인 실패시: WS_LOGIN 클래스 부분에서 참조하는 파라미터)
-
-    //     var oPwInput = sap.ui.getCore().byId("ws_pw");
-
-    //     var xhr = new XMLHttpRequest();
-
-    //     xhr.onreadystatechange = function () { // 요청에 대한 콜백
-    //         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
-    //             if (xhr.status === 200 || xhr.status === 201) {
-
-    //                 // u4a 서비스 관련 헤더가 존재할 경우 오류
-    //                 let u4a_status = xhr.getResponseHeader("u4a_status");
-    //                 if (u4a_status) {
-
-    //                     parent.setBusy("");
-
-    //                     try {
-    //                         var oResult = JSON.parse(xhr.response);
-    //                     } catch (error) {
-    //                         fnJsonParseError(error);
-    //                         return;
-    //                     }
-
-    //                     //오류 메시지 출력.
-    //                     parent.showMessage(sap, 20, oResult.RETCD, oResult.RTMSG);
-
-    //                     return;
-
-    //                 }
-
-    //                 var oResult;
-
-    //                 try {
-
-    //                     oResult = JSON.parse(xhr.response);
-
-    //                 } catch (error) {
-
-    //                     var sCleanHtml = parent.setCleanHtml(xhr.response);
-
-    //                     parent.showMessage(null, 99, "E", sCleanHtml);
-
-    //                     parent.setBusy("");
-
-    //                     return;
-
-    //                 }
-
-    //                 if (oResult.TYPE == "E") {
-
-    //                     oPwInput.setValue("");
-
-    //                     // 오류 처리..                   
-    //                     parent.showMessage(null, 99, "E", oResult.MSG);
-
-    //                     parent.setBusy("");
-
-    //                     return;
-
-    //                 }
-
-    //                 // HTTP ONLY 값을 글로벌에 저장
-    //                 oAPP.attr.HTTPONLY = oResult.HTTP_ONLY;
-    //                 oAPP.attr.LOGIN = oLogInData;
-
-    //                 // 여기까지 온건 로그인 성공했다는 뜻이니까 
-    //                 // 권한 체크를 수행한다.
-    //                 oAPP.fn.fnCheckAuthority().then((oAuthInfo) => {
-
-    //                     // trial 버전 확인
-    //                     var oWsSettings = oAPP.fn.fnGetSettingsInfo(),
-    //                         bIsTrial = oWsSettings.isTrial,
-    //                         bIsPackaged = APP.isPackaged;
-
-    //                     oAuthInfo.IS_TRIAL = bIsTrial; // 유저 권한 정보에 Trial 정보를 저장한다.
-
-    //                     // no build일 경우 혹은 Trial 버전일 경우는 최신 버전 체크를 하지 않는다.                        
-    //                     if (!bIsPackaged || bIsTrial) {
-
-    //                         parent.setBusy("");
-
-    //                         oAPP.fn.fnCheckVersionFinished(oResult, oAuthInfo);
-
-    //                         return;
-    //                     }
-
-    //                     // 개발자 권한 성공시
-    //                     oAPP.fn.fnCheckAuthSuccess(oResult, oAuthInfo);
-
-    //                 }).catch((e) => {
-
-    //                     // 권한이 없으므로 오류 메시지를 띄운다.
-    //                     oAPP.fn.fnShowNoAuthIllustMsg(e);
-
-    //                     parent.setBusy("");
-
-    //                 });
-
-    //             } else {
-
-    //                 let sErrMsg = "Connection fail!";
-
-    //                 if (xhr.response == "") {
-    //                     parent.showMessage(null, 99, "E", sErrMsg);
-    //                     parent.setBusy("");
-    //                     return;
-    //                 }
-
-    //                 var sCleanHtml = parent.setCleanHtml(xhr.response);
-
-    //                 parent.showMessage(null, 99, "E", sCleanHtml);
-    //                 parent.setBusy("");
-
-    //             }
-    //         }
-    //     };
-
-    //     xhr.open('POST', sServicePath); // 메소드와 주소 설정
-    //     //xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
-    //     xhr.withCredentials = true;
-    //     xhr.send(oFormData); // 요청 전송         
-
-    // }; // end of oAPP.events.ev_login
-
-    // function fnJsonParseError(e) {
-
-    //     debugger;
-
-    //     zconsole.error(e);
-
-    //     parent.setBusy("");
-
-    //     let sErrmsg = + "Fatal Error! Please contact your system administrator. \n \n " + e.toString();
-    //     parent.showMessage(sap, 20, "E", sErrmsg);
-
-    // } // end of fnJsonParseError
-
     /************************************************************************
      * 개발 권한 체크
      ************************************************************************/
@@ -1200,45 +1023,8 @@ let oAPP = (function () {
             return;
         }
 
-        // 개인화 파일에 저장된 CDN 허용 여부 플래그를 구한다.
-        // var bIsCDN = oAPP.fn.fnGetIsCDN();
+        // 개인화 파일에 저장된 CDN 허용 여부 플래그를 구한다.        
         var bIsCDN = parent.getIsCDN();
-
-        // // CDN 허용 여부 플래그가 저장되지 않았을 경우.
-        // if (typeof bIsCDN == "undefined") {
-
-        //     parent.setBusy("");
-
-        //     parent.showMessage(sap, 30, "I", "Do you want to allow CDN Auto Update?", lf_msgCallback.bind(this));
-
-        //     function lf_msgCallback(sAction) {
-
-        //         parent.setBusy("X");
-
-        //         var YES = sap.m.MessageBox.Action.YES,
-        //             bIsAction = (sAction == YES ? "X" : "");
-
-        //         // CDN 허용여부 플래그 값을 개인화 폴더에 저장한다.
-        //         // oAPP.fn.fnSetIsCDN(bIsAction);
-        //         parent.setIsCDN(bIsAction);
-
-        //         // CDN 허용일 경우 GitHub에 Ping을 수행.
-        //         if (bIsAction == "X") {
-
-        //             oAPP.fn.fnConnectionGithub().then(oAPP.fn.fnConnectionGithubThen.bind(this));
-
-        //             return;
-
-        //         }
-
-        //         // CDN 허용이 아닐 경우 sap 서버에 최신 버전 체크 후 있다면 다운받기
-        //         oAPP.fn.fnSetAutoUpdateForSAP().then(oAPP.fn.fnSetAutoUpdateForSAPThen.bind(this));
-
-        //     } // end of lf_msgCallback
-
-        //     return;
-
-        // }
 
         // CDN 플래그가 저장되어 있고, CDN 허용일 경우 GitHub에 Ping을 수행.
         if (bIsCDN == "X") {
@@ -1831,7 +1617,7 @@ let oAPP = (function () {
         });
 
         // 테마 설정
-        oAPP.fn.fnP13nCreateTheme().then((oThemeInfo) => {
+        oAPP.fn.fnP13nCreateTheme().then(async (oThemeInfo) => {
 
             // 테마 정보를 저장한다.
             parent.setThemeInfo(oThemeInfo);
@@ -2426,7 +2212,7 @@ let oAPP = (function () {
             // 다운로드 중 오류가 발생하였습니다.
             // 재시작 하시겠습니까?
             parent.setBusy("");
-            
+
             let sMsg = "Error occurred while U4A Workspace Updating! \n ";
             sMsg += "Do you want to restart? \n \n";
             sMsg += sap.m.MessageBox.Action.RETRY + ": Application Restart \n \n ";

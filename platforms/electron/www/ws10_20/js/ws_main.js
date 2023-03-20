@@ -322,7 +322,7 @@
      ************************************************************************/
     oAPP.main.fnWsStart = function () {
 
-        sap.ui.getCore().attachInit(async function () {
+        sap.ui.getCore().attachInit(async function () {           
 
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
@@ -346,8 +346,11 @@
             oAPP.common.fnSetGlobalShortcut();
 
             // 초기 모델 바인딩
-            oAPP.main.fnOnInitModelBinding();           
+            oAPP.main.fnOnInitModelBinding();
 
+            // 패턴을 앱 설치폴더에 JSON 파일로 저장한다.
+            await oAPP.fn.fnSaveSourcePattern(); // #[ws_usp_01.js]
+           
             // 초기 화면 그리기
             oAPP.fn.fnOnInitRendering(); // #[ws_fn_01.js]
 
@@ -358,21 +361,23 @@
             oAPP.fn.fnServerSession();
 
             // DOM 감지
-            oAPP.fn.fnSetMutationObserver(); // #[ws_fn_03.js]
+            oAPP.fn.fnSetMutationObserver(); // #[ws_fn_03.js]           
 
             // Loading Page
             parent.showLoadingPage('');
 
             // 공통 IPCMAIN 이벤트 걸기
-            oAPP.fn.fnIpcMain_Attach_Event_Handler(); // #[ws_fn_ipc.js]           
+            oAPP.fn.fnIpcMain_Attach_Event_Handler(); // #[ws_fn_ipc.js]                           
 
             // 자연스러운 로딩
-            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function () {
+            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, async function () {
 
                 if (!parent.oWS.utill.attr.UIUpdated) {
 
                     setTimeout(() => {
+
                         $('#content').fadeIn(300, 'linear');
+
                     }, 300);
 
                     parent.oWS.utill.attr.UIUpdated = "X";
@@ -398,57 +403,6 @@
         oAPP.main.onDragend();
 
     };
-
-    // /**
-    //  * 테스트
-    //  * @returns 
-    //  */
-    // // window.ondragover = () => {
-    // window.addEventListener("dragover", () => {
-
-    //     console.log('ondragover!!!');
-
-    //     //focus된 dom focus 해제 처리.
-    //     if (document.activeElement && document.activeElement.blur) {
-    //         document.activeElement.blur();
-    //     }
-
-    //     var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
-    //     if (l_dom === null || l_dom.length === 0) {
-    //         return;
-    //     }
-
-    //     let oDom = l_dom[0];
-    //     oDom.classList.remove("u4aWsDisplayNone");
-    // });
-
-    // /**
-    //  * 테스트
-    //  * @returns 
-    //  */
-    // // window.ondragleave = () => {
-    // window.addEventListener("dragleave", () => {
-
-    //     console.log('ondragleave!!!');
-
-    //     oAPP.main.onDragend();
-
-    //     //focus된 dom focus 해제 처리.
-    //     if (document.activeElement && document.activeElement.blur) {
-    //         document.activeElement.blur();
-    //     }
-
-    //     var l_dom = document.getElementsByClassName("sapUiDnDIndicator");
-    //     if (l_dom === null || l_dom.length === 0) {
-    //         return;
-    //     }
-
-    //     let oDom = l_dom[0];
-
-    //     oDom.classList.remove("u4aWsDisplayNone");
-    //     oDom.classList.add("u4aWsDisplayNone");
-
-    // });
 
     /**
      * 테스트

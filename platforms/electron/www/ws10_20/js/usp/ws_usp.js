@@ -1526,7 +1526,10 @@
         oCodeEditor.addEventDelegate({
             onkeyup: _fnCodeeditorKeyupEvent,
             oncontextmenu: (oEvent) => {
+
+                // [async] Usp Codeeditor ContextMenu
                 _fnCodeeditorContextMenuEvent(oEvent);
+
             }
 
         });
@@ -1534,7 +1537,10 @@
         oCodeEditorClone.addEventDelegate({
             onkeyup: _fnCodeeditorKeyupEvent,
             oncontextmenu: (oEvent) => {
+
+                // [async] Usp Codeeditor ContextMenu
                 _fnCodeeditorContextMenuEvent(oEvent);
+
             }
         });
 
@@ -1673,21 +1679,23 @@
     /************************************************************************
      * [WS30] Codeeditor ContextMenu Event
      ************************************************************************/
-    function _fnCodeeditorContextMenuEvent(oEvent) {
-        
+    async function _fnCodeeditorContextMenuEvent(oEvent) {
 
-        /**
-         * 2023-03-15
-         * 완성된 후에 오픈할것.
-         */
 
-        return;
+        // /**
+        //  * 2023-03-15
+        //  * 완성된 후에 오픈할것.
+        //  */
+
+        // return;
+
+        debugger;
 
 
         // 컨트롤키 누르고 마우스 우클릭이면 전체 팝업을 띄운다.
         if (oEvent.ctrlKey) {
 
-            oAPP.fn.fnUspPatternPopupOpener();
+            oAPP.fn.fnSourcePatternPopupOpener();
 
             return;
         }
@@ -1707,6 +1715,9 @@
         if (!oCodeEditor1 || !oCodeEditor2) {
             return;
         }
+
+        // JSON으로 저장된 USP 기본패턴 & 커스텀패턴 정보를 모델 바인딩 한다.
+        await oAPP.fn.fnModelBindingUspPattern(); // #[ws_usp_01.js]
 
         // 현재 커서의 위치가 어떤 에디터인지 확인
         let $oCodeeditor1 = $(oCurrTarget).closest(".u4aUspCodeeditor1"),

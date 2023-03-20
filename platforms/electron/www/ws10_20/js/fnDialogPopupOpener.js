@@ -953,7 +953,7 @@
     /************************************************************************
      * USP PATTERN POPUP
      ************************************************************************/
-    oAPP.fn.fnUspPatternPopupOpener = () => {
+    oAPP.fn.fnSourcePatternPopupOpener = () => {
 
         let sPopupName = "PATTPOPUP";
 
@@ -1040,7 +1040,7 @@
 
         });
 
-    }; // end of oAPP.fn.fnUspPatternPopupOpener
+    }; // end of oAPP.fn.fnSourcePatternPopupOpener
 
     /************************************************************************
      * U4A Help Document Popup Opener

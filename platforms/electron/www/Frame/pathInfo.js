@@ -31,7 +31,7 @@ module.exports = (() => {
         SUGG_ROOT = PATH.join(P13N_ROOT, "suggestion"),
         USP_ROOT = PATH.join(APPPATH, "ws10_20", "js", "usp"),
         PATTERN_ROOT = PATH.join(USP_ROOT, "pattern"),
-        USERDATA_PATTERN_ROOT = PATH.join(USERDATA, "p13n", "usp", "pattern");
+        USERDATA_PATTERN_ROOT = PATH.join(USERDATA, "p13n", "pattern");
 
     return {
 

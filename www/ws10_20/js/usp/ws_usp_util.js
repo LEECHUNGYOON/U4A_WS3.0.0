@@ -26,7 +26,7 @@ module.exports = {
                 sUi5IconUrl = "https://sap.github.io/ui5-webcomponents/assets/images/ui5-logo.png";
 
             // 파일 확장자에 맞는 SVG 아이콘 정보를 가져온다.
-            let oIconResult = await parent.WSUTIL.getFileExtSvgIcons();
+            let oIconResult = await WSUTIL.getFileExtSvgIcons();
             if (oIconResult.RETCD == "S") {
 
                 aIcons = oIconResult.RTDATA;
@@ -223,8 +223,5 @@ module.exports = {
         });
 
     }, // end of readDefaultPatternFiles
-
-
-
 
 };
