@@ -21,7 +21,6 @@
         REGEDIT = require('regedit'),
         PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
         WSUTIL = parent.require(PATHINFO.WSUTIL),
-        SETTINGS = require(PATHINFO.WSSETTINGS),
         RANDOM = require("random-key");
 
     const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
@@ -29,14 +28,34 @@
 
     oAPP.fn.fnOnDeviceReady = function () {
 
-        // 현재 버전 보여주기
-        oAPP.fn.fnDisplayCurrentVersion();
-
         oAPP.fn.fnOnStart();
 
     }; // end of oAPP.fn.fnOnDeviceReady     
 
+
+    function _fnwait() {
+
+        return new Promise((resolve) => {
+
+            setTimeout(() => {
+
+                resolve();
+
+            }, 3000);
+
+        });
+
+    }
+
     oAPP.fn.fnOnStart = async () => {
+
+        await _fnwait();
+
+        // // ws setting Info를 UserData에 저장
+        await _saveConfigInfo();
+
+        // 현재 버전 보여주기
+        oAPP.fn.fnDisplayCurrentVersion();
 
         // 레지스트리 관련작업
         await _registryRelated();
@@ -213,7 +232,7 @@
 
             oPatVerTr.style.display = "";
             oPatVer.innerHTML = iSupportPatch;
-            
+
         }
 
     }; // end of oAPP.fn.fnDisplayCurrentVersion  
@@ -243,14 +262,6 @@
 
         // 브라우저 상단 메뉴 없애기
         oWin.setMenu(null);
-
-        // if (process.env.COMPUTERNAME.toUpperCase().startsWith("YOON") == true) {
-        //     oWin.loadURL(PATHINFO.SERVERLIST_v2);
-        // } else {
-        //     oWin.loadURL(PATHINFO.SERVERLIST);
-        // }
-
-        // oWin.loadURL(PATHINFO.SERVERLIST);
 
         oWin.loadURL(PATHINFO.SERVERLIST_v2);
 
@@ -365,9 +376,6 @@
 
         }
 
-        // let oHelpDocuPromise = oAPP.fn.fnInstallHelpDocument();
-
-        // aPromise.push(oHelpDocuPromise);
 
         // 상위 폴더를 생성 후 끝나면 실행
         Promise.all(aPromise).then(function (values) {
@@ -469,108 +477,6 @@
 
     }; // end of oAPP.fn.copyVbsPromise
 
-    // /************************************************************************
-    //  * U4A help document를 로컬에 설치한다.
-    //  ************************************************************************/
-    // oAPP.fn.fnInstallHelpDocument = () => {
-
-    //     return new Promise((resolve, reject) => {
-
-    //         let lf_err = (err) => {
-    //             reject(err.toString());
-    //         },
-
-    //             // 파일 압축 풀기 성공 콜백
-    //             lf_FileExtractSuccess = () => {
-    //                 resolve();
-    //             },
-
-    //             // copy 성공 콜백
-    //             lf_CopySuccess = () => {
-
-    //                 oAPP.fn.fnCopyHelpDocFileExtract()
-    //                     .then(lf_FileExtractSuccess)
-    //                     .catch(lf_err);
-    //             };
-
-    //         // help docu file 복사    
-    //         oAPP.fn.fnCopyHelpDocFile()
-    //             .then(lf_CopySuccess)
-    //             .catch(lf_err);
-
-    //     }); // end of promise
-
-    // }; // end of oAPP.fn.fnInstallHelpDocument
-
-    // /************************************************************************
-    //  * U4A help document 파일을 로컬에 복사
-    //  ************************************************************************/
-    // oAPP.fn.fnCopyHelpDocFile = () => {
-
-    //     return new Promise((resolve, reject) => {
-
-    //         var oSettingsPath = PATHINFO.WSSETTINGS,
-    //             oSettings = require(oSettingsPath),
-    //             sHelpDocOriginFile = PATH.join(APPPATH, oSettings.path.u4aHelpDocFilePath),
-    //             sHelpDocTargetPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFilePath);
-
-    //         //1. Document File을 복사한다.
-    //         FS.copy(sHelpDocOriginFile, sHelpDocTargetPath, {
-    //             overwrite: true,
-    //         }).then(function () {
-
-    //             resolve();
-
-    //         }).catch(function (err) {
-    //             reject(err.toString());
-    //         });
-
-    //     });
-
-    // }; // end of oAPP.fn.fnCopyHelpDocFile
-
-    // /************************************************************************
-    //  * U4A help document 파일을 로컬에 복사
-    //  ************************************************************************/
-    // oAPP.fn.fnCopyHelpDocFileExtract = () => {
-
-    //     return new Promise((resolve, reject) => {
-
-    //         var oSettingsPath = PATHINFO.WSSETTINGS,
-    //             oSettings = require(oSettingsPath),
-    //             sHelpDocFolderPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFolderPath),
-    //             sHelpDocTargetPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFilePath);
-
-    //         let ZIP = require("zip-lib"),
-    //             UNZIP = new ZIP.Unzip({
-    //                 // Called before an item is extracted.
-    //                 onEntry: function (event) {
-    //                     zconsole.log(event.entryCount, event.entryName);
-    //                 }
-    //             });
-
-    //         UNZIP.extract(sHelpDocTargetPath, sHelpDocFolderPath, {
-    //             overwrite: true
-    //         })
-    //             .then(function () {
-
-    //                 resolve();
-
-    //             }, function (err) {
-
-    //                 reject(err.toString());
-
-    //             });
-
-    //     }); // end of promise
-
-    // }; // end of oAPP.fn.fnCopyHelpDocFileExtract
-
-
-
-
-
-
 
 
     /**
@@ -670,7 +576,8 @@
 
         return new Promise(async (resolve) => {
 
-            let sRegPath = SETTINGS.regPaths,
+            let oSettings = oAPP.fn.fnGetSettingsInfo(),
+                sRegPath = oSettings.regPaths,
                 cSessionPath = sRegPath.cSession;
 
             let oRegData = await _getRegeditList(cSessionPath);
@@ -715,7 +622,8 @@
 
             let aKeys = [];
 
-            let sRegPath = SETTINGS.regPaths;
+            let oSettings = oAPP.fn.fnGetSettingsInfo(),
+                sRegPath = oSettings.regPaths;
 
             aKeys.push(sRegPath.systems);
             aKeys.push(sRegPath.LogonSettings);
@@ -762,6 +670,49 @@
 
 
     } // end of _checkRegistry
+
+    /************************************************************************
+     * WS Setting 정보를 LocalStorage에 저장하기
+     ************************************************************************/
+    function _saveConfigInfo() {
+
+        return new Promise(async (resolve) => {
+
+            if (!FS.existsSync(PATHINFO.CONF_ROOT)) {
+                FS.mkdirSync(PATHINFO.CONF_ROOT);
+            }
+
+            let sConfPath = PATH.join(USERDATA, "conf", "ws_settings.json"),
+                oSettings = require(PATH.join(APPPATH, "settings", "ws_settings.json"));
+
+            /**
+             * 여기서 Setting정보 추가할것. -- start
+             */
+
+            debugger;
+
+            // UI5 관련
+
+            let sUi5BootUrl = PATH.join(APPPATH, oSettings.UI5.localResource);
+
+            oSettings.UI5.releaseResource = sUi5BootUrl;
+
+            /**
+             *  -- end
+             */
+
+            let sSettingJson = JSON.stringify(oSettings),
+                oWriteFileResult = await WSUTIL.fsWriteFile(sConfPath, sSettingJson);
+
+            if (oWriteFileResult.RETCD == "E") {
+                throw new Error("[intro] ws settings file Error!");
+            }
+
+            resolve();
+
+        });
+
+    } // end of _saveSettingInfoIndexDB
 
     /************************************************************************
      * Usp 기본 패턴 파일을 설치폴더 경로에 옮기기

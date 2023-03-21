@@ -6,6 +6,7 @@
     "UI5": {
         "version": "v11071",
         "testResource": "https://sapui5.hana.ondemand.com/1.107.1/resources/sap-ui-core.js",
+        "localResource" : "lib/ui5/v11071/resources/sap-ui-core.js",
         "bootstrap": {
             "data-sap-ui-language": "EN",
             "data-sap-ui-noDuplicateIds": "true",
@@ -33,7 +34,8 @@
         "help",
         "help\\u4a_help",
         "ext_api",
-        "ext_api\\vbs"
+        "ext_api\\vbs",
+        "conf"
     ],
     "requireFiles": [
         "p13n\\p13n.json",

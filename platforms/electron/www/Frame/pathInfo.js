@@ -31,7 +31,8 @@ module.exports = (() => {
         SUGG_ROOT = PATH.join(P13N_ROOT, "suggestion"),
         USP_ROOT = PATH.join(APPPATH, "ws10_20", "js", "usp"),
         PATTERN_ROOT = PATH.join(USP_ROOT, "pattern"),
-        USERDATA_PATTERN_ROOT = PATH.join(USERDATA, "p13n", "pattern");
+        USERDATA_PATTERN_ROOT = PATH.join(USERDATA, "p13n", "pattern"),
+        CONF_ROOT = PATH.join(PATH.join(USERDATA, "conf"));
 
     return {
 
@@ -45,7 +46,8 @@ module.exports = (() => {
         JQUERYUICSS: PATH.join(APPPATH, '/css/jquery-ui.min.css'),
         MSG: PATH.join(APPPATH, '/msg'),
         BROWSERSETTINGS: PATH.join(APPPATH, '/settings/BrowserWindow/BrowserWindow-settings.json'),
-        WSSETTINGS: PATH.join(APPPATH, "settings", "ws_settings.json"),
+        // WSSETTINGS: PATH.join(APPPATH, "settings", "ws_settings.json"),        
+        WSSETTINGS: PATH.join(CONF_ROOT, "ws_settings.json"),        
         SERVERLIST: PATH.join(APPPATH, '/ServerList/ServerFrame.html'),
         SERVERLIST_v2: PATH.join(APPPATH, '/ServerList_v2/ServerFrame.html'),
         COMMONCSS: PATH.join(APPPATH, "css", "common.css"),
@@ -54,6 +56,7 @@ module.exports = (() => {
         PATTERN_ROOT: PATTERN_ROOT,
         USERDATA_PATT_FILES: PATH.join(USERDATA_PATTERN_ROOT, "default_pattern_files"),
         USP_ROOT: USP_ROOT,
+        CONF_ROOT : CONF_ROOT,
 
         // User Data Paths..
         CLIPBOARD: PATH.join(USERDATA, "clipboard.json"),
