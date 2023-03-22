@@ -461,29 +461,29 @@
     function fnGetServerInfoDialog() {
 
         var oDialog = new sap.m.Dialog("serverDlg", {
-                icon: "{/SERVDLG/ICON}",
-                resizable: true,
-                draggable: true,
-                buttons: [
-                    new sap.m.Button("serverDlgSaveBtn", {
-                        icon: "sap-icon://save",
-                        tooltip: "{/MSGCLS/0018}", // save
-                        press: ev_pressServerDlgSave
-                    }),
-                    new sap.m.Button({
-                        icon: "sap-icon://decline",
-                        tooltip: "{/MSGCLS/0019}", // cancel
-                        press: function (oEvent) {
+            icon: "{/SERVDLG/ICON}",
+            resizable: true,
+            draggable: true,
+            buttons: [
+                new sap.m.Button("serverDlgSaveBtn", {
+                    icon: "sap-icon://save",
+                    tooltip: "{/MSGCLS/0018}", // save
+                    press: ev_pressServerDlgSave
+                }),
+                new sap.m.Button({
+                    icon: "sap-icon://decline",
+                    tooltip: "{/MSGCLS/0019}", // cancel
+                    press: function (oEvent) {
 
-                            var oDialog = oEvent.getSource().getParent();
+                        var oDialog = oEvent.getSource().getParent();
 
-                            ev_pressServerDlgClose(oDialog);
+                        ev_pressServerDlgClose(oDialog);
 
-                        }
-                    })
-                ]
+                    }
+                })
+            ]
 
-            })
+        })
             .bindProperty("title", "/SERVDLG/TRCOD", function (TITLE) {
 
                 if (!TITLE) {
@@ -993,22 +993,22 @@
                 key: "HMWS10",
                 label: "Languages",
                 submenu: [{
-                        key: "en",
-                        // key: "HMWS10_10",
-                        // type: "checkbox",
-                        // checked: true,
-                        label: "ENGLISH",
-                        click: fnLanguageSetting
-                    },
-                    {
-                        key: "ko",
-                        // key: "HMWS10_20",
-                        // type: "checkbox",
-                        label: "KOREAN",
-                        click: fnLanguageSetting
-                    }
+                    key: "en",
+                    // key: "HMWS10_10",
+                    // type: "checkbox",
+                    // checked: true,
+                    label: "ENGLISH",
+                    click: fnLanguageSetting
+                },
+                {
+                    key: "ko",
+                    // key: "HMWS10_20",
+                    // type: "checkbox",
+                    label: "KOREAN",
+                    click: fnLanguageSetting
+                }
                 ]
-            }, ]
+            },]
         }];
 
         var oMenu = MENU.buildFromTemplate(aWindowHeaderMenu);
@@ -1177,6 +1177,9 @@
 
         var sCommonCssUrl = PATHINFO.COMMONCSS,
             oCss = document.createElement("link");
+
+        sCommonCssUrl = sCommonCssUrl.replaceAll("\\", "/");
+        sCommonCssUrl = `file:///${sCommonCssUrl}`;
 
         oCss.setAttribute("rel", "stylesheet");
         oCss.setAttribute("href", sCommonCssUrl);

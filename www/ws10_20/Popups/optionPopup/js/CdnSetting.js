@@ -3,6 +3,7 @@
 
     const
         REMOTE = oAPP.remote,
+        PATHINFO = parent.PATHINFO,
         OCTOKIT = REMOTE.require("@octokit/core").Octokit,
         BINDROOT = "/OPTS/CDN",
         APPCOMMON = oAPP.common;
@@ -16,7 +17,7 @@
             APPPATH = oAPP.apppath;
 
         // Browser Window option
-        let sSettingsJsonPath = PATH.join(APPPATH, "/settings/ws_settings.json"),
+        let sSettingsJsonPath = PATHINFO.WSSETTINGS,
 
             // JSON 파일 형식의 Setting 정보를 읽는다..
             oSettings = parent.require(sSettingsJsonPath);

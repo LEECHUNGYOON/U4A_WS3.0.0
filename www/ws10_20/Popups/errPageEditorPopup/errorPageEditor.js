@@ -9,9 +9,10 @@
  ************************************************************************/
 let zconsole = parent.WSERR(window, document, console);
 
-let oAPP = parent.oAPP;
+let oAPP = parent.oAPP,
+    PATHINFO = parent.PATHINFO;
 
-(function(window, oAPP) {
+(function (window, oAPP) {
     "use strict";
 
     oAPP.settings = {};
@@ -24,7 +25,7 @@ let oAPP = parent.oAPP;
         oTimer = "";
 
     // *-메시지 팝업
-    oAPP.fn.fnMsgPopup = function(txt) {
+    oAPP.fn.fnMsgPopup = function (txt) {
 
         var x = document.getElementById("snackbar");
         if (!x) {
@@ -34,7 +35,7 @@ let oAPP = parent.oAPP;
         x.innerHTML = txt;
         x.className = "show";
 
-        oTimer = setTimeout(function() {
+        oTimer = setTimeout(function () {
             clearTimeout(oTimer);
             oTimer = null;
 
@@ -54,7 +55,7 @@ let oAPP = parent.oAPP;
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.fn.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
+    oAPP.fn.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -72,7 +73,7 @@ let oAPP = parent.oAPP;
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.fn.fnGetModelProperty = function(sModelPath) {
+    oAPP.fn.fnGetModelProperty = function (sModelPath) {
 
         return sap.ui.getCore().getModel().getProperty(sModelPath);
 
@@ -81,10 +82,10 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * ws의 설정 정보를 구한다.
      ************************************************************************/
-    oAPP.fn.getSettingsInfo = function() {
+    oAPP.fn.getSettingsInfo = function () {
 
         // Browser Window option
-        var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
+        var sSettingsJsonPath = PATHINFO.WSSETTINGS,
 
             // JSON 파일 형식의 Setting 정보를 읽는다..
             oSettings = require(sSettingsJsonPath);
@@ -99,15 +100,11 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * UI5 BootStrap 
      ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = function() {
+    oAPP.fn.fnLoadBootStrapSetting = function () {
 
         var oSettings = oAPP.fn.getSettingsInfo(),
-            oSetting_UI5 = oSettings.UI5,
-            sVersion = oSetting_UI5.version,
+            oSetting_UI5 = oSettings.UI5,            
             oBootStrap = oSetting_UI5.bootstrap,
-            sTestResource = oSetting_UI5.testResource,
-            sReleaseResource = `../../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
-            bIsDev = oSettings.isDev,
             oEditorInfo = oAPP.fn.fnGetEditorInfo(),
             oThemeInfo = parent.oAPP.attr.oThemeInfo,
             oUserInfo = oEditorInfo.USERINFO,
@@ -124,14 +121,8 @@ let oAPP = parent.oAPP;
         oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
         oScript.setAttribute("data-sap-ui-language", sLangu);
         oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.codeeditor");
-
-        // 개발일때와 release 할 때의 Bootstrip 경로 분기
-        if (bIsDev) {
-            oScript.setAttribute("src", sTestResource);
-        } else {
-            oScript.setAttribute("src", sReleaseResource);
-        }
-
+        oScript.setAttribute("src", oSetting_UI5.resourceUrl);
+        
         document.head.appendChild(oScript);
 
     }; // end of fnLoadBootStrapSetting
@@ -139,7 +130,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 초기 모델 바인딩
      ************************************************************************/
-    oAPP.fn.fnInitModelBinding = function() {
+    oAPP.fn.fnInitModelBinding = function () {
 
         var oModelData = oAPP.fn.fnGetEditorInfo(),
 
@@ -154,7 +145,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 화면 초기 렌더링
      ************************************************************************/
-    oAPP.fn.fnInitRendering = function() {
+    oAPP.fn.fnInitRendering = function () {
 
         var oMasterPage = oAPP.fn.fnGetErrorPageEditorMasterPage(),
             oDetailPage = oAPP.fn.fnGetErrorPageEditorDetailPage();
@@ -177,7 +168,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * Error Page Editor의 SplitApp에서 MasterPage
      ************************************************************************/
-    oAPP.fn.fnGetErrorPageEditorMasterPage = function() {
+    oAPP.fn.fnGetErrorPageEditorMasterPage = function () {
 
         var aMasterPageContents = oAPP.fn.fnGetErrorPageEditorMasterPageContents();
 
@@ -194,21 +185,21 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * Error Page Editor의 SplitApp에서 MasterPage의 Contents
      ************************************************************************/
-    oAPP.fn.fnGetErrorPageEditorMasterPageContents = function() {
+    oAPP.fn.fnGetErrorPageEditorMasterPageContents = function () {
 
         var oHBox = new sap.m.HBox({
-                alignItems: sap.m.FlexAlignItems.Center,
-                items: [
-                    new sap.m.Avatar({
-                        fallbackIcon: "sap-icon://media-play",
-                        press: oAPP.events.ev_errorPageEditorMasterAvatarPress
-                    }),
-                    new sap.m.Title({
-                        text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A67", "", "", "", ""), // Preview
-                        titleStyle: sap.ui.core.TitleLevel.H2,
-                    }).addStyleClass("sapUiTinyMarginBegin")
-                ]
-            }),
+            alignItems: sap.m.FlexAlignItems.Center,
+            items: [
+                new sap.m.Avatar({
+                    fallbackIcon: "sap-icon://media-play",
+                    press: oAPP.events.ev_errorPageEditorMasterAvatarPress
+                }),
+                new sap.m.Title({
+                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A67", "", "", "", ""), // Preview
+                    titleStyle: sap.ui.core.TitleLevel.H2,
+                }).addStyleClass("sapUiTinyMarginBegin")
+            ]
+        }),
 
             sHeaderTxt = "[ " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D33") + " ] ", // How to Use
 
@@ -259,7 +250,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * Error Page Editor의 SplitApp에서 DetailPage 
      ************************************************************************/
-    oAPP.fn.fnGetErrorPageEditorDetailPage = function() {
+    oAPP.fn.fnGetErrorPageEditorDetailPage = function () {
 
         var oCustomHeader = new sap.m.Toolbar({
             content: [
@@ -275,7 +266,7 @@ let oAPP = parent.oAPP;
                 new sap.m.Button({
                     text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25", "", "", "", ""), // Pretty Print
 
-                    press: function() {
+                    press: function () {
 
                         var oCodeEditor = sap.ui.getCore().byId("ErrorPageEditor");
                         if (!oCodeEditor) {
@@ -291,8 +282,8 @@ let oAPP = parent.oAPP;
                     text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D35", "", "", "", ""), // Enable Error Page
                     select: oAPP.events.ev_errorPageEditorEnableCheckBoxSelect
                 })
-                .bindProperty("selected", "/EDITDATA/IS_USE", oAPP.fn.fnUiVisibleBinding)
-                .bindProperty("enabled", "/APPINFO/IS_EDIT", oAPP.fn.fnUiVisibleBinding),
+                    .bindProperty("selected", "/EDITDATA/IS_USE", oAPP.fn.fnUiVisibleBinding)
+                    .bindProperty("enabled", "/APPINFO/IS_EDIT", oAPP.fn.fnUiVisibleBinding),
 
                 new sap.m.Button({
                     text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A64", "", "", "", ""), // Save
@@ -319,7 +310,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * Error Page Editor의 SplitApp에서 DetailPage의 Contents
      ************************************************************************/
-    oAPP.fn.fnGetErrorPageEditorDetailPageContents = function() {
+    oAPP.fn.fnGetErrorPageEditorDetailPageContents = function () {
 
         var oCodeEditor = new sap.ui.codeeditor.CodeEditor("ErrorPageEditor", {
             type: "html",
@@ -327,7 +318,7 @@ let oAPP = parent.oAPP;
         }).bindProperty("editable", "/APPINFO/IS_EDIT", oAPP.fn.fnUiVisibleBinding);
 
         oCodeEditor.addDelegate({
-            onAfterRendering: function(oControl) {
+            onAfterRendering: function (oControl) {
 
                 var oEditor = oControl.srcControl,
                     _oAceEditor = oEditor._oEditor;
@@ -348,7 +339,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * Change or Display 모드에 따른 UI 보이기 숨기기 bindProperty function
      ************************************************************************/
-    oAPP.fn.fnUiVisibleBinding = function(bIsDispMode) {
+    oAPP.fn.fnUiVisibleBinding = function (bIsDispMode) {
 
         if (bIsDispMode == null) {
             return false;
@@ -363,7 +354,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 클라이언트 세션 유지를 위한 function
      * **********************************************************************/
-    oAPP.fn.fnKeepClientSession = function() {
+    oAPP.fn.fnKeepClientSession = function () {
 
         // 브라우저의 세션 키
         var sSessionKey = oAPP.fn.getSessionKey();
@@ -384,7 +375,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 브라우저에서 키보드, 마우스 클릭 이벤트를 감지하여 클라이언트 세션을 유지한다.
      * **********************************************************************/
-    oAPP.fn.fnWindowClickEventListener = function() {
+    oAPP.fn.fnWindowClickEventListener = function () {
 
         // 브라우저의 세션 키
         var sSessionKey = oAPP.fn.getSessionKey();
@@ -397,7 +388,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * Error Page Editor의 SplitApp에서 MasterPage의 Avatar 클릭 이벤트
      ************************************************************************/
-    oAPP.events.ev_errorPageEditorMasterAvatarPress = function() {
+    oAPP.events.ev_errorPageEditorMasterAvatarPress = function () {
 
         var BROWSKEY = oAPP.fn.fnGetBrowserKey(),
             oSaveData = oAPP.fn.fnGetModelProperty("/EDITDATA");
@@ -412,7 +403,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * Error Page Editor의 저장 버튼 이벤트
      ************************************************************************/
-    oAPP.events.ev_setErrorPageSave = function() {
+    oAPP.events.ev_setErrorPageSave = function () {
 
         var oCodeEditor = sap.ui.getCore().byId("ErrorPageEditor");
         if (!oCodeEditor) {
@@ -428,7 +419,7 @@ let oAPP = parent.oAPP;
         });
 
         let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "002", "", "", "", ""); // Saved success
-        
+
         oAPP.fn.fnMsgPopup(sMsg);
 
     }; // end of oAPP.events.ev_setErrorPageSave
@@ -436,7 +427,7 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * Error Page Editor의 Enable Error Page CheckBox Select 이벤트
      ************************************************************************/
-    oAPP.events.ev_errorPageEditorEnableCheckBoxSelect = function(oEvent) {
+    oAPP.events.ev_errorPageEditorEnableCheckBoxSelect = function (oEvent) {
 
         var bIsSelect = oEvent.getParameter("selected"),
             oCheckBox = oEvent.getSource(),
@@ -467,9 +458,9 @@ let oAPP = parent.oAPP;
     // 클라이언트 세션 유지를 위한 function
     oAPP.fn.fnKeepClientSession();
 
-    window.onload = function() {
+    window.onload = function () {
 
-        sap.ui.getCore().attachInit(function() {
+        sap.ui.getCore().attachInit(function () {
 
             oAPP.fn.fnInitModelBinding();
 

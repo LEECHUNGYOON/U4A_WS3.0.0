@@ -10,6 +10,7 @@
         REMOTE = parent.REMOTE,
         REMOTEMAIN = parent.REMOTEMAIN,
         APPCOMMON = oAPP.common,
+        PATHINFO = parent.PATHINFO,
         CURRWIN = REMOTE.getCurrentWindow(),
         SESSKEY = parent.getSessionKey(),
         BROWSKEY = parent.getBrowserKey(),
@@ -254,7 +255,7 @@
     oAPP.fn.getSettingsInfo = function () {
 
         // Browser Window option
-        var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
+        var sSettingsJsonPath = PATHINFO.WSSETTINGS,
 
             // JSON 파일 형식의 Setting 정보를 읽는다..
             oSettings = parent.require(sSettingsJsonPath);

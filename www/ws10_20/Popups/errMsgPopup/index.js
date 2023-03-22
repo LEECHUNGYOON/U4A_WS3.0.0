@@ -10,7 +10,7 @@ const zconsole = parent.WSERR(window, document, console);
 
 let oAPP = parent.oAPP,
     APPCOMMON = oAPP.common;
-    
+
 (function (window, oAPP) {
     "use strict";
 
@@ -31,7 +31,7 @@ let oAPP = parent.oAPP,
      * model Refresh 유무
      ************************************************************************/
     oAPP.fn.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
-        
+
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
 
@@ -48,7 +48,7 @@ let oAPP = parent.oAPP,
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.fn.fnGetModelProperty = function (sModelPath) {       
+    oAPP.fn.fnGetModelProperty = function (sModelPath) {
 
         return sap.ui.getCore().getModel().getProperty(sModelPath);
 
@@ -133,28 +133,28 @@ let oAPP = parent.oAPP,
     oAPP.fn.fnInitRendering = function () {
 
         var oToolbar = new sap.m.Toolbar({
-                content: [
-                    // new sap.m.Text({
-                    //     text: "Error Footer Message"
-                    // }),
-                    new sap.m.ObjectStatus({
-                        // inverted: true,
-                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D25"), // Error Message
-                        state: sap.ui.core.ValueState.Error,
-                        icon: "sap-icon://alert"
-                    }),
-                    new sap.m.ToolbarSpacer(),
-                    new sap.m.Button({
-                        icon: "sap-icon://decline",
-                        press: function () {
+            content: [
+                // new sap.m.Text({
+                //     text: "Error Footer Message"
+                // }),
+                new sap.m.ObjectStatus({
+                    // inverted: true,
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D25"), // Error Message
+                    state: sap.ui.core.ValueState.Error,
+                    icon: "sap-icon://alert"
+                }),
+                new sap.m.ToolbarSpacer(),
+                new sap.m.Button({
+                    icon: "sap-icon://decline",
+                    press: function () {
 
-                            var oCurrWin = oAPP.REMOTE.getCurrentWindow();
-                            oCurrWin.close();
-                        }
-                        // press: oAPP.events.fnPressMultiFooterMsgCloseBtn
-                    })
-                ]
-            })
+                        var oCurrWin = oAPP.REMOTE.getCurrentWindow();
+                        oCurrWin.close();
+                    }
+                    // press: oAPP.events.fnPressMultiFooterMsgCloseBtn
+                })
+            ]
+        })
             // .addStyleClass("u4aWsMsgFooter_HeaderToolbar"),
             .addStyleClass("u4aWsMsgFooter_HeaderToolbar u4aWsWindowHeaderDraggable"),
 
@@ -265,6 +265,9 @@ let oAPP = parent.oAPP,
     oAPP.fn.fnLoadCommonCss = () => {
 
         var sCommonCssUrl = PATH.join(APPPATH, "css", "common.css");
+        
+        sCommonCssUrl = sCommonCssUrl.replaceAll("\\", "/");
+        sCommonCssUrl = `file:///${sCommonCssUrl}`;
 
         var oCss = document.createElement("link");
         oCss.setAttribute("rel", "stylesheet");

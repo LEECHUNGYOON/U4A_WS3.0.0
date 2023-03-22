@@ -49,7 +49,7 @@
 
     oAPP.fn.fnOnStart = async () => {
 
-        await _fnwait();
+        // await _fnwait();
 
         // // ws setting Info를 UserData에 저장
         await _saveConfigInfo();
@@ -147,9 +147,9 @@
         // oBrowserWindow.webContents.openDevTools();
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -269,9 +269,9 @@
         // oWin.webContents.openDevTools();
         // no build 일 경우에는 개발자 툴을 실행한다.
 
-        // if (!APP.isPackaged) {
-        //     oWin.webContents.openDevTools();
-        // }
+        if (!APP.isPackaged) {
+            oWin.webContents.openDevTools();
+        }
 
         oWin.webContents.on('did-finish-load', function () {
 
@@ -689,13 +689,12 @@
              * 여기서 Setting정보 추가할것. -- start
              */
 
-            debugger;
+            // UI5 Bootstrap Url 구성
+            _setUI5BootStrapUrl(oSettings);
 
-            // UI5 관련
+            // 각종 루트 패스 등의 패스 정보 구성
+            _setCommonPaths(oSettings);
 
-            let sUi5BootUrl = PATH.join(APPPATH, oSettings.UI5.localResource);
-
-            oSettings.UI5.releaseResource = sUi5BootUrl;
 
             /**
              *  -- end
@@ -712,7 +711,48 @@
 
         });
 
-    } // end of _saveSettingInfoIndexDB
+    } // end of _saveConfigInfo
+
+    function _setUI5BootStrapUrl(oSettings) {
+
+        oSettings.isDev = false; // 테스트용
+
+        debugger;
+
+        // 탑재된 UI5 Library 경로
+        let sSettingUi5BootUrl = PATH.join(APPPATH, oSettings.UI5.localResource);
+
+        sSettingUi5BootUrl = sSettingUi5BootUrl.replaceAll("\\", "/");
+        sSettingUi5BootUrl = `file:///${sSettingUi5BootUrl}`;
+
+        oSettings.UI5.resourceUrl = sSettingUi5BootUrl;
+
+        // test url
+        let sTestUrl = PATH.join(process.env.TEMP, "v11071", "resources", "sap-ui-core.js");
+        sTestUrl = sTestUrl.replaceAll("\\", "/");
+        sTestUrl = `file:///${sTestUrl}`;
+
+        oSettings.UI5.resourceUrl = sTestUrl;
+
+        // 개발 모드일 경우, UI5 CDN 경로
+        if (oSettings.isDev) {
+            oSettings.UI5.resourceUrl = oSettings.UI5.testResource;
+        }
+     
+    } // end of _setUI5BootStrapUrl
+
+    /************************************************************************
+     * 공통으로 사용할 패스 정보 구성
+     ************************************************************************/
+    function _setCommonPaths(oSettings){
+
+        if(!oSettings.path){
+            oSettings.path = {};
+        }
+
+        oSettings.path = Object.assign(oSettings.path, PATHINFO);       
+
+    } // end of _setCommonPaths
 
     /************************************************************************
      * Usp 기본 패턴 파일을 설치폴더 경로에 옮기기

@@ -160,10 +160,6 @@ let oAPP = (function () {
 
         var oSettings = oAPP.fn.fnGetSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
-            sVersion = oSetting_UI5.version,
-            sTestResource = oSetting_UI5.testResource,
-            sReleaseResource = `../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
-            bIsDev = oSettings.isDev,
             oBootStrap = oSetting_UI5.bootstrap,
             sLangu = navigator.language;
 
@@ -183,13 +179,7 @@ let oAPP = (function () {
         oScript.setAttribute("data-sap-ui-language", sLangu);
         oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.f, sap.ui.layout, sap.tnt");
         oScript.setAttribute("data-sap-ui-theme", oThemeInfo.THEME);
-
-        // 개발일때와 release 할 때의 Bootstrip 경로 분기
-        if (bIsDev) {
-            oScript.setAttribute("src", sTestResource);
-        } else {
-            oScript.setAttribute("src", sReleaseResource);
-        }
+        oScript.setAttribute("src", oSetting_UI5.resourceUrl);
 
         document.head.appendChild(oScript);
 

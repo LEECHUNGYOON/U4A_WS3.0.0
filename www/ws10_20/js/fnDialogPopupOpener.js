@@ -20,6 +20,7 @@
         SESSKEY = parent.getSessionKey(),
         BROWSKEY = parent.getBrowserKey(),
         WSUTIL = parent.require(parent.PATHINFO.WSUTIL),
+        PATHINFO = parent.PATHINFO,
         APPCOMMON = oAPP.common;
 
     /************************************************************************
@@ -896,9 +897,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         oBrowserWindow.once('ready-to-show', () => {
 
@@ -1903,9 +1904,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -2127,7 +2128,7 @@
         let oThemeInfo = parent.getThemeInfo(); // theme 정보      
 
         // 브라우저 옵션 설정
-        let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+        let sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
@@ -2149,15 +2150,10 @@
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
         oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
-
+        
         let oSettings = oAPP.fn.getSettingsInfo(),
-            oSetting_UI5 = oSettings.UI5,
-            sVersion = oSetting_UI5.version,
-            sTestResource = oSetting_UI5.testResource,
-            sReleaseResource = `../../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
-            // sReleaseResource = `../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
-            bIsDev = oSettings.isDev;
-
+            oSetting_UI5 = oSettings.UI5;
+          
         //==* 기본 config 정보 
         var S_config = {};
 
@@ -2170,12 +2166,7 @@
         //UI5 기본 정보
         S_config.UI5_INFO = {};
 
-        //Lib path
-        if (bIsDev) {
-            S_config.UI5_INFO.src = sTestResource;
-        } else {
-            S_config.UI5_INFO.src = sReleaseResource;
-        }
+        S_config.UI5_INFO.src = oSetting_UI5.resourceUrl;
 
         //Lib 접속 언어        
         S_config.UI5_INFO.language = oUserInfo.LANGU;
@@ -2212,9 +2203,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        // if (!APP.isPackaged) {
-        //     oBrowserWindow.webContents.openDevTools();
-        // }
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {

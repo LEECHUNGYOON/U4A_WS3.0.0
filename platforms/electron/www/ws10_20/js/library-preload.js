@@ -11,6 +11,7 @@ let oAPP = (function (window) {
     let oAPP = {},
         PATH = parent.PATH,
         APP = parent.APP,
+        PATHINFO = parent.PATHINFO,
         USERDATA = parent.USERDATA,
         require = parent.require;
 
@@ -179,7 +180,8 @@ let oAPP = (function (window) {
     oAPP.getSettingsInfo = function () {
 
         // Browser Window option
-        var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
+        // var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
+        var sSettingsJsonPath = PATHINFO.WSSETTINGS,
 
             // JSON 파일 형식의 Setting 정보를 읽는다..
             oSettings = require(sSettingsJsonPath);
@@ -198,8 +200,8 @@ let oAPP = (function (window) {
     oAPP.getBrowserWindowSettingInfo = function () {
 
         // Browser Window option        
-        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
-
+        var sSettingsJsonPath = PATHINFO.WSSETTINGS,
+        
             // JSON 파일 형식의 Setting 정보를 읽는다..
             oSettings = require(sSettingsJsonPath);
 
@@ -217,11 +219,7 @@ let oAPP = (function (window) {
     oAPP.fnLoadBootStrapSetting = function () {
 
         let oSettings = oAPP.getSettingsInfo(),
-            oSetting_UI5 = oSettings.UI5,
-            sVersion = oSetting_UI5.version,
-            sTestResource = oSetting_UI5.testResource,
-            sReleaseResource = `../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
-            bIsDev = oSettings.isDev,
+            oSetting_UI5 = oSettings.UI5,          
             oBootStrap = oSetting_UI5.bootstrap,
             oUserInfo = parent.getUserInfo(), // 로그인 유저 정보
             sLangu = oUserInfo.LANGU, // 접속 언어           
@@ -238,13 +236,7 @@ let oAPP = (function (window) {
         oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
         oScript.setAttribute("data-sap-ui-language", sLangu);
         oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.layout, sap.ui.table, sap.tnt, sap.ui.codeeditor, sap.ui.unified");
-
-        // 개발일때와 release 할 때의 Bootstrip 경로 분기
-        if (bIsDev) {
-            oScript.setAttribute("src", sTestResource);
-        } else {
-            oScript.setAttribute("src", sReleaseResource);
-        }
+        oScript.setAttribute("src", oSetting_UI5.resourceUrl);
 
         document.head.appendChild(oScript);
 

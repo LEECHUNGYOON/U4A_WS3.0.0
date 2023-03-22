@@ -59,23 +59,10 @@ let oAPP = parent.oAPP;
 
         var oSettings = oAPP.attr.oSettingInfo,
             oSetting_UI5 = oSettings.UI5,
-            sVersion = oSetting_UI5.version,
-            sTestResource = oSetting_UI5.testResource,
-            sReleaseResource = `../../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
-            bIsDev = oSettings.isDev,
             oBootStrap = oSetting_UI5.bootstrap,
             oUserInfo = oAPP.attr.oUserInfo,
             oThemeInfo = oAPP.attr.oThemeInfo,
             sLangu = oUserInfo.LANGU;
-
-        // sTestResource = `file:\\C:\\Temp\\ws_build\\v1\\U4A_WS3.0.0-3.4.0-base\\www\\lib\\ui5\\v11071\\resources\\sap-ui-core.js`;
-        sTestResource = `file://${parent.testPath}/v11071/resources/sap-ui-core.js`;
-
-        // sTestResource = parent.PATH.join(parent.testPath, "v11071", "resources", "sap-ui-core.js");
-        
-        // sTestResource = `file://${parent.PATH.join(parent.testPath, "v11071", "resources", "sap-ui-core.js")}`;
-
-        // alert(sTestResource);
 
         var oScript = document.createElement("script");
         oScript.id = "sap-ui-bootstrap";
@@ -88,14 +75,8 @@ let oAPP = parent.oAPP;
         // 로그인 Language 적용
         oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
         oScript.setAttribute("data-sap-ui-language", sLangu);
-        oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.codeeditor, sap.ui.table, sap.ui.layout");
-
-        // 개발일때와 release 할 때의 Bootstrip 경로 분기
-        if (bIsDev) {
-            oScript.setAttribute("src", sTestResource);
-        } else {
-            oScript.setAttribute("src", sReleaseResource);
-        }
+        oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.codeeditor, sap.ui.table, sap.ui.layout");       
+        oScript.setAttribute("src", oSetting_UI5.resourceUrl);
 
         document.head.appendChild(oScript);
 

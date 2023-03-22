@@ -38,7 +38,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function(oAPP) {
+(function (oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -87,7 +87,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             text: "Connecting...",
             // customIcon: "sap-icon://connected",
             showCancelButton: true,
-            close: function() {
+            close: function () {
                 XHR.abort();
             }
         });
@@ -100,7 +100,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.sendAjax = (sUrl, fnSuccess, fnError, fnCancel) => {
 
         // ajax call 취소할 경우..
-        XHR.onabort = function() {
+        XHR.onabort = function () {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -109,7 +109,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // ajax call 실패 할 경우
-        XHR.onerror = function() {
+        XHR.onerror = function () {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -117,7 +117,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         };
 
-        XHR.onload = function() {
+        XHR.onload = function () {
 
             if (typeof fnSuccess == "function") {
                 fnSuccess(XHR.response);
@@ -665,9 +665,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-                RETCD: "E",
-                RTMSG: "Server information does not exist in the SAPGUI logon file."
-            },
+            RETCD: "E",
+            RTMSG: "Server information does not exist in the SAPGUI logon file."
+        },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -797,9 +797,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-                RETCD: "E",
-                RTMSG: "Server information does not exist in the SAPGUI logon file."
-            },
+            RETCD: "E",
+            RTMSG: "Server information does not exist in the SAPGUI logon file."
+        },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -973,8 +973,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnOnInitRendering = () => {
 
         var oApp = new sap.m.App({
-                autoFocus: false,
-            }),
+            autoFocus: false,
+        }),
             oTreeTable = oAPP.fn.fnGetWorkSpaceTreeTable(), // 좌측 폴더 Tree
             oTable = oAPP.fn.fnGetSAPLogonListTable(), // 우측 서버 리스트 테이블
             oPage1 = new sap.m.Page({
@@ -1020,7 +1020,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function() {
+            onAfterRendering: function () {
 
                 setTimeout(() => {
                     $('#content').fadeIn(300, 'linear');
@@ -2461,7 +2461,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -2496,13 +2496,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // oBrowserWindow.on("focus", () => {
 
-         
+
 
         // });
 
         // oBrowserWindow.on("blur", () => {
 
-         
+
         // });       
 
 
@@ -2529,7 +2529,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         resolve({
@@ -2714,10 +2714,6 @@ function fnLoadBootStrapSetting() {
 
     var oSettings = SETTINGS,
         oSetting_UI5 = oSettings.UI5,
-        sVersion = oSetting_UI5.version,
-        sTestResource = oSetting_UI5.testResource,
-        sReleaseResource = `../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
-        bIsDev = oSettings.isDev,
         oBootStrap = oSetting_UI5.bootstrap,
         sLangu = navigator.language;
 
@@ -2736,13 +2732,7 @@ function fnLoadBootStrapSetting() {
 
     oScript.setAttribute("data-sap-ui-language", sLangu);
     oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.layout, sap.ui.table");
-
-    // 개발일때와 release 할 때의 Bootstrip 경로 분기
-    if (bIsDev) {
-        oScript.setAttribute("src", sTestResource);
-    } else {
-        oScript.setAttribute("src", sReleaseResource);
-    }
+    oScript.setAttribute("src", oSetting_UI5.resourceUrl);
 
     document.head.appendChild(oScript);
 
@@ -2755,6 +2745,9 @@ function fnLoadCommonCss() {
 
     var sCommonCssUrl = PATHINFO.COMMONCSS,
         oCss = document.createElement("link");
+
+    sCommonCssUrl = sCommonCssUrl.replaceAll("\\", "/");
+    sCommonCssUrl = `file:///${sCommonCssUrl}`;
 
     oCss.setAttribute("rel", "stylesheet");
     oCss.setAttribute("href", sCommonCssUrl);

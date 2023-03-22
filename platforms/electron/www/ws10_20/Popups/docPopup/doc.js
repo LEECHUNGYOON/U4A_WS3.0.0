@@ -3,7 +3,8 @@
    ************************************************************************/
   var zconsole = parent.WSERR(window, document, console);
 
-  let oAPP = parent.oAPP;
+  let oAPP = parent.oAPP,
+  PATHINFO = parent.PATHINFO;
   // const oAPP = parent.fn_getParent();
   // const oWIN = oAPP.remote.getCurrentWindow();
 
@@ -16,11 +17,8 @@
    ************************************************************************/
   function fnGetSettingsInfo() {
 
-      let PATH = parent.oAPP.PATH,
-          APP = parent.oAPP.APP;
-
       // Browser Window option
-      var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
+      var sSettingsJsonPath = PATHINFO.WSSETTINGS,
 
           // JSON 파일 형식의 Setting 정보를 읽는다..
           oSettings = parent.require(sSettingsJsonPath);
@@ -39,10 +37,6 @@
 
       var oSettings = fnGetSettingsInfo(),
           oSetting_UI5 = oSettings.UI5,
-          sVersion = oSetting_UI5.version,
-          sTestResource = oSetting_UI5.testResource,
-          sReleaseResource = `../../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
-          bIsDev = oSettings.isDev,
           oBootStrap = oSetting_UI5.bootstrap,
           oUserInfo = parent.oAPP.attr.oUserInfo,
           oThemeInfo = parent.oAPP.attr.oThemeInfo,
@@ -61,13 +55,7 @@
       oScript.setAttribute("data-sap-ui-preload", "sync");
       oScript.setAttribute("data-sap-ui-language", sLangu);
       oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.tnt, sap.ui.commons, sap.ui.core, sap.ui.layout, sap.ui.unified");
-
-      // 개발일때와 release 할 때의 Bootstrip 경로 분기
-      if (bIsDev) {
-          oScript.setAttribute("src", sTestResource);
-      } else {
-          oScript.setAttribute("src", sReleaseResource);
-      }
+      oScript.setAttribute("src", oSetting_UI5.resourceUrl);
 
       document.head.appendChild(oScript);
 

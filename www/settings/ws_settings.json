@@ -66,7 +66,7 @@
         "systems": "HKCU\\SOFTWARE\\U4A\\WS\\Systems",
         "LogonSettings": "HKCU\\SOFTWARE\\U4A\\WS\\WSLogon\\Settings"
     },
-    "isDev": true,
+    "isDev": false,
     "isTrial": false,
     "trialServerInfo": {
         "ID": "soccerhs",

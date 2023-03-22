@@ -20,6 +20,7 @@ let oAPP = parent.oAPP;
     let PATH = oAPP.PATH,
         APPPATH = oAPP.APPPATH,
         USERDATA = oAPP.USERDATA,
+        PATHINFO = parent.PATHINFO,
         APP = oAPP.APP,
         FS = oAPP.FS,
         SHELL = oAPP.SHELL,
@@ -66,7 +67,7 @@ let oAPP = parent.oAPP;
     oAPP.fn.getSettingsInfo = function () {
 
         // Browser Window option
-        var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
+        var sSettingsJsonPath = PATHINFO.WSSETTINGS,
 
             // JSON 파일 형식의 Setting 정보를 읽는다..
             oSettings = require(sSettingsJsonPath);
@@ -85,10 +86,6 @@ let oAPP = parent.oAPP;
 
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
-            sVersion = oSetting_UI5.version,
-            sTestResource = oSetting_UI5.testResource,
-            sReleaseResource = `../../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
-            bIsDev = oSettings.isDev,
             oBootStrap = oSetting_UI5.bootstrap,
             oUserInfo = oAPP.attr.oUserInfo,
             oThemeInfo = oAPP.attr.oThemeInfo,
@@ -106,13 +103,7 @@ let oAPP = parent.oAPP;
         oScript.setAttribute("data-sap-ui-theme", oThemeInfo.THEME);
         oScript.setAttribute("data-sap-ui-language", sLangu);
         oScript.setAttribute("data-sap-ui-libs", "sap.m");
-
-        // 개발일때와 release 할 때의 Bootstrip 경로 분기
-        if (bIsDev) {
-            oScript.setAttribute("src", sTestResource);
-        } else {
-            oScript.setAttribute("src", sReleaseResource);
-        }
+        oScript.setAttribute("src", oSetting_UI5.resourceUrl);
 
         document.head.appendChild(oScript);
 
@@ -217,7 +208,7 @@ let oAPP = parent.oAPP;
     oAPP.fn.fnGetFileList = () => {
 
         return new Promise((resolve, reject) => {
-           
+
             let oSettingsPath = PATH.join(APPPATH, "settings", "ws_settings.json"),
                 oSettings = require(oSettingsPath),
                 sHelpDocFolderPath = PATH.join(USERDATA, oSettings.path.u4aHelpDocFolderPath);
