@@ -5,7 +5,7 @@
  * - file Desc : Error Page Editor
  ************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     const
@@ -18,7 +18,7 @@
         APPCOMMON = oAPP.common;
 
 
-    oAPP.fn.fnErrorPageEditorPopupOpen = function() {
+    oAPP.fn.fnErrorPageEditorPopupOpen = function () {
 
         let sPopupName = "ERRPAGE";
 
@@ -38,7 +38,7 @@
             // sBrowserTitle = "Editor - Customizing the Error Page";
 
             sTitle = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D23"); // Editor
-            sTitle += " - " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D32"); // Customizing the Error Page
+        sTitle += " - " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D32"); // Customizing the Error Page
 
         var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
@@ -58,27 +58,7 @@
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
-
-        // // 팝업 위치를 부모 위치에 배치시킨다.
-        // var oParentBounds = CURRWIN.getBounds(),
-        //     xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-        //     yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-        //     oWinScreen = window.screen,
-        //     iAvailLeft = oWinScreen.availLeft;
-
-        // if (xPos < iAvailLeft) {
-        //     xPos = iAvailLeft;
-        // }
-
-        // if (yPos < 0) {
-        //     yPos = 0;
-        // };
-
-        // oBrowserWindow.setBounds({
-        //     x: xPos,
-        //     y: yPos
-        // });
-
+       
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
@@ -96,7 +76,7 @@
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oEditorInfo = {
                 APPINFO: oAppInfo,
@@ -129,6 +109,8 @@
 
             oBrowserWindow = null;
 
+            CURRWIN.focus();
+
         });
 
     }; // end of oAPP.fn.fnErrorPageEditorPopupOpen
@@ -136,7 +118,7 @@
     /************************************************************************
      * Error Page Editor 팝업의 저장 버튼 이벤트를 수행하기 위한 IPCMAIN 이벤트
      * **********************************************************************/
-    oAPP.fn.fnIpcMain_ErrorPageEditorSave = function(event, res) {
+    oAPP.fn.fnIpcMain_ErrorPageEditorSave = function (event, res) {
 
         var BROWSKEY = parent.getBrowserKey();
 
@@ -163,7 +145,7 @@
     /************************************************************************
      * Error Page Editor 팝업의 미리보기 IPCMAIN 이벤트
      * **********************************************************************/
-    oAPP.fn.fnIpcMain_ErrorPagePreview = function(event, res) {
+    oAPP.fn.fnIpcMain_ErrorPagePreview = function (event, res) {
 
         var sWinObjType = "ERRPAGEPREV";
 
@@ -181,6 +163,7 @@
 
         var oCurrWin = REMOTE.getCurrentWindow(),
             oSaveData = res.SAVEDATA,
+            oParWin = res.PARWIN,
             SESSKEY = parent.getSessionKey();
 
         var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),

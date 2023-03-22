@@ -532,7 +532,7 @@
 
                 let sCustomPatternJson = FS.readFileSync(sCustPattJsonPath, 'utf-8'), // 커스텀 패턴 Json Data
                     aCustomPatternJsonData;
-                    
+
                 try {
                     aCustomPatternJsonData = JSON.parse(sCustomPatternJson); // Custom Pattern Json Parse    
                 } catch (error) {
@@ -574,8 +574,17 @@
             let aPatternJson,
                 aCustmPatternJson,
                 aPatternMerge;
+            
+                debugger;
+
+            const ESCAPEJSON = parent.require('escape-json');
 
             try {
+
+                sPatternJson = ESCAPEJSON(sPatternJson);
+                aCustmPatternJson = ESCAPEJSON(aCustmPatternJson);
+
+
                 aPatternJson = JSON.parse(sPatternJson); // 기본 패턴 Json Parse
                 aCustmPatternJson = JSON.parse(sCustomPatternJson); // Custom Pattern Json Parse
             } catch (error) {

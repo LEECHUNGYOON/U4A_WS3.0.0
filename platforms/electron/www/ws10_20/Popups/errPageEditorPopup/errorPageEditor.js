@@ -392,7 +392,7 @@ let oAPP = parent.oAPP,
 
         var BROWSKEY = oAPP.fn.fnGetBrowserKey(),
             oSaveData = oAPP.fn.fnGetModelProperty("/EDITDATA");
-
+            
         oAPP.IPCRENDERER.send("if-ErrorPage-Preview", {
             BROWSKEY: BROWSKEY,
             SAVEDATA: oSaveData
@@ -411,11 +411,12 @@ let oAPP = parent.oAPP,
         }
 
         var BROWSKEY = oAPP.fn.fnGetBrowserKey(),
-            oSaveData = oAPP.fn.fnGetModelProperty("/EDITDATA");
+            oSaveData = oAPP.fn.fnGetModelProperty("/EDITDATA"),
+            CURRWIN = parent.REMOTE.getCurrentWindow();
 
         oAPP.IPCRENDERER.send("if-ErrorPageEditor-Save", {
             BROWSKEY: BROWSKEY,
-            SAVEDATA: oSaveData
+            SAVEDATA: oSaveData            
         });
 
         let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "002", "", "", "", ""); // Saved success
