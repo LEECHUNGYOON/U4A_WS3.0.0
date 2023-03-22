@@ -15,7 +15,8 @@ let oAPP = parent.oAPP;
     "use strict";
 
     let require = parent.require,
-        FS = require("fs-extra");
+        FS = require("fs-extra"),
+        ESCAPEJSON = require('escape-json');
 
     /************************************************************************
      * 모델 데이터 set
@@ -622,6 +623,7 @@ let oAPP = parent.oAPP;
             contentHeight: "100%",
             verticalScrolling: false,
             horizontalScrolling: false,
+            escapeHandler: () => {},
 
             // aggregations
             customHeader: new sap.m.Bar({
@@ -743,10 +745,10 @@ let oAPP = parent.oAPP;
         parent.WSUTIL.parseArrayToTree(oModel, "CUS_PAT", "CKEY", "PKEY", "CUS_PAT");
 
         oModel.refresh();
-
+        
         // 신규 추가한 정보를 JSON으로 변환하여 로컬에 저장
-        let sNewCustomJsonData = JSON.stringify(aCustomData);
-
+        let sNewCustomJsonData = JSON.stringify(aCustomData);                
+        
         FS.writeFileSync(oAPP.attr.sCustomPatternJsonPath, sNewCustomJsonData, "utf-8");
 
         let oCloseBtn = sap.ui.getCore().byId("uspCustPattCreateDlgCloseBtn");

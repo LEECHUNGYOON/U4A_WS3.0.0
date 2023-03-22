@@ -1681,8 +1681,6 @@
      ************************************************************************/
     async function _fnCodeeditorContextMenuEvent(oEvent) {
 
-        debugger;
-        
         // 컨트롤키 누르고 마우스 우클릭이면 전체 팝업을 띄운다.
         if (oEvent.ctrlKey) {
 
