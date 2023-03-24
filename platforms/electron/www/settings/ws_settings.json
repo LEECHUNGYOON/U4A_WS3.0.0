@@ -64,7 +64,9 @@
         "cSession": "HKCU\\SOFTWARE\\U4A\\WS\\cSession",
         "GUIVer": "HKCU\\SOFTWARE\\U4A\\WS\\GUIVer",
         "systems": "HKCU\\SOFTWARE\\U4A\\WS\\Systems",
-        "LogonSettings": "HKCU\\SOFTWARE\\U4A\\WS\\WSLogon\\Settings"
+        "LogonSettings": "HKCU\\SOFTWARE\\U4A\\WS\\WSLogon\\Settings",
+        "globalSettings" : "HKCU\\SOFTWARE\\U4A\\WS\\GlobalSettings"
+
     },
     "isDev": true,
     "isTrial": false,

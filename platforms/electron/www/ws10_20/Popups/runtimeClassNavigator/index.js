@@ -74,6 +74,13 @@ let oAPP = parent.oAPP;
 
     }; // end of oAPP.fn.getSettingsInfo
 
+    // oAPP.fn.fnGetThemeInfo = function(){
+
+    //     PATHINFO.THEME
+
+
+    // };
+
     // /************************************************************************
     //  * UI5 BootStrap 
     //  ************************************************************************/

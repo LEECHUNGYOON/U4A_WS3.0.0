@@ -3,7 +3,11 @@ const
     FS = require('fs-extra'),
     PATH = REMOTE.require('path'),
     APP = REMOTE.app,
+    REGEDIT = require('regedit'),
     USERDATA = APP.getPath("userData");
+
+const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
+REGEDIT.setExternalVBSLocation(vbsDirectory);
 
 /**
  * 테스트 -- start
@@ -265,74 +269,7 @@ module.exports = {
         t(JSON.parse(JSON.stringify(e)));
         return a;
 
-    }, // end of parseTreeToArray
-
-    /**
-     * 전달받은 경로의 디렉토리 정보를 구한다.
-     * 
-     * @param {String} sFolderPath 
-     * - 읽을려는 폴더 경로
-     * @returns {Object} { RETCD : "성공여부", RTDATA: "폴더내부의 정보리스트"}
-     */
-    readDir: (sFolderPath) => {
-
-        return new Promise(async (resolve) => {
-
-            FS.readdir(sFolderPath, { withFileTypes: false }, (err, files) => {
-
-                if (err) {
-
-                    resolve({
-                        RETCD: "E",
-                        RTMSG: err.toString()
-                    });
-
-                    return;
-                }
-
-                resolve({
-                    RETCD: "S",
-                    RTDATA: files
-                });
-
-            });
-
-        });
-
-    }, // end of readdir
-
-    /**
-     * File 읽기
-     * 
-     * @param {String} sFilePath
-     * - 읽을려는 파일의 경로
-     */
-    readFile: (sFilePath) => {
-
-        return new Promise(async (resolve) => {
-
-            FS.readFile(sFilePath, "utf-8", (err, data) => {
-
-                if (err) {
-
-                    resolve({
-                        RETCD: "E",
-                        RTMSG: err.toString()
-                    });
-
-                    return;
-                }
-
-                resolve({
-                    RETCD: "S",
-                    RTDATA: data
-                });
-
-            });
-
-        });
-
-    }, // end of readFile
+    }, // end of parseTreeToArray   
 
     /**
      * Electron Browser Window Open 시 Opacity를 이용하여 자연스러운 동작 연출
@@ -414,6 +351,113 @@ module.exports = {
         });
 
     }, // end of getFileExtSvgIcons
+
+    /**
+     * SAP 아이콘 이미지 경로     
+     */
+    getSapIconPath: (sIcon) => {
+
+        if (sIcon == null) {
+            return;
+        }
+
+        var sIconName = sIcon + ".gif";
+
+        return PATH.join(APP.getAppPath(), "icons", sIconName);
+
+    },
+
+    /**
+     * 랜덤 값 구하기
+     * @param {Integer} iLength 
+     * - 랜덤값 길이 (Default: 50)   
+     *
+     */
+    getRandomKey: function (iLength) {
+
+        const RANDOM = require("random-key");
+
+        let iDefLength = 50;
+
+        if (iLength) {
+            iDefLength = iLength;
+        }
+
+        return RANDOM.generateBase30(iDefLength);
+
+    }, // end of getRandomKey
+
+
+    /*************************************************************************
+     * 파일시스템 관련 -- Start
+     *************************************************************************/
+
+    /**
+    * 전달받은 경로의 디렉토리 정보를 구한다.
+    * 
+    * @param {String} sFolderPath 
+    * - 읽을려는 폴더 경로
+    * @returns {Object} { RETCD : "성공여부", RTDATA: "폴더내부의 정보리스트"}
+    */
+    readDir: (sFolderPath) => {
+
+        return new Promise(async (resolve) => {
+
+            FS.readdir(sFolderPath, { withFileTypes: false }, (err, files) => {
+
+                if (err) {
+
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTDATA: files
+                });
+
+            });
+
+        });
+
+    }, // end of readdir
+
+    /**
+     * File 읽기
+     * 
+     * @param {String} sFilePath
+     * - 읽을려는 파일의 경로
+     */
+    readFile: (sFilePath) => {
+
+        return new Promise(async (resolve) => {
+
+            FS.readFile(sFilePath, "utf-8", (err, data) => {
+
+                if (err) {
+
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTDATA: data
+                });
+
+            });
+
+        });
+
+    }, // end of readFile
 
     /**
      * 폴더 및 파일 복사 [deprecated] 빌드시 버그있음!!!!! 사용 금지!! 
@@ -537,18 +581,80 @@ module.exports = {
 
     }, // end of fsRemove
 
-    getRandomKey : function(iLength){
+    /*************************************************************************
+     * 파일 시스템 관련 -- End
+     *************************************************************************/
 
-        const RANDOM = require("random-key");
 
-        let iDefLength = 50;
+    /*************************************************************************
+     * 레지스트리 관련 -- Start
+     *************************************************************************/
 
-        if(iLength){
-            iDefLength = iLength;
-        }
+    /**
+     * 레지스트리 정보 가져오기
+     * 
+     * @param {Array} aPaths 
+     * - 레지스트리 경로
+     */
+    getRegeditList: function (aPaths) {
 
-        return RANDOM.generateBase30(iDefLength);
+        return new Promise((resolve) => {
 
-    } // end of getRandomKey
+            REGEDIT.list(aPaths, (err, result) => {
+
+                if (err) {
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTDATA: result
+                });
+
+            });
+
+        });
+
+    },
+
+    /**
+     * 레지스트리 저장
+     * 
+     */
+    putRegeditValue: function (oRegData) {
+
+        return new Promise((resolve) => {
+
+            REGEDIT.putValue(oRegData, (err) => {
+
+                if (err) {
+
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString(),
+                        RTDATA: ""
+                    });
+
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S"
+                });
+
+            });
+
+
+        });
+
+    },
+
+    /*************************************************************************
+     * 레지스트리 관련 -- End
+     *************************************************************************/
 
 };

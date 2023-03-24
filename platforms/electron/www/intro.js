@@ -269,9 +269,9 @@
         // oWin.webContents.openDevTools();
         // no build 일 경우에는 개발자 툴을 실행한다.
 
-        // if (!APP.isPackaged) {
-        //     oWin.webContents.openDevTools();
-        // }
+        if (!APP.isPackaged) {
+            oWin.webContents.openDevTools();
+        }
 
         oWin.webContents.on('did-finish-load', function () {
 
@@ -614,6 +614,45 @@
     } // end of _cSessionClear
 
     /************************************************************************
+     * 초기 글로벌 설정값 세팅
+     ************************************************************************/
+    function _initRegistryGlobalSettings() {
+
+        return new Promise(async (resolve) => {           
+          
+            let oSettings = oAPP.fn.fnGetSettingsInfo(),
+                sRegPath = oSettings.regPaths,
+                sGlobalSettingPath = sRegPath.globalSettings;
+
+            let oRegList = await WSUTIL.getRegeditList([sGlobalSettingPath]),
+                oRetData = oRegList.RTDATA;
+
+            //  레지스트리에 SAPLogon 정보가 있는지 확인
+            var oGlobalSettingRegData = oRetData[sGlobalSettingPath],
+                oSettingValues = oGlobalSettingRegData.values;
+
+            if (oSettingValues.language) {
+                resolve();
+                return;
+            }
+
+            let oRegData = {};
+            oRegData[sGlobalSettingPath] = {};
+            oRegData[sGlobalSettingPath]["language"] = {
+                value: "EN",
+                type: "REG_SZ"
+            };
+
+            await WSUTIL.putRegeditValue(oRegData);
+
+            resolve();
+
+        });
+
+
+    } // end of _initRegistryGlobalSettings
+
+    /************************************************************************
      * 초기 레지스트리 폴더 생성
      ************************************************************************/
     function _initCreateRegistryFolders() {
@@ -627,6 +666,7 @@
 
             aKeys.push(sRegPath.systems);
             aKeys.push(sRegPath.LogonSettings);
+            aKeys.push(sRegPath.globalSettings);
 
             await _regeditCreateKey(aKeys);
 
@@ -651,18 +691,11 @@
 
 
             /**
-             * 레지스트리관련 로직 확장은 아래에 쭉 추가하면 됨
-             * .
-             * .
-             * .
-             * .
-             * 
+             * 레지스트리관련 로직 확장은 아래에 쭉 추가하면 됨         
              */
 
-
-
-
-
+            // 초기 글로벌 설정값 세팅
+            await _initRegistryGlobalSettings();
 
             resolve();
 
@@ -734,19 +767,19 @@
         if (oSettings.isDev) {
             oSettings.UI5.resourceUrl = oSettings.UI5.testResource;
         }
-     
+
     } // end of _setUI5BootStrapUrl
 
     /************************************************************************
      * 공통으로 사용할 패스 정보 구성
      ************************************************************************/
-    function _setCommonPaths(oSettings){
+    function _setCommonPaths(oSettings) {
 
-        if(!oSettings.path){
+        if (!oSettings.path) {
             oSettings.path = {};
         }
 
-        oSettings.path = Object.assign(oSettings.path, PATHINFO);       
+        oSettings.path = Object.assign(oSettings.path, PATHINFO);
 
     } // end of _setCommonPaths
 

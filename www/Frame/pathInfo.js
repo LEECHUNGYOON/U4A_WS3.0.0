@@ -32,7 +32,8 @@ module.exports = (() => {
         USP_ROOT = PATH.join(APPPATH, "ws10_20", "js", "usp"),
         PATTERN_ROOT = PATH.join(USP_ROOT, "pattern"),
         USERDATA_PATTERN_ROOT = PATH.join(USERDATA, "p13n", "pattern"),
-        CONF_ROOT = PATH.join(PATH.join(USERDATA, "conf"));
+        CONF_ROOT = PATH.join(PATH.join(USERDATA, "conf")),
+        COMMON_MODULES_ROOT = PATH.join(JS_ROOT, "common_modules");
 
     return {
 
@@ -57,6 +58,7 @@ module.exports = (() => {
         USERDATA_PATT_FILES: PATH.join(USERDATA_PATTERN_ROOT, "default_pattern_files"),
         USP_ROOT: USP_ROOT,
         CONF_ROOT : CONF_ROOT,
+        COMMON_MODULES_ROOT : COMMON_MODULES_ROOT,
 
         // User Data Paths..
         CLIPBOARD: PATH.join(USERDATA, "clipboard.json"),
@@ -101,6 +103,9 @@ module.exports = (() => {
         TCODESUGG: PATH.join(SUGG_ROOT, "tcode.json"),
         DEF_PATT: PATH.join(USERDATA_PATTERN_ROOT, "default_pattern.json"), // usp default pattern file
         CUST_PATT: PATH.join(USERDATA_PATTERN_ROOT, "custom_pattern.json"), // usp custom pattern file
+
+        // common module paths...
+        MODULE_WS_SETTINGS : PATH.join(COMMON_MODULES_ROOT, "ws_settings.js")
 
     };
 

@@ -999,7 +999,41 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             }),
             oMainPage = new sap.m.Page({
                 enableScrolling: false,
-                title: "U4A Workspace Logon Pad",
+                // title: "U4A Workspace Logon Pad",
+                customHeader: new sap.m.Bar({
+                    contentLeft: [
+                        new sap.m.Title({
+                            text: "U4A Workspace Logon Pad"
+                        }),
+                    ],
+                    contentRight: [
+                        // new sap.m.Button({
+                        //     icon: "sap-icon://settings",
+                        //     press : function(){
+
+                        //         _settingPopupOpen();
+
+                        //     }
+                        // })
+                        new sap.m.MenuButton({
+                            type: sap.m.ButtonType.Ghost,
+                            buttonMode: sap.m.MenuButtonMode.Split,
+                            icon: "sap-icon://settings",
+                            menu: new sap.m.Menu({
+                                items : [
+                                    new sap.m.MenuItem({
+                                        key: "WSLANGU",
+                                        text: "Language"
+                                    })
+                                ],
+
+                                itemSelected: function(oEvent){
+                                    ev_settingItemSelected(oEvent);
+                                }
+                            })
+                        })
+                    ]
+                }),
                 content: [
                     new sap.ui.layout.Splitter({
                         height: "100%",
@@ -2257,6 +2291,21 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         fnLoginPage(oSAPServerInfo);
 
     }; // end of oAPP.fn.fnPressServerListItem
+
+    function ev_settingItemSelected(oEvent){
+
+        debugger;
+
+
+    } // end of ev_settingItemSelected
+
+    function _settingPopupOpen() {
+
+        debugger;
+
+
+
+    } // end of _settingPopupOpen
 
     function _registSelectedSystemInfo(oServerInfo) {
 
