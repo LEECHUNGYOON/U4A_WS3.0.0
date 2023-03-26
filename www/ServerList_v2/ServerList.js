@@ -1258,39 +1258,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 레지스트리 데이터 저장
         await RegeditPromisified.putValue(oRegData);
 
-        // return;
-
-
-
-
-        // // P13N JSON 파일이 있는지 확인한다.
-        // if (!FS.existsSync(sP13nPath)) {
-        //     FS.writeFileSync(sP13nPath, JSON.stringify(""), {
-        //         encoding: "utf8",
-        //         mode: 0o777 // 올 권한
-        //     }); // 없으면 생성
-        // }
-
-        // let sP13nData = FS.readFileSync(sP13nPath, "utf-8"),
-        //     oP13nData = JSON.parse(sP13nData);
-
-        // if (oP13nData == "") {
-        //     oP13nData = {};
-        // }
-
-        // if (!oP13nData.SERVERINFO) {
-        //     oP13nData.SERVERINFO = {};
-        // }
-
-        // let oServerInfo = oP13nData.SERVERINFO;
-
-        // oServerInfo.UUID = sUUID;
-
-        // FS.writeFileSync(sP13nPath, JSON.stringify(oP13nData), {
-        //     encoding: "utf8",
-        //     mode: 0o777 // 올 권한
-        // }); // 없으면 생성
-
     }; // end of oAPP.fn.fnSetSaveSelectedItemPosition
 
     /************************************************************************
@@ -2285,8 +2252,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oSAPServerInfo.oThemeInfo = oP13nThemeInfo.RTDATA;
         }
 
-        // // 선택한 정보를 레지스트리에 저장한다.
-        // await _registSelectedSystemInfo(oSAPServerInfo);
+        // 선택한 정보를 레지스트리에 저장한다.
+        await _registSelectedSystemInfo(oSAPServerInfo);
 
         fnLoginPage(oSAPServerInfo);
 
@@ -2309,7 +2276,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     function _registSelectedSystemInfo(oServerInfo) {
 
-        const RegeditPromisified = parent.require('regedit').promisified;
+        // const RegeditPromisified = parent.require('regedit').promisified;
 
         return new Promise(async (resolve) => {
 
@@ -2327,13 +2294,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 return;
             }
 
-            let oCtxData = oCtx.getModel().getProperty(oCtx.getPath()),
-                LastSelectedNodeKey = oCtxData._attributes.uuid;
+            // let oCtxData = oCtx.getModel().getProperty(oCtx.getPath()),
+            //     LastSelectedNodeKey = oCtxData._attributes.uuid;
 
             let oWsSettings = fnGetSettingsInfo(),
                 oRegPaths = oWsSettings.regPaths,
-                sSystemPath = oRegPaths.systems,
-                sSettingsPath = oRegPaths.LogonSettings;
+                sSystemPath = oRegPaths.systems;
+                // sSettingsPath = oRegPaths.LogonSettings;
 
             let sCreatePath = `${sSystemPath}\\${oServerInfo.SYSID}`,
                 aKeys = [sCreatePath];
@@ -2341,15 +2308,15 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             // 레지스트리 폴더 생성
             await _regeditCreateKey(aKeys);
 
-            let oRegData = {};
-            oRegData[sSettingsPath] = {};
-            oRegData[sSettingsPath]["LastSelectedNodeKey"] = {
-                value: LastSelectedNodeKey,
-                type: "REG_SZ"
-            };
+            // let oRegData = {};
+            // oRegData[sSettingsPath] = {};
+            // oRegData[sSettingsPath]["LastSelectedNodeKey"] = {
+            //     value: LastSelectedNodeKey,
+            //     type: "REG_SZ"
+            // };
 
-            // 레지스트리 데이터 저장
-            await RegeditPromisified.putValue(oRegData);
+            // // 레지스트리 데이터 저장
+            // await RegeditPromisified.putValue(oRegData);
 
             resolve();
 

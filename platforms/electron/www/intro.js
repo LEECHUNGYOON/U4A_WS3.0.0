@@ -3,7 +3,7 @@
  * ************************************************************************
  * - Application Intro
  **************************************************************************/
-(function () {
+(function() {
     "use strict";
 
     let oAPP = {};
@@ -26,7 +26,7 @@
     const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
     REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-    oAPP.fn.fnOnDeviceReady = function () {
+    oAPP.fn.fnOnDeviceReady = function() {
 
         oAPP.fn.fnOnStart();
 
@@ -152,7 +152,7 @@
         // }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oMetadata = {
                 SERVERINFO: oServerInfo,
@@ -200,6 +200,8 @@
      ************************************************************************/
     oAPP.fn.fnDisplayCurrentVersion = () => {
 
+        let oPackageJson = REMOTE.require("./package.json");
+
         let oVerTable = document.getElementById("verTable"),
             oVerTextArea = document.getElementById("verTextArea"),
             oRelVer = document.getElementById("relver"),
@@ -210,6 +212,11 @@
             sVersion = APP.getVersion(), // 앱 버전
             oWsSettings = oAPP.fn.fnGetSettingsInfo(), // WS Setting 정보
             iSupportPatch = Number(oWsSettings.patch_level || 0);
+
+        // no build 상태에서는 버전 정보를 package.json에서 읽는다.
+        if (!APP.isPackaged) {
+            sVersion = oPackageJson.version;
+        }
 
         // Trial 버전 여부 확인
         if (oWsSettings.isTrial) {
@@ -228,19 +235,19 @@
         oRelVer.innerHTML = sVersion;
 
         // 빌드된 상태에서 실행했을 경우에만 Support Package version을 보여준다.
-        if (APP.isPackaged) {
+        // if (APP.isPackaged) {
 
-            oPatVerTr.style.display = "";
-            oPatVer.innerHTML = iSupportPatch;
+        oPatVerTr.style.display = "";
+        oPatVer.innerHTML = iSupportPatch;
 
-        }
+        // }
 
     }; // end of oAPP.fn.fnDisplayCurrentVersion  
 
     /************************************************************************
      * 서버 리스트를 오픈한다.
      ************************************************************************/
-    oAPP.fn.fnOpenServerList = function () {
+    oAPP.fn.fnOpenServerList = function() {
 
         // Electron Browser Default Options        
         var sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
@@ -269,11 +276,11 @@
         // oWin.webContents.openDevTools();
         // no build 일 경우에는 개발자 툴을 실행한다.
 
-        if (!APP.isPackaged) {
-            oWin.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oWin.webContents.openDevTools();
+        // }
 
-        oWin.webContents.on('did-finish-load', function () {
+        oWin.webContents.on('did-finish-load', function() {
 
             oWin.webContents.send('window-id', oWin.id);
 
@@ -303,7 +310,7 @@
      * 2. 설치 경로는 WS가 설치된 userData
      *    예) C:\Users\[UserName]\AppData\Roaming\com.u4a_ws.app
      ************************************************************************/
-    oAPP.fn.setInitInstall = function (fnCallback) {
+    oAPP.fn.setInitInstall = function(fnCallback) {
 
         var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
@@ -329,9 +336,9 @@
                 continue;
             }
 
-            aPromise.push(new Promise(function (resolve, reject) {
+            aPromise.push(new Promise(function(resolve, reject) {
 
-                FS.mkdir(sFullPath, oMkdirOptions, function (err) {
+                FS.mkdir(sFullPath, oMkdirOptions, function(err) {
 
                     if (err) {
                         reject(err.toString());
@@ -361,7 +368,7 @@
                 FS.writeFile(sFileFullPath, JSON.stringify(""), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         reject(err.toString());
@@ -378,9 +385,9 @@
 
 
         // 상위 폴더를 생성 후 끝나면 실행
-        Promise.all(aPromise).then(function (values) {
+        Promise.all(aPromise).then(function(values) {
 
-            oAPP.fn.copyVbsToLocalFolder(function (oResult) {
+            oAPP.fn.copyVbsToLocalFolder(function(oResult) {
 
                 if (oResult.RETCD == 'E') {
                     alert(oResult.MSG);
@@ -391,7 +398,7 @@
 
             });
 
-        }).catch(function (err) {
+        }).catch(function(err) {
 
             alert(err.toString());
 
@@ -402,7 +409,7 @@
     /************************************************************************
      * build된 폴더에서 vbs 파일을 로컬 폴더로 복사한다.
      ************************************************************************/
-    oAPP.fn.copyVbsToLocalFolder = function (fnCallback) {
+    oAPP.fn.copyVbsToLocalFolder = function(fnCallback) {
 
         var sVbsFolderPath = PATH.join(APPPATH, "vbs"),
             aVbsFolderList = FS.readdirSync(sVbsFolderPath),
@@ -440,7 +447,7 @@
 
             fnCallback(oResult);
 
-        }).catch(function (err) {
+        }).catch(function(err) {
 
             oResult.RETCD = 'E';
             oResult.MSG = err.toString();
@@ -451,7 +458,7 @@
 
     }; // end of oAPP.fn.copyVbsToLocalFolder
 
-    oAPP.fn.copyVbsPromise = function (sFile, sVbsOrigPath) {
+    oAPP.fn.copyVbsPromise = function(sFile, sVbsOrigPath) {
 
         var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
@@ -463,11 +470,11 @@
 
             FS.copy(sVbsOrigPath, sVbsFullPath, {
                 overwrite: true,
-            }).then(function () {
+            }).then(function() {
 
                 resolve("X");
 
-            }).catch(function (err) {
+            }).catch(function(err) {
 
                 reject(err.toString());
 
@@ -618,8 +625,8 @@
      ************************************************************************/
     function _initRegistryGlobalSettings() {
 
-        return new Promise(async (resolve) => {           
-          
+        return new Promise(async (resolve) => {
+
             let oSettings = oAPP.fn.fnGetSettingsInfo(),
                 sRegPath = oSettings.regPaths,
                 sGlobalSettingPath = sRegPath.globalSettings;
@@ -651,6 +658,41 @@
 
 
     } // end of _initRegistryGlobalSettings
+
+
+    function _testGetReg() {
+
+        return new Promise(async (resolve) => {
+
+            let oSettings = oAPP.fn.fnGetSettingsInfo(),
+                sRegPath = oSettings.regPaths,
+                sSystems = sRegPath.systems,
+                sUHA = sSystems + "\\UHA";
+
+            // let oRegList = await WSUTIL.getRegeditList([sUHA]);
+            // if (oRegList.RETCD == "E") {
+            //     resolve();
+            // }
+
+            // let oRetData = oRegList.RTDATA,
+            //     oRegData = oRetData[sUHA],
+            //     oRegValue = oRegData.values;
+
+            // let A1 = oRegValue.T_REG_THEME.value,
+            //     A2 = oRegValue.T_REG_WLO.value;
+
+            // try {
+            //     var A1_parse = JSON.parse(A1);
+            //     var A2_parse = JSON.parse(A2);
+            // } catch (error) {
+            //     throw new Error(error);
+            // }
+
+            await WSUTIL.getRegeditAsync("HKCU", "SOFTWARE", "U4A", "WS", "Systems", "UHA");
+
+        });
+
+    }
 
     /************************************************************************
      * 초기 레지스트리 폴더 생성
@@ -696,6 +738,11 @@
 
             // 초기 글로벌 설정값 세팅
             await _initRegistryGlobalSettings();
+
+            // if (!APP.isPackaged) {
+            //     await _testGetReg();
+            // }
+
 
             resolve();
 
@@ -804,7 +851,7 @@
 
             ncp.limit = 16; // 한번에 처리하는 수?  
 
-            ncp(sPattnFolderSourcePath, sPattnFolderTargetPath, function (err) {
+            ncp(sPattnFolderSourcePath, sPattnFolderTargetPath, function(err) {
 
                 if (err) {
                     resolve({
@@ -897,10 +944,10 @@
 })();
 
 
-(function () {
+(function() {
     "use strict";
 
-    String.prototype.string = function (len) {
+    String.prototype.string = function(len) {
         var s = '',
             i = 0;
         while (i++ < len) {
@@ -908,14 +955,14 @@
         }
         return s;
     };
-    String.prototype.zf = function (len) {
+    String.prototype.zf = function(len) {
         return "0".string(len - this.length) + this;
     };
-    Number.prototype.zf = function (len) {
+    Number.prototype.zf = function(len) {
         return this.toString().zf(len);
     };
 
-    Date.prototype.format = function (f) {
+    Date.prototype.format = function(f) {
 
         if (!this.valueOf()) return " ";
 
@@ -925,7 +972,7 @@
             weekEngShortName = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
             d = this;
 
-        return f.replace(/(yyyy|yy|MM|dd|KS|KL|ES|EL|HH|hh|mm|ss|a\/p)/gi, function ($1) {
+        return f.replace(/(yyyy|yy|MM|dd|KS|KL|ES|EL|HH|hh|mm|ss|a\/p)/gi, function($1) {
 
             var h = "";
 

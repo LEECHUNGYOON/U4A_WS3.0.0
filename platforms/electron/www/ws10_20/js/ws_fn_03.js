@@ -669,7 +669,8 @@
                                     ],
                                     formatter: function () {
 
-                                        return APP.isPackaged;
+                                        return true;
+                                        // return APP.isPackaged;
 
                                     }
                                 }), // end of sap.ui.layout.form.FormElement

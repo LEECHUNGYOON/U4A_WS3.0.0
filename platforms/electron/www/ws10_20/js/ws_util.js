@@ -200,7 +200,7 @@ module.exports = {
      * @param {*} t PARENT
      * @param {*} z 재구성할 MODEL PATH 명
      *************************************************************************/
-    parseArrayToTree: function (m, p, r, t, z) {
+    parseArrayToTree: function(m, p, r, t, z) {
 
         var lp = p.replace(/[.\[\]]/g, '/');
         lp = lp.replace(/(\/\/)/g, '/');
@@ -246,10 +246,10 @@ module.exports = {
      * @param {Array} Tree 구조로 되어 있는 Array
      * @param {String} Child 이름
      *************************************************************************/
-    parseTreeToArray: function (e, sArrName) {
+    parseTreeToArray: function(e, sArrName) {
 
         var a = [],
-            t = function (e) {
+            t = function(e) {
 
                 e.forEach((o, e) => {
 
@@ -275,7 +275,7 @@ module.exports = {
      * Electron Browser Window Open 시 Opacity를 이용하여 자연스러운 동작 연출
      * @param {BrowserWindow} oBrowserWindow 
      */
-    setBrowserOpacity: function (oBrowserWindow) {
+    setBrowserOpacity: function(oBrowserWindow) {
 
         let iOpa = 0.0,
             iInterval;
@@ -314,7 +314,9 @@ module.exports = {
 
             var svgFolder = PATH.join(APP.getAppPath(), "svg");
 
-            FS.readdir(svgFolder, { withFileTypes: false }, (err, aFiles) => {
+            FS.readdir(svgFolder, {
+                withFileTypes: false
+            }, (err, aFiles) => {
 
                 if (err) {
                     resolve({
@@ -373,7 +375,7 @@ module.exports = {
      * - 랜덤값 길이 (Default: 50)   
      *
      */
-    getRandomKey: function (iLength) {
+    getRandomKey: function(iLength) {
 
         const RANDOM = require("random-key");
 
@@ -393,23 +395,26 @@ module.exports = {
      *************************************************************************/
 
     /**
-    * 전달받은 경로의 디렉토리 정보를 구한다.
-    * 
-    * @param {String} sFolderPath 
-    * - 읽을려는 폴더 경로
-    * @returns {Object} { RETCD : "성공여부", RTDATA: "폴더내부의 정보리스트"}
-    */
+     * 전달받은 경로의 디렉토리 정보를 구한다.
+     * 
+     * @param {String} sFolderPath 
+     * - 읽을려는 폴더 경로
+     * @returns {Object} { RETCD : "성공여부", RTDATA: "폴더내부의 정보리스트"}
+     */
     readDir: (sFolderPath) => {
 
         return new Promise(async (resolve) => {
 
-            FS.readdir(sFolderPath, { withFileTypes: false }, (err, files) => {
+            FS.readdir(sFolderPath, {
+                withFileTypes: false
+            }, (err, files) => {
 
                 if (err) {
 
                     resolve({
                         RETCD: "E",
-                        RTMSG: err.toString()
+                        RTMSG: err.toString(),
+                        RTDATA: ""
                     });
 
                     return;
@@ -417,6 +422,7 @@ module.exports = {
 
                 resolve({
                     RETCD: "S",
+                    RTMSG: "",
                     RTDATA: files
                 });
 
@@ -442,7 +448,8 @@ module.exports = {
 
                     resolve({
                         RETCD: "E",
-                        RTMSG: err.toString()
+                        RTMSG: err.toString(),
+                        RTDATA: ""
                     });
 
                     return;
@@ -450,7 +457,8 @@ module.exports = {
 
                 resolve({
                     RETCD: "S",
-                    RTDATA: data
+                    RTMSG: "",
+                    RTDATA: data,
                 });
 
             });
@@ -475,18 +483,20 @@ module.exports = {
 
         return new Promise((resolve) => {
 
-            FS.copy(sSource, sTarget, options).then(function () {
+            FS.copy(sSource, sTarget, options).then(function() {
 
                 resolve({
                     RETCD: "S",
-                    RTMSG: ""
+                    RTMSG: "",
+                    RTDATA: ""
                 });
 
-            }).catch(function (err) {
+            }).catch(function(err) {
 
                 resolve({
                     RETCD: "E",
-                    RTMSG: err.toString()
+                    RTMSG: err.toString(),
+                    RTDATA: ""
                 });
 
             });
@@ -512,14 +522,16 @@ module.exports = {
                 if (err) {
                     resolve({
                         RETCD: "E",
-                        RTMSG: err.toString()
+                        RTMSG: err.toString(),
+                        RTDATA: ""
                     });
                     return;
                 }
 
                 resolve({
                     RETCD: "S",
-                    RTMSG: ""
+                    RTMSG: "",
+                    RTDATA: ""
                 });
 
             });
@@ -538,7 +550,8 @@ module.exports = {
                 if (err) {
                     resolve({
                         RETCD: "E",
-                        RTMSG: err.toString()
+                        RTMSG: err.toString(),
+                        RTDATA: ""
                     });
                     return;
                 }
@@ -565,14 +578,16 @@ module.exports = {
                 if (err) {
                     resolve({
                         RETCD: "E",
-                        RTMSG: err.toString()
+                        RTMSG: err.toString(),
+                        RTDATA: ""
                     });
                     return;
                 }
 
                 resolve({
                     RETCD: "S",
-                    RTMSG: ""
+                    RTMSG: "",
+                    RTDATA: ""
                 });
 
             });
@@ -590,13 +605,72 @@ module.exports = {
      * 레지스트리 관련 -- Start
      *************************************************************************/
 
+    /** 
+     * [async/arguments] 레지스트리 정보 가져오기     
+     * 예: PATH.join("XX", "ZZ", "GGG") 처럼 파라미터 갯수 제한 없음
+     * 파라미터가 하나도 없으면 오류
+     */
+    getRegeditAsync: function() {
+
+        var aArgs = arguments,
+            iArgLength = aArgs.length;
+
+        return new Promise((resolve) => {
+
+            if (iArgLength == 0) {
+
+                resolve({
+                    RETCD: "E",
+                    RTMSG: "",
+                    RTDATA: ""
+                });
+
+                return;
+
+            }
+
+            // arguments로 Path 조합
+            let sRegPath = "";
+            for (var i = 0; i < iArgLength; i++) {
+
+                if(i == iArgLength - 1){
+                    sRegPath += aArgs[i];
+                    continue;
+                }
+
+                sRegPath += aArgs[i] + "\\";
+            }
+
+            REGEDIT.list([sRegPath], (err, result) => {
+
+                if (err) {
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString(),
+                        RTDATA: ""
+                    });
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTMSG: "",
+                    RTDATA: result[sRegPath]
+                });
+
+            });
+
+        });
+
+    },
+
     /**
      * 레지스트리 정보 가져오기
      * 
      * @param {Array} aPaths 
      * - 레지스트리 경로
      */
-    getRegeditList: function (aPaths) {
+    getRegeditList: function(aPaths) {
 
         return new Promise((resolve) => {
 
@@ -605,13 +679,15 @@ module.exports = {
                 if (err) {
                     resolve({
                         RETCD: "E",
-                        RTMSG: err.toString()
+                        RTMSG: err.toString(),
+                        RTDATA: ""
                     });
                     return;
                 }
 
                 resolve({
                     RETCD: "S",
+                    RTMSG: "",
                     RTDATA: result
                 });
 
@@ -625,7 +701,7 @@ module.exports = {
      * 레지스트리 저장
      * 
      */
-    putRegeditValue: function (oRegData) {
+    putRegeditValue: function(oRegData) {
 
         return new Promise((resolve) => {
 
@@ -643,7 +719,9 @@ module.exports = {
                 }
 
                 resolve({
-                    RETCD: "S"
+                    RETCD: "S",
+                    RTMSG: "",
+                    RTDATA: ""
                 });
 
             });

@@ -56,7 +56,7 @@
     </div>
 
     <!-- Page Loading Start -->
-    <div id="u4a_main_load" class="u4a_loaders u4a_loadersInactive">
+    <div id="u4a_main_load" class="u4a_loaders u4a_loadersInactive" style="display: none;">
         <!-- <span class="u4a_loader u4a_loader-bars"> <span></span> </span> Loading... -->
         <div class="cl_ring">LOADING<span class="cl_ringArea"></span></div>
     </div>
@@ -198,7 +198,7 @@
         }
 
         function onunhandledrejection(event) {
-debugger;
+
             if (bIsError) {
                 return;
             }
