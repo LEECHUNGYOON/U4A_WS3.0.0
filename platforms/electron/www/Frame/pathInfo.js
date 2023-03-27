@@ -46,6 +46,7 @@ module.exports = (() => {
         JQUERYUI: PATH.join(APPPATH, '/js/jquery-ui.min.js'),
         JQUERYUICSS: PATH.join(APPPATH, '/css/jquery-ui.min.css'),
         MSG: PATH.join(APPPATH, '/msg'),
+        WSMSG_ROOT: PATH.join(APPPATH, "MSG"),
         BROWSERSETTINGS: PATH.join(APPPATH, '/settings/BrowserWindow/BrowserWindow-settings.json'),
         // WSSETTINGS: PATH.join(APPPATH, "settings", "ws_settings.json"),        
         WSSETTINGS: PATH.join(CONF_ROOT, "ws_settings.json"),        

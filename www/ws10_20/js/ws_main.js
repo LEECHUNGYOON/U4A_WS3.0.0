@@ -26,29 +26,7 @@
         // oAPP.attr.iServerSessionTimeout = oMetaData.STIME - 1; // 서버 세션 타임아웃 시간 (1: 1분)
         oAPP.attr.bIsNwActive = true; // 네트워크 연결 상태 Flag        
 
-    }; // end of fnPredefineGlobalObject  
-
-    // /************************************************************************
-    //  * 접속 Language 에 맞는 메시지 텍스트 읽어오기
-    //  ************************************************************************/
-    // oAPP.main.fnOnLoadMessageClass = function() {
-
-    //     var FS = parent.FS,
-    //         oUserInfo = parent.getUserInfo();
-
-    //     var sMsgFileFolderPath = parent.getPath("MSG"),
-    //         sMsgFilePath = sMsgFileFolderPath + "\\" + oUserInfo.LANGU + ".json";
-
-    //     if (FS.existsSync(sMsgFilePath) == false) {
-    //         return;
-    //     }
-
-    //     var sMsgData = FS.readFileSync(sMsgFilePath, 'utf-8'),
-    //         oMsgData = JSON.parse(sMsgData);
-
-    //     oAPP.attr.oMsgClass = oMsgData;
-
-    // }; // end of oAPP.main.fnOnLoadMessageClass
+    }; // end of fnPredefineGlobalObject      
 
     /**************************************************************************
      * [WS10] 모델 데이터 기본세팅

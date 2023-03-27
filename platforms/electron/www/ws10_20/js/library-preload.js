@@ -25,8 +25,7 @@ let oAPP = (function (window) {
     oAPP.sap = {};
     oAPP.sap.msgcls = {};
 
-    oAPP.attr = {};
-    // oAPP.attr.oMsgClass = {}; // Language 별 메시지
+    oAPP.attr = {};    
     oAPP.common = {};
     oAPP.wmenu = {}; // window menu
 

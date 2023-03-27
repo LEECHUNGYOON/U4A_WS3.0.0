@@ -3,6 +3,7 @@ const
     FS = require('fs-extra'),
     PATH = REMOTE.require('path'),
     APP = REMOTE.app,
+    PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
     REGEDIT = require('regedit'),
     USERDATA = APP.getPath("userData");
 
@@ -27,7 +28,6 @@ let oAPP = {};
 /**
  * 테스트 -- end
  */
-
 
 module.exports = {
 
@@ -189,6 +189,113 @@ module.exports = {
     },
     /************** end of Class (MessageClassText) ***************/
 
+    getWsLanguAsync: function () {
+
+        return new Promise(async (resolve) => {
+
+            let oSettings = this.getWsSettingsInfo(), // ws 설정 정보
+                sRegPath = oSettings.regPaths, // 각종 레지스트리 경로
+                sGlobalSettingPath = sRegPath.globalSettings; // globalsettings 레지스트리 경로
+
+            // 레지스트리 정보 구하기
+            let oRegList = await this.getRegeditList([sGlobalSettingPath]),
+                oRetData = oRegList.RTDATA;
+
+            // 여기서 오류면 크리티컬 오류
+            if (oRegList.RETCD == "E") {
+                throw new Error(oRegList.RTMSG);
+            }
+
+            //  레지스트리에 GlobalSetting 정보가 있는지 확인
+            let oGlobalSettingRegData = oRetData[sGlobalSettingPath],
+                oSettingValues = oGlobalSettingRegData.values;
+
+            let sLangu = "EN"; // WS Language 기본값
+
+            // 레지스트리에 저장된 WS language 값
+            if (oSettingValues.language) {
+                sLangu = oSettingValues.language.value;
+            }
+
+            resolve(sLangu);
+
+        });
+
+    }, // end of getWsLanguAsync
+
+
+    /**
+     * WS 3.0 전용 메시지 리턴
+     */
+    getWsMsgClsTxt: function (LANGU, ARBGB, MSGNR, p1, p2, p3, p4) {
+
+        // www에 내장되어 있는 WS 메시지 경로
+        let sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", LANGU, ARBGB + ".json");
+
+        // WS 메시지 존재 유무
+        if (!FS.existsSync(sWsMsgPath)) {
+            return `${ARBGB}|${MSGNR}`;
+        }
+
+        // ws 메시지를 읽는다.
+        let aMsgList = require(sWsMsgPath),
+            oFindTxt = aMsgList.find(elem => elem.MSGNR == MSGNR);
+
+        // 메시지 넘버에 맞는 ws 메시지가 없으면 빠져나감.
+        if (!oFindTxt) {
+            return `${ARBGB}|${MSGNR}`;
+        }
+
+        // 전달 받은 P~ 파라미터 값 수집
+        let sText = oFindTxt.TEXT,
+            aWithParam = [];
+
+        // 파라미터로 전달 받은 Replace Text 수집
+        aWithParam.push(p1 == null ? "" : p1);
+        aWithParam.push(p2 == null ? "" : p2);
+        aWithParam.push(p3 == null ? "" : p3);
+        aWithParam.push(p4 == null ? "" : p4);
+
+        let iWithParamLenth = aWithParam.length;
+        if (iWithParamLenth == 0) {
+            return sText;
+        }
+
+        // 메시지 클래스 텍스트에서 "& + 숫자" (예: &1) 값이 있는 것부터 순차적으로 치환한다.
+        for (let i = 0; i < iWithParamLenth; i++) {
+
+            let index = i + 1,
+                sParamTxt = aWithParam[i];
+
+            let sRegEx = "&" + index,
+                oRegExp = new RegExp(sRegEx, "g");
+
+            sText = sText.replace(oRegExp, sParamTxt);
+
+        }
+
+        sText = sText.replace(new RegExp("&\\d+", "g"), "");
+
+        // 치환된 Text에 "&" 가 존재 할 경우 추가적인 치환을 한다.
+        if (sText.includes("&")) {
+
+            // 메시지 클래스 텍스트에서 "&" 를 앞에서 부터 순차적으로 치환한다.
+            for (let i = 0; i < iWithParamLenth; i++) {
+
+                let sParamTxt = aWithParam[i];
+
+                sText = sText.replace(new RegExp("&", "i"), sParamTxt);
+
+            }
+
+        }
+
+        sText = sText.replace(new RegExp("&", "g"), "");
+
+        return sText;
+
+    }, // end of getWsMsgClsTxt    
+
     /************************************************************************
      * Array를 Tree 구조로 변환
      ************************************************************************  
@@ -200,7 +307,7 @@ module.exports = {
      * @param {*} t PARENT
      * @param {*} z 재구성할 MODEL PATH 명
      *************************************************************************/
-    parseArrayToTree: function(m, p, r, t, z) {
+    parseArrayToTree: function (m, p, r, t, z) {
 
         var lp = p.replace(/[.\[\]]/g, '/');
         lp = lp.replace(/(\/\/)/g, '/');
@@ -246,10 +353,10 @@ module.exports = {
      * @param {Array} Tree 구조로 되어 있는 Array
      * @param {String} Child 이름
      *************************************************************************/
-    parseTreeToArray: function(e, sArrName) {
+    parseTreeToArray: function (e, sArrName) {
 
         var a = [],
-            t = function(e) {
+            t = function (e) {
 
                 e.forEach((o, e) => {
 
@@ -275,7 +382,7 @@ module.exports = {
      * Electron Browser Window Open 시 Opacity를 이용하여 자연스러운 동작 연출
      * @param {BrowserWindow} oBrowserWindow 
      */
-    setBrowserOpacity: function(oBrowserWindow) {
+    setBrowserOpacity: function (oBrowserWindow) {
 
         let iOpa = 0.0,
             iInterval;
@@ -357,7 +464,7 @@ module.exports = {
     /**
      * SAP 아이콘 이미지 경로     
      */
-    getSapIconPath: (sIcon) => {
+    getSapIconPath: function (sIcon) {
 
         if (sIcon == null) {
             return;
@@ -375,7 +482,7 @@ module.exports = {
      * - 랜덤값 길이 (Default: 50)   
      *
      */
-    getRandomKey: function(iLength) {
+    getRandomKey: function (iLength) {
 
         const RANDOM = require("random-key");
 
@@ -389,6 +496,21 @@ module.exports = {
 
     }, // end of getRandomKey
 
+    getWsSettingsInfo: function () {
+
+        // Browser Window option
+        var oSettingsPath = PATHINFO.WSSETTINGS,
+
+            // JSON 파일 형식의 Setting 정보를 읽는다..
+            oSettings = require(oSettingsPath);
+        if (!oSettings) {
+            return;
+        }
+
+        return oSettings;
+
+    },
+
 
     /*************************************************************************
      * 파일시스템 관련 -- Start
@@ -401,7 +523,7 @@ module.exports = {
      * - 읽을려는 폴더 경로
      * @returns {Object} { RETCD : "성공여부", RTDATA: "폴더내부의 정보리스트"}
      */
-    readDir: (sFolderPath) => {
+    readDir: function (sFolderPath) {
 
         return new Promise(async (resolve) => {
 
@@ -438,7 +560,7 @@ module.exports = {
      * @param {String} sFilePath
      * - 읽을려는 파일의 경로
      */
-    readFile: (sFilePath) => {
+    readFile: function (sFilePath) {
 
         return new Promise(async (resolve) => {
 
@@ -479,11 +601,11 @@ module.exports = {
      * @param {Object} options
      * - 옵션정보는 Nodejs의 fs 참조
      */
-    fsCopy: (sSource, sTarget, options) => {
+    fsCopy: function (sSource, sTarget, options) {
 
         return new Promise((resolve) => {
 
-            FS.copy(sSource, sTarget, options).then(function() {
+            FS.copy(sSource, sTarget, options).then(function () {
 
                 resolve({
                     RETCD: "S",
@@ -491,7 +613,7 @@ module.exports = {
                     RTDATA: ""
                 });
 
-            }).catch(function(err) {
+            }).catch(function (err) {
 
                 resolve({
                     RETCD: "E",
@@ -513,7 +635,7 @@ module.exports = {
      * @param {*} data 
      * @param {*} options      
      */
-    fsWriteFile: (file, data, options = {}) => {
+    fsWriteFile: function (file, data, options = {}) {
 
         return new Promise(async (resolve) => {
 
@@ -541,7 +663,7 @@ module.exports = {
 
     }, // end of fsWriteFile
 
-    fsStat: (sFilePath) => {
+    fsStat: function (sFilePath) {
 
         return new Promise(async (resolve) => {
 
@@ -569,7 +691,7 @@ module.exports = {
 
     }, // end of fsStat
 
-    fsRemove: (sRemovePath) => {
+    fsRemove: function (sRemovePath) {
 
         return new Promise(async (resolve) => {
 
@@ -610,7 +732,7 @@ module.exports = {
      * 예: PATH.join("XX", "ZZ", "GGG") 처럼 파라미터 갯수 제한 없음
      * 파라미터가 하나도 없으면 오류
      */
-    getRegeditAsync: function() {
+    getRegeditAsync: function () {
 
         var aArgs = arguments,
             iArgLength = aArgs.length;
@@ -633,7 +755,7 @@ module.exports = {
             let sRegPath = "";
             for (var i = 0; i < iArgLength; i++) {
 
-                if(i == iArgLength - 1){
+                if (i == iArgLength - 1) {
                     sRegPath += aArgs[i];
                     continue;
                 }
@@ -670,7 +792,7 @@ module.exports = {
      * @param {Array} aPaths 
      * - 레지스트리 경로
      */
-    getRegeditList: function(aPaths) {
+    getRegeditList: function (aPaths) {
 
         return new Promise((resolve) => {
 
@@ -701,7 +823,7 @@ module.exports = {
      * 레지스트리 저장
      * 
      */
-    putRegeditValue: function(oRegData) {
+    putRegeditValue: function (oRegData) {
 
         return new Promise((resolve) => {
 
