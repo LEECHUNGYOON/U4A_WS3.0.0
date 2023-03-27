@@ -1006,28 +1006,24 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                             text: "U4A Workspace Logon Pad"
                         }),
                     ],
-                    contentRight: [
-                        // new sap.m.Button({
-                        //     icon: "sap-icon://settings",
-                        //     press : function(){
-
-                        //         _settingPopupOpen();
-
-                        //     }
-                        // })
+                    contentRight: [                                                
                         new sap.m.MenuButton({
-                            type: sap.m.ButtonType.Ghost,
-                            buttonMode: sap.m.MenuButtonMode.Split,
-                            icon: "sap-icon://settings",
+                            icon: "sap-icon://action-settings",
                             menu: new sap.m.Menu({
-                                items : [
+                                items: [
                                     new sap.m.MenuItem({
                                         key: "WSLANGU",
+                                        icon: "sap-icon://translate",
                                         text: "Language"
+                                    }),
+                                    new sap.m.MenuItem({
+                                        key: "WSTHEME",
+                                        icon: "sap-icon://palette",
+                                        text: "Theme"
                                     })
                                 ],
 
-                                itemSelected: function(oEvent){
+                                itemSelected: function (oEvent) {
                                     ev_settingItemSelected(oEvent);
                                 }
                             })
@@ -2259,7 +2255,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of oAPP.fn.fnPressServerListItem
 
-    function ev_settingItemSelected(oEvent){
+    function ev_settingItemSelected(oEvent) {
 
         debugger;
 
@@ -2300,7 +2296,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             let oWsSettings = fnGetSettingsInfo(),
                 oRegPaths = oWsSettings.regPaths,
                 sSystemPath = oRegPaths.systems;
-                // sSettingsPath = oRegPaths.LogonSettings;
+            // sSettingsPath = oRegPaths.LogonSettings;
 
             let sCreatePath = `${sSystemPath}\\${oServerInfo.SYSID}`,
                 aKeys = [sCreatePath];
