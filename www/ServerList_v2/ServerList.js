@@ -126,7 +126,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     /************************************************************************
      * ------------------------ [ Server List Start ] ------------------------
      * **********************************************************************/
-    oAPP.fn.fnOnMainStart = () => {
+    oAPP.fn.fnOnMainStart = async () => {
 
         // await _fnWait();
 
@@ -135,8 +135,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
          */
         jQuery.sap.require("sap.m.MessageBox");
 
-        // // 초기 모델 구성
-        // await oAPP.fn.fnOnInitModeling();
+        // 초기 모델 구성
+        await oAPP.fn.fnOnInitModeling();
 
         // 초기 화면 먼저 그리기
         oAPP.fn.fnOnInitRendering();
@@ -149,8 +149,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnOnInitModeling = () => {
 
         return new Promise(async (resolve) => {
-
-            debugger;
 
             let sWsLangu = await WSUTIL.getWsLanguAsync(), // WS Language 설정 정보                
                 sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", sWsLangu); // www에 내장되어 있는 WS 메시지 경로
@@ -217,18 +215,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of oAPP.fn.fnOnInitModeling
 
-    // oAPP.fn.fnLanguModelRefresh = () => {
-
-
-    //     debugger;
-
-
-
-    // }; // end of oAPP.fn.fnLanguModelRefresh
-
     oAPP.fn.fnAttachRowsUpdateOnce = async (oControl) => {
-
-        debugger;
 
         let oWorkTree = oControl.getSource(),
             oTreeModel = oWorkTree.getModel();
@@ -261,7 +248,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         let sLastSelectNodeKey = oValues.value, // 마지막 선택한 노드 키
             oTreeModelData = oTreeModel.getProperty("/SAPLogon");
 
-        if (!oTreeModelData) {
+        if (!oTreeModelData || !oTreeModelData.Node) {
             return;
         }
 
@@ -337,6 +324,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             if (uuid) {
                 aPaths.push(uuid);
+            }
+
+            if (!aTreeData.Node) {
+                return;
             }
 
             _findLastSelectedPath(aTreeData.Node, sLastSelectNodeKey, aPaths);
@@ -721,6 +712,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oAPP.setBusy(false);
 
+        let oWorkTree = sap.ui.getCore().byId("WorkTree");
+        if (oWorkTree) {
+            oWorkTree.attachEventOnce("rowsUpdated", oAPP.fn.fnAttachRowsUpdateOnce);
+        }
+
     }; // end of oAPP.fn.fnReadSAPLogonDataThen    
 
     /************************************************************************
@@ -1065,12 +1061,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             }),
             oMainPage = new sap.m.Page({
                 enableScrolling: false,
-                // title: "U4A Workspace Logon Pad",
                 customHeader: new sap.m.Bar({
                     contentLeft: [
                         new sap.m.Title({
-                            // text: "U4A Workspace Logon Pad"
-                            text: "{/WSLANGU/ZWSMSG_001/002}"
+                            text: "{/WSLANGU/ZMSG_WS_COMMON_001/004}" // U4A Workspace Logon Pad
                         }),
                     ],
                     contentRight: [
@@ -1081,12 +1075,12 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                     new sap.m.MenuItem({
                                         key: "WSLANGU",
                                         icon: "sap-icon://translate",
-                                        text: "Language"
+                                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/001}" //"Language"
                                     }),
                                     new sap.m.MenuItem({
                                         key: "WSTHEME",
                                         icon: "sap-icon://palette",
-                                        text: "Theme"
+                                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/005}" // Theme
                                     })
                                 ],
 
@@ -1158,17 +1152,17 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             rowSelectionChange: (oEvent) => {
 
-                // 좌측 트리 선택 이벤트
-                oAPP.fn.fnPressWorkSpaceTreeItem(oEvent);
-
                 // 우측 서버 리스트 전체 선택 해제
                 oAPP.fn.fnServerListUnselect();
+
+                // 좌측 트리 선택 이벤트
+                oAPP.fn.fnPressWorkSpaceTreeItem(oEvent);
 
             }
 
         });
 
-        oWorkTree.attachEventOnce("rowsUpdated", oAPP.fn.fnAttachRowsUpdateOnce);
+        // oWorkTree.attachEventOnce("rowsUpdated", oAPP.fn.fnAttachRowsUpdateOnce);
 
         return oWorkTree;
 
@@ -1320,6 +1314,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 레지스트리 데이터 저장
         await RegeditPromisified.putValue(oRegData);
+
 
     }; // end of oAPP.fn.fnSetSaveSelectedItemPosition
 
@@ -2323,11 +2318,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     }; // end of oAPP.fn.fnPressServerListItem
 
     /************************************************************************
-     * [Event] WS Setting 메뉴 선택
+     * [Event] WS Global Setting 메뉴 선택
      ************************************************************************/
     function ev_settingItemSelected(oEvent) {
-
-        debugger;
 
         let oSelectedItem = oEvent.getParameter("item"),
             sItemKey = oSelectedItem.getKey();
@@ -2335,12 +2328,15 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         switch (sItemKey) {
             case "WSLANGU":
 
-                // ws Language 설정 팝업 오픈
+                // WS Language 설정 팝업 오픈
                 _openWsLanguSettingPopup();
 
                 break;
 
             case "WSTHEME":
+
+                // WS Theme 설정 팝업 오픈
+                _openWSThemeSettingPopup();
 
                 break;
 
@@ -2351,12 +2347,16 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     } // end of ev_settingItemSelected
 
     /************************************************************************
-     * [WS Setting] 언어 선택 팝업
+     * [WS Global Setting] 언어 선택 팝업
      ************************************************************************/
     async function _openWsLanguSettingPopup() {
 
+        let oCoreModel = sap.ui.getCore().getModel(),
+            WSLANGU = oCoreModel.getProperty("/WSLANGU");
+
         // 기본 모델 데이터 구조
         var oInitModelData = {
+            WSLANGU: WSLANGU,
             sSelectedKey: "EN",
             aLangu: [{
                 KEY: "EN"
@@ -2364,8 +2364,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             {
                 KEY: "KO"
             },
-            ]
-
+            ],
         };
 
         // 레지스트리에 저장된 WS LANGU 정보를 구한다.
@@ -2396,7 +2395,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                         src: "sap-icon://translate"
                     }),
                     new sap.m.Title({
-                        text: "WS Language Settings"
+                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/000}" // WS Language Settings
                     })
                 ]
             }),
@@ -2419,7 +2418,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                 new sap.ui.layout.form.FormElement({
                                     label: new sap.m.Label({
                                         design: sap.m.LabelDesign.Bold,
-                                        text: "Language"
+                                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/001}" //"Language"
                                     }),
                                     fields: new sap.m.ComboBox({
                                         selectedKey: "{/sSelectedKey}",
@@ -2444,16 +2443,16 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             buttons: [
                 new sap.m.Button({
                     type: sap.m.ButtonType.Emphasized,
-                    text: "OK",
+                    text: "{/WSLANGU/ZMSG_WS_COMMON_001/002}", // "OK",
                     press: function (oEvent) {
 
-                        // 선택한 언어 저장
+                        //[async] 선택한 언어 저장
                         _saveWsLangu();
 
                     }
                 }),
                 new sap.m.Button({
-                    text: "Cancel",
+                    text: "{/WSLANGU/ZMSG_WS_COMMON_001/003}", // "Cancel"
                     press: function () {
 
                         let sDialogId = "GlobalSettingWsLangu",
@@ -2467,16 +2466,69 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         }); // end of dialog
 
-
         oDialog.setModel(oJsonModel);
 
         oDialog.open();
 
     } // end of _settingPopupOpen
 
-    function _saveWsLangu() {
+    function _getThemeInfoRegAsync() {
+
+        return new Promise(async (resolve) => {
+
+            let oSettings = SETTINGS, // ws 설정 정보
+                sRegPath = oSettings.regPaths, // 각종 레지스트리 경로
+                sGlobalSettingPath = sRegPath.globalSettings; // globalsettings 레지스트리 경로
+
+            // 레지스트리 정보 구하기
+            let oRegList = await WSUTIL.getRegeditList([sGlobalSettingPath]),
+                oRetData = oRegList.RTDATA;
+
+            // 여기서 오류면 크리티컬 오류
+            if (oRegList.RETCD == "E") {
+                throw new Error(oRegList.RTMSG);
+            }
+
+
+            let sTheme = "sap_horizon_dark";
+
+
+
+
+            resolve();
+
+        });
+
+    }
+
+    /************************************************************************
+     * [WS Global Setting] 테마 설정 팝업
+     ************************************************************************/
+    async function _openWSThemeSettingPopup() {
 
         debugger;
+
+        let oCoreModel = sap.ui.getCore().getModel(),
+            WSLANGU = oCoreModel.getProperty("/WSLANGU"),
+            aSupportedThemes = sap.ui.getVersionInfo().supportedThemes;
+
+        let sTheme = await _getThemeInfoRegAsync();
+
+        let oInitModelData = {
+            WSLANGU: WSLANGU,
+            sSelectedTheme: "",
+            aSupportThemes: aSupportedThemes,
+        };
+
+        // let sTheme
+
+
+    } // end of _openWSThemeSettingPopup
+
+    /************************************************************************
+     * [WS Global Setting] WS Language 저장
+     ************************************************************************/
+    async function _saveWsLangu() {
 
         let sDialogId = "GlobalSettingWsLangu",
             oDialog = sap.ui.getCore().byId(sDialogId);
@@ -2485,10 +2537,20 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
         }
 
+        /**
+         * 선택한 언어 정보를 레지스트리에 저장한다.
+         */
         let oDialogModel = oDialog.getModel(),
             oModelData = oDialogModel.getData(),
             sSelectedKey = oModelData.sSelectedKey;
 
+        // 선택한 언어값을 레지스트리에 저장
+        await WSUTIL.setWsLanguAsync(sSelectedKey);
+
+        // 초기 모델 구성
+        await oAPP.fn.fnOnInitModeling();
+
+        oDialog.close();
 
     } // end of _saveWsLangu
 
@@ -2998,7 +3060,7 @@ fnLoadCommonCss();
 
 // Window onload
 window.addEventListener("load", () => {
-    // sap.ui.getCore().attachInit(oAPP.fn.fnOnMainStart);
+
     sap.ui.getCore().attachInit(() => {
 
         oAPP.fn.fnOnMainStart();

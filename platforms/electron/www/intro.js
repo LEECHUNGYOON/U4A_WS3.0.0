@@ -55,7 +55,7 @@
 
             var langu = await WSUTIL.getWsLanguAsync(); // ws에 저장된 언어 레지스트리에서 구하기
             var aa = WSUTIL.getWsMsgClsTxt(langu, "ZWSMSG_001", "000", "aa", "bb", "cc", "dd");
-           
+
 
         });
     }
@@ -292,9 +292,9 @@
         // oWin.webContents.openDevTools();
         // no build 일 경우에는 개발자 툴을 실행한다.
 
-        // if (!APP.isPackaged) {
-        //     oWin.webContents.openDevTools();
-        // }
+        if (!APP.isPackaged) {
+            oWin.webContents.openDevTools();
+        }
 
         oWin.webContents.on('did-finish-load', function () {
 
@@ -654,19 +654,32 @@
             var oGlobalSettingRegData = oRetData[sGlobalSettingPath],
                 oSettingValues = oGlobalSettingRegData.values;
 
-            if (oSettingValues.language) {
-                resolve();
-                return;
+            // WS Language 정보 저장
+            if (!oSettingValues.language) {
+
+                let oRegData = {};
+                oRegData[sGlobalSettingPath] = {};
+                oRegData[sGlobalSettingPath]["language"] = {
+                    value: "EN",
+                    type: "REG_SZ"
+                };
+
+                await WSUTIL.putRegeditValue(oRegData);
+
             }
 
-            let oRegData = {};
-            oRegData[sGlobalSettingPath] = {};
-            oRegData[sGlobalSettingPath]["language"] = {
-                value: "EN",
-                type: "REG_SZ"
-            };
+            if (!oSettingValues.theme) {
 
-            await WSUTIL.putRegeditValue(oRegData);
+                let oRegData = {};
+                oRegData[sGlobalSettingPath] = {};
+                oRegData[sGlobalSettingPath]["theme"] = {
+                    value: "sap_horizon_dark",
+                    type: "REG_SZ"
+                };
+
+                await WSUTIL.putRegeditValue(oRegData);
+
+            }
 
             resolve();
 
@@ -768,7 +781,7 @@
     } // end of _checkRegistry
 
     /************************************************************************
-     * WS Setting 정보를 LocalStorage에 저장하기
+     * WS Setting 정보를 Json 파일로 저장
      ************************************************************************/
     function _saveConfigInfo() {
 

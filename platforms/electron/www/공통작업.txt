@@ -26,18 +26,28 @@ oAPP.fn.fnSetTreeJson(oModel, "WS30.USPTREE", "OBJKY", "PUJKY", "USPTREE");
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 // 30번 페이지에서 자주 쓰는 공통 메소드
 
 _fnFindUspTreeItem(OBJKY);    
 - OBJKY를 가지고 Tree Item 구하는 공통 메소드
+
+
+
+/**
+ * WS SETTING 정보 구하는 법
+ */
+let REMOTE = require('@electron/remote'),
+	PATH = REMOTE.require('path'),
+	APP = REMOTE.app,
+	APPPATH = APP.getAppPath(),
+	PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
+	WSSETTINGS = require(PATHINFO.WSSETTINGS);
+		
+		
+// WS 로컬 폴더 경로
+REMOTE.app.getPath("userData");
+
+// WS의 WWW 루트 폴더 경로
+REMOTE.app.getAppPath();
+
+

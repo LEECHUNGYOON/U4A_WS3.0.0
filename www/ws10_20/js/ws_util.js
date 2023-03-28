@@ -189,6 +189,9 @@ module.exports = {
     },
     /************** end of Class (MessageClassText) ***************/
 
+    /**
+     * 레지스트리에서 WS Global Language 구하기     
+     */
     getWsLanguAsync: function () {
 
         return new Promise(async (resolve) => {
@@ -223,6 +226,32 @@ module.exports = {
 
     }, // end of getWsLanguAsync
 
+    /**
+     * WS Global Language를 레지스트리에 저장
+     */
+    setWsLanguAsync: function (sWsLangu) {
+
+        return new Promise(async (resolve) => {
+
+            let oSettings = this.getWsSettingsInfo(), // ws 설정 정보
+                sRegPath = oSettings.regPaths, // 각종 레지스트리 경로
+                sGlobalSettingPath = sRegPath.globalSettings; // globalsettings 레지스트리 경로           
+
+            // 저장할 레지스트리 데이터
+            let oRegData = {};
+            oRegData[sGlobalSettingPath] = {};
+            oRegData[sGlobalSettingPath]["language"] = {
+                value: sWsLangu,
+                type: "REG_SZ"
+            };
+
+            await this.putRegeditValue(oRegData);
+
+            resolve();
+
+        });
+
+    }, // end of setWsLanguAsync
 
     /**
      * WS 3.0 전용 메시지 리턴
