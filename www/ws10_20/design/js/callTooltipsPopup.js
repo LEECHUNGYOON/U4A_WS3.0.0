@@ -9,15 +9,26 @@
     ************************************************************************/
     oAPP.fn.callTooltipsPopup = function(oUi, sArea, sCODE){
 
-        //팝업 호출 ui가 존재하지 않는경우 exit.
-        if(!oUi){return;}
+        //화면 잠금 처리.
+        oAPP.fn.designAreaLockUnlock(true);
 
+        //팝업 호출 ui가 존재하지 않는경우 exit.
+        if(!oUi){
+            //화면 잠금 해제처리.
+            oAPP.fn.designAreaLockUnlock();
+            return;
+        }
         //도움말 html의 파일 경로 구성.
         var l_path = lf_setHTMLPath(sArea, sCODE);
-        if(!l_path){return;}
+        if(!l_path){
+            //화면 잠금 해제처리.
+            oAPP.fn.designAreaLockUnlock();
+            return;
+        }
 
         //도움말 html 팝업 title 구성.
         var l_title = lf_setHTMLTitle(sCODE);
+        
 
         var opt = {
             "height": 760,
@@ -60,6 +71,9 @@
 
          // 브라우저가 오픈이 다 되면 타는 이벤트
          oWin.webContents.on("did-finish-load", function() {
+            
+            //화면 잠금 해제처리.
+            oAPP.fn.designAreaLockUnlock();
 
             oWin.show();
 

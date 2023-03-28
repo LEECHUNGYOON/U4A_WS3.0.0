@@ -523,7 +523,7 @@
     var l_cnt = parseInt(oInp1.getValue());
 
     //DRAG한 UI 정보 세팅.
-    event.dataTransfer.setData("text/plain", ls_0022.UIOBK + "_" + l_cnt + "|" + oAPP.attr.DnDRandKey + "|callUIInsertPopup");
+    event.dataTransfer.setData("text/plain", "callUIInsertPopup|" + ls_0022.UIOBK + "|" + l_cnt + "|" + oAPP.attr.DnDRandKey);
 
     //drag 시작시 drop 가능건에 대한 제어 처리.
     oAPP.fn.designTreeDragStart({OBJID:undefined, UIOBK:ls_drag.UIOBK});

@@ -1323,13 +1323,13 @@
 
         //UI 개인화 저장 팝업 function이 존재하는경우 즉시 호출.
         if(typeof oAPP.fn.callP13nDesignDataPopup !== "undefined"){
-            oAPP.fn.callP13nDesignDataPopup(ls_tree);
+            oAPP.fn.callP13nDesignDataPopup(ls_tree, "C");
             return;
         }
 
         //UI 개인화 저장 팝업 function이 존재하지 않는경우 js 로드 후 호출.
         oAPP.fn.getScript("design/js/callP13nDesignDataPopup",function(){
-            oAPP.fn.callP13nDesignDataPopup(ls_tree);
+            oAPP.fn.callP13nDesignDataPopup(ls_tree, "C");
         });
 
 

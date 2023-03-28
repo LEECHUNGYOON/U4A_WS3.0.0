@@ -166,7 +166,7 @@
       }
 
       //DRAG한 UI ID 정보 세팅.
-      event.dataTransfer.setData("text/plain", ls_drag.OBJID + "|" + oAPP.attr.DnDRandKey);
+      event.dataTransfer.setData("text/plain", "designTree|" + ls_drag.OBJID + "|" + oAPP.attr.DnDRandKey);
 
       //drag 시작시 drop 가능건에 대한 제어 처리.
       oAPP.fn.designTreeDragStart(ls_drag);
@@ -231,7 +231,10 @@
       if(oAPP.fn.UIDrop(oEvent, ls_drop.OBJID)){return;}
 
       //UI Insert popup에서 Drop했다면 UI 추가 처리.
-      oAPP.fn.designUIDropInsertPopup(oEvent, ls_drop.OBJID);
+      if(oAPP.fn.designUIDropInsertPopup(oEvent, ls_drop.OBJID)){return;}
+
+      //개인화 화면에서 Drop했다면 UI 추가 처리.
+      if(oAPP.fn.designUIDropP13nList(oEvent, ls_drop.OBJID)){return;}
 
     }); //drop 이벤트.
     
@@ -2348,7 +2351,7 @@
 
 
   //drag한 UI의 파라메터 정보 얻기.
-  oAPP.fn.getDragParam = function(oEvent, sArea){
+  oAPP.fn.getDragParam = function(oEvent){
 
     if(!oEvent?.mParameters?.browserEvent?.dataTransfer?.getData){return;}
 
@@ -2364,17 +2367,7 @@
     //조합된 형식이 아닌경우 exit.
     if(lt_split.length < 2){return;}
 
-    //drag 영역 판단 파라메터가 존재하는경우 해당 영역에서 drag 하지 않았다면 exit.
-    if(sArea && lt_split[2] !== sArea){
-      return;
-    }
-
-    //D&D random key가 현재 D&D random key와 다른경우 exit.
-    //(다른 창에서 Drag하여 현재 창에 Drop한 경우 drop 불가처리를 위함)
-    if(lt_split[1] !== oAPP.attr.DnDRandKey){return;}
-
-    //OBJID  or UIOBK 부분 발췌.
-    return lt_split[0];
+    return lt_split;
 
 
   };  //drag한 UI의 OBJID 정보 얻기.
@@ -2387,8 +2380,22 @@
 
     if(!i_OBJID){return;}
 
-    //dragUI의 OBJID 얻기.
-    var l_objid = oAPP.fn.getDragParam(oEvent);
+    //drag 정보 얻기.
+    var lt_dragInfo = oAPP.fn.getDragParam(oEvent);
+    if(!lt_dragInfo || lt_dragInfo.length !== 3){return;}
+
+    //design tree, 미리보기 영역에서 drag한 정보가 아닌경우 exit.
+    if(lt_dragInfo[0] !== "designTree" && lt_dragInfo[0] !== "previewArea"){
+      return;
+    }
+
+    //다른 세션에서 drag한 정보라면 exit.
+    if(lt_dragInfo[2] !== oAPP.attr.DnDRandKey){
+      return;
+    }
+
+    //drag한 UI의 OBJECT ID 정보 얻기.
+    var l_objid = lt_dragInfo[1];
 
     //OBJID를 얻지 못한 경우 EXIT.
     if(!l_objid){return;}
@@ -3142,15 +3149,25 @@
     } //UI 추가.
 
   
-    //insertUIPopup에서 D&D 했다면 drag한 UIOBK 정보 얻기.
-    var l_UIOBK = oAPP.fn.getDragParam(oEvent, "callUIInsertPopup");
-    if(!l_UIOBK){return;}
+    //Drag한 정보 발췌.
+    var lt_dragInfo = oAPP.fn.getDragParam(oEvent);
+    if(!lt_dragInfo || lt_dragInfo.length !== 4){return;}
 
-    var lt_split = l_UIOBK.split("_");
+    //insert UI popup에서 drag한건이 아닌경우 exit.
+    if(lt_dragInfo[0] !== "callUIInsertPopup"){
+      return;
+    }
 
-    l_UIOBK = lt_split[0];
+    //다른 영역에서 drag했다면 exit.
+    if(lt_dragInfo[3] !== oAPP.attr.DnDRandKey){
+      return;
+    }
 
-    var l_cnt = parseInt(lt_split[1]);
+    //drag한 UI의 object key.
+    var l_UIOBK = lt_dragInfo[1];
+
+    //추가할 UI 갯수.
+    var l_cnt = parseInt(lt_dragInfo[2]);
 
     //이벤트 발생 라인 정보 얻기.
     ls_drop = oAPP.fn.getTreeData(OBJID);
@@ -3173,6 +3190,41 @@
     return true;
 
   };  //UI Insert popup에서 Drop했다면 UI 추가 처리.
+
+
+
+
+  //개인화 항목에서 D&D한 경우 UI 추가 처리.
+  oAPP.fn.designUIDropP13nList = function(oEvent, OBJID){
+
+    //Drag한 정보 발췌.
+    var lt_dragInfo = oAPP.fn.getDragParam(oEvent);
+    if(!lt_dragInfo || lt_dragInfo.length !== 2){return;}
+
+    //개인화 리스트에서 Drag한건이 아닌경우 exit.
+    if(lt_dragInfo[0] !== "P13nUIData"){
+      return;
+    }
+
+    var l_itemKey = lt_dragInfo[1];
+
+    var l_SYSID =  parent.getUserInfo()?.SYSID;
+
+    //개인화 파일 정보 path 구성.
+    var l_path = parent.PATH.join(parent.getPath("P13N_ROOT"), "U4A_UI_PATTERN", l_SYSID, l_itemKey);
+
+    //실제 파일이 존재하지 않는다면 exit.
+    if(parent.FS.existsSync(l_path)){
+      return true;
+    }
+
+    //개인화 파일 정보 read.
+    var ls_item = JSON.parse(parent.FS.readFileSync(l_path, "utf-8"));
+
+
+    return true;
+
+  };  //개인화 항목에서 D&D한 경우 UI 추가 처리.
 
   
 

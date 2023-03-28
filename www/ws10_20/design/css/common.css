@@ -15,10 +15,10 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%) rotate(-45deg);
-    color: #000000;
+    color: #b2b2b2;
+    text-shadow: 0 0 5px #ffffff;
     font-weight: bold;
     font-size: 92px;
-    opacity: 0.2;
     filter: blur(1px);
     letter-spacing: 13px;
 }

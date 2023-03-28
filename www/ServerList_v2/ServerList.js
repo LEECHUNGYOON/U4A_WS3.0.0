@@ -38,7 +38,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function(oAPP) {
+(function (oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -60,39 +60,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         sap.ui.core.BusyIndicator.hide();
 
-    }; // end of oAPP.fn.setBusy
-
-    oAPP.setBusyDialog = (bIsBusy, bIsCancelBtnHide) => {
-
-        if (bIsBusy) {
-            oAPP.BUSYDIALOG.open();
-        } else {
-            oAPP.BUSYDIALOG.close();
-        }
-
-        // busy dialog 에 cancel 버튼을 숨기고 싶을 경우
-        let bIsHidden = bIsCancelBtnHide || false;
-        oAPP.BUSYDIALOG.setShowCancelButton(!bIsHidden);
-
-    }; // end of oAPP.setBusyDialog
-
-    /**************************************************************************
-     * 초기 로딩 시, 필요한 인스턴스 생성
-     **************************************************************************/
-    oAPP.fn.fnOnInitInstanceCreate = () => {
-
-        oAPP.BUSYDIALOG = new sap.m.BusyDialog({
-            // title: "Server Connection",
-            // titleAlignment: sap.m.TitleAlignment.Center,
-            text: "Connecting...",
-            // customIcon: "sap-icon://connected",
-            showCancelButton: true,
-            close: function() {
-                XHR.abort();
-            }
-        });
-
-    }; // end of fnOnInitInstanceCreate
+    }; // end of oAPP.fn.setBusy    
 
     /**************************************************************************
      * ajax 호출 펑션
@@ -100,7 +68,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.sendAjax = (sUrl, fnSuccess, fnError, fnCancel) => {
 
         // ajax call 취소할 경우..
-        XHR.onabort = function() {
+        XHR.onabort = function () {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -109,7 +77,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // ajax call 실패 할 경우
-        XHR.onerror = function() {
+        XHR.onerror = function () {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -117,7 +85,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         };
 
-        XHR.onload = function() {
+        XHR.onload = function () {
 
             if (typeof fnSuccess == "function") {
                 fnSuccess(XHR.response);
@@ -144,25 +112,123 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of fnSendAjax
 
+
+    function _fnWait() {
+        return new Promise((resolve) => {
+
+            setTimeout(() => {
+                resolve();
+            }, 3000);
+
+        });
+    }
+
     /************************************************************************
      * ------------------------ [ Server List Start ] ------------------------
      * **********************************************************************/
     oAPP.fn.fnOnMainStart = () => {
 
+        // await _fnWait();
+
+        /**
+         * 하위 function 순서 중요!!
+         */
         jQuery.sap.require("sap.m.MessageBox");
 
-        // 초기 로딩 시, 필요한 인스턴스 생성
-        oAPP.fn.fnOnInitInstanceCreate();
+        // // 초기 모델 구성
+        // await oAPP.fn.fnOnInitModeling();
 
         // 초기 화면 먼저 그리기
         oAPP.fn.fnOnInitRendering();
 
         // 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
-        oAPP.fn.fnOnListupSapLogon();
+        oAPP.fn.fnOnListupSapLogon(); // [내부 로직에 비동기가 있음]
 
     }; // end of oAPP.fn.fnOnMainStart
 
+    oAPP.fn.fnOnInitModeling = () => {
+
+        return new Promise(async (resolve) => {
+
+            debugger;
+
+            let sWsLangu = await WSUTIL.getWsLanguAsync(), // WS Language 설정 정보                
+                sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", sWsLangu); // www에 내장되어 있는 WS 메시지 경로
+
+            let oWsLanguDir = await WSUTIL.readDir(sWsMsgPath);
+            if (oWsLanguDir.RETCD == "E") {
+                throw new Error("WS Language File not found!");
+            }
+
+            let aLanguFiles = oWsLanguDir.RTDATA,
+                iLanguFileLength = aLanguFiles.length;
+
+            let oLanguJsonData = {};
+            for (var i = 0; i < iLanguFileLength; i++) {
+
+                let sLanguFileFullName = aLanguFiles[i], // Language 폴더의 파일 목록
+                    oPathParse = PATH.parse(sLanguFileFullName), // 파일명만 추출
+                    sLanguFileName = oPathParse.name,
+
+                    sLanguFilePath = PATH.join(sWsMsgPath, sLanguFileFullName),
+                    aLanguJson = require(sLanguFilePath),
+                    iLanguJsonLength = aLanguJson.length;
+
+
+                /**
+                 * 구조 예시
+                 * {
+                 *      "ZWSMSG_001" : {
+                 *          "000" : "TEXT_000",
+                 *          "001" : "TEXT_001",
+                 *      },
+                 *      "ZWSMSG_002" : {
+                 *          "000" : "TEXT_000",
+                 *          "001" : "TEXT_001",
+                 *      }
+                 * }
+                 */
+                oLanguJsonData[sLanguFileName] = {};
+
+                for (var j = 0; j < iLanguJsonLength; j++) {
+
+                    let oLanguJson = aLanguJson[j];
+
+                    oLanguJsonData[sLanguFileName][oLanguJson.MSGNR] = oLanguJson.TEXT;
+
+                }
+
+            }
+
+            let oCoreModel = sap.ui.getCore().getModel(),
+                oJsonModel = new sap.ui.model.json.JSONModel();
+
+            if (!oCoreModel) {
+                oJsonModel.setData({ WSLANGU: oLanguJsonData });
+                sap.ui.getCore().setModel(oJsonModel);
+                resolve();
+                return;
+            }
+
+            oCoreModel.setProperty("/WSLANGU", oLanguJsonData);
+            resolve();
+
+        });
+
+    }; // end of oAPP.fn.fnOnInitModeling
+
+    // oAPP.fn.fnLanguModelRefresh = () => {
+
+
+    //     debugger;
+
+
+
+    // }; // end of oAPP.fn.fnLanguModelRefresh
+
     oAPP.fn.fnAttachRowsUpdateOnce = async (oControl) => {
+
+        debugger;
 
         let oWorkTree = oControl.getSource(),
             oTreeModel = oWorkTree.getModel();
@@ -665,9 +731,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-                RETCD: "E",
-                RTMSG: "Server information does not exist in the SAPGUI logon file."
-            },
+            RETCD: "E",
+            RTMSG: "Server information does not exist in the SAPGUI logon file."
+        },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -797,9 +863,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-                RETCD: "E",
-                RTMSG: "Server information does not exist in the SAPGUI logon file."
-            },
+            RETCD: "E",
+            RTMSG: "Server information does not exist in the SAPGUI logon file."
+        },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -973,8 +1039,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnOnInitRendering = () => {
 
         var oApp = new sap.m.App({
-                autoFocus: false,
-            }),
+            autoFocus: false,
+        }),
             oTreeTable = oAPP.fn.fnGetWorkSpaceTreeTable(), // 좌측 폴더 Tree
             oTable = oAPP.fn.fnGetSAPLogonListTable(), // 우측 서버 리스트 테이블
             oPage1 = new sap.m.Page({
@@ -1003,7 +1069,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 customHeader: new sap.m.Bar({
                     contentLeft: [
                         new sap.m.Title({
-                            text: "U4A Workspace Logon Pad"
+                            // text: "U4A Workspace Logon Pad"
+                            text: "{/WSLANGU/ZWSMSG_001/002}"
                         }),
                     ],
                     contentRight: [
@@ -1023,7 +1090,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                     })
                                 ],
 
-                                itemSelected: function(oEvent) {
+                                itemSelected: function (oEvent) {
                                     ev_settingItemSelected(oEvent);
                                 }
                             })
@@ -1050,7 +1117,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function() {
+            onAfterRendering: function () {
 
                 setTimeout(() => {
                     $('#content').fadeIn(300, 'linear');
@@ -2292,11 +2359,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         var oInitModelData = {
             sSelectedKey: "EN",
             aLangu: [{
-                    KEY: "EN"
-                },
-                {
-                    KEY: "KO"
-                },
+                KEY: "EN"
+            },
+            {
+                KEY: "KO"
+            },
             ]
 
         };
@@ -2378,7 +2445,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 new sap.m.Button({
                     type: sap.m.ButtonType.Emphasized,
                     text: "OK",
-                    press: function(oEvent) {
+                    press: function (oEvent) {
 
                         // 선택한 언어 저장
                         _saveWsLangu();
@@ -2387,7 +2454,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 }),
                 new sap.m.Button({
                     text: "Cancel",
-                    press: function() {                        
+                    press: function () {
 
                         let sDialogId = "GlobalSettingWsLangu",
                             oDialog = sap.ui.getCore().byId(sDialogId);
@@ -2628,7 +2695,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,
@@ -2696,7 +2763,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         resolve({
@@ -2931,7 +2998,13 @@ fnLoadCommonCss();
 
 // Window onload
 window.addEventListener("load", () => {
-    sap.ui.getCore().attachInit(oAPP.fn.fnOnMainStart);
+    // sap.ui.getCore().attachInit(oAPP.fn.fnOnMainStart);
+    sap.ui.getCore().attachInit(() => {
+
+        oAPP.fn.fnOnMainStart();
+
+    });
+
 });
 
 // window onbeforeunload

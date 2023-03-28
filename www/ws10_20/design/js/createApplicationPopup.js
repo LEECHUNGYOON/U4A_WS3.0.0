@@ -1158,7 +1158,15 @@
     var l_appdata = {};
     l_appdata.APPID = appid;          //Web Application ID
     l_appdata.APPNM = l_create.APPNM; //Web Application Name
-    l_appdata.LANGU = l_create.LANGU; //Language Key
+    //Language Key
+    switch(l_create.LANGU){
+      case "EN":
+        l_appdata.LANGU = "E";
+        break;
+      case "KO":
+        l_appdata.LANGU = "3";
+        break;
+    }
     l_appdata.APPTY = l_create.APPTY; //Web Application Type
     l_appdata.CODPG = l_create.CODPG; //Identifier for Character Format (UTF-8, UCS-2, ...)
     l_appdata.UITHM = l_create.UITHM; //UI5 UI Theme
