@@ -199,15 +199,14 @@
 
         function onunhandledrejection(event) {
 
-            debugger;
-            
             if (bIsError) {
                 return;
             }
+            
+            let oReason = event.reason,
+                sErrorMsg = `${oReason.name}\n${oReason.message}, ${oReason.at}\n\n${oReason.text}`;
 
-            let sErrorMsg = event.reason.toString();
-
-            console.error(sErrorMsg);
+            console.error(event.reason);
 
             // critical 오류이므로 창을 다 닫는다.
             showCriticalErrorDialog(sErrorMsg);

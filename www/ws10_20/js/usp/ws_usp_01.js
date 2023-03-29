@@ -637,7 +637,7 @@
                     text: "{DESC}",
                     startsSection: "{ISSTART}",
                     icon: "{ICON}",
-                    tooltip: "{DATA}",
+                    // tooltip: "{DATA}",
                     items: {
                         path: "PATTN",
                         templateShareable: true,
@@ -646,7 +646,7 @@
                             text: "{DESC}",
                             startsSection: "{ISSTART}",
                             icon: "{ICON}",
-                            tooltip: "{DATA}",
+                            // tooltip: "{DATA}",
                             items: {
                                 path: "PATTN",
                                 templateShareable: true,
@@ -655,7 +655,7 @@
                                     text: "{DESC}",
                                     startsSection: "{ISSTART}",
                                     icon: "{ICON}",
-                                    tooltip: "{DATA}",
+                                    // tooltip: "{DATA}",
                                     items: {
                                         path: "PATTN",
                                         templateShareable: true,
@@ -664,8 +664,19 @@
                                             text: "{DESC}",
                                             startsSection: "{ISSTART}",
                                             icon: "{ICON}",
-                                            tooltip: "{DATA}"
-                                        })
+                                            // tooltip: "{DATA}"
+                                        }).addEventDelegate({
+                                            onmouseover: function(oEvent){
+
+                                                debugger;
+
+                                            },
+                                            onmouseenter: function(oEvent){
+                                                
+                                                debugger;
+
+                                            }
+                                        }) // end of addEventDelegate
                                     }
                                 })
                             }

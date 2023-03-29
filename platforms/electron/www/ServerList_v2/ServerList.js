@@ -49,7 +49,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             // 화면 Lock 걸기
             sap.ui.getCore().lock();
-
+            
             sap.ui.core.BusyIndicator.show(0);
 
             return;
@@ -1073,7 +1073,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnOnInitRendering = () => {
 
         var oApp = new sap.m.App({
-            autoFocus: false,
+            autoFocus: false,            
         }),
             oTreeTable = oAPP.fn.fnGetWorkSpaceTreeTable(), // 좌측 폴더 Tree
             oTable = oAPP.fn.fnGetSAPLogonListTable(), // 우측 서버 리스트 테이블
