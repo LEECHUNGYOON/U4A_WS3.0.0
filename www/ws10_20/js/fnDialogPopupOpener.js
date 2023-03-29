@@ -1325,7 +1325,10 @@
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         oBrowserWindow.once('ready-to-show', () => {
 
@@ -2150,10 +2153,10 @@
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
         oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
-        
+
         let oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5;
-          
+
         //==* 기본 config 정보 
         var S_config = {};
 

@@ -25,6 +25,7 @@
         "latestUrl": "https://api.github.com/repos/LEECHUNGYOON/U4A_WS3.0.0/releases/latest"        
     },
     "defaultTheme": "sap_horizon_dark",
+    "defaultLanguage" : "EN",
     "defaultBackgroundColor": "#12171c",
     "requireFolders": [
         "msgcls",

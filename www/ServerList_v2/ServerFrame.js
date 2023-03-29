@@ -8,14 +8,25 @@
     let oAPP = {};
     oAPP.fn = {};
     oAPP.data = {};
+    oAPP.attr = {};
+    oAPP.msg = {};
     oAPP.data.SAPLogon = {};
 
     oAPP.REMOTE = require('@electron/remote');
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
+    oAPP.IPCRENDERER = require('electron').ipcRenderer;
     oAPP.APPPATH = oAPP.APP.getAppPath();
     oAPP.DIALOG = oAPP.REMOTE.require('electron').dialog;
     oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
+
+    oAPP.IPCRENDERER.on("if-globalSetting-info", (events, oInfo) => {
+
+        oAPP.data.GlobalSettings = oInfo;
+
+        oAPP.fn.fnOnDeviceReady();
+
+    });
 
     oAPP.fn.fnOnDeviceReady = function() {
 
@@ -63,7 +74,7 @@
 
     };
 
-    document.addEventListener('deviceready', oAPP.fn.fnOnDeviceReady, false);
+    // document.addEventListener('deviceready', oAPP.fn.fnOnDeviceReady, false);
 
     window.oAPP = oAPP;
 

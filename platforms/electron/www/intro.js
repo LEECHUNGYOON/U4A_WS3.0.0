@@ -48,22 +48,24 @@
     }
 
 
-    function _test01() {
-        return new Promise(async (resolve) => {
+    // function _test01() {
+    //     return new Promise(async (resolve) => {
 
-            debugger;
+    //         debugger;
 
-            var langu = await WSUTIL.getWsLanguAsync(); // ws에 저장된 언어 레지스트리에서 구하기
-            var aa = WSUTIL.getWsMsgClsTxt(langu, "ZWSMSG_001", "000", "aa", "bb", "cc", "dd");
+    //         var langu = await WSUTIL.getWsLanguAsync(); // ws에 저장된 언어 레지스트리에서 구하기
+    //         var aa = WSUTIL.getWsMsgClsTxt(langu, "ZWSMSG_001", "000", "aa", "bb", "cc", "dd");
 
 
-        });
-    }
+    //     });
+    // }
 
 
     oAPP.fn.fnOnStart = async () => {
 
         // await _fnwait();
+
+        oAPP.startTime = new Date().getTime();
 
         // await _test01();
 
@@ -82,8 +84,21 @@
         // 실행 기준 3개월이 지난 로그가 있다면 삭제한다.
         await _oldLogDelete();
 
+        let oGlobalSettings = await WSUTIL.getWsGlobalSettingInfoAsync();
+
         // 초기 설치(기본 폴더, vbs 옮기기 등등)
         oAPP.fn.setInitInstall(() => {
+
+            oAPP.endTime = new Date().getTime();
+
+            let iTime = 3000,
+                timeDiff = oAPP.endTime - oAPP.startTime;
+
+            if (iTime - timeDiff >= 0) {
+                iTime = iTime - timeDiff;
+            } else {
+                iTime = 0;
+            }
 
             // WS 세팅 정보
             var oWsSettings = oAPP.fn.fnGetSettingsInfo();
@@ -93,14 +108,14 @@
 
                 setTimeout(() => {
                     oAPP.fn.fnTrialLogin();
-                }, 3000);
+                }, iTime);
 
                 return;
             }
 
             setTimeout(() => {
-                oAPP.fn.fnOpenServerList();
-            }, 3000);
+                oAPP.fn.fnOpenServerList(oGlobalSettings);
+            }, iTime);
 
         });
 
@@ -263,7 +278,7 @@
     /************************************************************************
      * 서버 리스트를 오픈한다.
      ************************************************************************/
-    oAPP.fn.fnOpenServerList = function () {
+    oAPP.fn.fnOpenServerList = function (oGlobalSettings) {
 
         // Electron Browser Default Options        
         var sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
@@ -292,11 +307,14 @@
         // oWin.webContents.openDevTools();
         // no build 일 경우에는 개발자 툴을 실행한다.
 
-        if (!APP.isPackaged) {
-            oWin.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oWin.webContents.openDevTools();
+        // }
 
-        oWin.webContents.on('did-finish-load', function () {
+        oWin.webContents.on('did-finish-load', async function () {
+
+            // 글로벌 설정 정보를 ServerList에 전달한다.
+            oWin.webContents.send('if-globalSetting-info', oGlobalSettings);
 
             oWin.webContents.send('window-id', oWin.id);
 
@@ -643,14 +661,15 @@
 
         return new Promise(async (resolve) => {
 
+            // 레지스트리의 글로벌 세팅 경로 구하기
             let oSettings = oAPP.fn.fnGetSettingsInfo(),
                 sRegPath = oSettings.regPaths,
                 sGlobalSettingPath = sRegPath.globalSettings;
 
+            // 레지스트리에 저장된 글로벌 세팅 정보 구하기
             let oRegList = await WSUTIL.getRegeditList([sGlobalSettingPath]),
                 oRetData = oRegList.RTDATA;
 
-            //  레지스트리에 SAPLogon 정보가 있는지 확인
             var oGlobalSettingRegData = oRetData[sGlobalSettingPath],
                 oSettingValues = oGlobalSettingRegData.values;
 
@@ -660,7 +679,7 @@
                 let oRegData = {};
                 oRegData[sGlobalSettingPath] = {};
                 oRegData[sGlobalSettingPath]["language"] = {
-                    value: "EN",
+                    value: oSettings.defaultLanguage || "EN",
                     type: "REG_SZ"
                 };
 
@@ -668,12 +687,13 @@
 
             }
 
+            // WS Theme 정보 저장
             if (!oSettingValues.theme) {
 
                 let oRegData = {};
                 oRegData[sGlobalSettingPath] = {};
                 oRegData[sGlobalSettingPath]["theme"] = {
-                    value: "sap_horizon_dark",
+                    value: oSettings.defaultTheme || "sap_horizon_dark",
                     type: "REG_SZ"
                 };
 

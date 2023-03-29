@@ -540,6 +540,33 @@ module.exports = {
 
     },
 
+    getWsGlobalSettingInfoAsync: function () {
+
+        return new Promise(async (resolve) => {
+
+            let oSettings = this.getWsSettingsInfo(), // ws 설정 정보
+                sRegPath = oSettings.regPaths, // 각종 레지스트리 경로
+                sGlobalSettingPath = sRegPath.globalSettings; // globalsettings 레지스트리 경로
+
+            // 레지스트리 정보 구하기
+            let oRegList = await this.getRegeditList([sGlobalSettingPath]),
+                oRetData = oRegList.RTDATA;
+
+            // 여기서 오류면 크리티컬 오류
+            if (oRegList.RETCD == "E") {
+                throw new Error(oRegList.RTMSG);
+            }
+
+            //  레지스트리에 GlobalSetting 정보가 있는지 확인
+            let oGlobalSettingRegData = oRetData[sGlobalSettingPath],
+                oSettingValues = oGlobalSettingRegData.values;
+
+            resolve(oSettingValues);
+
+        });
+
+    }, // getWsGlobalSettingInfoAsync
+
 
     /*************************************************************************
      * 파일시스템 관련 -- Start

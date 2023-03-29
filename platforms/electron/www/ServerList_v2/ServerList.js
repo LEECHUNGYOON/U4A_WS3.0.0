@@ -128,12 +128,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      * **********************************************************************/
     oAPP.fn.fnOnMainStart = async () => {
 
-        // await _fnWait();
-
-        /**
-         * 하위 function 순서 중요!!
-         */
         jQuery.sap.require("sap.m.MessageBox");
+
+        // WS Global 메시지 글로벌 변수 설정
+        await oAPP.fn.fnWsGlobalMsgList();
 
         // 초기 모델 구성
         await oAPP.fn.fnOnInitModeling();
@@ -145,6 +143,44 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oAPP.fn.fnOnListupSapLogon(); // [내부 로직에 비동기가 있음]
 
     }; // end of oAPP.fn.fnOnMainStart
+
+
+    /************************************************************************
+     * WS Global 메시지 글로벌 변수 설정
+     ************************************************************************/
+    oAPP.fn.fnWsGlobalMsgList = () => {
+
+        return new Promise(async (resolve) => {
+
+            // 레지스트리에서 WS Global language 구하기
+            let sWsLangu = await WSUTIL.getWsLanguAsync();
+
+            oAPP.msg.M01 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "007"); // Saved success
+            oAPP.msg.M02 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "008"); // Delete success
+            oAPP.msg.M03 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "009"); // Please Check the SAPGUI is Installed and whether saved Server is exsists!
+            oAPP.msg.M04 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "010"); // Server information does not exist in the SAPGUI logon file.
+            oAPP.msg.M05 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "011"); // No SAPGUI version information.
+            oAPP.msg.M06 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "012"); // SAPGUI version information not Found.
+            oAPP.msg.M07 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "013"); // Not supported lower than SAPGUI 770 versions.
+            oAPP.msg.M08 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "014"); // SAPGUI version information not Found.
+            oAPP.msg.M09 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "015"); // Please contact U4A Solution Team!
+            oAPP.msg.M10 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "016"); // Server List file not exists. restart now!
+            oAPP.msg.M11 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "017"); // Not exists save file.
+            oAPP.msg.M12 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "018"); // Server List file not exists.
+            oAPP.msg.M13 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "019"); // host is required!
+            oAPP.msg.M14 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "020"); // Do not include Empty string!
+
+
+
+
+
+
+
+            resolve();
+
+        });
+
+    }; // end of oAPP.fn.fnWsGlobalMsgList
 
     oAPP.fn.fnOnInitModeling = () => {
 
@@ -539,7 +575,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         return new Promise((resolve, reject) => {
 
             let sSaplogonPath = SETTINGS.regPaths.saplogon,
-                sErrMsg = "Please Check the SAPGUI is Installed and whether saved Server is exsists!";
+                sErrMsg = oAPP.msg.M03; //"Please Check the SAPGUI is Installed and whether saved Server is exsists!";
 
             REGEDIT.list(sSaplogonPath, (err, result) => {
 
@@ -578,7 +614,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         let oLandscapeFile = oResult.LandscapeFile,
             oLandscapeFileGlobal = oResult.LandscapeFileGlobal,
             sLandscapeFilePath = oLandscapeFile.value,
-            sErrMsg = "Please Check the SAPGUI is Installed and whether saved Server is exsists!";
+            sErrMsg = oAPP.msg.M03; //"Please Check the SAPGUI is Installed and whether saved Server is exsists!";
 
         if (typeof oLandscapeFile == "undefined") {
 
@@ -728,7 +764,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 성공 실패 공통 리턴 구조
         let oErr = {
             RETCD: "E",
-            RTMSG: "Server information does not exist in the SAPGUI logon file."
+            RTMSG: oAPP.msg.M04, // "Server information does not exist in the SAPGUI logon file."
         },
             oSucc = {
                 RETCD: "S",
@@ -760,13 +796,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 정규식으로 null 값이면 버전정보가 없다고 간주함.
         if (aVersion == null) {
-            oErr.RTMSG = "No SAPGUI version information.";
+            oErr.RTMSG = oAPP.msg.M05; // "No SAPGUI version information.";
             return oErr;
         }
 
         // 정규식으로 버전 정보를 찾았다면 Array 타입
         if (Array.isArray(aVersion) == false) {
-            oErr.RTMSG = "No SAPGUI version information.";
+            oErr.RTMSG = oAPP.msg.M05; // "No SAPGUI version information.";
             return oErr;
         }
 
@@ -775,13 +811,15 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         if (isNaN(parseVer)) {
 
-            oErr.RTMSG = "SAPGUI version information not Found.";
+            oErr.RTMSG = oAPP.msg.M06; // "SAPGUI version information not Found.";
             return oErr;
         }
 
         // 770 보다 낮다면 지원 불가
         if (parseVer < SAPGUIVER) {
-            oErr.RTMSG = "Not supported lower than SAPGUI 770 versions. \n Please upgrade SAPGUI 770 or Higher";
+            
+            //"Not supported lower than SAPGUI 770 versions. \n Please upgrade SAPGUI 770 or Higher";
+            oErr.RTMSG = oAPP.msg.M07 + " \n " + oAPP.msg.M08;            
             return oErr;
         }
 
@@ -860,7 +898,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 성공 실패 공통 리턴 구조
         let oErr = {
             RETCD: "E",
-            RTMSG: "Server information does not exist in the SAPGUI logon file."
+            RTMSG: oAPP.msg.M04 // "Server information does not exist in the SAPGUI logon file."
         },
             oSucc = {
                 RETCD: "S",
@@ -997,7 +1035,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         let sMsg = oError.toString();
 
-        sMsg += " \n Please contact U4A Solution Team!";
+        sMsg += " \n " + oAPP.msg.M09; //"Please contact U4A Solution Team!";
 
         // 파일 저장에 실패 했을 경우 오류메시지 출력후 빠져나간다.
         oAPP.fn.fnShowMessageBox("E", sMsg, () => {
@@ -1016,7 +1054,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         let sMsg = oError.toString();
 
-        sMsg += " \n Please contact U4A Solution Team!";
+        sMsg += " \n " + oAPP.msg.M09; //"Please contact U4A Solution Team!";
 
         // 파일 저장에 실패 했을 경우 오류메시지 출력후 빠져나간다.
         oAPP.fn.fnShowMessageBox("E", sMsg, () => {
@@ -1635,7 +1673,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         if (!bIsFileExist) {
 
             // 파일이 없습니다 오류
-            oAPP.fn.fnShowMessageBox("E", "server List file not exists. restart now!", () => {
+            oAPP.fn.fnShowMessageBox("E", oAPP.msg.M10 /*"server List file not exists. restart now!"*/, () => {
                 oAPP.fn.fnEditDialogClose();
             });
 
@@ -1662,7 +1700,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 성공 사운드
         oAPP.setSoundMsg("01");
 
-        sap.m.MessageToast.show("Delete Success!");
+        sap.m.MessageToast.show(oAPP.msg.M02 /*Delete Success!*/);
 
         // 좌측 workspace 트리 테이블을 갱신한다.
         oAPP.fn.fnSetRefreshSelectTreeItem();
@@ -1877,7 +1915,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             // 파일이 없습니다 오류
             return {
                 RETCD: "E",
-                RTMSG: "ServerList file not exists."
+                RTMSG: oAPP.msg.M04 //"ServerList file not exists."
             };
 
         }
@@ -1891,7 +1929,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             return {
                 RETCD: "E",
-                RTMSG: "not exists save file."
+                RTMSG: oAPP.msg.M11 // "not exists save file."
             };
 
         }
@@ -1901,7 +1939,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             return {
                 RETCD: "E",
-                RTMSG: "not exists save file."
+                RTMSG: oAPP.msg.M11 // "not exists save file."
             };
 
         }
@@ -1930,7 +1968,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             // 파일이 없습니다 오류
             return {
                 RETCD: "E",
-                RTMSG: "ServerList file not exists."
+                RTMSG: oAPP.msg.M12 // "ServerList file not exists."
             };
 
         }
@@ -1944,7 +1982,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             return {
                 RETCD: "E",
-                RTMSG: "not exists save file."
+                RTMSG: oAPP.msg.M11 // "not exists save file."
             };
 
         }
@@ -2026,7 +2064,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         if (!bIsFileExist) {
 
             // 파일이 없습니다 오류
-            oAPP.fn.fnShowMessageBox("E", "server List file not exists. restart now!", () => {
+            oAPP.fn.fnShowMessageBox("E", oAPP.msg.M10 /*"server List file not exists. restart now!"*/, () => {
                 oAPP.fn.fnEditDialogClose();
             });
 
@@ -2071,7 +2109,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             // 성공 사운드
             oAPP.setSoundMsg("01");
 
-            sap.m.MessageToast.show("saved Success!");
+            sap.m.MessageToast.show(oAPP.msg.M01 /*"saved Success!"*/);
 
             return;
 
@@ -2115,7 +2153,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 성공 사운드
         oAPP.setSoundMsg("01");
 
-        sap.m.MessageToast.show("saved Success!");
+        sap.m.MessageToast.show(oAPP.msg.M01 /*"saved Success!"*/);
 
     }; // end of oAPP.fn.fnPressSave
 
@@ -2182,7 +2220,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 var oResult = {
                     RETCD: "E",
-                    RTMSG: "host is required!"
+                    RTMSG: oAPP.msg.M13 // "host is required!"
                 };
 
                 // Value State
@@ -2209,7 +2247,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 var oResult = {
                     RETCD: "E",
-                    RTMSG: "Do not include Empty string!"
+                    RTMSG: oAPP.msg.M14 //"Do not include Empty string!"
                 };
 
                 // Value State
@@ -2446,6 +2484,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     text: "{/WSLANGU/ZMSG_WS_COMMON_001/002}", // "OK",
                     press: function (oEvent) {
 
+                        oAPP.setBusy(true);
+
                         //[async] 선택한 언어 저장
                         _saveWsLangu();
 
@@ -2489,13 +2529,15 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 throw new Error(oRegList.RTMSG);
             }
 
+            let oRegValues = oRetData[sGlobalSettingPath].values,
+                oRegTheme = oRegValues.theme,
+                sTheme = oSettings.defaultTheme;
 
-            let sTheme = "sap_horizon_dark";
+            if (oRegTheme) {
+                sTheme = oRegTheme.value;
+            }
 
-
-
-
-            resolve();
+            resolve(sTheme);
 
         });
 
@@ -2506,22 +2548,128 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      ************************************************************************/
     async function _openWSThemeSettingPopup() {
 
-        debugger;
-
         let oCoreModel = sap.ui.getCore().getModel(),
-            WSLANGU = oCoreModel.getProperty("/WSLANGU"),
-            aSupportedThemes = sap.ui.getVersionInfo().supportedThemes;
+            WSLANGU = oCoreModel.getProperty("/WSLANGU"), // WS 글로벌 Language 텍스트 정보
+            aSupportedThemes = sap.ui.getVersionInfo().supportedThemes, // 현재 버전에서 지원되는 테마 목록
+            iThemeLength = aSupportedThemes.length;
 
+        // 테마 정보를 바인딩 구조에 맞게 변경
+        let aThemes = [];
+        for (var i = 0; i < iThemeLength; i++) {
+
+            let sThemeName = aSupportedThemes[i];
+
+            aThemes.push({ KEY: sThemeName, THEME: sThemeName });
+
+        }
+
+        // 레지스트리에 저장된 테마 정보를 구한다.
         let sTheme = await _getThemeInfoRegAsync();
 
         let oInitModelData = {
             WSLANGU: WSLANGU,
-            sSelectedTheme: "",
-            aSupportThemes: aSupportedThemes,
+            sSelectedTheme: sTheme || aSupportedThemes[0],
+            aSupportThemes: aThemes,
         };
 
-        // let sTheme
+        var oJsonModel = new sap.ui.model.json.JSONModel();
+        oJsonModel.setData(oInitModelData);
 
+        let sDialogId = "GlobalSettingWsTheme";
+
+        var oDialog = sap.ui.getCore().byId(sDialogId);
+        if (oDialog) {
+            oDialog.setModel(oJsonModel);
+            oDialog.open();
+            return;
+        }
+
+        var oDialog = new sap.m.Dialog(sDialogId, {
+
+            draggable: true,
+            resizable: true,
+
+            customHeader: new sap.m.Bar({
+                contentLeft: [
+                    new sap.ui.core.Icon({
+                        src: "sap-icon://palette"
+                    }),
+                    new sap.m.Title({
+                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/006}" // Theme Settings
+                    })
+                ]
+            }),
+
+            content: [
+
+                new sap.ui.layout.form.Form({
+                    editable: true,
+                    layout: new sap.ui.layout.form.ResponsiveGridLayout({
+                        labelSpanXL: 2,
+                        labelSpanL: 3,
+                        labelSpanM: 3,
+                        labelSpanS: 12,
+                        singleContainerFullSize: true
+                    }),
+
+                    formContainers: [
+                        new sap.ui.layout.form.FormContainer({
+                            formElements: [
+                                new sap.ui.layout.form.FormElement({
+                                    label: new sap.m.Label({
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/005}" // Theme
+                                    }),
+                                    fields: new sap.m.ComboBox({
+                                        selectedKey: "{/sSelectedTheme}",
+                                        items: {
+                                            path: "/aSupportThemes",
+                                            template: new sap.ui.core.Item({
+                                                key: "{KEY}",
+                                                text: "{KEY}"
+                                            })
+                                        }
+                                    })
+                                })
+                            ]
+                        })
+
+                    ] // end of formContainers
+
+                }) // end of Form
+
+            ], // end of dialog content
+
+            buttons: [
+                new sap.m.Button({
+                    type: sap.m.ButtonType.Emphasized,
+                    text: "{/WSLANGU/ZMSG_WS_COMMON_001/002}", // "OK",
+                    press: function (oEvent) {
+
+                        oAPP.setBusy(true);
+
+                        // [async] 선택한 테마 저장                        
+                        _saveWsThemeInfo();
+
+                    }
+                }),
+                new sap.m.Button({
+                    text: "{/WSLANGU/ZMSG_WS_COMMON_001/003}", // "Cancel"
+                    press: function () {
+
+                        let oDialog = sap.ui.getCore().byId(sDialogId);
+
+                        oDialog.close();
+
+                    }
+                })
+            ]
+
+        }); // end of dialog
+
+        oDialog.setModel(oJsonModel);
+
+        oDialog.open();
 
     } // end of _openWSThemeSettingPopup
 
@@ -2534,6 +2682,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oDialog = sap.ui.getCore().byId(sDialogId);
 
         if (!oDialog) {
+            oAPP.setBusy(false);
             return;
         }
 
@@ -2552,7 +2701,53 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oDialog.close();
 
+        oAPP.setBusy(false);
+
+        // UI5 Language 변경
+        sap.ui.getCore().getConfiguration().setLanguage(sSelectedKey);
+
+        sap.m.MessageToast.show(oAPP.msg.M01); // // Saved success
+
     } // end of _saveWsLangu
+
+    /************************************************************************
+     * [WS Global Setting] WS Theme 저장
+     ************************************************************************/
+    async function _saveWsThemeInfo() {
+
+        let sDialogId = "GlobalSettingWsTheme";
+
+        // Dialog의 모델 정보를 구한다.
+        let oDialog = sap.ui.getCore().byId(sDialogId),
+            oModelData = oDialog.getModel().getData();
+
+        let sSelectedTheme = oModelData.sSelectedTheme;
+
+        let oSettings = WSUTIL.getWsSettingsInfo(),
+            sRegPath = oSettings.regPaths, // 각종 레지스트리 경로
+            sGlobalSettingPath = sRegPath.globalSettings; // globalsettings 레지스트리 경로        
+
+        // 저장할 레지스트리 데이터
+        let oRegData = {};
+        oRegData[sGlobalSettingPath] = {};
+        oRegData[sGlobalSettingPath]["theme"] = {
+            value: sSelectedTheme,
+            type: "REG_SZ"
+        };
+
+        // 레지스트리에 테마 정보 저장
+        await WSUTIL.putRegeditValue(oRegData);
+
+        oDialog.close();
+
+        oAPP.setBusy(false);
+
+        // UI5 테마 적용
+        sap.ui.getCore().applyTheme(sSelectedTheme);
+
+        sap.m.MessageToast.show(oAPP.msg.M01); // Saved success
+
+    } // end of _saveWsThemeInfo
 
     function _registSelectedSystemInfo(oServerInfo) {
 
@@ -3026,7 +3221,15 @@ function fnLoadBootStrapSetting() {
         oScript.setAttribute(key, oBootStrap[key]);
     }
 
+    let oWsGlobalSettings = oAPP.data.GlobalSettings,
+        oThemeInfo = oWsGlobalSettings.theme,
+        oLanguInfo = oWsGlobalSettings.language,
+        sTheme = (typeof oThemeInfo === "undefined" ? oSettings.defaultTheme || "sap_horizon_dark" : oThemeInfo.value);
+
+    sLangu = (typeof oLanguInfo === "undefined" ? oSettings.defaultLanguage || "EN" : oLanguInfo.value);
+
     oScript.setAttribute("data-sap-ui-language", sLangu);
+    oScript.setAttribute('data-sap-ui-theme', sTheme);
     oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.layout, sap.ui.table");
     oScript.setAttribute("src", oSetting_UI5.resourceUrl);
 

@@ -105,7 +105,11 @@
             color: black;
         }
 
-
+        #ts12 {
+            font-weight: bold;
+            color: #ff00ff;
+            font-size: 0.8rem;
+        }
 
         .copyright {
             font-weight: bold;
@@ -152,8 +156,13 @@
 
                 <li>
                     <span id="ts10">Work Space 3.0</span>&nbsp;
-                    <span id="ts11">Version&nbsp;:</span>
+                    <span id="ts11">Current Version&nbsp;:</span>
                     <span id="VER3"> </span>
+                </li>
+
+                <li>
+                    <span id="ts12">Current Server allowed Workspace Version : </span>
+                    <span id="VER4"> </span>
                 </li>
 
 
@@ -276,13 +285,15 @@
                             sWsVer = parent.WSVER;
 
                         if(bIsPackged){
-                            sWsVer += ` (Patch Level : ${parent.WSPATCH_LEVEL})`;
+                            sWsVer += ` (SP : ${parent.WSPATCH_LEVEL})`;
                         }
 
                         document.getElementById('LIC_TYPE').innerHTML = sData.DATA.LIC_TYPE;
                         document.getElementById('VER1').innerHTML = sData.DATA.VER1;
                         document.getElementById('VER2').innerHTML = sData.DATA.VER2;
                         document.getElementById('VER3').innerHTML = sWsVer;
+                        document.getElementById('VER4').innerHTML = sData.DATA?.VER3 || "";
+
                         // document.getElementById('VER3').innerHTML = parent.gfn_remote().app.getVersion();
 
 
