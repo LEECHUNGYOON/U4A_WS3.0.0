@@ -928,7 +928,10 @@ let oAPP = parent.oAPP;
             return;
         }
 
-        let oModelData = oTableModel.getProperty("/CUS_PAT"),
+        let oTableBinding = oCustTable.getBinding(),
+            sBindPath = oTableBinding.getPath();
+
+        let oModelData = oTableModel.getProperty(sBindPath),
             aCustData = parent.WSUTIL.parseTreeToArray(oModelData, "CUS_PAT");
 
         // 선택한 라인이 있는지 확인
@@ -987,6 +990,8 @@ let oAPP = parent.oAPP;
         oTableModel.refresh();
 
         oCustTable.clearSelection();
+
+        oAPP.fn.fnSetModelProperty("/CONTENT", {});
 
     } // end of ev_pressCustomDelete
 
