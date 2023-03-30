@@ -18,7 +18,7 @@ let oAPP = (function (window) {
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
     oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
-    
+
     /*******************************************************
      * 메시지클래스 텍스트 작업 관련 Object -- start
      *******************************************************/
@@ -53,11 +53,7 @@ let oAPP = (function (window) {
 
         oAPP.attr.oUserInfo = oInfo.oUserInfo;
         oAPP.attr.oServerInfo = oInfo.oServerInfo;
-        oAPP.attr.oThemeInfo = oInfo.oThemeInfo;        
-        oAPP.attr.oSettingInfo = require(PATHINFO.WSSETTINGS);
-
-        oAPP.attr.sDefaultPatternJsonPath = PATHINFO.DEF_PATT;
-        oAPP.attr.sCustomPatternJsonPath = PATHINFO.CUST_PATT;
+        oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {

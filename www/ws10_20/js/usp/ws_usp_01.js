@@ -573,14 +573,15 @@
 
             let aPatternJson,
                 aCustmPatternJson,
-                aPatternMerge;           
-        
+                aPatternMerge;
+
             try {
-                
+
                 aPatternJson = JSON.parse(sPatternJson); // 기본 패턴 Json Parse
                 aCustmPatternJson = JSON.parse(sCustomPatternJson); // Custom Pattern Json Parse
 
             } catch (error) {
+                console.error(error);
                 throw new Error(error);
             }
 
@@ -590,7 +591,10 @@
             APPCOMMON.fnSetModelProperty("/PATTN", aPatternMerge);
 
             let oModel = sap.ui.getCore().getModel();
+
             parent.WSUTIL.parseArrayToTree(oModel, "PATTN", "CKEY", "PKEY", "PATTN");
+
+            oModel.refresh();
 
             resolve();
 
@@ -604,6 +608,7 @@
      **************************************************************************/
     oAPP.fn.fnUspCodeeditorContextMenuOpen = (oEvent, oCodeEditor) => {
 
+        // 패턴메뉴 선택 시, 출력될 에디터 위치를 저장한다.
         if (oAPP.attr.oCtxMenuClickEditor) {
             delete oAPP.attr.oCtxMenuClickEditor;
         }
@@ -615,17 +620,17 @@
         var oCtxMenu = sap.ui.getCore().byId(sMenuId);
         if (oCtxMenu) {
 
-            let oUspAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
+            let aPatterns = APPCOMMON.fnGetModelProperty("/PATTN"),
+                oUspAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
                 oCtxMenuModel = oCtxMenu.getModel();
 
             oCtxMenuModel.setProperty("/APPINFO", oUspAppInfo);
-
+            oCtxMenuModel.setProperty("/PATTN", aPatterns);
             oCtxMenu.openAsContextMenu(oEvent, oCodeEditor);
-
             return;
         }
 
-        var oCtxMenu = new sap.m.Menu({
+        var oCtxMenu = new sap.m.Menu(sMenuId, {
             itemSelected: (oEvent) => { // USP Pattern Contextmenu Event
                 oAPP.fn.fnUspPatternContextMenuClick(oEvent);
 
@@ -665,18 +670,7 @@
                                             startsSection: "{ISSTART}",
                                             icon: "{ICON}",
                                             // tooltip: "{DATA}"
-                                        }).addEventDelegate({
-                                            onmouseover: function(oEvent){
-
-                                                debugger;
-
-                                            },
-                                            onmouseenter: function(oEvent){
-                                                
-                                                debugger;
-
-                                            }
-                                        }) // end of addEventDelegate
+                                        })
                                     }
                                 })
                             }

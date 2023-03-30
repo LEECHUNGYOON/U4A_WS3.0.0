@@ -15,8 +15,7 @@ let oAPP = parent.oAPP;
     "use strict";
 
     let require = parent.require,
-        FS = require("fs-extra"),
-        ESCAPEJSON = require('escape-json');
+        FS = require("fs-extra");
 
     /************************************************************************
      * 모델 데이터 set
@@ -58,7 +57,7 @@ let oAPP = parent.oAPP;
     //  ************************************************************************/
     oAPP.fn.fnLoadBootStrapSetting = function () {
 
-        var oSettings = oAPP.attr.oSettingInfo,
+        var oSettings = parent.WSUTIL.getWsSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
             oBootStrap = oSetting_UI5.bootstrap,
             oUserInfo = oAPP.attr.oUserInfo,
@@ -76,7 +75,7 @@ let oAPP = parent.oAPP;
         // 로그인 Language 적용
         oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
         oScript.setAttribute("data-sap-ui-language", sLangu);
-        oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.codeeditor, sap.ui.table, sap.ui.layout");       
+        oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.codeeditor, sap.ui.table, sap.ui.layout");
         oScript.setAttribute("src", oSetting_UI5.resourceUrl);
 
         document.head.appendChild(oScript);
@@ -88,8 +87,12 @@ let oAPP = parent.oAPP;
      ************************************************************************/
     oAPP.fn.fnInitModelBinding = function () {
 
-        let sDefPattJson = FS.readFileSync(oAPP.attr.sDefaultPatternJsonPath, 'utf-8'), // Usp 기본 패턴
-            sCustPattJson = FS.readFileSync(oAPP.attr.sCustomPatternJsonPath, 'utf-8'); // Usp 커스텀 패턴
+        // WS Setting 정보
+        let oSettings = parent.WSUTIL.getWsSettingsInfo(),
+            oPath = oSettings.path;
+
+        let sDefPattJson = FS.readFileSync(oPath.DEF_PATT, 'utf-8'), // Usp 기본 패턴
+            sCustPattJson = FS.readFileSync(oPath.CUST_PATT, 'utf-8'); // Usp 커스텀 패턴
 
         let aDefPattJson,
             aCustPattJson;
@@ -623,7 +626,7 @@ let oAPP = parent.oAPP;
             contentHeight: "100%",
             verticalScrolling: false,
             horizontalScrolling: false,
-            escapeHandler: () => {},
+            escapeHandler: () => { },
 
             // aggregations
             customHeader: new sap.m.Bar({
@@ -714,8 +717,12 @@ let oAPP = parent.oAPP;
 
         }
 
+        // WS Setting 정보
+        let oSettings = parent.WSUTIL.getWsSettingsInfo(),
+            oPath = oSettings.path;
+
         // 기 저장된 커스텀 데이터를 구한다.
-        let sCustomJson = FS.readFileSync(oAPP.attr.sCustomPatternJsonPath, "utf-8"),
+        let sCustomJson = FS.readFileSync(oPath.CUST_PATT, "utf-8"),
             aCustomData;
 
         try {
@@ -736,6 +743,16 @@ let oAPP = parent.oAPP;
 
         aCustomData.push(oNewCustomPatternData);
 
+        try {
+            // 신규 추가한 정보를 JSON으로 변환하여 로컬에 저장
+            let sNewCustomJsonData = JSON.stringify(aCustomData);
+
+            FS.writeFileSync(oPath.CUST_PATT, sNewCustomJsonData, "utf-8");
+
+        } catch (error) {
+            throw new Error(error);
+        }
+
         // 신규 추가한 데이터를 모델에 반영한다.
         oAPP.fn.fnSetModelProperty("/CUS_PAT", aCustomData, true);
 
@@ -745,18 +762,126 @@ let oAPP = parent.oAPP;
         parent.WSUTIL.parseArrayToTree(oModel, "CUS_PAT", "CKEY", "PKEY", "CUS_PAT");
 
         oModel.refresh();
-        
-        // 신규 추가한 정보를 JSON으로 변환하여 로컬에 저장
-        let sNewCustomJsonData = JSON.stringify(aCustomData);                
-        
-        FS.writeFileSync(oAPP.attr.sCustomPatternJsonPath, sNewCustomJsonData, "utf-8");
 
         let oCloseBtn = sap.ui.getCore().byId("uspCustPattCreateDlgCloseBtn");
         if (oCloseBtn) {
             oCloseBtn.firePress();
         }
 
+        let oCustTable = sap.ui.getCore().byId("uspCustPattTreeTbl"),
+            oBindData = {
+                KEY: sKey
+            };
+
+        oCustTable.attachEventOnce("rowsUpdated", ev_CustCreateRowsUpdatedEventOnce.bind(oBindData));
+
     } // end of ev_CustCreatef
+
+    function ev_CustCreateRowsUpdatedEventOnce(oEvent) {
+
+        debugger;
+
+        let oTreeTable = oEvent.getSource(), // tree table 인스턴스
+            sCreateKey = this.KEY, // 신규 생성한 키
+            oBindings = oTreeTable.getBinding(); // tree binding 정보
+
+        if (!oBindings) {
+            return;
+        }
+
+        let sBindPath = oBindings.getPath(), // 테이블에 바인딩된 패스경로
+            aBindData = oTreeTable.getModel().getProperty(sBindPath), // 테이블에 바인딩된 데이터
+            aNodePaths = []; // 찾을려는 UI의 패스 수집
+
+        if (typeof oAPP.attr.bFindNode !== "undefined") {
+            delete oAPP.attr.bFindNode;
+        }
+
+        oAPP.attr.bFindNode = false;
+
+        _findCustPattCreateNode(aBindData, sCreateKey, aNodePaths);
+
+        let iRowIndex = 0,
+            iNodePathLength = aNodePaths.length;
+
+        if (iNodePathLength == 0) {
+            return;
+        }
+
+        for (var i = 0; i < iNodePathLength; i++) {
+
+            let sPath = aNodePaths[i],
+                iBindLength = oBindings.getLength();
+
+            for (var j = 0; j < iBindLength; j++) {
+
+                let oNode = oBindings.getNodeByIndex(j),
+                    oCtx = oNode.context,
+                    CKEY = oCtx.getObject("CKEY");
+
+                if (CKEY !== sPath) {
+                    continue;
+                }
+
+                if (j !== iNodePathLength - 1) {
+                    let oNodeState = oNode.nodeState,
+                        bIsExpanded = oNodeState.expanded;
+
+                    if (!bIsExpanded) {
+                        oTreeTable.expand(j);
+                    }
+
+                }
+
+                iRowIndex = j + 1;
+
+                break;
+
+            }
+
+        }
+
+        let iFindIndex = iRowIndex - 1;
+        oTreeTable.setSelectedIndex(iFindIndex);
+        oTreeTable.setFirstVisibleRow(iFindIndex);
+
+    } // end of ev_CustCreateRowsUpdatedEventOnce
+
+    function _findCustPattCreateNode(aBindData, KEY, aNodePaths) {
+
+        let iBindLength = aBindData.length;
+        if (iBindLength == 0) {
+            return;
+        }
+
+        for (var i = 0; i < iBindLength; i++) {
+
+            // 이미 찾았다면 빠져나감.
+            if (oAPP.attr.bFindNode == true) {
+                return;
+            }
+
+            let oBindData = aBindData[i];
+
+            if (oBindData.CKEY === KEY) {
+                oAPP.attr.bFindNode = true;
+                aNodePaths.push(oBindData.CKEY);
+                return;
+            }
+
+            aNodePaths.push(oBindData.CKEY);
+
+            let iChildLength = oBindData.CUS_PAT.length;
+            if (iChildLength !== 0) {
+                _findCustPattCreateNode(oBindData.CUS_PAT, KEY, aNodePaths);
+                return;
+            }
+
+            aNodePaths.pop();
+
+        }
+
+    }
 
     /************************************************************************
      * 커스텀 패턴 생성팝업 닫기 이벤트
@@ -777,7 +902,19 @@ let oAPP = parent.oAPP;
     /************************************************************************
      * 커스텀 패턴 삭제 이벤트
      ************************************************************************/
-    function ev_pressCustomPatternDelete(oEvent) {
+    async function ev_pressCustomPatternDelete(oEvent) {
+
+        /**
+         * 삭제 질문 팝업?
+         */
+
+
+
+        // let oMessagePop = await new Promise((resolve) => {
+
+
+
+        // });
 
         debugger;
 
@@ -811,7 +948,13 @@ let oAPP = parent.oAPP;
                 continue;
             }
 
-            let sCKEY = oCtx.getObject("CKEY");
+            let sCKEY = oCtx.getObject("CKEY"),
+                sTYPE = oCtx.getObject("TYPE");
+
+            // 루트는 삭제 하지 않음.
+            if (sTYPE === "ROOT") {
+                continue;
+            }
 
             let iFindIndex = aCustData.findIndex(elem => elem?.CKEY === sCKEY);
 
@@ -819,16 +962,31 @@ let oAPP = parent.oAPP;
                 continue;
             }
 
-
-
-
-
-            debugger;
-
+            aCustData.splice(iFindIndex, 1);
 
         }
 
+        // WS Setting 정보
+        let oSettings = parent.WSUTIL.getWsSettingsInfo(),
+            oPath = oSettings.path;
 
+        try {
+            // 신규 추가한 정보를 JSON으로 변환하여 로컬에 저장
+            let sCustomJson = JSON.stringify(aCustData);
+
+            FS.writeFileSync(oPath.CUST_PATT, sCustomJson, "utf-8");
+
+        } catch (error) {
+            throw new Error(error);
+        }
+
+        oTableModel.setProperty("/CUS_PAT", aCustData, true);
+
+        parent.WSUTIL.parseArrayToTree(oTableModel, "CUS_PAT", "CKEY", "PKEY", "CUS_PAT");
+
+        oTableModel.refresh();
+
+        oCustTable.clearSelection();
 
     } // end of ev_pressCustomDelete
 

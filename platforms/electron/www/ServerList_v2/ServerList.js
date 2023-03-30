@@ -337,10 +337,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         }
 
-        oWorkTree.setSelectedIndex(iRowIndex - 1);
+        let iFindIndex = iRowIndex - 1;
+        oWorkTree.setSelectedIndex(iFindIndex);
+        oWorkTree.setFirstVisibleRow(iFindIndex);
 
     }; // end of oAPP.fn.fnAttachRowsUpdateOnce
-
 
     function _findLastSelectedPath(aTreeData, sLastSelectNodeKey, aPaths) {
 
