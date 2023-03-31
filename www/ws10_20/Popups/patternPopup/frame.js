@@ -9,6 +9,7 @@ let oAPP = (function (window) {
     let oAPP = {};
     oAPP.fn = {};
     oAPP.attr = {};
+    oAPP.msg = {};
     oAPP.events = {};
     oAPP.common = {};
 

@@ -10,6 +10,11 @@
 let zconsole = parent.WSERR(window, document, console);
 
 let oAPP = parent.oAPP;
+if (!oAPP) {
+    oAPP = {};
+    oAPP.fn = {};
+    oAPP.msg = {};
+}
 
 (function (window, oAPP) {
     "use strict";
@@ -107,7 +112,7 @@ let oAPP = parent.oAPP;
         var oCoreModel = sap.ui.getCore().getModel(),
             oJsonModel = new sap.ui.model.json.JSONModel(),
             oData = {
-                CUST_CR_DLG: {}, // Custom Pattern 생성 팝업 모델
+                CUST_CR_DLG: {}, // Custom Pattern 생성 팝업 모델                
                 CONTENT: {},
                 DEF_PAT: aDefPattJson,
                 CUS_PAT: aCustPattJson
@@ -152,7 +157,7 @@ let oAPP = parent.oAPP;
 
                 // aggregations
                 content: _getMainPageContents(),
-                footer: _getMainPageFooter(),
+                // footer: _getMainPageFooter(),
 
 
             }).addStyleClass("");
@@ -162,6 +167,41 @@ let oAPP = parent.oAPP;
         oApp.placeAt("content");
 
     }; // end of oAPP.fn.fnInitRendering
+
+    /************************************************************************
+     * WS 글로벌 메시지 목록 구하기
+     ************************************************************************/
+    oAPP.fn.getWsMessageList = function () {
+
+        return new Promise(async (resolve) => {
+
+            var WSUTIL = parent.WSUTIL;
+
+            let sWsLangu = await WSUTIL.getWsLanguAsync();
+
+            oAPP.msg.M01 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "021"); // Default Pattern
+            oAPP.msg.M02 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "022"); // Custom Pattern
+            oAPP.msg.M03 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "023"); // Content Type
+            oAPP.msg.M04 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "024"); // Title
+            oAPP.msg.M05 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "025"); // Pretty Print
+            oAPP.msg.M06 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "026"); // Create
+            oAPP.msg.M07 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027", oAPP.msg.M04); // title is required entry value
+            oAPP.msg.M08 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "028"); // Do you really want to delete the object?
+            oAPP.msg.M09 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "029"); // Delete
+            oAPP.msg.M10 = oAPP.msg.M02 + " " + WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "029"); // Custom Pattern Delete
+            oAPP.msg.M11 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "030"); // Change
+
+
+
+
+
+
+
+            resolve();
+
+        });
+
+    };
 
     /************************************************************************
      * 패턴 메인 페이지
@@ -270,7 +310,8 @@ let oAPP = parent.oAPP;
             layoutData: new sap.ui.layout.SplitterLayoutData("uspDefPattLayoutData"),
             columns: [
                 new sap.ui.table.Column({
-                    label: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E10"), // Default Pattern
+                    // label: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E10"), // Default Pattern
+                    label: oAPP.msg.M01, // Default Pattern
                     template: new sap.m.Text().bindProperty("text", {
                         parts: [
                             "TYPE",
@@ -305,6 +346,7 @@ let oAPP = parent.oAPP;
             visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
             selectionMode: sap.ui.table.SelectionMode.Single,
             minAutoRowCount: 1,
+            rowActionCount: 2,
             alternateRowColors: true,
             columnHeaderVisible: true,
 
@@ -315,24 +357,23 @@ let oAPP = parent.oAPP;
                         type: sap.m.ButtonType.Emphasized,
                         icon: "sap-icon://create-form",
                         press: function (oEvent) {
-                            ev_pressCustomPatternCreate(oEvent);
+                            ev_pressCustomPatternCreateUpdate({ PRCCD: "C", CONT_TYPE: "text" });
                         }
                     }),
-                    new sap.m.Button({
-                        type: sap.m.ButtonType.Negative,
-                        icon: "sap-icon://delete",
-                        press: function (oEvent) {
-                            ev_pressCustomPatternDelete(oEvent);
-                        }
-
-                    }),
+                    // new sap.m.Button({
+                    //     type: sap.m.ButtonType.Negative,
+                    //     icon: "sap-icon://delete",
+                    //     press: function (oEvent) {
+                    //         ev_pressCustomPatternDelete(oEvent);
+                    //     }
+                    // }),
                 ]
             }),
 
             layoutData: new sap.ui.layout.SplitterLayoutData("uspCustPattLayoutData"),
             columns: [
                 new sap.ui.table.Column({
-                    label: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E11"), // Custom Pattern
+                    label: oAPP.msg.M02, // Custom Pattern
                     template: new sap.m.Text().bindProperty("text", {
                         parts: [
                             "TYPE",
@@ -343,12 +384,12 @@ let oAPP = parent.oAPP;
                         }
                     })
                 }),
-
                 new sap.ui.table.Column({
-                    label: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E18"), // Content Type
+                    label: oAPP.msg.M03, // Content Type
                     template: new sap.m.Text({ text: "{CONT_TYPE}" })
                 }),
             ],
+
             rows: {
                 path: "/CUS_PAT",
                 parameters: {
@@ -356,11 +397,110 @@ let oAPP = parent.oAPP;
                 },
             },
 
-            rowSelectionChange: ev_CustPattRowSelectionChange
+            rowActionTemplate: new sap.ui.table.RowAction({
+                items: [
+                    new sap.ui.table.RowActionItem({ // update Button
+                        icon: "sap-icon://edit",
+                        press: function (oEvent) {
+
+                            let oRow = oEvent.getParameter("row"),
+                                iRowIndex = oRow.getIndex(),
+                                oRowCtx = oRow.getBindingContext(),
+                                oRowData = oRowCtx.getObject(),
+                                oTreeTable = oRow.getParent(),
+                                oCopyRow = jQuery.extend(true, {}, oRowData);
+
+                            // 선택한 라인 선택 표시
+                            oTreeTable.setSelectedIndex(iRowIndex);
+
+                            oCopyRow.PRCCD = "U"; // 수정 플래그
+
+                            // 커스텀 패턴 생성 수정 팝업 실행
+                            ev_pressCustomPatternCreateUpdate(oCopyRow);
+
+                        }
+                    }),
+                    new sap.ui.table.RowActionItem({ // delete button
+                        icon: "sap-icon://delete",
+                        type: sap.ui.table.RowActionType.Delete,
+                        press: function (oEvent) {
+                            // ev_rowActionDelete(oEvent);
+                            ev_pressCustomPatternDelete(oEvent);
+                        }
+                    })
+                ]
+            }).bindProperty("visible", {
+                parts: [
+                    "TYPE"
+                ],
+                formatter: (TYPE) => {
+
+                    if (TYPE === "ROOT") {
+                        return false;
+                    }
+
+                    return true;
+
+                }
+            }),
+
+            rowSelectionChange: ev_CustPattRowSelectionChange,
+            rowsUpdated: ev_CusttPattRowsUpdated,
 
         }).addStyleClass("uspCustPattTreeTbl");
 
     } // end of _getCustomPatternTable
+
+    function ev_CusttPattRowsUpdated(oEvent) {
+
+        let oColorPattleete = sap.ui.core.theming.Parameters.get();
+
+        let oTreeTable = oEvent.getSource(),
+            aRows = oTreeTable.getRows(),
+            iRowIndex = aRows.length;
+
+        for (var i = 0; i < iRowIndex; i++) {
+
+            let oRows = aRows[i];
+
+            if (oRows.isEmpty()) {
+                continue;
+            }
+
+            let oRowCtx = oRows.getBindingContext();
+            if (!oRowCtx) {
+                return;
+            }
+
+            let oRowAction = oRows.getRowAction(),
+                aActionIcons = oRowAction.getAggregation("_icons");
+
+            if (!aActionIcons) {
+                return;
+            }
+
+            let iActionIconLength = aActionIcons.length;
+            for (var j = 0; j < iActionIconLength; j++) {
+
+                let oIcon = aActionIcons[j],
+                    sIconSrc = oIcon.getProperty("src");
+
+                if (sIconSrc !== "sap-icon://delete") {
+                    continue;
+                }
+
+                oIcon.setActiveBackgroundColor(oColorPattleete.sapButton_Reject_Active_Background);
+                oIcon.setActiveColor(oColorPattleete.sapButton_Reject_Active_TextColor);
+                oIcon.setBackgroundColor(oColorPattleete.sapButton_Reject_Background);
+                oIcon.setColor(oColorPattleete.sapButton_Reject_TextColor);
+                oIcon.setHoverBackgroundColor(oColorPattleete.sapButton_Reject_Hover_Background);
+                oIcon.setHoverColor(oColorPattleete.sapButton_Reject_Hover_TextColor);
+
+            }
+
+        }
+
+    }
 
     /************************************************************************
      * 패턴 코드 페이지
@@ -376,6 +516,29 @@ let oAPP = parent.oAPP;
                         text: "{/CONTENT/DESC}"
                     })
                 ],
+                contentRight: [
+                    new sap.m.Button({
+                        icon: "sap-icon://copy",
+                        press: function (oEvent) {
+
+                            debugger;
+
+
+                        }
+                    }).bindProperty("visible", "/CONTENT", function (oContent) {
+
+                        if (!oContent) {
+                            return false;
+                        }
+
+                        if (typeof oContent.DATA === "undefined") {
+                            return false;
+                        }
+
+                        return true;
+
+                    })
+                ]
             }),
             content: _getPatternCodePageContent()
         });
@@ -435,10 +598,10 @@ let oAPP = parent.oAPP;
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 design: sap.m.LabelDesign.Bold,
-                                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D16") // Title
+                                text: oAPP.msg.M04 // Title
                             }),
                             fields: new sap.m.Input("custPattCrTitleInput", {
-                                value: "{/CUST_CR_DLG/TITLE}",
+                                value: "{/CUST_CR_DLG/DESC}",
                                 valueState: "{/CUST_CR_DLG/TITLE_VS}",
                                 valueStateText: "{/CUST_CR_DLG/TITLE_VSTXT}"
                             }).bindProperty("valueState", "/CUST_CR_DLG/TITLE_VS", function (TITLE_VS) {
@@ -449,7 +612,7 @@ let oAPP = parent.oAPP;
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 design: sap.m.LabelDesign.Bold,
-                                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E18") // Content Type
+                                text: oAPP.msg.M03 // Content Type
                             }),
                             fields: new sap.m.Select({
                                 selectedKey: "{/CUST_CR_DLG/CONT_TYPE}",
@@ -509,7 +672,7 @@ let oAPP = parent.oAPP;
         let oToolbar = new sap.m.Bar({
             contentLeft: [
                 new sap.m.Button({
-                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25"), // Pretty Print
+                    text: oAPP.msg.M05, // Pretty Print
                     press: function (oEvent) {
                         ev_pressCustPattCreatePrettyPrint(oEvent);
                     }
@@ -559,14 +722,11 @@ let oAPP = parent.oAPP;
     } // end of ev_pressCustPattCreatePrettyPrint
 
     /************************************************************************
-     * 커스텀 패턴 생성 이벤트
+     * 커스텀 패턴의 컨텐츠 유형
      ************************************************************************/
-    function ev_pressCustomPatternCreate(oEvent) {
+    function _getWsCustomPatternContentTypes() {
 
-        let sDlgTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E11"); // Custom Pattern
-        sDlgTitle += " " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"); // Create
-
-        let aContentTypes = [{
+        return [{
             KEY: "text",
             EXTEN: "txt",
             TEXT: "text",
@@ -600,11 +760,46 @@ let oAPP = parent.oAPP;
             TEXT: "xml",
         }];
 
-        let oCreateInfo = {
-            HEADER_TITLE: sDlgTitle,
-            CONT_TYPE: "text",
-            aContentTypes: aContentTypes
-        };
+
+    } // end of _getWsCustomPatternContentTypes
+
+    /************************************************************************
+    * 커스텀 패턴 생성 수정 팝업
+    ************************************************************************/
+    function ev_pressCustomPatternCreateUpdate(oParam) {
+        
+        debugger;
+
+        /**
+         * Dialog Title 구성
+         */
+        let sDlgTitle = oAPP.msg.M02, // Custom Pattern
+            sHeaderIconSrc = "";
+
+        switch (oParam.PRCCD) {
+            case "C": // 신규 생성일 경우
+                sDlgTitle += " " + oAPP.msg.M06; // Create
+                sHeaderIconSrc = "sap-icon://create-form";
+                break;
+
+            case "U":
+                sDlgTitle += " " + oAPP.msg.M11; // Change
+                sHeaderIconSrc = "sap-icon://edit";
+                break;
+        }
+
+        let aContentTypes = _getWsCustomPatternContentTypes(), // 커스텀 패턴의 컨텐츠 유형
+            oCreateInfo = {
+                HEADER_TITLE: sDlgTitle,
+                CONT_TYPE: oParam.CONT_TYPE,
+                aContentTypes: aContentTypes,
+                HEAD_ICON: sHeaderIconSrc,
+                PRCCD: oParam.PRCCD
+            };
+
+        if (oParam.PRCCD == "U") {
+            oCreateInfo = Object.assign({}, oCreateInfo, oParam);
+        }
 
         oAPP.fn.fnSetModelProperty("/CUST_CR_DLG", {});
         oAPP.fn.fnSetModelProperty("/CUST_CR_DLG", oCreateInfo);
@@ -631,6 +826,10 @@ let oAPP = parent.oAPP;
             // aggregations
             customHeader: new sap.m.Bar({
                 contentLeft: [
+                    new sap.ui.core.Icon({
+                        src: "{/CUST_CR_DLG/HEAD_ICON}"
+                    }),
+
                     new sap.m.Title({
                         text: "{/CUST_CR_DLG/HEADER_TITLE}"
                     }).addStyleClass("sapUiTinyMarginBegin"),
@@ -680,12 +879,15 @@ let oAPP = parent.oAPP;
 
         oDialog.open();
 
-    } // end of ev_pressCustomPatternCreate
+
+    } // end of ev_pressCustomPatternCreateUpdate    
 
     /************************************************************************
      * 커스텀 패턴 생성팝업 저장 이벤트
      ************************************************************************/
     function ev_CustCreateDlgSave() {
+
+        debugger;
 
         let oCreateInfo = oAPP.fn.fnGetModelProperty("/CUST_CR_DLG");
 
@@ -695,9 +897,9 @@ let oAPP = parent.oAPP;
         oAPP.fn.fnSetModelProperty("/CUST_CR_DLG", oCreateInfo);
 
         // Title 입력 여부 확인
-        if (!oCreateInfo.TITLE) {
+        if (!oCreateInfo.DESC) {
 
-            let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "014", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D16")); // title is required entry value
+            let sMsg = oAPP.msg.M07; // title is required entry value
 
             oCreateInfo.TITLE_VS = sap.ui.core.ValueState.Error;
             oCreateInfo.TITLE_VSTXT = sMsg;
@@ -732,16 +934,40 @@ let oAPP = parent.oAPP;
         }
 
         // 신규 커스텀 데이터를 저장한다.
-        let sKey = parent.WSUTIL.getRandomKey(),
-            oNewCustomPatternData = {
-                PKEY: "PATT002",
-                CKEY: sKey,
-                DESC: oCreateInfo.TITLE,
-                DATA: oCreateInfo.DATA,
-                CONT_TYPE: oCreateInfo.CONT_TYPE
-            };
+        let sRandomKey = parent.WSUTIL.getRandomKey(),
+            sSelectedKey = "", // 생성 및 수정 후 선택 표시할 Row의 키
+            oCustomPatternData = {};
 
-        aCustomData.push(oNewCustomPatternData);
+        switch (oCreateInfo.PRCCD) {
+            case "C":
+                sSelectedKey = sRandomKey;
+
+                oCustomPatternData.PKEY = "PATT002";
+                oCustomPatternData.CKEY = sRandomKey;
+                oCustomPatternData.DESC = oCreateInfo.DESC;
+                oCustomPatternData.DATA = oCreateInfo.DATA;
+                oCustomPatternData.CONT_TYPE = oCreateInfo.CONT_TYPE;
+
+                aCustomData.push(oCustomPatternData);
+
+                break;
+
+            case "U":
+                sSelectedKey = oCreateInfo.CKEY;
+
+                oCustomPatternData.PKEY = oCreateInfo.PKEY;
+                oCustomPatternData.CKEY = oCreateInfo.CKEY;
+                oCustomPatternData.DESC = oCreateInfo.DESC;
+                oCustomPatternData.DATA = oCreateInfo.DATA;
+                oCustomPatternData.CONT_TYPE = oCreateInfo.CONT_TYPE;
+
+                let iFind = aCustomData.findIndex(elem => elem.CKEY == oCreateInfo.CKEY);
+                if (iFind >= 0) {
+                    var oFindData = aCustomData[iFind];
+                    aCustomData[iFind] = Object.assign({}, oFindData, oCustomPatternData);
+                }
+
+        }
 
         try {
             // 신규 추가한 정보를 JSON으로 변환하여 로컬에 저장
@@ -770,16 +996,18 @@ let oAPP = parent.oAPP;
 
         let oCustTable = sap.ui.getCore().byId("uspCustPattTreeTbl"),
             oBindData = {
-                KEY: sKey
+                KEY: sSelectedKey
             };
 
+        // 추가한 데이터 위치에 선택 표시하기
         oCustTable.attachEventOnce("rowsUpdated", ev_CustCreateRowsUpdatedEventOnce.bind(oBindData));
 
     } // end of ev_CustCreatef
 
+    /************************************************************************
+     * 커스텀 패턴 추가한 데이터 위치에 선택 표시하기
+     ************************************************************************/
     function ev_CustCreateRowsUpdatedEventOnce(oEvent) {
-
-        debugger;
 
         let oTreeTable = oEvent.getSource(), // tree table 인스턴스
             sCreateKey = this.KEY, // 신규 생성한 키
@@ -797,8 +1025,12 @@ let oAPP = parent.oAPP;
             delete oAPP.attr.bFindNode;
         }
 
+        // 노드를 찾았는지 여부 플래그
         oAPP.attr.bFindNode = false;
 
+        /**
+         * Key 정보를 가지고 노드를 찾는다.
+         */
         _findCustPattCreateNode(aBindData, sCreateKey, aNodePaths);
 
         let iRowIndex = 0,
@@ -874,6 +1106,10 @@ let oAPP = parent.oAPP;
             let iChildLength = oBindData.CUS_PAT.length;
             if (iChildLength !== 0) {
                 _findCustPattCreateNode(oBindData.CUS_PAT, KEY, aNodePaths);
+            }
+
+            // 이미 찾았다면 빠져나감.
+            if (oAPP.attr.bFindNode == true) {
                 return;
             }
 
@@ -881,7 +1117,7 @@ let oAPP = parent.oAPP;
 
         }
 
-    }
+    } // end of _findCustPattCreateNode
 
     /************************************************************************
      * 커스텀 패턴 생성팝업 닫기 이벤트
@@ -904,22 +1140,38 @@ let oAPP = parent.oAPP;
      ************************************************************************/
     async function ev_pressCustomPatternDelete(oEvent) {
 
+        let oRow = oEvent.getParameter("row"),
+            oRowCtx = oRow.getBindingContext(),
+            oRowBindData = oRowCtx.getObject(),
+            iRowIndex = oRow.getIndex(),
+            oCustTable = oRow.getParent();
+
+        oCustTable.setSelectedIndex(iRowIndex);
+
         /**
          * 삭제 질문 팝업?
          */
 
+        let oMessagePop = await new Promise((resolve) => {
 
+            let sMsg = `[${oRowBindData.DESC}]  \n\n` + oAPP.msg.M08, //Do you really want to delete the object?
+                options = {
+                    icon: "WARNING",
+                    title: oAPP.msg.M10, // Custom Pattern Delete
+                    TYPE: "W",
+                    MSG: sMsg,
+                    actions: ["YES", "NO"],
+                    emphasizedAction: "YES",
+                    onClose: function (oAction) {
+                        resolve({ RETCD: oAction });
+                    }
+                };
 
-        // let oMessagePop = await new Promise((resolve) => {
+            parent.WSUTIL.showMessageBox(sap, options);
 
+        });
 
-
-        // });
-
-        debugger;
-
-        let oCustTable = sap.ui.getCore().byId("uspCustPattTreeTbl");
-        if (!oCustTable) {
+        if (oMessagePop.RETCD !== "YES") {
             return;
         }
 
@@ -932,42 +1184,15 @@ let oAPP = parent.oAPP;
             sBindPath = oTableBinding.getPath();
 
         let oModelData = oTableModel.getProperty(sBindPath),
-            aCustData = parent.WSUTIL.parseTreeToArray(oModelData, "CUS_PAT");
+            aCustData = parent.WSUTIL.parseTreeToArray(oModelData, "CUS_PAT"),
+            sCKEY = oRowBindData.CKEY,
+            iFindIndex = aCustData.findIndex(elem => elem?.CKEY === sCKEY);
 
-        // 선택한 라인이 있는지 확인
-        let aSelIndex = oCustTable.getSelectedIndices(),
-            iSelLength = aSelIndex.length;
-
-        if (iSelLength == 0) {
+        if (iFindIndex == -1) {
             return;
         }
 
-        for (var i = 0; i < iSelLength; i++) {
-
-            let iSelIdx = aSelIndex[i],
-                oCtx = oCustTable.getContextByIndex(iSelIdx);
-
-            if (!oCtx) {
-                continue;
-            }
-
-            let sCKEY = oCtx.getObject("CKEY"),
-                sTYPE = oCtx.getObject("TYPE");
-
-            // 루트는 삭제 하지 않음.
-            if (sTYPE === "ROOT") {
-                continue;
-            }
-
-            let iFindIndex = aCustData.findIndex(elem => elem?.CKEY === sCKEY);
-
-            if (iFindIndex == -1) {
-                continue;
-            }
-
-            aCustData.splice(iFindIndex, 1);
-
-        }
+        aCustData.splice(iFindIndex, 1);
 
         // WS Setting 정보
         let oSettings = parent.WSUTIL.getWsSettingsInfo(),
@@ -1108,9 +1333,11 @@ let oAPP = parent.oAPP;
 
     window.onload = function () {
 
-        sap.ui.getCore().attachInit(function () {
+        sap.ui.getCore().attachInit(async function () {
 
             oAPP.setBusy("X");
+
+            await oAPP.fn.getWsMessageList(); // 반드시 이 위치에!!
 
             oAPP.fn.fnInitRendering();
 

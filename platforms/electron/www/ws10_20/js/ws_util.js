@@ -189,6 +189,53 @@ module.exports = {
     },
     /************** end of Class (MessageClassText) ***************/
 
+    showMessageBox: function (sap, pOptions) {
+
+        if (!sap?.m?.MessageBox) {
+            sap.ui.requireSync("sap/m/MessageBox");
+        }
+
+        let oDefaultOptions = {
+            icon: sap.m.MessageBox.Icon.NONE,                    // default
+            title: "",                                           // default
+            actions: sap.m.MessageBox.Action.OK,                 // default
+            emphasizedAction: sap.m.MessageBox.Action.OK,        // default
+            onClose: null,                                       // default
+            styleClass: "",                                      // default
+            initialFocus: null,                                  // default
+            textDirection: sap.ui.core.TextDirection.Inherit     // default
+        },
+            oOptions = Object.assign({}, oDefaultOptions, pOptions);
+
+
+        let sType = oOptions.TYPE || "I";
+
+        switch (sType) {
+
+            case "I":
+                sap.m.MessageBox.information(oOptions.MSG || "", oOptions);
+                break;
+
+            case "S":
+                sap.m.MessageBox.success(oOptions.MSG || "", oOptions);
+                break;
+
+            case "W":
+                sap.m.MessageBox.warning(oOptions.MSG || "", oOptions);
+                break;
+
+            case "E":
+                sap.m.MessageBox.error(oOptions.MSG || "", oOptions);
+                break;
+
+            default:
+                sap.m.MessageBox.show(oOptions.MSG || "", oOptions);
+                break;
+
+        }
+
+    },
+
     /**
      * 레지스트리에서 WS Global Language 구하기     
      */
