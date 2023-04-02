@@ -190,6 +190,7 @@ if (!oAPP) {
             oAPP.msg.M09 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "029"); // Delete
             oAPP.msg.M10 = oAPP.msg.M02 + " " + WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "029"); // Custom Pattern Delete
             oAPP.msg.M11 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "030"); // Change
+            oAPP.msg.M12 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "031"); // Clipboard Copy Success!
 
 
 
@@ -521,8 +522,26 @@ if (!oAPP) {
                         icon: "sap-icon://copy",
                         press: function (oEvent) {
 
-                            debugger;
+                            let oBtn = oEvent.getSource(),
+                                oModel = oBtn.getModel();
 
+                            if(!oModel){
+                                return;
+                            }
+
+                            let oContentData = oModel.getProperty("/CONTENT");
+                            if(!oContentData){
+                                return;
+                            }
+
+                            let remote = parent.require("@electron/remote"),
+                                clipboard = remote.clipboard;
+
+                            clipboard.writeText(oContentData.DATA);
+
+                            let sMsg = oAPP.msg.M12; // Clipboard Copy Success!
+
+                            parent.WSUTIL.showMessageToast(sap, sMsg);
 
                         }
                     }).bindProperty("visible", "/CONTENT", function (oContent) {
@@ -768,8 +787,6 @@ if (!oAPP) {
     ************************************************************************/
     function ev_pressCustomPatternCreateUpdate(oParam) {
         
-        debugger;
-
         /**
          * Dialog Title 구성
          */
