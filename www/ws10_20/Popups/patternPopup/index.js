@@ -904,8 +904,6 @@ if (!oAPP) {
      ************************************************************************/
     function ev_CustCreateDlgSave() {
 
-        debugger;
-
         let oCreateInfo = oAPP.fn.fnGetModelProperty("/CUST_CR_DLG");
 
         oCreateInfo.TITLE_VS = "";
