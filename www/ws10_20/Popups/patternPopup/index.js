@@ -152,7 +152,7 @@ if (!oAPP) {
             oPage = new sap.m.Page({
 
                 // properties
-                showHeader: true,
+                showHeader: false,
                 enableScrolling: false,
 
                 // aggregations
@@ -191,6 +191,8 @@ if (!oAPP) {
             oAPP.msg.M10 = oAPP.msg.M02 + " " + WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "029"); // Custom Pattern Delete
             oAPP.msg.M11 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "030"); // Change
             oAPP.msg.M12 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "031"); // Clipboard Copy Success!
+            oAPP.msg.M13 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "007"); // Saved success
+            oAPP.msg.M14 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "008"); // Delete success
 
 
 
@@ -310,19 +312,53 @@ if (!oAPP) {
             // aggregations            
             layoutData: new sap.ui.layout.SplitterLayoutData("uspDefPattLayoutData"),
             columns: [
-                new sap.ui.table.Column({
-                    // label: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E10"), // Default Pattern
+                new sap.ui.table.Column({                    
                     label: oAPP.msg.M01, // Default Pattern
-                    template: new sap.m.Text().bindProperty("text", {
-                        parts: [
-                            "TYPE",
-                            "DESC"
-                        ],
-                        formatter: function (TYPE, DESC) {
-                            return (TYPE === "ROOT" ? `${DESC} Root` : DESC);
-                        }
-                    })
+                    template: new sap.m.HBox({
+                        renderType: sap.m.FlexRendertype.Bare,
+                        alignItems: sap.m.FlexAlignItems.Center,
+                        items: [
+                            new sap.m.Image({
+                                src: "{ICON}",
+                                width: "20px"                                
+                            })
+                            .bindProperty("visible", "ICON", function(ICON){
+
+                                if(!ICON){
+                                    return false;
+                                }
+
+                                return true;
+                            })
+                            .addStyleClass("sapUiTinyMarginEnd"),
+
+                            new sap.m.Text().bindProperty("text", {
+                                parts: [
+                                    "TYPE",
+                                    "DESC"
+                                ],
+                                formatter: function (TYPE, DESC) {
+                                    return (TYPE === "ROOT" ? `${DESC} Root` : DESC);
+                                }
+                            })
+                        ]
+                    })                    
+                    
                 }),
+
+                // 원본
+                // new sap.ui.table.Column({                    
+                //     label: oAPP.msg.M01, // Default Pattern
+                //     template: new sap.m.Text().bindProperty("text", {
+                //         parts: [
+                //             "TYPE",
+                //             "DESC"
+                //         ],
+                //         formatter: function (TYPE, DESC) {
+                //             return (TYPE === "ROOT" ? `${DESC} Root` : DESC);
+                //         }
+                //     })
+                // }),
 
             ],
             rows: {
@@ -541,7 +577,9 @@ if (!oAPP) {
 
                             let sMsg = oAPP.msg.M12; // Clipboard Copy Success!
 
-                            parent.WSUTIL.showMessageToast(sap, sMsg);
+                            sap.m.MessageToast.show(sMsg);
+
+                            // parent.WSUTIL.showMessageToast(sap, sMsg);
 
                         }
                     }).bindProperty("visible", "/CONTENT", function (oContent) {
@@ -1017,6 +1055,9 @@ if (!oAPP) {
         // 추가한 데이터 위치에 선택 표시하기
         oCustTable.attachEventOnce("rowsUpdated", ev_CustCreateRowsUpdatedEventOnce.bind(oBindData));
 
+        let sMsg = oAPP.msg.M13; // // Saved success
+        sap.m.MessageToast.show(sMsg);
+
     } // end of ev_CustCreatef
 
     /************************************************************************
@@ -1232,6 +1273,9 @@ if (!oAPP) {
         oCustTable.clearSelection();
 
         oAPP.fn.fnSetModelProperty("/CONTENT", {});
+
+        let sMsg = oAPP.msg.M14;  // Delete success
+        sap.m.MessageToast.show(sMsg);
 
     } // end of ev_pressCustomDelete
 

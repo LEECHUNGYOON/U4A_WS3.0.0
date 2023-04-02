@@ -21,6 +21,7 @@ module.exports = {
             let aIcons,
                 oHtmlIconInfo = {},
                 oJsIconInfo = {},
+                oCssIconInfo = {},
 
                 // 테스트 목적
                 sUi5IconUrl = "https://sap.github.io/ui5-webcomponents/assets/images/ui5-logo.png";
@@ -32,6 +33,7 @@ module.exports = {
                 aIcons = oIconResult.RTDATA;
                 oHtmlIconInfo = aIcons.find(elem => elem.EXTNM === "html") || {};
                 oJsIconInfo = aIcons.find(elem => elem.EXTNM === "js") || {};
+                oCssIconInfo = aIcons.find(elem => elem.EXTNM === "css") || {};
 
             }
 
@@ -103,7 +105,18 @@ module.exports = {
                 "CKEY": "PTN002_004",
                 "DESC": "윈도우 이벤트 패턴",
                 "ACTCD": "02"
-            }
+            }, {
+                "PKEY": "PATT001",
+                "CKEY": "PTN003",
+                "DESC": "CSS",
+                "ICON": oCssIconInfo.ICONPATH || ""
+            },
+            {
+                "PKEY": "PTN003",
+                "CKEY": "PTN003_001",
+                "DESC": "폰트색상 패턴",
+                "ACTCD": "02"
+            },
             ];
 
             resolve({ RETCD: "S", RTDATA: aPatternJson });

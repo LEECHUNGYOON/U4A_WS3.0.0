@@ -236,28 +236,28 @@ module.exports = {
 
     }, // end of showMessageBox
 
-    showMessageToast : function(sap, sMsg, pOptions){
+    // showMessageToast : function(sap, sMsg, pOptions){
 
-        let oDefaultOptions = {
-            duration: 3000,                  // default
-            width: "15em",                   // default
-            my: "center center",             // default
-            at: "center center",             // default
-            of: window,                      // default
-            offset: "0 0",                   // default
-            collision: "fit fit",            // default
-            onClose: null,                   // default
-            autoClose: true,                 // default
-            animationTimingFunction: "ease", // default
-            animationDuration: 1000,         // default
-            closeOnBrowserNavigation: true   // default
-        },
+    //     let oDefaultOptions = {
+    //         duration: 3000,                  // default
+    //         width: "15em",                   // default
+    //         my: "center center",             // default
+    //         at: "center center",             // default
+    //         of: window,                      // default
+    //         offset: "0 0",                   // default
+    //         collision: "fit fit",            // default
+    //         onClose: null,                   // default
+    //         autoClose: true,                 // default
+    //         animationTimingFunction: "ease", // default
+    //         animationDuration: 1000,         // default
+    //         closeOnBrowserNavigation: true   // default
+    //     },
 
-        oOptions = Object.assign({}, oDefaultOptions, pOptions);
+    //     oOptions = Object.assign({}, oDefaultOptions, pOptions);
 
-        sap.m.MessageToast.show(sMsg, oOptions);
+    //     sap.m.MessageToast.show(sMsg, oOptions);
 
-    }, // end of showMessageToast
+    // }, // end of showMessageToast
 
     /**
      * 레지스트리에서 WS Global Language 구하기     
