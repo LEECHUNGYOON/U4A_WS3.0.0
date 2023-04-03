@@ -324,10 +324,7 @@
             oAPP.common.fnSetGlobalShortcut();
 
             // 초기 모델 바인딩
-            oAPP.main.fnOnInitModelBinding();
-
-            // 패턴을 앱 설치폴더에 JSON 파일로 저장한다.
-            await oAPP.fn.fnSaveSourcePattern(); // #[ws_usp_01.js]
+            oAPP.main.fnOnInitModelBinding();           
            
             // 초기 화면 그리기
             oAPP.fn.fnOnInitRendering(); // #[ws_fn_01.js]

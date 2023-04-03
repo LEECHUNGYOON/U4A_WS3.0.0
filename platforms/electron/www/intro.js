@@ -3,16 +3,19 @@
  * ************************************************************************
  * - Application Intro
  **************************************************************************/
-(function() {
+(function () {
     "use strict";
 
     let oAPP = {};
     oAPP.fn = {};
+    oAPP.msg = {};
 
     const
         REMOTE = require('@electron/remote'),
+        CURRWIN = REMOTE.getCurrentWindow(),
         REMOTEMAIN = REMOTE.require('@electron/remote/main'),
         APP = REMOTE.app,
+        DIALOG = REMOTE.dialog,
         PATH = REMOTE.require('path'),
         APPPATH = APP.getAppPath(),
         USERDATA = APP.getPath("userData"),
@@ -20,13 +23,14 @@
         FS = REMOTE.require('fs-extra'),
         REGEDIT = require('regedit'),
         PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
-        WSUTIL = parent.require(PATHINFO.WSUTIL),
+        WSUTIL = require(PATHINFO.WSUTIL),
+        USP_UTIL = require(PATHINFO.USP_UTIL),
         RANDOM = require("random-key");
 
     const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
     REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-    oAPP.fn.fnOnDeviceReady = function() {
+    oAPP.fn.fnOnDeviceReady = function () {
 
         oAPP.fn.fnOnStart();
 
@@ -67,19 +71,19 @@
 
         oAPP.startTime = new Date().getTime();
 
-        // await _test01();
-
-        // // ws setting Info를 UserData에 저장
-        await _saveConfigInfo();
+        // ws setting Info를 UserData에 저장
+        await _saveWsSettingsInfo(); // <--- 반드시 여기에 위치해야함!!
 
         // 현재 버전 보여주기
         oAPP.fn.fnDisplayCurrentVersion();
 
-        // 레지스트리 관련작업
+        // WS Settings 에 있는 레지스트리 저장 Path 정보를 가지고 기본 레지스트리 정보를 생성한다.
         await _registryRelated();
 
-        // Usp 기본 패턴 파일을 설치폴더 경로에 옮기기
-        await _uspPatternFileDown();
+        await oAPP.fn.getWsMessageList(); // <--- 반드시 여기에 위치해야함!!        
+
+        // 소스 패턴 관련작업
+        await _sourcePatternRelated();        
 
         // 실행 기준 3개월이 지난 로그가 있다면 삭제한다.
         await _oldLogDelete();
@@ -120,6 +124,32 @@
         });
 
     }; // end of oAPP.fn.fnOnStart   
+
+    /************************************************************************
+     * WS 글로벌 메시지 목록 구하기
+     ************************************************************************/
+    oAPP.fn.getWsMessageList = () => {
+
+        return new Promise(async (resolve) => {
+
+            let sWsLangu = await WSUTIL.getWsLanguAsync();
+
+            oAPP.msg.M01 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "032"); // Restart
+            oAPP.msg.M02 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "033"); // App Close
+            oAPP.msg.M03 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "034"); // Ignore
+            oAPP.msg.M04 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "015"); // Please contact U4A Solution Team!
+            oAPP.msg.M05 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "035"); // Default Pattern File Copy Error!
+            oAPP.msg.M06 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "036"); // Pattern Json File Write Error!
+            oAPP.msg.M07 = "";
+            oAPP.msg.M08 = "";
+            oAPP.msg.M09 = "";
+            oAPP.msg.M10 = "";
+
+            resolve();
+
+        });
+
+    }; // end of oAPP.fn.getWsMessageList
 
     /************************************************************************
      * Trial 버전의 로그인 페이지로 이동한다.
@@ -183,7 +213,7 @@
         // }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             var oMetadata = {
                 SERVERINFO: oServerInfo,
@@ -278,7 +308,7 @@
     /************************************************************************
      * 서버 리스트를 오픈한다.
      ************************************************************************/
-    oAPP.fn.fnOpenServerList = function(oGlobalSettings) {
+    oAPP.fn.fnOpenServerList = function (oGlobalSettings) {
 
         // Electron Browser Default Options        
         var sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
@@ -311,7 +341,7 @@
         //     oWin.webContents.openDevTools();
         // }
 
-        oWin.webContents.on('did-finish-load', async function() {
+        oWin.webContents.on('did-finish-load', async function () {
 
             // 글로벌 설정 정보를 ServerList에 전달한다.
             oWin.webContents.send('if-globalSetting-info', oGlobalSettings);
@@ -344,7 +374,7 @@
      * 2. 설치 경로는 WS가 설치된 userData
      *    예) C:\Users\[UserName]\AppData\Roaming\com.u4a_ws.app
      ************************************************************************/
-    oAPP.fn.setInitInstall = function(fnCallback) {
+    oAPP.fn.setInitInstall = function (fnCallback) {
 
         var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
@@ -370,9 +400,9 @@
                 continue;
             }
 
-            aPromise.push(new Promise(function(resolve, reject) {
+            aPromise.push(new Promise(function (resolve, reject) {
 
-                FS.mkdir(sFullPath, oMkdirOptions, function(err) {
+                FS.mkdir(sFullPath, oMkdirOptions, function (err) {
 
                     if (err) {
                         reject(err.toString());
@@ -402,7 +432,7 @@
                 FS.writeFile(sFileFullPath, JSON.stringify(""), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         reject(err.toString());
@@ -419,9 +449,9 @@
 
 
         // 상위 폴더를 생성 후 끝나면 실행
-        Promise.all(aPromise).then(function(values) {
+        Promise.all(aPromise).then(function (values) {
 
-            oAPP.fn.copyVbsToLocalFolder(function(oResult) {
+            oAPP.fn.copyVbsToLocalFolder(function (oResult) {
 
                 if (oResult.RETCD == 'E') {
                     alert(oResult.MSG);
@@ -432,7 +462,7 @@
 
             });
 
-        }).catch(function(err) {
+        }).catch(function (err) {
 
             alert(err.toString());
 
@@ -443,7 +473,7 @@
     /************************************************************************
      * build된 폴더에서 vbs 파일을 로컬 폴더로 복사한다.
      ************************************************************************/
-    oAPP.fn.copyVbsToLocalFolder = function(fnCallback) {
+    oAPP.fn.copyVbsToLocalFolder = function (fnCallback) {
 
         var sVbsFolderPath = PATH.join(APPPATH, "vbs"),
             aVbsFolderList = FS.readdirSync(sVbsFolderPath),
@@ -481,7 +511,7 @@
 
             fnCallback(oResult);
 
-        }).catch(function(err) {
+        }).catch(function (err) {
 
             oResult.RETCD = 'E';
             oResult.MSG = err.toString();
@@ -492,7 +522,7 @@
 
     }; // end of oAPP.fn.copyVbsToLocalFolder
 
-    oAPP.fn.copyVbsPromise = function(sFile, sVbsOrigPath) {
+    oAPP.fn.copyVbsPromise = function (sFile, sVbsOrigPath) {
 
         var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
@@ -504,11 +534,11 @@
 
             FS.copy(sVbsOrigPath, sVbsFullPath, {
                 overwrite: true,
-            }).then(function() {
+            }).then(function () {
 
                 resolve("X");
 
-            }).catch(function(err) {
+            }).catch(function (err) {
 
                 reject(err.toString());
 
@@ -803,7 +833,7 @@
     /************************************************************************
      * WS Setting 정보를 Json 파일로 저장
      ************************************************************************/
-    function _saveConfigInfo() {
+    function _saveWsSettingsInfo() {
 
         return new Promise(async (resolve) => {
 
@@ -833,14 +863,14 @@
                 oWriteFileResult = await WSUTIL.fsWriteFile(sConfPath, sSettingJson);
 
             if (oWriteFileResult.RETCD == "E") {
-                throw new Error("[intro] ws settings file Error!");
+                throw new Error("[intro] WS Setting Info File Write Error!");
             }
 
             resolve();
 
         });
 
-    } // end of _saveConfigInfo
+    } // end of _saveWsSettingsInfo
 
     function _setUI5BootStrapUrl(oSettings) {
 
@@ -880,21 +910,142 @@
     } // end of _setCommonPaths
 
     /************************************************************************
-     * Usp 기본 패턴 파일을 설치폴더 경로에 옮기기
-     ************************************************************************
-     * - 상세 로직 
-     * 인트로에서 패턴 파일들을 USERDATA에 복사 후, 
-     * 로그인 시, 로그인 언어에 맞게 텍스트 변환한 패턴 정보에 대한 JSON 구조를 만들어서 USERDATA에 JSON 파일 생성.
-     * USP에서 우클릭으로 컨텍스트 메뉴 실행 시, 위에서 만든 JSON 구조를 실시간으로 읽어서 메뉴 목록을 만듬. 
-     * 
+     * 패턴 관련 작업
      ************************************************************************/
-    function _uspPatternFileDown() {
+    function _sourcePatternRelated() {
 
         return new Promise(async (resolve) => {
 
-            let sPattnFolderSourcePath = PATHINFO.PATTERN_ROOT,
-                sPattnFolderTargetPath = PATHINFO.USERDATA_PATT_FILES;
+            // 기본 패턴 파일을 설치폴더 경로에 옮기기
+            let oResult1 = await _sourceDefaultPatternFileDown();
+            if (oResult1.RETCD == "E") {
 
+                let sMsg = "[intro] " + oAPP.msg.M05; // Default Pattern File Copy Error!
+
+                // 패턴 관련 작업 중 오류 발생 시 공통 메시지 출력
+                lf_sourcePatternErrorMsg(resolve, sMsg);
+
+                console.error("[Intro] WWW에 있는 기본 패턴파일을 USERDATA에 복사하다가 오류");
+
+                return;
+
+            }
+
+            // 패턴 관련 JSON 파일을 만든다.
+            let oResult2 = await _saveSourcePatternJson();
+            if (oResult2.RETCD == "E") {
+
+                let sMsg = "[intro] " + oAPP.msg.M06; // Pattern Json File Write Error!
+
+                // 패턴 관련 작업 중 오류 발생 시 공통 메시지 출력
+                lf_sourcePatternErrorMsg(resolve, sMsg);
+
+                return;
+
+            }
+
+            resolve();
+
+        });
+
+    } // end of _sourcePatternRelated    
+
+    // 패턴 관련 작업 중 오류 발생 시 공통 메시지 출력
+    async function lf_sourcePatternErrorMsg(resolve, sMsg) {
+
+        let sTxt1 = oAPP.msg.M01, // Restart
+            sTxt2 = oAPP.msg.M02, // App Close
+            sTxt3 = oAPP.msg.M03, // Ignore
+            sTxt4 = oAPP.msg.M04; // Please contact U4A Solution Team!
+
+        let options = {
+            buttons: [sTxt1, sTxt2, sTxt3],
+            message: sMsg,
+            detail: sTxt4
+        };
+
+        let oMsgResult = await showMessageBox("E", options),
+            iResponse = oMsgResult.response;
+
+        switch (iResponse) {
+            case 0: // App Restart
+
+                APP.relaunch();
+                APP.exit();
+                return;
+
+            case 1: // App Close
+
+                APP.exit();
+                return;
+
+            case 2: // Ignore
+
+                resolve();
+                return;
+        }
+
+    }
+
+
+    function showMessageBox(messageTypes, pOptions) {
+
+        return new Promise((resolve) => {
+
+            let sMsgType = "";
+
+            switch (messageTypes) {
+                case "I":
+                    sMsgType = "info";
+                    break;
+
+                case "S":
+                    sMsgType = "info";
+                    break;
+
+                case "W":
+                    sMsgType = "warning";
+                    break;
+
+                case "E":
+                    sMsgType = "error";
+                    break;
+
+                default:
+                    sMsgType = "none";
+                    break;
+            }
+
+            let options = {
+                title: "U4A Workspace",
+                type: sMsgType,
+                message: "",
+                detail: ""
+            };
+
+            options = Object.assign({}, options, pOptions);
+
+            DIALOG.showMessageBox(CURRWIN, options).then((e) => {
+
+                resolve(e);
+
+            });
+
+        });
+
+    } // end of showMessageBox
+
+    /************************************************************************
+     * 기본 패턴 파일을 설치폴더 경로에 옮기기
+     ************************************************************************/
+    function _sourceDefaultPatternFileDown() {
+
+        return new Promise(async (resolve) => {
+
+            let sPattnFolderSourcePath = PATHINFO.PATTERN_ROOT, // WWW에 기본 패턴 파일이 있는 폴더
+                sPattnFolderTargetPath = PATHINFO.USERDATA_PATT_FILES; // USERDATA의 패턴 파일들이 저장될 폴더
+
+            // USERDATA의 패턴 파일들이 저장될 폴더가 없으면 생성
             const isExists = FS.existsSync(sPattnFolderTargetPath);
             if (!isExists) {
                 FS.mkdirSync(sPattnFolderTargetPath, {
@@ -906,7 +1057,8 @@
 
             ncp.limit = 16; // 한번에 처리하는 수?  
 
-            ncp(sPattnFolderSourcePath, sPattnFolderTargetPath, function(err) {
+            // WWW에 있는 패턴 파일을 USERDATA 폴더에 복사한다.
+            ncp(sPattnFolderSourcePath, sPattnFolderTargetPath, function (err) {
 
                 if (err) {
                     resolve({
@@ -924,14 +1076,69 @@
 
             });
 
-            // // 앱내에 있는 USP 기본 패턴 폴더를 앱 설치 폴더내에 복사한다.
-            // await WSUTIL.fsCopy(sPattnFolderSourcePath, sPattnFolderTargetPath, oOptions);
+        });
 
-            resolve();
+    } // end of _sourceDefaultPatternFileDown
+
+    /************************************************************************
+     * 패턴 관련 JSON 파일을 만든다.
+     ************************************************************************/
+    function _saveSourcePatternJson() {
+
+        return new Promise(async (resolve) => {
+
+            /**
+             * Default Pattern JSON 만들기
+             */
+
+            // Usp 기본 패턴 정보를 구한다.
+            let oDefPattDataResult = await USP_UTIL.getDefaultPatternData();
+            if (oDefPattDataResult.RETCD == "E") {
+                resolve(oDefPattDataResult);
+                console.error("[Intro] 기본 패턴 정보 오류");
+                return;
+            }
+
+            let aDefPattData = oDefPattDataResult.RTDATA,
+                sDefPattJsonPath = PATHINFO.DEF_PATT,
+                sDefPattJsonData = JSON.stringify(aDefPattData);
+
+            // Usp 기본 패턴 정보를 Json 파일로 저장한다.
+            let oWriteJsonResult = await WSUTIL.fsWriteFile(sDefPattJsonPath, sDefPattJsonData);
+            if (oWriteJsonResult.RETCD == "E") {
+                resolve(oDefPattDataResult);
+                console.error("[Intro] 기본패턴 정보 JSON 저장하다가 오류");
+                return;
+            }
+
+            /**
+             * Custom Pattern
+             */
+
+            let aCustomPatternInitData = await USP_UTIL.getCustomPatternInitData(), // 커스텀 패턴 기본 정보 구하기
+                sCustPattJsonData = JSON.stringify(aCustomPatternInitData); // 커스텀 패턴 기본 정보 JSON 변환
+
+            // 커스텀 패턴 파일이 없으면 신규 생성
+            let sCustPattJsonPath = PATHINFO.CUST_PATT,
+                bIsFileExist = FS.existsSync(sCustPattJsonPath);
+
+            if (!bIsFileExist) {
+
+                // 커스텀 패턴 정보를 JSON으로 말아서 앱 설치 폴더에 저장
+                let oWriteResult = await WSUTIL.fsWriteFile(sCustPattJsonPath, sCustPattJsonData);
+                if (oWriteResult.RETCD == "E") {
+                    resolve(oWriteResult);
+                    console.error("[Intro] 커스텀 패턴 파일 저장하다가 오류");
+                    return;
+                }
+
+            }
+
+            resolve({ RETCD: "S" });
 
         });
 
-    } // end of _uspPatternFileDown
+    } // end of _saveSourcePatternJson
 
     /************************************************************************
      * 3개월 전 로그는 삭제한다.
@@ -999,10 +1206,10 @@
 })();
 
 
-(function() {
+(function () {
     "use strict";
 
-    String.prototype.string = function(len) {
+    String.prototype.string = function (len) {
         var s = '',
             i = 0;
         while (i++ < len) {
@@ -1010,14 +1217,14 @@
         }
         return s;
     };
-    String.prototype.zf = function(len) {
+    String.prototype.zf = function (len) {
         return "0".string(len - this.length) + this;
     };
-    Number.prototype.zf = function(len) {
+    Number.prototype.zf = function (len) {
         return this.toString().zf(len);
     };
 
-    Date.prototype.format = function(f) {
+    Date.prototype.format = function (f) {
 
         if (!this.valueOf()) return " ";
 
@@ -1027,7 +1234,7 @@
             weekEngShortName = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
             d = this;
 
-        return f.replace(/(yyyy|yy|MM|dd|KS|KL|ES|EL|HH|hh|mm|ss|a\/p)/gi, function($1) {
+        return f.replace(/(yyyy|yy|MM|dd|KS|KL|ES|EL|HH|hh|mm|ss|a\/p)/gi, function ($1) {
 
             var h = "";
 

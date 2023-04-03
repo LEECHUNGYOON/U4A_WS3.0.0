@@ -382,16 +382,7 @@
 
         // USP 초기 레이아웃 설정
         oAPP.fn.fnOnInitLayoutSettingsWs30(); // #[ws_usp.js]
-
-        // JSON으로 저장된 USP 기본패턴 & 커스텀패턴 정보를 모델 바인딩 한다.
-        // await oAPP.fn.fnModelBindingUspPattern(); // #[ws_usp_01.js]
-
-        // // 패턴을 앱 설치폴더에 JSON 파일로 저장한다.
-        // await oAPP.fn.fnSaveSourcePattern(); // #[ws_usp_01.js]
-
-        // // JSON으로 저장된 USP 기본패턴 & 커스텀패턴 정보를 모델 바인딩 한다.
-        // await oAPP.fn.fnModelBindingUspPattern(); // #[ws_usp_01.js]s
-
+       
         let oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
             sServerPath = parent.getServerPath(),
             sInitPath = `${sServerPath}/usp_init_prc`;

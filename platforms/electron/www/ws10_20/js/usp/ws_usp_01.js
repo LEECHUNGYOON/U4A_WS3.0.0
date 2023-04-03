@@ -18,6 +18,7 @@
         REMOTEMAIN = parent.REMOTEMAIN,
         PATH = parent.PATH,
         IPCMAIN = parent.IPCMAIN,
+        PATHINFO = parent.PATHINFO,
         WSUTIL = parent.WSUTIL;
 
 
@@ -497,77 +498,14 @@
     // end of oAPP.fn.fnUspNewWindowIPCEvent
 
     /**************************************************************************
-     * Source pattern을 앱 설치 폴더에 JSON으로 저장
-     **************************************************************************/
-    oAPP.fn.fnSaveSourcePattern = () => {
-
-        return new Promise(async (resolve) => {
-
-            /**
-             * Default Pattern
-             */
-
-            // Usp 기본 패턴 정보를 구한다.
-            let oDefPattDataResult = await parent.USP_UTIL.getDefaultPatternData(),
-                aDefPattData = oDefPattDataResult.RTDATA,
-                sDefPattJsonPath = parent.getPath("DEF_PATT"),
-                sDefPattJsonData = JSON.stringify(aDefPattData);
-
-            // Usp 기본 패턴 정보를 Json 파일로 저장한다.
-            await parent.WSUTIL.fsWriteFile(sDefPattJsonPath, sDefPattJsonData);
-
-            /**
-             * Custom Pattern
-             */
-
-            let aCustomPatternInitData = parent.USP_UTIL.getCustomPatternInitData(),
-                sCustPattJsonData = JSON.stringify(aCustomPatternInitData);
-
-            // 커스텀 패턴 파일이 없으면 신규 생성
-            let sCustPattJsonPath = parent.getPath("CUST_PATT"),
-                bIsFileExist = FS.existsSync(sCustPattJsonPath);
-
-            // 이미 저장되어 있다면 커스텀 패턴의 Root만 언어에 맞는 텍스트로 변경한다.
-            if (bIsFileExist) {
-
-                let sCustomPatternJson = FS.readFileSync(sCustPattJsonPath, 'utf-8'), // 커스텀 패턴 Json Data
-                    aCustomPatternJsonData;
-
-                try {
-                    aCustomPatternJsonData = JSON.parse(sCustomPatternJson); // Custom Pattern Json Parse    
-                } catch (error) {
-                    throw Error(error);
-                }
-
-                let iFindIdx = aCustomPatternJsonData.findIndex(elem => elem.TYPE === "ROOT");
-                if (iFindIdx >= 0) {
-
-                    aCustomPatternJsonData[iFindIdx] = aCustomPatternInitData[0];
-
-                    sCustPattJsonData = JSON.stringify(aCustomPatternJsonData);
-
-                }
-
-            }
-
-            // 커스텀 패턴 정보를 JSON으로 말아서 앱 설치 폴더에 저장
-            await parent.WSUTIL.fsWriteFile(sCustPattJsonPath, sCustPattJsonData);
-
-            resolve();
-
-        });
-
-    }; // end of oAPP.fn.fnSaveSourcePattern
-
-    /**************************************************************************
      * Usp Pattern 정보를 바인딩한다.
      **************************************************************************/
     oAPP.fn.fnModelBindingUspPattern = () => {
 
         return new Promise(async (resolve) => {
 
-            let sPatternJsonPath = parent.getPath("DEF_PATT"), // 기본 패턴 경로
-                sCustomPatternJsonPath = parent.getPath("CUST_PATT"), // 커스텀 패턴 경로
+            let sPatternJsonPath = PATHINFO.DEF_PATT, //parent.getPath("DEF_PATT"), // 기본 패턴 경로
+                sCustomPatternJsonPath = PATHINFO.CUST_PATT, //parent.getPath("CUST_PATT"), // 커스텀 패턴 경로
                 sPatternJson = FS.readFileSync(sPatternJsonPath, 'utf-8'), // 기본 패턴 JSON Data
                 sCustomPatternJson = FS.readFileSync(sCustomPatternJsonPath, 'utf-8'); // 커스텀 패턴 Json Data
 

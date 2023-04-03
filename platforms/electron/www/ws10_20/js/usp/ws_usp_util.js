@@ -15,8 +15,11 @@ module.exports = {
      */
     getDefaultPatternJsonData: function () {
 
-        return new Promise(async (resolve) => {          
-          
+        return new Promise(async (resolve) => {
+
+            // // 글로벌 설정된 언어키를 구한다.
+            // let sLangu = await WSUTIL.getWsLanguAsync();
+
             // 각 확장자에 맞는 svg 경로를 구한다.
             let aIcons,
                 oHtmlIconInfo = {},
@@ -46,7 +49,10 @@ module.exports = {
                 "PKEY": "",
                 "CKEY": "PATT001",
                 "TYPE": "ROOT",
-                "DESC": oAPP?.common?.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E10") // Default Pattern
+                "ARBGB": "ZMSG_WS_COMMON_001",
+                "MSGNR": "021",
+                "TEXT": "Default Pattern",
+                "DESC": ""
             }, {
                 "PKEY": "PATT001",
                 "CKEY": "PTN001",
@@ -123,22 +129,29 @@ module.exports = {
 
         });
 
-    },
+    }, // end of getDefaultPatternJsonData
 
     /**
      * Custom Pattern Json Data
      */
     getCustomPatternInitData: function () {
 
-        return [{
-            "PKEY": "",
-            "CKEY": "PATT002",
-            "TYPE": "ROOT",
-            "DESC": oAPP?.common?.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E11"), // Custom Pattern
-            "ISSTART": true
-        }];
+        return new Promise(async (resolve) => {
 
-    },
+            resolve([{
+                "PKEY": "",
+                "CKEY": "PATT002",
+                "TYPE": "ROOT",
+                "ARBGB": "ZMSG_WS_COMMON_001",
+                "MSGNR": "022",
+                "TEXT": "Custom Pattern",
+                "DESC": "",
+                "ISSTART": true
+            }]);
+
+        });
+
+    }, // end of getCustomPatternInitData
 
     getDefaultPatternData: function () {
 
@@ -151,24 +164,25 @@ module.exports = {
             // 2. 기본 패턴 파일 정보를 구한다. 
             // 앱 내에 설치되어 있는 기본 패턴 정보의 파일을 읽어서 Array와 매칭 시킨다.
             let oDefPattFileDataResult = await this.getDefaultPatternFileData();
-            if (oDefPattFileDataResult.RETCD == "S") {
+            if (oDefPattFileDataResult.RETCD == "E") {
+                resolve(oDefPattFileDataResult);
+                return;
+            }
 
-                let aDefPattFileData = oDefPattFileDataResult.RTDATA,
-                    iDefPattFileDataLength = aDefPattFileData.length;
+            let aDefPattFileData = oDefPattFileDataResult.RTDATA,
+                iDefPattFileDataLength = aDefPattFileData.length;
 
-                for (var i = 0; i < iDefPattFileDataLength; i++) {
+            for (var i = 0; i < iDefPattFileDataLength; i++) {
 
-                    let oDefPattFileData = aDefPattFileData[i];
+                let oDefPattFileData = aDefPattFileData[i];
 
-                    // 3. 같은 Key값을 비교하여 1, 2를 매칭 시킨다.
-                    let oDefPattData = aDefPattData.find(elem => elem.CKEY == oDefPattFileData.KEY);
-                    if (!oDefPattData) {
-                        continue;
-                    }
-
-                    oDefPattData.DATA = oDefPattFileData.DATA;
-
+                // 3. 같은 Key값을 비교하여 1, 2를 매칭 시킨다.
+                let oDefPattData = aDefPattData.find(elem => elem.CKEY == oDefPattFileData.KEY);
+                if (!oDefPattData) {
+                    continue;
                 }
+
+                oDefPattData.DATA = oDefPattFileData.DATA;
 
             }
 
