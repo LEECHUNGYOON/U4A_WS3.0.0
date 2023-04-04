@@ -8,7 +8,6 @@ oAPP.fn.uiMovePosition = function(is_parent, OBJID, pos, max, f_callBack, i_x, i
     oAPP.fn.designMoveMark(is_parent, OBJID, 1, true);
 
     oDlg.close();
-    oDlg.destroy();
 
   }
   
@@ -30,6 +29,11 @@ oAPP.fn.uiMovePosition = function(is_parent, OBJID, pos, max, f_callBack, i_x, i
     this.oPopup.setPosition("begin top", {top:i_x, left:i_y}, oAPP.attr.ui.oLTree1, "0 0");
 
   }); //DIALOG OPEN전 이벤트.
+
+  oDlg.attachAfterClose(function(){
+    lf_close();
+    oDlg.destroy();
+  });
   
 
   //MODEL 생성.

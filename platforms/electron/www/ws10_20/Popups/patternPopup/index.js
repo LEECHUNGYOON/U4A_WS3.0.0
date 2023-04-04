@@ -7,20 +7,34 @@
 /************************************************************************
  * 에러 감지
  ************************************************************************/
-let zconsole = parent.WSERR(window, document, console);
+
+const
+    require = parent.require,
+    REMOTE = require('@electron/remote'),
+    PATH = REMOTE.require('path'),
+    APP = REMOTE.app,
+    APPPATH = APP.getAppPath(),
+    PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+    PATHINFO = require(PATHINFOURL),
+    WSERR = require(PATHINFO.WSTRYCATCH),
+    WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+    WSUTIL = require(WSMSGPATH),
+    USP_UTIL = parent.require(PATHINFO.USP_UTIL);
+
+var zconsole = WSERR(window, document, console);
 
 let oAPP = parent.oAPP;
 if (!oAPP) {
     oAPP = {};
+    oAPP.attr = {};
     oAPP.fn = {};
     oAPP.msg = {};
 }
 
-(function (window, oAPP) {
+(async function (window, oAPP) {
     "use strict";
 
-    let require = parent.require,
-        FS = require("fs-extra");
+    let FS = require("fs-extra");
 
     /************************************************************************
      * 모델 데이터 set
@@ -60,14 +74,19 @@ if (!oAPP) {
     // /************************************************************************
     //  * UI5 BootStrap 
     //  ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = function () {
+    oAPP.fn.fnLoadBootStrapSetting = async function () {
 
-        var oSettings = parent.WSUTIL.getWsSettingsInfo(),
+        // WS Global Setting의 Language 설정 값
+        let sWsLangu = await WSUTIL.getWsLanguAsync(),
+            sWsTheme = await WSUTIL.getWsThemeAsync();
+
+        var oSettings = WSUTIL.getWsSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
             oBootStrap = oSetting_UI5.bootstrap,
-            oUserInfo = oAPP.attr.oUserInfo,
-            oThemeInfo = oAPP.attr.oThemeInfo,
-            sLangu = oUserInfo.LANGU;
+            // oThemeInfo = oAPP.attr.oThemeInfo,
+            sTheme = sWsTheme,
+            sLangu = sWsLangu;
+        // sLangu = oUserInfo.LANGU;
 
         var oScript = document.createElement("script");
         oScript.id = "sap-ui-bootstrap";
@@ -78,12 +97,18 @@ if (!oAPP) {
         }
 
         // 로그인 Language 적용
-        oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
+        oScript.setAttribute('data-sap-ui-theme', sTheme);
         oScript.setAttribute("data-sap-ui-language", sLangu);
         oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.codeeditor, sap.ui.table, sap.ui.layout");
         oScript.setAttribute("src", oSetting_UI5.resourceUrl);
 
         document.head.appendChild(oScript);
+
+        oScript.onload = () => {
+
+            oAPP.fn.attachInit();
+
+        };
 
     }; // end of fnLoadBootStrapSetting 
 
@@ -193,6 +218,8 @@ if (!oAPP) {
             oAPP.msg.M12 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "031"); // Clipboard Copy Success!
             oAPP.msg.M13 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "007"); // Saved success
             oAPP.msg.M14 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "008"); // Delete success
+            oAPP.msg.M15 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "038"); // YES
+            oAPP.msg.M16 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "039"); // NO
 
 
 
@@ -312,7 +339,9 @@ if (!oAPP) {
             // aggregations            
             layoutData: new sap.ui.layout.SplitterLayoutData("uspDefPattLayoutData"),
             columns: [
-                new sap.ui.table.Column({                    
+                new sap.ui.table.Column({
+                    filterProperty: "DESC",
+                    sortProperty: "DESC",
                     label: oAPP.msg.M01, // Default Pattern
                     template: new sap.m.HBox({
                         renderType: sap.m.FlexRendertype.Bare,
@@ -320,17 +349,17 @@ if (!oAPP) {
                         items: [
                             new sap.m.Image({
                                 src: "{ICON}",
-                                width: "20px"                                
+                                width: "20px"
                             })
-                            .bindProperty("visible", "ICON", function(ICON){
+                                .bindProperty("visible", "ICON", function (ICON) {
 
-                                if(!ICON){
-                                    return false;
-                                }
+                                    if (!ICON) {
+                                        return false;
+                                    }
 
-                                return true;
-                            })
-                            .addStyleClass("sapUiTinyMarginEnd"),
+                                    return true;
+                                })
+                                .addStyleClass("sapUiTinyMarginEnd"),
 
                             new sap.m.Text().bindProperty("text", {
                                 parts: [
@@ -342,8 +371,8 @@ if (!oAPP) {
                                 }
                             })
                         ]
-                    })                    
-                    
+                    })
+
                 }),
 
                 // 원본
@@ -419,11 +448,15 @@ if (!oAPP) {
                         formatter: function (TYPE, DESC) {
                             return (TYPE === "ROOT" ? `${DESC} Root` : DESC);
                         }
-                    })
+                    }),                    
+                    filterProperty: "DESC",
+                    sortProperty: "DESC"
                 }),
-                new sap.ui.table.Column({
-                    label: oAPP.msg.M03, // Content Type
-                    template: new sap.m.Text({ text: "{CONT_TYPE}" })
+                new sap.ui.table.Column({                    
+                    label: oAPP.msg.M03, // Content Type                    
+                    template: new sap.m.Text({ text: "{CONT_TYPE}" }),                    
+                    filterProperty: "CONT_TYPE",
+                    sortProperty: "CONT_TYPE"
                 }),
             ],
 
@@ -561,12 +594,12 @@ if (!oAPP) {
                             let oBtn = oEvent.getSource(),
                                 oModel = oBtn.getModel();
 
-                            if(!oModel){
+                            if (!oModel) {
                                 return;
                             }
 
                             let oContentData = oModel.getProperty("/CONTENT");
-                            if(!oContentData){
+                            if (!oContentData) {
                                 return;
                             }
 
@@ -824,7 +857,7 @@ if (!oAPP) {
     * 커스텀 패턴 생성 수정 팝업
     ************************************************************************/
     function ev_pressCustomPatternCreateUpdate(oParam) {
-        
+
         /**
          * Dialog Title 구성
          */
@@ -1383,14 +1416,10 @@ if (!oAPP) {
 
     }; // end of oAPP.fn.setBusy
 
-    /************************************************************************
-     * -- Start of Program
-     ************************************************************************/
-
-    // // UI5 Boot Strap을 로드 하고 attachInit 한다.
-    oAPP.fn.fnLoadBootStrapSetting();
-
-    window.onload = function () {
+    /**
+     * UI5 Attach Init
+     */
+    oAPP.fn.attachInit = () => {
 
         sap.ui.getCore().attachInit(async function () {
 
@@ -1433,5 +1462,56 @@ if (!oAPP) {
         });
 
     };
+
+    /************************************************************************
+     * -- Start of Program
+     ************************************************************************/
+
+    // UI5 Boot Strap을 로드 하고 attachInit 한다.
+    oAPP.fn.fnLoadBootStrapSetting();
+
+    // window.onload = function () {
+
+    //     sap.ui.getCore().attachInit(async function () {
+
+    //         oAPP.setBusy("X");
+
+    //         await oAPP.fn.getWsMessageList(); // 반드시 이 위치에!!
+
+    //         oAPP.fn.fnInitRendering();
+
+    //         oAPP.fn.fnInitModelBinding();
+
+    //         let oTable1 = sap.ui.getCore().byId("uspDefPattTreeTbl"),
+    //             oTable2 = sap.ui.getCore().byId("uspCustPattTreeTbl");
+
+    //         if (oTable1 && oTable2) {
+    //             oTable1.expandToLevel(1);
+    //             oTable2.expandToLevel(1);
+    //         }
+
+    //         /**
+    //          * 무조건 맨 마지막에 수행 되어야 함!!
+    //          */
+    //         // 자연스러운 로딩
+    //         sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function () {
+
+    //             if (!oAPP.attr.UIUpdated) {
+
+    //                 setTimeout(() => {
+    //                     $('#content').fadeIn(300, 'linear');
+    //                 }, 300);
+
+    //                 oAPP.attr.UIUpdated = "X";
+
+    //                 oAPP.setBusy("");
+
+    //             }
+
+    //         });
+
+    //     });
+
+    // };
 
 })(window, oAPP);

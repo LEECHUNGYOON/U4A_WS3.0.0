@@ -132,41 +132,41 @@
 
 			var sData = {};
 			sData.THEME = oSelect.getSelectedKey();
-			sData.BGCOL = "";
+			sData.BGCOL = parent.WSUTIL.getThemeBackgroundColor(sData.THEME);
+						
+			// switch (sData.THEME) {
+			// 	case "sap_belize_plus":
+			// 		sData.BGCOL = "#fafafa";
 
-			switch (sData.THEME) {
-				case "sap_belize_plus":
-					sData.BGCOL = "#fafafa";
+			// 		break;
 
-					break;
+			// 	case "sap_horizon_dark":
+			// 		sData.BGCOL = "#12171c";
 
-				case "sap_horizon_dark":
-					sData.BGCOL = "#12171c";
+			// 		break;
 
-					break;
+			// 	case "sap_horizon":
+			// 		sData.BGCOL = "#f5f6f7";
 
-				case "sap_horizon":
-					sData.BGCOL = "#f5f6f7";
+			// 		break;
 
-					break;
+			// 	case "sap_belize":
+			// 		sData.BGCOL = "#fafafa";
 
-				case "sap_belize":
-					sData.BGCOL = "#fafafa";
+			// 		break;
 
-					break;
+			// 	case "sap_fiori_3":
+			// 		sData.BGCOL = "#f7f7f7";
+			// 		break;
 
-				case "sap_fiori_3":
-					sData.BGCOL = "#f7f7f7";
-					break;
+			// 	case "sap_fiori_3_dark":
+			// 		sData.BGCOL = "#1c2228";
+			// 		break;
 
-				case "sap_fiori_3_dark":
-					sData.BGCOL = "#1c2228";
-					break;
+			// 	default:
+			// 		break;
 
-				default:
-					break;
-
-			}
+			// }
 
 
 			var Lfname = oAPP.IF_DATA.SYSID + ".json",

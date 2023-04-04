@@ -4409,14 +4409,33 @@
       //대상 Aggregation에 N건 바인딩 처리가 안된경우 상위 부모 탐색.
       if(!parent._MODEL[EMBED_AGGR]){
 
+
+        var l_name = parent.getMetadata()._sClassName;
+
         //부모가 sap.ui.table.Column인경우 sap.ui.table.Table(TreeTable)의
         //row Aggregation에 N건 바인딩 처리됐는지 여부 판단.
-        if(parent.getMetadata()._sClassName === "sap.ui.table.Column"){
+        if(l_name === "sap.ui.table.Column"){
 
           //ui table(tree table의 columns에 바인딩처리가 안된경우.)
           if(!parent.__PARENT._MODEL["coloums"]){
             return lf_getParentAggrModel(UIATV, "rows", parent.__PARENT);
           }
+
+        }
+
+        if(l_name === "sap.ui.table.RowAction" && !parent._MODEL["items"]){
+          //부모가 sap.ui.table.RowAction 인경우 items에 바인딩 처리가 안됐다면.
+          //그 상위 부모인 table(tree table)의 rows aggregation에 N건 바인딩 처리 됐는지 여부 판단
+          return lf_getParentAggrModel(UIATV, "rows", parent.__PARENT);
+
+        }
+
+        if((l_name === "sap.ui.table.Table" || l_name === "sap.ui.table.TreeTable" ) &&
+           (EMBED_AGGR === "rowActionTemplate" || EMBED_AGGR === "rowSettingsTemplate")){
+          
+            //부모가 table, tree table이면서 현재 UI가 rowActionTemplate, rowSettingsTemplate에 존재하는경우.
+            //rows rows aggregation에 N건 바인딩 처리 됐는지 여부 판단.
+            return lf_getParentAggrModel(UIATV, "rows", parent);
 
         }
 
@@ -4523,6 +4542,21 @@
             //rows에 바인딩 처리됐는지 확인.
             return oAPP.fn.getParentAggrBind(oUI.__PARENT, "rows");
           }
+
+        }
+
+      }
+
+      if(l_meta && (l_meta._sClassName === "sap.ui.table.RowAction" || l_meta._sClassName === "sap.ui.table.RowSettings")){
+
+        l_meta = oUI.__PARENT.getMetadata();
+
+        if(typeof l_meta !== "undefined" &&
+         l_meta._sClassName === "sap.ui.table.Table" ||
+         l_meta._sClassName === "sap.ui.table.TreeTable"){
+
+          //rows에 바인딩 처리됐는지 확인.
+          return oAPP.fn.getParentAggrBind(oUI.__PARENT, "rows");
 
         }
 
@@ -5223,11 +5257,29 @@
 
       l_isTree = true;
 
-    }else if(ls_tree.PUIATK === "AT000022249" || ls_tree.PUIATK === "AT000022258"){
-      //sap.ui.table.Table(sap.ui.table.TreeTable)의 rowSettingsTemplate aggregation에 속한 UI인경우.
+    }else if(ls_tree.PUIATK === "AT000022249" || ls_tree.PUIATK === "AT000022258" || 
+      ls_tree.PUIATK === "AT000013070" || ls_tree.PUIATK === "AT000013148"){
+      //sap.ui.table.Table(sap.ui.table.TreeTable)의 rowSettingsTemplate, rowActionTemplate aggregation에 속한 UI인경우.
       l_path = oAPP.attr.prev[ls_tree.POBID]._MODEL["rows"];
 
       l_isTree = true;
+
+    
+    }else if(ls_tree.PUIATK === "AT000013013"){
+      //sap.ui.table.RowAction의 items aggregation에 존재하는 ui인경우.
+
+      //부모의 items에 바인딩이 설정되있지 않다면.
+      if(!oAPP.attr.prev[ls_tree.POBID]._MODEL["items"]){
+
+        //부모의 라인 정보 얻기.
+        var ls_parent = oAPP.fn.getTreeData(ls_tree.POBID);
+
+        //sap.ui.table.RowAction의 부모(ui table, tree table의 rows에 바인딩된 정보를 얻기.)
+        if(ls_parent && (ls_parent.UIOBK === "UO01139" || ls_parent.UIOBK === "UO01142")){
+          l_path = oAPP.attr.prev[ls_parent.POBID]._MODEL["rows"];
+        }
+
+      }
 
     }
 

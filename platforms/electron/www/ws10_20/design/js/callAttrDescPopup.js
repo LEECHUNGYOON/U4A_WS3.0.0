@@ -4,7 +4,7 @@
     const C_EN = "EN";
 
     //attribute 설명글 팝업 호출.
-    oAPP.fn.callAttrDescPopup = function(oUi, is_attr){
+    oAPP.fn.callAttrDescPopup = async function(oUi, is_attr){
         
         //openBy 처리 UI가 존재하지 않는경우 exit.
         if(!oUi){return;}
@@ -27,9 +27,12 @@
 
         var ls_desc2;
 
+        //세팅된 언어 정보 얻기.
+        var l_LANGU = await parent.WSUTIL.getWsLanguAsync();
+
         //세팅된 언어가 원어와 다른경우 번역본에 해당하는 DESC정보 검색.
-        if(oAPP.fn.convLanguage(navigator.language) !== C_EN){
-            ls_desc2 = lf_getDescData(oAPP.fn.convLanguage(navigator.language), l_LIBNM, is_attr.UIATT);
+        if(l_LANGU !== C_EN){
+            ls_desc2 = lf_getDescData(l_LANGU, l_LIBNM, is_attr.UIATT);
         }
 
         //두 언어 다 desc정보를 찾지 못한 경우.
@@ -111,7 +114,7 @@
     function lf_getDescData(i_lang, LIBNM, UIATT){
         
         //desc 파일 path 구성.
-        var l_path = parent.PATH.join(parent.REMOTE.app.getAppPath(), "ws10_20", "design", "json", i_lang, "UI5_UI_DESCR.json");
+        var l_path = parent.PATH.join(parent.REMOTE.app.getAppPath(), "ws10_20", "design", "json", "ATTR_DESC", i_lang, "UI5_UI_DESCR.json");
         
         //해당 파일이 존재하지 않는다면 exit.
         if(parent.FS.existsSync(l_path) !== true){

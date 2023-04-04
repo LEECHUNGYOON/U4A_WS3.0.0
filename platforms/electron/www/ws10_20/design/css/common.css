@@ -1,14 +1,15 @@
-
-.u4aAttrObjectStatus *{
-            
+/* 디자인 영역 우측 ATTRIBUTE NAME의 밑줄 제거 CSS */
+.u4aAttrObjectStatus *{            
     text-decoration: unset !important;
-    
 }
+
+/* 디자인 영역 우측 ATTRIBUTE NAME에 MOUSE OVER시 밑줄 표현 CSS */
 .u4aAttrObjectStatus:hover * {
     font-weight:bold;
     text-decoration: underline !important;
 }
 
+/* UI 개인화 팝업의 미리보기 FRAME 표현 CSS */
 .u4aP13nPreview:after {
     content: "PREVIEW";
     position: absolute;
@@ -21,4 +22,27 @@
     font-size: 92px;
     filter: blur(1px);
     letter-spacing: 13px;
+    opacity: 0.35;
+    animation: bling 2s linear infinite;
+}
+
+/* UI 개인화 팝업의 처리 불가 라인 표현 CSS */
+.u4aP13nNegativeLine{
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+@keyframes bling {
+    0% {
+        opacity: 0.35;
+        text-shadow: 0 0 10px #ffffff;
+    }
+    50% {
+        opacity: 0.5;
+        text-shadow: 0 0 10px #dddddd;
+    }
+    100% {
+        opacity: 0.35;
+        text-shadow: 0 0 10px #ffffff;
+    }
 }

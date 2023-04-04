@@ -1308,6 +1308,19 @@
     //UI 개인화 저장 메뉴.
     oAPP.fn.contextMenuP13nDesignPopup = function(){
 
+        var lockFile = parent.require("proper-lockfile");
+
+        //HEADER 파일 PATH 구성.
+        var l_path = parent.PATH.join(parent.getPath("P13N_ROOT"), "U4A_UI_PATTERN", parent.getUserInfo().SYSID, "header.json");
+
+        //이미 파일이 잠겨 있다면.
+        if(lockFile.checkSync(l_path)){
+            //382	Personalizing UI on other screens.
+            parent.showMessage(sap, 10, "S", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "382", "", "", "", ""));
+            return;
+
+        }
+
         //context menu를 호출한 라인의 OBJID 얻기.
         var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
             
@@ -1323,13 +1336,13 @@
 
         //UI 개인화 저장 팝업 function이 존재하는경우 즉시 호출.
         if(typeof oAPP.fn.callP13nDesignDataPopup !== "undefined"){
-            oAPP.fn.callP13nDesignDataPopup(ls_tree, "C");
+            oAPP.fn.callP13nDesignDataPopup("C", ls_tree);
             return;
         }
 
         //UI 개인화 저장 팝업 function이 존재하지 않는경우 js 로드 후 호출.
         oAPP.fn.getScript("design/js/callP13nDesignDataPopup",function(){
-            oAPP.fn.callP13nDesignDataPopup(ls_tree, "C");
+            oAPP.fn.callP13nDesignDataPopup("C", ls_tree);
         });
 
 

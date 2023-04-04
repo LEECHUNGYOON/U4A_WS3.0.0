@@ -73,8 +73,8 @@ oAPP.common = {};
     // Browser Key 정보
     oWS.utill.attr.browserkey = "";
 
-    // 현재 떠있는 새창 갯수
-    oWS.utill.attr.aWindowIds = [];
+    // // 현재 떠있는 새창 갯수
+    // oWS.utill.attr.aWindowIds = [];
 
     // 에디터 정보
     oWS.utill.attr.oWsConfInfo = {

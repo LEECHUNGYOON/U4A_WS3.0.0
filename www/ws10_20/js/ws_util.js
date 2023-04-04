@@ -236,28 +236,70 @@ module.exports = {
 
     }, // end of showMessageBox
 
-    // showMessageToast : function(sap, sMsg, pOptions){
+    /**
+     * 테마별 백그라운드 색상 구하기     
+     */
+    getThemeBackgroundColor: function (sTheme) {
 
-    //     let oDefaultOptions = {
-    //         duration: 3000,                  // default
-    //         width: "15em",                   // default
-    //         my: "center center",             // default
-    //         at: "center center",             // default
-    //         of: window,                      // default
-    //         offset: "0 0",                   // default
-    //         collision: "fit fit",            // default
-    //         onClose: null,                   // default
-    //         autoClose: true,                 // default
-    //         animationTimingFunction: "ease", // default
-    //         animationDuration: 1000,         // default
-    //         closeOnBrowserNavigation: true   // default
-    //     },
+        switch (sTheme) {
+            case "sap_belize_plus":
+                return "#fafafa";
 
-    //     oOptions = Object.assign({}, oDefaultOptions, pOptions);
+            case "sap_horizon_dark":
+                return "#12171c";
 
-    //     sap.m.MessageToast.show(sMsg, oOptions);
+            case "sap_horizon":
+                return "#f5f6f7";
 
-    // }, // end of showMessageToast
+            case "sap_belize":
+                return "#fafafa";             
+
+            case "sap_fiori_3":
+                return "#f7f7f7";              
+
+            case "sap_fiori_3_dark":
+                return "#1c2228";          
+
+            default:
+                return "#ffffff";
+
+        }
+
+    }, // end of getThemeBackgroundColor
+
+    /**
+     * 레지스트리에서 WS Global Theme 구하기   
+     */
+    getWsThemeAsync: function () {
+
+        return new Promise(async (resolve) => {
+
+            let oSettings = this.getWsSettingsInfo(), // ws 설정 정보
+                sRegPath = oSettings.regPaths, // 각종 레지스트리 경로
+                sGlobalSettingPath = sRegPath.globalSettings; // globalsettings 레지스트리 경로
+
+            // 레지스트리 정보 구하기
+            let oRegList = await this.getRegeditList([sGlobalSettingPath]),
+                oRetData = oRegList.RTDATA;
+
+            // 여기서 오류면 크리티컬 오류
+            if (oRegList.RETCD == "E") {
+                throw new Error(oRegList.RTMSG);
+            }
+
+            let oRegValues = oRetData[sGlobalSettingPath].values,
+                oRegTheme = oRegValues.theme,
+                sTheme = oSettings.defaultTheme;
+
+            if (oRegTheme) {
+                sTheme = oRegTheme.value;
+            }
+
+            resolve(sTheme);
+
+        });
+
+    }, // end of getWsThemeAsync
 
     /**
      * 레지스트리에서 WS Global Language 구하기     
@@ -595,6 +637,9 @@ module.exports = {
 
     }, // end of getRandomKey
 
+    /**
+     * WS Setting 정보     
+     */
     getWsSettingsInfo: function () {
 
         // Browser Window option
@@ -608,8 +653,11 @@ module.exports = {
 
         return oSettings;
 
-    },
+    }, // end of getWsSettingsInfo
 
+    /**
+     * WS Global Setting 정보 [레지스트리에 설정된 값 구하기]
+     */
     getWsGlobalSettingInfoAsync: function () {
 
         return new Promise(async (resolve) => {
@@ -637,6 +685,61 @@ module.exports = {
 
     }, // getWsGlobalSettingInfoAsync
 
+    /**
+     * 레지스트리에 저장된 whiteList Object 정보
+     */
+    getWsWhiteListObjectAsync: function (SYSID = "", CHGOBJ = "") {
+
+        return new Promise(async (resolve) => {
+
+            // 레지스트리의 WS SYSTEM 경로를 구한다.
+            let oSettings = this.getWsSettingsInfo(), // ws 설정 정보
+                sRegPath = oSettings.regPaths, // 각종 레지스트리 경로
+                sWsSystemPath = sRegPath.systems;
+
+            // 접속 SYSID에 해당하는 레지스트리 정보를 구한다.
+            let oRegData = await this.getRegeditAsync(sWsSystemPath, SYSID);
+            if (oRegData.RETCD == "E") {
+                resolve(false);
+                return;
+            }
+
+            // 레지스트리에 저장되어 있는 white list object 정보를 구한다.
+            let oRegValues = oRegData.RTDATA.values,
+                oWLO = oRegValues.T_REG_WLO;
+
+            // 저장된 정보가 없으면 리턴
+            if (!oWLO) {
+                resolve(false);
+                return;
+            }
+
+            let sWsoJson = oWLO.value;
+
+            try {
+                var aWSO = JSON.parse(sWsoJson);
+            } catch (error) {
+                resolve(false);
+                return;
+            }
+
+            // 데이터 구조가 Array 인지 체크
+            if (!Array.isArray(aWSO)) {
+                resolve(false);
+                return;
+            }
+
+            let oFindWso = aWSO.find(elem => elem?.CHGOBJ === CHGOBJ);
+            if (!oFindWso) {
+                resolve(false);
+                return;
+            }
+
+            resolve(true);
+
+        });
+
+    }, // end of getWsWhiteListObjectAsync
 
     /*************************************************************************
      * 파일시스템 관련 -- Start
@@ -984,7 +1087,7 @@ module.exports = {
      *************************************************************************/
 
 
-    
+
 
 
 

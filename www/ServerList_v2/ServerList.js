@@ -49,7 +49,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             // 화면 Lock 걸기
             sap.ui.getCore().lock();
-            
+
             sap.ui.core.BusyIndicator.show(0);
 
             return;
@@ -818,9 +818,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 770 보다 낮다면 지원 불가
         if (parseVer < SAPGUIVER) {
-            
+
             //"Not supported lower than SAPGUI 770 versions. \n Please upgrade SAPGUI 770 or Higher";
-            oErr.RTMSG = oAPP.msg.M07 + " \n " + oAPP.msg.M08;            
+            oErr.RTMSG = oAPP.msg.M07 + " \n " + oAPP.msg.M08;
             return oErr;
         }
 
@@ -1074,7 +1074,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnOnInitRendering = () => {
 
         var oApp = new sap.m.App({
-            autoFocus: false,            
+            autoFocus: false,
         }),
             oTreeTable = oAPP.fn.fnGetWorkSpaceTreeTable(), // 좌측 폴더 Tree
             oTable = oAPP.fn.fnGetSAPLogonListTable(), // 우측 서버 리스트 테이블
@@ -1546,7 +1546,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         }).addEventDelegate({
             ondblclick: oAPP.fn.fnPressServerListItem
-        });
+        }).addStyleClass("u4aWsServerListTbl");
 
     }; // end of oAPP.fn.fnGetSAPLogonListTable
 
@@ -2321,6 +2321,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
         }
 
+        oAPP.setBusy(true);
+
         let oRetData = oSavedData.RETDATA,
             sProtocol = oRetData.protocol,
             sHost = oRetData.host,
@@ -2424,7 +2426,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         var oDialog = new sap.m.Dialog(sDialogId, {
-
+            contentWidth: "350px",
             draggable: true,
             resizable: true,
 
@@ -2440,6 +2442,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             }),
 
             content: [
+
+                new sap.m.MessageStrip({
+                    showIcon: true,
+                    text : "{/WSLANGU/ZMSG_WS_COMMON_001/037}" // The selected language applies only to after restarting application.
+                }).addStyleClass("sapUiTinyMargin"),
 
                 new sap.ui.layout.form.Form({
                     editable: true,
@@ -2707,7 +2714,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // UI5 Language 변경
         sap.ui.getCore().getConfiguration().setLanguage(sSelectedKey);
 
-        sap.m.MessageToast.show(oAPP.msg.M01); // // Saved success
+        sap.m.MessageToast.show(oAPP.msg.M01); // Saved success
 
     } // end of _saveWsLangu
 
@@ -2954,6 +2961,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
+            
+            oAPP.setBusy(false);
 
             var oMetadata = {
                 SERVERINFO: oSAPServerInfo,

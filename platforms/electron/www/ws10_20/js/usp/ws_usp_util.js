@@ -17,8 +17,8 @@ module.exports = {
 
         return new Promise(async (resolve) => {
 
-            // // 글로벌 설정된 언어키를 구한다.
-            // let sLangu = await WSUTIL.getWsLanguAsync();
+            // 글로벌 설정된 언어키를 구한다.
+            let sLangu = await WSUTIL.getWsLanguAsync();
 
             // 각 확장자에 맞는 svg 경로를 구한다.
             let aIcons,
@@ -49,10 +49,7 @@ module.exports = {
                 "PKEY": "",
                 "CKEY": "PATT001",
                 "TYPE": "ROOT",
-                "ARBGB": "ZMSG_WS_COMMON_001",
-                "MSGNR": "021",
-                "TEXT": "Default Pattern",
-                "DESC": ""
+                "DESC": WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "021") // Default Pattern
             }, {
                 "PKEY": "PATT001",
                 "CKEY": "PTN001",
@@ -91,12 +88,14 @@ module.exports = {
                 "CKEY": "PTN002",
                 "DESC": "JS",
                 "ICON": oJsIconInfo.ICONPATH || ""
-            }, {
-                "PKEY": "PTN002",
-                "CKEY": "PTN002_001",
-                "DESC": "JS 기본 패턴",
-                "ACTCD": "02"
-            }, {
+            }, 
+            // {
+            //     "PKEY": "PTN002",
+            //     "CKEY": "PTN002_001",
+            //     "DESC": "JS 기본 패턴",
+            //     "ACTCD": "02"
+            // }, 
+            {
                 "PKEY": "PTN002",
                 "CKEY": "PTN002_002",
                 "DESC": "즉시실행함수 패턴",
@@ -111,18 +110,19 @@ module.exports = {
                 "CKEY": "PTN002_004",
                 "DESC": "윈도우 이벤트 패턴",
                 "ACTCD": "02"
-            }, {
-                "PKEY": "PATT001",
-                "CKEY": "PTN003",
-                "DESC": "CSS",
-                "ICON": oCssIconInfo.ICONPATH || ""
-            },
-            {
-                "PKEY": "PTN003",
-                "CKEY": "PTN003_001",
-                "DESC": "폰트색상 패턴",
-                "ACTCD": "02"
-            },
+            }, 
+            // {
+            //     "PKEY": "PATT001",
+            //     "CKEY": "PTN003",
+            //     "DESC": "CSS",
+            //     "ICON": oCssIconInfo.ICONPATH || ""
+            // },
+            // {
+            //     "PKEY": "PTN003",
+            //     "CKEY": "PTN003_001",
+            //     "DESC": "폰트색상 패턴",
+            //     "ACTCD": "02"
+            // },
             ];
 
             resolve({ RETCD: "S", RTDATA: aPatternJson });
@@ -138,14 +138,14 @@ module.exports = {
 
         return new Promise(async (resolve) => {
 
+            // 글로벌 설정된 언어키를 구한다.
+            let sLangu = await WSUTIL.getWsLanguAsync();
+
             resolve([{
                 "PKEY": "",
                 "CKEY": "PATT002",
-                "TYPE": "ROOT",
-                "ARBGB": "ZMSG_WS_COMMON_001",
-                "MSGNR": "022",
-                "TEXT": "Custom Pattern",
-                "DESC": "",
+                "TYPE": "ROOT",             
+                "DESC": WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "022"), // Custom Pattern
                 "ISSTART": true
             }]);
 

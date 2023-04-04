@@ -309,10 +309,28 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
           //rows aggregation에 바인딩된 정보 매핑.
           l_path = oAPP.attr.prev[oAPP.attr.oBindDialog._is_attr.OBJID].__PARENT._MODEL["rows"];
 
-        }else if(ls_tree && (ls_tree.PUIATK === "AT000022249" || ls_tree.PUIATK === "AT000022258")){
-          //sap.ui.table.Table(sap.ui.table.TreeTable)의 rowSettingsTemplate aggregation에 속한 UI인경우.
+        }else if(ls_tree && (ls_tree.PUIATK === "AT000022249" || ls_tree.PUIATK === "AT000022258" || 
+          ls_tree.PUIATK === "AT000013070" || ls_tree.PUIATK === "AT000013148")){
+          //sap.ui.table.Table(sap.ui.table.TreeTable)의 rowSettingsTemplate, rowActionTemplate aggregation에 속한 UI인경우.
           //부모의 rows aggregation의 path 정보 얻기.
           l_path = oAPP.attr.prev[ls_tree.POBID]._MODEL["rows"];
+        
+        }else if(ls_tree && ls_tree.PUIATK === "AT000013013"){
+          //sap.ui.table.RowAction의 items aggregation에 존재하는 ui인경우.
+
+          //부모의 items에 바인딩이 설정되있지 않다면.
+          if(!oAPP.attr.prev[ls_tree.POBID]._MODEL["items"]){
+
+            //부모의 라인 정보 얻기.
+            var ls_parent = oAPP.fn.getTreeData(ls_tree.POBID);
+
+            //sap.ui.table.RowAction의 부모(ui table, tree table의 rows에 바인딩된 정보를 얻기.)
+            if(ls_parent && (ls_parent.UIOBK === "UO01139" || ls_parent.UIOBK === "UO01142")){
+              l_path = oAPP.attr.prev[ls_parent.POBID]._MODEL["rows"];
+            }
+
+          }
+
         }
 
         //2레벨의 TABLE, STRUCTURE정보만 발췌.

@@ -181,10 +181,11 @@
             }
             ]
         },
-        {
-            key: "WMENU10_03",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
-        },
+        // 2023-04-04 중복 메뉴로 폐기
+        // {
+        //     key: "WMENU10_03",
+        //     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
+        // },
         {
             key: "WMENU10_04",
             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B45"), // Shortcut Manager
@@ -192,10 +193,11 @@
                 key: "WMENU10_04_01",
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B46"), // U4A Shortcut Create
             },
-            {
-                key: "WMENU10_04_02",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B47"), // QR Code Maker
-            }
+            // 2023-04-04 로직 미완성으로 임시 주석처리
+            // {
+            //     key: "WMENU10_04_02",
+            //     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B47"), // QR Code Maker
+            // }
             ]
         },
         {

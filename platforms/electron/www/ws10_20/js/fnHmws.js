@@ -959,7 +959,7 @@
      ************************************************************************/
     oAPP.fn.fnWS10Test91 = () => {
 
-        oAPP.fn.fnSourcePatternPopupOpener();
+        oAPP.fn.fnSourcePatternPopupOpener(); // [async]
 
     };
 

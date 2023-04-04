@@ -1,7 +1,7 @@
 (function(){
 
   //DATASET의 검색조건 LAYOUT의 미리보기 이미지 경로.
-  const DATASET_IMG_PREFIX = parent.PATH.join(parent.REMOTE.app.getAppPath(), "ws10_20", "design", "image", "create APP Dataset");
+  const DATASET_IMG_PREFIX = parent.PATH.join(parent.REMOTE.app.getAppPath(), "ws10_20", "design", "image", "DATASET");
 
   const LAYOUT_IMG1 = "COL1.jpg";
   const LAYOUT_IMG2 = "COL2.jpg";
@@ -856,38 +856,63 @@
     //dataset 초기값 구성.
     var ls_dataset = lf_setDefaultValDataset();
 
+    var l_userInfo = parent.getUserInfo();
+
     //Language Key DDLB 리스트
-    var T_LANGU = [{KEY:"EN",TEXT:"English"},
-                      {KEY:"KO",TEXT:"Korean"}
-                      ];
+    // var T_LANGU = [{KEY:"EN",TEXT:"English"},
+    //                {KEY:"KO",TEXT:"Korean"}
+    //               ];
+
+    var T_LANGU = [];
+
+    //SAP 서버의 설치된 언어 정보를 기준으로 DDLB 항목 구성.
+    for(var i=0, l= l_userInfo.META.T_LANGU.length; i<l; i++){
+      T_LANGU.push({KEY:l_userInfo.META.T_LANGU[i].SPRAS, TEXT:l_userInfo.META.T_LANGU[i].SPTXT});
+    }
+    
 
     //Character Format DDLB 리스트
-    var T_CODPG = [{KEY:"utf-8",TEXT:"utf-8"},
-                      {KEY:"EUC-KR",TEXT:"EUC-KR"}
-                      ];
+    var T_CODPG = [{KEY:"utf-8", TEXT:"utf-8"},
+                   {KEY:"EUC-KR", TEXT:"EUC-KR"}
+                  ];
 
     //UI5 UI Theme DDLB 리스트
-    var T_UITHM = [{KEY:"base",TEXT:"base"},
-                    {KEY:"sap_belize",TEXT:"sap_belize"},
-                    {KEY:"sap_belize_hcb",TEXT:"sap_belize_hcb"},
-                    {KEY:"sap_belize_hcw",TEXT:"sap_belize_hcw"},
-                    {KEY:"sap_belize_plus",TEXT:"sap_belize_plus"},
-                    {KEY:"sap_bluecrystal",TEXT:"sap_bluecrystal"},
-                    {KEY:"sap_hcb",TEXT:"sap_hcb"},
-                    {KEY:"sap_fiori_3",TEXT:"sap_fiori_3"},
-                    {KEY:"sap_fiori_3_dark",TEXT:"sap_fiori_3_dark"},
-                    {KEY:"sap_fiori_3_hcb",TEXT:"sap_fiori_3_hcb"},
-                    {KEY:"sap_fiori_3_hcw",TEXT:"sap_fiori_3_hcw"},
-                    {KEY:"sap_horizon",TEXT:"sap_horizon"},
-                    {KEY:"sap_horizon_dark",TEXT:"sap_horizon_dark"},
-                    {KEY:"sap_horizon_hcb",TEXT:"sap_horizon_hcb"},
-                    {KEY:"sap_horizon_hcw",TEXT:"sap_horizon_hcw"}
-                    ];
+    // var T_UITHM = [{KEY:"base",TEXT:"base"},
+    //                 {KEY:"sap_belize",TEXT:"sap_belize"},
+    //                 {KEY:"sap_belize_hcb",TEXT:"sap_belize_hcb"},
+    //                 {KEY:"sap_belize_hcw",TEXT:"sap_belize_hcw"},
+    //                 {KEY:"sap_belize_plus",TEXT:"sap_belize_plus"},
+    //                 {KEY:"sap_bluecrystal",TEXT:"sap_bluecrystal"},
+    //                 {KEY:"sap_hcb",TEXT:"sap_hcb"},
+    //                 {KEY:"sap_fiori_3",TEXT:"sap_fiori_3"},
+    //                 {KEY:"sap_fiori_3_dark",TEXT:"sap_fiori_3_dark"},
+    //                 {KEY:"sap_fiori_3_hcb",TEXT:"sap_fiori_3_hcb"},
+    //                 {KEY:"sap_fiori_3_hcw",TEXT:"sap_fiori_3_hcw"},
+    //                 {KEY:"sap_horizon",TEXT:"sap_horizon"},
+    //                 {KEY:"sap_horizon_dark",TEXT:"sap_horizon_dark"},
+    //                 {KEY:"sap_horizon_hcb",TEXT:"sap_horizon_hcb"},
+    //                 {KEY:"sap_horizon_hcw",TEXT:"sap_horizon_hcw"}
+    //                 ];
+
+    var T_UITHM = [];
+
+    //서버의 테마 공통코드 항목을 기준으로 DDLB 리스트 구성.
+    for(var i=0, l= l_userInfo.META.T_REG_THEME.length; i<l; i++){
+      T_UITHM.push({KEY:l_userInfo.META.T_REG_THEME[i].THEME, TEXT:l_userInfo.META.T_REG_THEME[i].THEME});
+    }
 
     //Web Application Type DDLB 리스트.
-    var T_APPTY = [{KEY:"M",TEXT:"U4A Application"},
-                       {KEY:"U",TEXT:"U4A Server Page"}
-                      ];
+    // var T_APPTY = [{KEY:"M",TEXT:"U4A Application"},
+    //                    {KEY:"U",TEXT:"U4A Server Page"}
+    //                   ];
+
+    var T_APPTY = [];
+
+    //Web Application Type DDLB 리스트.
+    for(var i=0, l= l_userInfo.META.T_APPTY.length; i<l; i++){
+      T_APPTY.push({KEY:l_userInfo.META.T_APPTY[i].KEY, TEXT:l_userInfo.META.T_APPTY[i].TEXT});
+    }
+
 
     oModel.setData({"selHKey":"K01",
                     "CREATE":ls_appl, 
@@ -918,12 +943,12 @@
     var ls_userInfo = parent.getUserInfo();
 
     //Language Key default EN
-    ls_appl.LANGU = "EN";
+    ls_appl.LANGU = "E";
 
     //접속 유저 정보, 접속 language가 존재하는경우.
-    if(ls_userInfo && ls_userInfo.LANGU){
+    if(ls_userInfo && ls_userInfo.META.LANGU){
       //해당 language를 default language로 설정.
-      ls_appl.LANGU = ls_userInfo.LANGU;
+      ls_appl.LANGU = ls_userInfo.META.LANGU;
 
     }
 
@@ -932,6 +957,14 @@
 
     //UI5 UI Theme
     ls_appl.UITHM = "sap_horizon";
+
+    //default 테마 정보 검색.
+    var ls_theme = ls_userInfo.META.T_REG_THEME.find( a=> a.ISDEF === "X" );
+
+    //default 테마정보를 검색한 경우 해당 테마를 선택 처리.
+    if(ls_theme){
+      ls_appl.UITHM = ls_theme.THEME;
+    }
 
     //Web Application Type
     ls_appl.APPTY = "M";
@@ -991,12 +1024,12 @@
     var ls_userInfo = parent.getUserInfo();
 
     //Language Key default EN
-    ls_appl.LANGU = "EN";
+    ls_appl.LANGU = "E";
 
     //접속 유저 정보, 접속 language가 존재하는경우.
-    if(ls_userInfo && ls_userInfo.LANGU){
+    if(ls_userInfo && ls_userInfo.META.LANGU){
       //해당 language를 default language로 설정.
-      ls_appl.LANGU = ls_userInfo.LANGU;
+      ls_appl.LANGU = ls_userInfo.META.LANGU;
 
     }
 
@@ -1005,6 +1038,14 @@
 
     //UI5 UI Theme
     ls_appl.UITHM = "sap_horizon";
+
+    //default 테마 정보 검색.
+    var ls_theme = ls_userInfo.META.T_REG_THEME.find( a=> a.ISDEF === "X" );
+
+    //default 테마정보를 검색한 경우 해당 테마를 선택 처리.
+    if(ls_theme){
+      ls_appl.UITHM = ls_theme.THEME;
+    }
 
     //Web Application Type
     ls_appl.APPTY = "M";
@@ -1157,16 +1198,8 @@
     var l_create = oModel.getProperty(ls_stru);
     var l_appdata = {};
     l_appdata.APPID = appid;          //Web Application ID
-    l_appdata.APPNM = l_create.APPNM; //Web Application Name
-    //Language Key
-    switch(l_create.LANGU){
-      case "EN":
-        l_appdata.LANGU = "E";
-        break;
-      case "KO":
-        l_appdata.LANGU = "3";
-        break;
-    }
+    l_appdata.APPNM = l_create.APPNM; //Web Application Name    
+    l_appdata.LANGU = l_create.LANGU; //Language Key
     l_appdata.APPTY = l_create.APPTY; //Web Application Type
     l_appdata.CODPG = l_create.CODPG; //Identifier for Character Format (UTF-8, UCS-2, ...)
     l_appdata.UITHM = l_create.UITHM; //UI5 UI Theme

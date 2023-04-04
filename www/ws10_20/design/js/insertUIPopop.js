@@ -38,7 +38,9 @@
 
     //dialog open이후 이벤트.
     oDlg.attachAfterOpen(function(){
+
       oDlg.setInitialFocus("");
+
       //aggregation name ddlb 선택 처리.
       oSel1.focus();
     });
@@ -311,6 +313,7 @@
     var oTab1 = new sap.ui.table.Table({selectionMode:"Single", selectionBehavior:"Row", rowHeight:30,
       visibleRowCountMode:"Auto", layoutData:new sap.m.FlexItemData({growFactor:1})});
 
+
     //테이블 스크롤 이벤트.
     oTab1.attachFirstVisibleRowChanged(function(){
       //현재 선택된 DOM focus out 처리.
@@ -360,18 +363,57 @@
 
     }); //drag end 이벤트
 
+    //UI 이미지 컬럼.
     var oCol1 = new sap.ui.table.Column({hAlign:"Center", width:"80px"});
     oTab1.addColumn(oCol1);
 
     var oImage = new sap.m.Image({src:"{UICON}", width:"19px"});
     oCol1.setTemplate(oImage);
 
-    //E02  Icon
-    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E02", "", "", "", "");
+    //E31	Symbol
+    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E31", "", "", "", "");
 
     var oLab4 = new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt});
     oCol1.setLabel(oLab4);
 
+    
+    // //ui info 컬럼.
+    // var oCol5 = new sap.ui.table.Column({hAlign:"Center", width:"80px", visible:true});
+    // oTab1.addColumn(oCol5);
+
+    // //A67  Preview
+    // var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A67", "", "", "", "");
+
+    // var oLab8 = new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt});
+    // oCol5.setLabel(oLab8);
+
+    // var oIcon2 = new sap.ui.core.Icon({src:"sap-icon://picture", color:"#2b7c2b", height:"20px", visible:"{visible_help}"});
+    // oCol5.setTemplate(oIcon2);
+
+    oImage.attachPress((oEvent)=>{
+
+      var l_ui = oEvent.getSource();
+
+      var l_ctxt = l_ui.getBindingContext();
+      if(!l_ctxt){return;}
+
+      var ls_line = l_ctxt.getProperty();
+
+      //UI 미리보기 팝업 function이 존재하는경우 즉시 호출.
+      if(typeof oAPP.fn.callUiPreviewImagePopup !== "undefined"){
+        oAPP.fn.callUiPreviewImagePopup(l_ui, ls_line.UIOBK);
+        return;
+      }
+
+      //UI 미리보기 팝업 function이 존재하지 않는경우 js 로드 후 호출.
+      oAPP.fn.getScript("design/js/callUiPreviewImagePopup",function(){
+          oAPP.fn.callUiPreviewImagePopup(l_ui, ls_line.UIOBK);
+      });
+
+    });
+
+
+    //UI 오브젝트명 컬럼.
     var oCol2 = new sap.ui.table.Column({autoResizable:true, filterProperty:"UIOBJ", sortProperty:"UIOBJ"});
     oTab1.addColumn(oCol2);
 
@@ -384,6 +426,8 @@
     var oTxt1 = new sap.m.Text({text:"{UIOBJ}"});
     oCol2.setTemplate(oTxt1);
 
+
+    //UI 라이브러리명 컬럼.
     var oCol3 = new sap.ui.table.Column({autoResizable:true, filterProperty:"LIBNM", sortProperty:"LIBNM"});
     oTab1.addColumn(oCol3);
 
@@ -408,17 +452,6 @@
     var oTxt4 = new sap.m.Text({text:"{UIOBK}"});
     oCol4.setTemplate(oTxt4);
 
-    var oCol5 = new sap.ui.table.Column({hAlign:"Center", width:"80px", visible:false});
-    oTab1.addColumn(oCol5);
-
-    //E05  UI Info
-    var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E05", "", "", "", "");
-
-    var oLab8 = new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt});
-    oCol5.setLabel(oLab8);
-
-    var oIcon2 = new sap.ui.core.Icon({src:"sap-icon://sys-help", height:"20px"});
-    oCol5.setTemplate(oIcon2);
 
     var oRow1 = new sap.ui.table.Row();
     oTab1.bindAggregation("rows", {path:"/T_LIST",template:oRow1});
@@ -463,7 +496,7 @@
     oDlg.open();
 
 
-    
+
 
     //UI 선택처리 FUNCTION.
     function lf_selectUi(is_UI){
@@ -549,6 +582,6 @@
     oDlg.oPopup.setModal(true);
 
   } //결과리스트 table 라인 drag end 처리.
-   
+
 
 })();

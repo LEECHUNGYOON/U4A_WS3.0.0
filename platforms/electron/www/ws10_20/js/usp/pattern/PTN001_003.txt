@@ -1,30 +1,8 @@
-/*
-&&## UI5 기본 패턴 ##&&
-*/
-
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <script id="sap-ui-bootstrap"
-        src="/zu4a_imp/openui5_lib/v1772/resources/sap-ui-core.js"
-        data-sap-ui-language="EN"
-        data-sap-ui-preload="sync"
-        data-sap-ui-compatversion="edge"
-        data-sap-ui-theme="sap_fiori_3_dark"
-        data-sap-ui-libs="sap.m"
-        data-sap-ui-noduplicateids="true">
-    </script>
-
-</head>
-
-<body class="sapUiBody">
-
-    <div id="content"></div>
-
-    <script src=""></script>
-
-</body>
-
-</html>
+<iframe src=""
+    id="iframe"
+    name="iframe"
+    frameborder="0"
+    style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100%;width:100%;position:absolute;top:0px;left:0px;right:0px;bottom:0px"
+    height="100%"
+    width="100%">
+</iframe>

@@ -234,14 +234,14 @@
       if(oAPP.fn.designUIDropInsertPopup(oEvent, ls_drop.OBJID)){return;}
 
       //개인화 화면에서 Drop했다면 UI 추가 처리.
-      if(oAPP.fn.designUIDropP13nList(oEvent, ls_drop.OBJID)){return;}
+      if(oAPP.fn.designUIDropP13nList(oEvent, ls_drop)){return;}
 
     }); //drop 이벤트.
     
 
 
     //tree toolbar UI.
-    var oLTBar1 = new sap.m.Toolbar();
+    var oLTBar1 = new sap.m.OverflowToolbar();
     oLTree1.setToolbar(oLTBar1);
 
     //B21  Expand
@@ -305,8 +305,8 @@
     }); //UI FILTER 버튼 선택 이벤트.
 
 
-    //구분자 추가.
-    oLTBar1.addContent(new sap.m.ToolbarSeparator({visible:"{/IS_EDIT}"}));
+    // //구분자 추가.
+    // oLTBar1.addContent(new sap.m.ToolbarSeparator({visible:"{/IS_EDIT}"}));
 
 
     //B23  Clear selection
@@ -324,8 +324,8 @@
 
 
 
-    //구분자 추가.
-    oLTBar1.addContent(new sap.m.ToolbarSeparator({visible:"{/IS_EDIT}"}));
+    // //구분자 추가.
+    // oLTBar1.addContent(new sap.m.ToolbarSeparator({visible:"{/IS_EDIT}"}));
 
     //A03  Delete
     //삭제 버튼.
@@ -342,8 +342,8 @@
     });
 
 
-    //구분자 추가.
-    oLTBar1.addContent(new sap.m.ToolbarSeparator({visible:"{/IS_EDIT}"}));
+    // //구분자 추가.
+    // oLTBar1.addContent(new sap.m.ToolbarSeparator({visible:"{/IS_EDIT}"}));
 
 
     //B24  UI Template Wizard
@@ -370,6 +370,28 @@
       
     }); //wizard 버튼 선택 이벤트.
 
+    
+    //E28  UI Personalization List
+    //개인화 팝업 호출 버튼.
+    var oLBtn7 = new sap.m.Button({icon:"sap-icon://user-settings",
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E28", "", "", "", ""),
+      visible:parent.REMOTE.app.isPackaged ? false : true});
+    oLTBar1.addContent(oLBtn7);
+
+    oLBtn7.attachPress(function(){
+
+      //UI 개인화 저장 팝업 function이 존재하는경우 즉시 호출.
+      if(typeof oAPP.fn.callP13nDesignDataPopup !== "undefined"){
+        oAPP.fn.callP13nDesignDataPopup("R");
+        return;
+      }
+
+      //UI 개인화 저장 팝업 function이 존재하지 않는경우 js 로드 후 호출.
+      oAPP.fn.getScript("design/js/callP13nDesignDataPopup",function(){
+        oAPP.fn.callP13nDesignDataPopup("R");
+      });
+
+    });
 
     oLTBar1.addContent(new sap.m.ToolbarSpacer());
 
@@ -3195,36 +3217,540 @@
 
 
   //개인화 항목에서 D&D한 경우 UI 추가 처리.
-  oAPP.fn.designUIDropP13nList = function(oEvent, OBJID){
+  oAPP.fn.designUIDropP13nList = function(oEvent, is_tree){
 
     //Drag한 정보 발췌.
     var lt_dragInfo = oAPP.fn.getDragParam(oEvent);
-    if(!lt_dragInfo || lt_dragInfo.length !== 2){return;}
+    if(!lt_dragInfo || lt_dragInfo.length !== 3){return;}
 
     //개인화 리스트에서 Drag한건이 아닌경우 exit.
     if(lt_dragInfo[0] !== "P13nUIData"){
       return;
     }
 
+    //다른 WS 세션에서 D&D 한경우 EXIT.
+    if(lt_dragInfo[2] !== oAPP.attr.DnDRandKey){
+      return;
+    }
+
     var l_itemKey = lt_dragInfo[1];
 
     var l_SYSID =  parent.getUserInfo()?.SYSID;
+    if(!l_SYSID){return;}
 
     //개인화 파일 정보 path 구성.
     var l_path = parent.PATH.join(parent.getPath("P13N_ROOT"), "U4A_UI_PATTERN", l_SYSID, l_itemKey);
 
     //실제 파일이 존재하지 않는다면 exit.
-    if(parent.FS.existsSync(l_path)){
+    if(!parent.FS.existsSync(l_path)){
       return true;
     }
 
     //개인화 파일 정보 read.
-    var ls_item = JSON.parse(parent.FS.readFileSync(l_path, "utf-8"));
+    try{
+      var ls_item = JSON.parse(parent.FS.readFileSync(l_path, "utf-8"));
+    }catch(e){
+      parent.showMessage(sap, 10, "E", e);
+      return true;
+    }
+    
+
+    //UI 추가 처리.
+    oAPP.fn.designAddTreeData(ls_item.is_tree, is_tree);
 
 
     return true;
 
   };  //개인화 항목에서 D&D한 경우 UI 추가 처리.
+
+
+
+
+  //design에 tree 데이터 추가 처리.
+  oAPP.fn.designAddTreeData = function(is_data, is_tree){
+        
+    //UI의 attr 정보 복사 처리.
+    function lf_copyAttrData(is_14, is_copied, aggrParam, bKeep){
+
+        if(is_copied._T_0015.length === 0){return;}
+
+        var lt_0015 = [];
+
+        for(var i=0, l=is_copied._T_0015.length; i<l; i++){
+            
+            //바인딩 정보를 유지 안하는경우.
+            if(bKeep !== true){
+
+                //바인딩 처리된건인경우 skip.
+                if(is_copied._T_0015[i].ISBND === "X" && is_copied._T_0015[i].UIATV !== ""){
+                    continue;
+                }
+
+                //서버 이벤트가 존재하는경우 skip.
+                if(is_copied._T_0015[i].UIATY === "2" && is_copied._T_0015[i].UIATV !== ""){
+                    continue;
+                }
+
+            }
+
+            //프로퍼티 구조 신규 생성.
+            var ls_15 = oAPP.fn.crtStru0015();
+
+            //기존 복사건을 신규 15번 구조에 매핑.
+            oAPP.fn.moveCorresponding(is_copied._T_0015[i], ls_15);
+
+            ls_15.APPID = oAPP.attr.appInfo.APPID;
+            ls_15.GUINR = oAPP.attr.appInfo.GUINR;
+            ls_15.OBJID = is_14.OBJID;
+
+            //복사된 ui의 최상위 정보의 aggregation 정보 변경처리.
+            if(aggrParam && ls_15.UIATY === "6"){
+                ls_15.UIATK = aggrParam.UIATK;
+                ls_15.UIATT = aggrParam.UIATT;
+                ls_15.UIASN = aggrParam.UIASN;
+                ls_15.UIADT = aggrParam.UIADT;
+                ls_15.UIADS = aggrParam.UIADS;
+                ls_15.ISMLB = aggrParam.ISMLB;
+
+            }
+
+            //프로퍼티 복사건 재수집 처리.
+            lt_0015.push(ls_15);
+            
+        }
+
+        return lt_0015;
+
+    }   //UI의 attr 정보 복사 처리.
+
+
+    //복사된 ui를 붙여넣기 처리.
+    function lf_setPasteCopiedData(is_parent, is_copied, aggrParam, it_ua018, it_ua026, it_ua030, it_ua032, it_ua050, bKeep){
+
+        //신규 14번 구조 생성.
+        var ls_14 = oAPP.fn.crtStru0014();
+
+        //바인딩 처리 필드 생성.
+        oAPP.fn.crtTreeBindField(ls_14);
+        
+        //기존 복사건을 신규 14번 구조에 매핑.
+        oAPP.fn.moveCorresponding(is_copied, ls_14);
+        ls_14.zTREE = [];
+
+        //application 정보 재정의.
+        ls_14.APPID = oAPP.attr.appInfo.APPID;
+        ls_14.GUINR = oAPP.attr.appInfo.GUINR;
+
+        if(aggrParam){
+            //aggr 선택 팝업에서 선택한 aggregation정보 매핑.
+            ls_14.UIATK = aggrParam.UIATK;
+            ls_14.UIATT = aggrParam.UIATT;
+            ls_14.UIASN = aggrParam.UIASN;
+            ls_14.UIATY = aggrParam.UIATY;
+            ls_14.UIADT = aggrParam.UIADT;
+            ls_14.UIADS = aggrParam.UIADS;
+            ls_14.ISMLB = aggrParam.ISMLB;
+            ls_14.PUIATK = aggrParam.UIATK;                
+        }
+
+        //OBJID에 포함된 숫자 제거.
+        ls_14.OBJID = ls_14.OBJID.replace(/\d/g,"");
+
+        //현재 UI의 OBJID 재 매핑.
+        ls_14.OBJID = oAPP.fn.setOBJID(ls_14.OBJID);
+
+        //PARENT의 ID 매핑 처리.
+        ls_14.POBID = is_parent.OBJID;
+
+        //부모 UI OBJECT ID 매핑 처리.
+        ls_14.PUIOK = is_parent.UIOBK;
+
+        ls_14.chk = false;
+        ls_14.chk_visible = true;
+
+        //attribute 입력건 복사 처리.
+        var lt_0015 = lf_copyAttrData(ls_14, is_copied, aggrParam, bKeep);
+
+
+        //UI의 아이콘 구성 처리.
+        ls_14.UICON = oAPP.fn.fnGetSapIconPath(ls_14.UICON);
+
+        ls_14.icon_visible = true;
+
+
+        //tree embeded aggregation 아이콘 표현.
+        oAPP.fn.setTreeAggrIcon(ls_14);
+
+
+        //부모 정보에 현재 복사처리한 UI 수집처리.
+        is_parent.zTREE.push(ls_14);
+
+
+        //UI DESC 정보가 존재하는경우.
+        if(typeof is_copied._DESC !== "undefined"){
+            //UI DESC 정보 구성.
+            oAPP.fn.setDesc(ls_14.OBJID, is_copied._DESC);
+        }
+
+
+        //UI의 클라이언트 이벤트가 존재하는 경우 복사 처리.
+        lf_copyClientEvent(ls_14.OBJID, is_copied);
+
+
+        var l_UILIB = ls_14.UILIB;
+        
+        var ls_0022 = oAPP.DATA.LIB.T_0022.find( a=> a.UOBK === ls_14.UIOBK );
+
+        if(ls_0022){
+            l_UILIB = ls_0022.LIBNM;
+        }
+
+        //미리보기 UI 추가
+        oAPP.attr.ui.frame.contentWindow.addUIObjPreView(ls_14.OBJID, ls_14.UIOBK, l_UILIB, 
+            ls_14.UIFND, ls_14.POBID, ls_14.PUIOK, ls_14.UIATT, lt_0015, it_ua018, it_ua032, it_ua030, it_ua026, it_ua050);
+
+            
+        //file uploader UI의 uploaderUrl 프로퍼티 예외처리.
+        oAPP.fn.attrUploadUrlException(ls_14.OBJID, ls_14.UIOBK);
+
+
+        //복사한 데이터의 CHILD 정보가 존재하지 않는경우.
+        if(is_copied.zTREE.length === 0){
+            //aggrParam 파라메터가 존재하는경우 현재 구성한 라인정보 RETURN.
+            return aggrParam ? ls_14 : undefined;
+        }
+
+        //복사한 데이터의 CHILD정보가 존재하는경우 하위를 탐색하며 라인 정보 구성.
+        for(var i=0, l=is_copied.zTREE.length; i<l; i++){
+            lf_setPasteCopiedData(ls_14, is_copied.zTREE[i], undefined, it_ua018, it_ua026, it_ua030, it_ua032, it_ua050, bKeep);
+
+        }
+
+        //붙여넣기 데이터의 최상위인경우 해당 값 return.
+        if(aggrParam){return ls_14;}
+
+    }   //복사된 ui를 붙여넣기 처리.
+
+
+
+    //붙여넣기 callback 이벤트.
+    function lf_paste_cb(param, i_cdata, bKeep){
+        
+        //공통코드 미리보기 UI Property 고정값 정보 검색.
+        var lt_ua018 = oAPP.attr.S_CODE.UA018;
+        
+        //부모 UI에 추가 불필요 대상 UI 정보 검색.
+        var lt_ua026 = oAPP.attr.S_CODE.UA026;
+
+        //UI 프로퍼티 고정값 설정 정보 검색.
+        var lt_ua030 = oAPP.attr.S_CODE.UA030;
+
+        //UI 프로퍼티 type 예외처리 정보 검색.
+        var lt_ua032 = oAPP.attr.S_CODE.UA032;
+
+        //UI 프로퍼티 type 예외처리 정보 검색.
+        var lt_ua050 = oAPP.attr.S_CODE.UA050;
+
+
+        //복사한 UI 붙여넣기 처리.
+        var ls_14 = lf_setPasteCopiedData(is_tree, i_cdata, param, lt_ua018, lt_ua026, lt_ua030, lt_ua032, lt_ua050, bKeep);
+
+        //model 갱신 처리.
+        oAPP.attr.oModel.refresh();
+
+        //design tree의 tree binding 정보 갱신 처리.
+        var l_bind = oAPP.attr.ui.oLTree1.getBinding();
+        l_bind._buildTree(0, oAPP.fn.designGetTreeItemCount());
+
+        
+        //붙여넣기한 UI 선택 처리.
+        oAPP.fn.setSelectTreeItem(ls_14.OBJID);
+
+        //변경 FLAG 처리.
+        oAPP.fn.setChangeFlag();
+
+
+    } //붙여넣기 callback 이벤트.
+
+
+    //붙여넣기 정보의 OTR ALIAS검색.
+    function lf_getOTRtext(param, i_cdata, bKeep){
+
+        //화면 잠금 처리.
+        oAPP.fn.designAreaLockUnlock(true);
+        
+        //붙여넣기 처리하려는 정보의 OTR ALIAS 수집 처리.
+        function lf_getOTRAlise(is_tree){
+            //ATTR 정보가 존재하지 않는경우 EXIT.
+            if(is_tree._T_0015.length === 0){return;}
+
+            //ATTR 정보를 기준으로 OTR ALIAS 수집 처리.
+            for(var i=0, l=is_tree._T_0015.length; i<l; i++){
+
+                //프로퍼티, 바인딩처리안됨, 입력값이 $OTR:로 시작함.
+                if(is_tree._T_0015[i].UIATY === "1" && 
+                    is_tree._T_0015[i].ISBND !== "X" && 
+                    is_tree._T_0015[i].UIATV.substr(0,5) === "$OTR:"){
+                    
+                    //ALIAS 정보 수집.
+                    lt_alise.push(is_tree._T_0015[i].UIATV.substr(5));
+                }
+
+            }
+
+        }   //붙여넣기 처리하려는 정보의 OTR ALIAS 수집 처리.
+
+        
+        
+        //TREE를 기준으로 하위를 탐색하며, OTR ALIAS정보 수집.
+        function lf_getOTRAlisetree(is_tree){
+            //CHILD가 존재하는경우 CHILD의 OTR ALIAS정보 수집을 위한 탐색.
+            if(is_tree.zTREE.length.length !== 0){
+                for(var i=0, l=is_tree.zTREE.length; i<l; i++){
+                    lf_getOTRAlisetree(is_tree.zTREE[i]);
+                }
+            }
+
+            //현재 TREE에 OTR정보가 존재하는지 수집 처리.
+            lf_getOTRAlise(is_tree);
+
+        }   //TREE를 기준으로 하위를 탐색하며, OTR ALIAS정보 수집.
+
+        var lt_alise = [];
+
+        //붙여넣기 정보에서 OTR ALIAS 수집.
+        lf_getOTRAlisetree(i_cdata);
+
+        //수집된 OTR ALIAS 정보가 없는경우 EXIT.
+        if(lt_alise.length === 0){
+            lf_paste_cb(param, i_cdata, bKeep);
+            return;
+        }
+        
+
+        var oFormData = new FormData();
+        oFormData.append("ALIAS", JSON.stringify(lt_alise));
+
+        //수집된 OTR ALIAS가 존재하는경우 서버에서 OTR ALIAS에 해당하는 TEXT 검색.
+        sendAjax(oAPP.attr.servNm + "/getOTRTextsAlias", oFormData, function(oRet){
+
+            //화면 잠금 처리.
+            oAPP.fn.designAreaLockUnlock(true);
+
+
+            if(oRet.RETCD === "E"){
+                //메시지 출력.
+                parent.showMessage(sap, 10, "W", oRet.RTMSG);
+                
+            }
+
+            //서버에서 구성한 OTR ALISE에 해당하는 TEXT 정보 매핑.
+            oAPP.DATA.APPDATA.T_OTR = oRet.T_OTR;
+
+            //복사된 정보  붙여넣기 처리.
+            lf_paste_cb(param, i_cdata, bKeep);
+
+        }, "X", true, "POST", function(e){
+            //오류 발생시 lock 해제.
+            oAPP.fn.designAreaLockUnlock();
+          
+        });  //수집된 OTR ALIAS가 존재하는경우 서버에서 OTR ALIAS에 해당하는 TEXT 검색.
+
+
+    }   //붙여넣기 정보의 OTR ALIAS검색.
+
+
+    //AGGR 선택 팝업의 CALLBACK FUNCTION.
+    function lf_aggrPopup_cb(param, i_cdata){
+
+        //화면 잠금 처리.
+        oAPP.fn.designAreaLockUnlock(true);
+
+        //이동 가능한 aggregation 정보가 존재하지 않는경우.
+        if(typeof param === "undefined"){
+            //오류 메시지 출력.
+            //269	붙여넣기가 가능한 aggregation이 존재하지 않습니다.
+            parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "269", "", "", "", ""));
+
+            //lock 해제.
+            oAPP.fn.designAreaLockUnlock();
+            return;
+        }
+
+        //UI가 입력 가능한 카디널리티 여부 확인.
+        if(oAPP.fn.chkUiCardinality(is_tree, param.UIATK, param.ISMLB) === true){
+            //오류 발생시 lock 해제.
+            oAPP.fn.designAreaLockUnlock();
+            return;
+        }
+
+        //UI의 허용 가능 부모 정보
+        //(특정 UI는 특정 부모에만 존재해야함.)
+        if(oAPP.fn.designChkFixedParentUI(i_cdata.UIOBK, is_tree.UIOBK, param.UIATT) === true){
+            //오류 발생시 lock 해제.
+            oAPP.fn.designAreaLockUnlock();
+            return;
+        }
+
+
+        //application이 같더라도 붙여넣기시 바인딩, 이벤트가 있으면 유지여부 확인팝업 호출에 의한 주석 처리-start.
+        // //복사한 UI의 application이 현재 application과 같다면 바인딩 유지하면서 붙여넣기.
+        // if(i_cdata.APPID === oAPP.attr.appInfo.APPID){
+        //     //복사된 ui 붙여넣기 처리.
+        //     lf_paste_cb(param, i_cdata, true);
+        //     return;
+        // }
+        //application이 같더라도 붙여넣기시 바인딩, 이벤트가 있으면 유지여부 확인팝업 호출에 의한 주석 처리-end.
+
+
+        //복사한 UI에 바인딩, 이벤트 정보가 존재하지 않는경우.
+        if(lf_chkBindNEvent(i_cdata) !== true){
+            //복사된 ui 붙여넣기 처리.
+            //lf_paste_cb(param, i_cdata, false);
+            lf_getOTRtext(param, i_cdata, false);
+            return;
+        }
+
+
+        //trial 버전인경우.
+        if(parent.getIsTrial()){
+            //복사된 바인딩 정보, 서버이벤트 정보 제거 상태로 붙여넣기 처리.
+            //lf_paste_cb(param, i_cdata, false);
+            lf_getOTRtext(param, i_cdata, false);
+            return;
+        }
+        
+        //116	Copy and paste application is different.
+        var l_msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "116", "", "", "", "");
+
+        //117	Do you want to keep the binding?.
+        l_msg += oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "117", "", "", "", "");
+
+        //lock 해제.
+        oAPP.fn.designAreaLockUnlock();
+
+        //단축키 잠금 처리.
+        oAPP.fn.setShortcutLock(true);
+
+        //복사한 UI의 APPLICATION이 현재 APPLICATION과 다른 경우.
+        //바인딩, 서버이벤트 초기화 여부 확인 팝업 호출.
+        parent.showMessage(sap, 40, "I", l_msg, function(oEvent){
+
+            //화면 잠금 처리.
+            oAPP.fn.designAreaLockUnlock(true);
+
+            //취소를 한경우 exit.
+            if(oEvent === "CANCEL"){
+                //화면 잠금 해제 처리.
+                oAPP.fn.designAreaLockUnlock();
+                return;
+            }
+
+            //default 바인딩, 서버이벤트 해제 처리.
+            var l_flag = false;
+
+            //바인딩, 서버이벤트를 유지하는경우.
+            if(oEvent === "YES"){
+                l_flag = true;
+            }
+
+            //복사된 ui 붙여넣기 처리.
+            //lf_paste_cb(param, i_cdata, l_flag);
+            lf_getOTRtext(param, i_cdata, l_flag);
+
+        }); //바인딩, 서버이벤트 초기화 여부 확인 팝업 호출.
+
+
+    }   //AGGR 선택 팝업의 CALLBACK FUNCTION.
+
+
+
+
+    //바인딩, 이벤트 설정건 존재여부 확인.
+    function lf_chkBindNEvent(is_tree){
+
+        //attribute 입력건이 존재하는경우.
+        if(typeof is_tree._T_0015 !== "undefined" && is_tree._T_0015.length !== 0 ){
+            //바인딩된 정보가 존재하거나 이벤트가 존재하는건이 있는지 여부 확인
+            if(is_tree._T_0015.findIndex( a => ( a.ISBND === "X" && a.UIATV !== "") || ( a.UIATY === "2" && a.UIATV !== "") ) !== -1 ){
+                return true;
+            }
+
+        }
+
+        //child UI가 존재하는경우.
+        if(typeof is_tree.zTREE !== "undefined" && is_tree.zTREE.length !== 0){
+
+            for(var i=0, l=is_tree.zTREE.length; i<l; i++){
+                var l_found = lf_chkBindNEvent(is_tree.zTREE[i]);
+
+                if(l_found){return true;}
+            }
+
+        }
+
+    }   //바인딩, 이벤트 설정건 존재여부 확인.
+
+
+
+    //클라이언트 이벤트 복사 처리.
+    function lf_copyClientEvent(OBJID, is_tree){
+        //복사된 UI에 클라이언트가 없는경우 EXIT.
+        if(typeof is_tree._CEVT === "undefined"){return;}
+
+        //클라이언트 이벤트를 복사 처리.
+        for(var i=0, l=is_tree._CEVT.length; i<l; i++){
+            //이전의 클라이언트 이벤트의 OBJID를 복사된 UI의 이름으로 변경처리.
+            is_tree._CEVT[i].OBJID = is_tree._CEVT[i].OBJID.replace(is_tree.OBJID, OBJID);
+        }
+
+        //OBJID를 재구성한 클라이언트 이벤트 수집 처리.
+        oAPP.DATA.APPDATA.T_CEVT = oAPP.DATA.APPDATA.T_CEVT.concat(is_tree._CEVT);
+
+    }
+
+    //단축키 잠금 처리.
+    oAPP.fn.setShortcutLock(true);
+
+    //편집 불가능 상태일때는 exit.
+    if(oAPP.attr.oModel.oData.IS_EDIT !== true){
+        //단축키 잠금 해제 처리.
+        oAPP.fn.setShortcutLock();
+        return;
+    }
+
+
+    //복사한 UI가 이미 존재하는경우 붙여넣기 skip 처리.(공통코드 UA039에 해당하는 UI는 APP당 1개만 존재 가능)
+    if(oAPP.fn.designChkUnique(is_data.UIOBK) === true){
+        //단축키 잠금 해제 처리.
+        oAPP.fn.setShortcutLock();
+        return;
+    }
+
+    //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.(공통코드 UA040에 해당하는 UI는 특정 UI 하위에만 존재가능)
+    if(oAPP.fn.designChkHiddenAreaUi(is_data.UIOBK, is_tree.UIOBK) === true){
+        //단축키 잠금 해제 처리.
+        oAPP.fn.setShortcutLock();
+        return;
+    }
+
+    
+    //이벤트 발생 x, y 좌표값 얻기.
+    var l_pos = oAPP.fn.getMousePosition();
+
+    //aggregation 선택 팝업 호출.
+    if(typeof oAPP.fn.aggrSelectPopup !== "undefined"){
+        oAPP.fn.aggrSelectPopup(is_data, is_tree, lf_aggrPopup_cb, l_pos.x, l_pos.y);
+        return;
+    }
+
+    //aggregation 선택 팝업이 존재하지 않는경우 js load후 호출.
+    oAPP.fn.getScript("design/js/aggrSelectPopup",function(){
+        oAPP.fn.aggrSelectPopup(is_data, is_tree, lf_aggrPopup_cb, l_pos.x, l_pos.y);
+    });
+
+
+  };  //context menu ui 붙여넣기 처리.
 
   
 

@@ -28,6 +28,7 @@
             APPPATH = APP.getAppPath(),
             PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
             PATHINFO = require(PATHINFOURL),
+            WSUTIL = parent.require(PATHINFO.WSUTIL),
             WSERR = require(PATHINFO.WSTRYCATCH);
 
         var zconsole = WSERR(window, document, console);

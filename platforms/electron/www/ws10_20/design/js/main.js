@@ -883,7 +883,7 @@
 
 
     //UI DOM을 기준으로 UI instance 정보 얻기.
-    oAPP.fn.getUiInstanceDOM = function(oDom,oCore){
+    oAPP.fn.getUiInstanceDOM = function(oDom, oCore){
 
       //DOM 정보가 존재하지 않는경우 exit.
       if(typeof oDom === "undefined"){return;}

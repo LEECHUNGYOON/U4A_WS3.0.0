@@ -954,7 +954,7 @@
     /************************************************************************
      * USP PATTERN POPUP
      ************************************************************************/
-    oAPP.fn.fnSourcePatternPopupOpener = () => {
+    oAPP.fn.fnSourcePatternPopupOpener = async () => {
 
         let sPopupName = "PATTPOPUP";
 
@@ -966,7 +966,9 @@
 
         let oUserInfo = parent.getUserInfo(), // Login User 정보
             oServerInfo = parent.getServerInfo(), // 서버 정보         
-            oThemeInfo = parent.getThemeInfo(); // 테마 개인화 정보            
+            oThemeInfo = parent.getThemeInfo(), // 테마 개인화 정보            
+            sWsThemeInfo = await parent.WSUTIL.getWsThemeAsync(),
+            sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(sWsThemeInfo);
 
         // Browswer Options
         let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
@@ -978,7 +980,8 @@
         oBrowserOptions.show = false;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+        // oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+        oBrowserOptions.backgroundColor = sWsThemeColor;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
@@ -989,7 +992,7 @@
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
         // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
-        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${sWsThemeColor}; }`;
         oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
         // 브라우저 상단 메뉴 없애기
@@ -999,9 +1002,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         oBrowserWindow.once('ready-to-show', () => {
 
@@ -1014,10 +1017,10 @@
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
             let oOptionData = {
-                BROWSKEY: BROWSKEY, // 브라우저 고유키 
-                oUserInfo: oUserInfo, // 로그인 사용자 정보
-                oServerInfo: oServerInfo, // 서버 정보                
-                oThemeInfo: oThemeInfo, // 테마 정보                
+                // BROWSKEY: BROWSKEY, // 브라우저 고유키 
+                // oUserInfo: oUserInfo, // 로그인 사용자 정보
+                // oServerInfo: oServerInfo, // 서버 정보                
+                // oThemeInfo: oThemeInfo, // 테마 정보                
             };
 
             oBrowserWindow.webContents.send('if-usp-pattern-info', oOptionData);

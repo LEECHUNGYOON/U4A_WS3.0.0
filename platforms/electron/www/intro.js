@@ -64,10 +64,35 @@
     //     });
     // }
 
+    async function WLO_test() {
+
+        debugger;
+
+        let bIsExe1 = await WSUTIL.getWsWhiteListObjectAsync("UHA", "aaaa");
+
+        debugger;
+
+        let bIsExe2 = await WSUTIL.getWsWhiteListObjectAsync("U4A", "/U4A/WS000001|_GETMETA");
+
+        debugger;
+
+        let bIsExe3 = await WSUTIL.getWsWhiteListObjectAsync("UHA", "/U4A/WS000001|_GETMETA");
+
+        debugger;
+
+        let bIsExe4 = await WSUTIL.getWsWhiteListObjectAsync();
+
+        debugger;
+
+    }
 
     oAPP.fn.fnOnStart = async () => {
 
         // await _fnwait();
+
+        // WLO_test();
+
+        // return;
 
         oAPP.startTime = new Date().getTime();
 
@@ -83,7 +108,7 @@
         await oAPP.fn.getWsMessageList(); // <--- 반드시 여기에 위치해야함!!        
 
         // 소스 패턴 관련작업
-        await _sourcePatternRelated();        
+        await _sourcePatternRelated();
 
         // 실행 기준 3개월이 지난 로그가 있다면 삭제한다.
         await _oldLogDelete();
@@ -1116,7 +1141,7 @@
              */
 
             let aCustomPatternInitData = await USP_UTIL.getCustomPatternInitData(), // 커스텀 패턴 기본 정보 구하기
-                sCustPattJsonData = JSON.stringify(aCustomPatternInitData); // 커스텀 패턴 기본 정보 JSON 변환
+                sCustPattInitJsonData = JSON.stringify(aCustomPatternInitData); // 커스텀 패턴 기본 정보 JSON 변환
 
             // 커스텀 패턴 파일이 없으면 신규 생성
             let sCustPattJsonPath = PATHINFO.CUST_PATT,
@@ -1125,7 +1150,7 @@
             if (!bIsFileExist) {
 
                 // 커스텀 패턴 정보를 JSON으로 말아서 앱 설치 폴더에 저장
-                let oWriteResult = await WSUTIL.fsWriteFile(sCustPattJsonPath, sCustPattJsonData);
+                let oWriteResult = await WSUTIL.fsWriteFile(sCustPattJsonPath, sCustPattInitJsonData);
                 if (oWriteResult.RETCD == "E") {
                     resolve(oWriteResult);
                     console.error("[Intro] 커스텀 패턴 파일 저장하다가 오류");
@@ -1133,6 +1158,30 @@
                 }
 
             }
+
+            // 기존에 저장된 개인화 패턴 정보가 있을 경우, 개인화 패턴 ROOT의 Description을 Ws language에 맞게 변경
+            let sCustPattJsonData = FS.readFileSync(sCustPattJsonPath, 'utf-8');
+
+            try {
+                var aCustPattData = JSON.parse(sCustPattJsonData);
+            } catch (error) {
+                console.error("[Intro] 기 저장된 커스텀 패턴 파일읽어서 JSON 파싱하다가 오류");
+                throw new Error(error.toString());
+            }
+
+            // 커스텀 패턴 ROOT의 Description을 WS Language 언어에 맞게 매핑
+            aCustPattData[0] = aCustomPatternInitData[0];
+
+            let sCustPattJson = JSON.stringify(aCustPattData);            
+
+            // 커스텀 패턴 정보를 Json 파일로 저장한다.
+            let oWriteCustJsonResult = await WSUTIL.fsWriteFile(sCustPattJsonPath, sCustPattJson);
+            if (oWriteCustJsonResult.RETCD == "E") {
+                resolve(oWriteCustJsonResult);
+                console.error("[Intro] 기본패턴 정보 JSON 저장하다가 오류");
+                return;
+            }
+
 
             resolve({ RETCD: "S" });
 

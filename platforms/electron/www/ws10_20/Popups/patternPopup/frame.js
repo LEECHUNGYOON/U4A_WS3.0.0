@@ -52,9 +52,9 @@ let oAPP = (function (window) {
      ************************************************************************/
     oAPP.IPCRENDERER.on('if-usp-pattern-info', (events, oInfo) => {
 
-        oAPP.attr.oUserInfo = oInfo.oUserInfo;
-        oAPP.attr.oServerInfo = oInfo.oServerInfo;
-        oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
+        // oAPP.attr.oUserInfo = oInfo.oUserInfo;
+        // oAPP.attr.oServerInfo = oInfo.oServerInfo;
+        // oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {
