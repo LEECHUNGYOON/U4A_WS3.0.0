@@ -374,8 +374,8 @@
     //E28  UI Personalization List
     //개인화 팝업 호출 버튼.
     var oLBtn7 = new sap.m.Button({icon:"sap-icon://user-settings",
-      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E28", "", "", "", ""),
-      visible:parent.REMOTE.app.isPackaged ? false : true});
+      // visible:parent.REMOTE.app.isPackaged ? false : true, //no build mode 일때만 활성화 처리(작업 완료후 해제 필요)
+      tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E28", "", "", "", "")});
     oLTBar1.addContent(oLBtn7);
 
     oLBtn7.attachPress(function(){

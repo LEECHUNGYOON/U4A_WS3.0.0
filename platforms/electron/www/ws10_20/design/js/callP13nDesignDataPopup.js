@@ -749,7 +749,7 @@
 
     //초기값 설정.
     function lf_setInitData(sMode){
-        
+
         //진입시 모드 설정.(C, R)
         loApp.attr.mode = sMode;
 

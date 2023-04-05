@@ -13,14 +13,17 @@
         
         //이미지 정보 구성을 실패한 경우.
         if(lf_getImageData(UIOBK) === false){
+            //E32	Preview Image
             //196  &1 does not exist.
-            parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "196", "Preview Image", "", "", ""));
+            parent.showMessage(sap, 10, "E", 
+                oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "196", 
+                oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E32", "", "", "", ""), "", "", ""));
             return;
         }
 
         //ui 미리보기 이미지 팝업.
-        loApp.ui.oPop = new sap.m.ResponsivePopover({placement:"Auto", contentWidth:"40%", contentHeight:"40%", verticalScrolling:false});
-        // loApp.ui.oPop = new sap.m.ResponsivePopover({placement:"Auto", verticalScrolling:false});
+        loApp.ui.oPop = new sap.m.ResponsivePopover({placement:"Auto", contentWidth:"40%", 
+            contentHeight:"40%", verticalScrolling:false});
 
         //이미지 팝업 호출 전 이벤트.
         loApp.ui.oPop.attachBeforeOpen(function(){
@@ -53,6 +56,13 @@
 
         oTool0.addContent(new sap.m.ToolbarSpacer());
 
+        oSwitch = new sap.m.Switch({state:"{/state}"});
+        oTool0.addContent(oSwitch);
+        oSwitch.attachChange(function(){
+            //switch on/off 여부에 따른 Carousel 자동넘김 처리.
+            lf_setCarouselInterval(this.getState() ? false:true);
+        });
+
         //A39	Close
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "");
 
@@ -69,20 +79,19 @@
         }); //닫기 버튼 선택 이벤트.
 
 
-        // var oHBox = new sap.m.HBox();
-        // loApp.ui.oPop.addContent(oHBox);
-
-        // var oCar = new sap.m.Carousel({loop:true, width:"", height:"30%"});
         loApp.ui.oCar = new sap.m.Carousel({loop:true});
         loApp.ui.oPop.addContent(loApp.ui.oCar);
-        // oHBox.addItem(oCar);
+
+
+        //Carousel 화면 전환전 이벤트.
+        loApp.ui.oCar.attachBeforePageChanged(function(oEvent){
+            //interval 재설정 처리.
+            lf_setCarouselInterval();
+        });
 
         var oImage = new sap.m.Image({src:"{src}"});
         loApp.ui.oCar.bindAggregation("pages", {path:"/T_IMAGE", template:oImage});
 
-
-        // var oDetail = new sap.m.LightBox({imageContent:new sap.m.LightBoxItem({imageSrc:"{src}"})});
-        // oImage.setDetailBox(oDetail);
 
         //팝업 호출 처리.
         loApp.ui.oPop.openBy(oUi);
@@ -147,8 +156,8 @@
     //팝업 종료 이벤트.
     function lf_afterClose(){
         
-        // //Carousel Interval 초기화 처리.
-        // clearInterval(loApp.attr.intv);
+        //Carousel Interval 초기화 처리.
+        lf_setCarouselInterval(true);
 
         //팝업 UI 제거.
         loApp.ui.oPop.destroy();
@@ -213,7 +222,7 @@
         if(!ls_0022){return;}
 
         //결과 바인딩.
-        loApp.oModel.setData({title: `${ls_0022.UIOBJ} (${ls_0022.LIBNM})` });
+        loApp.oModel.setData({title: `${ls_0022.UIOBJ} (${ls_0022.LIBNM})`, state:true });
 
 
     }   //팝업 호출 전 이벤트 처리.
@@ -239,12 +248,32 @@
         loApp.oModel.setData({T_IMAGE:lt_IMAGE}, true);
 
 
-        // //2초마다 Carousel 넘기기.
-        // loApp.attr.intv = setInterval(()=>{
-        //     loApp.ui.oCar.next();
-        // },2000);
+        //2초마다 Carousel 넘기기.
+        lf_setCarouselInterval();
         
 
     }   //팝업 호출 이후 이벤트 처리.
+
+
+
+
+    //Carousel Interval 설정 처리.
+    function lf_setCarouselInterval(bClose){
+
+        //Carousel Interval 초기화 처리.
+        clearInterval(loApp.attr.intv);
+
+        //초기화 후 interval 처리를 안하는경우 exit.
+        if(bClose){return;}
+
+        if(!loApp.oModel.oData.state){return;}
+
+        //2초마다 Carousel 넘기기.
+        loApp.attr.intv = setInterval(()=>{
+            loApp.ui.oCar.next();
+        },2000);
+
+    }   //Carousel Interval 설정 처리.
+
 
 })();

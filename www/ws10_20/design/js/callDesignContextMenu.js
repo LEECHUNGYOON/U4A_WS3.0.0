@@ -109,28 +109,28 @@
         
         //UI 개인화 저장.
         var oMItem11 = new this.sap.m.MenuItem({key:"M11", icon:"sap-icon://save", 
-            visible:parent.REMOTE.app.isPackaged ? false : true,    //no build mode 일때만 활성화 처리(작업 완료후 해제 필요)
+            // visible:parent.REMOTE.app.isPackaged ? false : true,    //no build mode 일때만 활성화 처리(작업 완료후 해제 필요)
             text:l_txt, tooltip:l_txt, startsSection:true, enabled:"{/lcmenu/enab11}"});
         oMenu1.addItem(oMItem11);
 
 
-        //A60	Admin
-        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A60", "", "", "", "");
+        // //A60	Admin
+        // var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A60", "", "", "", "");
 
-        //관리자 메뉴.
-        var oMItem9 = new this.sap.m.MenuItem({key:"M09", icon:"sap-icon://paste", 
-            visible:parent.getUserInfo().ISADM === "X" ? true : false,  //admin인경우만 관리자 메뉴 활성화.
-            text:l_txt, tooltip:l_txt, startsSection:true});
-        oMenu1.addItem(oMItem9);
+        // //관리자 메뉴.
+        // var oMItem9 = new this.sap.m.MenuItem({key:"M09", icon:"sap-icon://paste", 
+        //     visible:parent.getUserInfo().ISADM === "X" ? true : false,  //admin인경우만 관리자 메뉴 활성화.
+        //     text:l_txt, tooltip:l_txt, startsSection:true});
+        // oMenu1.addItem(oMItem9);
 
 
-        //A61	Register Wizard Template
-        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A61", "", "", "", "");
+        // //A61	Register Wizard Template
+        // var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A61", "", "", "", "");
 
-        //관리자 서브 메뉴.
-        var oMItem10 = new this.sap.m.MenuItem({key:"M10", icon:"sap-icon://paste", 
-            text:l_txt, tooltip:l_txt});
-        oMItem9.addItem(oMItem10);
+        // //관리자 서브 메뉴.
+        // var oMItem10 = new this.sap.m.MenuItem({key:"M10", icon:"sap-icon://paste", 
+        //     text:l_txt, tooltip:l_txt});
+        // oMItem9.addItem(oMItem10);
 
 
         //생성한 popup 정보 return;
