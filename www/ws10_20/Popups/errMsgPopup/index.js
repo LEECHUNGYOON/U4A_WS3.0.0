@@ -17,6 +17,7 @@ let oAPP = parent.oAPP,
     let PATH = oAPP.PATH,
         APP = oAPP.APP,
         APPPATH = APP.getAppPath(),
+        PATHINFO = parent.PATHINFO,
         require = parent.require;
 
     /************************************************************************
@@ -60,7 +61,7 @@ let oAPP = parent.oAPP,
     oAPP.fn.getSettingsInfo = function () {
 
         // Browser Window option
-        var sSettingsJsonPath = PATH.join(APP.getAppPath(), "/settings/ws_settings.json"),
+        var sSettingsJsonPath = PATHINFO.WSSETTINGS,
 
             // JSON 파일 형식의 Setting 정보를 읽는다..
             oSettings = require(sSettingsJsonPath);
@@ -79,10 +80,6 @@ let oAPP = parent.oAPP,
 
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
-            sVersion = oSetting_UI5.version,
-            sTestResource = oSetting_UI5.testResource,
-            sReleaseResource = `../../../lib/ui5/${sVersion}/resources/sap-ui-core.js`,
-            bIsDev = oSettings.isDev,
             oBootStrap = oSetting_UI5.bootstrap,
             oUserInfo = oAPP.attr.oUserInfo,
             oThemeInfo = oAPP.attr.oThemeInfo,
@@ -99,14 +96,7 @@ let oAPP = parent.oAPP,
         // 로그인 Language 적용
         oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
         oScript.setAttribute("data-sap-ui-language", sLangu);
-        oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.tnt, sap.ui.table, sap.ui.layout");
-
-        // 개발일때와 release 할 때의 Bootstrip 경로 분기
-        if (bIsDev) {
-            oScript.setAttribute("src", sTestResource);
-        } else {
-            oScript.setAttribute("src", sReleaseResource);
-        }
+        oScript.setAttribute("src", oSetting_UI5.resourceUrl);
 
         document.head.appendChild(oScript);
 
@@ -265,7 +255,7 @@ let oAPP = parent.oAPP,
     oAPP.fn.fnLoadCommonCss = () => {
 
         var sCommonCssUrl = PATH.join(APPPATH, "css", "common.css");
-        
+
         sCommonCssUrl = sCommonCssUrl.replaceAll("\\", "/");
         sCommonCssUrl = `file:///${sCommonCssUrl}`;
 
