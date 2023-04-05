@@ -2445,7 +2445,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 new sap.m.MessageStrip({
                     showIcon: true,
-                    text : "{/WSLANGU/ZMSG_WS_COMMON_001/037}" // The selected language applies only to after restarting application.
+                    text: "{/WSLANGU/ZMSG_WS_COMMON_001/037}" // The selected language applies only to after restarting application.
                 }).addStyleClass("sapUiTinyMargin"),
 
                 new sap.ui.layout.form.Form({
@@ -2593,7 +2593,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         var oDialog = new sap.m.Dialog(sDialogId, {
-
+            contentWidth: "350px",
             draggable: true,
             resizable: true,
 
@@ -2609,6 +2609,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             }),
 
             content: [
+
+                new sap.m.MessageStrip({
+                    showIcon: true,
+                    text: "{/WSLANGU/ZMSG_WS_COMMON_001/037}" // This setting is applies only to after restarting application.
+                }).addStyleClass("sapUiTinyMargin"),
 
                 new sap.ui.layout.form.Form({
                     editable: true,
@@ -2704,15 +2709,15 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 선택한 언어값을 레지스트리에 저장
         await WSUTIL.setWsLanguAsync(sSelectedKey);
 
-        // 초기 모델 구성
-        await oAPP.fn.fnOnInitModeling();
+        // // 초기 모델 구성
+        // await oAPP.fn.fnOnInitModeling();
 
         oDialog.close();
 
         oAPP.setBusy(false);
 
         // UI5 Language 변경
-        sap.ui.getCore().getConfiguration().setLanguage(sSelectedKey);
+        // sap.ui.getCore().getConfiguration().setLanguage(sSelectedKey);
 
         sap.m.MessageToast.show(oAPP.msg.M01); // Saved success
 
@@ -2750,8 +2755,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oAPP.setBusy(false);
 
-        // UI5 테마 적용
-        sap.ui.getCore().applyTheme(sSelectedTheme);
+        // // UI5 테마 적용
+        // sap.ui.getCore().applyTheme(sSelectedTheme);
 
         sap.m.MessageToast.show(oAPP.msg.M01); // Saved success
 
@@ -2961,7 +2966,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
-            
+
             oAPP.setBusy(false);
 
             var oMetadata = {

@@ -32,7 +32,7 @@
 
     oAPP.fn.fnOnDeviceReady = function () {
 
-        oAPP.fn.fnOnStart();
+        oAPP.fn.fnOnStart(); // [async]
 
 
     }; // end of oAPP.fn.fnOnDeviceReady
@@ -64,27 +64,27 @@
     //     });
     // }
 
-    async function WLO_test() {
+    // async function WLO_test() {
 
-        debugger;
+    //     debugger;
 
-        let bIsExe1 = await WSUTIL.getWsWhiteListObjectAsync("UHA", "aaaa");
+    //     let bIsExe1 = await WSUTIL.getWsWhiteListObjectAsync("UHA", "aaaa");
 
-        debugger;
+    //     debugger;
 
-        let bIsExe2 = await WSUTIL.getWsWhiteListObjectAsync("U4A", "/U4A/WS000001|_GETMETA");
+    //     let bIsExe2 = await WSUTIL.getWsWhiteListObjectAsync("U4A", "/U4A/WS000001|_GETMETA");
 
-        debugger;
+    //     debugger;
 
-        let bIsExe3 = await WSUTIL.getWsWhiteListObjectAsync("UHA", "/U4A/WS000001|_GETMETA");
+    //     let bIsExe3 = await WSUTIL.getWsWhiteListObjectAsync("UHA", "/U4A/WS000001|_GETMETA");
 
-        debugger;
+    //     debugger;
 
-        let bIsExe4 = await WSUTIL.getWsWhiteListObjectAsync();
+    //     let bIsExe4 = await WSUTIL.getWsWhiteListObjectAsync();
 
-        debugger;
+    //     debugger;
 
-    }
+    // }
 
     oAPP.fn.fnOnStart = async () => {
 
