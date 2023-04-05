@@ -905,10 +905,9 @@
         sSettingUi5BootUrl = sSettingUi5BootUrl.replaceAll("\\", "/");
         sSettingUi5BootUrl = `file:///${sSettingUi5BootUrl}`;
 
-        oSettings.UI5.resourceUrl = sSettingUi5BootUrl;
-        oSettings.UI5.realUrl = sSettingUi5BootUrl;
-        
-        // // test url
+        oSettings.UI5.resourceUrl = sSettingUi5BootUrl;        
+
+        // test url
         // let sTestUrl = PATH.join(process.env.TEMP, "v11071", "resources", "sap-ui-core.js");
         // sTestUrl = sTestUrl.replaceAll("\\", "/");
         // sTestUrl = `file:///${sTestUrl}`;
