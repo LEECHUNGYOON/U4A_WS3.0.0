@@ -32,7 +32,7 @@
   },
   "build": {
     "copyright": "Copyright 2020. INFOCG Inc. all rights reserved.",
-    "asar": true,
+    "asar": false,
     "artifactName": "U4A-Workspace-Setup-${version}.${ext}",
     "win": {},
     "publish": {
@@ -81,7 +81,6 @@
     "node-ssh": "^13.0.1",
     "node-zip": "^1.1.1",
     "ping": "^0.4.2",
-    "proper-lockfile": "^4.1.2",
     "random-key": "^0.3.2",
     "regedit": "^5.0.0",
     "systeminformation": "^5.15.1",
