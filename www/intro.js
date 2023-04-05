@@ -32,7 +32,7 @@
 
     oAPP.fn.fnOnDeviceReady = function () {
 
-        oAPP.fn.fnOnStart();
+        oAPP.fn.fnOnStart(); // [async]
 
 
     }; // end of oAPP.fn.fnOnDeviceReady
@@ -64,27 +64,27 @@
     //     });
     // }
 
-    async function WLO_test() {
+    // async function WLO_test() {
 
-        debugger;
+    //     debugger;
 
-        let bIsExe1 = await WSUTIL.getWsWhiteListObjectAsync("UHA", "aaaa");
+    //     let bIsExe1 = await WSUTIL.getWsWhiteListObjectAsync("UHA", "aaaa");
 
-        debugger;
+    //     debugger;
 
-        let bIsExe2 = await WSUTIL.getWsWhiteListObjectAsync("U4A", "/U4A/WS000001|_GETMETA");
+    //     let bIsExe2 = await WSUTIL.getWsWhiteListObjectAsync("U4A", "/U4A/WS000001|_GETMETA");
 
-        debugger;
+    //     debugger;
 
-        let bIsExe3 = await WSUTIL.getWsWhiteListObjectAsync("UHA", "/U4A/WS000001|_GETMETA");
+    //     let bIsExe3 = await WSUTIL.getWsWhiteListObjectAsync("UHA", "/U4A/WS000001|_GETMETA");
 
-        debugger;
+    //     debugger;
 
-        let bIsExe4 = await WSUTIL.getWsWhiteListObjectAsync();
+    //     let bIsExe4 = await WSUTIL.getWsWhiteListObjectAsync();
 
-        debugger;
+    //     debugger;
 
-    }
+    // }
 
     oAPP.fn.fnOnStart = async () => {
 
@@ -855,6 +855,19 @@
 
     } // end of _checkRegistry
 
+    function _setGlobalSettingInfo(oSettings) {
+
+        return new Promise(async (resolve) => {
+
+            oSettings.globalLanguage = await WSUTIL.getWsLanguAsync();
+            oSettings.globalTheme = await WSUTIL.getWsThemeAsync();
+
+            resolve();
+
+        });
+
+    } // end of _setGlobalSettingInfo
+
     /************************************************************************
      * WS Setting 정보를 Json 파일로 저장
      ************************************************************************/
@@ -873,12 +886,14 @@
              * 여기서 Setting정보 추가할것. -- start
              */
 
+            // WS Global Setting 관련 정보
+            await _setGlobalSettingInfo(oSettings);
+
             // UI5 Bootstrap Url 구성
             _setUI5BootStrapUrl(oSettings);
 
             // 각종 루트 패스 등의 패스 정보 구성
             _setCommonPaths(oSettings);
-
 
             /**
              *  -- end
@@ -905,7 +920,7 @@
         sSettingUi5BootUrl = sSettingUi5BootUrl.replaceAll("\\", "/");
         sSettingUi5BootUrl = `file:///${sSettingUi5BootUrl}`;
 
-        oSettings.UI5.resourceUrl = sSettingUi5BootUrl;        
+        oSettings.UI5.resourceUrl = sSettingUi5BootUrl;
 
         // test url
         // let sTestUrl = PATH.join(process.env.TEMP, "v11071", "resources", "sap-ui-core.js");
@@ -1172,7 +1187,7 @@
             // 커스텀 패턴 ROOT의 Description을 WS Language 언어에 맞게 매핑
             aCustPattData[0] = aCustomPatternInitData[0];
 
-            let sCustPattJson = JSON.stringify(aCustPattData);            
+            let sCustPattJson = JSON.stringify(aCustPattData);
 
             // 커스텀 패턴 정보를 Json 파일로 저장한다.
             let oWriteCustJsonResult = await WSUTIL.fsWriteFile(sCustPattJsonPath, sCustPattJson);

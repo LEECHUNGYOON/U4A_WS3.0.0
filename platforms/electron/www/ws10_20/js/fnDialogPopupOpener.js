@@ -964,11 +964,8 @@
             return;
         }
 
-        let oUserInfo = parent.getUserInfo(), // Login User 정보
-            oServerInfo = parent.getServerInfo(), // 서버 정보         
-            oThemeInfo = parent.getThemeInfo(), // 테마 개인화 정보            
-            sWsThemeInfo = await parent.WSUTIL.getWsThemeAsync(),
-            sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(sWsThemeInfo);
+        let oSettings = parent.WSUTIL.getWsSettingsInfo(),
+            sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(oSettings.globalTheme);
 
         // Browswer Options
         let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
@@ -979,8 +976,7 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.show = false;
         oBrowserOptions.parent = CURRWIN;
-        oBrowserOptions.opacity = 0.0;
-        // oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+        oBrowserOptions.opacity = 0.0;        
         oBrowserOptions.backgroundColor = sWsThemeColor;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;

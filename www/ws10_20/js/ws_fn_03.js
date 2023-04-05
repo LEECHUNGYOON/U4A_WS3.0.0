@@ -539,8 +539,8 @@
         }
 
         var sTitle = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C85"), // Trial Version
-            sDesc = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "311"); // Does not Support in this Trial Version.
-        sIllustType = "tnt-Lock",
+            sDesc = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "311"), // Does not Support in this Trial Version.
+            sIllustType = "tnt-Lock",
             sIllustSize = sap.m.IllustratedMessageSize.Spot;
 
         oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize);

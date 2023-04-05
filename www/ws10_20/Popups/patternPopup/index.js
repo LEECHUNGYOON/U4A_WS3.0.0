@@ -75,17 +75,17 @@ if (!oAPP) {
     //  * UI5 BootStrap 
     //  ************************************************************************/
     oAPP.fn.fnLoadBootStrapSetting = async function () {
-
-        // WS Global Setting의 Language 설정 값
-        let sWsLangu = await WSUTIL.getWsLanguAsync(),
-            sWsTheme = await WSUTIL.getWsThemeAsync();
+        
+        // // WS Global Setting의 Language 설정 값
+        // let sWsLangu = await WSUTIL.getWsLanguAsync(),
+        //     sWsTheme = await WSUTIL.getWsThemeAsync();
 
         var oSettings = WSUTIL.getWsSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
             oBootStrap = oSetting_UI5.bootstrap,
             // oThemeInfo = oAPP.attr.oThemeInfo,
-            sTheme = sWsTheme,
-            sLangu = sWsLangu;
+            sTheme = oSettings.globalTheme,
+            sLangu = oSettings.globalLanguage;
         // sLangu = oUserInfo.LANGU;
 
         var oScript = document.createElement("script");
@@ -200,9 +200,10 @@ if (!oAPP) {
 
         return new Promise(async (resolve) => {
 
-            var WSUTIL = parent.WSUTIL;
+            var WSUTIL = parent.WSUTIL,
+                oSettingInfo = WSUTIL.getWsSettingsInfo();
 
-            let sWsLangu = await WSUTIL.getWsLanguAsync();
+            let sWsLangu = oSettingInfo.globalLanguage;
 
             oAPP.msg.M01 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "021"); // Default Pattern
             oAPP.msg.M02 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "022"); // Custom Pattern
@@ -448,13 +449,13 @@ if (!oAPP) {
                         formatter: function (TYPE, DESC) {
                             return (TYPE === "ROOT" ? `${DESC} Root` : DESC);
                         }
-                    }),                    
+                    }),
                     filterProperty: "DESC",
                     sortProperty: "DESC"
                 }),
-                new sap.ui.table.Column({                    
+                new sap.ui.table.Column({
                     label: oAPP.msg.M03, // Content Type                    
-                    template: new sap.m.Text({ text: "{CONT_TYPE}" }),                    
+                    template: new sap.m.Text({ text: "{CONT_TYPE}" }),
                     filterProperty: "CONT_TYPE",
                     sortProperty: "CONT_TYPE"
                 }),

@@ -1044,7 +1044,13 @@ let oAPP = (function() {
             //업데이트 가능 
             autoUpdaterSAP.on('update-available-sap', (e) => {
 
-                oModel.setProperty("/BUSYPOP/PROGVISI", true, true);
+                let oBusyPop = oModel.getProperty("/BUSYPOP");
+                oBusyPop.PROGVISI = true;
+                oBusyPop.PROGTXT = "Downloading";
+
+                oModel.setProperty("/BUSYPOP", oBusyPop, true);
+
+                // oModel.setProperty("/BUSYPOP/PROGVISI", true, true);
 
                 // 로그인 페이지의 Opacity를 적용한다.
                 $('.u4aWsLoginFormFcard').animate({
@@ -1265,7 +1271,13 @@ let oAPP = (function() {
 
             autoUpdater.on('update-available', (info) => {
 
-                oModel.setProperty("/BUSYPOP/PROGVISI", true, true);
+                let oBusyPop = oModel.getProperty("/BUSYPOP");
+                oBusyPop.PROGVISI = true;
+                oBusyPop.PROGTXT = "Downloading";
+
+                oModel.setProperty("/BUSYPOP", oBusyPop, true);
+
+                // oModel.setProperty("/BUSYPOP/PROGVISI", true, true);
 
                 // 로그인 페이지의 Opacity를 적용한다.
                 $('.u4aWsLoginFormFcard').animate({
@@ -1450,7 +1462,8 @@ let oAPP = (function() {
             percentValue: "{PERVALUE}",
             displayOnly: true,
             state: "Success",
-            displayValue: "Downloading... {PERVALUE}%"
+            // displayValue: "Downloading... {PERVALUE}%"            
+            displayValue: "{PROGTXT}... {PERVALUE}%"            
         }).bindProperty("displayAnimation", "ANIMATION", function(ANIMATION) {
             return ANIMATION === false ? false : true;
         }).addStyleClass("sapUiSmallMarginBeginEnd sapUiMediumMarginBottom");
@@ -2117,6 +2130,7 @@ let oAPP = (function() {
         oModelData.ANIMATION = true;
         oModelData.PROGVISI = true;
         oModelData.TITLE = "Downloading...";
+        oModelData.PROGTXT = "Downloading";
         oModelData.PERVALUE = 0;
 
         oModel.setProperty("/BUSYPOP", oModelData, true);
@@ -2180,6 +2194,7 @@ let oAPP = (function() {
             _supportPackageVersionCheckDialogProgressEnd();
 
             oModel.setProperty("/BUSYPOP/TITLE", "Support Patch Installing...", true);
+            oModel.setProperty("/BUSYPOP/PROGTXT", "Processing", true);
 
             // Progress Bar 실행
             _supportPackageVersionCheckDialogProgressStart();
@@ -2193,6 +2208,8 @@ let oAPP = (function() {
             _supportPackageVersionCheckDialogProgressEnd();
 
             oModel.setProperty("/BUSYPOP/TITLE", "Update Complete! Restarting...", true);
+
+            oModel.setProperty("/BUSYPOP/PROGTXT", "Processing Complete!", true);
 
             oModel.setProperty("/BUSYPOP/ILLUSTTYPE", "sapIllus-SuccessHighFive", true);
 
