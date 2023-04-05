@@ -4,9 +4,6 @@
  * - file Name : Login.js
  * - file Desc : WS Login Page
  ************************************************************************/
-
-const ws_util = require("../ws10_20/js/ws_util");
-
 let oAPP = (function() {
     "use strict";
 

@@ -1,12 +1,12 @@
 {
-    "patch_level" : "00001",
+    "patch_level" : "00000",
     "SYSADMIN": {
         "AUTHKEY": "c2hvd21ldGhlbW9uZXk="
     },
     "UI5": {
         "version": "v11071",
         "testResource": "https://sapui5.hana.ondemand.com/1.107.1/resources/sap-ui-core.js",
-        "localResource" : "lib/ui5/v11071/resources/sap-ui-core.js",
+        "localResource" : "node_modules/U4A/WS/lib/ui5/v11071/resources/sap-ui-core.js",
         "bootstrap": {
             "data-sap-ui-language": "EN",
             "data-sap-ui-noDuplicateIds": "true",
@@ -69,7 +69,7 @@
         "globalSettings" : "HKCU\\SOFTWARE\\U4A\\WS\\GlobalSettings"
 
     },
-    "isDev": false,
+    "isDev": true,
     "isTrial": false,
     "trialServerInfo": {
         "ID": "soccerhs",

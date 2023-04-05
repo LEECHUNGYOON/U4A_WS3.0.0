@@ -900,14 +900,14 @@
     function _setUI5BootStrapUrl(oSettings) {
 
         // 탑재된 UI5 Library 경로
-        let sSettingUi5BootUrl = PATH.join(APPPATH, oSettings.UI5.localResource);
+        let sSettingUi5BootUrl = PATH.join(process.resourcesPath, oSettings.UI5.localResource);
 
         sSettingUi5BootUrl = sSettingUi5BootUrl.replaceAll("\\", "/");
         sSettingUi5BootUrl = `file:///${sSettingUi5BootUrl}`;
 
-        oSettings.UI5.resourceUrl = sSettingUi5BootUrl;
+        oSettings.UI5.resourceUrl = sSettingUi5BootUrl;        
 
-        // // test url
+        // test url
         // let sTestUrl = PATH.join(process.env.TEMP, "v11071", "resources", "sap-ui-core.js");
         // sTestUrl = sTestUrl.replaceAll("\\", "/");
         // sTestUrl = `file:///${sTestUrl}`;
