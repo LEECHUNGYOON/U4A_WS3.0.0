@@ -1308,10 +1308,66 @@
     //UI 개인화 저장 메뉴.
     oAPP.fn.contextMenuP13nDesignPopup = function(){
 
+        //개인화 폴더명.
+        const C_P13N = "p13n";
+
+        //U4A 개인화 폴더명.
+        const C_FOLDER = "U4A_UI_PATTERN";
+
+        //개인화 파일명.
+        const C_HEADER_FILE = "header.json";
+
+        //SYSTEM ID.
+        const C_SYSID = parent.getUserInfo().SYSID;
+
+
+        //U4A UI 개인화 폴더 path 구성.
+        var l_folderPath = parent.PATH.join(parent.REMOTE.app.getPath("userData"), C_P13N, C_FOLDER);
+
+        //U4A UI 개인화 폴더가 존재하지 않는다면 폴더 생성 처리.
+        if(!parent.FS.existsSync(l_folderPath)){
+            try{
+                parent.FS.mkdirSync(l_folderPath);
+            }catch(e){
+                parent.showMessage(sap, 10, "E", e);
+                return true;
+            }
+        }
+
+
+        //U4A UI 개인화 폴더(시스템)path 구성.
+        var l_folderPath = parent.PATH.join(parent.REMOTE.app.getPath("userData"), C_P13N, C_FOLDER, C_SYSID);
+
+        //U4A UI 개인화 폴더가 존재하지 않는다면 폴더 생성 처리.
+        if(!parent.FS.existsSync(l_folderPath)){
+            try{
+                parent.FS.mkdirSync(l_folderPath);
+            }catch(e){
+                parent.showMessage(sap, 10, "E", e);
+                return true;
+            }
+        }
+
+        //U4A UI 개인화 header 파일 path 구성.
+        var l_filePath = parent.PATH.join(parent.REMOTE.app.getPath("userData"), C_P13N, C_FOLDER, C_SYSID, C_HEADER_FILE);
+
+        //개인화 파일이 header 존재하지 않는경우.
+        if(!parent.FS.existsSync(l_filePath)){
+                        
+            try{
+                //header 파일 생성 처리.
+                parent.FS.writeFileSync(l_filePath, JSON.stringify([]));
+            }catch(e){
+                parent.showMessage(sap, 10, "E", e);
+                return true;
+            }
+
+        }
+
         var lockFile = parent.require("proper-lockfile");
 
         //HEADER 파일 PATH 구성.
-        var l_path = parent.PATH.join(parent.getPath("P13N_ROOT"), "U4A_UI_PATTERN", parent.getUserInfo().SYSID, "header.json");
+        var l_path = parent.PATH.join(parent.getPath("P13N_ROOT"), C_FOLDER, C_SYSID, C_HEADER_FILE);
 
         //이미 파일이 잠겨 있다면.
         if(lockFile.checkSync(l_path)){

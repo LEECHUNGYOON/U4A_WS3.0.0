@@ -23,6 +23,12 @@
             parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "380", "ROOT", "", "", ""));
             return;
         }
+
+        //개인화 폴더 및 파일이 존재하지 않는경우 생성 처리.
+        if(lf_createDefaultFolder()){
+            //생성 과정에서 문제 발생시 
+            return;
+        }
         
         //초기값 구성.
         lf_setInitData(sMode);
@@ -501,6 +507,9 @@
 
     //팝업 종료 이벤트.
     function lf_afterClose(){
+
+        //기본 폴더 및 파일이 존재하지 않는경우 생성 처리.
+        lf_createDefaultFolder();
 
         //파일 unlock 처리.
         lf_headerLock(true);
@@ -1118,6 +1127,56 @@
     }   //팝업 사이즈 변경처리.
 
 
+    
+
+    //개인화 default 폴더 생성 처리.
+    function lf_createDefaultFolder(){
+
+        //U4A UI 개인화 폴더 path 구성.
+        var l_folderPath = parent.PATH.join(parent.REMOTE.app.getPath("userData"), C_P13N, C_FOLDER);
+
+        //U4A UI 개인화 폴더가 존재하지 않는다면 폴더 생성 처리.
+        if(!parent.FS.existsSync(l_folderPath)){
+            try{
+                parent.FS.mkdirSync(l_folderPath);
+            }catch(e){
+                parent.showMessage(sap, 10, "E", e);
+                return true;
+            }
+        }
+
+
+        //U4A UI 개인화 폴더(시스템)path 구성.
+        var l_folderPath = parent.PATH.join(parent.REMOTE.app.getPath("userData"), C_P13N, C_FOLDER, C_SYSID);
+
+        //U4A UI 개인화 폴더가 존재하지 않는다면 폴더 생성 처리.
+        if(!parent.FS.existsSync(l_folderPath)){
+            try{
+                parent.FS.mkdirSync(l_folderPath);
+            }catch(e){
+                parent.showMessage(sap, 10, "E", e);
+                return true;
+            }
+        }
+
+        //U4A UI 개인화 header 파일 path 구성.
+        var l_filePath = parent.PATH.join(parent.REMOTE.app.getPath("userData"), C_P13N, C_FOLDER, C_SYSID, C_HEADER_FILE);
+
+        //개인화 파일이 header 존재하지 않는경우.
+        if(!parent.FS.existsSync(l_filePath)){
+                        
+            try{
+                //header 파일 생성 처리.
+                parent.FS.writeFileSync(l_filePath, JSON.stringify([]));
+            }catch(e){
+                parent.showMessage(sap, 10, "E", e);
+                return true;
+            }
+
+        }
+
+    }   //개인화 default 폴더 생성 처리.
+
 
 
     //저장버튼 선택 이벤트.
@@ -1133,7 +1192,7 @@
             }catch(e){
                 parent.showMessage(sap, 10, "E", e);
                 return;
-            }            
+            }
         }
 
 

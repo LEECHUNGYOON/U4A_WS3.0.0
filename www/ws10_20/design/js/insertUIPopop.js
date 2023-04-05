@@ -434,7 +434,7 @@
     //E03  UI Object(Fullname)
     var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E03", "", "", "", "");
 
-    var oLab6 = new sap.m.Label({design: "Bold",text:l_txt, tooltip:l_txt});
+    var oLab6 = new sap.m.Label({design: "Bold", text:l_txt, tooltip:l_txt});
     oCol3.setLabel(oLab6);
 
     var oTxt2 = new sap.m.Text({text:"{LIBNM}"});

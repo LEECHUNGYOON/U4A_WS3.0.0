@@ -4,13 +4,14 @@
     const C_EN = "EN";
 
     //attribute 설명글 팝업 호출.
-    oAPP.fn.callAttrDescPopup = async function(oUi, is_attr){
+    oAPP.fn.callAttrDescPopup = function(oUi, is_attr){
         
         //openBy 처리 UI가 존재하지 않는경우 exit.
         if(!oUi){return;}
 
         //대상 attribute의 라이브러리명 탐색.
         var l_LIBNM = lf_getLibraryName(is_attr);
+
 
         //라이브러리명을 찾지 못한 경우 exit.
         if(!l_LIBNM){
@@ -28,7 +29,7 @@
         var ls_desc2;
 
         //세팅된 언어 정보 얻기.
-        var l_LANGU = await parent.WSUTIL.getWsLanguAsync();
+        var l_LANGU = parent.WSUTIL.getWsSettingsInfo().globalLanguage;
 
         //세팅된 언어가 원어와 다른경우 번역본에 해당하는 DESC정보 검색.
         if(l_LANGU !== C_EN){
@@ -60,6 +61,11 @@
             lf_setBindData(oModel, is_attr, ls_desc1, ls_desc2);
         });
 
+        //팝업 종료 이후 instance 제거 처리.
+        oPop.attachAfterClose(function(){
+            oPop.destroy();
+        });
+
 
         var oModel = new sap.ui.model.json.JSONModel();
         oPop.setModel(oModel);
@@ -85,7 +91,6 @@
         oBtn0.attachPress(function(){
             //팝업 종료 처리.
             oPop.close();
-            oPop.destroy();
 
         }); //닫기 버튼 선택 이벤트.
 

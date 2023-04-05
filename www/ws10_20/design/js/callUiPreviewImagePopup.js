@@ -1,6 +1,6 @@
 (function(){
 
-    const C_FOLDER = "UI_PREVIEW";
+    const C_FOLDER = "UI_PREVIEW";    
 
     var loApp = {ui:{}, attr:{}};
 
@@ -22,7 +22,7 @@
         }
 
         //ui 미리보기 이미지 팝업.
-        loApp.ui.oPop = new sap.m.ResponsivePopover({placement:"Auto", contentWidth:"40%", 
+        loApp.ui.oPop = new sap.m.ResponsivePopover({placement:"Auto", contentWidth:"40%",
             contentHeight:"40%", verticalScrolling:false});
 
         //이미지 팝업 호출 전 이벤트.
@@ -56,7 +56,10 @@
 
         oTool0.addContent(new sap.m.ToolbarSpacer());
 
-        oSwitch = new sap.m.Switch({state:"{/state}"});
+
+        //040	Rotation On/Off
+        oSwitch = new sap.m.Switch({state:"{/state}", 
+            tooltip:parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "040")});
         oTool0.addContent(oSwitch);
         oSwitch.attachChange(function(){
             //switch on/off 여부에 따른 Carousel 자동넘김 처리.
