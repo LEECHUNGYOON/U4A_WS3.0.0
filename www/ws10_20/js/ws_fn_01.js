@@ -193,11 +193,11 @@
                 key: "WMENU10_04_01",
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B46"), // U4A Shortcut Create
             },
-            // 2023-04-04 로직 미완성으로 임시 주석처리
-            // {
-            //     key: "WMENU10_04_02",
-            //     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B47"), // QR Code Maker
-            // }
+                // 2023-04-04 로직 미완성으로 임시 주석처리
+                // {
+                //     key: "WMENU10_04_02",
+                //     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B47"), // QR Code Maker
+                // }
             ]
         },
         {
@@ -229,7 +229,7 @@
             {
                 key: "WMENU30_04",
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
-            },  {
+            }, {
                 key: "WMENU30_06",
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
                 items: [{
@@ -899,6 +899,12 @@
             search: oAPP.events.ev_AppValueHelp,
             liveChange: (oEvent) => {
 
+                // X 버튼, 검색 버튼 눌렀을 경우는 하위 로직 실행 하지 않음.
+                let bCloseBtnPress = jQuery(event.target).hasClass("sapMSFR sapMSFB");
+                if (bCloseBtnPress) {
+                    return;
+                }
+
                 var oInput = oEvent.getSource(),
                     sValue = oInput.getValue();
 
@@ -940,22 +946,6 @@
 
                 this.getBinding("suggestionItems").filter(aFilters);
                 this.suggest();
-
-
-                // var sValue = oEvent.getParameter("suggestValue") || "";
-
-                // var aFilters = [];
-
-                // aFilters = [
-                //     new sap.ui.model.Filter([
-                //         new sap.ui.model.Filter("APPID", sap.ui.model.FilterOperator.Contains, sValue.toUpperCase())
-                //     ], false)
-                // ];
-
-                // this.getBinding("suggestionItems").filter();
-                // this.getBinding("suggestionItems").filter(aFilters);
-
-                // this.suggest(true);
 
             },
             enableSuggestions: true,

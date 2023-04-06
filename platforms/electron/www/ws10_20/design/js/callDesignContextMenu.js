@@ -383,33 +383,14 @@
         //단축키 잠금 처리.
         oAPP.fn.setShortcutLock(true);
 
-        //UI 추가.
-        function lf_setChild(is_0022, is_0023, i_cnt){
-
-            //UI 추가 처리 FUNCTION 호출.
-            oAPP.fn.designAddUIObject(ls_tree, is_0022, is_0023, i_cnt);
-
-        } //UI 추가.  
-
-
-
         //context menu를 호출한 라인의 OBJID 얻기.
         var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
 
         //OBJID에 해당하는 TREE 정보 얻기.
         var ls_tree = oAPP.fn.getTreeData(l_OBJID);
-        
-        
-        //UI추가 팝업 정보가 존재하는경우 팝업 호출.
-        if(typeof oAPP.fn.callUIInsertPopup !== "undefined"){        
-            oAPP.fn.callUIInsertPopup(ls_tree.UIOBK, lf_setChild);
-            return;
-        }
-        
-        //UI 추가 팝업 정보가 존재하지 않는다면 JS 호출 후 팝업 호출.
-        oAPP.fn.getScript("design/js/insertUIPopop",function(){
-            oAPP.fn.callUIInsertPopup(ls_tree.UIOBK, lf_setChild);
-        });
+
+        //ui 추가 처리.
+        oAPP.fn.designUIAdd(ls_tree);        
   
     };  //UI 추가 메뉴 선택 처리.
 
@@ -418,109 +399,14 @@
     //context menu UI삭제 메뉴 선택 이벤트.
     oAPP.fn.contextMenuDeleteUI = function(){
 
-        //단축키 잠금 처리.
-        oAPP.fn.setShortcutLock(true);
-        
-        //선택라인의 삭제대상 OBJECT 제거 처리.
-        function lf_deleteTreeLine(is_tree){
-            
-            //child정보가 존재하는경우.
-            if(is_tree.zTREE.length !== 0){
-                //하위 TREE 정보가 존재하는경우
-                for(var i=0, l=is_tree.zTREE.length; i<l; i++){
-                    //재귀호출 탐색하며 삭제 처리.
-                    lf_deleteTreeLine(is_tree.zTREE[i]);
+        //context menu를 호출한 라인의 OBJID 얻기.
+        var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
 
-                }
+        //OBJID에 해당하는 TREE 정보 얻기.
+        var ls_tree = oAPP.fn.getTreeData(l_OBJID);
 
-            }
-
-            //클라이언트 이벤트 및 sap.ui.core.HTML의 프로퍼티 입력건 제거 처리.
-            oAPP.fn.delUiClientEvent(is_tree);
-
-            //Description 삭제.
-            oAPP.fn.delDesc(is_tree.OBJID);
-
-            //해당 UI의 바인딩처리 수집건 제거 처리.
-            oAPP.fn.designUnbindLine(is_tree);
-
-            //미리보기 UI destroy 처리.
-            oAPP.attr.ui.frame.contentWindow.destroyUIPreView(is_tree.OBJID);
-
-            //팝업 수집건에서 해당 UI 제거 처리.
-            oAPP.fn.removeCollectPopup(is_tree.OBJID);
-
-            //미리보기 UI 수집항목에서 해당 OBJID건 삭제.
-            delete oAPP.attr.prev[is_tree.OBJID];
-
-        } //선택라인의 삭제대상 OBJECT 제거 처리.
-  
-  
-  
-        //UI삭제전 확인 팝업 호출. 메시지!!
-        //003	Do you really want to delete the object?
-        parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "003", "", "", "", ""), function(oEvent){
-            
-            //확인 팝업에서 YES를 선택한 경우 하위 로직 수행.
-            if(oEvent !== "YES"){
-                //화면 unlock 처리.
-                oAPP.fn.designAreaLockUnlock();                
-                return;
-            }
-
-            //화면 lock 처리.
-            oAPP.fn.designAreaLockUnlock(true);
-            
-            //context menu를 호출한 라인의 OBJID 얻기.
-            var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
-
-            //OBJID에 해당하는 TREE 정보 얻기.
-            var ls_tree = oAPP.fn.getTreeData(l_OBJID);
-
-            //내 부모가 자식 UI가 필수인 UI에 자식이 없는경우 강제추가 script 처리. 
-            oAPP.attr.ui.frame.contentWindow.setChildUiException(ls_tree.PUIOK, ls_tree.POBID, undefined, undefined, true);
-
-            //현재 UI가 자식 UI가 필수인 UI에 자식이 없는경우 강제추가 script 처리.
-            oAPP.attr.ui.frame.contentWindow.setChildUiException(ls_tree.UIOBK, ls_tree.OBJID, undefined, undefined, true);
-
-            //미리보기 화면 UI 제거.
-            oAPP.attr.ui.frame.contentWindow.delUIObjPreView(ls_tree.OBJID, ls_tree.POBID, ls_tree.PUIOK, ls_tree.UIATT, ls_tree.ISMLB, ls_tree.UIOBK);
-
-            //삭제 이후 이전 선택처리 정보 얻기.
-            var l_prev = oAPP.fn.designGetPreviousTreeItem(ls_tree.OBJID);
-            
-            //선택라인의 삭제대상 OBJECT 제거 처리.
-            lf_deleteTreeLine(ls_tree);
-            
-            //부모 TREE 라인 정보 얻기.
-            var ls_parent = oAPP.fn.getTreeData(ls_tree.POBID);
-            
-            //부모에서 현재 삭제대상 라인이 몇번째 라인인지 확인.
-            var l_fIndx = ls_parent.zTREE.findIndex( a => a.OBJID === ls_tree.OBJID );
-
-            if(l_fIndx !== -1){
-                //부모에서 현재 삭제 대상건 제거.
-                ls_parent.zTREE.splice(l_fIndx, 1);
-            }
-
-            //미리보기의 직접 입력 가능한 UI의 직접 입력건 반영처리.
-            oAPP.fn.previewSetStrAggr(ls_tree);
-            
-            //모델 갱신 처리.
-            oAPP.attr.oModel.refresh(true);
-
-            //삭제라인의 바로 윗 라인 선택 처리.
-            oAPP.fn.setSelectTreeItem(l_prev);
-
-            //변경 FLAG 처리.
-            oAPP.fn.setChangeFlag();
-
-            //화면 unlock 처리.
-            oAPP.fn.designAreaLockUnlock();
-
-  
-        }); //UI삭제전 확인 팝업 호출.
-  
+        //ui 삭제 처리.
+        oAPP.fn.designUIDelete(ls_tree);  
   
     };  //contet menu UI삭제 메뉴 선택 이벤트.
 

@@ -252,13 +252,13 @@ module.exports = {
                 return "#f5f6f7";
 
             case "sap_belize":
-                return "#fafafa";             
+                return "#fafafa";
 
             case "sap_fiori_3":
-                return "#f7f7f7";              
+                return "#f7f7f7";
 
             case "sap_fiori_3_dark":
-                return "#1c2228";          
+                return "#1c2228";
 
             default:
                 return "#ffffff";
@@ -1088,8 +1088,19 @@ module.exports = {
 
 
 
+    /*************************************************************************
+     * Color 색상 Hex -> RGBA 변환
+     *************************************************************************/
+    hexToRgb: function (hex, alpha) {
+        let r = parseInt(hex.slice(1, 3), 16),
+            g = parseInt(hex.slice(3, 5), 16),
+            b = parseInt(hex.slice(5, 7), 16);
 
-
-
+        if (0 <= alpha && alpha <= 1) {
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`
+        } else {
+            return `rgb(${r}, ${g}, ${b})`
+        }
+    },
 
 };

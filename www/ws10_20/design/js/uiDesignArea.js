@@ -8,8 +8,10 @@
     sap.ui.getCore().loadLibrary("sap.ui.table");
 
     //design tree UI.
-    var oLTree1 = new sap.ui.table.TreeTable({selectionMode:"Single", selectionBehavior:"RowOnly",
-      columnHeaderVisible:false, visibleRowCountMode:"Auto", alternateRowColors:true, rowHeight:40});
+    var oLTree1 = new sap.ui.table.TreeTable({selectionMode:"Single", 
+      selectionBehavior:"RowOnly", rowActionCount:2,
+      columnHeaderVisible:false, visibleRowCountMode:"Auto", 
+      alternateRowColors:true, rowHeight:40});
     oLPage.addContent(oLTree1);
 
 
@@ -42,6 +44,14 @@
 
     }); //tree 접힘/펼침 이벤트.
 
+    //table에 hook 이벤트 추가.
+    sap.ui.table.utils._HookUtils.register(oLTree1, 
+      sap.ui.table.utils._HookUtils.Keys.Signal, function(oEvent){
+
+      //design tree의 row action icon style 처리.
+      oAPP.fn.designSetRowActionIconStyle(oEvent);
+           
+    });
 
     
     //tree 라인선택 예외처리.
@@ -79,7 +89,46 @@
     oLTree1.attachBrowserEvent("click", function(){
         window.getSelection().removeAllRanges();
     });
-      
+
+
+    //라인별 action 버튼.
+    var oAct = new sap.ui.table.RowAction();
+    oLTree1.setRowActionTemplate(oAct);
+
+    //A54  Insert Element
+    //UI 추가 버튼.
+    var oItem1 = new sap.ui.table.RowActionItem({icon:"sap-icon://add", visible:"{visible_add}",
+        text:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A54", "", "", "", "")});
+    oAct.addItem(oItem1);
+
+    //ui 추가 버튼 선택 이벤트.
+    oItem1.attachPress(function(oEvent){
+
+      var l_ctxt = this.getBindingContext();
+      if(!l_ctxt){return;}
+
+      //ui 추가 버튼 선택 이벤트 처리.
+      oAPP.fn.designUIAdd(l_ctxt.getProperty());
+
+    }); //ui 추가 버튼 선택 이벤트.
+
+
+    //A03  Delete
+    //삭제 버튼.
+    var oItem2 = new sap.ui.table.RowActionItem({icon:"sap-icon://delete", visible:"{visible_delete}",
+        text:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03", "", "", "", "")});
+    oAct.addItem(oItem2);
+
+    //ui 삭제 버튼 선택 이벤트.
+    oItem2.attachPress(function(oEvent){
+
+      var l_ctxt = this.getBindingContext();
+      if(!l_ctxt){return;}
+
+      //ui 삭제 버튼 선택 이벤트 처리.
+      oAPP.fn.designUIDelete(l_ctxt.getProperty());
+
+    }); //ui 삭제 버튼 선택 이벤트.
 
 
     //tree instance 정보 광역화.
@@ -89,7 +138,8 @@
     var oLCol1 = new sap.ui.table.Column({autoResizable:true});
     oLTree1.addColumn(oLCol1);
 
-    var oLHbox1 = new sap.m.HBox({width:"100%", alignItems:"Center", justifyContent:"SpaceBetween", wrap:"NoWrap"});
+    var oLHbox1 = new sap.m.HBox({width:"100%", alignItems:"Center", 
+      justifyContent:"SpaceBetween", wrap:"NoWrap"}).addStyleClass("sapUiTinyMarginEnd");
     oLCol1.setTemplate(oLHbox1);
 
     var oLHbox2 = new sap.m.HBox({renderType:"Bare", alignItems:"Center"});
@@ -1044,6 +1094,43 @@
     }
 
   };  //tree drag & drop 가능여부 처리.
+
+
+
+
+  //row Action Icon의 활성여부 설정.
+  oAPP.fn.designSetActionIcon = function(is_tree){
+
+    //default insert UI 버튼 편집 여부에 따른 활성화 처리.
+    is_tree.visible_add = oAPP.attr.oModel.oData.IS_EDIT;
+
+    //default delete UI 버튼 편집 여부에 따른 활성화 처리.
+    is_tree.visible_delete = oAPP.attr.oModel.oData.IS_EDIT;
+
+    //ROOT는 추가, 삭제 불가능.
+    if(is_tree.OBJID === "ROOT"){
+
+      //insert UI 버튼 비활성화 처리.
+      is_tree.visible_add = false;
+
+      //delete UI 버튼 비활성화 처리.
+      is_tree.visible_delete = false;
+    
+    }else if(is_tree.OBJID === "APP"){
+      //최상위 APP는 삭제 불가능.
+
+      //delete UI 버튼 비활성화 처리.
+      is_tree.visible_delete = false;
+    }
+
+    if(!is_tree.zTREE?.length){return;}
+
+    //child 정보가 존재하는경우 하위를 탐색하며 아이콘 활성여부 설정.
+    for(var i=0, l=is_tree.zTREE.length; i<l; i++){
+      oAPP.fn.designSetActionIcon(is_tree.zTREE[i]);
+    }
+
+  };  //row Action Icon의 활성여부 설정.
 
 
 
@@ -3752,6 +3839,224 @@
 
   };  //context menu ui 붙여넣기 처리.
 
+
+
+
+  //ui 추가 처리 이벤트.
+  oAPP.fn.designUIAdd = function(is_tree){
+
+    if(!is_tree){return;}
+
+    //단축키 잠금 처리.
+    oAPP.fn.setShortcutLock(true);
+
+    //UI 추가.
+    function lf_setChild(is_0022, is_0023, i_cnt){
+
+      //UI 추가 처리 FUNCTION 호출.
+      oAPP.fn.designAddUIObject(is_tree, is_0022, is_0023, i_cnt);
+
+    } //UI 추가.
+
+
+    //UI추가 팝업 정보가 존재하는경우 팝업 호출.
+    if(typeof oAPP.fn.callUIInsertPopup !== "undefined"){        
+      oAPP.fn.callUIInsertPopup(is_tree.UIOBK, lf_setChild);
+      return;
+    }
+    
+    //UI 추가 팝업 정보가 존재하지 않는다면 JS 호출 후 팝업 호출.
+    oAPP.fn.getScript("design/js/insertUIPopop",function(){
+      oAPP.fn.callUIInsertPopup(is_tree.UIOBK, lf_setChild);
+    });
+
+  };  //ui 추가 처리 이벤트.
+
+
+
+
+  //ui 삭제 처리 이벤트.
+  oAPP.fn.designUIDelete = function(is_tree_param){
+
+    if(!is_tree_param){return;}
+
+    //단축키 잠금 처리.
+    oAPP.fn.setShortcutLock(true);
+        
+    //선택라인의 삭제대상 OBJECT 제거 처리.
+    function lf_deleteTreeLine(is_tree){
+        
+      //child정보가 존재하는경우.
+      if(is_tree.zTREE.length !== 0){
+        //하위 TREE 정보가 존재하는경우
+        for(var i=0, l=is_tree.zTREE.length; i<l; i++){
+            //재귀호출 탐색하며 삭제 처리.
+            lf_deleteTreeLine(is_tree.zTREE[i]);
+
+        }
+
+      }
+
+      //클라이언트 이벤트 및 sap.ui.core.HTML의 프로퍼티 입력건 제거 처리.
+      oAPP.fn.delUiClientEvent(is_tree);
+
+      //Description 삭제.
+      oAPP.fn.delDesc(is_tree.OBJID);
+
+      //해당 UI의 바인딩처리 수집건 제거 처리.
+      oAPP.fn.designUnbindLine(is_tree);
+
+      //미리보기 UI destroy 처리.
+      oAPP.attr.ui.frame.contentWindow.destroyUIPreView(is_tree.OBJID);
+
+      //팝업 수집건에서 해당 UI 제거 처리.
+      oAPP.fn.removeCollectPopup(is_tree.OBJID);
+
+      //미리보기 UI 수집항목에서 해당 OBJID건 삭제.
+      delete oAPP.attr.prev[is_tree.OBJID];
+
+    } //선택라인의 삭제대상 OBJECT 제거 처리.
+
+
+    var ls_tree = is_tree_param;
+
+
+    //UI삭제전 확인 팝업 호출. 메시지!!
+    //003	Do you really want to delete the object?
+    parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "003", "", "", "", ""), function(oEvent){
+        
+      //확인 팝업에서 YES를 선택한 경우 하위 로직 수행.
+      if(oEvent !== "YES"){
+        //단축키 잠금 해제 처리.
+        oAPP.fn.setShortcutLock();
+        return;
+      }
+
+      //화면 lock 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+      
+      //내 부모가 자식 UI가 필수인 UI에 자식이 없는경우 강제추가 script 처리. 
+      oAPP.attr.ui.frame.contentWindow.setChildUiException(ls_tree.PUIOK, ls_tree.POBID, undefined, undefined, true);
+
+      //현재 UI가 자식 UI가 필수인 UI에 자식이 없는경우 강제추가 script 처리.
+      oAPP.attr.ui.frame.contentWindow.setChildUiException(ls_tree.UIOBK, ls_tree.OBJID, undefined, undefined, true);
+
+      //미리보기 화면 UI 제거.
+      oAPP.attr.ui.frame.contentWindow.delUIObjPreView(ls_tree.OBJID, ls_tree.POBID, ls_tree.PUIOK, ls_tree.UIATT, ls_tree.ISMLB, ls_tree.UIOBK);
+
+      //삭제 이후 이전 선택처리 정보 얻기.
+      var l_prev = oAPP.fn.designGetPreviousTreeItem(ls_tree.OBJID);
+      
+      //선택라인의 삭제대상 OBJECT 제거 처리.
+      lf_deleteTreeLine(ls_tree);
+      
+      //부모 TREE 라인 정보 얻기.
+      var ls_parent = oAPP.fn.getTreeData(ls_tree.POBID);
+      
+      //부모에서 현재 삭제대상 라인이 몇번째 라인인지 확인.
+      var l_fIndx = ls_parent.zTREE.findIndex( a => a.OBJID === ls_tree.OBJID );
+
+      if(l_fIndx !== -1){
+          //부모에서 현재 삭제 대상건 제거.
+          ls_parent.zTREE.splice(l_fIndx, 1);
+      }
+
+      //미리보기의 직접 입력 가능한 UI의 직접 입력건 반영처리.
+      oAPP.fn.previewSetStrAggr(ls_tree);
+      
+      //모델 갱신 처리.
+      oAPP.attr.oModel.refresh(true);
+
+      //삭제라인의 바로 윗 라인 선택 처리.
+      oAPP.fn.setSelectTreeItem(l_prev);
+
+      //변경 FLAG 처리.
+      oAPP.fn.setChangeFlag();
+
+      //화면 unlock 처리.
+      oAPP.fn.designAreaLockUnlock();
+
+      //단축키 잠금 해제 처리.
+      oAPP.fn.setShortcutLock();
+
+    }); //UI삭제전 확인 팝업 호출.
+
+  }; //ui 삭제 처리 이벤트.
+
+
+
+
+  //design tree의 row action icon style 처리.
+  oAPP.fn.designSetRowActionIconStyle = function(oEvent){
+    
+    //아이콘 색상 처리.
+    function lf_setActionItemColor(oRow){
+        
+      if(!oRow){return;}
+
+      var oAct = oRow.getRowAction();
+      if(!oAct){return;}
+
+      var lt_icon = oAct.getAggregation("_icons");
+
+      for(var i=0, l=lt_icon.length; i<l; i++){
+        //ui 추가 버튼의 경우 margin 처리.
+        if(lt_icon[i].getSrc() === "sap-icon://add"){
+          lt_icon[i].removeStyleClass("sapUiTinyMarginEnd");
+          lt_icon[i].addStyleClass("sapUiTinyMarginEnd");
+        }
+        
+        //삭제 아이콘인경우 아이콘 색상 처리.
+        if(lt_icon[i].getSrc() === "sap-icon://delete"){
+          lt_icon[i].setColor("#fa6161");
+        }
+
+      }
+
+    }   //아이콘 색상 처리.
+
   
+    //테이블 업데이트 시작 시점이 아닌경우 exit.
+    if(oEvent !== "StartTableUpdate"){return;}
+
+    //아이콘 색상을 처리된경우 exit.
+    if(oAPP.attr.ui.oLTree1.__ActIconColor){
+        delete oAPP.attr.ui.oLTree1.__ActIconColor;
+        return;
+    }
+
+    //아이콘 색상을 처리함 flag 마킹.
+    oAPP.attr.ui.oLTree1.__ActIconColor = true;
+
+    var lt_row = oAPP.attr.ui.oLTree1.getRows();
+    if(lt_row.length === 0){return;}
+
+    for(var i=0, l=lt_row.length; i<l; i++){
+
+      //아이콘 색상 처리.
+      lf_setActionItemColor(lt_row[i]);
+
+    }
+
+  };  //design tree의 row action icon style 처리.
+
+
+  
+
+  //design tree의 row action 활성여부 설정.
+  oAPP.fn.designTreeSetRowAction = function(){
+
+    //design tree의 row action count를 0으로 설정.
+    var l_cnt = 0;
+        
+    //편집상태인경우 row action count를 2로 설정.
+    if(oAPP.attr.oModel.oData.IS_EDIT){
+      l_cnt = 2;
+    }
+
+    oAPP.attr.ui.oLTree1.setRowActionCount(l_cnt);
+
+  };  //design tree의 row action 활성여부 설정.
+
 
 })();

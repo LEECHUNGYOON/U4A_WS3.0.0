@@ -382,7 +382,7 @@
 
         // USP 초기 레이아웃 설정
         oAPP.fn.fnOnInitLayoutSettingsWs30(); // #[ws_usp.js]
-       
+
         let oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
             sServerPath = parent.getServerPath(),
             sInitPath = `${sServerPath}/usp_init_prc`;
@@ -1169,7 +1169,37 @@
     }; // end of oAPP.fn.fnCloseAllDialog
 
     /************************************************************************
-     * Electron Browser들 전체 닫는 function
+    * Electron Browser들 예외 대상 제외한 전체 닫는 function
+    ************************************************************************/
+    oAPP.fn.fnChildWindowAllClose = () => {
+
+        var oCurrWin = parent.REMOTE.getCurrentWindow();
+        if (oCurrWin.isDestroyed()) {
+            return;
+        }
+
+        var aChild = oCurrWin.getChildWindows(),
+            iChildCnt = aChild.length;
+
+        if (iChildCnt <= 0) {
+            return;
+        }
+
+        for (var i = 0; i < iChildCnt; i++) {
+
+            var oChild = aChild[i];
+            if (oChild.isDestroyed()) {
+                continue;
+            }
+
+            oChild.close();
+
+        }
+
+    }; // end of oAPP.fn.fnChildWindowAllClose
+
+    /************************************************************************
+     * Electron Browser들 예외 대상 제외한 전체 닫는 function
      ************************************************************************/
     oAPP.fn.fnChildWindowClose = function () {
 
@@ -1197,7 +1227,7 @@
                 sOBJTY = oWebPref.OBJTY;
 
             // child window 닫을 때 예외 팝업 체크
-            let bIsHideExp = oAPP.fn.fnCheckPopupHideException(sOBJTY);
+            let bIsHideExp = oAPP.fn.fnCheckPopupCloseException(sOBJTY);
             if (bIsHideExp) {
                 continue;
             }
@@ -1234,15 +1264,15 @@
                 continue;
             }
 
-            let oWebCon = oChild.webContents,
-                oWebPref = oWebCon.getWebPreferences(),
-                sOBJTY = oWebPref.OBJTY;
-            
-            // child window들 활성 or 비활성 시 예외 대상 팝업 체크
-            let bIsHideExp = oAPP.fn.fnCheckPopupHideException(sOBJTY);
-            if (bIsHideExp) {
-                continue;
-            }
+            // let oWebCon = oChild.webContents,
+            //     oWebPref = oWebCon.getWebPreferences(),
+            //     sOBJTY = oWebPref.OBJTY;
+
+            // // child window들 활성 or 비활성 시 예외 대상 팝업 체크
+            // let bIsHideExp = oAPP.fn.fnCheckPopupHideException(sOBJTY);
+            // if (bIsHideExp) {
+            //     continue;
+            // }
 
             var isVisible = oChild.isVisible();
 
@@ -1271,6 +1301,26 @@
     }; // end of oAPP.fn.fnChildWindowShow
 
     /************************************************************************
+     * 전체 Electron Browser Close 시 예외 대상 체크
+     ************************************************************************/
+    oAPP.fn.fnCheckPopupCloseException = (OBJTY) => {
+
+        let aExceptionList = [
+            "VIDEOREC",
+            "EXAMPLE",
+            "PATTPOPUP"
+        ];
+
+        if (!OBJTY) {
+            return false;
+        }
+
+        return (aExceptionList.find(element => element == OBJTY) == null ? false : true);
+
+
+    }; // end of oAPP.fn.fnCheckPopupCloseException
+
+    /************************************************************************
      * Electron Browser 활성 or 비활성 예외 대상 체크
      ************************************************************************/
     oAPP.fn.fnCheckPopupHideException = (OBJTY) => {
@@ -1278,7 +1328,6 @@
         let aExceptionList = [
             "VIDEOREC",
             "EXAMPLE",
-            "PATTPOPUP"
         ];
 
         if (!OBJTY) {

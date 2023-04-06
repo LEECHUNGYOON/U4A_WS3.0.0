@@ -27,13 +27,13 @@
             // APPLIST1: aAPPLIST,
             TAB1: oTab1_Data,
             aAPPTY: [{
-                    KEY: "M",
-                    TEXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B96"), // U4A Application
-                },
-                {
-                    KEY: "U",
-                    TEXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D48"), // U4A Server Page
-                }
+                KEY: "M",
+                TEXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B96"), // U4A Application
+            },
+            {
+                KEY: "U",
+                TEXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D48"), // U4A Server Page
+            }
             ],
             APPF4HIER: null
         };
@@ -390,7 +390,8 @@
 
             sTableListBindPath = `${C_BIND_ROOT_PATH}/TAB1/APPLIST`,
 
-            oTable = oAPP.fn.fnGetAppF4ListTable(sTableListBindPath);
+            oTable = oAPP.fn.fnGetAppF4ListTable(sTableListBindPath),
+            oUiTable = getAppF4ListUiTable(sTableListBindPath);
 
         var oItem = new sap.m.IconTabFilter({
             key: "K1",
@@ -407,7 +408,8 @@
                         new sap.m.Page({
                             showHeader: false,
                             content: [
-                                oTable
+                                // oTable
+                                oUiTable
                             ]
                         }),
 
@@ -422,6 +424,135 @@
     }; // end of oAPP.fn.fnCreateAppF4Tab1
 
     /************************************************************************
+    * APP SearchHelp의 App List UI Table object return
+    ************************************************************************/
+    function getAppF4ListUiTable(sBindPath) {
+
+        return new sap.ui.table.Table({
+            visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
+            alternateRowColors: true,
+            selectionMode: sap.ui.table.SelectionMode.Single,
+            selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
+            rowHeight: 45,
+            columns: [
+
+                new sap.ui.table.Column({
+                    label: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B95"), // User Name
+                        design: sap.m.LabelDesign.Bold
+                    }),
+
+                    template: new sap.m.Text({
+                        text: "{ERUSR}"
+                    }),
+
+                }),
+
+                new sap.ui.table.Column({
+                    label: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A90"), // Web Application ID
+                        design: sap.m.LabelDesign.Bold
+                    }),
+                    template: new sap.m.Text({
+                        text: "{APPID}"
+                    }),
+
+                }),
+
+                new sap.ui.table.Column({
+                    label: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91"), // Web Application Name
+                        design: sap.m.LabelDesign.Bold
+                    }),
+                    template: new sap.m.Text({
+                        text: "{APPNM}"
+                    }),
+
+                }),
+
+                new sap.ui.table.Column({
+                    label: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B97"), // App Type
+                        design: sap.m.LabelDesign.Bold
+                    }),
+                    template: new sap.m.Text({
+                        text: "{APPTY}"
+                    }),
+
+                }),
+
+            ],
+
+            rows: {
+                path: sBindPath,
+            },
+
+
+        }).addEventDelegate({
+
+            ondblclick: ev_AppF4ListUiTableDblClick
+
+        });
+
+    } // end of getAppF4ListUiTable
+
+    /************************************************************************
+     * APP SearchHelp의 App List UI Table의 더블 클릭 이벤트
+     ************************************************************************/
+    function ev_AppF4ListUiTableDblClick(oEvent) {
+
+        var oTarget = oEvent.target,
+            $oTreeIcon = $(oTarget).closest(".sapUiTableTreeIcon"),
+            $SelectedRow = $(oTarget).closest(".sapUiTableRow");
+
+        if ($oTreeIcon.length || !$SelectedRow.length) {
+            return;
+        }
+
+        var oRow = $SelectedRow[0],
+
+            sRowId1 = oRow.getAttribute("data-sap-ui-related"),
+            sRowId2 = oRow.getAttribute("data-sap-ui"),
+            sRowId = "";
+
+        if (sRowId1 == null && sRowId2 == null) {
+            return;
+        }
+
+        if (sRowId1) {
+            sRowId = sRowId1;
+        }
+
+        if (sRowId2) {
+            sRowId = sRowId2;
+        }
+
+        var oRow = sap.ui.getCore().byId(sRowId);
+        if (!oRow) {
+            return;
+        }
+
+        // 바인딩 정보가 없으면 빠져나간다.
+        if (oRow.isEmpty()) {
+            return;
+        }
+
+        var oCtx = oRow.getBindingContext(),
+            oRowData = oRow.getModel().getProperty(oCtx.sPath);
+
+        if (typeof GfnCallback == "function") {
+            GfnCallback(oRowData);
+        }
+
+        var oAppF4Dialog = sap.ui.getCore().byId("AppF4Dialog");
+        if (oAppF4Dialog) {
+            oAppF4Dialog.close();
+            return;
+        }
+
+    } // end of ev_AppF4ListUiTableDblClick
+
+    /************************************************************************
      * Application Name F4 의 TabContainer Item2 생성
      ************************************************************************/
     oAPP.fn.fnCreateAppF4Tab2 = function () {
@@ -433,7 +564,7 @@
             }
 
             var oBindCtx = this.getBindingContext();
-            if (oBindCtx == null) {
+            if (oBindCtx == null) { 
                 return;
             }
 

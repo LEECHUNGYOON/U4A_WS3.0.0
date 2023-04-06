@@ -270,7 +270,8 @@
                 oAPP.fn.fnClearSessionStorageData(); // #[ws_fn_04.js]
 
                 // 현재 세션에서 파생된 Childwindow를 닫는다.
-                oAPP.fn.fnChildWindowClose();
+                oAPP.fn.fnChildWindowAllClose();
+                // oAPP.fn.fnChildWindowClose();
 
                 if (oAPP.attr._oWorker && oAPP.attr._oWorker.terminate) {
                     oAPP.attr._oWorker.terminate();

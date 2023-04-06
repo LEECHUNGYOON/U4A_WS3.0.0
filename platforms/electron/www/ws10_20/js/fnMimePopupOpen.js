@@ -20,9 +20,12 @@
     const
         C_DIALOG_ID = "u4aMimeTreeDlg";
 
-    var oAppInfo;
+    var oAppInfo,
+        oThemeColors;
 
     oAPP.fn.fnMimePopupOpen = function () {
+
+        oThemeColors = sap.ui.core.theming.Parameters.get();
 
         if (oAppInfo) {
             oAppInfo = undefined;
@@ -103,7 +106,7 @@
                 return sFormattedDate;
 
             })
-            .addStyleClass("sapUiTinyMarginEnd"),
+                .addStyleClass("sapUiTinyMarginEnd"),
 
             // Mime Create Time
             oCreateTimeInput = new sap.m.Input({
@@ -123,7 +126,7 @@
                 return sFormattedDate;
 
             })
-            .addStyleClass("sapUiTinyMarginEnd"),
+                .addStyleClass("sapUiTinyMarginEnd"),
 
             oCreateUnameInput = new sap.m.Input({
                 value: "{/WS20/MIME/ERNAM}",
@@ -188,34 +191,34 @@
                     new sap.m.Image({
                         src: "{/WS20/MIMEDATA/CONTENT}"
                     })
-                    .bindProperty("src", {
-                        parts: [{
+                        .bindProperty("src", {
+                            parts: [{
                                 path: "/WS20/MIMEDATA/CONTENT"
                             },
                             {
                                 path: "/WS20/MIMEDATA/VISI"
                             },
-                        ],
-                        formatter: function (CONT, VISI) {
+                            ],
+                            formatter: function (CONT, VISI) {
 
-                            if (VISI != "IMAGE") {
-                                return;
+                                if (VISI != "IMAGE") {
+                                    return;
+                                }
+
+                                return CONT;
+
                             }
 
-                            return CONT;
+                        })
+                        .bindProperty("visible", "/WS20/MIMEDATA/VISI", function (value) {
 
-                        }
+                            if (value == "IMAGE") {
+                                return true;
+                            }
 
-                    })
-                    .bindProperty("visible", "/WS20/MIMEDATA/VISI", function (value) {
+                            return false;
 
-                        if (value == "IMAGE") {
-                            return true;
-                        }
-
-                        return false;
-
-                    }).addStyleClass("u4aWsMimeImgPrev"),
+                        }).addStyleClass("u4aWsMimeImgPrev"),
 
                     new sap.ui.codeeditor.CodeEditor({
                         syntaxHints: false,
@@ -225,11 +228,11 @@
                         value: "{/WS20/MIMEDATA/CONTENT}"
                     }).bindProperty("value", {
                         parts: [{
-                                path: "/WS20/MIMEDATA/CONTENT"
-                            },
-                            {
-                                path: "/WS20/MIMEDATA/VISI"
-                            },
+                            path: "/WS20/MIMEDATA/CONTENT"
+                        },
+                        {
+                            path: "/WS20/MIMEDATA/VISI"
+                        },
                         ],
                         formatter: function (CONT, VISI) {
 
@@ -241,15 +244,15 @@
 
                         }
                     })
-                    .bindProperty("visible", "/WS20/MIMEDATA/VISI", function (value) {
+                        .bindProperty("visible", "/WS20/MIMEDATA/VISI", function (value) {
 
-                        if (value == "TEXT") {
-                            return true;
-                        }
+                            if (value == "TEXT") {
+                                return true;
+                            }
 
-                        return false;
+                            return false;
 
-                    }),
+                        }),
 
                     new sap.m.HBox({
                         width: "100%",
@@ -262,16 +265,16 @@
                             })
                         ]
                     })
-                    .bindProperty("visible", "/WS20/MIMEDATA/VISI", function (value) {
+                        .bindProperty("visible", "/WS20/MIMEDATA/VISI", function (value) {
 
-                        // visible 값이 없으면 No data 화면을 보여준다.
-                        if (!value || value == "") {
-                            return true;
-                        }
+                            // visible 값이 없으면 No data 화면을 보여준다.
+                            if (!value || value == "") {
+                                return true;
+                            }
 
-                        return false;
+                            return false;
 
-                    }),
+                        }),
                 ]
 
             });
@@ -386,7 +389,7 @@
         // if (!oAppInfo) {
         //     oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
         // }
-        
+
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
 
@@ -602,17 +605,17 @@
                             }).bindProperty("value", {
 
                                 parts: [{
-                                        path: "MYAPP"
-                                    },
-                                    {
-                                        path: "TYPE"
-                                    },
-                                    {
-                                        path: "ZLEVEL"
-                                    },
-                                    {
-                                        path: "MYAPPCHILD"
-                                    },
+                                    path: "MYAPP"
+                                },
+                                {
+                                    path: "TYPE"
+                                },
+                                {
+                                    path: "ZLEVEL"
+                                },
+                                {
+                                    path: "MYAPPCHILD"
+                                },
                                 ],
 
                                 formatter: oAPP.fn.fnMimeTreeTableBindingFormatter
@@ -670,36 +673,69 @@
             rowSelectionChange: oAPP.events.ev_MimeTreeTableRowSelect,
             firstVisibleRowChanged: function (oEvent) {
 
-                var oTable = oEvent.getSource();
+                // ev_mimePopupRowsUpdated(oEvent);
 
-                var aRows = oTable.getRows(),
-                    iRowLen = aRows.length;
+                // var oTable = oEvent.getSource();
 
-                if (iRowLen <= 0) {
-                    return;
-                }
+                // var aRows = oTable.getRows(),
+                //     iRowLen = aRows.length;
 
-                for (var i = 0; i < iRowLen; i++) {
+                // if (iRowLen <= 0) {
+                //     return;
+                // }
 
-                    var oRow = aRows[i],
-                        oRowBindCtx = oRow.getBindingContext();
+                // for (var i = 0; i < iRowLen; i++) {
 
-                    if (!oRowBindCtx) {
-                        return;
-                    }
+                //     var oRow = aRows[i],
+                //         oRowBindCtx = oRow.getBindingContext();
 
-                    // mime tree의 binding 값을 확인하여 level, row별 css를 적용한다.
-                    oAPP.fn.fnMimeTreeTableRowCssApply(oRow);
+                //     if (!oRowBindCtx) {
+                //         return;
+                //     }
 
-                }
+                //     // mime tree의 binding 값을 확인하여 level, row별 css를 적용한다.
+                //     oAPP.fn.fnMimeTreeTableRowCssApply(oRow);
+
+                // }
 
             },
+
+            rowsUpdated: function (oEvent) {
+                ev_mimePopupRowsUpdated(oEvent);
+            }
 
         }).addStyleClass("u4aWsMimeTreeTable");
 
         return oTreeTable;
 
     }; // end of oAPP.fn.fnGetMimeTreeTable
+
+
+    function ev_mimePopupRowsUpdated(oEvent) {
+
+        let oTable = oEvent.getSource(),
+            aRows = oTable.getRows(),
+            iRowLen = aRows.length;
+
+        if (iRowLen <= 0) {
+            return;
+        }
+
+        for (var i = 0; i < iRowLen; i++) {
+
+            var oRow = aRows[i],
+                oRowBindCtx = oRow.getBindingContext();
+
+            if (!oRowBindCtx) {
+                return;
+            }
+
+            // mime tree의 binding 값을 확인하여 level, row별 css를 적용한다.
+            oAPP.fn.fnMimeTreeTableRowCssApply(oRow);
+
+        }
+
+    }
 
     /************************************************************************
      * Mime Tree Table에 대한 Binding Formatter 
@@ -738,15 +774,21 @@
      * **********************************************************************/
     oAPP.fn.fnMimeTreeTableRowCssApply = function (oRow) {
 
-        oRow.removeStyleClass("u4aMimeTreeMyApp");
-        oRow.removeStyleClass("u4aMimeTreeDarkRow");
-        oRow.removeStyleClass("u4aMimeTreeBrightRow");
-        oRow.removeStyleClass("u4aMimeTreeMyAppChild");
+        // oRow.removeStyleClass("u4aMimeTreeMyApp");
+        // oRow.removeStyleClass("u4aMimeTreeDarkRow");
+        // oRow.removeStyleClass("u4aMimeTreeBrightRow");
+        // oRow.removeStyleClass("u4aMimeTreeMyAppChild");  
+
+        let sRowBgCol = oThemeColors.sapUiTableRowSelectionBG,
+            sRowBgCol_rgba = parent.WSUTIL.hexToRgb(sRowBgCol, 0.6);
+
+        oRow.$().css({ "background-color": "" });
 
         var oRowBindCtx = oRow.getBindingContext();
 
         if (oRowBindCtx === null) {
-            oRow.addStyleClass("u4aMimeTreeDarkRow");
+            // oRow.addStyleClass("u4aMimeTreeDarkRow");
+            oRow.$().find(".sapMText").css({ color: oThemeColors.sapContent_DisabledTextColor });
             return;
         };
 
@@ -756,27 +798,33 @@
             TYPE = oRowBindCtx.getObject("TYPE");
 
         if (ZLEVEL == 1) {
-            oRow.addStyleClass("u4aMimeTreeBrightRow");
+            // oRow.addStyleClass("u4aMimeTreeBrightRow");
+            oRow.$().find(".sapMText").css({ color: oThemeColors.sapTextColor });
             return;
         }
 
         if (ZLEVEL == 2) {
-            oRow.addStyleClass("u4aMimeTreeDarkRow");
+            // oRow.addStyleClass("u4aMimeTreeDarkRow");
+            oRow.$().find(".sapMText").css({ color: oThemeColors.sapContent_DisabledTextColor });
             return;
         }
 
         if (MYAPP == 'X') {
-            oRow.addStyleClass("u4aMimeTreeMyApp");
+            // oRow.addStyleClass("u4aMimeTreeMyApp");
+            oRow.$().find(".sapMText").css({ color: oThemeColors.sapTextColor });
+            oRow.$().css({ "background-color": sRowBgCol_rgba });
             return;
         }
 
         if (MYAPPCHILD == 'X') {
-            oRow.addStyleClass("u4aMimeTreeMyAppChild");
+            // oRow.addStyleClass("u4aMimeTreeMyAppChild");
+            oRow.$().find(".sapMText").css({ color: oThemeColors.sapTextColor });
             return;
         }
 
         if (TYPE == 'F') {
-            oRow.addStyleClass("u4aMimeTreeDarkRow");
+            // oRow.addStyleClass("u4aMimeTreeDarkRow");
+            oRow.$().find(".sapMText").css({ color: oThemeColors.sapContent_DisabledTextColor });
             return;
         }
 
@@ -1354,53 +1402,53 @@
     oAPP.fn.fnGetMimeTreeDefCtxMenuList = function () {
 
         return [{
-                ICON: "",
-                KEY: "K1",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C27"), // Expand Subtree
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "",
-                KEY: "K2",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C28"), // Collapse Subtree
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "",
-                KEY: "K3",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C29"), // Create Folder
-                ENABLED: true,
-                ISSTART: true,
-                VISIBLE: true
-            },
-            {
-                ICON: "",
-                KEY: "K4",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C30"), // Delete Object
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "",
-                KEY: "K5",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C31"), // Import Mime Object
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            },
-            {
-                ICON: "",
-                KEY: "K6",
-                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C32"), // Download Mime Object
-                ENABLED: true,
-                ISSTART: false,
-                VISIBLE: true
-            }
+            ICON: "",
+            KEY: "K1",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C27"), // Expand Subtree
+            ENABLED: true,
+            ISSTART: false,
+            VISIBLE: true
+        },
+        {
+            ICON: "",
+            KEY: "K2",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C28"), // Collapse Subtree
+            ENABLED: true,
+            ISSTART: false,
+            VISIBLE: true
+        },
+        {
+            ICON: "",
+            KEY: "K3",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C29"), // Create Folder
+            ENABLED: true,
+            ISSTART: true,
+            VISIBLE: true
+        },
+        {
+            ICON: "",
+            KEY: "K4",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C30"), // Delete Object
+            ENABLED: true,
+            ISSTART: false,
+            VISIBLE: true
+        },
+        {
+            ICON: "",
+            KEY: "K5",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C31"), // Import Mime Object
+            ENABLED: true,
+            ISSTART: false,
+            VISIBLE: true
+        },
+        {
+            ICON: "",
+            KEY: "K6",
+            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C32"), // Download Mime Object
+            ENABLED: true,
+            ISSTART: false,
+            VISIBLE: true
+        }
         ];
 
     }; // end of oAPP.fn.fnGetMimeTreeDefCtxMenuList
@@ -1464,16 +1512,16 @@
     oAPP.fn.fnCheckAllowedMimeTypes = function (sMimetype) {
 
         var aAllowedMimeTypes = [
-                "text/plain",
-                "text/html",
-                "text/css",
-                "text/javascript",
-                "application/x-javascript",
-                "image/jpeg",
-                "image/png",
-                "image/gif",
-                "image/bmp",
-            ],
+            "text/plain",
+            "text/html",
+            "text/css",
+            "text/javascript",
+            "application/x-javascript",
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/bmp",
+        ],
             aTypeLen = aAllowedMimeTypes.length;
 
         var bIsAllow = false;

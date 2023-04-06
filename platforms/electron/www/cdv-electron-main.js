@@ -160,9 +160,9 @@ function createWindow() {
     const loadUrl = `${__dirname}\\intro3.html`;
     mainWindow.loadURL(loadUrl, loadUrlOpts);
 
-    mainWindow.once('ready-to-show', () => {
-        mainWindow.show();
-    })
+    // mainWindow.once('ready-to-show', () => {
+    //     mainWindow.show();
+    // })
 
     // // Open the DevTools.  
     // if (!app.isPackaged) {

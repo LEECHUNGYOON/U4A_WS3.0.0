@@ -270,6 +270,13 @@ let oAPP = (function() {
                                     placeholder: "　",
                                     suggest: function(oEvent) {
 
+                                        // 커서가 다른쪽으로 이미 이동했을 경우 (탭 키를 누르던지 마우스를 이용하던지간에)
+                                        // suggestion을 하지 않는다.
+                                        let iIndexOf = document.activeElement.id.indexOf(oEvent.getSource().getId());
+                                        if(iIndexOf == -1){
+                                            return;
+                                        }
+
                                         var sValue = oEvent.getParameter("suggestValue"),
                                             aFilters = [];
 

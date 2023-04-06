@@ -28,6 +28,7 @@
         gaDblClickHistory = [], // Node 더블클릭 히스토리
         gaFileExtendImgList = [], // 파일 확장자 이미지 경로
 
+        gThemeColors, // UI5의 테마별 색상 코드 정보
         gfSelectRowUpdate; // Ui Table RowUpdated Global function
 
     /**
@@ -39,6 +40,9 @@
      * [WS30] 30번 페이지 생성
      ************************************************************************/
     oAPP.fn.fnCreateWs30 = () => {
+
+        // 현재 테마의 색상 정보 구하기
+        gThemeColors = sap.ui.core.theming.Parameters.get();
 
         // 30번 페이지 존재 유무 체크
         var oWs30 = sap.ui.getCore().byId("WS30");
@@ -1251,13 +1255,17 @@
             return;
         }
 
+        let sRowBgCol = gThemeColors.sapUiTableRowSelectionBG,
+            sRowBgCol_rgba = parent.WSUTIL.hexToRgb(sRowBgCol, 0.6);
+
         for (var i = 0; i < iRowLength; i++) {
 
             // Row의 Instance를 구한다.
             var oRow = aRows[i];
 
             // 일단 css 클래스를 지우고 본다.
-            oRow.removeStyleClass("u4aWsTreeTableSelected");
+            // oRow.removeStyleClass("u4aWsTreeTableSelected");
+            oRow.$().css({ "background-color": "" });
 
             // 바인딩 정보가 없으면 빠져나간다.
             if (oRow.isEmpty()) {
@@ -1271,7 +1279,8 @@
             var ISSEL = oRowData.ISSEL;
 
             if (ISSEL) {
-                oRow.addStyleClass("u4aWsTreeTableSelected");
+                // oRow.addStyleClass("u4aWsTreeTableSelected");
+                oRow.$().css({ "background-color": sRowBgCol_rgba });
             }
 
         }
@@ -1926,6 +1935,14 @@
      **************************************************************************/
     function fnGetUspTreeDefCtxMenuList() {
 
+        /**
+         * 혹여나 안쓰는 메뉴라고 해서 주석처리 하지 말고 VISIBLE: false 로 할 것!!
+         * 만약, 지워야 하는 경우,
+         * _ev_beforeOpenContextMenuDisplay
+         * _ev_beforeOpenContextMenuChange
+         * 위 두 function에 가서 find 로직도 같이 삭제할것!!
+         */
+
         return [{
             ICON: "sap-icon://expand-group",
             KEY: "K1",
@@ -1956,7 +1973,7 @@
             TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
             ENABLED: true,
             ISSTART: false,
-            VISIBLE: true
+            VISIBLE: false
         },
         {
             ICON: "sap-icon://write-new",
@@ -2012,7 +2029,7 @@
             TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D88"), // Upload
             ENABLED: true,
             ISSTART: true,
-            VISIBLE: true
+            VISIBLE: false
         },
         {
             ICON: "sap-icon://download",

@@ -99,8 +99,10 @@
         // ws setting Info를 UserData에 저장
         await _saveWsSettingsInfo(); // <--- 반드시 여기에 위치해야함!!
 
+        CURRWIN.show();
+
         // 현재 버전 보여주기
-        oAPP.fn.fnDisplayCurrentVersion();
+        oAPP.fn.fnDisplayCurrentVersion();       
 
         // WS Settings 에 있는 레지스트리 저장 Path 정보를 가지고 기본 레지스트리 정보를 생성한다.
         await _registryRelated();

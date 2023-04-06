@@ -315,6 +315,12 @@
         //UI design tree 영역 UI에 따른 ICON 세팅.
         oAPP.fn.setTreeUiIcon(oAPP.attr.oModel.oData.zTREE[0]);
 
+        //UI design tree 영역의 action icon 활성여부 처리.
+        oAPP.fn.designSetActionIcon(oAPP.attr.oModel.oData.zTREE[0]);
+
+        //design tree의 row action 활성여부 설정.
+        oAPP.fn.designTreeSetRowAction();
+
         //모델 갱신 처리.
         oAPP.attr.oModel.refresh();
 
@@ -493,6 +499,9 @@
           //UI design tree영역 체크박스 활성여부 처리.
           oAPP.fn.setTreeChkBoxEnable(oAPP.attr.oModel.oData.zTREE[0]);
 
+          //UI design tree 영역의 action icon 활성여부 처리.
+          oAPP.fn.designSetActionIcon(oAPP.attr.oModel.oData.zTREE[0]);
+
           //미리보기 UI의 drop 제거 처리.
           oAPP.attr.ui.frame.contentWindow.removeDropConfig();
 
@@ -501,6 +510,9 @@
 
           //attribute 초기화버튼 비활성처리.
           oAPP.attr.oModel.oData.uiinfo.vis02 = false;
+
+          //design tree의 row action 활성여부 설정.
+          oAPP.fn.designTreeSetRowAction();
 
           //모델 갱신 처리.
           oAPP.attr.oModel.refresh();
