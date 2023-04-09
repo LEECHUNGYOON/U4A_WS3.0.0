@@ -31,9 +31,7 @@
         "msgcls",
         "p13n",
         "p13n\\theme",
-        "p13n\\suggestion",
-        "help",
-        "help\\u4a_help",
+        "p13n\\suggestion",       
         "ext_api",
         "ext_api\\vbs",
         "conf"
@@ -53,8 +51,7 @@
         "newSessionVbs": "newSESSTION.vbs"
     },
     "path": {
-        "u4aHelpDocFolderPath": "help\\u4a_help",
-        "u4aHelpDocFilePath": "help\\u4a_help\\U4A.zip"
+       
     },
     "regPaths": {
         "chrome": "",
