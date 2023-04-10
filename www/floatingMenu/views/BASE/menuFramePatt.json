@@ -1,0 +1,19 @@
+[{
+        icon: 'sap-icon://calendar',
+        sysid: 'U4E',
+        key: '라인KEY',
+        title: 'U4E example name1',
+        desc: 'U4E example name1',
+        view_path: 'view/'
+
+    },
+    {
+        icon: 'sap-icon://clear-all',
+        sysid: 'U4E',
+        key: 'U4E example name2'
+    },
+    {
+        icon: 'sap-icon://crossed-line-chart',
+        key: 'U4E example name3'
+    }
+];

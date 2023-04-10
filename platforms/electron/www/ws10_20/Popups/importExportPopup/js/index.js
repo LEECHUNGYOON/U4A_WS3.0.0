@@ -15,7 +15,7 @@ const oAPP = {
 
         //WS Main 에서 호출받은 기본 I/F Data 
         this.ipcRenderer.on('export_import-INITDATA', (event, IF_DATA) => {
-            
+
             this.BROWSKEY = IF_DATA.BROWSKEY;
             this.SERVPATH = IF_DATA.SERVPATH;
             this.USERINFO = IF_DATA.USERINFO;
@@ -50,11 +50,12 @@ const oAPP = {
             APP = REMOTE.app,
             APPPATH = APP.getAppPath(),
             LANGU = USERINFO.LANGU,
-            SYSID = USERINFO.SYSID;
+            SYSID = USERINFO.SYSID,
+            PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));
 
         const
-            WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
-            WSUTIL = require(WSMSGPATH),
+            WSUTILPATH = PATH.join(PATHINFO.WSUTIL),
+            WSUTIL = require(WSUTILPATH),
             WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
 
         oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
@@ -89,7 +90,7 @@ const oAPP = {
 
         //file 선택 팝업 실행 
         oAPP.remote.dialog.showOpenDialog(oAPP.oWIN, options).then(result => {
-            
+
             if (result.canceled) {
                 oAPP.oWIN.close();
             }
@@ -110,20 +111,26 @@ const oAPP = {
 
                 }
 
-                let sURL = oAPP.path.join(oAPP.SERVPATH, "app_export_import?ACTCD=IMPORT"),
+                let oSettings = WSUTIL.getWsSettingsInfo();                
+
+                let sUrlParam = `app_export_import?ACTCD=IMPORT&WSVER=${oSettings.appVersion}&WSPATCH_LEVEL=${oSettings.patch_level}`;
+
+                let sURL = oAPP.path.join(oAPP.SERVPATH, sUrlParam),
                     oformData = new FormData();
 
                 var oBin = new Blob([Buffer.from(data)]);
                 oformData.append('files', oBin, oAPP.path.basename(oAPP.FilePath));
                 oBin = null;
 
-                // 로그인 정보가 있을 경우
-                let oLogInData = oAPP.USERINFO;
-                if (oLogInData && oLogInData.HTTP_ONLY == "1") {
+                // // 로그인 정보가 있을 경우
+                // let oLogInData = oAPP.USERINFO;
+                // if (oLogInData && oLogInData.HTTP_ONLY == "1") {
 
-                    sURL += `&sap-user=${oLogInData.ID}&sap-password=${oLogInData.PW}&sap-client=${oLogInData.CLIENT}&sap-language=${oLogInData.LANGU}`;
-             
-                }
+                //     sURL += `&sap-user=${oLogInData.ID}&sap-password=${oLogInData.PW}&sap-client=${oLogInData.CLIENT}&sap-language=${oLogInData.LANGU}`;
+
+                // }
+
+                debugger;
 
                 var xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function () {
@@ -138,7 +145,7 @@ const oAPP = {
 
                             //오류 발생?
                             if (sData.RETCD !== "S") {
-                            // if (sData.RETCD === "E") {
+                                // if (sData.RETCD === "E") {
 
                                 oAPP.remote.dialog.showErrorBox(sErrMsg1, sData.RTMSG);
                                 oAPP.oWIN.close();
@@ -243,6 +250,7 @@ const oAPP = {
 
                 var LpopMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "342"); // Same file exists Do you ignore the existing file and proceed?
                 var Ret = oAPP.remote.dialog.showMessageBoxSync(oAPP.oWIN, {
+                    title : sTitle,
                     type: "question",
                     message: LpopMsg,
                     buttons: ['YES', 'NO']
@@ -253,19 +261,24 @@ const oAPP = {
 
             }
 
+            let oSettings = WSUTIL.getWsSettingsInfo();
+
             let sURL = oAPP.path.join(oAPP.SERVPATH, `app_export_import?ACTCD=EXPORT&APPID=${oAPP.APPID}`);
 
             var xhr = new XMLHttpRequest(),
                 oformData = new FormData();
 
-            // 로그인 정보가 있을 경우
-            let oLogInData = oAPP.USERINFO;
-            if (oLogInData && oLogInData.HTTP_ONLY == "1") {
-                oformData.append("sap-user", oLogInData.ID);
-                oformData.append("sap-password", oLogInData.PW);
-                oformData.append("sap-client", oLogInData.CLIENT);
-                oformData.append("sap-language", oLogInData.LANGU);
-            }
+            oformData.append('WSVER', oSettings.appVersion);
+            oformData.append('WSPATCH_LEVEL', oSettings.patch_level);
+
+            // // 로그인 정보가 있을 경우
+            // let oLogInData = oAPP.USERINFO;
+            // if (oLogInData && oLogInData.HTTP_ONLY == "1") {
+            //     oformData.append("sap-user", oLogInData.ID);
+            //     oformData.append("sap-password", oLogInData.PW);
+            //     oformData.append("sap-client", oLogInData.CLIENT);
+            //     oformData.append("sap-language", oLogInData.LANGU);
+            // }
 
             xhr.onreadystatechange = function () {
 
@@ -301,7 +314,7 @@ const oAPP = {
                         var Lmsg = xhr.getResponseHeader('RTMSG');
 
                         var oBuff = Buffer.from(xhr.response);
-                        oAPP.fs.writeFileSync(oAPP.FilePath, oBuff, null, function (err) {});
+                        oAPP.fs.writeFileSync(oAPP.FilePath, oBuff, null, function (err) { });
 
                         // 파일 다운받은 폴더를 오픈한다.
                         oAPP.SHELL.showItemInFolder(oAPP.FilePath);

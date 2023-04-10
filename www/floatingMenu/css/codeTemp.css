@@ -1,0 +1,28 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    overflow: hidden;
+}
+
+.codeTempNoScrolling {
+    overflow: hidden;
+}
+
+.sapUiTableCell:focus::before {
+    outline: none !important;
+}
+
+.listPage>section {
+    overflow: hidden !important;
+}
+
+.actionBtn > .sapUiIcon:nth-child(1) {
+    color: #249524 !important;
+}
+
+.actionBtn > .sapUiIcon:nth-child(2) {
+    color: #d91c1c !important;
+}

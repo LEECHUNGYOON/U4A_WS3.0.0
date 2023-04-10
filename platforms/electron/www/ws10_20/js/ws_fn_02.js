@@ -1308,7 +1308,8 @@
         let aExceptionList = [
             "VIDEOREC",
             "EXAMPLE",
-            "PATTPOPUP"
+            "PATTPOPUP",
+            "FLTMENU",            
         ];
 
         if (!OBJTY) {

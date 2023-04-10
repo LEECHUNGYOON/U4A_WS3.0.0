@@ -255,8 +255,11 @@
 
             setTimeout(() => {
 
+                let oSettings = parent.WSUTIL.getWsSettingsInfo();
+
                 let PATH = parent.require('path'),
-                    sURL = PATH.join(parent.SERVPATH, "about_u4aide");
+                    sUrlParam = `about_u4aide?WSVER=${oSettings.appVersion}&WSPATCH_LEVEL=${oSettings.patch_level}`,
+                    sURL = PATH.join(parent.SERVPATH, sUrlParam);
 
                 var xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function () {

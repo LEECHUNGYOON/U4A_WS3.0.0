@@ -26,8 +26,8 @@ function getBeforeServerInfo() {
 
 
 // 3. 서버 URL을 구한다.
-function getServerPath() {
-    return oWS.utill.fn.getServerPath();
+function getServerPath(bIsStateLess) {
+    return oWS.utill.fn.getServerPath(bIsStateLess);
 }
 
 // 서버의 호스트를 구한다.

@@ -26,8 +26,7 @@
             PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
             PATHINFO = require(PATHINFOURL),
             WSERR = require(PATHINFO.WSTRYCATCH),
-            WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
-            WSUTIL = require(WSMSGPATH),
+            WSUTIL = require(PATHINFO.WSUTIL),
             USP_UTIL = parent.require(PATHINFO.USP_UTIL);
 
         var zconsole = WSERR(window, document, console);

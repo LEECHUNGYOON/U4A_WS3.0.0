@@ -848,16 +848,16 @@ let oAPP = (function() {
 
             var oFormData = new FormData();
 
-            if (oAPP.attr.HTTPONLY && oAPP.attr.HTTPONLY == "1") {
+            // if (oAPP.attr.HTTPONLY && oAPP.attr.HTTPONLY == "1") {
 
-                let oLogInData = oAPP.attr.LOGIN;
+            //     let oLogInData = oAPP.attr.LOGIN;
 
-                oFormData.append("sap-user", oLogInData.ID);
-                oFormData.append("sap-password", oLogInData.PW);
-                oFormData.append("sap-client", oLogInData.CLIENT);
-                oFormData.append("sap-language", oLogInData.LANGU);
+            //     oFormData.append("sap-user", oLogInData.ID);
+            //     oFormData.append("sap-password", oLogInData.PW);
+            //     oFormData.append("sap-client", oLogInData.CLIENT);
+            //     oFormData.append("sap-language", oLogInData.LANGU);
 
-            }
+            // }
 
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() { // 요청에 대한 콜백
@@ -947,16 +947,16 @@ let oAPP = (function() {
 
             var oFormData = new FormData();
 
-            if (oAPP.attr.HTTPONLY && oAPP.attr.HTTPONLY == "1") {
+            // if (oAPP.attr.HTTPONLY && oAPP.attr.HTTPONLY == "1") {
 
-                let oLogInData = oAPP.attr.LOGIN;
+            //     let oLogInData = oAPP.attr.LOGIN;
 
-                oFormData.append("sap-user", oLogInData.ID);
-                oFormData.append("sap-password", oLogInData.PW);
-                oFormData.append("sap-client", oLogInData.CLIENT);
-                oFormData.append("sap-language", oLogInData.LANGU);
+            //     oFormData.append("sap-user", oLogInData.ID);
+            //     oFormData.append("sap-password", oLogInData.PW);
+            //     oFormData.append("sap-client", oLogInData.CLIENT);
+            //     oFormData.append("sap-language", oLogInData.LANGU);
 
-            }
+            // }
 
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() { // 요청에 대한 콜백
@@ -1658,9 +1658,9 @@ let oAPP = (function() {
             parent.onMoveToPage("WS10");
 
             parent.showLoadingPage('');
-
-            // // Floating Menu를 오픈한다.
-            // oAPP.fn.fnFloatingMenuOpen();
+            
+            // Floating Menu를 오픈한다.    
+            oAPP.fn.fnFloatingMenuOpen();
 
         });
 

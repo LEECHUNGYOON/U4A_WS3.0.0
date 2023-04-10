@@ -38,7 +38,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function(oAPP) {
+(function (oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -68,7 +68,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.sendAjax = (sUrl, fnSuccess, fnError, fnCancel) => {
 
         // ajax call 취소할 경우..
-        XHR.onabort = function() {
+        XHR.onabort = function () {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -77,7 +77,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // ajax call 실패 할 경우
-        XHR.onerror = function() {
+        XHR.onerror = function () {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -85,7 +85,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         };
 
-        XHR.onload = function() {
+        XHR.onload = function () {
 
             if (typeof fnSuccess == "function") {
                 fnSuccess(XHR.response);
@@ -782,9 +782,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-                RETCD: "E",
-                RTMSG: oAPP.msg.M04, // "Server information does not exist in the SAPGUI logon file."
-            },
+            RETCD: "E",
+            RTMSG: oAPP.msg.M04, // "Server information does not exist in the SAPGUI logon file."
+        },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -916,9 +916,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-                RETCD: "E",
-                RTMSG: oAPP.msg.M04 // "Server information does not exist in the SAPGUI logon file."
-            },
+            RETCD: "E",
+            RTMSG: oAPP.msg.M04 // "Server information does not exist in the SAPGUI logon file."
+        },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -1092,8 +1092,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnOnInitRendering = () => {
 
         var oApp = new sap.m.App({
-                autoFocus: false,
-            }),
+            autoFocus: false,
+        }),
             oTreeTable = oAPP.fn.fnGetWorkSpaceTreeTable(), // 좌측 폴더 Tree
             oTable = oAPP.fn.fnGetSAPLogonListTable(), // 우측 서버 리스트 테이블
             oPage1 = new sap.m.Page({
@@ -1141,7 +1141,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                     })
                                 ],
 
-                                itemSelected: function(oEvent) {
+                                itemSelected: function (oEvent) {
                                     ev_settingItemSelected(oEvent);
                                 }
                             })
@@ -1168,7 +1168,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function() {
+            onAfterRendering: function () {
 
                 setTimeout(() => {
                     $('#content').fadeIn(300, 'linear');
@@ -1692,7 +1692,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         if (!bIsFileExist) {
 
             // 파일이 없습니다 오류
-            oAPP.fn.fnShowMessageBox("E", oAPP.msg.M10 /*"server List file not exists. restart now!"*/ , () => {
+            oAPP.fn.fnShowMessageBox("E", oAPP.msg.M10 /*"server List file not exists. restart now!"*/, () => {
                 oAPP.fn.fnEditDialogClose();
             });
 
@@ -1719,7 +1719,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 성공 사운드
         oAPP.setSoundMsg("01");
 
-        sap.m.MessageToast.show(oAPP.msg.M02 /*Delete Success!*/ );
+        sap.m.MessageToast.show(oAPP.msg.M02 /*Delete Success!*/);
 
         // 좌측 workspace 트리 테이블을 갱신한다.
         oAPP.fn.fnSetRefreshSelectTreeItem();
@@ -2083,7 +2083,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         if (!bIsFileExist) {
 
             // 파일이 없습니다 오류
-            oAPP.fn.fnShowMessageBox("E", oAPP.msg.M10 /*"server List file not exists. restart now!"*/ , () => {
+            oAPP.fn.fnShowMessageBox("E", oAPP.msg.M10 /*"server List file not exists. restart now!"*/, () => {
                 oAPP.fn.fnEditDialogClose();
             });
 
@@ -2128,7 +2128,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             // 성공 사운드
             oAPP.setSoundMsg("01");
 
-            sap.m.MessageToast.show(oAPP.msg.M01 /*"saved Success!"*/ );
+            sap.m.MessageToast.show(oAPP.msg.M01 /*"saved Success!"*/);
 
             return;
 
@@ -2172,7 +2172,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 성공 사운드
         oAPP.setSoundMsg("01");
 
-        sap.m.MessageToast.show(oAPP.msg.M01 /*"saved Success!"*/ );
+        sap.m.MessageToast.show(oAPP.msg.M01 /*"saved Success!"*/);
 
     }; // end of oAPP.fn.fnPressSave
 
@@ -2418,11 +2418,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             WSLANGU: WSLANGU,
             sSelectedKey: "EN",
             aLangu: [{
-                    KEY: "EN"
-                },
-                {
-                    KEY: "KO"
-                },
+                KEY: "EN"
+            },
+            {
+                KEY: "KO"
+            },
             ],
         };
 
@@ -2508,7 +2508,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 new sap.m.Button({
                     type: sap.m.ButtonType.Emphasized,
                     text: "{/WSLANGU/ZMSG_WS_COMMON_001/002}", // "OK",
-                    press: function(oEvent) {
+                    press: function (oEvent) {
 
                         oAPP.setBusy(true);
 
@@ -2519,7 +2519,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 }),
                 new sap.m.Button({
                     text: "{/WSLANGU/ZMSG_WS_COMMON_001/003}", // "Cancel"
-                    press: function() {
+                    press: function () {
 
                         let sDialogId = "GlobalSettingWsLangu",
                             oDialog = sap.ui.getCore().byId(sDialogId);
@@ -2678,7 +2678,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 new sap.m.Button({
                     type: sap.m.ButtonType.Emphasized,
                     text: "{/WSLANGU/ZMSG_WS_COMMON_001/002}", // "OK",
-                    press: function(oEvent) {
+                    press: function (oEvent) {
 
                         oAPP.setBusy(true);
 
@@ -2689,7 +2689,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 }),
                 new sap.m.Button({
                     text: "{/WSLANGU/ZMSG_WS_COMMON_001/003}", // "Cancel"
-                    press: function() {
+                    press: function () {
 
                         let oDialog = sap.ui.getCore().byId(sDialogId);
 
@@ -2986,7 +2986,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function() {
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             oAPP.setBusy(false);
 
@@ -3056,7 +3056,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         resolve({
@@ -3250,38 +3250,38 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         new sap.m.Dialog(sDialogId, {
 
-                // properties
-                showHeader: false,
-                horizontalScrolling: false,
-                verticalScrolling: false,
+            // properties
+            showHeader: false,
+            horizontalScrolling: false,
+            verticalScrolling: false,
 
-                // aggregations
-                content: [
-                    new sap.m.IllustratedMessage({
-                        description: "An activated window exists. please close All activated windows first.",
-                        illustrationType: "tnt-Teams",
-                        illustrationSize: sap.m.IllustratedMessageSize.Dialog,
-                        additionalContent: new sap.m.Button({
-                            text: "OK",
-                            press: function() {
+            // aggregations
+            content: [
+                new sap.m.IllustratedMessage({
+                    description: "{/WSLANGU/ZMSG_WS_COMMON_001/043}", // "An activated window exists. please close All activated windows first.",
+                    illustrationType: "tnt-Teams",
+                    illustrationSize: sap.m.IllustratedMessageSize.Dialog,
+                    additionalContent: new sap.m.Button({
+                        type: sap.m.ButtonType.Emphasized,
+                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/002}", //"OK",
+                        press: function () {
 
-                                let oDialog = sap.ui.getCore().byId(sDialogId);
-                                oDialog.close();
+                            // 전체 윈도우를 활성화 시킨다
+                            oAPP.fn.fnShowAllWindows();
 
-                                // 전체 윈도우를 활성화 시킨다
-                                oAPP.fn.fnShowAllWindows();
+                            let oDialog = sap.ui.getCore().byId(sDialogId);
+                            oDialog.close();
 
-                            }
-                        }),
+                        }
+                    }),
 
+                })
+            ],
 
-                    })
-                ],
+            // Events
+            escapeHandler: () => { }, // esc 키 방지
 
-                // Events
-                escapeHandler: () => {}, // esc 키 방지
-
-            })
+        })
             .addStyleClass(sDialogId)
             .open();
 
@@ -3293,7 +3293,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnShowAllWindows = () => {
 
         let aBrowserList = REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
-            iBrowserListLength = aBrowserList.length;          
+            iBrowserListLength = aBrowserList.length;
 
         for (var i = 0; i < iBrowserListLength; i++) {
 
@@ -3398,7 +3398,14 @@ window.addEventListener("load", () => {
 // window onbeforeunload
 window.onbeforeunload = (oEvent) => {
 
-    debugger;
+    // // 작업표시줄에서 닫기 눌렀을 경우
+    // if(oEvent.defaultPrevented){
+    //     return "";
+    // }
+
+    // REMOTE.getCurrentWindow().openDevTools();
+
+    // console.log(oEvent);
 
     /**
      * 서버리스트 이외에 현재 실행되고 있는 브라우저가 있을 경우
@@ -3440,6 +3447,8 @@ window.onbeforeunload = (oEvent) => {
     if (typeof sap === "undefined") {
         return "";
     }
+
+    REMOTE.getCurrentWindow().show();
 
     oAPP.fn.showIllustratedMsg();
 

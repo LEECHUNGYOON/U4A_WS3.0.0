@@ -259,16 +259,16 @@ exports.autoUpdaterSAP = {
 
         var oFormData = new FormData();
 
-        if (oServerInfo && oServerInfo.HTTPONLY && oServerInfo.HTTPONLY == "1") {
+        // if (oServerInfo && oServerInfo.HTTPONLY && oServerInfo.HTTPONLY == "1") {
 
-            let oLogInData = oServerInfo.LOGIN;
+        //     let oLogInData = oServerInfo.LOGIN;
 
-            oFormData.append("sap-user", oLogInData.ID);
-            oFormData.append("sap-password", oLogInData.PW);
-            oFormData.append("sap-client", oLogInData.CLIENT);
-            oFormData.append("sap-language", oLogInData.LANGU);
+        //     oFormData.append("sap-user", oLogInData.ID);
+        //     oFormData.append("sap-password", oLogInData.PW);
+        //     oFormData.append("sap-client", oLogInData.CLIENT);
+        //     oFormData.append("sap-language", oLogInData.LANGU);
 
-        }
+        // }
 
         var xhr = new XMLHttpRequest();
 

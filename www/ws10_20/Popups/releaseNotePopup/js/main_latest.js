@@ -53,7 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
     oHandle.REPO = oGitSettings.REPO; //폴더명
 
     //현재 WS3.0 버젼 
-    oHandle.curVER = `v${oAPP.APP.getVersion()}`;
+    oHandle.curVER = `v${oSettings.appVersion}`;
+    // oHandle.curVER = `v${oAPP.APP.getVersion()}`;
 
     var sServerPath = oAPP.fnGetServerPath();
 
@@ -199,26 +200,28 @@ function gfn_crtUI_Item() {
 // 릴리즈 노트 라인 아이템 구성 - SAP 
 function gfn_crtUI_Item_SAP() {
 
-    debugger;
+    let oSettings = oAPP.fnGetSettingsInfo();    
 
     let oformData = new FormData();
     oformData.append('VER', oHandle.curVER);
     oformData.append('ISADM', oAPP.ISADM);
+    oformData.append('WSVER', oSettings.appVersion);
+    oformData.append('WSPATCH_LEVEL', oSettings.patch_level);
 
-    // User Info가 있을 경우.
-    if (oAPP.attr.oUserInfo) {
+    // // User Info가 있을 경우.
+    // if (oAPP.attr.oUserInfo) {
 
-        // Server 설정이 HTTP ONLY 일 경우 서버 호출 시 
-        // ID, PW를 던진다.
-        let oLogInData = oAPP.attr.oUserInfo;
-        if (oLogInData.HTTP_ONLY && oLogInData.HTTP_ONLY == "1") {
-            oformData.append("sap-user", oLogInData.ID);
-            oformData.append("sap-password", oLogInData.PW);
-            oformData.append("sap-client", oLogInData.CLIENT);
-            oformData.append("sap-language", oLogInData.LANGU);
+    //     // Server 설정이 HTTP ONLY 일 경우 서버 호출 시 
+    //     // ID, PW를 던진다.
+    //     let oLogInData = oAPP.attr.oUserInfo;
+    //     if (oLogInData.HTTP_ONLY && oLogInData.HTTP_ONLY == "1") {
+    //         oformData.append("sap-user", oLogInData.ID);
+    //         oformData.append("sap-password", oLogInData.PW);
+    //         oformData.append("sap-client", oLogInData.CLIENT);
+    //         oformData.append("sap-language", oLogInData.LANGU);
 
-        }
-    }
+    //     }
+    // }
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", oHandle.sapURL, true);

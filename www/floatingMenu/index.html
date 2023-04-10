@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <iframe id="floatFrame" src="" frameborder="0"
+        style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100%;width:100%;position:absolute;top:0px;left:0px;right:0px;bottom:0px;"></iframe>
+
+    <script>
+
+
+        /************************************************************************
+         * 에러 감지
+         ************************************************************************/
+        var REMOTE = require('@electron/remote'),
+            PATH = REMOTE.require('path'),
+            APP = REMOTE.app,
+            APPPATH = APP.getAppPath(),
+            PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            PATHINFO = require(PATHINFOURL),
+            WSERR = require(PATHINFO.WSTRYCATCH),
+            WSUTIL = require(PATHINFO.WSUTIL);          
+
+        var zconsole = WSERR(window, document, console);
+
+        let oAPP = {};
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            console.log('플로팅 쪽의 처음');
+
+            oAPP.remote = require('@electron/remote');
+            oAPP.ipcRenderer = require('electron').ipcRenderer;
+            oAPP.path = oAPP.remote.require('path');
+            oAPP.__dirname = __dirname;
+            oAPP.PRC = require(oAPP.path.join(__dirname, 'js/fn_handler.js'));
+            oAPP.fs = oAPP.remote.require('fs');
+            oAPP.convert = require('xml-js');
+
+            // var data = oAPP.fs.readFileSync("C:\\Users\\Administrator\\AppData\\Roaming\\SAP\\SAP GUI\\ABAP Editor\\abap_user.xml" , 'utf8'); 
+            // var json = JSON.parse(convert.xml2json(data)); 
+            // console.log(json);
+
+            // send를 통해 전송 시 수행 이벤트
+            oAPP.ipcRenderer.on('IF-WS30-FLOARTMENU', (event, data) => {
+
+                try {
+                    oAPP.PRC.PRCCD = data['PRCCD'];
+                } catch (error) {
+                    console.error('IF-WS30-FLOARTMENU =>' + error);
+                    //여기가 오류라는건!!!!! 크리티컬!!!!오류!!!!!!!
+                    //호출처 파라메터 확인!!!!! did-finish-load <-- 요기 확인
+                    //크리티컬
+                    // alert("i/f값이 안넘어옴!!!!!!");
+                    console.error("i/f값이 안넘어옴!!!!!!");
+                    // oAPP.remote.getCurrentWindow().close();
+                    return;
+                };
+
+
+                if (oAPP.PRC.PRCCD === "INIT") {
+                    oAPP.PRC._IF_DATA = data;
+
+                    let frameId = document.getElementById('floatFrame');
+                    frameId.src = "frame.html";
+
+                    return;
+
+                }
+
+                //아래 동적처리는 fn_handler.js 안에 모듈펑션을 동적으로 call 
+                //오류나면 fn_handler.js <- 요기 안에 
+                //oAPP.PRC.PRCCD <-- 값에 대한 펑션이 없다는 뜻임!!!
+                try {
+                    oAPP.PRC[oAPP.PRC.PRCCD](data);
+                } catch (error) {
+                    //크리티컬 오류!!!
+                    // alert("크리티컬 오류!!! - " + error);
+                    console.error("크리티컬 오류!!! - " + error);
+
+                }
+
+            }); //oAPP.ipcRenderer.on('IF-WS30-FLOARTMENU', (event, data) => {
+
+
+        }); //document.addEventListener('DOMContentLoaded', () => {
+
+        function gfn_parent() {
+
+            return oAPP;
+
+        };
+    </script>
+</body>
+
+</html>

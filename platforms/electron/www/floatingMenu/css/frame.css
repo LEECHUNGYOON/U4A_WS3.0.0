@@ -1,0 +1,469 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html.sap-desktop .wonRental_body .sapMBtn:focus>.sapMFocusable:not(.sapMBadgeIndicator):before {
+    border: none;
+}
+
+.wonRental_body .wonRental_content .sapUiLoSplitter>.sapUiLoSplitterBar:focus::after,
+.wonRental_body .wonRental_content .sapUiLoSplitter>.sapUiLoSplitterOverlay .sapUiLoSplitterOverlayBar:focus::after {
+    border: none;
+}
+
+
+/* .wonRental_content {
+    opacity: 0;
+} */
+
+.wonRental_body .wonRental_content .sapMNav {
+    background-color: transparent;
+}
+
+.wonRental_body .wonRental_content .outSplitter {
+    display: flex;
+    justify-content: end;
+}
+
+.wonRental_body .wonRental_content .mainPage>:first-child {
+    overflow: hidden !important;
+}
+
+.wonRental_body .wonRental_content .sideSp {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    /* position: absolute;
+    top: 0;
+    right: 0; */
+    top: 0;
+    transition: 0.3s all;
+}
+
+.wonRental_body .wonRental_content .sideSp> :nth-child(3) {
+    /* height: 100%; */
+    box-shadow: 0 16px #12171c, 0 -16px #12171c;
+    /* transition: 0.5 all; */
+}
+
+.wonRental_body .wonRental_content .sapMBtn.sevActive {
+    /* background-color: #000000; */
+    background-color: #4a459a;
+}
+
+/* .wonRental_body .wonRental_content .sapMBtn.sevActive>.sapMBtnTransparent bdi {
+    color: #ffffff;
+} */
+
+.wonRental_body .wonRental_content .sapMBtn.active {
+    /* background-color: #12171c; */
+    background-color: #4a459a;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp> :nth-child(1) {
+    overflow: hidden;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp> :nth-child(3) {
+    position: absolute;
+    right: 0;
+    /* background-color: #F5C500; */
+    background-color: #222342;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp> :nth-child(3) .rotateButton {
+    height: 50px;
+    /* background-color: #F5C500; */
+    background-color: #222342;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp> :nth-child(3) .rotateButton.rotate {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp> :nth-child(3) .rotateButton .sapMBtnInner .sapUiIcon {
+    transition: 0.5s all;
+    color: #ffffff;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp> :nth-child(3) .rotateButton.rotate .sapMBtnInner .sapUiIcon {
+    transform: rotate(180deg);
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp .prgContent .sapMPageHeader .sapMIBar {
+    background-color: transparent;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp .prgContent .sapMPageHeader .sapMIBar .sapMBarLeft {
+    padding-left: 0;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp .prgContent .sapMPageHeader .sapMIBar .sapMBarRight {
+    padding-right: 0;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp .prgContent .sapMPageSubHeader .sapMIBar {
+    background-color: transparent;
+    padding-bottom: 15px;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp .prgContent .sapMPageFooter .sapMIBar-CTX.sapMFooter-CTX {
+    background-color: transparent;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp .prgContent .sapMPageFooter .sapMIBar-CTX.sapMFooter-CTX .sapMBarLeft {
+    padding-left: 0;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp .prgContent .sapMPageSubHeader .sapMIBar .sapMBarRight {
+    padding: 0;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp .prgContent .sapMPageSubHeader .sapMIBar .sapMBarLeft>.sapMBarChild,
+.wonRental_body .wonRental_content .sideSp .contSp .prgContent .sapMPageSubHeader .sapMIBar .sapMBarRight>.sapMBarChild {
+    flex-shrink: 1;
+}
+
+.wonRental_body .wonRental_content .serverTitle {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp .prgContent .sapMPageSubHeader .sapMIBar .sapMBarRight>.sapMInputBase {
+    max-width: 350px;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp .prgContent>:nth-child(3) {
+    margin-top: 25px;
+}
+
+.wonRental_body .wonRental_content .serverPage> :first-child {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: end;
+}
+
+.wonRental_body .wonRental_content .programPage> :first-child>.sapMPage> :first-child {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.wonRental_body .wonRental_content .sapMBtn:hover>.sapMBtnTransparent.sapMBtnHoverable:not(.sapMBtnActive):not(.sapMToggleBtnPressed),
+.wonRental_body .wonRental_content .sapMIBar-CTX .sapMBtn:hover>.sapMBtnTransparent.sapMBtnHoverable:not(.sapMBtnActive):not(.sapMToggleBtnPressed) {
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.wonRental_body .wonRental_content .programPage :not(.sapMBtnDisabled) .sapMBtnTransparent>.sapMBtnIcon {
+    background-color: transparent;
+    /* color: #000000; */
+}
+
+.wonRental_body .wonRental_content .programPage :not(.sapMBtnDisabled).active .sapMBtnTransparent>.sapMBtnIcon {
+    color: #ffffff;
+}
+
+.wonRental_body .wonRental_content .serverPage .sapMBtnTransparent {
+    color: #ffffff;
+}
+
+.wonRental_body .wonRental_content .sapMBtn:hover:not(.sapMBtnDisabled)>.sapMBtnTransparent.sapMBtnHoverable:not(.sapMBtnActive):not(.sapMToggleBtnPressed):not(.sapMBtnEmphasized) .sapUiIcon,
+.wonRental_body .wonRental_content .programPage .sapMBtn:hover:not(.sapMBtnDisabled)>.sapMBtnTransparent.sapMBtnHoverable:not(.sapMBtnActive):not(.sapMToggleBtnPressed):not(.sapMBtnEmphasized) .sapUiIcon,
+.wonRental_body .wonRental_content .serverPage .sapMBtn:hover>.sapMBtnTransparent.sapMBtnHoverable:not(.sapMBtnActive):not(.sapMToggleBtnPressed) bdi {
+    color: #ffffff;
+}
+
+.wonRental_body .wsy_helpContent {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #000000d4;
+    display: none;
+}
+
+.wsy_overlayfloating {
+    width: 465px;
+    height: 100%;
+    display: flex;
+    top: 0;
+    right: 0;
+    background-color: #12171C;
+}
+
+.wsy_overlayfloating::before {
+    content: '';
+    width: 100%;
+    height: 15px;
+    background-color: #12171c;
+    background-image: url(./../img/bar.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 17px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.wsy_overlayfloating::after {
+    content: '';
+    width: 100%;
+    height: 15px;
+    background-color: #12171c;
+    background-image: url(./../img/bar.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 17px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.wsy_overlayfloatingL {
+    width: 365px;
+    height: 100%;
+}
+
+.wsy_overlayfloatingL::before {
+    content: '';
+    width: 15px;
+    height: 100%;
+    background-color: #12171c;
+    background-image: url(./../img/bar2.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9;
+}
+
+.wsy_overlayfloatingLH {
+    width: 95%;
+    height: 103px;
+    margin: 15px auto 0;
+    padding: 0 10px;
+    box-sizing: border-box;
+    background-color: transparent;
+    border-bottom: 1px solid #2E3742;
+}
+
+.wsy_overlayfloatingLMH {
+    width: 100%;
+    height: 44px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.wsy_overlayLogout {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background-color: #490000;
+}
+
+.wsy_logcheck,
+.wsy_domcheck,
+.wsy_mainareacheck,
+.wsy_splittercheck,
+.wsy_prgareacheck {
+    border-radius: 100%;
+    border: 2px dashed #ffffff;
+    z-index: 99;
+}
+
+.wsy_logcheck::after,
+.wsy_domcheck::after,
+.wsy_mainareacheck::after,
+.wsy_splittercheck::after,
+.wsy_prgareacheck::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border-radius: 100%;
+    background-color: #ffffff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 99;
+}
+
+.wsy_logcheck::before {
+    content: '';
+    width: 40vw;
+    height: 1px;
+    border-top: 2px dashed #ffffff;
+    position: absolute;
+    top: 100%;
+    right: 100%;
+    z-index: 99;
+}
+
+.wsy_domcheck::before {
+    content: '';
+    width: 20vw;
+    height: 800%;
+    border-bottom: 2px dashed #ffffff;
+    border-right: 2px dashed #ffffff;
+    position: absolute;
+    top: 100%;
+    right: calc(50% - 1px);
+    z-index: 99;
+}
+
+.wsy_mainareacheck::before {
+    content: '';
+    width: 35vw;
+    height: 1px;
+    border-top: 2px dashed #ffffff;
+    position: absolute;
+    top: calc(50% - 1px);
+    right: 100%;
+    z-index: 99;
+}
+
+.wsy_splittercheck::before {
+    content: '';
+    width: 45vw;
+    height: 500%;
+    border-top: 2px dashed #ffffff;
+    border-right: 2px dashed #ffffff;
+    position: absolute;
+    top: -500%;
+    right: calc(50% - 1px);
+    z-index: 99;
+}
+
+.wsy_prgareacheck::before {
+    content: '';
+    
+}
+
+.wsy_overlayserverid {
+    font-size: 16px;
+    color: #818181;
+}
+
+.wsy_overlaytcode {
+    width: 100%;
+    height: 36px;
+    background-color: #242E38;
+    border: none;
+    margin-top: 4px;
+    border-radius: 4px;
+    border-bottom: 1px solid #A9B4BE;
+    padding: 0 0 0 10px;
+    box-sizing: border-box;
+    font-size: 15px;
+    font-style: italic;
+}
+
+.wsy_overlayfloatingLSH {
+    width: 100%;
+    height: 44px;
+}
+
+.wsy_overlayfloatingR {
+    width: 100px;
+    height: 100%;
+    background-color: #222342;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+}
+
+.wsy_overlayfloatingRP {
+    width: 100%;
+    height: calc(100% - 115px);
+}
+
+.wsy_overlayfloatingRS {
+    width: 100%;
+    height: 100px;
+    border-top: 15px solid #12171C;
+    position: relative;
+}
+
+.wsy_overlayfloatingRS::after {
+    content: '';
+    width: 100%;
+    height: 15px;
+    background-color: #12171c;
+    background-image: url(./../img/bar.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 17px;
+    position: absolute;
+    top: -15px;
+    left: 0;
+}
+
+.wonRental_body .wsy_helpContent .close {
+    width: 100%;
+    display: flex;
+    justify-content: end;
+}
+
+.wonRental_body .wsy_helpContent .close .closebt {
+    font-size: 24px;
+    padding: 5px 11PX;
+    margin: 20px;
+    border-radius: 25px;
+    background-color: #ffffff6e;
+    color: #ffffff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.wonRental_body .wsy_helpContent>* {
+    position: absolute;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1vw;
+}
+
+.wonRental_body .wsy_helpContent .logout_desc {
+    top: 22px;
+    right: 40vw;
+}
+
+.wonRental_body .wsy_helpContent .t_codesc {
+    right: 30vw;
+}
+
+.wonRental_body .wsy_helpContent .mainLayout_desc {
+    right: 35vw;
+}
+
+.wonRental_body .wsy_helpContent .splittbar_desc {
+    right: 60vw;
+}
+
+.wonRental_body .sapUiLoSplitter>.sapUiLoSplitterBar,
+.wonRental_body .sapUiLoSplitterOverlay>.sapUiLoSplitterOverlayBar {
+    color: #ffffff;
+}
+
+.wonRental_body .sapUiLoSplitter.sapUiLoSplitterH>.sapUiLoSplitterOverlay .sapUiLoSplitterOverlayBar .sapUiLoSplitterBarDecorationBefore {
+    background-image: linear-gradient(to bottom, #ffffff00,#ffffff);
+}
+.wonRental_body .sapUiLoSplitter.sapUiLoSplitterH>.sapUiLoSplitterOverlay .sapUiLoSplitterOverlayBar .sapUiLoSplitterBarDecorationAfter {
+    background-image: linear-gradient(to bottom, #ffffff,#ffffff00);
+}
+
+.wonRental_body .sapUiLoSplitter.sapUiLoSplitterV>.sapUiLoSplitterOverlay .sapUiLoSplitterOverlayBar .sapUiLoSplitterBarDecorationBefore {
+    background-image: linear-gradient(to right, #ffffff00,#ffffff);
+}
+
+.wonRental_body .sapUiLoSplitter.sapUiLoSplitterV>.sapUiLoSplitterOverlay .sapUiLoSplitterOverlayBar .sapUiLoSplitterBarDecorationAfter {
+    background-image: linear-gradient(to left, #ffffff00,#ffffff);
+}

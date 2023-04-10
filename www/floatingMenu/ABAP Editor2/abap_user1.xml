@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="lang_user.xslt"?>
+<XMLConfigSettings>
+	<FILEINFO>
+		<Author>SAP</Author>
+		<Type>LangUser</Type>
+		<Language>ABAP</Language>
+		<Desc>User specific settings for ABAP</Desc>
+	</FILEINFO>
+	<EXPANDS>
+		<Expand key="*--">
+			<Descr>*-------...</Descr>
+			<Text>*--------------------------------------------------------------------*</Text>
+		</Expand>
+		<Expand key="if">
+			<Descr>If (§)</Descr>
+			<Text>IF |.\n%SurroundedText%\nENDIF.</Text>
+		</Expand>
+		<Expand key="try">
+			<Descr>Try (§)</Descr>
+			<Text>TRY.\n bbbb \nCATCH |.\n\nENDTRY.</Text>
+		</Expand>
+		<Expand key="1dt">
+			<Descr>DT XXX</Descr>
+			<Text>DATA : LT_AAA TYPE STRING_TABLE..</Text>
+		</Expand>
+		<Expand key="region">
+			<Descr>Region (§)</Descr>
+			<Text>"$. Region %Region Name%\n%SurroundedText%\n"$. Endregion %Region Name%</Text>
+		</Expand>
+		<Expand key="do">
+			<Descr>Do (§)</Descr>
+			<Text>DO | TIMES.\n%SurroundedText%\nENDDO.</Text>
+		</Expand>
+		<Expand key="***">
+			<Descr>***.....</Descr>
+			<Text>**********************************************************************</Text>
+		</Expand>
+		<Expand key="ife">
+			<Descr>If (§) Else</Descr>
+			<Text>IF |.\n%SurroundedText%\nELSE.\n\nENDIF.</Text>
+		</Expand>
+		<Expand key="while">
+			<Descr>While (§)</Descr>
+			<Text>WHILE |.\n%SurroundedText%\nENDWHILE.</Text>
+		</Expand>
+		<Expand key="define">
+			<Descr>Define (§)</Descr>
+			<Text>DEFINE |.\n%SurroundedText%\nEND-OF-DEFINITION.</Text>
+		</Expand>
+		<Expand key="loop">
+			<Descr>Loop (§)</Descr>
+			<Text>LOOP AT |.\n%SurroundedText%\nENDLOOP.</Text>
+		</Expand>
+		<Expand key="case"><Descr>Case (§)</Descr><Text>CASE |.\n	WHEN .\n	WHEN .\n	WHEN OTHERS.\nENDCASE.</Text></Expand></EXPANDS>
+</XMLConfigSettings>

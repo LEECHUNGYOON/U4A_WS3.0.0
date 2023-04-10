@@ -102,7 +102,7 @@
         CURRWIN.show();
 
         // 현재 버전 보여주기
-        oAPP.fn.fnDisplayCurrentVersion();       
+        oAPP.fn.fnDisplayCurrentVersion();
 
         // WS Settings 에 있는 레지스트리 저장 Path 정보를 가지고 기본 레지스트리 정보를 생성한다.
         await _registryRelated();
@@ -386,6 +386,13 @@
         // oWin.once('ready-to-show', () => {
         //     oWin.show();
         // })
+
+        oWin.on("close", () => {
+
+            debugger;
+
+
+        });
 
         oWin.on('closed', () => {
             oWin = null;
@@ -897,6 +904,9 @@
             // 각종 루트 패스 등의 패스 정보 구성
             _setCommonPaths(oSettings);
 
+            // 어플리케이션 버전, 패치 레벨 정보
+            _setAppVersion(oSettings);
+
             /**
              *  -- end
              */
@@ -913,6 +923,21 @@
         });
 
     } // end of _saveWsSettingsInfo
+
+    function _setAppVersion(oSettings) {
+
+        let oPackageJson = REMOTE.require("./package.json"),
+            sAppVersion = oPackageJson.version;
+
+        if (APP.isPackaged) {
+            sAppVersion = APP.getVersion();
+        }
+
+        oSettings.appVersion = sAppVersion;
+
+        oSettings.patch_level = Number(oSettings.patch_level);
+
+    } // end of _setAppVersion
 
     function _setUI5BootStrapUrl(oSettings) {
 

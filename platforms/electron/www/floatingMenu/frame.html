@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html style="overflow: hidden; width: 100%;">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/frame.css">
+</head>
+
+<body class="wonRental_body" style="position: relative;">
+
+    <div id="content" class="wonRental_content" style="opacity:0;"></div>
+    <div id="help_content" class="wsy_helpContent"></div>
+
+    <script>
+        var require = parent.require;
+
+        /************************************************************************
+         * 에러 감지
+         ************************************************************************/
+        var REMOTE = require('@electron/remote'),
+            PATH = REMOTE.require('path'),
+            APP = REMOTE.app,
+            APPPATH = APP.getAppPath(),
+            PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            PATHINFO = require(PATHINFOURL),
+            WSERR = require(PATHINFO.WSTRYCATCH),
+            WSUTIL = require(PATHINFO.WSUTIL);
+
+        var zconsole = WSERR(window, document, console);
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            let oWsSettings = parent.WSUTIL.getWsSettingsInfo();
+
+            let oAPP = parent.gfn_parent();
+
+            console.log(oAPP);
+
+            var oScript = document.createElement("script");
+            oScript.id = "sap-ui-bootstrap";
+
+            //<!-- *********************************************************************************************** -->
+            //<!-- ui5 라이브러리 불러오기 *********************************************************************** -->
+            //<!-- *********************************************************************************************** -->
+
+            let sBootSrc = oWsSettings.UI5.resourceUrl,
+                sTheme = oWsSettings.globalTheme,
+                sLangu = oWsSettings.globalLanguage;
+
+            // 추 후 삭제 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            oScript.setAttribute('data-sap-ui-theme', sTheme);
+            oScript.setAttribute("data-sap-ui-language", sLangu);
+            oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.core, sap.f, sap.ui.layout");
+            oScript.setAttribute("src", sBootSrc);
+
+            // 추 후 활성화 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+            // if (!oAPP.remote.app.isPackaged) {
+            //     oScript.setAttribute('data-sap-ui-theme', "sap_horizon_dark");
+            //     oScript.setAttribute("data-sap-ui-language", "EN");
+            //     oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.core, sap.f, sap.ui.layout");
+
+            //     oScript.setAttribute("src", "https://sapui5.hana.ondemand.com/1.107.1/resources/sap-ui-core.js");    
+
+            // } else if(oAPP.remote.app.isPackaged) {
+            //     var oSettings = oAPP.attr.settingsInfo,
+            //         oSetting_UI5 = oSettings.UI5,
+            //         oBootStrap = oSetting_UI5.bootstrap,
+            //         oUserInfo = oAPP.attr.userInfo,
+            //         oThemeInfo = oAPP.attr.themeInfo,
+            //         sLangu = oUserInfo.LANGU;
+
+            //     // 공통 속성 적용
+            //     for (const key in oBootStrap) {
+            //         oScript.setAttribute(key, oBootStrap[key]);
+            //     };
+
+            //     // 로그인 Language 적용
+            //     oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
+            //     oScript.setAttribute("data-sap-ui-language", sLangu);
+            //     oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.core, sap.f, sap.ui.layout");
+
+            //     oScript.setAttribute("src", oSetting_UI5.resourceUrl);    
+            // };
+
+
+            document.head.appendChild(oScript);
+
+        });
+
+        window.onload = function () {
+            sap.ui.getCore().attachInit(() => {
+                console.log('넌 언제');
+                let frameJS = document.createElement("script");
+
+                frameJS.setAttribute('src', 'JS/frame.js');
+
+                document.body.append(frameJS);
+            });
+        };
+    </script>
+</body>
+
+</html>

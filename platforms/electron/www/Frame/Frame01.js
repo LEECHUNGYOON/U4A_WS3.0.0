@@ -436,10 +436,14 @@ oAPP.common = {};
     };
 
     // 3. 서버 URL을 구한다.
-    oWS.utill.fn.getServerPath = function () {
+    oWS.utill.fn.getServerPath = function (bIsStateLess) {
 
         var sServerHost = getServerHost(),
             sServicePath = sServerHost + "/zu4a_wbc/u4a_ipcmain";
+
+        if(bIsStateLess){
+            sServicePath = sServerHost + "/zu4a_wbc/u4a_dynpro";
+        }
 
         return sServicePath;
 

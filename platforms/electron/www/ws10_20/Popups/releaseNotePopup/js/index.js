@@ -2,7 +2,7 @@ const oAPP = {
     attr: {},
     common: {},
     onStart: function () {
-
+        
         this.remote = require('@electron/remote');
         this.IPCRENDERER = require('electron').ipcRenderer;
         this.PATH = this.remote.require('path');
@@ -26,8 +26,8 @@ const oAPP = {
             SYSID = USERINFO.SYSID;
 
         const
-            WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
-            WSUTIL = require(WSMSGPATH),
+            WSUTILPATH = PATH.join(this.PATHINFO.WSUTIL),
+            WSUTIL = require(WSUTILPATH),
             WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
 
         oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);

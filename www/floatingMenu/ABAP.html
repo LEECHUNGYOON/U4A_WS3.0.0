@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/codeTemp.css">
+</head>
+<body>
+    <!-- <h1 style="color:#ffffff;">ABAP</h1> -->
+    <div id="content"></div>
+
+    <script>
+        // 개인화 영역의 ABAP탭을 눌렀을 때 ABAP.html을 읽는다.
+        document.addEventListener('DOMContentLoaded', () => {
+            var oScript = document.createElement("script");
+            oScript.id = "sap-ui-bootstrap";
+
+            oScript.setAttribute('data-sap-ui-theme', "sap_horizon_dark");
+            oScript.setAttribute("data-sap-ui-language", "EN");
+            oScript.setAttribute("data-sap-ui-preload", "async");
+            oScript.setAttribute("data-sap-ui-noduplicateids", "true");
+            oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.layout, sap.ui.table, sap.ui.codeeditor");
+            oScript.setAttribute("src", "https://sapui5.hana.ondemand.com/1.107.1/resources/sap-ui-core.js");    
+
+            document.head.appendChild(oScript);
+        });
+
+        window.onload = function () {
+
+            // UI5 라이브러리를 가져오는데 성공했을 때 attachInit()
+            sap.ui.getCore().attachInit(() => {
+                let CODETEMPJS = document.createElement("script");
+                
+                // CODETEMPJS.setAttribute('src','JS/codetemp.js');
+                CODETEMPJS.setAttribute('src','JS/code.js');
+            
+                document.body.append(CODETEMPJS);
+            });
+        };
+    </script>
+</body>
+</html>

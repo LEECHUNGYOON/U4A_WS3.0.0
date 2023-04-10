@@ -28,17 +28,17 @@ self.onmessage = function (e) {
 
         var oFormData = new FormData();
 
-        if (oUserInfo && oUserInfo.HTTP_ONLY && oUserInfo.HTTP_ONLY == "1") {
+        // if (oUserInfo && oUserInfo.HTTP_ONLY && oUserInfo.HTTP_ONLY == "1") {
 
-            let oLogInData = oUserInfo;
+        //     let oLogInData = oUserInfo;
 
-            oFormData.append("sap-user", oLogInData.ID);
-            oFormData.append("sap-password", oLogInData.PW);
-            oFormData.append("sap-client", oLogInData.CLIENT);
-            oFormData.append("sap-language", oLogInData.LANGU);
-            oFormData.append("ACTCD", "002");
+        //     oFormData.append("sap-user", oLogInData.ID);
+        //     oFormData.append("sap-password", oLogInData.PW);
+        //     oFormData.append("sap-client", oLogInData.CLIENT);
+        //     oFormData.append("sap-language", oLogInData.LANGU);
+        //     oFormData.append("ACTCD", "002");
 
-        }
+        // }
 
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () { // 요청에 대한 콜백
