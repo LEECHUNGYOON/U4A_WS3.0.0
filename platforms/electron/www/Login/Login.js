@@ -4,7 +4,7 @@
  * - file Name : Login.js
  * - file Desc : WS Login Page
  ************************************************************************/
-let oAPP = (function() {
+let oAPP = (function () {
     "use strict";
 
     const
@@ -39,20 +39,20 @@ let oAPP = (function() {
      *  @ !! 위에서 부터 Default 값 우선 순위 브라우저임!! @@
      */
     oAPP.attr.aDefaultBrowsers = [{
-            NAME: "CHROME",
-            DESC: "Google Chrome Browser",
-            REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"
-        },
-        {
-            NAME: "MSEDGE",
-            DESC: "Microsoft Edge",
-            REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe"
-        },
-        {
-            NAME: "IE",
-            DESC: "Microsoft Internet Explorer",
-            REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\IEXPLORE.EXE"
-        },
+        NAME: "CHROME",
+        DESC: "Google Chrome Browser",
+        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"
+    },
+    {
+        NAME: "MSEDGE",
+        DESC: "Microsoft Edge",
+        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe"
+    },
+    {
+        NAME: "IE",
+        DESC: "Microsoft Internet Explorer",
+        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\IEXPLORE.EXE"
+    },
     ];
 
     oAPP.fn.getDefaultBrowserInfo = () => {
@@ -268,12 +268,12 @@ let oAPP = (function() {
                                     value: "{ID}",
                                     showSearchButton: false,
                                     placeholder: "　",
-                                    suggest: function(oEvent) {
+                                    suggest: function (oEvent) {
 
                                         // 커서가 다른쪽으로 이미 이동했을 경우 (탭 키를 누르던지 마우스를 이용하던지간에)
                                         // suggestion을 하지 않는다.
                                         let iIndexOf = document.activeElement.id.indexOf(oEvent.getSource().getId());
-                                        if(iIndexOf == -1){
+                                        if (iIndexOf == -1) {
                                             return;
                                         }
 
@@ -284,7 +284,7 @@ let oAPP = (function() {
 
                                             aFilters = [
                                                 new sap.ui.model.Filter([
-                                                    new sap.ui.model.Filter("ID", function(sText) {
+                                                    new sap.ui.model.Filter("ID", function (sText) {
                                                         return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                                     }),
                                                 ], false)
@@ -296,7 +296,7 @@ let oAPP = (function() {
                                         this.suggest();
 
                                     },
-                                    search: function(oEvent) {
+                                    search: function (oEvent) {
 
                                         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
                                         if (bIsPressClearBtn) {
@@ -398,25 +398,25 @@ let oAPP = (function() {
 
             new sap.m.Button({
                 text: "영선",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("yshong");
                 }
             }),
             new sap.m.Button({
                 text: "성호",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("shhong");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
             new sap.m.Button({
                 text: "은섭",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("pes");
                 }
             }),
             new sap.m.Button({
                 text: "청윤",
-                press: function() {
+                press: function () {
                     oAPP.fn.fnStaffLogin("soccerhs");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
@@ -503,7 +503,7 @@ let oAPP = (function() {
                         parts: [
                             "/LOGIN/SYSID"
                         ],
-                        formatter: function(SYSID) {
+                        formatter: function (SYSID) {
 
                             // U4A 서버 일 경우에만 자동 로그인 버튼 보이기
                             switch (SYSID) {
@@ -535,52 +535,52 @@ let oAPP = (function() {
 
         return new sap.m.Page({
 
-                // properties
-                showHeader: false,
-                showFooter: true,
-                backgroundDesign: sap.m.PageBackgroundDesign.Transparent,
+            // properties
+            showHeader: false,
+            showFooter: true,
+            backgroundDesign: sap.m.PageBackgroundDesign.Transparent,
 
-                // aggregations
-                content: [
+            // aggregations
+            content: [
 
-                    new sap.m.VBox({
+                new sap.m.VBox({
 
-                        // properties
-                        alignItems: sap.m.FlexAlignItems.Center,
-                        renderType: sap.m.FlexRendertype.Bare,
-                        alignItems: sap.m.FlexAlignItems.Center,
-                        justifyContent: sap.m.FlexJustifyContent.Center,
-                        width: "100%",
-                        height: "100%",
+                    // properties
+                    alignItems: sap.m.FlexAlignItems.Center,
+                    renderType: sap.m.FlexRendertype.Bare,
+                    alignItems: sap.m.FlexAlignItems.Center,
+                    justifyContent: sap.m.FlexJustifyContent.Center,
+                    width: "100%",
+                    height: "100%",
 
-                        // Aggregations
-                        items: [
-                            oFcard
-                        ]
-
-                    })
-
-                ],
-                footer: new sap.m.Toolbar({
-                    content: [
-                        new sap.m.Text({
-                            text: "Copyright 2022. Infocg inc. all rights reserved."
-                        }),
-
-                        new sap.m.ToolbarSpacer(),
-
-                        // new sap.m.Text({
-                        //     text: "CLIENT: {/LOGIN/CLIENT}"
-                        // }),
-
-                        new sap.m.Text({
-                            text: "SYSID: {/LOGIN/SYSID}"
-                        }),
-
+                    // Aggregations
+                    items: [
+                        oFcard
                     ]
-                }).addStyleClass("sapUiSizeCompact")
 
-            })
+                })
+
+            ],
+            footer: new sap.m.Toolbar({
+                content: [
+                    new sap.m.Text({
+                        text: "Copyright 2022. Infocg inc. all rights reserved."
+                    }),
+
+                    new sap.m.ToolbarSpacer(),
+
+                    // new sap.m.Text({
+                    //     text: "CLIENT: {/LOGIN/CLIENT}"
+                    // }),
+
+                    new sap.m.Text({
+                        text: "SYSID: {/LOGIN/SYSID}"
+                    }),
+
+                ]
+            }).addStyleClass("sapUiSizeCompact")
+
+        })
             .bindElement("/LOGIN")
             .addStyleClass("u4aWsLoginPage");
 
@@ -601,7 +601,7 @@ let oAPP = (function() {
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function() {
+            onAfterRendering: function () {
 
                 oAPP.fn.fnOnSmoothLoading();
 
@@ -631,15 +631,15 @@ let oAPP = (function() {
             sId = (bIsRemember ? oRememberInfo && oRememberInfo.ID || "" : "");
 
         var oLoginData = {
-                CLIENT: sClient,
-                // ID: sRememberId,
-                ID: sId,
-                PW: "",
-                LANGU: sLangu,
-                SYSID: oServerInfo.SYSID,
-                REMEMBER: bIsRemember,
-                IDSUGG: []
-            },
+            CLIENT: sClient,
+            // ID: sRememberId,
+            ID: sId,
+            PW: "",
+            LANGU: sLangu,
+            SYSID: oServerInfo.SYSID,
+            REMEMBER: bIsRemember,
+            IDSUGG: []
+        },
 
             oBusyPopInit = {
                 TITLE: "Checking for updates...",
@@ -721,7 +721,7 @@ let oAPP = (function() {
 
         var xhr = new XMLHttpRequest();
 
-        xhr.onreadystatechange = function() { // 요청에 대한 콜백
+        xhr.onreadystatechange = function () { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
@@ -860,7 +860,7 @@ let oAPP = (function() {
             // }
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() { // 요청에 대한 콜백
+            xhr.onreadystatechange = function () { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -959,7 +959,7 @@ let oAPP = (function() {
             // }
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function() { // 요청에 대한 콜백
+            xhr.onreadystatechange = function () { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -1001,7 +1001,7 @@ let oAPP = (function() {
     /************************************************************************
      * 고객사 라이센스 체크 성공
      ************************************************************************/
-    oAPP.fn.fnCheckCustomerLisenceThen = function(oLicenseInfo) {
+    oAPP.fn.fnCheckCustomerLisenceThen = function (oLicenseInfo) {
 
         // ISCDS TYPE C LENGTH 1, "on premise : space
         // RETCD TYPE C LENGTH 1, "처리 리턴 코드 : E 오류
@@ -1134,7 +1134,7 @@ let oAPP = (function() {
                     title: "U4A Workspace Update Error",
                     initialFocus: sap.m.MessageBox.Action.RETRY,
                     emphasizedAction: sap.m.MessageBox.Action.RETRY,
-                    onClose: function(oEvent) {
+                    onClose: function (oEvent) {
 
                         switch (oEvent) {
                             case "RETRY": // 앱 재시작
@@ -1181,7 +1181,7 @@ let oAPP = (function() {
 
     }; // end of  oAPP.fn.fnSetAutoUpdateForSAP
 
-    oAPP.fn.fnSetAutoUpdateForSAPThen = function() {
+    oAPP.fn.fnSetAutoUpdateForSAPThen = function () {
 
         var oResult = this.oResult,
             oAuthInfo = this.oAuthInfo;
@@ -1233,7 +1233,7 @@ let oAPP = (function() {
     /************************************************************************
      * Github 연결을 시도 하여 on-premise 인지 CDN인지 확인
      ************************************************************************/
-    oAPP.fn.fnConnectionGithubThen = function(oReturn) {
+    oAPP.fn.fnConnectionGithubThen = function (oReturn) {
 
         parent.setIsCDN(oReturn.ISCDN);
 
@@ -1333,7 +1333,7 @@ let oAPP = (function() {
                     title: "U4A Workspace Update Error",
                     initialFocus: sap.m.MessageBox.Action.RETRY,
                     emphasizedAction: sap.m.MessageBox.Action.RETRY,
-                    onClose: function(oEvent) {
+                    onClose: function (oEvent) {
 
                         switch (oEvent) {
                             case "RETRY": // 앱 재시작
@@ -1405,7 +1405,7 @@ let oAPP = (function() {
     /************************************************************************
      * 버전 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSetAutoUpdateForCDNThen = function() {
+    oAPP.fn.fnSetAutoUpdateForCDNThen = function () {
 
         var oResult = this.oResult,
             oAuthInfo = this.oAuthInfo;
@@ -1470,35 +1470,35 @@ let oAPP = (function() {
             displayOnly: true,
             state: "Success",
             // displayValue: "Downloading... {PERVALUE}%"            
-            displayValue: "{PROGTXT}... {PERVALUE}%"            
-        }).bindProperty("displayAnimation", "ANIMATION", function(ANIMATION) {
+            displayValue: "{PROGTXT}... {PERVALUE}%"
+        }).bindProperty("displayAnimation", "ANIMATION", function (ANIMATION) {
             return ANIMATION === false ? false : true;
         }).addStyleClass("sapUiSmallMarginBeginEnd sapUiMediumMarginBottom");
 
         new sap.m.Dialog(sDialogId, {
 
-                // properties
-                showHeader: false,
-                horizontalScrolling: false,
-                verticalScrolling: false,
+            // properties
+            showHeader: false,
+            horizontalScrolling: false,
+            verticalScrolling: false,
 
-                // aggregations
-                content: [
-                    oIllustMsg,
+            // aggregations
+            content: [
+                oIllustMsg,
 
-                    new sap.m.HBox({
-                        renderType: "Bare",
-                        items: [
-                            oProgressbar
-                        ]
-                    }),
+                new sap.m.HBox({
+                    renderType: "Bare",
+                    items: [
+                        oProgressbar
+                    ]
+                }),
 
-                ],
+            ],
 
-                // Events
-                escapeHandler: () => {}, // esc 키 방지
+            // Events
+            escapeHandler: () => { }, // esc 키 방지
 
-            })
+        })
             .addStyleClass(sDialogId)
             .bindElement("/BUSYPOP")
             .open();
@@ -1583,7 +1583,7 @@ let oAPP = (function() {
             oPackageJson = REMOTE.require("./package.json"),
             sAppVer = APP.getVersion();
 
-        if(!APP.isPackaged){
+        if (!APP.isPackaged) {
             sAppVer = oPackageJson.version;
         }
 
@@ -1658,9 +1658,11 @@ let oAPP = (function() {
             parent.onMoveToPage("WS10");
 
             parent.showLoadingPage('');
-            
-            // Floating Menu를 오픈한다.    
-            oAPP.fn.fnFloatingMenuOpen();
+
+            // if (!APP.isPackaged) {
+            //     // Floating Menu를 오픈한다.                    
+            //     oAPP.fn.fnFloatingMenuOpen();
+            // }
 
         });
 
@@ -1766,7 +1768,7 @@ let oAPP = (function() {
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function(err) {
+                }, function (err) {
 
                     if (err) {
                         reject(err.toString());
@@ -2029,7 +2031,7 @@ let oAPP = (function() {
     /************************************************************************
      * 네트워크 연결 시 Network Indicator 해제
      * **********************************************************************/
-    oAPP.fn.fnNetworkCheckerOnline = function() {
+    oAPP.fn.fnNetworkCheckerOnline = function () {
 
         // 네트워크 활성화 여부 flag
         oAPP.attr.bIsNwActive = true;
@@ -2043,7 +2045,7 @@ let oAPP = (function() {
     /************************************************************************
      * 네트워크 연결 시 Network Indicator 실행
      * **********************************************************************/
-    oAPP.fn.fnNetworkCheckerOffline = function() {
+    oAPP.fn.fnNetworkCheckerOffline = function () {
 
         // 네트워크 활성화 여부 flag
         oAPP.attr.bIsNwActive = false;
@@ -2057,7 +2059,7 @@ let oAPP = (function() {
     /************************************************************************
      * 개인화 폴더 생성 및 로그인 사용자별 개인화 Object 만들기
      ************************************************************************/
-    oAPP.fn.fnOnP13nFolderCreate = function() {
+    oAPP.fn.fnOnP13nFolderCreate = function () {
 
         var oServerInfo = parent.getServerInfo(),
             sSysID = oServerInfo.SYSID;
@@ -2254,7 +2256,7 @@ let oAPP = (function() {
                 title: "U4A Workspace Support Package Update Error",
                 initialFocus: sap.m.MessageBox.Action.OK,
                 emphasizedAction: sap.m.MessageBox.Action.OK,
-                onClose: function(oEvent) {
+                onClose: function (oEvent) {
 
                     APP.exit();
 
@@ -2307,7 +2309,7 @@ let oAPP = (function() {
 
         let iPer = 0;
 
-        oAPP.attr.progressInterval = setInterval(function() {
+        oAPP.attr.progressInterval = setInterval(function () {
 
             iPer += 1;
 
@@ -2319,7 +2321,7 @@ let oAPP = (function() {
                     clearInterval(oAPP.attr.progressInterval);
                     delete oAPP.attr.progressInterval;
 
-                    setTimeout(function() {
+                    setTimeout(function () {
                         _supportPackageVersionCheckDialogProgressStart();
                     }, 500);
 
@@ -2401,13 +2403,13 @@ let oAPP = (function() {
                 sWhiteListObj = JSON.stringify(T_REG_WLO);
 
             // 저장할 레지스트리 경로
-            let sRegPath = PATH.join(sSystemsRegPath, oServerInfo.SYSID);        
+            let sRegPath = PATH.join(sSystemsRegPath, oServerInfo.SYSID);
 
             // 저장할 레지스트리 데이터
             let oRegData = {};
             oRegData[sRegPath] = {};
             oRegData[sRegPath]["T_REG_WLO"] = {
-                value: sWhiteListObj,                
+                value: sWhiteListObj,
                 type: "REG_SZ"
             };
 
@@ -2514,7 +2516,7 @@ window.addEventListener("offline", oAPP.fn.fnNetworkCheckerOffline, false);
 
 window.addEventListener("beforeunload", oAPP.fn.fnOnBeforeUnload, false);
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
     // 브라우저 타이틀 변경
     parent.CURRWIN.setTitle("U4A Workspace - #Login");

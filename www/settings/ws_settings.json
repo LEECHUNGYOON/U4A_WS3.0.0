@@ -1,5 +1,5 @@
 {
-    "patch_level" : "00003",
+    "patch_level" : "00001",
     "SYSADMIN": {
         "AUTHKEY": "c2hvd21ldGhlbW9uZXk="
     },
@@ -66,7 +66,7 @@
         "globalSettings" : "HKCU\\SOFTWARE\\U4A\\WS\\GlobalSettings"
 
     },
-    "isDev": true,
+    "isDev": false,
     "isTrial": false,
     "trialServerInfo": {
         "ID": "soccerhs",

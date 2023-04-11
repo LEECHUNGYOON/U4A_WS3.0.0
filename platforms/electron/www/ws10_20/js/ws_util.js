@@ -3,6 +3,7 @@ const
     FS = require('fs-extra'),
     PATH = REMOTE.require('path'),
     APP = REMOTE.app,
+    APPPATH = APP.getAppPath(),
     PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
     REGEDIT = require('regedit'),
     USERDATA = APP.getPath("userData");
@@ -642,14 +643,20 @@ module.exports = {
      */
     getWsSettingsInfo: function () {
 
-        // Browser Window option
-        var oSettingsPath = PATHINFO.WSSETTINGS,
+        // // Browser Window option
+        // var oSettingsPath = PATHINFO.WSSETTINGS,
 
-            // JSON 파일 형식의 Setting 정보를 읽는다..
-            oSettings = require(oSettingsPath);
-        if (!oSettings) {
-            return;
-        }
+        //     // JSON 파일 형식의 Setting 정보를 읽는다..
+        //     oSettings = require(oSettingsPath);
+        // if (!oSettings) {
+        //     return;
+        // }
+
+        // return oSettings;
+
+
+        let sSetttingJsonData = FS.readFileSync(PATHINFO.WSSETTINGS, 'utf-8'),
+            oSettings = JSON.parse(sSetttingJsonData);
 
         return oSettings;
 

@@ -96,6 +96,8 @@
 
         oAPP.startTime = new Date().getTime();
 
+        // debugger;
+
         // ws setting Info를 UserData에 저장
         await _saveWsSettingsInfo(); // <--- 반드시 여기에 위치해야함!!
 
@@ -852,11 +854,6 @@
             // 초기 글로벌 설정값 세팅
             await _initRegistryGlobalSettings();
 
-            // if (!APP.isPackaged) {
-            //     await _testGetReg();
-            // }
-
-
             resolve();
 
         });
@@ -889,7 +886,8 @@
             }
 
             let sConfPath = PATH.join(USERDATA, "conf", "ws_settings.json"),
-                oSettings = require(PATH.join(APPPATH, "settings", "ws_settings.json"));
+                sSetttingJsonData = FS.readFileSync(PATH.join(APPPATH, "settings", "ws_settings.json"), 'utf-8'),
+                oSettings = JSON.parse(sSetttingJsonData);
 
             /**
              * 여기서 Setting정보 추가할것. -- start
@@ -907,6 +905,9 @@
             // 어플리케이션 버전, 패치 레벨 정보
             _setAppVersion(oSettings);
 
+            // SAP 관련 패스 구성
+            _setSapPath(oSettings);
+
             /**
              *  -- end
              */
@@ -918,12 +919,35 @@
                 throw new Error("[intro] WS Setting Info File Write Error!");
             }
 
+
+
             resolve();
 
         });
 
     } // end of _saveWsSettingsInfo
 
+    /************************************************************************
+     * SAP 관련 패스 구성
+     ************************************************************************/
+    function _setSapPath(oSettings) {
+
+        oSettings.SAP = {};
+
+        let APPDATA = process.env.APPDATA,
+            sAbapEditorRootPath = PATH.join(APPDATA, "SAP", "SAP GUI", "ABAP Editor");
+
+        oSettings.SAP.abap_user = PATH.join(sAbapEditorRootPath, "abap_user.xml");
+
+
+
+
+
+    } // end of _setSapPath
+
+    /************************************************************************
+     * WS APP Version 정보 구성
+     ************************************************************************/
     function _setAppVersion(oSettings) {
 
         let oPackageJson = REMOTE.require("./package.json"),
@@ -939,6 +963,9 @@
 
     } // end of _setAppVersion
 
+    /************************************************************************
+     * UI5 Bootstrap 경로 구성
+     ************************************************************************/
     function _setUI5BootStrapUrl(oSettings) {
 
         // 탑재된 UI5 Library 경로

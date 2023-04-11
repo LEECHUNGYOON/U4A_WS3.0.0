@@ -1264,15 +1264,15 @@
                 continue;
             }
 
-            // let oWebCon = oChild.webContents,
-            //     oWebPref = oWebCon.getWebPreferences(),
-            //     sOBJTY = oWebPref.OBJTY;
+            let oWebCon = oChild.webContents,
+                oWebPref = oWebCon.getWebPreferences(),
+                sOBJTY = oWebPref.OBJTY;
 
-            // // child window들 활성 or 비활성 시 예외 대상 팝업 체크
-            // let bIsHideExp = oAPP.fn.fnCheckPopupHideException(sOBJTY);
-            // if (bIsHideExp) {
-            //     continue;
-            // }
+            // child window들 활성 or 비활성 시 예외 대상 팝업 체크
+            let bIsHideExp = oAPP.fn.fnCheckPopupHideException(sOBJTY);
+            if (bIsHideExp) {
+                continue;
+            }
 
             var isVisible = oChild.isVisible();
 
