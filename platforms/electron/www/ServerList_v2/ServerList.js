@@ -1138,7 +1138,12 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                         key: "WSTHEME",
                                         icon: "sap-icon://palette",
                                         text: "{/WSLANGU/ZMSG_WS_COMMON_001/005}" // Theme
-                                    })
+                                    }),
+                                    // new sap.m.MenuItem({
+                                    //     key: "ABOUTWS",
+                                    //     icon: "sap-icon://palette",
+                                    //     text: "{/WSLANGU/ZMSG_WS_COMMON_001/005}.." // About Workspace..
+                                    // })
                                 ],
 
                                 itemSelected: function (oEvent) {
