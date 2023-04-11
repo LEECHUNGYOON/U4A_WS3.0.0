@@ -39,7 +39,7 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-(function (oAPP) {
+(function(oAPP) {
     "use strict";
 
     oAPP.setBusy = (bIsBusy) => {
@@ -69,7 +69,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.sendAjax = (sUrl, fnSuccess, fnError, fnCancel) => {
 
         // ajax call 취소할 경우..
-        XHR.onabort = function () {
+        XHR.onabort = function() {
 
             if (typeof fnCancel == "function") {
                 fnCancel();
@@ -78,7 +78,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // ajax call 실패 할 경우
-        XHR.onerror = function () {
+        XHR.onerror = function() {
 
             if (typeof fnError == "function") {
                 fnError();
@@ -86,7 +86,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         };
 
-        XHR.onload = function () {
+        XHR.onload = function() {
 
             if (typeof fnSuccess == "function") {
                 fnSuccess(XHR.response);
@@ -701,9 +701,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-            RETCD: "E",
-            RTMSG: oAPP.msg.M04, // "Server information does not exist in the SAPGUI logon file."
-        },
+                RETCD: "E",
+                RTMSG: oAPP.msg.M04, // "Server information does not exist in the SAPGUI logon file."
+            },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -835,9 +835,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
-            RETCD: "E",
-            RTMSG: oAPP.msg.M04 // "Server information does not exist in the SAPGUI logon file."
-        },
+                RETCD: "E",
+                RTMSG: oAPP.msg.M04 // "Server information does not exist in the SAPGUI logon file."
+            },
             oSucc = {
                 RETCD: "S",
                 RTMSG: ""
@@ -1011,8 +1011,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnOnInitRendering = () => {
 
         var oApp = new sap.m.App({
-            autoFocus: false,
-        }),
+                autoFocus: false,
+            }),
             oTreeTable = oAPP.fn.fnGetWorkSpaceTreeTable(), // 좌측 폴더 Tree
             oTable = oAPP.fn.fnGetSAPLogonListTable(), // 우측 서버 리스트 테이블
             oPage1 = new sap.m.Page({
@@ -1037,79 +1037,77 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             }),
             oMainPage = new sap.m.Page({
                 enableScrolling: false,
-                customHeader:
-                    new sap.m.Bar({
-                        contentRight: [
-                            new sap.m.Button({
-                                icon: "sap-icon://less",
-                                press: function () {
+                customHeader: new sap.m.Bar({
+                    contentRight: [
+                        new sap.m.Button({
+                            icon: "sap-icon://less",
+                            press: function() {
 
-                                    CURRWIN.minimize();
+                                CURRWIN.minimize();
 
+                            }
+                        }),
+                        new sap.m.Button("maxWinBtn", {
+                            icon: "sap-icon://header",
+                            press: function(oEvent) {
+
+                                let bIsMax = CURRWIN.isMaximized();
+
+                                if (bIsMax) {
+                                    CURRWIN.unmaximize();
+                                    return;
                                 }
-                            }),
-                            new sap.m.Button("maxWinBtn", {
-                                icon: "sap-icon://header",
-                                press: function (oEvent) {
 
-                                    let bIsMax = CURRWIN.isMaximized();
+                                CURRWIN.maximize();
 
-                                    if (bIsMax) {
-                                        CURRWIN.unmaximize();
-                                        return;
-                                    }
+                            }
+                        }),
+                        new sap.m.Button({
+                            icon: "sap-icon://decline",
+                            press: function() {
 
-                                    CURRWIN.maximize();
+                                // CURRWIN.close();
+                                APP.exit();
 
+                            }
+                        }),
+                    ]
+                }).addStyleClass("draggable"),
+                subHeader: new sap.m.Bar({
+                    contentLeft: [
+                        new sap.m.Title({
+                            text: "{/WSLANGU/ZMSG_WS_COMMON_001/004}" // U4A Workspace Logon Pad
+                        }),
+                    ],
+                    contentRight: [
+                        new sap.m.MenuButton({
+                            icon: "sap-icon://action-settings",
+                            menu: new sap.m.Menu({
+                                items: [
+                                    new sap.m.MenuItem({
+                                        key: "WSLANGU",
+                                        icon: "sap-icon://translate",
+                                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/001}" // Language
+                                    }),
+                                    new sap.m.MenuItem({
+                                        key: "WSTHEME",
+                                        icon: "sap-icon://palette",
+                                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/005}" // Theme
+                                    }),
+                                    new sap.m.MenuItem({
+                                        key: "ABOUTWS",
+                                        icon: "sap-icon://hint",
+                                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/044}" // About WS..
+                                    })
+                                ],
+
+                                itemSelected: function(oEvent) {
+                                    ev_settingItemSelected(oEvent);
                                 }
-                            }),
-                            new sap.m.Button({
-                                icon: "sap-icon://decline",
-                                press: function () {
-
-                                    // CURRWIN.close();
-                                    APP.exit();
-
-                                }
-                            }),
-                        ]
-                    }).addStyleClass("draggable"),
-                subHeader:
-                    new sap.m.Bar({
-                        contentLeft: [
-                            new sap.m.Title({
-                                text: "{/WSLANGU/ZMSG_WS_COMMON_001/004}" // U4A Workspace Logon Pad
-                            }),
-                        ],
-                        contentRight: [
-                            new sap.m.MenuButton({
-                                icon: "sap-icon://action-settings",
-                                menu: new sap.m.Menu({
-                                    items: [
-                                        new sap.m.MenuItem({
-                                            key: "WSLANGU",
-                                            icon: "sap-icon://translate",
-                                            text: "{/WSLANGU/ZMSG_WS_COMMON_001/001}" // Language
-                                        }),
-                                        new sap.m.MenuItem({
-                                            key: "WSTHEME",
-                                            icon: "sap-icon://palette",
-                                            text: "{/WSLANGU/ZMSG_WS_COMMON_001/005}" // Theme
-                                        }),
-                                        new sap.m.MenuItem({
-                                            key: "ABOUTWS",
-                                            icon: "sap-icon://hint",
-                                            text: "{/WSLANGU/ZMSG_WS_COMMON_001/044}" // About WS..
-                                        })
-                                    ],
-
-                                    itemSelected: function (oEvent) {
-                                        ev_settingItemSelected(oEvent);
-                                    }
-                                })
                             })
-                        ]
-                    }),
+                        })
+                    ]
+                }),
                 content: [
                     new sap.ui.layout.Splitter({
                         height: "100%",
@@ -1130,7 +1128,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oApp.placeAt("content");
 
         oApp.addEventDelegate({
-            onAfterRendering: function () {
+            onAfterRendering: function() {
 
                 setTimeout(() => {
                     $('#content').fadeIn(300, 'linear');
@@ -1654,7 +1652,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         if (!bIsFileExist) {
 
             // 파일이 없습니다 오류
-            oAPP.fn.fnShowMessageBox("E", oAPP.msg.M10 /*"server List file not exists. restart now!"*/, () => {
+            oAPP.fn.fnShowMessageBox("E", oAPP.msg.M10 /*"server List file not exists. restart now!"*/ , () => {
                 oAPP.fn.fnEditDialogClose();
             });
 
@@ -1681,7 +1679,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 성공 사운드
         oAPP.setSoundMsg("01");
 
-        sap.m.MessageToast.show(oAPP.msg.M02 /*Delete Success!*/);
+        sap.m.MessageToast.show(oAPP.msg.M02 /*Delete Success!*/ );
 
         // 좌측 workspace 트리 테이블을 갱신한다.
         oAPP.fn.fnSetRefreshSelectTreeItem();
@@ -2043,7 +2041,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         if (!bIsFileExist) {
 
             // 파일이 없습니다 오류
-            oAPP.fn.fnShowMessageBox("E", oAPP.msg.M10 /*"server List file not exists. restart now!"*/, () => {
+            oAPP.fn.fnShowMessageBox("E", oAPP.msg.M10 /*"server List file not exists. restart now!"*/ , () => {
                 oAPP.fn.fnEditDialogClose();
             });
 
@@ -2088,7 +2086,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             // 성공 사운드
             oAPP.setSoundMsg("01");
 
-            sap.m.MessageToast.show(oAPP.msg.M01 /*"saved Success!"*/);
+            sap.m.MessageToast.show(oAPP.msg.M01 /*"saved Success!"*/ );
 
             return;
 
@@ -2132,7 +2130,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 성공 사운드
         oAPP.setSoundMsg("01");
 
-        sap.m.MessageToast.show(oAPP.msg.M01 /*"saved Success!"*/);
+        sap.m.MessageToast.show(oAPP.msg.M01 /*"saved Success!"*/ );
 
     }; // end of oAPP.fn.fnPressSave
 
@@ -2383,11 +2381,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             WSLANGU: WSLANGU,
             sSelectedKey: "EN",
             aLangu: [{
-                KEY: "EN"
-            },
-            {
-                KEY: "KO"
-            },
+                    KEY: "EN"
+                },
+                {
+                    KEY: "KO"
+                },
             ],
         };
 
@@ -2473,7 +2471,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 new sap.m.Button({
                     type: sap.m.ButtonType.Emphasized,
                     text: "{/WSLANGU/ZMSG_WS_COMMON_001/002}", // "OK",
-                    press: function (oEvent) {
+                    press: function(oEvent) {
 
                         oAPP.setBusy(true);
 
@@ -2484,7 +2482,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 }),
                 new sap.m.Button({
                     text: "{/WSLANGU/ZMSG_WS_COMMON_001/003}", // "Cancel"
-                    press: function () {
+                    press: function() {
 
                         let sDialogId = "GlobalSettingWsLangu",
                             oDialog = sap.ui.getCore().byId(sDialogId);
@@ -2643,7 +2641,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 new sap.m.Button({
                     type: sap.m.ButtonType.Emphasized,
                     text: "{/WSLANGU/ZMSG_WS_COMMON_001/002}", // "OK",
-                    press: function (oEvent) {
+                    press: function(oEvent) {
 
                         oAPP.setBusy(true);
 
@@ -2654,7 +2652,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 }),
                 new sap.m.Button({
                     text: "{/WSLANGU/ZMSG_WS_COMMON_001/003}", // "Cancel"
-                    press: function () {
+                    press: function() {
 
                         let oDialog = sap.ui.getCore().byId(sDialogId);
 
@@ -2730,7 +2728,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 new sap.m.Button({
                     type: sap.m.ButtonType.Emphasized,
                     text: "{/WSLANGU/ZMSG_WS_COMMON_001/002}", // "OK",
-                    press: function () {
+                    press: function() {
 
                         let sDialogId = "aboutWsDialog",
                             oDialog = sap.ui.getCore().byId(sDialogId);
@@ -3016,7 +3014,47 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
         }
 
-        oWin.setAlwaysOnTop(false);
+        // let aBrowserList = REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
+        //     iBrowserListLength = aBrowserList.length;
+
+        // for (var i = 0; i < iBrowserListLength; i++) {
+
+        //     const oBrows = aBrowserList[i];
+
+        //     if (oBrows.isDestroyed()) {
+        //         continue;
+        //     }
+
+        //     var a = oBrows.webContents,
+        //         b = a.getWebPreferences();
+
+        //     // 서버리스트, Floting menu는 카운트 제외
+        //     if (b.OBJTY == "FLTMENU") {
+
+        //         oWin.setAlwaysOnTop(false);
+        //         oBrows.focus();
+               
+        //     }
+
+        // }
+
+
+
+        // oWin.setAlwaysOnTop(false, "modal-panel");
+        // oWin.minimize();
+        // oWin.restore();
+
+        // oWin.setOpacity(0);
+        // oWin.hide();
+        // oWin.setIgnoreMouseEvents(true);
+        // oWin.setIgnoreMouseEvents(false);
+        // oWin.setOpacity(1);
+        // oWin.showInactive();
+
+        // setTimeout(() => {
+        //     oWin.showInactive();
+        //     oWin.setOpacity(1);
+        // }, 1000);
 
     } // end of _attachBrowserWindowBlur
 
@@ -3119,7 +3157,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             oAPP.setBusy(false);
 
@@ -3172,7 +3210,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         resolve({
@@ -3366,38 +3404,38 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         new sap.m.Dialog(sDialogId, {
 
-            // properties
-            showHeader: false,
-            horizontalScrolling: false,
-            verticalScrolling: false,
+                // properties
+                showHeader: false,
+                horizontalScrolling: false,
+                verticalScrolling: false,
 
-            // aggregations
-            content: [
-                new sap.m.IllustratedMessage({
-                    description: "{/WSLANGU/ZMSG_WS_COMMON_001/043}", // "An activated window exists. please close All activated windows first.",
-                    illustrationType: "tnt-Teams",
-                    illustrationSize: sap.m.IllustratedMessageSize.Dialog,
-                    additionalContent: new sap.m.Button({
-                        type: sap.m.ButtonType.Emphasized,
-                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/002}", //"OK",
-                        press: function () {
+                // aggregations
+                content: [
+                    new sap.m.IllustratedMessage({
+                        description: "{/WSLANGU/ZMSG_WS_COMMON_001/043}", // "An activated window exists. please close All activated windows first.",
+                        illustrationType: "tnt-Teams",
+                        illustrationSize: sap.m.IllustratedMessageSize.Dialog,
+                        additionalContent: new sap.m.Button({
+                            type: sap.m.ButtonType.Emphasized,
+                            text: "{/WSLANGU/ZMSG_WS_COMMON_001/002}", //"OK",
+                            press: function() {
 
-                            // 전체 윈도우를 활성화 시킨다
-                            oAPP.fn.fnShowAllWindows();
+                                // 전체 윈도우를 활성화 시킨다
+                                oAPP.fn.fnShowAllWindows();
 
-                            let oDialog = sap.ui.getCore().byId(sDialogId);
-                            oDialog.close();
+                                let oDialog = sap.ui.getCore().byId(sDialogId);
+                                oDialog.close();
 
-                        }
-                    }),
+                            }
+                        }),
 
-                })
-            ],
+                    })
+                ],
 
-            // Events
-            escapeHandler: () => { }, // esc 키 방지
+                // Events
+                escapeHandler: () => {}, // esc 키 방지
 
-        })
+            })
             .addStyleClass(sDialogId)
             .open();
 
