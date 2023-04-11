@@ -51,52 +51,9 @@
 
     }
 
-
-    // function _test01() {
-    //     return new Promise(async (resolve) => {
-
-    //         debugger;
-
-    //         var langu = await WSUTIL.getWsLanguAsync(); // ws에 저장된 언어 레지스트리에서 구하기
-    //         var aa = WSUTIL.getWsMsgClsTxt(langu, "ZWSMSG_001", "000", "aa", "bb", "cc", "dd");
-
-
-    //     });
-    // }
-
-    // async function WLO_test() {
-
-    //     debugger;
-
-    //     let bIsExe1 = await WSUTIL.getWsWhiteListObjectAsync("UHA", "aaaa");
-
-    //     debugger;
-
-    //     let bIsExe2 = await WSUTIL.getWsWhiteListObjectAsync("U4A", "/U4A/WS000001|_GETMETA");
-
-    //     debugger;
-
-    //     let bIsExe3 = await WSUTIL.getWsWhiteListObjectAsync("UHA", "/U4A/WS000001|_GETMETA");
-
-    //     debugger;
-
-    //     let bIsExe4 = await WSUTIL.getWsWhiteListObjectAsync();
-
-    //     debugger;
-
-    // }
-
     oAPP.fn.fnOnStart = async () => {
 
-        // await _fnwait();
-
-        // WLO_test();
-
-        // return;
-
         oAPP.startTime = new Date().getTime();
-
-        // debugger;
 
         // ws setting Info를 UserData에 저장
         await _saveWsSettingsInfo(); // <--- 반드시 여기에 위치해야함!!
@@ -147,12 +104,28 @@
             }
 
             setTimeout(() => {
-                oAPP.fn.fnOpenServerList(oGlobalSettings);
+
+                oAPP.fn.fnFloatingMenuOpen(); // 플로팅 메뉴 오픈
+
+                oAPP.fn.fnOpenServerList(oGlobalSettings); // 서버리스트 오픈      
+
             }, iTime);
 
         });
 
     }; // end of oAPP.fn.fnOnStart   
+
+    /************************************************************************
+     * WS Floating Menu Open
+     ************************************************************************/
+    oAPP.fn.fnFloatingMenuOpen = () => {
+
+        var sFloatingMenuJsPath = PATHINFO.FLTMENU,
+            oFloatMenu = require(sFloatingMenuJsPath);
+
+        oFloatMenu.open(REMOTE, screen, APPPATH);
+
+    }; // end of oAPP.fn.fnFloatingMenuOpen
 
     /************************************************************************
      * WS 글로벌 메시지 목록 구하기
@@ -168,11 +141,7 @@
             oAPP.msg.M03 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "034"); // Ignore
             oAPP.msg.M04 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "015"); // Please contact U4A Solution Team!
             oAPP.msg.M05 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "035"); // Default Pattern File Copy Error!
-            oAPP.msg.M06 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "036"); // Pattern Json File Write Error!
-            oAPP.msg.M07 = "";
-            oAPP.msg.M08 = "";
-            oAPP.msg.M09 = "";
-            oAPP.msg.M10 = "";
+            oAPP.msg.M06 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "036"); // Pattern Json File Write Error!     
 
             resolve();
 
@@ -347,7 +316,11 @@
         oBrowserWindow.backgroundColor = "#1c2228";
         oBrowserWindow.webPreferences.OBJTY = "SERVERLIST";
         oBrowserWindow.show = false;
+        oBrowserWindow.titleBarStyle = 'hidden';
+        oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.resizable = true;
+        oBrowserOptions.movable = true;
 
         // 인트로 화면 닫기
         let oCurrWindow = REMOTE.getCurrentWindow();
@@ -366,9 +339,9 @@
         // oWin.webContents.openDevTools();
         // no build 일 경우에는 개발자 툴을 실행한다.
 
-        // if (!APP.isPackaged) {
-        //     oWin.webContents.openDevTools();
-        // }
+        if (!APP.isPackaged) {
+            oWin.webContents.openDevTools();
+        }
 
         oWin.webContents.on('did-finish-load', async function () {
 
@@ -588,7 +561,7 @@
 
     /**
      * Private functions
-     */
+     */   
 
     /************************************************************************
      * 레지스트리 키의 List를 구한다.
@@ -919,8 +892,6 @@
                 throw new Error("[intro] WS Setting Info File Write Error!");
             }
 
-
-
             resolve();
 
         });
@@ -938,9 +909,6 @@
             sAbapEditorRootPath = PATH.join(APPDATA, "SAP", "SAP GUI", "ABAP Editor");
 
         oSettings.SAP.abap_user = PATH.join(sAbapEditorRootPath, "abap_user.xml");
-
-
-
 
 
     } // end of _setSapPath

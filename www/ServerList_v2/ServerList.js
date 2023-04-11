@@ -10,6 +10,7 @@ let oAPP = parent.oAPP;
 const
     require = parent.require,
     REMOTE = oAPP.REMOTE,
+    CURRWIN = REMOTE.getCurrentWindow(),
     // session = REMOTE.require('electron').session,
     REMOTEMAIN = REMOTE.require('@electron/remote/main'),
     PATH = REMOTE.require('path'),
@@ -129,6 +130,12 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnOnMainStart = async () => {
 
         jQuery.sap.require("sap.m.MessageBox");
+
+        // Electron App 이벤트 핸들러
+        _attachBrowserWindowEventHandle();
+
+        // 현재 브라우저의 이벤트 핸들러
+        _attachCurrentWindowEvents();
 
         // WS Global 메시지 글로벌 변수 설정
         await oAPP.fn.fnWsGlobalMsgList();
@@ -452,94 +459,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
     }
-
-    // function _fnFindLastSelectedItem(aNode, pUUID, aStack) {
-
-    //     let iNodeLength = aNode.length;
-
-    //     for (let index = 0; index < iNodeLength; index++) {
-
-    //         const element = aNode[index];
-
-    //         // uuid가 없다면 하위 노드를 찾는다.
-    //         if (element._attributes && !element._attributes.uuid) {
-
-    //             const aChildNode = element.Node;
-
-    //             // 자식 노드가 Array라면..
-    //             if (Array.isArray(aChildNode) == true) {
-
-    //                 _fnFindLastSelectedItem(aChildNode, pUUID, aStack);
-
-    //                 continue;
-
-    //             }
-
-    //             // 자식 노드가 Array가 아니라면.(더이상 자식은 없다)
-    //             if (Array.isArray(aChildNode) == false) {
-
-    //                 const sChildUUID = aChildNode._attributes.uuid;
-
-    //                 if (sChildUUID !== pUUID) {
-    //                     continue;
-    //                 }
-
-    //                 aStack.push(sChildUUID);
-
-    //             }
-
-    //         }
-
-    //     }
-
-    // } // end of _fnFindLastSelectedItem
-
-    // function _fnSetSelectedTreeItem(oTreeTable, aStack) {
-
-    //     var aRows = oTreeTable.getRows(),
-    //         iRowLength = aRows.length;
-
-    //     if (iRowLength < 0) {
-    //         return;
-    //     }
-
-    //     let iStackLength = aStack.length;
-    //     for (let index = 0; index < iStackLength; index++) {
-
-    //         const element = aStack[index];
-
-    //         for (var i = 0; i < iRowLength; i++) {
-
-    //             // Row의 Instance를 구한다.
-    //             var oRow = aRows[i];
-
-    //             // 바인딩 정보가 없으면 빠져나간다.
-    //             if (oRow.isEmpty()) {
-    //                 continue;
-    //             }
-
-    //             var oRowCtx = oRow.getBindingContext(),
-    //                 oRowData = oRowCtx.getModel().getProperty(oRowCtx.getPath());
-
-    //             if (oRowData._attributes && !oRowData._attributes.uuid) {
-    //                 continue;
-    //             }
-
-    //             let sUUID = oRowData._attributes.uuid;
-    //             if (sUUID == element) {
-
-    //                 let iRowindex = oRow.getIndex();
-
-    //                 oTreeTable.setSelectedIndex(iRowindex);
-
-    //                 return;
-    //             }
-
-    //         }
-
-    //     }
-
-    // } // end of _fnSetSelectedTreeItem
 
     /************************************************************************
      * 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
@@ -1118,41 +1037,79 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             }),
             oMainPage = new sap.m.Page({
                 enableScrolling: false,
-                customHeader: new sap.m.Bar({
-                    contentLeft: [
-                        new sap.m.Title({
-                            text: "{/WSLANGU/ZMSG_WS_COMMON_001/004}" // U4A Workspace Logon Pad
-                        }),
-                    ],
-                    contentRight: [
-                        new sap.m.MenuButton({
-                            icon: "sap-icon://action-settings",
-                            menu: new sap.m.Menu({
-                                items: [
-                                    new sap.m.MenuItem({
-                                        key: "WSLANGU",
-                                        icon: "sap-icon://translate",
-                                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/001}" //"Language"
-                                    }),
-                                    new sap.m.MenuItem({
-                                        key: "WSTHEME",
-                                        icon: "sap-icon://palette",
-                                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/005}" // Theme
-                                    }),
-                                    // new sap.m.MenuItem({
-                                    //     key: "ABOUTWS",
-                                    //     icon: "sap-icon://palette",
-                                    //     text: "{/WSLANGU/ZMSG_WS_COMMON_001/005}.." // About Workspace..
-                                    // })
-                                ],
+                customHeader:
+                    new sap.m.Bar({
+                        contentRight: [
+                            new sap.m.Button({
+                                icon: "sap-icon://less",
+                                press: function () {
 
-                                itemSelected: function (oEvent) {
-                                    ev_settingItemSelected(oEvent);
+                                    CURRWIN.minimize();
+
                                 }
+                            }),
+                            new sap.m.Button("maxWinBtn", {
+                                icon: "sap-icon://header",
+                                press: function (oEvent) {
+
+                                    let bIsMax = CURRWIN.isMaximized();
+
+                                    if (bIsMax) {
+                                        CURRWIN.unmaximize();
+                                        return;
+                                    }
+
+                                    CURRWIN.maximize();
+
+                                }
+                            }),
+                            new sap.m.Button({
+                                icon: "sap-icon://decline",
+                                press: function () {
+
+                                    // CURRWIN.close();
+                                    APP.exit();
+
+                                }
+                            }),
+                        ]
+                    }).addStyleClass("draggable"),
+                subHeader:
+                    new sap.m.Bar({
+                        contentLeft: [
+                            new sap.m.Title({
+                                text: "{/WSLANGU/ZMSG_WS_COMMON_001/004}" // U4A Workspace Logon Pad
+                            }),
+                        ],
+                        contentRight: [
+                            new sap.m.MenuButton({
+                                icon: "sap-icon://action-settings",
+                                menu: new sap.m.Menu({
+                                    items: [
+                                        new sap.m.MenuItem({
+                                            key: "WSLANGU",
+                                            icon: "sap-icon://translate",
+                                            text: "{/WSLANGU/ZMSG_WS_COMMON_001/001}" // Language
+                                        }),
+                                        new sap.m.MenuItem({
+                                            key: "WSTHEME",
+                                            icon: "sap-icon://palette",
+                                            text: "{/WSLANGU/ZMSG_WS_COMMON_001/005}" // Theme
+                                        }),
+                                        new sap.m.MenuItem({
+                                            key: "ABOUTWS",
+                                            icon: "sap-icon://hint",
+                                            text: "{/WSLANGU/ZMSG_WS_COMMON_001/044}" // About WS..
+                                        })
+                                    ],
+
+                                    itemSelected: function (oEvent) {
+                                        ev_settingItemSelected(oEvent);
+                                    }
+                                })
                             })
-                        })
-                    ]
-                }),
+                        ]
+                    }),
                 content: [
                     new sap.ui.layout.Splitter({
                         height: "100%",
@@ -2079,9 +2036,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         };
 
         // 로컬에 저장된 서버리스트 정보 JSON PATH
-        let sPathInfoUrl = PATH.join(APPPATH, "Frame", "pathInfo.js"),
-            oPathInfo = require(sPathInfoUrl),
-            sLocalJsonPath = oPathInfo.SERVERINFO_V2 || "";
+        let sLocalJsonPath = PATHINFO.SERVERINFO_V2 || "";
 
         // 파일 존재 유무 확인
         let bIsFileExist = FS.existsSync(sLocalJsonPath);
@@ -2404,6 +2359,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 break;
 
+            case "ABOUTWS":
+
+                // About WS Popup 오픈
+                _openAboutWsPopup();
+
             default:
                 break;
         }
@@ -2713,6 +2673,92 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     } // end of _openWSThemeSettingPopup
 
     /************************************************************************
+     * About WS Popup 오픈
+     ************************************************************************/
+    function _openAboutWsPopup() {
+
+        let sDialogId = "aboutWsDialog";
+
+        var oDialog = sap.ui.getCore().byId(sDialogId);
+        if (oDialog) {
+            oDialog.open();
+            return;
+        }
+
+        var oDialog = new sap.m.Dialog(sDialogId, {
+            contentWidth: "800px",
+            contentHeight: "500px",
+            draggable: true,
+            resizable: false,
+            verticalScrolling: false,
+            horizontalScrolling: false,
+            customHeader: new sap.m.Bar({
+                contentLeft: [
+                    new sap.ui.core.Icon({
+                        src: "sap-icon://hint"
+                    }),
+                    new sap.m.Title({
+                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/044}" // About WS..
+                    })
+                ]
+            }),
+
+            content: [
+
+                new sap.m.Page({
+                    showHeader: false,
+                    enableScrolling: true,
+                    content: [
+
+                        new sap.m.VBox({
+                            height: "500px",
+                            renderType: sap.m.FlexRendertype.Bare,
+                            items: [
+                                new sap.ui.core.HTML({
+                                    content: _getAboutWsHtml()
+                                })
+                            ]
+                        }),
+
+                    ]
+
+                }),
+
+            ],
+
+            buttons: [
+                new sap.m.Button({
+                    type: sap.m.ButtonType.Emphasized,
+                    text: "{/WSLANGU/ZMSG_WS_COMMON_001/002}", // "OK",
+                    press: function () {
+
+                        let sDialogId = "aboutWsDialog",
+                            oDialog = sap.ui.getCore().byId(sDialogId);
+
+                        oDialog.close();
+                        oDialog.destroy();
+
+                    }
+                }),
+            ]
+
+        });
+
+        oDialog.setInitialFocus("");
+
+        oDialog.open();
+
+    } // end of _openAboutWsPopup
+
+    function _getAboutWsHtml() {
+
+        let sAboutHtmlPath = PATH.join(APPPATH, "aboutWs.html");
+
+        return `<iframe src="${sAboutHtmlPath}" style='width:100%; height:100%; padding:15px; box-sizing:border-box; border:none;'></iframe>`;
+
+    } // end of _getAboutWsHtml   
+
+    /************************************************************************
      * [WS Global Setting] WS Language 저장
      ************************************************************************/
     async function _saveWsLangu() {
@@ -2892,6 +2938,88 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     } // end of _regeditCreateKey
 
+    /************************************************************************
+     * 현재 브라우저의 이벤트 핸들러
+     ************************************************************************/
+    function _attachCurrentWindowEvents() {
+
+        CURRWIN.on("maximize", () => {
+
+            if (typeof sap === "undefined") {
+                return;
+            }
+
+            let oMaxBtn = sap.ui.getCore().byId("maxWinBtn");
+            if (!oMaxBtn) {
+                return;
+            }
+
+            oMaxBtn.setIcon("sap-icon://value-help");
+
+        });
+
+        CURRWIN.on("unmaximize", () => {
+
+            if (typeof sap === "undefined") {
+                return;
+            }
+
+            let oMaxBtn = sap.ui.getCore().byId("maxWinBtn");
+            if (!oMaxBtn) {
+                return;
+            }
+
+            oMaxBtn.setIcon("sap-icon://header");
+
+        });
+
+    } // end of _attachCurrentWindowEvents
+
+    /************************************************************************
+     * Electron App 이벤트 핸들러
+     ************************************************************************/
+    function _attachBrowserWindowEventHandle() {
+
+        APP.on("browser-window-focus", _attachBrowserWindowFocus); // 전체 윈도우의 focus 이벤트
+
+        APP.on("browser-window-blur", _attachBrowserWindowBlur); // 전체 윈도우의 blur 이벤트
+
+    } // end of _attachBrowserWindowEventHandle
+
+    /************************************************************************
+     * 전체 윈도우의 focus 이벤트
+     ************************************************************************/
+    function _attachBrowserWindowFocus(oEvent) {
+
+        let oWin = oEvent.sender,
+            oWebCon = oWin.webContents,
+            oWebPref = oWebCon.getWebPreferences(),
+            sOBJTY = oWebPref.OBJTY;
+
+        oWin.setAlwaysOnTop(true);
+
+
+    } // end of _attachBrowserWindowFocus
+
+    /************************************************************************
+     * 전체 윈도우의 blur 이벤트
+     ************************************************************************/
+    function _attachBrowserWindowBlur(oEvent) {
+
+        let oWin = oEvent.sender,
+            oWebCon = oWin.webContents,
+            oWebPref = oWebCon.getWebPreferences(),
+            sOBJTY = oWebPref.OBJTY;
+
+        if (sOBJTY == "FLTMENU") {
+            oWin.setAlwaysOnTop(true);
+            return;
+        }
+
+        oWin.setAlwaysOnTop(false);
+
+    } // end of _attachBrowserWindowBlur
+
     // session samesite 회피
     function configureSession(oBrowserWindow) {
 
@@ -3016,27 +3144,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         });
 
-        // oBrowserWindow.once('ready-to-show', () => {
-        //     oBrowserWindow.show();
-        // });
-
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
             oBrowserWindow = null;
         });
-
-
-        // oBrowserWindow.on("focus", () => {
-
-
-
-        // });
-
-        // oBrowserWindow.on("blur", () => {
-
-
-        // });       
-
 
     } // end of fnLoginPage
 
@@ -3421,6 +3532,7 @@ window.onbeforeunload = (oEvent) => {
      * 사유: samesite 관련 이벤트 핸들러가 서버리스트에 존재하기 때문에
      * 서버리스트를 닫으면 실행 어플리케이션에서 ajax 통신을 못하게 되는 문제가 발생함.
      */
+    CURRWIN.show();
 
     let aBrowserList = REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
         iBrowserListLength = aBrowserList.length,
@@ -3437,7 +3549,8 @@ window.onbeforeunload = (oEvent) => {
         var oWebCon = oBrows.webContents,
             oWebPref = oWebCon.getWebPreferences();
 
-        if (oWebPref.OBJTY == "SERVERLIST") {
+        // 서버리스트, Floting menu는 카운트 제외
+        if (oWebPref.OBJTY == "SERVERLIST" || oWebPref.OBJTY == "FLTMENU") {
             continue;
         }
 
@@ -3446,7 +3559,7 @@ window.onbeforeunload = (oEvent) => {
     }
 
     if (iChildLength == 0) {
-        return;
+        return "";
     }
 
     if (typeof sap === "undefined") {

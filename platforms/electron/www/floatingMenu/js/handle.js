@@ -104,7 +104,7 @@ exports.open = function(REMOTE, SCREEN, _DIRNAME, SSID) {
         "minimizable": false,
         "skipTaskbar": true,
         'resizable': false,
-        "parent": REMOTE.getCurrentWindow(),
+        // "parent": REMOTE.getCurrentWindow(),
         "webPreferences": {
             "devTools": true,
             "nodeIntegration": true,
