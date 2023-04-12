@@ -132,7 +132,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         jQuery.sap.require("sap.m.MessageBox");
 
         // Electron App 이벤트 핸들러
-        _attachBrowserWindowEventHandle();
+        // _attachBrowserWindowEventHandle();
 
         // 현재 브라우저의 이벤트 핸들러
         _attachCurrentWindowEvents();
@@ -3017,14 +3017,27 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      ************************************************************************/
     function _attachBrowserWindowFocus(oEvent) {
 
-        let oWin = oEvent.sender;
-        if (oWin.isDestroyed()) {
+        let oWin = oEvent?.sender;
+        
+        if(typeof oWin === "undefined"){
             return;
         }
 
-        let oWebCon = oWin.webContents,
-            oWebPref = oWebCon.getWebPreferences(),
-            sOBJTY = oWebPref.OBJTY;
+        if (oWin.isDestroyed()) {
+            return;
+        }      
+
+        try {
+
+            var oWebCon = oWin.webContents,
+                oWebPref = oWebCon.getWebPreferences(),
+                sOBJTY = oWebPref.OBJTY;
+
+        } catch (error) {
+
+            return;
+
+        }
 
         oWin.setAlwaysOnTop(true);
 
@@ -3043,7 +3056,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         let oWebCon = oWin.webContents,
             oWebPref = oWebCon.getWebPreferences(),
-            sOBJTY = oWebPref.OBJTY;        
+            sOBJTY = oWebPref.OBJTY;
+
+        oWin.blur();
 
         if (sOBJTY == "FLTMENU") {
             oWin.setAlwaysOnTop(true);
@@ -3623,7 +3638,6 @@ window.onbeforeunload = (oEvent) => {
     for (var i = 0; i < iBrowserListLength; i++) {
 
         const oBrows = aBrowserList[i];
-
         if (oBrows.isDestroyed()) {
             continue;
         }

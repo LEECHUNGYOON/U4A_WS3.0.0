@@ -16,32 +16,31 @@
 // => 즐겨찾기한 프로그램 키 값
 // => 
 
-(function(o){
+(function (o) {
 
+    o.favorite_list = (oAPP, REMOTE, oPARENT, PARAMS) => {
 
-    let oWsSettingsInfo = parent.WSUTIL.getWsSettingsInfo(),
+        let oWsSettingsInfo = parent.WSUTIL.getWsSettingsInfo(),
         oPaths = oWsSettingsInfo.path,
         sPattPopPath = oPaths.PATTPOPUP;
 
         sPattPopPath = parent.PATH.join(sPattPopPath, "..", "index.html");
 
-    // 아이콘 탭바의 컨텐트를 구성할 데이터
-    let personalTab = [
-        {
-           title: 'USP',
-           framePath: `<iframe src="${sPattPopPath}" style='width:100%; height:100%; padding:15px; box-sizing:border-box; border:none;'></iframe>`,
-           key: 'USP' 
-        },
-        {
-            title: 'ABAP',
-            framePath: "<iframe src='ABAP.html' style='width:100%; height:100%; padding:15px; box-sizing:border-box; border:none;'></iframe>",
-            key: 'ABAP'
-        }
-    ];
+        // 아이콘 탭바의 컨텐트를 구성할 데이터
+        let personalTab = [
+            {
+                title: 'Source Patterns',
+                framePath:  `<iframe src="${sPattPopPath}" style='width:100%; height:100%; padding:15px; box-sizing:border-box; border:none;'></iframe>`,
+                key: 'USP'
+            },
+            {
+                title: 'Code Templates',
+                framePath: "<iframe src='ABAP.html' style='width:100%; height:100%; padding:15px; box-sizing:border-box; border:none;'></iframe>",
+                key: 'ABAP'
+            }
+        ];
 
-    o.favorite_list = (oAPP, REMOTE, oPARENT, PARAMS) => {
-     
-        if(oAPP.WATCH !== undefined) {
+        if (oAPP.WATCH !== undefined) {
             oAPP.WATCH.close();
         };
 
@@ -55,20 +54,20 @@
 
         let oParentCont = oPARENT.getContent()[0],
             oParentContCD = oParentCont.getModel();
-        
+
         // 이미 아이콘 탭 바가 그려져 있는지 체크
-        if(oParentContCD !== undefined){
+        if (oParentContCD !== undefined) {
 
             return;
         }
 
         // 받아온 PARAMS가 없어?? 리턴해
-        if(PARAMS === undefined){ console.log("favorite_list.js 에러"); return;};
+        if (PARAMS === undefined) { console.log("favorite_list.js 에러"); return; };
 
         let oPersTab = new sap.m.IconTabBar({
             stretchContentHeight: true,
             expandable: false,
-            select: function(){
+            select: function () {
                 GLV_DATA.FN.TAB_SELECT();
             }
         }).addStyleClass('perstab_bar');

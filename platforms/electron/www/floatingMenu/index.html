@@ -30,6 +30,8 @@
 
         let oAPP = {};
 
+            oAPP.oSettings = parent.WSUTIL.getWsSettingsInfo(),
+            oAPP.LANGU = oAPP.oSettings.globalLanguage;
 
         document.addEventListener('DOMContentLoaded', () => {
 
@@ -42,6 +44,21 @@
             oAPP.PRC = require(oAPP.path.join(__dirname, 'js/fn_handler.js'));
             oAPP.fs = oAPP.remote.require('fs');
             oAPP.convert = require('xml-js');
+
+            oAPP.MSG = {};
+
+            oAPP.MSG.M045 = parent.WSUTIL.getWsMsgClsTxt(oAPP.LANGU, "ZMSG_WS_COMMON_001", "045"); // Source Patterns
+            oAPP.MSG.M002 = parent.WSUTIL.getWsMsgClsTxt(oAPP.LANGU, "ZMSG_WS_COMMON_001", "046"); // Source Patterns
+            oAPP.MSG.M003 = parent.WSUTIL.getWsMsgClsTxt(oAPP.LANGU, "ZMSG_WS_COMMON_001", "047"); // Source Patterns
+            oAPP.MSG.M004 = parent.WSUTIL.getWsMsgClsTxt(oAPP.LANGU, "ZMSG_WS_COMMON_001", "048"); // Source Patterns
+            oAPP.MSG.M005 = parent.WSUTIL.getWsMsgClsTxt(oAPP.LANGU, "ZMSG_WS_COMMON_001", "049"); // Source Patterns
+            oAPP.MSG.M006 = parent.WSUTIL.getWsMsgClsTxt(oAPP.LANGU, "ZMSG_WS_COMMON_001", "050"); // Source Patterns
+            oAPP.MSG.M007 = parent.WSUTIL.getWsMsgClsTxt(oAPP.LANGU, "ZMSG_WS_COMMON_001", "045"); // Source Patterns
+            oAPP.MSG.M008 = parent.WSUTIL.getWsMsgClsTxt(oAPP.LANGU, "ZMSG_WS_COMMON_001", "045"); // Source Patterns
+
+            
+
+
 
             // var data = oAPP.fs.readFileSync("C:\\Users\\Administrator\\AppData\\Roaming\\SAP\\SAP GUI\\ABAP Editor\\abap_user.xml" , 'utf8'); 
             // var json = JSON.parse(convert.xml2json(data)); 

@@ -99,10 +99,10 @@ exports.open = function(REMOTE, SCREEN, _DIRNAME, SSID) {
         "modal":false,
         // "show": oToggle,
         "frame": false,
-        "alwaysOnTop": true,
+        // "alwaysOnTop": true,
         "maximizable": false,
         "minimizable": false,
-        "skipTaskbar": true,
+        // "skipTaskbar": true,
         'resizable': false,
         // "parent": REMOTE.getCurrentWindow(),
         "webPreferences": {

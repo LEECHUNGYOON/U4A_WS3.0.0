@@ -20,11 +20,17 @@
 
     o.favorite_list = (oAPP, REMOTE, oPARENT, PARAMS) => {
 
+        let oWsSettingsInfo = parent.WSUTIL.getWsSettingsInfo(),
+        oPaths = oWsSettingsInfo.path,
+        sPattPopPath = oPaths.PATTPOPUP;
+
+        sPattPopPath = parent.PATH.join(sPattPopPath, "..", "index.html");
+
         // 아이콘 탭바의 컨텐트를 구성할 데이터
         let personalTab = [
             {
                 title: 'Source Patterns',
-                framePath: "<iframe src='USP.html' style='width:100%; height:100%; padding:15px; box-sizing:border-box; border:none;'></iframe>",
+                framePath:  `<iframe src="${sPattPopPath}" style='width:100%; height:100%; padding:15px; box-sizing:border-box; border:none;'></iframe>`,
                 key: 'USP'
             },
             {
