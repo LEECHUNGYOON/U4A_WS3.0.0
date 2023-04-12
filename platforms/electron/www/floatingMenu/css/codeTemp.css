@@ -26,3 +26,7 @@ html {
 .actionBtn > .sapUiIcon:nth-child(2) {
     color: #d91c1c !important;
 }
+
+.sapUiTableActionIcon.sapUiIcon:focus {
+    outline-color: transparent !important;
+}

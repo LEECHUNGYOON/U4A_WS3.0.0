@@ -3,17 +3,19 @@ let oAPP,
     GLV_UI = {},
     GLV_FN = {},
     GLV_BINDATA = {},
-    XMLVS = '',
+    GLV_INFO = {},
     zoom = 1,
     ZOOM_SPEED = 0.1,
     GLV_ZOOM = '1';
-    GLV_BINDATA.DELETEDATA = [];
+    GLV_BINDATA.DELETEDATA = [],
+    oSettingInfo = parent.WSUTIL.getWsSettingsInfo();
 
+// var xmlPath = "C:\\Users\\Administrator\\AppData\\Roaming\\SAP\\SAP GUI\\ABAP Editor";
+var xmlPath = oSettingInfo.SAP.abapEditorRoot;
 
 oAPP = parent.parent.gfn_parent();
 
 jQuery.sap.require("sap.m.MessageBox");
-jQuery.sap.require("sap.m.MessageToast");
 
 createUi();
 
@@ -23,10 +25,10 @@ createUi();
 GLV_FN.CHECK_DATA = (oUPDLG) => {
 
     // 현재는 하드코딩 추 후 수정
-    let data = oAPP.fs.readFileSync("C:\\Users\\Administrator\\AppData\\Roaming\\SAP\\SAP GUI\\ABAP Editor\\abap_user.xml" , 'utf8');
+    let data = oAPP.fs.readFileSync(xmlPath + "\\abap_user.xml" , 'utf8');
     let json = JSON.parse(oAPP.convert.xml2json(data));
 
-    XMLVS = json.declaration.attributes.version;
+    GLV_INFO.XMLVS = json.declaration.attributes.version;
 
     let eleDom = json.elements.filter(a => a.type === "element" && a.elements !== undefined)[0];
 
@@ -90,24 +92,31 @@ GLV_FN.DETACH_DATA = (expChDom, oUPDLG) => {
             };
 
         // 좌측 리스트 구성할 기본 데이터 틀
-        let keywordKey = {
+        let S_HEAD = {
 
             KEY: nameKey,
+            ORGKEY: nameKey,
             EDIT: false,
             ICON:'sap-icon://edit',
             VISIBLE: true,
             VISIBLE2: false,
-            STATUS: '',
-            T_ITEM: [
-                {
-                    DESC: oDtxt,
-                    TEXT: oTtxt
-                }
-            ]
-            
+            S_ITEM: {
+                CONTENT: oDtxt,
+                TITLE: oTtxt
+            },
+            FN: function(){
+                // KEY => 좌측 리스트의 텍스트 ==> 인풋 입력 시 변경
+                // ORGKEY => 저장 하지 않을 때 원복하기 위해 필요한 원본 데이터
+                // EDIT => 활성화 여부
+                // ICON => 클릭 시 변경되는 수정 버튼
+                // VISIBLE => 텍스트 UI에 대한 VISIBLE 값
+                // VISIBLE2 => 인풋 UI에 대한 VISIBLE 값
+                // S_ITEM => 해당 해더의 자식인 디스크립션과 텍스트
+            }
+
         };
 
-        GLV_BINDATA.KEYWORDDATA[i] = keywordKey;
+        GLV_BINDATA.KEYWORDDATA[i] = S_HEAD;
 
     };
 
@@ -119,7 +128,12 @@ GLV_FN.DETACH_DATA = (expChDom, oUPDLG) => {
         ICON: 'sap-icon://document',
         KEY: '',
         ACTIVE: 'DISPLAY',
-        VISIBLE: false
+        VISIBLE: false,
+        S_ITEM: {
+            CONTENT: "",
+            TITLE: "",
+            VISIBLE: false
+        }
     };
 
     GLV_BINDATA.ACTIVEDATA = activeTxt;
@@ -144,37 +158,12 @@ GLV_FN.DATASETTING = (oUPDLG) => {
 
     GLV_UI.PAGE.setModel(oLPageModel);
 
-    // GLV_FN.WATCHBUSY(oUPDLG);
-
-};
-
-
-// 좌측 리스트 클릭 펑션
-GLV_FN.LIST_CLICK = (e) => {
-    debugger;
-
-    let ePram = e.getParameter('rowContext'),
-        eIdx = e.getParameter('rowIndex'),
-        eProp = ePram.getProperty(),
-        slpth = ePram.sPath,
-        oDipt = GLV_UI.RHINPUT,
-        oDiptctxt = oDipt.getBindingContext(),
-        oDiptPrp = oDiptctxt.getProperty();
-
-};
-
-
-// busydialog가 켜져있다면
-GLV_FN.WATCHBUSY = (oUPDLG) => {
-
     setTimeout(() => {
 
         if(oUPDLG !== undefined) {
     
             oUPDLG.close();
-    
-            GLV_HISTORYDATA.SELECTLINE = GLV_BINDATA.KEYWORDDATA.findIndex(a => a.KEY === GLV_HISTORYDATA.SELECTKEY);
-            GLV_UI.UITABLE.setSelectedIndex(GLV_HISTORYDATA.SELECTLINE);
+            GLV_FN.WATCH_DATA();
     
         };
 
@@ -183,84 +172,85 @@ GLV_FN.WATCHBUSY = (oUPDLG) => {
 };
 
 
-// sap에서 데이터가 바뀌었을 때 우측 데이터 삽입
-GLV_FN.WATCHDESCDATA = () => {
+// sap => 데이터 변경
+GLV_FN.WATCH_DATA = () => {
+    // GLV_BINDATA.HISTORYEDIT
+    let selectIdx = GLV_UI.UITABLE.getSelectedIndex(),
+        actdata = GLV_BINDATA.ACTIVEDATA;
 
-    if(GLV_HISTORYDATA.SELECTLINE === -1) { return; };
+    if(selectIdx === -1) {return;};
 
-    let selProp = GLV_BINDATA.KEYWORDDATA[GLV_HISTORYDATA.SELECTLINE],
-        oDipt = GLV_UI.RHINPUT,
-        oDiptctxt = oDipt.getBindingContext(),
-        oDiptPrp = oDiptctxt.getProperty(),
-        oRData = GLV_BINDATA.ALLDATA.find(a => a.KEY === selProp.KEY && a.INUM === selProp.INUM);
+    GLV_FN.EDIT_CHECK();
 
-        oDiptPrp.KEY = selProp.KEY;
-        oDiptPrp.DESC = oRData.DESC;
-        oDiptPrp.ORGDESC = oRData.DESC;
-        oDiptPrp.TEXT = oRData.TEXT;
-        oDiptPrp.ORGTEXT = oRData.TEXT;
+    console.log(selectIdx);
 
-        GLV_FN.BARDESC(selProp);
-        
-        GLV_UI.RHINPUT.getModel().setProperty("", oDiptPrp, oDiptctxt);
+    let selectProp = GLV_BINDATA.KEYWORDDATA[selectIdx];
 
+    actdata.S_ITEM.CONTENT = selectProp.S_ITEM.CONTENT;
+    actdata.S_ITEM.TITLE = selectProp.S_ITEM.TITLE;
+
+    GLV_FN.BAR_TEXT(selectProp);
+
+};
+
+
+// sap => 활성화가 있는지
+GLV_FN.EDIT_CHECK = () => {
+
+    if(GLV_BINDATA.HISTORYEDIT === undefined) {return;};
+
+    let editProp = GLV_BINDATA.KEYWORDDATA.find(a => a.KEY === GLV_BINDATA.HISTORYEDIT.KEY);
+    
+    GLV_FN.NAMEINPUTACTIVE(editProp);
 };
 
 
 // 좌측 리스트 클릭 펑션
-GLV_FN.L_LISTCLICK = (e) => {
-
-    // debugger;
+GLV_FN.LIST_CLICK = (e) => {
 
     let ePram = e.getParameter('rowContext');
 
-    if (ePram === null) {return;};
+    if(ePram === null) {
+        return;
+    };
 
     let eIdx = e.getParameter('rowIndex'),
         eProp = ePram.getProperty(),
         slpth = ePram.sPath,
-        oDipt = GLV_UI.RHINPUT,
-        oDiptctxt = oDipt.getBindingContext(),
-        oDiptPrp = oDiptctxt.getProperty(),
-        oEditBool = GLV_BINDATA.KEYWORDDATA.find(a => a.VISIBLE2 === true),
-        oRData = GLV_BINDATA.ALLDATA.find(a => a.ORGKEY === eProp.KEY && a.INUM === eProp.INUM),
-        // oRData = GLV_BINDATA.ALLDATA.find(a => a.KEY === eProp.KEY && a.INUM === eProp.INUM),
-        codDom = GLV_UI.RCODEEDITOR.getDomRef();
-        codDom.style.zoom;
+        ui_rpage = GLV_UI.RPAGE,
+        rpagectxt = ui_rpage.getBindingContext(),
+        rpageprop = rpagectxt.getProperty(),
+        oEditing = GLV_BINDATA.KEYWORDDATA.find(a => a.EDIT === true);
 
+        // 활성화 상태가 있을 때
+        if(oEditing !== undefined) {
 
-        if (Boolean(oEditBool) === true) {
-            let editli = GLV_BINDATA.KEYWORDDATA.findIndex(a => a.EDIT === true);
-    
-            GLV_UI.UITABLE.setSelectedIndex(editli);
-    
+            let oEditT = GLV_BINDATA.KEYWORDDATA.findIndex(a => a.EDIT === true);
+
+            GLV_UI.UITABLE.setSelectedIndex(oEditT);
+
             return;
-        } else if (GLV_HISTORYDATA.ROWIDX === slpth) {
+
+        } else if (GLV_INFO.SELECTIDX === slpth) { // 비활성화이지만 같은 리스트를 클릭
     
             GLV_UI.UITABLE.setSelectedIndex(eIdx);
     
             return;
+
         };
 
-        GLV_HISTORYDATA.SELECTKEY = eProp.KEY;
+        rpageprop.S_ITEM.CONTENT = eProp.S_ITEM.CONTENT;
+        rpageprop.S_ITEM.TITLE = eProp.S_ITEM.TITLE;
 
-        oDiptPrp.KEY = eProp.KEY;
-        oDiptPrp.DESC = oRData.DESC;
-        oDiptPrp.ORGDESC = oRData.DESC;
-        oDiptPrp.TEXT = oRData.TEXT;
-        oDiptPrp.ORGTEXT = oRData.TEXT;
-        
-        GLV_FN.BARDESC(eProp);
-        
-        GLV_UI.RHINPUT.getModel().setProperty("", oDiptPrp, oDiptctxt);
-        
-        GLV_HISTORYDATA.ROWIDX = slpth;
+        GLV_INFO.SELECTIDX = slpth;
+
+        GLV_FN.BAR_TEXT(eProp);
 
 };
 
 
-// 좌측 리스트 클릭에 따라 우츨 바 영역 텍스트 변경 펑션
-GLV_FN.BARDESC = (eProp) => {
+// 우측 바 영역 삽입 펑션
+GLV_FN.BAR_TEXT = (eProp) => {
 
     let oActDes = GLV_UI.SELDESC,
     oActDesctxt = oActDes.getBindingContext(),
@@ -276,7 +266,7 @@ GLV_FN.BARDESC = (eProp) => {
         oActPrp.KEY = eProp.KEY;
         oActPrp.ACTIVE = 'DISPLAY';
 
-    } else if (eProp.NEW !== '') { // 신규일때
+    } else if (eProp.ORGKEY === '') { // 신규일때
 
         oActPrp.ICON = 'sap-icon://add-document';
         oActPrp.VISIBLE = true;
@@ -292,946 +282,605 @@ GLV_FN.BARDESC = (eProp) => {
 
     };
 
-};
-
-
-// 좌측 수정 버튼 클릭
-GLV_FN.EDIT_CLICK = (e) => {
-
-    let oETarget = e.getSource(),
-        oETBindCont = oETarget.getBindingContext(),
-        oETBCProp = oETBindCont.getProperty(),
-        oEditBool = GLV_BINDATA.KEYWORDDATA.find(a => a.EDIT === true);
-
-    // 수정 중에 다른 수정 버튼 클릭 체크
-    if (Boolean(oEditBool) === true && oETBCProp.EDIT === false) {
-
-        sap.m.MessageBox.confirm('저장하지 않은 내용은 삭제 됩니다', {
-            title: "수정",
-            actions: [
-                sap.m.MessageBox.Action.OK,
-                sap.m.MessageBox.Action.CLOSE
-            ],
-            onClose: function(ACTION) {
-                console.log(ACTION);
-
-                switch (ACTION) {
-                    case "OK":
-
-                        GLV_FN.MESSAGEOK(oETBCProp);
-
-                        break;
-
-                    case "CLOSE":
-
-                        break;
-                }
-            }
-
-        })
-
-        return;
-    };
-
-    GLV_HISTORYDATA.SELECTKEY = oETBCProp.KEY;
-
-    // UI의 바인딩 프로퍼티 중 EDIT의 BOOLEAN이 뭐냐
-    switch (oETBCProp.EDIT) {
-        case false:
-
-            GLV_FN.KEYINPUTACTIVE(oETBCProp);
-
-            break;
-
-        case true:
-
-            GLV_FN.NOSAVECLOSE(oETarget, oETBindCont, oETBCProp);
-
-            break;
-    };
-
-    GLV_FN.BARDESC(oETBCProp);
-
-    e.getSource().getModel().setProperty("", oETBCProp, oETBindCont);
-
-};
-
-// 저장하지 않고 수정 버튼을 닫을 때
-GLV_FN.NOSAVECLOSE = (oETarget, oETBindCont, oETBCProp) => {
-
-    // let oEdit = GLV_BINDATA.ALLDATA.filter(a => a.MODF === true);
-    let oEdit = GLV_BINDATA.ALLDATA.find(a => a.MODF === true);
-
-    // 수정한 값이 있다면
-    // if(oEdit.length > 0) {
-    if(oEdit !== undefined) {
-
-        sap.m.MessageBox.confirm('저장하지 않은 내용은 삭제 됩니다', {
-            title: "수정",
-            actions: [
-                sap.m.MessageBox.Action.OK,
-                sap.m.MessageBox.Action.CLOSE
-            ],
-            onClose: function(ACTION) {
-                console.log(ACTION);
-    
-                switch (ACTION) {
-                    case "OK":
-    
-                        GLV_FN.DELETENODATA(oETarget, oETBindCont, oETBCProp, oEdit);
-    
-                        break;
-    
-                    case "CLOSE":
-    
-                        break;
-                }
-            }
-    
-        });
-
-
-        return;
-    };
-
-    // 수정한 값이 없다면
-    GLV_FN.KEYINPUTINACTIVE(oETBCProp);
-
-};
-
-// 저장하지 않은 내용 삭제
-GLV_FN.DELETENODATA = (oETarget, oETBindCont, oETBCProp, oEdit) => {
-
-    let oDipt = GLV_UI.RHINPUT,
-        oDiptctxt = oDipt.getBindingContext(),
-        oDiptPrp = oDiptctxt.getProperty(),
-        oActDes = GLV_UI.SELDESC,
-        oActDesctxt = oActDes.getBindingContext(),
-        oActPrp = oActDesctxt.getProperty(),
-        oModf = GLV_BINDATA.ALLDATA.find(a => a.MODF === true);
-
-    oETBCProp.KEY = oETBCProp.ORGKEY;
-    oETBCProp.ICON = 'sap-icon://edit';
-    oETBCProp.EDIT = false;
-    oETBCProp.VISIBLE = true;
-    oETBCProp.VISIBLE2 = false;
-
-    oModf.KEY = GLV_BINDATA.DESCRDATA.KEY;
-    oModf.DESC = GLV_BINDATA.DESCRDATA.DESC;
-    oModf.TEXT = GLV_BINDATA.DESCRDATA.TEXT;
-
-    oDiptPrp.DESC = oDiptPrp.ORGDESC;
-    oDiptPrp.TEXT = oDiptPrp.ORGTEXT;
-    oDiptPrp.VISIBLE = false;
-
-    oActPrp.ICON = 'sap-icon://document';
-    oActPrp.VISIBLE = true;
-    oActPrp.KEY = oETBCProp.ORGKEY;
-    oActPrp.ACTIVE = 'DISPLAY';
-
-    oEdit.MODF = '';
-    oEdit.NEW = '';
-
-    oETarget.getModel().setProperty("", oETBCProp, oETBindCont);
-
-};
-
-
-// 좌측 인풋 활성화
-GLV_FN.KEYINPUTACTIVE = (oETBCProp) => {
-
-    // debugger;
-
-    // 현채 클릭한 리스트의 인덱스 값
-    let slNum = GLV_BINDATA.KEYWORDDATA.findIndex(a => a.KEY === oETBCProp.KEY);
-
-    oETBCProp.EDIT = true;
-    oETBCProp.VISIBLE = false;
-    oETBCProp.VISIBLE2 = true;
-    oETBCProp.ICON = 'sap-icon://decline';
-
-    // 해당 인덱스의 로우에 셀렉트 해준다.
-    GLV_UI.UITABLE.setSelectedIndex(slNum);
-
-    // 우측 영역 활성화
-    GLV_FN.DESCACTIVE(oETBCProp);
-
-};
-
-
-// 우측 영역 활성화
-GLV_FN.DESCACTIVE = (oETBCProp) => {
-
-    let oDipt = GLV_UI.RHINPUT,
-        oDiptctxt = oDipt.getBindingContext(),
-        oDiptPrp = oDiptctxt.getProperty();
-
-        oDiptPrp.VISIBLE = true;
-
-        // 저장 버튼 활성화
-        GLV_FN.SAVEBTNACTIVE();
-
-        // 데이터 삽입
-        GLV_FN.DESCDATAPUSH(oETBCProp, oDiptPrp);
-
-};
-
-
-// 저장 버튼 활성화
-GLV_FN.SAVEBTNACTIVE = () => {
-
-    let sctxt = GLV_UI.RHBAR.getBindingContext(),
-        sProp = sctxt.getProperty();
-
-        sProp.VISIBLE = true;
-
-        GLV_UI.RHBAR.getModel().setProperty('', sProp, sctxt);
-
-};
-
-
-// 데이터 삽입
-GLV_FN.DESCDATAPUSH = (oETBCProp, oDiptPrp) => {
-
-    let oDescEdit = GLV_BINDATA.ALLDATA.find(a => a.KEY === oETBCProp.KEY && a.INUM === oETBCProp.INUM);
-
-    if(oDescEdit === undefined) {return;};
-
-    let oDesc = oDescEdit.DESC,
-        oText = oDescEdit.TEXT;
-
-    // KEY값이 없을 때
-    // 신규 추가했을 때
-    if (oETBCProp.KEY === '') {
-
-        oDiptPrp.KEY = '';
-        oDiptPrp.DESC = '';
-        oDiptPrp.TEXT = '';
-
-        return;
-    };
-
-    oDiptPrp.KEY = oETBCProp.KEY;
-    oDiptPrp.DESC = oDesc;
-    oDiptPrp.ORGDESC = oDesc;
-    oDiptPrp.TEXT = oText;
-    oDiptPrp.ORGTEXT = oText;
-
-};
-
-
-// 좌측 인풋 비활성화
-GLV_FN.KEYINPUTINACTIVE = (oETBCProp) => {
-
-    if (oETBCProp === undefined) { return; }
-
-    if (oETBCProp.KEY === '') {
-
-        sap.m.MessageBox.error('Name은 필수 값 입니다', {
-            title: '중요',
-            actions: [
-                sap.m.MessageBox.Action.OK
-            ]
-        });
-
-        return;
-    };
-
-    oETBCProp.EDIT = false;
-    oETBCProp.VISIBLE = true;
-    oETBCProp.VISIBLE2 = false;
-    oETBCProp.ICON = 'sap-icon://edit';
-
-    // 저장 버튼 비활성화
-    GLV_FN.SAVEBTNINACTIVE();
-
-    // 우측 영역 비활성화
-    GLV_FN.DESCINACTIVE(oETBCProp);
-
-};
-
-
-// 저장 버튼 비활성화
-GLV_FN.SAVEBTNINACTIVE = () => {
-
-    let sctxt = GLV_UI.RHBAR.getBindingContext(),
-        sProp = sctxt.getProperty();
-
-        sProp.VISIBLE = false;
-
-        GLV_UI.RHBAR.getModel().setProperty('', sProp, sctxt);
-
-};
-
-
-// 우측 영역 비활성화
-GLV_FN.DESCINACTIVE = () => {
-
-    let oDipt = GLV_UI.RHINPUT,
-        oDiptctxt = oDipt.getBindingContext(),
-        oDiptPrp = oDiptctxt.getProperty();
-
-        oDiptPrp.VISIBLE = false;
-
-        GLV_UI.RHINPUT.getModel().setProperty('', oDiptPrp, oDiptctxt);
-};
-
-
-// 수정 중 팝업 OK 클릭 펑션
-GLV_FN.MESSAGEOK = (oETBCProp) => {
-
-    // debugger;
-
-    let oEditT = GLV_BINDATA.KEYWORDDATA.find(a => a.EDIT === true),
-        oDipt = GLV_UI.RHINPUT,
-        oDiptctxt = oDipt.getBindingContext(),
-        oDiptPrp = oDiptctxt.getProperty();
-        oModf = GLV_BINDATA.ALLDATA.find(a => a.MODF === true);
-
-        oEditT.KEY = oEditT.ORGKEY;
-        oEditT.EDIT = false;
-        oEditT.VISIBLE = true;
-        oEditT.VISIBLE2 = false;
-        oEditT.ICON = 'sap-icon://edit';
-
-        // oModf.KEY = GLV_BINDATA.DESCRDATA.KEY;
-        // oModf.DESC = GLV_BINDATA.DESCRDATA.DESC;
-        // oModf.TEXT = GLV_BINDATA.DESCRDATA.TEXT;
-
-        console.log(GLV_BINDATA.ALLDATA);
-
-        GLV_FN.REMOVE_NEWLIST();
-
-        GLV_FN.KEYINPUTACTIVE(oETBCProp);
-        
-        GLV_FN.BARDESC(oETBCProp);
-        
-        GLV_FN.REMOVE_AFTERLIST();
-
-        // if(oModf.length > 0) {
-        if(oModf !== undefined) {
-
-            oModf.MODF = false;
-
-            // oModf.KEY = GLV_BINDATA.DESCRDATA.KEY;
-            // oModf.DESC = GLV_BINDATA.DESCRDATA.DESC;
-            // oModf.TEXT = GLV_BINDATA.DESCRDATA.TEXT;
-
-        };
-
-
-        GLV_UI.RHINPUT.getModel().setProperty('', oDiptPrp, oDiptctxt);
-
-};
-
-
-// 좌측 추가버튼 클릭 펑션
-GLV_FN.ADDBTN_CLICK = (e) => {
-
-    let oLData = GLV_BINDATA.KEYWORDDATA,
-        oETBCProp = oLData.find(a => a.EDIT === true);
-        GLV_UI.UITABLE.setSelectedIndex(0);
-
-        // 데이터가 없으면 리턴
-        if (!oLData) {
-
-            return;
-
-        };
-
-        if (Boolean(oETBCProp) === true) {
-
-            if (oETBCProp.KEY === '') {
-                sap.m.MessageBox.error('Name은 필수 값 입니다', {
-                    title: '중요',
-                    actions: [
-                        sap.m.MessageBox.Action.OK
-                    ]
-                });
-    
-                return;
-            }
-    
-            // confirm('수정 중 입니다.');
-            sap.m.MessageBox.confirm('저장하지 않은 내용은 삭제 됩니다', {
-                title: "수정",
-                actions: [
-                    sap.m.MessageBox.Action.OK,
-                    sap.m.MessageBox.Action.CLOSE
-                ],
-                onClose: function(ACTION) {
-                    console.log(ACTION);
-    
-                    switch (ACTION) {
-                        case "OK":
-    
-                            GLV_FN.REMOVE_NEWLIST();
-
-                            GLV_FN.KEYINPUTINACTIVE(oETBCProp);
-    
-                            GLV_FN.ADD_LIST(oLData);
-    
-                            break;
-    
-                        case "CLOSE":
-    
-                            break;
-                    }
-                }
-    
-            })
-    
-            return;
-        };
-
-        GLV_FN.ADD_LIST(oLData);
-
-};
-
-
-// 신규 => 저장 하지 않은 리스트 삭제
-GLV_FN.REMOVE_NEWLIST = () => {
-
-    let oNBool = GLV_BINDATA.ALLDATA.find(a => a.NEW === true);
-
-    if(oNBool === undefined) {
-
-        return;
-
-    };
-
-    GLV_BINDATA.KEYWORDDATA.shift();
-    GLV_BINDATA.ALLDATA.shift();
-
-};
-
-// 신규 => 저장 하지 않은 리스트 삭제 후 재구성
-GLV_FN.REMOVE_AFTERLIST = () => {
-
-    let oLData = GLV_BINDATA.KEYWORDDATA,
-        oAllData = GLV_BINDATA.ALLDATA;
-
-    for (var i = 0; i < oLData.length; i++) {
-
-        oLData[i].INUM = i;
-        oAllData[i].INUM = i;
-
-    };
-
-    let selIdx = GLV_BINDATA.KEYWORDDATA.findIndex(a => a.EDIT === true);
-
-    GLV_UI.UITABLE.setSelectedIndex(selIdx);
-
-};
-
-
-// 추가 리스트 구성
-GLV_FN.ADD_LIST = (oLData) => {
-
-    let oAllData = GLV_BINDATA.ALLDATA,
-        oDipt = GLV_UI.RHINPUT,
-        oDiptctxt = oDipt.getBindingContext(),
-        oDiptPrp = oDiptctxt.getProperty();
-
-    for (var i = 0; i < oLData.length; i++) {
-        let oLDataIdx = oLData[i].INUM,
-            oALDataIdx = oAllData[i].INUM;
-
-        oLData[i].INUM = oLDataIdx + 1;
-        oAllData[i].INUM = oALDataIdx + 1;
-    };
-
-    let addtemp = {
-        KEY: '',
-        EDIT: true,
-        ICON: 'sap-icon://decline',
-        VISIBLE: false,
-        VISIBLE2: true,
-        INUM: 0,
-        MODF: true,
-        ORGKEY: '',
-        NEW: true
-    };
-
-    let newdata = {
-        KEY: '',
-        DESC: '',
-        TEXT: '',
-        INUM: 0,
-        MODF: true,
-        ORGKEY: '',
-        ORGDESC: '',
-        ORGTEXT: '',
-        NEW: true
-    };
-
-    // 기존의 좌측 구성 데이터 배열의 앞에 추가
-    oLData.unshift(addtemp);
-
-    // 전체 데이터 배열의 앞에 추가
-    oAllData.unshift(newdata);
-
-    // 우측 영역 활성화
-    oDiptPrp.VISIBLE = true;
-    oDiptPrp.KEY = '';
-    oDiptPrp.DESC = '';
-    oDiptPrp.TEXT = '';
-    oDiptPrp.ORGDESC = '';
-    oDiptPrp.ORGTEXT = '';
-    oDiptPrp.NEW = true;
-
-    let oNData = GLV_BINDATA.KEYWORDDATA.find(a => a.NEW === true);
-
-    GLV_FN.SAVEBTNACTIVE();
-
-    GLV_FN.BARDESC(oNData);
-
-    GLV_UI.RHINPUT.getModel().setProperty("", oDiptPrp, oDiptctxt);
-
-    GLV_UI.UITABLE.setFirstVisibleRow(0);
-    GLV_UI.UITABLE.setSelectedIndex(0);
-
-};
-
-// 좌측 인풋 입력 펑션
-GLV_FN.KEYINPUTCHANGE = (e) => {
-
-    let eValue = e.getParameter('value'),
-        oETarget = e.getSource(),
-        oETBindCont = oETarget.getBindingContext(),
-        oETBCProp = oETBindCont.getProperty(),
-        aldt = GLV_BINDATA.ALLDATA.find(a => a.ORGKEY === oETBCProp.ORGKEY);
-
-
-        // 입력 받은 리스트가 신규이면
-        if(oETBCProp.NEW === true) {
-
-            GLV_FN.NEWINPUTCHANGE(eValue, oETBCProp);
-
-            return;
-
-        };
-
-        // 입력 받은 리스트가 신규가 아니라면
-        aldt.MODF = true;
-        aldt.KEY = eValue;
-
-        GLV_FN.BARDESC(oETBCProp);
-
-};
-
-// 좌측 신규 인풋 입력 펑션
-GLV_FN.NEWINPUTCHANGE = (eValue, oETBCProp) => {
-
-    // let aldt = GLV_BINDATA.ALLDATA,
-    let aldt = GLV_BINDATA.ALLDATA.find(a => a.NEW === true),
-        oActDes = GLV_UI.SELDESC,
-        oActDesctxt = oActDes.getBindingContext(),
-        oActPrp = oActDesctxt.getProperty();
-
-    oETBCProp.KEY = eValue;
-    aldt.KEY = eValue;
-    aldt.ORGKEY = eValue;
-    oActPrp.KEY = eValue;
-
     oActDes.getModel().setProperty("", oActPrp, oActDesctxt);
 
 };
 
 
-// 우측 인풋 입력 펑션
-GLV_FN.DESCINPUTCHANGE = (e) => {
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// 수정 관련 ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
 
-    let eValue = e.getParameter('value'),
-        oETarget = e.getSource(),
-        oETBindCont = oETarget.getBindingContext(),
-        oETBCProp = oETBindCont.getProperty(),
-        aldt = GLV_BINDATA.ALLDATA.find(a => a.DESC === oETBCProp.ORGDESC);
+// 좌측 수정 버튼 클릭
+GLV_FN.EDITBTN_CLICK = (e) => {
 
-        // 입력 받은 리스트가 신규이면
-        if(oETBCProp.NEW === true) {
+    let eSource = e.getSource(),
+        eBindContext = eSource.getBindingContext(),
+        eProperty = eBindContext.getProperty(),
+        oEditing = GLV_BINDATA.KEYWORDDATA.find(a => a.EDIT === true);
 
-            GLV_FN.NEWDESCCHANGE(eValue, oETBCProp);
+        // 수정 중에 저장하지 않고 다른 수정 버튼 클릭 했을 때
+        if(oEditing !== undefined && eProperty.EDIT === false) {
 
-            return;
-
-        };
-
-        aldt.MODF = true;
-        aldt.DESC = eValue;
-
-};
-
-
-// 우측 신규 인풋 디스크립션 입력 펑션
-GLV_FN.NEWDESCCHANGE = (eValue, oETBCProp) => {
-
-    // let aldt = GLV_BINDATA.ALLDATA;
-    let aldt = GLV_BINDATA.ALLDATA.find(a => a.NEW === true);
-
-    oETBCProp.KEY = eValue;
-    aldt.DESC = eValue;
-    aldt.ORGDESC = eValue;
-
-};
-
-
-// 우측 코드에디터 입력 펑션
-GLV_FN.CODEEDITORCHANGE = (e) => {
-
-    let eValue = e.getParameter('value'),
-        oETarget = e.getSource(),
-        oETBindCont = oETarget.getBindingContext(),
-        oETBCProp = oETBindCont.getProperty(),
-        aldt = GLV_BINDATA.ALLDATA.find(a => a.TEXT === oETBCProp.ORGTEXT);
-
-        // 입력 받은 리스트가 신규이면
-        if(oETBCProp.NEW === true) {
-
-            GLV_FN.NEWTEXTCHANGE(eValue, oETBCProp);
+            GLV_FN.MESSAGE_POPUP('EDIT', 'OTHER', eProperty);
 
             return;
 
         };
 
-        aldt.MODF = true;
-        aldt.TEXT = eValue;
+        // 바인딩 된 프로퍼티 중 EDIT 상태
+        switch(eProperty.EDIT) {
+            
+            case false:
+
+                // 선택 리스트 활성화
+                GLV_FN.NAMEINPUTACTIVE(eProperty);
+
+            break;
+
+            case true:
+
+                // 저장 하지 않았을 때
+                GLV_FN.CLOSENOSAVE(eProperty);
+
+            break;
+
+        };
+
+        // 현재 활성화 상태에 따른 우측 텍스트 변경
+        GLV_FN.BAR_TEXT(eProperty);
+
+        eSource.getModel().setProperty("", eProperty, eBindContext);
 
 };
 
 
-// 우측 신규 코드에디터 입력 펑션
-GLV_FN.NEWTEXTCHANGE = (eValue, oETBCProp) => {
+// 수정 클릭 시 선택 라인 인풋 활성화
+GLV_FN.NAMEINPUTACTIVE = (eProperty) => {
 
-    // let aldt = GLV_BINDATA.ALLDATA;
-    let aldt = GLV_BINDATA.ALLDATA.find(a => a.NEW === true);
+    // let selecIdx = GLV_BINDATA.KEYWORDDATA.findIndex(a => a.KEY === eProperty.KEY);
+    let selecIdx = GLV_BINDATA.KEYWORDDATA.findIndex(a => a === eProperty);
 
-    oETBCProp.KEY = eValue;
-    aldt.TEXT = eValue;
-    aldt.ORGTEXT = eValue;
+    // 해당 인덱스의 로우에 셀렉트 해준다.
+    GLV_UI.UITABLE.setSelectedIndex(selecIdx);
 
-};
+    if(selecIdx === -1) {return;};
 
-// 좌측 삭제 버튼 클릭
-GLV_FN.DELETE_CLICK = (e) => {
+    // 현재 활성화 라인 프로퍼티 변경
+    eProperty.EDIT = true;
+    eProperty.VISIBLE = false;
+    eProperty.VISIBLE2 = true;
+    eProperty.ICON = 'sap-icon://decline';
 
-    let oETarget = e.getSource(),
-        oETBindCont = oETarget.getBindingContext(),
-        oETBCProp = oETBindCont.getProperty();
-
-        // 삭제 할 리스트 셀렉트
-        GLV_UI.UITABLE.setSelectedIndex(oETBCProp.INUM);
-
-        sap.m.MessageBox.confirm('정말 삭제하시겠습니까?', {
-            title: '삭제',
-            actions: [
-                sap.m.MessageBox.Action.OK,
-                sap.m.MessageBox.Action.NO
-            ],
-            onClose: function(ACTION) {
-                console.log(ACTION);
-    
-                switch (ACTION) {
-                    case "OK":
-    
-                        GLV_FN.DELETE_LIST(oETBCProp);
-    
-                        break;
-    
-                    case "NO":
-    
-                        break;
-                }
-            }
-        });
-
-};
-
-// 좌측 리스트에서 선택 행 삭제
-GLV_FN.DELETE_LIST = (oETBCProp) => {
-
-    let oFindDel = GLV_BINDATA.KEYWORDDATA.findIndex(a => a === oETBCProp),
-        oselIDX = GLV_UI.UITABLE.getSelectedIndex(),
-        oActDes = GLV_UI.SELDESC,
-        oActDesctxt = oActDes.getBindingContext(),
-        oActPrp = oActDesctxt.getProperty(),
-        oDipt = GLV_UI.RHINPUT,
-        oDiptctxt = oDipt.getBindingContext(),
-        oDiptPrp = oDiptctxt.getProperty();
-
-        // 삭제 데이터 array
-        GLV_BINDATA.DELETEDATA.push(GLV_BINDATA.ALLDATA[oFindDel]);
-        
-        GLV_BINDATA.KEYWORDDATA.splice(oFindDel, 1);
-        GLV_BINDATA.ALLDATA.splice(oFindDel, 1);
-
-        GLV_FN.SELECT_BOOL(oselIDX, oETBCProp, oDiptPrp, oActPrp, oActDesctxt);
-    
-        GLV_FN.DELETE_UPDATA();
+    // 우측 영역 활성화
+    GLV_FN.ACTIVEDESCTEXT(eProperty);
 
 };
 
 
-// 삭제 => 셀렉트 여부
-GLV_FN.SELECT_BOOL = (oselIDX, oETBCProp, oDiptPrp, oActPrp, oActDesctxt) => {
+// 우측 영역 활성화
+GLV_FN.ACTIVEDESCTEXT = () => {
 
-    // 현재 셀렉트가 된 리스트가 없어
-    if(oselIDX === -1) {
+    let ui_rpage = GLV_UI.RPAGE,
+        rpagectxt = ui_rpage.getBindingContext(),
+        rpageprop = rpagectxt.getProperty(),
+        saveBtn = sap.ui.getCore().byId('saveBtn');
+
+        rpageprop.VISIBLE = true;
+        rpageprop.S_ITEM.VISIBLE = true;
+
+        saveBtn.setVisible(true);
+
+};
+
+
+// 저장하지 않고 수정 버튼 닫을 때
+GLV_FN.CLOSENOSAVE = (eProperty) => {
+
+    // 수정 된 값이 없다
+    if(eProperty.KEY === '') {
+
+        let ACTIVE = 'NAME';
+
+        GLV_FN.MESSAGE_POPUP(ACTIVE);
+
+        return;
+
+    } else if(eProperty.KEY === eProperty.ORGKEY) {
+
+        GLV_FN.NAMEINPUTINACTIVE(eProperty);
+            
+        return;
+
+    } else if(eProperty.ORGKEY === '') {
+
+        GLV_BINDATA.KEYWORDDATA.shift();
+
+        GLV_FN.NAMEINPUTACTIVE(eProperty);
+
+        GLV_FN.BAR_TEXT(eProperty);
 
         GLV_UI.UITABLE.setSelectedIndex(-1);
 
-    } else { // 현재 셀렉트가 된 리스트가 있어
-
-        // 활성화 여부 체크
-        GLV_FN.EDIT_BOOL(oETBCProp, oDiptPrp, oActPrp, oActDesctxt);
-        
-    }
-
-};
-
-// 삭제 => 활성화 여부
-GLV_FN.EDIT_BOOL = (oETBCProp, oDiptPrp, oActPrp, oActDesctxt) => {
-
-    // 활성화 상태가 있는지 여부
-    let oEditT = GLV_BINDATA.KEYWORDDATA.find(a => a.EDIT === true),
-        oEditIDX = GLV_BINDATA.KEYWORDDATA.findIndex(a => a.EDIT === true);
-
-        // 활성화 상태가 없다면
-        if(oEditT === undefined) {
-
-            // 저장 버튼 비활성화
-            GLV_FN.SAVEBTNINACTIVE();
-            oDiptPrp.DESC = '';
-            oDiptPrp.TEXT = '';
-
-            oActPrp.VISIBLE = false;
-            GLV_UI.UITABLE.getModel().refresh();
-
-        } else { // 활성화 상태가 있으면
-
-            // 활성화 리스트와 삭제 리스트가 같아
-            if(oETBCProp === oDiptPrp) {
-
-                GLV_UI.UITABLE.setSelectedIndex(-1);
-
-                oActPrp.VISIBLE = false;
-                GLV_UI.SELDESC.getModel().setProperty("", oActPrp, oActDesctxt);
-
-            } else { // 활성화 리스트와 삭제 리스트가 달라
-
-                GLV_UI.SELDESC.getModel().setProperty("", oActPrp, oActDesctxt);
-                GLV_UI.UITABLE.setSelectedIndex(oEditIDX);
-
-            }
-
-        }
-
-};
-
-
-// 삭제 => 좌측 리스트 재구성
-GLV_FN.DELETE_UPDATA = () => {
-
-    let oKeyData = GLV_BINDATA.KEYWORDDATA,
-
-        oAllData = GLV_BINDATA.ALLDATA,
-
-        oKeyDataLeng = oKeyData.length;
-
-    for (var i = 0; i < oKeyDataLeng; i++) {
-
-        oKeyData[i].INUM = i;
-        oAllData[i].INUM = i;
-
     };
 
+    GLV_FN.MESSAGE_POPUP('EDIT', 'SAME', eProperty);
+
 };
 
 
-// 우측 저장 버튼 클릭
-GLV_FN.SAVEBTN_CLICK = (e) => {
+// 수정 중인 해당 리스트 원복
+GLV_FN.EDITLIST_RESET = (eProperty) => {
 
-    let oNList = GLV_BINDATA.ALLDATA.find(a => a.NEW === true);
+    let saveBtn = sap.ui.getCore().byId('saveBtn');
 
-    if(!oNList) {
-        
-        GLV_HISTORYDATA.SELECTIDX = GLV_UI.UITABLE.getSelectedIndex();
+    eProperty.KEY = eProperty.ORGKEY;
+    eProperty.EDIT = false;
+    eProperty.VISIBLE = true;
+    eProperty.VISIBLE2 = false;
+    eProperty.ICON = 'sap-icon://edit';
 
+    // 우측 저장 버튼 비활성화
+    saveBtn.setVisible(false);
+
+    // 우측 영역 비활성화
+    GLV_FN.INACTIVEDESCTEXT();
+
+    // 우측 상단 바 디스플레이 모드
+    GLV_FN.BAR_TEXT(eProperty);
+
+};
+
+
+// 수정 라인 인풋 비활성화 => 너는 인풋 비활성화만 해
+GLV_FN.NAMEINPUTINACTIVE = (eProperty) => {
+
+    if(eProperty === undefined) {
+        return;
     };
 
-    GLV_BINDATA.RECENTDATA = [];
+    // 현재 라인 프로퍼티 변경
+    eProperty.EDIT = false;
+    eProperty.VISIBLE = true;
+    eProperty.VISIBLE2 = false;
+    eProperty.ICON = 'sap-icon://edit';
 
-    // 최신 데이터 가져오기
-    GLV_FN.CHECK_DATA();
+    GLV_FN.INACTIVEDESCTEXT(eProperty);
 
-    let oKeyData = GLV_BINDATA.KEYWORDDATA,
-        oETBCProp = oKeyData.find(a => a.EDIT === true),
-        oNoKey = oKeyData.find(a => a.KEY === ''),
-        oOrigData = GLV_BINDATA.RECENTDATA;
+};
 
-        // 키워드에 빈 값이 있는지 체크 로직
-        switch (Boolean(oNoKey)) {
-        // 좌측에 Name이 빈 값인 리스트가 있다
-        case true:
 
+// 수정 중 메세지 박스 OK 클릭
+GLV_FN.EDITMESSBOXOK = (eProperty) => {
+
+    let ui_rInp = GLV_UI.RHINPUT,
+        rInpctxt = ui_rInp.getBindingContext(),
+        rInprop = rInpctxt.getProperty(),
+        oKeyData = GLV_BINDATA.KEYWORDDATA,
+        oEditT = oKeyData.find(a => a.EDIT === true),
+        selecIdx = oKeyData.findIndex(a => a.KEY === eProperty.KEY);
+
+        if(oEditT.ORGKEY === '') {
+
+            oKeyData.shift();
+
+            GLV_FN.NAMEINPUTACTIVE(eProperty);
+
+            GLV_FN.BAR_TEXT(eProperty);
+
+            GLV_UI.UITABLE.setSelectedIndex(selecIdx);
+
+            return;
+        };
+
+        // 이전 프로퍼티 변경
+        oEditT.EDIT = false;
+        oEditT.VISIBLE = true;
+        oEditT.VISIBLE2 = false;
+        oEditT.ICON = 'sap-icon://edit';
+
+        GLV_FN.NOSAVE_DATARESET(oEditT);
+
+        GLV_FN.NAMEINPUTACTIVE(eProperty);
+
+        GLV_FN.BAR_TEXT(eProperty);
+
+        ui_rInp.getModel().setProperty("", rInprop, rInpctxt);
+
+};
+
+
+// 우측 영역 비활성화
+GLV_FN.INACTIVEDESCTEXT = (eProperty) => {
+
+    let ui_rpage = GLV_UI.RPAGE,
+        rpagectxt = ui_rpage.getBindingContext(),
+        rpageprop = rpagectxt.getProperty(),
+        saveBtn = sap.ui.getCore().byId('saveBtn');
+
+        rpageprop.S_ITEM.VISIBLE = false;
+
+        saveBtn.setVisible(false);
+
+};
+
+
+// 저장하지 않은 데이터 원복
+GLV_FN.NOSAVE_DATARESET = (oEditT) => {
+
+    // 좌측 리스트에 수정 된 값이 있을 때
+    if(oEditT.KEY === oEditT.ORGKEY) {return;};
+
+    oEditT.KEY = oEditT.ORGKEY;
+
+};
+
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// 수정 관련 끝  ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+
+
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// 팝업 관련 ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+
+// 메세지 팝업
+GLV_FN.MESSAGE_POPUP = (ACTION, C, P1, P2) => {
+    
+    switch (ACTION) {
+        case 'NAME':
             sap.m.MessageBox.error('Name은 필수 값 입니다', {
                 title: '중요',
                 actions: [
                     sap.m.MessageBox.Action.OK
                 ]
             });
+        break;
 
-            break;
+        case 'EDIT':
+            sap.m.MessageBox.confirm('저장하지 않은 내용은 삭제 됩니다', {
+                title: "수정",
+                actions: [
+                    sap.m.MessageBox.Action.OK,
+                    sap.m.MessageBox.Action.CLOSE
+                ],
+                onClose: function(ACT) {
+        
+                    switch (ACT) {
+                        case "OK":
+                            GLV_FN.EDITE_POPUP(C, P1);
+                        break;
+                    }
+                }
+        
+            });
+        break;
 
-        // 좌측에 Name이 빈 값이 리스트가 없다.
-        case false:
+        case 'ADD':
+            sap.m.MessageBox.confirm('수정 중에는 추가할 수 없습니다.', {
+                title: "수정",
+                actions: [
+                    sap.m.MessageBox.Action.CLOSE
+                ]
+            });
+        break;
 
-            GLV_FN.DATA_CHECK(oOrigData);
-            GLV_FN.KEYINPUTINACTIVE(oETBCProp);
+        case 'DELETE':
+            sap.m.MessageBox.confirm('정말 삭제하시겠습니까?', {
+                title: '삭제',
+                actions: [
+                    sap.m.MessageBox.Action.OK,
+                    sap.m.MessageBox.Action.NO
+                ],
+                onClose: function(ACTION) {
+                    console.log(ACTION);
+        
+                    switch (ACTION) {
+                        case "OK":
+                            GLV_FN.LIST_DELETE(P1, P2);
+                        break;
+                    }
+                }
+    
+            });
+        break;
 
-            break;
+        case 'SAVE':
+            sap.m.MessageToast.show('저장 되었습니다', {
+                duration: 1500,
+                animationDuration: 1500,
+                at: sap.ui.core.Popup.Dock.CenterCenter
+            });
+        break;
+    }
+
+};
+
+
+// EDITE 팝업 분류
+GLV_FN.EDITE_POPUP = (C, P1) => {
+    
+    switch(C) {
+        
+        case 'SAME':
+            GLV_FN.EDITLIST_RESET(P1);
+        break;
+
+        case 'OTHER':
+            GLV_FN.EDITMESSBOXOK(P1);
+        break;
+
+    };
+
+};
+
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// 팝업 관련 끝 ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+
+
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// 추가 관련 ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+
+// 추가 => 버튼 클릭
+GLV_FN.ADDBTN_CLICK = (e) => {
+
+    let oKeyData = GLV_BINDATA.KEYWORDDATA,
+        oEditT = oKeyData.find(a => a.EDIT === true);
+
+        if(!oKeyData) {
+            return;
         };
 
-};
+        if(Boolean(oEditT) === true) {
 
+            GLV_FN.MESSAGE_POPUP('ADD');
 
-// 수정한 데이터가 있는지 체크
-GLV_FN.DATA_CHECK = (oOrigData) => {
-
-    // 내쪽의 기존 가져온 전체 데이터
-    let oAllData = GLV_BINDATA.ALLDATA,
-    // 수정 한 값이 있는 아이 찾기
-    oModf = oAllData.find(a => a.MODF === true);
-
-    if (Boolean(oModf) === true) { // 수정 한 값 있어!!!!!!!!
-
-        GLV_FN.DATA_COMP(oAllData, oOrigData);
-
-
-    } else { // 수정한 값 없어!!!!!!!
-
-        // 데이터 저장
-        GLV_FN.DATA_DELETE(oOrigData);
-
-    };
-
-};
-
-
-// 최신 데이터와 수정 데이터 비교
-GLV_FN.DATA_COMP = (oAllData, oOrigData) => {
-
-    let editRow = GLV_BINDATA.ALLDATA.find(a => a.MODF === true);
-
-    for (var i = 0; i < oOrigData.length; i++) {
-
-        for (var idx = 0; idx < oAllData.length; idx++) {
-
-            // 최신 데이터의 키값이 수정한 데이터의 오리지날 키 값과 같을 때
-            if (oOrigData[i].KEY === oAllData[idx].ORGKEY && oAllData[idx].MODF === true) {
-
-                oOrigData[i].KEY = oAllData[idx].KEY;
-                oOrigData[i].DESC = oAllData[idx].DESC;
-                oOrigData[i].TEXT = oAllData[idx].TEXT;
-
-            };
-
+            return;
         };
 
-    };
+        GLV_FN.CREATE_LIST(oKeyData);
 
-    // 신규 체크
-    GLV_FN.NEW_DATA(oOrigData);
-
-    // 삭제 데이터 체크
-    GLV_FN.DATA_DELETE(oOrigData, editRow);
 };
 
 
-// 신규 데이터 체크
-GLV_FN.NEW_DATA = (oOrigData) => {
+// 추가 => 신규 리스트 생성
+GLV_FN.CREATE_LIST = (oKeyData) => {
 
-    //  신규 추가 체크
-    // let oNewList = GLV_BINDATA.ALLDATA.filter(a => a.NEW === true),
-    let oNewList = GLV_BINDATA.ALLDATA.filter(a => a.NEW === true),
-        oKeyList = GLV_BINDATA.KEYWORDDATA.filter(a => a.NEW === true);
+    let ui_rpage = GLV_UI.RPAGE,
+        rpagectxt = ui_rpage.getBindingContext(),
+        rpageprop = rpagectxt.getProperty();
 
-    // 신규 추가가 없을 때 리턴
-    if(oNewList === undefined || oNewList.length === 0){
-        return;
-    };
+    let S_HEAD = {
 
-    GLV_HISTORYDATA.NEWKEY = oNewList.KEY;
-
-    for (var i = 0; i < oNewList.length; i++) {
-
-        let addList = {
-            KEY: oNewList[i].KEY,
-            DESC: oNewList[i].DESC,
-            TEXT: oNewList[i].TEXT
+        KEY: '',
+        ORGKEY: '',
+        EDIT: true,
+        ICON: 'sap-icon://decline',
+        VISIBLE: false,
+        VISIBLE2: true,
+        S_ITEM: {
+            CONTENT: '',
+            TITLE: ''
         }
 
-        oOrigData.push(addList);
-
-        // 신규와 수정 되었다는 값 제거(xml 데이터 삽입 했을 때)
-        oNewList[i].NEW = '';
-        oNewList[i].MODF = '';
-        oKeyList[i].NEW = '';
-        oKeyList[i].MODF = '';
-
     };
+
+    oKeyData.unshift(S_HEAD);
+
+    // 우측 영역 활성화
+    GLV_FN.ACTIVEDESCTEXT();
+
+    rpageprop.S_ITEM.CONTENT = '';
+    rpageprop.S_ITEM.TITLE = '';
+
+    GLV_FN.BAR_TEXT(S_HEAD);
+
+    GLV_UI.UITABLE.setSelectedIndex(0);
+    GLV_UI.UITABLE.setFirstVisibleRow(0);
+
+};
+
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// 추가 관련 끝 ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+
+
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// 삭제 관련 ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+
+// 삭제 => 버튼 클릭
+GLV_FN.DELETEBTN_CLICK = (e) => {
+
+    let eSource = e.getSource(),
+        eBindContext = eSource.getBindingContext(),
+        eProperty = eBindContext.getProperty(),
+        ui_table = GLV_UI.UITABLE,
+        getTableBinding = ui_table.getBinding("rows"),
+        getTableContext = getTableBinding.getContexts(),
+        eIdx = getTableContext.findIndex(a => a === eBindContext);
+
+        GLV_FN.MESSAGE_POPUP('DELETE','', eSource, eIdx);
 
 };
 
 
-// 삭제 데이터 체크
-GLV_FN.DATA_DELETE = (oOrigData, editRow) => {
+// 삭제 => 해당 리스트 제거
+GLV_FN.LIST_DELETE = (eSource, eIdx) => {
 
-    editRow = editRow;
+    // *******************************
+    //  eBindContext => 삭제 할 행의 바인드 컨텍스트
+    //  eProperty => 삭제 할 행의 프로퍼티
+    //  eIdx => 삭제 할 행의 인덱스 값
+    // *******************************
     
-    // 삭제 된 값이 없을 때
-    if (GLV_BINDATA.DELETEDATA.length === 0) {
+    let eBindContext = eSource.getBindingContext(),
+        eProperty = eBindContext.getProperty();
         
-        // let editRow = GLV_BINDATA.ALLDATA.find(a => a.MODF === true);
+        // 삭제 리스트의 데이터를 DELETEDATA배열에 추가
+        GLV_BINDATA.DELETEDATA.push(eProperty);
 
-        // 데이터 저장
-        GLV_FN.DATA_SAVE(editRow);
-
-        return;
-    };
+        GLV_FN.DELTE_EDITCHECK(eProperty, eIdx);
+        
+};
 
 
-    // 삭제 된 값이 있을 때
-    
-    for (var idx = 0; idx < GLV_BINDATA.DELETEDATA.length; idx++) {
+// 삭제 => 활성화 상태 체크
+GLV_FN.DELTE_EDITCHECK = (eProperty, eIdx) => {
 
-        for (var i = 0; i < oOrigData.length; i++) {
+    // *******************************
+    //  oKeyData => name 리스트의 데이터
+    //  oEditT => 활성화가 되어있는 리스트
+    //  oEditIdx => 활성화가 되어있는 리스트의 인덱스 값
+    //  ui_rpage => 우측 페이지 UI
+    //  rpagectxt => 우측 페이지 UI의 바인드 컨텍스트
+    //  rpageprop => 우측 페이지 UI의 프로퍼티
+    // *******************************
 
-            if (oOrigData[i].KEY === GLV_BINDATA.DELETEDATA[idx].ORGKEY) {
-                oOrigData.splice(i, 1);
-            };
+    let oKeyData = GLV_BINDATA.KEYWORDDATA,
+        oEditT = oKeyData.find(a => a.EDIT === true);
+
+        // 활성화 상태가 없다면
+        if(oEditT === undefined) {
+
+            GLV_FN.DELETE_NOACTIVE(eIdx);
+            
+        } else {
+
+            // 활성화 상태가 있을 때
+            GLV_FN.DELETE_ACTIVE(eProperty, oKeyData, eIdx);
 
         };
 
+};
+
+
+// 삭제 => 활성화 상태가 없을 때
+GLV_FN.DELETE_NOACTIVE = (eIdx) => {
+
+    let selecIdx = GLV_UI.UITABLE.getSelectedIndex(),
+        ui_rpage = GLV_UI.RPAGE,
+        rpagectxt = ui_rpage.getBindingContext(),
+        rpageprop = rpagectxt.getProperty(),
+        getRPageModel = ui_rpage.getModel();
+
+    // 셀렉트 체크
+    if(selecIdx === eIdx) {
+
+        GLV_UI.UITABLE.setSelectedIndex(-1);
+
+        rpageprop.VISIBLE = false;
+
+        // Name 리스트에서 해당 삭제 데이터 제거
+        GLV_BINDATA.KEYWORDDATA.splice(eIdx, 1);
+
+        getRPageModel.setProperty("", rpageprop, rpagectxt);
+        
+        return;
     };
 
-    GLV_BINDATA.DELETEDATA = [];
+    // Name 리스트에서 해당 삭제 데이터 제거
+    GLV_BINDATA.KEYWORDDATA.splice(eIdx, 1);
+    
+    getRPageModel.setProperty("", rpageprop, rpagectxt);
 
-    // 데이터 저장
-    GLV_FN.DATA_SAVE();
+    GLV_UI.UITABLE.setSelectedIndex(selecIdx);
 
 };
 
 
-// 데이터 저장
-GLV_FN.DATA_SAVE = (editRow) => {
+// 삭제 => 활성화 상태가 있을 때
+GLV_FN.DELETE_ACTIVE = (eProperty, oKeyData, eIdx) => {
 
-    let oRecent = GLV_BINDATA.RECENTDATA,
-        oUpArray = oRecent.sort((a, b) => a.KEY > b.KEY ? 1 : -1);
+    let oEditT = oKeyData.find(a => a.EDIT === true),
+        oEditIdx = oKeyData.findIndex(a => a.EDIT === true),
+        ui_rpage = GLV_UI.RPAGE,
+        rpagectxt = ui_rpage.getBindingContext(),
+        rpageprop = rpagectxt.getProperty(),
+        saveBtn = sap.ui.getCore().byId('saveBtn'),
+        getRPageModel = ui_rpage.getModel();
 
-    console.log(oUpArray);
+    // 활성화 리스트가 삭제 리스트랑 같을 때
+    if(eProperty === oEditT) {
 
-    let nXML = `<?xml version="${XMLVS}"?>\n`;
+        rpageprop.VISIBLE = false;
+
+        rpageprop.S_ITEM.CONTENT = '';
+        rpageprop.S_ITEM.TITLE = '';
+        rpageprop.S_ITEM.VISIBLE = false;
+
+        saveBtn.setVisible(false);
+
+        // Name 리스트에서 해당 삭제 데이터 제거
+        oKeyData.splice(eIdx, 1);
+
+        getRPageModel.setProperty("", rpageprop, rpagectxt);
+
+        GLV_UI.UITABLE.setSelectedIndex(-1);
+        return;
+    };
+
+    // Name 리스트에서 해당 삭제 데이터 제거
+    oKeyData.splice(eIdx, 1);
+
+    // 활성화 리스트가 삭제 리스트가 다를 때
+    getRPageModel.setProperty("", rpageprop, rpagectxt);
+
+    GLV_UI.UITABLE.setSelectedIndex(oEditIdx);
+
+};
+
+
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// 삭제 관련 끝 ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+
+
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// 저장 관련 ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+
+// 저장 => 버튼 클릭
+GLV_FN.SAVEBTN_CLICK = (e) => {
+
+    let oKeyData = GLV_BINDATA.KEYWORDDATA,
+        oNoKey = oKeyData.find(a => a.KEY === ''),
+        oEdit= oKeyData.find(a => a.EDIT === true);
+
+        GLV_FN.SAVE_DESCTEXT(oEdit);
+
+        switch(Boolean(oNoKey)) {
+            case true:
+
+                GLV_FN.MESSAGE_POPUP('NAME');
+
+            break;
+
+            case false:
+                GLV_FN.SAVE_DATA(oKeyData);
+            break;
+        }
+
+};
+
+
+// 저장 => 디스크립션 및 텍스트 저장
+GLV_FN.SAVE_DESCTEXT = (oEdit) => {
+
+    let ACTDATA = GLV_BINDATA.ACTIVEDATA;
+
+    oEdit.S_ITEM.CONTENT = ACTDATA.S_ITEM.CONTENT;
+    oEdit.S_ITEM.TITLE = ACTDATA.S_ITEM.TITLE;
+
+};
+
+
+// 저장 => 데이터 저장
+GLV_FN.SAVE_DATA = (oKeyData) => {
+
+    let nXML = `<?xml version="${GLV_INFO.XMLVS}"?>\n`;
     nXML += '<?xml-stylesheet type="text/xsl" href="lang_user.xslt"?>\n';
     nXML += '<XMLConfigSettings>\n';
     nXML += '  <FILEINFO>\n';
@@ -1239,99 +888,79 @@ GLV_FN.DATA_SAVE = (editRow) => {
     nXML += '  </FILEINFO>\n';
     nXML += '  <EXPANDS>\n';
 
-    for (var i = 0; i < oUpArray.length; i++) {
-        nXML += `      <Expand key="${oUpArray[i].KEY}">\n`;
-        nXML += `          <Descr>${oUpArray[i].DESC}</Descr>\n`;
-        nXML += `          <Text>${oUpArray[i].TEXT}</Text>\n`;
+    for (var i = 0; i < oKeyData.length; i++) {
+        nXML += `      <Expand key="${oKeyData[i].KEY}">\n`;
+        nXML += `          <Descr>${oKeyData[i].S_ITEM.CONTENT}</Descr>\n`;
+        nXML += `          <Text>${oKeyData[i].S_ITEM.TITLE}</Text>\n`;
         nXML += '      </Expand>\n';
     };
 
     nXML += '  </EXPANDS>\n';
     nXML += '</XMLConfigSettings>\n';
 
-    oAPP.fs.writeFileSync("C:\\Users\\Administrator\\AppData\\Roaming\\SAP\\SAP GUI\\ABAP Editor\\abap_user.xml", nXML);
+    oAPP.fs.writeFileSync(xmlPath + "\\abap_user.xml", nXML);
 
-    sap.m.MessageToast.show('저장 되었습니다', {
-        duration: 1500,
-        animationDuration: 1500,
-        at: sap.ui.core.Popup.Dock.CenterCenter
-    });
+    GLV_FN.MESSAGE_POPUP('SAVE');
 
+    // 저장 이후 
+    GLV_FN.SAVE_AFTER();
+
+};
+
+
+// 저장 => 저장 이후
+GLV_FN.SAVE_AFTER = () => {
+
+    GLV_FN.SAVE_RESET();
     GLV_FN.SAVE_AFTERBAR();
 
-    setTimeout(() => {
+};
 
-        GLV_FN.SAVE_AFTERSELECT(editRow);
 
-    },0);
+// 저장 => 셀렉트 및 활성화 초기화
+GLV_FN.SAVE_RESET = () => {
+
+    let oEditBool = GLV_BINDATA.KEYWORDDATA.find(a => a.EDIT === true);
+
+        GLV_FN.NAMEINPUTINACTIVE(oEditBool);
+
+        // GLV_UI.UITABLE.setSelectedIndex(-1);
 
 
 };
 
 
-// 데이터 저장 이후 셀렉트
-GLV_FN.SAVE_AFTERSELECT = (editRow) => {
-
-    // 신규일 경우
-    if(GLV_HISTORYDATA.NEWKEY != undefined) {
-
-        GLV_HISTORYDATA.SELECTIDX = GLV_BINDATA.ALLDATA.findIndex(a => a.KEY === GLV_HISTORYDATA.NEWKEY);
-
-    // 삭제했을 경우
-    } else if(editRow === undefined) {
-
-        GLV_HISTORYDATA.SELECTIDX = -1;
-
-    // 수정했을 경우
-    } else {
-
-        GLV_HISTORYDATA.SELECTIDX = GLV_BINDATA.ALLDATA.findIndex(a => a.KEY === editRow.KEY)
-    
-    };
-
-    GLV_UI.UITABLE.setSelectedIndex(GLV_HISTORYDATA.SELECTIDX);
-
-    GLV_HISTORYDATA.NEWKEY = undefined;
-
-    if(GLV_HISTORYDATA.SELECTIDX > 9) {
-
-        let selRow = (GLV_HISTORYDATA.SELECTIDX +1) - 10;
-
-        GLV_UI.UITABLE.setFirstVisibleRow(selRow);
-
-    };
-
-};
-
-
-// 저장 이후 우측 바 변경
+// 저장 => 우측 바
 GLV_FN.SAVE_AFTERBAR = () => {
 
-    // 우측 상단 바 영역 hbox
     let oActDes = GLV_UI.SELDESC,
+        oActDesctxt = oActDes.getBindingContext(),
+        oActPrp = oActDesctxt.getProperty();
 
-    // hbox의 바인딩 컨텍스트
-    oActDesctxt = oActDes.getBindingContext(),
+        oActPrp.ICON = 'sap-icon://document';
+        oActPrp.ACTIVE = 'DISPLAY';
 
-    // hbox의 바인딩 프로퍼티
-    oActPrp = oActDesctxt.getProperty();
+        oActDes.getModel().setProperty('', oActPrp, oActDesctxt);
 
-    oActPrp.ICON = 'sap-icon://document';
-    oActPrp.ACTIVE = 'DISPLAY';
-
-    GLV_UI.SELDESC.getModel().setProperty('', oActPrp, oActDesctxt);
+        GLV_UI.UITABLE.setSelectedIndex(-1);
 
 };
 
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// 저장 관련 끝 ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
 
-// 코드에디터 줌
-GLV_FN.CODEEDITZOOM = () => {
 
-    let codDom = GLV_UI.RCODEEDITOR.getDomRef();
+// RowActionItem 스타일 클래스 추가
+GLV_FN.UITABLE_HOOKUITILS = (oEvent) => {
 
-    codDom.style.zoom = GLV_ZOOM;
+    if(oEvent !== "StartTableUpdate") {
+
+        // debugger;
+    }
 
 };
+
 
 // ★★★★★★★★★★★★★★★★★★ UI 생성 이후 실행 ★★★★★★★★★★★★★★★★★★
 function fn_UIUPdated() {
@@ -1340,15 +969,15 @@ function fn_UIUPdated() {
 
     GLV_FN.CHECK_DATA();
 
-    let watchPath = 'C:\\Users\\Administrator\\AppData\\Roaming\\SAP\\SAP GUI\\ABAP Editor';
+    // let watchPath = 'C:\\Users\\Administrator\\AppData\\Roaming\\SAP\\SAP GUI\\ABAP Editor';
 
-    oAPP.WATCH = oAPP.fs.watch(watchPath, { "recursive":true } ,async (a,b)=>{
+    oAPP.WATCH = oAPP.fs.watch(xmlPath, { "recursive":true } ,async (a,b)=>{
        
         // 받아온 파라미터 값 중 b의 값이 'abap_user.xml' 아니라면 리턴
         if(b !== 'abap_user.xml'){return;};
 
         // 해당 경로에 abap_user.xml 파일이 있는지 체크
-        let oFileFind = oAPP.fs.existsSync(`${watchPath}\\abap_user.xml`);
+        let oFileFind = oAPP.fs.existsSync(`${xmlPath}\\abap_user.xml`);
 
         // 없다면?
         if(oFileFind !== true) {
@@ -1365,41 +994,39 @@ function fn_UIUPdated() {
 
         oUPDLG.open();
 
-        GLV_HISTORYDATA.SELECTLINE = GLV_UI.UITABLE.getSelectedIndex();
+        GLV_BINDATA.HISTORYEDIT = GLV_BINDATA.KEYWORDDATA.find(a => a.EDIT === true);
+
+        // GLV_HISTORYDATA.SELECTLINE = GLV_UI.UITABLE.getSelectedIndex();
 
         GLV_FN.CHECK_DATA(oUPDLG);
-
-        setTimeout(() => {
-            
-            GLV_FN.WATCHDESCDATA();
-
-        },100);
-
-        if(GLV_HISTORYDATA.SELECTLINE > 9) {
-
-            let selRow = (GLV_HISTORYDATA.SELECTLINE +1) - 10;
-
-            GLV_UI.UITABLE.setFirstVisibleRow(selRow);
-
-        };
     
     }); 
 
-    GLV_UI.RVBOX.bindElement('/r_editData');
-    GLV_UI.RHBAR.bindElement('/r_btnDaTA');
-    GLV_UI.SELDESC.bindElement('/r_selectDesc');
+    GLV_UI.RPAGE.bindElement('/r_activeData');
 
     GLV_UI.RCODEEDITOR.addEventDelegate({
 
-        onAfterRendering: function(e) {
-            GLV_FN.CODEEDITZOOM();
-        }
+        // onAfterRendering: function(e) {
+        //     GLV_FN.CODEEDITZOOM();
+        // }
 
     });
+
 
     GLV_UI.PAGE.setBusy(false);
 
 }; // fn_UIUPdated end
+
+
+        //table에 hook 이벤트 추가. 
+        sap.ui.table.utils._HookUtils.register(GLV_UI.UITABLE,  
+
+            sap.ui.table.utils._HookUtils.Keys.Signal, function(oEvent){ 
+          
+                GLV_FN.UITABLE_HOOKUITILS(oEvent);
+              //콜백 펑션 
+          
+        }); 
 
 
 // ★★★★★★★★★★★★★★★★★★ ui 생성 ★★★★★★★★★★★★★★★★★★
@@ -1453,6 +1080,9 @@ function createUi() {
 
     // 4_3. LIST PAGE UI TABLE 생성
     GLV_UI.UITABLE = new sap.ui.table.Table({
+        extension: [
+            GLV_UI.LHBAR
+        ],
         columns: new sap.ui.table.Column({
             width: '100%',
             minWidth: 80,
@@ -1469,9 +1099,9 @@ function createUi() {
                     new sap.m.Input({
                         value: '{KEY}',
                         visible: '{VISIBLE2}',
-                        change: function(e) {
-                            GLV_FN.KEYINPUTCHANGE(e);
-                        }
+                        // change: function(e) {
+                        //     GLV_FN.NAMEINPUTCHANGE(e);
+                        // }
                     })
                 ]
             })
@@ -1485,14 +1115,14 @@ function createUi() {
                     icon: "{ICON}",
                     type: sap.ui.table.RowActionType.Custom,
                     press: function(e) {
-                        GLV_FN.EDIT_CLICK(e);
+                        GLV_FN.EDITBTN_CLICK(e);
                     }
                 }),
                 new sap.ui.table.RowActionItem({
                     icon: "sap-icon://delete",
                     type: sap.ui.table.RowActionType.Delete,
                     press: function(e) {
-                        GLV_FN.DELETE_CLICK(e);
+                        GLV_FN.DELETEBTN_CLICK(e);
                     }
                 })
             ]
@@ -1500,10 +1130,12 @@ function createUi() {
         rowSelectionChange: function(e) {
             GLV_FN.LIST_CLICK(e);
         },
-        rowHeight: 64,
+        rowHeight: 50,
         rowActionCount: 2,
         selectionMode: sap.ui.table.SelectionMode.Single,
         selectionBehavior: sap.ui.table.SelectionBehavior.Row,
+        visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
+        minAutoRowCount: 1
     });
 
 
@@ -1519,7 +1151,7 @@ function createUi() {
 
     // 5_1. DESCRIPTION & TEXT PAGE BAR 생성
     GLV_UI.RHBAR = new sap.m.Bar({
-        contentRight: new sap.m.Button({
+        contentRight: new sap.m.Button('saveBtn',{
             icon: 'sap-icon://save',
             type: sap.m.ButtonType.Emphasized,
             visible: false,
@@ -1576,11 +1208,11 @@ function createUi() {
 
     // 5_6. DESCRIPTION & TEXT PAGE HBOX INPUT 생성
     GLV_UI.RHINPUT = new sap.m.Input({
-        editable: '{VISIBLE}',
-        value: '{DESC}',
-        change: function(e) {
-            GLV_FN.DESCINPUTCHANGE(e);
-        }
+        editable: "{/r_activeData/S_ITEM/VISIBLE}",
+        value: "{/r_activeData/S_ITEM/CONTENT}",
+        // change: function(e) {
+        //     GLV_FN.DESCINPUTCHANGE(e);
+        // }
     });
 
 
@@ -1588,11 +1220,11 @@ function createUi() {
     GLV_UI.RCODEEDITOR = new sap.ui.codeeditor.CodeEditor({
         type: "abap",
         height: '100%',
-        editable: '{VISIBLE}',
-        value: '{TEXT}',
-        change: function(e) {
-            GLV_FN.CODEEDITORCHANGE(e);
-        }
+        editable: "{/r_activeData/S_ITEM/VISIBLE}",
+        value: "{/r_activeData/S_ITEM/TITLE}",
+        // change: function(e) {
+        //     GLV_FN.CODEEDITORCHANGE(e);
+        // }
     }).attachBrowserEvent('wheel', function(e) {
         let codDom = GLV_UI.RCODEEDITOR.getDomRef();
 
@@ -1612,7 +1244,8 @@ function createUi() {
     });
 
     GLV_UI.LHBAR.addContentLeft(GLV_UI.LADDBTN);
-    GLV_UI.LPAGE.addContent(GLV_UI.LHBAR).addContent(GLV_UI.UITABLE);
+    // GLV_UI.LPAGE.addContent(GLV_UI.LHBAR).addContent(GLV_UI.UITABLE);
+    GLV_UI.LPAGE.addContent(GLV_UI.UITABLE);
     GLV_UI.RHBOX.addItem(GLV_UI.RHLABEL).addItem(GLV_UI.RHINPUT);
     GLV_UI.RVBOX.addItem(GLV_UI.RHBOX).addItem(GLV_UI.RCODEEDITOR);
     GLV_UI.RHBAR.addContentLeft(GLV_UI.SELDESC);

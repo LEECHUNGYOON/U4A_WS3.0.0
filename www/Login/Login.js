@@ -1659,10 +1659,10 @@ let oAPP = (function () {
 
             parent.showLoadingPage('');
 
-            // if (!APP.isPackaged) {
-            //     // Floating Menu를 오픈한다.                    
-            //     oAPP.fn.fnFloatingMenuOpen();
-            // }
+            if (!APP.isPackaged) {
+                // Floating Menu를 오픈한다.                    
+                oAPP.fn.fnFloatingMenuOpen();
+            }
 
         });
 

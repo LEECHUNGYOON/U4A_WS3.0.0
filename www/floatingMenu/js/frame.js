@@ -16,7 +16,8 @@
 
 let oAPP,
     oBEFORESIZE,
-    GLV_DATA = {};
+    GLV_DATA = {},
+    GLV_SIZEINFO = {};
 
 GLV_DATA.UI = {};
 GLV_DATA.FN = {};
@@ -24,7 +25,7 @@ GLV_DATA.INFO = {};
 GLV_DATA.T_MENUDATA = [];
 GLV_DATA.DATA = {};
 GLV_DATA.DB_CLICK = null;
-// GLV_DATA.SELECTED = undefined;
+GLV_DATA.DBV_CLICK = null;
 
 // ***********************************************************************************************
 // [시작] 메인 플로우  *****************************************************************
@@ -102,10 +103,23 @@ GLV_DATA.FN.SPLITTBAR_DOWN = () => {
     }, 10);
 };
 
+
 // '스플리트 바' 리사이징을 위한 마우스 무브 펑션
 GLV_DATA.FN.MOUSEMOVING = (e) => {
-    /* oMouseY => 마우스 y좌표 */
 
+    let oTPageLD = GLV_DATA.UI.PAGE4.getLayoutData(),
+        oMPageLD = GLV_DATA.UI.PAGE5.getLayoutData(),
+        oBPageLD = GLV_DATA.UI.PAGE6.getLayoutData();
+
+    if(GLV_DATA.DBV_CLICK !== 'expanded') {
+
+        GLV_SIZEINFO.TOPSIZE = oTPageLD.getSize();
+        GLV_SIZEINFO.MIDSIZE = oMPageLD.getSize();
+        GLV_SIZEINFO.BOTSIZE = oBPageLD.getSize();
+
+    };
+
+    /* oMouseY => 마우스 y좌표 */
     let oMouseY = e.clientY;
     
     GLV_DATA.INFO.pos = oMouseY;
@@ -627,15 +641,18 @@ function fn_UIUPdated() {
         oHorizOB = oHorizDom.children[1],
         oVertDom = GLV_DATA.UI.SPLITTER2.getDomRef(),
         oVertTB = oVertDom.children[1],
+        oVertOVB = oVertDom.children[5],
         oVertBB = oVertDom.children[3];
 
     oHorizOB.classList.add('outSpBar');
 
     oVertTB.addEventListener('mousedown', function() {
+        
         GLV_DATA.FN.SPLITTBAR_DOWN();
     });
 
     oVertBB.addEventListener('mousedown', function() {
+        
         GLV_DATA.FN.SPLITTBAR_DOWN();
     });
 
@@ -792,25 +809,23 @@ function createUi() {
             let oTarget = e.target,
                 bTarget = oTarget.classList.contains('outSplitter'),
                 oLPageLD = GLV_DATA.UI.PAGE2.getLayoutData(),
-                oRPageLD = GLV_DATA.UI.PAGE3.getLayoutData();
+                oRPageLD = GLV_DATA.UI.PAGE3.getLayoutData(),
+                oRPageSize = oRPageLD.getSize();
+                screenSize = `${screen.width - 16}px`;
+
 
             if (bTarget === true) {
 
-                if(GLV_DATA.DB_CLICK === 'expanded'){
+                if(oRPageSize === screenSize){
 
-                    // oLPageLD.setSize('100%');
-                    oRPageLD.setSize('900px');
-
-                    GLV_DATA.DB_CLICK = null;
+                    oRPageLD.setSize('100px');
 
                     return;
                 };
 
-                // oLPageLD.setSize('0px');
                 oRPageLD.setSize('100%');
             };
 
-            GLV_DATA.DB_CLICK = 'expanded';
         }
     });
 
@@ -838,6 +853,9 @@ function createUi() {
         orientation: sap.ui.core.Orientation.Vertical
     }).addStyleClass('sideSp').addEventDelegate({
         ondblclick: function(e) {
+
+            // debugger;
+            
             let oTarget = e.target,
                 bTarget = oTarget.classList.contains('sideSp'),
                 oTPageLD = GLV_DATA.UI.PAGE4.getLayoutData(),
@@ -845,10 +863,27 @@ function createUi() {
                 oBPageLD = GLV_DATA.UI.PAGE6.getLayoutData();
 
             if (bTarget === true) {
+
+                if(GLV_DATA.DBV_CLICK === 'expanded'){
+
+                    oTPageLD.setSize(GLV_SIZEINFO.TOPSIZE);
+                    oMPageLD.setSize(GLV_SIZEINFO.MIDSIZE);
+                    oBPageLD.setSize(GLV_SIZEINFO.BOTSIZE);
+
+                    GLV_DATA.DBV_CLICK = null;
+
+                    return;
+
+                };
+
                 oTPageLD.setSize('0px');
                 oMPageLD.setSize('100%');
                 oBPageLD.setSize('0px');
+
             };
+            
+            GLV_DATA.DBV_CLICK = 'expanded';
+            
         }
     });
 
@@ -893,14 +928,6 @@ function createUi() {
                         eKey = 'help_overlay';
                         // 플로팅 메뉴 도움말 팝오버 펑션
                         GLV_DATA.FN.FLOAT_HELP_POPUP(eKey);
-                    }
-                }),
-                new sap.m.Button('wsy_logOut',{
-                    icon: 'sap-icon://log',
-                    type: sap.m.ButtonType.Reject,
-                    tooltip: '로그아웃',
-                    press: function(){
-                        oAPP.remote.getCurrentWindow().close();
                     }
                 })
             ]
@@ -953,11 +980,19 @@ function createUi() {
         })
     }).addStyleClass('ws_sideContent');
 
+    // 세팅 버튼 생성 ********************************************************************************
+    GLV_DATA.UI.SETTINGBUTTON = new sap.m.Button({
+        width: '100px',
+        icon: 'sap-icon://action-settings',
+        type: sap.m.ButtonType.Transparent,
+        tooltip: '세팅',
+    }).addStyleClass('ws_settingBtn');
+
     // splitter 생성 ****************************************************************************
     // 서버 및 메뉴를 나누는 세로 스플리트
     GLV_DATA.UI.SPLITTER4 = new sap.ui.layout.Splitter('wsy_sideContSplitt', {
         orientation: sap.ui.core.Orientation.Vertical,
-        height: 'calc(100% - 50px)'
+        height: 'calc(100% - 94px)'
     });
 
     // page 생성 ********************************************************************************
@@ -977,6 +1012,7 @@ function createUi() {
         })
     }).addStyleClass('serverPage');
 
+  
     // button 생성 ******************************************************************************
     // 최소화 최대화 로테이트 버튼
     GLV_DATA.UI.BUTTON = new sap.m.Button('wsy_rotateBt', {
@@ -986,6 +1022,16 @@ function createUi() {
         press: function(e) {
             GLV_DATA.FN.SHOWTOGGLEBTN(e);
             return;
+        }
+    }).addEventDelegate({
+        onAfterRendering: function(oEvent){
+
+            let oThemeColor = sap.ui.core.theming.Parameters.get();
+
+            let oBtn = oEvent.srcControl;
+            
+            oBtn.$().css({"background-color": oThemeColor.sapBackgroundColor});
+
         }
     }).addStyleClass('rotateButton');
 
@@ -1019,7 +1065,7 @@ function createUi() {
 
     // 생성한 ui들을 차례차례 추가
     GLV_DATA.UI.SPLITTER4.addContentArea(GLV_DATA.UI.PAGE9).addContentArea(GLV_DATA.UI.PAGE10);
-    GLV_DATA.UI.PAGE8.addContent(GLV_DATA.UI.SPLITTER4).addContent(GLV_DATA.UI.BUTTON);
+    GLV_DATA.UI.PAGE8.addContent(GLV_DATA.UI.SETTINGBUTTON).addContent(GLV_DATA.UI.SPLITTER4).addContent(GLV_DATA.UI.BUTTON);
     GLV_DATA.UI.PAGE7.addContent(GLV_DATA.UI.NODATA);
     GLV_DATA.UI.PAGE7.getCustomHeader().addContentLeft(GLV_DATA.UI.HEDITBUTTON);
     GLV_DATA.UI.SPLITTER3.addContentArea(GLV_DATA.UI.PAGE7).addContentArea(GLV_DATA.UI.PAGE8);

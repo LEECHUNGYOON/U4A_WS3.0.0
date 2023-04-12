@@ -47,10 +47,10 @@ html.sap-desktop .wonRental_body .sapMBtn:focus>.sapMFocusable:not(.sapMBadgeInd
     /* transition: 0.5 all; */
 }
 
-.wonRental_body .wonRental_content .sapMBtn.sevActive {
-    /* background-color: #000000; */
+/* .wonRental_body .wonRental_content .sapMBtn.sevActive {
+    background-color: #000000;
     background-color: #4a459a;
-}
+} */
 
 /* .wonRental_body .wonRental_content .sapMBtn.sevActive>.sapMBtnTransparent bdi {
     color: #ffffff;
@@ -58,7 +58,7 @@ html.sap-desktop .wonRental_body .sapMBtn:focus>.sapMFocusable:not(.sapMBadgeInd
 
 .wonRental_body .wonRental_content .sapMBtn.active {
     /* background-color: #12171c; */
-    background-color: #4a459a;
+    /* background-color: #4a459a; */
 }
 
 .wonRental_body .wonRental_content .sideSp .contSp> :nth-child(1) {
@@ -69,27 +69,31 @@ html.sap-desktop .wonRental_body .sapMBtn:focus>.sapMFocusable:not(.sapMBadgeInd
     position: absolute;
     right: 0;
     /* background-color: #F5C500; */
-    background-color: #222342;
+    /* background-color: #222342; */
 }
 
-.wonRental_body .wonRental_content .sideSp .contSp> :nth-child(3) .rotateButton {
+.wonRental_body .wonRental_content .sideSp .contSp .rotateButton {
     height: 50px;
     /* background-color: #F5C500; */
-    background-color: #222342;
+    /* background-color: #12171c; */
 }
 
-.wonRental_body .wonRental_content .sideSp .contSp> :nth-child(3) .rotateButton.rotate {
+.wonRental_body .wonRental_content .ws_settingBtn {
+    height: 44px;
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp .rotateButton.rotate {
     position: fixed;
     bottom: 0;
     right: 0;
 }
 
-.wonRental_body .wonRental_content .sideSp .contSp> :nth-child(3) .rotateButton .sapMBtnInner .sapUiIcon {
+.wonRental_body .wonRental_content .sideSp .contSp .rotateButton .sapMBtnInner .sapUiIcon {
     transition: 0.5s all;
-    color: #ffffff;
+    /* color: #ffffff; */
 }
 
-.wonRental_body .wonRental_content .sideSp .contSp> :nth-child(3) .rotateButton.rotate .sapMBtnInner .sapUiIcon {
+.wonRental_body .wonRental_content .sideSp .contSp .rotateButton.rotate .sapMBtnInner .sapUiIcon {
     transform: rotate(180deg);
 }
 
@@ -164,17 +168,17 @@ html.sap-desktop .wonRental_body .sapMBtn:focus>.sapMFocusable:not(.sapMBadgeInd
 }
 
 .wonRental_body .wonRental_content .programPage :not(.sapMBtnDisabled).active .sapMBtnTransparent>.sapMBtnIcon {
-    color: #ffffff;
+    /* color: #ffffff; */
 }
 
 .wonRental_body .wonRental_content .serverPage .sapMBtnTransparent {
-    color: #ffffff;
+    /* color: #ffffff; */
 }
 
 .wonRental_body .wonRental_content .sapMBtn:hover:not(.sapMBtnDisabled)>.sapMBtnTransparent.sapMBtnHoverable:not(.sapMBtnActive):not(.sapMToggleBtnPressed):not(.sapMBtnEmphasized) .sapUiIcon,
 .wonRental_body .wonRental_content .programPage .sapMBtn:hover:not(.sapMBtnDisabled)>.sapMBtnTransparent.sapMBtnHoverable:not(.sapMBtnActive):not(.sapMToggleBtnPressed):not(.sapMBtnEmphasized) .sapUiIcon,
 .wonRental_body .wonRental_content .serverPage .sapMBtn:hover>.sapMBtnTransparent.sapMBtnHoverable:not(.sapMBtnActive):not(.sapMToggleBtnPressed) bdi {
-    color: #ffffff;
+    /* color: #ffffff; */
 }
 
 .wonRental_body .wsy_helpContent {

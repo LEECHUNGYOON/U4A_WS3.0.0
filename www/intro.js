@@ -53,6 +53,10 @@
 
     oAPP.fn.fnOnStart = async () => {
 
+        // await _fnwait();
+
+        // debugger;
+
         oAPP.startTime = new Date().getTime();
 
         // ws setting Info를 UserData에 저장
@@ -105,7 +109,9 @@
 
             setTimeout(() => {
 
-                oAPP.fn.fnFloatingMenuOpen(); // 플로팅 메뉴 오픈
+                if (!APP.isPackaged) {
+                    oAPP.fn.fnFloatingMenuOpen(); // 플로팅 메뉴 오픈    
+                }
 
                 oAPP.fn.fnOpenServerList(oGlobalSettings); // 서버리스트 오픈      
 
@@ -269,7 +275,7 @@
             oPatVerTr = document.getElementById("patVerTr"),
 
             sVersion = APP.getVersion(), // 앱 버전
-            oWsSettings = oAPP.fn.fnGetSettingsInfo(), // WS Setting 정보
+            oWsSettings = WSUTIL.getWsSettingsInfo(),
             iSupportPatch = Number(oWsSettings.patch_level || 0);
 
         // no build 상태에서는 버전 정보를 package.json에서 읽는다.
@@ -339,9 +345,9 @@
         // oWin.webContents.openDevTools();
         // no build 일 경우에는 개발자 툴을 실행한다.
 
-        if (!APP.isPackaged) {
-            oWin.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oWin.webContents.openDevTools();
+        // }
 
         oWin.webContents.on('did-finish-load', async function () {
 
@@ -561,7 +567,7 @@
 
     /**
      * Private functions
-     */   
+     */
 
     /************************************************************************
      * 레지스트리 키의 List를 구한다.
@@ -862,6 +868,13 @@
                 sSetttingJsonData = FS.readFileSync(PATH.join(APPPATH, "settings", "ws_settings.json"), 'utf-8'),
                 oSettings = JSON.parse(sSetttingJsonData);
 
+            var sSettingJson = JSON.stringify(oSettings),
+                oWriteFileResult = await WSUTIL.fsWriteFile(sConfPath, sSettingJson);
+
+            if (oWriteFileResult.RETCD == "E") {
+                throw new Error("[intro] WS Setting Info File Write Error!");
+            }
+
             /**
              * 여기서 Setting정보 추가할것. -- start
              */
@@ -885,7 +898,7 @@
              *  -- end
              */
 
-            let sSettingJson = JSON.stringify(oSettings),
+            var sSettingJson = JSON.stringify(oSettings),
                 oWriteFileResult = await WSUTIL.fsWriteFile(sConfPath, sSettingJson);
 
             if (oWriteFileResult.RETCD == "E") {
@@ -908,8 +921,8 @@
         let APPDATA = process.env.APPDATA,
             sAbapEditorRootPath = PATH.join(APPDATA, "SAP", "SAP GUI", "ABAP Editor");
 
+        oSettings.SAP.abapEditorRoot = sAbapEditorRootPath;
         oSettings.SAP.abap_user = PATH.join(sAbapEditorRootPath, "abap_user.xml");
-
 
     } // end of _setSapPath
 
@@ -1207,7 +1220,7 @@
             }
 
             // 커스텀 패턴 ROOT의 Description을 WS Language 언어에 맞게 매핑
-            aCustPattData[0] = aCustomPatternInitData[0];
+            aCustPattData[0] = JSON.parse(JSON.stringify(aCustomPatternInitData[0]));
 
             let sCustPattJson = JSON.stringify(aCustPattData);
 
