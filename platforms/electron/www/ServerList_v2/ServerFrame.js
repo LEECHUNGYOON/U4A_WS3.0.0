@@ -24,7 +24,7 @@
 
         oAPP.data.GlobalSettings = oInfo;
 
-        oAPP.fn.fnOnDeviceReady();
+        oAPP.fn.fnOnDeviceReady();       
 
     });
 

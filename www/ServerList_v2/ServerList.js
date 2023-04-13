@@ -1066,6 +1066,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                             icon: "sap-icon://decline",
                             press: function () {
 
+                                debugger;
+                                
                                 let aBrowserList = REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
                                     iBrowserListLength = aBrowserList.length,
                                     iChildLength = 0;
@@ -3018,14 +3020,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     function _attachBrowserWindowFocus(oEvent) {
 
         let oWin = oEvent?.sender;
-        
-        if(typeof oWin === "undefined"){
+
+        if (typeof oWin === "undefined") {
             return;
         }
 
         if (oWin.isDestroyed()) {
             return;
-        }      
+        }
 
         try {
 
@@ -3525,6 +3527,18 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of oAPP.fn.fnShowAllWindows
 
+    /************************************************************************
+     * WS Floating Menu Open
+     ************************************************************************/
+    oAPP.fn.fnFloatingMenuOpen = () => {
+
+        var sFloatingMenuJsPath = PATHINFO.FLTMENU,
+            oFloatMenu = require(sFloatingMenuJsPath);
+
+        oFloatMenu.open(REMOTE, screen, APPPATH);
+
+    }; // end of oAPP.fn.fnFloatingMenuOpen
+
 })(oAPP);
 
 /************************************************************************
@@ -3594,6 +3608,9 @@ fnLoadCommonCss();
 window.addEventListener("load", () => {
 
     sap.ui.getCore().attachInit(() => {
+
+        // Floating Menu Open
+        oAPP.fn.fnFloatingMenuOpen();
 
         // Illustration Pool에 TNT Theme를 등록한다.
         oAPP.fn.fnRegisterIllustrationPool();

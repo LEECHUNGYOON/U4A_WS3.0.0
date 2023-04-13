@@ -32,7 +32,7 @@
 // 플로팅 window 종료 처리
 // 펑션을 광역으로 빼주는 이유는 문제가 있을 시 이 곳만 집중하면 되기때문 !!!!! && 이벤트를 add했으면 remove도 해줘야 하기 때문
 function gfn_close() {
-  
+
     if (typeof floatwin(REMOTE) === 'undefined') { return; }
 
     //추가 로직이 잇으면 넣어야함!!!!
@@ -47,22 +47,22 @@ function gfn_close() {
 // 플로팅 메뉴가 이미 열려있는지 확인
 // 없으면 null
 // 있으면 "floatingMenu": true
-floatwin = (REMOTE) =>{
+floatwin = (REMOTE) => {
 
     // let f_browserWindow = oAPP.remote.BrowserWindow, 
-    let f_browserWindow = REMOTE.BrowserWindow, 
+    let f_browserWindow = REMOTE.BrowserWindow,
         o_allWindows = f_browserWindow.getAllWindows(),
         o_allWindowsLeng = o_allWindows.length;
 
-    for(var i=0; i < o_allWindowsLeng; i++) {
+    for (var i = 0; i < o_allWindowsLeng; i++) {
 
         let o_webContents = o_allWindows[i].webContents,
             o_webPreferences = o_webContents.getWebPreferences();
-            
-        if(typeof o_webPreferences.floatingMenu === "undefined"){continue;}
-    
+
+        if (typeof o_webPreferences.floatingMenu === "undefined") { continue; }
+
         return o_allWindows[i];
-        
+
     };
 
     return undefined;
@@ -77,26 +77,28 @@ floatwin = (REMOTE) =>{
 // SCREEN   => 사용자의 윈도우 스크린
 // _DIRNAME => 일렉트론의 www까지의 주소
 // SSID     => 시스템 아이디
-exports.open = function(REMOTE, SCREEN, _DIRNAME, SSID) {
+exports.open = function (REMOTE, SCREEN, _DIRNAME, SSID) {
     console.log('2. 오픈 할 때 여기를 타');
-    
+
     //현재 윈도우가 이전에 호출 된 상태여부 점검
     if (typeof floatwin(REMOTE) !== "undefined") {
         //이전에 호출 된 상태라면 I/F 코드 호출
-        floatwin(REMOTE).webContents.send("IF-WS30-FLOARTMENU", { PRCCD: "NEW_SERVER", SSID: SSID});
+        floatwin(REMOTE).webContents.send("IF-WS30-FLOARTMENU", { PRCCD: "NEW_SERVER", SSID: SSID });
         return;
 
     };
 
     // webPreferences의 floatingMenu는 플로팅 메뉴가 생성이 됐는지 여부
     var op = {
+        "title": "U4A Workspace - Floating Menu",
         "x": 0,
         "y": 0,
         "height": SCREEN.availHeight,
         "width": SCREEN.availWidth,
         "transparent": true,
         "show": false,
-        "modal":false,
+        "modal": false,
+        "icon": "www/img/logo.png",
         // "show": oToggle,
         "frame": false,
         // "alwaysOnTop": true,
@@ -114,7 +116,7 @@ exports.open = function(REMOTE, SCREEN, _DIRNAME, SSID) {
             "webSecurity": false,
             "webviewTag": true,
             "floatingMenu": true,
-            "OBJTY" : "FLTMENU"
+            "OBJTY": "FLTMENU"
         }
     };
 
@@ -128,7 +130,7 @@ exports.open = function(REMOTE, SCREEN, _DIRNAME, SSID) {
     var remote = require('@electron/remote');
     remote.require('@electron/remote/main').enable(oWIN.webContents);
 
-    oWIN.webContents.on('did-finish-load', function() {
+    oWIN.webContents.on('did-finish-load', function () {
         //호출대상 윈도우 oWIN(현재 상태는 index.html)  <<<<<<=====
         //로드가 완료되면 수행되는 이벤트!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         console.log('호출대상 윈도우가 로드가 완료되면 수행돼는 이벤트!!!!');
@@ -138,28 +140,28 @@ exports.open = function(REMOTE, SCREEN, _DIRNAME, SSID) {
             oWIN.webContents.openDevTools();
         };
 
-        oWIN.webContents.send('IF-WS30-FLOARTMENU', { PRCCD: "INIT", SSID: SSID});
+        oWIN.webContents.send('IF-WS30-FLOARTMENU', { PRCCD: "INIT", SSID: SSID });
 
     });
 };
 
 
-exports.isOPEND = ()=>{
+exports.isOPEND = () => {
 
     var isOpen = false;
 
-    if(typeof floatwin(REMOTE) !== "undefined"){
+    if (typeof floatwin(REMOTE) !== "undefined") {
         isOpen = true;
     }
 
-    return  isOpen;
+    return isOpen;
 
 }
 
 /* ================================================================= */
 /* Export Module Function - 플로팅 메뉴 종료 
 /* ================================================================= */
-exports.close = function() {
+exports.close = function () {
 
     if (typeof floatwin(REMOTE) === "undefined") { return; };
 
@@ -171,7 +173,7 @@ exports.close = function() {
 /* ================================================================= */
 /* Export Module Function - 메인 -> 플로팅 메뉴 I/F 통신
 /* ================================================================= */
-exports.send = function(chid, params) {
+exports.send = function (chid, params) {
 
     if (typeof floatwin(REMOTE) === "undefined") {
         return;

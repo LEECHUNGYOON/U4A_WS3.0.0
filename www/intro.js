@@ -109,29 +109,13 @@
 
             setTimeout(() => {
 
-                if (!APP.isPackaged) {
-                    oAPP.fn.fnFloatingMenuOpen(); // 플로팅 메뉴 오픈    
-                }
-
                 oAPP.fn.fnOpenServerList(oGlobalSettings); // 서버리스트 오픈      
 
             }, iTime);
 
         });
 
-    }; // end of oAPP.fn.fnOnStart   
-
-    /************************************************************************
-     * WS Floating Menu Open
-     ************************************************************************/
-    oAPP.fn.fnFloatingMenuOpen = () => {
-
-        var sFloatingMenuJsPath = PATHINFO.FLTMENU,
-            oFloatMenu = require(sFloatingMenuJsPath);
-
-        oFloatMenu.open(REMOTE, screen, APPPATH);
-
-    }; // end of oAPP.fn.fnFloatingMenuOpen
+    }; // end of oAPP.fn.fnOnStart       
 
     /************************************************************************
      * WS 글로벌 메시지 목록 구하기
