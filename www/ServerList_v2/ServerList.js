@@ -1066,8 +1066,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                             icon: "sap-icon://decline",
                             press: function () {
 
-                                debugger;
-                                
                                 let aBrowserList = REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
                                     iBrowserListLength = aBrowserList.length,
                                     iChildLength = 0;
@@ -1102,7 +1100,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                             }
                         }),
                     ]
-                }).addStyleClass("draggable"),
+                }).addStyleClass("u4aWsBrowserDraggable"),
                 subHeader: new sap.m.Bar({
                     contentLeft: [
                         new sap.m.Title({

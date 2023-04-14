@@ -49,17 +49,17 @@ module.exports = (() => {
         WSMSG_ROOT: PATH.join(APPPATH, "MSG"),
         BROWSERSETTINGS: PATH.join(APPPATH, '/settings/BrowserWindow/BrowserWindow-settings.json'),
         // WSSETTINGS: PATH.join(APPPATH, "settings", "ws_settings.json"),        
-        WSSETTINGS: PATH.join(CONF_ROOT, "ws_settings.json"),        
+        WSSETTINGS: PATH.join(CONF_ROOT, "ws_settings.json"),
         SERVERLIST: PATH.join(APPPATH, '/ServerList/ServerFrame.html'),
         SERVERLIST_v2: PATH.join(APPPATH, '/ServerList_v2/ServerFrame.html'),
         COMMONCSS: PATH.join(APPPATH, "css", "common.css"),
         AUTOUPDSAP: PATH.join(APPPATH, "lib", "ws", "electron-updater-sap.js"),
-        WS_SP_UPD : PATH.join(APPPATH, "lib", "ws", "SupportPackageChecker", "index.js"),
+        WS_SP_UPD: PATH.join(APPPATH, "lib", "ws", "SupportPackageChecker", "index.js"),
         PATTERN_ROOT: PATTERN_ROOT,
         USERDATA_PATT_FILES: PATH.join(USERDATA_PATTERN_ROOT, "default_pattern_files"),
         USP_ROOT: USP_ROOT,
-        CONF_ROOT : CONF_ROOT,
-        COMMON_MODULES_ROOT : COMMON_MODULES_ROOT,
+        CONF_ROOT: CONF_ROOT,
+        COMMON_MODULES_ROOT: COMMON_MODULES_ROOT,
 
         // User Data Paths..
         CLIPBOARD: PATH.join(USERDATA, "clipboard.json"),
@@ -91,11 +91,12 @@ module.exports = (() => {
         WINHIDE2: PATH.join(POPUP_ROOT, "winShowHidePopup", "test1.html"),
         USPNEW: PATH.join(POPUP_ROOT, "uspNewPopup", "frame.html"),
         PATTPOPUP: PATH.join(POPUP_ROOT, "patternPopup", "frame.html"),
+        ICONPREV: PATH.join(POPUP_ROOT, "iconPrevPopup", "frame.html"),
 
         // JS Paths..
         WSTRYCATCH: PATH.join(JS_ROOT, "ws_trycatch.js"),
         WSUTIL: PATH.join(JS_ROOT, "ws_util.js"),
-        USP_UTIL: PATH.join(USP_ROOT, "ws_usp_util.js"), 
+        USP_UTIL: PATH.join(USP_ROOT, "ws_usp_util.js"),
         U4AHELP: PATH.join(APPPATH, "help", "u4a_helpdoc", "main.js"),
         FLTMENU: PATH.join(APPPATH, "floatingMenu", "js", "handle.js"),
 
@@ -106,7 +107,7 @@ module.exports = (() => {
         CUST_PATT: PATH.join(USERDATA_PATTERN_ROOT, "custom_pattern.json"), // usp custom pattern file
 
         // common module paths...
-        MODULE_WS_SETTINGS : PATH.join(COMMON_MODULES_ROOT, "ws_settings.js")
+        MODULE_WS_SETTINGS: PATH.join(COMMON_MODULES_ROOT, "ws_settings.js")
 
     };
 

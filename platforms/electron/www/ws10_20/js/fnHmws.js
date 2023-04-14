@@ -963,6 +963,16 @@
 
     };
 
+    /************************************************************************
+     * Source Pattern Popup
+     ************************************************************************/
+    oAPP.fn.fnWS10Test89 = () => {
+
+        oAPP.fn.fnIconPreviewPopupOpener();
+
+
+    };
+
     function _callbrowser(sUrl) {
 
         var SPAWN = parent.SPAWN, // pc 제어하는 api

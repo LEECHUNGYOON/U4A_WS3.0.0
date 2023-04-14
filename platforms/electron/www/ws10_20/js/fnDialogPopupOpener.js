@@ -976,7 +976,7 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.show = false;
         oBrowserOptions.parent = CURRWIN;
-        oBrowserOptions.opacity = 0.0;        
+        oBrowserOptions.opacity = 0.0;
         oBrowserOptions.backgroundColor = sWsThemeColor;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -1034,6 +1034,93 @@
         });
 
     }; // end of oAPP.fn.fnSourcePatternPopupOpener
+
+    /************************************************************************
+     * Icon Preview Popup Opener
+     ************************************************************************/
+    oAPP.fn.fnIconPreviewPopupOpener = (bIsModal = false) => {
+
+        let sPopupName = "ICONPREV";
+
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        if (oResult.ISOPEN) {
+            return;
+        }
+
+        let oSettings = parent.WSUTIL.getWsSettingsInfo(),
+            sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(oSettings.globalTheme);
+
+        // Browswer Options
+        let sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.show = false;
+        oBrowserOptions.titleBarStyle = 'hidden';
+        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.resizable = true;
+        oBrowserOptions.movable = true;
+        oBrowserOptions.backgroundColor = sWsThemeColor;
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
+
+        // 브라우저 오픈
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${sWsThemeColor}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+
+        let sUrlPath = parent.getPath(sPopupName);
+        oBrowserWindow.loadURL(sUrlPath);
+
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
+
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            let oOptionData = {
+                // BROWSKEY: BROWSKEY, // 브라우저 고유키
+                // oUserInfo: oUserInfo, // 로그인 사용자 정보
+                // oServerInfo: oServerInfo, // 서버 정보
+                // oThemeInfo: oThemeInfo, // 테마 정보
+            };
+
+            oBrowserWindow.webContents.send('if-icon-prev', oOptionData);
+
+
+            oBrowserWindow.show();
+
+            // oBrowserWindow.setOpacity(1.0);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
+    }; // end of oAPP.fn.fnIconPreviewPopupOpener
 
     /************************************************************************
      * U4A Help Document Popup Opener

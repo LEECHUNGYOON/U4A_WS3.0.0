@@ -289,6 +289,10 @@
                 key: "Test91",
                 text: "Source Pattern Popop"
             },
+            {
+                key: "Test89",
+                text: "icon Preview Popup"
+            },
 
             ];
 

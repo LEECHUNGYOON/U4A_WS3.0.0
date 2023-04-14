@@ -90,7 +90,7 @@ exports.open = function (REMOTE, SCREEN, _DIRNAME, SSID) {
 
     // webPreferences의 floatingMenu는 플로팅 메뉴가 생성이 됐는지 여부
     var op = {
-        "title": "U4A Workspace",
+        "title": "U4A Workspace - Floating Menu",
         "x": 0,
         "y": 0,
         "height": SCREEN.availHeight,

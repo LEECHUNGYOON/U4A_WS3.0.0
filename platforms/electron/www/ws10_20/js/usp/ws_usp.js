@@ -659,7 +659,7 @@
                     }
                 }),
 
-            oMimeBtn = new sap.m.Button({
+            oMimeBtn = new sap.m.Button("ws30_MimeBtn",{
                 icon: "sap-icon://picture",
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10"), // MIME Repository
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10") + " (Ctrl+Shift+F12)", // MIME Repository (Ctrl+Shift+F12)

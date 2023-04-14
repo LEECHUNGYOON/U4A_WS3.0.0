@@ -1341,7 +1341,90 @@
                     });
 
                 }
-            }
+            },
+            {
+                KEY: "F8", // Application Execution Button
+                fn: (e) => {
+
+                    e.stopImmediatePropagation();
+
+                    if (sap.ui.getCore().isLocked()) {
+                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                        return;
+                    }
+
+                    // 단축키 실행 할지 말지 여부 체크
+                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                    // X 이면 실행 불가
+                    if (result == "X") {
+                        return;
+                    }
+
+                    var oAppExecBtn = sap.ui.getCore().byId("ws30_appExecBtn");
+                    if (!oAppExecBtn || !oAppExecBtn.getEnabled() || !oAppExecBtn.getVisible()) {
+                        return;
+                    }
+
+                    oAppExecBtn.firePress();
+                }
+            },
+            {
+                KEY: "Ctrl+Shift+F12", // Mime Button
+                fn: (e) => {
+
+                    debugger;
+                    
+                    e.stopImmediatePropagation();
+
+                    if (sap.ui.getCore().isLocked()) {
+                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                        return;
+                    }
+
+                    // 단축키 실행 할지 말지 여부 체크
+                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                    // X 이면 실행 불가
+                    if (result == "X") {
+                        return;
+                    }
+
+                    var oMimeBtn = sap.ui.getCore().byId("ws30_MimeBtn");
+                    if (!oMimeBtn || !oMimeBtn.getEnabled() || !oMimeBtn.getVisible()) {
+                        return;
+                    }
+
+                    oMimeBtn.firePress();
+                }
+            },
+            {
+                KEY: "Ctrl+F12", // Controller Button
+                fn: (e) => {
+
+                    e.stopImmediatePropagation();
+
+                    if (sap.ui.getCore().isLocked()) {
+                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                        return;
+                    }
+
+                    // 단축키 실행 할지 말지 여부 체크
+                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                    // X 이면 실행 불가
+                    if (result == "X") {
+                        return;
+                    }
+
+                    var oControllerBtn = sap.ui.getCore().byId("ws30_controllerBtn");
+                    if (!oControllerBtn || !oControllerBtn.getEnabled() || !oControllerBtn.getVisible()) {
+                        return;
+                    }
+
+                    oControllerBtn.firePress();
+                }
+            },
             ];
 
         var oShortcutList = {
