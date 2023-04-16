@@ -2,6 +2,7 @@
     -webkit-app-region: drag !important;
 }
 
-.u4aWsBrowserDraggable .sapMBtn {
+.u4aWsBrowserDraggable .sapMBtn,
+.u4aWsBrowserDraggable .sapMSlt {
     -webkit-app-region: no-drag;
 }

@@ -32,7 +32,7 @@ if (!oAPP) {
     oAPP.msg = {};
 }
 
-(async function (window, oAPP) {
+(async function(window, oAPP) {
     "use strict";
 
     let FS = require("fs-extra");
@@ -48,7 +48,7 @@ if (!oAPP) {
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.fn.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
+    oAPP.fn.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -66,7 +66,7 @@ if (!oAPP) {
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.fn.fnGetModelProperty = function (sModelPath) {
+    oAPP.fn.fnGetModelProperty = function(sModelPath) {
 
         return sap.ui.getCore().getModel().getProperty(sModelPath);
 
@@ -75,7 +75,7 @@ if (!oAPP) {
     // /************************************************************************
     //  * UI5 BootStrap 
     //  ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = async function () {
+    oAPP.fn.fnLoadBootStrapSetting = async function() {
 
         var oSettings = WSUTIL.getWsSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
@@ -110,7 +110,7 @@ if (!oAPP) {
     /************************************************************************
      * 초기 모델 바인딩
      ************************************************************************/
-    oAPP.fn.fnInitModelBinding = function () {
+    oAPP.fn.fnInitModelBinding = function() {
 
 
 
@@ -119,20 +119,61 @@ if (!oAPP) {
     /************************************************************************
      * 화면 초기 렌더링
      ************************************************************************/
-    oAPP.fn.fnInitRendering = function () {
+    oAPP.fn.fnInitRendering = function() {
 
         var oApp = new sap.m.App({
-            autoFocus: false,
-        }),
+                autoFocus: false,
+            }),
             oPage = new sap.m.Page({
                 // properties
                 showHeader: true,
                 enableScrolling: false,
-                customHeader: new sap.m.Bar({
-                    contentRight: [
+                customHeader: new sap.m.Toolbar({
+                    content: [
+                        new sap.m.Image({
+                            width: "25px",
+                            src: PATH.join(APPPATH, "img", "logo.png")
+                        }),
+                        new sap.m.Title({
+                            text: "Icon List"
+                        }),
+
+                        new sap.m.ToolbarSpacer(),
+
+                        new sap.m.MenuButton("hdMenuBtn",{
+                            text: "SAP Icons",
+                            menu: new sap.m.Menu({                                
+                                items: [
+                                    new sap.m.MenuItem({
+                                        key: "SAP",
+                                        text : "SAP Icons"
+                                    }),
+                                    new sap.m.MenuItem({
+                                        key: "U4A",
+                                        text : "U4A Icons"
+                                    }),
+                                ]
+                            })
+                        }),
+                        // new sap.m.Select({
+                        //     selectedKey: "SAP",
+                        //     items: [
+                        //         new sap.ui.core.Item({
+                        //             key: "SAP",
+                        //             text: "SAP ICONS"
+                        //         }),
+                        //         new sap.ui.core.Item({
+                        //             key: "U4A",
+                        //             text: "U4A ICONS"
+                        //         }),
+                        //     ]
+                        // }),
+
+                        new sap.m.ToolbarSpacer(),
+
                         new sap.m.Button({
                             icon: "sap-icon://less",
-                            press: function () {                                
+                            press: function() {
 
                                 CURRWIN.minimize();
 
@@ -140,7 +181,7 @@ if (!oAPP) {
                         }),
                         new sap.m.Button("maxWinBtn", {
                             icon: "sap-icon://header",
-                            press: function (oEvent) {
+                            press: function(oEvent) {
 
                                 let bIsMax = CURRWIN.isMaximized();
 
@@ -155,14 +196,73 @@ if (!oAPP) {
                         }),
                         new sap.m.Button({
                             icon: "sap-icon://decline",
-                            press: function () {
+                            press: function() {
 
                                 CURRWIN.close();
 
                             }
                         }),
                     ]
-                }).addStyleClass("u4aWsBrowserDraggable"),
+                }),
+                // new sap.m.Bar({
+                //     titleAlignment: "Center",
+                //     contentLeft: [
+                //         new sap.m.Image({
+                //             src: PATH.join(APPPATH, "img", "logo.png")
+                //         }),
+                //         new sap.m.Title({
+                //             text: "Icon List"
+                //         }),                    
+                //     ],
+                //     contentMiddle: [
+                //         new sap.m.Select({
+                //             selectedKey: "SAP",
+                //             items: [
+                //                 new sap.ui.core.Item({
+                //                     key: "SAP",
+                //                     text: "SAP ICONS"
+                //                 }),
+                //                 new sap.ui.core.Item({
+                //                     key: "U4A",
+                //                     text: "U4A ICONS"
+                //                 }),
+                //             ]
+                //         })
+                //     ],
+                //     contentRight: [
+                //         new sap.m.Button({
+                //             icon: "sap-icon://less",
+                //             press: function() {
+
+                //                 CURRWIN.minimize();
+
+                //             }
+                //         }),
+                //         new sap.m.Button("maxWinBtn", {
+                //             icon: "sap-icon://header",
+                //             press: function(oEvent) {
+
+                //                 let bIsMax = CURRWIN.isMaximized();
+
+                //                 if (bIsMax) {
+                //                     CURRWIN.unmaximize();
+                //                     return;
+                //                 }
+
+                //                 CURRWIN.maximize();
+
+                //             }
+                //         }),
+                //         new sap.m.Button({
+                //             icon: "sap-icon://decline",
+                //             press: function() {
+
+                //                 CURRWIN.close();
+
+                //             }
+                //         }),
+                //     ]
+                // }).addStyleClass("u4aWsBrowserDraggable"),
 
             }).addStyleClass("");
 
@@ -175,7 +275,7 @@ if (!oAPP) {
     /************************************************************************
      * WS 글로벌 메시지 목록 구하기
      ************************************************************************/
-    oAPP.fn.getWsMessageList = function () {
+    oAPP.fn.getWsMessageList = function() {
 
         return new Promise(async (resolve) => {
 
@@ -236,7 +336,7 @@ if (!oAPP) {
      */
     oAPP.fn.attachInit = () => {
 
-        sap.ui.getCore().attachInit(async function () {
+        sap.ui.getCore().attachInit(async function() {
 
             oAPP.setBusy("X");
 
@@ -250,7 +350,7 @@ if (!oAPP) {
              * 무조건 맨 마지막에 수행 되어야 함!!
              */
             // 자연스러운 로딩
-            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function () {
+            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function() {
 
                 if (!oAPP.attr.UIUpdated) {
 
