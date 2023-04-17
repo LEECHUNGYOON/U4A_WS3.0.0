@@ -11,23 +11,17 @@ let oAPP = (function (window) {
     oAPP.attr = {};
     oAPP.msg = {};
     oAPP.events = {};
-    oAPP.common = {};
 
-    oAPP.REMOTE = require('@electron/remote');
-    oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain;
-    oAPP.IPCRENDERER = require('electron').ipcRenderer;
-    oAPP.PATH = oAPP.REMOTE.require('path');
-    oAPP.APP = oAPP.REMOTE.app;
-    oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
+    const
+        REMOTE = require('@electron/remote'),
+        CURRWIN = REMOTE.getCurrentWindow(),
+        PARWIN = CURRWIN.getParentWindow(),
+        IPCRENDERER = require('electron').ipcRenderer;
 
     /************************************************************************
      * IPCRENDERER Events..
      ************************************************************************/
-    oAPP.IPCRENDERER.on('if-icon-prev', (events, oInfo) => {
-
-        // oAPP.attr.oUserInfo = oInfo.oUserInfo;
-        // oAPP.attr.oServerInfo = oInfo.oServerInfo;
-        // oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
+    IPCRENDERER.on('if-icon-prev', (events, oInfo) => {
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {
@@ -36,15 +30,42 @@ let oAPP = (function (window) {
 
         oWs_frame.src = "index.html";
 
+        CURRWIN.setParentWindow(null);
+
     });
 
     window.onbeforeunload = function () {
 
-        // 부모창에 포커스를 준다.
-        let oParWin = oAPP.CURRWIN.getParentWindow();
-        oParWin.focus();
+        if (PARWIN && PARWIN.isDestroyed()) {
+            return;
+        }
 
-    };
+        PARWIN.off("closed", oAPP.fn.fnOnParentWindowClosedEvent);
+
+        PARWIN.focus();
+
+    }; // end of window.onbeforeunload
+
+    /************************************************************************
+     * 부모 윈도우 관련 이벤트 --- start 
+     ************************************************************************/
+
+    // 부모창 닫기 이벤트
+    oAPP.fn.fnOnParentWindowClosedEvent = () => {
+
+        if (CURRWIN && CURRWIN.isDestroyed()) {
+            return;
+        }
+
+        CURRWIN.close();
+
+    }; // end of oAPP.fn.fnOnParentWindowClosedEvent
+
+    /************************************************************************
+     * 부모 윈도우 관련 이벤트 --- End
+     ************************************************************************/
+
+    PARWIN.on("closed", oAPP.fn.fnOnParentWindowClosedEvent);
 
     window.oAPP = oAPP;
 

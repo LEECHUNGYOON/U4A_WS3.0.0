@@ -1042,8 +1042,9 @@
 
         let sPopupName = "ICONPREV";
 
+        // [!! 전체 떠있는 브라우저 기준 !!] 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow2(sPopupName);
         if (oResult.ISOPEN) {
             return;
         }
@@ -1056,6 +1057,7 @@
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
+        oBrowserOptions.title = "Icon List";
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.show = false;
         oBrowserOptions.titleBarStyle = 'hidden';

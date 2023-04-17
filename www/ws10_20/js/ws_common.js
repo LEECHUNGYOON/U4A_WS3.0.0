@@ -1374,7 +1374,7 @@
                 fn: (e) => {
 
                     debugger;
-                    
+
                     e.stopImmediatePropagation();
 
                     if (sap.ui.getCore().isLocked()) {
@@ -1504,6 +1504,8 @@
     }; // end of oAPP.common.sendAjaxLoginChk
 
     /************************************************************************
+     * !! 현재 브라우저의 Child 기준 !!
+     ************************************************************************
      * 에디터 타입별로 이미 오픈된 팝업이 있는지 확인
      * 있으면 새창을 띄우지 말고 focus 를 준다.
      * **********************************************************************
@@ -1562,6 +1564,88 @@
         };
 
     }; // end of oAPP.common.onCheckAlreadyOpenEditor
+
+    /************************************************************************
+    * !! 전체 떠있는 브라우저 기준 !!
+    *************************************************************************
+    * OBJTY 별로 이미 오픈된 팝업이 있는지 확인
+    * 있으면 새창을 띄우지 말고 focus 를 준다.
+    * ***********************************************************************
+    * @param {Object} oEditInfo
+    * - 오픈 하려는 에디터의 타입 정보
+    * 
+    * @return {Object} 
+    *  - ISOPEN {Boolean} 
+    *      true : 같은 타입의 오픈된 에디터 팝업이 이미 있는 경우.
+    *      false : 같은 타입의 오픈된 에디터 팝업이 없는 신규일 경우.
+    * 
+    *  - WINDOW {Object}
+    *      BrowserWindow Instance
+    *  
+    ************************************************************************/
+    oAPP.common.getCheckAlreadyOpenWindow2 = (OBJTY) => {
+
+        // 현재 떠있는 전체 윈도우를 구한다.
+        let aAllWindows = REMOTE.BrowserWindow.getAllWindows(),
+            iAllWinLength = aAllWindows.length;
+
+        if (iAllWinLength <= 0) {
+            return {
+                ISOPEN: false
+            };
+        }
+
+        // 현재 떠있는 브라우저의 키를 구한다.
+        let oCurrWin = REMOTE.getCurrentWindow(),
+            oCurrWinWebCon = oCurrWin.webContents,
+            oCurrWinWebPref = oCurrWinWebCon.getWebPreferences(),
+            sCurrWinBrowsKey = oCurrWinWebPref.browserkey;
+
+        for (var i = 0; i < iAllWinLength; i++) {
+
+            let oWin = aAllWindows[i];
+
+            // 브라우저가 이미 죽었다면..
+            if (oWin.isDestroyed()) {
+                continue;
+            }
+
+            let oWebCon = oWin.webContents,
+                oWebPref = oWebCon.getWebPreferences(),
+                sBrowsKey = oWebPref.browserkey,
+                sOBJTY = oWebPref.OBJTY;
+
+            // 현재 떠있는 브라우저의 키와 같은것을 찾는다.
+            if (sCurrWinBrowsKey !== sBrowsKey) {
+                continue;
+            }
+
+            // OBJTY가 있는지
+            if (!sOBJTY) {
+                continue;
+            }
+
+            // OBJTY가 같은것인지
+            if (OBJTY !== OBJTY) {
+                continue;
+            }
+
+            oWin.focus();
+
+            // 찾으면 빠져나감
+            return {
+                ISOPEN: true,
+                WINDOW: oWin
+            };
+
+        }
+
+        // 그래도 못찾았다면..
+        return {
+            ISOPEN: false
+        };
+
+    };
 
 
     /************************************************************************

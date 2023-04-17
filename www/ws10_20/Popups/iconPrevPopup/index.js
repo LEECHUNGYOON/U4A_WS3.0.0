@@ -19,7 +19,6 @@ const
     WSERR = require(PATHINFO.WSTRYCATCH),
     WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
     WSUTIL = require(WSMSGPATH),
-    USP_UTIL = parent.require(PATHINFO.USP_UTIL),
     CURRWIN = REMOTE.getCurrentWindow();
 
 var zconsole = WSERR(window, document, console);
@@ -32,10 +31,8 @@ if (!oAPP) {
     oAPP.msg = {};
 }
 
-(async function(window, oAPP) {
+(async function (window, oAPP) {
     "use strict";
-
-    let FS = require("fs-extra");
 
     /************************************************************************
      * 모델 데이터 set
@@ -48,7 +45,7 @@ if (!oAPP) {
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.fn.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
+    oAPP.fn.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty(sModelPath, oModelData);
@@ -66,7 +63,7 @@ if (!oAPP) {
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.fn.fnGetModelProperty = function(sModelPath) {
+    oAPP.fn.fnGetModelProperty = function (sModelPath) {
 
         return sap.ui.getCore().getModel().getProperty(sModelPath);
 
@@ -75,7 +72,7 @@ if (!oAPP) {
     // /************************************************************************
     //  * UI5 BootStrap 
     //  ************************************************************************/
-    oAPP.fn.fnLoadBootStrapSetting = async function() {
+    oAPP.fn.fnLoadBootStrapSetting = async function () {
 
         var oSettings = WSUTIL.getWsSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
@@ -110,7 +107,7 @@ if (!oAPP) {
     /************************************************************************
      * 초기 모델 바인딩
      ************************************************************************/
-    oAPP.fn.fnInitModelBinding = function() {
+    oAPP.fn.fnInitModelBinding = function () {
 
 
 
@@ -119,11 +116,11 @@ if (!oAPP) {
     /************************************************************************
      * 화면 초기 렌더링
      ************************************************************************/
-    oAPP.fn.fnInitRendering = function() {
+    oAPP.fn.fnInitRendering = function () {
 
         var oApp = new sap.m.App({
-                autoFocus: false,
-            }),
+            autoFocus: false,
+        }),
             oPage = new sap.m.Page({
                 // properties
                 showHeader: true,
@@ -132,7 +129,7 @@ if (!oAPP) {
                     content: [
                         new sap.m.Image({
                             width: "25px",
-                            src: PATH.join(APPPATH, "img", "logo.png")
+                            src: PATHINFO.WS_LOGO
                         }),
                         new sap.m.Title({
                             text: "Icon List"
@@ -140,48 +137,46 @@ if (!oAPP) {
 
                         new sap.m.ToolbarSpacer(),
 
-                        new sap.m.MenuButton("hdMenuBtn",{
+                        new sap.m.MenuButton("hdMenuBtn", {
                             text: "SAP Icons",
-                            menu: new sap.m.Menu({                                
+                            menu: new sap.m.Menu("hdMenu", {
+                                itemSelected: ev_HeaderMenuSelected,
                                 items: [
                                     new sap.m.MenuItem({
                                         key: "SAP",
-                                        text : "SAP Icons"
+                                        text: "SAP Icons"
                                     }),
                                     new sap.m.MenuItem({
                                         key: "U4A",
-                                        text : "U4A Icons"
+                                        text: "U4A Icons"
                                     }),
                                 ]
                             })
                         }),
-                        // new sap.m.Select({
-                        //     selectedKey: "SAP",
-                        //     items: [
-                        //         new sap.ui.core.Item({
-                        //             key: "SAP",
-                        //             text: "SAP ICONS"
-                        //         }),
-                        //         new sap.ui.core.Item({
-                        //             key: "U4A",
-                        //             text: "U4A ICONS"
-                        //         }),
-                        //     ]
-                        // }),
 
                         new sap.m.ToolbarSpacer(),
 
                         new sap.m.Button({
                             icon: "sap-icon://less",
-                            press: function() {
+                            press: function () {
 
-                                CURRWIN.minimize();
+                                CURRWIN.setOpacity(0);
+
+                                CURRWIN.setParentWindow(null);
+
+                                setTimeout(() => {
+
+                                    CURRWIN.minimize();
+
+                                    CURRWIN.setOpacity(1);
+
+                                }, 100);
 
                             }
                         }),
                         new sap.m.Button("maxWinBtn", {
                             icon: "sap-icon://header",
-                            press: function(oEvent) {
+                            press: function (oEvent) {
 
                                 let bIsMax = CURRWIN.isMaximized();
 
@@ -196,73 +191,16 @@ if (!oAPP) {
                         }),
                         new sap.m.Button({
                             icon: "sap-icon://decline",
-                            press: function() {
+                            press: function () {
 
                                 CURRWIN.close();
 
                             }
                         }),
                     ]
-                }),
-                // new sap.m.Bar({
-                //     titleAlignment: "Center",
-                //     contentLeft: [
-                //         new sap.m.Image({
-                //             src: PATH.join(APPPATH, "img", "logo.png")
-                //         }),
-                //         new sap.m.Title({
-                //             text: "Icon List"
-                //         }),                    
-                //     ],
-                //     contentMiddle: [
-                //         new sap.m.Select({
-                //             selectedKey: "SAP",
-                //             items: [
-                //                 new sap.ui.core.Item({
-                //                     key: "SAP",
-                //                     text: "SAP ICONS"
-                //                 }),
-                //                 new sap.ui.core.Item({
-                //                     key: "U4A",
-                //                     text: "U4A ICONS"
-                //                 }),
-                //             ]
-                //         })
-                //     ],
-                //     contentRight: [
-                //         new sap.m.Button({
-                //             icon: "sap-icon://less",
-                //             press: function() {
+                }).addStyleClass("u4aWsBrowserDraggable"),
 
-                //                 CURRWIN.minimize();
-
-                //             }
-                //         }),
-                //         new sap.m.Button("maxWinBtn", {
-                //             icon: "sap-icon://header",
-                //             press: function(oEvent) {
-
-                //                 let bIsMax = CURRWIN.isMaximized();
-
-                //                 if (bIsMax) {
-                //                     CURRWIN.unmaximize();
-                //                     return;
-                //                 }
-
-                //                 CURRWIN.maximize();
-
-                //             }
-                //         }),
-                //         new sap.m.Button({
-                //             icon: "sap-icon://decline",
-                //             press: function() {
-
-                //                 CURRWIN.close();
-
-                //             }
-                //         }),
-                //     ]
-                // }).addStyleClass("u4aWsBrowserDraggable"),
+                content: fnGetPageContents()
 
             }).addStyleClass("");
 
@@ -275,7 +213,7 @@ if (!oAPP) {
     /************************************************************************
      * WS 글로벌 메시지 목록 구하기
      ************************************************************************/
-    oAPP.fn.getWsMessageList = function() {
+    oAPP.fn.getWsMessageList = function () {
 
         return new Promise(async (resolve) => {
 
@@ -331,12 +269,12 @@ if (!oAPP) {
 
     }; // end of oAPP.fn.setBusy
 
-    /**
+    /************************************************************************
      * UI5 Attach Init
-     */
+     ************************************************************************/
     oAPP.fn.attachInit = () => {
 
-        sap.ui.getCore().attachInit(async function() {
+        sap.ui.getCore().attachInit(async function () {
 
             oAPP.setBusy("X");
 
@@ -350,7 +288,7 @@ if (!oAPP) {
              * 무조건 맨 마지막에 수행 되어야 함!!
              */
             // 자연스러운 로딩
-            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function() {
+            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function () {
 
                 if (!oAPP.attr.UIUpdated) {
 
@@ -368,7 +306,154 @@ if (!oAPP) {
 
         });
 
-    };
+    }; // end of oAPP.fn.attachInit
+
+    function fnGetPageContents() {
+
+        let oDynamicPage = fnGetDynamicPage();
+
+        let oIconTabBar = new sap.m.IconTabBar({
+            selectedKey: "SAP",
+            expandable: false,
+            expanded: true,
+            stretchContentHeight: true,
+            applyContentPadding: false,
+            backgroundDesign: "Transparent",
+            items: [
+                new sap.m.IconTabFilter({
+                    icon: "sap-icon://grid",
+                    text: "Grid",
+                    key: "SAP"
+                }),
+                new sap.m.IconTabFilter({
+                    icon: "sap-icon://list",
+                    text: "Details",
+                    key: "U4A"
+                }),
+            ],
+            content: [
+                oDynamicPage
+            ]
+
+        });
+
+        return [
+            oIconTabBar
+        ];
+
+    } // end of fnGetPageContents
+
+    function fnGetNaviContainer() {
+
+        return new sap.m.NavContainer({
+            autoFocus: false,
+            pages: [
+                new sap.m.Page({
+                    showHeader: false,
+                    content: [
+                        new sap.f.GridList({
+
+                            growingScrollToLoad: true,
+                            growingThreshold: 200,
+                            customLayout: new sap.ui.layout.cssgrid.GridBoxLayout({
+                                boxWidth: "8.125rem"
+                            }),
+
+                            items: [
+                                new sap.f.GridListItem({
+                                    content: [
+                                        new sap.m.VBox({
+                                            direction: "Column",
+                                            alignItems: "Center",
+                                            items: [
+                                                new sap.ui.core.Icon({
+                                                    src: "sap-icon://settings",
+                                                    size: "2.5rem"
+                                                }),
+                                                new sap.m.Label({
+                                                    text: "settings",
+                                                    textAlign: "Center",
+                                                    design: "Bold",
+                                                    width: "6rem"
+                                                }),
+                                                new sap.m.HBox({
+                                                    items: [
+                                                        new sap.m.Button({
+                                                            icon: "sap-icon://copy",
+                                                            press: ev_iconClipBoardCopy
+                                                        })
+                                                    ]
+                                                }),
+                                            ]
+
+                                        })
+                                    ]
+                                })
+                            ]
+
+                        })
+                    ]
+                }).addStyleClass("sapUiContentPadding"),
+
+                new sap.m.Page({
+
+
+
+                    
+                }),
+            ]
+        })
+
+    } // end of fnGetNaviContainer
+
+    function ev_iconClipBoardCopy(oEvent) {
+
+        debugger;
+
+
+
+
+    } // end of ev_iconClipBoardCopy
+
+    function fnGetDynamicPage() {
+
+        return new sap.f.DynamicPage({
+            headerExpanded: true,
+            fitContent: true,
+
+            title: new sap.f.DynamicPageTitle({
+                expandedContent: [
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.SearchField()
+                        ]
+                    })
+                ]
+            }),
+
+            content: fnGetNaviContainer()
+        })
+
+    }  // end of fnGetDynamicPage
+
+    /************************************************************************
+     * WS 글로벌 메시지 목록 구하기
+     ************************************************************************/
+    function ev_HeaderMenuSelected(oEvent) {
+
+        debugger;
+
+        let oSelectedItem = oEvent.getParameter("item"),
+            sSelectedKey = oSelectedItem.getProperty("key");
+
+
+    } // end of ev_HeaderMenuSelected
+
+
+
+
+
+
 
     /************************************************************************
      * -- Start of Program

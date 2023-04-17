@@ -80,10 +80,16 @@ floatwin = (REMOTE) => {
 exports.open = function (REMOTE, SCREEN, _DIRNAME, SSID) {
     console.log('2. 오픈 할 때 여기를 타');
 
+    let oFloatWin = floatwin(REMOTE);
+
     //현재 윈도우가 이전에 호출 된 상태여부 점검
-    if (typeof floatwin(REMOTE) !== "undefined") {
+    if (typeof oFloatWin !== "undefined") {
+        
         //이전에 호출 된 상태라면 I/F 코드 호출
-        floatwin(REMOTE).webContents.send("IF-WS30-FLOARTMENU", { PRCCD: "NEW_SERVER", SSID: SSID });
+        oFloatWin.webContents.send("IF-WS30-FLOARTMENU", { PRCCD: "NEW_SERVER", SSID: SSID });
+
+        oFloatWin.focus();
+
         return;
 
     };
@@ -135,14 +141,17 @@ exports.open = function (REMOTE, SCREEN, _DIRNAME, SSID) {
         //로드가 완료되면 수행되는 이벤트!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         console.log('호출대상 윈도우가 로드가 완료되면 수행돼는 이벤트!!!!');
 
-        // 일렉트론이 노빌드인 상태에서만
-        if (!REMOTE.app.isPackaged) {
-            oWIN.webContents.openDevTools();
-        };
+        // // 일렉트론이 노빌드인 상태에서만
+        // if (!REMOTE.app.isPackaged) {
+        //     oWIN.webContents.openDevTools();
+        // };
 
         oWIN.webContents.send('IF-WS30-FLOARTMENU', { PRCCD: "INIT", SSID: SSID });
 
     });
+
+    oWIN.focus();
+
 };
 
 

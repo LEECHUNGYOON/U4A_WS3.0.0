@@ -348,19 +348,13 @@
 
         });
 
-        // oWin.once('ready-to-show', () => {
-        //     oWin.show();
-        // })
-
-        oWin.on("close", () => {
-
-            debugger;
-
-
-        });
-
         oWin.on('closed', () => {
             oWin = null;
+
+            if(oCurrWindow.isDestroyed()){
+                return;
+            }
+            
             oCurrWindow.close();
         });
 

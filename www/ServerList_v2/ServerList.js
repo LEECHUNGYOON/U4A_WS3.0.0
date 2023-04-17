@@ -149,6 +149,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
         oAPP.fn.fnOnListupSapLogon(); // [내부 로직에 비동기가 있음]
 
+        CURRWIN.focus();
+
     }; // end of oAPP.fn.fnOnMainStart
 
 
@@ -3521,6 +3523,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             oBrows.show();
 
+            return;
+
         }
 
     }; // end of oAPP.fn.fnShowAllWindows
@@ -3619,7 +3623,6 @@ window.addEventListener("load", () => {
 
 });
 
-// window onbeforeunload
 window.onbeforeunload = (oEvent) => {
 
     // // 작업표시줄에서 닫기 눌렀을 경우
@@ -3644,7 +3647,9 @@ window.onbeforeunload = (oEvent) => {
      * 사유: samesite 관련 이벤트 핸들러가 서버리스트에 존재하기 때문에
      * 서버리스트를 닫으면 실행 어플리케이션에서 ajax 통신을 못하게 되는 문제가 발생함.
      */
-    CURRWIN.show();
+    // CURRWIN.show();    
+
+    // return false;
 
     let aBrowserList = REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
         iBrowserListLength = aBrowserList.length,
@@ -3653,34 +3658,52 @@ window.onbeforeunload = (oEvent) => {
     for (var i = 0; i < iBrowserListLength; i++) {
 
         const oBrows = aBrowserList[i];
-        if (oBrows.isDestroyed()) {
+        if (oBrows && oBrows.isDestroyed()) {
             continue;
         }
 
-        var oWebCon = oBrows.webContents,
-            oWebPref = oWebCon.getWebPreferences();
+        try {
 
-        // 서버리스트, Floting menu는 카운트 제외
-        if (oWebPref.OBJTY == "SERVERLIST" || oWebPref.OBJTY == "FLTMENU") {
+            var oWebCon = oBrows.webContents,
+            oWebPref = oWebCon.getWebPreferences();    
+
+        } catch (error) {
+            continue;
+        }        
+
+        if (oWebPref.OBJTY == "SERVERLIST") {
             continue;
         }
+
+        if (oWebPref.OBJTY == "FLTMENU") {
+            continue;
+        }
+
+        // // 서버리스트, Floting menu는 카운트 제외
+        // if (oWebPref.OBJTY == "SERVERLIST" || oWebPref.OBJTY == "FLTMENU") {
+        //     continue;
+        // }
 
         ++iChildLength;
 
     }
 
-    if (iChildLength == 0) {
-        return "";
+    if (iChildLength === 0) {
+        return false;
     }
 
-    if (typeof sap === "undefined") {
-        return "";
+    if(CURRWIN.isDestroyed()){
+        return false;
     }
 
     CURRWIN.show();
 
+    if (typeof sap === "undefined") {
+        return false;
+    }
+
     oAPP.fn.showIllustratedMsg();
 
-    return "";
+    return false;
 
 };
