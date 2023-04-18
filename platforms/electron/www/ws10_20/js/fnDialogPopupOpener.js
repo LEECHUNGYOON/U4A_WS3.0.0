@@ -1049,15 +1049,27 @@
             return;
         }
 
+        // 로그인 정보에서 서버의 기본 테마 정보를 구한다.
+        let oUserInfo = parent.getUserInfo(),
+            oMeta = oUserInfo.META,
+            aTheme = oMeta.T_REG_THEME,
+            oDefThemeInfo = aTheme.find(elem => elem.ISDEF === "X");
+
+        let sDefTheme = "sap_horizon";
+        if (oDefThemeInfo) {
+            sDefTheme = oDefThemeInfo.THEME;
+        }
+        
         let oSettings = parent.WSUTIL.getWsSettingsInfo(),
-            sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(oSettings.globalTheme);
+            sGlobalLangu = oSettings.globalLanguage,
+            sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(sDefTheme);
 
         // Browswer Options
         let sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.title = "Icon List";
+        oBrowserOptions.title = parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "047"); // Icon List
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.show = false;
         oBrowserOptions.titleBarStyle = 'hidden';
@@ -1069,7 +1081,7 @@
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
-        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
+        oBrowserOptions.webPreferences.USERINFO = oUserInfo;
 
         // 브라우저 오픈
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -1103,8 +1115,8 @@
             let oOptionData = {
                 // BROWSKEY: BROWSKEY, // 브라우저 고유키
                 // oUserInfo: oUserInfo, // 로그인 사용자 정보
-                // oServerInfo: oServerInfo, // 서버 정보
-                // oThemeInfo: oThemeInfo, // 테마 정보
+                sServerPath: parent.getServerPath(), // 서버 정보
+                sDefTheme: sDefTheme // 테마 정보
             };
 
             oBrowserWindow.webContents.send('if-icon-prev', oOptionData);

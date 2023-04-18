@@ -92,7 +92,7 @@ module.exports = (() => {
         WINHIDE2: PATH.join(POPUP_ROOT, "winShowHidePopup", "test1.html"),
         USPNEW: PATH.join(POPUP_ROOT, "uspNewPopup", "frame.html"),
         PATTPOPUP: PATH.join(POPUP_ROOT, "patternPopup", "frame.html"),
-        ICONPREV: PATH.join(POPUP_ROOT, "iconPrevPopup", "frame.html"),
+        ICONPREV: PATH.join(POPUP_ROOT, "iconPrevPopup", "index.html"),
 
         // JS Paths..
         WSTRYCATCH: PATH.join(JS_ROOT, "ws_trycatch.js"),
@@ -108,7 +108,10 @@ module.exports = (() => {
         CUST_PATT: PATH.join(USERDATA_PATTERN_ROOT, "custom_pattern.json"), // usp custom pattern file
 
         // common module paths...
-        MODULE_WS_SETTINGS: PATH.join(COMMON_MODULES_ROOT, "ws_settings.js")
+        MODULE_WS_SETTINGS: PATH.join(COMMON_MODULES_ROOT, "ws_settings.js"),
+
+        // Root Paths...
+        POPUP_ROOT: POPUP_ROOT,
 
     };
 
