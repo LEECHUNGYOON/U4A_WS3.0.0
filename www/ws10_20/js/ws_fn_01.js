@@ -2287,7 +2287,7 @@
      * Default Browser 개인화 설정
      ************************************************************************/
     oAPP.fn.fnOnP13nExeDefaultBrowser = function () {
-
+        
         var FS = parent.FS;
 
         var oServerInfo = parent.getServerInfo(),
@@ -2467,6 +2467,13 @@
             oCurrBrows.SELECTED = true;
             aNewInfo.push(oCurrBrows);
 
+        }
+
+        // 선택된 브라우저가 그래도 없다면 첫번째 브라우저를 선택
+        // 크롬, 엣지, IE 순
+        let oSelectedBrowser = aNewInfo.find(elem => elem.SELECTED === true);
+        if(!oSelectedBrowser){
+            aNewInfo[0].SELECTED = true;
         }
 
         return aNewInfo;

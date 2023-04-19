@@ -478,7 +478,7 @@
                 return;
             }
 
-            oAPP.fn.fnOnExecApp(sAppID);
+            oAPP.fn.fnOnExecApp(sAppID); // [ws_fn_02.js]
 
             // 화면 Lock 해제
             sap.ui.getCore().unlock();

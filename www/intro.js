@@ -351,10 +351,10 @@
         oWin.on('closed', () => {
             oWin = null;
 
-            if(oCurrWindow.isDestroyed()){
+            if (oCurrWindow.isDestroyed()) {
                 return;
             }
-            
+
             oCurrWindow.close();
         });
 
@@ -872,6 +872,9 @@
             // SAP 관련 패스 구성
             _setSapPath(oSettings);
 
+            // U4A 관련 정보 구성
+            _setU4ASettingInfo(oSettings);
+
             /**
              *  -- end
              */
@@ -963,6 +966,40 @@
     } // end of _setCommonPaths
 
     /************************************************************************
+     * U4A 관련 정보 구성
+     ************************************************************************/
+    function _setU4ASettingInfo(oSettings) {
+
+        if (!oSettings.U4A) {
+            oSettings.U4A = {};
+        }
+
+        let sIconRootPath = "/zu4a_imp/publish/icons",
+            sFontAwesomeRoot = sIconRootPath + "/fontAwesome";
+
+        oSettings.U4A = {
+            icons: {
+                iconRootPath: sIconRootPath,
+                fontAwesome: {
+                    rootPath : sFontAwesomeRoot,
+                    iconMetaJson: `${sFontAwesomeRoot}/icons.json`,
+                    collectionNames : {
+                        regular: "u4a-fw-regular",
+                        brands: "u4a-fw-brands",
+                        solid: "u4a-fw-solid"
+                    },
+                    fontList: {
+                        regular: "u4a_fw_regular",
+                        brands: "u4a_fw_brands",
+                        solid: "u4a_fw_solid"
+                    }
+                }
+            }
+        };
+
+    } // end of _setU4ASettingInfo
+
+    /************************************************************************
      * 패턴 관련 작업
      ************************************************************************/
     function _sourcePatternRelated() {
@@ -1001,7 +1038,7 @@
 
         });
 
-    } // end of _sourcePatternRelated    
+    } // end of _sourcePatternRelated
 
     // 패턴 관련 작업 중 오류 발생 시 공통 메시지 출력
     async function lf_sourcePatternErrorMsg(resolve, sMsg) {

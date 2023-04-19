@@ -10,6 +10,7 @@
 
 let oAPP = {};
 oAPP.fn = {};
+oAPP.msg = {};
 oAPP.attr = {};
 
 window.oAPP = oAPP;
@@ -19,6 +20,7 @@ let sap,
 
 const
     REMOTE = require('@electron/remote'),
+    CLIPBOARD = REMOTE.clipboard,
     PATH = REMOTE.require('path'),
     FS = REMOTE.require("fs"),
     APP = REMOTE.app,
@@ -42,9 +44,8 @@ IPCRENDERER.on('if-icon-prev', async (events, oInfo) => {
         oWebPref = oWebCon.getWebPreferences();
 
     oAPP.attr.sServerPath = oInfo.sServerPath; // 서버 경로
+    oAPP.attr.sServerHost = oInfo.sServerHost // 서버 호스트 경로
     oAPP.attr.sDefTheme = oInfo.sDefTheme // 기본 테마 정보
-
-    // oAPP.attr.USERINFO = oWebPref.USERINFO; // User 정보
 
     // ws 글로벌 언어 설정정보
     oAPP.attr.WS_LANGU = await WSUTIL.getWsLanguAsync();
@@ -99,22 +100,15 @@ PARWIN.on("closed", oAPP.fn.fnOnParentWindowClosedEvent);
  ************************************************************************/
 oAPP.fn.fnFrameLoad = () => {
 
-    var oWs_frame = document.getElementById("ws_frame");
-    if (!oWs_frame) {
-        return;
-    }
-
     let sServerPath = oAPP.attr.sServerPath,
-        sServerHtmlUrl = sServerPath + "/getP13nPreviewHTML";
-
-    let oForm = document.getElementById("u4asendform");
-
-    let aParam = [
-        { NAME: "LIBRARY", VALUE: "sap.m, sap.f, sap.ui.table" },
-        { NAME: "LANGU", VALUE: oAPP.attr.WS_LANGU },
-        { NAME: "THEME", VALUE: "sap_horizon" },
-        { NAME: "CALLBACKFUNC", VALUE: "parent.oAPP.fn.onFrameLoadSuccess();" },
-    ]
+        sServerHtmlUrl = sServerPath + "/getP13nPreviewHTML",
+        oForm = document.getElementById("u4asendform"),
+        aParam = [
+            { NAME: "LIBRARY", VALUE: "sap.m, sap.f, sap.ui.table" },
+            { NAME: "LANGU", VALUE: oAPP.attr.WS_LANGU },
+            { NAME: "THEME", VALUE: "sap_horizon" },
+            { NAME: "CALLBACKFUNC", VALUE: "parent.oAPP.fn.onFrameLoadSuccess();" },
+        ]
 
     for (var i = 0; i < aParam.length; i++) {
 
@@ -132,17 +126,17 @@ oAPP.fn.fnFrameLoad = () => {
 
     oForm.submit();
 
-};
+}; // end of oAPP.fn.fnFrameLoad
 
 /************************************************************************
  * 서버 부트스트랩 로드 성공 시
  ************************************************************************/
 oAPP.fn.onFrameLoadSuccess = () => {
 
-    var oWs_frame = document.getElementById("ws_frame");
+    let oWs_frame = document.getElementById("ws_frame"),
 
-    // content div 생성
-    let oContentDocu = oWs_frame.contentDocument,
+        // content div 생성
+        oContentDocu = oWs_frame.contentDocument,
         oContentDiv = oContentDocu.createElement("div");
 
     oContentDiv.id = "content";
@@ -182,16 +176,139 @@ function fnWait() {
 
 }
 
+function fnGetFontAwesomeIcon() {
+
+    return new Promise(async (resolve) => {
+
+        let oSettingInfo = WSUTIL.getWsSettingsInfo(),
+            oU4ASettingsInfo = oSettingInfo.U4A,
+            oU4AIconsInfo = oU4ASettingsInfo.icons,
+            oFwInfo = oU4AIconsInfo.fontAwesome,
+            oFwCollNames = oFwInfo.collectionNames,
+            oFwList = oFwInfo.fontList;
+
+        // fontawesome 아이콘 추가
+        let sUrlRoot = oFwInfo.rootPath,
+            sBrandsColName = oFwCollNames.brands,
+            sRegularColName = oFwCollNames.regular,
+            sSolidColName = oFwCollNames.solid;
+
+        sap.ui.core.IconPool.registerFont({
+            collectionName: sRegularColName,
+            fontFamily: oFwList.regular,
+            fontURI: sUrlRoot,
+            lazy: false
+        });
+
+        sap.ui.core.IconPool.registerFont({
+            collectionName: sBrandsColName,
+            fontFamily: oFwList.brands,
+            fontURI: sUrlRoot,
+            lazy: false
+        });
+
+        sap.ui.core.IconPool.registerFont({
+            collectionName: sSolidColName,
+            fontFamily: oFwList.solid,
+            fontURI: sUrlRoot,
+            lazy: false
+        });
+
+        // 서버가서 관련 Json 가져오기
+        let sServerHost = oAPP.attr.sServerHost,
+            sFwRoot = `${sServerHost}${oFwInfo.rootPath}`,
+            aJsonUrlInfo = [
+                { path: `${sFwRoot}/${oFwList.regular}.json`, name: oFwList.regular, collectionName: oFwCollNames.regular },
+                { path: `${sFwRoot}/${oFwList.brands}.json`, name: oFwList.brands, collectionName: oFwCollNames.brands },
+                { path: `${sFwRoot}/${oFwList.solid}.json`, name: oFwList.solid, collectionName: oFwCollNames.solid },
+            ],
+            aPromise = [];
+
+
+        for (var i = 0; i < aJsonUrlInfo.length; i++) {
+
+            let oJsonInfo = aJsonUrlInfo[i],
+                oAjaxOptions = {
+                    url: oJsonInfo.path,
+                    responseType: "json",
+                    method: "GET",
+                    collectionName: oJsonInfo.collectionName,
+                };
+
+            // 서버 호출
+            aPromise.push(sendAjaxAsync(oAjaxOptions));
+
+        }
+
+        // 서버 호출 결과
+        let aResult = await Promise.all(aPromise),
+            iResLength = aResult.length,
+            sIconSrcPrefix = "sap-icon://",
+            aIcons = [];
+
+        for (var i = 0; i < iResLength; i++) {
+
+            let oResult = aResult[i];
+
+            if (oResult.RETCD == "E") {
+                continue;
+            }
+
+            let options = oResult.options,
+                oIcons = oResult.RTDATA;
+
+            for (var j in oIcons) {
+
+                let oIconInfo = {};
+                oIconInfo.ICON_NAME = j;
+                oIconInfo.ICON_SRC = `${sIconSrcPrefix}${options.collectionName}/${j}`;
+                aIcons.push(oIconInfo);
+
+            }
+
+        }
+
+        let oCoreModel = sap.ui.getCore().getModel();
+        oCoreModel.setProperty("/ICONS/U4A", aIcons);
+
+        resolve();
+
+    });
+
+} // end of fnGetFontAwesomeIcon
+
+// U4A Icon 관련 설정
+function fnU4AIconConfig() {
+
+    return new Promise(async (resolve) => {
+
+        // Font Awesome 아이콘 등록 및 구하기
+        await fnGetFontAwesomeIcon();
+
+
+
+
+        resolve();
+
+    });
+
+} // end of fnU4AIconConfig
+
 /************************************************************************
  * Attach Init
  ************************************************************************/
 oAPP.fn.attachInit = async () => {
+
+    // await fnWait();
 
     await oAPP.fn.getWsMessageList(); // 반드시 이 위치에!!
 
     oAPP.fn.fnInitRendering();
 
     oAPP.fn.fnInitModelBinding();
+
+    // U4A ICON 관련
+    await fnU4AIconConfig();
 
     /**
      * 무조건 맨 마지막에 수행 되어야 함!!
@@ -210,6 +327,8 @@ oAPP.fn.attachInit = async () => {
 
             oAPP.setBusy("");
 
+            document.getElementById("u4aWsBusyIndicator").style.visibility = "hidden";
+
         }
 
     });
@@ -222,7 +341,7 @@ oAPP.fn.attachInit = async () => {
 oAPP.fn.fnInitModelBinding = function () {
 
     // 현재 버전에서 지원되는 테마 목록
-    let aSupportedThemes = sap.ui.getVersionInfo().supportedThemes, 
+    let aSupportedThemes = sap.ui.getVersionInfo().supportedThemes,
         iThemeLength = aSupportedThemes.length;
 
     // 테마 정보를 바인딩 구조에 맞게 변경
@@ -238,14 +357,22 @@ oAPP.fn.fnInitModelBinding = function () {
 
     }
 
+    let aUI5Icons = fnGetUI5IconList();
+
     let oModelData = {
+        PRC: {
+            MenuSelectedKey: "SAP",
+        },
         THEME: {
             THEME_KEY: oAPP.attr.sDefTheme,
             THEME_LIST: aThemes
         },
 
-        ICONS: fnGetUI5IconList()
-
+        ICONS: {
+            ICON_LIST: aUI5Icons,
+            SAP: aUI5Icons,
+            U4A: []
+        }
     };
 
 
@@ -276,7 +403,7 @@ oAPP.fn.fnInitRendering = function () {
                         src: PATHINFO.WS_LOGO
                     }),
                     new sap.m.Title({
-                        text: "Icon List"
+                        text: oAPP.msg.M047 //"Icon List"
                     }),
 
                     new sap.m.ToolbarSpacer(),
@@ -450,7 +577,7 @@ function fnGetDynamicPageContent() {
                 }),
 
                 items: {
-                    path: "/ICONS",
+                    path: "/ICONS/ICON_LIST",
                     template: new sap.f.GridListItem({
                         content: [
                             new sap.m.VBox({
@@ -498,7 +625,7 @@ function fnGetDynamicPageContent() {
         showHeader: false,
         content: [
 
-            new sap.ui.table.Table({
+            new sap.ui.table.Table("ListTable", {
 
                 // properties
                 selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
@@ -506,32 +633,46 @@ function fnGetDynamicPageContent() {
                 selectionMode: sap.ui.table.SelectionMode.Single,
                 minAutoRowCount: 1,
                 alternateRowColors: true,
+                rowHeight: 50,
 
                 columns: [
                     new sap.ui.table.Column({
+                        width: "100px",
+                        hAlign: "Center",
                         label: "Icon",
                         template: new sap.ui.core.Icon({
-
+                            src: "{ICON_SRC}",
+                            size: "45px"
                         })
                     }),
+
                     new sap.ui.table.Column({
                         label: "Name",
                         template: new sap.m.Label({
                             design: "Bold",
-
+                            text: "{ICON_NAME}"
                         })
                     }),
 
                     new sap.ui.table.Column({
                         label: "Code",
                         template: new sap.m.Text({
+                            text: "{ICON_SRC}"
+                        })
+                    }),
 
+                    new sap.ui.table.Column({
+                        label: "Copy",
+                        template: new sap.m.Button({
+                            icon: "sap-icon://copy",
+                            press: ev_iconClipBoardCopy
                         })
                     }),
 
                 ],
+
                 rows: {
-                    path: "/ICONLIST",
+                    path: "/ICONS/ICON_LIST",
                 },
 
             })
@@ -554,6 +695,9 @@ function fnGetDynamicPageContent() {
 } // end of fnGetDynamicPageContent    
 
 
+/************************************************************************
+ * UI5의 아이콘 정보를 구한다.
+ ************************************************************************/
 function fnGetUI5IconList() {
 
     let aIconNames = sap.ui.core.IconPool.getIconNames(),
@@ -577,6 +721,21 @@ function fnGetUI5IconList() {
 
 
 } // end of fnGetUI5IconList
+
+/************************************************************************
+ * 스크롤 탑으로 올릴것 모음
+ ************************************************************************/
+function fnSetScrollTop() {
+
+    // Grid Page의 스크롤을 최 상위로 올린다.
+    let oGridPage = sap.ui.getCore().byId("K1");
+    oGridPage.scrollTo(0);
+
+    // List Table의 스크롤을 최 상위로 올린다.
+    let oListTable = sap.ui.getCore().byId("ListTable");
+    oListTable.setFirstVisibleRow(0);
+
+} // end of fnSetScrollTop
 
 
 
@@ -609,13 +768,48 @@ function fnGetUI5IconList() {
  ************************************************************************/
 function ev_HeaderMenuSelected(oEvent) {
 
-    let oHdMenuBtn = sap.ui.getCore().byId("hdMenuBtn");
-
-    let oSelectedItem = oEvent.getParameter("item"),
+    let oHdMenuBtn = sap.ui.getCore().byId("hdMenuBtn"),
+        oSelectedItem = oEvent.getParameter("item"),
         sSelectedKey = oSelectedItem.getProperty("key"),
         sSelectedTxt = oSelectedItem.getProperty("text");
 
     oHdMenuBtn.setText(sSelectedTxt);
+
+    let oCoreModel = sap.ui.getCore().getModel(),
+        oPrc = oCoreModel.getProperty("/PRC"),
+        sBeforeSelectedKey = oPrc.MenuSelectedKey;
+
+    // 이전 선택한 값이 같으면 그냥 빠져나간다
+    if (sBeforeSelectedKey == sSelectedKey) {
+        return;
+    }
+
+    // 스크롤 최 상단으로 이동
+    fnSetScrollTop();
+
+    // 출력 모델 클리어
+    oCoreModel.setProperty("/ICONS/ICON_LIST", []);
+
+    switch (sSelectedKey) {
+        case "SAP":
+
+            let aSapIcons = oCoreModel.getProperty("/ICONS/SAP");
+
+            oCoreModel.setProperty("/ICONS/ICON_LIST", aSapIcons);
+
+            break;
+
+        case "U4A":
+
+            let aU4aIcons = oCoreModel.getProperty("/ICONS/U4A");
+
+            oCoreModel.setProperty("/ICONS/ICON_LIST", aU4aIcons);
+
+            break;
+
+    }
+
+    oCoreModel.setProperty("/PRC/MenuSelectedKey", sSelectedKey);
 
 } // end of ev_HeaderMenuSelected
 
@@ -631,6 +825,9 @@ function ev_iconListIconTabSelectEvent(oEvent) {
         return;
     }
 
+    
+
+
     let oNavi = sap.ui.getCore().byId("IconListNavCon");
     oNavi.to(sCurrKey);
 
@@ -641,10 +838,18 @@ function ev_iconListIconTabSelectEvent(oEvent) {
  ************************************************************************/
 function ev_iconClipBoardCopy(oEvent) {
 
-    debugger;
+    let oUI = oEvent.getSource(),
+        oCtx = oUI.getBindingContext();
 
+    if (!oCtx) {
+        return;
+    }
 
+    let oBindData = oCtx.getObject();
 
+    CLIPBOARD.writeText(oBindData.ICON_SRC);
+
+    sap.m.MessageToast.show(oAPP.msg.M031); // Clipboard Copy Success!
 
 } // end of ev_iconClipBoardCopy
 
@@ -721,7 +926,12 @@ oAPP.fn.getWsMessageList = function () {
         // oAPP.msg.M09 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "029"); // Delete
         // oAPP.msg.M10 = oAPP.msg.M02 + " " + WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "029"); // Custom Pattern Delete
         // oAPP.msg.M11 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "030"); // Change
-        // oAPP.msg.M12 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "031"); // Clipboard Copy Success!
+
+        oAPP.msg.M031 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "031"); // Clipboard Copy Success!
+        oAPP.msg.M047 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "047"); // Icon List
+
+
+
         // oAPP.msg.M13 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "007"); // Saved success
         // oAPP.msg.M14 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "008"); // Delete success
         // oAPP.msg.M15 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "038"); // YES
@@ -733,3 +943,85 @@ oAPP.fn.getWsMessageList = function () {
     });
 
 };
+
+function sendAjaxAsync(pOptions, oFormData) {
+
+    return new Promise((resolve) => {
+
+        /**
+         * 파라미터 종류
+         * 1. url
+         * 2. method
+         *  - POST, GET
+         * 3. responseType
+         *  - json
+         *  - blob
+         *  - arraybuffer
+         * 
+         * 4. FormData
+         * 
+         * 5. callback
+         *  - success
+         *  - fail
+         * 
+         */
+
+
+        let oDefOptions = {
+            url: "",
+            method: "GET",
+            responseType: "",
+            async: true,
+            withCredentials: true,
+            formData: oFormData
+        };
+
+        if ((typeof oDefOptions.formData === "undefined")) {
+            oDefOptions.formData = new FormData();
+        }
+
+        if (oDefOptions.formData instanceof FormData == false) {
+            oDefOptions.formData = new FormData();
+        }
+
+        let oOptions = { ...oDefOptions, ...pOptions };
+
+        var XHR = new XMLHttpRequest();
+
+        XHR.onreadystatechange = function () { // 요청에 대한 콜백
+            if (XHR.readyState === XHR.DONE) { // 요청이 완료되면
+                if (XHR.status === 200 || XHR.status === 201) {
+
+                    resolve({ RETCD: "S", RTDATA: XHR.response, options: pOptions });
+
+                }
+            }
+        };
+
+        // 오류 콜백
+        XHR.error = function (oEvent) {
+
+            resolve({ RETCD: "E" });
+
+        };
+
+        // Request Timeout 콜백
+        XHR.timeout = function (oEvent) {
+
+            resolve({ RETCD: "E" });
+
+        };
+
+        XHR.withCredentials = oOptions.withCredentials;
+
+        // FormData가 없으면 GET으로 전송
+        XHR.open(oOptions.method, oOptions.url, oOptions.async);
+
+        XHR.timeout = 60000; // 1분
+        XHR.responseType = oOptions.responseType;
+
+        XHR.send(oOptions.formData);
+
+    });
+
+} // end of sendAjax

@@ -1115,6 +1115,7 @@
             let oOptionData = {
                 // BROWSKEY: BROWSKEY, // 브라우저 고유키
                 // oUserInfo: oUserInfo, // 로그인 사용자 정보
+                sServerHost : parent.getHost(), //  서버 호스트 정보
                 sServerPath: parent.getServerPath(), // 서버 정보
                 sDefTheme: sDefTheme // 테마 정보
             };

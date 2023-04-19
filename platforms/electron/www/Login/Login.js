@@ -41,18 +41,21 @@ let oAPP = (function () {
     oAPP.attr.aDefaultBrowsers = [{
         NAME: "CHROME",
         DESC: "Google Chrome Browser",
-        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"
+        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe",
+        REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"
     },
     {
         NAME: "MSEDGE",
         DESC: "Microsoft Edge",
-        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe"
+        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe",
+        REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe"
     },
-    {
-        NAME: "IE",
-        DESC: "Microsoft Internet Explorer",
-        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\IEXPLORE.EXE"
-    },
+        // {
+        //     NAME: "IE",
+        //     DESC: "Microsoft Internet Explorer",
+        //     REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\IEXPLORE.EXE",
+        //     REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\IEXPLORE.EXE"
+        // },
     ];
 
     oAPP.fn.getDefaultBrowserInfo = () => {

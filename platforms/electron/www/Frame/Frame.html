@@ -26,7 +26,7 @@
     </iframe>
 
     <!-- Busy Indicator Start -->
-    <div id="u4aWsBusyIndicator" data-sap-ui-popup="id-1622786200065-234" class="u4aWsBusyIndicator sapUiUserSelectable"
+    <div id="u4aWsBusyIndicator" class="u4aWsBusyIndicator sapUiUserSelectable"
         style="position: absolute; visibility: hidden; display: block; top: 0px; height: 100%; width: 100%; left: 0px;">
         <div class="sapUiBusy" tabindex="0" role="progressbar" alt="" title="Please wait"></div>
         <div class="sapUiLocalBusyIndicator sapUiLocalBusyIndicatorSizeBig sapUiLocalBusyIndicatorFade"
@@ -183,7 +183,7 @@
         } // end of showCriticalErrorDialog    
 
         function onError(message, url, line, col, errorObj) {
-            
+
             if (bIsError) {
                 return;
             }
@@ -202,7 +202,7 @@
             if (bIsError) {
                 return;
             }
-            
+
             let oReason = event.reason,
                 sErrorMsg = `${oReason.name}\n${oReason.message}, ${oReason.at}\n\n${oReason.text}`;
 

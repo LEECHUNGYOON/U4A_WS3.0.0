@@ -861,7 +861,7 @@
     oAPP.fn.fnOnExecApp = function (APPID, bIsMulti) {
 
         // 기본 브라우저 설정        
-        oAPP.fn.fnOnInitP13nSettings();
+        oAPP.fn.fnOnInitP13nSettings(); // [ws_fn_01.js]
 
         var SPAWN = parent.SPAWN, // pc 제어하는 api
             aComm = []; // 명령어 수집
