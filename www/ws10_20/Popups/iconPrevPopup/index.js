@@ -214,9 +214,9 @@ function fnGetFontAwesomeIcon() {
             lazy: false
         });
 
-        // 서버가서 관련 Json 가져오기
-        let sServerHost = oAPP.attr.sServerHost,
-            sFwRoot = `${sServerHost}${oFwInfo.rootPath}`,
+
+        // 서버에서 가져올 JSON 경로를 설정
+        let sFwRoot = oFwInfo.rootPath,
             aJsonUrlInfo = [
                 { path: `${sFwRoot}/${oFwList.regular}.json`, name: oFwList.regular, collectionName: oFwCollNames.regular },
                 { path: `${sFwRoot}/${oFwList.brands}.json`, name: oFwList.brands, collectionName: oFwCollNames.brands },
@@ -224,11 +224,11 @@ function fnGetFontAwesomeIcon() {
             ],
             aPromise = [];
 
-
+        // 서버가서 관련 Json 가져오기 
         for (var i = 0; i < aJsonUrlInfo.length; i++) {
 
             let oJsonInfo = aJsonUrlInfo[i],
-                oAjaxOptions = {
+                oParam = {
                     url: oJsonInfo.path,
                     responseType: "json",
                     method: "GET",
@@ -236,7 +236,7 @@ function fnGetFontAwesomeIcon() {
                 };
 
             // 서버 호출
-            aPromise.push(sendAjaxAsync(oAjaxOptions));
+            aPromise.push(getJsonAsync(oJsonInfo.path, oParam));
 
         }
 
@@ -246,6 +246,7 @@ function fnGetFontAwesomeIcon() {
             sIconSrcPrefix = "sap-icon://",
             aIcons = [];
 
+        // 아이콘 정보를 합친다.
         for (var i = 0; i < iResLength; i++) {
 
             let oResult = aResult[i];
@@ -254,15 +255,42 @@ function fnGetFontAwesomeIcon() {
                 continue;
             }
 
-            let options = oResult.options,
+            let oParam = oResult.PARAM,
                 oIcons = oResult.RTDATA;
 
             for (var j in oIcons) {
 
                 let oIconInfo = {};
                 oIconInfo.ICON_NAME = j;
-                oIconInfo.ICON_SRC = `${sIconSrcPrefix}${options.collectionName}/${j}`;
+                oIconInfo.ICON_SRC = `${sIconSrcPrefix}${oParam.collectionName}/${j}`;
                 aIcons.push(oIconInfo);
+
+            }
+
+        }
+
+        // 메타 정보를 구한다.
+        let oGetMeta = await getJsonAsync(oFwInfo.iconMetaJson);
+
+        /**
+         * 메타데이터와 아이콘 정보가 있을 경우
+         * 아이콘 정보에 연관 키워드 정보를 매핑한다.
+         */
+        if (oGetMeta.RETCD === "S" && aIcons.length !== 0) {
+
+            let oMetadata = oGetMeta.RTDATA;
+
+            for (var i in oMetadata) {
+
+                let oIconMeta = oMetadata[i],
+                    sLabel = oIconMeta.label;
+
+                let oFound = aIcons.find(elem => elem.ICON_NAME === sLabel);
+                if (!oFound) {
+                    continue;
+                }
+
+                oFound.KEYWORDS = oIconMeta?.search?.terms || [];
 
             }
 
@@ -414,6 +442,7 @@ oAPP.fn.fnInitRendering = function () {
                             itemSelected: ev_HeaderMenuSelected,
                             items: [
                                 new sap.m.MenuItem({
+                                    icon: "sap-icon://sap-logo-shape",
                                     key: "SAP",
                                     text: "SAP Icons"
                                 }),
@@ -488,7 +517,8 @@ function fnGetMainPageContents() {
 
     let oDynamicPage = fnGetDynamicPage();
 
-    let oIconTabBar = new sap.m.IconTabBar({
+    let oIconTabBar = new sap.m.IconTabBar("iconListTabBar", {
+        busyIndicatorDelay: 0,
         selectedKey: "K1",
         expandable: false,
         expanded: true,
@@ -532,7 +562,9 @@ function fnGetDynamicPage() {
                 new sap.m.HBox({
                     renderType: "Bare",
                     items: [
-                        new sap.m.SearchField(),
+                        new sap.m.SearchField({
+                            liveChange: ev_searchFieldLiveChange
+                        }),
                         new sap.m.Select({
                             selectedKey: "{/THEME/THEME_KEY}",
                             items: {
@@ -622,6 +654,7 @@ function fnGetDynamicPageContent() {
 
     let oTableListPage = new sap.m.Page("K2", {
 
+        visible: false,
         showHeader: false,
         content: [
 
@@ -689,7 +722,8 @@ function fnGetDynamicPageContent() {
 
             oTableListPage
 
-        ]
+        ],
+        afterNavigate: ev_iconListPageNavigation
     })
 
 } // end of fnGetDynamicPageContent    
@@ -823,13 +857,20 @@ function ev_iconListIconTabSelectEvent(oEvent) {
 
     if (sPrevKey === sCurrKey) {
         return;
-    }
-
+    }    
     
+    // IconTabBar Busy
+    _setIconTabBarBusy(true);
 
+    let oPrevPage = sap.ui.getCore().byId(sPrevKey);
+    oPrevPage.setVisible(false);
 
-    let oNavi = sap.ui.getCore().byId("IconListNavCon");
-    oNavi.to(sCurrKey);
+    setTimeout(() => {      
+
+        let oNavi = sap.ui.getCore().byId("IconListNavCon");
+        oNavi.to(sCurrKey);
+
+    }, 100);
 
 } // end of ev_iconListIconTabSelectEvent
 
@@ -871,6 +912,71 @@ function ev_themeSelectChangeEvent(oEvent) {
     sap.ui.getCore().applyTheme(sSelectedKey);
 
 } // end of ev_themeSelectChangeEvent
+
+/************************************************************************
+ * 페이지 이동 후 발생하는 이벤트
+ ************************************************************************/
+function ev_iconListPageNavigation(oEvent) {
+
+    let oToPage = oEvent.getParameter("to");
+    
+    oAPP.attr.oDelegate = {
+
+        onAfterRendering: function (oEvent) {
+                      
+            let oPage = oEvent.srcControl;
+
+            // IconTabBar Busy
+            _setIconTabBarBusy(false);
+
+            oPage.removeEventDelegate(oAPP.attr.oDelegate);
+
+        }
+
+    };
+
+    oToPage.addEventDelegate(oAPP.attr.oDelegate);
+
+    oToPage.setVisible(true);
+
+} // end of ev_iconListPageNavigation
+
+/************************************************************************
+ * 아이콘 탭바 Busy Indicator
+ ************************************************************************/
+function ev_searchFieldLiveChange(oEvent) {
+
+
+
+} // end of ev_searchFieldLiveChange
+
+
+
+
+
+
+
+
+
+
+
+/************************************************************************
+ * [private] 아이콘 탭바 Busy Indicator
+ ************************************************************************/
+function _setIconTabBarBusy(bIsBusy) {
+
+    let oIconTabBar = sap.ui.getCore().byId("iconListTabBar");
+    oIconTabBar.setBusy(bIsBusy);
+
+} // end of _setIconTabBarBusy
+
+
+
+
+
+
+
+
 
 
 
@@ -944,6 +1050,34 @@ oAPP.fn.getWsMessageList = function () {
 
 };
 
+
+function getJsonAsync(sUrl, oParam) {
+
+    return new Promise((resolve) => {
+
+        let oResult = jQuery.sap.syncGetJSON(sUrl);
+        if (oResult.error) {
+
+            resolve({
+                RETCD: "E",
+                RTMSG: oResult.error.toString()
+            });
+
+            return;
+        }
+
+        resolve({
+            RETCD: "S",
+            RTDATA: oResult.data,
+            PARAM: oParam
+        });
+
+        return;
+
+    });
+
+}
+
 function sendAjaxAsync(pOptions, oFormData) {
 
     return new Promise((resolve) => {
@@ -999,28 +1133,33 @@ function sendAjaxAsync(pOptions, oFormData) {
         };
 
         // 오류 콜백
-        XHR.error = function (oEvent) {
+        XHR.onerror = function (oEvent) {
 
             resolve({ RETCD: "E" });
 
         };
 
         // Request Timeout 콜백
-        XHR.timeout = function (oEvent) {
+        XHR.ontimeout = function (oEvent) {
 
             resolve({ RETCD: "E" });
 
         };
 
-        XHR.withCredentials = oOptions.withCredentials;
+        try {
+            // FormData가 없으면 GET으로 전송
+            XHR.open(oOptions.method, oOptions.url, oOptions.async);
 
-        // FormData가 없으면 GET으로 전송
-        XHR.open(oOptions.method, oOptions.url, oOptions.async);
+            XHR.withCredentials = oOptions.withCredentials;
+            XHR.timeout = 60000; // 1분
+            XHR.responseType = oOptions.responseType;
 
-        XHR.timeout = 60000; // 1분
-        XHR.responseType = oOptions.responseType;
+            XHR.send(oOptions.formData);
 
-        XHR.send(oOptions.formData);
+        } catch (error) {
+            resolve({ RETCD: "E" });
+            console.log(error.toString());
+        }
 
     });
 
