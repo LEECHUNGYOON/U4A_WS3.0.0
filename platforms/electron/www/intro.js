@@ -938,6 +938,10 @@
 
         oSettings.UI5.resourceUrl = sSettingUi5BootUrl;
 
+        // 서버에 있는 UI5 라이브러리 Root Path
+        oSettings.UI5.ServerLibraryRootPath = "/zu4a_imp/openUI5_LIB";
+        oSettings.UI5.UI5IconTagsJsonPath = "/resources/u4a/icons/tags.json";
+
         // test url
         // let sTestUrl = PATH.join(process.env.TEMP, "v11071", "resources", "sap-ui-core.js");
         // sTestUrl = sTestUrl.replaceAll("\\", "/");

@@ -293,6 +293,10 @@
                 key: "Test89",
                 text: "icon Preview Popup"
             },
+            {
+                key: "Test88",
+                text: "icon Preview Popup (callback)"
+            },
 
             ];
 

@@ -46,11 +46,33 @@ IPCRENDERER.on('if-icon-prev', async (events, oInfo) => {
     oAPP.attr.sServerPath = oInfo.sServerPath; // 서버 경로
     oAPP.attr.sServerHost = oInfo.sServerHost // 서버 호스트 경로
     oAPP.attr.sDefTheme = oInfo.sDefTheme // 기본 테마 정보
+    oAPP.attr.isCallback = oInfo.isCallback;
 
     // ws 글로벌 언어 설정정보
     oAPP.attr.WS_LANGU = await WSUTIL.getWsLanguAsync();
 
     oAPP.fn.fnFrameLoad();
+
+    // CURRWIN.setParentWindow(null);
+
+    if (oAPP.attr.isCallback === "X") {
+        CURRWIN.setParentWindow(PARWIN);
+        return;
+    }
+
+    CURRWIN.setParentWindow(null);
+
+});
+
+// test
+IPCRENDERER.on("if-icon-isCallback", function (events, isCallback) {
+
+    oAPP.attr.isCallback = isCallback;
+
+    if (oAPP.attr.isCallback === "X") {
+        CURRWIN.setParentWindow(PARWIN);
+        return;
+    }
 
     CURRWIN.setParentWindow(null);
 
@@ -63,9 +85,12 @@ IPCRENDERER.on('if-icon-prev', async (events, oInfo) => {
 // 부모창 닫기 이벤트
 oAPP.fn.fnOnParentWindowClosedEvent = () => {
 
-    if (CURRWIN && CURRWIN.isDestroyed()) {
+    if (!CURRWIN || CURRWIN.isDestroyed()) {
         return;
     }
+
+    // if (!CURRWIN) { return; }
+    // if (CURRWIN.isDestroyed()) { return; }
 
     CURRWIN.close();
 
@@ -78,11 +103,14 @@ oAPP.fn.fnOnParentWindowClosedEvent = () => {
 /************************************************************************
  * 윈도우 관련 이벤트
  ************************************************************************/
-window.onbeforeunload = function () {
+window.onbeforeunload = function () {    
 
-    if (PARWIN && PARWIN.isDestroyed()) {
-        return;
+    if (!PARWIN || PARWIN.isDestroyed()) {
+        return "";
     }
+
+    // if (!PARWIN) { return; }
+    // if (PARWIN.isDestroyed()) { return; }
 
     PARWIN.off("closed", oAPP.fn.fnOnParentWindowClosedEvent);
 
@@ -90,10 +118,9 @@ window.onbeforeunload = function () {
 
 }; // end of window.onbeforeunload
 
-PARWIN.on("closed", oAPP.fn.fnOnParentWindowClosedEvent);
-
-
-
+if (PARWIN && !PARWIN.isDestroyed()) {
+    PARWIN.on("closed", oAPP.fn.fnOnParentWindowClosedEvent);
+}
 
 /************************************************************************
  * frame Load 수행 
@@ -290,7 +317,23 @@ function fnGetFontAwesomeIcon() {
                     continue;
                 }
 
-                oFound.KEYWORDS = oIconMeta?.search?.terms || [];
+                let aKeyWords = oIconMeta?.search?.terms || [],
+                    iKeyWordLength = aKeyWords.length,
+                    sSeparator = "|";
+
+                oFound.KEYWORDS = [];
+
+                for (var i = 0; i < iKeyWordLength; i++) {
+
+                    let sKeyWord = aKeyWords[i];
+
+                    oFound.KEYWORDS.push({
+                        NAME: sKeyWord
+                    });
+
+                }
+
+                oFound.KEYWORD_STRING = fnGetKeyWordToString(aKeyWords, sSeparator);
 
             }
 
@@ -304,6 +347,29 @@ function fnGetFontAwesomeIcon() {
     });
 
 } // end of fnGetFontAwesomeIcon
+
+function fnGetKeyWordToString(aKeyWords, sSeparator) {
+
+    if (!Array.isArray(aKeyWords)) {
+        return "";
+    }
+
+    let iKeyWordLength = aKeyWords.length;
+    if (iKeyWordLength === 0) {
+        return "";
+    }
+
+    let sKeyWordString = "";
+    for (var i = 0; i < iKeyWordLength; i++) {
+
+        let sKeyWord = aKeyWords[i];
+        sKeyWordString += sKeyWord + sSeparator;
+
+    }
+
+    return sKeyWordString;
+
+} // end of fnGetKeyWordToString
 
 // U4A Icon 관련 설정
 function fnU4AIconConfig() {
@@ -323,6 +389,89 @@ function fnU4AIconConfig() {
 } // end of fnU4AIconConfig
 
 /************************************************************************
+ * SAP ICON 정보를 구성한다.
+ ************************************************************************/
+function fnSAPIconConfig() {
+
+    return new Promise(async (resolve) => {
+
+        let aIconNames = sap.ui.core.IconPool.getIconNames(),
+            iIconLength = aIconNames.length;
+
+        let aIcons = [];
+        for (var i = 0; i < iIconLength; i++) {
+
+            let sIconName = aIconNames[i];
+
+            let oIconInfo = {
+                ICON_NAME: sIconName,
+                ICON_SRC: `sap-icon://${sIconName}`
+            }
+
+            aIcons.push(oIconInfo);
+
+        }
+
+        let sUi5Version = sap.ui.version;
+        sUi5Version = sUi5Version.replaceAll(".", "");
+        sUi5Version = "v" + sUi5Version;
+
+        let oSettingInfo = WSUTIL.getWsSettingsInfo(),
+            oUi5Info = oSettingInfo.UI5,
+            sServerLibRootPath = oUi5Info.ServerLibraryRootPath,
+            sUI5IconTagsJsonPath = oUi5Info.UI5IconTagsJsonPath;
+
+        let sIconTagJsonUrl = PATH.join(sServerLibRootPath, sUi5Version, sUI5IconTagsJsonPath);
+
+        let oIconTagsResult = await getJsonAsync(sIconTagJsonUrl);
+        if (oIconTagsResult.RETCD == "E") {
+            resolve();
+            return;
+        }
+
+        let oIconTags = oIconTagsResult.RTDATA;
+
+        for (var i in oIconTags) {
+
+            let oIconMeta = oIconTags[i],
+                oFound = aIcons.find(elem => elem.ICON_NAME === i);
+
+            if (!oFound) {
+                continue;
+            }
+
+            let aKeyWords = oIconMeta.tags || [],
+                iKeyWordLength = aKeyWords.length,
+                sSeparator = "|";
+
+            oFound.KEYWORDS = [];
+
+            for (var i = 0; i < iKeyWordLength; i++) {
+
+                let sKeyWord = aKeyWords[i];
+
+                oFound.KEYWORDS.push({
+                    NAME: sKeyWord
+                });
+
+            }
+
+            oFound.KEYWORD_STRING = fnGetKeyWordToString(aKeyWords, sSeparator);
+
+        }
+
+        let oCoreModel = sap.ui.getCore().getModel();
+
+        oCoreModel.setProperty("/ICONS/ICON_LIST", aIcons);
+        oCoreModel.setProperty("/ICONS/SAP", aIcons);
+
+        resolve();
+
+    });
+
+} // end of fnSAPIconConfig
+
+/************************************************************************
  * Attach Init
  ************************************************************************/
 oAPP.fn.attachInit = async () => {
@@ -335,7 +484,10 @@ oAPP.fn.attachInit = async () => {
 
     oAPP.fn.fnInitModelBinding();
 
-    // U4A ICON 관련
+    // SAP ICON 관련 정보 구성
+    await fnSAPIconConfig();
+
+    // U4A ICON 관련 정보 구성
     await fnU4AIconConfig();
 
     /**
@@ -385,8 +537,6 @@ oAPP.fn.fnInitModelBinding = function () {
 
     }
 
-    let aUI5Icons = fnGetUI5IconList();
-
     let oModelData = {
         PRC: {
             MenuSelectedKey: "SAP",
@@ -397,8 +547,8 @@ oAPP.fn.fnInitModelBinding = function () {
         },
 
         ICONS: {
-            ICON_LIST: aUI5Icons,
-            SAP: aUI5Icons,
+            ICON_LIST: [],
+            SAP: [],
             U4A: []
         }
     };
@@ -493,7 +643,13 @@ oAPP.fn.fnInitRendering = function () {
                         icon: "sap-icon://decline",
                         press: function () {
 
-                            CURRWIN.close();
+                            // CURRWIN.close();
+
+                            if (CURRWIN.isDestroyed()) {
+                                return;
+                            }
+
+                            CURRWIN.hide();
 
                         }
                     }),
@@ -509,9 +665,6 @@ oAPP.fn.fnInitRendering = function () {
     oApp.placeAt("content");
 
 }; // end of oAPP.fn.fnInitRendering
-
-
-
 
 function fnGetMainPageContents() {
 
@@ -600,7 +753,7 @@ function fnGetDynamicPageContent() {
     let oGridListPage = new sap.m.Page("K1", {
         showHeader: false,
         content: [
-            new sap.f.GridList({
+            new sap.f.GridList("iconGridList", {
                 growing: true,
                 growingScrollToLoad: true,
                 growingThreshold: 200,
@@ -641,12 +794,17 @@ function fnGetDynamicPageContent() {
                                 ] // end of VBox items
 
                             }) // end of VBox
-                        ]
+
+                        ] // end of end of GridListItem content
+
                     }) // end of GridListItem   
 
                 } // end of GridList items
 
             }) // end of GridList
+                .addEventDelegate({
+                    ondblclick: ev_iconGridListDblClick
+                })
 
         ] // end of Page Content
 
@@ -658,7 +816,7 @@ function fnGetDynamicPageContent() {
         showHeader: false,
         content: [
 
-            new sap.ui.table.Table("ListTable", {
+            new sap.ui.table.Table("iconListTable", {
 
                 // properties
                 selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
@@ -667,6 +825,7 @@ function fnGetDynamicPageContent() {
                 minAutoRowCount: 1,
                 alternateRowColors: true,
                 rowHeight: 50,
+                fixedColumnCount: 1,
 
                 columns: [
                     new sap.ui.table.Column({
@@ -694,7 +853,22 @@ function fnGetDynamicPageContent() {
                         })
                     }),
 
+                    // new sap.ui.table.Column({
+                    //     label: "Key Words",
+                    //     template: new sap.m.HBox({
+                    //         items: {
+                    //             path: "KEYWORDS",
+                    //             templateShareable: true,
+                    //             template: new sap.m.GenericTag({
+                    //                 text: "{NAME}"
+                    //             }).addStyleClass("sapUiTinyMarginEnd")
+                    //         }
+                    //     })
+                    // }),
+
                     new sap.ui.table.Column({
+                        width: "100px",
+                        hAlign: "Center",
                         label: "Copy",
                         template: new sap.m.Button({
                             icon: "sap-icon://copy",
@@ -704,10 +878,23 @@ function fnGetDynamicPageContent() {
 
                 ],
 
+                rowSelectionChange: function (oEvent) {
+
+                    var iRowIndex = oEvent.getParameter("rowIndex"),
+                        oTable = oEvent.getSource();
+
+                    if (oTable.getSelectedIndex() == -1) {
+                        oTable.setSelectedIndex(iRowIndex);
+                    }
+
+                },
+
                 rows: {
                     path: "/ICONS/ICON_LIST",
                 },
 
+            }).addEventDelegate({
+                ondblclick: ev_iconListTableDblClick
             })
 
         ]
@@ -726,35 +913,7 @@ function fnGetDynamicPageContent() {
         afterNavigate: ev_iconListPageNavigation
     })
 
-} // end of fnGetDynamicPageContent    
-
-
-/************************************************************************
- * UI5의 아이콘 정보를 구한다.
- ************************************************************************/
-function fnGetUI5IconList() {
-
-    let aIconNames = sap.ui.core.IconPool.getIconNames(),
-        iIconLength = aIconNames.length;
-
-    let aIcons = [];
-    for (var i = 0; i < iIconLength; i++) {
-
-        let sIconName = aIconNames[i];
-
-        let oIconInfo = {
-            ICON_NAME: sIconName,
-            ICON_SRC: `sap-icon://${sIconName}`
-        }
-
-        aIcons.push(oIconInfo);
-
-    }
-
-    return aIcons;
-
-
-} // end of fnGetUI5IconList
+} // end of fnGetDynamicPageContent
 
 /************************************************************************
  * 스크롤 탑으로 올릴것 모음
@@ -766,7 +925,7 @@ function fnSetScrollTop() {
     oGridPage.scrollTo(0);
 
     // List Table의 스크롤을 최 상위로 올린다.
-    let oListTable = sap.ui.getCore().byId("ListTable");
+    let oListTable = sap.ui.getCore().byId("iconListTable");
     oListTable.setFirstVisibleRow(0);
 
 } // end of fnSetScrollTop
@@ -792,9 +951,131 @@ function fnSetScrollTop() {
 
 
 
+/************************************************************************
+ * 아이콘 리스트 테이블의 더블클릭 이벤트
+ ************************************************************************/
+function ev_iconListTableDblClick(oEvent) {
+
+    var oTarget = oEvent.target,
+        $SelectedRow = $(oTarget).closest(".sapUiTableRow");
+
+    if (!$SelectedRow.length) {
+        return;
+    }
+
+    var oRow = $SelectedRow[0],
+
+        sRowId1 = oRow.getAttribute("data-sap-ui-related"),
+        sRowId2 = oRow.getAttribute("data-sap-ui"),
+        sRowId = "";
+
+    if (sRowId1 == null && sRowId2 == null) {
+        return;
+    }
+
+    if (sRowId1) {
+        sRowId = sRowId1;
+    }
+
+    if (sRowId2) {
+        sRowId = sRowId2;
+    }
+
+    var oRow = sap.ui.getCore().byId(sRowId);
+    if (!oRow) {
+        return;
+    }
+
+    // 바인딩 정보가 없으면 빠져나간다.
+    if (oRow.isEmpty()) {
+        return;
+    }
+
+    var oCtx = oRow.getBindingContext(),
+        sIconSrc = oCtx.getObject("ICON_SRC");
+
+    // 콜백 여부에 따라 아이콘 url를 리턴
+    _sendIconSrc(sIconSrc);
+
+    // if (oAPP.attr.isCallback === "X") {
+
+    //     CURRWIN.webContents.send("if-icon-url-callback", sIconSrc);
+
+    //     CURRWIN.hide();
+
+    //     return;
+    // }
+
+    // CLIPBOARD.writeText(sIconSrc);
+
+    // sap.m.MessageToast.show(oAPP.msg.M031); // Clipboard Copy Success!
 
 
+    // debugger;
 
+} // end of ev_iconListTableDblClick
+
+/************************************************************************
+ * 아이콘 그리드 리스트의 더블클릭 이벤트
+ ************************************************************************/
+function ev_iconGridListDblClick(oEvent) {
+
+    let oTarget = oEvent.target,
+        $SelectedGrid = $(oTarget).closest(".sapMLIB");
+
+    if (!$SelectedGrid.length) {
+        return;
+    }
+
+    let oGridListItemDOM = $SelectedGrid[0],
+
+        sGridListItemId1 = oGridListItemDOM.getAttribute("data-sap-ui-related"),
+        sGridListItemId2 = oGridListItemDOM.getAttribute("data-sap-ui"),
+        sGridListItemId = "";
+
+    if (sGridListItemId1 == null && sGridListItemId2 == null) {
+        return;
+    }
+
+    if (sGridListItemId1) {
+        sGridListItemId = sGridListItemId1;
+    }
+
+    if (sGridListItemId2) {
+        sGridListItemId = sGridListItemId2;
+    }
+
+    let oGridListItem = sap.ui.getCore().byId(sGridListItemId);
+    if (!oGridListItem) {
+        return;
+    }
+
+    let oCtx = oGridListItem.getBindingContext();
+    if (!oCtx) {
+        return;
+    }
+
+    let sIconSrc = oCtx.getObject("ICON_SRC");
+
+    // 콜백 여부에 따라 아이콘 url를 리턴
+    _sendIconSrc(sIconSrc);
+
+    // debugger;
+
+    // if (oAPP.attr.isCallback === "X") {
+
+    //     CURRWIN.webContents.send("if-icon-url-callback", sIconSrc);
+
+    //     CURRWIN.hide();
+
+    //     return;
+    // }
+
+    // CLIPBOARD.writeText(sIconSrc);
+
+    // sap.m.MessageToast.show(oAPP.msg.M031); // Clipboard Copy Success!
+
+} // end of ev_iconGridListDblClick
 
 
 /************************************************************************
@@ -858,8 +1139,6 @@ function ev_iconListIconTabSelectEvent(oEvent) {
     if (sPrevKey === sCurrKey) {
         return;
     }
-    
-    debugger;
 
     // IconTabBar Busy
     _setIconTabBarBusy(true);
@@ -867,7 +1146,7 @@ function ev_iconListIconTabSelectEvent(oEvent) {
     let oPrevPage = sap.ui.getCore().byId(sPrevKey);
     oPrevPage.setVisible(false);
 
-    setTimeout(() => {      
+    setTimeout(() => {
 
         let oNavi = sap.ui.getCore().byId("IconListNavCon");
         oNavi.to(sCurrKey);
@@ -881,6 +1160,8 @@ function ev_iconListIconTabSelectEvent(oEvent) {
  ************************************************************************/
 function ev_iconClipBoardCopy(oEvent) {
 
+    debugger;
+
     let oUI = oEvent.getSource(),
         oCtx = oUI.getBindingContext();
 
@@ -888,11 +1169,23 @@ function ev_iconClipBoardCopy(oEvent) {
         return;
     }
 
-    let oBindData = oCtx.getObject();
+    let sIconSrc = oCtx.getObject("ICON_SRC");
 
-    CLIPBOARD.writeText(oBindData.ICON_SRC);
+    // 콜백 여부에 따라 아이콘 url를 리턴
+    _sendIconSrc(sIconSrc);
 
-    sap.m.MessageToast.show(oAPP.msg.M031); // Clipboard Copy Success!
+    // if (oAPP.attr.isCallback === "X") {
+
+    //     CURRWIN.webContents.send("if-icon-url-callback", sIconSrc);
+
+    //     CURRWIN.hide();
+
+    //     return;
+    // }
+
+    // CLIPBOARD.writeText(sIconSrc);
+
+    // sap.m.MessageToast.show(oAPP.msg.M031); // Clipboard Copy Success!
 
 } // end of ev_iconClipBoardCopy
 
@@ -921,14 +1214,10 @@ function ev_themeSelectChangeEvent(oEvent) {
 function ev_iconListPageNavigation(oEvent) {
 
     let oToPage = oEvent.getParameter("to");
-    
-    debugger;
 
     oAPP.attr.oDelegate = {
 
         onAfterRendering: function (oEvent) {
-
-            debugger;
 
             let oPage = oEvent.srcControl;
 
@@ -952,7 +1241,32 @@ function ev_iconListPageNavigation(oEvent) {
  ************************************************************************/
 function ev_searchFieldLiveChange(oEvent) {
 
+    let oSearchField = oEvent.getSource(),
+        sSearchValue = oSearchField.getValue();
 
+    let oGridList = sap.ui.getCore().byId("iconGridList"),
+        oTable = sap.ui.getCore().byId("iconListTable"),
+        oGridListBindingInfo = oGridList.getBinding("items"),
+        oTableBindingInfo = oTable.getBinding("rows");
+
+    if (!oGridListBindingInfo || !oTableBindingInfo) {
+        return;
+    }
+
+    if (sSearchValue === "") {
+        oGridListBindingInfo.filter();
+        oTableBindingInfo.filter();
+        return;
+    }
+
+    var aFilters = [];
+
+    aFilters.push(new sap.ui.model.Filter({ path: "KEYWORD_STRING", operator: "Contains", value1: sSearchValue }));
+    aFilters.push(new sap.ui.model.Filter({ path: "ICON_SRC", operator: "Contains", value1: sSearchValue }));
+
+    //model 필터 처리.
+    oGridListBindingInfo.filter([new sap.ui.model.Filter(aFilters, false)]);
+    oTableBindingInfo.filter([new sap.ui.model.Filter(aFilters, false)]);
 
 } // end of ev_searchFieldLiveChange
 
@@ -976,6 +1290,25 @@ function _setIconTabBarBusy(bIsBusy) {
 
 } // end of _setIconTabBarBusy
 
+/************************************************************************
+ * 콜백 여부에 따라 아이콘 url를 리턴
+ ************************************************************************/
+function _sendIconSrc(sIconSrc) {
+
+    if (oAPP.attr.isCallback === "X") {
+
+        PARWIN.webContents.send("if-icon-url-callback", sIconSrc);
+
+        CURRWIN.hide();
+
+        return;
+    }
+
+    CLIPBOARD.writeText(sIconSrc);
+
+    sap.m.MessageToast.show(oAPP.msg.M031); // Clipboard Copy Success!
+
+} // end of _sendIconSrc
 
 
 

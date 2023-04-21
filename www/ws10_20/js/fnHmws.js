@@ -964,12 +964,24 @@
     };
 
     /************************************************************************
-     * Source Pattern Popup
+     * IconPreviewPopup
      ************************************************************************/
     oAPP.fn.fnWS10Test89 = () => {
 
         oAPP.fn.fnIconPreviewPopupOpener();
 
+    };
+
+    /************************************************************************
+    * IconPreviewPopup (callback)
+    ************************************************************************/
+    oAPP.fn.fnWS10Test88 = () => {
+
+        oAPP.fn.fnIconPreviewPopupOpener(function (e) {
+            debugger;
+
+
+        });
 
     };
 

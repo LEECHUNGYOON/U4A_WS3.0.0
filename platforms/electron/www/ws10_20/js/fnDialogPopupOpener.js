@@ -17,6 +17,7 @@
         REMOTEMAIN = parent.REMOTEMAIN,
         CURRWIN = REMOTE.getCurrentWindow(),
         IPCMAIN = parent.IPCMAIN,
+        IPCRENDERER = parent.IPCRENDERER,
         SESSKEY = parent.getSessionKey(),
         BROWSKEY = parent.getBrowserKey(),
         WSUTIL = parent.require(parent.PATHINFO.WSUTIL),
@@ -1035,10 +1036,36 @@
 
     }; // end of oAPP.fn.fnSourcePatternPopupOpener
 
+    oAPP.fn.fnIconUrlCallback = function (events, res) {
+
+        debugger;
+
+
+    }; // end of oAPP.fn.fnIconUrlCallback
+
     /************************************************************************
      * Icon Preview Popup Opener
      ************************************************************************/
-    oAPP.fn.fnIconPreviewPopupOpener = (bIsModal = false) => {
+    oAPP.fn.fnIconPreviewPopupOpener = (fnCallback) => {
+
+        debugger;
+
+        // 콜백 유무 플래그
+        let isCallback = ((typeof fnCallback === "function") ? "X" : "");
+
+        // 이전에 콜백 바인딩된 펑션이 있을 경우 이벤트 해제
+        if(oAPP.attr.fnBindCallback){
+            IPCRENDERER.off("if-icon-url-callback", oAPP.attr.fnBindCallback);
+        }                
+
+        // 파라미터에 콜백 펑션이 있을 경우에만 IPCRENDER 이벤트를 건다.
+        if (isCallback == "X") {
+
+            oAPP.attr.fnBindCallback = oAPP.fn.fnIconUrlCallback.bind(fnCallback);
+
+            IPCRENDERER.on("if-icon-url-callback", oAPP.attr.fnBindCallback);
+
+        }
 
         let sPopupName = "ICONPREV";
 
@@ -1046,7 +1073,15 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow2(sPopupName);
         if (oResult.ISOPEN) {
+
+            let oIconWindow = oResult.WINDOW;
+
+            oIconWindow.show();
+
+            oIconWindow.webContents.send("if-icon-isCallback", isCallback);
+
             return;
+
         }
 
         // 로그인 정보에서 서버의 기본 테마 정보를 구한다.
@@ -1059,7 +1094,7 @@
         if (oDefThemeInfo) {
             sDefTheme = oDefThemeInfo.THEME;
         }
-        
+
         let oSettings = parent.WSUTIL.getWsSettingsInfo(),
             sGlobalLangu = oSettings.globalLanguage,
             sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(sDefTheme);
@@ -1077,6 +1112,7 @@
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.resizable = true;
         oBrowserOptions.movable = true;
+        // oBrowserOptions.modal = true;
         oBrowserOptions.backgroundColor = sWsThemeColor;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -1115,13 +1151,13 @@
             let oOptionData = {
                 // BROWSKEY: BROWSKEY, // 브라우저 고유키
                 // oUserInfo: oUserInfo, // 로그인 사용자 정보
-                sServerHost : parent.getHost(), //  서버 호스트 정보
+                sServerHost: parent.getHost(), //  서버 호스트 정보
                 sServerPath: parent.getServerPath(), // 서버 정보
-                sDefTheme: sDefTheme // 테마 정보
+                sDefTheme: sDefTheme, // 테마 정보
+                isCallback: isCallback // 아이콘 팝업 호출 시 콜백 펑션이 있는지 여부 플래그 
             };
 
             oBrowserWindow.webContents.send('if-icon-prev', oOptionData);
-
 
             oBrowserWindow.show();
 
