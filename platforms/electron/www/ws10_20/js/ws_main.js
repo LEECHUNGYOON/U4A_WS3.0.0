@@ -296,14 +296,55 @@
     }; // end of oAPP.main.onDragend
 
     /************************************************************************
+     * 현재 브라우저의 이벤트 핸들러
+     ************************************************************************/
+    function _attachCurrentWindowEvents() {
+
+        let CURRWIN = parent.CURRWIN;
+
+        CURRWIN.on("maximize", () => {
+
+            if (typeof sap === "undefined") {
+                return;
+            }
+
+            let oMaxBtn = sap.ui.getCore().byId("maxWinBtn");
+            if (!oMaxBtn) {
+                return;
+            }
+
+            oMaxBtn.setIcon("sap-icon://value-help");
+
+        });
+
+        CURRWIN.on("unmaximize", () => {
+
+            if (typeof sap === "undefined") {
+                return;
+            }
+
+            let oMaxBtn = sap.ui.getCore().byId("maxWinBtn");
+            if (!oMaxBtn) {
+                return;
+            }
+
+            oMaxBtn.setIcon("sap-icon://header");
+
+        });
+
+    } // end of _attachCurrentWindowEvents
+
+    /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------
      ************************************************************************/
     oAPP.main.fnWsStart = function () {
 
-        sap.ui.getCore().attachInit(async function () {           
+        sap.ui.getCore().attachInit(async function () {
 
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
+
+            _attachCurrentWindowEvents();
 
             // Register illustration Message Pool
             oAPP.fn.fnRegisterIllustrationPool();
@@ -324,8 +365,8 @@
             oAPP.common.fnSetGlobalShortcut();
 
             // 초기 모델 바인딩
-            oAPP.main.fnOnInitModelBinding();           
-           
+            oAPP.main.fnOnInitModelBinding();
+
             // 초기 화면 그리기
             oAPP.fn.fnOnInitRendering(); // #[ws_fn_01.js]
 
@@ -408,7 +449,7 @@
 
     // 브라우저 닫기, window.close() 실행시 타는 이벤트
     window.onbeforeunload = () => {
-        
+
         // Logout 메시지가 이미 떠 있다면 창을 못닫게 한다.
         if (oAPP.attr.isBrowserCloseLogoutMsgOpen == 'X') {
 

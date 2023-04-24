@@ -407,12 +407,12 @@
             // Open 된 Dialog가 없으면 숨겼던 child window 전체를 보여준다.
             var $oOpendDialog = $(".sapMDialogOpen");
             if (!$oOpendDialog.length) {
-                oAPP.fn.fnChildWindowShow(true);
+                oAPP.fn.fnChildWindowShow(true); // [ws_fn_02.js]
                 return;
             }
 
             // Dialog 가 Open 되면 child window 전체를 숨긴다.
-            oAPP.fn.fnChildWindowShow(false);
+            oAPP.fn.fnChildWindowShow(false); // [ws_fn_02.js]
 
         });
 

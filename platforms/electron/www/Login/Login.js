@@ -539,11 +539,59 @@ let oAPP = (function () {
         return new sap.m.Page({
 
             // properties
-            showHeader: false,
+            showHeader: true,
             showFooter: true,
             backgroundDesign: sap.m.PageBackgroundDesign.Transparent,
+            enableScrolling: false,
 
             // aggregations
+            customHeader: new sap.m.Bar({
+                contentLeft: [
+                    new sap.m.Image({
+                        width: "25px",
+                        src: PATHINFO.WS_LOGO
+                    }),
+                    new sap.m.Title({
+                        text: "U4A Workspace Login"
+                    }),
+                ],
+                contentRight: [
+
+                    new sap.m.Button({
+                        icon: "sap-icon://less",
+                        press: function () {
+
+                            CURRWIN.minimize();
+
+                        }
+                    }),
+                    new sap.m.Button("maxWinBtn", {
+                        icon: "sap-icon://header",
+                        press: function (oEvent) {
+
+                            let bIsMax = CURRWIN.isMaximized();
+
+                            if (bIsMax) {
+                                CURRWIN.unmaximize();
+                                return;
+                            }
+
+                            CURRWIN.maximize();
+
+                        }
+                    }),
+                    new sap.m.Button({
+                        icon: "sap-icon://decline",
+                        press: function () {
+
+                            CURRWIN.close();
+
+                        }
+                    }),
+
+                ]
+            }).addStyleClass("u4aWsBrowserDraggable"),
+
             content: [
 
                 new sap.m.VBox({
@@ -2425,6 +2473,42 @@ let oAPP = (function () {
 
     } // end of _registry_T_REG_WLO
 
+    /************************************************************************
+     * 현재 브라우저의 이벤트 핸들러
+     ************************************************************************/
+    function _attachCurrentWindowEvents() {
+
+        CURRWIN.on("maximize", () => {
+
+            if (typeof sap === "undefined") {
+                return;
+            }
+
+            let oMaxBtn = sap.ui.getCore().byId("maxWinBtn");
+            if (!oMaxBtn) {
+                return;
+            }
+
+            oMaxBtn.setIcon("sap-icon://value-help");
+
+        });
+
+        CURRWIN.on("unmaximize", () => {
+
+            if (typeof sap === "undefined") {
+                return;
+            }
+
+            let oMaxBtn = sap.ui.getCore().byId("maxWinBtn");
+            if (!oMaxBtn) {
+                return;
+            }
+
+            oMaxBtn.setIcon("sap-icon://header");
+
+        });
+
+    } // end of _attachCurrentWindowEvents
 
     /************************************************************************s
      *---------------------[ U4A WS Login Page Start ] ----------------------
@@ -2434,6 +2518,9 @@ let oAPP = (function () {
         sap.ui.getCore().attachInit(() => {
 
             jQuery.sap.require("sap.m.MessageBox");
+
+            // 현재 브라우저의 이벤트 핸들러
+            _attachCurrentWindowEvents();
 
             // Shortcut 설정
             oAPP.fn.fnSetShortCut();

@@ -1257,7 +1257,7 @@
 
         for (var i = 0; i < iChildCnt; i++) {
 
-            var oChild = aChild[i],
+            let oChild = aChild[i],
                 bIsDestroyed = oChild.isDestroyed();
 
             if (bIsDestroyed) {
@@ -1274,28 +1274,33 @@
                 continue;
             }
 
-            var isVisible = oChild.isVisible();
+            let isVisible = oChild.isVisible();
 
             // 숨기려는 경우
             if (!bShow) {
 
                 // 이미 숨겨져 있다면 빠져나간다
-                if (!isVisible) {
-                    continue;
-                }
+                // if (!isVisible) {
+                //     continue;
+                // }
 
-                oChild.hide();
+                
+                setTimeout(() => {
+                    oChild.setOpacity(0);
+                    oChild.hide();
+                },0);
+                
 
                 continue;
             }
 
 
-            if (isVisible) {
-                continue;
-            }
+            // if (isVisible) {
+            //     continue;
+            // }
 
             oChild.show();
-
+            oChild.setOpacity(1);
         }
 
     }; // end of oAPP.fn.fnChildWindowShow
@@ -1309,7 +1314,7 @@
             "VIDEOREC",
             "EXAMPLE",
             "PATTPOPUP",
-            "FLTMENU",            
+            "FLTMENU",
         ];
 
         if (!OBJTY) {
@@ -1329,6 +1334,7 @@
         let aExceptionList = [
             "VIDEOREC",
             "EXAMPLE",
+            // "ICONPREV"
         ];
 
         if (!OBJTY) {

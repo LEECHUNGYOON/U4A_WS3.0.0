@@ -40,9 +40,6 @@ const
  ************************************************************************/
 IPCRENDERER.on('if-icon-prev', async (events, oInfo) => {
 
-    let oWebCon = REMOTE.getCurrentWebContents(),
-        oWebPref = oWebCon.getWebPreferences();
-
     oAPP.attr.sServerPath = oInfo.sServerPath; // 서버 경로
     oAPP.attr.sServerHost = oInfo.sServerHost // 서버 호스트 경로
     oAPP.attr.sDefTheme = oInfo.sDefTheme // 기본 테마 정보
@@ -53,8 +50,6 @@ IPCRENDERER.on('if-icon-prev', async (events, oInfo) => {
 
     oAPP.fn.fnFrameLoad();
 
-    // CURRWIN.setParentWindow(null);
-
     if (oAPP.attr.isCallback === "X") {
         CURRWIN.setParentWindow(PARWIN);
         return;
@@ -64,10 +59,17 @@ IPCRENDERER.on('if-icon-prev', async (events, oInfo) => {
 
 });
 
-// test
+/**
+ * 아이콘 리스트 팝업을 콜백으로 실행했을 경우 타는 이벤트 핸들러
+ */
 IPCRENDERER.on("if-icon-isCallback", function (events, isCallback) {
 
     oAPP.attr.isCallback = isCallback;
+
+    let oCoreModel = sap.ui.getCore().getModel();
+    if (oCoreModel) {
+        oCoreModel.setProperty("/PRC/MINI_INVISI", oAPP.attr.isCallback);
+    }
 
     if (oAPP.attr.isCallback === "X") {
         CURRWIN.setParentWindow(PARWIN);
@@ -89,9 +91,6 @@ oAPP.fn.fnOnParentWindowClosedEvent = () => {
         return;
     }
 
-    // if (!CURRWIN) { return; }
-    // if (CURRWIN.isDestroyed()) { return; }
-
     CURRWIN.close();
 
 }; // end of oAPP.fn.fnOnParentWindowClosedEvent
@@ -99,24 +98,6 @@ oAPP.fn.fnOnParentWindowClosedEvent = () => {
 /************************************************************************
  * 부모 윈도우 관련 이벤트 --- End
  ************************************************************************/
-
-/************************************************************************
- * 윈도우 관련 이벤트
- ************************************************************************/
-window.onbeforeunload = function () {    
-
-    if (!PARWIN || PARWIN.isDestroyed()) {
-        return "";
-    }
-
-    // if (!PARWIN) { return; }
-    // if (PARWIN.isDestroyed()) { return; }
-
-    PARWIN.off("closed", oAPP.fn.fnOnParentWindowClosedEvent);
-
-    PARWIN.focus();
-
-}; // end of window.onbeforeunload
 
 if (PARWIN && !PARWIN.isDestroyed()) {
     PARWIN.on("closed", oAPP.fn.fnOnParentWindowClosedEvent);
@@ -379,9 +360,6 @@ function fnU4AIconConfig() {
         // Font Awesome 아이콘 등록 및 구하기
         await fnGetFontAwesomeIcon();
 
-
-
-
         resolve();
 
     });
@@ -472,11 +450,51 @@ function fnSAPIconConfig() {
 } // end of fnSAPIconConfig
 
 /************************************************************************
+ * 현재 브라우저의 이벤트 핸들러
+ ************************************************************************/
+function _attachCurrentWindowEvents() {
+
+    CURRWIN.on("maximize", () => {
+
+        if (typeof sap === "undefined") {
+            return;
+        }
+
+        let oMaxBtn = sap.ui.getCore().byId("maxWinBtn");
+        if (!oMaxBtn) {
+            return;
+        }
+
+        oMaxBtn.setIcon("sap-icon://value-help");
+
+    });
+
+    CURRWIN.on("unmaximize", () => {
+
+        if (typeof sap === "undefined") {
+            return;
+        }
+
+        let oMaxBtn = sap.ui.getCore().byId("maxWinBtn");
+        if (!oMaxBtn) {
+            return;
+        }
+
+        oMaxBtn.setIcon("sap-icon://header");
+
+    });
+
+} // end of _attachCurrentWindowEvents
+
+/************************************************************************
  * Attach Init
  ************************************************************************/
 oAPP.fn.attachInit = async () => {
 
     // await fnWait();
+
+    // 현재 브라우저의 이벤트 핸들러 
+    _attachCurrentWindowEvents();
 
     await oAPP.fn.getWsMessageList(); // 반드시 이 위치에!!
 
@@ -540,6 +558,7 @@ oAPP.fn.fnInitModelBinding = function () {
     let oModelData = {
         PRC: {
             MenuSelectedKey: "SAP",
+            MINI_INVISI: oAPP.attr.isCallback
         },
         THEME: {
             THEME_KEY: oAPP.attr.sDefTheme,
@@ -592,7 +611,7 @@ oAPP.fn.fnInitRendering = function () {
                             itemSelected: ev_HeaderMenuSelected,
                             items: [
                                 new sap.m.MenuItem({
-                                    icon: "sap-icon://sap-logo-shape",
+                                    // icon: "sap-icon://sap-logo-shape",
                                     key: "SAP",
                                     text: "SAP Icons"
                                 }),
@@ -610,19 +629,25 @@ oAPP.fn.fnInitRendering = function () {
                         icon: "sap-icon://less",
                         press: function () {
 
-                            CURRWIN.setOpacity(0);
+                            CURRWIN.minimize();
 
-                            CURRWIN.setParentWindow(null);
+                            // CURRWIN.setOpacity(0);
 
-                            setTimeout(() => {
+                            // CURRWIN.setParentWindow(null);
 
-                                CURRWIN.minimize();
+                            // setTimeout(() => {
 
-                                CURRWIN.setOpacity(1);
+                            //     CURRWIN.minimize();
 
-                            }, 100);
+                            //     CURRWIN.setOpacity(1);
+
+                            // }, 100);
 
                         }
+                    }).bindProperty("visible", "/PRC/MINI_INVISI", function (MINI_INVISI) {
+
+                        return (MINI_INVISI === "X" ? false : true);
+
                     }),
                     new sap.m.Button("maxWinBtn", {
                         icon: "sap-icon://header",
@@ -643,13 +668,25 @@ oAPP.fn.fnInitRendering = function () {
                         icon: "sap-icon://decline",
                         press: function () {
 
-                            // CURRWIN.close();
-
                             if (CURRWIN.isDestroyed()) {
                                 return;
                             }
 
                             CURRWIN.hide();
+
+                            // 콜백 메소드가 있는지 확인
+                            if (oAPP.attr.isCallback !== "X") {
+                                return;
+                            }
+
+                            // Parent가 존재하는지 확인
+                            if (!PARWIN || PARWIN.isDestroyed()) {
+                                return;
+                            }
+
+                            PARWIN.webContents.send("if-icon-url-callback", { RETCD: "C", RTDATA: "" });
+
+                            CURRWIN.setParentWindow(null);
 
                         }
                     }),
@@ -997,22 +1034,6 @@ function ev_iconListTableDblClick(oEvent) {
     // 콜백 여부에 따라 아이콘 url를 리턴
     _sendIconSrc(sIconSrc);
 
-    // if (oAPP.attr.isCallback === "X") {
-
-    //     CURRWIN.webContents.send("if-icon-url-callback", sIconSrc);
-
-    //     CURRWIN.hide();
-
-    //     return;
-    // }
-
-    // CLIPBOARD.writeText(sIconSrc);
-
-    // sap.m.MessageToast.show(oAPP.msg.M031); // Clipboard Copy Success!
-
-
-    // debugger;
-
 } // end of ev_iconListTableDblClick
 
 /************************************************************************
@@ -1059,21 +1080,6 @@ function ev_iconGridListDblClick(oEvent) {
 
     // 콜백 여부에 따라 아이콘 url를 리턴
     _sendIconSrc(sIconSrc);
-
-    // debugger;
-
-    // if (oAPP.attr.isCallback === "X") {
-
-    //     CURRWIN.webContents.send("if-icon-url-callback", sIconSrc);
-
-    //     CURRWIN.hide();
-
-    //     return;
-    // }
-
-    // CLIPBOARD.writeText(sIconSrc);
-
-    // sap.m.MessageToast.show(oAPP.msg.M031); // Clipboard Copy Success!
 
 } // end of ev_iconGridListDblClick
 
@@ -1160,8 +1166,6 @@ function ev_iconListIconTabSelectEvent(oEvent) {
  ************************************************************************/
 function ev_iconClipBoardCopy(oEvent) {
 
-    debugger;
-
     let oUI = oEvent.getSource(),
         oCtx = oUI.getBindingContext();
 
@@ -1171,21 +1175,12 @@ function ev_iconClipBoardCopy(oEvent) {
 
     let sIconSrc = oCtx.getObject("ICON_SRC");
 
-    // 콜백 여부에 따라 아이콘 url를 리턴
-    _sendIconSrc(sIconSrc);
+    CLIPBOARD.writeText(sIconSrc);
 
-    // if (oAPP.attr.isCallback === "X") {
+    sap.m.MessageToast.show(oAPP.msg.M031); // Clipboard Copy Success!
 
-    //     CURRWIN.webContents.send("if-icon-url-callback", sIconSrc);
-
-    //     CURRWIN.hide();
-
-    //     return;
-    // }
-
-    // CLIPBOARD.writeText(sIconSrc);
-
-    // sap.m.MessageToast.show(oAPP.msg.M031); // Clipboard Copy Success!
+    // // 콜백 여부에 따라 아이콘 url를 리턴
+    // _sendIconSrc(sIconSrc);
 
 } // end of ev_iconClipBoardCopy
 
@@ -1275,11 +1270,6 @@ function ev_searchFieldLiveChange(oEvent) {
 
 
 
-
-
-
-
-
 /************************************************************************
  * [private] 아이콘 탭바 Busy Indicator
  ************************************************************************/
@@ -1297,16 +1287,14 @@ function _sendIconSrc(sIconSrc) {
 
     if (oAPP.attr.isCallback === "X") {
 
-        PARWIN.webContents.send("if-icon-url-callback", sIconSrc);
+        PARWIN.webContents.send("if-icon-url-callback", { RETCD: "S", RTDATA: sIconSrc });
 
         CURRWIN.hide();
 
+        CURRWIN.setParentWindow(null);
+
         return;
     }
-
-    CLIPBOARD.writeText(sIconSrc);
-
-    sap.m.MessageToast.show(oAPP.msg.M031); // Clipboard Copy Success!
 
 } // end of _sendIconSrc
 

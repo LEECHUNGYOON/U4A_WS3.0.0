@@ -13,21 +13,21 @@ html,
 }
 
 .u4aWsLoginBody {
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
   color: white;
   font-weight: 300;
 }
 
 .u4aWsLoginBody ::-webkit-input-placeholder {
   /* WebKit browsers */
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
   color: white;
   font-weight: 300;
 }
 
 .u4aWsLoginBody :-moz-placeholder {
   /* Mozilla Firefox 4 to 18 */
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
   color: white;
   opacity: 1;
   font-weight: 300;
@@ -35,7 +35,7 @@ html,
 
 .u4aWsLoginBody ::-moz-placeholder {
   /* Mozilla Firefox 19+ */
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
   color: white;
   opacity: 1;
   font-weight: 300;
@@ -43,13 +43,18 @@ html,
 
 .u4aWsLoginBody :-ms-input-placeholder {
   /* Internet Explorer 10+ */
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
   color: white;
   font-weight: 300;
 }
 
 .u4aWsLoginWrapper {
-  background: linear-gradient(125deg, rgba(160, 0, 161, 1) 0%, rgba(148, 40, 197, 1) 51%, rgba(49, 80, 233, 1) 100%);
+  background: linear-gradient(
+    125deg,
+    rgba(160, 0, 161, 1) 0%,
+    rgba(148, 40, 197, 1) 51%,
+    rgba(49, 80, 233, 1) 100%
+  );
   position: absolute;
   left: 0;
   width: 100%;
@@ -262,12 +267,12 @@ html,
   align-items: center;
 }
 
-.u4aWsLoginHeader>div {
+.u4aWsLoginHeader > div {
   color: white;
   text-align: center;
 }
 
-.u4aWsLoginHeader>h3 {
+.u4aWsLoginHeader > h3 {
   color: #ffffff;
   text-align: center;
   margin-left: 15px;
@@ -290,7 +295,7 @@ html,
 .u4aWsLoginForm {
   height: auto;
   width: 80%;
-  transition: opacity .5s ease, transform .5s ease;
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 .u4aWsLoginForm input,
@@ -307,7 +312,7 @@ html,
   border: none;
   border-radius: 20px;
   margin-bottom: 20px;
-  background: rgba(255, 255, 255, .2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .u4aWsLoginFormArea label {
@@ -316,7 +321,7 @@ html,
   font-size: 13px;
   padding-left: 15px;
   padding-bottom: 10px;
-  color: rgba(255, 255, 255, .7);
+  color: rgba(255, 255, 255, 0.7);
   display: block;
 }
 
@@ -328,10 +333,10 @@ html,
 textarea:focus,
 .form-signup input:focus,
 textarea:focus {
-  background: rgba(255, 255, 255, .3);
+  background: rgba(255, 255, 255, 0.3);
   border: none;
   /* padding-right: 40px; */
-  transition: background .5s ease;
+  transition: background 0.5s ease;
 }
 
 .u4aWsLoginBtnSignin {
@@ -360,14 +365,15 @@ textarea:focus {
   background-color: rgba(16, 89, 255, 1);
   left: 0px;
   top: 0px;
-  transition: all .5s ease, top .5s ease .5s, height .5s ease .5s, background-color .5s ease .75s;
+  transition: all 0.5s ease, top 0.5s ease 0.5s, height 0.5s ease 0.5s,
+    background-color 0.5s ease 0.75s;
 }
 
 .u4aWsLoginBody a.btn-signup:hover,
 a.u4aWsLoginBtnSignin:hover {
   cursor: pointer;
-  background-color: #0F4FE6;
-  transition: background-color .5s;
+  background-color: #0f4fe6;
+  transition: background-color 0.5s;
 }
 
 @media screen and (max-width: 500px) {
@@ -375,7 +381,7 @@ a.u4aWsLoginBtnSignin:hover {
     width: 300px;
   }
 
-  .u4aWsLoginHeader>h3 {
+  .u4aWsLoginHeader > h3 {
     margin-right: 15px;
   }
 
@@ -383,10 +389,6 @@ a.u4aWsLoginBtnSignin:hover {
     margin-left: 20px;
   }
 }
-
-
-
-
 
 .staffLoginBtn {
   width: 50px !important;
@@ -396,8 +398,20 @@ a.u4aWsLoginBtnSignin:hover {
   padding: 0px !important;
 }
 
-
-.u4aWsGuestLoginCard .sapFCardHeaderWrapper .sapFCardHeaderText .sapFCardHeaderTextFirstLine .sapFCardTitle {
+.u4aWsGuestLoginCard
+  .sapFCardHeaderWrapper
+  .sapFCardHeaderText
+  .sapFCardHeaderTextFirstLine
+  .sapFCardTitle {
   font-weight: bold;
   font-size: 1.2rem;
+}
+
+.u4aWsBrowserDraggable {
+  -webkit-app-region: drag !important;
+}
+
+.u4aWsBrowserDraggable .sapMBtn,
+.u4aWsBrowserDraggable .sapMSlt {
+  -webkit-app-region: no-drag;
 }

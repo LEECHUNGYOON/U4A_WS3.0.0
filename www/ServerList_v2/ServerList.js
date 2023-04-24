@@ -1040,6 +1040,15 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oMainPage = new sap.m.Page({
                 enableScrolling: false,
                 customHeader: new sap.m.Bar({
+                    contentLeft: [
+                        new sap.m.Image({
+                            width: "25px",
+                            src: PATHINFO.WS_LOGO
+                        }),
+                        new sap.m.Title({
+                            text: "U4A Workspace"
+                        }),
+                    ],
                     contentRight: [
                         new sap.m.Button({
                             icon: "sap-icon://less",
@@ -3190,8 +3199,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oBrowserOptions.minHeight = 800;
         oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0;
+
+        oBrowserOptions.titleBarStyle = 'hidden';
+        oBrowserOptions.autoHideMenuBar = true;
+
         oWebPreferences.partition = SESSKEY;
         oWebPreferences.browserkey = BROWSERKEY;
+        oWebPreferences.OBJTY = "MAIN";
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -3477,8 +3491,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                         text: "{/WSLANGU/ZMSG_WS_COMMON_001/002}", //"OK",
                         press: function () {
 
+                            // 서버리스트에서 파생된 자식 윈도우를 활성화 시킨다.
+                            // oAPP.fn.fnShowChildWindows();
+
                             // 전체 윈도우를 활성화 시킨다
-                            oAPP.fn.fnShowAllWindows();
+                            // oAPP.fn.fnShowAllWindows();
+
+                            // 메인 윈도우만 활성화 시킨다.
+                            oAPP.fn.fnShowMainWindow();
 
                             let oDialog = sap.ui.getCore().byId(sDialogId);
                             oDialog.close();
@@ -3497,6 +3517,33 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             .open();
 
     }; // end of oAPP.fn.showIllustratedMsg
+
+    /************************************************************************
+     * 서버리스트에서 파생된 자식 윈도우를 활성화 시킨다
+     ************************************************************************/
+    oAPP.fn.fnShowChildWindows = () => {
+
+        let aChildWin = CURRWIN.getChildWindows(),
+            iChildLength = aChildWin.length;
+
+        if (iChildLength <= 0) {
+            return;
+        }
+
+        for (var i = 0; i < iChildLength; i++) {
+
+            let oChildWin = aChildWin[i];
+            if (oChildWin.isDestroyed()) {
+                continue;
+            }
+
+            oChildWin.setAlwaysOnTop(true);
+            oChildWin.show();
+            oChildWin.setAlwaysOnTop(false);
+
+        }
+
+    }; // end of oAPP.fn.fnShowChildWindows
 
     /************************************************************************
      * 전체 윈도우를 활성화 시킨다
@@ -3528,6 +3575,37 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
     }; // end of oAPP.fn.fnShowAllWindows
+
+    /************************************************************************
+     * 메인 윈도우만 활성화 시킨다.
+     ************************************************************************/
+    oAPP.fn.fnShowMainWindow = () => {
+
+        let aBrowserList = REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
+            iBrowserListLength = aBrowserList.length;
+
+        for (var i = 0; i < iBrowserListLength; i++) {
+
+            const oBrows = aBrowserList[i];
+            if (oBrows.isDestroyed()) {
+                continue;
+            }
+
+            let oWebCon = oBrows.webContents,
+                oWebPref = oWebCon.getWebPreferences();
+
+            if (oWebPref.OBJTY !== "MAIN") {
+                continue;
+            }
+
+            oBrows.show();
+
+            return;
+
+        }
+
+
+    }; // end of oAPP.fn.fnShowMainWindow
 
     /************************************************************************
      * WS Floating Menu Open
@@ -3647,9 +3725,10 @@ window.onbeforeunload = (oEvent) => {
      * 사유: samesite 관련 이벤트 핸들러가 서버리스트에 존재하기 때문에
      * 서버리스트를 닫으면 실행 어플리케이션에서 ajax 통신을 못하게 되는 문제가 발생함.
      */
-    // CURRWIN.show();    
 
-    // return false;
+    CURRWIN.setAlwaysOnTop(true);
+    CURRWIN.show();
+    CURRWIN.setAlwaysOnTop(false);
 
     let aBrowserList = REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
         iBrowserListLength = aBrowserList.length,
@@ -3665,11 +3744,11 @@ window.onbeforeunload = (oEvent) => {
         try {
 
             var oWebCon = oBrows.webContents,
-            oWebPref = oWebCon.getWebPreferences();    
+                oWebPref = oWebCon.getWebPreferences();
 
         } catch (error) {
             continue;
-        }        
+        }
 
         if (oWebPref.OBJTY == "SERVERLIST") {
             continue;
@@ -3692,15 +3771,15 @@ window.onbeforeunload = (oEvent) => {
         return false;
     }
 
-    if(CURRWIN.isDestroyed()){
+    if (CURRWIN.isDestroyed()) {
         return false;
     }
-
-    CURRWIN.show();
 
     if (typeof sap === "undefined") {
         return false;
     }
+
+    // CURRWIN.show();
 
     oAPP.fn.showIllustratedMsg();
 

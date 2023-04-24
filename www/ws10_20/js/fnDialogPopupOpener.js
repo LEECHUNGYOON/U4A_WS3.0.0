@@ -1038,7 +1038,7 @@
 
     oAPP.fn.fnIconUrlCallback = function (events, res) {
 
-        debugger;
+        this(res);
 
 
     }; // end of oAPP.fn.fnIconUrlCallback
@@ -1047,8 +1047,6 @@
      * Icon Preview Popup Opener
      ************************************************************************/
     oAPP.fn.fnIconPreviewPopupOpener = (fnCallback) => {
-
-        debugger;
 
         // 콜백 유무 플래그
         let isCallback = ((typeof fnCallback === "function") ? "X" : "");
@@ -1169,6 +1167,14 @@
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
+         // 브라우저를 닫을때 타는 이벤트
+         oBrowserWindow.on('closed', () => {
+
+            oBrowserWindow = null;
+            parent.setBusy("");
 
         });
 

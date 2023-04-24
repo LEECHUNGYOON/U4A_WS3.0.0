@@ -636,6 +636,8 @@ oAPP.common = {};
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+        oBrowserOptions.titleBarStyle = 'hidden';
+        oBrowserOptions.autoHideMenuBar = true;
 
         // 브라우저 윈도우 기본 사이즈
         oBrowserOptions.x = mainWindowState.x;
@@ -645,7 +647,8 @@ oAPP.common = {};
         oBrowserOptions.minWidth = 1000;
         oBrowserOptions.minHeight = 800;
         oBrowserOptions.webPreferences.USERINFO = process.USERINFO;
-
+        oBrowserOptions.webPreferences.OBJTY = "MAIN";
+        
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);

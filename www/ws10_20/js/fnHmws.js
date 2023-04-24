@@ -976,10 +976,19 @@
     * IconPreviewPopup (callback)
     ************************************************************************/
     oAPP.fn.fnWS10Test88 = () => {
+        
+        parent.setBusy("X");
 
         oAPP.fn.fnIconPreviewPopupOpener(function (e) {
-            debugger;
 
+            if(e.RETCD === "C"){
+                parent.setBusy("");
+                return;
+            }
+            
+            sap.m.MessageToast.show(e.RTDATA);
+
+            parent.setBusy("");
 
         });
 

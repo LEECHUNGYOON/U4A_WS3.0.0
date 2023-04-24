@@ -11,6 +11,7 @@
         PATH = parent.PATH,
         FS = parent.FS,
         APP = parent.APP,
+        CURRWIN = parent.CURRWIN,
         USERDATA = parent.USERDATA,
         APPPATH = parent.APPPATH,
         WEBFRAME = parent.WEBFRAME;
@@ -21,7 +22,7 @@
             return;
         }
 
-        var oCurrWin = parent.REMOTE.getCurrentWindow();
+        var oCurrWin = REMOTE.getCurrentWindow();
         if (oCurrWin.isDestroyed()) {
             return;
         }
@@ -60,6 +61,130 @@
      * 초기 화면 그리기
      ************************************************************************/
     oAPP.fn.fnOnInitRendering = function () {
+
+        let oRootApp = new sap.m.App({
+            autoFocus: false,
+        }).addStyleClass("sapUiSizeCompact"),
+            oRootPage = new sap.m.Page({
+                enableScrolling: false,
+                customHeader: new sap.m.Bar({
+                    contentLeft: [
+                        new sap.m.Image({
+                            width: "25px",
+                            src: parent.PATHINFO.WS_LOGO
+                        }),
+                        new sap.m.Title({
+                            text: "U4A Workspace"
+                        }),
+                    ],
+                    contentRight: [
+
+                        new sap.m.Button({
+                            icon: "sap-icon://less",
+                            press: function () {
+
+                                CURRWIN.minimize();
+
+                            }                            
+                        }),
+                        new sap.m.Button("maxWinBtn", {
+                            icon: "sap-icon://header",
+                            press: function (oEvent) {
+
+                                let bIsMax = CURRWIN.isMaximized();
+
+                                if (bIsMax) {
+                                    CURRWIN.unmaximize();
+                                    return;
+                                }
+
+                                CURRWIN.maximize();
+
+                            }
+                        }),
+                        new sap.m.Button({
+                            icon: "sap-icon://decline",
+                            press: function () {
+
+                                CURRWIN.close();
+
+                            }
+                        }),
+
+                    ]
+                }).addStyleClass("u4aWsBrowserDraggable"),
+
+                // new sap.m.Toolbar({
+                //     content: [
+                //         new sap.m.Image({
+                //             width: "25px",
+                //             src: parent.PATHINFO.WS_LOGO
+                //         }),
+                //         new sap.m.Title({
+                //             text: "U4A Workspace"
+                //         }),
+
+                //         new sap.m.ToolbarSpacer(),
+
+                //         new sap.m.Button({
+                //             icon: "sap-icon://less",
+                //             press: function () {
+
+                //                 CURRWIN.minimize();                           
+
+                //             }
+                //         }).bindProperty("visible", "/PRC/MINI_INVISI", function (MINI_INVISI) {
+
+                //             return (MINI_INVISI === "X" ? false : true);
+
+                //         }),
+                //         new sap.m.Button("maxWinBtn", {
+                //             icon: "sap-icon://header",
+                //             press: function (oEvent) {
+
+                //                 let bIsMax = CURRWIN.isMaximized();
+
+                //                 if (bIsMax) {
+                //                     CURRWIN.unmaximize();
+                //                     return;
+                //                 }
+
+                //                 CURRWIN.maximize();
+
+                //             }
+                //         }),
+                //         new sap.m.Button({
+                //             icon: "sap-icon://decline",
+                //             press: function () {
+
+                //                 CURRWIN.close();
+
+                //                 // if (CURRWIN.isDestroyed()) {
+                //                 //     return;
+                //                 // }
+
+                //                 // CURRWIN.hide();
+
+                //                 // // 콜백 메소드가 있는지 확인
+                //                 // if (oAPP.attr.isCallback !== "X") {
+                //                 //     return;
+                //                 // }
+
+                //                 // // Parent가 존재하는지 확인
+                //                 // if (!PARWIN || PARWIN.isDestroyed()) {
+                //                 //     return;
+                //                 // }
+
+                //                 // PARWIN.webContents.send("if-icon-url-callback", { RETCD: "C", RTDATA: "" });
+
+                //                 // CURRWIN.setParentWindow(null);
+
+                //             }
+                //         }),
+                //     ]
+                // }).addStyleClass("u4aWsBrowserDraggable"),
+            });
+
 
         var oApp = new sap.m.NavContainer("WSAPP", {
             autoFocus: false,
@@ -121,7 +246,19 @@
         // 30번 페이지 생성하기
         oAPP.fn.fnWs30Creator();
 
-        oApp.placeAt("content");
+        // oApp.placeAt("content");        
+
+        oRootPage.addContent(new sap.m.VBox({
+            height: "100%",
+            renderType: "Bare",
+            items: [
+                oApp
+            ]
+        }));
+
+        oRootApp.addPage(oRootPage);
+
+        oRootApp.placeAt("content");
 
         // 단축키 설정
         APPCOMMON.setShortCut("WS10");
@@ -2291,7 +2428,7 @@
      * Default Browser 개인화 설정
      ************************************************************************/
     oAPP.fn.fnOnP13nExeDefaultBrowser = function () {
-        
+
         var FS = parent.FS;
 
         var oServerInfo = parent.getServerInfo(),
@@ -2476,7 +2613,7 @@
         // 선택된 브라우저가 그래도 없다면 첫번째 브라우저를 선택
         // 크롬, 엣지, IE 순
         let oSelectedBrowser = aNewInfo.find(elem => elem.SELECTED === true);
-        if(!oSelectedBrowser){
+        if (!oSelectedBrowser) {
             aNewInfo[0].SELECTED = true;
         }
 

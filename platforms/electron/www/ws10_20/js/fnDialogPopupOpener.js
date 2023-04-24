@@ -1038,7 +1038,7 @@
 
     oAPP.fn.fnIconUrlCallback = function (events, res) {
 
-        debugger;
+        this(res);
 
 
     }; // end of oAPP.fn.fnIconUrlCallback
@@ -1048,14 +1048,13 @@
      ************************************************************************/
     oAPP.fn.fnIconPreviewPopupOpener = (fnCallback) => {
 
-        debugger;
-
         // 콜백 유무 플래그
         let isCallback = ((typeof fnCallback === "function") ? "X" : "");
 
         // 이전에 콜백 바인딩된 펑션이 있을 경우 이벤트 해제
         if(oAPP.attr.fnBindCallback){
             IPCRENDERER.off("if-icon-url-callback", oAPP.attr.fnBindCallback);
+            delete oAPP.attr.fnBindCallback;
         }                
 
         // 파라미터에 콜백 펑션이 있을 경우에만 IPCRENDER 이벤트를 건다.
@@ -1168,6 +1167,14 @@
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
+         // 브라우저를 닫을때 타는 이벤트
+         oBrowserWindow.on('closed', () => {
+
+            oBrowserWindow = null;
+            parent.setBusy("");
 
         });
 
