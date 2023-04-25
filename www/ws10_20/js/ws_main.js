@@ -15,13 +15,13 @@
      **************************************************************************/
     oAPP.main.fnPredefineGlobalObject = function () {
 
-        var oMetaData = parent.getMetadata();
+        let oMetaData = parent.getMetadata();
 
         oAPP.attr.oShortcut = jQuery.extend(true, {}, shortcut);
         oAPP.attr.oServerInfo = parent.getServerInfo(); // 접속 서버 정보
         oAPP.attr.iAppSuggMaxCnt = 20; // WS10 의 APPID Suggestion Max 갯수
         oAPP.attr.iAppNameMaxLength = 15; // WS10 의 어플리케이션명 이름의 Max 길이  
-        // oAPP.attr.iSessionTimeout = 1; // 세션타임아웃 시간 (1: 1분)
+        // oAPP.attr.iSessionTimeout = 0.5; // 세션타임아웃 시간 (1: 1분)
         oAPP.attr.iSessionTimeout = oMetaData.STIME; // 세션타임아웃 시간 (1: 1분)
         // oAPP.attr.iServerSessionTimeout = oMetaData.STIME - 1; // 서버 세션 타임아웃 시간 (1: 1분)
         oAPP.attr.bIsNwActive = true; // 네트워크 연결 상태 Flag        
@@ -344,6 +344,7 @@
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
 
+            // 현재 브라우저의 이벤트 핸들러
             _attachCurrentWindowEvents();
 
             // Register illustration Message Pool
@@ -374,10 +375,10 @@
             oAPP.fn.fnOnInitP13nSettings(); // #[ws_fn_01.js]
 
             // 서버 세션 타임아웃 체크            
-            oAPP.fn.fnServerSession();
+            oAPP.fn.fnServerSession(); // #[fnServerSession.js]
 
             // DOM 감지
-            oAPP.fn.fnSetMutationObserver(); // #[ws_fn_03.js]           
+            oAPP.fn.fnSetMutationObserver(); // #[ws_fn_03.js]
 
             // Loading Page
             parent.showLoadingPage('');
@@ -462,6 +463,11 @@
             return false;
         }
 
+        // 브라우저의 닫기 버튼을 누른게 아니라면 종료 하지 않음
+        if (oAPP.attr.isPressWindowClose !== "X") {
+            return false;
+        }
+
         // 같은 세션의 브라우저 갯수 체크
         var aSameBrowser = oAPP.fn.fnGetSameBrowsers(); // #[ws_fn_02.js]        
 
@@ -495,11 +501,12 @@
 
         return "";
 
-    };
+    }; // end of window.onbeforeunload
 
     function lf_MsgCallback(sAction) {
 
-        delete oAPP.attr.isBrowserCloseLogoutMsgOpen;
+        delete oAPP.attr.isBrowserCloseLogoutMsgOpen; // Logout 메시지 Open 여부 Flag
+        delete oAPP.attr.isPressWindowClose; //  // 브라우저의 닫기 버튼을 눌렀는지 여부 Flag
 
         if (sAction != "YES") {
             return;

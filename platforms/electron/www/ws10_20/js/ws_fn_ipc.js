@@ -14,10 +14,9 @@
      ************************************************************************/
     oAPP.fn.fnIpcMain_if_session_time = function (event, res) {
 
-        var iSessionTime = oAPP.attr.iSessionTimeout; // 세션 타임아웃 시간
-        // var iSessionTime = 0.1;
+        let iSessionTime = oAPP.attr.iSessionTimeout; // 세션 타임아웃 시간        
 
-        var sSessionKey = parent.getSessionKey();
+        let sSessionKey = parent.getSessionKey();
         if (sSessionKey != res) {
             return;
         }
@@ -39,7 +38,7 @@
 
         zconsole.log("fnIpcMain_if_exam_move");
 
-        var oMsg = res,
+        let oMsg = res,
             MODE = oMsg.MODE,
             sAppID = oMsg.APPID,
             BROWSERKEY = parent.getBrowserKey();
@@ -201,7 +200,9 @@
                 // onBeforeunload event 해제
                 oAPP.main.fnDetachBeforeunloadEvent();
 
-                oAPP.main.fnBeforeunload("");
+                // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
+                // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
+                oAPP.main.fnBeforeunload();
 
                 break;
 
@@ -326,21 +327,27 @@
         let PRCCD = oRes.PRCCD;
 
         switch (PRCCD) {
-            case "01": // 같은 SYSID & CLIENT에 ILLUST 메시지 팝업 오픈
+            case "01": // [컨트롤러 클래스 눌렀을 때 팝업] 같은 SYSID & CLIENT에 ILLUST 메시지 팝업 오픈
 
                 oAPP.fn.fnIpcMain_browser_interconnection_01(oRes);
 
                 return;
 
-            case "02": // 같은 SYSID & CLIENT에 ILLUST 메시지 팝업 닫기
+            case "02": // [컨트롤러 클래스 눌렀을 때 팝업] 같은 SYSID & CLIENT에 ILLUST 메시지 팝업 닫기
 
                 oAPP.fn.fnIpcMain_browser_interconnection_02(oRes);
 
                 return;
 
-            case "03": // 같은 SYSID & CLIENT에 ILLUST 메시지 변경
+            case "03": // [컨트롤러 클래스 눌렀을 때 팝업] 같은 SYSID & CLIENT에 ILLUST 메시지 변경
 
                 oAPP.fn.fnIpcMain_browser_interconnection_03(oRes);
+
+                return;
+
+            case "04": // 전체 윈도우를 강제로 닫을 경우
+
+                oAPP.fn.fnIpcMain_browser_interconnection_04(oRes);
 
                 return;
 
@@ -354,7 +361,7 @@
      * 전체 브라우저간 통신
      * **********************************************************************
      * # PRCCD: 01 
-     *   - 같은 SYSID & CLIENT에 ILLUST 메시지 팝업 오픈
+     *   - 컨트롤러 클래스 버튼 눌렀을 때, 같은 SYSID & CLIENT에 ILLUST 메시지 팝업 오픈
      ************************************************************************/
     oAPP.fn.fnIpcMain_browser_interconnection_01 = (oRes) => {
 
@@ -375,7 +382,7 @@
      * 전체 브라우저간 통신
      * **********************************************************************
      * # PRCCD: 02 
-     *   - 같은 SYSID & CLIENT에 ILLUST 메시지 팝업 닫기
+     *   - 컨트롤러 클래스 버튼 눌렀을 때, 같은 SYSID & CLIENT에 ILLUST 메시지 팝업 닫기
      ************************************************************************/
     oAPP.fn.fnIpcMain_browser_interconnection_02 = (oRes) => {
 
@@ -395,7 +402,7 @@
      * 전체 브라우저간 통신
      * **********************************************************************
      * # PRCCD: 03
-     *   - 같은 SYSID & CLIENT에 ILLUST 메시지 변경
+     *   - 컨트롤러 클래스 버튼 눌렀을 때, 같은 SYSID & CLIENT에 ILLUST 메시지 변경
      ************************************************************************/
     oAPP.fn.fnIpcMain_browser_interconnection_03 = (oRes) => {
 
@@ -415,5 +422,23 @@
         }
 
     }; // end of oAPP.fn.fnIpcMain_browser_interconnection_03
+
+    /************************************************************************
+     * 전체 브라우저간 통신
+     * **********************************************************************
+     * # PRCCD: 04
+     *   - 전체 브라우저 닫기
+     ************************************************************************/
+    oAPP.fn.fnIpcMain_browser_interconnection_04 = (oRes) => {
+
+        // onBeforeunload event 해제
+        oAPP.main.fnDetachBeforeunloadEvent();
+
+        // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
+        // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
+        oAPP.main.fnBeforeunload();
+
+
+    }; // end of oAPP.fn.fnIpcMain_browser_interconnection_04
 
 })(window, $, oAPP);

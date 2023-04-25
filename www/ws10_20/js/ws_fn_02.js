@@ -991,12 +991,7 @@
             }
 
             var oWebCon = oBrows.webContents,
-                oWebPref = oWebCon.getWebPreferences();
-
-            // 팝업같은 경우는 카운트 하지 않는다.
-            if (oWebPref.OBJTY) {
-                continue;
-            };
+                oWebPref = oWebCon.getWebPreferences();       
 
             // session 정보가 없으면 skip.
             var sSessionKey = oWebPref.partition;
@@ -1014,6 +1009,14 @@
             if (sKey != sSessionKey) {
                 continue;
             }
+            
+            /**
+             * 메인이 아닌경우는 카운트 하지 않음.
+             * (예: 팝업류)
+             */
+            if (oWebPref.OBJTY !== "MAIN") {
+                continue;
+            };
 
             // 같은 세션키를 가진 브라우저 갯수를 카운트한다.
             iSamekeys++;
@@ -1242,7 +1245,7 @@
      * Electron Browser들 전체 활성/비활성화
      ************************************************************************/
     oAPP.fn.fnChildWindowShow = function (bShow) {
-
+        
         var oCurrWin = REMOTE.getCurrentWindow();
         if (oCurrWin.isDestroyed()) {
             return;

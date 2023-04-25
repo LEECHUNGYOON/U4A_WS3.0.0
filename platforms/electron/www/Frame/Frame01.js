@@ -630,12 +630,11 @@ oAPP.common = {};
             // oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
             oBrowserOptions = JSON.parse(JSON.stringify(oDefaultOption.browserWindow));
 
-        // oBrowserOptions.title = "U4A Workspace - #Main";
+        oBrowserOptions.title = "U4A Workspace - #Main";
         oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.show = false;
-        oBrowserOptions.webPreferences.partition = SESSKEY;
-        oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
+        oBrowserOptions.show = false;       
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+        
         oBrowserOptions.titleBarStyle = 'hidden';
         oBrowserOptions.autoHideMenuBar = true;
 
@@ -646,6 +645,9 @@ oAPP.common = {};
         oBrowserOptions.height = mainWindowState.height;
         oBrowserOptions.minWidth = 1000;
         oBrowserOptions.minHeight = 800;
+
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
         oBrowserOptions.webPreferences.USERINFO = process.USERINFO;
         oBrowserOptions.webPreferences.OBJTY = "MAIN";
         

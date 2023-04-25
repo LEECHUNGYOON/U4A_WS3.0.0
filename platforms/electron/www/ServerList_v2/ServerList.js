@@ -21,6 +21,7 @@ const
     XMLJS = require('xml-js'),
     FS = REMOTE.require('fs'),
     RANDOM = require("random-key"),
+    IPCRENDERER = require('electron').ipcRenderer,
 
     PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
     WSUTIL = parent.require(PATHINFO.WSUTIL),
@@ -131,8 +132,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         jQuery.sap.require("sap.m.MessageBox");
 
-        // Electron App 이벤트 핸들러
-        // _attachBrowserWindowEventHandle();
+        // 작업표시줄 메뉴 생성하기
+        _createTaskBarMenu();
 
         // 현재 브라우저의 이벤트 핸들러
         _attachCurrentWindowEvents();
@@ -3013,15 +3014,174 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     } // end of _attachCurrentWindowEvents
 
     /************************************************************************
-     * Electron App 이벤트 핸들러
+     * 작업표시줄 메뉴 만들기
      ************************************************************************/
-    function _attachBrowserWindowEventHandle() {
+    function _createTaskBarMenu() {
 
-        APP.on("browser-window-focus", _attachBrowserWindowFocus); // 전체 윈도우의 focus 이벤트
+        CURRWIN.setThumbarButtons([
+            {
+                tooltip: 'Shutt Down',
+                icon: PATH.join(APPPATH, "img", "shutdown.png"),
+                click() {
 
-        APP.on("browser-window-blur", _attachBrowserWindowBlur); // 전체 윈도우의 blur 이벤트
+                    CURRWIN.setAlwaysOnTop(true);
+                    CURRWIN.show();
+                    CURRWIN.setAlwaysOnTop(false);
 
-    } // end of _attachBrowserWindowEventHandle
+                    _showShuttdownAskPopup(); // 프로그램 종료 질문 팝업
+                }
+            },
+
+        ])
+
+    } // end of _createTaskBarMenu
+
+    /************************************************************************
+     * 프로그램 종료 질문 팝업
+     ************************************************************************/
+    function _showShuttdownAskPopup() {
+
+        let sDialogId = "u4aProgramExitDlg",
+            oDialog = sap.ui.getCore().byId(sDialogId);
+
+        if (oDialog) {
+
+            if (oDialog.isOpen()) {
+                return;
+            }
+
+            oDialog.open();
+            return;
+
+        }
+
+        new sap.m.Dialog(sDialogId, {
+
+            // properties
+            showHeader: false,
+            horizontalScrolling: false,
+            verticalScrolling: false,
+
+            // aggregations
+            content: [
+                new sap.m.IllustratedMessage({
+                    enableDefaultTitleAndDescription: false,
+                    // title: "{/WSLANGU/ZMSG_WS_COMMON_001/048} \n {/WSLANGU/ZMSG_WS_COMMON_001/049}", // "Unsaved data will be lost. Are you sure you want to exit the Program?",
+                    // description: "　",
+                    title: "　",
+                    description: "{/WSLANGU/ZMSG_WS_COMMON_001/048} \n {/WSLANGU/ZMSG_WS_COMMON_001/049}", // "Unsaved data will be lost. Are you sure you want to exit the Program?"
+                    illustrationType: "sapIllus-Connection",
+                    illustrationSize: sap.m.IllustratedMessageSize.Dialog,
+
+                }),
+                new sap.m.HBox({
+                    renderType: "Bare",
+                    justifyContent: "Center",
+                    items: [
+                        new sap.m.Button({
+                            type: sap.m.ButtonType.Emphasized,
+                            text: "{/WSLANGU/ZMSG_WS_COMMON_001/002}", //"OK",
+                            press: function () {
+
+                                oAPP.fn.fnProgramShuttDown(); // 전체 프로그램 종료
+
+                                setInterval(() => {
+
+                                    // 10번 메인 프로그램이 다 죽었는지 체크
+                                    if (!_checkMainProgramExit()) {
+                                        return;
+                                    }
+
+                                    APP.exit();
+
+                                }, 500);
+
+                            }
+                        }).addStyleClass("sapUiSmallMarginEnd"),
+                        new sap.m.Button({
+                            text: "{/WSLANGU/ZMSG_WS_COMMON_001/003}", //"CANCEL",
+                            press: function () {
+
+                                let sDialogId = "u4aProgramExitDlg",
+                                    oDialog = sap.ui.getCore().byId(sDialogId);
+
+                                oDialog.close();
+
+                            }
+                        }),
+                    ]
+                })
+            ],
+
+            // Events
+            escapeHandler: () => { }, // esc 키 방지
+
+        })
+            .addStyleClass(sDialogId)
+            .open();
+
+
+    } // end of _showShuttdownAskPopup
+
+    /************************************************************************
+     * MAIN 프로그램이 종료 되었는지 확인
+     ************************************************************************/
+    function _checkMainProgramExit() {
+
+        let aBrowserList = REMOTE.BrowserWindow.getAllWindows(), // 떠있는 브라우저 전체
+            iBrowserListLength = aBrowserList.length,
+            iChildLength = 0;
+
+        for (var i = 0; i < iBrowserListLength; i++) {
+
+            const oBrows = aBrowserList[i];
+            if (oBrows && oBrows.isDestroyed()) {
+                continue;
+            }
+
+            try {
+
+                var oWebCon = oBrows.webContents,
+                    oWebPref = oWebCon.getWebPreferences();
+
+            } catch (error) {
+                continue;
+            }
+
+            if (oWebPref.OBJTY !== "MAIN") {
+                continue;
+            }
+
+            // if (oWebPref.OBJTY == "SERVERLIST") {
+            //     continue;
+            // }
+
+            // if (oWebPref.OBJTY == "FLTMENU") {
+            //     continue;
+            // }
+
+            ++iChildLength;
+
+        }
+
+        if (iChildLength === 0) {
+            return true;
+        }
+
+        return false;
+
+    } // end of _checkMainProgramExit
+
+    // /************************************************************************
+    //  * Electron App 이벤트 핸들러
+    //  ************************************************************************/
+    // function _attachBrowserWindowEventHandle() {
+
+    //     APP.on("browser-window-focus", _attachBrowserWindowFocus); // 전체 윈도우의 focus 이벤트
+
+    //     APP.on("browser-window-blur", _attachBrowserWindowBlur); // 전체 윈도우의 blur 이벤트
+
+    // } // end of _attachBrowserWindowEventHandle
 
     /************************************************************************
      * 전체 윈도우의 focus 이벤트
@@ -3190,18 +3350,19 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oThemeInfo = oSAPServerInfo.oThemeInfo;
 
         // 브라우저 윈도우 기본 사이즈
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.show = false;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+
+        oBrowserOptions.titleBarStyle = 'hidden';
+        oBrowserOptions.autoHideMenuBar = true;
+
         oBrowserOptions.x = mainWindowState.x;
         oBrowserOptions.y = mainWindowState.y;
         oBrowserOptions.width = mainWindowState.width;
         oBrowserOptions.height = mainWindowState.height;
         oBrowserOptions.minWidth = 1000;
         oBrowserOptions.minHeight = 800;
-        oBrowserOptions.show = false;
-        oBrowserOptions.opacity = 0.0;
-
-        oBrowserOptions.titleBarStyle = 'hidden';
-        oBrowserOptions.autoHideMenuBar = true;
 
         oWebPreferences.partition = SESSKEY;
         oWebPreferences.browserkey = BROWSERKEY;
@@ -3519,6 +3680,19 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     }; // end of oAPP.fn.showIllustratedMsg
 
     /************************************************************************
+     * 전체 프로그램 종료
+     ************************************************************************/
+    oAPP.fn.fnProgramShuttDown = () => {
+
+        let oSendData = {
+            PRCCD: "04",
+        };
+
+        IPCRENDERER.send("if-browser-interconnection", oSendData);
+
+    }; // end of oAPP.fn.fnProgramShuttDown
+
+    /************************************************************************
      * 서버리스트에서 파생된 자식 윈도우를 활성화 시킨다
      ************************************************************************/
     oAPP.fn.fnShowChildWindows = () => {
@@ -3600,10 +3774,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             oBrows.show();
 
-            return;
-
         }
-
 
     }; // end of oAPP.fn.fnShowMainWindow
 
@@ -3701,7 +3872,7 @@ window.addEventListener("load", () => {
 
 });
 
-window.onbeforeunload = (oEvent) => {
+window.onbeforeunload = () => {
 
     // // 작업표시줄에서 닫기 눌렀을 경우
     // if(oEvent.defaultPrevented){
@@ -3758,11 +3929,6 @@ window.onbeforeunload = (oEvent) => {
             continue;
         }
 
-        // // 서버리스트, Floting menu는 카운트 제외
-        // if (oWebPref.OBJTY == "SERVERLIST" || oWebPref.OBJTY == "FLTMENU") {
-        //     continue;
-        // }
-
         ++iChildLength;
 
     }
@@ -3778,8 +3944,6 @@ window.onbeforeunload = (oEvent) => {
     if (typeof sap === "undefined") {
         return false;
     }
-
-    // CURRWIN.show();
 
     oAPP.fn.showIllustratedMsg();
 

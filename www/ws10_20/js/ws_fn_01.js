@@ -106,6 +106,9 @@
                             icon: "sap-icon://decline",
                             press: function () {
 
+                                // 브라우저의 닫기 버튼 눌렀다는 플래그
+                                oAPP.attr.isPressWindowClose = "X";
+
                                 CURRWIN.close();
 
                             }

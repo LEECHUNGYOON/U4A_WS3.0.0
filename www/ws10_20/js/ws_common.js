@@ -1626,7 +1626,7 @@
             }
 
             // OBJTY가 같은것인지
-            if (OBJTY !== OBJTY) {
+            if (sOBJTY !== OBJTY) {
                 continue;
             }
 
