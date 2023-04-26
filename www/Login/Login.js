@@ -552,7 +552,7 @@ let oAPP = (function () {
                         src: PATHINFO.WS_LOGO
                     }),
                     new sap.m.Title({
-                        text: "U4A Workspace Login"
+                        text: "U4A Workspace - Login"
                     }),
                 ],
                 contentRight: [
@@ -651,15 +651,7 @@ let oAPP = (function () {
         var oLoginPage = oAPP.fn.fnGetLoginPage();
 
         oApp.addPage(oLoginPage);
-        oApp.placeAt("content");
-
-        oApp.addEventDelegate({
-            onAfterRendering: function () {
-
-                oAPP.fn.fnOnSmoothLoading();
-
-            }
-        });
+        oApp.placeAt("content");      
 
     }; // end of oAPP.fn.fnOnInitRendering   
 
@@ -1486,7 +1478,7 @@ let oAPP = (function () {
 
             parent.setBusy('');
 
-            parent.CURRWIN.setTitle("U4A Workspace - #Main");
+            parent.CURRWIN.setTitle("U4A Workspace - Main");
 
             // [async] 권한이 있으면 성공적으로 로그인 후 10번으로 이동
             oAPP.fn.fnOnLoginSuccess(oResultData);
@@ -2565,6 +2557,27 @@ let oAPP = (function () {
             // 로그인 페이지 초기 렌더링
             oAPP.fn.fnOnInitRendering();
 
+            /**
+             * 무조건 맨 마지막에 수행 되어야 함!!
+             */
+
+            // 자연스러운 로딩
+            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function () {
+
+                if (!oAPP.attr.UIUpdated) {
+
+                    setTimeout(() => {
+                        $('#content').fadeIn(300, 'linear');
+                    }, 300);
+
+                    oAPP.attr.UIUpdated = "X";
+
+                    parent.document.getElementById("u4aWsBusyIndicator").style.visibility = "hidden";
+
+                }
+
+            });
+
         });
 
     }; // end of oAPP.fn.fnAttachInit
@@ -2637,7 +2650,7 @@ window.addEventListener("offline", oAPP.fn.fnNetworkCheckerOffline, false);
 document.addEventListener('DOMContentLoaded', function () {
 
     // 브라우저 타이틀 변경
-    parent.CURRWIN.setTitle("U4A Workspace - #Login");
+    parent.CURRWIN.setTitle("U4A Workspace - Login");
 
     // 브라우저 zoom 레벨을 수정 한 후 로그인 페이지로 이동 시 기본 zoom 레벨 적용
     parent.WEBFRAME.setZoomLevel(0);

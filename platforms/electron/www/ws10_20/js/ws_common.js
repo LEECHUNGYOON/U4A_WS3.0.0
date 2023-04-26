@@ -2435,6 +2435,16 @@
 
     }; // end of oAPP.common.fnIllustMsgDialogClose
 
+    /**
+     * WS Header Title 변경     
+     */
+    oAPP.common.setWSHeadText = (sText) => {
+
+        let oHeaderText = sap.ui.getCore().byId("u4aWsHeaderTitle");
+        oHeaderText.setText(sText);
+
+    }; // end of oAPP.common.setWSHeadText
+
 })(window, $, oAPP);
 
 // application 초기 정보

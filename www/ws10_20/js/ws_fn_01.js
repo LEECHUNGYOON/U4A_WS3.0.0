@@ -73,8 +73,8 @@
                             width: "25px",
                             src: parent.PATHINFO.WS_LOGO
                         }),
-                        new sap.m.Title({
-                            text: "U4A Workspace"
+                        new sap.m.Title("u4aWsHeaderTitle", {
+                            text: "U4A Workspace - Main"
                         }),
                     ],
                     contentRight: [
@@ -117,77 +117,7 @@
                     ]
                 }).addStyleClass("u4aWsBrowserDraggable"),
 
-                // new sap.m.Toolbar({
-                //     content: [
-                //         new sap.m.Image({
-                //             width: "25px",
-                //             src: parent.PATHINFO.WS_LOGO
-                //         }),
-                //         new sap.m.Title({
-                //             text: "U4A Workspace"
-                //         }),
-
-                //         new sap.m.ToolbarSpacer(),
-
-                //         new sap.m.Button({
-                //             icon: "sap-icon://less",
-                //             press: function () {
-
-                //                 CURRWIN.minimize();                           
-
-                //             }
-                //         }).bindProperty("visible", "/PRC/MINI_INVISI", function (MINI_INVISI) {
-
-                //             return (MINI_INVISI === "X" ? false : true);
-
-                //         }),
-                //         new sap.m.Button("maxWinBtn", {
-                //             icon: "sap-icon://header",
-                //             press: function (oEvent) {
-
-                //                 let bIsMax = CURRWIN.isMaximized();
-
-                //                 if (bIsMax) {
-                //                     CURRWIN.unmaximize();
-                //                     return;
-                //                 }
-
-                //                 CURRWIN.maximize();
-
-                //             }
-                //         }),
-                //         new sap.m.Button({
-                //             icon: "sap-icon://decline",
-                //             press: function () {
-
-                //                 CURRWIN.close();
-
-                //                 // if (CURRWIN.isDestroyed()) {
-                //                 //     return;
-                //                 // }
-
-                //                 // CURRWIN.hide();
-
-                //                 // // 콜백 메소드가 있는지 확인
-                //                 // if (oAPP.attr.isCallback !== "X") {
-                //                 //     return;
-                //                 // }
-
-                //                 // // Parent가 존재하는지 확인
-                //                 // if (!PARWIN || PARWIN.isDestroyed()) {
-                //                 //     return;
-                //                 // }
-
-                //                 // PARWIN.webContents.send("if-icon-url-callback", { RETCD: "C", RTDATA: "" });
-
-                //                 // CURRWIN.setParentWindow(null);
-
-                //             }
-                //         }),
-                //     ]
-                // }).addStyleClass("u4aWsBrowserDraggable"),
             });
-
 
         var oApp = new sap.m.NavContainer("WSAPP", {
             autoFocus: false,
@@ -1467,10 +1397,14 @@
                     let sModeTxt = IS_EDIT == "X" ? sChangeTxt : sDispTxt,
                         sActTxt = ACTST == "A" ? sActiveTxt : sInactTxt;
 
-                    let sTitle = "U4A Workspace - #";
+                    let sTitle = "U4A Workspace - ";
                     sTitle += `${APPID} ${sModeTxt} ${sActTxt}`;
 
+                    // 브라우저 타이틀 변경
                     parent.CURRWIN.setTitle(sTitle);
+
+                    // 윈도우 헤더 타이틀 변경
+                    oAPP.common.setWSHeadText(sTitle);
 
                     switch (ACTST) {
                         case "A":

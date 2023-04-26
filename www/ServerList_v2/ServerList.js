@@ -31,8 +31,7 @@ const
 XHR.withCredentials = true;
 
 const
-    SAPGUIVER = 7700,
-    ZU4A_WBC_URL = "/zu4a_wbc/u4a_ipcmain",
+    SAPGUIVER = 7700,    
     POPID = "editPopup",
     SERVER_TBL_ID = "serverlist_table",
     BINDROOT = "/SAVEDATA";

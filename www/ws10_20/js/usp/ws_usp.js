@@ -517,11 +517,14 @@
                         let sModeTxt = IS_EDIT == "X" ? sChangeTxt : sDispTxt,
                             sActTxt = ACTST == "A" ? sActiveTxt : sInactTxt;
 
-                        let sTitle = "U4A Workspace - #";
+                        let sTitle = "U4A Workspace - ";
                         sTitle += `${APPID} ${sModeTxt} ${sActTxt}`;
 
+                        // 브라우저 타이틀 변경
                         parent.CURRWIN.setTitle(sTitle);
 
+                        // 윈도우 헤더 타이틀 변경
+                        oAPP.common.setWSHeadText(sTitle);
 
                         return ACTST == "A" ? sActTxt : sInactTxt;
                     }
@@ -659,7 +662,7 @@
                     }
                 }),
 
-            oMimeBtn = new sap.m.Button("ws30_MimeBtn",{
+            oMimeBtn = new sap.m.Button("ws30_MimeBtn", {
                 icon: "sap-icon://picture",
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10"), // MIME Repository
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10") + " (Ctrl+Shift+F12)", // MIME Repository (Ctrl+Shift+F12)
@@ -3186,7 +3189,13 @@
             oUspTreeTable.detachRowsUpdated(oAPP.fn.fnAttachRowsUpdateInit);
         }
 
-        parent.CURRWIN.setTitle("U4A Workspace - #Main");
+        let sTitle = "U4A Workspace - Main";       
+
+        // 브라우저 타이틀 변경
+        parent.CURRWIN.setTitle(sTitle);
+
+        // 윈도우 헤더 타이틀 변경
+        oAPP.common.setWSHeadText(sTitle);
 
     } // end of _fnKillUserSessionCb
 

@@ -415,3 +415,178 @@ a.u4aWsLoginBtnSignin:hover {
 .u4aWsBrowserDraggable .sapMSlt {
   -webkit-app-region: no-drag;
 }
+
+/* BusyIndicator */
+#u4aWsBusyIndicator {
+  right: 0;
+}
+
+.u4aWsBusyIndicator {
+  z-index: 2000000;
+}
+
+.sapUiUserSelectable {
+  -webkit-touch-callout: text;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.sapUiBusy {
+  display: block;
+  width: 48px;
+  height: 48px;
+  outline: none;
+  cursor: wait;
+  top: 0 !important;
+}
+
+#u4aWsBusyIndicator > .sapUiLocalBusyIndicatorFade {
+  cursor: wait;
+}
+
+.sapUiLocalBusyIndicatorSizeBig {
+  font-size: 2rem;
+  background-color: transparent;
+}
+
+.sapUiLocalBusyIndicatorFade {
+  opacity: 1;
+}
+
+.sapUiLocalBusyIndicator {
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+  outline: none;
+}
+
+.sapUiLocalBusyIndicator {
+  background-color: rgba(247, 247, 247, 0.72);
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.sapUiLocalBusyIndicatorAnimation {
+  position: absolute;
+  width: 3em;
+  top: 50%;
+  left: 50%;
+}
+
+.sapUiLocalBusyIndicatorAnimStandard > div:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.sapUiLocalBusyIndicatorAnimStandard > div:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.sapUiLocalBusyIndicatorAnimStandard > div {
+  animation: sapUiBusyAnimationStandard 1.8s infinite ease-in-out;
+}
+
+.sapUiLocalBusyIndicatorAnimation > div,
+.sapUiLocalBusyIndicatorAnimation > div::before,
+.sapUiLocalBusyIndicatorAnimation > div::after {
+  animation-fill-mode: both;
+}
+
+.sapUiLocalBusyIndicatorAnimation > div {
+  width: 1em;
+  height: 1em;
+  border-radius: 100%;
+  display: block;
+  float: left;
+  margin: 0px;
+  position: relative;
+  top: -0.5em;
+  left: -1.5em;
+  text-indent: 1px;
+}
+
+.sapUiLocalBusyIndicatorAnimStandard > div {
+  animation: sapUiBusyAnimationStandard 1.8s infinite ease-in-out;
+}
+
+.sapUiLocalBusyIndicatorAnimation > div::before {
+  background: #0854a0;
+  animation-duration: 0ms;
+}
+
+.sapUiLocalBusyIndicatorAnimStandard > div::before {
+  animation: sapUiBusyAnimationStandardBackground 1.8s infinite ease-in-out;
+}
+
+.sapUiLocalBusyIndicatorAnimation > div::before {
+  background: #0a6ed1;
+}
+
+.sapUiLocalBusyIndicatorAnimation > div::before,
+.sapUiLocalBusyIndicatorAnimation > div::after {
+  content: "";
+  opacity: 1;
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+}
+
+.sapUiLocalBusyIndicatorAnimation > div::after {
+  box-shadow: inset 0 0 0 0 #0854a0;
+}
+
+.sapUiLocalBusyIndicatorAnimStandard > div::after {
+  animation: sapUiBusyAnimationStandardShadow 1.8s infinite ease-in-out;
+}
+
+.sapUiLocalBusyIndicatorAnimation > div::after {
+  box-shadow: inset 0 0 2px 1px rgb(10 110 209 / 80%);
+}
+
+.sapUiLocalBusyIndicatorAnimation > div {
+  width: 1em;
+  height: 1em;
+  border-radius: 100%;
+  display: block;
+  float: left;
+  margin: 0px;
+  position: relative;
+  top: -0.5em;
+  left: -1.5em;
+  text-indent: 1px;
+}
+
+.sapUiLocalBusyIndicatorSizeBig {
+  font-size: 2rem;
+  background-color: transparent;
+}
+
+.sapUiLocalBusyIndicator {
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+  outline: none;
+}
+
+.sapUiLocalBusyIndicatorFade {
+  opacity: 1;
+}
+
+@keyframes sapUiBusyAnimationStandard {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.4);
+  }
+
+  40% {
+    transform: scale(1);
+  }
+}

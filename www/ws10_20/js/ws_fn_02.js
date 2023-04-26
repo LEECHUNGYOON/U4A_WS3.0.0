@@ -305,7 +305,11 @@
             // 10번 프로그램 단축키 설정
             APPCOMMON.setShortCut("WS10");
 
-            parent.CURRWIN.setTitle("U4A Workspace - #Main");
+            // 브라우저 타이틀 변경
+            parent.CURRWIN.setTitle("U4A Workspace - Main");
+
+            // 윈도우 헤더 타이틀 변경
+            oAPP.common.setWSHeadText("U4A Workspace - Main");
 
             // busy 끄고 Lock 끄기
             oAPP.common.fnSetBusyLock("");

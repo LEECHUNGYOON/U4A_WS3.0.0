@@ -91,6 +91,8 @@ oAPP.fn.fnOnParentWindowClosedEvent = () => {
         return;
     }
 
+    oAPP.attr.isPressWindowClose = "X";
+    
     CURRWIN.close();
 
 }; // end of oAPP.fn.fnOnParentWindowClosedEvent
@@ -670,7 +672,7 @@ oAPP.fn.fnInitRendering = function () {
 
                             if (CURRWIN.isDestroyed()) {
                                 return;
-                            }
+                            }                            
 
                             CURRWIN.hide();
 
@@ -1491,3 +1493,14 @@ function sendAjaxAsync(pOptions, oFormData) {
     });
 
 } // end of sendAjax
+
+
+window.onbeforeunload = () => {
+
+    // 브라우저의 닫기 버튼을 누른게 아니라면 종료 하지 않음
+    if (oAPP.attr.isPressWindowClose !== "X") {
+        return false;
+    }
+
+
+};
