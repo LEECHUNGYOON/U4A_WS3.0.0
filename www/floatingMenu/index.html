@@ -2,7 +2,8 @@
 <html lang="ko">
 
 <head>
-    <meta charset="UTF-8">    
+    <meta charset="UTF-8">
+    <title>Document</title>
 </head>
 
 <body>
@@ -23,13 +24,13 @@
             PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
             PATHINFO = require(PATHINFOURL),
             WSERR = require(PATHINFO.WSTRYCATCH),
-            WSUTIL = require(PATHINFO.WSUTIL);
+            WSUTIL = require(PATHINFO.WSUTIL);          
 
         var zconsole = WSERR(window, document, console);
 
         let oAPP = {};
 
-        oAPP.oSettings = parent.WSUTIL.getWsSettingsInfo(),
+            oAPP.oSettings = parent.WSUTIL.getWsSettingsInfo(),
             oAPP.LANGU = oAPP.oSettings.globalLanguage;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -55,7 +56,7 @@
             oAPP.MSG.M007 = parent.WSUTIL.getWsMsgClsTxt(oAPP.LANGU, "ZMSG_WS_COMMON_001", "045"); // Source Patterns
             oAPP.MSG.M008 = parent.WSUTIL.getWsMsgClsTxt(oAPP.LANGU, "ZMSG_WS_COMMON_001", "045"); // Source Patterns
 
-
+            
 
 
 
@@ -106,7 +107,6 @@
 
 
         }); //document.addEventListener('DOMContentLoaded', () => {
-
 
         window.onbeforeunload = function () {
 

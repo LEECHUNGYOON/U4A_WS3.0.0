@@ -184,6 +184,7 @@
          ************************************************************************/
          var require = parent.require, 
             REMOTE = require('@electron/remote'),
+            IPCMAIN = REMOTE.require('electron').ipcMain,
             PATH = REMOTE.require('path'),
             APP = REMOTE.app,
             APPPATH = APP.getAppPath(),

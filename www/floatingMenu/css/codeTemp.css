@@ -30,3 +30,10 @@ html {
 .sapUiTableActionIcon.sapUiIcon:focus {
     outline-color: transparent !important;
 }
+
+.float_illustmsg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}

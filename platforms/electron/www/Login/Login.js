@@ -9,7 +9,7 @@ let oAPP = (function () {
 
     const
         require = parent.require,
-        REMOTE = parent.REMOTE,
+        REMOTE = parent.REMOTE,       
         CURRWIN = REMOTE.getCurrentWindow(),
         APPPATH = parent.APPPATH,
         PATH = parent.PATH,
@@ -26,8 +26,8 @@ let oAPP = (function () {
         OCTOKIT = REMOTE.require("@octokit/core").Octokit,
         GlobalShortCut = REMOTE.globalShortcut;
 
-    // 오류 로그 감지    
-    parent.WSLOG.start(parent.REMOTE, console);
+    // // 오류 로그 감지    
+    // parent.WSLOG.start(parent.REMOTE, console);
 
     let oAPP = {};
     oAPP.fn = {};
@@ -343,6 +343,16 @@ let oAPP = (function () {
                                     type: sap.m.InputType.Password,
                                     value: "{PW}",
                                     submit: oAPP.events.ev_login
+                                }).addEventDelegate({
+                                    onkeydown: fnPWInputCapsLockCheck,
+                                    onmousedown: fnPWInputCapsLockCheck,
+                                    onfocusout: (oEvent) => {
+
+                                        let oInput = oEvent.srcControl;
+                                        oInput.setValueState("None");
+                                        oInput.setValueStateText("");
+
+                                    }
                                 })
                             ]
                         }),
@@ -391,6 +401,22 @@ let oAPP = (function () {
         });
 
     }; // end of oAPP.fn.fnGetLoginForm
+
+    function fnPWInputCapsLockCheck(oEvent) {
+
+        let oInput = oEvent.srcControl;
+        oInput.setValueState("None");
+        oInput.setValueStateText("");
+
+        let isCaps = event.getModifierState("CapsLock");
+        if (!isCaps) {
+            return;
+        }
+
+        oInput.setValueState("Information");
+        oInput.setValueStateText("Caps lock is switched on.");
+
+    };
 
     /************************************************************************
      * U4A R&D Staff 자동 로그인 버튼
@@ -651,7 +677,7 @@ let oAPP = (function () {
         var oLoginPage = oAPP.fn.fnGetLoginPage();
 
         oApp.addPage(oLoginPage);
-        oApp.placeAt("content");      
+        oApp.placeAt("content");
 
     }; // end of oAPP.fn.fnOnInitRendering   
 
@@ -773,19 +799,22 @@ let oAPP = (function () {
                     let u4a_status = xhr.getResponseHeader("u4a_status");
                     if (u4a_status) {
 
-                        parent.setBusy("");
+                        // parent.setBusy("");
                         // oAPP.common.fnSetBusyDialog(false);
                         var oResult;
                         try {
                             oResult = JSON.parse(xhr.response);
-                        } catch (error) {
-                            // fnJsonParseError(error);
+                        } catch (error) {                            
+
+                            parent.setBusy("");
                             return;
                         }
 
                         // // 잘못된 url 이거나 지원하지 않는 기능 처리
                         // oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, oResult);
 
+                        parent.setBusy("");
+                        
                         return;
                     }
 
@@ -801,7 +830,7 @@ let oAPP = (function () {
 
                         parent.showMessage(null, 99, "E", sCleanHtml);
 
-                        parent.setBusy('');
+                        parent.setBusy("");
 
                         return;
 
@@ -813,7 +842,8 @@ let oAPP = (function () {
 
                         // 오류 처리..                   
                         parent.showMessage(null, 99, "E", oResult.MSG);
-                        parent.setBusy('');
+
+                        parent.setBusy("");
 
                         return;
 
@@ -837,7 +867,7 @@ let oAPP = (function () {
                         // no build일 경우 혹은 Trial 버전일 경우는 최신 버전 체크를 하지 않는다.                        
                         if (!bIsPackaged || bIsTrial) {
 
-                            parent.setBusy('');
+                            // parent.setBusy('');
 
                             oAPP.fn.fnCheckVersionFinished(oResult, oAuthInfo);
 
@@ -852,7 +882,7 @@ let oAPP = (function () {
                         // 권한이 없으므로 오류 메시지를 띄운다.
                         oAPP.fn.fnShowNoAuthIllustMsg(e);
 
-                        parent.setBusy('');
+                        parent.setBusy("");
 
                     });
 
@@ -862,14 +892,14 @@ let oAPP = (function () {
 
                     if (xhr.response == "") {
                         parent.showMessage(null, 99, "E", sErrMsg);
-                        parent.setBusy('');
+                        parent.setBusy("");
                         return;
                     }
 
                     var sCleanHtml = parent.setCleanHtml(xhr.response);
 
                     parent.showMessage(null, 99, "E", sCleanHtml);
-                    parent.setBusy('');
+                    parent.setBusy("");
 
                 }
             }
@@ -1020,7 +1050,7 @@ let oAPP = (function () {
 
                             parent.showMessage(null, 99, "E", sCleanHtml);
 
-                            parent.setBusy('');
+                            parent.setBusy("");
 
                             return;
 
@@ -1029,7 +1059,7 @@ let oAPP = (function () {
                     } else {
 
                         parent.showMessage(null, 99, "E", xhr.response);
-                        parent.setBusy('');
+                        parent.setBusy("");
 
                     }
                 }
@@ -1474,9 +1504,9 @@ let oAPP = (function () {
 
             oResultData.USER_AUTH = oAuthInfo;
 
-            parent.showLoadingPage('X');
+            parent.showLoadingPage("X");
 
-            parent.setBusy('');
+            parent.setBusy("X");
 
             parent.CURRWIN.setTitle("U4A Workspace - Main");
 
@@ -1584,6 +1614,8 @@ let oAPP = (function () {
      * 권한 없음 Illustration Message Popup Ok 버튼 press 이벤트
      ************************************************************************/
     oAPP.events.ev_attachIllustMsgOkBtn = () => {
+
+        oAPP.attr.isPressWindowClose = "X";
 
         var oCurrWin = REMOTE.getCurrentWindow();
         oCurrWin.close();
@@ -2353,6 +2385,36 @@ let oAPP = (function () {
 
     }; // end of oAPP.fn.fnFloatingMenuOpen
 
+    /************************************************************************
+     * 전체 브라우저간 통신
+     ************************************************************************/
+    oAPP.fn.fnIpcMain_browser_interconnection = (oEvent, oRes) => {
+
+        let PRCCD = oRes.PRCCD;
+
+        switch (PRCCD) {
+
+            case "04": // 전체 윈도우를 강제로 닫을 경우
+
+                oAPP.fn.fnIpcMain_browser_interconnection_04(oRes);
+
+                return;
+
+            default:
+                break;
+
+        }
+
+    }; // end of oAPP.fn.fnIpcMain_browser_interconnection
+
+    oAPP.fn.fnIpcMain_browser_interconnection_04 = () => {
+
+        oAPP.attr.isPressWindowClose = "X";
+
+        CURRWIN.close();
+
+    }; // end of oAPP.fn.fnIpcMain_browser_interconnection_04
+
     function _supportPackageVersionCheckDialogProgressStart() {
 
         if (typeof oAPP.attr.progressInterval !== "undefined") {
@@ -2514,6 +2576,16 @@ let oAPP = (function () {
 
     } // end of _attachCurrentWindowEvents
 
+    /************************************************************************
+     * IPC 이벤트 핸들러
+     ************************************************************************/
+    function _attachIPCEvents() {
+
+        // 브라우저간 IPC 통신
+        IPCMAIN.on('if-browser-interconnection', oAPP.fn.fnIpcMain_browser_interconnection);
+
+    } // end of _attachIPCEvents
+
     /************************************************************************s
      *---------------------[ U4A WS Login Page Start ] ----------------------
      ************************************************************************/
@@ -2525,6 +2597,9 @@ let oAPP = (function () {
 
             // 현재 브라우저의 이벤트 핸들러
             _attachCurrentWindowEvents();
+
+            // IPC 이벤트 핸들러
+            _attachIPCEvents();
 
             // Shortcut 설정
             oAPP.fn.fnSetShortCut();
@@ -2572,7 +2647,9 @@ let oAPP = (function () {
 
                     oAPP.attr.UIUpdated = "X";
 
-                    parent.document.getElementById("u4aWsBusyIndicator").style.visibility = "hidden";
+                    fnSetGlobalBusy(false);
+
+                    // parent.document.getElementById("u4aWsBusyIndicator").style.visibility = "hidden";
 
                 }
 
@@ -2587,23 +2664,38 @@ let oAPP = (function () {
 })();
 
 
-function fnSetBusy(bIsShow) {
+function fnSetGlobalBusy(bIsShow) {
 
-    var oLoadPg = document.getElementById("u4a_main_load");
+    let oBusy = parent.document.getElementById("u4aWsBusyIndicator"),
+        sVisibility = "hidden";
 
-    if (!oLoadPg) {
-        return;
+    if (bIsShow) {
+        sVisibility = "visible";
     }
 
-    if (bIsShow == 'X') {
-        oLoadPg.classList.remove("u4a_loadersInactive");
-    } else {
-        oLoadPg.classList.add("u4a_loadersInactive");
-    }
+    oBusy.style.visibility = sVisibility;
 
 }
 
-fnSetBusy('X');
+
+
+// function fnSetBusy(bIsShow) {
+
+//     var oLoadPg = document.getElementById("u4a_main_load");
+
+//     if (!oLoadPg) {
+//         return;
+//     }
+
+//     if (bIsShow == 'X') {
+//         oLoadPg.classList.remove("u4a_loadersInactive");
+//     } else {
+//         oLoadPg.classList.add("u4a_loadersInactive");
+//     }
+
+// }
+
+// fnSetBusy('X');
 
 oAPP.fn.fnLoadBootStrapSetting();
 
@@ -2625,6 +2717,9 @@ window.onbeforeunload = () => {
 
     window.removeEventListener("online", oAPP.fn.fnNetworkCheckerOnline);
     window.removeEventListener("offline", oAPP.fn.fnNetworkCheckerOffline);
+
+    // 브라우저간 IPC 통신
+    IPCMAIN.off('if-browser-interconnection', oAPP.fn.fnIpcMain_browser_interconnection);
 
     oAPP.fn.fnOnBeforeUnload();
 

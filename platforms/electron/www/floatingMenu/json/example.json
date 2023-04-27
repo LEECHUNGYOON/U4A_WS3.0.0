@@ -1,0 +1,91 @@
+{
+  "?xml":"",
+  "?xml-stylesheet": "",
+  "XMLConfigSettings": {
+    "FILEINFO": {
+      "Author": "SAP",
+      "Type": "LangUser",
+      "Language": "ABAP",
+      "Desc": "User specific settings for ABAP"
+    },
+    "EXPANDS": {
+      "Expand": [
+        {
+          "-key": "while",
+          "Descr": "While (§)",
+          "Text": "WHILE |.\\n%SurroundedText%\\nENDWHILE."
+        },
+        {
+          "-key": "try",
+          "Descr": "Try (§)",
+          "Text": "TRY.\\n bbbb \\nCATCH |.\\n\\nENDTRY."
+        },
+        {
+          "-key": "1dt",
+          "Descr": "DT XXX",
+          "Text": "DATA : LT_AAA TYPE STRING_TABLE.."
+        },
+        {
+          "-key": "*--",
+          "Descr": "*-------...",
+          "Text": "*--------------------------------------------------------------------*"
+        },
+        {
+          "-key": "case",
+          "Descr": "Case (§)",
+          "Text": "CASE |.\\n\tWHEN .\\n\tWHEN .\\n\tWHEN OTHERS.\\nENDCASE."
+        },
+        {
+          "-key": "ife",
+          "Descr": "If (§) Else",
+          "Text": "IF |.\\n%SurroundedText%\\nELSE.\\n\\nENDIF."
+        },
+        {
+          "-key": "bbbbbb",
+          "Descr": "ccccccc",
+          "Text": "bbbbbb"
+        },
+        {
+          "-key": "define",
+          "Descr": "Define (§)",
+          "Text": "DEFINE |.\\n%SurroundedText%\\nEND-OF-DEFINITION."
+        },
+        {
+          "-key": "loop",
+          "Descr": "Loop (§)",
+          "Text": "LOOP AT |.\\n%SurroundedText%\\nENDLOOP."
+        },
+        {
+          "-key": "do",
+          "Descr": "Do (§)",
+          "Text": "DO | TIMES.\\n%SurroundedText%\\nENDDO."
+        },
+        {
+          "-key": "z1",
+          "Descr": "z1",
+          "Text": "aaaa"
+        },
+        {
+          "-key": "if",
+          "Descr": "If (§)",
+          "Text": "IF |.\\n%SurroundedText%\\nENDIF."
+        },
+        {
+          "-key": "***",
+          "Descr": "***.....",
+          "Text": "**********************************************************************"
+        },
+        {
+          "-key": "ysw",
+          "Descr": "ysw",
+          "Text": "yoon sung won"
+        },
+        {
+          "-key": "region",
+          "Descr": "Region (§)",
+          "Text": "\"$. Region %Region Name%\\n%SurroundedText%\\n\"$. Endregion %Region Name%"
+        }
+      ]
+    }
+  }
+}

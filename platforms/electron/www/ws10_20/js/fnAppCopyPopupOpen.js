@@ -274,7 +274,7 @@
         oModelData.PACKG_VSTXT = "";
 
         // 어플리케이션 명 정합성 체크
-        var oValid = oAPP.fn.fnCheckValidAppName(sTargetId);
+        var oValid = oAPP.fn.fnCheckValidAppName(sTargetId, true);
 
         if (oValid.RETCD == false) {
 

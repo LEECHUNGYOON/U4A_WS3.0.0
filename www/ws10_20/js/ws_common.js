@@ -2543,31 +2543,31 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
     // 접속 서버가 HTTP Only 일 경우 서버 호출 시 ID, PW를 파라미터에 붙인다.
 
-    if (oUserInfo && oUserInfo.HTTP_ONLY == "1") {
+    // if (oUserInfo && oUserInfo.HTTP_ONLY == "1") {
 
-        if (oFormData && oFormData instanceof FormData == true) {
+    //     if (oFormData && oFormData instanceof FormData == true) {
 
-            oFormData.append("sap-user", oUserInfo.ID);
-            oFormData.append("sap-password", oUserInfo.PW);
-            oFormData.append("sap-client", oUserInfo.CLIENT);
-            oFormData.append("sap-language", oUserInfo.LANGU);
+    //         oFormData.append("sap-user", oUserInfo.ID);
+    //         oFormData.append("sap-password", oUserInfo.PW);
+    //         oFormData.append("sap-client", oUserInfo.CLIENT);
+    //         oFormData.append("sap-language", oUserInfo.LANGU);
 
-        }
+    //     }
 
-        // POST 방식이 아닐 경우 호출 URL 파라미터에 ID, PW를 붙인다.
-        if (meth && meth !== "POST") {
+    //     // POST 방식이 아닐 경우 호출 URL 파라미터에 ID, PW를 붙인다.
+    //     if (meth && meth !== "POST") {
 
-            if (sPath.indexOf("?") == -1) {
-                sPath += "?";
-            } else {
-                sPath += "&";
-            }
+    //         if (sPath.indexOf("?") == -1) {
+    //             sPath += "?";
+    //         } else {
+    //             sPath += "&";
+    //         }
 
-            sPath += `sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.CLIENT}&sap-language=${oUserInfo.LANGU}`;
+    //         sPath += `sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.CLIENT}&sap-language=${oUserInfo.LANGU}`;
 
-        }
+    //     }
 
-    }
+    // }
 
     // Default Values
     var busy = 'X',

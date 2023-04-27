@@ -31,8 +31,8 @@
                 sComputerName = parent.COMPUTERNAME;
 
             var oFormData = new FormData();
-            oFormData.append("sap-user", sId);
-            oFormData.append("sap-password", sPw);
+            // oFormData.append("sap-user", sId);
+            // oFormData.append("sap-password", sPw);
             oFormData.append("PC_NAME", sComputerName);
 
             sendAjax(

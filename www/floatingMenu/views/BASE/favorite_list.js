@@ -31,12 +31,12 @@
             {
                 title: 'Source Patterns',
                 framePath:  `<iframe src="${sPattPopPath}" style='width:100%; height:100%; padding:15px; box-sizing:border-box; border:none;'></iframe>`,
-                key: 'USP'
+                key: 'Source Patterns'
             },
             {
                 title: 'Code Templates',
                 framePath: "<iframe src='ABAP.html' style='width:100%; height:100%; padding:15px; box-sizing:border-box; border:none;'></iframe>",
-                key: 'ABAP'
+                key: 'Code Templates'
             }
         ];
 
@@ -67,6 +67,7 @@
         let oPersTab = new sap.m.IconTabBar({
             stretchContentHeight: true,
             expandable: false,
+            // busy: true,
             select: function () {
                 GLV_DATA.FN.TAB_SELECT();
             }
@@ -76,13 +77,15 @@
         oPersTab.setModel(oJsonModel);
 
         let oITBTN_USP = new sap.m.IconTabFilter({
-            text: 'USP',
-            key: 'USP'
+            text: 'Source Patterns',
+            key: 'Source Patterns',
+            enabled: false
         });
 
         let oITBTN_ABAP = new sap.m.IconTabFilter({
-            text: 'ABAP',
-            key: 'ABAP'
+            text: 'Code Templates',
+            key: 'Code Templates',
+            enabled: false
         });
 
         let oITCONT = new sap.m.NavContainer({
@@ -106,6 +109,10 @@
         oPersTab.addItem(oITBTN_USP).addItem(oITBTN_ABAP);
         oPARENT.setShowSubHeader(false);
         oPARENT.addContent(oPersTab);
+
+        // [수정]
+        oITBTN_USP.setEnabled(true);
+        oITBTN_ABAP.setEnabled(true);
 
     };
 

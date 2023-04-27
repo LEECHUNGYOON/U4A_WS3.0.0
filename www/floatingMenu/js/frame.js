@@ -47,7 +47,7 @@ GLV_DATA.DBV_CLICK = null;
 // [종료] 메인 플로우 *****************************************************************
 // ***********************************************************************************************
 
-
+// [수정] 여기 다시!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // ***********************************************************************************************
 // 초기 Data 펑션!!!!!!! *****************************************************************
 // ***********************************************************************************************
@@ -167,7 +167,7 @@ GLV_DATA.FN.SHOWTOGGLEBTN = (e) => {
 
 // 플로팅 메뉴의 우측 하단 서버 버튼 활성화 펑션
 GLV_DATA.FN.SERVER_ACTIVE = (e) => {
-    // debugger;
+
     /* eKey => 시스템 아이디
        oServVBox => 우측 하단 서버 영역 VBox UI
        oServBtns => 서버 버튼 UI 리스트
@@ -236,7 +236,7 @@ GLV_DATA.FN.SERVER_ITEM_ZONE = (eKey) => {
 
     let ePath = `/eKey`;
     
-    GLV_DATA.UI.PAGE9.removeContent(GLV_DATA.UI.PRGBT);
+    // GLV_DATA.UI.PAGE9.removeContent(GLV_DATA.UI.PRGBT);
 
     GLV_DATA.UI.PRGBT = new sap.m.Page({
         showHeader: false,
@@ -248,15 +248,15 @@ GLV_DATA.FN.SERVER_ITEM_ZONE = (eKey) => {
                 type: sap.m.ButtonType.Transparent,
                 icon: '{menu_icon}',
                 tooltip: '{desc}',
-                customData: new sap.ui.core.CustomData({
-                    key: '{key}'
-                }),
+                // customData: new sap.ui.core.CustomData({
+                //     key: '{key}'
+                // }),
                 press: function(e) {
                     GLV_DATA.FN.SERVERITEM_BUTTON_CLICK(e);
                 }
             }).addStyleClass('prgbtn')
         }
-    });
+    }).addStyleClass('program_btn_page');
 
     // 우측 상단 영역 생성 버튼 삽입
     GLV_DATA.UI.PAGE9.addContent(GLV_DATA.UI.PRGBT);
@@ -271,7 +271,7 @@ GLV_DATA.FN.SERVER_ITEM_ZONE = (eKey) => {
 
 // 우측 상단 개인화 영역의 버튼 클릭 펑션
 GLV_DATA.FN.SERVERITEM_BUTTON_CLICK = (e) => {
-    // debugger;
+    
     /*  eKey => 우측 상단 영역의 클릭한 버튼에 커스텀데이터 value
         oServItmBtns => 우측 상단 영역 버튼 */
 
@@ -281,20 +281,25 @@ GLV_DATA.FN.SERVERITEM_BUTTON_CLICK = (e) => {
     // 우측 상단 서버별 버튼 활성화 체크
     if (e.getSource().hasStyleClass('active') === false) {
 
-        // let eKey = e.getSource().getCustomData()[0].getValue(),
-        let eKey = e.getSource().getModel().oData.eKey[0],
-            oServItmBtns = GLV_DATA.UI.PRGBT.getContent();
+        let oBtn = e.getSource(),
+            oBtnCtxt = oBtn.getBindingContext(),
+            eKey = oBtnCtxt.getProperty(),
+            prg_btn = GLV_DATA.UI.PRGBT;
 
+            if(prg_btn) {
+                oServItmBtns = prg_btn.getContent();
 
-        for (var i = 0; i < oServItmBtns.length; i++) {
+                for (var i = 0; i < oServItmBtns.length; i++) {
 
-            if (oServItmBtns[i].hasStyleClass('active')) {
-    
-                oServItmBtns[i].removeStyleClass('active');
-
+                    if (oServItmBtns[i].hasStyleClass('active')) {
+            
+                        oServItmBtns[i].removeStyleClass('active');
+        
+                    };
+        
+                };
             };
-
-        };
+            // oServItmBtns = GLV_DATA.UI.PRGBT.getContent();
 
         e.getSource().addStyleClass('active');
 
@@ -305,7 +310,7 @@ GLV_DATA.FN.SERVERITEM_BUTTON_CLICK = (e) => {
             
             // 이미 활성화가 되어있다면 그려져있는 개인화 페이지를 삭제해라
             GLV_DATA.UI.PAGE7.getContent()[0].getContent()[0].removeAllPages();
-        }
+        };
 
         // 우측 상단 개인화 영역 버튼 클릭 시 컨텐트 삽입 펑션
         GLV_DATA.FN.MAIN_PUSH_CONTENT(eKey);
@@ -316,7 +321,7 @@ GLV_DATA.FN.SERVERITEM_BUTTON_CLICK = (e) => {
 
 // 우측 상단 개인화 영역 버튼 클릭 시 컨텐트 삽입 펑션
 GLV_DATA.FN.MAIN_PUSH_CONTENT = (eKey, RECALLID) => {
-    // debugger;
+   
     /* eKey.key => favorite_list, newly_list, total_list => key의 이름으로 명해진 모듈 js*/
 
     // oFn[eKey.key]가 없으면 ┓
@@ -325,7 +330,6 @@ GLV_DATA.FN.MAIN_PUSH_CONTENT = (eKey, RECALLID) => {
 
         jQuery.getScript(Lpath,function(){
             GLV_DATA.FN[eKey.key](oAPP, oAPP.remote, GLV_DATA.UI.PAGE7, eKey);
-            // GLV_DATA.FN[eKey.key](oAPP.remote, GLV_DATA.UI.PAGE7, eKey);
         });
 
         return;
@@ -333,8 +337,7 @@ GLV_DATA.FN.MAIN_PUSH_CONTENT = (eKey, RECALLID) => {
     };
 
     // oFn[eKey.key]가 있으면 ┓
-    GLV_DATA.FN[eKey.key](oAPP, oAPP.remote, GLV_DATA.UI.PAGE7, eKey);
-    // GLV_DATA.FN[eKey.key](oAPP.remote, GLV_DATA.UI.PAGE7, eKey);
+    GLV_DATA.FN[eKey.key](oAPP, oAPP.remote, GLV_DATA.UI.PAGE7, eKey);  
 
 };
 
@@ -481,6 +484,53 @@ GLV_DATA.FN.FLOAT_HELP_POPUP_CLOSE = () => {
     let HELPOVERLAY = document.getElementById('help_content');
 
     HELPOVERLAY.style.display = 'none';
+};
+
+
+// 드래그앤드 펑션
+GLV_DATA.FN.DRAGEND = () => {
+
+    console.log('end');
+    // debugger;
+    //사용자 마지막 마우스 위치(x,y)
+    var LS_POS = oAPP.remote.screen.getCursorScreenPoint();
+
+    //현재 윈도우 위치 정보 추출 
+    var oWIN    = oAPP.remote.getCurrentWindow();
+    var oBounds = oWIN.getBounds();
+
+        //마우스 위치 정보에 해당하는 모니터 디스플레이 위치 정보 얻기
+        oBounds.x = LS_POS.x;
+        oBounds.y = LS_POS.y;
+
+    var oDisp = oAPP.remote.screen.getDisplayNearestPoint(oBounds);
+
+    //변경된 위치로 윈도우 창 이동 
+    oBounds.x      = oDisp.bounds.x;
+    oBounds.y      = oDisp.bounds.y;
+    oBounds.width  = oDisp.bounds.width;
+    oBounds.height = oDisp.bounds.height;
+
+    oWIN.setBounds(oBounds);
+
+    setTimeout(()=>{
+
+        oBounds.height = screen.availHeight;
+        oBounds.width = screen.availWidth;
+        oWIN.setBounds(oBounds);
+        document.body.style.opacity = "1";
+        //oWIN.setOpacity(1);
+        
+    }, 0);
+
+};
+
+// 드래그스타트 펑션
+GLV_DATA.FN.START = () => {
+    // debugger;
+    console.log('start');
+    document.body.style.opacity = "0.1";
+
 };
 
 // ***********************************************************************************************
@@ -660,9 +710,10 @@ function fn_UIUPdated() {
         GLV_DATA.FN.MOUSEMOVING(e);
     });
 
+
     // 우측 하단 서버 버튼 생성 펑션
     GLV_DATA.FN.SERVER_BUTTON_CREATE = (SYSID) => {
-        // debugger;
+   
         let CRETSERV = oAPP.T_SID,
             oJsonModel = new sap.ui.model.json.JSONModel();
         oJsonModel.setData({
@@ -695,7 +746,11 @@ function fn_UIUPdated() {
         GLV_DATA.UI.PAGE10.addContent(GLV_DATA.UI.SVBTN);
 
         // GLV_DATA.UI.PAGE7.getContent()[0].getContent()[0].removeAllPages();
-        GLV_DATA.UI.PAGE7.removeAllContent();
+        if(oAPP.T_SID.length !== 0) {
+
+            GLV_DATA.UI.PAGE7.removeAllContent();
+
+        }
 
         // 우측 하단 서버 버튼의 수에 따라 해당 영역의 높이 조절 펑션
         GLV_DATA.FN.SERVER_ZONE_HEIGHT();
@@ -739,19 +794,48 @@ function fn_UIUPdated() {
         GLV_DATA.T_MENUDATA[`${SERVERID}`] = oNMenuData;
     };
 
-    // 우측 상단의 기본 메뉴 버튼 커스텀 데이터 value 세팅 펑션
-    // GLV_DATA.FN.DEFAULT_MENU_CUSTOMDATA = (eKey) => {
-    //     /* oServItmBtns => 우측 상단 영역 버튼 */
-    //     debugger;
+    //모니터 변경 감지 이벤트 설정 
+    oAPP.remote.screen.on("display-metrics-changed", ()=>{
+        var oWIN = oAPP.remote.getCurrentWindow();
+        var oBounds  = oWIN.getBounds();
+        oBounds.height = screen.availHeight;
+        oBounds.width  = screen.availWidth;
+        oWIN.setBounds(oBounds);
+        GLV_DATA.UI.SPLITTER2.resetContentAreasSizes();
 
-    //    let oServItmBtns = GLV_DATA.UI.PRGBT.getContent();
+    
+    });
 
-    //    for(var i = 0; i < oServItmBtns.length; i++) {
+    let oScreen = oAPP.remote.screen;
+  
+    if(oScreen.getAllDisplays().length > 1) {
 
-    //     oServItmBtns[i].getCustomData()[0].setValue(GLV_DATA.T_MENUDATA[`${eKey}`][i]);
-       
-    //     }
-    // };
+        GLV_DATA.UI.DNDBTN = new sap.ui.core.dnd.DragDropInfo({
+            dragEnd: function() {
+            
+                GLV_DATA.FN.DRAGEND();
+    
+            },
+            dragStart: function() {
+    
+                GLV_DATA.FN.START();
+    
+            }
+        });
+
+        // 숨김 버튼에 드래그 드롭
+        GLV_DATA.UI.BUTTON.addDragDropConfig(GLV_DATA.UI.DNDBTN);
+
+        var l_meta = GLV_DATA.UI.SPLITTER4.getMetadata();
+        l_meta.dnd.draggable = true;
+        l_meta.dnd.droppable = true;
+
+        // 우측 버튼 영역에 드래그 드롭
+        GLV_DATA.UI.SPLITTER4.addDragDropConfig(GLV_DATA.UI.DNDBTN.clone());
+
+    };
+
+
 
     oAPP.WIN.show();
 
@@ -927,7 +1011,7 @@ function createUi() {
                     press: function(){
                         eKey = 'help_overlay';
                         // 플로팅 메뉴 도움말 팝오버 펑션
-                        GLV_DATA.FN.FLOAT_HELP_POPUP(eKey);
+                        // GLV_DATA.FN.FLOAT_HELP_POPUP(eKey);
                     }
                 })
             ]
@@ -999,8 +1083,35 @@ function createUi() {
     // 메뉴 영역
     GLV_DATA.UI.PAGE9 = new sap.m.Page('prgPg', {
         showHeader: false,
-        backgroundDesign: sap.m.PageBackgroundDesign.Transparent
+        backgroundDesign: sap.m.PageBackgroundDesign.Transparent,
+        content: [
+            new sap.m.VBox('persVBox',{
+                width: '100%',
+                height: '50px',
+                items: [
+                    new sap.m.Button('favorite_list',{
+                        width: '100%',
+                        type: sap.m.ButtonType.Transparent,
+                        tooltip: '개인화',
+                        icon: 'sap-icon://person-placeholder',
+                        press: function(e) {
+
+                            // [수정]
+                            oKEY = GLV_DATA.T_MENUDATA.__DEFULT_MENU[0];
+
+                            GLV_DATA.FN.MAIN_PUSH_CONTENT(oKEY);
+                            // GLV_DATA.FN.SERVERITEM_BUTTON_CLICK(oKEY);
+                        }
+                    })
+                ]
+            }),
+        ]
     }).addStyleClass('programPage');
+
+    // 개인화 버튼 생성 ********************************************************************************
+    // GLV_DATA.UI.PERSPAGE = new sap.m.Page({
+        
+    // })
 
     // page 생성 ********************************************************************************
     // 서버 영역

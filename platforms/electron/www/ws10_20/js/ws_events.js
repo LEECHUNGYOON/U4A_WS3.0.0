@@ -15,7 +15,7 @@
     /************************************************************************
      * App 생성팝업
      ************************************************************************/
-    oAPP.events.ev_AppCreate = function() {
+    oAPP.events.ev_AppCreate = function() {        
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
@@ -338,13 +338,10 @@
             oAPP.common.fnSetBusyLock("");
 
             return;
-        }
-
-        // Create, Copy일 경우에만 App Name MaxLength Check 해야함!!
-        let bAppMaxLengthCheck = true;
+        }       
 
         // 어플리케이션 명 입력 유무 및 데이터 정합성 체크
-        var bCheckAppNm = oAPP.fn.fnCheckAppName(bAppMaxLengthCheck);
+        var bCheckAppNm = oAPP.fn.fnCheckAppName();
         if (!bCheckAppNm) {
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");

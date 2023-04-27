@@ -92,7 +92,7 @@ oAPP.fn.fnOnParentWindowClosedEvent = () => {
     }
 
     oAPP.attr.isPressWindowClose = "X";
-    
+
     CURRWIN.close();
 
 }; // end of oAPP.fn.fnOnParentWindowClosedEvent
@@ -146,6 +146,7 @@ oAPP.fn.onFrameLoadSuccess = () => {
     let oWs_frame = document.getElementById("ws_frame"),
 
         // content div 생성
+        oContWindow = oWs_frame.contentWindow,
         oContentDocu = oWs_frame.contentDocument,
         oContentDiv = oContentDocu.createElement("div");
 
@@ -155,8 +156,8 @@ oAPP.fn.onFrameLoadSuccess = () => {
     oContentDocu.body.appendChild(oContentDiv);
 
     // sap 오브젝트 상속
-    sap = oWs_frame.contentWindow.sap;
-    jQuery = $ = oWs_frame.contentWindow.jQuery;
+    sap = oContWindow.sap;
+    jQuery = $ = oContWindow.jQuery;
 
     // css 파일 넣기
     let sCssLinkPath = PATH.join(PATHINFO.POPUP_ROOT, "iconPrevPopup", "index.css"),
@@ -166,6 +167,18 @@ oAPP.fn.onFrameLoadSuccess = () => {
     oStyle.innerHTML = sCssData;
 
     oContentDocu.head.appendChild(oStyle);
+
+    debugger;
+
+    // 스크립트 오류 감지    
+    let sEvalString = "debugger; const require = parent.require,";    
+    sEvalString += "REMOTE = parent.require('@electron/remote'), ";
+    sEvalString += "APP = REMOTE.app, APPPATH = APP.getAppPath(),";
+    sEvalString += "PATHINFOURL = PATH.join(APPPATH, 'Frame', 'pathInfo.js'),";
+    sEvalString += "PATHINFO = require(PATHINFOURL),";
+    sEvalString += "WSERR = require(PATHINFO.WSTRYCATCH);"
+
+    oContWindow["___u4a_ws_eval___"](sEvalString);
 
     oAPP.setBusy("X");
 
@@ -672,7 +685,7 @@ oAPP.fn.fnInitRendering = function () {
 
                             if (CURRWIN.isDestroyed()) {
                                 return;
-                            }                            
+                            }
 
                             CURRWIN.hide();
 

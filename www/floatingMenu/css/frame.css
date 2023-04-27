@@ -74,8 +74,12 @@ html.sap-desktop .wonRental_body .sapMBtn:focus>.sapMFocusable:not(.sapMBadgeInd
 
 .wonRental_body .wonRental_content .sideSp .contSp .rotateButton {
     height: 50px;
-    /* background-color: #F5C500; */
-    /* background-color: #12171c; */
+    transition: 0.5s all;
+    background-color: rgb(247, 247, 247);
+}
+
+.wonRental_body .wonRental_content .sideSp .contSp .rotateButton.sapUiDnDDragging {
+    background-color: transparent !important;
 }
 
 .wonRental_body .wonRental_content .ws_settingBtn {
@@ -148,6 +152,15 @@ html.sap-desktop .wonRental_body .sapMBtn:focus>.sapMFocusable:not(.sapMBadgeInd
     display: flex;
     flex-direction: column-reverse;
     justify-content: end;
+}
+
+.wonRental_body .wonRental_content .programPage>section {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.wonRental_body .wonRental_content .programPage .program_btn_page {
+    height: calc(100% - 50px);
 }
 
 .wonRental_body .wonRental_content .programPage> :first-child>.sapMPage> :first-child {

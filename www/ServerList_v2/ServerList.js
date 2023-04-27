@@ -3084,7 +3084,12 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                                 oAPP.fn.fnProgramShuttDown(); // 전체 프로그램 종료
 
-                                setInterval(() => {
+                                if(oAPP.attr.windowCloseInterval){
+                                    clearInterval(oAPP.attr.windowCloseInterval);
+                                    delete oAPP.attr.windowCloseInterval;
+                                }
+
+                                oAPP.attr.windowCloseInterval = setInterval(() => {
 
                                     // 10번 메인 프로그램이 다 죽었는지 체크
                                     if (!_checkMainProgramExit()) {
@@ -3150,14 +3155,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             if (oWebPref.OBJTY !== "MAIN") {
                 continue;
             }
-
-            // if (oWebPref.OBJTY == "SERVERLIST") {
-            //     continue;
-            // }
-
-            // if (oWebPref.OBJTY == "FLTMENU") {
-            //     continue;
-            // }
 
             ++iChildLength;
 

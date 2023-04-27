@@ -1,5 +1,5 @@
 module.exports = function (window, document, console) {
-
+    
     /************************************************************************
      * onError 관련 공통 로직
      ************************************************************************/
@@ -15,10 +15,10 @@ module.exports = function (window, document, console) {
     var zconsole = {};
     zconsole.APP = APP;
 
-    if (APP.isPackaged) {
+    // if (APP.isPackaged) {
         // 오류 로그 감지
         WSLOG.start(REMOTE, console);
-    }
+    // }
 
     // // 오류 로그 감지
     // WSLOG.start(REMOTE, console);
@@ -55,7 +55,8 @@ module.exports = function (window, document, console) {
   
             bIsError = false;
 
-            CURRWIN.close();
+            // CURRWIN.close();
+            APP.exit();
 
         });
 

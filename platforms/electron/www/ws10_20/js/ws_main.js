@@ -378,10 +378,7 @@
             oAPP.fn.fnServerSession(); // #[fnServerSession.js]
 
             // DOM 감지
-            oAPP.fn.fnSetMutationObserver(); // #[ws_fn_03.js]
-
-            // Loading Page
-            parent.showLoadingPage('');
+            oAPP.fn.fnSetMutationObserver(); // #[ws_fn_03.js]           
 
             // 공통 IPCMAIN 이벤트 걸기
             oAPP.fn.fnIpcMain_Attach_Event_Handler(); // #[ws_fn_ipc.js]                           
@@ -390,6 +387,11 @@
             sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, async function () {
 
                 if (!parent.oWS.utill.attr.UIUpdated) {
+
+                    // Loading Page
+                    parent.showLoadingPage("");
+
+                    parent.setBusy("");
 
                     setTimeout(() => {
 
