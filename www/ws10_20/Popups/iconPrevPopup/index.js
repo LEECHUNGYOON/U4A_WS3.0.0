@@ -168,17 +168,17 @@ oAPP.fn.onFrameLoadSuccess = () => {
 
     oContentDocu.head.appendChild(oStyle);
 
-    debugger;
+    // debugger;
 
-    // 스크립트 오류 감지    
-    let sEvalString = "debugger; const require = parent.require,";    
-    sEvalString += "REMOTE = parent.require('@electron/remote'), ";
-    sEvalString += "APP = REMOTE.app, APPPATH = APP.getAppPath(),";
-    sEvalString += "PATHINFOURL = PATH.join(APPPATH, 'Frame', 'pathInfo.js'),";
-    sEvalString += "PATHINFO = require(PATHINFOURL),";
-    sEvalString += "WSERR = require(PATHINFO.WSTRYCATCH);"
+    // // 스크립트 오류 감지    
+    // let sEvalString = "debugger; const require = parent.require,";    
+    // sEvalString += "REMOTE = parent.require('@electron/remote'), ";
+    // sEvalString += "APP = REMOTE.app, APPPATH = APP.getAppPath(),";
+    // sEvalString += "PATHINFOURL = PATH.join(APPPATH, 'Frame', 'pathInfo.js'),";
+    // sEvalString += "PATHINFO = require(PATHINFOURL),";
+    // sEvalString += "WSERR = require(PATHINFO.WSTRYCATCH);"
 
-    oContWindow["___u4a_ws_eval___"](sEvalString);
+    // oContWindow["___u4a_ws_eval___"](sEvalString);
 
     oAPP.setBusy("X");
 
