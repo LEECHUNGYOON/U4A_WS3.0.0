@@ -28,12 +28,19 @@ const
     PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
     PATHINFO = require(PATHINFOURL),
     WSERR = require(PATHINFO.WSTRYCATCH),
+    zconsole = WSERR(window, document, console),
     WSUTIL = require(PATHINFO.WSUTIL),
     CURRWIN = REMOTE.getCurrentWindow(),
     PARWIN = CURRWIN.getParentWindow(),
-    IPCRENDERER = require('electron').ipcRenderer,
-    zconsole = WSERR(window, document, console);
+    IPCRENDERER = require('electron').ipcRenderer;
 
+
+let options = {
+    root: null,
+    rootMargin: "0px",
+    threshold: 0,
+},
+    observer = new IntersectionObserver(fnObserverCallback, options);
 
 /************************************************************************
  * IPCRENDERER Events..
@@ -168,17 +175,17 @@ oAPP.fn.onFrameLoadSuccess = () => {
 
     oContentDocu.head.appendChild(oStyle);
 
-    // debugger;
+    // 스크립트 오류 감지    
+    let sEvalString = "const require = parent.require,";
+    sEvalString += "REMOTE = require('@electron/remote'), ";
+    sEvalString += "PATH = REMOTE.require('path'),";
+    sEvalString += "APP = REMOTE.app, APPPATH = APP.getAppPath(),";
+    sEvalString += "PATHINFOURL = PATH.join(APPPATH, 'Frame', 'pathInfo.js'),";
+    sEvalString += "PATHINFO = require(PATHINFOURL),";
+    sEvalString += "WSERR = require(PATHINFO.WSTRYCATCH),"
+    sEvalString += "zconsole = WSERR(window, document, console);"
 
-    // // 스크립트 오류 감지    
-    // let sEvalString = "debugger; const require = parent.require,";    
-    // sEvalString += "REMOTE = parent.require('@electron/remote'), ";
-    // sEvalString += "APP = REMOTE.app, APPPATH = APP.getAppPath(),";
-    // sEvalString += "PATHINFOURL = PATH.join(APPPATH, 'Frame', 'pathInfo.js'),";
-    // sEvalString += "PATHINFO = require(PATHINFOURL),";
-    // sEvalString += "WSERR = require(PATHINFO.WSTRYCATCH);"
-
-    // oContWindow["___u4a_ws_eval___"](sEvalString);
+    oContWindow["___u4a_ws_eval___"](sEvalString);
 
     oAPP.setBusy("X");
 
@@ -528,25 +535,25 @@ oAPP.fn.attachInit = async () => {
      */
 
     // 자연스러운 로딩
-    sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function () {
-
-        if (!oAPP.attr.UIUpdated) {
-
-            setTimeout(() => {
-                $('#content').fadeIn(300, 'linear');
-            }, 300);
-
-            oAPP.attr.UIUpdated = "X";
-
-            oAPP.setBusy("");
-
-            document.getElementById("u4aWsBusyIndicator").style.visibility = "hidden";
-
-        }
-
-    });
+    sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback);
 
 }; // end of oAPP.fn.attachInit
+
+function _fnUIupdatedCallback() {
+
+    setTimeout(() => {
+        $('#content').fadeIn(300, 'linear');
+    }, 300);
+
+    // oAPP.attr.UIUpdated = "X";
+
+    oAPP.setBusy("");
+
+    document.getElementById("u4aWsBusyIndicator").style.visibility = "hidden";
+
+    sap.ui.getCore().detachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback);
+
+} // end of _fnUIupdatedCallback
 
 /************************************************************************
  * 초기 모델 바인딩
@@ -813,6 +820,8 @@ function fnGetDynamicPageContent() {
                     boxWidth: "8.125rem"
                 }),
 
+                // growingFinished: ev_gridListGrowingFinished,
+
                 items: {
                     path: "/ICONS/ICON_LIST",
                     template: new sap.f.GridListItem({
@@ -849,13 +858,17 @@ function fnGetDynamicPageContent() {
 
                         ] // end of end of GridListItem content
 
+                    }).addEventDelegate({
+                        onAfterRendering: ev_gridListAfterRendering
                     }) // end of GridListItem   
 
                 } // end of GridList items
 
             }) // end of GridList
                 .addEventDelegate({
-                    ondblclick: ev_iconGridListDblClick
+                    ondblclick: ev_iconGridListDblClick,
+
+                    // onAfterRendering: ev_gridListAfterRendering
                 })
 
         ] // end of Page Content
@@ -983,24 +996,177 @@ function fnSetScrollTop() {
 } // end of fnSetScrollTop
 
 
+function fnObserverCallback(aObservEntry) {
+
+    let iEntryLength = aObservEntry.length;
+
+    if (iEntryLength == 0) {
+        return;
+    }
+
+    for (var i = 0; i < iEntryLength; i++) {
+
+        let oObservEntry = aObservEntry[i],
+            oTarget = oObservEntry.target;
+
+        if (!oTarget) {
+            continue;
+        }
+
+        // debugger;
+
+        //dom에 해당하는 UI정보 얻기.
+        var oItem = sap.ui.getCore().byId(oTarget.id);
+        if (!oItem) { return; }
+
+        // 해당 요소가 화면에 나오는 경우
+        if (oObservEntry.isIntersecting) {
+
+            console.log("zzzz");
+
+            setTimeout(function () {
+
+                let oItem = this;
+
+                oItem.getContent()[0].getItems()[0].setVisible(true);
+                oItem.getContent()[0].getItems()[1].setVisible(true);
+                oItem.getContent()[0].getItems()[2].setVisible(true);              
+
+            }.bind(oItem), 0);
+
+            // oItem.getContent()[0].getItems()[0].setVisible(true);
+            // oItem.getContent()[0].getItems()[1].setVisible(true);
+            // oItem.getContent()[0].getItems()[2].setVisible(true);
+
+            //oItem.getContent()[0].getItems()[0].invalidate();
+            //oItem.getContent()[0].getItems()[1].invalidate();
+            //oItem.getContent()[0].getItems()[2].invalidate();
+
+
+            //dom 갱신 처리.
+            oItem.invalidate();
+            // oItem.setVisible(true);
+            continue;
+
+        }
+
+        let $oTarget = jQuery(oTarget);
+        if ($oTarget.length == 0) {
+            continue;
+        }
+
+        //현재 dom의 width, height정보를 직접 매핑.
+        // oTarget.style.width = $oTarget.width();
+        //oTarget.style.height = $oTarget.height();
+
+        //dom의 child정보가 없다면 하위 로직 skip.
+        if (oTarget.children.length === 0) {
+            continue;
+        }
+
+        if (!oItem) { return; }
+
+        // jQuery(oItem.getContent()[0].getItems()[0].getDomRef()).remove();
+        // jQuery(oItem.getContent()[0].getItems()[1].getDomRef()).remove();
+        // jQuery(oItem.getContent()[0].getItems()[2].getDomRef()).remove();
+
+        setTimeout(function () {
+
+            let oItem = this;
+
+            oItem.getContent()[0].getItems()[0].setVisible(false);
+            oItem.getContent()[0].getItems()[1].setVisible(false);
+            oItem.getContent()[0].getItems()[2].setVisible(false);
+
+        }.bind(oItem), 0);
+
+        // oItem.getContent()[0].getItems()[0].setVisible(false);
+        // oItem.getContent()[0].getItems()[1].setVisible(false);
+        // oItem.getContent()[0].getItems()[2].setVisible(false);
+
+        // oItem.setVisible(false);
+
+        // //비동기로 dom의 child 제거 처리.
+        // setTimeout(function () {
+
+        //     let $oTarget = jQuery(this);
+
+        //     $oTarget.empty();
+
+
+        // }.bind(oTarget), 0);
+
+    }
+
+} // end of fnObserverCallback
 
 
 
+// function ev_gridListGrowingFinished(oEvent) {
 
+//     let oGridList = oEvent.getSource(),
+//         aItems = oGridList.getItems(),
+//         iItemLength = aItems.length;
 
+//     if (iItemLength == 0) {
+//         return;
+//     }
 
+//     for (var i = 0; i < iItemLength; i++) {
 
+//         let oItem = aItems[i],
+//             oItemDOM = oItem.getDomRef();
 
+//         if (!oItemDOM) {
+//             continue;
+//         }
 
+//         observer.unobserve(oItemDOM);
 
+//         //item dom에 observer 구성.
+//         observer.observe(oItemDOM);
 
+//     }
 
+// } // end of ev_gridListGrowingFinished
 
+function ev_gridListAfterRendering(oEvent) {
 
+    let oItem = oEvent.srcControl,
+        oItemDOM = oItem.getDomRef();
 
+    if (!oItemDOM) {
+        return;
+    }
 
+    observer.unobserve(oItemDOM);
 
+    observer.observe(oItemDOM);
 
+    // aItems = oGridList.getItems(),
+    // iItemLength = aItems.length;
+
+    // if (iItemLength == 0) {
+    //     return;
+    // }
+
+    // for (var i = 0; i < iItemLength; i++) {
+
+    //     let oItem = aItems[i],
+    //         oItemDOM = oItem.getDomRef();
+
+    //     if (!oItemDOM) {
+    //         continue;
+    //     }
+
+    //     observer.unobserve(oItemDOM);
+
+    //     //item dom에 observer 구성.
+    //     observer.observe(oItemDOM);
+
+    // }
+
+} // end of ev_gridListAfterRendering
 
 
 /************************************************************************

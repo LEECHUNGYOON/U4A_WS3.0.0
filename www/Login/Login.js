@@ -9,7 +9,7 @@ let oAPP = (function () {
 
     const
         require = parent.require,
-        REMOTE = parent.REMOTE,       
+        REMOTE = parent.REMOTE,
         CURRWIN = REMOTE.getCurrentWindow(),
         APPPATH = parent.APPPATH,
         PATH = parent.PATH,
@@ -342,6 +342,9 @@ let oAPP = (function () {
                                 new sap.m.Input("ws_pw", {
                                     type: sap.m.InputType.Password,
                                     value: "{PW}",
+                                    showValueHelp: true,
+                                    valueHelpIconSrc: "sap-icon://hide",
+                                    valueHelpRequest: fnPWInputValueHelpEvent,
                                     submit: oAPP.events.ev_login
                                 }).addEventDelegate({
                                     onkeydown: fnPWInputCapsLockCheck,
@@ -402,9 +405,18 @@ let oAPP = (function () {
 
     }; // end of oAPP.fn.fnGetLoginForm
 
+    /************************************************************************
+     * 비밀번호 입력시 caps lock 메시지
+     ************************************************************************/
     function fnPWInputCapsLockCheck(oEvent) {
 
         let oInput = oEvent.srcControl;
+
+        // valueHelpRequest 버튼을 눌렀을 경우 제외
+        if(oInput instanceof sap.m.Input == false){
+            return;
+        }
+
         oInput.setValueState("None");
         oInput.setValueStateText("");
 
@@ -416,7 +428,31 @@ let oAPP = (function () {
         oInput.setValueState("Information");
         oInput.setValueStateText("Caps lock is switched on.");
 
-    };
+    }; // end of fnPWInputCapsLockCheck
+
+    /************************************************************************
+     * 비밀번호 보이기 숨기기 이벤트
+     ************************************************************************/
+    function fnPWInputValueHelpEvent(oEvent) {
+
+        let oInput = oEvent.getSource(),
+            sInputType = oInput.getType(),
+
+            sDefType = "Password",
+            sDefIcon = "sap-icon://hide";
+
+        if (sInputType == sDefType) {
+
+            oInput.setType("Text");
+            oInput.setValueHelpIconSrc("sap-icon://show");
+
+            return;
+        }
+
+        oInput.setType(sDefType);
+        oInput.setValueHelpIconSrc(sDefIcon);
+
+    } // end of fnPWInputValueHelpEvent
 
     /************************************************************************
      * U4A R&D Staff 자동 로그인 버튼
@@ -804,7 +840,7 @@ let oAPP = (function () {
                         var oResult;
                         try {
                             oResult = JSON.parse(xhr.response);
-                        } catch (error) {                            
+                        } catch (error) {
 
                             parent.setBusy("");
                             return;
@@ -814,7 +850,7 @@ let oAPP = (function () {
                         // oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, oResult);
 
                         parent.setBusy("");
-                        
+
                         return;
                     }
 
@@ -1746,10 +1782,10 @@ let oAPP = (function () {
 
             parent.showLoadingPage('');
 
-            if (!APP.isPackaged) {
-                // Floating Menu를 오픈한다.                    
-                oAPP.fn.fnFloatingMenuOpen();
-            }
+            // if (!APP.isPackaged) {
+            //     // Floating Menu를 오픈한다.                    
+            //     oAPP.fn.fnFloatingMenuOpen();
+            // }
 
         });
 

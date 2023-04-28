@@ -85,14 +85,14 @@
 
             oAPP.endTime = new Date().getTime();
 
-            let iTime = 3000,
+            let iTime = 4000,
                 timeDiff = oAPP.endTime - oAPP.startTime;
 
             if (iTime - timeDiff >= 0) {
                 iTime = iTime - timeDiff;
             } else {
                 iTime = 0;
-            }
+            }           
 
             // WS 세팅 정보
             var oWsSettings = oAPP.fn.fnGetSettingsInfo();
@@ -727,6 +727,52 @@
 
     } // end of _initRegistryGlobalSettings
 
+    /************************************************************************
+     * ws 설치 폴더 및, UserData 경로를 저장한다.
+     ************************************************************************/
+    function _addRegWsInstallInfo() {
+
+        return new Promise(async (resolve) => {
+
+            /**
+             * No build 할 때와, Build 할때의 앱 설치 경로가 다르므로
+             * 빌드했을 경우에만 해당 설치 경로를 레지스트리에 등록한다.
+             */
+            if(!APP.isPackaged){
+                resolve();
+                return;
+            }
+
+            // 레지스트리 경로 구하기
+            let oSettings = oAPP.fn.fnGetSettingsInfo(),
+                sRegPath = oSettings.regPaths,
+                sU4AWsRegPath = sRegPath.u4aws;
+
+            let oRegData = {};
+            oRegData[sU4AWsRegPath] = {};
+            oRegData[sU4AWsRegPath]["execPath"] = {
+                value: process.execPath,
+                type: "REG_SZ"
+            };
+
+            oRegData[sU4AWsRegPath]["resourcesPath"] = {
+                value: process.resourcesPath,
+                type: "REG_SZ"
+            };
+
+            oRegData[sU4AWsRegPath]["userDataPath"] = {
+                value: APP.getPath("userData"),
+                type: "REG_SZ"
+            };
+
+            await WSUTIL.putRegeditValue(oRegData);
+
+            resolve();
+
+        });
+
+
+    } // end of _addRegWsInstallInfo
 
     function _testGetReg() {
 
@@ -806,6 +852,9 @@
 
             // 초기 글로벌 설정값 세팅
             await _initRegistryGlobalSettings();
+
+            // ws 설치 폴더 및, UserData 경로를 저장한다.
+            await _addRegWsInstallInfo();
 
             resolve();
 
@@ -981,9 +1030,9 @@
             icons: {
                 iconRootPath: sIconRootPath,
                 fontAwesome: {
-                    rootPath : sFontAwesomeRoot,
+                    rootPath: sFontAwesomeRoot,
                     iconMetaJson: `${sFontAwesomeRoot}/icons.json`,
-                    collectionNames : {
+                    collectionNames: {
                         regular: "u4a-fw-regular",
                         brands: "u4a-fw-brands",
                         solid: "u4a-fw-solid"

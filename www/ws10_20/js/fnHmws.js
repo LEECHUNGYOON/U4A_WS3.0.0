@@ -981,7 +981,7 @@
 
         oAPP.fn.fnIconPreviewPopupOpener(function (e) {
 
-            if(e.RETCD === "C"){
+            if(e.RETCD === "C"){ // C : 취소
                 parent.setBusy("");
                 return;
             }

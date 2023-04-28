@@ -31,7 +31,7 @@ const
 XHR.withCredentials = true;
 
 const
-    SAPGUIVER = 7700,    
+    SAPGUIVER = 7700,
     POPID = "editPopup",
     SERVER_TBL_ID = "serverlist_table",
     BINDROOT = "/SAVEDATA";
@@ -3084,7 +3084,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                                 oAPP.fn.fnProgramShuttDown(); // 전체 프로그램 종료
 
-                                if(oAPP.attr.windowCloseInterval){
+                                if (oAPP.attr.windowCloseInterval) {
                                     clearInterval(oAPP.attr.windowCloseInterval);
                                     delete oAPP.attr.windowCloseInterval;
                                 }
@@ -3855,9 +3855,11 @@ fnLoadCommonCss();
 window.addEventListener("load", () => {
 
     sap.ui.getCore().attachInit(() => {
-
-        // Floating Menu Open
-        oAPP.fn.fnFloatingMenuOpen();
+        
+        // if (!APP.isPackaged) {
+        //     // Floating Menu Open
+        //     oAPP.fn.fnFloatingMenuOpen();
+        // }
 
         // Illustration Pool에 TNT Theme를 등록한다.
         oAPP.fn.fnRegisterIllustrationPool();
