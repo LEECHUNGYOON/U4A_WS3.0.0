@@ -137,7 +137,7 @@ oAPP.fn.fnFrameLoad = () => {
         oInput.setAttribute("value", oParam.VALUE);
         oForm.appendChild(oInput);
 
-    }
+    }   
 
     oForm.setAttribute("action", sServerHtmlUrl);
 
@@ -175,17 +175,17 @@ oAPP.fn.onFrameLoadSuccess = () => {
 
     oContentDocu.head.appendChild(oStyle);
 
-    // 스크립트 오류 감지    
-    let sEvalString = "const require = parent.require,";
-    sEvalString += "REMOTE = require('@electron/remote'), ";
-    sEvalString += "PATH = REMOTE.require('path'),";
-    sEvalString += "APP = REMOTE.app, APPPATH = APP.getAppPath(),";
-    sEvalString += "PATHINFOURL = PATH.join(APPPATH, 'Frame', 'pathInfo.js'),";
-    sEvalString += "PATHINFO = require(PATHINFOURL),";
-    sEvalString += "WSERR = require(PATHINFO.WSTRYCATCH),"
-    sEvalString += "zconsole = WSERR(window, document, console);"
+    // // 스크립트 오류 감지    
+    // let sEvalString = "const require = parent.require,";
+    // sEvalString += "REMOTE = require('@electron/remote'), ";
+    // sEvalString += "PATH = REMOTE.require('path'),";
+    // sEvalString += "APP = REMOTE.app, APPPATH = APP.getAppPath(),";
+    // sEvalString += "PATHINFOURL = PATH.join(APPPATH, 'Frame', 'pathInfo.js'),";
+    // sEvalString += "PATHINFO = require(PATHINFOURL),";
+    // sEvalString += "WSERR = require(PATHINFO.WSTRYCATCH),"
+    // sEvalString += "zconsole = WSERR(window, document, console);"
 
-    oContWindow["___u4a_ws_eval___"](sEvalString);
+    // oContWindow["___u4a_ws_eval___"](sEvalString);
 
     oAPP.setBusy("X");
 
@@ -999,7 +999,6 @@ function fnSetScrollTop() {
 function fnObserverCallback(aObservEntry) {
 
     let iEntryLength = aObservEntry.length;
-
     if (iEntryLength == 0) {
         return;
     }
@@ -1022,17 +1021,17 @@ function fnObserverCallback(aObservEntry) {
         // 해당 요소가 화면에 나오는 경우
         if (oObservEntry.isIntersecting) {
 
-            console.log("zzzz");
+            // console.log("zzzz");
 
-            setTimeout(function () {
+            // setTimeout(function () {
 
-                let oItem = this;
+            //     let oItem = this;
 
-                oItem.getContent()[0].getItems()[0].setVisible(true);
-                oItem.getContent()[0].getItems()[1].setVisible(true);
-                oItem.getContent()[0].getItems()[2].setVisible(true);              
+            //     oItem.getContent()[0].getItems()[0].setVisible(true);
+            //     oItem.getContent()[0].getItems()[1].setVisible(true);
+            //     oItem.getContent()[0].getItems()[2].setVisible(true);              
 
-            }.bind(oItem), 0);
+            // }.bind(oItem), 0);
 
             // oItem.getContent()[0].getItems()[0].setVisible(true);
             // oItem.getContent()[0].getItems()[1].setVisible(true);
@@ -1043,21 +1042,32 @@ function fnObserverCallback(aObservEntry) {
             //oItem.getContent()[0].getItems()[2].invalidate();
 
 
-            //dom 갱신 처리.
-            oItem.invalidate();
-            // oItem.setVisible(true);
-            continue;
+             //dom에 해당하는 UI정보 얻기.
+             var l_ui = sap.ui.getCore().byId(oTarget.id);
+             if(!l_ui){return;}
+             
+             //dom 갱신 처리.
+             l_ui.invalidate();         
+             continue;
+
+            // //dom 갱신 처리.
+            // oItem.invalidate();
+            // // oItem.setVisible(true);
+            // continue;
 
         }
 
-        let $oTarget = jQuery(oTarget);
-        if ($oTarget.length == 0) {
-            continue;
-        }
+        // let $oTarget = jQuery(oTarget);
+        // if ($oTarget.length == 0) {
+        //     continue;
+        // }
 
         //현재 dom의 width, height정보를 직접 매핑.
         // oTarget.style.width = $oTarget.width();
         //oTarget.style.height = $oTarget.height();
+
+        oTarget.style.width = jQuery(oTarget).width();
+        oTarget.style.height = jQuery(oTarget).height();
 
         //dom의 child정보가 없다면 하위 로직 skip.
         if (oTarget.children.length === 0) {
@@ -1072,13 +1082,17 @@ function fnObserverCallback(aObservEntry) {
 
         setTimeout(function () {
 
-            let oItem = this;
+            let l_dom = this;
+            
+            jQuery(l_dom).empty();
 
-            oItem.getContent()[0].getItems()[0].setVisible(false);
-            oItem.getContent()[0].getItems()[1].setVisible(false);
-            oItem.getContent()[0].getItems()[2].setVisible(false);
+            // let oItem = this;
 
-        }.bind(oItem), 0);
+            // oItem.getContent()[0].getItems()[0].setVisible(false);
+            // oItem.getContent()[0].getItems()[1].setVisible(false);
+            // oItem.getContent()[0].getItems()[2].setVisible(false);
+
+        }.bind(oTarget), 0);
 
         // oItem.getContent()[0].getItems()[0].setVisible(false);
         // oItem.getContent()[0].getItems()[1].setVisible(false);
@@ -1139,7 +1153,7 @@ function ev_gridListAfterRendering(oEvent) {
         return;
     }
 
-    observer.unobserve(oItemDOM);
+    // observer.unobserve(oItemDOM);
 
     observer.observe(oItemDOM);
 
