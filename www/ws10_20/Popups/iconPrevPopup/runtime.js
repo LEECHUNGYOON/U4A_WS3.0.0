@@ -1,8 +1,3 @@
-/************************************************************************
- * Copyright 2020. INFOCG Inc. all rights reserved. 
- * ----------------------------------------------------------------------
- * - file Name : iconPrevPopup/index.js
- ************************************************************************/
 
 /************************************************************************
  * Global..
@@ -15,7 +10,8 @@ oAPP.attr = {};
 
 window.oAPP = oAPP;
 
-var
+const
+    require = parent.require,
     REMOTE = require('@electron/remote'),
     CLIPBOARD = REMOTE.clipboard,
     PATH = REMOTE.require('path'),
@@ -27,9 +23,9 @@ var
     WSERR = require(PATHINFO.WSTRYCATCH),
     zconsole = WSERR(window, document, console),
     WSUTIL = require(PATHINFO.WSUTIL),
-    CURRWIN = REMOTE.getCurrentWindow(),
-    PARWIN = CURRWIN.getParentWindow(),
-    IPCRENDERER = require('electron').ipcRenderer;
+    IPCRENDERER = require('electron').ipcRenderer,
+    CURRWIN = parent.CURRWIN,
+    PARWIN = parent.PARWIN;
 
 let options = {
     root: null,
@@ -38,20 +34,17 @@ let options = {
 },
     observer = new IntersectionObserver(fnObserverCallback, options);
 
-/************************************************************************
- * IPCRENDERER Events..
- ************************************************************************/
-IPCRENDERER.on('if-icon-prev', async (events, oInfo) => {
+/**
+* 아이콘 리스트 팝업을 콜백으로 실행했을 경우 타는 이벤트 핸들러
+*/
+IPCRENDERER.on("if-icon-isCallback", function (events, isCallback) {
 
-    oAPP.attr.sServerPath = oInfo.sServerPath; // 서버 경로
-    oAPP.attr.sServerHost = oInfo.sServerHost // 서버 호스트 경로
-    oAPP.attr.sDefTheme = oInfo.sDefTheme // 기본 테마 정보
-    oAPP.attr.isCallback = oInfo.isCallback;
+    oAPP.attr.isCallback = isCallback;
 
-    // ws 글로벌 언어 설정정보
-    oAPP.attr.WS_LANGU = await WSUTIL.getWsLanguAsync();
-
-    oAPP.fn.fnFrameLoad();
+    let oCoreModel = sap.ui.getCore().getModel();
+    if (oCoreModel) {
+        oCoreModel.setProperty("/PRC/MINI_INVISI", oAPP.attr.isCallback);
+    }
 
     if (oAPP.attr.isCallback === "X") {
         CURRWIN.setParentWindow(PARWIN);
@@ -62,131 +55,37 @@ IPCRENDERER.on('if-icon-prev', async (events, oInfo) => {
 
 });
 
-// /**
-//  * 아이콘 리스트 팝업을 콜백으로 실행했을 경우 타는 이벤트 핸들러
-//  */
-// IPCRENDERER.on("if-icon-isCallback", function (events, isCallback) {
-
-//     oAPP.attr.isCallback = isCallback;
-
-//     let oCoreModel = sap.ui.getCore().getModel();
-//     if (oCoreModel) {
-//         oCoreModel.setProperty("/PRC/MINI_INVISI", oAPP.attr.isCallback);
-//     }
-
-//     if (oAPP.attr.isCallback === "X") {
-//         CURRWIN.setParentWindow(PARWIN);
-//         return;
-//     }
-
-//     CURRWIN.setParentWindow(null);
-
-// });
-
 /************************************************************************
- * 부모 윈도우 관련 이벤트 --- start 
+ * Attach Init
  ************************************************************************/
+oAPP.fn.attachInit = async () => {
 
-// 부모창 닫기 이벤트
-oAPP.fn.fnOnParentWindowClosedEvent = () => {
+    // await fnWait();
 
-    if (!CURRWIN || CURRWIN.isDestroyed()) {
-        return;
-    }
+    // 현재 브라우저의 이벤트 핸들러 
+    _attachCurrentWindowEvents();
 
-    oAPP.attr.isPressWindowClose = "X";
+    await oAPP.fn.getWsMessageList(); // 반드시 이 위치에!!
 
-    CURRWIN.close();
+    oAPP.fn.fnInitRendering();
 
-}; // end of oAPP.fn.fnOnParentWindowClosedEvent
+    oAPP.fn.fnInitModelBinding();
 
-/************************************************************************
- * 부모 윈도우 관련 이벤트 --- End
- ************************************************************************/
+    // SAP ICON 관련 정보 구성
+    await fnSAPIconConfig();
 
-if (PARWIN && !PARWIN.isDestroyed()) {
-    PARWIN.on("closed", oAPP.fn.fnOnParentWindowClosedEvent);
-}
+    // U4A ICON 관련 정보 구성
+    await fnU4AIconConfig();
 
-/************************************************************************
- * frame Load 수행 
- ************************************************************************/
-oAPP.fn.fnFrameLoad = () => {
+    /**
+     * 무조건 맨 마지막에 수행 되어야 함!!
+     */
 
-    let sServerPath = oAPP.attr.sServerPath,
-        sServerHtmlUrl = sServerPath + "/getP13nPreviewHTML",
-        oForm = document.getElementById("u4asendform"),
-        aParam = [
-            { NAME: "LIBRARY", VALUE: "sap.m, sap.f, sap.ui.table" },
-            { NAME: "LANGU", VALUE: oAPP.attr.WS_LANGU },
-            { NAME: "THEME", VALUE: "sap_horizon" },
-            { NAME: "CALLBACKFUNC", VALUE: "parent.oAPP.fn.onFrameLoadSuccess();" },
-        ]
+    // 자연스러운 로딩
+    sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback);
 
-    for (var i = 0; i < aParam.length; i++) {
+}; // end of oAPP.fn.attachInit
 
-        let oParam = aParam[i],
-            oInput = document.createElement("input");
-
-        oInput.setAttribute("type", "hidden");
-        oInput.setAttribute("name", oParam.NAME);
-        oInput.setAttribute("value", oParam.VALUE);
-        oForm.appendChild(oInput);
-
-    }
-
-    oForm.setAttribute("action", sServerHtmlUrl);
-
-    oForm.submit();
-
-}; // end of oAPP.fn.fnFrameLoad
-
-/************************************************************************
- * 서버 부트스트랩 로드 성공 시
- ************************************************************************/
-oAPP.fn.onFrameLoadSuccess = () => {    
-
-    let oWs_frame = document.getElementById("ws_frame"),
-
-        // content div 생성
-        oContWindow = oWs_frame.contentWindow,
-        oContentDocu = oWs_frame.contentDocument,
-        oContentDiv = oContentDocu.createElement("div");
-
-    oContentDiv.id = "content";
-    oContentDiv.style.display = "none";
-
-    oContentDocu.body.appendChild(oContentDiv);
-
-    // css 파일 넣기
-    let sCssLinkPath = PATH.join(PATHINFO.POPUP_ROOT, "iconPrevPopup", "index.css"),
-        sCssData = FS.readFileSync(sCssLinkPath, "utf-8");
-
-    let oStyle = oContentDocu.createElement("style");
-    oStyle.innerHTML = sCssData;
-
-    oContentDocu.head.appendChild(oStyle);
-
-    // frame 영역에서 동작할 js를 읽어서 eval 처리 한다.
-    let sRuntimeJsPath = PATH.join(PATHINFO.POPUP_ROOT, "iconPrevPopup", "runtime.js"),
-        sJsData = FS.readFileSync(sRuntimeJsPath, "utf-8");
-
-    oContWindow["___u4a_ws_eval___"](sJsData);
-
-}; // end of oAPP.fn.onFrameLoadSuccess
-
-
-function fnWait() {
-
-    return new Promise((resolve) => {
-
-        setTimeout(() => {
-            resolve();
-        }, 3000);
-
-    });
-
-}
 
 function fnGetFontAwesomeIcon() {
 
@@ -490,37 +389,6 @@ function _attachCurrentWindowEvents() {
 
 } // end of _attachCurrentWindowEvents
 
-/************************************************************************
- * Attach Init
- ************************************************************************/
-oAPP.fn.attachInit = async () => {
-
-    // await fnWait();
-
-    // 현재 브라우저의 이벤트 핸들러 
-    _attachCurrentWindowEvents();
-
-    await oAPP.fn.getWsMessageList(); // 반드시 이 위치에!!
-
-    oAPP.fn.fnInitRendering();
-
-    oAPP.fn.fnInitModelBinding();
-
-    // SAP ICON 관련 정보 구성
-    await fnSAPIconConfig();
-
-    // U4A ICON 관련 정보 구성
-    await fnU4AIconConfig();
-
-    /**
-     * 무조건 맨 마지막에 수행 되어야 함!!
-     */
-
-    // 자연스러운 로딩
-    sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback);
-
-}; // end of oAPP.fn.attachInit
-
 function _fnUIupdatedCallback() {
 
     setTimeout(() => {
@@ -531,7 +399,7 @@ function _fnUIupdatedCallback() {
 
     oAPP.setBusy("");
 
-    document.getElementById("u4aWsBusyIndicator").style.visibility = "hidden";
+    parent.document.getElementById("u4aWsBusyIndicator").style.visibility = "hidden";
 
     sap.ui.getCore().detachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback);
 
@@ -1015,6 +883,7 @@ function fnObserverCallback(aObservEntry) {
 
         oTarget.style.width = jQuery(oTarget).width();
         oTarget.style.height = jQuery(oTarget).height();
+        oTarget.style.backgroundColor = "red";
 
         //dom의 child정보가 없다면 하위 로직 skip.
         if (oTarget.children.length === 0) {
@@ -1559,12 +1428,11 @@ function sendAjaxAsync(pOptions, oFormData) {
 } // end of sendAjax
 
 
-window.onbeforeunload = () => {
-
-    // 브라우저의 닫기 버튼을 누른게 아니라면 종료 하지 않음
-    if (oAPP.attr.isPressWindowClose !== "X") {
-        return false;
-    }
 
 
-};
+
+
+
+
+
+oAPP.fn.attachInit();

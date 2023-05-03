@@ -1,0 +1,25 @@
+.u4aWsBrowserDraggable {
+  -webkit-app-region: drag !important;
+}
+
+.u4aWsBrowserDraggable .sapMBtn,
+.u4aWsBrowserDraggable .sapMSlt {
+  -webkit-app-region: no-drag;
+}
+
+.u4aWsIconListMainPage
+  .sapFDynamicPageContent
+  .sapFDynamicPageContentFitContainer {
+  padding: 0px;
+}
+
+.u4aWsIconListMainPage .sapFDynamicPageContentFitContainer .sapMListItems {
+  place-content: start;
+}
+
+.u4aWsIconListMainPage .u4aWsIconListDynamicPage .sapFDynamicPageTitle {
+  padding: 0px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-bottom: 1rem;
+}

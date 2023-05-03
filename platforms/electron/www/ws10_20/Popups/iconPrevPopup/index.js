@@ -15,10 +15,7 @@ oAPP.attr = {};
 
 window.oAPP = oAPP;
 
-let sap,
-    jQuery;
-
-const
+var
     REMOTE = require('@electron/remote'),
     CLIPBOARD = REMOTE.clipboard,
     PATH = REMOTE.require('path'),
@@ -33,7 +30,6 @@ const
     CURRWIN = REMOTE.getCurrentWindow(),
     PARWIN = CURRWIN.getParentWindow(),
     IPCRENDERER = require('electron').ipcRenderer;
-
 
 let options = {
     root: null,
@@ -66,26 +62,26 @@ IPCRENDERER.on('if-icon-prev', async (events, oInfo) => {
 
 });
 
-/**
- * 아이콘 리스트 팝업을 콜백으로 실행했을 경우 타는 이벤트 핸들러
- */
-IPCRENDERER.on("if-icon-isCallback", function (events, isCallback) {
+// /**
+//  * 아이콘 리스트 팝업을 콜백으로 실행했을 경우 타는 이벤트 핸들러
+//  */
+// IPCRENDERER.on("if-icon-isCallback", function (events, isCallback) {
 
-    oAPP.attr.isCallback = isCallback;
+//     oAPP.attr.isCallback = isCallback;
 
-    let oCoreModel = sap.ui.getCore().getModel();
-    if (oCoreModel) {
-        oCoreModel.setProperty("/PRC/MINI_INVISI", oAPP.attr.isCallback);
-    }
+//     let oCoreModel = sap.ui.getCore().getModel();
+//     if (oCoreModel) {
+//         oCoreModel.setProperty("/PRC/MINI_INVISI", oAPP.attr.isCallback);
+//     }
 
-    if (oAPP.attr.isCallback === "X") {
-        CURRWIN.setParentWindow(PARWIN);
-        return;
-    }
+//     if (oAPP.attr.isCallback === "X") {
+//         CURRWIN.setParentWindow(PARWIN);
+//         return;
+//     }
 
-    CURRWIN.setParentWindow(null);
+//     CURRWIN.setParentWindow(null);
 
-});
+// });
 
 /************************************************************************
  * 부모 윈도우 관련 이벤트 --- start 
@@ -137,7 +133,7 @@ oAPP.fn.fnFrameLoad = () => {
         oInput.setAttribute("value", oParam.VALUE);
         oForm.appendChild(oInput);
 
-    }   
+    }
 
     oForm.setAttribute("action", sServerHtmlUrl);
 
@@ -148,7 +144,7 @@ oAPP.fn.fnFrameLoad = () => {
 /************************************************************************
  * 서버 부트스트랩 로드 성공 시
  ************************************************************************/
-oAPP.fn.onFrameLoadSuccess = () => {
+oAPP.fn.onFrameLoadSuccess = () => {    
 
     let oWs_frame = document.getElementById("ws_frame"),
 
@@ -162,10 +158,6 @@ oAPP.fn.onFrameLoadSuccess = () => {
 
     oContentDocu.body.appendChild(oContentDiv);
 
-    // sap 오브젝트 상속
-    sap = oContWindow.sap;
-    jQuery = $ = oContWindow.jQuery;
-
     // css 파일 넣기
     let sCssLinkPath = PATH.join(PATHINFO.POPUP_ROOT, "iconPrevPopup", "index.css"),
         sCssData = FS.readFileSync(sCssLinkPath, "utf-8");
@@ -175,21 +167,11 @@ oAPP.fn.onFrameLoadSuccess = () => {
 
     oContentDocu.head.appendChild(oStyle);
 
-    // // 스크립트 오류 감지    
-    // let sEvalString = "const require = parent.require,";
-    // sEvalString += "REMOTE = require('@electron/remote'), ";
-    // sEvalString += "PATH = REMOTE.require('path'),";
-    // sEvalString += "APP = REMOTE.app, APPPATH = APP.getAppPath(),";
-    // sEvalString += "PATHINFOURL = PATH.join(APPPATH, 'Frame', 'pathInfo.js'),";
-    // sEvalString += "PATHINFO = require(PATHINFOURL),";
-    // sEvalString += "WSERR = require(PATHINFO.WSTRYCATCH),"
-    // sEvalString += "zconsole = WSERR(window, document, console);"
+    // frame 영역에서 동작할 js를 읽어서 eval 처리 한다.
+    let sRuntimeJsPath = PATH.join(PATHINFO.POPUP_ROOT, "iconPrevPopup", "runtime.js"),
+        sJsData = FS.readFileSync(sRuntimeJsPath, "utf-8");
 
-    // oContWindow["___u4a_ws_eval___"](sEvalString);
-
-    oAPP.setBusy("X");
-
-    oAPP.fn.attachInit(); // [Async]
+    oContWindow["___u4a_ws_eval___"](sJsData);
 
 }; // end of oAPP.fn.onFrameLoadSuccess
 
@@ -998,6 +980,8 @@ function fnSetScrollTop() {
 
 function fnObserverCallback(aObservEntry) {
 
+    console.warn("콜백!!");
+
     let iEntryLength = aObservEntry.length;
     if (iEntryLength == 0) {
         return;
@@ -1012,8 +996,6 @@ function fnObserverCallback(aObservEntry) {
             continue;
         }
 
-        // debugger;
-
         //dom에 해당하는 UI정보 얻기.
         var oItem = sap.ui.getCore().byId(oTarget.id);
         if (!oItem) { return; }
@@ -1021,50 +1003,15 @@ function fnObserverCallback(aObservEntry) {
         // 해당 요소가 화면에 나오는 경우
         if (oObservEntry.isIntersecting) {
 
-            // console.log("zzzz");
+            //dom에 해당하는 UI정보 얻기.
+            var l_ui = sap.ui.getCore().byId(oTarget.id);
+            if (!l_ui) { return; }
 
-            // setTimeout(function () {
-
-            //     let oItem = this;
-
-            //     oItem.getContent()[0].getItems()[0].setVisible(true);
-            //     oItem.getContent()[0].getItems()[1].setVisible(true);
-            //     oItem.getContent()[0].getItems()[2].setVisible(true);              
-
-            // }.bind(oItem), 0);
-
-            // oItem.getContent()[0].getItems()[0].setVisible(true);
-            // oItem.getContent()[0].getItems()[1].setVisible(true);
-            // oItem.getContent()[0].getItems()[2].setVisible(true);
-
-            //oItem.getContent()[0].getItems()[0].invalidate();
-            //oItem.getContent()[0].getItems()[1].invalidate();
-            //oItem.getContent()[0].getItems()[2].invalidate();
-
-
-             //dom에 해당하는 UI정보 얻기.
-             var l_ui = sap.ui.getCore().byId(oTarget.id);
-             if(!l_ui){return;}
-             
-             //dom 갱신 처리.
-             l_ui.invalidate();         
-             continue;
-
-            // //dom 갱신 처리.
-            // oItem.invalidate();
-            // // oItem.setVisible(true);
-            // continue;
+            //dom 갱신 처리.
+            l_ui.invalidate();
+            continue;
 
         }
-
-        // let $oTarget = jQuery(oTarget);
-        // if ($oTarget.length == 0) {
-        //     continue;
-        // }
-
-        //현재 dom의 width, height정보를 직접 매핑.
-        // oTarget.style.width = $oTarget.width();
-        //oTarget.style.height = $oTarget.height();
 
         oTarget.style.width = jQuery(oTarget).width();
         oTarget.style.height = jQuery(oTarget).height();
@@ -1076,75 +1023,22 @@ function fnObserverCallback(aObservEntry) {
 
         if (!oItem) { return; }
 
-        // jQuery(oItem.getContent()[0].getItems()[0].getDomRef()).remove();
-        // jQuery(oItem.getContent()[0].getItems()[1].getDomRef()).remove();
-        // jQuery(oItem.getContent()[0].getItems()[2].getDomRef()).remove();
-
         setTimeout(function () {
 
             let l_dom = this;
-            
+
             jQuery(l_dom).empty();
 
-            // let oItem = this;
-
-            // oItem.getContent()[0].getItems()[0].setVisible(false);
-            // oItem.getContent()[0].getItems()[1].setVisible(false);
-            // oItem.getContent()[0].getItems()[2].setVisible(false);
-
         }.bind(oTarget), 0);
-
-        // oItem.getContent()[0].getItems()[0].setVisible(false);
-        // oItem.getContent()[0].getItems()[1].setVisible(false);
-        // oItem.getContent()[0].getItems()[2].setVisible(false);
-
-        // oItem.setVisible(false);
-
-        // //비동기로 dom의 child 제거 처리.
-        // setTimeout(function () {
-
-        //     let $oTarget = jQuery(this);
-
-        //     $oTarget.empty();
-
-
-        // }.bind(oTarget), 0);
 
     }
 
 } // end of fnObserverCallback
 
-
-
-// function ev_gridListGrowingFinished(oEvent) {
-
-//     let oGridList = oEvent.getSource(),
-//         aItems = oGridList.getItems(),
-//         iItemLength = aItems.length;
-
-//     if (iItemLength == 0) {
-//         return;
-//     }
-
-//     for (var i = 0; i < iItemLength; i++) {
-
-//         let oItem = aItems[i],
-//             oItemDOM = oItem.getDomRef();
-
-//         if (!oItemDOM) {
-//             continue;
-//         }
-
-//         observer.unobserve(oItemDOM);
-
-//         //item dom에 observer 구성.
-//         observer.observe(oItemDOM);
-
-//     }
-
-// } // end of ev_gridListGrowingFinished
-
 function ev_gridListAfterRendering(oEvent) {
+
+    console.warn("ev_gridListAfterRendering");
+
 
     let oItem = oEvent.srcControl,
         oItemDOM = oItem.getDomRef();
@@ -1153,32 +1047,9 @@ function ev_gridListAfterRendering(oEvent) {
         return;
     }
 
-    // observer.unobserve(oItemDOM);
+    observer.unobserve(oItemDOM);
 
     observer.observe(oItemDOM);
-
-    // aItems = oGridList.getItems(),
-    // iItemLength = aItems.length;
-
-    // if (iItemLength == 0) {
-    //     return;
-    // }
-
-    // for (var i = 0; i < iItemLength; i++) {
-
-    //     let oItem = aItems[i],
-    //         oItemDOM = oItem.getDomRef();
-
-    //     if (!oItemDOM) {
-    //         continue;
-    //     }
-
-    //     observer.unobserve(oItemDOM);
-
-    //     //item dom에 observer 구성.
-    //     observer.observe(oItemDOM);
-
-    // }
 
 } // end of ev_gridListAfterRendering
 
@@ -1374,8 +1245,8 @@ function ev_iconClipBoardCopy(oEvent) {
 
     sap.m.MessageToast.show(oAPP.msg.M031); // Clipboard Copy Success!
 
-    // // 콜백 여부에 따라 아이콘 url를 리턴
-    // _sendIconSrc(sIconSrc);
+    // 콜백 여부에 따라 아이콘 url를 리턴
+    _sendIconSrc(sIconSrc);
 
 } // end of ev_iconClipBoardCopy
 
