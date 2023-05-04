@@ -453,7 +453,7 @@ module.exports = {
 
                 resolve(oWsLanguDir);
                 return;
-                                
+
                 // throw new Error("WS Language File not found!");
             }
 
@@ -763,7 +763,7 @@ module.exports = {
     /**
      * 레지스트리에 저장된 whiteList Object 정보
      */
-    getWsWhiteListObjectAsync: function (SYSID = "", CHGOBJ = "") {
+    getWsWhiteListObjectAsync: function (SYSID = "", REGTYP = "", CHGOBJ = "") {
 
         return new Promise(async (resolve) => {
 
@@ -804,7 +804,17 @@ module.exports = {
                 return;
             }
 
-            let oFindWso = aWSO.find(elem => elem?.CHGOBJ === CHGOBJ);
+            let oFindWso = aWSO.find((elem) => {
+
+                if (elem.REGTYP == REGTYP && elem.CHGOBJ == CHGOBJ) {
+                    return true;
+                }
+
+                return false;
+
+            });
+
+            // let oFindWso = aWSO.find(elem => elem?.CHGOBJ === CHGOBJ);
             if (!oFindWso) {
                 resolve(false);
                 return;

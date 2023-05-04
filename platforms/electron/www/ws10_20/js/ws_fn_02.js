@@ -1302,9 +1302,9 @@
             }
 
 
-            // if (isVisible) {
-            //     continue;
-            // }
+            if (isVisible) {
+                continue;
+            }
 
             oChild.show();
             oChild.setOpacity(1);
