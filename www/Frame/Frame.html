@@ -79,10 +79,10 @@
             APPPATH = APP.getAppPath(),
             WSLOG = require(PATH.join(APPPATH, "ws10_20", "js", "ws_log.js"));
 
-        // if (APP.isPackaged) {
-        // 오류 로그 감지
-        WSLOG.start(REMOTE, console);
-        // }
+        if (APP.isPackaged) {
+            // 오류 로그 감지
+            WSLOG.start(REMOTE, console);
+        }
 
         // 무한 루프 오류 방지 flag
         var bIsError = false;
@@ -147,7 +147,7 @@
             }).then(() => {
 
                 bIsError = false;
-             
+
                 REMOTE.app.exit();
 
                 // return;

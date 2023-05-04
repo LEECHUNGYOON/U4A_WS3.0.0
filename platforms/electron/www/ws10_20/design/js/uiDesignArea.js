@@ -744,7 +744,7 @@
     }
 
     //입력 UI OBJECT의 상속관계 정보 얻기.
-    var lt_0027 = oAPP.DATA.LIB.T_0027.filter( a => a.TGOBJ === sUIOBK);
+    var lt_0027 = oAPP.DATA.LIB.T_0027.filter( a => a.TGOBJ === sUIOBK && a.TOBTY !== "1" );
 
     //상속관계 정보가 존재하지 않는경우 exit.
     if(lt_0027.length === 0){

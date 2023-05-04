@@ -2,13 +2,14 @@
 /************************************************************************
  * Global..
  ************************************************************************/
+let oAPP = parent.oAPP;
 
-let oAPP = {};
-oAPP.fn = {};
-oAPP.msg = {};
-oAPP.attr = {};
-
-window.oAPP = oAPP;
+if (!oAPP) {
+    oAPP = {};
+    oAPP.fn = {};
+    oAPP.msg = {};
+    oAPP.attr = {};
+}
 
 const
     require = parent.require,
@@ -27,12 +28,12 @@ const
     CURRWIN = parent.CURRWIN,
     PARWIN = parent.PARWIN;
 
-let options = {
+let oIntersectionObserverOptions = {
     root: null,
     rootMargin: "0px",
     threshold: 0,
 },
-    observer = new IntersectionObserver(fnObserverCallback, options);
+    oIntersectionObserver = new IntersectionObserver(fnIntersectionObserverCallback, oIntersectionObserverOptions);
 
 /**
 * 아이콘 리스트 팝업을 콜백으로 실행했을 경우 타는 이벤트 핸들러
@@ -59,8 +60,6 @@ IPCRENDERER.on("if-icon-isCallback", function (events, isCallback) {
  * Attach Init
  ************************************************************************/
 oAPP.fn.attachInit = async () => {
-
-    // await fnWait();
 
     // 현재 브라우저의 이벤트 핸들러 
     _attachCurrentWindowEvents();
@@ -503,18 +502,6 @@ oAPP.fn.fnInitRendering = function () {
 
                             CURRWIN.minimize();
 
-                            // CURRWIN.setOpacity(0);
-
-                            // CURRWIN.setParentWindow(null);
-
-                            // setTimeout(() => {
-
-                            //     CURRWIN.minimize();
-
-                            //     CURRWIN.setOpacity(1);
-
-                            // }, 100);
-
                         }
                     }).bindProperty("visible", "/PRC/MINI_INVISI", function (MINI_INVISI) {
 
@@ -709,7 +696,7 @@ function fnGetDynamicPageContent() {
                         ] // end of end of GridListItem content
 
                     }).addEventDelegate({
-                        onAfterRendering: ev_gridListAfterRendering
+                        onAfterRendering: ev_gridListItemAfterRendering
                     }) // end of GridListItem   
 
                 } // end of GridList items
@@ -717,8 +704,6 @@ function fnGetDynamicPageContent() {
             }) // end of GridList
                 .addEventDelegate({
                     ondblclick: ev_iconGridListDblClick,
-
-                    // onAfterRendering: ev_gridListAfterRendering
                 })
 
         ] // end of Page Content
@@ -845,10 +830,10 @@ function fnSetScrollTop() {
 
 } // end of fnSetScrollTop
 
-
-function fnObserverCallback(aObservEntry) {
-
-    console.warn("콜백!!");
+/************************************************************************
+ * IntersectionObserver Callback
+ ************************************************************************/
+function fnIntersectionObserverCallback(aObservEntry) {
 
     let iEntryLength = aObservEntry.length;
     if (iEntryLength == 0) {
@@ -883,7 +868,6 @@ function fnObserverCallback(aObservEntry) {
 
         oTarget.style.width = jQuery(oTarget).width();
         oTarget.style.height = jQuery(oTarget).height();
-        oTarget.style.backgroundColor = "red";
 
         //dom의 child정보가 없다면 하위 로직 skip.
         if (oTarget.children.length === 0) {
@@ -904,10 +888,7 @@ function fnObserverCallback(aObservEntry) {
 
 } // end of fnObserverCallback
 
-function ev_gridListAfterRendering(oEvent) {
-
-    console.warn("ev_gridListAfterRendering");
-
+function ev_gridListItemAfterRendering(oEvent) {
 
     let oItem = oEvent.srcControl,
         oItemDOM = oItem.getDomRef();
@@ -916,12 +897,11 @@ function ev_gridListAfterRendering(oEvent) {
         return;
     }
 
-    observer.unobserve(oItemDOM);
+    oIntersectionObserver.unobserve(oItemDOM);
 
-    observer.observe(oItemDOM);
+    oIntersectionObserver.observe(oItemDOM);
 
-} // end of ev_gridListAfterRendering
-
+} // end of ev_gridListItemAfterRendering
 
 /************************************************************************
  * 아이콘 리스트 테이블의 더블클릭 이벤트

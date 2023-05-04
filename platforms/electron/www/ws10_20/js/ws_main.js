@@ -8,7 +8,8 @@
 (function (window, oAPP) {
     "use strict";
 
-    var APPCOMMON = oAPP.common;
+    var APPCOMMON = oAPP.common,
+        WSUTIL = parent.WSUTIL;
 
     /**************************************************************************
      * 공통 인스턴스 정의
@@ -62,7 +63,54 @@
             }
         };
 
-    }; // end of oAPP.main.fnGetWs20InitData    
+    }; // end of oAPP.main.fnGetWs20InitData
+
+    /**************************************************************************
+     * WS Global Setting Lauguage에 맞는 메시지 텍스트 정보를 구한다.
+     **************************************************************************/
+    oAPP.main.fnGetWsMsgModelData = function () {
+
+        return new Promise(async (resolve) => {
+
+            // WS Global Setting Lauguage에 맞는 메시지 텍스트 정보를 구한다.
+            let oLanguTextResult = await WSUTIL.getWsMsgModelData();
+            if (oLanguTextResult.RETCD == "E") {
+                resolve();
+                return;
+            }
+
+            let oLanguJsonData = oLanguTextResult.RTDATA,
+                oCoreModel = sap.ui.getCore().getModel();
+
+            oCoreModel.setProperty("/WSLANGU", oLanguJsonData);
+
+            resolve();
+
+        });
+
+    }; // end of oAPP.main.fnGetWsMsgModelData
+
+    /************************************************************************
+     * WS Global 메시지 글로벌 변수 설정
+     ************************************************************************/
+    oAPP.fn.fnWsGlobalMsgList = () => {
+
+        return new Promise(async (resolve) => {
+
+            if (!oAPP.msg) {
+                oAPP.msg = {};
+            }
+
+            // 레지스트리에서 WS Global language 구하기
+            let sWsLangu = await WSUTIL.getWsLanguAsync();
+
+            oAPP.msg.M047 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "047"); // Icon List
+
+            resolve();
+
+        });
+
+    }; // end of oAPP.fn.fnWsGlobalMsgList
 
     /**************************************************************************
      * U4A WS 메타 정보 구하기
@@ -367,6 +415,12 @@
 
             // 초기 모델 바인딩
             oAPP.main.fnOnInitModelBinding();
+
+            //WS Global Setting Lauguage에 맞는 메시지 텍스트 정보를 구해서 모델에 저장한다.
+            await oAPP.main.fnGetWsMsgModelData();
+
+            // WS Global 메시지 글로벌 변수 설정
+            await oAPP.fn.fnWsGlobalMsgList();
 
             // 초기 화면 그리기
             oAPP.fn.fnOnInitRendering(); // #[ws_fn_01.js]

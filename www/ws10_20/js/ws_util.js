@@ -438,6 +438,74 @@ module.exports = {
 
     }, // end of getWsMsgClsTxt    
 
+    /**
+     * WS 3.0 전용 메시지 모델 정보 구조
+     */
+    getWsMsgModelData: function () {
+
+        return new Promise(async (resolve) => {
+
+            let sWsLangu = await this.getWsLanguAsync(), // WS Language 설정 정보                
+                sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", sWsLangu); // www에 내장되어 있는 WS 메시지 경로
+
+            let oWsLanguDir = await this.readDir(sWsMsgPath);
+            if (oWsLanguDir.RETCD == "E") {
+
+                resolve(oWsLanguDir);
+                return;
+                                
+                // throw new Error("WS Language File not found!");
+            }
+
+            let aLanguFiles = oWsLanguDir.RTDATA,
+                iLanguFileLength = aLanguFiles.length;
+
+            let oLanguJsonData = {};
+            for (var i = 0; i < iLanguFileLength; i++) {
+
+                let sLanguFileFullName = aLanguFiles[i], // Language 폴더의 파일 목록
+                    oPathParse = PATH.parse(sLanguFileFullName), // 파일명만 추출
+                    sLanguFileName = oPathParse.name,
+
+                    sLanguFilePath = PATH.join(sWsMsgPath, sLanguFileFullName),
+                    aLanguJson = require(sLanguFilePath),
+                    iLanguJsonLength = aLanguJson.length;
+
+
+                /**
+                 * 구조 예시
+                 * {
+                 *      "ZWSMSG_001" : {
+                 *          "000" : "TEXT_000",
+                 *          "001" : "TEXT_001",
+                 *      },
+                 *      "ZWSMSG_002" : {
+                 *          "000" : "TEXT_000",
+                 *          "001" : "TEXT_001",
+                 *      }
+                 * }
+                 */
+                oLanguJsonData[sLanguFileName] = {};
+
+                for (var j = 0; j < iLanguJsonLength; j++) {
+
+                    let oLanguJson = aLanguJson[j];
+
+                    oLanguJsonData[sLanguFileName][oLanguJson.MSGNR] = oLanguJson.TEXT;
+
+                }
+
+            }
+
+            resolve({
+                RETCD: "S",
+                RTDATA: oLanguJsonData
+            });
+
+        });
+
+    }, // end of getWsMsgModelData
+
     /************************************************************************
      * Array를 Tree 구조로 변환
      ************************************************************************  

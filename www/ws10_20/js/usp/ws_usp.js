@@ -1867,6 +1867,9 @@
         }, {
             key: "WMENU20_03",
             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
+        }, {
+            key: "WMENU20_04",
+            text: oAPP.msg.M047, // Icon List
         }],
 
             aWMENU30 = [{
@@ -3189,7 +3192,7 @@
             oUspTreeTable.detachRowsUpdated(oAPP.fn.fnAttachRowsUpdateInit);
         }
 
-        let sTitle = "U4A Workspace - Main";       
+        let sTitle = "U4A Workspace - Main";
 
         // 브라우저 타이틀 변경
         parent.CURRWIN.setTitle(sTitle);

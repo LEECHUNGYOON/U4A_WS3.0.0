@@ -9,6 +9,9 @@
   //바인딩(서버이벤트) 색상 필드
   const C_ATTR_BIND_ICON_COLOR = "#dec066";
 
+  //SELECT OPTION2(SELECT OPTION3) F4Help 삭제 아이콘 색상.
+  const C_ATTR_SEL_OPT_F4_ICON_COLOR = "#fa6161";
+
   //우측 페이지(attribute 영역) 구성
   oAPP.fn.uiAttributeArea = function(oRPage){
     
@@ -342,7 +345,7 @@
 
     //attribute 선택 이벤트.
     oRObjStat1.attachPress(function(){
-
+      
       var l_ui = this;
 
       var l_ctxt = this.getBindingContext();
@@ -378,7 +381,7 @@
 
     //attribute 직접입력 필드
     var oRInp2 = new sap.m.Input({value:"{UIATV}", editable:"{edit}", visible:"{inp_visb}", tooltip:"{UIATV}",
-      showValueHelp:"{showF4}", enabled:"{/IS_EDIT}", valueState:"{valst}", valueStateText:"{valtx}"});
+      showValueHelp:"{showF4}", enabled:"{/IS_EDIT}", valueState:"{valst}", valueStateText:"{valtx}", valueHelpOnly:"{F4Only}"});
     oRHbox1.addItem(oRInp2);
 
     //attr 입력필드 이벤트.
@@ -581,6 +584,9 @@
     //HTML UI의 content 프로퍼티에 바인딩 처리시 점검.
     if(oAPP.fn.attrChkHTMLContent(is_attr, true, oAPP.fn.attrBindProp)){return;}
 
+    //selectOption3 UI의 F4HelpReturnFIeld 바인딩시 필요값 점검.
+    if(oAPP.fn.attrCheckSelOpt3F4ReturnField(is_attr)){return;}
+
     //프로퍼티 바인딩 처리건
     if(oAPP.fn.attrBindProp(is_attr)){return;}
 
@@ -747,7 +753,7 @@
     //custom data 설정건 정보 얻기.
     var lt_cdata = l_ui.getCustomData();
 
-    //cusom data 설정건 정보가 존재하지 않는경우 exit.
+    //custom data 설정건 정보가 존재하지 않는경우 exit.
     if(lt_cdata.length === 0){return;}
 
 
@@ -783,6 +789,12 @@
 
     //SELECT OPTION2의 VALUE에 바인딩처리 하는경우.
     if(is_attr.UIATK === "EXT00001161"){
+      //RANGE TABLE만 바인딩 가능 FLAG 처리.
+      l_CARDI = "R";
+    }
+
+    //SELECT OPTION3의 VALUE에 바인딩처리 하는경우.
+    if(is_attr.UIATK === "EXT00002507"){
       //RANGE TABLE만 바인딩 가능 FLAG 처리.
       l_CARDI = "R";
     }
@@ -1789,7 +1801,12 @@
 
     //icon popup 호출 처리.
     if(oAPP.fn.attrCallValueHelpIcon(is_attr)){return;}
-      
+
+    //select option3 UI의 f4 help 호출 처리.
+    if(oAPP.fn.attrSelOption2F4HelpID(is_attr, true)){return;}
+
+    //select option3 UI의 F4HelpReturnFIeld 프로퍼티 처리.
+    if(oAPP.fn.attrSelOption2F4HelpReturnFIeld(is_attr, true)){return;}
 
   };  //프로퍼티 f4 help 호출 처리.
 
@@ -2694,6 +2711,12 @@
       //f4 help 버튼 활성화.
       is_attr.showF4 = true;
     }
+
+    //select option3 UI의 F4HelpID, F4HelpReturnFIeld 프로퍼티인경우.
+    if(is_attr.UIATK === "EXT00002534" || is_attr.UIATK === "EXT00002535"){
+      //f4 help 버튼 활성화.
+      is_attr.showF4 = true;
+    }
     
   };  //프로퍼티의 입력필드 f4 help 설정 여부.
 
@@ -2765,6 +2788,12 @@
 
         //SELECT OPTION2의 VALUE에 바인딩처리 하는경우.
         if(is_attr.UIATK === "EXT00001161"){
+          //RANGE TABLE만 바인딩 가능 FLAG 처리.
+          l_CARDI = "R";
+        }
+
+        //SELECT OPTION3의 VALUE에 바인딩처리 하는경우.
+        if(is_attr.UIATK === "EXT00002507"){
           //RANGE TABLE만 바인딩 가능 FLAG 처리.
           l_CARDI = "R";
         }
@@ -3062,6 +3091,17 @@
     var l_type = sap.ui.base.DataType.getType(is_attr.UIADT);
     if(!l_type){return;}
 
+    //20230417 PES -start.
+    //프로퍼티 입력값이 예외처리된건인지 확인.
+    var ls_UA032 = oAPP.attr.S_CODE.UA032.find( a => a.FLD01 === is_attr.UIOBK && 
+      a.FLD03 === is_attr.UIATT && a.FLD06 !== "X" && a.FLD07 !== "" );
+
+    //예외처리 function이 존재하는경우 예외처리 function 수행.
+    if(ls_UA032){
+      l_val = oAPP.attr.ui.frame.contentWindow[ls_UA032.FLD07](l_val);
+    }
+    //20230417 PES -end.
+
     //입력값 가능여부 return. true: 가능, false: 불가능.
     return l_type.isValid(l_val);
 
@@ -3215,10 +3255,17 @@
 
 
   //select option2의 F4HelpID 프로퍼티의 팝업 호출 처리.
-  oAPP.fn.attrSelOption2F4HelpID = function(is_attr){
+  oAPP.fn.attrSelOption2F4HelpID = function(is_attr, bSelOpt3){
     
     //selectOption2의 F4HelpID프로퍼티가 아닌경우 exit.
-    if(is_attr.UIATK !== "EXT00001188"){return;}
+    if(is_attr.UIATK !== "EXT00001188" && !bSelOpt3){
+      return;
+    }
+
+    //selectOption3의 F4HelpID프로퍼티가 아닌경우 exit.
+    if(is_attr.UIATK !== "EXT00002534" && bSelOpt3 === true){
+      return;
+    }
 
     //편집상태가 아닌경우 exit.
     if(!oAPP.attr.oModel.oData.IS_EDIT){
@@ -3234,6 +3281,30 @@
 
       //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
       oAPP.fn.attrChangeProc(is_attr);
+
+      //default F4HelpReturnFIeld의 attr key 구성(selectOption2)
+      var l_UIATK = "EXT00001189";
+
+      //selectOption3 UI의 F4HelpID인경우 F4HelpReturnFIeld의 attr key 구성(selectOption3)
+      if(is_attr.UIATK === "EXT00002534"){
+        l_UIATK = "EXT00002535";
+      }
+
+      //F4HelpReturnFIeld ATTRIBUTE 검색.
+      var ls_attr = oAPP.attr.oModel.oData.T_ATTR.find( a => a.UIATK === l_UIATK );
+
+      //바인딩 처리가 안됐다면 초기화 처리.
+      if(typeof ls_attr !== "undefined" && ls_attr.ISBND !== "X"){
+        //F4HelpReturnFIeld 입력건 초기화.
+        ls_attr.UIATV = "";
+
+        //바인딩 해제 처리.
+        ls_attr.ISBND = "";
+
+        //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
+        oAPP.fn.attrChangeProc(ls_attr);
+
+      }
 
     } //f4 help callback function.
     
@@ -3269,7 +3340,7 @@
 
 
   //select option2의 F4HelpReturnFIeld 프로퍼티의 팝업 호출 처리.
-  oAPP.fn.attrSelOption2F4HelpReturnFIeld = function(is_attr){
+  oAPP.fn.attrSelOption2F4HelpReturnFIeld = function(is_attr, bSelOpt3){
 
     //CALLBACK FUNCTION.
     function lf_callback(param){
@@ -3287,7 +3358,22 @@
 
     
     //selectOption2의 F4HelpReturnFIeld프로퍼티가 아닌경우 exit.
-    if(is_attr.UIATK !== "EXT00001189"){return;}
+    if(is_attr.UIATK !== "EXT00001189" && !bSelOpt3){
+      return;
+    }
+
+    //selectOption3의 F4HelpReturnFIeld프로퍼티가 아닌경우 exit.
+    if(is_attr.UIATK !== "EXT00002535" && bSelOpt3 === true){
+      return;
+    }
+
+    //default selectOption2의 F4HelpID property key매핑.
+    var l_UIATK = "EXT00001188";
+
+    //selectOption3 UI인경우 F4HelpID property key매핑.
+    if(bSelOpt3){
+      l_UIATK = "EXT00002534";
+    }
     
     //편집상태가 아닌경우 exit.
     if(!oAPP.attr.oModel.oData.IS_EDIT){
@@ -3296,7 +3382,7 @@
     }
 
     //F4HelpID 프로퍼티 정보 얻기.
-    var ls_attr = oAPP.attr.oModel.oData.T_ATTR.find( a => a.UIATK === "EXT00001188" );
+    var ls_attr = oAPP.attr.oModel.oData.T_ATTR.find( a => a.UIATK === l_UIATK );
 
     //F4HelpID 프로퍼티 입력값이 존재하지 않는경우 EXIT.
     if(ls_attr.UIATV === ""){
@@ -3313,6 +3399,21 @@
       oAPP.attr.oModel.refresh();
 
       //하위로직 skip처리를 위한 flag return
+      return true;
+    }
+
+    //F4HelpID에 바인딩 처리가 됐다면 exit.
+    if(ls_attr.ISBND === "X"){
+      var l_LANGU = parent.WSUTIL.getWsSettingsInfo().globalLanguage;
+
+      //Unable to invoke field list popup bound to F4HelpID field.
+      ls_attr.valtx = parent.WSUTIL.getWsMsgClsTxt(l_LANGU, "ZMSG_WS_COMMON_001", "050");
+
+      //005	Job finished.
+      parent.showMessage(sap, 10, "E", ls_attr.valtx);
+
+      //모델 갱신 처리.
+      oAPP.attr.oModel.refresh();
       return true;
     }
 
@@ -3344,8 +3445,10 @@
 
   //select option2의 F4HelpID, F4HelpReturnFIeld 프로퍼티의 예외처리.
   oAPP.fn.attrSelOption2F4HelpIDDel = function(is_attr){
-    //F4HelpID, F4HelpReturnFIeld 프로퍼티가 아닌경우 EXIT.
-    if(is_attr.UIATK !== "EXT00001188" && is_attr.UIATK !== "EXT00001189"){
+
+    //selectOption2, selectOption3 UI의 F4HelpID, F4HelpReturnFIeld 프로퍼티가 아닌경우 EXIT.
+    if(is_attr.UIATK !== "EXT00001188" && is_attr.UIATK !== "EXT00001189" && 
+      is_attr.UIATK !== "EXT00002534" && is_attr.UIATK !== "EXT00002535"){
       return;
     }
 
@@ -3356,20 +3459,34 @@
     }
 
     //F4HelpID프로퍼티인경우.
-    if(is_attr.UIATK === "EXT00001188"){
+    if(is_attr.UIATK === "EXT00001188" || is_attr.UIATK === "EXT00002534"){
 
       //기존 입력건 초기화.
       is_attr.UIATV = "";
+
+      //바인딩 해제 처리.
+      is_attr.ISBND = "";
+
+      var l_UIATK = "EXT00001189";
+
+      //selectOption3 UI의 F4HelpID 프로퍼티인경우.
+      if(is_attr.UIATK === "EXT00002534"){
+        l_UIATK = "EXT00002535";
+      }
 
       //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
       oAPP.fn.attrChangeProc(is_attr);
 
       //F4HelpReturnFIeld ATTRIBUTE 검색.
-      var ls_attr = oAPP.attr.oModel.oData.T_ATTR.find( a => a.UIATK === "EXT00001189" );
+      var ls_attr = oAPP.attr.oModel.oData.T_ATTR.find( a => a.UIATK === l_UIATK );
 
-      if(typeof ls_attr !== "undefined"){
+      //바인딩 처리가 안됐다면 초기화 처리.
+      if(typeof ls_attr !== "undefined" && ls_attr.ISBND !== "X"){
         //F4HelpReturnFIeld 입력건 초기화.
         ls_attr.UIATV = "";
+
+        //바인딩 해제 처리.
+        ls_attr.ISBND = "";
 
         //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
         oAPP.fn.attrChangeProc(ls_attr);
@@ -3382,9 +3499,12 @@
     }
 
     //F4HelpReturnFIeld 프로퍼티 인경우.
-    if(is_attr.UIATK === "EXT00001189"){
+    if(is_attr.UIATK === "EXT00001189" || is_attr.UIATK === "EXT00002535"){
       //기존 입력건 초기화.
       is_attr.UIATV = "";
+
+      //바인딩 해제 처리.
+      is_attr.ISBND = "";
 
       //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
       oAPP.fn.attrChangeProc(is_attr);
@@ -3396,6 +3516,43 @@
 
 
   };  //select option2의 F4HelpReturnFIeld 프로퍼티의 팝업 호출 처리.
+
+
+
+
+  //selectOption3 UI의 F4HelpReturnFIeld 바인딩시 필요값 점검.
+  oAPP.fn.attrCheckSelOpt3F4ReturnField = function(is_attr){
+
+    //selectOption3 UI의 F4HelpReturnFIeld 프로퍼티가 아닌경우 EXIT.
+    if(is_attr.UIATK !== "EXT00002535"){return;}
+
+
+    //F4HelpID ATTRIBUTE 검색.
+    var ls_attr = oAPP.attr.oModel.oData.T_ATTR.find( a => a.UIATK === "EXT00002534" );
+    
+    //F4HelpID ATTRIBUTE에 값이 존재하는경우 EXIT.
+    if(!ls_attr || ls_attr.UIATV !== ""){return;}
+
+    //F4HelpID  ATTRIBUTE에 값이 없다면 오류 메시지 처리.
+
+    //오류 표현 처리.
+    ls_attr.valst = "Error";
+
+    //A37	Search Help ID
+    //053	Value & is missing.
+    ls_attr.valtx = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "053", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A37"), "", "", "");
+
+    //005	Job finished.
+    parent.showMessage(sap, 10, "E", ls_attr.valtx);
+
+    //모델 갱신 처리.
+    oAPP.attr.oModel.refresh();
+
+    //FUNCTION 호출처의 하위 로직 SKIP FLAG RETURN.
+    return true;
+
+  };  //selectOption3 UI의 F4HelpReturnFIeld 바인딩시 필요값 점검.
+
 
 
   //visible, editable등의 attribute 처리 전용 바인딩 필드 생성 처리.
@@ -3421,6 +3578,9 @@
 
     //input의 F4 help 활성여부 필드.
     is_0015.showF4 = false;
+    
+    //input의 valueHelpOnly 바인딩 필드.
+    is_0015.F4Only = false;
 
     //input(ddlb,checkbox) valueState 필드.
     is_0015.valst = undefined;
@@ -3748,6 +3908,29 @@
             //상세보기 아이콘 처리.
             is_attr.icon1_src = "sap-icon://inspection";
             is_attr.icon2_src = "sap-icon://delete";
+
+            //f4 help 제거 아이콘 색상.
+            is_attr.icon2_color = C_ATTR_SEL_OPT_F4_ICON_COLOR;  
+
+            return;
+        }
+
+
+        //selectOption3의 F4HelpID, F4HelpReturnFIeld 프로퍼티인경우.
+        if(is_attr.UIATK === "EXT00002534" ||   //F4HelpID
+            is_attr.UIATK === "EXT00002535"){    //F4HelpReturnFIeld
+
+            //상세보기 아이콘 처리.
+            is_attr.icon2_src = "sap-icon://delete";
+
+            //valueHelpOnly 프로퍼티 true 처리.
+            is_attr.F4Only = true;
+
+            //f4 help 버튼 활성화.
+            is_attr.showF4 = true;
+
+            //f4 help 제거 아이콘 색상.
+            is_attr.icon2_color = C_ATTR_SEL_OPT_F4_ICON_COLOR;  
 
             return;
         }
@@ -4772,6 +4955,29 @@
       //아이콘 활성 처리.
       is_attr.icon2_visb = true;
 
+      //f4 help 제거 아이콘 색상.
+      is_attr.icon2_color = C_ATTR_SEL_OPT_F4_ICON_COLOR;
+
+      return;
+    }
+
+
+    //selectOption3의 F4HelpID, F4HelpReturnFIeld 프로퍼티인경우.
+    if(is_attr.UIATK === "EXT00002534" ||   //F4HelpID
+       is_attr.UIATK === "EXT00002535"){    //F4HelpReturnFIeld
+
+      //상세보기 아이콘 처리.
+      is_attr.icon2_src = "sap-icon://delete";
+
+      //아이콘 활성 처리.
+      is_attr.icon2_visb = true;
+
+      //valueHelpOnly 바인딩 필드 true 처리.
+      is_attr.F4Only = true;
+
+      //f4 help 제거 아이콘 색상.
+      is_attr.icon2_color = C_ATTR_SEL_OPT_F4_ICON_COLOR;
+
       return;
     }
 
@@ -4896,7 +5102,8 @@
     //selectOption2의 F4HelpID, F4HelpReturnFIeld 프로퍼티인경우.
     if(is_attr.UIATK === "EXT00001188" ||   //F4HelpID
        is_attr.UIATK === "EXT00001189" ||   //F4HelpReturnFIeld
-       is_attr.UIATK === "EXT00001161" ){   //value
+       is_attr.UIATK === "EXT00001161" ||   //value
+       is_attr.UIATK === "EXT00002507" ){   //value
 
        return;
     }
@@ -5325,7 +5532,7 @@
     if(ls_attr.UIATY === "1"){
       
       //selectOption2의 value에 바인딩 처리되는경우.
-      if(ls_attr.UIATK === "EXT00001161"){
+      if(ls_attr.UIATK === "EXT00001161" || ls_attr.UIATK === "EXT00002507"){
         //drag한 필드가 range table이 아닌경우 exit.
         if(l_json.IF_DATA.EXP_TYP !== "RANGE_TAB"){
           //214  Unable to bind.

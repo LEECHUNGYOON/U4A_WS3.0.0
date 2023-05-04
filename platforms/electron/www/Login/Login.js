@@ -25,10 +25,7 @@ let oAPP = (function () {
         autoUpdaterServerUrl = `${SERVPATH}/update_check`,
         OCTOKIT = REMOTE.require("@octokit/core").Octokit,
         GlobalShortCut = REMOTE.globalShortcut;
-
-    // // 오류 로그 감지    
-    // parent.WSLOG.start(parent.REMOTE, console);
-
+    
     let oAPP = {};
     oAPP.fn = {};
     oAPP.attr = {};

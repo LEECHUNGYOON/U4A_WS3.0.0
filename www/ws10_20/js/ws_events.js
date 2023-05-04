@@ -1410,6 +1410,8 @@
      ************************************************************************/
     oAPP.events.ev_pressIconListBtn = function(oEvent) {
 
+        let oMetadata = parent.getMetadata();        
+
         oAPP.fn.fnIconListPopupOpener();
 
     }; // end of oAPP.events.ev_pressIconListBtn

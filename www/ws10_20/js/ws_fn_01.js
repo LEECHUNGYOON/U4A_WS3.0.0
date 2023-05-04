@@ -85,7 +85,7 @@
 
                                 CURRWIN.minimize();
 
-                            }                            
+                            }
                         }),
                         new sap.m.Button("maxWinBtn", {
                             icon: "sap-icon://header",
@@ -283,6 +283,10 @@
             {
                 key: "WMENU20_03",
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
+            },
+            {
+                key: "WMENU20_04",
+                text: oAPP.msg.M047, // Icon List
             }
             ],
 
@@ -416,6 +420,10 @@
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
                 enabled: true,
             },
+            {
+                key: "WMENU20_04",
+                text: oAPP.msg.M047, // Icon List
+            }
             ],
 
             aWMENU30 = [{
@@ -628,15 +636,27 @@
      ************************************************************************/
     oAPP.fn.fnWs10HeaderMenuEnableBinding = (sMenuKey) => {
 
+        // 개발 서버 여부 확인
         let isDev = APPCOMMON.fnGetModelProperty("/USERINFO/USER_AUTH/IS_DEV");
-        if (isDev == "D") {
-            return true;
+
+        // 개발서버가 아닐 경우 막을 메뉴
+        if (isDev !== "D") {
+
+            switch (sMenuKey) {
+                case "WMENU10_01": // App. Package Change
+                case "WMENU10_02_01": // App. Importing
+                    return false;
+
+                default:
+                    return true;
+
+            }
+
         }
 
+        // 개발서버 일 경우
+        // 아래에 case로 확장하면 됨!!
         switch (sMenuKey) {
-            case "WMENU10_01":
-            case "WMENU10_02_01":
-                return false;
 
             default:
                 return true;
@@ -1142,7 +1162,7 @@
 
         var sFmsgBindRootPath = "/FMSG/WS10";
 
-        var aHeaderToolbarContents = oAPP.fn.fnGetHeaderToolbarContentWs10(),
+        var aHeaderToolbarContents = oAPP.fn.fnGetHeaderToolbarContentWs10(), // 헤더 메뉴
             aSubHeaderToolbarContents = oAPP.fn.fnGetSubHeaderToolbarContentWs10(),
             aPageContent = oAPP.fn.fnGetPageContentWs10();
 

@@ -390,6 +390,20 @@
     }; // end of oAPP.fn.fnWS10WMENU20_03
 
     /************************************************************************
+     * [WS10] Icon List
+     ************************************************************************/
+    oAPP.fn.fnWS10WMENU20_04 = () => {
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        oAPP.fn.fnIconPreviewPopupOpener();
+
+    }; // end of oAPP.fn.fnWS10WMENU20_04
+
+    /************************************************************************
      * [WS10] New Window
      ************************************************************************/
     oAPP.fn.fnWS10WMENU30_01 = function () {
@@ -622,6 +636,20 @@
         oAPP.fn.fnOpenVideoRecord();
 
     }; // end of oAPP.fn.fnWS20WMENU20_03
+
+    /************************************************************************
+     * [WS20] Icon List
+     ************************************************************************/
+    oAPP.fn.fnWS20WMENU20_04 = () => {
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        oAPP.fn.fnIconPreviewPopupOpener();
+
+    }; // end of oAPP.fn.fnWS20WMENU20_04
 
     /************************************************************************
      * [WS20] Editor

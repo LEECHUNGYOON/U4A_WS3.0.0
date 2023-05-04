@@ -195,63 +195,27 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         return new Promise(async (resolve) => {
 
-            let sWsLangu = await WSUTIL.getWsLanguAsync(), // WS Language 설정 정보                
-                sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", sWsLangu); // www에 내장되어 있는 WS 메시지 경로
-
-            let oWsLanguDir = await WSUTIL.readDir(sWsMsgPath);
-            if (oWsLanguDir.RETCD == "E") {
-                throw new Error("WS Language File not found!");
+            // WS Global Setting Lauguage에 맞는 메시지 텍스트 정보를 구한다.
+            let oLanguTextResult = await WSUTIL.getWsMsgModelData();
+            if (oLanguTextResult.RETCD == "E") {
+                resolve();
+                return;
             }
 
-            let aLanguFiles = oWsLanguDir.RTDATA,
-                iLanguFileLength = aLanguFiles.length;
-
-            let oLanguJsonData = {};
-            for (var i = 0; i < iLanguFileLength; i++) {
-
-                let sLanguFileFullName = aLanguFiles[i], // Language 폴더의 파일 목록
-                    oPathParse = PATH.parse(sLanguFileFullName), // 파일명만 추출
-                    sLanguFileName = oPathParse.name,
-
-                    sLanguFilePath = PATH.join(sWsMsgPath, sLanguFileFullName),
-                    aLanguJson = require(sLanguFilePath),
-                    iLanguJsonLength = aLanguJson.length;
-
-
-                /**
-                 * 구조 예시
-                 * {
-                 *      "ZWSMSG_001" : {
-                 *          "000" : "TEXT_000",
-                 *          "001" : "TEXT_001",
-                 *      },
-                 *      "ZWSMSG_002" : {
-                 *          "000" : "TEXT_000",
-                 *          "001" : "TEXT_001",
-                 *      }
-                 * }
-                 */
-                oLanguJsonData[sLanguFileName] = {};
-
-                for (var j = 0; j < iLanguJsonLength; j++) {
-
-                    let oLanguJson = aLanguJson[j];
-
-                    oLanguJsonData[sLanguFileName][oLanguJson.MSGNR] = oLanguJson.TEXT;
-
-                }
-
-            }
-
-            let oCoreModel = sap.ui.getCore().getModel(),
+            let oLanguJsonData = oLanguTextResult.RTDATA,
+                oCoreModel = sap.ui.getCore().getModel(),
                 oJsonModel = new sap.ui.model.json.JSONModel();
 
             if (!oCoreModel) {
+                
                 oJsonModel.setData({
                     WSLANGU: oLanguJsonData
                 });
+
                 sap.ui.getCore().setModel(oJsonModel);
+
                 resolve();
+
                 return;
             }
 
@@ -3063,8 +3027,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             // aggregations
             content: [
-                new sap.m.IllustratedMessage({
-                    enableDefaultTitleAndDescription: false,
+                new sap.m.IllustratedMessage({                    
                     // title: "{/WSLANGU/ZMSG_WS_COMMON_001/048} \n {/WSLANGU/ZMSG_WS_COMMON_001/049}", // "Unsaved data will be lost. Are you sure you want to exit the Program?",
                     // description: "　",
                     title: "　",
@@ -3855,7 +3818,7 @@ fnLoadCommonCss();
 window.addEventListener("load", () => {
 
     sap.ui.getCore().attachInit(() => {
-        
+
         // if (!APP.isPackaged) {
         //     // Floating Menu Open
         //     oAPP.fn.fnFloatingMenuOpen();

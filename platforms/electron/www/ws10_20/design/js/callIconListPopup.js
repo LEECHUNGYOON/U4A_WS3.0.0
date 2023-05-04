@@ -82,7 +82,7 @@
             if(typeof retfunc === "undefined"){return;}
 
             //더블클릭한 dom으로부터 UI 검색.
-            var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target,sap.ui.getCore());
+            var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target, sap.ui.getCore());
 
             //UI를 찾지 못한 경우 exit.
             if(typeof l_ui === "undefined"){return;}
@@ -164,7 +164,7 @@
         oHbox.addItem(oIcon);
 
         //icon text.
-        var oText = new sap.m.Text({text:"{src}",width:"100%"});
+        var oText = new sap.m.Text({text:"{src}", width:"100%"});
         oText.addStyleClass("sapUiTinyMarginEnd");
         // oCItem.addCell(oText);
         oHbox.addItem(oText);
@@ -243,11 +243,11 @@
 
         var lt_filter = [];
 
-        lt_filter.push(new sap.ui.model.Filter({path:"nam",operator:"Contains",value1:l_val}));
-        lt_filter.push(new sap.ui.model.Filter({path:"src",operator:"Contains",value1:l_val}));
+        lt_filter.push(new sap.ui.model.Filter({path:"nam", operator:"Contains", value1:l_val}));
+        lt_filter.push(new sap.ui.model.Filter({path:"src", operator:"Contains", value1:l_val}));
 
         //model 필터 처리.
-        l_bind.filter([new sap.ui.model.Filter(lt_filter,false)]);
+        l_bind.filter([new sap.ui.model.Filter(lt_filter, false)]);
 
     }   //아이콘 검색 처리.
 
