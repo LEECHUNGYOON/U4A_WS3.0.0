@@ -232,7 +232,7 @@
     /************************************************************************
      * 10번 페이지 Window Menu List
      ************************************************************************/
-    oAPP.fn.fnGetWindowMenuListWS10 = function () {
+    oAPP.fn.fnGetWindowMenuListWS10 = function () {      
 
         var aWMENU10 = [{
             key: "WMENU10_01",
@@ -287,6 +287,7 @@
             {
                 key: "WMENU20_04",
                 text: oAPP.msg.M047, // Icon List
+                visible: oAPP.common.checkWLOList("C", "UHAK900630")
             }
             ],
 
@@ -423,6 +424,7 @@
             {
                 key: "WMENU20_04",
                 text: oAPP.msg.M047, // Icon List
+                visible: oAPP.common.checkWLOList("C", "UHAK900630")
             }
             ],
 

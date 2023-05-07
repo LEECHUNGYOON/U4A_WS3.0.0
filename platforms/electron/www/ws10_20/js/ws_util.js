@@ -789,22 +789,27 @@ module.exports = {
                 return;
             }
 
-            let sWsoJson = oWLO.value;
+            let sWLOJson = oWLO.value;
 
             try {
-                var aWSO = JSON.parse(sWsoJson);
+                var aWLO = JSON.parse(sWLOJson);
             } catch (error) {
                 resolve(false);
                 return;
             }
 
             // 데이터 구조가 Array 인지 체크
-            if (!Array.isArray(aWSO)) {
+            if (!Array.isArray(aWLO)) {
                 resolve(false);
                 return;
             }
 
-            let oFindWso = aWSO.find((elem) => {
+            if (aWLO.length == 0) {
+                resolve(false);
+                return;
+            }
+
+            let oFindWLO = aWLO.find((elem) => {
 
                 if (elem.REGTYP == REGTYP && elem.CHGOBJ == CHGOBJ) {
                     return true;
@@ -813,9 +818,8 @@ module.exports = {
                 return false;
 
             });
-
-            // let oFindWso = aWSO.find(elem => elem?.CHGOBJ === CHGOBJ);
-            if (!oFindWso) {
+          
+            if (!oFindWLO) {
                 resolve(false);
                 return;
             }

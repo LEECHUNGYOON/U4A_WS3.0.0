@@ -4,7 +4,7 @@
  * - file Name : Login.js
  * - file Desc : WS Login Page
  ************************************************************************/
-let oAPP = (function () {
+let oAPP = (function() {
     "use strict";
 
     const
@@ -25,7 +25,7 @@ let oAPP = (function () {
         autoUpdaterServerUrl = `${SERVPATH}/update_check`,
         OCTOKIT = REMOTE.require("@octokit/core").Octokit,
         GlobalShortCut = REMOTE.globalShortcut;
-    
+
     let oAPP = {};
     oAPP.fn = {};
     oAPP.attr = {};
@@ -36,17 +36,17 @@ let oAPP = (function () {
      *  @ !! 위에서 부터 Default 값 우선 순위 브라우저임!! @@
      */
     oAPP.attr.aDefaultBrowsers = [{
-        NAME: "CHROME",
-        DESC: "Google Chrome Browser",
-        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe",
-        REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"
-    },
-    {
-        NAME: "MSEDGE",
-        DESC: "Microsoft Edge",
-        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe",
-        REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe"
-    },
+            NAME: "CHROME",
+            DESC: "Google Chrome Browser",
+            REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe",
+            REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"
+        },
+        {
+            NAME: "MSEDGE",
+            DESC: "Microsoft Edge",
+            REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe",
+            REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe"
+        },
         // {
         //     NAME: "IE",
         //     DESC: "Microsoft Internet Explorer",
@@ -98,34 +98,79 @@ let oAPP = (function () {
     oAPP.fn.fnGetBrowserInfoPromise = (aDefaultBrowsers, index) => {
 
         var oDefBrows = aDefaultBrowsers[index],
-            sRegPath = oDefBrows.REGPATH;
+            sRegPath = oDefBrows.REGPATH,
+            sRegPath2 = oDefBrows.REGPATH2;
 
-        var oProm = new Promise((resolve, reject) => {
+        var oProm = new Promise(async (resolve) => {
 
-            REGEDIT.list(sRegPath, (err, result) => {
+            let oRETURN = Object.assign({}, aDefaultBrowsers[index]);
 
-                var oRETURN = Object.assign({}, aDefaultBrowsers[index]);
+            let oBrowsInstResult = await parent.WSUTIL.getRegeditList([sRegPath, sRegPath2]);
+            if (oBrowsInstResult.RETCD == "E") {
+                resolve(oRETURN);
+                return;
+            }
 
-                // 레지스터에 해당 패스가 없을 경우 오류 처리..
-                if (err) {
+            /**
+             * Current User(HKCU) 경로 레지스트리 정보에 브라우저 설치 경로가 있는지 확인한다.
+             */
+            let oBrowsInstData = oBrowsInstResult.RTDATA,
+                oCheckHKCU = oBrowsInstData[sRegPath2];
 
+            if (oCheckHKCU.exists) {
+
+                var oExePathObj = oCheckHKCU.values[""];
+                if (oExePathObj != null) {
+                    oRETURN.INSPATH = oExePathObj.value;
                     resolve(oRETURN);
                     return;
-
                 }
 
-                // 해당 브라우저가 설치 되어있으면 실제 설치된 경로를 매핑한다.
-                var sObjKey = Object.keys(result)[0],
-                    oPathObj = result[sObjKey],
-                    oExePathObj = oPathObj.values[""];
+            }
+
+            /**
+             * Local Machine (HKLM) 경로 레지스트리 정보에 브라우저 설치 경로가 있는지 확인한다.
+             */
+            let oCheckHKLM = oBrowsInstData[sRegPath];
+
+            if (oCheckHKLM.exists) {
+                var oExePathObj = oCheckHKLM.values[""];
 
                 if (oExePathObj != null) {
                     oRETURN.INSPATH = oExePathObj.value;
+                    resolve(oRETURN);
+                    return;
                 }
 
-                resolve(oRETURN);
+            }
 
-            });
+            resolve(oRETURN);
+
+
+            // REGEDIT.list(sRegPath, (err, result) => {
+
+            //     var oRETURN = Object.assign({}, aDefaultBrowsers[index]);
+
+            //     // 레지스터에 해당 패스가 없을 경우 오류 처리..
+            //     if (err) {
+
+            //         resolve(oRETURN);
+            //         return;
+
+            //     }
+
+            //     // 해당 브라우저가 설치 되어있으면 실제 설치된 경로를 매핑한다.
+            //     var sObjKey = Object.keys(result)[0],
+            //         oPathObj = result[sObjKey],
+            //         oExePathObj = oPathObj.values[""];
+
+            //     if (oExePathObj != null) {
+            //         oRETURN.INSPATH = oExePathObj.value;
+            //     }
+
+            //     resolve(oRETURN);
+
+            // });
 
         });
 
@@ -268,7 +313,7 @@ let oAPP = (function () {
                                     value: "{ID}",
                                     showSearchButton: false,
                                     placeholder: "　",
-                                    suggest: function (oEvent) {
+                                    suggest: function(oEvent) {
 
                                         // 커서가 다른쪽으로 이미 이동했을 경우 (탭 키를 누르던지 마우스를 이용하던지간에)
                                         // suggestion을 하지 않는다.
@@ -284,7 +329,7 @@ let oAPP = (function () {
 
                                             aFilters = [
                                                 new sap.ui.model.Filter([
-                                                    new sap.ui.model.Filter("ID", function (sText) {
+                                                    new sap.ui.model.Filter("ID", function(sText) {
                                                         return (sText || "").toUpperCase().indexOf(sValue.toUpperCase()) > -1;
                                                     }),
                                                 ], false)
@@ -296,7 +341,7 @@ let oAPP = (function () {
                                         this.suggest();
 
                                     },
-                                    search: function (oEvent) {
+                                    search: function(oEvent) {
 
                                         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
                                         if (bIsPressClearBtn) {
@@ -410,7 +455,7 @@ let oAPP = (function () {
         let oInput = oEvent.srcControl;
 
         // valueHelpRequest 버튼을 눌렀을 경우 제외
-        if(oInput instanceof sap.m.Input == false){
+        if (oInput instanceof sap.m.Input == false) {
             return;
         }
 
@@ -460,25 +505,25 @@ let oAPP = (function () {
 
             new sap.m.Button({
                 text: "영선",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("yshong");
                 }
             }),
             new sap.m.Button({
                 text: "성호",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("shhong");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
             new sap.m.Button({
                 text: "은섭",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("pes");
                 }
             }),
             new sap.m.Button({
                 text: "청윤",
-                press: function () {
+                press: function() {
                     oAPP.fn.fnStaffLogin("soccerhs");
                 }
             }).addStyleClass("sapUiTinyMarginBeginEnd"),
@@ -565,7 +610,7 @@ let oAPP = (function () {
                         parts: [
                             "/LOGIN/SYSID"
                         ],
-                        formatter: function (SYSID) {
+                        formatter: function(SYSID) {
 
                             // U4A 서버 일 경우에만 자동 로그인 버튼 보이기
                             switch (SYSID) {
@@ -597,102 +642,102 @@ let oAPP = (function () {
 
         return new sap.m.Page({
 
-            // properties
-            showHeader: true,
-            showFooter: true,
-            backgroundDesign: sap.m.PageBackgroundDesign.Transparent,
-            enableScrolling: false,
+                // properties
+                showHeader: true,
+                showFooter: true,
+                backgroundDesign: sap.m.PageBackgroundDesign.Transparent,
+                enableScrolling: false,
 
-            // aggregations
-            customHeader: new sap.m.Bar({
-                contentLeft: [
-                    new sap.m.Image({
-                        width: "25px",
-                        src: PATHINFO.WS_LOGO
-                    }),
-                    new sap.m.Title({
-                        text: "U4A Workspace - Login"
-                    }),
-                ],
-                contentRight: [
+                // aggregations
+                customHeader: new sap.m.Bar({
+                    contentLeft: [
+                        new sap.m.Image({
+                            width: "25px",
+                            src: PATHINFO.WS_LOGO
+                        }),
+                        new sap.m.Title({
+                            text: "U4A Workspace - Login"
+                        }),
+                    ],
+                    contentRight: [
 
-                    new sap.m.Button({
-                        icon: "sap-icon://less",
-                        press: function () {
+                        new sap.m.Button({
+                            icon: "sap-icon://less",
+                            press: function() {
 
-                            CURRWIN.minimize();
+                                CURRWIN.minimize();
 
-                        }
-                    }),
-                    new sap.m.Button("maxWinBtn", {
-                        icon: "sap-icon://header",
-                        press: function (oEvent) {
-
-                            let bIsMax = CURRWIN.isMaximized();
-
-                            if (bIsMax) {
-                                CURRWIN.unmaximize();
-                                return;
                             }
+                        }),
+                        new sap.m.Button("maxWinBtn", {
+                            icon: "sap-icon://header",
+                            press: function(oEvent) {
 
-                            CURRWIN.maximize();
+                                let bIsMax = CURRWIN.isMaximized();
 
-                        }
-                    }),
-                    new sap.m.Button({
-                        icon: "sap-icon://decline",
-                        press: function () {
+                                if (bIsMax) {
+                                    CURRWIN.unmaximize();
+                                    return;
+                                }
 
-                            oAPP.attr.isPressWindowClose = "X";
+                                CURRWIN.maximize();
 
-                            CURRWIN.close();
+                            }
+                        }),
+                        new sap.m.Button({
+                            icon: "sap-icon://decline",
+                            press: function() {
 
-                        }
-                    }),
+                                oAPP.attr.isPressWindowClose = "X";
 
-                ]
-            }).addStyleClass("u4aWsBrowserDraggable"),
+                                CURRWIN.close();
 
-            content: [
+                            }
+                        }),
 
-                new sap.m.VBox({
-
-                    // properties
-                    alignItems: sap.m.FlexAlignItems.Center,
-                    renderType: sap.m.FlexRendertype.Bare,
-                    alignItems: sap.m.FlexAlignItems.Center,
-                    justifyContent: sap.m.FlexJustifyContent.Center,
-                    width: "100%",
-                    height: "100%",
-
-                    // Aggregations
-                    items: [
-                        oFcard
                     ]
+                }).addStyleClass("u4aWsBrowserDraggable"),
 
-                })
-
-            ],
-            footer: new sap.m.Toolbar({
                 content: [
-                    new sap.m.Text({
-                        text: "Copyright 2022. Infocg inc. all rights reserved."
-                    }),
 
-                    new sap.m.ToolbarSpacer(),
+                    new sap.m.VBox({
 
-                    // new sap.m.Text({
-                    //     text: "CLIENT: {/LOGIN/CLIENT}"
-                    // }),
+                        // properties
+                        alignItems: sap.m.FlexAlignItems.Center,
+                        renderType: sap.m.FlexRendertype.Bare,
+                        alignItems: sap.m.FlexAlignItems.Center,
+                        justifyContent: sap.m.FlexJustifyContent.Center,
+                        width: "100%",
+                        height: "100%",
 
-                    new sap.m.Text({
-                        text: "SYSID: {/LOGIN/SYSID}"
-                    }),
+                        // Aggregations
+                        items: [
+                            oFcard
+                        ]
 
-                ]
-            }).addStyleClass("sapUiSizeCompact")
+                    })
 
-        })
+                ],
+                footer: new sap.m.Toolbar({
+                    content: [
+                        new sap.m.Text({
+                            text: "Copyright 2022. Infocg inc. all rights reserved."
+                        }),
+
+                        new sap.m.ToolbarSpacer(),
+
+                        // new sap.m.Text({
+                        //     text: "CLIENT: {/LOGIN/CLIENT}"
+                        // }),
+
+                        new sap.m.Text({
+                            text: "SYSID: {/LOGIN/SYSID}"
+                        }),
+
+                    ]
+                }).addStyleClass("sapUiSizeCompact")
+
+            })
             .bindElement("/LOGIN")
             .addStyleClass("u4aWsLoginPage");
 
@@ -735,15 +780,15 @@ let oAPP = (function () {
             sId = (bIsRemember ? oRememberInfo && oRememberInfo.ID || "" : "");
 
         var oLoginData = {
-            CLIENT: sClient,
-            // ID: sRememberId,
-            ID: sId,
-            PW: "",
-            LANGU: sLangu,
-            SYSID: oServerInfo.SYSID,
-            REMEMBER: bIsRemember,
-            IDSUGG: []
-        },
+                CLIENT: sClient,
+                // ID: sRememberId,
+                ID: sId,
+                PW: "",
+                LANGU: sLangu,
+                SYSID: oServerInfo.SYSID,
+                REMEMBER: bIsRemember,
+                IDSUGG: []
+            },
 
             oBusyPopInit = {
                 TITLE: "Checking for updates...",
@@ -825,7 +870,7 @@ let oAPP = (function () {
 
         var xhr = new XMLHttpRequest();
 
-        xhr.onreadystatechange = function () { // 요청에 대한 콜백
+        xhr.onreadystatechange = function() { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
@@ -968,7 +1013,7 @@ let oAPP = (function () {
             // }
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () { // 요청에 대한 콜백
+            xhr.onreadystatechange = function() { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -1067,7 +1112,7 @@ let oAPP = (function () {
             // }
 
             var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () { // 요청에 대한 콜백
+            xhr.onreadystatechange = function() { // 요청에 대한 콜백
                 if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                     if (xhr.status === 200 || xhr.status === 201) {
 
@@ -1109,7 +1154,7 @@ let oAPP = (function () {
     /************************************************************************
      * 고객사 라이센스 체크 성공
      ************************************************************************/
-    oAPP.fn.fnCheckCustomerLisenceThen = function (oLicenseInfo) {
+    oAPP.fn.fnCheckCustomerLisenceThen = function(oLicenseInfo) {
 
         // ISCDS TYPE C LENGTH 1, "on premise : space
         // RETCD TYPE C LENGTH 1, "처리 리턴 코드 : E 오류
@@ -1242,7 +1287,7 @@ let oAPP = (function () {
                     title: "U4A Workspace Update Error",
                     initialFocus: sap.m.MessageBox.Action.RETRY,
                     emphasizedAction: sap.m.MessageBox.Action.RETRY,
-                    onClose: function (oEvent) {
+                    onClose: function(oEvent) {
 
                         switch (oEvent) {
                             case "RETRY": // 앱 재시작
@@ -1289,7 +1334,7 @@ let oAPP = (function () {
 
     }; // end of  oAPP.fn.fnSetAutoUpdateForSAP
 
-    oAPP.fn.fnSetAutoUpdateForSAPThen = function () {
+    oAPP.fn.fnSetAutoUpdateForSAPThen = function() {
 
         var oResult = this.oResult,
             oAuthInfo = this.oAuthInfo;
@@ -1341,7 +1386,7 @@ let oAPP = (function () {
     /************************************************************************
      * Github 연결을 시도 하여 on-premise 인지 CDN인지 확인
      ************************************************************************/
-    oAPP.fn.fnConnectionGithubThen = function (oReturn) {
+    oAPP.fn.fnConnectionGithubThen = function(oReturn) {
 
         parent.setIsCDN(oReturn.ISCDN);
 
@@ -1441,7 +1486,7 @@ let oAPP = (function () {
                     title: "U4A Workspace Update Error",
                     initialFocus: sap.m.MessageBox.Action.RETRY,
                     emphasizedAction: sap.m.MessageBox.Action.RETRY,
-                    onClose: function (oEvent) {
+                    onClose: function(oEvent) {
 
                         switch (oEvent) {
                             case "RETRY": // 앱 재시작
@@ -1513,7 +1558,7 @@ let oAPP = (function () {
     /************************************************************************
      * 버전 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSetAutoUpdateForCDNThen = function () {
+    oAPP.fn.fnSetAutoUpdateForCDNThen = function() {
 
         var oResult = this.oResult,
             oAuthInfo = this.oAuthInfo;
@@ -1579,34 +1624,34 @@ let oAPP = (function () {
             state: "Success",
             // displayValue: "Downloading... {PERVALUE}%"            
             displayValue: "{PROGTXT}... {PERVALUE}%"
-        }).bindProperty("displayAnimation", "ANIMATION", function (ANIMATION) {
+        }).bindProperty("displayAnimation", "ANIMATION", function(ANIMATION) {
             return ANIMATION === false ? false : true;
         }).addStyleClass("sapUiSmallMarginBeginEnd sapUiMediumMarginBottom");
 
         new sap.m.Dialog(sDialogId, {
 
-            // properties
-            showHeader: false,
-            horizontalScrolling: false,
-            verticalScrolling: false,
+                // properties
+                showHeader: false,
+                horizontalScrolling: false,
+                verticalScrolling: false,
 
-            // aggregations
-            content: [
-                oIllustMsg,
+                // aggregations
+                content: [
+                    oIllustMsg,
 
-                new sap.m.HBox({
-                    renderType: "Bare",
-                    items: [
-                        oProgressbar
-                    ]
-                }),
+                    new sap.m.HBox({
+                        renderType: "Bare",
+                        items: [
+                            oProgressbar
+                        ]
+                    }),
 
-            ],
+                ],
 
-            // Events
-            escapeHandler: () => { }, // esc 키 방지
+                // Events
+                escapeHandler: () => {}, // esc 키 방지
 
-        })
+            })
             .addStyleClass(sDialogId)
             .bindElement("/BUSYPOP")
             .open();
@@ -1888,7 +1933,7 @@ let oAPP = (function () {
                 FS.writeFile(sThemeJsonPath, JSON.stringify(oDefThemeInfo), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         reject(err.toString());
@@ -2151,7 +2196,7 @@ let oAPP = (function () {
     /************************************************************************
      * 네트워크 연결 시 Network Indicator 해제
      * **********************************************************************/
-    oAPP.fn.fnNetworkCheckerOnline = function () {
+    oAPP.fn.fnNetworkCheckerOnline = function() {
 
         // 네트워크 활성화 여부 flag
         oAPP.attr.bIsNwActive = true;
@@ -2165,7 +2210,7 @@ let oAPP = (function () {
     /************************************************************************
      * 네트워크 연결 시 Network Indicator 실행
      * **********************************************************************/
-    oAPP.fn.fnNetworkCheckerOffline = function () {
+    oAPP.fn.fnNetworkCheckerOffline = function() {
 
         // 네트워크 활성화 여부 flag
         oAPP.attr.bIsNwActive = false;
@@ -2179,7 +2224,7 @@ let oAPP = (function () {
     /************************************************************************
      * 개인화 폴더 생성 및 로그인 사용자별 개인화 Object 만들기
      ************************************************************************/
-    oAPP.fn.fnOnP13nFolderCreate = function () {
+    oAPP.fn.fnOnP13nFolderCreate = function() {
 
         var oServerInfo = parent.getServerInfo(),
             sSysID = oServerInfo.SYSID;
@@ -2376,7 +2421,7 @@ let oAPP = (function () {
                 title: "U4A Workspace Support Package Update Error",
                 initialFocus: sap.m.MessageBox.Action.OK,
                 emphasizedAction: sap.m.MessageBox.Action.OK,
-                onClose: function (oEvent) {
+                onClose: function(oEvent) {
 
                     APP.exit();
 
@@ -2459,7 +2504,7 @@ let oAPP = (function () {
 
         let iPer = 0;
 
-        oAPP.attr.progressInterval = setInterval(function () {
+        oAPP.attr.progressInterval = setInterval(function() {
 
             iPer += 1;
 
@@ -2471,7 +2516,7 @@ let oAPP = (function () {
                     clearInterval(oAPP.attr.progressInterval);
                     delete oAPP.attr.progressInterval;
 
-                    setTimeout(function () {
+                    setTimeout(function() {
                         _supportPackageVersionCheckDialogProgressStart();
                     }, 500);
 
@@ -2670,7 +2715,7 @@ let oAPP = (function () {
              */
 
             // 자연스러운 로딩
-            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function () {
+            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function() {
 
                 if (!oAPP.attr.UIUpdated) {
 
@@ -2732,6 +2777,17 @@ function fnSetGlobalBusy(bIsShow) {
 
 oAPP.fn.fnLoadBootStrapSetting();
 
+function _fnWait() {
+    return new Promise((resolve) => {
+
+        setTimeout(() => {
+            resolve();
+        }, 3000);
+
+    });
+
+}
+
 window.addEventListener("load", async () => {
 
     // Default Browser check
@@ -2775,7 +2831,7 @@ window.addEventListener("offline", oAPP.fn.fnNetworkCheckerOffline, false);
 
 // window.addEventListener("beforeunload", oAPP.fn.fnOnBeforeUnload, false);
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
 
     // 브라우저 타이틀 변경
     parent.CURRWIN.setTitle("U4A Workspace - Login");

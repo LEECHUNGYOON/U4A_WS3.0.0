@@ -1408,11 +1408,12 @@
     /************************************************************************
      * IconList Button Event
      ************************************************************************/
-    oAPP.events.ev_pressIconListBtn = async function(oEvent) {
-
-        let oServerInfo = parent.getServerInfo(),
-            bIsNewPopup = await parent.WSUTIL.getWsWhiteListObjectAsync(oServerInfo.SYSID, "C", "UHAK900630");
-
+    oAPP.events.ev_pressIconListBtn = function(oEvent) {
+        
+        /**
+         * White List Object에 해당 CTS 번호가 있을경우 새로운 Icon List를 실행
+         */
+        let bIsNewPopup = oAPP.common.checkWLOList("C", "UHAK900630");        
         if (bIsNewPopup) {
             oAPP.fn.fnIconPreviewPopupOpener();
             return;

@@ -4,7 +4,7 @@
  * - file Name : ws_common.js
  * - file Desc : ws 공통 스크립트
  ************************************************************************/
-(function (window, $, oAPP) {
+(function(window, $, oAPP) {
     "use strict";
 
     oAPP.common = {};
@@ -27,7 +27,7 @@
      * - true : child window 보이기
      * - false : child window 숨김
      * **********************************************************************/
-    oAPP.common.fnIsChildWindowShow = function (bIsShow) {
+    oAPP.common.fnIsChildWindowShow = function(bIsShow) {
 
         var oCurrWin = REMOTE.getCurrentWindow(),
             aChild = oCurrWin.getChildWindows(),
@@ -61,7 +61,7 @@
      * @param {Boolean} bIsRefresh 
      * model Refresh 유무
      ************************************************************************/
-    oAPP.common.fnSetModelProperty = function (sModelPath, oModelData, bIsRefresh) {
+    oAPP.common.fnSetModelProperty = function(sModelPath, oModelData, bIsRefresh) {
 
         var oCoreModel = sap.ui.getCore().getModel();
         if (!oCoreModel) {
@@ -83,7 +83,7 @@
      * - Model Path 명
      * 예) /WS10/APPDATA
      ************************************************************************/
-    oAPP.common.fnGetModelProperty = function (sModelPath) {
+    oAPP.common.fnGetModelProperty = function(sModelPath) {
 
         let oCoreModel = sap.ui.getCore().getModel();
         if (!oCoreModel) {
@@ -252,14 +252,14 @@
     /************************************************************************
      * z-Index 구하기
      * **********************************************************************/
-    oAPP.common.fnGetZIndex = function () {
+    oAPP.common.fnGetZIndex = function() {
         return sap.ui.core.Popup.getNextZIndex();
     };
 
     /************************************************************************
      * 각 페이지 이동 시 푸터 메시지가 있으면 숨김처리
      ************************************************************************/
-    oAPP.common.fnHideFloatingFooterMsg = function () {
+    oAPP.common.fnHideFloatingFooterMsg = function() {
 
         if (oAPP.attr.footerMsgTimeout) {
             clearTimeout(oAPP.attr.footerMsgTimeout);
@@ -274,7 +274,7 @@
     /************************************************************************
      * 멀티 푸터 메시지 닫기
      ************************************************************************/
-    oAPP.common.fnMultiFooterMsgClose = function () {
+    oAPP.common.fnMultiFooterMsgClose = function() {
 
         var sPopupName = "ERRMSGPOP";
 
@@ -299,7 +299,7 @@
      * 예) WS10, WS20
      * @param {String} MSG  
      ************************************************************************/
-    oAPP.common.fnShowFloatingFooterMsg = function (TYPE, POS, MSG) {
+    oAPP.common.fnShowFloatingFooterMsg = function(TYPE, POS, MSG) {
 
         oAPP.common.fnHideFloatingFooterMsg();
 
@@ -349,7 +349,7 @@
         }
 
         // timeout 시간이 도래되면 Footer Message를 지운다.
-        oAPP.attr.footerMsgTimeout = setTimeout(function () {
+        oAPP.attr.footerMsgTimeout = setTimeout(function() {
 
             oAPP.common.fnHideFloatingFooterMsg();
 
@@ -402,460 +402,740 @@
     /*************************************************************************
      * Shortcut 설정
      **************************************************************************/
-    oAPP.common.getShortCutList = function (sPgNo) {
+    oAPP.common.getShortCutList = function(sPgNo) {
 
         var aShortCutWS10 = [{
-            KEY: "F11", // FullScreen
-            fn: (e) => {
+                    KEY: "F11", // FullScreen
+                    fn: (e) => {
 
-                e.stopImmediatePropagation();
+                        e.stopImmediatePropagation();
 
-                var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
-                    bIsFull = oCurrWin.isFullScreen();
+                        var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
+                            bIsFull = oCurrWin.isFullScreen();
 
-                oCurrWin.setFullScreen(!bIsFull);
+                        oCurrWin.setFullScreen(!bIsFull);
 
-            }
-        }, {
-            KEY: "Ctrl+Shift+F", // textSearchPopup
-            fn: (e) => {
-
-                e.stopImmediatePropagation();
-
-                // 단축키 실행 할지 말지 여부 체크
-                var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                // X 이면 실행 불가
-                if (result == "X") {
-                    return;
-                }
-
-                oAPP.fn.fnTextSearchPopupOpener();
-
-            }
-        }, {
-            KEY: "Ctrl+F12", // Application Create
-            fn: (e) => {
-
-                e.stopImmediatePropagation();
-
-                // 단축키 실행 할지 말지 여부 체크
-                var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                // X 이면 실행 불가
-                if (result == "X") {
-                    return;
-                }
-
-                var oAppCreateBtn = sap.ui.getCore().byId("appCreateBtn");
-                if (!oAppCreateBtn || !oAppCreateBtn.getEnabled() || !oAppCreateBtn.getVisible()) {
-                    return;
-                }
-
-                oAppCreateBtn.firePress();
-
-            }
-        },
-        {
-            // KEY: "Ctrl+Shift+F1", // Application Change
-            KEY: "F6", // Application Change
-            fn: (e) => {
-
-                e.stopImmediatePropagation();
-
-                // 커서 포커스 날리기
-                if (document.activeElement && document.activeElement.blur) {
-                    document.activeElement.blur();
-                }
-
-                // lock 걸기
-                sap.ui.getCore().lock();
-
-                // 단축키 실행 할지 말지 여부 체크
-                var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                // X 이면 실행 불가
-                if (result == "X") {
-                    sap.ui.getCore().unlock();
-                    return;
-                }
-
-                var oAppChangeBtn = sap.ui.getCore().byId("appChangeBtn");
-                if (!oAppChangeBtn || !oAppChangeBtn.getEnabled() || !oAppChangeBtn.getVisible()) {
-                    sap.ui.getCore().unlock();
-                    return;
-                }
-
-                oAppChangeBtn.firePress();
-
-            }
-        },
-        {
-            KEY: "Ctrl+F10", // Application Delete
-            fn: (e) => {
-
-                e.stopImmediatePropagation();
-
-                if (sap.ui.getCore().isLocked()) {
-                    zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                    return;
-                }
-
-                // 단축키 실행 할지 말지 여부 체크
-                var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                // X 이면 실행 불가
-                if (result == "X") {
-                    return;
-                }
-
-                var oAppDelBtn = sap.ui.getCore().byId("appDelBtn");
-                if (!oAppDelBtn || !oAppDelBtn.getEnabled() || !oAppDelBtn.getVisible()) {
-                    return;
-                }
-
-                oAppDelBtn.firePress();
-
-            }
-        },
-        {
-            KEY: "Shift+F11", // Application Copy
-            fn: (e) => {
-
-                e.stopImmediatePropagation();
-
-                if (sap.ui.getCore().isLocked()) {
-                    zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                    return;
-                }
-
-                // 단축키 실행 할지 말지 여부 체크
-                var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                // X 이면 실행 불가
-                if (result == "X") {
-                    return;
-                }
-
-                var oAppCopyBtn = sap.ui.getCore().byId("appCopyBtn");
-                if (!oAppCopyBtn || !oAppCopyBtn.getEnabled() || !oAppCopyBtn.getVisible()) {
-                    return;
-                }
-
-                oAppCopyBtn.firePress();
-
-            }
-        },
-        {
-            KEY: "F7", // Display Button
-            fn: (e) => {
-
-                e.stopImmediatePropagation();
-
-                // lock 걸기
-                sap.ui.getCore().lock();
-
-                // 메뉴 팝오버 닫기
-                oAPP.common.fnCloseMenuPopover();
-
-                // 단축키 실행 할지 말지 여부 체크
-                var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                // X 이면 실행 불가
-                if (result == "X") {
-                    sap.ui.getCore().unlock();
-                    return;
-                }
-
-                var oDisplayBtn = sap.ui.getCore().byId("displayBtn");
-                if (!oDisplayBtn || !oDisplayBtn.getEnabled() || !oDisplayBtn.getVisible()) {
-                    sap.ui.getCore().unlock();
-                    return;
-                }
-
-                // 커서 포커스 날리기
-                if (document.activeElement && document.activeElement.blur) {
-                    document.activeElement.blur();
-                }
-
-                oDisplayBtn.firePress();
-
-            }
-        },
-        {
-            KEY: "F8", // Application Execution
-            fn: (e) => {
-
-                e.stopImmediatePropagation();
-
-                if (sap.ui.getCore().isLocked()) {
-                    zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                    return;
-                }
-
-                // 단축키 실행 할지 말지 여부 체크
-                var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                // X 이면 실행 불가
-                if (result == "X") {
-                    return;
-                }
-
-                var oAppExecBtn = sap.ui.getCore().byId("appExecBtn");
-                if (!oAppExecBtn || !oAppExecBtn.getEnabled() || !oAppExecBtn.getVisible()) {
-                    return;
-                }
-
-                oAppExecBtn.firePress();
-
-            }
-        },
-        {
-            KEY: "Ctrl+F1", // Example Open
-            fn: (e) => {
-
-                e.stopImmediatePropagation();
-
-                if (sap.ui.getCore().isLocked()) {
-                    zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                    return;
-                }
-
-                // 단축키 실행 할지 말지 여부 체크
-                var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                // X 이면 실행 불가
-                if (result == "X") {
-                    return;
-                }
-
-                var oExamBtn = sap.ui.getCore().byId("examBtn");
-                if (!oExamBtn || !oExamBtn.getEnabled() || !oExamBtn.getVisible()) {
-                    return;
-                }
-
-                oExamBtn.firePress();
-
-            }
-        },
-        {
-            KEY: "Ctrl+F3", // Multi Preview
-            fn: (e) => {
-
-                e.stopImmediatePropagation();
-
-                if (sap.ui.getCore().isLocked()) {
-                    zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                    return;
-                }
-
-                // 단축키 실행 할지 말지 여부 체크
-                var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                // X 이면 실행 불가
-                if (result == "X") {
-                    return;
-                }
-
-                var oMultiPrevBtn = sap.ui.getCore().byId("multiPrevBtn");
-                if (!oMultiPrevBtn || !oMultiPrevBtn.getEnabled() || !oMultiPrevBtn.getVisible()) {
-                    return;
-                }
-
-                oMultiPrevBtn.firePress();
-
-            }
-        }
-
-        ],
-            aShortCutWS20 = [{
-                KEY: "F11", // FullScreen
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
-                        bIsFull = oCurrWin.isFullScreen();
-
-                    oCurrWin.setFullScreen(!bIsFull);
-
-                }
-            }, {
-                KEY: "Ctrl+Shift+F", // textSearchPopup
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
                     }
+                }, {
+                    KEY: "Ctrl+Shift+F", // textSearchPopup
+                    fn: (e) => {
 
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
+                        e.stopImmediatePropagation();
 
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        oAPP.fn.fnTextSearchPopupOpener();
+
                     }
+                }, {
+                    KEY: "Ctrl+F12", // Application Create
+                    fn: (e) => {
 
-                    oAPP.fn.fnTextSearchPopupOpener();
+                        e.stopImmediatePropagation();
 
-                }
-            }, {
-                KEY: "Ctrl+F2", // Syntax Check Button
-                fn: (e) => {
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
 
-                    e.stopImmediatePropagation();
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
 
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
+                        var oAppCreateBtn = sap.ui.getCore().byId("appCreateBtn");
+                        if (!oAppCreateBtn || !oAppCreateBtn.getEnabled() || !oAppCreateBtn.getVisible()) {
+                            return;
+                        }
+
+                        oAppCreateBtn.firePress();
+
                     }
+                },
+                {
+                    // KEY: "Ctrl+Shift+F1", // Application Change
+                    KEY: "F6", // Application Change
+                    fn: (e) => {
 
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
+                        e.stopImmediatePropagation();
 
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        // lock 걸기
+                        sap.ui.getCore().lock();
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            sap.ui.getCore().unlock();
+                            return;
+                        }
+
+                        var oAppChangeBtn = sap.ui.getCore().byId("appChangeBtn");
+                        if (!oAppChangeBtn || !oAppChangeBtn.getEnabled() || !oAppChangeBtn.getVisible()) {
+                            sap.ui.getCore().unlock();
+                            return;
+                        }
+
+                        oAppChangeBtn.firePress();
+
                     }
+                },
+                {
+                    KEY: "Ctrl+F10", // Application Delete
+                    fn: (e) => {
 
-                    var oSyntaxCheckBtn = sap.ui.getCore().byId("syntaxCheckBtn");
-                    if (!oSyntaxCheckBtn || !oSyntaxCheckBtn.getEnabled() || !oSyntaxCheckBtn.getVisible()) {
-                        return;
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oAppDelBtn = sap.ui.getCore().byId("appDelBtn");
+                        if (!oAppDelBtn || !oAppDelBtn.getEnabled() || !oAppDelBtn.getVisible()) {
+                            return;
+                        }
+
+                        oAppDelBtn.firePress();
+
                     }
+                },
+                {
+                    KEY: "Shift+F11", // Application Copy
+                    fn: (e) => {
 
-                    oSyntaxCheckBtn.firePress();
+                        e.stopImmediatePropagation();
 
-                }
-            },
-            {
-                KEY: "F3", // Back Button
-                fn: (e) => {
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
 
-                    e.stopImmediatePropagation();
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
 
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oAppCopyBtn = sap.ui.getCore().byId("appCopyBtn");
+                        if (!oAppCopyBtn || !oAppCopyBtn.getEnabled() || !oAppCopyBtn.getVisible()) {
+                            return;
+                        }
+
+                        oAppCopyBtn.firePress();
+
                     }
+                },
+                {
+                    KEY: "F7", // Display Button
+                    fn: (e) => {
 
-                    // lock 걸기
-                    sap.ui.getCore().lock();
+                        e.stopImmediatePropagation();
 
-                    // 메뉴 팝오버 닫기
-                    oAPP.common.fnCloseMenuPopover();
+                        // lock 걸기
+                        sap.ui.getCore().lock();
 
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
+                        // 메뉴 팝오버 닫기
+                        oAPP.common.fnCloseMenuPopover();
 
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        sap.ui.getCore().unlock();
-                        return;
-                    }
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
 
-                    var oBackBtn = sap.ui.getCore().byId("backBtn");
-                    if (!oBackBtn || !oBackBtn.getEnabled() || !oBackBtn.getVisible()) {
-                        sap.ui.getCore().unlock();
-                        return;
-                    }
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            sap.ui.getCore().unlock();
+                            return;
+                        }
 
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
-                    }
+                        var oDisplayBtn = sap.ui.getCore().byId("displayBtn");
+                        if (!oDisplayBtn || !oDisplayBtn.getEnabled() || !oDisplayBtn.getVisible()) {
+                            sap.ui.getCore().unlock();
+                            return;
+                        }
 
-                    oBackBtn.focus();
-                    oBackBtn.firePress();
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
 
-                }
-
-            },
-            {
-                KEY: "Ctrl+F1", // Display or Change Button
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
-                    }
-
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
-                    }
-
-                    var oChangeModeBtn = sap.ui.getCore().byId("changeModeBtn"),
-                        oDisplayBtn = sap.ui.getCore().byId("displayModeBtn");
-
-                    if (!oChangeModeBtn && !oDisplayBtn) {
-                        return;
-                    }
-
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
-                    }
-
-                    var bIsChgVisi = oChangeModeBtn.getVisible(),
-                        bIsDisVisi = oDisplayBtn.getVisible();
-
-                    if (bIsChgVisi == true) {
-                        oChangeModeBtn.focus();
-                        oChangeModeBtn.firePress();
-                        return;
-                    }
-
-                    if (bIsDisVisi == true) {
-                        oDisplayBtn.focus();
                         oDisplayBtn.firePress();
-                        return;
-                    }
 
+                    }
+                },
+                {
+                    KEY: "F8", // Application Execution
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oAppExecBtn = sap.ui.getCore().byId("appExecBtn");
+                        if (!oAppExecBtn || !oAppExecBtn.getEnabled() || !oAppExecBtn.getVisible()) {
+                            return;
+                        }
+
+                        oAppExecBtn.firePress();
+
+                    }
+                },
+                {
+                    KEY: "Ctrl+F1", // Example Open
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oExamBtn = sap.ui.getCore().byId("examBtn");
+                        if (!oExamBtn || !oExamBtn.getEnabled() || !oExamBtn.getVisible()) {
+                            return;
+                        }
+
+                        oExamBtn.firePress();
+
+                    }
+                },
+                {
+                    KEY: "Ctrl+F3", // Multi Preview
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oMultiPrevBtn = sap.ui.getCore().byId("multiPrevBtn");
+                        if (!oMultiPrevBtn || !oMultiPrevBtn.getEnabled() || !oMultiPrevBtn.getVisible()) {
+                            return;
+                        }
+
+                        oMultiPrevBtn.firePress();
+
+                    }
                 }
-            },
-            {
-                KEY: "Ctrl+F3", // Activate Button
-                fn: (e) => {
 
-                    e.stopImmediatePropagation();
+            ],
+            aShortCutWS20 = [{
+                    KEY: "F11", // FullScreen
+                    fn: (e) => {
 
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
+                        e.stopImmediatePropagation();
+
+                        var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
+                            bIsFull = oCurrWin.isFullScreen();
+
+                        oCurrWin.setFullScreen(!bIsFull);
+
+                    }
+                }, {
+                    KEY: "Ctrl+Shift+F", // textSearchPopup
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        oAPP.fn.fnTextSearchPopupOpener();
+
+                    }
+                }, {
+                    KEY: "Ctrl+F2", // Syntax Check Button
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oSyntaxCheckBtn = sap.ui.getCore().byId("syntaxCheckBtn");
+                        if (!oSyntaxCheckBtn || !oSyntaxCheckBtn.getEnabled() || !oSyntaxCheckBtn.getVisible()) {
+                            return;
+                        }
+
+                        oSyntaxCheckBtn.firePress();
+
+                    }
+                },
+                {
+                    KEY: "F3", // Back Button
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // lock 걸기
+                        sap.ui.getCore().lock();
+
+                        // 메뉴 팝오버 닫기
+                        oAPP.common.fnCloseMenuPopover();
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            sap.ui.getCore().unlock();
+                            return;
+                        }
+
+                        var oBackBtn = sap.ui.getCore().byId("backBtn");
+                        if (!oBackBtn || !oBackBtn.getEnabled() || !oBackBtn.getVisible()) {
+                            sap.ui.getCore().unlock();
+                            return;
+                        }
+
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        oBackBtn.focus();
+                        oBackBtn.firePress();
+
                     }
 
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
+                },
+                {
+                    KEY: "Ctrl+F1", // Display or Change Button
+                    fn: (e) => {
 
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oChangeModeBtn = sap.ui.getCore().byId("changeModeBtn"),
+                            oDisplayBtn = sap.ui.getCore().byId("displayModeBtn");
+
+                        if (!oChangeModeBtn && !oDisplayBtn) {
+                            return;
+                        }
+
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        var bIsChgVisi = oChangeModeBtn.getVisible(),
+                            bIsDisVisi = oDisplayBtn.getVisible();
+
+                        if (bIsChgVisi == true) {
+                            oChangeModeBtn.focus();
+                            oChangeModeBtn.firePress();
+                            return;
+                        }
+
+                        if (bIsDisVisi == true) {
+                            oDisplayBtn.focus();
+                            oDisplayBtn.firePress();
+                            return;
+                        }
+
                     }
+                },
+                {
+                    KEY: "Ctrl+F3", // Activate Button
+                    fn: (e) => {
 
-                    var oActivateBtn = sap.ui.getCore().byId("activateBtn");
+                        e.stopImmediatePropagation();
 
-                    if (!oActivateBtn || !oActivateBtn.getEnabled() || !oActivateBtn.getVisible()) {
-                        return;
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oActivateBtn = sap.ui.getCore().byId("activateBtn");
+
+                        if (!oActivateBtn || !oActivateBtn.getEnabled() || !oActivateBtn.getVisible()) {
+                            return;
+                        }
+
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        oActivateBtn.focus();
+                        oActivateBtn.firePress();
                     }
+                },
+                {
+                    /****************************************************************************************************
+                     * shortcut library bug,
+                     ****************************************************************************************************
+                     * Ctrl + F4 키를 누르면 Ctrl + S 이벤트를 발생시키는 버그를 발견하여,
+                     * Ctrl + F4 키를 눌렀다면 이벤트 전파 방지를 하여 Ctrl + S 이벤트를
+                     * 타지 않게 하기 위함.               
+                     ****************************************************************************************************/
+                    KEY: "Ctrl+F4",
+                    fn: (e) => {
 
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
+                        e.stopImmediatePropagation();
+
+                        zconsole.log("ws30/Ctrl+F4 key in!!");
+
                     }
+                },
+                {
+                    KEY: "Ctrl+S", // Save Button
+                    fn: (e) => {
 
-                    oActivateBtn.focus();
-                    oActivateBtn.firePress();
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oSaveBtn = sap.ui.getCore().byId("saveBtn");
+                        if (!oSaveBtn || !oSaveBtn.getEnabled() || !oSaveBtn.getVisible()) {
+                            return;
+                        }
+
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        oSaveBtn.focus();
+                        oSaveBtn.firePress();
+                    }
+                },
+                {
+                    KEY: "Ctrl+Shift+F12", // Mime Button
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oMimeBtn = sap.ui.getCore().byId("mimeBtn");
+                        if (!oMimeBtn || !oMimeBtn.getEnabled() || !oMimeBtn.getVisible()) {
+                            return;
+                        }
+
+                        oMimeBtn.firePress();
+                    }
+                },
+                {
+                    KEY: "Ctrl+F12", // Controller Button
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oControllerBtn = sap.ui.getCore().byId("controllerBtn");
+                        if (!oControllerBtn || !oControllerBtn.getEnabled() || !oControllerBtn.getVisible()) {
+                            return;
+                        }
+
+                        oControllerBtn.firePress();
+                    }
+                },
+                {
+                    KEY: "F8", // Application Execution Button
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oAppExecBtn = sap.ui.getCore().byId("ws20_appExecBtn");
+                        if (!oAppExecBtn || !oAppExecBtn.getEnabled() || !oAppExecBtn.getVisible()) {
+                            return;
+                        }
+
+                        oAppExecBtn.firePress();
+                    }
+                },
+                {
+                    KEY: "Ctrl+F5", // Multi Preview Button
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oMultiPrevBtn = sap.ui.getCore().byId("ws20_multiPrevBtn");
+                        if (!oMultiPrevBtn || !oMultiPrevBtn.getEnabled() || !oMultiPrevBtn.getVisible()) {
+                            return;
+                        }
+
+                        oMultiPrevBtn.firePress();
+                    }
+                },
+                {
+                    KEY: "Ctrl+Shift+F10", // Icon List Button
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oIconListBtn = sap.ui.getCore().byId("iconListBtn");
+                        if (!oIconListBtn || !oIconListBtn.getEnabled() || !oIconListBtn.getVisible()) {
+                            return;
+                        }
+
+                        oIconListBtn.firePress();
+                    }
+                },
+                {
+                    KEY: "Shift+F1", // Add Server Event Button
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oAddEventBtn = sap.ui.getCore().byId("addEventBtn");
+                        if (!oAddEventBtn || !oAddEventBtn.getEnabled() || !oAddEventBtn.getVisible()) {
+                            return;
+                        }
+
+                        oAddEventBtn.firePress();
+                    }
+                },
+                {
+                    KEY: "F9", // Runtime Class Navigator Event Button
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oRuntimeBtn = sap.ui.getCore().byId("runtimeBtn");
+                        if (!oRuntimeBtn || !oRuntimeBtn.getEnabled() || !oRuntimeBtn.getVisible()) {
+                            return;
+                        }
+
+                        oRuntimeBtn.firePress();
+                    }
+                },
+                {
+                    KEY: "Ctrl+F", // Find
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oFindBtn = sap.ui.getCore().byId("ws20_findBtn");
+                        if (!oFindBtn || !oFindBtn.getEnabled() || !oFindBtn.getVisible()) {
+                            return;
+                        }
+
+                        oFindBtn.firePress();
+                    }
                 }
-            },
-            {
+
+            ],
+            aShortCutWS30 = [{
+                    KEY: "F11", // FullScreen
+                    fn: (e) => {
+
+                        e.stopImmediatePropagation();
+
+                        var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
+                            bIsFull = oCurrWin.isFullScreen();
+
+                        oCurrWin.setFullScreen(!bIsFull);
+
+                    }
+                },
                 /****************************************************************************************************
                  * shortcut library bug,
                  ****************************************************************************************************
@@ -863,568 +1143,288 @@
                  * Ctrl + F4 키를 눌렀다면 이벤트 전파 방지를 하여 Ctrl + S 이벤트를
                  * 타지 않게 하기 위함.               
                  ****************************************************************************************************/
-                KEY: "Ctrl+F4",
-                fn: (e) => {
+                {
+                    KEY: "Ctrl+F4",
+                    fn: (e) => {
 
-                    e.stopImmediatePropagation();
+                        e.stopImmediatePropagation();
 
-                    zconsole.log("ws30/Ctrl+F4 key in!!");
+                        zconsole.log("ws30/Ctrl+F4 key in!!");
 
-                }
-            },
-            {
-                KEY: "Ctrl+S", // Save Button
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
                     }
+                },
+                {
+                    KEY: "F3",
+                    fn: (e) => {
 
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
+                        e.stopImmediatePropagation();
 
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oBackBtn = sap.ui.getCore().byId("ws30_backBtn");
+                        if (!oBackBtn || !oBackBtn.getEnabled() || !oBackBtn.getVisible()) {
+                            return;
+                        }
+
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        oBackBtn.focus();
+                        oBackBtn.firePress();
+
                     }
+                }, {
+                    KEY: "Ctrl+F1", // Display or Change Button
+                    fn: (e) => {
 
-                    var oSaveBtn = sap.ui.getCore().byId("saveBtn");
-                    if (!oSaveBtn || !oSaveBtn.getEnabled() || !oSaveBtn.getVisible()) {
-                        return;
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oChangeModeBtn = sap.ui.getCore().byId("ws30_changeModeBtn"),
+                            oDisplayBtn = sap.ui.getCore().byId("ws30_displayModeBtn");
+
+                        if (!oChangeModeBtn && !oDisplayBtn) {
+                            return;
+                        }
+
+                        var bIsChgVisi = oChangeModeBtn.getVisible(),
+                            bIsDisVisi = oDisplayBtn.getVisible();
+
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        if (bIsChgVisi == true) {
+                            oChangeModeBtn.focus();
+                            oChangeModeBtn.firePress();
+                            return;
+                        }
+
+                        if (bIsDisVisi == true) {
+                            oDisplayBtn.focus();
+                            oDisplayBtn.firePress();
+                            return;
+                        }
+
                     }
+                }, {
+                    KEY: "Ctrl+F3", // Activate Button
+                    fn: (e) => {
 
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
+                        // Active 버튼 누르기 전 커서의 위치를 저장한다.
+                        if (oAPP.attr.beforeActiveElement) {
+                            delete oAPP.attr.beforeActiveElement;
+                        }
+
+                        oAPP.attr.beforeActiveElement = document.activeElement;
+
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oActivateBtn = sap.ui.getCore().byId("ws30_activateBtn");
+
+                        if (!oActivateBtn || !oActivateBtn.getEnabled() || !oActivateBtn.getVisible()) {
+                            return;
+                        }
+
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        oActivateBtn.focus();
+                        oActivateBtn.firePress();
                     }
+                }, {
+                    KEY: "Ctrl+S", // Save Button
+                    fn: (e) => {
 
-                    oSaveBtn.focus();
-                    oSaveBtn.firePress();
-                }
-            },
-            {
-                KEY: "Ctrl+Shift+F12", // Mime Button
-                fn: (e) => {
+                        // Active 버튼 누르기 전 커서의 위치를 저장한다.
+                        if (oAPP.attr.beforeActiveElement) {
+                            delete oAPP.attr.beforeActiveElement;
+                        }
 
-                    e.stopImmediatePropagation();
+                        oAPP.attr.beforeActiveElement = document.activeElement;
 
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+                        if (!oSaveBtn || !oSaveBtn.getEnabled() || !oSaveBtn.getVisible()) {
+                            return;
+                        }
+
+                        // 커서 포커스 날리기
+                        if (document.activeElement && document.activeElement.blur) {
+                            document.activeElement.blur();
+                        }
+
+                        oSaveBtn.focus();
+                        oSaveBtn.firePress();
                     }
+                }, {
+                    KEY: "Shift+F1", // Code Editor Pretty Print
+                    fn: (e) => {
 
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
+                        e.stopImmediatePropagation();
 
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oBtn = sap.ui.getCore().byId("ws30_codeeditor_prettyBtn");
+                        if (!oBtn || !oBtn.getEnabled() || !oBtn.getVisible()) {
+                            return;
+                        }
+
+                        oBtn.firePress({
+                            ISSHORTCUT: "X"
+                        });
+
                     }
+                },
+                {
+                    KEY: "F8", // Application Execution Button
+                    fn: (e) => {
 
-                    var oMimeBtn = sap.ui.getCore().byId("mimeBtn");
-                    if (!oMimeBtn || !oMimeBtn.getEnabled() || !oMimeBtn.getVisible()) {
-                        return;
+                        e.stopImmediatePropagation();
+
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oAppExecBtn = sap.ui.getCore().byId("ws30_appExecBtn");
+                        if (!oAppExecBtn || !oAppExecBtn.getEnabled() || !oAppExecBtn.getVisible()) {
+                            return;
+                        }
+
+                        oAppExecBtn.firePress();
                     }
+                },
+                {
+                    KEY: "Ctrl+Shift+F12", // Mime Button
+                    fn: (e) => {
 
-                    oMimeBtn.firePress();
-                }
-            },
-            {
-                KEY: "Ctrl+F12", // Controller Button
-                fn: (e) => {
+                        debugger;
 
-                    e.stopImmediatePropagation();
+                        e.stopImmediatePropagation();
 
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oMimeBtn = sap.ui.getCore().byId("ws30_MimeBtn");
+                        if (!oMimeBtn || !oMimeBtn.getEnabled() || !oMimeBtn.getVisible()) {
+                            return;
+                        }
+
+                        oMimeBtn.firePress();
                     }
+                },
+                {
+                    KEY: "Ctrl+F12", // Controller Button
+                    fn: (e) => {
 
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
+                        e.stopImmediatePropagation();
 
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
+                        if (sap.ui.getCore().isLocked()) {
+                            zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                            return;
+                        }
+
+                        // 단축키 실행 할지 말지 여부 체크
+                        var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                        // X 이면 실행 불가
+                        if (result == "X") {
+                            return;
+                        }
+
+                        var oControllerBtn = sap.ui.getCore().byId("ws30_controllerBtn");
+                        if (!oControllerBtn || !oControllerBtn.getEnabled() || !oControllerBtn.getVisible()) {
+                            return;
+                        }
+
+                        oControllerBtn.firePress();
                     }
-
-                    var oControllerBtn = sap.ui.getCore().byId("controllerBtn");
-                    if (!oControllerBtn || !oControllerBtn.getEnabled() || !oControllerBtn.getVisible()) {
-                        return;
-                    }
-
-                    oControllerBtn.firePress();
-                }
-            },
-            {
-                KEY: "F8", // Application Execution Button
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
-                    }
-
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
-                    }
-
-                    var oAppExecBtn = sap.ui.getCore().byId("ws20_appExecBtn");
-                    if (!oAppExecBtn || !oAppExecBtn.getEnabled() || !oAppExecBtn.getVisible()) {
-                        return;
-                    }
-
-                    oAppExecBtn.firePress();
-                }
-            },
-            {
-                KEY: "Ctrl+F5", // Multi Preview Button
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
-                    }
-
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
-                    }
-
-                    var oMultiPrevBtn = sap.ui.getCore().byId("ws20_multiPrevBtn");
-                    if (!oMultiPrevBtn || !oMultiPrevBtn.getEnabled() || !oMultiPrevBtn.getVisible()) {
-                        return;
-                    }
-
-                    oMultiPrevBtn.firePress();
-                }
-            },
-            {
-                KEY: "Ctrl+Shift+F10", // Icon List Button
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
-                    }
-
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
-                    }
-
-                    var oIconListBtn = sap.ui.getCore().byId("iconListBtn");
-                    if (!oIconListBtn || !oIconListBtn.getEnabled() || !oIconListBtn.getVisible()) {
-                        return;
-                    }
-
-                    oIconListBtn.firePress();
-                }
-            },
-            {
-                KEY: "Shift+F1", // Add Server Event Button
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
-                    }
-
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
-                    }
-
-                    var oAddEventBtn = sap.ui.getCore().byId("addEventBtn");
-                    if (!oAddEventBtn || !oAddEventBtn.getEnabled() || !oAddEventBtn.getVisible()) {
-                        return;
-                    }
-
-                    oAddEventBtn.firePress();
-                }
-            },
-            {
-                KEY: "F9", // Runtime Class Navigator Event Button
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
-                    }
-
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
-                    }
-
-                    var oRuntimeBtn = sap.ui.getCore().byId("runtimeBtn");
-                    if (!oRuntimeBtn || !oRuntimeBtn.getEnabled() || !oRuntimeBtn.getVisible()) {
-                        return;
-                    }
-
-                    oRuntimeBtn.firePress();
-                }
-            },
-            {
-                KEY: "Ctrl+F", // Find
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
-                    }
-
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
-                    }
-
-                    var oFindBtn = sap.ui.getCore().byId("ws20_findBtn");
-                    if (!oFindBtn || !oFindBtn.getEnabled() || !oFindBtn.getVisible()) {
-                        return;
-                    }
-
-                    oFindBtn.firePress();
-                }
-            }
-
-            ],
-            aShortCutWS30 = [{
-                KEY: "F11", // FullScreen
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
-                        bIsFull = oCurrWin.isFullScreen();
-
-                    oCurrWin.setFullScreen(!bIsFull);
-
-                }
-            },
-            /****************************************************************************************************
-             * shortcut library bug,
-             ****************************************************************************************************
-             * Ctrl + F4 키를 누르면 Ctrl + S 이벤트를 발생시키는 버그를 발견하여,
-             * Ctrl + F4 키를 눌렀다면 이벤트 전파 방지를 하여 Ctrl + S 이벤트를
-             * 타지 않게 하기 위함.               
-             ****************************************************************************************************/
-            {
-                KEY: "Ctrl+F4",
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    zconsole.log("ws30/Ctrl+F4 key in!!");
-
-                }
-            },
-            {
-                KEY: "F3",
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
-                    }
-
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
-                    }
-
-                    var oBackBtn = sap.ui.getCore().byId("ws30_backBtn");
-                    if (!oBackBtn || !oBackBtn.getEnabled() || !oBackBtn.getVisible()) {
-                        return;
-                    }
-
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
-                    }
-
-                    oBackBtn.focus();
-                    oBackBtn.firePress();
-
-                }
-            }, {
-                KEY: "Ctrl+F1", // Display or Change Button
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
-                    }
-
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
-                    }
-
-                    var oChangeModeBtn = sap.ui.getCore().byId("ws30_changeModeBtn"),
-                        oDisplayBtn = sap.ui.getCore().byId("ws30_displayModeBtn");
-
-                    if (!oChangeModeBtn && !oDisplayBtn) {
-                        return;
-                    }
-
-                    var bIsChgVisi = oChangeModeBtn.getVisible(),
-                        bIsDisVisi = oDisplayBtn.getVisible();
-
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
-                    }
-
-                    if (bIsChgVisi == true) {
-                        oChangeModeBtn.focus();
-                        oChangeModeBtn.firePress();
-                        return;
-                    }
-
-                    if (bIsDisVisi == true) {
-                        oDisplayBtn.focus();
-                        oDisplayBtn.firePress();
-                        return;
-                    }
-
-                }
-            }, {
-                KEY: "Ctrl+F3", // Activate Button
-                fn: (e) => {
-
-                    // Active 버튼 누르기 전 커서의 위치를 저장한다.
-                    if (oAPP.attr.beforeActiveElement) {
-                        delete oAPP.attr.beforeActiveElement;
-                    }
-
-                    oAPP.attr.beforeActiveElement = document.activeElement;
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
-                    }
-
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
-                    }
-
-                    var oActivateBtn = sap.ui.getCore().byId("ws30_activateBtn");
-
-                    if (!oActivateBtn || !oActivateBtn.getEnabled() || !oActivateBtn.getVisible()) {
-                        return;
-                    }
-
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
-                    }
-
-                    oActivateBtn.focus();
-                    oActivateBtn.firePress();
-                }
-            }, {
-                KEY: "Ctrl+S", // Save Button
-                fn: (e) => {
-
-                    // Active 버튼 누르기 전 커서의 위치를 저장한다.
-                    if (oAPP.attr.beforeActiveElement) {
-                        delete oAPP.attr.beforeActiveElement;
-                    }
-
-                    oAPP.attr.beforeActiveElement = document.activeElement;
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
-                    }
-
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
-                    }
-
-                    var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
-                    if (!oSaveBtn || !oSaveBtn.getEnabled() || !oSaveBtn.getVisible()) {
-                        return;
-                    }
-
-                    // 커서 포커스 날리기
-                    if (document.activeElement && document.activeElement.blur) {
-                        document.activeElement.blur();
-                    }
-
-                    oSaveBtn.focus();
-                    oSaveBtn.firePress();
-                }
-            }, {
-                KEY: "Shift+F1", // Code Editor Pretty Print
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
-                    }
-
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
-                    }
-
-                    var oBtn = sap.ui.getCore().byId("ws30_codeeditor_prettyBtn");
-                    if (!oBtn || !oBtn.getEnabled() || !oBtn.getVisible()) {
-                        return;
-                    }
-
-                    oBtn.firePress({
-                        ISSHORTCUT: "X"
-                    });
-
-                }
-            },
-            {
-                KEY: "F8", // Application Execution Button
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
-                    }
-
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
-                    }
-
-                    var oAppExecBtn = sap.ui.getCore().byId("ws30_appExecBtn");
-                    if (!oAppExecBtn || !oAppExecBtn.getEnabled() || !oAppExecBtn.getVisible()) {
-                        return;
-                    }
-
-                    oAppExecBtn.firePress();
-                }
-            },
-            {
-                KEY: "Ctrl+Shift+F12", // Mime Button
-                fn: (e) => {
-
-                    debugger;
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
-                    }
-
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
-                    }
-
-                    var oMimeBtn = sap.ui.getCore().byId("ws30_MimeBtn");
-                    if (!oMimeBtn || !oMimeBtn.getEnabled() || !oMimeBtn.getVisible()) {
-                        return;
-                    }
-
-                    oMimeBtn.firePress();
-                }
-            },
-            {
-                KEY: "Ctrl+F12", // Controller Button
-                fn: (e) => {
-
-                    e.stopImmediatePropagation();
-
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
-                        return;
-                    }
-
-                    // 단축키 실행 할지 말지 여부 체크
-                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
-
-                    // X 이면 실행 불가
-                    if (result == "X") {
-                        return;
-                    }
-
-                    var oControllerBtn = sap.ui.getCore().byId("ws30_controllerBtn");
-                    if (!oControllerBtn || !oControllerBtn.getEnabled() || !oControllerBtn.getVisible()) {
-                        return;
-                    }
-
-                    oControllerBtn.firePress();
-                }
-            },
+                },
             ];
 
         var oShortcutList = {
@@ -1444,7 +1444,7 @@
      * - page 명
      * 예) WS10, WS20     
      ************************************************************************/
-    oAPP.common.setShortCut = function (sPgNo) {
+    oAPP.common.setShortCut = function(sPgNo) {
 
         var oShortcut = oAPP.attr.oShortcut;
 
@@ -1468,7 +1468,7 @@
      * - page 명
      * 예) WS10, WS20     
      ************************************************************************/
-    oAPP.common.removeShortCut = function (sPgNo) {
+    oAPP.common.removeShortCut = function(sPgNo) {
 
         var oShortcut = oAPP.attr.oShortcut;
 
@@ -1488,7 +1488,7 @@
     /************************************************************************
      * 로그인 상태 체크
      ************************************************************************/
-    oAPP.common.sendAjaxLoginChk = function (fnCallback) {
+    oAPP.common.sendAjaxLoginChk = function(fnCallback) {
 
         // var sPath = parent.getServerPath() + "/wsloginchk";
         var sPath = parent.getServerPath() + "/ping_check";
@@ -1521,7 +1521,7 @@
      *      BrowserWindow Instance
      *  
      ************************************************************************/
-    oAPP.common.getCheckAlreadyOpenWindow = function (OBJTY) {
+    oAPP.common.getCheckAlreadyOpenWindow = function(OBJTY) {
 
         var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
             aChildWin = oCurrWin.getChildWindows(), // 현재 window의 child window           
@@ -1566,23 +1566,23 @@
     }; // end of oAPP.common.onCheckAlreadyOpenEditor
 
     /************************************************************************
-    * !! 전체 떠있는 브라우저 기준 !!
-    *************************************************************************
-    * OBJTY 별로 이미 오픈된 팝업이 있는지 확인
-    * 있으면 새창을 띄우지 말고 focus 를 준다.
-    * ***********************************************************************
-    * @param {Object} oEditInfo
-    * - 오픈 하려는 에디터의 타입 정보
-    * 
-    * @return {Object} 
-    *  - ISOPEN {Boolean} 
-    *      true : 같은 타입의 오픈된 에디터 팝업이 이미 있는 경우.
-    *      false : 같은 타입의 오픈된 에디터 팝업이 없는 신규일 경우.
-    * 
-    *  - WINDOW {Object}
-    *      BrowserWindow Instance
-    *  
-    ************************************************************************/
+     * !! 전체 떠있는 브라우저 기준 !!
+     *************************************************************************
+     * OBJTY 별로 이미 오픈된 팝업이 있는지 확인
+     * 있으면 새창을 띄우지 말고 focus 를 준다.
+     * ***********************************************************************
+     * @param {Object} oEditInfo
+     * - 오픈 하려는 에디터의 타입 정보
+     * 
+     * @return {Object} 
+     *  - ISOPEN {Boolean} 
+     *      true : 같은 타입의 오픈된 에디터 팝업이 이미 있는 경우.
+     *      false : 같은 타입의 오픈된 에디터 팝업이 없는 신규일 경우.
+     * 
+     *  - WINDOW {Object}
+     *      BrowserWindow Instance
+     *  
+     ************************************************************************/
     oAPP.common.getCheckAlreadyOpenWindow2 = (OBJTY) => {
 
         // 현재 떠있는 전체 윈도우를 구한다.
@@ -1660,7 +1660,7 @@
      * @param {String} oAppInfo (AppInfo를 던지고 싶을때 사용)
      * - APP Info
      ************************************************************************/
-    oAPP.common.execControllerClass = function (METHNM, INDEX, TCODE, oAppInfo) {
+    oAPP.common.execControllerClass = function(METHNM, INDEX, TCODE, oAppInfo) {
 
         let oServerInfo = parent.getServerInfo();
 
@@ -1728,7 +1728,7 @@
     /************************************************************************
      * APP 전체 대상 글로벌 Shortcut 지정하기
      * **********************************************************************/
-    oAPP.common.fnSetGlobalShortcut = function () {
+    oAPP.common.fnSetGlobalShortcut = function() {
 
         var oShortcut = oAPP.attr.oShortcut;
 
@@ -1788,7 +1788,7 @@
     /************************************************************************
      * APP 전체 대상 글로벌 Shortcut 삭제
      * **********************************************************************/
-    oAPP.common.fnRemoveGlobalShortcut = function () {
+    oAPP.common.fnRemoveGlobalShortcut = function() {
 
         var oShortcut = parent.GLOBALSHORTCUT;
 
@@ -1802,7 +1802,7 @@
      * 
      * @param {Function} fnExecFunc 
      */
-    oAPP.common.fnSetBusyDialog = function (bIsOpen) {
+    oAPP.common.fnSetBusyDialog = function(bIsOpen) {
 
         const BusyDialogID = "u4aWsBusyDialog";
 
@@ -1837,7 +1837,7 @@
 
                 // properties
                 showHeader: false,
-                escapeHandler: function () {
+                escapeHandler: function() {
 
 
                 },
@@ -2281,38 +2281,38 @@
 
         new sap.m.Dialog(sDialogId, {
 
-            // properties
-            showHeader: false,
-            horizontalScrolling: false,
-            verticalScrolling: false,
+                // properties
+                showHeader: false,
+                horizontalScrolling: false,
+                verticalScrolling: false,
 
-            // aggregations
-            content: [
-                oIllustMsg,
+                // aggregations
+                content: [
+                    oIllustMsg,
 
-                new sap.m.HBox({
-                    renderType: "Bare",
-                    items: [
-                        oProgressbar
-                    ]
-                }),
+                    new sap.m.HBox({
+                        renderType: "Bare",
+                        items: [
+                            oProgressbar
+                        ]
+                    }),
 
-            ],
-            afterClose: () => {
+                ],
+                afterClose: () => {
 
-                let oProg = new sap.ui.getCore().byId(sPrgressId);
-                if (!oProg) {
-                    return;
-                }
+                    let oProg = new sap.ui.getCore().byId(sPrgressId);
+                    if (!oProg) {
+                        return;
+                    }
 
-                oProg.setPercentValue(0);
-                oProg.setDisplayValue("");
+                    oProg.setPercentValue(0);
+                    oProg.setDisplayValue("");
 
-            },
-            // Events
-            escapeHandler: () => { }, // esc 키 방지
+                },
+                // Events
+                escapeHandler: () => {}, // esc 키 방지
 
-        })
+            })
             .addStyleClass(sDialogId)
             .open();
 
@@ -2371,36 +2371,36 @@
 
         new sap.m.Dialog(sDialogId, {
 
-            // properties
-            showHeader: false,
-            horizontalScrolling: false,
-            verticalScrolling: false,
+                // properties
+                showHeader: false,
+                horizontalScrolling: false,
+                verticalScrolling: false,
 
-            // aggregations
-            content: [
-                oIllustMsg,
-            ],
-            afterClose: () => {
+                // aggregations
+                content: [
+                    oIllustMsg,
+                ],
+                afterClose: () => {
 
-                var oIllustMsg = sap.ui.getCore().byId(sIllustId);
-                if (!oIllustMsg) {
-                    return;
-                }
+                    var oIllustMsg = sap.ui.getCore().byId(sIllustId);
+                    if (!oIllustMsg) {
+                        return;
+                    }
 
-                let oOptions = {
-                    title: "",
-                    description: "",
-                    illustrationType: "NoSearchResults",
-                    illustrationSize: sap.m.IllustratedMessageSize.Auto
-                };
+                    let oOptions = {
+                        title: "",
+                        description: "",
+                        illustrationType: "NoSearchResults",
+                        illustrationSize: sap.m.IllustratedMessageSize.Auto
+                    };
 
-                lf_setIllustMsg(oIllustMsg, oOptions);
+                    lf_setIllustMsg(oIllustMsg, oOptions);
 
-            },
-            // Events
-            escapeHandler: () => { }, // esc 키 방지
+                },
+                // Events
+                escapeHandler: () => {}, // esc 키 방지
 
-        })
+            })
             .addStyleClass(sDialogId)
             .open();
 
@@ -2444,6 +2444,58 @@
         oHeaderText.setText(sText);
 
     }; // end of oAPP.common.setWSHeadText
+
+    /**
+     * White List Object 유무 확인 
+     * 
+     * 1. REGTYP
+     *   - C : Client,
+     *   - S : Server
+     * 
+     * 2. CHGOBJ
+     *  - CTS No
+     * 
+     * @returns true or false
+     */
+    oAPP.common.checkWLOList = (REGTYP = "", CHGOBJ = "") => {
+
+        let oCoreModel = sap.ui.getCore().getModel();
+        if (!oCoreModel) {
+            return false;
+        }
+
+        let aWLO = oCoreModel.getProperty("/METADATA/T_REG_WLO");
+
+        if (!aWLO) {
+            return false;
+        }
+
+        // 데이터 구조가 Array 인지 체크
+        if (!Array.isArray(aWLO)) {
+            return false;
+        }
+
+        if (aWLO.length == 0) {
+            return false;
+        }
+
+        let oFindWLO = aWLO.find((elem) => {
+
+            if (elem.REGTYP == REGTYP && elem.CHGOBJ == CHGOBJ) {
+                return true;
+            }
+
+            return false;
+
+        });
+
+        if (!oFindWLO) {
+            return false;
+        }
+
+        return true;
+
+    }; // end of oAPP.common.checkWLOList
 
 })(window, $, oAPP);
 
@@ -2584,7 +2636,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
     var xhr = new XMLHttpRequest();
 
-    xhr.onreadystatechange = function () { // 요청에 대한 콜백
+    xhr.onreadystatechange = function() { // 요청에 대한 콜백
         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
             if (xhr.status === 200 || xhr.status === 201) {
 

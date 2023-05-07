@@ -1870,6 +1870,7 @@
         }, {
             key: "WMENU20_04",
             text: oAPP.msg.M047, // Icon List
+            visible: oAPP.common.checkWLOList("C", "UHAK900630")
         }],
 
             aWMENU30 = [{
