@@ -2582,6 +2582,7 @@ function fnJsonParseError(e) {
 
 function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob) {
 
+    debugger;
 
     let oUserInfo = parent.getUserInfo();
 

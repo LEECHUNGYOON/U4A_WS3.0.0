@@ -24,6 +24,8 @@ Rem *********************
 	
 	Public objWSH, objSapGui, objAppl, objConn, objSess
 	
+    Public SNCNAM, SNCOPQ, SNCNSSO
+	
 Rem ****************************
 Rem *** End Of Public Sector ***
 Rem ****************************
@@ -113,6 +115,11 @@ Function GetArg()
 	
 	ESID  = WScript.arguments.Item(17) 'Electron JS 호출처 세션 ID
 	
+	'SNC 설정값
+	SNCNAM  = WScript.arguments.Item(18) 'SNC Name
+	SNCOPQ  = WScript.arguments.Item(19) 'SNC Option 
+	SNCNSSO = WScript.arguments.Item(20) 'SNC Logon with user/password(0: SSO, 1: No Sigle sign-On)
+		
 End Function
 
 
@@ -138,6 +145,11 @@ Function SetConnStr()
 
 	End If
 
+    '20230426 YSHONG: Logon Connection String SNC 설정값 적용
+    ConnStr = "SNC_PARTNERNAME=" & """" & SNCNAM & """" & " " & "SNC_QOP=" & SNCOPQ & " " & ConnStr
+	
+    '20230426 YSHONG: Logon Connection String SNC 설정값 적용 END
+ 
 'MsgBox ConnStr
 
 End Function
@@ -339,11 +351,34 @@ Function SAP_Login()
 	'objSess.findById("wnd[0]").resizeWorkingPane 113,33,false
 	objSess.findById("wnd[0]").JumpForward
 	'objSess.findById("wnd[0]").maximize
-	objSess.findById("wnd[0]/usr/txtRSYST-MANDT").Text = MANDT
-	objSess.findById("wnd[0]/usr/txtRSYST-BNAME").Text = BNAME
-	objSess.findById("wnd[0]/usr/pwdRSYST-BCODE").Text = PASS
-	objSess.findById("wnd[0]/usr/txtRSYST-LANGU").Text = LANGU
-	objSess.findById("wnd[0]").sendVKey 0
+	
+	'SNC 로그온 SSO 설정 여부에 따른 로직 분기
+	Select Case SNCNSSO
+	Case "0" 'SSO 로그인
+		IF SNCNAM = "" Then 'SNC Parameter Name이 없으면 SSO 사용 안함으로 간주함
+			objSess.findById("wnd[0]/usr/txtRSYST-MANDT").Text = MANDT
+			objSess.findById("wnd[0]/usr/txtRSYST-BNAME").Text = BNAME
+			objSess.findById("wnd[0]/usr/pwdRSYST-BCODE").Text = PASS
+			objSess.findById("wnd[0]/usr/txtRSYST-LANGU").Text = LANGU
+			objSess.findById("wnd[0]").sendVKey 0
+			
+		End If
+	
+	Case "1" 'SSO 로그인 사용안함
+		objSess.findById("wnd[0]/usr/txtRSYST-MANDT").Text = MANDT
+		objSess.findById("wnd[0]/usr/txtRSYST-BNAME").Text = BNAME
+		objSess.findById("wnd[0]/usr/pwdRSYST-BCODE").Text = PASS
+		objSess.findById("wnd[0]/usr/txtRSYST-LANGU").Text = LANGU
+		objSess.findById("wnd[0]").sendVKey 0
+
+	Case "" 'SSO 로그인 사용안함
+		objSess.findById("wnd[0]/usr/txtRSYST-MANDT").Text = MANDT
+		objSess.findById("wnd[0]/usr/txtRSYST-BNAME").Text = BNAME
+		objSess.findById("wnd[0]/usr/pwdRSYST-BCODE").Text = PASS
+		objSess.findById("wnd[0]/usr/txtRSYST-LANGU").Text = LANGU
+		objSess.findById("wnd[0]").sendVKey 0
+			
+	End Select
 
     '다중 로그인 팝업 처리
 	If ISMLGN = "2" Then
