@@ -1763,6 +1763,28 @@
       return;
     }
 
+
+    //신규 아이콘 팝업 정보를 접속한 서버가 허용하는경우.
+    if(oAPP.common.checkWLOList("C", "UHAK900630") === true){
+      //신규 아이콘 팝업 호출.
+
+      parent.setBusy("X");
+
+      oAPP.fn.fnIconPreviewPopupOpener(function (e) {
+
+        parent.setBusy("");
+
+        if(e.RETCD === "C"){ // C : 취소
+            return;
+        }
+
+        lf_callback(e.RTDATA);
+
+      });
+
+      return;
+    }
+
     //icon list popup function이 존재하는 경우.
     if(typeof oAPP.fn.callIconListPopup !== "undefined"){
       //icon list popup 호출.

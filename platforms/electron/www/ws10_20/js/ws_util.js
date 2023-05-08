@@ -710,19 +710,7 @@ module.exports = {
      * WS Setting 정보     
      */
     getWsSettingsInfo: function () {
-
-        // // Browser Window option
-        // var oSettingsPath = PATHINFO.WSSETTINGS,
-
-        //     // JSON 파일 형식의 Setting 정보를 읽는다..
-        //     oSettings = require(oSettingsPath);
-        // if (!oSettings) {
-        //     return;
-        // }
-
-        // return oSettings;
-
-
+ 
         let sSetttingJsonData = FS.readFileSync(PATHINFO.WSSETTINGS, 'utf-8'),
             oSettings = JSON.parse(sSetttingJsonData);
 
@@ -761,9 +749,47 @@ module.exports = {
     }, // getWsGlobalSettingInfoAsync
 
     /**
-     * 레지스트리에 저장된 whiteList Object 정보
+     * 레지스트리에 저장된 whiteList Object 목록에 존재 여부 확인
      */
-    getWsWhiteListObjectAsync: function (SYSID = "", REGTYP = "", CHGOBJ = "") {
+    checkWLOListAsync: function (SYSID = "", REGTYP = "", CHGOBJ = "") {
+
+        return new Promise(async (resolve) => {
+
+            // 레지스트리에 저장된 whiteList Object 목록을 구한다.
+            let aWLO = await this.getWsWLOListAsync(SYSID);
+
+            // Array 형식인지 여부 확인
+            if (!Array.isArray(aWLO)) {
+                resolve(false);
+                return;
+            }
+
+            // 전달받은 파라미터에 해당하는 White List Object가 있는지 확인
+            let oFindWLO = aWLO.find((elem) => {
+
+                if (elem.REGTYP == REGTYP && elem.CHGOBJ == CHGOBJ) {
+                    return true;
+                }
+
+                return false;
+
+            });
+
+            if (!oFindWLO) {
+                resolve(false);
+                return;
+            }
+
+            resolve(true);
+
+        });
+
+    }, // end of checkWLOListAsync
+
+    /**
+     * 레지스트리에 저장된 whiteList Object 목록
+     */
+    getWsWLOListAsync: function (SYSID = "") {
 
         return new Promise(async (resolve) => {
 
@@ -775,7 +801,7 @@ module.exports = {
             // 접속 SYSID에 해당하는 레지스트리 정보를 구한다.
             let oRegData = await this.getRegeditAsync(sWsSystemPath, SYSID);
             if (oRegData.RETCD == "E") {
-                resolve(false);
+                resolve([]);
                 return;
             }
 
@@ -785,7 +811,7 @@ module.exports = {
 
             // 저장된 정보가 없으면 리턴
             if (!oWLO) {
-                resolve(false);
+                resolve([]);
                 return;
             }
 
@@ -794,41 +820,26 @@ module.exports = {
             try {
                 var aWLO = JSON.parse(sWLOJson);
             } catch (error) {
-                resolve(false);
+                resolve([]);
                 return;
             }
 
             // 데이터 구조가 Array 인지 체크
             if (!Array.isArray(aWLO)) {
-                resolve(false);
+                resolve([]);
                 return;
             }
 
             if (aWLO.length == 0) {
-                resolve(false);
+                resolve([]);
                 return;
             }
 
-            let oFindWLO = aWLO.find((elem) => {
-
-                if (elem.REGTYP == REGTYP && elem.CHGOBJ == CHGOBJ) {
-                    return true;
-                }
-
-                return false;
-
-            });
-          
-            if (!oFindWLO) {
-                resolve(false);
-                return;
-            }
-
-            resolve(true);
+            resolve(aWLO);
 
         });
 
-    }, // end of getWsWhiteListObjectAsync
+    }, // end of getWsWLOListAsync
 
     /*************************************************************************
      * 파일시스템 관련 -- Start
