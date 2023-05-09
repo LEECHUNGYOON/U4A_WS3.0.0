@@ -105,9 +105,8 @@
             oUspTreeTable.collapseAll();
             oUspTreeTable.clearSelection();
 
-            // Usp Tree RowsUpdate 이벤트 걸기
-            oUspTreeTable.detachRowsUpdated(oAPP.fn.fnAttachRowsUpdateInit);
-            oUspTreeTable.attachRowsUpdated(oAPP.fn.fnAttachRowsUpdateInit);
+            // Usp Tree RowsUpdate 이벤트 걸기          
+            oUspTreeTable.attachEventOnce("rowsUpdated", oAPP.fn.fnAttachRowsUpdateInit);
 
             // 화면 처음 로딩 시, Root Node의 정보를 구한다.
             oUspTreeTable.attachRowsUpdated(ev_getRootNodeRowsUpdated);
@@ -210,9 +209,7 @@
         }
 
         // 앱 변경 사항 플래그 설정
-        oAPP.fn.setAppChangeWs30("X");
-
-        zconsole.log("codeeditor change!!");
+        oAPP.fn.setAppChangeWs30("X");        
 
         // code editor keyPress 이벤트 해제
         fnCodeEditorKeyPressEvent("");
@@ -1232,9 +1229,7 @@
     /**************************************************************************
      * [WS30] Usp 화면 진입시 UspTree에 RowsUpdate 이벤트 걸기
      **************************************************************************/
-    oAPP.fn.fnAttachRowsUpdateInit = () => {
-
-        zconsole.log("[Table] rowsUpdated Event");
+    oAPP.fn.fnAttachRowsUpdateInit = () => {        
 
         // // Usp Tree의 선택된 Row에 색깔 표시
         _fnUspTreeSelectedRowMark();
@@ -1266,8 +1261,7 @@
             // Row의 Instance를 구한다.
             var oRow = aRows[i];
 
-            // 일단 css 클래스를 지우고 본다.
-            // oRow.removeStyleClass("u4aWsTreeTableSelected");
+            // 일단 css 클래스를 지우고 본다.            
             oRow.$().css({ "background-color": "" });
 
             // 바인딩 정보가 없으면 빠져나간다.
@@ -1281,8 +1275,7 @@
             // 바인딩 데이터 중 선택 플래그가 있을 경우에만 css 클래스를 적용한다.
             var ISSEL = oRowData.ISSEL;
 
-            if (ISSEL) {
-                // oRow.addStyleClass("u4aWsTreeTableSelected");
+            if (ISSEL) {                
                 oRow.$().css({ "background-color": sRowBgCol_rgba });
             }
 
@@ -1727,7 +1720,9 @@
         // 현재 키 입력한 위치가 왼쪽 에디터에 있었을 경우
         if ($oCodeeditor1.length !== 0) {
 
-            oAPP.fn.fnUspCodeeditorContextMenuOpen(oEvent, oCodeEditor1); // #[ws_usp_01.js]
+            setTimeout(() => {
+                oAPP.fn.fnUspCodeeditorContextMenuOpen(oEvent, oCodeEditor1); // #[ws_usp_01.js]
+            }, 0);
 
             return;
 
@@ -1736,7 +1731,9 @@
         // 현재 키 입력한 위치가 오른쪽 에디터에 있었을 경우
         if ($oCodeeditor2.length !== 0) {
 
-            oAPP.fn.fnUspCodeeditorContextMenuOpen(oEvent, oCodeEditor2); // #[ws_usp_01.js]
+            setTimeout(() => {
+                oAPP.fn.fnUspCodeeditorContextMenuOpen(oEvent, oCodeEditor2); // #[ws_usp_01.js]
+            }, 0);
 
             return;
 
@@ -3187,11 +3184,11 @@
         // 화면 Lock 해제
         sap.ui.getCore().unlock();
 
-        // RowUpdate 이벤트를 해제 한다.
-        let oUspTreeTable = sap.ui.getCore().byId("usptree");
-        if (oUspTreeTable) {
-            oUspTreeTable.detachRowsUpdated(oAPP.fn.fnAttachRowsUpdateInit);
-        }
+        // // RowUpdate 이벤트를 해제 한다.
+        // let oUspTreeTable = sap.ui.getCore().byId("usptree");
+        // if (oUspTreeTable) {
+        //     oUspTreeTable.detachRowsUpdated(oAPP.fn.fnAttachRowsUpdateInit);
+        // }
 
         let sTitle = "U4A Workspace - Main";
 

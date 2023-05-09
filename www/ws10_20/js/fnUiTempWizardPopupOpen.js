@@ -15,6 +15,7 @@
         C_TMPL_WZD3_ID = "u4aWsTmplWzd3",
 
         C_TMPL_NAVCON_ID = "u4aWsTmplWzdNavCon",
+        C_TMPL_LNAVCON_ID = "u4aWsTmplWzdLNavCon",
         C_TMPL_BIND_ROOT = "/WS20/TMPLWZD",
 
         C_TMPL_WZD1_MODEL_TABLE_ID = `${C_TMPL_WZD1_ID}--table`,
@@ -413,15 +414,65 @@
 
         return new sap.ui.layout.SplitPane({
             content: new sap.m.Page({
+                enableScrolling: false,
                 title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A67"), // Preview
                 layoutData: new sap.ui.layout.SplitterLayoutData({
-                    size: "500px"
+                    size: "40%"
                 }),
                 content: [
-                    new sap.m.Image({
-                        width: "100%",
-                        height: "100%"
-                    }).addStyleClass("u4aWsTmplWzdPrevImg")
+
+                    new sap.m.NavContainer(C_TMPL_LNAVCON_ID, {
+                        autoFocus: false,
+                        pages: [
+                            new sap.m.Page(`${C_TMPL_LNAVCON_ID}--P1`, {
+                                showHeader: false,
+                                enableScrolling: true,
+                                content: [
+                                    new sap.m.VBox({
+                                        height: "100%",
+                                        width: "100%",
+                                        renderType: "Bare",
+                                        justifyContent: "Center",
+                                        items: [
+
+                                            new sap.m.IllustratedMessage({
+                                                title: APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "347", APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E32")), // Preview Image Not found.
+                                                description: "　",
+                                                illustrationType: "tnt-UnableToLoad",
+                                                illustrationSize: "Scene"
+                                            })
+
+                                        ]
+                                    })
+                                ]
+                            }),
+
+                            new sap.m.Page(`${C_TMPL_LNAVCON_ID}--P2`, {
+                                showHeader: false,
+                                enableScrolling: true,
+                                content: [
+
+                                    new sap.m.VBox({
+                                        height: "100%",
+                                        width: "100%",
+                                        renderType: "Bare",
+                                        justifyContent: "Center",
+                                        items: [
+
+                                            new sap.m.Image(`${C_TMPL_LNAVCON_ID}--Img`, {
+                                                // width: "100%",
+                                                height: "auto"
+                                            }).addStyleClass("u4aWsTmplWzdPrevImg")
+
+                                        ]
+                                    })
+
+                                ]
+
+                            })
+                        ]
+                    })
+
                 ]
             })
         });
@@ -460,80 +511,80 @@
         return new sap.tnt.ToolPage({
             sideContent: new sap.tnt.SideNavigation({
                 item: new sap.tnt.NavigationList({
-                        selectedKey: `{${C_MENU_BIND_PATH}/SELKEY}`,
-                        itemSelect: oAPP.events.ev_sideNaviItemSelection,
-                        items: {
-                            path: `${C_MENU_BIND_PATH}/MENULIST`,
-                            template: new sap.tnt.NavigationListItem({
-                                icon: "sap-icon://color-fill",
-                                key: "{key}",
-                                text: "{text}",
-                                // enabled: "{enabled}"
-                            }).bindProperty("enabled", {
-                                parts: [
-                                    `${C_TMPL_BIND_ROOT}/MASTER`,
-                                    `key`
-                                ],
-                                formatter: (MASTER, key) => {
+                    selectedKey: `{${C_MENU_BIND_PATH}/SELKEY}`,
+                    itemSelect: oAPP.events.ev_sideNaviItemSelection,
+                    items: {
+                        path: `${C_MENU_BIND_PATH}/MENULIST`,
+                        template: new sap.tnt.NavigationListItem({
+                            icon: "sap-icon://color-fill",
+                            key: "{key}",
+                            text: "{text}",
+                            // enabled: "{enabled}"
+                        }).bindProperty("enabled", {
+                            parts: [
+                                `${C_TMPL_BIND_ROOT}/MASTER`,
+                                `key`
+                            ],
+                            formatter: (MASTER, key) => {
 
-                                    let bEnabled = false; // 메뉴 활성화 여부
+                                let bEnabled = false; // 메뉴 활성화 여부
 
-                                    let bIsTab = false, // 테이블 존재 여부
-                                        bIsStr = false, // 스트럭처 존재 여부
-                                        bIsAll = false; // 둘다 존재 여부
+                                let bIsTab = false, // 테이블 존재 여부
+                                    bIsStr = false, // 스트럭처 존재 여부
+                                    bIsAll = false; // 둘다 존재 여부
 
-                                    var sTab = MASTER.T_MINFO.find(element => element == "T"),
-                                        sStr = MASTER.T_MINFO.find(element => element == "S");
+                                var sTab = MASTER.T_MINFO.find(element => element == "T"),
+                                    sStr = MASTER.T_MINFO.find(element => element == "S");
 
-                                    // 테이블이 있는지 확인
-                                    if (sTab) {
-                                        bIsTab = true;
-                                    }
+                                // 테이블이 있는지 확인
+                                if (sTab) {
+                                    bIsTab = true;
+                                }
 
-                                    // 스트럭처가 있는지 확인
-                                    if (sStr) {
-                                        bIsStr = true;
-                                    }
+                                // 스트럭처가 있는지 확인
+                                if (sStr) {
+                                    bIsStr = true;
+                                }
 
 
-                                    // 테이블 && 스트럭처가 있는지 확인
-                                    if (bIsTab && bIsStr) {
-                                        bIsAll = true;
-                                    }
+                                // 테이블 && 스트럭처가 있는지 확인
+                                if (bIsTab && bIsStr) {
+                                    bIsAll = true;
+                                }
 
-                                    switch (key) {
-                                        case C_TMPL_WZD1_ID:
+                                switch (key) {
+                                    case C_TMPL_WZD1_ID:
 
-                                            if (bIsTab) {
-                                                bEnabled = true;
-                                            }
+                                        if (bIsTab) {
+                                            bEnabled = true;
+                                        }
 
-                                            break;
+                                        break;
 
-                                        case C_TMPL_WZD2_ID:
+                                    case C_TMPL_WZD2_ID:
 
-                                            if (bIsStr) {
-                                                bEnabled = true;
-                                            }
+                                        if (bIsStr) {
+                                            bEnabled = true;
+                                        }
 
-                                            break;
+                                        break;
 
-                                        case C_TMPL_WZD3_ID:
+                                    case C_TMPL_WZD3_ID:
 
-                                            if (bIsAll) {
-                                                bEnabled = true;
-                                            }
+                                        if (bIsAll) {
+                                            bEnabled = true;
+                                        }
 
-                                            break;
-
-                                    }
-
-                                    return bEnabled;
+                                        break;
 
                                 }
-                            })
-                        }
-                    })
+
+                                return bEnabled;
+
+                            }
+                        })
+                    }
+                })
                     .addDelegate({
 
                         // 구조, 테이블 유무에 따른 아이콘 색상 적용
@@ -1948,22 +1999,22 @@
     oAPP.fn.fnGetTempWizardContent3WzdSteps = () => {
 
         let oEnabledBindPropertyS = {
-                parts: [
-                    `${C_TMPL_BIND_ROOT}/MASTER`
-                ],
-                formatter: (MASTER) => {
+            parts: [
+                `${C_TMPL_BIND_ROOT}/MASTER`
+            ],
+            formatter: (MASTER) => {
 
-                    let bEnabled = false;
+                let bEnabled = false;
 
-                    let sStr = MASTER.T_MINFO.find(element => element == "S");
-                    if (sStr) {
-                        bEnabled = true;
-                    }
-
-                    return bEnabled;
-
+                let sStr = MASTER.T_MINFO.find(element => element == "S");
+                if (sStr) {
+                    bEnabled = true;
                 }
-            },
+
+                return bEnabled;
+
+            }
+        },
             oEnabledBindPropertyT = {
                 parts: [
                     `${C_TMPL_BIND_ROOT}/MASTER`
@@ -2492,9 +2543,9 @@
 
         // return 구조
         var oReturn = {
-                RETCD: "",
-                RETMSG: ""
-            },
+            RETCD: "",
+            RETMSG: ""
+        },
 
             sParTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B76"), // Parent
             sChildTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B77"), // Child
@@ -2702,6 +2753,55 @@
         APPCOMMON.fnSetModelProperty(C_MODEL_TABLE_OUTAB_PATH, aTableData);
 
     }; // end of oAPP.fn.fnSetTmplWzd3TableAllRowEnable
+
+    /************************************************************************
+     * 좌측 미리보기 이미지 보이기
+    ************************************************************************/
+    function fnSetPrevImage(sKey = "") {
+
+        let sPrevImgRootPath = PATH.join(APPPATH, "ws10_20", "images", "wizard"),
+            sImagePath = PATH.join(sPrevImgRootPath, `${sKey}.png`),
+
+            sPrevImgId = `${C_TMPL_LNAVCON_ID}--Img`,
+            oPrevImg = sap.ui.getCore().byId(sPrevImgId);
+
+        if (!sKey) {
+            oPrevImg.setSrc("");
+            return;
+        }
+
+        oPrevImg.setSrc(sImagePath);
+
+    } // end of fnSetPrevImage
+
+    /************************************************************************
+     * 좌측 미리보기 이미지 영역 페이지 이동
+    ************************************************************************/
+    function fnPrevNavPage(sPageId = "P1") {
+
+        let sPrevPagePrefix = C_TMPL_LNAVCON_ID,
+            sPrevMovePage = `${sPrevPagePrefix}--${sPageId}`;
+
+        let oLNavCon = sap.ui.getCore().byId(C_TMPL_LNAVCON_ID);
+
+        oLNavCon.to(sPrevMovePage);
+
+    } // end of fnPrevNavPage
+
+    /************************************************************************
+     * 좌측 미리보기 이미지 영역 초기화
+    ************************************************************************/
+    function fnSetPrevInit() {
+
+        fnPrevNavPage(); // 미리보기 영역 페이지 이동
+
+        fnSetPrevImage(); // 미리보기 영역에 이미지 출력
+
+    } // end of fnSetPrevInit
+
+
+
+
 
     /************************************************************************************************************************************************
      * [Event] **************************************************************************************************************************************
@@ -2981,6 +3081,9 @@
         // 선택한 값이 없으면 wizard UI의 첫번째 step으로 이동
         if (sSelectedItemKey == "") {
 
+            // 좌측 미리보기에 이미지 없음 화면으로 이동
+            fnPrevNavPage("P1");
+
             // Model Info Table의 체크 박스 전체 해제
             let oBindInfoTable = sap.ui.getCore().byId(C_TMPL_WZD1_MODEL_TABLE_ID);
             if (oBindInfoTable) {
@@ -2995,11 +3098,17 @@
             return;
         }
 
+        // 좌측 미리보기 이미지 페이지로 이동
+        fnPrevNavPage("P2");
+
         // Tree Table을 선택 했을 경우 Tree 전용 컬럼을 활성화 한다.
         let sTreeColumnVisi = false;
         if (sSelectedItemKey == "sap.ui.table.TreeTable") {
             sTreeColumnVisi = true;
         }
+
+        // 좌측 미리보기 화면에 이미지 출력
+        fnSetPrevImage(sSelectedItemKey);
 
         APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/${C_TMPL_WZD1_ID}/TREEVISI`, sTreeColumnVisi);
 
@@ -3474,6 +3583,9 @@
         // 선택한 값이 없으면 wizard UI의 첫번째 step으로 이동
         if (sSelectedItemKey == "") {
 
+            // 좌측 미리보기에 이미지 없음 화면으로 이동
+            fnPrevNavPage("P1");
+
             // Model Info Table의 체크 박스 전체 해제
             let oBindInfoTable = sap.ui.getCore().byId(C_TMPL_WZD2_MODEL_TABLE_ID);
             if (oBindInfoTable) {
@@ -3487,6 +3599,12 @@
 
             return;
         }
+
+        // 좌측 미리보기 이미지 페이지로 이동
+        fnPrevNavPage("P2");
+
+        // 좌측 미리보기 화면에 이미지 출력
+        fnSetPrevImage(sSelectedItemKey);
 
         // Model 선택 Step으로 이동
         oWizard.validateStep(oCurrentStep);
@@ -3609,6 +3727,8 @@
         oAPP.fn.fnSetWizard3Popup1Init(); // Report Template Create의 Form Ui 초기화
         // oAPP.fn.fnSetWizard3Popup2Init(); // Report Template Create의 Table Ui 초기화
 
+        fnSetPrevInit(); // 좌측 미리보기 영역 초기화
+
         APPCOMMON.fnSetModelProperty("/WS20/TMPLWZD", undefined);
 
     }; // end of oAPP.events.ev_UiTempWizardAfterClose
@@ -3616,7 +3736,7 @@
     /************************************************************************
      * UI TEMPLATE WIZARD Dialog Tnt Menu Item Select Event
      ************************************************************************/
-    oAPP.events.ev_sideNaviItemSelection = function (oEvent) {
+    oAPP.events.ev_sideNaviItemSelection = function (oEvent) {       
 
         var oSelectedItem = oEvent.getParameter("item"),
             sItemKey = oSelectedItem.getProperty("key"),
@@ -3638,6 +3758,44 @@
         }
 
         oPage.setTitle(sTitle);
+
+        let oUiChoiceData = APPCOMMON.fnGetModelProperty(C_TMPL_BIND_ROOT + "/UICHOICE");
+
+        // 선택한 메뉴별 Preview 화면 구성
+        let sSelectedKey = "";
+
+        switch (sItemKey) {
+
+            case C_TMPL_WZD1_ID: // Table Ui Create
+
+                sSelectedKey = oUiChoiceData.T.selectedKey;
+
+                break;
+
+            case C_TMPL_WZD2_ID: // Form Ui Create
+
+                sSelectedKey = oUiChoiceData.S.selectedKey;
+
+                break;
+
+            case C_TMPL_WZD3_ID: // Report Template Create
+
+                fnPrevNavPage("P2"); // 미리보기 영역 페이지 이동
+
+                fnSetPrevImage("ReportTemplate"); // 미리보기 영역에 이미지 출력
+
+                return;
+
+        }
+
+        if (!sSelectedKey) {
+            fnSetPrevInit(); // 미리보기 화면 초기화
+            return;
+        }
+
+        fnPrevNavPage("P2"); // 미리보기 영역 페이지 이동
+
+        fnSetPrevImage(sSelectedKey); // 미리보기 영역에 이미지 출력
 
     }; // end of oAPP.events.ev_sideNaviItemSelection      
 
