@@ -186,6 +186,25 @@ if (!oAPP) {
 
         oAPP.setBusy("X");
 
+        let oCustTable = sap.ui.getCore().byId("uspCustPattTreeTbl"),
+            aSelectedIndices = oCustTable.getSelectedIndices(),
+            iSelectedLength = aSelectedIndices.length;
+        
+        // watch 이벤트 발생 이전에 선택되어 있는 라인이 있었다면 해당 라인을 선택 표시한다.
+        if(iSelectedLength > 0){
+
+            let iSelectedIndex = aSelectedIndices[0],
+                oCtx = oCustTable.getContextByIndex(iSelectedIndex),
+                oCtxData = oCtx.getObject(),
+                oBindData = {
+                    KEY: oCtxData.CKEY
+                };
+
+            // 추가한 데이터 위치에 선택 표시하기
+            oCustTable.attachEventOnce("rowsUpdated", ev_CustCreateRowsUpdatedEventOnce.bind(oBindData));
+
+        }
+
         oAPP.fn.fnInitModelBinding();
 
         oAPP.setBusy("");

@@ -1252,9 +1252,7 @@
 
             /**
              * Custom Pattern
-             */
-
-            debugger;
+             */            
 
             let aCustomPatternInitData = await USP_UTIL.getCustomPatternInitData(), // 커스텀 패턴 기본 정보 구하기
                 sCustPattInitJsonData = JSON.stringify(aCustomPatternInitData); // 커스텀 패턴 기본 정보 JSON 변환
