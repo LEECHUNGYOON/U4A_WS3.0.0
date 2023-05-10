@@ -166,9 +166,9 @@ function createWindow() {
     // })
 
     // // Open the DevTools.  
-    // if (!app.isPackaged) {
-    //     mainWindow.webContents.openDevTools();
-    // }
+    if (!app.isPackaged) {
+        mainWindow.webContents.openDevTools();
+    }
 
     // Emitted when the window is closed.
     mainWindow.on('closed', () => {

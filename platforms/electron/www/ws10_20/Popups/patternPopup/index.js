@@ -11,6 +11,7 @@
 const
     require = parent.require,
     REMOTE = require('@electron/remote'),
+    FS = REMOTE.require('fs'),
     PATH = REMOTE.require('path'),
     APP = REMOTE.app,
     APPPATH = APP.getAppPath(),
@@ -75,7 +76,7 @@ if (!oAPP) {
     //  * UI5 BootStrap 
     //  ************************************************************************/
     oAPP.fn.fnLoadBootStrapSetting = async function () {
-        
+
         // // WS Global Setting의 Language 설정 값
         // let sWsLangu = await WSUTIL.getWsLanguAsync(),
         //     sWsTheme = await WSUTIL.getWsThemeAsync();
@@ -115,14 +116,30 @@ if (!oAPP) {
     /************************************************************************
      * 초기 모델 바인딩
      ************************************************************************/
-    oAPP.fn.fnInitModelBinding = function () {
+    oAPP.fn.fnInitModelBinding = function () {        
+
+        var oCoreModel = sap.ui.getCore().getModel();
+        if (oCoreModel) {
+            oCoreModel.setProperty("/", {});
+        }
 
         // WS Setting 정보
         let oSettings = parent.WSUTIL.getWsSettingsInfo(),
             oPath = oSettings.path;
 
-        let sDefPattJson = FS.readFileSync(oPath.DEF_PATT, 'utf-8'), // Usp 기본 패턴
-            sCustPattJson = FS.readFileSync(oPath.CUST_PATT, 'utf-8'); // Usp 커스텀 패턴
+        try {
+
+            var sDefPattJson = FS.readFileSync(oPath.DEF_PATT, 'utf-8'), // Usp 기본 패턴
+                sCustPattJson = FS.readFileSync(oPath.CUST_PATT, 'utf-8'); // Usp 커스텀 패턴
+
+        } catch (error) {
+
+            let sMsg = error.toString() + " \n\n ";
+            sMsg += "Source Pattern File Not Found!!"
+
+            throw new Error(sMsg);
+
+        }
 
         let aDefPattJson,
             aCustPattJson;
@@ -134,8 +151,7 @@ if (!oAPP) {
             throw new Error(error);
         }
 
-        var oCoreModel = sap.ui.getCore().getModel(),
-            oJsonModel = new sap.ui.model.json.JSONModel(),
+        var oJsonModel = new sap.ui.model.json.JSONModel(),
             oData = {
                 CUST_CR_DLG: {}, // Custom Pattern 생성 팝업 모델                
                 CONTENT: {},
@@ -159,12 +175,22 @@ if (!oAPP) {
 
         oCoreModel.setData(oData);
 
-        oCoreModel.refresh(true);
-
         parent.WSUTIL.parseArrayToTree(oCoreModel, "DEF_PAT", "CKEY", "PKEY", "DEF_PAT");
         parent.WSUTIL.parseArrayToTree(oCoreModel, "CUS_PAT", "CKEY", "PKEY", "CUS_PAT");
 
+        oCoreModel.refresh();
+
     }; // end of oAPP.fn.fnInitModelBinding
+
+    function fnPatternFileWatchEvent(oEvent) {
+
+        oAPP.setBusy("X");
+
+        oAPP.fn.fnInitModelBinding();
+
+        oAPP.setBusy("");
+
+    } // end of fnPatternFileWatchEvent
 
     /************************************************************************
      * 화면 초기 렌더링
@@ -974,7 +1000,7 @@ if (!oAPP) {
     /************************************************************************
      * 커스텀 패턴 생성팝업 저장 이벤트
      ************************************************************************/
-    function ev_CustCreateDlgSave() {
+    function ev_CustCreateDlgSave() {        
 
         let oCreateInfo = oAPP.fn.fnGetModelProperty("/CUST_CR_DLG");
 
@@ -1004,18 +1030,18 @@ if (!oAPP) {
 
             return;
 
-        }
+        }        
 
         // WS Setting 정보
         let oSettings = parent.WSUTIL.getWsSettingsInfo(),
             oPath = oSettings.path;
 
-        // 기 저장된 커스텀 데이터를 구한다.
-        let sCustomJson = FS.readFileSync(oPath.CUST_PATT, "utf-8"),
-            aCustomData;
-
         try {
-            aCustomData = JSON.parse(sCustomJson);
+
+            // 기 저장된 커스텀 데이터를 구한다.
+            var sCustomJson = FS.readFileSync(oPath.CUST_PATT, "utf-8"),
+                aCustomData = JSON.parse(sCustomJson);
+
         } catch (error) {
             throw new Error(error);
         }
@@ -1417,6 +1443,20 @@ if (!oAPP) {
 
     }; // end of oAPP.fn.setBusy
 
+    /************************************************************************
+     * 패턴 파일에 Watch 이벤트를 걸기
+     ************************************************************************/
+    oAPP.fn.fnSetPatternFileWatch = () => {
+
+        // WS Setting 정보
+        let oSettings = parent.WSUTIL.getWsSettingsInfo(),
+            oPath = oSettings.path;
+
+        // FS.watch(oPath.DEF_PATT, fnPatternFileWatchEvent);
+        FS.watch(oPath.CUST_PATT, fnPatternFileWatchEvent);
+
+    }; // end of oAPP.fn.fnSetPatternFileWatch
+
     /**
      * UI5 Attach Init
      */
@@ -1429,6 +1469,8 @@ if (!oAPP) {
             await oAPP.fn.getWsMessageList(); // 반드시 이 위치에!!
 
             oAPP.fn.fnInitRendering();
+
+            oAPP.fn.fnSetPatternFileWatch(); // 패턴 파일 Watch 이벤트를 건다.
 
             oAPP.fn.fnInitModelBinding();
 

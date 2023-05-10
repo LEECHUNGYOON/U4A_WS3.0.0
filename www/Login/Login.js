@@ -854,6 +854,8 @@ let oAPP = (function () {
 
         }
 
+        let oSettings = WSUTIL.getWsSettingsInfo();
+
         var sServicePath = parent.getServerPath() + "/wsloginchk";
 
         var oFormData = new FormData();
@@ -862,6 +864,9 @@ let oAPP = (function () {
         oFormData.append("sap-client", oLogInData.CLIENT);
         oFormData.append("sap-language", oLogInData.LANGU);
         oFormData.append("SYSID", oLogInData.SYSID);
+        oFormData.append("WSVER", oSettings.appVersion);
+        oFormData.append("WSPATCH_LEVEL", oSettings.patch_level);
+        oFormData.append("WSLANGU", oSettings.globalLanguage || "EN");
         oFormData.append("PRCCD", "00"); // 로그인에서 호출하고 있다는 구분자 (로그인 성공시: [/wsloginchk] 서비스 부분에서 참조하는 파라미터)
         oFormData.append("ACTCD", "001"); // 로그인에서 호출하고 있다는 구분자 (로그인 실패시: WS_LOGIN 클래스 부분에서 참조하는 파라미터)
 
@@ -1002,6 +1007,12 @@ let oAPP = (function () {
 
             var oFormData = new FormData();
 
+            let oSettings = WSUTIL.getWsSettingsInfo();
+
+            oFormData.append("WSVER", oSettings.appVersion);
+            oFormData.append("WSPATCH_LEVEL", oSettings.patch_level);
+            oFormData.append("WSLANGU", oSettings.globalLanguage || "EN");
+
             // if (oAPP.attr.HTTPONLY && oAPP.attr.HTTPONLY == "1") {
 
             //     let oLogInData = oAPP.attr.LOGIN;
@@ -1101,6 +1112,12 @@ let oAPP = (function () {
 
             var oFormData = new FormData();
 
+            let oSettings = WSUTIL.getWsSettingsInfo();
+
+            oFormData.append("WSVER", oSettings.appVersion);
+            oFormData.append("WSPATCH_LEVEL", oSettings.patch_level);
+            oFormData.append("WSLANGU", oSettings.globalLanguage || "EN");
+            
             // if (oAPP.attr.HTTPONLY && oAPP.attr.HTTPONLY == "1") {
 
             //     let oLogInData = oAPP.attr.LOGIN;

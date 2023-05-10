@@ -92,7 +92,7 @@
                 iTime = iTime - timeDiff;
             } else {
                 iTime = 0;
-            }           
+            }
 
             // WS 세팅 정보
             var oWsSettings = oAPP.fn.fnGetSettingsInfo();
@@ -738,7 +738,7 @@
              * No build 할 때와, Build 할때의 앱 설치 경로가 다르므로
              * 빌드했을 경우에만 해당 설치 경로를 레지스트리에 등록한다.
              */
-            if(!APP.isPackaged){
+            if (!APP.isPackaged) {
                 resolve();
                 return;
             }
@@ -1254,6 +1254,8 @@
              * Custom Pattern
              */
 
+            debugger;
+
             let aCustomPatternInitData = await USP_UTIL.getCustomPatternInitData(), // 커스텀 패턴 기본 정보 구하기
                 sCustPattInitJsonData = JSON.stringify(aCustomPatternInitData); // 커스텀 패턴 기본 정보 JSON 변환
 
@@ -1283,8 +1285,13 @@
                 throw new Error(error.toString());
             }
 
-            // 커스텀 패턴 ROOT의 Description을 WS Language 언어에 맞게 매핑
-            aCustPattData[0] = JSON.parse(JSON.stringify(aCustomPatternInitData[0]));
+            let iCustomRoot = aCustPattData.findIndex(elem => elem.TYPE === "ROOT");
+            if (iCustomRoot >= 0) {
+
+                // 커스텀 패턴 ROOT의 Description을 WS Language 언어에 맞게 매핑
+                aCustPattData[iCustomRoot] = JSON.parse(JSON.stringify(aCustomPatternInitData[0]));
+
+            }
 
             let sCustPattJson = JSON.stringify(aCustPattData);
 

@@ -2582,7 +2582,9 @@ function fnJsonParseError(e) {
 
 function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob) {
   
-    let oUserInfo = parent.getUserInfo();
+    let oUserInfo = parent.getUserInfo(),
+        oSettings = parent.WSUTIL.getWsSettingsInfo(),
+        sGlobalLangu = oSettings.globalLanguage || "EN";
 
     /**
      * 버전, 패치 레벨 정보를 무조건 전송 -- start
@@ -2591,10 +2593,11 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
         oFormData.append("WSVER", oUserInfo.WSVER);
         oFormData.append("WSPATCH_LEVEL", oUserInfo.WSPATCH_LEVEL);
+        oFormData.append("WSLANGU", sGlobalLangu);
 
     }
 
-    if (meth && meth !== "POST") {
+    if (!meth || meth !== "POST") {
 
         if (sPath.indexOf("?") == -1) {
             sPath += "?";
@@ -2602,7 +2605,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
             sPath += "&";
         }
 
-        sPath += `WSVER=${oUserInfo.WSVER}&WSPATCH_LEVEL=${oUserInfo.WSPATCH_LEVEL}`;
+        sPath += `WSVER=${oUserInfo.WSVER}&WSPATCH_LEVEL=${oUserInfo.WSPATCH_LEVEL}&WSLANGU=${sGlobalLangu}`;
     }
 
     /**

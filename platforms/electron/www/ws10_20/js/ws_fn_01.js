@@ -232,7 +232,7 @@
     /************************************************************************
      * 10번 페이지 Window Menu List
      ************************************************************************/
-    oAPP.fn.fnGetWindowMenuListWS10 = function () {      
+    oAPP.fn.fnGetWindowMenuListWS10 = function () {
 
         var aWMENU10 = [{
             key: "WMENU10_01",
@@ -1126,9 +1126,10 @@
                         enableScrolling: false,
                         content: [
                             // oHtml,
-                            // new sap.m.Button({text: "SP_00001", press: function(){
-                            //     alert("SP_00001!!!");
-                            // }}),
+                            // new sap.m.Button({
+                            //     text: "테스트 서버 호출",
+                            //     press: _testServerCall
+                            // }),
                             // new sap.m.Button({text: "SP_00002", press: function(){
                             //     alert("SP_00002!!!");
                             // }}),
@@ -1144,7 +1145,35 @@
             }),
         ];
 
-    }; // end of oAPP.fn.fnGetPageContentWs10    
+    }; // end of oAPP.fn.fnGetPageContentWs10 
+
+    function _testServerCall() {
+
+        debugger;
+
+        // var sPath = parent.getServerPath() + "/wsloginchk";
+        var sPath = parent.getServerPath() + "/test_lee";
+
+        var oFormData = new FormData();
+        oFormData.append('APPID', "aaaa");
+
+        sendAjax(sPath, oFormData, (oReturn) => {
+
+            debugger;
+
+            parent.setBusy("");
+
+            // if (typeof fnCallback == "function") {
+            //     fnCallback(oReturn);
+            // }
+
+        },
+        null,
+        null,
+        "POST"
+        );
+
+    }
 
     function _getWs10ContentHtml() {
 
