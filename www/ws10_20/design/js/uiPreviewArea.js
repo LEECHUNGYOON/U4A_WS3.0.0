@@ -298,7 +298,16 @@
       case "EXT00002458": //sap.m.SearchField preventKeypad
       case "EXT00002459": //sap.m.TextArea preventKeypad
       case "EXT00002460": //sap.m.TimePicker preventKeypad
-        
+
+      case "EXT00002534": //u4a.m.SelectOption3 F4HelpID
+      case "EXT00002535": //u4a.m.SelectOption3 F4HelpReturnFIeld
+      case "EXT00002536": //u4a.m.SelectOption3 optPopupWidth
+      case "EXT00002537": //u4a.m.SelectOption3 optPopupHeight
+      case "EXT00002538": //u4a.m.SelectOption3 optPopupTitle
+      case "EXT00002539": //u4a.m.SelectOption3 optButtonType
+      case "EXT00002540": //u4a.m.SelectOption3 optButtonIcon
+      case "EXT00002541": //u4a.m.SelectOption3 showOptButton
+            
         return true;
     
       default:
@@ -338,6 +347,12 @@
     if(oAPP.attr.S_CODE.UA018.findIndex( a => a.FLD05 === is_attr.UIOBK && a.FLD02 === is_attr.UIATT ) !== -1){
       return;
     }
+
+    
+    //20230508 PES.
+    //SELECT OPTION3 UI의 프로퍼티 예외처리건인경우 예외처리 후 하위 로직 SKIP.
+    if(oAPP.fn.prevSetSelOpt3ExceptProp(is_attr)){return;}
+
 
     //직접 입력 가능한 aggregation인경우 해당 aggregation에 child UI가 존재하는지 여부 확인.
     if(is_attr.UIATK.indexOf("_1") !== -1){
@@ -1198,6 +1213,76 @@
     oAPP.attr.ui.oDesignAttr.getLayoutData().setResizable(l_attrResize);
 
   };  //미리보기 전체화면 처리.
+
+
+
+
+  //selectOption3 UI의 예외처리 프로퍼티 설정.
+  oAPP.fn.prevSetSelOpt3ExceptProp = function(is_attr){
+
+    //selectOption3 UI가 아닌경우 EXIT.
+    if(is_attr.UIOBK !== "UO99984"){return;}
+
+    //selectOption3 팝업 호출 버튼 ui 얻기.
+    var l_ui = oAPP.attr.prev[is_attr.OBJID].data("optButton");
+    if(!l_ui){return;}
+
+    
+    var l_prop = is_attr.UIATV;
+
+    //해당 ATTRIBUTE의 라이브러리 정보 얻기.
+    var ls_0023 = oAPP.DATA.LIB.T_0023.find( a=> a.UIATK === is_attr.UIATK );
+    if(!ls_0023){return;}
+
+    
+    var l_propnm;
+
+    //ATTRIBUTE 유형에 따른 분기.
+    switch (is_attr.UIATK) {
+      case "EXT00002539": //optButtonType
+        l_propnm = "setType";
+        break;
+
+      case "EXT00002540": //optButtonIcon
+        l_propnm = "setIcon";
+        break;
+
+      case "EXT00002541": //showOptButton
+        l_propnm = "setVisible";
+        break;
+        
+      default:
+        //이외 ATTRIBUTE의 경우 처리 안함.
+        return;
+    }
+
+
+    //바인딩 처리가 됐다면 DEFAULT 값으로 설정.
+    if(is_attr.ISBND === "X"){
+      l_prop = ls_0023.DEFVL;
+    }
+
+
+    //프로퍼티 타입이 boolean인경우.
+    if(is_attr.UIADT === "boolean"){
+      l_prop = false;
+      if(is_attr.UIATV === "true"){
+        l_prop = true;
+      }
+    }
+
+
+    //UI.setProperty(value); 처리.
+    try{
+      l_ui[l_propnm](l_prop);
+    }catch(e){
+
+    }
+
+    //FUNCTION 호출처의 하위로직 수행 SKIP을 위한 FLAG RETURN.
+    return true;
+
+  };  //selectOption3 UI의 예외처리 프로퍼티 설정.
 
 
 })();

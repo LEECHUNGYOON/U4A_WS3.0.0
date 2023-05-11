@@ -4568,6 +4568,16 @@
 
     //UI5 library Reference정보 구성.
     ls_uiinfo.UILIB = is_tree.UILIB;
+
+    //SelectOption2 인경우.
+    if(is_tree.UIOBK === "UO99992"){
+      ls_uiinfo.UILIB = "u4a.m.SelectOption2";
+    }
+
+    //SelectOption3 인경우.
+    if(is_tree.UIOBK === "UO99984"){
+      ls_uiinfo.UILIB = "u4a.m.SelectOption3";
+    }
     
     //UI 대문자.
     ls_uiinfo.UIFND = is_tree.UIFND;

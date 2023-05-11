@@ -54,9 +54,22 @@
         oDlg.addContent(oVbox1);
 
 
+        var oPanel = new sap.m.Panel({expandable:true, expanded:true});
+        oVbox1.addItem(oPanel);
+
+        var oTool1 = new sap.m.Toolbar();
+        oPanel.setHeaderToolbar(oTool1);
+
+        //Selected UI Object Info
+        var l_txt = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "060");
+
+        oTool1.addContent(new sap.m.Title({text:"▶ " + l_txt}).addStyleClass("sapUiTinyMarginBegin"));
+        
+
         jQuery.sap.require("sap.ui.layout.form.Form");
         var oForm = new sap.ui.layout.form.Form({editable:true});
-        oVbox1.addItem(oForm);
+        // oVbox1.addItem(oForm);
+        oPanel.addContent(oForm);
 
         var oLay = new sap.ui.layout.form.ResponsiveGridLayout({adjustLabelSpan:false,
             singleContainerFullSize:false});
@@ -64,6 +77,15 @@
 
         var oCont = new sap.ui.layout.form.FormContainer();
         oForm.addFormContainer(oCont);
+
+        //A84  UI Object ID
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A84", "", "", "", "");
+
+        //UI OBJECT ID.
+        var oElem0 = new sap.ui.layout.form.FormElement({
+            label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})});
+        oElem0.addField(new sap.m.Text({text:"{/OBJID}"}));
+        oCont.addFormElement(oElem0);
 
         //A81	Attribute ID
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A81", "", "", "", "");
@@ -95,6 +117,13 @@
         var oTab1 = new sap.ui.table.Table({selectionBehavior:"Row", rowHeight:30,
             visibleRowCountMode:"Auto", layoutData:new sap.m.FlexItemData({growFactor:1})});
         oVbox1.addItem(oTab1);
+
+        //Target Replace Properties
+        var l_txt = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "061");
+
+        var oTitle2 = new sap.m.Title({text:"▶ " + l_txt}).addStyleClass("sapUiMediumMarginBegin");
+        oTab1.setTitle(oTitle2);
+
 
 
         //A84	UI Object ID
@@ -258,6 +287,8 @@
 
             }
 
+            //UI OBJECT ID.
+            ls_binfo.OBJID = is_attr.OBJID;
 
             //프로퍼티 명.
             ls_binfo.UIATT = is_attr.UIATT;
