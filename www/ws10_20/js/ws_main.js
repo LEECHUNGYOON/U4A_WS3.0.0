@@ -105,6 +105,7 @@
             let sWsLangu = await WSUTIL.getWsLanguAsync();
 
             oAPP.msg.M047 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "047"); // Icon List
+            oAPP.msg.M059 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "059"); // Source Pattern
 
             resolve();
 

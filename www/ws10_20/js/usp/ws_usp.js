@@ -209,7 +209,7 @@
         }
 
         // 앱 변경 사항 플래그 설정
-        oAPP.fn.setAppChangeWs30("X");        
+        oAPP.fn.setAppChangeWs30("X");
 
         // code editor keyPress 이벤트 해제
         fnCodeEditorKeyPressEvent("");
@@ -294,8 +294,8 @@
         var sBindRoot = "/WMENU/WS30",
 
             //10번 페이지 윈도우 메뉴 정보
-            aWMenu30 = fnGetWindowMenuWS30(),
-            oMenuList = fnGetWindowMenuListWS30();
+            aWMenu30 = fnGetWindowMenuWS30(),            
+            oMenuList = oAPP.fn.fnGetWindowMenuListWS30();
 
         oMenuList.HEADER = aWMenu30;
 
@@ -1229,7 +1229,7 @@
     /**************************************************************************
      * [WS30] Usp 화면 진입시 UspTree에 RowsUpdate 이벤트 걸기
      **************************************************************************/
-    oAPP.fn.fnAttachRowsUpdateInit = () => {        
+    oAPP.fn.fnAttachRowsUpdateInit = () => {
 
         // // Usp Tree의 선택된 Row에 색깔 표시
         _fnUspTreeSelectedRowMark();
@@ -1275,7 +1275,7 @@
             // 바인딩 데이터 중 선택 플래그가 있을 경우에만 css 클래스를 적용한다.
             var ISSEL = oRowData.ISSEL;
 
-            if (ISSEL) {                
+            if (ISSEL) {
                 oRow.$().css({ "background-color": sRowBgCol_rgba });
             }
 
@@ -1853,72 +1853,78 @@
 
     } // end of fnGetWindowMenuWS30
 
-    /************************************************************************
-     * [WS30] Window Menu List
-     ************************************************************************/
-    function fnGetWindowMenuListWS30() {
+    // /************************************************************************
+    //  * [WS30] Window Menu List
+    //  ************************************************************************/
+    // function fnGetWindowMenuListWS30() {
 
-        var aWMENU20 = [{
-            key: "WMENU20_01",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
-        }, {
-            key: "WMENU20_03",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
-        }, {
-            key: "WMENU20_04",
-            text: oAPP.msg.M047, // Icon List
-            visible: oAPP.common.checkWLOList("C", "UHAK900630")
-        }],
+    //     var
 
-            aWMENU30 = [{
-                key: "WMENU30_01",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
-            }, {
-                key: "WMENU30_02",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B51"), // Close Window
-            }, {
-                key: "WMENU30_03",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"), // Options
-            }, {
-                key: "WMENU30_04",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
-            }, {
-                key: "WMENU30_06",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
-                visible: true,
-                items: [{
-                    key: "WMENU30_06_01",
-                    text: "DevTool"
-                },
-                {
-                    key: "WMENU30_06_02",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Notes
-                }, {
-                    key: "WMENU30_06_03",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
-                },
-                ],
-            },],
+    //         aWMENU20 = [
+    //             {
+    //                 key: "WMENU20_01",
+    //                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
+    //             },
+    //             {
+    //                 key: "WMENU20_03",
+    //                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
+    //             },
+    //             {
+    //                 key: "WMENU20_04",
+    //                 text: oAPP.msg.M047, // Icon List
+    //                 visible: oAPP.common.checkWLOList("C", "UHAK900630")
+    //             }
+    //         ],
 
-            aWMENU50 = [{
-                key: "WMENU50_01",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
-                enabled: true,
-            }],
+    //         aWMENU30 = [{
+    //             key: "WMENU30_01",
+    //             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
+    //         }, {
+    //             key: "WMENU30_02",
+    //             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B51"), // Close Window
+    //         }, {
+    //             key: "WMENU30_03",
+    //             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"), // Options
+    //         }, {
+    //             key: "WMENU30_04",
+    //             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
+    //         }, {
+    //             key: "WMENU30_06",
+    //             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
+    //             visible: true,
+    //             items: [{
+    //                 key: "WMENU30_06_01",
+    //                 text: "DevTool"
+    //             },
+    //             {
+    //                 key: "WMENU30_06_02",
+    //                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Notes
+    //             }, {
+    //                 key: "WMENU30_06_03",
+    //                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
+    //             },
+    //             ],
+    //         },],
 
-            Test10 = [{
-                key: "Test97",
-                text: "개발툴"
-            }];
+    //         aWMENU50 = [{
+    //             key: "WMENU50_01",
+    //             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
+    //             enabled: true,
+    //         }],
 
-        return {
-            WMENU20: aWMENU20,
-            WMENU30: aWMENU30,
-            WMENU50: aWMENU50,
-            Test10: Test10
-        };
+    //         Test10 = [{
+    //             key: "Test97",
+    //             text: "개발툴"
+    //         }];
 
-    } // end of fnGetWindowMenuListWS30
+    //     return {
+    //         WMENU20: aWMENU20,
+    //         WMENU30: aWMENU30,
+    //         WMENU50: aWMENU50,
+    //         Test10: Test10
+    //     };
+
+    // } // end of fnGetWindowMenuListWS30
 
     /**************************************************************************
      * [WS30] USP Tree ContextMenu Default 정보

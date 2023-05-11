@@ -404,6 +404,20 @@
     }; // end of oAPP.fn.fnWS10WMENU20_04
 
     /************************************************************************
+     * [WS10] Source Pattern
+     ************************************************************************/
+    oAPP.fn.fnWS10WMENU20_05 = () => {
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        oAPP.fn.fnSourcePatternPopupOpener(); // [async]
+
+    }; // end of oAPP.fn.fnWS10WMENU20_05
+
+    /************************************************************************
      * [WS10] New Window
      ************************************************************************/
     oAPP.fn.fnWS10WMENU30_01 = function () {
@@ -648,6 +662,20 @@
         }
 
         oAPP.fn.fnIconPreviewPopupOpener();
+
+    }; // end of oAPP.fn.fnWS20WMENU20_04
+
+    /************************************************************************
+     * [WS20] Source Pattern 
+     ************************************************************************/
+    oAPP.fn.fnWS20WMENU20_05 = () => {
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        oAPP.fn.fnSourcePatternPopupOpener(); // [async]
 
     }; // end of oAPP.fn.fnWS20WMENU20_04
 
@@ -1004,16 +1032,16 @@
     * IconPreviewPopup (callback)
     ************************************************************************/
     oAPP.fn.fnWS10Test88 = () => {
-        
+
         parent.setBusy("X");
 
         oAPP.fn.fnIconPreviewPopupOpener(function (e) {
 
-            if(e.RETCD === "C"){ // C : 취소
+            if (e.RETCD === "C") { // C : 취소
                 parent.setBusy("");
                 return;
             }
-            
+
             sap.m.MessageToast.show(e.RTDATA);
 
             parent.setBusy("");
@@ -1030,11 +1058,20 @@
         var oDefBrows = APPCOMMON.fnGetModelProperty("/DEFBR"),
             sSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
 
+        if (!sSelectedBrows || !sSelectedBrows?.INSPATH) {
+
+            // 설치된 브라우저가 없습니다 오류 메시지
+            let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "333"); // Installed browser information not found.
+            parent.showMessage(sap, 20, 'E', sMsg);
+
+            return;
+        }
+
         // 실행전 명령어 수집
         aComm.push(sUrl);
 
         // APP 실행		
-        SPAWN(sSelectedBrows.INSPATH, aComm);
+        SPAWN(sSelectedBrows.INSPATH, aComm, { detached: true });
 
     }
 

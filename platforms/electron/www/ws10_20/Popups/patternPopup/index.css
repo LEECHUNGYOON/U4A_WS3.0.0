@@ -15,3 +15,8 @@
 .sapUiLocalBusyIndicator:focus:after {
   border: 0px !important;
 }
+
+.sapUiTableCell:focus::before {
+  border: 0px !important;
+  outline: none !important;
+}

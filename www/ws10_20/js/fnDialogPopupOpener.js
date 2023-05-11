@@ -973,7 +973,8 @@
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D46"); // Source Pattern
+        // oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D46"); // Source Pattern
+        oBrowserOptions.title = oAPP.msg.M059; // Source Pattern
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.show = false;
         oBrowserOptions.parent = CURRWIN;

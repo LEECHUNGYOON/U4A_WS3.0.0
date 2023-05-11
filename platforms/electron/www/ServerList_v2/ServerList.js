@@ -207,7 +207,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 oJsonModel = new sap.ui.model.json.JSONModel();
 
             if (!oCoreModel) {
-                
+
                 oJsonModel.setData({
                     WSLANGU: oLanguJsonData
                 });
@@ -3027,7 +3027,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             // aggregations
             content: [
-                new sap.m.IllustratedMessage({                    
+                new sap.m.IllustratedMessage({
                     // title: "{/WSLANGU/ZMSG_WS_COMMON_001/048} \n {/WSLANGU/ZMSG_WS_COMMON_001/049}", // "Unsaved data will be lost. Are you sure you want to exit the Program?",
                     // description: "　",
                     title: "　",
@@ -3344,7 +3344,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
         if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
+        oBrowserWindow.webContents.openDevTools();
         }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트

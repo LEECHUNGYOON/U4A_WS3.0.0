@@ -230,149 +230,180 @@
     }; // end of fnOnInitRendering  
 
     /************************************************************************
-     * 10번 페이지 Window Menu List
+     * [WS10] 10번 페이지 Window Menu List
      ************************************************************************/
     oAPP.fn.fnGetWindowMenuListWS10 = function () {
 
-        var aWMENU10 = [{
-            key: "WMENU10_01",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B40"), // App. Package Change
-        },
-        {
-            key: "WMENU10_02",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B41"), // App. Import/Export
-            items: [{
-                key: "WMENU10_02_01",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B42"), // App. Importing
-            },
-            {
-                key: "WMENU10_02_02",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B43"), // App. Exporting
-            }
-            ]
-        },
-        // 2023-04-04 중복 메뉴로 폐기
-        // {
-        //     key: "WMENU10_03",
-        //     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
-        // },
-        {
-            key: "WMENU10_04",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B45"), // Shortcut Manager
-            items: [{
-                key: "WMENU10_04_01",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B46"), // U4A Shortcut Create
-            },
-                // 2023-04-04 로직 미완성으로 임시 주석처리
-                // {
-                //     key: "WMENU10_04_02",
-                //     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B47"), // QR Code Maker
-                // }
-            ]
-        },
-        {
-            key: "WMENU10_05",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B48"), // About U4A WS IDE
-        },
-        ],
-
-            aWMENU20 = [{
-                key: "WMENU20_01",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
-            },
-            {
-                key: "WMENU20_03",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
-            },
-            {
-                key: "WMENU20_04",
-                text: oAPP.msg.M047, // Icon List
-                visible: oAPP.common.checkWLOList("C", "UHAK900630")
-            }
-            ],
-
-            aWMENU30 = [{
-                key: "WMENU30_01",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
-            }, {
-                key: "WMENU30_02",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B51"), // Close Window
-            }, {
-                key: "WMENU30_03",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"), // Options
-            },
-            {
-                key: "WMENU30_04",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
-            }, {
-                key: "WMENU30_06",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
-                items: [{
-                    key: "WMENU30_06_01",
-                    text: "DevTool"
+        var
+            /** 
+             * Extras
+            */
+            aWMENU10 = [
+                {
+                    key: "WMENU10_01",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B40"), // App. Package Change
                 },
                 {
-                    key: "WMENU30_06_02",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Note
-                }, {
-                    key: "WMENU30_06_03",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
+                    key: "WMENU10_02",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B41"), // App. Import/Export
+                    items: [{
+                        key: "WMENU10_02_01",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B42"), // App. Importing
+                    },
+                    {
+                        key: "WMENU10_02_02",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B43"), // App. Exporting
+                    }
+                    ]
                 },
-                ],
-                visible: true,
-            },
+                // 2023-04-04 중복 메뉴로 폐기
+                // {
+                //     key: "WMENU10_03",
+                //     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
+                // },
+                {
+                    key: "WMENU10_04",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B45"), // Shortcut Manager
+                    items: [{
+                        key: "WMENU10_04_01",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B46"), // U4A Shortcut Create
+                    },
+                        // 2023-04-04 로직 미완성으로 임시 주석처리
+                        // {
+                        //     key: "WMENU10_04_02",
+                        //     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B47"), // QR Code Maker
+                        // }
+                    ]
+                },
+                {
+                    key: "WMENU10_05",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B48"), // About U4A WS IDE
+                },
+
             ],
 
-            aWMENU50 = [{
-                key: "WMENU50_01",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
-                enabled: true,
-            },],
+            /**
+             * Utilities
+            */
+            aWMENU20 = [
+                {
+                    key: "WMENU20_01",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
+                },
+                {
+                    key: "WMENU20_03",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
+                },
+                {
+                    key: "WMENU20_05",
+                    text: oAPP.msg.M059, // Source Pattern                    
+                },
+                {
+                    key: "WMENU20_04",
+                    text: oAPP.msg.M047, // Icon List
+                    visible: oAPP.common.checkWLOList("C", "UHAK900630")
+                }
+            ],
 
-            Test10 = [{
-                key: "Test96",
-                text: "USP 페이지 생성"
-            }, {
-                key: "Test90",
-                text: "Busy 강제실행"
-            },
-            {
-                key: "Test99",
-                text: "Busy 강제종료"
-            },
-            {
-                key: "Test98",
-                text: "세션 끊기"
-            },
-            {
-                key: "Test97",
-                text: "개발툴"
-            },
-            {
-                key: "Test94",
-                text: "잘못된 서버 호출"
-            },
-            {
-                key: "Test93",
-                text: "abap 펑션 버젼 확인"
-            },
-            {
-                key: "Test92",
-                text: "abap syntax 버젼 확인"
-            },
-            {
-                key: "Test91",
-                text: "Source Pattern Popop"
-            },
-            {
-                key: "Test89",
-                text: "icon Preview Popup"
-            },
-            {
-                key: "Test88",
-                text: "icon Preview Popup (callback)"
-            },
+            /**
+             * System
+            */
+            aWMENU30 = [
+                {
+                    key: "WMENU30_01",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
+                },
+                {
+                    key: "WMENU30_02",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B51"), // Close Window
+                },
+                {
+                    key: "WMENU30_03",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"), // Options
+                },
+                {
+                    key: "WMENU30_04",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
+                },
+                {
+                    key: "WMENU30_06",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
+                    items: [
+                        {
+                            key: "WMENU30_06_01",
+                            text: "DevTool"
+                        },
+                        {
+                            key: "WMENU30_06_02",
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Note
+                        }, {
+                            key: "WMENU30_06_03",
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
+                        },
+                    ],
+                    visible: true,
+                },
+            ],
 
+            /** 
+             * Help
+            */
+            aWMENU50 = [
+                {
+                    key: "WMENU50_01",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
+                    enabled: true,
+                },
+            ],
+
+            /** 
+             * Test
+            */
+            Test10 = [
+                {
+                    key: "Test96",
+                    text: "USP 페이지 생성"
+                },
+                {
+                    key: "Test90",
+                    text: "Busy 강제실행"
+                },
+                {
+                    key: "Test99",
+                    text: "Busy 강제종료"
+                },
+                {
+                    key: "Test98",
+                    text: "세션 끊기"
+                },
+                {
+                    key: "Test97",
+                    text: "개발툴"
+                },
+                {
+                    key: "Test94",
+                    text: "잘못된 서버 호출"
+                },
+                {
+                    key: "Test93",
+                    text: "abap 펑션 버젼 확인"
+                },
+                {
+                    key: "Test92",
+                    text: "abap syntax 버젼 확인"
+                },
+                {
+                    key: "Test91",
+                    text: "Source Pattern Popop"
+                },
+                {
+                    key: "Test89",
+                    text: "icon Preview Popup"
+                },
+                {
+                    key: "Test88",
+                    text: "icon Preview Popup (callback)"
+                },
             ];
 
         return {
@@ -386,162 +417,191 @@
     }; // end of oAPP.fn.fnGetWindowMenuListWS10
 
     /************************************************************************
-     * 20번 페이지 Window Menu List
+     * [WS20] 20번 페이지 Window Menu List
      ************************************************************************/
     oAPP.fn.fnGetWindowMenuListWS20 = function () {
 
-        var aWMENU10 = [{
-            key: "WMENU10_01",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B56"), // Theme Designer
-            enabled: false,
-        }, {
-            key: "WMENU10_02",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B57"), // Font Style Wizard
-            enabled: true,
-        },
-        {
-            key: "WMENU10_03",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B58"), // UI5 Predefined CSS
-            enabled: true,
-        }
-        ],
-
-            aWMENU20 = [{
-                key: "WMENU20_01",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
-                enabled: true,
-            },
-            {
-                key: "WMENU20_02",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B59"), // OTR Manager
-                enabled: true,
-            },
-            {
-                key: "WMENU20_03",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
-                enabled: true,
-            },
-            {
-                key: "WMENU20_04",
-                text: oAPP.msg.M047, // Icon List
-                visible: oAPP.common.checkWLOList("C", "UHAK900630")
-            }
-            ],
-
-            aWMENU30 = [{
-                key: "WMENU30_01",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B60"), // CSS Editor
-                enabled: true,
-            },
-            {
-                key: "WMENU30_02",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B61"), // Javascript Editor
-                enabled: true,
-            },
-            {
-                key: "WMENU30_03",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B62"), // HTML Editor
-                enabled: true,
-            },
-            {
-                key: "WMENU30_04",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B63"), // Error Page Editor
-                enabled: true,
-            },
-            {
-                key: "WMENU30_05",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B64"), // Skeleton Scr Setting
-                enabled: true,
-            }
-            ],
-
-            aWMENU40 = [{
-                key: "WMENU40_01",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
-                enabled: true,
-            },
-            {
-                key: "WMENU40_02",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B51"), // Close Window
-                enabled: true,
-            },
-            {
-                key: "WMENU40_03",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"), // Options
-                enabled: true,
-            },
-            {
-                key: "WMENU40_04",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
-                enabled: true,
-            },
-            {
-                key: "WMENU40_06",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
-                enabled: true,
-                visible: true,
-                items: [{
-                    key: "WMENU40_06_01",
-                    text: "DevTool"
-                },
+        var
+            /** 
+             * Style Class
+            */
+            aWMENU10 = [
                 {
-                    key: "WMENU40_06_02",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Note
+                    key: "WMENU10_01",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B56"), // Theme Designer
+                    enabled: false,
+                }, {
+                    key: "WMENU10_02",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B57"), // Font Style Wizard
                     enabled: true,
                 },
                 {
-                    key: "WMENU40_06_03",
-                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
+                    key: "WMENU10_03",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B58"), // UI5 Predefined CSS
                     enabled: true,
-                },],
-            },
+                }
             ],
 
-            aWMENU50 = [{
-                key: "WMENU50_01",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
-                enabled: true,
-            },
-            // {
-            //      key: "WMENU50_02",
-            //      text: "Settings",
-            //      enabled: true,
-            //  },
-            {
-                key: "WMENU50_03",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B65"), // Document
-                enabled: true,
-            }
+            /** 
+             * Utilities
+            */
+            aWMENU20 = [
+                {
+                    key: "WMENU20_01",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
+                    enabled: true,
+                },
+                {
+                    key: "WMENU20_02",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B59"), // OTR Manager
+                    enabled: true,
+                },
+                {
+                    key: "WMENU20_03",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
+                    enabled: true,
+                },
+                {
+                    key: "WMENU20_05",
+                    text: oAPP.msg.M059, // Source Pattern                    
+                },
+                {
+                    key: "WMENU20_04",
+                    text: oAPP.msg.M047, // Icon List
+                    visible: oAPP.common.checkWLOList("C", "UHAK900630")
+                }
             ],
 
-            Test20 = [{
-                key: "Test90",
-                text: "Busy 강제실행",
-            },
-            {
-                key: "Test99",
-                text: "Busy 강제종료",
-            },
-            {
-                key: "Test98",
-                text: "세션 끊기",
-            },
-            {
-                key: "Test97",
-                text: "개발툴",
-            },
-            {
-                key: "Test95",
-                text: "CTS Popup",
-            },
-            {
-                key: "Test91",
-                text: "Prop Help",
-            },
-            {
-                key: "Test96",
-                text: "스크립트 오류",
-            },
+            /** 
+             * Edit
+            */
+            aWMENU30 = [
+                {
+                    key: "WMENU30_01",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B60"), // CSS Editor
+                    enabled: true,
+                },
+                {
+                    key: "WMENU30_02",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B61"), // Javascript Editor
+                    enabled: true,
+                },
+                {
+                    key: "WMENU30_03",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B62"), // HTML Editor
+                    enabled: true,
+                },
+                {
+                    key: "WMENU30_04",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B63"), // Error Page Editor
+                    enabled: true,
+                },
+                {
+                    key: "WMENU30_05",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B64"), // Skeleton Scr Setting
+                    enabled: true,
+                }
+            ],
+
+            /** 
+             * System
+            */
+            aWMENU40 = [
+                {
+                    key: "WMENU40_01",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
+                    enabled: true,
+                },
+                {
+                    key: "WMENU40_02",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B51"), // Close Window
+                    enabled: true,
+                },
+                {
+                    key: "WMENU40_03",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"), // Options
+                    enabled: true,
+                },
+                {
+                    key: "WMENU40_04",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
+                    enabled: true,
+                },
+                {
+                    key: "WMENU40_06",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
+                    enabled: true,
+                    visible: true,
+                    items: [{
+                        key: "WMENU40_06_01",
+                        text: "DevTool"
+                    },
+                    {
+                        key: "WMENU40_06_02",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Note
+                        enabled: true,
+                    },
+                    {
+                        key: "WMENU40_06_03",
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
+                        enabled: true,
+                    },],
+                },
+            ],
+
+            /** 
+             * Help
+            */
+            aWMENU50 = [
+                {
+                    key: "WMENU50_01",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
+                    enabled: true,
+                },
+                // {
+                //      key: "WMENU50_02",
+                //      text: "Settings",
+                //      enabled: true,
+                //  },
+                {
+                    key: "WMENU50_03",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B65"), // Document
+                    enabled: true,
+                }
+            ],
+
+            /** 
+             * Test
+            */
+            Test20 = [
+                {
+                    key: "Test90",
+                    text: "Busy 강제실행",
+                },
+                {
+                    key: "Test99",
+                    text: "Busy 강제종료",
+                },
+                {
+                    key: "Test98",
+                    text: "세션 끊기",
+                },
+                {
+                    key: "Test97",
+                    text: "개발툴",
+                },
+                {
+                    key: "Test95",
+                    text: "CTS Popup",
+                },
+                {
+                    key: "Test91",
+                    text: "Prop Help",
+                },
+                {
+                    key: "Test96",
+                    text: "스크립트 오류",
+                },
 
                 // {
                 //     key: "doc01",
@@ -559,6 +619,105 @@
         };
 
     }; // end of oAPP.fn.fnGetWindowMenuListWS20
+
+    /************************************************************************
+    * [WS30] 30번 페이지 Window Menu List
+    ************************************************************************/
+    oAPP.fn.fnGetWindowMenuListWS30 = function () {
+
+        var
+            /** 
+             * Utilities
+            */
+            aWMENU20 = [
+                {
+                    key: "WMENU20_01",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
+                },
+                {
+                    key: "WMENU20_03",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
+                },
+                {
+                    key: "WMENU20_05",
+                    text: oAPP.msg.M059, // Source Pattern                    
+                },
+                {
+                    key: "WMENU20_04",
+                    text: oAPP.msg.M047, // Icon List
+                    visible: oAPP.common.checkWLOList("C", "UHAK900630")
+                }
+            ],
+
+            /** 
+             * System
+            */
+            aWMENU30 = [
+                {
+                    key: "WMENU30_01",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
+                },
+                {
+                    key: "WMENU30_02",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B51"), // Close Window
+                },
+                {
+                    key: "WMENU30_03",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"), // Options
+                },
+                {
+                    key: "WMENU30_04",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
+                },
+                {
+                    key: "WMENU30_06",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
+                    visible: true,
+                    items: [
+                        {
+                            key: "WMENU30_06_01",
+                            text: "DevTool"
+                        },
+                        {
+                            key: "WMENU30_06_02",
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Notes
+                        }, {
+                            key: "WMENU30_06_03",
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
+                        },
+                    ],
+                },
+            ],
+
+            /** 
+             * Help
+            */
+            aWMENU50 = [
+                {
+                    key: "WMENU50_01",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
+                    enabled: true,
+                }
+            ],
+
+            /** 
+             * Test
+            */
+            Test10 = [
+                {
+                    key: "Test97",
+                    text: "개발툴"
+                }
+            ];
+
+        return {
+            WMENU20: aWMENU20,
+            WMENU30: aWMENU30,
+            WMENU50: aWMENU50,
+            Test10: Test10
+        };
+
+    }; // end of oAPP.fn.fnGetWindowMenuListWS30
 
     /**************************************************************************
      * WS10 페이지의 윈도우 메뉴 정보
@@ -1168,9 +1327,9 @@
             // }
 
         },
-        null,
-        null,
-        "POST"
+            null,
+            null,
+            "POST"
         );
 
     }
@@ -2596,6 +2755,10 @@
             oCurrBrows.SELECTED = true;
             aNewInfo.push(oCurrBrows);
 
+        }
+
+        if(aNewInfo.length == 0){            
+            return aCurrentInfo;
         }
 
         // 선택된 브라우저가 그래도 없다면 첫번째 브라우저를 선택

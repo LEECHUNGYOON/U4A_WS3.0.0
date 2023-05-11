@@ -134,7 +134,7 @@
         ];
 
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
-        var vbs = parent.SPAWN('cscript.exe', aParam);
+        var vbs = parent.SPAWN('cscript.exe', aParam, { detached: true });
         vbs.stdout.on("data", function (data) {
 
 
@@ -184,10 +184,10 @@
                 (oSvrInfoDetail.sncname ? oSvrInfoDetail.sncname : ""),  // snc name
                 (oSvrInfoDetail.sncop && oSvrInfoDetail.sncop != "-1" ? oSvrInfoDetail.sncop : ""), // snc operation
                 (oSvrInfoDetail.sncnosso ? oSvrInfoDetail.sncnosso : "0"),  // snc sso
-                
+
             ];
 
-            var vbs = parent.SPAWN('cscript.exe', aParam);
+            var vbs = parent.SPAWN('cscript.exe', aParam, { detached: true });
             vbs.stdout.on("data", function (data) {
 
 

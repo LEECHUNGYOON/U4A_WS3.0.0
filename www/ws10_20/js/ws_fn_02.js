@@ -884,11 +884,20 @@
         var oDefBrows = APPCOMMON.fnGetModelProperty("/DEFBR"),
             sSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
 
+        if (!sSelectedBrows || !sSelectedBrows?.INSPATH) {
+
+            // 설치된 브라우저가 없습니다 오류 메시지
+            let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "333"); // Installed browser information not found.
+            parent.showMessage(sap, 20, 'E', sMsg);
+
+            return;
+        }
+
         // 실행전 명령어 수집
         aComm.push(sPath);
 
         // APP 실행		
-        SPAWN(sSelectedBrows.INSPATH, aComm);
+        SPAWN(sSelectedBrows.INSPATH, aComm, { detached: true });
 
     }; // end of oAPP.fn.fnOnExecApp
 
@@ -916,11 +925,20 @@
         var oDefBrows = APPCOMMON.fnGetModelProperty("/DEFBR"),
             sSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
 
+        if (!sSelectedBrows || !sSelectedBrows?.INSPATH) {
+
+            // 설치된 브라우저가 없습니다 오류 메시지
+            let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "333"); // Installed browser information not found.
+            parent.showMessage(sap, 20, 'E', sMsg);
+
+            return;
+        }
+
         // 실행전 명령어 수집
         aComm.push(sUrl);
 
         // APP 실행		
-        SPAWN(sSelectedBrows.INSPATH, aComm);
+        SPAWN(sSelectedBrows.INSPATH, aComm, { detached: true });
 
     }; // end of oAPP.fn.fnExeBrowser
 
@@ -995,7 +1013,7 @@
             }
 
             var oWebCon = oBrows.webContents,
-                oWebPref = oWebCon.getWebPreferences();       
+                oWebPref = oWebCon.getWebPreferences();
 
             // session 정보가 없으면 skip.
             var sSessionKey = oWebPref.partition;
@@ -1013,7 +1031,7 @@
             if (sKey != sSessionKey) {
                 continue;
             }
-            
+
             /**
              * 메인이 아닌경우는 카운트 하지 않음.
              * (예: 팝업류)
@@ -1249,7 +1267,7 @@
      * Electron Browser들 전체 활성/비활성화
      ************************************************************************/
     oAPP.fn.fnChildWindowShow = function (bShow) {
-        
+
         var oCurrWin = REMOTE.getCurrentWindow();
         if (oCurrWin.isDestroyed()) {
             return;
@@ -1291,12 +1309,12 @@
                 //     continue;
                 // }
 
-                
+
                 setTimeout(() => {
                     oChild.setOpacity(0);
                     oChild.hide();
-                },0);
-                
+                }, 0);
+
 
                 continue;
             }
