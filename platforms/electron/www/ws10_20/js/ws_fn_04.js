@@ -134,7 +134,7 @@
         ];
 
         //1. 이전 GUI 세션창 OPEN 여부 VBS 
-        var vbs = parent.SPAWN('cscript.exe', aParam, { detached: true });
+        var vbs = parent.SPAWN('cscript.exe', aParam);
         vbs.stdout.on("data", function (data) {
 
 
@@ -187,7 +187,7 @@
 
             ];
 
-            var vbs = parent.SPAWN('cscript.exe', aParam, { detached: true });
+            var vbs = parent.SPAWN('cscript.exe', aParam);
             vbs.stdout.on("data", function (data) {
 
 

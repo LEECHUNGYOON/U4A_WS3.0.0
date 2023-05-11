@@ -44,7 +44,7 @@ let oAPP = (function () {
     },
     {
         NAME: "MSEDGE",
-        DESC: "Microsoft Edge",
+        DESC: "Microsoft Edge Browser",
         REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe",
         REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe"
     },

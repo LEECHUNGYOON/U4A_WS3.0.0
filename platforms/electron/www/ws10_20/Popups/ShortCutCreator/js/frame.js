@@ -983,7 +983,7 @@
 
             var FORM3_RADIOBUTTON1 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C75"), // Chrome Browser
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C75"), // Google Chrome Browser
                 visible: false
             });
             FORM3_RADIOBUTTON1.addStyleClass("sapUiSmallMarginBegin");
@@ -991,14 +991,14 @@
 
             var FORM3_RADIOBUTTON2 = new sap.m.RadioButton({
                 groupName: "sapMRbDefaultGroup",
-                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C76"), // IE edge Browser
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C76"), // Microsoft Edge
                 visible: false
             });
             FORM3_RADIOBUTTON2.addStyleClass("sapUiSmallMarginBegin");
             FORM3_RADIOBUTTONGROUP1.addButton(FORM3_RADIOBUTTON2);
 
             let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C77"); // Browser Option
-            sTitle += "(" + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C75") + ")"; // Chrome Browser
+            sTitle += "(" + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C75") + ")"; // Google Chrome Browser
 
             //== Browser Option - Chrome 영역 
             var FORM4 = new sap.ui.layout.form.Form({
@@ -1089,7 +1089,7 @@
             FORM4_HBOX2.addItem(FORM4_CHECKBOX2);
 
             let sTitle1 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C77"); // Browser Option
-            sTitle1 += "(" + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C76") + ")"; // IE edge Browser
+            sTitle1 += "(" + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C76") + ")"; // Microsoft Edge
 
             //== Browser Option - IE edge 영역 
             var FORM5 = new sap.ui.layout.form.Form({
