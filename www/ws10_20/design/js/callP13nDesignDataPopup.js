@@ -139,7 +139,7 @@
 
         //좌측 NAVI CONTAINER.
         loApp.ui.oNav = new sap.m.NavContainer({
-            layoutData:new sap.ui.layout.SplitterLayoutData({size:"25%", minSize:30})});
+            layoutData:new sap.ui.layout.SplitterLayoutData({size:"33%", minSize:30})});
         oSApp.addContentArea(loApp.ui.oNav);
 
         //더미 페이지 추가.
@@ -209,6 +209,11 @@
         loApp.ui.oTab = new sap.ui.table.Table({visibleRowCountMode:"Auto", rowActionCount:2,
             selectionBehavior:"RowOnly", selectionMode:"Single"});
         loApp.ui.oHeadListPage.addContent(loApp.ui.oTab);
+
+        //Drag a personalization list item to drop it into the design tree.
+        var l_txt = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "062");
+
+        loApp.ui.oTab.setFooter(new sap.m.Text({wrapping:false, text:l_txt, tooltip:l_txt}));
 
         //라인선택 이벤트.
         loApp.ui.oTab.attachRowSelectionChange(function(oEvent){

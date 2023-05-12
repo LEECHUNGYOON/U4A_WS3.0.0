@@ -2671,6 +2671,11 @@
     //프로퍼티 타입이 색상관련 타입인경우 exit.
     if(is_attr.UIADT === "sap.ui.core.CSSColor"){return;}
 
+    //아이콘 미지원 항목관리에 해당하는 프로퍼티인경우 EXIT.
+    if(oAPP.attr.S_CODE.UW07 && oAPP.attr.S_CODE.UW07.findIndex( a => a.FLD01 === is_attr.UIATK && a.FLD05 !== "X" ) !== -1){
+      return;
+    }
+
     //아이콘 관련 프로퍼티임 flag return.
     return true;
 

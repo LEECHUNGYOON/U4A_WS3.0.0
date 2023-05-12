@@ -774,6 +774,55 @@
 
     } // end of _addRegWsInstallInfo
 
+    function _addWindowContextMenu(sKeyName) {
+
+        return new Promise(async (resolve) => {
+
+            /**
+             * No build 할 때와, Build 할때의 앱 설치 경로가 다르므로
+             * 빌드했을 경우에만 해당 설치 경로를 레지스트리에 등록한다.
+             */
+            if (!APP.isPackaged) {
+                resolve();
+                return;
+            }
+
+            let sRootPath = "HKCU\\SOFTWARE\\Classes\\Directory\\background\\shell";
+
+            // 키 생성부터
+            let sKeys = [
+                sRootPath + `\\${sKeyName}`,
+                sRootPath + `\\${sKeyName}\\command`
+            ];
+
+            await _regeditCreateKey(sKeys);
+
+            var oRegData = {};
+            oRegData[sRootPath + `\\${sKeyName}`] = {};
+            oRegData[sRootPath + `\\${sKeyName}`]["icon"] = {
+                value: process.execPath,
+                type: "REG_EXPAND_SZ"
+            };
+
+            await WSUTIL.putRegeditValue(oRegData);
+
+            var oRegData = {};
+
+            oRegData[sRootPath + `\\${sKeyName}\\command`] = {};
+            oRegData[sRootPath + `\\${sKeyName}\\command`]["command"] = {
+                value: process.execPath,
+                type: "REG_DEFAULT"
+            };
+
+            await WSUTIL.putRegeditValue(oRegData);
+
+            resolve();
+
+        });
+
+    } // end of _addWindowContextMenu
+
+
     function _testGetReg() {
 
         return new Promise(async (resolve) => {
@@ -855,6 +904,9 @@
 
             // ws 설치 폴더 및, UserData 경로를 저장한다.
             await _addRegWsInstallInfo();
+
+            // 윈도우 컨텍스트 메뉴 레지스트리 등록
+            await _addWindowContextMenu("U4A Workspace");
 
             resolve();
 
@@ -1252,7 +1304,7 @@
 
             /**
              * Custom Pattern
-             */            
+             */
 
             let aCustomPatternInitData = await USP_UTIL.getCustomPatternInitData(), // 커스텀 패턴 기본 정보 구하기
                 sCustPattInitJsonData = JSON.stringify(aCustomPatternInitData); // 커스텀 패턴 기본 정보 JSON 변환

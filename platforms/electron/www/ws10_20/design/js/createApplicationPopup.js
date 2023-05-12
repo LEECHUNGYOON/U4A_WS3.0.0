@@ -1169,8 +1169,17 @@
     //dataset 파라메터 추가.
     oForm.append("DATASET", JSON.stringify(l_param));
 
+    //default layout 파일정보.
+    var l_fileName = "databaseview_layo01.json";
+
+    //selectOption3 UI 사용이 가능한 서버인경우 layout 파일정보 변경.
+    if(oAPP.common.checkWLOList("C", "UHAK900630") === true){
+      l_fileName = "databaseview_layo02.json";
+    }
+
     //DATASET의 VIEW(TABLE) TEMPLATE 정보 얻기.
-    var l_layo = parent.require(parent.PATH.join(parent.REMOTE.app.getAppPath(), "ws10_20", "design", "template", "dataset", "databaseview_layo01.json"));
+    var l_layo = parent.require(parent.PATH.join(parent.REMOTE.app.getAppPath(), "ws10_20", "design", "template", "dataset", l_fileName));
+    
 
     if(!l_layo){return;}
 

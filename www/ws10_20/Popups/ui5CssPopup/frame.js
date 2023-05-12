@@ -46,7 +46,7 @@ let oAPP = (function (window) {
             oLoadPg.classList.add("u4a_loadersInactive");
         }
 
-    };  
+    };
 
     /************************************************************************
      * 현재 팝업 닫기
@@ -107,7 +107,7 @@ let oAPP = (function (window) {
         for (const key in oIconUrl) {
             if (Object.hasOwnProperty.call(oIconUrl, key)) {
                 const element = oIconUrl[key];
-                
+
                 oFormData.append(key, element);
 
             }
@@ -126,7 +126,7 @@ let oAPP = (function (window) {
         if (!oWs_frame) {
             return;
         }
-      
+
         oAPP.attr.BROWSERKEY = oInfo.BROWSKEY;  // 브라우저 키
         oAPP.attr.oIconUrl = oInfo.oIconUrl; // SAP ICON PATH
 
@@ -141,7 +141,7 @@ let oAPP = (function (window) {
             ICON_LED_RED: oIconUrl.ICON_LED_RED,
             ICON_LED_GREEN: oIconUrl.ICON_LED_GREEN
         };
-        
+
         let oForm = document.getElementById("ws_form");
         oForm.setAttribute("action", sUrl);
 

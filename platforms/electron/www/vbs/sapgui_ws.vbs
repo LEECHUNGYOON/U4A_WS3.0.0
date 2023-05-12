@@ -86,24 +86,50 @@ End Function
 
 '외부에서 전달된 Arguments 얻기
 Function GetArg()
-	HOSTIP = WScript.arguments.Item(0) '연결 Host IP (*필수) => EX) 10.10.10.10 또는 EEQ 
-	SVPORT = WScript.arguments.Item(1) 'Service Port (*필수) => EX) 3200
-	SID    = WScript.arguments.Item(2) '연결 SID (*필수) => EX) U4A
+    '연결 Host IP (*필수) => EX) 10.10.10.10 또는 EEQ 
+	HOSTIP = WScript.arguments.Item(0) 
 	
-    MSSEVR = WScript.arguments.Item(3) 'Message Server (*옵션) => EX) 10.10.10.10 또는 msg.server.com
-	MSPORT = WScript.arguments.Item(4) 'Message Server Port (*옵션) => EX) 3600
-	SAPRUT = WScript.arguments.Item(5) 'SAP Route (*옵션) => EX) /H/10.10.10.10/S/3299
+	'Service Port (*필수) => EX) 3200
+	SVPORT = WScript.arguments.Item(1) 
 	
-	MANDT  = WScript.arguments.Item(6) '로그온 클라이언트 (*필수) => EX) 800
-	BNAME  = WScript.arguments.Item(7) '로그온 SAP ID (*필수)	 => EX) USER
-	PASS   = WScript.arguments.Item(8) '로그온 SAP ID 비번 (*필수) => EX) Password
-	LANGU  = WScript.arguments.Item(9) '로그온 언어키 (*필수)   => EX) KO
+	'연결 SID (*필수) => EX) U4A
+	SID    = WScript.arguments.Item(2) 
 	
-	APPID  = WScript.arguments.Item(10) 'U4A APP ID (*필수) => EX) ZU4A_TS0010
-	METHD  = WScript.arguments.Item(11) '네비게이션 대상 이벤트 메소드 (*옵션) => EX) EV_TEST
-	SPOSI  = WScript.arguments.Item(12) '네비게이션 대상 이벤트 메소드 소스 라인번호 (*옵션) => EX) 100
-	ISEDT  = WScript.arguments.Item(13) '수정모드 여부(예 : X, 아니오 : 공백) 
-	TCODE  = WScript.arguments.Item(14) 'SAP TCODE
+	'Message Server (*옵션) => EX) 10.10.10.10 또는 msg.server.com
+    MSSEVR = WScript.arguments.Item(3) 
+	
+	'Message Server Port (*옵션) => EX) 3600
+	MSPORT = WScript.arguments.Item(4) 
+	
+	'SAP Route (*옵션) => EX) /H/10.10.10.10/S/3299
+	SAPRUT = WScript.arguments.Item(5) 
+	
+	'로그온 클라이언트 (*필수) => EX) 800
+	MANDT  = WScript.arguments.Item(6) 
+	
+	'로그온 SAP ID (*필수)	 => EX) USER
+	BNAME  = WScript.arguments.Item(7) 
+	
+	'로그온 SAP ID 비번 (*필수) => EX) Password
+	PASS   = WScript.arguments.Item(8) 
+	
+	'로그온 언어키 (*필수)   => EX) KO
+	LANGU  = WScript.arguments.Item(9) 
+	
+	'U4A APP ID (*필수) => EX) ZU4A_TS0010
+	APPID  = WScript.arguments.Item(10) 
+	
+	'네비게이션 대상 이벤트 메소드 (*옵션) => EX) EV_TEST
+	METHD  = WScript.arguments.Item(11) 
+	
+	'네비게이션 대상 이벤트 메소드 소스 라인번호 (*옵션) => EX) 100
+	SPOSI  = WScript.arguments.Item(12) 
+	
+	'수정모드 여부(예 : X, 아니오 : 공백) 
+	ISEDT  = WScript.arguments.Item(13) 
+	
+	'SAP TCODE
+	TCODE  = WScript.arguments.Item(14) 
 
 	REM ** 다중 로그인 여부 **
 	REM    1: SAP GUI 다중 로그인 정보 없음, 
@@ -111,14 +137,21 @@ Function GetArg()
 	REM    X: SAP GUI 다중 로그인 시스템 허용 안함
 	ISMLGN = WScript.arguments.Item(15) 
  
- 	MAXSS = CInt(WScript.arguments.Item(16)) '시스템 허용 최대 세션수
+    '시스템 허용 최대 세션수
+ 	MAXSS = CInt(WScript.arguments.Item(16)) 
 	
-	ESID  = WScript.arguments.Item(17) 'Electron JS 호출처 세션 ID
+	'Electron JS 호출처 세션 ID
+	ESID  = WScript.arguments.Item(17) 
 	
-	'SNC 설정값
-	SNCNAM  = WScript.arguments.Item(18) 'SNC Name
-	SNCOPQ  = WScript.arguments.Item(19) 'SNC Option 
-	SNCNSSO = WScript.arguments.Item(20) 'SNC Logon with user/password(0: SSO, 1: No Sigle sign-On)
+	REM SNC 설정값	
+	'SNC Name
+	SNCNAM  = WScript.arguments.Item(18) 
+	
+	'SNC Option 
+	SNCOPQ  = WScript.arguments.Item(19) 
+	
+	'SNC Logon with user/password(0: SSO, 1: No Sigle sign-On)
+	SNCNSSO = WScript.arguments.Item(20) 
 		
 End Function
 
@@ -354,8 +387,8 @@ Function SAP_Login()
 	
 	'SNC 로그온 SSO 설정 여부에 따른 로직 분기
 	Select Case SNCNSSO
-	Case "0" 'SSO 로그인
-		IF SNCNAM = "" Then 'SNC Parameter Name이 없으면 SSO 사용 안함으로 간주함
+	Case "0" 
+		IF SNCNAM = "" Then 
 			objSess.findById("wnd[0]/usr/txtRSYST-MANDT").Text = MANDT
 			objSess.findById("wnd[0]/usr/txtRSYST-BNAME").Text = BNAME
 			objSess.findById("wnd[0]/usr/pwdRSYST-BCODE").Text = PASS
@@ -364,14 +397,14 @@ Function SAP_Login()
 			
 		End If
 	
-	Case "1" 'SSO 로그인 사용안함
+	Case "1" 
 		objSess.findById("wnd[0]/usr/txtRSYST-MANDT").Text = MANDT
 		objSess.findById("wnd[0]/usr/txtRSYST-BNAME").Text = BNAME
 		objSess.findById("wnd[0]/usr/pwdRSYST-BCODE").Text = PASS
 		objSess.findById("wnd[0]/usr/txtRSYST-LANGU").Text = LANGU
 		objSess.findById("wnd[0]").sendVKey 0
 
-	Case "" 'SSO 로그인 사용안함
+    Case "" 
 		objSess.findById("wnd[0]/usr/txtRSYST-MANDT").Text = MANDT
 		objSess.findById("wnd[0]/usr/txtRSYST-BNAME").Text = BNAME
 		objSess.findById("wnd[0]/usr/pwdRSYST-BCODE").Text = PASS
@@ -505,7 +538,7 @@ Sub StartSAPGUI
 
     '로그인 처리 리턴 코드에 따른 로직 분기
 	Select Case LV_RET
-	Case "1"
+	Case "1" 
 		'MsgBox "Login session not found.", vbExclamation, "Error!!"
 		'Exit Sub
 		LV_ERR = ERR_RET("E03", "Login session not found.")
