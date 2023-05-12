@@ -3,7 +3,7 @@
  * ************************************************************************
  * - Application Intro
  **************************************************************************/
-(function () {
+(function() {
     "use strict";
 
     let oAPP = {};
@@ -30,7 +30,7 @@
     const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
     REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-    oAPP.fn.fnOnDeviceReady = function () {
+    oAPP.fn.fnOnDeviceReady = function() {
 
         oAPP.fn.fnOnStart(); // [async]
 
@@ -77,6 +77,9 @@
 
         // 실행 기준 3개월이 지난 로그가 있다면 삭제한다.
         await _oldLogDelete();
+
+        // Vbs 파일을 UserData 쪽으로 복사
+        await _copyToUserDataVbs();
 
         let oGlobalSettings = await WSUTIL.getWsGlobalSettingInfoAsync();
 
@@ -201,7 +204,7 @@
         // }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function() {
 
             var oMetadata = {
                 SERVERINFO: oServerInfo,
@@ -296,7 +299,7 @@
     /************************************************************************
      * 서버 리스트를 오픈한다.
      ************************************************************************/
-    oAPP.fn.fnOpenServerList = function (oGlobalSettings) {
+    oAPP.fn.fnOpenServerList = function(oGlobalSettings) {
 
         // Electron Browser Default Options        
         var sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
@@ -329,7 +332,7 @@
         //     oWin.webContents.openDevTools();
         // }
 
-        oWin.webContents.on('did-finish-load', async function () {
+        oWin.webContents.on('did-finish-load', async function() {
 
             // 글로벌 설정 정보를 ServerList에 전달한다.
             oWin.webContents.send('if-globalSetting-info', oGlobalSettings);
@@ -363,7 +366,7 @@
      * 2. 설치 경로는 WS가 설치된 userData
      *    예) C:\Users\[UserName]\AppData\Roaming\com.u4a_ws.app
      ************************************************************************/
-    oAPP.fn.setInitInstall = function (fnCallback) {
+    oAPP.fn.setInitInstall = function(fnCallback) {
 
         var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
@@ -389,9 +392,9 @@
                 continue;
             }
 
-            aPromise.push(new Promise(function (resolve, reject) {
+            aPromise.push(new Promise(function(resolve, reject) {
 
-                FS.mkdir(sFullPath, oMkdirOptions, function (err) {
+                FS.mkdir(sFullPath, oMkdirOptions, function(err) {
 
                     if (err) {
                         reject(err.toString());
@@ -421,7 +424,7 @@
                 FS.writeFile(sFileFullPath, JSON.stringify(""), {
                     encoding: "utf8",
                     mode: 0o777 // 올 권한
-                }, function (err) {
+                }, function(err) {
 
                     if (err) {
                         reject(err.toString());
@@ -438,20 +441,22 @@
 
 
         // 상위 폴더를 생성 후 끝나면 실행
-        Promise.all(aPromise).then(function (values) {
+        Promise.all(aPromise).then(function(values) {
 
-            oAPP.fn.copyVbsToLocalFolder(function (oResult) {
+            // oAPP.fn.copyVbsToLocalFolder(function (oResult) {
 
-                if (oResult.RETCD == 'E') {
-                    alert(oResult.MSG);
-                    return;
-                }
+            //     if (oResult.RETCD == 'E') {
+            //         alert(oResult.MSG);
+            //         return;
+            //     }
 
-                fnCallback();
+            //     fnCallback();
 
-            });
+            // });
 
-        }).catch(function (err) {
+            fnCallback();
+
+        }).catch(function(err) {
 
             alert(err.toString());
 
@@ -462,7 +467,7 @@
     /************************************************************************
      * build된 폴더에서 vbs 파일을 로컬 폴더로 복사한다.
      ************************************************************************/
-    oAPP.fn.copyVbsToLocalFolder = function (fnCallback) {
+    oAPP.fn.copyVbsToLocalFolder = function(fnCallback) {
 
         var sVbsFolderPath = PATH.join(APPPATH, "vbs"),
             aVbsFolderList = FS.readdirSync(sVbsFolderPath),
@@ -500,7 +505,7 @@
 
             fnCallback(oResult);
 
-        }).catch(function (err) {
+        }).catch(function(err) {
 
             oResult.RETCD = 'E';
             oResult.MSG = err.toString();
@@ -511,7 +516,7 @@
 
     }; // end of oAPP.fn.copyVbsToLocalFolder
 
-    oAPP.fn.copyVbsPromise = function (sFile, sVbsOrigPath) {
+    oAPP.fn.copyVbsPromise = function(sFile, sVbsOrigPath) {
 
         var oSettingsPath = PATHINFO.WSSETTINGS,
             oSettings = require(oSettingsPath),
@@ -523,11 +528,11 @@
 
             FS.copy(sVbsOrigPath, sVbsFullPath, {
                 overwrite: true,
-            }).then(function () {
+            }).then(function() {
 
                 resolve("X");
 
-            }).catch(function (err) {
+            }).catch(function(err) {
 
                 reject(err.toString());
 
@@ -1249,7 +1254,7 @@
             ncp.limit = 16; // 한번에 처리하는 수?  
 
             // WWW에 있는 패턴 파일을 USERDATA 폴더에 복사한다.
-            ncp(sPattnFolderSourcePath, sPattnFolderTargetPath, function (err) {
+            ncp(sPattnFolderSourcePath, sPattnFolderTargetPath, function(err) {
 
                 if (err) {
                     resolve({
@@ -1354,7 +1359,9 @@
             }
 
 
-            resolve({ RETCD: "S" });
+            resolve({
+                RETCD: "S"
+            });
 
         });
 
@@ -1418,6 +1425,24 @@
 
     } // end of _oldLogCheck
 
+    /************************************************************************
+     * 3개월 전 로그는 삭제한다.
+     ************************************************************************/
+    function _copyToUserDataVbs() {
+
+        return new Promise((resolve) => {
+
+
+
+
+
+
+            resolve();
+
+        });
+
+    } // end of _copyToUserDataVbs
+
 
 
 
@@ -1426,10 +1451,10 @@
 })();
 
 
-(function () {
+(function() {
     "use strict";
 
-    String.prototype.string = function (len) {
+    String.prototype.string = function(len) {
         var s = '',
             i = 0;
         while (i++ < len) {
@@ -1437,14 +1462,14 @@
         }
         return s;
     };
-    String.prototype.zf = function (len) {
+    String.prototype.zf = function(len) {
         return "0".string(len - this.length) + this;
     };
-    Number.prototype.zf = function (len) {
+    Number.prototype.zf = function(len) {
         return this.toString().zf(len);
     };
 
-    Date.prototype.format = function (f) {
+    Date.prototype.format = function(f) {
 
         if (!this.valueOf()) return " ";
 
@@ -1454,7 +1479,7 @@
             weekEngShortName = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
             d = this;
 
-        return f.replace(/(yyyy|yy|MM|dd|KS|KL|ES|EL|HH|hh|mm|ss|a\/p)/gi, function ($1) {
+        return f.replace(/(yyyy|yy|MM|dd|KS|KL|ES|EL|HH|hh|mm|ss|a\/p)/gi, function($1) {
 
             var h = "";
 
