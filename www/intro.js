@@ -1183,6 +1183,42 @@
 
     }
 
+    async function showErrorMsgBoxAsync(resolve, sMsg) {
+
+        let sTxt1 = oAPP.msg.M01, // Restart
+            sTxt2 = oAPP.msg.M02, // App Close
+            sTxt3 = oAPP.msg.M03, // Ignore
+            sTxt4 = oAPP.msg.M04; // Please contact U4A Solution Team!
+
+        let options = {
+            buttons: [sTxt1, sTxt2, sTxt3],
+            message: sMsg,
+            detail: sTxt4
+        };
+
+        let oMsgResult = await showMessageBox("E", options),
+            iResponse = oMsgResult.response;
+
+        switch (iResponse) {
+            case 0: // App Restart
+
+                APP.relaunch();
+                APP.exit();
+                return;
+
+            case 1: // App Close
+
+                APP.exit();
+                return;
+
+            case 2: // Ignore
+
+                resolve();
+                return;
+        }
+
+    }
+
 
     function showMessageBox(messageTypes, pOptions) {
 
@@ -1426,16 +1462,42 @@
     } // end of _oldLogCheck
 
     /************************************************************************
-     * 3개월 전 로그는 삭제한다.
+     * vbs 파일을 UserData에 복사한다.
      ************************************************************************/
     function _copyToUserDataVbs() {
 
-        return new Promise((resolve) => {
+        return new Promise(async (resolve) => {
 
+            debugger;
 
+            let sVbsFileName = "sapgui_ws_vbs.zip",
+                sVbsSourcePath = PATH.join(APPPATH, "vbs", sVbsFileName);
 
+            let oSettings = oAPP.fn.fnGetSettingsInfo(),
+                sUserDataPath = APP.getPath("userData"),
+                sVbsUserDataFolderPath = PATH.join(sUserDataPath, oSettings.vbs.rootPath),
+                sVbsTargetPath = PATH.join(sVbsUserDataFolderPath, sVbsFileName);
 
+            let oCopyResult = await WSUTIL.fsCopy(sVbsSourcePath, sVbsTargetPath);
+            if (oCopyResult.RETCD == "E") {
+                console.error("Vbs Zip 파일 복사하다가 오류!!");
+                throw Error(oCopyResult.RTMSG);
+            }
 
+            // let oUnZipResult = await WSUTIL.zipExtract(sVbsTargetPath, sVbsUserDataFolderPath);
+            // if (oUnZipResult.RETCD == "E") {
+            //     console.error("Vbs Zip 파일 압축 풀다가 오류!!");
+            //     throw Error(oUnZipResult.RTMSG);
+            // }
+
+            await fnExtractFileAdmZip(sVbsTargetPath, sVbsUserDataFolderPath);
+
+            // 압축푼 zip 파일 삭제
+            let oRemoveResult = await WSUTIL.fsRemove(sVbsTargetPath);
+            if (oRemoveResult.RETCD == "E") {
+                console.error("vbs zip 파일 압축풀고 삭제하다가 오류!!");
+                throw Error(oRemoveResult.RTMSG);
+            }
 
             resolve();
 
@@ -1444,7 +1506,27 @@
     } // end of _copyToUserDataVbs
 
 
+    function fnExtractFileAdmZip(sSourcePath, sTargetFolderPath) {
 
+        var AdmZip = require("adm-zip");
+
+        return new Promise((resolve) => {
+
+            try {
+                const ZIP = new AdmZip(sSourcePath);
+
+                ZIP.extractAllTo(sTargetFolderPath, /*overwrite*/ true);
+
+            } catch (error) {
+                console.error("Vbs Zip 파일 압축 풀다가 오류!!");
+                throw new Error(error.toString());
+            }
+
+            resolve();
+
+        });
+
+    }
 
     document.addEventListener('deviceready', oAPP.fn.fnOnDeviceReady, false);
 
