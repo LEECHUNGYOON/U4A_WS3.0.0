@@ -191,22 +191,22 @@ module.exports = {
     },
     /************** end of Class (MessageClassText) ***************/
 
-    showMessageBox: function(sap, pOptions) {
+    showMessageBox: function (sap, pOptions) {
 
         if (!sap?.m?.MessageBox) {
             sap.ui.requireSync("sap/m/MessageBox");
         }
 
         let oDefaultOptions = {
-                icon: sap.m.MessageBox.Icon.NONE, // default
-                title: "", // default
-                actions: sap.m.MessageBox.Action.OK, // default
-                emphasizedAction: sap.m.MessageBox.Action.OK, // default
-                onClose: null, // default
-                styleClass: "", // default
-                initialFocus: null, // default
-                textDirection: sap.ui.core.TextDirection.Inherit // default
-            },
+            icon: sap.m.MessageBox.Icon.NONE, // default
+            title: "", // default
+            actions: sap.m.MessageBox.Action.OK, // default
+            emphasizedAction: sap.m.MessageBox.Action.OK, // default
+            onClose: null, // default
+            styleClass: "", // default
+            initialFocus: null, // default
+            textDirection: sap.ui.core.TextDirection.Inherit // default
+        },
             oOptions = Object.assign({}, oDefaultOptions, pOptions);
 
 
@@ -241,7 +241,7 @@ module.exports = {
     /**
      * 테마별 백그라운드 색상 구하기     
      */
-    getThemeBackgroundColor: function(sTheme) {
+    getThemeBackgroundColor: function (sTheme) {
 
         switch (sTheme) {
             case "sap_belize_plus":
@@ -272,7 +272,7 @@ module.exports = {
     /**
      * 레지스트리에서 WS Global Theme 구하기   
      */
-    getWsThemeAsync: function() {
+    getWsThemeAsync: function () {
 
         return new Promise(async (resolve) => {
 
@@ -306,7 +306,7 @@ module.exports = {
     /**
      * 레지스트리에서 WS Global Language 구하기     
      */
-    getWsLanguAsync: function() {
+    getWsLanguAsync: function () {
 
         return new Promise(async (resolve) => {
 
@@ -343,7 +343,7 @@ module.exports = {
     /**
      * WS Global Language를 레지스트리에 저장
      */
-    setWsLanguAsync: function(sWsLangu) {
+    setWsLanguAsync: function (sWsLangu) {
 
         return new Promise(async (resolve) => {
 
@@ -370,7 +370,7 @@ module.exports = {
     /**
      * WS 3.0 전용 메시지 리턴
      */
-    getWsMsgClsTxt: function(LANGU, ARBGB, MSGNR, p1, p2, p3, p4) {
+    getWsMsgClsTxt: function (LANGU, ARBGB, MSGNR, p1, p2, p3, p4) {
 
         // www에 내장되어 있는 WS 메시지 경로
         let sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", LANGU, ARBGB + ".json");
@@ -442,7 +442,7 @@ module.exports = {
     /**
      * WS 3.0 전용 메시지 모델 정보 구조
      */
-    getWsMsgModelData: function() {
+    getWsMsgModelData: function () {
 
         return new Promise(async (resolve) => {
 
@@ -518,7 +518,7 @@ module.exports = {
      * @param {*} t PARENT
      * @param {*} z 재구성할 MODEL PATH 명
      *************************************************************************/
-    parseArrayToTree: function(m, p, r, t, z) {
+    parseArrayToTree: function (m, p, r, t, z) {
 
         var lp = p.replace(/[.\[\]]/g, '/');
         lp = lp.replace(/(\/\/)/g, '/');
@@ -564,10 +564,10 @@ module.exports = {
      * @param {Array} Tree 구조로 되어 있는 Array
      * @param {String} Child 이름
      *************************************************************************/
-    parseTreeToArray: function(e, sArrName) {
+    parseTreeToArray: function (e, sArrName) {
 
         var a = [],
-            t = function(e) {
+            t = function (e) {
 
                 e.forEach((o, e) => {
 
@@ -593,7 +593,7 @@ module.exports = {
      * Electron Browser Window Open 시 Opacity를 이용하여 자연스러운 동작 연출
      * @param {BrowserWindow} oBrowserWindow 
      */
-    setBrowserOpacity: function(oBrowserWindow) {
+    setBrowserOpacity: function (oBrowserWindow) {
 
         let iOpa = 0.0,
             iInterval;
@@ -621,6 +621,38 @@ module.exports = {
         }, 10);
 
     }, // end of setBrowserOpacity
+
+    /**
+     * 부모 윈도우 위치의 가운데 배치한다.
+     * @param {REMOTE} REMOTE
+     * @param {BrowserWindow} oBrowserWindow
+     * @param {Object} oBrowserOptions
+     */
+    setParentCenterBounds: function (REMOTE, oBrowserWindow, oBrowserOptions) {
+
+        let oCurrWin = REMOTE.getCurrentWindow();
+
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = oCurrWin.getBounds(),
+            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
+
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
+        }
+
+        if (oParentBounds.y > yPos) {
+            yPos = oParentBounds.y + 10;
+        }
+
+        oBrowserWindow.setBounds({
+            x: xPos,
+            y: yPos
+        });
+
+    }, // end of setParentCenterBounds
 
     /**
      * 파일 확장자 svg icon 목록
@@ -675,7 +707,7 @@ module.exports = {
     /**
      * SAP 아이콘 이미지 경로     
      */
-    getSapIconPath: function(sIcon) {
+    getSapIconPath: function (sIcon) {
 
         if (sIcon == null) {
             return;
@@ -693,7 +725,7 @@ module.exports = {
      * - 랜덤값 길이 (Default: 50)   
      *
      */
-    getRandomKey: function(iLength) {
+    getRandomKey: function (iLength) {
 
         const RANDOM = require("random-key");
 
@@ -710,7 +742,7 @@ module.exports = {
     /**
      * WS Setting 정보     
      */
-    getWsSettingsInfo: function() {
+    getWsSettingsInfo: function () {
 
         let sSetttingJsonData = FS.readFileSync(PATHINFO.WSSETTINGS, 'utf-8'),
             oSettings = JSON.parse(sSetttingJsonData);
@@ -722,7 +754,7 @@ module.exports = {
     /**
      * WS Global Setting 정보 [레지스트리에 설정된 값 구하기]
      */
-    getWsGlobalSettingInfoAsync: function() {
+    getWsGlobalSettingInfoAsync: function () {
 
         return new Promise(async (resolve) => {
 
@@ -752,7 +784,7 @@ module.exports = {
     /**
      * 레지스트리에 저장된 whiteList Object 목록에 존재 여부 확인
      */
-    checkWLOListAsync: function(SYSID = "", REGTYP = "", CHGOBJ = "") {
+    checkWLOListAsync: function (SYSID = "", REGTYP = "", CHGOBJ = "") {
 
         return new Promise(async (resolve) => {
 
@@ -790,7 +822,7 @@ module.exports = {
     /**
      * 레지스트리에 저장된 whiteList Object 목록
      */
-    getWsWLOListAsync: function(SYSID = "") {
+    getWsWLOListAsync: function (SYSID = "") {
 
         return new Promise(async (resolve) => {
 
@@ -853,7 +885,7 @@ module.exports = {
      * - 읽을려는 폴더 경로
      * @returns {Object} { RETCD : "성공여부", RTDATA: "폴더내부의 정보리스트"}
      */
-    readDir: function(sFolderPath) {
+    readDir: function (sFolderPath) {
 
         return new Promise(async (resolve) => {
 
@@ -890,7 +922,7 @@ module.exports = {
      * @param {String} sFilePath
      * - 읽을려는 파일의 경로
      */
-    readFile: function(sFilePath) {
+    readFile: function (sFilePath) {
 
         return new Promise(async (resolve) => {
 
@@ -931,11 +963,11 @@ module.exports = {
      * @param {Object} options
      * - 옵션정보는 Nodejs의 fs 참조
      */
-    fsCopy: function(sSource, sTarget, options) {
+    fsCopy: function (sSource, sTarget, options) {
 
         return new Promise((resolve) => {
 
-            FS.copy(sSource, sTarget, options).then(function() {
+            FS.copy(sSource, sTarget, options).then(function () {
 
                 resolve({
                     RETCD: "S",
@@ -943,7 +975,7 @@ module.exports = {
                     RTDATA: ""
                 });
 
-            }).catch(function(err) {
+            }).catch(function (err) {
 
                 resolve({
                     RETCD: "E",
@@ -965,7 +997,7 @@ module.exports = {
      * @param {*} data 
      * @param {*} options      
      */
-    fsWriteFile: function(file, data, options = {}) {
+    fsWriteFile: function (file, data, options = {}) {
 
         return new Promise(async (resolve) => {
 
@@ -993,7 +1025,7 @@ module.exports = {
 
     }, // end of fsWriteFile
 
-    fsStat: function(sFilePath) {
+    fsStat: function (sFilePath) {
 
         return new Promise(async (resolve) => {
 
@@ -1021,7 +1053,7 @@ module.exports = {
 
     }, // end of fsStat
 
-    fsRemove: function(sRemovePath) {
+    fsRemove: function (sRemovePath) {
 
         return new Promise(async (resolve) => {
 
@@ -1062,7 +1094,7 @@ module.exports = {
      * 예: PATH.join("XX", "ZZ", "GGG") 처럼 파라미터 갯수 제한 없음
      * 파라미터가 하나도 없으면 오류
      */
-    getRegeditAsync: function() {
+    getRegeditAsync: function () {
 
         var aArgs = arguments,
             iArgLength = aArgs.length;
@@ -1122,7 +1154,7 @@ module.exports = {
      * @param {Array} aPaths 
      * - 레지스트리 경로
      */
-    getRegeditList: function(aPaths) {
+    getRegeditList: function (aPaths) {
 
         return new Promise((resolve) => {
 
@@ -1153,7 +1185,7 @@ module.exports = {
      * 레지스트리 저장
      * 
      */
-    putRegeditValue: function(oRegData) {
+    putRegeditValue: function (oRegData) {
 
         return new Promise((resolve) => {
 
@@ -1192,7 +1224,7 @@ module.exports = {
     /*************************************************************************
      * Color 색상 Hex -> RGBA 변환
      *************************************************************************/
-    hexToRgb: function(hex, alpha) {
+    hexToRgb: function (hex, alpha) {
         let r = parseInt(hex.slice(1, 3), 16),
             g = parseInt(hex.slice(3, 5), 16),
             b = parseInt(hex.slice(5, 7), 16);
@@ -1207,13 +1239,13 @@ module.exports = {
     /**
      * zip 압축파일 풀기
      */
-    zipExtract: function(sSourcePath, sTargetFolderPath) {
+    zipExtract: function (sSourcePath, sTargetFolderPath) {
 
         return new Promise((resolve) => {
 
-            ZIPLIB.extract(sSourcePath, sTargetFolderPath).then(function() {
+            ZIPLIB.extract(sSourcePath, sTargetFolderPath).then(function () {
                 resolve({ RETCD: "S" });
-            }, function(err) {
+            }, function (err) {
                 resolve({ RETCD: "E", RTMSG: err.toString() });
             });
 

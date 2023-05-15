@@ -344,7 +344,6 @@
         oBrowserOptions.height = mainWindowState.height;
         oBrowserOptions.minWidth = 1000;
         oBrowserOptions.minHeight = 800;
-        oBrowserOptions.show = false;
         oBrowserOptions.opacity = 0.0;
         oWebPreferences.partition = SESSKEY;
         oWebPreferences.browserkey = BROWSERKEY;
@@ -360,10 +359,6 @@
         mainWindowState.manage(oBrowserWindow);
 
         oBrowserWindow.loadURL(PATHINFO.MAINFRAME);
-
-        // oBrowserWindow.once('ready-to-show', () => {
-        //     oBrowserWindow.show();
-        // });
 
         // oBrowserWindow.webContents.openDevTools();
 
@@ -384,11 +379,10 @@
             };
 
             // 메타 정보를 보낸다.
-            oBrowserWindow.webContents.send('if-meta-info', oMetadata);
+            oBrowserWindow.webContents.send('if-meta-info', oMetadata);           
 
-            oBrowserWindow.setOpacity(1.0);
-
-            oBrowserWindow.show();
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
 
         });
 

@@ -298,8 +298,20 @@ let oAPP = (function () {
                                     type: sap.m.InputType.Number,
                                     value: "{CLIENT}",
                                     width: "100px",
+                                    // valueState: "{CLIENT_VS}",
+                                    // valueStateText: "{CLIENT_VSTXT}",
                                     submit: oAPP.events.ev_login
                                 })
+                                // .bindProperty("valueState", function(sValueState){
+
+                                //     if(!sValueState){
+                                //         return "None";
+                                //     }
+
+                                //     return sValueState;
+
+                                // })
+
                             ]
                         }),
 
@@ -483,6 +495,9 @@ let oAPP = (function () {
 
             sDefType = "Password",
             sDefIcon = "sap-icon://hide";
+
+        // f4Help 선택 시, Input type을 변경하면 기존 값 사라지는 문제
+        oInput.setValue(oInput.getValue());
 
         if (sInputType == sDefType) {
 
@@ -848,7 +863,8 @@ let oAPP = (function () {
         if (oResult.RETCD == 'E') {
 
             // 메시지 처리.. 
-            parent.showMessage(null, 99, "E", oResult.MSG);
+            // parent.showMessage(null, 99, "E", oResult.MSG);
+            sap.m.MessageToast.show(oResult.MSG);
             parent.setBusy("");
             return;
 
@@ -1117,7 +1133,7 @@ let oAPP = (function () {
             oFormData.append("WSVER", oSettings.appVersion);
             oFormData.append("WSPATCH_LEVEL", oSettings.patch_level);
             oFormData.append("WSLANGU", oSettings.globalLanguage || "EN");
-            
+
             // if (oAPP.attr.HTTPONLY && oAPP.attr.HTTPONLY == "1") {
 
             //     let oLogInData = oAPP.attr.LOGIN;
@@ -1297,8 +1313,8 @@ let oAPP = (function () {
                 // 재시작 하시겠습니까?
                 let sMsg = oAPP.msg.M051 + " \n ";
                 sMsg += oAPP.msg.M052 + " \n \n";
-                sMsg += sap.m.MessageBox.Action.RETRY + ": Application Restart \n \n ";
-                sMsg += sap.m.MessageBox.Action.CLOSE + ": Application Close \n \n ";
+                sMsg += sap.m.MessageBox.Action.RETRY + ": " + oAPP.msg.M055 + " " + oAPP.msg.M056 + " \n \n ";
+                sMsg += sap.m.MessageBox.Action.CLOSE + ": " + oAPP.msg.M055 + " " + oAPP.msg.M056 + " \n \n ";
                 sMsg += sap.m.MessageBox.Action.IGNORE + ": " + oAPP.msg.M053; //"Ignoring updates and then running the program"
 
                 sap.m.MessageBox.error(sMsg, {
@@ -1995,7 +2011,7 @@ let oAPP = (function () {
         if (isEmpty(CLIENT) === true || isBlank(CLIENT) === true) {
 
             oCheck.RETCD = "E";
-            oCheck.MSG = "Client is Required!";
+            oCheck.MSG = oAPP.msg.M0271; // "Client is Required!";
 
             return oCheck;
 
@@ -2004,7 +2020,7 @@ let oAPP = (function () {
         if (isEmpty(ID) === true || isBlank(ID) === true) {
 
             oCheck.RETCD = "E";
-            oCheck.MSG = "ID is Required!";
+            oCheck.MSG = oAPP.msg.M0272; // "ID is Required!";
 
             return oCheck;
 
@@ -2013,7 +2029,7 @@ let oAPP = (function () {
         if (isEmpty(PW) === true || isBlank(PW) === true) {
 
             oCheck.RETCD = "E";
-            oCheck.MSG = "PW is Required!";
+            oCheck.MSG = oAPP.msg.M0273; // "PW is Required!";
 
             return oCheck;
 
@@ -2022,7 +2038,7 @@ let oAPP = (function () {
         if (isEmpty(LANGU) === true || isBlank(LANGU) === true) {
 
             oCheck.RETCD = "E";
-            oCheck.MSG = "Language is Required!";
+            oCheck.MSG = oAPP.msg.M0274; // "Language is Required!";
 
             return oCheck;
 
@@ -2816,6 +2832,7 @@ function fnWsGlobalMsgList() {
         // 레지스트리에서 WS Global language 구하기
         let sWsLangu = await WSUTIL.getWsLanguAsync();
 
+        oAPP.msg.M001 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "001"); // Language        
         oAPP.msg.M032 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "032"); // Restart
         oAPP.msg.M051 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "051"); // Error occurred while U4A Workspace Updating!
         oAPP.msg.M052 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "052"); // Do you want to restart?
@@ -2825,6 +2842,14 @@ function fnWsGlobalMsgList() {
         oAPP.msg.M056 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "056"); // Close
         oAPP.msg.M057 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "057"); // Error occurred while U4A Workspace Support Package Updating!
         oAPP.msg.M058 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "058"); // U4A Workspace Support Package Update Error
+        oAPP.msg.M063 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "063"); // Client
+        oAPP.msg.M064 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "064"); // ID
+        oAPP.msg.M065 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "065"); // Password
+
+        oAPP.msg.M0271 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027", oAPP.msg.M063); // (Client) &1 is required entry value
+        oAPP.msg.M0272 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027", oAPP.msg.M064); // (ID) &1 is required entry value
+        oAPP.msg.M0273 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027", oAPP.msg.M065); // (Password) &1 is required entry value
+        oAPP.msg.M0274 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027", oAPP.msg.M001); // (Language) &1 is required entry value
 
         resolve();
 

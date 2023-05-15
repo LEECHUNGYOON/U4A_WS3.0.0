@@ -441,7 +441,7 @@ oAPP.common = {};
         var sServerHost = getServerHost(),
             sServicePath = sServerHost + "/zu4a_wbc/u4a_ipcmain";
 
-        if(bIsStateLess){
+        if (bIsStateLess) {
             sServicePath = sServerHost + "/zu4a_wbc/u4a_dynpro";
         }
 
@@ -627,14 +627,12 @@ oAPP.common = {};
         let oThemeInfo = getThemeInfo(), // 테마 정보
             sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
-            // oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
             oBrowserOptions = JSON.parse(JSON.stringify(oDefaultOption.browserWindow));
 
         oBrowserOptions.title = "U4A Workspace - #Main";
         oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.show = false;       
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
-        
+
         oBrowserOptions.titleBarStyle = 'hidden';
         oBrowserOptions.autoHideMenuBar = true;
 
@@ -650,7 +648,7 @@ oAPP.common = {};
         oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
         oBrowserOptions.webPreferences.USERINFO = process.USERINFO;
         oBrowserOptions.webPreferences.OBJTY = "MAIN";
-        
+
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
@@ -679,14 +677,6 @@ oAPP.common = {};
 
         // oBrowserWindow.webContents.openDevTools();    
 
-        oBrowserWindow.once('ready-to-show', () => {
-
-            console.log('ready-to-show');
-
-            lf_setBound();
-
-        });
-
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
@@ -706,37 +696,10 @@ oAPP.common = {};
             // 브라우저가 오픈되면서 부모가 가지고 있는 메타 관련 정보들을 전달한다.
             oBrowserWindow.webContents.send('if-meta-info', oMetadata);
 
-            oBrowserWindow.show();
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
 
-            let iOpa = 0.0;
-
-            if (oAPP.iInterval) {
-                clearInterval(oAPP.iInterval);
-                delete oAPP.iInterval;
-            }
-
-            oAPP.iInterval = setInterval(() => {
-
-                if (iOpa > 1) {
-
-                    if (oAPP.iInterval) {
-                        oBrowserWindow.setOpacity(1.0);
-                        clearInterval(oAPP.iInterval);
-                        delete oAPP.iInterval;
-
-                    }
-
-                    return;
-                }
-
-                iOpa += 0.1;
-
-                oBrowserWindow.setOpacity(iOpa);
-
-            }, 30);
-
-            // oBrowserWindow.setOpacity(1.0);
-
+            // 부모 위치에서 우측 + 30, 하단 + 30 위치에 배치한다.
             lf_setBound();
 
         });

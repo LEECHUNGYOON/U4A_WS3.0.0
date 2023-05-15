@@ -320,8 +320,6 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.center = true;
-        oBrowserOptions.show = false;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -348,14 +346,6 @@
         //     oBrowserWindow.webContents.openDevTools();
         // }
 
-        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
-
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
@@ -369,10 +359,6 @@
             };
 
             oBrowserWindow.webContents.send('if_modelBindingPopup', oBindPopupData);
-
-            oBrowserWindow.show();
-
-            // oBrowserWindow.setOpacity(1.0);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             WSUTIL.setBrowserOpacity(oBrowserWindow);
@@ -450,7 +436,7 @@
         oBrowserOptions.minHeight = 60;
 
         oBrowserOptions.frame = false;
-        // oBrowserOptions.show = false;
+        // oBrowserOptions.show = true;
         // oBrowserOptions.opacity = 0.0;
         oBrowserOptions.transparent = true;
         oBrowserOptions.center = false;
@@ -477,19 +463,19 @@
         //     oBrowserWindow.webContents.openDevTools();
         // }
 
-        oBrowserWindow.once('ready-to-show', () => {
-            lf_move();
-        });
+        // oBrowserWindow.once('ready-to-show', () => {
+        //     lf_move();
+        // });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function () {           
 
-            oBrowserWindow.show();
-
-            // // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            // WSUTIL.setBrowserOpacity(oBrowserWindow);
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             lf_move();
+
+            oBrowserWindow.show();
 
         });
 
@@ -781,7 +767,6 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.show = false;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -808,14 +793,6 @@
         //     oBrowserWindow.webContents.openDevTools();
         // }
 
-        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
-
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
@@ -827,10 +804,6 @@
             };
 
             oBrowserWindow.webContents.send('if-appdocu-info', oDocuData);
-
-            oBrowserWindow.show();
-
-            // oBrowserWindow.setOpacity(1.0);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             WSUTIL.setBrowserOpacity(oBrowserWindow);
@@ -873,7 +846,6 @@
 
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"); // Options
         oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.show = false;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
@@ -900,14 +872,7 @@
         // no build 일 경우에는 개발자 툴을 실행한다.
         // if (!APP.isPackaged) {
         //     oBrowserWindow.webContents.openDevTools();
-        // }
-
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
+        // }   
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -922,10 +887,6 @@
             };
 
             oBrowserWindow.webContents.send('if-ws-options-info', oOptionData);
-
-            oBrowserWindow.show();
-
-            // oBrowserWindow.setOpacity(1.0);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             WSUTIL.setBrowserOpacity(oBrowserWindow);
@@ -976,7 +937,6 @@
         // oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D46"); // Source Pattern
         oBrowserOptions.title = oAPP.msg.M059; // Source Pattern
         oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.show = false;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.backgroundColor = sWsThemeColor;
@@ -1004,13 +964,6 @@
         //     oBrowserWindow.webContents.openDevTools();
         // }
 
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
-
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
@@ -1022,10 +975,6 @@
             };
 
             oBrowserWindow.webContents.send('if-usp-pattern-info', oOptionData);
-
-            oBrowserWindow.show();
-
-            // oBrowserWindow.setOpacity(1.0);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             WSUTIL.setBrowserOpacity(oBrowserWindow);
@@ -1053,10 +1002,10 @@
         let isCallback = ((typeof fnCallback === "function") ? "X" : "");
 
         // 이전에 콜백 바인딩된 펑션이 있을 경우 이벤트 해제
-        if(oAPP.attr.fnBindCallback){
+        if (oAPP.attr.fnBindCallback) {
             IPCRENDERER.off("if-icon-url-callback", oAPP.attr.fnBindCallback);
             delete oAPP.attr.fnBindCallback;
-        }                
+        }
 
         // 파라미터에 콜백 펑션이 있을 경우에만 IPCRENDER 이벤트를 건다.
         if (isCallback == "X") {
@@ -1106,13 +1055,11 @@
 
         oBrowserOptions.title = parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "047"); // Icon List
         oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.show = false;
         oBrowserOptions.titleBarStyle = 'hidden';
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.resizable = true;
         oBrowserOptions.movable = true;
-        // oBrowserOptions.modal = true;
         oBrowserOptions.backgroundColor = sWsThemeColor;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -1139,13 +1086,6 @@
         //     oBrowserWindow.webContents.openDevTools();
         // }
 
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
-
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
@@ -1160,10 +1100,6 @@
 
             oBrowserWindow.webContents.send('if-icon-prev', oOptionData);
 
-            oBrowserWindow.show();
-
-            // oBrowserWindow.setOpacity(1.0);
-
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             WSUTIL.setBrowserOpacity(oBrowserWindow);
 
@@ -1172,8 +1108,8 @@
 
         });
 
-         // 브라우저를 닫을때 타는 이벤트
-         oBrowserWindow.on('closed', () => {
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
 
             oBrowserWindow = null;
             parent.setBusy("");
@@ -1207,84 +1143,6 @@
             return;
 
         }
-
-
-
-
-
-        // let sPopupName = "U4ADOCU";
-
-        // // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        // let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
-        // if (oResult.ISOPEN) {
-        //     return;
-        // }
-
-        // let oThemeInfo = parent.getThemeInfo(); // theme 정보  
-
-        // let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
-        //     oDefaultOption = parent.require(sSettingsJsonPath),
-        //     oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
-
-        // oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"); // U4A Help Document
-        // oBrowserOptions.width = 350;
-        // oBrowserOptions.minWidth = 350;
-        // oBrowserOptions.height = 500;
-        // oBrowserOptions.minHeight = 500;
-        // oBrowserOptions.show = false;
-        // oBrowserOptions.autoHideMenuBar = true;
-        // oBrowserOptions.parent = CURRWIN;
-        // oBrowserOptions.opacity = 0.0;
-        // oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
-        // oBrowserOptions.webPreferences.partition = SESSKEY;
-        // oBrowserOptions.webPreferences.browserkey = BROWSKEY;
-        // oBrowserOptions.webPreferences.OBJTY = sPopupName;
-        // oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
-
-        // // 브라우저 오픈
-        // let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
-        // REMOTEMAIN.enable(oBrowserWindow.webContents);
-
-        // // 브라우저 상단 메뉴 없애기
-        // oBrowserWindow.setMenu(null);
-
-        // let sUrlPath = parent.getPath(sPopupName);
-        // oBrowserWindow.loadURL(sUrlPath);
-
-        // // oBrowserWindow.webContents.openDevTools();
-
-        // oBrowserWindow.once('ready-to-show', () => {
-
-        //     // 부모 위치 가운데 배치한다.
-        //     oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        // });
-
-        // // 브라우저가 오픈이 다 되면 타는 이벤트
-        // oBrowserWindow.webContents.on('did-finish-load', function () {
-
-        //     let oDocuData = {
-        //         oUserInfo: parent.getUserInfo(),
-        //         oThemeInfo: oThemeInfo, // 테마 개인화 정보               
-        //     };
-
-        //     oBrowserWindow.webContents.send('if-u4adocu-info', oDocuData);
-
-        //     oBrowserWindow.show();
-
-        //     oBrowserWindow.setOpacity(1.0);
-
-        //     // 부모 위치 가운데 배치한다.
-        //     oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        // });
-
-        // // 브라우저를 닫을때 타는 이벤트
-        // oBrowserWindow.on('closed', () => {
-
-        //     oBrowserWindow = null;
-
-        // });
 
     }; // end of oAPP.fn.fnU4ADocuPopupOpener
 
@@ -1322,7 +1180,6 @@
                 "width": 400,
                 "transparent": true,
                 "frame": false,
-                // "show": false,
                 "resizable": false,
                 "maximizable": false,
                 "minimizable": false,
@@ -1339,7 +1196,7 @@
             };
 
         oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.title = sFlag;
+        oBrowserOptions.title = sFlag;        
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
@@ -1374,18 +1231,12 @@
         //     oBrowserWindow.webContents.openDevTools();
         // }
 
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
-
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
             oBrowserWindow.webContents.send("export_import-INITDATA", oSendData);
 
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             oBrowserWindow.show();
 
             // 부모 위치 가운데 배치한다.
@@ -1442,7 +1293,7 @@
 
             };
 
-        oBrowserOptions.show = false;
+
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B48"); // About U4A WS IDE
@@ -1458,7 +1309,6 @@
 
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
-
 
         let oServerInfo = parent.getServerInfo();
 
@@ -1476,21 +1326,10 @@
         //     oBrowserWindow.webContents.openDevTools();
         // }
 
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
-
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
             oBrowserWindow.webContents.send("if-about-u4a", oSendData);
-
-            oBrowserWindow.show();
-
-            // oBrowserWindow.setOpacity(1.0);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             WSUTIL.setBrowserOpacity(oBrowserWindow);
@@ -1534,8 +1373,7 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A14"); // Runtime Class Navigator
-        oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.show = false;
+        oBrowserOptions.autoHideMenuBar = true;        
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
@@ -1564,13 +1402,6 @@
         //     oBrowserWindow.webContents.openDevTools();
         // }
 
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
-
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
@@ -1583,10 +1414,6 @@
 
             // 오픈할 URL 파라미터 전송
             oBrowserWindow.webContents.send('if-runtime-info', oRuntimeInfo);
-
-            oBrowserWindow.show();
-
-            // oBrowserWindow.setOpacity(1.0);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             WSUTIL.setBrowserOpacity(oBrowserWindow);
@@ -1633,8 +1460,7 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B57"); // Font Style Wizard
-        oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.show = false;
+        oBrowserOptions.autoHideMenuBar = true;        
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -1652,20 +1478,8 @@
 
         // oBrowserWindow.webContents.openDevTools();
 
-        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
-
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
-
-            oBrowserWindow.show();
-
-            // oBrowserWindow.setOpacity(1.0);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             WSUTIL.setBrowserOpacity(oBrowserWindow);
@@ -1715,8 +1529,7 @@
 
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12"); // Icon List
         oBrowserOptions.url = sPath;
-        oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.show = false;
+        oBrowserOptions.autoHideMenuBar = true;        
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -1750,8 +1563,7 @@
         sTitle += " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D24"); // Message Popup
 
         oBrowserOptions.title = sTitle;
-        oBrowserOptions.center = true;
-        oBrowserOptions.show = false;
+        oBrowserOptions.center = true;        
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.titleBarStyle = "hidden";
@@ -1782,14 +1594,6 @@
         //     oBrowserWindow.webContents.openDevTools();
         // }
 
-        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
-
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
@@ -1800,10 +1604,6 @@
             };
 
             oBrowserWindow.webContents.send('if-errmsg-info', oSendData);
-
-            oBrowserWindow.show();
-
-            // oBrowserWindow.setOpacity(1.0);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             WSUTIL.setBrowserOpacity(oBrowserWindow);
@@ -1822,9 +1622,7 @@
 
         });
 
-
         IPCMAIN.on(`${BROWSKEY}--errormsg--click`, oAPP.fn.fnIpcMain_errmsg_click);
-
 
     }; // end of oAPP.fn.fnMultiFooterMsg
 
@@ -1859,8 +1657,7 @@
         oBrowserOptions.url = sPath;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
-        oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.show = false;
+        oBrowserOptions.opacity = 0.0;        
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sWinObjType;
@@ -1907,8 +1704,7 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         // oBrowserOptions.title = "Document";
-        oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.show = false;
+        oBrowserOptions.autoHideMenuBar = true;        
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
@@ -1939,14 +1735,7 @@
         // no build 일 경우에는 개발자 툴을 실행한다.
         // if (!APP.isPackaged) {
         //     oBrowserWindow.webContents.openDevTools();
-        // }
-
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
+        // }  
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -1959,10 +1748,6 @@
             };
 
             oBrowserWindow.webContents.send('if-relnote-info', oData);
-
-            oBrowserWindow.show();
-
-            // oBrowserWindow.setOpacity(1.0);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             WSUTIL.setBrowserOpacity(oBrowserWindow);
@@ -2027,8 +1812,7 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B59"); // OTR Manager
-        oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.show = false;
+        oBrowserOptions.autoHideMenuBar = true;        
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
@@ -2057,14 +1841,6 @@
         //     oBrowserWindow.webContents.openDevTools();
         // }
 
-        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
-
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
@@ -2078,10 +1854,6 @@
 
             // 오픈할 URL 파라미터 전송
             oBrowserWindow.webContents.send('if_OTRF4HelpPopup', oSendData);
-
-            oBrowserWindow.show();
-
-            // oBrowserWindow.setOpacity(1.0);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             WSUTIL.setBrowserOpacity(oBrowserWindow);
@@ -2122,8 +1894,7 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B58"); // UI5 Predefined CSS
-        oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.show = false;
+        oBrowserOptions.autoHideMenuBar = true;        
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
@@ -2153,14 +1924,6 @@
         //     oBrowserWindow.webContents.openDevTools();
         // }
 
-        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
-
         // sap icon 종류
         let oIconUrl = {
             ICON_LED_RED: oAPP.fn.fnGetSapIconPath("ICON_LED_RED"),
@@ -2181,10 +1944,6 @@
 
             // 오픈할 URL 파라미터 전송
             oBrowserWindow.webContents.send('if-ui5css-info', oSendData);
-
-            oBrowserWindow.show();
-
-            // oBrowserWindow.setOpacity(1.0);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             WSUTIL.setBrowserOpacity(oBrowserWindow);
@@ -2281,8 +2040,7 @@
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D31"); // ShortCut Creator
-        oBrowserOptions.show = false;
+        oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D31"); // ShortCut Creator        
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.skipTaskbar = false;
         oBrowserOptions.autoHideMenuBar = true;
@@ -2355,15 +2113,7 @@
         // if (!APP.isPackaged) {
         //     oBrowserWindow.webContents.openDevTools();
         // }
-
-        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
-
+   
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
@@ -2375,10 +2125,6 @@
 
             // 오픈할 URL 파라미터 전송
             oBrowserWindow.webContents.send('if_APP_shortcutCreator', oSendData);
-
-            oBrowserWindow.show();
-
-            // oBrowserWindow.setOpacity(1.0);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             WSUTIL.setBrowserOpacity(oBrowserWindow);

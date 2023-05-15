@@ -506,8 +506,7 @@
         oBrowserOptions.url = sPath;
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A07"); // Example Open
         oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.modal = true;
-        oBrowserOptions.show = false;
+        oBrowserOptions.modal = true;        
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.webPreferences.partition = SESSKEY;

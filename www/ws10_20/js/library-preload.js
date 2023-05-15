@@ -25,102 +25,102 @@ let oAPP = (function (window) {
     oAPP.sap = {};
     oAPP.sap.msgcls = {};
 
-    oAPP.attr = {};    
+    oAPP.attr = {};
     oAPP.common = {};
     oAPP.wmenu = {}; // window menu
 
     oAPP.aPreloadScripts = [{
-            URL: parent.getPath("JQUERYUI"),
-            MIMETYPE: "script"
-        },
-        {
-            URL: "../js/shortcut.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "../js/download.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "../js/dateformat.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/ws_common.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/fnNetworkChecker.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/ws_events.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/ws_events_01.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/ws_events_02.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/ws_fn_01.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/ws_fn_02.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/ws_fn_03.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/ws_fn_04.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/fnSuggestion.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/fnDialogPopupOpener.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/ws_fn_ipc.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/fnServerSession.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/fnHmws.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/ws_fn_test.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "design/js/main.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/usp/ws_usp.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/usp/ws_usp_01.js",
-            MIMETYPE: "script"
-        },
-        {
-            URL: "./js/ws_main.js",
-            MIMETYPE: "script"
-        },
+        URL: parent.getPath("JQUERYUI"),
+        MIMETYPE: "script"
+    },
+    {
+        URL: "../js/shortcut.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "../js/download.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "../js/dateformat.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/ws_common.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/fnNetworkChecker.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/ws_events.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/ws_events_01.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/ws_events_02.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/ws_fn_01.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/ws_fn_02.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/ws_fn_03.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/ws_fn_04.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/fnSuggestion.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/fnDialogPopupOpener.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/ws_fn_ipc.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/fnServerSession.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/fnHmws.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/ws_fn_test.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "design/js/main.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/usp/ws_usp.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/usp/ws_usp_01.js",
+        MIMETYPE: "script"
+    },
+    {
+        URL: "./js/ws_main.js",
+        MIMETYPE: "script"
+    },
     ];
 
     oAPP.loadLibrary = function (scripts, index, fnCallback) {
@@ -200,7 +200,7 @@ let oAPP = (function (window) {
 
         // Browser Window option        
         var sSettingsJsonPath = PATHINFO.WSSETTINGS,
-        
+
             // JSON 파일 형식의 Setting 정보를 읽는다..
             oSettings = require(sSettingsJsonPath);
 
@@ -218,7 +218,7 @@ let oAPP = (function (window) {
     oAPP.fnLoadBootStrapSetting = function () {
 
         let oSettings = oAPP.getSettingsInfo(),
-            oSetting_UI5 = oSettings.UI5,          
+            oSetting_UI5 = oSettings.UI5,
             oBootStrap = oSetting_UI5.bootstrap,
             oUserInfo = parent.getUserInfo(), // 로그인 유저 정보
             sLangu = oUserInfo.LANGU, // 접속 언어           
@@ -266,7 +266,7 @@ oAPP.fnLoadBootStrapSetting();
 // Window onload
 window.addEventListener("load", oAPP.fnWindowOnInitLoad);
 
-document.addEventListener('DOMContentLoaded', function () {    
+document.addEventListener('DOMContentLoaded', function () {
 
     zconsole.log("[library-preload.js] === > ws10_20.html");
 

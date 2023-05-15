@@ -798,25 +798,13 @@
             // // no build 일 경우에는 개발자 툴을 실행한다.
             // if (!APP.isPackaged) {
             //     oBrowserWindow.webContents.openDevTools();
-            // }
-
-            // 브라우저가 활성화 될 준비가 될때 타는 이벤트
-            oBrowserWindow.once('ready-to-show', () => {
-
-                // 부모 위치 가운데 배치한다.
-                oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-            });
+            // }      
 
             // 브라우저가 오픈이 다 되면 타는 이벤트
             oBrowserWindow.webContents.on('did-finish-load', function () {
 
                 // 오픈할 URL 파라미터 전송
                 oBrowserWindow.webContents.send('if-extopen-url', sPath);
-
-                oBrowserWindow.show();
-
-                // oBrowserWindow.setOpacity(1.0);
 
                 // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
                 parent.WSUTIL.setBrowserOpacity(oBrowserWindow);

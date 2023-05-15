@@ -55,9 +55,8 @@
 
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D02"); // Find
         oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.parent = CURRWIN;        
         oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.show = false;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -75,16 +74,8 @@
 
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
-
+      
         // oBrowserWindow.webContents.openDevTools();
-
-        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -104,9 +95,7 @@
 
             });
 
-            oBrowserWindow.show();
-
-            // oBrowserWindow.setOpacity(1.0);
+            // oBrowserWindow.show();
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             parent.WSUTIL.setBrowserOpacity(oBrowserWindow);

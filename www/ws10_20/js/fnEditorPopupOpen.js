@@ -56,7 +56,6 @@
         oBrowserOptions.title = sBrowserTitle;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
-        oBrowserOptions.show = false;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
 
         oBrowserOptions.parent = oCurrWin;
@@ -75,24 +74,15 @@
         var sUrlPath = parent.getPath("EDITPOP");
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
-
-        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
-        oBrowserWindow.once('ready-to-show', () => {
-
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-        });
+        // oBrowserWindow.webContents.openDevTools();   
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
             lf_webContentSend(oBrowserWindow, sSearchValue);
 
-            oBrowserWindow.show();
-
-            oBrowserWindow.setOpacity(1.0);
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
@@ -128,7 +118,8 @@
 
             oBrowserWindow.webContents.send('if-editor-info', oEditorInfo);
 
-            oBrowserWindow.setOpacity(1.0);
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
 
         }
 
