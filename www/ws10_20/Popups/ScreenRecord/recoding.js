@@ -87,7 +87,7 @@ oAPP = {
             "transparent": true,
             "frame": false,
             "icon": "www/img/logo.png",
-            "parent": oAPP.remote.getCurrentWindow(),
+            // "parent": oAPP.remote.getCurrentWindow(),
             "webPreferences": {
                 "devTools": true,
                 "nodeIntegration": true,
@@ -146,7 +146,7 @@ oAPP = {
             "maximizable": false,
             "minimizable": false,
             "show": true,
-            "transparent": false,
+            // "transparent": false,
             "frame": true,
             "parent": oAPP.remote.getCurrentWindow(),
             "webPreferences": {
@@ -442,7 +442,11 @@ oAPP = {
     onRecordStop: () => {
 
         //레코딩 다운 종료 
-        oAPP.REC.stop();
+        if(oAPP.REC && oAPP.REC.stop){
+            oAPP.REC.stop();
+        }
+
+        // oAPP.REC.stop();
         delete oAPP.REC;
 
         //드로잉 설정해제 

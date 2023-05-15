@@ -248,6 +248,7 @@ oAPP = {
 
 
         var timerInterval = null,
+            recordTimeOut = null,
             swipeDir = -1,
             toggle = false,
             cElms = clickaBleElements.length;
@@ -296,7 +297,7 @@ oAPP = {
 
             toggleButton.classList.remove("movedown");
             toggleButton.classList.add("moveup");
-            setTimeout(function() {
+            recordTimeOut = setTimeout(function() {
                 recText[1].classList.remove("active");
                 activeText.classList.add("active");
                 startRecorder();
@@ -310,6 +311,8 @@ oAPP = {
             toggleButton.classList.remove("moveup");
             toggleButton.classList.add("movedown");
             clearInterval(timerInterval);
+            clearTimeout(recordTimeOut);
+            
             setTimeout(function() {
                 recText[0].classList.remove("active");
                 document.getElementById("stop-text").classList.add("active");

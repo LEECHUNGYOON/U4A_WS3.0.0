@@ -294,23 +294,13 @@ let oAPP = (function () {
                                 text: "CLIENT"
                             }),
                             fields: [
-                                new sap.m.Input({
+                                new sap.m.Input("ws_client", {
                                     type: sap.m.InputType.Number,
                                     value: "{CLIENT}",
                                     width: "100px",
-                                    // valueState: "{CLIENT_VS}",
-                                    // valueStateText: "{CLIENT_VSTXT}",
+                                    showValueStateMessage: false,
                                     submit: oAPP.events.ev_login
                                 })
-                                // .bindProperty("valueState", function(sValueState){
-
-                                //     if(!sValueState){
-                                //         return "None";
-                                //     }
-
-                                //     return sValueState;
-
-                                // })
 
                             ]
                         }),
@@ -398,6 +388,7 @@ let oAPP = (function () {
                                     type: sap.m.InputType.Password,
                                     value: "{PW}",
                                     showValueHelp: true,
+                                    showValueStateMessage: false,
                                     valueHelpIconSrc: "sap-icon://hide",
                                     valueHelpRequest: fnPWInputValueHelpEvent,
                                     submit: oAPP.events.ev_login
@@ -421,8 +412,9 @@ let oAPP = (function () {
                                 text: "LANGUAGE"
                             }),
                             fields: [
-                                new sap.m.Input({
+                                new sap.m.Input("ws_langu", {
                                     value: "{LANGU}",
+                                    showValueStateMessage: false,
                                     submit: oAPP.events.ev_login,
                                     change: (oEvent) => {
 
@@ -864,7 +856,7 @@ let oAPP = (function () {
 
             // 메시지 처리.. 
             // parent.showMessage(null, 99, "E", oResult.MSG);
-            sap.m.MessageToast.show(oResult.MSG);
+            sap.m.MessageToast.show(oResult.MSG, { width: "auto" });
             parent.setBusy("");
             return;
 
@@ -2003,6 +1995,17 @@ let oAPP = (function () {
      ************************************************************************/
     oAPP.fn.fnLoginCheck = (ID, PW, CLIENT, LANGU) => {
 
+        let oClientInput = sap.ui.getCore().byId("ws_client"),
+            oIdInput = sap.ui.getCore().byId("ws_id"),
+            oPwInput = sap.ui.getCore().byId("ws_pw"),
+            oLanguInput = sap.ui.getCore().byId("ws_langu");
+
+        oClientInput.setValueState("None");
+        oPwInput.setValueState("None");
+        oLanguInput.setValueState("None");
+
+        oIdInput.removeStyleClass("u4aWsSearchError");
+
         var oCheck = {
             RETCD: "S",
             MSG: ""
@@ -2013,6 +2016,12 @@ let oAPP = (function () {
             oCheck.RETCD = "E";
             oCheck.MSG = oAPP.msg.M0271; // "Client is Required!";
 
+            oClientInput.setValueState("Error");
+
+            setTimeout(() => {
+                oClientInput.focus();
+            });
+
             return oCheck;
 
         }
@@ -2021,6 +2030,12 @@ let oAPP = (function () {
 
             oCheck.RETCD = "E";
             oCheck.MSG = oAPP.msg.M0272; // "ID is Required!";
+
+            oIdInput.addStyleClass("u4aWsSearchError");
+
+            setTimeout(() => {
+                oIdInput.focus();
+            });
 
             return oCheck;
 
@@ -2031,6 +2046,12 @@ let oAPP = (function () {
             oCheck.RETCD = "E";
             oCheck.MSG = oAPP.msg.M0273; // "PW is Required!";
 
+            oPwInput.setValueState("Error");
+
+            setTimeout(() => {
+                oPwInput.focus();
+            });
+
             return oCheck;
 
         }
@@ -2039,6 +2060,12 @@ let oAPP = (function () {
 
             oCheck.RETCD = "E";
             oCheck.MSG = oAPP.msg.M0274; // "Language is Required!";
+
+            oLanguInput.setValueState("Error");
+
+            setTimeout(() => {
+                oLanguInput.focus();
+            });
 
             return oCheck;
 

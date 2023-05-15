@@ -38,7 +38,7 @@
             // sBrowserTitle = "Editor - Customizing the Error Page";
 
             sTitle = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D23"); // Editor
-        sTitle += " - " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D32"); // Customizing the Error Page
+            sTitle += " - " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D32"); // Customizing the Error Page
 
         var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),
@@ -79,7 +79,7 @@
             oBrowserWindow.webContents.send('if-editor-info', oEditorInfo);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            WSUTIL.setBrowserOpacity(oBrowserWindow);
+            parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
@@ -166,7 +166,7 @@
         // oBrowserOptions.title = "Error Page Preview";
         oBrowserOptions.title = sTitle;
         oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.opacity = 1.0;
+        oBrowserOptions.opacity = 0.0;
         oBrowserOptions.devTools = false;
         oBrowserOptions.parent = oCurrWin;
 

@@ -590,3 +590,8 @@ a.u4aWsLoginBtnSignin:hover {
     transform: scale(1);
   }
 }
+
+
+.sapMSF.u4aWsSearchError.sapMFocus>.sapMSFF::before {
+    border: .125rem solid #fa6161;
+}
