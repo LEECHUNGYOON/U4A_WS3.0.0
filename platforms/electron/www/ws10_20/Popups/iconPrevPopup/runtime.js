@@ -78,7 +78,7 @@ function fnWait() {
  ************************************************************************/
 oAPP.fn.attachInit = async () => {
 
-    // await fnWait();
+    await fnWait();
 
     // 현재 브라우저의 이벤트 핸들러 
     _attachCurrentWindowEvents();
@@ -341,18 +341,23 @@ function fnSAPIconConfig() {
 
         }
 
-        let sUi5Version = sap.ui.version;
-        sUi5Version = sUi5Version.replaceAll(".", "");
-        sUi5Version = "v" + sUi5Version;
+        debugger;
+
+        // let sUi5Version = sap.ui.version;
+        // sUi5Version = sUi5Version.replaceAll(".", "");
+        // sUi5Version = "v" + sUi5Version;
+
+        // let oSettingInfo = WSUTIL.getWsSettingsInfo();
+        //     oUi5Info = oSettingInfo.UI5,
+        //     sServerLibRootPath = oUi5Info.ServerLibraryRootPath,
+        // let sUI5IconTagsJsonPath = oUi5Info.UI5IconTagsJsonPath;
 
         let oSettingInfo = WSUTIL.getWsSettingsInfo(),
-            oUi5Info = oSettingInfo.UI5,
-            sServerLibRootPath = oUi5Info.ServerLibraryRootPath,
-            sUI5IconTagsJsonPath = oUi5Info.UI5IconTagsJsonPath;
+            sUI5IconTagsJsonPath = jQuery.sap.getResourcePath(oSettingInfo.UI5.UI5IconTagsJsonPath);
 
-        let sIconTagJsonUrl = PATH.join(sServerLibRootPath, sUi5Version, sUI5IconTagsJsonPath);
+        // let sIconTagJsonUrl = PATH.join(sServerLibRootPath, sUi5Version, sUI5IconTagsJsonPath);
 
-        let oIconTagsResult = await getJsonAsync(sIconTagJsonUrl);
+        let oIconTagsResult = await getJsonAsync(sUI5IconTagsJsonPath);
         if (oIconTagsResult.RETCD == "E") {
             resolve();
             return;
