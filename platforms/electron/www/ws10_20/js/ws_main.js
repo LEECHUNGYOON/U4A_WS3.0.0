@@ -399,6 +399,9 @@
             // Register illustration Message Pool
             oAPP.fn.fnRegisterIllustrationPool();
 
+            // U4A Icon 추가하기
+            oAPP.fn.fnRegisterU4AIcons();
+
             // 초기 현재 화면 위치 정보 저장
             parent.setCurrPage("WS10");
 

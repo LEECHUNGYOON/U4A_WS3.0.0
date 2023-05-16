@@ -25,6 +25,7 @@ module.exports = (() => {
         APPPATH = APP.getAppPath(),
         USERDATA = APP.getPath("userData"),
 
+        WS10_20 = PATH.join(APPPATH, "ws10_20"),
         JS_ROOT = PATH.join(APPPATH, "ws10_20", "js"),
         POPUP_ROOT = PATH.join(APPPATH, "ws10_20", "Popups"),
         P13N_ROOT = PATH.join(USERDATA, "p13n"),
@@ -112,6 +113,7 @@ module.exports = (() => {
 
         // Root Paths...
         POPUP_ROOT: POPUP_ROOT,
+        U4AICON_ROOT: PATH.join(WS10_20, "icons", "u4a")
 
     };
 

@@ -2,7 +2,7 @@
  * ws_events.js
  **************************************************************************/
 
-(function(window, $, oAPP) {
+(function (window, $, oAPP) {
     "use strict";
 
     oAPP.events = {};
@@ -15,7 +15,7 @@
     /************************************************************************
      * App 생성팝업
      ************************************************************************/
-    oAPP.events.ev_AppCreate = function() {
+    oAPP.events.ev_AppCreate = function () {
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
@@ -60,7 +60,7 @@
             if (!oAPP.fn.createApplicationPopup) {
 
                 // Application 생성 팝업 띄우기
-                $.getScript("design/js/createApplicationPopup.js", function() {
+                $.getScript("design/js/createApplicationPopup.js", function () {
 
                     oAPP.fn.createApplicationPopup(sAppID);
 
@@ -86,7 +86,7 @@
     /************************************************************************
      * App 수정
      ************************************************************************/
-    oAPP.events.ev_AppChange = function() {
+    oAPP.events.ev_AppChange = function () {
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
@@ -101,7 +101,7 @@
     /************************************************************************
      * App 삭제
      ************************************************************************/
-    oAPP.events.ev_AppDelete = function() {
+    oAPP.events.ev_AppDelete = function () {
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
@@ -153,7 +153,7 @@
             var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "003"); // Do you really want to delete the object?
 
             // 질문팝업? 삭제하시겠습니까?            
-            parent.showMessage(sap, 30, 'W', sMsg, function(TYPE) {
+            parent.showMessage(sap, 30, 'W', sMsg, function (TYPE) {
 
                 if (TYPE == null || TYPE == "NO") {
                     return;
@@ -190,7 +190,7 @@
     /************************************************************************
      * App 삭제하러 서버 호출
      ************************************************************************/
-    oAPP.fn.fnSetAppDelete = function(oParam) {
+    oAPP.fn.fnSetAppDelete = function (oParam) {
 
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
@@ -210,7 +210,7 @@
 
         oFormData.append("APPID", sAppId);
 
-        sendAjax(sPath, oFormData, function(oResult) {
+        sendAjax(sPath, oFormData, function (oResult) {
 
             // 스크립트가 있으면 eval 처리
             if (oResult.SCRIPT) {
@@ -246,7 +246,7 @@
         function lf_appDelCtsPopup() {
 
             // CTS Popup을 Open 한다.
-            oAPP.fn.fnCtsPopupOpener(function(oResult) {
+            oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
                 oAPP.fn.fnSetAppDelete(oResult);
 
@@ -259,7 +259,7 @@
     /************************************************************************
      * USP App 삭제하러 서버 호출
      ************************************************************************/
-    oAPP.fn.fnSetUspAppDelete = function(oParam) {
+    oAPP.fn.fnSetUspAppDelete = function (oParam) {
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
@@ -282,7 +282,7 @@
 
         oFormData.append("APPDATA", JSON.stringify(oDelAppInfo));
 
-        sendAjax(sPath, oFormData, function(oResult) {
+        sendAjax(sPath, oFormData, function (oResult) {
 
             // 스크립트가 있으면 eval 처리
             if (oResult.SCRIPT) {
@@ -313,7 +313,7 @@
         function lf_appDelCtsPopup() {
 
             // CTS Popup을 Open 한다.
-            oAPP.fn.fnCtsPopupOpener(function(oResult) {
+            oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
                 oAPP.fn.fnSetUspAppDelete(oResult);
 
@@ -326,7 +326,7 @@
     /************************************************************************
      * App 복사
      ************************************************************************/
-    oAPP.events.ev_AppCopy = function() {
+    oAPP.events.ev_AppCopy = function () {
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
@@ -387,7 +387,7 @@
     /************************************************************************
      * App 조회
      ************************************************************************/
-    oAPP.events.ev_AppDisplay = function(oEvent) {
+    oAPP.events.ev_AppDisplay = function (oEvent) {
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
@@ -402,7 +402,7 @@
     /************************************************************************
      * App 실행
      ************************************************************************/
-    oAPP.events.ev_AppExec = function() {
+    oAPP.events.ev_AppExec = function () {
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
@@ -490,7 +490,7 @@
     /************************************************************************
      * Example 실행
      ************************************************************************/
-    oAPP.events.ev_AppExam = function(oEvent) {
+    oAPP.events.ev_AppExam = function (oEvent) {
 
         var oCurrWin = REMOTE.getCurrentWindow(),
             SESSKEY = parent.getSessionKey(),
@@ -506,7 +506,7 @@
         oBrowserOptions.url = sPath;
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A07"); // Example Open
         oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.modal = true;        
+        oBrowserOptions.modal = true;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -520,7 +520,7 @@
     /************************************************************************
      * App 모바일 미리보기
      ************************************************************************/
-    oAPP.events.ev_MultiPrev = function() {
+    oAPP.events.ev_MultiPrev = function () {
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
@@ -608,7 +608,7 @@
     /************************************************************************
      * Application Name Input Search Help(F4)
      ************************************************************************/
-    oAPP.events.ev_AppValueHelp = function(oEvent) {
+    oAPP.events.ev_AppValueHelp = function (oEvent) {
 
         var bIsPressClearBtn = oEvent.getParameter("clearButtonPressed");
         if (bIsPressClearBtn) {
@@ -679,7 +679,7 @@
     /************************************************************************
      * new Window
      ************************************************************************/
-    oAPP.events.ev_NewWindow = function() {
+    oAPP.events.ev_NewWindow = function () {
 
         parent.onNewWindow();
 
@@ -688,7 +688,7 @@
     /************************************************************************
      * Application Name Input Change Event
      ************************************************************************/
-    oAPP.events.ev_AppInputChange = function(oEvent) {
+    oAPP.events.ev_AppInputChange = function (oEvent) {
 
         oEvent.preventDefault();
 
@@ -703,7 +703,7 @@
     /************************************************************************
      * logout
      ************************************************************************/
-    oAPP.events.ev_Logout = function() {
+    oAPP.events.ev_Logout = function () {
 
         // Logout 버튼으로 Logout을 시도 했다는 Flag      
         oAPP.attr.isBrowserCloseLogoutMsgOpen = "X";
@@ -750,7 +750,7 @@
     /************************************************************************
      * ws main 페이지로 이동
      ************************************************************************/
-    oAPP.events.ev_pageBack = function(oEvent) {
+    oAPP.events.ev_pageBack = function (oEvent) {
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
@@ -788,7 +788,7 @@
     /************************************************************************
      * WS10 으로 화면 이동 전에 질문 팝업 callback function
      ************************************************************************/
-    oAPP.events.ev_pageBack_MsgCallBack = function(ACTCD) {
+    oAPP.events.ev_pageBack_MsgCallBack = function (ACTCD) {
 
         // 이동을 하지 않는다.
         if (ACTCD == null || ACTCD == "CANCEL") {
@@ -830,7 +830,7 @@
     /************************************************************************
      * side navigation Menu click
      ************************************************************************/
-    oAPP.events.ev_pressSideNavMenu = function(oEvent) {
+    oAPP.events.ev_pressSideNavMenu = function (oEvent) {
 
         var oSelectedItem = oEvent.getParameter("item"),
             sItemKey = oSelectedItem.getProperty("key"),
@@ -851,7 +851,7 @@
     /************************************************************************
      * Syntax Check Button Event
      ************************************************************************/
-    oAPP.events.ev_pressSyntaxCheckBtn = function(oEvent) {
+    oAPP.events.ev_pressSyntaxCheckBtn = function (oEvent) {
 
         // 화면 Lock 걸기
         sap.ui.getCore().lock();
@@ -932,7 +932,7 @@
     /************************************************************************
      * Display or Change Button Event
      ************************************************************************/
-    oAPP.events.ev_pressDisplayModeBtn = function(oEvent) {
+    oAPP.events.ev_pressDisplayModeBtn = function (oEvent) {
 
         var oAppInfo = jQuery.extend(true, {}, parent.getAppInfo()); // APP 정보
 
@@ -1011,7 +1011,7 @@
         var lo_Event = oEvent;
 
         // CTS Popup을 Open 한다.
-        oAPP.fn.fnCtsPopupOpener(function(oResult) {
+        oAPP.fn.fnCtsPopupOpener(function (oResult) {
 
             var oEvent = this,
                 IS_ACT = oEvent.getParameter("IS_ACT");
@@ -1032,7 +1032,7 @@
     /************************************************************************
      * Activate Button Event
      ************************************************************************/
-    oAPP.events.ev_pressActivateBtn = function(oEvent) {
+    oAPP.events.ev_pressActivateBtn = function (oEvent) {
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
@@ -1086,7 +1086,7 @@
         oFormData.append("APPDATA", JSON.stringify(oAPP.fn.getSaveData()));
 
         // Ajax 서버 호출
-        sendAjax(sPath, oFormData, function(oResult) {
+        sendAjax(sPath, oFormData, function (oResult) {
 
             // 현재 떠있는 브라우저
             var oCurrWin = REMOTE.getCurrentWindow(),
@@ -1192,7 +1192,7 @@
     /************************************************************************
      * Save Button Event
      ************************************************************************/
-    oAPP.events.ev_pressSaveBtn = function(oEvent) {
+    oAPP.events.ev_pressSaveBtn = function (oEvent) {
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
@@ -1329,7 +1329,7 @@
     /************************************************************************
      * MIME Button Event
      ************************************************************************/
-    oAPP.events.ev_pressMimeBtn = function() {
+    oAPP.events.ev_pressMimeBtn = function () {
 
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
@@ -1343,7 +1343,7 @@
     /************************************************************************
      * Controller Button Event
      ************************************************************************/
-    oAPP.events.ev_pressControllerBtn = function() {
+    oAPP.events.ev_pressControllerBtn = function () {
 
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
@@ -1357,7 +1357,7 @@
     /************************************************************************
      * Application Execution Button Event
      ************************************************************************/
-    oAPP.events.ev_pressAppExecBtn = function(oEvent) {
+    oAPP.events.ev_pressAppExecBtn = function (oEvent) {
 
         var oAppInfo = parent.getAppInfo(),
             sCurrPage = parent.getCurrPage(),
@@ -1382,7 +1382,7 @@
     /************************************************************************
      * Multi Preview Button Event
      ************************************************************************/
-    oAPP.events.ev_pressMultiPrevBtn = function(oEvent) {
+    oAPP.events.ev_pressMultiPrevBtn = function (oEvent) {
 
         var oAppInfo = parent.getAppInfo(),
             sCurrPage = parent.getCurrPage(),
@@ -1407,12 +1407,12 @@
     /************************************************************************
      * IconList Button Event
      ************************************************************************/
-    oAPP.events.ev_pressIconListBtn = function(oEvent) {
-        
+    oAPP.events.ev_pressIconListBtn = function (oEvent) {
+
         /**
          * White List Object에 해당 CTS 번호가 있을경우 새로운 Icon List를 실행
          */
-        let bIsNewPopup = oAPP.common.checkWLOList("C", "UHAK900630");        
+        let bIsNewPopup = oAPP.common.checkWLOList("C", "UHAK900630");
         if (bIsNewPopup) {
             oAPP.fn.fnIconPreviewPopupOpener();
             return;
@@ -1423,9 +1423,46 @@
     }; // end of oAPP.events.ev_pressIconListBtn
 
     /************************************************************************
+     * Icon Collection Button Event
+     ************************************************************************/
+    oAPP.events.ev_PressIconCollectBtn = function (oEvent) {
+
+        let oSelectedMenuItem = oEvent.getParameter("item"),
+            sSelectedKey = oSelectedMenuItem.getProperty("key");
+
+        switch (sSelectedKey) {
+            case "M1":
+
+                /**
+                 * White List Object에 해당 CTS 번호가 있을경우 새로운 Icon List를 실행
+                 */
+                let bIsNewPopup = oAPP.common.checkWLOList("C", "UHAK900630");
+                if (bIsNewPopup) {
+                    oAPP.fn.fnIconPreviewPopupOpener();
+                    return;
+                }
+
+                oAPP.fn.fnIconListPopupOpener();
+
+                return;
+
+            case "M2": // Illustrated Message Preview Popup
+
+
+
+
+                return;
+
+
+        }
+
+
+    }; // end of oAPP.events.ev_PressIconCollectBtn
+
+    /************************************************************************
      * Add Server Event Button Event
      ************************************************************************/
-    oAPP.events.ev_pressAddEventBtn = function(oEvent) {
+    oAPP.events.ev_pressAddEventBtn = function (oEvent) {
 
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
@@ -1433,7 +1470,7 @@
         }
 
         if (!oAPP.fn.createEventPopup) {
-            oAPP.fn.getScript("design/js/createEventPopup", function() {
+            oAPP.fn.getScript("design/js/createEventPopup", function () {
                 oAPP.fn.createEventPopup();
             });
 
@@ -1447,7 +1484,7 @@
     /************************************************************************
      * Runtime Class Navigator Button
      ************************************************************************/
-    oAPP.events.ev_pressRuntimeBtn = function() {
+    oAPP.events.ev_pressRuntimeBtn = function () {
 
         oAPP.fn.fnRuntimeClassNaviPopupOpener();
 
@@ -1456,7 +1493,7 @@
     /************************************************************************
      * 세션 끊기..
      ************************************************************************/
-    oAPP.events.ev_LogoutTest = function() {
+    oAPP.events.ev_LogoutTest = function () {
 
         var sPath = parent.getServerPath() + '/logoff';
 

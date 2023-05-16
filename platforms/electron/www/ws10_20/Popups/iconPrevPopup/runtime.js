@@ -56,10 +56,29 @@ IPCRENDERER.on("if-icon-isCallback", function (events, isCallback) {
 
 });
 
+
+function fnWait() {
+
+    return new Promise((resolve) => {
+
+        setTimeout(() => {
+
+            resolve();
+
+        }, 3000);
+
+    });
+
+}
+
+
+
 /************************************************************************
  * Attach Init
  ************************************************************************/
 oAPP.fn.attachInit = async () => {
+
+    // await fnWait();
 
     // 현재 브라우저의 이벤트 핸들러 
     _attachCurrentWindowEvents();
@@ -69,6 +88,9 @@ oAPP.fn.attachInit = async () => {
     oAPP.fn.fnInitRendering();
 
     oAPP.fn.fnInitModelBinding();
+
+    // sap tnt 아이콘을 로드 한다.
+    fnRegisterIconPool();
 
     // SAP ICON 관련 정보 구성
     await fnSAPIconConfig();
@@ -84,6 +106,33 @@ oAPP.fn.attachInit = async () => {
     sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback);
 
 }; // end of oAPP.fn.attachInit
+
+function fnRegisterIconPool() {
+
+    jQuery.sap.require("sap.ui.core.IconPool");
+
+    // Tnt Icons
+    var oIconSet1 = {
+        collectionName: "SAP-icons-TNT",
+        fontFamily: "SAP-icons-TNT",
+        fontURI: sap.ui.require.toUrl("sap/tnt/themes/base/fonts"),
+        lazy: true
+    };
+
+    var oIconPool = sap.ui.core.IconPool;
+    oIconPool.registerFont(oIconSet1);
+
+    // BusinessSuite Icons
+    var oIconSet2 = {
+        collectionName: "BusinessSuiteInAppSymbols",
+        fontFamily: "BusinessSuiteInAppSymbols",
+        fontURI: sap.ui.require.toUrl("sap/ushell/themes/base/fonts"),
+        lazy: true
+    };
+
+    oIconPool.registerFont(oIconSet2);
+
+} // end of fnRegisterTntIcons
 
 
 function fnGetFontAwesomeIcon() {
@@ -347,9 +396,98 @@ function fnSAPIconConfig() {
 
         resolve();
 
+        setTimeout(async () => {
+
+            // SAP Tnt Icon Meta 정보를 구한다.
+            await fnGetSapTntIcons(); // [async]
+
+            // oCoreModel.refresh();
+
+        }, 500);
+
+        setTimeout(async () => {
+
+            // SAP Business Icon Meta 정보를 구한다.
+            await fnGetSapBusinessIcons(); // [async]
+
+            // oCoreModel.refresh();
+
+        }, 500);
+
     });
 
 } // end of fnSAPIconConfig
+
+function fnGetSapTntIcons() {
+
+    return new Promise(async (resolve) => {
+
+        let sUrl = sap.ui.require.toUrl("sap/tnt/themes/base/fonts/SAP-icons-TNT.json"),
+            oIconListResult = await getJsonAsync(sUrl);
+
+        if (oIconListResult.RETCD == "E") {
+            resolve();
+            return;
+        }
+
+        let oCoreModel = sap.ui.getCore().getModel();
+
+        var aIcons = oCoreModel.getProperty("/ICONS/SAP");
+
+        let oIconList = oIconListResult.RTDATA;
+        for (var sIconName in oIconList) {
+
+            let oIconInfo = {
+                ICON_NAME: sIconName,
+                ICON_SRC: `sap-icon://SAP-icons-TNT/${sIconName}`
+            }
+
+            aIcons.push(oIconInfo);
+
+        }
+
+        resolve();
+
+    });
+
+} // end of fnGetSapTntIcons
+
+
+function fnGetSapBusinessIcons() {
+
+    return new Promise(async (resolve) => {
+
+        let sUrl = sap.ui.require.toUrl("sap/ushell/themes/base/fonts/BusinessSuiteInAppSymbols.json"),
+            oIconListResult = await getJsonAsync(sUrl);
+
+        if (oIconListResult.RETCD == "E") {
+            resolve();
+            return;
+        }
+
+        let oCoreModel = sap.ui.getCore().getModel();
+
+        var aIcons = oCoreModel.getProperty("/ICONS/SAP");
+
+        let oIconList = oIconListResult.RTDATA;
+        for (var sIconName in oIconList) {
+
+            let oIconInfo = {
+                ICON_NAME: sIconName,
+                ICON_SRC: `sap-icon://BusinessSuiteInAppSymbols/${sIconName}`
+            }
+
+            aIcons.push(oIconInfo);
+
+        }
+
+        resolve();
+
+    });
+
+} // end of fnGetSapBusinessIcons
+
+
 
 /************************************************************************
  * 현재 브라우저의 이벤트 핸들러

@@ -507,6 +507,51 @@ module.exports = {
 
     }, // end of getWsMsgModelData
 
+    getWsRegisterU4AIcons: function (sap) {
+
+        let oSettingInfo = this.getWsSettingsInfo(),
+            oU4ASettingsInfo = oSettingInfo.U4A,
+            oU4AIconsInfo = oU4ASettingsInfo.icons,
+            oFwInfo = oU4AIconsInfo.fontAwesome,
+            oFwCollNames = oFwInfo.collectionNames,
+            oFwList = oFwInfo.fontList;
+
+        // fontawesome 아이콘 추가
+        let sUrlRoot = PATHINFO.U4AICON_ROOT,
+            sBrandsColName = oFwCollNames.brands,
+            sRegularColName = oFwCollNames.regular,
+            sSolidColName = oFwCollNames.solid;
+        
+        sap.ui.requireSync("sap/ui/core/IconPool");
+
+        // 로컬 경로 Protocol 변경
+        sUrlRoot = sUrlRoot.replaceAll("\\", "/");
+        sUrlRoot = `file:///${sUrlRoot}`;
+
+        sap.ui.core.IconPool.registerFont({
+            collectionName: sRegularColName,
+            fontFamily: oFwList.regular,
+            fontURI: sUrlRoot,
+            lazy: true
+        });
+
+        sap.ui.core.IconPool.registerFont({
+            collectionName: sBrandsColName,
+            fontFamily: oFwList.brands,
+            fontURI: sUrlRoot,
+            lazy: true
+        });
+
+        sap.ui.core.IconPool.registerFont({
+            collectionName: sSolidColName,
+            fontFamily: oFwList.solid,
+            fontURI: sUrlRoot,
+            lazy: true
+        });
+
+    },
+
+
     /************************************************************************
      * Array를 Tree 구조로 변환
      ************************************************************************  

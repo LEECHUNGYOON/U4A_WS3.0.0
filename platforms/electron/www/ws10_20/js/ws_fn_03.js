@@ -445,6 +445,15 @@
     }; // end of oAPP.fn.fnRegisterIllustrationPool
 
     /************************************************************************
+     * U4A icon 등록
+     ************************************************************************/
+    oAPP.fn.fnRegisterU4AIcons = () => {
+
+        parent.WSUTIL.getWsRegisterU4AIcons(sap);       
+
+    }; // end of oAPP.fn.fnRegisterU4AIcons
+
+    /************************************************************************
      * Illustration Message Dialog
      ************************************************************************
      * @param {String}  sTitle

@@ -2180,12 +2180,38 @@
                 press: oAPP.events.ev_pressMultiPrevBtn
             }).addStyleClass("u4aWs20MultiPrevBtn"),
 
-            oIconListBtn = new sap.m.Button("iconListBtn", {
-                icon: "sap-icon://activity-items",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12"), // Icon List
-                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12") + " (Ctrl+Shift+F10)", // Icon List (Ctrl+Shift+F10)
-                press: oAPP.events.ev_pressIconListBtn
-            }).addStyleClass("u4aWs20IconListBtn"),
+            // oIconListBtn = new sap.m.Button("iconListBtn", {
+            //     icon: "sap-icon://activity-items",
+            //     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12"), // Icon List
+            //     tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12") + " (Ctrl+Shift+F10)", // Icon List (Ctrl+Shift+F10)
+            //     press: oAPP.events.ev_pressIconListBtn
+            // }).addStyleClass("u4aWs20IconListBtn"),
+
+            oIconCollection = new sap.m.MenuButton({
+                icon: "sap-icon://u4a-fw-regular/Face Grin Wide",
+                text: "Icon Explorer",
+                menu: [
+                    new sap.m.Menu("iconCollBtn", {
+                        itemSelected: oAPP.events.ev_PressIconCollectBtn,
+                        items: [
+                            new sap.m.MenuItem("iconListMenuItem", {
+                                key: "M1",
+                                icon: "sap-icon://u4a-fw-solid/Icons",
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12"), // Icon List
+                                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12") + " (Ctrl+Shift+F10)", // Icon List (Ctrl+Shift+F10)
+                            }),
+                            new sap.m.MenuItem({
+                                key: "M2",
+                                icon: "sap-icon://u4a-fw-solid/Image",
+                                text: "Image Icons",
+                                enabled: oAPP.common.checkWLOList("C", "UHAK900630")
+                            })
+                        ]
+
+                    })
+                ]
+
+            }),
 
             oAddEventBtn = new sap.m.Button("addEventBtn", {
                 icon: "sap-icon://touch",
@@ -2264,7 +2290,10 @@
             oControllerBtn, // Controller Button
             oAppExecBtn, // Application Execution Button
             oMobileBtn, // App Multi Preview Button
-            oIconListBtn, // Icon List Button
+
+            // oIconListBtn, // Icon List Button
+            oIconCollection,
+
             oAddEventBtn, // Add Server Event Button
             oRuntimeBtn, // Runtime Class Navigator Button
             oBindPopupBtn, // Binding Popup Button
@@ -2757,7 +2786,7 @@
 
         }
 
-        if(aNewInfo.length == 0){            
+        if (aNewInfo.length == 0) {
             return aCurrentInfo;
         }
 

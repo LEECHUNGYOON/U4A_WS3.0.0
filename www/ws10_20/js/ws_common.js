@@ -1032,12 +1032,23 @@
                         return;
                     }
 
-                    var oIconListBtn = sap.ui.getCore().byId("iconListBtn");
+                    // iconCollBtn
+
+                    var oIconListBtn = sap.ui.getCore().byId("iconCollBtn");
                     if (!oIconListBtn || !oIconListBtn.getEnabled() || !oIconListBtn.getVisible()) {
                         return;
                     }
 
-                    oIconListBtn.firePress();
+                    let oItem = sap.ui.getCore().byId("iconListMenuItem");
+
+                    oIconListBtn.fireItemSelected({ item: oItem });
+
+                    // var oIconListBtn = sap.ui.getCore().byId("iconListBtn");
+                    // if (!oIconListBtn || !oIconListBtn.getEnabled() || !oIconListBtn.getVisible()) {
+                    //     return;
+                    // }
+
+                    // oIconListBtn.firePress();
                 }
             },
             {
@@ -2581,7 +2592,7 @@ function fnJsonParseError(e) {
 }
 
 function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob) {
-  
+
     let oUserInfo = parent.getUserInfo(),
         oSettings = parent.WSUTIL.getWsSettingsInfo(),
         sGlobalLangu = oSettings.globalLanguage || "EN";
