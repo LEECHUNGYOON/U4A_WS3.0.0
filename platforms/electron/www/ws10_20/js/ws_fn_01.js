@@ -2358,9 +2358,7 @@
 
         // 로그인 유저 정보		
         var oUserInfo = parent.getUserInfo(),
-            sUserId = oUserInfo.ID.toUpperCase();
-
-        var sP13nfolderPath = PATH.join(USERDATA, "p13n"), // P13N 폴더 경로
+            sP13nfolderPath = PATH.join(USERDATA, "p13n"), // P13N 폴더 경로
             sP13nPath = parent.getPath("P13N"), // P13N.json 파일 경로
             bIsExists = FS.existsSync(sP13nPath); // P13N.json 파일 유무 확인.        
 

@@ -521,7 +521,7 @@ module.exports = {
             sBrandsColName = oFwCollNames.brands,
             sRegularColName = oFwCollNames.regular,
             sSolidColName = oFwCollNames.solid;
-        
+
         sap.ui.requireSync("sap/ui/core/IconPool");
 
         // 로컬 경로 Protocol 변경
@@ -1298,7 +1298,56 @@ module.exports = {
 
     },
 
+    /**
+     * 아이콘 리스트 즐겨찾기 정보 개인화 저장
+     * @param {String} SYSID     
+     *  - 접속 서버의 SYSTEM ID
+     * 
+     * @param {String} ICON_SRC
+     *  - 저장 할 Icon Src
+     *  
+     * @param {Boolean} bIsFav 
+     *  - 저장 유무
+     */
+    setIconFavorite: function (SYSID, ICON_SRC, bIsFav) {
+
+        debugger;
+
+        // P13N_ICONFAV
+        let sIconFavFolderPath = PATHINFO.P13N_ICONFAV,
+            sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`);
+
+        // 파일이 없으면 생성
+        if (!FS.existsSync(sIconFavFilePath)) {
+
+            this.fsWriteFile(sIconFavFilePath, JSON.stringify([]));
+
+        }
+
+        let sIconFavData = FS.readFileSync(sIconFavFilePath, 'utf-8');
+
+        try {
+            var aIconFavData = JSON.parse(sIconFavData);
+
+        } catch (error) {
+
+            return {
+                RETCD: "E",
+                RTMSG: error.toString()
+            };
+
+        }
+
+        // 저장일 경우
+        if(bIsFav){
+
+            
 
 
+
+        }
+
+
+    }, // end of setIconFavorite
 
 };

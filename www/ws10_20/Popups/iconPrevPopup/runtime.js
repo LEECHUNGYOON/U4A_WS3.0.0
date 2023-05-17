@@ -2,13 +2,15 @@
 /************************************************************************
  * Global..
  ************************************************************************/
-let oAPP = parent.oAPP;
+var oAPP = parent.oAPP;
 
 if (!oAPP) {
     oAPP = {};
     oAPP.fn = {};
     oAPP.msg = {};
     oAPP.attr = {};
+
+    window.oAPP = oAPP;
 }
 
 const
@@ -78,7 +80,7 @@ function fnWait() {
  ************************************************************************/
 oAPP.fn.attachInit = async () => {
 
-    await fnWait();
+    // await fnWait();
 
     // 현재 브라우저의 이벤트 핸들러 
     _attachCurrentWindowEvents();
@@ -344,13 +346,16 @@ function fnSAPIconConfig() {
         let oSettingInfo = WSUTIL.getWsSettingsInfo(),
             sUI5IconTagsJsonPath = jQuery.sap.getResourcePath(oSettingInfo.UI5.UI5IconTagsJsonPath);
 
+
         let oIconTagsResult = await getJsonAsync(sUI5IconTagsJsonPath);
         if (oIconTagsResult.RETCD == "E") {
             resolve();
             return;
         }
 
-        let oIconTags = oIconTagsResult.RTDATA;
+        oAPP.attr.oIconTagData = oIconTagsResult.RTDATA;
+
+        let oIconTags = oAPP.attr.oIconTagData;
 
         for (var i in oIconTags) {
 
@@ -388,23 +393,36 @@ function fnSAPIconConfig() {
 
         resolve();
 
-        setTimeout(async () => {
+        setTimeout(() => {
 
-            // SAP Tnt Icon Meta 정보를 구한다.
-            await fnGetSapTntIcons(); // [async]
+            let oProm1 = fnGetSapTntIcons(),
+                oProm2 = fnGetSapBusinessIcons();
 
-            oCoreModel.refresh();
+            Promise.all([oProm1, oProm2]).then((result) => {
 
-        }, 500);
+                oCoreModel.refresh();
 
-        setTimeout(async () => {
-
-            // SAP Business Icon Meta 정보를 구한다.
-            await fnGetSapBusinessIcons(); // [async]
-
-            oCoreModel.refresh();
+            });
 
         }, 500);
+
+
+
+        // setTimeout(async () => {
+
+        //     // SAP Tnt Icon Meta 정보를 구한다.
+        //     await fnGetSapTntIcons(); // [async]
+
+        //     setTimeout(async () => {
+
+        //         // SAP Business Icon Meta 정보를 구한다.
+        //         await fnGetSapBusinessIcons(); // [async]
+
+        //         // oCoreModel.refresh();
+
+        //     }, 500);
+
+        // }, 500);
 
     });
 
@@ -414,6 +432,7 @@ function fnGetSapTntIcons() {
 
     return new Promise(async (resolve) => {
 
+        // 아이콘 목록이 저장되어있는 JSON 파일을 읽는다.
         let sUrl = sap.ui.require.toUrl("sap/tnt/themes/base/fonts/SAP-icons-TNT.json"),
             oIconListResult = await getJsonAsync(sUrl);
 
@@ -422,11 +441,10 @@ function fnGetSapTntIcons() {
             return;
         }
 
-        let oCoreModel = sap.ui.getCore().getModel();
+        let oIconList = oIconListResult.RTDATA,
+            aIcons = [];
 
-        var aIcons = oCoreModel.getProperty("/ICONS/SAP");
-
-        let oIconList = oIconListResult.RTDATA;
+        // 가져온 JSON 목록을 추가 정보를 구성하여 Array에 저장한다.
         for (var sIconName in oIconList) {
 
             let oIconInfo = {
@@ -437,6 +455,52 @@ function fnGetSapTntIcons() {
             aIcons.push(oIconInfo);
 
         }
+
+        let iIconlength = aIcons.length;
+        if (iIconlength == 0) {
+            resolve();
+            return;
+        }
+
+        // 각각 아이콘에 맞는 keyword를 매핑한다.
+        let oIconTags = oAPP.attr.oIconTagData;
+
+        for (var i = 0; i < iIconlength; i++) {
+
+            let oIconItem = aIcons[i],
+                oIconMeta = oIconTags[oIconItem.ICON_NAME];
+
+            if (!oIconMeta) {
+                continue;
+            }
+
+            let aKeyWords = oIconMeta.tags || [],
+                iKeyWordLength = aKeyWords.length,
+                sSeparator = "|";
+
+            oIconItem.KEYWORDS = [];
+
+            for (var j = 0; j < iKeyWordLength; j++) {
+
+                let sKeyWord = aKeyWords[j];
+
+                oIconItem.KEYWORDS.push({
+                    NAME: sKeyWord
+                });
+
+            }
+
+            oIconItem.KEYWORD_STRING = fnGetKeyWordToString(aKeyWords, sSeparator);
+
+        }
+
+        var oCoreModel = sap.ui.getCore().getModel(),
+            aSAPIcons = oCoreModel.getProperty("/ICONS/SAP");
+
+        aSAPIcons = aSAPIcons.concat(aIcons);
+
+        oCoreModel.setProperty("/ICONS/SAP", aSAPIcons);
+        oCoreModel.setProperty("/ICONS/ICON_LIST", aSAPIcons);
 
         resolve();
 
@@ -449,6 +513,7 @@ function fnGetSapBusinessIcons() {
 
     return new Promise(async (resolve) => {
 
+        // 아이콘 목록이 저장되어있는 JSON 파일을 읽는다.
         let sUrl = sap.ui.require.toUrl("sap/ushell/themes/base/fonts/BusinessSuiteInAppSymbols.json"),
             oIconListResult = await getJsonAsync(sUrl);
 
@@ -457,11 +522,10 @@ function fnGetSapBusinessIcons() {
             return;
         }
 
-        let oCoreModel = sap.ui.getCore().getModel();
+        let oIconList = oIconListResult.RTDATA,
+            aIcons = [];
 
-        var aIcons = oCoreModel.getProperty("/ICONS/SAP");
-
-        let oIconList = oIconListResult.RTDATA;
+        // 가져온 JSON 목록을 추가 정보를 구성하여 Array에 저장한다.
         for (var sIconName in oIconList) {
 
             let oIconInfo = {
@@ -472,6 +536,52 @@ function fnGetSapBusinessIcons() {
             aIcons.push(oIconInfo);
 
         }
+
+        let iIconlength = aIcons.length;
+        if (iIconlength == 0) {
+            resolve();
+            return;
+        }
+
+        // 각각 아이콘에 맞는 keyword를 매핑한다.
+        let oIconTags = oAPP.attr.oIconTagData;
+
+        for (var i = 0; i < iIconlength; i++) {
+
+            let oIconItem = aIcons[i],
+                oIconMeta = oIconTags[oIconItem.ICON_NAME];
+
+            if (!oIconMeta) {
+                continue;
+            }
+
+            let aKeyWords = oIconMeta.tags || [],
+                iKeyWordLength = aKeyWords.length,
+                sSeparator = "|";
+
+            oIconItem.KEYWORDS = [];
+
+            for (var j = 0; j < iKeyWordLength; j++) {
+
+                let sKeyWord = aKeyWords[j];
+
+                oIconItem.KEYWORDS.push({
+                    NAME: sKeyWord
+                });
+
+            }
+
+            oIconItem.KEYWORD_STRING = fnGetKeyWordToString(aKeyWords, sSeparator);
+
+        }
+
+        var oCoreModel = sap.ui.getCore().getModel(),
+            aSAPIcons = oCoreModel.getProperty("/ICONS/SAP");
+
+        aSAPIcons = aSAPIcons.concat(aIcons);
+
+        oCoreModel.setProperty("/ICONS/SAP", aSAPIcons);
+        oCoreModel.setProperty("/ICONS/ICON_LIST", aSAPIcons);
 
         resolve();
 
@@ -811,11 +921,30 @@ function fnGetDynamicPageContent() {
                                         width: "6rem"
                                     }),
                                     new sap.m.HBox({
+                                        renderType: "Bare",
+                                        alignItems: "Center",
                                         items: [
+
+                                            new sap.m.RatingIndicator({
+                                                visualMode: "Full",
+                                                maxValue: 1,
+                                                // value: 1,
+                                                change: ev_iconFavoChange,
+                                            }).bindProperty("value", "ISFAV", function (ISFAV) {
+
+                                                if (ISFAV == null) {
+                                                    return 0;
+                                                }
+
+                                                return (ISFAV == true ? 1 : 0);
+
+                                            }).addStyleClass("sapUiTinyMarginEnd"),
+
                                             new sap.m.Button({
                                                 icon: "sap-icon://copy",
                                                 press: ev_iconClipBoardCopy
                                             })
+
                                         ]
                                     }),
 
@@ -1230,6 +1359,46 @@ function ev_iconClipBoardCopy(oEvent) {
 } // end of ev_iconClipBoardCopy
 
 /************************************************************************
+ * 즐겨찾기 버튼 클릭 이벤트
+ ************************************************************************/
+function ev_iconFavoChange(oEvent) {
+
+    debugger;
+
+    let iRatingValue = oEvent.getParameter("value"),
+        bIsFav = (iRatingValue == 1 ? true : false),
+
+        oRating = oEvent.getSource(),
+        oCtx = oRating.getBindingContext();
+
+    if (!oCtx) {
+        return;
+    }
+
+    let oIconInfo = oCtx.getObject(),
+        sIconSrc = oIconInfo.ICON_SRC,
+        SYSID = parent.oAPP.attr.USERINFO.SYSID,
+
+        // 아이콘 즐겨찾기 저장
+        oFavSaveResult = WSUTIL.setIconFavorite(SYSID, sIconSrc, bIsFav);
+
+    if (oFavSaveResult.RETCD == "E") {
+
+        WSUTIL.showMessageBox({
+            TYPE: oFavSaveResult.RETCD,
+            title: oAPP.msg.M01, // 아이콘 즐겨찾기 저장 오류
+            MSG: oAPP.msg.M02, // "아이콘 즐겨찾기 저장시 오류가 발생하였습니다."
+        });
+
+        console.log(oFavSaveResult.RTMSG);
+
+        return;
+
+    }
+
+} // end of ev_iconFavoChange
+
+/************************************************************************
  * 테마 선택 이벤트
  ************************************************************************/
 function ev_themeSelectChangeEvent(oEvent) {
@@ -1392,18 +1561,9 @@ oAPP.fn.getWsMessageList = function () {
 
         let oSettingInfo = WSUTIL.getWsSettingsInfo(),
             sWsLangu = oSettingInfo.globalLanguage;
-
-        // oAPP.msg.M01 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "021"); // Default Pattern
-        // oAPP.msg.M02 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "022"); // Custom Pattern
-        // oAPP.msg.M03 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "023"); // Content Type
-        // oAPP.msg.M04 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "024"); // Title
-        // oAPP.msg.M05 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "025"); // Pretty Print
-        // oAPP.msg.M06 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "026"); // Create
-        // oAPP.msg.M07 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027", oAPP.msg.M04); // title is required entry value
-        // oAPP.msg.M08 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "028"); // Do you really want to delete the object?
-        // oAPP.msg.M09 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "029"); // Delete
-        // oAPP.msg.M10 = oAPP.msg.M02 + " " + WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "029"); // Custom Pattern Delete
-        // oAPP.msg.M11 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "030"); // Change
+        
+        oAPP.msg.M01 = "아이콘 즐겨찾기 저장 오류";
+        oAPP.msg.M02 = "아이콘 즐겨찾기 저장시 오류가 발생하였습니다."
 
         oAPP.msg.M031 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "031"); // Clipboard Copy Success!
         oAPP.msg.M047 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "047"); // Icon List

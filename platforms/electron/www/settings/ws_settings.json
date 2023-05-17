@@ -32,6 +32,7 @@
         "p13n",
         "p13n\\theme",
         "p13n\\suggestion",       
+        "p13n\\iconFavorite",
         "ext_api",
         "ext_api\\vbs",
         "conf"
@@ -41,7 +42,7 @@
         "p13n\\login.json",
         "p13n\\ServerInfo.json",
         "p13n\\ServerInfo-v2.json",
-        "p13n\\zoom.json",
+        "p13n\\zoom.json",      
         "p13n\\suggestion\\events.json",
         "p13n\\suggestion\\tcode.json"
     ],

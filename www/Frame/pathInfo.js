@@ -65,10 +65,11 @@ module.exports = (() => {
 
         // User Data Paths..
         CLIPBOARD: PATH.join(USERDATA, "clipboard.json"),
-        THEME: PATH.join(USERDATA, "p13n", "theme"),
-        P13N: PATH.join(USERDATA, "p13n", "p13n.json"),
+        THEME: PATH.join(P13N_ROOT, "theme"),
+        P13N: PATH.join(P13N_ROOT, "p13n.json"),
         P13N_ROOT: P13N_ROOT,
-        SERVERINFO_V2: PATH.join(USERDATA, "p13n", "ServerInfo-v2.json"),
+        P13N_ICONFAV : PATH.join(P13N_ROOT, "iconFavorite"),
+        SERVERINFO_V2: PATH.join(P13N_ROOT, "ServerInfo-v2.json"),
 
         // Popup Paths..        
         ERRPAGE: PATH.join(POPUP_ROOT, "errPageEditorPopup", "errorPageEditorFrame.html"),

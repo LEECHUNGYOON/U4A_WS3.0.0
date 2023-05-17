@@ -37,8 +37,9 @@ var
 IPCRENDERER.on('if-icon-prev', async (events, oInfo) => {
 
     oAPP.attr.sServerPath = oInfo.sServerPath; // 서버 경로
-    oAPP.attr.sServerHost = oInfo.sServerHost // 서버 호스트 경로
-    oAPP.attr.sDefTheme = oInfo.sDefTheme // 기본 테마 정보
+    oAPP.attr.sServerHost = oInfo.sServerHost; // 서버 호스트 경로
+    oAPP.attr.sDefTheme = oInfo.sDefTheme; // 기본 테마 정보
+    oAPP.attr.USERINFO = process.USERINFO; // 접속 사용자 정보
     oAPP.attr.isCallback = oInfo.isCallback;
 
     // ws 글로벌 언어 설정정보
