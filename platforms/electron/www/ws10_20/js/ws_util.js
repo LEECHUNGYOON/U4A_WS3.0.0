@@ -1,5 +1,4 @@
-const
-    REMOTE = require('@electron/remote'),
+const REMOTE = require('@electron/remote'),
     FS = require('fs-extra'),
     ZIPLIB = require("zip-lib"),
     PATH = REMOTE.require('path'),
@@ -15,8 +14,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 /**
  * 테스트 -- start
  */
-const
-    CURRWIN = REMOTE.getCurrentWindow(),
+const CURRWIN = REMOTE.getCurrentWindow(),
     WEBCON = CURRWIN.webContents,
     WEBPREF = WEBCON.getWebPreferences(),
     USERINFO = WEBPREF.USERINFO;
@@ -46,7 +44,7 @@ module.exports = {
          * @param {string} pSysID 접속 시스템 아이디
          * @param {string} pLangu 접속 시스템 언어
          */
-        constructor(pSysID, pLangu) { // 인자를 받아 할당한다.                 
+        constructor(pSysID, pLangu) { // 인자를 받아 할당한다.
 
             if (!pSysID) {
                 throw new Error("System ID is require!");
@@ -78,16 +76,14 @@ module.exports = {
          *  
          * @private
          */
-        _fnReadMsgClassTxt() {
-
-            // APPPATH 경로를 구한다.
+        _fnReadMsgClassTxt() { // APPPATH 경로를 구한다.
             let sSysID = this.SYSID,
                 sLangu = this.LANGU,
                 sJsonFolderPath = PATH.join(USERDATA, "msgcls", sSysID, sLangu),
                 sJsonPath = PATH.join(sJsonFolderPath, "msgcls.json");
 
             // 파일이 없을 경우 그냥 빠져나간다.
-            if (!FS.existsSync(sJsonPath)) {
+            if (! FS.existsSync(sJsonPath)) {
                 console.error("not exists file => msgcls.json");
                 return;
             }
@@ -97,7 +93,8 @@ module.exports = {
 
             this.setMsgClassTxt(aMsgClsTxt);
 
-        } // end of _fnReadMsgClassTxt
+        }
+        // end of _fnReadMsgClassTxt
 
         /**
          * 메시지 클래스 명과 번호를 참조해서 메시지 텍스트를 리턴한다.
@@ -116,19 +113,18 @@ module.exports = {
             let aMsgClsTxt = this.getMsgClassTxt(),
                 sLangu = this.LANGU;
 
-            if (!aMsgClsTxt || !aMsgClsTxt.length) {
+            if (! aMsgClsTxt || ! aMsgClsTxt.length) {
                 return sMsgCls + "|" + sMsgNum;
             }
 
-            let sDefLangu = "E"; // default language    
+            let sDefLangu = "E";
+            // default language
 
             // 현재 접속한 언어로 메시지를 찾는다.
             let oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sLangu && a.MSGNR == sMsgNum);
 
             // 현재 접속한 언어로 메시지를 못찾은 경우
-            if (!oMsgTxt) {
-
-                // 접속한 언어가 영어일 경우 빠져나간다.
+            if (! oMsgTxt) { // 접속한 언어가 영어일 경우 빠져나간다.
                 if (sDefLangu == sLangu) {
                     return sMsgCls + "|" + sMsgNum;
 
@@ -138,7 +134,7 @@ module.exports = {
                 oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sDefLangu && a.MSGNR == sMsgNum);
 
                 // 그래도 없다면 빠져나간다.
-                if (!oMsgTxt) {
+                if (! oMsgTxt) {
                     return sMsgCls + "|" + sMsgNum;
                 }
 
@@ -193,20 +189,20 @@ module.exports = {
 
     showMessageBox: function (sap, pOptions) {
 
-        if (!sap?.m?.MessageBox) {
+        if (! sap ?. m ?. MessageBox) {
             sap.ui.requireSync("sap/m/MessageBox");
         }
 
         let oDefaultOptions = {
-            icon: sap.m.MessageBox.Icon.NONE, // default
-            title: "", // default
-            actions: sap.m.MessageBox.Action.OK, // default
-            emphasizedAction: sap.m.MessageBox.Action.OK, // default
-            onClose: null, // default
-            styleClass: "", // default
-            initialFocus: null, // default
-            textDirection: sap.ui.core.TextDirection.Inherit // default
-        },
+                icon: sap.m.MessageBox.Icon.NONE, // default
+                title: "", // default
+                actions: sap.m.MessageBox.Action.OK, // default
+                emphasizedAction: sap.m.MessageBox.Action.OK, // default
+                onClose: null, // default
+                styleClass: "", // default
+                initialFocus: null, // default
+                textDirection: sap.ui.core.TextDirection.Inherit // default
+            },
             oOptions = Object.assign({}, oDefaultOptions, pOptions);
 
 
@@ -214,29 +210,25 @@ module.exports = {
 
         switch (sType) {
 
-            case "I":
-                sap.m.MessageBox.information(oOptions.MSG || "", oOptions);
+            case "I": sap.m.MessageBox.information(oOptions.MSG || "", oOptions);
                 break;
 
-            case "S":
-                sap.m.MessageBox.success(oOptions.MSG || "", oOptions);
+            case "S": sap.m.MessageBox.success(oOptions.MSG || "", oOptions);
                 break;
 
-            case "W":
-                sap.m.MessageBox.warning(oOptions.MSG || "", oOptions);
+            case "W": sap.m.MessageBox.warning(oOptions.MSG || "", oOptions);
                 break;
 
-            case "E":
-                sap.m.MessageBox.error(oOptions.MSG || "", oOptions);
+            case "E": sap.m.MessageBox.error(oOptions.MSG || "", oOptions);
                 break;
 
-            default:
-                sap.m.MessageBox.show(oOptions.MSG || "", oOptions);
+            default: sap.m.MessageBox.show(oOptions.MSG || "", oOptions);
                 break;
 
         }
 
-    }, // end of showMessageBox
+    },
+    // end of showMessageBox
 
     /**
      * 테마별 백그라운드 색상 구하기     
@@ -267,7 +259,8 @@ module.exports = {
 
         }
 
-    }, // end of getThemeBackgroundColor
+    },
+    // end of getThemeBackgroundColor
 
     /**
      * 레지스트리에서 WS Global Theme 구하기   
@@ -278,7 +271,8 @@ module.exports = {
 
             let oSettings = this.getWsSettingsInfo(), // ws 설정 정보
                 sRegPath = oSettings.regPaths, // 각종 레지스트리 경로
-                sGlobalSettingPath = sRegPath.globalSettings; // globalsettings 레지스트리 경로
+                sGlobalSettingPath = sRegPath.globalSettings;
+            // globalsettings 레지스트리 경로
 
             // 레지스트리 정보 구하기
             let oRegList = await this.getRegeditList([sGlobalSettingPath]),
@@ -301,7 +295,8 @@ module.exports = {
 
         });
 
-    }, // end of getWsThemeAsync
+    },
+    // end of getWsThemeAsync
 
     /**
      * 레지스트리에서 WS Global Language 구하기     
@@ -312,7 +307,8 @@ module.exports = {
 
             let oSettings = this.getWsSettingsInfo(), // ws 설정 정보
                 sRegPath = oSettings.regPaths, // 각종 레지스트리 경로
-                sGlobalSettingPath = sRegPath.globalSettings; // globalsettings 레지스트리 경로
+                sGlobalSettingPath = sRegPath.globalSettings;
+            // globalsettings 레지스트리 경로
 
             // 레지스트리 정보 구하기
             let oRegList = await this.getRegeditList([sGlobalSettingPath]),
@@ -323,11 +319,12 @@ module.exports = {
                 throw new Error(oRegList.RTMSG);
             }
 
-            //  레지스트리에 GlobalSetting 정보가 있는지 확인
+            // 레지스트리에 GlobalSetting 정보가 있는지 확인
             let oGlobalSettingRegData = oRetData[sGlobalSettingPath],
                 oSettingValues = oGlobalSettingRegData.values;
 
-            let sLangu = "EN"; // WS Language 기본값
+            let sLangu = "EN";
+            // WS Language 기본값
 
             // 레지스트리에 저장된 WS language 값
             if (oSettingValues.language) {
@@ -338,7 +335,8 @@ module.exports = {
 
         });
 
-    }, // end of getWsLanguAsync
+    },
+    // end of getWsLanguAsync
 
     /**
      * WS Global Language를 레지스트리에 저장
@@ -349,7 +347,8 @@ module.exports = {
 
             let oSettings = this.getWsSettingsInfo(), // ws 설정 정보
                 sRegPath = oSettings.regPaths, // 각종 레지스트리 경로
-                sGlobalSettingPath = sRegPath.globalSettings; // globalsettings 레지스트리 경로           
+                sGlobalSettingPath = sRegPath.globalSettings;
+            // globalsettings 레지스트리 경로
 
             // 저장할 레지스트리 데이터
             let oRegData = {};
@@ -365,18 +364,17 @@ module.exports = {
 
         });
 
-    }, // end of setWsLanguAsync
+    },
+    // end of setWsLanguAsync
 
     /**
      * WS 3.0 전용 메시지 리턴
      */
-    getWsMsgClsTxt: function (LANGU, ARBGB, MSGNR, p1, p2, p3, p4) {
-
-        // www에 내장되어 있는 WS 메시지 경로
+    getWsMsgClsTxt: function (LANGU, ARBGB, MSGNR, p1, p2, p3, p4) { // www에 내장되어 있는 WS 메시지 경로
         let sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", LANGU, ARBGB + ".json");
 
         // WS 메시지 존재 유무
-        if (!FS.existsSync(sWsMsgPath)) {
+        if (! FS.existsSync(sWsMsgPath)) {
             return `${ARBGB}|${MSGNR}`;
         }
 
@@ -385,7 +383,7 @@ module.exports = {
             oFindTxt = aMsgList.find(elem => elem.MSGNR == MSGNR);
 
         // 메시지 넘버에 맞는 ws 메시지가 없으면 빠져나감.
-        if (!oFindTxt) {
+        if (! oFindTxt) {
             return `${ARBGB}|${MSGNR}`;
         }
 
@@ -420,9 +418,7 @@ module.exports = {
         sText = sText.replace(new RegExp("&\\d+", "g"), "");
 
         // 치환된 Text에 "&" 가 존재 할 경우 추가적인 치환을 한다.
-        if (sText.includes("&")) {
-
-            // 메시지 클래스 텍스트에서 "&" 를 앞에서 부터 순차적으로 치환한다.
+        if (sText.includes("&")) { // 메시지 클래스 텍스트에서 "&" 를 앞에서 부터 순차적으로 치환한다.
             for (let i = 0; i < iWithParamLenth; i++) {
 
                 let sParamTxt = aWithParam[i];
@@ -437,7 +433,8 @@ module.exports = {
 
         return sText;
 
-    }, // end of getWsMsgClsTxt    
+    },
+    // end of getWsMsgClsTxt
 
     /**
      * WS 3.0 전용 메시지 모델 정보 구조
@@ -446,7 +443,7 @@ module.exports = {
 
         return new Promise(async (resolve) => {
 
-            let sWsLangu = await this.getWsLanguAsync(), // WS Language 설정 정보                
+            let sWsLangu = await this.getWsLanguAsync(), // WS Language 설정 정보
                 sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", sWsLangu); // www에 내장되어 있는 WS 메시지 경로
 
             let oWsLanguDir = await this.readDir(sWsMsgPath);
@@ -498,10 +495,7 @@ module.exports = {
 
             }
 
-            resolve({
-                RETCD: "S",
-                RTDATA: oLanguJsonData
-            });
+            resolve({RETCD: "S", RTDATA: oLanguJsonData});
 
         });
 
@@ -528,26 +522,11 @@ module.exports = {
         sUrlRoot = sUrlRoot.replaceAll("\\", "/");
         sUrlRoot = `file:///${sUrlRoot}`;
 
-        sap.ui.core.IconPool.registerFont({
-            collectionName: sRegularColName,
-            fontFamily: oFwList.regular,
-            fontURI: sUrlRoot,
-            lazy: true
-        });
+        sap.ui.core.IconPool.registerFont({collectionName: sRegularColName, fontFamily: oFwList.regular, fontURI: sUrlRoot, lazy: true});
 
-        sap.ui.core.IconPool.registerFont({
-            collectionName: sBrandsColName,
-            fontFamily: oFwList.brands,
-            fontURI: sUrlRoot,
-            lazy: true
-        });
+        sap.ui.core.IconPool.registerFont({collectionName: sBrandsColName, fontFamily: oFwList.brands, fontURI: sUrlRoot, lazy: true});
 
-        sap.ui.core.IconPool.registerFont({
-            collectionName: sSolidColName,
-            fontFamily: oFwList.solid,
-            fontURI: sUrlRoot,
-            lazy: true
-        });
+        sap.ui.core.IconPool.registerFont({collectionName: sSolidColName, fontFamily: oFwList.solid, fontURI: sUrlRoot, lazy: true});
 
     },
 
@@ -578,7 +557,7 @@ module.exports = {
 
         var tm2 = m.getProperty('/' + lp2);
 
-        if (!tm || tm.length === 0) {
+        if (! tm || tm.length === 0) {
             tm2[z] = [];
             m.refresh();
             return;
@@ -588,18 +567,20 @@ module.exports = {
 
         var n = JSON.parse(y);
 
-        for (var e, h, u, a = [], c = {}, o = 0, f = n.length; f > o; o++) {
+        for (var e, h, u, a =[], c =
+            {}, o = 0, f = n.length; f > o; o++) {
             e = n[o],
-                h = e[r],
-                u = e[t] || 0,
-                c[h] = c[h] || [],
-                e[z] = c[h],
-                0 != u ? (c[u] = c[u] || [], c[u].push(e)) : a.push(e);
+            h = e[r],
+            u = e[t] || 0,
+            c[h] = c[h] || [],
+            e[z] = c[h],
+            0 != u ? (c[u] = c[u] || [], c[u].push(e)) : a.push(e);
         }
 
         tm2[z] = a;
 
-    }, // end of parseArrayToTree
+    },
+    // end of parseArrayToTree
 
     /************************************************************************
      * Tree구조를 Array 구조로 변환
@@ -616,8 +597,7 @@ module.exports = {
 
                 e.forEach((o, e) => {
 
-                    o[sArrName] && (t(o[sArrName]),
-                        delete o[sArrName]);
+                    o[sArrName] && (t(o[sArrName]), delete o[sArrName]);
                     a.push(o);
 
                 });
@@ -632,7 +612,8 @@ module.exports = {
         t(JSON.parse(JSON.stringify(e)));
         return a;
 
-    }, // end of parseTreeToArray   
+    },
+    // end of parseTreeToArray
 
     /**
      * Electron Browser Window Open 시 Opacity를 이용하여 자연스러운 동작 연출
@@ -665,7 +646,8 @@ module.exports = {
 
         }, 10);
 
-    }, // end of setBrowserOpacity
+    },
+    // end of setBrowserOpacity
 
     /**
      * 부모 윈도우 위치의 가운데 배치한다.
@@ -692,12 +674,10 @@ module.exports = {
             yPos = oParentBounds.y + 10;
         }
 
-        oBrowserWindow.setBounds({
-            x: xPos,
-            y: yPos
-        });
+        oBrowserWindow.setBounds({x: xPos, y: yPos});
 
-    }, // end of setParentCenterBounds
+    },
+    // end of setParentCenterBounds
 
     /**
      * 파일 확장자 svg icon 목록
@@ -714,10 +694,7 @@ module.exports = {
             }, (err, aFiles) => {
 
                 if (err) {
-                    resolve({
-                        RETCD: "E",
-                        RTMSG: err.toString()
-                    })
+                    resolve({RETCD: "E", RTMSG: err.toString()})
                     return;
                 }
 
@@ -737,17 +714,15 @@ module.exports = {
 
                 }
 
-                resolve({
-                    RETCD: "S",
-                    RTDATA: aFileExtInfo
-                });
+                resolve({RETCD: "S", RTDATA: aFileExtInfo});
 
             });
 
 
         });
 
-    }, // end of getFileExtSvgIcons
+    },
+    // end of getFileExtSvgIcons
 
     /**
      * SAP 아이콘 이미지 경로     
@@ -782,7 +757,8 @@ module.exports = {
 
         return RANDOM.generateBase30(iDefLength);
 
-    }, // end of getRandomKey
+    },
+    // end of getRandomKey
 
     /**
      * WS Setting 정보     
@@ -794,7 +770,8 @@ module.exports = {
 
         return oSettings;
 
-    }, // end of getWsSettingsInfo
+    },
+    // end of getWsSettingsInfo
 
     /**
      * WS Global Setting 정보 [레지스트리에 설정된 값 구하기]
@@ -805,7 +782,8 @@ module.exports = {
 
             let oSettings = this.getWsSettingsInfo(), // ws 설정 정보
                 sRegPath = oSettings.regPaths, // 각종 레지스트리 경로
-                sGlobalSettingPath = sRegPath.globalSettings; // globalsettings 레지스트리 경로
+                sGlobalSettingPath = sRegPath.globalSettings;
+            // globalsettings 레지스트리 경로
 
             // 레지스트리 정보 구하기
             let oRegList = await this.getRegeditList([sGlobalSettingPath]),
@@ -816,7 +794,7 @@ module.exports = {
                 throw new Error(oRegList.RTMSG);
             }
 
-            //  레지스트리에 GlobalSetting 정보가 있는지 확인
+            // 레지스트리에 GlobalSetting 정보가 있는지 확인
             let oGlobalSettingRegData = oRetData[sGlobalSettingPath],
                 oSettingValues = oGlobalSettingRegData.values;
 
@@ -824,16 +802,15 @@ module.exports = {
 
         });
 
-    }, // getWsGlobalSettingInfoAsync
+    },
+    // getWsGlobalSettingInfoAsync
 
     /**
      * 레지스트리에 저장된 whiteList Object 목록에 존재 여부 확인
      */
     checkWLOListAsync: function (SYSID = "", REGTYP = "", CHGOBJ = "") {
 
-        return new Promise(async (resolve) => {
-
-            // 레지스트리에 저장된 whiteList Object 목록을 구한다.
+        return new Promise(async (resolve) => { // 레지스트리에 저장된 whiteList Object 목록을 구한다.
             let aWLO = await this.getWsWLOListAsync(SYSID);
 
             // Array 형식인지 여부 확인
@@ -853,7 +830,7 @@ module.exports = {
 
             });
 
-            if (!oFindWLO) {
+            if (! oFindWLO) {
                 resolve(false);
                 return;
             }
@@ -862,16 +839,15 @@ module.exports = {
 
         });
 
-    }, // end of checkWLOListAsync
+    },
+    // end of checkWLOListAsync
 
     /**
      * 레지스트리에 저장된 whiteList Object 목록
      */
     getWsWLOListAsync: function (SYSID = "") {
 
-        return new Promise(async (resolve) => {
-
-            // 레지스트리의 WS SYSTEM 경로를 구한다.
+        return new Promise(async (resolve) => { // 레지스트리의 WS SYSTEM 경로를 구한다.
             let oSettings = this.getWsSettingsInfo(), // ws 설정 정보
                 sRegPath = oSettings.regPaths, // 각종 레지스트리 경로
                 sWsSystemPath = sRegPath.systems;
@@ -888,7 +864,7 @@ module.exports = {
                 oWLO = oRegValues.T_REG_WLO;
 
             // 저장된 정보가 없으면 리턴
-            if (!oWLO) {
+            if (! oWLO) {
                 resolve([]);
                 return;
             }
@@ -917,7 +893,8 @@ module.exports = {
 
         });
 
-    }, // end of getWsWLOListAsync
+    },
+    // end of getWsWLOListAsync
 
     /*************************************************************************
      * 파일시스템 관련 -- Start
@@ -940,26 +917,19 @@ module.exports = {
 
                 if (err) {
 
-                    resolve({
-                        RETCD: "E",
-                        RTMSG: err.toString(),
-                        RTDATA: ""
-                    });
+                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
 
                     return;
                 }
 
-                resolve({
-                    RETCD: "S",
-                    RTMSG: "",
-                    RTDATA: files
-                });
+                resolve({RETCD: "S", RTMSG: "", RTDATA: files});
 
             });
 
         });
 
-    }, // end of readdir
+    },
+    // end of readdir
 
     /**
      * File 읽기
@@ -975,26 +945,19 @@ module.exports = {
 
                 if (err) {
 
-                    resolve({
-                        RETCD: "E",
-                        RTMSG: err.toString(),
-                        RTDATA: ""
-                    });
+                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
 
                     return;
                 }
 
-                resolve({
-                    RETCD: "S",
-                    RTMSG: "",
-                    RTDATA: data,
-                });
+                resolve({RETCD: "S", RTMSG: "", RTDATA: data});
 
             });
 
         });
 
-    }, // end of readFile
+    },
+    // end of readFile
 
     /**
      * 폴더 및 파일 복사 [deprecated] 빌드시 버그있음!!!!! 사용 금지!! 
@@ -1014,26 +977,19 @@ module.exports = {
 
             FS.copy(sSource, sTarget, options).then(function () {
 
-                resolve({
-                    RETCD: "S",
-                    RTMSG: "",
-                    RTDATA: ""
-                });
+                resolve({RETCD: "S", RTMSG: "", RTDATA: ""});
 
             }).catch(function (err) {
 
-                resolve({
-                    RETCD: "E",
-                    RTMSG: err.toString(),
-                    RTDATA: ""
-                });
+                resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
 
             });
 
 
         });
 
-    }, // end of fsCopy
+    },
+    // end of fsCopy
 
     /**
      * 파일 쓰기 
@@ -1049,19 +1005,11 @@ module.exports = {
             FS.writeFile(file, data, options, (err) => {
 
                 if (err) {
-                    resolve({
-                        RETCD: "E",
-                        RTMSG: err.toString(),
-                        RTDATA: ""
-                    });
+                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
                     return;
                 }
 
-                resolve({
-                    RETCD: "S",
-                    RTMSG: "",
-                    RTDATA: ""
-                });
+                resolve({RETCD: "S", RTMSG: "", RTDATA: ""});
 
             });
 
@@ -1077,19 +1025,11 @@ module.exports = {
             FS.stat(sFilePath, (err, stats) => {
 
                 if (err) {
-                    resolve({
-                        RETCD: "E",
-                        RTMSG: err.toString(),
-                        RTDATA: ""
-                    });
+                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
                     return;
                 }
 
-                resolve({
-                    RETCD: "S",
-                    RTMSG: "",
-                    RTDATA: stats
-                });
+                resolve({RETCD: "S", RTMSG: "", RTDATA: stats});
 
             });
 
@@ -1105,25 +1045,18 @@ module.exports = {
             FS.remove(sRemovePath, (err) => {
 
                 if (err) {
-                    resolve({
-                        RETCD: "E",
-                        RTMSG: err.toString(),
-                        RTDATA: ""
-                    });
+                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
                     return;
                 }
 
-                resolve({
-                    RETCD: "S",
-                    RTMSG: "",
-                    RTDATA: ""
-                });
+                resolve({RETCD: "S", RTMSG: "", RTDATA: ""});
 
             });
 
         });
 
-    }, // end of fsRemove
+    },
+    // end of fsRemove
 
     /*************************************************************************
      * 파일 시스템 관련 -- End
@@ -1148,11 +1081,7 @@ module.exports = {
 
             if (iArgLength == 0) {
 
-                resolve({
-                    RETCD: "E",
-                    RTMSG: "",
-                    RTDATA: ""
-                });
+                resolve({RETCD: "E", RTMSG: "", RTDATA: ""});
 
                 return;
 
@@ -1173,19 +1102,11 @@ module.exports = {
             REGEDIT.list([sRegPath], (err, result) => {
 
                 if (err) {
-                    resolve({
-                        RETCD: "E",
-                        RTMSG: err.toString(),
-                        RTDATA: ""
-                    });
+                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
                     return;
                 }
 
-                resolve({
-                    RETCD: "S",
-                    RTMSG: "",
-                    RTDATA: result[sRegPath]
-                });
+                resolve({RETCD: "S", RTMSG: "", RTDATA: result[sRegPath]});
 
             });
 
@@ -1206,19 +1127,11 @@ module.exports = {
             REGEDIT.list(aPaths, (err, result) => {
 
                 if (err) {
-                    resolve({
-                        RETCD: "E",
-                        RTMSG: err.toString(),
-                        RTDATA: ""
-                    });
+                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
                     return;
                 }
 
-                resolve({
-                    RETCD: "S",
-                    RTMSG: "",
-                    RTDATA: result
-                });
+                resolve({RETCD: "S", RTMSG: "", RTDATA: result});
 
             });
 
@@ -1238,20 +1151,12 @@ module.exports = {
 
                 if (err) {
 
-                    resolve({
-                        RETCD: "E",
-                        RTMSG: err.toString(),
-                        RTDATA: ""
-                    });
+                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
 
                     return;
                 }
 
-                resolve({
-                    RETCD: "S",
-                    RTMSG: "",
-                    RTDATA: ""
-                });
+                resolve({RETCD: "S", RTMSG: "", RTDATA: ""});
 
             });
 
@@ -1263,7 +1168,6 @@ module.exports = {
     /*************************************************************************
      * 레지스트리 관련 -- End
      *************************************************************************/
-
 
 
     /*************************************************************************
@@ -1289,9 +1193,9 @@ module.exports = {
         return new Promise((resolve) => {
 
             ZIPLIB.extract(sSourcePath, sTargetFolderPath).then(function () {
-                resolve({ RETCD: "S" });
+                resolve({RETCD: "S"});
             }, function (err) {
-                resolve({ RETCD: "E", RTMSG: err.toString() });
+                resolve({RETCD: "E", RTMSG: err.toString()});
             });
 
         });
@@ -1309,7 +1213,7 @@ module.exports = {
      * @param {Boolean} bIsFav 
      *  - 저장 유무
      */
-    setIconFavorite: function (SYSID, ICON_SRC, bIsFav) {
+    setIconFavorite: function (SYSID, oIconInfo, bIsFav) {
 
         debugger;
 
@@ -1318,7 +1222,7 @@ module.exports = {
             sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`);
 
         // 파일이 없으면 생성
-        if (!FS.existsSync(sIconFavFilePath)) {
+        if (! FS.existsSync(sIconFavFilePath)) {
 
             this.fsWriteFile(sIconFavFilePath, JSON.stringify([]));
 
@@ -1331,22 +1235,43 @@ module.exports = {
 
         } catch (error) {
 
-            return {
-                RETCD: "E",
-                RTMSG: error.toString()
-            };
+            aIconFavData = [];
+
+            // return {
+            //     RETCD: "E",
+            //     RTMSG: "[Icon Favorite 저장 오류] \n\n 저장된 데이터 Json Parse 오류! \n \n" + error.toString()
+            // };
 
         }
 
-        // 저장일 경우
-        if(bIsFav){
+        if (Array.isArray(aIconFavData) == false) {
+            return {RETCD: "E", RTMSG: "[Icon Favorite 저장 오류] \n\n 저장된 데이터가 Array 타입이 아닙니다."};
+        }
 
-            
+        // 아이콘 즐겨찾기 등록일 경우
+        if (bIsFav) {
 
+            aIconFavData.push(oIconInfo);
 
+            this.fsWriteFile(sIconFavFilePath, JSON.stringify(aIconFavData));
+
+            return {RETCD: "S"};
 
         }
 
+        // 아이콘 즐겨찾기 삭제일 경우
+        let iFind = aIconFavData.findIndex(elem => elem.ICON_SRC == oIconInfo.ICON_SRC);
+
+        // 삭제할 대상이 없으면 그냥 빠져나감.
+        if (iFind < 0) {
+            return {RETCD: "S"};
+        }
+
+        aIconFavData.slice(iFind, 1);
+
+        this.fsWriteFile(sIconFavFilePath, JSON.stringify(aIconFavData));
+
+        return {RETCD: "S"};
 
     }, // end of setIconFavorite
 

@@ -346,7 +346,6 @@ function fnSAPIconConfig() {
         let oSettingInfo = WSUTIL.getWsSettingsInfo(),
             sUI5IconTagsJsonPath = jQuery.sap.getResourcePath(oSettingInfo.UI5.UI5IconTagsJsonPath);
 
-
         let oIconTagsResult = await getJsonAsync(sUI5IconTagsJsonPath);
         if (oIconTagsResult.RETCD == "E") {
             resolve();
@@ -393,41 +392,13 @@ function fnSAPIconConfig() {
 
         resolve();
 
-        setTimeout(() => {
-
-            let oProm1 = fnGetSapTntIcons(),
-                oProm2 = fnGetSapBusinessIcons();
-
-            Promise.all([oProm1, oProm2]).then((result) => {
-
-                oCoreModel.refresh();
-
-            });
-
-        }, 500);
-
-
-
-        // setTimeout(async () => {
-
-        //     // SAP Tnt Icon Meta 정보를 구한다.
-        //     await fnGetSapTntIcons(); // [async]
-
-        //     setTimeout(async () => {
-
-        //         // SAP Business Icon Meta 정보를 구한다.
-        //         await fnGetSapBusinessIcons(); // [async]
-
-        //         // oCoreModel.refresh();
-
-        //     }, 500);
-
-        // }, 500);
-
     });
 
 } // end of fnSAPIconConfig
 
+/************************************************************************
+ * SAP Tnt Icon 구하기
+ ************************************************************************/
 function fnGetSapTntIcons() {
 
     return new Promise(async (resolve) => {
@@ -508,7 +479,9 @@ function fnGetSapTntIcons() {
 
 } // end of fnGetSapTntIcons
 
-
+/************************************************************************
+ * SAP Business Icon 구하기
+ ************************************************************************/
 function fnGetSapBusinessIcons() {
 
     return new Promise(async (resolve) => {
@@ -589,6 +562,26 @@ function fnGetSapBusinessIcons() {
 
 } // end of fnGetSapBusinessIcons
 
+/************************************************************************
+ * 추가할 SAP ICON 정보를 구성한다.
+ ************************************************************************/
+function _fnAdditionalSAPIconConfig(){
+
+    setTimeout(() => {
+
+        let oProm1 = fnGetSapTntIcons(),
+            oProm2 = fnGetSapBusinessIcons();
+
+        Promise.all([oProm1, oProm2]).then((result) => {
+
+            let oCoreModel = sap.ui.getCore().getModel();
+            oCoreModel.refresh();
+
+        });
+
+    }, 500);
+
+} // end of _fnAdditionalSAPIconConfig
 
 
 /************************************************************************
@@ -641,6 +634,9 @@ function _fnUIupdatedCallback() {
     parent.document.getElementById("u4aWsBusyIndicator").style.visibility = "hidden";
 
     sap.ui.getCore().detachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback);
+
+    // 추가할 SAP ICON 정보를 구성한다.
+    _fnAdditionalSAPIconConfig();
 
 } // end of _fnUIupdatedCallback
 
@@ -1376,11 +1372,10 @@ function ev_iconFavoChange(oEvent) {
     }
 
     let oIconInfo = oCtx.getObject(),
-        sIconSrc = oIconInfo.ICON_SRC,
         SYSID = parent.oAPP.attr.USERINFO.SYSID,
 
         // 아이콘 즐겨찾기 저장
-        oFavSaveResult = WSUTIL.setIconFavorite(SYSID, sIconSrc, bIsFav);
+        oFavSaveResult = WSUTIL.setIconFavorite(SYSID, oIconInfo, bIsFav);
 
     if (oFavSaveResult.RETCD == "E") {
 
