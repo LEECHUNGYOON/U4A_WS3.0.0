@@ -1333,20 +1333,48 @@ module.exports = {
 
             return {
                 RETCD: "E",
-                RTMSG: error.toString()
+                RTMSG: "[Icon Favorite 저장 오류] \n\n 저장된 데이터 Json Parse 오류! \n \n" + error.toString()
             };
 
         }
 
-        // 저장일 경우
-        if(bIsFav){
+        if (Array.isArray(aIconFavData) == false) {
+            return {
+                RETCD: "E",
+                RTMSG: "[Icon Favorite 저장 오류] \n\n 저장된 데이터가 Array 타입이 아닙니다."
+            };
+        }
 
-            
+        // 아이콘 즐겨찾기 등록일 경우
+        if (bIsFav) {
 
+            aIconFavData.push(ICON_SRC);
 
+            this.fsWriteFile(sIconFavFilePath, JSON.stringify(aIconFavData));
+
+            return {
+                RETCD: "S"
+            };
 
         }
 
+        // 아이콘 즐겨찾기 삭제일 경우
+        let iFind = aIconFavData.findIndex(elem => elem == ICON_SRC);
+
+        // 삭제할 대상이 없으면 그냥 빠져나감.
+        if (iFind < 0) {
+            return {
+                RETCD: "S"
+            };
+        }
+
+        aIconFavData.slice(iFind, 1);
+
+        this.fsWriteFile(sIconFavFilePath, JSON.stringify(aIconFavData));
+
+        return {
+            RETCD: "S"
+        };
 
     }, // end of setIconFavorite
 

@@ -1364,11 +1364,11 @@ function ev_iconClipBoardCopy(oEvent) {
 function ev_iconFavoChange(oEvent) {
 
     debugger;
-    
-    let iRatingValue = oEvent.getParameter("value"),
-        bIsFav = (iRatingValue == 1 ? true : false);
 
-    let oRating = oEvent.getSource(),
+    let iRatingValue = oEvent.getParameter("value"),
+        bIsFav = (iRatingValue == 1 ? true : false),
+
+        oRating = oEvent.getSource(),
         oCtx = oRating.getBindingContext();
 
     if (!oCtx) {
@@ -1376,22 +1376,25 @@ function ev_iconFavoChange(oEvent) {
     }
 
     let oIconInfo = oCtx.getObject(),
-        sIconSrc = oIconInfo.ICON_SRC;
+        sIconSrc = oIconInfo.ICON_SRC,
+        SYSID = parent.oAPP.attr.USERINFO.SYSID,
 
-    let SYSID = parent.oAPP.attr.USERINFO.SYSID;
+        // 아이콘 즐겨찾기 저장
+        oFavSaveResult = WSUTIL.setIconFavorite(SYSID, sIconSrc, bIsFav);
 
-    let bFavSaveResult = WSUTIL.setIconFavorite(SYSID, sIconSrc, bIsFav);
+    if (oFavSaveResult.RETCD == "E") {
 
-    debugger;
+        WSUTIL.showMessageBox({
+            TYPE: oFavSaveResult.RETCD,
+            title: oAPP.msg.M01, // 아이콘 즐겨찾기 저장 오류
+            MSG: oAPP.msg.M02, // "아이콘 즐겨찾기 저장시 오류가 발생하였습니다."
+        });
 
-    // 개인화 저장
+        console.log(oFavSaveResult.RTMSG);
 
+        return;
 
-
-
-
-
-
+    }
 
 } // end of ev_iconFavoChange
 
@@ -1558,18 +1561,9 @@ oAPP.fn.getWsMessageList = function () {
 
         let oSettingInfo = WSUTIL.getWsSettingsInfo(),
             sWsLangu = oSettingInfo.globalLanguage;
-
-        // oAPP.msg.M01 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "021"); // Default Pattern
-        // oAPP.msg.M02 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "022"); // Custom Pattern
-        // oAPP.msg.M03 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "023"); // Content Type
-        // oAPP.msg.M04 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "024"); // Title
-        // oAPP.msg.M05 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "025"); // Pretty Print
-        // oAPP.msg.M06 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "026"); // Create
-        // oAPP.msg.M07 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027", oAPP.msg.M04); // title is required entry value
-        // oAPP.msg.M08 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "028"); // Do you really want to delete the object?
-        // oAPP.msg.M09 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "029"); // Delete
-        // oAPP.msg.M10 = oAPP.msg.M02 + " " + WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "029"); // Custom Pattern Delete
-        // oAPP.msg.M11 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "030"); // Change
+        
+        oAPP.msg.M01 = "아이콘 즐겨찾기 저장 오류";
+        oAPP.msg.M02 = "아이콘 즐겨찾기 저장시 오류가 발생하였습니다."
 
         oAPP.msg.M031 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "031"); // Clipboard Copy Success!
         oAPP.msg.M047 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "047"); // Icon List
