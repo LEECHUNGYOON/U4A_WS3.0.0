@@ -91,15 +91,6 @@ oAPP.fn.attachInit = async () => {
 
     oAPP.fn.fnInitModelBinding();
 
-    // sap tnt 아이콘을 로드 한다.
-    fnRegisterIconPool();
-
-    // SAP ICON 관련 정보 구성
-    await fnSAPIconConfig();
-
-    // U4A ICON 관련 정보 구성
-    await fnU4AIconConfig();
-
     /**
      * 무조건 맨 마지막에 수행 되어야 함!!
      */
@@ -336,7 +327,8 @@ function fnSAPIconConfig() {
 
             let oIconInfo = {
                 ICON_NAME: sIconName,
-                ICON_SRC: `sap-icon://${sIconName}`
+                ICON_SRC: `sap-icon://${sIconName}`,
+                RATVAL: 0
             }
 
             aIcons.push(oIconInfo);
@@ -420,7 +412,8 @@ function fnGetSapTntIcons() {
 
             let oIconInfo = {
                 ICON_NAME: sIconName,
-                ICON_SRC: `sap-icon://SAP-icons-TNT/${sIconName}`
+                ICON_SRC: `sap-icon://SAP-icons-TNT/${sIconName}`,
+                RATVAL: 0
             }
 
             aIcons.push(oIconInfo);
@@ -465,6 +458,9 @@ function fnGetSapTntIcons() {
 
         }
 
+
+
+
         var oCoreModel = sap.ui.getCore().getModel(),
             aSAPIcons = oCoreModel.getProperty("/ICONS/SAP");
 
@@ -503,7 +499,8 @@ function fnGetSapBusinessIcons() {
 
             let oIconInfo = {
                 ICON_NAME: sIconName,
-                ICON_SRC: `sap-icon://BusinessSuiteInAppSymbols/${sIconName}`
+                ICON_SRC: `sap-icon://BusinessSuiteInAppSymbols/${sIconName}`,
+                RATVAL: 0
             }
 
             aIcons.push(oIconInfo);
@@ -565,7 +562,7 @@ function fnGetSapBusinessIcons() {
 /************************************************************************
  * 추가할 SAP ICON 정보를 구성한다.
  ************************************************************************/
-function _fnAdditionalSAPIconConfig(){
+function _fnAdditionalSAPIconConfig() {
 
     setTimeout(() => {
 
@@ -627,16 +624,27 @@ function _fnUIupdatedCallback() {
         $('#content').fadeIn(300, 'linear');
     }, 300);
 
-    // oAPP.attr.UIUpdated = "X";
-
-    oAPP.setBusy("");
-
-    parent.document.getElementById("u4aWsBusyIndicator").style.visibility = "hidden";
-
     sap.ui.getCore().detachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback);
 
-    // 추가할 SAP ICON 정보를 구성한다.
-    _fnAdditionalSAPIconConfig();
+    setTimeout(async () => {
+
+        // sap tnt 아이콘을 로드 한다.
+        fnRegisterIconPool();
+
+        // SAP ICON 관련 정보 구성
+        await fnSAPIconConfig();
+
+        // U4A ICON 관련 정보 구성
+        await fnU4AIconConfig();
+
+        // 추가할 SAP ICON 정보를 구성한다.
+        _fnAdditionalSAPIconConfig();
+
+        parent.document.getElementById("u4aWsBusyIndicator").style.visibility = "hidden";
+
+        oAPP.setBusy("");
+
+    }, 500);
 
 } // end of _fnUIupdatedCallback
 
@@ -847,8 +855,24 @@ function fnGetDynamicPage() {
                 new sap.m.HBox({
                     renderType: "Bare",
                     items: [
-                        new sap.m.SearchField({
-                            liveChange: ev_searchFieldLiveChange
+                        new sap.m.SearchField("iconSearchField", {
+                            liveChange: function () {
+
+                                ev_iconSearch();
+
+                            }
+
+
+                            // ev_searchFieldLiveChange
+                        }),
+                        new sap.m.CheckBox("favCheckbox", {
+                            text: "Favorite only",
+                            select: function () {
+
+                                ev_iconSearch();
+
+                            }
+
                         }),
                         new sap.m.Select({
                             selectedKey: "{/THEME/THEME_KEY}",
@@ -921,20 +945,26 @@ function fnGetDynamicPageContent() {
                                         alignItems: "Center",
                                         items: [
 
-                                            new sap.m.RatingIndicator({
-                                                visualMode: "Full",
-                                                maxValue: 1,
-                                                // value: 1,
-                                                change: ev_iconFavoChange,
-                                            }).bindProperty("value", "ISFAV", function (ISFAV) {
+                                            new sap.ui.core.Icon({
+                                                src: "sap-icon://unfavorite"
+                                            }),
+                                            // new sap.m.RatingIndicator({
+                                            //     visualMode: "Full",
+                                            //     maxValue: 1,
+                                            //     value: "{RATVAL}",
+                                            //     change: ev_iconFavoChange,
+                                            // }).addStyleClass("sapUiTinyMarginEnd"),
 
-                                                if (ISFAV == null) {
-                                                    return 0;
-                                                }
+                                            // .bindProperty("value", "RATVAL", function (ISFAV) {
 
-                                                return (ISFAV == true ? 1 : 0);
+                                            //     if (ISFAV == null) {
+                                            //         return 0;
+                                            //     }
 
-                                            }).addStyleClass("sapUiTinyMarginEnd"),
+                                            //     return (ISFAV == true ? 1 : 0);
+
+                                            // }),
+
 
                                             new sap.m.Button({
                                                 icon: "sap-icon://copy",
@@ -1090,6 +1120,8 @@ function fnSetScrollTop() {
  ************************************************************************/
 function fnIntersectionObserverCallback(aObservEntry) {
 
+    console.log("ccc");
+
     let iEntryLength = aObservEntry.length;
     if (iEntryLength == 0) {
         return;
@@ -1145,6 +1177,12 @@ function fnIntersectionObserverCallback(aObservEntry) {
 
 function ev_gridListItemAfterRendering(oEvent) {
 
+    console.log("aa1");
+
+    if (oEvent?.srcControl?.aa) {
+        return;
+    }
+
     let oItem = oEvent.srcControl,
         oItemDOM = oItem.getDomRef();
 
@@ -1152,9 +1190,12 @@ function ev_gridListItemAfterRendering(oEvent) {
         return;
     }
 
-    oIntersectionObserver.unobserve(oItemDOM);
+    // oIntersectionObserver.unobserve(oItemDOM);
+    console.log("aa2");
 
     oIntersectionObserver.observe(oItemDOM);
+
+    oItem.aa = "X";
 
 } // end of ev_gridListItemAfterRendering
 
@@ -1354,42 +1395,93 @@ function ev_iconClipBoardCopy(oEvent) {
 
 } // end of ev_iconClipBoardCopy
 
+function _fnIconWorkerOnMessage() {
+
+    this.terminate();
+
+}
+
 /************************************************************************
  * 즐겨찾기 버튼 클릭 이벤트
  ************************************************************************/
 function ev_iconFavoChange(oEvent) {
 
-    debugger;
+    return;
 
-    let iRatingValue = oEvent.getParameter("value"),
-        bIsFav = (iRatingValue == 1 ? true : false),
+    let oRating = oEvent.getSource();
 
-        oRating = oEvent.getSource(),
-        oCtx = oRating.getBindingContext();
+    setTimeout(function () {
 
-    if (!oCtx) {
-        return;
-    }
+        let oRating = this;
 
-    let oIconInfo = oCtx.getObject(),
-        SYSID = parent.oAPP.attr.USERINFO.SYSID,
+        let oFavModel = oRating.getModel(),
+            SYSID = parent.oAPP.attr.USERINFO.SYSID;
 
-        // 아이콘 즐겨찾기 저장
-        oFavSaveResult = WSUTIL.setIconFavorite(SYSID, oIconInfo, bIsFav);
+        if (!oFavModel) {
+            return;
+        }
 
-    if (oFavSaveResult.RETCD == "E") {
+        let aRatingModelData = oFavModel.getProperty("/ICONS/SAP"),
+            // aRatingFilter = aRatingModelData.filter(elem => elem.RATVAL == 1),
 
-        WSUTIL.showMessageBox({
-            TYPE: oFavSaveResult.RETCD,
-            title: oAPP.msg.M01, // 아이콘 즐겨찾기 저장 오류
-            MSG: oAPP.msg.M02, // "아이콘 즐겨찾기 저장시 오류가 발생하였습니다."
-        });
+            sIconFavFolderPath = PATHINFO.P13N_ICONFAV,
+            sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`),
+            sWorkerPath = PATH.join(PATHINFO.WORKER_ROOT, "u4aWsFavIconWorker.js"),
 
-        console.log(oFavSaveResult.RTMSG);
+            // 설정된 세션 timeout 시간 도래 여부를 체크하기 위한 워커 생성
+            oIconFavWorker = new Worker(sWorkerPath);
 
-        return;
+        oIconFavWorker.onmessage = _fnIconWorkerOnMessage.bind(oIconFavWorker);
 
-    }
+        let oSendData = {
+            aIconFav: aRatingModelData,
+            sSaveFilePath: sIconFavFilePath
+        };
+
+        // 워커에 값 전달
+        oIconFavWorker.postMessage(oSendData);
+
+    }.bind(oRating), 500);
+
+
+
+
+    /**
+     * 원본
+     */
+
+
+    // let oRating = oEvent.getSource(),
+    //     oFavModel = oRating.getModel(),
+    //     SYSID = parent.oAPP.attr.USERINFO.SYSID;
+
+    // if (!oFavModel) {
+    //     return;
+    // }
+
+    // let aRatingModelData = oFavModel.getProperty("/ICONS/SAP"),
+    //     aRatingFilter = aRatingModelData.filter(elem => elem.RATVAL == 1),
+
+    //     sIconFavFolderPath = PATHINFO.P13N_ICONFAV,
+    //     sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`),
+    //     sWorkerPath = PATH.join(PATHINFO.WORKER_ROOT, "u4aWsFavIconWorker.js"),
+
+    //     // 설정된 세션 timeout 시간 도래 여부를 체크하기 위한 워커 생성
+    //     oIconFavWorker = new Worker(sWorkerPath);
+
+    // oIconFavWorker.onmessage = function () {
+
+    //     oIconFavWorker.terminate();
+
+    // };
+
+    // let oSendData = {
+    //     aIconFav: aRatingFilter,
+    //     sSaveFilePath: sIconFavFilePath
+    // };
+
+    // // 워커에 값 전달
+    // oIconFavWorker.postMessage(oSendData);
 
 } // end of ev_iconFavoChange
 
@@ -1439,6 +1531,59 @@ function ev_iconListPageNavigation(oEvent) {
     oToPage.setVisible(true);
 
 } // end of ev_iconListPageNavigation
+
+/************************************************************************
+ * 아이콘 검색 기능
+ ************************************************************************/
+function ev_iconSearch() {
+
+    let oSearchField = sap.ui.getCore().byId("iconSearchField"),
+        oCheckBox = sap.ui.getCore().byId("favCheckbox"),
+        oGridList = sap.ui.getCore().byId("iconGridList"),
+        oTable = sap.ui.getCore().byId("iconListTable"),
+
+        oGridListBindingInfo = oGridList.getBinding("items"),
+        oTableBindingInfo = oTable.getBinding("rows"),
+
+        sSearchValue = oSearchField.getValue(),
+        bIsCheck = oCheckBox.getSelected();
+
+    if (!oGridListBindingInfo || !oTableBindingInfo) {
+        return;
+    }
+
+    if (sSearchValue === "" && !bIsCheck) {
+        oGridListBindingInfo.filter();
+        oTableBindingInfo.filter();
+        return;
+    }
+
+    var aFilters1 = [],
+        aFilters2 = [];
+
+    if (bIsCheck) {
+        aFilters1.push(new sap.ui.model.Filter({ path: "RATVAL", operator: "EQ", value1: 1 }));
+    }
+
+    aFilters2.push(new sap.ui.model.Filter({ path: "KEYWORD_STRING", operator: "Contains", value1: sSearchValue }));
+    aFilters2.push(new sap.ui.model.Filter({ path: "ICON_SRC", operator: "Contains", value1: sSearchValue }));
+
+    //model 필터 처리.
+    oGridListBindingInfo.filter(
+        [
+            new sap.ui.model.Filter(aFilters1, true),
+            new sap.ui.model.Filter(aFilters2, false)
+        ]
+    );
+
+    oTableBindingInfo.filter(
+        [
+            new sap.ui.model.Filter(aFilters1, true),
+            new sap.ui.model.Filter(aFilters2, false)
+        ]
+    );
+
+} // end of ev_iconSearch
 
 /************************************************************************
  * 아이콘 탭바 Busy Indicator
@@ -1556,7 +1701,7 @@ oAPP.fn.getWsMessageList = function () {
 
         let oSettingInfo = WSUTIL.getWsSettingsInfo(),
             sWsLangu = oSettingInfo.globalLanguage;
-        
+
         oAPP.msg.M01 = "아이콘 즐겨찾기 저장 오류";
         oAPP.msg.M02 = "아이콘 즐겨찾기 저장시 오류가 발생하였습니다."
 
@@ -1605,92 +1750,92 @@ function getJsonAsync(sUrl, oParam) {
 
 }
 
-function sendAjaxAsync(pOptions, oFormData) {
+// function sendAjaxAsync(pOptions, oFormData) {
 
-    return new Promise((resolve) => {
+//     return new Promise((resolve) => {
 
-        /**
-         * 파라미터 종류
-         * 1. url
-         * 2. method
-         *  - POST, GET
-         * 3. responseType
-         *  - json
-         *  - blob
-         *  - arraybuffer
-         * 
-         * 4. FormData
-         * 
-         * 5. callback
-         *  - success
-         *  - fail
-         * 
-         */
+//         /**
+//          * 파라미터 종류
+//          * 1. url
+//          * 2. method
+//          *  - POST, GET
+//          * 3. responseType
+//          *  - json
+//          *  - blob
+//          *  - arraybuffer
+//          * 
+//          * 4. FormData
+//          * 
+//          * 5. callback
+//          *  - success
+//          *  - fail
+//          * 
+//          */
 
 
-        let oDefOptions = {
-            url: "",
-            method: "GET",
-            responseType: "",
-            async: true,
-            withCredentials: true,
-            formData: oFormData
-        };
+//         let oDefOptions = {
+//             url: "",
+//             method: "GET",
+//             responseType: "",
+//             async: true,
+//             withCredentials: true,
+//             formData: oFormData
+//         };
 
-        if ((typeof oDefOptions.formData === "undefined")) {
-            oDefOptions.formData = new FormData();
-        }
+//         if ((typeof oDefOptions.formData === "undefined")) {
+//             oDefOptions.formData = new FormData();
+//         }
 
-        if (oDefOptions.formData instanceof FormData == false) {
-            oDefOptions.formData = new FormData();
-        }
+//         if (oDefOptions.formData instanceof FormData == false) {
+//             oDefOptions.formData = new FormData();
+//         }
 
-        let oOptions = { ...oDefOptions, ...pOptions };
+//         let oOptions = { ...oDefOptions, ...pOptions };
 
-        var XHR = new XMLHttpRequest();
+//         var XHR = new XMLHttpRequest();
 
-        XHR.onreadystatechange = function () { // 요청에 대한 콜백
-            if (XHR.readyState === XHR.DONE) { // 요청이 완료되면
-                if (XHR.status === 200 || XHR.status === 201) {
+//         XHR.onreadystatechange = function () { // 요청에 대한 콜백
+//             if (XHR.readyState === XHR.DONE) { // 요청이 완료되면
+//                 if (XHR.status === 200 || XHR.status === 201) {
 
-                    resolve({ RETCD: "S", RTDATA: XHR.response, options: pOptions });
+//                     resolve({ RETCD: "S", RTDATA: XHR.response, options: pOptions });
 
-                }
-            }
-        };
+//                 }
+//             }
+//         };
 
-        // 오류 콜백
-        XHR.onerror = function (oEvent) {
+//         // 오류 콜백
+//         XHR.onerror = function (oEvent) {
 
-            resolve({ RETCD: "E" });
+//             resolve({ RETCD: "E" });
 
-        };
+//         };
 
-        // Request Timeout 콜백
-        XHR.ontimeout = function (oEvent) {
+//         // Request Timeout 콜백
+//         XHR.ontimeout = function (oEvent) {
 
-            resolve({ RETCD: "E" });
+//             resolve({ RETCD: "E" });
 
-        };
+//         };
 
-        try {
-            // FormData가 없으면 GET으로 전송
-            XHR.open(oOptions.method, oOptions.url, oOptions.async);
+//         try {
+//             // FormData가 없으면 GET으로 전송
+//             XHR.open(oOptions.method, oOptions.url, oOptions.async);
 
-            XHR.withCredentials = oOptions.withCredentials;
-            XHR.timeout = 60000; // 1분
-            XHR.responseType = oOptions.responseType;
+//             XHR.withCredentials = oOptions.withCredentials;
+//             XHR.timeout = 60000; // 1분
+//             XHR.responseType = oOptions.responseType;
 
-            XHR.send(oOptions.formData);
+//             XHR.send(oOptions.formData);
 
-        } catch (error) {
-            resolve({ RETCD: "E" });
-            console.log(error.toString());
-        }
+//         } catch (error) {
+//             resolve({ RETCD: "E" });
+//             console.log(error.toString());
+//         }
 
-    });
+//     });
 
-} // end of sendAjax
+// } // end of sendAjax
 
 
 

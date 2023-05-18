@@ -1059,13 +1059,14 @@
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.resizable = true;
-        oBrowserOptions.movable = true;
+        oBrowserOptions.movable = true;        
         oBrowserOptions.backgroundColor = sWsThemeColor;
+        oBrowserOptions.webPreferences.nodeIntegrationInWorker = true;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
         oBrowserOptions.webPreferences.USERINFO = oUserInfo;
-
+        
         // 브라우저 오픈
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);

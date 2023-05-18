@@ -1,4 +1,5 @@
-const REMOTE = require('@electron/remote'),
+const
+    REMOTE = require('@electron/remote'),
     FS = require('fs-extra'),
     ZIPLIB = require("zip-lib"),
     PATH = REMOTE.require('path'),
@@ -83,7 +84,7 @@ module.exports = {
                 sJsonPath = PATH.join(sJsonFolderPath, "msgcls.json");
 
             // 파일이 없을 경우 그냥 빠져나간다.
-            if (! FS.existsSync(sJsonPath)) {
+            if (!FS.existsSync(sJsonPath)) {
                 console.error("not exists file => msgcls.json");
                 return;
             }
@@ -113,7 +114,7 @@ module.exports = {
             let aMsgClsTxt = this.getMsgClassTxt(),
                 sLangu = this.LANGU;
 
-            if (! aMsgClsTxt || ! aMsgClsTxt.length) {
+            if (!aMsgClsTxt || !aMsgClsTxt.length) {
                 return sMsgCls + "|" + sMsgNum;
             }
 
@@ -124,7 +125,7 @@ module.exports = {
             let oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sLangu && a.MSGNR == sMsgNum);
 
             // 현재 접속한 언어로 메시지를 못찾은 경우
-            if (! oMsgTxt) { // 접속한 언어가 영어일 경우 빠져나간다.
+            if (!oMsgTxt) { // 접속한 언어가 영어일 경우 빠져나간다.
                 if (sDefLangu == sLangu) {
                     return sMsgCls + "|" + sMsgNum;
 
@@ -134,7 +135,7 @@ module.exports = {
                 oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sDefLangu && a.MSGNR == sMsgNum);
 
                 // 그래도 없다면 빠져나간다.
-                if (! oMsgTxt) {
+                if (!oMsgTxt) {
                     return sMsgCls + "|" + sMsgNum;
                 }
 
@@ -189,20 +190,20 @@ module.exports = {
 
     showMessageBox: function (sap, pOptions) {
 
-        if (! sap ?. m ?. MessageBox) {
+        if (!sap?.m?.MessageBox) {
             sap.ui.requireSync("sap/m/MessageBox");
         }
 
         let oDefaultOptions = {
-                icon: sap.m.MessageBox.Icon.NONE, // default
-                title: "", // default
-                actions: sap.m.MessageBox.Action.OK, // default
-                emphasizedAction: sap.m.MessageBox.Action.OK, // default
-                onClose: null, // default
-                styleClass: "", // default
-                initialFocus: null, // default
-                textDirection: sap.ui.core.TextDirection.Inherit // default
-            },
+            icon: sap.m.MessageBox.Icon.NONE, // default
+            title: "", // default
+            actions: sap.m.MessageBox.Action.OK, // default
+            emphasizedAction: sap.m.MessageBox.Action.OK, // default
+            onClose: null, // default
+            styleClass: "", // default
+            initialFocus: null, // default
+            textDirection: sap.ui.core.TextDirection.Inherit // default
+        },
             oOptions = Object.assign({}, oDefaultOptions, pOptions);
 
 
@@ -374,7 +375,7 @@ module.exports = {
         let sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", LANGU, ARBGB + ".json");
 
         // WS 메시지 존재 유무
-        if (! FS.existsSync(sWsMsgPath)) {
+        if (!FS.existsSync(sWsMsgPath)) {
             return `${ARBGB}|${MSGNR}`;
         }
 
@@ -383,7 +384,7 @@ module.exports = {
             oFindTxt = aMsgList.find(elem => elem.MSGNR == MSGNR);
 
         // 메시지 넘버에 맞는 ws 메시지가 없으면 빠져나감.
-        if (! oFindTxt) {
+        if (!oFindTxt) {
             return `${ARBGB}|${MSGNR}`;
         }
 
@@ -495,7 +496,7 @@ module.exports = {
 
             }
 
-            resolve({RETCD: "S", RTDATA: oLanguJsonData});
+            resolve({ RETCD: "S", RTDATA: oLanguJsonData });
 
         });
 
@@ -522,11 +523,11 @@ module.exports = {
         sUrlRoot = sUrlRoot.replaceAll("\\", "/");
         sUrlRoot = `file:///${sUrlRoot}`;
 
-        sap.ui.core.IconPool.registerFont({collectionName: sRegularColName, fontFamily: oFwList.regular, fontURI: sUrlRoot, lazy: true});
+        sap.ui.core.IconPool.registerFont({ collectionName: sRegularColName, fontFamily: oFwList.regular, fontURI: sUrlRoot, lazy: true });
 
-        sap.ui.core.IconPool.registerFont({collectionName: sBrandsColName, fontFamily: oFwList.brands, fontURI: sUrlRoot, lazy: true});
+        sap.ui.core.IconPool.registerFont({ collectionName: sBrandsColName, fontFamily: oFwList.brands, fontURI: sUrlRoot, lazy: true });
 
-        sap.ui.core.IconPool.registerFont({collectionName: sSolidColName, fontFamily: oFwList.solid, fontURI: sUrlRoot, lazy: true});
+        sap.ui.core.IconPool.registerFont({ collectionName: sSolidColName, fontFamily: oFwList.solid, fontURI: sUrlRoot, lazy: true });
 
     },
 
@@ -557,7 +558,7 @@ module.exports = {
 
         var tm2 = m.getProperty('/' + lp2);
 
-        if (! tm || tm.length === 0) {
+        if (!tm || tm.length === 0) {
             tm2[z] = [];
             m.refresh();
             return;
@@ -567,14 +568,14 @@ module.exports = {
 
         var n = JSON.parse(y);
 
-        for (var e, h, u, a =[], c =
+        for (var e, h, u, a = [], c =
             {}, o = 0, f = n.length; f > o; o++) {
             e = n[o],
-            h = e[r],
-            u = e[t] || 0,
-            c[h] = c[h] || [],
-            e[z] = c[h],
-            0 != u ? (c[u] = c[u] || [], c[u].push(e)) : a.push(e);
+                h = e[r],
+                u = e[t] || 0,
+                c[h] = c[h] || [],
+                e[z] = c[h],
+                0 != u ? (c[u] = c[u] || [], c[u].push(e)) : a.push(e);
         }
 
         tm2[z] = a;
@@ -674,7 +675,7 @@ module.exports = {
             yPos = oParentBounds.y + 10;
         }
 
-        oBrowserWindow.setBounds({x: xPos, y: yPos});
+        oBrowserWindow.setBounds({ x: xPos, y: yPos });
 
     },
     // end of setParentCenterBounds
@@ -694,7 +695,7 @@ module.exports = {
             }, (err, aFiles) => {
 
                 if (err) {
-                    resolve({RETCD: "E", RTMSG: err.toString()})
+                    resolve({ RETCD: "E", RTMSG: err.toString() })
                     return;
                 }
 
@@ -714,7 +715,7 @@ module.exports = {
 
                 }
 
-                resolve({RETCD: "S", RTDATA: aFileExtInfo});
+                resolve({ RETCD: "S", RTDATA: aFileExtInfo });
 
             });
 
@@ -830,7 +831,7 @@ module.exports = {
 
             });
 
-            if (! oFindWLO) {
+            if (!oFindWLO) {
                 resolve(false);
                 return;
             }
@@ -864,7 +865,7 @@ module.exports = {
                 oWLO = oRegValues.T_REG_WLO;
 
             // 저장된 정보가 없으면 리턴
-            if (! oWLO) {
+            if (!oWLO) {
                 resolve([]);
                 return;
             }
@@ -917,12 +918,12 @@ module.exports = {
 
                 if (err) {
 
-                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
+                    resolve({ RETCD: "E", RTMSG: err.toString(), RTDATA: "" });
 
                     return;
                 }
 
-                resolve({RETCD: "S", RTMSG: "", RTDATA: files});
+                resolve({ RETCD: "S", RTMSG: "", RTDATA: files });
 
             });
 
@@ -945,12 +946,12 @@ module.exports = {
 
                 if (err) {
 
-                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
+                    resolve({ RETCD: "E", RTMSG: err.toString(), RTDATA: "" });
 
                     return;
                 }
 
-                resolve({RETCD: "S", RTMSG: "", RTDATA: data});
+                resolve({ RETCD: "S", RTMSG: "", RTDATA: data });
 
             });
 
@@ -977,11 +978,11 @@ module.exports = {
 
             FS.copy(sSource, sTarget, options).then(function () {
 
-                resolve({RETCD: "S", RTMSG: "", RTDATA: ""});
+                resolve({ RETCD: "S", RTMSG: "", RTDATA: "" });
 
             }).catch(function (err) {
 
-                resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
+                resolve({ RETCD: "E", RTMSG: err.toString(), RTDATA: "" });
 
             });
 
@@ -1005,11 +1006,11 @@ module.exports = {
             FS.writeFile(file, data, options, (err) => {
 
                 if (err) {
-                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
+                    resolve({ RETCD: "E", RTMSG: err.toString(), RTDATA: "" });
                     return;
                 }
 
-                resolve({RETCD: "S", RTMSG: "", RTDATA: ""});
+                resolve({ RETCD: "S", RTMSG: "", RTDATA: "" });
 
             });
 
@@ -1025,11 +1026,11 @@ module.exports = {
             FS.stat(sFilePath, (err, stats) => {
 
                 if (err) {
-                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
+                    resolve({ RETCD: "E", RTMSG: err.toString(), RTDATA: "" });
                     return;
                 }
 
-                resolve({RETCD: "S", RTMSG: "", RTDATA: stats});
+                resolve({ RETCD: "S", RTMSG: "", RTDATA: stats });
 
             });
 
@@ -1045,11 +1046,11 @@ module.exports = {
             FS.remove(sRemovePath, (err) => {
 
                 if (err) {
-                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
+                    resolve({ RETCD: "E", RTMSG: err.toString(), RTDATA: "" });
                     return;
                 }
 
-                resolve({RETCD: "S", RTMSG: "", RTDATA: ""});
+                resolve({ RETCD: "S", RTMSG: "", RTDATA: "" });
 
             });
 
@@ -1081,7 +1082,7 @@ module.exports = {
 
             if (iArgLength == 0) {
 
-                resolve({RETCD: "E", RTMSG: "", RTDATA: ""});
+                resolve({ RETCD: "E", RTMSG: "", RTDATA: "" });
 
                 return;
 
@@ -1102,11 +1103,11 @@ module.exports = {
             REGEDIT.list([sRegPath], (err, result) => {
 
                 if (err) {
-                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
+                    resolve({ RETCD: "E", RTMSG: err.toString(), RTDATA: "" });
                     return;
                 }
 
-                resolve({RETCD: "S", RTMSG: "", RTDATA: result[sRegPath]});
+                resolve({ RETCD: "S", RTMSG: "", RTDATA: result[sRegPath] });
 
             });
 
@@ -1127,11 +1128,11 @@ module.exports = {
             REGEDIT.list(aPaths, (err, result) => {
 
                 if (err) {
-                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
+                    resolve({ RETCD: "E", RTMSG: err.toString(), RTDATA: "" });
                     return;
                 }
 
-                resolve({RETCD: "S", RTMSG: "", RTDATA: result});
+                resolve({ RETCD: "S", RTMSG: "", RTDATA: result });
 
             });
 
@@ -1151,12 +1152,12 @@ module.exports = {
 
                 if (err) {
 
-                    resolve({RETCD: "E", RTMSG: err.toString(), RTDATA: ""});
+                    resolve({ RETCD: "E", RTMSG: err.toString(), RTDATA: "" });
 
                     return;
                 }
 
-                resolve({RETCD: "S", RTMSG: "", RTDATA: ""});
+                resolve({ RETCD: "S", RTMSG: "", RTDATA: "" });
 
             });
 
@@ -1193,9 +1194,9 @@ module.exports = {
         return new Promise((resolve) => {
 
             ZIPLIB.extract(sSourcePath, sTargetFolderPath).then(function () {
-                resolve({RETCD: "S"});
+                resolve({ RETCD: "S" });
             }, function (err) {
-                resolve({RETCD: "E", RTMSG: err.toString()});
+                resolve({ RETCD: "E", RTMSG: err.toString() });
             });
 
         });
@@ -1213,65 +1214,29 @@ module.exports = {
      * @param {Boolean} bIsFav 
      *  - 저장 유무
      */
-    setIconFavorite: function (SYSID, oIconInfo, bIsFav) {
-
-        debugger;
+    setIconFavorite: function (SYSID, aIconInfo) {
 
         // P13N_ICONFAV
         let sIconFavFolderPath = PATHINFO.P13N_ICONFAV,
             sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`);
 
-        // 파일이 없으면 생성
-        if (! FS.existsSync(sIconFavFilePath)) {
-
-            this.fsWriteFile(sIconFavFilePath, JSON.stringify([]));
-
-        }
-
-        let sIconFavData = FS.readFileSync(sIconFavFilePath, 'utf-8');
-
         try {
-            var aIconFavData = JSON.parse(sIconFavData);
+
+            // 파일이 없으면 생성
+            if (!FS.existsSync(sIconFavFilePath)) {
+
+                this.fsWriteFile(sIconFavFilePath, JSON.stringify([]));
+
+            }
+
+            this.fsWriteFile(sIconFavFilePath, JSON.stringify(aIconInfo));
 
         } catch (error) {
 
-            aIconFavData = [];
-
-            // return {
-            //     RETCD: "E",
-            //     RTMSG: "[Icon Favorite 저장 오류] \n\n 저장된 데이터 Json Parse 오류! \n \n" + error.toString()
-            // };
-
+            let sErrMsg = "[Icon Favorite save]: " + error.toString() + " \n\n ";
+            console.log(sErrMsg);
+            throw new Error(error);
         }
-
-        if (Array.isArray(aIconFavData) == false) {
-            return {RETCD: "E", RTMSG: "[Icon Favorite 저장 오류] \n\n 저장된 데이터가 Array 타입이 아닙니다."};
-        }
-
-        // 아이콘 즐겨찾기 등록일 경우
-        if (bIsFav) {
-
-            aIconFavData.push(oIconInfo);
-
-            this.fsWriteFile(sIconFavFilePath, JSON.stringify(aIconFavData));
-
-            return {RETCD: "S"};
-
-        }
-
-        // 아이콘 즐겨찾기 삭제일 경우
-        let iFind = aIconFavData.findIndex(elem => elem.ICON_SRC == oIconInfo.ICON_SRC);
-
-        // 삭제할 대상이 없으면 그냥 빠져나감.
-        if (iFind < 0) {
-            return {RETCD: "S"};
-        }
-
-        aIconFavData.slice(iFind, 1);
-
-        this.fsWriteFile(sIconFavFilePath, JSON.stringify(aIconFavData));
-
-        return {RETCD: "S"};
 
     }, // end of setIconFavorite
 

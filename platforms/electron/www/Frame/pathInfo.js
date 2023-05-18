@@ -26,11 +26,11 @@ module.exports = (() => {
         USERDATA = APP.getPath("userData"),
 
         WS10_20 = PATH.join(APPPATH, "ws10_20"),
-        JS_ROOT = PATH.join(APPPATH, "ws10_20", "js"),
-        POPUP_ROOT = PATH.join(APPPATH, "ws10_20", "Popups"),
+        JS_ROOT = PATH.join(WS10_20, "js"),
+        POPUP_ROOT = PATH.join(WS10_20, "Popups"),
         P13N_ROOT = PATH.join(USERDATA, "p13n"),
         SUGG_ROOT = PATH.join(P13N_ROOT, "suggestion"),
-        USP_ROOT = PATH.join(APPPATH, "ws10_20", "js", "usp"),
+        USP_ROOT = PATH.join(JS_ROOT, "usp"),
         PATTERN_ROOT = PATH.join(USP_ROOT, "pattern"),
         USERDATA_PATTERN_ROOT = PATH.join(USERDATA, "p13n", "pattern"),
         CONF_ROOT = PATH.join(PATH.join(USERDATA, "conf")),
@@ -114,6 +114,8 @@ module.exports = (() => {
 
         // Root Paths...
         POPUP_ROOT: POPUP_ROOT,
+        JS_ROOT: JS_ROOT,
+        WORKER_ROOT : PATH.join(JS_ROOT, "workers"),
         U4AICON_ROOT: PATH.join(WS10_20, "icons", "u4a")
 
     };
