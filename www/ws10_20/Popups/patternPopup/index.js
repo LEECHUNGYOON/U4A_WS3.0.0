@@ -1470,8 +1470,7 @@ if (!oAPP) {
         // WS Setting 정보
         let oSettings = parent.WSUTIL.getWsSettingsInfo(),
             oPath = oSettings.path;
-
-        // FS.watch(oPath.DEF_PATT, fnPatternFileWatchEvent);
+        
         FS.watch(oPath.CUST_PATT, fnPatternFileWatchEvent);
 
     }; // end of oAPP.fn.fnSetPatternFileWatch

@@ -4,9 +4,14 @@ self.onmessage = function (e) {
         FS = require("fs");
 
     let receiveData = e.data,
-        aIconFav = receiveData.aIconFav,
+        aIcons = receiveData.aIcons,
+        sIconSrc = receiveData.sIconSrc,
         sIconFavFilePath = receiveData.sSaveFilePath,
-        aIconInfo = aIconFav.filter(elem => elem.RATVAL == 1);
+        aIconInfo = aIcons.filter(elem => elem.RATVAL == 1);
+        
+        // aSelectedFavIcon = aIcons.filter(elem => elem.ICON_SRC == sIconSrc);
+
+    // aIconInfo = aIconInfo.concat(aSelectedFavIcon);
 
     try {
 
@@ -21,14 +26,14 @@ self.onmessage = function (e) {
 
     } catch (error) {
 
-        postMessage('X');
+        postMessage('E');
 
         let sErrMsg = "[Icon Favorite save]: " + error.toString() + " \n\n ";
         console.log(sErrMsg);
-        throw new Error(sErrMsg);        
+        throw new Error(sErrMsg);
 
     }
 
-    postMessage('X');
+    postMessage('S');
 
 };

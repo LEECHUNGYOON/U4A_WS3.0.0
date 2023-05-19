@@ -37,6 +37,10 @@ let oIntersectionObserverOptions = {
 },
     oIntersectionObserver = new IntersectionObserver(fnIntersectionObserverCallback, oIntersectionObserverOptions);
 
+// test
+var G_bIsMe = "";
+
+
 /**
 * 아이콘 리스트 팝업을 콜백으로 실행했을 경우 타는 이벤트 핸들러
 */
@@ -82,6 +86,9 @@ oAPP.fn.attachInit = async () => {
 
     // await fnWait();
 
+    // 테마별 색상 정보 구하기
+    _fnGetThemeColors();
+
     // 현재 브라우저의 이벤트 핸들러 
     _attachCurrentWindowEvents();
 
@@ -100,7 +107,10 @@ oAPP.fn.attachInit = async () => {
 
 }; // end of oAPP.fn.attachInit
 
-function fnRegisterIconPool() {
+/************************************************************************
+ * 아이콘을 사용할 수 있도록 IconPool에 등록한다.
+ ************************************************************************/
+function _fnRegisterIconPool() {
 
     jQuery.sap.require("sap.ui.core.IconPool");
 
@@ -125,9 +135,11 @@ function fnRegisterIconPool() {
 
     oIconPool.registerFont(oIconSet2);
 
-} // end of fnRegisterTntIcons
+} // end of _fnRegisterIconPool
 
-
+/************************************************************************
+ * 서버에서 U4A Icon 정보를 구한다.
+ ************************************************************************/
 function fnGetFontAwesomeIcon() {
 
     return new Promise(async (resolve) => {
@@ -215,6 +227,7 @@ function fnGetFontAwesomeIcon() {
                 let oIconInfo = {};
                 oIconInfo.ICON_NAME = j;
                 oIconInfo.ICON_SRC = `${sIconSrcPrefix}${oParam.collectionName}/${j}`;
+                oIconInfo.RATVAL = 0;
                 aIcons.push(oIconInfo);
 
             }
@@ -264,6 +277,26 @@ function fnGetFontAwesomeIcon() {
 
         }
 
+        // 기 저장된 아이콘 정보가 있을 경우 저장된 값을 매핑한다.
+        let aSavedIconFavData = oAPP.attr.aSavedIconFavData;
+        if (aSavedIconFavData && Array.isArray(aSavedIconFavData) == true) {
+
+            let iSavedIconLength = aSavedIconFavData.length;
+            for (var i = 0; i < iSavedIconLength; i++) {
+
+                let oSavedIcon = aSavedIconFavData[i];
+
+                var oFind = aIcons.find(elem => elem.ICON_SRC == oSavedIcon.ICON_SRC);
+                if (!oFind) {
+                    continue;
+                }
+
+                oFind.RATVAL = oSavedIcon.RATVAL;
+
+            }
+
+        }
+
         let oCoreModel = sap.ui.getCore().getModel();
         oCoreModel.setProperty("/ICONS/U4A", aIcons);
 
@@ -273,6 +306,9 @@ function fnGetFontAwesomeIcon() {
 
 } // end of fnGetFontAwesomeIcon
 
+/************************************************************************
+ * Array 구조의 키워드 정보를 String으로 변환
+ ************************************************************************/
 function fnGetKeyWordToString(aKeyWords, sSeparator) {
 
     if (!Array.isArray(aKeyWords)) {
@@ -296,7 +332,9 @@ function fnGetKeyWordToString(aKeyWords, sSeparator) {
 
 } // end of fnGetKeyWordToString
 
-// U4A Icon 관련 설정
+/************************************************************************
+ * U4A Icon 관련 설정
+ ************************************************************************/
 function fnU4AIconConfig() {
 
     return new Promise(async (resolve) => {
@@ -374,6 +412,26 @@ function fnSAPIconConfig() {
             }
 
             oFound.KEYWORD_STRING = fnGetKeyWordToString(aKeyWords, sSeparator);
+
+        }
+
+        // 기 저장된 아이콘 정보가 있을 경우
+        let aSavedIconFavData = oAPP.attr.aSavedIconFavData;
+        if (aSavedIconFavData && Array.isArray(aSavedIconFavData) == true) {
+
+            let iSavedIconLength = aSavedIconFavData.length;
+            for (var i = 0; i < iSavedIconLength; i++) {
+
+                let oSavedIcon = aSavedIconFavData[i];
+
+                var oFind = aIcons.find(elem => elem.ICON_SRC == oSavedIcon.ICON_SRC);
+                if (!oFind) {
+                    continue;
+                }
+
+                oFind.RATVAL = oSavedIcon.RATVAL;
+
+            }
 
         }
 
@@ -458,8 +516,25 @@ function fnGetSapTntIcons() {
 
         }
 
+        // 기 저장된 아이콘 정보가 있을 경우
+        let aSavedIconFavData = oAPP.attr.aSavedIconFavData;
+        if (aSavedIconFavData && Array.isArray(aSavedIconFavData) == true) {
 
+            let iSavedIconLength = aSavedIconFavData.length;
+            for (var i = 0; i < iSavedIconLength; i++) {
 
+                let oSavedIcon = aSavedIconFavData[i];
+
+                var oFind = aIcons.find(elem => elem.ICON_SRC == oSavedIcon.ICON_SRC);
+                if (!oFind) {
+                    continue;
+                }
+
+                oFind.RATVAL = oSavedIcon.RATVAL;
+
+            }
+
+        }
 
         var oCoreModel = sap.ui.getCore().getModel(),
             aSAPIcons = oCoreModel.getProperty("/ICONS/SAP");
@@ -545,6 +620,26 @@ function fnGetSapBusinessIcons() {
 
         }
 
+        // 기 저장된 아이콘 정보가 있을 경우
+        let aSavedIconFavData = oAPP.attr.aSavedIconFavData;
+        if (aSavedIconFavData && Array.isArray(aSavedIconFavData) == true) {
+
+            let iSavedIconLength = aSavedIconFavData.length;
+            for (var i = 0; i < iSavedIconLength; i++) {
+
+                let oSavedIcon = aSavedIconFavData[i];
+
+                var oFind = aIcons.find(elem => elem.ICON_SRC == oSavedIcon.ICON_SRC);
+                if (!oFind) {
+                    continue;
+                }
+
+                oFind.RATVAL = oSavedIcon.RATVAL;
+
+            }
+
+        }
+
         var oCoreModel = sap.ui.getCore().getModel(),
             aSAPIcons = oCoreModel.getProperty("/ICONS/SAP");
 
@@ -579,6 +674,100 @@ function _fnAdditionalSAPIconConfig() {
     }, 500);
 
 } // end of _fnAdditionalSAPIconConfig
+
+/************************************************************************
+ * 저장된 즐겨찾기 정보를 구한다.
+ ************************************************************************/
+function fnGetSavedFavIconInfo() {
+
+    return new Promise((resolve) => {
+       
+        let sIconFavFolderPath = PATHINFO.P13N_ICONFAV,
+            SYSID = parent.oAPP.attr.USERINFO.SYSID,
+            sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`);
+
+        if (!FS.existsSync(sIconFavFilePath)) {
+            resolve();
+            return;
+        }
+
+        try {
+
+            var sIconFavJsonData = FS.readFileSync(sIconFavFilePath, 'utf-8'),
+                aIconFavData = JSON.parse(sIconFavJsonData);
+
+        } catch (error) {
+
+            let sErrMsg = "[Saved Icon Read Error]: \n \n " + error.toString();
+            console.error(sErrMsg);
+
+            throw new Error(sErrMsg);
+
+        }
+
+        oAPP.attr.aSavedIconFavData = aIconFavData;
+
+        resolve();
+
+    });
+
+} // end of fnGetSavedFavIconInfo
+
+/************************************************************************
+ * UI5 버전 및 테마별 색상 정보를 구한다.
+ ************************************************************************/
+function _fnGetThemeColors() {
+
+    oAPP.attr.themeColors = sap.ui.core.theming.Parameters.get();
+
+} // end of _fnGetThemeColors
+
+/************************************************************************
+ * 즐겨찾기 저장할 Json 파일을 생성한다.
+ ************************************************************************/
+function _fnWriteFavJsonFile() {
+
+    let sIconFavFolderPath = PATHINFO.P13N_ICONFAV,
+        SYSID = parent.oAPP.attr.USERINFO.SYSID,
+        sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`);
+
+    // 파일이 없으면 생성
+    if (!FS.existsSync(sIconFavFilePath)) {
+
+        FS.writeFileSync(sIconFavFilePath, JSON.stringify([]));
+
+    }
+
+} // end of _fnWriteFavJsonFile
+
+/************************************************************************
+ * 즐거찾기 저장된 Json 파일을 감지한다.
+ ************************************************************************/
+function _fnWatchFavJsonFile() {
+
+    let sIconFavFolderPath = PATHINFO.P13N_ICONFAV,
+        SYSID = parent.oAPP.attr.USERINFO.SYSID,
+        sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`);
+
+    FS.watch(sIconFavFilePath, fnWatchFavJsonFile);
+
+} // end of _fnWatchFavJsonFile
+
+/************************************************************************
+ * 즐거찾기 저장된 Json 파일을 감지되면 발생하는 이벤트
+ ************************************************************************/
+function fnWatchFavJsonFile() {
+
+    debugger;
+
+    if (G_bIsMe == "X") {
+        G_bIsMe = "";
+        return;
+    }
+
+
+} // end of fnWatchFavJsonFile
+
 
 
 /************************************************************************
@@ -629,7 +818,10 @@ function _fnUIupdatedCallback() {
     setTimeout(async () => {
 
         // sap tnt 아이콘을 로드 한다.
-        fnRegisterIconPool();
+        _fnRegisterIconPool();
+
+        // 저장된 즐겨찾기 정보를 구한다.
+        await fnGetSavedFavIconInfo();
 
         // SAP ICON 관련 정보 구성
         await fnSAPIconConfig();
@@ -639,6 +831,12 @@ function _fnUIupdatedCallback() {
 
         // 추가할 SAP ICON 정보를 구성한다.
         _fnAdditionalSAPIconConfig();
+
+        // 즐겨찾기 저장할 Json 파일을 생성한다.
+        _fnWriteFavJsonFile();
+
+        // 즐거찾기 저장된 Json 파일을 감지한다.
+        _fnWatchFavJsonFile();
 
         parent.document.getElementById("u4aWsBusyIndicator").style.visibility = "hidden";
 
@@ -858,7 +1056,7 @@ function fnGetDynamicPage() {
                         new sap.m.SearchField("iconSearchField", {
                             liveChange: function () {
 
-                                ev_iconSearch();
+                                ev_iconFilter();
 
                             }
 
@@ -869,7 +1067,7 @@ function fnGetDynamicPage() {
                             text: "Favorite only",
                             select: function () {
 
-                                ev_iconSearch();
+                                ev_iconFilter();
 
                             }
 
@@ -946,8 +1144,37 @@ function fnGetDynamicPageContent() {
                                         items: [
 
                                             new sap.ui.core.Icon({
-                                                src: "sap-icon://unfavorite"
-                                            }),
+                                                size: "20px",
+                                                press: ev_iconFavoChange
+                                            }).bindProperty("src", "RATVAL", function (RATVAL) {
+                                                return;
+                                                let activeColor = oAPP.attr?.themeColors?.sapUiContentRatedColor || "#000",
+                                                    inactiveColor = oAPP.attr?.themeColors?.sapUiContentUnratedColor || "#FFF",
+
+                                                    sUnfavIcon = "sap-icon://unfavorite",
+                                                    sFavIcon = "sap-icon://favorite";
+
+                                                if (!RATVAL) {
+
+                                                    this.setColor(inactiveColor);
+
+                                                    return sUnfavIcon;
+                                                }
+
+                                                if (RATVAL == 1) {
+
+                                                    this.setColor(activeColor);
+
+                                                    return sFavIcon;
+
+                                                }
+
+                                                this.setColor(inactiveColor);
+
+                                                return sUnfavIcon;
+
+                                            }).addStyleClass("sapUiTinyMarginEnd"),
+
                                             // new sap.m.RatingIndicator({
                                             //     visualMode: "Full",
                                             //     maxValue: 1,
@@ -964,7 +1191,6 @@ function fnGetDynamicPageContent() {
                                             //     return (ISFAV == true ? 1 : 0);
 
                                             // }),
-
 
                                             new sap.m.Button({
                                                 icon: "sap-icon://copy",
@@ -1120,8 +1346,6 @@ function fnSetScrollTop() {
  ************************************************************************/
 function fnIntersectionObserverCallback(aObservEntry) {
 
-    console.log("ccc");
-
     let iEntryLength = aObservEntry.length;
     if (iEntryLength == 0) {
         return;
@@ -1177,9 +1401,9 @@ function fnIntersectionObserverCallback(aObservEntry) {
 
 function ev_gridListItemAfterRendering(oEvent) {
 
-    console.log("aa1");
+    console.log("aaa");
 
-    if (oEvent?.srcControl?.aa) {
+    if (oEvent?.srcControl?.isObserve) {
         return;
     }
 
@@ -1190,12 +1414,9 @@ function ev_gridListItemAfterRendering(oEvent) {
         return;
     }
 
-    // oIntersectionObserver.unobserve(oItemDOM);
-    console.log("aa2");
-
     oIntersectionObserver.observe(oItemDOM);
 
-    oItem.aa = "X";
+    oItem.isObserve = "X";
 
 } // end of ev_gridListItemAfterRendering
 
@@ -1368,6 +1589,9 @@ function ev_iconListIconTabSelectEvent(oEvent) {
         let oNavi = sap.ui.getCore().byId("IconListNavCon");
         oNavi.to(sCurrKey);
 
+        // 아이콘 필터를 수행
+        ev_iconFilter();
+
     }, 100);
 
 } // end of ev_iconListIconTabSelectEvent
@@ -1395,56 +1619,134 @@ function ev_iconClipBoardCopy(oEvent) {
 
 } // end of ev_iconClipBoardCopy
 
-function _fnIconWorkerOnMessage() {
+function _fnIconWorkerOnMessage(oEvent) {
 
-    this.terminate();
+    let oBindParam = this,
+        oWorker = oBindParam.oWorker;
 
-}
+    if (oEvent.data == "E") {
+
+        G_bIsMe = "";
+        oWorker.terminate();
+
+        return;
+    }
+
+    oWorker.terminate();
+
+} // end of _fnIconWorkerOnMessage
 
 /************************************************************************
  * 즐겨찾기 버튼 클릭 이벤트
  ************************************************************************/
 function ev_iconFavoChange(oEvent) {
 
+    debugger;
+
+
+
+
     return;
 
-    let oRating = oEvent.getSource();
 
-    setTimeout(function () {
+    let oIcon = oEvent.getSource(),
+        oFavModel = oIcon.getModel();
 
-        let oRating = this;
+    if (!oFavModel) {
+        return;
+    }
 
-        let oFavModel = oRating.getModel(),
-            SYSID = parent.oAPP.attr.USERINFO.SYSID;
+    let oCtx = oIcon.getBindingContext();
+    if (!oCtx) {
+        return;
+    }
 
-        if (!oFavModel) {
-            return;
-        }
+    G_bIsMe = "X";
 
-        let aRatingModelData = oFavModel.getProperty("/ICONS/SAP"),
-            // aRatingFilter = aRatingModelData.filter(elem => elem.RATVAL == 1),
+    // 선택한 아이콘의 바인딩 정보를 구한다.
+    let oSelectedFavInfo = oCtx.getObject(),
+        // sIconSrc = oSelectedFavInfo.ICON_SRC,
+        iRATVAL = oSelectedFavInfo.RATVAL || 0;
 
-            sIconFavFolderPath = PATHINFO.P13N_ICONFAV,
-            sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`),
-            sWorkerPath = PATH.join(PATHINFO.WORKER_ROOT, "u4aWsFavIconWorker.js"),
+    iRATVAL = (iRATVAL == 0 ? 1 : 0);
 
-            // 설정된 세션 timeout 시간 도래 여부를 체크하기 위한 워커 생성
-            oIconFavWorker = new Worker(sWorkerPath);
+    oFavModel.setProperty(oCtx.getPath() + "/RATVAL", iRATVAL);
 
-        oIconFavWorker.onmessage = _fnIconWorkerOnMessage.bind(oIconFavWorker);
+    let aSAPIconFav = oFavModel.getProperty("/ICONS/SAP"), // SAP Icon
+        aU4AIconFav = oFavModel.getProperty("/ICONS/U4A"), // U4A Icon
+        aIcons = aSAPIconFav.concat(aU4AIconFav), // SAP Icon + U4A Icon
 
-        let oSendData = {
-            aIconFav: aRatingModelData,
-            sSaveFilePath: sIconFavFilePath
-        };
+        sIconFavFolderPath = PATHINFO.P13N_ICONFAV,
+        SYSID = parent.oAPP.attr.USERINFO.SYSID,
 
-        // 워커에 값 전달
-        oIconFavWorker.postMessage(oSendData);
+        sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`),
+        sWorkerPath = PATH.join(PATHINFO.WORKER_ROOT, "u4aWsFavIconWorker.js"),
 
-    }.bind(oRating), 500);
+        // 설정된 세션 timeout 시간 도래 여부를 체크하기 위한 워커 생성
+        oIconFavWorker = new Worker(sWorkerPath);
+
+    let oIconFavBindParam = {
+        oWorker: oIconFavWorker, // Worker Instance
+        // oCtx: oCtx, // Binding Context
+    };
+
+    // Worker Message Event
+    oIconFavWorker.onmessage = _fnIconWorkerOnMessage.bind(oIconFavBindParam);
+
+    // Send to Worker Data
+    let oSendData = {
+        aIcons: aIcons,
+        // sIconSrc: sIconSrc,
+        sSaveFilePath: sIconFavFilePath
+    };
+
+    // 워커에 값 전달
+    oIconFavWorker.postMessage(oSendData);
 
 
 
+
+
+
+
+
+
+
+    // let oSelectedFavInfo = oCtx.getObject(),
+    //     sBindPath = oCtx.getPath(),
+    //     iRATVAL = oSelectedFavInfo.RATVAL || 0;
+
+    // iRATVAL = (iRATVAL == 0 ? 1 : 0);
+
+    // oFavModel.setProperty(sBindPath + "/RATVAL", iRATVAL);
+
+    // let SYSID = parent.oAPP.attr.USERINFO.SYSID;
+
+    // if (!oFavModel) {
+    //     return;
+    // }
+
+    // let aSAPIconFav = oFavModel.getProperty("/ICONS/SAP"),
+    //     aU4AIconFav = oFavModel.getProperty("/ICONS/U4A"),
+    //     sIconFavFolderPath = PATHINFO.P13N_ICONFAV,
+    //     sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`),
+    //     sWorkerPath = PATH.join(PATHINFO.WORKER_ROOT, "u4aWsFavIconWorker.js"),
+
+    //     // 설정된 세션 timeout 시간 도래 여부를 체크하기 위한 워커 생성
+    //     oIconFavWorker = new Worker(sWorkerPath);
+
+    // oIconFavWorker.onmessage = _fnIconWorkerOnMessage.bind(oIconFavWorker);
+
+    // let oSendData = {
+    //     aSAPIconFav: aSAPIconFav,
+    //     aU4AIconFav: aU4AIconFav,
+    //     sSaveFilePath: sIconFavFilePath
+    // };
+
+    // // 워커에 값 전달
+    // oIconFavWorker.postMessage(oSendData);
+
+    return;
 
     /**
      * 원본
@@ -1535,7 +1837,7 @@ function ev_iconListPageNavigation(oEvent) {
 /************************************************************************
  * 아이콘 검색 기능
  ************************************************************************/
-function ev_iconSearch() {
+function ev_iconFilter() {
 
     let oSearchField = sap.ui.getCore().byId("iconSearchField"),
         oCheckBox = sap.ui.getCore().byId("favCheckbox"),
@@ -1583,7 +1885,7 @@ function ev_iconSearch() {
         ]
     );
 
-} // end of ev_iconSearch
+} // end of ev_iconFilter
 
 /************************************************************************
  * 아이콘 탭바 Busy Indicator
