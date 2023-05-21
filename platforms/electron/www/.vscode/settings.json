@@ -1,0 +1,5 @@
+{
+    "prettier.htmlWhitespaceSensitivity": "strict",
+    "js/ts.implicitProjectConfig.target": "ES6",
+    "prettier.embeddedLanguageFormatting": "off"
+}
