@@ -4,12 +4,11 @@ self.onmessage = function (e) {
         FS = require("fs");
 
     let receiveData = e.data,
-        aIcons = receiveData.aIcons,
-        sIconSrc = receiveData.sIconSrc,
+        aIcons = receiveData.aIcons,        
         sIconFavFilePath = receiveData.sSaveFilePath,
         aIconInfo = aIcons.filter(elem => elem.RATVAL == 1);
-        
-        // aSelectedFavIcon = aIcons.filter(elem => elem.ICON_SRC == sIconSrc);
+
+    // aSelectedFavIcon = aIcons.filter(elem => elem.ICON_SRC == sIconSrc);
 
     // aIconInfo = aIconInfo.concat(aSelectedFavIcon);
 

@@ -12,6 +12,7 @@ var oAPP = {};
 oAPP.fn = {};
 oAPP.msg = {};
 oAPP.attr = {};
+oAPP.data = {};
 
 window.oAPP = oAPP;
 
