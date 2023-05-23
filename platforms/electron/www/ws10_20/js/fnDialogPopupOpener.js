@@ -468,7 +468,7 @@
         // });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {           
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             WSUTIL.setBrowserOpacity(oBrowserWindow);
@@ -1055,18 +1055,18 @@
 
         oBrowserOptions.title = parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "047"); // Icon List
         oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.titleBarStyle = 'hidden';
+        // oBrowserOptions.titleBarStyle = 'hidden';
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.resizable = true;
-        oBrowserOptions.movable = true;        
+        oBrowserOptions.movable = true;
         oBrowserOptions.backgroundColor = sWsThemeColor;
         oBrowserOptions.webPreferences.nodeIntegrationInWorker = true;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
         oBrowserOptions.webPreferences.USERINFO = oUserInfo;
-        
+
         // 브라우저 오픈
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
@@ -1075,8 +1075,10 @@
         let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${sWsThemeColor}; }`;
         oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
-        // 브라우저 상단 메뉴 없애기
-        oBrowserWindow.setMenu(null);
+        // // 브라우저 상단 메뉴 없애기.
+        if (APP.isPackaged) {
+            oBrowserWindow.setMenu(null);
+        }
 
         let sUrlPath = parent.getPath(sPopupName);
 
@@ -1197,7 +1199,7 @@
             };
 
         oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.title = sFlag;        
+        oBrowserOptions.title = sFlag;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
@@ -1374,7 +1376,7 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A14"); // Runtime Class Navigator
-        oBrowserOptions.autoHideMenuBar = true;        
+        oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
@@ -1461,7 +1463,7 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B57"); // Font Style Wizard
-        oBrowserOptions.autoHideMenuBar = true;        
+        oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -1530,7 +1532,7 @@
 
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12"); // Icon List
         oBrowserOptions.url = sPath;
-        oBrowserOptions.autoHideMenuBar = true;        
+        oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -1564,7 +1566,7 @@
         sTitle += " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D24"); // Message Popup
 
         oBrowserOptions.title = sTitle;
-        oBrowserOptions.center = true;        
+        oBrowserOptions.center = true;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.titleBarStyle = "hidden";
@@ -1658,7 +1660,7 @@
         oBrowserOptions.url = sPath;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
-        oBrowserOptions.opacity = 0.0;        
+        oBrowserOptions.opacity = 0.0;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sWinObjType;
@@ -1705,7 +1707,7 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         // oBrowserOptions.title = "Document";
-        oBrowserOptions.autoHideMenuBar = true;        
+        oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
@@ -1813,7 +1815,7 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B59"); // OTR Manager
-        oBrowserOptions.autoHideMenuBar = true;        
+        oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
@@ -1895,7 +1897,7 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B58"); // UI5 Predefined CSS
-        oBrowserOptions.autoHideMenuBar = true;        
+        oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
@@ -2114,7 +2116,7 @@
         // if (!APP.isPackaged) {
         //     oBrowserWindow.webContents.openDevTools();
         // }
-   
+
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
