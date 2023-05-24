@@ -1054,8 +1054,8 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.title = parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "047"); // Icon List
-        oBrowserOptions.autoHideMenuBar = true;
-        // oBrowserOptions.titleBarStyle = 'hidden';
+        // oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.titleBarStyle = 'hidden';
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.resizable = true;
@@ -1076,9 +1076,9 @@
         oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
         // // 브라우저 상단 메뉴 없애기.
-        if (APP.isPackaged) {
+        // if (APP.isPackaged) {
             oBrowserWindow.setMenu(null);
-        }
+        // }
 
         let sUrlPath = parent.getPath(sPopupName);
 

@@ -1107,8 +1107,6 @@ function fnGetDynamicPage() {
                         new sap.m.SearchField("iconSearchField", {
                             liveChange: function () {
 
-                                // oAPP.setBusy("X");
-
                                 let oNavCon = sap.ui.getCore().byId("IconListNavCon"),
                                     oCurrPage = oNavCon.getCurrentPage(),
                                     sCurrsId = oCurrPage.getId();
@@ -1150,13 +1148,15 @@ function fnGetDynamicPage() {
                         }), // ev_searchFieldLiveChange
                         new sap.m.CheckBox("favCheckbox", {
                             text: "Favorite only",
-                            select: function () {
+                            select: ev_favOnlyCheckBoxSelect
 
-                                setTimeout(() => {
-                                    ev_iconFilter();
-                                }, 100);
+                            // function () {
 
-                            }
+                            //     setTimeout(() => {
+                            //         ev_iconFilter();
+                            //     }, 100);
+
+                            // }
 
                         }),
                         new sap.m.Select({
@@ -1215,7 +1215,9 @@ function fnGetGridListItemContents() {
                             visualMode: "Full",
                             maxValue: 1,
                             change: ev_iconFavoChange,
-                        }).addStyleClass("sapUiTinyMarginEnd"),
+                        })
+                            .bindProperty("value", { path: "RATVAL", mode: "OneWay" })
+                            .addStyleClass("sapUiTinyMarginEnd"),
 
                         new sap.m.Button({
                             icon: "sap-icon://copy",
@@ -1699,26 +1701,25 @@ function ev_gridListItemAfterRendering(oEvent) {
 
     console.log("Item AfterRendering");
 
-    let oItem = oEvent.srcControl,
-        sItemId = oItem.getId();
+    let oItem = oEvent.srcControl;
 
-    let oBindCtx = oItem.getBindingContext();
-    if (oBindCtx) {
+    // let oBindCtx = oItem.getBindingContext();
+    // if (oBindCtx) {
 
-        let sSeparator = "-",
-            sIdPrefix = "favRating",
-            sLastPrefix = sItemId.split(sSeparator)[1],
-            sRatingId = sIdPrefix + sSeparator + sLastPrefix;
+    //     let sSeparator = "-",
+    //         sIdPrefix = "favRating",
+    //         sLastPrefix = sItemId.split(sSeparator)[1],
+    //         sRatingId = sIdPrefix + sSeparator + sLastPrefix;
 
-        let oRating = sap.ui.getCore().byId(sRatingId);
-        if (oRating) {
+    //     let oRating = sap.ui.getCore().byId(sRatingId);
+    //     if (oRating) {
 
-            let oBindData = oBindCtx.getObject();
-            oRating.setValue(oBindData.RATVAL);
+    //         let oBindData = oBindCtx.getObject();
+    //         oRating.setValue(oBindData.RATVAL);
 
-        }
+    //     }
 
-    }
+    // }
 
     if (oEvent?.srcControl?.isObserve) {
         return;
@@ -1888,8 +1889,6 @@ function ev_HeaderMenuSelected(oEvent) {
  ************************************************************************/
 function ev_iconListIconTabSelectEvent(oEvent) {
 
-    // IconTabBar Busy
-
     let sPrevKey = oEvent.getParameter("previousKey"),
         sCurrKey = oEvent.getParameter("selectedKey");
 
@@ -1957,10 +1956,8 @@ function _fnIconWorkerOnMessage(oEvent) {
  ************************************************************************/
 function ev_iconFavoChange(oEvent) {
 
-    let oGridList = sap.ui.getCore().byId("iconGridList");
-    oGridList.setGrowing(false);
-
-    let oIcon = oEvent.getSource(),
+    let oGridList = sap.ui.getCore().byId("iconGridList"),
+        oIcon = oEvent.getSource(),
         oFavModel = oIcon.getModel();
 
     if (!oFavModel) {
@@ -1973,17 +1970,29 @@ function ev_iconFavoChange(oEvent) {
     }
 
     // 선택한 아이콘의 바인딩 정보를 구한다.
-    var oSelectedFavInfo = oCtx.getObject();
+    let oSelectedFavInfo = oCtx.getObject();
+
+    // 선택한 정보를 모델 오브젝트에 반영한다.
     oSelectedFavInfo.RATVAL = (oSelectedFavInfo.RATVAL == 0 ? 1 : 0);
 
-    // setTimeout(() => {
-    //     oFavModel.refresh();
-    // }, 0);
+    // 선택한 정보를 필터 오브젝트에 반영한다.
+    let oGridListBinding = oGridList.getBinding("items");
+    if (oGridListBinding) {
 
+        let sBindPath = oCtx.getPath(),
+            aList = oGridListBinding?.oList,
+            iSelectedIndex = parseInt(sBindPath.substr(sBindPath.lastIndexOf("/") + 1));
 
+        if (aList && Array.isArray(aList) && aList.length) {
 
-    return;
+            let oSelectedList = aList[iSelectedIndex];
+            if (oSelectedList) {
+                oSelectedList.RATVAL = oSelectedFavInfo.RATVAL;
+            }
 
+        }
+
+    }
 
     let aSAPIconFav = oFavModel.getProperty("/ICONS/SAP"), // SAP Icon
         aU4AIconFav = oFavModel.getProperty("/ICONS/U4A"), // U4A Icon
@@ -2052,9 +2061,6 @@ function ev_iconListPageNavigation(oEvent) {
         oGridList.removeAllItems();
 
     }
-    // if(){
-
-    // }
 
 } // end of ev_iconListPageNavigation
 
@@ -2062,9 +2068,6 @@ function ev_iconListPageNavigation(oEvent) {
  * 아이콘 검색 기능
  ************************************************************************/
 function ev_iconFilter() {
-
-    // updated 걸기
-    // sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback2);
 
     let oSearchField = sap.ui.getCore().byId("iconSearchField"),
         oCheckBox = sap.ui.getCore().byId("favCheckbox"),
@@ -2126,6 +2129,86 @@ function ev_iconFilter() {
     );
 
 } // end of ev_iconFilter
+
+function ev_favOnlyCheckBoxSelect() {
+
+    let oNavCon = sap.ui.getCore().byId("IconListNavCon"),
+        oCurrPage = oNavCon.getCurrentPage(),
+        sCurrsId = oCurrPage.getId();
+
+    switch (sCurrsId) {
+        case "K1":
+
+            oAPP.setBusy("X");
+            // oNavCon.setBusy(true);
+
+            oCurrPage.setVisible(false);
+
+            let oGridList = sap.ui.getCore().byId("iconGridList");
+            oGridList.removeAllItems();
+
+            oAPP.attr.k10Delegate = {
+                onAfterRendering: function () {
+
+                    ev_iconFilter();
+
+                    // oNavCon.setBusy(false);
+                    oAPP.setBusy("");
+
+                    oCurrPage.removeEventDelegate(oAPP.attr.k10Delegate);
+
+                    delete oAPP.attr.k10Delegate;
+
+                }
+            };
+
+            oCurrPage.addEventDelegate(oAPP.attr.k10Delegate);
+
+            setTimeout(function () {
+                oCurrPage.setVisible(true);
+            }, 100);
+
+            return;
+
+        default:
+
+            setTimeout(() => {
+                ev_iconFilter();
+            }, 100);
+
+            return;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // oAPP.attr.afterFavOnlyFilter = function () {
+
+    //     ev_iconFilter();
+
+    //     oCurrPage.setVisible(true);
+
+    //     sap.ui.getCore().detachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, oAPP.attr.afterFavOnlyFilter);
+
+    //     setTimeout(() => {
+    //         oNavCon.setBusy(false);
+    //     }, 100);
+
+    // };
+
+    // // 자연스러운 로딩
+    // sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, oAPP.attr.afterFavOnlyFilter);
+
+} // end of ev_favOnlyCheckBoxSelect
 
 // /************************************************************************
 //  * 아이콘 탭바 Busy Indicator
