@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <iframe id="floatFrame" frameborder="0"
+        style="overflow:hidden;height:100%;width:100%;position:absolute;top:0px;left:0px;right:0px;bottom:0px;"></iframe>
+
+    <script>
+
+        let oAPP = {};
+        oAPP.attr = {};
+        oAPP.ICON_MSG = {};
+        oAPP.require = require;
+        oAPP.remote = require('@electron/remote');
+        oAPP.path = oAPP.remote.require('path');
+        oAPP.__dirname = __dirname;
+        oAPP.fs = oAPP.remote.require('fs');
+        oAPP.convert = require('xml-js');
+
+        const
+            REMOTE = oAPP.remote,
+            APP = oAPP.remote.app,
+            PATH = oAPP.remote.require('path'),
+            APPPATH = APP.getAppPath(),
+            PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            PATHINFO = require(PATHINFOURL),
+            WSERR = require(PATHINFO.WSTRYCATCH),
+            zconsole = WSERR(window, document, console),
+            WSUTIL = require(PATHINFO.WSUTIL),
+            CURRWIN = REMOTE.getCurrentWindow(),
+            PARWIN = CURRWIN.getParentWindow(),
+            IPCRENDERER = require('electron').ipcRenderer;
+
+        IPCRENDERER.on("if-illust-prev", async function (events, oInfo) {
+
+            oAPP.attr.sServerPath = oInfo.sServerPath; // 서버 경로
+            oAPP.attr.sServerHost = oInfo.sServerHost; // 서버 호스트 경로
+            oAPP.attr.sDefTheme = oInfo.sDefTheme; // 기본 테마 정보
+            oAPP.attr.USERINFO = process.USERINFO; // 접속 사용자 정보            
+
+            // ws 글로벌 언어 설정정보
+            oAPP.attr.WS_LANGU = await WSUTIL.getWsLanguAsync();
+
+            CURRWIN.setParentWindow(null);
+
+            fnInitLoad();
+
+        });
+
+        function fnInitLoad() {
+
+            oAPP.ICON_MSG.M001 = "복사 되었습니다.";
+            oAPP.ICON_MSG.M002 = "SAP ICONS";
+            oAPP.ICON_MSG.M003 = "Grid";
+            oAPP.ICON_MSG.M004 = "Details";
+            oAPP.ICON_MSG.M005 = "Auto";
+            oAPP.ICON_MSG.M006 = "Dark Mode";
+            oAPP.ICON_MSG.M007 = "Light Mode";
+            oAPP.ICON_MSG.M008 = "Copy";
+            oAPP.ICON_MSG.M009 = "IllustratedMessage";
+            oAPP.ICON_MSG.M010 = "illustrationType";
+            oAPP.ICON_MSG.M011 = "title";
+            oAPP.ICON_MSG.M012 = "illustrationSize";
+            oAPP.ICON_MSG.M013 = "selectSAP";
+            oAPP.ICON_MSG.M014 = "GRID";
+            oAPP.ICON_MSG.M015 = "DETAILS";
+            oAPP.ICON_MSG.M016 = "selectU4A";
+            oAPP.ICON_MSG.M017 = "Spot";
+
+            /*********************************************
+             *   텍스트 번역 대상 아님!!  -- start
+             *********************************************/
+            // oAPP.ICON_MSG.M013 = "Spot";
+            // oAPP.ICON_MSG.M014 = "Scene";
+            // oAPP.ICON_MSG.M015 = "Auto";
+            // oAPP.ICON_MSG.M016 = "Dialog";
+            /*********************************************
+             *   텍스트 번역 대상 아님!!  -- end
+             *********************************************/
+
+            oAPP.UI5LIB_WSSRC = "https://sapui5.hana.ondemand.com/1.107.1/resources/sap-ui-core.js";
+            oAPP.UI5LIB_SSRC = "https://u4arnd.com:44300/zu4a_imp/openui5_lib/v11071/resources/sap-ui-core.js";
+
+            if (!oAPP.remote.app.isPackaged) {
+
+                oAPP.UI5LIB_WSSRC = "https://sapui5.hana.ondemand.com/1.107.1/resources/sap-ui-core.js";
+                oAPP.UI5LIB_SSRC = "https://u4arnd.com:44300/zu4a_imp/openui5_lib/v11071/resources/sap-ui-core.js?sap-user=pes&sap-password=dmstjq8!";
+
+            };
+
+            oAPP.UI5_LANGU = oAPP.attr.WS_LANGU;
+            oAPP.UI5_THEME = oAPP.attr.sDefTheme;
+
+            let oFrame = document.getElementById("floatFrame");
+            oFrame.src = "frame.html";
+
+        }
+
+        // document.addEventListener('DOMContentLoaded', fnInitLoad);
+
+        function gfn_parent() {
+
+            return oAPP;
+
+        };
+    </script>
+
+</body>
+
+</html>

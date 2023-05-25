@@ -2180,16 +2180,16 @@
                 press: oAPP.events.ev_pressMultiPrevBtn
             }).addStyleClass("u4aWs20MultiPrevBtn"),
 
-            // oIconListBtn = new sap.m.Button("iconListBtn", {
-            //     icon: "sap-icon://activity-items",
-            //     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12"), // Icon List
-            //     tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12") + " (Ctrl+Shift+F10)", // Icon List (Ctrl+Shift+F10)
-            //     press: oAPP.events.ev_pressIconListBtn
-            // }).addStyleClass("u4aWs20IconListBtn"),
+            oIconListBtn = new sap.m.Button("iconListBtn", {
+                icon: "sap-icon://activity-items",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12"), // Icon List
+                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12") + " (Ctrl+Shift+F10)", // Icon List (Ctrl+Shift+F10)
+                press: oAPP.events.ev_pressIconListBtn
+            }).addStyleClass("u4aWs20IconListBtn"),
 
             oIconCollection = new sap.m.MenuButton({
                 icon: "sap-icon://u4a-fw-regular/Face Grin Wide",
-                text: "Icon Explorer",
+                text: "{/WSLANGU/ZMSG_WS_COMMON_001/066}", // "Icon Explorer"
                 menu: [
                     new sap.m.Menu("iconCollBtn", {
                         itemSelected: oAPP.events.ev_PressIconCollectBtn,
@@ -2197,14 +2197,13 @@
                             new sap.m.MenuItem("iconListMenuItem", {
                                 key: "M1",
                                 icon: "sap-icon://u4a-fw-solid/Icons",
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12"), // Icon List
-                                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12") + " (Ctrl+Shift+F10)", // Icon List (Ctrl+Shift+F10)
+                                text: "{/WSLANGU/ZMSG_WS_COMMON_001/047}", // Icon List                                
+                                tooltip: "{/WSLANGU/ZMSG_WS_COMMON_001/047}" + " (Ctrl+Shift+F10)", // Icon List (Ctrl+Shift+F10)
                             }),
                             new sap.m.MenuItem({
                                 key: "M2",
                                 icon: "sap-icon://u4a-fw-solid/Image",
-                                text: "Image Icons",
-                                enabled: oAPP.common.checkWLOList("C", "UHAK900630")
+                                text: "{/WSLANGU/ZMSG_WS_COMMON_001/067}" // Image Icons,                       
                             })
                         ]
 
@@ -2234,6 +2233,13 @@
                 press: oAPP.events.ev_pressBindPopupBtn,
 
             }).addStyleClass("u4aWs20bindPopupBtn");
+
+
+        // WS 버전에 따른 아이콘 리스트 버튼 
+        let oIconList = oIconListBtn;
+        if (oAPP.common.checkWLOList("C", "UHAK900630")) {
+            oIconList = oIconCollection;
+        }
 
         return [
 
@@ -2291,8 +2297,7 @@
             oAppExecBtn, // Application Execution Button
             oMobileBtn, // App Multi Preview Button
 
-            // oIconListBtn, // Icon List Button
-            oIconCollection,
+            oIconList, // Icon List Button
 
             oAddEventBtn, // Add Server Event Button
             oRuntimeBtn, // Runtime Class Navigator Button

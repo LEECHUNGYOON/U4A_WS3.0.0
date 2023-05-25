@@ -34,9 +34,9 @@ const
 let oIntersectionObserverOptions = {
     root: null,
     rootMargin: "0px",
-    // threshold: 0,
+    threshold: 0,
     // threshold: [0, 0.25, 0.5, 0.75, 1]
-    threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+    // threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
 };
 
 parent.oAPP.oIntersectionObserver = new IntersectionObserver(fnIntersectionObserverCallback, oIntersectionObserverOptions);
@@ -449,9 +449,6 @@ function fnSAPIconConfig() {
         }
 
         let oCoreModel = sap.ui.getCore().getModel();
-        // oCoreModel.oData.ICONS.ICON_LIST = aIcons;
-        // oCoreModel.oData.ICONS.SAP = aIcons;
-
         oCoreModel.setProperty("/ICONS/ICON_LIST", aIcons);
         oCoreModel.setProperty("/ICONS/SAP", aIcons);
 
@@ -683,9 +680,6 @@ async function _fnAdditionalSAPIconConfig() {
 
             Promise.all([oProm1, oProm2]).then((result) => {
 
-                // let oCoreModel = sap.ui.getCore().getModel();
-                // oCoreModel.refresh();
-
                 resolve();
 
             });
@@ -761,27 +755,27 @@ function _fnWriteFavJsonFile() {
 
 } // end of _fnWriteFavJsonFile
 
-/************************************************************************
- * 즐거찾기 저장된 Json 파일을 감지한다.
- ************************************************************************/
-function _fnWatchFavJsonFile() {
+// /************************************************************************
+//  * 즐거찾기 저장된 Json 파일을 감지한다.
+//  ************************************************************************/
+// function _fnWatchFavJsonFile() {
 
-    let sIconFavFolderPath = PATHINFO.P13N_ICONFAV,
-        SYSID = parent.oAPP.attr.USERINFO.SYSID,
-        sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`);
+//     let sIconFavFolderPath = PATHINFO.P13N_ICONFAV,
+//         SYSID = parent.oAPP.attr.USERINFO.SYSID,
+//         sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`);
 
-    FS.watch(sIconFavFilePath, fnWatchFavJsonFile);
+//     FS.watch(sIconFavFilePath, fnWatchFavJsonFile);
 
-} // end of _fnWatchFavJsonFile
+// } // end of _fnWatchFavJsonFile
 
-/************************************************************************
- * 즐거찾기 저장된 Json 파일을 감지되면 발생하는 이벤트
- ************************************************************************/
-function fnWatchFavJsonFile() {
+// /************************************************************************
+//  * 즐거찾기 저장된 Json 파일을 감지되면 발생하는 이벤트
+//  ************************************************************************/
+// function fnWatchFavJsonFile() {
 
 
 
-} // end of fnWatchFavJsonFile
+// } // end of fnWatchFavJsonFile
 
 
 
@@ -859,40 +853,9 @@ function _fnUIupdatedCallback() {
 
         sap.ui.getCore().getModel().refresh();
 
-        // console.log("updated222");        
-
-        // // updated 걸기
-        // sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function () {
-
-
-
-        // });
-
     }, 500);
 
 } // end of _fnUIupdatedCallback
-
-function _fnUIupdatedCallback2() {
-
-
-    sap.ui.getCore().detachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback2);
-
-    return;
-
-    let oGridList = sap.ui.getCore().byId("iconGridList"),
-        dom = oGridList.getDomRef();
-
-    dom.style.display = "none";
-
-
-
-
-    console.log("updated 완료");
-
-}
-
-
-
 
 /************************************************************************
  * 초기 모델 바인딩
@@ -961,7 +924,7 @@ oAPP.fn.fnInitRendering = function () {
                         src: PATHINFO.WS_LOGO
                     }),
                     new sap.m.Title({
-                        text: oAPP.msg.M047 //"Icon List"
+                        text: oAPP.msg.M047 // Icon List
                     }),
 
                     new sap.m.ToolbarSpacer(),
@@ -972,7 +935,6 @@ oAPP.fn.fnInitRendering = function () {
                             itemSelected: ev_HeaderMenuSelected,
                             items: [
                                 new sap.m.MenuItem({
-                                    // icon: "sap-icon://sap-logo-shape",
                                     key: "SAP",
                                     text: "SAP Icons"
                                 }),
@@ -1070,12 +1032,12 @@ function fnGetMainPageContents() {
         items: [
             new sap.m.IconTabFilter({
                 icon: "sap-icon://grid",
-                text: "Grid",
+                text: oAPP.msg.M069, //"Grid",
                 key: "K1"
             }),
             new sap.m.IconTabFilter({
                 icon: "sap-icon://list",
-                text: "Details",
+                text: oAPP.msg.M070, //"List",
                 key: "K2"
             }),
         ],
@@ -1105,59 +1067,11 @@ function fnGetDynamicPage() {
                     renderType: "Bare",
                     items: [
                         new sap.m.SearchField("iconSearchField", {
-                            liveChange: function () {
-
-                                let oNavCon = sap.ui.getCore().byId("IconListNavCon"),
-                                    oCurrPage = oNavCon.getCurrentPage(),
-                                    sCurrsId = oCurrPage.getId();
-
-                                oNavCon.setBusy(true);
-
-                                if (sCurrsId == "K1") {
-
-                                    oCurrPage.setVisible(false);
-
-                                    let oGridList = sap.ui.getCore().byId("iconGridList");
-                                    oGridList.removeAllItems();
-
-                                }
-
-                                if (oAPP.attr.SearchLivTimeout) {
-                                    clearTimeout(oAPP.attr.SearchLivTimeout);
-                                    delete oAPP.attr.SearchLivTimeout;
-                                }
-
-                                oAPP.attr.SearchLivTimeout = setTimeout(() => {
-
-                                    ev_iconFilter();
-
-                                    if (sCurrsId == "K1") {
-
-                                        oCurrPage.setVisible(true);
-
-                                    }
-
-                                    oNavCon.setBusy(false);
-
-                                    // oAPP.setBusy("");
-
-                                }, 500);
-
-                            }
-
-                        }), // ev_searchFieldLiveChange
+                            liveChange: ev_searchFieldLiveChange
+                        }),
                         new sap.m.CheckBox("favCheckbox", {
-                            text: "Favorite only",
+                            text: oAPP.msg.M071, // favorite
                             select: ev_favOnlyCheckBoxSelect
-
-                            // function () {
-
-                            //     setTimeout(() => {
-                            //         ev_iconFilter();
-                            //     }, 100);
-
-                            // }
-
                         }),
                         new sap.m.Select({
                             selectedKey: "{/THEME/THEME_KEY}",
@@ -1211,7 +1125,7 @@ function fnGetGridListItemContents() {
                     alignItems: "Center",
                     items: [
 
-                        new sap.m.RatingIndicator("favRating", {
+                        new sap.m.RatingIndicator({
                             visualMode: "Full",
                             maxValue: 1,
                             change: ev_iconFavoChange,
@@ -1250,9 +1164,26 @@ function fnGetDynamicPageContent() {
                     boxWidth: "8.125rem"
                 }),
 
+                updateStarted: function (oEvent) {
+
+                    let sReason = oEvent.getParameter("reason");
+                    if (sReason == "Growing") {
+                        oAPP.setBusy("X");
+                    }
+
+                },
+                updateFinished: function (oEvent) {
+
+                    let sReason = oEvent.getParameter("reason");
+                    if (sReason == "Growing") {
+                        oAPP.setBusy("");
+                    }
+
+                },
+
                 items: {
                     path: "/ICONS/ICON_LIST",
-                    template: new sap.f.GridListItem("gridItem", {
+                    template: new sap.f.GridListItem({
                         content: fnGetGridListItemContents()
                     }).addEventDelegate({
                         onAfterRendering: ev_gridListItemAfterRendering
@@ -1289,7 +1220,7 @@ function fnGetDynamicPageContent() {
                     new sap.ui.table.Column({
                         width: "100px",
                         hAlign: "Center",
-                        label: "Icon",
+                        label: oAPP.msg.M072, // "Icon",
                         template: new sap.ui.core.Icon({
                             src: "{ICON_SRC}",
                             size: "45px"
@@ -1297,7 +1228,7 @@ function fnGetDynamicPageContent() {
                     }),
 
                     new sap.ui.table.Column({
-                        label: "Name",
+                        label: oAPP.msg.M073, // "Name",
                         template: new sap.m.Label({
                             design: "Bold",
                             text: "{ICON_NAME}"
@@ -1305,10 +1236,23 @@ function fnGetDynamicPageContent() {
                     }),
 
                     new sap.ui.table.Column({
-                        label: "Code",
+                        label: oAPP.msg.M074, // "Code",
                         template: new sap.m.Text({
                             text: "{ICON_SRC}"
                         })
+                    }),
+
+                    new sap.ui.table.Column({
+                        width: "100px",
+                        hAlign: "Center",
+                        label: oAPP.msg.M071, // "Favorite",
+                        template: new sap.m.RatingIndicator({
+                            visualMode: "Full",
+                            maxValue: 1,
+                            change: ev_iconFavoChange,
+                        })
+                            .bindProperty("value", { path: "RATVAL", mode: "OneWay" })
+                            .addStyleClass("sapUiTinyMarginEnd"),
                     }),
 
                     // new sap.ui.table.Column({
@@ -1327,7 +1271,7 @@ function fnGetDynamicPageContent() {
                     new sap.ui.table.Column({
                         width: "100px",
                         hAlign: "Center",
-                        label: "Copy",
+                        label: oAPP.msg.M075, // "Copy",
                         template: new sap.m.Button({
                             icon: "sap-icon://copy",
                             press: ev_iconClipBoardCopy
@@ -1393,7 +1337,6 @@ function fnAnimationFrame(aObservEntry, observer) {
 
     let iEntryLength = aObservEntry.length;
     if (iEntryLength == 0) {
-        console.error("엔트리 없음!!!!");
         return;
     }
 
@@ -1403,14 +1346,12 @@ function fnAnimationFrame(aObservEntry, observer) {
             oTarget = oObservEntry.target;
 
         if (!oTarget) {
-            console.error("엔트리 오류111");
             continue;
         }
 
         //dom에 해당하는 UI정보 얻기.
         var oItem = sap.ui.getCore().byId(oTarget.id);
         if (!oItem) {
-            console.error("엔트리 오류222");
             continue;
         }
 
@@ -1420,7 +1361,6 @@ function fnAnimationFrame(aObservEntry, observer) {
             //dom에 해당하는 UI정보 얻기.
             var l_ui = sap.ui.getCore().byId(oTarget.id);
             if (!l_ui) {
-                console.error("엔트리 오류333");
                 continue;
             }
 
@@ -1455,271 +1395,24 @@ function fnAnimationFrame(aObservEntry, observer) {
 
     cancelAnimationFrame(oAPP.ani);
 
-}
+} // end of fnAnimationFrame
 
 /************************************************************************
  * IntersectionObserver Callback
  ************************************************************************/
 function fnIntersectionObserverCallback(aObservEntry, observe) {
 
-    // let oGridList = sap.ui.getCore().byId("iconGridList"),
-    // dom = oGridList.getDomRef();
-
-    // dom.style.display = "";
-
-    console.log("observer 완료 : " + aObservEntry.length);
-    // console.log(aObservEntry);
-
-
+    zconsole.log("observer 완료 : " + aObservEntry.length);
 
     oAPP.ani = window.requestAnimationFrame(fnAnimationFrame.bind(oAPP.ani, aObservEntry, observe));
-
-    return;
-
-    oAPP.animation = window.requestAnimationFrame(function () {
-
-        let iEntryLength = aObservEntry.length;
-        if (iEntryLength == 0) {
-            return;
-        }
-
-        for (var i = 0; i < iEntryLength; i++) {
-
-            let oObservEntry = aObservEntry[i],
-                oTarget = oObservEntry.target;
-
-            if (!oTarget) {
-                continue;
-            }
-
-            //dom에 해당하는 UI정보 얻기.
-            var oItem = sap.ui.getCore().byId(oTarget.id);
-            if (!oItem) {
-                return;
-            }
-
-            console.log("for");
-
-            // 해당 요소가 화면에 나오는 경우
-            if (oObservEntry.isIntersecting) {
-
-                //dom에 해당하는 UI정보 얻기.
-                var l_ui = sap.ui.getCore().byId(oTarget.id);
-                if (!l_ui) {
-                    return;
-                }
-
-                //dom 갱신 처리.
-                l_ui.invalidate();
-                continue;
-
-            }
-
-            let sBeforeWidth = jQuery(oTarget).width() + "px",
-                sBeforeHeight = jQuery(oTarget).height() + "px";
-
-            oTarget.style.width = sBeforeWidth;
-            oTarget.style.height = sBeforeHeight;
-
-            //dom의 child정보가 없다면 하위 로직 skip.
-            if (oTarget.children.length === 0) {
-                continue;
-            }
-
-            if (!oItem) {
-                return;
-            }
-
-            jQuery(oTarget).empty();
-
-            // setTimeout(function () {
-
-            //     let l_dom = this;
-
-            //     jQuery(l_dom).empty();
-
-            // }.bind(oTarget), 0);
-
-        }
-
-        cancelAnimationFrame(oAPP.animation);
-
-    });
-
-
-    // return;
-
-    // var oGrid = sap.ui.getCore().byId("iconGridList"),
-    //     aGrid = oGrid.getItems();
-
-    // for (var j = 0; j < aGrid.length; j++) {
-
-    //     let item = aGrid[j];
-
-    //     var oTarget = item.getDomRef();
-    //     let sId = oTarget.id;
-    //     let oFindObserver = aObservEntry.find(elem => elem?.target?.id == sId);
-
-    //     if (oFindObserver) {
-
-    //         // 해당 요소가 화면에 나오는 경우
-    //         if (oFindObserver.isIntersecting) {
-
-    //             //dom에 해당하는 UI정보 얻기.
-    //             var l_ui = sap.ui.getCore().byId(oTarget.id);
-    //             if (!l_ui) {
-    //                 continue;
-    //             }
-
-    //             //dom 갱신 처리.
-    //             l_ui.invalidate();
-    //             continue;
-
-    //         }
-
-    //         let sBeforeWidth = jQuery(oTarget).width() + "px",
-    //             sBeforeHeight = jQuery(oTarget).height() + "px";
-
-    //         oTarget.style.width = sBeforeWidth;
-    //         oTarget.style.height = sBeforeHeight;
-
-    //         //dom의 child정보가 없다면 하위 로직 skip.
-    //         if (oTarget.children.length === 0) {
-    //             continue;
-    //         }
-
-    //         // jQuery(oTarget).empty();
-
-    //         setTimeout(function () {
-
-    //             let l_dom = this;
-
-    //             jQuery(l_dom).empty();
-
-    //         }.bind(oTarget), 0);
-
-
-    //         continue;
-
-    //     }
-
-
-
-    //     // if (!oFindObserver || !oFindObserver.isIntersecting) {
-
-    //     //     let sBeforeWidth = jQuery(oTarget).width() + "px",
-    //     //         sBeforeHeight = jQuery(oTarget).height() + "px";
-
-    //     //     oTarget.style.width = sBeforeWidth;
-    //     //     oTarget.style.height = sBeforeHeight;
-
-    //     //     jQuery(oTarget).empty();
-    //     //     continue;
-    //     // }
-
-
-
-    //     // item.invalidate();
-
-
-
-
-
-
-
-
-    // }
-
-    // return;
-
-    // for (var i = 0; i < iEntryLength; i++) {
-
-    //     let oObservEntry = aObservEntry[i],
-    //         oTarget = oObservEntry.target;
-
-    //     if (!oTarget) {
-    //         continue;
-    //     }
-
-    //     //dom에 해당하는 UI정보 얻기.
-    //     var oItem = sap.ui.getCore().byId(oTarget.id);
-    //     if (!oItem) {
-    //         return;
-    //     }
-
-    //     console.log("for");
-
-    //     // 해당 요소가 화면에 나오는 경우
-    //     if (oObservEntry.isIntersecting) {
-    //         ZZZ = "X";
-    //         //dom에 해당하는 UI정보 얻기.
-    //         var l_ui = sap.ui.getCore().byId(oTarget.id);
-    //         if (!l_ui) {
-    //             return;
-    //         }
-
-    //         //dom 갱신 처리.
-    //         l_ui.invalidate();
-    //         continue;
-
-    //     }
-
-    //     let sBeforeWidth = jQuery(oTarget).width() + "px",
-    //         sBeforeHeight = jQuery(oTarget).height() + "px";
-
-    //     oTarget.style.width = sBeforeWidth;
-    //     oTarget.style.height = sBeforeHeight;
-
-    //     //dom의 child정보가 없다면 하위 로직 skip.
-    //     if (oTarget.children.length === 0) {
-    //         continue;
-    //     }
-
-    //     if (!oItem) {
-    //         return;
-    //     }
-
-    //     jQuery(oTarget).empty();
-
-    //     // setTimeout(function () {
-
-    //     //     let l_dom = this;
-
-    //     //     jQuery(l_dom).empty();
-
-    //     // }.bind(oTarget), 0);
-
-    // }
-
-    // if (ZZZ === "") {
-    //     oAPP.setBusy("");
-    // }
 
 } // end of fnObserverCallback
 
 function ev_gridListItemAfterRendering(oEvent) {
 
-    console.log("Item AfterRendering");
+    zconsole.log("Item AfterRendering");
 
     let oItem = oEvent.srcControl;
-
-    // let oBindCtx = oItem.getBindingContext();
-    // if (oBindCtx) {
-
-    //     let sSeparator = "-",
-    //         sIdPrefix = "favRating",
-    //         sLastPrefix = sItemId.split(sSeparator)[1],
-    //         sRatingId = sIdPrefix + sSeparator + sLastPrefix;
-
-    //     let oRating = sap.ui.getCore().byId(sRatingId);
-    //     if (oRating) {
-
-    //         let oBindData = oBindCtx.getObject();
-    //         oRating.setValue(oBindData.RATVAL);
-
-    //     }
-
-    // }
 
     if (oEvent?.srcControl?.isObserve) {
         return;
@@ -1730,12 +1423,11 @@ function ev_gridListItemAfterRendering(oEvent) {
         return;
     }
 
-    //parent.oAPP.oIntersectionObserver.unobserve(oItemDOM);
     parent.oAPP.oIntersectionObserver.observe(oItemDOM);
 
     oItem.isObserve = "X";
 
-    console.log("oItem.isObserve = X;");
+    zconsole.log("register Observer");
 
 } // end of ev_gridListItemAfterRendering
 
@@ -1793,7 +1485,7 @@ function ev_iconListTableDblClick(oEvent) {
 function ev_iconGridListDblClick(oEvent) {
 
     let oTarget = oEvent.target,
-        $SelectedGrid = $(oTarget).closest(".sapFCard");
+        $SelectedGrid = $(oTarget).closest(".sapMLIB");
 
     if (!$SelectedGrid.length) {
         return;
@@ -1994,6 +1686,46 @@ function ev_iconFavoChange(oEvent) {
 
     }
 
+    let oNavCon = sap.ui.getCore().byId("IconListNavCon"),
+        oCheckBox = sap.ui.getCore().byId("favCheckbox"),
+        oListTable = sap.ui.getCore().byId("iconListTable"),
+        oCurrPage = oNavCon.getCurrentPage();
+
+    switch (oCurrPage.getId()) {
+        case "K1":
+
+            if (!oCheckBox.getSelected()) {
+                break;
+            }
+
+            // ev_iconFilter();
+            ev_searchFieldLiveChange();
+
+            break;
+
+        case "K2":
+
+            let oListModel = oListTable.getModel();
+            if (!oListModel) {
+                break;
+            }
+
+            oListModel.refresh();
+
+            let sBeforeFirstVisibleRowIndex = oListTable.getFirstVisibleRow();
+
+            setTimeout(() => {
+
+                ev_iconFilter();
+
+                oListTable.setFirstVisibleRow(sBeforeFirstVisibleRowIndex);
+
+            }, 100);
+
+            break;
+
+    }
+
     let aSAPIconFav = oFavModel.getProperty("/ICONS/SAP"), // SAP Icon
         aU4AIconFav = oFavModel.getProperty("/ICONS/U4A"), // U4A Icon
         aIcons = aSAPIconFav.concat(aU4AIconFav), // SAP Icon + U4A Icon    
@@ -2004,7 +1736,6 @@ function ev_iconFavoChange(oEvent) {
         sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`),
         sWorkerPath = PATH.join(PATHINFO.WORKER_ROOT, "u4aWsFavIconWorker.js"),
 
-        // 설정된 세션 timeout 시간 도래 여부를 체크하기 위한 워커 생성
         oIconFavWorker = new Worker(sWorkerPath);
 
     let oIconFavBindParam = {
@@ -2059,6 +1790,11 @@ function ev_iconListPageNavigation(oEvent) {
 
         let oGridList = sap.ui.getCore().byId("iconGridList");
         oGridList.removeAllItems();
+
+        let oModel = oToPage.getModel();
+        if (oModel) {
+            oModel.refresh();
+        }
 
     }
 
@@ -2170,6 +1906,24 @@ function ev_favOnlyCheckBoxSelect() {
 
             return;
 
+        case "K2":
+
+            oAPP.setBusy("X");
+
+            let oListTable = sap.ui.getCore().byId("iconListTable");
+
+            oListTable.attachEventOnce("rowsUpdated", function () {
+
+                oAPP.setBusy("");
+
+            });
+
+            setTimeout(() => {
+                ev_iconFilter();
+            }, 100);
+
+            return;
+
         default:
 
             setTimeout(() => {
@@ -2179,83 +1933,48 @@ function ev_favOnlyCheckBoxSelect() {
             return;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    // oAPP.attr.afterFavOnlyFilter = function () {
-
-    //     ev_iconFilter();
-
-    //     oCurrPage.setVisible(true);
-
-    //     sap.ui.getCore().detachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, oAPP.attr.afterFavOnlyFilter);
-
-    //     setTimeout(() => {
-    //         oNavCon.setBusy(false);
-    //     }, 100);
-
-    // };
-
-    // // 자연스러운 로딩
-    // sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, oAPP.attr.afterFavOnlyFilter);
-
 } // end of ev_favOnlyCheckBoxSelect
 
-// /************************************************************************
-//  * 아이콘 탭바 Busy Indicator
-//  ************************************************************************/
-// function ev_searchFieldLiveChange(oEvent) {    
+/************************************************************************
+ * 아이콘 검색 SearchField LiveChange Event
+ ************************************************************************/
+function ev_searchFieldLiveChange() {
 
-//     let oSearchField = oEvent.getSource(),
-//         sSearchValue = oSearchField.getValue();
+    let oNavCon = sap.ui.getCore().byId("IconListNavCon"),
+        oCurrPage = oNavCon.getCurrentPage(),
+        sCurrsId = oCurrPage.getId();
 
-//     let oGridList = sap.ui.getCore().byId("iconGridList"),
-//         oTable = sap.ui.getCore().byId("iconListTable"),
-//         oGridListBindingInfo = oGridList.getBinding("items"),
-//         oTableBindingInfo = oTable.getBinding("rows");
+    oNavCon.setBusy(true);
 
-//     if (!oGridListBindingInfo || !oTableBindingInfo) {
-//         return;
-//     }
+    if (sCurrsId == "K1") {
 
-//     if (sSearchValue === "") {
-//         oGridListBindingInfo.filter();
-//         oTableBindingInfo.filter();
-//         return;
-//     }
+        oCurrPage.setVisible(false);
 
-//     var aFilters = [];
+        let oGridList = sap.ui.getCore().byId("iconGridList");
+        oGridList.removeAllItems();
 
-//     aFilters.push(new sap.ui.model.Filter({
-//         path: "KEYWORD_STRING",
-//         operator: "Contains",
-//         value1: sSearchValue
-//     }));
-//     aFilters.push(new sap.ui.model.Filter({
-//         path: "ICON_SRC",
-//         operator: "Contains",
-//         value1: sSearchValue
-//     }));
+    }
 
-//     //model 필터 처리.
-//     oGridListBindingInfo.filter([new sap.ui.model.Filter(aFilters, false)]);
-//     oTableBindingInfo.filter([new sap.ui.model.Filter(aFilters, false)]);
+    if (oAPP.attr.SearchLivTimeout) {
+        clearTimeout(oAPP.attr.SearchLivTimeout);
+        delete oAPP.attr.SearchLivTimeout;
+    }
 
-// } // end of ev_searchFieldLiveChange
+    oAPP.attr.SearchLivTimeout = setTimeout(() => {
 
+        ev_iconFilter();
 
+        if (sCurrsId == "K1") {
 
+            oCurrPage.setVisible(true);
 
+        }
 
+        oNavCon.setBusy(false);
+
+    }, 500);
+
+} // end of ev_searchFieldLiveChange
 
 /************************************************************************
  * [private] 아이콘 탭바 Busy Indicator
@@ -2287,15 +2006,6 @@ function _sendIconSrc(sIconSrc) {
     }
 
 } // end of _sendIconSrc
-
-
-
-
-
-
-
-
-
 
 /************************************************************************
  * [공통] busy indicator 수행
@@ -2338,26 +2048,23 @@ oAPP.fn.getWsMessageList = function () {
         let oSettingInfo = WSUTIL.getWsSettingsInfo(),
             sWsLangu = oSettingInfo.globalLanguage;
 
-        oAPP.msg.M01 = "아이콘 즐겨찾기 저장 오류";
-        oAPP.msg.M02 = "아이콘 즐겨찾기 저장시 오류가 발생하였습니다."
-
         oAPP.msg.M031 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "031"); // Clipboard Copy Success!
         oAPP.msg.M047 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "047"); // Icon List
-
-
-
-        // oAPP.msg.M13 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "007"); // Saved success
-        // oAPP.msg.M14 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "008"); // Delete success
-        // oAPP.msg.M15 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "038"); // YES
-        // oAPP.msg.M16 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "039"); // NO
-
+        oAPP.msg.M066 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "066"); // Icon Explorer
+        oAPP.msg.M068 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "068"); // Icon Viewer
+        oAPP.msg.M069 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "069"); // Grid
+        oAPP.msg.M070 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "070"); // List
+        oAPP.msg.M071 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "071"); // favorite
+        oAPP.msg.M072 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "072"); // Icon
+        oAPP.msg.M073 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "073"); // Name
+        oAPP.msg.M074 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "074"); // Code
+        oAPP.msg.M075 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "075"); // Copy
 
         resolve();
 
     });
 
-};
-
+}; // end of oAPP.fn.getWsMessageList
 
 function getJsonAsync(sUrl, oParam) {
 
@@ -2385,100 +2092,5 @@ function getJsonAsync(sUrl, oParam) {
     });
 
 }
-
-// function sendAjaxAsync(pOptions, oFormData) {
-
-//     return new Promise((resolve) => {
-
-//         /**
-//          * 파라미터 종류
-//          * 1. url
-//          * 2. method
-//          *  - POST, GET
-//          * 3. responseType
-//          *  - json
-//          *  - blob
-//          *  - arraybuffer
-//          * 
-//          * 4. FormData
-//          * 
-//          * 5. callback
-//          *  - success
-//          *  - fail
-//          * 
-//          */
-
-
-//         let oDefOptions = {
-//             url: "",
-//             method: "GET",
-//             responseType: "",
-//             async: true,
-//             withCredentials: true,
-//             formData: oFormData
-//         };
-
-//         if ((typeof oDefOptions.formData === "undefined")) {
-//             oDefOptions.formData = new FormData();
-//         }
-
-//         if (oDefOptions.formData instanceof FormData == false) {
-//             oDefOptions.formData = new FormData();
-//         }
-
-//         let oOptions = { ...oDefOptions, ...pOptions };
-
-//         var XHR = new XMLHttpRequest();
-
-//         XHR.onreadystatechange = function () { // 요청에 대한 콜백
-//             if (XHR.readyState === XHR.DONE) { // 요청이 완료되면
-//                 if (XHR.status === 200 || XHR.status === 201) {
-
-//                     resolve({ RETCD: "S", RTDATA: XHR.response, options: pOptions });
-
-//                 }
-//             }
-//         };
-
-//         // 오류 콜백
-//         XHR.onerror = function (oEvent) {
-
-//             resolve({ RETCD: "E" });
-
-//         };
-
-//         // Request Timeout 콜백
-//         XHR.ontimeout = function (oEvent) {
-
-//             resolve({ RETCD: "E" });
-
-//         };
-
-//         try {
-//             // FormData가 없으면 GET으로 전송
-//             XHR.open(oOptions.method, oOptions.url, oOptions.async);
-
-//             XHR.withCredentials = oOptions.withCredentials;
-//             XHR.timeout = 60000; // 1분
-//             XHR.responseType = oOptions.responseType;
-
-//             XHR.send(oOptions.formData);
-
-//         } catch (error) {
-//             resolve({ RETCD: "E" });
-//             console.log(error.toString());
-//         }
-
-//     });
-
-// } // end of sendAjax
-
-
-
-
-
-
-
-
 
 oAPP.fn.attachInit();

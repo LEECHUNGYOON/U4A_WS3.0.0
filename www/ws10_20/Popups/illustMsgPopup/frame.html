@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .u4aWsBrowserDraggable {
+            -webkit-app-region: drag !important;
+        }
+
+        .u4aWsBrowserDraggable .sapMBtn,
+        .u4aWsBrowserDraggable .sapMSlt {
+            -webkit-app-region: no-drag;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="content" class="won_content" style="opacity: 0;"></div>
+
+    <script>
+
+        let oAPP = {};
+
+        oAPP = parent.gfn_parent();
+
+        const
+            require = oAPP.require,
+            REMOTE = oAPP.remote,
+            APP = oAPP.remote.app,
+            PATH = oAPP.remote.require('path'),
+            APPPATH = APP.getAppPath(),
+            PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            PATHINFO = require(PATHINFOURL),
+            WSERR = require(PATHINFO.WSTRYCATCH),
+            zconsole = WSERR(window, document, console),
+            WSUTIL = require(PATHINFO.WSUTIL),
+            CURRWIN = REMOTE.getCurrentWindow(),
+            PARWIN = CURRWIN.getParentWindow();
+
+        var oScript = document.createElement("script");
+        oScript.id = "sap-ui-bootstrap";
+
+        oScript.setAttribute("src", oAPP.UI5LIB_WSSRC);
+        oScript.setAttribute('data-sap-ui-theme', oAPP.UI5_THEME);
+        oScript.setAttribute("data-sap-ui-language", oAPP.UI5_LANGU);
+        oScript.setAttribute("data-sap-ui-preload", "async");
+        oScript.setAttribute("data-sap-ui-noduplicateids", "true");
+        oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.core, sap.f, sap.ui.table");
+
+        document.head.appendChild(oScript);
+
+        window.onload = () => {
+
+            let LV_UI5JS = document.createElement("script");
+
+            LV_UI5JS.setAttribute('src', 'JS/index.js');
+
+            document.body.append(LV_UI5JS);
+
+        };
+
+        function gfn_parent() {
+
+            return oAPP;
+
+        };
+
+    </script>
+
+</body>
+
+</html>

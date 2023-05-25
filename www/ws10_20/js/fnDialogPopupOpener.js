@@ -1077,7 +1077,7 @@
 
         // // 브라우저 상단 메뉴 없애기.
         // if (APP.isPackaged) {
-            oBrowserWindow.setMenu(null);
+        oBrowserWindow.setMenu(null);
         // }
 
         let sUrlPath = parent.getPath(sPopupName);
@@ -1120,6 +1120,106 @@
         });
 
     }; // end of oAPP.fn.fnIconPreviewPopupOpener
+
+    /************************************************************************
+     * 성원이가 만든 일러스트 메시지 팝업
+     ************************************************************************/
+    oAPP.fn.fnIllustedMsgPrevPopupOpener = () => {
+
+        let sPopupName = "ILLUST_MSG_PREV";
+
+        // [!! 전체 떠있는 브라우저 기준 !!] 
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow2(sPopupName);
+        if (oResult.ISOPEN) {
+            let oIconWindow = oResult.WINDOW;
+            oIconWindow.show();
+            return;
+        }
+
+        // 로그인 정보에서 서버의 기본 테마 정보를 구한다.
+        let oUserInfo = parent.getUserInfo(),
+            oMeta = oUserInfo.META,
+            aTheme = oMeta.T_REG_THEME,
+            oDefThemeInfo = aTheme.find(elem => elem.ISDEF === "X");
+
+        let sDefTheme = "sap_horizon";
+        if (oDefThemeInfo) {
+            sDefTheme = oDefThemeInfo.THEME;
+        }
+
+        let oSettings = parent.WSUTIL.getWsSettingsInfo(),
+            sGlobalLangu = oSettings.globalLanguage,
+            sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(sDefTheme);
+
+        // Browswer Options
+        let sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.title = parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "067"); // Image Icons
+        // oBrowserOptions.autoHideMenuBar = true;
+        oBrowserOptions.titleBarStyle = 'hidden';
+        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.resizable = true;
+        oBrowserOptions.movable = true;
+        oBrowserOptions.backgroundColor = sWsThemeColor;
+        oBrowserOptions.webPreferences.nodeIntegrationInWorker = true;
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.webPreferences.USERINFO = oUserInfo;
+
+        // 브라우저 오픈
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${sWsThemeColor}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+        oBrowserWindow.setMenu(null);
+
+        let sUrlPath = parent.getPath(sPopupName);
+
+        oBrowserWindow.loadURL(sUrlPath);
+
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+
+            let oOptionData = {
+                // BROWSKEY: BROWSKEY, // 브라우저 고유키
+                // oUserInfo: oUserInfo, // 로그인 사용자 정보
+                sServerHost: parent.getHost(), //  서버 호스트 정보
+                sServerPath: parent.getServerPath(), // 서버 Url                
+                sDefTheme: sDefTheme, // 테마 정보              
+            };
+
+            oBrowserWindow.webContents.send('if-illust-prev', oOptionData);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+
+            oBrowserWindow = null;
+            parent.setBusy("");
+
+        });
+
+    }; // end of oAPP.fn.fnIllustedMsgPrevPopupOpener
 
     /************************************************************************
      * U4A Help Document Popup Opener

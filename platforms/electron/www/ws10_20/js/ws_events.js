@@ -1409,14 +1409,14 @@
      ************************************************************************/
     oAPP.events.ev_pressIconListBtn = function (oEvent) {
 
-        /**
-         * White List Object에 해당 CTS 번호가 있을경우 새로운 Icon List를 실행
-         */
-        let bIsNewPopup = oAPP.common.checkWLOList("C", "UHAK900630");
-        if (bIsNewPopup) {
-            oAPP.fn.fnIconPreviewPopupOpener();
-            return;
-        }
+        // /**
+        //  * White List Object에 해당 CTS 번호가 있을경우 새로운 Icon List를 실행
+        //  */
+        // let bIsNewPopup = oAPP.common.checkWLOList("C", "UHAK900630");
+        // if (bIsNewPopup) {
+        //     oAPP.fn.fnIconPreviewPopupOpener();
+        //     return;
+        // }
 
         oAPP.fn.fnIconListPopupOpener();
 
@@ -1431,31 +1431,19 @@
             sSelectedKey = oSelectedMenuItem.getProperty("key");
 
         switch (sSelectedKey) {
-            case "M1":
+            case "M1": // Icon Preview popup
 
-                /**
-                 * White List Object에 해당 CTS 번호가 있을경우 새로운 Icon List를 실행
-                 */
-                let bIsNewPopup = oAPP.common.checkWLOList("C", "UHAK900630");
-                if (bIsNewPopup) {
-                    oAPP.fn.fnIconPreviewPopupOpener();
-                    return;
-                }
-
-                oAPP.fn.fnIconListPopupOpener();
+                oAPP.fn.fnIconPreviewPopupOpener();
 
                 return;
 
             case "M2": // Illustrated Message Preview Popup
 
-
-
+                oAPP.fn.fnIllustedMsgPrevPopupOpener();
 
                 return;
 
-
         }
-
 
     }; // end of oAPP.events.ev_PressIconCollectBtn
 

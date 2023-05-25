@@ -68,7 +68,7 @@ module.exports = (() => {
         THEME: PATH.join(P13N_ROOT, "theme"),
         P13N: PATH.join(P13N_ROOT, "p13n.json"),
         P13N_ROOT: P13N_ROOT,
-        P13N_ICONFAV : PATH.join(P13N_ROOT, "iconFavorite"),
+        P13N_ICONFAV: PATH.join(P13N_ROOT, "iconFavorite"),
         SERVERINFO_V2: PATH.join(P13N_ROOT, "ServerInfo-v2.json"),
 
         // Popup Paths..        
@@ -94,7 +94,8 @@ module.exports = (() => {
         WINHIDE2: PATH.join(POPUP_ROOT, "winShowHidePopup", "test1.html"),
         USPNEW: PATH.join(POPUP_ROOT, "uspNewPopup", "frame.html"),
         PATTPOPUP: PATH.join(POPUP_ROOT, "patternPopup", "frame.html"),
-        ICONPREV: PATH.join(POPUP_ROOT, "iconPrevPopup", "index.html"),
+        ICONPREV: PATH.join(POPUP_ROOT, "iconPrevPopup", "index.html"), // 아이콘 리스트 팝업
+        ILLUST_MSG_PREV: PATH.join(POPUP_ROOT, "illustMsgPopup", "index.html"), // 일러스트 메시지 팝업
 
         // JS Paths..
         WSTRYCATCH: PATH.join(JS_ROOT, "ws_trycatch.js"),
@@ -115,7 +116,7 @@ module.exports = (() => {
         // Root Paths...
         POPUP_ROOT: POPUP_ROOT,
         JS_ROOT: JS_ROOT,
-        WORKER_ROOT : PATH.join(JS_ROOT, "workers"),
+        WORKER_ROOT: PATH.join(JS_ROOT, "workers"),
         U4AICON_ROOT: PATH.join(WS10_20, "icons", "u4a")
 
     };

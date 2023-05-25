@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .load {
+            width: 100%;
+            height: 100%;
+            background-color: #f5f5f5;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            transition: 1s linear;
+            transition-delay: 1s;
+        }
+
+        .u4aSWHboxNoPadding .sapMIllustratedMessage {
+            padding: 0;
+        }
+
+        .u4aSWHboxNoPadding .sapMIllustratedMessage.sapMIllustratedMessage-Spot .sapMIllustratedMessageAdditionalContent {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .u4aSWCopyBtn.sapMBtn .sapMBtnInner {
+            height: 45px;
+            align-items: center;
+        }
+
+        .u4aSWCopyBtn.sapMBtn .sapMBtnInner .sapMBtnIcon {
+            font-size: 1.25rem;
+        }
+
+        .sapUiTableCell:focus::before {
+            outline: none !important;
+        }
+
+        .u4aSWIllustMSG.sapMIllustratedMessage {
+            padding: 0;
+        }
+
+        .u4aSWIllustMSG.sapMIllustratedMessage .sapMIllustratedMessageDescription {
+            margin-bottom: 0;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .u4aSWIllustMSG.sapMIllustratedMessage.sapMIllustratedMessage-Scene .sapMIllustratedMessageDescription {
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .u4aSWIllustMSG.sapMIllustratedMessage .sapMTitle,
+        .u4aSWIllustMSG.sapMIllustratedMessage.sapMIllustratedMessage-Scene .sapMTitle {
+            margin-top: 0.5rem;
+        }
+
+        .u4aSWIllustMSG.sapMIllustratedMessage .sapMTitle>* {
+            display: none;
+        }
+
+        .u4aSWIllustMSG .sapMIllustratedMessageAdditionalContent,
+        .u4aSWIllustMSG.sapMIllustratedMessage.sapMIllustratedMessage-Scene .sapMIllustratedMessageAdditionalContent {
+            margin-bottom: 0;
+        }
+
+        .u4aSWIllustMSG.sapMIllustratedMessage.sapMIllustratedMessage-Spot .sapMIllustration,
+        .u4aSWIllustMSG.sapMIllustratedMessage.sapMIllustratedMessage-Dialog .sapMIllustration {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+
+<body style="margin:0;">
+    <div id="content" style="width:100%;"></div>
+    <div id="loadsection" class="load"></div>
+
+    <script>
+
+        let oAPP;
+
+        oAPP = parent.gfn_parent();
+
+        const
+            require = oAPP.require,
+            REMOTE = oAPP.remote,
+            APP = oAPP.remote.app,
+            PATH = oAPP.remote.require('path'),
+            APPPATH = APP.getAppPath(),
+            PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            PATHINFO = require(PATHINFOURL),
+            WSERR = require(PATHINFO.WSTRYCATCH),
+            zconsole = WSERR(window, document, console),
+            WSUTIL = require(PATHINFO.WSUTIL),
+            CURRWIN = REMOTE.getCurrentWindow(),
+            PARWIN = CURRWIN.getParentWindow();
+
+
+        //1 부트스트립 동적생성
+        var oScript = document.createElement("script");
+        oScript.id = "sap-ui-bootstrap";
+
+        oScript.setAttribute("src", oAPP.UI5LIB_SSRC);
+        oScript.setAttribute("data-sap-ui-language", oAPP.UI5_LANGU);
+        oScript.setAttribute("data-sap-ui-preload", "async");
+        oScript.setAttribute("data-sap-ui-noduplicateids", "true");
+        oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.core, sap.f, sap.ui.table, sap.tnt");
+        oScript.setAttribute('data-sap-ui-theme', oAPP.UI5_THEME);
+
+        document.head.appendChild(oScript);
+
+        window.onload = () => {
+
+            //2 사용 JS 생성 
+
+            let LV_UI5JS = document.createElement("script");
+
+            LV_UI5JS.setAttribute('src', 'JS/selectSAP.js');
+
+            document.body.append(LV_UI5JS);
+
+        };
+
+    </script>
+
+</body>
+
+</html>
