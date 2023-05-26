@@ -2189,7 +2189,7 @@
 
             oIconCollection = new sap.m.MenuButton({
                 icon: "sap-icon://u4a-fw-regular/Face Grin Wide",
-                text: "{/WSLANGU/ZMSG_WS_COMMON_001/066}", // "Icon Explorer"
+                text: "{/WSLANGU/ZMSG_WS_COMMON_001/068}", // Icon Viewer
                 menu: [
                     new sap.m.Menu("iconCollBtn", {
                         itemSelected: oAPP.events.ev_PressIconCollectBtn,

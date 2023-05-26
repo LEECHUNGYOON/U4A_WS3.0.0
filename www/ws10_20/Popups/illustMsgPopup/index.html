@@ -14,6 +14,7 @@
     <script>
 
         let oAPP = {};
+        oAPP.fn = {};
         oAPP.attr = {};
         oAPP.ICON_MSG = {};
         oAPP.require = require;
@@ -42,6 +43,7 @@
             oAPP.attr.sServerPath = oInfo.sServerPath; // 서버 경로
             oAPP.attr.sServerHost = oInfo.sServerHost; // 서버 호스트 경로
             oAPP.attr.sDefTheme = oInfo.sDefTheme; // 기본 테마 정보
+            oAPP.attr.sServerLibPath = oInfo.sServerLibPath; // 서버 라이브러리 경로
             oAPP.attr.USERINFO = process.USERINFO; // 접속 사용자 정보            
 
             // ws 글로벌 언어 설정정보
@@ -53,46 +55,70 @@
 
         });
 
+        /************************************************************************
+         * 부모 윈도우 관련 이벤트 --- start 
+         ************************************************************************/
+
+        // 부모창 닫기 이벤트
+        oAPP.fn.fnOnParentWindowClosedEvent = () => {
+
+            if (!CURRWIN || CURRWIN.isDestroyed()) {
+                return;
+            }
+
+            oAPP.attr.isPressWindowClose = "X";
+
+            CURRWIN.close();
+
+        }; // end of oAPP.fn.fnOnParentWindowClosedEvent
+
+        /************************************************************************
+        * 부모 윈도우 관련 이벤트 --- End
+        ************************************************************************/
+
+        if (PARWIN && !PARWIN.isDestroyed()) {
+            PARWIN.on("closed", oAPP.fn.fnOnParentWindowClosedEvent);
+        }
+
         function fnInitLoad() {
 
-            oAPP.ICON_MSG.M001 = "복사 되었습니다.";
-            oAPP.ICON_MSG.M002 = "SAP ICONS";
-            oAPP.ICON_MSG.M003 = "Grid";
-            oAPP.ICON_MSG.M004 = "Details";
-            oAPP.ICON_MSG.M005 = "Auto";
-            oAPP.ICON_MSG.M006 = "Dark Mode";
-            oAPP.ICON_MSG.M007 = "Light Mode";
-            oAPP.ICON_MSG.M008 = "Copy";
+            let sGlobalLangu = oAPP.attr.WS_LANGU;
+
+            oAPP.ICON_MSG.M072 = WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "072"); // Icon            
+
+            oAPP.ICON_MSG.M001 = WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "031"); // Clipboard Copy Success!     
+            oAPP.ICON_MSG.M002 = "SAP " + oAPP.ICON_MSG.M072; //SAP ICONS       
+            oAPP.ICON_MSG.M003 = WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "069"); // Grid
+            oAPP.ICON_MSG.M004 = WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "070"); // List
+            oAPP.ICON_MSG.M006 = WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "076"); // Dark Mode
+            oAPP.ICON_MSG.M007 = WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "077"); // Light Mode
+            oAPP.ICON_MSG.M008 = WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "075"); // Copy
+
+            oAPP.ICON_MSG.M018 = WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "067"); // Image Icons     
+
+            /*********************************************************
+             * 번역 대상 아님 --- start
+             *********************************************************/
+            oAPP.ICON_MSG.M011 = "title"
             oAPP.ICON_MSG.M009 = "IllustratedMessage";
             oAPP.ICON_MSG.M010 = "illustrationType";
-            oAPP.ICON_MSG.M011 = "title";
             oAPP.ICON_MSG.M012 = "illustrationSize";
-            oAPP.ICON_MSG.M013 = "selectSAP";
-            oAPP.ICON_MSG.M014 = "GRID";
-            oAPP.ICON_MSG.M015 = "DETAILS";
-            oAPP.ICON_MSG.M016 = "selectU4A";
-            oAPP.ICON_MSG.M017 = "Spot";
+            /*********************************************************
+            * 번역 대상 아님 --- end
+            *********************************************************/
 
-            /*********************************************
-             *   텍스트 번역 대상 아님!!  -- start
-             *********************************************/
-            // oAPP.ICON_MSG.M013 = "Spot";
-            // oAPP.ICON_MSG.M014 = "Scene";
-            // oAPP.ICON_MSG.M015 = "Auto";
-            // oAPP.ICON_MSG.M016 = "Dialog";
-            /*********************************************
-             *   텍스트 번역 대상 아님!!  -- end
-             *********************************************/
+            let oSettings = WSUTIL.getWsSettingsInfo(),
+                oSetting_UI5 = oSettings.UI5;
 
-            oAPP.UI5LIB_WSSRC = "https://sapui5.hana.ondemand.com/1.107.1/resources/sap-ui-core.js";
-            oAPP.UI5LIB_SSRC = "https://u4arnd.com:44300/zu4a_imp/openui5_lib/v11071/resources/sap-ui-core.js";
+            oAPP.UI5LIB_WSSRC = oSetting_UI5.resourceUrl;
+            oAPP.UI5LIB_SSRC = oAPP.attr.sServerHost + oAPP.attr.sServerLibPath;
 
-            if (!oAPP.remote.app.isPackaged) {
+            // if (!oAPP.remote.app.isPackaged) {
 
-                oAPP.UI5LIB_WSSRC = "https://sapui5.hana.ondemand.com/1.107.1/resources/sap-ui-core.js";
-                oAPP.UI5LIB_SSRC = "https://u4arnd.com:44300/zu4a_imp/openui5_lib/v11071/resources/sap-ui-core.js?sap-user=pes&sap-password=dmstjq8!";
+            //     oAPP.UI5LIB_WSSRC = "https://sapui5.hana.ondemand.com/1.107.1/resources/sap-ui-core.js";
+            //     oAPP.UI5LIB_SSRC = "https://u4arnd.com:44300/zu4a_imp/openui5_lib/v11071/resources/sap-ui-core.js?sap-user=pes&sap-password=dmstjq8!";
 
-            };
+            // };
 
             oAPP.UI5_LANGU = oAPP.attr.WS_LANGU;
             oAPP.UI5_THEME = oAPP.attr.sDefTheme;
@@ -109,6 +135,16 @@
             return oAPP;
 
         };
+
+        window.onbeforeunload = () => {
+
+            // 브라우저의 닫기 버튼을 누른게 아니라면 종료 하지 않음
+            if (oAPP.attr.isPressWindowClose !== "X") {
+                return false;
+            }
+
+        }; // end of window.onbeforeunload
+        
     </script>
 
 </body>

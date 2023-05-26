@@ -415,7 +415,7 @@ function createUi() {
                         src: PATHINFO.WS_LOGO
                     }),
                     new sap.m.Title({
-                        text: "aaa"    // oAPP.msg.M047 // Icon List
+                        text: oAPP.ICON_MSG.M018 // Image Icons
                     }),
                 ],
                 contentMiddle: [

@@ -655,7 +655,7 @@ function createUi() {
                                             width: "120px"
                                         }),
                                         new sap.m.Text({
-                                            text: oAPP.ICON_MSG.M017 //'Spot'
+                                            text: 'Spot'
                                         })
                                     ]
                                 }).addStyleClass("sapUiSmallMarginBegin"),

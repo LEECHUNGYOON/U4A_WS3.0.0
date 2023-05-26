@@ -36,6 +36,9 @@
      * @param {String}  [oOptions.initCond.APPID] Application ID
      * @param {String}  [oOptions.initCond.APPNM] Application Desc
      * @param {String}  [oOptions.initCond.APPTY] Application Type
+     * @param {String}  [oOptions.initCond.EXPAGE] 
+     * - 팝업을 실행하려는 Page 명
+     * - 예) WS10, WS20, WS30
      * @param {String}  [oOptions.initCond.ERUSR] Create User
      * @param {Int}     [oOptions.initCond.HITS]  Max Count
      ************************************************************************/
@@ -1085,9 +1088,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -1140,6 +1143,7 @@
         // 로그인 정보에서 서버의 기본 테마 정보를 구한다.
         let oUserInfo = parent.getUserInfo(),
             oMeta = oUserInfo.META,
+            sServerLibPath = oMeta.LIBPATH,
             aTheme = oMeta.T_REG_THEME,
             oDefThemeInfo = aTheme.find(elem => elem.ISDEF === "X");
 
@@ -1186,9 +1190,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -1198,7 +1202,8 @@
                 // oUserInfo: oUserInfo, // 로그인 사용자 정보
                 sServerHost: parent.getHost(), //  서버 호스트 정보
                 sServerPath: parent.getServerPath(), // 서버 Url                
-                sDefTheme: sDefTheme, // 테마 정보              
+                sDefTheme: sDefTheme, // 테마 정보 
+                sServerLibPath : sServerLibPath // 서버 라이브러리 경로
             };
 
             oBrowserWindow.webContents.send('if-illust-prev', oOptionData);
@@ -2213,9 +2218,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        // if (!APP.isPackaged) {
-        //     oBrowserWindow.webContents.openDevTools();
-        // }
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {

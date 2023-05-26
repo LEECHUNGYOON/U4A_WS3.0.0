@@ -710,6 +710,46 @@
 
             };
 
+            // APP 검색 팝업 F4Help
+            function fn_AppId_F4Help(e){
+
+                debugger;
+
+                // 임시
+                if(oAPP.remote.app.isPackaged){
+                    return;
+                }
+
+                let sAppPath = oAPP.remote.app.getAppPath(),
+                    sAppF4ModulePath = oAPP.path.join(sAppPath, "ws10_20", "js", "moduleAppF4Popup.js"),
+                    ModuleAppF4 = parent.require(sAppF4ModulePath);
+
+                let oUserInfo = oAPP.attr.oUserInfo;
+
+                // APP 검색 팝업 옵션
+                var oOptions = {
+                    autoSearch: true,
+                    initCond: {
+                        PACKG: "",
+                        // APPID: sAppId,
+                        APPNM: "",
+                        APPTY: "M",
+                        // EXPAGE: "WS10",
+                        ERUSR: oUserInfo.ID,
+                        HITS: 500,
+                    }
+                };
+                
+                ModuleAppF4.open(sap, oOptions, function(e){
+
+                    debugger;
+
+
+
+                });
+
+            } // end of fn_AppId_F4Help
+
             /* ===================================================================================== */
             /* [시작] APP 화면 구성                                                                   */
             /* ===================================================================================== */
@@ -775,6 +815,9 @@
                 liveChange: (e) => {
                     var Lval = FORM1_INPUT1.getValue();
                     FORM1_INPUT1.setValue(Lval.toUpperCase());
+                },
+                valueHelpRequest: (e) => {
+                    fn_AppId_F4Help(e);
                 }
             });
             FORM1_ELEMENT1.addField(FORM1_INPUT1);

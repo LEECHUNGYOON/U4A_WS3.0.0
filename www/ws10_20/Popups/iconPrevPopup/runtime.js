@@ -41,8 +41,6 @@ let oIntersectionObserverOptions = {
 
 parent.oAPP.oIntersectionObserver = new IntersectionObserver(fnIntersectionObserverCallback, oIntersectionObserverOptions);
 
-
-
 /**
  * 아이콘 리스트 팝업을 콜백으로 실행했을 경우 타는 이벤트 핸들러
  */
@@ -930,17 +928,17 @@ oAPP.fn.fnInitRendering = function () {
                     new sap.m.ToolbarSpacer(),
 
                     new sap.m.MenuButton("hdMenuBtn", {
-                        text: "SAP Icons",
+                        text: oAPP.msg.M0721, // "SAP Icons",
                         menu: new sap.m.Menu("hdMenu", {
                             itemSelected: ev_HeaderMenuSelected,
                             items: [
                                 new sap.m.MenuItem({
                                     key: "SAP",
-                                    text: "SAP Icons"
+                                    text: oAPP.msg.M0721 // "SAP Icons"
                                 }),
                                 new sap.m.MenuItem({
                                     key: "U4A",
-                                    text: "U4A Icons"
+                                    text: oAPP.msg.M0722 // "U4A Icons"
                                 }),
                             ]
                         })
@@ -2056,9 +2054,13 @@ oAPP.fn.getWsMessageList = function () {
         oAPP.msg.M070 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "070"); // List
         oAPP.msg.M071 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "071"); // favorite
         oAPP.msg.M072 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "072"); // Icon
+        oAPP.msg.M0721 = "SAP " + WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "072"); // SAP Icon
+        oAPP.msg.M0722 = "U4A " + WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "072"); // U4A Icon
+
         oAPP.msg.M073 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "073"); // Name
         oAPP.msg.M074 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "074"); // Code
         oAPP.msg.M075 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "075"); // Copy
+
 
         resolve();
 

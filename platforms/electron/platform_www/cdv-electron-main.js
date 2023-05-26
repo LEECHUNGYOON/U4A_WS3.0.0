@@ -33,7 +33,7 @@ const {
 
 // app.setUserTasks([]); // 작업표시줄 메뉴 초기화
 
-// app.disableHardwareAcceleration();
+app.disableHardwareAcceleration();
 
 // 참고 https://www.electronjs.org/docs/latest/api/command-line-switches
 app.commandLine.appendSwitch('disable-site-isolation-trials');

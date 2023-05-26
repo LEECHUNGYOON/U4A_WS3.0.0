@@ -388,7 +388,7 @@ let oAPP = (function () {
                                     type: sap.m.InputType.Password,
                                     value: "{PW}",
                                     showValueHelp: true,
-                                    showValueStateMessage: false,
+                                    showValueStateMessage: true,
                                     valueHelpIconSrc: "sap-icon://hide",
                                     valueHelpRequest: fnPWInputValueHelpEvent,
                                     submit: oAPP.events.ev_login
