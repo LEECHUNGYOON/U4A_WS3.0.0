@@ -44,10 +44,12 @@
             oAPP.attr.sServerHost = oInfo.sServerHost; // 서버 호스트 경로
             oAPP.attr.sDefTheme = oInfo.sDefTheme; // 기본 테마 정보
             oAPP.attr.sServerLibPath = oInfo.sServerLibPath; // 서버 라이브러리 경로
-            oAPP.attr.USERINFO = process.USERINFO; // 접속 사용자 정보            
+            oAPP.attr.USERINFO = process.USERINFO; // 접속 사용자 정보  
+
+            let oSettingInfo = WSUTIL.getWsSettingsInfo();
 
             // ws 글로벌 언어 설정정보
-            oAPP.attr.WS_LANGU = await WSUTIL.getWsLanguAsync();
+            oAPP.attr.WS_LANGU = oSettingInfo.globalLanguage;
 
             CURRWIN.setParentWindow(null);
 

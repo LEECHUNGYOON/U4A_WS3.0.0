@@ -444,7 +444,11 @@ module.exports = {
 
         return new Promise(async (resolve) => {
 
-            let sWsLangu = await this.getWsLanguAsync(), // WS Language 설정 정보
+            // let sWsLangu = await this.getWsLanguAsync(), // WS Language 설정 정보
+            //     sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", sWsLangu); // www에 내장되어 있는 WS 메시지 경로
+
+            let oSettingInfo = this.getWsSettingsInfo(),
+                sWsLangu = oSettingInfo.globalLanguage, // WS Language 설정 정보
                 sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", sWsLangu); // www에 내장되어 있는 WS 메시지 경로
 
             let oWsLanguDir = await this.readDir(sWsMsgPath);

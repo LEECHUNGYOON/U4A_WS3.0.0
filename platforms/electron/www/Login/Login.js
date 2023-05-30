@@ -466,12 +466,14 @@ let oAPP = (function () {
 
         oInput.setValueState("None");
         oInput.setValueStateText("");
+        oInput.setShowValueStateMessage(false);
 
         let isCaps = event.getModifierState("CapsLock");
         if (!isCaps) {
             return;
         }
 
+        oInput.setShowValueStateMessage(true);
         oInput.setValueState("Information");
         oInput.setValueStateText("Caps lock is switched on.");
 
@@ -2002,6 +2004,7 @@ let oAPP = (function () {
 
         oClientInput.setValueState("None");
         oPwInput.setValueState("None");
+        oPwInput.setShowValueStateMessage(false);
         oLanguInput.setValueState("None");
 
         oIdInput.removeStyleClass("u4aWsSearchError");
@@ -2848,16 +2851,16 @@ function _fnWait() {
 }
 
 /************************************************************************
-    * WS Global 메시지 글로벌 변수 설정
-    ************************************************************************/
+* WS Global 메시지 글로벌 변수 설정
+************************************************************************/
 function fnWsGlobalMsgList() {
 
     return new Promise(async (resolve) => {
 
         const WSUTIL = parent.WSUTIL;
 
-        // 레지스트리에서 WS Global language 구하기
-        let sWsLangu = await WSUTIL.getWsLanguAsync();
+        let oSettingInfo = WSUTIL.getWsSettingsInfo(),
+	        sWsLangu = oSettingInfo.globalLanguage;
 
         oAPP.msg.M001 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "001"); // Language        
         oAPP.msg.M032 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "032"); // Restart

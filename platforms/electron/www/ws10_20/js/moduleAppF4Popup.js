@@ -1016,13 +1016,8 @@ oAPP.events.ev_AppF4DialogAfterOpen = function (oEvent) {
 module.exports = {
 
     open: function (oSap, options, fnCallback) {
-
-        debugger;
-        
-        
+      
         sap = oSap;
-
-        sap.ui.require("sap.ui.table.Table");
 
         var oTab1_Data = options.initCond;
 

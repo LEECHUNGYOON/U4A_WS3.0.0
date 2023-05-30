@@ -43,8 +43,10 @@ IPCRENDERER.on('if-icon-prev', async (events, oInfo) => {
     oAPP.attr.USERINFO = process.USERINFO; // 접속 사용자 정보
     oAPP.attr.isCallback = oInfo.isCallback;
 
+    let oSettingInfo = WSUTIL.getWsSettingsInfo();
+
     // ws 글로벌 언어 설정정보
-    oAPP.attr.WS_LANGU = await WSUTIL.getWsLanguAsync();
+    oAPP.attr.WS_LANGU = oSettingInfo.globalLanguage;
 
     oAPP.fn.fnFrameLoad();
 
