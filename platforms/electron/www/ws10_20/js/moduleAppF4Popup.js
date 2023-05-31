@@ -339,6 +339,8 @@ oAPP.fn.fnCreateAppF4Tab1 = function () {
 ************************************************************************/
 function getAppF4ListUiTable(sBindPath) {
 
+    sap.ui.requireSync("sap/ui/table/Table");
+
     return new sap.ui.table.Table({
         visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
         alternateRowColors: true,

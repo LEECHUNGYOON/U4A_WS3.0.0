@@ -441,6 +441,9 @@
             return;
         }
 
+        // 브라우저의 닫기 버튼 눌렀다는 플래그
+        oAPP.attr.isPressWindowClose = "X";
+
         var oCurrWin = parent.REMOTE.getCurrentWindow();
         oCurrWin.close();
 
@@ -789,6 +792,9 @@
         if (parent.getBusy() == 'X') {
             return;
         }
+
+        // 브라우저의 닫기 버튼 눌렀다는 플래그
+        oAPP.attr.isPressWindowClose = "X";
 
         var oCurrWin = parent.REMOTE.getCurrentWindow();
         oCurrWin.close();

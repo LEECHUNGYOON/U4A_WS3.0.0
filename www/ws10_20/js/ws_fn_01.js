@@ -1308,7 +1308,7 @@
 
     function _testServerCall() {
 
-        debugger;
+        
 
         // var sPath = parent.getServerPath() + "/wsloginchk";
         var sPath = parent.getServerPath() + "/test_lee";
@@ -1318,7 +1318,7 @@
 
         sendAjax(sPath, oFormData, (oReturn) => {
 
-            debugger;
+        
 
             parent.setBusy("");
 
@@ -2606,7 +2606,7 @@
     /************************************************************************
      * Default Browser 개인화 설정
      ************************************************************************/
-    oAPP.fn.fnOnP13nExeDefaultBrowser = function () {
+    oAPP.fn.fnOnP13nExeDefaultBrowser = function () {        
 
         var FS = parent.FS;
 
@@ -2719,7 +2719,7 @@
      * @param {Array} aCurrentInfo 
      * - 현재 Local PC에 설치된 브라우저의 정보
      ************************************************************************/
-    oAPP.fn.fnCompareBeforeBrowserInfo = function (aBeforeInfo, aCurrentInfo) {
+    oAPP.fn.fnCompareBeforeBrowserInfo = function (aBeforeInfo, aCurrentInfo) {        
 
         var iBeforeCnt = aBeforeInfo.length,
             iCurrCnt = aCurrentInfo.length;
@@ -2733,6 +2733,16 @@
 
             // 기 저장한 기본 브라우저면서 그 브라우저가 실제로 local PC에 설치가 되어 있을 경우..
             if (oBeforeBrows.SELECTED && oBeforeBrows.INSPATH) {
+
+                let oFound = aCurrentInfo.find(elem => elem.NAME == oBeforeBrows.NAME);
+                if(!oFound){
+                    continue;
+                }
+
+                if(!oFound.ENABLED){
+                    continue;
+                }
+
                 oBeforeSelected = oBeforeBrows;
                 break;
             }

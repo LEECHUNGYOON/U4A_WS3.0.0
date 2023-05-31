@@ -1087,7 +1087,7 @@
 
         oBrowserWindow.loadURL(sUrlPath);
 
-        // no build 일 경우에는 개발자 툴을 실행한다.
+        // // no build 일 경우에는 개발자 툴을 실행한다.
         // if (!APP.isPackaged) {
         //     oBrowserWindow.webContents.openDevTools();
         // }

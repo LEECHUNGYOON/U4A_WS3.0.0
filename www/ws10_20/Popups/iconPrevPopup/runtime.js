@@ -227,6 +227,7 @@ function fnGetFontAwesomeIcon() {
             let oResult = aResult[i];
 
             if (oResult.RETCD == "E") {
+                console.error(`[fnGetFontAwesomeIcon] file not Found or JsonParseError \n\n ${oResult?.PARAM?.url || ""}`);
                 continue;
             }
 
@@ -388,41 +389,41 @@ function fnSAPIconConfig() {
             sUI5IconTagsJsonPath = jQuery.sap.getResourcePath(oSettingInfo.UI5.UI5IconTagsJsonPath);
 
         let oIconTagsResult = await getJsonAsync(sUI5IconTagsJsonPath);
-        if (oIconTagsResult.RETCD == "E") {
-            resolve();
-            return;
-        }
 
         oAPP.attr.oIconTagData = oIconTagsResult.RTDATA;
 
+        // 아이콘에 대한 태그 정보가 있을 경우에만 Keyword 매핑
         let oIconTags = oAPP.attr.oIconTagData;
+        if (oIconTags) {
 
-        for (var i in oIconTags) {
+            for (var i in oIconTags) {
 
-            let oIconMeta = oIconTags[i],
-                oFound = aIcons.find(elem => elem.ICON_NAME === i);
+                let oIconMeta = oIconTags[i],
+                    oFound = aIcons.find(elem => elem.ICON_NAME === i);
 
-            if (!oFound) {
-                continue;
+                if (!oFound) {
+                    continue;
+                }
+
+                let aKeyWords = oIconMeta.tags || [],
+                    iKeyWordLength = aKeyWords.length,
+                    sSeparator = "|";
+
+                oFound.KEYWORDS = [];
+
+                for (var i = 0; i < iKeyWordLength; i++) {
+
+                    let sKeyWord = aKeyWords[i];
+
+                    oFound.KEYWORDS.push({
+                        NAME: sKeyWord
+                    });
+
+                }
+
+                oFound.KEYWORD_STRING = fnGetKeyWordToString(aKeyWords, sSeparator);
+
             }
-
-            let aKeyWords = oIconMeta.tags || [],
-                iKeyWordLength = aKeyWords.length,
-                sSeparator = "|";
-
-            oFound.KEYWORDS = [];
-
-            for (var i = 0; i < iKeyWordLength; i++) {
-
-                let sKeyWord = aKeyWords[i];
-
-                oFound.KEYWORDS.push({
-                    NAME: sKeyWord
-                });
-
-            }
-
-            oFound.KEYWORD_STRING = fnGetKeyWordToString(aKeyWords, sSeparator);
 
         }
 
@@ -468,6 +469,7 @@ function fnGetSapTntIcons() {
             oIconListResult = await getJsonAsync(sUrl);
 
         if (oIconListResult.RETCD == "E") {
+            console.log("[fnGetSapTntIcons]:  SAP-icons-TNT.json 파일 없음");
             resolve();
             return;
         }
@@ -494,35 +496,38 @@ function fnGetSapTntIcons() {
             return;
         }
 
-        // 각각 아이콘에 맞는 keyword를 매핑한다.
+        // 아이콘에 대한 태그 정보가 있을 경우에만 Keyword 매핑
         let oIconTags = oAPP.attr.oIconTagData;
+        if (oIconTags) {
 
-        for (var i = 0; i < iIconlength; i++) {
+            for (var i = 0; i < iIconlength; i++) {
 
-            let oIconItem = aIcons[i],
-                oIconMeta = oIconTags[oIconItem.ICON_NAME];
+                let oIconItem = aIcons[i],
+                    oIconMeta = oIconTags[oIconItem.ICON_NAME];
 
-            if (!oIconMeta) {
-                continue;
+                if (!oIconMeta) {
+                    continue;
+                }
+
+                let aKeyWords = oIconMeta.tags || [],
+                    iKeyWordLength = aKeyWords.length,
+                    sSeparator = "|";
+
+                oIconItem.KEYWORDS = [];
+
+                for (var j = 0; j < iKeyWordLength; j++) {
+
+                    let sKeyWord = aKeyWords[j];
+
+                    oIconItem.KEYWORDS.push({
+                        NAME: sKeyWord
+                    });
+
+                }
+
+                oIconItem.KEYWORD_STRING = fnGetKeyWordToString(aKeyWords, sSeparator);
+
             }
-
-            let aKeyWords = oIconMeta.tags || [],
-                iKeyWordLength = aKeyWords.length,
-                sSeparator = "|";
-
-            oIconItem.KEYWORDS = [];
-
-            for (var j = 0; j < iKeyWordLength; j++) {
-
-                let sKeyWord = aKeyWords[j];
-
-                oIconItem.KEYWORDS.push({
-                    NAME: sKeyWord
-                });
-
-            }
-
-            oIconItem.KEYWORD_STRING = fnGetKeyWordToString(aKeyWords, sSeparator);
 
         }
 
@@ -601,32 +606,37 @@ function fnGetSapBusinessIcons() {
         // 각각 아이콘에 맞는 keyword를 매핑한다.
         let oIconTags = oAPP.attr.oIconTagData;
 
-        for (var i = 0; i < iIconlength; i++) {
+        // 아이콘에 대한 태그 정보가 있을 경우에만 Keyword 매핑
+        if (oIconTags) {
 
-            let oIconItem = aIcons[i],
-                oIconMeta = oIconTags[oIconItem.ICON_NAME];
+            for (var i = 0; i < iIconlength; i++) {
 
-            if (!oIconMeta) {
-                continue;
+                let oIconItem = aIcons[i],
+                    oIconMeta = oIconTags[oIconItem.ICON_NAME];
+
+                if (!oIconMeta) {
+                    continue;
+                }
+
+                let aKeyWords = oIconMeta.tags || [],
+                    iKeyWordLength = aKeyWords.length,
+                    sSeparator = "|";
+
+                oIconItem.KEYWORDS = [];
+
+                for (var j = 0; j < iKeyWordLength; j++) {
+
+                    let sKeyWord = aKeyWords[j];
+
+                    oIconItem.KEYWORDS.push({
+                        NAME: sKeyWord
+                    });
+
+                }
+
+                oIconItem.KEYWORD_STRING = fnGetKeyWordToString(aKeyWords, sSeparator);
+
             }
-
-            let aKeyWords = oIconMeta.tags || [],
-                iKeyWordLength = aKeyWords.length,
-                sSeparator = "|";
-
-            oIconItem.KEYWORDS = [];
-
-            for (var j = 0; j < iKeyWordLength; j++) {
-
-                let sKeyWord = aKeyWords[j];
-
-                oIconItem.KEYWORDS.push({
-                    NAME: sKeyWord
-                });
-
-            }
-
-            oIconItem.KEYWORD_STRING = fnGetKeyWordToString(aKeyWords, sSeparator);
 
         }
 
@@ -744,11 +754,14 @@ function _fnWriteFavJsonFile() {
         SYSID = parent.oAPP.attr.USERINFO.SYSID,
         sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`);
 
+    // 폴더가 없으면 폴더부터 생성
+    if (!FS.existsSync(sIconFavFolderPath)) {
+        FS.mkdirSync(sIconFavFolderPath, { recursive: true });
+    }
+
     // 파일이 없으면 생성
     if (!FS.existsSync(sIconFavFilePath)) {
-
         FS.writeFileSync(sIconFavFilePath, JSON.stringify([]));
-
     }
 
 } // end of _fnWriteFavJsonFile
@@ -1108,6 +1121,7 @@ function fnGetGridListItemContents() {
                 new sap.ui.core.Icon({
                     src: "{ICON_SRC}",
                     size: "2.5rem",
+                    tooltip: "{ICON_SRC}",
                     layoutData: new sap.m.FlexItemData({
                         styleClass: "sapUiTinyMarginTop"
                     })
@@ -1116,7 +1130,8 @@ function fnGetGridListItemContents() {
                     text: "{ICON_NAME}",
                     textAlign: "Center",
                     design: "Bold",
-                    width: "6rem"
+                    width: "6rem",
+                    tooltip: "{ICON_NAME}",
                 }),
                 new sap.m.HBox({
                     renderType: "Bare",
@@ -1712,13 +1727,9 @@ function ev_iconFavoChange(oEvent) {
 
             let sBeforeFirstVisibleRowIndex = oListTable.getFirstVisibleRow();
 
-            setTimeout(() => {
+            ev_iconFilter();
 
-                ev_iconFilter();
-
-                oListTable.setFirstVisibleRow(sBeforeFirstVisibleRowIndex);
-
-            }, 100);
+            oListTable.setFirstVisibleRow(sBeforeFirstVisibleRowIndex);
 
             break;
 
@@ -2077,7 +2088,8 @@ function getJsonAsync(sUrl, oParam) {
 
             resolve({
                 RETCD: "E",
-                RTMSG: oResult.error.toString()
+                RTMSG: oResult.error.toString(),
+                PARAM: oParam
             });
 
             return;

@@ -1244,4 +1244,36 @@ module.exports = {
 
     }, // end of setIconFavorite
 
+    /**
+     * SYSID 별 아이콘 즐겨찾기 정보를 구한다.
+     * @param {String} SYSID 
+     * @returns {Array}
+     */
+    getIconFavorite: function (SYSID) {
+
+        // P13N_ICONFAV
+        let sIconFavFolderPath = PATHINFO.P13N_ICONFAV,
+            sIconFavFilePath = PATH.join(sIconFavFolderPath, `${SYSID}.json`);
+
+        // 파일이 없으면 생성
+        if (!FS.existsSync(sIconFavFilePath)) {
+            return [];
+        }
+
+        try {
+
+            var sJsonData = FS.readFileSync(sIconFavFilePath, 'utf-8'),
+                aFavIcon = JSON.parse(sJsonData);
+
+        } catch (error) {
+
+            return [];
+
+        }
+
+        return aFavIcon;
+
+    }, // end of getIconFavorite
+
+
 };
