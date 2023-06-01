@@ -84,10 +84,10 @@ oAPP = {
             "maximizable": false,
             "minimizable": false,
             "show": false,
-            "transparent": true,
+            "transparent": true,            
             "frame": false,
             "icon": "www/img/logo.png",
-            // "parent": oAPP.remote.getCurrentWindow(),
+            "parent": oAPP.remote.getCurrentWindow(),
             "webPreferences": {
                 "devTools": true,
                 "nodeIntegration": true,
@@ -105,6 +105,9 @@ oAPP = {
 
         var url = `file://${__dirname}/RecordActive.html`;
         oWIN.loadURL(url);
+
+        // oWIN.webContents.openDevTools();
+
         oWIN.webContents.on('did-finish-load', function () {
             oWIN.show();
 

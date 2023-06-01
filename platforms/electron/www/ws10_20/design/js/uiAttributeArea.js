@@ -2901,6 +2901,7 @@
         oAPP.attr.prev[is_attr.OBJID]._T_0015[l_indx].MPROP = is_attr.MPROP;
         oAPP.attr.prev[is_attr.OBJID]._T_0015[l_indx].ADDSC = is_attr.ADDSC;
         oAPP.attr.prev[is_attr.OBJID]._T_0015[l_indx].ISWIT = is_attr.ISWIT;
+        oAPP.attr.prev[is_attr.OBJID]._T_0015[l_indx].ISSPACE = is_attr.ISSPACE;
         return;
       }
 
@@ -3029,8 +3030,9 @@
     }
 
     //프로퍼티 type이 숫자 유형인경우.
-    if(is_attr.UIATY === "1" && is_attr.ISBND === "" && ( is_attr.UIADT === "int" || is_attr.UIADT === "float")){
-      //입력값 숫자 유형으로 변경 처리.                
+    if(is_attr.UIATY === "1" && is_attr.ISBND === "" && is_attr.ISMLB === "" &&
+      ( is_attr.UIADT === "int" || is_attr.UIADT === "float")){
+      //입력값 숫자 유형으로 변경 처리.
       is_attr.UIATV  = String(Number(is_attr.UIATV));
     }
 
@@ -3085,8 +3087,19 @@
     if(is_attr.UIATY !== "1" || is_attr.ISBND === "X"){return;}
 
     var l_val = is_attr.UIATV;
+    
+    var l_uiadt = is_attr.UIADT;
 
-    switch(is_attr.UIADT.toUpperCase()){
+    //N건 입력이 가능한 프로퍼티 인경우.
+    if(is_attr.ISMLB === "X"){
+      //프로퍼티 TYPE에 []이 없다면 추가.
+      if(l_uiadt.indexOf("[]") === -1){
+        l_uiadt += "[]";
+      }
+    }
+
+
+    switch(l_uiadt.toUpperCase()){
       case "BOOLEAN":
 
         //입력값이 true인경우.
@@ -3122,7 +3135,7 @@
 
     }
 
-    var l_type = sap.ui.base.DataType.getType(is_attr.UIADT);
+    var l_type = sap.ui.base.DataType.getType(l_uiadt);
     if(!l_type){return;}
 
     //20230417 PES -start.

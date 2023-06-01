@@ -93,6 +93,7 @@ const oAPP = {
 
             if (result.canceled) {
                 oAPP.oWIN.close();
+                return;
             }
 
             oAPP.FilePath = result.filePaths[0];

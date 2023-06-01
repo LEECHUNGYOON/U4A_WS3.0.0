@@ -18,7 +18,7 @@
         loApp.attr.f_cb = f_cb;
 
         //아이콘 즐겨찾기 항목 검색.
-        loApp.attr.T_ICON = parent.WSUTIL.getIconFavorite(parent.WSUTIL.getWsSettingsInfo().globalLanguage);
+        loApp.attr.T_ICON = parent.WSUTIL.getIconFavorite(parent.getUserInfo().SYSID);
 
         //즐겨찾기 항목이 존재하지 않는다면.
         if(loApp.attr.T_ICON.length === 0){
@@ -29,6 +29,11 @@
                 parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "079", 
                     parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "078")
                 , "", "", ""));
+
+            //팝업 UI가 이미 호출되 있다면 종료 처리.
+            if(loApp.ui.oPop && loApp.ui.oPop.isOpen()){
+                loApp.ui.oPop.close();
+            }
 
             return;
         }

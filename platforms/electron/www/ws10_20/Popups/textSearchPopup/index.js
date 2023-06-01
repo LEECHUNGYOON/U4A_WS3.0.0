@@ -169,7 +169,7 @@ let oAPP = (() => {
             return;
         }
 
-        oSrchInput.focus();
+        oSrchInput.focus();      
 
     };
 

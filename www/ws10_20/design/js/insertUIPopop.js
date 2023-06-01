@@ -328,6 +328,11 @@
 
       //UI정보를 얻지 못한 경우 exit.
       if(!l_ui){return;}
+      
+      //아이콘을 더블클릭한 경우 exit.
+      if(l_ui.data("ico")){
+        return;
+      }
 
       //바인딩정보 얻기.
       var l_ctxt = l_ui.getBindingContext();
@@ -367,7 +372,7 @@
     var oCol1 = new sap.ui.table.Column({hAlign:"Center", width:"80px"});
     oTab1.addColumn(oCol1);
 
-    var oImage = new sap.m.Image({src:"{UICON}", width:"19px"});
+    var oImage = new sap.m.Image({src:"{UICON}", width:"19px"}).data("ico", true);
     oCol1.setTemplate(oImage);
 
     //E31	Symbol

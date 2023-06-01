@@ -21,6 +21,13 @@
             return;
         }
 
+
+        //이미 이미지 팝업을 구성했다면 팝업 즉시 호출.
+        if(loApp.ui.oPop){
+            loApp.ui.oPop.openBy(oUi);
+            return;
+        }
+
         //ui 미리보기 이미지 팝업.
         loApp.ui.oPop = new sap.m.ResponsivePopover({placement:"Auto", contentWidth:"40%",
             contentHeight:"40%", verticalScrolling:false});
@@ -35,10 +42,11 @@
             lf_AfterOpen();
         }); //이미지 팝업 호출 후 이벤트.
 
-        //팝업 종로 후 이벤트.
-        loApp.ui.oPop.attachAfterClose(function(){
-            lf_afterClose();
-        }); //팝업 종로 후 이벤트.
+        //팝업 종료전 이벤트.
+        loApp.ui.oPop.attachBeforeClose(function(){            
+            //Carousel Interval 초기화 처리.
+            lf_setCarouselInterval(true);
+        }); //팝업 종료전 이벤트.
 
 
         loApp.oModel = new sap.ui.model.json.JSONModel();
@@ -144,6 +152,7 @@
 
 
 
+
     //팝업 종료 처리.
     function lf_close(sMSGNO){
         
@@ -153,22 +162,6 @@
 
     }   //팝업 종료 처리.
 
-
-
-
-    //팝업 종료 이벤트.
-    function lf_afterClose(){
-        
-        //Carousel Interval 초기화 처리.
-        lf_setCarouselInterval(true);
-
-        //팝업 UI 제거.
-        loApp.ui.oPop.destroy();
-
-        //광역 구조 초기화.
-        loApp = {ui:{}, attr:{}};
-
-    }   //팝업 종료 이벤트.
 
 
 
@@ -253,6 +246,12 @@
 
         //2초마다 Carousel 넘기기.
         lf_setCarouselInterval();
+        
+        //첫번째 페이지로 이동 처리.
+        loApp.ui.oCar._moveToPage(1);
+
+        //팝업에 focus 처리.
+        loApp.ui.oPop.focus();
         
 
     }   //팝업 호출 이후 이벤트 처리.

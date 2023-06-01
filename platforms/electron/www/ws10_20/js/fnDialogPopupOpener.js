@@ -439,7 +439,8 @@
         oBrowserOptions.minHeight = 60;
 
         oBrowserOptions.frame = false;
-        // oBrowserOptions.show = true;
+        oBrowserOptions.thickFrame = false;
+        // oBrowserOptions.show = false;
         // oBrowserOptions.opacity = 0.0;
         oBrowserOptions.transparent = true;
         oBrowserOptions.center = false;
@@ -461,6 +462,8 @@
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
+        oBrowserWindow.hide();
+
         // no build 일 경우에는 개발자 툴을 실행한다.
         // if (!APP.isPackaged) {
         //     oBrowserWindow.webContents.openDevTools();
@@ -473,20 +476,22 @@
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
+            lf_move();
+
+            setTimeout(() => {
+                oBrowserWindow.show();
+            }, 10);
+
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            WSUTIL.setBrowserOpacity(oBrowserWindow);
-
-            lf_move();
-
-            oBrowserWindow.show();
+            // WSUTIL.setBrowserOpacity(oBrowserWindow);
 
         });
 
-        oBrowserWindow.webContents.on("dom-ready", function () {
+        // oBrowserWindow.webContents.on("dom-ready", function () {
 
-            lf_move();
+        //     lf_move();
 
-        });
+        // });
 
         function lf_move() {
 
@@ -511,21 +516,21 @@
         }
 
         // 부모 창이 움직일려고 할때 타는 이벤트
-        function lf_will_move() {
-
-            oBrowserWindow.hide();
+        function lf_will_move() {            
 
             lf_move();
+
+            oBrowserWindow.hide();
 
         }
 
         // 부모 창이 움직임 완료 되었을 때 타는 이벤트
-        function lf_moved() {
-
-            oBrowserWindow.show();
+        function lf_moved() {            
 
             lf_move();
 
+            oBrowserWindow.show();
+            
         }
 
         function lf_off() {
@@ -1203,7 +1208,7 @@
                 sServerHost: parent.getHost(), //  서버 호스트 정보
                 sServerPath: parent.getServerPath(), // 서버 Url                
                 sDefTheme: sDefTheme, // 테마 정보 
-                sServerLibPath : sServerLibPath // 서버 라이브러리 경로
+                sServerLibPath: sServerLibPath // 서버 라이브러리 경로
             };
 
             oBrowserWindow.webContents.send('if-illust-prev', oOptionData);

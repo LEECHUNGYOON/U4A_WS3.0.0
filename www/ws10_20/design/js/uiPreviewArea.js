@@ -400,8 +400,18 @@
     //프로퍼티 otr 입력값 존재시 text 검색.
     var l_prop = oAPP.fn.prevGetOTRText(is_attr) || is_attr.UIATV;
 
+    var l_UIADT = is_attr.UIADT;
+
+    //N건 입력이 가능한 프로퍼티 인경우.
+    if(is_attr.ISMLB === "X"){
+      //프로퍼티 TYPE에 []이 없다면 추가.
+      if(l_UIADT.indexOf("[]") === -1){
+        l_UIADT += "[]";
+      }
+    }
+
     //프로퍼티 타입에 따른 입력값 parse 처리.
-    switch(is_attr.UIADT){
+    switch(l_UIADT){
 
        case "boolean":
          l_prop = false;
