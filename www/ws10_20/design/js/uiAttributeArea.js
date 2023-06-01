@@ -12,6 +12,9 @@
   //SELECT OPTION2(SELECT OPTION3) F4Help 삭제 아이콘 색상.
   const C_ATTR_SEL_OPT_F4_ICON_COLOR = "#fa6161";
 
+  //즐겨찾기 아이콘 색상.
+  const C_ATTR_FAV_ICON_COLOR = "#FFD700";
+
   //우측 페이지(attribute 영역) 구성
   oAPP.fn.uiAttributeArea = function(oRPage){
     
@@ -471,7 +474,7 @@
     //help(script 이벤트) 아이콘 선택 이벤트
     oRIcon2.attachPress(function(oEvent){
       //property Help document, client event icon에 대한 처리.
-      oAPP.fn.attrIcon2Proc(this.getBindingContext().getProperty());      
+      oAPP.fn.attrIcon2Proc(this, this.getBindingContext().getProperty());      
 
     }); //help(script 이벤트) 아이콘 선택 이벤트
 
@@ -868,10 +871,11 @@
   /************************************************************************
    * property Help document, client event icon에 대한 처리.
    * **********************************************************************
+   * @param {object} oUi - 이벤트 발생 ui instance
    * @param {object} is_attr - 처리대상 attribute 라인 정보
    * @param {string} uityp - 이벤트 발생 UI의 유형(DDLB, INPUT, CHECK)
    ************************************************************************/
-   oAPP.fn.attrIcon2Proc = function(is_attr){
+   oAPP.fn.attrIcon2Proc = function(oUi, is_attr){
 
     //오류 표현 필드 초기화 처리.
     oAPP.fn.attrClearErrorField(true);
@@ -887,6 +891,9 @@
     
     //u4a.m.UsageArea의 AppID프로퍼티 삭제 예외처리.
     if(oAPP.fn.attrAppF4Del(is_attr)){return;}
+
+    //icon 즐겨찾기 팝업 호출.
+    if(oAPP.fn.attrCallFavoriteIcon(oUi, is_attr)){return;}
 
     //property help DOCUMENT 팝업 호출.
     if(oAPP.fn.attrPropHelpPopup(is_attr)){return;}
@@ -1782,7 +1789,7 @@
 
       });
 
-      return;
+      return true;
     }
 
     //icon list popup function이 존재하는 경우.
@@ -3600,6 +3607,9 @@
     is_0015.icon1_color = undefined;  //바인딩(서버이벤트) 색상 필드
     is_0015.icon2_color = undefined;  //help(클라이언트이벤트) 색상 필드
 
+    is_0015.icon1_ttip = undefined; //바인딩(서버이벤트) 아이콘 tooltip
+    is_0015.icon2_ttip = undefined; //help(클라이언트이벤트) 아이콘 tooltip
+
     //edit 비활성 처리 여부 필드.
     is_0015.edit = false;
 
@@ -4002,6 +4012,29 @@
           is_attr.dropEnable = true;
 
           return;
+
+        }
+
+        //아이콘 사용 가능한 프로퍼티인경우. 신규 아이콘 처리 기능을 사용 가능한 경우.
+        if(oAPP.fn.attrIsIconProp(is_attr) && oAPP.common.checkWLOList("C", "UHAK900630")){
+
+          is_attr.icon2_src = "sap-icon://favorite";
+
+          //아이콘 색상 처리.
+          is_attr.icon2_color = C_ATTR_FAV_ICON_COLOR;  //바인딩(서버이벤트) 색상 필드
+
+          //아이콘 비활성 처리.
+          is_attr.icon2_visb = false;
+          
+          //아이콘 툴팁 구성.
+          //078   Icon favorite list
+          is_attr.icon2_ttip = "🌟\n" + parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "078");
+
+          //바인딩 처리가 안됐다면.
+          if(is_attr.ISBND === ""){
+            //아이콘 활성 처리.
+            is_attr.icon2_visb = true;
+          }
 
         }
 
@@ -5062,6 +5095,24 @@
 
     }
 
+    //아이콘 사용 가능한 프로퍼티인경우. 신규 아이콘 기능을 사용 가능한 경우.
+    if(oAPP.fn.attrIsIconProp(is_attr) && is_attr.ISBND === "" && 
+      oAPP.common.checkWLOList("C", "UHAK900630")){
+
+      is_attr.icon2_src = "sap-icon://favorite";
+
+      //아이콘 색상 처리.
+      is_attr.icon2_color = C_ATTR_FAV_ICON_COLOR;  //바인딩(서버이벤트) 색상 필드
+
+      //아이콘 활성 처리.
+      is_attr.icon2_visb = true;
+
+      //아이콘 툴팁 구성.
+      //078   Icon favorite list
+      is_attr.icon2_ttip = "🌟\n" + parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "078");
+
+    }
+
 
     //bind 처리된건인경우.
     if(is_attr.ISBND === "X"){
@@ -5896,6 +5947,54 @@
     }
 
   };  //attribute의 필수 입력 표현 처리.
+
+
+
+
+  //아이콘 즐겨찾기 팝업 호출.
+  oAPP.fn.attrCallFavoriteIcon = function(oUi, is_attr){
+
+    function lf_callback(sIcon){
+
+      //전달받은 아이콘명이 존재하지 않는경우 exit.
+      if(typeof sIcon === "undefined" || sIcon === null || sIcon === ""){return;}
+
+      //아이콘 매핑.
+      ls_attr.UIATV = sIcon;
+
+      //ATTR 변경처리.
+      oAPP.fn.attrChangeProc(ls_attr, "INPUT");
+
+    }
+
+    var ls_attr = is_attr;
+
+    //아이콘 프로퍼티가 아닌경우 EXIT.
+    if(!oAPP.fn.attrIsIconProp(ls_attr)){return;}
+    
+    //신규 아이콘 기능을 사용하지 못하는 경우 exit.
+    if(!oAPP.common.checkWLOList("C", "UHAK900630")){return;}
+
+
+    //즐겨찾기 아이콘 팝업 function이 존재하는경우 즉시 호출.
+    if(typeof oAPP.fn.callFavIconPopup !== "undefined"){
+      
+      oAPP.fn.callFavIconPopup(oUi, ls_attr, lf_callback);
+
+    }else{
+      //즐겨찾기 아이콘 팝업 function이 존재하지 않는경우 script 호출.
+      oAPP.fn.getScript("design/js/callFavIconPopup",function(){
+        //즐겨찾기 아이콘 팝업 호출.
+        oAPP.fn.callFavIconPopup(oUi, ls_attr, lf_callback);
+      });
+
+    }
+
+    //function 호출처의 하위로직 skip flag return.
+    return true;
+
+
+  };  //아이콘 즐겨찾기 팝업 호출.
 
 
 })();
