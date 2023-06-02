@@ -389,10 +389,24 @@
 
     }; // end of oAPP.fn.fnWS10WMENU20_03
 
+    // /************************************************************************
+    //  * [WS10] Icon List
+    //  ************************************************************************/
+    // oAPP.fn.fnWS10WMENU20_04 = () => {
+
+    //     // Busy Indicator가 실행중이면 빠져나간다.
+    //     if (parent.getBusy() == 'X') {
+    //         return;
+    //     }
+
+    //     oAPP.fn.fnIconPreviewPopupOpener();
+
+    // }; // end of oAPP.fn.fnWS10WMENU20_04
+
     /************************************************************************
-     * [WS10] Icon List
-     ************************************************************************/
-    oAPP.fn.fnWS10WMENU20_04 = () => {
+    * [WS20] Icon List
+    ************************************************************************/
+    oAPP.fn.fnWS10WMENU20_04_01 = () => {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -401,7 +415,21 @@
 
         oAPP.fn.fnIconPreviewPopupOpener();
 
-    }; // end of oAPP.fn.fnWS10WMENU20_04
+    }; // end of oAPP.fn.fnWS10WMENU20_04_01
+
+    /************************************************************************
+     * [WS20] Image Icons
+     ************************************************************************/
+    oAPP.fn.fnWS10WMENU20_04_02 = () => {
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        oAPP.fn.fnIllustedMsgPrevPopupOpener();
+
+    }; // end of oAPP.fn.fnWS10WMENU20_04_02
 
     /************************************************************************
      * [WS10] Source Pattern
@@ -654,10 +682,24 @@
 
     }; // end of oAPP.fn.fnWS20WMENU20_03
 
+    // /************************************************************************
+    //  * [WS20] Icon List
+    //  ************************************************************************/
+    // oAPP.fn.fnWS20WMENU20_04 = () => {
+
+    //     // Busy Indicator가 실행중이면 빠져나간다.
+    //     if (parent.getBusy() == 'X') {
+    //         return;
+    //     }
+
+    //     oAPP.fn.fnIconPreviewPopupOpener();
+
+    // }; // end of oAPP.fn.fnWS20WMENU20_04
+
     /************************************************************************
-     * [WS20] Icon List
-     ************************************************************************/
-    oAPP.fn.fnWS20WMENU20_04 = () => {
+    * [WS20] Icon List
+    ************************************************************************/
+    oAPP.fn.fnWS20WMENU20_04_01 = () => {
 
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
@@ -666,7 +708,21 @@
 
         oAPP.fn.fnIconPreviewPopupOpener();
 
-    }; // end of oAPP.fn.fnWS20WMENU20_04
+    }; // end of oAPP.fn.fnWS20WMENU20_04_01
+
+    /************************************************************************
+     * [WS20] Image Icons
+     ************************************************************************/
+    oAPP.fn.fnWS20WMENU20_04_02 = () => {
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        oAPP.fn.fnIllustedMsgPrevPopupOpener();
+
+    }; // end of oAPP.fn.fnWS20WMENU20_04_02
 
     /************************************************************************
      * [WS20] Source Pattern 
@@ -680,7 +736,7 @@
 
         oAPP.fn.fnSourcePatternPopupOpener(); // [async]
 
-    }; // end of oAPP.fn.fnWS20WMENU20_04
+    }; // end of oAPP.fn.fnWS20WMENU20_05
 
     /************************************************************************
      * [WS20] Editor

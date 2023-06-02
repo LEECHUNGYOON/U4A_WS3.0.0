@@ -449,9 +449,36 @@
      ************************************************************************/
     oAPP.fn.fnRegisterU4AIcons = () => {
 
-        parent.WSUTIL.getWsRegisterU4AIcons(sap);       
+        parent.WSUTIL.getWsRegisterU4AIcons(sap);
 
     }; // end of oAPP.fn.fnRegisterU4AIcons
+
+    oAPP.fn.fnRegisterSAPIcons = () => {
+
+        jQuery.sap.require("sap.ui.core.IconPool");
+
+        // Tnt Icons
+        var oIconSet1 = {
+            collectionName: "SAP-icons-TNT",
+            fontFamily: "SAP-icons-TNT",
+            fontURI: sap.ui.require.toUrl("sap/tnt/themes/base/fonts"),
+            lazy: true
+        };
+
+        var oIconPool = sap.ui.core.IconPool;
+        oIconPool.registerFont(oIconSet1);
+
+        // BusinessSuite Icons
+        var oIconSet2 = {
+            collectionName: "BusinessSuiteInAppSymbols",
+            fontFamily: "BusinessSuiteInAppSymbols",
+            fontURI: sap.ui.require.toUrl("sap/ushell/themes/base/fonts"),
+            lazy: true
+        };
+
+        oIconPool.registerFont(oIconSet2);
+
+    };
 
     /************************************************************************
      * Illustration Message Dialog

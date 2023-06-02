@@ -10,6 +10,7 @@
         APP = parent.APP,
         REMOTEMAIN = parent.REMOTEMAIN,
         REMOTE = parent.REMOTE,
+        CURRWIN = REMOTE.getCurrentWindow(),
         APPPATH = parent.APPPATH,
         APPCOMMON = oAPP.common,
         IPCRENDERER = parent.IPCRENDERER,
@@ -578,6 +579,8 @@
             }
 
             oBrowserWindow = null;
+
+            CURRWIN.focus();	
 
         });
 

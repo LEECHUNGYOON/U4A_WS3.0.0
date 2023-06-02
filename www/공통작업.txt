@@ -51,3 +51,5 @@ REMOTE.app.getPath("userData");
 REMOTE.app.getAppPath();
 
 
+ // busy 키고 Lock 켜기
+oAPP.common.fnSetBusyLock("X");

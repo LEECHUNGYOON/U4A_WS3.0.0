@@ -115,6 +115,8 @@
 
             oBrowserWindow = null;
 
+            CURRWIN.focus();
+
         });
 
         // 선택한 UI 정보를 WS20에 표시

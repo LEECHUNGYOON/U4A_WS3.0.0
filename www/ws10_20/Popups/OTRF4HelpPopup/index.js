@@ -4,12 +4,15 @@
  * - file Name : bindPopup/index.js
  ************************************************************************/
 
+
+
 /************************************************************************
  * 에러 감지 (index.js)
  ************************************************************************/
 let zconsole = parent.WSERR(window, document, console);
 
-let oAPP = parent.oAPP;
+//var oAPP = parent.oAPP;
+var oAPP = parent.gfn_getParent();
 
 (function (window, oAPP) {
 
@@ -77,6 +80,7 @@ let oAPP = parent.oAPP;
 	//  * UI5 BootStrap 
 	//  ************************************************************************/
 	oAPP.fn.fnLoadBootStrapSetting = function () {
+
 
 		var oSettings = oAPP.fn.getSettingsInfo(),
 			oSetting_UI5 = oSettings.UI5,
@@ -191,8 +195,9 @@ let oAPP = parent.oAPP;
 		});
 
 	};
+   
 
-
+	
 
 	//OTR 검색 팝업 호출.
 	oAPP.fn.callOTRListPopup = function (I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESCR, f_clientCallbak) {
@@ -431,9 +436,6 @@ let oAPP = parent.oAPP;
 			//f4 help 필드정보 검색.
 			sendAjax(oAPP.attr.servNm + "/f4serverData", oFormData, function (param) {
 
-				//~witing mode 제거
-				oPage.setBusy(false);
-
 				//~조회입력 패널 펼침
 				oPanel.setExpanded(true);
 
@@ -443,10 +445,35 @@ let oAPP = parent.oAPP;
 				//결과리스트 컬럼 재설정.
 				lf_setTableColumn(I_SHLPNAME, param);
 
+				//ipc로 메인 호출처로 로딩 완료여부 전송.
+
+				var CURRWIN = oAPP.REMOTE.getCurrentWindow(),
+					PARWIN = CURRWIN.getParentWindow();
+
+				PARWIN.webContents.send("if-otr-callback", "X");
+
+				//~witing mode 제거
+				oPage.setBusy(false);
+
+
 			});
 
 		} //f4 help 필드정보 얻기.
 
+
+		function lf_UIUpdated(){
+
+			//호출 이후 이벤트 제거 처리.
+			sap.ui.getCore().detachEvent("UIUpdated", lf_UIUpdated);
+				
+			//검색조건, 결과리스트 필드 정보 얻기.
+			lf_getF4Field();
+
+		}
+
+
+		//UI화면 갱신 이후 이벤트 처리.
+		sap.ui.getCore().attachEvent("UIUpdated", lf_UIUpdated);
 
 
 		var oApp = new sap.m.App();
@@ -456,7 +483,7 @@ let oAPP = parent.oAPP;
 		var l_txt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "366", "", "", "", "");
 
 		//dialog 생성.
-		var oPage = new sap.m.Page({ title: l_txt });
+		var oPage = new sap.m.Page({ title: l_txt, busy:true, busyIndicatorDelay:0});
 		oApp.addPage(oPage);
 		oPage.addStyleClass("sapUiSizeCompact");
 
@@ -599,11 +626,6 @@ let oAPP = parent.oAPP;
 
 		oTable.bindAggregation("rows", { path: "/TF4LIST", template: new sap.ui.table.Row() });
 
-		//~출력리스트 컬럼 구성 텍스트 UI 생성
-		lf_setTableColumn(I_SHLPNAME, IT_FIELDDESCR);
-
-
-		lf_getF4Field();
 
 	};  //OTR 검색 팝업 호출.
 

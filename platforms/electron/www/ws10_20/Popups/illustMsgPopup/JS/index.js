@@ -406,8 +406,11 @@ function createUi() {
     sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, fn_UIUPdated);
 
     // ▶ App 생성
-    let LO_APP = new sap.m.App("u4aFApp",),
+    let LO_APP = new sap.m.App("u4aFApp", {
+        autoFocus: false
+    }),
         LO_FPAGE = new sap.m.Page("u4aFPAGE",{
+            enableScrolling: false,
             customHeader: new sap.m.Bar({
                 contentLeft: [
                     new sap.m.Image({
@@ -630,5 +633,8 @@ function createUi() {
     LO_FPAGE.addContent(LO_TABBAR);
     LO_APP.addPage(LO_FPAGE);
     LO_APP.placeAt('content');
+
+    // 모든 팝업 및 드롭다운 등등의 영역 제한
+    sap.ui.core.Popup.setWithinArea(LO_TABBAR);
 
 };

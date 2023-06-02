@@ -102,10 +102,12 @@
             }
 
             let oSettingInfo = WSUTIL.getWsSettingsInfo(),
-	            sWsLangu = oSettingInfo.globalLanguage;
+                sWsLangu = oSettingInfo.globalLanguage;
 
             oAPP.msg.M047 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "047"); // Icon List
             oAPP.msg.M059 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "059"); // Source Pattern
+            oAPP.msg.M068 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "068"); // Icon Viewer
+            oAPP.msg.M067 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "067"); // Image Icons
 
             resolve();
 
@@ -398,6 +400,9 @@
 
             // Register illustration Message Pool
             oAPP.fn.fnRegisterIllustrationPool();
+
+            // SAP Icon 등록 (TNT, Business)
+            oAPP.fn.fnRegisterSAPIcons();
 
             // U4A Icon 추가하기
             oAPP.fn.fnRegisterU4AIcons();

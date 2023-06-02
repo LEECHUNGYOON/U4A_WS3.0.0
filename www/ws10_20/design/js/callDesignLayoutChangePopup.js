@@ -9,6 +9,12 @@
     //A67	Preview
     const C_PREVIEW = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A67", "", "", "", "");
 
+    //광역 모델 정보.
+    let oModel;
+
+    //광역 dialog UI정보.
+    let oDialog;
+
     //디자인 레이아웃 변경 팝업.
     oAPP.fn.callDesignLayoutChangePopup = function(){
 
@@ -156,6 +162,58 @@
 
 
 
+    //저장버튼 선택 -> design영역의 page 삭제 이후 이벤트.
+    function lf_after(){
+
+        //삭제 이후 이벤트 제거 처리.
+        sap.ui.getCore().detachEvent("UIUpdated", lf_after);
+
+        //design layout 재정의 이후 이벤트 추가.
+        sap.ui.getCore().attachEvent("UIUpdated", lf_frame);
+
+        var oSplit = sap.ui.getCore().byId("designSplit");
+
+        //구성한 정보를 기준으로 화면 구성 처리.
+        for(var i=0, l=oModel.oData.T_LAYOUT.length; i<l; i++){
+            oSplit.addContentArea(oAPP.attr.ui[oModel.oData.T_LAYOUT[i].UIID]);
+        }
+
+        //구성한 design layout 정보 저장 처리.
+        parent.setP13nData("designLayout", oModel.oData.T_LAYOUT);
+
+        //팝업 종료 처리.
+        lf_close(oDialog, true);
+        
+
+    }   //저장버튼 선택 -> design영역의 page 삭제 이후 이벤트.
+
+
+
+
+    //design layout 재정의 이후 이벤트
+    function lf_frame(){
+
+        //design layout 재정의 이후 이벤트 제거 처리.
+        sap.ui.getCore().detachEvent("UIUpdated", lf_frame);
+
+        //미리보기에서 사용되고 있는 UI정보 제거 처리.
+        delete oAPP.attr.ui._page1;
+        delete oAPP.attr.ui._hbox1;
+        delete oAPP.attr.ui.oMenu;
+        oAPP.attr.popup = [];
+
+        //미리보기 iframe 다리 load 처리.
+        oAPP.fn.loadPreviewFrame(true);
+
+        //화면 잠금 해제 처리.
+        oAPP.fn.designAreaLockUnlock();
+
+
+    }   //design layout 재정의 이후 이벤트
+
+
+
+
     //저장 처리.
     function lf_save(oDlg, oMdl){
 
@@ -175,33 +233,18 @@
 
             var oSplit = sap.ui.getCore().byId("designSplit");
 
+            //UI 광역화.
+            oModel = oMdl;
+            oDialog = oDlg;
+
+            //삭제 이후 이벤트 추가.
+            sap.ui.getCore().attachEvent("UIUpdated", lf_after);
 
             //모든 영역 제거 처리.
             oSplit.removeAllContentAreas();
 
-            //구성한 정보를 기준으로 화면 구성 처리.
-            for(var i=0, l=oMdl.oData.T_LAYOUT.length; i<l; i++){
-                oSplit.addContentArea(oAPP.attr.ui[oMdl.oData.T_LAYOUT[i].UIID]);
-            }
-
-            //팝업 종료 처리.
-            lf_close(oDlg, true);
-
-            //구성한 design layout 정보 저장 처리.
-            parent.setP13nData("designLayout", oMdl.oData.T_LAYOUT);
-
-            //미리보기 영역 재구성.
-            setTimeout(function(){
-                oAPP.fn.loadPreviewFrame(true);
-
-                //화면 잠금 해제 처리.
-                oAPP.fn.designAreaLockUnlock();
-
-            }, 100);
-
         }); //저장전 확인 팝업 호출.
         
-
 
     }   //저장 처리.
 

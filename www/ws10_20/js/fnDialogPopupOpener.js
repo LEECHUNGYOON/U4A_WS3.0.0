@@ -299,18 +299,34 @@
 
     }; // end of oAPP.fn.fnBindPopupOpener
 
+    oAPP.fn.fnBindPopupIpcCallBack = () => {
+
+        // busy 끄고 Lock 끄기
+        oAPP.common.fnSetBusyLock("");
+
+
+    }; // end of oAPP.fn.fnBindPopupIpcCallBack
+
     /************************************************************************
      * [WS20] Binding Popup 버튼 이벤트
      ************************************************************************/
     oAPP.fn.fnBindWindowPopupOpener = () => {
+
+        // busy 키고 Lock 켜기
+        oAPP.common.fnSetBusyLock("X");
 
         var sPopupName = "BINDPOPUP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+            // busy 키고 Lock 켜기
+            oAPP.common.fnSetBusyLock("");
             return;
         }
+
+        // Binding Popup 에서 콜백 받을 준비를 한다.
+        IPCRENDERER.on("if-bindPopup-callback", oAPP.fn.fnBindPopupIpcCallBack);
 
         let oThemeInfo = parent.getThemeInfo(); // theme 정보
 
@@ -374,7 +390,15 @@
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
 
+            // busy & Lock 끄기
+            oAPP.common.fnSetBusyLock("");
+
             oBrowserWindow = null;
+
+            // Binding Popup 에서 콜백 이벤트 해제
+            IPCRENDERER.off("if-bindPopup-callback", oAPP.fn.fnBindPopupIpcCallBack);
+
+            CURRWIN.focus();
 
         });
 
@@ -516,7 +540,7 @@
         }
 
         // 부모 창이 움직일려고 할때 타는 이벤트
-        function lf_will_move() {            
+        function lf_will_move() {
 
             lf_move();
 
@@ -525,12 +549,12 @@
         }
 
         // 부모 창이 움직임 완료 되었을 때 타는 이벤트
-        function lf_moved() {            
+        function lf_moved() {
 
             lf_move();
 
             oBrowserWindow.show();
-            
+
         }
 
         function lf_off() {
@@ -594,6 +618,8 @@
             lf_off();
 
             oBrowserWindow = null;
+
+            CURRWIN.focus();
 
         });
 
@@ -690,6 +716,8 @@
 
             // 각종 이벤트 끄기
             lf_off();
+
+            CURRWIN.focus();
 
         });
 
@@ -826,6 +854,8 @@
 
             oBrowserWindow = null;
 
+            CURRWIN.focus();
+
         });
 
     }; // end of oAPP.fn.fnDocuPopupOpener
@@ -913,6 +943,8 @@
             IPCMAIN.off(`${BROWSKEY}-cdn-save`, lf_IpcMainCdnSave);
 
             oBrowserWindow = null;
+
+            CURRWIN.focus();
 
         });
 
@@ -1123,7 +1155,10 @@
         oBrowserWindow.on('closed', () => {
 
             oBrowserWindow = null;
+
             parent.setBusy("");
+
+            CURRWIN.focus();
 
         });
 
@@ -1225,7 +1260,10 @@
         oBrowserWindow.on('closed', () => {
 
             oBrowserWindow = null;
+
             parent.setBusy("");
+
+            CURRWIN.focus();
 
         });
 
@@ -1365,6 +1403,8 @@
 
             oBrowserWindow = null;
 
+            CURRWIN.focus();
+
         });
 
         // IPCMAIN 이벤트
@@ -1457,6 +1497,8 @@
 
             oBrowserWindow = null;
 
+            CURRWIN.focus();
+
         });
 
     }; // end of oAPP.fn.fnAboutU4APopupOpener
@@ -1538,7 +1580,11 @@
 
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
+
             oBrowserWindow = null;
+
+            CURRWIN.focus();
+
         });
 
     }; // end of oAPP.fn.fnRuntimeClassNaviPopupOpener
@@ -1604,7 +1650,11 @@
 
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
+
             oBrowserWindow = null;
+
+            CURRWIN.focus();
+
         });
 
     }; // end of oAPP.fn.fnFontStyleWizardPopupOpener
@@ -1732,6 +1782,8 @@
             IPCMAIN.off(`${BROWSKEY}--errormsg--click`, oAPP.fn.fnIpcMain_errmsg_click);
 
             oBrowserWindow = null;
+
+            CURRWIN.focus();
 
         });
 
@@ -1875,6 +1927,8 @@
 
             oBrowserWindow = null;
 
+            CURRWIN.focus();
+
         });
 
     }; // end of oAPP.fn.fnReleaseNotePopupOpener
@@ -1900,18 +1954,34 @@
 
     }; // end of oAPP.fn.callDesignLayoutChangePopupOpener
 
+
+    oAPP.fn.fnOtrIpcCallBack = function (events, res) {
+
+        // busy 끄고 Lock 끄기
+        oAPP.common.fnSetBusyLock("");
+
+    }; // end of oAPP.fn.fnOtrIpcCallBack
+
     /************************************************************************
      * OTR Manager Popup Opener
      ************************************************************************/
     oAPP.fn.fnOtrManagerPopupOpener = () => {
+
+        // busy 키고 Lock 켜기
+        oAPP.common.fnSetBusyLock("X");
 
         let sPopupName = "U4AOTRPOP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+            // busy 키고 Lock 켜기
+            oAPP.common.fnSetBusyLock("");
             return;
         }
+
+        // otr 팝업에서 콜백 받을 준비를 한다.
+        IPCRENDERER.on("if-otr-callback", oAPP.fn.fnOtrIpcCallBack);
 
         let SESSKEY = parent.getSessionKey(),
             BROWSKEY = parent.getBrowserKey(),
@@ -1978,7 +2048,16 @@
 
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
+
+            // busy & Lock 끄기
+            oAPP.common.fnSetBusyLock("");
+
             oBrowserWindow = null;
+
+            IPCRENDERER.off("if-otr-callback", oAPP.fn.fnOtrIpcCallBack);
+
+            CURRWIN.focus();
+
         });
 
     }; // end of oAPP.fn.fnOtrManagerPopupOpener
@@ -2072,6 +2151,8 @@
             IPCMAIN.off(`${BROWSKEY}--if-ui5css`, lf_ui5css_getData);
 
             oBrowserWindow = null;
+
+            CURRWIN.focus();
 
         });
 
@@ -2251,6 +2332,8 @@
         oBrowserWindow.on('closed', () => {
 
             oBrowserWindow = null;
+
+            CURRWIN.focus();
 
         });
 

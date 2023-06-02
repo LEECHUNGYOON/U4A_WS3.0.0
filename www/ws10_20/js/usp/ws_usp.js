@@ -313,6 +313,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    icon: "{icon}",
                     visible: "{visible}",
                     enabled: "{enabled}",
                     items: {
@@ -321,6 +322,7 @@
                         template: new sap.m.MenuItem({
                             key: "{key}",
                             text: "{text}",
+                            icon: "{icon}",
                             visible: "{visible}",
                             enabled: "{enabled}",
                         })
@@ -337,6 +339,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    icon: "{icon}",
                     visible: "{visible}",
                     enabled: "{enabled}",
                     items: {
@@ -345,6 +348,7 @@
                         template: new sap.m.MenuItem({
                             key: "{key}",
                             text: "{text}",
+                            icon: "{icon}",
                             visible: "{visible}",
                             enabled: "{enabled}",
                         })
@@ -361,6 +365,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    icon: "{icon}",
                     enabled: "{enabled}",
                     visible: "{visible}",
                     items: {
@@ -369,6 +374,7 @@
                         template: new sap.m.MenuItem({
                             key: "{key}",
                             text: "{text}",
+                            icon: "{icon}",
                             enabled: "{enabled}",
                             visible: "{visible}",
                         })
@@ -384,6 +390,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    icon: "{icon}",
                     visible: "{visible}",
                     enabled: "{enabled}",
                     items: {
@@ -392,6 +399,7 @@
                         template: new sap.m.MenuItem({
                             key: "{key}",
                             text: "{text}",
+                            icon: "{icon}",
                             visible: "{visible}",
                             enabled: "{enabled}",
                         })

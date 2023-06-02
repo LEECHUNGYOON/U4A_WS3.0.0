@@ -140,13 +140,35 @@ let oAPP = parent.oAPP,
 
     }; // end of oAPP.fn.fnInitRendering   
 
+
+
+
+    //UI화면 갱신 이후 이벤트 처리.
+    oAPP.fn.UIUpdated = function(){
+
+        //UI화면 갱신 이후 이벤트 제거 처리.
+		sap.ui.getCore().detachEvent("UIUpdated", oAPP.fn.UIUpdated);
+
+        //서버에서 바인딩 정보 얻기.
+        oAPP.fn.getBindFieldInfo();
+
+    };  //UI화면 갱신 이후 이벤트 처리.
+
+
+
+
     //바인딩 팝업 화면 구성.
     oAPP.fn.callBindPopup = function () {
 
+        //UI화면 갱신 이후 이벤트 처리.
+		sap.ui.getCore().attachEvent("UIUpdated", oAPP.fn.UIUpdated);
+
         //최상위 UI.
-        var oApp = new sap.m.App();
+        var oApp = new sap.m.App({busy:true, busyIndicatorDelay:0});
         oApp.placeAt("content");
         oApp.addStyleClass("sapUiSizeCompact");
+
+        oAPP.attr.App = oApp;
 
         //모델 정보 세팅.
         oAPP.attr.oModel = new sap.ui.model.json.JSONModel();
@@ -493,8 +515,8 @@ let oAPP = parent.oAPP,
         // oAPP.fn.setTreeDrag();
 
 
-        //서버에서 바인딩 정보 얻기.
-        oAPP.fn.getBindFieldInfo();
+        // //서버에서 바인딩 정보 얻기.
+        // oAPP.fn.getBindFieldInfo();
 
 
 
@@ -1138,6 +1160,13 @@ let oAPP = parent.oAPP,
                 //모델 정보 바인딩 처리.
                 l_model.refresh(true);
 
+                oAPP.attr.App.setBusy(false);
+
+                var CURRWIN = oAPP.REMOTE.getCurrentWindow(),
+                PARWIN = CURRWIN.getParentWindow();
+
+                PARWIN.webContents.send("if-bindPopup-callback", "X");
+
                 return;
             }
 
@@ -1165,6 +1194,13 @@ let oAPP = parent.oAPP,
 
                 // //바인딩 필드가 존재하지 않음 메시지 처리.
                 sap.m.MessageToast.show("Binding attributes dose not exist.", {duration: 3000, at:"center center"});
+
+                oAPP.attr.App.setBusy(false);
+
+                var CURRWIN = oAPP.REMOTE.getCurrentWindow(),
+                PARWIN = CURRWIN.getParentWindow();
+
+                PARWIN.webContents.send("if-bindPopup-callback", "X");
 
                 return;
 
@@ -1204,6 +1240,13 @@ let oAPP = parent.oAPP,
 
             //추가속성 table layout 설정.
             oAPP.fn.setAdditLayout();
+
+            oAPP.attr.App.setBusy(false);
+
+            var CURRWIN = oAPP.REMOTE.getCurrentWindow(),
+            PARWIN = CURRWIN.getParentWindow();
+
+            PARWIN.webContents.send("if-bindPopup-callback", "X");
 
 
         }); //바인딩 필드 정보 검색.

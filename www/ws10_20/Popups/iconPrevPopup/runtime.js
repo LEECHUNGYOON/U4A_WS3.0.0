@@ -1060,6 +1060,9 @@ function fnGetMainPageContents() {
 
     });
 
+    // 모든 팝업 및 드롭다운 등등의 영역 제한
+    sap.ui.core.Popup.setWithinArea(oIconTabBar);
+
     return [
         oIconTabBar
     ];

@@ -169,6 +169,9 @@
 
         }).addStyleClass("u4aWsApp sapUiSizeCompact");
 
+        // 모든 팝업 및 드롭다운 등등의 영역 제한
+        sap.ui.core.Popup.setWithinArea(oApp);
+
         // 10, 20번 화면에 대한 Page Instance 구하기
         var WS10 = oAPP.fn.fnOnInitRenderingWS10(),
             WS20 = oAPP.fn.fnOnInitRenderingWS20();
@@ -300,9 +303,28 @@
                 },
                 {
                     key: "WMENU20_04",
-                    text: oAPP.msg.M047, // Icon List
-                    visible: oAPP.common.checkWLOList("C", "UHAK900630")
+                    text: oAPP.msg.M068, // Icon Viewer
+                    // icon: "sap-icon://u4a-fw-regular/Face Grin Wide",
+                    visible: oAPP.common.checkWLOList("C", "UHAK900630"),
+                    items: [
+                        {
+                            key: "WMENU20_04_01",
+                            // icon: "sap-icon://u4a-fw-solid/Icons",
+                            text: oAPP.msg.M047, // Icon List
+                        },
+                        {
+                            key: "WMENU20_04_02",
+                            // icon: "sap-icon://u4a-fw-solid/Image",
+                            text: oAPP.msg.M067 // Image Icons
+                        },
+                    ]
+
                 }
+                // {
+                //     key: "WMENU20_04",
+                //     text: oAPP.msg.M047, // Icon List
+                //     visible: oAPP.common.checkWLOList("C", "UHAK900630")
+                // }
             ],
 
             /**
@@ -467,9 +489,28 @@
                 },
                 {
                     key: "WMENU20_04",
-                    text: oAPP.msg.M047, // Icon List
-                    visible: oAPP.common.checkWLOList("C", "UHAK900630")
+                    text: oAPP.msg.M068, // Icon Viewer
+                    // icon: "sap-icon://u4a-fw-regular/Face Grin Wide",
+                    visible: oAPP.common.checkWLOList("C", "UHAK900630"),
+                    items: [
+                        {
+                            key: "WMENU20_04_01",
+                            // icon: "sap-icon://u4a-fw-solid/Icons",
+                            text: oAPP.msg.M047, // Icon List
+                        },
+                        {
+                            key: "WMENU20_04_02",
+                            // icon: "sap-icon://u4a-fw-solid/Image",
+                            text: oAPP.msg.M067 // Image Icons
+                        },
+                    ]
+
                 }
+                // {
+                //     key: "WMENU20_04",
+                //     text: oAPP.msg.M047, // Icon List
+                //     visible: oAPP.common.checkWLOList("C", "UHAK900630")
+                // }
             ],
 
             /** 
@@ -644,9 +685,28 @@
                 },
                 {
                     key: "WMENU20_04",
-                    text: oAPP.msg.M047, // Icon List
-                    visible: oAPP.common.checkWLOList("C", "UHAK900630")
+                    text: oAPP.msg.M068, // Icon Viewer
+                    // icon: "sap-icon://u4a-fw-regular/Face Grin Wide",
+                    visible: oAPP.common.checkWLOList("C", "UHAK900630"),
+                    items: [
+                        {
+                            key: "WMENU20_04_01",
+                            // icon: "sap-icon://u4a-fw-solid/Icons",
+                            text: oAPP.msg.M047, // Icon List
+                        },
+                        {
+                            key: "WMENU20_04_02",
+                            // icon: "sap-icon://u4a-fw-solid/Image",
+                            text: oAPP.msg.M067 // Image Icons
+                        },
+                    ]
+
                 }
+                // {
+                //     key: "WMENU20_04",
+                //     text: oAPP.msg.M047, // Icon List
+                //     visible: oAPP.common.checkWLOList("C", "UHAK900630")
+                // }
             ],
 
             /** 
@@ -853,6 +913,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    icon: "{icon}",
                     visible: "{visible}",
                     enabled: "{enabled}",
                     items: {
@@ -861,6 +922,7 @@
                         template: new sap.m.MenuItem({
                             key: "{key}",
                             text: "{text}",
+                            icon: "{icon}",
                             visible: "{visible}",
                             enabled: "{enabled}",
                         }).bindProperty("enabled", "key", oAPP.fn.fnWs10HeaderMenuEnableBinding)
@@ -877,6 +939,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    icon: "{icon}",
                     visible: "{visible}",
                     enabled: "{enabled}",
                     items: {
@@ -885,6 +948,7 @@
                         template: new sap.m.MenuItem({
                             key: "{key}",
                             text: "{text}",
+                            icon: "{icon}",
                             visible: "{visible}",
                             enabled: "{enabled}",
                         })
@@ -901,6 +965,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    icon: "{icon}",
                     visible: "{visible}",
                     enabled: "{enabled}",
                     items: {
@@ -909,6 +974,7 @@
                         template: new sap.m.MenuItem({
                             key: "{key}",
                             text: "{text}",
+                            icon: "{icon}",
                             visible: "{visible}",
                             enabled: "{enabled}",
                         })
@@ -925,6 +991,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    icon: "{icon}",
                     visible: "{visible}",
                     enabled: "{enabled}",
                     items: {
@@ -933,6 +1000,7 @@
                         template: new sap.m.MenuItem({
                             key: "{key}",
                             text: "{text}",
+                            icon: "{icon}",
                             visible: "{visible}",
                             enabled: "{enabled}",
                         })
@@ -948,6 +1016,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    icon: "{icon}",
                     visible: "{visible}",
                     enabled: "{enabled}",
                     items: {
@@ -956,6 +1025,7 @@
                         template: new sap.m.MenuItem({
                             key: "{key}",
                             text: "{text}",
+                            icon: "{icon}",
                             visible: "{visible}",
                             enabled: "{enabled}",
                         })
@@ -1308,7 +1378,7 @@
 
     function _testServerCall() {
 
-        
+
 
         // var sPath = parent.getServerPath() + "/wsloginchk";
         var sPath = parent.getServerPath() + "/test_lee";
@@ -1318,7 +1388,7 @@
 
         sendAjax(sPath, oFormData, (oReturn) => {
 
-        
+
 
             parent.setBusy("");
 
@@ -1780,6 +1850,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    icon: "{icon}",
                     enabled: "{enabled}",
                     visible: "{visible}",
                     items: {
@@ -1788,6 +1859,7 @@
                         template: new sap.m.MenuItem({
                             key: "{key}",
                             text: "{text}",
+                            icon: "{icon}",
                             enabled: "{enabled}",
                             visible: "{visible}",
                         })
@@ -1804,6 +1876,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    icon: "{icon}",
                     enabled: "{enabled}",
                     visible: "{visible}",
                     items: {
@@ -1812,6 +1885,7 @@
                         template: new sap.m.MenuItem({
                             key: "{key}",
                             text: "{text}",
+                            icon: "{icon}",
                             enabled: "{enabled}",
                             visible: "{visible}",
                         })
@@ -1828,6 +1902,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    icon: "{icon}",
                     visible: "{visible}",
                     enabled: "{enabled}",
                     items: {
@@ -1836,6 +1911,7 @@
                         template: new sap.m.MenuItem({
                             key: "{key}",
                             text: "{text}",
+                            icon: "{icon}",
                             enabled: "{enabled}",
                             visible: "{visible}",
                         })
@@ -1881,6 +1957,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    icon: "{icon}",
                     enabled: "{enabled}",
                     visible: "{visible}",
                     items: {
@@ -1905,6 +1982,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    icon: "{icon}",
                     enabled: "{enabled}",
                     visible: "{visible}",
                     items: {
@@ -1929,6 +2007,7 @@
                 template: new sap.m.MenuItem({
                     key: "{key}",
                     text: "{text}",
+                    icon: "{icon}",
                     enabled: "{enabled}",
                     visible: "{visible}",
                     items: {
@@ -1937,6 +2016,7 @@
                         template: new sap.m.MenuItem({
                             key: "{key}",
                             text: "{text}",
+                            icon: "{icon}",
                             enabled: "{enabled}",
                             visible: "{visible}",
                         })
@@ -2606,7 +2686,7 @@
     /************************************************************************
      * Default Browser 개인화 설정
      ************************************************************************/
-    oAPP.fn.fnOnP13nExeDefaultBrowser = function () {        
+    oAPP.fn.fnOnP13nExeDefaultBrowser = function () {
 
         var FS = parent.FS;
 
@@ -2719,7 +2799,7 @@
      * @param {Array} aCurrentInfo 
      * - 현재 Local PC에 설치된 브라우저의 정보
      ************************************************************************/
-    oAPP.fn.fnCompareBeforeBrowserInfo = function (aBeforeInfo, aCurrentInfo) {        
+    oAPP.fn.fnCompareBeforeBrowserInfo = function (aBeforeInfo, aCurrentInfo) {
 
         var iBeforeCnt = aBeforeInfo.length,
             iCurrCnt = aCurrentInfo.length;
@@ -2735,11 +2815,11 @@
             if (oBeforeBrows.SELECTED && oBeforeBrows.INSPATH) {
 
                 let oFound = aCurrentInfo.find(elem => elem.NAME == oBeforeBrows.NAME);
-                if(!oFound){
+                if (!oFound) {
                     continue;
                 }
 
-                if(!oFound.ENABLED){
+                if (!oFound.ENABLED) {
                     continue;
                 }
 

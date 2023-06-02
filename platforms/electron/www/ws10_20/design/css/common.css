@@ -26,6 +26,19 @@
     animation: bling 2s linear infinite;
 }
 
+.u4aP13nPreviewNoText:after {
+    content: "NO TEXT";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    color: #ffffff;
+    text-shadow: 1px 2px 3px #575757, -1px -1px 3px #575757;
+    font-weight: bold;
+    font-size: 18px;
+    letter-spacing: 3px;
+}
+
 /* UI 개인화 팝업의 처리 불가 라인 표현 CSS */
 .u4aP13nNegativeLine{
     text-decoration: line-through;

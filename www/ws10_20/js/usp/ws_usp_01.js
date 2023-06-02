@@ -475,6 +475,8 @@
 
             oBrowserWindow = null;
 
+            CURRWIN.focus();
+
         });
 
 
@@ -484,9 +486,7 @@
 
     oAPP.fn.fnUspNewWindowIPCEvent = (res, data) => {
 
-        debugger;
-
-
+  
     };
     // end of oAPP.fn.fnUspNewWindowIPCEvent
 

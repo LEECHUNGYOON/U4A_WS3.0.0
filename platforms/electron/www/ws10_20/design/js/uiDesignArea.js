@@ -2358,6 +2358,8 @@
     for(var i=0, l=lt_row.length; i<l; i++){
       //기존 style 제거 처리.
       lt_row[i].removeStyleClass("u4aWsDisableTreeDrop");
+      
+      lt_row[i].removeStyleClass("sapUiDnDDragging");
 
       //css를 삭제 하는경우 하위 로직 skip.
       if(bClear){continue;}

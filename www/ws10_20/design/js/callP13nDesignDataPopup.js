@@ -551,16 +551,25 @@
         for(var i=0, l=lt_row.length; i<l; i++){
 
             //style class 제거 처리.
-            lf_setTableCellStyle(lt_row[i], true);
+            lf_setTableCellStyle(lt_row[i], "u4aP13nNegativeLine", true);
+
+            //no text css 제거 처리.
+            lf_setTableCellStyle(lt_row[i], "u4aP13nPreviewNoText", true);
 
             var l_ctxt = lt_row[i].getBindingContext();
             if(!l_ctxt){continue;}
 
-            //UI 개인화 사용을 허용하지 않는 경우 CSS 처리.
-            if(l_ctxt.getProperty("notAllow") !== true){continue;}
+            //description이 존재하지 않는경우.
+            if(l_ctxt.getProperty("title") === ""){
+                //no text css 추가 처리.
+                lf_setTableCellStyle(lt_row[i], "u4aP13nPreviewNoText");
+            }
 
-            //style class 구성 처리.
-            lf_setTableCellStyle(lt_row[i]);
+            //UI 개인화 사용을 허용하지 않는 경우 CSS 처리.
+            if(l_ctxt.getProperty("notAllow") === true){
+                //style class 구성 처리.
+                lf_setTableCellStyle(lt_row[i], "u4aP13nNegativeLine");    
+            }
 
         }
 
@@ -570,7 +579,7 @@
 
 
     //table의 cell에 style class 구성, 제거 처리.
-    function lf_setTableCellStyle(oRow, bRemove){
+    function lf_setTableCellStyle(oRow, sStyleName, bRemove){
 
         if(!oRow){return;}
 
@@ -593,7 +602,7 @@
             if(!lt_cell[i][l_func]){continue;}
 
             //addStyleClass(removeStyleClass) 처리.
-            lt_cell[i][l_func]("u4aP13nNegativeLine");
+            lt_cell[i][l_func](sStyleName);
 
         }
 
@@ -698,6 +707,9 @@
         var l_frame = document.getElementById(loApp.attr.frameID);
         if(!l_frame || !l_frame.contentDocument){return;}
 
+        //extension 아이콘 등록처리.
+        lf_setPrevExtIcon(l_frame.contentWindow);
+
         //개인화 미리보기의 DOM 정보 얻기.
         var l_prev = l_frame.contentDocument.getElementById("prev");
 
@@ -718,6 +730,48 @@
 
 
     }   //개인화 미리보기 화면 구성.
+
+
+
+
+    //extension 아이콘 등록처리.
+    function lf_setPrevExtIcon(oWin){
+
+        oWin.jQuery.sap.require("sap.ui.core.IconPool");
+        oWin.jQuery.sap.require("sap.m.IllustrationPool");
+
+        //TNT icon 등록 처리.
+        oWin.sap.ui.core.IconPool.registerFont({
+            collectionName:"SAP-icons-TNT", 
+            fontFamily:"SAP-icons-TNT",
+            fontURI:sap.ui.require.toUrl("sap/tnt/themes/base/fonts"), 
+            lazy:true});
+        
+        //BusinessSuiteInAppSymbols icon 등록처리.
+        oWin.sap.ui.core.IconPool.registerFont({
+            collectionName:"BusinessSuiteInAppSymbols",
+            fontFamily:"BusinessSuiteInAppSymbols",
+            fontURI:sap.ui.require.toUrl("sap/ushell/themes/base/fonts"),
+            lazy:true});
+
+        //tnt 일러스트 정보 등록 처리.
+        oWin.sap.m.IllustrationPool.registerIllustrationSet({
+            setFamily:"tnt",
+            setURI:sap.ui.require.toUrl("sap/tnt/themes/base/illustrations")},false);
+
+
+        //extension icon 정보가 존재하지 않는경우 exit.
+        if(!oAPP.attr.S_CODE.UA053){return;}
+        
+
+        for(var i=0, l=oAPP.attr.S_CODE.UA053.length; i<l; i++){
+            oWin.sap.ui.core.IconPool.registerFont({
+                collectionName:oAPP.attr.S_CODE.UA053[i].FLD01,
+                fontFamily:oAPP.attr.S_CODE.UA053[i].FLD02,
+                fontURI:oAPP.attr.S_CODE.UA053[i].FLD03,lazy:true});
+        }
+
+    }   //extension 아이콘 등록처리.
 
 
 
@@ -971,8 +1025,8 @@
         lf_setParam(oForm, "LANGU", l_info.LANGU);
 
         //미리보기 HTML LOAD 이후 호출할 CALLBACK FUNCTION 구성.
-        // lf_setParam(oForm, "CALLBACKFUNC", "parent.oAPP.fn.P13nPrevLoaded();");
-        lf_setParam(oForm, "CALLBACKFUNC", "___u4a_ws_eval___('function lf_zztest(){}'); parent.oAPP.fn.P13nPrevLoaded();");
+        lf_setParam(oForm, "CALLBACKFUNC", "parent.oAPP.fn.P13nPrevLoaded();");
+        // lf_setParam(oForm, "CALLBACKFUNC", "___u4a_ws_eval___('function lf_zztest(){}'); parent.oAPP.fn.P13nPrevLoaded();");
         
         document.body.appendChild(oForm);
 

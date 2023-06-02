@@ -200,6 +200,8 @@
 
             oBrowserWindow = null;
 
+            CURRWIN.focus();
+
         });
 
     };

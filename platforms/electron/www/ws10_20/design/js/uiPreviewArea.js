@@ -102,10 +102,14 @@
 
     //초기화 처리 하는경우.
     if(bReset === true){
+
+      //미리보기 영역 onAfterRendering 제거.
+      oAPP.attr.ui.oDesignPreview.removeEventDelegate(oAPP.fn.prevFrameReload);
+
       //frame 정보 초기화.
       oAPP.attr.ui.frame = null;
     }
-    
+
     //미리보기 html 정보가 로드되지 않은경우.
     if(!oAPP.attr.ui.frame || !oAPP.attr.ui.frame.contentWindow){
       oAPP.attr.ui.frame = document.getElementById("prevHTML");
@@ -143,6 +147,9 @@
       document.body.appendChild(oform);
 
       oform.submit();
+
+      //미리보기 영역이 onAfterRendering 호출되는경우 다시 미리보기 영역을 load처리.
+      oAPP.attr.ui.oDesignPreview.addEventDelegate(oAPP.fn.prevFrameReload);
  
       // //미리보기 서버 URL 정보 구성.
       // oAPP.attr.ui.frame.src = parent.getHost() + "/zu4a_wbc/u4a_ipcmain/getPrevHTML?" +
@@ -177,7 +184,25 @@
 
 
   };  //미리보기 iframe 영역 구성.
+
+
+
+
+  //미리보기 영역 다시 로드 처리.
+  oAPP.fn.prevFrameReload = {onAfterRendering:function(){
+    console.log(123123);
+    //미리보기에서 사용하는 광역 변수 초기화.
+    delete oAPP.attr.ui._page1;
+    delete oAPP.attr.ui._hbox1;
+    delete oAPP.attr.ui.oMenu;
+    oAPP.attr.popup = [];
+
+    //미리보기 iframe 다시 load 처리.
+    oAPP.fn.loadPreviewFrame(true);
+
+  }};  //미리보기 영역 다시 로드 처리.
   
+
 
 
   //sap.ui.getCore().loadLibrary 처리 대상건 구성.

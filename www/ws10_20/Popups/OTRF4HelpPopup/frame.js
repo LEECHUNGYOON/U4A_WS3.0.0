@@ -21,8 +21,8 @@ let oAPP = (function(window) {
      /*******************************************************
      * 메시지클래스 텍스트 작업 관련 Object -- start
      *******************************************************/
-        const
-        REMOTE = oAPP.REMOTE,
+
+        const REMOTE = oAPP.REMOTE,
         PATH = REMOTE.require('path'),
         CURRWIN = REMOTE.getCurrentWindow(),
         WEBCON = CURRWIN.webContents,
@@ -32,6 +32,12 @@ let oAPP = (function(window) {
         APPPATH = APP.getAppPath(),
         LANGU = USERINFO.LANGU,
         SYSID = USERINFO.SYSID;
+
+    var PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+        PATHINFO = require(PATHINFOURL),
+        WSERR = require(PATHINFO.WSTRYCATCH);
+            
+    var zconsole = WSERR(window, document, console);
 
     const
         WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
@@ -63,7 +69,7 @@ let oAPP = (function(window) {
     /************************************************************************
      * IPCRENDERER Events..
      ************************************************************************/
-    oAPP.IPCRENDERER.on('if_OTRF4HelpPopup', (events, oInfo) => {
+    oAPP.IPCRENDERER.on('if_OTRF4HelpPopup', async (events, oInfo) =>  {
 
         oAPP.attr.oUserInfo = oInfo.oUserInfo; // User 정보(필수)
         oAPP.attr.oThemeInfo = oInfo.oThemeInfo; // User 정보(필수)

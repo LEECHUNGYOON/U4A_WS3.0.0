@@ -8,7 +8,6 @@
 (function (window, $, oAPP) {
     "use strict";
 
-
     const
         REMOTE = parent.REMOTE,
         REMOTEMAIN = parent.REMOTEMAIN,
@@ -99,6 +98,8 @@
             IPCMAIN.removeListener("if-editor-save", oAPP.fn.fnIpcMain_EditorSave);
 
             oBrowserWindow = null;
+
+            CURRWIN.focus();
 
         });
 

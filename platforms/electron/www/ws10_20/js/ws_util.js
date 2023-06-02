@@ -638,6 +638,12 @@ module.exports = {
             if (iOpa > 1) {
 
                 if (iInterval) {
+                    
+                    if(oBrowserWindow.isDestroyed()){
+                        clearInterval(iInterval);
+                        return;    
+                    }
+
                     oBrowserWindow.setOpacity(1.0);
                     clearInterval(iInterval);
                 }
@@ -646,6 +652,11 @@ module.exports = {
             }
 
             iOpa += 0.02;
+
+            if(oBrowserWindow.isDestroyed()){
+                clearInterval(iInterval);
+                return;    
+            }
 
             oBrowserWindow.setOpacity(iOpa);
 

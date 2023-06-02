@@ -453,7 +453,7 @@ function createUi() {
         height: '100%',
         autoFocus: false,
         busyIndicatorDelay: 0
-    });
+    });   
 
     // ▶ 그리드 페이지
     let LO_GRIDPAGE = new sap.m.Page('GRID',{

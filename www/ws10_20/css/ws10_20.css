@@ -2,6 +2,7 @@ html,
 body,
 .u4aWsContent {
   height: 100%;
+  -webkit-app-region: no-drag;  
 }
 
 .u4aWsApp.sapUiSizeCompact
@@ -399,6 +400,7 @@ body,
 
 .u4aWsBrowserDraggable {
   -webkit-app-region: drag !important;
+  /* -webkit-user-select: none; */
 }
 
 .u4aWsBrowserDraggable .sapMBtn,

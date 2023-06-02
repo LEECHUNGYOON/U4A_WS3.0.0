@@ -818,6 +818,8 @@
             oBrowserWindow.on('closed', () => {
 
                 oBrowserWindow = null;
+                
+                CURRWIN.focus();
 
             });
 
