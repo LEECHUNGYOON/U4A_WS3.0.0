@@ -800,6 +800,14 @@
             //     oBrowserWindow.webContents.openDevTools();
             // }      
 
+            // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+            oBrowserWindow.once('ready-to-show', () => {
+
+                // 부모 위치 가운데 배치한다.
+                oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+            });
+
             // 브라우저가 오픈이 다 되면 타는 이벤트
             oBrowserWindow.webContents.on('did-finish-load', function () {
 
@@ -818,7 +826,7 @@
             oBrowserWindow.on('closed', () => {
 
                 oBrowserWindow = null;
-                
+
                 CURRWIN.focus();
 
             });
