@@ -447,7 +447,7 @@
     /************************************************************************
      * U4A icon 등록
      ************************************************************************/
-    oAPP.fn.fnRegisterU4AIcons = () => {
+    oAPP.fn.fnRegisterU4AIcons = () => {        
 
         parent.WSUTIL.getWsRegisterU4AIcons(sap);
 
