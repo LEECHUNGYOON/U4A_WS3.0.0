@@ -6,6 +6,8 @@
 
     loAPP.attr = {};
 
+    let l_chromePath = "";
+
     //템플릿 폴더명.
     const C_TEMPLATE_FOLDER = "ui5app";
 
@@ -36,6 +38,11 @@
         //어플리케이션이 Active 상태가 아닌경우 exit.
         if(parent.getAppInfo().ACTST !== "A"){
             parent.showMessage(sap, 20, "E", "어플리케이션이 활성화된 상태에서만 해당 기능을 사용할 수 있습니다.");
+            return;
+        }
+
+        //크롬 설치 경로 얻기.
+        if(lf_getChromePath()){
             return;
         }
 
@@ -214,6 +221,29 @@
 
     };  //DAMI에서 사용할 샘플파일 다운로드 팝업.
 
+
+
+    
+    //크롬 설치 경로 얻기.
+    function lf_getChromePath(){
+    
+        let aBrowserInfo = sap.ui.getCore().getModel().getData().DEFBR,
+                oChromeInfo = aBrowserInfo.find(elem => elem.NAME == "CHROME"); // 크롬 브라우저 정보
+
+            // 크롬 브라우저 설치 유무 확인
+            if (!oChromeInfo) {
+                sap.m.MessageToast.show("크롬 설치가 안되어 있음!!");
+                return true;
+            }
+            if (!oChromeInfo.ENABLED) {
+                sap.m.MessageToast.show("크롬 설치가 안되어 있음!!");
+                return true;
+            }
+
+            // 크롬 설치 경로
+            l_chromePath = oChromeInfo.INSPATH;
+
+    }   //크롬 설치 경로 얻기.
 
 
 
@@ -1047,9 +1077,13 @@ sap.ui.getCore().attachInit(function(){
             }   //open 이후 callback 처리.
 
 
-            var puppeteer = parent.require("puppeteer");
+            var puppeteer = parent.require("puppeteer-core");
 
-            var browser = await puppeteer.launch({ headless: false, args:['--start-maximized']});
+            var browser = await puppeteer.launch({
+                headless: false,
+                args: ['--start-maximized'],
+                executablePath: l_chromePath
+            });
 
 
             var lt_page = await browser.pages();
