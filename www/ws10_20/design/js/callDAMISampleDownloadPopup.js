@@ -1286,7 +1286,7 @@ sap.ui.getCore().attachInit(function(){
         var l_indexJS = lf_templateIndexJS();
 
         //index.js의 패턴 변환 처리.
-        l_indexJS = l_indexJS.replaceAll("&PATTERN001&", ls_data.fileName);
+        l_indexJS = l_indexJS.replaceAll("&PATTERN001&", ls_data.fileName.toLowerCase());
 
         //index.js 파일 생성.
         if(lf_writeFileSync(parent.PATH.join(l_downPath, "js"), "index.js", l_indexJS)){
@@ -1324,7 +1324,7 @@ sap.ui.getCore().attachInit(function(){
         }
 
         //작업폴더 압축.
-        var l_ret = await lf_executeZipFile(l_downPath, ls_data.fileName, parent.PATH.join(ls_data.downPath, ls_data.fileName + ".zip"));
+        var l_ret = await lf_executeZipFile(l_downPath, ls_data.fileName.toLowerCase(), parent.PATH.join(ls_data.downPath, ls_data.fileName.toLowerCase() + ".zip"));
         
 
         //압축 처리 종료 후 작업 폴더 삭제 
@@ -1349,7 +1349,10 @@ sap.ui.getCore().attachInit(function(){
     //처리완료후 폴더 open 여부 callback.
     function lf_downComplateCB(param){
 
-        if(param !== "YES"){return;}
+        if(param !== "YES"){
+            lf_afterClose();
+            return;
+        }
 
         var ls_data = loAPP.oModel.getData();
 
