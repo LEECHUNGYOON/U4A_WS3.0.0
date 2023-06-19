@@ -445,6 +445,7 @@
 
     oLTBar1.addContent(new sap.m.ToolbarSpacer());
 
+
     //B39	Help
     //도움말 버튼.
     var oLBtn5 = new sap.m.Button({icon:"sap-icon://question-mark", 

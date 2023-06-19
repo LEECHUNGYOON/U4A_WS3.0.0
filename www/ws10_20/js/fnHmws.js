@@ -1186,10 +1186,19 @@
      * sample script download Popup
      ************************************************************************/
     oAPP.fn.fnWS20Test94 = () => {
-        
-        if(oAPP.fn.callDAMISampleDownloadPopup){
+
+        //DAMI에서 사용할 샘플파일 다운로드 팝업 function이 존재하는경우.
+        if (typeof oAPP.fn.callDAMISampleDownloadPopup !== "undefined") {
+            //DAMI에서 사용할 샘플파일 다운로드 팝업 호출.
             oAPP.fn.callDAMISampleDownloadPopup();
-        }        
+            return;
+        }
+
+        //DAMI에서 사용할 샘플파일 다운로드 팝업 function이 존재하지 않는경우 script 호출.
+        oAPP.fn.getScript("design/js/callDAMISampleDownloadPopup", function () {
+            //DAMI에서 사용할 샘플파일 다운로드 팝업 호출.
+            oAPP.fn.callDAMISampleDownloadPopup();
+        });
 
     }; // end of oAPP.fn.fnWS20Test94
 
