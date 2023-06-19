@@ -643,6 +643,10 @@
                     key: "Test96",
                     text: "스크립트 오류",
                 },
+                {
+                    key: "Test94",
+                    text: "sample script download",
+                }
 
                 // {
                 //     key: "doc01",

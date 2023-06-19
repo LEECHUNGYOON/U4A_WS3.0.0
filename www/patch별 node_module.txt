@@ -2,7 +2,8 @@
 - proper-lockfile
 
 
-
+## v3.4.0 sp-00003
+- puppeteer
 
 
 

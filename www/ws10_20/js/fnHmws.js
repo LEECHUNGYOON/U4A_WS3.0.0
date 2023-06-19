@@ -1183,6 +1183,17 @@
     }; // end of oAPP.fn.fnWS20Test96
 
     /************************************************************************
+     * sample script download Popup
+     ************************************************************************/
+    oAPP.fn.fnWS20Test94 = () => {
+        
+        if(oAPP.fn.callDAMISampleDownloadPopup){
+            oAPP.fn.callDAMISampleDownloadPopup();
+        }        
+
+    }; // end of oAPP.fn.fnWS20Test94
+
+    /************************************************************************
      * CTS popup Test
      ************************************************************************/
     oAPP.fn.fnWS20Test95 = function () {
