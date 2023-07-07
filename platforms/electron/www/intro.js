@@ -81,6 +81,9 @@
         // Vbs 파일을 UserData 쪽으로 복사
         await _copyToUserDataVbs();
 
+        // u4a Icon 파일을 UserData 쪽으로 복사
+        await _copyToUserDataU4aIcon();
+
         let oGlobalSettings = await WSUTIL.getWsGlobalSettingInfoAsync();
 
         // 초기 설치(기본 폴더, vbs 옮기기 등등)
@@ -1468,8 +1471,6 @@
 
         return new Promise(async (resolve) => {
 
-            debugger;
-
             let sVbsFileName = "sapgui_ws_vbs.zip",
                 sVbsSourcePath = PATH.join(APPPATH, "vbs", sVbsFileName);
 
@@ -1527,6 +1528,45 @@
         });
 
     }
+
+    /************************************************************************
+     * vbs 파일을 UserData에 복사한다.
+     ************************************************************************/
+    function _copyToUserDataU4aIcon() {
+
+        return new Promise(async (resolve) => {
+
+            let sIconsPath = PATH.join(PATHINFO.WS10_20_ROOT, "icons");
+
+            if (!FS.existsSync(sIconsPath)) {
+                console.error("u4a icons 폴더 없음");
+                resolve();
+                return;
+            }
+
+            let sUserDataIconPath = PATH.join(APP.getPath("userData"), "ext_api", "icons");
+
+            if (!FS.existsSync(sUserDataIconPath)) {
+                FS.mkdirSync(sUserDataIconPath, {
+                    recursive: true
+                });
+            }
+
+            let oCopyResult = await WSUTIL.fsCopy(sIconsPath, sUserDataIconPath);
+
+            if (oCopyResult.RETCD == "E") {
+                console.error("u4a icon 복사하다가 실패!");
+                throw Error(oCopyResult.RTMSG);
+            }
+
+            resolve();
+
+        });
+
+    } // end of _copyToUserDataU4aIcon
+
+
+
 
     document.addEventListener('deviceready', oAPP.fn.fnOnDeviceReady, false);
 

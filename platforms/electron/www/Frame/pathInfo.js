@@ -117,7 +117,9 @@ module.exports = (() => {
         POPUP_ROOT: POPUP_ROOT,
         JS_ROOT: JS_ROOT,
         WORKER_ROOT: PATH.join(JS_ROOT, "workers"),
-        U4AICON_ROOT: PATH.join(WS10_20, "icons", "u4a")
+        WS10_20_ROOT: WS10_20,
+        // U4AICON_ROOT: PATH.join(WS10_20, "icons", "u4a")
+        U4AICON_ROOT: PATH.join(USERDATA, "ext_api", "icons", "u4a")
 
     };
 
