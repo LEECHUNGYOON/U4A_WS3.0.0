@@ -1552,14 +1552,36 @@
                 });
             }
 
-            let oCopyResult = await WSUTIL.fsCopy(sIconsPath, sUserDataIconPath);
+            var ncp = require('ncp').ncp;
 
-            if (oCopyResult.RETCD == "E") {
-                console.error("u4a icon 복사하다가 실패!");
-                throw Error(oCopyResult.RTMSG);
-            }
+            ncp.limit = 16; // 한번에 처리하는 수?
+          
+            ncp(sIconsPath, sUserDataIconPath, function(err) {
 
-            resolve();
+                if (err) {
+                    resolve({
+                        RETCD: "E",
+                        RTMSG: err.toString()
+                    });
+
+                    return;
+                }
+
+                resolve({
+                    RETCD: "S",
+                    RTMSG: ""
+                });
+
+            });
+
+            // let oCopyResult = await WSUTIL.fsCopy(sIconsPath, sUserDataIconPath);
+
+            // if (oCopyResult.RETCD == "E") {
+            //     console.error("u4a icon 복사하다가 실패!");
+            //     throw Error(oCopyResult.RTMSG);
+            // }
+
+            // resolve();
 
         });
 
