@@ -22,7 +22,7 @@
 
 
     //DAMI의 UI5 bootstrap 라이브러리 경로.
-    const C_DAMI_LIB_SRC = "/lib/sapui5-rt-1.112.1/resources/sap-ui-core.js";
+    const C_DAMI_LIB_SRC = "../../../public/lib/ui5_latest/resources/sap-ui-core.js";
 
     //DAMI의 UI5 bootstrap 라이브러리 data-sap-ui-resourceroots 의 경로.
     const C_DAMI_RESOURCE_ROOT = "\"u4aApps\":\"/webapps/samples\"";
@@ -30,6 +30,17 @@
     const C_NEWLINE = "\n";
 
     const C_TAB = "\t";
+
+    //backend 폴더명.
+    const C_BACKEND = "backend";
+
+    //readme.md 파일명.
+    const C_README = "readme.md";
+
+
+    const C_BACKEND_README_PATH = "https://www.u4ainfo.com/LOTO/template/backendreadme.md";
+
+    const C_APP_README_PATH = "https://www.u4ainfo.com/LOTO/template/appreadme.md";
 
 
     //DAMI에서 사용할 샘플파일 다운로드 팝업.
@@ -152,9 +163,15 @@
             parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "005");
 
         oFElem4.setLabel(new sap.m.Label({text:l_txt, design:"Bold"}));
-
+        
         var oSel = new sap.m.Select({selectedKey:"{/theme}"});
         oFElem4.addField(oSel);
+
+        //테마 ddlb 선택 이벤트.
+        oSel.attachChange(function(){
+            lf_selThemeDDLB();
+        }); //테마 ddlb 선택 이벤트.
+
 
         oSel.bindAggregation("items", {path:"/T_THEM", 
             template: new sap.ui.core.Item({key:"{KEY}", text:"{TEXT}"})});
@@ -188,10 +205,25 @@
             height: "500px",
             value: "{/editorValue}",
             layoutData: new sap.m.FlexItemData({growFactor:1})
-         });
-         oVBox.addItem(oEditor1);
+        });
 
-         oEditor1._oEditor.setFontSize(20);
+        //code editor 변경 이벤트.
+        oEditor1.attachChange(function(){
+            lf_changeEditor();
+        }); //code editor 변경 이벤트.
+
+
+        oVBox.addItem(oEditor1);
+
+        oEditor1._oEditor.setFontSize(20);
+
+        //샘플 다운로드 버튼.
+        var oBtn4 = new sap.m.Button({text:"기본 패턴 다운로드", type:"Emphasized", icon:"sap-icon://download"});
+        loAPP.ui.oDialog.addButton(oBtn4);
+
+        oBtn4.attachPress(function(oEvent){
+            lf_templateDownload();
+        }); //샘플 다운로드 버튼 선택 이벤트.
 
         //샘플 다운로드 버튼.
         var oBtn2 = new sap.m.Button({text:"샘플 다운로드", type:"Accept", icon:"sap-icon://download"});
@@ -543,10 +575,13 @@
         var l_txt = 
 `sap.ui.define([
         "./control"
-    ], function (param) {
+    ], function (oContr) {
         "use strict";
+
 &PATTERN001&
         
+        return oContr;
+
 });`;
 
         return l_txt;
@@ -559,9 +594,14 @@
     function lf_templateControlJS(){
         var l_txt = 
 `sap.ui.define([
-        "./control"
-    ], function (param) {
+    ], function () {
         "use strict";
+        var oContr = {};
+        oContr.ui = {};
+        oContr.fn = {};
+        oContr.attr = {};
+
+        return oContr;
         
 });`;
 
@@ -589,7 +629,7 @@ sap.ui.getCore().attachInit(function(){
     sap.ui.getCore().attachEvent("UIUpdated", lf_UIUpdated);
 
     //call main view js.
-    sap.ui.requireSync('u4aApps/&PATTERN001&/js/main/view').placeAt("Content");
+    sap.ui.requireSync('u4aApps/&PATTERN001&/js/main/view').ui.APP.placeAt("Content");
 
 });`
 
@@ -601,7 +641,7 @@ sap.ui.getCore().attachInit(function(){
 
 
     //템플릿 index.html 정보 구성.
-    function lf_replaceTemplateHTML(is_data){
+    function lf_replaceTemplateHTML(is_data, bTemplate){
 
         //Library 정보 수집 처리.
         function lf_getLibraryList(it_child){
@@ -621,7 +661,7 @@ sap.ui.getCore().attachInit(function(){
                 if(lt_lib.findIndex( a => a === it_child[i].TGLIB ) === -1){
                     lt_lib.push(it_child[i].TGLIB);
     
-                }                
+                }
             }
         }
 
@@ -642,7 +682,9 @@ sap.ui.getCore().attachInit(function(){
         var lt_lib = [];
 
         //라이브러리 정보 수집.
-        lf_getLibraryList(oAPP.attr.oModel.oData.zTREE);
+        if(!bTemplate){
+            lf_getLibraryList(oAPP.attr.oModel.oData.zTREE);
+        }        
 
         //data-sap-ui-libs 정보 구성.
         l_source = l_source.replaceAll("&PATTERN004&", lt_lib.join(","));
@@ -675,7 +717,7 @@ sap.ui.getCore().attachInit(function(){
         }
 
         //css source 변경 처리.
-        l_source = l_source.replaceAll("&PATTERN001&", l_css);
+        l_source = l_css;
 
         return l_source;
 
@@ -708,9 +750,17 @@ sap.ui.getCore().attachInit(function(){
 			
 			//프로퍼티 정보 구성.
 			var l_prop = lf_setProp(is_tree.OBJID, it_0015);
+
+            //UI instance 생성 script 구성(var BUTTON1 = new sap.m.Button({text:"test"}); 형식의 script)
+            var l_script = C_TAB + C_TAB + "var " + is_tree.OBJID + " = new " + is_tree.UILIB + "(" + l_prop + ");" + C_NEWLINE;
+
+            // //UI5 버전별 jQuery.sap.require(); SCRIPT처리항목인경우 script 추가.
+            // if(oAPP.attr.S_CODE.UA036.findIndex( a=> a.FLD01 === oAPP.attr.metadata.METADATA.LIBVER && a.FLD02 === is_tree.UIOBK ) !== -1){
+            //     l_script = C_TAB + C_TAB + "jQuery.sap.require(\"" + is_tree.UILIB + "\");"+ C_NEWLINE + l_script;
+            // }
 			
-			//UI instance 생성 script 구성(var BUTTON1 = new sap.m.Button({text:"test"}); 형식의 script)
-			return C_TAB + C_TAB + "var " + is_tree.OBJID + " = new " + is_tree.UILIB + "(" + l_prop + ");" + C_NEWLINE;
+			
+			return l_script;
 			
 		}	//UI 생성 SCRIPT 구성.
 
@@ -727,9 +777,9 @@ sap.ui.getCore().attachInit(function(){
 			
 			//EMBED Aggregation 정보가 없는경우(최상위인경우)
 			if(!l_parent){
-				//Content에 추가하는 스크립트 구성.
-				l_last = C_TAB + C_TAB + "return " + is_tree.OBJID + ";";
-                return "" + C_NEWLINE + C_NEWLINE;
+                return C_TAB + C_TAB + "oContr.ui." + is_tree.OBJID + " = " + is_tree.OBJID + ";" + C_NEWLINE + C_NEWLINE + 
+                    C_TAB + C_TAB + "oContr.attr.oModel = new sap.ui.model.json.JSONModel();" + C_NEWLINE +
+                    C_TAB + C_TAB + is_tree.OBJID + ".setModel(oContr.attr.oModel);" + C_NEWLINE + C_NEWLINE;
 			}
 			
 			//set(add) aggregation명 얻기.
@@ -908,6 +958,54 @@ sap.ui.getCore().attachInit(function(){
 
 
 
+        //UI.attachEvent script 구성.
+        function lf_UISetEvent(is_tree, it_0015){
+
+            //skip 대상건인경우 exit.
+			if(lf_isSkip0014(is_tree) === true){return "";}
+
+            //현재 UI의 변경한 프로퍼티 정보 발췌.
+			var lt_0015 = it_0015.filter( a => a.OBJID === is_tree.OBJID && a.UIATY === "2" 
+                && a.UIATK.substr(0,2) === "AT" );
+
+            if(lt_0015.length === 0){return "";}
+
+            var l_event = "";
+
+            for(var i=0, l=lt_0015.length; i<l; i++){
+
+                var ls_cevt = oAPP.DATA.APPDATA.T_CEVT.find( a => a.OBJID === is_tree.OBJID + lt_0015[i].UIASN && a.OBJTY === "JS");
+                if(!ls_cevt){continue;}
+
+                
+                //event script 구성.
+                l_event += C_TAB + C_TAB + is_tree.OBJID + ".attachEvent(\"" +  lt_0015[i].UIATT + "\", function(oEvent){" + C_NEWLINE;
+
+                //\n 으로 분리.
+                var lt_split = ls_cevt.DATA.split(C_NEWLINE);
+
+                for(var j=0, jl=lt_split.length; j<jl; j++){
+                    if(lt_split[j] === ""){
+                        l_event += C_NEWLINE;
+                        continue;
+                    }
+
+                    l_event += C_TAB + C_TAB + C_TAB + lt_split[j] + C_NEWLINE;
+
+                }
+
+                //event script 구성.
+                l_event += C_TAB + C_TAB +  "});" + C_NEWLINE + C_NEWLINE;
+
+            }
+
+            return l_event;
+
+
+        }   //UI.attachEvent script 구성.
+
+
+
         //tree를 하위 탐색하며 script 정보 구성.
 		function lf_setUIScript(it_tree, it_0015, is_parent){
 			
@@ -920,6 +1018,9 @@ sap.ui.getCore().attachInit(function(){
 
                 //UI.setProperty(); script 구성.
                 l_script += lf_UIPropDirectly(it_tree[i], it_0015);
+
+                //UI.attachEvent script 구성.
+                l_script += lf_UISetEvent(it_tree[i], it_0015);
 				
 				//부모 UI에 추가 처리.
 				l_script += lf_setParent(it_tree[i], it_0015, is_parent);
@@ -936,17 +1037,81 @@ sap.ui.getCore().attachInit(function(){
 		}	//tree를 하위 탐색하며 script 정보 구성.
 
 
-        var l_last = "";
+        //sap.ui.getCore().loadLibrary 처리 script 구성.
+        function lf_getLibraryList(it_child){
 
+            for(var i=0, l=it_child.length; i<l; i++){
+                    
+                //하위를 탐색하며 라이브러리 정보 수집.
+                lf_getLibraryList(it_child[i].zTREE);
+                
+                //skip 대상건인경우 수집 안함.
+                if(lf_isSkip0014(it_child[i]) === true){continue;}
+                
+                //라이브러리명에 값이 없으면 skip.
+                if(it_child[i].TGLIB === ""){continue;}
+                
+                //수집되지 않은 라이브러리만 수집 처리.
+                if(lt_lib.findIndex( a => a === it_child[i].TGLIB ) === -1){
+                    lt_lib.push(it_child[i].TGLIB);
+
+                    l_lib += C_TAB + C_TAB +  "sap.ui.getCore().loadLibrary(\"" + it_child[i].TGLIB + "\");" + C_NEWLINE;
+    
+                }
+            }
+
+        }   //sap.ui.getCore().loadLibrary 처리 script 구성.
+
+
+
+        //jQuery.sap.require 처리 script 구성.
+        function lf_getRequireList(it_child){
+
+            for(var i=0, l=it_child.length; i<l; i++){
+                    
+                //하위를 탐색하며 라이브러리 정보 수집.
+                lf_getRequireList(it_child[i].zTREE);
+                
+                //skip 대상건인경우 수집 안함.
+                if(lf_isSkip0014(it_child[i]) === true){continue;}
+                
+                //라이브러리명에 값이 없으면 skip.
+                if(it_child[i].TGLIB === ""){continue;}
+                
+                //수집되지 않은 라이브러리만 수집 처리.
+                if(lt_require.findIndex( a => a === it_child[i].TGLIB ) === -1){
+                    lt_require.push(it_child[i].TGLIB);
+
+                    l_require += C_TAB + C_TAB +  "jQuery.sap.require(\"" + it_child[i].UILIB + "\");" + C_NEWLINE;
+    
+                }
+            }
+
+        }   //jQuery.sap.require 처리 script 구성.
+
+
+        var l_lib = "";
+        var lt_lib = [];
+
+        var l_require = "";
+        var lt_require = [];
+
+        //sap.ui.getCore().loadLibrary(""); 처리 script 구성.
+        lf_getLibraryList(oAPP.attr.oModel.oData.zTREE);
+
+
+        //jQuery.sap.require(""); 처리 script 구성.
+        lf_getRequireList(oAPP.attr.oModel.oData.zTREE);
 
         //main view.js template source 정보 얻기.
         // var l_source = lf_readFileSync(loAPP.attr[C_MAIN_VIEW_JS]);
         var l_source = lf_templateMainJS();
 
         //현재 design 영역에 있는 UI를 기준으로 script 구성.
-        var l_script = lf_setUIScript(oAPP.attr.oModel.oData.zTREE, oAPP.fn.getAttrChangedData());
+        var l_script = l_lib + C_NEWLINE + C_NEWLINE +
+            l_require + C_NEWLINE + C_NEWLINE +
+            lf_setUIScript(oAPP.attr.oModel.oData.zTREE, oAPP.fn.getAttrChangedData());
 
-        l_script = l_script + C_NEWLINE + C_NEWLINE + l_last;
 
         l_source = l_source.replaceAll("&PATTERN001&", l_script);
 
@@ -996,6 +1161,222 @@ sap.ui.getCore().attachInit(function(){
 
 
     }   //샘플 다운로드.
+
+
+
+
+    //템플릿 다운로드.
+    function lf_templateDownload(){
+
+        //editor 입력건을 해당 source에 반영 처리.
+        lf_selTabBar(loAPP.oModel.getProperty("/editorKey"), true);
+
+        //다운로드전 입력값 점검.
+        if(lf_chkValidate()){return;}
+
+        //다운로드 전 확인 팝업 호출.
+        parent.showMessage(sap, 30, "I", "다운로드를 진행하시겠습니까?", lf_templateDownloadCB);
+
+
+    }   //템플릿 다운로드.
+
+
+
+
+    //템플릿 다운로드 callback.
+    async function lf_templateDownloadCB(param){
+        
+        //확인팝업에서 YES를 하지 않은 경우 EXIT.
+        if(param !== "YES"){return;}
+
+        loAPP.ui.oDialog.setBusy(true);
+
+                
+        //backend readme 파일 정보 얻기.
+        var l_backend_readme = await lf_HtthpRequest(C_BACKEND_README_PATH + "?"+ oAPP.fn.getRandomKey()).catch(function(){
+            loAPP.ui.oDialog.setBusy(false);            
+            parent.showMessage(sap, 20, "E", "backend의 readme 파일 얻기 실패.");
+            return;
+        });
+
+
+        //application의 readme 파일 정보 얻기.
+        var l_app_readme = await lf_HtthpRequest(C_APP_README_PATH + "?"+ oAPP.fn.getRandomKey()).catch(function(){
+            loAPP.ui.oDialog.setBusy(false);            
+            parent.showMessage(sap, 20, "E", "application의 readme 파일 얻기 실패.");
+            return;
+        });
+
+        
+        var ls_data = loAPP.oModel.getData();
+
+        ls_data.source = {};
+
+        //index.html 파일 정보 얻기.
+        ls_data.source[C_INDEX_HTML] = lf_replaceTemplateHTML(ls_data, true);
+
+        //index.css 파일 정보 얻기.
+        ls_data.source[C_INDEX_CSS] = "";
+
+        //main view.js 파일 정보 얻기.
+        ls_data.source[C_MAIN_VIEW_JS] = lf_templateMainJS();
+
+        ls_data.source[C_MAIN_VIEW_JS] = ls_data.source[C_MAIN_VIEW_JS].replaceAll("&PATTERN001&", "");
+
+        //작업 폴더명 구성.
+        var l_folder = lf_getWorkFolderName(ls_data.downPath);
+
+        //다운로드 경로 + 다운로드 폴더명의 path 구성.
+        var l_downPath = parent.PATH.join(ls_data.downPath, l_folder);
+
+        //작업 폴더 생성.
+        if(lf_mkdirSync(l_downPath)){
+            loAPP.ui.oDialog.setBusy(false);
+            return;
+        }
+
+        //backend 폴더 생성.
+        if(lf_mkdirSync(parent.PATH.join(l_downPath, C_BACKEND))){
+            loAPP.ui.oDialog.setBusy(false);            
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
+        //readme 파일 생성.
+        if(lf_writeFileSync(parent.PATH.join(l_downPath, C_BACKEND), C_README, l_backend_readme)){
+            loAPP.ui.oDialog.setBusy(false);
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
+        //login 폴더 생성.
+        if(lf_mkdirSync(parent.PATH.join(l_downPath, "login"))){
+            loAPP.ui.oDialog.setBusy(false);            
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
+        //index.html 파일 생성.
+        if(lf_writeFileSync(l_downPath, "index.html", ls_data.source[C_INDEX_HTML])){
+            loAPP.ui.oDialog.setBusy(false);
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
+        //application의 readme 파일 생성.
+        if(lf_writeFileSync(l_downPath, C_README, l_app_readme)){
+            loAPP.ui.oDialog.setBusy(false);
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
+
+        //resources 폴더 생성.
+        if(lf_mkdirSync(parent.PATH.join(l_downPath, "resources"))){
+            loAPP.ui.oDialog.setBusy(false);
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
+        //resources 폴더 안에 images 폴더 생성.
+        if(lf_mkdirSync(parent.PATH.join(l_downPath, "resources", "images"))){
+            loAPP.ui.oDialog.setBusy(false);
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
+        //resources 폴더 안에 CSS 폴더 생성.
+        if(lf_mkdirSync(parent.PATH.join(l_downPath, "resources", "css"))){
+            loAPP.ui.oDialog.setBusy(false);
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
+        //index.css 파일 생성.
+        if(lf_writeFileSync(parent.PATH.join(l_downPath, "resources", "css"), "index.css", ls_data.source[C_INDEX_CSS])){
+            loAPP.ui.oDialog.setBusy(false);
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+        
+        //js 폴더 생성.
+        if(lf_mkdirSync(parent.PATH.join(l_downPath, "js"))){
+            loAPP.ui.oDialog.setBusy(false);
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
+        //index.js source 구성.
+        var l_indexJS = lf_templateIndexJS();
+
+        //index.js의 패턴 변환 처리.
+        l_indexJS = l_indexJS.replaceAll("&PATTERN001&", ls_data.fileName.toLowerCase());
+
+        //index.js 파일 생성.
+        if(lf_writeFileSync(parent.PATH.join(l_downPath, "js"), "index.js", l_indexJS)){
+            loAPP.ui.oDialog.setBusy(false);
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
+        //js 폴더 안에 main 폴더 생성.
+        if(lf_mkdirSync(parent.PATH.join(l_downPath, "js", "main"))){
+            loAPP.ui.oDialog.setBusy(false);
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
+        //main control.js source 구성.
+        var l_controlJS = lf_templateControlJS();
+
+        //control.js 파일 생성.
+        if(lf_writeFileSync(parent.PATH.join(l_downPath, "js", "main"), "control.js", l_controlJS)){
+            loAPP.ui.oDialog.setBusy(false);
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
+        //view.js 파일 생성.
+        if(lf_writeFileSync(parent.PATH.join(l_downPath, "js", "main"), "view.js", ls_data.source[C_MAIN_VIEW_JS])){
+            loAPP.ui.oDialog.setBusy(false);
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
+        //작업폴더 압축.
+        var l_ret = await lf_executeZipFile(l_downPath, ls_data.fileName.toLowerCase(), parent.PATH.join(ls_data.downPath, ls_data.fileName.toLowerCase() + ".zip"));
+        
+
+        //압축 처리 종료 후 작업 폴더 삭제 
+        try {
+            parent.FS.rmdirSync(l_downPath, {recursive: true, force: true});
+        } catch (error) {
+        
+        }
+
+
+        loAPP.ui.oDialog.setBusy(false);
+
+        //처리완료 메시지.
+        parent.showMessage(sap, 30, "S", "다운로드를 완료 했습니다. 해당 폴더를 여시겠습니까?", lf_downComplateCB);
+        
+
+    }
+
 
 
 
@@ -1058,21 +1439,32 @@ sap.ui.getCore().attachInit(function(){
                     //open된 window의 내부 size를 화면에 맞게 변경 처리.
                     l_page.setViewport({width: i_width, height: i_height});
 
-                    l_image = await l_page.screenshot();
-                    
-                    //호출된 창 종료.
-                    l_page.close();
-
-                    //browser 종료.
-                    browser.close();
-
                 } catch (error) {
    
                 }
 
 
-                //이미지 정보 return.
-                resolve(l_image);
+                setTimeout(async () => {
+                    
+                    try {
+                        l_image = await l_page.screenshot();
+                        
+                        //호출된 창 종료.
+                        l_page.close();
+    
+                        //browser 종료.
+                        browser.close();
+    
+                        //이미지 정보 return.
+                        resolve(l_image);
+                        
+                    } catch (error) {
+                        
+                    }
+                    
+                }, 1000);
+
+
         
             }   //open 이후 callback 처리.
 
@@ -1092,9 +1484,14 @@ sap.ui.getCore().attachInit(function(){
 
             var ls_userInfo = parent.getUserInfo();
 
+            var l_theme = loAPP.oModel.getProperty("/theme");
+
             //APPLICATION 호출 URL 정보 구성.
             var l_url = ls_userInfo.META.HOST + "/zu4a/" + oAPP.attr.APPID + 
-                "?sap-language=" + ls_userInfo.LANGU + "&sap-user=" + ls_userInfo.ID + "&sap-password=" + ls_userInfo.PW;
+                "?sap-language=" + ls_userInfo.LANGU + 
+                "&sap-user=" + ls_userInfo.ID + 
+                "&sap-password=" + ls_userInfo.PW +
+                "&sap-ui-theme=" + l_theme;
 
             l_page.goto(l_url);
 
@@ -1194,6 +1591,23 @@ sap.ui.getCore().attachInit(function(){
             parent.showMessage(sap, 20, "E", "미리보기 이미지 구성 실패.");
             return;
         }
+
+        
+        //backend readme 파일 정보 얻기.
+        var l_backend_readme = await lf_HtthpRequest(C_BACKEND_README_PATH + "?"+ oAPP.fn.getRandomKey()).catch(function(){
+            loAPP.ui.oDialog.setBusy(false);            
+            parent.showMessage(sap, 20, "E", "backend의 readme 파일 얻기 실패.");
+            return;
+        });
+
+
+        //application의 readme 파일 정보 얻기.
+        var l_app_readme = await lf_HtthpRequest(C_APP_README_PATH + "?"+ oAPP.fn.getRandomKey()).catch(function(){
+            loAPP.ui.oDialog.setBusy(false);            
+            parent.showMessage(sap, 20, "E", "application의 readme 파일 얻기 실패.");
+            return;
+        });
+
         
         var ls_data = loAPP.oModel.getData();
 
@@ -1209,6 +1623,22 @@ sap.ui.getCore().attachInit(function(){
             return;
         }
 
+        //backend 폴더 생성.
+        if(lf_mkdirSync(parent.PATH.join(l_downPath, C_BACKEND))){
+            loAPP.ui.oDialog.setBusy(false);            
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
+        //readme 파일 생성.
+        if(lf_writeFileSync(parent.PATH.join(l_downPath, C_BACKEND), C_README, l_backend_readme)){
+            loAPP.ui.oDialog.setBusy(false);
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
         //login 폴더 생성.
         if(lf_mkdirSync(parent.PATH.join(l_downPath, "login"))){
             loAPP.ui.oDialog.setBusy(false);            
@@ -1219,6 +1649,14 @@ sap.ui.getCore().attachInit(function(){
 
         //index.html 파일 생성.
         if(lf_writeFileSync(l_downPath, "index.html", ls_data.source[C_INDEX_HTML])){
+            loAPP.ui.oDialog.setBusy(false);
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+            return;
+        }
+
+        //application의 readme 파일 생성.
+        if(lf_writeFileSync(l_downPath, C_README, l_app_readme)){
             loAPP.ui.oDialog.setBusy(false);
             //폴더 생성 실패시 작업 폴더 삭제.
             lf_rmdirSync(l_downPath);
@@ -1587,6 +2025,70 @@ sap.ui.getCore().attachInit(function(){
         });
 
     }   //다운로드 폴더 선택 팝업 호출.
+
+
+
+
+    //테마 ddlb 선택 이벤트.
+    function lf_selThemeDDLB(){
+
+        var ls_data = loAPP.oModel.getData();
+
+        //index.html SOURCE 재구성.
+        ls_data.source[C_INDEX_HTML] = lf_replaceTemplateHTML(ls_data);
+
+        //현재 선택한 ICON TAB이 index.html이면 화면 갱신 처리.
+        if(ls_data.editorKey === C_INDEX_HTML){
+            ls_data.editorValue = ls_data.source[C_INDEX_HTML];
+        }
+
+        loAPP.oModel.setData(ls_data);
+
+    }   //테마 ddlb 선택 이벤트.
+
+
+
+
+    //code editor 변경 이벤트.
+    function lf_changeEditor(){
+
+        //모델 정보 얻기.
+        var ls_data = loAPP.oModel.getData();
+
+        //code editor에 입력한 값을 해당 source에 업데이트 처리.
+        ls_data.source[ls_data.editorKey] = ls_data.editorValue;
+
+        loAPP.oModel.setData(ls_data);
+
+    }   //code editor 변경 이벤트.
+
+
+
+
+    //HTTP 요청.
+    async function lf_HtthpRequest(sUrl){
+
+        return new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.addEventListener("load", (params)=>{
+                if (xhttp.status === 200) {
+                    resolve(params.target.responseText);
+                }else{
+                    reject();    
+                }
+                
+            });
+
+            xhttp.addEventListener("error", (params)=>{
+                reject();
+            });
+
+            xhttp.open("GET", sUrl);
+            xhttp.send();
+
+        });
+
+    }   //HTTP 요청.
 
 
 })();
