@@ -526,6 +526,7 @@ module.exports = {
         // 로컬 경로 Protocol 변경
         sUrlRoot = sUrlRoot.replaceAll("\\", "/");
         sUrlRoot = `file:///${sUrlRoot}`;
+        sUrlRoot = encodeURI(sUrlRoot);
 
         sap.ui.core.IconPool.registerFont({ collectionName: sRegularColName, fontFamily: oFwList.regular, fontURI: sUrlRoot, lazy: true });
 

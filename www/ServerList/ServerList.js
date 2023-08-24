@@ -1172,6 +1172,7 @@
 
         sCommonCssUrl = sCommonCssUrl.replaceAll("\\", "/");
         sCommonCssUrl = `file:///${sCommonCssUrl}`;
+        sCommonCssUrl = encodeURI(sCommonCssUrl);
 
         oCss.setAttribute("rel", "stylesheet");
         oCss.setAttribute("href", sCommonCssUrl);

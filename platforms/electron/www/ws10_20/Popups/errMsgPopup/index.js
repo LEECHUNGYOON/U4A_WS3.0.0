@@ -258,6 +258,7 @@ let oAPP = parent.oAPP,
 
         sCommonCssUrl = sCommonCssUrl.replaceAll("\\", "/");
         sCommonCssUrl = `file:///${sCommonCssUrl}`;
+        sCommonCssUrl = encodeURI(sCommonCssUrl);
 
         var oCss = document.createElement("link");
         oCss.setAttribute("rel", "stylesheet");

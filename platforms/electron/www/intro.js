@@ -1040,7 +1040,8 @@
 
         sSettingUi5BootUrl = sSettingUi5BootUrl.replaceAll("\\", "/");
         sSettingUi5BootUrl = `file:///${sSettingUi5BootUrl}`;
-
+        sSettingUi5BootUrl = encodeURI(sSettingUi5BootUrl);
+        
         oSettings.UI5.resourceUrl = sSettingUi5BootUrl;
 
         // 서버에 있는 UI5 라이브러리 Root Path
