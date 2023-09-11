@@ -11,7 +11,7 @@
     var oTool = new sap.m.Toolbar();
     oMPage.setCustomHeader(oTool);
 
-    var oTitle = new sap.m.Title({text:"preview"});
+    var oTitle = new sap.m.Title({text:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A67", "", "", "", "")});
     oTool.addContent(oTitle);
 
     oTool.addContent(new sap.m.ToolbarSpacer());
@@ -41,7 +41,7 @@
 
     //미리보기 전체화면 스위치.
     //C23	Full Screen
-    oBtnFull = new sap.m.Switch({tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C23", "", "", "", "")});
+    var oBtnFull = new sap.m.Switch({tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C23", "", "", "", "")});
     oTool.addContent(oBtnFull);
 
     //미리보기 전체화면 스위치 변경 이벤트.

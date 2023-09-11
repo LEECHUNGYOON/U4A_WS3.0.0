@@ -22,7 +22,7 @@
 
 
     //DAMI의 UI5 bootstrap 라이브러리 경로.
-    const C_DAMI_LIB_SRC = "../../../public/lib/ui5_latest/resources/sap-ui-core.js";
+    const C_DAMI_LIB_SRC = "/public/lib/ui5_latest/resources/sap-ui-core.js";
 
     //DAMI의 UI5 bootstrap 라이브러리 data-sap-ui-resourceroots 의 경로.
     const C_DAMI_RESOURCE_ROOT = "\"u4aApps\":\"/webapps/samples\"";
@@ -1074,13 +1074,19 @@ sap.ui.getCore().attachInit(function(){
                 
                 //skip 대상건인경우 수집 안함.
                 if(lf_isSkip0014(it_child[i]) === true){continue;}
-                
-                //라이브러리명에 값이 없으면 skip.
-                if(it_child[i].TGLIB === ""){continue;}
-                
+            
+                //jQuery.sap.require 대상 항목 여부 확인.
+                if(oAPP.attr.S_CODE.UA036.findIndex( a=> a.FLD01 === l_info.META.LIBVER && 
+                    a.FLD02 === it_child[i].UIOBK && a.FLD04 === "" ) === -1){
+                    
+                    //jQuery.sap.require 대상 건이 아닌경위 하위 로직 SKIP.
+                    continue;
+
+                }
+
                 //수집되지 않은 라이브러리만 수집 처리.
-                if(lt_require.findIndex( a => a === it_child[i].TGLIB ) === -1){
-                    lt_require.push(it_child[i].TGLIB);
+                if(lt_require.findIndex( a => a === it_child[i].UILIB ) === -1){
+                    lt_require.push(it_child[i].UILIB);
 
                     l_require += C_TAB + C_TAB +  "jQuery.sap.require(\"" + it_child[i].UILIB + "\");" + C_NEWLINE;
     
@@ -1096,6 +1102,9 @@ sap.ui.getCore().attachInit(function(){
         var l_require = "";
         var lt_require = [];
 
+        //접속 서버, 및 유저 정보 얻기.
+        var l_info = parent.getUserInfo();
+
         //sap.ui.getCore().loadLibrary(""); 처리 script 구성.
         lf_getLibraryList(oAPP.attr.oModel.oData.zTREE);
 
@@ -1108,9 +1117,13 @@ sap.ui.getCore().attachInit(function(){
         var l_source = lf_templateMainJS();
 
         //현재 design 영역에 있는 UI를 기준으로 script 구성.
-        var l_script = l_lib + C_NEWLINE + C_NEWLINE +
-            l_require + C_NEWLINE + C_NEWLINE +
-            lf_setUIScript(oAPP.attr.oModel.oData.zTREE, oAPP.fn.getAttrChangedData());
+        var l_script = l_lib + C_NEWLINE + C_NEWLINE;
+
+        if(l_require !== ""){
+            l_script += l_require + C_NEWLINE + C_NEWLINE;
+        }
+
+        l_script += lf_setUIScript(oAPP.attr.oModel.oData.zTREE, oAPP.fn.getAttrChangedData());
 
 
         l_source = l_source.replaceAll("&PATTERN001&", l_script);
@@ -1156,6 +1169,9 @@ sap.ui.getCore().attachInit(function(){
         //다운로드전 입력값 점검.
         if(lf_chkValidate()){return;}
 
+        //다운로드 경로에 파일명 존재여부 확인.
+        if(lf_chkFileExistsSample()){return;}
+
         //다운로드 전 확인 팝업 호출.
         parent.showMessage(sap, 30, "I", "다운로드를 진행하시겠습니까?", lf_sampleDownloadCB);
 
@@ -1173,6 +1189,9 @@ sap.ui.getCore().attachInit(function(){
 
         //다운로드전 입력값 점검.
         if(lf_chkValidate()){return;}
+
+        //다운로드 경로에 파일명 존재여부 확인.
+        if(lf_chkFileExistsTemplate()){return;}
 
         //다운로드 전 확인 팝업 호출.
         parent.showMessage(sap, 30, "I", "다운로드를 진행하시겠습니까?", lf_templateDownloadCB);
@@ -1472,7 +1491,8 @@ sap.ui.getCore().attachInit(function(){
             var puppeteer = parent.require("puppeteer-core");
 
             var browser = await puppeteer.launch({
-                headless: false,
+                // headless: false,
+                headless: true,
                 args: ['--start-maximized'],
                 executablePath: l_chromePath
             });
@@ -1612,7 +1632,9 @@ sap.ui.getCore().attachInit(function(){
         var ls_data = loAPP.oModel.getData();
 
         //작업 폴더명 구성.
-        var l_folder = lf_getWorkFolderName(ls_data.downPath);
+        // var l_folder = lf_getWorkFolderName(ls_data.downPath);
+
+        var l_folder = ls_data.fileName;
 
         //다운로드 경로 + 다운로드 폴더명의 path 구성.
         var l_downPath = parent.PATH.join(ls_data.downPath, l_folder);
@@ -1760,14 +1782,36 @@ sap.ui.getCore().attachInit(function(){
             lf_rmdirSync(l_downPath);
             return;
         }
+        
 
-        //작업폴더 압축.
-        var l_ret = await lf_executeZipFile(l_downPath, ls_data.fileName.toLowerCase(), parent.PATH.join(ls_data.downPath, ls_data.fileName.toLowerCase() + ".zip"));
+        // //작업폴더 압축.
+        // var l_ret = await lf_executeZipFile(l_downPath, ls_data.fileName.toLowerCase(), parent.PATH.join(ls_data.downPath, ls_data.fileName.toLowerCase() + ".zip"));
+
+        //command로 tar 파일 생성 처리.
+        if(lf_createTar(ls_data.downPath, ls_data.fileName)){
+
+            loAPP.ui.oDialog.setBusy(false);
+            
+            //폴더 생성 실패시 작업 폴더 삭제.
+            lf_rmdirSync(l_downPath);
+
+            //폴더 생성 실패시 sample folder 삭제.
+            lf_rmdirSync(l_sampleFolder);
+
+            return;
+
+        }
+
+
+        //압축 파일을 sample 폴더로 copy 처리.
+        if(lf_copyFileSync(parent.PATH.join(ls_data.downPath, l_folder + ".tar"), parent.PATH.join(l_downPath, l_folder + ".tar"))){
+
+        }
         
 
         //압축 처리 종료 후 작업 폴더 삭제 
         try {
-            parent.FS.rmdirSync(l_downPath, {recursive: true, force: true});
+            parent.FS.rmdirSync(parent.PATH.join(ls_data.downPath, l_folder + ".tar"), {recursive: true, force: true});
         } catch (error) {
         
         }
@@ -1784,6 +1828,57 @@ sap.ui.getCore().attachInit(function(){
 
 
 
+    //tar 파일 생성 처리.
+    function lf_createTar(i_downPath, i_fileName){
+
+        //다운로드 경로를 분리 처리.
+        var l_parse = parent.PATH.parse(i_downPath);
+
+        //분리된 정보가 존재하지 않는경우 exit.
+        if(!l_parse || !l_parse.root){return true;}
+
+        //root 드라이브(c:\\ or c:/ 형식에서 / 제거)
+        var l_root = l_parse.root.replace(/\//g, "");
+
+        //root 드라이브(c:\\ or c:/ 형식에서 \\ 제거)
+        l_root = l_root.replace(/\\/g, "");
+
+        //command 처리 node js require처리.
+        var cmd = parent.require('node-cmd');
+
+        if(!cmd){return true;}
+
+        //(최상위 드라이브 이동 -> 다운로드한 최상위 드라이브로 이동 -> 다운로드한 폴더 위치로 이동 -> 압축 처리)
+        var l_command = "CD\\ & " + l_root + " & CD " + i_downPath + " & tar -czcvf " + i_fileName + ".tar " + i_fileName;
+
+        try{
+            cmd.runSync(l_command);
+        }catch(e){
+            parent.showMessage(sap, 20, "E", "다운로드 작업 실패.");
+            return true;
+        }
+        
+
+    }   //tar 파일 생성 처리.
+
+
+
+
+    //파일 복사 처리.
+    function lf_copyFileSync(i_source, i_target){
+        
+        try {
+            parent.FS.copyFileSync(i_source, i_target);
+        } catch (error) {
+            parent.showMessage(sap, 20, "E", "다운로드 작업 실패.");
+            return true;
+        }
+
+    }   //파일 복사 처리.
+
+
+
+
     //처리완료후 폴더 open 여부 callback.
     function lf_downComplateCB(param){
 
@@ -1795,7 +1890,8 @@ sap.ui.getCore().attachInit(function(){
         var ls_data = loAPP.oModel.getData();
 
         //다운로드한 폴더 열기.
-        parent.REMOTE.shell.showItemInFolder(parent.PATH.join(ls_data.downPath, ls_data.fileName + ".zip"));
+        // parent.REMOTE.shell.showItemInFolder(parent.PATH.join(ls_data.downPath, ls_data.fileName + ".zip"));
+        parent.REMOTE.shell.showItemInFolder(parent.PATH.join(ls_data.downPath, ls_data.fileName, "index.html"));
 
 
         lf_afterClose();
@@ -1881,7 +1977,7 @@ sap.ui.getCore().attachInit(function(){
         }
 
 
-        //파일명 입력이 누락됐다면.
+        //다운로드 경로 입력이 누락됐다면.
         if(ls_data.downPath === ""){
             
             //오류 flag 처리.
@@ -1910,7 +2006,7 @@ sap.ui.getCore().attachInit(function(){
         }
 
 
-        //index.html 정보가 없는경우.
+        //index.js 정보가 없는경우.
         if(ls_data.source[C_MAIN_VIEW_JS] === ""){
             //오류 flag 처리.
             l_err = true;
@@ -1940,10 +2036,70 @@ sap.ui.getCore().attachInit(function(){
 
 
     //다운로드 할 경로에 파일명이 존재하는지 여부 확인.
-    function lf_chkFileExists(){
+    function lf_chkFileExistsSample(){
 
         var ls_data = loAPP.oModel.getData();
 
+        // var l_path = parent.PATH.join(ls_data.downPath, ls_data.fileName + ".zip");
+
+        //다운로드 경로에 입력 폴더명이 존재하는지 확인.
+        var l_path = parent.PATH.join(ls_data.downPath, ls_data.fileName);
+
+        //다운로드 경로 + 파일명.zip 의 파일이 존재한다면.
+        if(lf_existsSync(l_path)){
+
+            ls_data.stat.st.fileName = "Error";
+            ls_data.stat.st.downPath = "Error";
+
+            // ls_data.stat.tx.fileName = "다운로드 경로에 처리대상 파일명이 존재합니다." + "\n" +
+            ls_data.stat.tx.fileName = "다운로드 경로에 입력한 폴더명이 존재합니다." + "\n" +
+                "(" + l_path + ")";
+
+            ls_data.stat.tx.downPath = ls_data.stat.tx.fileName;
+
+            parent.showMessage(sap, 20, "E", ls_data.stat.tx.fileName);
+
+            loAPP.oModel.setProperty("/stat", ls_data.stat);
+
+            //오류 flag return.
+            return true;
+
+        }
+
+        //다운로드 경로에 입력 폴더명이 존재하는지 확인.
+        var l_path = parent.PATH.join(ls_data.downPath, ls_data.fileName + ".tar");
+
+        //다운로드 경로 + 파일명.tar 의 파일이 존재한다면.
+        if(lf_existsSync(l_path)){
+
+            ls_data.stat.st.fileName = "Error";
+            ls_data.stat.st.downPath = "Error";
+
+            ls_data.stat.tx.fileName = "다운로드 경로에 처리대상 파일명이 존재합니다." + "\n" +
+                "(" + l_path + ")";
+
+            ls_data.stat.tx.downPath = ls_data.stat.tx.fileName;
+
+            parent.showMessage(sap, 20, "E", ls_data.stat.tx.fileName);
+
+            loAPP.oModel.setProperty("/stat", ls_data.stat);
+
+            //오류 flag return.
+            return true;
+
+        }
+
+    }   //다운로드 할 경로에 파일명이 존재하는지 여부 확인.
+
+
+
+
+    //다운로드 할 경로에 파일명이 존재하는지 여부 확인.
+    function lf_chkFileExistsTemplate(){
+
+        var ls_data = loAPP.oModel.getData();
+
+        //다운로드 경로에 입력 폴더명이 존재하는지 확인.
         var l_path = parent.PATH.join(ls_data.downPath, ls_data.fileName + ".zip");
 
         //다운로드 경로 + 파일명.zip 의 파일이 존재한다면.
@@ -1961,11 +2117,12 @@ sap.ui.getCore().attachInit(function(){
 
             loAPP.oModel.setProperty("/stat", ls_data.stat);
 
+            //오류 flag return.
             return true;
 
         }
 
-    }
+    }   //다운로드 할 경로에 파일명이 존재하는지 여부 확인.
 
 
 

@@ -1,5 +1,5 @@
 (function(oAPP){
-        
+
   //미리보기 메인 function
   oAPP.fn.main = function(){
 
@@ -1359,8 +1359,9 @@
       layoutData:new sap.ui.layout.SplitterLayoutData({size:"25%", minSize:300})});
     // oSApp.addContentArea(oAPP.attr.ui.oDesignTree);
 
+    //A67	Preview
     //가운데 페이지(미리보기 영역)
-    oAPP.attr.ui.oDesignPreview = new sap.m.Page("designPreview", {title:"preview"});
+    oAPP.attr.ui.oDesignPreview = new sap.m.Page("designPreview");
     // oSApp.addContentArea(oAPP.attr.ui.oDesignPreview);
 
     //우측 페이지(attribute 영역)

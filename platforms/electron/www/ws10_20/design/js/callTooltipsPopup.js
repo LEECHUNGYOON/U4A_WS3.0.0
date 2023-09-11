@@ -55,6 +55,7 @@
         
         var oWin = new parent.REMOTE.BrowserWindow(opt);
 
+        oWin.setMenu(null);
 
         oWin.loadURL(l_path);
         oWin.webContents.on("did-finish-load", ()=> {

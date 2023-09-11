@@ -329,7 +329,7 @@
     
     //A70  Find UI
     //UI FILTER 버튼.
-    oLBtn6 = new sap.m.Button({icon:"sap-icon://search", 
+    var oLBtn6 = new sap.m.Button({icon:"sap-icon://search", 
       tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A70", "", "", "", "")});
     oLTBar1.addContent(oLBtn6);
 
