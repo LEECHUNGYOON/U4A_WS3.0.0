@@ -2766,7 +2766,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
                 }
 
                 var sCleanHtml = parent.setCleanHtml(xhr.response);
-                if (sCleanHtml == "") {
+                if (!sCleanHtml || sCleanHtml == "") {
                     sCleanHtml = "Server connection fail!!"
                 }
 
