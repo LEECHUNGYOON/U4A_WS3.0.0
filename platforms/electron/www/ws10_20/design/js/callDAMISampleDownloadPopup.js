@@ -599,7 +599,8 @@
         var oContr = {};
         oContr.ui = {};
         oContr.fn = {};
-        oContr.attr = {};
+        oContr.attr = {};        
+        oContr.attr.oModel = new sap.ui.model.json.JSONModel();
 
         return oContr;
         
@@ -778,7 +779,6 @@ sap.ui.getCore().attachInit(function(){
 			//EMBED Aggregation 정보가 없는경우(최상위인경우)
 			if(!l_parent){
                 return C_TAB + C_TAB + "oContr.ui." + is_tree.OBJID + " = " + is_tree.OBJID + ";" + C_NEWLINE + C_NEWLINE + 
-                    C_TAB + C_TAB + "oContr.attr.oModel = new sap.ui.model.json.JSONModel();" + C_NEWLINE +
                     C_TAB + C_TAB + is_tree.OBJID + ".setModel(oContr.attr.oModel);" + C_NEWLINE + C_NEWLINE;
 			}
 			
@@ -1391,10 +1391,33 @@ sap.ui.getCore().attachInit(function(){
         loAPP.ui.oDialog.setBusy(false);
 
         //처리완료 메시지.
-        parent.showMessage(sap, 30, "S", "다운로드를 완료 했습니다. 해당 폴더를 여시겠습니까?", lf_downComplateCB);
+        parent.showMessage(sap, 30, "S", "다운로드를 완료 했습니다. 해당 폴더를 여시겠습니까?", lf_templateDownComplateCB);
         
 
-    }
+    }   //템플릿 다운로드 callback.
+
+
+
+
+    //다운로드 완료 후 폴더 열기 팝업 종료.
+    function lf_templateDownComplateCB(param){
+
+        
+        if(param !== "YES"){
+            lf_afterClose();
+            return;
+        }
+
+        var ls_data = loAPP.oModel.getData();
+
+        //다운로드한 폴더 열기.
+        // parent.REMOTE.shell.showItemInFolder(parent.PATH.join(ls_data.downPath, ls_data.fileName + ".zip"));
+        parent.REMOTE.shell.showItemInFolder(parent.PATH.join(ls_data.downPath, ls_data.fileName + ".zip"));
+
+
+        lf_afterClose();
+
+    }   //다운로드 완료 후 폴더 열기 팝업 종료.
 
 
 

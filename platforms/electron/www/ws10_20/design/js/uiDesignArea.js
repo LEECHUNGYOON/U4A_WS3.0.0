@@ -2110,6 +2110,15 @@
     await oAPP.fn.updateAttrList(is_tree.UIOBK, is_tree.OBJID, UIATK, TYPE, f_cb);
 
 
+    //20231011 pes.
+    //ui가 라이브러리 내부 로직에 의해 destroy 처리 되어 사용할 수 없는 상태일경우,
+    //redrawUIScript function을 통해 UI를 다시 생성 처리.
+    if(oAPP.common.checkWLOList("C", "UHAK900681") === true || parent.REMOTE.app.isPackaged === false){
+      oAPP.attr.ui.frame.contentWindow.redrawUIScript(oAPP.attr.oModel.oData.zTREE);
+    }
+
+
+
     //미리보기 화면 갱신 처리.
     oAPP.attr.ui.frame.contentWindow.refreshPreview(is_tree);
 
