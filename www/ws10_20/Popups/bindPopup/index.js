@@ -936,6 +936,8 @@ let oAPP = parent.oAPP,
         var ls_mprop = {},
             lt_split = [];
 
+        var lt_mprop = [];
+
         //바인딩 추가 속성 정의건이 존재하는 경우.
         if (is_tree.MPROP) {
             lt_split = is_tree.MPROP.split("|");
@@ -986,6 +988,10 @@ let oAPP = parent.oAPP,
                     if (is_tree.MPROP) {
                         ls_mprop.val = lt_split[0];
                     }
+
+                    //추가 속성정보 재수집.
+                    lt_mprop.push(ls_mprop.val);
+
                     ls_mprop.sel_vis = true;
 
                     //P 타입이 아닌경우 입력 필드 잠금 처리.
@@ -1013,6 +1019,10 @@ let oAPP = parent.oAPP,
                     if (is_tree.MPROP) {
                         ls_mprop.val = lt_split[1];
                     }
+
+                    //추가 속성정보 재수집.
+                    lt_mprop.push(ls_mprop.val);
+
                     ls_mprop.sel_vis = true;
 
                     //구조(TAB) 안에 있는 필드 중 CUKY, UNIT 타입이 없으면 잠김.
@@ -1056,6 +1066,10 @@ let oAPP = parent.oAPP,
                     if (is_tree.MPROP) {
                         ls_mprop.val = lt_split[2];
                     }
+
+                    //추가 속성정보 재수집.
+                    lt_mprop.push(ls_mprop.val);
+
                     ls_mprop.inp_vis = true;
                     break;
 
@@ -1068,6 +1082,9 @@ let oAPP = parent.oAPP,
                     if (ls_mprop.val === "") {
                         ls_mprop.val = "false";
                     }
+
+                    //추가 속성정보 재수집.
+                    lt_mprop.push(ls_mprop.val);
 
                     ls_mprop.sel_vis = true;
 
@@ -1098,6 +1115,9 @@ let oAPP = parent.oAPP,
                         ls_mprop.val = "false";
                     }
 
+                    //추가 속성정보 재수집.
+                    lt_mprop.push(ls_mprop.val);
+
                     ls_mprop.sel_vis = true;
 
                     //number format 가능항목에 속하지 않는 타입인경우 입력필드 잠금 처리.
@@ -1121,6 +1141,11 @@ let oAPP = parent.oAPP,
             oAPP.attr.oModel.oData.T_MPROP.push(ls_mprop);
             ls_mprop = {};
 
+        }
+
+        //재구성된 바인딩 추가 속성 정보가 존재하는경우 해당 라인에 바인딩 추가 속성정보 재매핑.
+        if(lt_mprop.length > 0){
+            is_tree.MPROP = lt_mprop.join("|");
         }
 
         oAPP.attr.oModel.refresh();

@@ -163,7 +163,7 @@
 
     //OBJID 입력필드
     var oRInp1 = new sap.m.Input({value:"{/uiinfo/OBJID}", tooltip:"{/uiinfo/OBJID}", editable:"{/uiinfo/edit01}",
-      enabled:"{/IS_EDIT}", valueState:"{/uiinfo/OBJID_stat}", valueStateText:"{/uiinfo/OBJID_stxt}",
+      enabled:"{/IS_EDIT}", valueState:"{/uiinfo/OBJID_stat}", valueStateText:"{/uiinfo/OBJID_stxt}", maxLength:100,
       layoutData:new sap.ui.layout.GridData({span:"XL11 L11 M11 S11"})});
     oRGrid.addContent(oRInp1);
 
@@ -3036,6 +3036,8 @@
       is_attr.UIATV  = String(Number(is_attr.UIATV));
     }
 
+
+    is_attr.ISSPACE = "";
 
     //입력값이 존재하지 않는경우, default 값과 다르다면.
     if(is_attr.UIATV === "" && l_dval !== is_attr.UIATV){
