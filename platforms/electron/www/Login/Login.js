@@ -223,7 +223,11 @@ let oAPP = (function () {
         }
 
         oScript.setAttribute("data-sap-ui-language", sLangu);
-        oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.f, sap.ui.layout, sap.tnt");
+
+        //20231228 pes.
+        //sap.ui.table 라이브러리 추가 로드.
+        oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.f, sap.ui.layout, sap.tnt, sap.ui.table");
+
         oScript.setAttribute("data-sap-ui-theme", oThemeInfo.THEME);
         oScript.setAttribute("src", oSetting_UI5.resourceUrl);
 
@@ -886,7 +890,7 @@ let oAPP = (function () {
 
         var xhr = new XMLHttpRequest();
 
-        xhr.onreadystatechange = function () { // 요청에 대한 콜백
+        xhr.onreadystatechange = async function () { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
                 if (xhr.status === 200 || xhr.status === 201) {
 
@@ -933,6 +937,17 @@ let oAPP = (function () {
                     if (oResult.TYPE == "E") {
 
                         oPwInput.setValue("");
+
+                        //20231228 pes -start.
+                        //권한 점검 오류가 발생한 경우.
+                        //오류 권한 리스트 팝업 호출.
+                        var _called = await oAPP.fn.fnCallAuthErrorListPopup(oResult);
+                        if (_called === true) {
+                            parent.setBusy("");
+
+                            return;
+                        }
+                        //20231228 pes -end.
 
                         // 오류 처리..                   
                         parent.showMessage(null, 99, "E", oResult.MSG);
@@ -1005,6 +1020,153 @@ let oAPP = (function () {
         xhr.send(oFormData); // 요청 전송         
 
     }; // end of oAPP.events.ev_login
+
+    /************************************************************************
+     * 권한 오류 리스트 팝업 호출.
+     ************************************************************************/
+    oAPP.fn.fnCallAuthErrorListPopup = (oRes) => {
+
+        return new Promise(async (resolve, reject) => {
+
+            if (oRes?.TYPE !== "E") {
+                return resolve();
+            }
+
+            if (!oRes?.T_AUTH) {
+                return resolve();
+            }
+
+            var _gModel = sap.ui.getCore().getModel();
+
+            //접속 하려는 SYSTEM ID 얻기.
+            var _SYSID = _gModel.getProperty("/LOGIN/SYSID");
+
+            //[U4A] WS Patch : v3.4.0_00005 / 20231026 110241
+            //해당 패치 정보가 존재하는지 여부 확인.
+            var _found = await WSUTIL.checkWLOListAsync(_SYSID, "C", "UHAK900697");
+
+            //패치 정보가 존재하지 않는경우 EXIT.
+            if (_found !== true) {
+                return resolve();
+            }
+
+            //권한 오류 리스트 팝업 구성.
+            var oDialog = new sap.m.Dialog({
+                title: "Authorization Error",
+                draggable: true,
+                resizable: true,
+                // contentWidth: "40%",
+                contentWidth: "80%",
+                type: "Message",
+                state: "Error",
+                // contentHeight: "40%",
+                contentHeight: "40%",
+                verticalScrolling: false,
+                customHeader: new sap.m.Toolbar({
+                    content: [
+                        new sap.m.Title({
+                            text: "Authorization Error"
+                        }),
+                        new sap.m.ToolbarSpacer(),
+                        new sap.m.Button({
+                            icon: "sap-icon://decline",
+                            type: "Reject",
+                            press: () => {
+                                oDialog.close();
+                                oDialog.destroy();
+                            }
+                        })
+                    ]
+                }),
+                content: [
+                    new sap.ui.table.Table({
+                        title: new sap.m.Title({
+                            text: oRes.MSG,
+                            wrapping: true
+                        }),
+                        selectionMode: "None",
+                        visibleRowCountMode: "Auto",
+                        minAutoRowCount: 1,
+                        columns: [
+                            new sap.ui.table.Column({
+                                width: "150px",
+                                sortProperty: "OBJECT",
+                                filterProperty: "OBJECT",
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Auth. Object"
+                                }),
+                                template: new sap.m.Text({
+                                    text: "{OBJECT}"
+                                })
+                            }),
+                            new sap.ui.table.Column({
+                                sortProperty: "TTEXT",
+                                filterProperty: "TTEXT",
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Description"
+                                }),
+                                template: new sap.m.Text({
+                                    text: "{TTEXT}"
+                                })
+                            }),
+                            new sap.ui.table.Column({
+                                width: "150px",
+                                sortProperty: "ACTVT",
+                                filterProperty: "ACTVT",
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Field"
+                                }),
+                                template: new sap.m.Text({
+                                    text: "{ACTVT}"
+                                })
+                            }),
+                            new sap.ui.table.Column({
+                                sortProperty: "FIELD",
+                                filterProperty: "FIELD",
+                                label: new sap.m.Label({
+                                    design: "Bold",
+                                    text: "Value"
+                                }),
+                                template: new sap.m.Text({
+                                    text: "{FIELD}"
+                                })
+                            })
+                        ],
+                        rows: {
+                            path: "/T_AUTH",
+                            template: new sap.ui.table.Row()
+                        }
+                    })
+                ],
+                buttons: [
+                    new sap.m.Button({
+                        icon: "sap-icon://decline",
+                        type: "Reject",
+                        press: () => {
+                            oDialog.close();
+                            oDialog.destroy();
+                        }
+                    })
+                ]
+            });
+
+            var oModel = new sap.ui.model.json.JSONModel();
+            oDialog.setModel(oModel);
+
+            oModel.setData({ T_AUTH: oRes.T_AUTH });
+
+
+            //권한 오류 리스트 팝업 OPEN 처리.
+            oDialog.open();
+
+            return resolve(true);
+
+        });
+
+    };  // end of oAPP.fn.fnCallAuthErrorListPopup
 
     /************************************************************************
      * 개발 권한 체크
@@ -2860,7 +3022,7 @@ function fnWsGlobalMsgList() {
         const WSUTIL = parent.WSUTIL;
 
         let oSettingInfo = WSUTIL.getWsSettingsInfo(),
-	        sWsLangu = oSettingInfo.globalLanguage;
+            sWsLangu = oSettingInfo.globalLanguage;
 
         oAPP.msg.M001 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "001"); // Language        
         oAPP.msg.M032 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "032"); // Restart
