@@ -11,6 +11,7 @@
     oAPP.attr = {};
     oAPP.msg = {};
     oAPP.data.SAPLogon = {};
+    oAPP.data.SAPLogon.aSys32MsgServPort = [];
 
     oAPP.REMOTE = require('@electron/remote');
     oAPP.PATH = oAPP.REMOTE.require('path');
@@ -23,6 +24,8 @@
     oAPP.IPCRENDERER.on("if-globalSetting-info", (events, oInfo) => {
 
         oAPP.data.GlobalSettings = oInfo;
+
+        oAPP.data.SystemRootPath = process.env.SystemRoot;
 
         oAPP.fn.fnOnDeviceReady();       
 

@@ -114,14 +114,100 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     }; // end of fnSendAjax
 
 
-    function _fnWait() {
+    function _fnWait(itime = 3000){
+
         return new Promise((resolve) => {
 
             setTimeout(() => {
                 resolve();
-            }, 3000);
+            }, itime);
 
         });
+
+    }
+
+    async function _getSys32Services(){
+
+        return new Promise((resolve) => {
+        
+            const { exec } = require('child_process');
+
+            let servicePath = PATH.join(oAPP.data.SystemRootPath, 'System32', 'Drivers', 'etc', 'services');
+
+            let cmd = `findstr "^sapms*" ${servicePath}`;
+
+            exec(cmd, (err, stdout, stderr) => {
+
+                if (err) {
+                    return resolve({
+                        RETCD : "E"
+                    });
+                }
+
+                return resolve({
+                    RETCD: "S",
+                    RDATA: stdout
+                });
+
+            });
+
+        });
+
+    }
+
+    async function _getMsgServPortList(){
+
+        let oSys32Services = await _getSys32Services();
+        if(oSys32Services.RETCD === "E"){
+            return;
+        }
+
+        let sServices = oSys32Services.RDATA;
+            sServices = sServices.replace(/'/g, "''");
+            sServices = sServices.replace(/\r/g, "");
+            sServices = sServices.replace(/\t/g, "");
+
+        let aServices = sServices.split("\n");
+        
+        let aServ = [];
+        for(const sItem of aServices){
+
+            let sServ = sItem;
+    
+            if(!sServ){
+                continue;
+            }
+            
+            let aServItem = sServ.split(" ");
+    
+            if(aServItem.length !== 2){
+               continue;
+            }
+    
+            let sMsg_serv_name = aServItem[0];
+            if(!sMsg_serv_name){
+                continue;
+            }
+    
+            sMsg_serv_name = sMsg_serv_name.replace(/sapms/g, "");
+            
+            let sMsg_serv_port = aServItem[1];
+            if(!sMsg_serv_port){
+                continue;
+            }
+    
+            sMsg_serv_port = sMsg_serv_port.replace(/\/.*/g, "");
+    
+            let oServices = {};
+            oServices[sMsg_serv_name] = sMsg_serv_port;
+    
+            aServ.push(oServices);
+        }
+
+        oAPP.data.SAPLogon.aSys32MsgServPort = aServ;
+
+        console.log(oAPP.data.SAPLogon.aSys32MsgServPort);
+
     }
 
     /************************************************************************
@@ -145,6 +231,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 초기 화면 먼저 그리기
         oAPP.fn.fnOnInitRendering();
+
+        // [TEST]
+        await _getMsgServPortList();
 
         // 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
         oAPP.fn.fnOnListupSapLogon(); // [내부 로직에 비동기가 있음]
@@ -3815,7 +3904,7 @@ fnLoadCommonCss();
 // Window onload
 window.addEventListener("load", () => {
 
-    sap.ui.getCore().attachInit(() => {
+    sap.ui.getCore().attachInit(async () => {
 
         // if (!APP.isPackaged) {
         //     // Floating Menu Open
@@ -3825,7 +3914,7 @@ window.addEventListener("load", () => {
         // Illustration Pool에 TNT Theme를 등록한다.
         oAPP.fn.fnRegisterIllustrationPool();
 
-        oAPP.fn.fnOnMainStart(); // [async]
+        await oAPP.fn.fnOnMainStart(); // [async]
 
     });
 

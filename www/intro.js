@@ -331,9 +331,9 @@
 
         oWin.loadURL(PATHINFO.SERVERLIST_v2);
 
-        // if (!APP.isPackaged) {
-        //     oWin.webContents.openDevTools();
-        // }
+        if (!APP.isPackaged) {
+            oWin.webContents.openDevTools();
+        }
 
         oWin.webContents.on('did-finish-load', async function() {
 
