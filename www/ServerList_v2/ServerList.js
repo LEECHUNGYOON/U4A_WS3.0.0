@@ -992,17 +992,32 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 oServiceAttr.msgsvr = (oMsgSvr == null ? {} : oMsgSvr._attributes);
 
-                // Host와 port를 구한다.
-                oServiceAttr.host = oServiceAttr.msgsvr.host;
-                oServiceAttr.port = oServiceAttr.msgsvr.port;
+                // // Host와 port를 구한다.
+                // oServiceAttr.host = oServiceAttr.msgsvr.host;
+                // oServiceAttr.port = oServiceAttr.msgsvr.port;
 
-                // [TEST]
+                // MessageServer가 있을 경우는 host를 server(logon_group)이름으로 매핑한다.
                 oServiceAttr.host = oServiceAttr.server;
                 oServiceAttr.port = oServiceAttr.msgsvr.port;
                 
+                // 메시지 서버 포트가 없을 경우는 system32의 services에서 추출한 port 번호를 매핑한다.
                 if(!oServiceAttr.port){
 
+                    if(oAPP.data.SAPLogon.aSys32MsgServPort && Array.isArray(oAPP.data.SAPLogon.aSys32MsgServPort) === true){
+
+                        let aSys32Port = oAPP.data.SAPLogon.aSys32MsgServPort;
+
+                        let oPortInfo = aSys32Port.find(e=>e.SYSID === oServiceAttr.systemid);
+                        if(oPortInfo){
+                            oServiceAttr.port = oPortInfo.PORT;
+                            oServiceAttr.msgsvr.port = oPortInfo.PORT;
+                        }
+
+                    }
                 }
+
+
+                oServiceAttr.msgsvr.port = oServiceAttr.msgsvr.port ? oServiceAttr.msgsvr.port : "3600";
 
             }
 
