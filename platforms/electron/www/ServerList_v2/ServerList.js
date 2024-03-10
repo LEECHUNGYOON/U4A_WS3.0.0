@@ -165,7 +165,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         let sServices = oSys32Services.RDATA;
             sServices = sServices.replace(/'/g, "''");
             sServices = sServices.replace(/\r/g, "");
-            sServices = sServices.replace(/\t/g, "");
+            sServices = sServices.replace(/\t/g, " ");
 
         let aServices = sServices.split("\n");
         
@@ -199,7 +199,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             sMsg_serv_port = sMsg_serv_port.replace(/\/.*/g, "");
     
             let oServices = {};
-            oServices[sMsg_serv_name] = sMsg_serv_port;
+            oServices.SYSID = sMsg_serv_name;
+            oServices.PORT  = sMsg_serv_port;
     
             aServ.push(oServices);
         }
@@ -232,7 +233,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 초기 화면 먼저 그리기
         oAPP.fn.fnOnInitRendering();
 
-        // [TEST]
+        // /etc/services에 있는 메시지 서버 포트 정보를 추출한다.
         await _getMsgServPortList();
 
         // 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
@@ -992,9 +993,32 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 oServiceAttr.msgsvr = (oMsgSvr == null ? {} : oMsgSvr._attributes);
 
-                // Host와 port를 구한다.
-                oServiceAttr.host = oServiceAttr.msgsvr.host;
+                // // Host와 port를 구한다.
+                // oServiceAttr.host = oServiceAttr.msgsvr.host;
+                // oServiceAttr.port = oServiceAttr.msgsvr.port;
+
+                // MessageServer가 있을 경우는 host를 server(logon_group)이름으로 매핑한다.
+                oServiceAttr.host = oServiceAttr.server;
                 oServiceAttr.port = oServiceAttr.msgsvr.port;
+                
+                // 메시지 서버 포트가 없을 경우는 system32의 services에서 추출한 port 번호를 매핑한다.
+                if(!oServiceAttr.port){
+
+                    if(oAPP.data.SAPLogon.aSys32MsgServPort && Array.isArray(oAPP.data.SAPLogon.aSys32MsgServPort) === true){
+
+                        let aSys32Port = oAPP.data.SAPLogon.aSys32MsgServPort;
+
+                        let oPortInfo = aSys32Port.find(e=>e.SYSID === oServiceAttr.systemid);
+                        if(oPortInfo){
+                            oServiceAttr.port = oPortInfo.PORT;
+                            oServiceAttr.msgsvr.port = oPortInfo.PORT;
+                        }
+
+                    }
+                }
+
+
+                oServiceAttr.msgsvr.port = oServiceAttr.msgsvr.port ? oServiceAttr.msgsvr.port : "3600";
 
             }
 

@@ -165,7 +165,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         let sServices = oSys32Services.RDATA;
             sServices = sServices.replace(/'/g, "''");
             sServices = sServices.replace(/\r/g, "");
-            sServices = sServices.replace(/\t/g, "");
+            sServices = sServices.replace(/\t/g, " ");
 
         let aServices = sServices.split("\n");
         
@@ -199,7 +199,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             sMsg_serv_port = sMsg_serv_port.replace(/\/.*/g, "");
     
             let oServices = {};
-            oServices[sMsg_serv_name] = sMsg_serv_port;
+            oServices.SYSID = sMsg_serv_name;
+            oServices.PORT  = sMsg_serv_port;
     
             aServ.push(oServices);
         }
@@ -232,7 +233,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 초기 화면 먼저 그리기
         oAPP.fn.fnOnInitRendering();
 
-        // [TEST]
+        // /etc/services에 있는 메시지 서버 포트 정보를 추출한다.
         await _getMsgServPortList();
 
         // 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
