@@ -907,6 +907,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 oServiceAttr.host = oServiceAttr.msgsvr.host;
                 oServiceAttr.port = oServiceAttr.msgsvr.port;
 
+                // [TEST]
+                oServiceAttr.host = oServiceAttr.server;
+                oServiceAttr.port = oServiceAttr.msgsvr.port;
+                
+                if(!oServiceAttr.port){
+
+                }
+
             }
 
             // port 가 있다면 instance no 구하기
