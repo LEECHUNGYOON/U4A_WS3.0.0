@@ -57,12 +57,12 @@
 
         // debugger;
 
+        CURRWIN.show();
+
         oAPP.startTime = new Date().getTime();
 
         // ws setting Info를 UserData에 저장
-        await _saveWsSettingsInfo(); // <--- 반드시 여기에 위치해야함!!
-
-        CURRWIN.show();
+        await _saveWsSettingsInfo(); // <--- 반드시 여기에 위치해야함!!        
 
         // 현재 버전 보여주기
         oAPP.fn.fnDisplayCurrentVersion();
