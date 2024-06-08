@@ -32,6 +32,169 @@ let oAPP = {};
 
 module.exports = {
 
+    /**********************************************
+     * @class - IndexDB Class
+     **********************************************/
+    IndexDB : class {
+
+
+        /*********************************************************
+         * @method - Insert
+         *********************************************************
+         * @param {Object} oParams
+         * {
+         *    DB_NAME   :   @type {String} Database Name    (* 필수)
+         *    TABLE_NAME:   @type {String} Table Name       (* 필수)
+         *    DATA      :   @type {Array}  Insert Data      (* 필수)
+         *    KEY       :   @type {String} Key              (옵션)
+         * }
+         * 
+         * @returns {Object}
+         * {
+         *    RETCD:        // 리턴코드 'S': 성공, 'E': 실패
+         *    RDATA:        // 수행결과
+         * }
+         *********************************************************/
+        static insert(oParams) {
+
+            if(!oParams){
+                return;
+            }
+
+            if(!oParams.constructor.toString().includes("Object")){
+                return;
+            }
+
+            // 필수값 체크
+            let oCheckResult = this.checkInsertParams(oParams);
+            if(oCheckResult.RETCD === "E"){
+                
+                let sErrMsg = oCheckResult.RTMSG;
+
+                console.error(sErrMsg);
+
+                throw new Error(sErrMsg);
+            }
+
+            let sDbName = oParams.DB_NAME;
+            let sTbName = oParams.TABLE_NAME;
+            let sKey    = oParams.KEY;
+
+
+
+
+        } // end of static insert
+
+        /*************************************************
+         * Database Open
+         ************************************************** 
+        * @param {String} sDbName 
+        *************************************************/
+        static openDatabase(sDbName) {
+
+            return new Promise((resolve) => {
+
+                var oDb = indexedDB.open(sDbName, 1);
+    
+                oDb.onsuccess = function() {
+    
+                    return resolve({
+                        RETCD : "S",
+                        RDATA : oDb.result
+                    });
+    
+                };
+    
+                oDb.onerror = function(error) { 
+    
+                    return resolve({
+                        RETCD : "E",
+                        RDATA : error
+                    });       
+    
+                };
+    
+            });
+
+        } // end of static openDatabase
+
+        /*********************************************************
+         * @method - Check for Insert Parameter
+         *********************************************************/
+        static checkInsertParams(oParams){
+
+            // DB_NAME   :   @type {String} Database Name    (* 필수)
+            // TABLE_NAME:   @type {String} Table Name       (* 필수)
+            // DATA      :   @type {Array}  Insert Data      (* 필수)
+            // KEY       :   @type {String} Key              (옵션)
+
+            if(!oParams.DB_NAME || typeof oParams.DB_NAME !== "string"){
+                return {
+                    RETCD: "E",
+                    RTMSG: "'DB_NAME' 파라미터가 없거나 String 타입이 아닙니다"
+                };
+            }
+
+
+            if(!oParams.TABLE_NAME || typeof oParams.TABLE_NAME !== "string"){
+                return {
+                    RETCD: "E",
+                    RTMSG: "'TABLE_NAME' 파라미터가 없거나 String 타입이 아닙니다"
+                };
+            }
+
+            if(!oParams.DATA || Array.isArray(oParams.DATA) === false){
+                return {
+                    RETCD: "E",
+                    RTMSG: "'DATA' 파라미터가 없거나 Array 타입이 아닙니다"
+                };
+            }
+
+            if(oParams.KEY){
+
+                if(typeof oParams.KEY !== "string"){
+                    
+                    return {
+                        RETCD: "E",
+                        RTMSG: "'KEY' 파라미터가 없거나 String 타입이 아닙니다"
+                    };
+                    
+                }
+
+            }
+
+            return {
+                RETCD: "S"
+            };            
+
+        } // end of static checkInsertParams
+
+        static read() {
+
+
+
+        }
+
+        static readAll(){
+
+
+
+        }        
+
+        static delete(){
+
+
+
+        }
+
+        static deleteAll() {
+
+
+
+        }
+
+    },
+
     /**
      * @class
      * 접속 언어별 다국어 지원 메시지를 생성하는 클래스
