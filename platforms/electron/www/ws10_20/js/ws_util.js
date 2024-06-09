@@ -32,6 +32,509 @@ let oAPP = {};
 
 module.exports = {
 
+    /**********************************************
+     * @class - IndexDB Class
+     **********************************************/
+    IndexDB : class {
+
+        /*********************************************************
+         * 공통 리턴구조         
+         *********************************************************/
+        static getResInfo (){
+
+            return {
+                RETCD: "",
+                PRCCD: "",
+                RTMSG: "",
+                RDATA: "",
+            }
+
+        } // end of static getResInfo
+
+        
+        /*********************************************************
+         * @method - IndexDB 생성
+         *********************************************************          
+         * @param {Object} oParams
+         * {
+         *    DB_NAME   :   @type {String}  Database Name    (* 필수)
+         *    TABLE_NAME:   @type {String}  Table Name       (* 필수)
+         *    VER       :   @type {Integer} Database Version (옵션)
+         * }
+         *********************************************************/
+        static createIndexDB (oParams){
+
+            var that = this;
+
+            return new Promise((resolve) => {
+
+                // 공통 리턴 구조
+                let _oRES = that.getResInfo();
+
+                // E 박고 시작
+                _oRES.RETCD = "E";
+
+                // 파라미터 필수값 체크
+                let _oCheckResult = that._checkCreateIndexDbParams(oParams);
+                if(_oCheckResult.RETCD === "E"){
+
+                    let _sErrMsg = "";
+
+                    switch (_oCheckResult.PRCCD) {
+
+                        case "E01":
+                            _sErrMsg = "Parameter가 없습니다.";
+                            break;
+
+                        case "E02":
+                            _sErrMsg = "Parameter 가 Object 타입이 아닙니다";
+                            break;
+
+                        case "E03":
+                            _sErrMsg = "'DB_NAME' 파라미터가 없거나 String 타입이 아닙니다.";
+                            break;
+
+                        case "E04":
+                            _sErrMsg = "'TABLE_NAME' 파라미터가 없거나 String 타입이 아닙니다";
+                            break;
+
+                        case "E05":
+                            _sErrMsg = "버전 파라미터는 숫자타입만 가능합니다.";
+                            break;
+
+                    }
+
+                    console.error(_sErrMsg);
+
+                    _oRES.RETCD = "E";
+                    _oRES.RTMSG = _sErrMsg;
+
+                    return resolve(_oRES);
+                }
+
+                let _sDbName = oParams.DB_NAME;
+                let _sTbName = oParams.TABLE_NAME;
+                let _iVer = oParams.VER || 1;
+
+                let _oRequest = indexedDB.open(_sDbName, _iVer);
+            
+                _oRequest.onsuccess = async function(oEvent) {
+                    
+                    const _oDatabase = _oRequest.result;                    
+
+                    // 테이블이 잘 생성되었는지 확인
+                    let _bIsExists = _oRequest.result.objectStoreNames.contains(_sTbName);
+                    if(!_bIsExists){
+
+                        _oDatabase.close();
+
+                        var iVersion = _oDatabase.version;
+
+                        oParams.VER = iVersion + 1;
+
+                        // let _sErrMsg = "테이블이 생성되지 않았습니다.";
+
+                        // console.error(_sErrMsg);
+
+                        // _oRES.RETCD = "E";
+                        // _oRES.RTMSG = _sErrMsg;                        
+    
+                        return resolve(await that.createIndexDB(oParams));
+                    }
+
+                    _oDatabase.close();
+
+                    _oRES.RETCD = "S";
+                    _oRES.RDATA = oEvent;
+
+                    return resolve(_oRES);
+                };
+                
+                _oRequest.onupgradeneeded = function(oEvent) {
+
+                    const _oDatabase = _oRequest.result;
+
+                    _oDatabase.createObjectStore(_sTbName, { autoIncrement: true });
+
+                };
+                
+                _oRequest.onerror = (error) => {                    
+                    
+                    console.error(error);
+
+                    _oRES.RETCD = "E";
+                    _oRES.RTMSG = error && error?.target?.error?.toString() || "";
+
+                    return resolve(_oRES);
+
+                };
+                
+            });
+
+        } // end of static createIndexDB
+
+        /*********************************************************
+         * @method - Check for CreateIndexDb Parameter
+         *********************************************************/
+        static _checkCreateIndexDbParams(oParams) {
+
+            // DB_NAME   :   @type {String} Database Name     (* 필수)
+            // TABLE_NAME:   @type {String} Table Name        (* 필수)
+            // VERSION   :   @type {Integer} Database Version (옵션)
+
+            // 공통 리턴 구조
+            let _oRES = this.getResInfo();
+
+            // 파라미터가 없을 경우 오류!!
+            if(!oParams){
+
+                _oRES.RETCD = "E";
+                _oRES.PRCCD = "E01";
+                // _oRES.RTMSG = "Parameter가 없습니다.";
+                
+                return _oRES;
+            }
+
+            // 파라미터 타입 체크
+            if(!oParams.constructor.toString().includes("Object")){
+
+                _oRES.RETCD = "E";
+                _oRES.PRCCD = "E02";
+                // _oRES.RTMSG = "Parameter 가 Object 타입이 아닙니다";
+
+                return _oRES;
+            }
+
+            if(!oParams.DB_NAME || typeof oParams.DB_NAME !== "string"){
+
+                _oRES.RETCD = "E";
+                _oRES.PRCCD = "E03";            
+                // _oRES.RTMSG = "'DB_NAME' 파라미터가 없거나 String 타입이 아닙니다"
+
+                return _oRES; 
+            }
+
+            if(!oParams.TABLE_NAME || typeof oParams.TABLE_NAME !== "string"){
+
+                _oRES.RETCD = "E";
+                _oRES.PRCCD = "E04";
+                // _oRES.RTMSG = "'TABLE_NAME' 파라미터가 없거나 String 타입이 아닙니다"
+
+                return _oRES;
+            }
+
+            // 버전 정보가 있을 경우 타입 체크
+            if(oParams.VER){
+
+                if(oParams.VER.constructor.name !== "Number"){
+
+                    _oRES.RETCD = "E";
+                    _oRES.PRCCD = "E05";
+                    // _oRES.RTMSG = "버전 파라미터는 숫자타입만 가능합니다."
+
+                    return _oRES;
+                }
+            }
+            
+            _oRES.RETCD = "S";
+
+            return _oRES;
+
+        } // end of static _checkCreateIndexDbParams
+        
+
+        /*********************************************************
+         * @method - Insert
+         *********************************************************
+         * @param {Object} oParams
+         * {
+         *    DB_NAME   :   @type {String} Database Name    (* 필수)
+         *    TABLE_NAME:   @type {String} Table Name       (* 필수)
+         *    DATA      :   @type {Array}  Insert Data      (* 필수)
+         *    KEY       :   @type {String} Key              (옵션)
+         * }
+         * 
+         * @returns {Object}
+         * {
+         *    RETCD:        // 리턴코드 'S': 성공, 'E': 실패
+         *    RTMSG:        // 리턴 메시지
+         * }
+         *********************************************************/
+        static insert(oParams) {
+
+            var that = this;
+
+            return new Promise(async (resolve) => {            
+
+                // 공통 리턴 구조
+                let _oRES = that.getResInfo();
+
+                // E 박고 시작
+                _oRES.RETCD = "E";                
+
+                // Insert 파라미터 필수값 체크
+                let _oCheckResult = that._checkInsertParams(oParams);
+                if(_oCheckResult.RETCD === "E"){
+                    
+                    let _sErrMsg = "";
+
+                    switch (_oCheckResult.PRCCD) {
+
+                        case "E01":
+                            _sErrMsg = "Parameter가 없습니다.";
+                            break;
+
+                        case "E02":
+                            _sErrMsg = "Parameter 가 Object 타입이 아닙니다";
+                            break;
+
+                        case "E03":
+                            _sErrMsg = "'DB_NAME' 파라미터가 없거나 String 타입이 아닙니다.";
+                            break;
+
+                        case "E04":
+                            _sErrMsg = "'TABLE_NAME' 파라미터가 없거나 String 타입이 아닙니다";
+                            break;
+
+                        case "E05":
+                            _sErrMsg = "'DATA' 파라미터가 없거나 Array 타입이 아닙니다";
+                            break;
+
+                        case "E06":
+                            _sErrMsg = "'KEY' 파라미터가 없거나 String 타입이 아닙니다";
+                            break;
+                    }
+
+                    console.error(_sErrMsg);
+
+                    _oRES.RETCD = "E";
+                    _oRES.RTMSG = _sErrMsg;
+
+                    return resolve(_oRES);
+                }
+
+                let _sDbName       = oParams.DB_NAME;
+                let _sTbName       = oParams.TABLE_NAME;
+                let _sKey          = oParams.KEY;
+                let _aInsertData   = oParams.DATA;
+
+                // Database Open
+                let _oDbResult = await that._openDatabase(_sDbName);
+                if(_oDbResult.RETCD === "E"){
+                    
+                    console.error(_oDbResult.RTMSG);
+
+                    _oRES.RETCD = "E";
+                    _oRES.RTMSG = _oDbResult.RTMSG;
+
+                    return resolve(_oRES);
+                }
+
+                let _oDatabase = _oDbResult.RDATA;
+
+                try {
+                    
+                    const _oTransaction = _oDatabase.transaction(_sTbName, 'readwrite');
+
+                    // transaction 성공일 경우에만 발생되는 이벤트(실패할 경우는 타지 않음!!)
+                    _oTransaction.oncomplete = function() {
+
+                        _oDatabase.close();
+
+                        return resolve(_oRES);
+                    };
+
+                    const _oStore = _oTransaction.objectStore(_sTbName);
+
+                    var _oREQ = undefined;
+                    
+                    if(_sKey){
+                        _oREQ = _oStore.add(_aInsertData, _sKey);
+                    } else {
+                        _oREQ = _oStore.add(_aInsertData);
+                    }
+
+                    _oREQ.onsuccess = function(event) {
+
+                        _oRES.RETCD = "S";
+                        _oRES.RDATA = event.target.result || "";
+
+                    };
+
+                    _oREQ.onerror = function(event){
+
+                        _oDatabase.close();
+
+                        _oRES.RETCD = "E";
+
+                        let _sErrMsg = "";
+                        if( event && 
+                            event.target && 
+                            event.target.error && 
+                            event.target.error.toString){
+                            
+                            _sErrMsg = event.target.error.toString();
+                        }
+
+                        _oRES.RTMSG = _sErrMsg || "Insert Error!!";
+
+                        return resolve(_oRES);
+                    };            
+
+
+                } catch (error) {
+                    
+                    _oDatabase.close();
+
+                    _oRES.RETCD = "E";
+                    _oRES.RTMSG = (error ? error.toString() : "Insert Error!!");
+
+                    return resolve(_oRES);
+                }
+
+            });
+
+
+        } // end of static insert
+
+        /*************************************************
+         * Database Open
+         ************************************************** 
+        * @param {String} _sDbName 
+        *************************************************/
+        static _openDatabase(_sDbName) {
+
+            return new Promise((resolve) => {
+
+                var oDb = indexedDB.open(_sDbName, 1);
+    
+                oDb.onsuccess = function() {
+    
+                    return resolve({
+                        RETCD : "S",
+                        RDATA : oDb.result
+                    });
+    
+                };
+    
+                oDb.onerror = function(error) { 
+    
+                    return resolve({
+                        RETCD : "E",
+                        RTMSG : error
+                    });       
+    
+                };
+    
+            });
+
+        } // end of static _openDatabase
+
+        /*********************************************************
+         * @method - Check for Insert Parameter
+         *********************************************************/
+        static _checkInsertParams(oParams){
+
+            // 공통 리턴 구조
+            let _oRES = this.getResInfo();
+            
+            // DB_NAME   :   @type {String} Database Name    (* 필수)
+            // TABLE_NAME:   @type {String} Table Name       (* 필수)
+            // DATA      :   @type {Array}  Insert Data      (* 필수)
+            // KEY       :   @type {String} Key              (옵션)
+
+            // 파라미터가 없을 경우 오류!!
+            if(!oParams){
+
+                _oRES.RETCD = "E";
+                _oRES.PRCCD = "E01";
+                // _oRES.RTMSG = "Parameter가 없습니다.";
+                
+                return _oRES;
+            }
+
+            // 파라미터 타입 체크
+            if(!oParams.constructor.toString().includes("Object")){
+
+                _oRES.RETCD = "E";
+                _oRES.PRCCD = "E02";
+                // _oRES.RTMSG = "Parameter 가 Object 타입이 아닙니다";
+
+                return _oRES;
+            }
+
+            if(!oParams.DB_NAME || typeof oParams.DB_NAME !== "string"){
+
+                _oRES.RETCD = "E";
+                _oRES.PRCCD = "E03";            
+                // _oRES.RTMSG = "'DB_NAME' 파라미터가 없거나 String 타입이 아닙니다"
+
+                return _oRES; 
+            }
+
+            if(!oParams.TABLE_NAME || typeof oParams.TABLE_NAME !== "string"){
+
+                _oRES.RETCD = "E";
+                _oRES.PRCCD = "E04";
+                // _oRES.RTMSG = "'TABLE_NAME' 파라미터가 없거나 String 타입이 아닙니다"
+
+                return _oRES;
+            }
+
+            if(!oParams.DATA || Array.isArray(oParams.DATA) === false){
+
+                _oRES.RETCD = "E";
+                _oRES.PRCCD = "E05";
+                // _oRES.RTMSG = "'DATA' 파라미터가 없거나 Array 타입이 아닙니다"
+
+                return _oRES;
+            }
+
+            if(oParams.KEY){
+
+                if(typeof oParams.KEY !== "string"){
+                    
+                    _oRES.RETCD = "E";
+                    _oRES.PRCCD = "E06";
+                    // _oRES.RTMSG = "'KEY' 파라미터가 없거나 String 타입이 아닙니다"
+
+                    return _oRES;                    
+                }
+
+            }
+
+            _oRES.RETCD = "S";
+
+            return _oRES;       
+
+        } // end of static _checkInsertParams
+
+        static read() {
+
+
+
+        }
+
+        static readAll(){
+
+
+
+        }        
+
+        static delete(){
+
+
+
+        }
+
+        static deleteAll() {
+
+
+
+        }
+
+    },
+
     /**
      * @class
      * 접속 언어별 다국어 지원 메시지를 생성하는 클래스
@@ -1249,8 +1752,8 @@ module.exports = {
 
         } catch (error) {
 
-            let sErrMsg = "[Icon Favorite save]: " + error.toString() + " \n\n ";
-            console.log(sErrMsg);
+            let _sErrMsg = "[Icon Favorite save]: " + error.toString() + " \n\n ";
+            console.log(_sErrMsg);
             throw new Error(error);
         }
 

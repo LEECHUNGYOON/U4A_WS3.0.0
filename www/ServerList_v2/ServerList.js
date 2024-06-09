@@ -126,6 +126,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }
 
+    /**************************************************************************
+     * /etc/services에 있는 메시지 서버관련 정보를 추출한다.
+     **************************************************************************/
     async function _getSys32Services(){
 
         return new Promise((resolve) => {
@@ -153,10 +156,15 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         });
 
-    }
+    } // end of _getSys32Services
 
+    /**************************************************************************
+     * /etc/services에 있는 메시지 서버관련 정보를 추출하여 SYSID 별 PORT 정보를 
+     * Array 구조로 만든다.
+     **************************************************************************/
     async function _getMsgServPortList(){
 
+        // /etc/services에 있는 메시지 서버관련 정보를 추출
         let oSys32Services = await _getSys32Services();
         if(oSys32Services.RETCD === "E"){
             return;
@@ -209,7 +217,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         console.log(oAPP.data.SAPLogon.aSys32MsgServPort);
 
-    }
+    } // end of _getMsgServPortList
 
     /************************************************************************
      * ------------------------ [ Server List Start ] ------------------------

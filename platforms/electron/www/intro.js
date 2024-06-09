@@ -84,6 +84,9 @@
         // u4a Icon 파일을 UserData 쪽으로 복사
         await _copyToUserDataU4aIcon();
 
+        // IndexDB 관련
+        await _indexDbRelated();
+
         let oGlobalSettings = await WSUTIL.getWsGlobalSettingInfoAsync();
 
         // 초기 설치(기본 폴더, vbs 옮기기 등등)
@@ -1589,6 +1592,20 @@
     } // end of _copyToUserDataU4aIcon
 
 
+    /************************************************************************
+     * IndexDB 관련
+     ************************************************************************/
+    function _indexDbRelated(){
+
+        return new Promise(async (resolve) => {
+
+
+
+            resolve();
+
+        });
+        
+    } // end of _indexDbRelated
 
 
     document.addEventListener('deviceready', oAPP.fn.fnOnDeviceReady, false);

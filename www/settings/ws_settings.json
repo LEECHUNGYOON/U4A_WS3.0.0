@@ -1,11 +1,11 @@
 {
-    "patch_level" : "00006",
+    "patch_level" : "00007",
     "SYSADMIN": {
         "AUTHKEY": "c2hvd21ldGhlbW9uZXk="
     },
     "UI5": {
         "version": "v11071",
-        "testResource": "https://sapui5.hana.ondemand.com/resources/sap-ui-core.js",
+        "testResource": "https://sapui5.hana.ondemand.com/1.108.11/resources/sap-ui-core.js",
         "localResource" : "node_modules/U4A/WS/lib/ui5/v11071/resources/sap-ui-core.js",
         "bootstrap": {
             "data-sap-ui-language": "EN",
