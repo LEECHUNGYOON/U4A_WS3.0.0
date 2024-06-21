@@ -557,6 +557,10 @@
     //모델 갱신 처리.
     oAPP.attr.oModel.refresh(bForceUpdate);
 
+    //20240621 pes.
+    //바인딩 팝업의 디자인 영역 갱신처리.
+    oAPP.fn.updateBindPopupDesignData();
+
   };  //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
 
 
@@ -719,6 +723,10 @@
 
       //화면 잠금 해제 처리.
       oAPP.fn.designAreaLockUnlock();
+
+      //20240621 pes.
+      //바인딩 팝업의 디자인 영역 갱신처리.
+      oAPP.fn.updateBindPopupDesignData();
 
     }); //초기화전 확인팝업 호출.
 
@@ -1381,6 +1389,11 @@
     //모델 갱신 FLAG가 입력된 경우.
     if(bModelRefresh){
       oAPP.attr.oModel.refresh(true);
+
+      //20240621 pes.
+      //바인딩 팝업의 디자인 영역 갱신처리.
+      oAPP.fn.updateBindPopupDesignData();
+
     }
 
     //해당 FUNCTION 호출처의 하위 로직 SKIP을 위한 FLAG RETURN.
@@ -1939,6 +1952,9 @@
       oAPP.attr.oModel.oData.T_ATTR[i].OBJID = ls_uiinfo.OBJID;
     }
     
+    //20240621 pes.
+    //바인딩 팝업의 디자인 영역 갱신처리.
+    oAPP.fn.updateBindPopupDesignData();
 
     //이전 OBJID를 변경된 ID로 업데이트.
     ls_uiinfo.OBJID_bf = ls_uiinfo.OBJID;
@@ -1949,6 +1965,7 @@
 
     //화면에서 UI추가, 이동, 삭제 및 attr 변경시 변경 flag 처리.
     oAPP.fn.setChangeFlag();
+
 
   };  //OBJID 입력건 처리.
 
@@ -2206,6 +2223,7 @@
     if(bIsbind === false){
       //unbind 처리.
       oAPP.fn.attrSetUnbindProp(is_attr);
+
       return;
     }
 
@@ -2291,7 +2309,7 @@
 
             //TREE의 PARENT, CHILD 프로퍼티 예외처리.
             oAPP.fn.attrUnbindTree(is_attr);
-            
+
 
           });
 
@@ -2340,6 +2358,10 @@
 
         oAPP.attr.prev[is_attr.OBJID]._MODEL[is_attr.UIATT] = is_attr.UIATV;
 
+        //20240621 pes.
+        //바인딩 팝업의 디자인 영역 갱신처리.
+        oAPP.fn.updateBindPopupDesignData();
+
       });
 
       return;
@@ -2351,6 +2373,10 @@
 
     oAPP.attr.prev[is_attr.OBJID]._MODEL[is_attr.UIATT] = is_attr.UIATV;
 
+    
+    //20240621 pes.
+    //바인딩 팝업의 디자인 영역 갱신처리.
+    oAPP.fn.updateBindPopupDesignData();
 
   };  //aggregation 바인딩 callback 처리.
 
@@ -2509,8 +2535,10 @@
     //n건 바인딩이 없는경우 exit.
     if(!oUi._BIND_AGGR[UIATT] || oUi._BIND_AGGR[UIATT].length === 0){
 
-      //n건 바인딩 초기화 처리.
-      lf_clearBindData(oUi);
+      //현재 UI에 수집된 ATTR 정보 초기화 로직 주석.
+      //해당 FUNCTION 수행 이후 ATTR 수집건 처리 FUNCTION에 판단함.
+      // //n건 바인딩 초기화 처리.
+      // lf_clearBindData(oUi);
 
       //Aggregation에 n건 바인딩 처리 제거.
       if(oAPP.fn.chkBindPath(UIATV, oUi._MODEL[UIATT]) === true){
@@ -2553,8 +2581,10 @@
     } //N건 바인딩 설정한 하위 UI가 존재하는경우.
 
 
-    //n건 바인딩 초기화 처리.
-    lf_clearBindData(oUi);
+    //현재 UI에 수집된 ATTR 정보 초기화 로직 주석.
+    //해당 FUNCTION 수행 이후 ATTR 수집건 처리 FUNCTION에 판단함.
+    // //n건 바인딩 초기화 처리.
+    // lf_clearBindData(oUi);
 
     
     //Aggregation에 n건 바인딩 처리 제거.

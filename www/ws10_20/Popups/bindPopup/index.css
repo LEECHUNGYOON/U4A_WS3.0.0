@@ -8,3 +8,18 @@
 .sapMSticky5 .sapMTableTH, .sapMSticky7>.sapMListInfoTBarContainer {
     top: 2.75rem;
 }
+
+
+.u4aWsDisableTreeDrop {
+    opacity: 0.3;
+}
+  
+.sapUiTheme-sap_fiori_3_dark .u4aWsDisableTreeDrop,
+.sapUiTheme-sap_horizon_dark .u4aWsDisableTreeDrop {
+    opacity: 0.3;
+}
+
+
+.u4aWsDesignTreeError{
+    background-color: #FF6347 !important;
+}

@@ -320,7 +320,7 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
-            // busy 키고 Lock 켜기
+            // busy OFF Lock OFF
             oAPP.common.fnSetBusyLock("");
             return;
         }
@@ -335,7 +335,8 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A15"); // Binding Popup
-        oBrowserOptions.width = 1000;
+        // oBrowserOptions.width = 1000;
+        oBrowserOptions.width = 1440;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
@@ -360,21 +361,62 @@
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        // no build 일 경우에는 개발자 툴을 실행한다.
+
+        //WS 3.0 메인 PATH 얻기.
+        var _channelPath = parent.getPath("WS10_20_ROOT");
+
+        //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH 구성.
+        _channelPath = PATH.join(_channelPath, "design", "bindPopupHandler", "broadcastChannelBindPopup.js");
+
+
+  
+        // // no build 일 경우에는 개발자 툴을 실행한다.
         // if (!APP.isPackaged) {
         //     oBrowserWindow.webContents.openDevTools();
         // }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
+            
+            var _aTree = JSON.parse(JSON.stringify(oAPP.attr.oModel.oData.zTREE));
 
+
+            oAPP.attr.POSIT = 0;
+
+            //UI POSTION 정보 재매핑 처리.
+            oAPP.fn.setUIPOSIT(_aTree);
+
+            oAPP.attr.POSIT = 0;
+
+
+            //design tree 정보를 기준으로 ZY04A0014 저장 정보 구성.
+            var lt_0014 = oAPP.fn.parseTree2Tab(_aTree);
+
+            //POSITION 으로 정렬처리.
+            lt_0014.sort(function(a,b){
+                return a.POSIT - b.POSIT;
+            });
+
+            //UI에 구성한 attr 정보 수집 처리.
+            var lt_0015 = oAPP.fn.getAttrChangedData();
+
+
+            //디자인상세화면(20화면) <-> BINDPOPUP 통신 채널 키 얻기.
+            var _channelKey = parent.require(_channelPath)("GET-CHANNEL-ID");
+            
             var oBindPopupData = {
                 oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보 (필수)
                 oThemeInfo: oThemeInfo, // 테마 개인화 정보
                 T_9011: oAPP.DATA.LIB.T_9011,
+                T_0022: oAPP.DATA.LIB.T_0022,
+                T_0023: oAPP.DATA.LIB.T_0023,
+                T_0014: lt_0014,
+                T_0015: lt_0015,
+                T_CEVT: oAPP.DATA.APPDATA.T_CEVT,
                 oAppInfo: parent.getAppInfo(),
                 servNm: parent.getServerPath(),
-                SSID: parent.getSSID()
+                SSID: parent.getSSID(),
+                channelKey : _channelKey
             };
 
             oBrowserWindow.webContents.send('if_modelBindingPopup', oBindPopupData);
@@ -384,6 +426,15 @@
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+            // no build 일 경우에는 개발자 툴을 실행한다.
+            if (!APP.isPackaged) {
+                oBrowserWindow.webContents.openDevTools();
+            }
+
+            //디자인상세화면(20화면) <-> BINDPOPUP 통신을 위한 채널 생성.
+            parent.require(_channelPath)("CHANNEL-CREATE");
+
 
         });
 
@@ -395,6 +446,9 @@
 
             oBrowserWindow = null;
 
+            //디자인상세화면(20화면) <-> BINDPOPUP 통신 채널 종료.
+            parent.require(_channelPath)("CHANNEL-CLOSE");
+
             // Binding Popup 에서 콜백 이벤트 해제
             IPCRENDERER.off("if-bindPopup-callback", oAPP.fn.fnBindPopupIpcCallBack);
 
@@ -403,6 +457,8 @@
         });
 
     }; // end of oAPP.fn.fnBindWindowPopupOpener
+
+
 
     /************************************************************************
      * 부모 윈도우 위치의 가운데 배치한다.
