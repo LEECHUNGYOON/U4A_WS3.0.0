@@ -43,6 +43,7 @@ let oAPP = (function(window) {
         WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
 
     oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+    oAPP.WSUTIL = WSUTIL;
 
     /*******************************************************
      * 메시지클래스 텍스트 작업 관련 Object -- end

@@ -5,37 +5,73 @@ module.exports = function(is_attr){
 
     return new Promise(async(res)=>{
 
-        var _sRes = {RETCD:"", RTMSG:""};
+        var _sRes = {RETCD:"", RTMSG:"", T_RTMSG:[]};
 
 
         //DESIGN TREE의 오류 표현 필드 정보 초기화.
         oAPP.attr.oDesign.fn.resetErrorField();
         
 
-        //바인딩 추가 속성 정보 적용 전 입력값 점검.
-        var _sRes =  await oAPP.fn.chkAdditBindData(oAPP.attr.oAddit.oModel);
-
-        //추가속성 정보 입력값 오류가 존재하는경우.
-        if(_sRes.RETCD === "E"){
-            oAPP.attr.oDesign.oModel.refresh();
-            return res(_sRes);
-        }
-
-
         //DESIGN TREE의 체크박스 선택건 존재 여부 확인.
         var _aTree = oAPP.attr.oDesign.fn.getSelectedDesignTree();
 
         //DESIGN TREE의 체크박스 선택건이 존재하지 않는경우.
         if(_aTree.length === 0){
-            
+
             //$$MSG
             _sRes.RETCD = "E";
-            _sRes.RTMSG = "라인 선택건이 존재하지 않습니다.";
+            _sRes.RTMSG = "DESIGN 영역의 라인 선택건이 존재하지 않습니다."; //$$MSG
+            
+            var _sBindError = JSON.parse(JSON.stringify(oAPP.types.TY_BIND_ERROR));
+            
+            _sBindError.ACTCD    = oAPP.attr.CS_MSG_ACTCD.ACT02;
+            _sBindError.TYPE     = "Error";
+            _sBindError.TITLE    = "DESIGN 영역의 라인 선택건이 존재하지 않습니다.";             //$$MSG
+            _sBindError.DESC     = "추가속성 바인딩을 하기 위해서 디자인 영역의 라인을 선택 해야 합니다."; //$$MSG
+
+            _sRes.T_RTMSG.push(_sBindError);
+
             oAPP.attr.oDesign.oModel.refresh();
-            return res(_sRes);
 
         }
-        
+
+
+        //오류 표현 필드 초기화.
+        oAPP.attr.oAddit.fn.resetErrorField();
+
+
+        //바인딩 추가 속성 정보 적용 전 입력값 점검.
+        var _sChk =  await oAPP.fn.chkAdditBindData(oAPP.attr.oAddit.ui.ROOT);
+
+        //추가속성 정보 입력값 오류가 존재하는경우.
+        if(_sChk.RETCD === "E"){
+
+            _sRes.RETCD = _sChk.RETCD;
+            _sRes.RTMSG = _sChk.RTMSG;
+
+            _sRes.T_RTMSG = _sRes.T_RTMSG.concat(_sChk.T_RTMSG);
+            
+            // var _sBindError = JSON.parse(JSON.stringify(oAPP.types.TY_BIND_ERROR));
+            
+            // _sBindError.ACTCD    = oAPP.attr.CS_MSG_ACTCD.ACT03;
+            // _sBindError.TYPE     = "Error";
+            // _sBindError.TITLE    = _sChk.RTMSG;             //$$MSG
+            // _sBindError.DESC     = _sChk.RTMSG; //$$MSG
+
+            // _sRes.T_RTMSG.push(_sBindError);
+
+            oAPP.attr.oDesign.oModel.refresh();
+
+
+            return res(_sRes);
+        }
+
+
+        //라인 선택건이 존재하지 않는경우 exit.
+        if(_aTree.length === 0){
+            return res(_sRes);
+        }
+
 
         var _error = false;
 
@@ -45,10 +81,10 @@ module.exports = function(is_attr){
             var _sTree = _aTree[i];
 
             //선택건중 추가속성 정보 가능건 확인.
-            var _sRes = oAPP.attr.oAddit.fn.chkPossibleAdditBind(_sTree);
+            var _sChk = oAPP.attr.oAddit.fn.chkPossibleAdditBind(_sTree);
 
             //선택건중 추가속성이 불가능한건이존재하는경우.
-            if(_sRes.RETCD === "E"){
+            if(_sChk.RETCD === "E"){
 
                 //오류 flag 처리.
                 _error = true;
@@ -56,17 +92,28 @@ module.exports = function(is_attr){
                 //바인딩시 오류가 발생한 경우.
                 _sTree._bind_error    = true;
 
-                //오류 표현 처리.
-                _sTree._check_vs      = "Error";
-                _sTree._highlight     = "Error";
-                _sTree._style         = "u4aWsDesignTreeError";
-                _sTree._error_tooltip = _sRes.RTMSG;
+                // //오류 표현 처리.
+                // _sTree._check_vs      = "Error";
+                // _sTree._highlight     = "Error";
+                // _sTree._style         = "u4aWsDesignTreeError";
+                // _sTree._error_tooltip = _sChk.RTMSG;
+
+
+                var _sBindError = JSON.parse(JSON.stringify(oAPP.types.TY_BIND_ERROR));
+        
+                _sBindError.ACTCD    = oAPP.attr.CS_MSG_ACTCD.ACT04;
+                _sBindError.LINE_KEY = _sTree.CHILD;
+                _sBindError.TYPE     = "Error";
+                _sBindError.TITLE    = `${_sTree.OBJID} - ${_sTree.UIATT} 필드 추가속성 바인딩 오류.`; //$$MSG
+                _sBindError.DESC     = _sChk.RTMSG; //$$MSG
+
+                _sRes.T_RTMSG.push(_sBindError);
 
             }
             
         }
 
-        
+
         //추가 속성 불가능건이 존재하는경우.
         if(_error === true){
 
@@ -81,13 +128,13 @@ module.exports = function(is_attr){
                 }
 
                 //라인 펼침 처리.
-                oAPP.attr.oDesign.fn.setSelectTreeItem(_sTree.CHILD);
+                oAPP.attr.oDesign.fn.getTreeItemIndex(_sTree.CHILD);
 
             }
 
 
             //현재 row에 오류 표현된건이 존재하지 않는경우 오류 발생한 라인으로 이동 처리.
-            moveDesignTreeErrorLine();
+            moveDesignTreeErrorLine(_aTree);
 
             //$$MSG
             _sRes.RETCD = "E";
@@ -100,16 +147,19 @@ module.exports = function(is_attr){
 
 
 
-        //선택 라인의 모델 필드 정보 점검.
-        var _sRes = await parent.require("./bindAdditArea/checkModelFieldData.js")(_aTree);
+        // //선택 라인의 모델 필드 정보 점검.
+        // var _sChk = await parent.require("./bindAdditArea/checkModelFieldData.js")(_aTree);
 
-        //추가속성 정보 입력값 오류가 존재하는경우.
-        if(_sRes.RETCD === "E"){
+        // //추가속성 정보 입력값 오류가 존재하는경우.
+        // if(_sChk.RETCD === "E"){
 
-            oAPP.attr.oDesign.oModel.refresh();
+        //     _sRes.RETCD = _sChk.RETCD;
+        //     _sRes.RTMSG = _sChk.RTMSG;
 
-            return res(_sRes);
-        }
+        //     oAPP.attr.oDesign.oModel.refresh();
+
+        //     return res(_sRes);
+        // }
 
         oAPP.attr.oDesign.oModel.refresh();
 
@@ -123,38 +173,7 @@ module.exports = function(is_attr){
 /*************************************************************
  * @function - 디자인 트리 영역에 오류 발생 위치로 이동 처리.
  *************************************************************/
-function moveDesignTreeErrorLine(){
-
-    function _foundErrorNode(aChild){
-
-        if(aChild.length === 0){
-            return;
-        }
-
-        for (let i = 0, l = aChild.length; i < l; i++) {
-            var _oChild = aChild[i];
-
-            if(typeof _oChild?.context === "undefined" || _oChild.context === null){
-                continue;
-            }
-
-            _cnt++;
-
-            if(_oChild.context.getProperty("_bind_error") === true){
-                return true;
-            }
-
-            //하위를 탐색하며 오류 발생 라인 찾기.
-            var _found = _foundErrorNode(_oChild.children);
-
-            if(_found === true){
-                return;
-            }
-            
-        }
-
-    }
-
+function moveDesignTreeErrorLine(aTree){
 
 
     //오류가 발생한 row가 화면에 표현된 상태인경우 exit.
@@ -163,26 +182,19 @@ function moveDesignTreeErrorLine(){
     }
 
 
-    var _cnt = -1;
+    //오류가 발생한 라인 얻기.
+    var _sTree = aTree.find( item => item._bind_error === true);
 
-    var _oBind = oAPP.attr.oDesign.ui.ROOT.getBinding("rows");
+    //라인 펼침 처리.
+    var _pos = oAPP.attr.oDesign.fn.getTreeItemIndex(_sTree.CHILD);
 
-    if(typeof _oBind === "undefined" || _oBind === null){
+    if(typeof _pos === "undefined"){
         return;
     }
 
+    //해당 위치로 이동 처리.
+    oAPP.attr.oDesign.ui.TREE.setFirstVisibleRow(_pos);
 
-    //오류 발생 라인 위치 찾기.
-    _foundErrorNode(_oBind._oRootNode.children);
-
-    //오류 발생 라인을 찾지 못한 경우 exit.
-    if(_cnt === -1){
-        return;
-    }
-
-
-    //오류 발생 라인을 찾은경우 해당 라인으로 이동 처리.
-    oAPP.attr.oDesign.ui.ROOT.setFirstVisibleRow(_cnt);
 
 }
 
@@ -192,7 +204,7 @@ function moveDesignTreeErrorLine(){
  *************************************************************/
 function chkShowErrorRow(){
     
-    var _aRows = oAPP.attr.oDesign.ui.ROOT.getRows();
+    var _aRows = oAPP.attr.oDesign.ui.TREE.getRows();
 
     if(_aRows.length === 0){
         return false;

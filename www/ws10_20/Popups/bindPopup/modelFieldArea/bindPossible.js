@@ -1,22 +1,3 @@
-//바인딩 제외 항목.
-const CT_BIND_EXCEPT = [
-    {ITMCD:"", FLD01:"EXT00000030"},    //appcontainer의 AppID 프로퍼티인경우
-    {ITMCD:"", FLD01:"EXT00000031"},    //appcontainer의 AppDescript.
-    {ITMCD:"", FLD01:"EXT00000032"},    //appcontainer의 height
-    {ITMCD:"", FLD01:"EXT00000033"},    //appcontainer의 width
-    {ITMCD:"", FLD01:"EXT00001188"},    //selectOption2의 F4HelpID
-    {ITMCD:"", FLD01:"EXT00001189"},    //selectOption2의 F4HelpReturnFIeld
-    {ITMCD:"", FLD01:"EXT00002534"},    //selectOption3의 F4HelpID
-    {ITMCD:"", FLD01:"EXT00002535"},    //selectOption3의 F4HelpReturnFIeld
-
-    {ITMCD:"", FLD01:"EXT00001347"},    //sap.ui.table.Table autoGrowing
-    {ITMCD:"", FLD01:"EXT00001348"},    //sap.m.Table autoGrowing
-    {ITMCD:"", FLD01:"EXT00001349"},    //sap.m.List autoGrowing
-    {ITMCD:"", FLD01:"EXT00002374"},    //sap.m.Page useBackToTopButton
-    {ITMCD:"", FLD01:"EXT00002378"},    //sap.uxap.ObjectPageLayout useBackToTopButton
-    {ITMCD:"", FLD01:"EXT00002379"}     //sap.f.DynamicPage
-];  
-
 
 /*************************************************************
  * @module - DESIGN TREE에서 선택한 ATTR(PROPERTY, AGGREGEGATION)
@@ -456,7 +437,7 @@ function lf_setBindEnable(it_tree, l_path, l_model, KIND){
                 }
 
                 //바인딩 예외처리 항목에 해당하는건은 선택 불가능 처리.
-                if(CT_BIND_EXCEPT.findIndex( item => item.FLD01 === oAPP.attr.oBindDialog._is_attr.UIATK) !== -1){
+                if(oAPP.attr.CT_BIND_EXCEPT.findIndex( item => item.FLD01 === oAPP.attr.oBindDialog._is_attr.UIATK) !== -1){
                     continue;
                 }
 
@@ -472,11 +453,11 @@ function lf_setBindEnable(it_tree, l_path, l_model, KIND){
                     it_tree[i].stat_color = "#1589FF";
                     it_tree[i].highlight  = "Information";
 
-                    //이전 선택한 바인딩 상세정보가 존재하는경우.
-                    if(oAPP.attr.oBindDialog._is_attr.MPROP !== ""){
-                        //바인딩 상세정보 매핑.
-                        it_tree[i].MPROP = oAPP.attr.oBindDialog._is_attr.MPROP;
-                    }
+                    // //이전 선택한 바인딩 상세정보가 존재하는경우.
+                    // if(oAPP.attr.oBindDialog._is_attr.MPROP !== ""){
+                    //     //바인딩 상세정보 매핑.
+                    //     it_tree[i].MPROP = oAPP.attr.oBindDialog._is_attr.MPROP;
+                    // }
 
                 }
 

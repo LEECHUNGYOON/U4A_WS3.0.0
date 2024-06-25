@@ -174,11 +174,12 @@ function updateDesignData(oEvent){
 
 
     //디자인 트리 FILTER 초기화.
-    oAPP.fn.resetUiTableFilterSort(oAPP.attr.oDesign.ui.ROOT);
+    oAPP.fn.resetUiTableFilterSort(oAPP.attr.oDesign.ui.TREE);
 
 
-    //추가속성 정보 초기화.
-    oAPP.attr.oModel.oData.T_MPROP = [];
+    //바인딩 추가속성 정보 초기화.
+    oAPP.fn.clearSelectAdditBind();
+    
 
     //추가속성 정보 화면 비활성 처리.
     oAPP.fn.setAdditLayout("");

@@ -2523,6 +2523,12 @@
 
         //바인딩건인경우 N건 바인딩 처리된 건인지 판단.
         if(oAPP.fn.chkBindPath(UIATV, oUi._T_0015[i].UIATV) === true){
+
+
+          if(oUi._T_0015[i].UIATY === "3"){
+            oAPP.fn.attrUnbindAggr(oUi, oUi._T_0015[i].UIATT, oUi._T_0015[i].UIATV);
+          }          
+
           //N건 바인딩된 건인경우 바인딩 해제 처리.
           oUi._T_0015.splice(i,1);
         }
@@ -5787,6 +5793,26 @@
         return;
       }
 
+
+      //현재 UI로부터 부모를 탐색하며 n건 바인딩 존재 여부 확인.
+      var _parentModel = oAPP.fn.getParentAggrBind(oAPP.attr.prev[ls_attr.OBJID], ls_attr.UIATT);
+
+      //부모에 N건 바인딩이 구성 되었을경우, 현재 DRAG한 필드와 동일한 PATH라면 바인딩 불가능.
+      if(typeof _parentModel !== "undefined" && _parentModel.startsWith(l_json.IF_DATA.CHILD) === true){
+        //214  Unable to bind.
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+        return;
+      }
+
+
+      //대상 UI로부터 자식을 탐색하며 바인딩 가능 여부 점검.
+      if(oAPP.fn.getChildAggrBind(ls_attr.OBJID, l_json.IF_DATA.CHILD) === true){
+        //214  Unable to bind.
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+        return;
+      }
+
+
       if(typeof lt_split2 !== "undefined"){
         //마지막 필드 제거(마지막필드는 TABLE이므로)
         lt_split2.splice(lt_split2.length - 1, 1);
@@ -5807,6 +5833,55 @@
 
 
   };  //attribute에 drag UI가 올라갔을때 이벤트.
+
+
+
+  //대상 UI로부터 자식을 탐색하며 바인딩 가능 여부 점검.
+  oAPP.fn.getChildAggrBind = function(OBJID, BINDFIELD){
+
+    function lf_chkChildAggrBind(aChild){
+      
+      //CHILD 정보가 없다면 EXIT.
+      if(aChild.length === 0){
+        return;
+      }
+
+      for (let i = 0; i < aChild.length; i++) {
+
+          var sChild = aChild[i];
+
+          //CHILD에 매핑된 모델 바인딩 정보를 확인.
+          for (const key in oAPP.attr.prev[sChild.OBJID]._MODEL) {
+
+              var _sModel = oAPP.attr.prev[sChild.OBJID]._MODEL[key];
+
+              //CHILD에 매핑된 모델 바인딩건과 현재 입력한 모델 PATH가 같다면.
+              if(_sModel === BINDFIELD){
+                  
+                  //같은 PATH 정보 바인딩됨 FLAG RETURN.
+                  return true;
+              }                       
+
+          }
+
+          //하위를 탐색하며 입력 모델 PATH와 같은 바인딩이 설정 됐는지 확인.
+          var _found = lf_chkChildAggrBind(sChild.zTREE, BINDFIELD);
+
+          if(_found === true){
+              return _found;
+          }
+
+      }
+
+    }
+        
+    //입력 OBJECT tree 라인 정보 얻기.
+    var _sTree = oAPP.fn.getTreeData(OBJID);
+
+    //대상 UI로부터 자식을 탐색하며 바인딩 가능 여부 점검.
+    return lf_chkChildAggrBind(_sTree.zTREE);
+
+  };
 
 
 

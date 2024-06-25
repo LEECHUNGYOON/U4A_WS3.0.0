@@ -252,6 +252,10 @@ function updateAppData(oEvent){
     //BUSY OFF, LOCK OFF
     oAPP.common.fnSetBusyLock("");
 
+
+    //화면에서 UI추가, 이동, 삭제 및 attr 변경시 변경 flag 처리.
+    oAPP.fn.setChangeFlag();
+
     return true;
 
 }
