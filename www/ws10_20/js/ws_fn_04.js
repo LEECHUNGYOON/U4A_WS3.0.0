@@ -895,6 +895,211 @@
 
         oDialog.close();
 
-    }; // end of oAPP.fn.fnSetOpenDevTool    
+    }; // end of oAPP.fn.fnSetOpenDevTool
+
+
+    /************************************************************************
+     * System Information Dialog Open
+     ************************************************************************/
+    oAPP.fn.fnServerInfoDialogOpen = function(){
+
+        let oDialog = new sap.m.Dialog({          
+            draggable: true,        // boolean         
+            resizable: true,       // boolean        
+            afterClose: function(){
+                oDialog.destroy();
+            },           
+            buttons: [
+                new sap.m.Button({
+                    icon: "sap-icon://decline",
+                    type: sap.m.ButtonType.Reject,
+                    press: function(){
+                        oDialog.close();
+                    }
+                })
+            ],             // sap.m.Button
+            // content: [],             // sap.ui.core.Control               
+            customHeader: new sap.m.Toolbar({
+                content: [
+                    new sap.ui.core.Icon({
+                        src: "sap-icon://it-system",
+
+                    }).addStyleClass("sapUiTinyMarginBegin"),
+
+                    new sap.m.Title({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C42") // Server Information
+                    }),
+
+                    new sap.m.ToolbarSpacer(),
+
+                    new sap.m.Button({
+                        icon: "sap-icon://decline",
+                        type: sap.m.ButtonType.Reject,
+                        press: function(){
+                            oDialog.close();
+                        }
+                    })
+                ]
+            }),
+
+            content: [
+
+                new sap.ui.layout.form.Form({
+                    // width: "300px",
+                    editable: true,
+
+                    layout: new sap.ui.layout.form.ResponsiveGridLayout({
+                        labelSpanS: 4,
+                        labelSpanM: 4,
+                        labelSpanL: 4,
+                        columnsM: 1,
+                        columnsL: 2
+                    }), // end of layout
+
+                    formContainers: [
+
+                        new sap.ui.layout.form.FormContainer({
+                            formElements: [
+
+                                new sap.ui.layout.form.FormElement({
+                                    label: new sap.m.Label({
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C43") // WS Version
+                                    }), // end of label
+
+                                    fields: [
+                                        new sap.m.Text({
+                                            text: "{/USERINFO/WSVER}"
+                                        })
+                                    ] // end of fields
+
+                                }), // end of sap.ui.layout.form.FormElement
+
+                                new sap.ui.layout.form.FormElement({
+                                    label: new sap.m.Label({
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E26") // Patch Level                                        
+                                    }), // end of label
+
+                                    fields: [
+                                        new sap.m.Text({
+                                            text: "{/USERINFO/WSPATCH_LEVEL}"
+                                        })
+                                    ] // end of fields
+
+                                }).bindProperty("visible", {
+                                    parts: [
+                                        "/USERINFO/WSPATCH_LEVEL"
+                                    ],
+                                    formatter: function () {
+
+                                        return true;
+                                        // return APP.isPackaged;
+
+                                    }
+                                }), // end of sap.ui.layout.form.FormElement
+
+                                new sap.ui.layout.form.FormElement({
+                                    label: new sap.m.Label({
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C44") // Client
+                                    }), // end of label
+
+                                    fields: [
+                                        new sap.m.Text({
+                                            text: "{/USERINFO/CLIENT}"
+                                        })
+                                    ] // end of fields
+
+                                }), // end of sap.ui.layout.form.FormElement
+
+                                new sap.ui.layout.form.FormElement({
+                                    label: new sap.m.Label({
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C45") // System ID
+                                    }), // end of label
+
+                                    fields: [
+                                        new sap.m.Text({
+                                            text: "{/USERINFO/SYSID}"
+                                        })
+                                    ] // end of fields
+
+                                }), // end of sap.ui.layout.form.FormElement
+
+                                new sap.ui.layout.form.FormElement({
+                                    label: new sap.m.Label({
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C46"), // USER
+                                    }), // end of label
+
+                                    fields: [
+                                        new sap.m.Text().bindProperty("text", "/USERINFO/ID", function (sId) {
+
+                                            if (typeof sId !== "string") {
+                                                return "";
+                                            }
+
+                                            return sId.toUpperCase();
+
+                                        })
+                                    ] // end of fields
+
+                                }), // end of sap.ui.layout.form.FormElement
+
+                                new sap.ui.layout.form.FormElement({
+                                    label: new sap.m.Label({
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C47") // Language
+                                    }), // end of label
+
+                                    fields: [
+                                        new sap.m.Text({
+                                            text: "{/USERINFO/LANGU}"
+                                        })
+                                    ] // end of fields
+
+                                }), // end of sap.ui.layout.form.FormElement
+
+                                new sap.ui.layout.form.FormElement({
+                                    label: new sap.m.Label({
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C48") // Host
+                                    }), // end of label
+
+                                    fields: [
+                                        new sap.m.Text().bindProperty("text", {
+                                            parts: [
+                                                "/SERVERINFO/SERVER_INFO"
+                                            ],
+                                            formatter: (SERVERINFO) => {
+
+                                                if (!SERVERINFO) {
+                                                    return;
+                                                }
+
+                                                return SERVERINFO.host;
+
+                                            }
+                                        })
+                                    ] // end of fields
+
+                                }), // end of sap.ui.layout.form.FormElement
+
+                            ]
+
+                        })
+
+                    ] // end of formContainers
+
+                }) // end of sap.ui.layout.form.Form
+
+            ]
+
+        });
+
+        oDialog.open();
+
+    }; // end of oAPP.fn.fnServerInfoDialogOpen
 
 })(window, $, oAPP);

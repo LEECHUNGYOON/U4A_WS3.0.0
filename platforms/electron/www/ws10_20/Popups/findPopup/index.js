@@ -332,100 +332,159 @@ let oAPP = parent.oAPP;
         var EnumLabelDesignBold = sap.m.LabelDesign.Bold,
             EnumSticky = sap.m.Sticky;
 
-        return new sap.m.Page(`${C_FIND_MENU1_ID}--page`, {
+        let PAGE1 = new sap.m.Page(`${C_FIND_MENU1_ID}--page`, {
             showHeader: true,
             title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D03"), // UI Where to Use the Event
-            titleAlignment: sap.m.TitleAlignment.Center,
-            content: [
-                new sap.m.Table({
+            titleAlignment: sap.m.TitleAlignment.Center,      
+        });
 
-                    // properties
-                    fixedLayout: false,
-                    alternateRowColors: true,
-                    autoPopinMode: false,
-                    growing: true,
-                    growingScrollToLoad: true,
-                    growingThreshold: 50,
-                    sticky: [
-                        EnumSticky.ColumnHeaders
-                    ],
+        let TABLE1 = new sap.m.Table({
 
-                    // Aggregations
-                    columns: [
+            // properties
+            fixedLayout: false,
+            alternateRowColors: true,
+            autoPopinMode: false,
+            growing: true,
+            growingScrollToLoad: true,
+            growingThreshold: 50,
+            sticky: [
+                EnumSticky.ColumnHeaders
+            ],
 
-                        new sap.m.Column({
-                            demandPopin: false,
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C49"), // Event ID
-                                design: EnumLabelDesignBold
-                            }),
+            // Aggregations
+            columns: [
+
+                new sap.m.Column({
+                    demandPopin: false,
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C49"), // Event ID
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+                new sap.m.Column({
+                    demandPopin: true,
+                    minScreenWidth: "Desktop",
+                    // popinDisplay: sap.m.PopinDisplay.Inline,
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C52"), // Event Text
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+                new sap.m.Column({
+                    demandPopin: false,
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C50"), // Event Target Properties
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+                new sap.m.Column({
+                    demandPopin: false,
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C51"), // UI OBJ ID
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+            ],
+
+            items: {
+                path: `${C_MENU_BIND_PATH}/FIND1TABLE`,
+                template: new sap.m.ColumnListItem({
+                    cells: [
+
+                        new sap.m.Link({
+                            text: "{UIATV}",
+                            emphasized: true,
+                            press: oAPP.events.ev_press_Link_Find_Controller
                         }),
 
-                        new sap.m.Column({
-                            demandPopin: true,
-                            minScreenWidth: "Desktop",
-                            // popinDisplay: sap.m.PopinDisplay.Inline,
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C52"), // Event Text
-                                design: EnumLabelDesignBold
-                            }),
+                        new sap.m.Text({
+                            text: "{EVTXT}"
                         }),
 
-                        new sap.m.Column({
-                            demandPopin: false,
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C50"), // Event Target Properties
-                                design: EnumLabelDesignBold
-                            }),
+                        new sap.m.Link({
+                            text: "{UIATT}",
+                            emphasized: true,
+                            press: oAPP.events.ev_press_Link_Find
                         }),
 
-                        new sap.m.Column({
-                            demandPopin: false,
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C51"), // UI OBJ ID
-                                design: EnumLabelDesignBold
-                            }),
+                        new sap.m.Text({
+                            text: "{OBJID}"
                         }),
 
-                    ],
 
-                    items: {
-                        path: `${C_MENU_BIND_PATH}/FIND1TABLE`,
-                        template: new sap.m.ColumnListItem({
-                            cells: [
-
-                                new sap.m.Link({
-                                    text: "{UIATV}",
-                                    emphasized: true,
-                                    press: oAPP.events.ev_press_Link_Find_Controller
-                                }),
-
-                                new sap.m.Text({
-                                    text: "{EVTXT}"
-                                }),
-
-                                new sap.m.Link({
-                                    text: "{UIATT}",
-                                    emphasized: true,
-                                    press: oAPP.events.ev_press_Link_Find
-                                }),
-
-                                new sap.m.Text({
-                                    text: "{OBJID}"
-                                }),
-
-
-                            ]
-                        })
-                    }
-
+                    ]
                 })
+            }
 
-            ]
-        })
-        // .addStyleClass("sapUiContentPadding");
+        });
+
+
+        PAGE1.addContent(TABLE1);
+
+        /************************************************
+         * 테이블 헤더 툴바 영역
+         ************************************************/
+        let TOOLBAR1 = new sap.m.Toolbar();        
+        TABLE1.setHeaderToolbar(TOOLBAR1);       
+
+        let SEARCHFIELD1 = new sap.m.SearchField({
+            width: "300px",                    
+            change: function(oEvent){
+
+                oAPP.fn.fnFindPage1Filter(oEvent);
+
+            }
+        });
+        TOOLBAR1.addContent(SEARCHFIELD1);
+
+        SEARCHFIELD1.data("table", TABLE1);
+
+        return PAGE1;
 
     }; // end of oAPP.fn.fnGetFindPage1
+
+
+    /**************************************************************************
+     *  Find의 "UI Where to Use the Event" 페이지
+     * 
+     * 테이블 필터
+     **************************************************************************/
+    oAPP.fn.fnFindPage1Filter = function(oEvent){
+
+        let oSearchField = oEvent.getSource();
+
+        let oTable = oSearchField.data("table");
+        if(!oTable){
+            return;
+        }
+
+        let oBindInfo = oTable.getBinding("items");
+        if(!oBindInfo){
+            return;
+        }                                                                 
+
+        let sValue = oEvent.getSource().getValue();
+
+        //검색조건 값이 입력안된 경우 필터 해제 처리.
+        if(sValue === ""){
+            oBindInfo.filter();
+            return;
+        }      
+
+        let aFilter = [];
+
+        aFilter.push(new sap.ui.model.Filter({path:"UIATV", operator:"Contains", value1:sValue}));
+        aFilter.push(new sap.ui.model.Filter({path:"EVTXT", operator:"Contains", value1:sValue}));
+        aFilter.push(new sap.ui.model.Filter({path:"UIATT", operator:"Contains", value1:sValue}));
+        aFilter.push(new sap.ui.model.Filter({path:"OBJID", operator:"Contains", value1:sValue}));                     
+
+        oBindInfo.filter([new sap.ui.model.Filter(aFilter, false)]);
+
+    }// end of oAPP.fn.fnFindPage1Filter
 
     /**************************************************************************
      *  Find의 "Model Binding Usage For UI" 페이지
@@ -477,139 +536,196 @@ let oAPP = parent.oAPP;
         var EnumLabelDesignBold = sap.m.LabelDesign.Bold,
             EnumSticky = sap.m.Sticky;
 
-        return new sap.m.Page(`${C_FIND_MENU2_ID}--leftPage`, {
+        let oPage = new sap.m.Page(`${C_FIND_MENU2_ID}--leftPage`, {
             showHeader: false,
-            content: [
-
-                new sap.m.Table({
-
-                    // properties
-                    fixedLayout: false,
-                    alternateRowColors: true,
-                    autoPopinMode: false,
-                    growing: true,
-                    growingScrollToLoad: true,
-                    growingThreshold: 50,
-                    sticky: [
-                        EnumSticky.ColumnHeaders,
-                        EnumSticky.HeaderToolbar
-                    ],
-
-                    // Aggregations
-                    columns: [
-
-                        new sap.m.Column({
-                            demandPopin: false,
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C53"), // UI ID
-                                design: EnumLabelDesignBold
-                            }),
-                        }),
-
-                        new sap.m.Column({
-                            demandPopin: false,
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C54"), // UI Attribute ID
-                                design: EnumLabelDesignBold
-                            }),
-                        }),
-
-                        new sap.m.Column({
-                            demandPopin: true,
-                            minScreenWidth: "10000px",
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C57"), // Model full Path
-                                design: EnumLabelDesignBold
-                            }),
-                        }),
-
-                        new sap.m.Column({
-                            demandPopin: false,
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C55"), // Binding Field
-                                design: EnumLabelDesignBold
-                            }),
-                        }),
-
-                        new sap.m.Column({
-                            demandPopin: false,
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C56"), // Data Type
-                                design: EnumLabelDesignBold
-                            }),
-                        }),
-
-                    ],
-
-                    headerToolbar: new sap.m.Toolbar({
-                        content: [
-                            new sap.ui.core.Icon({
-                                src: "sap-icon://list"
-                            }),
-                            new sap.m.Text({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D07"), // Properties Usage Bind List
-                            }).addStyleClass("sapUiTinyMarginBegin")
-                        ]
-                    }),
-
-                    items: {
-                        path: `${C_MENU_BIND_PATH}/FIND2LEFT`,
-                        template: new sap.m.ColumnListItem({
-                            cells: [
-
-                                new sap.m.Link({
-                                    text: "{OBJID}",
-                                    emphasized: true,
-                                    press: oAPP.events.ev_press_Link_Find
-                                }),
-
-                                new sap.m.Text({
-                                    text: "{UIATT}"
-                                }),
-
-                                new sap.m.Link({
-                                    text: "{UIATV}",
-                                    emphasized: true,
-                                    // press: oAPP.events.ev_press_Link_Find
-                                }),
-
-                                new sap.m.Text().bindProperty("text", {
-                                    parts: [
-                                        "UIATV"
-                                    ],
-                                    formatter: function(UIATV) {
-
-                                        if (UIATV == null) {
-                                            return "";
-                                        }
-
-                                        if (UIATV.indexOf("-") < 0) {
-                                            return "";
-                                        }
-
-                                        var aSplit = UIATV.split("-"),
-                                            sFieldName = aSplit[aSplit.length - 1];
-
-                                        return sFieldName;
-
-                                    }
-                                }),
-
-                                new sap.m.Text({
-                                    text: "{UIADT}"
-                                }),
-
-                            ]
-                        })
-                    }
-
-                })
-
-            ]
-
         });
 
+        let oTable = new sap.m.Table({
+
+            // properties
+            fixedLayout: false,
+            alternateRowColors: true,
+            autoPopinMode: false,
+            growing: true,
+            growingScrollToLoad: true,
+            growingThreshold: 50,
+            sticky: [
+                EnumSticky.ColumnHeaders,
+                // EnumSticky.HeaderToolbar
+            ],
+
+            // Aggregations
+            columns: [
+
+                new sap.m.Column({
+                    demandPopin: false,
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C53"), // UI ID
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+                new sap.m.Column({
+                    demandPopin: false,
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C54"), // UI Attribute ID
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+                new sap.m.Column({
+                    demandPopin: true,
+                    minScreenWidth: "10000px",
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C57"), // Model full Path
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+                new sap.m.Column({
+                    demandPopin: false,
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C55"), // Binding Field
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+                new sap.m.Column({
+                    demandPopin: false,
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C56"), // Data Type
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+            ],
+
+            items: {
+                path: `${C_MENU_BIND_PATH}/FIND2LEFT`,
+                template: new sap.m.ColumnListItem({
+                    cells: [
+
+                        new sap.m.Link({
+                            text: "{OBJID}",
+                            emphasized: true,
+                            press: oAPP.events.ev_press_Link_Find
+                        }),
+
+                        new sap.m.Text({
+                            text: "{UIATT}"
+                        }),
+
+                        new sap.m.Link({
+                            text: "{UIATV}",
+                            emphasized: true,
+                            // press: oAPP.events.ev_press_Link_Find
+                        }),
+
+                        new sap.m.Text().bindProperty("text", {
+                            parts: [
+                                "UIATV"
+                            ],
+                            formatter: function(UIATV) {
+
+                                if (UIATV == null) {
+                                    return "";
+                                }
+
+                                if (UIATV.indexOf("-") < 0) {
+                                    return "";
+                                }
+
+                                var aSplit = UIATV.split("-"),
+                                    sFieldName = aSplit[aSplit.length - 1];
+
+                                return sFieldName;
+
+                            }
+                        }),
+
+                        new sap.m.Text({
+                            text: "{UIADT}"
+                        }),
+
+                    ]
+                })
+            }
+
+        });
+        oPage.addContent(oTable);
+
+        /************************************************
+         * 테이블 헤더 툴바 영역
+         ************************************************/
+        let oHeaderToolbar = new sap.m.Toolbar();
+        oTable.setHeaderToolbar(oHeaderToolbar);
+
+        let ICON1 = new sap.ui.core.Icon({
+            src: "sap-icon://list"
+        });
+        oHeaderToolbar.addContent(ICON1);
+
+        let TEXT1 = new sap.m.Text({
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D07"), // Properties Usage Bind List
+        }).addStyleClass("sapUiTinyMarginBegin");
+        oHeaderToolbar.addContent(TEXT1);
+
+        oHeaderToolbar.addContent(new sap.m.ToolbarSpacer());
+
+        let SEARCHFIELD1 = new sap.m.SearchField({
+            width: "300px",                    
+            change: function(oEvent){
+
+                oAPP.fn.fnFindPage2_LeftPageFilter(oEvent);
+
+            }
+        });
+        oHeaderToolbar.addContent(SEARCHFIELD1);
+
+        SEARCHFIELD1.data("table", oTable);
+
+        return oPage;
+
     }; // end of oAPP.fn.fnGetFindPage2_LeftPage
+
+    /**************************************************************************
+     *  Find의 "Model Binding Usage For UI" 페이지의 Split 중 왼쪽영역
+     * 
+     *  테이블 필터
+     **************************************************************************/
+    oAPP.fn.fnFindPage2_LeftPageFilter = function(oEvent){
+
+        let oSearchField = oEvent.getSource();
+
+        let oTable = oSearchField.data("table");
+        if(!oTable){
+            return;
+        }
+
+        let oBindInfo = oTable.getBinding("items");
+        if(!oBindInfo){
+            return;
+        }                                                                 
+
+        let sValue = oEvent.getSource().getValue();
+
+        //검색조건 값이 입력안된 경우 필터 해제 처리.
+        if(sValue === ""){
+            oBindInfo.filter();
+            return;
+        }      
+
+        let aFilter = [];
+
+        aFilter.push(new sap.ui.model.Filter({path:"OBJID", operator:"Contains", value1:sValue}));
+        aFilter.push(new sap.ui.model.Filter({path:"UIATT", operator:"Contains", value1:sValue}));
+        aFilter.push(new sap.ui.model.Filter({path:"UIATV", operator:"Contains", value1:sValue}));
+        aFilter.push(new sap.ui.model.Filter({path:"UIADT", operator:"Contains", value1:sValue}));                     
+
+        oBindInfo.filter([new sap.ui.model.Filter(aFilter, false)]);
+
+
+    }; // end of oAPP.fn.fnFindPage2_LeftPageFilter
 
     /**************************************************************************
      *  Find의 "Model Binding Usage For UI" 페이지의 Split 중 오른쪽영역
@@ -619,98 +735,166 @@ let oAPP = parent.oAPP;
         var EnumLabelDesignBold = sap.m.LabelDesign.Bold,
             EnumSticky = sap.m.Sticky;
 
-        return new sap.m.Page(`${C_FIND_MENU2_ID}--rightPage`, {
-            showHeader: false,
-            content: [
-
-                new sap.m.Table({
-
-                    // properties
-                    fixedLayout: false,
-                    alternateRowColors: true,
-                    autoPopinMode: false,
-                    growing: true,
-                    growingScrollToLoad: true,
-                    growingThreshold: 50,
-                    sticky: [
-                        EnumSticky.ColumnHeaders
-                    ],
-
-                    // Aggregations
-                    columns: [
-
-                        new sap.m.Column({
-                            demandPopin: false,
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C53"), // UI ID
-                                design: EnumLabelDesignBold
-                            }),
-                        }),
-
-                        new sap.m.Column({
-                            demandPopin: true,
-                            minScreenWidth: "Desktop",
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C58"), // Aggregations ID
-                                design: EnumLabelDesignBold
-                            }),
-                        }),
-
-                        new sap.m.Column({
-                            demandPopin: true,
-                            minScreenWidth: "Desktop",
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C59"), // Binding Model
-                                design: EnumLabelDesignBold
-                            }),
-                        }),
-
-                    ],
-
-                    headerToolbar: new sap.m.Toolbar({
-                        content: [
-
-                            new sap.ui.core.Icon({
-                                src: "sap-icon://list"
-                            }),
-                            new sap.m.Text({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D08"), // Aggregations Usage Bind Models
-                            }).addStyleClass("sapUiTinyMarginBegin")
-                        ]
-                    }),
-
-                    items: {
-                        path: `${C_MENU_BIND_PATH}/FIND2RIGHT`,
-                        template: new sap.m.ColumnListItem({
-                            cells: [
-
-                                new sap.m.Link({
-                                    text: "{OBJID}",
-                                    emphasized: true,
-                                    press: oAPP.events.ev_press_Link_Find
-                                }),
-
-                                new sap.m.Text({
-                                    text: "{UIATT}"
-                                }),
-
-                                new sap.m.Link({
-                                    text: "{UIATV}",
-                                    emphasized: true,
-                                    // press: oAPP.events.ev_press_Link_Find_Controller
-                                }),
-
-                            ]
-                        })
-                    }
-
-                })
-
-            ]
-
+        let PAGE1 = new sap.m.Page(`${C_FIND_MENU2_ID}--rightPage`, {
+            showHeader: false,  
         });
 
+        let TABLE1 = new sap.m.Table({
+
+            // properties
+            fixedLayout: false,
+            alternateRowColors: true,
+            autoPopinMode: false,
+            growing: true,
+            growingScrollToLoad: true,
+            growingThreshold: 50,
+            sticky: [
+                EnumSticky.ColumnHeaders
+            ],
+
+            // Aggregations
+            columns: [
+
+                new sap.m.Column({
+                    demandPopin: false,
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C53"), // UI ID
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+                new sap.m.Column({
+                    demandPopin: true,
+                    minScreenWidth: "Desktop",
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C58"), // Aggregations ID
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+                new sap.m.Column({
+                    demandPopin: true,
+                    minScreenWidth: "Desktop",
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C59"), // Binding Model
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+            ],
+
+            // headerToolbar: new sap.m.Toolbar({
+            //     content: [
+
+            //         new sap.ui.core.Icon({
+            //             src: "sap-icon://list"
+            //         }),
+            //         new sap.m.Text({
+            //             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D08"), // Aggregations Usage Bind Models
+            //         }).addStyleClass("sapUiTinyMarginBegin")
+            //     ]
+            // }),
+
+            items: {
+                path: `${C_MENU_BIND_PATH}/FIND2RIGHT`,
+                template: new sap.m.ColumnListItem({
+                    cells: [
+
+                        new sap.m.Link({
+                            text: "{OBJID}",
+                            emphasized: true,
+                            press: oAPP.events.ev_press_Link_Find
+                        }),
+
+                        new sap.m.Text({
+                            text: "{UIATT}"
+                        }),
+
+                        new sap.m.Link({
+                            text: "{UIATV}",
+                            emphasized: true,
+                            // press: oAPP.events.ev_press_Link_Find_Controller
+                        }),
+
+                    ]
+                })
+            }
+
+        });
+        PAGE1.addContent(TABLE1);
+
+
+        /************************************************
+         * 테이블 헤더 툴바 영역
+         ************************************************/
+        let TOOLBAR1 = new sap.m.Toolbar();        
+        TABLE1.setHeaderToolbar(TOOLBAR1);
+
+        let ICON1 = new sap.ui.core.Icon({
+            src: "sap-icon://list"
+        });
+        TOOLBAR1.addContent(ICON1);
+
+        let TEXT1 = new sap.m.Text({
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D08"), // Aggregations Usage Bind Models
+        }).addStyleClass("sapUiTinyMarginBegin")
+        TOOLBAR1.addContent(TEXT1);
+
+        TOOLBAR1.addContent(new sap.m.ToolbarSpacer());
+
+        let SEARCHFIELD1 = new sap.m.SearchField({
+            width: "300px",                    
+            change: function(oEvent){
+
+                oAPP.fn.fnFindPage2_RightPageFilter(oEvent);
+
+            }
+        });
+        TOOLBAR1.addContent(SEARCHFIELD1);
+
+        SEARCHFIELD1.data("table", TABLE1);
+
+        return PAGE1;
+
     }; // end of oAPP.fn.fnGetFindPage2_RightPage
+
+
+    /**************************************************************************
+     *  Find의 "Model Binding Usage For UI" 페이지의 Split 중 오른쪽영역
+     * 
+     *  테이블 필터
+     **************************************************************************/
+    oAPP.fn.fnFindPage2_RightPageFilter = function(oEvent){
+
+        let oSearchField = oEvent.getSource();
+
+        let oTable = oSearchField.data("table");
+        if(!oTable){
+            return;
+        }
+
+        let oBindInfo = oTable.getBinding("items");
+        if(!oBindInfo){
+            return;
+        }                                                                 
+
+        let sValue = oEvent.getSource().getValue();
+
+        //검색조건 값이 입력안된 경우 필터 해제 처리.
+        if(sValue === ""){
+            oBindInfo.filter();
+            return;
+        }      
+
+        let aFilter = [];
+
+        aFilter.push(new sap.ui.model.Filter({path:"OBJID", operator:"Contains", value1:sValue}));
+        aFilter.push(new sap.ui.model.Filter({path:"UIATT", operator:"Contains", value1:sValue}));
+        aFilter.push(new sap.ui.model.Filter({path:"UIATV", operator:"Contains", value1:sValue}));                  
+
+        oBindInfo.filter([new sap.ui.model.Filter(aFilter, false)]);
+
+    }; // end of oAPP.fn.fnFindPage2_RightPageFilter
 
     /**************************************************************************
      *  Find의 "CSS Style Class Where to Use" 페이지
@@ -720,74 +904,131 @@ let oAPP = parent.oAPP;
         var EnumLabelDesignBold = sap.m.LabelDesign.Bold,
             EnumSticky = sap.m.Sticky;
 
-        return new sap.m.Page(`${C_FIND_MENU3_ID}--page`, {
+        let PAGE1 = new sap.m.Page(`${C_FIND_MENU3_ID}--page`, {
 
             // properties
             showHeader: true,
             title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D05"), // CSS Style Class Where to Use
             titleAlignment: sap.m.TitleAlignment.Center,
 
-            content: [
-
-                new sap.m.Table({
-
-                    // properties                   
-                    fixedLayout: false,
-                    alternateRowColors: true,
-                    autoPopinMode: false,
-                    growing: true,
-                    growingScrollToLoad: true,
-                    growingThreshold: 50,
-                    sticky: [
-                        EnumSticky.ColumnHeaders
-                    ],
-
-                    // Aggregations
-                    columns: [
-
-                        new sap.m.Column({
-                            demandPopin: false,
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C51"), // UI OBJ ID
-                                design: EnumLabelDesignBold
-                            }),
-                        }),
-
-                        new sap.m.Column({
-                            demandPopin: false,
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C60"), // Style Class Name
-                                design: EnumLabelDesignBold
-                            }),
-                        }),
-
-                    ],
-
-                    items: {
-                        path: `${C_MENU_BIND_PATH}/FIND3TABLE`,
-                        template: new sap.m.ColumnListItem({
-                            cells: [
-
-                                new sap.m.Link({
-                                    text: "{OBJID}",
-                                    emphasized: true,
-                                    press: oAPP.events.ev_press_Link_Find
-                                }),
-
-                                new sap.m.Text({
-                                    text: "{UIATV}"
-                                }),
-
-                            ]
-                        })
-                    }
-
-                })
-            ]
-
         });
 
+        let TABLE1 = new sap.m.Table({
+
+            // properties                   
+            fixedLayout: false,
+            alternateRowColors: true,
+            autoPopinMode: false,
+            growing: true,
+            growingScrollToLoad: true,
+            growingThreshold: 50,
+            sticky: [
+                EnumSticky.ColumnHeaders
+            ],
+
+            // Aggregations
+            columns: [
+
+                new sap.m.Column({
+                    demandPopin: false,
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C51"), // UI OBJ ID
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+                new sap.m.Column({
+                    demandPopin: false,
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C60"), // Style Class Name
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+            ],
+
+            items: {
+                path: `${C_MENU_BIND_PATH}/FIND3TABLE`,
+                template: new sap.m.ColumnListItem({
+                    cells: [
+
+                        new sap.m.Link({
+                            text: "{OBJID}",
+                            emphasized: true,
+                            press: oAPP.events.ev_press_Link_Find
+                        }),
+
+                        new sap.m.Text({
+                            text: "{UIATV}"
+                        }),
+
+                    ]
+                })
+            }
+
+        });
+        PAGE1.addContent(TABLE1);
+
+
+        /************************************************
+         * 테이블 헤더 툴바 영역
+         ************************************************/
+        let TOOLBAR1 = new sap.m.Toolbar();        
+        TABLE1.setHeaderToolbar(TOOLBAR1);       
+
+        let SEARCHFIELD1 = new sap.m.SearchField({
+            width: "300px",                    
+            change: function(oEvent){
+
+                oAPP.fn.fnFindPage3Filter(oEvent);
+
+            }
+        });
+        TOOLBAR1.addContent(SEARCHFIELD1);
+
+        SEARCHFIELD1.data("table", TABLE1);
+
+        return PAGE1;
+
     }; // end of oAPP.fn.fnGetFindPage3
+
+
+    /**************************************************************************
+     *  Find의 "CSS Style Class Where to Use" 페이지
+     * 
+     * 테이블 필터
+     **************************************************************************/
+    oAPP.fn.fnFindPage3Filter = function(oEvent) {
+
+        let oSearchField = oEvent.getSource();
+
+        let oTable = oSearchField.data("table");
+        if(!oTable){
+            return;
+        }
+
+        let oBindInfo = oTable.getBinding("items");
+        if(!oBindInfo){
+            return;
+        }                                                                 
+
+        let sValue = oEvent.getSource().getValue();
+
+        //검색조건 값이 입력안된 경우 필터 해제 처리.
+        if(sValue === ""){
+            oBindInfo.filter();
+            return;
+        }      
+
+        let aFilter = [];
+
+        aFilter.push(new sap.ui.model.Filter({path:"OBJID", operator:"Contains", value1:sValue}));
+        aFilter.push(new sap.ui.model.Filter({path:"UIATV", operator:"Contains", value1:sValue}));                    
+
+        oBindInfo.filter([new sap.ui.model.Filter(aFilter, false)]);
+
+    }; // end of oAPP.fn.fnFindPage3Filter
+
 
     /**************************************************************************
      *  Find의 "Event JS Where to Use" 페이지
@@ -797,86 +1038,142 @@ let oAPP = parent.oAPP;
         var EnumLabelDesignBold = sap.m.LabelDesign.Bold,
             EnumSticky = sap.m.Sticky;
 
-        return new sap.m.Page(`${C_FIND_MENU4_ID}--page`, {
+        let PAGE1 = new sap.m.Page(`${C_FIND_MENU4_ID}--page`, {
 
             // properties
             showHeader: true,
             title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D06"), // Event JS Where to Use
             titleAlignment: sap.m.TitleAlignment.Center,
 
-            content: [
-
-                new sap.m.Table({
-
-                    // properties                    
-                    fixedLayout: false,
-                    alternateRowColors: true,
-                    autoPopinMode: false,
-                    growing: true,
-                    growingScrollToLoad: true,
-                    growingThreshold: 50,
-                    sticky: [
-                        EnumSticky.ColumnHeaders
-                    ],
-
-                    // Aggregations
-                    columns: [
-
-                        new sap.m.Column({
-                            demandPopin: false,
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C51"), // UI OBJ ID
-                                design: EnumLabelDesignBold
-                            }),
-                        }),
-
-                        new sap.m.Column({
-                            demandPopin: false,
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C61"), // UI Event Name
-                                design: EnumLabelDesignBold
-                            }),
-                        }),
-
-                        new sap.m.Column({
-                            demandPopin: false,
-                            header: new sap.m.Label({
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C62"), // UI Class
-                                design: EnumLabelDesignBold
-                            }),
-                        }),
-
-                    ],
-
-                    items: {
-                        path: `${C_MENU_BIND_PATH}/FIND4TABLE`,
-                        template: new sap.m.ColumnListItem({
-                            cells: [
-
-                                new sap.m.Link({
-                                    text: "{OBJID}",
-                                    emphasized: true,
-                                    press: oAPP.events.ev_press_Link_Find
-                                }),
-
-                                new sap.m.Text({
-                                    text: "{UIATT}"
-                                }),
-
-                                new sap.m.Text({
-                                    text: "{LIBNM}"
-                                }),
-
-                            ]
-                        })
-                    }
-
-                })
-            ]
-
         });
 
+        let TABLE1 = new sap.m.Table({
+
+            // properties                    
+            fixedLayout: false,
+            alternateRowColors: true,
+            autoPopinMode: false,
+            growing: true,
+            growingScrollToLoad: true,
+            growingThreshold: 50,
+            sticky: [
+                EnumSticky.ColumnHeaders
+            ],
+
+            // Aggregations
+            columns: [
+
+                new sap.m.Column({
+                    demandPopin: false,
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C51"), // UI OBJ ID
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+                new sap.m.Column({
+                    demandPopin: false,
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C61"), // UI Event Name
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+                new sap.m.Column({
+                    demandPopin: false,
+                    header: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C62"), // UI Class
+                        design: EnumLabelDesignBold
+                    }),
+                }),
+
+            ],
+
+            items: {
+                path: `${C_MENU_BIND_PATH}/FIND4TABLE`,
+                template: new sap.m.ColumnListItem({
+                    cells: [
+
+                        new sap.m.Link({
+                            text: "{OBJID}",
+                            emphasized: true,
+                            press: oAPP.events.ev_press_Link_Find
+                        }),
+
+                        new sap.m.Text({
+                            text: "{UIATT}"
+                        }),
+
+                        new sap.m.Text({
+                            text: "{LIBNM}"
+                        }),
+
+                    ]
+                })
+            }
+
+        });
+        PAGE1.addContent(TABLE1);
+
+        /************************************************
+         * 테이블 헤더 툴바 영역
+         ************************************************/
+        let TOOLBAR1 = new sap.m.Toolbar();        
+        TABLE1.setHeaderToolbar(TOOLBAR1);       
+
+        let SEARCHFIELD1 = new sap.m.SearchField({
+            width: "300px",                    
+            change: function(oEvent){
+
+                oAPP.fn.fnFindPage4Filter(oEvent);
+
+            }
+        });
+        TOOLBAR1.addContent(SEARCHFIELD1);
+
+        SEARCHFIELD1.data("table", TABLE1);
+
+        return PAGE1;
+
     }; // end of oAPP.fn.fnGetFindPage4
+
+
+    /**************************************************************************
+     *  Find의 "CSS Style Class Where to Use" 페이지
+     * 
+     *  테이블 필터
+     **************************************************************************/
+    oAPP.fn.fnFindPage4Filter = function(oEvent){
+
+        let oSearchField = oEvent.getSource();
+
+        let oTable = oSearchField.data("table");
+        if(!oTable){
+            return;
+        }
+
+        let oBindInfo = oTable.getBinding("items");
+        if(!oBindInfo){
+            return;
+        }                                                                 
+
+        let sValue = oEvent.getSource().getValue();
+
+        //검색조건 값이 입력안된 경우 필터 해제 처리.
+        if(sValue === ""){
+            oBindInfo.filter();
+            return;
+        }      
+
+        let aFilter = [];
+
+        aFilter.push(new sap.ui.model.Filter({path:"OBJID", operator:"Contains", value1:sValue}));
+        aFilter.push(new sap.ui.model.Filter({path:"UIATT", operator:"Contains", value1:sValue}));                    
+        aFilter.push(new sap.ui.model.Filter({path:"LIBNM", operator:"Contains", value1:sValue}));                    
+
+        oBindInfo.filter([new sap.ui.model.Filter(aFilter, false)]);
+
+    }; // end of oAPP.fn.fnFindPage4Filter
 
 
     /**************************************************************************
@@ -1073,6 +1370,20 @@ let oAPP = parent.oAPP;
         // sap.ui.getCore().getModel().refresh();
 
     }; // end of oAPP.fn.fnIpcRendererFind_data_refresh_callback
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**************************************************************************
      *  Find의 TNT 메뉴 선택 시 NavContainer의 afterNav events.

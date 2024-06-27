@@ -16,6 +16,7 @@ sap.ui.getCore().attachInit(() => {
 
 
 // ▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣ 펑션 Group ▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣
+
 // ▶ [펑션] SAP 전체 테마 정보 추출(추출해서 모델 세팅까지만)
 function GET_THEMEINFO() {
 
@@ -352,6 +353,9 @@ function fn_UIUPdated() {
         if (frameContent.style.opacity === '0.9') {
             frameContent.style.opacity = '1';
             clearInterval(contOpacity);
+
+            parent.setBusy("");           
+
             return;
         };
 
@@ -636,5 +640,14 @@ function createUi() {
 
     // 모든 팝업 및 드롭다운 등등의 영역 제한
     sap.ui.core.Popup.setWithinArea(LO_TABBAR);
+
+
+    // LO_APP.addEventDelegate({
+    //     onAfterRendering: function(){
+
+    //         console.log("bbbbbb");
+
+    //     }
+    // });
 
 };

@@ -673,6 +673,15 @@
             rowSelectionChange: oAPP.events.ev_MimeTreeTableRowSelect,
             firstVisibleRowChanged: function (oEvent) {
 
+                let oTable = oEvent.getSource();
+                
+                // 스크롤 이동시 컨텍스트 메뉴가 떠있을 경우
+                // 컨텍스트 메뉴를 닫는다.
+                let oCtxMenu = oTable.getContextMenu();
+                if(oCtxMenu && oCtxMenu.close){
+                    oCtxMenu.close();
+                }
+
                 // ev_mimePopupRowsUpdated(oEvent);
 
                 // var oTable = oEvent.getSource();

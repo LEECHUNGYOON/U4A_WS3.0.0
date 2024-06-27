@@ -557,6 +557,10 @@
     //모델 갱신 처리.
     oAPP.attr.oModel.refresh(bForceUpdate);
 
+    //20240621 pes.
+    //바인딩 팝업의 디자인 영역 갱신처리.
+    oAPP.fn.updateBindPopupDesignData();
+
   };  //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
 
 
@@ -719,6 +723,10 @@
 
       //화면 잠금 해제 처리.
       oAPP.fn.designAreaLockUnlock();
+
+      //20240621 pes.
+      //바인딩 팝업의 디자인 영역 갱신처리.
+      oAPP.fn.updateBindPopupDesignData();
 
     }); //초기화전 확인팝업 호출.
 
@@ -1381,6 +1389,11 @@
     //모델 갱신 FLAG가 입력된 경우.
     if(bModelRefresh){
       oAPP.attr.oModel.refresh(true);
+
+      //20240621 pes.
+      //바인딩 팝업의 디자인 영역 갱신처리.
+      oAPP.fn.updateBindPopupDesignData();
+
     }
 
     //해당 FUNCTION 호출처의 하위 로직 SKIP을 위한 FLAG RETURN.
@@ -1939,6 +1952,9 @@
       oAPP.attr.oModel.oData.T_ATTR[i].OBJID = ls_uiinfo.OBJID;
     }
     
+    //20240621 pes.
+    //바인딩 팝업의 디자인 영역 갱신처리.
+    oAPP.fn.updateBindPopupDesignData();
 
     //이전 OBJID를 변경된 ID로 업데이트.
     ls_uiinfo.OBJID_bf = ls_uiinfo.OBJID;
@@ -1949,6 +1965,7 @@
 
     //화면에서 UI추가, 이동, 삭제 및 attr 변경시 변경 flag 처리.
     oAPP.fn.setChangeFlag();
+
 
   };  //OBJID 입력건 처리.
 
@@ -2206,6 +2223,7 @@
     if(bIsbind === false){
       //unbind 처리.
       oAPP.fn.attrSetUnbindProp(is_attr);
+
       return;
     }
 
@@ -2291,7 +2309,7 @@
 
             //TREE의 PARENT, CHILD 프로퍼티 예외처리.
             oAPP.fn.attrUnbindTree(is_attr);
-            
+
 
           });
 
@@ -2340,6 +2358,10 @@
 
         oAPP.attr.prev[is_attr.OBJID]._MODEL[is_attr.UIATT] = is_attr.UIATV;
 
+        //20240621 pes.
+        //바인딩 팝업의 디자인 영역 갱신처리.
+        oAPP.fn.updateBindPopupDesignData();
+
       });
 
       return;
@@ -2351,6 +2373,10 @@
 
     oAPP.attr.prev[is_attr.OBJID]._MODEL[is_attr.UIATT] = is_attr.UIATV;
 
+    
+    //20240621 pes.
+    //바인딩 팝업의 디자인 영역 갱신처리.
+    oAPP.fn.updateBindPopupDesignData();
 
   };  //aggregation 바인딩 callback 처리.
 
@@ -2497,6 +2523,12 @@
 
         //바인딩건인경우 N건 바인딩 처리된 건인지 판단.
         if(oAPP.fn.chkBindPath(UIATV, oUi._T_0015[i].UIATV) === true){
+
+
+          if(oUi._T_0015[i].UIATY === "3"){
+            oAPP.fn.attrUnbindAggr(oUi, oUi._T_0015[i].UIATT, oUi._T_0015[i].UIATV);
+          }          
+
           //N건 바인딩된 건인경우 바인딩 해제 처리.
           oUi._T_0015.splice(i,1);
         }
@@ -2509,8 +2541,10 @@
     //n건 바인딩이 없는경우 exit.
     if(!oUi._BIND_AGGR[UIATT] || oUi._BIND_AGGR[UIATT].length === 0){
 
-      //n건 바인딩 초기화 처리.
-      lf_clearBindData(oUi);
+      //현재 UI에 수집된 ATTR 정보 초기화 로직 주석.
+      //해당 FUNCTION 수행 이후 ATTR 수집건 처리 FUNCTION에 판단함.
+      // //n건 바인딩 초기화 처리.
+      // lf_clearBindData(oUi);
 
       //Aggregation에 n건 바인딩 처리 제거.
       if(oAPP.fn.chkBindPath(UIATV, oUi._MODEL[UIATT]) === true){
@@ -2553,8 +2587,10 @@
     } //N건 바인딩 설정한 하위 UI가 존재하는경우.
 
 
-    //n건 바인딩 초기화 처리.
-    lf_clearBindData(oUi);
+    //현재 UI에 수집된 ATTR 정보 초기화 로직 주석.
+    //해당 FUNCTION 수행 이후 ATTR 수집건 처리 FUNCTION에 판단함.
+    // //n건 바인딩 초기화 처리.
+    // lf_clearBindData(oUi);
 
     
     //Aggregation에 n건 바인딩 처리 제거.
@@ -5757,6 +5793,26 @@
         return;
       }
 
+
+      //현재 UI로부터 부모를 탐색하며 n건 바인딩 존재 여부 확인.
+      var _parentModel = oAPP.fn.getParentAggrBind(oAPP.attr.prev[ls_attr.OBJID], ls_attr.UIATT);
+
+      //부모에 N건 바인딩이 구성 되었을경우, 현재 DRAG한 필드와 동일한 PATH라면 바인딩 불가능.
+      if(typeof _parentModel !== "undefined" && _parentModel.startsWith(l_json.IF_DATA.CHILD) === true){
+        //214  Unable to bind.
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+        return;
+      }
+
+
+      //대상 UI로부터 자식을 탐색하며 바인딩 가능 여부 점검.
+      if(oAPP.fn.getChildAggrBind(ls_attr.OBJID, l_json.IF_DATA.CHILD) === true){
+        //214  Unable to bind.
+        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+        return;
+      }
+
+
       if(typeof lt_split2 !== "undefined"){
         //마지막 필드 제거(마지막필드는 TABLE이므로)
         lt_split2.splice(lt_split2.length - 1, 1);
@@ -5777,6 +5833,55 @@
 
 
   };  //attribute에 drag UI가 올라갔을때 이벤트.
+
+
+
+  //대상 UI로부터 자식을 탐색하며 바인딩 가능 여부 점검.
+  oAPP.fn.getChildAggrBind = function(OBJID, BINDFIELD){
+
+    function lf_chkChildAggrBind(aChild){
+      
+      //CHILD 정보가 없다면 EXIT.
+      if(aChild.length === 0){
+        return;
+      }
+
+      for (let i = 0; i < aChild.length; i++) {
+
+          var sChild = aChild[i];
+
+          //CHILD에 매핑된 모델 바인딩 정보를 확인.
+          for (const key in oAPP.attr.prev[sChild.OBJID]._MODEL) {
+
+              var _sModel = oAPP.attr.prev[sChild.OBJID]._MODEL[key];
+
+              //CHILD에 매핑된 모델 바인딩건과 현재 입력한 모델 PATH가 같다면.
+              if(_sModel === BINDFIELD){
+                  
+                  //같은 PATH 정보 바인딩됨 FLAG RETURN.
+                  return true;
+              }                       
+
+          }
+
+          //하위를 탐색하며 입력 모델 PATH와 같은 바인딩이 설정 됐는지 확인.
+          var _found = lf_chkChildAggrBind(sChild.zTREE, BINDFIELD);
+
+          if(_found === true){
+              return _found;
+          }
+
+      }
+
+    }
+        
+    //입력 OBJECT tree 라인 정보 얻기.
+    var _sTree = oAPP.fn.getTreeData(OBJID);
+
+    //대상 UI로부터 자식을 탐색하며 바인딩 가능 여부 점검.
+    return lf_chkChildAggrBind(_sTree.zTREE);
+
+  };
 
 
 

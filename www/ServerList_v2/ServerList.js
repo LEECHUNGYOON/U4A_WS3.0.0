@@ -276,6 +276,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oAPP.msg.M12 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "018"); // Server List file not exists.
             oAPP.msg.M13 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "019"); // host is required!
             oAPP.msg.M14 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "020"); // Do not include Empty string!
+            oAPP.msg.M15 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "080"); // Do you want to Delete?
 
 
 
@@ -1734,7 +1735,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         let oResult = await new Promise((resolve) => {
 
             // 삭제 메시지 팝업
-            let sMsg = "Do you want to Delete?";
+            // let sMsg = "Do you want to Delete?";
+            let sMsg = oAPP.msg.M15; // Do you want to Delete?
 
             oAPP.fn.fnShowMessageBox("C", sMsg, fnCallback);
 

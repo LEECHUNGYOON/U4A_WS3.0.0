@@ -6,6 +6,9 @@
 
     //UI TABLE 라이브러리 LOAD.
     sap.ui.getCore().loadLibrary("sap.ui.table");
+    
+    //UI TABLE 라이브러리 예외처리.
+    oAPP.fn.excepUiTableLibrary();
 
     //design tree UI.
     var oLTree1 = new sap.ui.table.TreeTable({selectionMode:"Single", 
@@ -218,8 +221,13 @@
       //DRAG한 UI ID 정보 세팅.
       event.dataTransfer.setData("text/plain", "designTree|" + ls_drag.OBJID + "|" + oAPP.attr.DnDRandKey);
 
+
       //drag 시작시 drop 가능건에 대한 제어 처리.
       oAPP.fn.designTreeDragStart(ls_drag);
+      
+
+      //바인딩 팝업에서 UI 구성을 위한 design tree 데이터 구성.
+      oAPP.fn.setDragAppData(ls_drag);
 
 
     }); //drag start 이벤트
@@ -510,7 +518,7 @@
       //메뉴 호출 처리.
       setTimeout(() => {
         oAPP.attr.ui.designMenu.openBy(oEvent.target);  
-      }, 400);     
+      }, 400);
      
 
     }); //context menu 호출 이벤트.
@@ -543,6 +551,203 @@
 
 
 
+  //바인딩 팝업 전송전 drag 라인 점검.
+  oAPP.fn.checkBindPopupDragAppData = function(is_drag){
+
+    var _sRes = {RETCD: "", RTMSG:""};
+
+    if(typeof is_drag === "undefined"){
+      _sRes.RETCD = "E";
+      _sRes.RTMSG = "drag 정보가 존재하지 않습니다."; //$$MSG
+      return _sRes;
+    }
+
+
+    //최상위 root가 인경우 점검 불필요.
+    if(is_drag.OBJID === "ROOT"){
+      return _sRes;
+    }
+
+    
+    var _UIATT = undefined;
+
+    var _OBJID = is_drag.OBJID;
+
+    //sap.ui.table.Column인경우, CHILD에 TEMPLATE이 존재하는경우.
+    if(is_drag.UILIB === "sap.ui.table.Column" && is_drag.zTREE.findIndex( item => item.UIATT === "template" ) !== -1){
+
+      //부모(sap.ui.table.Table / sap.ui.table.TreeTable)로 변경.
+      _OBJID = is_drag.POBID;
+
+      //점검 대상 aggr을 rows로 구성.
+      _UIATT = "rows";
+
+    }
+
+    //현재 선택한 라인의 부모에 N건 바인딩 처리 됐는지 여부 확인.
+    var l_path = oAPP.fn.getParentAggrBind(oAPP.attr.prev[_OBJID], _UIATT);
+
+    //N건 바인딩 처리 된경우.
+    if(typeof l_path !== "undefined" && l_path !== ""){
+
+      _sRes.RETCD = "E";
+      _sRes.RTMSG = "부모 UI에 MODEL BINDING 처리되어 UI를 구성할 수 없습니다."; //$$MSG
+
+      return _sRes;
+
+    }
+
+    return _sRes;      
+
+  };
+
+
+  //바인딩 팝업에서 UI 구성을 위한 design tree 데이터 구성.
+  oAPP.fn.setBindPopupDragAppData = function(is_drag){
+
+    var _aTree = JSON.parse(JSON.stringify([is_drag]));
+
+    oAPP.attr.POSIT = 0;
+
+    //UI POSTION 정보 재매핑 처리.
+    oAPP.fn.setUIPOSIT(_aTree);
+
+    oAPP.attr.POSIT = 0;
+
+    //선택한 라인을 기준으로 tree -> table화.
+    var _aTree = oAPP.fn.parseTree2Tab(_aTree);
+
+    
+    //POSITION 으로 정렬처리.
+    _aTree.sort(function(a,b){
+      return a.POSIT - b.POSIT;
+    });
+
+    var _sRes = {
+      T_0014 : [],
+      T_0015 : [],
+      T_CEVT : [],
+    };
+
+    for (let i = 0, l = _aTree.length; i < l; i++) {
+      
+      var _sTree = _aTree[i];
+
+      var _s0014 = oAPP.fn.crtStru0014();
+
+      _s0014.APPID   = _sTree.APPID;
+      _s0014.GUINR   = _sTree.GUINR;
+      _s0014.OBJID   = _sTree.OBJID;
+      _s0014.POSIT   = _sTree.POSIT;
+      _s0014.POBID   = _sTree.POBID;
+      _s0014.UIOBK   = _sTree.UIOBK;
+      _s0014.PUIOK   = _sTree.PUIOK;
+      _s0014.ISAGR   = _sTree.ISAGR;
+      _s0014.AGRID   = _sTree.AGRID;
+      _s0014.ISDFT   = _sTree.ISDFT;
+      _s0014.OBDEC   = _sTree.OBDEC;
+      _s0014.AGTYP   = _sTree.AGTYP;
+      _s0014.UIATK   = _sTree.UIATK;
+      _s0014.UIATT   = _sTree.UIATT;
+      _s0014.UIASN   = _sTree.UIASN;
+      _s0014.UIATY   = _sTree.UIATY;
+      _s0014.UIADT   = _sTree.UIADT;
+      _s0014.UIADS   = _sTree.UIADS;
+      _s0014.VALKY   = _sTree.VALKY;
+      _s0014.ISLST   = _sTree.ISLST;
+      _s0014.ISMLB   = _sTree.ISMLB;
+      _s0014.TOOLB   = _sTree.TOOLB;
+      _s0014.UIFND   = _sTree.UIFND;
+      _s0014.PUIATK  = _sTree.PUIATK;
+      _s0014.UILIB   = _sTree.UILIB;
+      _s0014.ISEXT   = _sTree.ISEXT;
+      _s0014.TGLIB   = _sTree.TGLIB;
+      _s0014.DEL_UOK = _sTree.DEL_UOK;
+      _s0014.DEL_POK = _sTree.DEL_POK;
+      _s0014.ISECP   = _sTree.ISECP;
+
+      _sRes.T_0014.push(_s0014);
+
+
+      var _aT0015 = oAPP.attr.prev[_s0014.OBJID]._T_0015;
+
+      for (let j = 0, jl = _aT0015.length; j < jl; j++) {
+        
+        var _s0015t = _aT0015[j];
+
+        //ZSU4A0015 구조 생성.
+        var _s0015 = oAPP.fn.crtStru0015();
+
+        _s0015.APPID    = _s0015t.APPID;
+        _s0015.GUINR    = _s0015t.GUINR;
+        _s0015.OBJID    = _s0015t.OBJID;
+        _s0015.UIATK    = _s0015t.UIATK;
+        _s0015.UIATV    = _s0015t.UIATV;
+        _s0015.ISBND    = _s0015t.ISBND;
+        _s0015.UILIK    = _s0015t.UILIK;
+        _s0015.UIOBK    = _s0015t.UIOBK;
+        _s0015.UIATT    = _s0015t.UIATT;
+        _s0015.UIASN    = _s0015t.UIASN;
+        _s0015.UIADT    = _s0015t.UIADT;
+        _s0015.RVALU    = _s0015t.RVALU;
+        _s0015.BPATH    = _s0015t.BPATH;
+        _s0015.ADDSC    = _s0015t.ADDSC;
+        _s0015.UIATY    = _s0015t.UIATY;
+        _s0015.ISMLB    = _s0015t.ISMLB;
+        _s0015.ISEMB    = _s0015t.ISEMB;
+        _s0015.DEL_LIB  = _s0015t.DEL_LIB;
+        _s0015.DEL_UOK  = _s0015t.DEL_UOK;
+        _s0015.DEL_ATT  = _s0015t.DEL_ATT;
+        _s0015.ISWIT    = _s0015t.ISWIT;
+        _s0015.ISSPACE  = _s0015t.ISSPACE;
+        _s0015.FTYPE    = _s0015t.FTYPE;
+        _s0015.REFFD    = _s0015t.REFFD;
+        _s0015.CONVR    = _s0015t.CONVR;
+        _s0015.MPROP    = _s0015t.MPROP;
+
+        _sRes.T_0015.push(_s0015);
+        
+      }
+
+    }
+
+    //클라이언트 이벤트(HTML CONTENT) 정보 매핑.
+    _sRes.T_CEVT = JSON.parse(JSON.stringify(oAPP.DATA.APPDATA.T_CEVT));
+
+    return _sRes;
+
+  };
+
+
+  //바인딩 팝업에서 UI 구성을 위한 design tree 데이터 구성.
+  oAPP.fn.setDragAppData = function(is_drag){
+    
+    //WS 3.0 메인 PATH 얻기.
+    var _channelPath = parent.getPath("WS10_20_ROOT");
+
+    //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH 구성.
+    _channelPath = parent.PATH.join(_channelPath, "design", "bindPopupHandler", "setDragBindPopupData.js");
+
+    //바인딩 팝업에 APP DATA 전송.
+    parent.require(_channelPath)(is_drag);
+
+  };
+
+
+  //바인딩 팝업의 디자인 영역 갱신처리.
+  oAPP.fn.updateBindPopupDesignData = function(){
+
+    //WS 3.0 메인 PATH 얻기.
+    var _channelPath = parent.getPath("WS10_20_ROOT");
+
+    //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH 구성.
+    _channelPath = parent.PATH.join(_channelPath, "design", "bindPopupHandler", "broadcastChannelBindPopup.js");
+
+    //바인딩 팝업에 APP DATA 전송.
+    parent.require(_channelPath)("UPDATE-DESIGN-DATA");
+
+  };
+  
 
   //design tree의 drag over 이벤트.
   oAPP.fn.designDragOver = function(oEvent){
@@ -1765,6 +1970,11 @@
     oAPP.fn.setChangeFlag();
 
 
+    //20240621 pes.
+    //바인딩 팝업의 디자인 영역 갱신처리.
+    oAPP.fn.updateBindPopupDesignData();
+
+
     oAPP.attr.ui.oLTree1.attachEventOnce("rowsUpdated", function(){
       //design tree의 바인딩 정보 얻기.
       var lt_row = oAPP.attr.ui.oLTree1.getRows();
@@ -1895,6 +2105,12 @@
       
       //화면 잠금 해제 처리.
       oAPP.fn.designAreaLockUnlock();
+
+
+      //20240621 pes.
+      //바인딩 팝업의 디자인 영역 갱신처리.
+      oAPP.fn.updateBindPopupDesignData();
+
       return;
 
     } //선택가능 aggregation리스트가 존재하지 않는경우, drag, drop의 부모, aggregation이 동일한경우.
@@ -2037,6 +2253,10 @@
 
     //005  Job finished.
     parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
+
+    //20240621 pes.
+    //바인딩 팝업의 디자인 영역 갱신처리.
+    oAPP.fn.updateBindPopupDesignData();
 
   }; //drop callback 이벤트.
 
@@ -2672,7 +2892,6 @@
     } //선택라인 삭제처리.
 
 
-
     //체크박스 선택건 존재여부 확인.
     if(oAPP.fn.designCheckedLine(true) !== true){
       //존재하지 않는경우 오류 메시지 처리.
@@ -2751,6 +2970,11 @@
 
       //005  Job finished.
       parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
+
+
+      //20240621 pes.
+      //바인딩 팝업의 디자인 영역 갱신처리.
+      oAPP.fn.updateBindPopupDesignData();
 
 
     }); //삭제전 확인팝업 호출.
@@ -3250,6 +3474,12 @@
     //변경 FLAG 처리.
     oAPP.fn.setChangeFlag();
 
+
+    //20240621 pes.
+    //바인딩 팝업의 디자인 영역 갱신처리.
+    oAPP.fn.updateBindPopupDesignData();
+    
+
   }; //UI 추가.
 
 
@@ -3566,6 +3796,10 @@
 
         //변경 FLAG 처리.
         oAPP.fn.setChangeFlag();
+
+        //20240621 pes.
+        //바인딩 팝업의 디자인 영역 갱신처리.
+        oAPP.fn.updateBindPopupDesignData();
 
 
     } //붙여넣기 callback 이벤트.
@@ -3989,6 +4223,12 @@
 
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock();
+
+
+      //20240621 pes.
+      //바인딩 팝업의 디자인 영역 갱신처리.
+      oAPP.fn.updateBindPopupDesignData();
+
 
     }); //UI삭제전 확인 팝업 호출.
 

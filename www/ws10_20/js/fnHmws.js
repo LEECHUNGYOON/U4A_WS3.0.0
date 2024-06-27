@@ -563,6 +563,20 @@
 
         parent.setBusy("");
 
+    }; // end of oAPP.fn.fnWS10WMENU30_06_03
+
+    /************************************************************************
+     * [WS10] System Information
+     ************************************************************************/    
+    oAPP.fn.fnWS10WMENU30_07 = function(){
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        oAPP.fn.fnServerInfoDialogOpen();        
+
     }; // end of oAPP.fn.fnWS10WMENU30_07
 
     /************************************************************************
@@ -944,6 +958,20 @@
         parent.setBusy("");
 
     }; // end of oAPP.fn.fnWS20WMENU40_06_03
+
+    /************************************************************************
+     * [WS10] System Information
+     ************************************************************************/
+    oAPP.fn.fnWS20WMENU40_07 = function(){
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        oAPP.fn.fnServerInfoDialogOpen(); 
+
+    }; // end of oAPP.fn.fnWS20WMENU40_07
 
     /************************************************************************
      * [WS20] U4A Help Document

@@ -450,6 +450,10 @@
         //변경 FLAG 처리.
         oAPP.fn.setChangeFlag();
 
+        //20240621 pes.
+        //바인딩 팝업의 디자인 영역 갱신처리.
+        oAPP.fn.updateBindPopupDesignData();
+
     };  //wizard UI 추가 후 후속 처리.
 
 

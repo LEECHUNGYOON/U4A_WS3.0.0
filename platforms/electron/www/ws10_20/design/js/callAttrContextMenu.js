@@ -288,6 +288,10 @@
                 //005	Job finished.
                 parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
 
+                //20240621 pes.
+                //바인딩 팝업의 디자인 영역 갱신처리.
+                oAPP.fn.updateBindPopupDesignData();
+
                 return;
             }
 
@@ -304,6 +308,11 @@
 
                 //005 Job finished.
                 parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
+
+                //20240621 pes.
+                //바인딩 팝업의 디자인 영역 갱신처리.
+                oAPP.fn.updateBindPopupDesignData();
+                
             }
 
         }); //UNBIND 처리여부 확인 팝업 호출.

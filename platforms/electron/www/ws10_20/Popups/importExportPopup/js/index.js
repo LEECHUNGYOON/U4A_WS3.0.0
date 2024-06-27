@@ -312,6 +312,8 @@ const oAPP = {
                             return;
                         }
 
+                        debugger;
+                        
                         var Lmsg = xhr.getResponseHeader('RTMSG');
 
                         var oBuff = Buffer.from(xhr.response);

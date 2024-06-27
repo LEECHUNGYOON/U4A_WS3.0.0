@@ -502,6 +502,10 @@
 
         //변경 FLAG 처리.
         oAPP.fn.setChangeFlag();
+
+        //20240621 pes.
+        //바인딩 팝업의 디자인 영역 갱신처리.
+        oAPP.fn.updateBindPopupDesignData();
  
 
     };  //ui 이동처리 function
@@ -827,6 +831,11 @@
 
             //변경 FLAG 처리.
             oAPP.fn.setChangeFlag();
+
+
+            //20240621 pes.
+            //바인딩 팝업의 디자인 영역 갱신처리.
+            oAPP.fn.updateBindPopupDesignData();
 
 
         } //붙여넣기 callback 이벤트.

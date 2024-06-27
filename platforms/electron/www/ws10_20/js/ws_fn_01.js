@@ -365,6 +365,10 @@
                     ],
                     visible: true,
                 },
+                {
+                    key: "WMENU30_07",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C42") // Server Information
+                },
             ],
 
             /** 
@@ -588,6 +592,10 @@
                         enabled: true,
                     },],
                 },
+                {
+                    key: "WMENU40_07",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C42") // Server Information
+                },
             ],
 
             /** 
@@ -751,6 +759,11 @@
                         },
                     ],
                 },
+                {
+                    key: "WMENU30_07",
+                    text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C42") // Server Information
+                },
+
             ],
 
             /** 

@@ -639,6 +639,16 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
     //바인딩 추가속성 리스트 얻기.
     var lt_ua028 = oAPP.DATA.LIB.T_9011.filter( a => a.CATCD === "UA028" );
 
+    //20240625 PES -START.
+    //공통코드 SORT 로직 추가.
+    //itmcd로 정렬 처리.
+    lt_ua028.sort(function(a, b){
+
+      return a.ITMCD.localeCompare(b.ITMCD);
+
+    });
+    //20240625 PES -END.
+
     var ls_mprop = {},
         lt_split = [];
 
@@ -750,6 +760,17 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
           if(is_tree.MPROP){
             ls_mprop.val = lt_split[2];
           }
+
+          //20240625 PES -START.
+          //Bind type을 구성했다면
+          if(lt_split.length > 0 && lt_split[0] !== ""){
+            
+            //Conversion Routine 선택 불가 처리.
+            ls_mprop.edit = false;
+
+          }
+          //20240625 PES -END.
+
           ls_mprop.inp_vis = true;
           break;
 

@@ -904,7 +904,13 @@ let oAPP = (function () {
                             oResult = JSON.parse(xhr.response);
                         } catch (error) {
 
+                            let _sLog = `[oAPP.events.ev_login] \n\n`;
+                                _sLog += error && error.toString() || "login Error";
+
+                            console.log(_sLog);
+
                             parent.setBusy("");
+
                             return;
                         }
 
@@ -924,12 +930,25 @@ let oAPP = (function () {
 
                     } catch (error) {
 
-                        var sCleanHtml = parent.setCleanHtml(xhr.response);
+                        // var sCleanHtml = parent.setCleanHtml(xhr.response);
 
-                        parent.showMessage(null, 99, "E", sCleanHtml);
+                        // parent.showMessage(null, 99, "E", sCleanHtml);
 
                         parent.setBusy("");
 
+                        
+                        /**
+                         * 📝 2024-06-27 soccerhs
+                         * 로그인 처리시 약속된 JSON구조가 아닐 경우는 알수 없는 오류처리
+                         */
+
+                        // MSG - 로그인 처리 하는 과정에서 문제가 발생하였습니다. 담당자에게 문의하세요.
+                        let sErrMsg = oAPP.msg.M081;
+
+                        console.log(sErrMsg);
+
+                        sap.m.MessageBox.error(sErrMsg);                        
+                        
                         return;
 
                     }
@@ -949,10 +968,30 @@ let oAPP = (function () {
                         }
                         //20231228 pes -end.
 
-                        // 오류 처리..                   
-                        parent.showMessage(null, 99, "E", oResult.MSG);
+                        /**
+                         * 📝 2024-06-27 soccerhs
+                         * Change Password 일 경우의 메시지 처리
+                         */                        
+                        if(oResult.RCODE === "R001"){
+                            
+                            parent.setBusy("");
+
+                            // MSG - You need to change your password. Please update it via SAPGUI.
+                            let sMsg = oAPP.msg.M082; 
+                            
+                            console.log(sMsg);
+
+                            sap.m.MessageBox.warning(sMsg);
+
+                            return;
+
+                        }
 
                         parent.setBusy("");
+                        
+                        // 오류 처리..    
+                        sap.m.MessageBox.error(oResult.MSG);               
+                        // parent.showMessage(null, 99, "E", oResult.MSG);
 
                         return;
 
@@ -988,10 +1027,10 @@ let oAPP = (function () {
 
                     }).catch((e) => {
 
-                        // 권한이 없으므로 오류 메시지를 띄운다.
-                        oAPP.fn.fnShowNoAuthIllustMsg(e);
-
                         parent.setBusy("");
+
+                        // 권한이 없으므로 오류 메시지를 띄운다.
+                        oAPP.fn.fnShowNoAuthIllustMsg(e);                        
 
                     });
 
@@ -1000,15 +1039,20 @@ let oAPP = (function () {
                     let sErrMsg = "Connection fail!";
 
                     if (xhr.response == "") {
-                        parent.showMessage(null, 99, "E", sErrMsg);
+                        // parent.showMessage(null, 99, "E", sErrMsg);
+                        
                         parent.setBusy("");
+
+                        sap.m.MessageBox.error(sErrMsg);
+                        
                         return;
                     }
 
                     var sCleanHtml = parent.setCleanHtml(xhr.response);
 
-                    parent.showMessage(null, 99, "E", sCleanHtml);
                     parent.setBusy("");
+
+                    parent.showMessage(null, 99, "E", sCleanHtml);                    
 
                 }
             }
@@ -3037,6 +3081,8 @@ function fnWsGlobalMsgList() {
         oAPP.msg.M063 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "063"); // Client
         oAPP.msg.M064 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "064"); // ID
         oAPP.msg.M065 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "065"); // Password
+        oAPP.msg.M081 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "081"); // An issue occurred during login. Please contact support for assistance.
+        oAPP.msg.M082 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "082"); // You need to change your password. Please update it via SAPGUI.
 
         oAPP.msg.M0271 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027", oAPP.msg.M063); // (Client) &1 is required entry value
         oAPP.msg.M0272 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027", oAPP.msg.M064); // (ID) &1 is required entry value

@@ -28,6 +28,7 @@
 
     oAPP.attr.POSIT = 0;
 
+    
     //sap core 정보 광역화.
     oAPP.attr.oCore = sap.ui.getCore();
 
@@ -1165,6 +1166,68 @@
 
 
     };  //이벤트 발생시 마우스의 x, y 좌표 값 얻기.
+
+
+
+    /*************************************************************
+     * @function - UI TABLE 라이브러리 예외처리.
+     *************************************************************/
+    oAPP.fn.excepUiTableLibrary = function(){
+
+      jQuery.sap.require("sap.ui.table.extensions.KeyboardDelegate");
+      sap.ui.table.extensions.KeyboardDelegate.prototype.onkeyup = function(oEvent) {
+          var oCellInfo = sap.ui.table.utils.TableUtils.getCellInfo(oEvent.target);
+          var ModKey = {
+              CTRL: 1,
+              SHIFT: 2,
+              ALT: 4
+          };
+          
+          function startRangeSelectionMode(oTable) {
+              var iFocusedRowIndex = sap.ui.table.utils.TableUtils.getRowIndexOfFocusedCell(oTable);
+              var iDataRowIndex = oTable.getRows()[iFocusedRowIndex].getIndex();
+              var oSelectionPlugin = oTable._getSelectionPlugin();
+
+              /**
+               * Contains information that are used when the range selection mode is active.
+               * If this property is undefined the range selection mode is not active.
+               * @type {{startIndex: int, selected: boolean}}
+               * @property {int} startIndex The index of the data row in which the selection mode was activated.
+               * @property {boolean} selected True, if the data row in which the selection mode was activated is selected.
+               * @private
+               */
+              oTable._oRangeSelection = {
+                  startIndex: iDataRowIndex,
+                  selected: oSelectionPlugin.isIndexSelected(iDataRowIndex)
+              };
+          }
+
+          // End the range selection mode.
+          if (sap.ui.table.extensions.KeyboardDelegate._isKeyCombination(oEvent, jQuery.sap.KeyCodes.SHIFT)) {
+              delete this._oRangeSelection;
+          }
+
+          if (oCellInfo.isOfType(sap.ui.table.utils.TableUtils.CELLTYPE.COLUMNHEADER)) {
+              if (sap.ui.table.extensions.KeyboardDelegate._isKeyCombination(oEvent, jQuery.sap.KeyCodes.SPACE) || sap.ui.table.extensions.KeyboardDelegate._isKeyCombination(oEvent, jQuery.sap.KeyCodes.ENTER)) {
+                  sap.ui.table.utils.TableUtils.Menu.openContextMenu(this, oEvent.target);
+              }
+          } else if (sap.ui.table.extensions.KeyboardDelegate._isKeyCombination(oEvent, jQuery.sap.KeyCodes.SPACE)) {
+              //sap.ui.table.extensions.KeyboardDelegate._handleSpaceAndEnter(this, oEvent);
+              sap.ui.table.extensions.KeyboardDelegate.prototype.onsapenter.call(this, oEvent);
+          } else if ( oCellInfo.rowIndex !== null && sap.ui.table.extensions.KeyboardDelegate._isKeyCombination(oEvent, jQuery.sap.KeyCodes.SPACE, ModKey.SHIFT)) {
+              sap.ui.table.utils.TableUtils.toggleRowSelection(this, this.getRows()[oCellInfo.rowIndex].getIndex());
+
+
+              startRangeSelectionMode(this);
+          } else if (this._legacyMultiSelection && !oCellInfo.isOfType(sap.ui.table.utils.TableUtils.CELLTYPE.COLUMNROWHEADER) &&
+                      (sap.ui.table.extensions.KeyboardDelegate._isKeyCombination(oEvent, jQuery.sap.KeyCodes.SPACE, ModKey.CTRL) ||
+                      sap.ui.table.extensions.KeyboardDelegate._isKeyCombination(oEvent, jQuery.sap.KeyCodes.ENTER, ModKey.CTRL))) {
+              //sap.ui.table.extensions.KeyboardDelegate._handleSpaceAndEnter(this, oEvent);
+              sap.ui.table.extensions.KeyboardDelegate.prototype.onsapenter.call(this, oEvent);
+          }
+      };
+
+    };
 
 
 

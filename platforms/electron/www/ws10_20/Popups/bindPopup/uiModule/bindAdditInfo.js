@@ -1,0 +1,947 @@
+/********************************************************************
+ *📝 바인딩 추가속성 정보 구성.
+********************************************************************/
+export async function start(oArea, oTable){
+
+    return new Promise(async (res) => {
+
+        //바인딩 추가속성 정보 화면 구성.
+        var _oContr = await designView(oArea, oTable);
+
+        
+        var _oPromise = _oContr.fn.uiUpdateComplate(oArea);
+
+        oArea.invalidate();
+
+        await _oPromise;
+        
+
+        //화면 구성 이후 View Start
+        await _oContr.onViewReady();
+
+        return res(_oContr);
+
+    });
+
+};
+
+
+
+/********************************************************************
+ *📝 바인딩 추가속성 정보 control 정보 구성.
+********************************************************************/
+function designControl(oArea){
+
+    return new Promise(async (res) => {
+
+
+        /******************************************************************
+         *📝 DATA / ATTRIBUTE 선언부
+        *******************************************************************/ 
+        const 
+            oContr         = {};
+            oContr.ui      = {};
+            oContr.ui.ROOT = undefined;
+            oContr.fn      = {};
+
+            oContr.types   = {};
+
+            oContr.types.TY_DDLB = {
+                KEY  : "",
+                TEXT : ""
+            };
+
+
+            //바인딩 추가 속성 정보 모델.
+            oContr.oModel = new sap.ui.model.json.JSONModel({
+                T_MPROP  : []
+            });
+
+
+        /********************************************************************
+         *📝 PRIVITE FUNCTION 선언부
+        *******************************************************************/    
+
+            /*************************************************************
+             * @FlowEvent - 추가속성 바인딩 활성여부 처리.
+             *************************************************************/
+            function _setAdditBindButtonEnable(bEnable){
+
+                //default 추가속성 버튼 비활성.
+                oContr.oModel.oData.edit_additbind = false;
+
+                //workbench 화면이 편집상태가 아닌경우.
+                if(oAPP.attr.oAppInfo.IS_EDIT !== "X"){
+                    //활성 처리 하지 않음.
+                    return;
+
+                }
+
+                //추가속성 버튼 활성 여부 처리.
+                oContr.oModel.oData.edit_additbind = bEnable;
+            }
+            
+
+        /*************************************************************
+         * @FlowEvent - View Start 
+         *************************************************************/
+        oContr.onViewReady = async function(){
+
+            return new Promise(async (res) => {
+
+                //추가속성 정보 초기값 구성.
+                oContr.fn.setAdditialListData();
+
+
+                //default 화면 편집 불가능.
+                oContr.oModel.oData.edit = false;
+
+                //workbench 화면이 편집상태인경우.
+                if(oAPP.attr.oAppInfo.IS_EDIT === "X"){
+                    //화면 편집 가능 flag 처리.
+                    oContr.oModel.oData.edit = true;
+                }
+
+                
+                //추가속성 바인딩 활성여부 처리.
+                _setAdditBindButtonEnable(true);
+
+                
+                oContr.oModel.refresh();
+
+
+                return res();
+
+            });           
+
+        };
+
+
+        /*************************************************************
+         * @event - 바인딩 추가 속성 정보 멀티 적용.
+         *************************************************************/
+        oContr.fn.onMultiAdditionalBind = async function(oEvent){
+
+            oAPP.fn.setBusy(true);
+
+            var _oUi = oEvent.oSource;
+
+            //바인딩 추가속성 정보 멀티 적용 가능 여부 점검.
+            var _sRes = await parent.require("./bindAdditArea/checkMultiAdditBind.js")();
+
+            //점검 오류가 발생한 경우.
+            if(_sRes.RETCD === "E"){
+
+                oAPP.fn.setBusy(false);
+
+                await oAPP.fn.showMessagePopoverOppener(_oUi, _sRes.T_RTMSG);
+                
+                return;
+
+            }
+
+
+            //$$MSG
+            var _msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "999", "", "", "", "");
+
+            //$$MSG
+            if(typeof _msg === "undefined"){
+                _msg = "바인딩 추가 속성 정보를 적용하시겠습니까?";
+            }
+
+            oAPP.fn.setBusy(false);
+            
+            let _actcd = await new Promise((resolve) => {
+                sap.m.MessageBox.confirm(_msg, {
+                    onClose: (actcd) => {
+                        resolve(actcd);
+                    }
+                });
+            });
+
+            if (_actcd !== "OK") {
+                return;
+            }
+
+            oAPP.fn.setBusy(true);
+
+            //바인딩 추가 속성 값 얻기.
+            var _MPROP = oAPP.fn.setAdditBindData(oContr.oModel.oData.T_MPROP);
+
+
+            //추가 속성 바인딩 멀티 적용.
+            oAPP.attr.oDesign.fn.additionalBindMulti(_MPROP);
+
+
+            oAPP.attr.oDesign.oModel.refresh(true);
+
+
+            oAPP.fn.setBusy(false);
+
+            //$$MSG
+            sap.m.MessageToast.show("바인딩 추가 속성 정보를 적용 했습니다.", 
+                {duration: 3000, at:"center center"});
+
+        };
+
+
+        /*************************************************************
+         * @event - 입력필드 변경 이벤트.
+         *************************************************************/
+        oContr.fn.onChangeInput = function(oEvent){
+
+            var _oUi = oEvent.oSource;
+        
+            if(typeof _oUi === "undefined" || _oUi === null){
+                return;
+            }
+
+            var _oCtxt = _oUi.getBindingContext();
+
+            if(typeof _oCtxt === "undefined" || _oCtxt === null){
+                return;
+            }
+
+            var _sAddit = _oCtxt.getProperty();
+
+            //추가속성 정보 conversion 입력필드 변경에 대한 처리.
+            oContr.fn.convChangeInput(_sAddit);
+
+
+        };
+
+
+        /*************************************************************
+         * @function - 추가속성 정보 conversion 입력필드 변경에 대한 처리.
+         *************************************************************/
+        oContr.fn.convChangeInput = async function(sAddit){
+            
+            oAPP.fn.setBusy(true);
+
+            //conversion 입력 라인이 아닌경우 exit.
+            if(sAddit.ITMCD !== "P06"){
+                oAPP.fn.setBusy(false);
+                return;
+            }
+            
+            //conversion명 대문자 변환 처리.
+            oAPP.fn.setConvNameUpperCase(sAddit);
+
+
+            //conversion 명 점검.
+            var _sRes = await oAPP.fn.checkConversion(sAddit);
+
+            if(_sRes.RETCD === "E"){
+                
+                oAPP.fn.setBusy(false);
+
+                oContr.oModel.refresh();
+
+                return;
+            }
+
+            oContr.oModel.refresh();
+
+            oAPP.fn.setBusy(false);
+
+        };
+
+
+        /*************************************************************
+         * @function - 추가속성 바인딩 정보 가능 여부점검.(ATTR 기준 점검)
+         *************************************************************/
+        oContr.fn.chkPossibleAdditBind = function(is_attr){
+
+            let _sRes = {RETCD:"", RTMSG:""};
+
+            //ATTRIBUTE 정보가 추가속성 바인딩 불가능.
+            if(is_attr.DATYP !== "02"){
+
+                _sRes.RETCD = "E";
+                _sRes.RTMSG = "Property 라인만 추가속성 정보를 적용할 수 있습니다."; //$$MSG
+
+                return _sRes;
+            }
+
+
+            //프로퍼티가 아닌경우 추가속성 바인딩 불가능.
+            if(is_attr.UIATY !== "1"){
+
+                _sRes.RETCD = "E";
+                _sRes.RTMSG = "Property 라인만 추가속성 정보를 적용할 수 있습니다."; //$$MSG
+
+                return _sRes;
+
+            }
+
+
+            //바인딩 처리가 안된경우 추가속성 바인딩 불가능.
+            if(is_attr.UIATV === "" || is_attr.ISBND === ""){
+                _sRes.RETCD = "E";
+                _sRes.RTMSG = "바인딩 정보가 존재하지 않아 추가속성 정보를 적용할 수 없습니다."; //$$MSG
+
+                return _sRes;
+            }
+
+
+            //바인딩 필드의 라인 정보 얻기.
+            var _sField = oAPP.fn.getModelBindData(is_attr.UIATV, oAPP.attr.oModel.oData.zTREE);
+
+            //일반 필드가 아닌경우 EXIT.
+            if(_sField.KIND !== "E"){
+                _sRes.RETCD = "E";
+                _sRes.RTMSG = `${is_attr.UIATV} 필드가 모델 항목에 존재하지 않습니다.`; //$$MSG
+
+                return _sRes;
+
+            }
+    
+                
+            var _aMPROP = oContr.oModel.oData.T_MPROP;
+
+            //Bind type
+            var _sP04 = _aMPROP.find( item => item.ITMCD === "P04" );
+
+            if(typeof _sP04 === "undefined"){
+
+                _sRes.RETCD = "E";
+                _sRes.RTMSG = "Bind type 정보를 찾을 수 없습니다."; //$$MSG
+
+                return _sRes;
+
+            }
+
+
+            //Bind type을 설정 했으나, 바인딩된 필드 타입이 P TYPE이 아닌경우.
+            if(_sP04.val !== "" && _sField.TYPE_KIND !== "P"){
+
+                _sRes.RETCD = "E";
+                _sRes.RTMSG = "Bind type은 ABAP TYPE이 P 유형만 가능합니다."; //$$MSG
+
+                return _sRes;
+
+            }
+
+
+            //Reference Field name
+            var _sP05 = _aMPROP.find( item => item.ITMCD === "P05" );
+
+            if(typeof _sP05 === "undefined"){
+
+                _sRes.RETCD = "E";
+                _sRes.RTMSG = "Reference Field name 정보를 찾을 수 없습니다."; //$$MSG
+
+                return _sRes;
+
+            }
+
+
+            //참조 필드가 입력됐다면
+            if(_sP05.val !== ""){
+
+                //참조필드의 부모 path와 바인딩 필드의 부모 path가 다른경우.
+                if(_sP05.val.substr(0, _sP05.val.lastIndexOf("-")) !== is_attr.UIATV.substr(0, is_attr.UIATV.lastIndexOf("-"))){
+                    _sRes.RETCD = "E";
+                    _sRes.RTMSG = "바인딩 필드와 참조필드의 부모 모델 path가 다릅니다."; //$$MSG
+
+                    return _sRes;
+
+                }
+                //같은 path로 부터 파생된 UI인지 여부 확인.
+
+            }
+
+
+            //NOZERO.
+            var _sP07 = _aMPROP.find( item => item.ITMCD === "P07" );
+
+            if(typeof _sP07 === "undefined"){
+
+                _sRes.RETCD = "E";
+                _sRes.RTMSG = "Nozero 정보를 찾을 수 없습니다."; //$$MSG
+
+                return _sRes;
+
+            }
+
+
+            //nozero 불가능 항목.(C:char, g:string)
+            var l_nozero = "Cg";
+
+            //nozero가 입력됐으나, 바인딩된 필드가 허용 불가능 타입인경우..
+            if(_sP07.val === "true" && l_nozero.indexOf(_sField.TYPE_KIND) !== -1 ){
+
+                _sRes.RETCD = "E";
+                _sRes.RTMSG = "ABAP TYPE CHAR, STRING은 Nozero를 설정할 수 없습니다."; //$$MSG
+
+                return _sRes;
+
+            }
+
+
+            //Is number format
+            var _sP08 = _aMPROP.find( item => item.ITMCD === "P08" );
+
+            if(typeof _sP08 === "undefined"){
+
+                _sRes.RETCD = "E";
+                _sRes.RTMSG = "Is number format 정보를 찾을 수 없습니다."; //$$MSG
+
+                return _sRes;
+
+            }
+
+
+            //number format 가능항목.(I:int, P: P TYPE)
+            var l_numfmt = "IP";
+
+            //numberformat가 입력됐으나, 바인딩된 필드가 허용 불가능 타입인경우..
+            if(_sP08.val === "true" && l_numfmt.indexOf(_sField.TYPE_KIND) === -1 ){
+
+                _sRes.RETCD = "E";
+                _sRes.RTMSG = "Is number format은 ABAP TYPE INT, P만 사용할 수 있습니다."; //$$MSG
+
+                return _sRes;
+
+            }
+
+            return _sRes;
+
+
+        };
+
+
+
+        /*************************************************************
+         * @function - 추가속성 정보 리스트 오류 초기화.
+         *************************************************************/
+        oContr.fn.resetErrorField = function(){
+
+            var _aMPROP = oContr.oModel.oData.T_MPROP;
+
+            //바인딩 추가속성 정보 오류 표현 필드 초기화.
+            for (let i = 0, l = _aMPROP.length; i < l; i++) {
+
+                var _sMPROP = _aMPROP[i];
+
+                _sMPROP.stat    = null;
+                _sMPROP.statTxt = "";
+                _sMPROP._style  = "";
+                
+            }
+
+        };
+
+
+
+        /*************************************************************
+         * @function - 참조 필드 DDLB 리스트 초기화.
+         *************************************************************/
+        oContr.fn.clearRefField = function(){
+
+            var _sMPROP = oContr?.oModel?.oData?.T_MPROP;
+
+            if(typeof _sMPROP === "undefined"){
+                return;
+            }
+
+            if(_sMPROP.length === 0){
+                return;
+            }
+
+            //Reference Field name 라인 정보 찾기.
+            var _sP05 = _sMPROP.find( item => item.ITMCD === "P05");
+
+            //해당 라인을 찾지 못한 경우 exit.
+            if(typeof _sP05 === "undefined"){
+                return;
+            }
+
+            //입력값 초기화.
+            _sP05.val    = "";
+
+            //참조 항목 필드 리스트 초기화.
+            _sP05.T_DDLB = [];
+
+            oContr.oModel.refresh();
+
+        };
+
+
+        /*************************************************************
+         * @function - 참조 필드 DDLB 리스트 구성
+         *************************************************************/
+        oContr.fn.setRefFieldList = function(){
+            
+            //DESIGN TREE의 체크박스 선택건 얻기.
+            var _aTree = oAPP.attr.oDesign.fn.getSelectedDesignTree();
+
+            //라인 선택건이 존재하지 않는경우 exit.
+            if(_aTree.length === 0){
+                
+                //참조 필드 리스트 초기화.
+                //참조 필드 라인 선택건 초기화.
+                oContr.fn.clearRefField();
+
+                return;
+            }
+
+
+            var _aField = [];
+
+            //선택한 라인들중 같은 라인으로 파생됐는지 확인.
+            for (let i = 0, l = _aTree.length; i < l; i++) {
+                
+                var _sTree = _aTree[i];
+
+                //바인딩되지 않은 필드를 선택한 경우 SKIP.
+                if(_sTree.UIATV === "" || _sTree.ISBND === ""){
+                    continue;
+                }
+
+                //프로퍼티를 선택하지 않는 경우.
+                if(_sTree.UIATY !== "1"){
+                    //참조 필드 리스트 초기화.
+                    //참조 필드 라인 선택건 초기화.
+                    oContr.fn.clearRefField();
+
+                    return;
+                }
+
+
+                //GT_OTAB-FLD01 형식의 정보에서 마지막 구분자 위치 얻기.
+                var _pos = _sTree.UIATV.lastIndexOf("-");
+
+                var _field = _sTree.UIATV.substr(0, _pos);
+
+                //수집되지 않은 항목인 경우 수집 처리.
+                if(_aField.indexOf(_field) === -1){
+                    _aField.push(_field);
+                }
+                
+            }
+
+            //수집된 항목이 1건을 초과 하는경우
+            //(같은 구조, TABLE로 파생된 바인딩 정보가 아닌경우)
+            if(_aField.length > 1){
+
+                //참조 필드 리스트 초기화.
+                //참조 필드 라인 선택건 초기화.
+                oContr.fn.clearRefField();
+
+                return;
+
+            }
+
+            //바인딩한 필드 정보 검색.
+            var _sField = oAPP.fn.getModelBindData(_aField[0], oAPP.attr.oModel.oData.zTREE);
+
+            if(typeof _sField === "undefined"){
+                //참조 필드 리스트 초기화.
+                //참조 필드 라인 선택건 초기화.
+                oContr.fn.clearRefField();
+                return;
+            }
+
+
+            //구조(TAB) 안에 있는 필드 중 CUKY, UNIT 타입이 없으면 잠김.
+            var lt_filt = _sField.zTREE.filter( item => item.DATATYPE === "CUKY" || item.DATATYPE === "UNIT");
+
+            //해당 구조(TAB) 안에 CUKY, UNIT 타입이 없는경우.
+            if(lt_filt.length === 0){
+                //참조 필드 리스트 초기화.
+                //참조 필드 라인 선택건 초기화.
+                oContr.fn.clearRefField();
+                return;
+            }
+
+            var _sMPROP = oContr?.oModel?.oData?.T_MPROP;
+
+            if(typeof _sMPROP === "undefined"){
+                return;
+            }
+
+            if(_sMPROP.length === 0){
+                return;
+            }
+
+            //Reference Field name 라인 정보 찾기.
+            var _sP05 = _sMPROP.find( item => item.ITMCD === "P05");
+
+            //해당 라인을 찾지 못한 경우 exit.
+            if(typeof _sP05 === "undefined"){
+                return;
+            }
+
+            //입력값 초기화.
+            _sP05.val    = "";
+
+            //참조 항목 필드 리스트 초기화.
+            _sP05.T_DDLB = [];
+
+            //공란 추가.
+            _sP05.T_DDLB.push(JSON.parse(JSON.stringify(oContr.types.TY_DDLB)));
+
+            for (let i = 0, l = lt_filt.length; i < l; i++) {
+                
+                var _sField = lt_filt[i];
+
+                var _sDDLB = JSON.parse(JSON.stringify(oContr.types.TY_DDLB));
+
+                _sDDLB.KEY  = _sField.CHILD;
+                _sDDLB.TEXT = _sField.CHILD;
+
+                _sP05.T_DDLB.push(_sDDLB);
+                
+            }
+
+            oContr.oModel.refresh();
+
+
+        };
+
+
+        /*************************************************************
+         * @function - UI 구성 완료후 call back 처리.
+         *************************************************************/
+        oContr.fn.uiUpdateComplate = function(oUI){
+
+            return new Promise((res)=>{
+                
+                if(typeof oUI === "undefined" || oUI === null){
+                    return res();
+                }
+
+                var _oDelegate = {
+                    onAfterRendering:(oEvent)=>{
+
+                        console.log(`${oUI.sId} onAfterRendering`);
+
+                        //onAfterRendering 이벤트 제거.
+                        oUI.removeEventDelegate(_oDelegate);
+
+                        //onAfterRendering 정보 초기화.
+                        oUI.data("_onAfterRendering", null);
+
+                        return res();
+
+                    }
+                };
+
+                //onAfterRendering 추가.
+                oUI.addEventDelegate(_oDelegate);
+                
+                //onAfterRendering 정보 매핑.
+                oUI.data("_onAfterRendering", _oDelegate);
+
+            });
+
+        };
+
+
+        /*******************************************************
+        * @function - 추가속성 정보 출력 데이터구성.
+        *******************************************************/  
+        oContr.fn.setAdditialListData = function(){
+
+            oContr.oModel.oData.T_MPROP = [];
+
+            // var lt_bool = [JSON.parse(JSON.stringify(oContr.types.TY_DDLB))];
+            var lt_bool = [];
+            
+            var _sBool = JSON.parse(JSON.stringify(oContr.types.TY_DDLB));
+            
+            _sBool.KEY = _sBool.TEXT =  "true";
+            lt_bool.push(_sBool);
+
+            var _sBool = JSON.parse(JSON.stringify(oContr.types.TY_DDLB));
+            
+            _sBool.KEY = _sBool.TEXT =  "false";
+            lt_bool.push(_sBool);
+            _sBool = null;
+
+
+
+            //바인딩 추가속성 리스트 얻기.
+            var lt_ua028 = oAPP.attr.T_9011.filter(a => a.CATCD === "UA028");
+
+            var lt_ua022 = oAPP.attr.T_9011.filter( item => item.CATCD === "UA022" && item.FLD03 === "X" );
+
+            var lt_refList = [JSON.parse(JSON.stringify(oContr.types.TY_DDLB))];
+
+            for (var i = 0, l = lt_ua022.length; i < l; i++) {
+                var ls_ua022 = lt_ua022[i];
+                
+                lt_refList.push({
+                    KEY : ls_ua022.FLD01,
+                    TEXT: ls_ua022.FLD01
+                });
+                
+            }
+
+
+            for (var i = 0, l = lt_ua028.length; i < l; i++) {
+
+                var ls_mprop = {};
+
+                ls_mprop.ITMCD       = lt_ua028[i].ITMCD;
+                ls_mprop.prop        = lt_ua028[i].FLD01;
+                ls_mprop.val         = "";
+                ls_mprop.stat        = "None";
+                ls_mprop.statTxt     = "";
+                ls_mprop.isFieldInfo = false;
+    
+                ls_mprop.edit        = false;
+                ls_mprop.inp_vis     = false;
+                ls_mprop.sel_vis     = false;
+                ls_mprop.txt_vis     = false;
+                ls_mprop._style      = "";
+
+                switch (ls_mprop.ITMCD) {
+                    case "P01": //Field name
+                    case "P02": //Field path
+                    case "P03": //type
+                        ls_mprop.isFieldInfo = true;
+                        break;
+
+                    case "P04": //Bind type
+                        ls_mprop.edit    = true;
+                        ls_mprop.sel_vis = true;
+                        ls_mprop.T_DDLB  = JSON.parse(JSON.stringify(lt_refList));
+                        break;
+                    
+                    case "P05": //Reference Field name
+                        ls_mprop.sel_vis = true;
+                        
+                        break;
+
+                    case "P06": //Conversion Routine
+                        
+                        ls_mprop.maxlen  = 5;
+
+                        ls_mprop.edit    = true;
+                        ls_mprop.inp_vis = true;
+                        
+                        break;
+                    
+                    case "P07": //Nozero
+
+                        ls_mprop.val     = "false";
+
+                        ls_mprop.edit    = true;
+                        ls_mprop.sel_vis = true;
+                        ls_mprop.T_DDLB  = JSON.parse(JSON.stringify(lt_bool));
+                        break;
+                    
+                    case "P08": //Is number format?
+
+                        ls_mprop.val     = "false";
+
+                        ls_mprop.edit    = true;
+                        ls_mprop.sel_vis = true;
+                        ls_mprop.T_DDLB  = JSON.parse(JSON.stringify(lt_bool));
+                        break;
+
+                    default:
+                        break;
+                }
+
+
+                oContr.oModel.oData.T_MPROP.push(ls_mprop);
+
+            }
+        };
+
+
+        /*******************************************************
+        * @function - 추가속성 바인딩 버튼 활성처리.
+        *******************************************************/  
+        oContr.fn.setAdditBindButtonEnable = function(bEnable){
+
+            //추가속성 바인딩 버튼 활성처리.
+            _setAdditBindButtonEnable(bEnable);
+
+            oContr.oModel.refresh();
+
+        };
+
+
+        return res(oContr);
+        
+    });
+
+}
+
+
+
+/********************************************************************
+ *📝 바인딩 추가속성 정보 화면 구성.
+********************************************************************/
+function designView(oArea, oTable){
+
+    return new Promise(async (res)=>{
+
+        //control 정보 구성.
+        let oContr = await designControl(oArea);
+
+
+        //바인딩 추가속성 정보 table.
+        var oTab = new sap.ui.table.Table({
+            selectionMode: "None",
+            selectionBehavior: "RowOnly",
+            visibleRowCountMode: "Auto",
+            width: "100%",
+            visible: "{/resize}",
+            rowHeight:30,
+            layoutData: new sap.ui.layout.SplitterLayoutData()
+        });
+        oContr.ui.ROOT = oTab;
+
+        //메인의 추가속성 정보 table 이름 마킹.
+        //(우측 추가속성 정보 테이블)
+        oContr.ui.ROOT.data("TAB_NAME", "MAIN_ADDIT");
+
+        oContr.ui.ROOT.setModel(oContr.oModel);
+
+        oContr.ui.ROOT.addExtension(
+            new sap.m.OverflowToolbar({
+                content:[
+                    new sap.m.Button({
+                        text:"추가 속성 바인딩",    //$$OTR
+                        icon:"sap-icon://multiselect-all",
+                        type:"Emphasized",
+                        enabled: "{/edit_additbind}",
+                        press: oContr.fn.onMultiAdditionalBind
+                    }).addStyleClass("sapUiTinyMarginEnd")
+                ]
+            })  
+        );
+
+
+        var _oUtil = await import("../utils/setStyleClassUiTable.js");
+
+        //tree table의 style class 처리.
+        _oUtil.setStyleClassUiTable(oContr.ui.ROOT, "_style");
+
+
+        //A52  Property
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A52", "", "", "", "");
+
+        //추가바인딩 속성의 Property 컬럼.
+        var oTabCol1 = new sap.ui.table.Column({
+            label: new sap.m.Label({
+                text: l_txt,
+                tooltip: l_txt,
+                design: "Bold"
+            }),
+            template: new sap.m.Text({
+                text: "{prop}"
+            })
+        });
+        oTab.addColumn(oTabCol1);
+        
+        //A53  Value
+        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A53", "", "", "", "");
+
+        //추가바인딩 속성의 value 컬럼.
+        var oTabCol2 = new sap.ui.table.Column({
+            label: new sap.m.Label({
+                text: l_txt,
+                tooltip: l_txt,
+                design: "Bold"
+            }),
+            template: new sap.m.Text({
+                text: "{val}"
+            })
+        });
+        oTab.addColumn(oTabCol2);
+
+        var oTabCol2HBox1 = new sap.m.HBox({
+            justifyContent: "Center",
+            renderType: "Bare",
+            direction: "Column"
+        });
+        oTabCol2.setTemplate(oTabCol2HBox1);
+
+        //추가속성정보 TEXT.
+        var oTabCol2Txt1 = new sap.m.Text({
+            text: "{val}",
+            visible: "{txt_vis}"
+        });
+        oTabCol2HBox1.addItem(oTabCol2Txt1);
+
+        //추가속성정보 입력 필드.
+        var oTabCol2Inp1 = new sap.m.Input({
+            value: "{val}",
+            visible: "{inp_vis}",
+            editable: "{edit}",
+            maxLength: "{maxlen}",
+            valueState: "{stat}",
+            valueStateText: "{statTxt}",
+            enabled: "{/edit}",
+            change: oContr.fn.onChangeInput
+        });
+        oTabCol2HBox1.addItem(oTabCol2Inp1);
+
+
+        //추가속성정보 DDLB 필드.
+        var oTabCol2Sel1 = new sap.m.Select({
+            selectedKey: "{val}",
+            visible: "{sel_vis}",
+            editable: "{edit}",
+            valueState: "{stat}",
+            valueStateText: "{statTxt}",
+            enabled: "{/edit}"
+        });
+        oTabCol2HBox1.addItem(oTabCol2Sel1);
+
+        //바인딩 추가속성 정보 DDLB 선택 이벤트.
+        oTabCol2Sel1.attachChange(function (oEvent) {
+
+            var _oUi = oEvent.oSource;
+
+            //바인딩 추가속성 정보 DDLB 선택 이벤트.
+            oAPP.fn.setAddtBindInfoDDLB(_oUi);
+
+            // //바인딩 추가속성값 설정.
+            // oAPP.fn.setMPROP();
+
+        });
+
+        //DDLB ITEM 바인딩 처리.
+        oTabCol2Sel1.bindAggregation("items", {
+            path: "T_DDLB",
+            template: new sap.ui.core.Item({
+                key: "{KEY}",
+                text: "{TEXT}"
+            }),
+            templateShareable: true
+        });
+
+        //추가속성 정보 바인딩 처리.
+        oTab.bindAggregation("rows", {
+            path: "/T_MPROP",
+            templateShareable: true,
+            template: new sap.ui.table.Row()
+        });
+
+        
+
+        var _oPromise = oContr.fn.uiUpdateComplate(oArea);
+
+        oArea.addAggregation("content", oContr.ui.ROOT, true);
+
+        oArea.invalidate();
+
+        await _oPromise;
+
+
+
+        return res(oContr);
+
+    });
+
+}
+
+
+
