@@ -45,6 +45,10 @@ let oAPP = (function(window) {
     oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
     oAPP.WSUTIL = WSUTIL;
 
+    oAPP.attr.GLANGU = oAPP.WSUTIL.getWsSettingsInfo().globalLanguage;
+
+
+
     /*******************************************************
      * 메시지클래스 텍스트 작업 관련 Object -- end
      *******************************************************/

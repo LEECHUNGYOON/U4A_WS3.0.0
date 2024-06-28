@@ -226,6 +226,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         jQuery.sap.require("sap.m.MessageBox");
 
+        // Illustration Pool에 TNT Theme를 등록한다.
+        oAPP.fn.fnRegisterIllustrationPool();
+
         // 작업표시줄 메뉴 생성하기
         _createTaskBarMenu();
 
@@ -3118,7 +3121,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 }
             },
 
-        ])
+        ]);
 
     } // end of _createTaskBarMenu
 
@@ -3943,12 +3946,9 @@ window.addEventListener("load", () => {
         // if (!APP.isPackaged) {
         //     // Floating Menu Open
         //     oAPP.fn.fnFloatingMenuOpen();
-        // }
+        // }        
 
-        // Illustration Pool에 TNT Theme를 등록한다.
-        oAPP.fn.fnRegisterIllustrationPool();
-
-        await oAPP.fn.fnOnMainStart(); // [async]
+        oAPP.fn.fnOnMainStart(); // [async]
 
     });
 

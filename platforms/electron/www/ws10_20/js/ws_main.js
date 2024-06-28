@@ -346,6 +346,185 @@
 
     }; // end of oAPP.main.onDragend
 
+
+    /************************************************************************
+     * 현재 브라우저의 child window 전체를 
+     * 부모가 위치한 모니터 기준 바둑판 정렬
+     ************************************************************************/
+    oAPP.main.adjustWindowGrid = function(){
+
+        let mainWindow = parent.CURRWIN;
+        let screen = parent.SCREEN;
+        let childWindows = mainWindow.getChildWindows();
+
+
+        // 원본-------
+
+        // // 부모 창의 위치와 크기 가져오기
+        // const [parentX, parentY] = mainWindow.getPosition();
+        // const [parentWidth, parentHeight] = mainWindow.getSize();
+
+        // // 부모 창의 중앙 위치
+        // const parentCenterX = parentX + parentWidth / 2;
+        // const parentCenterY = parentY + parentHeight / 2;
+
+        // // 부모 창이 위치한 디스플레이를 찾기
+        // const displays = screen.getAllDisplays();
+        // let targetDisplay;
+        // for (const display of displays) {
+        //     const { x, y, width, height } = display.workArea;
+        //     if (parentCenterX >= x && parentCenterX < x + width && parentCenterY >= y && parentCenterY < y + height) {
+        //         targetDisplay = display;
+        //         break;
+        //     }
+        // }
+
+        // if (!targetDisplay) return;
+
+        // // 디스플레이 작업 영역 정보
+        // const { x: displayX, y: displayY, width: displayWidth, height: displayHeight } = targetDisplay.workArea;
+
+        // // 자식 창들을 30px 간격으로 겹쳐서 배치
+        // const spacing = 30;
+        // let currentX = displayX;
+        // let currentY = displayY;
+
+        // childWindows.forEach((childWindow, index) => {
+
+        //     // 자식 창의 위치 설정
+        //     childWindow.setPosition(Math.round(currentX), Math.round(currentY));
+
+        //     // 다음 자식 창의 위치로 이동 (30px 간격)
+        //     currentX += spacing;
+        //     currentY += spacing;
+          
+        // });
+
+        // // 모든 자식 창을 보이게 설정
+        // childWindows.forEach(childWindow => {
+        //     childWindow.show();
+        // });
+
+
+        // let mainWindow = parent.CURRWIN;
+        // let screen = parent.SCREEN;
+        // let childWindows = mainWindow.getChildWindows();
+
+        // 부모 창의 위치와 크기 가져오기
+        const [parentX, parentY] = mainWindow.getPosition();
+        const [parentWidth, parentHeight] = mainWindow.getSize();
+
+        // 부모 창의 중앙 위치
+        const parentCenterX = parentX + parentWidth / 2;
+        const parentCenterY = parentY + parentHeight / 2;
+
+        // 부모 창이 위치한 디스플레이를 찾기
+        const displays = screen.getAllDisplays();
+        let targetDisplay;
+        for (const display of displays) {
+            const { x, y, width, height } = display.workArea;
+            if (parentCenterX >= x && parentCenterX < x + width && parentCenterY >= y && parentCenterY < y + height) {
+                targetDisplay = display;
+                break;
+            }
+        }
+
+        if (!targetDisplay) return;
+
+        // 디스플레이 작업 영역 정보
+        const { x: displayX, y: displayY, width: displayWidth, height: displayHeight } = targetDisplay.workArea;
+
+        // 자식 창들을 30px 간격으로 겹쳐서 배치
+        const spacing = 30;
+        let currentX = displayX;
+        let currentY = displayY;
+
+        let aChildXY = [];
+
+        childWindows.forEach((childWindow, index) => {
+
+            aChildXY.push({ X : currentX, Y: currentY, WIN : childWindow });
+
+            // 자식 창의 위치 설정
+            // childWindow.setPosition(Math.round(currentX), Math.round(currentY));
+
+            // 다음 자식 창의 위치로 이동 (30px 간격)
+            currentX += spacing;
+            currentY += spacing;
+          
+        });        
+
+        aChildXY.forEach((oPos) => {         
+
+            oPos.WIN.setPosition(Math.round(oPos.X), Math.round(oPos.Y));
+
+        });
+
+        aChildXY.forEach((oPos) => {
+
+            oPos.WIN.setBounds({ x: Math.round(oPos.X), y: Math.round(oPos.Y)});
+
+        });
+
+        // 모든 자식 창을 보이게 설정
+        childWindows.forEach(childWindow => {
+            
+            childWindow.show();
+        });
+        
+    }; // end of oAPP.main.adjustWindowGrid
+
+    /************************************************************************
+     * 현재 브라우저의 child window 전체를 
+     * 부모가 위치한 모니터 기준 바둑판 정렬
+     ************************************************************************/
+    oAPP.main.adjustWindowCenter = function(){
+
+        let mainWindow = parent.CURRWIN;
+        let screen = parent.SCREEN;
+        let childWindows = mainWindow.getChildWindows();
+
+        
+            // 부모 창의 위치와 크기 가져오기
+            const { x: parentX, y: parentY, width: parentWidth, height: parentHeight } = mainWindow.getBounds();
+
+            // 부모 창의 중앙 위치 계산
+            const parentCenterX = parentX + parentWidth / 2;
+            const parentCenterY = parentY + parentHeight / 2;
+
+            // 부모 창이 위치한 모니터 찾기
+            const displays = screen.getAllDisplays();
+            let targetDisplay;
+            for (const display of displays) {
+                const { x, y, width, height } = display.workArea;
+                if (parentCenterX >= x && parentCenterX < x + width && parentCenterY >= y && parentCenterY < y + height) {
+                    targetDisplay = display;
+                    break;
+                }
+            }
+
+            if (!targetDisplay) return;
+
+            // 디스플레이의 중앙 좌표 계산
+            const displayCenterX = targetDisplay.workArea.x + targetDisplay.workArea.width / 2;
+            const displayCenterY = targetDisplay.workArea.y + targetDisplay.workArea.height / 2;
+
+            childWindows.forEach(childWindow => {
+                const { width: childWidth, height: childHeight } = childWindow.getBounds();
+
+                // 자식 창을 디스플레이의 중앙에 위치 설정
+                const childX = Math.round(displayCenterX - childWidth / 2);
+                const childY = Math.round(displayCenterY - childHeight / 2);
+                childWindow.setPosition(childX, childY);
+            });
+
+            // 모든 자식 창을 보이게 설정
+            childWindows.forEach(childWindow => {
+                childWindow.show();
+            });
+
+    };
+
     /************************************************************************
      * 현재 브라우저의 이벤트 핸들러
      ************************************************************************/
@@ -385,6 +564,38 @@
 
     } // end of _attachCurrentWindowEvents
 
+
+
+    function _createTaskBarMenu(){
+
+        parent.CURRWIN.setThumbarButtons([
+            {
+                tooltip: '바둑판',
+                icon: parent.PATH.join(parent.APPPATH, "img", "shutdown.png"),
+                click() {
+
+                    // 현재 떠있는 윈도우를 부모에 위치한 모니터 기준으로
+                    // 좌측 상단 부터 바둑판 형태로 정렬
+                    oAPP.main.adjustWindowGrid();
+ 
+                }
+            },
+
+            {
+                tooltip: '중앙정렬',
+                icon: parent.PATH.join(parent.APPPATH, "img", "shutdown.png"),
+                click() {
+
+                    oAPP.main.adjustWindowCenter();
+ 
+                }
+            },
+
+        ]);
+        
+    }
+    
+
     /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------
      ************************************************************************/
@@ -392,8 +603,13 @@
 
         sap.ui.getCore().attachInit(async function () {
 
+            jQuery.sap.require("sap.m.MessageBox");
+
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
+
+            // 작업표시줄 메뉴 생성하기
+            _createTaskBarMenu();
 
             // 현재 브라우저의 이벤트 핸들러
             _attachCurrentWindowEvents();
