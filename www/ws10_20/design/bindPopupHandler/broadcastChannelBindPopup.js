@@ -77,6 +77,9 @@ class CL_WS20_BINDPOPUP{
             return;
         }
 
+        //바인딩 팝업 디자인 영역의 ROOT OBJID 정보 초기화.
+        DESIGN_ROOT_OBJID = "";
+
         //채널 종료 처리.
         this.oChannel.close();
         console.log("채널 종료함.");
@@ -133,6 +136,12 @@ function resBroadcastChannelBindPopup(oEvent){
 
     //바인딩 팝업 디자인 영역에 그려진 최상위 UI 정보 전송건에 대한 처리.
     if(updateRootObjectID(oEvent) === true){
+        return;
+    }
+
+
+    //디자인 영역 UI선택 처리.
+    if(responeSelectDesignTreeOBJID(oEvent) === true){
         return;
     }
 
@@ -226,7 +235,17 @@ function updateAppData(oEvent){
                 
             }
             
-        }                    
+        }
+
+
+        for (let i = 0, l = _oUi._T_0015.length; i < l; i++) {
+            
+            var _s0015 = _oUi._T_0015[i];
+
+            //미리보기 화면 재 갱신 처리.
+            oAPP.fn.previewUIsetProp(_s0015);
+            
+        }
 
     }
 
@@ -240,8 +259,17 @@ function updateAppData(oEvent){
 
     //BIND POPUP으로 부터 받은 UI 정보중 현재 선택건이 포함되어 있다면.
     if(oEvent.data.T_0014.findIndex( item => item.OBJID === _OBJID ) !== -1){
-        //tree item 선택 처리.
-        oAPP.fn.setSelectTreeItem(oAPP.attr.oModel.oData.uiinfo.OBJID);
+        // //tree item 선택 처리.
+        // oAPP.fn.setSelectTreeItem(oAPP.attr.oModel.oData.uiinfo.OBJID);
+
+        //선택한 UI의 TREE 라인 정보 얻기.
+        var _sTree = oAPP.fn.getTreeData("PAGE");
+
+        if(typeof _sTree !== "undefined"){
+            //UI design tree 라인 선택 이벤트 수행.
+            oAPP.fn.designTreeItemPress(_sTree);
+        }
+
     }
 
 
@@ -282,6 +310,30 @@ function updateRootObjectID(oEvent){
 }
 
 
+/************************************************************************
+ * @function - 디자인 영역 UI선택 처리.
+ ************************************************************************/
+function responeSelectDesignTreeOBJID(oEvent){
+
+    //디자인 영역 UI선택 처리 건이 아닌경우 exit.
+    if(oEvent.data.PRCCD !== "DESIGN-TREE-SELECT-OBJID"){
+        return false;
+    }
+
+    //전달받은 파라메터가 존재하지 않는경우 exit.
+    if(typeof oEvent.data.OBJID === "undefined" || oEvent.data.OBJID === ""){
+        return true;
+    }
+
+
+    //tree item 선택 처리
+    oAPP.fn.setSelectTreeItem(oEvent.data.OBJID);
+
+    return true;
+
+}
+
+
 
 /*************************************************************
  * @function - 바인딩 팝업 데이터 전송전 라인값 점검.
@@ -291,6 +343,10 @@ function checkBindPopupDragAppData(is_drag){
     var _sRes = {RETCD: "", RTMSG:""};
 
     if(typeof is_drag === "undefined"){
+
+        //디자인 영역의 object ID 초기화.
+        DESIGN_ROOT_OBJID = "";
+
         _sRes.RETCD = "E";
         _sRes.RTMSG = "갱신 처리 대상 UI가 존재하지 않습니다."; //$$MSG
         return _sRes;
@@ -554,6 +610,39 @@ function setBindPopupDragAppData(is_drag){
 
 
 
+/*************************************************************
+ * @function - 바인딩 팝업의 바인딩 추가속성 정보 오류건 처리.
+ *************************************************************/
+function sendAdditError(oData){
+
+    var _sParam = {
+        PRCCD   : "ERROR-ADDIT-DATA",
+        T_ERMSG : oData
+    };
+
+
+    //바인딩 팝업에 데이터 전송.
+    CL_WS20_BINDPOPUP.sendPostMessage(_sParam);
+
+}
+
+
+/*************************************************************
+ * @function - 바인딩 팝업의 디자인 영역 UI선택 처리.
+ *************************************************************/
+function selectDesignTreeOBJID(oData){
+
+    var _sParam = {
+        PRCCD   : "DESIGN-TREE-SELECT-OBJID",
+        OBJID : oData
+    };
+
+
+    //바인딩 팝업에 데이터 전송.
+    CL_WS20_BINDPOPUP.sendPostMessage(_sParam);
+
+}
+
 
 /*************************************************************
  * @module - 디자인상세화면(20화면) <-> BINDPOPUP 통신 처리 모듈.
@@ -588,15 +677,18 @@ module.exports = function(ACTCD, oData){
             updateBindPopupDesignData(oData);
             break;
 
+        case "ERROR-ADDIT-DATA":
+            //바인딩 팝업의 바인딩 추가속성 정보 오류건 처리.
+            sendAdditError(oData);
+            break;
+
+        case "DESIGN-TREE-SELECT-OBJID":
+            //디자인 tree 영역 라인 선택 처리.
+            selectDesignTreeOBJID(oData);
+            break;
+
         default:
             break;
     }    
 
 };
-
-
-
-
-
-
-

@@ -402,6 +402,9 @@ function designControl(oArea){
                 //01: T_0014 정보
                 _sTree.DATYP        = CS_DATYP.UOBJ;
 
+                //UI 표현 처리.
+                _sTree._highlight   = "Success";
+
                 
                 var _s0022 = oAPP.attr.T_0022.find( item => item.UIOBK === _sTree.S_14_UIOBK );
 
@@ -805,9 +808,6 @@ function designControl(oArea){
                 //체크박스 오류 표현 필드 초기화.
                 sTree._check_vs      = null;
 
-                //라인의 오류표현 필드 초기화.
-                sTree._highlight     = null;
-
                 //오류 표현 style 초기화.
                 sTree._style         = "";
 
@@ -1055,6 +1055,10 @@ function designControl(oArea){
                 return;
             }
 
+
+            //DESIGN TREE 영역에 DROP 되는 데이터는 
+            //바인딩 추가 속성 정보를 적용하지 않기에 초기화 처리.
+            _sRes.IF_DATA.MPROP = "";
            
             //바인딩 필드 적용.
             await _setBindAttribute(_sRes.IF_DATA, _sDrop);
@@ -1274,7 +1278,6 @@ function designControl(oArea){
             sap.m.MessageToast.show("Unbinding 처리 완료", 
                 {my:"center center", at:"center center"});
 
-
         };
 
 
@@ -1289,6 +1292,10 @@ function designControl(oArea){
             _clearSelection(oContr.oModel.oData.zTREE_DESIGN);
 
             oContr.oModel.refresh();
+
+
+            //참조 필드 DDLB 리스트 구성
+            oAPP.attr.oAddit.fn.setRefFieldList();
 
             oAPP.fn.setBusy(false);
 
@@ -1349,7 +1356,6 @@ function designControl(oArea){
                 
                 //오류 표현 처리.
                 _sTree._check_vs      = "Error";
-                _sTree._highlight     = "Error";
                 _sTree._style         = "u4aWsDesignTreeError";
                 _sTree._error_tooltip = _sRes.RTMSG;
 
@@ -1479,6 +1485,14 @@ function designControl(oArea){
 
             //모델 필드의 바인딩 가능 여부 설정.
             await parent.require("./modelFieldArea/bindPossible.js")(_sTree);
+
+
+            //UI 라인인 경우 WS 디자인 영역의 라인 선택 처리.
+            if(_sTree.DATYP === "01"){
+                //바인딩 팝업 디자인 영역에 그려진 최상위 UI 정보 전송.
+                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("DESIGN-TREE-SELECT-OBJID", _sTree.OBJID);
+
+            }
 
             oAPP.fn.setBusy(false);
  
@@ -1787,11 +1801,12 @@ return;
 
 
             //모델 필드 라인 선택 위치 얻기.
-            var _indx = oAPP.ui.oTree.getSelectedIndex();
-
-            var _oCtxt = oAPP.ui.oTree.getContextByIndex(_indx);
-
-            var _sField = _oCtxt.getProperty();
+            var _sField = oAPP.fn.getSelectedModelLine();
+                        
+            if(typeof _sField === "undefined"){
+                oAPP.fn.setBusy(false);
+                return;
+            }
 
             //DESIGN TREE의 체크박스 선택한 정보 얻기.
             var _aTree = oAPP.attr.oDesign.fn.getSelectedDesignTree();
@@ -1937,11 +1952,6 @@ return;
 
             var _sTree = _aTree[0];
 
-            //해당 attr명이 다른 UI에 존재하지 않는경우 오류.
-
-            //N건 바인딩 처리 되어 해당 리스트만 출력하는 상황일때도 attr명이 리스트에 없으면 오류.
-
-
             //바인딩 처리가 되지 않은경우.
             if(_sTree.UIATV === ""){
 
@@ -1954,7 +1964,6 @@ return;
                 return;
 
             }
-
 
             //바인딩 필드의 모델 필드 정보 얻기.
             var _sField = oAPP.fn.getModelBindData(_sTree.UIATV, oAPP.attr.oModel.oData.zTREE);
@@ -1970,6 +1979,21 @@ return;
                 return;
             }
 
+            
+            //동일속성 attr 항목 검색.
+            var _aList = parent.require("./synchronizionArea/getSameAttrList.js")(_sTree);
+
+            if(_aList.length === 0){
+
+                oAPP.fn.setBusy(false);
+
+                //$$MSG
+                sap.m.MessageToast.show(`${_sTree.UIATT} 과 동일한 속성 정보가 존재하지 않습니다.` , 
+                    {duration: 3000, at:"center center"});
+
+                return;
+
+            }
 
 
             var _path = oAPP.PATH.join(oAPP.APP.getAppPath(), 
@@ -2042,49 +2066,55 @@ return;
          *************************************************************/
         oContr.fn.moveDesignPage = async function(){
 
-            oAPP.fn.setBusy(true);
+            return new Promise((res)=>{
 
-            oContr.ui.ROOT.attachEventOnce("afterNavigate", async function () {
-                
-                //tree 하위를 탐색하며, 라인 선택 해제 처리.
-                _clearSelection(oContr.oModel.oData.zTREE_DESIGN);
-
-                
-                oContr.oModel.refresh();
-
-                
-                //추가속성 바인딩 버튼 활성 처리.
-                oAPP.attr.oAddit.fn.setAdditBindButtonEnable(true);
-
-
-                var _oPage = oContr.ui.ROOT.getCurrentPage();
-
-                if(typeof _oPage === "undefined"){
-
-                    oAPP.fn.setBusy(false);
-                    return;
-
+                //현재 보이는 화면이 design main 화면인경우 exit.
+                if(oContr.ui.ROOT.getCurrentPage() === oContr.ui.PG_MAIN){
+                    return res();
                 }
 
-                var _oContr = _oPage.data("TARGET");
 
-                if(typeof _oContr === "undefined" || _oContr === null){
+                oContr.ui.ROOT.attachEventOnce("afterNavigate", async function () {
+                    
+                    //tree 하위를 탐색하며, 라인 선택 해제 처리.
+                    _clearSelection(oContr.oModel.oData.zTREE_DESIGN);
 
-                    oAPP.fn.setBusy(false);
-                    return;
-                }
+                    
+                    oContr.oModel.refresh();
 
-                //이전화면의 VIEW EXIT 호출.
-                await _oContr.onViewExit();
+                    
+                    //추가속성 바인딩 버튼 활성 처리.
+                    oAPP.attr.oAddit.fn.setAdditBindButtonEnable(true);
+
+
+                    var _oPage = oContr.ui.ROOT.getCurrentPage();
+
+                    if(typeof _oPage === "undefined"){
+
+                        oAPP.fn.setBusy(false);
+                        return;
+
+                    }
+
+                    var _oContr = _oPage.data("TARGET");
+
+                    if(typeof _oContr === "undefined" || _oContr === null){
+
+                        oAPP.fn.setBusy(false);
+                        return;
+                    }
+
+                    //이전화면의 VIEW EXIT 호출.
+                    await _oContr.onViewExit();
+
+                    return res();
+                    
+                });
+
                 
-
-                oAPP.fn.setBusy(false);
-
+                oContr.ui.ROOT.to(oContr.ui.PG_MAIN);
 
             });
-
-            
-            oContr.ui.ROOT.to(oContr.ui.PG_MAIN);
 
         };
 
@@ -2367,6 +2397,47 @@ return;
         };
 
 
+        /*************************************************************
+         * @function - 출력된 row에서 대상 라인 위치 찾기.
+         *************************************************************/
+        oContr.fn.findTargetRowIndex = function(CHILD){
+
+            var _aRows = oAPP.attr.oDesign.ui.TREE.getRows();
+
+            if(_aRows.length === 0){
+                return -1;
+            }
+
+
+            //출력된 row에서 대상 라인 검색.
+            for (let i = 0, l = _aRows.length; i < l; i++) {
+                
+                var _oRow = _aRows[i];
+
+                if(typeof _oRow === "undefined" || _oRow === null){
+                    continue;
+                }
+
+                var _oCtxt = _oRow.getBindingContext();
+
+                if(typeof _oCtxt === "undefined" || _oCtxt === null){
+                    continue;
+                }
+
+                //현재 ROW의 라인 정보가 찾고자 하는 라인과 같은경우.
+                if(_oCtxt.getProperty("CHILD") === CHILD){
+
+                    //찾은 라인 index return.
+                    return _oRow.getIndex();
+                }
+
+            }
+
+            //못찾은경우 -1 return.
+            return -1;
+
+        };
+
 
         /*************************************************************
          * @function - drop 가능 여부 설정.
@@ -2469,10 +2540,10 @@ return;
                 //현재 CHILD가 펼침 처리 대상건인경우.
                 if(l_CHILD === lt_path[0]){
                     
-                    //입력UI와 동일건인경우. 선택 처리.
+                    //입력UI와 동일건인경우.
                     if(CHILD === lt_path[0]){
-                    
-                        // oContr.ui.TREE.setSelectedIndex(l_cnt);
+                        //대상 라인 찾름 flag 처리.
+                        _found = true;
                     
                     }
                     
@@ -2518,30 +2589,39 @@ return;
 
             //CHILD가 존재하지 않는경우 EXIT.
             if(typeof CHILD === "undefined" || CHILD === null || CHILD === ""){            
-                return;
+                return -1;
             }
 
 
             var lt_route = [], lt_path = [], l_cnt = 0;
+
+            var _found = false;
 
             //입력 UI명으로 부터 부모까지의 PATH 정보 검색.
             lf_getTreePath(oContr.oModel.oData.zTREE_DESIGN);
 
             //path 정보를 수집하지 않은경우 exit.
             if(lt_path.length === 0){
-                return;
+                return -1;
             }
 
 
             var l_bind = oContr.ui.TREE.getBinding();
 
             if(typeof l_bind === "undefined"){
-                return;
+                return -1;
             }
                 
             //수집한 path를 기준으로 tree 펼첨 처리.
             lf_expand(l_bind._oRootNode.children[0]);
 
+
+            //해당라인을 찾지 못한 경우.
+            if(_found === false){
+                return -1;
+            }
+
+            //찾은 라인 위치 return.
             return l_cnt;
 
         };  //tree item 선택 처리
@@ -3183,7 +3263,7 @@ function designView(oArea){
                 template: new sap.ui.table.Row(),
                 templateShareable:true,
                 parameters: {
-                    collapseRecursive: false,
+                    collapseRecursive: true,
                     arrayNames: ["zTREE_DESIGN"],
                     numberOfExpandedLevels: 3
                 }

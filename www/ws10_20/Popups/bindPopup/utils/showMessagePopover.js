@@ -13,7 +13,7 @@ export default async function(oTarget, aMessage){
 
 
     //기존 메시지 팝오버 종료처리.
-    closeMessagePopover();
+    oAPP.fn.closeMessagePopover();
 
 
     var _oPopover = new sap.m.MessagePopover({
@@ -79,37 +79,6 @@ export default async function(oTarget, aMessage){
     _oPopover.openBy(oTarget);
 
 };
-
-
-/*************************************************************
- * @function - 기존 메시지 팝오버 종료처리.
- *************************************************************/
-function closeMessagePopover(oEvent){
-
-    var _aPopOver = sap.m.InstanceManager.getOpenPopovers();
-
-    if(_aPopOver.length === 0){
-        return;
-    }
-
-    for (let i = 0, l = _aPopOver.length; i < l; i++) {
-        
-        var _oPopOver = _aPopOver[i];
-
-        if(typeof _oPopOver?.oParent?.data === "undefined"){
-            continue;
-        }
-
-        //메시지 팝업호 호출건인경우 종료 처리.
-        if(_oPopOver.oParent.data("msg_popover") === true){
-
-            _oPopOver.destroy();
-
-        }
-        
-    }
-
-}
 
 
 /*************************************************************
@@ -217,7 +186,7 @@ function setFocusErrorDesignLine(LINE_KEY){
 
     //오류 표현 처리.
     _sTree._check_vs      = "Error";
-    _sTree._highlight     = "Error";
+    // _sTree._highlight     = "Error";
     _sTree._style         = "u4aWsDesignTreeError";
 
     
@@ -227,7 +196,7 @@ function setFocusErrorDesignLine(LINE_KEY){
     var _pos = oAPP.attr.oDesign.fn.getTreeItemIndex(LINE_KEY);
 
     //라인 위치 정보를 얻지 못한 경우 EXIT.
-    if(typeof _pos === "undefined"){
+    if(_pos === -1){
         return;
     }
 

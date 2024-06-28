@@ -108,6 +108,18 @@ function resBroadcastChannelBindPopup(oEvent){
     }
 
 
+    //바인딩 팝업의 바인딩 추가속성 정보 오류건 처리.
+    if(responseAdditError(oEvent) === true){
+        return;
+    }
+
+
+    //바인딩 팝업의 디자인 영역 UI선택 처리.
+    if(responeSelectDesignTreeOBJID(oEvent) === true){
+        return;
+    }
+
+
 }
 
 
@@ -157,7 +169,7 @@ function responseBindPopupBusyOn(oEvent){
 /************************************************************************
  * 디자인 영역 갱신 처리건인경우.
  ************************************************************************/
-function updateDesignData(oEvent){
+async function updateDesignData(oEvent){
 
     //디자인 영역 갱신 요청건이 아닌경우 exit.
     if(oEvent.data.PRCCD !== "UPDATE_DESIGN_DATA"){
@@ -166,6 +178,10 @@ function updateDesignData(oEvent){
 
 
     oAPP.fn.setBusy(true);
+
+
+    //호출된 모든 팝업 종료 처리.
+    oAPP.fn.closeAllPopups();
 
 
     oAPP.attr.T_0014 = JSON.parse(JSON.stringify(oEvent.data.T_0014));
@@ -177,20 +193,23 @@ function updateDesignData(oEvent){
     oAPP.fn.resetUiTableFilterSort(oAPP.attr.oDesign.ui.TREE);
 
 
-    //바인딩 추가속성 정보 초기화.
-    oAPP.fn.clearSelectAdditBind();
-    
+    // //바인딩 추가속성 정보 초기화.
+    // oAPP.fn.clearSelectAdditBind();
+
 
     //추가속성 정보 화면 비활성 처리.
     oAPP.fn.setAdditLayout("");
 
     
+    //디자인 영역으로 화면 이동 처리
+    await oAPP.attr.oDesign.fn.moveDesignPage();
+
+    
     //디자인 영역 데이터 구성 처리.
     oAPP.attr.oDesign.fn.setDesignTreeData();
 
-    //바인딩 추가 속성 정보 구성 처리.
-    oAPP.attr.oAddit.fn.setAdditialListData();
-
+    // //바인딩 추가 속성 정보 구성 처리.
+    // oAPP.attr.oAddit.fn.setAdditialListData();
 
     //메인 모델 갱신 처리.
     oAPP.attr.oModel.refresh();
@@ -200,8 +219,8 @@ function updateDesignData(oEvent){
     oAPP.attr.oDesign.oModel.refresh();
 
 
-    //바인딩 추가 속성 정보 모델 갱신 처리.
-    oAPP.attr.oAddit.oModel.refresh();
+    // //바인딩 추가 속성 정보 모델 갱신 처리.
+    // oAPP.attr.oAddit.oModel.refresh();
 
 
     oAPP.fn.setBusy(false);
@@ -213,9 +232,118 @@ function updateDesignData(oEvent){
 }
 
 
+/************************************************************************
+ * @function - 바인딩 팝업의 바인딩 추가속성 정보 오류건 처리.
+ ************************************************************************/
+async function responseAdditError(oEvent){
+
+    //바인딩 팝업의 바인딩 추가속성 정보 오류건 처리가 아닌경우 exit.
+    if(oEvent.data.PRCCD !== "ERROR-ADDIT-DATA"){
+        return false;
+    }
+
+    if(typeof oEvent.data.T_ERMSG === "undefined"){
+        return true;
+    }
+
+    if(oEvent.data.T_ERMSG.length === 0){
+        return true;
+    }
+
+
+    var _aBindError = [];
+
+    for (let i = 0, l = oEvent.data.T_ERMSG.length; i < l; i++) {
+        
+        var _sERMSG = oEvent.data.T_ERMSG[i];
+
+
+        var _sBindError = JSON.parse(JSON.stringify(oAPP.types.TY_BIND_ERROR));
+        
+        //바인딩 추가속성 정보 TABLE 라인.
+        _sBindError.ACTCD    = oAPP.attr.CS_MSG_ACTCD.ACT05;
+        _sBindError.LINE_KEY = _sERMSG.ITMCD;
+        _sBindError.TYPE     = "Error";
+        _sBindError.TITLE    = _sERMSG.ERMSG;
+        _sBindError.DESC     = _sERMSG.ERMSG;
+
+        _aBindError.push(_sBindError);
+        _sBindError = null;
+
+    }
+
+
+    //오류 팝업 호출 처리.
+    await oAPP.fn.showMessagePopoverOppener(oAPP.attr.oAddit.ui.ROOT, _aBindError);
+
+
+    //디자인 영역 갱신 요청임 flag return.
+    return true;
+
+}
+
+
+/************************************************************************
+ * @function - 바인딩 팝업의 디자인 영역 UI선택 처리.
+ ************************************************************************/
+function responeSelectDesignTreeOBJID(oEvent){
+
+    //바인딩 팝업의 디자인 영역 UI선택 처리 건이 아닌경우 exit.
+    if(oEvent.data.PRCCD !== "DESIGN-TREE-SELECT-OBJID"){
+        return false;
+    }
+
+
+    //전달받은 파라메터가 존재하지 않는경우 exit.
+    if(typeof oEvent.data.OBJID === "undefined" || oEvent.data.OBJID === ""){
+        return true;
+    }
+
+    //디자인 영역에 출력데이터가 존재하지 않는경우 exit.
+    if(oAPP.attr.oDesign.oModel.oData.zTREE_DESIGN.length === 0){
+        return true;
+    }
+
+    //날라온 OBJID에 해당하는 라인 검색.
+    var _sTree = oAPP.fn.getDesignTreeData(oEvent.data.OBJID);
+
+    //대상 라인을 찾지 못한 경우 exit.
+    if(typeof _sTree === "undefined"){
+        return true;
+    }
+
+    //찾은 라인 정보 갖고 현재 화면상에 존재하는지 확인.
+    var _indx = oAPP.attr.oDesign.fn.findTargetRowIndex(_sTree.CHILD);
+
+    //화면상에 존재하는 라인인경우.
+    if(_indx !== -1){
+        //해당 라인 선택 처리.
+        oAPP.attr.oDesign.ui.TREE.setSelectedIndex(_indx);
+        return true;
+    }
+
+
+    //해당 라인 위치 검색.
+    var _indx = oAPP.attr.oDesign.fn.getTreeItemIndex(_sTree.CHILD);
+
+    //해당 라인을 찾지 못한 경우 exit.
+    if(_indx === -1){
+        return true;
+    }
+
+    //해당 라인 선택 처리.
+    oAPP.attr.oDesign.ui.TREE.setSelectedIndex(_indx);
+
+    //해당 라인으로 이동 처리.
+    oAPP.attr.oDesign.ui.TREE.setFirstVisibleRow(_indx);
+
+    return true;
+
+}
+
 
 /*************************************************************
- * @function - 바인딩 팝업에서 UI 구성을 위한 design tree 데이터 구성.
+ * @function - 디자인 영역 ATTR 정보 갱신처리.
  *************************************************************/
 function updateBindPopupDesignData(){
     
@@ -376,6 +504,7 @@ function setBindAggrData(sParam, oUi){
 
 }
 
+
 /*************************************************************
  * @function - 바인딩 팝업 디자인 영역에 그려진 최상위 UI 정보 전송.
  *************************************************************/
@@ -391,8 +520,25 @@ function sendRootObjectID(oData){
     _sData.OBJID = oData;
 
 
-    //바인딩 팝업에 데이터 전송.
+    //WS 3.0 디자인 영역에 데이터 전송.
     CL_WS20_BINDPOPUP.sendPostMessage(_sData);
+
+}
+
+
+/*************************************************************
+ * @function - WS 디자인 영역의 TREE 라인 선택 처리.
+ *************************************************************/
+function selectDesignTreeOBJID(oData){
+
+    var _sParam = {
+        PRCCD   : "DESIGN-TREE-SELECT-OBJID",
+        OBJID : oData
+    };
+
+
+    //WS 3.0 디자인 영역에 데이터 전송.
+    CL_WS20_BINDPOPUP.sendPostMessage(_sParam);
 
 }
 
@@ -426,7 +572,7 @@ module.exports = function(ACTCD, oData){
             return CL_WS20_BINDPOPUP.isCreateChannel();
 
         case "UPDATE-DESIGN-DATA":
-            //바인딩 팝업 디자인 데이터 갱신.
+            //디자인 영역 ATTR 정보 갱신처리.
             updateBindPopupDesignData(oData);
             break;
 
@@ -435,15 +581,13 @@ module.exports = function(ACTCD, oData){
             sendRootObjectID(oData);
             break;
 
+        case "DESIGN-TREE-SELECT-OBJID":
+            //WS디자인영역 tree 라인 선택 처리.
+            selectDesignTreeOBJID(oData);
+            break;
+
         default:
             break;
     }    
 
 };
-
-
-
-
-
-
-

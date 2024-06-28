@@ -46,13 +46,7 @@ module.exports = function(){
             //바인딩시 오류가 발생한 경우.
             _sTree._bind_error    = true;
 
-            // //오류 표현 처리.
-            // _sTree._check_vs      = "Error";
-            // _sTree._highlight     = "Error";
-            // _sTree._style         = "u4aWsDesignTreeError";
-            // _sTree._error_tooltip = _sChk.RTMSG;
-
-
+            //오류 정보 수집 처리.
             var _sBindError = JSON.parse(JSON.stringify(oAPP.types.TY_BIND_ERROR));
         
             _sBindError.ACTCD    = oAPP.attr.CS_MSG_ACTCD.ACT04;

@@ -68,13 +68,25 @@ let oAPP = parent.oAPP,
 
     //오류 발생 정보 수집 구조.
     oAPP.types.TY_BIND_ERROR = {
-        ACTCD    : "",  //
+        ACTCD    : "",  //오류 ACTION CODE
         LINE_KEY : "",  //오류 라인 KEY
         TYPE     : "",  //오류 TYPE
         TITLE    : "",  //오류 제목
         DESC     : "",  //오류 상세내역.
         
     };
+
+
+    //바인딩 추가속성 정보 메시지 구조.
+    oAPP.types.TY_ADDIT_MSG = {
+        ITMCD : "",  //바인딩 추가속성 정보 ITEM CODE.
+        ERMSG : "",  //오류 메시지 정보.
+    };
+
+
+    //오류 정보 수집 광역 ARRAY
+    //(converion명 점검 오류 발생과 같은 특정 오류건 수집을 위한 array)
+    oAPP.attr.T_EXCEP_ERR = [];
 
 
     oAPP.settings = {};
@@ -643,8 +655,8 @@ let oAPP = parent.oAPP,
         parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("CHANNEL-CREATE");
 
 
-        setTimeout(() => {
-                
+        setTimeout(async () => {
+
             //path 정보 구성.
             getPathInfo();
 
@@ -654,12 +666,12 @@ let oAPP = parent.oAPP,
 
 
             //바인딩 모드 변경.
-            oAPP.fn.changeBindingMode(oAPP.attr.BIND_MODE);
+            await oAPP.fn.changeBindingMode(oAPP.attr.BIND_MODE);
 
 
             //서버에서 바인딩 정보 얻기.
             oAPP.fn.getBindFieldInfo();
-            
+
         }, 0);
 
     };  //UI화면 갱신 이후 이벤트 처리.
@@ -799,6 +811,7 @@ let oAPP = parent.oAPP,
         //메시지 팝오버 호출 처리.
         var _oPop =  await import(_path);
 
+        //입력 파라메터 전달 처리.
         _oPop.default(oTarget, aMessage);
 
     };
@@ -814,9 +827,8 @@ let oAPP = parent.oAPP,
 
         
         //추가 속성 정보 초기화.
-        oAPP.attr.oModel.oData.T_MPROP = [];
+        oAPP.fn.clearSelectAdditBind();
 
-        oAPP.ui.oTree.clearSelection();
         oAPP.attr.oModel.refresh();
         
 
@@ -1132,7 +1144,8 @@ let oAPP = parent.oAPP,
         //바인딩 추가속성 정보 페이지.
         var oPageAdit = new sap.m.Page({
             layoutData: new sap.ui.layout.SplitterLayoutData({
-                size:"auto"
+                size:"auto",
+                minSize:300
             }),
             customHeader : new sap.m.OverflowToolbar({
                 content:[                    
@@ -1144,9 +1157,7 @@ let oAPP = parent.oAPP,
                         press: function(){
 
                             //추가속성 정보 초기화.
-                            oAPP.attr.oModel.oData.T_MPROP = [];
-
-                            oAPP.attr.oModel.oData.S_SEL_ATTR = {};
+                            oAPP.fn.clearSelectAdditBind();
                             
                             //추가속성 정보 필드 비활성 처리.
                             oAPP.fn.setAdditLayout('');
@@ -1190,6 +1201,8 @@ let oAPP = parent.oAPP,
         });
         // oPageLeft.addContent(oAPP.ui.oTree);
         oPageTree.addContent(oAPP.ui.oTree);
+
+        oAPP.ui.oTree.addEventDelegate({onmousedown:oAPP.fn.onTreeMouseDown});
 
         
         oAPP.ui.oTree.attachFilter(function () {
@@ -1403,7 +1416,8 @@ let oAPP = parent.oAPP,
             valueState: "{stat}",
             valueStateText: "{statTxt}",
             enabled: "{/edit}",
-            change: oAPP.fn.onChangeInput
+            change: oAPP.fn.onChangeInput,
+            liveChange: oAPP.fn.onLiveChangeInput
         });
         oTabCol2HBox1.addItem(oTabCol2Inp1);
 
@@ -1464,6 +1478,26 @@ let oAPP = parent.oAPP,
 
 
     /*************************************************************
+     * @event - 모델 tree mouse down 이벤트.
+     *************************************************************/
+    oAPP.fn.onTreeMouseDown = function(){
+
+        //text 선택 정보 얻기.
+        var _oSel = window.getSelection();
+
+        if(typeof _oSel === "undefined" || _oSel === null){
+            return;
+        }
+
+        //text 선택 해제.
+        //(text가 선택된 상태에서 라인 선택 이벤트가 동작 하지 않음)
+        _oSel.removeAllRanges();
+
+    };
+
+
+
+    /*************************************************************
      * @function - 바인딩 추가 속성 정보 입력값 점검.
      *************************************************************/
     oAPP.fn.chkAdditBindData = function(oTab){
@@ -1471,8 +1505,6 @@ let oAPP = parent.oAPP,
         return new Promise(async (resolve)=>{
 
             var _sRes = {RETCD:"", RTMSG:"", T_RTMSG:[]};
-
-            oTab.data("TAB_NAME");
 
             var _oModel = oTab.getModel();
 
@@ -1638,45 +1670,21 @@ let oAPP = parent.oAPP,
             }
 
 
-            //conversion routine이 입력된경우.
-            if(ls_p06.val !== ""){
+            //conversion routine 입력건 오류가 존재하는경우.
+            if(ls_p06._error === true){
 
-                var _sParam = await new Promise((res)=>{
+                _sRes.RETCD = "E";
+                _sRes.RTMSG = ls_p06._error_msg;
 
-                    //Conversion Routine명 서버전송 데이터 구성.
-                    var oFormData = new FormData();
-                    oFormData.append("CONVEXIT", ls_p06.val);
+                var _sBindError = JSON.parse(JSON.stringify(oAPP.types.TY_BIND_ERROR));
+        
+                _sBindError.ACTCD    = _ACTCD02;
+                _sBindError.LINE_KEY = ls_p06.ITMCD;
+                _sBindError.TYPE     = "Error";
+                _sBindError.TITLE    = ls_p06._error_msg;
+                _sBindError.DESC     = ls_p06._error_msg;
 
-                    // Conversion Routine 존재여부 확인.
-                    sendAjax(oAPP.attr.servNm + "/chkConvExit", oFormData,function(param){
-                        
-                        res(param);
-                
-                    },"",false);
-
-                    
-                });
-
-                //잘못된 Conversion Routine을 입력한 경우.
-                if(_sParam.RETCD === "E"){
-
-                    ls_p06.stat    = "Error";
-                    ls_p06.statTxt = _sParam.RTMSG;
-
-                    _sRes.RETCD = _sParam.RETCD;
-                    _sRes.RTMSG = _sParam.RTMSG;
-
-                    var _sBindError = JSON.parse(JSON.stringify(oAPP.types.TY_BIND_ERROR));
-            
-                    _sBindError.ACTCD    = _ACTCD02;
-                    _sBindError.LINE_KEY = ls_p06.ITMCD;
-                    _sBindError.TYPE     = "Error";
-                    _sBindError.TITLE    = _sParam.RTMSG;             //$$MSG
-                    _sBindError.DESC     = _sParam.RTMSG; //$$MSG
-
-                    _sRes.T_RTMSG.push(_sBindError);
-
-                }
+                _sRes.T_RTMSG.push(_sBindError);
 
             }
 
@@ -1688,6 +1696,71 @@ let oAPP = parent.oAPP,
 
     };
 
+
+    /*************************************************************
+     * @function - UI의 bindingContext에서 데이터 추출.
+     *************************************************************/
+    oAPP.fn.getUiContextData = function(oUi){
+
+        if(typeof oUi === "undefined" || oUi === null){
+            return;
+        }
+
+        var _oCtxt = oUi.getBindingContext();
+
+        if(typeof _oCtxt === "undefined" || _oCtxt === null){
+            return;
+        }
+
+        return _oCtxt.getProperty();
+
+    };
+
+
+    /*************************************************************
+     * @function - conversion 입력라인에 대한 광역 오류 정보 초기화 처리.
+     *************************************************************/
+    oAPP.fn.clearConvError = function(sAddit){
+
+        //conversion 입력 라인이 아닌경우 exit.
+        if(sAddit.ITMCD !== "P06"){
+            return;
+        }
+        
+        //오류 표현 초기화.
+        sAddit.stat       = null;
+        sAddit.statTxt    = "";
+
+        //conversion 라인의 오류 필드 초기화.
+        sAddit._error     = false;
+
+        //오류 메시지 초기화.
+        sAddit._error_msg = "";
+        
+        oAPP.attr.oModel.refresh();
+
+    };
+    
+
+    /*************************************************************
+     * @event - 바인딩 추가속성 정보 입력필드 live change 이벤트.
+     *************************************************************/
+    oAPP.fn.onLiveChangeInput = function(oEvent){
+
+        var _oUi = oEvent.oSource;
+
+        //UI의 bindingContext에서 데이터 추출.
+        var _sAddit = oAPP.fn.getUiContextData(_oUi);
+        
+        if(typeof _sAddit === "undefined"){
+            return;
+        }
+
+        //conversion 입력라인에 대한 광역 오류 정보 초기화 처리.
+        oAPP.fn.clearConvError(_sAddit);
+
+
+    };
 
 
     /*************************************************************
@@ -1730,18 +1803,40 @@ let oAPP = parent.oAPP,
             return;
         }
 
+        //오류 표현 초기화.
+        sAddit.stat    = null;
+        sAddit.statTxt = "";
+
+        //입력된 값이 존재하지 않는경우.
+        if(sAddit.val === ""){
+
+            oAPP.attr.oModel.refresh();
+
+            oAPP.fn.setBusy(false);
+
+            return;
+        }
         
         //conversion명 대문자 변환 처리.
         oAPP.fn.setConvNameUpperCase(sAddit);
-
+        
 
         //conversion 명 점검.
-        var _sRes = await oAPP.fn.checkConversion(sAddit);
+        var _sRes = await oAPP.fn.checkConversion(sAddit.val);
 
         
-        oAPP.attr.oModel.refresh();
-
         if(_sRes.RETCD === "E"){
+
+            //오류 표현 처리.
+            sAddit.stat    = "Error";
+            sAddit.statTxt = _sRes.RTMSG;
+
+            //conversion 라인의 오류 flag 처리.
+            sAddit._error      = true;
+            sAddit._error_msg  = _sRes.RTMSG;
+
+            oAPP.attr.oModel.refresh();
+
             oAPP.attr.oDesign.oModel.refresh();
 
             oAPP.fn.setBusy(false);
@@ -1749,6 +1844,7 @@ let oAPP = parent.oAPP,
             return;
         }
 
+        oAPP.attr.oModel.refresh();
 
         oAPP.fn.setBusy(false);
 
@@ -1758,23 +1854,14 @@ let oAPP = parent.oAPP,
     /*************************************************************
      * @function - conversion 명 점검.
      *************************************************************/
-    oAPP.fn.checkConversion = function(sAddit){
+    oAPP.fn.checkConversion = function(convName){
 
         return new Promise(async (resolve)=>{
 
             var _sRes = {RETCD:"", RTMSG:""};
-
-            //conversion 입력 라인이 아닌경우 exit.
-            if(sAddit.ITMCD !== "P06"){
-                return resolve(_sRes);
-            }
-
-            //오류 표현 초기화.
-            sAddit.stat    = null;
-            sAddit.statTxt = "";
-
+            
             //conversion명이 입력되지 않은경우.
-            if(sAddit.val === ""){
+            if(convName === ""){
 
                 return resolve(_sRes);
             }
@@ -1782,17 +1869,16 @@ let oAPP = parent.oAPP,
 
             //Conversion Routine명 서버전송 데이터 구성.
             var oFormData = new FormData();
-            oFormData.append("CONVEXIT", sAddit.val);
+            oFormData.append("CONVEXIT", convName);
 
             // Conversion Routine 존재여부 확인.
             sendAjax(oAPP.attr.servNm + "/chkConvExit", oFormData,function(param){
 
+                //Conversion Routine 존재여부 오류가 발생한 경우.
                 if(param.RETCD === "E"){
-                    sAddit.stat    = "Error";
-                    sAddit.statTxt = param.RTMSG;
     
-                    _sRes.RETCD = param.RETCD;
-                    _sRes.RTMSG = param.RTMSG;
+                    _sRes.RETCD    = param.RETCD;
+                    _sRes.RTMSG    = param.RTMSG;
 
                 }
                 
@@ -1837,6 +1923,30 @@ let oAPP = parent.oAPP,
         }
 
         return _aProp.join("|");
+
+    };
+
+
+    /*************************************************************
+     * @function - 모델 tree의 선택된 라인 정보 얻기.
+     *************************************************************/
+    oAPP.fn.getSelectedModelLine = function(){
+
+        //모델 필드 라인 선택 위치 얻기.
+        var _indx = oAPP.ui.oTree.getSelectedIndex();
+
+        //선택된 라인이 존재하지 않는경우 exit.
+        if(_indx ===  -1){
+            return;
+        }
+
+        var _oCtxt = oAPP.ui.oTree.getContextByIndex(_indx);
+
+        if(typeof _oCtxt === "undefined" || _oCtxt === null){
+            return;
+        }
+
+        return _oCtxt.getProperty();
 
     };
     
@@ -1968,37 +2078,53 @@ let oAPP = parent.oAPP,
     //라인선택 이벤트
     oAPP.fn.onSelTabRow = function(oEvent) {
 
-        var l_indx = this.getSelectedIndex();
-        if (l_indx === -1) {
+        //모델 tree의 라인 선택정보 얻기.
+        var _indx = oAPP.ui.oTree.getSelectedIndex();
+
+        //라인 선택이 해제 된경우.
+        if(_indx === -1){
+            
+            //이벤트 발생 index 얻기.
+            _indx = oEvent.getParameter("rowIndex");
+
+            //라인선택 이벤트 제거.
+            //(라인 선택 이벤트 동작을 회피하기 위함)
+            oAPP.ui.oTree.detachRowSelectionChange(oAPP.fn.onSelTabRow);
+
+            //라인 재 선택 처리.
+            oAPP.ui.oTree.setSelectedIndex(_indx);
+
+            //다시 이벤트 등록 처리.
+            oAPP.ui.oTree.attachRowSelectionChange(oAPP.fn.onSelTabRow);
+
             return;
         }
 
-        var l_bind = this.getBinding("rows");
 
-        var l_ctxt = l_bind.getContextByIndex(l_indx);
-        if (!l_ctxt) {
-            return;
-        }
+        //참조 필드 DDLB 리스트 구성
+        oAPP.attr.oAddit.fn.setRefFieldList();
 
-        var ls_tree = l_ctxt.getProperty();
+
+        // var l_bind = this.getBinding("rows");
+
+        // var l_ctxt = l_bind.getContextByIndex(l_indx);
+        // if (!l_ctxt) {
+        //     return;
+        // }
+
+        // var ls_tree = l_ctxt.getProperty();
 
         
-        //일반 바인딩 모드가 아닌경우 exit.
-        if(oAPP.attr.BIND_MODE !== CS_BIND_MODE.DEFAULT){
-            return;
-        }
+        // //추가속성 table layout 설정.
+        // oAPP.fn.setAdditLayout(ls_tree.KIND);
 
 
-        //추가속성 table layout 설정.
-        oAPP.fn.setAdditLayout(ls_tree.KIND);
+        // var l_path = l_ctxt.getPath();
 
+        // l_path = l_path.substr(0, l_path.lastIndexOf("/"));
 
-        var l_path = l_ctxt.getPath();
-
-        l_path = l_path.substr(0, l_path.lastIndexOf("/"));
-
-        //추가속성 정보 출력 처리.
-        oAPP.fn.setAdditBindInfo(ls_tree, ls_tree.MPROP, oAPP.attr.oModel.getProperty(l_path));
+        // //추가속성 정보 출력 처리.
+        // oAPP.fn.setAdditBindInfo(ls_tree, ls_tree.MPROP, oAPP.attr.oModel.getProperty(l_path));
 
     }; //라인선택 이벤트
 
@@ -3820,14 +3946,21 @@ let oAPP = parent.oAPP,
     oAPP.fn.getBindFieldInfo = function() {
 
         //화면 잠금 처리.
-        oAPP.attr.oModel.setProperty("/busy", true);
+        // oAPP.attr.oModel.setProperty("/busy", true);
+
+        oAPP.fn.setBusy(true);
 
         //바인딩 필드 정보 초기화.
         oAPP.attr.oModel.oData.zTREE       = [];
         oAPP.attr.oModel.oData.TREE        = [];
 
-        //추가 속성 정보 초기화.
-        oAPP.attr.oModel.oData.T_MPROP     = [];
+        //바인딩 추가속성 정보 초기화.
+        oAPP.fn.clearSelectAdditBind();
+
+
+        //추가속성 정보 화면 비활성 처리.
+        oAPP.fn.setAdditLayout("");
+
 
         oAPP.attr.oModel.refresh();
         
@@ -3943,9 +4076,9 @@ let oAPP = parent.oAPP,
             // //tree table 컬럼길이 재조정 처리.
             // oAPP.fn.setTreeAutoResizeCol(500);
 
-            //추가속성 table layout 설정.
-            oAPP.fn.setAdditLayout('');
-
+            //모델 tree 첫번째 라인 선택 처리.
+            oAPP.ui.oTree.setSelectedIndex(0);
+            
 
             var CURRWIN = oAPP.REMOTE.getCurrentWindow(),
             PARWIN = CURRWIN.getParentWindow();
@@ -4118,6 +4251,13 @@ let oAPP = parent.oAPP,
             //Conversion Routine 선택값 초기화.
             ls_P06.val = "";
 
+            //오류 FLAG 초기화.
+            ls_P06._error     = false;
+            ls_P06._error_msg = "";
+            
+            ls_P06.stat       = null;
+            ls_P06.statTxt    = "";
+
         }
 
         //모델 갱신 처리.
@@ -4127,12 +4267,85 @@ let oAPP = parent.oAPP,
 
 
 
+    /*************************************************************
+     * @function - 바인딩 추가 속성 정보 오류 점검.
+     *************************************************************/
+    oAPP.fn.checkAdditData = function(){
+
+        var _sRes = {RETCD:"", RTMSG:"", T_ERMSG:[]};
+
+        //추가속성 매핑 전 오류건 확인.
+        var _aMPROP = oAPP.attr.oAddit.oModel.oData.T_MPROP.filter( item => item._error === true);
+
+        //오류건이 존재하지 않는경우 exit.
+        if(_aMPROP.length === 0){
+            return _sRes;
+        }
+
+        //오류 메시지 정보 수집.
+        for (let i = 0, l =_aMPROP.length; i < l; i++) {
+            
+            var _sMPROP = _aMPROP[i];
+
+            var _sERMSG = JSON.parse(JSON.stringify(oAPP.types.TY_ADDIT_MSG));
+
+            _sERMSG.ITMCD = _sMPROP.ITMCD;
+            _sERMSG.ERMSG = _sMPROP._error_msg;
+
+            _sRes.T_ERMSG.push(_sERMSG);
+            
+        }
+
+        _sRes.RETCD  = "E";
+        _sRes.RTMSG  = "바인딩 추가속성 정보에 오류건이 존재합니다."; //$$MSG
+        
+        return _sRes;
+
+    };
+
+
+    /*************************************************************
+     * @function - 바인딩 추가 속성 정보 오류 점검.
+     *************************************************************/
+    oAPP.fn.closeMessagePopover = function(){
+
+        var _aPopOver = sap.m.InstanceManager.getOpenPopovers();
+
+        if(_aPopOver.length === 0){
+            return;
+        }
+
+        for (let i = 0, l = _aPopOver.length; i < l; i++) {
+            
+            var _oPopOver = _aPopOver[i];
+
+            if(typeof _oPopOver?.oParent?.data === "undefined"){
+                continue;
+            }
+
+            //메시지 팝업호 호출건인경우 종료 처리.
+            if(_oPopOver.oParent.data("msg_popover") === true){
+
+                _oPopOver.destroy();
+
+            }
+            
+        }
+
+    };
+
 
     //drag 정보 처리.
     oAPP.fn.setDragStart = async function(oEvent){
 
+        var _oUi = oEvent?.mParameters?.target;
+
+        if(typeof _oUi === "undefined" || _oUi === null){
+            return;
+        }
+
         //drag한 위치의 바인딩 정보 얻기.
-        var l_ctxt = oEvent.mParameters.target.getBindingContext();
+        var l_ctxt = _oUi.getBindingContext();
         if (!l_ctxt) {
             return;
         }
@@ -4151,11 +4364,34 @@ let oAPP = parent.oAPP,
         //프로세스 코드.
         l_obj.PRCCD = "PRC001";
 
+        //오류 코드.
+        l_obj.RETCD = "";
+
+        //오류 메시지.
+        l_obj.RTMSG = "";
+
+        //오류 세부 코드.
+        l_obj.T_ERMSG = [];
+
         //application session key 매핑.
         l_obj.DnDRandKey = oAPP.attr.DnDRandKey;
 
         //DRAG 한 라인 정보.
-        l_obj.IF_DATA = ls_drag;
+        l_obj.IF_DATA = JSON.parse(JSON.stringify(ls_drag));
+
+        //바인딩 추가속성 정보 매핑.
+        l_obj.IF_DATA.MPROP = oAPP.fn.setAdditBindData(oAPP.attr.oAddit.oModel.oData.T_MPROP);
+
+        //추가속성 매핑 오류건 확인.
+        var _sRes = oAPP.fn.checkAdditData();
+
+        //오류가 발생한 경우 해당 내용 drag data에 세팅.
+        if(_sRes.RETCD === "E"){
+            l_obj.RETCD   = _sRes.RETCD;
+            l_obj.RTMSG   = _sRes.RTMSG;
+            l_obj.T_ERMSG = _sRes.T_ERMSG;
+        }
+
 
         var l_json = JSON.stringify(l_obj);
 
@@ -4179,8 +4415,37 @@ let oAPP = parent.oAPP,
         oAPP.attr.oDesign.fn.setDropStyle();
 
 
+        //오류 팝업 종료 처리.
+        oAPP.fn.closeMessagePopover();
+
+
+        //drag한 UI의 라인 위치 얻기.
+        var _indx = oAPP.ui.oTree.indexOfRow(_oUi);
+
+        if(_indx === -1){
+            return;
+        }
+
+        //라인 재 선택 처리.
+        oAPP.ui.oTree.setSelectedIndex(_indx);
+
 
     };  //drag 정보 처리.
+
+
+    /*************************************************************
+     * @function - 호출된 모든 팝업 종료 처리.
+     *************************************************************/
+    oAPP.fn.closeAllPopups = function(){
+        
+        //호출된 모든 팝업 종료.
+        sap.m.InstanceManager.closeAllDialogs();
+
+        //호출된 모든 팝업 종료.
+        sap.m.InstanceManager.closeAllPopovers();
+
+
+    };
 
 
     /*************************************************************
@@ -4210,7 +4475,7 @@ let oAPP = parent.oAPP,
         
         oAPP.fn.setBusy(true);
 
-        var _oUi = oEvent.oSource;
+        var _oUi = oEvent?.oSource;
 
         if(typeof _oUi === "undefined"){
 
@@ -4249,6 +4514,7 @@ let oAPP = parent.oAPP,
 
         oAPP.fn.setBusy(false);
 
+        //$$MSG
         sap.m.MessageToast.show("바인딩 추가 속성 정보 적용.", 
             {duration: 3000, at:"center center"});
 

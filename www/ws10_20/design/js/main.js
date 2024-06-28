@@ -1231,6 +1231,19 @@
 
 
 
+    /*************************************************************
+     * @function - 바인딩 팝업 통신 관련 module path 구성.
+     *************************************************************/
+    oAPP.fn.getBindingPopupBroadcastModulePath = function(){
+
+      //WS 3.0 메인 PATH 얻기.
+      var _channelPath = parent.getPath("WS10_20_ROOT");
+
+      //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH 구성.
+      return parent.PATH.join(_channelPath, "design", "bindPopupHandler", "broadcastChannelBindPopup.js");
+
+    };
+
 
     //design 영역 순서 설정.
     oAPP.fn.setDesignLayout = function(){
