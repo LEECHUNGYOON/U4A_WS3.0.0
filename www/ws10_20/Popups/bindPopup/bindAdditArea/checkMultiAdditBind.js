@@ -140,22 +140,6 @@ module.exports = function(is_attr){
 
         }
 
-
-
-        // //선택 라인의 모델 필드 정보 점검.
-        // var _sChk = await parent.require("./bindAdditArea/checkModelFieldData.js")(_aTree);
-
-        // //추가속성 정보 입력값 오류가 존재하는경우.
-        // if(_sChk.RETCD === "E"){
-
-        //     _sRes.RETCD = _sChk.RETCD;
-        //     _sRes.RTMSG = _sChk.RTMSG;
-
-        //     oAPP.attr.oDesign.oModel.refresh();
-
-        //     return res(_sRes);
-        // }
-
         oAPP.attr.oDesign.oModel.refresh();
 
         return res(_sRes);

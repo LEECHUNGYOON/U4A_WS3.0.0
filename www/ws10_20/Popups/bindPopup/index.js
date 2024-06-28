@@ -510,7 +510,6 @@ let oAPP = parent.oAPP,
      ************************************************************************/
     oAPP.fn.getSettingsInfo = function () {
 
-        //테스트!!!!!!!!!!!!!!!!!!!!!!!!!!
         // Browser Window option
         var sSettingsJsonPath = PATHINFO.WSSETTINGS,
 
@@ -521,24 +520,6 @@ let oAPP = parent.oAPP,
         }
 
         return oSettings;
-
-        // var oSettings = {
-        //     UI5:{
-        //         bootstrap:{
-        //             "data-sap-ui-language": "EN",
-        //             "data-sap-ui-noDuplicateIds": "true",
-        //             "data-sap-ui-preload": "async",
-        //             "data-sap-ui-compatVersion": "edge",
-        //             "data-sap-ui-theme": "sap_horizon_dark",
-        //             "data-sap-ui-libs": "sap.m"
-        //         }
-        //     }
-        // };
-        // //테스트!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-        // return oSettings;
-
 
     }; // end of oAPP.fn.getSettingsInfo
 
@@ -561,10 +542,6 @@ let oAPP = parent.oAPP,
         for (const key in oBootStrap) {
             oScript.setAttribute(key, oBootStrap[key]);
         }
-
-        oSetting_UI5.resourceUrl = "https://s000.smartils.kr:49999/public/lib/_org_files/sapui5-rt-1.107.1/resources/sap-ui-core.js";
-        // oSetting_UI5.resourceUrl = "https://sapui5.hana.ondemand.com/1.108.32/resources/sap-ui-core.js";
-
 
         // 로그인 Language 적용
         oScript.setAttribute("data-sap-ui-theme", oThemeInfo.THEME);
@@ -3970,14 +3947,6 @@ let oAPP = parent.oAPP,
         oFormData.append("CLSNM", oAPP.attr.oAppInfo.CLSID);
         oFormData.append("APPID", oAPP.attr.oAppInfo.APPID);
 
-        //테스트!!!!!!!!!
-        if(parent?.oAPP?.PES_DEV === "X" && oAPP.APP.isPackaged === false){
-
-            oFormData.append("sap-user", "pes");
-            oFormData.append("sap-password", "dmstjq8!");
-
-        }
-        //테스트!!!!!!!!!
 
         //바인딩 필드 정보 검색.
         sendAjax(oAPP.attr.servNm + "/getBindAttrData", oFormData, function (param) {

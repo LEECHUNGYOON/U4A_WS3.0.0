@@ -90,47 +90,8 @@ function designControl(is_attr){
                     _oData.S_ATTR.MPROP =  oContr.attr.is_attr.MPROP;
                     _oData.S_ATTR.UIATY =  oContr.attr.is_attr.UIATY;
 
-
-
-                    //바인딩 필드의 모델 필드 정보 얻기.
-                    var _sField = oAPP.fn.getModelBindData(_oData.S_ATTR.UIATV, oAPP.attr.oModel.oData.zTREE);
-
-                    if(typeof _sField === "undefined"){
-                        return;
-                    }
-
-
-                    //테이블로 파생된 필드가 아닌경우.
-                    if(_isTablePath(_sField.KIND_PATH) !== true){
-                        //동일 속성 리스트 구성.
-                        setSameAttrList(oAPP.attr.oDesign.oModel.oData.zTREE_DESIGN);
-
-                        return;
-
-                    }
-
-                    console.log("동일속성 바인딩");
-                    //선택한 attr의 N건 바인딩 처리된 부모 UI 정보 얻기.
-                    var _oUi = oAPP.fn.getParentUi(oAPP.attr.prev[_oData.S_ATTR.OBJID]);
-
-
-                    //n건 바인딩 처리되지 않은경우.
-                    if(typeof _oUi === "undefined"){
-                        //동일 속성 리스트 구성.
-                        setSameAttrList(oAPP.attr.oDesign.oModel.oData.zTREE_DESIGN);
-
-                        return;
-
-                    }
-                    
-
-                    //n건 바인딩 처리된 부모 UI의 라인 정보 얻기.
-                    var _stree = oAPP.fn.getDesignTreeData(_oUi._OBJID);
-                    
-
-                    //해당 부모로 부터 파생된 CHILD중 동일 프로퍼티명 타입으로 필터링.
-                    setSameAttrList(_stree.zTREE_DESIGN, _oUi);
-
+                    //동일속성 attr 항목 검색.
+                    _oData.T_LIST = parent.require("./synchronizionArea/getSameAttrList.js")(oContr.attr.is_attr);
 
                 }
 
@@ -449,7 +410,9 @@ function designControl(is_attr){
 
 
             //디자인 영역으로 이동 처리.
-            oAPP.attr.oDesign.fn.moveDesignPage();
+            await oAPP.attr.oDesign.fn.moveDesignPage();
+
+            oAPP.fn.setBusy(false);
 
 
         };
@@ -459,10 +422,14 @@ function designControl(is_attr){
         /*************************************************************
          * @event - 뒤로가기 버튼 선택 이벤트.
          *************************************************************/
-        oContr.fn.onMoveDesignPage = function(){
+        oContr.fn.onMoveDesignPage = async function(){
+
+            oAPP.fn.setBusy(true);
 
             //디자인 영역으로 이동 처리.
-            oAPP.attr.oDesign.fn.moveDesignPage();
+            await oAPP.attr.oDesign.fn.moveDesignPage();
+
+            oAPP.fn.setBusy(false);
 
         };
 
@@ -470,7 +437,7 @@ function designControl(is_attr){
         /*************************************************************
          * @event - 동일속성 적용 팝업으로 호출.
          *************************************************************/
-        oContr.fn.onCallSyncBindPopup = function(){
+        oContr.fn.onCallSyncBindPopup = async function(){
 
             oAPP.fn.setBusy(true);
 
@@ -549,8 +516,9 @@ function designControl(is_attr){
 
 
             //디자인 영역으로 이동 처리.
-            oAPP.attr.oDesign.fn.moveDesignPage();
+            await oAPP.attr.oDesign.fn.moveDesignPage();
 
+            oAPP.fn.setBusy(false);
 
         };
 

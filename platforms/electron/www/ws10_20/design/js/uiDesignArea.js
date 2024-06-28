@@ -36,6 +36,10 @@
       //라인선택에 따른 각 화면에 대한 처리.
       oAPP.fn.designTreeItemPress(ls_tree);
 
+      //20240527 PES
+      //바인딩 팝업에 UI 라인 선택 처리.
+      oAPP.fn.selectBindingPopupOBJID(ls_tree);
+
     }); //tree item 선택 이벤트.
 
 
@@ -2359,6 +2363,11 @@
     oAPP.fn.desginSetFirstVisibleRow(iIndex, is_tree);
 
 
+    //20240527 PES
+    //바인딩 팝업에 UI 라인 선택 처리.
+    oAPP.fn.selectBindingPopupOBJID(is_tree);
+
+
   };  //UI design tree 라인 선택 이벤트.
 
 
@@ -2389,6 +2398,19 @@
 
   };  //design tree의 라인 이동 처리.
 
+
+  /*************************************************************
+   * @function - 바인딩 팝업의 디자인 영역 UI선택 처리.
+   *************************************************************/
+  oAPP.fn.selectBindingPopupOBJID = function(is_tree){
+
+    //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH 구성.
+    var _channelPath = oAPP.fn.getBindingPopupBroadcastModulePath();
+
+    //바인딩 팝업으로 다시 호출하여 알림 처리.
+    parent.require(_channelPath)("DESIGN-TREE-SELECT-OBJID", is_tree.OBJID);
+
+  };
 
 
 

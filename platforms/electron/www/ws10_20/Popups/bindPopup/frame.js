@@ -93,13 +93,7 @@ let oAPP = (function(window) {
         oWs_frame.src = "index.html";
 
     });
-
-
-    oAPP.IPCRENDERER.on('if_modelBindingPopup2', (events, oInfo) => {
-        debugger;
-
-    });
-
+    
 
     window.oAPP = oAPP;
 

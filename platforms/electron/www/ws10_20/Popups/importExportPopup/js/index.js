@@ -312,9 +312,15 @@ const oAPP = {
                             return;
                         }
 
-                        debugger;
+                        // 응답 메시지 인코딩 여부
+                        let ISENCODE = xhr.getResponseHeader("ISENCODE");
                         
-                        var Lmsg = xhr.getResponseHeader('RTMSG');
+                        var Lmsg = xhr.getResponseHeader("RTMSG");
+
+                        // 리턴 메시지를 인코딩해야 할 경우
+                        if(ISENCODE === "X"){
+                            Lmsg = decodeURIComponent(escape(atob( Lmsg )));
+                        }
 
                         var oBuff = Buffer.from(xhr.response);
                         oAPP.fs.writeFileSync(oAPP.FilePath, oBuff, null, function (err) { });

@@ -5478,7 +5478,7 @@
 
 
 
-  //attribute에 drag UI가 올라갔을때 이벤트.
+  //attribute에 바인딩 필드 DROP 했을때 처리.
   oAPP.fn.attrDrop = function(oEvent){
 
     //drop UI 정보 얻기.
@@ -5547,6 +5547,42 @@
       return;
     }
 
+    //20240626 PES.
+    //DRAG한 데이터의 바인딩 추가속성 정보 점검.
+    var _sRes = oAPP.fn.attrCheckDropMPROP(l_json.IF_DATA);
+
+    //바인딩 추가 속성 정보 점검 오류가 존재하는경우.
+    if(_sRes.RETCD === "E"){
+      
+      //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH 구성.
+      var _channelPath = oAPP.fn.getBindingPopupBroadcastModulePath();
+
+      //바인딩 팝업에서 발생한 오류 정보가 있다면 같이 수집 처리.
+      if(typeof l_json.T_ERMSG !== "undefined" && l_json.T_ERMSG.length > 0){
+        _sRes.T_ERMSG = _sRes.T_ERMSG.concat(l_json.T_ERMSG);
+      }
+
+      //바인딩 팝업으로 다시 호출하여 알림 처리.
+      parent.require(_channelPath)("ERROR-ADDIT-DATA", _sRes.T_ERMSG);
+
+      return;
+    }
+
+
+    //20240627 PES.
+    //바인딩 팝업에서 DRAG한 데이터의 오류 발생 정보가 존재하는경우.
+    if(l_json.RETCD === "E" && typeof l_json.T_ERMSG !== "undefined"){
+      
+      //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH 구성.
+      var _channelPath = oAPP.fn.getBindingPopupBroadcastModulePath();
+
+      //바인딩 팝업으로 다시 호출하여 알림 처리.
+      parent.require(_channelPath)("ERROR-ADDIT-DATA", l_json.T_ERMSG);
+
+      return;
+    }
+
+
     //kind path가 존재하지 않는경우 exit.
     if(typeof l_json.IF_DATA.KIND_PATH === "undefined"){
       //265	Binding attributes does not exist.
@@ -5560,6 +5596,8 @@
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
       return;
     }
+
+    
 
     //aggregation인경우 TABLE을 DROP하지 않았다면.
     if(ls_attr.UIATY === "3" && l_json.IF_DATA.KIND !== "T" ){
@@ -5832,7 +5870,161 @@
     }
 
 
-  };  //attribute에 drag UI가 올라갔을때 이벤트.
+  };  //attribute에 바인딩 필드 DROP 했을때 처리.
+
+
+  //DRAG한 데이터의 바인딩 추가속성 정보 점검.
+  oAPP.fn.attrCheckDropMPROP = function(IF_DATA){
+
+    const TY_ADDIT_MSG = {
+      ITMCD : "",  //바인딩 추가속성 정보 ITEM CODE.
+      ERMSG : "",  //오류 메시지 정보.
+    };
+
+    var _sRes = {RETCD:"", RTMSG:"", T_ERMSG:[]};
+    
+
+    //바인딩 추가 속성 정보가 존재하지 않는경우 exit.
+    if(typeof IF_DATA.MPROP === "undefined" || IF_DATA.MPROP === ""){
+      return _sRes;
+    }
+
+    var _aSplit = IF_DATA.MPROP.split("|");
+
+    var _aUA028 = JSON.parse(JSON.stringify(oAPP.attr.S_CODE.UA028));
+
+    //입력 가능한 바인딩 추가속성 정보만 발췌.
+    _aUA028 = _aUA028.filter( item => item.FLD02 === "" );
+
+    if(_aUA028.length === 0){
+      return _sRes;  
+    }
+
+
+    //itmcd로 정렬 처리.
+    _aUA028.sort(function(a, b){
+
+      return a.ITMCD.localeCompare(b.ITMCD);
+
+    });
+
+
+    //nozero 불가능 항목.
+    var l_nozero = "Cg";
+
+    //number format 가능항목.
+    var l_numfmt = "IP";
+
+    
+    for (let i = 0, l = _aUA028.length; i < l; i++) {
+      
+      var _sUA028 = _aUA028[i];
+
+      //바인딩 추가속성 입력값.
+      var _param = _aSplit[i];
+
+      //추가속성값이 입력되지 않은경우 skip.
+      if(_param === ""){
+        continue;
+      }
+
+      switch (_sUA028.ITMCD) {
+        case "P04":
+          //Bind type
+
+          //모델 바인딩 필드 타입이 P타입이 아닌경우.
+          if(IF_DATA.TYPE_KIND !== "P"){
+            //$$MSG
+
+            var _sERMSG = JSON.parse(JSON.stringify(TY_ADDIT_MSG));
+            
+            _sERMSG.ITMCD = _sUA028.ITMCD;
+            _sERMSG.ERMSG = "Bind type은 ABAP TYPE이 P 유형만 가능합니다."; //$$MSG
+
+            _sRes.T_ERMSG.push(_sERMSG);
+
+          }
+
+          var _indx = _aUA028.findIndex( item => item.ITMCD === "P05" );
+          
+          //Reference Field name를 구성하지 않은경우.
+          if(_aSplit[_indx] === ""){
+            
+            var _sERMSG = JSON.parse(JSON.stringify(TY_ADDIT_MSG));
+            
+            //267	If Bind type is selected, Reference Field name is required.
+            _sERMSG.ITMCD = "P05";
+            _sERMSG.ERMSG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "267", "", "", "", "");
+
+            _sRes.T_ERMSG.push(_sERMSG);
+
+          }
+          
+          break;
+
+        case "P05":
+          //Reference Field name
+          break;
+
+        case "P06":
+          //Conversion Routine
+          break;
+
+        case "P07":
+          //Nozero
+
+          //no zero를 true로 설정했으나, 바인딩된 필드가 허용 불가능 타입인경우.
+          if(_param === "true" && l_nozero.indexOf(IF_DATA.TYPE_KIND) !== -1 ){
+
+            var _sERMSG = JSON.parse(JSON.stringify(TY_ADDIT_MSG));
+            
+            //$$MSG
+            _sERMSG.ITMCD = _sUA028.ITMCD; 
+            _sERMSG.ERMSG = "ABAP TYPE CHAR, STRING은 Nozero를 설정할 수 없습니다.";
+
+            _sRes.T_ERMSG.push(_sERMSG);
+
+          }
+
+          break;
+
+        case "P08":
+          //Is number  format?
+
+          //numberformat을 true로 설정했으나, 바인딩된 필드가 허용 불가능 타입인경우.
+          if(_param === "true" && l_numfmt.indexOf(IF_DATA.TYPE_KIND) === -1 ){
+
+            var _sERMSG = JSON.parse(JSON.stringify(TY_ADDIT_MSG));
+            
+            //$$MSG
+            _sERMSG.ITMCD = _sUA028.ITMCD; 
+            _sERMSG.ERMSG = "Is number format은 ABAP TYPE INT, P만 사용할 수 있습니다.";
+
+            _sRes.T_ERMSG.push(_sERMSG);
+
+          }
+
+          break;
+      
+        default:
+          break;
+      }
+      
+    }
+
+
+    //오류 메시지가 존재하는경우.
+    if(_sRes.T_ERMSG.length > 0){
+      _sRes.RETCD = "E";
+      _sRes.RTMSG = "바인딩 추가속성 정보에 오류건이 존재합니다."; //$$msg
+      
+      return _sRes;
+
+    }
+
+    return _sRes;
+
+  };
 
 
 

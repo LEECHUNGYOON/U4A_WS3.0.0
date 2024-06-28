@@ -46,9 +46,32 @@ function designControl(oArea){
 
             oContr.types   = {};
 
+
+            //추가속성 DDLB 구조.
             oContr.types.TY_DDLB = {
                 KEY  : "",
                 TEXT : ""
+            };
+
+
+            //바인딩 추가 속성 리스트 구조.
+            oContr.types.TY_LIST = {
+                ITMCD       : "",       //공통코드 ITEM CODE(UA028-ITMCD)
+                prop        : "",       //속성명(UA028-FLD01)
+                val         : "",       //입력(출력) 값.
+                stat        : null,     //오류 표현 필드.
+                statTxt     : "",       //오류 표현 TEXT.
+                isFieldInfo : false,    //DISPLAY 필드 여부
+                edit        : false,    //editable 바인딩 필드.
+                inp_vis     : false,    //input 활성여부
+                sel_vis     : false,    //select 활성여부
+                txt_vis     : false,    //text 활성여부
+                maxlen      : 0,        //입력필드 max length.
+                _style      : "",       //오류 표현 css style 바인딩 필드.
+                _error      : false,    //라인의 입력값 오류발생시 flag 처리 필드.
+                _error_msg  : "",       //라인 입력값 오류 발생시 메시지.
+                T_DDLB      : [],       //라인 별 DDLB 리스트
+
             };
 
 
@@ -63,7 +86,7 @@ function designControl(oArea){
         *******************************************************************/    
 
             /*************************************************************
-             * @FlowEvent - 추가속성 바인딩 활성여부 처리.
+             * @function - 추가속성 바인딩 활성여부 처리.
              *************************************************************/
             function _setAdditBindButtonEnable(bEnable){
 
@@ -80,7 +103,8 @@ function designControl(oArea){
                 //추가속성 버튼 활성 여부 처리.
                 oContr.oModel.oData.edit_additbind = bEnable;
             }
-            
+
+
 
         /*************************************************************
          * @FlowEvent - View Start 
@@ -191,22 +215,63 @@ function designControl(oArea){
         oContr.fn.onChangeInput = function(oEvent){
 
             var _oUi = oEvent.oSource;
-        
-            if(typeof _oUi === "undefined" || _oUi === null){
+
+            //UI의 bindingContext에서 데이터 추출.
+            var _sAddit = oAPP.fn.getUiContextData(_oUi);
+            
+            if(typeof _sAddit === "undefined"){
                 return;
             }
-
-            var _oCtxt = _oUi.getBindingContext();
-
-            if(typeof _oCtxt === "undefined" || _oCtxt === null){
-                return;
-            }
-
-            var _sAddit = _oCtxt.getProperty();
 
             //추가속성 정보 conversion 입력필드 변경에 대한 처리.
             oContr.fn.convChangeInput(_sAddit);
 
+
+        };
+
+
+        /*************************************************************
+         * @event - 입력필드 live change 이벤트.
+         *************************************************************/
+        oContr.fn.onLiveChangeInput = function(oEvent){
+
+            var _oUi = oEvent.oSource;
+
+            //UI의 bindingContext에서 데이터 추출.
+            var _sAddit = oAPP.fn.getUiContextData(_oUi);
+            
+            if(typeof _sAddit === "undefined"){
+                return;
+            }
+
+            //conversion 입력라인에 대한 광역 오류 정보 초기화 처리.
+            oContr.fn.clearConvError(_sAddit);
+
+
+        };
+
+
+        /*************************************************************
+         * @function - conversion 입력라인에 대한 광역 오류 정보 초기화 처리.
+         *************************************************************/
+        oContr.fn.clearConvError = function(sAddit){
+
+            //conversion 입력 라인이 아닌경우 exit.
+            if(sAddit.ITMCD !== "P06"){
+                return;
+            }
+            
+            //오류 표현 초기화.
+            sAddit.stat       = null;
+            sAddit.statTxt    = "";
+
+            //conversion 라인의 오류 필드 초기화.
+            sAddit._error     = false;
+
+            //오류 메시지 초기화.
+            sAddit._error_msg = "";
+            
+            oContr.oModel.refresh();
 
         };
 
@@ -223,19 +288,37 @@ function designControl(oArea){
                 oAPP.fn.setBusy(false);
                 return;
             }
+
+            //입력된 값이 존재하지 않는경우.
+            if(sAddit.val === ""){
+
+                oContr.oModel.refresh();
+
+                oAPP.fn.setBusy(false);
+
+                return;
+            }
             
             //conversion명 대문자 변환 처리.
             oAPP.fn.setConvNameUpperCase(sAddit);
-
+            
 
             //conversion 명 점검.
-            var _sRes = await oAPP.fn.checkConversion(sAddit);
+            var _sRes = await oAPP.fn.checkConversion(sAddit.val);
 
             if(_sRes.RETCD === "E"){
                 
-                oAPP.fn.setBusy(false);
+                //오류 표현 처리.
+                sAddit.stat    = "Error";
+                sAddit.statTxt = _sRes.RTMSG;
 
+                //conversion 라인의 오류 flag 처리.
+                sAddit._error      = true;
+                sAddit._error_msg  = _sRes.RTMSG;
+                
                 oContr.oModel.refresh();
+
+                oAPP.fn.setBusy(false);
 
                 return;
             }
@@ -283,20 +366,50 @@ function designControl(oArea){
                 return _sRes;
             }
 
+            
+            //모델필드의 바인딩 추가 속성 정보 가능 여부 확인.
+            _sRes = oContr.fn.chkModelFiendAdditData(is_attr.UIATV);
+
+            if(_sRes.RETCD === "E"){
+                return _sRes;
+            }
+
+            return _sRes;
+
+
+        };
+
+
+        /*************************************************************
+         * @function - 모델필드의 바인딩 추가 속성 정보 가능 여부 확인.
+         *************************************************************/
+        oContr.fn.chkModelFiendAdditData = function(modelField){
+
+            let _sRes = {RETCD:"", RTMSG:""};
 
             //바인딩 필드의 라인 정보 얻기.
-            var _sField = oAPP.fn.getModelBindData(is_attr.UIATV, oAPP.attr.oModel.oData.zTREE);
+            var _sField = oAPP.fn.getModelBindData(modelField, oAPP.attr.oModel.oData.zTREE);
 
-            //일반 필드가 아닌경우 EXIT.
-            if(_sField.KIND !== "E"){
+            //필드 정보를 찾을 수 없는경우.
+            if(typeof _sField === "undefined"){
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = `${is_attr.UIATV} 필드가 모델 항목에 존재하지 않습니다.`; //$$MSG
+                _sRes.RTMSG = `${modelField} 필드가 모델 항목에 존재하지 않습니다.`; //$$MSG
 
                 return _sRes;
 
             }
-    
-                
+
+
+            //일반 필드가 아닌경우 EXIT.
+            if(_sField.KIND !== "E"){
+                _sRes.RETCD = "E";
+                _sRes.RTMSG = `기본유형의 ABAP TYPE(CHAR, STRING, NUMC, DATE, TIME, INT, P)만 바인딩 추가 속성 정보를 적용할 수 있습니다.`; //$$MSG
+
+                return _sRes;
+
+            }
+
+
             var _aMPROP = oContr.oModel.oData.T_MPROP;
 
             //Bind type
@@ -340,7 +453,7 @@ function designControl(oArea){
             if(_sP05.val !== ""){
 
                 //참조필드의 부모 path와 바인딩 필드의 부모 path가 다른경우.
-                if(_sP05.val.substr(0, _sP05.val.lastIndexOf("-")) !== is_attr.UIATV.substr(0, is_attr.UIATV.lastIndexOf("-"))){
+                if(_sP05.val.substr(0, _sP05.val.lastIndexOf("-")) !== _sField.CHILD.substr(0, _sField.CHILD.lastIndexOf("-"))){
                     _sRes.RETCD = "E";
                     _sRes.RTMSG = "바인딩 필드와 참조필드의 부모 모델 path가 다릅니다."; //$$MSG
 
@@ -407,9 +520,7 @@ function designControl(oArea){
 
             return _sRes;
 
-
         };
-
 
 
         /*************************************************************
@@ -476,16 +587,6 @@ function designControl(oArea){
             //DESIGN TREE의 체크박스 선택건 얻기.
             var _aTree = oAPP.attr.oDesign.fn.getSelectedDesignTree();
 
-            //라인 선택건이 존재하지 않는경우 exit.
-            if(_aTree.length === 0){
-                
-                //참조 필드 리스트 초기화.
-                //참조 필드 라인 선택건 초기화.
-                oContr.fn.clearRefField();
-
-                return;
-            }
-
 
             var _aField = [];
 
@@ -520,6 +621,21 @@ function designControl(oArea){
                 }
                 
             }
+
+
+            //모델 tree의 라인 선택건 얻기.
+            var _sMField = oAPP.fn.getSelectedModelLine();
+
+            //선택된 라인이 존재하는경우.
+            if(typeof _sMField !== "undefined"){
+
+                //선택된 라인의 부모 정보 필드가 수집되지 않은 항목인경우 수집.
+                if(_aField.indexOf(_sMField.PARENT) === -1){
+                    _aField.push(_sMField.PARENT);
+                }
+
+            }
+
 
             //수집된 항목이 1건을 초과 하는경우
             //(같은 구조, TABLE로 파생된 바인딩 정보가 아닌경우)
@@ -573,8 +689,6 @@ function designControl(oArea){
                 return;
             }
 
-            //입력값 초기화.
-            _sP05.val    = "";
 
             //참조 항목 필드 리스트 초기화.
             _sP05.T_DDLB = [];
@@ -593,6 +707,13 @@ function designControl(oArea){
 
                 _sP05.T_DDLB.push(_sDDLB);
                 
+            }
+
+
+            //구성된 DDLB에 이전에 선택한 필드정보가 존재하지 않는경우 선택건 초기화 처리.
+            if(_sP05.T_DDLB.findIndex( item => item.KEY === _sP05.val) === -1){
+                //입력값 초기화.
+                _sP05.val    = "";
             }
 
             oContr.oModel.refresh();
@@ -646,6 +767,8 @@ function designControl(oArea){
 
             oContr.oModel.oData.T_MPROP = [];
 
+
+            //boolean ddlb 리스트 구성.
             // var lt_bool = [JSON.parse(JSON.stringify(oContr.types.TY_DDLB))];
             var lt_bool = [];
             
@@ -665,6 +788,15 @@ function designControl(oArea){
             //바인딩 추가속성 리스트 얻기.
             var lt_ua028 = oAPP.attr.T_9011.filter(a => a.CATCD === "UA028");
 
+            //itmcd로 정렬 처리.
+            lt_ua028.sort(function(a, b){
+
+                return a.ITMCD.localeCompare(b.ITMCD);
+
+            });
+
+
+            //UI Attrubute bind property DDLB 구성.
             var lt_ua022 = oAPP.attr.T_9011.filter( item => item.CATCD === "UA022" && item.FLD03 === "X" );
 
             var lt_refList = [JSON.parse(JSON.stringify(oContr.types.TY_DDLB))];
@@ -879,7 +1011,8 @@ function designView(oArea, oTable){
             valueState: "{stat}",
             valueStateText: "{statTxt}",
             enabled: "{/edit}",
-            change: oContr.fn.onChangeInput
+            change: oContr.fn.onChangeInput,
+            liveChange: oContr.fn.onLiveChangeInput
         });
         oTabCol2HBox1.addItem(oTabCol2Inp1);
 

@@ -339,7 +339,7 @@
         oBrowserOptions.width = 1440;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
-        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.opacity = 0;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -362,12 +362,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
 
-        //WS 3.0 메인 PATH 얻기.
-        var _channelPath = parent.getPath("WS10_20_ROOT");
-
-        //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH 구성.
-        _channelPath = PATH.join(_channelPath, "design", "bindPopupHandler", "broadcastChannelBindPopup.js");
-
+        //broadcase 통신 API 모듈 js path 정보.
+        //(design/bindPopupHandler/broadcastChannelBindPopup.js)
+        var _channelPath = "";
 
   
         // // no build 일 경우에는 개발자 툴을 실행한다.
@@ -377,28 +374,30 @@
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
+
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
             
-            var _aTree = JSON.parse(JSON.stringify(oAPP.attr.oModel.oData.zTREE));
+                                
+            var lt_0014 = [];
+            var lt_0015 = [];
+            var lt_9011 = [];
+            var lt_0022 = [];
+            var lt_0023 = [];
+            var lt_CEVT = [];
 
+            lt_9011 = oAPP.DATA.LIB.T_9011;
+            lt_0022 = oAPP.DATA.LIB.T_0022;
+            lt_0023 = oAPP.DATA.LIB.T_0023;
+            
 
-            oAPP.attr.POSIT = 0;
-
-            //UI POSTION 정보 재매핑 처리.
-            oAPP.fn.setUIPOSIT(_aTree);
-
-            oAPP.attr.POSIT = 0;
-
-
-            //design tree 정보를 기준으로 ZY04A0014 저장 정보 구성.
-            var lt_0014 = oAPP.fn.parseTree2Tab(_aTree);
-
-            //POSITION 으로 정렬처리.
-            lt_0014.sort(function(a,b){
-                return a.POSIT - b.POSIT;
-            });
-
-            //UI에 구성한 attr 정보 수집 처리.
-            var lt_0015 = oAPP.fn.getAttrChangedData();
+            //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH 구성.
+            _channelPath = oAPP.fn.getBindingPopupBroadcastModulePath();
 
 
             //디자인상세화면(20화면) <-> BINDPOPUP 통신 채널 키 얻기.
@@ -407,12 +406,12 @@
             var oBindPopupData = {
                 oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보 (필수)
                 oThemeInfo: oThemeInfo, // 테마 개인화 정보
-                T_9011: oAPP.DATA.LIB.T_9011,
-                T_0022: oAPP.DATA.LIB.T_0022,
-                T_0023: oAPP.DATA.LIB.T_0023,
+                T_9011: lt_9011,
+                T_0022: lt_0022,
+                T_0023: lt_0023,
                 T_0014: lt_0014,
                 T_0015: lt_0015,
-                T_CEVT: oAPP.DATA.APPDATA.T_CEVT,
+                T_CEVT: lt_CEVT,
                 oAppInfo: parent.getAppInfo(),
                 servNm: parent.getServerPath(),
                 SSID: parent.getSSID(),
@@ -421,19 +420,16 @@
 
             oBrowserWindow.webContents.send('if_modelBindingPopup', oBindPopupData);
 
-            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            WSUTIL.setBrowserOpacity(oBrowserWindow);
+            
+            //디자인상세화면(20화면) <-> BINDPOPUP 통신을 위한 채널 생성.
+            parent.require(_channelPath)("CHANNEL-CREATE");
 
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
+            
             // no build 일 경우에는 개발자 툴을 실행한다.
             if (!APP.isPackaged) {
                 oBrowserWindow.webContents.openDevTools();
             }
 
-            //디자인상세화면(20화면) <-> BINDPOPUP 통신을 위한 채널 생성.
-            parent.require(_channelPath)("CHANNEL-CREATE");
 
 
         });
@@ -1474,9 +1470,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         //  // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        //  if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
