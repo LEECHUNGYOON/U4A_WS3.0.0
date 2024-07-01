@@ -83,7 +83,7 @@ class CL_WS20_BINDPOPUP{
  * 바인딩 팝업 Broadcast Channel 응답 처리.
  ************************************************************************/
 function resBroadcastChannelBindPopup(oEvent){
-        
+
     console.log(oEvent.data);
 
     if(typeof oEvent?.data?.PRCCD === "undefined"){
@@ -118,7 +118,6 @@ function resBroadcastChannelBindPopup(oEvent){
     if(responeSelectDesignTreeOBJID(oEvent) === true){
         return;
     }
-
 
 }
 
@@ -180,6 +179,9 @@ async function updateDesignData(oEvent){
     oAPP.fn.setBusy(true);
 
 
+    await oAPP.fn.waitBusyOpened();
+
+
     //호출된 모든 팝업 종료 처리.
     oAPP.fn.closeAllPopups();
 
@@ -222,6 +224,9 @@ async function updateDesignData(oEvent){
     // //바인딩 추가 속성 정보 모델 갱신 처리.
     // oAPP.attr.oAddit.oModel.refresh();
 
+    //BUSY OFF 요청 처리.
+    oEvent.currentTarget.postMessage({PRCCD:"BUSY_OFF"});
+
 
     oAPP.fn.setBusy(false);
 
@@ -250,6 +255,8 @@ async function responseAdditError(oEvent){
         return true;
     }
 
+    oAPP.fn.setBusy(true);
+
 
     var _aBindError = [];
 
@@ -276,9 +283,11 @@ async function responseAdditError(oEvent){
     //오류 팝업 호출 처리.
     await oAPP.fn.showMessagePopoverOppener(oAPP.attr.oAddit.ui.ROOT, _aBindError);
 
+    oAPP.fn.setBusy(false);
 
     //디자인 영역 갱신 요청임 flag return.
     return true;
+
 
 }
 
@@ -293,14 +302,17 @@ function responeSelectDesignTreeOBJID(oEvent){
         return false;
     }
 
+    oAPP.fn.setBusy(true);
 
     //전달받은 파라메터가 존재하지 않는경우 exit.
     if(typeof oEvent.data.OBJID === "undefined" || oEvent.data.OBJID === ""){
+        oAPP.fn.setBusy(false);
         return true;
     }
 
     //디자인 영역에 출력데이터가 존재하지 않는경우 exit.
     if(oAPP.attr.oDesign.oModel.oData.zTREE_DESIGN.length === 0){
+        oAPP.fn.setBusy(false);
         return true;
     }
 
@@ -309,6 +321,7 @@ function responeSelectDesignTreeOBJID(oEvent){
 
     //대상 라인을 찾지 못한 경우 exit.
     if(typeof _sTree === "undefined"){
+        oAPP.fn.setBusy(false);
         return true;
     }
 
@@ -319,6 +332,9 @@ function responeSelectDesignTreeOBJID(oEvent){
     if(_indx !== -1){
         //해당 라인 선택 처리.
         oAPP.attr.oDesign.ui.TREE.setSelectedIndex(_indx);
+
+        oAPP.fn.setBusy(false);
+
         return true;
     }
 
@@ -328,6 +344,9 @@ function responeSelectDesignTreeOBJID(oEvent){
 
     //해당 라인을 찾지 못한 경우 exit.
     if(_indx === -1){
+
+        oAPP.fn.setBusy(false);
+
         return true;
     }
 
@@ -336,6 +355,8 @@ function responeSelectDesignTreeOBJID(oEvent){
 
     //해당 라인으로 이동 처리.
     oAPP.attr.oDesign.ui.TREE.setFirstVisibleRow(_indx);
+
+    oAPP.fn.setBusy(false);
 
     return true;
 
@@ -346,11 +367,14 @@ function responeSelectDesignTreeOBJID(oEvent){
  * @function - 디자인 영역 ATTR 정보 갱신처리.
  *************************************************************/
 function updateBindPopupDesignData(){
+
+    
+    oAPP.fn.setBusy(true);
     
     var _sData = {};
 
     //데이터 동기화 프로세스 코드.
-    _sData.PRCCD = "DATA_SYNC";
+    _sData.PRCCD = "UPDATE-DESIGN-DATA";
 
 
     //디자인 트리 전송 data(T_0014) 구성.
@@ -554,10 +578,6 @@ module.exports = function(ACTCD, oData){
             CL_WS20_BINDPOPUP.createChannel(oData);
             break;
 
-        case "SEND-APP-DATA":
-            //BIND POPUP에 데이터 전송 처리.
-            return CL_WS20_BINDPOPUP.sendPostMessage(oData);
-
         case "CHANNEL-CLOSE":
             //broadcast Channel 종료처리.
             CL_WS20_BINDPOPUP.closeChannel();
@@ -588,6 +608,6 @@ module.exports = function(ACTCD, oData){
 
         default:
             break;
-    }    
+    }
 
 };

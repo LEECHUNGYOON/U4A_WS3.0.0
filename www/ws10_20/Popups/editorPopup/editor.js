@@ -347,6 +347,11 @@
 
           fnOnInit();
 
+      
+        setTimeout(() => {
+            $('#maincontent').fadeIn(300, 'linear');
+        }, 0);
+
       });
 
       window.addEventListener("beforeunload", function () {

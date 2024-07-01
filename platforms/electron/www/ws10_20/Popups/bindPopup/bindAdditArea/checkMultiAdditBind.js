@@ -18,16 +18,24 @@ module.exports = function(is_attr){
         //DESIGN TREE의 체크박스 선택건이 존재하지 않는경우.
         if(_aTree.length === 0){
 
-            //$$MSG
             _sRes.RETCD = "E";
-            _sRes.RTMSG = "DESIGN 영역의 라인 선택건이 존재하지 않습니다."; //$$MSG
+
+            //087	DESIGN 영역의 라인 선택건이 존재하지 않습니다.
+            var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "087");
+            
+            _sRes.RTMSG = _msg;
             
             var _sBindError = JSON.parse(JSON.stringify(oAPP.types.TY_BIND_ERROR));
             
             _sBindError.ACTCD    = oAPP.attr.CS_MSG_ACTCD.ACT02;
             _sBindError.TYPE     = "Error";
-            _sBindError.TITLE    = "DESIGN 영역의 라인 선택건이 존재하지 않습니다.";             //$$MSG
-            _sBindError.DESC     = "추가속성 바인딩을 하기 위해서 디자인 영역의 라인을 선택 해야 합니다."; //$$MSG
+            //087	DESIGN 영역의 라인 선택건이 존재하지 않습니다.
+            _sRes.RTMSG = _msg;
+
+            //142	추가속성 바인딩을 하기 위해서 디자인 영역의 라인을 선택 해야 합니다.
+            _sBindError.DESC     = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "142");
+
+            _sBindError.LK_VIS   = false;
 
             _sRes.T_RTMSG.push(_sBindError);
 
@@ -51,15 +59,6 @@ module.exports = function(is_attr){
 
             _sRes.T_RTMSG = _sRes.T_RTMSG.concat(_sChk.T_RTMSG);
             
-            // var _sBindError = JSON.parse(JSON.stringify(oAPP.types.TY_BIND_ERROR));
-            
-            // _sBindError.ACTCD    = oAPP.attr.CS_MSG_ACTCD.ACT03;
-            // _sBindError.TYPE     = "Error";
-            // _sBindError.TITLE    = _sChk.RTMSG;             //$$MSG
-            // _sBindError.DESC     = _sChk.RTMSG; //$$MSG
-
-            // _sRes.T_RTMSG.push(_sBindError);
-
             oAPP.attr.oDesign.oModel.refresh();
 
 
@@ -99,8 +98,11 @@ module.exports = function(is_attr){
                 _sBindError.ACTCD    = oAPP.attr.CS_MSG_ACTCD.ACT04;
                 _sBindError.LINE_KEY = _sTree.CHILD;
                 _sBindError.TYPE     = "Error";
-                _sBindError.TITLE    = `${_sTree.OBJID} - ${_sTree.UIATT} 필드 추가속성 바인딩 오류.`; //$$MSG
-                _sBindError.DESC     = _sChk.RTMSG; //$$MSG
+
+                //143	&1 필드 추가속성 바인딩 오류.
+                _sBindError.TITLE    = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "143", `${_sTree.OBJID} - ${_sTree.UIATT}`);
+
+                _sBindError.DESC     = _sChk.RTMSG;
 
                 _sRes.T_RTMSG.push(_sBindError);
 
@@ -131,9 +133,11 @@ module.exports = function(is_attr){
             //현재 row에 오류 표현된건이 존재하지 않는경우 오류 발생한 라인으로 이동 처리.
             moveDesignTreeErrorLine(_aTree);
 
-            //$$MSG
             _sRes.RETCD = "E";
-            _sRes.RTMSG = "선택한 정보 중 추가 속성 불가능건이 존재합니다.";
+
+            //084	선택한 정보 중 추가 속성 불가능건이 존재합니다.
+            _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "084");
+            
             
             oAPP.attr.oDesign.oModel.refresh();
             return res(_sRes);

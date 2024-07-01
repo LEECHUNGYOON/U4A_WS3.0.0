@@ -226,6 +226,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         jQuery.sap.require("sap.m.MessageBox");
 
+        // WS Global 메시지 글로벌 변수 설정
+        await oAPP.fn.fnWsGlobalMsgList();
+        
         // Illustration Pool에 TNT Theme를 등록한다.
         oAPP.fn.fnRegisterIllustrationPool();
 
@@ -235,8 +238,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 현재 브라우저의 이벤트 핸들러
         _attachCurrentWindowEvents();
 
-        // WS Global 메시지 글로벌 변수 설정
-        await oAPP.fn.fnWsGlobalMsgList();
+        // // WS Global 메시지 글로벌 변수 설정
+        // await oAPP.fn.fnWsGlobalMsgList();
 
         // 초기 모델 구성
         await oAPP.fn.fnOnInitModeling();

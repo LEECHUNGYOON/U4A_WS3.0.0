@@ -67,13 +67,28 @@
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
         var sUrlPath = parent.getPath("EDITPOP");
         oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();   
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
+        
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -117,10 +132,13 @@
                 SRCHVAL: sSearchValue // 선택한 style class의 검색용 데이터
             };
 
-            oBrowserWindow.webContents.send('if-editor-info', oEditorInfo);
+            oBrowserWindow.webContents.send('if-editor-info', oEditorInfo);            
 
-            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
+            // // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            // parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
+
+            // // 부모 위치 가운데 배치한다.
+            // oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
         }
 

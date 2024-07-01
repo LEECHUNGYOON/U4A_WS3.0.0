@@ -668,6 +668,8 @@ oAPP.common = {};
 
             oBrowserWindow.setBounds(oBrowserOptions);
 
+            oBrowserWindow.setPosition(oBrowserOptions.x, oBrowserOptions.y);
+
         }
 
         // 브라우저 상단 메뉴 없애기
@@ -675,7 +677,17 @@ oAPP.common = {};
 
         oBrowserWindow.loadURL(parent.getPath("MAINFRAME"));
 
-        // oBrowserWindow.webContents.openDevTools();    
+        // // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
+
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            lf_setBound();
+
+        });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {

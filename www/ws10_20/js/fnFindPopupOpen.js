@@ -80,6 +80,14 @@
         //     oBrowserWindow.webContents.openDevTools();
         // }
 
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+        });
+
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
@@ -103,8 +111,9 @@
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
 
-            // Find Popup을 부모창 가운데에 표시
-            oAPP.fn.fnFindPopupOpenSetBounds(oBrowserWindow, oBrowserOptions);
+            // // Find Popup을 부모창 가운데에 표시
+            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+            // oAPP.fn.fnFindPopupOpenSetBounds(oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -133,32 +142,32 @@
 
     }; // end of oAPP.fn.fnFindPopupOpen
 
-    /**************************************************************************
-     * Find Popup을 부모창 가운데에 표시
-     * ************************************************************************/
-    oAPP.fn.fnFindPopupOpenSetBounds = (oBrowserWindow, oBrowserOptions) => {
+    // /**************************************************************************
+    //  * Find Popup을 부모창 가운데에 표시
+    //  * ************************************************************************/
+    // oAPP.fn.fnFindPopupOpenSetBounds = (oBrowserWindow, oBrowserOptions) => {
 
-        // 팝업 위치를 부모 위치에 배치시킨다.
-        var oParentBounds = CURRWIN.getBounds(),
-            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-            oWinScreen = window.screen,
-            iAvailLeft = oWinScreen.availLeft;
+    //     // 팝업 위치를 부모 위치에 배치시킨다.
+    //     var oParentBounds = CURRWIN.getBounds(),
+    //         xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+    //         yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+    //         oWinScreen = window.screen,
+    //         iAvailLeft = oWinScreen.availLeft;
 
-        if (xPos < iAvailLeft) {
-            xPos = iAvailLeft;
-        }
+    //     if (xPos < iAvailLeft) {
+    //         xPos = iAvailLeft;
+    //     }
 
-        if (yPos < 0) {
-            yPos = 0;
-        };
+    //     if (yPos < 0) {
+    //         yPos = 0;
+    //     };
 
-        oBrowserWindow.setBounds({
-            x: xPos,
-            y: yPos
-        });
+    //     oBrowserWindow.setBounds({
+    //         x: xPos,
+    //         y: yPos
+    //     });
 
-    }; // end of oAPP.fn.fnFindPopupOpenSetBounds
+    // }; // end of oAPP.fn.fnFindPopupOpenSetBounds
 
     /**************************************************************************
      * Find Popup에서 전달 받은 UI 정보를 가지고 WS20에 표시를 해준다.

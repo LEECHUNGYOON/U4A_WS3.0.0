@@ -358,7 +358,7 @@
         let childWindows = mainWindow.getChildWindows();
 
 
-        // 원본-------
+        // 원본------- Start
 
         // // 부모 창의 위치와 크기 가져오기
         // const [parentX, parentY] = mainWindow.getPosition();
@@ -405,31 +405,28 @@
         //     childWindow.show();
         // });
 
+        // 원본------- End
 
-        // let mainWindow = parent.CURRWIN;
-        // let screen = parent.SCREEN;
-        // let childWindows = mainWindow.getChildWindows();
-
-        // 부모 창의 위치와 크기 가져오기
-        const [parentX, parentY] = mainWindow.getPosition();
-        const [parentWidth, parentHeight] = mainWindow.getSize();
-
-        // 부모 창의 중앙 위치
-        // const parentCenterX = parentX + parentWidth / 2;
-        // const parentCenterY = parentY + parentHeight / 2;
-
-        const parentCenterX = parentX;
-        const parentCenterY = parentY;
 
         // 부모 창이 위치한 디스플레이를 찾기
         const displays = screen.getAllDisplays();
         let targetDisplay;
-        for (const display of displays) {
-            const { x, y, width, height } = display.workArea;
-            if (parentCenterX >= x && parentCenterX < x + width && parentCenterY >= y && parentCenterY < y + height) {
+     
+        let winBounds = mainWindow.getBounds();
+        let maxArea = 0;
+
+        for (let display of displays) {
+
+            const displayBounds = display.bounds;   
+
+            // 윈도우의 영역이 어떤 모니터에 더 많이 포함되어 있는지 계산
+            const overlapArea = _getOverlapArea(winBounds, displayBounds);
+            
+            if (overlapArea > maxArea) {
+                maxArea = overlapArea;
                 targetDisplay = display;
-                break;
             }
+
         }
 
         if (!targetDisplay) return;
@@ -477,6 +474,17 @@
         
     }; // end of oAPP.main.adjustWindowGrid
 
+
+    /************************************************************************
+     * 윈도우의 영역이 어떤 모니터에 더 많이 포함되어 있는지 계산
+     ************************************************************************/
+    function _getOverlapArea(rect1, rect2) {
+        const x_overlap = Math.max(0, Math.min(rect1.x + rect1.width, rect2.x + rect2.width) - Math.max(rect1.x, rect2.x));
+        const y_overlap = Math.max(0, Math.min(rect1.y + rect1.height, rect2.y + rect2.height) - Math.max(rect1.y, rect2.y));
+      
+        return x_overlap * y_overlap;
+    }
+
     /************************************************************************
      * 현재 브라우저의 child window 전체를 
      * 부모가 위치한 모니터 기준 중앙 정렬
@@ -485,24 +493,27 @@
 
         let mainWindow = parent.CURRWIN;
         let screen = parent.SCREEN;
-        let childWindows = mainWindow.getChildWindows();
-        
-        // 부모 창의 위치와 크기 가져오기
-        const { x: parentX, y: parentY, width: parentWidth, height: parentHeight } = mainWindow.getBounds();
+        let childWindows = mainWindow.getChildWindows();       
 
-        // 부모 창의 중앙 위치 계산
-        const parentCenterX = parentX + parentWidth / 2;
-        const parentCenterY = parentY + parentHeight / 2;
-
-        // 부모 창이 위치한 모니터 찾기
+        // 부모 창이 위치한 디스플레이를 찾기
         const displays = screen.getAllDisplays();
         let targetDisplay;
-        for (const display of displays) {
-            const { x, y, width, height } = display.workArea;
-            if (parentCenterX >= x && parentCenterX < x + width && parentCenterY >= y && parentCenterY < y + height) {
+     
+        let winBounds = mainWindow.getBounds();
+        let maxArea = 0;
+
+        for (let display of displays) {
+
+            const displayBounds = display.bounds;  
+
+            // 윈도우의 영역이 어떤 모니터에 더 많이 포함되어 있는지 계산      
+            const overlapArea = _getOverlapArea(winBounds, displayBounds);
+            
+            if (overlapArea > maxArea) {
+                maxArea = overlapArea;
                 targetDisplay = display;
-                break;
             }
+
         }
 
         if (!targetDisplay) return;
@@ -512,12 +523,25 @@
         const displayCenterY = targetDisplay.workArea.y + targetDisplay.workArea.height / 2;
 
         childWindows.forEach(childWindow => {
+
             const { width: childWidth, height: childHeight } = childWindow.getBounds();
 
             // 자식 창을 디스플레이의 중앙에 위치 설정
             const childX = Math.round(displayCenterX - childWidth / 2);
             const childY = Math.round(displayCenterY - childHeight / 2);
             childWindow.setPosition(childX, childY);
+
+        });
+
+        childWindows.forEach(childWindow => {
+
+            const { width: childWidth, height: childHeight } = childWindow.getBounds();
+
+            // 자식 창을 디스플레이의 중앙에 위치 설정
+            const childX = Math.round(displayCenterX - childWidth / 2);
+            const childY = Math.round(displayCenterY - childHeight / 2);
+            childWindow.setPosition(childX, childY);
+
         });
 
         // 모든 자식 창을 보이게 설정
@@ -567,13 +591,16 @@
     } // end of _attachCurrentWindowEvents
 
 
-
+    /************************************************************************
+     * 작업표시줄 메뉴 생성하기
+     ************************************************************************/
     function _createTaskBarMenu(){
 
         parent.CURRWIN.setThumbarButtons([
             {
-                tooltip: '바둑판',
-                icon: parent.PATH.join(parent.APPPATH, "img", "shutdown.png"),
+                // tooltip: 'alignLeftTop',
+                tooltip: 'Child Window Align Left Top',
+                icon: parent.PATH.join(parent.APPPATH, "img", "newwin_1.png"),
                 click() {
 
                     // 현재 떠있는 윈도우를 부모에 위치한 모니터 기준으로
@@ -584,10 +611,13 @@
             },
 
             {
-                tooltip: '중앙정렬',
-                icon: parent.PATH.join(parent.APPPATH, "img", "shutdown.png"),
+                // tooltip: 'alignCenter',
+                tooltip: 'Child Window Align Center',
+                icon: parent.PATH.join(parent.APPPATH, "img", "winCenter.png"),
                 click() {
 
+                    // 현재 떠있는 윈도우를 부모에 위치한 모니터 기준으로
+                    // 좌측 상단 부터 가운데 정렬
                     oAPP.main.adjustCenterChildWindow();
  
                 }
@@ -595,7 +625,7 @@
 
         ]);
         
-    }
+    } // end of _createTaskBarMenu
     
 
     /************************************************************************
@@ -672,11 +702,13 @@
                     // Loading Page
                     parent.showLoadingPage("");
 
-                    parent.setBusy("");
+                    // parent.setBusy("");
 
                     setTimeout(() => {
 
                         $('#content').fadeIn(300, 'linear');
+
+                        parent.setBusy("");
 
                     }, 300);
 

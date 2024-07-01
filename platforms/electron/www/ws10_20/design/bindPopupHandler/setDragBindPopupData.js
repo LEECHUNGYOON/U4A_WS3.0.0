@@ -64,7 +64,10 @@ function checkBindPopupDragAppData(is_drag){
 
     if(typeof is_drag === "undefined"){
         _sRes.RETCD = "E";
-        _sRes.RTMSG = "drag 정보가 존재하지 않습니다."; //$$MSG
+
+        //099	Drag 정보가 존재하지 않습니다.
+        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "097");
+
         return _sRes;
     }
 
@@ -97,7 +100,10 @@ function checkBindPopupDragAppData(is_drag){
     if(typeof l_path !== "undefined" && l_path !== ""){
 
         _sRes.RETCD = "E";
-        _sRes.RTMSG = "부모 UI에 MODEL BINDING 처리되어 UI를 구성할 수 없습니다."; //$$MSG
+
+        //163	부모 UI에 MODEL BINDING 처리되어 UI를 구성할 수 없습니다.
+        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "163");
+        
 
         return _sRes;
 

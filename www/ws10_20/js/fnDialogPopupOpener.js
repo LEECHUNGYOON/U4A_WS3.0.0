@@ -472,6 +472,9 @@
         const parentCenterX = parentX + parentWidth / 2;
         const parentCenterY = parentY + parentHeight / 2;
 
+        // const parentCenterX = parentX;
+        // const parentCenterY = parentY;
+
         // 부모 창이 위치한 디스플레이들을 찾기
         const displays = SCREEN.getAllDisplays();
         let displayA, displayB;
@@ -1892,7 +1895,10 @@
 
         oBrowserWindow.loadURL(sUrl);
 
-        // oBrowserWindow.webContents.openDevTools();
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {

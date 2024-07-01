@@ -68,12 +68,12 @@ let oAPP = parent.oAPP,
 
     //오류 발생 정보 수집 구조.
     oAPP.types.TY_BIND_ERROR = {
-        ACTCD    : "",  //오류 ACTION CODE
-        LINE_KEY : "",  //오류 라인 KEY
-        TYPE     : "",  //오류 TYPE
-        TITLE    : "",  //오류 제목
-        DESC     : "",  //오류 상세내역.
-        
+        ACTCD    : "",     //오류 ACTION CODE
+        LINE_KEY : "",     //오류 라인 KEY
+        TYPE     : "",     //오류 TYPE
+        TITLE    : "",     //오류 제목
+        DESC     : "",     //오류 상세내역.
+        LK_VIS   : true,   //오류 상세내역 링크 활성화 바인딩.
     };
 
 
@@ -885,22 +885,25 @@ let oAPP = parent.oAPP,
 
 
         //바인딩 팝업 table 출력 page.
-        var oPage = new sap.m.Page({enableScrolling:false});
+        var oPage = new sap.m.Page({
+            enableScrolling:false,
+            showHeader: false
+        });
         oApp.addPage(oPage);
 
 
         //바인딩 tree toolabar 정보.
         var oTool = new sap.m.OverflowToolbar();
-        oPage.setCustomHeader(oTool);
+        // oPage.setCustomHeader(oTool);
 
         //A46  Expand All
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A46", "", "", "", "");
 
         //전체펼침
         var oToolBtn1 = new sap.m.Button({
-            text: l_txt,
+            // text: l_txt,
             icon: "sap-icon://expand-all",
-            type: "Emphasized",
+            // type: "Emphasized",
             busy: "{/busy}",
             tooltip: l_txt,
             busyIndicatorDelay: 1
@@ -912,8 +915,11 @@ let oAPP = parent.oAPP,
 
             oAPP.ui.oTree.expandToLevel(99999);
 
-            //tree table 컬럼길이 재조정 처리.
-            oAPP.fn.setTreeAutoResizeCol(100);
+            // //tree table 컬럼길이 재조정 처리.
+            // oAPP.fn.setTreeAutoResizeCol(100);
+
+            // //tree table 컬럼길이 재조정 처리.
+            oAPP.fn.setUiTableAutoResizeColumn(oAPP.ui.oTree);
 
         });
 
@@ -922,9 +928,9 @@ let oAPP = parent.oAPP,
 
         //전체접힘
         var oToolBtn2 = new sap.m.Button({
-            text: l_txt,
+            // text: l_txt,
             icon: "sap-icon://collapse-all",
-            type: "Emphasized",
+            // type: "Emphasized",
             busy: "{/busy}",
             tooltip: l_txt,
             busyIndicatorDelay: 1
@@ -934,6 +940,10 @@ let oAPP = parent.oAPP,
         //tree 전체접힘 이벤트
         oToolBtn2.attachPress(function () {
             oAPP.ui.oTree.collapseAll();
+
+            // //tree table 컬럼길이 재조정 처리.
+            oAPP.fn.setUiTableAutoResizeColumn(oAPP.ui.oTree);
+
         });
 
 
@@ -959,6 +969,22 @@ let oAPP = parent.oAPP,
             oAPP.fn.getBindFieldInfo();
         });
 
+
+        oTool.addContent(new sap.m.ToolbarSpacer());
+
+
+        //161	컬럼최적화
+        //table autoresize.        
+        var oToolBtn4 = new sap.m.Button({
+            icon: "sap-icon://resize-horizontal",
+            tooltip: oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "161"),
+            busyIndicatorDelay: 1,
+            press: function(){
+                // //tree table 컬럼길이 재조정 처리.
+                oAPP.fn.setUiTableAutoResizeColumn(oAPP.ui.oTree);
+            }
+        });
+        oTool.addContent(oToolBtn4);
 
 
         //테스트모드 인경우 테스트 버튼 추가.
@@ -1044,7 +1070,9 @@ let oAPP = parent.oAPP,
         oAPP.ui.oSptMain = oSpt1;
 
         //좌측 페이지.
-        var oPageLeft = new sap.m.Page({showHeader:false});
+        var oPageLeft = new sap.m.Page({
+            showHeader:false
+        });
         oSpt1.addContentArea(oPageLeft);
 
 
@@ -1117,6 +1145,12 @@ let oAPP = parent.oAPP,
         // oAPP.ui.oSptLeft.addContentArea(oPageTree);
         oPageLeft.addContent(oPageTree);
 
+        //B22  Collapse
+        var l_txt1 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B22", "", "", "", "");
+
+
+        //139   추가속성적용
+        var l_txt2 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "139");
 
         //바인딩 추가속성 정보 페이지.
         var oPageAdit = new sap.m.Page({
@@ -1127,8 +1161,8 @@ let oAPP = parent.oAPP,
             customHeader : new sap.m.OverflowToolbar({
                 content:[                    
                     new sap.m.Button({
-                        text:"Collapse",       //$$OTR
-                        tooltip:"Collapse",    //$$OTR
+                        text:l_txt1,
+                        tooltip:l_txt1,
                         icon:"sap-icon://connected",
                         type:"Emphasized",
                         press: function(){
@@ -1142,8 +1176,8 @@ let oAPP = parent.oAPP,
                         }
                     }),
                     new sap.m.Button({
-                        text:"추가속성적용",       //$$OTR
-                        tooltip:"추가속성적용",    //$$OTR
+                        text:l_txt2,
+                        tooltip:l_txt2,
                         icon:"sap-icon://accept",
                         type:"Emphasized",
                         press: oAPP.fn.onAdditBind
@@ -1151,6 +1185,20 @@ let oAPP = parent.oAPP,
                     new sap.m.ObjectStatus({
                         title:"{/S_SEL_ATTR/OBJID}",
                         text:"{/S_SEL_ATTR/UIATT}"
+                    }),
+
+                    new sap.m.ToolbarSpacer(),
+                    
+                    //161	컬럼최적화
+                    //table autoresize.        
+                    new sap.m.Button({
+                        icon: "sap-icon://resize-horizontal",
+                        tooltip: oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "161"),
+                        busyIndicatorDelay: 1,
+                        press: function(){
+                            // //tree table 컬럼길이 재조정 처리.
+                            oAPP.fn.setUiTableAutoResizeColumn(oAPP.ui.oAdditTab);
+                        }
                     })
 
                 ]
@@ -1174,7 +1222,10 @@ let oAPP = parent.oAPP,
             width : "100%",
             rowHeight:35,
             // title:new sap.m.Label({text:l_txt, tooltip:l_txt}),            
-            rowSelectionChange: oAPP.fn.onSelTabRow
+            rowSelectionChange: oAPP.fn.onSelTabRow,
+            extension:[
+                oTool
+            ]
         });
         // oPageLeft.addContent(oAPP.ui.oTree);
         oPageTree.addContent(oAPP.ui.oTree);
@@ -1343,6 +1394,7 @@ let oAPP = parent.oAPP,
 
         //추가바인딩 속성의 Property 컬럼.
         var oTabCol1 = new sap.ui.table.Column({
+            autoResizable:true,
             label: new sap.m.Label({
                 text: l_txt,
                 tooltip: l_txt,
@@ -1359,6 +1411,7 @@ let oAPP = parent.oAPP,
 
         //추가바인딩 속성의 value 컬럼.
         var oTabCol2 = new sap.ui.table.Column({
+            autoResizable:true,
             label: new sap.m.Label({
                 text: l_txt,
                 tooltip: l_txt,
@@ -1510,16 +1563,25 @@ let oAPP = parent.oAPP,
 
             if(typeof _oModel?.oData?.T_MPROP === "undefined" || _oModel?.oData?.T_MPROP.length === 0){
 
-                //$$MSG
-                _sRes.RETCD = "E";            
-                _sRes.RTMSG = "바인딩 추가 속성 정보가 존재하지 않습니다.";
+                _sRes.RETCD = "E";
+
+                //133	바인딩 추가 속성 정보가 존재하지 않습니다.
+                var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "133");
+
+                _sRes.RTMSG = _msg;
 
                 var _sBindError = JSON.parse(JSON.stringify(oAPP.types.TY_BIND_ERROR));
             
                 _sBindError.ACTCD    = _ACTCD01;
                 _sBindError.TYPE     = "Error";
-                _sBindError.TITLE    = "바인딩 추가 속성 정보가 존재하지 않습니다.";             //$$MSG
-                _sBindError.DESC     = "관리자에게 문의 하십시오."; //$$MSG
+                
+                //133	바인딩 추가 속성 정보가 존재하지 않습니다.
+                _sBindError.TITLE    = _msg;
+
+                //131	관리자에게 문의 하십시오.
+                _sBindError.DESC     = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "131");
+
+                _sBindError.LK_VIS   = false;
 
                 _sRes.T_RTMSG.push(_sBindError);
 
@@ -1532,16 +1594,24 @@ let oAPP = parent.oAPP,
             
             //추가속성 정보 입력건 존재 여부 확인.
             if(_aMPROP.findIndex( item => item.val !== "") === -1){
-                //$$MSG
+
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "바인딩 추가 속성 정보 입력건이 존재하지 않습니다.";
+                
+                //134	바인딩 추가 속성 정보 입력건이 존재하지 않습니다.
+                var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "134");
+
+                _sRes.RTMSG = _msg;
 
                 var _sBindError = JSON.parse(JSON.stringify(oAPP.types.TY_BIND_ERROR));
             
                 _sBindError.ACTCD    = _ACTCD01;
                 _sBindError.TYPE     = "Error";
-                _sBindError.TITLE    = "바인딩 추가 속성 정보 입력건이 존재하지 않습니다.";             //$$MSG
-                _sBindError.DESC     = "바인딩 추가 속성 정보 입력건이 존재하지 않습니다."; //$$MSG
+
+                //134	바인딩 추가 속성 정보 입력건이 존재하지 않습니다.
+                _sBindError.TITLE    = _msg;
+                _sBindError.DESC     = _sBindError.TITLE;
+
+                _sBindError.LK_VIS   = false;
 
                 _sRes.T_RTMSG.push(_sBindError);
 
@@ -1556,16 +1626,25 @@ let oAPP = parent.oAPP,
             var ls_p04 = _aMPROP.find( a=> a.ITMCD === "P04");
             
             if(typeof ls_p04 === "undefined"){
-                //$$MSG
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "바인딩 추가 속성 정보 Bind type이 존재하지 않습니다.";
+
+                //135	바인딩 추가 속성 정보 Bind type이 존재하지 않습니다.
+                var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "135");
+
+                _sRes.RTMSG = _msg;
 
                 var _sBindError = JSON.parse(JSON.stringify(oAPP.types.TY_BIND_ERROR));
             
                 _sBindError.ACTCD    = _ACTCD01;
                 _sBindError.TYPE     = "Error";
-                _sBindError.TITLE    = "바인딩 추가 속성 정보 Bind type이 존재하지 않습니다.";             //$$MSG
-                _sBindError.DESC     = "관리자에게 문의 하십시오."; //$$MSG
+
+                //135	바인딩 추가 속성 정보 Bind type이 존재하지 않습니다.
+                _sBindError.TITLE    = _msg;
+
+                //131	관리자에게 문의 하십시오.
+                _sBindError.DESC     = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "131");
+
+                _sBindError.LK_VIS   = false;
 
                 _sRes.T_RTMSG.push(_sBindError);
 
@@ -1579,16 +1658,25 @@ let oAPP = parent.oAPP,
             var ls_p05 = _aMPROP.find( a=> a.ITMCD === "P05");
 
             if(typeof ls_p05 === "undefined"){
-                //$$MSG
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "바인딩 추가 속성 정보 Reference Field name이 존재하지 않습니다.";
+
+                //136	바인딩 추가 속성 정보 Reference Field name이 존재하지 않습니다.
+                var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "136");
+
+                _sRes.RTMSG = _msg;
 
                 var _sBindError = JSON.parse(JSON.stringify(oAPP.types.TY_BIND_ERROR));
             
                 _sBindError.ACTCD    = _ACTCD01;
                 _sBindError.TYPE     = "Error";
-                _sBindError.TITLE    = "바인딩 추가 속성 정보 Reference Field name이 존재하지 않습니다.";             //$$MSG
-                _sBindError.DESC     = "관리자에게 문의 하십시오."; //$$MSG
+
+                //136	바인딩 추가 속성 정보 Reference Field name이 존재하지 않습니다.
+                _sBindError.TITLE    = _msg;
+                
+                //131	관리자에게 문의 하십시오.
+                _sBindError.DESC     = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "131");
+
+                _sBindError.LK_VIS   = false;
 
                 _sRes.T_RTMSG.push(_sBindError);
 
@@ -1601,13 +1689,9 @@ let oAPP = parent.oAPP,
             //Bind type이 구성된경우 Reference Field name이 존재하지 않는다면.
             if(ls_p04.val !== "" && ls_p05.val === ""){
 
-                //$$MSG
-                var _msg = "If Bind type is selected, Reference Field name is required.";
+                //137	바인딩 유형을 선택한 경우 참조 필드 이름은 필수입니다.
+                var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "137");
 
-                // ls_p05.stat = "Error";
-                // ls_p05.statTxt = _msg;
-
-                //$$MSG
                 _sRes.RETCD = "E";
                 _sRes.RTMSG = _msg;
 
@@ -1616,8 +1700,12 @@ let oAPP = parent.oAPP,
                 _sBindError.ACTCD    = _ACTCD02;
                 _sBindError.LINE_KEY = ls_p05.ITMCD;
                 _sBindError.TYPE     = "Error";
-                _sBindError.TITLE    = _msg;             //$$MSG
-                _sBindError.DESC     = "Reference Field를 입력 하십시오."; //$$MSG
+
+                //137	바인딩 유형을 선택한 경우 참조 필드 이름은 필수입니다.
+                _sBindError.TITLE    = _msg;
+                
+                //105	Reference Field를 입력 하십시오.
+                _sBindError.DESC     = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "105");
 
                 _sRes.T_RTMSG.push(_sBindError);
 
@@ -1628,16 +1716,25 @@ let oAPP = parent.oAPP,
             var ls_p06 = _aMPROP.find( a=> a.ITMCD === "P06");
 
             if(typeof ls_p06 === "undefined"){
-                //$$MSG
+                
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "바인딩 추가 속성 정보 Conversion Routine이 존재하지 않습니다.";
+                //138	바인딩 추가 속성 정보 Conversion Routine이 존재하지 않습니다.
+                var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "138");
+
+                _sRes.RTMSG = _msg;
 
                 var _sBindError = JSON.parse(JSON.stringify(oAPP.types.TY_BIND_ERROR));
             
                 _sBindError.ACTCD    = _ACTCD01;
                 _sBindError.TYPE     = "Error";
-                _sBindError.TITLE    = "바인딩 추가 속성 정보 Conversion Routine이 존재하지 않습니다.";             //$$MSG
-                _sBindError.DESC     = "관리자에게 문의 하십시오."; //$$MSG
+
+                //138	바인딩 추가 속성 정보 Conversion Routine이 존재하지 않습니다.
+                _sBindError.TITLE    = _msg;
+                
+                //131	관리자에게 문의 하십시오.
+                _sBindError.DESC     = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "131");
+
+                _sBindError.LK_VIS   = false;
 
                 _sRes.T_RTMSG.push(_sBindError);
 
@@ -3909,6 +4006,22 @@ let oAPP = parent.oAPP,
     };
 
     
+    /*************************************************************
+     * @function - busy open이 될때까지 대기 처리.
+     *************************************************************/
+    oAPP.fn.waitBusyOpened = function(){
+
+        return new Promise((res)=>{
+                       
+            setTimeout(() => {
+                res();
+            }, 0);
+
+        });
+
+    };
+
+    
 /********************************************************************
  * ******************************************************************
  * ******************************************************************
@@ -3947,7 +4060,6 @@ let oAPP = parent.oAPP,
         oFormData.append("CLSNM", oAPP.attr.oAppInfo.CLSID);
         oFormData.append("APPID", oAPP.attr.oAppInfo.APPID);
 
-
         //바인딩 필드 정보 검색.
         sendAjax(oAPP.attr.servNm + "/getBindAttrData", oFormData, function (param) {
 
@@ -3956,7 +4068,8 @@ let oAPP = parent.oAPP,
             //오류가 발생한 경우.
             if(param.RETCD === "E"){
                 //오류 메시지 처리.
-                sap.m.MessageToast.show(param.RTMSG,{duration: 3000, at:"center center"});
+                sap.m.MessageToast.show(param.RTMSG,
+                    {duration: 3000, at:"center center", my:"center center"});
                 
                 //tree 정보 공백 처리.
                 l_model.oData.zTREE = [];
@@ -3999,8 +4112,10 @@ let oAPP = parent.oAPP,
                 //모델 정보 바인딩 처리.
                 l_model.refresh(true);
 
+                //265  Binding attributes does not exist.
                 // //바인딩 필드가 존재하지 않음 메시지 처리.
-                sap.m.MessageToast.show("Binding attributes dose not exist.", {duration: 3000, at:"center center"});
+                sap.m.MessageToast.show(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "265", "", "", "", ""), 
+                    {duration: 3000, at:"center center", my:"center center"});
 
                 oAPP.fn.setBusy(false);
 
@@ -4044,6 +4159,9 @@ let oAPP = parent.oAPP,
 
             // //tree table 컬럼길이 재조정 처리.
             // oAPP.fn.setTreeAutoResizeCol(500);
+
+            // //tree table 컬럼길이 재조정 처리.
+            oAPP.fn.setUiTableAutoResizeColumn(oAPP.ui.oTree);
 
             //모델 tree 첫번째 라인 선택 처리.
             oAPP.ui.oTree.setSelectedIndex(0);
@@ -4266,7 +4384,9 @@ let oAPP = parent.oAPP,
         }
 
         _sRes.RETCD  = "E";
-        _sRes.RTMSG  = "바인딩 추가속성 정보에 오류건이 존재합니다."; //$$MSG
+
+        //146	바인딩 추가속성 정보에 오류건이 존재합니다.
+        _sRes.RTMSG  = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "146");
         
         return _sRes;
 
@@ -4481,11 +4601,9 @@ let oAPP = parent.oAPP,
         oAPP.attr.oDesign.fn.setMPROP();
 
 
-        oAPP.fn.setBusy(false);
-
-        //$$MSG
-        sap.m.MessageToast.show("바인딩 추가 속성 정보 적용.", 
-            {duration: 3000, at:"center center"});
+        //090	바인딩 추가 속성 정보를 적용 했습니다.
+        sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "090"), 
+            {duration: 3000, at:"center center", my:"center center"});
 
     };
     

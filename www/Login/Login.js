@@ -2949,8 +2949,8 @@ let oAPP = (function () {
             // IPC 이벤트 핸들러
             _attachIPCEvents();
 
-            // Shortcut 설정
-            oAPP.fn.fnSetShortCut();
+            // // Shortcut 설정
+            // oAPP.fn.fnSetShortCut();
 
             // 개인화 폴더 체크 후 없으면 생성
             oAPP.fn.fnOnP13nFolderCreate();

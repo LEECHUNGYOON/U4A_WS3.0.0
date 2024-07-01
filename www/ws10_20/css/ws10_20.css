@@ -407,3 +407,22 @@ body,
 .u4aWsBrowserDraggable .sapMSlt {
   -webkit-app-region: no-drag;
 }
+
+
+/***************************************************
+ * [TEST] 미리 보기 영역 테두리 구분 표시 --- Start
+ ***************************************************/
+/* .u4aWsDesignPreview {
+  padding: 0.5rem;
+  border: 0.125rem solid;
+  border-style: dashed;
+}
+
+.u4aWsDesignPreview > section {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-bottom: 0.5rem;
+} */
+/***************************************************
+ * 미리 보기 영역 테두리 구분 표시 --- End
+ ***************************************************/

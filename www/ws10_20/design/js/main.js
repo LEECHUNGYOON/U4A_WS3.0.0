@@ -1451,17 +1451,17 @@
 
     //좌측 페이지(UI Design 영역)
     oAPP.attr.ui.oDesignTree = new sap.m.Page("designTree", {enableScrolling:false, showHeader:false,
-      layoutData:new sap.ui.layout.SplitterLayoutData({size:"25%", minSize:300})});
+      layoutData:new sap.ui.layout.SplitterLayoutData({size:"25%", minSize:300})}).addStyleClass("u4aWsDesignTree");
     // oSApp.addContentArea(oAPP.attr.ui.oDesignTree);
 
     //A67	Preview
     //가운데 페이지(미리보기 영역)
-    oAPP.attr.ui.oDesignPreview = new sap.m.Page("designPreview");
+    oAPP.attr.ui.oDesignPreview = new sap.m.Page("designPreview").addStyleClass("u4aWsDesignPreview");
     // oSApp.addContentArea(oAPP.attr.ui.oDesignPreview);
 
     //우측 페이지(attribute 영역)
     oAPP.attr.ui.oDesignAttr = new sap.f.DynamicPage("designAttr", {preserveHeaderStateOnScroll:false,
-      layoutData:new sap.ui.layout.SplitterLayoutData({size:"30%", minSize:300})});
+      layoutData:new sap.ui.layout.SplitterLayoutData({size:"30%", minSize:300})}).addStyleClass("u4aWsDesignAttr");
     // oSApp.addContentArea(oAPP.attr.ui.oDesignAttr);
 
 

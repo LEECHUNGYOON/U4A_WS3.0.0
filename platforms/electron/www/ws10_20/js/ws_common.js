@@ -410,10 +410,28 @@
 
                 e.stopImmediatePropagation();
 
-                var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
-                    bIsFull = oCurrWin.isFullScreen();
+                // var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
+                //     bIsFull = oCurrWin.isFullScreen();
 
-                oCurrWin.setFullScreen(!bIsFull);
+                // oCurrWin.setFullScreen(!bIsFull);
+
+                /***************************************
+                 * 2024-07-01 soccerhs
+                 ***************************************
+                 * ## F11 기능 변경
+                 * - 기존: 전체창(Kiosk) 모드
+                 * - 변경: 브라우저 전체창 모드
+                 ***************************************/
+                if(typeof sap === undefined){
+                    return;
+                }
+
+                let oMaxWinBtn = sap.ui.getCore().byId("maxWinBtn");
+                if(!oMaxWinBtn){
+                    return;
+                }
+
+                oMaxWinBtn.firePress();
 
             }
         }, {
@@ -674,10 +692,28 @@
 
                     e.stopImmediatePropagation();
 
-                    var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
-                        bIsFull = oCurrWin.isFullScreen();
+                    // var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
+                    //     bIsFull = oCurrWin.isFullScreen();
 
-                    oCurrWin.setFullScreen(!bIsFull);
+                    // oCurrWin.setFullScreen(!bIsFull);
+
+                    /***************************************
+                     * 2024-07-01 soccerhs
+                     ***************************************
+                    * ## F11 기능 변경
+                    * - 기존: 전체창(Kiosk) 모드
+                    * - 변경: 브라우저 전체창 모드
+                    ***************************************/
+                    if(typeof sap === undefined){
+                        return;
+                    }
+
+                    let oMaxWinBtn = sap.ui.getCore().byId("maxWinBtn");
+                    if(!oMaxWinBtn){
+                        return;
+                    }
+
+                    oMaxWinBtn.firePress();
 
                 }
             }, {
@@ -1140,10 +1176,28 @@
 
                     e.stopImmediatePropagation();
 
-                    var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
-                        bIsFull = oCurrWin.isFullScreen();
+                    // var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
+                    //     bIsFull = oCurrWin.isFullScreen();
 
-                    oCurrWin.setFullScreen(!bIsFull);
+                    // oCurrWin.setFullScreen(!bIsFull);
+
+                    /***************************************
+                     * 2024-07-01 soccerhs
+                     ***************************************
+                    * ## F11 기능 변경
+                    * - 기존: 전체창(Kiosk) 모드
+                    * - 변경: 브라우저 전체창 모드
+                    ***************************************/
+                    if(typeof sap === undefined){
+                        return;
+                    }
+
+                    let oMaxWinBtn = sap.ui.getCore().byId("maxWinBtn");
+                    if(!oMaxWinBtn){
+                        return;
+                    }
+
+                    oMaxWinBtn.firePress();
 
                 }
             },

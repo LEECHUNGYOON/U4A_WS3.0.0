@@ -5934,12 +5934,13 @@
 
           //모델 바인딩 필드 타입이 P타입이 아닌경우.
           if(IF_DATA.TYPE_KIND !== "P"){
-            //$$MSG
 
             var _sERMSG = JSON.parse(JSON.stringify(TY_ADDIT_MSG));
             
             _sERMSG.ITMCD = _sUA028.ITMCD;
-            _sERMSG.ERMSG = "Bind type은 ABAP TYPE이 P 유형만 가능합니다."; //$$MSG
+
+            //093	Bind type은 ABAP TYPE이 P 유형만 가능합니다.
+            _sERMSG.ERMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "093");
 
             _sRes.T_ERMSG.push(_sERMSG);
 
@@ -5978,9 +5979,10 @@
 
             var _sERMSG = JSON.parse(JSON.stringify(TY_ADDIT_MSG));
             
-            //$$MSG
             _sERMSG.ITMCD = _sUA028.ITMCD; 
-            _sERMSG.ERMSG = "ABAP TYPE CHAR, STRING은 Nozero를 설정할 수 없습니다.";
+
+            //095	ABAP TYPE CHAR, STRING은 Nozero를 설정할 수 없습니다.
+            _sERMSG.ERMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "095");
 
             _sRes.T_ERMSG.push(_sERMSG);
 
@@ -5996,9 +5998,10 @@
 
             var _sERMSG = JSON.parse(JSON.stringify(TY_ADDIT_MSG));
             
-            //$$MSG
             _sERMSG.ITMCD = _sUA028.ITMCD; 
-            _sERMSG.ERMSG = "Is number format은 ABAP TYPE INT, P만 사용할 수 있습니다.";
+
+            //097	Is number format은 ABAP TYPE INT, P만 사용할 수 있습니다.
+            _sERMSG.ERMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "097");
 
             _sRes.T_ERMSG.push(_sERMSG);
 
@@ -6016,7 +6019,9 @@
     //오류 메시지가 존재하는경우.
     if(_sRes.T_ERMSG.length > 0){
       _sRes.RETCD = "E";
-      _sRes.RTMSG = "바인딩 추가속성 정보에 오류건이 존재합니다."; //$$msg
+
+      //146	바인딩 추가속성 정보에 오류건이 존재합니다.
+      _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "146");
       
       return _sRes;
 

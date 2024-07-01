@@ -481,6 +481,13 @@ let oAPP = parent.oAPP;
         aFilter.push(new sap.ui.model.Filter({path:"EVTXT", operator:"Contains", value1:sValue}));
         aFilter.push(new sap.ui.model.Filter({path:"UIATT", operator:"Contains", value1:sValue}));
         aFilter.push(new sap.ui.model.Filter({path:"OBJID", operator:"Contains", value1:sValue}));                     
+        
+        // let sOper = "NotContains";
+
+        // aFilter.push(new sap.ui.model.Filter({path:"UIATV", operator:sOper, value1:sValue}));
+        // aFilter.push(new sap.ui.model.Filter({path:"EVTXT", operator:sOper, value1:sValue}));
+        // aFilter.push(new sap.ui.model.Filter({path:"UIATT", operator:sOper, value1:sValue}));
+        // aFilter.push(new sap.ui.model.Filter({path:"OBJID", operator:sOper, value1:sValue})); 
 
         oBindInfo.filter([new sap.ui.model.Filter(aFilter, false)]);
 

@@ -165,13 +165,9 @@ function designControl(oArea){
             }
 
 
-            //$$MSG
-            var _msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "999", "", "", "", "");
+            //089	바인딩 추가 속성 정보를 적용하시겠습니까?
+            var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "089");
 
-            //$$MSG
-            if(typeof _msg === "undefined"){
-                _msg = "바인딩 추가 속성 정보를 적용하시겠습니까?";
-            }
 
             oAPP.fn.setBusy(false);
             
@@ -202,9 +198,9 @@ function designControl(oArea){
 
             oAPP.fn.setBusy(false);
 
-            //$$MSG
-            sap.m.MessageToast.show("바인딩 추가 속성 정보를 적용 했습니다.", 
-                {duration: 3000, at:"center center"});
+            //090	바인딩 추가 속성 정보를 적용 했습니다.
+            sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "090"), 
+                {duration: 3000, at:"center center", my:"center center"});
 
         };
 
@@ -341,7 +337,9 @@ function designControl(oArea){
             if(is_attr.DATYP !== "02"){
 
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "Property 라인만 추가속성 정보를 적용할 수 있습니다."; //$$MSG
+
+                //148	Property 라인만 추가속성 정보를 적용할 수 있습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "148");
 
                 return _sRes;
             }
@@ -351,7 +349,8 @@ function designControl(oArea){
             if(is_attr.UIATY !== "1"){
 
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "Property 라인만 추가속성 정보를 적용할 수 있습니다."; //$$MSG
+                //148	Property 라인만 추가속성 정보를 적용할 수 있습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "148");
 
                 return _sRes;
 
@@ -361,7 +360,9 @@ function designControl(oArea){
             //바인딩 처리가 안된경우 추가속성 바인딩 불가능.
             if(is_attr.UIATV === "" || is_attr.ISBND === ""){
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "바인딩 정보가 존재하지 않아 추가속성 정보를 적용할 수 없습니다."; //$$MSG
+
+                //149	바인딩 정보가 존재하지 않아 추가속성 정보를 적용할 수 없습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "149");
 
                 return _sRes;
             }
@@ -393,7 +394,9 @@ function designControl(oArea){
             //필드 정보를 찾을 수 없는경우.
             if(typeof _sField === "undefined"){
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = `${modelField} 필드가 모델 항목에 존재하지 않습니다.`; //$$MSG
+
+                //150	&1 필드가 모델 항목에 존재하지 않습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "150", modelField);
 
                 return _sRes;
 
@@ -403,7 +406,8 @@ function designControl(oArea){
             //일반 필드가 아닌경우 EXIT.
             if(_sField.KIND !== "E"){
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = `기본유형의 ABAP TYPE(CHAR, STRING, NUMC, DATE, TIME, INT, P)만 바인딩 추가 속성 정보를 적용할 수 있습니다.`; //$$MSG
+                //151	일반유형의 ABAP TYPE(CHAR, STRING, NUMC, DATE, TIME, INT, P)만 바인딩 추가 속성 정보를 적용할 수 있습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "151");
 
                 return _sRes;
 
@@ -418,7 +422,8 @@ function designControl(oArea){
             if(typeof _sP04 === "undefined"){
 
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "Bind type 정보를 찾을 수 없습니다."; //$$MSG
+                //092	Bind type 정보를 찾을 수 없습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "092");
 
                 return _sRes;
 
@@ -429,7 +434,8 @@ function designControl(oArea){
             if(_sP04.val !== "" && _sField.TYPE_KIND !== "P"){
 
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "Bind type은 ABAP TYPE이 P 유형만 가능합니다."; //$$MSG
+                //093	Bind type은 ABAP TYPE이 P 유형만 가능합니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "093");
 
                 return _sRes;
 
@@ -442,7 +448,8 @@ function designControl(oArea){
             if(typeof _sP05 === "undefined"){
 
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "Reference Field name 정보를 찾을 수 없습니다."; //$$MSG
+                //136	바인딩 추가 속성 정보 Reference Field name이 존재하지 않습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "136");
 
                 return _sRes;
 
@@ -455,7 +462,9 @@ function designControl(oArea){
                 //참조필드의 부모 path와 바인딩 필드의 부모 path가 다른경우.
                 if(_sP05.val.substr(0, _sP05.val.lastIndexOf("-")) !== _sField.CHILD.substr(0, _sField.CHILD.lastIndexOf("-"))){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "바인딩 필드와 참조필드의 부모 모델 path가 다릅니다."; //$$MSG
+
+                    //152	바인딩 필드와 참조필드의 부모 모델 path가 다릅니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "152");
 
                     return _sRes;
 
@@ -471,7 +480,8 @@ function designControl(oArea){
             if(typeof _sP07 === "undefined"){
 
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "Nozero 정보를 찾을 수 없습니다."; //$$MSG
+                //094	Nozero 정보를 찾을 수 없습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "094");
 
                 return _sRes;
 
@@ -485,7 +495,8 @@ function designControl(oArea){
             if(_sP07.val === "true" && l_nozero.indexOf(_sField.TYPE_KIND) !== -1 ){
 
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "ABAP TYPE CHAR, STRING은 Nozero를 설정할 수 없습니다."; //$$MSG
+                //095	ABAP TYPE CHAR, STRING은 Nozero를 설정할 수 없습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "095");
 
                 return _sRes;
 
@@ -498,7 +509,8 @@ function designControl(oArea){
             if(typeof _sP08 === "undefined"){
 
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "Is number format 정보를 찾을 수 없습니다."; //$$MSG
+                //096	Is number format 정보를 찾을 수 없습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "096");
 
                 return _sRes;
 
@@ -512,7 +524,8 @@ function designControl(oArea){
             if(_sP08.val === "true" && l_numfmt.indexOf(_sField.TYPE_KIND) === -1 ){
 
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "Is number format은 ABAP TYPE INT, P만 사용할 수 있습니다."; //$$MSG
+                //097	Is number format은 ABAP TYPE INT, P만 사용할 수 있습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "097");
 
                 return _sRes;
 
@@ -917,6 +930,13 @@ function designView(oArea, oTable){
         let oContr = await designControl(oArea);
 
 
+        //098	추가 속성 바인딩
+        var _txt1 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "098");
+
+
+        //161	컬럼최적화
+        var _txt2 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "161");
+
         //바인딩 추가속성 정보 table.
         var oTab = new sap.ui.table.Table({
             selectionMode: "None",
@@ -939,14 +959,27 @@ function designView(oArea, oTable){
             new sap.m.OverflowToolbar({
                 content:[
                     new sap.m.Button({
-                        text:"추가 속성 바인딩",    //$$OTR
+                        text:_txt1,     //098	추가 속성 바인딩
+                        tooltip: _txt1, //098	추가 속성 바인딩
                         icon:"sap-icon://multiselect-all",
                         type:"Emphasized",
                         enabled: "{/edit_additbind}",
                         press: oContr.fn.onMultiAdditionalBind
-                    }).addStyleClass("sapUiTinyMarginEnd")
+                    }).addStyleClass("sapUiTinyMarginEnd"),
+
+                    new sap.m.ToolbarSpacer(),
+
+                    new sap.m.Button({
+                        icon: "sap-icon://resize-horizontal",
+                        tooltip: _txt2,    //161	컬럼최적화
+                        busyIndicatorDelay: 1,
+                        press: function(){
+                            //tree table 컬럼길이 재조정 처리.
+                            oAPP.fn.setUiTableAutoResizeColumn(oContr.ui.ROOT);
+                        }
+                    })
                 ]
-            })  
+            })
         );
 
 
@@ -961,6 +994,7 @@ function designView(oArea, oTable){
 
         //추가바인딩 속성의 Property 컬럼.
         var oTabCol1 = new sap.ui.table.Column({
+            autoResizable:true,
             label: new sap.m.Label({
                 text: l_txt,
                 tooltip: l_txt,
@@ -977,6 +1011,7 @@ function designView(oArea, oTable){
 
         //추가바인딩 속성의 value 컬럼.
         var oTabCol2 = new sap.ui.table.Column({
+            autoResizable:true,
             label: new sap.m.Label({
                 text: l_txt,
                 tooltip: l_txt,
