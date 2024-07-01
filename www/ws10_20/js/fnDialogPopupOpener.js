@@ -13,7 +13,6 @@
         APP = parent.APP,
         APPPATH = parent.APPPATH,
         REMOTE = parent.REMOTE,
-        SCREEN = parent.SCREEN,
         USERDATA = parent.USERDATA,
         REMOTEMAIN = parent.REMOTEMAIN,
         CURRWIN = REMOTE.getCurrentWindow(),
@@ -460,171 +459,31 @@
     /************************************************************************
      * 부모 윈도우 위치의 가운데 배치한다.
      ************************************************************************/
-    oAPP.fn.setParentCenterBounds = (oChildWinow, oBrowserOptions) => {
+    oAPP.fn.setParentCenterBounds = (oBrowserWindow, oBrowserOptions) => {
 
-        var oMainWindow = REMOTE.getCurrentWindow();
+        let oCurrWin = REMOTE.getCurrentWindow();
 
-        // 부모 창의 위치와 크기 가져오기
-        const [parentX, parentY] = oMainWindow.getPosition();
-        const [parentWidth, parentHeight] = oMainWindow.getSize();
+        // 팝업 위치를 부모 위치에 배치시킨다.
+        var oParentBounds = oCurrWin.getBounds(),
+            xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
+            yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
+            oWinScreen = window.screen,
+            iAvailLeft = oWinScreen.availLeft;
 
-        // 부모 창의 중앙 위치
-        const parentCenterX = parentX + parentWidth / 2;
-        const parentCenterY = parentY + parentHeight / 2;
-
-        // 부모 창이 위치한 디스플레이들을 찾기
-        const displays = SCREEN.getAllDisplays();
-        let displayA, displayB;
-        for (const display of displays) {
-            const { x, y, width, height } = display.workArea;
-            if (parentCenterX >= x && parentCenterX < x + width && parentCenterY >= y && parentCenterY < y + height) {
-                if (!displayA) {
-                    displayA = display;
-                } else {
-                    displayB = display;
-                    break;
-                }
-            }
+        if (xPos < iAvailLeft) {
+            xPos = iAvailLeft;
         }
 
-        // // 디스플레이 배율 가져오기
-        // const scaleFactorA = displayA ? displayA.scaleFactor : 1;
-        // const scaleFactorB = displayB ? displayB.scaleFactor : 1;
-
-        // 자식 창의 크기 설정
-        const childWidth = oBrowserOptions.width;
-        const childHeight = oBrowserOptions.height;
-
-        // 자식 창의 위치를 부모 창의 가운데로 설정, 배율을 고려하여 계산
-        let childX = Math.round(parentX + (parentWidth - childWidth) / 2);
-        let childY = Math.round(parentY + (parentHeight - childHeight) / 2);
-
-        // 자식 창의 위치를 디스플레이 작업 영역 안에 있도록 조정
-        if (displayA) {
-            const { x: displayAX, y: displayAY, width: displayAWidth, height: displayAHeight } = displayA.workArea;
-            if (childX < displayAX) childX = displayAX;
-            if (childY < displayAY) childY = displayAY;
-            if (childX + childWidth > displayAX + displayAWidth) childX = displayAX + displayAWidth - childWidth;
-            if (childY + childHeight > displayAY + displayAHeight) childY = displayAY + displayAHeight - childHeight;
+        if (oParentBounds.y > yPos) {
+            yPos = oParentBounds.y + 10;
         }
 
-        if (displayB) {
-            const { x: displayBX, y: displayBY, width: displayBWidth, height: displayBHeight } = displayB.workArea;
-            if (childX < displayBX) childX = displayBX;
-            if (childY < displayBY) childY = displayBY;
-            if (childX + childWidth > displayBX + displayBWidth) childX = displayBX + displayBWidth - childWidth;
-            if (childY + childHeight > displayBY + displayBHeight) childY = displayBY + displayBHeight - childHeight;
-        }
-
-        let oBounds = {
-            width: childWidth,
-            height: childHeight,
-            x: childX,
-            y: childY,    
-        }
-
-        oChildWinow.setBounds(oBounds);
-
-
-
-
-
-        // // test --------- start
-        // if (!APP.isPackaged) {
-        //     oAPP.fn.fnTestBound(oBrowserWindow, oBrowserOptions);
-        //     return;
-        // }
-        // // test --------- end
-
-        // // 팝업 위치를 부모 위치에 배치시킨다.
-        // var oParentBounds = oCurrWin.getBounds(),
-        //     xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-        //     yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-        //     oWinScreen = window.screen,
-        //     iAvailLeft = oWinScreen.availLeft;
-
-        // if (xPos < iAvailLeft) {
-        //     xPos = iAvailLeft;
-        // }
-
-        // if (oParentBounds.y > yPos) {
-        //     yPos = oParentBounds.y + 10;
-        // }
-
-        // oBrowserWindow.setBounds({
-        //     x: xPos,
-        //     y: yPos
-        // });
+        oBrowserWindow.setBounds({
+            x: xPos,
+            y: yPos
+        });
 
     }; // end of oAPP.fn.setParentCenterBounds
-
-
-    // oAPP.fn.fnTestBound = function(oChildWinow, oBrowserOptions){
-        
-    //     var oMainWindow = REMOTE.getCurrentWindow();
-
-    //     // 부모 창의 위치와 크기 가져오기
-    //     const [parentX, parentY] = oMainWindow.getPosition();
-    //     const [parentWidth, parentHeight] = oMainWindow.getSize();
-
-    //     // 부모 창의 중앙 위치
-    //     const parentCenterX = parentX + parentWidth / 2;
-    //     const parentCenterY = parentY + parentHeight / 2;
-
-    //     // 부모 창이 위치한 디스플레이들을 찾기
-    //     const displays = SCREEN.getAllDisplays();
-    //     let displayA, displayB;
-    //     for (const display of displays) {
-    //         const { x, y, width, height } = display.workArea;
-    //         if (parentCenterX >= x && parentCenterX < x + width && parentCenterY >= y && parentCenterY < y + height) {
-    //             if (!displayA) {
-    //                 displayA = display;
-    //             } else {
-    //                 displayB = display;
-    //                 break;
-    //             }
-    //         }
-    //     }
-
-    //     // // 디스플레이 배율 가져오기
-    //     // const scaleFactorA = displayA ? displayA.scaleFactor : 1;
-    //     // const scaleFactorB = displayB ? displayB.scaleFactor : 1;
-
-    //     // 자식 창의 크기 설정
-    //     const childWidth = oBrowserOptions.width;
-    //     const childHeight = oBrowserOptions.height;
-
-    //     // 자식 창의 위치를 부모 창의 가운데로 설정, 배율을 고려하여 계산
-    //     let childX = Math.round(parentX + (parentWidth - childWidth) / 2);
-    //     let childY = Math.round(parentY + (parentHeight - childHeight) / 2);
-
-    //     // 자식 창의 위치를 디스플레이 작업 영역 안에 있도록 조정
-    //     if (displayA) {
-    //         const { x: displayAX, y: displayAY, width: displayAWidth, height: displayAHeight } = displayA.workArea;
-    //         if (childX < displayAX) childX = displayAX;
-    //         if (childY < displayAY) childY = displayAY;
-    //         if (childX + childWidth > displayAX + displayAWidth) childX = displayAX + displayAWidth - childWidth;
-    //         if (childY + childHeight > displayAY + displayAHeight) childY = displayAY + displayAHeight - childHeight;
-    //     }
-
-    //     if (displayB) {
-    //         const { x: displayBX, y: displayBY, width: displayBWidth, height: displayBHeight } = displayB.workArea;
-    //         if (childX < displayBX) childX = displayBX;
-    //         if (childY < displayBY) childY = displayBY;
-    //         if (childX + childWidth > displayBX + displayBWidth) childX = displayBX + displayBWidth - childWidth;
-    //         if (childY + childHeight > displayBY + displayBHeight) childY = displayBY + displayBHeight - childHeight;
-    //     }
-
-    //     let oBounds = {
-    //         width: childWidth,
-    //         height: childHeight,
-    //         x: childX,
-    //         y: childY,    
-    //     }
-
-    //     oChildWinow.setBounds(oBounds);
-        
-    // };
 
     /************************************************************************
      * Text 검색 팝업 (electron 기능)

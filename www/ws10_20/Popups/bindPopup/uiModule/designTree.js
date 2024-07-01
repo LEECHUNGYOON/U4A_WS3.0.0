@@ -681,24 +681,26 @@ function designControl(oArea){
             /*******************************************************
             * @function - drag 데이터 점검.
             *******************************************************/
-            function _checkDragData(){
+            function _checkDragData(oData){
 
                 let _sRes = {RETCD:"", RTMSG:"", IF_DATA:{}};
                     
-                var _oData = event.dataTransfer.getData("prc001");
 
-                if(typeof _oData === "undefined" || _oData === "" || _oData === null){
+                if(typeof oData === "undefined" || oData === "" || oData === null){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "Drag 정보가 존재하지 않습니다."; //$$MSG
+                    //099	Drag 정보가 존재하지 않습니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "099");
                     return _sRes;
                 }
 
                 try {
-                    var _sBindData = JSON.parse(_oData);    
+                    var _sBindData = JSON.parse(oData);    
                 } catch (error) {
                     //메시지 처리.                    
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "잘못된 Drag 정보 입니다.";   //$$MSG
+
+                    //100	잘못된 Drag 정보 입니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "100");
                     return _sRes;
                 }
 
@@ -706,7 +708,8 @@ function designControl(oArea){
                 //바인딩 데이터 D&D건이 아닌경우.
                 if(_sBindData.PRCCD !==  "PRC001"){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "해당 작업을 수행할 수 없습니다.";    //$$MSG
+                    //101	해당 작업을 수행할 수 없습니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "101");
                     return _sRes;
                 }
 
@@ -714,7 +717,8 @@ function designControl(oArea){
                 //다른 영역에서 D&D한 데이터 인경우.
                 if(oAPP.attr.DnDRandKey !== _sBindData.DnDRandKey){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "다른 영역에서의 Drag 정보는 처리할 수 없습니다.";    //$$MSG
+                    //102	다른 영역에서의 Drag 정보는 처리할 수 없습니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "102");
                     return _sRes;
                 }
 
@@ -855,38 +859,44 @@ function designControl(oArea){
 
                 //DESIGN TREE에서 DRAG한 구조가 아닌경우.
                 if(typeof sDragData.RETCD === "undefined"){
-                    _sRes.RETCD = "E";
-                    _sRes.RTMSG = "잘못된 drag 정보 입니다.";   //$$MSG
+                    _sRes.RETCD = "E";                    
+                    //100	잘못된 Drag 정보 입니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "100");
                     return _sRes;
                 }
 
                 if(typeof sDragData.RTMSG === "undefined"){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "잘못된 drag 정보 입니다.";   //$$MSG
+                    //100	잘못된 Drag 정보 입니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "100");
                     return _sRes;
                 }
 
                 if(typeof sDragData.DnDRandKey === "undefined"){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "잘못된 drag 정보 입니다.";   //$$MSG
+                    //100	잘못된 Drag 정보 입니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "100");
                     return _sRes;
                 }
 
                 if(typeof sDragData.T_0014 === "undefined"){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "잘못된 drag 정보 입니다.";   //$$MSG
+                    //100	잘못된 Drag 정보 입니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "100");
                     return _sRes;
                 }
 
                 if(typeof sDragData.T_0015 === "undefined"){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "잘못된 drag 정보 입니다.";   //$$MSG
+                    //100	잘못된 Drag 정보 입니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "100");
                     return _sRes;
                 }
 
                 if(typeof sDragData.T_CEVT === "undefined"){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "잘못된 drag 정보 입니다.";   //$$MSG
+                    //100	잘못된 Drag 정보 입니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "100");
                     return _sRes;
                 }
 
@@ -903,7 +913,9 @@ function designControl(oArea){
                 //drag한 UI 정보가 존재하지 않는경우.
                 if(sDragData.T_0014.length === 0){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "drag한 UI 정보가 존재하지 않습니다.";   //$$MSG
+
+                    //103	Drag한 UI 정보가 존재하지 않습니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "103");
                     return _sRes;
                 }
 
@@ -911,7 +923,8 @@ function designControl(oArea){
                 //다른 영역에서 DRAG한 정보인경우.
                 if(sDragData.DnDRandKey !== oAPP.attr.DnDRandKey){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "같은 세션에서만 D&D처리를 할 수 있습니다.";   //$$MSG
+                    //104	같은 세션에서만 D&D처리를 할 수 있습니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "104");
                     return _sRes;
                 }
 
@@ -1018,31 +1031,60 @@ function designControl(oArea){
          *************************************************************/
         oContr.fn.onDropBindField = async function(oEvent){
 
-            //WS20에서 DRAG한 데이터 처리건인경우.
-            if(oContr.fn.onDropDesignArea() === true){
+            //drag 정보 얻기.(바인딩 팝업의 drag정보)
+            var _prc001 = event.dataTransfer.getData("prc001");
 
+            //drag 정보 얻기.(WS20 디자인 영역의 DRAG 정보.)
+            var _prc002 = event.dataTransfer.getData("prc002");
+
+            //drop한 위치의 UI 정보 얻기.
+            var _oDrop = oEvent.getParameter("droppedControl");
+
+
+            oAPP.fn.setBusy(true);
+
+
+            //busy가 open 될때까지 대기 처리.
+            await oAPP.fn.waitBusyOpened();
+
+
+            //현재 편집상태가 아닌경우.
+            if(oAPP.attr.oAppInfo.IS_EDIT === ""){
+
+                oAPP.fn.setBusy(false);
+
+                return;
+            }
+
+
+            //WS20에서 DRAG한 데이터 처리건인경우.
+            if(oContr.fn.dropDesignArea(_prc002) === true){
+                
                 //drop 영역 초기화.
                 this.setTargetAggregation("rows");
+
+                oAPP.fn.setBusy(false);
 
                 return;
             }
 
 
             //DRAG 데이터 정합성 점검.
-            var _sRes = _checkDragData();
+            var _sRes = _checkDragData(_prc001);
 
             //DRAG 데이터 오류건이 존재하는경우.
             if(_sRes.RETCD === "E"){
                 sap.m.MessageToast.show(_sRes.RTMSG, 
-                    {duration: 3000, at:"center center"});
+                    {duration: 3000, at:"center center", my:"center center"});
                 
                 //drop 영역 초기화.
                 this.setTargetAggregation("rows");
 
+                oAPP.fn.setBusy(false);
+
                 return;
             }
 
-            var _oDrop = oEvent.getParameter("droppedControl");
 
             //Drop 위치의 tree 데이터 얻기.
             var _sDrop = _getContextData(_oDrop);
@@ -1051,6 +1093,8 @@ function designControl(oArea){
 
                 //drop 영역 초기화.
                 this.setTargetAggregation("rows");
+
+                oAPP.fn.setBusy(false);
 
                 return;
             }
@@ -1076,10 +1120,13 @@ function designControl(oArea){
             _refreshAdditBindInfo();
 
 
+            //모델 갱신 처리.            
             oContr.oModel.refresh(true);
+            
 
             //drop 영역 초기화.
             this.setTargetAggregation("rows");
+
 
         };
 
@@ -1088,38 +1135,25 @@ function designControl(oArea){
         /*************************************************************
          * @event - design 영역에 데이터 DROP 이벤트.
          *************************************************************/
-        oContr.fn.onDropDesignArea = function(){
-
-            oAPP.fn.setBusy(true);
+        oContr.fn.dropDesignArea = function(oData){
 
             //현재 편집상태가 아닌경우.
             if(oAPP.attr.oAppInfo.IS_EDIT === ""){
-                
-                oAPP.fn.setBusy(false);
-
                 return false;
             }
 
-            //drag 정보 얻기.
-            var l_json = event.dataTransfer.getData("prc002");
 
             //drag 한 정보가 존재하지 않는경우.
-            if(typeof l_json === "undefined" || l_json === null || l_json === ""){
-
-                oAPP.fn.setBusy(false);
-
+            if(typeof oData === "undefined" || oData === null || oData === ""){
                 return false;
             }
 
 
             try {
                 //drag 데이터 json parse.
-                var _sDragData = JSON.parse(l_json);
+                var _sDragData = JSON.parse(oData);
                 
             } catch (error) {
-
-                oAPP.fn.setBusy(false);
-
                 return false;
             }
 
@@ -1175,9 +1209,7 @@ function designControl(oArea){
 
             //바인딩 추가 속성 정보 모델 갱신 처리.
             oAPP.attr.oAddit.oModel.refresh();
-
-
-            oAPP.fn.setBusy(false);
+            
 
             return true;
 
@@ -1206,11 +1238,6 @@ function designControl(oArea){
             //263	Do you want to continue unbind?
             var _msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "263", "", "", "", "");
 
-            //$$MSG
-            if(typeof _msg === "undefined"){
-                _msg = "Do you want to continue unbind?";
-            }
-            
             let _actcd = await new Promise((resolve) => {
                 sap.m.MessageBox.confirm(_msg, {
                     onClose: (actcd) => {
@@ -1223,6 +1250,7 @@ function designControl(oArea){
                 return;
             }
 
+            oAPP.fn.setBusy(true);
 
             //오류 표현 초기화 처리.
             oContr.fn.resetErrorField();
@@ -1255,8 +1283,8 @@ function designControl(oArea){
                     break;
             }
 
+            //모델 갱신 처리.
             oContr.oModel.refresh(true);
-
 
             //참조 필드 DDLB 리스트 구성
             oAPP.attr.oAddit.fn.setRefFieldList();
@@ -1274,8 +1302,8 @@ function designControl(oArea){
             await parent.require("./modelFieldArea/bindPossible.js")(_sTree);
 
 
-            //$$MSG
-            sap.m.MessageToast.show("Unbinding 처리 완료", 
+            //153	바인딩 해제 처리를 완료 했습니다.
+            sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "153"), 
                 {my:"center center", at:"center center"});
 
         };
@@ -1361,7 +1389,7 @@ function designControl(oArea){
 
                 oContr.oModel.refresh();
 
-                sap.m.MessageToast.show(_sRes.RTMSG, {duration: 3000, at:"center center"});
+                sap.m.MessageToast.show(_sRes.RTMSG, {duration: 3000, at:"center center", my: "center center"});
                 oAPP.fn.setBusy(false);
                 
                 return;
@@ -1374,8 +1402,9 @@ function designControl(oArea){
             var _oUi = oAPP.attr.prev[_sTree.OBJID];
 
             if(typeof _oUi === "undefined" || typeof _oUi._T_0015 === "undefined"){
-                //$$MSG
-                sap.m.MessageToast.show(`${_sTree.OBJID} UI 정보를 찾을 수 없습니다.`, {duration: 3000, at:"center center"});
+                //106	&1 UI 정보를 찾을 수 없습니다.                
+                sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "106", _sTree.OBJID), 
+                    {duration: 3000, at:"center center", my: "center center"});
                 oAPP.fn.setBusy(false);
                 return;
             }
@@ -1400,24 +1429,19 @@ function designControl(oArea){
                 _showBindAdditInfo(_sTree);
 
 
-                //$$MSG
-                sap.m.MessageToast.show("바인딩 추가 속성 정보 적용.", {duration: 3000, at:"center center"});
+                //154	바인딩 추가 속성 정보를 적용 했습니다.
+                sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "154"), 
+                    {duration: 3000, at:"center center", my:"center center"});
 
                 oContr.oModel.refresh(true);
 
-                oAPP.fn.setBusy(false);
                 return;
 
             }
 
 
-            //$$MSG
-            var _msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "999", "", "", "", "");
-
-            //$$MSG
-            if(typeof _msg === "undefined"){
-                _msg = "바인딩 추가 속성 정보를 적용하시겠습니까?";
-            }
+            //089	바인딩 추가 속성 정보를 적용하시겠습니까?
+            var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "089");
 
             oAPP.fn.setBusy(false);
             
@@ -1433,6 +1457,8 @@ function designControl(oArea){
                 return;
             }
 
+            oAPP.fn.setBusy(true);
+
             _sTree.MPROP = oAPP.fn.setAdditBindData(oAPP.attr.oAddit.oModel.oData.T_MPROP);
 
 
@@ -1445,8 +1471,9 @@ function designControl(oArea){
             }
 
 
-            //$$MSG
-            sap.m.MessageToast.show("바인딩 추가 속성 정보 적용.", {duration: 3000, at:"center center"});
+            //154	바인딩 추가 속성 정보를 적용 했습니다.
+            sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "154"),
+                {duration: 3000, at:"center center", my:"center center"});
 
 
             //바인딩 추가 속성 정보 갱신 처리.
@@ -1455,7 +1482,6 @@ function designControl(oArea){
 
             oContr.oModel.refresh(true);
 
-            oAPP.fn.setBusy(false);
 
         };
 
@@ -1602,13 +1628,8 @@ function designControl(oArea){
         /*************************************************************
          * @event - 바인딩 데이터 변경시 메인에 해당 내용 전달 처리 이벤트.
          *************************************************************/
-        oContr.fn.onModelDataChanged = function(oEvent){
+        oContr.fn.onModelDataChanged = async function(oEvent){
             
-            oAPP.fn.setBusy(true);
-
-            // //바인딩 팝업에서 구성한 바인딩정보(T_0014, T_0015 정보) 호출처에 전달.
-            // parent.require("./designArea/sendAppData.js")();
-
             //바인딩 팝업에서 구성한 바인딩정보(T_0014, T_0015 정보) 호출처에 전달.
             parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("UPDATE-DESIGN-DATA");
 
@@ -1643,11 +1664,6 @@ function designControl(oArea){
 
             //263	Do you want to continue unbind?
             var _msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "263", "", "", "", "");
-
-            //$$MSG
-            if(typeof _msg === "undefined"){
-                _msg = "Do you want to continue unbind?";
-            }
 
             oAPP.fn.setBusy(false);
             
@@ -1730,10 +1746,9 @@ function designControl(oArea){
             //모델 필드의 바인딩 가능 여부 설정.
             await parent.require("./modelFieldArea/bindPossible.js")(_sTree);
 
-            oAPP.fn.setBusy(false);
 
-            //$$MSG
-            sap.m.MessageToast.show("Multi unbinding 처리 완료", 
+            //155	멀티 바인딩 해제 처리를 완료 했습니다.
+            sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "155"), 
                 {my:"center center", at:"center center"});
 
         };
@@ -1812,8 +1827,8 @@ return;
             var _aTree = oAPP.attr.oDesign.fn.getSelectedDesignTree();
 
 
-            //default 메시지.
-            var l_msg = "멀티 바인딩 처리를 진행 하시겠습니까?"; //$$MSG.
+            //156	멀티 바인딩 처리를 진행 하시겠습니까?
+            var l_msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "156");
 
             
             //기존 aggr에 이미 바인딩이 걸린건이 존재하는경우.
@@ -1825,11 +1840,6 @@ return;
                 //123	Do you want to continue?
                 l_msg += oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "123", "", "", "", "");
 
-                //$$MSG
-                if(oAPP.APP.isPackaged === false){
-                    l_msg = `Change the model, the binding that exists in the child is initialized.\n` +
-                        `Do you want to continue?`;
-                }
 
             }
 
@@ -1903,12 +1913,8 @@ return;
 
             oContr.oModel.refresh(true);
 
-            oAPP.fn.setBusy(false);
-
-
-
-            //$$MSG
-            sap.m.MessageToast.show("Multi binding 처리 완료", 
+            //157	멀티 바인딩 처리를 완료 했습니다.
+            sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "157"), 
                 {my:"center center", at:"center center"});
 
         };
@@ -1942,9 +1948,9 @@ return;
 
                 oAPP.fn.setBusy(false);
 
-                //$$MSG
-                sap.m.MessageToast.show("1건의 라인만 선택 하십시오.", 
-                    {duration: 3000, at:"center center"});
+                //107	1건의 라인만 선택 하십시오.
+                sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "107"), 
+                    {duration: 3000, at:"center center", my: "center center"});
 
                 return;
 
@@ -1957,9 +1963,9 @@ return;
 
                 oAPP.fn.setBusy(false);
 
-                //$$MSG
-                sap.m.MessageToast.show("바인딩 처리되지 않았습니다.", 
-                    {duration: 3000, at:"center center"});
+                //108	바인딩되지 않은 필드를 선택했습니다.
+                sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "108"), 
+                    {duration: 3000, at:"center center", my: "center center"});
 
                 return;
 
@@ -1972,9 +1978,9 @@ return;
 
                 oAPP.fn.setBusy(false);
 
-                //$$MSG
-                sap.m.MessageToast.show("바인딩 필드 정보를 찾을 수 없습니다.", 
-                    {duration: 3000, at:"center center"});
+                //109	바인딩 필드 정보를 찾을 수 없습니다.
+                sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "109"), 
+                    {duration: 3000, at:"center center", my: "center center"});
 
                 return;
             }
@@ -1987,9 +1993,9 @@ return;
 
                 oAPP.fn.setBusy(false);
 
-                //$$MSG
-                sap.m.MessageToast.show(`${_sTree.UIATT} 과 동일한 속성 정보가 존재하지 않습니다.` , 
-                    {duration: 3000, at:"center center"});
+                //158	&1와(과) 동일한 속성 정보가 존재하지 않습니다.                
+                sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "158", _sTree.UIATT), 
+                    {duration: 3000, at:"center center", my: "center center"});
 
                 return;
 
@@ -2136,8 +2142,9 @@ return;
             var _sTree = oAPP.fn.getDesignTreeAttrData(_sAttr.OBJID, _sAttr.UIATK);
             
             if(typeof _sTree === "undefined"){
-                //$$MSG
-                sap.m.MessageToast.show(`${_sAttr.UIATT} 정보를 찾을 수 없습니다.`, {duration: 3000, at:"center center"});
+                //110	&1 정보를 찾을 수 없습니다.
+                sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "110", _sAttr.UIATT), 
+                    {duration: 3000, at:"center center", my:"center center"});
                 return;
             }
 
@@ -2146,8 +2153,9 @@ return;
             var _oUi = oAPP.attr.prev[_sTree.OBJID];
 
             if(typeof _oUi === "undefined" || typeof _oUi._T_0015 === "undefined"){
-                //$$MSG
-                sap.m.MessageToast.show(`${_sTree.OBJID} 정보를 찾을 수 없습니다.`, {duration: 3000, at:"center center"});
+                //110	&1 정보를 찾을 수 없습니다.                
+                sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "110", _sTree.OBJID),
+                    {duration: 3000, at:"center center", my:"center center"});
                 return;
             }
 
@@ -2166,7 +2174,7 @@ return;
 
 
             //모델 갱신 처리.
-            oAPP.attr.oDesign.oModel.refresh(true);
+            oContr.oModel.refresh(true);
 
         };
 
@@ -2748,7 +2756,8 @@ return;
             //aggregation인경우 TABLE을 DROP하지 않았다면.
             if(sTree.DATYP !== "02"){
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "Property, Aggregation만 바인딩 할 수 있습니다."; //$$MSG
+                //111	Property, Aggregation만 바인딩 할 수 있습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "111");
                 return _sRes;
             }
             
@@ -2756,21 +2765,24 @@ return;
             //바인딩 불가능 예외처리 항목에 해당하는건인경우.
             if(oAPP.attr.CT_BIND_EXCEPT.findIndex( item => item.FLD01 === sTree.UIATK ) !== -1){
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "바인딩을 할 수 없는 프로퍼티 입니다."; //$$MSG
+                //112	바인딩을 할 수 없는 프로퍼티 입니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "112");
                 return _sRes;
             }
 
             //바인딩 팝업에서 최상위를 drag한경우, structure를 drag한경우 exit.
             if(sField.KIND === "" || sField.KIND === "S"){
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "Structure는 바인딩할 수 없습니다."; //$$MSG
+                //113	Structure는 바인딩할 수 없습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "113");
                 return _sRes;
             }
         
             //aggregation인경우 TABLE을 DROP하지 않았다면.
             if(sTree.UIATY === "3" && sField.KIND !== "T" ){
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "Aggregation은 internal table만 바인딩 할 수 있습니다."; //$$MSG
+                //114	Aggregation은 internal table만 바인딩 할 수 있습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "114");
                 return _sRes;
             }
 
@@ -2779,7 +2791,8 @@ return;
             //STRU, TABLE로 시작하는 정보만 구성함.)
             if(typeof sField.KIND_PATH === "undefined"){
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "Structure, Table로 시작하는 필드만 바인딩이 가능합니다."; //$$MSG
+                //115	Structure, Table로 시작하는 필드만 바인딩이 가능합니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "115");
                 return _sRes;
             }
 
@@ -2845,7 +2858,8 @@ return;
             //tree의 parent, child에 drop한경우 n건 바인딩 정보가 존재하지 않는경우.
             if(l_isTree && !l_path){
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "Tree의 경우 Aggregation에 먼저 바인딩을 구성해야합니다."; //$$MSG
+                //116	Tree의 경우 Aggregation에 먼저 바인딩을 구성해야합니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "116");
                 return _sRes;
             }
         
@@ -2860,14 +2874,16 @@ return;
                 //현재 UI가 N건 바인딩처리된건이 아닌경우 EXIT.
                 if(typeof l_path === "undefined" || l_path === "" || l_path === null){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "Aggregation에 먼저 바인딩을 구성해야합니다."; //$$MSG
+                    //117	Aggregation에 먼저 바인딩을 구성해야합니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "117");
                     return _sRes;
                 }
         
                 //현재 UI가 N건 바인딩 처리됐다면 
                 if(l_path !== sField.CHILD.substr(0, l_path.length)){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "Aggregation에 구성한 Table과 다른 Table입니다."; //$$MSG
+                    //118	Aggregation에 구성한 Table과 다른 Table입니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "118");
                     return _sRes;
                 }
         
@@ -2891,7 +2907,8 @@ return;
                     //drag한 필드가 range table이 아닌경우 exit.
                     if(sField.EXP_TYP !== "RANGE_TAB"){
                         _sRes.RETCD = "E";
-                        _sRes.RTMSG = "Range table만 바인딩이 가능합니다."; //$$MSG
+                        //119	Range table만 바인딩이 가능합니다.
+                        _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "119");
                         return _sRes;
                     }
             
@@ -2903,7 +2920,8 @@ return;
                         //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
                         if(lt_split2.findIndex( a=> a === "T" ) !== -1){
                             _sRes.RETCD = "E";
-                            _sRes.RTMSG = "Range table만 바인딩이 가능합니다."; //$$MSG
+                            //119	Range table만 바인딩이 가능합니다.
+                            _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "119");
                             return _sRes;
                         }
             
@@ -2920,14 +2938,16 @@ return;
                     //string_table이 아닌경우 exit.
                     if(sField.EXP_TYP !== "STR_TAB"){
                         _sRes.RETCD = "E";
-                        _sRes.RTMSG = "String table만 바인딩이 가능합니다."; //$$MSG
+                        //120	String table만 바인딩이 가능합니다.
+                        _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "120");
                         return _sRes;
                     }
         
                     //STRING_TABLE이지만 부모가 ROOT인경우 EXIT.(바인딩 가능한건은 STRU-FIELD or TABLE-FIELD만 가능)
                     if(sField.EXP_TYP === "STR_TAB" && sField.PARENT === "Attribute"){
                         _sRes.RETCD = "E";
-                        _sRes.RTMSG = "Structure, Table로 시작하는 필드만 바인딩이 가능합니다."; //$$MSG
+                        //115	Structure, Table로 시작하는 필드만 바인딩이 가능합니다.
+                        _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "115");
                         return _sRes;
                     }
             
@@ -2938,7 +2958,8 @@ return;
                         //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
                         if(lt_split2.findIndex( a=> a === "T" ) !== -1){
                             _sRes.RETCD = "E";
-                            _sRes.RTMSG = "String table만 바인딩이 가능합니다."; //$$MSG
+                            //120	String table만 바인딩이 가능합니다.
+                            _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "120");
                             return _sRes;
                         }
             
@@ -2951,14 +2972,16 @@ return;
                 //일반 프로퍼티의 경우 Elementary Type 이 아닌경우 EXIT.
                 if(sField.KIND !== "E"){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "일반 유형의 필드만(P, INT, CHAR, NUMC, STRING, DATE, TIME) 바인딩이 가능합니다."; //$$MSG
+                    //121	일반 유형의 필드만(P, INT, CHAR, NUMC, STRING, DATE, TIME) 바인딩이 가능합니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "121");
                     return _sRes;
                 }
         
                 //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
                 if(typeof lt_split2 !== "undefined" && lt_split2.findIndex( a=> a === "T" ) !== -1){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "Aggregation에 구성한 Table과 다른 Table입니다."; //$$MSG
+                    //118	Aggregation에 구성한 Table과 다른 Table입니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "118");
                     return _sRes;
                 }
         
@@ -2966,7 +2989,8 @@ return;
                 //tree인경우 n건 바인딩 path와 다른 경우 exit.
                 if(l_isTree && l_path && l_path !== sField.CHILD.substr(0, l_path.length)){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "Aggregation에 구성한 Table과 다른 Table입니다."; //$$MSG
+                    //118	Aggregation에 구성한 Table과 다른 Table입니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "118");
                     return _sRes;
                 }
                     
@@ -2978,7 +3002,8 @@ return;
             //AGGREGATION인경우 N건 들어가는 AGGREGATION이 아닌경우 EXIT.
             if(sTree.UIATY === "3" && sTree.ISMLB !== "X"){
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "단일 UI 등록 가능한 Aggregation에 바인딩 할 수 없습니다."; //$$MSG
+                //122	단일 UI 등록 가능한 Aggregation에 바인딩 할 수 없습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "122");
                 return _sRes;
             }
         
@@ -2986,7 +3011,8 @@ return;
             //AGGREGATION에 string_table을 drop한경우.
             if(sTree.UIATY === "3" && sField.EXP_TYP === "STR_TAB"){
                 _sRes.RETCD = "E";
-                _sRes.RTMSG = "Aggregation에 String Table을 바인딩 할 수 없습니다."; //$$MSG
+                //123	Aggregation에 String Table을 바인딩 할 수 없습니다.
+                _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "123");
                 return _sRes;
             }
 
@@ -3001,21 +3027,24 @@ return;
                 //자식 필드 정보가 존재하지 않는경우(STRING_TABLE, INT4_TABLE 등 단일 필드 속성의 테이블인경우) 바인딩 불가능.
                 if(_aChild.length === 0){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "Aggregation에 라인 유형이 일반 필드인 Internal Table을 바인딩 할 수 없습니다."; //$$MSG
+                    //124	Aggregation에 라인 유형이 일반 필드인 Internal Table을 바인딩 할 수 없습니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "124");
                     return _sRes;
                 }
         
                 //aggregation 바인딩 처리 가능여부 점검.(현재 UI의 child 정보에 따른 바인딩 가능여부)
                 if(oAPP.fn.attrChkBindAggrPossible(sTree) === true){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "Aggregation 2개 이상의 UI가 추가 되어 있어 바인딩 할 수 없습니다."; //$$MSG
+                    //125	Aggregation 2개 이상의 UI가 추가 되어 있어 바인딩 할 수 없습니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "125");
                     return _sRes;
                 }
 
                 //대상 UI로부터 자식을 탐색하며 바인딩 가능 여부 점검.
                 if(oAPP.fn.getChildAggrBind(sTree.OBJID, sField.CHILD) === true){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "하위 UI의 Aggregation에 같은 Internal Table이 바인딩 되어 있습니다."; //$$MSG
+                    //126	하위 UI의 Aggregation에 같은 Internal Table이 바인딩 되어 있습니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "126");
                     return _sRes;
                 }
 
@@ -3028,7 +3057,8 @@ return;
                 //부모에 N건 바인딩이 구성 되었을경우, 현재 DRAG한 필드와 동일한 PATH라면 바인딩 불가능.
                 if(typeof _parentModel !== "undefined" && _parentModel.startsWith(sField.CHILD) === true){
                     _sRes.RETCD = "E";
-                    _sRes.RTMSG = "상위 UI의 Aggregation에 같은 Internal Table이 바인딩 되어 있습니다."; //$$MSG
+                    //127	상위 UI의 Aggregation에 같은 Internal Table이 바인딩 되어 있습니다.
+                    _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "127");
                     return _sRes;
                 }
 
@@ -3040,7 +3070,8 @@ return;
                     //n건 바인딩 path 이후 필드에 table건이 존재하는경우 exit.
                     if(lt_split2.findIndex( a=> a === "T" ) !== -1){
                         _sRes.RETCD = "E";
-                        _sRes.RTMSG = "Aggregation은 Internal Table만 바인딩 가능합니다."; //$$MSG
+                        //128	Aggregation은 Internal Table만 바인딩 가능합니다.
+                        _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "128");
                         return _sRes;
                     }
             
@@ -3082,6 +3113,39 @@ function designView(oArea){
         });
         oContr.ui.ROOT.addPage(oContr.ui.PG_MAIN);
 
+        //129	동일속성 바인딩
+        var _txt1 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "129");
+
+        //130	멀티 바인딩
+        var _txt2 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "130");
+
+        //A43  Unbind
+        var _txt3 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A43", "", "", "", "");
+
+        //A50  Object Name
+        var _txt4 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A50", "", "", "", "");
+
+        //131	Bind Path
+        var _txt5 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "131");
+
+        //139   추가속성적용
+        var _txt6 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "139");
+
+        //A46  Expand All
+        var _txt7 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A46", "", "", "", "");
+
+        //A47  Collapse All
+        var _txt8 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A47", "", "", "", "");
+
+        //B23  Clear selection
+        var _txt9 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B23", "", "", "", "");
+
+        //161	컬럼최적화
+        var _txt10 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "161");
+
+        //162	디자인 영역의 UI를 Drag 하여 해당 영역에 Drop 하십시오.
+        var _txt11 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "162");
+
 
         oContr.ui.TREE = new sap.ui.table.TreeTable({
             selectionMode:"Single",
@@ -3092,22 +3156,23 @@ function designView(oArea){
             rowActionCount: 2,
             cellClick: oContr.fn.onSelDesignTreeLine,
             rowsUpdated : oContr.fn.onRowsUpdated,
+            noData:_txt11,
             extension: [
                 //메뉴 TREE TOOLBAR 영역.
                 new sap.m.OverflowToolbar({
                     visible: true,
                     content: [
                         new sap.m.Button({
-                            icon:"sap-icon://expand-group",
-                            tooltip: "Expand All",  //$$OTR
+                            icon:"sap-icon://expand-all",
+                            tooltip: _txt7, //A46  Expand All
                             press: function(){
                                 //design tree 전체펼침.
                                 oContr.fn.onExpandCollapseAll(true);
                             }
                         }),
                         new sap.m.Button({
-                            icon:"sap-icon://collapse-group",
-                            tooltip: "Collapse All",    //$$OTR
+                            icon:"sap-icon://collapse-all",
+                            tooltip: _txt8, //A47  Collapse All
                             press: function(){
                                 //design tree 전체접힘.
                                 oContr.fn.onExpandCollapseAll(false);
@@ -3116,7 +3181,7 @@ function designView(oArea){
                         new sap.m.ToolbarSeparator(),
                         new sap.m.Button({
                             icon:"sap-icon://multiselect-none",
-                            tooltip: "Clear Selection",    //$$OTR
+                            tooltip: _txt9, //B23  Clear selection
                             press: oContr.fn.onClearSelection
                         }),
 
@@ -3126,14 +3191,15 @@ function designView(oArea){
                         new sap.m.Button({
                             icon: "sap-icon://multiselect-all",
                             type: "Accept",
-                            text: "동일속성 바인딩 일괄적용",   //$$OTR
+                            text: _txt1,    //129	동일속성 바인딩 일괄적용
+                            tooltip: _txt1, //129	동일속성 바인딩 일괄적용
                             enabled: "{/edit}",
                             press: oContr.fn.onSynchronizionBind
                         }),
 
                         new sap.m.Button({
-                            text:"Multi Binding",       //$$OTR
-                            tooltip:"Multi Binding",    //$$OTR
+                            text:_txt2,     //130	멀티 바인딩
+                            tooltip:_txt2,  //130	멀티 바인딩
                             icon:"sap-icon://connected",
                             type:"Emphasized",
                             enabled: "{/edit}",
@@ -3143,11 +3209,23 @@ function designView(oArea){
                         new sap.m.Button({
                             icon: "sap-icon://disconnected",
                             type: "Reject",
-                            text: "Unbind", //$$OTR
+                            text: _txt3,    //A43  Unbind
+                            tooltip: _txt3, //A43  Unbind
                             enabled: "{/edit}",
                             press: oContr.fn.onMultiUnbind
-                        })
+                        }),
 
+                        new sap.m.ToolbarSpacer(),
+
+                        new sap.m.Button({
+                            icon: "sap-icon://resize-horizontal",
+                            tooltip: _txt10,    //161	컬럼최적화
+                            busyIndicatorDelay: 1,
+                            press: function(){
+                                //tree table 컬럼길이 재조정 처리.
+                                oAPP.fn.setUiTableAutoResizeColumn(oContr.ui.TREE);
+                            }
+                        })
                     ]
                 })
             ],	/*sap.ui.core.Control*/
@@ -3158,7 +3236,8 @@ function designView(oArea){
                     autoResizable:true,
                     label: new sap.m.Label({
                         design : "Bold",
-                        text   : "Object Name"  //$$OTR
+                        text   : _txt4, //A50  Object Name
+                        tooltip: _txt4  //A50  Object Name
                     }),
                     template: new sap.m.HBox({
                         alignItems:"Center",
@@ -3220,7 +3299,8 @@ function designView(oArea){
                     autoResizable:true,
                     label: new sap.m.Label({
                         design : "Bold",
-                        text   : "Bind Path"    //$$OTR
+                        text   : _txt5, //131	Bind Path
+                        tooltip : _txt5 //131	Bind Path
                     }),
                     template: new sap.m.HBox({
                         alignItems:"Center",
@@ -3243,9 +3323,11 @@ function designView(oArea){
                     })
                 }),
 
+                //패키징 처리 안됐을때(개발모드)만 활성화처리.
                 new sap.ui.table.Column({
                     filterProperty:"MPROP",
                     autoResizable:true,
+                    visible: !oAPP.APP.isPackaged,
                     label: new sap.m.Label({
                         design : "Bold",
                         text   : "MPROP"
@@ -3277,13 +3359,13 @@ function designView(oArea){
                     new sap.ui.table.RowActionItem({
                         icon:"sap-icon://accept",
                         visible: "{_bind_visible}",
-                        tooltip: "바인딩 추가속성 정보 적용",   //$$OTR
+                        tooltip: _txt6,   //132	바인딩 추가속성 정보 적용
                         press: oContr.fn.onAdditionalBind
                     }),
                     new sap.ui.table.RowActionItem({
                         icon:"sap-icon://disconnected",
                         visible: "{_unbind_visible}",
-                        tooltip: "바인딩 해제", //$$OTR
+                        tooltip: _txt3, //A43  Unbind
                         press: oContr.fn.onUnbind
                     })
                 ]

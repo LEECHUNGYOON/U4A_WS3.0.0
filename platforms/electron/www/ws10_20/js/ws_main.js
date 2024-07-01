@@ -415,8 +415,11 @@
         const [parentWidth, parentHeight] = mainWindow.getSize();
 
         // 부모 창의 중앙 위치
-        const parentCenterX = parentX + parentWidth / 2;
-        const parentCenterY = parentY + parentHeight / 2;
+        // const parentCenterX = parentX + parentWidth / 2;
+        // const parentCenterY = parentY + parentHeight / 2;
+
+        const parentCenterX = parentX;
+        const parentCenterY = parentY;
 
         // 부모 창이 위치한 디스플레이를 찾기
         const displays = screen.getAllDisplays();
@@ -476,54 +479,53 @@
 
     /************************************************************************
      * 현재 브라우저의 child window 전체를 
-     * 부모가 위치한 모니터 기준 바둑판 정렬
+     * 부모가 위치한 모니터 기준 중앙 정렬
      ************************************************************************/
-    oAPP.main.adjustWindowCenter = function(){
+    oAPP.main.adjustCenterChildWindow = function(){
 
         let mainWindow = parent.CURRWIN;
         let screen = parent.SCREEN;
         let childWindows = mainWindow.getChildWindows();
-
         
-            // 부모 창의 위치와 크기 가져오기
-            const { x: parentX, y: parentY, width: parentWidth, height: parentHeight } = mainWindow.getBounds();
+        // 부모 창의 위치와 크기 가져오기
+        const { x: parentX, y: parentY, width: parentWidth, height: parentHeight } = mainWindow.getBounds();
 
-            // 부모 창의 중앙 위치 계산
-            const parentCenterX = parentX + parentWidth / 2;
-            const parentCenterY = parentY + parentHeight / 2;
+        // 부모 창의 중앙 위치 계산
+        const parentCenterX = parentX + parentWidth / 2;
+        const parentCenterY = parentY + parentHeight / 2;
 
-            // 부모 창이 위치한 모니터 찾기
-            const displays = screen.getAllDisplays();
-            let targetDisplay;
-            for (const display of displays) {
-                const { x, y, width, height } = display.workArea;
-                if (parentCenterX >= x && parentCenterX < x + width && parentCenterY >= y && parentCenterY < y + height) {
-                    targetDisplay = display;
-                    break;
-                }
+        // 부모 창이 위치한 모니터 찾기
+        const displays = screen.getAllDisplays();
+        let targetDisplay;
+        for (const display of displays) {
+            const { x, y, width, height } = display.workArea;
+            if (parentCenterX >= x && parentCenterX < x + width && parentCenterY >= y && parentCenterY < y + height) {
+                targetDisplay = display;
+                break;
             }
+        }
 
-            if (!targetDisplay) return;
+        if (!targetDisplay) return;
 
-            // 디스플레이의 중앙 좌표 계산
-            const displayCenterX = targetDisplay.workArea.x + targetDisplay.workArea.width / 2;
-            const displayCenterY = targetDisplay.workArea.y + targetDisplay.workArea.height / 2;
+        // 디스플레이의 중앙 좌표 계산
+        const displayCenterX = targetDisplay.workArea.x + targetDisplay.workArea.width / 2;
+        const displayCenterY = targetDisplay.workArea.y + targetDisplay.workArea.height / 2;
 
-            childWindows.forEach(childWindow => {
-                const { width: childWidth, height: childHeight } = childWindow.getBounds();
+        childWindows.forEach(childWindow => {
+            const { width: childWidth, height: childHeight } = childWindow.getBounds();
 
-                // 자식 창을 디스플레이의 중앙에 위치 설정
-                const childX = Math.round(displayCenterX - childWidth / 2);
-                const childY = Math.round(displayCenterY - childHeight / 2);
-                childWindow.setPosition(childX, childY);
-            });
+            // 자식 창을 디스플레이의 중앙에 위치 설정
+            const childX = Math.round(displayCenterX - childWidth / 2);
+            const childY = Math.round(displayCenterY - childHeight / 2);
+            childWindow.setPosition(childX, childY);
+        });
 
-            // 모든 자식 창을 보이게 설정
-            childWindows.forEach(childWindow => {
-                childWindow.show();
-            });
+        // 모든 자식 창을 보이게 설정
+        childWindows.forEach(childWindow => {
+            childWindow.show();
+        });
 
-    };
+    }; // end of oAPP.main.adjustCenterChildWindow
 
     /************************************************************************
      * 현재 브라우저의 이벤트 핸들러
@@ -586,7 +588,7 @@
                 icon: parent.PATH.join(parent.APPPATH, "img", "shutdown.png"),
                 click() {
 
-                    oAPP.main.adjustWindowCenter();
+                    oAPP.main.adjustCenterChildWindow();
  
                 }
             },

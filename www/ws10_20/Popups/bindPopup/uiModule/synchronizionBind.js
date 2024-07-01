@@ -95,120 +95,7 @@ function designControl(is_attr){
 
                 }
 
-
-                /*******************************************************
-                * @function - table 파생건 여부 확인.
-                *******************************************************/ 
-                function _isTablePath(KIND_PATH){
-
-                    if(typeof KIND_PATH === "undefined"){
-                        return false;
-                    }
-
-                    //현재 입력 path의 마지막 KIND 정보 제거.
-                    let _parentPath = KIND_PATH.slice(0, KIND_PATH.length - 2);
-
-                    //경로에 해당하는 KIND에 테이블이 존재하는경우.
-                    if(_parentPath.indexOf("T") !== -1){
-                        //TABLE 로 파생된 필드 flag return.
-                        return true;
-                    }
-
-                    return false;
-
-                }
-
-
-                /*******************************************************
-                * @function - 동일 속성 리스트 구성.
-                *******************************************************/ 
-                function setSameAttrList(aTree, oUi){
-
-                    if(typeof aTree === "undefined"){
-                        return;
-                    }
-
-                    if(aTree.length === 0){
-                        return;
-                    }
-
-                    for (let i = 0; i < aTree.length; i++) {
-                        
-                        var _sTree = aTree[i];
-
-
-                        //N건 바인딩 처리된 UI 정보가 존재하는경우.
-                        if(typeof oUi !== "undefined"){
-
-                            //현재 ui가 N건 바인딩 처리된 UI라면 하위를 탐색.
-                            if(_sTree.OBJID === oUi._OBJID){
-                                setSameAttrList(_sTree.zTREE_DESIGN, oUi);
-                                continue;
-                            }
-
-                            if(oUi._UILIB === "sap.ui.table.TreeTable" && _sTree.UILIB === "sap.ui.table.Column"){
-                                setSameAttrList(_sTree.zTREE_DESIGN, oUi);
-                                continue;
-                            }
-
-                            if(oUi._UILIB === "sap.ui.table.Table" && _sTree.UILIB === "sap.ui.table.Column"){
-                                setSameAttrList(_sTree.zTREE_DESIGN, oUi);
-                                continue;
-                            }
-
-                            //현재 UI의 N건 바인딩 처리된 부모 얻기.
-                            // var _oUi = oAPP.fn.getDesignTreeData(_sTree.OBJID);
-                            var _oUi = oAPP.fn.getParentUi(oAPP.attr.prev[_sTree.OBJID]);
-
-                            if(typeof _oUi === "undefined"){
-                                continue;
-                            }
-
-                            //N건 바인딩 처리된 UI와 현재 UI의 N건 바인딩된 부모가 다른경우 수집 SKIP.
-                            if(oUi._OBJID !== _oUi._OBJID){
-                                continue;
-                            }
-
-                        }
-
-
-                        //ATTR 항목이 아닌경우 하위를 탐색.
-                        if(_sTree.DATYP !== "02"){
-                            setSameAttrList(_sTree.zTREE_DESIGN, oUi);
-                            continue;
-                        }
-
-                        //같은 UI의 ATTR은 생략.
-                        if(_sTree.OBJID === oContr.oModel.oData.S_ATTR.OBJID && 
-                            _sTree.UIATT === oContr.oModel.oData.S_ATTR.UIATT &&
-                            _sTree.UIATY === oContr.oModel.oData.S_ATTR.UIATY ){
-                            continue;
-                        }
-
-                        //프로퍼티명과 타입이 같은경우 수집 처리.
-                        if(_sTree.UIATT === oContr.oModel.oData.S_ATTR.UIATT && oContr.oModel.oData.S_ATTR.UIADT === _sTree.UIADT){
-
-                            var _sList = JSON.parse(JSON.stringify(oContr.types.TY_LIST));
-
-                            _sList.OBJID = _sTree.OBJID;
-                            _sList.UIATT = _sTree.UIATT;
-                            _sList.UIATK = _sTree.UIATK;
-                            _sList.UIATV = _sTree.UIATV;
-                            _sList.UILIB = _sTree.UILIB;
-                            _sList.UIOBK = _sTree.UIOBK;
-                            _sList.POBID = _sTree.POBID;
-                            _sList.PUIOK = _sTree.PUIOK;
-
-                            oContr.oModel.oData.T_LIST.push(_sList);
-                            
-                        }
-
-                        setSameAttrList(_sTree.zTREE_DESIGN, oUi);
-                        
-                    }
-
-                }
-            
+           
 
         /*************************************************************
          * @FlowEvent - View Start 
@@ -268,6 +155,42 @@ function designControl(is_attr){
         };
 
 
+
+        /*************************************************************
+         * @event - 컬럼 최적화 버튼 선택 이벤트.
+         *************************************************************/
+        oContr.fn.onAutoResizeColumn = function(oEvent){
+
+            var _oUi = oEvent?.oSource;
+
+            if(typeof _oUi === "undefined"){
+                oAPP.fn.setBusy(false);
+                return;
+            }
+
+            var _oParent = _oUi.getParent();
+
+            //부모를 탐색하며 UI TABLE 정보 찾기.
+            while (!_oParent.isA("sap.ui.table.Table")) {
+                
+                _oParent = _oParent.getParent();
+
+                if(typeof _oParent === "undefined"){
+                    return;
+                }
+
+            }
+
+            if(typeof _oParent === "undefined"){
+                return;
+            }
+
+
+            //tree table 컬럼길이 재조정 처리.
+            oAPP.fn.setUiTableAutoResizeColumn(_oParent);
+        };
+
+
         /*************************************************************
          * @event - 확인 버튼 선택 이벤트.
          *************************************************************/
@@ -309,13 +232,10 @@ function designControl(is_attr){
             }
 
 
-            // //263	Do you want to continue unbind?
-            // var _msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "263", "", "", "", "");
-
             oAPP.fn.setBusy(false);
 
-            //$$MSG
-            var _msg = "동일속성 바인딩 일괄적용 하시겠습니까?";
+            //159	동일속성 바인딩 일괄적용 하시겠습니까?
+            var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "159");
             
             let _actcd = await new Promise((resolve) => {
                 sap.m.MessageBox.confirm(_msg, {
@@ -404,9 +324,9 @@ function designControl(is_attr){
             //라인 선택 해제 처리.
             _oParent.clearSelection();
 
-            //$$MSG
-            sap.m.MessageToast.show("동일속성 바인딩 처리를 완료 했습니다.", 
-                {duration: 3000, at:"center center"});  
+            //160	동일속성 바인딩 처리를 완료 했습니다.
+            sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "160"), 
+                {duration: 3000, at:"center center", my:"center center"});  
 
 
             //디자인 영역으로 이동 처리.
@@ -588,10 +508,13 @@ function designView(is_attr){
         var oTool = new sap.m.Toolbar();
         oContr.ui.ROOT.setCustomHeader(oTool);
 
+        //E30  Back
+        var _txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E30", "", "", "", "");
 
         //뒤로가기 버튼.
         var oBack = new sap.m.Button({
-            text:"Back", //$$OTR
+            text:_txt,      //E30  Back
+            tooltip:_txt,   //E30  Back
             icon:"sap-icon://nav-back",
             type:"Emphasized",
             press:oContr.fn.onMoveDesignPage
@@ -602,9 +525,13 @@ function designView(is_attr){
 
         // oTool.addContent(new sap.m.ToolbarSpacer());
 
+        //140	동일속성 적용 팝업 호출
+        var _txt = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "140");
+
         //동일속성 적용 팝업으로 호출.
         var oSyncBindPopup = new sap.m.Button({
-            text:"동일속성 적용 팝업 호출", //$$OTR
+            text:_txt,      //140	동일속성 적용 팝업 호출
+            tooltip: _txt,  //140	동일속성 적용 팝업 호출
             icon:"sap-icon://popup-window",
             type:"Emphasized",
             press:oContr.fn.onCallSyncBindPopup
@@ -696,18 +623,32 @@ function designView(is_attr){
         var oTool2 = new sap.m.OverflowToolbar();
         oContr.ui.LIST.addExtension(oTool2);
         
-        // //A40	Confirm
-        // var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A40", "", "", "", "");
+        //141	일괄적용
+        var _txt = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "141");
 
         //확인 버튼.
         var oBtn1 = new sap.m.Button({
             icon: "sap-icon://accept",
-            text:"일괄적용",  //$$OTR
-            tooltip:"일괄적용", //$$OTR
+            text:_txt,      //141	일괄적용
+            tooltip:_txt,   //141	일괄적용
             type: "Accept",
             press: oContr.fn.onSetSyncAttr
         });
         oTool2.addContent(oBtn1);
+
+
+        oTool2.addContent(new sap.m.ToolbarSpacer());
+                    
+        //161	컬럼최적화
+        //table autoresize.        
+        var oBtn04 = new sap.m.Button({
+            icon: "sap-icon://resize-horizontal",
+            tooltip: oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "161"),
+            busyIndicatorDelay: 1,
+            press: oContr.fn.onAutoResizeColumn
+        });
+
+        oTool2.addContent(oBtn04);
 
 
         //Target Replace Properties

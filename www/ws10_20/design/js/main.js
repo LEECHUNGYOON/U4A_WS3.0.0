@@ -1245,6 +1245,25 @@
     };
 
 
+
+    /*************************************************************
+     * @function - 바인딩 팝업 통신 관련 module path 구성.
+     *************************************************************/
+    oAPP.fn.waitBusyOpened = function(){
+
+      return new Promise((res)=>{
+
+        setTimeout(() => {
+          res();
+        }, 0);
+        
+
+      });
+
+    };
+
+
+
     //design 영역 순서 설정.
     oAPP.fn.setDesignLayout = function(){
 

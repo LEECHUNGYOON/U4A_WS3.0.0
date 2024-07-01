@@ -555,57 +555,6 @@
 
 
 
-  //바인딩 팝업 전송전 drag 라인 점검.
-  oAPP.fn.checkBindPopupDragAppData = function(is_drag){
-
-    var _sRes = {RETCD: "", RTMSG:""};
-
-    if(typeof is_drag === "undefined"){
-      _sRes.RETCD = "E";
-      _sRes.RTMSG = "drag 정보가 존재하지 않습니다."; //$$MSG
-      return _sRes;
-    }
-
-
-    //최상위 root가 인경우 점검 불필요.
-    if(is_drag.OBJID === "ROOT"){
-      return _sRes;
-    }
-
-    
-    var _UIATT = undefined;
-
-    var _OBJID = is_drag.OBJID;
-
-    //sap.ui.table.Column인경우, CHILD에 TEMPLATE이 존재하는경우.
-    if(is_drag.UILIB === "sap.ui.table.Column" && is_drag.zTREE.findIndex( item => item.UIATT === "template" ) !== -1){
-
-      //부모(sap.ui.table.Table / sap.ui.table.TreeTable)로 변경.
-      _OBJID = is_drag.POBID;
-
-      //점검 대상 aggr을 rows로 구성.
-      _UIATT = "rows";
-
-    }
-
-    //현재 선택한 라인의 부모에 N건 바인딩 처리 됐는지 여부 확인.
-    var l_path = oAPP.fn.getParentAggrBind(oAPP.attr.prev[_OBJID], _UIATT);
-
-    //N건 바인딩 처리 된경우.
-    if(typeof l_path !== "undefined" && l_path !== ""){
-
-      _sRes.RETCD = "E";
-      _sRes.RTMSG = "부모 UI에 MODEL BINDING 처리되어 UI를 구성할 수 없습니다."; //$$MSG
-
-      return _sRes;
-
-    }
-
-    return _sRes;      
-
-  };
-
-
   //바인딩 팝업에서 UI 구성을 위한 design tree 데이터 구성.
   oAPP.fn.setBindPopupDragAppData = function(is_drag){
 
@@ -739,7 +688,7 @@
 
 
   //바인딩 팝업의 디자인 영역 갱신처리.
-  oAPP.fn.updateBindPopupDesignData = function(){
+  oAPP.fn.updateBindPopupDesignData = async function(){
 
     //WS 3.0 메인 PATH 얻기.
     var _channelPath = parent.getPath("WS10_20_ROOT");

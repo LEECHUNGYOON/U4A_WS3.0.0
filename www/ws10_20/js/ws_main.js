@@ -415,8 +415,11 @@
         const [parentWidth, parentHeight] = mainWindow.getSize();
 
         // 부모 창의 중앙 위치
-        const parentCenterX = parentX + parentWidth / 2;
-        const parentCenterY = parentY + parentHeight / 2;
+        // const parentCenterX = parentX + parentWidth / 2;
+        // const parentCenterY = parentY + parentHeight / 2;
+
+        const parentCenterX = parentX;
+        const parentCenterY = parentY;
 
         // 부모 창이 위치한 디스플레이를 찾기
         const displays = screen.getAllDisplays();

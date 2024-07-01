@@ -14,9 +14,12 @@ module.exports = function(){
     //DESIGN TREE의 체크박스 선택건이 존재하지 않는경우.
     if(_aTree.length === 0){
         
-        //$$MSG
+        
         _sRes.RETCD = "E";
-        _sRes.RTMSG = "DESIGN 영역의 라인 선택건이 존재하지 않습니다."; //$$MSG
+        
+        //087	DESIGN 영역의 라인 선택건이 존재하지 않습니다.
+        var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "087");
+        _sRes.RTMSG = _msg;
         
         oAPP.attr.oDesign.oModel.refresh();
 
@@ -24,8 +27,14 @@ module.exports = function(){
         
         _sBindError.ACTCD    = oAPP.attr.CS_MSG_ACTCD.ACT02;
         _sBindError.TYPE     = "Error";
-        _sBindError.TITLE    = "DESIGN 영역의 라인 선택건이 존재하지 않습니다.";             //$$MSG
-        _sBindError.DESC     = "멀티 바인딩을 하기 위해서 디자인 영역의 라인을 선택 해야 합니다."; //$$MSG
+
+        //087	DESIGN 영역의 라인 선택건이 존재하지 않습니다.
+        _sBindError.TITLE    = _msg;
+
+        //142	추가속성 바인딩을 하기 위해서 디자인 영역의 라인을 선택 해야 합니다.
+        _sBindError.DESC     = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "142");
+
+        _sBindError.LK_VIS   = false;
 
         _sRes.T_RTMSG.push(_sBindError);
 
@@ -39,7 +48,10 @@ module.exports = function(){
     if(_indx === -1){
 
         _sRes.RETCD = "E";
-        _sRes.RTMSG = "모델 필드 라인 선택건이 존재하지 않습니다."; //$$MSG
+
+        //085	모델 필드 라인 선택건이 존재하지 않습니다.
+        var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "085");
+        _sRes.RTMSG = _msg;
 
         // return _sRes;
 
@@ -47,8 +59,14 @@ module.exports = function(){
         
         _sBindError.ACTCD    = oAPP.attr.CS_MSG_ACTCD.ACT01;
         _sBindError.TYPE     = "Error";
-        _sBindError.TITLE    = "모델 필드 라인 선택건이 존재하지 않습니다.";             //$$MSG
-        _sBindError.DESC     = "멀티 바인딩을 하기 위해서 모델 필드를 선택 해야 합니다."; //$$MSG
+
+        //085	모델 필드 라인 선택건이 존재하지 않습니다.
+        _sBindError.TITLE    = _msg;
+
+        //083	멀티 바인딩을 하기 위해서 모델 필드를 선택 해야 합니다.
+        _sBindError.DESC     = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "083");
+
+        _sBindError.LK_VIS   = false;
 
         _sRes.T_RTMSG.push(_sBindError);
 
@@ -63,14 +81,22 @@ module.exports = function(){
     if(typeof _oCtxt === "undefined" || _oCtxt === null){
 
         _sRes.RETCD = "E";
-        _sRes.RTMSG = "모델 필드 라인 정보를 얻을 수 없습니다."; //$$MSG
+        
+        //086	모델 필드 라인 정보를 얻을 수 없습니다.
+        _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "086");
 
         var _sBindError = JSON.parse(JSON.stringify(oAPP.types.TY_BIND_ERROR));
         
         _sBindError.ACTCD    = oAPP.attr.CS_MSG_ACTCD.ACT01;
         _sBindError.TYPE     = "Error";
-        _sBindError.TITLE    = "모델 필드 라인 선택건이 존재하지 않습니다.";             //$$MSG
-        _sBindError.DESC     = "멀티 바인딩을 하기 위해서 모델 필드를 선택 해야 합니다."; //$$MSG
+
+        //085	모델 필드 라인 선택건이 존재하지 않습니다.
+        _sBindError.TITLE    = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "085");
+
+        //083	멀티 바인딩을 하기 위해서 모델 필드를 선택 해야 합니다.
+        _sBindError.DESC     = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "083");
+
+        _sBindError.LK_VIS   = false;
 
         _sRes.T_RTMSG.push(_sBindError);
 
@@ -111,9 +137,10 @@ module.exports = function(){
             _sBindError.ACTCD    = oAPP.attr.CS_MSG_ACTCD.ACT04;
             _sBindError.LINE_KEY = _sTree.CHILD;
             _sBindError.TYPE     = "Error";
-            // _sBindError.TITLE    = _sChk.RTMSG;             //$$MSG
-            _sBindError.TITLE    = `${_sTree.OBJID} - ${_sTree.UIATT} 필드 바인딩 오류.`;
-            _sBindError.DESC     = _sChk.RTMSG; //$$MSG
+
+            //144	&1 필드 바인딩 오류.
+            _sBindError.TITLE    = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "144", `${_sTree.OBJID} - ${_sTree.UIATT}`);
+            _sBindError.DESC     = _sChk.RTMSG;
 
             _sRes.T_RTMSG.push(_sBindError);
             continue;
@@ -128,7 +155,10 @@ module.exports = function(){
         oAPP.attr.oDesign.oModel.refresh();
 
         _sRes.RETCD = "E";
-        _sRes.RTMSG = "오류 발생 라인이 존재하여 멀티 바인딩을 할 수 없습니다."; //$$MSG
+
+        //088	오류 발생 라인이 존재하여 멀티 바인딩을 할 수 없습니다.
+        _sRes.RTMSG = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "088");
+
 
         return _sRes;
 

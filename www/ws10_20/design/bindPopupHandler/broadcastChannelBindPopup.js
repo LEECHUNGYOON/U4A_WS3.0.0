@@ -110,7 +110,7 @@ class CL_WS20_BINDPOPUP{
  * 바인딩 팝업 Broadcast Channel 응답 처리.
  ************************************************************************/
 function resBroadcastChannelBindPopup(oEvent){
-        
+    
     console.log(oEvent.data);
 
     if(typeof oEvent?.data?.PRCCD === "undefined"){
@@ -161,7 +161,7 @@ function responseBindPopupBusyOff(oEvent){
 
 
     //busy off.
-    oAPP.fn.setBusy(false);
+    parent.setBusy("");
 
     
     //busy off 요청임 flag return.
@@ -182,7 +182,7 @@ function responseBindPopupBusyOn(oEvent){
 
 
     //busy on.
-    oAPP.fn.setBusy(true);
+    parent.setBusy("X");
 
 
     //busy on 요청임 flag return.
@@ -194,15 +194,17 @@ function responseBindPopupBusyOn(oEvent){
 /************************************************************************
  * APP DATA 갱신 요청에 대한 처리.
  ************************************************************************/
-function updateAppData(oEvent){
+async function updateAppData(oEvent){
 
     //APP DATA 갱신 요청건이 아닌경우 EXIT.
-    if(oEvent.data.PRCCD !== "DATA_SYNC"){
+    if(oEvent.data.PRCCD !== "UPDATE-DESIGN-DATA"){
         return false;
     }
 
-    //BUSY ON, LOCK ON
-    oAPP.common.fnSetBusyLock("X");
+    //BUSY ON
+    parent.setBusy("X");
+    
+    await oAPP.fn.waitBusyOpened();
 
     for (const key in oEvent.data.oPrev) {
 
@@ -263,7 +265,7 @@ function updateAppData(oEvent){
         // oAPP.fn.setSelectTreeItem(oAPP.attr.oModel.oData.uiinfo.OBJID);
 
         //선택한 UI의 TREE 라인 정보 얻기.
-        var _sTree = oAPP.fn.getTreeData("PAGE");
+        var _sTree = oAPP.fn.getTreeData(_OBJID);
 
         if(typeof _sTree !== "undefined"){
             //UI design tree 라인 선택 이벤트 수행.
@@ -276,13 +278,13 @@ function updateAppData(oEvent){
     //BUSY OFF 요청 처리.
     oEvent.currentTarget.postMessage({PRCCD:"BUSY_OFF"});
 
-
-    //BUSY OFF, LOCK OFF
-    oAPP.common.fnSetBusyLock("");
-
+    console.log("UPDATE-DESIGN-DATA 처리 완료");
 
     //화면에서 UI추가, 이동, 삭제 및 attr 변경시 변경 flag 처리.
     oAPP.fn.setChangeFlag();
+    
+    //BUSY OFF
+    parent.setBusy("");
 
     return true;
 
@@ -298,10 +300,16 @@ function updateRootObjectID(oEvent){
         return false;
     }
 
+    //BUSY ON, LOCK ON
+    oAPP.common.fnSetBusyLock("X");
+
 
     //최상위 UI정보 갱신 처리.
     DESIGN_ROOT_OBJID = oEvent.data.OBJID;
     console.log(DESIGN_ROOT_OBJID);
+    
+    //BUSY OFF, LOCK OFF
+    oAPP.common.fnSetBusyLock("");
 
 
     //최상위 UI 갱신건 flag return.
@@ -320,14 +328,19 @@ function responeSelectDesignTreeOBJID(oEvent){
         return false;
     }
 
+    parent.setBusy("X");
+
     //전달받은 파라메터가 존재하지 않는경우 exit.
     if(typeof oEvent.data.OBJID === "undefined" || oEvent.data.OBJID === ""){
+        parent.setBusy("");
         return true;
     }
 
 
     //tree item 선택 처리
     oAPP.fn.setSelectTreeItem(oEvent.data.OBJID);
+
+    parent.setBusy("");
 
     return true;
 
@@ -348,7 +361,10 @@ function checkBindPopupDragAppData(is_drag){
         DESIGN_ROOT_OBJID = "";
 
         _sRes.RETCD = "E";
-        _sRes.RTMSG = "갱신 처리 대상 UI가 존재하지 않습니다."; //$$MSG
+        
+        //164	갱신 처리 대상 UI가 존재하지 않습니다.
+        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "164");
+
         return _sRes;
     }
 
@@ -381,7 +397,9 @@ function checkBindPopupDragAppData(is_drag){
     if(typeof l_path !== "undefined" && l_path !== ""){
 
         _sRes.RETCD = "E";
-        _sRes.RTMSG = "부모 UI에 MODEL BINDING 처리되어 UI를 구성할 수 없습니다."; //$$MSG
+
+        //163	부모 UI에 MODEL BINDING 처리되어 UI를 구성할 수 없습니다.
+        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "163");
 
         return _sRes;
 
@@ -443,14 +461,21 @@ function setBindPopupDesignAppData(){
 /*************************************************************
  * @function - 바인딩 팝업에서 UI 구성을 위한 design tree 데이터 구성.
  *************************************************************/
-function updateBindPopupDesignData(oData){
+async function updateBindPopupDesignData(oData){
+
+    parent.setBusy("X");
+
+    await oAPP.fn.waitBusyOpened();
 
     //바인딩 팝업 채널이 구성되지 않은경우 exit.
     //(바인딩 팝업이 호출되지 않은경우)
     if(CL_WS20_BINDPOPUP.isCreateChannel() === false){
+
+        //busy off.
+        parent.setBusy("");
+
         return;
     }
-
     
     var _sParam = {
         PRCCD  : "UPDATE_DESIGN_DATA",
@@ -484,7 +509,6 @@ function updateBindPopupDesignData(oData){
 
     //바인딩 팝업에 데이터 전송.
     CL_WS20_BINDPOPUP.sendPostMessage(_sParam);
-
 
 }
 
@@ -648,6 +672,8 @@ function selectDesignTreeOBJID(oData){
  * @module - 디자인상세화면(20화면) <-> BINDPOPUP 통신 처리 모듈.
  *************************************************************/
 module.exports = function(ACTCD, oData){
+
+    console.log(ACTCD);
 
     switch (ACTCD) {
         case "CHANNEL-CREATE":

@@ -50,6 +50,9 @@ export default async function(oTarget, aMessage){
     _oPopover.setModel(_oModel);
 
 
+    //091	오류 위치 확인
+    var _txt = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "091");
+
     _oPopover.bindAggregation("items", {
         path: "/T_MSG",
         template: new sap.m.MessageItem({
@@ -58,7 +61,9 @@ export default async function(oTarget, aMessage){
             description: "{DESC}",
             subtitle: "{SUBTITLE}",
             link: new sap.m.Link({
-                text: "오류 위치 확인",         //$$OTR
+                text: _txt,
+                tooltip: _txt,
+                visible: "{LK_VIS}",
                 press: onSelLink,
                 customData: [
                     new sap.ui.core.CustomData({
