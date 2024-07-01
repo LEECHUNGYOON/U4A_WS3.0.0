@@ -337,7 +337,9 @@
 
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A15"); // Binding Popup
         // oBrowserOptions.width = 1000;
-        oBrowserOptions.width = 1440;
+        oBrowserOptions.width = 1280;
+        oBrowserOptions.minWidth = 900;
+        oBrowserOptions.minHeight = 650;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0;
