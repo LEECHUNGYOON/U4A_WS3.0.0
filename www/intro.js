@@ -339,7 +339,7 @@
         // }
 
         oWin.webContents.on('did-finish-load', async function() {
-
+            
             // 글로벌 설정 정보를 ServerList에 전달한다.
             oWin.webContents.send('if-globalSetting-info', oGlobalSettings);
 
@@ -731,6 +731,20 @@
 
             }
 
+            // WS Sound 정보 저장
+            if (!oSettingValues.sound) {
+
+                let oRegData = {};
+                oRegData[sGlobalSettingPath] = {};
+                oRegData[sGlobalSettingPath]["sound"] = {
+                    value: oSettings.defaultSound || "X",
+                    type: "REG_SZ"
+                };
+
+                await WSUTIL.putRegeditValue(oRegData);
+
+            }
+
             resolve();
 
         });
@@ -926,12 +940,20 @@
 
     } // end of _checkRegistry
 
+    /************************************************************************
+     * WS Global Setting 관련 정보
+     ************************************************************************/
     function _setGlobalSettingInfo(oSettings) {
 
         return new Promise(async (resolve) => {
 
-            oSettings.globalLanguage = await WSUTIL.getWsLanguAsync();
-            oSettings.globalTheme = await WSUTIL.getWsThemeAsync();
+            let oGlobalSettingInfo = await WSUTIL.getWsGlobalSettingInfoAsync();
+            oSettings.globalLanguage = oGlobalSettingInfo?.language?.value || "EN";
+            oSettings.globalTheme    = oGlobalSettingInfo?.theme?.value;
+            oSettings.globalSound    = oGlobalSettingInfo?.sound?.value;
+
+            // oSettings.globalLanguage = await WSUTIL.getWsLanguAsync();
+            // oSettings.globalTheme = await WSUTIL.getWsThemeAsync();
 
             resolve();
 

@@ -871,6 +871,80 @@ module.exports = {
     },
     // end of setWsLanguAsync
 
+    getGlobalSettingInfo : function(key){
+
+        return new Promise(async (resolve) => {
+
+            let oSettings = this.getWsSettingsInfo(), // ws 설정 정보
+                sRegPath = oSettings.regPaths, // 각종 레지스트리 경로
+                sGlobalSettingPath = sRegPath.globalSettings;
+            // globalsettings 레지스트리 경로
+
+            // 레지스트리 정보 구하기
+            let oRegList = await this.getRegeditList([sGlobalSettingPath]),
+                oRetData = oRegList.RTDATA;
+
+            // 여기서 오류면 크리티컬 오류
+            if (oRegList.RETCD == "E") {
+                throw new Error(oRegList.RTMSG);
+            }
+
+            // 레지스트리에 GlobalSetting 정보가 있는지 확인
+            let oGlobalSettingRegData = oRetData[sGlobalSettingPath],
+                oSettingValues = oGlobalSettingRegData.values;
+
+            // 레지스트리에 저장된 WS language 값
+            if (!oSettingValues[key]) {
+                return resolve();
+            }
+
+            return resolve(oSettingValues[key]);
+
+
+        });
+
+
+    },
+
+
+    saveGlobalSettingInfo : function(key, value){
+
+        return new Promise(async (resolve) => {
+
+            let oSettings = this.getWsSettingsInfo(), // ws 설정 정보
+                sRegPath = oSettings.regPaths, // 각종 레지스트리 경로
+                sGlobalSettingPath = sRegPath.globalSettings;
+            // globalsettings 레지스트리 경로
+
+            // 저장할 레지스트리 데이터
+            let oRegData = {};
+            oRegData[sGlobalSettingPath] = {};
+            oRegData[sGlobalSettingPath][key] = {
+                value: value,
+                type: "REG_SZ"
+            };
+
+            try {
+
+                await this.putRegeditValue(oRegData);
+
+            } catch (error) {
+                
+                resolve({
+                    RETCD: "E",
+                    RTMSG: error && error.toString() || "Register Save Error!!"
+                });
+
+                return;
+            }            
+
+            resolve({ RETCD: "S" });
+
+        });
+
+
+    },
+
     /**
      * WS 3.0 전용 메시지 리턴
      */

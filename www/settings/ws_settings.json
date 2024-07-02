@@ -26,6 +26,7 @@
     },
     "defaultTheme": "sap_horizon_dark",
     "defaultLanguage" : "EN",
+    "defaultSound": "X",
     "defaultBackgroundColor": "#12171c",
     "requireFolders": [
         "msgcls",

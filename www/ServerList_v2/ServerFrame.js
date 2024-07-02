@@ -22,12 +22,12 @@
     oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
 
     oAPP.IPCRENDERER.on("if-globalSetting-info", (events, oInfo) => {
-
+    
         oAPP.data.GlobalSettings = oInfo;
 
         oAPP.data.SystemRootPath = process.env.SystemRoot;
 
-        oAPP.fn.fnOnDeviceReady();       
+        oAPP.fn.fnOnDeviceReady();
 
     });
 
@@ -43,7 +43,13 @@
     };
 
     // sap sound
-    oAPP.setSoundMsg = (TYPE) => {
+    oAPP.setSoundMsg = (TYPE) => {        
+
+        // 글로벌 사운드 설정값이 X 일 경우에만 수행
+        let oSettingInfo = WSUTIL.getWsSettingsInfo();
+        if(oSettingInfo.globalSound !== "X"){
+            return;
+        }     
 
         const
             PATH = oAPP.PATH,

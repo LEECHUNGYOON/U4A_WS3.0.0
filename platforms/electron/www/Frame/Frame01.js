@@ -934,6 +934,12 @@ oAPP.common = {};
 
     // 23. sap sound
     oWS.utill.fn.setSoundMsg = (TYPE) => {
+        
+        // 글로벌 사운드 설정값이 X 일 경우에만 수행
+        let oSettingInfo = WSUTIL.getWsSettingsInfo();
+        if(oSettingInfo.globalSound !== "X"){
+            return;
+        }
 
         // var oAudio = new Audio(),
         var oAudio = document.getElementById("u4aWsAudio"),

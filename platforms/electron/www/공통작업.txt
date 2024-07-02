@@ -24,6 +24,9 @@ var oModel = sap.ui.getCore().getModel();
 oAPP.fn.fnSetTreeJson(oModel, "WS30.USPTREE", "OBJKY", "PUJKY", "USPTREE");
 
 
+// 글로벌 설정 정보 구하기
+let oGlobalSettings = await WSUTIL.getWsGlobalSettingInfoAsync();
+
 
 
 // 30번 페이지에서 자주 쓰는 공통 메소드

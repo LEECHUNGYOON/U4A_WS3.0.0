@@ -299,7 +299,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     oAPP.fn.fnOnInitModeling = () => {
 
         return new Promise(async (resolve) => {
-
+            
             // WS Global Setting Lauguage에 맞는 메시지 텍스트 정보를 구한다.
             let oLanguTextResult = await WSUTIL.getWsMsgModelData();
             if (oLanguTextResult.RETCD == "E") {
@@ -1226,6 +1226,12 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                         text: "{/WSLANGU/ZMSG_WS_COMMON_001/005}" // Theme
                                     }),
                                     new sap.m.MenuItem({
+                                        key: "WSSOUND",
+                                        icon: "sap-icon://sound-loud",
+                                        text: "Sound"
+                                        // text: "{/WSLANGU/ZMSG_WS_COMMON_001/005}" // Theme
+                                    }),
+                                    new sap.m.MenuItem({
                                         key: "ABOUTWS",
                                         icon: "sap-icon://hint",
                                         text: "{/WSLANGU/ZMSG_WS_COMMON_001/044}" // About WS..
@@ -1253,7 +1259,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     }),
 
                 ]
-            });
+            });        
 
         oApp.addPage(oMainPage);
         oApp.placeAt("content");
@@ -1261,6 +1267,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oApp.addEventDelegate({
             onAfterRendering: function () {
 
+                // 모든 팝업 및 드롭다운 등등의 실행 영역을 페이지 컨텐츠 영역으로 제한
+                // 상단 헤더에는 electron 헤더 영역으로 클릭이 되지 않아
+                // 영역 제한을 하지 않을 경우 팝업 또는 드롭다운이 선택이 되지 않을 수 있음.
+                let oPageContentDom = oMainPage.getDomRef("cont");
+                if(oPageContentDom){                    
+                    sap.ui.core.Popup.setWithinArea(oPageContentDom);
+                }
+                
                 setTimeout(() => {
                     $('#content').fadeIn(300, 'linear');
                 }, 300);
@@ -2489,6 +2503,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
                 break;
 
+            case "WSSOUND":
+                
+                // WS Sound 설정 팝업 오픈
+                _openWsSoundSettingPopup();
+
+                break;
+
             case "ABOUTWS":
 
                 // About WS Popup 오픈
@@ -2801,6 +2822,136 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oDialog.open();
 
     } // end of _openWSThemeSettingPopup
+
+    /************************************************************************
+     * Sound Setting Popup Open
+     ************************************************************************/
+    function _openWsSoundSettingPopup(){
+
+        let _oDialog = new sap.m.Dialog({            
+            contentWidth: "350px",
+            draggable: true,
+            resizable: true,
+        });        
+
+        let _oCustomHeader = new sap.m.Bar({
+            contentLeft: [
+                new sap.ui.core.Icon({
+                    src: "sap-icon://sound-loud"
+                }),
+                new sap.m.Title({
+                    // text: "{/WSLANGU/ZMSG_WS_COMMON_001/000}" // WS Language Settings
+                    text: "사운드 설정"
+                })
+            ]
+        });
+        _oDialog.setCustomHeader(_oCustomHeader);
+
+        let _oMsgStrip = new sap.m.MessageStrip({
+            showIcon: true,
+            text: "{/WSLANGU/ZMSG_WS_COMMON_001/037}" // The selected language applies only to after restarting application.
+        }).addStyleClass("sapUiTinyMargin");
+        _oDialog.addContent(_oMsgStrip);
+
+        let _oForm = new sap.ui.layout.form.Form({
+            editable: true,
+            layout: new sap.ui.layout.form.ResponsiveGridLayout({
+                labelSpanXL: 2,
+                labelSpanL: 3,
+                labelSpanM: 3,
+                labelSpanS: 12,
+                singleContainerFullSize: true
+            })
+
+        }); // end of Form
+        _oDialog.addContent(_oForm);
+
+        let _oFormCont1 = new sap.ui.layout.form.FormContainer();
+        _oForm.addFormContainer(_oFormCont1);
+
+        let _oFormElem1 = new sap.ui.layout.form.FormElement();
+        _oFormCont1.addFormElement(_oFormElem1);
+
+        let _oLabel1 = new sap.m.Label({
+            design: sap.m.LabelDesign.Bold,
+            text: "사운드 설정" // [MSG]
+        });
+        _oFormElem1.setLabel(_oLabel1);
+
+        let _oSwitch1 = new sap.m.Switch({
+            busyIndicatorDelay:0,
+            busy: true
+
+        });
+        _oFormElem1.addField(_oSwitch1);
+
+
+        let _oBtn1 = new sap.m.Button({
+            type: sap.m.ButtonType.Emphasized,
+            text: "{/WSLANGU/ZMSG_WS_COMMON_001/002}", // "OK",
+            press: async function (oEvent) {
+
+                _oSwitch1.setBusy(true);
+
+                let _bState = _oSwitch1.getState();
+
+                await WSUTIL.saveGlobalSettingInfo("sound", _bState === true ? "X" : "");
+
+                _oSwitch1.setBusy(false);
+
+                sap.m.MessageToast.show(oAPP.msg.M01); // Saved success
+
+                _oDialog.close();
+
+            }
+        });
+        _oDialog.addButton(_oBtn1);        
+
+        let _oBtn2 = new sap.m.Button({
+            text: "{/WSLANGU/ZMSG_WS_COMMON_001/003}", // "Cancel"
+            press: function () {
+
+                _oDialog.close();
+
+            }
+        });
+        _oDialog.addButton(_oBtn2);
+
+
+        _oDialog.attachEvent("afterOpen", async function(){
+
+            _oSwitch1.setState(false);
+
+            let oResult = await WSUTIL.getGlobalSettingInfo("sound");
+
+            if(!oResult || !oResult.value){
+                _oSwitch1.setBusy(false);
+                return;
+            }            
+
+            if(oResult.value === "X"){
+                _oSwitch1.setState(true);
+            }
+
+            _oSwitch1.setBusy(false);
+
+            console.log("afterOpen");
+
+        });
+
+        _oDialog.attachEvent("afterClose", function(){
+
+            console.log("afterClose");
+
+            _oDialog.destroy();
+
+        });
+
+
+        _oDialog.open();
+
+    } // end of _openWsSoundSettingPopup
+
 
     /************************************************************************
      * About WS Popup 오픈
