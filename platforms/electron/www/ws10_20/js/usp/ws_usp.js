@@ -3700,7 +3700,7 @@
      * [WS30] Tree Table Row 데이터 구하기
      **************************************************************************/
     function fnUspTreeTableRowSelect(oRow) {
-
+debugger;
         var oCtx = oRow.getBindingContext(),
             oRowModel = oRow.getModel(),
             oRowData = oRowModel.getProperty(oCtx.sPath);
