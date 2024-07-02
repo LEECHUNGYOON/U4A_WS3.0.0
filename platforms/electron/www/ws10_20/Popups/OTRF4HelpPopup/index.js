@@ -159,7 +159,7 @@ var oAPP = parent.gfn_getParent();
 		};
 
 
-		// test..
+		
 		xhr.withCredentials = true;
 
 		// FormData가 없으면 GET으로 전송

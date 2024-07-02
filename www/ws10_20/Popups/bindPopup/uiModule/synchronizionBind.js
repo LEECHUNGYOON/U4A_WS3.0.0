@@ -95,6 +95,217 @@ function designControl(is_attr){
 
                 }
 
+
+                /*******************************************************
+                * @function - 선택한 라인의 데이터 정보 수집.
+                *******************************************************/  
+                function _getSelectedData(oTab){
+
+                    var _aList = [];
+
+                    if(typeof oTab === "undefined" || oTab === null){
+                        return _aList;
+                    }
+                    
+                    //라인 선택건 얻기.
+                    var _aSel = oTab.getSelectedIndices();
+
+
+                    //선택한 라인을 기준으로 입력값 동기화 처리.
+                    for(var i = 0, l = _aSel.length; i < l; i++){
+                        
+                        //선택 라인의 바인딩 정보 얻기.
+                        var _oCtxt = oTab.getContextByIndex(_aSel[i]);
+
+                        if(typeof _oCtxt === "undefined" || _oCtxt === null){
+                            continue;
+                        }
+
+                        var _sLine = _oCtxt.getProperty();
+
+                        if(typeof _sLine === "undefined" || _sLine === null){
+                            continue;
+                        }
+
+                        _aList.push(_sLine);
+                        
+                    }
+
+                    return _aList;
+
+                }
+
+
+                /*******************************************************
+                * @function - 동일속성 바인딩 처리.
+                *******************************************************/  
+                async function _setSyncAttr(aList){
+
+                    var _UIATV = oContr.oModel.oData.S_ATTR.UIATV;
+
+                    //바인딩 필드의 모델 필드 정보 얻기.
+                    var _sField = oAPP.fn.getModelBindData(_UIATV, oAPP.attr.oModel.oData.zTREE);
+
+                    //150	&1 필드가 모델 항목에 존재하지 않습니다.
+                    if(typeof _sField === "undefined"){
+
+                        oAPP.fn.setBusy(false);
+
+                        //dialog용 busy off.
+                        oContr.fn.setBusyDialog(false);
+
+                        //150	&1 필드가 모델 항목에 존재하지 않습니다.
+                        sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "150", _UIATV), 
+                            {duration: 3000, at:"center center", my:"center center"});
+
+                        return;
+
+                    }
+
+                    _sField = JSON.parse(JSON.stringify(_sField));
+
+                    //해당 attr에 추가속성 정보가 존재하는경우.
+                    if(typeof oContr.oModel.oData.S_ATTR.MPROP !== "undefined" && oContr.oModel.oData.S_ATTR.MPROP !== ""){
+                        _sField.MPROP = oContr.oModel.oData.S_ATTR.MPROP;
+                    }
+
+
+                    //선택한 라인을 기준으로 입력값 동기화 처리.
+                    for(var i = 0, l = aList.length; i < l; i++){
+
+                        var _sLine = aList[i];               
+
+
+                        //디자인 영역에 해당 라인 찾기.
+                        var _sTree = oAPP.fn.getDesignTreeAttrData(_sLine.OBJID, _sLine.UIATK);
+
+
+                        switch (_sTree.UIATY) {
+                            case "1":
+                                //프로퍼티 바인딩 처리.
+                                oAPP.fn.attrSetBindProp(_sTree, _sField);
+                                break;
+
+                            case "3":
+
+                                if(_sTree.UIATV !== "" && _sTree.ISBND === "X"){
+
+                                    //UNBIND 처리.
+                                    oAPP.fn.attrUnbindAggr(oAPP.attr.prev[_sTree.OBJID], _sTree.UIATT, _sTree.UIATV);
+
+                                    //TREE의 PARENT, CHILD 프로퍼티 예외처리.
+                                    oAPP.fn.attrUnbindTree(_sTree);
+
+                                }
+                                
+                                //AGGREGATION 바인딩 처리.
+                                oAPP.fn.attrSetBindProp(_sTree, _sField);
+                                
+
+                                oAPP.attr.prev[_sTree.OBJID]._MODEL[_sTree.UIATT] = _sTree.UIATV;
+
+                                break;
+                        
+                            default:
+                                break;
+                        }
+
+                        //바인딩 처리된 값 매핑.
+                        _sLine.UIATV = _sTree.UIATV;
+                        
+                    }
+
+
+                    oAPP.attr.oDesign.oModel.refresh(true);
+
+                    oContr.oModel.refresh();
+
+
+                    //160	동일속성 바인딩 처리를 완료 했습니다.
+                    sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "160"), 
+                        {duration: 3000, at:"center center", my:"center center"});  
+
+
+                    //디자인 영역으로 이동 처리.
+                    await oAPP.attr.oDesign.fn.moveDesignPage();
+
+                                        
+                    //추가속성 바인딩 버튼 활성 처리.
+                    oAPP.attr.oAddit.fn.setAdditBindButtonEnable(true);
+
+                    
+                    //tree table 컬럼길이 재조정 처리.
+                    oAPP.fn.setUiTableAutoResizeColumn(oAPP.attr.oDesign.ui.TREE);
+
+
+                    //해당 영역에서 BUSY OFF 처리하지 않음.
+                    //바인딩 팝업에서 WS20 디자인 영역에 데이터 전송 ->
+                    //WS20 디자인 영역에서 데이터 반영 ->
+                    //WS20 디자인 영역에서 BUSY OFF 요청으로 팝업의 BUSY가 종료됨.
+
+                    //dialog가 호출된 상태인경우 dialgo 종료 처리.
+                    if(typeof oContr.ui.oDialog !== "undefined"){
+                        oContr.ui.oDialog.close();
+                    }
+
+
+                }
+
+
+                /*******************************************************
+                * @function - dialog의 테이블 라인선택 해제 처리.
+                *******************************************************/  
+                function _clearSelectionPopupTable(){
+
+                    if(typeof oContr.ui.oDialog === "undefined"){
+                        return;
+                    }
+
+                    //dialog의 content 정보 검색.
+                    var _aCont = oContr.ui.oDialog.getContent();
+
+                    if(_aCont.length === 0){
+                        return;
+                    }
+
+                    var _oVBox =  _aCont[0];
+
+                    //첫번째 UI가 VBOX가 아닌경우 EXIT.
+                    if(_oVBox.isA("sap.m.VBox") !== true){
+                        return;
+                    }
+
+                    if(typeof _oVBox.getItems !== "function"){
+                        return;
+                    }
+
+                    var _aItems = _oVBox.getItems();
+
+                    if(_aItems.length === 0){
+                        return;
+                    }
+
+                    //VBOX의 ITEM에서 TABLE을 검색.
+                    for (let i = 0, l = _aItems.length; i < l; i++) {
+                        var _oUi = _aItems[i];
+
+                        if(_oUi.isA("sap.ui.table.Table") !== true){
+                            continue;
+                        }
+
+                        if(typeof _oUi.clearSelection !== "function"){
+                            continue;
+                        }
+
+                        //해당 TABLE의 라인 초기화 처리.
+                        _oUi.clearSelection();
+
+                        return;
+                        
+                    }
+
+                }
+
            
 
         /*************************************************************
@@ -122,6 +333,8 @@ function designControl(is_attr){
                 //모델 갱신 처리.
                 oContr.oModel.refresh();
 
+                //table 컬럼길이 재조정 처리.
+                oAPP.fn.setUiTableAutoResizeColumn(oContr.ui.LIST);
 
                 return res();
 
@@ -198,10 +411,14 @@ function designControl(is_attr){
 
             oAPP.fn.setBusy(true);
 
+            //dialog용 busy on.
+            oContr.fn.setBusyDialog(true);
+
             var _oUi = oEvent?.oSource;
 
             if(typeof _oUi === "undefined"){
                 oAPP.fn.setBusy(false);
+                oContr.fn.setBusyDialog(false);
                 return;
             }
 
@@ -218,24 +435,35 @@ function designControl(is_attr){
 
             }
 
-            //라인 선택건 얻기.
-            var lt_sel = _oParent.getSelectedIndices();
+
+            //선택한 라인의 데이터 정보 수집.
+            var _aList = _getSelectedData(_oParent);
 
             //라인선택건이 존재하지 않는경우.
-            if(lt_sel.length === 0){
+            if(_aList.length === 0){
 
                 oAPP.fn.setBusy(false);
 
+                //dialog용 busy off.
+                oContr.fn.setBusyDialog(false);
+
                 //268	Selected line does not exists.
                 sap.m.MessageBox.error(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", ""));
+
                 return;
+
             }
 
+            //dialog용 busy off.
+            oContr.fn.setBusyDialog(false);
 
             oAPP.fn.setBusy(false);
 
+            //166	&1건의 라인이 선택됐습니다.
+            var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "166", _aList.length);
+
             //159	동일속성 바인딩 일괄적용 하시겠습니까?
-            var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "159");
+            _msg += "\n" + oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "159");
             
             let _actcd = await new Promise((resolve) => {
                 sap.m.MessageBox.confirm(_msg, {
@@ -250,90 +478,20 @@ function designControl(is_attr){
                 return;
             }
 
+            
+            //dialog용 busy on.
+            oContr.fn.setBusyDialog(true);
+
+
             oAPP.fn.setBusy(true);
 
 
-            //바인딩 필드의 모델 필드 정보 얻기.
-            var _sField = oAPP.fn.getModelBindData(oContr.oModel.oData.S_ATTR.UIATV, oAPP.attr.oModel.oData.zTREE);
+            //동일속성 바인딩 처리.
+            _setSyncAttr(_aList);
 
-            _sField = JSON.parse(JSON.stringify(_sField));
-
-            //해당 attr에 추가속성 정보가 존재하는경우.
-            if(typeof oContr.oModel.oData.S_ATTR.MPROP !== "undefined" && oContr.oModel.oData.S_ATTR.MPROP !== ""){
-                _sField.MPROP = oContr.oModel.oData.S_ATTR.MPROP;
-            }
-
-
-            //선택한 라인을 기준으로 입력값 동기화 처리.
-            for(var i=0, l=lt_sel.length; i<l; i++){
-
-                
-                //선택 라인의 바인딩 정보 얻기.
-                var l_ctxt = oContr.ui.LIST.getContextByIndex(lt_sel[i]);
-                if(!l_ctxt){continue;}
-
-                var ls_line = l_ctxt.getProperty();               
-
-
-                //디자인 영역에 해당 라인 찾기.
-                var _sTree = oAPP.fn.getDesignTreeAttrData(ls_line.OBJID, ls_line.UIATK);
-
-
-                switch (_sTree.UIATY) {
-                    case "1":
-                        //프로퍼티 바인딩 처리.
-                        oAPP.fn.attrSetBindProp(_sTree, _sField);
-                        break;
-
-                    case "3":
-
-                        if(_sTree.UIATV !== "" && _sTree.ISBND === "X"){
-
-                            //UNBIND 처리.
-                            oAPP.fn.attrUnbindAggr(oAPP.attr.prev[_sTree.OBJID],_sTree.UIATT, _sTree.UIATV);
-
-                            //TREE의 PARENT, CHILD 프로퍼티 예외처리.
-                            oAPP.fn.attrUnbindTree(_sTree);
-
-                        }
-                        
-                        //AGGREGATION 바인딩 처리.
-                        oAPP.fn.attrSetBindProp(_sTree, _sField);
-                        
-
-                        oAPP.attr.prev[_sTree.OBJID]._MODEL[_sTree.UIATT] = _sTree.UIATV;
-
-                        break;
-                
-                    default:
-                        break;
-                }
-
-
-                //바인딩 처리된 값 매핑.
-                ls_line.UIATV = _sTree.UIATV;
-                
-            }
-
-
-            oAPP.attr.oDesign.oModel.refresh(true);
-
-            oContr.oModel.refresh();
-
-
+            
             //라인 선택 해제 처리.
             _oParent.clearSelection();
-
-            //160	동일속성 바인딩 처리를 완료 했습니다.
-            sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "160"), 
-                {duration: 3000, at:"center center", my:"center center"});  
-
-
-            //디자인 영역으로 이동 처리.
-            await oAPP.attr.oDesign.fn.moveDesignPage();
-
-            oAPP.fn.setBusy(false);
-
 
         };
 
@@ -348,6 +506,11 @@ function designControl(is_attr){
 
             //디자인 영역으로 이동 처리.
             await oAPP.attr.oDesign.fn.moveDesignPage();
+
+                                
+            //추가속성 바인딩 버튼 활성 처리.
+            oAPP.attr.oAddit.fn.setAdditBindButtonEnable(true);
+
 
             oAPP.fn.setBusy(false);
 
@@ -368,17 +531,35 @@ function designControl(is_attr){
             var l_A41 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A41", "", "", "", "");
 
 
-            var _oDialog = new sap.m.Dialog({
-                resizable:true, 
+            oContr.ui.oDialog = new sap.m.Dialog({
+                resizable:true,
+                busyIndicatorDelay: 0,
+                busy:"{/busy}",
                 draggable:true, 
                 contentWidth:"60%",
                 contentHeight:"60%",
                 verticalScrolling:false,
+                beforeOpen: function(){
+                    
+                    //팝업 호출전 기존 화면 잠금처리.
+                    oContr.fn.setViewLayoutEditable(false);
+                    
+                    //dialog의 테이블 라인선택 해제 처리.
+                    _clearSelectionPopupTable();
+
+                },
                 afterOpen: function(){
                     oAPP.fn.setBusy(false);
                 },
+                beforeClose: function(){
+
+                    //팝업 호출전 기존 화면 잠금해제처리.
+                    oContr.fn.setViewLayoutEditable(true);
+                },
                 afterClose: function(){
-                    _oDialog.destroy();
+                    oContr.ui.oDialog.destroy();
+
+                    delete oContr.ui.oDialog;
                 },
                 // customHeader: new sap.m.OverflowToolbar({
                 customHeader: new sap.m.Toolbar({
@@ -397,7 +578,7 @@ function designControl(is_attr){
                             //A39	Close
                             tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", ""),
                             press: function(){
-                                _oDialog.close();
+                                oContr.ui.oDialog.close();
                             }
                         })
                     ]
@@ -411,28 +592,28 @@ function designControl(is_attr){
                         tooltip:l_A41, 
                         type: "Reject",
                         press: function(){
-                            _oDialog.close();
+                            oContr.ui.oDialog.close();
                         }
                     })
                 ]
 
             }).addStyleClass("sapUiSizeCompact");
 
-            _oDialog.setModel(oContr.oModel);
+            oContr.ui.oDialog.setModel(oContr.oModel);
 
 
             //DIALOG MODAL 해제.
-            _oDialog.oPopup.setModal(false);
+            oContr.ui.oDialog.oPopup.setModal(false);
 
 
             //동일속성 화면 복사 처리.
             var _oClone = oContr.ui.VB_MAIN.clone();
 
 
-            _oDialog.addContent(_oClone);
+            oContr.ui.oDialog.addContent(_oClone);
 
             
-            _oDialog.open();
+            oContr.ui.oDialog.open();
 
 
             //디자인 영역으로 이동 처리.
@@ -442,6 +623,42 @@ function designControl(is_attr){
 
         };
 
+
+        /*************************************************************
+         * @function - Dialog busy 처리.
+         *************************************************************/
+        oContr.fn.setBusyDialog = function(bBusy){
+
+            //dialog용 busy on.
+            oContr.oModel.setProperty("/busy", bBusy);
+
+        };
+
+
+        /*************************************************************
+         * @function - 기존 화면 잠금/잠금해제 처리.
+         *************************************************************/
+        oContr.fn.setViewLayoutEditable = function(bLock){
+
+            //applicationdl 조회모드인경우 exit.
+            if(oAPP.attr.oAppInfo.IS_EDIT === ""){
+                return;
+            }
+
+
+            //기존 화면 화면 잠금/잠금해제 처리.
+            oAPP.fn.setViewEditable(bLock);
+
+
+            //design 영역 화면 잠금 / 잠금해제 처리
+            oAPP.attr.oDesign.fn.setViewEditable(bLock);
+
+
+            //추가속성 화면 잠금 / 잠금해제 처리.
+            oAPP.attr.oAddit.fn.setViewEditable(bLock);
+            
+
+        };
         
         /*************************************************************
          * @function - UI 구성 완료후 call back 처리.

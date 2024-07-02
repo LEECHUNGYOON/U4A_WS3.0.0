@@ -631,6 +631,9 @@ let oAPP = parent.oAPP,
         //바인딩 팝업 Broadcast Channel 생성.
         parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("CHANNEL-CREATE");
 
+        //split 영역 초기화 처리.
+        oAPP.fn.resetSplitArea();
+
 
         setTimeout(async () => {
 
@@ -958,6 +961,7 @@ let oAPP = parent.oAPP,
             icon: "sap-icon://refresh",
             type: "Emphasized",
             busy: "{/busy}",
+            enabled: "{/edit_refresh}",
             tooltip: l_txt,
             busyIndicatorDelay: 1
         });
@@ -987,80 +991,18 @@ let oAPP = parent.oAPP,
         oTool.addContent(oToolBtn4);
 
 
-        //테스트모드 인경우 테스트 버튼 추가.
-        if(oAPP.APP.isPackaged === false){
-
-            var oBtn01 = new sap.m.Button({
-                text: "바인딩 모드 변경",
-                icon: "sap-icon://refresh",
-                type: "Emphasized",
-                tooltip: l_txt,
-                busyIndicatorDelay: 1,
-                visible : false,
-                press:async function(){
-
-                    //테스트 모드.
-                    oAPP.attr.BIND_MODE = oAPP.attr.BIND_MODE === "01" ? "02" : "01";
-
-                    //바인딩 모드 변경.
-                    oAPP.fn.changeBindingMode(oAPP.attr.BIND_MODE);
-
-                }
-            });
-
-            oTool.addContent(oBtn01);
+        //168	분할 영역 초기화
+        var oToolBtn5 = new sap.m.Button({
+            icon: "sap-icon://screen-split-three",
+            tooltip: oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "168"),
+            busyIndicatorDelay: 1,
+            press: function(){
+                oAPP.fn.resetSplitArea();
+            }
+        });
+        oTool.addContent(oToolBtn5);
 
 
-            var oBtn02 = new sap.m.Button({
-                text: "데이터 갱신",
-                icon: "sap-icon://refresh",
-                type: "Emphasized",
-                tooltip: l_txt,
-                busyIndicatorDelay: 1,
-                press:async function(){
-
-                    oAPP.fn.setBusy(true);
-
-                    //design data 얻기.
-                    await new Promise((res)=>{
-    
-                        var oForm = new FormData();
-                        
-                        oForm.append("sap-user", "pes");
-                        oForm.append("sap-password", "dmstjq8!");
-                        oForm.append('appid', oAPP.attr.oAppInfo.APPID);
-                        
-                        sendAjax(oAPP.attr.servNm + "/getAppData", oForm, function (param) {
-                            
-                            
-                            oAPP.attr.T_0014 = param.APPDATA.T_0014;
-                            oAPP.attr.T_0015 = param.APPDATA.T_0015;
-                            oAPP.attr.T_CEVT = param.APPDATA.T_CEVT;
-
-                            res();
-
-                        });
-                        
-                    });
-
-                    //서버에서 바인딩 attr 정보 얻기.
-                    oAPP.fn.getBindFieldInfo();
-
-                }
-            });
-
-            oTool.addContent(oBtn02);
-
-            
-            var oBtn03 = new sap.m.Button({
-                text: "바인딩 정보 확인",
-                type: "Emphasized",
-                press:callBindingListPopup
-            });
-
-            oTool.addContent(oBtn03);
-            
-        }
 
 
         //메인의 좌, 우 분할 Splitter.
@@ -1071,7 +1013,12 @@ let oAPP = parent.oAPP,
 
         //좌측 페이지.
         var oPageLeft = new sap.m.Page({
-            showHeader:false
+            showHeader:false,
+            layoutData:  new sap.ui.layout.SplitterLayoutData({
+                size: "{/width}",
+                resizable: "{/resize}",
+                minSize: 300
+            })
         });
         oSpt1.addContentArea(oPageLeft);
 
@@ -1086,7 +1033,8 @@ let oAPP = parent.oAPP,
         oAPP.ui.oPageRight = new sap.m.Page({
             showHeader:false,
             layoutData: new sap.ui.layout.SplitterLayoutData({
-                size:"auto"
+                size:"auto",
+                minSize:300
             })
         });
         oSpt1.addContentArea(oAPP.ui.oPageRight);
@@ -1097,7 +1045,13 @@ let oAPP = parent.oAPP,
         oAPP.ui.oPageRight.addContent(oAPP.ui.oSptRight);
 
         //좌측 트리의 상하 분할 Splitter.
-        oAPP.ui.oSptLeft = new sap.ui.layout.Splitter({orientation:"Vertical"});
+        oAPP.ui.oSptLeft = new sap.ui.layout.Splitter({
+            orientation:"Vertical",
+            layoutData: new sap.ui.layout.SplitterLayoutData({
+                size:"{/width_c}",
+                minSize:300
+            })
+        });
         oAPP.ui.oSptRight.addContentArea(oAPP.ui.oSptLeft);
 
 
@@ -1119,9 +1073,10 @@ let oAPP = parent.oAPP,
 
 
         var oPageArea2 = new sap.m.Page({
-            showHeader: false,
+            showHeader: false,            
             layoutData: new sap.ui.layout.SplitterLayoutData({
-                size:"30%"
+                size:"{/width_r}",
+                minSize: 300,                
             })
         });
         oAPP.ui.oSptRight.addContentArea(oPageArea2);
@@ -1159,6 +1114,7 @@ let oAPP = parent.oAPP,
                 minSize:300
             }),
             customHeader : new sap.m.OverflowToolbar({
+                visible:"{/vis_addit}",
                 content:[                    
                     new sap.m.Button({
                         text:l_txt1,
@@ -1180,6 +1136,7 @@ let oAPP = parent.oAPP,
                         tooltip:l_txt2,
                         icon:"sap-icon://accept",
                         type:"Emphasized",
+                        enabled: "{/edit}",
                         press: oAPP.fn.onAdditBind
                     }),
                     new sap.m.ObjectStatus({
@@ -1258,12 +1215,6 @@ let oAPP = parent.oAPP,
 
 
 
-        var oLay1 = new sap.ui.layout.SplitterLayoutData({
-            size: "{/width}",
-            resizable: "{/resize}"
-        });
-        // oAPP.ui.oTree.setLayoutData(oLay1);
-        oPageLeft.setLayoutData(oLay1);
 
         //A50  Object Name
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A50", "", "", "", "");
@@ -1370,7 +1321,8 @@ let oAPP = parent.oAPP,
             selectionBehavior: "RowOnly",
             visibleRowCountMode: "Auto",
             width: "100%",
-            visible: "{/resize}",
+            // visible: "{/resize}",
+            visible:"{/vis_addit}",
             rowHeight:30,            
             layoutData: new sap.ui.layout.SplitterLayoutData()
         });
@@ -1843,19 +1795,13 @@ let oAPP = parent.oAPP,
     oAPP.fn.onChangeInput = async function(oEvent){
 
         var _oUi = oEvent.oSource;
+
+        //UI의 bindingContext에서 데이터 추출.
+        var _sAddit = oAPP.fn.getUiContextData(_oUi);
         
-        if(typeof _oUi === "undefined" || _oUi === null){
+        if(typeof _sAddit === "undefined"){
             return;
         }
-
-        var _oCtxt = _oUi.getBindingContext();
-
-        if(typeof _oCtxt === "undefined" || _oCtxt === null){
-            return;
-        }
-
-        var _sAddit = _oCtxt.getProperty(); 
-
 
         //추가속성 정보 conversion 입력필드 변경에 대한 처리.
         oAPP.fn.convChangeInput(_sAddit);
@@ -1910,8 +1856,6 @@ let oAPP = parent.oAPP,
             sAddit._error_msg  = _sRes.RTMSG;
 
             oAPP.attr.oModel.refresh();
-
-            oAPP.attr.oDesign.oModel.refresh();
 
             oAPP.fn.setBusy(false);
 
@@ -2443,10 +2387,15 @@ let oAPP = parent.oAPP,
                 oAPP.attr.oModel.oData.height = "100%";
                 oAPP.attr.oModel.oData.resize_v = false;
 
+
+                oAPP.attr.oModel.oData.vis_addit = false;
+
                 //선택한 라인의 데이터 유형이 일반 필드면 추가속성 정보 활성화.
                 if(KIND === "E"){
                     oAPP.attr.oModel.oData.resize_v = true;
                     oAPP.attr.oModel.oData.height = "60%";
+
+                    oAPP.attr.oModel.oData.vis_addit = true;
                 }
                 
                 break;
@@ -3021,9 +2970,25 @@ let oAPP = parent.oAPP,
                     
                     //같은 PATH 정보 바인딩됨 FLAG RETURN.
                     return true;
-                }                       
+                }
 
             }
+
+
+            //attr 수집건이 존재하는경우.
+            if(typeof oAPP.attr.prev[sChild.OBJID]._T_0015 !== "undefined"){
+
+                //바인딩 path로 부터 파생된 정보가 존재하는경우.
+                var _found = oAPP.attr.prev[sChild.OBJID]._T_0015.findIndex( item => item.ISBND === "X" &&                    
+                    String(item.UIATV).startsWith(BINDFIELD) === true );
+
+                if(_found !== -1){
+                    return true;
+                }
+
+            }
+
+            
 
             //하위를 탐색하며 입력 모델 PATH와 같은 바인딩이 설정 됐는지 확인.
             var _found = oAPP.fn.getChildAggrBind(sChild.OBJID, BINDFIELD);
@@ -3035,7 +3000,6 @@ let oAPP = parent.oAPP,
         }
 
     };
-
 
 
     //aggregation 바인딩 처리 가능여부 점검.
@@ -3933,6 +3897,35 @@ let oAPP = parent.oAPP,
     };  //MOVE-CORRESPONDING
 
 
+    /*******************************************************
+    * @function - split 영역 초기화 처리.
+    *******************************************************/  
+    oAPP.fn.resetSplitArea = function(){
+
+        //좌측 model tree width.
+        oAPP.attr.oModel.oData.width = "30%";
+
+        //가운데 design tree height
+        oAPP.attr.oModel.oData.height = "100%";
+
+        //가운데 split의 resize 여부.
+        oAPP.attr.oModel.oData.resize_v = false;
+
+        //가운데 바인딩 추가속성 정보 visible 여부.
+        oAPP.attr.oModel.oData.vis_addit = false;
+
+        //우측 바인딩 추가속성 정보 width.
+        oAPP.attr.oModel.oData.width_r = "40%";
+
+        //가운데 design, 바인딩 추가속성 영역 wdith.
+        oAPP.attr.oModel.oData.width_c = "60%";
+
+
+        oAPP.attr.oModel.refresh();
+
+    };
+
+
     /************************************************************************
      * sap.ui.table.Table의 SORT, FILTER초기화.(sap.ui.table.TreeTable도 가능)
      *-----------------------------------------------------------------------
@@ -4021,6 +4014,213 @@ let oAPP = parent.oAPP,
 
     };
 
+
+
+    /*************************************************************
+     * @function - tree item 펼침 처리.
+     *************************************************************/
+    oAPP.fn.expandTreeItem = function(oTree){
+
+        oAPP.fn.setBusy(true);
+
+        //선택한 라인을 기준으로 하위를 탐색하며 펼침 처리.
+        function _fn_expand(){
+
+            //처리대상 라인의 node 정보 얻기.
+            var _oNode = _oBind.getNodeByIndex(_indx);
+
+            //node를 찾지 못한 경우 exit(모든 node 탐색).
+            if(typeof _oNode === "undefined"){return;}
+
+            //선택한 라인에서 파생된건이 아닌경우 exit.
+            if(_group !== _oNode.groupID.substr(0, _group.length)){return;}
+            
+            //현재 node의 child가 존재, 해당 node가 펼쳐져있지 않다면.
+            if(_oNode.isLeaf === false && _oNode.nodeState.expanded === false){
+                //해당위치 펼침 처리.
+                _oBind.expand(_indx);
+
+            }
+
+            //다음 라인 정보 구성.
+            _indx += 1;
+            console.log(_indx);
+
+            //하위를 탐색하며 tree 펼첨 처리.
+            _fn_expand();
+        
+        } //선택한 라인을 기준으로 하위를 탐색하며 펼침 처리.
+
+
+        if(typeof oTree === "undefined"){
+            oAPP.fn.setBusy(false);
+            return;
+        }
+
+        //선택한 라인 index 얻기.
+        var _indx = oTree.getSelectedIndex();
+
+        //선택한 라인이 없는경우 exit.
+        if(_indx === -1){
+            oAPP.fn.setBusy(false);
+
+            //268	Selected line does not exists.            
+            sap.m.MessageToast.show(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", ""),
+                {duration: 3000, at:"center center", my:"center center"});
+
+            return;
+        }
+
+        //tree 바인딩 정보 얻기.
+        var _oBind = oTree.getBinding();
+
+        if(typeof _oBind === "undefined" || _oBind === null){
+            oAPP.fn.setBusy(false);
+            return;
+        }
+
+        //선택한 라인의 바인딩 정보 얻기.
+        var _group = _oBind.getNodeByIndex(_indx).groupID;
+
+        //선택한 라인을 기준으로 하위를 탐색하며 펼침 처리.
+        _fn_expand();
+
+        oAPP.fn.setBusy(false);
+
+
+    };  //tree item 펼침 처리.
+
+
+
+
+
+    /*************************************************************
+     * @function - tree item 펼침 처리.
+     *************************************************************/
+    oAPP.fn.expandTreeItem = function(oTree){
+
+        oAPP.fn.setBusy(true);
+
+        //선택한 라인을 기준으로 하위를 탐색하며 펼침 처리.
+        function _fn_expand(is_tree){
+
+            if(typeof is_tree === "undefined"){
+                return;
+            }
+
+            //현재 라인 펼침 처리.
+            _oBind.expand(_indx);
+
+
+            for (let i = 0, l = is_tree.zTREE_DESIGN.length; i < l; i++) {
+                _fn_expand(is_tree.zTREE_DESIGN[i]);
+                
+            }
+           
+        
+        } //선택한 라인을 기준으로 하위를 탐색하며 펼침 처리.
+
+
+        if(typeof oTree === "undefined"){
+            oAPP.fn.setBusy(false);
+            return;
+        }
+
+        //선택한 라인 index 얻기.
+        var _indx = oTree.getSelectedIndex();
+
+        //선택한 라인이 없는경우 exit.
+        if(_indx === -1){
+            oAPP.fn.setBusy(false);
+
+            //268	Selected line does not exists.            
+            sap.m.MessageToast.show(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", ""),
+                {duration: 3000, at:"center center", my:"center center"});
+
+            return;
+        }
+
+        //tree 바인딩 정보 얻기.
+        var _oBind = oTree.getBinding();
+
+        if(typeof _oBind === "undefined" || _oBind === null){
+            oAPP.fn.setBusy(false);
+            return;
+        }
+
+
+        var _oCtxt = _oBind.getContextByIndex(_indx);
+        
+        if(typeof _oCtxt === "undefined" || _oCtxt === null){
+            oAPP.fn.setBusy(false);
+            return;
+        }
+
+        var _sTree = _oCtxt.getProperty();
+
+
+        //선택한 라인을 기준으로 하위를 탐색하며 펼침 처리.
+        _fn_expand(_sTree);
+
+        oAPP.fn.setBusy(false);
+
+
+    };  //tree item 펼침 처리.
+
+
+
+    /*************************************************************
+     * @function - tree item 접힘 처리.
+     *************************************************************/
+    oAPP.fn.collapseTreeItem = function(oTree){
+
+        oAPP.fn.setBusy(true);
+
+        if(typeof oTree === "undefined"){
+            oAPP.fn.setBusy(false);
+            return;
+        }
+
+        var _indx = oTree.getSelectedIndex();
+
+        if(_indx === -1){
+            oAPP.fn.setBusy(false);
+
+            //268	Selected line does not exists.            
+            sap.m.MessageToast.show(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", ""),
+                {duration: 3000, at:"center center", my:"center center"});
+
+            return;
+        }
+        
+        //선택한 라인을 접힘 처리.
+        oTree.collapse(_indx);
+
+        oAPP.fn.setBusy(false);
+
+    };
+
+
+
+    /*************************************************************
+     * @function - 화면 잠금/잠금해제 처리.
+     *************************************************************/
+    oAPP.fn.setViewEditable = function(bLock){
+
+        //applicationdl 조회모드인경우 exit.
+        if(oAPP.attr.oAppInfo.IS_EDIT === ""){
+            return;
+        }
+
+        //모델 tree, 가운데 하단 바인딩 추가속성 정보 잠금/ 잠금 해제 처리.
+        oAPP.attr.oModel.oData.edit         = bLock;
+
+        //모델 tree 갱신버튼 잠금/ 잠금 해제 처리.
+        oAPP.attr.oModel.oData.edit_refresh = bLock;
+
+        oAPP.attr.oModel.refresh();
+
+    };
     
 /********************************************************************
  * ******************************************************************
@@ -4059,6 +4259,7 @@ let oAPP = parent.oAPP,
         var oFormData = new FormData();
         oFormData.append("CLSNM", oAPP.attr.oAppInfo.CLSID);
         oFormData.append("APPID", oAPP.attr.oAppInfo.APPID);
+
 
         //바인딩 필드 정보 검색.
         sendAjax(oAPP.attr.servNm + "/getBindAttrData", oFormData, function (param) {
@@ -4160,9 +4361,6 @@ let oAPP = parent.oAPP,
             // //tree table 컬럼길이 재조정 처리.
             // oAPP.fn.setTreeAutoResizeCol(500);
 
-            // //tree table 컬럼길이 재조정 처리.
-            oAPP.fn.setUiTableAutoResizeColumn(oAPP.ui.oTree);
-
             //모델 tree 첫번째 라인 선택 처리.
             oAPP.ui.oTree.setSelectedIndex(0);
             
@@ -4171,6 +4369,12 @@ let oAPP = parent.oAPP,
             PARWIN = CURRWIN.getParentWindow();
 
             PARWIN.webContents.send("if-bindPopup-callback", "X");
+
+
+            oAPP.ui.oTree.attachEventOnce("rowsUpdated", ()=>{
+                // //tree table 컬럼길이 재조정 처리.
+                oAPP.fn.setUiTableAutoResizeColumn(oAPP.ui.oTree);
+            });
           
             
             oAPP.fn.setBusy(false);

@@ -2852,8 +2852,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
     if (bIsAsync != null) {
         IsAsync = bIsAsync;
     }
-
-    // test..
+    
     xhr.withCredentials = true;
 
     // FormData가 없으면 GET으로 전송

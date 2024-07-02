@@ -5832,22 +5832,40 @@
       }
 
 
-      //현재 UI로부터 부모를 탐색하며 n건 바인딩 존재 여부 확인.
-      var _parentModel = oAPP.fn.getParentAggrBind(oAPP.attr.prev[ls_attr.OBJID], ls_attr.UIATT);
-
-      //부모에 N건 바인딩이 구성 되었을경우, 현재 DRAG한 필드와 동일한 PATH라면 바인딩 불가능.
-      if(typeof _parentModel !== "undefined" && _parentModel.startsWith(l_json.IF_DATA.CHILD) === true){
+      //대상 UI로부터 자식을 탐색하며 바인딩 가능 여부 점검.
+      if(oAPP.fn.getChildAggrBind(ls_attr.OBJID, l_json.IF_DATA.CHILD) === true){
         //214  Unable to bind.
         oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
         return;
       }
 
 
-      //대상 UI로부터 자식을 탐색하며 바인딩 가능 여부 점검.
-      if(oAPP.fn.getChildAggrBind(ls_attr.OBJID, l_json.IF_DATA.CHILD) === true){
-        //214  Unable to bind.
-        oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
-        return;
+      //현재 UI로부터 부모를 탐색하며 n건 바인딩 존재 여부 확인.
+      var _parentModel = oAPP.fn.getParentAggrBind(oAPP.attr.prev[ls_attr.OBJID], ls_attr.UIATT);
+
+      //부모에 N건 바인딩이 구성 되었을경우
+      if(typeof _parentModel !== "undefined"){
+
+        //현재 DRAG한 필드와 동일한 PATH라면 바인딩 불가능.
+        if(_parentModel.startsWith(l_json.IF_DATA.CHILD) === true){
+          //214  Unable to bind.
+          oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+          return;
+        }
+
+
+        //drag한 path가 N건 바인딩된 PATH로 부터 파생된 자식 PATH인경우.
+        if(l_json.IF_DATA.CHILD !== _parentModel && l_json.IF_DATA.CHILD.startsWith(_parentModel) === true){
+
+          //현재 UI의 하위에 n건 바인딩된 PATH
+          if( oAPP.fn.getChildAggrBind(ls_attr.OBJID, _parentModel) === true){
+            //214  Unable to bind.
+            oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+            return;
+          }
+
+        }
+
       }
 
 
@@ -6058,6 +6076,20 @@
                   //같은 PATH 정보 바인딩됨 FLAG RETURN.
                   return true;
               }                       
+
+          }
+
+
+          //attr 수집건이 존재하는경우.
+          if(typeof oAPP.attr.prev[sChild.OBJID]._T_0015 !== "undefined"){
+
+            //바인딩 path로 부터 파생된 정보가 존재하는경우.
+            var _found = oAPP.attr.prev[sChild.OBJID]._T_0015.findIndex( item => item.ISBND === "X" &&                    
+                String(item.UIATV).startsWith(BINDFIELD) === true );
+
+            if(_found !== -1){
+                return true;
+            }
 
           }
 

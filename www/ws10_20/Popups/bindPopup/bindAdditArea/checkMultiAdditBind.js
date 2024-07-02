@@ -10,7 +10,7 @@ module.exports = function(is_attr){
 
         //DESIGN TREE의 오류 표현 필드 정보 초기화.
         oAPP.attr.oDesign.fn.resetErrorField();
-        
+
 
         //DESIGN TREE의 체크박스 선택건 존재 여부 확인.
         var _aTree = oAPP.attr.oDesign.fn.getSelectedDesignTree();
@@ -29,8 +29,9 @@ module.exports = function(is_attr){
             
             _sBindError.ACTCD    = oAPP.attr.CS_MSG_ACTCD.ACT02;
             _sBindError.TYPE     = "Error";
+            
             //087	DESIGN 영역의 라인 선택건이 존재하지 않습니다.
-            _sRes.RTMSG = _msg;
+            _sBindError.TITLE = _msg;
 
             //142	추가속성 바인딩을 하기 위해서 디자인 영역의 라인을 선택 해야 합니다.
             _sBindError.DESC     = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "142");

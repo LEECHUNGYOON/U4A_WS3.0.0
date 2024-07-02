@@ -206,6 +206,10 @@ async function updateDesignData(oEvent){
     //디자인 영역으로 화면 이동 처리
     await oAPP.attr.oDesign.fn.moveDesignPage();
 
+                        
+    //추가속성 바인딩 버튼 활성 처리.
+    oAPP.attr.oAddit.fn.setAdditBindButtonEnable(true);
+
     
     //디자인 영역 데이터 구성 처리.
     oAPP.attr.oDesign.fn.setDesignTreeData();
@@ -226,6 +230,12 @@ async function updateDesignData(oEvent){
 
     //BUSY OFF 요청 처리.
     oEvent.currentTarget.postMessage({PRCCD:"BUSY_OFF"});
+
+
+    oAPP.attr.oDesign.ui.TREE.attachEventOnce("rowsUpdated", ()=>{
+        //tree table 컬럼길이 재조정 처리.
+        oAPP.fn.setUiTableAutoResizeColumn(oAPP.attr.oDesign.ui.TREE);
+    });
 
 
     oAPP.fn.setBusy(false);

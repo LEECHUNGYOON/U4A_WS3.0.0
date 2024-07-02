@@ -17,8 +17,12 @@ module.exports = {
 
         return new Promise(async (resolve) => {
 
+            let oSettingInfo = WSUTIL.getWsSettingsInfo(),
+            sWsLangu = oSettingInfo.globalLanguage;
+
             // 글로벌 설정된 언어키를 구한다.
-            let sLangu = await WSUTIL.getWsLanguAsync();
+            let sLangu = sWsLangu;
+            // let sLangu = await WSUTIL.getWsLanguAsync();
 
             // 각 확장자에 맞는 svg 경로를 구한다.
             let aIcons,
@@ -138,8 +142,12 @@ module.exports = {
 
         return new Promise(async (resolve) => {
 
+            let oSettingInfo = WSUTIL.getWsSettingsInfo(),
+                sWsLangu = oSettingInfo.globalLanguage;
+
             // 글로벌 설정된 언어키를 구한다.
-            let sLangu = await WSUTIL.getWsLanguAsync();
+            let sLangu = sWsLangu;
+            // let sLangu = await WSUTIL.getWsLanguAsync();
 
             resolve([{
                 "PKEY": "",

@@ -164,9 +164,14 @@ function designControl(oArea){
 
             }
 
+            //DESIGN TREE의 체크박스 선택한 정보 얻기.
+            var _aTree = oAPP.attr.oDesign.fn.getSelectedDesignTree();
+
+            //166	&1건의 라인이 선택됐습니다.
+            var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "166", _aTree.length);
 
             //089	바인딩 추가 속성 정보를 적용하시겠습니까?
-            var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "089");
+            _msg += "\n" + oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "089");
 
 
             oAPP.fn.setBusy(false);
@@ -196,11 +201,18 @@ function designControl(oArea){
             oAPP.attr.oDesign.oModel.refresh(true);
 
 
-            oAPP.fn.setBusy(false);
+            //tree table 컬럼길이 재조정 처리.
+            oAPP.fn.setUiTableAutoResizeColumn(oAPP.attr.oDesign.ui.TREE);
+
 
             //090	바인딩 추가 속성 정보를 적용 했습니다.
             sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "090"), 
                 {duration: 3000, at:"center center", my:"center center"});
+
+            //해당 영역에서 BUSY OFF 처리하지 않음.
+            //바인딩 팝업에서 WS20 디자인 영역에 데이터 전송 ->
+            //WS20 디자인 영역에서 데이터 반영 ->
+            //WS20 디자인 영역에서 BUSY OFF 요청으로 팝업의 BUSY가 종료됨.
 
         };
 
@@ -563,18 +575,18 @@ function designControl(oArea){
          *************************************************************/
         oContr.fn.clearRefField = function(){
 
-            var _sMPROP = oContr?.oModel?.oData?.T_MPROP;
+            var _aMPROP = oContr?.oModel?.oData?.T_MPROP;
 
-            if(typeof _sMPROP === "undefined"){
+            if(typeof _aMPROP === "undefined"){
                 return;
             }
 
-            if(_sMPROP.length === 0){
+            if(_aMPROP.length === 0){
                 return;
             }
 
             //Reference Field name 라인 정보 찾기.
-            var _sP05 = _sMPROP.find( item => item.ITMCD === "P05");
+            var _sP05 = _aMPROP.find( item => item.ITMCD === "P05");
 
             //해당 라인을 찾지 못한 경우 exit.
             if(typeof _sP05 === "undefined"){
@@ -674,28 +686,28 @@ function designControl(oArea){
 
 
             //구조(TAB) 안에 있는 필드 중 CUKY, UNIT 타입이 없으면 잠김.
-            var lt_filt = _sField.zTREE.filter( item => item.DATATYPE === "CUKY" || item.DATATYPE === "UNIT");
+            var _aFilt = _sField.zTREE.filter( item => item.DATATYPE === "CUKY" || item.DATATYPE === "UNIT");
 
             //해당 구조(TAB) 안에 CUKY, UNIT 타입이 없는경우.
-            if(lt_filt.length === 0){
+            if(_aFilt.length === 0){
                 //참조 필드 리스트 초기화.
                 //참조 필드 라인 선택건 초기화.
                 oContr.fn.clearRefField();
                 return;
             }
 
-            var _sMPROP = oContr?.oModel?.oData?.T_MPROP;
+            var _aMPROP = oContr?.oModel?.oData?.T_MPROP;
 
-            if(typeof _sMPROP === "undefined"){
+            if(typeof _aMPROP === "undefined"){
                 return;
             }
 
-            if(_sMPROP.length === 0){
+            if(_aMPROP.length === 0){
                 return;
             }
 
             //Reference Field name 라인 정보 찾기.
-            var _sP05 = _sMPROP.find( item => item.ITMCD === "P05");
+            var _sP05 = _aMPROP.find( item => item.ITMCD === "P05");
 
             //해당 라인을 찾지 못한 경우 exit.
             if(typeof _sP05 === "undefined"){
@@ -709,9 +721,9 @@ function designControl(oArea){
             //공란 추가.
             _sP05.T_DDLB.push(JSON.parse(JSON.stringify(oContr.types.TY_DDLB)));
 
-            for (let i = 0, l = lt_filt.length; i < l; i++) {
+            for (let i = 0, l = _aFilt.length; i < l; i++) {
                 
-                var _sField = lt_filt[i];
+                var _sField = _aFilt[i];
 
                 var _sDDLB = JSON.parse(JSON.stringify(oContr.types.TY_DDLB));
 
@@ -907,6 +919,31 @@ function designControl(oArea){
             _setAdditBindButtonEnable(bEnable);
 
             oContr.oModel.refresh();
+
+        };
+
+
+        /*******************************************************
+        * @function - 화면 잠금 / 잠금해제 처리.
+        *******************************************************/  
+        oContr.fn.setViewEditable = function(bLock){
+
+
+            //applicationdl 조회모드인경우 exit.
+            if(oAPP.attr.oAppInfo.IS_EDIT === ""){
+                return;
+            }
+
+
+            //추가속성 화면 입력 필드 잠금 / 잠금 해제 처리.
+            oContr.oModel.oData.edit = bLock;
+
+
+            //추가속성 바인딩 버튼 활성처리.
+            _setAdditBindButtonEnable(bLock);
+
+            oContr.oModel.refresh();
+
 
         };
 
