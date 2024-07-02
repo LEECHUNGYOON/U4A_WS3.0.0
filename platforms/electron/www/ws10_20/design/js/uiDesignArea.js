@@ -1399,10 +1399,20 @@
     var l_indx = oAPP.attr.ui.oLTree1.getSelectedIndex();
 
     //선택한 라인이 없는경우 exit.
-    if(l_indx === -1){return;}
+    if(l_indx === -1){
+      //화면 잠금 해제 처리.
+      oAPP.fn.designAreaLockUnlock();
+      return;
+    }
 
     //tree 바인딩 정보 얻기.
     var l_bind = oAPP.attr.ui.oLTree1.getBinding();
+
+    if(typeof l_bind === "undefined" || l_bind === null){
+      //화면 잠금 해제 처리.
+      oAPP.fn.designAreaLockUnlock();
+      return;
+    }
 
     //선택한 라인의 바인딩 정보 얻기.
     var l_group = l_bind.getNodeByIndex(l_indx).groupID;

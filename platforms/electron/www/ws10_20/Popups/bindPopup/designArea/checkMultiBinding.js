@@ -140,7 +140,7 @@ module.exports = function(){
 
             //144	&1 필드 바인딩 오류.
             _sBindError.TITLE    = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "144", `${_sTree.OBJID} - ${_sTree.UIATT}`);
-            _sBindError.DESC     = _sChk.RTMSG;
+            _sBindError.DESC     = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, _sChk.MSGID, _sChk.MSGNO);
 
             _sRes.T_RTMSG.push(_sBindError);
             continue;

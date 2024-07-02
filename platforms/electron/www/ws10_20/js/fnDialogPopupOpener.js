@@ -2557,6 +2557,20 @@
         });
 
 
+        // let sChanelId = `${BROWSKEY}-shortcut-appf4`;
+
+        // if(APP.isPackaged){        
+        //     return;
+        // }
+
+        // IPCMAIN.off(sChanelId, lf_IpcMainCdnSave);
+
+        // // IPCMAIN 이벤트        
+        // IPCMAIN.on(sChanelId, function(){
+
+
+        // });        
+
     }; // end of oAPP.fn.fnAppShortCutDownPopupOpener
 
     /************************************************************************
