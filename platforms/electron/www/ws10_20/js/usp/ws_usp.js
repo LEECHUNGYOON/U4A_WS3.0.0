@@ -2908,7 +2908,7 @@
             oBindBeforeSelect = _fnGetSelectedUspTreeData(aUspTreeData);
 
         var oAppInfo = fnGetAppInfo(), // App 정보
-
+            oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"), // 우측 컨텐츠 데이터
             // APP 업데이트 정보 갱신
             oAppInfo = Object.assign({}, oAppInfo, oResult.S_RETURN);
 
@@ -3700,7 +3700,7 @@
      * [WS30] Tree Table Row 데이터 구하기
      **************************************************************************/
     function fnUspTreeTableRowSelect(oRow) {
-debugger;
+
         var oCtx = oRow.getBindingContext(),
             oRowModel = oRow.getModel(),
             oRowData = oRowModel.getProperty(oCtx.sPath);
