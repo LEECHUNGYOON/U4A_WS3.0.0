@@ -1228,8 +1228,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                     new sap.m.MenuItem({
                                         key: "WSSOUND",
                                         icon: "sap-icon://sound-loud",
-                                        text: "Sound"
-                                        // text: "{/WSLANGU/ZMSG_WS_COMMON_001/005}" // Theme
+                                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/204}" // Sound
                                     }),
                                     new sap.m.MenuItem({
                                         key: "ABOUTWS",
@@ -2840,8 +2839,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     src: "sap-icon://sound-loud"
                 }),
                 new sap.m.Title({
-                    // text: "{/WSLANGU/ZMSG_WS_COMMON_001/000}" // WS Language Settings
-                    text: "사운드 설정"
+                    text: "{/WSLANGU/ZMSG_WS_COMMON_001/205}" // Sound Settings
                 })
             ]
         });
@@ -2874,7 +2872,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         let _oLabel1 = new sap.m.Label({
             design: sap.m.LabelDesign.Bold,
-            text: "사운드 설정" // [MSG]
+            text: "{/WSLANGU/ZMSG_WS_COMMON_001/205}" // Sound Settings
         });
         _oFormElem1.setLabel(_oLabel1);
 

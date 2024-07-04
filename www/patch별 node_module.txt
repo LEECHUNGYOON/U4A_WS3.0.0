@@ -10,4 +10,7 @@ node-cmd@5.0.0
 puppeteer-core@20.7.2
 
 
+## v3.4.1 sp-00000
+js-string-escape@1.0.1
+
 ※ 패치 할 때마다 상위 node_modules을 누적으로 압축해서 패치 시 동봉 해야함!!

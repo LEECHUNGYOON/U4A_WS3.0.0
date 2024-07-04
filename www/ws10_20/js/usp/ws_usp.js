@@ -36,6 +36,10 @@
      */
     const RENAME_BINDROOT = "/WS30/USPRN";
 
+
+    // TEST
+    oAPP.jsStringEscape = parent.require('js-string-escape');
+
     /************************************************************************
      * [WS30] 30번 페이지 생성
      ************************************************************************/
@@ -1474,7 +1478,7 @@
                     height: "100%",
                     width: "100%",
                     syntaxHints: true,
-                    type: "{/WS30/USPDATA/EXTEN}",
+                    type: "{/WS30/USPDATA/EXTEN}",                    
                     value: "{/WS30/USPDATA/CONTENT}",
                     change: _codeeditorChange
                 };
@@ -3722,19 +3726,93 @@
             oRow: oRow,
         }
 
-        sendAjax(sPath, oFormData, _fnLineSelectCb.bind(oParam));
+        // sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob
+        sendAjax(sPath, oFormData, _fnLineSelectCb.bind(oParam), null, null, null, null, "X");
 
     } // end of fnTreeTableRowSelect
 
-    function _fnLineSelectCb(oResult) {
+    async function _fnLineSelectCb(oResult) {
 
-        // 화면 Lock 해제
-        sap.ui.getCore().unlock();
+        // Blob를 text로 변환
+        var oJsonResult = await new Promise((resolve) => {
+            var reader = new FileReader();
+            reader.onload = function() {                
+                return resolve({
+                    RETCD: "S",
+                    RDATA: reader.result
+                });
+            };
 
-        parent.setBusy("");
+            reader.onerror = function(error){
+
+                console.error(error);
+
+                let sErrMsg = "[usp_get_object_line_data] Usp Data Read Error!!";
+                if(error && error.toString){
+                    sErrMsg += "\n\n" + error.toString();
+                }
+
+                return resolve({
+                    RETCD: "E",
+                    RTMSG: sErrMsg
+                });
+
+            };
+
+            reader.readAsText(oResult);
+
+        });
+
+        // 파일 읽다가 오류 발생
+        if(oJsonResult.RETCD === "E"){
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            parent.setBusy("");
+
+            // Critical Error
+            oAPP.fn.fnCriticalErrorWs30({
+                RTMSG: oJsonResult.RTMSG
+            });
+
+            return;
+        }
+       
+        var sJsonResult = oJsonResult.RDATA;        
+
+        try {
+
+            oResult = JSON.parse(sJsonResult);
+            // decodeURIComponent(escape(atob( '6rCA64KY64uk' )))
+            // oResult.CONTENT = decodeURIComponent(atob( oResult.CONTENT ));
+            oResult.CONTENT = atob( oResult.CONTENT );
+
+        } catch (error) {
+            
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            parent.setBusy("");
+
+            var sMsg = "[usp_get_object_line_data] JSON Parse Error";
+
+            // Critical Error
+            oAPP.fn.fnCriticalErrorWs30({
+                RTMSG: sMsg
+            });
+
+            return;
+        }
+                
 
         // JSON Parse 오류 일 경우
         if (typeof oResult !== "object") {
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            parent.setBusy("");
 
             var sMsg = "[usp_get_object_line_data] JSON Parse Error";
 
@@ -3752,6 +3830,11 @@
 
             case "Z":
 
+                // 화면 Lock 해제
+                sap.ui.getCore().unlock();
+
+                parent.setBusy("");
+
                 // Critical Error
                 oAPP.fn.fnCriticalErrorWs30(oResult);
 
@@ -3759,9 +3842,10 @@
 
             case "E":
 
-                sap.ui.getCore().unlock(); // 화면 Lock 해제
+                // 화면 Lock 해제
+                sap.ui.getCore().unlock();
 
-                parent.setBusy(""); // Busy 종료
+                parent.setBusy("");
 
                 parent.setSoundMsg("02"); // error sound
 
@@ -5146,7 +5230,7 @@
      * [WS30] Save Button
      **************************************************************************/
     function ev_pressSaveBtn(oEvent) {
-
+        
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
 
@@ -5186,6 +5270,8 @@
         // 우측 컨텐츠 데이터를 읽는다.
         var oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"),
             aUspTreeData = oEvent.getParameter("TREEDATA");
+            
+            debugger;
 
         if (!aUspTreeData) {
             var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
@@ -5215,7 +5301,7 @@
                 break;
 
             }
-
+           
             oSaveData.S_CONTENT = oContent;
 
         }
@@ -5225,8 +5311,20 @@
         var sServerPath = parent.getServerPath(),
             sPath = `${sServerPath}/usp_save_active_appdata`;
 
+
+        const blob = new Blob( [ JSON.stringify(oSaveData) ], {
+            type: "application/json;charset=utf-8"
+         });
+
         var oFormData = new FormData();
         oFormData.append("APPDATA", JSON.stringify(oSaveData));
+        oFormData.append("file", blob, "usp_save_data.json");
+
+        // var fd = new FormData();
+        // fd.append('file', blob, "xxxxx.json");                    
+        // fd.append('PARAM1', "TEST1");
+        // fd.enctype ='multipart/form-data';
+        // fd.method  ='post';
 
         sendAjax(sPath, oFormData, _fnSaveCallback.bind(oNewEvent));
 
