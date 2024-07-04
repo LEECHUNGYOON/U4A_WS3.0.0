@@ -3128,7 +3128,11 @@
         // 작업표시줄 깜빡임
         CURRWIN.flashFrame(true);
 
-        parent.showMessage(sap, 20, 'E', oResult.RTMSG, fnCallback);
+        // MSG - Fatal Error! Please contact your system administrator.
+        let sErrMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "192");
+            sErrMsg += "\n\n" + oResult.RTMSG;
+
+        parent.showMessage(sap, 20, 'E', sErrMsg, fnCallback);
 
         function fnCallback() {
 
@@ -3138,7 +3142,8 @@
             // fnMoveToWs10();
 
             // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Login 페이지로 이동.
-            fn_logoff_success('X');
+            // fn_logoff_success('X');
+            fn_logoff_success('');
 
         }
 
@@ -5273,10 +5278,7 @@
         var oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"),
             aUspTreeData = oEvent.getParameter("TREEDATA");
             
-
             debugger;
-
-
 
         if (!aUspTreeData) {
             var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
