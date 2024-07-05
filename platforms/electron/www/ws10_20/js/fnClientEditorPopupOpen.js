@@ -262,7 +262,7 @@
      * Getting Client Editor Javascript Data
      ************************************************************************/
     oAPP.fn.fnGetClientJsData = function(EDITORDATA) {
-
+        
         var sEditorDataBindPath = CLIENT_EDITOR_BIND_ROOT_PATH + "/EDITDATA",
 
             aCliEvt = jQuery.extend(true, [], oAPP.DATA.APPDATA.T_CEVT),
@@ -310,7 +310,7 @@
      * Client Editor (HTML, JAVASCRIPT) Save Event
      ************************************************************************/
     oAPP.events.ev_pressClientEditorSave = function(oEvent) {
-
+        
         if (typeof GfnEditorCallback !== "function") {
             return;
         }
