@@ -3748,14 +3748,14 @@
                 });
             };
 
-            reader.onerror = function(error){
-
-                console.error(error);
+            reader.onerror = function(error){               
 
                 let sErrMsg = "[usp_get_object_line_data] Usp Data Read Error!!";
                 if(error && error.toString){
                     sErrMsg += "\n\n" + error.toString();
                 }
+
+                console.error("[fnLineSelectCb]: " + sErrMsg);
 
                 return resolve({
                     RETCD: "E",
@@ -3783,18 +3783,15 @@
 
             return;
         }
-       
+        
+
+        // BLOB => string => JSON
         var sJsonResult = oJsonResult.RDATA;        
 
         try {
 
-            debugger;
-
             oResult = JSON.parse(sJsonResult);
-            // decodeURIComponent(escape(atob( '6rCA64KY64uk' )))
-            // oResult.CONTENT = decodeURIComponent(atob( oResult.CONTENT ));
-            oResult.CONTENT = atob( oResult.CONTENT );
-
+           
         } catch (error) {
             
             // 화면 Lock 해제
@@ -3811,6 +3808,20 @@
 
             return;
         }
+
+        // U4A WS 3.4.1 - sp 00000 버전일 경우
+        // USP Data 조회시 base64로 저장된 Content 데이터를 string으로 변환
+        if(APPCOMMON.checkWLOList("C", "UHAK900763")){
+
+            try {
+             
+                oResult.CONTENT = atob( oResult.CONTENT );
+    
+            } catch (error) {            
+                
+            }
+
+        }       
                 
 
         // JSON Parse 오류 일 경우
@@ -5278,8 +5289,13 @@
         var oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"),
             aUspTreeData = oEvent.getParameter("TREEDATA");
             
-            debugger;
-
+        let oContCP = JSON.parse(JSON.stringify(oContent));
+        
+        // U4A WS 3.4.1 - sp 00000 버전일 경우 저장시 Content 데이터를 base64로 저장
+        if(APPCOMMON.checkWLOList("C", "UHAK900763")){
+            oContCP.CONTENT = btoa(oContCP.CONTENT);
+        }        
+        
         if (!aUspTreeData) {
             var aTreeData = APPCOMMON.fnGetModelProperty("/WS30/USPTREE");
             aUspTreeData = jQuery.extend(true, [], aTreeData);
@@ -5302,14 +5318,14 @@
                     continue;
                 }
 
-                oUspTreeItem.CODPG = oContent.CODPG;
-                oUspTreeItem.DESCT = oContent.DESCT;
+                oUspTreeItem.CODPG = oContCP.CODPG;
+                oUspTreeItem.DESCT = oContCP.DESCT;
 
                 break;
 
             }
            
-            oSaveData.S_CONTENT = oContent;
+            oSaveData.S_CONTENT = oContCP;
 
         }
 
@@ -5326,12 +5342,6 @@
         var oFormData = new FormData();
         oFormData.append("APPDATA", JSON.stringify(oSaveData));
         oFormData.append("file", blob, "usp_save_data.json");
-
-        // var fd = new FormData();
-        // fd.append('file', blob, "xxxxx.json");                    
-        // fd.append('PARAM1', "TEST1");
-        // fd.enctype ='multipart/form-data';
-        // fd.method  ='post';
 
         sendAjax(sPath, oFormData, _fnSaveCallback.bind(oNewEvent));
 

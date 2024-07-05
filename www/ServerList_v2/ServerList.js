@@ -283,11 +283,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oAPP.msg.M13 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "019"); // host is required!
             oAPP.msg.M14 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "020"); // Do not include Empty string!
             oAPP.msg.M15 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "080"); // Do you want to Delete?
-
-
-
-
-
+            oAPP.msg.M16 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "206"); // 전체종료
 
 
             resolve();
@@ -1572,29 +1568,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     width: "150px",
                     header: new sap.m.Label({
                         design: sap.m.LabelDesign.Bold,
-                        text: "STATUS"
+                        text: "STATUS"      // #no text
                     })
                 }),
 
                 new sap.m.Column({
                     header: new sap.m.Label({
                         design: sap.m.LabelDesign.Bold,
-                        text: "SERVER NAME"
-                    })
-                }),
-
-                new sap.m.Column({
-                    hAlign: sap.ui.core.TextAlign.Center,
-                    header: new sap.m.Label({
-                        design: sap.m.LabelDesign.Bold,
-                        text: "SID"
-                    })
-                }),
-
-                new sap.m.Column({
-                    header: new sap.m.Label({
-                        design: sap.m.LabelDesign.Bold,
-                        text: "HOST(Or IP)"
+                        text: "SERVER NAME" // #no text
                     })
                 }),
 
@@ -1602,7 +1583,22 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     hAlign: sap.ui.core.TextAlign.Center,
                     header: new sap.m.Label({
                         design: sap.m.LabelDesign.Bold,
-                        text: "SNO"
+                        text: "SID"         // #no text
+                    })
+                }),
+
+                new sap.m.Column({
+                    header: new sap.m.Label({
+                        design: sap.m.LabelDesign.Bold,
+                        text: "HOST(Or IP)" // #no text
+                    })
+                }),
+
+                new sap.m.Column({
+                    hAlign: sap.ui.core.TextAlign.Center,
+                    header: new sap.m.Label({
+                        design: sap.m.LabelDesign.Bold,
+                        text: "SNO"         // #no text
                     })
                 }),
 
@@ -3261,7 +3257,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         CURRWIN.setThumbarButtons([
             {
-                tooltip: 'Shutt Down',
+                tooltip: oAPP.msg.M16, // Shutt Down
                 icon: PATH.join(APPPATH, "img", "shutdown.png"),
                 click() {
 

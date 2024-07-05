@@ -7,7 +7,7 @@ parent.showMessage(sap, 10, "E", oReturn.MSG);
 APPCOMMON.fnGetMsgClsTxt("002");
 
 - 컨트롤러 클래스 실행 패턴
-oAPP.common.execControllerClass = function(METHNM, INDEX, TCODE, oAppInfo) {
+oAPP.common.execControllerClass = function(METHNM, INDEX, TCODE, oAppInfo)
 
 
 
@@ -56,3 +56,7 @@ REMOTE.app.getAppPath();
 
  // busy 키고 Lock 켜기
 oAPP.common.fnSetBusyLock("X");
+
+// 해당 서버에 적용할지 말지 결정하는 function
+// true 일 경우만 수행하는 로직으로 짜면 됨.
+oAPP.common.checkWLOList("C", "UHAK900630")
