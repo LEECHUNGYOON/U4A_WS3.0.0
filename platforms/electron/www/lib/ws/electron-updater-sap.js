@@ -147,7 +147,12 @@ function __getUpdateFile() {
                 __jobCnt = 0;
                 __total = 0;
                 //업데이트 오류 발생 ..event 핸들러 call
-                __fireEvent(document, 'update-error-sap', sRET);
+                // __fireEvent(document, 'update-error-sap', sRET);
+                
+                // 20240708 soccerhs: 오류 발생시 오류 메시지 데이터를 공통 구조로 매핑함
+                __fireEvent(document, 'update-error-sap', {
+                    message: sRET.RTMSG
+                });
                 return;
 
             } catch (err) {
@@ -283,7 +288,13 @@ exports.autoUpdaterSAP = {
                     var sRET = JSON.parse(xhr.response);
 
                     //업데이트 오류 발생 
-                    __fireEvent(document, 'update-error-sap', sRET);
+                    // __fireEvent(document, 'update-error-sap', sRET);
+
+                    // 20240708 soccerhs: 오류 발생시 오류 메시지 데이터를 공통 구조로 매핑함
+                    __fireEvent(document, 'update-error-sap', {
+                        message: sRET.RTMSG
+                    });
+
                     return;
 
                 } catch (error) {
@@ -317,7 +328,11 @@ exports.autoUpdaterSAP = {
                     } else {
                         //최신버젼 
                         __fireEvent(document, 'update-not-available-sap', {
-                            message: "최신버젼"
+                            message: "최신버젼",
+                            verInfo: {                                
+                                appVer: appVer,
+                                updVER : updVER
+                            }
                         });
 
                     }

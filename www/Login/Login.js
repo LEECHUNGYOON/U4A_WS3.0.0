@@ -1462,15 +1462,28 @@ let oAPP = (function () {
             //현재 최신버전입니다
             autoUpdaterSAP.on('update-not-available-sap', (e) => {
 
-                // resolve();
-
                 let oParam = {
                     ISCDN: "",
                 };
 
-                // WS Support Package Version Check
-                oAPP.fn.fnCheckSupportPackageVersion(resolve, oParam);
+                // 현재 버전 정보와 서버 버전정보를 구한다.
+                let oVerInfo = e?.verInfo;
+                if(oVerInfo){
 
+                    // WS의 메이져 버전이 같을 경우에만 Support package 업데이트 체크를 한다.
+                    if(oVerInfo.appVer === oVerInfo.updVER){
+                        
+                        // WS Support Package Version Check
+                        oAPP.fn.fnCheckSupportPackageVersion(resolve, oParam);
+
+                        return;
+
+                    }
+
+                }
+
+                resolve();
+             
             });
 
             //다운로드 ...
