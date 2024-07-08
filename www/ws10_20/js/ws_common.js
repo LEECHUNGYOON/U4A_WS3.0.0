@@ -2749,7 +2749,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
                 if (xhr.responseType == 'blob') {
                     if (typeof fn_success == "function") {
-                        fn_success(xhr.response);
+                        fn_success(xhr.response, xhr);                        
                     }
 
                     return;

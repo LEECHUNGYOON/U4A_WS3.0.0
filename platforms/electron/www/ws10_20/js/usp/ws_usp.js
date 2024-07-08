@@ -3734,9 +3734,9 @@
         // sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob
         sendAjax(sPath, oFormData, _fnLineSelectCb.bind(oParam), null, null, null, null, "X");
 
-    } // end of fnTreeTableRowSelect
+    } // end of fnTreeTableRowSelect    
 
-    async function _fnLineSelectCb(oResult) {
+    async function _fnLineSelectCb(oResult, xhr) {
 
         // Blob를 text로 변환
         var oJsonResult = await new Promise((resolve) => {
@@ -3783,10 +3783,33 @@
 
             return;
         }
-        
+       
+        // Multipart data parsing 결과
+        var oMULTI_RESULT = undefined;
+
+        // U4A WS 3.4.1 - sp 00000 버전일 경우        
+        // Multipart 데이터를 읽어서 USP content 데이터를 구한다.
+        if(APPCOMMON.checkWLOList("C", "UHAK900763")){     
+
+            try {
+
+                // Multipart 데이터 읽기
+                oMULTI_RESULT = await _getUspMultiPartData(oJsonResult.RDATA, xhr);
+
+                if(oMULTI_RESULT.RETCD !== "E"){
+
+                    oJsonResult.RDATA = oMULTI_RESULT.RDATA.usp_head_data;
+           
+                }
+
+            } catch (error) {            
+                
+            }
+
+        }
 
         // BLOB => string => JSON
-        var sJsonResult = oJsonResult.RDATA;        
+        var sJsonResult = oJsonResult.RDATA;
 
         try {
 
@@ -3809,20 +3832,6 @@
             return;
         }
 
-        // U4A WS 3.4.1 - sp 00000 버전일 경우
-        // USP Data 조회시 base64로 저장된 Content 데이터를 string으로 변환
-        if(APPCOMMON.checkWLOList("C", "UHAK900763")){
-
-            try {
-             
-                oResult.CONTENT = atob( oResult.CONTENT );
-    
-            } catch (error) {            
-                
-            }
-
-        }       
-                
 
         // JSON Parse 오류 일 경우
         if (typeof oResult !== "object") {
@@ -3842,6 +3851,12 @@
             return;
 
         }
+
+        // Multipart 데이터 수집 결과가 있고 body data가 존재 할 경우에만
+        // USP CONTENT 데이터를 매핑한다.
+        if(typeof oMULTI_RESULT?.RDATA?.usp_body_data !== "undefined"){
+            oResult.CONTENT = oMULTI_RESULT.RDATA.usp_body_data;
+        }        
 
         // Normal or Critical Error
         switch (oResult.RETCD) {
@@ -3874,7 +3889,6 @@
                 APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
 
                 return;
-
 
         }
 
@@ -3942,6 +3956,62 @@
         parent.setBusy("");
 
     } // end of _fnLineSelectCb
+
+    /**************************************************************************
+     * [WS30] USP Multipart Data 읽기
+     **************************************************************************/    
+    function _getUspMultiPartData(res_data, xhr){
+
+        return new Promise(function(resolve){
+
+            const contentType = xhr.getResponseHeader('Content-Type');
+            const boundary = contentType.split('boundary=')[1];
+
+            // response type이 Multipart 가 아니면 빠져나간다.
+            if(xhr.response?.type !== "multipart/form-data"){
+                return resolve({RETCD : "E"});
+            }
+
+            if(typeof boundary === "undefined"){                
+                return resolve({RETCD : "E"});
+            }
+
+            const dicer = parent.require('dicer');
+
+            const parser = new dicer({ boundary });
+
+            // multipart data 수집
+            let _data = {};
+
+            parser.on('part', part => {
+
+                part.on('header', (header) => {
+                    part._name = header['content-disposition'][0];
+    
+                });
+
+                part.on('data', data => {
+                    _data[part._name] = data.toString();                
+                });
+
+            });
+
+            // 수집이 완료되었을 경우 호출됨
+            parser.on('finish', function(){
+
+                return resolve({
+                    RETCD: "S",
+                    RDATA: _data
+                });
+
+            });
+            
+            parser.write(res_data);
+            parser.end();
+          
+        });
+
+    } // end of _getUspMultiPartData
 
     /**************************************************************************
      * [WS30] USP PAGE 우측영역 페이지 이동
@@ -5291,9 +5361,15 @@
             
         let oContCP = JSON.parse(JSON.stringify(oContent));
         
+        let sContentTmp = ""; 
         // U4A WS 3.4.1 - sp 00000 버전일 경우 저장시 Content 데이터를 base64로 저장
         if(APPCOMMON.checkWLOList("C", "UHAK900763")){
-            oContCP.CONTENT = btoa(oContCP.CONTENT);
+
+            sContentTmp = oContCP.CONTENT;
+
+            oContCP.CONTENT = "";
+
+            // oContCP.CONTENT = btoa(oContCP.CONTENT);
         }        
         
         if (!aUspTreeData) {
@@ -5335,13 +5411,14 @@
             sPath = `${sServerPath}/usp_save_active_appdata`;
 
 
-        const blob = new Blob( [ JSON.stringify(oSaveData) ], {
+        const blob = new Blob( [ sContentTmp ], {
             type: "application/json;charset=utf-8"
-         });
+        });
 
         var oFormData = new FormData();
         oFormData.append("APPDATA", JSON.stringify(oSaveData));
-        oFormData.append("file", blob, "usp_save_data.json");
+        // oFormData.append("file", blob, "usp_save_data.json");
+        oFormData.append("file", blob, "usp_save_content");
 
         sendAjax(sPath, oFormData, _fnSaveCallback.bind(oNewEvent));
 
