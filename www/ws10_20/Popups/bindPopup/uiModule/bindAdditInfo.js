@@ -258,6 +258,16 @@ function designControl(oArea){
 
         };
 
+        /*************************************************************
+         * @event - help 버튼 선택 이벤트.
+         *************************************************************/
+        oContr.fn.onHelp = async function(oEvent){
+            
+            //202	Bind Additional Attributes Area
+            await parent.require("./utils/callTooltipsPopup.js")("bindAdditArea", "202");
+            
+        };
+
 
         /*************************************************************
          * @function - conversion 입력라인에 대한 광역 오류 정보 초기화 처리.
@@ -974,6 +984,9 @@ function designView(oArea, oTable){
         //161	컬럼최적화
         var _txt2 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "161");
 
+        //198	Help
+        var _txt3 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "198");
+
         //바인딩 추가속성 정보 table.
         var oTab = new sap.ui.table.Table({
             selectionMode: "None",
@@ -1006,15 +1019,23 @@ function designView(oArea, oTable){
 
                     new sap.m.ToolbarSpacer(),
 
-                    new sap.m.Button({
+                    new sap.m.OverflowToolbarButton({
                         icon: "sap-icon://resize-horizontal",
+                        text : _txt2,    //161	컬럼최적화
                         tooltip: _txt2,    //161	컬럼최적화
                         busyIndicatorDelay: 1,
                         press: function(){
                             //tree table 컬럼길이 재조정 처리.
                             oAPP.fn.setUiTableAutoResizeColumn(oContr.ui.ROOT);
                         }
+                    }),
+                    new sap.m.OverflowToolbarButton({
+                        icon:"sap-icon://question-mark", 
+                        text : _txt3,    //198	Help
+                        tooltip: _txt3,    //198	Help
+                        press: oContr.fn.onHelp
                     })
+
                 ]
             })
         );
@@ -1026,8 +1047,8 @@ function designView(oArea, oTable){
         _oUtil.setStyleClassUiTable(oContr.ui.ROOT, "_style");
 
 
-        //A52  Property
-        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A52", "", "", "", "");
+        //177	Property
+        var l_txt = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "177");
 
         //추가바인딩 속성의 Property 컬럼.
         var oTabCol1 = new sap.ui.table.Column({
@@ -1043,8 +1064,8 @@ function designView(oArea, oTable){
         });
         oTab.addColumn(oTabCol1);
         
-        //A53  Value
-        var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A53", "", "", "", "");
+        //178	Value
+        var l_txt = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "178");
 
         //추가바인딩 속성의 value 컬럼.
         var oTabCol2 = new sap.ui.table.Column({

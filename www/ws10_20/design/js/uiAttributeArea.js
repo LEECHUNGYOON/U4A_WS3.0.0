@@ -5971,9 +5971,9 @@
             
             var _sERMSG = JSON.parse(JSON.stringify(TY_ADDIT_MSG));
             
-            //267	If Bind type is selected, Reference Field name is required.
+            //137	If Bind type is selected, Reference Field name is required.
             _sERMSG.ITMCD = "P05";
-            _sERMSG.ERMSG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "267", "", "", "", "");
+            _sERMSG.ERMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "137");
 
             _sRes.T_ERMSG.push(_sERMSG);
 
@@ -5983,6 +5983,24 @@
 
         case "P05":
           //Reference Field name
+          
+          //부모 path로부터 파생된 child path 가 아닌경우.
+          if(oAPP.fn.chkBindPath(IF_DATA.PARENT, _param) !== true){
+            
+            var _sERMSG = JSON.parse(JSON.stringify(TY_ADDIT_MSG));
+            
+            _sERMSG.ITMCD = _sUA028.ITMCD;
+
+            //152	바인딩 필드와 참조필드의 부모 모델 path가 다릅니다.
+            _sERMSG.ERMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "152");
+
+            _sRes.T_ERMSG.push(_sERMSG);
+
+
+          }
+
+          _param
+
           break;
 
         case "P06":

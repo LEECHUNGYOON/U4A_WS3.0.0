@@ -11,9 +11,6 @@ module.exports = function(){
     //라인 선택건이 존재하지 않는경우.
     if(_aTree.length === 0){
 
-        //268 Selected line does not exists.
-        // oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", "");       
-
         _sRes.RETCD = "E";
 
         //087	DESIGN 영역의 라인 선택건이 존재하지 않습니다.

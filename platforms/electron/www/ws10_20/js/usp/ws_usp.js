@@ -36,10 +36,6 @@
      */
     const RENAME_BINDROOT = "/WS30/USPRN";
 
-
-    // TEST
-    oAPP.jsStringEscape = parent.require('js-string-escape');
-
     /************************************************************************
      * [WS30] 30번 페이지 생성
      ************************************************************************/
@@ -3798,12 +3794,13 @@
 
                 if(oMULTI_RESULT.RETCD !== "E"){
 
+                    // 기존 구조에 USP Head data를 넣는다.( 기존로직을 위한 행위 )
                     oJsonResult.RDATA = oMULTI_RESULT.RDATA.usp_head_data;
            
                 }
 
             } catch (error) {            
-                
+                console.error(error);
             }
 
         }
@@ -3817,6 +3814,8 @@
            
         } catch (error) {
             
+            console.error(error);
+
             // 화면 Lock 해제
             sap.ui.getCore().unlock();
 
@@ -3863,6 +3862,8 @@
 
             case "Z":
 
+                console.error(oResult);
+
                 // 화면 Lock 해제
                 sap.ui.getCore().unlock();
 
@@ -3874,6 +3875,8 @@
                 return;
 
             case "E":
+
+                console.error(oResult);
 
                 // 화면 Lock 해제
                 sap.ui.getCore().unlock();
@@ -3981,7 +3984,7 @@
             const parser = new dicer({ boundary });
 
             // multipart data 수집
-            let _data = {};
+            let oPartData = {};
 
             parser.on('part', part => {
 
@@ -3991,7 +3994,7 @@
                 });
 
                 part.on('data', data => {
-                    _data[part._name] = data.toString();                
+                    oPartData[part._name] = data.toString();                
                 });
 
             });
@@ -4001,7 +4004,7 @@
 
                 return resolve({
                     RETCD: "S",
-                    RDATA: _data
+                    RDATA: oPartData
                 });
 
             });
@@ -5358,18 +5361,22 @@
         // 우측 컨텐츠 데이터를 읽는다.
         var oContent = APPCOMMON.fnGetModelProperty("/WS30/USPDATA"),
             aUspTreeData = oEvent.getParameter("TREEDATA");
-            
+        
+        // 원본 데이터 COPY
         let oContCP = JSON.parse(JSON.stringify(oContent));
         
-        let sContentTmp = ""; 
-        // U4A WS 3.4.1 - sp 00000 버전일 경우 저장시 Content 데이터를 base64로 저장
+        // USP CONTENT 데이터 임시 변수
+        let sContentTmp = "";
+        
+        // U4A WS 3.4.1 - sp 00000 버전일 경우 저장시 Content 데이터를 Blob로 저장
         if(APPCOMMON.checkWLOList("C", "UHAK900763")){
 
+            // 임시변수에 USP CONTENT를 담는다.
             sContentTmp = oContCP.CONTENT;
 
+            // 기존에 담겨있는 CONTENT 변수를 제거한다.
             oContCP.CONTENT = "";
 
-            // oContCP.CONTENT = btoa(oContCP.CONTENT);
         }        
         
         if (!aUspTreeData) {
@@ -5410,15 +5417,14 @@
         var sServerPath = parent.getServerPath(),
             sPath = `${sServerPath}/usp_save_active_appdata`;
 
-
-        const blob = new Blob( [ sContentTmp ], {
+        // USP CONTENT 데이터를 BLOB로 변환한다.
+        const oContBlob = new Blob( [ sContentTmp ], {
             type: "application/json;charset=utf-8"
         });
 
         var oFormData = new FormData();
         oFormData.append("APPDATA", JSON.stringify(oSaveData));
-        // oFormData.append("file", blob, "usp_save_data.json");
-        oFormData.append("file", blob, "usp_save_content");
+        oFormData.append("file", oContBlob, "usp_save_content");
 
         sendAjax(sPath, oFormData, _fnSaveCallback.bind(oNewEvent));
 
@@ -5613,6 +5619,9 @@
             case "_RN": //rename 일 경우.
 
                 fnRenameUspNode(oEvent);
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
 

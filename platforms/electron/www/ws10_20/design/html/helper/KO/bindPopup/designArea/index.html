@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <title>Document</title> -->
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <div class="content">
+        <div id="bindingPopUp" class="contentArea">
+            <h1 class="helpTitle">
+                Design Area
+            </h1>
+            <div class="overview">
+                U4A Workspace의 Design Tree에 있는 UI를 Drag & Drop으로 세팅 후, 
+                <br> 해당 UI의 Property, Aggregattion, Child UI에 Bind Path를 지정 한다
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/designArea_1.png" alt="designArea">
+            </div>
+            <div class="contents">
+                1. Workspace의 DesignTree의 UI를 Drag&Drop하여 Design Area에 맵핑
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/designArea_2.png" alt="Drag&Drop mapping">
+                <p style="font-weight: bold;">※ 다른 UI 선택 후, Drag&Drop 하면 선택한 UI로 재맵핑됨</p>
+            </div>
+            <div class="contents">
+                2. MultiBinding 버튼을 사용하여 Property에 Model Field Area에서 선택한 필드를 Multi Binding
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/designArea_3.png" alt="MultiBinding button binding">
+                <p style="font-weight: bold;">Model Field Area에서 'GS_HDL-TEXT'를 선택 후, <br> Binding할 대상 Property를 Design Area 선택하여 Multi Binding 버튼을 통해 Binding 처리</p>
+            </div>
+            <div class="contents">
+                3. Unbind 버튼으로 Binding이 되어있는 Property를 선택한 후 Unbinding 가능
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/designArea_4.png" alt="Unbinding">
+            </div>
+            <div class="contents">
+                4. Property에 Binding된 Object 클릭시, Binding Option 창이 올라오고 Biding 된 필드의 추가 속성을 입력, 설정 후 적용
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/designArea_5.png" alt="Binding Option">
+            </div>
+            <div class="contents">
+                5. Bind Additional Info Area에서 입력된 속성값을 Apply additional Property 버튼을 클릭하여 Binding된 필드의 속성값으로 설정
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/designArea_6.png" alt="Apply additional Property button">
+            </div>
+            <div class="contents">
+                ※ 설정 시, 추가속성이 Binding된 필드에 의해 적용될 수 없는 속성이거나 잘못된값을 입력하면 적용이 되지 않음
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/designArea_7.png" alt="additional error 1">
+            </div>
+            <div class="contents">
+                6. Bind Additional Info Area에서 Binding된 필드를 Unbind 버튼을 클릭하여 해제할 수 있음
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/designArea_8.png" alt="Unbind button">
+            </div>
+            <div class="contents">
+                7. Property를 체크 선택 후 버튼을 눌러 동일 속성 Binding 화면으로 갈 수 있음
+                <p style="font-weight: bold;">동일 속성 Binding 방법은 Help Document -> Bindingpopup -> Apply Equal Properties Area 참조</p>
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/designArea_9.png" alt="Unbind button">
+                <p style="font-weight: bold;">※ Property는 1개만 선택해야 동일 속성 Binding 화면으로 넘어가진다</p>
+            </div>
+            <div class="contents">
+                8. Design Area 구성 버튼기능, 영역 추가 설명
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/designArea_10.png" alt="add designArea">                
+                <ul>
+                    <li>
+                        ① UI Aggregation 표시
+                    </li>
+                    <li>
+                        ② Binding된 Path 표시
+                    </li>
+                    <li>
+                        ③ UI Tree 펼치기 , 접기 버튼
+                    </li>
+                    <li>
+                        ④ 선택 전체 해제
+                    </li>
+                    <li>
+                        ⑤ 칼럼 최적화
+                    </li>
+                </ul>
+            </div>
+        </div>
+    <script src="./index.js"></script>
+</body>
+</html>

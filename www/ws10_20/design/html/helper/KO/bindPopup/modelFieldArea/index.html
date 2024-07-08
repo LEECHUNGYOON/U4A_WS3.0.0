@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <title>Document</title> -->
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <div class="content">
+        <div id="bindingPopUp" class="contentArea">
+            <h1 class="helpTitle">
+                Model Field Area
+            </h1>
+            <div class="overview">
+                Binding 가능한 리스트를 나타내며 Binding 하고자 하는 "Properties"에 Drag & Drop하여 Binding 한다
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/modelFieldArea_1.png" alt="modelFieldArea">
+            </div>
+            <div class="contents">
+                1. Refresh 버튼 클릭시, Binding 가능한 리스트 갱신
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/modelFieldArea_2.png" alt="Refresh">
+                <p style="font-weight: bold;">Binding Popup이 열려 있는 상태에서 'GS_ADD' Structure 추가 선언후, Refresh 버튼 클릭하면, <br> 리스트에 'GS_ADD' Structure가 추가되어 갱신되어 있음</p>
+            </div>
+
+            <div class="contents">
+                2. WorkSpace의 Attribute 영역으로 Drag & Drop 하여 Binding
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/modelFieldArea_3.png" alt="WS Attribute Drag&Drop">
+                <p style="font-weight: bold;">Text UI의 text Property에 구조체의 필드 Drag&Drop Binding 예시</p>
+            </div>
+
+            <div class="contents">
+                3. Design Area으로 Drag & Drop 하여 Binding
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/modelFieldArea_4.png" alt="designArea Drag&Drop">
+                <p style="font-weight: bold;">TITLE UI의 text Property에 구조체의 필드 Drag&Drop Binding 예시</p>
+            </div>
+            
+            <div class="contents">
+                ※ Design Area의 Property나 Aggregation을 클릭시, Model Field Area의 리스트에서 Binding 가능여부를 알 수 있음
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/modelFieldArea_5.png" alt="bindingable">
+            </div>
+
+            <div class="contents">
+                4. Model Field Area 구성 버튼기능 추가 설명
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/modelFieldArea_6.png" alt="add modelFieldArea">                <ul>
+                    <li>
+                        ① UI Tree 펼치기 , 접기 버튼
+                    </li>
+                    <li>
+                        ② 칼럼 최적화
+                    </li>
+                    <li>
+                        ③ 영역 최적화
+                    </li>
+                </ul>
+            </div>
+        </div>
+    <script src="./index.js"></script>
+</body>
+</html>

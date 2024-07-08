@@ -1,0 +1,182 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    /* font-family: D2Coding; */
+    font-family: Nanum Gothic;
+    scroll-behavior: smooth;
+    /* background-color: #000000; */
+}
+
+html::-webkit-scrollbar {
+    width: 10px;
+    background-color: #b3b3b3;
+}
+
+html::-webkit-scrollbar-thumb {
+    background-color: #353535;
+    border-radius: 20px;
+}
+
+body {
+    box-sizing: border-box;
+    background-image: none;
+}
+
+ul,
+li {
+    list-style: none;
+}
+
+ul {
+    margin-bottom: 50px;
+    /* margin-left: 50px; */
+}
+
+li {
+    font-size: 16px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.content {
+    min-width: 925px;
+    width: fit-content;
+}
+
+.contentArea {
+    /* margin-bottom: 50px; */
+    width: 100%;
+    float: right;
+    background-color: #ffffff;
+}
+
+.contentArea>* {
+    padding-left: 15px;
+    box-sizing: border-box;
+}
+
+/* 최상단 타이틀 */
+.helpTitle {
+    width: 100%;
+    background: linear-gradient(45deg, #3174b9, #d696ff);
+    font-size: 26px;
+    font-weight: bold;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+    font-family: 'Noto Sans';
+    color: #ffffff;
+    text-align: left;
+}
+
+/* 타이틀 바로 아래 설명 글 */
+.overview {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 62px;
+    color: #000000;
+}
+
+/* 가이드 설명 글 */
+.contents {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #000000;
+}
+
+.contentsImg {
+    width: 100%;
+    margin-top: 30px;
+    margin-bottom: 100px;
+}
+
+.contentsImg img {
+    /* width: 40%; */
+    /* max-width: 550px; */
+    margin:0 30px;
+    /* border: 3px solid #8776c7; */
+}
+
+.flex {
+    display: flex;
+    align-items: center;
+}
+
+.bottomargin {
+    margin-bottom: 50px;
+}
+
+.propertyH2 {
+    width: 100px;
+    text-align: center;
+}
+
+/* 가이드 영상 */
+.desc {
+    width: 50%;
+    max-width: 550px;
+    margin-left: 30px;
+    border: 1px solid #8776C7;
+    padding-bottom: 5px;
+}
+
+/* 컨텐트 바로가기 버튼 */
+.fast_button {
+    width: 50px;
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+    opacity: 0.2;
+}
+
+.fast_button:hover {
+    opacity: 1;
+}
+
+.fastDot {
+    width: 13px;
+    height: 13px;
+    border-radius: 15px;
+    margin: 10px 0;
+    background: radial-gradient(#cc00ff, #3670bc);
+    /* background-color: #cc00ff; */
+    cursor: pointer;
+}
+
+.fastDot a {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative;
+}
+
+.fastDot a::before {
+    content: '';
+    border-radius: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    transition: 0.5s all;
+}
+
+.fastDot a.active::before {
+    content: '';
+    width: 17px;
+    height: 17px;
+    border-radius: 100%;
+    border: 10px solid #3670bc;
+    background-color: #cc00ff;
+}

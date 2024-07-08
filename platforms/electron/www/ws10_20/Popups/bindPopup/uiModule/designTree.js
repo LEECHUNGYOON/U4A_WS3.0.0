@@ -1276,8 +1276,8 @@ function designControl(oArea){
 
             oAPP.fn.setBusy(false);
 
-            //263	Do you want to continue unbind?
-            var _msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "263", "", "", "", "");
+            //185	Do you want to continue unbind?
+            var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "185");
 
             let _actcd = await new Promise((resolve) => {
                 sap.m.MessageBox.confirm(_msg, {
@@ -1884,11 +1884,11 @@ return;
             //기존 aggr에 이미 바인딩이 걸린건이 존재하는경우.
             if(_aTree.findIndex( item => item.UIATV !== "" && item.UIATY === "3" ) !== -1){
 
-                //122	Change the model, the binding that exists in the child is initialized.
-                _msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "122", "", "", "", "");
+                //181	Change the model, the binding that exists in the child is initialized.
+                _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "181");
 
-                //123	Do you want to continue?
-                _msg += oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "123", "", "", "", "");
+                //182	Do you want to continue?
+                _msg += oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "182");
 
 
             }
@@ -1994,8 +1994,8 @@ return;
 
                 oAPP.fn.setBusy(false);
 
-                //268 Selected line does not exists.
-                sap.m.MessageToast.show(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", ""), 
+                //183	Selected line does not exists.
+                sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "183"), 
                     {duration: 3000, at:"center center"});
 
                 return;
@@ -2123,6 +2123,17 @@ return;
             oAPP.fn.setAdditLayout("");
 
 
+        };
+
+
+        /*************************************************************
+         * @event - help 버튼 선택 이벤트.
+         *************************************************************/
+        oContr.fn.onHelp = async function(oEvent){
+            
+            //201	Design Area
+            await parent.require("./utils/callTooltipsPopup.js")("designArea", "201");
+            
         };
 
 
@@ -3233,11 +3244,11 @@ function designView(oArea){
         //130	멀티 바인딩
         var _txt2 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "130");
 
-        //A43  Unbind
-        var _txt3 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A43", "", "", "", "");
+        //186	Unbind
+        var _txt3 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "186");
 
-        //A50  Object Name
-        var _txt4 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A50", "", "", "", "");
+        //174	Object Name
+        var _txt4 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "174");
 
         //165	바인딩 경로
         var _txt5 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "165");
@@ -3245,20 +3256,23 @@ function designView(oArea){
         //139   추가속성적용
         var _txt6 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "139");
 
-        //A46  Expand All
-        var _txt7 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A46", "", "", "", "");
+        //169	Expand All
+        var _txt7 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "169");
 
-        //A47  Collapse All
-        var _txt8 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A47", "", "", "", "");
+        //170	Collapse All
+        var _txt8 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "170");
 
-        //B23  Clear selection
-        var _txt9 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B23", "", "", "", "");
+        //187	Clear selection
+        var _txt9 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "187");
 
         //161	컬럼최적화
         var _txt10 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "161");
 
         //162	디자인 영역의 UI를 Drag 하여 해당 영역에 Drop 하십시오.
         var _txt11 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "162");
+
+        //198	Help
+        var _txt12 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "198");
 
 
         oContr.ui.TREE = new sap.ui.table.TreeTable({
@@ -3331,14 +3345,21 @@ function designView(oArea){
 
                         new sap.m.ToolbarSpacer(),
 
-                        new sap.m.Button({
+                        new sap.m.OverflowToolbarButton({
                             icon: "sap-icon://resize-horizontal",
+                            text : _txt10,    //161	컬럼최적화
                             tooltip: _txt10,    //161	컬럼최적화
                             busyIndicatorDelay: 1,
                             press: function(){
                                 //tree table 컬럼길이 재조정 처리.
                                 oAPP.fn.setUiTableAutoResizeColumn(oContr.ui.TREE);
                             }
+                        }),
+                        new sap.m.OverflowToolbarButton({
+                            icon:"sap-icon://question-mark", 
+                            text : _txt12,    //198	Help
+                            tooltip: _txt12,    //198	Help
+                            press: oContr.fn.onHelp
                         })
                     ]
                 })
@@ -3346,6 +3367,7 @@ function designView(oArea){
             columns: [
                 new sap.ui.table.Column({
                     filterProperty:"DESCR",
+                    filterOperator: "EQ",
                     width: "50%",
                     autoResizable:true,
                     label: new sap.m.Label({

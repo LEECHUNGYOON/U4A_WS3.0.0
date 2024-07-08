@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <title>Document</title> -->
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <div class="content">
+        <div id="bindingPopUp" class="contentArea">
+            <h1 class="helpTitle">
+                Bind Additional Info Area
+            </h1>
+            <div class="overview">
+                Binding 되어 있는 Field의 Binding 추가 Option을 설정을 할 수 있게 한다
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/bindAdditArea_1.png" alt="modelFieldArea">
+            </div>
+
+            <div class="contents">
+                1. additional Options 설명
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/bindAdditArea_2.png" alt="additional Options">
+                <ul>
+                    <li>Field name : 현재 바인딩 하기 위해서 선택한 필드명</li>
+                    <li>Field path : 선택한 필드가 위치하고 있는 경로</li>
+                    <li>type : 선택한 필드가 참조하고 있는 Type</li>
+                    <li>Bind type : 숫자 타입의 필드에 적용 시킬 단위 타입 선택</li>
+                    <li>( sap.ui.model.type.Currency / ext.ui.model.type.Quantity )</li>
+                    <li>Reference Field name : Bind Type 설정 시 참조 할 필드 명</li>
+                    <li>Conversion Routine : 선택한 필드에 Conversion Rotuine 적용</li>
+                    <li>Nozero : 숫자 타입일 경우 Initial 값으로 0을 보이게 할지 여부 결정</li>
+                    <li>Is number fomat? : 숫자 타입의 필드일 경우 숫자 포맷으로 보이게 할지 여부 결정</li>                    
+                </ul>                
+            </div>
+
+            <div class="contents">
+                2. Model Tree, Design Tree에서 선택된 Field에 따라 Reference Field이 구성된다.
+            </div>
+            <div class="contentsImg">
+                <p style="font-weight: bold;">Model Field Area의 Tree에서 선택된 필드에 따른 Refrence Field 예시</p> <br>       
+                <img src="./../../../image/bindAdditArea_3.png" alt="Model Field Area Reference">
+                <p style="font-weight: bold;">> Model Field Area의 Tree에서 선택된 'GT_OTAB'의 필드에서는 Currecy Bind Type에 참조 할 수 있는 필드들이 존재하지만,<br>
+                    'GS_HDL'에서 선택된 필드들은 참조할 수 있는 필드들이 없어 리스트가 나오지 않는다.
+                </p>        
+            </div>
+            <div class="contentsImg">
+                <p style="font-weight: bold;">Design Area의 Tree에서 선택된 필드에 따른 Refrence Field 예시</p> <br>    
+                <img src="./../../../image/bindAdditArea_8.png" alt="Model Field Area Reference">     
+                <p style="font-weight: bold;">> Design Area의 Tree에서 선택된 'GT_OTAB'의 필드에서는 Currecy Bind Type에 참조 할 수 있는 필드들이 존재하지만,<br>
+                    'GS_HDL'에서 선택된 필드들은 참조할 수 있는 필드들이 없어 리스트가 나오지 않는다.
+                </p>       
+            </div>
+
+            <div class="contents">
+                3. Binding 되어 있는 Property들의 Field 추가 속성을 입력하고 버튼 클릭하여 Multi 적용
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/bindAdditArea_4.png" alt="Multi Additional Properties"> 
+            </div>
+
+            <div class="contents">
+                ※ Binding이 되어 있지 않으면 사용할 수 없음
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/bindAdditArea_5.png" alt="No Binding Error">            
+            </div>
+
+            <div class="contents">
+                ※ 선택한 Field의 Type에 적용할 수 없는 추가속성은 적용할 수 없음
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/bindAdditArea_6.png" alt="No Type Error">            
+            </div>
+
+            <div class="contents">
+                4. Bind Additional Info Area 구성 버튼기능 추가 설명
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/bindAdditArea_7.png" alt="No Binding Error">    
+                <ul>
+                    <li>
+                        ① 칼럼최적화
+                    </li>
+                </ul>        
+            </div>
+        </div>
+    </div>
+    <script src="./index.js"></script>
+</body>
+</html>

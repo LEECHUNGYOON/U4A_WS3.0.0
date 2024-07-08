@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <title>Document</title> -->
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <div class="content">
+        <div id="bindingPopUp" class="contentArea">
+            <h1 class="helpTitle">
+                Apply Equal Properties Area
+            </h1>
+            <div class="overview">
+                Design Area에서 선택한 UI와 동일한 속성의 UI들의 Binding 동기화 적용한다
+            </div>
+            <div class="contents">
+                1. Design Area에서 동기화 적용할 UI 선택 후 버튼클릭하면 Apply Equal Properties Area로 전환됨
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/synchronizionArea_1.png" alt="synchronizionArea">
+                <br> <p style="font-weight: bold;">Apply Equal Properties Area에서는 추가 속성 적용 버튼 비활성화된다</p>
+            </div>
+            <div class="contents">
+                ※ Design Area에서 Binding 동기화를 하기 위해 Apply Equal Properties로 이동 불가능한 경우
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/synchronizionArea_2.png" alt="Error Case 1">
+                <br>
+                <img src="./../../../image/synchronizionArea_3.png" alt="Error Case 2">
+                <br> <p style="font-weight: bold;"> ① 선택한 Property에서 Binding된 필드가 없음</p>
+                <br> <p style="font-weight: bold;"> ② 선택한 Property가 없음 </p>
+                <br> <p style="font-weight: bold;"> ③ Property를 1개가 아닌 N건 선택함 </p>
+                <br> <p style="font-weight: bold;"> ④ Property가 선택한 UI 이외에 존재하지 않음 </p>                     
+            </div>
+            <div class="contents">
+                2. Apply Equal Properties Area에서 동기화
+                <br>- 선택한 UI를 기준으로 동기화 할 UI들을 선택후 버튼을 클릭하여 Binding 동기화
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/synchronizionArea_4.png" alt="sync Properties">
+                <p style="font-weight: bold;">'TITLE1'에 바인딩한 'GS_ADD-BRGEW' 필드가 선택한 'TEXT300' UI의 text property에 바인딩되고 추가속성 정보까지 동기화됨을 확인</p>
+            </div>
+
+            <div class="contents">
+                3. Synchronizion Equality popup에서의 Binding 동기화
+            </div>
+            <div class="contents">
+                3.1 Synchronizion Equality popup Open
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/synchronizionArea_5.png" alt="synchronizion Equality popup">
+            </div>
+
+            <div class="contents">
+                ※ UI 미 선택후 Apply all 버튼 클릭 시, Error
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/synchronizionArea_6.png" alt="No Select Ui Error">
+            </div>
+
+            <div class="contents">
+                3.2 선택한 UI를 기준으로 동기화 할 UI들을 선택후 버튼을 클릭하여 Binding 동기화
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/synchronizionArea_7.png" alt="sync binding">
+            </div>
+
+            <div class="contents">
+                4. Apply Equal Properties Area 구성 버튼기능, 영역 추가 설명
+            </div>
+            <div class="contentsImg">
+                <img src="./../../../image/synchronizionArea_8.png" alt="synchronizionArea 구성">
+                <ul>
+                    <li>
+                        ① 선택한 UI의 속성, 바인딩 정보 영역
+                    </li>
+                    <li>
+                        ② Binding 추가 속성 영역
+                    </li>
+                    <li>
+                        ③ 칼럼 최적화
+                    </li>
+                    <li>
+                        ④ Design Area로 돌아가는 Back 버튼
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <script src="./index.js"></script>
+</body>
+</html>
