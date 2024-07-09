@@ -77,8 +77,8 @@ module.exports = function(sArea, sCODE){
 //도움말 html 팝업 title 구성.
 function setHTMLTitle(S_CODE){
         
-    //204  Tooltips
-    var l_txt = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "204");
+    //207  Tooltips
+    var l_txt = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "207");
 
     var l_stitle = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", S_CODE);
 

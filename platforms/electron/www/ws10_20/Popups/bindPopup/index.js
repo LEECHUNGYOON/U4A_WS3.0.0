@@ -4286,15 +4286,6 @@ let oAPP = parent.oAPP,
         oFormData.append("CLSNM", oAPP.attr.oAppInfo.CLSID);
         oFormData.append("APPID", oAPP.attr.oAppInfo.APPID);
 
-        //테스트!!!!!!!!!
-        if(parent?.oAPP?.PES_DEV === "X" && oAPP.APP.isPackaged === false){
-
-            oFormData.append("sap-user", "pes");
-            oFormData.append("sap-password", "dmstjq8!");
-
-        }
-        //테스트!!!!!!!!!
-
         //바인딩 필드 정보 검색.
         sendAjax(oAPP.attr.servNm + "/getBindAttrData", oFormData, function (param) {
 
