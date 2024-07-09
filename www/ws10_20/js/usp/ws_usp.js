@@ -1182,6 +1182,14 @@
                 }
             },
 
+            rowSettingsTemplate: new sap.ui.table.RowSettings({
+                // highlight:"{ISSEL}"
+            }).bindProperty("highlight", "ISSEL", function(ISSEL){
+
+                return ISSEL === true ? "Indication03" : "None";
+
+            }),
+
             extension: [
                 new sap.m.OverflowToolbar({
                     content: [
@@ -1217,16 +1225,31 @@
             beforeOpenContextMenu: ev_beforeOpenContextMenu,
             rowSelectionChange: function (oEvent) {
 
-                var iRowIndex = oEvent.getParameter("rowIndex"),
-                    oTable = oEvent.getSource();
+                // var iRowIndex = oEvent.getParameter("rowIndex"),
+                //     oTable = oEvent.getSource();
 
-                if (oTable.getSelectedIndex() == -1) {
-                    oTable.setSelectedIndex(iRowIndex);
-                }
+                // console.log("rowSelectionChange: " + iRowIndex);
+
+                // // 사용자가 클릭 : true, 메소드로 클릭 : false
+                // let bIsUserClick = oEvent.getParameter("userInteraction");
+
+                // console.log(bIsUserClick);
+
+                // if(bIsUserClick){                    
+                //     return;
+                // }
+
+                
+
+                // if (oTable.getSelectedIndex() == -1) {
+                //     oTable.setSelectedIndex(iRowIndex);
+                // }
+
+                // oTable.clearSelection();
 
             },
 
-        }).addEventDelegate({
+        }).addEventDelegate({        
 
             ondblclick: ev_uspTreeItemDblClickEvent
 
@@ -1636,7 +1659,7 @@
 
             ]
 
-        });
+        }).bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
     } // end of fnGetUspPageWs30  
 
@@ -3906,6 +3929,7 @@
             oCtx = oRow.getBindingContext(),
             sCurrBindPath = oCtx.getPath();
 
+        // 선택한 라인의 선택 표시
         oTable.setSelectedIndex(iRowIndex);
 
         var oRowBindData = oRowModel.getProperty(sCurrBindPath),
@@ -3942,6 +3966,13 @@
             fnOnMoveToPage("USP20");
 
         }
+
+        // 우측에 Property 패널이 있고 접힌 상태면 펼친다.
+        let oPropPanel = sap.ui.getCore().byId("uspPanel");
+        if(oPropPanel && !oPropPanel.getExpanded()){
+            oPropPanel.setExpanded(true);
+        }
+        
 
         // 위에서 병합한 데이터를 복사해서 우측 Content 영역을 복사할 Object 생성
         var oUspData = jQuery.extend(true, {}, oResultRowData);

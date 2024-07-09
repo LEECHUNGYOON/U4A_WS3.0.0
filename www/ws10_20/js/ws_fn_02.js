@@ -107,7 +107,7 @@
                 // 단축키 설정
                 APPCOMMON.setShortCut("WS30");
 
-                // WS20번 페이지로 이동한다.
+                // USP 페이지로 이동한다.
                 oAPP.fn.fnOnMoveToPage("WS30");
 
                 return;
