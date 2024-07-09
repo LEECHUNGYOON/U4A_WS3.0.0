@@ -1467,7 +1467,7 @@ let oAPP = (function () {
                 };
 
                 // 현재 버전 정보와 서버 버전정보를 구한다.
-                let oVerInfo = e?.verInfo;
+                let oVerInfo = e?.params?.verInfo;
                 if(oVerInfo){
 
                     // WS의 메이져 버전이 같을 경우에만 Support package 업데이트 체크를 한다.
