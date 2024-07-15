@@ -91,7 +91,7 @@ let oAPP = (function (window) {
         var BROWSKEY = oAPP.attr.BROWSERKEY;
 
         var oSendData = {
-            TYPE: "P", // P : Preview, S: Save
+            TYPE: "P", // P : Preview, S: Save, C: Close
             DATA: aPreviewCss
         }
 
