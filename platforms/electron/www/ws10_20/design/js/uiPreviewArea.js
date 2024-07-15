@@ -190,9 +190,11 @@
 
   //미리보기 영역 다시 로드 처리.
   oAPP.fn.prevFrameReload = {onAfterRendering:function(){
-    console.log(123123);
+
     //미리보기에서 사용하는 광역 변수 초기화.
+    delete oAPP.attr.ui.prevRootPage;
     delete oAPP.attr.ui._page1;
+    delete oAPP.attr.ui.prevPopupArea;
     delete oAPP.attr.ui._hbox1;
     delete oAPP.attr.ui.oMenu;
     oAPP.attr.popup = [];
@@ -1322,6 +1324,29 @@
     return true;
 
   };  //selectOption3 UI의 예외처리 프로퍼티 설정.
+
+
+
+  //미리보기 영역 lock 설정/해제 처리.
+  oAPP.fn.prevSetLockUnlock = function(bLock){
+
+    //미리보기의 sap 라이브러리 정보가 존재하지 않는경우 exit.
+    if(oAPP.attr.ui?.frame?.contentWindow?.sap?.ui?.getCore){
+      return;
+    }
+
+    //lock 처리에 따른 분기.
+    switch (bLock) {
+      case true:  //lock 처리건인경우.
+        oAPP.attr.ui.frame.contentWindow.sap.ui.getCore().lock();    
+        break;
+
+      case false: //unlock 처리건인경우.
+        oAPP.attr.ui.frame.contentWindow.sap.ui.getCore().unlock();    
+        break;
+    }   
+
+  };
 
 
 })();

@@ -49,6 +49,22 @@ let oAPP = (function (window) {
     };
 
     /************************************************************************
+     * CSS 미리보기 전체 선택 해제 시 20번 페이지 미리보기 초기화
+     ************************************************************************/
+    oAPP.fn.fnUnselectCssItems = function(){
+
+        var BROWSKEY = oAPP.attr.BROWSERKEY;
+
+        var oSendData = {
+            TYPE: "C", // P : Preview, S: Save, C: Close
+            DATA: []
+        }
+
+        oAPP.IPCRENDERER.send(`${BROWSKEY}--if-ui5css`, oSendData);
+
+    }; // end of oAPP.fn.fnUnselectCssItems
+
+    /************************************************************************
      * 현재 팝업 닫기
      ************************************************************************/
     oAPP.fn.fnCurrentWindowClose = () => {
@@ -75,7 +91,7 @@ let oAPP = (function (window) {
         var BROWSKEY = oAPP.attr.BROWSERKEY;
 
         var oSendData = {
-            TYPE: "P", // P : Preview, S: Save
+            TYPE: "P", // P : Preview, S: Save, C: Close
             DATA: aPreviewCss
         }
 
@@ -172,6 +188,24 @@ let oAPP = (function (window) {
         };
 
     });
+
+
+    /************************************************************************
+     * 창 종료시 
+     ************************************************************************/
+    
+    
+    /**
+     * [TEST]  테스트 끝나면 반드시 주석을 풀것!! ----------- Start
+     */    
+    // window.onbeforeunload = () => { 
+
+    //     oAPP.fn.fnCurrentWindowClose();
+
+    // };
+    /**
+     * [TEST]  테스트 끝나면 반드시 주석을 풀것!! ----------- End
+     */    
 
     window.oAPP = oAPP;
 

@@ -197,7 +197,9 @@
         sap.ui.getCore().detachEvent("UIUpdated", lf_frame);
 
         //미리보기에서 사용되고 있는 UI정보 제거 처리.
+        delete oAPP.attr.ui.prevRootPage;
         delete oAPP.attr.ui._page1;
+        delete oAPP.attr.ui.prevPopupArea;
         delete oAPP.attr.ui._hbox1;
         delete oAPP.attr.ui.oMenu;
         oAPP.attr.popup = [];

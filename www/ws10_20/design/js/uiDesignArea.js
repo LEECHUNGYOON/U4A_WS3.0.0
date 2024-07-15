@@ -20,13 +20,26 @@
 
     //tree item 선택 이벤트.
     oLTree1.attachCellClick(function(oEvent){
+
       //attr 및 미리보기 갱신 전 화면 잠금 처리.
       oAPP.fn.designAreaLockUnlock(true);
+      
+      //미리보기 영역 lock 설정.
+      oAPP.fn.prevSetLockUnlock(true);
+      
+      parent.setBusy("X");
     
       //데이터 출력 라인을 선택하지 않은경우 exit.
       if(!oEvent.mParameters.rowBindingContext){
+        
+        //미리보기 영역 lock 해제.
+        oAPP.fn.prevSetLockUnlock(false);
+
         //화면 잠금 해제 처리.
-        oAPP.fn.designAreaLockUnlock();
+        oAPP.fn.designAreaLockUnlock(false);
+        
+        parent.setBusy("");
+
         return;
       }
       
@@ -62,32 +75,7 @@
 
     
     //tree 라인선택 예외처리.
-    oLTree1.attachRowSelectionChange(function(oEvent){
-      //라인선택이 해제 안된경우 EXIT.
-      if(this.getSelectedIndex() !== -1){return;}
-
-      var l_indx = oEvent.mParameters.rowIndex;
-
-      if(typeof oEvent.mParameters.rowIndices !== "undefined" && oEvent.mParameters.rowIndices.length !== 0){
-        l_indx = oEvent.mParameters.rowIndices[0];
-      }
-
-      //라인 선택이 해제 된경우 이벤트 발생 라인 선택 처리.
-      this.setSelectedIndex(l_indx);
-
-      var l_bind = oAPP.attr.ui.oLTree1.getBinding();
-      if(!l_bind){return;}
-
-      var l_ctxt = l_bind.getContextByIndex(l_indx);
-      if(!l_ctxt){return;}
-
-      var ls_tree = l_ctxt.getProperty();
-      if(!ls_tree){return;}
-
-      //design tree의 라인 이동 처리.
-      oAPP.fn.desginSetFirstVisibleRow(l_indx, ls_tree);
-      
-    }); //tree 라인선택 예외처리.
+    oLTree1.attachRowSelectionChange(oAPP.fn.onDesignTreeRowSelChange); //tree 라인선택 예외처리.
 
 
 
@@ -129,8 +117,21 @@
     //ui 삭제 버튼 선택 이벤트.
     oItem2.attachPress(function(oEvent){
 
+      //화면 lock 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+      
+      parent.setBusy("X");
+
       var l_ctxt = this.getBindingContext();
-      if(!l_ctxt){return;}
+      if(!l_ctxt){
+
+        parent.setBusy("");
+
+        //화면 unlock 처리.
+        oAPP.fn.designAreaLockUnlock(false);
+
+        return;
+      }
 
       //ui 삭제 버튼 선택 이벤트 처리.
       oAPP.fn.designUIDelete(l_ctxt.getProperty());
@@ -283,20 +284,52 @@
     //drop 이벤트.
     oLTDrop1.attachDrop(function(oEvent){
 
-      if(!oEvent.mParameters.droppedControl){return;}
+      //화면 lock 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+
+      parent.setBusy("X");
+
+      if(!oEvent.mParameters.droppedControl){
+
+        parent.setBusy("");
+
+        //화면 lock 해제 처리.
+        oAPP.fn.designAreaLockUnlock(false);
+
+        return;
+      }
 
       //DROP한 라인 정보 얻기.
       var ls_drop = oEvent.mParameters.droppedControl.getBindingContext()?.getProperty();
-      if(!ls_drop){return;}
+      if(!ls_drop){
+
+        parent.setBusy("");
+
+        //화면 lock 해제 처리.
+        oAPP.fn.designAreaLockUnlock(false);
+
+        return;
+      }
 
       //미리보기, design tree에서 D&D 했다면 DROP 처리.
-      if(oAPP.fn.UIDrop(oEvent, ls_drop.OBJID)){return;}
+      if(oAPP.fn.UIDrop(oEvent, ls_drop.OBJID)){
+        return;
+      }
 
       //UI Insert popup에서 Drop했다면 UI 추가 처리.
       if(oAPP.fn.designUIDropInsertPopup(oEvent, ls_drop.OBJID)){return;}
 
+
       //개인화 화면에서 Drop했다면 UI 추가 처리.
       if(oAPP.fn.designUIDropP13nList(oEvent, ls_drop)){return;}
+
+
+      //Drag data를 Drop 처리 하지 못하는경우 busy off.
+      parent.setBusy("");
+
+      //화면 lock 해제 처리.
+      oAPP.fn.designAreaLockUnlock(false);
+
 
     }); //drop 이벤트.
     
@@ -552,6 +585,39 @@
 
 
   };  //좌측 페이지(UI Design 영역) 구성.
+
+
+
+  /*************************************************************
+   * @function - design tree row 선택 이벤트.
+   *************************************************************/
+  oAPP.fn.onDesignTreeRowSelChange = function(oEvent){
+
+    //라인선택이 해제 안된경우 EXIT.
+    if(this.getSelectedIndex() !== -1){return;}
+
+    var l_indx = oEvent.mParameters.rowIndex;
+
+    if(typeof oEvent.mParameters.rowIndices !== "undefined" && oEvent.mParameters.rowIndices.length !== 0){
+      l_indx = oEvent.mParameters.rowIndices[0];
+    }
+
+    //라인 선택이 해제 된경우 이벤트 발생 라인 선택 처리.
+    this.setSelectedIndex(l_indx);
+
+    var l_bind = oAPP.attr.ui.oLTree1.getBinding();
+    if(!l_bind){return;}
+
+    var l_ctxt = l_bind.getContextByIndex(l_indx);
+    if(!l_ctxt){return;}
+
+    var ls_tree = l_ctxt.getProperty();
+    if(!ls_tree){return;}
+
+    //design tree의 라인 이동 처리.
+    oAPP.fn.desginSetFirstVisibleRow(l_indx, ls_tree);
+
+  };
 
 
 
@@ -1642,9 +1708,20 @@
         
         //입력UI와 동일건인경우. 선택 처리.
         if(OBJID === lt_path[0]){
+
+          var _sTree = is_child.context.getProperty();
           
           oAPP.attr.ui.oLTree1.setSelectedIndex(l_cnt);
-          oAPP.fn.designTreeItemPress(is_child.context.getProperty(), l_cnt, UIATK, TYPE, f_cb);
+          
+          //라인 선택 처리.
+          oAPP.fn.designTreeItemPress(_sTree, l_cnt, UIATK, TYPE, f_cb);
+          
+          //design tree의 라인 이동 처리.
+          oAPP.fn.desginSetFirstVisibleRow(l_cnt, _sTree);
+
+          //20240527 PES
+          //바인딩 팝업에 UI 라인 선택 처리.
+          oAPP.fn.selectBindingPopupOBJID(_sTree);
           
         }
         
@@ -2273,6 +2350,17 @@
   //UI design tree 라인 선택 이벤트.
   oAPP.fn.designTreeItemPress = async function(is_tree, iIndex, UIATK, TYPE, f_cb){
 
+    //디자인 영역 잠금처리.
+    oAPP.fn.designAreaLockUnlock(true);
+
+    
+    //미리보기 영역 lock 설정.
+    oAPP.fn.prevSetLockUnlock(true);
+
+
+    parent.setBusy("X");
+
+
     //우 상단 DynamicPage header 영역 펼침 처리.
     oAPP.fn.attrHeaderExpanded(true);
 
@@ -2301,30 +2389,33 @@
     }
 
 
-
     //미리보기 화면 갱신 처리.
-    oAPP.attr.ui.frame.contentWindow.refreshPreview(is_tree);
+    await oAPP.attr.ui.frame.contentWindow.refreshPreview(is_tree);
+    console.log("refreshPreview 끝.");
 
+           
 
+    //테스트!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     //팝업 호출건 강제 종료 처리.
-    oAPP.attr.ui.frame.contentWindow.closePopup();
+    if(parent.APP.isPackaged === true){
+      oAPP.attr.ui.frame.contentWindow.closePopup();
+    }
+    //테스트!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
     //미리보기 ui 선택 처리
-    oAPP.attr.ui.frame.contentWindow.selPreviewUI(is_tree.OBJID);
+    await oAPP.attr.ui.frame.contentWindow.selPreviewUI(is_tree.OBJID);
+
+    //BUSY 종료 처리.
+    parent.setBusy("");
 
 
-    //tree의 first visible row 변경이 필요한경우 하위 로직 수행.
-    if(typeof iIndex === "undefined"){return;}
+    //미리보기 영역 lock 해제.
+    oAPP.fn.prevSetLockUnlock(false);
+    
 
-
-    //design tree의 라인 이동 처리.
-    oAPP.fn.desginSetFirstVisibleRow(iIndex, is_tree);
-
-
-    //20240527 PES
-    //바인딩 팝업에 UI 라인 선택 처리.
-    oAPP.fn.selectBindingPopupOBJID(is_tree);
+    //디자인 영역 lock 해제.
+    oAPP.fn.designAreaLockUnlock(false);
 
 
   };  //UI design tree 라인 선택 이벤트.
@@ -3302,15 +3393,22 @@
 
 
   //UI 추가.
-  oAPP.fn.designAddUIObject = function(is_tree, is_0022, is_0023, i_cnt){
+  oAPP.fn.designAddUIObject = async function(is_tree, is_0022, is_0023, i_cnt){
 
     //화면 lock 처리.
     oAPP.fn.designAreaLockUnlock(true);
+		
+	  parent.setBusy("X");
+
 
     //UI가 입력 가능한 카디널리티 여부 확인.
     if(oAPP.fn.chkUiCardinality(is_tree, is_0023.UIATK, is_0023.ISMLB) === true){
+      
+      parent.setBusy("");
+
       //화면 unlock 처리.
-      oAPP.fn.designAreaLockUnlock();
+      oAPP.fn.designAreaLockUnlock(false);
+
       return;
     }
 
@@ -3318,15 +3416,23 @@
 
     //[워크벤치] 특정 API / UI 에 대한 중복 대상 관리 여부 확인.
     if(oAPP.fn.designChkUnique(is_0022.UIOBK, l_cnt) === true){        
+      
+      parent.setBusy("");
+      
       //화면 unlock 처리.
-      oAPP.fn.designAreaLockUnlock();
+      oAPP.fn.designAreaLockUnlock(false);
+
       return;
     }
 
     //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.
     if(oAPP.fn.designChkHiddenAreaUi(is_0022.UIOBK, is_tree.UIOBK) === true){
+      
+      parent.setBusy("");
+      
       //화면 unlock 처리.
-      oAPP.fn.designAreaLockUnlock();
+      oAPP.fn.designAreaLockUnlock(false);
+
       return;
     }
     
@@ -3334,8 +3440,12 @@
     //UI의 허용 가능 부모 정보
     //(특정 UI는 특정 부모에만 존재해야함.)
     if(oAPP.fn.designChkFixedParentUI(is_0022.UIOBK, is_tree.UIOBK, is_0023.UIATT) === true){
+      
+      parent.setBusy("");
+      
       //화면 unlock 처리.
-      oAPP.fn.designAreaLockUnlock();
+      oAPP.fn.designAreaLockUnlock(false);
+      
       return;
     }
     
@@ -3352,6 +3462,19 @@
       l_cnt = 1;
       //021	The object is already specified in Aggrigation.
       parent.showMessage(sap, 10, "W", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "021", "", "", "", ""));
+    }
+
+
+    //onAfterRendering 이벤트 등록 대상 UI 얻기.
+    let _oTarget = oAPP.fn.getTargetAfterRenderingUI(oAPP.attr.prev[is_tree.OBJID]);
+    
+    let _oDom = _oTarget.getDomRef();
+    
+    let _oPromise = undefined;
+    
+    //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
+    if(typeof _oDom !== "undefined" && _oDom !== null){
+      _oPromise = oAPP.fn.setAfterRendering(_oTarget);
     }
 
 
@@ -3442,6 +3565,22 @@
     //MODEL 갱신 처리.
     oAPP.attr.oModel.refresh();
 
+
+    //RichTextEditor 미리보기 출력 예외처리로직.
+    var _aPromise = oAPP.fn.renderingRichTextEditor(is_tree);
+
+
+    //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.
+    if(typeof _oPromise !== "undefined"){
+      _oTarget.invalidate();
+      
+      //onAfterRendering 수행까지 대기.
+      await _oPromise;
+    }
+
+    //richtexteditor 미리보기 화면이 다시 그려질떄까지 대기.
+    await Promise.all(_aPromise);
+
     //design tree의 tree binding 정보 갱신 처리.
     var l_bind = oAPP.attr.ui.oLTree1.getBinding();
     l_bind._buildTree(0,oAPP.fn.designGetTreeItemCount());
@@ -3451,6 +3590,7 @@
 
     //메뉴 선택 tree 위치 펼침 처리.
     oAPP.fn.setSelectTreeItem(l_14.OBJID);
+
 
     //변경 FLAG 처리.
     oAPP.fn.setChangeFlag();
@@ -3462,8 +3602,6 @@
     
 
   }; //UI 추가.
-
-
 
 
   //UI Insert popup에서 Drop했다면 UI 추가 처리.
@@ -3552,7 +3690,18 @@
 
     //실제 파일이 존재하지 않는다면 exit.
     if(!parent.FS.existsSync(l_path)){
+
+      //017 Not exists save file.
+      parent.showMessage(sap, 10, "E", 
+        parent.WSUTIL.getWsMsgClsTxt("EN", "ZMSG_WS_COMMON_001", "017"));
+
+      //화면 lock 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+      
+      parent.setBusy("X");
+
       return true;
+
     }
 
     //개인화 파일 정보 read.
@@ -3560,6 +3709,12 @@
       var ls_item = JSON.parse(parent.FS.readFileSync(l_path, "utf-8"));
     }catch(e){
       parent.showMessage(sap, 10, "E", e);
+
+      //화면 lock 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+      
+      parent.setBusy("X");
+
       return true;
     }
     
@@ -4106,9 +4261,7 @@
 
     if(!is_tree_param){return;}
 
-    //단축키 잠금 처리.
-    oAPP.fn.setShortcutLock(true);
-        
+            
     //선택라인의 삭제대상 OBJECT 제거 처리.
     function lf_deleteTreeLine(is_tree){
         
@@ -4147,9 +4300,17 @@
     var ls_tree = is_tree_param;
 
 
+    parent.setBusy("");
+
+    //화면 unlock 처리.
+    oAPP.fn.designAreaLockUnlock(false);
+
+    //단축키 잠금 처리.
+    oAPP.fn.setShortcutLock(true);
+
     //UI삭제전 확인 팝업 호출. 메시지!!
     //003	Do you really want to delete the object?
-    parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "003", "", "", "", ""), function(oEvent){
+    parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "003", "", "", "", ""), async function(oEvent){
         
       //확인 팝업에서 YES를 선택한 경우 하위 로직 수행.
       if(oEvent !== "YES"){
@@ -4160,6 +4321,8 @@
 
       //화면 lock 처리.
       oAPP.fn.designAreaLockUnlock(true);
+      
+      parent.setBusy("X");
       
       //내 부모가 자식 UI가 필수인 UI에 자식이 없는경우 강제추가 script 처리. 
       oAPP.attr.ui.frame.contentWindow.setChildUiException(ls_tree.PUIOK, ls_tree.POBID, undefined, undefined, true);
@@ -4173,11 +4336,41 @@
       //삭제 이후 이전 선택처리 정보 얻기.
       var l_prev = oAPP.fn.designGetPreviousTreeItem(ls_tree.OBJID);
       
+      
+      //onAfterRendering 이벤트 등록 대상 UI 얻기.
+      let _oTarget = oAPP.fn.getTargetAfterRenderingUI(oAPP.attr.prev[ls_tree.POBID]);
+      
+      let _oDom = _oTarget.getDomRef();
+      
+      let _oPromise = undefined;
+      
+      //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
+      if(typeof _oDom !== "undefined" && _oDom !== null){
+        _oPromise = oAPP.fn.setAfterRendering(_oTarget);
+      }
+
+      
       //선택라인의 삭제대상 OBJECT 제거 처리.
       lf_deleteTreeLine(ls_tree);
-      
+
       //부모 TREE 라인 정보 얻기.
       var ls_parent = oAPP.fn.getTreeData(ls_tree.POBID);
+      
+      //RichTextEditor 미리보기 출력 예외처리로직.
+      var _aPromise = oAPP.fn.renderingRichTextEditor(ls_parent);
+
+      
+      //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.
+      if(typeof _oPromise !== "undefined"){
+        _oTarget.invalidate();
+        
+        //onAfterRendering 수행까지 대기.
+        await _oPromise;
+      }
+
+      //richtexteditor 미리보기 화면이 다시 그려질떄까지 대기.
+      await Promise.all(_aPromise);
+            
       
       //부모에서 현재 삭제대상 라인이 몇번째 라인인지 확인.
       var l_fIndx = ls_parent.zTREE.findIndex( a => a.OBJID === ls_tree.OBJID );
@@ -4199,17 +4392,19 @@
       //변경 FLAG 처리.
       oAPP.fn.setChangeFlag();
 
+      
+      //20240621 pes.
+      //바인딩 팝업의 디자인 영역 갱신처리.
+      oAPP.fn.updateBindPopupDesignData();
+      
+      
+      parent.setBusy("");
+
       //화면 unlock 처리.
       oAPP.fn.designAreaLockUnlock();
 
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock();
-
-
-      //20240621 pes.
-      //바인딩 팝업의 디자인 영역 갱신처리.
-      oAPP.fn.updateBindPopupDesignData();
-
 
     }); //UI삭제전 확인 팝업 호출.
 

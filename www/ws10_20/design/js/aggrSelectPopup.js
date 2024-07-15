@@ -22,6 +22,11 @@
       //tree drop effect 초기화 처리(ctrl 누르고 drop시 복사를 위한 광역변수값).
       oAPP.attr.ui.oLTree1.__dropEffect = "";
 
+      parent.setBusy("");
+
+      //화면 lock 해제 처리.
+      oAPP.fn.designAreaLockUnlock(false);
+
       return;
     }
 
@@ -67,9 +72,16 @@
       if(this.oPopup){
         this.oPopup.setModal(true);
       }
-
+      
       //ddlb에 focus 처리.
       oSel1.focus();
+
+        
+      parent.setBusy("");
+
+      //화면 lock 해제 처리.
+      oAPP.fn.designAreaLockUnlock(false);
+
     });
 
     var oMdl = new sap.ui.model.json.JSONModel();

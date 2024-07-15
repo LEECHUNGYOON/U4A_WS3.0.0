@@ -1225,19 +1225,19 @@
             beforeOpenContextMenu: ev_beforeOpenContextMenu,
             rowSelectionChange: function (oEvent) {
 
-                var iRowIndex = oEvent.getParameter("rowIndex"),
-                    oTable = oEvent.getSource();
+                // var iRowIndex = oEvent.getParameter("rowIndex"),
+                //     oTable = oEvent.getSource();
 
-                console.log("rowSelectionChange: " + iRowIndex);
+                // console.log("rowSelectionChange: " + iRowIndex);
 
-                // 사용자가 클릭 : true, 메소드로 클릭 : false
-                let bIsUserClick = oEvent.getParameter("userInteraction");
+                // // 사용자가 클릭 : true, 메소드로 클릭 : false
+                // let bIsUserClick = oEvent.getParameter("userInteraction");
 
-                console.log(bIsUserClick);
+                // console.log(bIsUserClick);
 
-                if(bIsUserClick){                    
-                    return;
-                }
+                // if(bIsUserClick){                    
+                //     return;
+                // }
 
                 
 

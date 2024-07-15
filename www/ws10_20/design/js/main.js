@@ -28,6 +28,21 @@
 
     oAPP.attr.POSIT = 0;
 
+    //모듈 js path 수집 object.
+    oAPP.attr.modulePath = {};
+
+    //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH.
+    oAPP.attr.modulePath.broadcastChannelBindPopup = "";
+
+    //onAfterRendering 이벤트 등록 대상 UI 검색 모듈 PATH.
+    oAPP.attr.modulePath.getTargetAfterRenderingUI = "";
+
+    //대상 UI에 onAfterRendering 이벤트 등록 처리 모듈 PATH.
+    oAPP.attr.modulePath.setAfterRendering = "";
+
+    //RichTextEditor 미리보기 출력 예외처리로직 모듈 PATH.
+    oAPP.attr.modulePath.renderingRichTextEditor = "";
+
     
     //sap core 정보 광역화.
     oAPP.attr.oCore = sap.ui.getCore();
@@ -633,12 +648,18 @@
     //model, 미리보기 정보 제거.
     oAPP.fn.removeContent = function(){
 
+      //라인 선택 이벤트 해제(이벤트 수행 처리 회피 목적)
+      oAPP.attr.ui.oLTree1.detachRowSelectionChange(oAPP.fn.onDesignTreeRowSelChange);
       
       //design tree 선택 처리 해제
       oAPP.attr.ui.oLTree1.clearSelection();
 
+      //라인 선택 이벤트 재등록.
+      oAPP.attr.ui.oLTree1.attachRowSelectionChange(oAPP.fn.onDesignTreeRowSelChange);
+
       //design tree 필터 해제 처리.
       oAPP.fn.designSetFilter("");
+
 
       //attribute 선택 처리 해제.
       oAPP.attr.ui.oRTab1.removeSelections();
@@ -678,7 +699,9 @@
       document.getElementById("prevHTML").src = "";
       document.getElementById("prevHTML").style.display = "none";
 
+      delete oAPP.attr.ui.prevRootPage;
       delete oAPP.attr.ui._page1;
+      delete oAPP.attr.ui.prevPopupArea;
       delete oAPP.attr.ui._hbox1;
       delete oAPP.attr.ui.oMenu;
 
@@ -1230,24 +1253,8 @@
     };
 
 
-
     /*************************************************************
-     * @function - 바인딩 팝업 통신 관련 module path 구성.
-     *************************************************************/
-    oAPP.fn.getBindingPopupBroadcastModulePath = function(){
-
-      //WS 3.0 메인 PATH 얻기.
-      var _channelPath = parent.getPath("WS10_20_ROOT");
-
-      //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH 구성.
-      return parent.PATH.join(_channelPath, "design", "bindPopupHandler", "broadcastChannelBindPopup.js");
-
-    };
-
-
-
-    /*************************************************************
-     * @function - 바인딩 팝업 통신 관련 module path 구성.
+     * @function - busy open 시간 대기.
      *************************************************************/
     oAPP.fn.waitBusyOpened = function(){
 
@@ -1429,6 +1436,121 @@
 
     };  //UI의 drop 가능 css 제거 처리.
 
+
+    
+    /*************************************************************
+     * @function - 바인딩 팝업 통신 관련 module path 구성.
+     *************************************************************/
+    oAPP.fn.getBindingPopupBroadcastModulePath = function(){
+      
+      //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH가 존재하는경우 해당 path return.
+      if(oAPP.attr.modulePath.broadcastChannelBindPopup !== ""){
+        return oAPP.attr.modulePath.broadcastChannelBindPopup;
+      }
+
+      //WS 3.0 메인 PATH 얻기.
+      var _channelPath = parent.getPath("WS10_20_ROOT");
+
+      //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH 구성.
+      oAPP.attr.modulePath.broadcastChannelBindPopup = parent.PATH.join(_channelPath, "design", "bindPopupHandler", "broadcastChannelBindPopup.js");
+
+      return oAPP.attr.modulePath.broadcastChannelBindPopup;
+
+    };
+
+
+    /*************************************************************
+     * @function - onAfterRendering 이벤트 등록 대상 UI 검색 모듈 PATH 구성.
+     *************************************************************/
+    oAPP.fn.getTargetAfterRenderingUIPath = function(){
+
+      //구성된 path가 존재하는경우 해당 path return.
+      if(oAPP.attr.modulePath.getTargetAfterRenderingUI !== ""){
+        return oAPP.attr.modulePath.getTargetAfterRenderingUI;
+      }
+
+      //WS 3.0 메인 PATH 얻기.
+      var _channelPath = parent.getPath("WS10_20_ROOT");
+
+      //onAfterRendering 이벤트 등록 대상 UI 검색 모듈 PATH 구성.
+      oAPP.attr.modulePath.getTargetAfterRenderingUI = parent.PATH.join(_channelPath, "design", "js", "getTargetAfterRenderingUI.js");
+
+      return oAPP.attr.modulePath.getTargetAfterRenderingUI;
+
+    };
+
+
+    /*************************************************************
+     * @function - 대상 UI에 onAfterRendering 이벤트 등록 처리 모듈 PATH 구성.
+     *************************************************************/
+    oAPP.fn.setAfterRenderingPath = function(){
+
+      //구성된 path가 존재하는경우 해당 path return.
+      if(oAPP.attr.modulePath.setAfterRendering !== ""){
+        return oAPP.attr.modulePath.setAfterRendering;
+      }
+
+      //WS 3.0 메인 PATH 얻기.
+      var _channelPath = parent.getPath("WS10_20_ROOT");
+
+      //대상 UI에 onAfterRendering 이벤트 등록 처리 모듈 PATH 구성.
+      oAPP.attr.modulePath.setAfterRendering = parent.PATH.join(_channelPath, "design", "js", "setAfterRendering.js");
+
+      return oAPP.attr.modulePath.setAfterRendering;
+
+    };
+
+
+    /*************************************************************
+     * @function - RichTextEditor 미리보기 출력 예외처리로직 모듈 PATH 구성.
+     *************************************************************/
+    oAPP.fn.renderingRichTextEditorPath = function(){
+
+      //구성된 path가 존재하는경우 해당 path return.
+      if(oAPP.attr.modulePath.renderingRichTextEditor !== ""){
+        return oAPP.attr.modulePath.renderingRichTextEditor;
+      }
+
+      //WS 3.0 메인 PATH 얻기.
+      var _channelPath = parent.getPath("WS10_20_ROOT");
+
+      //대상 UI에 RichTextEditor 미리보기 출력 예외처리로직 모듈 PATH 구성.
+      oAPP.attr.modulePath.renderingRichTextEditor = parent.PATH.join(_channelPath, "design", "js", "renderingRichTextEditor.js");
+
+      return oAPP.attr.modulePath.renderingRichTextEditor;
+
+    };
+    
+
+
+    /*************************************************************
+     * @function - onAfterRendering 이벤트 등록 대상 UI 검색.
+     *************************************************************/
+    oAPP.fn.getTargetAfterRenderingUI = function(oTarget){
+
+      return parent.require(oAPP.fn.getTargetAfterRenderingUIPath())(oTarget);
+
+    };
+
+
+    /*************************************************************
+     * @function - 대상 UI에 onAfterRendering 이벤트 등록 처리.
+     *************************************************************/
+    oAPP.fn.setAfterRendering = function(oTarget){
+      
+      return parent.require(oAPP.fn.setAfterRenderingPath())(oTarget);
+
+    };
+
+
+    /*************************************************************
+     * @function - RichTextEditor 미리보기 출력 예외처리로직.
+     *************************************************************/
+    oAPP.fn.renderingRichTextEditor = function(oTarget){
+      
+      return parent.require(oAPP.fn.renderingRichTextEditorPath())(oTarget);
+
+    };
 
 
 

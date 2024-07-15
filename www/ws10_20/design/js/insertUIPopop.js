@@ -506,6 +506,11 @@
     //UI 선택처리 FUNCTION.
     function lf_selectUi(is_UI){
       
+      //화면 lock 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+
+      parent.setBusy("X");
+      
       //aggregation ddlb 선택 Key 값 얻기.
       var l_selky = oSel1.getSelectedKey();
 

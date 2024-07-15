@@ -673,7 +673,6 @@ function selectDesignTreeOBJID(oData){
  *************************************************************/
 module.exports = function(ACTCD, oData){
 
-    console.log(ACTCD);
 
     switch (ACTCD) {
         case "CHANNEL-CREATE":

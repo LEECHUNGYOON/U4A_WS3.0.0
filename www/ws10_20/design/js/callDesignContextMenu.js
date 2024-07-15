@@ -414,7 +414,7 @@
     
 
     //ui 이동처리 function
-    oAPP.fn.contextMenuUiMove = function(sign, pos){
+    oAPP.fn.contextMenuUiMove = async function(sign, pos){
 
         //화면 lock 처리.
         oAPP.fn.designAreaLockUnlock(true);
@@ -489,8 +489,35 @@
 
             }
 
+            //onAfterRendering 이벤트 등록 대상 UI 얻기.
+            let _oTarget = oAPP.fn.getTargetAfterRenderingUI(oAPP.attr.prev[l_parent.OBJID]);
+            
+            let _oDom = _oTarget.getDomRef();
+            
+            let _oPromise = undefined;
+            
+            //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
+            if(typeof _oDom !== "undefined" && _oDom !== null){
+                _oPromise = oAPP.fn.setAfterRendering(_oTarget);
+            }
+
+            //RichTextEditor 미리보기 출력 예외처리로직.
+            var _aPromise = oAPP.fn.renderingRichTextEditor(l_parent);
+
             //미리보기 갱신 처리.
             oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(ls_tree.OBJID, ls_tree.UILIB, ls_tree.POBID, ls_tree.PUIOK, ls_tree.UIATT, l_cnt, ls_tree.ISMLB, ls_tree.UIOBK);
+
+            //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.
+            if(typeof _oPromise !== "undefined"){
+                _oTarget.invalidate();
+                
+                //onAfterRendering 수행까지 대기.
+                await _oPromise;
+            }
+
+
+            //richtexteditor 미리보기 화면이 다시 그려질떄까지 대기.
+            await Promise.all(_aPromise);
 
             //미리보기 ui 선택.
             //oAPP.attr.ui.frame.contentWindow.selPreviewUI(ls_tree.OBJID);

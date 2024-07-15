@@ -4276,10 +4276,14 @@
       //컨트롤러 클래스의 서버 이벤트 항목 정보 검색.
       sendAjax(oAPP.attr.servNm + "/getServerEventList", oFormData, function(param){
 
+        //20240711 PES
+        //UNLOCK SKIP FLAG 처리시 BUSY OFF 처리 금지.
         //wait off.
-        parent.setBusy("");
+        if(bSkipUnLock !== true){
+          parent.setBusy("");
+        }
         
-        //서버이벤트 호출전 lock처리.
+        //서버이벤트 호출후 lock처리.
         oAPP.fn.designAreaLockUnlock(true);
 
         if(param.RETCD !== "S"){
