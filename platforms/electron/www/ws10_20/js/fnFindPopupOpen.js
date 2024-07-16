@@ -172,16 +172,20 @@
     /**************************************************************************
      * Find Popup에서 전달 받은 UI 정보를 가지고 WS20에 표시를 해준다.
      * ************************************************************************/
-    oAPP.fn.fnIpcMain_Find = function (events, res) {
+    oAPP.fn.fnIpcMain_Find = async function (events, res) {
 
-        function lf_success() {
+        // function lf_success() {
 
-            IPCRENDERER.send(`${BROWSKEY}--find--success`, "X");
+        //     IPCRENDERER.send(`${BROWSKEY}--find--success`, "X");
 
-        }
+        // }
 
-        // oAPP.fn.setSelectTreeItem(res.OBJID, res.UIATK);
-        oAPP.fn.setSelectTreeItem(res.OBJID, res.UIATK, null, lf_success);
+        // // oAPP.fn.setSelectTreeItem(res.OBJID, res.UIATK);
+        // oAPP.fn.setSelectTreeItem(res.OBJID, res.UIATK, null, lf_success);
+
+        await oAPP.fn.setSelectTreeItem(res.OBJID, res.UIATK, null);
+
+        IPCRENDERER.send(`${BROWSKEY}--find--success`, "X");
 
     }; // end of oAPP.fn.fnIpcMain_Find
 
