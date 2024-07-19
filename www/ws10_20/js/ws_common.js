@@ -2194,7 +2194,7 @@
 
                     // properties
                     width: "200px",
-                    maxLength: 30,
+                    maxLength: 20, // SAP Standard 기준으로 T-CODE는 최대 20자
                     placeholder: "SAP T-CODE",
                     showSearchButton: false,
                     enableSuggestions: true,
@@ -2217,7 +2217,22 @@
                         oAPP.events.ev_suggestSapTcode(oEvent);                        
                     }
 
-                }).addStyleClass("u4aWs30sapTcodeInput"),
+                }).addStyleClass("u4aWs30sapTcodeInput")
+                .addEventDelegate({
+                    onAfterRendering: function(oEvent){
+
+                        // 간헐적으로 SearchField에 값을 입력하면 maxlength가 적용이 되지 않아
+                        // 직접 maxlength 구현
+                        let oSF = oEvent.srcControl;
+                        let oSFInput = oSF.getDomRef("I");
+                        if(!oSFInput){
+                            return;
+                        }
+
+                        oSFInput.setAttribute("maxlength", oSF.getMaxLength());                        
+
+                    }
+                }),
 
                 // Browser Pin Button
                 new sap.m.OverflowToolbarToggleButton({
