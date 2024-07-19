@@ -3154,7 +3154,8 @@ return;
                 
 
                 //현재 UI로부터 부모를 탐색하며 n건 바인딩 존재 여부 확인.
-                var _parentModel = oAPP.fn.getParentAggrBind(oAPP.attr.prev[sTree.OBJID], sTree.UIATT);
+                // var _parentModel = oAPP.fn.getParentAggrBind(oAPP.attr.prev[sTree.OBJID], sTree.UIATT);
+                var _parentModel = oAPP.fn.getParentAggrBind(oAPP.attr.prev[sTree.POBID], oAPP.attr.prev[sTree.OBJID]._EMBED_AGGR);
 
 
                 if(typeof _parentModel !== "undefined"){

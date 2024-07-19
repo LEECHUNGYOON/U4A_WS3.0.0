@@ -133,12 +133,17 @@ oAPP.fn.uiMovePosition = function(is_parent, OBJID, pos, max, f_callBack, i_x, i
   //확인 버튼 선택 이벤트.
   oBtn1.attachPress(function(){
 
+    parent.setBusy("X");
+
     var l_pos = oMdl.getProperty("/move/pos") - 1;
 
     //0 미만인경우 or max값을 초과한경우.
     if(l_pos < 0 || l_pos > max){
       //274	Check input value.
       parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "274", "", "", "", ""));
+
+      parent.setBusy("");
+
       return;
     }
 
@@ -180,9 +185,16 @@ oAPP.fn.uiMovePosition = function(is_parent, OBJID, pos, max, f_callBack, i_x, i
     oAPP.fn.designMoveMark(is_parent, OBJID, pos);
 
     var l_dom = oStepInp.getDomRef("input-inner");
-    if(!l_dom || !l_dom.select){return;}
+    if(!l_dom || !l_dom.select){
+
+      parent.setBusy("");
+
+      return;
+    }
 
     l_dom.select();
+
+    parent.setBusy("");
 
   }); //dailog 호출전 이벤트.
 

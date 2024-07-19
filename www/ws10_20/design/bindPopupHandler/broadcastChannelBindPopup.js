@@ -261,8 +261,6 @@ async function updateAppData(oEvent){
 
     //BIND POPUP으로 부터 받은 UI 정보중 현재 선택건이 포함되어 있다면.
     if(oEvent.data.T_0014.findIndex( item => item.OBJID === _OBJID ) !== -1){
-        // //tree item 선택 처리.
-        // oAPP.fn.setSelectTreeItem(oAPP.attr.oModel.oData.uiinfo.OBJID);
 
         //선택한 UI의 TREE 라인 정보 얻기.
         var _sTree = oAPP.fn.getTreeData(_OBJID);
@@ -340,7 +338,6 @@ function responeSelectDesignTreeOBJID(oEvent){
     //tree item 선택 처리
     oAPP.fn.setSelectTreeItem(oEvent.data.OBJID);
 
-    parent.setBusy("");
 
     return true;
 

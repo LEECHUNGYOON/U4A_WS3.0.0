@@ -22,10 +22,10 @@
       //tree drop effect 초기화 처리(ctrl 누르고 drop시 복사를 위한 광역변수값).
       oAPP.attr.ui.oLTree1.__dropEffect = "";
 
-      parent.setBusy("");
+      //단축키 잠금 해제 처리.
+      oAPP.fn.setShortcutLock(false);
 
-      //화면 lock 해제 처리.
-      oAPP.fn.designAreaLockUnlock(false);
+      parent.setBusy("");
 
       return;
     }
@@ -79,8 +79,6 @@
         
       parent.setBusy("");
 
-      //화면 lock 해제 처리.
-      oAPP.fn.designAreaLockUnlock(false);
 
     });
 
@@ -146,10 +144,17 @@
 
     oBtn1.attachPress(function(){
 
+      parent.setBusy("X");
+
       var l_sel = oSel1.getSelectedKey();
 
       ls_0023 = oAPP.DATA.LIB.T_0023.find( a => a.UIATK === l_sel);
-      if(!ls_0023){return;}
+      if(!ls_0023){
+
+        parent.setBusy("");
+
+        return;
+      }
 
       oDlg1.close();
       oDlg1.destroy();

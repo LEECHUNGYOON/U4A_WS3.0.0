@@ -165,6 +165,7 @@
     //저장버튼 선택 -> design영역의 page 삭제 이후 이벤트.
     function lf_after(){
 
+
         //삭제 이후 이벤트 제거 처리.
         sap.ui.getCore().detachEvent("UIUpdated", lf_after);
 
@@ -207,9 +208,6 @@
         //미리보기 iframe 다리 load 처리.
         oAPP.fn.loadPreviewFrame(true);
 
-        //화면 잠금 해제 처리.
-        oAPP.fn.designAreaLockUnlock();
-
 
     }   //design layout 재정의 이후 이벤트
 
@@ -225,8 +223,10 @@
 
             if(param !== "YES"){return;}
 
-            //화면 잠금 처리.
-            oAPP.fn.designAreaLockUnlock(true);
+            parent.setBusy("X");
+
+            //단축키 잠금 처리.
+            oAPP.fn.setShortcutLock(true);
 
             //POSITION 으로 정렬처리.
             oMdl.oData.T_LAYOUT.sort(function(a,b){

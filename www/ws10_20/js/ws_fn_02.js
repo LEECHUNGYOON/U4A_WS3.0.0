@@ -654,14 +654,79 @@
 
             APPCOMMON.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
+            //테스트주석처리함!!!!!!!!!!!!!!!!!!!!!
+            // // 화면 Lock 해제
+            // sap.ui.getCore().unlock();
 
-            parent.setBusy('');
+            // parent.setBusy('');
+            //테스트주석처리함!!!!!!!!!!!!!!!!!!!!!
 
         }
 
     }; // end of oAPP.fn.fnSetAppChangeMode
+
+    // /************************************************************************
+    //  * WS20 Change 모드로 전환
+    //  * **********************************************************************/
+    // oAPP.fn.fnSetAppChangeMode = function () {
+
+    //     // 화면 Lock 걸기
+    //     sap.ui.getCore().lock();
+
+    //     var oAppInfo = parent.getAppInfo(),
+    //         sCurrPage = parent.getCurrPage();
+
+    //     var oFormData = new FormData();
+    //     oFormData.append("APPID", oAppInfo.APPID);
+    //     oFormData.append("ISEDIT", 'X');
+
+    //     // 서버에서 App 정보를 구한다.
+    //     ajax_init_prc(oFormData, lf_success);
+
+    //     function lf_success(oAppInfo) {
+
+    //         if (oAppInfo.IS_EDIT != "X") {
+
+    //             // 페이지 푸터 메시지
+    //             APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
+
+    //             // var sMsg = "Editing by " + oAppInfo.APPID;
+
+    //             // // 페이지 푸터 메시지
+    //             // APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sMsg);
+
+    //             // 화면 Lock 해제
+    //             sap.ui.getCore().unlock();
+
+    //             parent.setBusy('');
+
+    //             return;
+
+    //         }
+
+    //         // App 정보 갱신
+    //         parent.setAppInfo(oAppInfo);
+
+    //         APPCOMMON.fnSetModelProperty("/WS20/APP", oAppInfo);
+
+    //         // 현재 떠있는 Electron Browser들 전체 닫는 function
+    //         oAPP.fn.fnChildWindowClose();
+
+    //         oAPP.fn.setUIAreaEditable(); // Change Mode 모드로 변환
+
+    //         // 푸터 메시지 처리                                  
+    //         var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "020"); // Switch to edit mode.
+
+    //         APPCOMMON.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
+
+    //         // 화면 Lock 해제
+    //         sap.ui.getCore().unlock();
+
+    //         parent.setBusy('');
+
+    //     }
+
+    // }; // end of oAPP.fn.fnSetAppChangeMode
 
     /************************************************************************
      * WS20 페이지 Lock 풀고 Display Mode로 전환
@@ -714,14 +779,76 @@
 
             oAPP.fn.setUIAreaEditable(oAppInfo.IS_CHAG); // Display 모드로 변환
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
+            //테스트주석처리함!!!!!!!!!!!!!!
+            // // 화면 Lock 해제
+            // sap.ui.getCore().unlock();
 
-            parent.setBusy('');
+            // parent.setBusy('');
+            //테스트주석처리함!!!!!!!!!!!!!!
 
         }
 
     }; // end of oAPP.fn.fnSetAppDisplayMode
+
+    // /************************************************************************
+    //  * WS20 페이지 Lock 풀고 Display Mode로 전환
+    //  * **********************************************************************/
+    // oAPP.fn.fnSetAppDisplayMode = function () {
+
+    //     // 화면 Lock 걸기
+    //     sap.ui.getCore().lock();
+
+    //     // Busy를 킨다.
+    //     parent.setBusy("X");
+
+    //     var oAppInfo = parent.getAppInfo(),
+    //         sCurrPage = parent.getCurrPage();
+
+    //     var oFormData = new FormData();
+    //     oFormData.append("APPID", oAppInfo.APPID);
+
+    //     // Lock을 해제한다.
+    //     ajax_unlock_app(oAppInfo.APPID, lf_success);
+
+    //     function lf_success(RETURN) {
+
+    //         if (RETURN.RTCOD == 'E') {
+    //             // 오류..1
+    //             parent.showMessage(sap, 20, RETURN.RTCOD, RETURN.RTMSG);
+
+    //             // 화면 Lock 해제
+    //             sap.ui.getCore().unlock();
+
+    //             parent.setBusy('');
+
+    //             return;
+    //         }
+
+    //         RETURN.IS_EDIT = ""; // Display Mode FLAG
+    //         RETURN.IS_CHAG = "";
+
+    //         parent.setAppInfo(RETURN); // Application 정보 갱신
+
+    //         APPCOMMON.fnSetModelProperty("/WS20/APP", RETURN); // 모델 정보 갱신
+
+    //         // 현재 떠있는 Electron Browser들 전체 닫는 function
+    //         oAPP.fn.fnChildWindowClose();
+
+    //         var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "020"); // Switch to edit mode.
+
+    //         // 푸터 메시지 처리
+    //         APPCOMMON.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
+
+    //         oAPP.fn.setUIAreaEditable(oAppInfo.IS_CHAG); // Display 모드로 변환
+
+    //         // 화면 Lock 해제
+    //         sap.ui.getCore().unlock();
+
+    //         parent.setBusy('');
+
+    //     }
+
+    // }; // end of oAPP.fn.fnSetAppDisplayMode
 
     /************************************************************************
      * 어플리케이션 존재 유뮤 체크

@@ -9,6 +9,21 @@ module.exports = function(oTarget){
 	
 	var _oTarget = oTarget;
 	
+	
+	//UI에 onAfterRendering이 존재하지 않는경우.
+	//상위 부모의 onAfterRendering을 확인.
+	while(typeof _oTarget?.onAfterRendering === "undefined"){
+		
+		_oTarget = _oTarget.oParent;
+        
+        //부모를 찾지 못한 경우 exit.
+		if(typeof _oTarget === "undefined"){
+			return;
+		}
+	}
+
+	var _OBJID = _oTarget._OBJID;
+	
 	//예외처리 대상 UI에 해당하는건인경우.
 	switch(true){
 		case typeof _oTarget._oDialog !== "undefined":
@@ -47,19 +62,9 @@ module.exports = function(oTarget){
 			break;
 		
 	}
+
+	_oTarget._OBJID = _OBJID;
 	
-	
-	//UI에 onAfterRendering이 존재하지 않는경우.
-	//상위 부모의 onAfterRendering을 확인.
-	while(typeof _oTarget?.onAfterRendering === "undefined"){
-		
-		_oTarget = _oTarget.oParent;
-        
-        //부모를 찾지 못한 경우 exit.
-		if(typeof _oTarget === "undefined"){
-			return;
-		}
-	}
 		
 	return _oTarget;
 

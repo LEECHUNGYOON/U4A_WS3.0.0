@@ -993,6 +993,8 @@
         var l_dom = document.getElementById(loApp.attr.frameID);
         if(!l_dom){return;}
 
+        
+
         var oForm = document.createElement("form");
         oForm.setAttribute("id",     "prvSendForm");
         oForm.setAttribute("target", l_dom.id);
@@ -1032,7 +1034,10 @@
 
         oForm.submit();
 
-        document.body.removeChild(oForm);
+        setTimeout(() => {
+            document.body.removeChild(oForm);
+        }, 0);
+        
 
     }   //개인화 미리보기 html load.
 

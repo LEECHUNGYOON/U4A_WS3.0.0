@@ -150,6 +150,11 @@
 
       //미리보기 영역이 onAfterRendering 호출되는경우 다시 미리보기 영역을 load처리.
       oAPP.attr.ui.oDesignPreview.addEventDelegate(oAPP.fn.prevFrameReload);
+
+      setTimeout(() => {
+        document.body.removeChild(oform);
+      }, 0);
+
  
       // //미리보기 서버 URL 정보 구성.
       // oAPP.attr.ui.frame.src = parent.getHost() + "/zu4a_wbc/u4a_ipcmain/getPrevHTML?" +

@@ -287,6 +287,8 @@
       //서버 호출.
       sendAjax(oAPP.attr.servNm + "/getAppData", oFormData, function(param){
 
+        parent.setBusy("X");
+
         //application정보 구성전 화면 잠금 처리.
         oAPP.fn.designAreaLockUnlock(true);
 

@@ -43,6 +43,11 @@
 
       //aggregation name ddlb 선택 처리.
       oSel1.focus();
+
+      
+      parent.setBusy("");
+
+
     });
 
     var oTool = new sap.m.Toolbar();
@@ -323,14 +328,24 @@
     //table 더블클릭 이벤트.
     oTab1.attachBrowserEvent("dblclick", function(oEvent){
 
+      parent.setBusy("X");
+
       //이벤트 발생 UI 정보 얻기.
       var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target, sap.ui.getCore());
 
       //UI정보를 얻지 못한 경우 exit.
-      if(!l_ui){return;}
+      if(!l_ui){
+
+        parent.setBusy("");
+
+        return;
+      }
       
       //아이콘을 더블클릭한 경우 exit.
       if(l_ui.data("ico")){
+
+        parent.setBusy("");
+
         return;
       }
 
@@ -338,7 +353,12 @@
       var l_ctxt = l_ui.getBindingContext();
 
       //바인딩 정보를 얻지 못한 경우 exit.
-      if(!l_ctxt){return;}
+      if(!l_ctxt){
+
+        parent.setBusy("");
+
+        return;
+      }
 
       //선택 처리건에 대한 return.
       lf_selectUi(l_ctxt.getProperty());
@@ -469,6 +489,9 @@
     oDlg.addButton(oBtn1);
 
     oBtn1.attachPress(function(){
+
+      parent.setBusy("X");
+
       //table의 선택 라인 index 얻기.
       var l_sidx = oTab1.getSelectedIndex();
 
@@ -476,6 +499,9 @@
       if(l_sidx === -1){
         //268	Selected line does not exists.
         parent.showMessage(sap, 20, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", ""));
+
+        parent.setBusy("");
+
         return;
       }
             
@@ -505,11 +531,6 @@
 
     //UI 선택처리 FUNCTION.
     function lf_selectUi(is_UI){
-      
-      //화면 lock 처리.
-      oAPP.fn.designAreaLockUnlock(true);
-
-      parent.setBusy("X");
       
       //aggregation ddlb 선택 Key 값 얻기.
       var l_selky = oSel1.getSelectedKey();

@@ -6,7 +6,7 @@
         var oDlg = new sap.m.Dialog({draggable: true, resizable: true, busyIndicatorDelay:1,
             verticalScrolling:false, contentWidth:"60%", contentHeight:"60%", busy:"{/busy}"});
 
-        oDlg.attachBeforeOpen(function(){
+        oDlg.attachAfterOpen(function(){
             //대상 ui 사용처 리스트 검색.
             lf_getWhereUseList(oDlg, oModel, is_tree);
 
@@ -122,8 +122,11 @@
             //busy dialog close.
             oAPP.common.fnSetBusyDialog(false);
 
+            parent.setBusy("");
+            
             //화면 unlock 처리.
-            oAPP.fn.designAreaLockUnlock();
+            oAPP.fn.designAreaLockUnlock(false);
+
 
         },""); //사용처 리스트 검색.
 

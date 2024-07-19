@@ -435,7 +435,7 @@
      * wizard UI 추가 후 후속 처리.
      * **********************************************************************
      ************************************************************************/
-    oAPP.fn.designWizardFinish = function(OBJID){
+    oAPP.fn.designWizardFinish = async function(OBJID){
 
         //모델 갱신 처리.
         oAPP.attr.oModel.refresh(true);
@@ -445,7 +445,7 @@
         l_bind._buildTree(0,oAPP.fn.designGetTreeItemCount());
 
         //메뉴 선택 tree 위치 펼침 처리.
-        oAPP.fn.setSelectTreeItem(OBJID);
+        await oAPP.fn.setSelectTreeItem(OBJID);
 
         //변경 FLAG 처리.
         oAPP.fn.setChangeFlag();

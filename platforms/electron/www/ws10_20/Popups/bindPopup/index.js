@@ -3018,7 +3018,8 @@ let oAPP = parent.oAPP,
             if(typeof oAPP.attr.prev[sChild.OBJID]._T_0015 !== "undefined"){
 
                 //바인딩 path로 부터 파생된 정보가 존재하는경우.
-                var _found = oAPP.attr.prev[sChild.OBJID]._T_0015.findIndex( item => item.ISBND === "X" &&                    
+                var _found = oAPP.attr.prev[sChild.OBJID]._T_0015.findIndex( item => item.ISBND === "X" &&
+                    item.UIATY === "3" &&
                     String(item.UIATV).startsWith(BINDFIELD) === true );
 
                 if(_found !== -1){
@@ -3849,7 +3850,8 @@ let oAPP = parent.oAPP,
             for(var i in oParent._BIND_AGGR){
 
                 //현재 UI가 N건 바인딩 처리됐는지 확인.
-                var l_indx = oParent._BIND_AGGR[i].findIndex( a => a === oAPP.attr.prev[is_attr.OBJID] );
+                // var l_indx = oParent._BIND_AGGR[i].findIndex( a => a === oAPP.attr.prev[is_attr.OBJID] );
+                var l_indx = oParent._BIND_AGGR[i].findIndex( a => a.OBJID === is_attr.OBJID );
 
                 //N건 바인딩 처리 안된경우 SKIP.
                 if(l_indx === -1){continue;}

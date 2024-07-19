@@ -14,6 +14,11 @@
         //menu item 선택 이벤트.
         oMenu1.attachItemSelected(function(oEvent){
 
+            parent.setBusy("X");
+            
+            //단축키 잠금 처리.
+            oAPP.fn.setShortcutLock(true);
+
             //이벤트 발생 x, y 좌표값 얻기.
             var ls_pos = oAPP.fn.getMousePosition();
 
@@ -239,8 +244,8 @@
             oModel.setProperty("/lcmenu", ls_menu);
             oAPP.attr.oModel.setProperty("/lcmenu", ls_menu);
 
-            //TREE ITEM 선택처리.
-            oAPP.fn.setSelectTreeItem(OBJID);
+            // //TREE ITEM 선택처리.
+            // oAPP.fn.setSelectTreeItem(OBJID);
             return;
         }
 
@@ -264,8 +269,8 @@
             oModel.setProperty("/lcmenu", ls_menu);
             oAPP.attr.oModel.setProperty("/lcmenu", ls_menu);
 
-            //TREE ITEM 선택처리.
-            oAPP.fn.setSelectTreeItem(OBJID);
+            // //TREE ITEM 선택처리.
+            // oAPP.fn.setSelectTreeItem(OBJID);
             return;
         }
 
@@ -275,8 +280,8 @@
             oModel.setProperty("/lcmenu", ls_menu);
             oAPP.attr.oModel.setProperty("/lcmenu", ls_menu);
 
-            //TREE ITEM 선택처리.
-            oAPP.fn.setSelectTreeItem(OBJID);
+            // //TREE ITEM 선택처리.
+            // oAPP.fn.setSelectTreeItem(OBJID);
             return;
         }
 
@@ -322,8 +327,8 @@
         oModel.setProperty("/lcmenu", ls_menu);
         oAPP.attr.oModel.setProperty("/lcmenu", ls_menu);
 
-        //context menu를 호출한 UI 선택 처리.
-        oAPP.fn.setSelectTreeItem(OBJID);
+        // //context menu를 호출한 UI 선택 처리.
+        // oAPP.fn.setSelectTreeItem(OBJID);
 
     };  //디자인영역 context menu 활성여부 설정.
 
@@ -380,9 +385,6 @@
     //UI 추가 메뉴 선택 처리.
     oAPP.fn.contextMenuInsertUI = function(){
         
-        //단축키 잠금 처리.
-        oAPP.fn.setShortcutLock(true);
-
         //context menu를 호출한 라인의 OBJID 얻기.
         var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
 
@@ -390,7 +392,7 @@
         var ls_tree = oAPP.fn.getTreeData(l_OBJID);
 
         //ui 추가 처리.
-        oAPP.fn.designUIAdd(ls_tree);        
+        oAPP.fn.designUIAdd(ls_tree);
   
     };  //UI 추가 메뉴 선택 처리.
 
@@ -415,9 +417,6 @@
 
     //ui 이동처리 function
     oAPP.fn.contextMenuUiMove = async function(sign, pos){
-
-        //화면 lock 처리.
-        oAPP.fn.designAreaLockUnlock(true);
 
         //context menu를 호출한 라인의 OBJID 얻기.
         var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
@@ -489,6 +488,11 @@
 
             }
 
+            
+            //UI 다시 생성 처리.
+            oAPP.fn.reCreateUIOjInstance(ls_tree);
+
+
             //onAfterRendering 이벤트 등록 대상 UI 얻기.
             let _oTarget = oAPP.fn.getTargetAfterRenderingUI(oAPP.attr.prev[l_parent.OBJID]);
             
@@ -517,6 +521,7 @@
 
 
             //richtexteditor 미리보기 화면이 다시 그려질떄까지 대기.
+            //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
             await Promise.all(_aPromise);
 
             //미리보기 ui 선택.
@@ -525,7 +530,7 @@
         }
 
         //design영역 tree item 선택 재선택 처리.
-        oAPP.fn.setSelectTreeItem(ls_tree.OBJID);
+        await oAPP.fn.setSelectTreeItem(ls_tree.OBJID);
 
         //변경 FLAG 처리.
         oAPP.fn.setChangeFlag();
@@ -542,9 +547,6 @@
     
     //UI 위치 이동 처리.
     oAPP.fn.contextMenuUiMovePosition = function(i_x, i_y){
-
-        //단축키 잠금 처리.
-        oAPP.fn.setShortcutLock(true);
 
         //CALL BACK FUNCTION.
         function lf_callback(pos){
@@ -636,8 +638,11 @@
         
         //DOCUMENT, APP에서 COPY한경우 EXIT.
         if(ls_tree.OBJID === "ROOT" || ls_tree.OBJID === "APP"){
+
+            parent.setBusy("");
+
             //화면 unlock 처리.
-            oAPP.fn.designAreaLockUnlock();
+            oAPP.fn.designAreaLockUnlock(false);
             return;
         }
 
@@ -650,8 +655,11 @@
         //현재 라인 정보를 복사 처리.
         oAPP.fn.setCopyData("U4AWSuiDesignArea", ["U4AWSuiDesignArea"], ls_tree);
 
-        //화면 lock 처리.
-        oAPP.fn.designAreaLockUnlock();
+
+        parent.setBusy("");
+
+        //화면 lock 해제 처리.
+        oAPP.fn.designAreaLockUnlock(false);
 
 
     };  //context menu ui복사처리.
@@ -821,7 +829,7 @@
 
 
         //붙여넣기 callback 이벤트.
-        function lf_paste_cb(param, i_cdata, bKeep){
+        async function lf_paste_cb(param, i_cdata, bKeep){
             
             //공통코드 미리보기 UI Property 고정값 정보 검색.
             var lt_ua018 = oAPP.DATA.LIB.T_9011.filter( a=> a.CATCD === "UA018");
@@ -854,7 +862,7 @@
             //oAPP.attr.prev[ls_14.OBJID].__isnew = "X";
 
             //붙여넣기한 UI 선택 처리.
-            oAPP.fn.setSelectTreeItem(ls_14.OBJID);
+            await oAPP.fn.setSelectTreeItem(ls_14.OBJID);
 
             //변경 FLAG 처리.
             oAPP.fn.setChangeFlag();
@@ -967,23 +975,29 @@
                 //269	붙여넣기가 가능한 aggregation이 존재하지 않습니다.
                 parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "269", "", "", "", ""));
 
-                //lock 해제.
-                oAPP.fn.designAreaLockUnlock();
+                parent.setBusy("");
+
+                //화면 unlock 처리.
+                oAPP.fn.designAreaLockUnlock(false);
                 return;
             }
 
             //UI가 입력 가능한 카디널리티 여부 확인.
             if(oAPP.fn.chkUiCardinality(ls_tree, param.UIATK, param.ISMLB) === true){
-                //오류 발생시 lock 해제.
-                oAPP.fn.designAreaLockUnlock();
+                parent.setBusy("");
+
+                //화면 unlock 처리.
+                oAPP.fn.designAreaLockUnlock(false);
                 return;
             }
 
             //UI의 허용 가능 부모 정보
             //(특정 UI는 특정 부모에만 존재해야함.)
             if(oAPP.fn.designChkFixedParentUI(i_cdata.UIOBK, ls_tree.UIOBK, param.UIATT) === true){
-                //오류 발생시 lock 해제.
-                oAPP.fn.designAreaLockUnlock();
+                parent.setBusy("");
+
+                //화면 unlock 처리.
+                oAPP.fn.designAreaLockUnlock(false);
                 return;
             }
 
@@ -1021,6 +1035,8 @@
             //117	Do you want to keep the binding?.
             l_msg += oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "117", "", "", "", "");
 
+            parent.setBusy("");
+
             //lock 해제.
             oAPP.fn.designAreaLockUnlock();
 
@@ -1034,10 +1050,16 @@
                 //화면 잠금 처리.
                 oAPP.fn.designAreaLockUnlock(true);
 
+                parent.setBusy("X");
+
                 //취소를 한경우 exit.
-                if(oEvent === "CANCEL"){
+                if(oEvent === "CANCEL" || oEvent === null){
+
+                    parent.setBusy("");
+
                     //화면 잠금 해제 처리.
-                    oAPP.fn.designAreaLockUnlock();
+                    oAPP.fn.designAreaLockUnlock(false);
+                    
                     return;
                 }
 
@@ -1104,13 +1126,15 @@
 
         }
 
-        //단축키 잠금 처리.
-        oAPP.fn.setShortcutLock(true);
 
         //편집 불가능 상태일때는 exit.
         if(oAPP.attr.oModel.oData.IS_EDIT !== true){
-            //단축키 잠금 해제 처리.
-            oAPP.fn.setShortcutLock();
+            
+            parent.setBusy("");
+
+            //화면 unlock 처리.
+            oAPP.fn.designAreaLockUnlock(false);
+
             return;
         }
 
@@ -1119,8 +1143,12 @@
         
         //DOCUMENT영역에 PASTE한경우 EXIT.
         if(l_OBJID === "ROOT"){
-            //단축키 잠금 해제 처리.
-            oAPP.fn.setShortcutLock();
+            
+            parent.setBusy("");
+
+            //화면 unlock 처리.
+            oAPP.fn.designAreaLockUnlock(false);
+
             return;
         }
 
@@ -1132,8 +1160,12 @@
 
         //붙여넣기 정보가 존재하지 않는경우.
         if(!l_cpoied){
-            //단축키 잠금 해제 처리.
-            oAPP.fn.setShortcutLock();
+            
+            parent.setBusy("");
+
+            //화면 unlock 처리.
+            oAPP.fn.designAreaLockUnlock(false);
+
             return;
         }
 
@@ -1143,15 +1175,23 @@
 
         //복사한 UI가 이미 존재하는경우 붙여넣기 skip 처리.(공통코드 UA039에 해당하는 UI는 APP당 1개만 존재 가능)
         if(oAPP.fn.designChkUnique(l_cdata.UIOBK) === true){
-            //단축키 잠금 해제 처리.
-            oAPP.fn.setShortcutLock();
+            
+            parent.setBusy("");
+
+            //화면 unlock 처리.
+            oAPP.fn.designAreaLockUnlock(false);
+
             return;
         }
 
         //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.(공통코드 UA040에 해당하는 UI는 특정 UI 하위에만 존재가능)
         if(oAPP.fn.designChkHiddenAreaUi(l_cdata.UIOBK, ls_tree.UIOBK) === true){
-            //단축키 잠금 해제 처리.
-            oAPP.fn.setShortcutLock();
+            
+            parent.setBusy("");
+
+            //화면 unlock 처리.
+            oAPP.fn.designAreaLockUnlock(false);
+
             return;
         }
 
@@ -1179,6 +1219,11 @@
     //ui 사용처 리스트 메뉴.
     oAPP.fn.contextMenuUiWhereUse = function(){
         
+        parent.setBusy("");
+
+        //화면 unlock 처리.
+        oAPP.fn.designAreaLockUnlock(false);
+
         //단축키 잠금 처리.
         oAPP.fn.setShortcutLock(true);
 
@@ -1188,11 +1233,16 @@
 
             //화면 lock 처리.
             oAPP.fn.designAreaLockUnlock(true);
+            
+            parent.setBusy("X");
 
             //YES를 선택하지 않은경우 EXIT.
-            if(param !== "YES"){                
+            if(param !== "YES"){
+                
+                parent.setBusy("");
+                
                 //화면 unlock 처리.
-                oAPP.fn.designAreaLockUnlock();
+                oAPP.fn.designAreaLockUnlock(false);
                 return;
             }
 
@@ -1201,8 +1251,11 @@
             
             //DOCUMENT영역에 PASTE한경우 EXIT.
             if(l_OBJID === "ROOT"){
+
+                parent.setBusy("");
+
                 //화면 unlock 처리.
-                oAPP.fn.designAreaLockUnlock();
+                oAPP.fn.designAreaLockUnlock(false);
                 return;
             }
 
@@ -1252,6 +1305,11 @@
                 parent.FS.mkdirSync(l_folderPath);
             }catch(e){
                 parent.showMessage(sap, 10, "E", e);
+
+                parent.setBusy("");
+
+                oAPP.fn.setShortcutLock(false);
+
                 return true;
             }
         }
@@ -1266,6 +1324,11 @@
                 parent.FS.mkdirSync(l_folderPath);
             }catch(e){
                 parent.showMessage(sap, 10, "E", e);
+
+                parent.setBusy("");
+
+                oAPP.fn.setShortcutLock(false);
+
                 return true;
             }
         }
@@ -1281,6 +1344,11 @@
                 parent.FS.writeFileSync(l_filePath, JSON.stringify([]));
             }catch(e){
                 parent.showMessage(sap, 10, "E", e);
+
+                parent.setBusy("");
+
+                oAPP.fn.setShortcutLock(false);
+
                 return true;
             }
 
@@ -1295,6 +1363,11 @@
         if(lockFile.checkSync(l_path)){
             //382	Personalizing UI on other screens.
             parent.showMessage(sap, 10, "S", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "382", "", "", "", ""));
+
+            parent.setBusy("");
+
+            oAPP.fn.setShortcutLock(false);
+
             return;
 
         }
@@ -1304,8 +1377,11 @@
             
         //DOCUMENT영역에 PASTE한경우 EXIT.
         if(l_OBJID === "ROOT"){
-            //화면 unlock 처리.
-            oAPP.fn.designAreaLockUnlock();
+            
+            parent.setBusy("");
+
+            oAPP.fn.setShortcutLock(false);
+
             return;
         }
 
