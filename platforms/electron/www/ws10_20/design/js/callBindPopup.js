@@ -965,7 +965,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
     }
 
     var ls_tree = l_cxtx.getProperty(),
-        lt_MPROP = oAPP.attr.oBindDialog._oModel.oData.T_MPROP;
+        lt_MPROP = oAPP.attr.oBindDialog._oModel.oData.T_MPROP || [];
 
         
     

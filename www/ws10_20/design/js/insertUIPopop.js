@@ -15,6 +15,12 @@
     if(lt_sel.length === 0){
       //280	입력 가능한 Aggregation이 존재하지 않습니다.
       parent.showMessage(sap, 10, "W", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "280", "", "", "", ""));
+
+      //단축키 잠금 해제처리.
+      oAPP.fn.setShortcutLock(false);
+
+      parent.setBusy("");
+
       return;
     }
 

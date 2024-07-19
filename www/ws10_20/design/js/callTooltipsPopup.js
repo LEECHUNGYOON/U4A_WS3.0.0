@@ -9,20 +9,25 @@
     ************************************************************************/
     oAPP.fn.callTooltipsPopup = function(oUi, sArea, sCODE){
 
-        //화면 잠금 처리.
-        oAPP.fn.designAreaLockUnlock(true);
 
         //팝업 호출 ui가 존재하지 않는경우 exit.
         if(!oUi){
-            //화면 잠금 해제처리.
-            oAPP.fn.designAreaLockUnlock();
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
+
             return;
         }
+
         //도움말 html의 파일 경로 구성.
         var l_path = lf_setHTMLPath(sArea, sCODE);
         if(!l_path){
-            //화면 잠금 해제처리.
-            oAPP.fn.designAreaLockUnlock();
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
+
             return;
         }
 
@@ -73,9 +78,6 @@
          // 브라우저가 오픈이 다 되면 타는 이벤트
          oWin.webContents.on("did-finish-load", function() {
             
-            //화면 잠금 해제처리.
-            oAPP.fn.designAreaLockUnlock();
-
             oWin.show();
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
@@ -83,6 +85,11 @@
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oWin, opt);
+
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
 
         });
 

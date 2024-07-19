@@ -298,6 +298,11 @@
     //도움말 버튼 선택 이벤트.
     oRTBtn2.attachPress(function(){
 
+      parent.setBusy("X");
+
+      //단축키 잠금 처리.
+      oAPP.fn.setShortcutLock(true);
+
       var l_ui = this;
 
       //attribute 도움말 팝업 function이 존재하는경우.
@@ -1171,6 +1176,7 @@
       return;
     }
 
+    //dropAble 프로퍼티 입력건에 따른 예외처리.
     oAPP.fn.attrSetDropAbleException(is_attr, true, true);
     return true;
   };

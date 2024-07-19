@@ -517,6 +517,11 @@
     //도움말 버튼 선택 이벤트.
     oLBtn5.attachPress(function(){
 
+      parent.setBusy("X");
+
+      //단축키 잠금 처리.
+      oAPP.fn.setShortcutLock(true);
+
       var l_ui = this;
 
       //attribute 도움말 팝업 function이 존재하는경우.

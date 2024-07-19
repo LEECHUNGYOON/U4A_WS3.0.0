@@ -2194,6 +2194,7 @@
 
                     // properties
                     width: "200px",
+                    maxLength: 30,
                     placeholder: "SAP T-CODE",
                     showSearchButton: false,
                     enableSuggestions: true,
@@ -2210,10 +2211,10 @@
 
                     // events
                     search: (oEvent) => {
-                        oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]
+                        oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]                        
                     },
                     suggest: (oEvent) => {
-                        oAPP.events.ev_suggestSapTcode(oEvent);
+                        oAPP.events.ev_suggestSapTcode(oEvent);                        
                     }
 
                 }).addStyleClass("u4aWs30sapTcodeInput"),
