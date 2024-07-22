@@ -139,13 +139,8 @@
       //테이블 라인선택 초기화.
       oTab1.clearSelection();
 
-      //테이블 sort 초기화.
-      oTab1.sort();
-
-      //테이블 filter 초기화.
-      for(var i=0,l=oTab1.mAggregations.columns.length; i<l;i++){
-        oTab1.filter(oTab1.mAggregations.columns[i]);
-      }
+      //결과리스트 테이블 sort, 필터 초기화.
+      oAPP.fn.resetUiTableFilterSort(oTab1);
 
       //Aggregation name DDLB 선택값 얻기.
       var l_skey = oSel1.getSelectedKey();
@@ -302,9 +297,18 @@
     //ui 검색 필드 Suggest 처리.
     oAPP.fn.setUiSuggest(oInp2, "insertUiName");
 
+    
+    //20240721 PES.
+    //change -> submit으로 이벤트 변경,
     //ui 검색 이벤트.
-    oInp2.attachChange(function(){
+    // oInp2.attachChange(function(){
+    oInp2.attachSubmit(function(){
+
+        //결과리스트 테이블 sort, 필터 초기화.
+        oAPP.fn.resetUiTableFilterSort(oTab1);
+
         var l_val = this.getValue();
+
 
         var l_bind = oTab1.getBinding("rows");
         if(!l_bind){return;}
@@ -319,10 +323,35 @@
     }); //ui 검색 이벤트.
 
 
+    //Suggestion 선택 이벤트.
+    oInp2.attachSuggestionItemSelected((oEvent)=>{
+      //Suggestion 선택시 sumit 이벤트 호출.
+
+      //Suggestion 선택 정보가 존재하지 않는경우 exit.
+      if(typeof oEvent?.mParameters?.selectedItem?.getKey !== "function"){
+        return;
+      }
+
+      //Suggestion 선택 라인의 key 정보 얻기.
+      var _key = oEvent.mParameters.selectedItem.getKey();
+
+
+      //ui 검색 인풋에 해당 값 매핑.
+      oInp2.setValue(_key);
+
+      //submit 이벤트 호출.
+      oInp2.fireSubmit();
+
+    });
+
 
     //결과 테이블
     var oTab1 = new sap.ui.table.Table({selectionMode:"Single", selectionBehavior:"Row", rowHeight:30,
       visibleRowCountMode:"Auto", layoutData:new sap.m.FlexItemData({growFactor:1})});
+
+
+    //테이블 필터 이벤트.
+    oTab1.attachFilter(lf_tablefilter);
 
 
     //테이블 스크롤 이벤트.
@@ -566,6 +595,96 @@
 
 
     } //UI 선택처리 FUNCTION.
+
+
+
+    //테이블 필터 이벤트.
+    function lf_tablefilter(oEvent){
+  
+      //컬럼 필터 입력값이 없다면 exit.
+      if(typeof oEvent?.mParameters?.value === "undefined"){
+        return;
+      }
+
+      //컬럼 필터 입력값이 없다면 exit.
+      if(oEvent?.mParameters?.value === null){
+        return;
+      }
+
+      //컬럼 필터 입력값이 없다면 exit.
+      if(oEvent?.mParameters?.value === ""){
+        return;
+      }
+
+      //필터된 컬럼 정보가 없다면 exit.
+      if(typeof oEvent.mParameters.column === "undefined"){
+        return;
+      }
+
+      //필터된 컬럼 정보가 없다면 exit.
+      if(oEvent.mParameters.column === null){
+        return;
+      }
+
+      //컬럼의 필터 필드명 얻기.
+      var _fldName = oEvent.mParameters.column.getFilterProperty();
+
+      //필터 필드명이 존재하지 않는경우 exit.
+      if(typeof _fldName === "undefined"){
+        return;
+      }
+
+      //필터 필드명이 존재하지 않는경우 exit.
+      if(_fldName === null){
+        return;
+      }
+
+      //필터 필드명이 존재하지 않는경우 exit.
+      if(_fldName === ""){
+        return;
+      }
+
+      //테이블의 바인딩 정보 얻기.
+      var _oBind = oTab1.getBinding("rows");
+
+      //테이블의 바인딩 정보가 없다면 exit.
+      if(typeof _oBind === "undefined" || _oBind === null){
+        return;
+      }
+
+      //기존 필터 이벤트 처리 skip.
+      oEvent.preventDefault();
+
+      var _aCol = oTab1.getColumns();
+
+      //컬럼의 필터 초기화.
+      for(var i = 0, l = _aCol.length; i < l; i++){
+        
+        var _oCol = _aCol[i];
+
+        _oCol.setFiltered(false);
+
+      }
+
+      //현재 이벤트가 발생한 컬럼의 필터 처리.
+      oEvent.mParameters.column.setFiltered(true);
+
+
+      var _val = oInp2.getValue();
+
+      var _aFilter = [];
+
+      //object id 검색 필드에 값이 존재하는경우 필터 구성.
+      if(_val !== ""){
+        _aFilter.push(new sap.ui.model.Filter({path:"UIOBJ", operator:"Contains", value1:_val}));
+      }
+
+      //컬럼에 입력한 정보를 필터 구성.
+      _aFilter.push(new sap.ui.model.Filter({path:_fldName, operator:"Contains", value1:oEvent.mParameters.value}));
+
+      _oBind.filter(new sap.ui.model.Filter(_aFilter, true));
+
+    }
 
   };  //UI 생성 팝업
 

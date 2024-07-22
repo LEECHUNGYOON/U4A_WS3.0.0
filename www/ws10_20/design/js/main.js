@@ -1439,6 +1439,35 @@
     };  //UI의 drop 가능 css 제거 처리.
 
 
+    /************************************************************************
+     * sap.ui.table.Table의 SORT, FILTER초기화.(sap.ui.table.TreeTable도 가능)
+     *-----------------------------------------------------------------------
+    * @param {object} oTable - sort, filter를 초기화 할 대상 table UI
+    ***********************************************************************/
+     oAPP.fn.resetUiTableFilterSort = function(oTable) {
+
+      if (typeof oTable === "undefined") { return; }
+
+      //table 바인딩 sort 해제 처리.
+      oTable.sort();
+
+      //table의 컬럼 정보 얻기.
+      var _aCol = oTable.getColumns();
+
+      for (var i = 0, l = _aCol.length; i < l; i++) {
+
+        var _oCol = _aCol[i];
+
+        //필터 초기화.
+        oTable.filter(_oCol);
+
+        //sort 초기화.
+        _oCol.setSorted(false);
+      }
+
+    };   //end of resetUiTableFilterSort     결과리스트 테이블의 SORT, FILTER초기화.
+
+
     
     /*************************************************************
      * @function - 바인딩 팝업 통신 관련 module path 구성.

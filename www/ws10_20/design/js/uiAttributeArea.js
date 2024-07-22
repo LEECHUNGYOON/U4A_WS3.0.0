@@ -1394,7 +1394,12 @@
 
     //모델 갱신 FLAG가 입력된 경우.
     if(bModelRefresh){
-      oAPP.attr.oModel.refresh(true);
+      //20240719 PES.
+      //refresh(true);로 모델 갱신시 attr 영역을 다시 구성하여
+      //group된 라인(Properties, Events, Aggregations)을 새로 그려
+      //발생된 문제를 해결하기 위한 주석 처리.
+      // oAPP.attr.oModel.refresh(true);
+      oAPP.attr.oModel.refresh();
 
       //20240621 pes.
       //바인딩 팝업의 디자인 영역 갱신처리.
