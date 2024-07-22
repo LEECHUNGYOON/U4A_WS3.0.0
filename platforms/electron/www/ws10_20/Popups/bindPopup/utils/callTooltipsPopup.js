@@ -44,9 +44,9 @@ module.exports = function(sArea, sCODE){
     oWin.setMenu(null);
 
     oWin.loadURL(l_path);
-    oWin.webContents.on("did-finish-load", ()=> {
-        oWin.show();
-    });
+    // oWin.webContents.on("did-finish-load", ()=> {
+    //     oWin.show();
+    // });
 
     // 브라우저가 활성화 될 준비가 될때 타는 이벤트
     oWin.once("ready-to-show", () => {
@@ -59,8 +59,6 @@ module.exports = function(sArea, sCODE){
      // 브라우저가 오픈이 다 되면 타는 이벤트
      oWin.webContents.on("did-finish-load", function() {
         
-        oAPP.fn.setBusy(false);
-
         oWin.show();
 
         // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
@@ -68,6 +66,9 @@ module.exports = function(sArea, sCODE){
 
         // 부모 위치 가운데 배치한다.
         setParentCenterBounds(oWin, opt);
+
+        
+        oAPP.fn.setBusy(false);
 
     });
 

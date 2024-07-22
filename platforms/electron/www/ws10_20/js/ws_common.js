@@ -2194,7 +2194,7 @@
 
                     // properties
                     width: "200px",
-                    maxLength: 20,
+                    maxLength: 20, // SAP Standard 기준으로 T-CODE는 최대 20자
                     placeholder: "SAP T-CODE",
                     showSearchButton: false,
                     enableSuggestions: true,

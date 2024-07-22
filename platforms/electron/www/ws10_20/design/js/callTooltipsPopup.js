@@ -9,7 +9,6 @@
     ************************************************************************/
     oAPP.fn.callTooltipsPopup = function(oUi, sArea, sCODE){
 
-
         //팝업 호출 ui가 존재하지 않는경우 exit.
         if(!oUi){
             //단축키 잠금 해제처리.
@@ -63,9 +62,9 @@
         oWin.setMenu(null);
 
         oWin.loadURL(l_path);
-        oWin.webContents.on("did-finish-load", ()=> {
-            oWin.show();
-        });
+        // oWin.webContents.on("did-finish-load", ()=> {
+        //     oWin.show();
+        // });
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oWin.once("ready-to-show", () => {
@@ -74,9 +73,10 @@
             oAPP.fn.setParentCenterBounds(oWin, opt);
 
         });
+        
 
-         // 브라우저가 오픈이 다 되면 타는 이벤트
-         oWin.webContents.on("did-finish-load", function() {
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oWin.webContents.on("did-finish-load", function() {
             
             oWin.show();
 

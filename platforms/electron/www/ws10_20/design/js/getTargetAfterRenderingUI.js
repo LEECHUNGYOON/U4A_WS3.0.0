@@ -3,7 +3,7 @@
  ********************************************************/
 module.exports = function(oTarget){
 
-    if(typeof oTarget === "undefined"){
+    if(typeof oTarget === "undefined" || oTarget === null){
 		return;
 	}
 	
@@ -17,7 +17,7 @@ module.exports = function(oTarget){
 		_oTarget = _oTarget.oParent;
         
         //부모를 찾지 못한 경우 exit.
-		if(typeof _oTarget === "undefined"){
+		if(typeof _oTarget === "undefined" || _oTarget === null){
 			return;
 		}
 	}
@@ -26,19 +26,19 @@ module.exports = function(oTarget){
 	
 	//예외처리 대상 UI에 해당하는건인경우.
 	switch(true){
-		case typeof _oTarget._oDialog !== "undefined":
+		case typeof _oTarget._oDialog !== "undefined" && _oTarget._oDialog != null:
             //UI 내부에 DIALOG UI가 존재하는경우(sap.m.BusyDialog)
 			_oTarget = _oTarget._oDialog;
             
 			break;
 		
-		case typeof _oTarget._oPopover !== "undefined":
+		case typeof _oTarget._oPopover !== "undefined" && _oTarget._oPopover != null:
             //UI 내부에 POPOVER UI가 존재하는경우(sap.m.QuickView)
 			_oTarget = _oTarget._oPopover;
 
 			break;
 			
-		case typeof _oTarget._getMenu !== "undefined":
+		case typeof _oTarget._getMenu === "function":
 			//UI 내부에 MENU UI를 얻는 function이 존재하는경우(sap.m.Menu)
 			if (!_oTarget._bIsInitialized) {
 				_oTarget._initAllMenuItems();
@@ -49,13 +49,13 @@ module.exports = function(oTarget){
 		
 			break;
 			
-		case typeof _oTarget._getDialog !== "undefined":
+		case typeof _oTarget._getDialog === "function":
             //UI 내부에 dialog UI를 얻는 function이 존재하는경우(sap.m.ViewSettingsDialog)
 			_oTarget = _oTarget._getDialog();
 		
 			break;
 			
-		case typeof _oTarget._oControl !== "undefined":
+		case typeof _oTarget._oControl !== "undefined" && _oTarget._oControl !== null:
 			//UI 내부에 control UI가 존재하는경우(sap.m.ResponsivePopover)
 			_oTarget = _oTarget._oControl;
 		
