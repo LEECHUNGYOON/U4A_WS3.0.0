@@ -1,0 +1,17 @@
+[
+    {
+        "KEY": "OTHER_M1",
+        "TITLE": "Other1",
+        "PATH": "M1/index.html"
+    },
+    {
+        "KEY": "OTHER_M2",
+        "TITLE": "Other2",
+        "PATH": "M2/index.html"
+    },
+    {
+        "KEY": "OTHER_M3",
+        "TITLE": "Other3",
+        "PATH": "M3/index.html"
+    }
+]

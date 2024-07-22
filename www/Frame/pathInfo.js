@@ -87,6 +87,7 @@ module.exports = (() => {
         RELNOTEPOP: PATH.join(POPUP_ROOT, "releaseNotePopup", "index.html"),
         U4AOTRPOP: PATH.join(POPUP_ROOT, "OTRF4HelpPopup", "frame.html"),
         UI5CSSPOP: PATH.join(POPUP_ROOT, "ui5CssPopup", "frame.html"),
+        UI5CSSPOP_V2: PATH.join(POPUP_ROOT, "ui5CssPopup_v2", "main", "frame.html"),
         SHORTCUTPOP: PATH.join(POPUP_ROOT, "ShortCutCreator", "index.html"),
         DESIGNTREEUISRCH: PATH.join(POPUP_ROOT, "designTreeUiSearchPopup", "index.html"),
         VIDEOREC: PATH.join(POPUP_ROOT, "ScreenRecord", "ScreenRecording.js"),
@@ -98,6 +99,7 @@ module.exports = (() => {
         ILLUST_MSG_PREV: PATH.join(POPUP_ROOT, "illustMsgPopup", "index.html"), // 일러스트 메시지 팝업
 
         // JS Paths..
+        UI5CSSPOP_V2_CONTROL: PATH.join(POPUP_ROOT, "ui5CssPopup_v2", "control.js"),
         WSTRYCATCH: PATH.join(JS_ROOT, "ws_trycatch.js"),
         WSUTIL: PATH.join(JS_ROOT, "ws_util.js"),
         USP_UTIL: PATH.join(USP_ROOT, "ws_usp_util.js"),

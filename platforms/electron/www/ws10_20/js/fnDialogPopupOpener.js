@@ -2265,10 +2265,65 @@
 
     }; // end of oAPP.fn.fnOtrManagerPopupOpener
 
+
+    /************************************************************************
+     * [WS20] UI5 Predefined Css Popup Opener
+     * - u4a workspace 3.4.2 - sp2 이상
+     ************************************************************************/
+    oAPP.fn.fnUI5PreCssPopupOpener = async function(){
+
+        console.log("new");
+
+        let sPopupName = "UI5CSSPOP_V2";
+
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        if (oResult.ISOPEN) {
+            return;
+        }
+
+        let oSettings = oAPP.fn.getSettingsInfo();
+        let oSetting_UI5 = oSettings.UI5;
+
+        let SESSKEY = parent.getSessionKey(),
+            BROWSKEY = parent.getBrowserKey(),
+            oUserInfo = parent.getUserInfo(),
+            oThemeInfo = parent.getThemeInfo(); // theme 정보
+
+        let sAppPath = parent.APP.getAppPath();
+
+        let sUrlPath = parent.getPath("UI5CSSPOP_V2_CONTROL");
+    
+        let oCSS = await import(sUrlPath);    
+        
+        let sTheme = sap.ui.getCore().getConfiguration().getTheme();
+        let oThemeColors = sap.ui.core.theming.Parameters.get();
+        let sThemeBgColor = oThemeColors.sapBackgroundColor;
+
+        let IF_DATA = {
+            SESSKEY: SESSKEY,
+            BROWSKEY: BROWSKEY,            
+            oUserInfo: oUserInfo,           
+            oThemeInfo: {"THEME":sTheme, "BGCOL": sThemeBgColor },            
+            sServerPath: parent.getServerPath(),
+            sClientBootStrapUrl : oSetting_UI5.resourceUrl,
+            sServerHost : parent.getHost(),
+            sServerBootStrapUrl: oAPP.fn.getBootStrapUrl(),
+            sSubRootPath: "/getui5_pre_css"
+        };
+        
+        oCSS.start(parent.REMOTE, IF_DATA, function(oRes){
+            console.log(oRes);
+        });
+
+    }; // end of oAPP.fn.fnUI5PreCssPopupOpener
+
     /************************************************************************
      * [WS20] UI5 Predefined Css Popup Opener
      ************************************************************************/
     oAPP.fn.fnUI5PredefinedCssPopupOpener = () => {
+        
+        console.log("old");
 
         let sPopupName = "UI5CSSPOP";
 

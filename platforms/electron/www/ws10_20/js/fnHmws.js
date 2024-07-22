@@ -643,6 +643,13 @@
             return;
         }
 
+        // u4a workspace 3.4.2 - sp2 이상일 경우는 신규 CSS 팝업을 띄운다
+        if(oAPP.common.checkWLOList("C", "UHAK900788")){
+
+            oAPP.fn.fnUI5PreCssPopupOpener();
+            return;
+        }
+
         oAPP.fn.fnUI5PredefinedCssPopupOpener();
 
     }; // end of oAPP.fn.fnWS20WMENU10_03

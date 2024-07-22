@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+
+    <style>
+
+        .u4aCssIncContPad>section,
+        .u4aCssIncRespContPad>section {
+            background: orange;
+        }
+        .u4aCssIncContPad .u4aCssIncContPadTitle {
+            color: #28a745;
+        }
+
+        .u4aCssPanelContPad .sapMPanelContent{
+            background: orange;
+        }
+
+        .u4aCssNoContPad .u4aCssNoContTitle {
+            color: #28a745;
+        }
+
+        .bgOrange {
+            background: orange;
+        }
+
+        .csslist .sapMFlexBox {
+            background-color: orange;
+        }
+        
+        .csslist .sapMFlexBox .sapMInput {
+            margin: 0px;
+        }
+        
+        .csslist.sapMPanel .sapMPanelHdr {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .M6 .sapFCard .sapFCardContent .sapMHBox {
+            background-color: orange;
+        }
+        
+    </style>
+</head>
+
+
+<body class="sapUiBody">
+
+    <div id="Content"></div>    
+
+    <script>
+    
+        var oAPP = {};
+            oAPP.fn = {};
+            oAPP.attr = {};
+            oAPP.IF_DATA = parent.IF_DATA;
+
+        /************************************************************************
+         * UI5 Bootstrap Load
+         ************************************************************************/
+        var oScript = document.createElement("script");
+            oScript.id = "sap-ui-bootstrap";    
+            oScript.setAttribute("src", oAPP.IF_DATA.SERVER_BOOTSRC);
+
+        let oBootStrap =  {
+            "data-sap-ui-language": "EN",
+            "data-sap-ui-noDuplicateIds": "true",
+            "data-sap-ui-preload": "async",
+            "data-sap-ui-compatVersion": "edge",
+            "data-sap-ui-theme": oAPP.IF_DATA.oThemeInfo.THEME,
+            //"data-sap-ui-theme": "sap_horizon_dark",
+            "data-sap-ui-libs": "sap.m",
+        };
+
+        for (const key in oBootStrap) {
+            oScript.setAttribute(key, oBootStrap[key]);
+        }
+        
+        document.head.appendChild(oScript);
+        
+
+        /*******************************************************
+         * @function - 지원 가능한 테마 정보 설정
+         *******************************************************/
+        function _setSupportedThemeConfig(){
+
+            // 부모의 부모 (CSS POPUP 영역)
+            let oGrandF = parent.parent;
+            let oGrandFModel = oGrandF?.oAPP?.oModel;
+            if(!oGrandFModel || !oGrandFModel?.oData?.S_DETAIL?.T_THEME){
+                return;
+            }
+            
+            // 할아버지 영역(parent.parent)의 테마 모델 데이터가 있으면 
+            // 선택된 테마 정보를 적용한다.
+            let aThemeList = oGrandFModel.oData.S_DETAIL.T_THEME;
+            if(!aThemeList || Array.isArray(aThemeList) === false || aThemeList.length !== 0){
+
+                sap.ui.getCore().applyTheme(oGrandFModel.oData.S_DETAIL.selectedTheme);
+
+                return;
+            }
+
+            // 현재 버전에서 지원하는 테마 목록
+            let aSuppTheme = sap.ui.getVersionInfo().supportedThemes;
+
+            let aThemeData = [];
+            
+            // 테마 목록을 모델화
+            for(var i = 0; i < aSuppTheme.length; i++){
+
+                let sTheme = aSuppTheme[i];
+
+                aThemeData.push({ key: sTheme, text: sTheme });
+            }
+
+            oGrandFModel.oData.S_DETAIL.T_THEME = aThemeData;
+
+            let sDefTheme = "sap_fiori_3";
+
+            let oFindTheme = aThemeData.find(e => e.key === oGrandFModel.oData.S_DETAIL.selectedTheme);
+            if(!oFindTheme){
+                oGrandFModel.oData.S_DETAIL.selectedTheme = sDefTheme;
+            }
+
+            oGrandFModel.refresh();
+            
+            sap.ui.getCore().applyTheme(oGrandFModel.oData.S_DETAIL.selectedTheme);            
+
+        } // end of _setSupportedThemeConfig        
+
+
+        /************************************************************************
+         * window load
+         ************************************************************************/
+        window.addEventListener("load", function(){
+
+            if(typeof sap === "undefined"){
+                alert("bootstrap 로드 오류!!");
+                return;
+            }
+
+            sap.ui.getCore().attachInit(async function(){
+
+                // 지원 가능한 테마 정보 설정
+                _setSupportedThemeConfig();                 
+
+                let oScript = document.createElement("script");
+                    oScript.src = oAPP.IF_DATA.SUBROOT_SRC;
+
+                document.body.appendChild(oScript);
+       
+                
+            });
+
+        });
+
+    </script>
+
+    <script src="./js/common.js"></script>
+    
+</body>
+
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta charset="utf-8">
+</head>
+<style>
+    html,
+    body {
+        height: 100%;
+    }
+
+    body {
+        margin: 0px;
+        overflow: hidden;
+    }
+</style>
+
+<body>
+
+    <iframe id="ws_frame" name="ws_frame" style="border:none;width:100%;height:100%;" allowfullscreen>
+    </iframe>
+
+
+    <script>
+
+    /************************************************************************
+     * Global Variable
+     ************************************************************************/
+    var REMOTE = require('@electron/remote');
+    var PATH = REMOTE.require('path');
+    var APP = REMOTE.app;
+    var APPPATH = APP.getAppPath();
+    var IPCRENDERER = require('electron').ipcRenderer;
+    
+    var oAPP = {};
+        oAPP.fn = {};
+        oAPP.attr = {};
+
+    /************************************************************************
+     * IPC 통신
+     ************************************************************************/
+    IPCRENDERER.on("if-ui5css-info", function(events, oInfo){
+    
+        let oWs_frame = document.getElementById("ws_frame");
+        if (!oWs_frame) {
+            return;
+        }
+    
+        oAPP.attr.IF_DATA = oInfo;
+
+        // 로컬스토리지에 저장할때의 키값에 들어갈 prefix
+        oAPP.attr.IF_DATA.STORAGE_KEY_PREFIX = "PRE_CSS";
+    
+        oWs_frame.src = "index.html";    
+    
+    });
+
+    /************************************************************************
+     * 부모의 APP Object 전달
+     ************************************************************************/
+    function fnGetApp (){
+    
+        return oAPP;
+    
+    }
+
+    </script>
+    
+</body>
+
+</html>
