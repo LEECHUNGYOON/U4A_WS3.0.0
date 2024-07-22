@@ -41,7 +41,8 @@
         
 
     // 디테일 영역의 HTML 경로
-    const C_DETAIL_HTML_PATH = parent.PATH.join(parent.APPPATH, "ui5CssPopup", "detail", "frame.html");    
+    const C_DETAIL_HTML_PATH = parent.PATH.join(parent.__dirname, "..", "detail", "frame.html");
+    const C_OTHER_ROOT_PATH  = parent.PATH.join(parent.__dirname, "..", "others");  
 
     oContr.oModel = new sap.ui.model.json.JSONModel({
 
@@ -359,14 +360,9 @@
     oContr.fn.setTest = function(){
 
         let oFS = parent.REMOTE.require("fs");
-        let oPATH = parent.REMOTE.require("path");        
-       
-        let sAppPath = parent.REMOTE.app.getAppPath();
+   
+        let sMenuJsonPath = parent.PATH.join(C_OTHER_ROOT_PATH, "menu.json");
 
-        let sOtherRootPath = oPATH.join(sAppPath, "ui5CssPopup", "others");
-
-        let sMenuJsonPath = oPATH.join(sOtherRootPath, "menu.json");
-        
         var sOtherMenuJson = oFS.readFileSync(sMenuJsonPath, {encoding: "utf-8"});
 
         var aOtherMenuList = JSON.parse(sOtherMenuJson);
@@ -685,13 +681,7 @@
         const CURRWIN = REMOTE.getCurrentWindow();
         const REMOTEMAIN = REMOTE.require('@electron/remote/main');
 
-        let oPATH = REMOTE.require("path");        
-       
-        let sAppPath = REMOTE.app.getAppPath();
-
-        let sOtherRootPath = oPATH.join(sAppPath, "ui5CssPopup", "others");
-
-        let sLoadUrl = oPATH.join(sOtherRootPath, oMenuData.PATH);
+        let sLoadUrl = parent.PATH.join(C_OTHER_ROOT_PATH, oMenuData.PATH);        
 
         // 브라우저 키
         let sBrowsKey = oContr.IF_DATA.BROWSKEY;

@@ -5,7 +5,7 @@ export var oContr = await new Promise(async function(resolve){
  * 💖 컨트롤러 호출
  ************************************************************************/
 
-    let sControlPath = parent.PATH.join(parent.APPPATH, "ui5CssPopup", "main", "views", "control.js");
+    let sControlPath = "./control.js";
 
     const oRes = await import(sControlPath);
     const oContr = oRes.oContr;

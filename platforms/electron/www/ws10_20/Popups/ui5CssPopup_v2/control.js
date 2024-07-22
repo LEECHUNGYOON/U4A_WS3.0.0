@@ -1,13 +1,46 @@
+/**************************************************************
+ *  필수 파라미터!!
+ **************************************************************
+ * - SESSKEY: 세션키
+ * - BROWSKEY: 브라우저키
+ * - USERINFO: 유저 정보
+ * - THEMEINFO: 테마정보
+ * 
+ **************************************************************/
+
 export function start(REMOTE, IF_DATA, fnCallback){
+
+    // 단독으로 실행한다 생각하고 짤것!!!
+    // no build 일 경우에는 개발자 툴을 실행한다.  
+
+    debugger;
 
     let sPopupName = "UI5CSSPOP_V2";
 
-    const REMOTEMAIN = REMOTE.require('@electron/remote/main');
-    const CURRWIN = REMOTE.getCurrentWindow();
-    const APP = REMOTE.app;
-    const PATH = REMOTE.require("path");
-    const IPCMAIN = REMOTE.require('electron').ipcMain;
-    const WSUTIL = parent.require(parent.PATHINFO.WSUTIL);
+    /************************************************************************
+     * 에러 감지
+     ************************************************************************/
+    const        
+        PATH = REMOTE.require('path'),
+        APP = REMOTE.app;
+        // APPPATH = APP.getAppPath(),
+        // PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+        // PATHINFO = REMOTE.require(PATHINFOURL),
+        // WSUTIL = REMOTE.require(PATHINFO.WSUTIL);
+
+
+    /*******************************************************
+     * ❗❗❗❗❗❗❗❗ 작업완료 후 반드시 삭제할것 --- START ❗❗❗❗❗❗❗❗
+     *******************************************************/
+    if (!APP.isPackaged) {
+
+        alert("신규버전 작업 중입니다.");
+
+        return;
+    }
+    /*******************************************************
+     * ❗❗❗❗❗❗❗❗ 작업완료 후 반드시 삭제할것 --- END ❗❗❗❗❗❗❗❗
+     *******************************************************/
 
     let SESSKEY = IF_DATA.SESSKEY,
         BROWSKEY = IF_DATA.BROWSKEY,
@@ -15,7 +48,7 @@ export function start(REMOTE, IF_DATA, fnCallback){
         oThemeInfo = IF_DATA.oThemeInfo; // theme 정보
 
     // 브라우저 옵션 설정
-    let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+    let sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
         oDefaultOption = parent.require(sSettingsJsonPath),
         oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
@@ -60,7 +93,7 @@ export function start(REMOTE, IF_DATA, fnCallback){
         WSUTIL.setBrowserOpacity(oBrowserWindow);
 
         // 부모 위치 가운데 배치한다.
-        oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+        WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow, oBrowserOptions);
 
     });
 
@@ -68,7 +101,7 @@ export function start(REMOTE, IF_DATA, fnCallback){
     oBrowserWindow.once('ready-to-show', () => {
 
         // 부모 위치 가운데 배치한다.
-        oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+        WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow, oBrowserOptions);
 
     });
 

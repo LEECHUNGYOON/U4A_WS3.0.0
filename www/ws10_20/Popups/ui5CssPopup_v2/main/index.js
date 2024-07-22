@@ -68,8 +68,7 @@ window.addEventListener("load", function(){
 
         debugger;
         
-        // let sViewPath = parent.PATH.join(parent.APPPATH, "ws10_20", "ui5CssPopup", "main", "views", "view.js");
-        let sViewPath = "./views/view.js";
+        let sViewPath = parent.PATH.join(parent.__dirname, "views", "view.js");
 
         let oView = await import(sViewPath);
   
