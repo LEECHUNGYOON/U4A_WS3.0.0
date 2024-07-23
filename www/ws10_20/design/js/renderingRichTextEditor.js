@@ -36,6 +36,9 @@ function refreshRichTextEditor(is_tree, aPromise = []){
         return aPromise;
     }
 
+    if(typeof _oTarget.getDomRef !== "function"){
+        return aPromise;
+    }
     
     //현재 UI가 미리보기 화면에 출력 됐는지 확인.
     var _oDom = _oTarget.getDomRef();

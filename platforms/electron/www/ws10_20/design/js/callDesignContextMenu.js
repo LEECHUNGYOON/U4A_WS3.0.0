@@ -490,13 +490,17 @@
 
             
             //UI 다시 생성 처리.
-            oAPP.fn.reCreateUIOjInstance(ls_tree);
+            oAPP.fn.reCreateUIObjInstance(ls_tree);
 
 
             //onAfterRendering 이벤트 등록 대상 UI 얻기.
             let _oTarget = oAPP.fn.getTargetAfterRenderingUI(oAPP.attr.prev[l_parent.OBJID]);
             
-            let _oDom = _oTarget.getDomRef();
+            let _oDom = undefined;
+
+            if(typeof _oTarget?.getDomRef === "function"){
+                _oDom = _oTarget.getDomRef();
+            }
             
             let _oPromise = undefined;
             

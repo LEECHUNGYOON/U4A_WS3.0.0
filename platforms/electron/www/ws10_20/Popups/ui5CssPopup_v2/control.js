@@ -13,8 +13,6 @@ export function start(REMOTE, IF_DATA, fnCallback){
     // 단독으로 실행한다 생각하고 짤것!!!
     // no build 일 경우에는 개발자 툴을 실행한다.  
 
-    debugger;
-
     let sPopupName = "UI5CSSPOP_V2";
 
     /************************************************************************
@@ -32,7 +30,7 @@ export function start(REMOTE, IF_DATA, fnCallback){
     /*******************************************************
      * ❗❗❗❗❗❗❗❗ 작업완료 후 반드시 삭제할것 --- START ❗❗❗❗❗❗❗❗
      *******************************************************/
-    if (!APP.isPackaged) {
+    if (APP.isPackaged) {
 
         alert("신규버전 작업 중입니다.");
 

@@ -2051,7 +2051,7 @@
       
     let _oDom = undefined;
 
-    if(typeof _oTarget.getDomRef === "function"){
+    if(typeof _oTarget?.getDomRef === "function"){
       _oDom = _oTarget.getDomRef();
     }
     
@@ -2171,11 +2171,11 @@
 
 
       //DRAG된 UI 다시 생성 처리.
-      oAPP.fn.reCreateUIOjInstance(i_drag);
+      oAPP.fn.reCreateUIObjInstance(i_drag);
 
       
       //DROP된 UI 다시 생성 처리.
-      oAPP.fn.reCreateUIOjInstance(i_drop);
+      oAPP.fn.reCreateUIObjInstance(i_drop);
 
 
 
@@ -2184,7 +2184,7 @@
 
       var _oDom = undefined;
 
-      if(typeof _oTarget.getDomRef === "function"){
+      if(typeof _oTarget?.getDomRef === "function"){
         _oDom = _oTarget.getDomRef();
       }
       
@@ -2436,7 +2436,7 @@
 
 
     //미리보기 UI 다시 생성 처리.
-    oAPP.fn.reCreateUIOjInstance(i_drag);
+    oAPP.fn.reCreateUIObjInstance(i_drag);
 
 
     //동일 AGGREGATION에 추가된 UI 갯수 얻기.
@@ -2448,7 +2448,7 @@
 
     var _oDom = undefined;
 
-    if(typeof _oTarget.getDomRef === "function"){
+    if(typeof _oTarget?.getDomRef === "function"){
       _oDom = _oTarget.getDomRef();
     }
     
@@ -2507,7 +2507,7 @@
 
 
   //미리보기 UI 다시 생성 처리.
-  oAPP.fn.reCreateUIOjInstance = function(is_tree){
+  oAPP.fn.reCreateUIObjInstance = function(is_tree){
 
     //해당 패치가 존재하지 않는경우 exit.
     if(oAPP.common.checkWLOList("C", "UHAK900681") !== true){
@@ -3212,6 +3212,12 @@
         //UI수집건에 해당 UI 제거 처리.
         delete oAPP.attr.prev[it_tree[i].OBJID];
 
+        //현재 미리보기 예외처리 대상 UI가 삭제되는 UI인경우.
+        if(oAPP.attr?.UA015UI?._OBJID === is_tree.OBJID){
+          //예외처리 UI 정보 제거.
+          delete oAPP.attr.UA015UI;
+        }
+
         var ls_tree = it_tree[i];
 
         //해당 라인 삭제.
@@ -3432,7 +3438,7 @@
       }
       
       //부모 UI의 dom 정보 확인 function이 존재하지 않는경우 skip.
-      if(typeof _oTarget.getDomRef !== "function"){
+      if(typeof _oTarget?.getDomRef !== "function"){
         continue;
       }
       
@@ -3909,7 +3915,7 @@
     
     let _oDom = undefined;
 
-    if(typeof _oTarget.getDomRef === "function"){
+    if(typeof _oTarget?.getDomRef === "function"){
       _oDom = _oTarget.getDomRef();
     }
     
@@ -4015,6 +4021,19 @@
       
       //onAfterRendering 수행까지 대기.
       await _oPromise;
+
+      
+      // //테스트!!!!!!!!!!!!!!!!!!!!!!!!!
+      // if(is_0022.UIOBK === "UO02095"){
+      //   await new Promise((resolve)=>{
+      //     setTimeout(() => {
+      //       resolve();
+      //     }, 3000);
+      //   });
+      // }
+      // //테스트!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
     }
 
     
@@ -4025,6 +4044,8 @@
     //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.
     //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
     await Promise.all(_aPromise);
+
+
 
     //design tree의 tree binding 정보 갱신 처리.
     var l_bind = oAPP.attr.ui.oLTree1.getBinding();
@@ -4761,6 +4782,12 @@
       //미리보기 UI 수집항목에서 해당 OBJID건 삭제.
       delete oAPP.attr.prev[is_tree.OBJID];
 
+      //현재 미리보기 예외처리 대상 UI가 삭제되는 UI인경우.
+      if(oAPP.attr?.UA015UI?._OBJID === is_tree.OBJID){
+        //예외처리 UI 정보 제거.
+        delete oAPP.attr.UA015UI;
+      }
+
     } //선택라인의 삭제대상 OBJECT 제거 처리.
 
 
@@ -4809,7 +4836,11 @@
       //onAfterRendering 이벤트 등록 대상 UI 얻기.
       let _oTarget = oAPP.fn.getTargetAfterRenderingUI(oAPP.attr.prev[ls_tree.POBID]);
       
-      let _oDom = _oTarget.getDomRef();
+      let _oDom = undefined;
+
+      if(typeof _oTarget?.getDomRef === "function"){
+        _oDom = _oTarget.getDomRef();
+      }      
       
       let _oPromise = undefined;
       

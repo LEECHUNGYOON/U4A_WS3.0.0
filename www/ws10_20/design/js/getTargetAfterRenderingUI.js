@@ -38,8 +38,9 @@ module.exports = function(oTarget){
 
 			break;
 			
-		case typeof _oTarget._getMenu === "function":
+		case typeof _oTarget._getMenu === "function" && typeof _oTarget._initAllMenuItems === "function":
 			//UI 내부에 MENU UI를 얻는 function이 존재하는경우(sap.m.Menu)
+
 			if (!_oTarget._bIsInitialized) {
 				_oTarget._initAllMenuItems();
 				_oTarget._bIsInitialized = true;
@@ -60,7 +61,17 @@ module.exports = function(oTarget){
 			_oTarget = _oTarget._oControl;
 		
 			break;
+
+		case typeof _oTarget.isA === "function" && _oTarget.isA("sap.ui.unified.MenuItemBase") === true:
+			//sap.ui.unified.MenuItemBase으로 파생된 UI인경우(sap.ui.unified.MenuItem, sap.ui.unified.MenuTextFieldItem)
+			_oTarget = _oTarget.oParent;
 		
+			break;
+		
+	}
+	
+	if(typeof _oTarget === "undefined" || _oTarget === null){
+		return;
 	}
 
 	_oTarget._OBJID = _OBJID;
