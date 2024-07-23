@@ -10,13 +10,13 @@ var oAPP = {};
  ************************************************************************/
 var oScript = document.createElement("script");
     oScript.id = "sap-ui-bootstrap";    
-    oScript.setAttribute("src", oParentAPP.attr.IF_DATA.sClientBootStrapUrl);
+    oScript.setAttribute("src", oParentAPP.attr.IF_DATA.WS30_BOOT_PATH);
 
-
-let sTheme = oParentAPP.attr.IF_DATA.oThemeInfo.THEME;
+let sTheme = oParentAPP.attr.IF_DATA.THEME_INFO.THEME;
+let sLangu = oParentAPP.attr.IF_DATA.USER_INFO.LANGU;
 
 let oBootStrap =  {
-    "data-sap-ui-language": "EN",
+    "data-sap-ui-language": sLangu,
     "data-sap-ui-noDuplicateIds": "true",
     "data-sap-ui-preload": "async",
     "data-sap-ui-compatVersion": "edge",
@@ -65,8 +65,6 @@ oAPP.fn.removeLocalStorage = function(){
 window.addEventListener("load", function(){
 
     sap.ui.getCore().attachInit(async function(){
-
-        debugger;
         
         let sViewPath = parent.PATH.join(parent.__dirname, "views", "view.js");
 

@@ -2282,38 +2282,22 @@
             return;
         }
 
-        let oSettings = oAPP.fn.getSettingsInfo();
-        let oSetting_UI5 = oSettings.UI5;
-
-        let SESSKEY = parent.getSessionKey(),
-            BROWSKEY = parent.getBrowserKey(),
-            oUserInfo = parent.getUserInfo(),
-            oThemeInfo = parent.getThemeInfo(); // theme 정보
-
-        let sAppPath = parent.APP.getAppPath();
-
         let sUrlPath = parent.getPath("UI5CSSPOP_V2_CONTROL");
     
         let oCSS = await import(sUrlPath);    
-        
-        let sTheme = sap.ui.getCore().getConfiguration().getTheme();
-        let oThemeColors = sap.ui.core.theming.Parameters.get();
-        let sThemeBgColor = oThemeColors.sapBackgroundColor;
 
+        // 던질 파라미터
         let IF_DATA = {
-            SESSKEY: SESSKEY,
-            BROWSKEY: BROWSKEY,            
-            oUserInfo: oUserInfo,           
-            oThemeInfo: {"THEME":sTheme, "BGCOL": sThemeBgColor },            
-            sServerPath: parent.getServerPath(),
-            sClientBootStrapUrl : oSetting_UI5.resourceUrl,
-            sServerHost : parent.getHost(),
-            sServerBootStrapUrl: oAPP.fn.getBootStrapUrl(),
-            sSubRootPath: "/getui5_pre_css"
+            SESSKEY: parent.getSessionKey(),
+            BROWSKEY: parent.getBrowserKey()
         };
         
-        oCSS.start(parent.REMOTE, IF_DATA, function(oRes){
+        oCSS.start(parent.require, IF_DATA, function(oRes){
+            
             console.log(oRes);
+
+            // oAPP.fn.prevStyleClassApply(aCSSList, bIsSave);
+
         });
 
     }; // end of oAPP.fn.fnUI5PreCssPopupOpener
@@ -2369,10 +2353,10 @@
         let sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // sap icon 종류
         let oIconUrl = {

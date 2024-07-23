@@ -2046,8 +2046,15 @@
     var lt_ua050 = oAPP.DATA.LIB.T_9011.filter( a=> a.CATCD === "UA050" && a.FLD08 !== "X" );
 
 
+    //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
+    var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
+
+    //미리보기 onAfterRendering 처리 관련 module load.
+    var _oRender = parent.require(_modulePath);
+
+
     //onAfterRendering 이벤트 등록 대상 UI 얻기.
-    let _oTarget = oAPP.fn.getTargetAfterRenderingUI(oAPP.attr.prev[is_p.OBJID]);
+    let _oTarget = _oRender.getTargetAfterRenderingUI(oAPP.attr.prev[is_p.OBJID]);
       
     let _oDom = undefined;
 
@@ -2059,11 +2066,11 @@
     
     //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
     if(typeof _oDom !== "undefined" && _oDom !== null){
-      _oPromise = oAPP.fn.setAfterRendering(_oTarget);
+      _oPromise = _oRender.setAfterRendering(_oTarget);
     }
 
     //RichTextEditor 미리보기 출력 예외처리로직.
-    var _aPromise = oAPP.fn.renderingRichTextEditor(is_p);
+    var _aPromise = _oRender.renderingRichTextEditor(is_p);
 
     
     //ui 복사 처리.
@@ -2178,9 +2185,14 @@
       oAPP.fn.reCreateUIObjInstance(i_drop);
 
 
+      //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
+      var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
+
+      //미리보기 onAfterRendering 처리 관련 module load.
+      var _oRender = parent.require(_modulePath);
 
       //onAfterRendering 이벤트 등록 대상 UI 얻기.
-      var _oTarget = oAPP.fn.getTargetAfterRenderingUI(oAPP.attr.prev[l_parent.OBJID]);
+      var _oTarget = _oRender.getTargetAfterRenderingUI(oAPP.attr.prev[l_parent.OBJID]);
 
       var _oDom = undefined;
 
@@ -2192,7 +2204,7 @@
       
       //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
       if(typeof _oDom !== "undefined" && _oDom !== null){
-        _oPromise = oAPP.fn.setAfterRendering(_oTarget);
+        _oPromise = _oRender.setAfterRendering(_oTarget);
       }
 
       //drag UI의 index 얻기.
@@ -2261,7 +2273,7 @@
 
           
         //RichTextEditor 미리보기 출력 예외처리로직.
-        var _aPromise = oAPP.fn.renderingRichTextEditor(l_parent);
+        var _aPromise = _oRender.renderingRichTextEditor(l_parent);
         
         //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.
         //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
@@ -2323,6 +2335,43 @@
 
       return;
     }
+
+
+    //20240723 PES -START.
+    //현재 UI의 대상 Aggregation에 추가 불가능한 UI여부 점검로직.
+    var _sParam = {};
+
+    //현재 UI.
+    _sParam.UIOBK       = i_drop.UIOBK;
+
+    //추가 대상 AGGREGATION.
+    _sParam.UIATT       = param.UIATT;
+
+    //추가 UI.
+    _sParam.CHILD_UIOBK = i_drag.UIOBK;
+
+
+    var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "exception", "exceptionUI.js");
+
+    //부모의 Aggregation에 추가 불가능한 UI인지 확인.
+    var _deny = parent.require(_modulePath).checkDenyChildAggr(_sParam);
+
+    if(_deny === true){
+      
+      //$$MSG
+      parent.showMessage(sap, 10, "E", `${i_drag.OBJID} UI는 ${i_drop.OBJID}의 ${param.UIATT} Aggregation에 추가 할 수 없습니다.`);
+
+      //단축키 잠금 해제 처리.
+      oAPP.fn.setShortcutLock(false);
+      
+      parent.setBusy("");
+      
+      return;
+
+    }
+    //20240723 PES -END.
+
+
 
     //복사처리로 D&D한경우.
     if(l_effect === "Copy"){
@@ -2442,9 +2491,15 @@
     //동일 AGGREGATION에 추가된 UI 갯수 얻기.
     var l_indx = i_drop.zTREE.filter( a => a.UIATT === i_drag.UIATT );
 
+    //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
+    var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
+
+    //미리보기 onAfterRendering 처리 관련 module load.
+    var _oRender = parent.require(_modulePath);
+
 
     //onAfterRendering 이벤트 등록 대상 UI 얻기.
-    var _oTarget = oAPP.fn.getTargetAfterRenderingUI(oAPP.attr.prev[i_drop.OBJID]);
+    var _oTarget = _oRender.getTargetAfterRenderingUI(oAPP.attr.prev[i_drop.OBJID]);
 
     var _oDom = undefined;
 
@@ -2456,13 +2511,13 @@
     
     //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
     if(typeof _oDom !== "undefined" && _oDom !== null){
-      _oPromise = oAPP.fn.setAfterRendering(_oTarget);
+      _oPromise = _oRender.setAfterRendering(_oTarget);
     }
 
 
     
     //RichTextEditor 미리보기 출력 예외처리로직.
-    var _aPromise = oAPP.fn.renderingRichTextEditor(i_drop);
+    var _aPromise = _oRender.renderingRichTextEditor(i_drop);
 
     //미리보기 갱신 처리.
     oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(i_drag.OBJID, i_drag.UILIB, i_drag.POBID, 
@@ -3213,7 +3268,7 @@
         delete oAPP.attr.prev[it_tree[i].OBJID];
 
         //현재 미리보기 예외처리 대상 UI가 삭제되는 UI인경우.
-        if(oAPP.attr?.UA015UI?._OBJID === is_tree.OBJID){
+        if(oAPP.attr?.UA015UI?._OBJID === it_tree[i].OBJID){
           //예외처리 UI 정보 제거.
           delete oAPP.attr.UA015UI;
         }
@@ -3414,6 +3469,12 @@
       return _aPromise;
     }
     
+    //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
+    var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
+
+    //미리보기 onAfterRendering 처리 관련 module load.
+    var _oRender = parent.require(_modulePath);
+
     
     //수집된 부모 UI가 화면에 출력된 UI인경우 onAfterRendering 이벤트 등록. 
     for( var i = 0, l = aParent.length; i < l; i++){
@@ -3431,7 +3492,7 @@
 
       
       //대상 UI의 onAfterRendering 처리 대상 UI 찾기.
-      var _oTarget = oAPP.fn.getTargetAfterRenderingUI(_oParent);
+      var _oTarget = _oRender.getTargetAfterRenderingUI(_oParent);
 
       if(typeof _oTarget === "undefined"){
         continue;
@@ -3452,14 +3513,14 @@
 
       
       //화면에 출력된 UI라면 onAfterRendering 이벤트 등록. 
-      _aPromise.push(oAPP.fn.setAfterRendering(_oTarget));
+      _aPromise.push(_oRender.setAfterRendering(_oTarget));
 
       _oTarget.invalidate();
       
       
       //현재 수집된 UI의 직속 child에 존재하는 richtexteditor UI에 readyRecurring이벤트 등록처리
       //(editor가 충분히 그려진 이후 이벤트).
-      var _aRichProm = oAPP.fn.renderingRichTextEditor(_sParent);
+      var _aRichProm = _oRender.renderingRichTextEditor(_sParent);
       
       if(_aRichProm.length > 0){
         _aPromise = _aPromise.concat(_aRichProm);
@@ -3893,6 +3954,42 @@
       
       return;
     }
+
+
+    //20240723 PES -START.
+    //현재 UI의 대상 Aggregation에 추가 불가능한 UI여부 점검로직.
+    var _sParam = {};
+
+    //현재 UI.
+    _sParam.UIOBK       = is_tree.UIOBK;
+
+    //추가 대상 AGGREGATION.
+    _sParam.UIATT       = is_0023.UIATT;
+
+    //추가 UI.
+    _sParam.CHILD_UIOBK = is_0022.UIOBK;
+
+
+    var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "exception", "exceptionUI.js");
+
+    //부모의 Aggregation에 추가 불가능한 UI인지 확인.
+    var _deny = parent.require(_modulePath).checkDenyChildAggr(_sParam);
+
+    if(_deny === true){
+      
+      //$$MSG
+      parent.showMessage(sap, 10, "E", `${is_0022.UIOBJ} UI는 ${is_tree.OBJID}의 ${is_0023.UIATT} Aggregation에 추가 할 수 없습니다.`);
+
+      //단축키 잠금 해제 처리.
+      oAPP.fn.setShortcutLock(false);
+      
+      parent.setBusy("");
+      
+      return;
+
+    }
+    //20240723 PES -END.
+    
     
     //context menu 호출 UI의 child 정보가 존재하지 않는경우 생성.
     if(!is_tree.zTREE){
@@ -3910,8 +4007,15 @@
     }
 
 
+    //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
+    var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
+
+    //미리보기 onAfterRendering 처리 관련 module load.
+    var _oRender = parent.require(_modulePath);
+
+
     //onAfterRendering 이벤트 등록 대상 UI 얻기.
-    let _oTarget = oAPP.fn.getTargetAfterRenderingUI(oAPP.attr.prev[is_tree.OBJID]);
+    let _oTarget = _oRender.getTargetAfterRenderingUI(oAPP.attr.prev[is_tree.OBJID]);
     
     let _oDom = undefined;
 
@@ -3923,7 +4027,7 @@
     
     //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
     if(typeof _oDom !== "undefined" && _oDom !== null){
-      _oPromise = oAPP.fn.setAfterRendering(_oTarget);
+      _oPromise = _oRender.setAfterRendering(_oTarget);
     }
 
 
@@ -4022,23 +4126,11 @@
       //onAfterRendering 수행까지 대기.
       await _oPromise;
 
-      
-      // //테스트!!!!!!!!!!!!!!!!!!!!!!!!!
-      // if(is_0022.UIOBK === "UO02095"){
-      //   await new Promise((resolve)=>{
-      //     setTimeout(() => {
-      //       resolve();
-      //     }, 3000);
-      //   });
-      // }
-      // //테스트!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
     }
 
     
     //RichTextEditor 미리보기 출력 예외처리로직.
-    var _aPromise = oAPP.fn.renderingRichTextEditor(is_tree);
+    var _aPromise = _oRender.renderingRichTextEditor(is_tree);
 
 
     //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.
@@ -4527,6 +4619,41 @@
         }
 
 
+        //20240723 PES -START.
+        //현재 UI의 대상 Aggregation에 추가 불가능한 UI여부 점검로직.
+        var _sParam = {};
+
+        //현재 UI.
+        _sParam.UIOBK       = is_tree.UIOBK;
+
+        //추가 대상 AGGREGATION.
+        _sParam.UIATT       = param.UIATT;
+
+        //추가 UI.
+        _sParam.CHILD_UIOBK = i_cdata.UIOBK;
+
+
+        var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "exception", "exceptionUI.js");
+
+        //부모의 Aggregation에 추가 불가능한 UI인지 확인.
+        var _deny = parent.require(_modulePath).checkDenyChildAggr(_sParam);
+
+        if(_deny === true){
+          
+          //$$MSG
+          parent.showMessage(sap, 10, "E", `${i_cdata.OBJID} UI는 ${is_tree.OBJID}의 ${param.UIATT} Aggregation에 추가 할 수 없습니다.`);
+
+          //단축키 잠금 해제 처리.
+          oAPP.fn.setShortcutLock(false);
+          
+          parent.setBusy("");
+          
+          return;
+
+        }
+        //20240723 PES -END.
+
+
         //application이 같더라도 붙여넣기시 바인딩, 이벤트가 있으면 유지여부 확인팝업 호출에 의한 주석 처리-start.
         // //복사한 UI의 application이 현재 application과 같다면 바인딩 유지하면서 붙여넣기.
         // if(i_cdata.APPID === oAPP.attr.appInfo.APPID){
@@ -4831,10 +4958,17 @@
 
       //삭제 이후 이전 선택처리 정보 얻기.
       var l_prev = oAPP.fn.designGetPreviousTreeItem(ls_tree.OBJID);
+
+
+      //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
+      var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
+
+      //미리보기 onAfterRendering 처리 관련 module load.
+      var _oRender = parent.require(_modulePath);
       
       
       //onAfterRendering 이벤트 등록 대상 UI 얻기.
-      let _oTarget = oAPP.fn.getTargetAfterRenderingUI(oAPP.attr.prev[ls_tree.POBID]);
+      let _oTarget = _oRender.getTargetAfterRenderingUI(oAPP.attr.prev[ls_tree.POBID]);
       
       let _oDom = undefined;
 
@@ -4846,7 +4980,7 @@
       
       //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
       if(typeof _oDom !== "undefined" && _oDom !== null){
-        _oPromise = oAPP.fn.setAfterRendering(_oTarget);
+        _oPromise = _oRender.setAfterRendering(_oTarget);
       }
 
       
@@ -4857,7 +4991,7 @@
       var ls_parent = oAPP.fn.getTreeData(ls_tree.POBID);
       
       //RichTextEditor 미리보기 출력 예외처리로직.
-      var _aPromise = oAPP.fn.renderingRichTextEditor(ls_parent);
+      var _aPromise = _oRender.renderingRichTextEditor(ls_parent);
 
       
       //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.

@@ -128,6 +128,8 @@
 
         oAPP.attr.aSessionKeys = [];
 
+        let BROWSKEY = parent.getBrowserKey();
+
         // EXAM MOVE 이벤트
         parent.IPCMAIN.on("if-exam-move", oAPP.fn.fnIpcMain_if_exam_move);
 
@@ -143,12 +145,18 @@
         // 브라우저간 IPC 통신
         parent.IPCMAIN.on('if-browser-interconnection', oAPP.fn.fnIpcMain_browser_interconnection);
 
+        // 부모로 부터 접속 환경 정보 구하기
+        parent.IPCMAIN.on(`if-get-sys-info-${BROWSKEY}`, oAPP.fn.fnIpcMain_if_get_sys_info);
+        
+
     }; // end of oAPP.fn.fnIpcMain_Attach_Event_Handler
 
     /************************************************************************
      * IPC MAIN Detach Event
      ************************************************************************/
     oAPP.fn.fnIpcMain_Detach_Event_Handler = () => {
+
+        let BROWSKEY = parent.getBrowserKey();
 
         // 화면 잠겼을때 세션타임 아웃 이벤트 해제
         parent.IPCMAIN.off('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
@@ -165,6 +173,9 @@
         // 브라우저간 IPC 통신
         parent.IPCMAIN.off('if-browser-interconnection', oAPP.fn.fnIpcMain_browser_interconnection);
 
+        // 부모로 부터 접속 환경 정보 구하기
+        parent.IPCMAIN.off(`if-get-sys-info-${BROWSKEY}`, oAPP.fn.fnIpcMain_if_get_sys_info);
+        
     };
 
     /************************************************************************
@@ -440,5 +451,43 @@
 
 
     }; // end of oAPP.fn.fnIpcMain_browser_interconnection_04
+
+    /************************************************************************
+     * 접속환경 정보 구하기
+     ************************************************************************/
+    oAPP.fn.fnIpcMain_if_get_sys_info = function(oEvent, oPARAM){
+
+        // let BROWSKEY = parent.getBrowserKey();
+
+        // // 다른 브라우저에서 실행한 이벤트면 리턴 시킨다.
+        // if(BROWSKEY !== oPARAM.BROWSKEY){
+        //     return;
+        // }
+
+        let APPPATH     = parent.REMOTE.app.getAppPath();
+        let PATHINFOURL = parent.PATH.join(APPPATH, "Frame", "pathInfo.js");
+        let PATHINFO    = parent.require(PATHINFOURL);
+
+        let sIpcSysInfoPath = parent.PATH.join(PATHINFO.JS_ROOT, "ipc", "assist", "sys_info_assist.js");
+        let oIPC_SYS_INFO_ASSIST = parent.require(sIpcSysInfoPath);
+
+        if(!oIPC_SYS_INFO_ASSIST[oPARAM.PRCCD]){
+            return;
+        }
+
+        try {
+            
+            oIPC_SYS_INFO_ASSIST[oPARAM.PRCCD](oEvent, oPARAM);
+
+        } catch (error) {
+
+            console.error("[ws_fn_ipc.js] oAPP.fn.fnIpcMain_if_get_sys_info --- Start");
+            console.error(error);            
+            console.error("[ws_fn_ipc.js] oAPP.fn.fnIpcMain_if_get_sys_info --- End");
+
+            return;
+        }
+
+    }; // end of oAPP.fn.fnIpcMain_if_get_sys_info
 
 })(window, $, oAPP);

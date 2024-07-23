@@ -1,56 +1,69 @@
-/**************************************************************
- *  필수 파라미터!!
- **************************************************************
- * - SESSKEY: 세션키
- * - BROWSKEY: 브라우저키
- * - USERINFO: 유저 정보
- * - THEMEINFO: 테마정보
- * 
- **************************************************************/
 
-export function start(REMOTE, IF_DATA, fnCallback){
+/*******************************************************************
+ *  IF_DATA 필수 파라미터
+ * - SESSKEY : 세션이 있어야 서버 로그인 할 수 있음.
+ * - BROWSKEY: IPC 통신할 때 다른 브라우저 호출을 막을 수 있음.
+ *******************************************************************/
+
+export async function start(require, IF_DATA, fnCallback){
 
     // 단독으로 실행한다 생각하고 짤것!!!
     // no build 일 경우에는 개발자 툴을 실행한다.  
 
+    if(!IF_DATA){
+        var IF_DATA = {};
+    }
+   
     let sPopupName = "UI5CSSPOP_V2";
 
-    /************************************************************************
-     * 에러 감지
-     ************************************************************************/
-    const        
+    const 
+        REMOTE = require('@electron/remote'),
+        IPCMAIN = REMOTE.require('electron').ipcMain,
+        REMOTEMAIN = REMOTE.require('@electron/remote/main'),
+        CURRWIN = REMOTE.getCurrentWindow(),
         PATH = REMOTE.require('path'),
-        APP = REMOTE.app;
-        // APPPATH = APP.getAppPath(),
-        // PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
-        // PATHINFO = REMOTE.require(PATHINFOURL),
-        // WSUTIL = REMOTE.require(PATHINFO.WSUTIL);
+        APP = REMOTE.app,
+        APPPATH = APP.getAppPath(),
+        PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+        PATHINFO = require(PATHINFOURL),
+        WSUTIL = require(PATHINFO.WSUTIL),
+        SETTINGS = require(PATHINFO.WSSETTINGS),
+        oSetting_UI5 = SETTINGS.UI5;
 
+    let SESSKEY = IF_DATA.SESSKEY;
+    let BROWSKEY = IF_DATA.BROWSKEY;
+    let oUserLoginInfo = await WSUTIL.getSysInfoIPC({ PRCCD: "USER_LOGIN_INFO", BROWSKEY: BROWSKEY });
+    
+    // 테마 관련 정보
+    let sTheme = sap.ui.getCore().getConfiguration().getTheme();
+    let oThemeColors = sap.ui.core.theming.Parameters.get();
+    let sThemeBgColor = oThemeColors.sapBackgroundColor;    
+    let oThemeInfo = { THEME: sTheme, BGCOL: sThemeBgColor };
 
-    /*******************************************************
-     * ❗❗❗❗❗❗❗❗ 작업완료 후 반드시 삭제할것 --- START ❗❗❗❗❗❗❗❗
-     *******************************************************/
-    if (APP.isPackaged) {
+    IF_DATA.SESSKEY          = SESSKEY;
+    IF_DATA.BROWSKEY         = BROWSKEY;
+    IF_DATA.USER_LOGIN_INFO  = oUserLoginInfo;
+    IF_DATA.USER_INFO        = await WSUTIL.getSysInfoIPC({ PRCCD: "USER_INFO",   BROWSKEY: BROWSKEY });    
+    IF_DATA.SERVER_HOST      = await WSUTIL.getSysInfoIPC({ PRCCD: "SERVER_HOST", BROWSKEY: BROWSKEY });
+    IF_DATA.SERVER_PATH      = await WSUTIL.getSysInfoIPC({ PRCCD: "SERVER_PATH", BROWSKEY: BROWSKEY });
+    IF_DATA.SERVER_BOOT_PATH = IF_DATA.USER_INFO.META.LIBPATH;
+    IF_DATA.WS30_BOOT_PATH   = oSetting_UI5.resourceUrl;
+    IF_DATA.SUBROOT_PATH     = "/getui5_pre_css_v2";
+    IF_DATA.THEME_INFO       = oThemeInfo;
 
-        alert("신규버전 작업 중입니다.");
-
-        return;
-    }
-    /*******************************************************
-     * ❗❗❗❗❗❗❗❗ 작업완료 후 반드시 삭제할것 --- END ❗❗❗❗❗❗❗❗
-     *******************************************************/
-
-    let SESSKEY = IF_DATA.SESSKEY,
-        BROWSKEY = IF_DATA.BROWSKEY,
-        oUserInfo = IF_DATA.oUserInfo,
-        oThemeInfo = IF_DATA.oThemeInfo; // theme 정보
+    let LANGU = IF_DATA.USER_LOGIN_INFO.LANGU;
+    let SYSID = IF_DATA.USER_LOGIN_INFO.SYSID;
+    let WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+    
+    // 메시지 클래스 정보 구하는 function
+    let fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
 
     // 브라우저 옵션 설정
     let sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
         oDefaultOption = parent.require(sSettingsJsonPath),
         oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.title = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B58"); // UI5 Predefined CSS
+        oBrowserOptions.title = fnGetMsgClsText("/U4A/CL_WS_COMMON", "B58"); // UI5 Predefined CSS
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.parent = CURRWIN;
@@ -60,7 +73,7 @@ export function start(REMOTE, IF_DATA, fnCallback){
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
-        oBrowserOptions.webPreferences.USERINFO = oUserInfo;
+        oBrowserOptions.webPreferences.USERINFO = oUserLoginInfo;
     
     // 브라우저 오픈
     let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -76,10 +89,10 @@ export function start(REMOTE, IF_DATA, fnCallback){
     let sUrlPath = parent.getPath(sPopupName);
     oBrowserWindow.loadURL(sUrlPath);
 
-    // no build 일 경우에는 개발자 툴을 실행한다.
-    if (!APP.isPackaged) {
-        oBrowserWindow.webContents.openDevTools();
-    }
+    // // no build 일 경우에는 개발자 툴을 실행한다.
+    // if (!APP.isPackaged) {
+    //     oBrowserWindow.webContents.openDevTools();
+    // }
  
     // 브라우저가 오픈이 다 되면 타는 이벤트
     oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -124,6 +137,5 @@ export function start(REMOTE, IF_DATA, fnCallback){
         }
 
     }
-
 
 };

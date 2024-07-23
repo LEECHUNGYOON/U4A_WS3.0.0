@@ -8,7 +8,7 @@ var oAPP = {};
  ************************************************************************/
 var oScript = document.createElement("script");
     oScript.id = "sap-ui-bootstrap";    
-    oScript.setAttribute("src", oAPP.IF_DATA.sClientBootStrapUrl);
+    oScript.setAttribute("src", oAPP.IF_DATA.WS30_BOOT_PATH);
 
 let oBootStrap =  {
     "data-sap-ui-language": "EN",

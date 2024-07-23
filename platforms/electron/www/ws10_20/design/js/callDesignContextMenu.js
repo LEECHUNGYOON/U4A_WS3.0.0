@@ -493,8 +493,15 @@
             oAPP.fn.reCreateUIObjInstance(ls_tree);
 
 
+            //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
+            var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
+
+            //미리보기 onAfterRendering 처리 관련 module load.
+            var _oRender = parent.require(_modulePath);
+
+            
             //onAfterRendering 이벤트 등록 대상 UI 얻기.
-            let _oTarget = oAPP.fn.getTargetAfterRenderingUI(oAPP.attr.prev[l_parent.OBJID]);
+            let _oTarget = _oRender.getTargetAfterRenderingUI(oAPP.attr.prev[l_parent.OBJID]);
             
             let _oDom = undefined;
 
@@ -506,11 +513,11 @@
             
             //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
             if(typeof _oDom !== "undefined" && _oDom !== null){
-                _oPromise = oAPP.fn.setAfterRendering(_oTarget);
+                _oPromise = _oRender.setAfterRendering(_oTarget);
             }
 
             //RichTextEditor 미리보기 출력 예외처리로직.
-            var _aPromise = oAPP.fn.renderingRichTextEditor(l_parent);
+            var _aPromise = _oRender.renderingRichTextEditor(l_parent);
 
             //미리보기 갱신 처리.
             oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(ls_tree.OBJID, ls_tree.UILIB, ls_tree.POBID, ls_tree.PUIOK, ls_tree.UIATT, l_cnt, ls_tree.ISMLB, ls_tree.UIOBK);
@@ -1004,6 +1011,41 @@
                 oAPP.fn.designAreaLockUnlock(false);
                 return;
             }
+
+
+            //20240723 PES -START.
+            //현재 UI의 대상 Aggregation에 추가 불가능한 UI여부 점검로직.
+            var _sParam = {};
+
+            //현재 UI.
+            _sParam.UIOBK       = ls_tree.UIOBK;
+
+            //추가 대상 AGGREGATION.
+            _sParam.UIATT       = param.UIATT;
+
+            //추가 UI.
+            _sParam.CHILD_UIOBK = i_cdata.UIOBK;
+
+
+            var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "exception", "exceptionUI.js");
+
+            //부모의 Aggregation에 추가 불가능한 UI인지 확인.
+            var _deny = parent.require(_modulePath).checkDenyChildAggr(_sParam);
+
+            if(_deny === true){
+            
+                //$$MSG
+                parent.showMessage(sap, 10, "E", `${i_cdata.OBJID} UI는 ${ls_tree.OBJID}의 ${param.UIATT} Aggregation에 추가 할 수 없습니다.`);
+
+                //단축키 잠금 해제 처리.
+                oAPP.fn.setShortcutLock(false);
+                
+                parent.setBusy("");
+                
+                return;
+
+            }
+            //20240723 PES -END.
 
 
             //application이 같더라도 붙여넣기시 바인딩, 이벤트가 있으면 유지여부 확인팝업 호출에 의한 주석 처리-start.

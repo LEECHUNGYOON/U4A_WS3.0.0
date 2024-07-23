@@ -71,8 +71,8 @@
 
         return new Promise(async (resolve) => {
 
-            let sServerUrl = oContr.IF_DATA.sServerPath;
-            let sServUrl = `${sServerUrl}${oContr.IF_DATA.sSubRootPath}`; // 서버 호출 url
+            let sServerUrl = oContr.IF_DATA.SERVER_PATH;
+            let sServUrl = `${sServerUrl}${oContr.IF_DATA.SUBROOT_PATH}`; // 서버 호출 url
     
             try {
                 var oResult = await fetch(sServUrl);
@@ -289,30 +289,30 @@
         }
 
         // 서버 호스트
-        let sServerHost = oContr.IF_DATA.sServerHost;
+        let sServerHost = oContr.IF_DATA.SERVER_HOST;
 
         // 서버 호출 경로        
-        let sServerPath = oContr.IF_DATA.sServerPath;
+        let sServerPath = oContr.IF_DATA.SERVER_PATH;
 
         // 메뉴리스트 정보에 서버 bootstrap 정보를 추가한다.
-        let sServerBootSrc = sServerHost + oContr.IF_DATA.sServerBootStrapUrl;        
-        let sSubrootSrc = `${sServerPath}${oContr.IF_DATA.sSubRootPath}`;
+        let sServerBootSrc = sServerHost + oContr.IF_DATA.SERVER_BOOT_PATH;        
+        let sSubrootSrc = `${sServerPath}${oContr.IF_DATA.SUBROOT_PATH}`;
 
         // 좌측 메뉴의 추가 정보를 저장한다.
         for(const oMenu of aLMenuList){
 
-            oMenu.SERVER_BOOTSRC = sServerBootSrc;
-            oMenu.SUBROOT_SRC = `${sSubrootSrc}&mid=${oMenu.KEY}&menunm=${oMenu.TITLE}`;
-            oMenu.oThemeInfo = oContr.IF_DATA.oThemeInfo;
+            oMenu.SERVER_BOOT_URL = sServerBootSrc;
+            oMenu.SUBROOT_URL = `${sSubrootSrc}?mid=${oMenu.KEY}&menunm=${oMenu.TITLE}`;
+            oMenu.THEME_INFO = oContr.IF_DATA.THEME_INFO;
 
         }
 
         // 푸터 메뉴의 추가 정보를 저장한다.
         for(const oMenu of aFMenuList){
 
-            oMenu.SERVER_BOOTSRC = sServerBootSrc;
-            oMenu.SUBROOT_SRC = `${sSubrootSrc}&mid=${oMenu.KEY}&menunm=${oMenu.TITLE}`;
-            oMenu.oThemeInfo = oContr.IF_DATA.oThemeInfo;
+            oMenu.SERVER_BOOT_URL = sServerBootSrc;
+            oMenu.SUBROOT_URL = `${sSubrootSrc}?mid=${oMenu.KEY}&menunm=${oMenu.TITLE}`;
+            oMenu.THEME_INFO = oContr.IF_DATA.THEME_INFO;
 
         }        
 
@@ -320,9 +320,9 @@
         oContr.oModel.oData.T_FMENU_LIST = aFMenuList;  // 푸터 메뉴
 
 
-        // TEST -------- START
-        oContr.fn.setTest();
-        // TEST -------- END
+        // // TEST -------- START
+        // oContr.fn.setTest();
+        // // TEST -------- END
 
 
         oContr.oModel.refresh();
@@ -337,9 +337,9 @@
         oContr.ui.NAVCON2.attachEventOnce("afterNavigate", function(){            
                
             // 디테일 영역의 기본 테마 설정
-            let oThemeInfo = oContr.IF_DATA.oThemeInfo;
-            if(oThemeInfo){            
-                oContr.oModel.oData.S_DETAIL.selectedTheme = oContr.IF_DATA.oThemeInfo.THEME; 
+            let THEME_INFO = oContr.IF_DATA.THEME_INFO;
+            if(THEME_INFO){            
+                oContr.oModel.oData.S_DETAIL.selectedTheme = oContr.IF_DATA.THEME_INFO.THEME; 
             }
 
             // 화면 처음 로드 시 첫번째 메뉴를 선택한 효과를 준다
@@ -596,14 +596,20 @@
             
             oContr.fn.setBusy(false);
 
-            return;
+            return;        
         }
+
+        let oThemeInfo = oContr.IF_DATA.THEME_INFO;
 
         let oBrowserOptions = {
             "browserWindow": {
                 "width": 1000,
-                "height": 800,            
+                "height": 800,
+                opacity: 0.0,            
                 "icon": "www/img/logo.png",
+                title: oMenuData.TITLE,
+                autoHideMenuBar: true,
+                backgroundColor: oThemeInfo.BGCOL,
                 "webPreferences": {
                     "devTools": true,
                     "nodeIntegration": true,
@@ -613,7 +619,9 @@
                     "nativeWindowOpen": true,
                     "webSecurity": false,
                     "autoplayPolicy": "no-user-gesture-required",
-                    "OBJTY": sChildKey
+                    "OBJTY": sChildKey,
+                    browserkey: oContr.IF_DATA.BROWSKEY,
+                    partition: oContr.IF_DATA.SESSKEY
                 },
                 parent: CURRWIN
             },
@@ -624,7 +632,14 @@
 
         // 브라우저 오픈
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions.browserWindow);
-        REMOTEMAIN.enable(oBrowserWindow.webContents);        
+        REMOTEMAIN.enable(oBrowserWindow.webContents);   
+        
+         // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+        // 브라우저 상단 메뉴 없애기        
+        oBrowserWindow.setMenu(null);
 
         // BroadCast에 전송할 파라미터
         let IF_DATA = JSON.parse(JSON.stringify(oMenuData));
@@ -632,7 +647,7 @@
         jQuery.extend(true, IF_DATA, oContr.IF_DATA);
 
         // 현재 선택된 테마의 정보를 전달한다.
-        IF_DATA.oThemeInfo.THEME = oContr.oModel.oData.S_DETAIL.selectedTheme;
+        IF_DATA.THEME_INFO.THEME = oContr.oModel.oData.S_DETAIL.selectedTheme;
         
         // 이 URL에 던지는 파라미터는 브로드캐스트 구분용으로 사용함.
         let sDetailUrl = `${C_DETAIL_HTML_PATH}?browskey=${sBrowsKey}&mid=${IF_DATA.KEY}`;
@@ -650,6 +665,20 @@
                 oBroadCast.close();
 
             oContr.fn.setBusy(false);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
+
+            // 부모 위치 가운데 배치한다.
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow, oBrowserOptions);
+
+        });
+
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -669,11 +698,11 @@
      *******************************************************/
     oContr.fn.openNewBrowserOthers = function(oMenuData){
 
-        // // TEST ------
-        // oContr.fn.openNewBrowserMenu(oMenuData);
-        // // TEST ------
+        // TEST ------
+        oContr.fn.openNewBrowserMenu(oMenuData);
+        // TEST ------
 
-        // return; 
+        return; 
 
         oContr.fn.setBusy(true);
 
@@ -708,6 +737,7 @@
                 "width": 1000,
                 "height": 800,            
                 "icon": "www/img/logo.png",
+                title: oMenuData.TITLE,
                 "webPreferences": {
                     "devTools": true,
                     "nodeIntegration": true,

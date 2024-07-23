@@ -90,7 +90,7 @@ let oAPP = (function (window) {
         MIMETYPE: "script"
     },
     {
-        URL: "./js/ws_fn_ipc.js",
+        URL: "./js/ipc/ws_fn_ipc.js",
         MIMETYPE: "script"
     },
     {

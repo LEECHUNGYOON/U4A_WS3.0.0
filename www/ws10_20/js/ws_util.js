@@ -1258,6 +1258,8 @@ module.exports = {
 
         var oMainWindow = REMOTE.getCurrentWindow();
 
+        var SCREEN = REMOTE.require("electron").screen;
+
         // 부모 창의 위치와 크기 가져오기
         const [parentX, parentY] = oMainWindow.getPosition();
         const [parentWidth, parentHeight] = oMainWindow.getSize();
@@ -1914,6 +1916,50 @@ module.exports = {
         return aFavIcon;
 
     }, // end of getIconFavorite
+
+    /*****************************************************
+     * IPC 통신으로 현재 시스템 접속 관련 정보를 얻는다.
+     *****************************************************/
+    getSysInfoIPC : function(IF_DATA){
+
+        return new Promise((resolve) => {
+            
+            // IF_DATA 타입이 Object 가 아니면 빠져나감!!
+            if(typeof IF_DATA !== "object"){
+                return resolve();
+            }
+
+            // PRCCD는 필수!!
+            if(!IF_DATA?.PRCCD){
+                return resolve();
+            }
+
+            // BROWSKEY 필수!!
+            if(!IF_DATA?.BROWSKEY){
+                return resolve();
+            }
+
+            let lf_ipc_callback = function(event, res){
+                
+                IPCRENDERER.off(`if-get-sys-info-result-${IF_DATA.BROWSKEY}`, lf_ipc_callback);
+
+                resolve(res);
+
+            };
+
+            let oIF_DATA = {};
+
+            oIF_DATA.TO_CHID = `if-get-sys-info-result-${IF_DATA.BROWSKEY}`;
+
+            Object.assign(oIF_DATA, IF_DATA);
+
+            IPCRENDERER.send(`if-get-sys-info-${IF_DATA.BROWSKEY}`, oIF_DATA);
+
+            IPCRENDERER.on(`if-get-sys-info-result-${IF_DATA.BROWSKEY}`, lf_ipc_callback);
+
+        });
+
+    }, // end of getSysInfoIPC
 
 
 };

@@ -67,14 +67,14 @@
          ************************************************************************/
         var oScript = document.createElement("script");
             oScript.id = "sap-ui-bootstrap";    
-            oScript.setAttribute("src", oAPP.IF_DATA.SERVER_BOOTSRC);
+            oScript.setAttribute("src", oAPP.IF_DATA.SERVER_BOOT_URL);
 
         let oBootStrap =  {
             "data-sap-ui-language": "EN",
             "data-sap-ui-noDuplicateIds": "true",
             "data-sap-ui-preload": "async",
             "data-sap-ui-compatVersion": "edge",
-            "data-sap-ui-theme": oAPP.IF_DATA.oThemeInfo.THEME,
+            "data-sap-ui-theme": oAPP.IF_DATA.THEME_INFO.THEME,
             //"data-sap-ui-theme": "sap_horizon_dark",
             "data-sap-ui-libs": "sap.m",
         };
@@ -153,7 +153,7 @@
                 _setSupportedThemeConfig();                 
 
                 let oScript = document.createElement("script");
-                    oScript.src = oAPP.IF_DATA.SUBROOT_SRC;
+                    oScript.src = oAPP.IF_DATA.SUBROOT_URL;
 
                 document.body.appendChild(oScript);
        

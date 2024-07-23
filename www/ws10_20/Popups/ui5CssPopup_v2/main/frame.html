@@ -36,6 +36,10 @@
     var APPPATH = APP.getAppPath();
     var IPCRENDERER = require('electron').ipcRenderer;
     
+    var PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js");
+    var PATHINFO = require(PATHINFOURL);
+    var WSUTIL = require(PATHINFO.WSUTIL);
+    
     var oAPP = {};
         oAPP.fn = {};
         oAPP.attr = {};
@@ -44,7 +48,7 @@
      * IPC 통신
      ************************************************************************/
     IPCRENDERER.on("if-ui5css-info", function(events, oInfo){
-    
+        
         let oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {
             return;

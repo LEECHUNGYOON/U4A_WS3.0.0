@@ -2632,8 +2632,6 @@ function ajax_init_prc(oFormData, fn_callback, fn_fail) {
 // critical 오류
 function fnCriticalError() {
 
-    debugger;
-
     // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Login 페이지로 이동.
     fn_logoff_success("");
 
@@ -2641,8 +2639,6 @@ function fnCriticalError() {
 
 // JSON Parse Error
 function fnJsonParseError(e) {
-
-    debugger;
 
     zconsole.error(e);
 
