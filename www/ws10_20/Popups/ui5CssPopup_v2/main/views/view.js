@@ -209,7 +209,6 @@ export var oContr = await new Promise(async function(resolve){
 
     let TITLE3 = new sap.m.Title({
         text : "{/S_PRC/dtl_tit}"
-        // text: "[TEST] Detail 영역"
     });
     TOOLBAR5.addContent(TITLE3);
 
@@ -220,7 +219,6 @@ export var oContr = await new Promise(async function(resolve){
         selectedKey: "{/S_DETAIL/selectedTheme}",
         maxWidth: "300px",
         width: "200px",
-        // resetOnMissingKey: true,
         wrapItemsText: true,
         change: function(oEvent){
             
@@ -278,18 +276,6 @@ export var oContr = await new Promise(async function(resolve){
     });
     TOOLBAR5.addContent(BUTTON5);
 
-    // // 자식창 전체 닫기
-    // let BUTTON10 = new sap.m.Button({
-    //     icon: "sap-icon://clear-all",
-    //     type: "Negative",
-    //     press: function(){
-
-    //         oContr.fn.clearAllChildWindow();
-
-    //     }
-    // });
-    // TOOLBAR5.addContent(BUTTON10);
-
     // 우측 디테일 페이지 => NAVCON => 첫번째 페이지 푸터 툴바
     let TOOLBAR6 = new sap.m.OverflowToolbar();
     DTLPG1.setFooter(TOOLBAR6);
@@ -298,11 +284,11 @@ export var oContr = await new Promise(async function(resolve){
 
     // unselect 버튼
     let BUTTON4 = new sap.m.Button({        
-        text: "Unselect",
+        text: "Unselect ALL",
         icon: "sap-icon://refresh",
         press: function(oEvent){
 
-            oContr.fn.setUnselectItemsAll();            
+            oContr.fn.onUnselectAll();                     
 
         }
 
@@ -343,7 +329,7 @@ export var oContr = await new Promise(async function(resolve){
         type: "Accept",
         press: function(oEvent){
 
-            oContr.fn.setCssApply();            
+            oContr.fn.onApply();                      
 
         }
     });

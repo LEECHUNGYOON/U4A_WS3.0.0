@@ -132,7 +132,11 @@ export async function start(require, IF_DATA, fnCallback){
     function lf_ui5css_getData(event, res) {
 
         if(typeof fnCallback === "function"){
+
+            res.WIN = oBrowserWindow;
+
             fnCallback(res);
+            
             return;
         }
 

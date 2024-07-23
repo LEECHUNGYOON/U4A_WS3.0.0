@@ -4,6 +4,19 @@
 var oParentAPP = parent.fnGetApp();
 var oAPP = {};
     oAPP.fn = {};
+    oAPP.common = {};
+
+debugger;
+
+// 메시지 클래스 정보 구하기
+let LANGU = oParentAPP.attr.IF_DATA.USER_LOGIN_INFO.LANGU;
+let SYSID = oParentAPP.attr.IF_DATA.USER_LOGIN_INFO.SYSID;
+let WSMSG = new parent.WSUTIL.MessageClassText(SYSID, LANGU);
+
+oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+
+// 메시지 클래스 정보 구하는 function
+let fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
 
 /************************************************************************
  * UI5 Bootstrap Load

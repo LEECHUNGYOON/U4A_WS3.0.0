@@ -912,6 +912,36 @@
 
 
     /*******************************************************
+     * @function - Unselect ALL 버튼 이벤트
+     *******************************************************/
+    oContr.fn.onUnselectAll = async function(){
+
+        let sAction = await new Promise(function(resolve){
+
+            // [MSG]
+            let sMsg = "선택한 항목을 전체 해제 하시겠습니까?";
+
+            sap.m.MessageBox.information(sMsg, {
+                actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CANCEL],
+                emphasizedAction: sap.m.MessageBox.Action.OK,
+                onClose: function (sAction) {
+                    resolve(sAction);
+
+                }
+            });
+
+        });
+
+        if(sAction === "CANCEL"){
+            return;
+        }
+
+
+        oContr.fn.setUnselectItemsAll();
+
+    }; // end of oContr.fn.onUnselectAll
+
+    /*******************************************************
      * @function 
      *  - 선택한 items 들 전체 체크 해제
      *  - 기 저장된 로컬스토리지 전체 삭제
@@ -954,7 +984,7 @@
         // 브라우저키와 메뉴 key를 조합해서 broadcast를 만들고 
         // REFRESH 하라고 파라미터를 날린다.
 
-        sap.m.MessageToast.show("Unselect");
+        sap.m.MessageToast.show("Unselect"); // [MSG]
 
         oContr.fn.setBusy(false);
 
@@ -1088,10 +1118,11 @@
     }; // end of oContr.fn.setSelectedItemsCopyClipboard
 
 
+
     /*******************************************************
-     * @function - 선택한 items 들을 clipboard 복사
+     * @function - 선택한 items 들을 clipboard 복사 이벤트
      *******************************************************/
-    oContr.fn.setCssApply = function(){
+    oContr.fn.onApply = async function(){
 
         oContr.fn.setBusy(true);
 
@@ -1104,8 +1135,10 @@
             switch (oCssResult.ERRCD) {
                 case "E01":  // JSON PARSE 오류
 
+                    console.error("oContr.fn.setCssApply => [E01]");
+
                     // [MSG] - JSON PARSE 오류!! 관리자에게 문의
-                    var sErrMsg = "JSON PARSE 오류!! 관리자에게 문의";    
+                    var sErrMsg = "선택한 CSS 항목을 읽는 중 문제가 발생하였습니다! \n\n 관리자에게 문의하세요.";    
 
                     sap.m.MessageBox.error(sErrMsg);
 
@@ -1114,25 +1147,60 @@
                 case "E02": // 선택한 데이터 없음
 
                     // [MSG] - 선택한 데이터 없음!!
-                    var sErrMsg = "선택한 데이터 없음";
+                    var sErrMsg = "선택한 데이터가 없습니다.";
 
                     sap.m.MessageToast.show(sErrMsg);
 
                     break;
             }
-
-           
+        
             return;
         }
+
+        oContr.fn.setBusy(false);  
+
+        let sAction = await new Promise(function(resolve){
+
+            // [MSG]
+            let sMsg = "선택한 항목을 일괄 적용 하시겠습니까?";
+
+            sap.m.MessageBox.information(sMsg, {
+                actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CANCEL],
+                emphasizedAction: sap.m.MessageBox.Action.OK,
+                onClose: function (sAction) {
+                    resolve(sAction);
+
+                }
+
+            });
+
+        });
+        
+        oContr.fn.setBusy(true);  
+
+        if(sAction === "CANCEL"){
+            oContr.fn.setBusy(false);  
+            return;
+        }
+
+        oContr.fn.setCssApply(oCssResult.RDATA);  
+
+        oContr.fn.setBusy(false);  
+
+    }; // end of oContr.fn.onApply
+
+
+    /*******************************************************
+     * @function - 선택한 items 들을 clipboard 복사
+     *******************************************************/
+    oContr.fn.setCssApply = function(aSavedCssList){              
 
         let aCssList = [];
 
         // 기 저장된 CSS 정보에서 CSS text만 추출
-        let aSavedCssList = oCssResult.RDATA;
         for(const oCss of aSavedCssList){
             aCssList.push(oCss.text);
-        }       
-
+        }
 
         // IF PARAM을 구성하여 미리보기 쪽에 전송
         let IF_PARAM = {
@@ -1146,10 +1214,7 @@
 
         parent.IPCRENDERER.send(sChennalId, IF_PARAM);
 
-
-        sap.m.MessageToast.show("Apply");
-
-        oContr.fn.setBusy(false);      
+        sap.m.MessageToast.show("Apply");            
 
     }; // end of oContr.fn.setCssApply
 
