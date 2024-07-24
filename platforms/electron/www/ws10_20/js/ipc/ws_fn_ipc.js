@@ -455,14 +455,7 @@
     /************************************************************************
      * 접속환경 정보 구하기
      ************************************************************************/
-    oAPP.fn.fnIpcMain_if_get_sys_info = function(oEvent, oPARAM){
-
-        // let BROWSKEY = parent.getBrowserKey();
-
-        // // 다른 브라우저에서 실행한 이벤트면 리턴 시킨다.
-        // if(BROWSKEY !== oPARAM.BROWSKEY){
-        //     return;
-        // }
+    oAPP.fn.fnIpcMain_if_get_sys_info = function(oEvent, oPARAM){    
 
         let APPPATH     = parent.REMOTE.app.getAppPath();
         let PATHINFOURL = parent.PATH.join(APPPATH, "Frame", "pathInfo.js");

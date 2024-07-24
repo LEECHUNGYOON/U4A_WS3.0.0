@@ -1,7 +1,18 @@
+/************************************************************************
+ * 부모의 APP 객체 할당
+ ************************************************************************/
+var oParentAPP = parent.fnGetApp();
+
 var oAPP = {};
     oAPP.fn = {};
     oAPP.attr = {};
     oAPP.IF_DATA = parent.IF_DATA;
+
+// 테마 정보
+let sTheme = oAPP.IF_DATA.THEME_INFO.THEME;
+
+// 로그인 언어 정보
+let sLangu = oAPP.IF_DATA.USER_INFO.LANGU;
 
 /************************************************************************
  * UI5 Bootstrap Load
@@ -11,11 +22,11 @@ var oScript = document.createElement("script");
     oScript.setAttribute("src", oAPP.IF_DATA.WS30_BOOT_PATH);
 
 let oBootStrap =  {
-    "data-sap-ui-language": "EN",
+    "data-sap-ui-language": sLangu,
     "data-sap-ui-noDuplicateIds": "true",
     "data-sap-ui-preload": "async",
     "data-sap-ui-compatVersion": "edge",
-    "data-sap-ui-theme": "sap_horizon_dark",
+    "data-sap-ui-theme": sTheme,
     "data-sap-ui-libs": "sap.m",
 };
 
@@ -35,16 +46,29 @@ window.addEventListener("load", function(){
         return;
     }
 
-    sap.ui.getCore().attachInit(async function(){        
+    sap.ui.getCore().attachInit(async function(){
+        
+        let sViewPath = parent.PATH.join(parent.__dirname, "views", "view.js");
 
-        let APP = new sap.m.App();
-        let PAGE = new sap.m.Page({
-            title: "aaaaaaaaacccff"
-        });
+        let oView = await import(sViewPath);
+  
+        jQuery.extend(true, oAPP, oView.oContr);
 
-        APP.addPage(PAGE);
-        APP.placeAt("Content");
+        let oDelegate = {
+            onAfterRendering: function(){
 
+                oAPP.ui.ROOT.removeEventDelegate(oDelegate);
+
+                oAPP.onViewReady();
+
+            }
+        };
+
+        oAPP.ui.ROOT.addEventDelegate(oDelegate);
+
+        oAPP.ui.ROOT.placeAt("Content");
+
+        oParentAPP.attr.isLoad = true;
         
     });
 

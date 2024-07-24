@@ -1,17 +1,26 @@
 [
     {
         "KEY": "OTHER_M1",
-        "TITLE": "Other1",
-        "PATH": "M1/index.html"
+        "TITLE": "Responsive Margin",
+        "PATH": "M1/index.html",
+        "PRGTY": "UI5"
     },
     {
         "KEY": "OTHER_M2",
-        "TITLE": "Other2",
-        "PATH": "M2/index.html"
+        "TITLE": "Removing Margin",
+        "PATH": "M2/index.html",
+        "PRGTY": "UI5"
     },
     {
         "KEY": "OTHER_M3",
-        "TITLE": "Other3",
-        "PATH": "M3/index.html"
+        "TITLE": "Enabling Responsive Paddings According to the Control Width",
+        "PATH": "M3/index.html",
+        "PRGTY": "HTML"
+    },
+    {
+        "KEY": "OTHER_M4",
+        "TITLE": "CSS Styling Issues",
+        "PATH": "M4/index.html",
+        "PRGTY": "HTML"
     }
 ]

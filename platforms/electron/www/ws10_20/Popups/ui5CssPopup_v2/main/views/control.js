@@ -65,6 +65,123 @@
  ********************************************************************/
 
     /*******************************************************
+     * @function - CSS 메뉴 관련 설정
+     *******************************************************/
+    async function _setCssMenuConfig(){
+
+        // CSS메뉴 목록을 구한다.
+        var oResult = await _getCSSMenuList();
+        if(oResult.RETCD === "E"){
+            
+            console.error(oResult);
+            
+            // sap.m.MessageBox.error(oResult.RTMSG);
+
+            oContr.ui.NAVCON2.to(oContr.ui.NODATAPG1);
+
+            return;
+        }
+
+        // CSS 메뉴 관련 정보가 없다면 빠져나간다.
+        let oCssMenuInfo = oResult.RDATA;
+        if(!oCssMenuInfo){
+
+            // 디테일 영역에 데이터 없음 페이지로 이동
+            oContr.ui.NAVCON2.to(oContr.ui.NODATAPG1);
+
+            return;
+        }
+
+        // 좌측 메뉴 정보가 없다면 우측 디테일 화면에는 데이터 없음 페이지로 이동시킨다.
+        let aLMenuList = oCssMenuInfo.LMENU;
+        if(!aLMenuList || Array.isArray(aLMenuList) === false || aLMenuList.length === 0){
+
+            aLMenuList = [];
+
+            // 디테일 영역에 데이터 없음 페이지로 이동
+            oContr.ui.NAVCON2.to(oContr.ui.NODATAPG1);
+
+            return;
+        }
+
+        // 서버 호스트
+        let sServerHost = oContr.IF_DATA.SERVER_HOST;
+
+        // 서버 호출 경로        
+        let sServerPath = oContr.IF_DATA.SERVER_PATH;
+
+        // 메뉴리스트 정보에 서버 bootstrap 정보를 추가한다.
+        let sServerBootSrc = sServerHost + oContr.IF_DATA.SERVER_BOOT_PATH;        
+        let sSubrootSrc = `${sServerPath}${oContr.IF_DATA.SUBROOT_PATH}`;
+
+        // 좌측 메뉴의 추가 정보를 저장한다.
+        for(const oMenu of aLMenuList){
+
+            oMenu.SERVER_BOOT_URL = sServerBootSrc;
+            oMenu.SUBROOT_URL = `${sSubrootSrc}?mid=${oMenu.KEY}&menunm=${oMenu.TITLE}`;
+            oMenu.THEME_INFO = oContr.IF_DATA.THEME_INFO;
+
+        }
+
+        oContr.oModel.oData.T_LMENU_LIST = aLMenuList;        
+
+    } // end of _setCssMenuConfig
+
+    /*******************************************************
+     * @function - Other CSS 메뉴 관련 설정
+     *******************************************************/
+    async function _setOtherCssMenuConfig(){
+
+        let oFS = parent.REMOTE.require("fs");
+        
+        // Other 메뉴 정보가 담긴 JSON 파일 경로
+        let sMenuJsonPath = parent.PATH.join(C_OTHER_ROOT_PATH, "menu.json");
+
+        // Other 메뉴 정보가 담긴 JSON 파일을 읽는다.
+        try {
+
+            var sOtherMenuJson = oFS.readFileSync(sMenuJsonPath, { encoding: "utf-8" });    
+
+        } catch (error) {
+            console.error("_setOtherCssMenuConfig: menu.json file read error");
+            return;
+        }        
+
+        // Other 메뉴 정보가 담긴 JSON 파일을 Parse
+        try {
+
+            var aOtherMenuList = JSON.parse(sOtherMenuJson);   
+             
+        } catch (error) {
+            console.error("_setOtherCssMenuConfig: Json Parse Error");
+            return;
+        }        
+
+        // 서버 호스트
+        let sServerHost = oContr.IF_DATA.SERVER_HOST;
+
+        // 서버 호출 경로        
+        let sServerPath = oContr.IF_DATA.SERVER_PATH;
+
+        // 메뉴리스트 정보에 서버 bootstrap 정보를 추가한다.
+        let sServerBootSrc = sServerHost + oContr.IF_DATA.SERVER_BOOT_PATH;        
+        let sSubrootSrc = `${sServerPath}${oContr.IF_DATA.SUBROOT_PATH}`;
+
+        // Other CSS Menu의 추가 정보를 저장한다.
+        for(const oMenu of aOtherMenuList){
+
+            oMenu.SERVER_BOOT_URL = sServerBootSrc;
+            oMenu.SUBROOT_URL = `${sSubrootSrc}?mid=${oMenu.KEY}&menunm=${oMenu.TITLE}`;
+            oMenu.THEME_INFO = oContr.IF_DATA.THEME_INFO;
+
+        }        
+
+        oContr.oModel.oData.T_FMENU_LIST = aOtherMenuList;
+
+    } // end of _setOtherCssMenuConfig
+
+
+    /*******************************************************
      * @function - 서버에서 CSS MENU 정보 구하기
      *******************************************************/
     function _getCSSMenuList(){
@@ -226,6 +343,11 @@
      *******************************************************/
     oContr.onViewReady = function(){
 
+        let sMsg = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E34", "", "", "", ""); // Please resize the browser window;
+
+        sap.m.MessageBox.information(sMsg);
+
+
         oContr.fn.onInit();
 
     }; // end of oContr.onViewReady
@@ -240,137 +362,52 @@
      * @function - Application Init 
      *******************************************************/
     oContr.fn.onInit = async function(){
+        
+        oContr.fn.setBusy(true);
 
         // 부모에 저장된 IF_DATA 정보를 가져온다.
         oContr.IF_DATA = oParentAPP.attr.IF_DATA;
 
-        // CSS메뉴 목록을 구한다.
-        var oResult = await _getCSSMenuList();
-        if(oResult.RETCD === "E"){
+        // CSS 메뉴 관련 설정
+        await _setCssMenuConfig();
 
-            oContr.fn.setBusy(false);
-
-            sap.m.MessageBox.error(oResult.RTMSG);
-
-            oContr.ui.NAVCON2.to(oContr.ui.NODATAPG1);
-
-            return;
-        }
-
-        // CSS 메뉴 관련 정보가 없다면 빠져나간다.
-        let oCssMenuInfo = oResult.RDATA;
-        if(!oCssMenuInfo){
-
-            oContr.fn.setBusy(false);
-
-            // 디테일 영역에 데이터 없음 페이지로 이동
-            oContr.ui.NAVCON2.to(oContr.ui.NODATAPG1);
-
-            return;
-        }
-
-        // 좌측 메뉴 정보가 없다면 우측 디테일 화면에는 데이터 없음 페이지로 이동시킨다.
-        let aLMenuList = oCssMenuInfo.LMENU;
-        if(!aLMenuList || Array.isArray(aLMenuList) === false || aLMenuList.length === 0){
-
-            aLMenuList = [];
-
-            // 디테일 영역에 데이터 없음 페이지로 이동
-            oContr.ui.NAVCON2.to(oContr.ui.NODATAPG1);
-
-        }
-
-        // 푸터 메뉴 정보
-        let aFMenuList = oCssMenuInfo.FMENU;
-        if(!aFMenuList || Array.isArray(aFMenuList) === false || aFMenuList.length === 0){
-
-            aFMenuList = [];
-
-        }
-
-        // 서버 호스트
-        let sServerHost = oContr.IF_DATA.SERVER_HOST;
-
-        // 서버 호출 경로        
-        let sServerPath = oContr.IF_DATA.SERVER_PATH;
-
-        // 메뉴리스트 정보에 서버 bootstrap 정보를 추가한다.
-        let sServerBootSrc = sServerHost + oContr.IF_DATA.SERVER_BOOT_PATH;        
-        let sSubrootSrc = `${sServerPath}${oContr.IF_DATA.SUBROOT_PATH}`;
-
-        // 좌측 메뉴의 추가 정보를 저장한다.
-        for(const oMenu of aLMenuList){
-
-            oMenu.SERVER_BOOT_URL = sServerBootSrc;
-            oMenu.SUBROOT_URL = `${sSubrootSrc}?mid=${oMenu.KEY}&menunm=${oMenu.TITLE}`;
-            oMenu.THEME_INFO = oContr.IF_DATA.THEME_INFO;
-
-        }
-
-        // 푸터 메뉴의 추가 정보를 저장한다.
-        for(const oMenu of aFMenuList){
-
-            oMenu.SERVER_BOOT_URL = sServerBootSrc;
-            oMenu.SUBROOT_URL = `${sSubrootSrc}?mid=${oMenu.KEY}&menunm=${oMenu.TITLE}`;
-            oMenu.THEME_INFO = oContr.IF_DATA.THEME_INFO;
-
-        }        
-
-        oContr.oModel.oData.T_LMENU_LIST = aLMenuList;  // 좌측 메뉴
-        oContr.oModel.oData.T_FMENU_LIST = aFMenuList;  // 푸터 메뉴
-
-
-        // // TEST -------- START
-        // oContr.fn.setTest();
-        // // TEST -------- END
-
+        // Other CSS 메뉴 관련 설정
+        await _setOtherCssMenuConfig();       
 
         oContr.oModel.refresh();
+        
+        // 서버에서 가져온 CSS 메뉴 정보가 있다면
+        // 우측 디테일 화면을 이동시킨 후 첫번째 메뉴를 선택하는 효과를 준다.
+        if(oContr.oModel.oData.T_LMENU_LIST.length !== 0){
 
-        if(aLMenuList.length === 0){
-            oContr.fn.setBusy(false);
+            oContr.ui.NAVCON2.to(oContr.ui.DTLPG1);
+
+            oContr.ui.NAVCON2.attachEventOnce("afterNavigate", function(){            
+                
+                // 디테일 영역의 기본 테마 설정
+                let THEME_INFO = oContr.IF_DATA.THEME_INFO;
+                if(THEME_INFO){            
+                    oContr.oModel.oData.S_DETAIL.selectedTheme = oContr.IF_DATA.THEME_INFO.THEME; 
+                }
+
+                // 화면 처음 로드 시 첫번째 메뉴를 선택한 효과를 준다
+                let oFirstItem = oContr.ui.LIST1.getItems()[0];
+                if(!oFirstItem){              
+                    return;
+                }
+                
+                oContr.ui.LIST1.setSelectedItem(oFirstItem);
+                oContr.ui.LIST1.fireSelectionChange({ listItem: oFirstItem }); 
+
+            });
+            
             return;
         }
 
-        oContr.ui.NAVCON2.to(oContr.ui.DTLPG1);
-
-        oContr.ui.NAVCON2.attachEventOnce("afterNavigate", function(){            
-               
-            // 디테일 영역의 기본 테마 설정
-            let THEME_INFO = oContr.IF_DATA.THEME_INFO;
-            if(THEME_INFO){            
-                oContr.oModel.oData.S_DETAIL.selectedTheme = oContr.IF_DATA.THEME_INFO.THEME; 
-            }
-
-            // 화면 처음 로드 시 첫번째 메뉴를 선택한 효과를 준다
-            let oFirstItem = oContr.ui.LIST1.getItems()[0];
-            if(!oFirstItem){
-                oContr.fn.setBusy(false);
-                return;
-            }
-            
-            oContr.ui.LIST1.setSelectedItem(oFirstItem);
-            oContr.ui.LIST1.fireSelectionChange({ listItem: oFirstItem });            
-
-        });        
+        oContr.fn.setBusy(false);
 
     }; // end of oContr.ui.onInit
 
-
-    oContr.fn.setTest = function(){
-
-        let oFS = parent.REMOTE.require("fs");
-   
-        let sMenuJsonPath = parent.PATH.join(C_OTHER_ROOT_PATH, "menu.json");
-
-        var sOtherMenuJson = oFS.readFileSync(sMenuJsonPath, {encoding: "utf-8"});
-
-        var aOtherMenuList = JSON.parse(sOtherMenuJson);
-        
-        oContr.oModel.oData.T_FMENU_LIST = aOtherMenuList;
-
-    };
-    
 
     /*******************************************************
      * @function - Busy indicator 실행
@@ -569,7 +606,7 @@
     }; // end of oContr.fn.moveToParentWin
 
     /*******************************************************
-     * @function - 메뉴별 미리보기 실행
+     * @function - 메뉴별 미리보기 새창 실행
      *******************************************************/
     oContr.fn.openNewBrowserMenu = function(oMenuData){
 
@@ -601,37 +638,33 @@
 
         let oThemeInfo = oContr.IF_DATA.THEME_INFO;
 
-        let oBrowserOptions = {
-            "browserWindow": {
-                "width": 1000,
-                "height": 800,
-                opacity: 0.0,            
-                "icon": "www/img/logo.png",
-                title: oMenuData.TITLE,
-                autoHideMenuBar: true,
-                backgroundColor: oThemeInfo.BGCOL,
-                "webPreferences": {
-                    "devTools": true,
-                    "nodeIntegration": true,
-                    "enableRemoteModule": true,
-                    "contextIsolation": false,
-                    "backgroundThrottling": false,
-                    "nativeWindowOpen": true,
-                    "webSecurity": false,
-                    "autoplayPolicy": "no-user-gesture-required",
-                    "OBJTY": sChildKey,
-                    browserkey: oContr.IF_DATA.BROWSKEY,
-                    partition: oContr.IF_DATA.SESSKEY
-                },
-                parent: CURRWIN
+        let oBrowserOptions = {      
+            width: 1000,
+            height: 800,
+            opacity: 0.0,            
+            icon: "www/img/logo.png",
+            title: oMenuData.TITLE,
+            autoHideMenuBar: true,
+            backgroundColor: oThemeInfo.BGCOL,
+            webPreferences: {
+                devTools: true,
+                nodeIntegration: true,
+                enableRemoteModule: true,
+                contextIsolation: false,
+                backgroundThrottling: false,
+                nativeWindowOpen: true,
+                webSecurity: false,
+                autoplayPolicy: "no-user-gesture-required",
+                OBJTY: sChildKey,
+                browserkey: oContr.IF_DATA.BROWSKEY,
+                partition: oContr.IF_DATA.SESSKEY,
+                USERINFO: oContr.IF_DATA.USER_LOGIN_INFO
             },
-            "browserWindowInstance": {
-        
-            }        
+            parent: CURRWIN      
         };
 
         // 브라우저 오픈
-        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions.browserWindow);
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);   
         
          // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
@@ -662,15 +695,15 @@
 
             let oBroadCast = new BroadcastChannel(sChennalId);
                 oBroadCast.postMessage(IF_DATA);
-                oBroadCast.close();
-
-            oContr.fn.setBusy(false);
+                oBroadCast.close();            
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 부모 위치 가운데 배치한다.
             parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow, oBrowserOptions);
+
+            oContr.fn.setBusy(false);
 
         });
 
@@ -697,16 +730,13 @@
      * @function - Other CSS 팝업 띄우기
      *******************************************************/
     oContr.fn.openNewBrowserOthers = function(oMenuData){
-
-        // TEST ------
-        oContr.fn.openNewBrowserMenu(oMenuData);
-        // TEST ------
-
-        return; 
+    
+        debugger;
 
         oContr.fn.setBusy(true);
 
         const REMOTE = parent.REMOTE;
+        const APP = REMOTE.app;
         const CURRWIN = REMOTE.getCurrentWindow();
         const REMOTEMAIN = REMOTE.require('@electron/remote/main');
 
@@ -732,33 +762,36 @@
             return;
         }
 
-        let oBrowserOptions = {
-            "browserWindow": {
-                "width": 1000,
-                "height": 800,            
-                "icon": "www/img/logo.png",
-                title: oMenuData.TITLE,
-                "webPreferences": {
-                    "devTools": true,
-                    "nodeIntegration": true,
-                    "enableRemoteModule": true,
-                    "contextIsolation": false,
-                    "backgroundThrottling": false,
-                    "nativeWindowOpen": true,
-                    "webSecurity": false,
-                    "autoplayPolicy": "no-user-gesture-required",
-                    "OBJTY": sChildKey
-                },
-                parent: CURRWIN
+        let oBrowserOptions = {          
+            width: 1000,
+            height: 800,
+            opacity: 0.0,          
+            icon: "www/img/logo.png",
+            autoHideMenuBar: true,
+            title: oMenuData.TITLE,
+            webPreferences: {
+                devTools: true,
+                nodeIntegration: true,
+                enableRemoteModule: true,
+                contextIsolation: false,
+                backgroundThrottling: false,
+                nativeWindowOpen: true,
+                webSecurity: false,
+                autoplayPolicy: "no-user-gesture-required",
+                OBJTY: sChildKey,
+                browserkey: oContr.IF_DATA.BROWSKEY,
+                partition: oContr.IF_DATA.SESSKEY,
+                USERINFO: oContr.IF_DATA.USER_LOGIN_INFO
             },
-            "browserWindowInstance": {
-        
-            }        
+            parent: CURRWIN        
         };
 
         // 브라우저 오픈
-        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions.browserWindow);
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 브라우저 상단 메뉴 없애기        
+        oBrowserWindow.setMenu(null);
 
         // BroadCast에 전송할 파라미터
         let IF_DATA = JSON.parse(JSON.stringify(oMenuData));
@@ -770,17 +803,36 @@
 
         oBrowserWindow.loadURL(sDetailUrl);
 
-         // 브라우저가 오픈이 다 되면 타는 이벤트
-         oBrowserWindow.webContents.on('did-finish-load', function () {
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
 
             // 브로드캐스트 channal Id
             let sChennalId = sBrowsKey + IF_DATA.KEY;
 
             let oBroadCast = new BroadcastChannel(sChennalId);
                 oBroadCast.postMessage(IF_DATA);
-                oBroadCast.close();
+                oBroadCast.close();            
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
+
+            // 부모 위치 가운데 배치한다.
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow, oBrowserOptions);
 
             oContr.fn.setBusy(false);
+
+        });
+
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -815,7 +867,7 @@
         let oBrodData = {
             PRCCD: "THEME_CHANGE",
             THEME: sTheme
-        };      
+        };
 
         // 전체 메뉴에 대한 broadcast를 보내서 테마 변경
         for(const oMenuItem of aMenuList){
@@ -833,7 +885,7 @@
 
             oContr.fn.setBusy(false);
 
-        }, 300);        
+        }, 300);
 
     }; // end of oContr.fn.setDetailThemeChange
 
@@ -935,7 +987,6 @@
         if(sAction === "CANCEL"){
             return;
         }
-
 
         oContr.fn.setUnselectItemsAll();
 
@@ -1214,7 +1265,7 @@
 
         parent.IPCRENDERER.send(sChennalId, IF_PARAM);
 
-        sap.m.MessageToast.show("Apply");            
+        sap.m.MessageToast.show("Apply"); // [MSG]
 
     }; // end of oContr.fn.setCssApply
 
@@ -1294,7 +1345,7 @@
      *******************************************************/
     oContr.fn.onListMenuSelectChange = async function(oEvent){
 
-        oContr.fn.setBusy(true);            
+        oContr.fn.setBusy(true);
 
         let oListItem = oEvent.getParameter("listItem");
         if(!oListItem){
@@ -1466,13 +1517,11 @@
 
         oContr.fn.openNewBrowserOthers(oMenuData);
 
-        // oContr.fn.openNewBrowserMenu(oItemData);
-
     }; // end of oContr.fn.onOtherMenuSelectChange
 
 
 
 /********************************************************************
-*💨 EXPORT
-*********************************************************************/
+ *💨 EXPORT
+ *********************************************************************/
 export { oContr };

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta charset="utf-8">
+</head>
+<style>
+    html,
+    body {
+        height: 100%;
+    }
+  
+</style>
+
+<body>
+
+    <p style="line-height: 1.6em; padding: 0px; margin: 1.5em 0px; font-size: 14px; color: rgb(50, 54, 58); font-family: '72', '72full', Arial,
+    Helvetica, sans-serif; background-color: rgb(247, 247, 247);">SAPUI5 controls are styled with CSS, and
+      as applications can provide their own CSS,
+      they can adapt the styling. However, the
+      deeper such adaptations are, the more likely
+      is it that they break with future SAPUI5
+      updates or with other libraries and apps
+      getting involved. If you follow the rules
+      listed below, you will reduce the risk
+      of this happening.</p>
+    <section id="1" class="collapsible expanded"
+    style="color: rgb(50, 54, 58); font-family: '72', '72full', Arial, Helvetica, sans-serif; font-size: 14px; background-color: rgb(247, 247, 247);">
+      <div class="collapsible-icon sap-icon" style="cursor: pointer;">
+        <h2 class="title collapsible" style="break-after: avoid; break-inside: avoid; font-weight: 600; font-size: 1.25rem; line-height: 1.25rem; margin:
+    0.25rem; overflow-wrap: break-word; cursor: pointer; display: block; float: none; pointer-events:
+    none;">Don't override control class styling directly</h2>
+      </div>
+      <div class="fig">
+        <p style="line-height: 1.6em; padding: 0px; margin: 1.5em 0px; font-size: 1em;">SAPUI5 does not guarantee the stability
+          of style class names across versions.
+          If the naming of style classes is changed
+          in future versions, styling rules will
+          no longer be applied to targeted elements.
+          In addition, overriding control class
+          styles directly might lead to style
+          clashes when applications are run in
+          shared runtime environments (like SAP
+          Fiori launchpad).</p>
+        <p style="line-height: 1.6em; padding: 0px; margin: 1.5em 0px; font-size: 1em;">Add your own namespaced classes instead.</p>
+        <div class="tableWrapper" style="overflow-x: auto;">
+          <div class="fig">
+            <table id="table_ehh_rkk_jq" class="tableFullWidth"
+            style="border-width: 0px; border-color: rgb(191, 191, 191); border-collapse: collapse; width: 1182px; text-align: left; table-layout: fixed;"
+            border="1">
+              <colgroup>
+                <col width="50%">
+                  <col width="50%">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th style="background-color: rgb(227, 227, 227); font-weight: bold; border-collapse: collapse; padding: 0.6em;"
+                  colspan="1" rowspan="1">Bad Example</th>
+                  <th style="background-color: rgb(227, 227, 227); font-weight: bold; border-collapse: collapse; padding: 0.6em;"
+                  colspan="1" rowspan="1">Good Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="border-collapse: collapse; padding: 0.5rem; vertical-align: top; text-align: left; line-height: 1.75rem;"
+                  colspan="1" rowspan="1">
+                    <section>
+                      <div class="fig fig-codeblock" style="position: relative;">
+                        <div class="codeblock-wrapper" style="overflow-x: auto;">
+                          <pre class="codeblock hljs css" style="margin: 1.5em 0px; display: inline-block; overflow-x: auto; padding: 0.625rem; background-color:
+    rgb(235, 235, 235); color: rgb(50, 54, 58); font-family: Menlo, Monaco, Consolas, 'Courier
+    New', monospace; white-space: pre; overflow-wrap: break-word; border-left: 0.6rem solid rgb(40, 110, 180); font-size: 0.8125rem; line-height: 1.125rem; width:
+    573.5px; box-sizing: border-box;"><span class="hljs-selector-class">.sapMInputBaseError
+    </span> {
+        <span class="hljs-attribute" style="color: rgb(163, 21, 21);">font-weight</span>: bold;
+    }</pre>
+
+</div>
+</div>
+</section>
+</td>
+<td style="border-collapse: collapse; padding: 0.5rem; vertical-align: top; text-align: left; line-height: 1.75rem;"
+colspan="1" rowspan="1">
+<p style="line-height: 1.6em; padding: 0px; margin: 0px; font-size: 1em;">Add a custom CSS class to
+the control in those situations
+where you want additional
+styling:</p>
+<code style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 0.875rem;">oButton.addStyleClass("poaAppError");</code>
+<p style="line-height: 1.6em; padding: 0px; margin: 0px; font-size: 1em;">Then provide the style for
+this class:</p>
+<section>
+<div class="fig fig-codeblock" style="position: relative;">
+  <div class="codeblock-wrapper" style="overflow-x: auto;">
+    <pre class="codeblock hljs css" style="margin: 1.5em 0px; display: inline-block; overflow-x: auto; padding: 0.625rem; background-color:
+rgb(235, 235, 235); color: rgb(50, 54, 58); font-family: Menlo, Monaco, Consolas, 'Courier
+New', monospace; white-space: pre; overflow-wrap: break-word; border-left: 0.6rem solid rgb(40, 110, 180); font-size: 0.8125rem; line-height: 1.125rem; width:
+573.5px; box-sizing: border-box;"><span class="hljs-selector-class">.poaAppError</span> {
+<span class="hljs-attribute" style="color: rgb(163, 21, 21);">font-weight</span>: bold;
+}
+</pre>
+  </div>
+</div>
+</section>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="2" class="collapsible expanded"
+style="color: rgb(50, 54, 58); font-family: '72', '72full', Arial, Helvetica, sans-serif; font-size: 14px; background-color: rgb(247, 247, 247);">
+<div class="collapsible-icon sap-icon" style="cursor: pointer;">
+<h2 class="title collapsible" style="break-after: avoid; break-inside: avoid; font-weight: 600; font-size: 1.25rem; line-height: 1.25rem; margin: 0.25rem;
+overflow-wrap: break-word; cursor: pointer; display: block; float: none; pointer-events:
+none;">Don't style DOM element names directly</h2>
+</div>
+<div class="fig">
+<p style="line-height: 1.6em; padding: 0px; margin: 1.5em 0px; font-size: 1em;">Styling DOM elements directly will lead
+to unpredictable results, as SAPUI5
+does not guarantee the stability of
+the inner-control DOM-tree over time.
+In addition, this might lead to styling
+clashes when applications run in shared
+runtime environments (like SAP Fiori
+launchpad) or when custom HTML is added.
+It is better to limit styling changes
+to specifically used CSS classes.</p>
+<div class="tableWrapper" style="overflow-x: auto;">
+<div class="fig">
+<table id="table_mdl_qcq_jq" class="tableFullWidth"
+style="border-width: 0px; border-color: rgb(191, 191, 191); border-collapse: collapse; width: 1182px; text-align: left; table-layout: fixed;"
+border="1">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead>
+<tr>
+<th style="background-color: rgb(227, 227, 227); font-weight: bold; border-collapse: collapse; padding: 0.6em;"
+colspan="1" rowspan="1">Bad Example</th>
+<th style="background-color: rgb(227, 227, 227); font-weight: bold; border-collapse: collapse; padding: 0.6em;"
+colspan="1" rowspan="1">Good Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border-collapse: collapse; padding: 0.5rem; vertical-align: top; text-align: left; line-height: 1.75rem;"
+colspan="1" rowspan="1">
+<section class="lang-html">
+<div class="fig fig-codeblock" style="position: relative;">
+  <div class="codeblock-wrapper" style="overflow-x: auto;">
+    <pre class="codeblock hljs css" style="margin: 1.5em 0px; display: inline-block; overflow-x: auto; padding: 0.625rem;
+background-color: rgb(235, 235, 235); color: rgb(50, 54, 58); font-family: Menlo, Monaco, Consolas, 'Courier
+New', monospace; white-space: pre; overflow-wrap: break-word; border-left: 0.6rem solid rgb(40, 110, 180); font-size: 0.8125rem; line-height:
+1.125rem; width: 573.5px; box-sizing: border-box;"><span class="hljs-selector-tag" style="color: rgb(0, 0,
+255);">div</span> {
+<span class="hljs-attribute" style="color: rgb(163, 21, 21);">width</span>: <span class="hljs-number">120px</span>;
+}</pre>
+
+
+</div>
+</div>
+</section>
+</td>
+<td style="border-collapse: collapse; padding: 0.5rem; vertical-align: top; text-align: left; line-height: 1.75rem;"
+colspan="1" rowspan="1">
+<section>
+<div class="fig fig-codeblock" style="position: relative;">
+  <div class="codeblock-wrapper" style="overflow-x: auto;">
+    <pre class="codeblock hljs css" style="margin: 1.5em 0px; display: inline-block; overflow-x: auto; padding: 0.625rem; background-color:
+rgb(235, 235, 235); color: rgb(50, 54, 58); font-family: Menlo, Monaco, Consolas, 'Courier
+New', monospace; white-space: pre; overflow-wrap: break-word; border-left: 0.6rem solid rgb(40, 110, 180); font-size: 0.8125rem; line-height: 1.125rem; width:
+573.5px; box-sizing: border-box;"><span class="hljs-selector-class">.myStyleClass</span> {
+<span class="hljs-attribute" style="color: rgb(163, 21, 21);">width</span>: <span class="hljs-number">120px</span>;
+}</pre>
+  </div>
+</div>
+</section>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="3" class="collapsible expanded"
+style="color: rgb(50, 54, 58); font-family: '72', '72full', Arial, Helvetica, sans-serif; font-size: 14px; background-color: rgb(247, 247, 247);">
+<div class="collapsible-icon sap-icon" style="cursor: pointer;">
+<h2 class="title collapsible" style="break-after: avoid; break-inside: avoid; font-weight: 600; font-size: 1.25rem; line-height: 1.25rem; margin: 0.25rem;
+overflow-wrap: break-word; cursor: pointer; display: block; float: none; pointer-events:
+none;">Don't use generated IDs in CSS selectors</h2>
+</div>
+<div class="fig">
+<p style="line-height: 1.6em; padding: 0px; margin: 1.5em 0px; font-size: 1em;">SAPUI5 applications can create dynamic
+IDs for elements. Do not use these
+IDs as selectors in custom CSS as they
+can change over time. It is better
+to add and use CSS classes instead.</p>
+<div class="tableWrapper" style="overflow-x: auto;">
+<div class="fig">
+<table id="table_lzk_5dq_jq" class="tableFullWidth"
+style="border-width: 0px; border-color: rgb(191, 191, 191); border-collapse: collapse; width: 1182px; text-align: left; table-layout: fixed;"
+border="1">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead>
+<tr>
+<th style="background-color: rgb(227, 227, 227); font-weight: bold; border-collapse: collapse; padding: 0.6em;"
+colspan="1" rowspan="1">Bad Example</th>
+<th style="background-color: rgb(227, 227, 227); font-weight: bold; border-collapse: collapse; padding: 0.6em;"
+colspan="1" rowspan="1">Good Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border-collapse: collapse; padding: 0.5rem; vertical-align: top; text-align: left; line-height: 1.75rem;"
+colspan="1" rowspan="1">
+<section>
+<div class="fig fig-codeblock" style="position: relative;">
+  <div class="codeblock-wrapper" style="overflow-x: auto;">
+    <pre class="codeblock hljs css" style="margin: 1.5em 0px; display: inline-block; overflow-x: auto; padding: 0.625rem; background-color:
+rgb(235, 235, 235); color: rgb(50, 54, 58); font-family: Menlo, Monaco, Consolas, 'Courier
+New', monospace; white-space: pre; overflow-wrap: break-word; border-left: 0.6rem solid rgb(40, 110, 180); font-size: 0.8125rem; line-height: 1.125rem; width:
+573.5px; box-sizing: border-box;"><span class="hljs-selector-id">#__view1__button0</span> {
+<span class="hljs-attribute" style="color: rgb(163, 21, 21);">font-weight</span>: bold;
+}</pre>
+
+
+</div>
+</div>
+</section>
+</td>
+<td style="border-collapse: collapse; padding: 0.5rem; vertical-align: top; text-align: left; line-height: 1.75rem;"
+colspan="1" rowspan="1">
+<p style="line-height: 1.6em; padding: 0px; margin: 0px; font-size: 1em;">Add a style class as described
+above and then define the
+following:</p>
+<section>
+<div class="fig fig-codeblock" style="position: relative;">
+  <div class="codeblock-wrapper" style="overflow-x: auto;">
+    <pre class="codeblock hljs css" style="margin: 1.5em 0px; display: inline-block; overflow-x: auto; padding: 0.625rem; background-color:
+rgb(235, 235, 235); color: rgb(50, 54, 58); font-family: Menlo, Monaco, Consolas, 'Courier
+New', monospace; white-space: pre; overflow-wrap: break-word; border-left: 0.6rem solid rgb(40, 110, 180); font-size: 0.8125rem; line-height: 1.125rem; width:
+573.5px; box-sizing: border-box;"><span class="hljs-selector-class">.myEmphasizedButton
+</span> {
+<span class="hljs-attribute" style="color: rgb(163, 21, 21);">font-weight</span>: bold;
+}</pre>
+  </div>
+</div>
+</section>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="4" class="collapsible expanded"
+style="color: rgb(50, 54, 58); font-family: '72', '72full', Arial, Helvetica, sans-serif; font-size: 14px; background-color: rgb(247, 247, 247);">
+<div class="collapsible-icon sap-icon" style="cursor: pointer;">
+<h2 class="title collapsible" style="break-after: avoid; break-inside: avoid; font-weight: 600; font-size: 1.25rem; line-height: 1.25rem; margin: 0.25rem;
+overflow-wrap: break-word; cursor: pointer; display: block; float: none; pointer-events:
+none;">Don't create selectors that are not namespaced</h2>
+</div>
+<div class="fig">
+<p style="line-height: 1.6em; padding: 0px; margin: 1.5em 0px; font-size: 1em;">Custom selectors and CSS classes that
+are not namespaced might lead to style
+clashes in shared runtime environments
+like SAP Fiori launchpad, or when other
+JavaScript libraries are included that
+might use the same CSS class names.</p>
+<div class="tableWrapper" style="overflow-x: auto;">
+<div class="fig">
+<table id="table_j2n_l2q_jq" class="tableFullWidth"
+style="border-width: 0px; border-color: rgb(191, 191, 191); border-collapse: collapse; width: 1182px; text-align: left; table-layout: fixed;"
+border="1">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead>
+<tr>
+<th style="background-color: rgb(227, 227, 227); font-weight: bold; border-collapse: collapse; padding: 0.6em;"
+colspan="1" rowspan="1">Bad Example</th>
+<th style="background-color: rgb(227, 227, 227); font-weight: bold; border-collapse: collapse; padding: 0.6em;"
+colspan="1" rowspan="1">Good Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border-collapse: collapse; padding: 0.5rem; vertical-align: top; text-align: left; line-height: 1.75rem;"
+colspan="1" rowspan="1">
+<section>
+<div class="fig fig-codeblock" style="position: relative;">
+  <div class="codeblock-wrapper" style="overflow-x: auto;">
+    <pre class="codeblock hljs css" style="margin: 1.5em 0px; display: inline-block; overflow-x: auto; padding: 0.625rem; background-color:
+rgb(235, 235, 235); color: rgb(50, 54, 58); font-family: Menlo, Monaco, Consolas, 'Courier
+New', monospace; white-space: pre; overflow-wrap: break-word; border-left: 0.6rem solid rgb(40, 110, 180); font-size: 0.8125rem; line-height: 1.125rem; width:
+573.5px; box-sizing: border-box;"><span class="hljs-selector-class">.title</span> {
+<span class="hljs-attribute" style="color: rgb(163, 21, 21);">font-weight</span>: bold;
+}</pre>
+
+
+</div>
+</div>
+</section>
+</td>
+<td style="border-collapse: collapse; padding: 0.5rem; vertical-align: top; text-align: left; line-height: 1.75rem;"
+colspan="1" rowspan="1">
+<section>
+<div class="fig fig-codeblock" style="position: relative;">
+  <div class="codeblock-wrapper" style="overflow-x: auto;">
+    <pre class="codeblock hljs css" style="margin: 1.5em 0px; display: inline-block; overflow-x: auto; padding: 0.625rem; background-color:
+rgb(235, 235, 235); color: rgb(50, 54, 58); font-family: Menlo, Monaco, Consolas, 'Courier
+New', monospace; white-space: pre; overflow-wrap: break-word; border-left: 0.6rem solid rgb(40, 110, 180); font-size: 0.8125rem; line-height: 1.125rem; width:
+573.5px; box-sizing: border-box;"><span class="hljs-selector-class">.poaAppTitle</span> {
+<span class="hljs-attribute" style="color: rgb(163, 21, 21);">font-weight</span>: bold;
+}</pre>
+  </div>
+</div>
+</section>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="5" class="collapsible expanded"
+style="color: rgb(50, 54, 58); font-family: '72', '72full', Arial, Helvetica, sans-serif; font-size: 14px; background-color: rgb(247, 247, 247);">
+<div class="collapsible-icon sap-icon" style="cursor: pointer;">
+<h2 class="title collapsible" style="break-after: avoid; break-inside: avoid; font-weight: 600; font-size: 1.25rem; line-height: 1.25rem; margin: 0.25rem;
+overflow-wrap: break-word; cursor: pointer; display: block; float: none; pointer-events:
+none;">Don't use hard-coded colors, font sizes and images if the app should be themable</h2>
+</div>
+<div class="fig">
+<p style="line-height: 1.6em; padding: 0px; margin: 1.5em 0px; font-size: 1em;">Themability of applications relies on
+LESS calculations within the SAPUI5
+theme CSS. Hard-coding colors, fonts
+and images in applications and custom
+controls means that these colors are
+not modified by theming, which leads
+to design issues or accessibility issues
+(for example, in the High Contrast
+Black (HCB) theme). You can use special
+CSS classes instead that are supplied
+by these LESS calculations.</p>
+<div class="tableWrapper" style="overflow-x: auto;">
+<div class="fig">
+<table id="table_twd_s2q_jq" class="tableFullWidth"
+style="border-width: 0px; border-color: rgb(191, 191, 191); border-collapse: collapse; width: 1182px; text-align: left; table-layout: fixed;"
+border="1">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead>
+<tr>
+<th style="background-color: rgb(227, 227, 227); font-weight: bold; border-collapse: collapse; padding: 0.6em;"
+colspan="1" rowspan="1">Bad Example</th>
+<th style="background-color: rgb(227, 227, 227); font-weight: bold; border-collapse: collapse; padding: 0.6em;"
+colspan="1" rowspan="1">Good Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border-collapse: collapse; padding: 0.5rem; vertical-align: top; text-align: left; line-height: 1.75rem;"
+colspan="1" rowspan="1">
+<section>
+<div class="fig fig-codeblock" style="position: relative;">
+  <div class="codeblock-wrapper" style="overflow-x: auto;">
+    <pre class="codeblock hljs css" style="margin: 1.5em 0px; display: inline-block; overflow-x: auto; padding: 0.625rem; background-color:
+rgb(235, 235, 235); color: rgb(50, 54, 58); font-family: Menlo, Monaco, Consolas, 'Courier
+New', monospace; white-space: pre; overflow-wrap: break-word; border-left: 0.6rem solid rgb(40, 110, 180); font-size: 0.8125rem; line-height: 1.125rem; width:
+573.5px; box-sizing: border-box;"><span class="hljs-selector-class">.myCustomHTML</span> {
+<span class="hljs-attribute" style="color: rgb(163, 21, 21);">color</span>: <span class="hljs-number">#FFF</span>;
+<span class="hljs-attribute" style="color: rgb(163, 21, 21);">background-color</span>: blue;
+}</pre>
+
+
+</div>
+</div>
+</section>
+</td>
+<td style="border-collapse: collapse; padding: 0.5rem; vertical-align: top; text-align: left; line-height: 1.75rem;"
+colspan="1" rowspan="1">
+<p style="line-height: 1.6em; padding: 0px; margin: 0px; font-size: 1em;">Add the CSS classes&nbsp;
+<code
+style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 0.875rem;">sapThemeTextInverted</code>&nbsp;and&nbsp;
+  <code
+  style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 0.875rem;">sapThemeHighlight-asBackgroundColor</code>&nbsp;to
+    your custom HTML element.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="6" class="collapsible expanded"
+style="color: rgb(50, 54, 58); font-family: '72', '72full', Arial, Helvetica, sans-serif; font-size: 14px; background-color: rgb(247, 247, 247);">
+<div class="collapsible-icon sap-icon" style="cursor: pointer;">
+<h2 class="title collapsible" style="break-after: avoid; break-inside: avoid; font-weight: 600; font-size: 1.25rem; line-height: 1.25rem; margin: 0.25rem;
+overflow-wrap: break-word; cursor: pointer; display: block; float: none; pointer-events:
+none;">Don't use theming parameters for attributes they were not intended for</h2>
+</div>
+<div class="fig">
+<p style="line-height: 1.6em; padding: 0px; margin: 1.5em 0px; font-size: 1em;">SAPUI5 applications come with a built-in
+set of parameters which are used for
+theme-dependent styling, mainly for
+colors. They are accessible using the&nbsp;
+<code
+style="font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; font-size: 0.875rem;">sap.ui.core.theming.Parameters.get()</code>&nbsp;API
+(and for library builds using the
+OpenUI5 build mechanism, also in
+the *.less files in control libraries).
+These theme parameters have descriptive
+names, meaning that by looking at
+a parameter name, you can see the
+usage it has been defined for.</p>
+<p style="line-height: 1.6em; padding: 0px; margin: 1.5em 0px; font-size: 1em;">To ensure that you do not use combinations
+of theme colors which may clash after
+future theme changes, do not use background
+colors for fonts or vice versa, for
+example, and do not use border colors
+for anything else but borders.</p>
+<div class="tableWrapper" style="overflow-x: auto;">
+<div class="fig">
+<table id="table_qsf_kfq_jq" class="tableFullWidth"
+style="border-width: 0px; border-color: rgb(191, 191, 191); border-collapse: collapse; width: 1182px; text-align: left; table-layout: fixed;"
+border="1">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead>
+<tr>
+<th style="background-color: rgb(227, 227, 227); font-weight: bold; border-collapse: collapse; padding: 0.6em;"
+colspan="1" rowspan="1">Bad Example</th>
+<th style="background-color: rgb(227, 227, 227); font-weight: bold; border-collapse: collapse; padding: 0.6em;"
+colspan="1" rowspan="1">Good Example</th>
+</tr>
+</thead>
+
+<tbody>
+    <tr>
+      <td style="border-collapse: collapse; padding: 0.5rem; vertical-align: top; text-align: left; line-height: 1.75rem;"
+      colspan="1" rowspan="1">
+        <section class="lang-js">
+          <div class="fig fig-codeblock" style="position: relative;">
+            <div class="codeblock-wrapper" style="overflow-x: auto;">
+              <pre class="codeblock hljs csharp" style="margin: 1.5em 0px; display: inline-block; overflow-x: auto; padding: 0.625rem;
+background-color: rgb(235, 235, 235); color: rgb(50, 54, 58); font-family: Menlo, Monaco, Consolas,
+'Courier New', monospace; white-space: pre; overflow-wrap: break-word; border-left: 0.6rem solid rgb(40, 110, 180); font-size: 0.8125rem;
+line-height: 1.125rem; width: 573.5px; box-sizing: border-box;"><span class="hljs-keyword" style="color: rgb(0,
+0, 255);">var</span> sColor = sap.ui.core.theming.Parameters.<span class="hljs-keyword" style="color: rgb(0, 0, 255);">get</span>(<span class="hljs-string"
+style="color: rgb(163, 21, 21);">"sapUiButtonBorderColor"</span>);
+$(oSomeDomElement).css(<span class="hljs-string" style="color: rgb(163, 21, 21);">"background-color"</span>, sColor);</pre>
+            </div>
+          </div>
+        </section>
+      </td>
+      <td style="border-collapse: collapse; padding: 0.5rem; vertical-align: top; text-align: left; line-height: 1.75rem;"
+      colspan="1" rowspan="1">
+        <section class="lang-js">
+          <div class="fig fig-codeblock" style="position: relative;">
+            <div class="codeblock-wrapper" style="overflow-x: auto;">
+              <pre class="codeblock hljs csharp" style="margin: 1.5em 0px; display: inline-block; overflow-x: auto; padding: 0.625rem;
+background-color: rgb(235, 235, 235); color: rgb(50, 54, 58); font-family: Menlo, Monaco, Consolas,
+'Courier New', monospace; white-space: pre; overflow-wrap: break-word; border-left: 0.6rem solid rgb(40, 110, 180); font-size: 0.8125rem;
+line-height: 1.125rem; width: 573.5px; box-sizing: border-box;"><span class="hljs-keyword" style="color: rgb(0,
+0, 255);">var</span> sColor = sap.ui.core.theming.Parameters.<span class="hljs-keyword" style="color: rgb(0, 0, 255);">get</span>(<span class="hljs-string"
+style="color: rgb(163, 21, 21);">"sapUiButtonBorderColor"</span>);
+$(oSomeDomElement).css(<span class="hljs-string" style="color: rgb(163, 21, 21);">"border-color"</span>, sColor);</pre>
+            </div>
+          </div>
+        </section>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+
+</body>
+
+</html>

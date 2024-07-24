@@ -28,6 +28,51 @@
 
     <script>
 
+        /************************************************************************
+         * Global Variable
+         ************************************************************************/
+        var oAPP = {};
+            oAPP.attr = {};
+            oAPP.common = {};
+        /*
+        var REMOTE = require('@electron/remote');
+        var PATH = REMOTE.require('path');
+
+        var APP = REMOTE.app,
+            APPPATH = APP.getAppPath(),
+            PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            PATHINFO = require(PATHINFOURL),
+            WSUTIL = require(PATHINFO.WSUTIL);
+
+        // 메시지 클래스 정보 구하는 function
+        let LANGU = process.USERINFO.LANGU;
+        let SYSID = process.USERINFO.SYSID;
+        let WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);        
+
+        oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+        */
+
+        /*******************************************************
+        * 메시지클래스 텍스트 작업 관련 Object -- start
+        *******************************************************/
+        var REMOTE = require('@electron/remote'),
+            PATH = REMOTE.require('path'),
+            CURRWIN = REMOTE.getCurrentWindow(),
+            WEBCON = CURRWIN.webContents,
+            WEBPREF = WEBCON.getWebPreferences(),
+            USERINFO = WEBPREF.USERINFO,
+            APP = REMOTE.app,
+            APPPATH = APP.getAppPath(),
+            LANGU = USERINFO.LANGU,
+            SYSID = USERINFO.SYSID;
+
+        var WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+            WSUTIL = require(WSMSGPATH),
+            WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+
+        oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+        
+
         var IF_DATA = undefined;
 
         document.addEventListener('DOMContentLoaded', function () { 
@@ -65,7 +110,16 @@
 
             };
         
-        });        
+        }); 
+        
+        /************************************************************************
+         * 부모의 APP Object 전달
+         ************************************************************************/
+        function fnGetApp (){
+        
+            return oAPP;
+        
+        }
     
         window.onbeforeunload = function(){
 

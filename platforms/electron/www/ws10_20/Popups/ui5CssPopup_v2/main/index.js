@@ -2,11 +2,10 @@
  * 부모의 APP 객체 할당
  ************************************************************************/
 var oParentAPP = parent.fnGetApp();
+
 var oAPP = {};
     oAPP.fn = {};
     oAPP.common = {};
-
-debugger;
 
 // 메시지 클래스 정보 구하기
 let LANGU = oParentAPP.attr.IF_DATA.USER_LOGIN_INFO.LANGU;
