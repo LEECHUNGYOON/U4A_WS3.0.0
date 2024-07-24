@@ -15,7 +15,8 @@
         oContr.fn       = {};
         oContr.attr     = {};
         oContr.types    = {};
-
+        oContr.msg      = {};
+        
         oContr.IF_DATA  = parent.IF_DATA;
 
         oContr.oModel = new sap.ui.model.json.JSONModel({
@@ -24,6 +25,19 @@
         });
 
         oContr.oModel.setSizeLimit(Infinity);
+
+
+        
+/********************************************************************
+ * 💖 메시지 텍스트 구성
+ ********************************************************************/
+oContr.msg.M385 = parent.oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "385", "", "", "", ""); // Please resize the browser window        
+
+
+
+
+
+
 
 /********************************************************************
  * 💖 PRIVATE FUNCTION 선언부

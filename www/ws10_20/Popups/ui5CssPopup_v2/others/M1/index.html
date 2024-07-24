@@ -34,27 +34,11 @@
         var oAPP = {};
             oAPP.attr = {};
             oAPP.common = {};
-        /*
-        var REMOTE = require('@electron/remote');
-        var PATH = REMOTE.require('path');
 
-        var APP = REMOTE.app,
-            APPPATH = APP.getAppPath(),
-            PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
-            PATHINFO = require(PATHINFOURL),
-            WSUTIL = require(PATHINFO.WSUTIL);
-
-        // 메시지 클래스 정보 구하는 function
-        let LANGU = process.USERINFO.LANGU;
-        let SYSID = process.USERINFO.SYSID;
-        let WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);        
-
-        oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
-        */
 
         /*******************************************************
-        * 메시지클래스 텍스트 작업 관련 Object -- start
-        *******************************************************/
+         * 메시지클래스 텍스트 작업 관련 Object -- start
+         *******************************************************/
         var REMOTE = require('@electron/remote'),
             PATH = REMOTE.require('path'),
             CURRWIN = REMOTE.getCurrentWindow(),

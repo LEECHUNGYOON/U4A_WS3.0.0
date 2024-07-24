@@ -2272,8 +2272,6 @@
      ************************************************************************/
     oAPP.fn.fnUI5PreCssPopupOpener = async function(){
 
-        console.log("new");
-
         let sPopupName = "UI5CSSPOP_V2";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
@@ -2285,11 +2283,16 @@
         let sUrlPath = parent.getPath("UI5CSSPOP_V2_CONTROL");
     
         let oCSS = await import(sUrlPath);    
+        
+        // app 정보를 구한다.
+        var oAppInfo = parent.getAppInfo();
+        var IS_EDIT = (oAppInfo && oAppInfo?.IS_EDIT === "X" ? "X" : "");
 
         // 던질 파라미터
         let IF_DATA = {
             SESSKEY: parent.getSessionKey(),
-            BROWSKEY: parent.getBrowserKey()
+            BROWSKEY: parent.getBrowserKey(),
+            IS_EDIT: IS_EDIT
         };
         
         oCSS.start(parent.require, IF_DATA, function(oRes){
@@ -2307,8 +2310,6 @@
      ************************************************************************/
     oAPP.fn.fnUI5PredefinedCssPopupOpener = () => {
         
-        console.log("old");
-
         let sPopupName = "UI5CSSPOP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.

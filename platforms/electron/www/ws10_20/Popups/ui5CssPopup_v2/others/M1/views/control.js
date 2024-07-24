@@ -26,10 +26,12 @@
 
 
 
-
-
-        // 메시지 텍스트 구성
-        oContr.msg.E34 = parent.oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E34", "", "", "", ""); // Please resize the browser window
+/********************************************************************
+ * 💖 메시지 텍스트 구성
+ ********************************************************************/
+    oContr.msg.M385 = parent.oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "385", "", "", "", ""); // Please resize the browser window
+        
+    // oContr.msg.E34 = parent.oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E34", "", "", "", ""); // Please resize the browser window
 
 
 /********************************************************************

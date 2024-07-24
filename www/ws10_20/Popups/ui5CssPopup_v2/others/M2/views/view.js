@@ -92,7 +92,7 @@ export var oContr = await new Promise(async function(resolve){
         PAGE1.setCustomHeader(TOOLBAR1);
 
         let TITLE1 = new sap.m.Title({
-            text: "{/TITLE} ( Please resize the browser window !! )"
+            text: `{/TITLE} ( ${oContr.msg.M385} !! )` // Please resize the browser window
         });
         TOOLBAR1.addContent(TITLE1);
 

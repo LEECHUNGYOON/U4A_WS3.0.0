@@ -49,7 +49,7 @@ export var oContr = await new Promise(async function(resolve){
     TOOLBAR1.addContent(BUTTON1);
 
     let TITLE1 = new sap.m.Title({
-        text: "UI5 Standard Predefined CSS Preview"
+        text: oContr.msg.E35 // "UI5 Predefined CSS Helper"
     });
     TOOLBAR1.addContent(TITLE1);
 
@@ -117,7 +117,7 @@ export var oContr = await new Promise(async function(resolve){
 
     let BUTTON3 = new sap.m.Button({
         icon: "sap-icon://sys-help",
-        text: "Other CSS Guides",  // [MSG]
+        text: oContr.msg.E34, // Other CSS Guides
         press: function(oEvent){
 
             let oButton = oEvent.getSource();
@@ -284,8 +284,9 @@ export var oContr = await new Promise(async function(resolve){
 
     // unselect 버튼
     let BUTTON4 = new sap.m.Button({        
-        text: "Unselect ALL",
+        text: oContr.msg.E36, // "Unselect All",
         icon: "sap-icon://refresh",
+        enabled: "{/S_PRC/FBTN_EDIT/UNSELECT_BTN}",
         press: function(oEvent){
 
             oContr.fn.onUnselectAll();                     
@@ -297,9 +298,10 @@ export var oContr = await new Promise(async function(resolve){
 
     // Preview 버튼
     let BUTTON6 = new sap.m.Button({        
-        text: "Preview",        
+        text: oContr.msg.A67, // "Preview",        
         icon: "sap-icon://personnel-view",
         type: "Neutral",
+        enabled: "{/S_PRC/FBTN_EDIT/PREVIEW_BTN}",
         press: function(oEvent){
 
             oContr.fn.setCssPreview();            
@@ -311,7 +313,7 @@ export var oContr = await new Promise(async function(resolve){
     
     // Copy ClipBoard 버튼
     let BUTTON8 = new sap.m.Button({        
-        text: "Copy ClipBoard",        
+        text: oContr.msg.E37, // "Copy ClipBoard",        
         icon: "sap-icon://copy",
         type: "Emphasized",
         press: function(oEvent){
@@ -324,9 +326,10 @@ export var oContr = await new Promise(async function(resolve){
 
     // Accept 버튼
     let BUTTON7 = new sap.m.Button({        
-        text: "Apply",        
+        text: oContr.msg.C63, // "Apply",        
         icon: "sap-icon://accept",
         type: "Accept",
+        enabled: "{/S_PRC/FBTN_EDIT/APPLY_BTN}",
         press: function(oEvent){
 
             oContr.fn.onApply();                      
@@ -337,7 +340,7 @@ export var oContr = await new Promise(async function(resolve){
 
     // Cancel 버튼
     let BUTTON9 = new sap.m.Button({        
-        text: "Cancel",        
+        text: oContr.msg.A41, // "Cancel",        
         icon: "sap-icon://decline",
         type: "Negative",
         press: function(oEvent){

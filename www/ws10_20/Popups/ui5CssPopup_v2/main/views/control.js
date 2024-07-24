@@ -29,9 +29,13 @@
 
         // PRC 구조
         oContr.types.TY_PRC = {
-
-            dtl_tit : ""    // 디테일 페이지의 타이틀
-
+            IS_EDIT: "",
+            dtl_tit : "",    // 디테일 페이지의 타이틀
+            FBTN_EDIT: {
+                UNSELECT_BTN: false, // 선택 해제 버튼
+                PREVIEW_BTN : false, // 미리보기 버튼
+                APPLY_BTN   : false  // 적용 버튼
+            }
         };
 
         // 디테일 영역 모델 구조
@@ -63,8 +67,30 @@
 
 
     // 메시지 텍스트 구성
-    // oContr.msg.M01 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E34", "", "", "", ""); // Please resize the browser window;
+    oContr.msg.A41 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A41", "", "", "", ""); // Cancel
+    oContr.msg.A67 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A67", "", "", "", ""); // Preview
+    oContr.msg.B58 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B58", "", "", "", ""); // UI5 Predefined CSS
+    oContr.msg.C63 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C63", "", "", "", ""); // Apply
+    oContr.msg.E34 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E34", "", "", "", ""); // Other CSS Guides
+    oContr.msg.E35 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E35", "", "", "", ""); // UI5 Predefined CSS Helper
+    oContr.msg.E36 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E36", "", "", "", ""); // Unselect All
+    oContr.msg.E37 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E37", "", "", "", ""); // Copy ClipBoard
+    oContr.msg.E38 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E38", "", "", "", ""); // CSS Menu information
+    oContr.msg.E39 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E39", "", "", "", ""); // stored data
 
+
+    oContr.msg.M303 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "303", "", "", "", ""); // Clipboard Copy Success!    
+    oContr.msg.M371 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "371", "", "", "", ""); // 처리가 완료되었습니다.
+    oContr.msg.M386 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "386", "", "", "", ""); // 선택한 항목이 없습니다.
+    oContr.msg.M387 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "387", "", "", "", ""); // 선택 사항을 적용하시겠습니까?
+    oContr.msg.M388 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "388", "", "", "", ""); // 선택한 항목을 전체 해제 하시겠습니까?
+    oContr.msg.M389 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "389", "", "", "", ""); // 통신오류가 발생하였습니다.
+    oContr.msg.M390 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "390", "", "", "", ""); // 문제가 지속될 경우, 솔루션팀에 문의하세요.
+
+
+    oContr.msg.M391_E38 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "391", oContr.msg.E38, "", "", ""); // An issue occurred while retrieving CSS Menu information
+    oContr.msg.M391_E39 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "391", oContr.msg.E39, "", "", ""); // An issue occurred while retrieving stored data
+   
 
 /********************************************************************
  * 💖 PRIVATE FUNCTION 선언부
@@ -195,17 +221,34 @@
         return new Promise(async (resolve) => {
 
             let sServerUrl = oContr.IF_DATA.SERVER_PATH;
-            let sServUrl = `${sServerUrl}${oContr.IF_DATA.SUBROOT_PATH}`; // 서버 호출 url
-    
+            let sServUrl = `${sServerUrl}${oContr.IF_DATA.SUBROOT_PATH}`; // 서버 호출 url            
+            
             try {
+
                 var oResult = await fetch(sServUrl);
+
             } catch (error) {
-                resolve({ RETCD: "E", ERRCD: "E001", RTMSG: "통신오류!!" }); // [MSG]
+
+                console.error(error);
+                console.error("_getCSSMenuList: E001");
+
+                // MSG - 통신오류가 발생하였습니다. 문제가 지속될 경우, 솔루션팀에 문의하세요.
+                let sErrMsg = `${oContr.msg.M389} \n\n ${oContr.msg.M390}`;
+
+                resolve({ RETCD: "E", ERRCD: "E001", RTMSG: sErrMsg });
+
                 return;
             }
 
             if(oResult?.ok === false){
-                resolve({ RETCD: "E", ERRCD: "E002", RTMSG: "통신오류!!" }); // [MSG]
+
+                console.error("_getCSSMenuList: E002");
+
+                // MSG - 통신오류가 발생하였습니다.  문제가 지속될 경우, 솔루션팀에 문의하세요.
+                let sErrMsg = `${oContr.msg.M389} \n\n ${oContr.msg.M390}`;
+
+                resolve({ RETCD: "E", ERRCD: "E002", RTMSG: sErrMsg });
+
                 return;
             }
 
@@ -214,7 +257,15 @@
                 var aMenu = await oResult.json();
 
             } catch (error) {
-                resolve({ RETCD: "E", ERRCD: "E003", RTMSG: "JSON 응답 데이터 오류!!" }); // [MSG]
+
+                console.error(error);
+                console.error("_getCSSMenuList: E003");
+
+                // CSS 메뉴 정보를 읽는 도중 문제가 발생하였습니다. 문제가 지속될 경우, 솔루션팀에 문의하세요.
+                let sErrMsg = `${oContr.msg.M391_E38} \n\n ${oContr.msg.M390}`;
+
+                resolve({ RETCD: "E", ERRCD: "E003",  RTMSG: sErrMsg});
+
                 return;
             }
 
@@ -332,6 +383,31 @@
 
     } // end of _domFadeOut
 
+    /*******************************************************
+     * @function - 하단 버튼 Edit 설정
+     *******************************************************/
+    function _setFooterBtnEditConfig(){
+
+        let IS_EDIT = oContr.IF_DATA.IS_EDIT;
+
+        let oModel = oContr.oModel;
+
+        oModel.oData.S_PRC.FBTN_EDIT.UNSELECT_BTN = false;
+        oModel.oData.S_PRC.FBTN_EDIT.PREVIEW_BTN  = false;
+        oModel.oData.S_PRC.FBTN_EDIT.APPLY_BTN    = false;
+
+        if(IS_EDIT === "X"){
+         
+            oModel.oData.S_PRC.FBTN_EDIT.UNSELECT_BTN = true;
+            oModel.oData.S_PRC.FBTN_EDIT.PREVIEW_BTN  = true;
+            oModel.oData.S_PRC.FBTN_EDIT.APPLY_BTN    = true;
+
+        }
+
+        oModel.refresh();
+
+    } // end of _setFooterBtnEditConfig
+
 
 
 /********************************************************************
@@ -368,6 +444,9 @@
 
         // 부모에 저장된 IF_DATA 정보를 가져온다.
         oContr.IF_DATA = oParentAPP.attr.IF_DATA;
+
+        // 하단 버튼 Visible 설정
+        _setFooterBtnEditConfig();
 
         // CSS 메뉴 관련 설정
         await _setCssMenuConfig();
@@ -971,8 +1050,8 @@
 
         let sAction = await new Promise(function(resolve){
 
-            // [MSG]
-            let sMsg = "선택한 항목을 전체 해제 하시겠습니까?";
+            // MSG - 선택한 항목을 전체 해제 하시겠습니까?
+            let sMsg = oContr.msg.M388;
 
             sap.m.MessageBox.information(sMsg, {
                 actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CANCEL],
@@ -1032,13 +1111,12 @@
 
         }
 
-        // 좌측에 선택된 메뉴가 있을 경우
-        // 브라우저키와 메뉴 key를 조합해서 broadcast를 만들고 
-        // REFRESH 하라고 파라미터를 날린다.
-
-        sap.m.MessageToast.show("Unselect"); // [MSG]
-
         oContr.fn.setBusy(false);
+
+        // MSG - 처리가 완료되었습니다.
+        let sMsg = oContr.msg.M371;
+
+        sap.m.MessageToast.show(sMsg);
 
     }; // end of oContr.fn.setUnselectItemsAll
 
@@ -1059,8 +1137,10 @@
             switch (oCssResult.ERRCD) {
                 case "E01":  // JSON PARSE 오류
 
-                    // [MSG] - JSON PARSE 오류!! 관리자에게 문의
-                    var sErrMsg = "JSON PARSE 오류!! 관리자에게 문의";    
+                    console.error("oContr.fn.setCssPreview: E01");
+                    
+                    // MSG - 저장된 데이터를 불러오는 중에 문제가 발생하였습니다.
+                    var sErrMsg = oContr.msg.M391_E39;  
 
                     sap.m.MessageBox.error(sErrMsg);
 
@@ -1068,8 +1148,8 @@
             
                 case "E02": // 선택한 데이터 없음
 
-                    // [MSG] - 선택한 데이터 없음!!
-                    var sErrMsg = "선택한 데이터 없음";
+                    // MSG - 선택한 데이터 없음!!
+                    var sErrMsg = oContr.msg.M386;
 
                     sap.m.MessageToast.show(sErrMsg);
 
@@ -1098,10 +1178,14 @@
         let sChennalId = `${oContr.IF_DATA.BROWSKEY}--if-ui5css`;
 
         parent.IPCRENDERER.send(sChennalId, IF_PARAM);
-
-        sap.m.MessageToast.show("Preview");
-
+        
         oContr.fn.setBusy(false);
+
+
+        // MSG - 처리가 완료되었습니다.
+        let sMsg = oContr.msg.M371;
+
+        sap.m.MessageToast.show(sMsg);
 
     }; // end of oContr.fn.setCssPreview
 
@@ -1120,8 +1204,8 @@
             switch (oCssResult.ERRCD) {
                 case "E01":  // JSON PARSE 오류
 
-                    // [MSG] - JSON PARSE 오류!! 관리자에게 문의
-                    var sErrMsg = "JSON PARSE 오류!! 관리자에게 문의";    
+                    // MSG - 저장된 데이터를 불러오는 중에 문제가 발생하였습니다.
+                    var sErrMsg = oContr.msg.M391_E39;    
 
                     sap.m.MessageBox.error(sErrMsg);
 
@@ -1129,8 +1213,8 @@
             
                 case "E02": // 선택한 데이터 없음
 
-                    // [MSG] - 선택한 데이터 없음!!
-                    var sErrMsg = "선택한 데이터 없음";
+                    // MSG - 선택한 데이터 없음!!
+                    var sErrMsg = oContr.msg.M386;
 
                     sap.m.MessageToast.show(sErrMsg);
 
@@ -1163,9 +1247,12 @@
         // 클립보드 복사
         oContr.fn.setClipboardCopy(sCssString);
 
-        sap.m.MessageToast.show("Copy ClipBoard");
-
         oContr.fn.setBusy(false);
+
+        // MSG - Clipboard Copy Success!
+        let sMsg = oContr.msg.M303; 
+
+        sap.m.MessageToast.show(sMsg);
 
     }; // end of oContr.fn.setSelectedItemsCopyClipboard
 
@@ -1189,8 +1276,8 @@
 
                     console.error("oContr.fn.setCssApply => [E01]");
 
-                    // [MSG] - JSON PARSE 오류!! 관리자에게 문의
-                    var sErrMsg = "선택한 CSS 항목을 읽는 중 문제가 발생하였습니다! \n\n 관리자에게 문의하세요.";    
+                    // MSG - 저장된 데이터를 불러오는 중에 문제가 발생하였습니다.
+                    var sErrMsg = oContr.msg.M391_E39;
 
                     sap.m.MessageBox.error(sErrMsg);
 
@@ -1198,8 +1285,8 @@
             
                 case "E02": // 선택한 데이터 없음
 
-                    // [MSG] - 선택한 데이터 없음!!
-                    var sErrMsg = "선택한 데이터가 없습니다.";
+                    // MSG - 선택한 데이터 없음!!
+                    var sErrMsg = oContr.msg.M386;
 
                     sap.m.MessageToast.show(sErrMsg);
 
@@ -1213,8 +1300,8 @@
 
         let sAction = await new Promise(function(resolve){
 
-            // [MSG]
-            let sMsg = "선택한 항목을 일괄 적용 하시겠습니까?";
+            // MSG - 선택 사항을 적용하시겠습니까?
+            let sMsg = oContr.msg.M387;
 
             sap.m.MessageBox.information(sMsg, {
                 actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CANCEL],
@@ -1243,7 +1330,7 @@
 
 
     /*******************************************************
-     * @function - 선택한 items 들을 clipboard 복사
+     * @function - 선택한 items 들을 실제 적용
      *******************************************************/
     oContr.fn.setCssApply = function(aSavedCssList){              
 
@@ -1261,12 +1348,15 @@
         };
 
         // 전송!!
-
         let sChennalId = `${oContr.IF_DATA.BROWSKEY}--if-ui5css`;
 
         parent.IPCRENDERER.send(sChennalId, IF_PARAM);
 
-        sap.m.MessageToast.show("Apply"); // [MSG]
+
+        // MSG - 처리가 완료되었습니다.
+        let sMsg = oContr.msg.M371;
+
+        sap.m.MessageToast.show(sMsg);
 
     }; // end of oContr.fn.setCssApply
 
@@ -1449,7 +1539,7 @@
         ICON1.addStyleClass("sapUiTinyMarginEnd");        
 
         let TITLE1 = new sap.m.Title({
-            text: "Other CSS Guides" // [MSG]
+            text: oContr.msg.E34 // Other CSS Guides
         });
         TOOLBAR1.addContent(TITLE1);
 
