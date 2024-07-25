@@ -128,6 +128,9 @@
                 // 화면 Lock 해제
                 sap.ui.getCore().unlock();
 
+                // 현재 떠있는 팝오버 종류들을 전체 닫는다.
+                sap.m.InstanceManager.closeAllPopovers();
+
                 // 현재 페이지의 위치를 저장한다.
                 parent.setCurrPage(toId);
 
