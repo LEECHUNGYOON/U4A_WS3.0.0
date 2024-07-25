@@ -206,7 +206,10 @@
 
                 if (parent.oWS.utill.attr.ISINIT == null) {
 
-                    let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "299");
+                    // 웰컴 사운드
+                    parent.setSoundMsg('WELCOME');
+
+                    let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "299");                   
 
                     // 페이지 푸터 메시지                    
                     APPCOMMON.fnShowFloatingFooterMsg("S", "WS10", sMsg /*"Welcome to U4A Workspace!"*/);

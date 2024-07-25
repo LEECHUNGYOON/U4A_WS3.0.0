@@ -955,6 +955,10 @@ oAPP.common = {};
                 sAudioPath = PATH.join(sSoundRootPath, 'saperror.wav');
                 break;
 
+            case "WELCOME": 
+                sAudioPath = PATH.join(sSoundRootPath, 'greeting_1.wav');
+                break;
+
         }
 
         // 실행 중이면 리턴.
