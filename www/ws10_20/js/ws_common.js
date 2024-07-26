@@ -1615,7 +1615,7 @@
                 continue;
             }
 
-            oWin.focus();
+            // oWin.focus();
 
             return {
                 ISOPEN: true,
@@ -1680,10 +1680,10 @@
                 sBrowsKey = oWebPref.browserkey,
                 sOBJTY = oWebPref.OBJTY;
 
-            // 현재 떠있는 브라우저의 키와 같은것을 찾는다.
-            if (sCurrWinBrowsKey !== sBrowsKey) {
-                continue;
-            }
+            // // 현재 떠있는 브라우저의 키와 같은것을 찾는다.
+            // if (sCurrWinBrowsKey !== sBrowsKey) {
+            //     continue;
+            // }
 
             // OBJTY가 있는지
             if (!sOBJTY) {
@@ -1694,8 +1694,6 @@
             if (sOBJTY !== OBJTY) {
                 continue;
             }
-
-            oWin.focus();
 
             // 찾으면 빠져나감
             return {

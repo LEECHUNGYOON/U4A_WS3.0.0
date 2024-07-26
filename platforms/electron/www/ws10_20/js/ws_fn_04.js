@@ -1126,6 +1126,7 @@
         // 추후에 더 추가될경우 ARRAY에 닫고자 하는 팝업 고유 이름을 명시할것
         let aPopupNames = [
             `ICONPREV_${sCurrSysID}`,
+            `ILLUST_MSG_PREV_${sCurrSysID}`
         ];
 
         /*************************************************

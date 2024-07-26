@@ -95,7 +95,8 @@ oAPP.fn.fnFrameLoad = () => {
         aParam = [
             { NAME: "LIBRARY", VALUE: "sap.m, sap.f, sap.ui.table" },
             { NAME: "LANGU", VALUE: oAPP.attr.WS_LANGU },
-            { NAME: "THEME", VALUE: "sap_horizon" },
+            // { NAME: "THEME", VALUE: "sap_horizon" },
+            { NAME: "THEME", VALUE: oAPP.attr.sDefTheme },
             { NAME: "CALLBACKFUNC", VALUE: "parent.oAPP.fn.onFrameLoadSuccess();" },
         ]
 

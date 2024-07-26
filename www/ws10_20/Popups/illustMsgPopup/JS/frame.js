@@ -422,7 +422,7 @@ function createUi() {
                         src: PATHINFO.WS_LOGO
                     }),
                     new sap.m.Title({
-                        text: oAPP.ICON_MSG.M018 // Image Icons
+                        text: oAPP.ICON_MSG.M018 + " - " + oAPP.attr.USERINFO.SYSID // Image Icons
                     }),
                 ],
                 contentMiddle: [

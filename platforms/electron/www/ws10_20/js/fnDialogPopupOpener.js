@@ -1198,67 +1198,28 @@
         // 팝업 고유명
         let sPopupName = "ICONPREV";        
 
-        // 콜백이 있을 경우의 아이콘 팝업 이름을 SYSID와 조합
+        // 콜백이 없을 경우의 아이콘 팝업 이름을 SYSID와 조합
         if(isCallback !== "X"){
 
             // 팝업 고유 이름 지정 시, SYSID도 같이 붙인다. (아이콘 뷰어는 SYSID당 1개의 팝업이라고 생각하면됨.)
-            sPopupName += "_" + sSysID;       
+            sPopupName += "_" + sSysID; 
+            
+            // [!! 전체 떠있는 브라우저 기준 !!] 
+            // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+            let oResult = APPCOMMON.getCheckAlreadyOpenWindow2(sPopupName);
+            if (oResult.ISOPEN) {
 
-            // 현재 떠있는 전체 윈도우를 구한다.
-            let aAllWindows = parent.REMOTE.BrowserWindow.getAllWindows();
-            let oIconPrevWindow;
+                let oIconWindow = oResult.WINDOW;
 
-            // 전체 윈도우 중 아이콘 미리보기 팝업이 있는지 체크
-            for(const oWin of aAllWindows){
+                oIconWindow.show();
 
-                // 브라우저가 이미 죽었다면..
-                if (oWin.isDestroyed()) {
-                    continue;
-                }
-
-                let oWebCon = oWin.webContents,
-                oWebPref = oWebCon.getWebPreferences(),
-                sBrowsKey = oWebPref.browserkey,
-                sOBJTY = oWebPref.OBJTY;
-
-                // OBJTY가 있는지
-                if (!sOBJTY) {
-                    continue;
-                }
-
-                // OBJTY가 같은것인지
-                if (sOBJTY !== sPopupName) {
-                    continue;
-                }
-
-                oIconPrevWindow = oWin;
-
-            }
-
-            // [ SYSID ] 이미 실행된 아이콘 미리보기 팝업이 있을 경우 해당 팝업에 포커스를 준다.
-            if(oIconPrevWindow){
-
-                oIconPrevWindow.show();
+                // oIconWindow.webContents.send("if-icon-isCallback", isCallback);
 
                 return;
-            }
 
-        }
+            } 
 
-        // // [!! 전체 떠있는 브라우저 기준 !!] 
-        // // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        // let oResult = APPCOMMON.getCheckAlreadyOpenWindow2(sPopupName);
-        // if (oResult.ISOPEN) {
-
-        //     let oIconWindow = oResult.WINDOW;
-
-        //     oIconWindow.show();
-
-        //     oIconWindow.webContents.send("if-icon-isCallback", isCallback);
-
-        //     return;
-
-        // }
+        }        
 
         // 로그인 정보에서 서버의 기본 테마 정보를 구한다.        
         let aTheme = oMeta.T_REG_THEME,
@@ -1332,7 +1293,7 @@
                 // BROWSKEY: BROWSKEY, // 브라우저 고유키
                 // oUserInfo: oUserInfo, // 로그인 사용자 정보
                 sServerHost: parent.getHost(), //  서버 호스트 정보
-                sServerPath: parent.getServerPath(), // 서버 Url                
+                sServerPath: parent.getServerPath(), // 서버 Url
                 sDefTheme: sDefTheme, // 테마 정보
                 isCallback: isCallback // 아이콘 팝업 호출 시 콜백 펑션이 있는지 여부 플래그 
             };
@@ -1523,6 +1484,53 @@
             oIconWindow.show();
             return;
         }
+
+        // // 현재 떠있는 전체 윈도우를 구한다.
+        // let aAllWindows = parent.REMOTE.BrowserWindow.getAllWindows();
+        // let oIconPrevWindow;
+
+        // // 전체 윈도우 중 아이콘 미리보기 팝업이 있는지 체크
+        // for(const oWin of aAllWindows){
+
+        //     // 브라우저가 이미 죽었다면..
+        //     if (oWin.isDestroyed()) {
+        //         continue;
+        //     }
+
+        //     let oWebCon = oWin.webContents,
+        //     oWebPref = oWebCon.getWebPreferences(),
+        //     sOBJTY = oWebPref.OBJTY;
+
+        //     // OBJTY가 있는지
+        //     if (!sOBJTY) {
+        //         continue;
+        //     }
+
+        //     // OBJTY가 같은것인지
+        //     if (sOBJTY !== sPopupName) {
+        //         continue;
+        //     }
+
+        //     oIconPrevWindow = oWin;
+
+        // }
+
+        // // [ SYSID ] 이미 실행된 아이콘 미리보기 팝업이 있을 경우 해당 팝업에 포커스를 준다.
+        // if(oIconPrevWindow){
+
+        //     oIconPrevWindow.show();
+
+        //     return;
+        // }
+
+        // // [!! 전체 떠있는 브라우저 기준 !!] 
+        // // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        // let oResult = APPCOMMON.getCheckAlreadyOpenWindow2(sPopupName);
+        // if (oResult.ISOPEN) {
+        //     let oIconWindow = oResult.WINDOW;
+        //     oIconWindow.show();
+        //     return;
+        // }
 
         // 로그인 정보에서 서버의 기본 테마 정보를 구한다.        
         let sServerLibPath = oMeta.LIBPATH,
