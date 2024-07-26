@@ -1102,4 +1102,90 @@
 
     }; // end of oAPP.fn.fnServerInfoDialogOpen
 
+    /************************************************************************
+     * 현재 브라우저에 종속된 팝업 종류들을 닫는다.
+     ************************************************************************/
+    oAPP.fn.closeAllCurrWinDependentPopups = function(){
+
+        // 현재 떠있는 전체 윈도우를 구한다.
+        let aAllWindows = parent.REMOTE.BrowserWindow.getAllWindows();
+        if(aAllWindows.length === 0){
+            return;
+        }
+        
+        /*************************************************
+         * 🙋‍♂️ step - 종속된 팝업 이름들을 수집
+         *************************************************/        
+
+        // 사용자 로그인 정보
+        let oUserInfo = parent.getUserInfo();
+        
+        // 접속 SYSID
+        let sCurrSysID = oUserInfo.SYSID;
+
+        // 추후에 더 추가될경우 ARRAY에 닫고자 하는 팝업 고유 이름을 명시할것
+        let aPopupNames = [
+            `ICONPREV_${sCurrSysID}`,
+        ];
+
+        /*************************************************
+         * 🙋‍♂️ step - 현재 떠있는 창에서 종속된 이름이 포함된
+         *           창의 인스턴스를 수집
+         *************************************************/
+
+        let iSysCount = 0; // 같은 SYSID의 갯수
+
+        let aPopUpObj = [];
+        for(const oWin of aAllWindows){
+
+            // 같은 SYSID의 갯수가 1개 이상이면 빠져나간다.
+            if(iSysCount > 1){
+                return;
+            }
+
+            // 브라우저가 이미 죽었다면 next
+            if (oWin.isDestroyed()) {
+                continue;
+            }
+
+            let oWebCon = oWin.webContents,
+            oWebPref = oWebCon.getWebPreferences(),
+            sOBJTY = oWebPref.OBJTY,
+            sSYSID = oWebPref.SYSID;
+
+            // OBJTY가 없으면 next
+            if (!sOBJTY) {
+                continue;
+            }
+
+            // 현재 창과 같은 SYSID가 몇개인지 집계
+            if(sSYSID && sSYSID === sCurrSysID){
+                iSysCount += 1;
+            }
+
+            // 위에서 수집한 팝업 리스트에 포함되어 있을 경우에만 해당 윈도우 인스턴스 수집
+            let sFindName = aPopupNames.find(e => e === sOBJTY);
+            if(!sFindName){
+                continue;
+            }
+
+            aPopUpObj.push(oWin);
+
+        }
+        
+        // 수집된 팝업을 전체 닫는다.
+        for(const oPopup of aPopUpObj){
+
+            // 브라우저가 이미 죽었다면..
+            if (oPopup.isDestroyed()) {
+                continue;
+            }
+
+            oPopup.close();
+            
+        }
+
+
+    }; // end of oAPP.fn.closeAllCurrWinDependentPopups
+
 })(window, $, oAPP);

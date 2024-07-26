@@ -648,6 +648,7 @@ oAPP.common = {};
         oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
         oBrowserOptions.webPreferences.USERINFO = process.USERINFO;
         oBrowserOptions.webPreferences.OBJTY = "MAIN";
+        oBrowserOptions.webPreferences.SYSID = process.USERINFO.SYSID;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);

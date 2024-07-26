@@ -1280,6 +1280,8 @@
 
             },
             suggest: function (oEvent) {
+                
+                sap.ui.getCore().lock();
 
                 var sValue = oEvent.getParameter("suggestValue"),
                     aFilters = [];
@@ -1297,7 +1299,9 @@
                 }
 
                 this.getBinding("suggestionItems").filter(aFilters);
-                this.suggest();
+                // this.suggest();
+
+                sap.ui.getCore().unlock();
 
             },
             enableSuggestions: true,

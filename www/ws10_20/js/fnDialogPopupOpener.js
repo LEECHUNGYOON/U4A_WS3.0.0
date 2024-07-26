@@ -1163,6 +1163,10 @@
 
     /************************************************************************
      * Icon Preview Popup Opener
+     ************************************************************************
+     * - 🤚 ※ 아래 로직 중 콜백 펑션이 있을 경우는 UI의 icon 관련 Property의 
+     *   SearchHelp에서 실행된 경우이다.
+     * 
      ************************************************************************/
     oAPP.fn.fnIconPreviewPopupOpener = (fnCallback) => {
 
@@ -1176,7 +1180,7 @@
         }
 
         // 파라미터에 콜백 펑션이 있을 경우에만 IPCRENDER 이벤트를 건다.
-        if (isCallback == "X") {
+        if (isCallback === "X") {
 
             oAPP.attr.fnBindCallback = oAPP.fn.fnIconUrlCallback.bind(fnCallback);
 
@@ -1184,27 +1188,80 @@
 
         }
 
-        let sPopupName = "ICONPREV";
+        // 사용자 로그인 정보
+        let oUserInfo = parent.getUserInfo(),
+            oMeta = oUserInfo.META;
 
-        // [!! 전체 떠있는 브라우저 기준 !!] 
-        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        let oResult = APPCOMMON.getCheckAlreadyOpenWindow2(sPopupName);
-        if (oResult.ISOPEN) {
+        // 접속 SYSID
+        let sSysID = oUserInfo.SYSID;
 
-            let oIconWindow = oResult.WINDOW;
+        // 팝업 고유명
+        let sPopupName = "ICONPREV";        
 
-            oIconWindow.show();
+        // 콜백이 있을 경우의 아이콘 팝업 이름을 SYSID와 조합
+        if(isCallback !== "X"){
 
-            oIconWindow.webContents.send("if-icon-isCallback", isCallback);
+            // 팝업 고유 이름 지정 시, SYSID도 같이 붙인다. (아이콘 뷰어는 SYSID당 1개의 팝업이라고 생각하면됨.)
+            sPopupName += "_" + sSysID;       
 
-            return;
+            // 현재 떠있는 전체 윈도우를 구한다.
+            let aAllWindows = parent.REMOTE.BrowserWindow.getAllWindows();
+            let oIconPrevWindow;
+
+            // 전체 윈도우 중 아이콘 미리보기 팝업이 있는지 체크
+            for(const oWin of aAllWindows){
+
+                // 브라우저가 이미 죽었다면..
+                if (oWin.isDestroyed()) {
+                    continue;
+                }
+
+                let oWebCon = oWin.webContents,
+                oWebPref = oWebCon.getWebPreferences(),
+                sBrowsKey = oWebPref.browserkey,
+                sOBJTY = oWebPref.OBJTY;
+
+                // OBJTY가 있는지
+                if (!sOBJTY) {
+                    continue;
+                }
+
+                // OBJTY가 같은것인지
+                if (sOBJTY !== sPopupName) {
+                    continue;
+                }
+
+                oIconPrevWindow = oWin;
+
+            }
+
+            // [ SYSID ] 이미 실행된 아이콘 미리보기 팝업이 있을 경우 해당 팝업에 포커스를 준다.
+            if(oIconPrevWindow){
+
+                oIconPrevWindow.show();
+
+                return;
+            }
 
         }
 
-        // 로그인 정보에서 서버의 기본 테마 정보를 구한다.
-        let oUserInfo = parent.getUserInfo(),
-            oMeta = oUserInfo.META,
-            aTheme = oMeta.T_REG_THEME,
+        // // [!! 전체 떠있는 브라우저 기준 !!] 
+        // // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        // let oResult = APPCOMMON.getCheckAlreadyOpenWindow2(sPopupName);
+        // if (oResult.ISOPEN) {
+
+        //     let oIconWindow = oResult.WINDOW;
+
+        //     oIconWindow.show();
+
+        //     oIconWindow.webContents.send("if-icon-isCallback", isCallback);
+
+        //     return;
+
+        // }
+
+        // 로그인 정보에서 서버의 기본 테마 정보를 구한다.        
+        let aTheme = oMeta.T_REG_THEME,
             oDefThemeInfo = aTheme.find(elem => elem.ISDEF === "X");
 
         let sDefTheme = "sap_horizon";
@@ -1221,10 +1278,15 @@
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
+
+        // 콜백이 있을 경우에만 부모의 윈도우를 지정해주는 옵션을 추가한다.
+        // 콜백이 없으면 부모의 종속성 없이 별도 단독창으로 동작해야 하기 때문.
+        if(isCallback === "X"){
+            oBrowserOptions.parent = CURRWIN; 
+        }
+
         oBrowserOptions.title = parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "047"); // Icon List
-        // oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.titleBarStyle = 'hidden';
-        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.titleBarStyle = 'hidden';        
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.resizable = true;
         oBrowserOptions.movable = true;
@@ -1243,12 +1305,10 @@
         let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${sWsThemeColor}; }`;
         oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
-        // // 브라우저 상단 메뉴 없애기.
-        // if (APP.isPackaged) {
-        oBrowserWindow.setMenu(null);
-        // }
+        // // 브라우저 상단 메뉴 없애기.    
+        oBrowserWindow.setMenu(null);      
 
-        let sUrlPath = parent.getPath(sPopupName);
+        let sUrlPath = parent.getPath("ICONPREV");
 
         oBrowserWindow.loadURL(sUrlPath);
 
@@ -1300,12 +1360,160 @@
 
     }; // end of oAPP.fn.fnIconPreviewPopupOpener
 
+    // /************************************************************************
+    //  * [ 원본 ] Icon Preview Popup Opener
+    //  ************************************************************************/
+    // oAPP.fn.fnIconPreviewPopupOpener = (fnCallback) => {
+
+    //     // 콜백 유무 플래그
+    //     let isCallback = ((typeof fnCallback === "function") ? "X" : "");
+
+    //     // 이전에 콜백 바인딩된 펑션이 있을 경우 이벤트 해제
+    //     if (oAPP.attr.fnBindCallback) {
+    //         IPCRENDERER.off("if-icon-url-callback", oAPP.attr.fnBindCallback);
+    //         delete oAPP.attr.fnBindCallback;
+    //     }
+
+    //     // 파라미터에 콜백 펑션이 있을 경우에만 IPCRENDER 이벤트를 건다.
+    //     if (isCallback == "X") {
+
+    //         oAPP.attr.fnBindCallback = oAPP.fn.fnIconUrlCallback.bind(fnCallback);
+
+    //         IPCRENDERER.on("if-icon-url-callback", oAPP.attr.fnBindCallback);
+
+    //     }
+
+    //     let sPopupName = "ICONPREV";
+
+    //     // [!! 전체 떠있는 브라우저 기준 !!] 
+    //     // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+    //     let oResult = APPCOMMON.getCheckAlreadyOpenWindow2(sPopupName);
+    //     if (oResult.ISOPEN) {
+
+    //         let oIconWindow = oResult.WINDOW;
+
+    //         oIconWindow.show();
+
+    //         oIconWindow.webContents.send("if-icon-isCallback", isCallback);
+
+    //         return;
+
+    //     }
+
+    //     // 로그인 정보에서 서버의 기본 테마 정보를 구한다.
+    //     let oUserInfo = parent.getUserInfo(),
+    //         oMeta = oUserInfo.META,
+    //         aTheme = oMeta.T_REG_THEME,
+    //         oDefThemeInfo = aTheme.find(elem => elem.ISDEF === "X");
+
+    //     let sDefTheme = "sap_horizon";
+    //     if (oDefThemeInfo) {
+    //         sDefTheme = oDefThemeInfo.THEME;
+    //     }
+
+    //     let oSettings = parent.WSUTIL.getWsSettingsInfo(),
+    //         sGlobalLangu = oSettings.globalLanguage,
+    //         sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(sDefTheme);
+
+    //     // Browswer Options
+    //     let sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
+    //         oDefaultOption = parent.require(sSettingsJsonPath),
+    //         oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+    //     oBrowserOptions.title = parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "047"); // Icon List
+    //     // oBrowserOptions.autoHideMenuBar = true;
+    //     oBrowserOptions.titleBarStyle = 'hidden';
+    //     oBrowserOptions.parent = CURRWIN;
+    //     oBrowserOptions.opacity = 0.0;
+    //     oBrowserOptions.resizable = true;
+    //     oBrowserOptions.movable = true;
+    //     oBrowserOptions.backgroundColor = sWsThemeColor;
+    //     oBrowserOptions.webPreferences.nodeIntegrationInWorker = true;
+    //     oBrowserOptions.webPreferences.partition = SESSKEY;
+    //     oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+    //     oBrowserOptions.webPreferences.OBJTY = sPopupName;
+    //     oBrowserOptions.webPreferences.USERINFO = oUserInfo;
+
+    //     // 브라우저 오픈
+    //     let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+    //     REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+    //     // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+    //     let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${sWsThemeColor}; }`;
+    //     oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+    //     // // 브라우저 상단 메뉴 없애기.
+    //     // if (APP.isPackaged) {
+    //     oBrowserWindow.setMenu(null);
+    //     // }
+
+    //     let sUrlPath = parent.getPath(sPopupName);
+
+    //     oBrowserWindow.loadURL(sUrlPath);
+
+    //     // // no build 일 경우에는 개발자 툴을 실행한다.
+    //     // if (!APP.isPackaged) {
+    //     //     oBrowserWindow.webContents.openDevTools();
+    //     // }
+        
+    //     // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+    //     oBrowserWindow.once('ready-to-show', () => {
+
+    //         // 부모 위치 가운데 배치한다.
+    //         oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+    //     });
+
+    //     // 브라우저가 오픈이 다 되면 타는 이벤트
+    //     oBrowserWindow.webContents.on('did-finish-load', function () {
+
+    //         let oOptionData = {
+    //             // BROWSKEY: BROWSKEY, // 브라우저 고유키
+    //             // oUserInfo: oUserInfo, // 로그인 사용자 정보
+    //             sServerHost: parent.getHost(), //  서버 호스트 정보
+    //             sServerPath: parent.getServerPath(), // 서버 Url                
+    //             sDefTheme: sDefTheme, // 테마 정보
+    //             isCallback: isCallback // 아이콘 팝업 호출 시 콜백 펑션이 있는지 여부 플래그 
+    //         };
+
+    //         oBrowserWindow.webContents.send('if-icon-prev', oOptionData);
+
+    //         // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+    //         WSUTIL.setBrowserOpacity(oBrowserWindow);
+
+    //         // 부모 위치 가운데 배치한다.
+    //         oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+    //     });
+
+    //     // 브라우저를 닫을때 타는 이벤트
+    //     oBrowserWindow.on('closed', () => {
+
+    //         oBrowserWindow = null;
+
+    //         parent.setBusy("");
+
+    //         CURRWIN.focus();
+
+    //     });
+
+    // }; // end of oAPP.fn.fnIconPreviewPopupOpener
+
+
     /************************************************************************
      * 성원이가 만든 일러스트 메시지 팝업
      ************************************************************************/
     oAPP.fn.fnIllustedMsgPrevPopupOpener = () => {
 
+        // 로그인 정보에서 서버의 기본 테마 정보를 구한다.
+        let oUserInfo = parent.getUserInfo(),
+            oMeta = oUserInfo.META;
+
+        // 접속 SYSID
+        let sSysID = oUserInfo.SYSID;
+
         let sPopupName = "ILLUST_MSG_PREV";
+            sPopupName += "_" + sSysID;
 
         // [!! 전체 떠있는 브라우저 기준 !!] 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
@@ -1316,10 +1524,8 @@
             return;
         }
 
-        // 로그인 정보에서 서버의 기본 테마 정보를 구한다.
-        let oUserInfo = parent.getUserInfo(),
-            oMeta = oUserInfo.META,
-            sServerLibPath = oMeta.LIBPATH,
+        // 로그인 정보에서 서버의 기본 테마 정보를 구한다.        
+        let sServerLibPath = oMeta.LIBPATH,
             aTheme = oMeta.T_REG_THEME,
             oDefThemeInfo = aTheme.find(elem => elem.ISDEF === "X");
 
@@ -1340,7 +1546,7 @@
         oBrowserOptions.title = parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "067"); // Image Icons
         // oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.titleBarStyle = 'hidden';
-        oBrowserOptions.parent = CURRWIN;
+        // oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.resizable = true;
         oBrowserOptions.movable = true;
@@ -1361,7 +1567,7 @@
 
         oBrowserWindow.setMenu(null);
 
-        let sUrlPath = parent.getPath(sPopupName);
+        let sUrlPath = parent.getPath("ILLUST_MSG_PREV");
 
         oBrowserWindow.loadURL(sUrlPath);
 
@@ -1412,6 +1618,119 @@
         });
 
     }; // end of oAPP.fn.fnIllustedMsgPrevPopupOpener
+
+    // /************************************************************************
+    //  * [원본] 성원이가 만든 일러스트 메시지 팝업
+    //  ************************************************************************/
+    // oAPP.fn.fnIllustedMsgPrevPopupOpener = () => {
+
+    //     let sPopupName = "ILLUST_MSG_PREV";
+
+    //     // [!! 전체 떠있는 브라우저 기준 !!] 
+    //     // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+    //     let oResult = APPCOMMON.getCheckAlreadyOpenWindow2(sPopupName);
+    //     if (oResult.ISOPEN) {
+    //         let oIconWindow = oResult.WINDOW;
+    //         oIconWindow.show();
+    //         return;
+    //     }
+
+    //     // 로그인 정보에서 서버의 기본 테마 정보를 구한다.
+    //     let oUserInfo = parent.getUserInfo(),
+    //         oMeta = oUserInfo.META,
+    //         sServerLibPath = oMeta.LIBPATH,
+    //         aTheme = oMeta.T_REG_THEME,
+    //         oDefThemeInfo = aTheme.find(elem => elem.ISDEF === "X");
+
+    //     let sDefTheme = "sap_horizon";
+    //     if (oDefThemeInfo) {
+    //         sDefTheme = oDefThemeInfo.THEME;
+    //     }
+
+    //     let oSettings = parent.WSUTIL.getWsSettingsInfo(),
+    //         sGlobalLangu = oSettings.globalLanguage,
+    //         sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(sDefTheme);
+
+    //     // Browswer Options
+    //     let sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
+    //         oDefaultOption = parent.require(sSettingsJsonPath),
+    //         oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+    //     oBrowserOptions.title = parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "067"); // Image Icons
+    //     // oBrowserOptions.autoHideMenuBar = true;
+    //     oBrowserOptions.titleBarStyle = 'hidden';
+    //     oBrowserOptions.parent = CURRWIN;
+    //     oBrowserOptions.opacity = 0.0;
+    //     oBrowserOptions.resizable = true;
+    //     oBrowserOptions.movable = true;
+    //     oBrowserOptions.backgroundColor = sWsThemeColor;
+    //     oBrowserOptions.webPreferences.nodeIntegrationInWorker = true;
+    //     oBrowserOptions.webPreferences.partition = SESSKEY;
+    //     oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+    //     oBrowserOptions.webPreferences.OBJTY = sPopupName;
+    //     oBrowserOptions.webPreferences.USERINFO = oUserInfo;
+
+    //     // 브라우저 오픈
+    //     let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+    //     REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+    //     // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+    //     let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${sWsThemeColor}; }`;
+    //     oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+    //     oBrowserWindow.setMenu(null);
+
+    //     let sUrlPath = parent.getPath(sPopupName);
+
+    //     oBrowserWindow.loadURL(sUrlPath);
+
+    //     // no build 일 경우에는 개발자 툴을 실행한다.
+    //     // if (!APP.isPackaged) {
+    //     //     oBrowserWindow.webContents.openDevTools();
+    //     // }
+
+    //     // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+    //     oBrowserWindow.once('ready-to-show', () => {
+
+    //         // 부모 위치 가운데 배치한다.
+    //         oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+    //     });
+
+    //     // 브라우저가 오픈이 다 되면 타는 이벤트
+    //     oBrowserWindow.webContents.on('did-finish-load', function () {
+
+    //         let oOptionData = {
+    //             // BROWSKEY: BROWSKEY, // 브라우저 고유키
+    //             // oUserInfo: oUserInfo, // 로그인 사용자 정보
+    //             sServerHost: parent.getHost(), //  서버 호스트 정보
+    //             sServerPath: parent.getServerPath(), // 서버 Url                
+    //             sDefTheme: sDefTheme, // 테마 정보 
+    //             sServerLibPath: sServerLibPath // 서버 라이브러리 경로
+    //         };
+
+    //         oBrowserWindow.webContents.send('if-illust-prev', oOptionData);
+
+    //         // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+    //         WSUTIL.setBrowserOpacity(oBrowserWindow);
+
+    //         // 부모 위치 가운데 배치한다.
+    //         oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+    //     });
+
+    //     // 브라우저를 닫을때 타는 이벤트
+    //     oBrowserWindow.on('closed', () => {
+
+    //         oBrowserWindow = null;
+
+    //         parent.setBusy("");
+
+    //         CURRWIN.focus();
+
+    //     });
+
+    // }; // end of oAPP.fn.fnIllustedMsgPrevPopupOpener
 
     /************************************************************************
      * U4A Help Document Popup Opener

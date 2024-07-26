@@ -3599,6 +3599,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oWebPreferences.partition = SESSKEY;
         oWebPreferences.browserkey = BROWSERKEY;
         oWebPreferences.OBJTY = "MAIN";
+        oWebPreferences.SYSID = oSAPServerInfo.SYSID;
+
+        // // 새창띄울때 공통사항으로 USERINFO 정보를 담는데
+        // // 메인인 경우는 로그인하기 전에는 모르므로
+        // // 기존 공통사항과 구조를 맞추기 위해서 아래와 같이 구조를 구성함.
+        // oWebPreferences.USERINFO = {
+        //     SYSID: oSAPServerInfo.SYSID
+        // };
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);

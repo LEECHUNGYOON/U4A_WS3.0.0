@@ -722,7 +722,7 @@
 
         /************************************************************************
          * 네트워크 연결 및 해제 시 발생되는 이벤트
-         * **********************************************************************/
+         ************************************************************************/
         window.addEventListener("online", oAPP.fn.fnNetworkCheckerOnline, false);
         window.addEventListener("offline", oAPP.fn.fnNetworkCheckerOffline, false);
 
@@ -821,13 +821,17 @@
     function lf_MsgCallback(sAction) {
 
         delete oAPP.attr.isBrowserCloseLogoutMsgOpen; // Logout 메시지 Open 여부 Flag
-        delete oAPP.attr.isPressWindowClose; //  // 브라우저의 닫기 버튼을 눌렀는지 여부 Flag
+        delete oAPP.attr.isPressWindowClose; // 브라우저의 닫기 버튼을 눌렀는지 여부 Flag
 
         if (sAction != "YES") {
             return;
         }
 
-        oAPP.fn.fnSetFocusServerList();
+        // 현재 브라우저에 종속된 팝업 종류들을 닫는다.
+        oAPP.fn.closeAllCurrWinDependentPopups(); // => [ws_fn_04.js]
+
+        // 서버리스트 팝업에 포커스를 준다.
+        oAPP.fn.fnSetFocusServerList(); // [ws_fn_04.js]
 
         // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
         // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.

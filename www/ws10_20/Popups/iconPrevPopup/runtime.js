@@ -893,7 +893,8 @@ oAPP.fn.fnInitModelBinding = function () {
     let oModelData = {
         PRC: {
             MenuSelectedKey: "SAP",
-            MINI_INVISI: oAPP.attr.isCallback
+            MINI_INVISI: oAPP.attr.isCallback,
+            POP_TITLE: ""
         },
         THEME: {
             THEME_KEY: oAPP.attr.sDefTheme,
@@ -908,6 +909,16 @@ oAPP.fn.fnInitModelBinding = function () {
     };
 
 
+    let sPopUpTitle = oAPP.msg.M047;  // Icon List    
+    
+    // 아이콘뷰어 팝업 실행 시, 파라미터에 콜백펑션이 없었을 경우(SYSID 별 1개 팝업)
+    // 팝업 타이틀에 SYSID를 표기해준다.
+    if(oAPP.attr.isCallback !== "X"){
+        sPopUpTitle += " - " + oAPP.attr.USERINFO.SYSID;
+    }
+
+    oModelData.PRC.POP_TITLE = sPopUpTitle;
+    
     let oJsonModel = new sap.ui.model.json.JSONModel();
     oJsonModel.setData(oModelData);
     oJsonModel.setSizeLimit(100000);
@@ -924,103 +935,104 @@ oAPP.fn.fnInitRendering = function () {
     var oApp = new sap.m.App({
         autoFocus: false,
     }),
-        oPage = new sap.m.Page({
-            // properties
-            showHeader: true,
-            enableScrolling: false,
-            customHeader: new sap.m.Toolbar({
-                content: [
-                    new sap.m.Image({
-                        width: "25px",
-                        src: PATHINFO.WS_LOGO
-                    }),
-                    new sap.m.Title({
-                        text: oAPP.msg.M047 // Icon List
-                    }),
+    oPage = new sap.m.Page({
+        // properties
+        showHeader: true,
+        enableScrolling: false,
+        customHeader: new sap.m.Toolbar({
+            content: [
+                new sap.m.Image({
+                    width: "25px",
+                    src: PATHINFO.WS_LOGO
+                }),
+                new sap.m.Title({
+                    text: "{/PRC/POP_TITLE}"
+                    // text: oAPP.msg.M047 + " - " + oAPP.attr.USERINFO.SYSID // Icon List
+                }),
 
-                    new sap.m.ToolbarSpacer(),
+                new sap.m.ToolbarSpacer(),
 
-                    new sap.m.MenuButton("hdMenuBtn", {
-                        text: oAPP.msg.M0721, // "SAP Icons",
-                        menu: new sap.m.Menu("hdMenu", {
-                            itemSelected: ev_HeaderMenuSelected,
-                            items: [
-                                new sap.m.MenuItem({
-                                    key: "SAP",
-                                    text: oAPP.msg.M0721 // "SAP Icons"
-                                }),
-                                new sap.m.MenuItem({
-                                    key: "U4A",
-                                    text: oAPP.msg.M0722 // "U4A Icons"
-                                }),
-                            ]
-                        })
-                    }),
+                new sap.m.MenuButton("hdMenuBtn", {
+                    text: oAPP.msg.M0721, // "SAP Icons",
+                    menu: new sap.m.Menu("hdMenu", {
+                        itemSelected: ev_HeaderMenuSelected,
+                        items: [
+                            new sap.m.MenuItem({
+                                key: "SAP",
+                                text: oAPP.msg.M0721 // "SAP Icons"
+                            }),
+                            new sap.m.MenuItem({
+                                key: "U4A",
+                                text: oAPP.msg.M0722 // "U4A Icons"
+                            }),
+                        ]
+                    })
+                }),
 
-                    new sap.m.ToolbarSpacer(),
+                new sap.m.ToolbarSpacer(),
 
-                    new sap.m.Button({
-                        icon: "sap-icon://less",
-                        press: function () {
+                new sap.m.Button({
+                    icon: "sap-icon://less",
+                    press: function () {
 
-                            CURRWIN.minimize();
+                        CURRWIN.minimize();
 
+                    }
+                }).bindProperty("visible", "/PRC/MINI_INVISI", function (MINI_INVISI) {
+
+                    return (MINI_INVISI === "X" ? false : true);
+
+                }),
+                new sap.m.Button("maxWinBtn", {
+                    icon: "sap-icon://header",
+                    press: function (oEvent) {
+
+                        let bIsMax = CURRWIN.isMaximized();
+
+                        if (bIsMax) {
+                            CURRWIN.unmaximize();
+                            return;
                         }
-                    }).bindProperty("visible", "/PRC/MINI_INVISI", function (MINI_INVISI) {
 
-                        return (MINI_INVISI === "X" ? false : true);
+                        CURRWIN.maximize();
 
-                    }),
-                    new sap.m.Button("maxWinBtn", {
-                        icon: "sap-icon://header",
-                        press: function (oEvent) {
+                    }
+                }),
+                new sap.m.Button({
+                    icon: "sap-icon://decline",
+                    press: function () {
 
-                            let bIsMax = CURRWIN.isMaximized();
-
-                            if (bIsMax) {
-                                CURRWIN.unmaximize();
-                                return;
-                            }
-
-                            CURRWIN.maximize();
-
+                        if (CURRWIN.isDestroyed()) {
+                            return;
                         }
-                    }),
-                    new sap.m.Button({
-                        icon: "sap-icon://decline",
-                        press: function () {
 
-                            if (CURRWIN.isDestroyed()) {
-                                return;
-                            }
+                        CURRWIN.hide();
 
-                            CURRWIN.hide();
-
-                            // 콜백 메소드가 있는지 확인
-                            if (oAPP.attr.isCallback !== "X") {
-                                return;
-                            }
-
-                            // Parent가 존재하는지 확인
-                            if (!PARWIN || PARWIN.isDestroyed()) {
-                                return;
-                            }
-
-                            PARWIN.webContents.send("if-icon-url-callback", {
-                                RETCD: "C",
-                                RTDATA: ""
-                            });
-
-                            CURRWIN.setParentWindow(null);
-
+                        // 콜백 메소드가 있는지 확인
+                        if (oAPP.attr.isCallback !== "X") {
+                            return;
                         }
-                    }),
-                ]
-            }).addStyleClass("u4aWsBrowserDraggable"),
 
-            content: fnGetMainPageContents()
+                        // Parent가 존재하는지 확인
+                        if (!PARWIN || PARWIN.isDestroyed()) {
+                            return;
+                        }
 
-        }).addStyleClass("u4aWsIconListMainPage");
+                        PARWIN.webContents.send("if-icon-url-callback", {
+                            RETCD: "C",
+                            RTDATA: ""
+                        });
+
+                        CURRWIN.setParentWindow(null);
+
+                    }
+                }),
+            ]
+        }).addStyleClass("u4aWsBrowserDraggable"),
+
+        content: fnGetMainPageContents()
+
+    }).addStyleClass("u4aWsIconListMainPage");
 
     oApp.addPage(oPage);
 

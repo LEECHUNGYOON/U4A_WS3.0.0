@@ -153,9 +153,16 @@ oAPP.fn.onFrameLoadSuccess = () => {
 
 window.onbeforeunload = () => {
 
-    // 브라우저의 닫기 버튼을 누른게 아니라면 종료 하지 않음
-    if (oAPP.attr.isPressWindowClose !== "X") {
-        return false;
-    }
+    // if(oAPP.attr.isCallback !== "X") {
+
+
+    // }
+
+
+
+    // // 브라우저의 닫기 버튼을 누른게 아니라면 종료 하지 않음
+    // if (oAPP.attr.isPressWindowClose !== "X") {
+    //     return false;
+    // }
 
 }; // end of window.onbeforeunload
