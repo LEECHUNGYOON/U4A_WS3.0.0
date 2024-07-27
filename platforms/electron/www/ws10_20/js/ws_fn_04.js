@@ -1104,8 +1104,11 @@
 
     /************************************************************************
      * 현재 브라우저에 종속된 팝업 종류들을 닫는다.
+     * 
+     * @param bIsForce {Boolean}
+     * - true : 같은 SYSID 갯수 상관없이 무조건 닫는다.
      ************************************************************************/
-    oAPP.fn.closeAllCurrWinDependentPopups = function(){
+    oAPP.fn.closeAllCurrWinDependentPopups = function(bIsForce){
 
         // 현재 떠있는 전체 윈도우를 구한다.
         let aAllWindows = parent.REMOTE.BrowserWindow.getAllWindows();
@@ -1139,9 +1142,14 @@
         let aPopUpObj = [];
         for(const oWin of aAllWindows){
 
-            // 같은 SYSID의 갯수가 1개 이상이면 빠져나간다.
-            if(iSysCount > 1){
-                return;
+            // 강제로 죽이는 케이스가 아닐 경우
+            if(bIsForce !== true){
+
+                // 같은 SYSID의 갯수가 1개 이상이면 빠져나간다.
+                if(iSysCount > 1){
+                    return;
+                }
+                
             }
 
             // 브라우저가 이미 죽었다면 next

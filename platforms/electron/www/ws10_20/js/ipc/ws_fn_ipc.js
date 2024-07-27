@@ -139,8 +139,8 @@
         // 전체 브라우저에 공통으로 타는 DragEnd 이벤트
         parent.IPCMAIN.on('if-dragEnd', oAPP.fn.fnIpcMain_if_DragEnd);
 
-        // 여러창일때 나를 제외한 윈도우를 닫고 싶을때 
-        parent.IPCMAIN.on('if-browser-close', oAPP.fn.fnIpcMain_if_browser_close);
+        // // 여러창일때 나를 제외한 윈도우를 닫고 싶을때 
+        // parent.IPCMAIN.on('if-browser-close', oAPP.fn.fnIpcMain_if_browser_close);
 
         // 브라우저간 IPC 통신
         parent.IPCMAIN.on('if-browser-interconnection', oAPP.fn.fnIpcMain_browser_interconnection);

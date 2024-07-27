@@ -723,6 +723,12 @@
                 return;
             }
 
+            debugger;
+
+            // 현재 브라우저에 종속된 팝업 종류들을 닫는다.
+            // true: 강제로 닫기
+            oAPP.fn.closeAllCurrWinDependentPopups(true); // => [ws_fn_04.js]
+
             parent.IPCRENDERER.send('if-browser-close', {
                 ACTCD: "A", // 나를 제외한 나머지는 다 죽인다.
                 SESSKEY: parent.getSessionKey(),
