@@ -1615,7 +1615,7 @@
                 continue;
             }
 
-            // oWin.focus();
+            oWin.focus();
 
             return {
                 ISOPEN: true,

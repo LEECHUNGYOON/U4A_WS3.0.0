@@ -38,11 +38,18 @@
      * ************************************************************************/
     oAPP.fn.fnFindPopupOpen = function () {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         var sPopupName = "UIFIND";
 
         // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -102,7 +109,7 @@
                     aT_0022: oAPP.DATA.LIB.T_0022
                 };
 
-                oBrowserWindow.webContents.send('if-find-info', oFindData);
+                oBrowserWindow.webContents.send('if-find-info', oFindData);                
 
             });
 
@@ -128,6 +135,14 @@
             oBrowserWindow = null;
 
             CURRWIN.focus();
+
+        });
+
+        // find 팝업 화면이 다 그린 후에 호출되는 이벤트
+        IPCMAIN.once(`${BROWSKEY}--find_AfterRendering`, function(){
+
+            // busy 끄고 Lock 풀기
+            // oAPP.common.fnSetBusyLock("");
 
         });
 

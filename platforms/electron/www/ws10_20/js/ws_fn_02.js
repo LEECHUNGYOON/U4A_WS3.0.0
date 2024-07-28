@@ -1293,28 +1293,34 @@
      * **********************************************************************/
     oAPP.fn.fnCloseAllDialog = function () {
 
-        var $OpenDialogs = $(".sapMDialogOpen"),
-            iDialogLen = $OpenDialogs.length;
+        // var $OpenDialogs = $(".sapMDialogOpen"),
+        //     iDialogLen = $OpenDialogs.length;
 
-        if (iDialogLen <= 0) {
-            return;
-        }
+        // if (iDialogLen <= 0) {
+        //     return;
+        // }
 
-        for (var i = 0; i < iDialogLen; i++) {
+        // for (var i = 0; i < iDialogLen; i++) {
 
-            var $oDialog = $OpenDialogs[i],
-                sDialogId = $oDialog.id,
+        //     var $oDialog = $OpenDialogs[i],
+        //         sDialogId = $oDialog.id,
 
-                oDialog = sap.ui.getCore().byId(sDialogId);
+        //         oDialog = sap.ui.getCore().byId(sDialogId);
 
-            if (!oDialog) {
-                continue;
-            }
+        //     if (!oDialog) {
+        //         continue;
+        //     }
 
-            oDialog.close();
-            oDialog.destroy();
+        //     oDialog.close();
+        //     oDialog.destroy();
 
-        }
+        // }
+        
+        let oInsMan = sap.m.InstanceManager;
+
+        oInsMan.closeAllDialogs();
+        oInsMan.closeAllPopovers();
+        oInsMan.closeAllLightBoxes();
 
     }; // end of oAPP.fn.fnCloseAllDialog
 
@@ -1382,7 +1388,11 @@
                 continue;
             }
 
-            oChild.close();
+            try {
+                oChild.close();    
+            } catch (error) {
+                
+            }           
 
         }
 

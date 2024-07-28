@@ -1222,8 +1222,17 @@ module.exports = {
                         return;    
                     }
 
-                    oBrowserWindow.setOpacity(1.0);
-                    clearInterval(iInterval);
+                    // Browser에 opacity를 주다가 외부에서 메소드로 browser.close()를 하면
+                    // 막을 방법이 없으므로 어짜피 닫힐 녀석이면 isDestroyed 체크가 걸려서 빠져나갈 놈이였기 때문에
+                    // 순간 찰나에 여기를 탔다 하더라도 원래 isDestroyed 체크가 걸린것과 동일하게 빠져나가기 위해
+                    //  try catch로 예외처리 함.
+                    try {
+                        oBrowserWindow.setOpacity(1.0);
+                        clearInterval(iInterval);
+                    } catch (error) {
+                        clearInterval(iInterval);                     
+                    }
+                    
                 }
 
                 return;
@@ -1236,7 +1245,16 @@ module.exports = {
                 return;    
             }
 
-            oBrowserWindow.setOpacity(iOpa);
+            // Browser에 opacity를 주다가 외부에서 메소드로 browser.close()를 하면
+            // 막을 방법이 없으므로 어짜피 닫힐 녀석이면 isDestroyed 체크가 걸려서 빠져나갈 놈이였기 때문에
+            // 순간 찰나에 여기를 탔다 하더라도 원래 isDestroyed 체크가 걸린것과 동일하게 빠져나가기 위해
+            //  try catch로 예외처리 함.
+            try {
+                oBrowserWindow.setOpacity(iOpa);    
+            } catch (error) {
+                clearInterval(iInterval);               
+                return; 
+            }            
 
         }, 10);
 

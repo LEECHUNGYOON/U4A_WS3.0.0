@@ -230,6 +230,20 @@ let oAPP = parent.oAPP;
 
         oApp.placeAt("content");
 
+        oApp.addEventDelegate({
+            onAfterRendering: function(){
+
+                setTimeout(function(){
+
+                    // 화면을 다 그렸다고 메인에 신호 보내기
+                    parent.oAPP.IPCRENDERER.send(`${oAPP.BROWSKEY}--find_AfterRendering`, "X");
+
+                }, 3000);
+               
+                
+            }
+        });
+
     }; // end of oAPP.fn.fnInitRendering   
 
     /**************************************************************************

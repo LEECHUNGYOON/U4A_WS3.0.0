@@ -559,7 +559,8 @@
 
         parent.setBusy("X");
 
-        await parent.WSLOG.openLOG(true);
+        let oResult = await parent.WSLOG.openLOG(true);
+        console.log(oResult);
 
         parent.setBusy("");
 

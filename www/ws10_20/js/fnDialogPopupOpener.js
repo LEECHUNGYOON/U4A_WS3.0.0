@@ -59,12 +59,7 @@
     /************************************************************************
      * WS20의 찾기 버튼 팝업 실행시켜 주는 메소드
      ************************************************************************/
-    oAPP.fn.fnFindPopupOpener = function () {
-
-        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-        if (parent.getBusy() == 'X') {
-            return;
-        }
+    oAPP.fn.fnFindPopupOpener = function () {        
 
         // 서버이벤트 리스트를 구한다.
         // oAPP.fn.getServerEventList(function (aServerEventList) {
@@ -1995,11 +1990,18 @@
      ************************************************************************/
     oAPP.fn.fnRuntimeClassNaviPopupOpener = () => {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         let sPopupName = "RTMCLS";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -2070,6 +2072,9 @@
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         });
 
@@ -2214,6 +2219,9 @@
      * **********************************************************************/
     oAPP.fn.fnMultiFooterMsg = function (aMsg) {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         let sPopupName = "ERRMSGPOP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
@@ -2287,6 +2295,9 @@
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         });
 

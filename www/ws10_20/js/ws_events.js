@@ -923,11 +923,11 @@
             // 작업표시줄 깜빡임
             oCurrWin.flashFrame(true);
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
+            // // 화면 Lock 해제
+            // sap.ui.getCore().unlock();
 
-            // Busy를 끈다.
-            parent.setBusy("");
+            // // Busy를 끈다.
+            // parent.setBusy("");
 
         });
 
@@ -1147,10 +1147,10 @@
                 // 서버에서 만든 스크립트가 있다면 eval 처리.
                 if (oResult.SCRIPT) {
 
-                    eval(oResult.SCRIPT);
-
                     // busy 끄고 Lock 풀기
                     oAPP.common.fnSetBusyLock("");
+
+                    eval(oResult.SCRIPT);                    
 
                     return;
                 }

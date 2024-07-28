@@ -1101,6 +1101,7 @@
         oDialog.open();
 
     }; // end of oAPP.fn.fnServerInfoDialogOpen
+    
 
     /************************************************************************
      * 현재 브라우저에 종속된 팝업 종류들을 닫는다.
@@ -1136,36 +1137,28 @@
          *           창의 인스턴스를 수집
          *************************************************/
 
-        let iSysCount = 0; // 같은 SYSID의 갯수
-
-        let iDiffSessCount = 0; // 현재 브라우저와 다른 session의 갯수
-
         let aPopUpObj = [];
         for(const oWin of aAllWindows){
-
-            // 같은 SYSID의 갯수가 1개 이상이면 빠져나간다.
-            if(iSysCount > 1){
-                return;
-            }
 
             // 브라우저가 이미 죽었다면 next
             if (oWin.isDestroyed()) {
                 continue;
             }
 
-            let oWebCon = oWin.webContents,
-            oWebPref = oWebCon.getWebPreferences(),
-            sOBJTY = oWebPref.OBJTY,
-            sSYSID = oWebPref.SYSID;
+            let oWebCon     = oWin.webContents,
+                oWebPref    = oWebCon.getWebPreferences(),
+                sOBJTY      = oWebPref.OBJTY,
+                sSYSID      = oWebPref.SYSID,
+                sPartition  = oWebPref.partition;
 
             // OBJTY가 없으면 next
             if (!sOBJTY) {
                 continue;
             }
 
-            // 현재 창과 같은 SYSID가 몇개인지 집계
-            if(sSYSID && sSYSID === sCurrSysID){
-                iSysCount += 1;
+            // SYSID가 같은데 sessionkey가 다른게 존재 하면 빠져나감
+            if((sSYSID && sSYSID === sCurrSysID) && sSessionKey !== sPartition){
+                return;
             }
 
             // 위에서 수집한 팝업 리스트에 포함되어 있을 경우에만 해당 윈도우 인스턴스 수집

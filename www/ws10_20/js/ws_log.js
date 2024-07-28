@@ -82,7 +82,7 @@ function _getDate(){
 
 /* Main procces */
 exports.start = async function(REMOTE_OBJ, CONSOLE){
-   
+   debugger;
     let log = require('electron-log');
 
     if(typeof REMOTE === "undefined"){
