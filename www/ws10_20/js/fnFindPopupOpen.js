@@ -101,6 +101,9 @@
             // 서버이벤트 리스트를 구한다.
             oAPP.fn.getServerEventList(function (aServerEventList) {
 
+                // busy 키고 Lock 걸기
+                oAPP.common.fnSetBusyLock("X");
+
                 var oFindData = {
                     oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보
                     oThemeInfo: oThemeInfo, // 테마 개인화 정보
@@ -135,14 +138,6 @@
             oBrowserWindow = null;
 
             CURRWIN.focus();
-
-        });
-
-        // find 팝업 화면이 다 그린 후에 호출되는 이벤트
-        IPCMAIN.once(`${BROWSKEY}--find_AfterRendering`, function(){
-
-            // busy 끄고 Lock 풀기
-            // oAPP.common.fnSetBusyLock("");
 
         });
 

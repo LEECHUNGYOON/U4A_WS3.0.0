@@ -147,6 +147,9 @@
 
         // 부모로 부터 접속 환경 정보 구하기
         parent.IPCMAIN.on(`if-get-sys-info-${BROWSKEY}`, oAPP.fn.fnIpcMain_if_get_sys_info);
+
+        // 액션별 명령어 수행
+        parent.IPCMAIN.on(`if-send-action-${BROWSKEY}`, oAPP.fn.fnIpcMain_if_send_action);
         
 
     }; // end of oAPP.fn.fnIpcMain_Attach_Event_Handler
@@ -175,6 +178,9 @@
 
         // 부모로 부터 접속 환경 정보 구하기
         parent.IPCMAIN.off(`if-get-sys-info-${BROWSKEY}`, oAPP.fn.fnIpcMain_if_get_sys_info);
+        
+        // 부모 자식간 액션별 명령어 수행
+        parent.IPCMAIN.off(`if-send-action-${BROWSKEY}`, oAPP.fn.fnIpcMain_if_send_action);
         
     };
 
@@ -461,16 +467,16 @@
         let PATHINFOURL = parent.PATH.join(APPPATH, "Frame", "pathInfo.js");
         let PATHINFO    = parent.require(PATHINFOURL);
 
-        let sIpcSysInfoPath = parent.PATH.join(PATHINFO.JS_ROOT, "ipc", "assist", "sys_info_assist.js");
-        let oIPC_SYS_INFO_ASSIST = parent.require(sIpcSysInfoPath);
+        let sIpcModulePath = parent.PATH.join(PATHINFO.JS_ROOT, "ipc", "assist", "sys_info_assist.js");
+        let oASSIST = parent.require(sIpcModulePath);
 
-        if(!oIPC_SYS_INFO_ASSIST[oPARAM.PRCCD]){
+        if(!oASSIST[oPARAM.PRCCD]){
             return;
         }
 
         try {
             
-            oIPC_SYS_INFO_ASSIST[oPARAM.PRCCD](oEvent, oPARAM);
+            oASSIST[oPARAM.PRCCD](oEvent, oPARAM);
 
         } catch (error) {
 
@@ -482,5 +488,48 @@
         }
 
     }; // end of oAPP.fn.fnIpcMain_if_get_sys_info
+
+
+    /************************************************************************
+     * 액션별 명령어 수행
+     ************************************************************************ 
+     * @param {} oEvent 
+     * @param {Object} oPARAM 
+     * {
+     *    ACTCD : 명령어 수행할 ACTION CODE
+     * }     
+     *************************************************************************/
+    oAPP.fn.fnIpcMain_if_send_action = function(oEvent, oPARAM){
+
+        if(typeof oPARAM !== "object"){
+            return;
+        }
+
+        let APPPATH     = parent.REMOTE.app.getAppPath();
+        let PATHINFOURL = parent.PATH.join(APPPATH, "Frame", "pathInfo.js");
+        let PATHINFO    = parent.require(PATHINFOURL);
+
+        let sIpcModulePath = parent.PATH.join(PATHINFO.JS_ROOT, "ipc", "assist", "send_action_assist.js");
+        let oASSIST = parent.require(sIpcModulePath);
+
+        if(!oASSIST[oPARAM.ACTCD]){
+            return;
+        }
+
+        try {
+            
+            oASSIST[oPARAM.ACTCD](oEvent, oPARAM);
+
+        } catch (error) {
+
+            console.error("[ws_fn_ipc.js] oAPP.fn.fnIpcMain_if_send_action --- Start");
+            console.error(error);            
+            console.error("[ws_fn_ipc.js] oAPP.fn.fnIpcMain_if_send_action --- End");
+
+            return;
+        }
+
+
+    }; // end of oAPP.fn.fnIpcMain_if_send_action
 
 })(window, $, oAPP);

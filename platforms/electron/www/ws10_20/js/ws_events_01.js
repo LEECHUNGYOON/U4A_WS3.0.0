@@ -30,9 +30,6 @@
      ************************************************************************/
     oAPP.events.ev_pressFindBtn = function () {       
 
-        // busy 키고 Lock 걸기
-        oAPP.common.fnSetBusyLock("X");
-        
         oAPP.fn.fnFindPopupOpener();
 
     }; // end of oAPP.events.ev_pressFindBtn

@@ -234,9 +234,9 @@ let oAPP = parent.oAPP;
             onAfterRendering: function(){
 
                 setTimeout(function(){
-
-                    // 화면을 다 그렸다고 메인에 신호 보내기
-                    parent.oAPP.IPCRENDERER.send(`${oAPP.BROWSKEY}--find_AfterRendering`, "X");
+                
+                    // 부모 자식간 액션별 명령어 수행
+                    parent.oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
 
                 }, 3000);
                
