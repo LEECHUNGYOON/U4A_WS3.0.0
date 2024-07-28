@@ -2073,8 +2073,8 @@
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
-            // busy 끄고 Lock 풀기
-            oAPP.common.fnSetBusyLock("");
+            // // busy 끄고 Lock 풀기
+            // oAPP.common.fnSetBusyLock("");
 
         });
 

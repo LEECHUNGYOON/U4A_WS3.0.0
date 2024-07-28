@@ -230,14 +230,18 @@ let oAPP = parent.oAPP;
 
         oApp.placeAt("content");
 
-        oApp.addEventDelegate({
-            onAfterRendering: function(){
+        let oDelegate = {
+            onAfterRendering : function(){
 
-                // 부모 자식간 액션별 명령어 수행
-                parent.oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });              
-                
+                oApp.removeEventDelegate(oDelegate);
+
+                // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+                parent.oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+
             }
-        });
+        };
+
+        oApp.addEventDelegate(oDelegate);
 
     }; // end of oAPP.fn.fnInitRendering   
 

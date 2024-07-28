@@ -499,7 +499,7 @@
      *    ACTCD : 명령어 수행할 ACTION CODE
      * }     
      *************************************************************************/
-    oAPP.fn.fnIpcMain_if_send_action = function(oEvent, oPARAM){
+    oAPP.fn.fnIpcMain_if_send_action = async function(oEvent, oPARAM){
 
         if(typeof oPARAM !== "object"){
             return;
@@ -510,8 +510,9 @@
         let PATHINFO    = parent.require(PATHINFOURL);
 
         let sIpcModulePath = parent.PATH.join(PATHINFO.JS_ROOT, "ipc", "assist", "send_action_assist.js");
-        let oASSIST = parent.require(sIpcModulePath);
 
+        let oASSIST = await import(sIpcModulePath);
+    
         if(!oASSIST[oPARAM.ACTCD]){
             return;
         }

@@ -216,8 +216,15 @@
      ************************************************************************/
     oAPP.events.ev_pressBindPopupBtn = (oEvent) => {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
+            
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
