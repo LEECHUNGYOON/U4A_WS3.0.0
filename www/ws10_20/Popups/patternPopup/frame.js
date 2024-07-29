@@ -19,6 +19,7 @@ let oAPP = (function (window) {
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
     oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
+    oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
 
     /*******************************************************
      * 메시지클래스 텍스트 작업 관련 Object -- start

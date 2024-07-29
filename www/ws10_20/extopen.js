@@ -4,7 +4,9 @@
  * - Example Open Popup
  **************************************************************************/
 var REMOTE = require('@electron/remote'),
-    IPCRENDERER = require('electron').ipcRenderer;
+    IPCRENDERER = require('electron').ipcRenderer,
+    CURRWIN = REMOTE.getCurrentWindow(),
+    BROWSKEY = CURRWIN.webContents.getWebPreferences().browserkey;
 
 function setBusy(bIsBusy) {
 
@@ -39,6 +41,9 @@ IPCRENDERER.on('if-extopen-url', (event, res) => {
         oFrame.contentWindow.document.body.style.margin = "0px";
 
         setBusy(false);
+
+        // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+		IPCRENDERER.send(`if-send-action-${BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
 
     };
 

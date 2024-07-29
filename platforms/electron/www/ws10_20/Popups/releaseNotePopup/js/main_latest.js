@@ -33,8 +33,7 @@ function onLoadBootStrapSetting() {
 } // end of onLoadBootStrapSetting
 
 document.addEventListener('DOMContentLoaded', () => {
-    debugger;
-
+   
     //electron API 오브젝트 
     oAPP = parent.fn_getParent();
 
@@ -67,8 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener("load", () => {
-
-    debugger;
 
     //UI5 Start 
     sap.ui.getCore().attachInit(function () {
@@ -178,6 +175,19 @@ function gfn_crtUI_Main() {
 
     APP.addPage(oHandle.UI.DYNAMICPAGE1);
     APP.placeAt("Content", "only");
+
+    let oDelegate = {
+        onAfterRendering : function(){
+    
+            APP.removeEventDelegate(oDelegate);
+            
+            // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+            oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+    
+        }
+    };
+    
+    APP.addEventDelegate(oDelegate);
 
 }
 

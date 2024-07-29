@@ -41,6 +41,10 @@
                 this.browserInfo = [];
                 this.config = {};
 
+                oAPP.IPCRENDERER = this.ipcRenderer;
+                oAPP.CURRWIN = this.remote.getCurrentWindow();
+                oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
+
                 /*******************************************************
                  * 메시지클래스 텍스트 작업 관련 Object -- start
                  *******************************************************/

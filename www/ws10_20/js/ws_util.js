@@ -1201,24 +1201,26 @@ module.exports = {
     /**
      * Electron Browser Window Open 시 Opacity를 이용하여 자연스러운 동작 연출
      * @param {BrowserWindow} oBrowserWindow 
+     * 
+     * @fnFinish {Function} - 옵션
+     * - opacity가 끝났을 때 호출 해준다.
      */
-    setBrowserOpacity: function (oBrowserWindow) {
+    setBrowserOpacity: function (oBrowserWindow, fnFinish) {
 
         let iOpa = 0.0,
             iInterval;
 
-        if (iInterval) {
-            clearInterval(iInterval);
-        }
 
         iInterval = setInterval(() => {
 
-            if (iOpa > 1) {
+            if (iOpa > 1) {                
 
                 if (iInterval) {
+
+                    clearInterval(iInterval);
+                    iInterval = undefined;
                     
-                    if(oBrowserWindow.isDestroyed()){
-                        clearInterval(iInterval);
+                    if(oBrowserWindow.isDestroyed()){                        
                         return;    
                     }
 
@@ -1226,11 +1228,19 @@ module.exports = {
                     // 막을 방법이 없으므로 어짜피 닫힐 녀석이면 isDestroyed 체크가 걸려서 빠져나갈 놈이였기 때문에
                     // 순간 찰나에 여기를 탔다 하더라도 원래 isDestroyed 체크가 걸린것과 동일하게 빠져나가기 위해
                     //  try catch로 예외처리 함.
-                    try {
-                        oBrowserWindow.setOpacity(1.0);
-                        clearInterval(iInterval);
+                    try {                       
+
+                        oBrowserWindow.setOpacity(1.0);                       
+
+                        if(typeof fnFinish === "function"){
+                            fnFinish();
+                        }
+
                     } catch (error) {
-                        clearInterval(iInterval);                     
+                        
+                        if(typeof fnFinish === "function"){
+                            fnFinish();
+                        }
                     }
                     
                 }
@@ -1242,6 +1252,7 @@ module.exports = {
 
             if(oBrowserWindow.isDestroyed()){
                 clearInterval(iInterval);
+                iInterval = undefined;
                 return;    
             }
 
@@ -1252,7 +1263,8 @@ module.exports = {
             try {
                 oBrowserWindow.setOpacity(iOpa);    
             } catch (error) {
-                clearInterval(iInterval);               
+                clearInterval(iInterval);
+                iInterval = undefined;          
                 return; 
             }            
 

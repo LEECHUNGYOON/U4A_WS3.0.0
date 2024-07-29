@@ -30,6 +30,9 @@
      ************************************************************************/
     oAPP.events.ev_pressFindBtn = function () {       
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+        
         oAPP.fn.fnFindPopupOpener();
 
     }; // end of oAPP.events.ev_pressFindBtn
@@ -38,6 +41,9 @@
      * [WS10] Text Search Button Event
      ************************************************************************/
     oAPP.events.ev_winTxtSrchWS10 = function (oEvent) {
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         oAPP.fn.fnTextSearchPopupOpener();
 
@@ -48,6 +54,9 @@
      ************************************************************************/
     oAPP.events.ev_winTxtSrchWS20 = function (oEvent) {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+        
         oAPP.fn.fnTextSearchPopupOpener();
 
     }; // end of oAPP.events.ev_winTxtSrchWS20

@@ -931,7 +931,7 @@
             oBrowserWindow.once('ready-to-show', () => {
 
                 // 부모 위치 가운데 배치한다.
-                oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+                parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
             });
 
@@ -941,11 +941,24 @@
                 // 오픈할 URL 파라미터 전송
                 oBrowserWindow.webContents.send('if-extopen-url', sPath);
 
-                // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-                parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
-
                 // 부모 위치 가운데 배치한다.
-                oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+                parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
+
+                // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+                parent.WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
+                    
+                    if(oBrowserWindow.isDestroyed()){                        
+                        return;    
+                    }
+
+                    try {
+                        oBrowserWindow.closable = true;    
+                    } catch (error) {
+                        
+                    }
+
+                });
+
 
             });
 

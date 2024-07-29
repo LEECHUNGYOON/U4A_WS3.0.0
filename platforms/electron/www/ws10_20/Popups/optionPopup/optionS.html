@@ -265,6 +265,20 @@
 
                     //content 활성 
                     $('#content').fadeIn(300);
+                    
+
+                    let oDelegate = {
+                        onAfterRendering : function(){
+                    
+                            oUI5.APP.removeEventDelegate(oDelegate);
+                    
+                            // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+                            oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+                    
+                        }
+                    };
+                    
+                    oUI5.APP.addEventDelegate(oDelegate);
 
 
                 }); //[END] BASE DATA 추출 

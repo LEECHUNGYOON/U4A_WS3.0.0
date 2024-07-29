@@ -350,6 +350,10 @@
       
         setTimeout(() => {
             $('#maincontent').fadeIn(300, 'linear');
+
+            // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+		    oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+
         }, 0);
 
       });

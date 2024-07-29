@@ -1506,10 +1506,13 @@
 
     }; // end of oAPP.events.ev_pressAddEventBtn
 
-    /************************************************************************
+    /**********************************************************************\**
      * Runtime Class Navigator Button
      ************************************************************************/
     oAPP.events.ev_pressRuntimeBtn = function () {
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         oAPP.fn.fnRuntimeClassNaviPopupOpener();
 

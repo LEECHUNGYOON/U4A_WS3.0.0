@@ -13,11 +13,12 @@ let oAPP = (function (window) {
     oAPP.events = {};
     oAPP.common = {};
 
-    oAPP.REMOTE = require('@electron/remote');
-    oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
+    oAPP.REMOTE = require('@electron/remote');    
     oAPP.IPCRENDERER = require('electron').ipcRenderer;
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
+    oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
+    oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
 
 
     /*******************************************************

@@ -130,6 +130,19 @@ function gfn_crtUI_Main() {
     oHandle.UI.TIMELINE = TIMELINE;
     APP.placeAt("Content");
 
+    let oDelegate = {
+        onAfterRendering : function(){
+    
+            APP.removeEventDelegate(oDelegate);
+            
+            // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+            oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+    
+        }
+    };
+    
+    APP.addEventDelegate(oDelegate);
+
 }
 
 // 릴리즈 노트 라인 아이템 구성 

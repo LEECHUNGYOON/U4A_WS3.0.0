@@ -28,6 +28,10 @@
             WSERR = require(PATHINFO.WSTRYCATCH);
 
         var zconsole = WSERR(window, document, console);
+
+        var CURRWIN = REMOTE.getCurrentWindow();
+        var BROWSKEY = CURRWIN.webContents.getWebPreferences().browserkey;
+        var IPCRENDERER = require('electron').ipcRenderer;
     </script>
 
     <script>

@@ -41,6 +41,10 @@ oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
  * 메시지클래스 텍스트 작업 관련 Object -- end
  *******************************************************/
 
+oAPP.REMOTE = REMOTE;
+oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
+oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
+
 oAPP.ipcRenderer = require('electron').ipcRenderer;
 
 let oScreenWindow,
@@ -225,7 +229,7 @@ async function _chk_MultiScr(REMOTE) {
         oWIN.once('ready-to-show', () => {
 
             // 부모창 가운데에 띄우기
-            _setParentCenterBounds(oWIN, op);
+            // _setParentCenterBounds(oWIN, op);
 
         });
 
@@ -245,7 +249,8 @@ async function _chk_MultiScr(REMOTE) {
             oWIN.webContents.send('IF-chkScrList', opt);
 
             // 부모창 가운데에 띄우기
-            _setParentCenterBounds(oWIN, op);
+            // _setParentCenterBounds(oWIN, op);
+
 
 
         });

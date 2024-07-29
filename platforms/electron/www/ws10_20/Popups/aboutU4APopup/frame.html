@@ -253,6 +253,9 @@
 
         document.addEventListener('DOMContentLoaded', function () {
 
+            // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+		    parent.IPCRENDERER.send(`if-send-action-${parent.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+
             setTimeout(() => {
 
                 let oSettings = parent.WSUTIL.getWsSettingsInfo();

@@ -20,11 +20,18 @@
 
     oAPP.fn.fnErrorPageEditorPopupOpen = function () {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         let sPopupName = "ERRPAGE";
 
         // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -49,6 +56,8 @@
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.parent = oCurrWin;
+        oBrowserOptions.closable = false;
+        
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
@@ -77,7 +86,7 @@
         oBrowserWindow.once('ready-to-show', () => {
 
             // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
         });        
 
@@ -93,11 +102,23 @@
 
             oBrowserWindow.webContents.send('if-editor-info', oEditorInfo);
 
-            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
-
             // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            parent.WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
+                
+                if(oBrowserWindow.isDestroyed()){                        
+                    return;    
+                }
+
+                try {
+                    oBrowserWindow.closable = true;    
+                } catch (error) {
+                    
+                }
+
+            });      
 
         });
 

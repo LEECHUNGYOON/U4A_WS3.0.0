@@ -91,6 +91,9 @@ window.addEventListener("load", function(){
 
                 oAPP.onViewReady();
 
+                // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+		        parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+
             }
         };
 

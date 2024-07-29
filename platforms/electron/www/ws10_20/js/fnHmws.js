@@ -137,6 +137,9 @@
             return;
         }
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         // 에디터 정보를 담는 구조
         var oEditorInfo = {
             OBJID: "STYLECSS1",
@@ -155,6 +158,9 @@
         if (parent.getBusy() == 'X') {
             return;
         }
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         var oEditorInfo = {
             OBJID: "SCRIPTCODE1",
@@ -175,6 +181,9 @@
             return;
         }
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         var oEditorInfo = {
             OBJID: "HTMLCODE1",
             OBJTY: "HM",
@@ -193,6 +202,9 @@
         if (parent.getBusy() == 'X') {
             return;
         }
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // Error Page Editor Popup Open
         oAPP.fn.fnErrorPageEditorPopupOpener();
@@ -350,6 +362,9 @@
             return;
         }
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         oAPP.fn.fnAboutU4APopupOpener();
 
     }; // end of oAPP.fn.fnWS10WMENU10_05
@@ -487,6 +502,9 @@
             return;
         }
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         oAPP.fn.fnWsOptionsPopupOpener();
 
     }; // end of oAPP.fn.fnWS10WMENU30_03
@@ -542,6 +560,9 @@
         if (parent.getBusy() == 'X') {
             return;
         }
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         oAPP.fn.fnReleaseNotePopupOpener();
 
@@ -602,7 +623,10 @@
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
             return;
-        }
+        }   
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         oAPP.fn.fnAppShortCutDownPopupOpener();
 
@@ -889,6 +913,9 @@
             return;
         }
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         oAPP.fn.fnWsOptionsPopupOpener();
 
     }; // end of oAPP.fn.fnWS20WMENU40_03
@@ -916,6 +943,9 @@
         if (parent.getBusy() == 'X') {
             return;
         }
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         oAPP.fn.fnReleaseNotePopupOpener();
 
@@ -1016,6 +1046,9 @@
         if (parent.getBusy() == 'X') {
             return;
         }
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         oAPP.fn.fnDocuPopupOpener();
 

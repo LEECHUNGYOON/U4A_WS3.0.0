@@ -3006,6 +3006,9 @@ function onAppCrAndChgMode(sAppID) {
 // Property Help Popup
 function fn_PropHelpPopup(sUrl) {
 
+    // busy 키고 Lock 걸기
+    oAPP.common.fnSetBusyLock("X");
+
     oAPP.fn.fnPropertyHelpPopup(sUrl);
 
 }

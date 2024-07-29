@@ -8,7 +8,6 @@
 export async function start(require, IF_DATA, fnCallback){
 
     // 단독으로 실행한다 생각하고 짤것!!!
-    // no build 일 경우에는 개발자 툴을 실행한다.  
 
     if(!IF_DATA){
         var IF_DATA = {};
@@ -69,6 +68,7 @@ export async function start(require, IF_DATA, fnCallback){
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.width = 1200;
+        oBrowserOptions.closable = false;
 
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -100,11 +100,26 @@ export async function start(require, IF_DATA, fnCallback){
         // 오픈할 URL 파라미터 전송
         oBrowserWindow.webContents.send('if-ui5css-info', IF_DATA);
 
+        // 부모 위치 가운데 배치한다.
+        WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow, oBrowserOptions);
+
         // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
         WSUTIL.setBrowserOpacity(oBrowserWindow);
 
-        // 부모 위치 가운데 배치한다.
-        WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow, oBrowserOptions);
+        // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+        WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
+            
+            if(oBrowserWindow.isDestroyed()){                        
+                return;    
+            }
+
+            try {
+                oBrowserWindow.closable = true;    
+            } catch (error) {
+                
+            }
+
+        });
 
     });
 

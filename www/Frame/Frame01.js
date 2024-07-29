@@ -46,6 +46,7 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     oWS = {},
     oAPP = {};
 oAPP.common = {};
+oAPP.msg = {};
 
 (function (oWS) {
     "use strict";
@@ -100,28 +101,6 @@ oAPP.common = {};
             break;
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -192,8 +171,9 @@ oAPP.common = {};
             I: "Information",
             W: "Warning",
             WORKSPACE: "U4A WorkSpace"
-        },
-            APPCOMMON = oAPP.common;
+        };
+
+        let APPCOMMON = oAPP.common;
 
         // 로그인 후 메시지 정보를 읽었을 경우 접속 언어에 맞게 텍스트 변경
         if (APPCOMMON && APPCOMMON.fnGetMsgClsText) {
@@ -940,7 +920,7 @@ oAPP.common = {};
     // 19. Busy Indicator 실행
     oWS.utill.fn.setBusy = (sIsbusy) => {
 
-        var bIsBusy = (sIsbusy == "X" ? true : false);
+        var bIsBusy = (sIsbusy === "X" ? true : false);
 
         // 실행 즉시 lock을 건다
         if (oWS.utill.attr.sap) {
@@ -980,7 +960,7 @@ oAPP.common = {};
 
         }
 
-        //전역스콥으로 이사 해야함        
+        // Busy Indicator dom
         var oBusy = oWS.utill.attr.oBusyDom;
         
         setTimeout(() => {
@@ -1005,6 +985,112 @@ oAPP.common = {};
 
     }; // end of oWS.utill.fn.setBusy
 
+
+    /**********************************************************
+     * 공통 Busy Dialog 
+     **********************************************************
+     * @param {Char1} bIsBusy 
+     *  - "X" : busy 실행
+     *  - ""  : busy 종료
+     * 
+     * @param {Object} oOptions 
+     * {
+     *    TITLE: "",   // 제목
+     *    DESC : ""    // 내역
+     * }
+     **********************************************************/
+    oWS.utill.fn.setBusyDialog = function(sIsbusy, oOptions){
+
+        if(!oWS.utill.attr.sap){
+            return;
+        }
+
+        var bIsBusy = (sIsbusy === "X" ? true : false);
+
+        // 실행 즉시 lock을 건다        
+        if (bIsBusy) {
+            oWS.utill.attr.sap.ui.getCore().lock();            
+        }        
+
+        // Cursor Focus Handle
+        if (bIsBusy) {
+
+            var _oBeforeActiveElement = document.activeElement || undefined;
+
+            if (_oBeforeActiveElement && typeof _oBeforeActiveElement?.blur !== "undefined") {
+
+                //마지막 포커스 위치 전역화 
+                oWS.utill.attr.beforeActiveElement = _oBeforeActiveElement;
+
+                //이전 포커스 제거
+                _oBeforeActiveElement.blur();
+
+            }
+
+        } else {
+
+            //이전 등록된 위치정보가 존재시 
+            if (typeof oWS?.utill?.attr?.beforeActiveElement?.focus !== "undefined") {
+
+                oWS.utill.attr.beforeActiveElement.focus();
+
+                delete oWS.utill.attr.beforeActiveElement;
+
+            }
+
+        }
+
+        // 여기다가 기본 텍스트 값을 매핑 해야함!!!!
+        let sDefTitle = "";
+        let sDefDesc  = "잠시만 기다려 주세요.";
+
+        let sTitle = sDefTitle;
+        let sDesc  = sDefDesc;
+
+        // 옵션값이 있을 경우 
+        if(typeof oOptions === "object"){
+            sTitle = oOptions.TITLE || sDefTitle;
+            sDesc  = oOptions.DESC  || sDefDesc;
+        }
+
+        // Busy를 켰을 경우
+        if(bIsBusy){
+
+            // BusyDialog가 없으면 신규 생성
+            if(!oWS.utill.attr.oBusyDlg){
+
+                oWS.utill.attr.oBusyDlg = new oWS.utill.attr.sap.m.BusyDialog();
+
+            }
+
+            let oBusyDlg = oWS.utill.attr.oBusyDlg;
+
+            oBusyDlg.setTitle(sTitle);
+            oBusyDlg.setText(sDesc);
+
+            // Busy Dialog가 open되지 않았을 경우 오픈시킨다.
+            if(oBusyDlg?._oDialog?.isOpen() === false){
+                oBusyDlg.open();
+            }
+
+        } else {
+
+            if(oWS.utill.attr.oBusyDlg){
+                
+                oWS.utill.attr.oBusyDlg.destroy();
+
+                delete oWS.utill.attr.oBusyDlg;
+    
+                oWS.utill.attr.sap.ui.getCore().unlock();
+
+            }            
+
+        }
+
+        // 작업표시줄에 ProgressBar 실행
+        setProgressBar("S", bIsBusy);
+
+    }; // end of oWS.utill.fn.setBusyDialog    
 
     // 현재 Busy Indicator 상태를 리턴해준다.
     oWS.utill.fn.getBusy = function () {

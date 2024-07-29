@@ -9,6 +9,8 @@ const oAPP = {
         this.APP = this.remote.app;
         this.APPPATH = this.APP.getAppPath();
         this.PATHINFO = require(this.PATH.join(this.APPPATH, "Frame", "pathInfo.js"));
+        this.CURRWIN = this.remote.getCurrentWindow();
+        this.BROWSKEY = this.CURRWIN.webContents.getWebPreferences().browserkey;
 
         /*******************************************************
          * 메시지클래스 텍스트 작업 관련 Object -- start

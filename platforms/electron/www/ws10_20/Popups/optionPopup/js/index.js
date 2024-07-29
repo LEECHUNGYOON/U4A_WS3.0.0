@@ -63,6 +63,10 @@ const oAPP = {
         /*******************************************************
          * 메시지클래스 텍스트 작업 관련 Object -- end
          *******************************************************/
+        
+        oAPP.IPCRENDERER = oAPP.ipcRenderer;
+        oAPP.CURRWIN = this.remote.getCurrentWindow();
+        oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
 
     }
 

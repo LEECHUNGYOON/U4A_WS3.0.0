@@ -16,6 +16,11 @@ let oAPP = (() => {
         PARWIN = CURRWIN.getParentWindow(),
         PARCON = PARWIN.webContents;
 
+        
+    var BROWSKEY = CURRWIN.webContents.getWebPreferences().browserkey;
+    var IPCRENDERER = require('electron').ipcRenderer;
+
+
     var gBeforeSearchText = ""; // 이전 검색한 텍스트    
 
     /************************************************************************
@@ -164,12 +169,15 @@ let oAPP = (() => {
 
     oAPP.onLoad = () => {
 
+        // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+		IPCRENDERER.send(`if-send-action-${BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+
         var oSrchInput = document.getElementById("srchInput");
         if (oSrchInput == null) {
             return;
         }
 
-        oSrchInput.focus();      
+        oSrchInput.focus();
 
     };
 

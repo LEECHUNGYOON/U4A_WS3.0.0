@@ -64,6 +64,7 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;        
         oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.closable = false;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -89,9 +90,9 @@
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
-
+            
             // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
         });
 
@@ -112,19 +113,28 @@
                     aT_0022: oAPP.DATA.LIB.T_0022
                 };
 
-                oBrowserWindow.webContents.send('if-find-info', oFindData);                
+                oBrowserWindow.webContents.send('if-find-info', oFindData);  
+                
+                // Find Popup을 부모창 가운데에 표시
+                parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
-            });
+                // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+                parent.WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
+                    
+                    if(oBrowserWindow.isDestroyed()){                        
+                        return;    
+                    }
 
-            // oBrowserWindow.show();
+                    try {
+                        oBrowserWindow.closable = true;    
+                    } catch (error) {
+                        
+                    }
 
-            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
+                });                
 
-            // // Find Popup을 부모창 가운데에 표시
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-            // oAPP.fn.fnFindPopupOpenSetBounds(oBrowserWindow, oBrowserOptions);
-
+            });            
+       
         });
 
         // 브라우저를 닫을때 타는 이벤트
@@ -152,47 +162,11 @@
 
     }; // end of oAPP.fn.fnFindPopupOpen
 
-    // /**************************************************************************
-    //  * Find Popup을 부모창 가운데에 표시
-    //  * ************************************************************************/
-    // oAPP.fn.fnFindPopupOpenSetBounds = (oBrowserWindow, oBrowserOptions) => {
-
-    //     // 팝업 위치를 부모 위치에 배치시킨다.
-    //     var oParentBounds = CURRWIN.getBounds(),
-    //         xPos = Math.round((oParentBounds.x + (oParentBounds.width / 2)) - (oBrowserOptions.width / 2)),
-    //         yPos = Math.round((oParentBounds.y + (oParentBounds.height / 2)) - (oBrowserOptions.height / 2)),
-    //         oWinScreen = window.screen,
-    //         iAvailLeft = oWinScreen.availLeft;
-
-    //     if (xPos < iAvailLeft) {
-    //         xPos = iAvailLeft;
-    //     }
-
-    //     if (yPos < 0) {
-    //         yPos = 0;
-    //     };
-
-    //     oBrowserWindow.setBounds({
-    //         x: xPos,
-    //         y: yPos
-    //     });
-
-    // }; // end of oAPP.fn.fnFindPopupOpenSetBounds
-
     /**************************************************************************
      * Find Popup에서 전달 받은 UI 정보를 가지고 WS20에 표시를 해준다.
      * ************************************************************************/
     oAPP.fn.fnIpcMain_Find = async function (events, res) {
-
-        // function lf_success() {
-
-        //     IPCRENDERER.send(`${BROWSKEY}--find--success`, "X");
-
-        // }
-
-        // // oAPP.fn.setSelectTreeItem(res.OBJID, res.UIATK);
-        // oAPP.fn.setSelectTreeItem(res.OBJID, res.UIATK, null, lf_success);
-
+  
         await oAPP.fn.setSelectTreeItem(res.OBJID, res.UIATK, null);
 
         IPCRENDERER.send(`${BROWSKEY}--find--success`, "X");
@@ -205,9 +179,6 @@
     oAPP.fn.fnIpcMain_Find_Controller = function (events, res) {
 
         APPCOMMON.execControllerClass(res.UIATV);
-
-        // APPCOMMON.execControllerClass = function (METHNM, INDEX);
-
 
     }; // end of oAPP.fn.fnIpcMain_Find
 
