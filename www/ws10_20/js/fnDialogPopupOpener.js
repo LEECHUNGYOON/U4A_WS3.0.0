@@ -3120,10 +3120,12 @@
     /************************************************************************
      * [Header Menu] 비디오 녹화 팝업
      ************************************************************************/
-    oAPP.fn.fnOpenVideoRecord = () => {
+    oAPP.fn.fnOpenVideoRecord = async () => {
 
-        // busy 키고 Lock 걸기
-        oAPP.common.fnSetBusyLock("X");
+        // // busy 키고 Lock 걸기
+        // oAPP.common.fnSetBusyLock("X");
+
+        await oAPP.common.fnSleep(0);
 
         let oServerInfo = parent.getServerInfo(),
             oThemeInfo = oServerInfo.oThemeInfo,

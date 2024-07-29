@@ -400,6 +400,9 @@
             return;
         }
 
+        // // busy 키고 Lock 걸기
+        // oAPP.common.fnSetBusyLock("X");
+
         oAPP.fn.fnOpenVideoRecord();
 
     }; // end of oAPP.fn.fnWS10WMENU20_03
@@ -723,6 +726,9 @@
         if (parent.getBusy() == 'X') {
             return;
         }
+
+        // // busy 키고 Lock 걸기
+        // oAPP.common.fnSetBusyLock("X");
 
         oAPP.fn.fnOpenVideoRecord();
 
