@@ -27,6 +27,9 @@
      ************************************************************************/
     oAPP.fn.fnClientEditorPopupOpen = function(OBJTY, OBJID, fnCallback) {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         EDITORDATA.OBJTY = OBJTY;
         EDITORDATA.OBJID = OBJID;
 
@@ -53,6 +56,10 @@
                 break;
 
             default:
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
         }
 
@@ -75,10 +82,18 @@
 
             // Dialog가 열려 있으면 빠져나간다.
             if (oClientEditorDialog.isOpen() == true) {
+                
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
 
             oClientEditorDialog.open();
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+            
             return;
         }
 
@@ -141,6 +156,9 @@
                         oAPP.fn.fnGetClientHtmlData(EDITORDATA);
                         break;
                 }
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
             },
             afterClose: function(oEvent) {

@@ -459,8 +459,11 @@
         //현재 UI를 대상 위치로 이동.
         l_parent.zTREE.splice(l_pos, 0, ls_tree);
         
-        //모델 갱신 처리.
-        oAPP.attr.oModel.refresh();
+        // //모델 갱신 처리.
+        // oAPP.attr.oModel.refresh();
+
+        //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+        await oAPP.fn.designRefershModel();
         
         //design tree의 tree binding 정보 갱신 처리.
         var l_bind = oAPP.attr.ui.oLTree1.getBinding();
@@ -780,6 +783,12 @@
             ls_14.chk = false;
             ls_14.chk_visible = true;
 
+            //추가버튼 활성화.
+            ls_14.visible_add    = true;
+
+            //삭제 버튼 활성화.
+            ls_14.visible_delete = true;
+
             //attribute 입력건 복사 처리.
             var lt_0015 = lf_copyAttrData(ls_14, is_copied, aggrParam, bKeep);
 
@@ -861,8 +870,11 @@
             //복사한 UI 붙여넣기 처리.
             var ls_14 = lf_setPasteCopiedData(ls_tree, i_cdata, param, lt_ua018, lt_ua026, lt_ua030, lt_ua032, lt_ua050, bKeep);
 
-            //model 갱신 처리.
-            oAPP.attr.oModel.refresh();
+            // //model 갱신 처리.
+            // oAPP.attr.oModel.refresh();
+
+            //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+            await oAPP.fn.designRefershModel();
 
             //design tree의 tree binding 정보 갱신 처리.
             var l_bind = oAPP.attr.ui.oLTree1.getBinding();

@@ -549,6 +549,7 @@ function designControl(is_attr){
             
             let _actcd = await new Promise((resolve) => {
                 sap.m.MessageBox.confirm(_msg, {
+                    id: oAPP.attr.C_CONFIRM_POPUP, 
                     onClose: (actcd) => {
                         resolve(actcd);
                     }
@@ -560,12 +561,16 @@ function designControl(is_attr){
                 return;
             }
 
+
+            oAPP.fn.setBusy(true);
+
+            
+            //동기화 화면 busy처리.
+            oContr.ui.ROOT.setBusy(true);
+
             
             //dialog용 busy on.
             oContr.fn.setBusyDialog(true);
-
-
-            oAPP.fn.setBusy(true);
 
 
             //동일속성 바인딩 처리.
@@ -810,7 +815,9 @@ function designView(is_attr){
         // oContr.ui.ROOT = new sap.m.Dialog({resizable:true, draggable:true, contentWidth:"60%",
         //     contentHeight:"60%",verticalScrolling:false});
 
-        oContr.ui.ROOT = new sap.m.Page();
+        oContr.ui.ROOT = new sap.m.Page({
+            busyIndicatorDelay:0
+        });
 
         oContr.ui.ROOT.setModel(oContr.oModel);
 

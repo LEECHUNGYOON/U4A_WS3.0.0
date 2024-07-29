@@ -53,6 +53,9 @@
                 break;
 
             default:
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
                 return;
         }
 
@@ -63,10 +66,16 @@
 
             // Dialog가 열려 있으면 빠져나간다.
             if (oCssJsLinkAddDlg.isOpen() == true) {
+                
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
                 return;
             }
 
             oCssJsLinkAddDlg.open();
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
             return;
 
         }
@@ -115,6 +124,9 @@
                         oAPP.fn.fnGetJsLinkData();
                         break;
                 }
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
             },
             afterClose: function (oEvent) {

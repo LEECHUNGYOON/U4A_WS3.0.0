@@ -178,6 +178,7 @@ function designControl(oArea){
             
             let _actcd = await new Promise((resolve) => {
                 sap.m.MessageBox.confirm(_msg, {
+                    id: oAPP.attr.C_CONFIRM_POPUP, 
                     onClose: (actcd) => {
                         resolve(actcd);
                     }

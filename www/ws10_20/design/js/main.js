@@ -681,7 +681,22 @@
 
       oAPP.attr.oModel.refresh();
 
-      
+
+      //미리보기 iframe의 부모 dom 정보 얻기.
+      var _oParent = oAPP.attr.ui.frame.parentElement;
+
+      //미리보기 iframe 복사 처리.
+      var _oClone = oAPP.attr.ui.frame.cloneNode();
+
+      //미리보기 iframe 제거.
+      oAPP.attr.ui.frame.remove();
+
+      //복사된 iframe을 다시 부모 dom에 추가.
+      if(typeof _oParent !== "undefined" && _oParent !== null){
+        _oParent.appendChild(_oClone);
+      }
+
+
       
       //20230116 pes -start.
       //미리보기 src 초기화.
@@ -948,13 +963,39 @@
     //attribute 예외처리 항목 점검 function.
     oAPP.fn.chkExcepionAttr = function(){
 
-      var lt_err = [];
+      var _aError = [];
+
 
       //ui table 예외처리 프로퍼티 점검.
-      oAPP.fn.chkExcepUiTable(lt_err);
+      oAPP.fn.chkExcepUiTable(_aError);
+
+      //20240724 PES.
+      //디자인 tree 데이터 점검 module load.
+      var _oDesignChkModule = parent.require(
+        parent.PATH.join(oAPP.attr.designRootPath, "checkAppData", "designTreeData.js"));
+
+
+      //자식이 필수인 UI에 대한 자식 존재 여부 점검(공통코드 UA050)
+      var _aReuireError = _oDesignChkModule.checkRequireChild();
+      
+      //점검 오류 항목이 존재하는경우 오류 수집 처리.
+      if(typeof _aReuireError !== "undefined" && _aReuireError.length > 0){
+        _aError = _aError.concat(_aReuireError);
+      }
+
+
+      //오류 항목의 index 정보 매핑 처리.
+      for (let i = 0, l = _aError.length; i < l; i++) {
+
+        var _sError  = _aError[i];
+
+        //index 매핑.
+        _sError.LINE = i + 1;
+        
+      }
 
       //오류 점검 결과 RETURN.
-      return lt_err;
+      return _aError;
 
 
     };  //attribute 예외처리 항목 점검 function.
@@ -1046,7 +1087,7 @@
         //297  it must be “true” in “autoResizable” among the column properties.
         ls_err.DESC    += " " + oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "297", "", "", "", "");
 
-        ls_err.LINE    = "0";
+        ls_err.LINE    = "";
         ls_err.METHOD  = "";
         ls_err.OBJID   = lt_tab[i].OBJID;
         ls_err.UIATK   = ls_0015.UIATK;

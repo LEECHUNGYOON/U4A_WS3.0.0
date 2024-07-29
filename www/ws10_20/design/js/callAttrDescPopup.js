@@ -12,8 +12,12 @@
         loApp.attr = {};
 
         //openBy 처리 UI가 존재하지 않는경우 exit.
-        if(!oUi){return;}
-
+        if(!oUi){
+            //단축키 잠금, lock 해제처리.
+            oAPP.fn.designAreaLockUnlock(false);
+            return;
+        }
+        
         //입력 attr 정보 광역화.
         loApp.attr.is_attr = is_attr;
 
@@ -28,6 +32,10 @@
             parent.showMessage(sap, 10, "E", 
             oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "196", 
             oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35", "", "", "", ""), "", "", ""));
+
+            //단축키 잠금, lock 해제처리.
+            oAPP.fn.designAreaLockUnlock(false);
+
             return;
         } 
 
@@ -54,6 +62,9 @@
             parent.showMessage(sap, 10, "E", 
                 oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "196", 
                 oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35", "", "", "", ""), "", "", ""));
+
+            // busy off Lock off
+            oAPP.common.fnSetBusyLock("");
             return;
         }
 
@@ -68,6 +79,10 @@
 
             //새로 그리지 않고 이전 팝업 정보로 open 처리.
             loApp.ui.attrDescPopup.openBy(oUi);
+
+            //단축키 잠금, lock 해제처리.
+            oAPP.fn.designAreaLockUnlock(false);
+
             return;
         }
 
@@ -81,6 +96,10 @@
         //팝업 호출 이후 팝업에 focus 처리.
         oPop.attachAfterOpen(function(){
             oPop.focus();
+
+            //단축키 잠금, lock 해제처리.
+            oAPP.fn.designAreaLockUnlock(false);
+
         });
 
         //팝업 open전 이벤트.

@@ -374,8 +374,8 @@
 
             }
 
-            // busy 끄고 Lock 풀기
-            oAPP.common.fnSetBusyLock("");
+            // // busy 끄고 Lock 풀기
+            // oAPP.common.fnSetBusyLock("");
 
             // Application 복사 팝업을 띄운다
             oAPP.fn.fnAppCopyPopupOpener(sAppID);
@@ -1041,6 +1041,9 @@
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
 
+        // 자식 윈도우 숨기기
+        oAPP.fn.fnChildWindowShow(false);
+
         // 푸터 메시지가 있을 경우 닫기
         APPCOMMON.fnHideFloatingFooterMsg();
 
@@ -1056,6 +1059,9 @@
 
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
+
+            // 자식 윈도우 활성화
+            oAPP.fn.fnChildWindowShow(true);
 
             return;
 
@@ -1120,6 +1126,9 @@
                     // busy 끄고 Lock 풀기
                     oAPP.common.fnSetBusyLock("");
 
+                    // 자식 윈도우 활성화
+                    oAPP.fn.fnChildWindowShow(true);
+
                     return;
 
                 }
@@ -1131,6 +1140,9 @@
 
                 // busy 끄고 Lock 풀기
                 oAPP.common.fnSetBusyLock("");
+
+                // 자식 윈도우 활성화
+                oAPP.fn.fnChildWindowShow(true);
 
                 return;
 
@@ -1150,7 +1162,10 @@
                     // busy 끄고 Lock 풀기
                     oAPP.common.fnSetBusyLock("");
 
-                    eval(oResult.SCRIPT);                    
+                    // 자식 윈도우 활성화
+                    oAPP.fn.fnChildWindowShow(true);
+                    
+                    eval(oResult.SCRIPT);
 
                     return;
                 }
@@ -1160,6 +1175,9 @@
 
                 // busy 끄고 Lock 풀기
                 oAPP.common.fnSetBusyLock("");
+
+                // 자식 윈도우 활성화
+                oAPP.fn.fnChildWindowShow(true);
 
                 return;
 
@@ -1189,6 +1207,9 @@
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
 
+            // 자식 윈도우 활성화
+            oAPP.fn.fnChildWindowShow(true);
+
         });
 
     }; // end of oAPP.events.ev_pressActivateBtn   
@@ -1200,6 +1221,9 @@
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
+
+        // 자식 윈도우 숨기기
+        oAPP.fn.fnChildWindowShow(false);
 
         // 푸터 메시지가 있을 경우 닫기
         APPCOMMON.fnHideFloatingFooterMsg();
@@ -1258,12 +1282,15 @@
                 oCurrWin.flashFrame(true);
 
                 // 서버에서 만든 스크립트가 있다면 eval 처리.
-                if (oResult.SCRIPT) {
-
-                    eval(oResult.SCRIPT);
+                if (oResult.SCRIPT) {                    
 
                     // busy 끄고 Lock 풀기
                     oAPP.common.fnSetBusyLock("");
+
+                    // 자식 윈도우 활성화
+                    oAPP.fn.fnChildWindowShow(true);
+
+                    eval(oResult.SCRIPT);                    
 
                     return;
                 }
@@ -1273,6 +1300,9 @@
 
                 // busy 끄고 Lock 풀기
                 oAPP.common.fnSetBusyLock("");
+
+                // 자식 윈도우 활성화
+                oAPP.fn.fnChildWindowShow(true);
 
                 return;
 
@@ -1325,6 +1355,9 @@
 
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
+
+            // 자식 윈도우 활성화
+            oAPP.fn.fnChildWindowShow(true);
 
         } // end of lf_getAppInfo      
 

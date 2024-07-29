@@ -393,6 +393,7 @@
     //UI FILTER 버튼 선택 이벤트.
     oLBtn6.attachPress(function(){
 
+
       //화면 잠금 처리.
       oAPP.fn.designAreaLockUnlock(true);
 
@@ -467,6 +468,9 @@
 
     //wizard 버튼 선택 이벤트.
     oLBtn4.attachPress(function(oEvent){
+
+      // busy 키고 Lock 켜기
+      oAPP.common.fnSetBusyLock("X");
             
       if(typeof oAPP.fn.designCallWizardPopup !== "undefined"){
         //위자드 팝업 호출.
@@ -491,6 +495,9 @@
     oLTBar1.addContent(oLBtn7);
 
     oLBtn7.attachPress(function(){
+
+      // busy 키고 Lock 켜기
+      oAPP.common.fnSetBusyLock("X");
 
       //UI 개인화 저장 팝업 function이 존재하는경우 즉시 호출.
       if(typeof oAPP.fn.callP13nDesignDataPopup !== "undefined"){
@@ -560,16 +567,27 @@
     //context menu 호출 이벤트.
     oLTree1.attachBrowserEvent("contextmenu", async function(oEvent){
 
+      oAPP.common.fnSetBusyLock("X");
+
       var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target, sap.ui.getCore());
-      if(!l_ui){return;}
+      if(!l_ui){
+        oAPP.common.fnSetBusyLock("");
+        return;
+      }
 
       //해당 라인의 바인딩 정보 얻기.
       var l_ctxt = l_ui.getBindingContext();
-      if(!l_ctxt){return;}
+      if(!l_ctxt){
+        oAPP.common.fnSetBusyLock("");
+        return;
+      }
 
       //tree 정보 얻기.
       var ls_tree = l_ctxt.getProperty();
-      if(!ls_tree){return;}
+      if(!ls_tree){
+        oAPP.common.fnSetBusyLock("");
+        return;
+      }
 
       var _oTarget = oEvent.target;
 
@@ -579,6 +597,8 @@
       //context menu 호출전 메뉴 선택 가능 여부 설정.
       oAPP.fn.enableDesignContextMenu(oAPP.attr.ui.designMenu, ls_tree.OBJID);
 
+
+      oAPP.common.fnSetBusyLock("");
 
       //메뉴 호출 처리.
       oAPP.attr.ui.designMenu.openBy(_oTarget);  
@@ -1832,7 +1852,6 @@
       await oAPP.fn.designTreeItemPress(_sTree);
 
 
-      console.log("oAPP.fn.setSelectTreeItem");
       
       //design tree의 라인 이동 처리.
       oAPP.fn.desginSetFirstVisibleRow(l_cnt, _sTree);
@@ -1926,6 +1945,12 @@
 
       ls_14.chk = false;
       ls_14.chk_visible = true;
+
+      //추가버튼 활성화.
+      ls_14.visible_add    = true;
+
+      //삭제 버튼 활성화.
+      ls_14.visible_delete = true;
 
       if(i_aggr){        
         //aggr 선택 팝업에서 선택한 aggregation정보 매핑.
@@ -2076,8 +2101,8 @@
     //ui 복사 처리.
     var ls_copy = lf_copy0014(is_t, is_p, aggrParam);
 
-    //MODEL 갱신 처리.
-    oAPP.attr.oModel.refresh();
+    // //MODEL 갱신 처리.
+    // oAPP.attr.oModel.refresh();
 
     //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.
     if(typeof _oPromise !== "undefined"){
@@ -2091,6 +2116,10 @@
     //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.
     //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
     await Promise.all(_aPromise);
+
+
+    //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+    await oAPP.fn.designRefershModel();
 
 
     //drag한 UI 선택 처리.
@@ -2261,8 +2290,8 @@
       }
 
 
-      //MODEL 갱신 처리.
-      oAPP.attr.oModel.refresh();
+      // //MODEL 갱신 처리.
+      // oAPP.attr.oModel.refresh();
 
       //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.
       if(typeof _oPromise !== "undefined"){
@@ -2281,6 +2310,9 @@
 
       }
 
+
+      //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+      await oAPP.fn.designRefershModel();
 
       //design tree의 tree binding 정보 갱신 처리.
       var l_bind = oAPP.attr.ui.oLTree1.getBinding();
@@ -2476,8 +2508,13 @@
     oAPP.fn.designUnbindUi(i_drag, l_path, l_unbind);
 
 
-    //MODEL 갱신 처리.
-    oAPP.attr.oModel.refresh();
+    // //MODEL 갱신 처리.
+    // oAPP.attr.oModel.refresh();
+
+    
+    //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+    await oAPP.fn.designRefershModel();
+
 
     //design tree의 tree binding 정보 갱신 처리.
     var l_bind = oAPP.attr.ui.oLTree1.getBinding();
@@ -2702,7 +2739,7 @@
 
       //미리보기 화면 갱신 처리.
       await oAPP.attr.ui.frame.contentWindow.refreshPreview(is_tree);
-      console.log("refreshPreview 끝.");
+
 
 
       //20240716 pes.
@@ -2728,8 +2765,6 @@
       //BUSY 종료 처리.
       parent.setBusy("");
 
-
-      console.log("oAPP.fn.designTreeItemPress");
 
       //처리 완료 resolve
       resolve();
@@ -3379,13 +3414,18 @@
       lf_delSelLine(oAPP.attr.oModel.oData.zTREE);
 
 
-      //모델 갱신 처리.
-      oAPP.attr.oModel.refresh();
+      // //모델 갱신 처리.
+      // oAPP.attr.oModel.refresh();
 
 
       //부모 UI가 다시 그려질때까지 대기.
       //(onAfterRendering 처리 대상건이 존재하지 않는경우 바로 하위 로직 수행됨)
       await Promise.all(_aPromise);
+
+      
+      //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+      await oAPP.fn.designRefershModel();
+
 
       //메뉴 선택 tree 위치 펼침 처리.
       await oAPP.fn.setSelectTreeItem(l_objid);
@@ -3902,8 +3942,61 @@
 
 
 
+  //예외처리로 추가된 UI 제거 처리.
+  oAPP.fn.destroyExcepChild = function(is_tree, sAggr) {
 
-  //UI 추가.
+    //자식 UI가 필수인 UI에 자식이 없는경우 강제추가 script 항목에 해당하는건이 아닌경우 exit.
+    if(oAPP.attr.S_CODE.UA050.findIndex( item => item.FLD01 === is_tree.UIOBK && item.FLD08 !== "X") === -1){
+      return;
+    }
+
+    //getAggregation명 얻기.
+    var _getAggrName = oAPP.fn.getUIAttrFuncName(oAPP.attr.prev[is_tree.OBJID], "3", sAggr.UIATT, "_sGetter");
+    
+    if(typeof _getAggrName === "undefined" || _getAggrName === ""){
+      return;
+    }
+
+    //DESIGN에 그려전 CHILD UI 정보 얻기.
+    var _aChild = oAPP.attr.prev[is_tree.OBJID][_getAggrName]();
+
+    //child정보가 없다면 exit.
+    if(typeof _aChild === "undefined" || _aChild === null){
+      return;
+    }
+
+    //해당 child가 N건 입력 가능한 aggregation인경우 추가된 UI가 없다면 exit.
+    if(Array.isArray(_aChild) === true && _aChild.length === 0){
+      return;
+    }
+
+    //화면에 그려전 child 정보 중 공통코드 UA050의 예외처리로 그려진 UI건 제거.
+    for (let i = 0; i < _aChild.length; i++) {
+      
+      var _oChild = _aChild[i];
+
+      //UI에 매핑한 OBJECT ID 가 있다면 SKIP.
+      if(typeof _oChild._OBJID !== "undefined"){
+        continue;
+      }
+
+      //custom data에 매핑한 UI OBJECT ID가 있다면 SKIP.
+      if(typeof _oChild.data === "function" && _oChild.data("OBJID") !== null){
+        continue;
+      }
+
+      //예외처리로 그려진건 인경우 제거 처리.
+      if(typeof _oChild.destroy === "function"){
+        _oChild.destroy();
+      }      
+      
+    }
+
+  };
+
+
+
+  //UI 추가 처리.
   oAPP.fn.designAddUIObject = async function(is_tree, is_0022, is_0023, i_cnt){
 
 
@@ -4066,6 +4159,12 @@
 
       l_14.ISECP = is_0022.ISECP;
 
+      //추가버튼 활성화.
+      l_14.visible_add    = true;
+
+      //삭제 버튼 활성화.
+      l_14.visible_delete = true;
+
       //UI ICON 구성.
       l_14.UICON = oAPP.fn.fnGetSapIconPath(is_0022.UICON);
 
@@ -4115,8 +4214,12 @@
     } //UI 반복 횟수만큼 그리기.
     
 
-    //MODEL 갱신 처리.
-    oAPP.attr.oModel.refresh();
+    // //MODEL 갱신 처리.
+    // oAPP.attr.oModel.refresh();
+
+
+    //예외처리로 추가된 UI 제거 처리.
+    oAPP.fn.destroyExcepChild(is_tree, is_0023);
 
 
     //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.
@@ -4137,6 +4240,9 @@
     //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
     await Promise.all(_aPromise);
 
+
+    //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+    await oAPP.fn.designRefershModel();
 
 
     //design tree의 tree binding 정보 갱신 처리.
@@ -4160,6 +4266,45 @@
     
 
   }; //UI 추가.
+
+
+
+  //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+  oAPP.fn.designRefershModel = function(){
+
+    return new Promise(async(resolve)=>{
+      
+      //MODEL 갱신 처리.
+      oAPP.attr.oModel.refresh();
+
+
+      //디자인 tree의 업데이트처리 대기.
+      await new Promise((resolveTree)=>{
+        oAPP.attr.ui.oLTree1.attachEventOnce("rowsUpdated", ()=>{
+          return resolveTree();
+        });
+      });
+
+
+      //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
+      var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
+
+      //미리보기 onAfterRendering 처리 관련 module load.
+      var _oRender = parent.require(_modulePath);
+
+      //attr table에 onAfterRendering 이벤트 등록 처리.
+      var _oPromise = _oRender.setAfterRendering(oAPP.attr.ui.oRTab1);
+
+      //attr 테이블 갱신 처리.
+      oAPP.attr.ui.oRTab1.invalidate();
+
+      await _oPromise;
+
+      return resolve();
+
+    });
+
+  };
 
 
   //UI Insert popup에서 Drop했다면 UI 추가 처리.
@@ -4399,6 +4544,12 @@
 
         ls_14.icon_visible = true;
 
+        //추가버튼 활성화.
+        ls_14.visible_add    = true;
+
+        //삭제 버튼 활성화.
+        ls_14.visible_delete = true;
+
 
         //tree embeded aggregation 아이콘 표현.
         oAPP.fn.setTreeAggrIcon(ls_14);
@@ -4477,16 +4628,22 @@
         //복사한 UI 붙여넣기 처리.
         var ls_14 = lf_setPasteCopiedData(is_tree, i_cdata, param, lt_ua018, lt_ua026, lt_ua030, lt_ua032, lt_ua050, bKeep);
 
-        //model 갱신 처리.
-        oAPP.attr.oModel.refresh();
+        // //model 갱신 처리.
+        // oAPP.attr.oModel.refresh();
+
+        
+        //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+        await oAPP.fn.designRefershModel();
+
 
         //design tree의 tree binding 정보 갱신 처리.
         var l_bind = oAPP.attr.ui.oLTree1.getBinding();
         l_bind._buildTree(0, oAPP.fn.designGetTreeItemCount());
-
         
+
         //붙여넣기한 UI 선택 처리.
         await oAPP.fn.setSelectTreeItem(ls_14.OBJID);
+
 
         //변경 FLAG 처리.
         oAPP.fn.setChangeFlag();
@@ -5018,8 +5175,12 @@
       //미리보기의 직접 입력 가능한 UI의 직접 입력건 반영처리.
       oAPP.fn.previewSetStrAggr(ls_tree);
       
-      //모델 갱신 처리.
-      oAPP.attr.oModel.refresh(true);
+      // //모델 갱신 처리.
+      // oAPP.attr.oModel.refresh(true);
+
+      //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+      await oAPP.fn.designRefershModel();
+
 
       //삭제라인의 바로 윗 라인 선택 처리.
       await oAPP.fn.setSelectTreeItem(l_prev);

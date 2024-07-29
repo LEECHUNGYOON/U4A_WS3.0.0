@@ -240,12 +240,27 @@ let oAPP = parent.oAPP,
             ]
         }).addStyleClass("u4aWsErrMsgPopupPage");
 
-        new sap.m.App({
+        let oApp = new sap.m.App({
             autoFocus: false,
             pages: [
                 oPage
             ]
-        }).placeAt("content");
+        });
+        
+        oApp.placeAt("content");
+
+        let oDelegate = {
+            onAfterRendering : function(){
+        
+                oApp.removeEventDelegate(oDelegate);
+        
+                // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+                oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+        
+            }
+        };
+        
+        oApp.addEventDelegate(oDelegate);
 
     }; // end of oAPP.fn.fnInitRendering       
 

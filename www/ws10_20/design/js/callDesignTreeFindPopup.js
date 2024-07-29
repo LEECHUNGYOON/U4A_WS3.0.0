@@ -294,14 +294,47 @@
 
 
 
+    //이전에 호출된 find 팝업 종료 처리.
+    function lf_closeBeforeOpenFindPopup(){
+
+        var _aPopup = sap.m.InstanceManager.getOpenPopovers();
+
+        if(_aPopup.length === 0){
+            return;
+        }
+
+        for (let i = 0, l = _aPopup.length; i < l; i++) {
+            var _oPopup = _aPopup[i];
+
+            if(typeof _oPopup.data !== "function"){
+                continue;
+            }
+
+            //이전에 호출된 find popup이 존재하는경우 종료 처리.
+            if(_oPopup.data("designTreeFindPopup") === true){
+                _oPopup.destroy();
+            }
+
+
+        }
+
+    }   //이전에 호출된 find 팝업 종료 처리.
+
+
 
     //design tree의 라인 검색 팝업.
 	oAPP.fn.callDesignTreeFindPopup = function(oUi){
 
         //광역 구조 정보 초기화.
         gs_find = {T_TREE:[], position:0, keyword:"", equal:false, dirUp:false};
+
+        //이전에 호출된 find 팝업 종료 처리.
+        lf_closeBeforeOpenFindPopup();
 		
 		var oPop = new sap.m.ResponsivePopover({placement:"Auto", contentWidth:"450px", modal:false, placement:"Auto", offsetY:-30});
+
+        oPop.data("designTreeFindPopup", true);
+
 
         //팝업 호출 전 이벤트.
         oPop.attachBeforeOpen(function(){
@@ -343,6 +376,7 @@
 
             //팝업 호출 후 검색조건 필드에 포커스 처리.
             oInp.focus();
+
 
             //화면 잠금 해제 처리.
             oAPP.fn.designAreaLockUnlock();

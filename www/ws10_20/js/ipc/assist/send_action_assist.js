@@ -17,6 +17,8 @@ export function SETBUSYLOCK(oEvent, oPARAM){
         return;
     }
 
+    console.log("ipc busy");
+
     oAPP.common.fnSetBusyLock(oPARAM.ISBUSY);
     
 }

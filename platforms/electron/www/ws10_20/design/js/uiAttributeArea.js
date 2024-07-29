@@ -75,6 +75,10 @@
 
     //라이브러리 sample 버튼 선택 이벤트.
     oRLibBtn2.attachPress(function(){
+
+      // busy 키고 Lock 켜기
+      oAPP.common.fnSetBusyLock("X");
+
       //샘플 팝업 호출.
       oAPP.fn.attrCallUiSample();
     });
@@ -169,6 +173,10 @@
 
     //OBJID를 변경 이벤트.
     oRInp1.attachChange(function(oEvent){
+
+      // busy 키고 Lock 켜기
+      oAPP.common.fnSetBusyLock("X");
+
       //OBJID 변경건 처리.
       oAPP.fn.attrChnageOBJID();
 
@@ -202,11 +210,18 @@
 
     //Description 변경 이벤트.
     oRTAr1.attachChange(function(){
+
+      // busy 키고 Lock 켜기
+      oAPP.common.fnSetBusyLock("X");
+
       //Description 등록처리.
       oAPP.fn.setDesc(oRInp1.getValue(), this.getValue());
 
       //화면에서 UI추가, 이동, 삭제 및 attr 변경시 변경 flag 처리.
       oAPP.fn.setChangeFlag();
+
+      // busy off Lock off
+      oAPP.common.fnSetBusyLock("");
 
     }); //Description 변경 이벤트.
 
@@ -226,6 +241,10 @@
 
     //table 더블클릭 이벤트 처리.
     oAPP.attr.ui.oRTab1.attachBrowserEvent("dblclick", function(oEvent){
+
+      // busy 키고 Lock 켜기
+      oAPP.common.fnSetBusyLock("X");
+
       //table의 더블클릭에 따른 이벤트 처리.
       oAPP.fn.attrDblclickEvent(oEvent);
 
@@ -260,12 +279,12 @@
     var oDrop1 = new sap.ui.core.dnd.DropInfo({targetAggregation:"items", enabled:"{/IS_EDIT}"});
     oAPP.attr.ui.oRTab1.addDragDropConfig(oDrop1);
 
-    //drag UI가 다른라인에 올라갔을때 이벤트.
+    //attr 영역에 drop 처리 이벤트.
     oDrop1.attachDrop(function(oEvent){
       //attribute에 drag UI가 올라갔을때 이벤트.
       oAPP.fn.attrDrop(oEvent);
 
-    }); //drag UI가 다른라인에 올라갔을때 이벤트.
+    }); //attr 영역에 drop 처리 이벤트.
 
 
     //attribute toolbar UI.
@@ -281,6 +300,10 @@
     oRTTool.addContent(oRTBtn1);
 
     oRTBtn1.attachPress(function(){
+
+      // busy 키고 Lock 켜기
+      oAPP.common.fnSetBusyLock("X");
+      
       //attribute 초기화 처리.
       oAPP.fn.attrResetAttr();
     });
@@ -353,11 +376,19 @@
 
     //attribute 선택 이벤트.
     oRObjStat1.attachPress(function(){
+
+      //단축키 잠금, lock 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+
       
       var l_ui = this;
 
       var l_ctxt = this.getBindingContext();
-      if(!l_ctxt){return;}
+      if(!l_ctxt){
+        //단축키 잠금, lock 해제처리.
+        oAPP.fn.designAreaLockUnlock(false);
+        return;
+      }
 
       var ls_attr = l_ctxt.getProperty();
 
@@ -394,6 +425,10 @@
 
     //attr 입력필드 이벤트.
     oRInp2.attachChange(function(){
+
+      //단축키 잠금, lock 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+
       //ATTRIBUTE 입력건에 대한 처리.
       oAPP.fn.attrChange(this.getBindingContext().getProperty(), "INPUT");
 
@@ -401,6 +436,10 @@
 
     //input f4 help 이벤트
     oRInp2.attachValueHelpRequest(function(oEvent){
+
+      //단축키 잠금, lock 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+
       //f4 help 버튼 선택 이벤트.
       oAPP.fn.attrCallValueHelp(oEvent, this.getBindingContext().getProperty());
 
@@ -417,6 +456,10 @@
 
     //DDLB 선택 이벤트.
     oRSel1.attachChange(function(){
+      
+      //단축키 잠금, lock 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+
       //ATTRIBUTE 입력건에 대한 처리.
       oAPP.fn.attrChange(this.getBindingContext().getProperty(), "DDLB");
 
@@ -437,6 +480,10 @@
 
     //버튼 선택 이벤트.
     oRBtn1.attachPress(function(oEvent){
+
+      //단축키 잠금, lock 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+
       //attribute 입력건에 대한 처리.
       oAPP.fn.attrChange(this.getBindingContext().getProperty(), "BUTTON");
 
@@ -450,6 +497,10 @@
 
     //체크박스 선택 이벤트
     oRChk1.attachSelect(function(){
+
+      //단축키 잠금, lock 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+
       //attribute 입력건에 대한 처리.
       oAPP.fn.attrChange(this.getBindingContext().getProperty(), "CHECK");
 
@@ -462,6 +513,10 @@
 
     //바인딩(서버 이벤트) 아이콘 선택 이벤트
     oRIcon1.attachPress(function(oEvent){
+
+      //단축키 잠금, lock 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+
       //바인딩 팝업, 서버이벤트 팝업 호출 등에 대한 처리.
       oAPP.fn.attrIcon1Proc(this.getBindingContext().getProperty());
 
@@ -478,6 +533,10 @@
 
     //help(script 이벤트) 아이콘 선택 이벤트
     oRIcon2.attachPress(function(oEvent){
+      
+      //단축키 잠금, lock 처리.
+      oAPP.fn.designAreaLockUnlock(true);
+
       //property Help document, client event icon에 대한 처리.
       oAPP.fn.attrIcon2Proc(this, this.getBindingContext().getProperty());      
 
@@ -510,17 +569,32 @@
     oAPP.fn.attrClearErrorField();
 
     //document의 attr에 대한 처리.
-    if(oAPP.fn.attrDocumentProc(is_attr)){return;}
+    if(oAPP.fn.attrDocumentProc(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
     
     //autoGrowing 프로퍼티 변경건 예외처리.
-    if(oAPP.fn.attrChangeAutoGrowingProp(is_attr)){return;}
+    if(oAPP.fn.attrChangeAutoGrowingProp(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //dropAble 프로퍼티 변경건 예외처리.
-    if(oAPP.fn.attrChangeDropAbleProp(is_attr)){return;}
+    if(oAPP.fn.attrChangeDropAbleProp(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
 
     //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
     oAPP.fn.attrChangeProc(is_attr, uityp, bSkipRefresh, bForceUpdate);
+
+    //단축키 잠금, lock 해제처리.
+    oAPP.fn.designAreaLockUnlock(false);
 
   
   }; //attribute 입력건에 대한 처리.
@@ -582,31 +656,70 @@
     oAPP.fn.attrClearErrorField(true);
 
     //appcontainer의 AppID 프로퍼티인경우 f4 help 팝업 호출.
-    if(oAPP.fn.attrAppf4Popup(is_attr)){return;}
+    if(oAPP.fn.attrAppf4Popup(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //sap.m.Tree, sap.ui.table.TreeTable의 parent, child 프로퍼티 바인딩처리건 점검.
-    if(oAPP.fn.attrChkTreeProp(is_attr)){return;}
+    if(oAPP.fn.attrChkTreeProp(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //select option2의 F4HelpID 프로퍼티의 팝업 호출 처리.
-    if(oAPP.fn.attrSelOption2F4HelpID(is_attr)){return;}
+    if(oAPP.fn.attrSelOption2F4HelpID(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //select option2의 F4HelpReturnFIeld 프로퍼티의 예외 처리.
-    if(oAPP.fn.attrSelOption2F4HelpReturnFIeld(is_attr)){return;}
+    if(oAPP.fn.attrSelOption2F4HelpReturnFIeld(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //HTML UI의 content 프로퍼티에 바인딩 처리시 점검.
-    if(oAPP.fn.attrChkHTMLContent(is_attr, true, oAPP.fn.attrBindProp)){return;}
+    if(oAPP.fn.attrChkHTMLContent(is_attr, true, oAPP.fn.attrBindProp)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //selectOption3 UI의 F4HelpReturnFIeld 바인딩시 필요값 점검.
-    if(oAPP.fn.attrCheckSelOpt3F4ReturnField(is_attr)){return;}
+    if(oAPP.fn.attrCheckSelOpt3F4ReturnField(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //프로퍼티 바인딩 처리건
-    if(oAPP.fn.attrBindProp(is_attr)){return;}
+    if(oAPP.fn.attrBindProp(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //이벤트 팝업 호출 처리건
-    if(oAPP.fn.attrCallEventPopup(is_attr)){return;}
+    if(oAPP.fn.attrCallEventPopup(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //aggregation 바인딩 처리건
-    if(oAPP.fn.attrBindAggr(is_attr)){return;}
+    if(oAPP.fn.attrBindAggr(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
+
+    //단축키 잠금, lock 해제처리.
+    oAPP.fn.designAreaLockUnlock(false);
 
   };  //바인딩팝업, 서버이벤트 호출 icon에 대한 처리.
 
@@ -663,14 +776,24 @@
     //113  The registered value will be lost. Do you want to proceed?
     l_msg += oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "113", "", "", "", "");
 
+    // busy off Lock off
+    oAPP.common.fnSetBusyLock("");
+
     //초기화전 확인팝업 호출.
     parent.showMessage(sap, 30, "I", l_msg, function(param){
+
+      // busy 키고 Lock 켜기
+      oAPP.common.fnSetBusyLock("X");
 
       //화면 잠금 처리.
       oAPP.fn.designAreaLockUnlock(true);
 
       //YES를 선택하지 않은경우 EXIT.
       if(param !== "YES"){
+
+        // busy off Lock off
+        oAPP.common.fnSetBusyLock("");
+
         //화면 잠금 해제 처리.
         oAPP.fn.designAreaLockUnlock();
         return;
@@ -718,6 +841,9 @@
         //attribute 변경건 처리.
         oAPP.fn.attrChangeProc(oAPP.attr.oModel.oData.T_ATTR[i], "", true);
 
+        //dropAble 프로퍼티 변경건 예외처리.
+        oAPP.fn.attrChangeDropAbleProp(oAPP.attr.oModel.oData.T_ATTR[i]);
+
       }
 
       //모델 갱신 처리.
@@ -726,12 +852,16 @@
       //변경 FLAG 처리.
       oAPP.fn.setChangeFlag();
 
-      //화면 잠금 해제 처리.
-      oAPP.fn.designAreaLockUnlock();
-
       //20240621 pes.
       //바인딩 팝업의 디자인 영역 갱신처리.
       oAPP.fn.updateBindPopupDesignData();
+      
+      //화면 잠금 해제 처리.
+      oAPP.fn.designAreaLockUnlock();
+      
+      // busy off Lock off
+      oAPP.common.fnSetBusyLock("");
+
 
     }); //초기화전 확인팝업 호출.
 
@@ -894,22 +1024,50 @@
     oAPP.fn.attrClearErrorField(true);
 
     //선택한 라인이 이벤트인경우.
-    if(oAPP.fn.attrClientEventPopup(is_attr)){return;}
+    if(oAPP.fn.attrClientEventPopup(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //sap.ui.core.HTML UI의 content 프로퍼티의 icon선택시 HTML source 팝업 호출.
-    if(oAPP.fn.attrChkHTMLContent(is_attr, false, oAPP.fn.attrHTMLConentPopup)){return;}
+    if(oAPP.fn.attrChkHTMLContent(is_attr, false, oAPP.fn.attrHTMLConentPopup)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //select option2 UI의 예외처리.
-    if(oAPP.fn.attrSelOption2F4HelpIDDel(is_attr)){return;}
+    if(oAPP.fn.attrSelOption2F4HelpIDDel(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
     
     //u4a.m.UsageArea의 AppID프로퍼티 삭제 예외처리.
-    if(oAPP.fn.attrAppF4Del(is_attr)){return;}
+    if(oAPP.fn.attrAppF4Del(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //icon 즐겨찾기 팝업 호출.
-    if(oAPP.fn.attrCallFavoriteIcon(oUi, is_attr)){return;}
+    if(oAPP.fn.attrCallFavoriteIcon(oUi, is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //property help DOCUMENT 팝업 호출.
-    if(oAPP.fn.attrPropHelpPopup(is_attr)){return;}
+    if(oAPP.fn.attrPropHelpPopup(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
+
+
+    //단축키 잠금, lock 해제처리.
+    oAPP.fn.designAreaLockUnlock(false);
 
 
   };  //property Help document, client event icon에 대한 처리.
@@ -962,6 +1120,8 @@
 
     } //입력 attribute key에따른 로직 분기.
 
+
+
   };  //document 영역의 팝업 호출 처리건 수행.
 
 
@@ -978,13 +1138,21 @@
     var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target, sap.ui.getCore());
 
     //UI INSTANCE를 얻지 못한 경우 EXIT.
-    if(!l_ui){return;}
+    if(!l_ui){
+      // busy off Lock off
+      oAPP.common.fnSetBusyLock("");
+      return;
+    }
 
     //바인딩 정보 얻기.
     var l_ctxt = l_ui.getBindingContext();
 
     //바인딩 정보를 얻지 못한 경우 exit.
-    if(!l_ctxt){return;}
+    if(!l_ctxt){
+      // busy off Lock off
+      oAPP.common.fnSetBusyLock("");
+      return;
+    }
 
     //이벤트 발생 라인의 attribute 정보 얻기.
     var ls_attr = l_ctxt.getProperty();
@@ -997,6 +1165,9 @@
 
     //서버이벤트 더블클릭 처리.
     if(oAPP.fn.attrDblClickServerEvent(ls_attr)){return;}
+
+    // busy off Lock off
+    oAPP.common.fnSetBusyLock("");
 
 
   };  //attribute table의 더블클릭에 따른 이벤트 처리.
@@ -1057,18 +1228,24 @@
     //서버에서 해당 바인딩 필드의 위치 정보 얻기.
     sendAjax(oAPP.attr.servNm + "/get_bind_fld_postion", oFormData, function(param){
 
-      //wait 종료 처리.
-      parent.setBusy("");
+      // //wait 종료 처리.
+      // parent.setBusy("");
 
       //서버에서 오류가 발생한 경우.
       if(param.RETCD === "E"){
         //오류 메시지 출력.
         parent.showMessage(sap, 20, "E", param.RTMSG);
+
+        // busy off Lock off
+        oAPP.common.fnSetBusyLock("");
         return;
       }
 
       //해당 파라메터를 갖고 서버 호출 펑션 수행 해야함.
       console.log(param.PROGNM, param.LINE);
+
+      // busy off Lock off
+      oAPP.common.fnSetBusyLock("");
 
 
     }); //서버에서 해당 바인딩 필드의 위치 정보 얻기.
@@ -1354,6 +1531,9 @@
     if(is_attr.UIATV === "false"){
       l_edit = false;
     }
+
+    //선택한 값을 combobox value 프로퍼티 바인딩 필드에 매핑.
+    is_attr.comboval = is_attr.UIATV;
 
     //초기화 flag가 입력된 경우.
     if(bClear){
@@ -1847,19 +2027,42 @@
     oAPP.fn.attrClearErrorField(true);
 
     //DOCUMENT의 f4 help 호출건인경우 하위 로직 skip.
-    if(oAPP.fn.attrCallValueHelpDOC(is_attr)){return;}
+    if(oAPP.fn.attrCallValueHelpDOC(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
   
     //color popup f4 help 호출 처리.
-    if(oAPP.fn.attrCallValueHelpColor(oEvent, is_attr)){return;}
+    if(oAPP.fn.attrCallValueHelpColor(oEvent, is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //icon popup 호출 처리.
-    if(oAPP.fn.attrCallValueHelpIcon(is_attr)){return;}
+    if(oAPP.fn.attrCallValueHelpIcon(is_attr)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //select option3 UI의 f4 help 호출 처리.
-    if(oAPP.fn.attrSelOption2F4HelpID(is_attr, true)){return;}
+    if(oAPP.fn.attrSelOption2F4HelpID(is_attr, true)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
 
     //select option3 UI의 F4HelpReturnFIeld 프로퍼티 처리.
-    if(oAPP.fn.attrSelOption2F4HelpReturnFIeld(is_attr, true)){return;}
+    if(oAPP.fn.attrSelOption2F4HelpReturnFIeld(is_attr, true)){
+      //단축키 잠금, lock 해제처리.
+      oAPP.fn.designAreaLockUnlock(false);
+      return;
+    }
+
+    //단축키 잠금, lock 해제처리.
+    oAPP.fn.designAreaLockUnlock(false);
 
   };  //프로퍼티 f4 help 호출 처리.
 
@@ -1912,11 +2115,17 @@
     if(ls_uiinfo.OBJID_stat === "Error"){
       oAPP.attr.oModel.setProperty("/uiinfo", ls_uiinfo);
       parent.showMessage(sap, 10, "E", ls_uiinfo.OBJID_stxt);
+
+      // busy off Lock off
+      oAPP.common.fnSetBusyLock("");
+
       return;
     }
 
     //이전에 입력한 이름과 지금 입력한 이름이 같으면 exit.
     if(ls_uiinfo.OBJID === ls_uiinfo.OBJID_bf){
+      // busy off Lock off
+      oAPP.common.fnSetBusyLock("");
       return;
     }
 
@@ -1976,6 +2185,9 @@
 
     //화면에서 UI추가, 이동, 삭제 및 attr 변경시 변경 flag 처리.
     oAPP.fn.setChangeFlag();
+
+    // busy off Lock off
+    oAPP.common.fnSetBusyLock("");
 
 
   };  //OBJID 입력건 처리.
@@ -5396,6 +5608,10 @@
         return;
       }
 
+      //ATTR 상단 영역 접힘 처리.
+      oAPP.fn.attrHeaderExpanded(false);
+
+
       //해당 라인의 활성화된 입력필드에 focus 처리.
       _oTarget.focus();
 
@@ -5403,7 +5619,8 @@
 
       //DOM 위치로 스크롤 이동 처리.
       if(typeof _oDom !== "undefined" && _oDom !== null){
-        _oDom.scrollIntoView(true);
+        // _oDom.scrollIntoView(true);
+        _oDom.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
       }
 
       break;
@@ -6265,7 +6482,13 @@
     //UI5 bootstrap 라이브러리 활성화건 검색.
     var ls_UA025 = oAPP.DATA.LIB.T_9011.find( a => a.CATCD === "UA025" && a.FLD01 === "APP" && a.FLD06 === "X" );
 
-    if(!ls_UA025){return;}
+    if(!ls_UA025){
+
+      // busy off Lock off
+      oAPP.common.fnSetBusyLock("");
+
+      return;
+    }
 
     var oFormData = new FormData();
     
@@ -6281,18 +6504,26 @@
     //서버에서 SAMPLE 정보 검색.
     sendAjax(oAPP.attr.servNm + "/getLibSampleInfo", oFormData, function(param){
       
-      //wait 종료 처리.
-      parent.setBusy("");
+      // //wait 종료 처리.
+      // parent.setBusy("");
 
       //SAMPLE 정보 검색에 실패한 경우.
       if(param.RETCD === "E"){
         //오류 메시지 호출.
         parent.showMessage(sap, 10, "E", param.RTMSG);
+
+        // busy off Lock off
+        oAPP.common.fnSetBusyLock("");
+
         return;
       }
 
       //BROWSER 호출.
       oAPP.fn.fnExeBrowser(param.PATH, param.PARAM);
+
+      // busy off Lock off
+      oAPP.common.fnSetBusyLock("");
+
 
     }); //서버에서 SAMPLE 정보 검색.
 

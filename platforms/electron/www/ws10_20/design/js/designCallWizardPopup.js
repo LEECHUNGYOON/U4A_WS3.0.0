@@ -350,6 +350,9 @@
         //UI ICON 구성.
         l_14.UICON = oAPP.fn.fnGetSapIconPath(ls_0022.UICON);
 
+        //carinality에 따른 아이콘 설정.
+        oAPP.fn.setTreeAggrIcon(l_14);
+
         //default 아이콘 비활성 처리.
         l_14.icon_visible = false;
 
@@ -437,8 +440,12 @@
      ************************************************************************/
     oAPP.fn.designWizardFinish = async function(OBJID){
 
-        //모델 갱신 처리.
-        oAPP.attr.oModel.refresh(true);
+        // //모델 갱신 처리.
+        // oAPP.attr.oModel.refresh(true);
+
+        //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+        await oAPP.fn.designRefershModel();
+        
 
         //design tree의 tree binding 정보 갱신 처리.
         var l_bind = oAPP.attr.ui.oLTree1.getBinding();

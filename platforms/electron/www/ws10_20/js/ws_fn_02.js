@@ -1446,6 +1446,11 @@
 
 
                 setTimeout(() => {
+
+                    if(oChild.isDestroyed()){
+                        return;
+                    }
+
                     oChild.setOpacity(0);
                     oChild.hide();
                 }, 0);
@@ -1456,6 +1461,10 @@
 
 
             if (isVisible) {
+                continue;
+            }
+
+            if(oChild.isDestroyed()){
                 continue;
             }
 

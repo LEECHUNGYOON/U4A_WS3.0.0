@@ -163,6 +163,19 @@ let oAPP = parent.oAPP,
 
         oSplitApp.placeAt("content");
 
+        let oDelegate = {
+            onAfterRendering : function(){
+        
+                oSplitApp.removeEventDelegate(oDelegate);
+        
+                // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+                parent.oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+        
+            }
+        };
+        
+        oSplitApp.addEventDelegate(oDelegate);
+
     }; // end of oAPP.fn.fnInitRendering 
 
     /************************************************************************

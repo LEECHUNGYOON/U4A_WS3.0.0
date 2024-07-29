@@ -52,7 +52,8 @@
         oTool.addContent(oBtn0);
 
         //닫기 버튼 선택 이벤트.
-        oBtn0.attachPress(function(){        
+        oBtn0.attachPress(function(){
+
             //팝업 종료 처리.
             lf_close(oDlg);
 
@@ -132,6 +133,7 @@
 
         //팝업 종료버튼 선택 이벤트.
         oBtn3.attachPress(function(){
+
             //팝업 종료처리.
             lf_close(oDlg);
 
@@ -149,8 +151,11 @@
 
     //팝업 종료 처리.
     function lf_close(oDlg, bSkip){
-        //팝업 종료 처리.
-        oDlg.close();
+        
+        // //팝업 종료 처리.
+        // oDlg.close();
+
+        oDlg.destroy();
 
         if(bSkip){return;}
 

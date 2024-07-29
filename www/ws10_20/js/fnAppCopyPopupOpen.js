@@ -149,6 +149,13 @@
                 oAppCopyForm
             ],
 
+            afterOpen: function(){
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
+            },
+
             // Events
             afterClose: oAPP.events.ev_AppCopyDlgAfterClose,
 

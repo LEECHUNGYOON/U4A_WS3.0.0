@@ -3,85 +3,47 @@ var oFrame = document.getElementById('ws_frame');
 var oAPP = oFrame.contentWindow.oAPP;
 
 /*********************************************************
- * @module - onAfterRendering 이벤트 등록 대상 UI 얻기.
+ * @module - onAfterRendering 이벤트 등록 처리.
  ********************************************************/
 module.exports.setAfterRendering = function(oTarget){
 
-    if(typeof oTarget === "undefined" || oTarget === null){
-		return;
-	}
-	
-	var _oTarget = oTarget;
-	
-	
-	//UI에 onAfterRendering이 존재하지 않는경우.
-	//상위 부모의 onAfterRendering을 확인.
-	while(typeof _oTarget?.onAfterRendering === "undefined"){
-		
-		_oTarget = _oTarget.oParent;
-        
-        //부모를 찾지 못한 경우 exit.
-		if(typeof _oTarget === "undefined" || _oTarget === null){
-			return;
+    return new Promise((resolve)=>{
+			
+		if(typeof oTarget === "undefined"){
+			return resolve();
 		}
-	}
 
-	var _OBJID = _oTarget._OBJID;
-	
-	//예외처리 대상 UI에 해당하는건인경우.
-	switch(true){
-		case typeof _oTarget._oDialog !== "undefined" && _oTarget._oDialog != null:
-            //UI 내부에 DIALOG UI가 존재하는경우(sap.m.BusyDialog)
-			_oTarget = _oTarget._oDialog;
-            
-			break;
-		
-		case typeof _oTarget._oPopover !== "undefined" && _oTarget._oPopover != null:
-            //UI 내부에 POPOVER UI가 존재하는경우(sap.m.QuickView)
-			_oTarget = _oTarget._oPopover;
+		//RichTextEditor UI 인경우.
+		if(oTarget.isA("sap.ui.richtexteditor.RichTextEditor") === true){
 
-			break;
+			oTarget.attachEventOnce("readyRecurring", async function(){
+
+				return resolve();
+
+            });
 			
-		case typeof _oTarget._getMenu === "function" && typeof _oTarget._initAllMenuItems === "function":
-			//UI 내부에 MENU UI를 얻는 function이 존재하는경우(sap.m.Menu)
+			return;
+			
+		}		
+		
+		var _oDelegate = {
+			onAfterRendering: async function(){
+				oTarget.removeEventDelegate(_oDelegate);
 
-			if (!_oTarget._bIsInitialized) {
-				_oTarget._initAllMenuItems();
-				_oTarget._bIsInitialized = true;
+				//현재 호출될 dialog 안에 richTextEditor가 없다면
+				//afterOpen이벤트 등록 후 해당 이벤트 호출까지 대기.
+				//(dialog UI 안에 richTextEditor가 있다면
+				//dialog의 afterOpen 호출전에 richTextEditor의 readyRecurring 이벤트가 호출되어
+				//문제가 발생됨)
+				await attachEventDialogAfterOpen(oTarget);
+
+				return resolve();
 			}
-			
-			_oTarget = _oTarget._getMenu();
+		};
 		
-			break;
-			
-		case typeof _oTarget._getDialog === "function":
-            //UI 내부에 dialog UI를 얻는 function이 존재하는경우(sap.m.ViewSettingsDialog)
-			_oTarget = _oTarget._getDialog();
+		oTarget.addEventDelegate(_oDelegate);
 		
-			break;
-			
-		case typeof _oTarget._oControl !== "undefined" && _oTarget._oControl !== null:
-			//UI 내부에 control UI가 존재하는경우(sap.m.ResponsivePopover)
-			_oTarget = _oTarget._oControl;
-		
-			break;
-
-		case typeof _oTarget.isA === "function" && _oTarget.isA("sap.ui.unified.MenuItemBase") === true:
-			//sap.ui.unified.MenuItemBase으로 파생된 UI인경우(sap.ui.unified.MenuItem, sap.ui.unified.MenuTextFieldItem)
-			_oTarget = _oTarget.oParent;
-		
-			break;
-		
-	}
-	
-	if(typeof _oTarget === "undefined" || _oTarget === null){
-		return;
-	}
-
-	_oTarget._OBJID = _OBJID;
-	
-		
-	return _oTarget;
+	});
 
 };
 
@@ -253,8 +215,7 @@ function refreshRichTextEditor(is_tree, aPromise = []){
 
         //현재 UI가 richTextEditor라면 readyRecurring 이벤트 등록처리.
         if(_sChild.UIOBK === "UO01786"){
-
-            aPromise.push(oAPP.fn.setAfterRendering(_oChild));
+            aPromise.push(module.exports.setAfterRendering(_oChild));
 
         }
 
@@ -264,5 +225,100 @@ function refreshRichTextEditor(is_tree, aPromise = []){
     }
     
     return aPromise;
+
+}
+
+/*********************************************************
+ * @function - 현재 호출될 dialog 안에 richTextEditor가 없다면
+ * 				afterOpen이벤트 등록 후 해당 이벤트 호출까지 대기.
+ ********************************************************/
+function attachEventDialogAfterOpen(oTarget){
+
+	return new Promise((resolve)=>{
+
+		
+		//현재 UI의 tree 정보 얻기.
+		var _sTree = oAPP.fn.getTreeData(oTarget._OBJID);
+
+		if(typeof _sTree === "undefined"){
+			return resolve();
+		}
+
+		//Workbench 미리보기 화면 예외로직의 팝업류 UI가 아닌경우 EXIT.
+		if(oAPP.attr.S_CODE.UA015.findIndex( item => item.FLD01 === _sTree.UIFND && item.FLD03 !== "" ) === -1){
+			return resolve();
+		}
+
+		//AfterOpen 이벤트가 없다면 exit.
+		if(typeof oTarget.attachAfterOpen !== "function"){
+			return resolve();
+		}
+
+		//open 확인 function이 없다면 exit.
+		if(typeof oTarget.isOpen !== "function"){
+			return resolve();
+		}
+
+		//현재 dialog성 UI가 open 됐다면 exit.
+		if(oTarget.isOpen() === true){
+			return resolve();
+		}
+
+		//dialog 안에 richtexteditor이 존재하는 경우 exit.
+		if(findRichTextEditor(_sTree) === true){
+			return resolve();
+		}
+
+		//dialog의 AfterOpen 이벤트 등록.
+		oTarget.attachEventOnce("afterOpen", async function(){
+			return resolve();
+		});
+
+	});
+
+}
+
+
+/*********************************************************
+ * @function - child에 richTextEditor이 존재하는지 확인.
+ ********************************************************/
+function findRichTextEditor(sTree){
+
+	//tree 정보가 존재하지 않는경우 exit.
+	if(typeof sTree === "undefined"){
+		return false;
+	}
+
+	//SAP.UI.RICHTEXTEDITOR.RICHTEXTEDITOR 인경우 찾음 flag return.
+	if(sTree.UIOBK === "UO01786"){
+		return true;
+	}
+
+	//child 정보가 존재하지 않는경우 exit.
+	if(typeof sTree.zTREE === "undefined"){
+		return false;
+	}
+
+	//child 정보가 존재하지 않는경우 exit.
+	if(sTree.zTREE.length === 0){
+		return false;
+	}
+
+	//child를 탐색하여 RICHTEXTEDITOR가 존재하는지 확인.
+	for (let i = 0, l = sTree.zTREE.length; i < l; i++) {
+		
+		var _sTree = sTree.zTREE[i];
+
+		//재귀 호출을 통해 RICHTEXTEDITOR 존재여부 확인.
+		var _found = findRichTextEditor(_sTree);
+
+		//존재하는경우 exit.
+		if(_found === true){
+			return true;
+		}
+
+	}
+
+	return false;
 
 }

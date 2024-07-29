@@ -20,6 +20,8 @@ let oAPP = (function(window) {
     oAPP.APP = oAPP.REMOTE.app;
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.RANDOM = require("random-key");
+    oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
+    oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
 
     /*******************************************************
      * 메시지클래스 텍스트 작업 관련 Object -- start

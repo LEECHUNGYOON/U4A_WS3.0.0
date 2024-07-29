@@ -56,6 +56,23 @@
       if(typeof i_x === "undefined"){return;}
       if(typeof i_y === "undefined"){return;}
 
+
+      //20240726 PES -START.
+      //y축 좌표값이 window height 끝에 근접한경우.
+      if(window.innerHeight - i_y < 200){
+        //y축 좌표값 보정 처리.
+        i_y = window.innerHeight - 200;
+      }
+
+      //x축 좌표값이 window width 끝에 근접한경우.
+      if(window.innerWidth - i_x < 400){
+        //x축 좌표값 보정 처리.
+        i_x = window.innerWidth - 400;
+      }
+
+      //20240726 PES -END.
+
+
       //x, y 좌표에 의해 dialog 위치를 변경하기 위한 처리.
       this._bDisableRepositioning = true;    
       this._oManuallySetPosition = {x:i_x, y:i_y};

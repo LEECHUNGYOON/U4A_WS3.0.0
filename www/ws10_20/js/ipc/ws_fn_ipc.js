@@ -81,6 +81,10 @@
             case "CLSD":
             case "CPRO":
             case "CPUB":
+            
+            // 2024-07-29 v3.4.2-sp2 
+            // 오류 항목 유형 추가
+            case "CPRI":
 
                 oAPP.common.execControllerClass(oRowData.OBJID, oRowData.LINE);
                 return;

@@ -98,10 +98,8 @@
      ************************************************************************/
     oAPP.fn.fnCssJsLinkAddPopupOpener = function (TYPE) {
 
-        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-        if (parent.getBusy() == 'X') {
-            return;
-        }
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         if (oAPP.fn.fnCssJsLinkAddPopupOpen) {
             oAPP.fn.fnCssJsLinkAddPopupOpen(TYPE);
@@ -119,11 +117,6 @@
      ************************************************************************/
     oAPP.fn.fnWebSecurityPopupOpener = function () {
 
-        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-        if (parent.getBusy() == 'X') {
-            return;
-        }
-
         if (oAPP.fn.fnWebSecurityPopupOpen) {
             oAPP.fn.fnWebSecurityPopupOpen();
             return;
@@ -139,11 +132,6 @@
      * WS20의 Client Event 팝업 실행시켜 주는 메소드
      ************************************************************************/
     oAPP.fn.fnClientEditorPopupOpener = function (TYPE, PARAM, fnCallback) {
-
-        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-        if (parent.getBusy() == 'X') {
-            return;
-        }
 
         if (oAPP.fn.fnClientEditorPopupOpen) {
             oAPP.fn.fnClientEditorPopupOpen(TYPE, PARAM, fnCallback);
@@ -161,10 +149,8 @@
      ************************************************************************/
     oAPP.fn.fnErrorPageEditorPopupOpener = function () {
 
-        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-        if (parent.getBusy() == 'X') {
-            return;
-        }
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // Error Page Editor Popup Open
         if (oAPP.fn.fnErrorPageEditorPopupOpen) {
@@ -185,11 +171,6 @@
      * - 복사할 APPID
      * **********************************************************************/
     oAPP.fn.fnAppCopyPopupOpener = function (sAppId) {
-
-        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-        if (parent.getBusy() == 'X') {
-            return;
-        }
 
         // Application Copy Popup Open
         if (oAPP.fn.fnAppCopyPopupOpen) {
@@ -2094,11 +2075,18 @@
      ************************************************************************/
     oAPP.fn.fnFontStyleWizardPopupOpener = () => {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         let sPopupName = "FONTSTYLE";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+            
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -2296,8 +2284,8 @@
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
 
-            // busy 끄고 Lock 풀기
-            oAPP.common.fnSetBusyLock("");
+            // // busy 끄고 Lock 풀기
+            // oAPP.common.fnSetBusyLock("");
 
         });
 

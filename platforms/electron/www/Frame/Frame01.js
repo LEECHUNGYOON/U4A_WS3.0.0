@@ -84,9 +84,53 @@ oAPP.common = {};
     // 현재 페이지 정보
     oWS.utill.attr.currPage = "";
 
-    /**
+    // Busy를 실행하는 DOM 객체 정보
+    oWS.utill.attr.oBusyDom = undefined;
+
+    // Busy 타입별 Busy Dom 객체정보를 글로벌에 저장
+    let oDefBusyDom = document.getElementById("u4aWsBusyIndicator");
+    switch(oWS.utill.attr.oWsConfInfo.BUSYTYPE){
+
+        case "01":
+            oWS.utill.attr.oBusyDom = oDefBusyDom;
+            break;
+        
+        default: 
+            oWS.utill.attr.oBusyDom = oDefBusyDom;
+            break;
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**********************************************************
      * ## Function 
-     */
+     **********************************************************/
 
 
     /** 
@@ -825,21 +869,84 @@ oAPP.common = {};
 
     };
 
+    // [원본]
+    // // 19. Busy Indicator 실행
+    // oWS.utill.fn.setBusy = (sIsbusy) => {
+
+    //     // ws config를 구한다.
+    //     var oWsConfInfo = getWsConfigInfo(),
+    //         sBusyType = oWsConfInfo.BUSYTYPE,
+
+    //         bIsBusy = (sIsbusy == "X" ? true : false);
+
+    //     // 현재 Busy Indicator 상태정보를 글로벌 변수에 저장한다.
+    //     oWS.utill.attr.isBusy = sIsbusy;
+
+    //     if (oWS.utill.attr.sap) {
+    //         if (bIsBusy) {
+    //             oWS.utill.attr.sap.ui.getCore().lock();
+    //         } else {
+    //             oWS.utill.attr.sap.ui.getCore().unlock();
+    //         }
+    //     }
+
+    //     // Cursor Focus Handle
+    //     if (bIsBusy) {
+
+    //         if (document.activeElement && document.activeElement.blur) {
+    //             oWS.utill.attr.beforeActiveElement = document.activeElement;
+    //             document.activeElement.blur();
+    //         }
+
+    //     } else {
+
+    //         if (oWS.utill.attr.beforeActiveElement) {
+
+    //             oWS.utill.attr.beforeActiveElement.focus();
+
+    //             delete oWS.utill.attr.beforeActiveElement;
+
+    //         }
+
+    //     }
+
+    //     // 작업표시줄에 ProgressBar 실행
+    //     setProgressBar("S", bIsBusy);
+
+    //     switch (sBusyType) {
+    //         case "01": // UI5 Style
+    //             lf_type01(bIsBusy);
+    //             break;
+    //     }
+
+    //     function lf_type01(bIsBusy) {
+
+    //         var oBusy = document.getElementById("u4aWsBusyIndicator");
+
+    //         if (!oBusy) {
+    //             return;
+    //         }
+
+    //         if (bIsBusy) {
+    //             oBusy.style.visibility = "visible";
+    //         } else {
+    //             oBusy.style.visibility = "hidden";
+    //         }
+
+    //     }
+
+    // }; // end of oWS.utill.fn.setBusy
+
     // 19. Busy Indicator 실행
     oWS.utill.fn.setBusy = (sIsbusy) => {
 
-        // ws config를 구한다.
-        var oWsConfInfo = getWsConfigInfo(),
-            sBusyType = oWsConfInfo.BUSYTYPE,
+        var bIsBusy = (sIsbusy == "X" ? true : false);
 
-            bIsBusy = (sIsbusy == "X" ? true : false);
-
-        // 현재 Busy Indicator 상태정보를 글로벌 변수에 저장한다.
-        oWS.utill.attr.isBusy = sIsbusy;
-
+        // 실행 즉시 lock을 건다
         if (oWS.utill.attr.sap) {
             if (bIsBusy) {
                 oWS.utill.attr.sap.ui.getCore().lock();
+               
             } else {
                 oWS.utill.attr.sap.ui.getCore().unlock();
             }
@@ -848,14 +955,22 @@ oAPP.common = {};
         // Cursor Focus Handle
         if (bIsBusy) {
 
-            if (document.activeElement && document.activeElement.blur) {
-                oWS.utill.attr.beforeActiveElement = document.activeElement;
-                document.activeElement.blur();
+            var _oBeforeActiveElement = document.activeElement || undefined;
+
+            if (_oBeforeActiveElement && typeof _oBeforeActiveElement?.blur !== "undefined") {
+
+                //마지막 포커스 위치 전역화 
+                oWS.utill.attr.beforeActiveElement = _oBeforeActiveElement;
+
+                //이전 포커스 제거
+                _oBeforeActiveElement.blur();
+
             }
 
         } else {
 
-            if (oWS.utill.attr.beforeActiveElement) {
+            //이전 등록된 위치정보가 존재시 
+            if (typeof oWS?.utill?.attr?.beforeActiveElement?.focus !== "undefined") {
 
                 oWS.utill.attr.beforeActiveElement.focus();
 
@@ -865,32 +980,31 @@ oAPP.common = {};
 
         }
 
-        // 작업표시줄에 ProgressBar 실행
-        setProgressBar("S", bIsBusy);
-
-        switch (sBusyType) {
-            case "01": // UI5 Style
-                lf_type01(bIsBusy);
-                break;
-        }
-
-        function lf_type01(bIsBusy) {
-
-            var oBusy = document.getElementById("u4aWsBusyIndicator");
-
-            if (!oBusy) {
-                return;
-            }
-
+        //전역스콥으로 이사 해야함        
+        var oBusy = oWS.utill.attr.oBusyDom;
+        
+        setTimeout(() => {
+            
             if (bIsBusy) {
                 oBusy.style.visibility = "visible";
             } else {
-                oBusy.style.visibility = "hidden";
+                oBusy.style.visibility = "hidden";    
+            }
+    
+            oWS.utill.attr.isBusy = "";
+    
+            if(oBusy.style.visibility === "visible"){
+                oWS.utill.attr.isBusy = "X";       
+    
             }
 
-        }
+        }, 0);
+
+        // 작업표시줄에 ProgressBar 실행
+        setProgressBar("S", bIsBusy);
 
     }; // end of oWS.utill.fn.setBusy
+
 
     // 현재 Busy Indicator 상태를 리턴해준다.
     oWS.utill.fn.getBusy = function () {

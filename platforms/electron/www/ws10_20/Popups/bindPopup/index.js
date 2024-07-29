@@ -61,7 +61,7 @@ let oAPP = parent.oAPP,
         {ITMCD:"", FLD01:"EXT00002374"},    //sap.m.Page useBackToTopButton
         {ITMCD:"", FLD01:"EXT00002378"},    //sap.uxap.ObjectPageLayout useBackToTopButton
         {ITMCD:"", FLD01:"EXT00002379"}     //sap.f.DynamicPage
-    ];  
+    ];
 
 
     oAPP.types = {};
@@ -88,6 +88,8 @@ let oAPP = parent.oAPP,
     //(converion명 점검 오류 발생과 같은 특정 오류건 수집을 위한 array)
     oAPP.attr.T_EXCEP_ERR = [];
 
+    //CONFIRM POPUP 호출시 SID.
+    oAPP.attr.C_CONFIRM_POPUP = "WS_CONFIRM_POPUP";
 
     oAPP.settings = {};
 
@@ -2374,6 +2376,49 @@ let oAPP = parent.oAPP,
 
     window.onload = function () {
 
+        //20240726 PES.
+        //바인딩 팝업, WS3.0 디자인화면
+        //각 화면에서 순간적으로 이벤트를 발생하면서 생기는 문제를 처리하기위해
+        //팝업화면이 hidden 처리될때 confirm popup과 같이 다음 액션을
+        //기다리는 팝업류 종료 처리.
+        document.addEventListener('visibilitychange', function() {
+
+            //화면이 숨겨지지 않은경우 exit.
+            if (document.hidden !== true){
+                return;
+            }
+
+            //현재 호출된 dialog 정보 얻기.
+            var _aDialog = sap.m.InstanceManager.getOpenDialogs();
+
+            //호출된 dialog가 없다면 exit.
+            if(typeof _aDialog === "undefined" || _aDialog?.length === 0){
+                return;
+            }
+
+            for (let i = 0, l = _aDialog.length; i < l; i++) {
+                
+                var _oDialog = _aDialog[i];
+
+                //id 정보 얻는 function이 존재하지 않는경우 exit.
+                if(typeof _oDialog.getId !== "function"){
+                    continue;
+                }
+
+                //로직에 의해 호출된 confirm popup인경우.
+                if(_oDialog.getId() === oAPP.attr.C_CONFIRM_POPUP){
+                    //해당 dialog destroy 처리.
+                    _oDialog.destroy();
+                }
+                
+            }
+
+            // oAPP.ui.APP.focus();
+            oAPP.attr.oDesign.ui.TREE.focus();
+
+        });
+
+
         sap.ui.getCore().attachInit(function () {
 
             //UI TABLE 라이브러리 예외처리.
@@ -2392,8 +2437,6 @@ let oAPP = parent.oAPP,
         });
 
     };
-
-
 
 
     //추가속성 table layout 설정.
@@ -3191,13 +3234,13 @@ let oAPP = parent.oAPP,
 
         //확인이 필요한경우 메시지 팝업 호출.
         // parent.showMessage(sap, 30, "I", l_msg, function(param){
-        sap.m.MessageBox.confirm(l_msg, function(param){
+        sap.m.MessageBox.confirm(l_msg, {id: oAPP.attr.C_CONFIRM_POPUP, onClose:function(param){
             // if(param !== "YES"){return;}
             if(param !== "OK"){return;}
 
             fnCallback(is_attr);
 
-        });
+        }});
 
         //function 호출처 skip을 위한 flag return.
         return true;
@@ -3227,9 +3270,9 @@ let oAPP = parent.oAPP,
                 var _param = await new Promise(function(res){
                     //확인 팝업 호출.
                     // parent.showMessage(sap, 30, "I", l_msg, function(param){
-                    sap.m.MessageBox.confirm(l_msg, function(param){
+                    sap.m.MessageBox.confirm(l_msg, {id: oAPP.attr.C_CONFIRM_POPUP, onClose:function(param){
                         return res(param);
-                    });
+                    }});
 
                 });
         
@@ -3277,9 +3320,9 @@ let oAPP = parent.oAPP,
             var _param = await new Promise(function(res){
                 //확인 팝업 호출.
                 // parent.showMessage(sap, 30, "I", l_msg, function(param){
-                sap.m.MessageBox.confirm(l_msg, function(param){
+                sap.m.MessageBox.confirm(l_msg, {id: oAPP.attr.C_CONFIRM_POPUP, onClose:function(param){
                     return res(param);
-                });
+                }});
 
             });
 
@@ -4313,7 +4356,13 @@ let oAPP = parent.oAPP,
                 var CURRWIN = oAPP.REMOTE.getCurrentWindow(),
                 PARWIN = CURRWIN.getParentWindow();
 
-                PARWIN.webContents.send("if-bindPopup-callback", "X");
+                //20240729 PES -START.
+                //WS 3.0 디자인 영역과 바인딩 팝업 통신을 BROADCAST로 변경함에 따른 IPC 통신 주석처리.
+                // PARWIN.webContents.send("if-bindPopup-callback", "X");
+
+                //BUSY OFF 요청 처리.
+                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+                //20240729 PES -END.
 
                 return;
             }
@@ -4350,7 +4399,14 @@ let oAPP = parent.oAPP,
                 var CURRWIN = oAPP.REMOTE.getCurrentWindow(),
                 PARWIN = CURRWIN.getParentWindow();
 
-                PARWIN.webContents.send("if-bindPopup-callback", "X");
+                //20240729 PES -START.
+                //WS 3.0 디자인 영역과 바인딩 팝업 통신을 BROADCAST로 변경함에 따른 IPC 통신 주석처리.
+                // PARWIN.webContents.send("if-bindPopup-callback", "X");
+
+                //BROADCAST 통신으로 변경.
+                //BUSY OFF 요청 처리.
+                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+                //20240729 PES -END.
 
                 return;
 
@@ -4395,7 +4451,15 @@ let oAPP = parent.oAPP,
             var CURRWIN = oAPP.REMOTE.getCurrentWindow(),
             PARWIN = CURRWIN.getParentWindow();
 
-            PARWIN.webContents.send("if-bindPopup-callback", "X");
+
+            //20240729 PES -START.
+            //WS 3.0 디자인 영역과 바인딩 팝업 통신을 BROADCAST로 변경함에 따른 IPC 통신 주석처리.
+            // PARWIN.webContents.send("if-bindPopup-callback", "X");
+
+            //BROADCAST 통신으로 변경.
+            //BUSY OFF 요청 처리.
+            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+            //20240729 PES -END.
 
 
             oAPP.ui.oTree.attachEventOnce("rowsUpdated", ()=>{
