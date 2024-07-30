@@ -580,10 +580,26 @@ function selectDesignTreeOBJID(oData){
 /*************************************************************
  * @function - WS 디자인 영역의 busy off 요청 처리.
  *************************************************************/
-function sendBusyOff(oData){
+function sendDesignAreaBusyOff(oData){
 
     var _sParam = {
         PRCCD   : "BUSY_OFF"
+    };
+
+
+    //WS 3.0 디자인 영역에 데이터 전송.
+    CL_WS20_BINDPOPUP.sendPostMessage(_sParam);
+
+}
+
+
+/*************************************************************
+ * @function - WS 디자인 영역의 busy on 요청 처리.
+ *************************************************************/
+function sendDesignAreaBusyOn(oData){
+
+    var _sParam = {
+        PRCCD   : "BUSY_ON"
     };
 
 
@@ -633,8 +649,13 @@ module.exports = function(ACTCD, oData){
             break;
 
         case "BUSY_OFF":
-            //busy off 요청  처리
-            sendBusyOff(oData);
+            //디자인 영역에 busy off 요청 처리
+            sendDesignAreaBusyOff(oData);
+            break;
+
+        case "BUSY_ON":
+            //디자인 영역에 busy on 요청 처리
+            sendDesignAreaBusyOn(oData);
             break;
 
         default:

@@ -620,10 +620,14 @@ let oAPP = parent.oAPP,
     /*************************************************************
      * @function - UI화면 갱신 이후 이벤트 처리.
      *************************************************************/
-    oAPP.fn.UIUpdated = function(){
+    oAPP.fn.UIUpdated = async function(){
 
-        //UI화면 갱신 이후 이벤트 제거 처리.
-		sap.ui.getCore().detachEvent("UIUpdated", oAPP.fn.UIUpdated);
+
+        //20240730 PES
+        //UIUpdated 이벤트가 ui5 상위 버전에서 더이상 동작하지 않기에
+        //onAfterRendering으로 대체 처리를 위한 주석 처리.
+        // //UI화면 갱신 이후 이벤트 제거 처리.
+		// sap.ui.getCore().detachEvent("UIUpdated", oAPP.fn.UIUpdated);
 
         jQuery.sap.require("sap.m.MessageBox");
 
@@ -652,7 +656,21 @@ let oAPP = parent.oAPP,
 
 
             //서버에서 바인딩 정보 얻기.
-            oAPP.fn.getBindFieldInfo();
+            await oAPP.fn.getBindFieldInfo();
+
+
+            oAPP.fn.setBusy(false);
+
+
+            //BUSY OFF 요청 처리.
+            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+
+
+            var _oWin = oAPP.REMOTE.getCurrentWindow();
+
+            //윈도우 닫기버튼 활성화 처리.
+            _oWin.closable = true;
+
 
         }, 0);
 
@@ -805,7 +823,7 @@ let oAPP = parent.oAPP,
      *************************************************************/
     oAPP.fn.changeBindingMode = async function(bindMode){
         
-        oAPP.fn.setBusy(true);
+        // oAPP.fn.setBusy(true);
 
         
         //추가 속성 정보 초기화.
@@ -865,7 +883,7 @@ let oAPP = parent.oAPP,
         }
 
 
-        oAPP.fn.setBusy(false);
+        // oAPP.fn.setBusy(false);
 
 
     };
@@ -882,11 +900,25 @@ let oAPP = parent.oAPP,
     //바인딩 팝업 화면 구성.
     oAPP.fn.callBindPopup = async function () {
 
-        //UI화면 갱신 이후 이벤트 처리.
-		sap.ui.getCore().attachEvent("UIUpdated", oAPP.fn.UIUpdated);
+        //20240730 PES
+        //UIUpdated 이벤트가 ui5 상위 버전에서 더이상 동작하지 않기에
+        //onAfterRendering으로 대체 처리를 위한 주석 처리.
+        // //UI화면 갱신 이후 이벤트 처리.
+		// sap.ui.getCore().attachEvent("UIUpdated", oAPP.fn.UIUpdated);
 
         //최상위 UI.
         var oApp = new sap.m.App({busy:true, busyIndicatorDelay:0});
+
+        //UIUpdated 이벤트 대체 처리.
+        var _oDeligate = {onAfterRendering:(oEvent)=>{
+            oApp.removeEventDelegate(_oDeligate);
+
+            oAPP.fn.UIUpdated();
+        }};
+
+        oApp.addEventDelegate(_oDeligate);
+        
+
         oApp.placeAt("content");
         oApp.addStyleClass("sapUiSizeCompact");
 
@@ -926,13 +958,13 @@ let oAPP = parent.oAPP,
         //tree 전체펼침 이벤트
         oToolBtn1.attachPress(function () {
 
-            oAPP.ui.oTree.expandToLevel(99999);
+            oAPP.ui.oModelFieldTree.expandToLevel(99999);
 
             // //tree table 컬럼길이 재조정 처리.
             // oAPP.fn.setTreeAutoResizeCol(100);
 
             // //tree table 컬럼길이 재조정 처리.
-            oAPP.fn.setUiTableAutoResizeColumn(oAPP.ui.oTree);
+            oAPP.fn.setUiTableAutoResizeColumn(oAPP.ui.oModelFieldTree);
 
         });
 
@@ -952,10 +984,10 @@ let oAPP = parent.oAPP,
 
         //tree 전체접힘 이벤트
         oToolBtn2.attachPress(function () {
-            oAPP.ui.oTree.collapseAll();
+            oAPP.ui.oModelFieldTree.collapseAll();
 
             //tree table 컬럼길이 재조정 처리.
-            oAPP.fn.setUiTableAutoResizeColumn(oAPP.ui.oTree);
+            oAPP.fn.setUiTableAutoResizeColumn(oAPP.ui.oModelFieldTree);
 
         });
 
@@ -978,9 +1010,16 @@ let oAPP = parent.oAPP,
         oTool.addContent(oToolBtn3);
 
         //갱신버튼 이벤트
-        oToolBtn3.attachPress(function () {
+        oToolBtn3.attachPress(async function () {
+
+            oAPP.fn.setBusy(true);
+
             //서버에서 바인딩 정보 얻기.
-            oAPP.fn.getBindFieldInfo();
+            await oAPP.fn.getBindFieldInfo();
+
+
+            oAPP.fn.setBusy(false);
+
         });
 
 
@@ -998,7 +1037,7 @@ let oAPP = parent.oAPP,
             busyIndicatorDelay: 1,
             press: function(){
                 // //tree table 컬럼길이 재조정 처리.
-                oAPP.fn.setUiTableAutoResizeColumn(oAPP.ui.oTree);
+                oAPP.fn.setUiTableAutoResizeColumn(oAPP.ui.oModelFieldTree);
             }
         });
         oTool.addContent(oToolBtn4);
@@ -1202,7 +1241,7 @@ let oAPP = parent.oAPP,
         var l_txt = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "173");
 
         //바인딩 tree 정보.
-        oAPP.ui.oTree = new sap.ui.table.TreeTable({
+        oAPP.ui.oModelFieldTree = new sap.ui.table.TreeTable({
             selectionMode: "Single",
             selectionBehavior: "RowOnly",
             visibleRowCountMode: "Auto",
@@ -1214,13 +1253,13 @@ let oAPP = parent.oAPP,
                 oTool
             ]
         });
-        // oPageLeft.addContent(oAPP.ui.oTree);
-        oPageTree.addContent(oAPP.ui.oTree);
+        // oPageLeft.addContent(oAPP.ui.oModelFieldTree);
+        oPageTree.addContent(oAPP.ui.oModelFieldTree);
 
-        oAPP.ui.oTree.addEventDelegate({onmousedown:oAPP.fn.onTreeMouseDown});
+        oAPP.ui.oModelFieldTree.addEventDelegate({onmousedown:oAPP.fn.onTreeMouseDown});
 
         
-        oAPP.ui.oTree.attachFilter(function () {
+        oAPP.ui.oModelFieldTree.attachFilter(function () {
             //tee에서 필터 처리시 전체 펼침 처리.
             this.expandToLevel(99999);
         });
@@ -1241,7 +1280,7 @@ let oAPP = parent.oAPP,
             dragEnd: oAPP.fn.onBindFieldDragEnd,
 
         });
-        oAPP.ui.oTree.addDragDropConfig(oDrag);
+        oAPP.ui.oModelFieldTree.addDragDropConfig(oDrag);
 
 
 
@@ -1264,7 +1303,7 @@ let oAPP = parent.oAPP,
                 tooltip: "{NTEXT}"
             })
         });
-        oAPP.ui.oTree.addColumn(oTreeCol1);
+        oAPP.ui.oModelFieldTree.addColumn(oTreeCol1);
 
         //175	Type
         var l_txt = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "175");
@@ -1279,7 +1318,7 @@ let oAPP = parent.oAPP,
                 design: "Bold"
             })
         });
-        oAPP.ui.oTree.addColumn(oTreeCol2);
+        oAPP.ui.oModelFieldTree.addColumn(oTreeCol2);
 
         var oCol2Hbox1 = new sap.m.HBox({
             alignItems: "Center",
@@ -1319,7 +1358,7 @@ let oAPP = parent.oAPP,
                 tooltip: "{DESCR}"
             })
         });
-        oAPP.ui.oTree.addColumn(oTreeCol3);
+        oAPP.ui.oModelFieldTree.addColumn(oTreeCol3);
 
 
         // //테스트 바인딩 가능 여부 필드.
@@ -1332,11 +1371,11 @@ let oAPP = parent.oAPP,
         //         text: "{enable}"
         //     })
         // });
-        // oAPP.ui.oTree.addColumn(oTreeCol4);
+        // oAPP.ui.oModelFieldTree.addColumn(oTreeCol4);
 
 
         //바인딩 TREE 모델 바인딩 처리.
-        oAPP.ui.oTree.bindAggregation("rows", {
+        oAPP.ui.oModelFieldTree.bindAggregation("rows", {
             path: "/zTREE",
             template: new sap.ui.table.Row(),
             parameters: {
@@ -1931,7 +1970,7 @@ let oAPP = parent.oAPP,
             oFormData.append("CONVEXIT", convName);
 
             // Conversion Routine 존재여부 확인.
-            sendAjax(oAPP.attr.servNm + "/chkConvExit", oFormData,function(param){
+            sendAjax(oAPP.attr.servNm + "/chkConvExit", oFormData, function(param){
 
                 //Conversion Routine 존재여부 오류가 발생한 경우.
                 if(param.RETCD === "E"){
@@ -1943,7 +1982,7 @@ let oAPP = parent.oAPP,
                 
                 resolve(_sRes);
         
-            },"", false);
+            });
 
         });
 
@@ -1992,14 +2031,14 @@ let oAPP = parent.oAPP,
     oAPP.fn.getSelectedModelLine = function(){
 
         //모델 필드 라인 선택 위치 얻기.
-        var _indx = oAPP.ui.oTree.getSelectedIndex();
+        var _indx = oAPP.ui.oModelFieldTree.getSelectedIndex();
 
         //선택된 라인이 존재하지 않는경우 exit.
         if(_indx ===  -1){
             return;
         }
 
-        var _oCtxt = oAPP.ui.oTree.getContextByIndex(_indx);
+        var _oCtxt = oAPP.ui.oModelFieldTree.getContextByIndex(_indx);
 
         if(typeof _oCtxt === "undefined" || _oCtxt === null){
             return;
@@ -2013,10 +2052,10 @@ let oAPP = parent.oAPP,
     //바인딩 추가 속성값 설정.
     oAPP.fn.setMPROP = function(){
         
-        var l_indx = oAPP.ui.oTree.getSelectedIndex();
+        var l_indx = oAPP.ui.oModelFieldTree.getSelectedIndex();
         if(l_indx === -1){return;}
 
-        var l_ctxt = oAPP.ui.oTree.getContextByIndex(l_indx);
+        var l_ctxt = oAPP.ui.oModelFieldTree.getContextByIndex(l_indx);
         if (!l_ctxt) {
             return;
         }
@@ -2138,7 +2177,7 @@ let oAPP = parent.oAPP,
     oAPP.fn.onSelTabRow = function(oEvent) {
 
         //모델 tree의 라인 선택정보 얻기.
-        var _indx = oAPP.ui.oTree.getSelectedIndex();
+        var _indx = oAPP.ui.oModelFieldTree.getSelectedIndex();
 
         //라인 선택이 해제 된경우.
         if(_indx === -1){
@@ -2148,13 +2187,13 @@ let oAPP = parent.oAPP,
 
             //라인선택 이벤트 제거.
             //(라인 선택 이벤트 동작을 회피하기 위함)
-            oAPP.ui.oTree.detachRowSelectionChange(oAPP.fn.onSelTabRow);
+            oAPP.ui.oModelFieldTree.detachRowSelectionChange(oAPP.fn.onSelTabRow);
 
             //라인 재 선택 처리.
-            oAPP.ui.oTree.setSelectedIndex(_indx);
+            oAPP.ui.oModelFieldTree.setSelectedIndex(_indx);
 
             //다시 이벤트 등록 처리.
-            oAPP.ui.oTree.attachRowSelectionChange(oAPP.fn.onSelTabRow);
+            oAPP.ui.oModelFieldTree.attachRowSelectionChange(oAPP.fn.onSelTabRow);
 
             return;
         }
@@ -2276,14 +2315,14 @@ let oAPP = parent.oAPP,
     oAPP.fn.setTreeAutoResizeCol = function (iTime) {
 
         setTimeout(() => {
-            var lt_col = oAPP.ui.oTree.getColumns();
+            var lt_col = oAPP.ui.oModelFieldTree.getColumns();
 
             if (lt_col.length === 0) {
                 return;
             }
 
             for (var i = lt_col.length - 1; i >= 0; i--) {
-                oAPP.ui.oTree.autoResizeColumn(i);
+                oAPP.ui.oModelFieldTree.autoResizeColumn(i);
             }
 
         }, iTime);
@@ -2300,7 +2339,7 @@ let oAPP = parent.oAPP,
         function lf_setDraggable(){
 
             //row UI 정보 얻기.
-            var lt_row = oAPP.ui.oTree.getRows();
+            var lt_row = oAPP.ui.oModelFieldTree.getRows();
 
             if(lt_row.length == 0){return;}
 
@@ -2329,14 +2368,14 @@ let oAPP = parent.oAPP,
         var l_meta = sap.ui.table.Row.getMetadata();
         l_meta.dnd.draggable = true;
 
-        var l_bind = oAPP.ui.oTree.getBinding();
+        var l_bind = oAPP.ui.oModelFieldTree.getBinding();
 
         if(!l_bind){return;}
 
         l_bind.attachChange(lf_setDraggable);
 
-        oAPP.ui.oTree.attachToggleOpenState(lf_setDraggable);
-        oAPP.ui.oTree.attachFirstVisibleRowChanged(lf_setDraggable);
+        oAPP.ui.oModelFieldTree.attachToggleOpenState(lf_setDraggable);
+        oAPP.ui.oModelFieldTree.attachFirstVisibleRowChanged(lf_setDraggable);
 
 
 
@@ -2355,7 +2394,7 @@ let oAPP = parent.oAPP,
                 }
             }
         };
-        
+
         xhr.withCredentials = true;
 
         // FormData가 없으면 GET으로 전송
@@ -4305,172 +4344,145 @@ let oAPP = parent.oAPP,
 
     //서버에서 바인딩 attr 정보 얻기.
     oAPP.fn.getBindFieldInfo = function() {
-
-        //화면 잠금 처리.
-        // oAPP.attr.oModel.setProperty("/busy", true);
-
-        oAPP.fn.setBusy(true);
-
-        //바인딩 필드 정보 초기화.
-        oAPP.attr.oModel.oData.zTREE       = [];
-        oAPP.attr.oModel.oData.TREE        = [];
-
-        //바인딩 추가속성 정보 초기화.
-        oAPP.fn.clearSelectAdditBind();
-
-
-        //추가속성 정보 화면 비활성 처리.
-        oAPP.fn.setAdditLayout("");
-
-
-        oAPP.attr.oModel.refresh();
         
+        return new Promise((resolve)=>{
 
-        //클래스명 서버 전송 데이터에 구성.
-        var oFormData = new FormData();
-        oFormData.append("CLSNM", oAPP.attr.oAppInfo.CLSID);
-        oFormData.append("APPID", oAPP.attr.oAppInfo.APPID);
+            //화면 잠금 처리.
+            // oAPP.attr.oModel.setProperty("/busy", true);
 
-        //바인딩 필드 정보 검색.
-        sendAjax(oAPP.attr.servNm + "/getBindAttrData", oFormData, function (param) {
+            //바인딩 필드 정보 초기화.
+            oAPP.attr.oModel.oData.zTREE = [];
+            oAPP.attr.oModel.oData.TREE  = [];
 
-            var l_model = oAPP.attr.oModel;
+            //바인딩 추가속성 정보 초기화.
+            oAPP.fn.clearSelectAdditBind();
 
-            //오류가 발생한 경우.
-            if(param.RETCD === "E"){
-                //오류 메시지 처리.
-                sap.m.MessageToast.show(param.RTMSG,
-                    {duration: 3000, at:"center center", my:"center center"});
-                
-                //tree 정보 공백 처리.
-                l_model.oData.zTREE = [];
+
+            //추가속성 정보 화면 비활성 처리.
+            oAPP.fn.setAdditLayout("");
+
+
+            oAPP.attr.oModel.refresh();
+            
+
+            //클래스명 서버 전송 데이터에 구성.
+            var oFormData = new FormData();
+            oFormData.append("CLSNM", oAPP.attr.oAppInfo.CLSID);
+            oFormData.append("APPID", oAPP.attr.oAppInfo.APPID);
+
+            //바인딩 필드 정보 검색.
+            sendAjax(oAPP.attr.servNm + "/getBindAttrData", oFormData, async function (param) {
+
+                var l_model = oAPP.attr.oModel;
+
+                //오류가 발생한 경우.
+                if(param.RETCD === "E"){
+                    //오류 메시지 처리.
+                    sap.m.MessageToast.show(param.RTMSG,
+                        {duration: 3000, at:"center center", my:"center center"});
+                    
+                    //20240729 PES -START.
+                    //WS 3.0 디자인 영역과 바인딩 팝업 통신을 BROADCAST로 변경함에 따른 IPC 통신 주석처리.
+                    // var CURRWIN = oAPP.REMOTE.getCurrentWindow(),
+                    // PARWIN = CURRWIN.getParentWindow();
+
+                    // PARWIN.webContents.send("if-bindPopup-callback", "X");
+                    //20240729 PES -END.
+                    
+
+                    return resolve();
+                }
+
+                l_model.oData.TREE = param.T_ATTR;
+
+                //default 화면 편집 불가능.
+                l_model.oData.edit = false;
+
+                //workbench 화면이 편집상태인경우.
+                if(oAPP.attr.oAppInfo.IS_EDIT === "X"){
+                    //화면 편집 가능 flag 처리.
+                    l_model.oData.edit = true;
+                }
+
+                //바인딩 정보가 존재하지 않는경우.
+                if (l_model.oData.TREE.length === 0) {
+
+                    //184	Binding attributes does not exist.
+                    // //바인딩 필드가 존재하지 않음 메시지 처리.
+                    sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "184"), 
+                        {duration: 3000, at:"center center", my:"center center"});
+
+                    //20240729 PES -START.
+                    //WS 3.0 디자인 영역과 바인딩 팝업 통신을 BROADCAST로 변경함에 따른 IPC 통신 주석처리.
+                    // var CURRWIN = oAPP.REMOTE.getCurrentWindow(),
+                    // PARWIN = CURRWIN.getParentWindow();
+
+                    // PARWIN.webContents.send("if-bindPopup-callback", "X");
+                    //20240729 PES -END.
+                    
+                    return resolve();
+
+                }
+
+                //controller의 바인딩 가능 attribute 정보가 존재하는경우.
+                if (l_model.oData.TREE.length !== 0) {
+
+                    //2레벨의 TABLE, STRUCTURE정보만 발췌.
+                    var lt_filt = l_model.oData.TREE.filter(a => a.ZLEVEL === 2 && a.KIND !== "E");
+
+                    //TABLE, STRUCTURE를 탐색하며 선택 가능 여부 처리.
+                    oAPP.fn.setBindEnable(lt_filt, "", l_model, "");
+
+                    //tree 바인딩 정보 구성.
+                    oAPP.fn.setTreeJson(l_model, "TREE", "CHILD", "PARENT", "zTREE");
+
+                }
+
+                //tree 전체 접힘 처리.
+                oAPP.ui.oModelFieldTree.collapseAll();
+
+                //이전 선택 라인정보 초기화.
+                oAPP.ui.oModelFieldTree.clearSelection();
+
+                //tee에서 필터 처리시 전체 펼침 처리.
+                oAPP.ui.oModelFieldTree.expandToLevel(99999);
 
                 //화면 잠금 해제 처리.
                 l_model.oData.busy = false;
+
+                var _oPromise = new Promise((resolveTree)=>{
+                    oAPP.ui.oModelFieldTree.attachEventOnce("rowsUpdated", function(){
+                        resolveTree();
+                    });
+                });
+
+                //모델 정보 바인딩 처리.
+                l_model.refresh(true);
+
+                await _oPromise;
+
+                //모델 tree 첫번째 라인 선택 처리.
+                oAPP.ui.oModelFieldTree.setSelectedIndex(0);
                 
-                //모델 정보 바인딩 처리.
-                l_model.refresh(true);
-
-                oAPP.fn.setBusy(false);
-
-                var CURRWIN = oAPP.REMOTE.getCurrentWindow(),
-                PARWIN = CURRWIN.getParentWindow();
-
                 //20240729 PES -START.
                 //WS 3.0 디자인 영역과 바인딩 팝업 통신을 BROADCAST로 변경함에 따른 IPC 통신 주석처리.
-                // PARWIN.webContents.send("if-bindPopup-callback", "X");
+                // var CURRWIN = oAPP.REMOTE.getCurrentWindow(),
+                // PARWIN = CURRWIN.getParentWindow();
 
-                //BUSY OFF 요청 처리.
-                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+                // PARWIN.webContents.send("if-bindPopup-callback", "X");
                 //20240729 PES -END.
 
-                return;
-            }
 
-            l_model.oData.TREE = param.T_ATTR;
-
-            //default 화면 편집 불가능.
-            l_model.oData.edit = false;
-
-            //workbench 화면이 편집상태인경우.
-            if(oAPP.attr.oAppInfo.IS_EDIT === "X"){
-                //화면 편집 가능 flag 처리.
-                l_model.oData.edit = true;
-            }
-
-            //바인딩 정보가 존재하지 않는경우.
-            if (l_model.oData.TREE.length === 0) {
-                //tree 정보 공백 처리.
-                l_model.oData.zTREE = [];
-
-                //화면 잠금 해제 처리.
-                l_model.oData.busy = false;
-
-                //모델 정보 바인딩 처리.
-                l_model.refresh(true);
-
-                //184	Binding attributes does not exist.
-                // //바인딩 필드가 존재하지 않음 메시지 처리.
-                sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "184"), 
-                    {duration: 3000, at:"center center", my:"center center"});
-
-                oAPP.fn.setBusy(false);
-
-                var CURRWIN = oAPP.REMOTE.getCurrentWindow(),
-                PARWIN = CURRWIN.getParentWindow();
-
-                //20240729 PES -START.
-                //WS 3.0 디자인 영역과 바인딩 팝업 통신을 BROADCAST로 변경함에 따른 IPC 통신 주석처리.
-                // PARWIN.webContents.send("if-bindPopup-callback", "X");
-
-                //BROADCAST 통신으로 변경.
-                //BUSY OFF 요청 처리.
-                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
-                //20240729 PES -END.
-
-                return;
-
-            }
-
-            //controller의 바인딩 가능 attribute 정보가 존재하는경우.
-            if (l_model.oData.TREE.length !== 0) {
-
-                //2레벨의 TABLE, STRUCTURE정보만 발췌.
-                var lt_filt = l_model.oData.TREE.filter(a => a.ZLEVEL === 2 && a.KIND !== "E");
-
-                //TABLE, STRUCTURE를 탐색하며 선택 가능 여부 처리.
-                oAPP.fn.setBindEnable(lt_filt, "", l_model, "");
-
-                //tree 바인딩 정보 구성.
-                oAPP.fn.setTreeJson(l_model, "TREE", "CHILD", "PARENT", "zTREE");
-
-            }
-
-            //tree 전체 접힘 처리.
-            oAPP.ui.oTree.collapseAll();
-
-            //이전 선택 라인정보 초기화.
-            oAPP.ui.oTree.clearSelection();
-
-            //tee에서 필터 처리시 전체 펼침 처리.
-            oAPP.ui.oTree.expandToLevel(99999);
-
-            //화면 잠금 해제 처리.
-            l_model.oData.busy = false;
-
-            //모델 정보 바인딩 처리.
-            l_model.refresh(true);
-
-            // //tree table 컬럼길이 재조정 처리.
-            // oAPP.fn.setTreeAutoResizeCol(500);
-
-            //모델 tree 첫번째 라인 선택 처리.
-            oAPP.ui.oTree.setSelectedIndex(0);
+                oAPP.ui.oModelFieldTree.attachEventOnce("rowsUpdated", ()=>{
+                    // //tree table 컬럼길이 재조정 처리.
+                    oAPP.fn.setUiTableAutoResizeColumn(oAPP.ui.oModelFieldTree);
+                });
             
+                return resolve();
 
-            var CURRWIN = oAPP.REMOTE.getCurrentWindow(),
-            PARWIN = CURRWIN.getParentWindow();
+            }); //바인딩 필드 정보 검색.
 
-
-            //20240729 PES -START.
-            //WS 3.0 디자인 영역과 바인딩 팝업 통신을 BROADCAST로 변경함에 따른 IPC 통신 주석처리.
-            // PARWIN.webContents.send("if-bindPopup-callback", "X");
-
-            //BROADCAST 통신으로 변경.
-            //BUSY OFF 요청 처리.
-            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
-            //20240729 PES -END.
-
-
-            oAPP.ui.oTree.attachEventOnce("rowsUpdated", ()=>{
-                // //tree table 컬럼길이 재조정 처리.
-                oAPP.fn.setUiTableAutoResizeColumn(oAPP.ui.oTree);
-            });
-          
-            
-            oAPP.fn.setBusy(false);
-
-        }); //바인딩 필드 정보 검색.
+        });
 
     }; //서버에서 바인딩 attr 정보 얻기.
 
@@ -4804,14 +4816,14 @@ let oAPP = parent.oAPP,
 
 
         //drag한 UI의 라인 위치 얻기.
-        var _indx = oAPP.ui.oTree.indexOfRow(_oUi);
+        var _indx = oAPP.ui.oModelFieldTree.indexOfRow(_oUi);
 
         if(_indx === -1){
             return;
         }
 
         //라인 재 선택 처리.
-        oAPP.ui.oTree.setSelectedIndex(_indx);
+        oAPP.ui.oModelFieldTree.setSelectedIndex(_indx);
 
 
     };  //drag 정보 처리.

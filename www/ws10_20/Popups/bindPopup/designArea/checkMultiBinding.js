@@ -42,7 +42,7 @@ module.exports = function(){
 
 
     //모델 필드 라인 선택 위치 얻기.
-    var _indx = oAPP.ui.oTree.getSelectedIndex();
+    var _indx = oAPP.ui.oModelFieldTree.getSelectedIndex();
 
     //모델 필드 라인 선택하지 않은경우.
     if(_indx === -1){
@@ -76,7 +76,7 @@ module.exports = function(){
 
        
     //선택한 라인의 CONTEXT 정보 얻기.
-    var _oCtxt = oAPP.ui.oTree.getContextByIndex(_indx);
+    var _oCtxt = oAPP.ui.oModelFieldTree.getContextByIndex(_indx);
 
     if(typeof _oCtxt === "undefined" || _oCtxt === null){
 

@@ -1274,10 +1274,11 @@ function designControl(oArea){
                 return;
             }
 
-            oAPP.fn.setBusy(false);
 
             //185	Do you want to continue unbind?
             var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "185");
+            
+            oAPP.fn.setBusy(false);
 
             let _actcd = await new Promise((resolve) => {
                 sap.m.MessageBox.confirm(_msg, {
@@ -1667,6 +1668,8 @@ function designControl(oArea){
          * @event - 바인딩 데이터 변경시 메인에 해당 내용 전달 처리 이벤트.
          *************************************************************/
         oContr.fn.onModelDataChanged = async function(oEvent){
+
+            oAPP.fn.setBusy(true);
             
             //바인딩 팝업에서 구성한 바인딩정보(T_0014, T_0015 정보) 호출처에 전달.
             parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("UPDATE-DESIGN-DATA");
@@ -1714,17 +1717,16 @@ function designControl(oArea){
                 sap.m.MessageBox.confirm(_msg, {
                     id: oAPP.attr.C_CONFIRM_POPUP, 
                     onClose: (actcd) => {
+                        oAPP.fn.setBusy(true);
                         resolve(actcd);
                     }
                 });
             });
 
             if (_actcd !== "OK") {
+                oAPP.fn.setBusy(false);
                 return;
             }
-
-
-            oAPP.fn.setBusy(true);
 
             
             //라인 선택건 얻기.
@@ -1903,16 +1905,17 @@ return;
                 sap.m.MessageBox.confirm(_msg, {
                     id: oAPP.attr.C_CONFIRM_POPUP, 
                     onClose: (actcd) => {
+                        oAPP.fn.setBusy(true);
                         resolve(actcd);
                     }
                 });
             });
 
 
-            if(_actcd !== "OK"){return;}
-
-
-            oAPP.fn.setBusy(true);
+            if(_actcd !== "OK"){
+                oAPP.fn.setBusy(false);
+                return;
+            }
 
 
             //선택한 라인을 기준으로 모델 바인딩 처리.

@@ -665,6 +665,39 @@ function selectDesignTreeOBJID(oData){
 }
 
 
+
+/*************************************************************
+ * @function - 바인딩 팝업의 busy off 요청 처리.
+ *************************************************************/
+function sendBindPopupBusyOff(oData){
+
+    var _sParam = {
+        PRCCD   : "BUSY_OFF"
+    };
+
+
+    //WS 3.0 디자인 영역에 데이터 전송.
+    CL_WS20_BINDPOPUP.sendPostMessage(_sParam);
+
+}
+
+
+/*************************************************************
+ * @function - 바인딩 팝업의 busy on 요청 처리.
+ *************************************************************/
+function sendBindPopupBusyOn(oData){
+
+    var _sParam = {
+        PRCCD   : "BUSY_ON"
+    };
+
+
+    //WS 3.0 디자인 영역에 데이터 전송.
+    CL_WS20_BINDPOPUP.sendPostMessage(_sParam);
+
+}
+
+
 /*************************************************************
  * @module - 디자인상세화면(20화면) <-> BINDPOPUP 통신 처리 모듈.
  *************************************************************/
@@ -707,6 +740,16 @@ module.exports = function(ACTCD, oData){
         case "DESIGN-TREE-SELECT-OBJID":
             //디자인 tree 영역 라인 선택 처리.
             selectDesignTreeOBJID(oData);
+            break;
+
+        case "BUSY_OFF":
+            //바인딩 팝업에 busy off 요청 처리
+            sendBindPopupBusyOff(oData);
+            break;
+
+        case "BUSY_ON":
+            //바인딩 팝업에 busy on 요청 처리
+            sendBindPopupBusyOn(oData);
             break;
 
         default:

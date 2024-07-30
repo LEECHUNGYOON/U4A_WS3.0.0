@@ -7,7 +7,6 @@ module.exports = function(is_attr){
 
     return new Promise((res)=>{
 
-        console.log("라인선택");
         var _oModel = oAPP.attr.oModel;
 
         //바인딩 정보가 존재하지 않는경우 exit.

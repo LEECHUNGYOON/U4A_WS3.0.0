@@ -28,6 +28,10 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     COMPUTERNAME = process.env.COMPUTERNAME,
     WSLOG = require(PATH.join(APPPATH, "ws10_20", "js", "ws_log.js"));
 
+var WSUTIL_PATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js");
+var WSUTIL = require(WSUTIL_PATH);
+
+
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
@@ -1040,9 +1044,11 @@ oAPP.msg = {};
 
         }
 
-        // 여기다가 기본 텍스트 값을 매핑 해야함!!!!
+        // let aa = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "392", "", "", "", ""); // 잠시만 기다려 주세요.,  //350
+        // console.log(aa);
+
         let sDefTitle = "";
-        let sDefDesc  = "잠시만 기다려 주세요.";
+        let sDefDesc  = "please wait a minute..";
 
         let sTitle = sDefTitle;
         let sDesc  = sDefDesc;

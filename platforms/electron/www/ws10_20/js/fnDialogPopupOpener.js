@@ -3122,8 +3122,8 @@
      ************************************************************************/
     oAPP.fn.fnOpenVideoRecord = async () => {
 
-        // // busy 키고 Lock 걸기
-        // oAPP.common.fnSetBusyLock("X");
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         await oAPP.common.fnSleep(0);
 
