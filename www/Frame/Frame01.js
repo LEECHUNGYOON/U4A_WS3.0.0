@@ -939,7 +939,9 @@ oAPP.msg = {};
         // Cursor Focus Handle
         if (bIsBusy) {
 
-            var _oBeforeActiveElement = document.activeElement || undefined;
+            // var _oBeforeActiveElement = document.activeElement || undefined;
+
+            var _oBeforeActiveElement = (typeof ws_frame === "object" && ws_frame?.document?.activeElement) || undefined;
 
             if (_oBeforeActiveElement && typeof _oBeforeActiveElement?.blur !== "undefined") {
 

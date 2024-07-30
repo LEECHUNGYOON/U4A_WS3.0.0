@@ -3194,11 +3194,16 @@
     /************************************************************************
      * Wizard 생성 버튼
      ************************************************************************/
-    oAPP.events.ev_tmplWzdComplete = function () {
+    oAPP.events.ev_tmplWzdComplete = function () {        
+
+        parent.setBusy("X");
 
         var sCurrWizardPage = APPCOMMON.fnGetModelProperty(`${C_TMPL_BIND_ROOT}/TNTMENU/SELKEY`);
 
         if (typeof sCurrWizardPage !== "string" || sCurrWizardPage == null) {
+
+            parent.setBusy("");
+
             return;
         };
 
@@ -3313,6 +3318,9 @@
         // Model Table
         var oTable = sap.ui.getCore().byId(C_TMPL_WZD2_MODEL_TABLE_ID);
         if (oTable == null) {
+
+            parent.setBusy("");
+
             return;
         }
 
@@ -3321,8 +3329,13 @@
             iSelectIdxLength = aSelectIdx.length;
 
         if (iSelectIdxLength <= 0) {
+
             let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "268"); // Selected line does not exists.
+            
             parent.showMessage(sap, 10, "E", sMsg);
+
+            parent.setBusy("");
+
             return;
         }
 
@@ -3357,17 +3370,23 @@
 
         function lf_callback(oReturn) {
 
-            // Busy Dialog를 끈다.
-            APPCOMMON.fnSetBusyDialog(false);
+            // // Busy Dialog를 끈다.
+            // APPCOMMON.fnSetBusyDialog(false);
 
             if (oReturn.SUBRC == "E") {
+                
                 parent.showMessage(sap, 10, "E", oReturn.MSG);
+
+                parent.setBusy("");
+
                 return;
             }
 
             parent.showMessage(sap, 10, "S", oReturn.MSG);
 
             oAPP.events.pressUiTempWizardDialogClose();
+
+            parent.setBusy("");
 
         }
 
