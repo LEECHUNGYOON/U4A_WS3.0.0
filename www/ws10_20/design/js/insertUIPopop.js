@@ -365,6 +365,13 @@
 
       parent.setBusy("X");
 
+      var _oTarget = oEvent?.target || undefined;
+
+      if(typeof _oTarget === "undefined"){
+        parent.setBusy("");
+        return;
+      }
+
       //이벤트 발생 UI 정보 얻기.
       var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target, sap.ui.getCore());
 
@@ -452,10 +459,35 @@
 
     oImage.attachPress((oEvent)=>{
 
-      var l_ui = oEvent.getSource();
+      parent.setBusy("X");
+
+      //단축키도 같이 잠금 처리.
+      oAPP.fn.setShortcutLock(true);
+
+
+      var l_ui = oEvent?.oSource;
+
+      if(typeof l_ui === "undefined" || l_ui === null){
+
+        //단축키도 같이 잠금해제 처리.
+        oAPP.fn.setShortcutLock(false);
+
+        parent.setBusy("");
+
+        return;
+
+      }
 
       var l_ctxt = l_ui.getBindingContext();
-      if(!l_ctxt){return;}
+      if(!l_ctxt){
+
+        //단축키도 같이 잠금해제 처리.
+        oAPP.fn.setShortcutLock(false);
+
+        parent.setBusy("");
+
+        return;
+      }
 
       var ls_line = l_ctxt.getProperty();
 
@@ -691,6 +723,10 @@
 
   //결과리스트 table 라인 drag start 처리.
   function lf_rowDragStart(oEvent, oDlg, oInp1){
+
+    if(typeof oEvent?.mParameters?.target?.getBindingContext !== "function"){
+      return;
+    }
     
     //drag한 위치의 바인딩 정보 얻기.
     var l_ctxt = oEvent.mParameters.target.getBindingContext();

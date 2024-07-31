@@ -18,12 +18,24 @@
             parent.showMessage(sap, 10, "E", 
                 oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "196", 
                 oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E32", "", "", "", ""), "", "", ""));
+
+            //단축키도 같이 잠금해제 처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
+
             return;
         }
 
 
         //이미 이미지 팝업을 구성했다면 팝업 즉시 호출.
         if(loApp.ui.oPop){
+
+            //단축키도 같이 잠금해제 처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
+
             loApp.ui.oPop.openBy(oUi);
             return;
         }
@@ -102,6 +114,12 @@
 
         var oImage = new sap.m.Image({src:"{src}"});
         loApp.ui.oCar.bindAggregation("pages", {path:"/T_IMAGE", template:oImage});
+
+        
+        //단축키도 같이 잠금해제 처리.
+        oAPP.fn.setShortcutLock(false);
+
+        parent.setBusy("");
 
 
         //팝업 호출 처리.

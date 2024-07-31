@@ -118,6 +118,9 @@
 
         //저장버튼 선택 이벤트.
         oBtn2.attachPress(function(){
+
+            parent.setBusy("X");
+
             //저장 처리.
             lf_save(oDlg, oMdl);
 
@@ -222,13 +225,20 @@
     //저장 처리.
     function lf_save(oDlg, oMdl){
 
+
+        parent.setBusy("");
+
         //저장전 확인 팝업 호출.
         //010	Do you want to save it?
         parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "010", "", "", "", ""), function(param){
 
-            if(param !== "YES"){return;}
-
             parent.setBusy("X");
+
+            if(param !== "YES"){
+                parent.setBusy("");
+                return;
+            }
+
 
             //단축키 잠금 처리.
             oAPP.fn.setShortcutLock(true);

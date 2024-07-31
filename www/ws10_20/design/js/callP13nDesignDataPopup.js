@@ -21,12 +21,24 @@
         if(is_tree && is_tree.OBJID === "ROOT"){
             //380  &1 cannot be personalized.
             parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "380", "ROOT", "", "", ""));
+
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
+            
             return;
         }
 
         //개인화 폴더 및 파일이 존재하지 않는경우 생성 처리.
         if(lf_createDefaultFolder()){
-            //생성 과정에서 문제 발생시 
+            //생성 과정에서 문제 발생시 exit.
+
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
+
             return;
         }
         

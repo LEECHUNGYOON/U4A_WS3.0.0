@@ -92,6 +92,8 @@
 
         oTmplWzdDlg.bindElement(C_TMPL_BIND_ROOT);
 
+        oTmplWzdDlg.setInitialFocus(oTmplWzdDlg);
+
         oTmplWzdDlg.open();
 
     }; // end of oAPP.fn.fnUiTempWizardPopupOpen
@@ -3195,7 +3197,7 @@
      * Wizard 생성 버튼
      ************************************************************************/
     oAPP.events.ev_tmplWzdComplete = function () {        
-
+        
         parent.setBusy("X");
 
         var sCurrWizardPage = APPCOMMON.fnGetModelProperty(`${C_TMPL_BIND_ROOT}/TNTMENU/SELKEY`);
@@ -3232,6 +3234,9 @@
         // Model Table
         var oTable = sap.ui.getCore().byId(C_TMPL_WZD1_MODEL_TABLE_ID);
         if (oTable == null) {
+
+            parent.setBusy("");
+
             return;
         }
 
@@ -3240,8 +3245,13 @@
             iSelectIdxLength = aSelectIdx.length;
 
         if (iSelectIdxLength <= 0) {
+            
             let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "268"); // Selected line does not exists.
+            
             parent.showMessage(sap, 10, "E", sMsg);
+
+            parent.setBusy("");
+
             return;
         }
 
@@ -3270,6 +3280,9 @@
             if (oResult.RETCD == "E") {
 
                 parent.showMessage(sap, 10, "", oResult.RETMSG);
+
+                parent.setBusy("");
+
                 return;
             }
 
@@ -3296,13 +3309,19 @@
             APPCOMMON.fnSetBusyDialog(false);
 
             if (oReturn.SUBRC == "E") {
+
                 parent.showMessage(sap, 10, "E", oReturn.MSG);
+
+                parent.setBusy("");
+
                 return;
             }
 
             parent.showMessage(sap, 10, "S", oReturn.MSG);
 
             oAPP.events.pressUiTempWizardDialogClose();
+
+            parent.setBusy("");
 
         }
 
@@ -3370,8 +3389,8 @@
 
         function lf_callback(oReturn) {
 
-            // // Busy Dialog를 끈다.
-            // APPCOMMON.fnSetBusyDialog(false);
+            // Busy Dialog를 끈다.
+            APPCOMMON.fnSetBusyDialog(false);
 
             if (oReturn.SUBRC == "E") {
                 
@@ -3402,14 +3421,22 @@
         // Report Template의 Form 정보를 구한다.
         let oFormResult = oAPP.fn.fnGetTmplWzd3FormComplete();
         if (oFormResult.RETCD && oFormResult.RETCD == "E") {
+
             parent.showMessage(sap, 10, "E", oFormResult.RTMSG);
+
+            parent.setBusy("");
+
             return;
         }
 
         // Report Template의 Table 정보를 구한다.
         let oTableResult = oAPP.fn.fnGetTmplWzd3TableComplete();
         if (oTableResult.RETCD && oTableResult.RETCD == "E") {
+
             parent.showMessage(sap, 10, "E", oTableResult.RTMSG);
+
+            parent.setBusy("");
+
             return;
         }
 
@@ -3427,13 +3454,19 @@
             APPCOMMON.fnSetBusyDialog(false);
 
             if (oReturn.SUBRC == "E") {
+
                 parent.showMessage(sap, 10, "E", oReturn.MSG);
+
+                parent.setBusy("");
+
                 return;
             }
 
             parent.showMessage(sap, 10, "S", oReturn.MSG);
 
             oAPP.events.pressUiTempWizardDialogClose();
+
+            parent.setBusy("");
 
         }
 

@@ -35,8 +35,6 @@ class CL_WS20_BINDPOPUP{
         if(oAPP.attr.appInfo.IS_EDIT === ""){
             return;
         }
-
-        console.log("WS20 -> 바인딩 팝업 채널 생성");
         
         this.oChannel = new BroadcastChannel(C_CHID);
 
@@ -82,7 +80,6 @@ class CL_WS20_BINDPOPUP{
 
         //채널 종료 처리.
         this.oChannel.close();
-        console.log("채널 종료함.");
 
         //채널 instance 초기화.
         this.oChannel = undefined;
@@ -203,8 +200,7 @@ async function updateAppData(oEvent){
 
     //BUSY ON
     parent.setBusy("X");
-    
-    await oAPP.fn.waitBusyOpened();
+
 
     for (const key in oEvent.data.oPrev) {
 
@@ -267,7 +263,7 @@ async function updateAppData(oEvent){
 
         if(typeof _sTree !== "undefined"){
             //UI design tree 라인 선택 이벤트 수행.
-            oAPP.fn.designTreeItemPress(_sTree);
+            await oAPP.fn.designTreeItemPress(_sTree);
         }
 
     }
@@ -276,7 +272,6 @@ async function updateAppData(oEvent){
     //BUSY OFF 요청 처리.
     oEvent.currentTarget.postMessage({PRCCD:"BUSY_OFF"});
 
-    console.log("UPDATE-DESIGN-DATA 처리 완료");
 
     //화면에서 UI추가, 이동, 삭제 및 attr 변경시 변경 flag 처리.
     oAPP.fn.setChangeFlag();
@@ -304,7 +299,6 @@ function updateRootObjectID(oEvent){
 
     //최상위 UI정보 갱신 처리.
     DESIGN_ROOT_OBJID = oEvent.data.OBJID;
-    console.log(DESIGN_ROOT_OBJID);
     
     //BUSY OFF, LOCK OFF
     oAPP.common.fnSetBusyLock("");
@@ -461,8 +455,6 @@ function setBindPopupDesignAppData(){
 async function updateBindPopupDesignData(oData){
 
     parent.setBusy("X");
-
-    await oAPP.fn.waitBusyOpened();
 
     //바인딩 팝업 채널이 구성되지 않은경우 exit.
     //(바인딩 팝업이 호출되지 않은경우)

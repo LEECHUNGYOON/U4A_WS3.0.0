@@ -269,6 +269,8 @@
     //attribute context menu 호출 이벤트.
     oRTab1.attachBrowserEvent("contextmenu", function(oEvent){
 
+      parent.setBusy("X");
+
       //attribute의 context menu 호출전 처리.
       oAPP.fn.attrBeforeContextMenu(oEvent);
 
@@ -281,8 +283,13 @@
 
     //attr 영역에 drop 처리 이벤트.
     oDrop1.attachDrop(function(oEvent){
+
+      parent.setBusy("X");
+
       //attribute에 drag UI가 올라갔을때 이벤트.
       oAPP.fn.attrDrop(oEvent);
+
+      parent.setBusy("");
 
     }); //attr 영역에 drop 처리 이벤트.
 
@@ -440,8 +447,10 @@
       //단축키 잠금, lock 처리.
       oAPP.fn.designAreaLockUnlock(true);
 
+      var _oUi = this;
+
       //f4 help 버튼 선택 이벤트.
-      oAPP.fn.attrCallValueHelp(oEvent, this.getBindingContext().getProperty());
+      oAPP.fn.attrCallValueHelp(_oUi, this.getBindingContext().getProperty());
 
     }); //input f4 help 이벤트
 
@@ -874,43 +883,65 @@
   //attribute의 context menu 호출전 처리.
   oAPP.fn.attrBeforeContextMenu = function(oEvent){
 
+    var _oTarget = oEvent.target || undefined;
+
+    if(typeof _oTarget === "undefined"){
+      parent.setBusy("");
+      return;
+    }
+
     //편집모드가 아닌경우 EXIT.
     if(oAPP.attr.oModel.oData.IS_EDIT !== true){
+      parent.setBusy("");
       return;
     }
 
     //이벤트 발생 dom에 해당하는 UI정보 얻기.
-    var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target, sap.ui.getCore());
+    var l_ui = oAPP.fn.getUiInstanceDOM(_oTarget, sap.ui.getCore());
 
     //UI정보를 얻지 못한 경우 exit.
-    if(!l_ui){return;}
+    if(!l_ui){
+      parent.setBusy("");
+      return;
+    }
 
     //해당 UI의 바인딩 정보 얻기.
     var l_ctxt = l_ui.getBindingContext();
 
     //바인딩 정보를 얻지 못한 경우 exit.
-    if(!l_ctxt){return;}
+    if(!l_ctxt){
+      parent.setBusy("");
+      return;
+    }
 
     var ls_attr = l_ctxt.getProperty();
 
     //DOCUMENT에서 CONTEXT MENU를 호출한 경우 EXIT.
-    if(ls_attr.OBJID === "ROOT"){return;}
+    if(ls_attr.OBJID === "ROOT"){
+      parent.setBusy("");
+      return;
+    }
 
     //custom data 설정건 정보 얻기.
     var lt_cdata = l_ui.getCustomData();
 
     //custom data 설정건 정보가 존재하지 않는경우 exit.
-    if(lt_cdata.length === 0){return;}
+    if(lt_cdata.length === 0){
+      parent.setBusy("");
+      return;
+    }
 
 
     //메뉴 호출전 메뉴 활성여부 설정.
     if(oAPP.fn.attrSetContextMenu(oAPP.attr.ui.oAttrMenu, ls_attr, lt_cdata[0].getKey()) === true){
+      parent.setBusy("");
       return; 
     }
-
+    
+    parent.setBusy("");
 
     //메뉴 호출 처리.
-    oAPP.attr.ui.oAttrMenu.openBy(oEvent.target);
+    oAPP.attr.ui.oAttrMenu.openBy(_oTarget);
 
 
   };  //attribute의 context menu 호출전 처리.
@@ -1134,8 +1165,16 @@
    ************************************************************************/
   oAPP.fn.attrDblclickEvent = function(oEvent){
 
+    var _oTarget = oEvent?.target || undefined;
+
+    if(typeof _oTarget === "undefined"){
+      // busy off Lock off
+      oAPP.common.fnSetBusyLock("");
+      return;
+    }
+
     //더블클릭 이벤트 발생 위치의 UI정보 얻기.
-    var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target, sap.ui.getCore());
+    var l_ui = oAPP.fn.getUiInstanceDOM(_oTarget, sap.ui.getCore());
 
     //UI INSTANCE를 얻지 못한 경우 EXIT.
     if(!l_ui){
@@ -1896,7 +1935,7 @@
 
 
   //color popup f4 help 호출 처리.
-  oAPP.fn.attrCallValueHelpColor = function(oEvent, is_attr){
+  oAPP.fn.attrCallValueHelpColor = function(oUi, is_attr){
 
     //프로퍼티가 아닌경우, 바인딩처리한경우 exit.
     if(is_attr.UIATY !== "1" || is_attr.ISBND === "X"){return;}
@@ -1917,8 +1956,12 @@
     //팝업에서 색상 선택 이벤트.
     oColPic.attachChange(function(oEvent){
 
+      if(typeof oEvent.getParameter !== "function"){
+        return;
+      }
+
       //선택 색상 매핑.
-      is_attr.UIATV = oEvent.getParameter("hex");
+      is_attr.UIATV = oEvent.getParameter("hex") || "";
 
       //ATTR 변경처리.
       oAPP.fn.attrChangeProc(is_attr, "INPUT");
@@ -1926,7 +1969,7 @@
     });
 
     //f4 help선택 위치에 color picker 팝업 open처리.
-    oColPic.openBy(oEvent.oSource);
+    oColPic.openBy(oUi);
 
     //이전에 선택한 색상 코드가 존재하는경우 팝업에 마킹 처리.
     if(is_attr.UIATV !== ""){
@@ -2021,7 +2064,7 @@
 
 
   //프로퍼티 f4 help 호출 처리.
-  oAPP.fn.attrCallValueHelp = function(oEvent, is_attr){
+  oAPP.fn.attrCallValueHelp = function(oUi, is_attr){
 
     //오류 표현 필드 초기화 처리.
     oAPP.fn.attrClearErrorField(true);
@@ -2034,7 +2077,7 @@
     }
   
     //color popup f4 help 호출 처리.
-    if(oAPP.fn.attrCallValueHelpColor(oEvent, is_attr)){
+    if(oAPP.fn.attrCallValueHelpColor(oUi, is_attr)){
       //단축키 잠금, lock 해제처리.
       oAPP.fn.designAreaLockUnlock(false);
       return;
@@ -5735,6 +5778,12 @@
 
   //attribute에 바인딩 필드 DROP 했을때 처리.
   oAPP.fn.attrDrop = function(oEvent){
+
+    if(typeof oEvent.mParameters.dragSession.getDropControl !== "function"){
+      //214  Unable to bind.
+      oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+      return;
+    }
 
     //drop UI 정보 얻기.
     var l_row = oEvent.mParameters.dragSession.getDropControl();

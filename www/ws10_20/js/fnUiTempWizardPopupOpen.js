@@ -92,6 +92,8 @@
 
         oTmplWzdDlg.bindElement(C_TMPL_BIND_ROOT);
 
+        oTmplWzdDlg.setInitialFocus(oTmplWzdDlg);
+
         oTmplWzdDlg.open();
 
     }; // end of oAPP.fn.fnUiTempWizardPopupOpen
@@ -3195,7 +3197,7 @@
      * Wizard 생성 버튼
      ************************************************************************/
     oAPP.events.ev_tmplWzdComplete = function () {        
-
+        
         parent.setBusy("X");
 
         var sCurrWizardPage = APPCOMMON.fnGetModelProperty(`${C_TMPL_BIND_ROOT}/TNTMENU/SELKEY`);
@@ -3303,8 +3305,8 @@
 
         function lf_callback(oReturn) {
 
-            // // Busy Dialog를 끈다.
-            // APPCOMMON.fnSetBusyDialog(false);
+            // Busy Dialog를 끈다.
+            APPCOMMON.fnSetBusyDialog(false);
 
             if (oReturn.SUBRC == "E") {
 
@@ -3387,8 +3389,8 @@
 
         function lf_callback(oReturn) {
 
-            // // Busy Dialog를 끈다.
-            // APPCOMMON.fnSetBusyDialog(false);
+            // Busy Dialog를 끈다.
+            APPCOMMON.fnSetBusyDialog(false);
 
             if (oReturn.SUBRC == "E") {
                 
@@ -3448,8 +3450,8 @@
 
         function lf_callback(oReturn) {
 
-            // // Busy Dialog를 끈다.
-            // APPCOMMON.fnSetBusyDialog(false);
+            // Busy Dialog를 끈다.
+            APPCOMMON.fnSetBusyDialog(false);
 
             if (oReturn.SUBRC == "E") {
 

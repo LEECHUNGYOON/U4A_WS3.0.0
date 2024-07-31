@@ -18,6 +18,9 @@
 
             //화면 잠금 해제 처리.
             oAPP.fn.designAreaLockUnlock();
+
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -31,6 +34,9 @@
 
             //화면 잠금 해제 처리.
             oAPP.fn.designAreaLockUnlock();
+
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -45,6 +51,9 @@
 
             //화면 잠금 해제 처리.
             oAPP.fn.designAreaLockUnlock();
+
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -65,8 +74,8 @@
         //서버 호출.
         sendAjax(oAPP.attr.servNm + "/ui_temp_wzd", oFormData, function(param){
             
-            //WAITING OFF.
-            parent.setBusy("");
+            // //WAITING OFF.
+            // parent.setBusy("");
 
             //WIZARD 데이터구성에 실패한 경우.
             if(param.RETCD !== "S"){
@@ -81,8 +90,8 @@
             //template wizard 팝업 호출.
             oAPP.fn.fnUiTempWizardPopupOpener(param);
 
-            //화면 잠금 해제 처리.
-            oAPP.fn.designAreaLockUnlock();
+            // //화면 잠금 해제 처리.
+            // oAPP.fn.designAreaLockUnlock();
 
         });
 

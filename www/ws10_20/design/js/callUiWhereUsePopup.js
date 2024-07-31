@@ -3,13 +3,19 @@
     //UI where use 팝업.
     oAPP.fn.callUiWhereUsePopup = function(is_tree){
 
-        var oDlg = new sap.m.Dialog({draggable: true, resizable: true, busyIndicatorDelay:1,
+        var oDlg = new sap.m.Dialog({draggable: true, resizable: true, busyIndicatorDelay:0,
             verticalScrolling:false, contentWidth:"60%", contentHeight:"60%", busy:"{/busy}"});
 
         oDlg.attachAfterOpen(function(){
             //대상 ui 사용처 리스트 검색.
             lf_getWhereUseList(oDlg, oModel, is_tree);
 
+        });
+
+        //dialog 종료 이후 이벤트.
+        oDlg.attachAfterClose(function(){
+            //dialog destroy 처리.
+            oDlg.destroy();
         });
 
         var oModel = new sap.ui.model.json.JSONModel();
@@ -92,14 +98,9 @@
     //대상 ui 사용처 리스트 검색.
     function lf_getWhereUseList(oDlg, oModel, is_tree){
         
-        //화면 lock 처리.
-        oAPP.fn.designAreaLockUnlock(true);
-
         //busy on.
         oModel.setData({busy:true});
 
-        //busy dialog open.
-        oAPP.common.fnSetBusyDialog(true);
         
         //클래스명 서버 전송 데이터에 구성.
         var oFormData = new FormData();
@@ -118,14 +119,10 @@
 
             //결과정보 바인딩.
             oModel.setData({T_DATA:param.T_DATA, busy:false},true);
+                        
+            oAPP.fn.setShortcutLock(false);
             
-            //busy dialog close.
-            oAPP.common.fnSetBusyDialog(false);
-
             parent.setBusy("");
-            
-            //화면 unlock 처리.
-            oAPP.fn.designAreaLockUnlock(false);
 
 
         },""); //사용처 리스트 검색.

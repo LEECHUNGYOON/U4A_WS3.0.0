@@ -2,6 +2,8 @@ var oFrame = document.getElementById('ws_frame');
 
 var oAPP = oFrame.contentWindow.oAPP;
 
+var sap = oAPP.attr.ui?.frame?.contentWindow?.sap;
+
 /*********************************************************
  * @module - onAfterRendering 이벤트 등록 처리.
  ********************************************************/
@@ -58,15 +60,17 @@ module.exports.getTargetAfterRenderingUI = function(oTarget){
     if(typeof oTarget === "undefined" || oTarget === null){
 		return;
 	}
-	
+
 	var _oTarget = oTarget;
 	
 	
 	//UI에 onAfterRendering이 존재하지 않는경우.
 	//상위 부모의 onAfterRendering을 확인.
-	while(typeof _oTarget?.onAfterRendering === "undefined"){
+	//대상 UI가 sap.ui.base.ManagedObject.prototype.invalidate function을 사용하고 있다면,
+	//상위 부모를 찾아야함(sap.ui.base.ManagedObject.prototype.invalidate은 상위 부모를 invalidate 처리 하기때문)
+	while(typeof _oTarget?.onAfterRendering === "undefined" || _oTarget?.invalidate === sap?.ui?.base?.ManagedObject?.prototype?.invalidate){
 		
-		_oTarget = _oTarget.oParent;
+		_oTarget = _oTarget?.oParent;
         
         //부모를 찾지 못한 경우 exit.
 		if(typeof _oTarget === "undefined" || _oTarget === null){
@@ -74,7 +78,7 @@ module.exports.getTargetAfterRenderingUI = function(oTarget){
 		}
 	}
 
-	var _OBJID = _oTarget._OBJID;
+	var _OBJID = _oTarget?._OBJID;
 	
 	//예외처리 대상 UI에 해당하는건인경우.
 	switch(true){
