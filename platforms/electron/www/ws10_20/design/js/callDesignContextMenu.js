@@ -1277,30 +1277,28 @@
     //ui 사용처 리스트 메뉴.
     oAPP.fn.contextMenuUiWhereUse = function(){
         
-        parent.setBusy("");
-
-        //화면 unlock 처리.
-        oAPP.fn.designAreaLockUnlock(false);
-
         //단축키 잠금 처리.
         oAPP.fn.setShortcutLock(true);
+
+        parent.setBusy("");
+
 
         //사용처 확인전 질문팝업 호출.
         //123 Do you want to continue?
         parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "123", "", "", "", ""), function(param){
 
-            //화면 lock 처리.
-            oAPP.fn.designAreaLockUnlock(true);
-            
             parent.setBusy("X");
+
+            oAPP.fn.setShortcutLock(true);
+            
 
             //YES를 선택하지 않은경우 EXIT.
             if(param !== "YES"){
-                
+                                
+                oAPP.fn.setShortcutLock(false);
+                    
                 parent.setBusy("");
-                
-                //화면 unlock 처리.
-                oAPP.fn.designAreaLockUnlock(false);
+            
                 return;
             }
 
@@ -1310,10 +1308,10 @@
             //DOCUMENT영역에 PASTE한경우 EXIT.
             if(l_OBJID === "ROOT"){
 
+                oAPP.fn.setShortcutLock(false);
+
                 parent.setBusy("");
 
-                //화면 unlock 처리.
-                oAPP.fn.designAreaLockUnlock(false);
                 return;
             }
 

@@ -19,24 +19,19 @@
 
 
     //tree item 선택 이벤트.
-    oLTree1.attachCellClick(function(oEvent){
+    oLTree1.attachCellClick(async function(oEvent){
 
-      //attr 및 미리보기 갱신 전 화면 잠금 처리.
-      oAPP.fn.designAreaLockUnlock(true);
-      
-      //미리보기 영역 lock 설정.
-      oAPP.fn.prevSetLockUnlock(true);
-      
       parent.setBusy("X");
+
+      //단축키도 같이 잠금 처리.
+      oAPP.fn.setShortcutLock(true);
+      
     
       //데이터 출력 라인을 선택하지 않은경우 exit.
-      if(!oEvent.mParameters.rowBindingContext){
+      if(!oEvent?.mParameters?.rowBindingContext?.getProperty){
         
-        //미리보기 영역 lock 해제.
-        oAPP.fn.prevSetLockUnlock(false);
-
-        //화면 잠금 해제 처리.
-        oAPP.fn.designAreaLockUnlock(false);
+        //단축키 잠금 해제 처리.
+        oAPP.fn.setShortcutLock(false);
         
         parent.setBusy("");
 
@@ -47,11 +42,17 @@
       var ls_tree = oEvent.mParameters.rowBindingContext.getProperty();
 
       //라인선택에 따른 각 화면에 대한 처리.
-      oAPP.fn.designTreeItemPress(ls_tree);
+      await oAPP.fn.designTreeItemPress(ls_tree);
 
       //20240527 PES
       //바인딩 팝업에 UI 라인 선택 처리.
       oAPP.fn.selectBindingPopupOBJID(ls_tree);
+
+
+      //단축키 잠금 해제 처리.
+      oAPP.fn.setShortcutLock(false);
+      
+      parent.setBusy("");
 
     }); //tree item 선택 이벤트.
 
@@ -220,6 +221,10 @@
     //drag start 이벤트
     oLTDrag1.attachDragStart(function(oEvent){
 
+      if(typeof oEvent?.mParameters?.target?.getBindingContext !== "function"){
+        return;
+      }
+
       //drag한 위치의 바인딩 정보 얻기.
       var l_ctxt = oEvent.mParameters.target.getBindingContext();
       if(!l_ctxt){return;}
@@ -295,14 +300,15 @@
 
 
     //drop 이벤트.
-    oLTDrop1.attachDrop(function(oEvent){
+    oLTDrop1.attachDrop(async function(oEvent){
 
       parent.setBusy("X");
 
       //단축키 잠금 처리.
       oAPP.fn.setShortcutLock(true);
 
-      if(!oEvent.mParameters.droppedControl){
+      
+      if(typeof oEvent?.mParameters?.droppedControl.getBindingContext !== "function"){
 
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
@@ -312,8 +318,9 @@
         return;
       }
 
+
       //DROP한 라인 정보 얻기.
-      var ls_drop = oEvent.mParameters.droppedControl.getBindingContext()?.getProperty();
+      var ls_drop = oEvent.mParameters.droppedControl.getBindingContext().getProperty();
       if(!ls_drop){
 
         //단축키 잠금 해제 처리.
@@ -323,6 +330,7 @@
 
         return;
       }
+
 
       //미리보기, design tree에서 D&D 했다면 DROP 처리.
       if(oAPP.fn.UIDrop(oEvent, ls_drop.OBJID)){
@@ -393,9 +401,10 @@
     //UI FILTER 버튼 선택 이벤트.
     oLBtn6.attachPress(function(){
 
+      
+      parent.setBusy("X");
 
-      //화면 잠금 처리.
-      oAPP.fn.designAreaLockUnlock(true);
+      oAPP.fn.setShortcutLock(true);
 
 
       if(typeof oAPP.fn.callDesignTreeFindPopup !== "undefined"){
@@ -516,13 +525,13 @@
 
     //B39	Help
     //도움말 버튼.
-    var oLBtn5 = new sap.m.Button({icon:"sap-icon://question-mark", 
+    var oLBtn8 = new sap.m.Button({icon:"sap-icon://question-mark", 
       // visible:parent.REMOTE.app.isPackaged ? false : true,
       tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39", "", "", "", "")});
-    oLTBar1.addContent(oLBtn5);
+    oLTBar1.addContent(oLBtn8);
 
     //도움말 버튼 선택 이벤트.
-    oLBtn5.attachPress(function(){
+    oLBtn8.attachPress(function(){
 
       parent.setBusy("X");
 
@@ -569,7 +578,14 @@
 
       oAPP.common.fnSetBusyLock("X");
 
-      var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target, sap.ui.getCore());
+      var _oTarget = oEvent?.target || undefined;
+
+      if(typeof _oTarget === "undefined"){
+        oAPP.common.fnSetBusyLock("");
+        return;
+      }
+
+      var l_ui = oAPP.fn.getUiInstanceDOM(_oTarget, sap.ui.getCore());
       if(!l_ui){
         oAPP.common.fnSetBusyLock("");
         return;
@@ -589,7 +605,6 @@
         return;
       }
 
-      var _oTarget = oEvent.target;
 
       //라인 선택 처리.
       await oAPP.fn.setSelectTreeItem(ls_tree.OBJID);
@@ -601,7 +616,7 @@
       oAPP.common.fnSetBusyLock("");
 
       //메뉴 호출 처리.
-      oAPP.attr.ui.designMenu.openBy(_oTarget);  
+      oAPP.attr.ui.designMenu.openBy(_oTarget);
 
 
     }); //context menu 호출 이벤트.
@@ -642,9 +657,13 @@
     //라인선택이 해제 안된경우 EXIT.
     if(this.getSelectedIndex() !== -1){return;}
 
-    var l_indx = oEvent.mParameters.rowIndex;
+    if(typeof oEvent?.mParameters?.rowIndex === "undefined"){
+      return;
+    }
 
-    if(typeof oEvent.mParameters.rowIndices !== "undefined" && oEvent.mParameters.rowIndices.length !== 0){
+    var l_indx = oEvent?.mParameters?.rowIndex;
+
+    if(typeof oEvent?.mParameters?.rowIndices !== "undefined" && oEvent?.mParameters?.rowIndices?.length !== 0){
       l_indx = oEvent.mParameters.rowIndices[0];
     }
 
@@ -1686,8 +1705,14 @@
 
     return new Promise(async (resolve)=>{
 
-      //tree item 선택 처리전 화면 잠금 처리.
-      oAPP.fn.designAreaLockUnlock(true);
+      // //tree item 선택 처리전 화면 잠금 처리.
+      // oAPP.fn.designAreaLockUnlock(true);
+
+      parent.setBusy("X");
+
+      //단축키도 같이 잠금 처리.
+      oAPP.fn.setShortcutLock(true);
+      
       
       //tree를 탐색하며 ROOT로부터 입력 OBJID 까지의 PATH 정보 구성
       function lf_getTreePath(it_tree){
@@ -1864,6 +1889,13 @@
 
       //attribute 영역 선택처리(UIATK가 입력된경우 선택처리)
       oAPP.fn.setAttrFocus(UIATK, TYPE);
+
+
+      //단축키 잠금 해제 처리.
+      oAPP.fn.setShortcutLock(false);
+      
+
+      parent.setBusy("");
 
 
       return resolve();
@@ -2122,11 +2154,9 @@
     await oAPP.fn.designRefershModel();
 
 
-    //drag한 UI 선택 처리.
-    await oAPP.fn.setSelectTreeItem(ls_copy.OBJID);
-
     //drag 종료 처리.
     oAPP.fn.designDragEnd();
+
 
     //변경 FLAG 처리.
     oAPP.fn.setChangeFlag();
@@ -2136,7 +2166,11 @@
     //바인딩 팝업의 디자인 영역 갱신처리.
     oAPP.fn.updateBindPopupDesignData();
 
+    //drag한 UI 선택 처리.
+    await oAPP.fn.setSelectTreeItem(ls_copy.OBJID);
 
+
+    //복사된 라인의 위치에 메시지 출력 처리.
     oAPP.attr.ui.oLTree1.attachEventOnce("rowsUpdated", function(){
       //design tree의 바인딩 정보 얻기.
       var lt_row = oAPP.attr.ui.oLTree1.getRows();
@@ -2318,8 +2352,6 @@
       var l_bind = oAPP.attr.ui.oLTree1.getBinding();
       l_bind._buildTree(0,oAPP.fn.designGetTreeItemCount());
 
-      //drag한 UI 선택 처리.
-      await oAPP.fn.setSelectTreeItem(i_drag.OBJID);
       
       //drag 종료 처리.
       oAPP.fn.designDragEnd();
@@ -2327,16 +2359,17 @@
       //변경 FLAG 처리.
       oAPP.fn.setChangeFlag();
 
-      //005  Job finished.
-      parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
-      
-      //화면 잠금 해제 처리.
-      oAPP.fn.designAreaLockUnlock();
-
-
       //20240621 pes.
       //바인딩 팝업의 디자인 영역 갱신처리.
       oAPP.fn.updateBindPopupDesignData();
+
+
+      //drag한 UI 선택 처리.
+      await oAPP.fn.setSelectTreeItem(i_drag.OBJID);
+      
+      //005  Job finished.
+      parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
+      
 
       return;
 
@@ -2698,16 +2731,6 @@
 
     return new Promise(async (resolve)=>{
 
-      //디자인 영역 잠금처리.
-      oAPP.fn.designAreaLockUnlock(true);
-
-      
-      //미리보기 영역 lock 설정.
-      oAPP.fn.prevSetLockUnlock(true);
-
-
-      parent.setBusy("X");
-
 
       //우 상단 DynamicPage header 영역 펼침 처리.
       oAPP.fn.attrHeaderExpanded(true);
@@ -2753,17 +2776,6 @@
 
       //미리보기 ui 선택 처리
       await oAPP.attr.ui.frame.contentWindow.selPreviewUI(is_tree.OBJID);
-
-      //미리보기 영역 lock 해제.
-      oAPP.fn.prevSetLockUnlock(false);
-      
-
-      //디자인 영역 lock 해제.
-      oAPP.fn.designAreaLockUnlock(false);
-
-
-      //BUSY 종료 처리.
-      parent.setBusy("");
 
 
       //처리 완료 resolve
@@ -3041,6 +3053,12 @@
 
   //drag한 UI가 다른 라인에 올라갔을때 처리.
   oAPP.fn.designDragEnter = function(oEvent){
+
+    if(typeof oEvent?.mParameters?.dragSession?.getDropControl !== "function"){
+      oEvent.preventDefault();
+      return;
+    }
+
     var l_row = oEvent.mParameters.dragSession.getDropControl();
     if(!l_row){
       oEvent.preventDefault();
@@ -3666,101 +3684,6 @@
 
 
   };  //design tree 영역의 item 수 계산.
-
-
-
-  //context menu 호출전 메뉴 선택 가능 여부 설정.
-  oAPP.fn.beforeOpenContextMenu = function(OBJID){
-
-    var ls_menu = {};
-
-    //default 메뉴 항목 잠금 상태로 설정.
-    ls_menu.enab01 = false;   //ui추가 불가
-    ls_menu.enab02 = false;   //ui삭제 불가
-    ls_menu.enab03 = false;   //ui up 불가
-    ls_menu.enab04 = false;   //ui down 불가
-    ls_menu.enab05 = false;   //ui move position 불가
-    ls_menu.enab06 = false;   //copy 불가
-    ls_menu.enab07 = false;   //paste 불가
-
-    //root에서 menu 호출한경우.
-    if(OBJID === "ROOT"){
-      //context menu 모두 비활성처리.
-      oAPP.attr.oModel.setProperty("/lcmenu",ls_menu);
-      return;
-    }
-
-    //edit 상태인경우.(APP에서 CONTEXT MENU호출건을 처리하기위함)
-    if(oAPP.attr.oModel.oData.IS_EDIT === true){
-      ls_menu.enab01 = true; //ui추가 가능
-
-      //복사된건 history 존재여부에 따른 붙여넣기 메뉴 활성화 여부 설정.
-      ls_menu.enab07 = oAPP.fn.isExistsCopyData("U4AWSuiDesignArea");
-
-    }
-
-    //APP에서 menu 호출한 경우.
-    if(OBJID === "APP"){
-      oAPP.attr.oModel.setProperty("/lcmenu",ls_menu);
-      return;
-    }
-
-    //DOCUMENT, APP가 아닌 영역에서 CONTEXT MENU 호출시 display 상태인경우 메뉴 비활성 처리.
-    if(oAPP.attr.oModel.oData.IS_EDIT === false){
-      ls_menu.enab06 = true; //copy 가능
-      oAPP.attr.oModel.setProperty("/lcmenu",ls_menu);
-      return;
-    }
-
-    //DOCUMENT, APP가 아닌 영역에서 편집 가능한 상태일때 CONTEXT MENU 호출시 하위 로직 수행.
-
-    //context menu 선택 라인 위치의 바인딩 path 정보 얻기.
-    var ls_tree = oAPP.fn.getTreeData(OBJID);
-
-    //부모 라인 정보 얻기.
-    var l_parent = oAPP.fn.getTreeData(ls_tree.POBID);
-    
-    //현재 UI가 부모에서의 위치 얻기.
-    var l_pos = l_parent.zTREE.findIndex( a=> a.OBJID === OBJID);
-    
-
-    //default 설정.
-    ls_menu.enab01 = true;   //ui추가 가능
-    ls_menu.enab02 = true;   //ui삭제 가능
-    ls_menu.enab03 = true;   //ui up 가능
-    ls_menu.enab04 = true;   //ui down 가능
-    ls_menu.enab05 = true;   //ui move position 가능
-    ls_menu.enab06 = true;   //ui copy 활성화.
-
-    //복사된건 history 존재여부에 따른 붙여넣기 메뉴 활성화 여부 설정.
-    ls_menu.enab07 = oAPP.fn.isExistsCopyData("U4AWSuiDesignArea");
-
-    //부모의 child정보가 1건인경우.
-    if(l_parent.zTREE.length === 1){
-      ls_menu.enab03 = false;   //ui up 불가능
-      ls_menu.enab04 = false;   //ui down 불가능
-      ls_menu.enab05 = false;   //ui move position 불가능
-
-    }else if(l_pos === 0){
-      //menu를 선택한 위치가 child중 첫번째라면
-      ls_menu.enab03 = false; //ui up 불가능
-
-    }else if(l_pos+1 === l_parent.zTREE.length){
-      //menu를 선택한 위치가 child중 마지막이라면.
-      ls_menu.enab04 = false;   //ui down 불가능
-
-    }
-
-    //context menu의 바인딩 정보 갱신.
-    oAPP.attr.oModel.setProperty("/lcmenu",ls_menu);
-
-    //해당 라인 선택 처리.
-    oAPP.fn.setSelectTreeItem(OBJID);
-    
-
-  };  //context menu 호출전 메뉴 선택 가능 여부 설정.
-
-
 
 
   //checkbox 선택처리된 항목 얻기.

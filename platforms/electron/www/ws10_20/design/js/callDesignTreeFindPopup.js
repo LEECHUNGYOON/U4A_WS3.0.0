@@ -552,6 +552,10 @@
         }); //아래로 검색 버튼 선택 이벤트.
 
 
+        oAPP.fn.setShortcutLock(false);
+
+        parent.setBusy("");
+
         //팝업 호출 처리.
         oPop.openBy(oUi);
 

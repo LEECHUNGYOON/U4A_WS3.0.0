@@ -2427,6 +2427,10 @@ let oAPP = parent.oAPP,
                 return;
             }
 
+            if(typeof window?.sap?.m?.InstanceManager?.getOpenDialogs === "function"){
+                return;
+            }
+
             //현재 호출된 dialog 정보 얻기.
             var _aDialog = sap.m.InstanceManager.getOpenDialogs();
 
