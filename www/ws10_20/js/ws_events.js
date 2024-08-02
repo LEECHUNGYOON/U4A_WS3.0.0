@@ -1055,10 +1055,13 @@
 
         if (iexceplength !== 0) {
 
+            // 멀티푸터 메시지 실행 
+            // 이 안에서 화면이 로드가 완료되면
+            // IPC로 비지 끄는 로직 있음
             oAPP.fn.fnMultiFooterMsg(T_excep);
 
-            // busy 끄고 Lock 풀기
-            oAPP.common.fnSetBusyLock("");
+            // // busy 끄고 Lock 풀기
+            // oAPP.common.fnSetBusyLock("");
 
             // 자식 윈도우 활성화
             oAPP.fn.fnChildWindowShow(true);

@@ -2311,9 +2311,9 @@
 
         let sPopupName = "ERRMSGPOP";
 
-        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        // 기존에 멀티 푸터 메시지 팝업이 열렸을 경우 닫는다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
-        if (oResult.ISOPEN) {
+        if (oResult.ISOPEN === true && oResult.WINDOW.isDestroyed() === false) {
             oResult.WINDOW.close();
         }
 
