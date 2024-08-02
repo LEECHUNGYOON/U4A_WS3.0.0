@@ -111,7 +111,10 @@
      * WS20의 Web Security 팝업 실행시켜 주는 메소드
      ************************************************************************/
     oAPP.fn.fnWebSecurityPopupOpener = function () {
-
+        
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+        
         if (oAPP.fn.fnWebSecurityPopupOpen) {
             oAPP.fn.fnWebSecurityPopupOpen();
             return;
@@ -1346,8 +1349,6 @@
 
             oBrowserWindow = null;
 
-            parent.setBusy("");
-
             CURRWIN.focus();
 
         });
@@ -1484,8 +1485,6 @@
     //     oBrowserWindow.on('closed', () => {
 
     //         oBrowserWindow = null;
-
-    //         parent.setBusy("");
 
     //         CURRWIN.focus();
 
@@ -1652,8 +1651,6 @@
 
             oBrowserWindow = null;
 
-            parent.setBusy("");
-
             CURRWIN.focus();
 
         });
@@ -1764,8 +1761,6 @@
     //     oBrowserWindow.on('closed', () => {
 
     //         oBrowserWindow = null;
-
-    //         parent.setBusy("");
 
     //         CURRWIN.focus();
 

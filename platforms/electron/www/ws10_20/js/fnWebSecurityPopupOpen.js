@@ -103,6 +103,8 @@
 
         oWebSecuDlg.bindElement(C_BIND_ROOT_PATH);
 
+        oWebSecuDlg.setInitialFocus(oWebSecuDlg);
+
         oWebSecuDlg.open();
     };
 
@@ -661,11 +663,17 @@
      * WebSecurityDialog 의 저장 버튼 이벤트
      * ************************************************************************/
     oAPP.events.ev_pressWebSecuritySave = function() {
+        
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "010"); // Do you want to save it?
 
         // 질문 팝업?
         parent.showMessage(sap, 30, 'I', sMsg, oAPP.events.ev_pressWebSecuritySaveCB);
+
+        // busy 끄고 Lock 풀기
+        oAPP.common.fnSetBusyLock("");
 
     }; // end of oAPP.events.ev_pressWebSecuritySave
 
@@ -730,10 +738,16 @@
      * ************************************************************************/
     oAPP.events.ev_pressWebSecurityDel = function() {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "003"); // Do you really want to delete the object?
 
         // 질문 팝업?
         parent.showMessage(sap, 30, 'W', sMsg, oAPP.events.ev_pressWebSecurityDelCB);
+
+        // busy 끄고 Lock 풀기
+        oAPP.common.fnSetBusyLock("");
 
     }; // end of oAPP.events.ev_pressWebSecurityDel
 
@@ -776,6 +790,9 @@
 
         // UI Where to Use the Event 데이터를 가지고 모델에 저장한다.
         APPCOMMON.fnSetModelProperty(C_BIND_ROOT_PATH, oWsoData);
+
+        // busy 끄고 Lock 풀기
+        oAPP.common.fnSetBusyLock("");
 
     }; // end of oAPP.events.ev_webSecurityPopupAfterOpen
 
