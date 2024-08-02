@@ -2314,7 +2314,13 @@
         // 기존에 멀티 푸터 메시지 팝업이 열렸을 경우 닫는다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN === true && oResult.WINDOW.isDestroyed() === false) {
-            oResult.WINDOW.close();
+            
+            try {
+                oResult.WINDOW.close();    
+            } catch (error) {
+                
+            }
+            
         }
 
         let oThemeInfo = parent.getThemeInfo(); // theme 정보 

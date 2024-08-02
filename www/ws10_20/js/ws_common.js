@@ -281,7 +281,13 @@
         // 기존에 멀티 푸터 메시지 팝업이 열렸을 경우 닫는다
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN === true && oResult.WINDOW.isDestroyed() === false) {
-            oResult.WINDOW.close();
+            
+            try {
+                oResult.WINDOW.close();    
+            } catch (error) {
+                
+            }
+            
         }
 
     }; // end of oAPP.common.fnMultiFooterMsgClose
