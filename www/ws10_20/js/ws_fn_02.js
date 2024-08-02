@@ -1361,7 +1361,11 @@
                 continue;
             }
 
-            oChild.close();
+            try {
+                oChild.close();    
+            } catch (error) {
+                
+            }            
 
         }
 

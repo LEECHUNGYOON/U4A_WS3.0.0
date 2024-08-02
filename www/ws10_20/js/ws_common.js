@@ -1613,20 +1613,26 @@
                 continue;
             }
 
-            let oWebCon = oWin.webContents,
-                oWebPref = oWebCon.getWebPreferences(),
-                sType = oWebPref.OBJTY;
+            try {
 
-            if (sObjType != sType) {
+                var oWebCon = oWin.webContents;
+                var oWebPref = oWebCon.getWebPreferences();
+                var sType = oWebPref.OBJTY;
+
+                if (sObjType != sType) {
+                    continue;
+                }
+
+                oWin.focus();
+
+                return {
+                    ISOPEN: true,
+                    WINDOW: oWin
+                };
+
+            } catch (error) {
                 continue;
             }
-
-            oWin.focus();
-
-            return {
-                ISOPEN: true,
-                WINDOW: oWin
-            };
 
         }
 
@@ -1681,24 +1687,30 @@
                 continue;
             }
 
-            let oWebCon = oWin.webContents,
-                oWebPref = oWebCon.getWebPreferences(),
-                sBrowsKey = oWebPref.browserkey,
-                sOBJTY = oWebPref.OBJTY;
+            try {                
+        
+                let oWebCon     = oWin.webContents,
+                    oWebPref    = oWebCon.getWebPreferences(),
+                    sBrowsKey   = oWebPref.browserkey,
+                    sOBJTY      = oWebPref.OBJTY;
 
-            // // 현재 떠있는 브라우저의 키와 같은것을 찾는다.
-            // if (sCurrWinBrowsKey !== sBrowsKey) {
-            //     continue;
-            // }
+                // // 현재 떠있는 브라우저의 키와 같은것을 찾는다.
+                // if (sCurrWinBrowsKey !== sBrowsKey) {
+                //     continue;
+                // }
 
-            // OBJTY가 있는지
-            if (!sOBJTY) {
-                continue;
-            }
+                // OBJTY가 있는지
+                if (!sOBJTY) {
+                    continue;
+                }
 
-            // OBJTY가 같은것인지
-            if (sOBJTY !== OBJTY) {
-                continue;
+                // OBJTY가 같은것인지
+                if (sOBJTY !== OBJTY) {
+                    continue;
+                }
+
+            } catch (error) {
+                continue;       
             }
 
             // 찾으면 빠져나감
