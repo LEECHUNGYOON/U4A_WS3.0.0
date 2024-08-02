@@ -2080,36 +2080,53 @@ return;
 
             var _oTargetPage = _oContr.ui.ROOT;
 
-            // Target Page onAfterRendering Event Delegate
-            var _oDelegate = {
+            // // Target Page onAfterRendering Event Delegate
+            // var _oDelegate = {
 
-                onAfterRendering: function () {
+            //     onAfterRendering: function () {
 
-                    _oTargetPage.removeEventDelegate(_oDelegate);
+            //         _oTargetPage.removeEventDelegate(_oDelegate);
 
                     
-                    // 이동할 페이지에 viewReady가 있을 경우 호출해준다.
-                    if (_oContr.onViewReady && typeof _oContr.onViewReady === "function") {
+            //         // 이동할 페이지에 viewReady가 있을 경우 호출해준다.
+            //         if (_oContr.onViewReady && typeof _oContr.onViewReady === "function") {
 
-                        oAPP.fn.setBusy(false);
+            //             oAPP.fn.setBusy(false);
 
-                        _oContr.onViewReady();
+            //             _oContr.onViewReady();
 
-                        return;
+            //             return;
 
-                    }
+            //         }
 
+            //         oAPP.fn.setBusy(false);
+
+
+            //     } // end of onAfterRendering
+
+            // };
+
+            oContr.ui.ROOT.attachEventOnce("afterNavigate", function(){
+
+                // 이동할 페이지에 viewReady가 있을 경우 호출해준다.
+                if (_oContr.onViewReady && typeof _oContr.onViewReady === "function") {
+
+                    _oContr.onViewReady();
+                    
                     oAPP.fn.setBusy(false);
 
+                    return;
 
-                } // end of onAfterRendering
+                }
 
-            };
+                oAPP.fn.setBusy(false);
+
+            });
 
 
             _oTargetPage.data("TARGET", _oContr);
 
-            _oTargetPage.addEventDelegate(_oDelegate);
+            // _oTargetPage.addEventDelegate(_oDelegate);
 
 
             oContr.ui.ROOT.addPage(_oTargetPage);
@@ -2165,7 +2182,8 @@ return;
                     
                     oContr.oModel.refresh();
 
-                    var _oPage = oContr.ui.ROOT.getCurrentPage();
+                    //이전 페이지 정보 얻기.
+                    var _oPage = oContr.ui.ROOT.getPreviousPage();
 
                     if(typeof _oPage === "undefined"){
                         return res();

@@ -41,29 +41,24 @@
     var oDlg1 = new sap.m.Dialog({draggable:true});
     oDlg1.addStyleClass("sapUiSizeCompact");
 
+    
     //DIALOG OPEN전 이벤트.
     oDlg1.attachBeforeOpen(function(oEvent){
       
-      //20240731 PES -START.
-      //해당 기능을 사용하지 않아도 insert Aggregation 팝업이 최상위로 호출되기에 주석 처리.
-      //(해당 기능 사용시 focus문제가 발생하여 주석 처리함)
-      // //팝업 호출전 모달 해제.
-      // //insert ui 팝업에서 D&D를 통해 UI를 추가하는 과정에서 modal 여부를 변경하기에
-      // //aggregation 선택팝업이 호출될때 최상위가 되기위해 modal을 재설정함.
-      // if(this.oPopup){
-      //   this.oPopup.setModal(false);
-      // }
-      //20240731 PES -END.
-
-      oDlg1.setInitialFocus(oSel1);
-
-      this.oPopup.setInitialFocusId(oSel1.getId());
-
       //X, Y 좌표값이 존재하지 않는경우 EXIT.
       if(typeof i_x === "undefined"){return;}
       if(typeof i_y === "undefined"){return;}
 
+      
+      //팝업 호출전 모달 해제.
+      //insert ui 팝업에서 D&D를 통해 UI를 추가하는 과정에서 modal 여부를 변경하기에
+      //aggregation 선택팝업이 호출될때 최상위가 되기위해 modal을 재설정함.
+      //(aggregation 선택 팝업의 DDLB를 펼쳐지지 않는문제 해결을위함)
+      if(this.oPopup){
+        this.oPopup.setModal(false);
+      }
 
+      
       //20240726 PES -START.
       //y축 좌표값이 window height 끝에 근접한경우.
       if(window.innerHeight - i_y < 200){
@@ -90,24 +85,38 @@
     //dialog open 이후 이벤트.
     oDlg1.attachAfterOpen(function(){
 
-      //20240731 PES -START.
-      //해당 기능을 사용하지 않아도 insert Aggregation 팝업이 최상위로 호출되기에 주석 처리.
-      //(해당 기능 사용시 focus문제가 발생하여 주석 처리함)
-      // //팝업 호출전 모달 재설정.
-      // //insert ui 팝업에서 D&D를 통해 UI를 추가하는 과정에서 modal 여부를 변경하기에
-      // //aggregation 선택팝업이 호출될때 최상위가 되기위해 modal을 재설정함.
-      // if(this.oPopup){
-      //   this.oPopup.setModal(true);
-      // }
-      //20240731 PES -END.
       
-      oDlg1.setInitialFocus(oSel1);
+      //X, Y 좌표값이 존재하지 않는경우 EXIT.
+      if(typeof i_x === "undefined"){
+        parent.setBusy("");
+
+        oSel1.focus();
+
+        return;
+      }
+
+
+      if(typeof i_y === "undefined"){
+
+        parent.setBusy("");
+
+        oSel1.focus();
+
+        return;
+      
+      }
+
+      //팝업 호출전 모달 재설정.
+      //insert ui 팝업에서 D&D를 통해 UI를 추가하는 과정에서 modal 여부를 변경하기에
+      //aggregation 선택팝업이 호출될때 최상위가 되기위해 modal을 재설정함.
+      //(aggregation 선택 팝업의 DDLB를 펼쳐지지 않는문제 해결을위함)
+      if(this.oPopup){
+        this.oPopup.setModal(true);
+      }
 
       parent.setBusy("");
 
-      //ddlb에 focus 처리.
       oSel1.focus();
-
 
     });
 
@@ -211,6 +220,7 @@
       //001	Cancel operation
       parent.showMessage(sap,10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
     });
+
 
     oDlg1.setInitialFocus(oSel1);
 

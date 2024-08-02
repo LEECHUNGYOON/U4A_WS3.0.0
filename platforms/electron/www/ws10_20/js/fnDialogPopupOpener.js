@@ -1349,8 +1349,6 @@
 
             oBrowserWindow = null;
 
-            parent.setBusy("");
-
             CURRWIN.focus();
 
         });
@@ -1487,8 +1485,6 @@
     //     oBrowserWindow.on('closed', () => {
 
     //         oBrowserWindow = null;
-
-    //         parent.setBusy("");
 
     //         CURRWIN.focus();
 
@@ -1655,8 +1651,6 @@
 
             oBrowserWindow = null;
 
-            parent.setBusy("");
-
             CURRWIN.focus();
 
         });
@@ -1767,8 +1761,6 @@
     //     oBrowserWindow.on('closed', () => {
 
     //         oBrowserWindow = null;
-
-    //         parent.setBusy("");
 
     //         CURRWIN.focus();
 

@@ -173,6 +173,8 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
   //-검색 서버 조회 전송 처리 스크립트 펑션 생성
   function LF_getServerData(){
 
+    parent.setBusy("X");
+
     oTable.setBusy(true);
     SerchBT1.setBusy(true);
 
@@ -217,9 +219,6 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
     sendAjax(parent.getServerPath() + "/f4serverData", oFormData, function(param){
       //~조회 정보 존재시 data 처리
 
-        //BUSY OFF.
-        parent.setBusy(false);
-
         //A73	Search Result
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A73", "", "", "", "");
         
@@ -256,6 +255,11 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
         if(l_isMulti){
           ZF4SH_select.setBusy(false);
         }
+        
+        //BUSY OFF.
+        parent.setBusy("");
+
+
     }); //검색조건에 따른 결과 리스트 검색을 위한 서버 호출.
 
 
@@ -295,11 +299,6 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
     //f4 help 필드정보 검색.
     sendAjax(parent.getServerPath() + "/f4serverData", oFormData, function(param){
 
-      //BUSY OFF.
-      parent.setBusy(false);
-
-      //~witing mode 제거
-      oDialog.setBusy(false);
 
       //~조회입력 패널 펼침
       oPanel.setExpanded(true);
@@ -309,6 +308,13 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
 
       //결과리스트 컬럼 재설정.
       lf_setTableColumn(l_f4_def, param);
+      
+
+      //~witing mode 제거
+      oDialog.setBusy(false);
+
+
+      parent.setBusy("");
 
     });
 
@@ -411,6 +417,8 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
 
     //-include f4 help select 선택 이벤트 설정
     ZF4SH_select.attachEvent("change", function(oEvent){
+
+      parent.setBusy("X");
 
       //A73	Search Result
       var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A73", "", "", "", "");

@@ -13,6 +13,12 @@
             //메시지 처리.
             //055	Processing does not exist.
             parent.showMessage(sap, 10, "W", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "055", "", "", "", ""));
+
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
+
             return;
         }
 
@@ -223,6 +229,12 @@
         oDlg.attachAfterOpen(function(){
             //팝업에 출력할 값 바인딩 처리.
             lf_setBindVal();
+
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
+
         });
 
 
@@ -583,7 +595,7 @@
 
 
         //동일 ATTRIBUTE 동기화 처리.
-        function lf_setSyncAttr(){
+        async function lf_setSyncAttr(){
 
             //선택한 라인 정보 얻기.
             var lt_sel = oTab1.getSelectedIndices();
@@ -660,7 +672,8 @@
 
             is_attr.UIATV = l_UIATV;
 
-            oAPP.fn.attrChangeProc(is_attr, "", false, true);
+            //attr 영역 변경 처리.
+            oAPP.fn.attrChange(is_attr, "", false, true);
 
 
             lf_close(true);

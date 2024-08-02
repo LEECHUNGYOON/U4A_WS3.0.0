@@ -602,12 +602,16 @@ let oAPP = parent.oAPP,
             case true:
                 //busy on.
 
+                sap.ui.getCore().lock();
+
                 oAPP.ui.APP.setBusy(true);
                 
                 break;
         
             case false:
                 //busy off.
+
+                sap.ui.getCore().unlock();
 
                 oAPP.ui.APP.setBusy(false);
 
@@ -2427,7 +2431,7 @@ let oAPP = parent.oAPP,
                 return;
             }
 
-            if(typeof window?.sap?.m?.InstanceManager?.getOpenDialogs === "function"){
+            if(typeof window?.sap?.m?.InstanceManager?.getOpenDialogs !== "function"){
                 return;
             }
 

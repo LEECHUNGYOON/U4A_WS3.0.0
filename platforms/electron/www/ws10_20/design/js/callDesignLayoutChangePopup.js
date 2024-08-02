@@ -226,8 +226,6 @@
     function lf_save(oDlg, oMdl){
 
 
-        parent.setBusy("");
-
         //저장전 확인 팝업 호출.
         //010	Do you want to save it?
         parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "010", "", "", "", ""), function(param){
@@ -262,6 +260,7 @@
 
         }); //저장전 확인 팝업 호출.
         
+        parent.setBusy("");
 
     }   //저장 처리.
 

@@ -610,6 +610,9 @@ function designControl(is_attr){
         oContr.fn.onCallSyncBindPopup = async function(){
 
             oAPP.fn.setBusy(true);
+            
+            //동일속성 적용 버튼 비활성 처리.
+            this.setEnabled(false);
 
             //188	Property replace all
             var l_A80 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "188");
@@ -706,7 +709,6 @@ function designControl(is_attr){
             //디자인 영역으로 이동 처리.
             await oAPP.attr.oDesign.fn.moveDesignPage();
 
-            oAPP.fn.setBusy(false);
 
         };
 

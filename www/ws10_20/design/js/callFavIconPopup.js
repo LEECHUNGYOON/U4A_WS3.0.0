@@ -2,7 +2,7 @@
 
     let loApp = {ui:{}, attr:{}};
 
-    //attribute 설명글 팝업 호출.
+    //attribute 즐겨찾기 아이콘 팝업 호출.
     oAPP.fn.callFavIconPopup = function(oUi, is_attr, f_cb){
         
         //attr 초기화 처리.
@@ -35,6 +35,8 @@
                 loApp.ui.oPop.close();
             }
 
+            parent.setBusy("");
+
             return;
         }
 
@@ -45,6 +47,9 @@
 
             //새로 그리지 않고 이전 팝업 정보로 open 처리.
             loApp.ui.oPop.openBy(oUi);
+
+            parent.setBusy("");
+
             return;
         }
 
@@ -139,10 +144,12 @@
         oTab.bindAggregation("rows", {path:"/T_ICON", template:new sap.ui.table.Row()});
 
 
+        parent.setBusy("");
+
         //팝업 호출.
         oPop.openBy(oUi);
 
-    };  //attribute 설명글 팝업 호출.
+    };  //attribute 즐겨찾기 아이콘 팝업 호출.
 
 
 

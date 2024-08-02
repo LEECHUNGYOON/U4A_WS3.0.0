@@ -228,8 +228,8 @@ async function updateDesignData(oEvent){
     // //바인딩 추가 속성 정보 모델 갱신 처리.
     // oAPP.attr.oAddit.oModel.refresh();
 
-    //BUSY OFF 요청 처리.
-    oEvent.currentTarget.postMessage({PRCCD:"BUSY_OFF"});
+    //디자인 영역에 busy off 요청 처리
+    sendDesignAreaBusyOff();
 
 
     oAPP.attr.oDesign.ui.TREE.attachEventOnce("rowsUpdated", ()=>{

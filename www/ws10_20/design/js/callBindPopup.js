@@ -942,6 +942,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
     //편집 가능 상태가 아닌경우 exit.
     if(oAPP.attr.oModel.oData.IS_EDIT !== true){
+      parent.setBusy("");
       return;
     }
 
@@ -957,6 +958,9 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
       if(l_indx === -1){
         //268	Selected line does not exists.
         parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", ""));
+
+        parent.setBusy("");
+
         return true;
       }
 
@@ -972,6 +976,9 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
     //bind전 입력값 점검시 오류가 발생한 경우 exit.
     if(lf_chkBindVal(oCtxt ? false : true, ls_tree) === true){
       oAPP.attr.oBindDialog._oModel.refresh();
+
+      parent.setBusy("");
+
       return;
     }
 
@@ -1146,6 +1153,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
   //bind 버튼 이벤트
   oToolBtn3.attachPress(function(){
+    
+    parent.setBusy("X");
 
     lf_bindBtnEvt();
 
@@ -1193,17 +1202,25 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   //tree 더블클릭 이벤트.
   oTree.attachBrowserEvent("dblclick",function(oEvent){
 
+    parent.setBusy("X");
+
     //이벤트 발생 UI 정보 얻기.
     var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target,sap.ui.getCore());
 
     //UI정보를 얻지 못한 경우 exit.
-    if(!l_ui){return;}
+    if(!l_ui){
+      parent.setBusy("");
+      return;
+    }
 
     //바인딩정보 얻기.
     var l_ctxt = l_ui.getBindingContext();
 
     //바인딩 정보를 얻지 못한 경우 exit.
-    if(!l_ctxt){return;}
+    if(!l_ctxt){
+      parent.setBusy("");
+      return;
+    }
 
     //바인딩 처리.
     lf_bindBtnEvt(l_ui.getBindingContext());

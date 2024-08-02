@@ -1176,7 +1176,7 @@
           ls_attr.UIATV += l_css;
 
           //ATTR 변경처리.
-          oAPP.fn.attrChangeProc(ls_attr, "INPUT");
+          oAPP.fn.attrChange(ls_attr, "INPUT");
 
           //해당 ATTR FOCUS 처리.
           oAPP.fn.setAttrFocus(ls_attr.UIATK, "");

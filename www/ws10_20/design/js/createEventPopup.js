@@ -468,8 +468,14 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
 
   //dialog 호출시 이벤트.
   oDlg.attachAfterOpen(function(){
+
+    parent.setBusy("");
+
     //메소드명에 focus 처리.
-    oFmInp1.focus();
+    setTimeout(()=>{
+      oFmInp1.focus();
+    },0);
+    
   });
   
 

@@ -13,8 +13,10 @@
 
         //openBy 처리 UI가 존재하지 않는경우 exit.
         if(!oUi){
-            //단축키 잠금, lock 해제처리.
-            oAPP.fn.designAreaLockUnlock(false);
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
+
             return;
         }
         
@@ -33,8 +35,9 @@
             oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "196", 
             oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35", "", "", "", ""), "", "", ""));
 
-            //단축키 잠금, lock 해제처리.
-            oAPP.fn.designAreaLockUnlock(false);
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
 
             return;
         } 
@@ -63,8 +66,10 @@
                 oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "196", 
                 oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A35", "", "", "", ""), "", "", ""));
 
-            // busy off Lock off
-            oAPP.common.fnSetBusyLock("");
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
+
             return;
         }
 
@@ -80,8 +85,9 @@
             //새로 그리지 않고 이전 팝업 정보로 open 처리.
             loApp.ui.attrDescPopup.openBy(oUi);
 
-            //단축키 잠금, lock 해제처리.
-            oAPP.fn.designAreaLockUnlock(false);
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
 
             return;
         }
@@ -150,6 +156,11 @@
             growing:true, value:"{/RDESCR}", visible:"{/RVSIBL}"});
         oTArea2.addStyleClass("sapUiSmallMargin");
         oHBox2.addItem(oTArea2);
+
+
+        oAPP.fn.setShortcutLock(false);
+
+        parent.setBusy("");
 
         //팝업 호출.
         oPop.openBy(oUi);

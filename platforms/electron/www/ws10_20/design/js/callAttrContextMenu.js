@@ -15,9 +15,42 @@
 
         //menu item 선택 이벤트.
         oMenu1.attachItemSelected(function(oEvent){
+
+            parent.setBusy("X");
+      
+            //단축키 잠금 처리.
+            oAPP.fn.setShortcutLock(true);
+
+            
+            var _oUi = oEvent?.oSource;
+
+            if(typeof _oUi === "undefined" || _oUi === null){
+
+                //단축키 잠금 해제처리.
+                oAPP.fn.setShortcutLock(false);
+
+                parent.setBusy("");
+
+                return;
+
+            }
+
+
+            if(typeof oEvent?.mParameters?.item?.getKey !== "function"){
+
+                //단축키 잠금 해제처리.
+                oAPP.fn.setShortcutLock(false);
+
+                parent.setBusy("");
+
+                return;
+            }
+
+
+            var _key = oEvent?.mParameters?.item?.getKey();
             
             //메뉴 item선택건에 따른 기능 분기 처리.
-            oAPP.fn.attrCtxtMenuItemPress(oEvent);
+            oAPP.fn.attrCtxtMenuItemPress(_oUi, _key);
 
             this.close();
 
@@ -71,28 +104,33 @@
 
 
     //attribute 영역의 context menu 선택 이벤트
-    oAPP.fn.attrCtxtMenuItemPress = function(oEvent){
-
-        //선택한 menu item의 KEY 정보 얻기.
-        var l_key = oEvent.mParameters.item.getKey();
+    oAPP.fn.attrCtxtMenuItemPress = function(oUi, key){
 
         //선택 menu key에따른 로직 분기.
-        switch(l_key){
+        switch(key){
             case "M01": //wait off 처리.
-                oAPP.fn.attrContextMenuWaitOnOff(oEvent.oSource);
+                oAPP.fn.attrContextMenuWaitOnOff(oUi);
                 break;
             
             case "M02": //unbind 처리.
-                oAPP.fn.attrContextMenuUnbind(oEvent.oSource);
+                oAPP.fn.attrContextMenuUnbind(oUi);
                 break;
             
             case "M03": //프로퍼티 동일 속성 동기화 처리.
-                oAPP.fn.attrContextMenuSetSameAttr(oEvent.oSource);
+                oAPP.fn.attrContextMenuSetSameAttr(oUi);
                 break;
             
             case "M04": //클라이언트 이벤트 해제 처리.
-                oAPP.fn.attrContextMenuRemoveClientEvent(oEvent.oSource);
+                oAPP.fn.attrContextMenuRemoveClientEvent(oUi);
                 break;
+
+            default:
+                //단축키 잠금 해제처리.
+                oAPP.fn.setShortcutLock(false);
+
+                parent.setBusy("");
+
+                return;
 
         }   //선택 menu key에따른 로직 분기.
 
@@ -235,7 +273,14 @@
     oAPP.fn.attrContextMenuWaitOnOff = function(oMenu){
 
         var oModel = oMenu.getModel();
-        if(!oModel){return;}
+        if(!oModel){
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
+
+            return;
+        }
 
         //이벤트 발생 attribute 라인 정보 얻기.
         var ls_attr = oModel.getProperty("/attr");
@@ -257,7 +302,7 @@
         }
 
         //ATTRIBUTE 변경 후속 처리.
-        oAPP.fn.attrChangeProc(ls_attr);
+        oAPP.fn.attrChange(ls_attr);
 
 
     };  //이벤트의 WAIT ON/OFF 메뉴 선택 처리.
@@ -269,7 +314,13 @@
     oAPP.fn.attrContextMenuUnbind = function(oMenu){
 
         var oModel = oMenu.getModel();
-        if(!oModel){return;}
+        if(!oModel){
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
+            return;
+        }
 
         //이벤트 발생 attribute 라인 정보 얻기.
         var ls_attr = oModel.getProperty("/attr");
@@ -277,8 +328,18 @@
         //UNBIND 처리여부 확인 팝업 호출.
         //263	Do you want to continue unbind?
         parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "263", "", "", "", ""),function(param){
+
+            parent.setBusy("X");
+
             //YES를 선택하지 않은경우 EXIT.
-            if(param !== "YES"){return;}
+            if(param !== "YES"){
+
+                //단축키 잠금 해제처리.
+                oAPP.fn.setShortcutLock(false);
+
+                parent.setBusy("");
+                return;
+            }
 
             //프로퍼티인경우.
             if(ls_attr.UIATY ==="1"){
@@ -287,10 +348,6 @@
 
                 //005	Job finished.
                 parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
-
-                //20240621 pes.
-                //바인딩 팝업의 디자인 영역 갱신처리.
-                oAPP.fn.updateBindPopupDesignData();
 
                 return;
             }
@@ -308,14 +365,12 @@
 
                 //005 Job finished.
                 parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
-
-                //20240621 pes.
-                //바인딩 팝업의 디자인 영역 갱신처리.
-                oAPP.fn.updateBindPopupDesignData();
                 
             }
 
         }); //UNBIND 처리여부 확인 팝업 호출.
+
+        parent.setBusy("");
 
     };  //property, aggregation의 unbind 처리.
 
@@ -326,7 +381,14 @@
     oAPP.fn.attrContextMenuRemoveClientEvent = function(oMenu){
 
         var oModel = oMenu.getModel();
-        if(!oModel){return;}
+        if(!oModel){
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
+
+            return;
+        }
 
         //이벤트 발생 attribute 라인 정보 얻기.
         var ls_attr = oModel.getProperty("/attr");
@@ -336,8 +398,17 @@
         //264	Remove Event Javascript source?
         parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "264", "", "", "", ""),function(param){
             
+            parent.setBusy("X");
+
             //YES를 선택하지 않은경우 EXIT.
-            if(param !== "YES"){return;}
+            if(param !== "YES"){
+
+                //단축키 잠금 해제처리.
+                oAPP.fn.setShortcutLock(false);
+
+                parent.setBusy("");
+                return;
+            }
 
             var l_OBJTY = "JS";
 
@@ -353,12 +424,14 @@
             ls_attr.ADDSC = "";
 
             //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
-            oAPP.fn.attrChangeProc(ls_attr, "", false, true);
+            oAPP.fn.attrChange(ls_attr, "", false, true);
 
             //005 Job finished.
             parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
 
         });
+
+        parent.setBusy("");
 
 
     };  //클라이언트 이벤트 해제 처리.
@@ -371,7 +444,14 @@
 
         //모델 정보 얻기.
         var oModel = oMenu.getModel();
-        if(!oModel){return;}
+        if(!oModel){
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
+
+            return;
+        }
 
         //이벤트 발생 attribute 라인 정보 얻기.
         var ls_attr = oModel.getProperty("/attr");

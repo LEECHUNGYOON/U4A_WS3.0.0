@@ -15,6 +15,15 @@ module.exports.setAfterRendering = function(oTarget){
 			return resolve();
 		}
 
+		if(typeof oTarget?.addEventDelegate !== "function"){
+			return resolve();
+		}
+
+		if(typeof oTarget?.onAfterRendering !== "function"){
+			return resolve();
+		}
+
+		
 		//RichTextEditor UI 인경우.
 		if(oTarget.isA("sap.ui.richtexteditor.RichTextEditor") === true){
 
@@ -147,6 +156,55 @@ module.exports.renderingRichTextEditor = function(is_tree){
     //미리보기 화면에 출력될 RichTextEditor의 readyRecurring 이벤트 등록 처리
     return refreshRichTextEditor(is_tree);
     
+};
+
+
+
+/*********************************************************
+ * @module - 미리보기 화면 테마 변경 이벤트 등록 처리.
+ ********************************************************/
+module.exports.previewThemeChanged = function(is_attr){
+
+	return new Promise((resolve)=>{
+
+		//테마 변경 callback 이벤트 function.
+		function _previewThemeChanged(){
+
+			//이벤트 제거.
+			sap.ui.getCore().detachThemeChanged(_previewThemeChanged);
+
+			return resolve();
+
+		}	//테마 변경 callback 이벤트 function.
+
+
+		//attribute정보가 존재하지 않는경우 exit.
+		if(typeof is_attr === "undefined"){
+			return resolve();
+		}
+
+		//DOCUMENT의 UI theme attribute가 아닌경우 exit.
+		if(is_attr?.UIATK !== "DH001021"){
+			return resolve();
+		}
+
+		//테마 입력값이 존재하지 않는경우 exit.
+		if(typeof is_attr?.UIATV === "undefined" || is_attr?.UIATV === ""){
+			return resolve();
+		}
+
+
+		//미리보기 sap 라이브러리가 존재하지 않는경우 exit.
+		if(typeof sap === "undefined" || sap === null){
+			return resolve();
+		}
+
+		//테마 변경 이벤트 등록.
+		sap.ui.getCore().attachThemeChanged(_previewThemeChanged);
+
+
+	});
+
 };
 
 

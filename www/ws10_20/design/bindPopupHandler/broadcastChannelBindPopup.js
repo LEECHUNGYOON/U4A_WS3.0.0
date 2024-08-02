@@ -156,6 +156,8 @@ function responseBindPopupBusyOff(oEvent){
         return false;
     }
 
+    //단축키도 같이 잠금 해제처리.
+    oAPP.fn.setShortcutLock(false);
 
     //busy off.
     parent.setBusy("");
@@ -268,9 +270,9 @@ async function updateAppData(oEvent){
 
     }
 
-
+    
     //BUSY OFF 요청 처리.
-    oEvent.currentTarget.postMessage({PRCCD:"BUSY_OFF"});
+    sendBindPopupBusyOff();
 
 
     //화면에서 UI추가, 이동, 삭제 및 attr 변경시 변경 flag 처리.
@@ -459,6 +461,9 @@ async function updateBindPopupDesignData(oData){
     //바인딩 팝업 채널이 구성되지 않은경우 exit.
     //(바인딩 팝업이 호출되지 않은경우)
     if(CL_WS20_BINDPOPUP.isCreateChannel() === false){
+
+        //단축키도 같이 잠금 해제처리.
+        oAPP.fn.setShortcutLock(false);
 
         //busy off.
         parent.setBusy("");
