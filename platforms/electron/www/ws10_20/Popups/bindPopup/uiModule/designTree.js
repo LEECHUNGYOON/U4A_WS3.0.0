@@ -1080,6 +1080,9 @@ function designControl(oArea){
             await oAPP.fn.waitBusyOpened();
 
 
+            //design tree의 drop 타겟 aggregation 초기화.
+            oContr.fn.setDropTargetAggregation();
+
             //현재 편집상태가 아닌경우.
             if(oAPP.attr.oAppInfo.IS_EDIT === ""){
 
@@ -1092,8 +1095,8 @@ function designControl(oArea){
             //WS20에서 DRAG한 데이터 처리건인경우.
             if(oContr.fn.dropDesignArea(_prc002) === true){
                 
-                //drop 영역 초기화.
-                this.setTargetAggregation("rows");
+                // //drop 영역 초기화.
+                // this.setTargetAggregation("rows");
 
                 oAPP.fn.setBusy(false);
 
@@ -1109,8 +1112,8 @@ function designControl(oArea){
                 sap.m.MessageToast.show(_sRes.RTMSG, 
                     {duration: 3000, at:"center center", my:"center center"});
                 
-                //drop 영역 초기화.
-                this.setTargetAggregation("rows");
+                // //drop 영역 초기화.
+                // this.setTargetAggregation("rows");
 
                 oAPP.fn.setBusy(false);
 
@@ -1123,8 +1126,8 @@ function designControl(oArea){
 
             if(typeof _sDrop === "undefined"){
 
-                //drop 영역 초기화.
-                this.setTargetAggregation("rows");
+                // //drop 영역 초기화.
+                // this.setTargetAggregation("rows");
 
                 oAPP.fn.setBusy(false);
 
@@ -1156,8 +1159,8 @@ function designControl(oArea){
             oContr.oModel.refresh(true);
             
 
-            //drop 영역 초기화.
-            this.setTargetAggregation("rows");
+            // //drop 영역 초기화.
+            // this.setTargetAggregation("rows");
 
             //tree table 컬럼길이 재조정 처리.
             oAPP.fn.setUiTableAutoResizeColumn(oContr.ui.TREE);
@@ -1284,16 +1287,22 @@ function designControl(oArea){
                 sap.m.MessageBox.confirm(_msg, {
                     id: oAPP.attr.C_CONFIRM_POPUP, 
                     onClose: (actcd) => {
+                        
+                        oAPP.fn.setBusy(true);
+
+                        document.activeElement.blur();
+
                         resolve(actcd);
                     }
                 });
             });
 
+
             if (_actcd !== "OK") {
+                oAPP.fn.setBusy(false);
                 return;
             }
-
-            oAPP.fn.setBusy(true);
+            
 
             //오류 표현 초기화 처리.
             oContr.fn.resetErrorField();
@@ -1471,18 +1480,23 @@ function designControl(oArea){
                     sap.m.MessageBox.confirm(_msg, {
                         id: oAPP.attr.C_CONFIRM_POPUP, 
                         onClose: (actcd) => {
+
+                            oAPP.fn.setBusy(true);
+
+                            document.activeElement.blur();
+
                             resolve(actcd);
                         }
                     });
                 });
 
                 if (_actcd !== "OK") {
+                    oAPP.fn.setBusy(false);
                     return;
                 }
 
             }
 
-            oAPP.fn.setBusy(true);
 
             _sTree.MPROP = oAPP.fn.setAdditBindData(oAPP.attr.oAddit.oModel.oData.T_MPROP);
 
@@ -1718,6 +1732,9 @@ function designControl(oArea){
                     id: oAPP.attr.C_CONFIRM_POPUP, 
                     onClose: (actcd) => {
                         oAPP.fn.setBusy(true);
+
+                        document.activeElement.blur();
+
                         resolve(actcd);
                     }
                 });
@@ -1821,22 +1838,9 @@ function designControl(oArea){
          * @event - drag를 떠났을때 이벤트.
          *************************************************************/
         oContr.fn.onDragLeaveDesignArea = function(){
-return;
-            var _aDrop = oContr.ui.TREE.getDragDropConfig();
 
-            if(_aDrop.length === 0){
-                return;
-            }
-
-            //데이터 바인딩용 DROP 정보 찾기.
-            var _oDrop = _aDrop.find( oUI => oUI?.data && oUI.data("DROP_TYPE") === "DROP01" );
-
-            if(typeof _oDrop === "undefined"){
-                return;
-            }
-
-            //target aggregation 초기화.
-            _oDrop.setTargetAggregation("rows");
+            //drop 타겟 aggregation 초기화 처리.
+            oContr.fn.setDropTargetAggregation();
 
         };
 
@@ -1906,6 +1910,9 @@ return;
                     id: oAPP.attr.C_CONFIRM_POPUP, 
                     onClose: (actcd) => {
                         oAPP.fn.setBusy(true);
+
+                        document.activeElement.blur();
+
                         resolve(actcd);
                     }
                 });
@@ -1992,6 +1999,8 @@ return;
         oContr.fn.onSynchronizionBind = async function(){
 
             oAPP.fn.setBusy(true);
+
+            document.activeElement.blur();
 
             //라인 선택건 존재여부 확인.
             var _aTree = oContr.fn.getSelectedDesignTree();
@@ -2801,6 +2810,30 @@ return;
             
         };
 
+        
+        /*************************************************************
+         * @function - drop 타겟 aggregation 설정 처리.
+         *************************************************************/
+        oContr.fn.setDropTargetAggregation = function(aggrName){
+
+            var _aDrop = oContr.ui.TREE.getDragDropConfig();
+
+            if(_aDrop.length === 0){
+                return;
+            }
+
+            //데이터 바인딩용 DROP 정보 찾기.
+            var _oDrop = _aDrop.find( oUI => oUI?.data && oUI.data("DROP_TYPE") === "DROP01" );
+
+            if(typeof _oDrop === "undefined"){
+                return;
+            }
+
+            //target aggregation 설정 처리.
+            _oDrop.setTargetAggregation(aggrName);
+
+        };
+
 
         /*************************************************************
          * @function - dropAble 프로퍼티 unbind시 예외처리.
@@ -3543,8 +3576,9 @@ function designView(oArea){
         });
         oContr.ui.PG_MAIN.addContent(oContr.ui.TREE);
 
-        oContr.ui.TREE.addEventDelegate({ondragleave:oContr.fn.onDragLeaveDesignArea});
-
+        //테스트주석처리!!!!!!!!!!!!!!!!!!
+        // oContr.ui.TREE.addEventDelegate({ondragleave:oContr.fn.onDragLeaveDesignArea});
+        //테스트주석처리!!!!!!!!!!!!!!!!!!
 
         //모델 데이터 변경시 메인에 해당 내용 전달 처리 이벤트 등록.
         oContr.oModel.attachMessageChange(oContr.fn.onModelDataChanged);

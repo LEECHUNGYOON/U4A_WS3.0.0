@@ -180,16 +180,20 @@ function designControl(oArea){
                 sap.m.MessageBox.confirm(_msg, {
                     id: oAPP.attr.C_CONFIRM_POPUP, 
                     onClose: (actcd) => {
+
+                        oAPP.fn.setBusy(true);
+
+                        document.activeElement.blur();
+
                         resolve(actcd);
                     }
                 });
             });
 
             if (_actcd !== "OK") {
+                oAPP.fn.setBusy(false);
                 return;
             }
-
-            oAPP.fn.setBusy(true);
 
             //바인딩 추가 속성 값 얻기.
             var _MPROP = oAPP.fn.setAdditBindData(oContr.oModel.oData.T_MPROP);

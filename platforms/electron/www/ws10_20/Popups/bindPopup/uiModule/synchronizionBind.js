@@ -496,11 +496,16 @@ function designControl(is_attr){
             //dialog용 busy on.
             oContr.fn.setBusyDialog(true);
 
+            document.activeElement.blur();
+
             var _oUi = oEvent?.oSource;
 
             if(typeof _oUi === "undefined"){
-                oAPP.fn.setBusy(false);
+                
                 oContr.fn.setBusyDialog(false);
+
+                oAPP.fn.setBusy(false);
+                
                 return;
             }
 
@@ -511,7 +516,12 @@ function designControl(is_attr){
                 
                 _oParent = _oParent.getParent();
 
-                if(typeof _oParent === "undefined"){
+                if(typeof _oParent === "undefined" || _oParent === null){
+
+                    oContr.fn.setBusyDialog(false);
+
+                    oAPP.fn.setBusy(false);
+
                     return;
                 }
 
@@ -524,22 +534,16 @@ function designControl(is_attr){
             //라인선택건이 존재하지 않는경우.
             if(_aList.length === 0){
 
-                oAPP.fn.setBusy(false);
-
-                //dialog용 busy off.
-                oContr.fn.setBusyDialog(false);
-
                 //183	Selected line does not exists.
                 sap.m.MessageBox.error(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "183"));
+                
+                oContr.fn.setBusyDialog(false);
+
+                oAPP.fn.setBusy(false);
 
                 return;
 
             }
-
-            //dialog용 busy off.
-            oContr.fn.setBusyDialog(false);
-
-            oAPP.fn.setBusy(false);
 
             //166	&1건의 라인이 선택됐습니다.
             var _msg = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "166", _aList.length);
@@ -551,27 +555,41 @@ function designControl(is_attr){
                 sap.m.MessageBox.confirm(_msg, {
                     id: oAPP.attr.C_CONFIRM_POPUP, 
                     onClose: (actcd) => {
+
+                        oAPP.fn.setBusy(true);
+
+                        //동기화 화면 busy처리.
+                        oContr.ui.ROOT.setBusy(true);
+                        
+                        //dialog용 busy on.
+                        oContr.fn.setBusyDialog(true);
+
+                        document.activeElement.blur();
+
                         resolve(actcd);
                     }
                 });
+
+                oContr.fn.setBusyDialog(false);
+
+                oAPP.fn.setBusy(false);
+
             });
 
 
             if (_actcd !== "OK") {
+
+                oContr.ui.ROOT.setBusy(false);
+
+                oContr.fn.setBusyDialog(false);
+
+                oAPP.fn.setBusy(false);
+
                 return;
             }
 
 
             oAPP.fn.setBusy(true);
-
-            
-            //동기화 화면 busy처리.
-            oContr.ui.ROOT.setBusy(true);
-
-            
-            //dialog용 busy on.
-            oContr.fn.setBusyDialog(true);
-
 
             //동일속성 바인딩 처리.
             _setSyncAttr(_aList);
@@ -590,6 +608,8 @@ function designControl(is_attr){
         oContr.fn.onMoveDesignPage = async function(){
 
             oAPP.fn.setBusy(true);
+
+            document.activeElement.blur();
 
             //디자인 영역으로 이동 처리.
             await oAPP.attr.oDesign.fn.moveDesignPage();
@@ -610,9 +630,8 @@ function designControl(is_attr){
         oContr.fn.onCallSyncBindPopup = async function(){
 
             oAPP.fn.setBusy(true);
-            
-            //동일속성 적용 버튼 비활성 처리.
-            this.setEnabled(false);
+
+            document.activeElement.blur();
 
             //188	Property replace all
             var l_A80 = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "188");

@@ -184,6 +184,8 @@
 
       parent.setBusy("X");
 
+      document.activeElement.blur();
+
       var l_sel = oSel1.getSelectedKey();
 
       ls_0023 = oAPP.DATA.LIB.T_0023.find( a => a.UIATK === l_sel);

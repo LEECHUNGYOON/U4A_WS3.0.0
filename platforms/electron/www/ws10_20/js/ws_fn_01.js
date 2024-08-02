@@ -122,11 +122,13 @@
         var oApp = new sap.m.NavContainer("WSAPP", {
             autoFocus: false,
             afterNavigate: function (oEvent) {
+                
+                console.log(sap.ui.getCore().isLocked());
 
                 var toId = oEvent.getParameter("toId");
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
+                // // 화면 Lock 해제
+                // sap.ui.getCore().unlock();
 
                 // 현재 떠있는 팝오버 종류들을 전체 닫는다.
                 sap.m.InstanceManager.closeAllPopovers();
@@ -143,11 +145,9 @@
 
                         // 10번 페이지로 넘어 올때 APP NAME Input에 포커스 주기
                         var oAppNmInput = sap.ui.getCore().byId("AppNmInput");
-                        if (!oAppNmInput) {
-                            return;
-                        }
-
-                        oAppNmInput.focus();
+                        if (oAppNmInput) {
+                            oAppNmInput.focus();
+                        }                        
 
                         // Example 팝업을 통해서 접속 했다면 숨겨진 팝업을 보이게 한다.
                         _checkExamPopup();

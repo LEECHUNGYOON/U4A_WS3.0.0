@@ -618,8 +618,16 @@
 
                 var ls_line = l_ctxt.getProperty();
 
+                var l_UIATK = ls_line.UIATK;
+                var l_UIATY = ls_line.UIATY;
+
+                if(is_attr.UIATK.indexOf("_1") !== -1){
+                    l_UIATK = is_attr.UIATK.replace("_1", "");
+                    l_UIATY = "3";
+                }
+
                 //라이브러리에서 해당 attribute 정보 얻기.
-                var ls_0023 = oAPP.DATA.LIB.T_0023.find( a => a.UIATK === ls_line.UIATK && a.UIATY === ls_line.UIATY );
+                var ls_0023 = oAPP.DATA.LIB.T_0023.find( a => a.UIATK === l_UIATK && a.UIATY === l_UIATY );
 
                 //기존 수집건 존재여부 확인.
                 var ls_0015 = oAPP.attr.prev[ls_line.OBJID]._T_0015.find( a => a.UIATK === ls_line.UIATK && a.UIATY === ls_line.UIATY );

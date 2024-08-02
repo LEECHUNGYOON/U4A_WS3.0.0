@@ -30,11 +30,6 @@ class CL_WS20_BINDPOPUP{
 
     //디자인상세화면(20화면) <-> BIND POPUP 통신을 위한 broadcast Channel생성.
     static createChannel = function () {
-
-        //디자인상세화면(20화면) 조회 모드 인경우 채널 생성하지 않음.
-        if(oAPP.attr.appInfo.IS_EDIT === ""){
-            return;
-        }
         
         this.oChannel = new BroadcastChannel(C_CHID);
 

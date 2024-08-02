@@ -311,8 +311,8 @@
             // 윈도우 헤더 타이틀 변경
             oAPP.common.setWSHeadText("U4A Workspace - Main");
 
-            // busy 끄고 Lock 끄기
-            oAPP.common.fnSetBusyLock("");
+            // // busy 끄고 Lock 끄기
+            // oAPP.common.fnSetBusyLock("");
 
         } // end of lf_success
 

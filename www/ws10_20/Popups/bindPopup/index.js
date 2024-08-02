@@ -2431,6 +2431,8 @@ let oAPP = parent.oAPP,
                 return;
             }
 
+            document.activeElement.blur();
+
             if(typeof window?.sap?.m?.InstanceManager?.getOpenDialogs !== "function"){
                 return;
             }
@@ -4819,6 +4821,9 @@ let oAPP = parent.oAPP,
         oAPP.attr.oDesign.fn.setDropStyle();
 
 
+        //drop 타겟 aggregation 설정 처리.
+        oAPP.attr.oDesign.fn.setDropTargetAggregation("rows");
+
         //오류 팝업 종료 처리.
         oAPP.fn.closeMessagePopover();
 
@@ -4868,6 +4873,8 @@ let oAPP = parent.oAPP,
         //drop style 초기화.
         oAPP.attr.oDesign.fn.resetDropStyle();
 
+        //design tree의 drop 타겟 aggregation 초기화.
+        oAPP.attr.oDesign.fn.setDropTargetAggregation();
 
     };
 

@@ -486,7 +486,7 @@
 
 
       //ATTRIBUTE 입력건에 대한 처리.
-      oAPP.fn.attrChange(_sAttr, "INPUT");
+      oAPP.fn.attrChange(_sAttr, "INPUT", false, true);
 
     }); //attr 입력필드 이벤트.
 
@@ -603,7 +603,7 @@
       }
 
       //ATTRIBUTE 입력건에 대한 처리.
-      oAPP.fn.attrChange(_sAttr, "DDLB");
+      oAPP.fn.attrChange(_sAttr, "DDLB", false, true);
 
 
     }); //DDLB 선택 이벤트.
@@ -671,7 +671,7 @@
 
       
       //attribute 입력건에 대한 처리.
-      oAPP.fn.attrChange(_sAttr, "BUTTON");
+      oAPP.fn.attrChange(_sAttr, "BUTTON", false, true);
 
 
     }); //버튼 선택 이벤트.
@@ -731,7 +731,7 @@
       }
 
       //attribute 입력건에 대한 처리.
-      oAPP.fn.attrChange(_sAttr, "CHECK");
+      oAPP.fn.attrChange(_sAttr, "CHECK", false, true);
 
     }); //체크박스 선택 이벤트
 

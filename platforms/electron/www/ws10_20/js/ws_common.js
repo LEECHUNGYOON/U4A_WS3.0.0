@@ -2735,8 +2735,8 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
             if (xhr.status === 200 || xhr.status === 201) {
 
-                // 화면 Lock 해제                
-                sap.ui.getCore().unlock();
+                // // 화면 Lock 해제                
+                // sap.ui.getCore().unlock();
 
                 let u4a_status = xhr.getResponseHeader("u4a_status");
                 if (u4a_status) {
