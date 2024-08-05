@@ -148,6 +148,9 @@ function designControl(oArea){
 
             oAPP.fn.setBusy(true);
 
+            //WS 3.0 DESIGN 영역에 BUSY ON 요청 처리.
+            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_ON");
+
             var _oUi = oEvent.oSource;
 
             //바인딩 추가속성 정보 멀티 적용 가능 여부 점검.
@@ -155,6 +158,9 @@ function designControl(oArea){
 
             //점검 오류가 발생한 경우.
             if(_sRes.RETCD === "E"){
+
+                //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
 
                 oAPP.fn.setBusy(false);
 
@@ -191,6 +197,10 @@ function designControl(oArea){
             });
 
             if (_actcd !== "OK") {
+
+                //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+
                 oAPP.fn.setBusy(false);
                 return;
             }

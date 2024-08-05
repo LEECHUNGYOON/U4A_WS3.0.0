@@ -445,6 +445,12 @@
       oAPP.fn.setShortcutLock(true);
 
 
+      //value State message 팝업이 호출됐다면 종료 처리.
+      if(typeof this?._oValueStateMessage?.close === "function"){
+        this._oValueStateMessage.close();
+      }
+
+
       if(typeof this?.getBindingContext !== "function"){
 
         //단축키도 같이 잠금 해제처리.
@@ -486,7 +492,7 @@
 
 
       //ATTRIBUTE 입력건에 대한 처리.
-      oAPP.fn.attrChange(_sAttr, "INPUT", false, true);
+      oAPP.fn.attrChange(_sAttr, "INPUT", false, false);
 
     }); //attr 입력필드 이벤트.
 
@@ -562,6 +568,11 @@
       //단축키도 같이 잠금 처리.
       oAPP.fn.setShortcutLock(true);
 
+      //value State message 팝업이 호출됐다면 종료 처리.
+      if(typeof this?._oValueStateMessage?.close === "function"){
+        this._oValueStateMessage.close();
+      }
+
 
       if(typeof this?.getBindingContext !== "function"){
 
@@ -603,7 +614,7 @@
       }
 
       //ATTRIBUTE 입력건에 대한 처리.
-      oAPP.fn.attrChange(_sAttr, "DDLB", false, true);
+      oAPP.fn.attrChange(_sAttr, "DDLB", false, false);
 
 
     }); //DDLB 선택 이벤트.
@@ -671,7 +682,7 @@
 
       
       //attribute 입력건에 대한 처리.
-      oAPP.fn.attrChange(_sAttr, "BUTTON", false, true);
+      oAPP.fn.attrChange(_sAttr, "BUTTON", false, false);
 
 
     }); //버튼 선택 이벤트.
@@ -731,7 +742,7 @@
       }
 
       //attribute 입력건에 대한 처리.
-      oAPP.fn.attrChange(_sAttr, "CHECK", false, true);
+      oAPP.fn.attrChange(_sAttr, "CHECK", false, false);
 
     }); //체크박스 선택 이벤트
 

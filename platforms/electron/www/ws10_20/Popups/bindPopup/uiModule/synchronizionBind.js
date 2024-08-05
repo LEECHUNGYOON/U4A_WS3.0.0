@@ -418,6 +418,8 @@ function designControl(is_attr){
                 //table 컬럼길이 재조정 처리.
                 oAPP.fn.setUiTableAutoResizeColumn(oContr.ui.LIST);
 
+                oAPP.fn.setBusy(false);
+
                 return res();
 
             });
@@ -440,15 +442,6 @@ function designControl(is_attr){
             });
 
         };
-
-
-        /*************************************************************
-         * @event - 팝업 종료 이벤트.
-         *************************************************************/
-        oContr.fn.onClosePopup = function(){
-            oContr.ui.ROOT.close();
-        };
-
 
 
         /*************************************************************
@@ -497,11 +490,12 @@ function designControl(is_attr){
             oContr.fn.setBusyDialog(true);
 
             document.activeElement.blur();
+            
 
             var _oUi = oEvent?.oSource;
 
             if(typeof _oUi === "undefined"){
-                
+               
                 oContr.fn.setBusyDialog(false);
 
                 oAPP.fn.setBusy(false);
@@ -618,6 +612,9 @@ function designControl(is_attr){
             //추가속성 바인딩 버튼 활성 처리.
             oAPP.attr.oAddit.fn.setAdditBindButtonEnable(true);
 
+            //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+
 
             oAPP.fn.setBusy(false);
 
@@ -669,6 +666,10 @@ function designControl(is_attr){
                     oContr.ui.oDialog.destroy();
 
                     delete oContr.ui.oDialog;
+
+                    //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+                    parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+
                 },
                 // customHeader: new sap.m.OverflowToolbar({
                 customHeader: new sap.m.Toolbar({

@@ -922,7 +922,14 @@ oAPP.msg = {};
     // }; // end of oWS.utill.fn.setBusy
 
     // 19. Busy Indicator 실행
-    oWS.utill.fn.setBusy = (sIsbusy) => {
+    // - 파라미터에 Option이 존재할 경우는 busyDialog로 호출함
+    oWS.utill.fn.setBusy = (sIsbusy, oOptions) => {
+
+        // 파라미터에 옵션을 추가했을 경우는 BusyDialog로 호출함!!
+        if(typeof oOptions === "object"){
+            oWS.utill.fn.setBusyDialog(sIsbusy, oOptions);
+            return;
+        }
 
         var bIsBusy = (sIsbusy === "X" ? true : false);
 
@@ -1068,6 +1075,12 @@ oAPP.msg = {};
             if(!oWS.utill.attr.oBusyDlg){
 
                 oWS.utill.attr.oBusyDlg = new oWS.utill.attr.sap.m.BusyDialog();
+
+                // CustomData에 MUTATION_EXCEP을 주는 이유?
+                // Mutation이 화면에 dialog 류 들이 감지되면 현재 떠있는 자식 윈도우를 활성 or 비활성 하는데,
+                // 특정 Dialog는 Mutation 감지 대상에서 제외시키고자 할 때
+                // Dialog Object에 CustomData로 구분함
+                oWS.utill.attr.oBusyDlg._oDialog.data("MUTATION_EXCEP", "X");
 
             }
 

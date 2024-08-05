@@ -372,7 +372,6 @@ function responeSelectDesignTreeOBJID(oEvent){
  * @function - 디자인 영역 ATTR 정보 갱신처리.
  *************************************************************/
 function updateBindPopupDesignData(){
-
     
     oAPP.fn.setBusy(true);
     
@@ -594,9 +593,15 @@ function sendDesignAreaBusyOff(oData){
 function sendDesignAreaBusyOn(oData){
 
     var _sParam = {
-        PRCCD   : "BUSY_ON"
+        PRCCD   : "BUSY_ON",
+        OPTION  : undefined
     };
 
+
+    //BUSY DIALOG 처리용 파라메터가 존재하는경우.
+    if(typeof oData !== "undefined"){
+        _sParam.OPTION = JSON.parse(JSON.stringify(oData));
+    }
 
     //WS 3.0 디자인 영역에 데이터 전송.
     CL_WS20_BINDPOPUP.sendPostMessage(_sParam);

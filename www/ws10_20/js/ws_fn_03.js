@@ -390,10 +390,53 @@
 
     }; // end of oAPP.fn.fnGetBindAttrData
 
+    
     /************************************************************************
-     * Dom 정보의 변화를 감지
+     * Mutation에서 Dialog 감지 예외 대상이 있는지 체크
      ************************************************************************/
-    oAPP.fn.fnSetMutationObserver = function () {
+    function _checkMutationExpDialog(){
+
+        var aOpendDialog = $(".sapMDialogOpen");
+        if(aOpendDialog.length === 0){
+            return false;
+        }
+
+        let iOpendCount = aOpendDialog.length;
+        for(var i = 0; i < iOpendCount; i++){
+
+            let oDialogDom = aOpendDialog[i];
+            if(!oDialogDom){
+                continue;
+            }
+
+            let sDialogId = oDialogDom.id;
+            let oDialog = sap.ui.getCore().byId(sDialogId);
+            if(!oDialog){
+                continue;
+            }
+
+            // Dialog에 Mutation 감지 예외 대상인지 확인
+            let isExp = oDialog.data("MUTATION_EXCEP");
+            if(isExp === "X"){
+                return true;
+            }
+
+        }
+        
+        return false;
+
+    } // end of _checkMutationExpDialog
+
+    /************************************************************************
+     * Dialog의 Dom 정보를 감시한다.
+     ************************************************************************
+     * - 화면에 자식 윈도우 창이 여러개 떠있을 경우,
+     *   메시지 팝업, Dialog 등이 화면에 떠있으면
+     *   자식 윈도우에 가려져서 사용자가 인지를 못하므로
+     *   Dialog가 뜨는걸 감지해서 자식 윈도우를 비활성화 했다가
+     *   Dialog가 닫히면 자식 윈도우를 활성화 시키는 목적으로 만들어짐
+     ************************************************************************/
+    function _setDialogObserver() {
 
         // sap-ui-static 영역만 감지한다.
         var oSapUiStatic = document.getElementById("sap-ui-static");
@@ -411,6 +454,12 @@
                 return;
             }
 
+            // Dialog 중 감지 예외 대상인것 찾기
+            let bIsExp = _checkMutationExpDialog();
+            if(bIsExp === true){
+                return;
+            }
+
             // Dialog 가 Open 되면 child window 전체를 숨긴다.
             oAPP.fn.fnChildWindowShow(false); // [ws_fn_02.js]
 
@@ -422,6 +471,17 @@
         };
 
         observer.observe(oSapUiStatic, config);
+
+    }
+
+    /************************************************************************
+     * Dom 정보의 변화를 감지
+     ************************************************************************/
+    oAPP.fn.fnSetMutationObserver = function () {
+
+        // Dialog 감시
+        _setDialogObserver();
+        
 
     }; // end of oAPP.fn.fnSetMutationObserver
 

@@ -84,6 +84,13 @@ let oAPP = parent.oAPP,
     };
 
 
+    //BUSY DIALOG OPTION 파라메터 구조.
+    oAPP.types.TY_BUSY_OPTION = {
+        TITLE : "", //BUSY DIALOG 타이틀.
+        DESC  : "", //BUSY DIALOG 메시지.
+    };
+
+
     //오류 정보 수집 광역 ARRAY
     //(converion명 점검 오류 발생과 같은 특정 오류건 수집을 위한 array)
     oAPP.attr.T_EXCEP_ERR = [];
@@ -692,7 +699,7 @@ let oAPP = parent.oAPP,
             let _aPromise = [];
 
             // //left splitter
-            // _aPromise.push(uiUpdateComplate(oAPP.ui.oSptLeft));
+            // _aPromise.push(uiUpdateComplate(oAPP.ui.oSptCenter));
 
             //right page 
             _aPromise.push(uiUpdateComplate(oAPP.ui.oPageRight));
@@ -702,25 +709,25 @@ let oAPP = parent.oAPP,
             oAPP.ui.oPageAdit.removeAllAggregation("content", true);
 
             //좌측 splitter에 추가속성 정보 페이지 제거.
-            // oAPP.ui.oSptLeft.removeAggregation("contentAreas", oAPP.ui.oPageAdit, true);
-            oAPP.ui.oSptLeft.removeAllAggregation("contentAreas", true);
+            // oAPP.ui.oSptCenter.removeAggregation("contentAreas", oAPP.ui.oPageAdit, true);
+            oAPP.ui.oSptCenter.removeAllAggregation("contentAreas", true);
 
 
-            var _oArea1 = oAPP.ui.oPageRight.data("area1");
+            var _oArea1 = oAPP.ui.oPageCenter.data("area1");
 
             _oArea1.removeAllAggregation("content", true);
 
-            var _oArea2 = oAPP.ui.oPageRight.data("area2");
+            var _oArea2 = oAPP.ui.oPageCenter.data("area2");
             
             _oArea2.removeAllAggregation("content", true);
-                        
+
 
             //우측 페이지 content 초기화.
             oAPP.ui.oPageRight.removeAllAggregation("content", true);
 
 
             // //좌측 splitter 갱신.
-            // oAPP.ui.oSptLeft.invalidate();
+            // oAPP.ui.oSptCenter.invalidate();
 
             //우측 page 갱신.
             oAPP.ui.oPageRight.invalidate();
@@ -732,7 +739,7 @@ let oAPP = parent.oAPP,
             _aPromise = [];
 
             // //left splitter
-            // _aPromise.push(uiUpdateComplate(oAPP.ui.oSptLeft));
+            // _aPromise.push(uiUpdateComplate(oAPP.ui.oSptCenter));
 
             //right page 
             _aPromise.push(uiUpdateComplate(oAPP.ui.oPageRight));
@@ -759,21 +766,22 @@ let oAPP = parent.oAPP,
                 case CS_BIND_MODE.BULK:  //바인딩 일괄 적용 화면
 
                     //가운데 area 영역.
-                    _sArea.area1 = oAPP.ui.oPageRight.data("area1");
+                    _sArea.area1 = oAPP.ui.oPageCenter.data("area1");
 
                     //우측 area 영역.
-                    _sArea.area2  = oAPP.ui.oPageRight.data("area2");
+                    _sArea.area2  = oAPP.ui.oPageCenter.data("area2");
+
 
                     // //추가속성 정의 PAGE를 좌측 SPLITTER에 추가.
-                    // oAPP.ui.oSptLeft.addAggregation("contentAreas", oAPP.ui.oPageAdit, true);
+                    // oAPP.ui.oSptCenter.addAggregation("contentAreas", oAPP.ui.oPageAdit, true);
 
-                    oAPP.ui.oSptLeft.addAggregation("contentAreas", _sArea.area1, true);
-                    oAPP.ui.oSptLeft.addAggregation("contentAreas", oAPP.ui.oPageAdit, true);
+                    oAPP.ui.oSptCenter.addAggregation("contentAreas", _sArea.area1, true);
+                    oAPP.ui.oSptCenter.addAggregation("contentAreas", oAPP.ui.oPageAdit, true);
 
                     
 
-                    //우측 페이지에 design, 추가속성 일괄적용 테이블 추가.
-                    oAPP.ui.oPageRight.addAggregation("content", oAPP.ui.oSptRight, true);
+                    // //우측 페이지에 design, 추가속성 일괄적용 테이블 추가.
+                    // oAPP.ui.oPageRight.addAggregation("content", oAPP.ui.oSptRight, true);
             
                     oAPP.attr.oModel.oData.resize = true;
                     oAPP.attr.oModel.oData.width  = "30%";
@@ -786,7 +794,7 @@ let oAPP = parent.oAPP,
 
 
             // //좌측 splitter 갱신.
-            // oAPP.ui.oSptLeft.invalidate();
+            // oAPP.ui.oSptCenter.invalidate();
 
             //우측 page 갱신.
             oAPP.ui.oPageRight.invalidate();
@@ -829,7 +837,6 @@ let oAPP = parent.oAPP,
         
         // oAPP.fn.setBusy(true);
 
-        
         //추가 속성 정보 초기화.
         oAPP.fn.clearSelectAdditBind();
 
@@ -1079,6 +1086,8 @@ let oAPP = parent.oAPP,
         var oSpt1 = new sap.ui.layout.Splitter();
         oPage.addContent(oSpt1);
 
+        oSpt1.attachResize(oAPP.fn.onMainSplitResize);
+
         oAPP.ui.oSptMain = oSpt1;
 
         //좌측 페이지.
@@ -1094,37 +1103,47 @@ let oAPP = parent.oAPP,
 
 
         // //좌측 트리의 상하 분할 Splitter.
-        // oAPP.ui.oSptLeft = new sap.ui.layout.Splitter({orientation:"Vertical"});
-        // oPageLeft.addContent(oAPP.ui.oSptLeft);
-        
+        // oAPP.ui.oSptCenter = new sap.ui.layout.Splitter({orientation:"Vertical"});
+        // oPageLeft.addContent(oAPP.ui.oSptCenter);
+
+
+        //추가!!!!!!!!!!!
+        //가운데 페이지.
+        oAPP.ui.oPageCenter = new sap.m.Page({
+            showHeader:false,
+            layoutData: new sap.ui.layout.SplitterLayoutData({
+                size:"{/width_c}",
+                minSize:300
+            })
+        });
+        oSpt1.addContentArea(oAPP.ui.oPageCenter);
 
 
         //우측 페이지.
         oAPP.ui.oPageRight = new sap.m.Page({
             showHeader:false,
             layoutData: new sap.ui.layout.SplitterLayoutData({
-                size:"auto",
+                size:"30%",
                 minSize:300
             })
         });
         oSpt1.addContentArea(oAPP.ui.oPageRight);
 
 
-        //우측 좌, 우 분할 Splitter.
-        oAPP.ui.oSptRight = new sap.ui.layout.Splitter();
-        oAPP.ui.oPageRight.addContent(oAPP.ui.oSptRight);
-
-        //좌측 트리의 상하 분할 Splitter.
-        oAPP.ui.oSptLeft = new sap.ui.layout.Splitter({
+        //가운데 트리의 상하 분할 Splitter.
+        oAPP.ui.oSptCenter = new sap.ui.layout.Splitter({
             orientation:"Vertical",
             layoutData: new sap.ui.layout.SplitterLayoutData({
-                size:"{/width_c}",
+                // size:"{/width_c}",
+                size:"auto",
                 minSize:300
             })
         });
-        oAPP.ui.oSptRight.addContentArea(oAPP.ui.oSptLeft);
+
+        oAPP.ui.oPageCenter.addContent(oAPP.ui.oSptCenter);
 
 
+        //가운데 트리 영역.
         var oPageArea1 = new sap.m.Page({
             showHeader: false,
             layoutData: new sap.ui.layout.SplitterLayoutData({
@@ -1135,29 +1154,18 @@ let oAPP = parent.oAPP,
             })
         });
         // oAPP.ui.oSptRight.addContentArea(oPageArea1);
-        oAPP.ui.oSptLeft.addContentArea(oPageArea1);
+        oAPP.ui.oSptCenter.addContentArea(oPageArea1);
         
-        //가운데 영역 page에 등록.
-        oAPP.ui.oPageRight.data("area1", oPageArea1);
-
-
-
-        var oPageArea2 = new sap.m.Page({
-            showHeader: false,            
-            layoutData: new sap.ui.layout.SplitterLayoutData({
-                size:"{/width_r}",
-                minSize: 300,                
-            })
-        });
-        oAPP.ui.oSptRight.addContentArea(oPageArea2);
-
-        //우측 영역 page에 등록.
-        oAPP.ui.oPageRight.data("area2", oPageArea2);
         
+        oAPP.ui.oPageCenter.data("area1", oPageArea1);
+
+
+        oAPP.ui.oPageCenter.data("area2", oAPP.ui.oPageRight);
+
 
         // //좌측 트리의 상하 분할 Splitter.
-        // oAPP.ui.oSptLeft = new sap.ui.layout.Splitter({orientation:"Vertical"});
-        // oPageArea1.addContent(oAPP.ui.oSptLeft);
+        // oAPP.ui.oSptCenter = new sap.ui.layout.Splitter({orientation:"Vertical"});
+        // oPageArea1.addContent(oAPP.ui.oSptCenter);
 
 
         //바인딩 필드 TREE PAGE.
@@ -1167,7 +1175,7 @@ let oAPP = parent.oAPP,
                 size:"auto"
             })
         });
-        // oAPP.ui.oSptLeft.addContentArea(oPageTree);
+        // oAPP.ui.oSptCenter.addContentArea(oPageTree);
         oPageLeft.addContent(oPageTree);
 
         //172	Collapse
@@ -1238,7 +1246,7 @@ let oAPP = parent.oAPP,
         oAPP.ui.oPageAdit = oPageAdit;
 
         // //!!!!!!!!!
-        // oAPP.ui.oSptLeft.addContentArea(oAPP.ui.oPageAdit);
+        // oAPP.ui.oSptCenter.addContentArea(oAPP.ui.oPageAdit);
 
 
         //173	Binds to 'attributes' or 'aggregations' when dragged and dropped.
@@ -1529,6 +1537,28 @@ let oAPP = parent.oAPP,
 
 
     };  //바인딩 팝업 화면 구성.
+
+
+
+    /*************************************************************
+     * @event - 메인 splitter resize 이벤트.
+     *************************************************************/
+    oAPP.fn.onMainSplitResize = function(oEvent){
+
+        oAPP.ui.oSptMain.detachResize(oAPP.fn.onMainSplitResize);
+
+        var _oLayout = oAPP.ui.oPageRight.getLayoutData();
+
+        if(typeof _oLayout === "undefined" || _oLayout === null){
+            oAPP.ui.oSptMain.attachResize(oAPP.fn.onMainSplitResize);
+            return;
+        }
+
+        
+        _oLayout.setSize("auto");
+        oAPP.ui.oSptMain.attachResize(oAPP.fn.onMainSplitResize);
+
+    };
 
 
 
@@ -2459,7 +2489,8 @@ let oAPP = parent.oAPP,
                     //해당 dialog destroy 처리.
                     _oDialog.destroy();
                 }
-                
+
+               
             }
 
             // oAPP.ui.APP.focus();
@@ -4031,10 +4062,10 @@ let oAPP = parent.oAPP,
         oAPP.attr.oModel.oData.vis_addit = false;
 
         //우측 바인딩 추가속성 정보 width.
-        oAPP.attr.oModel.oData.width_r = "40%";
+        oAPP.attr.oModel.oData.width_r = "30%";
 
         //가운데 design, 바인딩 추가속성 영역 wdith.
-        oAPP.attr.oModel.oData.width_c = "60%";
+        oAPP.attr.oModel.oData.width_c = "40%";
 
 
         oAPP.attr.oModel.refresh();
@@ -4886,9 +4917,15 @@ let oAPP = parent.oAPP,
         
         oAPP.fn.setBusy(true);
 
+        //WS 3.0 DESIGN 영역에 BUSY ON 요청 처리.
+        parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_ON");
+
         var _oUi = oEvent?.oSource;
 
         if(typeof _oUi === "undefined"){
+
+            //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
 
             oAPP.fn.setBusy(false);
 
@@ -4906,10 +4943,14 @@ let oAPP = parent.oAPP,
         //바인딩 추가 속성 점검 오류가 존재하는경우.
         if(_sRes.RETCD === "E"){
 
+            //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+
+            oAPP.fn.setBusy(false);
+
             //메시지 처리.
             await oAPP.fn.showMessagePopoverOppener(_oUi, _sRes.T_RTMSG);
 
-            oAPP.fn.setBusy(false);
 
             return;
         }
@@ -4926,6 +4967,11 @@ let oAPP = parent.oAPP,
         //090	바인딩 추가 속성 정보를 적용 했습니다.
         sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "090"), 
             {duration: 3000, at:"center center", my:"center center"});
+
+        //해당 영역에서 BUSY OFF 처리하지 않음.
+        //바인딩 팝업에서 WS20 디자인 영역에 데이터 전송 ->
+        //WS20 디자인 영역에서 데이터 반영 ->
+        //WS20 디자인 영역에서 BUSY OFF 요청으로 팝업의 BUSY가 종료됨.
 
     };
     

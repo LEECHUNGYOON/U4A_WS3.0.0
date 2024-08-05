@@ -634,13 +634,19 @@
                 continue;
             }
 
-            let oWebCon = oChild.webContents,
-                oWebPref = oWebCon.getWebPreferences(),
-                sType = oWebPref.OBJTY;
+            try {
+                
+                let oWebCon = oChild.webContents,
+                    oWebPref = oWebCon.getWebPreferences(),
+                    sType = oWebPref.OBJTY;
 
-            if(sType !== OBJTY){
+                if(sType !== OBJTY){
+                    continue;
+                }
+
+            } catch (error) {
                 continue;
-            }
+            }          
 
             return {
                 RETCD: "S",
@@ -1425,8 +1431,12 @@
                 continue;
             }
 
-            oChild.close();
-
+            try {
+                oChild.close();    
+            } catch (error) {
+                
+            }
+            
         }
 
     }; // end of oContr.fn.clearAllChildWindow
@@ -1496,13 +1506,19 @@
                 continue;
             }
 
-            let oWebCon = oChild.webContents,
-                oWebPref = oWebCon.getWebPreferences(),
-                sType = oWebPref.OBJTY;
+            try {
+                
+                let oWebCon  = oChild.webContents,
+                    oWebPref = oWebCon.getWebPreferences(),
+                    sType    = oWebPref.OBJTY;
 
-            if(sType !== OBJTY){
+                if(sType !== OBJTY){
+                    continue;
+                }          
+                
+            } catch (error) {
                 continue;
-            }          
+            }
             
             return oChild.focus();
 

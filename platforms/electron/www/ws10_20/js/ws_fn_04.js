@@ -1145,29 +1145,35 @@
                 continue;
             }
 
-            let oWebCon     = oWin.webContents,
-                oWebPref    = oWebCon.getWebPreferences(),
-                sOBJTY      = oWebPref.OBJTY,
-                sSYSID      = oWebPref.SYSID,
-                sPartition  = oWebPref.partition;
+            try {                
+          
+                let oWebCon     = oWin.webContents,
+                    oWebPref    = oWebCon.getWebPreferences(),
+                    sOBJTY      = oWebPref.OBJTY,
+                    sSYSID      = oWebPref.SYSID,
+                    sPartition  = oWebPref.partition;
 
-            // OBJTY가 없으면 next
-            if (!sOBJTY) {
+                // OBJTY가 없으면 next
+                if (!sOBJTY) {
+                    continue;
+                }
+
+                // SYSID가 같은데 sessionkey가 다른게 존재 하면 빠져나감
+                if((sSYSID && sSYSID === sCurrSysID) && sSessionKey !== sPartition){
+                    return;
+                }
+
+                // 위에서 수집한 팝업 리스트에 포함되어 있을 경우에만 해당 윈도우 인스턴스 수집
+                let sFindName = aPopupNames.find(e => e === sOBJTY);
+                if(!sFindName){
+                    continue;
+                }
+
+                aPopUpObj.push(oWin);
+
+            } catch (error) {
                 continue;
             }
-
-            // SYSID가 같은데 sessionkey가 다른게 존재 하면 빠져나감
-            if((sSYSID && sSYSID === sCurrSysID) && sSessionKey !== sPartition){
-                return;
-            }
-
-            // 위에서 수집한 팝업 리스트에 포함되어 있을 경우에만 해당 윈도우 인스턴스 수집
-            let sFindName = aPopupNames.find(e => e === sOBJTY);
-            if(!sFindName){
-                continue;
-            }
-
-            aPopUpObj.push(oWin);
 
         }
         
@@ -1179,7 +1185,13 @@
                 continue;
             }
 
-            oPopup.close();
+            try {
+            
+                oPopup.close();
+
+            } catch (error) {
+                continue;   
+            }            
             
         }
 

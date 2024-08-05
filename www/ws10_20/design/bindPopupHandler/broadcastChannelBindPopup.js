@@ -174,9 +174,15 @@ function responseBindPopupBusyOn(oEvent){
         return false;
     }
 
+    var _sOption = undefined;
+
+    //BUSY DIALOG 처리용 파라메터가 존재하는경우.
+    if(typeof oEvent.data.OPTION !== "undefined"){
+        _sOption = JSON.parse(JSON.stringify(oEvent.data.OPTION));
+    }
 
     //busy on.
-    parent.setBusy("X");
+    parent.setBusy("X", _sOption);
 
 
     //busy on 요청임 flag return.
