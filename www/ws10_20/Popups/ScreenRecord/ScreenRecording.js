@@ -112,7 +112,7 @@ async function _getMonitorScrInfo(REMOTE) {
 
 //멀티 모니터 여부 점검
 async function _chk_MultiScr(REMOTE) {
-    return new Promise(async (RES, REJ) => {
+    return new Promise(async (RES, REJ) => {        
 
         // 이미 실행되어 있는 Screen Record 창이 있을 경우 빠져나감
         if (oScreenWindow && oScreenWindow.focus) {
@@ -182,6 +182,7 @@ async function _chk_MultiScr(REMOTE) {
             "icon": "www/img/logo.png",
             "title": oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "335"), // Select the monitor to record video on.,
             "parent": REMOTE.getCurrentWindow(),
+            "closable": false,
 
             "webPreferences": {
                 "devTools": true,
@@ -191,12 +192,16 @@ async function _chk_MultiScr(REMOTE) {
                 "webSecurity": false,
                 "nativeWindowOpen": true,
                 "DISPNM": "MULTIPOPUP",
-                "USERINFO": parent.process.USERINFO
+                "USERINFO": parent.process.USERINFO,
+                "browserkey": oAPP.BROWSKEY
             }
 
         };
 
-        var oWIN = new REMOTE.BrowserWindow(op);
+        var oWIN = new REMOTE.BrowserWindow(op);  
+        REMOTE.require('@electron/remote/main').enable(oWIN.webContents);
+      
+
         oWIN.setMenuBarVisibility(false);
 
         //WS3.0 로드된 테마별에 따른 윈도우 백그라운드 컬러 정의 
@@ -223,7 +228,10 @@ async function _chk_MultiScr(REMOTE) {
         var url = `file://${__dirname}/ScrList.html`;
         oWIN.loadURL(url);
 
+
+        // TEST !!!!!!!!!!!
         // oWIN.webContents.openDevTools();
+        // TEST !!!!!!!!!!!
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oWIN.once('ready-to-show', () => {
@@ -250,8 +258,7 @@ async function _chk_MultiScr(REMOTE) {
 
             // 부모창 가운데에 띄우기
             // _setParentCenterBounds(oWIN, op);
-
-
+            
 
         });
 
@@ -277,7 +284,7 @@ async function _chk_MultiScr(REMOTE) {
 
         });
 
-        REMOTE.require('@electron/remote/main').enable(oWIN.webContents);
+        // REMOTE.require('@electron/remote/main').enable(oWIN.webContents);
 
 
     });
@@ -286,7 +293,7 @@ async function _chk_MultiScr(REMOTE) {
 /* ================================================================= */
 /* Export Module Function - 스크린 레코딩 시작
 /* ================================================================= */
-exports.start = async function (REMOTE, P_THEME = "sap_horizon_dark") {
+exports.start = async function (REMOTE, P_THEME = "sap_horizon_dark") {    
 
     //WS3.0 로드된 테마명
     LOAD_THEME = P_THEME;
@@ -343,7 +350,7 @@ exports.start = async function (REMOTE, P_THEME = "sap_horizon_dark") {
         "y": mainDisp[0].bounds.y,
         "height": mainDisp[0].bounds.height,
         "width": mainDisp[0].bounds.width,
-        "resizable": false,
+        "resizable": false,        
         "icon": "www/img/logo.png",
         //"fullscreenable": true,
         "alwaysOnTop": true,
@@ -353,6 +360,8 @@ exports.start = async function (REMOTE, P_THEME = "sap_horizon_dark") {
         "transparent": false,
         "frame": false,
         "parent": REMOTE.getCurrentWindow(),
+        "closable" : false,
+
         "webPreferences": {
             "devTools": true,
             "nodeIntegration": true,
@@ -362,7 +371,8 @@ exports.start = async function (REMOTE, P_THEME = "sap_horizon_dark") {
             "nativeWindowOpen": true,
             "DISPNM": "VIDEOSCREEN",
             "OBJTY": "VIDEOREC",
-            "USERINFO": parent.process.USERINFO
+            "USERINFO": parent.process.USERINFO,
+            "browserkey": oAPP.BROWSKEY
         }
 
     };
@@ -371,6 +381,8 @@ exports.start = async function (REMOTE, P_THEME = "sap_horizon_dark") {
     // REMOTE.getCurrentWindow().closeDevTools();
 
     var oWIN = new REMOTE.BrowserWindow(op);
+    REMOTE.require('@electron/remote/main').enable(oWIN.webContents);
+    
     oWIN.setMenuBarVisibility(false);
 
     // 현재 창을 잠시 글로벌에 둔다.
@@ -430,9 +442,7 @@ exports.start = async function (REMOTE, P_THEME = "sap_horizon_dark") {
         // 글로벌 변수 초기화
         oScreenWindow = null;
 
-    });
-
-    REMOTE.require('@electron/remote/main').enable(oWIN.webContents);
+    });   
 
 
 };

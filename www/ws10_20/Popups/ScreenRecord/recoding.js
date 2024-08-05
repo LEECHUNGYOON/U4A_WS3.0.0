@@ -41,6 +41,10 @@ oAPP = {
          * 메시지클래스 텍스트 작업 관련 Object -- end
          *******************************************************/
 
+        oAPP.IPCRENDERER = oAPP.ipcRenderer;
+        oAPP.CURRWIN = oAPP.remote.getCurrentWindow();
+        oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
+
         //window 로딩 완료 이벤트 
         oAPP.ipcRenderer.on('IF-REC-READY', async (event, data) => {
             //oAPP.WIN.webContents.openDevTools();
@@ -55,6 +59,11 @@ oAPP = {
 
             //레코딩 콘트롤러 팝업 호출 
             oAPP.onControllerOpen();
+
+            // 부모 자식간 액션별 명령어 수행
+            oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+
+            CURRWIN.closable = true;
 
         });
 

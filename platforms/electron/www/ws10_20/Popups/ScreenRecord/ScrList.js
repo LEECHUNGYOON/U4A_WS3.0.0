@@ -36,14 +36,23 @@ let oAPP = {
      * 메시지클래스 텍스트 작업 관련 Object -- end
      *******************************************************/
 
+    oAPP.IPCRENDERER = oAPP.ipcRenderer;
+    oAPP.CURRWIN     = oAPP.remote.getCurrentWindow();
+    oAPP.BROWSKEY    = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
+
     //window 로딩 완료 이벤트 
     oAPP.ipcRenderer.on('IF-chkScrList', async (event, data) => {
+
+      oAPP.ipcRenderer.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+      
+      oAPP.CURRWIN.closable = true;
+
 
       //WS3.0 로드된 테마명
       oAPP.LOAD_THEME = data.LOAD_THEME;
     
       //모니터(screen) 정보 기반으로 미리보기 화면 구성 
-      await oAPP.onCreatePreview();
+      await oAPP.onCreatePreview();       
 
     });
     
