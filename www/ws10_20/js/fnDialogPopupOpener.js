@@ -282,21 +282,186 @@
 
     }; // end of oAPP.fn.fnBindPopupIpcCallBack
 
+    // /************************************************************************
+    //  * [WS20] Binding Popup 버튼 이벤트
+    //  ************************************************************************/
+    // oAPP.fn.fnBindWindowPopupOpener = () => {
+
+    //     // busy 키고 Lock 켜기
+    //     oAPP.common.fnSetBusyLock("X");
+
+    //     var sPopupName = "BINDPOPUP";
+
+    //     // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+    //     var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+    //     if (oResult.ISOPEN) {
+    //         // busy OFF Lock OFF
+    //         oAPP.common.fnSetBusyLock("");
+    //         return;
+    //     }
+
+    //     // Binding Popup 에서 콜백 받을 준비를 한다.
+    //     IPCRENDERER.on("if-bindPopup-callback", oAPP.fn.fnBindPopupIpcCallBack);
+
+    //     let oThemeInfo = parent.getThemeInfo(); // theme 정보
+
+    //     var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+    //         oDefaultOption = parent.require(sSettingsJsonPath),
+    //         oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+    //     oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A15"); // Binding Popup
+    //     // oBrowserOptions.width = 1000;
+    //     oBrowserOptions.width = 1280;
+    //     oBrowserOptions.minWidth = 900;
+    //     oBrowserOptions.minHeight = 650;
+    //     oBrowserOptions.autoHideMenuBar = true;
+    //     oBrowserOptions.parent = CURRWIN;
+    //     oBrowserOptions.opacity = 0;
+    //     oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+    //     oBrowserOptions.webPreferences.partition = SESSKEY;
+    //     oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+    //     oBrowserOptions.webPreferences.OBJTY = sPopupName;
+    //     oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
+
+    //     // 브라우저 오픈
+    //     var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+    //     REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+    //     // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+    //     let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+    //     oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+    //     // 브라우저 상단 메뉴 없애기
+    //     oBrowserWindow.setMenu(null);
+
+    //     // 실행할 URL 적용
+    //     var sUrlPath = parent.getPath(sPopupName);
+    //     oBrowserWindow.loadURL(sUrlPath);
+
+
+    //     //broadcase 통신 API 모듈 js path 정보.
+    //     //(design/bindPopupHandler/broadcastChannelBindPopup.js)
+    //     var _channelPath = "";
+
+  
+    //     // // no build 일 경우에는 개발자 툴을 실행한다.
+    //     // if (!APP.isPackaged) {
+    //     //     oBrowserWindow.webContents.openDevTools();
+    //     // }
+
+    //     // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+    //     oBrowserWindow.once('ready-to-show', () => {
+
+    //         // 부모 위치 가운데 배치한다.
+    //         oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+    //     });
+
+    //     // 브라우저가 오픈이 다 되면 타는 이벤트
+    //     oBrowserWindow.webContents.on('did-finish-load', function () {
+
+
+    //         // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+    //         WSUTIL.setBrowserOpacity(oBrowserWindow);
+
+    //         // 부모 위치 가운데 배치한다.
+    //         oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+            
+                                
+    //         var lt_0014 = [];
+    //         var lt_0015 = [];
+    //         var lt_9011 = [];
+    //         var lt_0022 = [];
+    //         var lt_0023 = [];
+    //         var lt_CEVT = [];
+
+    //         lt_9011 = oAPP.DATA.LIB.T_9011;
+    //         lt_0022 = oAPP.DATA.LIB.T_0022;
+    //         lt_0023 = oAPP.DATA.LIB.T_0023;
+            
+
+    //         //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH 구성.
+    //         _channelPath = oAPP.fn.getBindingPopupBroadcastModulePath();
+
+
+    //         //디자인상세화면(20화면) <-> BINDPOPUP 통신 채널 키 얻기.
+    //         var _channelKey = parent.require(_channelPath)("GET-CHANNEL-ID");
+            
+    //         var oBindPopupData = {
+    //             oUserInfo: parent.getUserInfo(), // 로그인 사용자 정보 (필수)
+    //             oThemeInfo: oThemeInfo, // 테마 개인화 정보
+    //             T_9011: lt_9011,
+    //             T_0022: lt_0022,
+    //             T_0023: lt_0023,
+    //             T_0014: lt_0014,
+    //             T_0015: lt_0015,
+    //             T_CEVT: lt_CEVT,
+    //             oAppInfo: parent.getAppInfo(),
+    //             servNm: parent.getServerPath(),
+    //             SSID: parent.getSSID(),
+    //             channelKey : _channelKey
+    //         };
+
+    //         oBrowserWindow.webContents.send('if_modelBindingPopup', oBindPopupData);
+
+            
+    //         //디자인상세화면(20화면) <-> BINDPOPUP 통신을 위한 채널 생성.
+    //         parent.require(_channelPath)("CHANNEL-CREATE");
+
+            
+    //         // no build 일 경우에는 개발자 툴을 실행한다.
+    //         if (!APP.isPackaged) {
+    //             oBrowserWindow.webContents.openDevTools();
+    //         }
+
+
+
+    //     });
+
+    //     // 브라우저를 닫을때 타는 이벤트
+    //     oBrowserWindow.on('closed', () => {
+
+    //         // busy & Lock 끄기
+    //         oAPP.common.fnSetBusyLock("");
+
+    //         oBrowserWindow = null;
+
+    //         //디자인상세화면(20화면) <-> BINDPOPUP 통신 채널 종료.
+    //         parent.require(_channelPath)("CHANNEL-CLOSE");
+
+    //         // Binding Popup 에서 콜백 이벤트 해제
+    //         IPCRENDERER.off("if-bindPopup-callback", oAPP.fn.fnBindPopupIpcCallBack);
+
+    //         CURRWIN.focus();
+
+    //     });
+
+    // }; // end of oAPP.fn.fnBindWindowPopupOpener
+
     /************************************************************************
      * [WS20] Binding Popup 버튼 이벤트
      ************************************************************************/
     oAPP.fn.fnBindWindowPopupOpener = () => {
 
-        // busy 키고 Lock 켜기
-        oAPP.common.fnSetBusyLock("X");
+        //테스트주석처리!!!!!!!!!!!
+        // // busy 키고 Lock 켜기
+        // oAPP.common.fnSetBusyLock("X");
+        //테스트주석처리!!!!!!!!!!!
 
         var sPopupName = "BINDPOPUP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
-            // busy OFF Lock OFF
-            oAPP.common.fnSetBusyLock("");
+
+            //테스트주석처리!!!!!!!!!!!
+            // // busy OFF Lock OFF
+            // oAPP.common.fnSetBusyLock("");
+            //테스트주석처리!!!!!!!!!!!
+
+            parent.setBusy("", {});
+
             return;
         }
 
@@ -383,9 +548,7 @@
 
             //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH 구성.
             _channelPath = oAPP.fn.getBindingPopupBroadcastModulePath();
-
-
-            //디자인상세화면(20화면) <-> BINDPOPUP 통신 채널 키 얻기.
+			//디자인상세화면(20화면) <-> BINDPOPUP 통신 채널 키 얻기.
             var _channelKey = parent.require(_channelPath)("GET-CHANNEL-ID");
             
             var oBindPopupData = {
@@ -422,8 +585,12 @@
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
 
-            // busy & Lock 끄기
-            oAPP.common.fnSetBusyLock("");
+            //테스트주석처리!!!!!!!!!!!
+            // // busy & Lock 끄기
+            // oAPP.common.fnSetBusyLock("");
+            //테스트주석처리!!!!!!!!!!!
+
+            parent.setBusy("", {});
 
             oBrowserWindow = null;
 
@@ -3122,9 +3289,6 @@
      * [Header Menu] 비디오 녹화 팝업
      ************************************************************************/
     oAPP.fn.fnOpenVideoRecord = async () => {
-
-        // busy 키고 Lock 걸기
-        oAPP.common.fnSetBusyLock("X");
 
         await oAPP.common.fnSleep(0);
 

@@ -220,19 +220,56 @@
 
     }; // end of oAPP.events.ev_pressWmenuItemWS20
 
+    // /************************************************************************
+    //  * [WS20] Binding Popup 버튼 이벤트
+    //  ************************************************************************/
+    // oAPP.events.ev_pressBindPopupBtn = (oEvent) => {
+
+    //     // busy 키고 Lock 걸기
+    //     oAPP.common.fnSetBusyLock("X");
+
+    //     // Trial Version Check
+    //     if (oAPP.fn.fnOnCheckIsTrial()) {
+            
+    //         // busy 끄고 Lock 풀기
+    //         oAPP.common.fnSetBusyLock("");
+
+    //         return;
+    //     }
+
+    //     oAPP.fn.fnBindWindowPopupOpener();
+
+    // }; // end of oAPP.events.ev_pressBindPopupBtn
+
     /************************************************************************
      * [WS20] Binding Popup 버튼 이벤트
      ************************************************************************/
     oAPP.events.ev_pressBindPopupBtn = (oEvent) => {
 
-        // busy 키고 Lock 걸기
-        oAPP.common.fnSetBusyLock("X");
+        //테스트주석처리!!!!!!!!!!!!!!
+        // // busy 키고 Lock 걸기
+        // oAPP.common.fnSetBusyLock("X");
+        //테스트주석처리!!!!!!!!!!!!!!
+
+        var _sOption = {
+            TITLE: "",
+            DESC : "",
+        };
+
+        //$$MSG
+        _sOption.DESC = "바인딩 팝업을 호출하고 있습니다.";
+
+        parent.setBusy("X", _sOption);
 
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
             
-            // busy 끄고 Lock 풀기
-            oAPP.common.fnSetBusyLock("");
+            //테스트주석처리!!!!!!!!!!!!!!
+            // // busy 끄고 Lock 풀기
+            // oAPP.common.fnSetBusyLock("");
+            //테스트주석처리!!!!!!!!!!!!!!
+            
+            parent.setBusy("", {});
 
             return;
         }
