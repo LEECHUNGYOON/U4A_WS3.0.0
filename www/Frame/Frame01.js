@@ -927,6 +927,7 @@ oAPP.msg = {};
 
     //     // 파라미터에 옵션을 추가했을 경우는 BusyDialog로 호출함!!
     //     if(typeof oOptions === "object"){
+    //         oWS.utill.fn.setBusyDialog(sIsbusy, oOptions);
     //         return;
     //     }
 
