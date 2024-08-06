@@ -673,8 +673,10 @@ let oAPP = parent.oAPP,
             oAPP.fn.setBusy(false);
 
 
-            //BUSY OFF 요청 처리.
-            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+            var _sOption = JSON.parse(JSON.stringify(oAPP.types.TY_BUSY_OPTION));
+
+            //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF", _sOption);
 
 
             var _oWin = oAPP.REMOTE.getCurrentWindow();
@@ -3315,12 +3317,20 @@ let oAPP = parent.oAPP,
         //확인이 필요한경우 메시지 팝업 호출.
         // parent.showMessage(sap, 30, "I", l_msg, function(param){
         sap.m.MessageBox.confirm(l_msg, {id: oAPP.attr.C_CONFIRM_POPUP, onClose:function(param){
+
+            oAPP.fn.setBusy(true);
+
             // if(param !== "YES"){return;}
-            if(param !== "OK"){return;}
+            if(param !== "OK"){
+                oAPP.fn.setBusy(false);
+                return;
+            }
 
             fnCallback(is_attr);
 
         }});
+
+        oAPP.fn.setBusy(false);
 
         //function 호출처 skip을 위한 flag return.
         return true;
@@ -3351,14 +3361,22 @@ let oAPP = parent.oAPP,
                     //확인 팝업 호출.
                     // parent.showMessage(sap, 30, "I", l_msg, function(param){
                     sap.m.MessageBox.confirm(l_msg, {id: oAPP.attr.C_CONFIRM_POPUP, onClose:function(param){
+                        
+                        oAPP.fn.setBusy(true);
+                        
                         return res(param);
+
                     }});
 
+                    oAPP.fn.setBusy(false);
                 });
         
                 //확인팝업에서 YES를 안누른경우 EXIT.
                 // if(param !== "YES"){return;}
-                if(_param !== "OK"){return;}
+                if(_param !== "OK"){
+                    oAPP.fn.setBusy(false);
+                    return;
+                }
 
                 //unbind 처리.
                 oAPP.fn.attrUnbindAggr(oAPP.attr.prev[is_attr.OBJID], is_attr.UIATT, is_attr.UIATV);
@@ -3401,15 +3419,23 @@ let oAPP = parent.oAPP,
                 //확인 팝업 호출.
                 // parent.showMessage(sap, 30, "I", l_msg, function(param){
                 sap.m.MessageBox.confirm(l_msg, {id: oAPP.attr.C_CONFIRM_POPUP, onClose:function(param){
+
+                    oAPP.fn.setBusy(true);
+
                     return res(param);
                 }});
+
+                oAPP.fn.setBusy(false);
 
             });
 
             
             //확인팝업에서 YES를 안누른경우 EXIT.
             // if(param !== "YES"){return;}
-            if(_param !== "OK"){return;}
+            if(_param !== "OK"){
+                oAPP.fn.setBusy(false);
+                return;
+            }
 
             //UNBIND 처리.
             oAPP.fn.attrUnbindAggr(oAPP.attr.prev[is_attr.OBJID],is_attr.UIATT, is_attr.UIATV);
@@ -4917,15 +4943,22 @@ let oAPP = parent.oAPP,
         
         oAPP.fn.setBusy(true);
 
+        var _sOption = JSON.parse(JSON.stringify(oAPP.types.TY_BUSY_OPTION));
+
+        //$$MSG
+        _sOption.DESC = "바인딩 팝업에서 추가 속성 바인딩 처리를 진행하고 있습니다.";
+
         //WS 3.0 DESIGN 영역에 BUSY ON 요청 처리.
-        parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_ON");
+        parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_ON", _sOption);
 
         var _oUi = oEvent?.oSource;
 
         if(typeof _oUi === "undefined"){
 
+            var _sOption = JSON.parse(JSON.stringify(oAPP.types.TY_BUSY_OPTION));
+
             //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF", _sOption);
 
             oAPP.fn.setBusy(false);
 
@@ -4943,8 +4976,10 @@ let oAPP = parent.oAPP,
         //바인딩 추가 속성 점검 오류가 존재하는경우.
         if(_sRes.RETCD === "E"){
 
+            var _sOption = JSON.parse(JSON.stringify(oAPP.types.TY_BUSY_OPTION));
+
             //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF", _sOption);
 
             oAPP.fn.setBusy(false);
 

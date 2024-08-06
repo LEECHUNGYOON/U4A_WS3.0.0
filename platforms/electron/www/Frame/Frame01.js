@@ -921,63 +921,133 @@ oAPP.msg = {};
 
     // }; // end of oWS.utill.fn.setBusy
 
-    // 19. Busy Indicator 실행
-    // - 파라미터에 Option이 존재할 경우는 busyDialog로 호출함
-    oWS.utill.fn.setBusy = (sIsbusy, oOptions) => {
+    // // 19. Busy Indicator 실행
+    // // - 파라미터에 Option이 존재할 경우는 busyDialog로 호출함
+    // oWS.utill.fn.setBusy = (sIsbusy, oOptions) => {
 
-        // 파라미터에 옵션을 추가했을 경우는 BusyDialog로 호출함!!
-        if(typeof oOptions === "object"){
-            oWS.utill.fn.setBusyDialog(sIsbusy, oOptions);
-            return;
-        }
+    //     // 파라미터에 옵션을 추가했을 경우는 BusyDialog로 호출함!!
+    //     if(typeof oOptions === "object"){
+    //         oWS.utill.fn.setBusyDialog(sIsbusy, oOptions);
+    //         return;
+    //     }
+
+    //     var bIsBusy = (sIsbusy === "X" ? true : false);
+
+    //     // 실행 즉시 lock을 건다
+    //     if (oWS.utill.attr.sap) {
+    //         if (bIsBusy) {
+    //             oWS.utill.attr.sap.ui.getCore().lock();
+               
+    //         } else {
+    //             oWS.utill.attr.sap.ui.getCore().unlock();
+    //         }
+    //     }
+
+    //     // Cursor Focus Handle
+    //     if (bIsBusy) {
+
+    //         // var _oBeforeActiveElement = document.activeElement || undefined;
+
+    //         var _oBeforeActiveElement = (typeof ws_frame === "object" && ws_frame?.document?.activeElement) || undefined;
+
+    //         if (_oBeforeActiveElement && typeof _oBeforeActiveElement?.blur !== "undefined") {
+
+    //             //마지막 포커스 위치 전역화 
+    //             oWS.utill.attr.beforeActiveElement = _oBeforeActiveElement;
+
+    //             //이전 포커스 제거
+    //             _oBeforeActiveElement.blur();
+
+    //         }
+
+    //     } else {
+
+    //         //이전 등록된 위치정보가 존재시 
+    //         if (typeof oWS?.utill?.attr?.beforeActiveElement?.focus !== "undefined") {
+
+    //             oWS.utill.attr.beforeActiveElement.focus();
+
+    //             delete oWS.utill.attr.beforeActiveElement;
+
+    //         }
+
+    //     }
+
+    //     // Busy Indicator dom
+    //     var oBusy = oWS.utill.attr.oBusyDom;
+        
+    //     setTimeout(() => {
+            
+    //         if (bIsBusy) {
+    //             oBusy.style.visibility = "visible";
+    //         } else {
+    //             oBusy.style.visibility = "hidden";    
+    //         }
+    
+    //         oWS.utill.attr.isBusy = "";
+    
+    //         if(oBusy.style.visibility === "visible"){
+    //             oWS.utill.attr.isBusy = "X";       
+    
+    //         }
+
+    //     }, 0);
+
+    //     // 작업표시줄에 ProgressBar 실행
+    //     setProgressBar("S", bIsBusy);
+
+    // }; // end of oWS.utill.fn.setBusy
+
+    // 19. Busy Indicator 실행
+    oWS.utill.fn.setBusy = (sIsbusy) => {
 
         var bIsBusy = (sIsbusy === "X" ? true : false);
-
+    
         // 실행 즉시 lock을 건다
         if (oWS.utill.attr.sap) {
             if (bIsBusy) {
                 oWS.utill.attr.sap.ui.getCore().lock();
-               
+    
             } else {
                 oWS.utill.attr.sap.ui.getCore().unlock();
             }
         }
-
+    
         // Cursor Focus Handle
         if (bIsBusy) {
-
+    
             // var _oBeforeActiveElement = document.activeElement || undefined;
-
+    
             var _oBeforeActiveElement = (typeof ws_frame === "object" && ws_frame?.document?.activeElement) || undefined;
-
+    
             if (_oBeforeActiveElement && typeof _oBeforeActiveElement?.blur !== "undefined") {
-
+    
                 //마지막 포커스 위치 전역화 
                 oWS.utill.attr.beforeActiveElement = _oBeforeActiveElement;
-
+    
                 //이전 포커스 제거
                 _oBeforeActiveElement.blur();
-
+    
             }
-
+    
         } else {
-
+    
             //이전 등록된 위치정보가 존재시 
             if (typeof oWS?.utill?.attr?.beforeActiveElement?.focus !== "undefined") {
-
+    
                 oWS.utill.attr.beforeActiveElement.focus();
-
+    
                 delete oWS.utill.attr.beforeActiveElement;
-
+    
             }
-
+    
         }
-
+    
         // Busy Indicator dom
         var oBusy = oWS.utill.attr.oBusyDom;
-        
+    
         setTimeout(() => {
-            
+    
             if (bIsBusy) {
                 oBusy.style.visibility = "visible";
             } else {
@@ -990,12 +1060,12 @@ oAPP.msg = {};
                 oWS.utill.attr.isBusy = "X";       
     
             }
-
+    
         }, 0);
-
+    
         // 작업표시줄에 ProgressBar 실행
         setProgressBar("S", bIsBusy);
-
+    
     }; // end of oWS.utill.fn.setBusy
 
 
@@ -1012,7 +1082,7 @@ oAPP.msg = {};
      *    DESC : ""    // 내역
      * }
      **********************************************************/
-    oWS.utill.fn.setBusyDialog = function(sIsbusy, oOptions){
+     oWS.utill.fn.setBusyDialog = function(sIsbusy, oOptions){
 
         if(!oWS.utill.attr.sap){
             return;
@@ -1053,23 +1123,20 @@ oAPP.msg = {};
 
         }
 
-        // let aa = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "392", "", "", "", ""); // 잠시만 기다려 주세요.,  //350
-        // console.log(aa);
-
-        let sDefTitle = "";
-        let sDefDesc  = "please wait a minute..";
-
-        let sTitle = sDefTitle;
-        let sDesc  = sDefDesc;
-
-        // 옵션값이 있을 경우 
-        if(typeof oOptions === "object"){
-            sTitle = oOptions.TITLE || sDefTitle;
-            sDesc  = oOptions.DESC  || sDefDesc;
-        }
-
         // Busy를 켰을 경우
-        if(bIsBusy){
+        if(bIsBusy){         
+         
+            let sDefTitle = "";
+            let sDefDesc  = "please wait a minute..";
+
+            let sTitle = sDefTitle;
+            let sDesc  = sDefDesc;
+
+            // 옵션값이 있을 경우 
+            if(typeof oOptions === "object"){
+                sTitle = oOptions.TITLE || sDefTitle;
+                sDesc  = oOptions.DESC  || sDefDesc;
+            }         
 
             // BusyDialog가 없으면 신규 생성
             if(!oWS.utill.attr.oBusyDlg){
@@ -1111,7 +1178,108 @@ oAPP.msg = {};
         // 작업표시줄에 ProgressBar 실행
         setProgressBar("S", bIsBusy);
 
-    }; // end of oWS.utill.fn.setBusyDialog    
+    }; // end of oWS.utill.fn.setBusyDialog
+
+    // oWS.utill.fn.setBusyDialog = function(sIsbusy, oOptions){
+
+    //     if(!oWS.utill.attr.sap){
+    //         return;
+    //     }
+
+    //     var bIsBusy = (sIsbusy === "X" ? true : false);
+
+    //     // 실행 즉시 lock을 건다        
+    //     if (bIsBusy) {
+    //         oWS.utill.attr.sap.ui.getCore().lock();            
+    //     }        
+
+    //     // Cursor Focus Handle
+    //     if (bIsBusy) {
+
+    //         var _oBeforeActiveElement = document.activeElement || undefined;
+
+    //         if (_oBeforeActiveElement && typeof _oBeforeActiveElement?.blur !== "undefined") {
+
+    //             //마지막 포커스 위치 전역화 
+    //             oWS.utill.attr.beforeActiveElement = _oBeforeActiveElement;
+
+    //             //이전 포커스 제거
+    //             _oBeforeActiveElement.blur();
+
+    //         }
+
+    //     } else {
+
+    //         //이전 등록된 위치정보가 존재시 
+    //         if (typeof oWS?.utill?.attr?.beforeActiveElement?.focus !== "undefined") {
+
+    //             oWS.utill.attr.beforeActiveElement.focus();
+
+    //             delete oWS.utill.attr.beforeActiveElement;
+
+    //         }
+
+    //     }
+
+    //     // let aa = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "392", "", "", "", ""); // 잠시만 기다려 주세요.,  //350
+    //     // console.log(aa);
+
+    //     let sDefTitle = "";
+    //     let sDefDesc  = "please wait a minute..";
+
+    //     let sTitle = sDefTitle;
+    //     let sDesc  = sDefDesc;
+
+    //     // 옵션값이 있을 경우 
+    //     if(typeof oOptions === "object"){
+    //         sTitle = oOptions.TITLE || sDefTitle;
+    //         sDesc  = oOptions.DESC  || sDefDesc;
+    //     }
+
+    //     // Busy를 켰을 경우
+    //     if(bIsBusy){
+
+    //         // BusyDialog가 없으면 신규 생성
+    //         if(!oWS.utill.attr.oBusyDlg){
+
+    //             oWS.utill.attr.oBusyDlg = new oWS.utill.attr.sap.m.BusyDialog();
+
+    //             // CustomData에 MUTATION_EXCEP을 주는 이유?
+    //             // Mutation이 화면에 dialog 류 들이 감지되면 현재 떠있는 자식 윈도우를 활성 or 비활성 하는데,
+    //             // 특정 Dialog는 Mutation 감지 대상에서 제외시키고자 할 때
+    //             // Dialog Object에 CustomData로 구분함
+    //             oWS.utill.attr.oBusyDlg._oDialog.data("MUTATION_EXCEP", "X");
+
+    //         }
+
+    //         let oBusyDlg = oWS.utill.attr.oBusyDlg;
+
+    //         oBusyDlg.setTitle(sTitle);
+    //         oBusyDlg.setText(sDesc);
+
+    //         // Busy Dialog가 open되지 않았을 경우 오픈시킨다.
+    //         if(oBusyDlg?._oDialog?.isOpen() === false){
+    //             oBusyDlg.open();
+    //         }
+
+    //     } else {
+
+    //         if(oWS.utill.attr.oBusyDlg){
+                
+    //             oWS.utill.attr.oBusyDlg.destroy();
+
+    //             delete oWS.utill.attr.oBusyDlg;
+    
+    //             oWS.utill.attr.sap.ui.getCore().unlock();
+
+    //         }            
+
+    //     }
+
+    //     // 작업표시줄에 ProgressBar 실행
+    //     setProgressBar("S", bIsBusy);
+
+    // }; // end of oWS.utill.fn.setBusyDialog    
 
     // 현재 Busy Indicator 상태를 리턴해준다.
     oWS.utill.fn.getBusy = function () {

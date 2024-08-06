@@ -773,6 +773,8 @@
 
     oDlg.oPopup.setModal(true);
 
+
+
   } //결과리스트 table 라인 drag end 처리.
 
 

@@ -1314,7 +1314,7 @@ function designControl(oArea){
             if(typeof _sTree === "undefined"){
 
                 //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF", {});
 
                 oAPP.fn.setBusy(false);
                 return;
@@ -1344,7 +1344,7 @@ function designControl(oArea){
             if (_actcd !== "OK") {
 
                 //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF", {});
 
                 oAPP.fn.setBusy(false);
                 return;
@@ -1530,8 +1530,8 @@ function designControl(oArea){
                 sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "106", _sTree.OBJID), 
                     {duration: 3000, at:"center center", my: "center center"});
 
-                //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF", {});
+                    //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+                    parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF", {});
 
                 oAPP.fn.setBusy(false);
                 return;
@@ -2191,6 +2191,7 @@ function designControl(oArea){
                 //109	바인딩 필드 정보를 찾을 수 없습니다.
                 sap.m.MessageToast.show(oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "109"), 
                     {duration: 3000, at:"center center", my: "center center"});
+
 
                 //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
                 parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF", {});

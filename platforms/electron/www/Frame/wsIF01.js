@@ -118,7 +118,43 @@ function getErrorMsg() {
 // 19. Busy Indicator 실행
 // - 파라미터에 Option이 존재할 경우는 busyDialog로 호출함
 function setBusy(bIsBusy, oOptions) {
-    oWS.utill.fn.setBusy(bIsBusy, oOptions);
+
+    // oWS.utill.fn.setBusy(bIsBusy, oOptions);
+    
+    //현재 busy가 on 상태인경우, 다시 on 처리시 return.
+    if(oWS.utill.fn.getBusy() === "X" && bIsBusy === "X"){
+        
+        //현재 busy dialog가 open 된 상태인경우.
+        if(typeof oWS.utill.attr.oBusyDlg !== "undefined" && typeof oOptions !== "undefined"){
+
+            //busy dialog 재호출(text 변경 목적).
+            oWS.utill.fn.setBusyDialog(bIsBusy, oOptions);
+        
+        }
+        
+        return;
+    }    
+    
+    //busy on 처리 건인경우.
+    if(bIsBusy === "X"){
+        // 파라미터에 옵션을 추가했을 경우는 BusyDialog로 호출함!!
+        if(typeof oOptions === "object"){
+            oWS.utill.fn.setBusyDialog(bIsBusy, oOptions);
+            return;
+        }
+        
+        oWS.utill.fn.setBusy(bIsBusy);
+        
+        return;
+    }
+    
+    
+    //busy dialog 종료처리.
+    oWS.utill.fn.setBusyDialog("", oOptions);
+    
+    //기존 busy 종료 처리.
+    oWS.utill.fn.setBusy("");
+
 }
 
 // 현재 Busy Indicator 상태를 구한다.

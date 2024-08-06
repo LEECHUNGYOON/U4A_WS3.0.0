@@ -69,7 +69,7 @@
         "globalSettings" : "HKCU\\SOFTWARE\\U4A\\WS\\GlobalSettings"
 
     },
-    "isDev": true,
+    "isDev": false,
     "isTrial": false,
     "trialServerInfo": {
         "ID": "soccerhs",

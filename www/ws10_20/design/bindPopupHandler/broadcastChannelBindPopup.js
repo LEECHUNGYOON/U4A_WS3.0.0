@@ -17,128 +17,147 @@ const oWS_FRAME = document.getElementById('ws_frame').contentWindow;
 //oAPP 정보 광역화.
 const oAPP = oWS_FRAME.oAPP;
 
+//디자인상세화면(20화면) <-> BIND POPUP 통신을 위한 broadcast Channel instance.
+let oChannel = undefined;
+
 
 //바인딩 팝업 디자인 영역의 ROOT OBJID 정보.
 let DESIGN_ROOT_OBJID = "";
 
+
 /*************************************************************
- * @class - 디자인상세화면(20화면) <-> BINDPOPUP 통신을 위한 CLASS.
+ * @function - 디자인상세화면(20화면) <-> BIND POPUP 통신을 위한 
+ *          broadcast Channel생성.
  *************************************************************/
-class CL_WS20_BINDPOPUP{
-
-    static oChannel = undefined;
-
-    //디자인상세화면(20화면) <-> BIND POPUP 통신을 위한 broadcast Channel생성.
-    static createChannel = function () {
+function createChannel() {
         
-        this.oChannel = new BroadcastChannel(C_CHID);
+    oChannel = new BroadcastChannel(C_CHID);
 
-        //MESSAGE 이벤트 구성.
-        this.oChannel.onmessage = function(oEvent) {
-            
-            //바인딩 팝업 Broadcast Channel 응답 처리.
-            resBroadcastChannelBindPopup(oEvent);
+    //MESSAGE 이벤트 구성.
+    oChannel.onmessage = function(oEvent) {
+                    
+        console.log(oEvent.data);
 
-        };
-
-    };
-
-
-    //BIND POPUP에 데이터 전송 처리.
-    static sendPostMessage = function (oData) {
-
-        var _sRes = {RETCD:"", RTMSG:""};
-
-        if(typeof this.oChannel === "undefined"){
-
-            _sRes.RETCD = "E";
-            _sRes.RTMSG = "";
-            return _sRes;
-        }
-
-        this.oChannel.postMessage(oData);
-
-        return _sRes;
-        
-    };
-
-
-    //채널 종료 처리.
-    static closeChannel = function(){
-
-        if(typeof this.oChannel === "undefined"){
+        if(typeof oEvent?.data?.PRCCD === "undefined"){
             return;
         }
 
-        //바인딩 팝업 디자인 영역의 ROOT OBJID 정보 초기화.
-        DESIGN_ROOT_OBJID = "";
-
-        //채널 종료 처리.
-        this.oChannel.close();
-
-        //채널 instance 초기화.
-        this.oChannel = undefined;
-
-    };
-
-
-    //채널 생성됨 여부.
-    static isCreateChannel = function(){
-        
-        if(typeof this.oChannel === "undefined"){
-            return false;
+        //busy off 응답을 받은 경우.
+        if(responseBindPopupBusyOff(oEvent) === true){
+            return;
         }
 
-        return true;
-        
+
+        //busy on 응답을 받은 경우.
+        if(responseBindPopupBusyOn(oEvent) === true){
+            return;
+        }
+
+        //APP DATA 갱신 요청에 대한 처리.
+        if(updateAppData(oEvent) === true){
+            return;
+        }
+
+
+        //바인딩 팝업 디자인 영역에 그려진 최상위 UI 정보 전송건에 대한 처리.
+        if(updateRootObjectID(oEvent) === true){
+            return;
+        }
+
+
+        //디자인 영역 UI선택 처리.
+        if(responeSelectDesignTreeOBJID(oEvent) === true){
+            return;
+        }
+
     };
 
-
-};
-
+}
 
 
-/************************************************************************
- * 바인딩 팝업 Broadcast Channel 응답 처리.
- ************************************************************************/
-function resBroadcastChannelBindPopup(oEvent){
+
+/*************************************************************
+ * @function - 디자인상세화면(20화면) => BIND POPUP에 데이터 전송 처리.
+ *************************************************************/
+sendPostMessage = function (oData) {
+
+    //디자인상세화면(20화면) <=> BIND POPUP 통신을 위한 BROADCAST는
+    //바인딩 팝업이 종료되기 전까지는 반드시 존재 해야함.
+    //따라서 해당 INSTANCE가 없을경우 치명적 오류를 발생 처리함.
+    if(typeof oChannel === "undefined" || oChannel === null){
+
+        var _errMsg = 
+            `ws10_20\\bindPopupHandler\\broadcastChannelBindPopup.js` +
+            `\nWS20 => BIND POPUP 통신을 위한 채널 정보가 존재하지 않습니다.`;
+
+        if(typeof oData?.PRCCD !== "undefined"){
+            _errMsg += `\n처리 Process Code : ${oData.PRCCD}`;
+        }
+
+        throw(new Error(_errMsg));
+
+    }
+
+    try {
+        oChannel.postMessage(oData);    
+
+    } catch (error) {
+
+        var _errMsg = 
+            `ws10_20\\bindPopupHandler\\broadcastChannelBindPopup.js` +
+            `\nWS20 => BIND POPUP oChannel.postMessage 오류`;
+
+        if(typeof oData?.PRCCD !== "undefined"){
+            _errMsg += `\n처리 Process Code : ${oData.PRCCD}`;
+        }
+
+        if(typeof error?.message !== "undefined"){
+            _errMsg += `\n${error.message}`;
+        }
+
+        throw(new Error(_errMsg));
+    }
     
-    console.log(oEvent.data);
+}
 
-    if(typeof oEvent?.data?.PRCCD === "undefined"){
+
+
+/*************************************************************
+ * @function - 디자인상세화면(20화면) 채널 종료 처리.
+ *************************************************************/
+function closeChannel(){
+
+    if(typeof oChannel === "undefined" || oChannel === null){
         return;
     }
 
-    //busy off 응답을 받은 경우.
-    if(responseBindPopupBusyOff(oEvent) === true){
-        return;
-    }
+    //바인딩 팝업 디자인 영역의 ROOT OBJID 정보 초기화.
+    DESIGN_ROOT_OBJID = "";
 
+    //채널 종료 처리.
+    oChannel.close();
 
-    //busy on 응답을 받은 경우.
-    if(responseBindPopupBusyOn(oEvent) === true){
-        return;
-    }
-
-    //APP DATA 갱신 요청에 대한 처리.
-    if(updateAppData(oEvent) === true){
-        return;
-    }
-
-
-    //바인딩 팝업 디자인 영역에 그려진 최상위 UI 정보 전송건에 대한 처리.
-    if(updateRootObjectID(oEvent) === true){
-        return;
-    }
-
-
-    //디자인 영역 UI선택 처리.
-    if(responeSelectDesignTreeOBJID(oEvent) === true){
-        return;
-    }
-
+    //채널 instance 초기화.
+    oChannel = undefined;
 
 }
+
+
+
+/*************************************************************
+ * @function - 디자인상세화면(20화면) 채널 생성됨 여부.
+ *************************************************************/
+function isCreateChannel(){
+    
+    //broadcast 채널이 생성되지 않은경우 생성되지 않음 flag return.
+    if(typeof oChannel === "undefined" || oChannel === null){
+        return false;
+    }
+
+    return true;
+    
+}
+
 
 
 /************************************************************************
@@ -154,8 +173,14 @@ function responseBindPopupBusyOff(oEvent){
     //단축키도 같이 잠금 해제처리.
     oAPP.fn.setShortcutLock(false);
 
+    var _sOption = undefined;
+
+    if(typeof oEvent.data.OPTION !== "undefined"){
+        _sOption = oEvent.data.OPTION;
+    }
+
     //busy off.
-    parent.setBusy("");
+    parent.setBusy("", _sOption);
 
     
     //busy off 요청임 flag return.
@@ -201,8 +226,8 @@ async function updateAppData(oEvent){
         return false;
     }
 
-    //BUSY ON
-    parent.setBusy("X");
+    // //BUSY ON
+    // parent.setBusy("X");
 
 
     for (const key in oEvent.data.oPrev) {
@@ -279,8 +304,9 @@ async function updateAppData(oEvent){
     //화면에서 UI추가, 이동, 삭제 및 attr 변경시 변경 flag 처리.
     oAPP.fn.setChangeFlag();
     
-    //BUSY OFF
-    parent.setBusy("");
+    //BUSY DIALOG OFF  
+    parent.setBusy("", {});
+
 
     return true;
 
@@ -345,11 +371,11 @@ function responeSelectDesignTreeOBJID(oEvent){
 /*************************************************************
  * @function - 바인딩 팝업 데이터 전송전 라인값 점검.
  *************************************************************/
-function checkBindPopupDragAppData(is_drag){
+function checkBindPopupDragAppData(sTree){
 
     var _sRes = {RETCD: "", RTMSG:""};
 
-    if(typeof is_drag === "undefined"){
+    if(typeof sTree === "undefined"){
 
         //디자인 영역의 object ID 초기화.
         DESIGN_ROOT_OBJID = "";
@@ -364,20 +390,20 @@ function checkBindPopupDragAppData(is_drag){
 
 
     //최상위 root가 인경우 점검 불필요.
-    if(is_drag.OBJID === "ROOT"){
+    if(sTree.OBJID === "ROOT"){
         return _sRes;
     }
 
     
     var _UIATT = undefined;
 
-    var _OBJID = is_drag.OBJID;
+    var _OBJID = sTree.OBJID;
 
     //sap.ui.table.Column인경우, CHILD에 TEMPLATE이 존재하는경우.
-    if(is_drag.UILIB === "sap.ui.table.Column" && is_drag.zTREE.findIndex( item => item.UIATT === "template" ) !== -1){
+    if(sTree.UILIB === "sap.ui.table.Column" && sTree.zTREE.findIndex( item => item.UIATT === "template" ) !== -1){
 
         //부모(sap.ui.table.Table / sap.ui.table.TreeTable)로 변경.
-        _OBJID = is_drag.POBID;
+        _OBJID = sTree.POBID;
 
         //점검 대상 aggr을 rows로 구성.
         _UIATT = "rows";
@@ -459,11 +485,14 @@ async function updateBindPopupDesignData(oData){
 
     parent.setBusy("X");
 
+    //단축키 잠금 처리.
+    oAPP.fn.setShortcutLock(true);
+
     //바인딩 팝업 채널이 구성되지 않은경우 exit.
     //(바인딩 팝업이 호출되지 않은경우)
-    if(CL_WS20_BINDPOPUP.isCreateChannel() === false){
+    if(isCreateChannel() === false){
 
-        //단축키도 같이 잠금 해제처리.
+        //단축키 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
 
         //busy off.
@@ -474,6 +503,8 @@ async function updateBindPopupDesignData(oData){
     
     var _sParam = {
         PRCCD  : "UPDATE_DESIGN_DATA",
+        RETCD  : "",
+        RTMSG  : "",
         T_0014 : [],
         T_0015 : [],
         T_CEVT : []
@@ -486,9 +517,12 @@ async function updateBindPopupDesignData(oData){
     
     //바인딩 팝업의 ROOT UI를 기준으로 APP DATA 구성에 실패한 경우.
     if(_sRes.RETCD === "E"){
-        
+
+        _sParam.RETCD = _sRes.RETCD;
+        _sParam.RTMSG = _sRes.RTMSG;
+
         //바인딩 팝업에 데이터 전송.
-        CL_WS20_BINDPOPUP.sendPostMessage(_sParam);
+        sendPostMessage(_sParam);
 
         return;
 
@@ -503,7 +537,7 @@ async function updateBindPopupDesignData(oData){
     _sParam.T_CEVT = _sData.T_CEVT;
 
     //바인딩 팝업에 데이터 전송.
-    CL_WS20_BINDPOPUP.sendPostMessage(_sParam);
+    sendPostMessage(_sParam);
 
 }
 
@@ -512,9 +546,9 @@ async function updateBindPopupDesignData(oData){
 /*************************************************************
  * @function - 바인딩 팝업에서 UI 구성을 위한 design tree 데이터 구성.
  *************************************************************/
-function setBindPopupDragAppData(is_drag){
+function setBindPopupDragAppData(sTree){
 
-    var _aTree = JSON.parse(JSON.stringify([is_drag]));
+    var _aTree = JSON.parse(JSON.stringify([sTree]));
 
     oAPP.attr.POSIT = 0;
 
@@ -641,7 +675,7 @@ function sendAdditError(oData){
 
 
     //바인딩 팝업에 데이터 전송.
-    CL_WS20_BINDPOPUP.sendPostMessage(_sParam);
+    sendPostMessage(_sParam);
 
 }
 
@@ -651,6 +685,11 @@ function sendAdditError(oData){
  *************************************************************/
 function selectDesignTreeOBJID(oData){
 
+    //broad cast 채널이 생성되지 않은경우 exit.
+    if(isCreateChannel() === false){
+        return;
+    }
+
     var _sParam = {
         PRCCD   : "DESIGN-TREE-SELECT-OBJID",
         OBJID : oData
@@ -658,7 +697,7 @@ function selectDesignTreeOBJID(oData){
 
 
     //바인딩 팝업에 데이터 전송.
-    CL_WS20_BINDPOPUP.sendPostMessage(_sParam);
+    sendPostMessage(_sParam);
 
 }
 
@@ -675,7 +714,7 @@ function sendBindPopupBusyOff(oData){
 
 
     //WS 3.0 디자인 영역에 데이터 전송.
-    CL_WS20_BINDPOPUP.sendPostMessage(_sParam);
+    sendPostMessage(_sParam);
 
 }
 
@@ -691,7 +730,7 @@ function sendBindPopupBusyOn(oData){
 
 
     //WS 3.0 디자인 영역에 데이터 전송.
-    CL_WS20_BINDPOPUP.sendPostMessage(_sParam);
+    sendPostMessage(_sParam);
 
 }
 
@@ -705,16 +744,16 @@ module.exports = function(ACTCD, oData){
     switch (ACTCD) {
         case "CHANNEL-CREATE":
             //채널 생성.
-            CL_WS20_BINDPOPUP.createChannel(oData);
+            createChannel(oData);
             break;
 
         case "SEND-APP-DATA":
             //BIND POPUP에 데이터 전송 처리.
-            return CL_WS20_BINDPOPUP.sendPostMessage(oData);
+            return sendPostMessage(oData);
 
         case "CHANNEL-CLOSE":
             //broadcast Channel 종료처리.
-            CL_WS20_BINDPOPUP.closeChannel();
+            closeChannel();
             break;
 
         case "GET-CHANNEL-ID":
@@ -723,7 +762,7 @@ module.exports = function(ACTCD, oData){
 
         case "IS-CHANNEL-CREATE":
             //채널 생성됨 여부 return.
-            return CL_WS20_BINDPOPUP.isCreateChannel();
+            return isCreateChannel();
 
         case "UPDATE-DESIGN-DATA":
             //바인딩 팝업 디자인 데이터 갱신.

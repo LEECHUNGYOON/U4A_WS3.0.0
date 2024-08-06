@@ -148,8 +148,13 @@ function designControl(oArea){
 
             oAPP.fn.setBusy(true);
 
+            var _sOption = JSON.parse(JSON.stringify(oAPP.types.TY_BUSY_OPTION));
+
+            //$$MSG
+            _sOption.DESC = "바인딩 팝업에서 추가 속성 바인딩 처리를 진행하고 있습니다.";
+
             //WS 3.0 DESIGN 영역에 BUSY ON 요청 처리.
-            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_ON");
+            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_ON", _sOption);
 
             var _oUi = oEvent.oSource;
 
@@ -160,7 +165,7 @@ function designControl(oArea){
             if(_sRes.RETCD === "E"){
 
                 //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF", {});
 
                 oAPP.fn.setBusy(false);
 
@@ -199,7 +204,7 @@ function designControl(oArea){
             if (_actcd !== "OK") {
 
                 //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF", {});
 
                 oAPP.fn.setBusy(false);
                 return;

@@ -613,7 +613,7 @@ function designControl(is_attr){
             oAPP.attr.oAddit.fn.setAdditBindButtonEnable(true);
 
             //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF", {});
 
 
             oAPP.fn.setBusy(false);
@@ -627,6 +627,10 @@ function designControl(is_attr){
         oContr.fn.onCallSyncBindPopup = async function(){
 
             oAPP.fn.setBusy(true);
+
+            //동일속성 적용 버튼 비활성 처리.
+            //(dialog가 호출될때 다시 선택할 수 있기에)
+            this.setEnabled(false);
 
             document.activeElement.blur();
 
@@ -668,7 +672,7 @@ function designControl(is_attr){
                     delete oContr.ui.oDialog;
 
                     //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-                    parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+                    parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF", {});
 
                 },
                 // customHeader: new sap.m.OverflowToolbar({
