@@ -117,7 +117,7 @@ let oAPP = (function(window) {
 
         oWs_frame.src = "errorPageEditor.html";
 
-    });
+    });   
 
     window.oAPP = oAPP;
 

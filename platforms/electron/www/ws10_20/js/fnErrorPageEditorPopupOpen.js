@@ -124,6 +124,8 @@
 
         // EDITOR의 저장을 위한 IPC 이벤트
         IPCMAIN.on("if-ErrorPageEditor-Save", oAPP.fn.fnIpcMain_ErrorPageEditorSave);
+
+        // ErrPageEditor 미리보기에 반영할 html을 받을 목적인 IPC 이벤트
         IPCMAIN.on("if-ErrorPage-Preview", oAPP.fn.fnIpcMain_ErrorPagePreview);
 
         // 브라우저를 닫을때 타는 이벤트
@@ -171,14 +173,14 @@
     /************************************************************************
      * Error Page Editor 팝업의 미리보기 IPCMAIN 이벤트
      * **********************************************************************/
-    oAPP.fn.fnIpcMain_ErrorPagePreview = function (event, res) {
-
-        var sWinObjType = "ERRPAGEPREV";
+    oAPP.fn.fnIpcMain_ErrorPagePreview = function (event, res) {        
 
         var BROWSKEY = parent.getBrowserKey();
         if (BROWSKEY != res.BROWSKEY) {
             return;
         }
+
+        var sWinObjType = "ERRPAGEPREV";
 
         // 기존에 Error Page Editor 미리보기 팝업이 열렸을 경우 창을 닫고 다시 띄운다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
@@ -229,13 +231,16 @@
 
         });
 
-        oBrowserWindow.webContents.on('did-finish-load', () => {
-
-            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
+        oBrowserWindow.webContents.on('did-finish-load', () => {            
 
             // 부모 위치 가운데 배치한다.
             oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
+            
+            // 오류 페이지 미리보기가 로드가 되면 오류 페이지 에디터에 실행중인 Busy를 끄라고 알린다.
+            parent.IPCRENDERER.send(`if-errorPageEditor-setBusy-${parent.getBrowserKey()}`, "");
 
         });
 

@@ -16,6 +16,7 @@ let oAPP = parent.oAPP,
     "use strict";
 
     oAPP.settings = {};
+    oAPP.ui = {};
 
     const APPCOMMON = oAPP.common;
 
@@ -41,6 +42,20 @@ let oAPP = parent.oAPP,
 
             x.className = x.className.replace("show", "");
         }, 3000);
+
+    };
+
+    oAPP.fn.setBusyIndicator = function(IsBusy){
+
+        if(IsBusy === "X"){
+            oAPP.ui.MAIN_APP.setBusy(true);
+            sap.ui.getCore().lock();
+            return;
+        }
+
+        sap.ui.getCore().unlock();
+
+        oAPP.ui.MAIN_APP.setBusy(false);       
 
     };
 
@@ -150,7 +165,8 @@ let oAPP = parent.oAPP,
         var oMasterPage = oAPP.fn.fnGetErrorPageEditorMasterPage(),
             oDetailPage = oAPP.fn.fnGetErrorPageEditorDetailPage();
 
-        var oSplitApp = new sap.m.SplitApp({
+        var oSplitApp = new sap.m.SplitApp("MAIN_APP", {
+            busyIndicatorDelay: 0,            
             mode: sap.m.SplitAppMode.HideMode,
             masterPages: [
                 oMasterPage
@@ -160,6 +176,8 @@ let oAPP = parent.oAPP,
             ]
 
         }).addStyleClass("sapUiSizeCompact");
+
+        oAPP.ui.MAIN_APP = oSplitApp;
 
         oSplitApp.placeAt("content");
 
@@ -403,6 +421,11 @@ let oAPP = parent.oAPP,
      ************************************************************************/
     oAPP.events.ev_errorPageEditorMasterAvatarPress = function () {
 
+        // 오류 페이지 미리보기 팝업을 띄우는 동안 재 실행을 방지하기 위해
+        // busy를 킨 후 미리 보기 팝업을 오픈 하라고 신호를 보낸다.
+        // busy를 끄는 시점은 미리보기 팝업이 로드가 된 후에 IPC로 끈다.
+        oAPP.fn.setBusyIndicator("X");
+
         var BROWSKEY = oAPP.fn.fnGetBrowserKey(),
             oSaveData = oAPP.fn.fnGetModelProperty("/EDITDATA");
             
@@ -462,6 +485,19 @@ let oAPP = parent.oAPP,
 
     }; // end of oAPP.events.ev_errorPageEditorEnableCheckBoxSelect
 
+    
+    oAPP.events.fnIpc_errorPageEditor_setBusy = function(event, res){
+
+        if(res === "X"){
+            oAPP.fn.setBusyIndicator("X");
+            return;
+        }
+
+        oAPP.fn.setBusyIndicator("");
+
+    };
+
+
     /************************************************************************
      * -- Start of Program
      ************************************************************************/
@@ -487,6 +523,17 @@ let oAPP = parent.oAPP,
             }, 100);
 
         });
+
+    };
+
+    // 오류페이지 미리보기에서 현재 에디터로 busy를 끄기 위한 IPC 이벤트
+    // 미리보기 띄우는 이벤트에서 Busy를 먼저 걸고 미리보기 팝업 실행이 완료 될때 
+    // 에디터 쪽으로 busy를 끄라고 신호를 받기 위한 이벤트
+    oAPP.IPCMAIN.on(`if-errorPageEditor-setBusy-${oAPP.BROWSKEY}`, oAPP.events.fnIpc_errorPageEditor_setBusy);
+
+    window.onbeforeunload = function(){
+
+        oAPP.IPCMAIN.off(`if-errorPageEditor-setBusy-${oAPP.BROWSKEY}`, oAPP.events.fnIpc_errorPageEditor_setBusy);
 
     };
 
