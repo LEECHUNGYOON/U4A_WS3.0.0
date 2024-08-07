@@ -180,10 +180,10 @@
             return;
         }
 
-        var sWinObjType = "ERRPAGEPREV";
+        var sPopupName = "ERRPAGEPREV";
 
         // 기존에 Error Page Editor 미리보기 팝업이 열렸을 경우 창을 닫고 다시 띄운다.
-        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
+        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             oResult.WINDOW.close();
             // return;
@@ -207,11 +207,13 @@
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.devTools = false;
         oBrowserOptions.parent = oCurrWin;
+        oBrowserOptions.closable = false;
 
         oBrowserOptions.webPreferences.partition = SESSKEY;
-        oBrowserOptions.webPreferences.nodeIntegration = false;
-        oBrowserOptions.webPreferences.enableRemoteModule = false;
-        oBrowserOptions.webPreferences.OBJTY = sWinObjType;
+        // oBrowserOptions.webPreferences.nodeIntegration = false;
+        // oBrowserOptions.webPreferences.enableRemoteModule = false;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
         oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
@@ -221,7 +223,9 @@
         // 브라우저 상단 메뉴 없애기
         oBrowserWindow.setMenu(null);
 
-        oBrowserWindow.loadURL("data:text/html;charset=utf-8," + encodeURI(oSaveData.HTML));
+        var sUrlPath = parent.getPath(sPopupName);
+
+        oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
         if (!APP.isPackaged) {
@@ -232,33 +236,36 @@
         oBrowserWindow.once('ready-to-show', () => {
 
             // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
         });
 
         oBrowserWindow.webContents.on('did-finish-load', () => {            
 
+            oBrowserWindow.webContents.send('if-Error-Page-prev', oSaveData);
+
             // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
+            parent.WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
+                    
+                if(oBrowserWindow.isDestroyed()){                        
+                    return;    
+                }
+
+                try {
+                    oBrowserWindow.closable = true;    
+                } catch (error) {
+                    
+                }
+
+            });          
             
             // 오류 페이지 미리보기가 로드가 되면 오류 페이지 에디터에 실행중인 Busy를 끄라고 알린다.
             parent.IPCRENDERER.send(`if-errorPageEditor-setBusy-${parent.getBrowserKey()}`, "");
 
-        });
-
-        oBrowserWindow.webContents.on("did-fail-load", function(oEvent){
-        
-            console.log(oEvent);
-
-            debugger;
-
-
-        });
-
-
+        });  
 
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {

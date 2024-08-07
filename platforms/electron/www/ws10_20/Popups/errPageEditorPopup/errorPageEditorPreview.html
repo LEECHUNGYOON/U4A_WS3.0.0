@@ -1,0 +1,17 @@
+<script>
+
+    var REMOTE = require('@electron/remote');
+    var IPCRENDERER = require('electron').ipcRenderer;
+
+
+    IPCRENDERER.on("if-Error-Page-prev", (events, oInfo) => {
+
+        if(!oInfo || !oInfo.HTML){
+            return;
+        }
+
+        document.write(oInfo.HTML);
+
+    });
+
+</script>

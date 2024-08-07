@@ -73,6 +73,7 @@ module.exports = (() => {
 
         // Popup Paths..        
         ERRPAGE: PATH.join(POPUP_ROOT, "errPageEditorPopup", "errorPageEditorFrame.html"),
+        ERRPAGEPREV: PATH.join(POPUP_ROOT, "errPageEditorPopup", "errorPageEditorPreview.html"),
         UIFIND: PATH.join(POPUP_ROOT, "findPopup", "frame.html"),
         RTMCLS: PATH.join(POPUP_ROOT, "runtimeClassNavigator", "frame.html"), // runtime class navigator  
         BINDPOPUP: PATH.join(POPUP_ROOT, "bindPopup", "frame.html"), // bind popup
