@@ -76,8 +76,7 @@
     //라이브러리 sample 버튼 선택 이벤트.
     oRLibBtn2.attachPress(function(){
 
-      // busy 키고 Lock 켜기
-      oAPP.common.fnSetBusyLock("X");
+      parent.setBusy("X");
 
       //샘플 팝업 호출.
       oAPP.fn.attrCallUiSample();
@@ -174,8 +173,7 @@
     //OBJID를 변경 이벤트.
     oRInp1.attachChange(function(oEvent){
 
-      // busy 키고 Lock 켜기
-      oAPP.common.fnSetBusyLock("X");
+      parent.setBusy("X");
 
       //OBJID 변경건 처리.
       oAPP.fn.attrChnageOBJID();
@@ -212,7 +210,7 @@
     oRTAr1.attachChange(function(){
 
       // busy 키고 Lock 켜기
-      oAPP.common.fnSetBusyLock("X");
+      parent.setBusy("X");
 
       //Description 등록처리.
       oAPP.fn.setDesc(oRInp1.getValue(), this.getValue());
@@ -221,7 +219,7 @@
       oAPP.fn.setChangeFlag();
 
       // busy off Lock off
-      oAPP.common.fnSetBusyLock("");
+      parent.setBusy("");
 
     }); //Description 변경 이벤트.
 
@@ -243,7 +241,7 @@
     oAPP.attr.ui.oRTab1.attachBrowserEvent("dblclick", function(oEvent){
 
       // busy 키고 Lock 켜기
-      oAPP.common.fnSetBusyLock("X");
+      parent.setBusy("X");
 
       //table의 더블클릭에 따른 이벤트 처리.
       oAPP.fn.attrDblclickEvent(oEvent);
@@ -445,6 +443,15 @@
       oAPP.fn.setShortcutLock(true);
 
 
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //$$MSG
+      _sOption.DESC = "디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다."; 
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
       //value State message 팝업이 호출됐다면 종료 처리.
       if(typeof this?._oValueStateMessage?.close === "function"){
         this._oValueStateMessage.close();
@@ -452,6 +459,9 @@
 
 
       if(typeof this?.getBindingContext !== "function"){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         //단축키도 같이 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
@@ -467,6 +477,9 @@
 
       if(typeof _oCtxt === "undefined" || _oCtxt === null){
 
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
         //단축키도 같이 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
 
@@ -480,6 +493,9 @@
       var _sAttr = _oCtxt.getProperty();
 
       if(typeof _sAttr === "undefined" || _sAttr === null){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         //단축키도 같이 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
@@ -568,6 +584,16 @@
       //단축키도 같이 잠금 처리.
       oAPP.fn.setShortcutLock(true);
 
+
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //$$MSG
+      _sOption.DESC = "디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다."; 
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
       //value State message 팝업이 호출됐다면 종료 처리.
       if(typeof this?._oValueStateMessage?.close === "function"){
         this._oValueStateMessage.close();
@@ -575,6 +601,9 @@
 
 
       if(typeof this?.getBindingContext !== "function"){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         //단축키도 같이 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
@@ -590,6 +619,9 @@
 
       if(typeof _oCtxt === "undefined" || _oCtxt === null){
 
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
         //단축키도 같이 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
 
@@ -603,6 +635,9 @@
       var _sAttr = _oCtxt.getProperty();
 
       if(typeof _sAttr === "undefined" || _sAttr === null){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         //단축키도 같이 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
@@ -701,8 +736,20 @@
       //단축키도 같이 잠금 처리.
       oAPP.fn.setShortcutLock(true);
 
+
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //$$MSG
+      _sOption.DESC = "디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다."; 
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
       
       if(typeof this?.getBindingContext !== "function"){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         //단축키도 같이 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
@@ -718,6 +765,9 @@
 
       if(typeof _oCtxt === "undefined" || _oCtxt === null){
 
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
         //단축키도 같이 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
 
@@ -731,6 +781,9 @@
       var _sAttr = _oCtxt.getProperty();
 
       if(typeof _sAttr === "undefined" || _sAttr === null){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         //단축키도 같이 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
@@ -927,8 +980,7 @@
     
     
     //미리보기 onAfterRendering 처리 관련 module load.
-    var _oRender = parent.require(
-      parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js"));
+    var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
 
     var _sTree = oAPP.fn.getTreeData(is_attr.OBJID);
 
@@ -1231,8 +1283,7 @@
       oAPP.fn.setChangeFlag();
 
       //미리보기 onAfterRendering 처리 관련 module load.
-      var _oRender = parent.require(
-        parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js"));
+      var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
 
       var _sTree = oAPP.fn.getTreeData(oAPP.attr.oModel.oData?.uiinfo?.OBJID);
 
@@ -1579,7 +1630,7 @@
 
     if(typeof _oTarget === "undefined"){
       // busy off Lock off
-      oAPP.common.fnSetBusyLock("");
+      parent.setBusy("");
       return;
     }
 
@@ -1589,7 +1640,7 @@
     //UI INSTANCE를 얻지 못한 경우 EXIT.
     if(!l_ui){
       // busy off Lock off
-      oAPP.common.fnSetBusyLock("");
+      parent.setBusy("");
       return;
     }
 
@@ -1599,7 +1650,7 @@
     //바인딩 정보를 얻지 못한 경우 exit.
     if(!l_ctxt){
       // busy off Lock off
-      oAPP.common.fnSetBusyLock("");
+      parent.setBusy("");
       return;
     }
 
@@ -1616,7 +1667,7 @@
     if(oAPP.fn.attrDblClickServerEvent(ls_attr)){return;}
 
     // busy off Lock off
-    oAPP.common.fnSetBusyLock("");
+    parent.setBusy("");
 
 
   };  //attribute table의 더블클릭에 따른 이벤트 처리.
@@ -1686,7 +1737,7 @@
         parent.showMessage(sap, 20, "E", param.RTMSG);
 
         // busy off Lock off
-        oAPP.common.fnSetBusyLock("");
+        parent.setBusy("");
         return;
       }
 
@@ -1694,7 +1745,7 @@
       console.log(param.PROGNM, param.LINE);
 
       // busy off Lock off
-      oAPP.common.fnSetBusyLock("");
+      parent.setBusy("");
 
 
     }); //서버에서 해당 바인딩 필드의 위치 정보 얻기.
@@ -2659,7 +2710,7 @@
       parent.showMessage(sap, 10, "E", ls_uiinfo.OBJID_stxt);
 
       // busy off Lock off
-      oAPP.common.fnSetBusyLock("");
+      parent.setBusy("");
 
       return;
     }
@@ -2667,7 +2718,7 @@
     //이전에 입력한 이름과 지금 입력한 이름이 같으면 exit.
     if(ls_uiinfo.OBJID === ls_uiinfo.OBJID_bf){
       // busy off Lock off
-      oAPP.common.fnSetBusyLock("");
+      parent.setBusy("");
       return;
     }
 
@@ -2729,7 +2780,7 @@
     oAPP.fn.setChangeFlag();
 
     // busy off Lock off
-    oAPP.common.fnSetBusyLock("");
+    parent.setBusy("");
 
 
   };  //OBJID 입력건 처리.
@@ -7024,7 +7075,7 @@
     if(!ls_UA025){
 
       // busy off Lock off
-      oAPP.common.fnSetBusyLock("");
+      parent.setBusy("");
 
       return;
     }
@@ -7052,7 +7103,7 @@
         parent.showMessage(sap, 10, "E", param.RTMSG);
 
         // busy off Lock off
-        oAPP.common.fnSetBusyLock("");
+        parent.setBusy("");
 
         return;
       }
@@ -7061,7 +7112,7 @@
       oAPP.fn.fnExeBrowser(param.PATH, param.PARAM);
 
       // busy off Lock off
-      oAPP.common.fnSetBusyLock("");
+      parent.setBusy("");
 
 
     }); //서버에서 SAMPLE 정보 검색.

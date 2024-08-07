@@ -18,8 +18,11 @@
     //디자인 레이아웃 변경 팝업.
     oAPP.fn.callDesignLayoutChangePopup = function(){
 
+
         //디자인영역 레이아웃 dialog UI 생성.
         var oDlg = new sap.m.Dialog({draggable:true, verticalScrolling:false});
+
+        oDlg.data("", true);
 
         //모델 생성.
         var oMdl = new sap.ui.model.json.JSONModel();
@@ -29,6 +32,12 @@
         oDlg.attachBeforeOpen(function(){
             //레이아웃 설정정보 얻기.
             lf_getLayout(oDlg, oMdl);
+
+        });
+
+
+        oDlg.attachAfterOpen(function(){
+            parent.setBusy("");
 
         });
 

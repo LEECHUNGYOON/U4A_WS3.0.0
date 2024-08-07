@@ -133,11 +133,22 @@
       
       parent.setBusy("X");
 
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //$$MSG
+      _sOption.DESC = "디자인 화면에서 UI 삭제처리를 진행하고 있습니다."; 
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
       //단축키 잠금.
       oAPP.fn.setShortcutLock(true);
 
       var l_ctxt = this.getBindingContext();
       if(!l_ctxt){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
         
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
@@ -479,7 +490,7 @@
     oLBtn4.attachPress(function(oEvent){
 
       // busy 키고 Lock 켜기
-      oAPP.common.fnSetBusyLock("X");
+      parent.setBusy("X");
             
       if(typeof oAPP.fn.designCallWizardPopup !== "undefined"){
         //위자드 팝업 호출.
@@ -506,7 +517,7 @@
     oLBtn7.attachPress(function(){
 
       // busy 키고 Lock 켜기
-      oAPP.common.fnSetBusyLock("X");
+      parent.setBusy("X");
 
       //UI 개인화 저장 팝업 function이 존재하는경우 즉시 호출.
       if(typeof oAPP.fn.callP13nDesignDataPopup !== "undefined"){
@@ -576,32 +587,32 @@
     //context menu 호출 이벤트.
     oLTree1.attachBrowserEvent("contextmenu", async function(oEvent){
 
-      oAPP.common.fnSetBusyLock("X");
+      parent.setBusy("X");
 
       var _oTarget = oEvent?.target || undefined;
 
       if(typeof _oTarget === "undefined"){
-        oAPP.common.fnSetBusyLock("");
+        parent.setBusy("");
         return;
       }
 
       var l_ui = oAPP.fn.getUiInstanceDOM(_oTarget, sap.ui.getCore());
       if(!l_ui){
-        oAPP.common.fnSetBusyLock("");
+        parent.setBusy("");
         return;
       }
 
       //해당 라인의 바인딩 정보 얻기.
       var l_ctxt = l_ui.getBindingContext();
       if(!l_ctxt){
-        oAPP.common.fnSetBusyLock("");
+        parent.setBusy("");
         return;
       }
 
       //tree 정보 얻기.
       var ls_tree = l_ctxt.getProperty();
       if(!ls_tree){
-        oAPP.common.fnSetBusyLock("");
+        parent.setBusy("");
         return;
       }
 
@@ -613,7 +624,7 @@
       oAPP.fn.enableDesignContextMenu(oAPP.attr.ui.designMenu, ls_tree.OBJID);
 
 
-      oAPP.common.fnSetBusyLock("");
+      parent.setBusy("");
 
       //메뉴 호출 처리.
       oAPP.attr.ui.designMenu.openBy(_oTarget);
@@ -821,14 +832,8 @@
   //바인딩 팝업의 디자인 영역 갱신처리.
   oAPP.fn.updateBindPopupDesignData = async function(){
 
-    //WS 3.0 메인 PATH 얻기.
-    var _channelPath = parent.getPath("WS10_20_ROOT");
-
-    //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH 구성.
-    _channelPath = parent.PATH.join(_channelPath, "design", "bindPopupHandler", "broadcastChannelBindPopup.js");
-
     //바인딩 팝업에 APP DATA 전송.
-    parent.require(_channelPath)("UPDATE-DESIGN-DATA");
+    parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("UPDATE-DESIGN-DATA");
 
   };
   
@@ -1253,7 +1258,39 @@
 
     //미리보기 영역 drop 영역 표시 잔상 제거.
     oAPP.attr.ui.frame.contentWindow.prevClearDropEffect();
+
+    //호출된 dialog 정보 얻기.
+    var _aDialog = sap.m.InstanceManager.getOpenDialogs();
+
+    if(typeof _aDialog === "undefined" || _aDialog.length === 0){
+      return;
+    }
+
     
+    //open된 dialog중 insert UI Popup 존재여부 확인.
+    var _oDialog = _aDialog.find( oUi => oUi.data && oUi.data("INSERT_UI_POPUP") === true);
+
+    if(typeof _oDialog === "undefined" || _oDialog === null){
+      return;
+    }
+
+    //insert UI Popup UI의 결과리스트 table 정보 얻기
+    var _oTable = _oDialog.data("INSERT_UI_POPUP_TABLE");
+
+    if(typeof _oTable === "undefined" || _oTable === null){
+      return;
+    }
+
+    var _aRows = _oTable.getRows();
+
+    //insert UI Popup 결과리스트 테이블의 drag 잔상 css 제거.
+    for (let i = 0, l = _aRows.length; i < l; i++) {
+      var _oRow = _aRows[i];
+
+      _oRow.removeStyleClass("sapUiDnDDragging");
+      
+    }
+     
 
   };  //drag 종료 처리.
 
@@ -2103,11 +2140,9 @@
     var lt_ua050 = oAPP.DATA.LIB.T_9011.filter( a=> a.CATCD === "UA050" && a.FLD08 !== "X" );
 
 
-    //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
-    var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
 
     //미리보기 onAfterRendering 처리 관련 module load.
-    var _oRender = parent.require(_modulePath);
+    var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
 
 
     //onAfterRendering 이벤트 등록 대상 UI 얻기.
@@ -2247,9 +2282,6 @@
       //DROP된 UI 다시 생성 처리.
       oAPP.fn.reCreateUIObjInstance(i_drop);
 
-
-      //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
-      var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
 
       //미리보기 onAfterRendering 처리 관련 module load.
       var _oRender = parent.require(_modulePath);
@@ -2416,7 +2448,7 @@
     _sParam.CHILD_UIOBK = i_drag.UIOBK;
 
 
-    var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "exception", "exceptionUI.js");
+    var _modulePath = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "exception", "exceptionUI.js");
 
     //부모의 Aggregation에 추가 불가능한 UI인지 확인.
     var _deny = parent.require(_modulePath).checkDenyChildAggr(_sParam);
@@ -2561,11 +2593,9 @@
     //동일 AGGREGATION에 추가된 UI 갯수 얻기.
     var l_indx = i_drop.zTREE.filter( a => a.UIATT === i_drag.UIATT );
 
-    //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
-    var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
 
     //미리보기 onAfterRendering 처리 관련 module load.
-    var _oRender = parent.require(_modulePath);
+    var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
 
 
     //onAfterRendering 이벤트 등록 대상 UI 얻기.
@@ -2670,10 +2700,13 @@
 
     //DRAG할 UI를 다시 생성 처리.
     oAPP.attr.ui.frame.contentWindow.redrawUIScript([is_tree]);
+
+    //다시 생성한 UI의 child가 필수인 건에 대한 UI 추가 처리.
+    oAPP.attr.ui.frame.contentWindow.setChildUiException(is_tree.UIOBK, is_tree.OBJID, is_tree.zTREE, oAPP.attr.S_CODE.UA050);
     
     //제거했던 embeded Aggregation을 다시 추가.
     if(_indx !== -1){
-      oAPP.attr.prev[is_tree.OBJID]._T_0015.push(ls_embed);    
+      oAPP.attr.prev[is_tree.OBJID]._T_0015.push(ls_embed);
     }
 
     oAPP.attr.prev[is_tree.OBJID].__PARENT = oAPP.attr.prev[is_tree.POBID];
@@ -3527,11 +3560,9 @@
       return _aPromise;
     }
     
-    //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
-    var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
 
     //미리보기 onAfterRendering 처리 관련 module load.
-    var _oRender = parent.require(_modulePath);
+    var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
 
     
     //수집된 부모 UI가 화면에 출력된 UI인경우 onAfterRendering 이벤트 등록. 
@@ -3986,7 +4017,7 @@
     _sParam.CHILD_UIOBK = is_0022.UIOBK;
 
 
-    var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "exception", "exceptionUI.js");
+    var _modulePath = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "exception", "exceptionUI.js");
 
     //부모의 Aggregation에 추가 불가능한 UI인지 확인.
     var _deny = parent.require(_modulePath).checkDenyChildAggr(_sParam);
@@ -4023,11 +4054,8 @@
     }
 
 
-    //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
-    var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
-
     //미리보기 onAfterRendering 처리 관련 module load.
-    var _oRender = parent.require(_modulePath);
+    var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
 
 
     //onAfterRendering 이벤트 등록 대상 UI 얻기.
@@ -4209,11 +4237,9 @@
       });
 
 
-      //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
-      var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
 
       //미리보기 onAfterRendering 처리 관련 module load.
-      var _oRender = parent.require(_modulePath);
+      var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
 
       //attr table에 onAfterRendering 이벤트 등록 처리.
       var _oPromise = _oRender.setAfterRendering(oAPP.attr.ui.oRTab1);
@@ -4713,7 +4739,7 @@
         _sParam.CHILD_UIOBK = i_cdata.UIOBK;
 
 
-        var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "exception", "exceptionUI.js");
+        var _modulePath = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "exception", "exceptionUI.js");
 
         //부모의 Aggregation에 추가 불가능한 UI인지 확인.
         var _deny = parent.require(_modulePath).checkDenyChildAggr(_sParam);
@@ -4948,6 +4974,9 @@
 
     if(!is_tree_param){
 
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
 
@@ -5018,6 +5047,9 @@
       //확인 팝업에서 YES를 선택한 경우 하위 로직 수행.
       if(oEvent !== "YES"){
 
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
 
@@ -5040,11 +5072,8 @@
       var l_prev = oAPP.fn.designGetPreviousTreeItem(ls_tree.OBJID);
 
 
-      //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
-      var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
-
       //미리보기 onAfterRendering 처리 관련 module load.
-      var _oRender = parent.require(_modulePath);
+      var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
       
       
       //onAfterRendering 이벤트 등록 대상 UI 얻기.

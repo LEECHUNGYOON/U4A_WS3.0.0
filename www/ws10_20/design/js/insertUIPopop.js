@@ -42,6 +42,8 @@
       contentWidth:"50%", contentHeight:"60%", verticalScrolling:false});
     oDlg.addStyleClass("sapUiSizeCompact");
 
+    oDlg.data("INSERT_UI_POPUP", true);
+
     //dialog open이후 이벤트.
     oDlg.attachAfterOpen(function(){
 
@@ -348,7 +350,9 @@
     //결과 테이블
     var oTab1 = new sap.ui.table.Table({selectionMode:"Single", selectionBehavior:"Row", rowHeight:30,
       visibleRowCountMode:"Auto", layoutData:new sap.m.FlexItemData({growFactor:1})});
+    
 
+    oDlg.data("INSERT_UI_POPUP_TABLE", oTab1);
 
     //테이블 필터 이벤트.
     oTab1.attachFilter(lf_tablefilter);
@@ -365,9 +369,21 @@
 
       parent.setBusy("X");
 
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //$$MSG
+      _sOption.DESC = "디자인 화면에서 UI 추가 처리 작업을 진행하고 있습니다."; 
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
       var _oTarget = oEvent?.target || undefined;
 
       if(typeof _oTarget === "undefined"){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
         parent.setBusy("");
         return;
       }
@@ -378,6 +394,9 @@
       //UI정보를 얻지 못한 경우 exit.
       if(!l_ui){
 
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
         parent.setBusy("");
 
         return;
@@ -385,6 +404,9 @@
       
       //아이콘을 더블클릭한 경우 exit.
       if(l_ui.data("ico")){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         parent.setBusy("");
 
@@ -396,6 +418,9 @@
 
       //바인딩 정보를 얻지 못한 경우 exit.
       if(!l_ctxt){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         parent.setBusy("");
 
@@ -559,6 +584,14 @@
 
       parent.setBusy("X");
 
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //$$MSG
+      _sOption.DESC = "디자인 화면에서 UI 추가 처리 작업을 진행하고 있습니다."; 
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
       //table의 선택 라인 index 얻기.
       var l_sidx = oTab1.getSelectedIndex();
 
@@ -566,6 +599,9 @@
       if(l_sidx === -1){
         //268	Selected line does not exists.
         parent.showMessage(sap, 20, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", ""));
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         parent.setBusy("");
 

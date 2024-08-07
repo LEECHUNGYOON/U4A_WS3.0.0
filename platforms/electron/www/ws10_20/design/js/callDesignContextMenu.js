@@ -401,6 +401,14 @@
     //context menu UI삭제 메뉴 선택 이벤트.
     oAPP.fn.contextMenuDeleteUI = function(){
 
+        var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+        //$$MSG
+        _sOption.DESC = "디자인 화면에서 UI 삭제처리를 진행하고 있습니다."; 
+
+        //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
         //context menu를 호출한 라인의 OBJID 얻기.
         var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
 
@@ -417,6 +425,15 @@
 
     //ui 이동처리 function
     oAPP.fn.contextMenuUiMove = async function(sign, pos){
+
+        var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+        //$$MSG
+        _sOption.DESC = "디자인 화면에서 UI 이동처리를 진행하고 있습니다."; 
+
+        //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
 
         //context menu를 호출한 라인의 OBJID 얻기.
         var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
@@ -495,12 +512,8 @@
             //UI 다시 생성 처리.
             oAPP.fn.reCreateUIObjInstance(ls_tree);
 
-
-            //onAfterRendering 이벤트 등록 대상 UI 검색 module js.
-            var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "previewRender", "setOnAfterRender.js");
-
             //미리보기 onAfterRendering 처리 관련 module load.
-            var _oRender = parent.require(_modulePath);
+            var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
 
             
             //onAfterRendering 이벤트 등록 대상 UI 얻기.
@@ -1039,7 +1052,7 @@
             _sParam.CHILD_UIOBK = i_cdata.UIOBK;
 
 
-            var _modulePath = parent.PATH.join(oAPP.attr.designRootPath, "exception", "exceptionUI.js");
+            var _modulePath = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "exception", "exceptionUI.js");
 
             //부모의 Aggregation에 추가 불가능한 UI인지 확인.
             var _deny = parent.require(_modulePath).checkDenyChildAggr(_sParam);

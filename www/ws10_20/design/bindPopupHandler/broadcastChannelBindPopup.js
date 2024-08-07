@@ -42,32 +42,36 @@ function createChannel() {
             return;
         }
 
-        //busy off 응답을 받은 경우.
-        if(responseBindPopupBusyOff(oEvent) === true){
-            return;
-        }
+        switch (oEvent.data.PRCCD) {
+            case "BUSY_ON":
+                //바인딩 팝업 -> WS20의 busy on 응답을 받은 경우.
+                responseBindPopupBusyOn(oEvent);
+                break;
 
+            case "BUSY_OFF":
+                //바인딩 팝업 -> WS20의 busy off 응답을 받은 경우.
+                responseBindPopupBusyOff(oEvent);
+                break;
 
-        //busy on 응답을 받은 경우.
-        if(responseBindPopupBusyOn(oEvent) === true){
-            return;
-        }
+            case "UPDATE-DESIGN-DATA":
+                //바인딩 팝업 -> WS20의 APP DATA 갱신 요청에 대한 처리.
+                updateAppData(oEvent);
+                break;
 
-        //APP DATA 갱신 요청에 대한 처리.
-        if(updateAppData(oEvent) === true){
-            return;
-        }
+            case "ROOT_OBJID":
+                //바인딩 팝업 -> WS20의 디자인 영역에 그려진 최상위 UI 정보 전송건에 대한 처리.
+                updateRootObjectID(oEvent);
+                break;
 
-
-        //바인딩 팝업 디자인 영역에 그려진 최상위 UI 정보 전송건에 대한 처리.
-        if(updateRootObjectID(oEvent) === true){
-            return;
-        }
-
-
-        //디자인 영역 UI선택 처리.
-        if(responeSelectDesignTreeOBJID(oEvent) === true){
-            return;
+            case "DESIGN-TREE-SELECT-OBJID":
+                //바인딩 팝업 -> WS20의 디자인 영역 UI선택 처리.
+                responeSelectDesignTreeOBJID(oEvent);
+                break;
+        
+            default:
+                //정해지지 않은 프로세스 코드가 호출된 경우,
+                //크리티컬 오류 메시지 처리 해야함.
+                break;
         }
 
     };
@@ -685,7 +689,8 @@ function sendAdditError(oData){
  *************************************************************/
 function selectDesignTreeOBJID(oData){
 
-    //broad cast 채널이 생성되지 않은경우 exit.
+    //WS20 <-> 바인딩 팝업통신을 위한 BROADCAST 채널이 생성되지 않은경우EXIT
+    //(바인딩 팝업을 호출하지 않은경우)
     if(isCreateChannel() === false){
         return;
     }
@@ -708,6 +713,12 @@ function selectDesignTreeOBJID(oData){
  *************************************************************/
 function sendBindPopupBusyOff(oData){
 
+    //WS20 <-> 바인딩 팝업통신을 위한 BROADCAST 채널이 생성되지 않은경우EXIT
+    //(바인딩 팝업을 호출하지 않은경우)
+    if(isCreateChannel() === false){
+        return;
+    }
+
     var _sParam = {
         PRCCD   : "BUSY_OFF"
     };
@@ -724,9 +735,21 @@ function sendBindPopupBusyOff(oData){
  *************************************************************/
 function sendBindPopupBusyOn(oData){
 
+    //WS20 <-> 바인딩 팝업통신을 위한 BROADCAST 채널이 생성되지 않은경우EXIT
+    //(바인딩 팝업을 호출하지 않은경우)
+    if(isCreateChannel() === false){
+        return;
+    }
+
     var _sParam = {
-        PRCCD   : "BUSY_ON"
+        PRCCD   : "BUSY_ON",
+        OPTION  : undefined
     };
+
+    //BUSY DIALOG 처리용 파라메터가 존재하는경우.
+    if(typeof oData !== "undefined"){
+        _sParam.OPTION = JSON.parse(JSON.stringify(oData));
+    }
 
 
     //WS 3.0 디자인 영역에 데이터 전송.
@@ -738,10 +761,10 @@ function sendBindPopupBusyOn(oData){
 /*************************************************************
  * @module - 디자인상세화면(20화면) <-> BINDPOPUP 통신 처리 모듈.
  *************************************************************/
-module.exports = function(ACTCD, oData){
+module.exports = function(PRCCD, oData){
 
 
-    switch (ACTCD) {
+    switch (PRCCD) {
         case "CHANNEL-CREATE":
             //채널 생성.
             createChannel(oData);
@@ -765,27 +788,27 @@ module.exports = function(ACTCD, oData){
             return isCreateChannel();
 
         case "UPDATE-DESIGN-DATA":
-            //바인딩 팝업 디자인 데이터 갱신.
+            //WS20 -> 바인딩 팝업 디자인 데이터 갱신 요청.
             updateBindPopupDesignData(oData);
             break;
 
         case "ERROR-ADDIT-DATA":
-            //바인딩 팝업의 바인딩 추가속성 정보 오류건 처리.
+            //WS20 -> 바인딩 팝업의 바인딩 추가속성 정보 오류건 처리 요청.
             sendAdditError(oData);
             break;
 
         case "DESIGN-TREE-SELECT-OBJID":
-            //디자인 tree 영역 라인 선택 처리.
+            //WS20 -> 디자인 tree 영역 라인 선택 처리 요청.
             selectDesignTreeOBJID(oData);
             break;
 
         case "BUSY_OFF":
-            //바인딩 팝업에 busy off 요청 처리
+            //WS20 -> 바인딩 팝업에 busy off 요청 처리
             sendBindPopupBusyOff(oData);
             break;
 
         case "BUSY_ON":
-            //바인딩 팝업에 busy on 요청 처리
+            //WS20 -> 바인딩 팝업에 busy on 요청 처리
             sendBindPopupBusyOn(oData);
             break;
 

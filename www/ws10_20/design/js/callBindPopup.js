@@ -942,6 +942,10 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
     //편집 가능 상태가 아닌경우 exit.
     if(oAPP.attr.oModel.oData.IS_EDIT !== true){
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -958,6 +962,9 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
       if(l_indx === -1){
         //268	Selected line does not exists.
         parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", ""));
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         parent.setBusy("");
 
@@ -976,6 +983,9 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
     //bind전 입력값 점검시 오류가 발생한 경우 exit.
     if(lf_chkBindVal(oCtxt ? false : true, ls_tree) === true){
       oAPP.attr.oBindDialog._oModel.refresh();
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
       parent.setBusy("");
 
@@ -1155,6 +1165,14 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   oToolBtn3.attachPress(function(){
     
     parent.setBusy("X");
+    
+    var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+    //$$MSG
+    _sOption.DESC = "디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다."; 
+
+    //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+    parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
 
     lf_bindBtnEvt();
 
@@ -1204,11 +1222,23 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
     parent.setBusy("X");
 
+    var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+    //$$MSG
+    _sOption.DESC = "디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다."; 
+
+    //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+    parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
     //이벤트 발생 UI 정보 얻기.
     var l_ui = oAPP.fn.getUiInstanceDOM(oEvent.target,sap.ui.getCore());
 
     //UI정보를 얻지 못한 경우 exit.
     if(!l_ui){
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -1218,6 +1248,10 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
     //바인딩 정보를 얻지 못한 경우 exit.
     if(!l_ctxt){
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }

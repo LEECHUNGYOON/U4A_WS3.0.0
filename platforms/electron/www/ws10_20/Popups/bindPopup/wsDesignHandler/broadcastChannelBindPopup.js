@@ -20,33 +20,37 @@ function createChannel() {
             return;
         }
 
-        //busy off 응답을 받은 경우.
-        if(responseBindPopupBusyOff(oEvent) === true){
-            return;
-        }
+        //프로세스 코드에 따른 분기.
+        switch (oEvent?.data?.PRCCD) {
+            case "BUSY_ON":
+                //WS20 -> 바인딩 팝업 busy on 응답을 받은 경우.
+                responseBindPopupBusyOn(oEvent);
+                break;
 
+            case "BUSY_OFF":
+                //WS20 -> 바인딩 팝업 busy off 응답을 받은 경우.
+                responseBindPopupBusyOff(oEvent);
+                break;
 
-        //busy on 응답을 받은 경우.
-        if(responseBindPopupBusyOn(oEvent) === true){
-            return;
-        }
+            case "UPDATE_DESIGN_DATA":
+                //WS20 -> 바인딩 팝업 갱신 요청건인경우.
+                updateDesignData(oEvent);
+                break;
 
+            case "ERROR-ADDIT-DATA":
+                //WS20 -> 바인딩 팝업의 바인딩 추가속성 정보 오류건 처리.
+                responseAdditError(oEvent);
+                break;
 
-        //디자인 영역 갱신 처리건인경우.
-        if(updateDesignData(oEvent) === true){
-            return;
-        }
-
-
-        //바인딩 팝업의 바인딩 추가속성 정보 오류건 처리.
-        if(responseAdditError(oEvent) === true){
-            return;
-        }
-
-
-        //바인딩 팝업의 디자인 영역 UI선택 처리.
-        if(responeSelectDesignTreeOBJID(oEvent) === true){
-            return;
+            case "DESIGN-TREE-SELECT-OBJID":
+                //WS20 -> 바인딩 팝업의 디자인 영역 UI선택 처리.
+                responeSelectDesignTreeOBJID(oEvent);
+                break;
+        
+            default:
+                //정해지지 않은 프로세스 코드가 호출된 경우,
+                //크리티컬 오류 메시지 처리 해야함.
+                break;
         }
 
     };
@@ -275,7 +279,7 @@ async function responseAdditError(oEvent){
         return false;
     }
 
-    if(typeof oEvent.data.T_ERMSG === "undefined"){
+    if(typeof oEvent?.data?.T_ERMSG === "undefined"){
         return true;
     }
 
@@ -333,7 +337,7 @@ function responeSelectDesignTreeOBJID(oEvent){
     oAPP.fn.setBusy(true);
 
     //전달받은 파라메터가 존재하지 않는경우 exit.
-    if(typeof oEvent.data.OBJID === "undefined" || oEvent.data.OBJID === ""){
+    if(typeof oEvent?.data?.OBJID === "undefined" || oEvent.data.OBJID === ""){
         oAPP.fn.setBusy(false);
         return true;
     }
@@ -600,15 +604,8 @@ function selectDesignTreeOBJID(oData){
 function sendDesignAreaBusyOff(oData){
 
     var _sParam = {
-        PRCCD   : "BUSY_OFF",
-        OPTION  : undefined
+        PRCCD   : "BUSY_OFF"
     };
-
-
-    //BUSY DIALOG 처리용 파라메터가 존재하는경우.
-    if(typeof oData !== "undefined"){
-        _sParam.OPTION = JSON.parse(JSON.stringify(oData));
-    }
 
 
     //WS 3.0 디자인 영역에 데이터 전송.
@@ -642,9 +639,9 @@ function sendDesignAreaBusyOn(oData){
 /*************************************************************
  * @module - 디자인상세화면(20화면) <-> BINDPOPUP 통신 처리 모듈.
  *************************************************************/
-module.exports = function(ACTCD, oData){
+module.exports = function(PRCCD, oData){
 
-    switch (ACTCD) {
+    switch (PRCCD) {
         case "CHANNEL-CREATE":
             //채널 생성.
             createChannel(oData);

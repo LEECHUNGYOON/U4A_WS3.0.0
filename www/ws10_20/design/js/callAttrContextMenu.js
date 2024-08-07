@@ -108,7 +108,7 @@
 
         //선택 menu key에따른 로직 분기.
         switch(key){
-            case "M01": //wait off 처리.
+            case "M01": //서버이벤트 wait off 처리.
                 oAPP.fn.attrContextMenuWaitOnOff(oUi);
                 break;
             
@@ -282,6 +282,15 @@
             return;
         }
 
+        var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+        //$$MSG
+        _sOption.DESC = "디자인 화면에서 이벤트 Wait Mode 변경 처리를 진행하고 있습니다."; 
+
+        //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
         //이벤트 발생 attribute 라인 정보 얻기.
         var ls_attr = oModel.getProperty("/attr");
 
@@ -322,6 +331,15 @@
             return;
         }
 
+        var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+        //$$MSG
+        _sOption.DESC = "디자인 화면에서 바인딩 해제 처리를 진행하고 있습니다."; 
+
+        //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
         //이벤트 발생 attribute 라인 정보 얻기.
         var ls_attr = oModel.getProperty("/attr");
 
@@ -333,6 +351,9 @@
 
             //YES를 선택하지 않은경우 EXIT.
             if(param !== "YES"){
+
+                //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+                parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
                 //단축키 잠금 해제처리.
                 oAPP.fn.setShortcutLock(false);
@@ -390,6 +411,15 @@
             return;
         }
 
+        var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+        //$$MSG
+        _sOption.DESC = "디자인 화면에서 클라이언트 이벤트 해제 처리를 진행하고 있습니다."; 
+
+        //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
         //이벤트 발생 attribute 라인 정보 얻기.
         var ls_attr = oModel.getProperty("/attr");
 
@@ -402,6 +432,9 @@
 
             //YES를 선택하지 않은경우 EXIT.
             if(param !== "YES"){
+
+                //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+                parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
                 //단축키 잠금 해제처리.
                 oAPP.fn.setShortcutLock(false);

@@ -28,8 +28,33 @@
 
     oAPP.attr.POSIT = 0;
 
+
+    //WS20 디자인 영역 전용 광역 OBJECT.
+    oAPP.oDesign = {};
+
+    oAPP.oDesign.types = {};
+
+
+    //busy dialog option 파라메터 구조.
+    oAPP.oDesign.types.TY_BUSY_OPTION = {
+      TITLE : "", //BUSY DIALOG 타이틀.
+      DESC  : "", //BUSY DIALOG 메시지.
+    };
+
+    //PATH 정보 수집 광역 OBJECT.
+    oAPP.oDesign.pathInfo = {};
+
+
     //design root path 정보 구성.(ws10_20/design/js)
-    oAPP.attr.designRootPath = parent.PATH.join(parent.getPath("WS10_20_ROOT"), "design", "js");
+    oAPP.oDesign.pathInfo.designRootPath = parent.PATH.join(parent.getPath("WS10_20_ROOT"), "design", "js");
+
+    //onAfterRender 처리 module path 정보.
+    oAPP.oDesign.pathInfo.setOnAfterRender = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, 
+      "previewRender", "setOnAfterRender.js");
+
+    //WS20 <=> 바인딩 팝업 BROADCAST 통신 모듈 PATH.
+    oAPP.oDesign.pathInfo.bindPopupBroadCast = parent.PATH.join(parent.getPath("WS10_20_ROOT"),
+      "design", "bindPopupHandler", "broadcastChannelBindPopup.js");
 
     
     //sap core 정보 광역화.
@@ -972,7 +997,7 @@
       //20240724 PES.
       //디자인 tree 데이터 점검 module load.
       var _oDesignChkModule = parent.require(
-        parent.PATH.join(oAPP.attr.designRootPath, "checkAppData", "designTreeData.js"));
+        parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "checkAppData", "designTreeData.js"));
 
 
       //자식이 필수인 UI에 대한 자식 존재 여부 점검(공통코드 UA050)
