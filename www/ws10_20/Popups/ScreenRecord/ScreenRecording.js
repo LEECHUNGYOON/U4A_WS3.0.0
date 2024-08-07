@@ -302,11 +302,14 @@ exports.start = async function (REMOTE, P_THEME = "sap_horizon_dark") {
     let sINFO = await _chk_MultiScr(REMOTE);
 
     if (sINFO.RETCD === "E") {
+        
+        parent.setBusy("");
+
         return;
     }
 
     //멀티 모니터 선택 화면에서 취소를 선택했다면..
-    if (sINFO.PRCCD === "03") {
+    if (sINFO.PRCCD === "03") {        
         return;
     }
 
