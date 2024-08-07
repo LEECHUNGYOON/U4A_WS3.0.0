@@ -2766,12 +2766,7 @@
      * [WS20] 디자인영역 Layout 변경 기능 팝업
      * **********************************************************************/
     oAPP.fn.callDesignLayoutChangePopupOpener = () => {
-
-        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-        if (parent.getBusy() == 'X') {
-            return;
-        }
-
+       
         if (oAPP.fn.callDesignLayoutChangePopup) {
             oAPP.fn.callDesignLayoutChangePopup();
             return;
