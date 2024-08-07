@@ -223,6 +223,11 @@
 
         oBrowserWindow.loadURL("data:text/html;charset=utf-8," + encodeURI(oSaveData.HTML));
 
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
+
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
 
@@ -243,6 +248,17 @@
             parent.IPCRENDERER.send(`if-errorPageEditor-setBusy-${parent.getBrowserKey()}`, "");
 
         });
+
+        oBrowserWindow.webContents.on("did-fail-load", function(oEvent){
+        
+            console.log(oEvent);
+
+            debugger;
+
+
+        });
+
+
 
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
