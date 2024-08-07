@@ -689,18 +689,23 @@
     oAPP.fn.fnWs20SideFIXITM_10 = (oEvent) => {
 
         var oSelectedItem = oEvent.getParameter("item");
-
-        var oServerInfoPopup = sap.ui.getCore().byId("serverInfoPopover");
-        if (oServerInfoPopup) {
-            oServerInfoPopup.openBy(oSelectedItem);
-            return;
-        }
-
-        var oServerInfoPopup = new sap.m.ResponsivePopover("serverInfoPopover", {
+   
+        var oServerInfoPopup = new sap.m.ResponsivePopover({
             resizable: true,
             contentWidth: "350px",
             placement: sap.m.PlacementType.Auto,
+            afterOpen: function(){
 
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
+            },
+
+            afterClose: function(){
+
+                oServerInfoPopup.destroy();
+
+            },
             customHeader: new sap.m.Toolbar({
                 content: [
                     new sap.ui.core.Icon({
