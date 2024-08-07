@@ -1395,20 +1395,25 @@
                 continue;
             }
 
-            let oWebCon = oChild.webContents,
-                oWebPref = oWebCon.getWebPreferences(),
-                sOBJTY = oWebPref.OBJTY;
-
-            // child window 닫을 때 예외 팝업 체크
-            let bIsHideExp = oAPP.fn.fnCheckPopupCloseException(sOBJTY);
-            if (bIsHideExp) {
-                continue;
-            }
-
+            // 위에서 isDestroyed 를 체크를 할때는 윈도우가 죽지 않았지만
+            // 여기까지 왔을때 죽었을 경우 오류 발생을 방지하기 위해 try catch로 조치함.
+            // (이미 브라우저가 죽었기 때문에 아래 하위 로직은 의미가 없음)
             try {
+
+                var oWebCon = oChild.webContents,
+                    oWebPref = oWebCon.getWebPreferences(),
+                    sOBJTY = oWebPref.OBJTY;
+
+                // child window 닫을 때 예외 팝업 체크
+                var bIsHideExp = oAPP.fn.fnCheckPopupCloseException(sOBJTY);
+                if (bIsHideExp) {
+                    continue;
+                }
+            
                 oChild.close();    
+
             } catch (error) {
-                
+                continue;
             }           
 
         }
@@ -1441,52 +1446,70 @@
                 continue;
             }
 
-            let oWebCon = oChild.webContents,
-                oWebPref = oWebCon.getWebPreferences(),
-                sOBJTY = oWebPref.OBJTY;
+            // 위에서 isDestroyed 를 체크를 할때는 윈도우가 죽지 않았지만
+            // 여기까지 왔을때 죽었을 경우 오류 발생을 방지하기 위해 try catch로 조치함.
+            // (이미 브라우저가 죽었기 때문에 아래 하위 로직은 의미가 없음)
+            try {
+                
+                var oWebCon = oChild.webContents,
+                    oWebPref = oWebCon.getWebPreferences(),
+                    sOBJTY = oWebPref.OBJTY;
 
-            // child window들 활성 or 비활성 시 예외 대상 팝업 체크
-            let bIsHideExp = oAPP.fn.fnCheckPopupHideException(sOBJTY);
-            if (bIsHideExp) {
+                // child window들 활성 or 비활성 시 예외 대상 팝업 체크
+                var bIsHideExp = oAPP.fn.fnCheckPopupHideException(sOBJTY);
+                if (bIsHideExp) {
+                    continue;
+                }            
+                
+                var isVisible = oChild.isVisible();
+
+                // 숨기려는 경우
+                if (!bShow) {
+
+                    // 이미 숨겨져 있다면 빠져나간다
+                    // if (!isVisible) {
+                    //     continue;
+                    // }
+
+
+                    setTimeout(() => {
+                        
+                        if(oChild.isDestroyed()){
+                            return;
+                        }
+
+                        try {
+
+                            oChild.setOpacity(0);
+                            oChild.hide(); 
+
+                        } catch (error) {
+                            return;
+                        }                        
+
+
+                    }, 0);
+
+
+                    continue;
+                }
+
+
+                if (isVisible) {
+                    continue;
+                }
+
+                if(oChild.isDestroyed()){
+                    continue;
+                }
+
+                oChild.show();
+                oChild.setOpacity(1);
+
+            } catch (error) {
                 continue;
             }
 
-            let isVisible = oChild.isVisible();
-
-            // 숨기려는 경우
-            if (!bShow) {
-
-                // 이미 숨겨져 있다면 빠져나간다
-                // if (!isVisible) {
-                //     continue;
-                // }
-
-
-                setTimeout(() => {
-
-                    if(oChild.isDestroyed()){
-                        return;
-                    }
-
-                    oChild.setOpacity(0);
-                    oChild.hide();
-                }, 0);
-
-
-                continue;
-            }
-
-
-            if (isVisible) {
-                continue;
-            }
-
-            if(oChild.isDestroyed()){
-                continue;
-            }
-
-            oChild.show();
-            oChild.setOpacity(1);
         }
 
     }; // end of oAPP.fn.fnChildWindowShow

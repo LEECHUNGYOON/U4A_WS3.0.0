@@ -1361,6 +1361,9 @@
 
         this(res);
 
+        // UI attribute에서 아이콘 미리보기를 실행 했을 때 다른 child window들을 숨긴것을
+        // 다시 활성화 한다.
+        oAPP.fn.fnChildWindowShow(true);
 
     }; // end of oAPP.fn.fnIconUrlCallback
 
@@ -1384,6 +1387,10 @@
 
         // 파라미터에 콜백 펑션이 있을 경우에만 IPCRENDER 이벤트를 건다.
         if (isCallback === "X") {
+
+            // UI attribute에서 아이콘 미리보기를 실행 했을 때 다른 child window들을 숨긴다.
+            // 아이콘 선택 작업을 먼저 끝내고 다른 행위를 하라는 의미.
+            oAPP.fn.fnChildWindowShow(false);
 
             oAPP.attr.fnBindCallback = oAPP.fn.fnIconUrlCallback.bind(fnCallback);
 
