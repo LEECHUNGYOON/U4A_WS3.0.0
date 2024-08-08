@@ -1854,15 +1854,15 @@
 
         });
 
-        // Busy 켜기
-        oShortcut.add("Ctrl+Shift+X", () => {
-            parent.setBusy('X');
-        });
+        // // Busy 켜기
+        // oShortcut.add("Ctrl+Shift+X", () => {
+        //     parent.setBusy('X');
+        // });
 
-        // Busy 끄기
-        oShortcut.add("Ctrl+Shift+Z", () => {
-            parent.setBusy('');
-        });
+        // // Busy 끄기
+        // oShortcut.add("Ctrl+Shift+Z", () => {
+        //     parent.setBusy('');
+        // });
 
     }; // end of oAPP.common.fnSetGlobalShortcut
 
