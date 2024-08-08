@@ -182,6 +182,9 @@
                         //279	model binding 처리된 aggregation에는 추가할 수 없습니다.
                         ls_ret.MSG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "279", "", "", "", "");
 
+                        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+                        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
                         //WIZARD 팝업의 CALLBACK FUNCTION.
                         fnCallback(ls_ret);
                         return;
@@ -218,6 +221,16 @@
         }   //aggregation 선택 팝업 callback function.
 
 
+        var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+        //215	디자인 화면에서 UI 추가 처리 작업을 진행하고 있습니다.
+        _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "215");
+
+        //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
+
         //전달 받은 파라메터가 조회조건&결과리스트 wizard 처리건인경우.
         if(oReturn.uName === "ReportTemplate"){
 
@@ -226,6 +239,10 @@
 
             //선택건 점검 오류가 발생한 경우 오류 FLAG, 메시지 RETURN 후 EXIT.
             if(ls_ret.SUBRC === "E"){
+
+                //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+                parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
                 fnCallback(ls_ret);
                 return;
             }
@@ -235,6 +252,10 @@
 
             //선택건 점검 오류가 발생한 경우 오류 FLAG, 메시지 RETURN 후 EXIT.
             if(ls_ret.SUBRC === "E"){
+
+                //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+                parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
                 fnCallback(ls_ret);
                 return;
             }
@@ -245,6 +266,10 @@
 
             //선택건 점검 오류가 발생한 경우 오류 FLAG, 메시지 RETURN 후 EXIT.
             if(ls_ret.SUBRC === "E"){
+
+                //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+                parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
                 fnCallback(ls_ret);
                 return;
             }

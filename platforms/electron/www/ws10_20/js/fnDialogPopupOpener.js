@@ -444,21 +444,11 @@
      ************************************************************************/
     oAPP.fn.fnBindWindowPopupOpener = () => {
 
-        //테스트주석처리!!!!!!!!!!!
-        // // busy 키고 Lock 켜기
-        // oAPP.common.fnSetBusyLock("X");
-        //테스트주석처리!!!!!!!!!!!
-
         var sPopupName = "BINDPOPUP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
-
-            //테스트주석처리!!!!!!!!!!!
-            // // busy OFF Lock OFF
-            // oAPP.common.fnSetBusyLock("");
-            //테스트주석처리!!!!!!!!!!!
 
             parent.setBusy("", {});
 
@@ -477,6 +467,7 @@
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A15"); // Binding Popup
         // oBrowserOptions.width = 1000;
         oBrowserOptions.width = 1280;
+        oBrowserOptions.height = 700;
         oBrowserOptions.minWidth = 900;
         oBrowserOptions.minHeight = 650;
         oBrowserOptions.autoHideMenuBar = true;
@@ -548,7 +539,7 @@
 
             //디자인상세화면(20화면) <-> BINDPOPUP 통신 모듈 PATH 구성.
             _channelPath = oAPP.fn.getBindingPopupBroadcastModulePath();
-			//디자인상세화면(20화면) <-> BINDPOPUP 통신 채널 키 얻기.
+         //디자인상세화면(20화면) <-> BINDPOPUP 통신 채널 키 얻기.
             var _channelKey = parent.require(_channelPath)("GET-CHANNEL-ID");
             
             var oBindPopupData = {
@@ -584,11 +575,6 @@
 
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
-
-            //테스트주석처리!!!!!!!!!!!
-            // // busy & Lock 끄기
-            // oAPP.common.fnSetBusyLock("");
-            //테스트주석처리!!!!!!!!!!!
 
             parent.setBusy("", {});
 

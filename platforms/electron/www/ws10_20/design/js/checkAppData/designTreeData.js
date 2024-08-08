@@ -88,7 +88,8 @@ function checkRequireChildRec(aTree, aError = []) {
             _sError.TYPE   = "E";
 
             //오류 메시지.
-            _sError.DESC   = `${_sTree.OBJID} UI의 ${_sUA050.FLD03} aggregation에 UI를 추가하십시오.`;  //$$MSG
+            //217	&1 UI의 &2 Aggregation에 UI를 추가하십시오.
+            _sError.DESC   = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "217", _sTree.OBJID, _sUA050.FLD03);
 
             //오류 Index
             _sError.LINE   = "";

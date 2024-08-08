@@ -1,6 +1,9 @@
 //BIND POPUP <-> 디자인상세화면(20화면) 통신을 위한 broadcast Channel instance.
 let oChannel = undefined;
 
+let oFrame = document.getElementById('ws_frame');
+
+let sap = oFrame.contentWindow.sap;
 
 /*************************************************************
  * @function - 디자인상세화면(20화면) <-> BINDPOPUP 통신을 위한 
@@ -238,8 +241,15 @@ async function updateDesignData(oEvent){
     oAPP.attr.oModel.refresh();
 
 
+    //모델 데이터 변경시 메인에 해당 내용 전달 처리 이벤트 등록 해제.
+    oAPP.attr.oDesign.oModel.detachMessageChange(oAPP.attr.oDesign.fn.onModelDataChanged);
+
     //디자인 영역 모델 갱신 처리.
-    oAPP.attr.oDesign.oModel.refresh();
+    oAPP.attr.oDesign.oModel.refresh(true);
+
+
+    //모델 데이터 변경시 메인에 해당 내용 전달 처리 이벤트 등록.
+    oAPP.attr.oDesign.oModel.attachMessageChange(oAPP.attr.oDesign.fn.onModelDataChanged);
 
 
     // //바인딩 추가 속성 정보 모델 갱신 처리.
@@ -249,18 +259,16 @@ async function updateDesignData(oEvent){
     sendDesignAreaBusyOff();
 
 
-    oAPP.attr.oDesign.ui.TREE.attachEventOnce("rowsUpdated", ()=>{
-        //tree table 컬럼길이 재조정 처리.
-        oAPP.fn.setUiTableAutoResizeColumn(oAPP.attr.oDesign.ui.TREE);
+    await new Promise((resolve)=>{
+        oAPP.attr.oDesign.ui.TREE.attachEventOnce("rowsUpdated", ()=>{
+            resolve();
+        });
     });
 
+    //tree table 컬럼길이 재조정 처리.
+    oAPP.fn.setUiTableAutoResizeColumn(oAPP.attr.oDesign.ui.TREE);
 
     oAPP.fn.setBusy(false);
-
-
-    if(oEvent.data.RETCD === "E"){
-        
-    }
 
 
     //디자인 영역 갱신 요청임 flag return.

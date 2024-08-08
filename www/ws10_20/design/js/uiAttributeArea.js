@@ -175,6 +175,14 @@
 
       parent.setBusy("X");
 
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //216	디자인 화면에서 UI명 변경에 대한 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "216");
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
       //OBJID 변경건 처리.
       oAPP.fn.attrChnageOBJID();
 
@@ -308,6 +316,16 @@
       
       //단축키 잠금 처리.
       oAPP.fn.setShortcutLock(true);
+      
+
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
       
       //attribute 초기화 처리.
       oAPP.fn.attrResetAttr();
@@ -445,8 +463,8 @@
 
       var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
 
-      //$$MSG
-      _sOption.DESC = "디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다."; 
+      //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
 
       //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
@@ -587,8 +605,8 @@
 
       var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
 
-      //$$MSG
-      _sOption.DESC = "디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다."; 
+      //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
 
       //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
@@ -739,8 +757,8 @@
 
       var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
 
-      //$$MSG
-      _sOption.DESC = "디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다."; 
+      //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
 
       //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
@@ -977,7 +995,10 @@
     //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
     oAPP.fn.attrChangeProc(is_attr, uityp, bSkipRefresh, bForceUpdate);
 
-    
+
+    //design tree, attr table 갱신 대기.
+    await oAPP.fn.designRefershModel();
+
     
     //미리보기 onAfterRendering 처리 관련 module load.
     var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
@@ -1020,11 +1041,7 @@
       await _oPromise;
 
     }
-
-
-    //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
-    await oAPP.fn.designRefershModel();
-
+   
     
     //20240621 pes.
     //바인딩 팝업의 디자인 영역 갱신처리.
@@ -1221,6 +1238,9 @@
 
       //YES를 선택하지 않은경우 EXIT.
       if(param !== "YES"){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         //단축키 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
@@ -2203,12 +2223,24 @@
       return true;
     }
 
+    var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+    //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+    _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
+
+    //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+    parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
     //확인이 필요한경우 메시지 팝업 호출.
     parent.showMessage(sap, 30, "I", l_msg, function(param){
 
       parent.setBusy("X");
 
       if(param !== "YES"){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         parent.setBusy("");
 
@@ -2258,6 +2290,14 @@
 
       parent.setBusy("X");
 
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
       //값을 삭제한 경우.
       if(param === ""){
         //입력값 초기화 처리.
@@ -2288,6 +2328,9 @@
         return;
 
       }
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
       parent.setBusy("");
 
@@ -2368,6 +2411,16 @@
 
     //클라이언트 스크립트 호출 FUNCTION 호출.
     oAPP.fn.fnClientEditorPopupOpener("JS", l_objid,function(param){
+
+      parent.setBusy("X");
+
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
 
       if(param === "X"){
         is_attr.ADDSC = "JS";
@@ -2500,7 +2553,19 @@
       oAPP.fn.setShortcutLock(true);
 
 
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
       if(typeof oEvent?.getParameter !== "function"){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         //단축키도 같이 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
@@ -2545,8 +2610,27 @@
 
     //icon popup의 callback function.
     function lf_callback(sIcon){
+
+      parent.setBusy("X");
+
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
       //전달받은 아이콘명이 존재하지 않는경우 exit.
-      if(typeof sIcon === "undefined" || sIcon === null || sIcon === ""){return;}
+      if(typeof sIcon === "undefined" || sIcon === null || sIcon === ""){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+        parent.setBusy("");
+
+        return;
+      }
 
       //아이콘 매핑.
       is_attr.UIATV = sIcon;
@@ -2709,6 +2793,9 @@
       oAPP.attr.oModel.setProperty("/uiinfo", ls_uiinfo);
       parent.showMessage(sap, 10, "E", ls_uiinfo.OBJID_stxt);
 
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       // busy off Lock off
       parent.setBusy("");
 
@@ -2717,6 +2804,10 @@
 
     //이전에 입력한 이름과 지금 입력한 이름이 같으면 exit.
     if(ls_uiinfo.OBJID === ls_uiinfo.OBJID_bf){
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       // busy off Lock off
       parent.setBusy("");
       return;
@@ -3619,6 +3710,17 @@
   //이벤트 팝업 call back 이벤트
   oAPP.fn.attrCreateEventCallBack = function(is_attr, evtnm){
 
+    parent.setBusy("X");
+
+    var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+    //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+    _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
+
+    //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+    parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+    
+
     //입력한 이벤트명 매핑.
     is_attr.UIATV = evtnm;
 
@@ -3913,6 +4015,15 @@
       //편집상태가 아닌경우 exit.
       if(!oAPP.attr.oModel.oData.IS_EDIT){return;}
 
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
       //APPLICATION ID 매핑.
       is_attr.UIATV = param.APPID;
 
@@ -3974,6 +4085,15 @@
       //하위로직 skip처리를 위한 flag return
       return true;
     }
+
+    var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+    //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+    _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
+
+    //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+    parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
 
     //입력값 초기화 처리.
     is_attr.UIATV = "";
@@ -4085,6 +4205,15 @@
     //f4 help callback function.
     async function lf_returnDOC(param){
 
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
       //F4 HELP에서 입력한 값매핑.
       is_attr.UIATV = param.SHLPNAME;
 
@@ -4160,6 +4289,15 @@
 
     //CALLBACK FUNCTION.
     function lf_callback(param){
+
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
 
       //리스트에서 선택한 필드명 매핑.
       is_attr.UIATV = param.FIELDNAME;
@@ -4296,6 +4434,15 @@
     //F4HelpID프로퍼티인경우.
     if(is_attr.UIATK === "EXT00001188" || is_attr.UIATK === "EXT00002534"){
 
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212"); 
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
       //기존 입력건 초기화.
       is_attr.UIATV = "";
 
@@ -4342,6 +4489,16 @@
 
     //F4HelpReturnFIeld 프로퍼티 인경우.
     if(is_attr.UIATK === "EXT00001189" || is_attr.UIATK === "EXT00002535"){
+
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
       //기존 입력건 초기화.
       is_attr.UIATV = "";
 
@@ -6276,9 +6433,21 @@
   //attribute에 바인딩 필드 DROP 했을때 처리.
   oAPP.fn.attrDrop = function(oEvent){
 
+    var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+    //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+    _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
+
+    //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+    parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
     if(typeof oEvent.mParameters.dragSession.getDropControl !== "function"){
       //214  Unable to bind.
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -6290,6 +6459,10 @@
     if(!l_row){
       //214  Unable to bind.
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -6301,6 +6474,10 @@
     if(!l_ctxt){
       //214  Unable to bind.
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -6312,6 +6489,10 @@
     if(!ls_attr.dropEnable){
       //214  Unable to bind.
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -6324,6 +6505,10 @@
     if(typeof l_json === "undefined" || l_json === ""){
       //214  Unable to bind.
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -6335,6 +6520,10 @@
     }catch(e){
       //265	Binding attributes does not exist.
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "265", "", "", "", ""));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -6343,6 +6532,10 @@
     if(l_json.PRCCD !== "PRC001"){
       //265	Binding attributes does not exist.
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "265", "", "", "", ""));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -6352,6 +6545,10 @@
     if(l_json.DnDRandKey !== oAPP.attr.DnDRandKey){
       //214  Unable to bind.
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -6400,6 +6597,10 @@
     if(typeof l_json.IF_DATA.KIND_PATH === "undefined"){
       //265	Binding attributes does not exist.
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "265", "", "", "", ""));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -6408,6 +6609,10 @@
     if(l_json.IF_DATA.KIND === "" || l_json.IF_DATA.KIND === "S"){
       //214  Unable to bind.
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -6418,6 +6623,10 @@
     if(ls_attr.UIATY === "3" && l_json.IF_DATA.KIND !== "T" ){
       //214  Unable to bind.
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -6487,6 +6696,10 @@
     if(l_isTree && !l_path){
       //214  Unable to bind.
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -6501,6 +6714,10 @@
       if(typeof l_path === "undefined" || l_path === "" || l_path === null){
         //214  Unable to bind.
         oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
         parent.setBusy("");
         return;
       }
@@ -6509,6 +6726,10 @@
       if(l_path !== l_json.IF_DATA.CHILD.substr(0, l_path.length)){
         //214  Unable to bind.
         oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
         parent.setBusy("");
         return;
       }
@@ -6533,6 +6754,10 @@
         if(l_json.IF_DATA.EXP_TYP !== "RANGE_TAB"){
           //214  Unable to bind.
           oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+          //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+          parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
           parent.setBusy("");
           return;
         }
@@ -6546,6 +6771,10 @@
           if(lt_split2.findIndex( a=> a === "T" ) !== -1){
             //214  Unable to bind.
             oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+            //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+            parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
             parent.setBusy("");
             return;
           }
@@ -6565,6 +6794,10 @@
         if(l_json.IF_DATA.EXP_TYP !== "STR_TAB"){
           //214  Unable to bind.
           oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+          //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+          parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
           parent.setBusy("");
           return;
         }
@@ -6573,6 +6806,10 @@
         if(l_json.IF_DATA.EXP_TYP === "STR_TAB" && l_json.IF_DATA.PARENT === "Attribute"){
           //214  Unable to bind.
           oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+          //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+          parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
           parent.setBusy("");
           return;
         }
@@ -6585,6 +6822,10 @@
           if(lt_split2.findIndex( a=> a === "T" ) !== -1){
             //214  Unable to bind.
             oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+            //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+            parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
             parent.setBusy("");
             return;
           }
@@ -6601,6 +6842,10 @@
       if(l_json.IF_DATA.KIND !== "E"){
         //214  Unable to bind.
         oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
         parent.setBusy("");
         return;
       }
@@ -6609,6 +6854,10 @@
       if(typeof lt_split2 !== "undefined" && lt_split2.findIndex( a=> a === "T" ) !== -1){
         //214  Unable to bind.
         oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
         parent.setBusy("");
         return;
       }
@@ -6618,6 +6867,10 @@
       if(l_isTree && l_path && l_path !== l_json.IF_DATA.CHILD.substr(0, l_path.length)){
         //214  Unable to bind.
         oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+        
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
         parent.setBusy("");
         return;
       }
@@ -6643,6 +6896,10 @@
     if(ls_attr.UIATY === "3" && ls_attr.ISMLB !== "X"){
       //214  Unable to bind.
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -6652,6 +6909,10 @@
     if(ls_attr.UIATY === "3" && l_json.IF_DATA.EXP_TYP === "STR_TAB"){
       //214  Unable to bind.
       oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       parent.setBusy("");
       return;
     }
@@ -6664,6 +6925,10 @@
       if(oAPP.fn.attrChkBindAggrPossible(ls_attr, true)){
         //214  Unable to bind.
         oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
         parent.setBusy("");
         return;
       }
@@ -6673,6 +6938,10 @@
       if(oAPP.fn.getChildAggrBind(ls_attr.OBJID, l_json.IF_DATA.CHILD) === true){
         //214  Unable to bind.
         oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
         parent.setBusy("");
         return;
       }
@@ -6689,6 +6958,10 @@
         if(_parentModel.startsWith(l_json.IF_DATA.CHILD) === true){
           //214  Unable to bind.
           oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+          //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+          parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
           parent.setBusy("");
           return;
         }
@@ -6701,6 +6974,10 @@
           if( oAPP.fn.getChildAggrBind(ls_attr.OBJID, _parentModel) === true){
             //214  Unable to bind.
             oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+            //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+            parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
             parent.setBusy("");
             return;
           }
@@ -6718,6 +6995,10 @@
         if(lt_split2.findIndex( a=> a === "T" ) !== -1){
           //214  Unable to bind.
           oAPP.common.fnShowFloatingFooterMsg("E", "WS20", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "214", "", "", "", ""));
+
+          //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+          parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
           parent.setBusy("");
           return;
         }
@@ -6730,6 +7011,8 @@
       return;
     }
 
+    //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+    parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
     parent.setBusy("");
 
@@ -7186,12 +7469,24 @@
     function lf_callback(sIcon){
 
       parent.setBusy("X");
-      
+            
       //단축키 잠금 처리.
       oAPP.fn.setShortcutLock(true);
 
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+      
+
       //전달받은 아이콘명이 존재하지 않는경우 exit.
       if(typeof sIcon === "undefined" || sIcon === null || sIcon === ""){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
         
         //단축키 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);

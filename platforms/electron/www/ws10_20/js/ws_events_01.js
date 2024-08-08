@@ -245,29 +245,20 @@
      * [WS20] Binding Popup 버튼 이벤트
      ************************************************************************/
     oAPP.events.ev_pressBindPopupBtn = (oEvent) => {
-
-        //테스트주석처리!!!!!!!!!!!!!!
-        // // busy 키고 Lock 걸기
-        // oAPP.common.fnSetBusyLock("X");
-        //테스트주석처리!!!!!!!!!!!!!!
-
+   
         var _sOption = {
             TITLE: "",
             DESC : "",
         };
 
-        //$$MSG
-        _sOption.DESC = "바인딩 팝업을 호출하고 있습니다.";
+        //218  바인딩 팝업을 호출하고 있습니다.
+        _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "218"); 
+
 
         parent.setBusy("X", _sOption);
 
         // Trial Version Check
         if (oAPP.fn.fnOnCheckIsTrial()) {
-            
-            //테스트주석처리!!!!!!!!!!!!!!
-            // // busy 끄고 Lock 풀기
-            // oAPP.common.fnSetBusyLock("");
-            //테스트주석처리!!!!!!!!!!!!!!
             
             parent.setBusy("", {});
 

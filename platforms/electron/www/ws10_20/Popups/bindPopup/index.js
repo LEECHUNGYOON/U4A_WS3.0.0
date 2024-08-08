@@ -589,15 +589,6 @@ let oAPP = parent.oAPP,
 
     }; // end of oAPP.fn.fnInitModelBinding
 
-    /************************************************************************
-     * 화면 초기 렌더링
-     ************************************************************************/
-    oAPP.fn.fnInitRendering = function () {
-
-
-
-    }; // end of oAPP.fn.fnInitRendering   
-
 
 
     /*************************************************************
@@ -608,19 +599,27 @@ let oAPP = parent.oAPP,
         switch (bBusy) {
             case true:
                 //busy on.
-
                 sap.ui.getCore().lock();
 
                 oAPP.ui.APP.setBusy(true);
+
+                var _oWin = oAPP.REMOTE.getCurrentWindow();
+
+                //윈도우 닫기버튼 비활성화 처리.
+                _oWin.closable = false;
                 
                 break;
         
             case false:
                 //busy off.
+                oAPP.ui.APP.setBusy(false);
+
+                var _oWin = oAPP.REMOTE.getCurrentWindow();
+
+                //윈도우 닫기버튼 활성화 처리.
+                _oWin.closable = true;
 
                 sap.ui.getCore().unlock();
-
-                oAPP.ui.APP.setBusy(false);
 
                 break;
         }
@@ -669,14 +668,12 @@ let oAPP = parent.oAPP,
             //서버에서 바인딩 정보 얻기.
             await oAPP.fn.getBindFieldInfo();
 
+            
+            //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+            
 
             oAPP.fn.setBusy(false);
-
-
-            var _sOption = JSON.parse(JSON.stringify(oAPP.types.TY_BUSY_OPTION));
-
-            //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF", _sOption);
 
 
             var _oWin = oAPP.REMOTE.getCurrentWindow();
@@ -818,15 +815,21 @@ let oAPP = parent.oAPP,
      *************************************************************/
     oAPP.fn.showMessagePopoverOppener = async function(oTarget, aMessage){
 
-        var _path = oAPP.PATH.join(CS_PATH_INFO.ROOT, 
-            "ws10_20", "Popups", "bindPopup", "utils", "showMessagePopover.js");
-        
+        return new Promise(async (resolve)=>{
 
-        //메시지 팝오버 호출 처리.
-        var _oPop =  await import(_path);
+            var _path = oAPP.PATH.join(CS_PATH_INFO.ROOT, 
+                "ws10_20", "Popups", "bindPopup", "utils", "showMessagePopover.js");
+            
 
-        //입력 파라메터 전달 처리.
-        _oPop.default(oTarget, aMessage);
+            //메시지 팝오버 호출 처리.
+            var _oPop =  await import(_path);
+
+            //입력 파라메터 전달 처리.
+            await _oPop.default(oTarget, aMessage);
+
+            resolve();
+            
+        });
 
     };
 
@@ -1561,7 +1564,6 @@ let oAPP = parent.oAPP,
         oAPP.ui.oSptMain.attachResize(oAPP.fn.onMainSplitResize);
 
     };
-
 
 
     /*************************************************************
@@ -4945,8 +4947,8 @@ let oAPP = parent.oAPP,
 
         var _sOption = JSON.parse(JSON.stringify(oAPP.types.TY_BUSY_OPTION));
 
-        //$$MSG
-        _sOption.DESC = "바인딩 팝업에서 추가 속성 바인딩 처리를 진행하고 있습니다.";
+        //219	바인딩 팝업에서 추가 속성 바인딩 처리를 진행하고 있습니다.
+        _sOption.DESC = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "219"); 
 
         //WS 3.0 DESIGN 영역에 BUSY ON 요청 처리.
         parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_ON", _sOption);
@@ -4955,10 +4957,8 @@ let oAPP = parent.oAPP,
 
         if(typeof _oUi === "undefined"){
 
-            var _sOption = JSON.parse(JSON.stringify(oAPP.types.TY_BUSY_OPTION));
-
             //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF", _sOption);
+            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
 
             oAPP.fn.setBusy(false);
 
@@ -4976,16 +4976,13 @@ let oAPP = parent.oAPP,
         //바인딩 추가 속성 점검 오류가 존재하는경우.
         if(_sRes.RETCD === "E"){
 
-            var _sOption = JSON.parse(JSON.stringify(oAPP.types.TY_BUSY_OPTION));
-
-            //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF", _sOption);
-
-            oAPP.fn.setBusy(false);
-
             //메시지 처리.
             await oAPP.fn.showMessagePopoverOppener(_oUi, _sRes.T_RTMSG);
+            
+            //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
 
+            oAPP.fn.setBusy(false);
 
             return;
         }

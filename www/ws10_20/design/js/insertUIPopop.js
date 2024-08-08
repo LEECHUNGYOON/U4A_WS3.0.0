@@ -38,8 +38,16 @@
     sap.ui.getCore().loadLibrary("sap.ui.table");
     sap.ui.getCore().loadLibrary("sap.m");
 
-    var oDlg = new sap.m.Dialog({resizable:true, draggable:true,
-      contentWidth:"50%", contentHeight:"60%", verticalScrolling:false});
+    var oDlg = new sap.m.Dialog({
+      resizable:true, 
+      draggable:true,
+      contentWidth:"50%", 
+      contentHeight:"60%", 
+      verticalScrolling:false,
+      afterClose : function(params) {
+        oAPP.fn.setShortcutLock(false);
+      }
+    });
     oDlg.addStyleClass("sapUiSizeCompact");
 
     oDlg.data("INSERT_UI_POPUP", true);
@@ -79,6 +87,9 @@
 
     //닫기 버튼 선택 이벤트.
     oBtn0.attachPress(function(){
+
+      //단축키 잠금 해제 처리.
+      oAPP.fn.setShortcutLock(false);
       
       oDlg.close();
       oDlg.destroy();
@@ -371,8 +382,8 @@
 
       var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
 
-      //$$MSG
-      _sOption.DESC = "디자인 화면에서 UI 추가 처리 작업을 진행하고 있습니다."; 
+      //215	디자인 화면에서 UI 추가 처리 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "215"); 
 
       //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
@@ -586,8 +597,8 @@
 
       var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
 
-      //$$MSG
-      _sOption.DESC = "디자인 화면에서 UI 추가 처리 작업을 진행하고 있습니다."; 
+      //215	디자인 화면에서 UI 추가 처리 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "215");
 
       //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
@@ -621,6 +632,10 @@
     var oBtn2 = new sap.m.Button({icon:"sap-icon://decline", text:l_txt, type:"Reject", tooltip:l_txt});
     oDlg.addButton(oBtn2);
     oBtn2.attachPress(function(){
+
+      //단축키 잠금 해제 처리.
+      oAPP.fn.setShortcutLock(false);
+
       oDlg.close();
       oDlg.destroy();
       //001	Cancel operation

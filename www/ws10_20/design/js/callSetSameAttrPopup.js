@@ -205,6 +205,9 @@
 
         //확인버튼 선택 이벤트.
         oBtn1.attachPress(function(){
+
+            parent.setBusy("X");
+
             //동일 ATTRIBUTE 동기화 처리.
             lf_setSyncAttr();
         });
@@ -604,8 +607,20 @@
             if(lt_sel.length === 0){
                 //268	Selected line does not exists.
                 parent.showMessage(sap,10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", ""));
+
+                parent.setBusy("");
+
                 return;
             }
+
+            var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+            //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
+            _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "212");
+
+            //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+            parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
 
             var l_UIATV = oMdl.getProperty("/UIATV");
 

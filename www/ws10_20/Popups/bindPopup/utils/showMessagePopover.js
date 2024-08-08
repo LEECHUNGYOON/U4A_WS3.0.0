@@ -3,85 +3,92 @@
  *************************************************************/
 export default async function(oTarget, aMessage){
 
-    if(typeof oTarget === "undefined"){
-        return;
-    }
+    return new Promise((resolve)=>{
 
-    if(oTarget === null){
-        return;
-    }
-
-
-    //기존 메시지 팝오버 종료처리.
-    oAPP.fn.closeMessagePopover();
-
-
-    var _oPopover = new sap.m.MessagePopover({
-        afterClose:function(){
-
-            //오류 표현 초기화.
-            clearError();
-
-            _oPopover.destroy();
-        },
-        beforeOpen:function(){
-
-            //팝업에 화살표 처리.
-            if(typeof _oPopover._oPopover._oControl !== "undefined" && _oPopover._oPopover._oControl !== null){
-                _oPopover._oPopover._oControl.setShowArrow(true);
-            }
-
+        if(typeof oTarget === "undefined"){
+            return resolve();
         }
-    });
 
-    
-    if(typeof _oPopover._oPopover !== "undefined" && _oPopover._oPopover !== null){
-        //메시지 팝오버 호출함 구분자 매핑.
-        _oPopover._oPopover.data("msg_popover", true);
+        if(oTarget === null){
+            return resolve();
+        }
+
+
+        //기존 메시지 팝오버 종료처리.
+        oAPP.fn.closeMessagePopover();
+
+
+        var _oPopover = new sap.m.MessagePopover({
+            afterClose:function(){
+
+                //오류 표현 초기화.
+                clearError();
+
+                _oPopover.destroy();
+            },
+            beforeOpen:function(){
+
+                //팝업에 화살표 처리.
+                if(typeof _oPopover._oPopover._oControl !== "undefined" && _oPopover._oPopover._oControl !== null){
+                    _oPopover._oPopover._oControl.setShowArrow(true);
+                }
+
+            },
+            afterOpen:function() {
+                resolve();
+            }
+        });
+
         
-        //팝업 호출 위치.
-        _oPopover._oPopover.setPlacement("PreferredLeftOrFlip");
+        if(typeof _oPopover._oPopover !== "undefined" && _oPopover._oPopover !== null){
+            //메시지 팝오버 호출함 구분자 매핑.
+            _oPopover._oPopover.data("msg_popover", true);
+            
+            //팝업 호출 위치.
+            _oPopover._oPopover.setPlacement("PreferredLeftOrFlip");
 
-    }    
+        }    
 
 
-    var _oModel = new sap.ui.model.json.JSONModel();
+        var _oModel = new sap.ui.model.json.JSONModel();
 
-    _oPopover.setModel(_oModel);
+        _oPopover.setModel(_oModel);
 
 
-    //091	오류 위치 확인
-    var _txt = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "091");
+        //091	오류 위치 확인
+        var _txt = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "091");
 
-    _oPopover.bindAggregation("items", {
-        path: "/T_MSG",
-        template: new sap.m.MessageItem({
-            title: "{TITLE}",
-            type: "{TYPE}",
-            description: "{DESC}",
-            subtitle: "{SUBTITLE}",
-            link: new sap.m.Link({
-                text: _txt,
-                tooltip: _txt,
-                visible: "{LK_VIS}",
-                press: onSelLink,
-                customData: [
-                    new sap.ui.core.CustomData({
-                        key: "ACTCD",
-                        value: "{ACTCD}"
-                    }),
-                    new sap.ui.core.CustomData({
-                        key: "LINE_KEY",
-                        value: "{LINE_KEY}"
-                    })
-                ]
-            })            
-        })
+        _oPopover.bindAggregation("items", {
+            path: "/T_MSG",
+            template: new sap.m.MessageItem({
+                title: "{TITLE}",
+                type: "{TYPE}",
+                description: "{DESC}",
+                subtitle: "{SUBTITLE}",
+                link: new sap.m.Link({
+                    text: _txt,
+                    tooltip: _txt,
+                    visible: "{LK_VIS}",
+                    press: onSelLink,
+                    customData: [
+                        new sap.ui.core.CustomData({
+                            key: "ACTCD",
+                            value: "{ACTCD}"
+                        }),
+                        new sap.ui.core.CustomData({
+                            key: "LINE_KEY",
+                            value: "{LINE_KEY}"
+                        })
+                    ]
+                })            
+            })
+        });
+
+        _oModel.setData({T_MSG:aMessage});
+
+        _oPopover.openBy(oTarget);
+
     });
-
-    _oModel.setData({T_MSG:aMessage});
-
-    _oPopover.openBy(oTarget);
 
 };
 

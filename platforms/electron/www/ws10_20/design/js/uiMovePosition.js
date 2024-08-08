@@ -4,6 +4,8 @@ oAPP.fn.uiMovePosition = function(is_parent, OBJID, pos, max, f_callBack, i_x, i
   //dialog 종료.
   function lf_close(){
 
+    oAPP.fn.setShortcutLock(false);
+
     //이동 가능한 위치 최상단에 이동 처리 표시.
     oAPP.fn.designMoveMark(is_parent, OBJID, 1, true);
 
@@ -176,7 +178,7 @@ oAPP.fn.uiMovePosition = function(is_parent, OBJID, pos, max, f_callBack, i_x, i
 
   oMdl.setData({"move":{"pos":pos, "max":max}});
 
-  //dailog 호출전 이벤트.
+  //dailog 호출후 이벤트.
   oDlg.attachAfterOpen(function(){
     //입력필드에 focus 처리.
     oStepInp.focus();

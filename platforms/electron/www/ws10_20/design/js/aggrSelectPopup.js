@@ -22,6 +22,9 @@
       //tree drop effect 초기화 처리(ctrl 누르고 drop시 복사를 위한 광역변수값).
       oAPP.attr.ui.oLTree1.__dropEffect = "";
 
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
 
@@ -38,7 +41,17 @@
 
 
     sap.ui.getCore().loadLibrary("sap.m");
-    var oDlg1 = new sap.m.Dialog({draggable:true});
+    var oDlg1 = new sap.m.Dialog({
+      draggable:true,
+      afterClose: function(){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+        //단축키 잠금 해제 처리.
+        oAPP.fn.setShortcutLock(false);
+      }
+    });
     oDlg1.addStyleClass("sapUiSizeCompact");
 
     
@@ -84,7 +97,6 @@
 
     //dialog open 이후 이벤트.
     oDlg1.attachAfterOpen(function(){
-
       
       //X, Y 좌표값이 존재하지 않는경우 EXIT.
       if(typeof i_x === "undefined"){
@@ -147,6 +159,13 @@
     oBtn0.attachPress(function(){
       //tree drop effect 초기화 처리(ctrl 누르고 drop시 복사를 위한 광역변수값).
       oAPP.attr.ui.oLTree1.__dropEffect = "";
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+
+      //단축키 잠금 해제처리.
+      oAPP.fn.setShortcutLock(false);
       
       oDlg1.close();
       oDlg1.destroy();
@@ -185,11 +204,25 @@
       parent.setBusy("X");
 
       document.activeElement.blur();
+      
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //208	디자인 화면에서 UI 변경 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "208");
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
 
       var l_sel = oSel1.getSelectedKey();
 
       ls_0023 = oAPP.DATA.LIB.T_0023.find( a => a.UIATK === l_sel);
       if(!ls_0023){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+        //단축키 잠금 해제처리.
+        oAPP.fn.setShortcutLock(false);
 
         parent.setBusy("");
 
@@ -216,6 +249,12 @@
 
       //tree drop effect 초기화 처리(ctrl 누르고 drop시 복사를 위한 광역변수값).
       oAPP.attr.ui.oLTree1.__dropEffect = "";
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+      //단축키 잠금 해제처리.
+      oAPP.fn.setShortcutLock(false);
 
       oDlg1.close();
       oDlg1.destroy();

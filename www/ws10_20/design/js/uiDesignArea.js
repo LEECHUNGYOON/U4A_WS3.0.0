@@ -135,8 +135,8 @@
 
       var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
 
-      //$$MSG
-      _sOption.DESC = "디자인 화면에서 UI 삭제처리를 진행하고 있습니다."; 
+      //213	디자인 화면에서 UI 삭제처리를 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "213");
 
       //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
@@ -319,7 +319,19 @@
       oAPP.fn.setShortcutLock(true);
 
       
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //215	디자인 화면에서 UI 추가 처리 작업을 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "215"); 
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+      
       if(typeof oEvent?.mParameters?.droppedControl.getBindingContext !== "function"){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
@@ -333,6 +345,9 @@
       //DROP한 라인 정보 얻기.
       var ls_drop = oEvent.mParameters.droppedControl.getBindingContext().getProperty();
       if(!ls_drop){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
@@ -355,6 +370,9 @@
       //개인화 화면에서 Drop했다면 UI 추가 처리.
       if(oAPP.fn.designUIDropP13nList(oEvent, ls_drop)){return;}
 
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
@@ -1747,7 +1765,7 @@
 
       parent.setBusy("X");
 
-      //단축키도 같이 잠금 처리.
+      //단축키 잠금 처리.
       oAPP.fn.setShortcutLock(true);
       
       
@@ -1868,8 +1886,11 @@
       //OBJID가 존재하지 않는경우 EXIT.
       if(typeof OBJID === "undefined" || OBJID === null || OBJID === ""){
         
-        //화면 잠금 해제 처리.
-        oAPP.fn.designAreaLockUnlock();
+        //단축키 잠금 해제 처리.
+        oAPP.fn.setShortcutLock(false);
+
+        parent.setBusy("");
+
         return resolve();
       }
 
@@ -1880,15 +1901,21 @@
 
       //path 정보를 수집하지 않은경우 exit.
       if(lt_path.length === 0){
-        //화면 잠금 해제 처리.
-        oAPP.fn.designAreaLockUnlock();
+        //단축키 잠금 해제 처리.
+        oAPP.fn.setShortcutLock(false);
+
+        parent.setBusy("");
+
         return resolve();
       }
 
       var l_bind = oAPP.attr.ui.oLTree1.getBinding();
       if(!l_bind){
-        //화면 잠금 해제 처리.
-        oAPP.fn.designAreaLockUnlock();
+        //단축키 잠금 해제 처리.
+        oAPP.fn.setShortcutLock(false);
+
+        parent.setBusy("");
+
         return resolve();
       }
 
@@ -1902,6 +1929,12 @@
       var _sTree = lf_expand(l_bind._oRootNode.children[0]);
 
       if(typeof _sTree === "undefined"){
+
+        //단축키 잠금 해제 처리.
+        oAPP.fn.setShortcutLock(false);
+
+        parent.setBusy("");
+
         return resolve();
       }
 
@@ -2253,8 +2286,10 @@
 
         //106 &1 UI 정보를 찾을 수 없습니다.
         parent.showMessage(sap, 20, "E", 
-          parent.WSUTIL.getWsMsgClsTxt(
-            parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "106", i_drop.POBID));
+          parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "106", i_drop.POBID));
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
@@ -2401,7 +2436,6 @@
       
       //005  Job finished.
       parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "005", "", "", "", ""));
-      
 
       return;
 
@@ -2411,6 +2445,9 @@
 
     //UI가 입력 가능한 카디널리티 여부 확인.
     if(oAPP.fn.chkUiCardinality(i_drop, param.UIATK, param.ISMLB) === true){
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
@@ -2424,6 +2461,9 @@
     //UI의 허용 가능 부모 정보
     //(특정 UI는 특정 부모에만 존재해야함.)
     if(oAPP.fn.designChkFixedParentUI(i_drag.UIOBK, i_drop.UIOBK, param.UIATT) === true){
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
@@ -2455,8 +2495,12 @@
 
     if(_deny === true){
       
-      //$$MSG
-      parent.showMessage(sap, 10, "E", `${i_drag.OBJID} UI는 ${i_drop.OBJID}의 ${param.UIATT} Aggregation에 추가 할 수 없습니다.`);
+      //214	&1 UI는 &2의 &3 Aggregation에 추가 할 수 없습니다.
+      parent.showMessage(sap, 10, "E", parent.WSUTIL.getWsMsgClsTxt(
+        oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "214", i_drag.OBJID, i_drop.OBJID, param.UIATT));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
@@ -2482,6 +2526,9 @@
 
     //drag UI의 부모 UI를 찾지 못한 경우 EXIT.
     if(typeof l_parent === "undefined"){
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
@@ -2496,6 +2543,9 @@
 
     //INDEX정보를 찾지 못한 경우 EXIT.
     if(l_indx === -1){
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
@@ -3197,17 +3247,33 @@
 
     if(!i_OBJID){return;}
 
+    var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+    //215	디자인 화면에서 UI 추가 처리 작업을 진행하고 있습니다.
+    _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "215"); 
+
+    //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+    parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
     //drag 정보 얻기.
     var lt_dragInfo = oAPP.fn.getDragParam(oEvent);
-    if(!lt_dragInfo || lt_dragInfo.length !== 3){return;}
+    if(!lt_dragInfo || lt_dragInfo.length !== 3){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+      return;
+    }
 
     //design tree, 미리보기 영역에서 drag한 정보가 아닌경우 exit.
     if(lt_dragInfo[0] !== "designTree" && lt_dragInfo[0] !== "previewArea"){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
     }
 
     //다른 세션에서 drag한 정보라면 exit.
     if(lt_dragInfo[2] !== oAPP.attr.DnDRandKey){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
     }
 
@@ -3215,28 +3281,46 @@
     var l_objid = lt_dragInfo[1];
 
     //OBJID를 얻지 못한 경우 EXIT.
-    if(!l_objid){return;}
+    if(!l_objid){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+      return;
+    }
 
     //ui 구성정보에서 직접 검색.
     l_drag = oAPP.fn.getTreeData(l_objid);
-    if(!l_drag){return;}
+    if(!l_drag){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+      return;
+    }
 
     //drop한 UI의 라인정보 얻기.
     var l_drop = oAPP.fn.getTreeData(i_OBJID);
-    if(!l_drop){return;}
+    if(!l_drop){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+      return;
+    }
 
     //dragUI명과 dropUI명이 같은경우 exit.
     if(l_drag.OBJID === l_drop.OBJID){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
     }
 
     //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.
     if(oAPP.fn.designChkHiddenAreaUi(l_drag.UIOBK, l_drop.UIOBK) === true){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
     }
 
     //DRAG UI와 DROP UI의 이동 가능 여부 점검.
     if(oAPP.fn.chkDnDPossible(l_drag.zTREE, l_drop.OBJID)){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
     }
 
@@ -3957,6 +4041,9 @@
     //UI가 입력 가능한 카디널리티 여부 확인.
     if(oAPP.fn.chkUiCardinality(is_tree, is_0023.UIATK, is_0023.ISMLB) === true){
 
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
       
@@ -3968,7 +4055,10 @@
     var l_cnt = i_cnt;
 
     //[워크벤치] 특정 API / UI 에 대한 중복 대상 관리 여부 확인.
-    if(oAPP.fn.designChkUnique(is_0022.UIOBK, l_cnt) === true){        
+    if(oAPP.fn.designChkUnique(is_0022.UIOBK, l_cnt) === true){    
+      
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
@@ -3980,6 +4070,9 @@
 
     //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.
     if(oAPP.fn.designChkHiddenAreaUi(is_0022.UIOBK, is_tree.UIOBK) === true){
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
@@ -3993,6 +4086,9 @@
     //UI의 허용 가능 부모 정보
     //(특정 UI는 특정 부모에만 존재해야함.)
     if(oAPP.fn.designChkFixedParentUI(is_0022.UIOBK, is_tree.UIOBK, is_0023.UIATT) === true){
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
@@ -4024,8 +4120,12 @@
 
     if(_deny === true){
       
-      //$$MSG
-      parent.showMessage(sap, 10, "E", `${is_0022.UIOBJ} UI는 ${is_tree.OBJID}의 ${is_0023.UIATT} Aggregation에 추가 할 수 없습니다.`);
+      //214	&1 UI는 &2의 &3 Aggregation에 추가 할 수 없습니다.
+      parent.showMessage(sap, 10, "E", parent.WSUTIL.getWsMsgClsTxt(
+        oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "214", is_0022.UIOBJ, is_tree.OBJID, is_0023.UIATT));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
@@ -4269,18 +4369,35 @@
 
     } //UI 추가.
 
+
+    var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+    //215	디자인 화면에서 UI 추가 처리 작업을 진행하고 있습니다.
+    _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "215"); 
+
+    //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+    parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
   
     //Drag한 정보 발췌.
     var lt_dragInfo = oAPP.fn.getDragParam(oEvent);
-    if(!lt_dragInfo || lt_dragInfo.length !== 4){return;}
+    if(!lt_dragInfo || lt_dragInfo.length !== 4){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+      return;
+    }
 
     //insert UI popup에서 drag한건이 아닌경우 exit.
     if(lt_dragInfo[0] !== "callUIInsertPopup"){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
     }
 
     //다른 영역에서 drag했다면 exit.
     if(lt_dragInfo[3] !== oAPP.attr.DnDRandKey){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
     }
 
@@ -4292,7 +4409,11 @@
 
     //이벤트 발생 라인 정보 얻기.
     ls_drop = oAPP.fn.getTreeData(OBJID);
-    if(!ls_drop){return;}
+    if(!ls_drop){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+      return;
+    }
 
     //이벤트 발생 x, y 좌표값 얻기.
     var l_pos = oAPP.fn.getMousePosition();
@@ -4318,24 +4439,45 @@
   //개인화 항목에서 D&D한 경우 UI 추가 처리.
   oAPP.fn.designUIDropP13nList = function(oEvent, is_tree){
 
+    var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+    //215	디자인 화면에서 UI 추가 처리 작업을 진행하고 있습니다.
+    _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "215"); 
+
+    //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+    parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
     //Drag한 정보 발췌.
     var lt_dragInfo = oAPP.fn.getDragParam(oEvent);
-    if(!lt_dragInfo || lt_dragInfo.length !== 3){return;}
+    if(!lt_dragInfo || lt_dragInfo.length !== 3){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+      return;
+    }
 
     //개인화 리스트에서 Drag한건이 아닌경우 exit.
     if(lt_dragInfo[0] !== "P13nUIData"){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
     }
 
     //다른 WS 세션에서 D&D 한경우 EXIT.
     if(lt_dragInfo[2] !== oAPP.attr.DnDRandKey){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
     }
 
     var l_itemKey = lt_dragInfo[1];
 
     var l_SYSID =  parent.getUserInfo()?.SYSID;
-    if(!l_SYSID){return;}
+    if(!l_SYSID){
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+      return;
+    }
 
     //개인화 파일 정보 path 구성.
     var l_path = parent.PATH.join(parent.getPath("P13N_ROOT"), "U4A_UI_PATTERN", l_SYSID, l_itemKey);
@@ -4345,7 +4487,10 @@
 
       //017 Not exists save file.
       parent.showMessage(sap, 10, "E", 
-        parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "017"));
+        parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "017"));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
@@ -4361,6 +4506,9 @@
       var ls_item = JSON.parse(parent.FS.readFileSync(l_path, "utf-8"));
     }catch(e){
       parent.showMessage(sap, 10, "E", e);
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
@@ -4608,8 +4756,6 @@
     //붙여넣기 정보의 OTR ALIAS검색.
     function lf_getOTRtext(param, i_cdata, bKeep){
 
-        //화면 잠금 처리.
-        oAPP.fn.designAreaLockUnlock(true);
         
         //붙여넣기 처리하려는 정보의 OTR ALIAS 수집 처리.
         function lf_getOTRAlise(is_tree){
@@ -4666,13 +4812,9 @@
         //수집된 OTR ALIAS가 존재하는경우 서버에서 OTR ALIAS에 해당하는 TEXT 검색.
         sendAjax(oAPP.attr.servNm + "/getOTRTextsAlias", oFormData, function(oRet){
 
-            //화면 잠금 처리.
-            oAPP.fn.designAreaLockUnlock(true);
-
-
             if(oRet.RETCD === "E"){
-                //메시지 출력.
-                parent.showMessage(sap, 10, "W", oRet.RTMSG);
+              //메시지 출력.
+              parent.showMessage(sap, 10, "W", oRet.RTMSG);
                 
             }
 
@@ -4683,8 +4825,15 @@
             lf_paste_cb(param, i_cdata, bKeep);
 
         }, "X", true, "POST", function(e){
-            //오류 발생시 lock 해제.
-            oAPP.fn.designAreaLockUnlock();
+
+            //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+            parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+            
+            parent.setBusy("");
+
           
         });  //수집된 OTR ALIAS가 존재하는경우 서버에서 OTR ALIAS에 해당하는 TEXT 검색.
 
@@ -4695,32 +4844,49 @@
     //AGGR 선택 팝업의 CALLBACK FUNCTION.
     function lf_aggrPopup_cb(param, i_cdata){
 
-        //화면 잠금 처리.
-        oAPP.fn.designAreaLockUnlock(true);
+        //단축키 잠금 처리.
+        oAPP.fn.setShortcutLock(true);
 
         //이동 가능한 aggregation 정보가 존재하지 않는경우.
         if(typeof param === "undefined"){
             //오류 메시지 출력.
             //269	붙여넣기가 가능한 aggregation이 존재하지 않습니다.
             parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "269", "", "", "", ""));
+            
+            //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+            parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
-            //lock 해제.
-            oAPP.fn.designAreaLockUnlock();
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
+
             return;
         }
 
         //UI가 입력 가능한 카디널리티 여부 확인.
         if(oAPP.fn.chkUiCardinality(is_tree, param.UIATK, param.ISMLB) === true){
-            //오류 발생시 lock 해제.
-            oAPP.fn.designAreaLockUnlock();
+          
+            //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+            parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
             return;
         }
 
         //UI의 허용 가능 부모 정보
         //(특정 UI는 특정 부모에만 존재해야함.)
         if(oAPP.fn.designChkFixedParentUI(i_cdata.UIOBK, is_tree.UIOBK, param.UIATT) === true){
-            //오류 발생시 lock 해제.
-            oAPP.fn.designAreaLockUnlock();
+            //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+            parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
             return;
         }
 
@@ -4746,12 +4912,16 @@
 
         if(_deny === true){
           
-          //$$MSG
-          parent.showMessage(sap, 10, "E", `${i_cdata.OBJID} UI는 ${is_tree.OBJID}의 ${param.UIATT} Aggregation에 추가 할 수 없습니다.`);
+          //214	&1 UI는 &2의 &3 Aggregation에 추가 할 수 없습니다.
+          parent.showMessage(sap, 10, "E", parent.WSUTIL.getWsMsgClsTxt(
+            oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "214", i_cdata.OBJID, is_tree.OBJID, param.UIATT));
 
-          //단축키 잠금 해제 처리.
+          //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+          parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+          //단축키 잠금 해제처리.
           oAPP.fn.setShortcutLock(false);
-          
+
           parent.setBusy("");
           
           return;
@@ -4793,8 +4963,6 @@
         //117	Do you want to keep the binding?.
         l_msg += oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "117", "", "", "", "");
 
-        parent.setBusy("");
-
         //단축키 잠금 처리.
         oAPP.fn.setShortcutLock(true);
 
@@ -4802,14 +4970,23 @@
         //바인딩, 서버이벤트 초기화 여부 확인 팝업 호출.
         parent.showMessage(sap, 40, "I", l_msg, function(oEvent){
 
+            parent.setBusy("X");
+
             //화면 잠금 처리.
             oAPP.fn.designAreaLockUnlock(true);
 
             //취소를 한경우 exit.
-            if(oEvent === "CANCEL"){
-                //화면 잠금 해제 처리.
-                oAPP.fn.designAreaLockUnlock();
-                return;
+            if(oEvent === "CANCEL" || oEvent === null){
+
+              //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+              parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+              //단축키 잠금 해제처리.
+              oAPP.fn.setShortcutLock(false);
+              
+              parent.setBusy("");
+
+              return;
             }
 
             //default 바인딩, 서버이벤트 해제 처리.
@@ -4825,7 +5002,8 @@
             lf_getOTRtext(param, i_cdata, l_flag);
 
         }); //바인딩, 서버이벤트 초기화 여부 확인 팝업 호출.
-
+        
+        parent.setBusy("");
 
     }   //AGGR 선택 팝업의 CALLBACK FUNCTION.
 
@@ -4880,6 +5058,10 @@
 
     //편집 불가능 상태일때는 exit.
     if(oAPP.attr.oModel.oData.IS_EDIT !== true){
+      
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+        
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
 
@@ -4891,6 +5073,10 @@
 
     //복사한 UI가 이미 존재하는경우 붙여넣기 skip 처리.(공통코드 UA039에 해당하는 UI는 APP당 1개만 존재 가능)
     if(oAPP.fn.designChkUnique(is_data.UIOBK) === true){
+      
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
 
@@ -4901,6 +5087,10 @@
 
     //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.(공통코드 UA040에 해당하는 UI는 특정 UI 하위에만 존재가능)
     if(oAPP.fn.designChkHiddenAreaUi(is_data.UIOBK, is_tree.UIOBK) === true){
+      
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
 

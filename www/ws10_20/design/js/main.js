@@ -44,6 +44,11 @@
     //PATH 정보 수집 광역 OBJECT.
     oAPP.oDesign.pathInfo = {};
 
+    oAPP.oDesign.settings = {};
+
+    //WS 3.0에 설정한 언어정보.
+    oAPP.oDesign.settings.GLANGU = parent.WSUTIL.getWsSettingsInfo().globalLanguage;
+
 
     //design root path 정보 구성.(ws10_20/design/js)
     oAPP.oDesign.pathInfo.designRootPath = parent.PATH.join(parent.getPath("WS10_20_ROOT"), "design", "js");
