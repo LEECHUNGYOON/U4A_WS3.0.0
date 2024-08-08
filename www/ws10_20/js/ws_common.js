@@ -1833,6 +1833,9 @@
                 return;
             }
 
+            // 브라우저의 닫기 버튼 눌렀다는 플래그
+            oAPP.attr.isPressWindowClose = "X";
+
             var oCurrWin = parent.REMOTE.getCurrentWindow();
             oCurrWin.close();
 
@@ -1840,7 +1843,7 @@
 
         // 브라우저 zoom 기본설정
         oShortcut.add("Ctrl+0", () => {
-
+            
             // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
             if (parent.getBusy() == 'X') {
                 return;
@@ -1854,15 +1857,34 @@
 
         });
 
-        // // Busy 켜기
-        // oShortcut.add("Ctrl+Shift+X", () => {
-        //     parent.setBusy('X');
-        // });
+        oShortcut.add("Ctrl+Shift+F9", (e) => {    
+            
+            e.stopImmediatePropagation();
 
-        // // Busy 끄기
-        // oShortcut.add("Ctrl+Shift+Z", () => {
-        //     parent.setBusy('');
-        // });
+            console.log("F9");
+            console.log(e);
+        });
+
+        // Busy 켜기
+        oShortcut.add("Ctrl+Shift+X", (e) => {
+            
+            e.stopImmediatePropagation();
+
+            parent.setBusy('X');
+            console.log("X");
+            console.log(e);
+        });
+
+        // Busy 끄기
+        oShortcut.add("Ctrl+Shift+Z", (e) => {
+
+            e.stopImmediatePropagation();
+
+            parent.setBusy('');
+
+            console.log("Z");
+            console.log(e);
+        });
 
     }; // end of oAPP.common.fnSetGlobalShortcut
 

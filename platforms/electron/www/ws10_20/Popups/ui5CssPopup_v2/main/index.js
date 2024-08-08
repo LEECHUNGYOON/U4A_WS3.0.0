@@ -49,7 +49,7 @@ oAPP.fn.sendIfcDataBrowserClose = function(){
 
     // IF PARAM을 구성하여 미리보기 쪽에 전송
     let IF_PARAM = {
-        PRCCD: "CANCEL",
+        PRCCD: "CLOSE",
         DATA: []
     };
 

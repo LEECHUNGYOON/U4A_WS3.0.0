@@ -2932,9 +2932,9 @@
         
         oCSS.start(parent.require, IF_DATA, function(oRes){
             
-            console.log(oRes);
+            // CSS를 미리보기에 적용
+            oAPP.fn.prevStyleClassApply(oRes.DATA, oRes.PRCCD);
 
-            // oAPP.fn.prevStyleClassApply(aCSSList, bIsSave);
 
         });
 
