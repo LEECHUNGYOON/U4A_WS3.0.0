@@ -6,8 +6,6 @@
      ************************************************************************/
     oAPP.fn.designCallWizardPopup = function(){
 
-        //화면 잠금 처리.
-        oAPP.fn.designAreaLockUnlock(true);
 
         //선택값에 대한 가능여부 점검.
         var ls_ret = oAPP.fn.designChkSelLine();
@@ -16,10 +14,10 @@
         if(ls_ret.SUBRC === "E"){
             parent.showMessage(sap, 10, "E", ls_ret.MSG);
 
-            //화면 잠금 해제 처리.
-            oAPP.fn.designAreaLockUnlock();
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
 
-            oAPP.common.fnSetBusyLock("");
+            parent.setBusy("");
 
             return;
         }
@@ -32,10 +30,10 @@
             //268	Selected line does not exists.
             parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "268", "", "", "", ""));
 
-            //화면 잠금 해제 처리.
-            oAPP.fn.designAreaLockUnlock();
-
-            oAPP.common.fnSetBusyLock("");
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+            
+            parent.setBusy("");
 
             return;
         }
@@ -49,10 +47,10 @@
             //056	& is not the target location.
             parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "056", oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A36"), "", "", ""));
 
-            //화면 잠금 해제 처리.
-            oAPP.fn.designAreaLockUnlock();
-
-            oAPP.common.fnSetBusyLock("");
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+            
+            parent.setBusy("");
 
             return;
         }
@@ -82,11 +80,10 @@
                 //오류에 대한 메시지 처리.
                 parent.showMessage(sap, 10, "E", param.RTMSG);
                 
-                //화면 잠금 해제 처리.
-                oAPP.fn.designAreaLockUnlock();
+                //단축키 잠금 해제처리.
+                oAPP.fn.setShortcutLock(false);
 
-
-                oAPP.common.fnSetBusyLock("");
+                parent.setBusy("");
 
                 return;
             }            
@@ -94,8 +91,8 @@
             //template wizard 팝업 호출.
             oAPP.fn.fnUiTempWizardPopupOpener(param);
 
-            // //화면 잠금 해제 처리.
-            // oAPP.fn.designAreaLockUnlock();
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
 
         });
 

@@ -307,6 +307,9 @@ async function updateAppData(oEvent){
 
     //화면에서 UI추가, 이동, 삭제 및 attr 변경시 변경 flag 처리.
     oAPP.fn.setChangeFlag();
+
+    //단축키 잠금 해제처리.
+    oAPP.fn.setShortcutLock(false);
     
     //BUSY DIALOG OFF  
     parent.setBusy("", {});
@@ -387,7 +390,7 @@ function checkBindPopupDragAppData(sTree){
         _sRes.RETCD = "E";
         
         //164	갱신 처리 대상 UI가 존재하지 않습니다.
-        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "164");
+        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "164");
 
         return _sRes;
     }
@@ -423,7 +426,7 @@ function checkBindPopupDragAppData(sTree){
         _sRes.RETCD = "E";
 
         //163	부모 UI에 MODEL BINDING 처리되어 UI를 구성할 수 없습니다.
-        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "163");
+        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "163");
 
         return _sRes;
 

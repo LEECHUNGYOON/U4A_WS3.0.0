@@ -509,6 +509,9 @@
 
       // busy 키고 Lock 켜기
       parent.setBusy("X");
+
+      //단축키 잠금 처리.
+      oAPP.fn.setShortcutLock(true);
             
       if(typeof oAPP.fn.designCallWizardPopup !== "undefined"){
         //위자드 팝업 호출.
@@ -1826,6 +1829,10 @@
       //수집된 path를 기준으로 child를 탐색하며 펼침 처리.
       function lf_expand(is_child){
 
+        if(typeof is_child?.context === "undefined" || is_child?.context === null){
+          return;
+        }
+
         //펼침 처리 대상 child의 OBJID 정보 검색.
         var l_objid = is_child.context.getProperty("OBJID");
 
@@ -2319,7 +2326,7 @@
 
 
       //미리보기 onAfterRendering 처리 관련 module load.
-      var _oRender = parent.require(_modulePath);
+      var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
 
       //onAfterRendering 이벤트 등록 대상 UI 얻기.
       var _oTarget = _oRender.getTargetAfterRenderingUI(oAPP.attr.prev[l_parent.OBJID]);
@@ -2636,16 +2643,50 @@
     l_bind._buildTree(0,oAPP.fn.designGetTreeItemCount());
 
 
+    //미리보기 onAfterRendering 처리 관련 module load.
+    var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
+
+
+    //drag한 UI의 이전 부모의 onAfterRendering 처리 대상 UI 얻기.
+    var _oTarget = _oRender.getTargetAfterRenderingUI(oAPP.attr.prev[l_parent.OBJID]);
+
+    var _oDom = undefined;
+
+    if(typeof _oTarget?.getDomRef === "function"){
+      _oDom = _oTarget.getDomRef();
+    }
+
+    var _oPromise = undefined;
+
+    //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
+    if(typeof _oDom !== "undefined" && _oDom !== null){
+      _oPromise = _oRender.setAfterRendering(_oTarget);
+    }
+
+    //RichTextEditor 미리보기 출력 예외처리로직.
+    var _aPromise = _oRender.renderingRichTextEditor(l_parent);
+
+
     //미리보기 UI 다시 생성 처리.
     oAPP.fn.reCreateUIObjInstance(i_drag);
 
 
+    //DRAG한 UI의 이전 부모를 다시 그리는것을 대기.
+    if(typeof _oPromise !== "undefined"){
+      _oTarget.invalidate();
+      
+      //onAfterRendering 수행까지 대기.
+      await _oPromise;
+
+    }
+
+    //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.
+    //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
+    await Promise.all(_aPromise);
+
+
     //동일 AGGREGATION에 추가된 UI 갯수 얻기.
     var l_indx = i_drop.zTREE.filter( a => a.UIATT === i_drag.UIATT );
-
-
-    //미리보기 onAfterRendering 처리 관련 module load.
-    var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
 
 
     //onAfterRendering 이벤트 등록 대상 UI 얻기.
@@ -2663,7 +2704,6 @@
     if(typeof _oDom !== "undefined" && _oDom !== null){
       _oPromise = _oRender.setAfterRendering(_oTarget);
     }
-
 
     
     //RichTextEditor 미리보기 출력 예외처리로직.
@@ -3057,6 +3097,19 @@
 
           //drop불가능한 UI인경우 다음 aggrgation의 drop여부 확인.
           if(!ls_0027){continue;}
+
+          //20240808 PES -START.
+          //DROP이 허용 가능한 AGGREGATION일경우, CHILD존재시,
+          //해당 AGGREGATION의 CARDINALITY가 0:1 이면서 해당 AGGREGATION에 CHILD가 존재하는경우 DROP 불가능 처리.
+          if(lt_0023[i].ISMLB === "" && is_child.zTREE.length > 0){
+
+            //허용 가능한 AGGREGATION에 UI가 이미 추가됐다면 DROP 불가능 처리.
+            if(is_child.zTREE.findIndex( item => item.UIATT === lt_0023[i].UIATT ) !== -1){
+              continue;
+            }
+
+          }
+          //20240808 PES -END.
 
           //drag한 UI가 drop 가능한 라인인경우 drop 가능 flag 처리. 
           is_child.drop_enable = true;
@@ -4366,6 +4419,9 @@
 
       //UI 추가 처리 FUNCTION 호출.
       oAPP.fn.designAddUIObject(ls_drop, ls_0022, is_0023, l_cnt);
+
+      //drag 종료 처리.
+      oAPP.fn.designDragEnd();
 
     } //UI 추가.
 

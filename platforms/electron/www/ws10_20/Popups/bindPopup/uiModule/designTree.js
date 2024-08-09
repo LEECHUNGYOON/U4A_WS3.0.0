@@ -2772,6 +2772,10 @@ function designControl(oArea){
             //수집된 path를 기준으로 child를 탐색하며 펼침 처리.
             function lf_expand(is_child){
 
+                if(typeof is_child?.context === "undefined" || is_child?.context === null){
+                    return;
+                }
+
                 //펼침 처리 대상 child의 CHILD 정보 검색.
                 var l_CHILD = is_child.context.getProperty("CHILD");
 
@@ -3667,10 +3671,7 @@ function designView(oArea){
                 highlight:"{_highlight}"
             }),
             rowActionTemplate : new sap.ui.table.RowAction({
-                //테스트 주석처리.
-                // visible:"{/edit}",
-                //테스트!!!!!!!!!!!
-                visible:"{/_bind_visible}",
+                visible:"{/edit}",
                 items : [
                     new sap.ui.table.RowActionItem({
                         icon:"sap-icon://accept",

@@ -1601,12 +1601,18 @@
         //CSS Link Add 팝업 호출.
         oAPP.fn.fnCssJsLinkAddPopupOpener("CSS");
 
+        //단축키 잠금 해제처리.
+        oAPP.fn.setShortcutLock(false);
+
         //function 호출처 skip을위한 flag 처리.
         return true;
 
       case "DH001023":
         //JS Link Add 팝업 호출.
         oAPP.fn.fnCssJsLinkAddPopupOpener("JS");
+        
+        //단축키 잠금 해제처리.
+        oAPP.fn.setShortcutLock(false);
 
         //function 호출처 skip을위한 flag 처리.
         return true;
@@ -1614,6 +1620,9 @@
       case "DH001026":
         //Web Security Settings 팝업 호출.
         oAPP.fn.fnWebSecurityPopupOpener();
+        
+        //단축키 잠금 해제처리.
+        oAPP.fn.setShortcutLock(false);
 
         //function 호출처 skip을위한 flag 처리.
         return true;
@@ -1848,6 +1857,9 @@
 
         //default false 처리.
         is_attr.UIATV = "false";
+
+        //combobox value false 처리.
+        is_attr.comboval = "false";
 
         //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
         oAPP.fn.attrChangeProc(is_attr, "DDLB");
@@ -2666,9 +2678,17 @@
 
       oAPP.fn.fnIconPreviewPopupOpener(function (e) {
 
-        parent.setBusy("");
+        parent.setBusy("X");
+
+        //단축키 잠금 처리.
+        oAPP.fn.setShortcutLock(true);
 
         if(e.RETCD === "C"){ // C : 취소
+
+            //단축키 잠금 해제 처리.
+            oAPP.fn.setShortcutLock(false);
+
+            parent.setBusy("");
             return;
         }
 
@@ -3838,7 +3858,7 @@
     }
 
     
-    var ls_0023, l_dval = "", l_ISLST = "";
+    var ls_0023 = undefined, l_dval = "", l_ISLST = "";
 
     //ROOT가 아닌경우, 직접 입력가능한 aggregation이 아닌경우 default 값 얻기.
     if(is_attr.OBJID !== "ROOT" && is_attr.UIATK.indexOf("_1") === -1){
@@ -3846,7 +3866,7 @@
 
     }
 
-    if(ls_0023){
+    if(typeof ls_0023 !== "undefined"){
       l_dval = ls_0023.DEFVL;
       l_ISLST = ls_0023.ISLST;
     }
@@ -4290,6 +4310,11 @@
     //CALLBACK FUNCTION.
     function lf_callback(param){
 
+      parent.setBusy("X");
+      
+      //단축키 잠금 처리.
+      oAPP.fn.setShortcutLock(true);
+
       var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
 
       //212	디자인 화면에서 Attribute 변경에 대한 작업을 진행하고 있습니다.
@@ -4371,10 +4396,8 @@
 
     //F4HelpID에 바인딩 처리가 됐다면 exit.
     if(ls_attr.ISBND === "X"){
-      var l_LANGU = parent.WSUTIL.getWsSettingsInfo().globalLanguage;
-
       //Unable to invoke field list popup bound to F4HelpID field.
-      ls_attr.valtx = parent.WSUTIL.getWsMsgClsTxt(l_LANGU, "ZMSG_WS_COMMON_001", "050");
+      ls_attr.valtx = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "050");
 
       //005	Job finished.
       parent.showMessage(sap, 10, "E", ls_attr.valtx);
@@ -5001,7 +5024,7 @@
           
           //아이콘 툴팁 구성.
           //078   Icon favorite list
-          is_attr.icon2_ttip = "🌟\n" + parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "078");
+          is_attr.icon2_ttip = "🌟\n" + parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "078");
 
           //바인딩 처리가 안됐다면.
           if(is_attr.ISBND === ""){
@@ -6081,7 +6104,7 @@
 
       //아이콘 툴팁 구성.
       //078   Icon favorite list
-      is_attr.icon2_ttip = "🌟\n" + parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "078");
+      is_attr.icon2_ttip = "🌟\n" + parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "078");
 
     }
 
@@ -7087,7 +7110,7 @@
             _sERMSG.ITMCD = _sUA028.ITMCD;
 
             //093	Bind type은 ABAP TYPE이 P 유형만 가능합니다.
-            _sERMSG.ERMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "093");
+            _sERMSG.ERMSG = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "093");
 
             _sRes.T_ERMSG.push(_sERMSG);
 
@@ -7102,7 +7125,7 @@
             
             //137	If Bind type is selected, Reference Field name is required.
             _sERMSG.ITMCD = "P05";
-            _sERMSG.ERMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "137");
+            _sERMSG.ERMSG = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "137");
 
             _sRes.T_ERMSG.push(_sERMSG);
 
@@ -7121,7 +7144,7 @@
             _sERMSG.ITMCD = _sUA028.ITMCD;
 
             //152	바인딩 필드와 참조필드의 부모 모델 path가 다릅니다.
-            _sERMSG.ERMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "152");
+            _sERMSG.ERMSG = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "152");
 
             _sRes.T_ERMSG.push(_sERMSG);
 
@@ -7147,7 +7170,7 @@
             _sERMSG.ITMCD = _sUA028.ITMCD; 
 
             //095	ABAP TYPE CHAR, STRING은 Nozero를 설정할 수 없습니다.
-            _sERMSG.ERMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "095");
+            _sERMSG.ERMSG = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "095");
 
             _sRes.T_ERMSG.push(_sERMSG);
 
@@ -7166,7 +7189,7 @@
             _sERMSG.ITMCD = _sUA028.ITMCD; 
 
             //097	Is number format은 ABAP TYPE INT, P만 사용할 수 있습니다.
-            _sERMSG.ERMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "097");
+            _sERMSG.ERMSG = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "097");
 
             _sRes.T_ERMSG.push(_sERMSG);
 
@@ -7186,7 +7209,7 @@
       _sRes.RETCD = "E";
 
       //146	바인딩 추가속성 정보에 오류건이 존재합니다.
-      _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "146");
+      _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "146");
       
       return _sRes;
 

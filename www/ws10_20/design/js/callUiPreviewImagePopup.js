@@ -79,7 +79,7 @@
 
         //040	Rotation On/Off
         oSwitch = new sap.m.Switch({state:"{/state}", 
-            tooltip:parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "040")});
+            tooltip:parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "040")});
         oTool0.addContent(oSwitch);
         oSwitch.attachChange(function(){
             //switch on/off 여부에 따른 Carousel 자동넘김 처리.

@@ -2479,6 +2479,9 @@ let oAPP = parent.oAPP,
                 return;
             }
 
+            //confirm 팝업 종료처리됨 flag.
+            var _destroied = false;
+
             for (let i = 0, l = _aDialog.length; i < l; i++) {
                 
                 var _oDialog = _aDialog[i];
@@ -2490,11 +2493,19 @@ let oAPP = parent.oAPP,
 
                 //로직에 의해 호출된 confirm popup인경우.
                 if(_oDialog.getId() === oAPP.attr.C_CONFIRM_POPUP){
+
+                    _destroied = true;
+
                     //해당 dialog destroy 처리.
                     _oDialog.destroy();
                 }
-
                
+            }
+
+            //confirm 팝업 종료처리된경우 WS20에 BUSY OFF 요청 처리.
+            if(_destroied === true){
+                //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
             }
 
             // oAPP.ui.APP.focus();

@@ -26,8 +26,8 @@
             //078  Icon favorite list
             //079  &1 does not exist.
             parent.showMessage(sap, 10, "E", 
-                parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "079", 
-                    parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "078")
+                parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "079", 
+                    parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "078")
                 , "", "", ""));
 
             //팝업 UI가 이미 호출되 있다면 종료 처리.
@@ -75,7 +75,7 @@
         oPop.setCustomHeader(oTool0);
 
         //078   Icon favorite list
-        var l_txt = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "078");
+        var l_txt = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "078");
 
         //팝업 타이틀.
         oTool0.addContent(new sap.m.Title({text:l_txt, tooltip:l_txt}).addStyleClass("sapUiTinyMarginBegin"));

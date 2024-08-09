@@ -412,7 +412,7 @@ body,
 /***************************************************
  * [TEST] 미리 보기 영역 테두리 구분 표시 --- Start
  ***************************************************/
-/* .u4aWsDesignPreview {
+.u4aWsDesignPreview {
   padding: 0.5rem;
   border: 0.125rem solid;
   border-style: dashed;
@@ -422,7 +422,19 @@ body,
   padding-left: 0.5rem;
   padding-right: 0.5rem;
   padding-bottom: 0.5rem;
-} */
+}
 /***************************************************
  * 미리 보기 영역 테두리 구분 표시 --- End
  ***************************************************/
+
+
+
+/***************************************************
+ * 메인페이지의 u4a bot 배경 이미지
+ ***************************************************/
+ .u4aWs10Page .sapMPage > section {
+	  background-image: url(../../img/u4a_bot.png);
+    background-repeat: no-repeat;
+    background-size: 30%;
+    background-position: center;
+}

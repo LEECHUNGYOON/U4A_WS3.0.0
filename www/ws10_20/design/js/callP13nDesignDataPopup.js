@@ -223,7 +223,7 @@
         loApp.ui.oHeadListPage.addContent(loApp.ui.oTab);
 
         //Drag a personalization list item to drop it into the design tree.
-        var l_txt = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "062");
+        var l_txt = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "062");
 
         loApp.ui.oTab.setFooter(new sap.m.Text({wrapping:false, text:l_txt, tooltip:l_txt}));
 
@@ -524,6 +524,9 @@
 
     //팝업 종료 이벤트.
     function lf_afterClose(){
+
+        //단축키 잠금 해제 처리.
+        oAPP.fn.setShortcutLock(false);
 
         //기본 폴더 및 파일이 존재하지 않는경우 생성 처리.
         lf_createDefaultFolder();

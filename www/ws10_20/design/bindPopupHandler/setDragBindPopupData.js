@@ -66,7 +66,7 @@ function checkBindPopupDragAppData(is_drag){
         _sRes.RETCD = "E";
 
         //099	Drag 정보가 존재하지 않습니다.
-        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "097");
+        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "099");
 
         return _sRes;
     }
@@ -102,7 +102,7 @@ function checkBindPopupDragAppData(is_drag){
         _sRes.RETCD = "E";
 
         //163	부모 UI에 MODEL BINDING 처리되어 UI를 구성할 수 없습니다.
-        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "163");
+        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "163");
         
 
         return _sRes;

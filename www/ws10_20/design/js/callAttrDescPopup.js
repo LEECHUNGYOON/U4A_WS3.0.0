@@ -49,12 +49,9 @@
         loApp.attr.ls_desc2 = undefined;
 
 
-        //세팅된 언어 정보 얻기.
-        var l_LANGU = parent.WSUTIL.getWsSettingsInfo().globalLanguage;
-
         //세팅된 언어가 원어와 다른경우 번역본에 해당하는 DESC정보 검색.
-        if(l_LANGU !== C_EN){
-            loApp.attr.ls_desc2 = lf_getDescData(l_LANGU, l_LIBNM, loApp.attr.is_attr.UIATT);
+        if(oAPP.oDesign.settings.GLANGU !== C_EN){
+            loApp.attr.ls_desc2 = lf_getDescData(oAPP.oDesign.settings.GLANGU, l_LIBNM, loApp.attr.is_attr.UIATT);
         }
 
         //두 언어 다 desc정보를 찾지 못한 경우.

@@ -67,7 +67,7 @@
         oPanel.setHeaderToolbar(oTool1);
 
         //Selected UI Object Info
-        var l_txt = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "060");
+        var l_txt = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "060");
 
         oTool1.addContent(new sap.m.Title({text:"▶ " + l_txt}).addStyleClass("sapUiTinyMarginBegin"));
         
@@ -125,7 +125,7 @@
         oVbox1.addItem(oTab1);
 
         //Target Replace Properties
-        var l_txt = parent.WSUTIL.getWsMsgClsTxt(parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "061");
+        var l_txt = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "061");
 
         var oTitle2 = new sap.m.Title({text:"▶ " + l_txt}).addStyleClass("sapUiMediumMarginBegin");
         oTab1.setTitle(oTitle2);
