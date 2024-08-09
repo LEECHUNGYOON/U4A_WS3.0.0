@@ -1043,7 +1043,9 @@
     /************************************************************************
      * Activate Button Event
      ************************************************************************/
-    oAPP.events.ev_pressActivateBtn = function (oEvent) {
+    oAPP.events.ev_pressActivateBtn = async function (oEvent) {
+
+        console.log("save01");
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
@@ -1101,6 +1103,7 @@
         if (sReqNo != "") {
             oFormData.append("TRKORR", sReqNo);
         }
+
 
         oFormData.append("IS_ACT", 'X');
         oFormData.append("APPDATA", JSON.stringify(oAPP.fn.getSaveData()));

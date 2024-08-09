@@ -1,3 +1,4 @@
+
 /************************************************************************
  * Copyright 2020. INFOCG Inc. all rights reserved. 
  * ----------------------------------------------------------------------
@@ -746,7 +747,7 @@
                 }
             }, {
                 KEY: "Ctrl+F2", // Syntax Check Button
-                fn: (e) => {
+                fn: async (e) => {
 
                     e.stopImmediatePropagation();
 
@@ -768,13 +769,30 @@
                         return;
                     }
 
+                    oSyntaxCheckBtn.focus();
+
+                    sap.ui.getCore().lock();
+
+                    await new Promise((resolve) => {
+
+                        var _ointer = setInterval(() => {
+    
+                            if(parent.getBusy() === "X"){ return; } 
+    
+                            clearInterval(_ointer);
+                            resolve();
+                          
+                        }, 0);
+
+                    });
+
                     oSyntaxCheckBtn.firePress();
 
                 }
             },
             {
                 KEY: "F3", // Back Button
-                fn: (e) => {
+                fn: async (e) => {
 
                     e.stopImmediatePropagation();
 
@@ -783,8 +801,8 @@
                         return;
                     }
 
-                    // lock 걸기
-                    sap.ui.getCore().lock();
+                    // // lock 걸기
+                    // sap.ui.getCore().lock();
 
                     // 메뉴 팝오버 닫기
                     oAPP.common.fnCloseMenuPopover();
@@ -798,18 +816,35 @@
                         return;
                     }
 
-                    var oBackBtn = sap.ui.getCore().byId("backBtn");
-                    if (!oBackBtn || !oBackBtn.getEnabled() || !oBackBtn.getVisible()) {
-                        sap.ui.getCore().unlock();
-                        return;
-                    }
+                    // var oBackBtn = sap.ui.getCore().byId("backBtn");
+                    // if (!oBackBtn || !oBackBtn.getEnabled() || !oBackBtn.getVisible()) {
+                    //     sap.ui.getCore().unlock();
+                    //     return;
+                    // }
 
                     // 커서 포커스 날리기
                     if (document.activeElement && document.activeElement.blur) {
                         document.activeElement.blur();
                     }
 
+                    var oBackBtn = sap.ui.getCore().byId("backBtn");
                     oBackBtn.focus();
+
+                    sap.ui.getCore().lock();
+
+                    await new Promise((resolve) => {
+
+                        var _ointer = setInterval(() => {
+    
+                            if(parent.getBusy() === "X"){ return; } 
+    
+                            clearInterval(_ointer);
+                            resolve();
+                          
+                        }, 0);
+
+                    });
+
                     oBackBtn.firePress();
 
                 }
@@ -865,14 +900,20 @@
             },
             {
                 KEY: "Ctrl+F3", // Activate Button
-                fn: (e) => {
-
+                fn: async (e) => {
                     e.stopImmediatePropagation();
+   
+                    var oActivateBtn = sap.ui.getCore().byId("activateBtn");
 
-                    if (sap.ui.getCore().isLocked()) {
-                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                    if (!oActivateBtn || !oActivateBtn.getEnabled() || !oActivateBtn.getVisible()) {
                         return;
                     }
+
+
+                    if (sap.ui.getCore().isLocked()) {
+                        return;
+                    }
+
 
                     // 단축키 실행 할지 말지 여부 체크
                     var result = oAPP.common.fnShortCutExeAvaliableCheck();
@@ -882,19 +923,33 @@
                         return;
                     }
 
-                    var oActivateBtn = sap.ui.getCore().byId("activateBtn");
 
-                    if (!oActivateBtn || !oActivateBtn.getEnabled() || !oActivateBtn.getVisible()) {
-                        return;
-                    }
 
                     // 커서 포커스 날리기
                     if (document.activeElement && document.activeElement.blur) {
                         document.activeElement.blur();
                     }
 
+                    
                     oActivateBtn.focus();
+
+                    sap.ui.getCore().lock();
+
+                    await new Promise((resolve) => {
+
+                        var _ointer = setInterval(() => {
+    
+                            if(parent.getBusy() === "X"){ return; } 
+    
+                            clearInterval(_ointer);
+                            resolve();
+                          
+                        }, 0);
+
+                    });
+
                     oActivateBtn.firePress();
+
                 }
             },
             {
@@ -916,9 +971,15 @@
             },
             {
                 KEY: "Ctrl+S", // Save Button
-                fn: (e) => {
+                fn: async (e) => {
 
                     e.stopImmediatePropagation();
+                    
+                    var oSaveBtn = sap.ui.getCore().byId("saveBtn");
+                    if (!oSaveBtn || !oSaveBtn.getEnabled() || !oSaveBtn.getVisible()) {
+                        return;
+                    }
+
 
                     if (sap.ui.getCore().isLocked()) {
                         zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -933,18 +994,31 @@
                         return;
                     }
 
-                    var oSaveBtn = sap.ui.getCore().byId("saveBtn");
-                    if (!oSaveBtn || !oSaveBtn.getEnabled() || !oSaveBtn.getVisible()) {
-                        return;
-                    }
-
                     // 커서 포커스 날리기
                     if (document.activeElement && document.activeElement.blur) {
                         document.activeElement.blur();
                     }
 
+
                     oSaveBtn.focus();
+
+                    sap.ui.getCore().lock();
+
+                    await new Promise((resolve) => {
+
+                        var _ointer = setInterval(() => {
+    
+                            if(parent.getBusy() === "X"){ return; } 
+    
+                            clearInterval(_ointer);
+                            resolve();
+                          
+                        }, 0);
+
+                    });
+
                     oSaveBtn.firePress();
+
                 }
             },
             {
@@ -1225,8 +1299,8 @@
                 }
             },
             {
-                KEY: "F3",
-                fn: (e) => {
+                KEY: "F3",  //USP 
+                fn: async (e) => {
 
                     e.stopImmediatePropagation();
 
@@ -1243,17 +1317,19 @@
                         return;
                     }
 
-                    var oBackBtn = sap.ui.getCore().byId("ws30_backBtn");
-                    if (!oBackBtn || !oBackBtn.getEnabled() || !oBackBtn.getVisible()) {
-                        return;
-                    }
+                    // var oBackBtn = sap.ui.getCore().byId("ws30_backBtn");
+                    // if (!oBackBtn || !oBackBtn.getEnabled() || !oBackBtn.getVisible()) {
+                    //     return;
+                    // }
 
                     // 커서 포커스 날리기
                     if (document.activeElement && document.activeElement.blur) {
                         document.activeElement.blur();
                     }
 
+                    var oBackBtn = sap.ui.getCore().byId("ws30_backBtn");
                     oBackBtn.focus();
+
                     oBackBtn.firePress();
 
                 }
