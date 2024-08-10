@@ -454,7 +454,7 @@
 
     //attr 입력필드 이벤트.
     oRInp2.attachChange(function(){
-      console.log('chg1111');
+
       parent.setBusy("X");
 
       //단축키도 같이 잠금 처리.
@@ -490,7 +490,7 @@
 
       }
 
-
+      
       var _oCtxt = this.getBindingContext();
 
       if(typeof _oCtxt === "undefined" || _oCtxt === null){
@@ -524,7 +524,6 @@
 
       }
 
-      console.log('chg2222');
 
       //ATTRIBUTE 입력건에 대한 처리.
       oAPP.fn.attrChange(_sAttr, "INPUT", false, false);
@@ -996,7 +995,6 @@
     //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
     oAPP.fn.attrChangeProc(is_attr, uityp, bSkipRefresh, bForceUpdate);
 
-    console.log('chg333');
 
     //design tree, attr table 갱신 대기.
     await oAPP.fn.designRefershModel();
@@ -1015,6 +1013,7 @@
     //테마변경 이벤트 대기 처리.
     //(테마 변경건이 아닌경우 하위 로직 바로 수행됨)
     await _oThemPromise;
+
 
 
     //onAfterRendering 이벤트 등록 대상 UI 얻기.
@@ -1044,13 +1043,9 @@
 
     }
    
-    
     //20240621 pes.
     //바인딩 팝업의 디자인 영역 갱신처리.
     oAPP.fn.updateBindPopupDesignData();
-
-    
-    console.log('chg444');
 
   
   }; //attribute 입력건에 대한 처리.

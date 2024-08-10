@@ -995,7 +995,6 @@
 
       var _aError = [];
 
-
       //ui table 예외처리 프로퍼티 점검.
       oAPP.fn.chkExcepUiTable(_aError);
 
