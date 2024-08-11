@@ -440,16 +440,18 @@ body,
 } */
 
 
-html[class^=sapuiTheme][class$="dark"] .u4aWs10Page .sapMPage > section {
-  background-image: url(../../img/u4a_bot.png);
+html[class*=sapUiTheme][class*="dark"] .u4aWs10Page .sapMPage > section {
+  background-image: url(../../img/u4a_bot_dark.jpg);
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: 80%;
   background-position: center;
+  background-color: #000000;
 }
 
-html[class^=sapuiTheme]:not([class$="dark"]) .u4aWs10Page .sapMPage > section {
-  background-image: url(../../img/u4a_bot.jpg);
+html[class*=sapUiTheme]:not([class*="dark"]) .u4aWs10Page .sapMPage > section {
+  background-image: url(../../img/u4a_bot_white.jpg);
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: 80%;
   background-position: center;
+  background-color: #FFFFFF;
 }
