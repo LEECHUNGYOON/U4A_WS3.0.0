@@ -1045,8 +1045,6 @@
      ************************************************************************/
     oAPP.events.ev_pressActivateBtn = async function (oEvent) {
 
-        console.log("save01");
-
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
 
