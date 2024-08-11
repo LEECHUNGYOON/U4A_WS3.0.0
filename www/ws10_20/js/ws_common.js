@@ -412,7 +412,7 @@
     oAPP.common.getShortCutList = function (sPgNo) {
 
         var aShortCutWS10 = [{
-            KEY: "F11", // FullScreen
+            KEY: "F11", // [WS10] FullScreen
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -442,7 +442,7 @@
 
             }
         }, {
-            KEY: "Ctrl+Shift+F", // textSearchPopup
+            KEY: "Ctrl+Shift+F", // [WS10] textSearchPopup
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -459,7 +459,7 @@
 
             }
         }, {
-            KEY: "Ctrl+F12", // Application Create
+            KEY: "Ctrl+F12", // [WS10] Application Create
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -481,9 +481,8 @@
 
             }
         },
-        {
-            // KEY: "Ctrl+Shift+F1", // Application Change
-            KEY: "F6", // Application Change
+        {           
+            KEY: "F6", // [WS10] Application Change
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -516,7 +515,7 @@
             }
         },
         {
-            KEY: "Ctrl+F10", // Application Delete
+            KEY: "Ctrl+F10", // [WS10] Application Delete
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -544,7 +543,7 @@
             }
         },
         {
-            KEY: "Shift+F11", // Application Copy
+            KEY: "Shift+F11", // [WS10] Application Copy
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -572,7 +571,7 @@
             }
         },
         {
-            KEY: "F7", // Display Button
+            KEY: "F7", // [WS10] Display Button
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -608,7 +607,7 @@
             }
         },
         {
-            KEY: "F8", // Application Execution
+            KEY: "F8", // [WS10] Application Execution
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -636,7 +635,7 @@
             }
         },
         {
-            KEY: "Ctrl+F1", // Example Open
+            KEY: "Ctrl+F1", // [WS10] Example Open
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -664,7 +663,7 @@
             }
         },
         {
-            KEY: "Ctrl+F3", // Multi Preview
+            KEY: "Ctrl+F3", // [WS10] Multi Preview
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -694,7 +693,7 @@
 
         ],
             aShortCutWS20 = [{
-                KEY: "F11", // FullScreen
+                KEY: "F11", // [WS20] FullScreen
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -724,7 +723,7 @@
 
                 }
             }, {
-                KEY: "Ctrl+Shift+F", // textSearchPopup
+                KEY: "Ctrl+Shift+F", // [WS20] textSearchPopup
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -746,7 +745,7 @@
 
                 }
             }, {
-                KEY: "Ctrl+F2", // Syntax Check Button
+                KEY: "Ctrl+F2", // [WS20] Syntax Check Button
                 fn: async (e) => {
 
                     e.stopImmediatePropagation();
@@ -791,7 +790,7 @@
                 }
             },
             {
-                KEY: "F3", // Back Button
+                KEY: "F3", // [WS20] Back Button
                 fn: async (e) => {
 
                     e.stopImmediatePropagation();
@@ -851,7 +850,7 @@
 
             },
             {
-                KEY: "Ctrl+F1", // Display or Change Button
+                KEY: "Ctrl+F1", // [WS20] Display or Change Button
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -899,7 +898,7 @@
                 }
             },
             {
-                KEY: "Ctrl+F3", // Activate Button
+                KEY: "Ctrl+F3", // [WS20] Activate Button
                 fn: async (e) => {
                     e.stopImmediatePropagation();
    
@@ -954,7 +953,7 @@
             },
             {
                 /****************************************************************************************************
-                 * shortcut library bug,
+                 * [WS20] shortcut library bug,
                  ****************************************************************************************************
                  * Ctrl + F4 키를 누르면 Ctrl + S 이벤트를 발생시키는 버그를 발견하여,
                  * Ctrl + F4 키를 눌렀다면 이벤트 전파 방지를 하여 Ctrl + S 이벤트를
@@ -970,7 +969,7 @@
                 }
             },
             {
-                KEY: "Ctrl+S", // Save Button
+                KEY: "Ctrl+S", // [WS20] Save Button
                 fn: async (e) => {
 
                     e.stopImmediatePropagation();
@@ -979,7 +978,6 @@
                     if (!oSaveBtn || !oSaveBtn.getEnabled() || !oSaveBtn.getVisible()) {
                         return;
                     }
-
 
                     if (sap.ui.getCore().isLocked()) {
                         zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -1022,7 +1020,7 @@
                 }
             },
             {
-                KEY: "Ctrl+Shift+F12", // Mime Button
+                KEY: "Ctrl+Shift+F12", // [WS20] Mime Button
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1049,7 +1047,7 @@
                 }
             },
             {
-                KEY: "Ctrl+F12", // Controller Button
+                KEY: "Ctrl+F12", // [WS20] Controller Button
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1076,7 +1074,7 @@
                 }
             },
             {
-                KEY: "F8", // Application Execution Button
+                KEY: "F8", // [WS20] Application Execution Button
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1103,7 +1101,7 @@
                 }
             },
             {
-                KEY: "Ctrl+F5", // Multi Preview Button
+                KEY: "Ctrl+F5", // [WS20] Multi Preview Button
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1130,7 +1128,7 @@
                 }
             },
             {
-                KEY: "Ctrl+Shift+F10", // Icon List Button
+                KEY: "Ctrl+Shift+F10", // [WS20] Icon List Button
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1168,7 +1166,7 @@
                 }
             },
             {
-                KEY: "Shift+F1", // Add Server Event Button
+                KEY: "Shift+F1", // [WS20] Add Server Event Button
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1195,7 +1193,7 @@
                 }
             },
             {
-                KEY: "F9", // Runtime Class Navigator Event Button
+                KEY: "F9", // [WS20] Runtime Class Navigator Event Button
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1222,7 +1220,7 @@
                 }
             },
             {
-                KEY: "Ctrl+F", // Find
+                KEY: "Ctrl+F", // [WS20] Find
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1250,8 +1248,12 @@
             }
 
             ],
+
+            /*****************************************************
+             * [WS30] USP 단축키
+             *****************************************************/
             aShortCutWS30 = [{
-                KEY: "F11", // FullScreen
+                KEY: "F11", // [WS30] FullScreen
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1289,7 +1291,7 @@
              * 타지 않게 하기 위함.               
              ****************************************************************************************************/
             {
-                KEY: "Ctrl+F4",
+                KEY: "Ctrl+F4", // [WS30]
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1299,7 +1301,7 @@
                 }
             },
             {
-                KEY: "F3",  //USP 
+                KEY: "F3",  // [WS30] 이전 페이지로 이동 
                 fn: async (e) => {
 
                     e.stopImmediatePropagation();
@@ -1334,10 +1336,17 @@
 
                 }
             }, {
-                KEY: "Ctrl+F1", // Display or Change Button
+                KEY: "Ctrl+F1", // [WS30] Display or Change Button
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
+
+                    var oChangeModeBtn = sap.ui.getCore().byId("ws30_changeModeBtn"),
+                        oDisplayBtn = sap.ui.getCore().byId("ws30_displayModeBtn");
+
+                    if (!oChangeModeBtn && !oDisplayBtn) {
+                        return;
+                    }
 
                     if (sap.ui.getCore().isLocked()) {
                         zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -1350,14 +1359,7 @@
                     // X 이면 실행 불가
                     if (result == "X") {
                         return;
-                    }
-
-                    var oChangeModeBtn = sap.ui.getCore().byId("ws30_changeModeBtn"),
-                        oDisplayBtn = sap.ui.getCore().byId("ws30_displayModeBtn");
-
-                    if (!oChangeModeBtn && !oDisplayBtn) {
-                        return;
-                    }
+                    }                    
 
                     var bIsChgVisi = oChangeModeBtn.getVisible(),
                         bIsDisVisi = oDisplayBtn.getVisible();
@@ -1381,17 +1383,22 @@
 
                 }
             }, {
-                KEY: "Ctrl+F3", // Activate Button
-                fn: (e) => {
+                KEY: "Ctrl+F3", // [WS30] Activate Button
+                fn: async (e) => {
+
+                    e.stopImmediatePropagation();
+
+                    var oActivateBtn = sap.ui.getCore().byId("ws30_activateBtn");
+                    if (!oActivateBtn || !oActivateBtn.getEnabled() || !oActivateBtn.getVisible()) {
+                        return;
+                    }
 
                     // Active 버튼 누르기 전 커서의 위치를 저장한다.
                     if (oAPP.attr.beforeActiveElement) {
                         delete oAPP.attr.beforeActiveElement;
                     }
 
-                    oAPP.attr.beforeActiveElement = document.activeElement;
-
-                    e.stopImmediatePropagation();
+                    oAPP.attr.beforeActiveElement = document.activeElement;                    
 
                     if (sap.ui.getCore().isLocked()) {
                         zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -1404,13 +1411,7 @@
                     // X 이면 실행 불가
                     if (result == "X") {
                         return;
-                    }
-
-                    var oActivateBtn = sap.ui.getCore().byId("ws30_activateBtn");
-
-                    if (!oActivateBtn || !oActivateBtn.getEnabled() || !oActivateBtn.getVisible()) {
-                        return;
-                    }
+                    }                    
 
                     // 커서 포커스 날리기
                     if (document.activeElement && document.activeElement.blur) {
@@ -1418,10 +1419,26 @@
                     }
 
                     oActivateBtn.focus();
+
+                    sap.ui.getCore().lock();
+
+                    await new Promise((resolve) => {
+
+                        var _ointer = setInterval(() => {
+    
+                            if(parent.getBusy() === "X"){ return; } 
+    
+                            clearInterval(_ointer);
+                            resolve();
+                          
+                        }, 0);
+
+                    });
+
                     oActivateBtn.firePress();
                 }
             }, {
-                KEY: "Ctrl+S", // Save Button
+                KEY: "Ctrl+S", // [WS30] Save Button
                 fn: (e) => {
 
                     // Active 버튼 누르기 전 커서의 위치를 저장한다.
@@ -1460,7 +1477,7 @@
                     oSaveBtn.firePress();
                 }
             }, {
-                KEY: "Shift+F1", // Code Editor Pretty Print
+                KEY: "Shift+F1", // [WS30] Code Editor Pretty Print
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1490,7 +1507,7 @@
                 }
             },
             {
-                KEY: "F8", // Application Execution Button
+                KEY: "F8", // [WS30] Application Execution Button
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1517,10 +1534,8 @@
                 }
             },
             {
-                KEY: "Ctrl+Shift+F12", // Mime Button
+                KEY: "Ctrl+Shift+F12", // [WS30] Mime Button
                 fn: (e) => {
-
-                    debugger;
 
                     e.stopImmediatePropagation();
 
@@ -1546,7 +1561,7 @@
                 }
             },
             {
-                KEY: "Ctrl+F12", // Controller Button
+                KEY: "Ctrl+F12", // [WS30] Controller Button
                 fn: (e) => {
 
                     e.stopImmediatePropagation();

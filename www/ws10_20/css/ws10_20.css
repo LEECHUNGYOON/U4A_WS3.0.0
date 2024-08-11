@@ -430,16 +430,10 @@ body,
 
 
 /***************************************************
- * 메인페이지의 u4a bot 배경 이미지
+ * 메인페이지의 u4a bot 배경 이미지 --- START
  ***************************************************/
- /* .u4aWs10Page .sapMPage > section {
-	  background-image: url(../../img/u4a_bot.jpg);
-    background-repeat: no-repeat;
-    background-size: 30%;
-    background-position: center;
-} */
 
-
+/* 다크테마일 경우 */
 html[class*=sapUiTheme][class*="dark"] .u4aWs10Page .sapMPage > section {
   background-image: url(../../img/u4a_bot_dark.jpg);
   background-repeat: no-repeat;
@@ -448,6 +442,7 @@ html[class*=sapUiTheme][class*="dark"] .u4aWs10Page .sapMPage > section {
   background-color: #000000;
 }
 
+/* 다크테마 이외의 나머지 테마 */
 html[class*=sapUiTheme]:not([class*="dark"]) .u4aWs10Page .sapMPage > section {
   background-image: url(../../img/u4a_bot_white.jpg);
   background-repeat: no-repeat;
@@ -455,3 +450,6 @@ html[class*=sapUiTheme]:not([class*="dark"]) .u4aWs10Page .sapMPage > section {
   background-position: center;
   background-color: #FFFFFF;
 }
+/***************************************************
+ * 메인페이지의 u4a bot 배경 이미지 --- END
+ ***************************************************/
