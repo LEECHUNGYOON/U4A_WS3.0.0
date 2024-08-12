@@ -453,7 +453,7 @@
     oRHbox1.addItem(oRInp2);
 
     //attr 입력필드 이벤트.
-    oRInp2.attachChange(function(){
+    oRInp2.attachChange(async function(){
 
       parent.setBusy("X");
 
@@ -526,7 +526,15 @@
 
 
       //ATTRIBUTE 입력건에 대한 처리.
-      oAPP.fn.attrChange(_sAttr, "INPUT", false, false);
+      await oAPP.fn.attrChange(_sAttr, "INPUT", false, false);
+
+      
+      //오류 표현 바인딩 정보가 존재하는경우.
+      if(_sAttr.valst !== undefined){
+        //오류 팝업 호출.
+        this._oValueStateMessage.open();
+      }
+
 
     }); //attr 입력필드 이벤트.
 
@@ -595,7 +603,7 @@
       valueState:"{valst}", valueStateText:"{valtx}"});
 
     //DDLB 선택 이벤트.
-    oRSel1.attachChange(function(){
+    oRSel1.attachChange(async function(){
       
       parent.setBusy("X");
 
@@ -667,7 +675,14 @@
       }
 
       //ATTRIBUTE 입력건에 대한 처리.
-      oAPP.fn.attrChange(_sAttr, "DDLB", false, false);
+      await oAPP.fn.attrChange(_sAttr, "DDLB", false, false);
+
+
+      //오류 표현 바인딩 정보가 존재하는경우.
+      if(_sAttr.valst !== undefined){
+        //오류 팝업 호출.
+        this._oValueStateMessage.open();
+      }
 
 
     }); //DDLB 선택 이벤트.
@@ -1066,8 +1081,30 @@
     //화면에서 UI추가, 이동, 삭제 및 attr 변경시 변경 flag 처리.
     oAPP.fn.setChangeFlag();
 
+    
+    var _oDesignChkModule = parent.require(
+      parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "checkAppData", "designTreeData.js"));
+
+
+    //입력한 값에 따른 점검 처리.
+    var _aReuireError = _oDesignChkModule.checkPropertyValue(is_attr);
+
+    //입력한 값에 오류가 존재하는경우.
+    if(_aReuireError?.RETCD === "E"){
+
+      is_attr.valst = "Error";
+      is_attr.valtx = _aReuireError.RTMSG;
+
+      //입력값 초기화.
+      is_attr.UIATV = "";
+
+    }
+
+
     //attr 변경처리.
     oAPP.fn.attrChgAttrVal(is_attr, uityp);
+
+
 
     //DDLB 변경 라인 STYLE 처리.
     oAPP.fn.attrSetLineStyle(is_attr);

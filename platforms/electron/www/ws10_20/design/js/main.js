@@ -993,6 +993,10 @@
     //attribute 예외처리 항목 점검 function.
     oAPP.fn.chkExcepionAttr = function(){
 
+      //오류 표현 필드 초기화 처리.
+      oAPP.fn.attrClearErrorField();
+
+
       var _aError = [];
 
       //ui table 예외처리 프로퍼티 점검.
@@ -1010,6 +1014,15 @@
       //점검 오류 항목이 존재하는경우 오류 수집 처리.
       if(typeof _aReuireError !== "undefined" && _aReuireError.length > 0){
         _aError = _aError.concat(_aReuireError);
+      }
+
+
+      //프로퍼티 입력값 점검 처리.
+      var _aPropError = _oDesignChkModule.checkValidProperty();
+
+      //점검 오류 항목이 존재하는경우 오류 수집 처리.
+      if(typeof _aPropError !== "undefined" && _aPropError.length > 0){
+        _aError = _aError.concat(_aPropError);
       }
 
 

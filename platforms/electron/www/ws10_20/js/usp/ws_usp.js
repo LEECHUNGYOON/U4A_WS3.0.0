@@ -5399,7 +5399,7 @@
         // USP CONTENT 데이터 임시 변수
         let sContentTmp = "";
         
-        // U4A WS 3.4.1 - sp 00000 버전일 경우 저장시 Content 데이터를 Blob로 저장
+        // U4A WS 3.4.1 - sp 00000 버전 이상일 경우 저장시 Content 데이터를 Blob로 저장
         if(APPCOMMON.checkWLOList("C", "UHAK900763")){
 
             // 임시변수에 USP CONTENT를 담는다.
