@@ -689,7 +689,7 @@ module.exports = {
         } // end of getMsgClsText
 
     },
-    /************** end of Class (MessageClassText) ***************/
+    /************** end of Class (MessageClassText) ***************/   
 
     showMessageBox: function (sap, pOptions) {
 
