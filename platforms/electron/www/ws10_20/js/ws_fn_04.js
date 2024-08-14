@@ -16,7 +16,8 @@
         IPCRENDERER = parent.IPCRENDERER,
         PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
         WSUTIL = parent.require(PATHINFO.WSUTIL),
-        SETTINGS = require(PATHINFO.WSSETTINGS);
+        SETTINGS = require(PATHINFO.WSSETTINGS),
+        WS_LANGU = SETTINGS.globalLanguage;
 
     /************************************************************************
      * SAP GUI 멀티 로그인 체크
@@ -211,17 +212,35 @@
                     Tstr = str.split(":"),
                     len = Tstr.length - 1;
 
+                // WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "227");
+
+                // let sErrMsg = "[VBS 실행 오류] \n\n " + sVbsFullPath + " \n\n " + str;
+                // sErrMsg += "\n \n 문제가 지속될 경우 U4A R&D 팀에 문의하세요.";
+
+                // Please contact U4A Solution Team!
+                // WSUTIL.getWsMsgClsTxt(langu, "ZMSG_WS_COMMON_001", "015");
+
+                // [MSG] - VBS 실행 오류
+                let sMsg1 = WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "227");
+
+                // [MSG] - 문제가 지속될 경우 U4A R&D 팀에 문의하세요.
+                let sMsg2 = WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "228");
+
+                let sErrMsg = `${sVbsFullPath} \n\n ${str} \n \n ${sMsg2}`;
+
+                sap.m.MessageBox.error(sErrMsg, {title: sMsg1});
+
                 console.error("[VBS 실행 오류] \n\n " + sVbsFullPath + " \n\n " + str);
 
-                if (len !== 0) {
+                // if (len !== 0) {
 
-                    str = Tstr[len];
+                //     str = Tstr[len];
 
-                    if (str.indexOf("|") != -1) {
-                        return;
-                    }
+                //     if (str.indexOf("|") != -1) {
+                //         return;
+                //     }
 
-                }
+                // }
 
             });
 
