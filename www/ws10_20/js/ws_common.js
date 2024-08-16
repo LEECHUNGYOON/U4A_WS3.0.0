@@ -1865,7 +1865,7 @@
             .then(oAPP.fn.fnSapGuiMultiLoginCheckThen.bind(oParam))
             .catch((result) => {
 
-                // 같은 client && SYSID 창에 일러스트 메시지를 뿌린다!!
+                // 같은 client && SYSID 창에 IllustedMsgDialog를 닫는다
                 oSendData.PRCCD = "02";
 
                 parent.IPCRENDERER.send("if-browser-interconnection", oSendData);
