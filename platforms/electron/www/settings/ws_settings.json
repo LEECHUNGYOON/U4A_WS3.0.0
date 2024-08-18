@@ -5,8 +5,8 @@
     },
     "UI5": {
         "version": "v11071",
-        "testResource": "http://www.u4arnd.com:8000/zu4a_imp/openui5_lib/v11071/resources/sap-ui-core.js?sap-user=soccerhs&sap-password=cjddbs12",
-        "testResource1": "https://openui5.hana.ondemand.com/1.108.16/resources/sap-ui-core.js",
+        "testResource1": "http://www.u4arnd.com:8000/zu4a_imp/openui5_lib/v11071/resources/sap-ui-core.js?sap-user=soccerhs&sap-password=cjddbs12",
+        "testResource": "https://openui5.hana.ondemand.com/1.108.16/resources/sap-ui-core.js",
         "testResource2": "https://s000.smartils.kr:49999/public/lib/_org_files/sapui5-rt-1.107.1/resources/sap-ui-core.js",        
         "localResource" : "node_modules/U4A/WS/lib/ui5/v11071/resources/sap-ui-core.js",
         "bootstrap": {

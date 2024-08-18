@@ -1912,6 +1912,14 @@
                 return;
             }
 
+            // 단축키 실행 할지 말지 여부 체크
+            var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+            // X 이면 실행 불가
+            if (result == "X") {
+                return;
+            }
+
             parent.onNewWindow();
 
         });
@@ -1921,6 +1929,14 @@
 
             // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
             if (parent.getBusy() == 'X') {
+                return;
+            }
+
+            // 단축키 실행 할지 말지 여부 체크
+            var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+            // X 이면 실행 불가
+            if (result == "X") {
                 return;
             }
 
