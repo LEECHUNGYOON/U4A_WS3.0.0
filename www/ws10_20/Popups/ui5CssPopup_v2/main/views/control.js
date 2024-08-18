@@ -18,8 +18,10 @@
         oContr.msg      = {};
         oContr.types    = {};
         oContr.broad    = {};
-
+    
         oContr.IF_DATA  = {};
+
+        oContr.attr.isBusy = false;
 
         // 공통 DDLB 구조
         oContr.types.TY_DDLB = {
@@ -64,7 +66,10 @@
 
     oContr.oModel.setSizeLimit(Infinity);
 
+    // parent.WSUTIL.getWsMsgClsTxt();
+    // let sGlobalLangu = oAPP.attr.WS_LANGU;
 
+    // oAPP.ICON_MSG.M072 = WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "072"); // Icon    
 
     // 메시지 텍스트 구성
     oContr.msg.A41 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A41", "", "", "", ""); // Cancel
@@ -488,15 +493,46 @@
 
     }; // end of oContr.ui.onInit
 
+    
+    oContr.fn.getBusy = function(){
+
+        return oContr.attr.isBusy;
+    };
 
     /*******************************************************
      * @function - Busy indicator 실행
      *******************************************************/
-    oContr.fn.setBusy = function(bIsBusy){
+    oContr.fn.setBusy = function(bIsBusy, sOption){
 
-        oAPP.ui.ROOT.setBusy(bIsBusy === true ? true : false);
+        oParentAPP.attr.isBusy = bIsBusy;
 
-        return bIsBusy === true ? sap.ui.getCore().lock() : sap.ui.getCore().unlock();
+        var _ISBROAD = sOption?.ISBROAD || undefined;
+
+        if(bIsBusy === true){
+            
+            sap.ui.getCore().lock();
+
+            oAPP.ui.ROOT.setBusy(true);
+
+            //다른 팝업의 BUSY ON 요청 처리.
+            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            if(typeof _ISBROAD === "undefined"){
+                oParentAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+            }      
+
+        } else {
+
+            sap.ui.getCore().unlock();
+            
+            oAPP.ui.ROOT.setBusy(false);
+
+            //다른 팝업의 BUSY OFF 요청 처리.
+            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            if(typeof _ISBROAD === "undefined"){
+                oParentAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+            }
+
+        }
 
     }; // end of oContr.ui.setBusy
 
@@ -815,9 +851,7 @@
     /*******************************************************
      * @function - Other CSS 팝업 띄우기
      *******************************************************/
-    oContr.fn.openNewBrowserOthers = function(oMenuData){
-    
-        debugger;
+    oContr.fn.openNewBrowserOthers = function(oMenuData){   
 
         oContr.fn.setBusy(true);
 
@@ -1054,8 +1088,13 @@
      *******************************************************/
     oContr.fn.onUnselectAll = async function(){
 
-        let sAction = await new Promise(function(resolve){
+        oContr.fn.setBusy(true);
 
+        // 메인 영역 Busy 켜기
+        parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "X" });
+
+        let sAction = await new Promise(function(resolve){
+            
             // MSG - 선택한 항목을 전체 해제 하시겠습니까?
             let sMsg = oContr.msg.M388;
 
@@ -1063,15 +1102,33 @@
                 actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CANCEL],
                 emphasizedAction: sap.m.MessageBox.Action.OK,
                 onClose: function (sAction) {
+
+                    oContr.fn.setBusy(true);
+
                     resolve(sAction);
 
                 }
             });
 
+            oContr.fn.setBusy(false);
+
+            //현재 팝업에서 이벤트 발생시 다른 팝업의 BUSY ON 요청 처리.
+            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            oParentAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
+
         });
 
-        if(sAction === "CANCEL"){
+        if(sAction !== "OK"){
+
+            oContr.fn.setBusy(false);
+
+            // 메인 영역 Busy 끄기
+            parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+
+            oParentAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
+
             return;
+
         }
 
         oContr.fn.setUnselectItemsAll();
@@ -1096,7 +1153,12 @@
 
         let aMenuList = oContr.oModel.oData.T_LMENU_LIST;
         if(!aMenuList || Array.isArray(aMenuList) === false || aMenuList.length === 0){
+            
             oContr.fn.setBusy(false);
+            
+            // 메인 영역 Busy 끄기
+            parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+
             return;
         }
 
@@ -1118,6 +1180,9 @@
         }
 
         oContr.fn.setBusy(false);
+
+        // 메인 영역 Busy 끄기
+        parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
 
         // MSG - 처리가 완료되었습니다.
         let sMsg = oContr.msg.M371;
@@ -1302,7 +1367,8 @@
             return;
         }
 
-        oContr.fn.setBusy(false);  
+        // 메인 영역 Busy 켜기
+        parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "X" });
 
         let sAction = await new Promise(function(resolve){
 
@@ -1313,24 +1379,43 @@
                 actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CANCEL],
                 emphasizedAction: sap.m.MessageBox.Action.OK,
                 onClose: function (sAction) {
+
+                    oContr.fn.setBusy(true);  
+
                     resolve(sAction);
 
                 }
 
             });
 
-        });
-        
-        oContr.fn.setBusy(true);  
+            oContr.fn.setBusy(false);
 
-        if(sAction === "CANCEL"){
-            oContr.fn.setBusy(false);  
+            //현재 팝업에서 이벤트 발생시 다른 팝업의 BUSY ON 요청 처리.
+            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            oParentAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
+
+        });
+
+        if(sAction !== "OK"){
+
+            oContr.fn.setBusy(false); 
+
+            // 메인 영역 Busy 끄기
+            parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+
+            oParentAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
+
             return;
         }
 
         oContr.fn.setCssApply(oCssResult.RDATA);  
 
-        oContr.fn.setBusy(false);  
+        oContr.fn.setBusy(false); 
+        
+        // 메인 영역 Busy 끄기
+        parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+
+        oParentAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
 
     }; // end of oContr.fn.onApply
 

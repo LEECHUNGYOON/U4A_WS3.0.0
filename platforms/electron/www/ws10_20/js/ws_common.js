@@ -1018,7 +1018,7 @@
                     oSaveBtn.firePress();
 
                 }
-            },
+            },     
             {
                 KEY: "Ctrl+Shift+F12", // [WS20] Mime Button
                 fn: (e) => {
@@ -1972,26 +1972,26 @@
             console.log(e);
         });
 
-        // Busy 켜기
-        oShortcut.add("Ctrl+Shift+X", (e) => {
+        // // Busy 켜기
+        // oShortcut.add("Ctrl+Shift+X", (e) => {
             
-            e.stopImmediatePropagation();
+        //     e.stopImmediatePropagation();
 
-            parent.setBusy('X');
-            console.log("X");
-            console.log(e);
-        });
+        //     parent.setBusy('X');
+        //     console.log("X");
+        //     console.log(e);
+        // });
 
-        // Busy 끄기
-        oShortcut.add("Ctrl+Shift+Z", (e) => {
+        // // Busy 끄기
+        // oShortcut.add("Ctrl+Shift+Z", (e) => {
 
-            e.stopImmediatePropagation();
+        //     e.stopImmediatePropagation();
 
-            parent.setBusy('');
+        //     parent.setBusy('');
 
-            console.log("Z");
-            console.log(e);
-        });
+        //     console.log("Z");
+        //     console.log(e);
+        // });
 
     }; // end of oAPP.common.fnSetGlobalShortcut
 

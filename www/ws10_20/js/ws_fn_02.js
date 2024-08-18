@@ -1480,7 +1480,7 @@
 
                         try {
 
-                            oChild.setOpacity(0);
+                            // oChild.setOpacity(0);
                             oChild.hide(); 
 
                         } catch (error) {
@@ -1504,7 +1504,7 @@
                 }
 
                 oChild.show();
-                oChild.setOpacity(1);
+                // oChild.setOpacity(1);
 
             } catch (error) {
                 continue;
@@ -1543,6 +1543,7 @@
         let aExceptionList = [
             "VIDEOREC",
             "EXAMPLE",
+            "WINSHOWHIDE"
             // "ICONPREV"
         ];
 

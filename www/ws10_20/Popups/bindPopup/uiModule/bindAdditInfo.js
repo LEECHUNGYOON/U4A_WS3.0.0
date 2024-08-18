@@ -185,9 +185,9 @@ function designControl(oArea){
             _msg += "\n" + oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "089");
 
 
-            oAPP.fn.setBusy(false);
             
             let _actcd = await new Promise((resolve) => {
+
                 sap.m.MessageBox.confirm(_msg, {
                     id: oAPP.attr.C_CONFIRM_POPUP, 
                     onClose: (actcd) => {
@@ -199,6 +199,13 @@ function designControl(oArea){
                         resolve(actcd);
                     }
                 });
+
+                oAPP.fn.setBusy(false);
+
+                //현재 팝업에서 이벤트 발생시 다른 팝업의 BUSY ON 요청 처리.
+                //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+                oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+
             });
 
             if (_actcd !== "OK") {

@@ -87,7 +87,9 @@ let oAPP = (function(window) {
         oAPP.attr.oAppInfo = oInfo.oAppInfo;
         oAPP.attr.servNm = oInfo.servNm;
         oAPP.attr.DnDRandKey = oInfo.SSID;
+        oAPP.attr.SSID       = oInfo.SSID;
         oAPP.attr.channelKey = oInfo.channelKey;
+        oAPP.attr.browserkey = CURRWIN.webContents.getWebPreferences().browserkey;
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {

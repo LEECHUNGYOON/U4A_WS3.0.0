@@ -604,7 +604,9 @@ let oAPP = parent.oAPP,
     /*************************************************************
      * @function - 화면 busy 처리.
      *************************************************************/
-    oAPP.fn.setBusy = function(bBusy){
+    oAPP.fn.setBusy = function(bBusy, sOption){
+
+        var _ISBROAD = sOption?.ISBROAD || undefined;
 
         switch (bBusy) {
             case true:
@@ -617,6 +619,12 @@ let oAPP = parent.oAPP,
 
                 //윈도우 닫기버튼 비활성화 처리.
                 _oWin.closable = false;
+
+                //다른 팝업의 BUSY ON 요청 처리.
+                //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+                if(typeof _ISBROAD === "undefined"){
+                    oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+                }
                 
                 break;
         
@@ -631,6 +639,12 @@ let oAPP = parent.oAPP,
 
                 sap.ui.getCore().unlock();
 
+                //다른 팝업의 BUSY OFF 요청 처리.
+                //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+                if(typeof _ISBROAD === "undefined"){
+                    oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+                }
+
                 break;
         }
 
@@ -642,6 +656,7 @@ let oAPP = parent.oAPP,
      *************************************************************/
     oAPP.fn.UIUpdated = async function(){
 
+        oAPP.fn.setBusy(true);
 
         //20240730 PES
         //UIUpdated 이벤트가 ui5 상위 버전에서 더이상 동작하지 않기에
@@ -2604,6 +2619,10 @@ let oAPP = parent.oAPP,
 
     window.onload = function () {
 
+        // //바인딩 팝업, WS3.0 디자인화면
+        // //각 화면에서 순간적으로 이벤트를 발생하면서 생기는 문제를 처리하기위해
+        // //팝업화면이 hidden 처리될때 confirm popup과 같이 다음 액션을
+        // //기다리는 팝업류 종료 처리.
         function _onVisibilitychange(){
             
             document.activeElement.blur();
@@ -2654,12 +2673,14 @@ let oAPP = parent.oAPP,
         }
 
         
+        //20240818 PES -START.
+        //visibilitychange 이벤트를 대체처리함.
         var _oWin = oAPP.REMOTE.getCurrentWindow();
 
         _oWin.on('hide', _onVisibilitychange);
 
         _oWin.on('minimize', _onVisibilitychange);
-
+        //20240818 PES -END.
 
         // //20240726 PES.
         // //바인딩 팝업, WS3.0 디자인화면
@@ -2738,6 +2759,73 @@ let oAPP = parent.oAPP,
             // oAPP.setBusy('');
 
         });
+
+        _oWin.on('close', function(){
+
+            if(typeof oAPP?.ui?.APP?.getBusy === "undefined"){
+                return;
+            }
+
+            
+            if(oAPP.ui.APP.getBusy() === true){
+                //취소를 선택한 경우 다른 팝업의 BUSY OFF 요청 처리.
+                oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+                return;
+            }
+
+
+            if(typeof window?.sap?.m?.InstanceManager?.getOpenDialogs !== "function"){
+                return;
+            }
+            
+
+            //현재 호출된 dialog 정보 얻기.
+            var _aDialog = sap.m.InstanceManager.getOpenDialogs();
+
+            //호출된 dialog가 없다면 exit.
+            if(typeof _aDialog === "undefined" || _aDialog?.length === 0){
+                return;
+            }
+
+            //confirm 팝업 호출건이 존재하지 않는경우 exit.
+            if(_aDialog.findIndex( item => typeof item.getId === "function" && 
+                item.getId() === oAPP.attr.C_CONFIRM_POPUP) !== -1){
+                
+                //취소를 선택한 경우 다른 팝업의 BUSY OFF 요청 처리.
+                oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+
+            }
+
+        });
+
+        oAPP.oMain.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${oAPP.attr.browserkey}`);
+
+        oAPP.oMain.broadToChild.onmessage = function(oEvent){
+
+            var _PRCCD = oEvent?.data?.PRCCD || undefined;
+
+            if(typeof _PRCCD === "undefined"){
+                return;
+            }
+
+
+            //프로세스에 따른 로직분기.
+            switch (_PRCCD) {
+                case "BUSY_ON":
+                    //BUSY ON을 요청받은경우.
+                    oAPP.fn.setBusy(true, {ISBROAD:true});
+                    break;
+
+                case "BUSY_OFF":
+                    //BUSY OFF를 요청 받은 경우.
+                    oAPP.fn.setBusy(false, {ISBROAD:true});
+                    break;
+
+                default:
+                    break;
+            }
+
+        };
 
     };
 
@@ -3533,7 +3621,6 @@ let oAPP = parent.oAPP,
             return true;
         }
 
-        
 
         //확인이 필요한경우 메시지 팝업 호출.
         // parent.showMessage(sap, 30, "I", l_msg, function(param){
@@ -3552,6 +3639,10 @@ let oAPP = parent.oAPP,
         }});
 
         oAPP.fn.setBusy(false);
+        
+        //현재 팝업에서 이벤트 발생시 다른 팝업의 BUSY ON 요청 처리.
+        //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+        oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_ON"});
 
         //function 호출처 skip을 위한 flag return.
         return true;
@@ -3578,18 +3669,24 @@ let oAPP = parent.oAPP,
                 l_msg += oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "182");
 
 
-                var _param = await new Promise(function(res){
+                var _param = await new Promise(function(resolve){
+                    
                     //확인 팝업 호출.
                     // parent.showMessage(sap, 30, "I", l_msg, function(param){
                     sap.m.MessageBox.confirm(l_msg, {id: oAPP.attr.C_CONFIRM_POPUP, onClose:function(param){
                         
                         oAPP.fn.setBusy(true);
                         
-                        return res(param);
+                        return resolve(param);
 
                     }});
 
                     oAPP.fn.setBusy(false);
+                    
+                    //현재 팝업에서 이벤트 발생시 다른 팝업의 BUSY ON 요청 처리.
+                    //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+                    oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+
                 });
         
                 //확인팝업에서 YES를 안누른경우 EXIT.
@@ -3636,17 +3733,23 @@ let oAPP = parent.oAPP,
             l_msg += oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "182");
 
 
-            var _param = await new Promise(function(res){
+            var _param = await new Promise(function(resolve){
+
                 //확인 팝업 호출.
                 // parent.showMessage(sap, 30, "I", l_msg, function(param){
                 sap.m.MessageBox.confirm(l_msg, {id: oAPP.attr.C_CONFIRM_POPUP, onClose:function(param){
 
                     oAPP.fn.setBusy(true);
 
-                    return res(param);
+                    return resolve(param);
                 }});
 
                 oAPP.fn.setBusy(false);
+                
+                //현재 팝업에서 이벤트 발생시 다른 팝업의 BUSY ON 요청 처리.
+                //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+                oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+
 
             });
 

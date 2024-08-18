@@ -81,6 +81,48 @@
     //sap core 정보 광역화.
     oAPP.attr.oCore = sap.ui.getCore();
 
+
+    //20240819 PES -START.
+    //MENU ITEM이 모두 비활성 처리 상태인경우, 방향키로 이동시 스크립트 오류발생.
+    //해당 로직 임시 overwrite 처리.
+    jQuery.sap.require("sap.ui.unified.Menu");
+    sap.ui.unified.Menu.prototype.getPreviousSelectableItem = function(iIdx){
+      var oItem = null;
+      var aItems = this.getItems();
+  
+      // At first, start with the previous index
+      for (var i = iIdx - 1; i >= 0; i--) {
+        //FOR문에서 0보다 작은값이 되면 loop exit 로직 추가.
+        if(i < 0 ){
+          break;
+        }
+        if (aItems[i].getVisible() && this.checkEnabled(aItems[i])) {
+          oItem = aItems[i];
+          break;
+        }
+      }
+  
+      // If nothing found, start from the end
+      if (!oItem) {
+        for (var i = aItems.length - 1; i >= iIdx; i--) {
+          //FOR문에서 0보다 작은값이 되면 loop exit 로직 추가.
+          if(i < 0 ){
+              break;
+          }
+                  
+          if (aItems[i].getVisible() && this.checkEnabled(aItems[i])) {
+            oItem = aItems[i];
+            break;
+          }
+        }
+      }
+  
+      return oItem;
+    };
+    //20240819 PES -END.
+
+
+
     //10번 정보 구조 생성.
     oAPP.fn.crtStru0010 = function(){
 

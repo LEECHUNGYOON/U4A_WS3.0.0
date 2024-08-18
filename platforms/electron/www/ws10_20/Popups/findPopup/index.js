@@ -235,6 +235,8 @@ let oAPP = parent.oAPP;
 
                 oApp.removeEventDelegate(oDelegate);
 
+                oAPP.setBusyIndicator("");
+
                 // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
                 parent.oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
 
@@ -1542,7 +1544,7 @@ let oAPP = parent.oAPP;
     // // UI5 Boot Strap을 로드 하고 attachInit 한다.
     oAPP.fn.fnLoadBootStrapSetting();
 
-    window.onload = function() {
+    window.onload = function() {        
 
         sap.ui.getCore().attachInit(function() {
 
@@ -1557,6 +1559,39 @@ let oAPP = parent.oAPP;
             }, 100);
 
         });
+    
+        oAPP.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${oAPP.BROWSKEY}`);
+
+        // busy를 여기서 키는 이유
+        // busy 안에서 broadcast 채널을 이용한 로직이 있기 때문.
+        oAPP.setBusyIndicator("X");
+
+        oAPP.broadToChild.onmessage = function(oEvent){
+
+            var _PRCCD = oEvent?.data?.PRCCD || undefined;
+
+            if(typeof _PRCCD === "undefined"){
+                return;
+            }
+
+            //프로세스에 따른 로직분기.
+            switch (_PRCCD) {
+                case "BUSY_ON":
+                    //BUSY ON을 요청받은경우.
+                    oAPP.setBusyIndicator(true, {ISBROAD:true});
+                    break;
+
+                case "BUSY_OFF":
+                    //BUSY OFF를 요청 받은 경우.
+                    oAPP.setBusyIndicator(false, {ISBROAD:true});
+                    break;
+
+                default:
+                    break;
+            }
+
+        };
+       
 
     };
 

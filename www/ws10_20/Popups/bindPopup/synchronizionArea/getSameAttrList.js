@@ -10,6 +10,12 @@ const TY_LIST = {
 
 };
 
+//SELECT OPTION의 VALUE 프로퍼티.
+const C_SEL_OPT_VALUE = [
+    "EXT00001161",
+    "EXT00002507"
+];
+
 /*************************************************************
  * @module - 동일속성 리스트 얻기.
  *************************************************************/
@@ -154,6 +160,36 @@ function setSameAttrList(aTree, is_attr, aList, oUi){
             _sTree.UIATY === is_attr.UIATY ){
             continue;
         }
+
+
+
+        //처리 대상 프로퍼티가 value 인경우.
+        if(is_attr.UIATT === "value"){
+            
+            switch (is_attr.UIOBK) {
+                case "UO99992": //SELECTOPTION2
+                case "UO99984": //SELECTOPTION3
+
+                    //해당 UI가 select option인경우, select option의 value만 가능.
+                    if(C_SEL_OPT_VALUE.indexOf(_sTree.UIATK) === -1){
+                        continue;
+                    }
+                    
+                    break;
+            
+                default:
+
+                    //해당 UI가 select option이 아닌경우 select option의 value는 제외.
+                    if(C_SEL_OPT_VALUE.indexOf(_sTree.UIATK) !== -1){
+                        continue;
+                    }
+
+                    break;
+            }
+
+        }       
+
+        
 
         //프로퍼티명과 타입이 같은경우 수집 처리.
         if(_sTree.UIATT === is_attr.UIATT && is_attr.UIADT === _sTree.UIADT){

@@ -31,6 +31,7 @@
      * Global Variable
      ************************************************************************/
     var REMOTE = require('@electron/remote');
+    var CURRWIN = REMOTE.getCurrentWindow();
     var PATH = REMOTE.require('path');
     var APP = REMOTE.app;
     var APPPATH = APP.getAppPath();
@@ -39,10 +40,16 @@
     var PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js");
     var PATHINFO = require(PATHINFOURL);
     var WSUTIL = require(PATHINFO.WSUTIL);
-    
+
     var oAPP = {};
         oAPP.fn = {};
         oAPP.attr = {};
+
+        oAPP.attr.isBusy = false;
+
+
+    oAPP.BROWSKEY = CURRWIN.webContents.getWebPreferences().browserkey;
+    
 
     /************************************************************************
      * IPC 통신
@@ -71,6 +78,14 @@
         return oAPP;
     
     }
+
+    // 현재 Busy 실행 여부
+    function fnGetBusy(){
+
+        return oAPP.attr.isBusy;
+
+    }
+
 
     </script>
     

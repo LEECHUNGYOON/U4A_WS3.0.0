@@ -353,6 +353,7 @@
      ************************************************************************/
     oAPP.main.adjustWindowGrid = function(){
 
+       
         let mainWindow = parent.CURRWIN;
         let screen = parent.SCREEN;
         let childWindows = mainWindow.getChildWindows();
@@ -467,8 +468,14 @@
         });
 
         // 모든 자식 창을 보이게 설정
-        childWindows.forEach(childWindow => {     
+        childWindows.forEach(childWindow => {            
+                        
+            if(childWindow.isVisible() === false){
+                return;
+            }
+
             childWindow.show();
+
         });
         
     }; // end of oAPP.main.adjustWindowGrid
@@ -545,6 +552,11 @@
 
         // 모든 자식 창을 보이게 설정
         childWindows.forEach(childWindow => {
+
+            if(childWindow.isVisible() === false){
+                return;
+            }
+
             childWindow.show();
         });
 
@@ -600,20 +612,19 @@
                 // tooltip: 'alignLeftTop',
                 tooltip: 'Child Window Align Left Top',
                 icon: parent.PATH.join(parent.APPPATH, "img", "newwin_1.png"),
-                click() {
-
+                click() {             
+                 
                     // 현재 떠있는 윈도우를 부모에 위치한 모니터 기준으로
                     // 좌측 상단 부터 바둑판 형태로 정렬
                     oAPP.main.adjustWindowGrid();
  
                 }
             },
-
             {
                 // tooltip: 'alignCenter',
                 tooltip: 'Child Window Align Center',
                 icon: parent.PATH.join(parent.APPPATH, "img", "winCenter.png"),
-                click() {
+                click() {                  
 
                     // 현재 떠있는 윈도우를 부모에 위치한 모니터 기준으로
                     // 좌측 상단 부터 가운데 정렬

@@ -46,6 +46,9 @@ let oAPP = (function(window) {
      * 메시지클래스 텍스트 작업 관련 Object -- end
      *******************************************************/
 
+    // 현재 비지 상태 
+    oAPP.attr.isBusy = false;
+
     oAPP.setBusy = function(bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
@@ -62,7 +65,33 @@ let oAPP = (function(window) {
 
     };
 
-    oAPP.setBusyIndicator = function(bIsBusy) {
+    // oAPP.setBusyIndicator = function(bIsBusy) {
+
+    //     var oBusy = document.getElementById("u4aWsBusyIndicator");
+
+    //     if (!oBusy) {
+    //         return;
+    //     }
+
+    //     if (bIsBusy) {
+    //         oBusy.style.visibility = "visible";
+    //     } else {
+    //         oBusy.style.visibility = "hidden";
+    //     }
+
+    // }
+
+    oAPP.getBusy = function(){
+    
+        return oAPP.attr.isBusy;
+
+    };
+    
+    oAPP.setBusyIndicator = function(bIsBusy, sOption) {
+
+        oAPP.attr.isBusy = bIsBusy;
+
+        var _ISBROAD = sOption?.ISBROAD || undefined;
 
         var oBusy = document.getElementById("u4aWsBusyIndicator");
 
@@ -72,8 +101,22 @@ let oAPP = (function(window) {
 
         if (bIsBusy) {
             oBusy.style.visibility = "visible";
+
+            //다른 팝업의 BUSY ON 요청 처리.
+            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            if(typeof _ISBROAD === "undefined"){
+                oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+            }      
+
         } else {
             oBusy.style.visibility = "hidden";
+
+            //다른 팝업의 BUSY OFF 요청 처리.
+            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            if(typeof _ISBROAD === "undefined"){
+                oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+            }
+
         }
 
     }
@@ -81,7 +124,7 @@ let oAPP = (function(window) {
     /************************************************************************
      * IPCRENDERER Events..
      ************************************************************************/
-    oAPP.IPCRENDERER.on('if-find-info', (events, oInfo) => {
+    oAPP.IPCRENDERER.on('if-find-info', (events, oInfo) => {        
 
         oAPP.attr.oUserInfo = oInfo.oUserInfo;
         oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
@@ -91,6 +134,9 @@ let oAPP = (function(window) {
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {
+
+            oAPP.setBusyIndicator("");
+
             return;
         }
 
@@ -109,6 +155,16 @@ let oAPP = (function(window) {
     window.addEventListener("beforeunload", () => {
 
         oAPP.IPCMAIN.off(`${oAPP.BROWSKEY}--find--success`, oAPP.fn.fnIpcMainFindSuccess);
+
+        // 브라우저 닫는 시점에 busy가 켜있을 경우
+        if(oAPP.getBusy() === true){
+
+            //다른 팝업의 BUSY OFF 요청 처리.
+            oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+
+            return;
+
+        }
 
     });
 
