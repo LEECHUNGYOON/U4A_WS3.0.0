@@ -467,8 +467,7 @@
         });
 
         // 모든 자식 창을 보이게 설정
-        childWindows.forEach(childWindow => {
-            
+        childWindows.forEach(childWindow => {     
             childWindow.show();
         });
         

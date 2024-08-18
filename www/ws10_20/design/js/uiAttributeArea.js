@@ -6396,8 +6396,8 @@
       oAPP.fn.attrHeaderExpanded(false);
 
 
-      //해당 라인의 활성화된 입력필드에 focus 처리.
-      _oTarget.focus();
+      // //해당 라인의 활성화된 입력필드에 focus 처리.
+      // _oTarget.focus();
 
       var _oDom = _oTarget.getDomRef();
 
@@ -6406,6 +6406,11 @@
         // _oDom.scrollIntoView(true);
         _oDom.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
       }
+
+      //비동기로 focus 처리.
+      setTimeout(() => {
+        _oTarget.focus();
+      }, 0);
 
       break;
 

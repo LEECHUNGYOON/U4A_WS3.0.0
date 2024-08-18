@@ -47,6 +47,7 @@ oAPP = {
 
         //window 로딩 완료 이벤트 
         oAPP.ipcRenderer.on('IF-REC-READY', async (event, data) => {
+
             //oAPP.WIN.webContents.openDevTools();
             //사용자 선택 모니터(Screen) ID
             oAPP.SCREEN_ID = data.SCREEN_ID;
@@ -61,7 +62,7 @@ oAPP = {
             oAPP.onControllerOpen();
 
             // 부모 자식간 액션별 명령어 수행
-            oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+            // oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
 
             CURRWIN.closable = true;
 

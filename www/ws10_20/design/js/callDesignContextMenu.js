@@ -1448,9 +1448,10 @@
             }catch(e){
                 parent.showMessage(sap, 10, "E", e);
 
-                parent.setBusy("");
-
+                //단축키 잠금 해제처리.
                 oAPP.fn.setShortcutLock(false);
+
+                parent.setBusy("");
 
                 return true;
             }
@@ -1467,9 +1468,10 @@
             }catch(e){
                 parent.showMessage(sap, 10, "E", e);
 
-                parent.setBusy("");
-
+                //단축키 잠금 해제처리.
                 oAPP.fn.setShortcutLock(false);
+                
+                parent.setBusy("");
 
                 return true;
             }
@@ -1487,9 +1489,10 @@
             }catch(e){
                 parent.showMessage(sap, 10, "E", e);
 
-                parent.setBusy("");
-
+                //단축키 잠금 해제처리.
                 oAPP.fn.setShortcutLock(false);
+                
+                parent.setBusy("");
 
                 return true;
             }
@@ -1506,9 +1509,10 @@
             //382	Personalizing UI on other screens.
             parent.showMessage(sap, 10, "S", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "382", "", "", "", ""));
 
-            parent.setBusy("");
-
+            //단축키 잠금 해제처리.
             oAPP.fn.setShortcutLock(false);
+                
+            parent.setBusy("");
 
             return;
 
@@ -1520,9 +1524,10 @@
         //DOCUMENT영역에 PASTE한경우 EXIT.
         if(l_OBJID === "ROOT"){
             
-            parent.setBusy("");
-
+            //단축키 잠금 해제처리.
             oAPP.fn.setShortcutLock(false);
+                
+            parent.setBusy("");
 
             return;
         }

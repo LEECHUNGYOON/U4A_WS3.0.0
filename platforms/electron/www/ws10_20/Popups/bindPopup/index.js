@@ -2604,18 +2604,8 @@ let oAPP = parent.oAPP,
 
     window.onload = function () {
 
-        //20240726 PES.
-        //바인딩 팝업, WS3.0 디자인화면
-        //각 화면에서 순간적으로 이벤트를 발생하면서 생기는 문제를 처리하기위해
-        //팝업화면이 hidden 처리될때 confirm popup과 같이 다음 액션을
-        //기다리는 팝업류 종료 처리.
-        document.addEventListener('visibilitychange', function() {
-
-            //화면이 숨겨지지 않은경우 exit.
-            if (document.hidden !== true){
-                return;
-            }
-
+        function _onVisibilitychange(){
+            
             document.activeElement.blur();
 
             if(typeof window?.sap?.m?.InstanceManager?.getOpenDialogs !== "function"){
@@ -2661,8 +2651,75 @@ let oAPP = parent.oAPP,
 
             // oAPP.ui.APP.focus();
             oAPP.attr.oDesign.ui.TREE.focus();
+        }
 
-        });
+        
+        var _oWin = oAPP.REMOTE.getCurrentWindow();
+
+        _oWin.on('hide', _onVisibilitychange);
+
+        _oWin.on('minimize', _onVisibilitychange);
+
+
+        // //20240726 PES.
+        // //바인딩 팝업, WS3.0 디자인화면
+        // //각 화면에서 순간적으로 이벤트를 발생하면서 생기는 문제를 처리하기위해
+        // //팝업화면이 hidden 처리될때 confirm popup과 같이 다음 액션을
+        // //기다리는 팝업류 종료 처리.
+        // document.addEventListener('visibilitychange', function() {
+
+        //     //화면이 숨겨지지 않은경우 exit.
+        //     if (document.hidden !== true){
+        //         return;
+        //     }
+
+        //     document.activeElement.blur();
+
+        //     if(typeof window?.sap?.m?.InstanceManager?.getOpenDialogs !== "function"){
+        //         return;
+        //     }
+
+        //     //현재 호출된 dialog 정보 얻기.
+        //     var _aDialog = sap.m.InstanceManager.getOpenDialogs();
+
+        //     //호출된 dialog가 없다면 exit.
+        //     if(typeof _aDialog === "undefined" || _aDialog?.length === 0){
+        //         return;
+        //     }
+
+        //     //confirm 팝업 종료처리됨 flag.
+        //     var _destroied = false;
+
+        //     for (let i = 0, l = _aDialog.length; i < l; i++) {
+                
+        //         var _oDialog = _aDialog[i];
+
+        //         //id 정보 얻는 function이 존재하지 않는경우 exit.
+        //         if(typeof _oDialog.getId !== "function"){
+        //             continue;
+        //         }
+
+        //         //로직에 의해 호출된 confirm popup인경우.
+        //         if(_oDialog.getId() === oAPP.attr.C_CONFIRM_POPUP){
+
+        //             _destroied = true;
+
+        //             //해당 dialog destroy 처리.
+        //             _oDialog.destroy();
+        //         }
+               
+        //     }
+
+        //     //confirm 팝업 종료처리된경우 WS20에 BUSY OFF 요청 처리.
+        //     if(_destroied === true){
+        //         //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+        //         parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+        //     }
+
+        //     // oAPP.ui.APP.focus();
+        //     oAPP.attr.oDesign.ui.TREE.focus();
+
+        // });
 
 
         sap.ui.getCore().attachInit(function () {

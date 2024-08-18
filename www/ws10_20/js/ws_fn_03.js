@@ -417,7 +417,7 @@
 
             // Dialog에 Mutation 감지 예외 대상인지 확인
             let isExp = oDialog.data("MUTATION_EXCEP");
-            if(isExp === "X"){
+            if(isExp === "X"){                
                 return true;
             }
 
@@ -446,19 +446,26 @@
 
         // 감시자 인스턴스 만들기
         var observer = new MutationObserver(function (mutations) {
-
-            // Open 된 Dialog가 없으면 숨겼던 child window 전체를 보여준다.
-            var $oOpendDialog = $(".sapMDialogOpen");
-            if (!$oOpendDialog.length) {
-                oAPP.fn.fnChildWindowShow(true); // [ws_fn_02.js]
-                return;
-            }
-
+         
             // Dialog 중 감지 예외 대상인것 찾기
             let bIsExp = _checkMutationExpDialog();
             if(bIsExp === true){
                 return;
             }
+
+            // Open 된 Dialog가 없으면 숨겼던 child window 전체를 보여준다.
+            var $oOpendDialog = $(".sapMDialogOpen");
+            if (!$oOpendDialog.length) {
+
+                oAPP.fn.fnChildWindowShow(true); // [ws_fn_02.js]
+                return;
+            }
+
+            // // Dialog 중 감지 예외 대상인것 찾기
+            // let bIsExp = _checkMutationExpDialog();
+            // if(bIsExp === true){
+            //     return;
+            // }
 
             // Dialog 가 Open 되면 child window 전체를 숨긴다.
             oAPP.fn.fnChildWindowShow(false); // [ws_fn_02.js]

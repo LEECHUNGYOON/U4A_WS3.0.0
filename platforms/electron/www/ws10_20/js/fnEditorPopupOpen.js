@@ -61,10 +61,10 @@
         oBrowserOptions.title = sBrowserTitle;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.closable = false;
-
-        oBrowserOptions.parent = oCurrWin;
+        
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = oEditInfo.OBJTY;
@@ -93,7 +93,7 @@
         oBrowserWindow.once('ready-to-show', () => {
 
             // 부모 위치 가운데 배치한다.
-            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow, oBrowserOptions);
 
         });
 
@@ -103,7 +103,10 @@
             lf_webContentSend(oBrowserWindow, sSearchValue);
 
             // 부모 위치 가운데 배치한다.
-            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow, oBrowserOptions);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             parent.WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
