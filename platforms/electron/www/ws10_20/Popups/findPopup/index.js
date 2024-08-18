@@ -1577,6 +1577,7 @@ let oAPP = parent.oAPP;
             //프로세스에 따른 로직분기.
             switch (_PRCCD) {
                 case "BUSY_ON":
+
                     //BUSY ON을 요청받은경우.
                     oAPP.setBusyIndicator(true, {ISBROAD:true});
                     break;

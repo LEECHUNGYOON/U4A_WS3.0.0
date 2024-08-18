@@ -100,7 +100,11 @@ let oAPP = (function(window) {
         }
 
         if (bIsBusy) {
+
             oBusy.style.visibility = "visible";
+
+            // 브라우저 창 닫기 버튼 비활성
+            oAPP.CURRWIN.closable = false;
 
             //다른 팝업의 BUSY ON 요청 처리.
             //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
@@ -110,6 +114,9 @@ let oAPP = (function(window) {
 
         } else {
             oBusy.style.visibility = "hidden";
+
+            // 브라우저 창 닫기 버튼 활성
+            oAPP.CURRWIN.closable = true;
 
             //다른 팝업의 BUSY OFF 요청 처리.
             //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
