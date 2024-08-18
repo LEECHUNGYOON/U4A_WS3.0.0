@@ -110,6 +110,16 @@ let oAPP = parent.oAPP,
     //default 바인딩 모드.
     oAPP.attr.BIND_MODE = CS_BIND_MODE.BULK;
 
+
+    //메인 관련 오브젝트.
+    oAPP.oMain = {};
+
+    //메인 이벤트 function 오브젝트.
+    oAPP.oMain.events = {};
+
+    //메인 관련 function.
+    oAPP.oMain.fn = {};
+
     /*************************************************************
      * @function - UI 구성 완료후 call back 처리.
      *************************************************************/
@@ -671,7 +681,7 @@ let oAPP = parent.oAPP,
             
             //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
             parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
-            
+
 
             oAPP.fn.setBusy(false);
 
@@ -1068,7 +1078,15 @@ let oAPP = parent.oAPP,
             tooltip: _txt,      //168	분할 영역 초기화
             busyIndicatorDelay: 1,
             press: function(){
+                //각 영역의 size 재설정.
                 oAPP.fn.resetSplitArea();
+
+                //메인 splitter invalidate 처리.
+                //(바인딩 팝업의 window를 최소 사이즈로 설정한뒤,
+                //area의 resize세로 바를 이동하면 간헐적으로
+                //resize 세로바가 사라지는현상을 보완하기 위함)
+                oAPP.ui.oSptMain.invalidate();
+
             }
         });
         oTool.addContent(oToolBtn5);
@@ -1087,13 +1105,14 @@ let oAPP = parent.oAPP,
         oTool.addContent(oHelp);
 
 
-        //메인의 좌, 우 분할 Splitter.
+        //메인의 좌, 가운데, 우 분할 Splitter.
         var oSpt1 = new sap.ui.layout.Splitter();
         oPage.addContent(oSpt1);
 
         oSpt1.attachResize(oAPP.fn.onMainSplitResize);
 
         oAPP.ui.oSptMain = oSpt1;
+
 
         //좌측 페이지.
         var oPageLeft = new sap.m.Page({
@@ -1128,7 +1147,7 @@ let oAPP = parent.oAPP,
         oAPP.ui.oPageRight = new sap.m.Page({
             showHeader:false,
             layoutData: new sap.ui.layout.SplitterLayoutData({
-                size:"30%",
+                size:"{/width_r}",
                 minSize:300
             })
         });
@@ -1196,7 +1215,7 @@ let oAPP = parent.oAPP,
         var oPageAdit = new sap.m.Page({
             layoutData: new sap.ui.layout.SplitterLayoutData({
                 size:"auto",
-                minSize:300
+                minSize:200
             }),
             customHeader : new sap.m.OverflowToolbar({
                 visible:"{/vis_addit}",
@@ -1407,6 +1426,7 @@ let oAPP = parent.oAPP,
             selectionBehavior: "RowOnly",
             visibleRowCountMode: "Auto",
             width: "100%",
+            minAutoRowCount:3,
             // visible: "{/resize}",
             visible:"{/vis_addit}",
             rowHeight:30,            
@@ -1546,22 +1566,153 @@ let oAPP = parent.oAPP,
 
 
     /*************************************************************
+     * @function - splitter resize시 area size 재조정 처리.(px -> %)
+     *************************************************************/
+    oAPP.oMain.fn.resizeSplitter = function(oEvent){
+
+        var _oUi = oEvent.oSource || undefined;
+        
+        if(typeof _oUi === "undefined"){
+            return;
+        }
+        
+        //size 정보 얻기.
+        var _aSize = oEvent?.mParameters?.newSizes || undefined;
+                
+        //size 정보가 없다면 exit.
+        if(typeof _aSize === "undefined"){
+            return;
+        }
+        
+        if(Array.isArray(_aSize) !== true){
+            return;
+        }
+        
+        if(_aSize.length === 0){
+            return;
+        }
+        
+        
+        //splitter dom 정보 얻기.    
+        var _oDom = _oUi.getDomRef();
+            
+        //화면에 그려지지 않은경우 exit.
+        if(typeof _oDom === "undefined" || _oDom === null){
+            return;
+        }
+        
+        
+        //splitter의 하위 area 정보 얻기.
+        var _aArea = _oUi.getContentAreas();
+        
+        //area가 없다면 exit
+        if(typeof _aArea === "undefined"){
+            return;
+        }
+        
+        if(Array.isArray(_aArea) !== true){
+            return;
+        }
+        
+        if(_aArea.length === 0){
+            return;
+        }
+
+
+        //bar에 해당하는 size 얻기.
+        //(resizable 프로퍼티 변경시 bar 존재여부 확인해.)
+        var _barSize = (_aSize.length - 1) * 16;
+        
+        var _totalSize = 0;
+        
+        
+        //splitter의 수직, 수평 표현 값에 따른 분기.
+        switch (_oUi.getOrientation()) {
+            case 'Vertical':
+                //수직으로 표현하는경우 height값으로 계산.
+                _totalSize = _oDom.scrollHeight - _barSize;
+                break;
+                
+            case 'Horizontal':
+                //수팽으로 표현하는경우 width 값으로 계산.
+                _totalSize = _oDom.scrollWidth - _barSize;
+                break;
+            
+            default:
+                return;
+        }
+        
+        
+        //전체 크기가 0px 인경우 exit.
+        if(_totalSize === 0){
+            return;
+        }
+        
+
+        //마지막 위치 index.
+        var _last = _aArea.length - 1;
+        
+        //area의 size를 %로 계산 처리.
+        for (var i = 0, l = _aArea.length; i < l; i++) {
+            
+            var _oArea = _aArea[i];
+            
+            var _oLayout = _oArea.getLayoutData();
+            
+            if(typeof _oLayout === "undefined" || _oLayout === null){
+                continue;
+            }
+
+            //마지막 area인경우 size auto 처리.
+            if(i === _last){
+                //area의 size를 auto로 지정.
+                //(마지막 size를 %로 지정할 경우 window창을 최소화 한뒤
+                //각 area를 minSize로 줄이고 windown를 전체창으로 변경하면
+                //resize 이벤트가 동작하지 않아 size 계산을 하지 못함.
+                //마지막 area의 size를 auto로 설정하면 window전체창시 resize이벤트가 호출됨)
+                _oLayout.setSize(`auto`);
+                continue;
+            }
+            
+            var _size = _aSize[i];
+            
+            _size = (_size / _totalSize) * 100;
+            
+            //소숫점 2자리까지 반올림.
+            _size = _size.toFixed(2);
+                        
+            _oLayout.setSize(`${_size}%`);
+            
+            
+        }
+
+    };
+
+
+    /*************************************************************
      * @event - 메인 splitter resize 이벤트.
      *************************************************************/
     oAPP.fn.onMainSplitResize = function(oEvent){
 
-        oAPP.ui.oSptMain.detachResize(oAPP.fn.onMainSplitResize);
+        //splitter의 영역 다시 그리는 로직 주석 처리 -START.
+        //(잘못된 로직임)
+        // oAPP.ui.oSptMain.detachResize(oAPP.fn.onMainSplitResize);
 
-        var _oLayout = oAPP.ui.oPageRight.getLayoutData();
+        // var _oLayout = oAPP.ui.oPageRight.getLayoutData();
 
-        if(typeof _oLayout === "undefined" || _oLayout === null){
-            oAPP.ui.oSptMain.attachResize(oAPP.fn.onMainSplitResize);
-            return;
-        }
+        // if(typeof _oLayout === "undefined" || _oLayout === null){
+        //     oAPP.ui.oSptMain.attachResize(oAPP.fn.onMainSplitResize);
+        //     return;
+        // }
 
-        
-        _oLayout.setSize("auto");
-        oAPP.ui.oSptMain.attachResize(oAPP.fn.onMainSplitResize);
+
+        // _oLayout.setSize("auto");
+        // oAPP.ui.oSptMain.attachResize(oAPP.fn.onMainSplitResize);
+        //splitter의 영역 다시 그리는 로직 주석 처리 -END.
+
+        //splitter resize시 area size 재조정 처리.(px -> %)
+        oAPP.oMain.fn.resizeSplitter(oEvent);
+
 
     };
 

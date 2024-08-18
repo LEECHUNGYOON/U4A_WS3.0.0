@@ -325,10 +325,10 @@
 
       //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
-
       
       //attribute 초기화 처리.
       oAPP.fn.attrResetAttr();
+
     });
 
     
@@ -1083,7 +1083,7 @@
 
     
     var _oDesignChkModule = parent.require(
-      parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "checkAppData", "designTreeData.js"));
+      parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "js", "checkAppData", "designTreeData.js"));
 
 
     //입력한 값에 따른 점검 처리.
@@ -1329,7 +1329,7 @@
         oAPP.fn.attrChangeProc(oAPP.attr.oModel.oData.T_ATTR[i], "", true);
 
         //dropAble 프로퍼티 변경건 예외처리.    
-        oAPP.fn.attrSetDropAbleException(oAPP.attr.oModel.oData.T_ATTR[i]);
+        oAPP.fn.attrSetDropAbleException(oAPP.attr.oModel.oData.T_ATTR[i], false, true);
 
       }
 
@@ -2879,6 +2879,19 @@
 
     }
 
+    //테스트!!!!!!!!!!!!!!!!!!!!!!
+    if(parent.REMOTE.app.isPackaged === false){
+
+      var _sParam = {
+        BEFORE_OBJID : ls_uiinfo.OBJID_bf,
+        OBJID : ls_uiinfo.OBJID
+      };
+
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_OBJID", _sParam);
+    }
+    //테스트!!!!!!!!!!!!!!!!!!!!!!
+
+
     //변경된 이름으로 UI 수집 처리.
     oAPP.attr.prev[ls_uiinfo.OBJID] = oAPP.attr.prev[ls_uiinfo.OBJID_bf];
 
@@ -3032,7 +3045,7 @@
 
 
   //프로퍼티 바인딩 처리.
-  oAPP.fn.attrSetBindProp = function(is_attr, is_bInfo){
+  oAPP.fn.attrSetBindProp = async function(is_attr, is_bInfo){
 
     //이전 바인딩 정보가 존재하는경우.
     if(is_attr.ISBND === "X"){
@@ -3104,7 +3117,7 @@
     }
 
     //변경건 대한 후속 처리.
-    oAPP.fn.attrChange(is_attr, "", false, true);
+    await oAPP.fn.attrChange(is_attr, "", false, true);
     
     //n건 바인딩 처리건인경우 부모 UI에 현재 UI 매핑 처리.
     oAPP.fn.setModelBind(oAPP.attr.prev[is_attr.OBJID]);
@@ -3246,6 +3259,8 @@
   //aggregation 바인딩 callback 처리.
   oAPP.fn.attrBindCallBackAggr = function(bIsbind, is_tree, is_attr){
 
+    parent.setBusy("X");
+
     //unbind 처리건인경우.
     if(bIsbind === false){
 
@@ -3312,9 +3327,19 @@
 
       //확인 팝업 호출.
       parent.showMessage(sap, 30, "I", l_msg, function(param){
+
+        parent.setBusy("X");
         
         //확인팝업에서 YES를 안누른경우 EXIT.
-        if(param !== "YES"){return;}
+        if(param !== "YES"){
+
+          //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+          parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+          parent.setBusy("");
+          
+          return;
+        }
 
         //UNBIND 처리.
         oAPP.fn.attrUnbindAggr(oAPP.attr.prev[is_attr.OBJID],is_attr.UIATT, is_attr.UIATV);
@@ -3333,6 +3358,8 @@
         oAPP.fn.updateBindPopupDesignData();
 
       });
+
+      parent.setBusy("");
 
       return;
 

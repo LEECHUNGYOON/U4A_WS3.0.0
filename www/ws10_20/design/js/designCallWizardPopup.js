@@ -147,6 +147,7 @@
 
             }   //wizard 생성 유형에 따른 분기.
 
+
             return l_OBJID;
 
         }   //ui 생성 처리.
@@ -191,12 +192,41 @@
                     l_OBJID = lf_createUI(oReturn.oSearch, aggr, ls_parent, oReturn.uName);
 
                     //결과 리스트에 대한 UI 생성 처리.
-                    lf_createUI(oReturn.oList, aggr, ls_parent, oReturn.uName);
+                    var _LIST = lf_createUI(oReturn.oList, aggr, ls_parent, oReturn.uName);
+                    
+            
+                    //테스트!!!!!!!!!!!!!!!!!!!!!!
+                    if(parent.REMOTE.app.isPackaged === false){
+
+                        var _aDesign = [];
+
+                        _aDesign.push(oAPP.fn.getTreeData(l_OBJID));
+
+                        _aDesign.push(oAPP.fn.getTreeData(_LIST));
+
+                        //UNDO HISTORY 추가 처리.
+                        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("WIZARD_INSERT", _aDesign);
+                    }
+                    //테스트!!!!!!!!!!!!!!!!!!!!!!
+
                     
                 }else{
 
                     //UI 생성 처리.
                     l_OBJID = lf_createUI(oReturn, aggr, ls_parent);
+
+
+                    //테스트!!!!!!!!!!!!!!!!!!!!!!
+                    if(parent.REMOTE.app.isPackaged === false){
+
+                        var _aDesign = [];
+
+                        _aDesign.push(oAPP.fn.getTreeData(l_OBJID));
+
+                        //UNDO HISTORY 추가 처리.
+                        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("WIZARD_INSERT", _aDesign);
+                    }
+                    //테스트!!!!!!!!!!!!!!!!!!!!!!
 
                 }
 
@@ -477,6 +507,7 @@
 
         // //모델 갱신 처리.
         // oAPP.attr.oModel.refresh(true);
+
 
         //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
         await oAPP.fn.designRefershModel();

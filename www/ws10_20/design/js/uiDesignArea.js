@@ -553,6 +553,48 @@
 
     });
 
+
+    //테스트!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if(parent.REMOTE.app.isPackaged === false){
+
+      oLTBar1.addContent(new sap.m.ToolbarSeparator());
+
+      //UNDO 버튼 생성.
+      oLTBar1.addContent(new sap.m.Button({
+        icon:"sap-icon://undo",
+        visible:"{/IS_EDIT}",
+        enabled:{
+          path:"/designTree/undo",
+          formatter:function(params) {
+            return params === true ? true : false;
+          }
+        },
+        press: function(){
+          parent.require(oAPP.oDesign.pathInfo.undoRedo).executeHistory("UNDO");
+        }
+      }));
+
+      //REDO 버튼 생성.
+      oLTBar1.addContent(new sap.m.Button({
+        icon:"sap-icon://redo",
+        visible:"{/IS_EDIT}",
+        enabled:{
+          path:"/designTree/redo",
+          formatter:function(params) {
+            return params === true ? true : false;
+          }
+        },
+        press: function(){
+          parent.require(oAPP.oDesign.pathInfo.undoRedo).executeHistory("REDO");
+        }
+      }));
+
+      oLTBar1.addContent(new sap.m.ToolbarSeparator());
+
+    }
+    //테스트!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
     oLTBar1.addContent(new sap.m.ToolbarSpacer());
 
     //B39	Help
@@ -2208,6 +2250,15 @@
     //ui 복사 처리.
     var ls_copy = lf_copy0014(is_t, is_p, aggrParam);
 
+
+    //테스트!!!!!!!!!!!!!!!!!!!!!!
+    if(parent.REMOTE.app.isPackaged === false){
+      //UNDO HISTORY 추가 처리.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("COPY", ls_copy);
+
+    }
+    //테스트!!!!!!!!!!!!!!!!!!!!!!
+
     // //MODEL 갱신 처리.
     // oAPP.attr.oModel.refresh();
 
@@ -2273,6 +2324,12 @@
 
 
 
+  //📌📌해당 FUNCTION은 UNDO, REDO에서도 사용됨!!!📌📌
+  //UNDO, REDO시에 is_tree_param 파라메터 이외에
+  //UNDO, REDO에 관련된 파라메터를 추가로 값전달 하고 있음.
+  //(oAPP.fn.drop_cb(s0023, sDrag, sDrop,{PRCCD:"UNDO"});)
+  //따라서 해당 FUNCTION을 호출하며 추가로 파라메터 처리 할경우
+  //내용을 확인하고 추가 처리 해야함.
   //drop callback 이벤트.
   oAPP.fn.drop_cb = async function(param, i_drag, i_drop){
 
@@ -2307,6 +2364,26 @@
 
       }
 
+      //테스트!!!!!!!!!!!!!!!!!!!!!!
+      if(parent.REMOTE.app.isPackaged === false){
+        
+        var _aParams = Object.values(arguments);
+        
+        var _sUndoRedo = _aParams.find( item => item?.PRCCD === "UNDO_REDO" );
+        
+        //undo, redo 처리에서 호출했는지 파라메터 확인.
+        if(typeof _sUndoRedo === "undefined"){
+
+          var _sParam = {};
+          _sParam.S_DRAG = i_drag;
+          _sParam.S_DROP = i_drop;
+
+          parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("DRAG_DROP", _sParam);
+        }
+
+      }
+      //테스트!!!!!!!!!!!!!!!!!!!!!!
+
 
       
       var l_funcnm = oAPP.fn.getUIAttrFuncName(oAPP.attr.prev[i_drag.POBID], "3", i_drag.UIATT, "_sIndexGetter");
@@ -2320,7 +2397,7 @@
       //DRAG된 UI 다시 생성 처리.
       oAPP.fn.reCreateUIObjInstance(i_drag);
 
-      
+
       //DROP된 UI 다시 생성 처리.
       oAPP.fn.reCreateUIObjInstance(i_drop);
 
@@ -2495,7 +2572,7 @@
     _sParam.CHILD_UIOBK = i_drag.UIOBK;
 
 
-    var _modulePath = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "exception", "exceptionUI.js");
+    var _modulePath = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "js", "exception", "exceptionUI.js");
 
     //부모의 Aggregation에 추가 불가능한 UI인지 확인.
     var _deny = parent.require(_modulePath).checkDenyChildAggr(_sParam);
@@ -2543,6 +2620,7 @@
       parent.setBusy("");
 
       return;
+      
     }
 
     //DRAG한 UI의 부모에서 DRAG UI의 INDEX 얻기.
@@ -2563,6 +2641,29 @@
     }
 
 
+
+
+    //테스트!!!!!!!!!!!!!!!!!!!!!!
+    if(parent.REMOTE.app.isPackaged === false){
+      
+      var _aParams = Object.values(arguments);
+      
+      var _sUndoRedo = _aParams.find( item => item?.PRCCD === "UNDO_REDO" );
+      
+      //undo, redo 처리에서 호출했는지 파라메터 확인.
+      if(typeof _sUndoRedo === "undefined"){
+
+        var _sParam = {};
+        _sParam.S_DRAG = i_drag;
+        _sParam.S_DROP = i_drop;
+
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("DRAG_DROP", _sParam);
+      }
+
+    }
+    //테스트!!!!!!!!!!!!!!!!!!!!!!
+
+
     //DRAG UI의 부모에서 DRAG UI정보 제거.
     l_parent.zTREE.splice(l_indx, 1);
     
@@ -2580,8 +2681,31 @@
       i_drop.zTREE = [];
     }
 
-    //drop의 CHILD 영역에 DRAG UI를 추가.
-    i_drop.zTREE.push(i_drag);
+
+    //테스트!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if(parent.REMOTE.app.isPackaged === false){
+
+      var _aParams = Object.values(arguments);
+      
+      var _sUndoRedo = _aParams.find( item => item?.PRCCD === "UNDO_REDO" );
+
+      if(typeof _sUndoRedo?.BEFORE_DRAG_POS !== "undefined"){
+        i_drop.zTREE.splice(_sUndoRedo.BEFORE_DRAG_POS, 0, i_drag);
+      }else{
+        //drop의 CHILD 영역에 DRAG UI를 추가.
+        i_drop.zTREE.push(i_drag);  
+      }
+
+
+    }else{
+      //기존로직.
+
+      //drop의 CHILD 영역에 DRAG UI를 추가.
+      i_drop.zTREE.push(i_drag);
+  
+    
+    }
+    //테스트!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
     //DRAG UI의 부모정보 변경.
@@ -2633,7 +2757,6 @@
     // //MODEL 갱신 처리.
     // oAPP.attr.oModel.refresh();
 
-    
     //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
     await oAPP.fn.designRefershModel();
 
@@ -3465,6 +3588,7 @@
         //체크박스가 선택안된 경우 하위 로직 skip.
         if(it_tree[i].chk !== true){continue;}
 
+
         //클라이언트 이벤트 및 sap.ui.core.HTML의 프로퍼티 입력건 제거 처리.
         oAPP.fn.delUiClientEvent(it_tree[i]);
 
@@ -3581,6 +3705,13 @@
       }
 
       
+      //테스트!!!!!!!!!!!!!!!!!!!!!!
+      if(parent.REMOTE.app.isPackaged === false){
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("MULTI_DELETE");
+      }
+      //테스트!!!!!!!!!!!!!!!!!!!!!!
+
+
       
       //선택한 라인의 부모 정보 수집.
       var _aParent = oAPP.fn.collectSelectParent(oAPP.attr.oModel.oData.zTREE);
@@ -4166,7 +4297,7 @@
     _sParam.CHILD_UIOBK = is_0022.UIOBK;
 
 
-    var _modulePath = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "exception", "exceptionUI.js");
+    var _modulePath = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "js", "exception", "exceptionUI.js");
 
     //부모의 Aggregation에 추가 불가능한 UI인지 확인.
     var _deny = parent.require(_modulePath).checkDenyChildAggr(_sParam);
@@ -4226,6 +4357,13 @@
     if(typeof _oDom !== "undefined" && _oDom !== null){
       _oPromise = _oRender.setAfterRendering(_oTarget);
     }
+
+    
+    //테스트!!!!!!!!!!!!!!!!!!!!!!
+    if(parent.REMOTE.app.isPackaged === false){
+      var _aInsertChild = [];
+    }
+    //테스트!!!!!!!!!!!!!!!!!!!!!!   
 
 
     //UI 반복 횟수만큼 그리기.
@@ -4315,7 +4453,24 @@
       //file uploader UI의 uploaderUrl 프로퍼티 예외처리.
       oAPP.fn.attrUploadUrlException(l_14.OBJID, l_14.UIOBK);
 
+
+      //테스트!!!!!!!!!!!!!!!!!!!!!!
+      if(parent.REMOTE.app.isPackaged === false){
+        _aInsertChild.push(l_14);
+      }
+      //테스트!!!!!!!!!!!!!!!!!!!!!!   
+      
+
     } //UI 반복 횟수만큼 그리기.
+
+
+    
+    //테스트!!!!!!!!!!!!!!!!!!!!!!
+    if(parent.REMOTE.app.isPackaged === false){
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("INSERT", _aInsertChild);
+    }
+    //테스트!!!!!!!!!!!!!!!!!!!!!!   
+
     
 
     // //MODEL 갱신 처리.
@@ -4367,7 +4522,7 @@
     //20240621 pes.
     //바인딩 팝업의 디자인 영역 갱신처리.
     oAPP.fn.updateBindPopupDesignData();
-    
+ 
 
   }; //UI 추가.
 
@@ -4784,6 +4939,15 @@
         // //model 갱신 처리.
         // oAPP.attr.oModel.refresh();
 
+
+        //테스트!!!!!!!!!!!!!!!!!!!!!!
+        if(parent.REMOTE.app.isPackaged === false){
+          //UNDO HISTORY 추가 처리.
+          parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("INSERT_PERS", ls_14);
+
+        }
+        //테스트!!!!!!!!!!!!!!!!!!!!!!
+
         
         //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
         await oAPP.fn.designRefershModel();
@@ -4961,7 +5125,7 @@
         _sParam.CHILD_UIOBK = i_cdata.UIOBK;
 
 
-        var _modulePath = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "exception", "exceptionUI.js");
+        var _modulePath = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "js", "exception", "exceptionUI.js");
 
         //부모의 Aggregation에 추가 불가능한 UI인지 확인.
         var _deny = parent.require(_modulePath).checkDenyChildAggr(_sParam);
@@ -5302,7 +5466,17 @@
         parent.setBusy("");
 
         return;
+
       }
+
+      
+      //테스트!!!!!!!!!!!!!!!!!!!!!!
+      if(parent.REMOTE.app.isPackaged === false){
+        //UNDO HISTORY 추가 처리.
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("DELETE", ls_tree);
+
+      }
+      //테스트!!!!!!!!!!!!!!!!!!!!!!  
 
       
       //내 부모가 자식 UI가 필수인 UI에 자식이 없는경우 강제추가 script 처리. 
@@ -5390,12 +5564,12 @@
       //20240621 pes.
       //바인딩 팝업의 디자인 영역 갱신처리.
       oAPP.fn.updateBindPopupDesignData();
+  
             
 
     }); //UI삭제전 확인 팝업 호출.
 
   }; //ui 삭제 처리 이벤트.
-
 
 
 

@@ -35,8 +35,6 @@ function createChannel() {
 
     //MESSAGE 이벤트 구성.
     oChannel.onmessage = function(oEvent) {
-                    
-        console.log(oEvent.data);
 
         if(typeof oEvent?.data?.PRCCD === "undefined"){
             return;
@@ -232,7 +230,7 @@ async function updateAppData(oEvent){
 
     // //BUSY ON
     // parent.setBusy("X");
-
+    
 
     for (const key in oEvent.data.oPrev) {
 
@@ -249,7 +247,7 @@ async function updateAppData(oEvent){
         _oUi._MODEL      = _sParam._MODEL;
 
         //N건 바인딩된 UI 정보 초기화.
-        _oUi._BIND_AGGR  = [];
+        _oUi._BIND_AGGR  = {};
 
 
         //바인딩 팝업에 전달받은 N건 바인딩된 UI정보로 갱신 처리.
@@ -257,11 +255,21 @@ async function updateAppData(oEvent){
 
             var _aList = _sParam._BIND_AGGR[aggr];
 
+            if(typeof _aList === "undefined"){
+                continue;
+            }
+
+            if(_aList.length === 0){
+                continue;
+            }
+
+            _oUi._BIND_AGGR[aggr] = [];
+
             for (let i = 0, l =_aList.length; i < l; i++) {
                 
                 var _list = _aList[i];
 
-                _oUi._BIND_AGGR.push(oAPP.attr.prev[_list]);
+                _oUi._BIND_AGGR[aggr].push(oAPP.attr.prev[_list]);
                 
             }
             

@@ -17,8 +17,6 @@ function createChannel() {
     //MESSAGE 이벤트 구성.
     oChannel.onmessage = function(oEvent) {
         
-        console.log(oEvent.data);
-
         if(typeof oEvent?.data?.PRCCD === "undefined"){
             return;
         }
@@ -415,7 +413,7 @@ function updateBindPopupDesignData(){
     //데이터 동기화 프로세스 코드.
     _sData.PRCCD = "UPDATE-DESIGN-DATA";
 
-
+    
     //디자인 트리 전송 data(T_0014) 구성.
     _sData.T_0014 = set0014Data();
 
@@ -527,7 +525,7 @@ function setPrevdata(){
         _sParam._BIND_AGGR = {};
 
         //N건 바인딩된 정보 수집.
-        setBindAggrData(_sParam, _oUi);
+        setBindAggrData(_sParam._BIND_AGGR, _oUi);
 
             
     }

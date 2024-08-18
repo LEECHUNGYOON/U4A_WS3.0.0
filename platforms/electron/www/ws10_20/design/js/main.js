@@ -35,6 +35,15 @@
     oAPP.oDesign.types = {};
 
 
+    //테스트!!!!!!!!!!!!!!!!!!!!!!!
+    //UNDO, REDO 관련 DB 저장 ARRAY
+    if(parent.REMOTE.app.isPackaged === false){
+      window.__ACT_UNDO_HIST = [];
+      window.__ACT_REDO_HIST = [];
+    }
+    //테스트!!!!!!!!!!!!!!!!!!!!!!!
+
+
     //busy dialog option 파라메터 구조.
     oAPP.oDesign.types.TY_BUSY_OPTION = {
       TITLE : "", //BUSY DIALOG 타이틀.
@@ -51,16 +60,23 @@
 
 
     //design root path 정보 구성.(ws10_20/design/js)
-    oAPP.oDesign.pathInfo.designRootPath = parent.PATH.join(parent.getPath("WS10_20_ROOT"), "design", "js");
+    oAPP.oDesign.pathInfo.designRootPath = parent.PATH.join(parent.getPath("WS10_20_ROOT"), "design");
 
     //onAfterRender 처리 module path 정보.
     oAPP.oDesign.pathInfo.setOnAfterRender = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, 
-      "previewRender", "setOnAfterRender.js");
+      "js", "previewRender", "setOnAfterRender.js");
 
     //WS20 <=> 바인딩 팝업 BROADCAST 통신 모듈 PATH.
-    oAPP.oDesign.pathInfo.bindPopupBroadCast = parent.PATH.join(parent.getPath("WS10_20_ROOT"),
-      "design", "bindPopupHandler", "broadcastChannelBindPopup.js");
+    oAPP.oDesign.pathInfo.bindPopupBroadCast = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath,
+      "bindPopupHandler", "broadcastChannelBindPopup.js");
 
+    
+    //테스트!!!!!!!!!!!!!!!!!!!!!!!
+    if(parent.REMOTE.app.isPackaged === false){
+      oAPP.oDesign.pathInfo.undoRedo = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, 
+        "testFolder", "undoRedo.js");
+    }
+    //테스트!!!!!!!!!!!!!!!!!!!!!!!
     
     //sap core 정보 광역화.
     oAPP.attr.oCore = sap.ui.getCore();
@@ -668,6 +684,14 @@
     //model, 미리보기 정보 제거.
     oAPP.fn.removeContent = function(){
 
+      //테스트!!!!!!!!!!!!!!!!!!!!!!!
+      if(parent.REMOTE.app.isPackaged === false){
+        //UNDO, REDO 관련 DB 저장 ARRAY
+        window.__ACT_UNDO_HIST = [];
+        window.__ACT_REDO_HIST = [];
+      }
+      //테스트!!!!!!!!!!!!!!!!!!!!!!!
+
       //라인 선택 이벤트 해제(이벤트 수행 처리 회피 목적)
       oAPP.attr.ui.oLTree1.detachRowSelectionChange(oAPP.fn.onDesignTreeRowSelChange);
       
@@ -792,6 +816,24 @@
 
     //UI 저장 정보 구성.
     oAPP.fn.getSaveData = function(){
+
+      //테스트!!!!!!!!!!!!!!!!!!!!!!!
+      if(parent.REMOTE.app.isPackaged === false){
+        //UNDO, REDO 관련 DB 저장 ARRAY
+        window.__ACT_UNDO_HIST = [];
+        window.__ACT_REDO_HIST = [];
+
+        if(typeof oAPP.attr.oModel.oData.designTree === "undefined"){
+          oAPP.attr.oModel.oData.designTree = {};
+        }
+
+        oAPP.attr.oModel.oData.designTree.undo = false;
+        oAPP.attr.oModel.oData.designTree.redo = false;
+        oAPP.attr.oModel.refresh();
+
+      }
+      //테스트!!!!!!!!!!!!!!!!!!!!!!!
+
 
       oAPP.attr.POSIT = 0;
 
@@ -996,6 +1038,8 @@
       //오류 표현 필드 초기화 처리.
       oAPP.fn.attrClearErrorField();
 
+      oAPP.attr.oModel.refresh();
+
 
       var _aError = [];
 
@@ -1005,7 +1049,7 @@
       //20240724 PES.
       //디자인 tree 데이터 점검 module load.
       var _oDesignChkModule = parent.require(
-        parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "checkAppData", "designTreeData.js"));
+        parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "js", "checkAppData", "designTreeData.js"));
 
 
       //자식이 필수인 UI에 대한 자식 존재 여부 점검(공통코드 UA050)

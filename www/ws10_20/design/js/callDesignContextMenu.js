@@ -422,7 +422,12 @@
 
 
     
-
+    //📌📌해당 FUNCTION은 UNDO, REDO에서도 사용됨!!!📌📌
+    //UNDO, REDO시에 is_tree_param 파라메터 이외에
+    //UNDO, REDO에 관련된 파라메터를 추가로 값전달 하고 있음.
+    //(oAPP.fn.contextMenuUiMove(undefined, 3, {PRCCD:"UNDO"});)
+    //따라서 해당 FUNCTION을 호출하며 추가로 파라메터 처리 할경우
+    //내용을 확인하고 추가 처리 해야함.
     //ui 이동처리 function
     oAPP.fn.contextMenuUiMove = async function(sign, pos){
 
@@ -438,8 +443,26 @@
         //context menu를 호출한 라인의 OBJID 얻기.
         var l_OBJID = oAPP.attr.oModel.getProperty("/lcmenu/OBJID");
 
+
         //OBJID에 해당하는 TREE 정보 얻기.
         var ls_tree = oAPP.fn.getTreeData(l_OBJID);
+
+        
+        //테스트!!!!!!!!!!!!!!!!!!!!!!
+        //전달받은 파라메터 정보 얻기.
+        if(parent.REMOTE.app.isPackaged === false){
+            var _aParams = Object.values(arguments);
+
+            var _sUndoRedo = _aParams.find( item => item?.PRCCD === "UNDO_REDO" );
+
+            //undo, redo 처리에서 호출했는지 파라메터 확인.
+            if(typeof _sUndoRedo === "undefined"){
+                parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("MOVE", ls_tree);
+
+            }
+        }
+        //테스트!!!!!!!!!!!!!!!!!!!!!!  
+
         
         //부모 TREE 정보 얻기.
         var l_parent = oAPP.fn.getTreeData(ls_tree.POBID);
@@ -881,6 +904,16 @@
             //복사한 UI 붙여넣기 처리.
             var ls_14 = lf_setPasteCopiedData(ls_tree, i_cdata, param, lt_ua018, lt_ua026, lt_ua030, lt_ua032, lt_ua050, bKeep);
 
+
+            //테스트!!!!!!!!!!!!!!!!!!!!!!
+            if(parent.REMOTE.app.isPackaged === false){
+                //UNDO HISTORY 추가 처리.
+                parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("PASTE", ls_14);
+
+            }
+            //테스트!!!!!!!!!!!!!!!!!!!!!!
+
+
             // //model 갱신 처리.
             // oAPP.attr.oModel.refresh();
 
@@ -1061,7 +1094,7 @@
             _sParam.CHILD_UIOBK = i_cdata.UIOBK;
 
 
-            var _modulePath = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "exception", "exceptionUI.js");
+            var _modulePath = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "js", "exception", "exceptionUI.js");
 
             //부모의 Aggregation에 추가 불가능한 UI인지 확인.
             var _deny = parent.require(_modulePath).checkDenyChildAggr(_sParam);
