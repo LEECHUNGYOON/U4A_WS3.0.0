@@ -185,7 +185,8 @@
     position: absolute;
     top: 0;
     width: 100%;
-    background: #1d232a;
+    /* background: #1d232a; */
+    background: transparent;
     box-shadow: rgba(0, 0, 0, 0.11) 0px 15px 30px 0px, rgba(0, 0, 0, 0.08) 0px 5px 15px 0px;
 }
 .u4a_loader {

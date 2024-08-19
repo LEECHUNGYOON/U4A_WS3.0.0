@@ -484,12 +484,18 @@
                 oContr.ui.LIST1.setSelectedItem(oFirstItem);
                 oContr.ui.LIST1.fireSelectionChange({ listItem: oFirstItem }); 
 
+                // 메인 영역 Busy 끄기
+                parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+
             });
             
             return;
         }
 
         oContr.fn.setBusy(false);
+
+        // 메인 영역 Busy 끄기
+        parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
 
     }; // end of oContr.ui.onInit
 
@@ -504,13 +510,18 @@
      *******************************************************/
     oContr.fn.setBusy = function(bIsBusy, sOption){
 
+        // 현재 Busy 실행 여부 플래그
         oParentAPP.attr.isBusy = bIsBusy;
 
+        // 브로드 캐스트 객체
         var _ISBROAD = sOption?.ISBROAD || undefined;
 
         if(bIsBusy === true){
             
             sap.ui.getCore().lock();
+
+            // 브라우저 닫기 버튼 비활성
+            parent.CURRWIN.closable = false;
 
             oAPP.ui.ROOT.setBusy(true);
 
@@ -523,6 +534,9 @@
         } else {
 
             sap.ui.getCore().unlock();
+
+            // 브라우저 닫기 버튼 활성
+            parent.CURRWIN.closable = true;
             
             oAPP.ui.ROOT.setBusy(false);
 

@@ -94,6 +94,10 @@ let oAPP = (function (window) {
         MIMETYPE: "script"
     },
     {
+        URL: "./js/broadcast/ws_fn_broad.js",
+        MIMETYPE: "script"
+    },
+    {
         URL: "./js/fnServerSession.js",
         MIMETYPE: "script"
     },

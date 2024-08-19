@@ -102,7 +102,7 @@
 
                             }
                         }),
-                        new sap.m.Button({
+                        new sap.m.Button("mainWinClose", {
                             icon: "sap-icon://decline",
                             press: function () {
 

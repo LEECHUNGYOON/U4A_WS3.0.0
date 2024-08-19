@@ -6,7 +6,7 @@
 
 self.onmessage = function (e) {
 
-    const iSessionTimeMinute = 10;
+    const iSessionTimeMinute = 10;  
 
     var iSessionTime = iSessionTimeMinute * 60 * 1000;
     var oReceiveData = e.data,

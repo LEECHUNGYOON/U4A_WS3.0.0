@@ -6,8 +6,7 @@
 
 
 
-
-
+ 
 /*******************************************************
  * main scope의 busy and lock 설정
  *******************************************************/
@@ -21,4 +20,4 @@ export function SETBUSYLOCK(oEvent, oPARAM){
 
     oAPP.common.fnSetBusyLock(oPARAM.ISBUSY);
     
-}
+} // end of SETBUSYLOCK

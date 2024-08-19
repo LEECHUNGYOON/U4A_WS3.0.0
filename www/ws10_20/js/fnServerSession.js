@@ -37,6 +37,13 @@
 
         console.error(oData.RTMSG);
 
+        // 세션 유지 실패 시, 나를 제외한 나머지는 다 죽인다
+        parent.IPCRENDERER.send('if-browser-close', {
+            ACTCD: "A", // 나를 제외한 나머지는 다 죽인다.
+            SESSKEY: parent.getSessionKey(),
+            BROWSKEY: parent.getBrowserKey()
+        });
+
         // 세션 타임 아웃 팝업을 띄운다.
         let sTitle = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "147"), // The session has terminated.
             sDesc = oData.RTMSG,

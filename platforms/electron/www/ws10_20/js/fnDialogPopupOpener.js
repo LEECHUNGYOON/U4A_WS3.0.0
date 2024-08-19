@@ -1012,7 +1012,7 @@
     }; // end of oAPP.fn.fnDesignTreeFindUiPopupOpen
 
     /************************************************************************
-     * Document Popup Open
+     * Current App Technical Document Popup Open
      ************************************************************************/
     oAPP.fn.fnDocuPopupOpener = function () {
         
