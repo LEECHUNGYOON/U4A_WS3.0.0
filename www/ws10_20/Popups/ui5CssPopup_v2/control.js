@@ -95,6 +95,14 @@ export async function start(require, IF_DATA, fnCallback){
     // if (!APP.isPackaged) {
     //     oBrowserWindow.webContents.openDevTools();
     // }
+
+    // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+    oBrowserWindow.once('ready-to-show', () => {
+
+        // 부모 위치 가운데 배치한다.
+        WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow, oBrowserOptions);
+
+    });
  
     // 브라우저가 오픈이 다 되면 타는 이벤트
     oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -120,15 +128,7 @@ export async function start(require, IF_DATA, fnCallback){
 
         // });
 
-    });
-
-    // 브라우저가 활성화 될 준비가 될때 타는 이벤트
-    oBrowserWindow.once('ready-to-show', () => {
-
-        // 부모 위치 가운데 배치한다.
-        WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow, oBrowserOptions);
-
-    });
+    });    
 
     // 브라우저를 닫을때 타는 이벤트
     oBrowserWindow.on('closed', () => {

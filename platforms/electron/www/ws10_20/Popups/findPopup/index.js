@@ -235,6 +235,10 @@ let oAPP = parent.oAPP;
 
                 oApp.removeEventDelegate(oDelegate);
 
+                oAPP.CURRWIN.show();
+
+                oAPP.WSUTIL.setBrowserOpacity(oAPP.CURRWIN); 
+
                 oAPP.setBusyIndicator("");
 
                 // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
@@ -1548,11 +1552,13 @@ let oAPP = parent.oAPP;
 
         sap.ui.getCore().attachInit(function() {
 
+            oAPP.setBusyIndicator("X");
+
             oAPP.fn.fnInitModelBinding();
 
             oAPP.fn.fnInitRendering();
 
-            oAPP.setBusy('');
+            oAPP.setBusyLoading('');
 
             setTimeout(() => {
                 $('#content').fadeIn(300, 'linear');
@@ -1560,11 +1566,7 @@ let oAPP = parent.oAPP;
 
         });
     
-        oAPP.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${oAPP.BROWSKEY}`);
-
-        // busy를 여기서 키는 이유
-        // busy 안에서 broadcast 채널을 이용한 로직이 있기 때문.
-        oAPP.setBusyIndicator("X");
+        oAPP.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${oAPP.BROWSKEY}`);        
 
         oAPP.broadToChild.onmessage = function(oEvent){
 
@@ -1579,12 +1581,12 @@ let oAPP = parent.oAPP;
                 case "BUSY_ON":
 
                     //BUSY ON을 요청받은경우.
-                    oAPP.setBusyIndicator(true, {ISBROAD:true});
+                    oAPP.setBusyIndicator("X", {ISBROAD:true});
                     break;
 
                 case "BUSY_OFF":
                     //BUSY OFF를 요청 받은 경우.
-                    oAPP.setBusyIndicator(false, {ISBROAD:true});
+                    oAPP.setBusyIndicator("X", {ISBROAD:true});
                     break;
 
                 default:

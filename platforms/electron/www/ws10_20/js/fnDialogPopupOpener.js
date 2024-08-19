@@ -2230,10 +2230,12 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A14"); // Runtime Class Navigator
-        oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.autoHideMenuBar = true;        
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.show = false;
         oBrowserOptions.closable = false;
 
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -2256,9 +2258,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        // if (!APP.isPackaged) {
-        //     oBrowserWindow.webContents.openDevTools();
-        // }
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -2284,20 +2286,20 @@
             // 부모 위치 가운데 배치한다.            
             WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
-            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
+            // // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            // WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
                 
-                if(oBrowserWindow.isDestroyed()){                        
-                    return;    
-                }
+            //     if(oBrowserWindow.isDestroyed()){                        
+            //         return;    
+            //     }
 
-                try {
-                    oBrowserWindow.closable = true;    
-                } catch (error) {
+            //     try {
+            //         oBrowserWindow.closable = true;    
+            //     } catch (error) {
                     
-                }
+            //     }
 
-            });     
+            // });     
 
         });
 

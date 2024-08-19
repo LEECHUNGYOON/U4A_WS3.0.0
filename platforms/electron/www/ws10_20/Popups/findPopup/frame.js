@@ -23,7 +23,7 @@ let oAPP = (function(window) {
     /*******************************************************
      * 메시지클래스 텍스트 작업 관련 Object -- start
      *******************************************************/
-    const
+    var
         REMOTE = oAPP.REMOTE,
         PATH = REMOTE.require('path'),
         CURRWIN = REMOTE.getCurrentWindow(),
@@ -35,12 +35,12 @@ let oAPP = (function(window) {
         LANGU = USERINFO.LANGU,
         SYSID = USERINFO.SYSID;
 
-    const
-        WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
-        WSUTIL = require(WSMSGPATH),
-        WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+    
+        oAPP.WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+        oAPP.WSUTIL = require(oAPP.WSMSGPATH),
+        oAPP.WSMSG = new oAPP.WSUTIL.MessageClassText(SYSID, LANGU);
 
-    oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+    oAPP.common.fnGetMsgClsText = oAPP.WSMSG.fnGetMsgClsText.bind(oAPP.WSMSG);
 
     /*******************************************************
      * 메시지클래스 텍스트 작업 관련 Object -- end
@@ -49,7 +49,7 @@ let oAPP = (function(window) {
     // 현재 비지 상태 
     oAPP.attr.isBusy = false;
 
-    oAPP.setBusy = function(bIsShow) {
+    oAPP.setBusyLoading = function(bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
 
@@ -99,7 +99,7 @@ let oAPP = (function(window) {
             return;
         }
 
-        if (bIsBusy) {
+        if (bIsBusy === "X") {
 
             oBusy.style.visibility = "visible";
 

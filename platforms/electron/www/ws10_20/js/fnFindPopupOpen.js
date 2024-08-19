@@ -62,9 +62,12 @@
 
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D02"); // Find
         oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.parent = CURRWIN;        
+        oBrowserOptions.parent = CURRWIN;
+
         oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.show = false;
         oBrowserOptions.closable = false;
+
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -122,20 +125,20 @@
                 // Find Popup을 부모창 가운데에 표시
                 parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
-                // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-                parent.WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
+                // // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+                // parent.WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
                     
-                    if(oBrowserWindow.isDestroyed()){                        
-                        return;    
-                    }
+                //     if(oBrowserWindow.isDestroyed()){                        
+                //         return;    
+                //     }
 
-                    try {
-                        oBrowserWindow.closable = true;    
-                    } catch (error) {
+                //     try {
+                //         oBrowserWindow.closable = true;    
+                //     } catch (error) {
                         
-                    }
+                //     }
 
-                });                
+                // });                
 
             });            
        

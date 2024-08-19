@@ -89,12 +89,12 @@ window.addEventListener("load", function(){
 
         let oDelegate = {
             onAfterRendering: function(){
+
+                oAPP.ui.ROOT.removeEventDelegate(oDelegate);
                 
                 parent.CURRWIN.show();
 
-                parent.WSUTIL.setBrowserOpacity(parent.CURRWIN);
-
-                oAPP.ui.ROOT.removeEventDelegate(oDelegate);
+                parent.WSUTIL.setBrowserOpacity(parent.CURRWIN);                
 
                 oAPP.onViewReady();
 

@@ -9,10 +9,14 @@ let oAPP = (function(window) {
 
     let oAPP = {};
     oAPP.fn = {};
+    oAPP.ui = {};
     oAPP.attr = {};
     oAPP.events = {};
     oAPP.common = {};
     oAPP.attr.aRuntime = [];
+
+    // 현재 비지 상태 
+    oAPP.attr.isBusy = false;
 
     oAPP.REMOTE = require('@electron/remote');
     oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain;
@@ -37,18 +41,27 @@ let oAPP = (function(window) {
         LANGU = USERINFO.LANGU,
         SYSID = USERINFO.SYSID;
 
-    const
-        WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
-        WSUTIL = require(WSMSGPATH),
-        WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+    // const
+    //     WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+    //     WSUTIL = require(WSMSGPATH),
+    //     WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
 
-    oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+    // oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+
+    oAPP.WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+    oAPP.WSUTIL = require(oAPP.WSMSGPATH),
+    oAPP.WSMSG = new oAPP.WSUTIL.MessageClassText(SYSID, LANGU);
+
+    oAPP.common.fnGetMsgClsText = oAPP.WSMSG.fnGetMsgClsText.bind(oAPP.WSMSG);
 
     /*******************************************************
      * 메시지클래스 텍스트 작업 관련 Object -- end
      *******************************************************/
 
-    oAPP.setBusy = function(bIsShow) {
+    /*******************************************************
+     * @function - 브라우저 처음 실행 시 보여지는 Busy Indicator
+     *******************************************************/
+    oAPP.setBusyLoading = function(bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
 

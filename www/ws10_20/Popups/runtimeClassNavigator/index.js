@@ -13,7 +13,7 @@ let oAPP = parent.oAPP;
 (function (window, oAPP) {
     "use strict";
 
-    oAPP.settings = {};
+    // oAPP.settings = {};
 
     let PATH = oAPP.PATH,
         APP = oAPP.APP,
@@ -132,12 +132,17 @@ let oAPP = parent.oAPP;
      ************************************************************************/
     oAPP.fn.fnInitRendering = function () {
 
-        var oApp = new sap.m.App(),
-            oPage = new sap.m.Page({
-                title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A14"), // Runtime Class Navigator
-                icon: "sap-icon://browse-folder",
-                titleAlignment: sap.m.TitleAlignment.Center
-            });
+        var oApp = new sap.m.App({
+            busyIndicatorDelay: 0,
+        });
+
+        oAPP.ui.APP = oApp;
+
+        var oPage = new sap.m.Page({
+            title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A14"), // Runtime Class Navigator
+            icon: "sap-icon://browse-folder",
+            titleAlignment: sap.m.TitleAlignment.Center
+        });
 
         var oPanel = oAPP.fn.fnGetSearchPanel(), // 상단 조회조건 영역(Panel)
             oTable = oAPP.fn.fnGetResultTable(); // 하단 결과리스트 (m.Table)
@@ -155,6 +160,14 @@ let oAPP = parent.oAPP;
 
                 oApp.removeEventDelegate(oDelegate);
 
+                oAPP.CURRWIN.show();
+
+                oAPP.WSUTIL.setBrowserOpacity(oAPP.CURRWIN); 
+
+                oAPP.fn.setBusy(false);
+
+                // oAPP.setBusyIndicator("");
+
                 // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
                 parent.oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
 
@@ -164,6 +177,51 @@ let oAPP = parent.oAPP;
         oApp.addEventDelegate(oDelegate);
 
     }; // end of oAPP.fn.fnRenderingRuntimeClassNavigator
+
+    /*******************************************************
+     * @function - Busy indicator 실행
+     *******************************************************/
+    oAPP.fn.setBusy = function(bIsBusy, sOption){
+
+        // 현재 Busy 실행 여부 플래그
+        oAPP.attr.isBusy = bIsBusy;
+
+        // 브로드 캐스트 객체
+        var _ISBROAD = sOption?.ISBROAD || undefined;
+
+        if(bIsBusy === true){
+            
+            sap.ui.getCore().lock();
+
+            // 브라우저 닫기 버튼 비활성
+            oAPP.CURRWIN.closable = false;
+
+            oAPP.ui.APP.setBusy(true);
+
+            //다른 팝업의 BUSY ON 요청 처리.
+            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            if(typeof _ISBROAD === "undefined"){
+                oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+            }      
+
+        } else {
+
+            sap.ui.getCore().unlock();
+
+            // 브라우저 닫기 버튼 활성
+            oAPP.CURRWIN.closable = true;
+            
+            oAPP.ui.APP.setBusy(false);
+
+            //다른 팝업의 BUSY OFF 요청 처리.
+            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            if(typeof _ISBROAD === "undefined"){
+                oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+            }
+
+        }
+
+    }; // end of oAPP.fn.setBusy
 
     /************************************************************************
      * 상단 조회조건 영역(Panel)
@@ -518,13 +576,45 @@ let oAPP = parent.oAPP;
 
     window.onload = function () {
 
-        sap.ui.getCore().attachInit(function () {
+        oAPP.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${oAPP.BROWSKEY}`);        
+
+        oAPP.broadToChild.onmessage = function(oEvent){
+
+            var _PRCCD = oEvent?.data?.PRCCD || undefined;
+
+            if(typeof _PRCCD === "undefined"){
+                return;
+            }
+
+            //프로세스에 따른 로직분기.
+            switch (_PRCCD) {
+                case "BUSY_ON":
+
+                    //BUSY ON을 요청받은경우.
+                    // oAPP.setBusyIndicator(true, {ISBROAD:true});
+                    oAPP.fn.setBusy(true, {ISBROAD:true});
+                    break;
+
+                case "BUSY_OFF":
+                    //BUSY OFF를 요청 받은 경우.
+                    oAPP.fn.setBusy(false, {ISBROAD:true});
+                    break;
+
+                default:
+                    break;
+            }
+
+        };
+
+        sap.ui.getCore().attachInit(function () {            
 
             oAPP.fn.fnInitModelBinding();
 
             oAPP.fn.fnInitRendering();
 
-            oAPP.setBusy('');
+            oAPP.fn.setBusy(true);
+
+            oAPP.setBusyLoading('');
 
             setTimeout(() => {
 
@@ -535,6 +625,8 @@ let oAPP = parent.oAPP;
             oAPP.IPCMAIN.on("if-Dialog-dragEnd", oAPP.fn.fnIpc_if_dialog_DragEnd);
 
         });
+
+        
 
     };
 
