@@ -11,6 +11,9 @@ let oAPP = (function(window) {
     oAPP.attr = {};
     oAPP.events = {};
     oAPP.common = {};
+
+    // 현재 비지 상태 
+    oAPP.attr.isBusy = false;
     
     oAPP.REMOTE = require('@electron/remote');
     oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain;
@@ -46,9 +49,9 @@ let oAPP = (function(window) {
      * 메시지클래스 텍스트 작업 관련 Object -- end
      *******************************************************/
 
-    // 현재 비지 상태 
-    oAPP.attr.isBusy = false;
-
+    /***********************************************************
+     * 브라우저 처음 실행 시 보여지는 Busy Indicator
+     ***********************************************************/
     oAPP.setBusyLoading = function(bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
@@ -65,29 +68,21 @@ let oAPP = (function(window) {
 
     };
 
-    // oAPP.setBusyIndicator = function(bIsBusy) {
 
-    //     var oBusy = document.getElementById("u4aWsBusyIndicator");
-
-    //     if (!oBusy) {
-    //         return;
-    //     }
-
-    //     if (bIsBusy) {
-    //         oBusy.style.visibility = "visible";
-    //     } else {
-    //         oBusy.style.visibility = "hidden";
-    //     }
-
-    // }
-
+    /***********************************************************
+     * Busy 실행 여부 정보 리턴
+     ***********************************************************/
     oAPP.getBusy = function(){
     
         return oAPP.attr.isBusy;
 
     };
     
-    oAPP.setBusyIndicator = function(bIsBusy, sOption) {
+
+    /***********************************************************
+     * Busy 켜기 끄기
+     ***********************************************************/
+    oAPP.fn.setBusyIndicator = function(bIsBusy, sOption) {
 
         oAPP.attr.isBusy = bIsBusy;
 
@@ -142,7 +137,7 @@ let oAPP = (function(window) {
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {
 
-            oAPP.setBusyIndicator("");
+            oAPP.fn.setBusyIndicator("");
 
             return;
         }
@@ -153,7 +148,7 @@ let oAPP = (function(window) {
 
     oAPP.fn.fnIpcMainFindSuccess = () => {
 
-        oAPP.setBusyIndicator('');
+        oAPP.fn.setBusyIndicator('');
 
     };
 

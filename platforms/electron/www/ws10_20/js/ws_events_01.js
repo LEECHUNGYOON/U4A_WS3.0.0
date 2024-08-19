@@ -32,7 +32,11 @@
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
+
+        // 전체 자식 윈도우에 Busy 킨다.
+        oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_ON"}); 
         
+        // Find Popup 실행
         oAPP.fn.fnFindPopupOpener();
 
     }; // end of oAPP.events.ev_pressFindBtn

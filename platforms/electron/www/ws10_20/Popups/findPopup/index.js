@@ -239,7 +239,7 @@ let oAPP = parent.oAPP;
 
                 oAPP.WSUTIL.setBrowserOpacity(oAPP.CURRWIN); 
 
-                oAPP.setBusyIndicator("");
+                oAPP.fn.setBusyIndicator("");
 
                 // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
                 parent.oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
@@ -1371,7 +1371,7 @@ let oAPP = parent.oAPP;
     // Find 정보 갱신
     oAPP.fn.fnFindDataRefresh = () => {
 
-        oAPP.setBusyIndicator('X');
+        oAPP.fn.setBusyIndicator('X');
 
         oAPP.IPCRENDERER.on(`${oAPP.BROWSKEY}--find--data--refresh--callback`, oAPP.fn.fnIpcRendererFind_data_refresh_callback);
 
@@ -1383,7 +1383,7 @@ let oAPP = parent.oAPP;
 
         oAPP.IPCRENDERER.off(`${oAPP.BROWSKEY}--find--data--refresh--callback`, oAPP.fn.fnIpcRendererFind_data_refresh_callback);
 
-        oAPP.setBusyIndicator('');
+        oAPP.fn.setBusyIndicator('');
 
         oAPP.attr.oUserInfo = oInfo.oUserInfo;
         oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
@@ -1500,7 +1500,7 @@ let oAPP = parent.oAPP;
         var sBindPath = oCtx.sPath,
             oBindData = oAPP.fn.fnGetModelProperty(sBindPath);
 
-        oAPP.setBusyIndicator('X');
+        oAPP.fn.setBusyIndicator('X');
 
         IPCRENDERER.send(`${sBrowserKey}--find`, oBindData);
 
@@ -1529,13 +1529,13 @@ let oAPP = parent.oAPP;
         var sBindPath = oCtx.sPath,
             oBindData = oAPP.fn.fnGetModelProperty(sBindPath);
 
-        oAPP.setBusyIndicator('X');
+        oAPP.fn.setBusyIndicator('X');
 
         IPCRENDERER.send(`${sBrowserKey}--find--controller`, oBindData);
 
         setTimeout(() => {
 
-            oAPP.setBusyIndicator('');
+            oAPP.fn.setBusyIndicator('');
 
         }, 3000);
 
@@ -1552,12 +1552,13 @@ let oAPP = parent.oAPP;
 
         sap.ui.getCore().attachInit(function() {
 
-            oAPP.setBusyIndicator("X");
+            oAPP.fn.setBusyIndicator("X");
 
             oAPP.fn.fnInitModelBinding();
 
             oAPP.fn.fnInitRendering();
 
+            // 화면 초기 실행 시 한번만 수행 되는 메인 Busy를 끈다.
             oAPP.setBusyLoading('');
 
             setTimeout(() => {
@@ -1581,12 +1582,12 @@ let oAPP = parent.oAPP;
                 case "BUSY_ON":
 
                     //BUSY ON을 요청받은경우.
-                    oAPP.setBusyIndicator("X", {ISBROAD:true});
+                    oAPP.fn.setBusyIndicator("X", {ISBROAD:true});
                     break;
 
                 case "BUSY_OFF":
                     //BUSY OFF를 요청 받은 경우.
-                    oAPP.setBusyIndicator("X", {ISBROAD:true});
+                    oAPP.fn.setBusyIndicator("",  {ISBROAD:true});
                     break;
 
                 default:

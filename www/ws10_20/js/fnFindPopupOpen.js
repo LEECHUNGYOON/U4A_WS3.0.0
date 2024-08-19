@@ -41,14 +41,20 @@
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
 
+        // 전체 자식 윈도우에 Busy 킨다.
+        oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_ON"}); 
+
         var sPopupName = "UIFIND";
 
         // 기존에 Editor 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
 
+            // 전체 자식 윈도우에 Busy 끈다.
+            oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
+
             // busy 끄고 Lock 풀기
-            oAPP.common.fnSetBusyLock("");
+            oAPP.common.fnSetBusyLock("");            
 
             return;
         }

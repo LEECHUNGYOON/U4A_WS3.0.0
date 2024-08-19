@@ -154,6 +154,7 @@ let oAPP = parent.oAPP;
         oApp.addPage(oPage);
         oApp.placeAt("content");
 
+        oAPP.fn.setBusy(true);
 
         let oDelegate = {
             onAfterRendering : function(){
@@ -612,8 +613,10 @@ let oAPP = parent.oAPP;
 
             oAPP.fn.fnInitRendering();
 
+            // Busy 킨다.
             oAPP.fn.setBusy(true);
 
+            // 화면 초기 실행 시 한번만 수행 되는 메인 Busy를 끈다.
             oAPP.setBusyLoading('');
 
             setTimeout(() => {
