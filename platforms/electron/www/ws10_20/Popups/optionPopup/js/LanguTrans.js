@@ -13,8 +13,10 @@
      ************************************************************************/
     function setBusy(a) {
 
-        oNavCon.setBusy(a);
-        oNavConList.setBusy(a);
+        // oNavCon.setBusy(a);
+        // oNavConList.setBusy(a);
+
+        oAPP.fn.setBusy(a);
 
     }; // end of oAPP.fn.fnSetBusy  
 

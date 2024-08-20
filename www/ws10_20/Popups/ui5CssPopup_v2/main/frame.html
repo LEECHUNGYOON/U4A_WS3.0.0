@@ -237,9 +237,7 @@
         // 현재 비지 상태 
         oAPP.attr.isBusy = false;
 
-
-    oAPP.BROWSKEY = CURRWIN.webContents.getWebPreferences().browserkey;
-    
+    oAPP.BROWSKEY = CURRWIN.webContents.getWebPreferences().browserkey;    
 
     /************************************************************************
      * IPC 통신
@@ -275,29 +273,6 @@
         return oAPP.attr.isBusy;
 
     }
-
-    oAPP.setBusyIndicator = function(bIsBusy, sOption){
-
-        oAPP.attr.isBusy = bIsBusy;
-
-        var oBusy = document.getElementById("u4aWsBusyIndicator");
-
-        if (!oBusy) {
-            return;
-        }
-
-        if(bIsBusy === true){
-
-            oBusy.style.visibility = "visible";
-
-        } else {
-
-            oBusy.style.visibility = "hidden";
-
-        }
-
-    };
-
 
     </script>
     

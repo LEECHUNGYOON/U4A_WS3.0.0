@@ -27,10 +27,19 @@
     <div id="content"></div>
 
     <script>
+
+        //UI5 생성 Object 그룹핑 
+        const oUI5 = {};
+
+        //APP 컨트롤 오브젝트 얻기  
+        var oAPP = parent.fn_getParent();
+
+
         /************************************************************************
          * 에러 감지
          ************************************************************************/
         var zconsole = parent.WSERR(window, document, console);
+        
 
         /************************************************************************
          * ws의 설정 정보를 구한다.
@@ -55,6 +64,9 @@
 
         } // end of oAPP.fn.getSettingsInfo
 
+        /**************************************************
+         * BootStrap 로드
+         **************************************************/
         function fnLoadBootStrapSetting() {
 
             var oAPP = parent.fn_getParent(),
@@ -83,22 +95,117 @@
 
         } // end of fnLoadBootStrapSetting
 
-        //UI5 생성 Object 그룹핑 
-        const oUI5 = {};
 
-        //APP 컨트롤 오브젝트 얻기  
-        let oAPP = parent.fn_getParent();
+        //******************************************************************//
+        // 내부 사용 펑션 
+        //*****************************************************************// 
+
+        //화면 Loading Mode 설정 
+        function fn_WaitMode(a) {
+
+            zconsole.log("!!Busy: " + a);
+
+            oUI5.NVCNT.setBusy(a);
+            oUI5.NAVIGATIONLIST.setBusy(a);
+
+        }
+
+         /*******************************************************
+         * @function - Busy indicator 실행
+         *******************************************************/
+        oAPP.fn.setBusy = function(bIsBusy, sOption){
+
+            // 현재 Busy 실행 여부 플래그
+            oAPP.attr.isBusy = bIsBusy;
+
+            fn_WaitMode(bIsBusy);
+
+            // 브로드 캐스트 객체
+            var _ISBROAD = sOption?.ISBROAD || undefined;            
+
+            if(bIsBusy === true){
+
+                // 브라우저 닫기 버튼 비활성
+                oAPP.CURRWIN.closable = false;
+
+                //다른 팝업의 BUSY ON 요청 처리.                
+                if(typeof _ISBROAD === "undefined"){
+                    oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+                } 
+
+                return;
+
+            }
+
+            // 브라우저 닫기 버튼 활성
+            oAPP.CURRWIN.closable = true;
+
+            //다른 팝업의 BUSY OFF 요청 처리.            
+            if(typeof _ISBROAD === "undefined"){
+                oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+            }
+
+
+        }; // end of oAPP.fn.setBusy
+        
+
+        /**************************************************
+         * BroadCast Event 걸기
+         **************************************************/
+        function _attachBroadCastEvent(){
+
+            oAPP.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${oAPP.BROWSKEY}`);        
+
+            oAPP.broadToChild.onmessage = function(oEvent){
+
+                var _PRCCD = oEvent?.data?.PRCCD || undefined;
+
+                if(typeof _PRCCD === "undefined"){
+                    return;
+                }
+
+                //프로세스에 따른 로직분기.
+                switch (_PRCCD) {
+                    case "BUSY_ON":
+
+                        //BUSY ON을 요청받은경우.
+                        // oAPP.fn.setBusyIndicator("X", {ISBROAD:true});
+
+                        oAPP.fn.setBusy(true, {ISBROAD:true});
+
+                        break;
+
+                    case "BUSY_OFF":
+                        //BUSY OFF를 요청 받은 경우.
+                        // oAPP.fn.setBusyIndicator("",  {ISBROAD:true});
+
+                        oAPP.fn.setBusy(false, {ISBROAD:true});
+
+                        break;
+
+                    default:
+                        break;
+                }
+
+            };
+
+        }
+
+        
 
         //UI5 부트스트립 로드 script 
         //oAPP.IF_DATA.THEME_INFO.THEME
         //oAPP.IF_DATA.THEME_INFO.BGCOL
 
-        oAPP.remote.getCurrentWindow().show();
+        // oAPP.remote.getCurrentWindow().show();
 
         // bootstrap setting
         fnLoadBootStrapSetting();
 
         function gfn_BootstrapLoad() {
+
+            // BroadCast Event 걸기
+            _attachBroadCastEvent();
 
             sap.ui.getCore().attachInit(function () {
 
@@ -113,19 +220,19 @@
                     //Menu JSON
                     let sMenuData = JSON.parse(data);
 
-                    //******************************************************************//
-                    // 내부 사용 펑션 
-                    //*****************************************************************//  
+                    // //******************************************************************//
+                    // // 내부 사용 펑션 
+                    // //*****************************************************************//  
 
-                    //화면 Loading Mode 설정 
-                    function fn_WaitMode(a) {
+                    // //화면 Loading Mode 설정 
+                    // function fn_WaitMode(a) {
 
-                        zconsole.log("!!Busy: " + a);
+                    //     zconsole.log("!!Busy: " + a);
 
-                        oUI5.NVCNT.setBusy(a);
-                        oUI5.NAVIGATIONLIST.setBusy(a);
+                    //     oUI5.NVCNT.setBusy(a);
+                    //     oUI5.NAVIGATIONLIST.setBusy(a);
 
-                    }
+                    // }
 
                     //******************************************************************//
                     // Menu ui 생성
@@ -194,7 +301,8 @@
                         select: function (e) {
 
                             //wait on
-                            fn_WaitMode(true);
+                            // fn_WaitMode(true);
+                            oAPP.fn.setBusy(true);
 
                             oUI5.NVCNT.removeAllPages();
 
@@ -260,17 +368,24 @@
 
                     oUI5.APP.placeAt("content");
 
-                    //window 활성 
-                    oAPP.remote.getCurrentWindow().show();
+                    // //window 활성 
+                    // oAPP.remote.getCurrentWindow().show();
 
                     //content 활성 
                     $('#content').fadeIn(300);
                     
+                    oAPP.fn.setBusy(true);
 
                     let oDelegate = {
                         onAfterRendering : function(){
                     
                             oUI5.APP.removeEventDelegate(oDelegate);
+
+                            oAPP.CURRWIN.show();
+
+                            oAPP.WSUTIL.setBrowserOpacity(oAPP.CURRWIN); 
+
+                            oAPP.fn.setBusy(false);
                     
                             // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
                             oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 

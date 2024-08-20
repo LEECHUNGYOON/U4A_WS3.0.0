@@ -29,6 +29,9 @@
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
 
+        // 전체 자식 윈도우에 Busy 킨다.
+        oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_ON" });
+
         let oCurrWin = REMOTE.getCurrentWindow(),
             SESSKEY = parent.getSessionKey(),
             BROWSKEY = parent.getBrowserKey(),
@@ -49,6 +52,9 @@
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
 
+            // 전체 자식 윈도우에 Busy 끈다.
+            oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_OFF" });
+
             return;
 
         }
@@ -59,10 +65,12 @@
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
         oBrowserOptions.title = sBrowserTitle;
-        oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.autoHideMenuBar = true;        
         oBrowserOptions.parent = oCurrWin;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+        
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.show = false;
         oBrowserOptions.closable = false;
         
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -105,23 +113,20 @@
             // 부모 위치 가운데 배치한다.
             parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow, oBrowserOptions);
 
-            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
-
-            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            parent.WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
+            // // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            // parent.WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
                 
-                if(oBrowserWindow.isDestroyed()){                        
-                    return;    
-                }
+            //     if(oBrowserWindow.isDestroyed()){                        
+            //         return;    
+            //     }
 
-                try {
-                    oBrowserWindow.closable = true;    
-                } catch (error) {
+            //     try {
+            //         oBrowserWindow.closable = true;    
+            //     } catch (error) {
                     
-                }
+            //     }
 
-            });          
+            // });          
 
         });
 
@@ -154,13 +159,7 @@
                 SRCHVAL: sSearchValue // 선택한 style class의 검색용 데이터
             };
 
-            oBrowserWindow.webContents.send('if-editor-info', oEditorInfo);            
-
-            // // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            // parent.WSUTIL.setBrowserOpacity(oBrowserWindow);
-
-            // // 부모 위치 가운데 배치한다.
-            // oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+            oBrowserWindow.webContents.send('if-editor-info', oEditorInfo);
 
         }
 

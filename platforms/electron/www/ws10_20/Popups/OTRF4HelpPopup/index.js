@@ -182,7 +182,8 @@ var oAPP = parent.gfn_getParent();
 
 		sap.ui.getCore().attachInit(function () {
 
-			//바인딩 팝업 화면 구성.
+			oAPP.fn.setBusyIndicator("X");
+
 			//oAPP.fn.callOTRListPopup("ZHU4A_OTR_INF", "ZHU4A_OTR_INF", [], []);
 			oAPP.fn.callOTRListPopup("/U4A/H_OTR_INF", "/U4A/H_OTR_INF", [], []);
 
@@ -190,9 +191,39 @@ var oAPP = parent.gfn_getParent();
 
 			// oAPP.fn.fnInitRendering();
 
-			oAPP.setBusy('');
+			// 브라우저 처음 실행 시 보여지는 Busy Indicator 끄기
+			parent.oAPP.fn.setBusyLoading('');
 
 		});
+
+		parent.oAPP.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${oAPP.BROWSKEY}`);        
+
+        parent.oAPP.broadToChild.onmessage = function(oEvent){
+
+            var _PRCCD = oEvent?.data?.PRCCD || undefined;
+
+            if(typeof _PRCCD === "undefined"){
+                return;
+            }
+
+            //프로세스에 따른 로직분기.
+            switch (_PRCCD) {
+                case "BUSY_ON":
+
+                    //BUSY ON을 요청받은경우.
+                    parent.oAPP.fn.setBusyIndicator("X", {ISBROAD:true});
+                    break;
+
+                case "BUSY_OFF":
+                    //BUSY OFF를 요청 받은 경우.
+                    parent.oAPP.fn.setBusyIndicator("",  {ISBROAD:true});
+                    break;
+
+                default:
+                    break;
+            }
+
+        };
 
 	};
    
@@ -351,6 +382,8 @@ var oAPP = parent.gfn_getParent();
 		//-검색 서버 조회 전송 처리 스크립트 펑션 생성
 		function LF_getServerData() {
 
+			oAPP.fn.setBusyIndicator("X");
+
 			oTable.setBusy(true);
 			SerchBT1.setBusy(true);
 
@@ -407,6 +440,7 @@ var oAPP = parent.gfn_getParent();
 				oTable.setBusy(false);
 				SerchBT1.setBusy(false);
 
+				oAPP.fn.setBusyIndicator("");
 
 			}); //검색조건에 따른 결과 리스트 검색을 위한 서버 호출.
 
@@ -455,25 +489,30 @@ var oAPP = parent.gfn_getParent();
 				//~witing mode 제거
 				oPage.setBusy(false);
 
+				oAPP.fn.setBusyIndicator("");
+
+                // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+                parent.oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+
 
 			});
 
 		} //f4 help 필드정보 얻기.
 
 
-		function lf_UIUpdated(){
+		// function lf_UIUpdated(){
 
-			//호출 이후 이벤트 제거 처리.
-			sap.ui.getCore().detachEvent("UIUpdated", lf_UIUpdated);
+		// 	//호출 이후 이벤트 제거 처리.
+		// 	sap.ui.getCore().detachEvent("UIUpdated", lf_UIUpdated);
 				
-			//검색조건, 결과리스트 필드 정보 얻기.
-			lf_getF4Field();
+		// 	//검색조건, 결과리스트 필드 정보 얻기.
+		// 	lf_getF4Field();
 
-		}
+		// }
 
 
-		//UI화면 갱신 이후 이벤트 처리.
-		sap.ui.getCore().attachEvent("UIUpdated", lf_UIUpdated);
+		// //UI화면 갱신 이후 이벤트 처리.
+		// sap.ui.getCore().attachEvent("UIUpdated", lf_UIUpdated);
 
 
 		var oApp = new sap.m.App();
@@ -626,6 +665,23 @@ var oAPP = parent.gfn_getParent();
 
 		oTable.bindAggregation("rows", { path: "/TF4LIST", template: new sap.ui.table.Row() });
 
+
+		let oDelegate = {
+            onAfterRendering : function(){
+
+                oApp.removeEventDelegate(oDelegate);
+
+				oAPP.CURRWIN.show();
+
+				oAPP.WSUTIL.setBrowserOpacity(oAPP.CURRWIN);
+
+				//검색조건, 결과리스트 필드 정보 얻기.
+				lf_getF4Field();
+
+            }
+        };
+
+        oApp.addEventDelegate(oDelegate);
 
 	};  //OTR 검색 팝업 호출.
 

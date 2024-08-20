@@ -4,6 +4,9 @@ oAPP.fn = {};
 oAPP.events = {};
 oAPP.common = {};
 
+// 현재 비지 상태 
+oAPP.attr.isBusy = "";
+
 oAPP.REMOTE = require('@electron/remote');
 oAPP.FS = oAPP.REMOTE.require('fs');
 oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain;
@@ -25,12 +28,16 @@ const
     LANGU = USERINFO.LANGU,
     SYSID = USERINFO.SYSID;
 
-const
-    WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
-    WSUTIL = require(WSMSGPATH),
-    WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+    oAPP.WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+    oAPP.WSUTIL = require(oAPP.WSMSGPATH),
+    oAPP.WSMSG = new oAPP.WSUTIL.MessageClassText(SYSID, LANGU);
 
-oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+// const
+//     WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+//     WSUTIL = require(WSMSGPATH),
+//     WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+
+oAPP.common.fnGetMsgClsText = oAPP.WSMSG.fnGetMsgClsText.bind(oAPP.WSMSG);
 
 /*******************************************************
  * 메시지클래스 텍스트 작업 관련 Object -- end
@@ -71,6 +78,16 @@ function getBrowserKey() {
     return oWebPref.browserkey;
 
 }
+
+
+/***********************************************************
+ * Busy 실행 여부 정보 리턴
+ ***********************************************************/
+oAPP.fn.getBusy = function(){
+
+    return oAPP.attr.isBusy;
+
+};
 
 // Wait for the deviceready event before using any of Cordova's device APIs.
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready

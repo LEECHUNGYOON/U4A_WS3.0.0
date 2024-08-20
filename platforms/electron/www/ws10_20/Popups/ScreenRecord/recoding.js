@@ -62,7 +62,10 @@ oAPP = {
             oAPP.onControllerOpen();
 
             // 부모 자식간 액션별 명령어 수행
-            // oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+            oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+
+            // 다른 브라우저의 Busy 끄기
+            oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "BROAD_BUSY", PRCCD: "BUSY_OFF" });
 
             CURRWIN.closable = true;
 

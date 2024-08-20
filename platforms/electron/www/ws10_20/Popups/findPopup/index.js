@@ -1373,6 +1373,8 @@ let oAPP = parent.oAPP;
 
         oAPP.fn.setBusyIndicator('X');
 
+        oAPP.IPCRENDERER.off(`${oAPP.BROWSKEY}--find--data--refresh--callback`, oAPP.fn.fnIpcRendererFind_data_refresh_callback);
+
         oAPP.IPCRENDERER.on(`${oAPP.BROWSKEY}--find--data--refresh--callback`, oAPP.fn.fnIpcRendererFind_data_refresh_callback);
 
         oAPP.IPCRENDERER.send(`${oAPP.BROWSKEY}--find--data--refresh`);
@@ -1541,32 +1543,12 @@ let oAPP = parent.oAPP;
 
     }; // end of oAPP.events.ev_press_Link_Find_Controller
 
-    /************************************************************************
-     * -- Start of Program
-     ************************************************************************/
 
-    // // UI5 Boot Strap을 로드 하고 attachInit 한다.
-    oAPP.fn.fnLoadBootStrapSetting();
+    /**************************************************
+     * BroadCast Event 걸기
+     **************************************************/
+    function _attachBroadCastEvent(){
 
-    window.onload = function() {        
-
-        sap.ui.getCore().attachInit(function() {
-
-            oAPP.fn.setBusyIndicator("X");
-
-            oAPP.fn.fnInitModelBinding();
-
-            oAPP.fn.fnInitRendering();
-
-            // 화면 초기 실행 시 한번만 수행 되는 메인 Busy를 끈다.
-            oAPP.setBusyLoading('');
-
-            setTimeout(() => {
-                $('#content').fadeIn(300, 'linear');
-            }, 100);
-
-        });
-    
         oAPP.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${oAPP.BROWSKEY}`);        
 
         oAPP.broadToChild.onmessage = function(oEvent){
@@ -1595,13 +1577,54 @@ let oAPP = parent.oAPP;
             }
 
         };
-       
+
+    } // end of _attachBroadCastEvent
+
+    /************************************************************************
+     * -- Start of Program
+     ************************************************************************/
+
+    // // UI5 Boot Strap을 로드 하고 attachInit 한다.
+    oAPP.fn.fnLoadBootStrapSetting();
+
+    window.onload = function() {
+        
+        // BroadCast Event 걸기
+        _attachBroadCastEvent();
+
+        sap.ui.getCore().attachInit(function() {
+
+            oAPP.fn.setBusyIndicator("X");
+
+            oAPP.fn.fnInitModelBinding();
+
+            oAPP.fn.fnInitRendering();
+
+            // 화면 초기 실행 시 한번만 수행 되는 메인 Busy를 끈다.
+            oAPP.setBusyLoading('');
+
+            setTimeout(() => {
+                $('#content').fadeIn(300, 'linear');
+            }, 100);
+
+        }); 
 
     };
 
+    /************************************************************************
+     * window 창을 닫을때 호출 되는 이벤트
+     ************************************************************************/
     window.onbeforeunload = function() {
 
+        // Busy가 실행 중이면 창을 닫지 않는다.
+        if(oAPP.fn.getBusy() === "X"){
+            return false;
+        }
+
         // IPCRENDERER 이벤트 해제
+
+        oAPP.IPCMAIN.off(`${oAPP.BROWSKEY}--find--success`, oAPP.fn.fnIpcMainFindSuccess);
+        
         oAPP.IPCRENDERER.off(`${oAPP.BROWSKEY}--find--data--refresh--callback`, oAPP.fn.fnIpcRendererFind_data_refresh_callback);
 
     };

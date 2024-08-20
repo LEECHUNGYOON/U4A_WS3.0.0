@@ -9,10 +9,12 @@
 
 	function fn_WaitMode(a) {
 
-		console.log("Busy: " + a);
+		// console.log("Busy: " + a);
 
-		oCTNR.setBusy(a);
-		oCTNRLIST.setBusy(a);
+		// oCTNR.setBusy(a);
+		// oCTNRLIST.setBusy(a);
+
+		oAPP.fn.setBusy(a);
 	}
 
 	//테마 미리보기 URL 경로 구성 
@@ -128,7 +130,9 @@
 		icon: "sap-icon://accept",
 		press: function (e) {
 
-			page.setBusy(true);
+			fn_WaitMode(true);
+
+			// page.setBusy(true);
 
 			var sData = {};
 			sData.THEME = oSelect.getSelectedKey();
@@ -176,7 +180,9 @@
 
 			oAPP.fs.writeFileSync(Lpath, SaveData, 'utf-8', function (err) {
 
-				page.setBusy(false);
+				// page.setBusy(false);
+
+				fn_WaitMode(false);
 
 				sap.m.MessageBox.error(err.toString(), {
 					onClose: (e) => {
@@ -189,7 +195,9 @@
 
 			});
 
-			page.setBusy(false);
+			// page.setBusy(false);
+
+			fn_WaitMode(false);
 
 			let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"); // Options
 			sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "330", sMsg); // &1 has been saved

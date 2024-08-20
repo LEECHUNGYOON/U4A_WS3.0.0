@@ -13,7 +13,7 @@ let oAPP = (function(window) {
     oAPP.common = {};
 
     // 현재 비지 상태 
-    oAPP.attr.isBusy = false;
+    oAPP.attr.isBusy = "";
     
     oAPP.REMOTE = require('@electron/remote');
     oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain;
@@ -49,6 +49,17 @@ let oAPP = (function(window) {
      * 메시지클래스 텍스트 작업 관련 Object -- end
      *******************************************************/
 
+
+    /***********************************************************
+     * Busy 실행 여부 정보 리턴
+     ***********************************************************/
+    oAPP.fn.getBusy = function(){
+
+        return oAPP.attr.isBusy;
+
+    };
+
+
     /***********************************************************
      * 브라우저 처음 실행 시 보여지는 Busy Indicator
      ***********************************************************/
@@ -65,16 +76,6 @@ let oAPP = (function(window) {
         } else {
             oLoadPg.classList.add("u4a_loadersInactive");
         }
-
-    };
-
-
-    /***********************************************************
-     * Busy 실행 여부 정보 리턴
-     ***********************************************************/
-    oAPP.getBusy = function(){
-    
-        return oAPP.attr.isBusy;
 
     };
     
@@ -153,22 +154,6 @@ let oAPP = (function(window) {
     };
 
     oAPP.IPCMAIN.on(`${oAPP.BROWSKEY}--find--success`, oAPP.fn.fnIpcMainFindSuccess);
-
-    window.addEventListener("beforeunload", () => {
-
-        oAPP.IPCMAIN.off(`${oAPP.BROWSKEY}--find--success`, oAPP.fn.fnIpcMainFindSuccess);
-
-        // 브라우저 닫는 시점에 busy가 켜있을 경우
-        if(oAPP.getBusy() === true){
-
-            //다른 팝업의 BUSY OFF 요청 처리.
-            oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
-
-            return;
-
-        }
-
-    });
 
     window.oAPP = oAPP;
 

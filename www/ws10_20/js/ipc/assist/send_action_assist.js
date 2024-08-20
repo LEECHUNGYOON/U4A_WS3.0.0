@@ -12,7 +12,7 @@
  *******************************************************/
 export function SETBUSYLOCK(oEvent, oPARAM){
 
-    if(typeof oPARAM?.ISBUSY == "undefined"){
+    if(typeof oPARAM?.ISBUSY === "undefined"){
         return;
     }
 
@@ -21,3 +21,21 @@ export function SETBUSYLOCK(oEvent, oPARAM){
     oAPP.common.fnSetBusyLock(oPARAM.ISBUSY);
     
 } // end of SETBUSYLOCK
+
+/*******************************************************
+ * 브로드 캐스트 Busy
+ *******************************************************/
+export function BROAD_BUSY(oEvent, oPARAM){
+
+    if(!oAPP.attr.oMainBroad){
+        return;
+    }
+
+    if(typeof oPARAM?.PRCCD === "undefined"){
+        return;
+    }
+
+    // 전체 자식 윈도우에 Busy 킨다.
+    oAPP.attr.oMainBroad.postMessage({PRCCD: oPARAM.PRCCD});
+
+} // end of BROAD_BUSY

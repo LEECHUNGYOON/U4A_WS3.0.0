@@ -65,27 +65,49 @@
       // *--------------------------------------------------------------------*
 
       // 로딩중 활성 & 비활성
-      function lf_setEditorBusy(bIsBusy) {
+      function lf_setEditorBusy(bIsBusy, sOption) {
 
-          var oLoading = document.getElementById("zloading"),
-              oLoadingOverlay = document.getElementById("zzoverlay");
+            parent.oAPP.attr.isBusy = bIsBusy;
 
-          if (!oLoading || !oLoadingOverlay) {
-              return;
-          }
+            var _ISBROAD = sOption?.ISBROAD || undefined;
 
-          if (bIsBusy == 'X') {
+            var oLoading = document.getElementById("zloading"),
+                oLoadingOverlay = document.getElementById("zzoverlay");
 
-              oLoading.style.visibility = "visible";
-              oLoadingOverlay.style.display = "block";
+            if (!oLoading || !oLoadingOverlay) {
+                return;
+            }
 
-              return;
+            if (bIsBusy == 'X') {
 
-          }
+                oLoading.style.visibility = "visible";
+                oLoadingOverlay.style.display = "block";
 
-          oLoading.style.visibility = "hidden";
-          oLoadingOverlay.style.display = "none";
+                // 브라우저 창 닫기 버튼 비활성
+                oAPP.CURRWIN.closable = false;
 
+                //다른 팝업의 BUSY ON 요청 처리.
+                //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+                if(typeof _ISBROAD === "undefined"){
+                    oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+                }  
+
+                return;
+
+            }
+
+            oLoading.style.visibility = "hidden";
+            oLoadingOverlay.style.display = "none";
+
+            // 브라우저 창 닫기 버튼 활성
+            oAPP.CURRWIN.closable = true;
+
+            //다른 팝업의 BUSY OFF 요청 처리.
+            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            if(typeof _ISBROAD === "undefined"){
+                oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+            }
+            
       }
 
       // *-이벤트 버블 및 전파 중지 처리 펑션
@@ -326,45 +348,37 @@
 
       }; // end of oAPP.fn.fnEditorValueSave
 
-      // *-윈도우 오류
-      window.onerror = function (message, source, lineno, colno, error) {
-          alert("EDIT ERRO:" + message);
-      };
+    //   // *-윈도우 오류  => 공통 에러 감지로 대체함
+    //   window.onerror = function (message, source, lineno, colno, error) {
+    //       alert("EDIT ERRO:" + message);
+    //   };
 
-      //문서 실행
-      $(document).ready(function () {
+    //   //문서 실행   => window.onload 이벤트로 대체함
+    //   $(document).ready(function () {
 
-          // 클라이언트 세션 유지를 위한 function
-          oAPP.fn.fnKeepClientSession();
+    //       // 클라이언트 세션 유지를 위한 function
+    //       oAPP.fn.fnKeepClientSession();
 
-          //윈도우 resize 이벤트
-          $(window).resize(function () {
+    //       //윈도우 resize 이벤트
+    //       $(window).resize(function () {
 
-              var h = $(window).height() - 60;
-              editor.resize();
+    //           var h = $(window).height() - 60;
+    //           editor.resize();
 
-          });
+    //       });
 
-          fnOnInit();
+    //       fnOnInit();
 
       
-        setTimeout(() => {
-            $('#maincontent').fadeIn(300, 'linear');
+    //     setTimeout(() => {
+    //         $('#maincontent').fadeIn(300, 'linear');
 
-            // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
-		    oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+    //         // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+	// 	    oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
 
-        }, 0);
+    //     }, 0);
 
-      });
-
-      window.addEventListener("beforeunload", function () {
-
-          // 윈도우 클릭 이벤트 해제
-          window.removeEventListener("click", oAPP.fn.fnWindowClickEventListener);
-          window.removeEventListener("keyup", oAPP.fn.fnWindowClickEventListener);
-
-      });
+    //   });      
 
       /************************************************************************
        * 클라이언트 세션 유지를 위한 function
@@ -399,6 +413,85 @@
           oAPP.IPCRENDERER.send("if-session-time", sSessionKey);
 
       };
+      
+
+      window.addEventListener("load", function(){
+
+        oAPP.CURRWIN.show();
+
+        oAPP.WSUTIL.setBrowserOpacity(oAPP.CURRWIN); 
+
+        // // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+        // oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+
+        oAPP.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${oAPP.BROWSKEY}`);        
+
+        oAPP.broadToChild.onmessage = function(oEvent){
+
+            var _PRCCD = oEvent?.data?.PRCCD || undefined;
+
+            if(typeof _PRCCD === "undefined"){
+                return;
+            }
+
+            //프로세스에 따른 로직분기.
+            switch (_PRCCD) {
+                case "BUSY_ON":
+
+                    //BUSY ON을 요청받은경우.
+                    // oAPP.fn.setBusyIndicator("X", {ISBROAD:true});
+
+                    lf_setEditorBusy("X", {ISBROAD:true});
+
+                    break;
+
+                case "BUSY_OFF":
+                    //BUSY OFF를 요청 받은 경우.
+                    // oAPP.fn.setBusyIndicator("",  {ISBROAD:true});
+                    lf_setEditorBusy("", {ISBROAD:true});
+                    break;
+
+                default:
+                    break;
+            }
+
+        };
+
+
+        // 클라이언트 세션 유지를 위한 function
+        oAPP.fn.fnKeepClientSession();
+
+        //윈도우 resize 이벤트
+        $(window).resize(function () {
+
+            var h = $(window).height() - 60;
+            editor.resize();
+
+        });
+
+        fnOnInit();
+
+        setTimeout(() => {
+            $('#maincontent').fadeIn(300, 'linear');
+
+            // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+		    oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+
+        }, 0);
+
+    });
+
+    window.onbeforeunload = function(){
+
+        // Busy가 실행 중일 경우는 브라우저를 못닫게 한다.
+        if(parent.oAPP.fn.getBusy() === "X"){
+            return false;
+        }
+
+        // 윈도우 클릭 이벤트 해제
+        window.removeEventListener("click", oAPP.fn.fnWindowClickEventListener);
+        window.removeEventListener("keyup", oAPP.fn.fnWindowClickEventListener);
+    };
 
       window.oAPP = oAPP;
 

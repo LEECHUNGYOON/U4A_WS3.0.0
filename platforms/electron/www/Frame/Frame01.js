@@ -998,6 +998,28 @@ oAPP.msg = {};
 
     // }; // end of oWS.utill.fn.setBusy
 
+    // 메인 브라우저 닫기 버튼 활성/비활성
+    oWS.utill.fn.setMainCloseBtnDisabled = function(sIsEnabled){
+    // oWS.utill.fn.setMainCloseBtnEnabled = function(sIsEnabled){
+
+        if(!oWS.utill.attr.sap){
+            return;
+        }
+
+        // 메인 브라우저 닫기 버튼
+        let _oMainCloseBtn = oWS.utill.attr.sap.ui.getCore().byId("mainWinClose");
+
+        if(sIsEnabled === "X"){
+
+            _oMainCloseBtn.setEnabled(false);
+
+            return;
+        }
+
+        _oMainCloseBtn.setEnabled(true);
+
+    };
+
     // 19. Busy Indicator 실행
     oWS.utill.fn.setBusy = (sIsbusy) => {
 
@@ -1012,7 +1034,7 @@ oAPP.msg = {};
                 oWS.utill.attr.sap.ui.getCore().unlock();
             }
         }
-    
+
         // Cursor Focus Handle
         if (bIsBusy) {
     
@@ -1041,7 +1063,7 @@ oAPP.msg = {};
     
             }
     
-        }
+        }        
     
         // Busy Indicator dom
         var oBusy = oWS.utill.attr.oBusyDom;
@@ -1049,9 +1071,19 @@ oAPP.msg = {};
         setTimeout(() => {
     
             if (bIsBusy) {
+                
                 oBusy.style.visibility = "visible";
+                
+                // 메인 브라우저 닫기 버튼 비활성
+                oWS.utill.fn.setMainCloseBtnDisabled("X");
+
             } else {
+
                 oBusy.style.visibility = "hidden";    
+
+                // 메인 브라우저 닫기 버튼 활성
+                oWS.utill.fn.setMainCloseBtnDisabled("");
+
             }
     
             oWS.utill.attr.isBusy = "";

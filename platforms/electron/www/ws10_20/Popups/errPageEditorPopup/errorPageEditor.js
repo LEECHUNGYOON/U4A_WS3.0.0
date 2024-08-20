@@ -9,7 +9,7 @@
  ************************************************************************/
 let zconsole = parent.WSERR(window, document, console);
 
-let oAPP = parent.oAPP,
+var oAPP = parent.oAPP,
     PATHINFO = parent.PATHINFO;
 
 (function (window, oAPP) {
@@ -45,18 +45,47 @@ let oAPP = parent.oAPP,
 
     };
 
-    oAPP.fn.setBusyIndicator = function(IsBusy){
+    /***********************************************************
+     * Busy 켜기 끄기
+     ***********************************************************/
+    oAPP.fn.setBusyIndicator = function(IsBusy, sOption){
+
+        oAPP.attr.isBusy = IsBusy;
+
+        var _ISBROAD = sOption?.ISBROAD || undefined;
 
         if(IsBusy === "X"){
-            oAPP.ui.MAIN_APP.setBusy(true);
+
             sap.ui.getCore().lock();
+
+            oAPP.ui.MAIN_APP.setBusy(true);
+
+            // 브라우저 창 닫기 버튼 비활성
+            oAPP.CURRWIN.closable = false;
+
+            //다른 팝업의 BUSY ON 요청 처리.
+            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            if(typeof _ISBROAD === "undefined"){
+                oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+            }
+            
             return;
         }
 
-        sap.ui.getCore().unlock();
+        // 브라우저 창 닫기 버튼 활성
+        oAPP.CURRWIN.closable = true;
+
+        //다른 팝업의 BUSY OFF 요청 처리.
+        //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+        if(typeof _ISBROAD === "undefined"){
+            oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+        }
 
         oAPP.ui.MAIN_APP.setBusy(false);       
 
+        sap.ui.getCore().unlock();
+
+        
     };
 
     /************************************************************************
@@ -185,6 +214,12 @@ let oAPP = parent.oAPP,
             onAfterRendering : function(){
         
                 oSplitApp.removeEventDelegate(oDelegate);
+
+                oAPP.CURRWIN.show();
+
+                oAPP.WSUTIL.setBrowserOpacity(oAPP.CURRWIN); 
+
+                oAPP.fn.setBusyIndicator("");
         
                 // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
                 parent.oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
@@ -426,7 +461,7 @@ let oAPP = parent.oAPP,
         // busy를 끄는 시점은 미리보기 팝업이 로드가 된 후에 IPC로 끈다.
         oAPP.fn.setBusyIndicator("X");
 
-        var BROWSKEY = oAPP.fn.fnGetBrowserKey(),
+        var BROWSKEY = oAPP.BROWSKEY,
             oSaveData = oAPP.fn.fnGetModelProperty("/EDITDATA");
             
         oAPP.IPCRENDERER.send("if-ErrorPage-Preview", {
@@ -446,9 +481,9 @@ let oAPP = parent.oAPP,
             return;
         }
 
-        var BROWSKEY = oAPP.fn.fnGetBrowserKey(),
-            oSaveData = oAPP.fn.fnGetModelProperty("/EDITDATA"),
-            CURRWIN = parent.REMOTE.getCurrentWindow();
+        var BROWSKEY = oAPP.BROWSKEY,
+            oSaveData = oAPP.fn.fnGetModelProperty("/EDITDATA");
+            // CURRWIN = parent.REMOTE.getCurrentWindow();
 
         oAPP.IPCRENDERER.send("if-ErrorPageEditor-Save", {
             BROWSKEY: BROWSKEY,
@@ -497,6 +532,41 @@ let oAPP = parent.oAPP,
 
     };
 
+    /**************************************************
+     * BroadCast Event 걸기
+     ***************************************************/
+    function _attachBroadCastEvent(){
+
+        oAPP.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${oAPP.BROWSKEY}`);        
+
+        oAPP.broadToChild.onmessage = function(oEvent){
+
+            var _PRCCD = oEvent?.data?.PRCCD || undefined;
+
+            if(typeof _PRCCD === "undefined"){
+                return;
+            }
+
+            //프로세스에 따른 로직분기.
+            switch (_PRCCD) {
+                case "BUSY_ON":
+
+                    //BUSY ON을 요청받은경우.
+                    oAPP.fn.setBusyIndicator("X", {ISBROAD:true});
+                    break;
+
+                case "BUSY_OFF":
+                    //BUSY OFF를 요청 받은 경우.
+                    oAPP.fn.setBusyIndicator("",  {ISBROAD:true});
+                    break;
+
+                default:
+                    break;
+            }
+
+        };
+
+    } // end of _attachBroadCastEvent
 
     /************************************************************************
      * -- Start of Program
@@ -508,15 +578,22 @@ let oAPP = parent.oAPP,
     // 클라이언트 세션 유지를 위한 function
     oAPP.fn.fnKeepClientSession();
 
-    window.onload = function () {
+    window.onload = function () {        
+
+        // BroadCast Event 걸기
+        _attachBroadCastEvent();
 
         sap.ui.getCore().attachInit(function () {
 
             oAPP.fn.fnInitModelBinding();
 
-            oAPP.fn.fnInitRendering();
+            oAPP.fn.fnInitRendering();            
 
-            oAPP.setBusy('');
+            // busy를 UI Busy를 사용하기 때문에 Rendering 펑션 호출 후에 Busy를 킴
+            oAPP.fn.setBusyIndicator("X");
+
+            // 화면 초기 실행 시 한번만 수행 되는 메인 Busy를 끈다.
+            oAPP.setBusyLoading('');
 
             setTimeout(() => {
                 $('#content').fadeIn(1000, 'linear');
@@ -532,6 +609,11 @@ let oAPP = parent.oAPP,
     oAPP.IPCMAIN.on(`if-errorPageEditor-setBusy-${oAPP.BROWSKEY}`, oAPP.events.fnIpc_errorPageEditor_setBusy);
 
     window.onbeforeunload = function(){
+
+        // Busy가 실행 중이면 창을 닫지 않는다.
+        if(oAPP.fn.getBusy() === "X"){
+            return false;
+        }
 
         oAPP.IPCMAIN.off(`if-errorPageEditor-setBusy-${oAPP.BROWSKEY}`, oAPP.events.fnIpc_errorPageEditor_setBusy);
 

@@ -677,8 +677,10 @@
             // 브라우저 상단 메뉴를 없앤다.
             parent.setBrowserMenu(null);
 
-            // APP 전체 대상 글로벌 Shortcut 지정하기
             oAPP.common.fnSetGlobalShortcut();
+
+            // APP 전체 대상 공통 Shortcut 지정하기
+            oAPP.common.fnSetCommonShortcut();
 
             // 초기 모델 바인딩
             oAPP.main.fnOnInitModelBinding();

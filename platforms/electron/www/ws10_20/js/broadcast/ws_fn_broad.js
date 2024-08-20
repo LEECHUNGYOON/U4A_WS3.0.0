@@ -9,7 +9,7 @@
         oAPP.attr.oMainBroad = new BroadcastChannel(`broadcast-to-child-window_${parent.getBrowserKey()}`);
 
         // 메인 브라우저 닫기 버튼
-        let _oMainCloseBtn = sap.ui.getCore().byId("mainWinClose");
+        // let _oMainCloseBtn = sap.ui.getCore().byId("mainWinClose");
 
         oAPP.attr.oMainBroad.onmessage = function(oEvent){
 
@@ -24,7 +24,7 @@
                 case "BUSY_ON":
                     //BUSY ON을 요청받은경우.         
                     // 메인 브라우저 닫기 버튼 비활성
-                    _oMainCloseBtn.setEnabled(false);
+                    // _oMainCloseBtn.setEnabled(false);
 
                     parent.setBusy("X");
     
@@ -34,7 +34,7 @@
                     //BUSY OFF를 요청 받은 경우.
 
                     // 메인 브라우저 닫기 버튼 활성
-                    _oMainCloseBtn.setEnabled(true);
+                    // _oMainCloseBtn.setEnabled(true);
 
                     parent.setBusy("");
     

@@ -3,13 +3,11 @@
    ************************************************************************/
   var zconsole = parent.WSERR(window, document, console);
 
-  let oAPP = parent.oAPP,
-  PATHINFO = parent.PATHINFO;
-  // const oAPP = parent.fn_getParent();
-  // const oWIN = oAPP.remote.getCurrentWindow();
+  let oAPP = parent.oAPP;
 
   // 브라우저 title
-  let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B65"); // Document     
+  let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B65"); // Document    
+
   oAPP.CURRWIN.setTitle(sTitle);
 
   /************************************************************************
@@ -18,7 +16,7 @@
   function fnGetSettingsInfo() {
 
       // Browser Window option
-      var sSettingsJsonPath = PATHINFO.WSSETTINGS,
+      var sSettingsJsonPath = parent.PATHINFO.WSSETTINGS,
 
           // JSON 파일 형식의 Setting 정보를 읽는다..
           oSettings = parent.require(sSettingsJsonPath);
@@ -30,9 +28,9 @@
 
   } // end of fnGetSettingsInfo
 
-  // /************************************************************************
-  //  * UI5 BootStrap 
-  //  ************************************************************************/
+  /************************************************************************
+   * UI5 BootStrap 
+   ************************************************************************/
   function fnLoadBootStrapSetting() {
 
       var oSettings = fnGetSettingsInfo(),
@@ -63,7 +61,7 @@
 
   /************************************************************************
    * 클라이언트 세션 유지를 위한 function
-   * **********************************************************************/
+   ************************************************************************/
   function fnKeepClientSession() {
 
       var oAPP = parent.oAPP;
@@ -84,6 +82,10 @@
 
   } // end of fnKeepClientSession
 
+
+  /**************************************************
+   * 윈도우 클릭 이벤트
+   **************************************************/
   function fnWindowClickEventListener() {
 
       var oAPP = parent.oAPP;
@@ -114,6 +116,43 @@
   oPrc.isChang = false;
 
 
+  
+/**************************************************
+ * BroadCast Event 걸기
+ **************************************************/
+function _attachBroadCastEvent (){
+
+    oAPP.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${oAPP.BROWSKEY}`);        
+
+    oAPP.broadToChild.onmessage = function(oEvent){
+
+        var _PRCCD = oEvent?.data?.PRCCD || undefined;
+
+        if(typeof _PRCCD === "undefined"){
+            return;
+        }
+
+        //프로세스에 따른 로직분기.
+        switch (_PRCCD) {
+            case "BUSY_ON":
+
+                //BUSY ON을 요청받은경우.
+                oPrc.fn_setBusy(true, {ISBROAD:true});
+                break;
+
+            case "BUSY_OFF":
+                //BUSY OFF를 요청 받은 경우.
+                oPrc.fn_setBusy(false,  {ISBROAD:true});
+                break;
+
+            default:
+                break;
+        }
+
+    };
+
+} // end of _attachBroadCastEvent
+
   //====================================================================================        
   // window 이벤트 설정 
   //====================================================================================   
@@ -135,12 +174,16 @@
   // 클라이언트 세션 유지를 위한 이벤트를 걸어둔다.
   fnKeepClientSession();
 
+  // BroadCast Event 걸기
+  _attachBroadCastEvent();
+
   //dom start event
   // document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('load', () => {
 
-      parent.oAPP.setBusy('');
+      // 브라우저 처음 실행 시 보여지는 Busy Indicator
+      parent.oAPP.setBusyLoading('');
 
       var oUserInfo = parent.oAPP.attr.oUserInfo,
           oAppInfo = parent.oAPP.attr.oAppInfo,
@@ -153,6 +196,54 @@
       //====================================================================================        
       // 내부 사용 펑션 선언 
       //====================================================================================         
+    
+
+    
+
+    /***********************************************************
+     * Busy 켜기 끄기
+     ***********************************************************/
+    oPrc.fn_setBusy = function(bIsBusy, sOption){
+
+        oAPP.attr.isBusy = bIsBusy;
+
+        var _ISBROAD = sOption?.ISBROAD || undefined;
+
+        if(bIsBusy === true){
+
+            // lock 걸기
+            sap.ui.getCore().lock();
+
+            oApp.setBusy(true);
+
+            // 브라우저 창 닫기 버튼 비활성
+            oAPP.CURRWIN.closable = false;
+
+            //다른 팝업의 BUSY ON 요청 처리.            
+            if(typeof _ISBROAD === "undefined"){
+                oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+            } 
+
+            return;
+
+        }
+
+        oApp.setBusy(false);
+
+        // 브라우저 창 닫기 버튼 활성
+        oAPP.CURRWIN.closable = true;
+
+        //다른 팝업의 BUSY OFF 요청 처리.           
+        if(typeof _ISBROAD === "undefined"){
+            oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+        }
+
+        // lock 풀기
+        sap.ui.getCore().unlock();
+
+
+    };
+
 
       //ZOOM 처리를 위해 이벤트 설정 
       oPrc.fn_setZoomEvt = () => {
@@ -246,7 +337,7 @@
       //[FUNCTION] 저장 처리 
       oPrc.fn_Save = () => {
 
-          oApp.setBusy(true);
+          oPrc.fn_setBusy(true);
 
           const xhr = new XMLHttpRequest();
           const url = oPrc.sURL;
@@ -270,7 +361,10 @@
 
           xhr.onload = function (e) {
 
-              oApp.setBusy(false);
+              oPrc.fn_setBusy(false);
+
+              //브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
+              oAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
 
               try {
                   var sData = JSON.parse(this.response);
@@ -306,7 +400,10 @@
           };
 
           xhr.onerror = function (e) {
-              oApp.setBusy(false);
+              oPrc.fn_setBusy(false);
+
+              //브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
+              oAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
 
               //크리티컬 메시지 처리 서버에서 JSON 오류라는건 잘못된 경로로 판단함 
               oPrc.fn_setMsgMove(sMsg);
@@ -322,7 +419,7 @@
       //[FUNCTION] 저장 Data 얻기 
       oPrc.fn_getSaveData = () => {
 
-          oApp.setBusy(true);
+          oPrc.fn_setBusy(true);
 
           const xhr = new XMLHttpRequest();
           const url = oPrc.sURL;
@@ -332,8 +429,6 @@
           oForm.append('APPID', oPrc.APPID);
           oForm.append('ACTCD', 'GET');
 
-          debugger;
-          
           // User정보가 있고, 서버 설정이 HTTP Only 일 경우,
           // 파라미터에 ID, PW를 붙인다.
         //   let oLogInData = oAPP.attr.oUserInfo;
@@ -355,7 +450,7 @@
           xhr.open("POST", url);
           xhr.onload = function (e) {
 
-              oApp.setBusy(false);
+              oPrc.fn_setBusy(false);
 
               try {
                   var sData = JSON.parse(this.response);
@@ -425,7 +520,7 @@
           };
 
           xhr.onerror = function () {
-              oApp.setBusy(false);
+              oPrc.fn_setBusy(false);
               //크리티컬 메시지 처리 서버에서 JSON 오류라는건 잘못된 경로로 판단함 
               oPrc.fn_setMsgMove(sMsg);
 
@@ -791,22 +886,37 @@
                   actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CLOSE],
                   emphasizedAction: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D15"), // Manage Products
                   onClose: function (sAction) {
-                      if (sap.m.MessageBox.Action.OK === sAction) {
 
-                          //변경 여부 지시자 초기화 
-                          oPrc.isChang = false;
+                    if(sap.m.MessageBox.Action.OK !== sAction){
 
-                          //삭제 
-                          oPrc.fn_delDOCLineData(oPrc.DOCKY);
+                        //브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
+                        oAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
 
-                          //삭제 완료 
-                          let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "327"); // Deletion processing complete
-                          sap.m.MessageToast.show(sMsg);
+                        return;
+                    }
 
-                      }
+                    // if (sap.m.MessageBox.Action.OK === sAction) {
+
+                        //변경 여부 지시자 초기화 
+                        oPrc.isChang = false;
+
+                        //삭제 
+                        oPrc.fn_delDOCLineData(oPrc.DOCKY);
+
+                        //삭제 완료 
+                        let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "327"); // Deletion processing complete
+                        sap.m.MessageToast.show(sMsg);
+
+                    // }
+                    
+                    //브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
+                    oAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
 
                   }
               });
+
+              //브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
+              oAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
 
           }
       });
@@ -836,14 +946,26 @@
                   actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CLOSE],
                   emphasizedAction: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D15"), // Manage Products
                   onClose: function (sAction) {
-                      if (sap.m.MessageBox.Action.OK === sAction) {
-                          //저장 처리 
-                          oPrc.fn_Save();
 
-                      }
+                    if(sap.m.MessageBox.Action.OK !== sAction){
+
+                        //브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
+                        oAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
+
+                        return;
+                    }
+
+                    // if (sap.m.MessageBox.Action.OK === sAction) {
+                        //저장 처리 
+                        oPrc.fn_Save();
+
+                    // }
 
                   }
               });
+
+              //브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
+              oAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
 
           }
       });
@@ -918,7 +1040,8 @@
               this.addButtonGroup('styleselect');
               this.addButtonGroup('table');
 
-              oApp.setBusy(true);
+              oPrc.fn_setBusy(true);
+
               setTimeout(() => {
                   //저장 Data 얻기 
                   oPrc.fn_getSaveData();
@@ -965,6 +1088,12 @@
         onAfterRendering : function(){
     
             oApp.removeEventDelegate(oDelegate);
+
+            oAPP.CURRWIN.show();
+
+            oPrc.fn_setBusy(false);
+
+            oAPP.WSUTIL.setBrowserOpacity(oAPP.CURRWIN);
     
             // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
             oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
@@ -975,8 +1104,64 @@
     oApp.addEventDelegate(oDelegate);
 
 
-      //화면 잠금/해제 처리 
-      oPrc.fn_scrEditble(oPrc.isEdit, oPrc.isEdit);
+    //화면 잠금/해제 처리 
+    oPrc.fn_scrEditble(oPrc.isEdit, oPrc.isEdit);
 
 
-  });
+});
+
+
+/***********************************************************************
+ * @function - 브라우저 창을 닫을 때 Broadcast로 busy 끄라는 지시를 한다.
+ ***********************************************************************/
+function _setBroadCastBusy(){
+
+    // 브라우저 닫는 시점에 busy가 켜있을 경우
+    if(oAPP.fn.getBusy() === true){
+
+        //다른 팝업의 BUSY OFF 요청 처리.
+        oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+
+        return;
+
+    }
+
+    if(typeof window?.sap?.m?.InstanceManager?.getOpenDialogs !== "function"){
+        return;
+    }
+
+    // 현재 호출된 dialog 정보 얻기.
+    var _aDialog = sap.m.InstanceManager.getOpenDialogs();
+
+    //호출된 dialog가 없다면 exit.
+    if(typeof _aDialog === "undefined" || _aDialog?.length === 0){
+        return;
+    }
+
+    // 내가 띄운 MessageBox 가 있을 경우 Busy OFF
+    if(_aDialog.findIndex( item => typeof item.getType === "function" && 
+        item.getType() === "Message") !== -1){
+        
+        //브로드캐스트로 다른 팝업의 BUSY OFF 요청 처리.
+        oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+
+        // // 메인 영역 Busy 끄기
+        // parent.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+
+    }
+
+} // end of _setBroadCastBusy
+
+/************************************************************************
+ * window 창을 닫을때 호출 되는 이벤트
+ ************************************************************************/
+window.onbeforeunload = function(){
+
+    // Busy가 실행 중이면 창을 닫지 않는다.
+    if(oAPP.fn.getBusy() === true){
+        return false;
+    }
+
+    _setBroadCastBusy();
+    
+};

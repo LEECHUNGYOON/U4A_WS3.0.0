@@ -21,8 +21,6 @@
     
         oContr.IF_DATA  = {};
 
-        oContr.attr.isBusy = false;
-
         // 공통 DDLB 구조
         oContr.types.TY_DDLB = {
             key: "",
@@ -498,13 +496,7 @@
         parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
 
     }; // end of oContr.ui.onInit
-
-    
-    oContr.fn.getBusy = function(){
-
-        return oContr.attr.isBusy;
-    };
-
+ 
     /*******************************************************
      * @function - Busy indicator 실행
      *******************************************************/
@@ -1126,8 +1118,7 @@
 
             oContr.fn.setBusy(false);
 
-            //현재 팝업에서 이벤트 발생시 다른 팝업의 BUSY ON 요청 처리.
-            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            //브로드 캐스트로 다른 팝업의 BUSY 요청 처리.          
             oParentAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
 
         });

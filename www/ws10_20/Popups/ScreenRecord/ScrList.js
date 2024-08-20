@@ -43,7 +43,11 @@ let oAPP = {
     //window 로딩 완료 이벤트 
     oAPP.ipcRenderer.on('IF-chkScrList', async (event, data) => {
 
+      // 메인 화면 Busy 끄기
       oAPP.ipcRenderer.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+
+      // BroadCast를 통해서 다른 윈도우의 Busy 끄기
+      oAPP.ipcRenderer.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "BROAD_BUSY", PRCCD: "BUSY_OFF" });
       
       oAPP.CURRWIN.closable = true;
 

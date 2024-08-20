@@ -13,6 +13,9 @@ let oAPP = (function(window) {
     oAPP.events = {};
     oAPP.common = {};
 
+    // 현재 비지 상태 
+    oAPP.attr.isBusy = "";
+
     oAPP.REMOTE = require('@electron/remote');
     oAPP.FS = oAPP.REMOTE.require('fs');
     oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain;
@@ -38,12 +41,12 @@ let oAPP = (function(window) {
         LANGU = USERINFO.LANGU,
         SYSID = USERINFO.SYSID;
 
-    const
-        WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
-        WSUTIL = require(WSMSGPATH),
-        WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
 
-    oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+    oAPP.WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+    oAPP.WSUTIL = require(oAPP.WSMSGPATH),
+    oAPP.WSMSG = new oAPP.WSUTIL.MessageClassText(SYSID, LANGU);
+
+    oAPP.common.fnGetMsgClsText = oAPP.WSMSG.fnGetMsgClsText.bind(oAPP.WSMSG);
 
     /*******************************************************
      * 메시지클래스 텍스트 작업 관련 Object -- end
@@ -62,22 +65,21 @@ let oAPP = (function(window) {
         return oWebPref.partition;
 
     };
+    
 
-    oAPP.fn.fnGetBrowserKey = function() {
+    /***********************************************************
+     * Busy 실행 여부 정보 리턴
+     ***********************************************************/
+    oAPP.fn.getBusy = function(){
 
-        var oCurrWin = oAPP.REMOTE.getCurrentWindow();
-        if (oCurrWin.isDestroyed()) {
-            return;
-        }
-
-        let oWebCon = oCurrWin.webContents,
-            oWebPref = oWebCon.getWebPreferences();
-
-        return oWebPref.browserkey;
+        return oAPP.attr.isBusy;
 
     };
 
-    oAPP.setBusy = function(bIsShow) {
+    /***********************************************************
+     * 브라우저 처음 실행 시 보여지는 Busy Indicator
+     ***********************************************************/
+    oAPP.setBusyLoading = function(bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
 

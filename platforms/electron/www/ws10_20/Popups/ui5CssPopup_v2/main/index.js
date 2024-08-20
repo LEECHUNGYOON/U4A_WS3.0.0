@@ -43,71 +43,11 @@ for (const key in oBootStrap) {
 
 document.head.appendChild(oScript);
 
-/*******************************************************
- * @function - 창을 닫았다는 지시자 IFC 전송
- *******************************************************/
-oAPP.fn.sendIfcDataBrowserClose = function(){
 
-    // IF PARAM을 구성하여 미리보기 쪽에 전송
-    let IF_PARAM = {
-        PRCCD: "CLOSE",
-        DATA: []
-    };
-
-    let sChennalId = `${oParentAPP.attr.IF_DATA.BROWSKEY}--if-ui5css`;
-
-    parent.IPCRENDERER.send(sChennalId, IF_PARAM);
-
-}; // end of oAPP.fn.sendIfcDataBrowserClose
-
-/*******************************************************
- * @function - 창을 닫았다는 지시자 IFC 전송
- *******************************************************/
-oAPP.fn.removeLocalStorage = function(){
-
-    // 브라우저키 + 스토리지 저장 prefix값으로 로컬스토리지 전체 삭제
-    let sStorageKey = oParentAPP.attr.IF_DATA.BROWSKEY + oParentAPP.attr.IF_DATA.STORAGE_KEY_PREFIX;
-
-    localStorage.removeItem(sStorageKey);
-
-}; // end of oAPP.fn.removeLocalStorage
-
-/************************************************************************
- * window load
- ************************************************************************/
-window.addEventListener("load", function(){
-
-    sap.ui.getCore().attachInit(async function(){
-        
-        let sViewPath = parent.PATH.join(parent.__dirname, "views", "view.js");
-
-        let oView = await import(sViewPath);
-  
-        jQuery.extend(true, oAPP, oView.oContr);
-
-        oAPP.fn.setBusy(true);
-
-        let oDelegate = {
-            onAfterRendering: function(){
-
-                oAPP.ui.ROOT.removeEventDelegate(oDelegate);
-                
-                parent.CURRWIN.show();
-
-                parent.WSUTIL.setBrowserOpacity(parent.CURRWIN);                
-
-                oAPP.onViewReady();
-
-            }
-        };
-
-        oAPP.ui.ROOT.addEventDelegate(oDelegate);
-
-        oAPP.ui.ROOT.placeAt("Content");
-
-        oParentAPP.attr.isLoad = true;
-        
-    });
+/**************************************************
+ * BroadCast Event 걸기
+ ***************************************************/
+function _attachBroadCastEvent(){
 
     oParentAPP.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${oParentAPP.attr.IF_DATA.BROWSKEY}`);    
     
@@ -122,17 +62,13 @@ window.addEventListener("load", function(){
         //프로세스에 따른 로직분기.
         switch (_PRCCD) {
             case "BUSY_ON":
-                //BUSY ON을 요청받은경우.
-                // oAPP.setBusyIndicator(true, {ISBROAD:true});
-
+          
                 oAPP.fn.setBusy(true, {ISBROAD: true});
 
                 break;
 
             case "BUSY_OFF":
-                //BUSY OFF를 요청 받은 경우.
-                // oAPP.setBusyIndicator(false, {ISBROAD:true});
-
+         
                 oAPP.fn.setBusy(false, {ISBROAD: true});
 
                 break;
@@ -142,12 +78,13 @@ window.addEventListener("load", function(){
         }
 
     };
+    
+} // end of _attachBroadCastEvent
 
 
-});
-
-
-// 브라우저 창을 닫을 때 Broadcast로 busy 끄라는 지시를 한다.
+/***********************************************************************
+ * @function - 브라우저 창을 닫을 때 Broadcast로 busy 끄라는 지시를 한다.
+ ***********************************************************************/
 function _setBroadCastBusy(){
 
     // 브라우저 닫는 시점에 busy가 켜있을 경우
@@ -184,13 +121,91 @@ function _setBroadCastBusy(){
 
     }
 
-}
+} // end of _setBroadCastBusy
+
+
+/*******************************************************
+ * @function - 창을 닫았다는 지시자 IFC 전송
+ *******************************************************/
+oAPP.fn.sendIfcDataBrowserClose = function(){
+
+    // IF PARAM을 구성하여 미리보기 쪽에 전송
+    let IF_PARAM = {
+        PRCCD: "CLOSE",
+        DATA: []
+    };
+
+    let sChennalId = `${oParentAPP.attr.IF_DATA.BROWSKEY}--if-ui5css`;
+
+    parent.IPCRENDERER.send(sChennalId, IF_PARAM);
+
+}; // end of oAPP.fn.sendIfcDataBrowserClose
+
+/*******************************************************
+ * @function - 로컬스토리지에 저장된 데이터 삭제
+ *******************************************************/
+oAPP.fn.removeLocalStorage = function(){
+
+    // 브라우저키 + 스토리지 저장 prefix값으로 로컬스토리지 전체 삭제
+    let sStorageKey = oParentAPP.attr.IF_DATA.BROWSKEY + oParentAPP.attr.IF_DATA.STORAGE_KEY_PREFIX;
+
+    localStorage.removeItem(sStorageKey);
+
+}; // end of oAPP.fn.removeLocalStorage
 
 
 /************************************************************************
- * window 창의 X 버튼 클릭시 호출 되는 이벤트
+ * window load
+ ************************************************************************/
+window.addEventListener("load", function(){
+
+    // BroadCast Event 걸기
+    _attachBroadCastEvent();
+    
+    sap.ui.getCore().attachInit(async function(){
+        
+        let sViewPath = parent.PATH.join(parent.__dirname, "views", "view.js");
+
+        let oView = await import(sViewPath);
+  
+        jQuery.extend(true, oAPP, oView.oContr);
+
+        oAPP.fn.setBusy(true);
+
+        let oDelegate = {
+            onAfterRendering: function(){
+
+                oAPP.ui.ROOT.removeEventDelegate(oDelegate);
+                
+                parent.CURRWIN.show();
+
+                parent.WSUTIL.setBrowserOpacity(parent.CURRWIN);                
+
+                oAPP.onViewReady();
+
+            }
+        };
+
+        oAPP.ui.ROOT.addEventDelegate(oDelegate);
+
+        oAPP.ui.ROOT.placeAt("Content");
+
+        oParentAPP.attr.isLoad = true;
+        
+    });    
+
+});
+
+
+/************************************************************************
+ * window 창 닫을때 호출 되는 이벤트
  ************************************************************************/
 window.onbeforeunload = function(){
+
+    // Busy가 실행 중이면 창을 닫지 않는다.
+    if(parent.fnGetBusy() === true){
+        return false;
+    }
 
     // 로컬스토리지에 저장된 데이터 삭제
     oAPP.fn.removeLocalStorage();

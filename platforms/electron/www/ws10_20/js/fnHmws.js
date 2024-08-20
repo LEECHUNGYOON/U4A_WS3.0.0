@@ -863,6 +863,9 @@
             return;
         }
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         // Error Page Editor Popup Open
         oAPP.fn.fnErrorPageEditorPopupOpener();
 

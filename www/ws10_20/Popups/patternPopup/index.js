@@ -11,7 +11,6 @@
 const
     require = parent.require,
     REMOTE = require('@electron/remote'),
-    FS = REMOTE.require('fs'),
     PATH = REMOTE.require('path'),
     APP = REMOTE.app,
     APPPATH = APP.getAppPath(),
@@ -19,8 +18,7 @@ const
     PATHINFO = require(PATHINFOURL),
     WSERR = require(PATHINFO.WSTRYCATCH),
     WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
-    WSUTIL = require(WSMSGPATH),
-    USP_UTIL = parent.require(PATHINFO.USP_UTIL);
+    WSUTIL = require(WSMSGPATH);
 
 var zconsole = WSERR(window, document, console);
 
@@ -240,9 +238,21 @@ if (!oAPP) {
             onAfterRendering : function(){
         
                 oApp.removeEventDelegate(oDelegate);
+
+                oAPP.CURRWIN.show();
+
+                parent.WSUTIL.setBrowserOpacity(oAPP.CURRWIN); 
+
+                setTimeout(() => {
+
+                    $('#content').fadeIn(300, 'linear');
+
+                    oAPP.setBusy("");
         
-                // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
-                oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+                    // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+                    oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+
+                }, 300);                
         
             }
         };
@@ -1452,28 +1462,55 @@ if (!oAPP) {
 
     } // end of ev_DefPattRowSelectionChange  
 
+    /********************************************************************
+     * Busy 켜기 끄기
+     *********************************************************************
+     * sOption
+     * - 옵션에 ISBROAD 값이 있으면, 
+     *   내 브라우저의 BroadCast onMessage 이벤트에서 Busy를 킨 것으로,
+     *   그럴때는 나만 Busy 키고 다시 BrodCast의 PostMessage를 하지 않는다.
+     *********************************************************************/
+    oAPP.setBusy = (isBusy, sOption) => {
 
-    oAPP.setBusy = (isBusy) => {
+        oAPP.attr.isBusy = isBusy;
 
-        let bIsBusy = (isBusy == "X" ? true : false);
-
-        sap.ui.core.BusyIndicator.iDEFAULT_DELAY_MS = 0;
-
-        if (bIsBusy) {
+        if (isBusy === "X") {
 
             // 화면 Lock 걸기
             sap.ui.getCore().lock();
 
-            sap.ui.core.BusyIndicator.show(0);
+            // 브라우저 창 닫기 버튼 비활성
+            oAPP.CURRWIN.closable = false;
 
+            sap.ui.core.BusyIndicator.show(0);      
+
+        } else {
+
+            // 브라우저 창 닫기 버튼 활성
+            oAPP.CURRWIN.closable = true;
+
+            sap.ui.core.BusyIndicator.hide();
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+        }
+
+        var _ISBROAD = sOption?.ISBROAD || undefined;
+        if(typeof _ISBROAD !== "undefined"){
             return;
         }
 
-        // 화면 Lock 해제
-        sap.ui.getCore().unlock();
+        if(isBusy === "X"){
 
-        sap.ui.core.BusyIndicator.hide();
+            oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
 
+        } else {
+
+            oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+
+        }
+  
     }; // end of oAPP.fn.setBusy
 
     /************************************************************************
@@ -1498,6 +1535,9 @@ if (!oAPP) {
 
             oAPP.setBusy("X");
 
+            // 글로벌 BusyIndicator Delay 설정
+            sap.ui.core.BusyIndicator.iDEFAULT_DELAY_MS = 0;
+
             await oAPP.fn.getWsMessageList(); // 반드시 이 위치에!!
 
             oAPP.fn.fnInitRendering();
@@ -1512,29 +1552,39 @@ if (!oAPP) {
             if (oTable1 && oTable2) {
                 oTable1.expandToLevel(1);
                 oTable2.expandToLevel(1);
-            }
-
-            /**
-             * 무조건 맨 마지막에 수행 되어야 함!!
-             */
-            // 자연스러운 로딩
-            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function () {
-
-                if (!oAPP.attr.UIUpdated) {
-
-                    setTimeout(() => {
-                        $('#content').fadeIn(300, 'linear');
-                    }, 300);
-
-                    oAPP.attr.UIUpdated = "X";
-
-                    oAPP.setBusy("");
-
-                }
-
-            });
+            } 
 
         });
+
+        oAPP.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${oAPP.BROWSKEY}`);        
+
+        oAPP.broadToChild.onmessage = function(oEvent){
+
+            var _PRCCD = oEvent?.data?.PRCCD || undefined;
+
+            if(typeof _PRCCD === "undefined"){
+                return;
+            }
+
+            //프로세스에 따른 로직분기.
+            switch (_PRCCD) {
+                case "BUSY_ON":
+
+                    //BUSY ON을 요청받은경우.
+                    oAPP.setBusy("X", {ISBROAD:true});
+                    break;
+
+                case "BUSY_OFF":
+                    //BUSY OFF를 요청 받은 경우.
+                    oAPP.setBusy("",  {ISBROAD:true});
+                    break;
+
+                default:
+                    break;
+            }
+
+        };
+
 
     };
 
@@ -1545,48 +1595,18 @@ if (!oAPP) {
     // UI5 Boot Strap을 로드 하고 attachInit 한다.
     oAPP.fn.fnLoadBootStrapSetting();
 
-    // window.onload = function () {
 
-    //     sap.ui.getCore().attachInit(async function () {
 
-    //         oAPP.setBusy("X");
+    /************************************************************************
+     * window 창의 X 버튼 클릭시 호출 되는 이벤트
+     ************************************************************************/
+    window.onbeforeunload = function() {
 
-    //         await oAPP.fn.getWsMessageList(); // 반드시 이 위치에!!
+        // Busy가 실행 중이면 창을 닫지 않는다.
+        if(oAPP.fn.getBusy() === "X"){
+            return false;
+        }
 
-    //         oAPP.fn.fnInitRendering();
-
-    //         oAPP.fn.fnInitModelBinding();
-
-    //         let oTable1 = sap.ui.getCore().byId("uspDefPattTreeTbl"),
-    //             oTable2 = sap.ui.getCore().byId("uspCustPattTreeTbl");
-
-    //         if (oTable1 && oTable2) {
-    //             oTable1.expandToLevel(1);
-    //             oTable2.expandToLevel(1);
-    //         }
-
-    //         /**
-    //          * 무조건 맨 마지막에 수행 되어야 함!!
-    //          */
-    //         // 자연스러운 로딩
-    //         sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function () {
-
-    //             if (!oAPP.attr.UIUpdated) {
-
-    //                 setTimeout(() => {
-    //                     $('#content').fadeIn(300, 'linear');
-    //                 }, 300);
-
-    //                 oAPP.attr.UIUpdated = "X";
-
-    //                 oAPP.setBusy("");
-
-    //             }
-
-    //         });
-
-    //     });
-
-    // };
+    };
 
 })(window, oAPP);

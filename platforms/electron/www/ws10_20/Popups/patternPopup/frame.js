@@ -13,6 +13,9 @@ let oAPP = (function (window) {
     oAPP.events = {};
     oAPP.common = {};
 
+    // 현재 비지 상태 
+    oAPP.attr.isBusy = "";
+
     oAPP.REMOTE = require('@electron/remote');
     oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain;
     oAPP.IPCRENDERER = require('electron').ipcRenderer;
@@ -48,6 +51,59 @@ let oAPP = (function (window) {
      * 메시지클래스 텍스트 작업 관련 Object -- end
      *******************************************************/
 
+    /***********************************************************
+     * Busy 실행 여부 정보 리턴
+     ***********************************************************/
+    oAPP.fn.getBusy = function(){
+
+        return oAPP.attr.isBusy;
+
+    };
+
+    /***********************************************************
+     * Busy 켜기 끄기
+     ***********************************************************/
+    oAPP.fn.setBusyIndicator = function(bIsBusy, sOption) {
+
+        oAPP.attr.isBusy = bIsBusy;
+
+        var _ISBROAD = sOption?.ISBROAD || undefined;
+
+        var oBusy = document.getElementById("u4aWsBusyIndicator");
+
+        if (!oBusy) {
+            return;
+        }
+
+        if (bIsBusy === "X") {
+
+            oBusy.style.visibility = "visible";
+
+            // 브라우저 창 닫기 버튼 비활성
+            oAPP.CURRWIN.closable = false;
+
+            //다른 팝업의 BUSY ON 요청 처리.
+            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            if(typeof _ISBROAD === "undefined"){
+                oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+            }      
+
+        } else {
+            oBusy.style.visibility = "hidden";
+
+            // 브라우저 창 닫기 버튼 활성
+            oAPP.CURRWIN.closable = true;
+
+            //다른 팝업의 BUSY OFF 요청 처리.
+            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            if(typeof _ISBROAD === "undefined"){
+                oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+            }
+
+        }
+
+    }
+
     /************************************************************************
      * IPCRENDERER Events..
      ************************************************************************/
@@ -65,14 +121,6 @@ let oAPP = (function (window) {
         oWs_frame.src = "index.html";
 
     });
-
-    window.onbeforeunload = function () {
-
-        // 부모창에 포커스를 준다.
-        let oParWin = CURRWIN.getParentWindow();
-        oParWin.focus();
-
-    };
 
     window.oAPP = oAPP;
 

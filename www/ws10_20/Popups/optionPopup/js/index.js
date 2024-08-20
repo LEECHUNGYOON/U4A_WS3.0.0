@@ -8,7 +8,9 @@
 const oAPP = {
     ui: {},
     fn: {},
-    attr: {},
+    attr: {
+        isBusy: false, // 현재 비지 상태 
+    },
     common: {},
     onStart: function () {
         this.remote = require('@electron/remote');
@@ -53,19 +55,26 @@ const oAPP = {
             LANGU = USERINFO.LANGU,
             SYSID = USERINFO.SYSID;
 
-        const
-            WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
-            WSUTIL = require(WSMSGPATH),
-            WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
+        // const
+        //     WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+        //     WSUTIL = require(WSMSGPATH),
+        //     WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
 
-        oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+        // oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
+
+        oAPP.WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
+        oAPP.WSUTIL = require(oAPP.WSMSGPATH),
+        oAPP.WSMSG = new oAPP.WSUTIL.MessageClassText(SYSID, LANGU);
+
+        oAPP.common.fnGetMsgClsText = oAPP.WSMSG.fnGetMsgClsText.bind(oAPP.WSMSG);
 
         /*******************************************************
          * 메시지클래스 텍스트 작업 관련 Object -- end
          *******************************************************/
         
+        oAPP.CURRWIN = REMOTE.getCurrentWindow();
         oAPP.IPCRENDERER = oAPP.ipcRenderer;
-        oAPP.CURRWIN = this.remote.getCurrentWindow();
+        oAPP.CURRWIN = REMOTE.getCurrentWindow();
         oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
 
     }
@@ -73,6 +82,14 @@ const oAPP = {
 };
 
 
+/***********************************************************
+ * Busy 실행 여부 정보 리턴
+ ***********************************************************/
+oAPP.fn.getBusy = function(){
+
+    return oAPP.attr.isBusy;
+
+};
 
 //Device ready 
 document.addEventListener('DOMContentLoaded', onDeviceReady, false);
@@ -86,3 +103,16 @@ function fn_getParent() {
 
     return oAPP;
 }
+
+/************************************************************************
+ * window 창을 닫을때 호출 되는 이벤트
+ ************************************************************************/
+window.onbeforeunload = function(){
+
+    // Busy가 실행 중이면 창을 닫지 않는다.
+    if(oAPP.fn.getBusy() === true){
+        return false;
+    }
+
+
+};

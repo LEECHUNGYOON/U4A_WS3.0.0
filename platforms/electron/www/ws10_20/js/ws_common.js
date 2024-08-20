@@ -1895,12 +1895,13 @@
     //         BROWSKEY: parent.getBrowserKey()
     //     });
 
-    // }; // end of oAPP.common.setSessionTimeout    
+    // }; // end of oAPP.common.setSessionTimeout      
+    
 
     /************************************************************************
      * APP 전체 대상 글로벌 Shortcut 지정하기
-     * **********************************************************************/
-    oAPP.common.fnSetGlobalShortcut = function () {
+     ************************************************************************/
+    oAPP.common.fnSetCommonShortcut = function () {
 
         var oShortcut = oAPP.attr.oShortcut;
 
@@ -1993,16 +1994,37 @@
         //     console.log(e);
         // });
 
+    }; // end of oAPP.common.fnSetCommonShortcut
+
+
+    /************************************************************************
+     * APP 전체 대상 공통 Shortcut 지정하기
+     ************************************************************************/
+    oAPP.common.fnSetGlobalShortcut = function(){
+
+        // var oGlobalShortcut = parent.GLOBALSHORTCUT;
+
+        // oGlobalShortcut.register('Alt+F4', (e) => {
+
+        //     debugger;
+
+        //     e.preventDefault();
+
+        //     console.log('Alt + F4 is disabled.');
+
+        // });
+
     }; // end of oAPP.common.fnSetGlobalShortcut
+
 
     /************************************************************************
      * APP 전체 대상 글로벌 Shortcut 삭제
      * **********************************************************************/
     oAPP.common.fnRemoveGlobalShortcut = function () {
 
-        var oShortcut = parent.GLOBALSHORTCUT;
+        var oGlobalShortcut = parent.GLOBALSHORTCUT;
 
-        oShortcut.unregisterAll();
+        oGlobalShortcut.unregisterAll();
 
     }; // end of oAPP.common.fnRemoveGlobalShortcut
 
