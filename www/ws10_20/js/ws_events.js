@@ -890,13 +890,7 @@
 
             // 작업표시줄 깜빡임
             oCurrWin.flashFrame(true);
-
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            // Busy를 끈다.
-            parent.setBusy("");
-
+        
             return;
         }
 
@@ -929,12 +923,6 @@
 
             // 작업표시줄 깜빡임
             oCurrWin.flashFrame(true);
-
-            // // 화면 Lock 해제
-            // sap.ui.getCore().unlock();
-
-            // // Busy를 끈다.
-            // parent.setBusy("");
 
         });
 
