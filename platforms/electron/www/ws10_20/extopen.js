@@ -8,6 +8,12 @@ var REMOTE = require('@electron/remote'),
     CURRWIN = REMOTE.getCurrentWindow(),
     BROWSKEY = CURRWIN.webContents.getWebPreferences().browserkey;
 
+var PATH = REMOTE.require('path');
+var APP = REMOTE.app;
+var APPPATH = APP.getAppPath();
+var WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js");
+var WSUTIL = require(WSMSGPATH);
+
 function setBusy(bIsBusy) {
 
     var oBusy = document.getElementById("u4a_main_load");
@@ -28,6 +34,16 @@ function setBusy(bIsBusy) {
 
 // 전달받은 html 경로를 Iframe의 경로로 변경한다.
 IPCRENDERER.on('if-extopen-url', (event, res) => {
+
+    CURRWIN.show();
+
+    // WSUTIL.setBrowserOpacity(CURRWIN); 
+
+    // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+    IPCRENDERER.send(`if-send-action-${BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+
+    // 현재 윈도우의 닫기 버튼 활성화
+    CURRWIN.closable = true;
 
     var oFrame = document.getElementById("ws_exam");
     if (!oFrame) {
