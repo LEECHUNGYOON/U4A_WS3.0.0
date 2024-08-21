@@ -37,10 +37,12 @@ IPCRENDERER.on('if-extopen-url', (event, res) => {
 
     CURRWIN.show();
 
-    // WSUTIL.setBrowserOpacity(CURRWIN); 
+    WSUTIL.setBrowserOpacity(CURRWIN);
 
     // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
     IPCRENDERER.send(`if-send-action-${BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+
+    IPCRENDERER.send(`if-send-action-${BROWSKEY}`, { ACTCD: "BROAD_BUSY", PRCCD: "BUSY_OFF" });
 
     // 현재 윈도우의 닫기 버튼 활성화
     CURRWIN.closable = true;

@@ -14,6 +14,10 @@ var APPPATH = APP.getAppPath();
 var WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js");
 var WSUTIL = require(WSMSGPATH);
 
+
+var oAPP = {};
+
+
 function setBusy(bIsBusy) {
 
     var oBusy = document.getElementById("u4a_main_load");
@@ -35,12 +39,17 @@ function setBusy(bIsBusy) {
 // 전달받은 html 경로를 Iframe의 경로로 변경한다.
 IPCRENDERER.on('if-extopen-url', (event, res) => {
 
+    // BroadCast Event 걸기
+    _attachBroadCastEvent();
+
     CURRWIN.show();
 
-    // WSUTIL.setBrowserOpacity(CURRWIN); 
+    WSUTIL.setBrowserOpacity(CURRWIN);
 
     // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
     IPCRENDERER.send(`if-send-action-${BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+
+    IPCRENDERER.send(`if-send-action-${BROWSKEY}`, { ACTCD: "BROAD_BUSY", PRCCD: "BUSY_OFF" });
 
     // 현재 윈도우의 닫기 버튼 활성화
     CURRWIN.closable = true;
@@ -66,6 +75,42 @@ IPCRENDERER.on('if-extopen-url', (event, res) => {
     oFrame.src = res;
 
 });
+
+/**************************************************
+ * BroadCast Event 걸기
+ **************************************************/
+function _attachBroadCastEvent(){
+
+    oAPP.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${BROWSKEY}`);        
+
+    oAPP.broadToChild.onmessage = function(oEvent){
+
+        var _PRCCD = oEvent?.data?.PRCCD || undefined;
+
+        if(typeof _PRCCD === "undefined"){
+            return;
+        }
+
+        //프로세스에 따른 로직분기.
+        switch (_PRCCD) {
+            case "BUSY_ON":
+
+                //BUSY ON을 요청받은경우.
+                // oAPP.fn.setBusyIndicator("X", {ISBROAD:true});
+                break;
+
+            case "BUSY_OFF":
+                //BUSY OFF를 요청 받은 경우.
+                // oAPP.fn.setBusyIndicator("",  {ISBROAD:true});
+                break;
+
+            default:
+                break;
+        }
+
+    };
+
+} // end of _attachBroadCastEvent
 
 //부모 / 자식 영역 이벤트 수신 
 window.addEventListener('message', function (e) {
