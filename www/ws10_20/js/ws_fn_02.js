@@ -907,6 +907,9 @@
      ************************************************************************/
     oAPP.fn.fnExternalOpen = function (oBrowserOptions) {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         function lf_external_open(oBrowserOptions) {
 
             var sPath = oBrowserOptions.url,
@@ -923,9 +926,9 @@
             oBrowserWindow.loadURL(sExtOpenHtmlUrl);
 
             // no build 일 경우에는 개발자 툴을 실행한다.
-            // if (!APP.isPackaged) {
-            //     oBrowserWindow.webContents.openDevTools();
-            // }      
+            if (!APP.isPackaged) {
+                oBrowserWindow.webContents.openDevTools();
+            }      
 
             // 브라우저가 활성화 될 준비가 될때 타는 이벤트
             oBrowserWindow.once('ready-to-show', () => {
@@ -944,20 +947,20 @@
                 // 부모 위치 가운데 배치한다.
                 parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
-                // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-                parent.WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
+                // // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+                // parent.WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
                     
-                    if(oBrowserWindow.isDestroyed()){                        
-                        return;    
-                    }
+                //     if(oBrowserWindow.isDestroyed()){                        
+                //         return;    
+                //     }
 
-                    try {
-                        oBrowserWindow.closable = true;    
-                    } catch (error) {
+                //     try {
+                //         oBrowserWindow.closable = true;    
+                //     } catch (error) {
                         
-                    }
+                //     }
 
-                });
+                // });
 
 
             });
@@ -982,7 +985,10 @@
                 return;
             }
 
-            parent.setBusy('');
+            // parent.setBusy('');
+
+            // busy 키고 Lock 걸기
+            oAPP.common.fnSetBusyLock("X");
 
             lf_external_open(oBrowserOptions);
 
