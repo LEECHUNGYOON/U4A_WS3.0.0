@@ -10,6 +10,7 @@ const oAPP = {
         this.APPID = "";
         this.SERVPATH = "";
         this.BROWSKEY = "";
+        this.CURRWIN = this.remote.getCurrentWindow();
         this.SHELL = this.remote.shell;
         this.oIMG = document.getElementById("LOAD_IMG");
 
@@ -109,6 +110,7 @@ const oAPP = {
 
                     oAPP.remote.dialog.showErrorBox(sErrMsg1, sErrMsg2);
                     oAPP.oWIN.close();
+                    return;
 
                 }
 
@@ -131,7 +133,7 @@ const oAPP = {
 
                 // }
 
-                debugger;
+                // debugger;
 
                 var xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function () {
@@ -150,6 +152,7 @@ const oAPP = {
 
                                 oAPP.remote.dialog.showErrorBox(sErrMsg1, sData.RTMSG);
                                 oAPP.oWIN.close();
+                                return;
                             }
 
                         } catch (e) {
@@ -159,6 +162,7 @@ const oAPP = {
 
                             oAPP.remote.dialog.showErrorBox(sErrMsg1, sMsg);
                             oAPP.oWIN.close();
+                            return;
 
                         }
 
@@ -171,6 +175,7 @@ const oAPP = {
                         //창 종료 
                         setTimeout(() => {
                             oAPP.oWIN.close();
+                            return;
                         }, 500);
 
 
@@ -188,6 +193,7 @@ const oAPP = {
         }).catch(err => {
             console.log(err);
             oAPP.oWIN.close();
+            return;
 
         });
 
@@ -205,6 +211,7 @@ const oAPP = {
 
             oAPP.remote.dialog.showErrorBox(sErrMsg1, sErrMsg2);
             oAPP.oWIN.close();
+            return;
 
         }
 
@@ -232,6 +239,7 @@ const oAPP = {
 
             if (result.canceled) {
                 oAPP.oWIN.close();
+                return;
             }
 
             //저장 파일 경로 설정 
@@ -258,6 +266,7 @@ const oAPP = {
                 });
                 if (Ret !== 0) {
                     oAPP.oWIN.close();
+                    return;
                 }
 
             }
@@ -295,6 +304,7 @@ const oAPP = {
                             let sErrMsg1 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "337"); // An error has occurred                      
                             oAPP.remote.dialog.showErrorBox(sErrMsg1, sData.RTMSG);
                             oAPP.oWIN.close();
+                            return;
                         }
 
                     } catch (e) {
@@ -335,6 +345,7 @@ const oAPP = {
 
                         setTimeout(() => {
                             oAPP.oWIN.close();
+                            return;
                         }, 500);
 
                     }
@@ -364,3 +375,10 @@ function onDeviceReady() {
     oAPP.onStart();
 
 }
+
+
+window.onbeforeunload = function(){
+
+    oAPP.ipcRenderer.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "BROAD_BUSY", PRCCD: "BUSY_OFF" });    
+    oAPP.ipcRenderer.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+};

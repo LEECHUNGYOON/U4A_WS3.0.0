@@ -26,6 +26,9 @@
                 //Update UI 이벤트 핸들러 제거 
                 sap.ui.getCore().detachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, fn_UIUPdated);
 
+                // BroadCast Event 걸기
+                _attachBroadCastEvent();
+
                 //화면 활성 
                 $('#content').fadeIn(1500);
 
@@ -43,7 +46,7 @@
                 fn_select_BROWSER();
 
                 //로딩바 제거 
-                APP.setBusy(false);
+                fn_setBusy(false);
 
             }
 
@@ -209,7 +212,7 @@
             //입력값 점검  
             async function fn_Check_value() {
 
-                APP.setBusy(true);
+                fn_setBusy(true);
 
                 //App Name 초기화 
                 FORM1_TEXT1.setText("");
@@ -231,7 +234,7 @@
                         data: JSON.stringify(Ldata),
                         success: (e) => {
 
-                            APP.setBusy(false);
+                            fn_setBusy(false);
                             if (typeof e.RETCD === "undefined") {
                                 return;
                             }
@@ -263,7 +266,7 @@
                         },
                         error: (r, t, e) => {
 
-                            APP.setBusy(false);
+                            fn_setBusy(false);
 
                             var Lmsg = fn_removeTAG(r.responseText);
 
@@ -289,7 +292,8 @@
                 //크리티컬 오류 !!!
                 if (result.RETCD === "Z") {
 
-                    APP.setBusy(true);
+                    fn_setBusy(true);
+
                     jQuery.sap.require("sap.m.MessageBox");
 
                     //시스템 메시지 
@@ -303,7 +307,7 @@
 
                         }
 
-                    });
+                    });                    
 
                     return "E";
                 }
@@ -387,6 +391,9 @@
             //숏컷 생성 - 처리전 
             async function fn_CreateShortcut() {
 
+                // Busy 켜기
+                fn_setBusy(true);
+
                 //오류 표시 초기화 
                 FORM1_INPUT1.setValueState('None'); //appid
                 FORM1_INPUT1.setValueStateText(""); //appid 오류 텍스트 초기화 
@@ -395,11 +402,19 @@
 
                 //필수 값 점검 
                 if (fn_Check_required() === "E") {
+
+                    // Busy 끄기
+                    fn_setBusy(false);
+
                     return;
                 }
 
                 //입력값 점검   
                 if (await fn_Check_value() === "E") {
+
+                    // Busy 끄기
+                    fn_setBusy(false);
+
                     return;
                 }
 
@@ -411,6 +426,10 @@
                     if (e !== "OK") {
                         let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "161"); // Job canceled.
                         sap.m.MessageToast.show(sMsg);
+
+                        // Busy 끄기
+                        fn_setBusy(false);
+
                         return;
                     }
 
@@ -418,6 +437,13 @@
                     fn_CreateShortcutRUN();
 
                 });
+
+
+                // Busy 끄기
+                fn_setBusy(false);
+                
+                //브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
+                oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
 
             }
 
@@ -548,6 +574,9 @@
 
                     });
 
+                    // Busy 끄기
+                    fn_setBusy(false);
+
                 } else {
                     //처리 실패
                     jQuery.sap.require('sap.m.MessageBox');
@@ -561,6 +590,9 @@
                         actions: [sap.m.MessageBox.Action.OK]
 
                     });
+
+                    // Busy 끄기
+                    fn_setBusy(false);
 
                 };
 
@@ -715,6 +747,8 @@
 
                 debugger;
 
+                return;
+                
                 // 임시
                 if(oAPP.remote.app.isPackaged){
                     return;
@@ -749,6 +783,86 @@
                 });
 
             } // end of fn_AppId_F4Help
+
+            /**************************************************
+             * BroadCast Event 걸기
+             **************************************************/
+            function _attachBroadCastEvent(){
+
+                oAPP.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${oAPP.BROWSKEY}`);        
+
+                oAPP.broadToChild.onmessage = function(oEvent){
+
+                    var _PRCCD = oEvent?.data?.PRCCD || undefined;
+
+                    if(typeof _PRCCD === "undefined"){
+                        return;
+                    }
+
+                    //프로세스에 따른 로직분기.
+                    switch (_PRCCD) {
+                        case "BUSY_ON":
+
+                            //BUSY ON을 요청받은경우.
+                            // oAPP.fn.setBusyIndicator("X", {ISBROAD:true});
+                            fn_setBusy(true, {ISBROAD:true});
+
+                            break;
+
+                        case "BUSY_OFF":
+                            //BUSY OFF를 요청 받은 경우.
+                            // oAPP.fn.setBusyIndicator("",  {ISBROAD:true});
+                            fn_setBusy(false, {ISBROAD:true});
+
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                };
+
+            } // end of _attachBroadCastEvent
+
+
+            /***********************************************************
+             * Busy 켜기 끄기
+             ***********************************************************/
+            function fn_setBusy(bIsBusy, sOption){
+
+                oAPP.attr.isBusy = bIsBusy;
+
+                var _ISBROAD = sOption?.ISBROAD || undefined;
+
+                if(bIsBusy === true){
+
+                    APP.setBusy(true);                    
+
+                    // 브라우저 창 닫기 버튼 비활성
+                    oAPP.CURRWIN.closable = false;
+
+                    //다른 팝업의 BUSY ON 요청 처리.            
+                    if(typeof _ISBROAD === "undefined"){
+                        oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+                    }      
+
+
+                    return;
+
+                }
+
+                APP.setBusy(false);                
+
+                // 브라우저 창 닫기 버튼 활성
+                oAPP.CURRWIN.closable = true;
+
+                //다른 팝업의 BUSY OFF 요청 처리.            
+                if(typeof _ISBROAD === "undefined"){
+                    oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+                }                
+
+
+            } // end of fn_setBusy
 
             /* ===================================================================================== */
             /* [시작] APP 화면 구성                                                                   */
@@ -1318,9 +1432,16 @@
                 onAfterRendering : function(){
             
                     APP.removeEventDelegate(oDelegate);
+
+                    oAPP.CURRWIN.show();
+
+                    oAPP.WSUTIL.setBrowserOpacity(oAPP.CURRWIN); 
             
                     // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
-                    oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+                    oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+
+                    // 다른 윈도우에 브로드캐스트로 Busy OFF 요청
+                    oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "BROAD_BUSY", PRCCD: "BUSY_OFF" });
             
                 }
             };
@@ -1378,3 +1499,60 @@
             },    
 
             */
+
+
+/***********************************************************************
+ * @function - 브라우저 창을 닫을 때 Broadcast로 busy 끄라는 지시를 한다.
+ ***********************************************************************/
+function _setBroadCastBusy(){
+
+    // 브라우저 닫는 시점에 busy가 켜있을 경우
+    if(oAPP.fn.getBusy() === "X"){
+
+        // 브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
+        oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+
+        return;
+
+    }
+
+    if(typeof window?.sap?.m?.InstanceManager?.getOpenDialogs !== "function"){
+        return;
+    }
+
+    // 현재 호출된 dialog 정보 얻기.
+    var _aDialog = sap.m.InstanceManager.getOpenDialogs();
+
+    //호출된 dialog가 없다면 exit.
+    if(typeof _aDialog === "undefined" || _aDialog?.length === 0){
+        return;
+    }
+
+    // 내가 띄운 MessageBox 가 있을 경우 Busy OFF
+    if(_aDialog.findIndex( item => typeof item.getType === "function" && 
+        item.getType() === "Message") !== -1){
+        
+        // 브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
+        oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+
+        // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+        oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+
+    }
+
+} // end of _setBroadCastBusy            
+
+/************************************************************************
+ * window 창 닫을때 호출 되는 이벤트
+ ************************************************************************/
+window.onbeforeunload = function() {
+
+    // Busy가 실행 중이면 창을 닫지 않는다.
+    if(oAPP.fn.getBusy() === true){
+        return false;
+    }
+
+    // 브라우저 창을 닫을 때 Broadcast로 busy 끄라는 지시를 한다.
+    _setBroadCastBusy();
+
+};            

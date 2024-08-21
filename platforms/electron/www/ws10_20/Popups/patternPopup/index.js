@@ -35,6 +35,19 @@ if (!oAPP) {
 
     let FS = require("fs-extra");
 
+    oAPP.fn.waiting = function(iTime = 0){
+
+        return new Promise(function(resolve){
+
+            setTimeout(function(){
+                resolve();
+
+            }, iTime);
+
+        });
+
+    };
+
     /************************************************************************
      * 모델 데이터 set
      * **********************************************************************
@@ -1045,6 +1058,9 @@ if (!oAPP) {
      ************************************************************************/
     function ev_CustCreateDlgSave() {        
 
+        // Busy 켜기
+        oAPP.setBusy("X");
+
         let oCreateInfo = oAPP.fn.fnGetModelProperty("/CUST_CR_DLG");
 
         oCreateInfo.TITLE_VS = "";
@@ -1069,6 +1085,9 @@ if (!oAPP) {
                     oCrInput.focus();
                 }
 
+                // Busy 끄기
+                oAPP.setBusy("");
+
             }, 0);
 
             return;
@@ -1086,6 +1105,10 @@ if (!oAPP) {
                 aCustomData = JSON.parse(sCustomJson);
 
         } catch (error) {
+
+            // Busy 끄기
+            oAPP.setBusy("");
+
             throw new Error(error);
         }
 
@@ -1132,6 +1155,10 @@ if (!oAPP) {
             FS.writeFileSync(oPath.CUST_PATT, sNewCustomJsonData, "utf-8");
 
         } catch (error) {
+
+            // Busy 끄기
+            oAPP.setBusy("");
+
             throw new Error(error);
         }
 
@@ -1160,6 +1187,9 @@ if (!oAPP) {
 
         let sMsg = oAPP.msg.M13; // // Saved success
         sap.m.MessageToast.show(sMsg);
+
+        // Busy 끄기
+        oAPP.setBusy("");
 
     } // end of ev_CustCreatef
 
@@ -1298,6 +1328,9 @@ if (!oAPP) {
      * 커스텀 패턴 삭제 이벤트
      ************************************************************************/
     async function ev_pressCustomPatternDelete(oEvent) {
+    
+        // Busy 켜기
+        oAPP.setBusy("X");
 
         let oRow = oEvent.getParameter("row"),
             oRowCtx = oRow.getBindingContext(),
@@ -1307,10 +1340,12 @@ if (!oAPP) {
 
         oCustTable.setSelectedIndex(iRowIndex);
 
+        // 선택한 위치를 표시해 주기 위해 selection Chage 이벤트가 발생되게 하기 위함
+        await oAPP.fn.waiting(0);
+
         /**
          * 삭제 질문 팝업?
          */
-
         let oMessagePop = await new Promise((resolve) => {
 
             let sMsg = `[${oRowBindData.DESC}]  \n\n` + oAPP.msg.M08, //Do you really want to delete the object?
@@ -1328,14 +1363,31 @@ if (!oAPP) {
 
             parent.WSUTIL.showMessageBox(sap, options);
 
+            // Busy 끄기
+            oAPP.setBusy("");
+
+            //브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
+            oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+
         });
 
         if (oMessagePop.RETCD !== "YES") {
+
+            // Busy 끄기
+            oAPP.setBusy("");
+
             return;
         }
 
+        // Busy 켜기
+        oAPP.setBusy("X");
+
         let oTableModel = oCustTable.getModel();
         if (!oTableModel) {
+
+            // Busy 끄기
+            oAPP.setBusy("");
+
             return;
         }
 
@@ -1348,6 +1400,10 @@ if (!oAPP) {
             iFindIndex = aCustData.findIndex(elem => elem?.CKEY === sCKEY);
 
         if (iFindIndex == -1) {
+
+            // Busy 끄기
+            oAPP.setBusy("");
+
             return;
         }
 
@@ -1364,6 +1420,10 @@ if (!oAPP) {
             FS.writeFileSync(oPath.CUST_PATT, sCustomJson, "utf-8");
 
         } catch (error) {
+
+            // Busy 끄기
+            oAPP.setBusy("");
+
             throw new Error(error);
         }
 
@@ -1380,12 +1440,18 @@ if (!oAPP) {
         let sMsg = oAPP.msg.M14;  // Delete success
         sap.m.MessageToast.show(sMsg);
 
+        // Busy 끄기
+        oAPP.setBusy("");
+
     } // end of ev_pressCustomDelete
 
     /************************************************************************
      * 커스텀 패턴 선택 이벤트
      ************************************************************************/
     function ev_CustPattRowSelectionChange(oEvent) {
+       
+        // Busy 켜기
+        oAPP.setBusy("X");
 
         let oDefPattTable = sap.ui.getCore().byId("uspDefPattTreeTbl"),
             oTable = oEvent.getSource(),
@@ -1396,6 +1462,10 @@ if (!oAPP) {
         oAPP.fn.fnSetModelProperty("/CONTENT", {});
 
         if (!oRowCtx) {
+
+            // Busy 끄기
+            oAPP.setBusy("");
+
             return;
         }
 
@@ -1411,14 +1481,24 @@ if (!oAPP) {
         let oSelectedRowData = oRowCtx.getProperty(oRowCtx.getPath());
 
         if (oSelectedRowData.TYPE === "ROOT") {
+            
+            // Busy 끄기
+            oAPP.setBusy("");
             return;
         }
 
         if (!oSelectedRowData.DATA) {
+
+            // Busy 끄기
+            oAPP.setBusy("");
+
             return;
         }
 
         oAPP.fn.fnSetModelProperty("/CONTENT", oSelectedRowData);
+
+        // Busy 끄기
+        oAPP.setBusy("");
 
     } // end of ev_CustPattRowSelectionChange
 
@@ -1458,7 +1538,7 @@ if (!oAPP) {
             return;
         }
 
-        oAPP.fn.fnSetModelProperty("/CONTENT", oSelectedRowData);
+        oAPP.fn.fnSetModelProperty("/CONTENT", oSelectedRowData); 
 
     } // end of ev_DefPattRowSelectionChange  
 
@@ -1588,6 +1668,47 @@ if (!oAPP) {
 
     };
 
+/***********************************************************************
+ * @function - 브라우저 창을 닫을 때 Broadcast로 busy 끄라는 지시를 한다.
+ ***********************************************************************/
+function _setBroadCastBusy(){
+
+    // 브라우저 닫는 시점에 busy가 켜있을 경우
+    if(oAPP.fn.getBusy() === "X"){
+
+        // 브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
+        oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+
+        return;
+
+    }
+
+    if(typeof window?.sap?.m?.InstanceManager?.getOpenDialogs !== "function"){
+        return;
+    }
+
+    // 현재 호출된 dialog 정보 얻기.
+    var _aDialog = sap.m.InstanceManager.getOpenDialogs();
+
+    //호출된 dialog가 없다면 exit.
+    if(typeof _aDialog === "undefined" || _aDialog?.length === 0){
+        return;
+    }
+
+    // 내가 띄운 MessageBox 가 있을 경우 Busy OFF
+    if(_aDialog.findIndex( item => typeof item.getType === "function" && 
+        item.getType() === "Message") !== -1){
+        
+        // 브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
+        oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+
+        // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+        oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+
+    }
+
+} // end of _setBroadCastBusy
+
     /************************************************************************
      * -- Start of Program
      ************************************************************************/
@@ -1598,7 +1719,7 @@ if (!oAPP) {
 
 
     /************************************************************************
-     * window 창의 X 버튼 클릭시 호출 되는 이벤트
+     * window 창 닫을때 호출 되는 이벤트
      ************************************************************************/
     window.onbeforeunload = function() {
 
@@ -1606,6 +1727,9 @@ if (!oAPP) {
         if(oAPP.fn.getBusy() === "X"){
             return false;
         }
+
+        // 브라우저 창을 닫을 때 Broadcast로 busy 끄라는 지시를 한다.
+        _setBroadCastBusy();
 
     };
 

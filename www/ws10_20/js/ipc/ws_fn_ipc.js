@@ -103,6 +103,8 @@
      ************************************************************************/
     oAPP.fn.fnIpcMain_export_import_IMPORT = (event, res) => {
 
+        debugger;
+        
         // 페이지 이동 처리..
         onAppCrAndChgMode(res.APPID);
 

@@ -633,7 +633,15 @@ let oAPP = parent.oAPP;
 
     };
 
+    /************************************************************************
+     * window 창 닫을때 호출 되는 이벤트
+     ************************************************************************/
     window.onbeforeunload = () => {
+
+        // Busy가 실행 중이면 창을 닫지 않는다.
+        if(oAPP.fn.getBusy() === true){
+            return false;
+        }
 
         oAPP.IPCMAIN.off("if-Dialog-dragEnd", oAPP.fn.fnIpc_if_dialog_DragEnd);
 

@@ -1073,9 +1073,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -1274,12 +1274,12 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
-            
-            // 전체 자식 윈도우에 Busy 끈다.
-            oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
 
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
+
+            // 전체 자식 윈도우에 Busy 끈다.
+            oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
 
             return;
         }
@@ -1984,11 +1984,24 @@
      * **********************************************************************/
     oAPP.fn.fnWsImportExportPopupOpener = (sFlag) => {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
+        // 전체 자식 윈도우에 Busy 킨다.
+        oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_ON"});
+
         let sPopupName = "IMPEXPPOP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            // 전체 자식 윈도우에 Busy 끈다.
+            oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
+
             return;
         }
 
@@ -1997,6 +2010,13 @@
             // application명 정합성 체크
             let bCheckAppNm = oAPP.fn.fnCheckAppName();
             if (!bCheckAppNm) {
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
+                // 전체 자식 윈도우에 Busy 끈다.
+                oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
+
                 return;
             }
 
@@ -2048,15 +2068,15 @@
             APPID: ""
         };
 
-        if (sFlag == "EXPORT") {
+        if (sFlag === "EXPORT") {
             oSendData.APPID = sAppId;
         }
 
         var sUrlPath = parent.getPath(sPopupName);
         oBrowserWindow.loadURL(sUrlPath);
 
-        //  // no build 일 경우에는 개발자 툴을 실행한다.
-        //  if (!APP.isPackaged) {
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!APP.isPackaged) {
         //     oBrowserWindow.webContents.openDevTools();
         // }
 
@@ -2064,20 +2084,20 @@
         oBrowserWindow.once('ready-to-show', () => {
 
             // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+            WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
+        oBrowserWindow.webContents.on('did-finish-load', function () {            
 
             oBrowserWindow.webContents.send("export_import-INITDATA", oSendData);
 
-            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            oBrowserWindow.show();
-
             // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+            WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            oBrowserWindow.show();            
 
         });
 
@@ -2561,7 +2581,7 @@
         oBrowserWindow.once('ready-to-show', () => {
 
             // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+            WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
         });
 
@@ -2576,14 +2596,11 @@
 
             oBrowserWindow.webContents.send('if-errmsg-info', oSendData);
 
-            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            WSUTIL.setBrowserOpacity(oBrowserWindow);
-
             // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+            WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
-            // // busy 끄고 Lock 풀기
-            // oAPP.common.fnSetBusyLock("");
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);            
 
         });
 
@@ -3092,12 +3109,21 @@
      ************************************************************************/
     oAPP.fn.fnAppShortCutDownPopupOpener = () => {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+        
+        // 전체 자식 윈도우에 Busy 킨다.
+        oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_ON"});      
+
         // 실행할 브라우저가 없다면 오류 후 빠져나감.    
         let aDefBr = APPCOMMON.fnGetModelProperty("/DEFBR"),
             sMsg = "";
 
         // 뭔가 크게 잘못된 경우
         if (Array.isArray(aDefBr) == false) {
+
+            // 전체 자식 윈도우에 Busy 끈다.
+            oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
 
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
@@ -3114,6 +3140,9 @@
         let oChrome = aDefBr.find(elem => elem.NAME === "CHROME") || {};
         if (!oChrome || !oChrome.ENABLED) {
 
+            // 전체 자식 윈도우에 Busy 끈다.
+            oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
+
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
 
@@ -3128,6 +3157,9 @@
 
         let oMsEdge = aDefBr.find(elem => elem.NAME === "MSEDGE") || {};
         if (!oMsEdge || !oMsEdge.ENABLED) {
+
+            // 전체 자식 윈도우에 Busy 끈다.
+            oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
 
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
@@ -3147,6 +3179,9 @@
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
 
+            // 전체 자식 윈도우에 Busy 끈다.
+            oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
+
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
 
@@ -3164,8 +3199,7 @@
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D31"); // ShortCut Creator        
-        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D31"); // ShortCut Creator    
         oBrowserOptions.skipTaskbar = false;
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.modal = true;
@@ -3175,6 +3209,9 @@
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL; //테마별 색상 처리               
         oBrowserOptions.height = 900;
         oBrowserOptions.width = 800;
+
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.show = false;
         oBrowserOptions.closable = false;
 
         oBrowserOptions.webPreferences.partition = SESSKEY;
@@ -3234,9 +3271,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        // if (!APP.isPackaged) {
-        //     oBrowserWindow.webContents.openDevTools();
-        // }
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -3259,22 +3296,7 @@
             oBrowserWindow.webContents.send('if_APP_shortcutCreator', oSendData);
 
             // 부모 위치 가운데 배치한다.
-            WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
-
-            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
-                
-                if(oBrowserWindow.isDestroyed()){                        
-                    return;    
-                }
-
-                try {
-                    oBrowserWindow.closable = true;    
-                } catch (error) {
-                    
-                }
-
-            });
+            WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);  
 
         });
 

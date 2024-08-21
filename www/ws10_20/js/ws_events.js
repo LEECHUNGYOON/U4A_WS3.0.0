@@ -492,6 +492,13 @@
      ************************************************************************/
     oAPP.events.ev_AppExam = function (oEvent) {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
+        // 전체 자식 윈도우에 Busy 킨다.
+        oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_ON"});
+
+
         var oCurrWin = REMOTE.getCurrentWindow(),
             SESSKEY = parent.getSessionKey(),
             BROWSERKEY = parent.getBrowserKey();
@@ -506,9 +513,13 @@
         oBrowserOptions.url = sPath;
         oBrowserOptions.title = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A07"); // Example Open
         oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.modal = true;
-        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.modal = true;        
         oBrowserOptions.parent = oCurrWin;
+
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.show = false;
+        oBrowserOptions.closable = false;
+        
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSERKEY;
         oBrowserOptions.webPreferences.OBJTY = "EXAMPLE"

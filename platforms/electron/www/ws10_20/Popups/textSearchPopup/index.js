@@ -15,11 +15,9 @@ let oAPP = (() => {
         CURRWIN = REMOTE.getCurrentWindow(),
         PARWIN = CURRWIN.getParentWindow(),
         PARCON = PARWIN.webContents;
-
         
     var BROWSKEY = CURRWIN.webContents.getWebPreferences().browserkey;
     var IPCRENDERER = require('electron').ipcRenderer;
-
 
     var gBeforeSearchText = ""; // 이전 검색한 텍스트    
 
@@ -31,6 +29,7 @@ let oAPP = (() => {
         // esc 키를 눌렀다면 검색창 닫기
         if (event.keyCode == 27) {
             oAPP.fn.fnTextSearchClose();
+            return;
         }
 
         var oFindTxt = document.getElementById("searchCnt");

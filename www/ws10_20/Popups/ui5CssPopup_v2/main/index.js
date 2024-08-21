@@ -90,7 +90,7 @@ function _setBroadCastBusy(){
     // 브라우저 닫는 시점에 busy가 켜있을 경우
     if(parent.fnGetBusy() === true){
 
-        //다른 팝업의 BUSY OFF 요청 처리.
+        // 브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
         oParentAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
 
         return;
@@ -113,7 +113,7 @@ function _setBroadCastBusy(){
     if(_aDialog.findIndex( item => typeof item.getType === "function" && 
         item.getType() === "Message") !== -1){
         
-        //취소를 선택한 경우 다른 팝업의 BUSY OFF 요청 처리.
+        // 브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
         oParentAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
 
         // 메인 영역 Busy 끄기
