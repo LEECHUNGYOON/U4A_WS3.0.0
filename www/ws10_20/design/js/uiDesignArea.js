@@ -12,7 +12,11 @@
 
     //design tree UI.
     var oLTree1 = new sap.ui.table.TreeTable({selectionMode:"Single", 
-      selectionBehavior:"RowOnly", rowActionCount:2,
+      selectionBehavior:"RowOnly", 
+      //20240819 PES.
+      //sap.ui.table.RowAction을 사용시 간헐적으로 특정 row의 rowActionItem이 보이지 않기에
+      //sap.ui.table.Column으로 대체 처리함에 따라 기존 rowActionCount 프로퍼티 세팅 주석 처리.
+      // rowActionCount:2,
       columnHeaderVisible:false, visibleRowCountMode:"Auto", 
       alternateRowColors:true, rowHeight:40});
     oLPage.addContent(oLTree1);
@@ -65,14 +69,18 @@
 
     }); //tree 접힘/펼침 이벤트.
 
-    //table에 hook 이벤트 추가.
-    sap.ui.table.utils._HookUtils.register(oLTree1, 
-      sap.ui.table.utils._HookUtils.Keys.Signal, function(oEvent){
+    //20240819 PES -START.
+    //sap.ui.table.RowAction을 사용시 간헐적으로 특정 row의 rowActionItem이 보이지 않기에
+    //기존 로직 주석 처리함.
+    // //table에 hook 이벤트 추가.
+    // sap.ui.table.utils._HookUtils.register(oLTree1, 
+    //   sap.ui.table.utils._HookUtils.Keys.Signal, function(oEvent){
 
-      //design tree의 row action icon style 처리.
-      oAPP.fn.designSetRowActionIconStyle(oEvent);
+    //   //design tree의 row action icon style 처리.
+    //   oAPP.fn.designSetRowActionIconStyle(oEvent);
            
-    });
+    // });
+    //20240819 PES -END.
 
     
     //tree 라인선택 예외처리.
@@ -87,81 +95,85 @@
     });
 
 
-    //라인별 action 버튼.
-    var oAct = new sap.ui.table.RowAction();
-    oLTree1.setRowActionTemplate(oAct);
+    //20240819 PES -START.
+    //sap.ui.table.RowAction을 사용시 간헐적으로 특정 row의 rowActionItem이 보이지 않기에
+    //기존 로직 주석 처리함.
+    // //라인별 action 버튼.
+    // var oAct = new sap.ui.table.RowAction();
+    // oLTree1.setRowActionTemplate(oAct);
 
-    //A54  Insert Element
-    //UI 추가 버튼.
-    var oItem1 = new sap.ui.table.RowActionItem({icon:"sap-icon://add", visible:"{visible_add}",
-        text:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A54", "", "", "", "")});
-    oAct.addItem(oItem1);
+    // //A54  Insert Element
+    // //UI 추가 버튼.
+    // var oItem1 = new sap.ui.table.RowActionItem({icon:"sap-icon://add", visible:"{visible_add}",
+    //     text:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A54", "", "", "", "")});
+    // oAct.addItem(oItem1);
 
-    //ui 추가 버튼 선택 이벤트.
-    oItem1.attachPress(function(oEvent){
+    // //ui 추가 버튼 선택 이벤트.
+    // oItem1.attachPress(function(oEvent){
 
-      parent.setBusy("X");
+    //   parent.setBusy("X");
 
-      //단축키 잠금 처리.
-      oAPP.fn.setShortcutLock(true);
+    //   //단축키 잠금 처리.
+    //   oAPP.fn.setShortcutLock(true);
 
-      var l_ctxt = this.getBindingContext();
-      if(!l_ctxt){
+    //   var l_ctxt = this.getBindingContext();
+    //   if(!l_ctxt){
 
-        //단축키 잠금 해제처리.
-        oAPP.fn.setShortcutLock(false);
+    //     //단축키 잠금 해제처리.
+    //     oAPP.fn.setShortcutLock(false);
 
-        parent.setBusy("");
+    //     parent.setBusy("");
 
-        return;
-      }
+    //     return;
+    //   }
 
-      //ui 추가 버튼 선택 이벤트 처리.
-      oAPP.fn.designUIAdd(l_ctxt.getProperty());
+    //   //ui 추가 버튼 선택 이벤트 처리.
+    //   oAPP.fn.designUIAdd(l_ctxt.getProperty());
 
-    }); //ui 추가 버튼 선택 이벤트.
+    // }); //ui 추가 버튼 선택 이벤트.
 
 
-    //A03  Delete
-    //삭제 버튼.
-    var oItem2 = new sap.ui.table.RowActionItem({icon:"sap-icon://delete", visible:"{visible_delete}",
-        text:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03", "", "", "", "")});
-    oAct.addItem(oItem2);
+    // //A03  Delete
+    // //삭제 버튼.
+    // var oItem2 = new sap.ui.table.RowActionItem({icon:"sap-icon://delete", visible:"{visible_delete}",
+    //     text:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03", "", "", "", "")});
+    // oAct.addItem(oItem2);
 
-    //ui 삭제 버튼 선택 이벤트.
-    oItem2.attachPress(function(oEvent){
+    // //ui 삭제 버튼 선택 이벤트.
+    // oItem2.attachPress(function(oEvent){
       
-      parent.setBusy("X");
+    //   parent.setBusy("X");
 
-      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+    //   var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
 
-      //213	디자인 화면에서 UI 삭제처리를 진행하고 있습니다.
-      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "213");
+    //   //213	디자인 화면에서 UI 삭제처리를 진행하고 있습니다.
+    //   _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "213");
 
-      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
-      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+    //   //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+    //   parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
 
-      //단축키 잠금.
-      oAPP.fn.setShortcutLock(true);
+    //   //단축키 잠금.
+    //   oAPP.fn.setShortcutLock(true);
 
-      var l_ctxt = this.getBindingContext();
-      if(!l_ctxt){
+    //   var l_ctxt = this.getBindingContext();
+    //   if(!l_ctxt){
 
-        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
-        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+    //     //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+    //     parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
         
-        //단축키 잠금 해제 처리.
-        oAPP.fn.setShortcutLock(false);
+    //     //단축키 잠금 해제 처리.
+    //     oAPP.fn.setShortcutLock(false);
 
-        parent.setBusy("");
+    //     parent.setBusy("");
 
-        return;
-      }
+    //     return;
+    //   }
 
-      //ui 삭제 버튼 선택 이벤트 처리.
-      oAPP.fn.designUIDelete(l_ctxt.getProperty());
+    //   //ui 삭제 버튼 선택 이벤트 처리.
+    //   oAPP.fn.designUIDelete(l_ctxt.getProperty());
 
-    }); //ui 삭제 버튼 선택 이벤트.
+    // }); //ui 삭제 버튼 선택 이벤트.
+    //20240819 PES -END.
 
 
     //tree instance 정보 광역화.
@@ -171,7 +183,7 @@
     var oLCol1 = new sap.ui.table.Column({autoResizable:true});
     oLTree1.addColumn(oLCol1);
 
-    var oLHbox1 = new sap.m.HBox({width:"100%", alignItems:"Center", 
+    var oLHbox1 = new sap.m.HBox({width:"100%", alignItems:"Center", tooltip:"{OBJID}", 
       justifyContent:"SpaceBetween", wrap:"NoWrap"}).addStyleClass("sapUiTinyMarginEnd");
     oLCol1.setTemplate(oLHbox1);
 
@@ -202,7 +214,7 @@
 
     
     //UI명.
-    var oLtxt1 = new sap.m.Text({text:"{OBJID}"});
+    var oLtxt1 = new sap.m.Text({text:"{OBJID}", tooltip:"{OBJID}"});
     oLHbox2.addItem(oLtxt1);
 
     // var oLCol2 = new sap.ui.table.Column({autoResizable:true, hAlign:"End"});
@@ -213,6 +225,93 @@
     var oLtxt2 = new sap.m.ObjectStatus({text:"{UIATT}", icon:"{UIATT_ICON}"});
     oLHbox1.addItem(oLtxt2);
     // oLCol2.setTemplate(oLtxt2);
+
+
+    //20240819 PES -START.
+    //sap.ui.table.RowAction을 사용시 간헐적으로 특정 row의 rowActionItem이 보이지 않기에
+    //sap.ui.table.Column으로 대체 처리.
+    oLTree1.addColumn(new sap.ui.table.Column({
+      width: "60px",
+      visible: "{/IS_EDIT}",
+      template: new sap.m.HBox({
+        width : "100%",
+        renderType : "Bare",
+        justifyContent : "SpaceBetween",
+        items:[
+          new sap.ui.core.Icon({
+            src : "sap-icon://add",
+            color : "#4db1ff",
+            visible : "{visible_add}",
+
+            //A54  Insert Element
+            tooltip : oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A54", "", "", "", ""),
+            press: function(oEvent){
+
+              parent.setBusy("X");
+
+              //단축키 잠금 처리.
+              oAPP.fn.setShortcutLock(true);
+
+              var l_ctxt = this.getBindingContext();
+              if(!l_ctxt){
+
+                //단축키 잠금 해제처리.
+                oAPP.fn.setShortcutLock(false);
+
+                parent.setBusy("");
+
+                return;
+              }
+
+              //ui 추가 버튼 선택 이벤트 처리.
+              oAPP.fn.designUIAdd(l_ctxt.getProperty());
+            }
+          }),
+          new sap.ui.core.Icon({
+            src : "sap-icon://delete",
+            color : "Negative",
+            visible :"{visible_delete}",
+
+            //A03  Delete
+            tooltip  :oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03", "", "", "", ""),
+            press: function(oEvent){
+              
+              parent.setBusy("X");
+
+              var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+              //213	디자인 화면에서 UI 삭제처리를 진행하고 있습니다.
+              _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "213");
+
+              //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+              parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+              //단축키 잠금.
+              oAPP.fn.setShortcutLock(true);
+
+              var l_ctxt = this.getBindingContext();
+              if(!l_ctxt){
+
+                //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+                parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+                
+                //단축키 잠금 해제 처리.
+                oAPP.fn.setShortcutLock(false);
+
+                parent.setBusy("");
+
+                return;
+              }
+
+              //ui 삭제 버튼 선택 이벤트 처리.
+              oAPP.fn.designUIDelete(l_ctxt.getProperty());
+            }
+          })
+        ]
+      })
+    }));
+
+    //20240819 PES -END.
     
 
     //drag UI 생성.
@@ -1799,7 +1898,6 @@
 
 
 
-
   //tree item 선택 처리
   oAPP.fn.setSelectTreeItem = function(OBJID, UIATK, TYPE){
 
@@ -1985,6 +2083,7 @@
         parent.setBusy("");
 
         return resolve();
+
       }
 
 
@@ -2324,12 +2423,6 @@
 
 
 
-  //📌📌해당 FUNCTION은 UNDO, REDO에서도 사용됨!!!📌📌
-  //UNDO, REDO시에 is_tree_param 파라메터 이외에
-  //UNDO, REDO에 관련된 파라메터를 추가로 값전달 하고 있음.
-  //(oAPP.fn.drop_cb(s0023, sDrag, sDrop,{PRCCD:"UNDO"});)
-  //따라서 해당 FUNCTION을 호출하며 추가로 파라메터 처리 할경우
-  //내용을 확인하고 추가 처리 해야함.
   //drop callback 이벤트.
   oAPP.fn.drop_cb = async function(param, i_drag, i_drop){
 
@@ -2367,19 +2460,12 @@
       //테스트!!!!!!!!!!!!!!!!!!!!!!
       if(parent.REMOTE.app.isPackaged === false){
         
-        var _aParams = Object.values(arguments);
-        
-        var _sUndoRedo = _aParams.find( item => item?.PRCCD === "UNDO_REDO" );
-        
-        //undo, redo 처리에서 호출했는지 파라메터 확인.
-        if(typeof _sUndoRedo === "undefined"){
+        var _sParam = {};
+        _sParam.S_DRAG = i_drag;
+        _sParam.S_DROP = i_drop;
 
-          var _sParam = {};
-          _sParam.S_DRAG = i_drag;
-          _sParam.S_DROP = i_drop;
-
-          parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("DRAG_DROP", _sParam);
-        }
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("DRAG_DROP", _sParam);
+        
 
       }
       //테스트!!!!!!!!!!!!!!!!!!!!!!
@@ -2638,28 +2724,19 @@
       parent.setBusy("");
 
       return;
+      
     }
-
-
 
 
     //테스트!!!!!!!!!!!!!!!!!!!!!!
     if(parent.REMOTE.app.isPackaged === false){
       
-      var _aParams = Object.values(arguments);
+      var _sParam = {};
+      _sParam.S_DRAG = i_drag;
+      _sParam.S_DROP = i_drop;
+
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("DRAG_DROP", _sParam);
       
-      var _sUndoRedo = _aParams.find( item => item?.PRCCD === "UNDO_REDO" );
-      
-      //undo, redo 처리에서 호출했는지 파라메터 확인.
-      if(typeof _sUndoRedo === "undefined"){
-
-        var _sParam = {};
-        _sParam.S_DRAG = i_drag;
-        _sParam.S_DROP = i_drop;
-
-        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("DRAG_DROP", _sParam);
-      }
-
     }
     //테스트!!!!!!!!!!!!!!!!!!!!!!
 
@@ -2681,32 +2758,9 @@
       i_drop.zTREE = [];
     }
 
-
-    //테스트!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    if(parent.REMOTE.app.isPackaged === false){
-
-      var _aParams = Object.values(arguments);
-      
-      var _sUndoRedo = _aParams.find( item => item?.PRCCD === "UNDO_REDO" );
-
-      if(typeof _sUndoRedo?.BEFORE_DRAG_POS !== "undefined"){
-        i_drop.zTREE.splice(_sUndoRedo.BEFORE_DRAG_POS, 0, i_drag);
-      }else{
-        //drop의 CHILD 영역에 DRAG UI를 추가.
-        i_drop.zTREE.push(i_drag);  
-      }
-
-
-    }else{
-      //기존로직.
-
-      //drop의 CHILD 영역에 DRAG UI를 추가.
-      i_drop.zTREE.push(i_drag);
+    //drop의 CHILD 영역에 DRAG UI를 추가.
+    i_drop.zTREE.push(i_drag);
   
-    
-    }
-    //테스트!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 
     //DRAG UI의 부모정보 변경.
     i_drag.POBID = i_drop.OBJID;
@@ -2976,7 +3030,6 @@
   oAPP.fn.designTreeItemPress = async function(is_tree){
 
     return new Promise(async (resolve)=>{
-
 
       //우 상단 DynamicPage header 영역 펼침 처리.
       oAPP.fn.attrHeaderExpanded(true);
@@ -3690,6 +3743,7 @@
 
       parent.setBusy("X");
 
+
       //단축키 잠금 처리.
       oAPP.fn.setShortcutLock(true);
 
@@ -3707,7 +3761,11 @@
       
       //테스트!!!!!!!!!!!!!!!!!!!!!!
       if(parent.REMOTE.app.isPackaged === false){
-        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("MULTI_DELETE");
+
+        //멀티 삭제시 파라메터 정보 구성.
+        var _aDeleteParam = parent.require(oAPP.oDesign.pathInfo.undoRedo).getMultiDeleteParam();
+
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("MULTI_DELETE", _aDeleteParam);
       }
       //테스트!!!!!!!!!!!!!!!!!!!!!!
 
@@ -5448,8 +5506,9 @@
     //UI삭제전 확인 팝업 호출. 메시지!!
     //003	Do you really want to delete the object?
     parent.showMessage(sap, 30, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "003", "", "", "", ""), async function(oEvent){
-      
+
       parent.setBusy("X");
+     
       
       //단축키 잠금 처리.
       oAPP.fn.setShortcutLock(true);
@@ -5632,6 +5691,13 @@
 
   //design tree의 row action 활성여부 설정.
   oAPP.fn.designTreeSetRowAction = function(){
+
+    //20240819 PES.
+    //sap.ui.table.RowAction을 사용시 간헐적으로 특정 row의 rowActionItem이 보이지 않기에
+    //컬럼으로 대체 처리함.
+    //이에 따라 조회모드시 rowAction을 비활성 처리하는 로직 수행하지 않음.
+    //(rowAction을 대체하는 컬럼의 visible 처리로 변경)
+    return;
 
     //design tree의 row action count를 0으로 설정.
     var l_cnt = 0;

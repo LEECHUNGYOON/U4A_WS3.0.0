@@ -120,6 +120,8 @@ let oAPP = parent.oAPP,
     //메인 관련 function.
     oAPP.oMain.fn = {};
 
+    oAPP.oMain.attr = {};
+
     /*************************************************************
      * @function - UI 구성 완료후 call back 처리.
      *************************************************************/
@@ -605,6 +607,9 @@ let oAPP = parent.oAPP,
      * @function - 화면 busy 처리.
      *************************************************************/
     oAPP.fn.setBusy = function(bBusy, sOption){
+
+
+        oAPP.oMain.attr.isBusy = bBusy;
 
         var _ISBROAD = sOption?.ISBROAD || undefined;
 
@@ -2826,6 +2831,17 @@ let oAPP = parent.oAPP,
             }
 
         };
+
+    };
+
+
+    //window 종료처리전 이벤트.
+    window.onbeforeunload = function(){
+
+        //현재 busy가 on 상태인경우 종료 하지 않음.
+        if(oAPP.oMain.attr.isBusy === true){
+            return false;
+        }
 
     };
 

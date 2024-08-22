@@ -3624,9 +3624,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oBrowserWindow.loadURL(PATHINFO.MAINFRAME);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -4030,6 +4030,44 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
 })(oAPP);
 
+// /************************************************************************
+//  * WS의 UI5 Bootstrap 정보를 생성한다.
+// function fnLoadBootStrapSetting() {
+
+//     var oSettings = SETTINGS,
+//         oSetting_UI5 = oSettings.UI5,
+//         oBootStrap = oSetting_UI5.bootstrap,
+//         sLangu = navigator.language;
+
+//     sLangu = sLangu.toLowerCase().substring(0, 2); // 저장된 언어 값을 0부터 2까지 자르고 소문자로 변환하여 lang에 저장
+//     sLangu = sLangu.toUpperCase();
+
+//     var oScript = document.createElement("script");
+//     if (oScript == null) {
+//         return;
+//     }
+
+//     // 공통 속성 적용
+//     for (const key in oBootStrap) {
+//         oScript.setAttribute(key, oBootStrap[key]);
+//     }
+
+//     let oWsGlobalSettings = oAPP.data.GlobalSettings,
+//         oThemeInfo = oWsGlobalSettings.theme,
+//         oLanguInfo = oWsGlobalSettings.language,
+//         sTheme = (typeof oThemeInfo === "undefined" ? oSettings.defaultTheme || "sap_horizon_dark" : oThemeInfo.value);
+
+//     sLangu = (typeof oLanguInfo === "undefined" ? oSettings.defaultLanguage || "EN" : oLanguInfo.value);
+
+//     oScript.setAttribute("data-sap-ui-language", sLangu);
+//     oScript.setAttribute('data-sap-ui-theme', sTheme);
+//     oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.layout, sap.ui.table");
+//     oScript.setAttribute("src", oSetting_UI5.resourceUrl);
+
+//     document.head.appendChild(oScript);
+
+// } // end of fnLoadBootStrapSetting
+
 /************************************************************************
  * WS의 UI5 Bootstrap 정보를 생성한다.
  ************************************************************************/
@@ -4055,10 +4093,24 @@ function fnLoadBootStrapSetting() {
 
     let oWsGlobalSettings = oAPP.data.GlobalSettings,
         oThemeInfo = oWsGlobalSettings.theme,
-        oLanguInfo = oWsGlobalSettings.language,
-        sTheme = (typeof oThemeInfo === "undefined" ? oSettings.defaultTheme || "sap_horizon_dark" : oThemeInfo.value);
+        oLanguInfo = oWsGlobalSettings.language;
 
-    sLangu = (typeof oLanguInfo === "undefined" ? oSettings.defaultLanguage || "EN" : oLanguInfo.value);
+    // let sTheme = (typeof oThemeInfo === "undefined" ? oSettings.defaultTheme || "sap_horizon_dark" : oThemeInfo.value);
+    let sTheme = "sap_horizon_dark";
+
+    if(typeof oThemeInfo === "object" && oThemeInfo?.value !== ""){
+        sTheme = oThemeInfo?.value;
+    } else {
+        sTheme = oSettings.defaultTheme;
+    }
+
+    // sLangu = (typeof oLanguInfo === "undefined" ? oSettings.defaultLanguage || "EN" : oLanguInfo.value);
+
+    if(typeof oLanguInfo === "object" && oLanguInfo?.value !== ""){
+        sLangu = oLanguInfo?.value;
+    } else {
+        sLangu = "EN";
+    }    
 
     oScript.setAttribute("data-sap-ui-language", sLangu);
     oScript.setAttribute('data-sap-ui-theme', sTheme);

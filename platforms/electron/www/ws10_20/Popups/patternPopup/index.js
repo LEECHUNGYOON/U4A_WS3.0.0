@@ -1367,7 +1367,7 @@ if (!oAPP) {
             oAPP.setBusy("");
 
             //브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
-            oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+            oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});            
 
         });
 
@@ -1668,46 +1668,46 @@ if (!oAPP) {
 
     };
 
-/***********************************************************************
- * @function - 브라우저 창을 닫을 때 Broadcast로 busy 끄라는 지시를 한다.
- ***********************************************************************/
-function _setBroadCastBusy(){
+    /***********************************************************************
+     * @function - 브라우저 창을 닫을 때 Broadcast로 busy 끄라는 지시를 한다.
+     ***********************************************************************/
+    function _setBroadCastBusy(){
 
-    // 브라우저 닫는 시점에 busy가 켜있을 경우
-    if(oAPP.fn.getBusy() === "X"){
+        // 브라우저 닫는 시점에 busy가 켜있을 경우
+        if(oAPP.fn.getBusy() === "X"){
 
-        // 브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
-        oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+            // 브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
+            oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
 
-        return;
+            return;
 
-    }
+        }
 
-    if(typeof window?.sap?.m?.InstanceManager?.getOpenDialogs !== "function"){
-        return;
-    }
+        if(typeof window?.sap?.m?.InstanceManager?.getOpenDialogs !== "function"){
+            return;
+        }
 
-    // 현재 호출된 dialog 정보 얻기.
-    var _aDialog = sap.m.InstanceManager.getOpenDialogs();
+        // 현재 호출된 dialog 정보 얻기.
+        var _aDialog = sap.m.InstanceManager.getOpenDialogs();
 
-    //호출된 dialog가 없다면 exit.
-    if(typeof _aDialog === "undefined" || _aDialog?.length === 0){
-        return;
-    }
+        //호출된 dialog가 없다면 exit.
+        if(typeof _aDialog === "undefined" || _aDialog?.length === 0){
+            return;
+        }
 
-    // 내가 띄운 MessageBox 가 있을 경우 Busy OFF
-    if(_aDialog.findIndex( item => typeof item.getType === "function" && 
-        item.getType() === "Message") !== -1){
-        
-        // 브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
-        oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+        // 내가 띄운 MessageBox 가 있을 경우 Busy OFF
+        if(_aDialog.findIndex( item => typeof item.getType === "function" && 
+            item.getType() === "Message") !== -1){
+            
+            // 브로드 캐스트로 다른 팝업의 BUSY 요청 처리.
+            oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
 
-        // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
-        oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
+            // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
+            oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
 
-    }
+        }
 
-} // end of _setBroadCastBusy
+    } // end of _setBroadCastBusy
 
     /************************************************************************
      * -- Start of Program

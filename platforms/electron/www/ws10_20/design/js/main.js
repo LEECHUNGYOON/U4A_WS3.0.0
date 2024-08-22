@@ -35,15 +35,6 @@
     oAPP.oDesign.types = {};
 
 
-    //테스트!!!!!!!!!!!!!!!!!!!!!!!
-    //UNDO, REDO 관련 DB 저장 ARRAY
-    if(parent.REMOTE.app.isPackaged === false){
-      window.__ACT_UNDO_HIST = [];
-      window.__ACT_REDO_HIST = [];
-    }
-    //테스트!!!!!!!!!!!!!!!!!!!!!!!
-
-
     //busy dialog option 파라메터 구조.
     oAPP.oDesign.types.TY_BUSY_OPTION = {
       TITLE : "", //BUSY DIALOG 타이틀.
@@ -728,9 +719,8 @@
 
       //테스트!!!!!!!!!!!!!!!!!!!!!!!
       if(parent.REMOTE.app.isPackaged === false){
-        //UNDO, REDO 관련 DB 저장 ARRAY
-        window.__ACT_UNDO_HIST = [];
-        window.__ACT_REDO_HIST = [];
+        //undo, redo 이력 초기화.
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
       }
       //테스트!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -861,16 +851,13 @@
 
       //테스트!!!!!!!!!!!!!!!!!!!!!!!
       if(parent.REMOTE.app.isPackaged === false){
-        //UNDO, REDO 관련 DB 저장 ARRAY
-        window.__ACT_UNDO_HIST = [];
-        window.__ACT_REDO_HIST = [];
 
-        if(typeof oAPP.attr.oModel.oData.designTree === "undefined"){
-          oAPP.attr.oModel.oData.designTree = {};
-        }
+        //undo, redo 이력 초기화.
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
 
-        oAPP.attr.oModel.oData.designTree.undo = false;
-        oAPP.attr.oModel.oData.designTree.redo = false;
+        //undo, redo 버튼 활성여부 처리.
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).setUndoRedoButtonEnable();
+
         oAPP.attr.oModel.refresh();
 
       }

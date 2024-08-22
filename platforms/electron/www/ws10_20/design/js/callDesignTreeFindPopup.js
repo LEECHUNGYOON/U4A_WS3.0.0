@@ -145,9 +145,43 @@
 
 
 
+    //value state 초기화 처리.
+    function lf_clearCondValueState(oUi){
+
+        if(typeof oUi === "undefined"){
+            return;
+        }
+
+        //오류표현 초기화 처리.
+        oUi.setValueState();
+        oUi.setValueStateText();
+
+
+    }   //value state 초기화 처리.
+
+
+
+    //value state 오류 표현 처리.
+    function lf_setCondValueState(oUi, message){
+
+        if(typeof oUi === "undefined"){
+            return;
+        }
+
+        //오류 메시지 출력 처리.
+        oUi.setValueState("Warning");
+        oUi.setValueStateText(message);
+
+    }   //value state 오류 표현 처리.
+
+
 
     //검색조건에 해당하는 OBJID 찾기.
 	function lf_designFindOBJID(oUi, POS, bRefresh){
+
+        //value state 초기화 처리.
+        lf_clearCondValueState(oUi);
+
 		
         //검색조건을 입력하지 않은경우.
         if(gs_find.keyword === ""){
@@ -176,8 +210,11 @@
 		if(gs_find.T_TREE.length === 0){
 			//오류 메시지 처리.
             //174 Target object can not be found.
-			//parent.showMessage(sap, 10, "E", "Target object can not be found.");
-            sap.m.MessageToast.show(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "174", "", "", "", ""), {of:oUi, my:"center top"});
+			// //parent.showMessage(sap, 10, "E", "Target object can not be found.");
+            // sap.m.MessageToast.show(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "174", "", "", "", ""), {of:oUi, my:"center top"});
+
+            //value state 오류 표현 처리.
+            lf_setCondValueState(oUi, oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "174", "", "", "", ""));
 
             //모델 갱신 처리.
             oAPP.attr.oModel.refresh();
@@ -439,6 +476,9 @@
 
         //검색조건 필드 key down 이벤트.
         oInp.attachBrowserEvent("keydown", function(oEvent){
+
+            //value state 초기화 처리.
+            lf_clearCondValueState(oInp);
 
             //입력값이 존재하지 않는경우 exit.
             if(this.getValue() === ""){

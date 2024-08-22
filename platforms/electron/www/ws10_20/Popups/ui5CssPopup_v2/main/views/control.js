@@ -1096,9 +1096,6 @@
 
         oContr.fn.setBusy(true);
 
-        // 메인 영역 Busy 켜기
-        parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "X" });
-
         let sAction = await new Promise(function(resolve){
             
             // MSG - 선택한 항목을 전체 해제 하시겠습니까?
@@ -1116,21 +1113,16 @@
                 }
             });
 
-            oContr.fn.setBusy(false);
-
-            //브로드 캐스트로 다른 팝업의 BUSY 요청 처리.          
-            oParentAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
+            // 비지를 나만 끈다
+            oContr.fn.setBusy(false, { ISBROAD:true });
 
         });
 
+        // 취소일 경우.
         if(sAction !== "OK"){
 
+            // 전체적으로 Busy를 꺼준다.
             oContr.fn.setBusy(false);
-
-            // 메인 영역 Busy 끄기
-            parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
-
-            oParentAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
 
             return;
 
@@ -1161,8 +1153,8 @@
             
             oContr.fn.setBusy(false);
             
-            // 메인 영역 Busy 끄기
-            parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+            // // 메인 영역 Busy 끄기
+            // parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
 
             return;
         }
@@ -1186,8 +1178,8 @@
 
         oContr.fn.setBusy(false);
 
-        // 메인 영역 Busy 끄기
-        parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+        // // 메인 영역 Busy 끄기
+        // parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
 
         // MSG - 처리가 완료되었습니다.
         let sMsg = oContr.msg.M371;
@@ -1333,9 +1325,8 @@
     }; // end of oContr.fn.setSelectedItemsCopyClipboard
 
 
-
     /*******************************************************
-     * @function - 선택한 items 들을 clipboard 복사 이벤트
+     * @function - 선택한 items 적용 버튼 이벤트
      *******************************************************/
     oContr.fn.onApply = async function(){
 
@@ -1368,12 +1359,15 @@
 
                     break;
             }
-        
+            
+
+            oContr.fn.setBusy(false);
+
             return;
         }
 
         // 메인 영역 Busy 켜기
-        parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "X" });
+        // parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "X" });
 
         let sAction = await new Promise(function(resolve){
 
@@ -1393,11 +1387,12 @@
 
             });
 
-            oContr.fn.setBusy(false);
+             // 비지를 나만 끈다
+            oContr.fn.setBusy(false, { ISBROAD:true });
 
-            //현재 팝업에서 이벤트 발생시 다른 팝업의 BUSY ON 요청 처리.
-            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
-            oParentAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
+            // //현재 팝업에서 이벤트 발생시 다른 팝업의 BUSY ON 요청 처리.
+            // //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            // oParentAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
 
         });
 
@@ -1405,8 +1400,8 @@
 
             oContr.fn.setBusy(false); 
 
-            // 메인 영역 Busy 끄기
-            parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+            // // 메인 영역 Busy 끄기
+            // parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
 
             oParentAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
 
@@ -1417,10 +1412,10 @@
 
         oContr.fn.setBusy(false); 
         
-        // 메인 영역 Busy 끄기
-        parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
+        // // 메인 영역 Busy 끄기
+        // parent.IPCRENDERER.send(`if-send-action-${oParentAPP.attr.IF_DATA.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
 
-        oParentAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
+        // oParentAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
 
     }; // end of oContr.fn.onApply
 

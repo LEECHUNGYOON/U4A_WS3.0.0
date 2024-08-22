@@ -479,8 +479,16 @@
             iSelIdx = 0;
         }
 
-        var oCtx = oTreeTable.getContextByIndex(iSelIdx),
-            oData = oTreeTable.getModel().getProperty(oCtx.sPath);
+        var oCtx = oTreeTable.getContextByIndex(iSelIdx);
+        var oModel = oTreeTable.getModel();
+        if(!oModel){
+            return;
+        }
+
+        var oData = oModel.getProperty(oCtx.sPath);
+        if(!oData){
+            return;
+        }
 
         var aCHILDTREE = oData.MIMETREE,
             iTreeCnt = aCHILDTREE.length;
@@ -852,8 +860,20 @@
             return;
         }
 
-        var oCtx = oTreeTable.getContextByIndex(iSelIdx),
-            oData = oTreeTable.getModel().getProperty(oCtx.sPath);
+        var oCtx = oTreeTable.getContextByIndex(iSelIdx);
+        if(!oCtx){
+            return;
+        }
+
+        var oModel = oTreeTable.getModel();
+        if(!oModel){
+            return;
+        }
+
+        var oData = oModel.getProperty(oCtx.sPath);
+        if(!oData){
+            return;
+        }
 
         if (oData.ZLEVEL == 1 || oData.ZLEVEL == 2) {
             oTreeTable.expandToLevel(99);
@@ -923,8 +943,21 @@
     oAPP.fn.fnMimeTreeCreateFolder = function (oTreeTable) {
 
         var iIndex = oTreeTable.getSelectedIndex(),
-            oCtx = oTreeTable.getContextByIndex(iIndex),
-            oData = oTreeTable.getModel().getProperty(oCtx.sPath);
+            oCtx = oTreeTable.getContextByIndex(iIndex);
+
+        if(!oCtx){
+            return;
+        }
+
+        var oModel = oTreeTable.getModel();
+        if(!oModel){
+            return;
+        }
+
+        var oData = oModel.getProperty(oCtx.sPath);
+        if(!oData){
+            return;
+        }
 
         var oMimeFolder = {
             FLDNM: "",
@@ -1069,9 +1102,21 @@
 
         var oTreeTable = this;
 
-        var iIndex = oTreeTable.getSelectedIndex(),
-            oCtx = oTreeTable.getContextByIndex(iIndex),
-            oData = oTreeTable.getModel().getProperty(oCtx.sPath);
+        var iIndex = oTreeTable.getSelectedIndex();
+        var oCtx = oTreeTable.getContextByIndex(iIndex);
+        if(!oCtx){
+            return;
+        }
+
+        let oModel = oTreeTable.getModel();
+        if(!oModel){
+            return;
+        }
+
+        var oData = oModel.getProperty(oCtx.sPath);
+        if(!oData){
+            return;
+        }
 
         var sObjType = "FILE";
 
@@ -1085,9 +1130,8 @@
             FLDNM: oData.NTEXT, // 파일 및 폴더 명
             FLDPATH: oData.URL, // 파일 및 폴더 경로
             DESC: oData.MDESC, // DESCRIPTION
-            DEVPKG: "$TMP", // 개발 패키지
-            REQNO: "", // Request/Task
-            // CONTENT : "",			// 파일 컨텐츠(xstring)	
+            DEVPKG : oAppInfo.PACKG, // 개발 패키지
+            REQNO: oAppInfo.REQNO || "" // Request/Task 
         };
 
         var sPath = parent.getServerPath() + '/set_mime_crud',
@@ -1127,6 +1171,7 @@
         if (oResult.RETCD == 'E') {
 
             var oCurrWin = REMOTE.getCurrentWindow();
+
             oCurrWin.flashFrame(true); // 작업표시줄 깜빡임
 
             parent.setSoundMsg('02'); // sap sound(error)
@@ -1139,8 +1184,16 @@
         var oTreeTable = this;
 
         var iIndex = oTreeTable.getSelectedIndex(),
-            oCtx = oTreeTable.getContextByIndex(iIndex),
-            oTreeTableModel = oTreeTable.getModel();
+            oCtx = oTreeTable.getContextByIndex(iIndex);
+
+        if(!oCtx){
+            return;
+        }
+
+        var oTreeTableModel = oTreeTable.getModel();
+        if(!oTreeTableModel){
+            return;
+        }
 
         oTreeTableModel.setProperty(oCtx.sPath, null, true); // 마임 트리 테이블에 데이터 삭제
         oTreeTableModel.setProperty("/WS20/MIME", null, true); // 마임의 프로퍼티 데이터 초기화
@@ -1280,8 +1333,17 @@
     oAPP.fn.fnMimeTreeFileDown = function (oTreeTable) {
 
         var iIndex = oTreeTable.getSelectedIndex(),
-            oCtx = oTreeTable.getContextByIndex(iIndex),
-            oData = oTreeTable.getModel().getProperty(oCtx.sPath);
+            oCtx = oTreeTable.getContextByIndex(iIndex);
+        
+        var oModel = oTreeTable.getModel();
+        if(!oModel){
+            return;
+        }
+
+        var oData = oModel.getProperty(oCtx.sPath);
+        if(!oData){
+            return;
+        }
 
         // 로그인 유지 여부 체크 후 Mime Repository의 선택한 파일 가져오기
         APPCOMMON.sendAjaxLoginChk(lf_LoginOk);
@@ -1565,9 +1627,23 @@
 
         // 트리 테이블에 선택한 라인의 모델 정보를 구한다.
         var iIndex = oTreeTable.getSelectedIndex(),
-            oCtx = oTreeTable.getContextByIndex(iIndex),
-            oData = oTreeTable.getModel().getProperty(oCtx.sPath),
-            aChild = (oData.MIMETREE == null ? [] : oData.MIMETREE);
+            oCtx = oTreeTable.getContextByIndex(iIndex);
+
+        if(!oCtx){
+            return;
+        }
+
+        let oModel = oTreeTable.getModel();
+        if(!oModel){
+            return;
+        }
+
+        var oData = oModel.getProperty(oCtx.sPath);
+        if(!oData){
+            return;
+        }
+
+        var aChild = (oData.MIMETREE == null ? [] : oData.MIMETREE);
 
         var iChildLen = aChild.length;
 
@@ -1633,9 +1709,17 @@
     oAPP.events.ev_MimeTreeCtxMenuClick = function (oEvent) {
 
         // contextmenu의 선택한 메뉴 정보를 구한다.
-        var oTreeTable = oEvent.getSource().getParent(),
-            oCtxMenuItm = oEvent.getParameter("item"),
-            sCtxMenuKey = oCtxMenuItm.getProperty("key");
+        var oTreeTable = oEvent.getSource().getParent();
+        if(!oTreeTable){
+            return;
+        }
+
+        var oCtxMenuItm = oEvent.getParameter("item");
+        if(!oCtxMenuItm){
+            return;
+        }
+
+        var sCtxMenuKey = oCtxMenuItm.getProperty("key");
 
         switch (sCtxMenuKey) {
 
@@ -1733,13 +1817,23 @@
 
         function lf_createMimeFile(sReqNo) {
 
-            // 현재 APP 정보
-            // var oAppInfo = parent.getAppInfo();
-
             // 트리 테이블에 선택한 라인의 모델 정보를 구한다.
             var iIndex = oTreeTable.getSelectedIndex(),
-                oCtx = oTreeTable.getContextByIndex(iIndex),
-                oData = oTreeTable.getModel().getProperty(oCtx.sPath);
+                oCtx = oTreeTable.getContextByIndex(iIndex);
+
+            if(!oCtx){
+                return;
+            }
+
+            var oModel = oTreeTable.getModel();
+            if(!oModel){
+                return;
+            }
+
+            var oData = oModel.getProperty(oCtx.sPath);
+            if(!oData){
+                return;
+            }
 
             var oCrFldInfo = {
                 TRCOD: "C", // C: 생성, D: 삭제
@@ -1798,10 +1892,24 @@
 
                 // 트리 테이블에 선택한 라인의 모델 정보를 구한다.
                 var iIndex = oTreeTable.getSelectedIndex(),
-                    oCtx = oTreeTable.getContextByIndex(iIndex),
-                    oData = oTreeTable.getModel().getProperty(oCtx.sPath),
-                    // aChild = oData.MIMETREE,
-                    aChild = (oData.MIMETREE == null ? [] : oData.MIMETREE),
+                    oCtx = oTreeTable.getContextByIndex(iIndex);
+
+                if(!oCtx){
+                    return;                    
+                }
+
+                let oModel = oTreeTable.getModel();
+                if(!oModel){
+                    return;
+                }
+
+                var oData = oModel.getProperty(oCtx.sPath);
+                if(!oData){
+                    return;
+                }
+                
+                // aChild = oData.MIMETREE,
+                var aChild = (oData.MIMETREE == null ? [] : oData.MIMETREE),
                     iChildLen = aChild.length;
 
                 if (iChildLen == 0) {
@@ -1868,7 +1976,12 @@
         // 우클릭한 라인을 선택 처리 한다.
         oTreeTable.setSelectedIndex(iSelectRow);
 
-        var oRowData = oTreeTable.getModel().getProperty(oCtx.sPath);
+        let oModel = oTreeTable.getModel();
+        if(!oModel){
+            return;
+        }
+
+        var oRowData = oModel.getProperty(oCtx.sPath);
         // oAppInfo = parent.getAppInfo();
 
         // mime tree 의 기본 contextmenu 정보를 구한다. 
@@ -2023,8 +2136,17 @@
         }
 
         var oTreeTable = oEvent.getSource(),
-            oCtx = oTreeTable.getContextByIndex(iSelIdx),
-            oData = oTreeTable.getModel().getProperty(oCtx.sPath);
+            oCtx = oTreeTable.getContextByIndex(iSelIdx);
+
+        var oModel = oTreeTable.getModel();
+        if(!oModel){
+            return;
+        }
+
+        var oData = oModel.getProperty(oCtx.sPath);
+        if(!oData){
+            return;
+        }
 
         // 선택한 위치가 폴더이면 return.
         if (oData.TYPE == 'F') {
@@ -2120,9 +2242,20 @@
      ************************************************************************/
     oAPP.events.ev_createMimeFolderEvent = function (oEvent) {
 
-        var oDialog = oEvent.getSource().getParent(),
-            oDialogModel = oDialog.getModel(),
-            oData = oDialogModel.getProperty("/WS20/MIMETREE/CRFLD");
+        var oDialog = oEvent.getSource().getParent();
+        if(!oDialog){
+            return;
+        }
+
+        var oDialogModel = oDialog.getModel();
+        if(!oDialogModel){
+            return;
+        }
+
+        var oData = oDialogModel.getProperty("/WS20/MIMETREE/CRFLD");
+        if(!oData){
+            return;
+        }
 
         if (oData.FLDNM == "") {
 

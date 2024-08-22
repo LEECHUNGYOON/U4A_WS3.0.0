@@ -980,6 +980,23 @@
     //오류 표현 필드 초기화 처리.
     oAPP.fn.attrClearErrorField();
 
+    //테스트!!!!!!!!!!!!!!!!!!!!!!
+    if(parent.REMOTE.app.isPackaged === false){
+      //UNDO HISTORY 추가 처리.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_ATTR", is_attr);
+
+    }
+    //테스트!!!!!!!!!!!!!!!!!!!!!!
+    
+    
+    //미리보기 onAfterRendering 처리 관련 module load.
+    var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
+
+
+    //미리보기 테마 변경 이벤트 등록 처리.
+    var _oThemPromise = _oRender.previewThemeChanged(is_attr);
+
+
     //document의 attr에 대한 처리.
     if(oAPP.fn.attrDocumentProc(is_attr)){
       return;
@@ -1014,21 +1031,13 @@
     //design tree, attr table 갱신 대기.
     await oAPP.fn.designRefershModel();
 
-    
-    //미리보기 onAfterRendering 처리 관련 module load.
-    var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
 
     var _sTree = oAPP.fn.getTreeData(is_attr.OBJID);
-
-
-    //미리보기 테마 변경 이벤트 등록 처리.
-    var _oThemPromise = _oRender.previewThemeChanged(is_attr);
 
     
     //테마변경 이벤트 대기 처리.
     //(테마 변경건이 아닌경우 하위 로직 바로 수행됨)
     await _oThemPromise;
-
 
 
     //onAfterRendering 이벤트 등록 대상 UI 얻기.
@@ -2814,39 +2823,68 @@
     ls_uiinfo.OBJID_stat = "None";
     ls_uiinfo.OBJID_stxt = "";
 
-    var l_sep = "";
+    //20240819 PES -START.
+    //UI OBJECT ID 점검 로직 주석 처리.
+    // var l_sep = "";
 
-    //OBJID의 첫번째 문자가 숫자인경우 오류 처리.
-    if(isNaN(ls_uiinfo.OBJID.substr(0,1)) !== true){
-      ls_uiinfo.OBJID_stat = "Error";
-      //091	Can not start with a numeric value.
-      ls_uiinfo.OBJID_stxt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "091", "", "", "", "");
-      l_sep = "\r\n";
-    }
+    // //OBJID의 첫번째 문자가 숫자인경우 오류 처리.
+    // if(isNaN(ls_uiinfo.OBJID.substr(0,1)) !== true){
+    //   ls_uiinfo.OBJID_stat = "Error";
+    //   //091	Can not start with a numeric value.
+    //   ls_uiinfo.OBJID_stxt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "091", "", "", "", "");
+    //   l_sep = "\r\n";
+    // }
 
-    var reg = /[^A-Z0-9]/;
+    // var reg = /[^A-Z0-9]/;
 
-    //특수문자가 입력된경우 오류 처리.
-    if(reg.test(ls_uiinfo.OBJID) === true){
-      ls_uiinfo.OBJID_stat = "Error";
-      //278	Special characters are not allowed.
-      ls_uiinfo.OBJID_stxt = ls_uiinfo.OBJID_stxt + l_sep + oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "278", "", "", "", "");
-      l_sep = "\r\n";
-    }
+    // //특수문자가 입력된경우 오류 처리.
+    // if(reg.test(ls_uiinfo.OBJID) === true){
+    //   ls_uiinfo.OBJID_stat = "Error";
+    //   //278	Special characters are not allowed.
+    //   ls_uiinfo.OBJID_stxt = ls_uiinfo.OBJID_stxt + l_sep + oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "278", "", "", "", "");
+    //   l_sep = "\r\n";
+    // }
 
-    //동일 OBJID 존재여부 확인.
-    if(ls_uiinfo.OBJID !== ls_uiinfo.OBJID_bf){
+    // //동일 OBJID 존재여부 확인.
+    // if(ls_uiinfo.OBJID !== ls_uiinfo.OBJID_bf){
       
-      //tree design영역에 중복된 OBJID건 존재하는경우.
-      if(typeof oAPP.fn.getTreeData(ls_uiinfo.OBJID) !== "undefined"){
-        ls_uiinfo.OBJID_stat = "Error";
-        //069	Duplicate values exist.
-        ls_uiinfo.OBJID_stxt = ls_uiinfo.OBJID_stxt + l_sep + oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "069", "", "", "", "");
-      }
-    }
+    //   //tree design영역에 중복된 OBJID건 존재하는경우.
+    //   if(typeof oAPP.fn.getTreeData(ls_uiinfo.OBJID) !== "undefined"){
+    //     ls_uiinfo.OBJID_stat = "Error";
+    //     //069	Duplicate values exist.
+    //     ls_uiinfo.OBJID_stxt = ls_uiinfo.OBJID_stxt + l_sep + oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "069", "", "", "", "");
+    //   }
+    // }
 
-    //오류가 발생한 경우 exit.
-    if(ls_uiinfo.OBJID_stat === "Error"){
+    // //오류가 발생한 경우 exit.
+    // if(ls_uiinfo.OBJID_stat === "Error"){
+
+    //   oAPP.attr.oModel.setProperty("/uiinfo", ls_uiinfo);
+    //   parent.showMessage(sap, 10, "E", ls_uiinfo.OBJID_stxt);
+
+    //   //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+    //   parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+    //   // busy off Lock off
+    //   parent.setBusy("");
+
+    //   return;
+    // }
+    //20240819 PES -END.
+
+
+    var _OBJID = ls_uiinfo.OBJID || "";
+
+    //UI OBJECT ID를 입력하지 않은경우.
+    if(_OBJID === ""){
+
+      ls_uiinfo.OBJID_stat = "Error";
+      
+      //A84  UI Object ID
+      //014	& is required entry value.
+      ls_uiinfo.OBJID_stxt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "014", 
+        oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A84", "", "", "", ""), "", "", "");
+      
       oAPP.attr.oModel.setProperty("/uiinfo", ls_uiinfo);
       parent.showMessage(sap, 10, "E", ls_uiinfo.OBJID_stxt);
 
@@ -2857,7 +2895,62 @@
       parent.setBusy("");
 
       return;
+
     }
+    
+    
+    var _aError = [];
+
+    //UI OBJECT ID를 입력했다면 맨 앞자리를 숫자로 입력시 오류.
+    if(isNaN(_OBJID.substr(0,1)) !== true){
+
+      //091	Can not start with a numeric value.
+      _aError.push(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "091", "", "", "", ""));
+
+    }
+
+
+    var reg = /[^A-Z0-9]/;
+
+    //특수문자가 입력된경우 오류 처리.
+    if(reg.test(_OBJID) === true){
+      //278	Special characters are not allowed.
+      _aError.push(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "278", "", "", "", ""));
+    }
+
+    
+    //현재 입력한 UI OBJECT ID가 이전에 입력한 OBJECT ID와 다른경우.
+    if(_OBJID !== ls_uiinfo.OBJID_bf){
+      
+      //tree design영역에 중복된 OBJID건 존재하는경우.
+      if(typeof oAPP.fn.getTreeData(_OBJID) !== "undefined"){
+        
+        //069	Duplicate values exist.
+        _aError.push(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "069", "", "", "", ""));
+      }
+    }
+
+
+    //UI OBJECT ID 입력건 오류가 존재하는경우.
+    if(_aError.length > 0){
+      
+      ls_uiinfo.OBJID_stat = "Error";
+      ls_uiinfo.OBJID_stxt = _aError.join("\r\n");
+
+      oAPP.attr.oModel.setProperty("/uiinfo", ls_uiinfo);
+      parent.showMessage(sap, 10, "E", ls_uiinfo.OBJID_stxt);
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+      // busy off Lock off
+      parent.setBusy("");
+
+      return;
+
+    }
+
+
 
     //이전에 입력한 이름과 지금 입력한 이름이 같으면 exit.
     if(ls_uiinfo.OBJID === ls_uiinfo.OBJID_bf){
