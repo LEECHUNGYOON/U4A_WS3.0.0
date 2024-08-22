@@ -4032,6 +4032,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
 // /************************************************************************
 //  * WS의 UI5 Bootstrap 정보를 생성한다.
+//  ************************************************************************/
 // function fnLoadBootStrapSetting() {
 
 //     var oSettings = SETTINGS,
