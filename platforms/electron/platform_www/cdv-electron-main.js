@@ -31,6 +31,7 @@ const {
     session
 } = require('electron');
 
+
 // app.setUserTasks([]); // 작업표시줄 메뉴 초기화
 
 app.disableHardwareAcceleration();
@@ -256,6 +257,18 @@ app.on('activate', () => {
 
         createWindow();
     }
+});
+
+/**************************************************************
+ * Alt+F4 키를 원천적으로 막는 로직
+ **************************************************************/
+app.on("web-contents-created", (_, contents) => {
+    contents.on("before-input-event", (event, input) => {
+      if (input.code == "F4" && input.alt) {
+        event.preventDefault();
+        console.debug("Prevented alt+f4", contents.getURL());
+      }
+    });
 });
 
 ipcMain.handle('cdv-plugin-exec', async (_, serviceName, action, ...args) => {

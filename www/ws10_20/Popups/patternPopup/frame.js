@@ -14,7 +14,7 @@ let oAPP = (function (window) {
     oAPP.common = {};
 
     // 현재 비지 상태 
-    oAPP.attr.isBusy = "";
+    oAPP.attr.isBusy = "X";
 
     oAPP.REMOTE = require('@electron/remote');
     oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain;
