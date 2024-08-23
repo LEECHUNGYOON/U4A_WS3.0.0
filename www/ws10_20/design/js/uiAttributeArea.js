@@ -988,20 +988,14 @@
     }
     //테스트!!!!!!!!!!!!!!!!!!!!!!
     
-    
-    //미리보기 onAfterRendering 처리 관련 module load.
-    var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
-
-
-    //미리보기 테마 변경 이벤트 등록 처리.
-    var _oThemPromise = _oRender.previewThemeChanged(is_attr);
-
 
     //document의 attr에 대한 처리.
     if(oAPP.fn.attrDocumentProc(is_attr)){
       return;
     }
+
     
+
     //autoGrowing 프로퍼티 변경건 예외처리.
     if(await oAPP.fn.attrChangeAutoGrowingProp(is_attr)){
       //단축키도 같이 잠금 해제처리.
@@ -1035,9 +1029,20 @@
     var _sTree = oAPP.fn.getTreeData(is_attr.OBJID);
 
     
-    //테마변경 이벤트 대기 처리.
-    //(테마 변경건이 아닌경우 하위 로직 바로 수행됨)
-    await _oThemPromise;
+    //미리보기 onAfterRendering 처리 관련 module load.
+    var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
+
+
+    //20240823 PES -START.
+    //기존 테마 변경시 테마 변경 이벤트를 기다리는 로직이 잘못되어 주석 처리함.
+    // //미리보기 테마 변경 이벤트 등록 처리.
+    // var _oThemPromise = _oRender.previewThemeChanged(is_attr);
+
+    
+    // //테마변경 이벤트 대기 처리.
+    // //(테마 변경건이 아닌경우 하위 로직 바로 수행됨)
+    // await _oThemPromise;
+    //20240823 PES -END.
 
 
     //onAfterRendering 이벤트 등록 대상 UI 얻기.

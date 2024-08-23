@@ -810,6 +810,15 @@ class CL_DELETE_UI{
         await oAPP.fn.designRefershModel();
 
 
+        for (let i = 0, l = _aParent.length; i < l; i++) {
+            
+            var _sParent = _aParent[i];
+            
+            oAPP.attr.prev[_sParent.OBJID].invalidate();
+
+        }
+
+
         //미리보기 화면 변경 대기 처리.
         await Promise.all(_aPromise);
         
@@ -1520,24 +1529,40 @@ class CL_CHANGE_ATTR{
      *************************************************************/
     static saveActionHistoryData(aTargetHist, oParam) {
 
-        //파라메터 정보가 존재하는지 확인.
+        //UI OBJECT ID 파라메터 정보가 존재하는지 확인.
         if(typeof oParam?.OBJID === "undefined" || oParam?.OBJID === null || oParam?.OBJID === ""){
             return;
         }
 
 
-        var _s0015 = oAPP.attr.prev[oParam.OBJID]._T_0015.find( item => item.UIATK === oParam.UIATK );
-
-        if(typeof _s0015 === "undefined"){
+        //ATTRIBUTE KEY 파라메터 정보가 존재하는지 확인.
+        if(typeof oParam?.UIATK === "undefined" || oParam?.UIATK === null || oParam?.UIATK === ""){
             return;
         }
 
+        
         //저장 데이터구성.
         var _sParam = {
             ACTCD  : "CHANGE_ATTR",
             OBJID  : oParam.OBJID,
-            S_0015 : JSON.parse(JSON.stringify(_s0015))
+            UIATK  : oParam.UIATK,
+            S_0015 : undefined,
+            T_CEVT : []
         };
+
+
+        //현재 attr 수집건 정보 존재 여부 확인.
+        var _s0015 = oAPP.attr.prev[oParam.OBJID]._T_0015.find( item => item.UIATK === oParam.UIATK );
+
+
+        //수집된 정보가 존재하는경우.
+        if(typeof _s0015 !== "undefined"){
+            _sParam.S_0015 = JSON.parse(JSON.stringify(_s0015));
+
+            //클라이언트 이벤트 수집 처리.
+            _sParam.T_CEVT =JSON.parse(JSON.stringify(CL_COMMON.collectClientEventData([_s0015])));
+
+        }
 
 
         //이력 저장 처리.
@@ -1555,7 +1580,7 @@ class CL_CHANGE_ATTR{
      *************************************************************/
     static async executeHistory(sEvent, oParam){
 
-        //파라메터 정보가 존재하는지 확인.
+        //UI OBJECT ID 파라메터 정보가 존재하는지 확인.
         if(typeof oParam?.OBJID === "undefined" || oParam?.OBJID === null || oParam?.OBJID === ""){
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
@@ -1568,8 +1593,8 @@ class CL_CHANGE_ATTR{
         }
 
 
-        //파라메터 정보가 존재하는지 확인.
-        if(typeof oParam?.S_0015 === "undefined" || oParam?.S_0015 === null){
+        //ATTRIBUTE KEY 파라메터 정보가 존재하는지 확인.
+        if(typeof oParam?.UIATK === "undefined" || oParam?.UIATK === null || oParam?.UIATK === ""){
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -1580,31 +1605,104 @@ class CL_CHANGE_ATTR{
             return;
         }
 
+        
+        var _sParam = {};
 
-        var _s0015 = oAPP.attr.prev[oParam.OBJID]._T_0015.find( item => item.UIATK === oParam.S_0015.UIATK );
-
+        _sParam.OBJID = oParam.OBJID;
+        _sParam.UIATK = oParam.UIATK;
 
         //이력 정보 저장 처리.
-        CL_CHANGE_ATTR.saveActionHistoryData(sEvent.T_HIST, _s0015);
+        CL_CHANGE_ATTR.saveActionHistoryData(sEvent.T_HIST, _sParam);
 
 
-        //이전 ATTR 정보로 변경 처리.
-        var _indx = oAPP.attr.prev[oParam.OBJID]._T_0015.findIndex( item => item.UIATK === oParam.S_0015.UIATK );
+        //이전 ATTR 변경건 위치 확인.
+        var _indx = oAPP.attr.prev[oParam.OBJID]._T_0015.findIndex( item => item.UIATK === oParam.UIATK );
 
+
+        //존재시 이전 수집 정보 제거.
         if(_indx !== -1){
             oAPP.attr.prev[oParam.OBJID]._T_0015.splice(_indx, 1);
         }
 
-        oAPP.attr.prev[oParam.OBJID]._T_0015.push(oParam.S_0015);
+
+        //이전에 수집한 attribute 정보가 존재하는경우.
+        if(typeof oParam.S_0015 !== "undefined"){
+            //attr 변경건에 추가 처리.
+            oAPP.attr.prev[oParam.OBJID]._T_0015.push(oParam.S_0015);
+
+        }
+        
+
+        var _sAttr = oParam.S_0015;
+
+        //이전 attr 정보가 존재하지 않는경우.
+        //(_T_0015에 변경건 수집이 안된경우)
+        if(typeof _sAttr === "undefined"){
+
+            _sAttr = oAPP.fn.crtStru0015();
+
+            var _UIATK = oParam.UIATK.replace(/_1/, "");
+
+            var _s0023 = oAPP.DATA.LIB.T_0023.find( item => item.UIATK === _UIATK );
+
+            Object.assign(_sAttr, JSON.parse(JSON.stringify(_s0023)));
+
+            _sAttr.OBJID = oParam.OBJID;
+            _sAttr.UIATV = _s0023.DEFVL;
+
+        }
 
 
+        //n건 바인딩 처리건인경우 부모 UI에 현재 UI 매핑 처리.
+        oAPP.fn.setModelBind(oAPP.attr.prev[_sAttr.OBJID]);
+
+        
+    
+        //미리보기 onAfterRendering 처리 관련 module load.
+        var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
+
+            
         //미리보기 화면의 대상 ui의 프로퍼티 변경처리.
-        oAPP.fn.previewUIsetProp(oParam.S_0015);
+        oAPP.fn.previewUIsetProp(_sAttr);
 
 
-        //모델 갱신 처리.
-        oAPP.attr.oModel.refresh();
+        //tree 라인 정보 얻기.
+        var _sTree = oAPP.fn.getTreeData(oParam.OBJID);
 
+        
+        //onAfterRendering 이벤트 등록 대상 UI 얻기.
+        let _oTarget = _oRender.getTargetAfterRenderingUI(oAPP.attr.prev[_sTree.POBID]);
+
+
+        let _oDom = undefined;
+
+        if(typeof _oTarget?.getDomRef === "function"){
+            _oDom = _oTarget.getDomRef();
+        }
+        
+        let _oPromise = undefined;
+        
+        //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
+        if(typeof _oDom !== "undefined" && _oDom !== null){
+            _oPromise = _oRender.setAfterRendering(_oTarget);
+        }
+
+
+        //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.
+        if(typeof _oPromise !== "undefined"){
+            _oTarget.invalidate();
+            
+            //onAfterRendering 수행까지 대기.
+            await _oPromise;
+
+        }
+    
+
+        //20240621 pes.
+        //바인딩 팝업의 디자인 영역 갱신처리.
+        oAPP.fn.updateBindPopupDesignData();
+
+        
         //DESIGN tree item 선택 처리
         await oAPP.fn.setSelectTreeItem(oParam.OBJID);
 

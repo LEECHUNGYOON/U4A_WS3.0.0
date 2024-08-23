@@ -1261,8 +1261,8 @@
     /************************************************************************
      * USP PATTERN POPUP
      ************************************************************************/
-    oAPP.fn.fnSourcePatternPopupOpener = async () => {
-        
+    oAPP.fn.fnSourcePatternPopupOpener = () => {       
+
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
 
@@ -1307,8 +1307,8 @@
         oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;        
 
         // 브라우저 오픈
-        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
-        REMOTEMAIN.enable(oBrowserWindow.webContents);
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions); 
+        REMOTEMAIN.enable(oBrowserWindow.webContents);     
 
         // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
         let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${sWsThemeColor}; }`;
@@ -1318,16 +1318,21 @@
         oBrowserWindow.setMenu(null);
 
         let sUrlPath = parent.getPath(sPopupName);
+        
+        if(oBrowserWindow.isDestroyed() === true){
+            return;
+        }
+        
         oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        // if (!APP.isPackaged) {
-        //     oBrowserWindow.webContents.openDevTools();
-        // }
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
-
+            
             // 부모 위치 가운데 배치한다.
             WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
@@ -1335,7 +1340,7 @@
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
-
+         
             let oOptionData = {
                 // BROWSKEY: BROWSKEY, // 브라우저 고유키 
                 // oUserInfo: oUserInfo, // 로그인 사용자 정보
@@ -1349,9 +1354,12 @@
             WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
         });
-
+    
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
+
+            console.log("cccccc");
+
 
             oBrowserWindow = null;
 

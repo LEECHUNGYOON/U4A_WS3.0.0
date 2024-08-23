@@ -256,16 +256,14 @@ if (!oAPP) {
 
                 parent.WSUTIL.setBrowserOpacity(oAPP.CURRWIN); 
 
-                setTimeout(() => {
-
-                    $('#content').fadeIn(300, 'linear');
+                $('#content').fadeIn(300, 'linear', () => {
 
                     oAPP.setBusy("");
         
                     // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
                     oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
 
-                }, 300);                
+                });
         
             }
         };
@@ -1448,8 +1446,8 @@ if (!oAPP) {
     /************************************************************************
      * 커스텀 패턴 선택 이벤트
      ************************************************************************/
-    function ev_CustPattRowSelectionChange(oEvent) {
-       
+    function ev_CustPattRowSelectionChange(oEvent) {    
+
         // Busy 켜기
         oAPP.setBusy("X");
 
@@ -1507,6 +1505,9 @@ if (!oAPP) {
      ************************************************************************/
     function ev_DefPattRowSelectionChange(oEvent) {
 
+        // Busy 켜기
+        oAPP.setBusy("X");
+
         let oCustPattTable = sap.ui.getCore().byId("uspCustPattTreeTbl"),
             oTable = oEvent.getSource(),
             oRowCtx = oEvent.getParameter("rowContext"),
@@ -1516,6 +1517,10 @@ if (!oAPP) {
         oAPP.fn.fnSetModelProperty("/CONTENT", {});
 
         if (!oRowCtx) {
+
+            // Busy 끄기
+            oAPP.setBusy("");
+
             return;
         }
 
@@ -1531,14 +1536,25 @@ if (!oAPP) {
         let oSelectedRowData = oRowCtx.getProperty(oRowCtx.getPath());
 
         if (oSelectedRowData.TYPE === "ROOT") {
+
+            // Busy 끄기
+            oAPP.setBusy("");
+
             return;
         }
 
         if (!oSelectedRowData.DATA) {
+
+            // Busy 끄기
+            oAPP.setBusy("");
+
             return;
         }
 
         oAPP.fn.fnSetModelProperty("/CONTENT", oSelectedRowData); 
+
+        // Busy 끄기
+        oAPP.setBusy("");
 
     } // end of ev_DefPattRowSelectionChange  
 
@@ -1717,6 +1733,21 @@ if (!oAPP) {
     oAPP.fn.fnLoadBootStrapSetting();
 
 
+    // window.addEventListener("keydown", function(e){
+
+    //     console.log(e.keyCode);
+
+    //     if(e.altKey === true && e.keyCode === 116){
+            
+    //         console.log("alt+f4");
+
+    //         oAPP.CURRWIN.close();
+
+    //         return;
+    //     }
+
+
+    // });
 
     /************************************************************************
      * window 창 닫을때 호출 되는 이벤트

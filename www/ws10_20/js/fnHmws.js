@@ -429,7 +429,7 @@
         // Busy Indicator가 실행중이면 빠져나간다.
         if (parent.getBusy() == 'X') {
             return;
-        }
+        }        
 
         oAPP.fn.fnIconPreviewPopupOpener();
 
@@ -458,6 +458,9 @@
         if (parent.getBusy() == 'X') {
             return;
         }
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         oAPP.fn.fnSourcePatternPopupOpener(); // [async]
 

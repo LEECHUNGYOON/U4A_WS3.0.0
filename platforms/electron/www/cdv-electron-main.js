@@ -259,16 +259,88 @@ app.on('activate', () => {
     }
 });
 
-/**************************************************************
- * Alt+F4 키를 원천적으로 막는 로직
- **************************************************************/
+/*********************************************************************** 
+ * 브라우저가 생성될 때 호출 되는 이벤트
+ ***********************************************************************/
 app.on("web-contents-created", (_, contents) => {
+
+    /*********************************************************************** 
+     * 실행되고 있는 브라우저에 키 관련 이벤트를 전파 하기 전에 호출되는 이벤트
+     ***********************************************************************/
     contents.on("before-input-event", (event, input) => {
-      if (input.code == "F4" && input.alt) {
-        event.preventDefault();
-        console.debug("Prevented alt+f4", contents.getURL());
-      }
+
+        if(typeof event === "undefined" || typeof input === "undefined"){
+            return;
+        }
+
+        // 브라우저 단축키(Alt + F4 막기)
+        // if (input.code === "F4" && input?.alt && input?.type === "keyDown") {
+        if (input.code === "F4" && input?.alt && input?.type === "keyDown") {
+        // if (input?.code === "F4" && input?.alt === true) {
+            
+            // 단축키 이벤트 전파 방지
+            event.preventDefault();
+
+            /**********************************************************
+             * 목적: 
+             * - 브라우저 새 창 띄우자 마자 단축키로 alt+f4 눌렀을 때,
+             *   브라우저가 실행 하려는 도중에 닫을려고 하다가
+             *   오류 발생되는 문제로 인한 오류 방지 목적임.             
+             **********************************************************/
+        
+            // 키 이벤트 중, keyUp일 경우에만 수행
+            // 키 이벤트중 keyDown 보단 keyUp이 조금 더 늦게 타기 때문에
+            // 최대한 늦게 타는 시점으로 만들기 위함!!
+            console.log(input.type);
+
+            // if(input.type == "keyDown"){
+            //     return;
+            // }
+
+            // if(input.type !== "keyUp"){
+            //     return;
+            // }
+
+            let oWebContent = event?.sender;
+            if(!oWebContent){
+                return;
+            }
+
+            if( typeof oWebContent?.isLoading           !== "function" || 
+                typeof oWebContent?.isLoadingMainFrame  !== "function" || 
+                typeof oWebContent?.isCrashed           !== "function" || 
+                typeof oWebContent?.isDestroyed         !== "function" ){
+
+                return;
+            }
+
+            // 단축키 수행 시점에 아직 브라우저가 로드 중이거나,
+            // 이미 브라우저가 죽어있거나 등의 경우에는 하위 로직 수행 하지 않는다.
+            if( oWebContent.isLoading()          === true ||
+                oWebContent.isLoadingMainFrame() === true ||
+                oWebContent.isCrashed()          === true ||
+                oWebContent.isDestroyed()        === true ){
+
+                return;
+            }
+
+            if(typeof oWebContent?.getOwnerBrowserWindow !== "function"){
+                return;
+            }
+
+            // 단축키 누른 위치의 브라우저 객체를 구한 후 해당 브라우저를 닫는다.
+            let CURRWIN = oWebContent.getOwnerBrowserWindow();
+
+            if(typeof CURRWIN?.close !== "function"){
+                return;
+            }
+
+            CURRWIN.close();
+
+        }
+
     });
+
 });
 
 ipcMain.handle('cdv-plugin-exec', async (_, serviceName, action, ...args) => {
