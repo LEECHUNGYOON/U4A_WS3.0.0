@@ -2595,7 +2595,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                         design: sap.m.LabelDesign.Bold,
                                         text: "{/WSLANGU/ZMSG_WS_COMMON_001/001}" //"Language"
                                     }),
-                                    fields: new sap.m.ComboBox({
+                                    // fields: new sap.m.ComboBox({
+                                    fields: new sap.m.Select({
                                         selectedKey: "{/sSelectedKey}",
                                         items: {
                                             path: "/aLangu",
@@ -2765,7 +2766,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                         design: sap.m.LabelDesign.Bold,
                                         text: "{/WSLANGU/ZMSG_WS_COMMON_001/005}" // Theme
                                     }),
-                                    fields: new sap.m.ComboBox({
+                                    // fields: new sap.m.ComboBox({
+                                    fields: new sap.m.Select({
                                         selectedKey: "{/sSelectedTheme}",
                                         items: {
                                             path: "/aSupportThemes",

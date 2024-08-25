@@ -444,6 +444,10 @@
      ************************************************************************/
     oAPP.fn.fnBindWindowPopupOpener = () => {
 
+        // 전체 자식 윈도우에 Busy 킨다.
+        oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_ON"});
+
+
         var sPopupName = "BINDPOPUP";
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
@@ -451,6 +455,9 @@
         if (oResult.ISOPEN) {
 
             parent.setBusy("", {});
+
+            // 전체 자식 윈도우에 Busy 끈다.
+            oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
 
             return;
         }
@@ -508,22 +515,23 @@
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
 
+            // // 부모 위치 가운데 배치한다.
+            // oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+
             // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
+            WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
         });
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
 
+            // 부모 위치 가운데 배치한다.
+            WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             WSUTIL.setBrowserOpacity(oBrowserWindow);
 
-            // 부모 위치 가운데 배치한다.
-            oAPP.fn.setParentCenterBounds(oBrowserWindow, oBrowserOptions);
-
-            
                                 
             var lt_0014 = [];
             var lt_0015 = [];
@@ -565,9 +573,9 @@
 
             
             // no build 일 경우에는 개발자 툴을 실행한다.
-            if (!APP.isPackaged) {
-                oBrowserWindow.webContents.openDevTools();
-            }
+            // if (!APP.isPackaged) {
+            //     oBrowserWindow.webContents.openDevTools();
+            // }
 
 
 
@@ -1319,16 +1327,19 @@
 
         let sUrlPath = parent.getPath(sPopupName);
         
-        if(oBrowserWindow.isDestroyed() === true){
-            return;
-        }
+        // TEST -----
+        // if(oBrowserWindow.isDestroyed() === true){
+        //     return;
+        // }
+
+        // TEST -----
         
         oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {

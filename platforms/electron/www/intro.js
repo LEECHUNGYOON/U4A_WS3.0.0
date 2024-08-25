@@ -53,7 +53,11 @@
 
     oAPP.fn.fnOnStart = async () => {
 
-        // await _fnwait();
+        // TEST ------
+        // if(!APP.isPackaged){
+        //     await _fnwait();
+        // }        
+        // TEST ------
 
         // debugger;
 
@@ -307,15 +311,26 @@
      ************************************************************************/
     oAPP.fn.fnOpenServerList = function(oGlobalSettings) {
 
+        // 글로벌 세팅된 테마 정보를 구한다.
+        let sTheme = "sap_horizon_dark";
+        if(oGlobalSettings?.theme?.value !== ""){
+            sTheme = oGlobalSettings.theme.value;
+        }
+
+        // 테마 별 배경 색을 구한다.
+        let sBgColor = WSUTIL.getThemeBackgroundColor(sTheme);
+
         // Electron Browser Default Options        
         var sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
-            oBrowserOptions = require(sSettingsJsonPath),
-            oBrowserWindow = JSON.parse(JSON.stringify(oBrowserOptions.browserWindow));
+            oDefaultOption = require(sSettingsJsonPath),
+            oBrowserOptions = JSON.parse(JSON.stringify(oDefaultOption.browserWindow));
 
-        oBrowserWindow.backgroundColor = "#1c2228";
-        oBrowserWindow.webPreferences.OBJTY = "SERVERLIST";
-        oBrowserWindow.show = false;
-        oBrowserWindow.titleBarStyle = 'hidden';
+        // oBrowserWindow.backgroundColor = "#1c2228";
+        oBrowserOptions.backgroundColor = sBgColor; // 글로벌 설정된 테마의 배경색
+        oBrowserOptions.webPreferences.OBJTY = "SERVERLIST";
+        oBrowserOptions.show = false;
+        oBrowserOptions.titleBarStyle = 'hidden';
+
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.resizable = true;
@@ -326,35 +341,39 @@
         oCurrWindow.hide();
 
         // Server List 화면 오픈
-        let oWin = new REMOTE.BrowserWindow(oBrowserWindow);
-        REMOTEMAIN.enable(oWin.webContents);
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${sBgColor}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
         // 브라우저 상단 메뉴 없애기
-        oWin.setMenu(null);
+        oBrowserWindow.setMenu(null);
 
-        oWin.loadURL(PATHINFO.SERVERLIST_v2);
+        oBrowserWindow.loadURL(PATHINFO.SERVERLIST_v2);
 
         // if (!APP.isPackaged) {
-        //     oWin.webContents.openDevTools();
+        //     oBrowserWindow.webContents.openDevTools();
         // }
 
-        oWin.webContents.on('did-finish-load', async function() {
+        oBrowserWindow.webContents.on('did-finish-load', async function() {
             
             // 글로벌 설정 정보를 ServerList에 전달한다.
-            oWin.webContents.send('if-globalSetting-info', oGlobalSettings);
+            oBrowserWindow.webContents.send('if-globalSetting-info', oGlobalSettings);
 
-            oWin.webContents.send('window-id', oWin.id);
+            oBrowserWindow.webContents.send('window-id', oBrowserWindow.id);
 
-            oWin.setOpacity(1.0);
+            oBrowserWindow.setOpacity(1.0);
 
-            oWin.show();
+            oBrowserWindow.show();
 
             oCurrWindow.close();
 
         });
 
-        oWin.on('closed', () => {
-            oWin = null;
+        oBrowserWindow.on('closed', () => {
+            oBrowserWindow = null;
 
             if (oCurrWindow.isDestroyed()) {
                 return;
@@ -704,7 +723,7 @@
                 oSettingValues = oGlobalSettingRegData.values;
 
             // WS Language 정보 저장
-            if (!oSettingValues.language) {
+            if (!oSettingValues?.language || !oSettingValues?.language?.value) {
 
                 let oRegData = {};
                 oRegData[sGlobalSettingPath] = {};
@@ -718,7 +737,7 @@
             }
 
             // WS Theme 정보 저장
-            if (!oSettingValues.theme) {
+            if (!oSettingValues?.theme || !oSettingValues?.theme?.value) {
 
                 let oRegData = {};
                 oRegData[sGlobalSettingPath] = {};
@@ -732,7 +751,7 @@
             }
 
             // WS Sound 정보 저장
-            if (!oSettingValues.sound) {
+            if (!oSettingValues?.sound || !oSettingValues?.sound?.value) {
 
                 let oRegData = {};
                 oRegData[sGlobalSettingPath] = {};
