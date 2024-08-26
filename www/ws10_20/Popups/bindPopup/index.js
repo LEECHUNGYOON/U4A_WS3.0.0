@@ -2671,6 +2671,11 @@ let oAPP = parent.oAPP,
             if(_destroied === true){
                 //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
                 parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+
+                //다른 팝업의 BUSY OFF 요청 처리.
+                //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+                oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+
             }
 
             // oAPP.ui.APP.focus();
