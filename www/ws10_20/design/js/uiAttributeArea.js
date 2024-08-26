@@ -983,7 +983,7 @@
     //테스트!!!!!!!!!!!!!!!!!!!!!!
     if(parent.REMOTE.app.isPackaged === false){
       //UNDO HISTORY 추가 처리.
-      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_ATTR", is_attr);
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_ATTR", [is_attr]);
 
     }
     //테스트!!!!!!!!!!!!!!!!!!!!!!
@@ -1301,6 +1301,17 @@
 
       }
 
+
+      //테스트!!!!!!!!!!!!!!!!!!!!!!
+      if(parent.REMOTE.app.isPackaged === false){
+        //UNDO HISTORY 추가 처리.
+        var _aResetAttr = parent.require(oAPP.oDesign.pathInfo.undoRedo).getResetAttrParam();
+
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("RESET_ATTR", _aResetAttr);
+      }
+      //테스트!!!!!!!!!!!!!!!!!!!!!!
+
+
       //현재 ATTRIBUTE 항목중 PROPERTY 항목에 대해 직접 입력하여 값을 변경했다면, DEFAULT 값으로 초기화 처리.
       for(var i = 0, l = oAPP.attr.oModel.oData.T_ATTR.length; i < l; i++){
 
@@ -1324,6 +1335,7 @@
 
         //직접 입력 가능한 AGGREGATION인경우 값을 입력했다면.
         if(ls_0023.ISSTR === "X" && oAPP.attr.oModel.oData.T_ATTR[i].UIATV !== ""){
+
           //입력값 초기화.
           oAPP.attr.oModel.oData.T_ATTR[i].UIATV = "";
 
@@ -1336,6 +1348,7 @@
         //현재 attribute값과 default값이 같다면 skip.
         if(oAPP.attr.oModel.oData.T_ATTR[i].UIATV === ls_0023.DEFVL){continue;}
 
+
         //attribute의 값을 변경한 경우 default 값으로 변환 처리.
         oAPP.attr.oModel.oData.T_ATTR[i].UIATV = ls_0023.DEFVL;
 
@@ -1346,6 +1359,7 @@
         oAPP.fn.attrSetDropAbleException(oAPP.attr.oModel.oData.T_ATTR[i], false, true);
 
       }
+
 
       //모델 갱신 처리.
       oAPP.attr.oModel.refresh(true);
@@ -1684,9 +1698,50 @@
         //미리보기 테마 변경처리.
         oAPP.attr.ui.frame.contentWindow.setPreviewUiTheme(is_attr.UIATV);
 
-        //function 호출처 skip 처리 안함.
-        return;
-      
+
+        //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
+        oAPP.fn.attrChangeProc(is_attr);
+
+        
+        var _exit = false;
+
+        //테마변경시 busy off 관련 패치가 존재하지 않는경우.
+        if(oAPP.common.checkWLOList("C", "UHAK900806") === false){
+          _exit = true;
+        }
+
+
+        //패키징 처리가 되지 않은경우.
+        if(parent.REMOTE.app.isPackaged === false){
+          _exit = false;
+        }
+
+        //busy off 패치가 되지 않은경우.
+        if(_exit === true){
+
+          //20240621 pes.
+          //바인딩 팝업의 디자인 영역 갱신처리.
+          oAPP.fn.updateBindPopupDesignData();
+
+          return true;
+
+        }
+
+
+        //바인딩 팝업과 통신을 위한 broad cast이 설정되어 있지 않는경우 exit.
+        //(미리보기 테마 변경이벤트에서 busy off 처리함.)
+        if(parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("IS-CHANNEL-CREATE") === false){
+          return true;
+        }
+
+
+        //20240621 pes.
+        //바인딩 팝업의 디자인 영역 갱신처리.
+        oAPP.fn.updateBindPopupDesignData();
+
+
+        return true;
+
       default:
         return;
 

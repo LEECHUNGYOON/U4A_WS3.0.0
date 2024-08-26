@@ -1796,6 +1796,40 @@
 
     }; // end of oAPP.events.fnMimeTreeFileAttachChange
 
+
+    /************************************************************************
+     * Mime File 저장 시 중복 이름 유무 체크
+     ************************************************************************/
+    // function _checkDupSaveFile(aFiles){
+
+    //     let oRES = {
+    //         RETCD: "E",
+    //         ERRCD: "",
+    //         RDATA: ""
+    //     };
+
+
+    //     if(!aFiles || Array.isArray(aFiles) === false || aFiles.length === 0){
+    //         return;
+    //     }
+
+    //     let iFileLength = aFiles.length;
+    //     for(var i = 0; i < iFileLength; i++){
+
+    //         let sFileName = "";
+
+    //         for(var j = 0; j < iFileLength; j++){
+
+
+    //         }
+
+    //     }
+
+
+
+
+    // } // end of _checkDupSaveFile
+
     /************************************************************************
      * Mime upload의 파일 첨부 후 저장 이벤트
      ************************************************************************/
@@ -1812,6 +1846,13 @@
         if (!oTreeTable) {
             return;
         }
+
+        // // 첨부된 파일 중복 체크
+        // let oCheckDupResult = _checkDupSaveFile(aFiles);
+        // if(oCheckDupResult.RETCD === "E"){
+
+        //     return;
+        // }
 
         lf_createMimeFile();
 

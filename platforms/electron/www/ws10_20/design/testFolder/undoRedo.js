@@ -106,6 +106,11 @@ module.exports.saveActionHistoryData = function(ACTCD, oParam){
             CL_CHANGE_ATTR.saveActionHistoryData(__ACT_UNDO_HIST, oParam);
             //attrubyte 변경.
             break;
+
+        case "RESET_ATTR":
+            //attr 초기화.
+            CL_CHANGE_ATTR.saveActionHistoryData(__ACT_UNDO_HIST, oParam);
+            break;
     
         default:
             //잘못된 ACTION CODE를 전달받았을때의 로직 처리.
@@ -274,6 +279,17 @@ module.exports.getMultiDeleteParam = function(){
     //멀티 삭제 파라메터 정보 구성.
     //(체크박스 선택건 정보 구성, 부모선택시 child는 수집 생략)
     return CL_DELETE_UI.getMultiDeleteParam(oAPP.attr.oModel.oData.zTREE);
+
+};
+
+
+/*************************************************************
+ * @module - attr 초기화시 파라메터 정보 구성.
+ *************************************************************/
+module.exports.getResetAttrParam = function(){
+
+    //attr 초기화시 파라메터 정보 구성.
+    return CL_CHANGE_ATTR.getResetAttrParam();
 
 };
 
@@ -1527,46 +1543,62 @@ class CL_CHANGE_ATTR{
     /*************************************************************
      * @method - ATTRIBUTE 변경 처리에 대한 이력 저장 처리.
      *************************************************************/
-    static saveActionHistoryData(aTargetHist, oParam) {
+    static saveActionHistoryData(aTargetHist, aParam) {
 
-        //UI OBJECT ID 파라메터 정보가 존재하는지 확인.
-        if(typeof oParam?.OBJID === "undefined" || oParam?.OBJID === null || oParam?.OBJID === ""){
+        if(typeof aParam === "undefined"){
+            return;
+        }
+
+        if(Array.isArray(aParam) !== true){
+            return;
+        }
+
+        if(aParam.length === 0){
             return;
         }
 
 
-        //ATTRIBUTE KEY 파라메터 정보가 존재하는지 확인.
-        if(typeof oParam?.UIATK === "undefined" || oParam?.UIATK === null || oParam?.UIATK === ""){
-            return;
+        var _sSaveHist = {};
+
+        //UNDO, REDO시 수행할 ACTION 코드.
+        _sSaveHist.ACTCD   = "CHANGE_ATTR";
+
+        _sSaveHist.T_ATTR  = [];
+
+
+        for (let i = 0, l = aParam.length; i < l; i++) {
+            
+            var _sParam = aParam[i];
+
+            var _sATTR = {};
+
+            _sATTR.OBJID  = _sParam.OBJID;
+            _sATTR.UIATK  = _sParam.UIATK;
+            _sATTR.UIATY  = _sParam.UIATY;
+            _sATTR.S_0015 = undefined;
+            _sATTR.T_CEVT = [];
+                
+
+            //현재 attr 수집건 정보 존재 여부 확인.
+            var _s0015 = oAPP.attr.prev[_sParam.OBJID]._T_0015.find( item => item.UIATK === _sParam.UIATK );
+
+
+            //수집된 정보가 존재하는경우.
+            if(typeof _s0015 !== "undefined"){
+                _sATTR.S_0015 = JSON.parse(JSON.stringify(_s0015));
+
+                //클라이언트 이벤트 수집 처리.
+                _sATTR.T_CEVT =JSON.parse(JSON.stringify(CL_COMMON.collectClientEventData([_s0015])));
+
+            }
+
+            _sSaveHist.T_ATTR.push(_sATTR);
+
+            
         }
-
-        
-        //저장 데이터구성.
-        var _sParam = {
-            ACTCD  : "CHANGE_ATTR",
-            OBJID  : oParam.OBJID,
-            UIATK  : oParam.UIATK,
-            S_0015 : undefined,
-            T_CEVT : []
-        };
-
-
-        //현재 attr 수집건 정보 존재 여부 확인.
-        var _s0015 = oAPP.attr.prev[oParam.OBJID]._T_0015.find( item => item.UIATK === oParam.UIATK );
-
-
-        //수집된 정보가 존재하는경우.
-        if(typeof _s0015 !== "undefined"){
-            _sParam.S_0015 = JSON.parse(JSON.stringify(_s0015));
-
-            //클라이언트 이벤트 수집 처리.
-            _sParam.T_CEVT =JSON.parse(JSON.stringify(CL_COMMON.collectClientEventData([_s0015])));
-
-        }
-
 
         //이력 저장 처리.
-        CL_COMMON.setHistoryData(aTargetHist, _sParam);
+        CL_COMMON.setHistoryData(aTargetHist, _sSaveHist);
 
 
         //UNDO, REDO 버튼 활성화 처리.
@@ -1580,8 +1612,7 @@ class CL_CHANGE_ATTR{
      *************************************************************/
     static async executeHistory(sEvent, oParam){
 
-        //UI OBJECT ID 파라메터 정보가 존재하는지 확인.
-        if(typeof oParam?.OBJID === "undefined" || oParam?.OBJID === null || oParam?.OBJID === ""){
+        if(typeof oParam === "undefined"){
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -1589,12 +1620,11 @@ class CL_CHANGE_ATTR{
             oAPP.fn.setShortcutLock(false);
             
             parent.setBusy("");
+
             return;
         }
 
-
-        //ATTRIBUTE KEY 파라메터 정보가 존재하는지 확인.
-        if(typeof oParam?.UIATK === "undefined" || oParam?.UIATK === null || oParam?.UIATK === ""){
+        if(Array.isArray(oParam?.T_ATTR) !== true){
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -1602,101 +1632,138 @@ class CL_CHANGE_ATTR{
             oAPP.fn.setShortcutLock(false);
             
             parent.setBusy("");
+
             return;
         }
 
+        if(oParam.T_ATTR.length === 0){
+            //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+            parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+            
+            parent.setBusy("");
+
+            return;
+        }
         
-        var _sParam = {};
-
-        _sParam.OBJID = oParam.OBJID;
-        _sParam.UIATK = oParam.UIATK;
 
         //이력 정보 저장 처리.
-        CL_CHANGE_ATTR.saveActionHistoryData(sEvent.T_HIST, _sParam);
-
-
-        //이전 ATTR 변경건 위치 확인.
-        var _indx = oAPP.attr.prev[oParam.OBJID]._T_0015.findIndex( item => item.UIATK === oParam.UIATK );
-
-
-        //존재시 이전 수집 정보 제거.
-        if(_indx !== -1){
-            oAPP.attr.prev[oParam.OBJID]._T_0015.splice(_indx, 1);
-        }
-
-
-        //이전에 수집한 attribute 정보가 존재하는경우.
-        if(typeof oParam.S_0015 !== "undefined"){
-            //attr 변경건에 추가 처리.
-            oAPP.attr.prev[oParam.OBJID]._T_0015.push(oParam.S_0015);
-
-        }
-        
-
-        var _sAttr = oParam.S_0015;
-
-        //이전 attr 정보가 존재하지 않는경우.
-        //(_T_0015에 변경건 수집이 안된경우)
-        if(typeof _sAttr === "undefined"){
-
-            _sAttr = oAPP.fn.crtStru0015();
-
-            var _UIATK = oParam.UIATK.replace(/_1/, "");
-
-            var _s0023 = oAPP.DATA.LIB.T_0023.find( item => item.UIATK === _UIATK );
-
-            Object.assign(_sAttr, JSON.parse(JSON.stringify(_s0023)));
-
-            _sAttr.OBJID = oParam.OBJID;
-            _sAttr.UIATV = _s0023.DEFVL;
-
-        }
-
-
-        //n건 바인딩 처리건인경우 부모 UI에 현재 UI 매핑 처리.
-        oAPP.fn.setModelBind(oAPP.attr.prev[_sAttr.OBJID]);
+        CL_CHANGE_ATTR.saveActionHistoryData(sEvent.T_HIST, oParam.T_ATTR);
 
         
-    
+
+        var _aOBJID = [];
+
+        for (let i = 0, l = oParam.T_ATTR.length; i < l; i++) {
+
+            var _sATTR = oParam.T_ATTR[i];
+
+            if(_sATTR.UIATY === "1"){
+                _aOBJID.push(_sATTR.OBJID);
+            }
+
+        }
+
+        
+        //UI 추가 대상 부모 정보 얻기.
+        var _aParent = CL_COMMON.collectParent(_aOBJID);
+
+
+        for (let i = 0, l = oParam.T_ATTR.length; i < l; i++) {
+
+            var _sATTR = oParam.T_ATTR[i];
+                
+
+            //이전 ATTR 변경건 위치 확인.
+            var _indx = oAPP.attr.prev[_sATTR.OBJID]._T_0015.findIndex( item => item.UIATK === _sATTR.UIATK );
+
+
+            //존재시 이전 수집 정보 제거.
+            if(_indx !== -1){
+                oAPP.attr.prev[_sATTR.OBJID]._T_0015.splice(_indx, 1);
+            }
+
+
+            //이전에 수집한 attribute 정보가 존재하는경우.
+            if(typeof _sATTR.S_0015 !== "undefined"){
+                //attr 변경건에 추가 처리.
+                oAPP.attr.prev[_sATTR.OBJID]._T_0015.push(_sATTR.S_0015);
+
+            }
+            
+
+            var _s0015 = _sATTR.S_0015;
+
+            //이전 attr 정보가 존재하지 않는경우.
+            //(_T_0015에 변경건 수집이 안된경우)
+            if(typeof _s0015 === "undefined"){
+
+                _s0015 = oAPP.fn.crtStru0015();
+
+                var _UIATK = _sATTR.UIATK.replace(/_1/, "");
+
+                var _s0023 = oAPP.DATA.LIB.T_0023.find( item => item.UIATK === _UIATK );
+
+                Object.assign(_s0015, JSON.parse(JSON.stringify(_s0023)));
+
+                _s0015.OBJID = _sATTR.OBJID;
+                _s0015.UIATV = _s0023.DEFVL;
+
+            }
+
+            //n건 바인딩 처리건인경우 부모 UI에 현재 UI 매핑 처리.
+            oAPP.fn.setModelBind(oAPP.attr.prev[_sATTR.OBJID]);
+
+            
+            //미리보기 화면의 대상 ui의 프로퍼티 변경처리.
+            oAPP.fn.previewUIsetProp(_s0015);
+
+            
+            
+        }
+
+
+        
         //미리보기 onAfterRendering 처리 관련 module load.
         var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
 
+
+        var _aPromise = [];
+
+        for (let i = 0; i < _aParent.length; i++) {
             
-        //미리보기 화면의 대상 ui의 프로퍼티 변경처리.
-        oAPP.fn.previewUIsetProp(_sAttr);
+            var _sParent = _aParent[i];
 
-
-        //tree 라인 정보 얻기.
-        var _sTree = oAPP.fn.getTreeData(oParam.OBJID);
-
-        
-        //onAfterRendering 이벤트 등록 대상 UI 얻기.
-        let _oTarget = _oRender.getTargetAfterRenderingUI(oAPP.attr.prev[_sTree.POBID]);
-
-
-        let _oDom = undefined;
-
-        if(typeof _oTarget?.getDomRef === "function"){
-            _oDom = _oTarget.getDomRef();
-        }
-        
-        let _oPromise = undefined;
-        
-        //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
-        if(typeof _oDom !== "undefined" && _oDom !== null){
-            _oPromise = _oRender.setAfterRendering(_oTarget);
-        }
-
-
-        //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.
-        if(typeof _oPromise !== "undefined"){
-            _oTarget.invalidate();
+            //onAfterRendering 이벤트 등록 대상 UI 얻기.
+            let _oTarget = _oRender.getTargetAfterRenderingUI(oAPP.attr.prev[_sParent.OBJID]);
             
-            //onAfterRendering 수행까지 대기.
-            await _oPromise;
+            let _oDom = undefined;
 
+            if(typeof _oTarget?.getDomRef === "function"){
+                _oDom = _oTarget.getDomRef();
+            }
+            
+            
+            //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
+            if(typeof _oDom !== "undefined" && _oDom !== null){
+                _aPromise.push(_oRender.setAfterRendering(_oTarget));
+
+                //RichTextEditor 미리보기 출력 예외처리로직.
+                _aPromise = _aPromise.concat(_oRender.renderingRichTextEditor(_sParent));
+
+                _oTarget.invalidate();
+
+            }
+
+            
         }
-    
+           
+
+        //onAfterRendering 수행까지 대기.
+        await Promise.all(_aPromise);
+
 
         //20240621 pes.
         //바인딩 팝업의 디자인 영역 갱신처리.
@@ -1704,8 +1771,59 @@ class CL_CHANGE_ATTR{
 
         
         //DESIGN tree item 선택 처리
-        await oAPP.fn.setSelectTreeItem(oParam.OBJID);
+        await oAPP.fn.setSelectTreeItem(oParam.T_ATTR[0].OBJID);
 
+
+    };
+
+
+
+    /*************************************************************
+     * @method - attr 초기화시 파라메터 정보 구성.
+     *************************************************************/
+    static getResetAttrParam = function(){
+
+        var _aATTR = [];
+
+        //현재 ATTRIBUTE 항목중 PROPERTY 항목에 대해 직접 입력하여 값을 변경했다면, DEFAULT 값으로 초기화 처리.
+        for(var i = 0, l = oAPP.attr.oModel.oData.T_ATTR.length; i < l; i++){
+
+            var _sATTR = oAPP.attr.oModel.oData.T_ATTR[i];
+
+            //프로퍼티가 아닌경우 skip.
+            if(_sATTR.UIATY !== "1"){continue}
+
+            //바인딩 처리된건인경우 skip.
+            if(_sATTR.ISBND === "X"){continue;}
+
+            var l_UIATK = _sATTR.UIATK;
+
+            //직접 입력 가능한 attribute 여부확인(AT000002650_1 형식으로 구성됨)
+            if(l_UIATK.indexOf("_") !== -1){
+                //_1 부분 제거.
+                l_UIATK = l_UIATK.substr(0, l_UIATK.indexOf("_"));
+            }
+
+            //현재 attribute 정보 검색.
+            var ls_0023 = oAPP.DATA.LIB.T_0023.find( a => a.UIATK === l_UIATK );
+            if(!ls_0023){continue;}
+
+            //직접 입력 가능한 AGGREGATION인경우 값을 입력했다면.
+            if(ls_0023.ISSTR === "X" && _sATTR.UIATV !== ""){
+
+                _aATTR.push(_sATTR);
+
+                continue;
+            }
+
+            //현재 attribute값과 default값이 같다면 skip.
+            if(_sATTR.UIATV === ls_0023.DEFVL){continue;}
+
+            _aATTR.push(_sATTR);
+
+        }
+
+        return _aATTR;
 
     };
 
