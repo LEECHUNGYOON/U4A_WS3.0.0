@@ -608,7 +608,7 @@ let oAPP = parent.oAPP,
      *************************************************************/
     oAPP.fn.setBusy = function(bBusy, sOption){
 
-
+        //BUSY ON/OFF 정보 광역화.
         oAPP.oMain.attr.isBusy = bBusy;
 
         var _ISBROAD = sOption?.ISBROAD || undefined;
@@ -656,6 +656,75 @@ let oAPP = parent.oAPP,
     };  //화면 busy 처리.
 
 
+
+    /*************************************************************
+     * @function - 바인딩 팝업 busy 처리 및 WS_20의 BUSY 요청 처리.
+     *************************************************************/
+    oAPP.fn.setBusyWS20Interaction = function(bBusy, sOption){
+
+        //BUSY ON/OFF 정보 광역화.
+        oAPP.oMain.attr.isBusy = bBusy;
+
+        switch (bBusy) {
+            case true:
+                //busy on.
+                sap.ui.getCore().lock();
+
+                oAPP.ui.APP.setBusy(true);
+
+                var _oWin = oAPP.REMOTE.getCurrentWindow();
+
+                //윈도우 닫기버튼 비활성화 처리.
+                _oWin.closable = false;
+
+
+                //WS20의 BUSY 요청 처리 정보가 존재하는경우.
+                if(typeof sOption !== "undefined"){
+
+                    var _sOption = {};
+
+                    _sOption.PRCCD = "BUSY_ON";
+                    _sOption.TITLE = sOption.TITLE || "";
+                    _sOption.DESC  = sOption.DESC  || "";
+                    _sOption.TYPE  = "DIALOG";
+
+                    //WS 3.0 DESIGN 영역에 BUSY ON 요청 처리.
+                    oAPP.oMain.broadToChild.postMessage(_sOption);
+                }
+                
+                break;
+        
+            case false:
+                //busy off.
+                oAPP.ui.APP.setBusy(false);
+
+                var _oWin = oAPP.REMOTE.getCurrentWindow();
+
+                //윈도우 닫기버튼 활성화 처리.
+                _oWin.closable = true;
+
+                sap.ui.getCore().unlock();
+                
+                //WS20의 BUSY 요청 처리 정보가 존재하는경우.
+                if(typeof sOption !== "undefined"){
+
+                    var _sOption = {};
+
+                    _sOption.PRCCD = "BUSY_OFF";
+
+                    //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+                    oAPP.oMain.broadToChild.postMessage(_sOption);
+
+                }
+
+                break;
+        }
+
+
+
+    };
+
+
     /*************************************************************
      * @function - UI화면 갱신 이후 이벤트 처리.
      *************************************************************/
@@ -699,8 +768,8 @@ let oAPP = parent.oAPP,
             await oAPP.fn.getBindFieldInfo();
 
             
-            //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+            // //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+            // parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
 
 
             oAPP.fn.setBusy(false);
@@ -2669,8 +2738,8 @@ let oAPP = parent.oAPP,
 
             //confirm 팝업 종료처리된경우 WS20에 BUSY OFF 요청 처리.
             if(_destroied === true){
-                //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-                parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+                // //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+                // parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
 
                 //다른 팝업의 BUSY OFF 요청 처리.
                 //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
@@ -3696,24 +3765,35 @@ let oAPP = parent.oAPP,
                     // parent.showMessage(sap, 30, "I", l_msg, function(param){
                     sap.m.MessageBox.confirm(l_msg, {id: oAPP.attr.C_CONFIRM_POPUP, onClose:function(param){
                         
-                        oAPP.fn.setBusy(true);
+                        // oAPP.fn.setBusy(true);
+
+                        //현재 팝업의 BUSY만 ON 처리.
+                        //(다른 팝업은 BUSY ON 상태임.)
+                        oAPP.fn.setBusyWS20Interaction(true);
                         
                         return resolve(param);
 
                     }});
 
-                    oAPP.fn.setBusy(false);
+                    // oAPP.fn.setBusy(false);
                     
-                    //현재 팝업에서 이벤트 발생시 다른 팝업의 BUSY ON 요청 처리.
-                    //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
-                    oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+                    // //현재 팝업에서 이벤트 발생시 다른 팝업의 BUSY ON 요청 처리.
+                    // //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+                    // oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+
+                    //바인딩 팝업의 BUSY만 종료 처리.
+                    //(WS20과 다른 팝업은 BUSY 유지 처리.)
+                    oAPP.fn.setBusyWS20Interaction(false);
 
                 });
         
                 //확인팝업에서 YES를 안누른경우 EXIT.
                 // if(param !== "YES"){return;}
                 if(_param !== "OK"){
-                    oAPP.fn.setBusy(false);
+                    // oAPP.fn.setBusy(false);
+
+                    oAPP.fn.setBusyWS20Interaction(false, {});
+
                     return;
                 }
 
@@ -3760,16 +3840,24 @@ let oAPP = parent.oAPP,
                 // parent.showMessage(sap, 30, "I", l_msg, function(param){
                 sap.m.MessageBox.confirm(l_msg, {id: oAPP.attr.C_CONFIRM_POPUP, onClose:function(param){
 
-                    oAPP.fn.setBusy(true);
+                    // oAPP.fn.setBusy(true);
+
+                    //현재 팝업의 BUSY만 ON 처리.
+                    //(다른 팝업은 BUSY ON 상태임.)
+                    oAPP.fn.setBusyWS20Interaction(true);
 
                     return resolve(param);
                 }});
 
-                oAPP.fn.setBusy(false);
+                // oAPP.fn.setBusy(false);
                 
-                //현재 팝업에서 이벤트 발생시 다른 팝업의 BUSY ON 요청 처리.
-                //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
-                oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+                // //현재 팝업에서 이벤트 발생시 다른 팝업의 BUSY ON 요청 처리.
+                // //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+                // oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+
+                //바인딩 팝업의 BUSY만 종료 처리.
+                //(WS20과 다른 팝업은 BUSY 유지 처리.)
+                oAPP.fn.setBusyWS20Interaction(false);
 
 
             });
@@ -3778,7 +3866,10 @@ let oAPP = parent.oAPP,
             //확인팝업에서 YES를 안누른경우 EXIT.
             // if(param !== "YES"){return;}
             if(_param !== "OK"){
-                oAPP.fn.setBusy(false);
+                // oAPP.fn.setBusy(false);
+
+                oAPP.fn.setBusyWS20Interaction(false, {});
+
                 return;
             }
 
@@ -4729,7 +4820,7 @@ let oAPP = parent.oAPP,
      *************************************************************/
     oAPP.fn.setViewEditable = function(bLock){
 
-        //applicationdl 조회모드인경우 exit.
+        //application이 조회모드인경우 exit.
         if(oAPP.attr.oAppInfo.IS_EDIT === ""){
             return;
         }
@@ -5285,25 +5376,41 @@ let oAPP = parent.oAPP,
      * @event - 추가속성 적용 버튼 선택 이벤트.
      *************************************************************/
     oAPP.fn.onAdditBind = async function(oEvent){
-        
-        oAPP.fn.setBusy(true);
 
         var _sOption = JSON.parse(JSON.stringify(oAPP.types.TY_BUSY_OPTION));
 
         //219	바인딩 팝업에서 추가 속성 바인딩 처리를 진행하고 있습니다.
         _sOption.DESC = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "219"); 
 
-        //WS 3.0 DESIGN 영역에 BUSY ON 요청 처리.
-        parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_ON", _sOption);
+
+        oAPP.fn.setBusyWS20Interaction(true, _sOption);
+        
+        //20240827 PES -START.
+        //기존 BUSY 처리시, BROADCAST로 WS20메인 화면 및 다른 팝업에 BUSY 요청 처리되어
+        //WS20 메인 화면의 BUSY DIALOG를 호출할 수 없기에 주석 처리함.
+        // oAPP.fn.setBusy(true);
+
+        // var _sOption = JSON.parse(JSON.stringify(oAPP.types.TY_BUSY_OPTION));
+
+        // //219	바인딩 팝업에서 추가 속성 바인딩 처리를 진행하고 있습니다.
+        // _sOption.DESC = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "219"); 
+
+        // //WS 3.0 DESIGN 영역에 BUSY ON 요청 처리.
+        // parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_ON", _sOption);
+        //20240827 PES -END.
+
+
 
         var _oUi = oEvent?.oSource;
 
         if(typeof _oUi === "undefined"){
 
-            //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+            // //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+            // parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
 
-            oAPP.fn.setBusy(false);
+            // oAPP.fn.setBusy(false);
+
+            oAPP.fn.setBusyWS20Interaction(false, {});
 
             return;
         }
@@ -5322,10 +5429,12 @@ let oAPP = parent.oAPP,
             //메시지 처리.
             await oAPP.fn.showMessagePopoverOppener(_oUi, _sRes.T_RTMSG);
             
-            //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+            // //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+            // parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
 
-            oAPP.fn.setBusy(false);
+            // oAPP.fn.setBusy(false);
+
+            oAPP.fn.setBusyWS20Interaction(false, {});
 
             return;
         }

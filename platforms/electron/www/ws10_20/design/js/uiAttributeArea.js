@@ -1731,6 +1731,15 @@
         //바인딩 팝업과 통신을 위한 broad cast이 설정되어 있지 않는경우 exit.
         //(미리보기 테마 변경이벤트에서 busy off 처리함.)
         if(parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("IS-CHANNEL-CREATE") === false){
+
+          // 전체 자식 윈도우에 Busy 종료.
+          oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
+
+          //단축키 잠금 해제처리.
+          oAPP.fn.setShortcutLock(false);
+
+          parent.setBusy("");
+
           return true;
         }
 

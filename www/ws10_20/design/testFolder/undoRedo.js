@@ -1572,10 +1572,25 @@ class CL_CHANGE_ATTR{
 
             var _sATTR = {};
 
+            //UI OBJECT ID.
             _sATTR.OBJID  = _sParam.OBJID;
+
+            //ATTRIBUTE KEY.
             _sATTR.UIATK  = _sParam.UIATK;
+
+            //ATTRIBUTE TYPE.
             _sATTR.UIATY  = _sParam.UIATY;
+
+            //ATTRIBUTE NAME.
+            _sATTR.UIATT  = _sParam.UIATT;
+
+            //ATTRIBUTE 대문자명.
+            _sATTR.UIASN  = _sParam.UIASN;
+
+            //ATTR 변경건 수집정보.
             _sATTR.S_0015 = undefined;
+
+            //클라이언트 이벤트.
             _sATTR.T_CEVT = [];
                 
 
@@ -1656,10 +1671,13 @@ class CL_CHANGE_ATTR{
 
         var _aOBJID = [];
 
+        //현재 OBJECT ID 정보 수집.
         for (let i = 0, l = oParam.T_ATTR.length; i < l; i++) {
 
             var _sATTR = oParam.T_ATTR[i];
 
+            //프로퍼티 변경건만 수집 처리.
+            //(프로퍼티 세팅으로 미리보기 갱신을 위함)
             if(_sATTR.UIATY === "1"){
                 _aOBJID.push(_sATTR.OBJID);
             }
@@ -1671,10 +1689,26 @@ class CL_CHANGE_ATTR{
         var _aParent = CL_COMMON.collectParent(_aOBJID);
 
 
+
         for (let i = 0, l = oParam.T_ATTR.length; i < l; i++) {
 
             var _sATTR = oParam.T_ATTR[i];
-                
+
+
+            var _OBJID = _sATTR.OBJID + _sATTR.UIASN;
+
+            //현재 attr의 클라이언트 이벤트(html content 정보) 존재 여부 확인.
+            var _indx = oAPP.DATA.APPDATA.T_CEVT.findIndex( a => a.OBJID === _OBJID );
+
+            //존재시 이전 수집 정보 제거.
+            if(_indx !== -1){
+                oAPP.DATA.APPDATA.T_CEVT.splice(_indx, 1);
+            }
+            
+            //이전 이력 정보 매핑.
+            oAPP.DATA.APPDATA.T_CEVT = oAPP.DATA.APPDATA.T_CEVT.concat(_sATTR.T_CEVT);
+
+            
 
             //이전 ATTR 변경건 위치 확인.
             var _indx = oAPP.attr.prev[_sATTR.OBJID]._T_0015.findIndex( item => item.UIATK === _sATTR.UIATK );
@@ -1719,7 +1753,6 @@ class CL_CHANGE_ATTR{
             
             //미리보기 화면의 대상 ui의 프로퍼티 변경처리.
             oAPP.fn.previewUIsetProp(_s0015);
-
             
             
         }
@@ -1756,7 +1789,6 @@ class CL_CHANGE_ATTR{
                 _oTarget.invalidate();
 
             }
-
             
         }
            

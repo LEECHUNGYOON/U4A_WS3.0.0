@@ -584,7 +584,15 @@
       parent.setBusy("X");
 
       //단축키 잠금 처리.
-      oAPP.fn.setShortcutLock(true);      
+      oAPP.fn.setShortcutLock(true);
+
+      var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
+
+      //213	디자인 화면에서 UI 삭제처리를 진행하고 있습니다.
+      _sOption.DESC = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "213"); 
+
+      //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
 
       //멀티 삭제 처리.
       oAPP.fn.designTreeMultiDeleteItem();
@@ -3692,6 +3700,9 @@
       //286	Check box not selected.
       parent.showMessage(sap, 20, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "286", "", "", "", ""));
 
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
 
@@ -3749,6 +3760,9 @@
 
       //YES를 선택하지 않은경우 EXIT.
       if(oEvent !== "YES"){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
@@ -3820,6 +3834,7 @@
 
 
     }); //삭제전 확인팝업 호출.
+
 
   };  //멀티 삭제 처리.
 
@@ -5623,10 +5638,10 @@
       //20240621 pes.
       //바인딩 팝업의 디자인 영역 갱신처리.
       oAPP.fn.updateBindPopupDesignData();
-  
-            
+              
 
     }); //UI삭제전 확인 팝업 호출.
+
 
   }; //ui 삭제 처리 이벤트.
 

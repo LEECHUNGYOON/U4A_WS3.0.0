@@ -231,7 +231,9 @@ function designControl(is_attr){
                     //150	&1 필드가 모델 항목에 존재하지 않습니다.
                     if(typeof _sField === "undefined"){
 
-                        oAPP.fn.setBusy(false);
+                        // oAPP.fn.setBusy(false);
+
+                        oAPP.fn.setBusyWS20Interaction(false);
 
                         //dialog용 busy off.
                         oContr.fn.setBusyDialog(false);
@@ -418,7 +420,8 @@ function designControl(is_attr){
                 //table 컬럼길이 재조정 처리.
                 oAPP.fn.setUiTableAutoResizeColumn(oContr.ui.LIST);
 
-                oAPP.fn.setBusy(false);
+                // oAPP.fn.setBusy(false);
+                oAPP.fn.setBusyWS20Interaction(false);
 
                 return res();
 
@@ -484,7 +487,8 @@ function designControl(is_attr){
          *************************************************************/
         oContr.fn.onSetSyncAttr = async function(oEvent){
 
-            oAPP.fn.setBusy(true);
+            // oAPP.fn.setBusy(true);
+            oAPP.fn.setBusyWS20Interaction(true);
 
             //dialog용 busy on.
             oContr.fn.setBusyDialog(true);
@@ -498,7 +502,8 @@ function designControl(is_attr){
                
                 oContr.fn.setBusyDialog(false);
 
-                oAPP.fn.setBusy(false);
+                // oAPP.fn.setBusy(false);
+                oAPP.fn.setBusyWS20Interaction(false);
                 
                 return;
             }
@@ -514,7 +519,8 @@ function designControl(is_attr){
 
                     oContr.fn.setBusyDialog(false);
 
-                    oAPP.fn.setBusy(false);
+                    // oAPP.fn.setBusy(false);
+                    oAPP.fn.setBusyWS20Interaction(false);
 
                     return;
                 }
@@ -533,7 +539,8 @@ function designControl(is_attr){
                 
                 oContr.fn.setBusyDialog(false);
 
-                oAPP.fn.setBusy(false);
+                // oAPP.fn.setBusy(false);
+                oAPP.fn.setBusyWS20Interaction(false);
 
                 return;
 
@@ -567,11 +574,12 @@ function designControl(is_attr){
 
                 oContr.fn.setBusyDialog(false);
 
-                oAPP.fn.setBusy(false);
+                // oAPP.fn.setBusy(false);
+                oAPP.fn.setBusyWS20Interaction(false);
                 
-                //현재 팝업에서 이벤트 발생시 다른 팝업의 BUSY ON 요청 처리.
-                //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
-                oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+                // //현재 팝업에서 이벤트 발생시 다른 팝업의 BUSY ON 요청 처리.
+                // //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+                // oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_ON"});
 
             });
 
@@ -582,13 +590,15 @@ function designControl(is_attr){
 
                 oContr.fn.setBusyDialog(false);
 
-                oAPP.fn.setBusy(false);
+                // oAPP.fn.setBusy(false);
+
+                oAPP.fn.setBusyWS20Interaction(false);
 
                 return;
             }
 
 
-            oAPP.fn.setBusy(true);
+            // oAPP.fn.setBusy(true);
 
             //동일속성 바인딩 처리.
             _setSyncAttr(_aList);
@@ -617,11 +627,18 @@ function designControl(is_attr){
             //추가속성 바인딩 버튼 활성 처리.
             oAPP.attr.oAddit.fn.setAdditBindButtonEnable(true);
 
-            //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-            parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+
+            //메인의 model tree 영역 활성 처리.
+            oAPP.fn.setViewEditable(true);
+            
+
+            // //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+            // parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
 
 
-            oAPP.fn.setBusy(false);
+            // oAPP.fn.setBusy(false);
+
+            oAPP.fn.setBusyWS20Interaction(false, {});
 
         };
 
@@ -631,7 +648,8 @@ function designControl(is_attr){
          *************************************************************/
         oContr.fn.onCallSyncBindPopup = async function(){
 
-            oAPP.fn.setBusy(true);
+            // oAPP.fn.setBusy(true);
+            oAPP.fn.setBusyWS20Interaction(true);
 
             //동일속성 적용 버튼 비활성 처리.
             //(dialog가 호출될때 다시 선택할 수 있기에)
@@ -664,7 +682,8 @@ function designControl(is_attr){
 
                 },
                 afterOpen: function(){
-                    oAPP.fn.setBusy(false);
+                    // oAPP.fn.setBusy(false);
+                    oAPP.fn.setBusyWS20Interaction(false);
                 },
                 beforeClose: function(){
 
@@ -676,8 +695,10 @@ function designControl(is_attr){
 
                     delete oContr.ui.oDialog;
 
-                    //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
-                    parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+                    // //WS 3.0 DESIGN 영역에 BUSY OFF 요청 처리.
+                    // parent.require("./wsDesignHandler/broadcastChannelBindPopup.js")("BUSY_OFF");
+
+                    oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
 
                 },
                 // customHeader: new sap.m.OverflowToolbar({

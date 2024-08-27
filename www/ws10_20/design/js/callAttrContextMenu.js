@@ -391,6 +391,7 @@
 
         }); //UNBIND 처리여부 확인 팝업 호출.
 
+
         parent.setBusy("");
 
     };  //property, aggregation의 unbind 처리.

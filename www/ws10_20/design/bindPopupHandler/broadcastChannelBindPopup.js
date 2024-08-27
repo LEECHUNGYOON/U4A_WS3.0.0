@@ -507,6 +507,9 @@ async function updateBindPopupDesignData(oData){
     //(바인딩 팝업이 호출되지 않은경우)
     if(isCreateChannel() === false){
 
+        // 전체 자식 윈도우에 Busy 종료.
+        oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
+
         //단축키 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
 
@@ -724,6 +727,9 @@ function selectDesignTreeOBJID(oData){
  *************************************************************/
 function sendBindPopupBusyOff(oData){
 
+    // 전체 자식 윈도우에 Busy 종료.
+    oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
+
     //WS20 <-> 바인딩 팝업통신을 위한 BROADCAST 채널이 생성되지 않은경우EXIT
     //(바인딩 팝업을 호출하지 않은경우)
     if(isCreateChannel() === false){
@@ -745,6 +751,9 @@ function sendBindPopupBusyOff(oData){
  * @function - 바인딩 팝업의 busy on 요청 처리.
  *************************************************************/
 function sendBindPopupBusyOn(oData){
+
+    // 전체 자식 윈도우에 Busy 킨다.
+    oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_ON"});
 
     //WS20 <-> 바인딩 팝업통신을 위한 BROADCAST 채널이 생성되지 않은경우EXIT
     //(바인딩 팝업을 호출하지 않은경우)

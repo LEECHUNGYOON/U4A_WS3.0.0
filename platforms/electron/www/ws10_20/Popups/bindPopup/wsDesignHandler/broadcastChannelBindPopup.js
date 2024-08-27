@@ -152,7 +152,12 @@ function responseBindPopupBusyOff(oEvent){
 
 
     //busy off.
-    oAPP.fn.setBusy(false);
+    // oAPP.fn.setBusy(false);
+
+    //WS20 -> 바인딩 팝업으로 BUSY 요청건인경우, 다른 영역에 BUSY를 요청 처리 하지 않음.
+    //(다른 영역에 BUSY 요청을 보내게 되면 WS20에도 BUSY 요청을 보내게 되어 
+    //WS20 화면을 제어 할 수 없음)
+    oAPP.fn.setBusy(false, {ISBROAD:true});
 
     
     //busy off 요청임 flag return.
@@ -170,10 +175,15 @@ function responseBindPopupBusyOn(oEvent){
     if(oEvent.data.PRCCD !== "BUSY_ON"){
         return false;
     }
-
+    
 
     //busy on.
-    oAPP.fn.setBusy(true);
+    // oAPP.fn.setBusy(true);
+
+    //WS20 -> 바인딩 팝업으로 BUSY 요청건인경우, 다른 영역에 BUSY를 요청 처리 하지 않음.
+    //(다른 영역에 BUSY 요청을 보내게 되면 WS20에도 BUSY 요청을 보내게 되어 
+    //WS20 화면을 제어 할 수 없음)
+    oAPP.fn.setBusy(true, {ISBROAD:true});
 
 
     //busy on 요청임 flag return.
@@ -340,17 +350,20 @@ function responeSelectDesignTreeOBJID(oEvent){
         return false;
     }
 
-    oAPP.fn.setBusy(true);
+    // oAPP.fn.setBusy(true);
+    oAPP.fn.setBusy(true, {ISBROAD:true});
 
     //전달받은 파라메터가 존재하지 않는경우 exit.
     if(typeof oEvent?.data?.OBJID === "undefined" || oEvent.data.OBJID === ""){
-        oAPP.fn.setBusy(false);
+        // oAPP.fn.setBusy(false);
+        oAPP.fn.setBusy(false, {ISBROAD:true});
         return true;
     }
 
     //디자인 영역에 출력데이터가 존재하지 않는경우 exit.
     if(oAPP.attr.oDesign.oModel.oData.zTREE_DESIGN.length === 0){
-        oAPP.fn.setBusy(false);
+        // oAPP.fn.setBusy(false);
+        oAPP.fn.setBusy(false, {ISBROAD:true});
         return true;
     }
 
@@ -359,7 +372,8 @@ function responeSelectDesignTreeOBJID(oEvent){
 
     //대상 라인을 찾지 못한 경우 exit.
     if(typeof _sTree === "undefined"){
-        oAPP.fn.setBusy(false);
+        // oAPP.fn.setBusy(false);
+        oAPP.fn.setBusy(false, {ISBROAD:true});
         return true;
     }
 
@@ -371,7 +385,8 @@ function responeSelectDesignTreeOBJID(oEvent){
         //해당 라인 선택 처리.
         oAPP.attr.oDesign.ui.TREE.setSelectedIndex(_indx);
 
-        oAPP.fn.setBusy(false);
+        // oAPP.fn.setBusy(false);
+        oAPP.fn.setBusy(false, {ISBROAD:true});
 
         return true;
     }
@@ -383,7 +398,8 @@ function responeSelectDesignTreeOBJID(oEvent){
     //해당 라인을 찾지 못한 경우 exit.
     if(_indx === -1){
 
-        oAPP.fn.setBusy(false);
+        // oAPP.fn.setBusy(false);
+        oAPP.fn.setBusy(false, {ISBROAD:true});
 
         return true;
     }
@@ -394,7 +410,8 @@ function responeSelectDesignTreeOBJID(oEvent){
     //해당 라인으로 이동 처리.
     oAPP.attr.oDesign.ui.TREE.setFirstVisibleRow(_indx);
 
-    oAPP.fn.setBusy(false);
+    // oAPP.fn.setBusy(false);
+    oAPP.fn.setBusy(false, {ISBROAD:true});
 
     return true;
 
