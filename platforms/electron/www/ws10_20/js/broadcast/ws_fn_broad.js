@@ -21,6 +21,19 @@
 
                 //BUSY ON을 요청 받은 경우.
                 case "BUSY_ON":
+
+                    //BUSY DIALOG를 호출하는경우.
+                    if(oEvent?.data?.TYPE === "DIALOG"){
+
+                        var _sOption = {};
+
+                        _sOption.TITLE = oEvent?.data?.TITLE || "";
+                        _sOption.DESC  = oEvent?.data?.DESC || "";
+
+                        parent.setBusy("X", _sOption);
+
+                        return;
+                    }
                 
                     parent.setBusy("X");
     
