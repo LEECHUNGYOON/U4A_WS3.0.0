@@ -1156,7 +1156,10 @@ oAPP.msg = {};
         }
 
         // Busy를 켰을 경우
-        if(bIsBusy){         
+        if(bIsBusy){
+
+            // 메인 브라우저 닫기 버튼 비활성
+            oWS.utill.fn.setMainCloseBtnDisabled("X");         
          
             let sDefTitle = "";
             let sDefDesc  = "please wait a minute..";
@@ -1194,6 +1197,9 @@ oAPP.msg = {};
             }
 
         } else {
+
+            // 메인 브라우저 닫기 버튼 활성
+            oWS.utill.fn.setMainCloseBtnDisabled("");
 
             if(oWS.utill.attr.oBusyDlg){
                 

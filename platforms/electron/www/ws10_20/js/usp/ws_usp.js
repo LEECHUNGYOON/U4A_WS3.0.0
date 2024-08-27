@@ -2749,6 +2749,9 @@
      **************************************************************************/
     function fnDeleteUspNode(oTreeTable) {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         var iIndex = gSelectedTreeIndex,
             oCtx = oTreeTable.getContextByIndex(iIndex),
             oTreeModel = oTreeTable.getModel(),
@@ -2759,10 +2762,7 @@
 
         var oParam = {
             oTreeTable: oTreeTable
-        };
-
-        // busy 끄고 Lock 풀기
-        oAPP.common.fnSetBusyLock("");
+        };        
 
         // 질문팝업? 삭제하시겠습니까?
         parent.showMessage(sap, 30, 'W', sMsg, _fnDeleteUspNodeCb.bind(this, oParam));
@@ -2770,9 +2770,19 @@
         // 현재 떠있는 팝업 창들을 잠시 숨긴다.
         oAPP.fn.fnChildWindowShow(false);
 
+        // busy 끄고 Lock 풀기
+        oAPP.common.fnSetBusyLock("");
+
     } // end of fnDeleteUspNode
 
+
+    /**************************************************************************
+     * [WS30] USP Tree의 Node 삭제 여부 질문 팝업 콜백
+     **************************************************************************/
     function _fnDeleteUspNodeCb(oParam, oEvent) {
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // 동작 취소.
         if (oEvent !== "YES") {
@@ -2780,19 +2790,25 @@
             // 현재 떠있는 팝업 창이 있었고 숨김 처리 되있었다면 다시 활성화 시킨다.
             oAPP.fn.fnChildWindowShow(true);
 
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
+
+        
 
         var oTreeTable = oParam.oTreeTable,
             iIndex = gSelectedTreeIndex,
             oSelectedCtx = oTreeTable.getContextByIndex(iIndex);
 
         if (!oSelectedCtx) {
-            return;
-        }
 
-        // busy 키고 Lock 걸기
-        oAPP.common.fnSetBusyLock("X");
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            return;
+        }        
 
         var oDelRowData = oSelectedCtx.getModel().getProperty(oSelectedCtx.getPath()),
             oDeleteTreeData = jQuery.extend(true, {}, oDelRowData),
@@ -2817,9 +2833,9 @@
             TRKORR: sReqNo,
             T_TREE: aDeleteTreeData,
             TU4A0010: oAppData
-        },
+        };
 
-            sServerPath = parent.getServerPath(),
+        var sServerPath = parent.getServerPath(),
             sPath = `${sServerPath}/usp_page_del`,
 
             oFormData = new FormData();
@@ -2880,6 +2896,7 @@
 
                 // 서버에서 만든 스크립트가 있다면 eval 처리.
                 if (oResult.SCRIPT) {
+                    
                     eval(oResult.SCRIPT);
 
                     // busy 끄고 Lock 풀기
@@ -3264,10 +3281,17 @@
      **************************************************************************/
     function fnOnDownloadUspFiles(oTreeTable) {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         var iIndex = gSelectedTreeIndex,
             oCtx = oTreeTable.getContextByIndex(iIndex);
 
         if (!oCtx) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");	
+
             return;
         }
 
@@ -3293,6 +3317,9 @@
 
             parent.showMessage(sap, 10, "E", sMsg);
 
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -3302,8 +3329,8 @@
         var oFormData = new FormData();
         oFormData.append("USPDATA", JSON.stringify(aUspData));
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // // 화면 Lock 걸기
+        // sap.ui.getCore().lock();
 
         // function bind Parameter
         var oBindParam = {
@@ -3361,10 +3388,10 @@
      **************************************************************************/
     function _fnGetFileContents(oResult) {
 
-        // 화면 Lock 해제
-        sap.ui.getCore().unlock();
+        // // 화면 Lock 해제
+        // sap.ui.getCore().unlock();
 
-        parent.setBusy("");
+        // parent.setBusy("");
 
         // JSON Parse 오류 일 경우
         if (typeof oResult !== "object") {
@@ -3375,6 +3402,9 @@
             oAPP.fn.fnCriticalErrorWs30({
                 RTMSG: sMsg
             });
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
             return;
 
@@ -3388,6 +3418,9 @@
                 // [WS30] Critical Error
                 oAPP.fn.fnCriticalErrorWs30(oResult);
 
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
 
             case "E":
@@ -3400,24 +3433,35 @@
                 // 서버에서 만든 스크립트가 있다면 eval 처리.
                 if (oResult.SCRIPT) {
                     eval(oResult.SCRIPT);
+
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
+
                     return;
                 }
 
                 // Footer Msg 출력
                 APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
 
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
         }
 
-        // 화면 Lock 해제
-        sap.ui.getCore().unlock();
+        // // 화면 Lock 해제
+        // sap.ui.getCore().unlock();
 
-        parent.setBusy("");
+        // parent.setBusy("");
 
         var aUspData = oResult.USPDATA;
 
         // Array 타입이 아니면 리턴
         if (Array.isArray(aUspData) == false) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             throw new Error("Usp Data Type Error! Please Contact Administrator!");
         }
 
@@ -3491,6 +3535,10 @@
         oFilePathPromise.then((oPaths) => {
 
             if (oPaths.canceled) {
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
 
@@ -3515,12 +3563,20 @@
                 FS.writeFile(filePath, buffer, {}, (err, res) => {
 
                     if (err) {
+
                         parent.showMessage(sap, 10, "E", err.toString());
+
+                        // busy 끄고 Lock 풀기
+                        oAPP.common.fnSetBusyLock("");
+
                         return;
                     }
 
                     // 파일 다운받은 폴더를 오픈한다.
                     SHELL.showItemInFolder(filePath);
+
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
 
                 });
 

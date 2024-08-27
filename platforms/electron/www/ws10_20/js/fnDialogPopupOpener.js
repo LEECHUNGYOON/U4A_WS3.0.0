@@ -444,6 +444,9 @@
      ************************************************************************/
     oAPP.fn.fnBindWindowPopupOpener = () => {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         // 전체 자식 윈도우에 Busy 킨다.
         oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_ON"});
 
@@ -480,6 +483,7 @@
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0;
+        oBrowserOptions.closable = false;
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
