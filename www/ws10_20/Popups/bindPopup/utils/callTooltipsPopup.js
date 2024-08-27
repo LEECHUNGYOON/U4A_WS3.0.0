@@ -3,12 +3,16 @@
  *************************************************************/
 module.exports = function(sArea, sCODE){
 
-    oAPP.fn.setBusy(true);
+    // oAPP.fn.setBusy(true);
+
+    oAPP.fn.setBusyWS20Interaction(true);
 
     //도움말 html의 파일 경로 구성.
     var l_path = setHTMLPath(sArea, sCODE);
     if(!l_path){
-        oAPP.fn.setBusy(false);
+        // oAPP.fn.setBusy(false);
+
+        oAPP.fn.setBusyWS20Interaction(false);
         return;
     }
 
@@ -68,7 +72,9 @@ module.exports = function(sArea, sCODE){
         setParentCenterBounds(oWin, opt);
 
         
-        oAPP.fn.setBusy(false);
+        // oAPP.fn.setBusy(false);
+
+        oAPP.fn.setBusyWS20Interaction(false);
 
     });
 

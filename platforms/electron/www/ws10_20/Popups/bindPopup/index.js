@@ -1127,13 +1127,23 @@ let oAPP = parent.oAPP,
         //갱신버튼 이벤트
         oToolBtn3.attachPress(async function () {
 
-            oAPP.fn.setBusy(true);
+            // oAPP.fn.setBusy(true);
+
+            var _sOption = JSON.parse(JSON.stringify(oAPP.types.TY_BUSY_OPTION));
+
+            //229	바인딩 팝업에서 바인딩 모델 정보를 갱신하고 있습니다.
+            _sOption.DESC = oAPP.WSUTIL.getWsMsgClsTxt(oAPP.attr.GLANGU, "ZMSG_WS_COMMON_001", "229"); 
+
+
+            oAPP.fn.setBusyWS20Interaction(true, _sOption);
 
             //서버에서 바인딩 정보 얻기.
             await oAPP.fn.getBindFieldInfo();
 
 
-            oAPP.fn.setBusy(false);
+            // oAPP.fn.setBusy(false);
+
+            oAPP.fn.setBusyWS20Interaction(false, {});
 
         });
 
@@ -2841,39 +2851,49 @@ let oAPP = parent.oAPP,
 
         _oWin.on('close', function(){
 
-            if(typeof oAPP?.ui?.APP?.getBusy === "undefined"){
-                return;
-            }
+
+            oAPP.fn.setBusyWS20Interaction(false, {});
+
+            //20240827 PES -START.
+            //팝업 BUSY ON 처리시 모든 창은(메인포함) 닫지 못하는 내용이 추가됨에 따라 
+            //현재 팝업이 닫을 수 있는 경우라면 다른 영역에 busy off 처리 요청 로직으로 
+            //변경됨에 따라 기존 로직 주석 처리함.
+            //(닫기 버튼을 누를 수 있는 상황 - busy 처리가 안되었거나, 
+            //confirm 팝업으로 나를 제외한 다른 창(메인포함)은 busy 처리 됐을때)
+            // if(typeof oAPP?.ui?.APP?.getBusy === "undefined"){
+            //     return;
+            // }
 
             
-            if(oAPP.ui.APP.getBusy() === true){
-                //취소를 선택한 경우 다른 팝업의 BUSY OFF 요청 처리.
-                oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
-                return;
-            }
+            // if(oAPP.ui.APP.getBusy() === true){
+            //     //취소를 선택한 경우 다른 팝업의 BUSY OFF 요청 처리.
+            //     oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+            //     return;
+            // }
 
 
-            if(typeof window?.sap?.m?.InstanceManager?.getOpenDialogs !== "function"){
-                return;
-            }
+            // if(typeof window?.sap?.m?.InstanceManager?.getOpenDialogs !== "function"){
+            //     return;
+            // }
             
 
-            //현재 호출된 dialog 정보 얻기.
-            var _aDialog = sap.m.InstanceManager.getOpenDialogs();
+            // //현재 호출된 dialog 정보 얻기.
+            // var _aDialog = sap.m.InstanceManager.getOpenDialogs();
 
-            //호출된 dialog가 없다면 exit.
-            if(typeof _aDialog === "undefined" || _aDialog?.length === 0){
-                return;
-            }
+            // //호출된 dialog가 없다면 exit.
+            // if(typeof _aDialog === "undefined" || _aDialog?.length === 0){
+            //     return;
+            // }
 
-            //confirm 팝업 호출건이 존재하지 않는경우 exit.
-            if(_aDialog.findIndex( item => typeof item.getId === "function" && 
-                item.getId() === oAPP.attr.C_CONFIRM_POPUP) !== -1){
+            // //confirm 팝업 호출건이 존재하지 않는경우 exit.
+            // if(_aDialog.findIndex( item => typeof item.getId === "function" && 
+            //     item.getId() === oAPP.attr.C_CONFIRM_POPUP) !== -1){
                 
-                //취소를 선택한 경우 다른 팝업의 BUSY OFF 요청 처리.
-                oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+            //     //취소를 선택한 경우 다른 팝업의 BUSY OFF 요청 처리.
+            //     oAPP.oMain.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
 
-            }
+            // }
+            //20240827 PES -END.
 
         });
 
@@ -4621,7 +4641,7 @@ let oAPP = parent.oAPP,
                        
             setTimeout(() => {
                 res();
-            }, 0);
+            }, 100);
 
         });
 

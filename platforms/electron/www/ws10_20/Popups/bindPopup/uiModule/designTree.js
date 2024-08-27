@@ -1480,7 +1480,9 @@ function designControl(oArea){
          *************************************************************/
         oContr.fn.onClearSelection = function(){
 
-            oAPP.fn.setBusy(true);
+            // oAPP.fn.setBusy(true);
+
+            oAPP.fn.setBusyWS20Interaction(true);
 
             //tree 하위를 탐색하며, 라인 선택 해제 처리.
             _clearSelection(oContr.oModel.oData.zTREE_DESIGN);
@@ -1491,7 +1493,9 @@ function designControl(oArea){
             //참조 필드 DDLB 리스트 구성
             oAPP.attr.oAddit.fn.setRefFieldList();
 
-            oAPP.fn.setBusy(false);
+            // oAPP.fn.setBusy(false);
+            
+            oAPP.fn.setBusyWS20Interaction(false);
 
         };
 
@@ -2427,7 +2431,6 @@ function designControl(oArea){
 
                     _oContr.onViewReady();
                     
-
                     return;
 
                 }
