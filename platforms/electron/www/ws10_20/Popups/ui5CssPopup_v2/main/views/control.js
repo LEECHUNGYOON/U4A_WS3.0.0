@@ -67,33 +67,57 @@
     // parent.WSUTIL.getWsMsgClsTxt();
     // let sGlobalLangu = oAPP.attr.WS_LANGU;
 
-    // oAPP.ICON_MSG.M072 = WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "072"); // Icon    
+    // oAPP.ICON_MSG.M072 = WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "072"); // Icon   
+    
+    var oSettingInfo = parent.WSUTIL.getWsSettingsInfo();
+    var sWsLangu = oSettingInfo.globalLanguage;
 
     // 메시지 텍스트 구성
-    oContr.msg.A41 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A41", "", "", "", ""); // Cancel
-    oContr.msg.A67 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A67", "", "", "", ""); // Preview
-    oContr.msg.B58 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B58", "", "", "", ""); // UI5 Predefined CSS
-    oContr.msg.C63 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C63", "", "", "", ""); // Apply
-    oContr.msg.E34 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E34", "", "", "", ""); // Other CSS Guides
-    oContr.msg.E35 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E35", "", "", "", ""); // UI5 Predefined CSS Helper
-    oContr.msg.E36 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E36", "", "", "", ""); // Unselect All
-    oContr.msg.E37 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E37", "", "", "", ""); // Copy ClipBoard
-    oContr.msg.E38 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E38", "", "", "", ""); // CSS Menu information
-    oContr.msg.E39 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E39", "", "", "", ""); // stored data
+    // oContr.msg.A41 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A41", "", "", "", ""); // Cancel
+    // oContr.msg.A67 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A67", "", "", "", ""); // Preview
+    // oContr.msg.B58 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B58", "", "", "", ""); // UI5 Predefined CSS
+    // oContr.msg.C63 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C63", "", "", "", ""); // Apply
+    // oContr.msg.E34 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E34", "", "", "", ""); // Other CSS Guides
+    // oContr.msg.E35 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E35", "", "", "", ""); // UI5 Predefined CSS Helper
+    // oContr.msg.E36 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E36", "", "", "", ""); // Unselect All
+    // oContr.msg.E37 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E37", "", "", "", ""); // Copy ClipBoard
+    // oContr.msg.E38 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E38", "", "", "", ""); // CSS Menu information
+    // oContr.msg.E39 = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E39", "", "", "", ""); // stored data
 
 
-    oContr.msg.M303 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "303", "", "", "", ""); // Clipboard Copy Success!    
-    oContr.msg.M371 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "371", "", "", "", ""); // 처리가 완료되었습니다.
-    oContr.msg.M386 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "386", "", "", "", ""); // 선택한 항목이 없습니다.
-    oContr.msg.M387 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "387", "", "", "", ""); // 선택 사항을 적용하시겠습니까?
-    oContr.msg.M388 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "388", "", "", "", ""); // 선택한 항목을 전체 해제 하시겠습니까?
-    oContr.msg.M389 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "389", "", "", "", ""); // 통신오류가 발생하였습니다.
-    oContr.msg.M390 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "390", "", "", "", ""); // 문제가 지속될 경우, 솔루션팀에 문의하세요.
+    // oContr.msg.M303 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "303", "", "", "", ""); // Clipboard Copy Success!    
+    // oContr.msg.M371 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "371", "", "", "", ""); // Processing completed.
+    // oContr.msg.M386 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "386", "", "", "", ""); // No items selected.
+    // oContr.msg.M387 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "387", "", "", "", ""); // Do you want to apply your selections?
+    // oContr.msg.M388 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "388", "", "", "", ""); // Would you like to clear all selections?
+    // oContr.msg.M389 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "389", "", "", "", ""); // Connection error has occurred.
+    // oContr.msg.M390 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "390", "", "", "", ""); // If the problem persists, Please contact the solution team.
 
-
-    oContr.msg.M391_E38 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "391", oContr.msg.E38, "", "", ""); // An issue occurred while retrieving CSS Menu information
-    oContr.msg.M391_E39 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "391", oContr.msg.E39, "", "", ""); // An issue occurred while retrieving stored data
+    // An issue occurred while retrieving &1
+    // oContr.msg.M391_E38 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "391", oContr.msg.E38, "", "", ""); // An issue occurred while retrieving CSS Menu information
+    // oContr.msg.M391_E39 = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "391", oContr.msg.E39, "", "", ""); // An issue occurred while retrieving stored data
    
+    oContr.msg.A41  = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "003"); // Cancel
+    oContr.msg.A67  = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "230"); // Preview
+    oContr.msg.B58  = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "231"); // UI5 Predefined CSS
+    oContr.msg.C63  = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "232"); // Apply
+    oContr.msg.E34  = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "233"); // Other CSS Guides
+    oContr.msg.E35  = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "234"); // UI5 Predefined CSS Helper
+    oContr.msg.E36  = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "235"); // Unselect All
+    oContr.msg.E37  = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "236"); // Copy ClipBoard
+    oContr.msg.E38  = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "237"); // CSS Menu information
+    oContr.msg.E39  = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "238"); // stored data
+    oContr.msg.M303 = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "031"); // Clipboard Copy Success!    
+    oContr.msg.M371 = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "239"); // Processing completed.
+    oContr.msg.M386 = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "240"); // No items selected.
+    oContr.msg.M387 = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "241"); // Do you want to apply your selections?
+    oContr.msg.M388 = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "242"); // Would you like to clear all selections?
+    oContr.msg.M389 = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "243"); // Connection error has occurred.
+    oContr.msg.M390 = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "228"); // If the problem persists, Please contact the solution team.
+    oContr.msg.M245 = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "244"); // An issue occurred while retrieving &1
+
+    oContr.msg.M391_E38 = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "244", oContr.msg.E38); // An issue occurred while retrieving CSS Menu information
+    oContr.msg.M391_E39 = parent.WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "244", oContr.msg.E39); // An issue occurred while retrieving stored data
 
 /********************************************************************
  * 💖 PRIVATE FUNCTION 선언부

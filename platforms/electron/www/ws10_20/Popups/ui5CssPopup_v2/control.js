@@ -113,21 +113,6 @@ export async function start(require, IF_DATA, fnCallback){
         // 부모 위치 가운데 배치한다.
         WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow, oBrowserOptions);
 
-        // // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-        // WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
-            
-        //     if(oBrowserWindow.isDestroyed()){                        
-        //         return;    
-        //     }
-
-        //     // try {
-        //     //     oBrowserWindow.closable = true;    
-        //     // } catch (error) {
-                
-        //     // }
-
-        // });
-
     });    
 
     // 브라우저를 닫을때 타는 이벤트
