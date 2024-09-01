@@ -875,11 +875,8 @@
      ************************************************************************/
     oAPP.events.ev_pressSyntaxCheckBtn = function (oEvent) {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
-        // Busy를 킨다.
-        parent.setBusy("X");
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // 현재 떠있는 브라우저
         var oCurrWin = REMOTE.getCurrentWindow(),
@@ -1045,10 +1042,7 @@
     oAPP.events.ev_pressActivateBtn = async function (oEvent) {
 
         // busy 키고 Lock 걸기
-        oAPP.common.fnSetBusyLock("X");
-
-        // 자식 윈도우 숨기기
-        oAPP.fn.fnChildWindowShow(false);
+        oAPP.common.fnSetBusyLock("X");        
 
         // 푸터 메시지가 있을 경우 닫기
         APPCOMMON.fnHideFloatingFooterMsg();
@@ -1061,20 +1055,26 @@
 
         if (iexceplength !== 0) {
 
+            // // 자식 윈도우 활성화
+            // oAPP.fn.fnChildWindowShow(true);
+            
             // 멀티푸터 메시지 실행 
             // 이 안에서 화면이 로드가 완료되면
             // IPC로 비지 끄는 로직 있음
             oAPP.fn.fnMultiFooterMsg(T_excep);
 
-            // // busy 끄고 Lock 풀기
-            // oAPP.common.fnSetBusyLock("");
+            // 작업표시줄 깜빡임
+            CURRWIN.flashFrame(true);
 
-            // 자식 윈도우 활성화
-            oAPP.fn.fnChildWindowShow(true);
+            // // busy 끄고 Lock 풀기
+            // oAPP.common.fnSetBusyLock("");            
 
             return;
 
         }
+
+        // 자식 윈도우 숨기기
+        oAPP.fn.fnChildWindowShow(false);
 
         oEvent.mParameters.IS_ACT = "X";
 

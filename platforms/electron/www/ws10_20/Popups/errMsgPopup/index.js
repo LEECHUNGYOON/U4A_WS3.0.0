@@ -20,6 +20,46 @@ let oAPP = parent.oAPP,
         PATHINFO = parent.PATHINFO,
         require = parent.require;
 
+
+    /************************************************************************
+     * Multi Footer Message 더블클릭
+     ************************************************************************/
+    function _multiFooterMsgDblclick (oEvent){
+
+        var oTarget = oEvent.target,
+            $SelectedRow = $(oTarget).closest(".sapMListTblRow");
+
+        if (!$SelectedRow.length) {
+            return;
+        }
+
+        var oRow = $SelectedRow[0],
+            oSelectedRow = sap.ui.getCore().byId(oRow.id);
+
+        if (!oSelectedRow) {
+            return;
+        }
+
+        var oCtx = oSelectedRow.getBindingContext(),
+            oRowData = oSelectedRow.getModel().getProperty(oCtx.sPath);
+
+        let oCurrWin = oAPP.REMOTE.getCurrentWindow();
+        if (oCurrWin.isDestroyed()) {
+            return;
+        }
+
+        let oWebCon = oCurrWin.webContents,
+            oWebPref = oWebCon.getWebPreferences(),
+            sBrowserKey = oWebPref.browserkey,
+            IPCRENDERER = oAPP.IPCRENDERER;
+
+        IPCRENDERER.send(`${sBrowserKey}--errormsg--click`, {
+            oRowData: oRowData
+        });
+
+    } // end of _multiFooterMsgDblclick
+
+
     /************************************************************************
      * 모델 데이터 set
      * **********************************************************************
@@ -198,40 +238,7 @@ let oAPP = parent.oAPP,
             }).addStyleClass("sapUiSizeCompact");
 
         // Multi Footer Message 더블클릭
-        oTable.attachBrowserEvent("dblclick", function (oEvent) {
-
-            var oTarget = oEvent.target,
-                $SelectedRow = $(oTarget).closest(".sapMListTblRow");
-
-            if (!$SelectedRow.length) {
-                return;
-            }
-
-            var oRow = $SelectedRow[0],
-                oSelectedRow = sap.ui.getCore().byId(oRow.id);
-
-            if (!oSelectedRow) {
-                return;
-            }
-
-            var oCtx = oSelectedRow.getBindingContext(),
-                oRowData = oSelectedRow.getModel().getProperty(oCtx.sPath);
-
-            let oCurrWin = oAPP.REMOTE.getCurrentWindow();
-            if (oCurrWin.isDestroyed()) {
-                return;
-            }
-
-            let oWebCon = oCurrWin.webContents,
-                oWebPref = oWebCon.getWebPreferences(),
-                sBrowserKey = oWebPref.browserkey,
-                IPCRENDERER = oAPP.IPCRENDERER;
-
-            IPCRENDERER.send(`${sBrowserKey}--errormsg--click`, {
-                oRowData: oRowData
-            });
-
-        });
+        oTable.attachBrowserEvent("dblclick", _multiFooterMsgDblclick);
 
         var oPage = new sap.m.Page({
             showHeader: false,
@@ -242,10 +249,13 @@ let oAPP = parent.oAPP,
 
         let oApp = new sap.m.App({
             autoFocus: false,
+            busyIndicatorDelay: 0,
             pages: [
                 oPage
             ]
         });
+
+        oAPP.ui.APP = oApp;
         
         oApp.placeAt("content");
 
@@ -253,6 +263,8 @@ let oAPP = parent.oAPP,
             onAfterRendering : function(){
         
                 oApp.removeEventDelegate(oDelegate);
+
+                oAPP.fn.setBusy(false);
         
                 // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
                 oAPP.IPCRENDERER.send(`if-send-action-${oAPP.BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
@@ -262,7 +274,52 @@ let oAPP = parent.oAPP,
         
         oApp.addEventDelegate(oDelegate);
 
-    }; // end of oAPP.fn.fnInitRendering       
+    }; // end of oAPP.fn.fnInitRendering     
+    
+    /*******************************************************
+     * @function - Busy indicator 실행
+     *******************************************************/
+    oAPP.fn.setBusy = function(bIsBusy, sOption){
+
+        // 현재 Busy 실행 여부 플래그
+        oAPP.attr.isBusy = bIsBusy;
+
+        // 브로드 캐스트 객체
+        var _ISBROAD = sOption?.ISBROAD || undefined;
+
+        if(bIsBusy === true){
+            
+            sap.ui.getCore().lock();
+
+            // 브라우저 닫기 버튼 비활성
+            oAPP.CURRWIN.closable = false;
+
+            oAPP.ui.APP.setBusy(true);
+
+            //다른 팝업의 BUSY ON 요청 처리.
+            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            if(typeof _ISBROAD === "undefined"){
+                oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+            }      
+
+        } else {
+
+            sap.ui.getCore().unlock();
+
+            // 브라우저 닫기 버튼 활성
+            oAPP.CURRWIN.closable = true;
+            
+            oAPP.ui.APP.setBusy(false);
+
+            //다른 팝업의 BUSY OFF 요청 처리.
+            //(다른 팝업에서 이벤트가 발생될 경우 WS20 화면의 BUSY를 먼저 종료 시키는 문제를 방지하기 위함)
+            if(typeof _ISBROAD === "undefined"){
+                oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+            }
+
+        }
+
+    }; // end of oAPP.fn.setBusy
 
     /************************************************************************
      * 공통 css을 적용한다.
@@ -295,13 +352,46 @@ let oAPP = parent.oAPP,
 
     window.onload = function () {
 
+        oAPP.broadToChild = new BroadcastChannel(`broadcast-to-child-window_${oAPP.BROWSKEY}`);        
+
+        oAPP.broadToChild.onmessage = function(oEvent){
+
+            var _PRCCD = oEvent?.data?.PRCCD || undefined;
+
+            if(typeof _PRCCD === "undefined"){
+                return;
+            }
+
+            //프로세스에 따른 로직분기.
+            switch (_PRCCD) {
+                case "BUSY_ON":
+
+                    //BUSY ON을 요청받은경우.
+                    // oAPP.setBusyIndicator(true, {ISBROAD:true});
+                    oAPP.fn.setBusy(true, {ISBROAD:true});
+                    break;
+
+                case "BUSY_OFF":
+                    //BUSY OFF를 요청 받은 경우.
+                    oAPP.fn.setBusy(false, {ISBROAD:true});
+                    break;
+
+                default:
+                    break;
+            }
+
+        };
+
         sap.ui.getCore().attachInit(function () {
 
             oAPP.fn.fnInitModelBinding();
 
             oAPP.fn.fnInitRendering();
 
-            oAPP.setBusy('');
+            // Busy 킨다.
+            oAPP.fn.setBusy(true);
+
+            oAPP.setBusyLoading('');
 
             // 자연스러운 로딩
             setTimeout(() => {

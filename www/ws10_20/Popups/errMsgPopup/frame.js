@@ -9,9 +9,13 @@ let oAPP = (function (window) {
 
     let oAPP = {};
     oAPP.fn = {};
+    oAPP.ui = {};
     oAPP.attr = {};
     oAPP.events = {};
     oAPP.common = {};
+
+    // 현재 비지 상태 
+    oAPP.attr.isBusy = false;
 
     oAPP.REMOTE = require('@electron/remote');
     oAPP.IPCRENDERER = require('electron').ipcRenderer;
@@ -46,7 +50,7 @@ let oAPP = (function (window) {
      * 메시지클래스 텍스트 작업 관련 Object -- end
      *******************************************************/
 
-    oAPP.setBusy = function (bIsShow) {
+    oAPP.setBusyLoading = function (bIsShow) {
 
         var oLoadPg = document.getElementById("u4a_main_load");
 
@@ -59,6 +63,15 @@ let oAPP = (function (window) {
         } else {
             oLoadPg.classList.add("u4a_loadersInactive");
         }
+
+    };
+
+    /***********************************************************
+     * Busy 실행 여부 정보 리턴
+     ***********************************************************/
+    oAPP.fn.getBusy = function(){
+
+        return oAPP.attr.isBusy;
 
     };
 

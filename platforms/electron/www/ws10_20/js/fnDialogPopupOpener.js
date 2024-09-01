@@ -2545,6 +2545,9 @@
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
 
+        // 전체 자식 윈도우에 Busy 킨다.
+        oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_ON"});
+
         let sPopupName = "ERRMSGPOP";
 
         // 기존에 멀티 푸터 메시지 팝업이 열렸을 경우 닫는다.
@@ -2977,7 +2980,7 @@
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
             
-            // 전체 자식 윈도우에 Busy 킨다.
+            // 전체 자식 윈도우에 Busy 끈다.
             oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
 
             // busy 끄고 Lock 풀기
