@@ -4101,12 +4101,22 @@
     if(oAPP.fn.attrIsColorProp(is_attr) === true){
       //f4 help 버튼 활성화.
       is_attr.showF4 = true;
+      return;
     }
 
     //select option3 UI의 F4HelpID, F4HelpReturnFIeld 프로퍼티인경우.
     if(is_attr.UIATK === "EXT00002534" || is_attr.UIATK === "EXT00002535"){
       //f4 help 버튼 활성화.
       is_attr.showF4 = true;
+      return;
+    }
+
+    //20240919 -PES.
+    //ROOT의 ATTRIBUTE 변경시 VALUE HELP 처리 대상건 여부 로직 추가.
+    if(oAPP.attr.S_CODE.UA003.findIndex( item => item.ITMCD === is_attr.UIATK && item.FLD04 === "X" ) !== -1){
+      //f4 help 버튼 활성화.
+      is_attr.showF4 = true;
+      return;
     }
     
   };  //프로퍼티의 입력필드 f4 help 설정 여부.
@@ -6201,6 +6211,7 @@
   oAPP.fn.getParentAggrBind = function(oUI, UIATT){
 
     if(!oUI){return;}
+    if(!oUI?.getMetadata){return;}
 
     if(!oUI._MODEL[UIATT]){
 

@@ -1811,7 +1811,6 @@ class CL_CHANGE_ATTR{
             
         }
 
-
         
         //미리보기 onAfterRendering 처리 관련 module load.
         var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
@@ -1854,6 +1853,15 @@ class CL_CHANGE_ATTR{
         //20240621 pes.
         //바인딩 팝업의 디자인 영역 갱신처리.
         oAPP.fn.updateBindPopupDesignData();
+
+        
+        //ROOT의 테마 변경건 존재여부 확인.
+        var _sTheme = oParam.T_ATTR.find( item => item.UIATK === "DH001021" );
+
+        if(typeof _sTheme?.S_0015?.UIATV !== "undefined"){
+            //미리보기 테마 변경처리.
+            oAPP.attr.ui.frame.contentWindow.setPreviewUiTheme(_sTheme.S_0015.UIATV);
+        }
 
         
         //가장 첫번째로 수집된 ATTR 항목 얻기.
