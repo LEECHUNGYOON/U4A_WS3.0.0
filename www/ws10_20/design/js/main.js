@@ -41,6 +41,10 @@
       DESC  : "", //BUSY DIALOG 메시지.
     };
 
+
+    //design 에서 사용하는 function 수집 object.
+    oAPP.oDesign.fn = {};
+
     //PATH 정보 수집 광역 OBJECT.
     oAPP.oDesign.pathInfo = {};
 
@@ -61,13 +65,10 @@
     oAPP.oDesign.pathInfo.bindPopupBroadCast = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath,
       "bindPopupHandler", "broadcastChannelBindPopup.js");
 
-    
-    //테스트!!!!!!!!!!!!!!!!!!!!!!!
-    if(parent.REMOTE.app.isPackaged === false){
-      oAPP.oDesign.pathInfo.undoRedo = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, 
-        "testFolder", "undoRedo.js");
-    }
-    //테스트!!!!!!!!!!!!!!!!!!!!!!!
+
+    //UNDO, REDO 처리 모듈 JS 구성.
+    oAPP.oDesign.pathInfo.undoRedo = parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, 
+      "undoRedo", "undoRedo.js");
     
     //sap core 정보 광역화.
     oAPP.attr.oCore = sap.ui.getCore();
@@ -717,12 +718,8 @@
     //model, 미리보기 정보 제거.
     oAPP.fn.removeContent = function(){
 
-      //테스트!!!!!!!!!!!!!!!!!!!!!!!
-      if(parent.REMOTE.app.isPackaged === false){
-        //undo, redo 이력 초기화.
-        parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
-      }
-      //테스트!!!!!!!!!!!!!!!!!!!!!!!
+      //undo, redo 이력 초기화.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
 
       //라인 선택 이벤트 해제(이벤트 수행 처리 회피 목적)
       oAPP.attr.ui.oLTree1.detachRowSelectionChange(oAPP.fn.onDesignTreeRowSelChange);
@@ -849,21 +846,16 @@
     //UI 저장 정보 구성.
     oAPP.fn.getSaveData = function(){
 
-      //테스트!!!!!!!!!!!!!!!!!!!!!!!
-      if(parent.REMOTE.app.isPackaged === false){
+      
+      //undo, redo 이력 초기화.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
 
-        //undo, redo 이력 초기화.
-        parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
+      //undo, redo 버튼 활성여부 처리.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).setUndoRedoButtonEnable();
 
-        //undo, redo 버튼 활성여부 처리.
-        parent.require(oAPP.oDesign.pathInfo.undoRedo).setUndoRedoButtonEnable();
-
-        oAPP.attr.oModel.refresh();
-
-      }
-      //테스트!!!!!!!!!!!!!!!!!!!!!!!
-
-
+      oAPP.attr.oModel.refresh();
+      
+        
       oAPP.attr.POSIT = 0;
 
       //UI POSTION 정보 재매핑 처리.

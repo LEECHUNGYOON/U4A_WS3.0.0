@@ -448,20 +448,16 @@
         var ls_tree = oAPP.fn.getTreeData(l_OBJID);
 
         
-        //테스트!!!!!!!!!!!!!!!!!!!!!!
-        //전달받은 파라메터 정보 얻기.
-        if(parent.REMOTE.app.isPackaged === false){
-            var _aParams = Object.values(arguments);
+        var _aParams = Object.values(arguments);
 
-            var _sUndoRedo = _aParams.find( item => item?.PRCCD === "UNDO_REDO" );
+        var _sUndoRedo = _aParams.find( item => item?.PRCCD === "UNDO_REDO" );
 
-            //undo, redo 처리에서 호출했는지 파라메터 확인.
-            if(typeof _sUndoRedo === "undefined"){
-                parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("MOVE", ls_tree);
+        //undo, redo 처리에서 호출했는지 파라메터 확인.
+        if(typeof _sUndoRedo === "undefined"){
+            //UNDO REDO에서 호출한 경우 UNDO 이력을 구성하지 않음.
+            parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("MOVE", ls_tree);
 
-            }
         }
-        //테스트!!!!!!!!!!!!!!!!!!!!!!  
 
         
         //부모 TREE 정보 얻기.
@@ -905,13 +901,46 @@
             var ls_14 = lf_setPasteCopiedData(ls_tree, i_cdata, param, lt_ua018, lt_ua026, lt_ua030, lt_ua032, lt_ua050, bKeep);
 
 
-            //테스트!!!!!!!!!!!!!!!!!!!!!!
-            if(parent.REMOTE.app.isPackaged === false){
-                //UNDO HISTORY 추가 처리.
-                parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("PASTE", ls_14);
+            //UNDO HISTORY 추가 처리.
+            parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("PASTE", ls_14);
 
+
+            //미리보기 onAfterRendering 처리 관련 module load.
+            var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
+
+
+            //onAfterRendering 이벤트 등록 대상 UI 얻기.
+            let _oTarget = _oRender.getTargetAfterRenderingUI(oAPP.attr.prev[ls_tree.OBJID]);
+            
+            let _oDom = undefined;
+
+            if(typeof _oTarget?.getDomRef === "function"){
+                _oDom = _oTarget.getDomRef();
             }
-            //테스트!!!!!!!!!!!!!!!!!!!!!!
+            
+            let _oPromise = undefined;
+            
+            //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
+            if(typeof _oDom !== "undefined" && _oDom !== null){
+                _oPromise = _oRender.setAfterRendering(_oTarget);
+            }
+
+            //RichTextEditor 미리보기 출력 예외처리로직.
+            var _aPromise = _oRender.renderingRichTextEditor(ls_tree);
+
+
+            //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.
+            if(typeof _oPromise !== "undefined"){
+                _oTarget.invalidate();
+                
+                //onAfterRendering 수행까지 대기.
+                await _oPromise;
+            }
+
+
+            //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.
+            //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
+            await Promise.all(_aPromise);
 
 
             // //model 갱신 처리.

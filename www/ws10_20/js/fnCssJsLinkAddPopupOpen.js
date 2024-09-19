@@ -309,8 +309,23 @@
      ************************************************************************/
     oAPP.fn.fnCssJsLinkAddPopupTable = function () {
 
+        //20240903 PES -START.
+        //패치정보, 패키징 처리 정보에 따라 inactive 컬럼 활성화 여부 설정.
+        var _inactiveVisible = false;
+
+        //v3.4.2 Patch7 정보가 존재하는경우 inactive 컬럼 활성화.
+        if(oAPP.common.checkWLOList("C", "UHAK900822") === true){
+            _inactiveVisible = true;
+        }
+
+        //패키징 처리가 되지 않은경우 컬럼 활성화.
+        if(parent.APP.isPackaged === false){
+            _inactiveVisible = true;
+        }
+        //20240903 PES -END.
+
         return new sap.ui.table.Table(C_LINK_TABLE_ID, {
-                selectionBehavior: sap.ui.table.SelectionBehavior.Row,
+                // selectionBehavior: sap.ui.table.SelectionBehavior.Row,
                 visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
                 columns: [
                     new sap.ui.table.Column({
@@ -360,6 +375,50 @@
                             .bindProperty("editable", "/WS20/APP/IS_EDIT", oAPP.fn.fnCssJsLinkAddPopupUiVisibleBinding)
 
                     }),
+
+                    //20240903 PES -START.
+                    //CSS, JS LINK 활성/비활성 처리 기능 추가로
+                    //결과리스트 테이블에 비활성 여부 컬럼 추가.
+                    new sap.ui.table.Column({
+                        hAlign : "Center",
+                        width : "80px",
+                        visible : _inactiveVisible,
+                        label: new sap.m.Label({
+                            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B67"), // Inactive
+                            design: sap.m.LabelDesign.Bold
+                        }),
+                        // template: new sap.m.CheckBox({
+                        template: new sap.m.Switch({
+                            // selected: {
+                                state: {
+                                path : "INACTIVE",
+                                formatter : function(bSel){
+                                    
+                                    //기존 INACTIVE 처리 값이 'X' 인경우 체크박스 선택, 그렇지 않은경우 선택 해제.
+                                    return bSel === "X" ? true : false;
+
+                                }
+                            },
+                            // select : function(oEvent){
+                            change : function(oEvent){
+
+                                //checkbox UI 정보 얻기.
+                                var _oUi = oEvent.oSource || undefined;
+
+                                if(typeof _oUi === "undefined"){
+                                    return;
+                                }
+
+                                //CSS & JS Link Inactive 체크박스 선택 이벤트.
+                                oAPP.events.selectCssJsLinkInactive(_oUi);
+                               
+                            }
+                        })
+                        // .bindProperty("editable", "/WS20/APP/IS_EDIT", oAPP.fn.fnCssJsLinkAddPopupUiVisibleBinding)
+                        .bindProperty("enabled", "/WS20/APP/IS_EDIT", oAPP.fn.fnCssJsLinkAddPopupUiVisibleBinding)
+
+                    }),
+                    //20240903 PES -END.
                 ],
 
                 rows: {
@@ -479,8 +538,20 @@
 
                 aSaveData.push({
                     "LKEY": i + 1,
-                    "URL": oLinkData.URL
+                    "URL": oLinkData.URL,
+
+                    //20240903 PES -START.
+                    //INACTIVE 처리 값 매핑.
+                    "INACTIVE": oLinkData.INACTIVE
+
                 });
+
+                //20240903 PES -START.
+                //INACTIVE 처리건인경우 미리보기 반영할 CSS LINK 수집 SKIP.
+                if(oLinkData.INACTIVE === "X"){
+                    continue;
+                }
+                //20240903 PES -END.
 
                 // 디자인 영역에 반영할 Link 정보를 String Table 형태로 수집
                 aSaveDataString.push(oLinkData.URL);
@@ -556,7 +627,12 @@
 
                 aSaveData.push({
                     "LKEY": i + 1,
-                    "URL": oLinkData.URL
+                    "URL": oLinkData.URL,
+
+                    //20240903 PES -START.
+                    //INACTIVE 처리 값 매핑.
+                    "INACTIVE": oLinkData.INACTIVE
+
                 });
 
                 continue;
@@ -598,6 +674,11 @@
                 STATUS: 1,
                 URL: ""
             };
+
+        //20240903 PES -START.
+        //Inactive 필드 추가.
+        oNewRow.INACTIVE = "";
+        //20240903 PES -END.
 
         // 테이블에 체크박스가 체크되어 있다면 전체 해제
         oAPP.fn.fnSetCssJsLinkTableClearSelection();
@@ -675,5 +756,41 @@
         }
 
     }; // end of oAPP.events.ev_pressCssJsLinkSave
+
+
+    /************************************************************************
+     * CSS & JS Link Inactive 체크박스 선택 이벤트.
+     ************************************************************************/
+    oAPP.events.selectCssJsLinkInactive = function(oUi){
+        
+        if(typeof oUi === "undefined"){
+            return;
+        }
+        
+        //모델 정보 얻기.
+        var _oModel = oUi.getModel() || undefined;
+
+        if(typeof _oModel === "undefined"){
+            return;
+        }
+
+        //이벤트 발생 라인의 context 정보 얻기.
+        var _oCtxt = oUi.getBindingContext() || undefined;
+
+        if(typeof _oCtxt === "undefined"){
+            return;
+        }
+
+        //현재 checkbox 선택 값 얻기.
+        // var _sel = oUi.getSelected();
+        var _sel = oUi.getState();
+
+        //chechbox를 선택한 경우 'X', 선택하지 않은경우 ''
+        var _INACTIVE = _sel === true ? "X" : "";
+
+        //INACTIVE 처리 값 매핑.
+        _oModel.setProperty("INACTIVE", _INACTIVE, _oCtxt);
+
+    };
 
 })(window, $, oAPP);

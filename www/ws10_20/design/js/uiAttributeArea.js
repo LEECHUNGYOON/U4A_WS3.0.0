@@ -15,6 +15,25 @@
   //즐겨찾기 아이콘 색상.
   const C_ATTR_FAV_ICON_COLOR = "#FFD700";
 
+  
+  //oAPP.fn.attrChange 호출시 액션코드 항목.
+  oAPP.oDesign.CS_ACTCD = {
+    ADD_CLIENT_EVENT    : "ADD_CLIENT_EVENT",    //클라이언트 이벤트 추가.
+    DEL_CLIENT_EVENT    : "DEL_CLIENT_EVENT",    //클라이언트 이벤트 제거.
+    UNBIND_AGGR         : "UNBIND_AGGR",         //AGGREGATION 바인딩 해제.
+    UNBIND_TREE_KEY     : "UNBIND_TREE_KEY",     //TREE의 PARENT, CHILD 바인딩 해제.
+    HTML_CONTENT_EDITOR : "HTML_CONTENT_EDITOR", //sap.ui.core.HTML의 content 프로퍼티
+  };
+
+  //UNDO 이력 생략 ACTION 항목.
+  const CT_SKIP_UNDO_ACTION = [
+    oAPP.oDesign.CS_ACTCD.ADD_CLIENT_EVENT,     //클라이언트 이벤트 추가.
+    oAPP.oDesign.CS_ACTCD.DEL_CLIENT_EVENT,     //클라이언트 이벤트 제거.
+    oAPP.oDesign.CS_ACTCD.UNBIND_AGGR,          //AGGREGATION 바인딩 해제.
+    oAPP.oDesign.CS_ACTCD.UNBIND_TREE_KEY,      //TREE의 PARENT, CHILD 바인딩 해제.
+    oAPP.oDesign.CS_ACTCD.HTML_CONTENT_EDITOR,  //TREE의 PARENT, CHILD 바인딩 해제.
+  ];
+
   //우측 페이지(attribute 영역) 구성
   oAPP.fn.uiAttributeArea = function(oRPage){
     
@@ -441,16 +460,23 @@
     oRHbox0.addItem(oRIcon0);
 
     //context menu 호출 위치를 알기위한 custom data 매핑.
-    oRObjStat1.addCustomData(new sap.ui.core.CustomData({key:"AT01"}));
+    // oRObjStat1.addCustomData(new sap.ui.core.CustomData({key:"AT01"}));
+    oRObjStat1.data("CONTEXT_MENU", "AT01");
 
     //attribute 입력 hbox
     var oRHbox1 = new sap.m.HBox({width:"100%", direction:"Column", renderType:"Bare", alignItems:"Center"});
     oRListItem1.addCell(oRHbox1);
 
+    //입력필드 CELL 정보 매핑.
+    oRHbox1.data("CELL_INFO", "ATTR_CHANGE");
+
     //attribute 직접입력 필드
     var oRInp2 = new sap.m.Input({value:"{UIATV}", editable:"{edit}", visible:"{inp_visb}", tooltip:"{UIATV}",
       showValueHelp:"{showF4}", enabled:"{/IS_EDIT}", valueState:"{valst}", valueStateText:"{valtx}", valueHelpOnly:"{F4Only}"});
     oRHbox1.addItem(oRInp2);
+
+    //UI 유형 INPUT으로 매핑.
+    oRInp2.data("UITYP", "INPUT");
 
     //attr 입력필드 이벤트.
     oRInp2.attachChange(async function(){
@@ -543,13 +569,13 @@
 
       parent.setBusy("X");
 
-      //단축키도 같이 잠금 처리.
+      //단축키 잠금 처리.
       oAPP.fn.setShortcutLock(true);
 
 
       if(typeof this?.getBindingContext !== "function"){
 
-        //단축키도 같이 잠금 해제처리.
+        //단축키 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
 
         parent.setBusy("");
@@ -563,7 +589,7 @@
 
       if(typeof _oCtxt === "undefined" || _oCtxt === null){
 
-        //단축키도 같이 잠금 해제처리.
+        //단축키 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
 
         parent.setBusy("");
@@ -577,7 +603,7 @@
 
       if(typeof _sAttr === "undefined" || _sAttr === null){
 
-        //단축키도 같이 잠금 해제처리.
+        //단축키 잠금 해제처리.
         oAPP.fn.setShortcutLock(false);
 
         parent.setBusy("");
@@ -594,13 +620,17 @@
     }); //input f4 help 이벤트
 
     //context menu 호출 위치를 알기위한 custom data 매핑.
-    oRInp2.addCustomData(new sap.ui.core.CustomData({key:"AT02"}));
+    // oRInp2.addCustomData(new sap.ui.core.CustomData({key:"AT02"}));
+    oRInp2.data("CONTEXT_MENU", "AT02");
 
 
     //Attribute DDLB UI
     var oRSel1 = new sap.m.ComboBox({showSecondaryValues:true, width:"100%", selectedKey:"{UIATV}", tooltip:"{UIATV}",
       editable:"{edit}", visible:"{sel_visb}", enabled:"{/IS_EDIT}", tooltip:"{UIATV}", value:"{comboval}",
       valueState:"{valst}", valueStateText:"{valtx}"});
+
+    //UI 유형 COMBOBOX로 매핑.
+    oRSel1.data("UITYP", "COMBOBOX");
 
     //DDLB 선택 이벤트.
     oRSel1.attachChange(async function(){
@@ -688,7 +718,8 @@
     }); //DDLB 선택 이벤트.
 
     //context menu 호출 위치를 알기위한 custom data 매핑.
-    oRSel1.addCustomData(new sap.ui.core.CustomData({key:"AT02"}));
+    // oRSel1.addCustomData(new sap.ui.core.CustomData({key:"AT02"}));
+    oRSel1.data("CONTEXT_MENU", "AT02");
 
 
     //DDLB ITEM.
@@ -699,6 +730,9 @@
     //Attribute Button UI
     var oRBtn1 = new sap.m.Button({icon:"sap-icon://popup-window", width:"100%", type:"Attention", text:"{UIATV}",visible:"{btn_visb}"});
     oRHbox1.addItem(oRBtn1);
+
+    //UI 유형 BUTTON으로 매핑.
+    oRBtn1.data("UITYP", "BUTTON");
 
     //버튼 선택 이벤트.
     oRBtn1.attachPress(function(oEvent){
@@ -760,6 +794,9 @@
     var oRChk1 = new sap.m.CheckBox({selected:"{UIATV_c}", editable:"{edit}", visible:"{chk_visb}",
       enabled:"{/IS_EDIT}", valueState:"{valst}"});
     oRHbox1.addItem(oRChk1);
+
+    //UI 유형 CHECKBOX로 매핑.
+    oRChk1.data("UITYP", "CHECKBOX");
 
     //체크박스 선택 이벤트
     oRChk1.attachSelect(function(){
@@ -891,7 +928,8 @@
     }); //바인딩(서버 이벤트) 아이콘 선택 이벤트
     
     //context menu 호출 위치를 알기위한 custom data 매핑.
-    oRIcon1.addCustomData(new sap.ui.core.CustomData({key:"AT03"}));
+    // oRIcon1.addCustomData(new sap.ui.core.CustomData({key:"AT03"}));
+    oRIcon1.data("CONTEXT_MENU", "AT03");
 
     //help(script 이벤트) 아이콘
     var oRIcon2 = new sap.ui.core.Icon({src:"{icon2_src}", color:"{icon2_color}", visible:"{icon2_visb}", tooltip:"{icon2_ttip}"});
@@ -955,7 +993,8 @@
     }); //help(script 이벤트) 아이콘 선택 이벤트
 
     //context menu 호출 위치를 알기위한 custom data 매핑.
-    oRIcon2.addCustomData(new sap.ui.core.CustomData({key:"AT04"}));
+    // oRIcon2.addCustomData(new sap.ui.core.CustomData({key:"AT04"}));
+    oRIcon2.data("CONTEXT_MENU", "AT04");
 
 
 
@@ -977,24 +1016,24 @@
    ************************************************************************/
   oAPP.fn.attrChange = async function(is_attr, uityp, bSkipRefresh, bForceUpdate){
 
+    //이벤트 발생 액션코드 로컬 필드에 매핑.
+    var _ACTCD = is_attr.ACTCD || "";
+
+    //액션코드 필드 제거.
+    //(oAPP.fn.attrChange를 호출하는 호출처에서 어떠한 목적으로 호출했는지
+    //단발성으로 액션코드를 부여해 로직 처리를 하기 위함)
+    delete is_attr.ACTCD;
+    
+    
     //오류 표현 필드 초기화 처리.
     oAPP.fn.attrClearErrorField();
-
-    //테스트!!!!!!!!!!!!!!!!!!!!!!
-    if(parent.REMOTE.app.isPackaged === false){
-      //UNDO HISTORY 추가 처리.
-      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_ATTR", [is_attr]);
-
-    }
-    //테스트!!!!!!!!!!!!!!!!!!!!!!
     
 
     //document의 attr에 대한 처리.
     if(oAPP.fn.attrDocumentProc(is_attr)){
       return;
     }
-
-    
+   
 
     //autoGrowing 프로퍼티 변경건 예외처리.
     if(await oAPP.fn.attrChangeAutoGrowingProp(is_attr)){
@@ -1007,6 +1046,7 @@
 
     }
 
+    
     //dropAble 프로퍼티 변경건 예외처리.
     if(await oAPP.fn.attrChangeDropAbleProp(is_attr)){
       //단축키도 같이 잠금 해제처리.
@@ -1015,6 +1055,14 @@
       parent.setBusy("");
 
       return;
+    }
+
+    
+    //UNDO 이력 수집 생략건이 아닌경우.
+    if(CT_SKIP_UNDO_ACTION.indexOf(_ACTCD) === -1){
+      //UNDO HISTORY 추가 처리.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_ATTR", [is_attr]);
+
     }
 
 
@@ -1302,26 +1350,25 @@
       }
 
 
-      //테스트!!!!!!!!!!!!!!!!!!!!!!
-      if(parent.REMOTE.app.isPackaged === false){
-        //UNDO HISTORY 추가 처리.
-        var _aResetAttr = parent.require(oAPP.oDesign.pathInfo.undoRedo).getResetAttrParam();
-
-        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("RESET_ATTR", _aResetAttr);
-      }
-      //테스트!!!!!!!!!!!!!!!!!!!!!!
+      //ATTR 초기화전 정보 수집.
+      var _aResetAttr = parent.require(oAPP.oDesign.pathInfo.undoRedo).getResetAttrParam();
+      
+      //UNDO HISTORY 추가 처리.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("RESET_ATTR", _aResetAttr);
 
 
       //현재 ATTRIBUTE 항목중 PROPERTY 항목에 대해 직접 입력하여 값을 변경했다면, DEFAULT 값으로 초기화 처리.
       for(var i = 0, l = oAPP.attr.oModel.oData.T_ATTR.length; i < l; i++){
 
+        var _sAttr = oAPP.attr.oModel.oData.T_ATTR[i];
+
         //프로퍼티가 아닌경우 skip.
-        if(oAPP.attr.oModel.oData.T_ATTR[i].UIATY !== "1"){continue}
+        if(_sAttr.UIATY !== "1"){continue}
 
         //바인딩 처리된건인경우 skip.
-        if(oAPP.attr.oModel.oData.T_ATTR[i].ISBND === "X"){continue;}
+        if(_sAttr.ISBND === "X"){continue;}
 
-        var l_UIATK = oAPP.attr.oModel.oData.T_ATTR[i].UIATK;
+        var l_UIATK = _sAttr.UIATK;
 
         //직접 입력 가능한 attribute 여부확인(AT000002650_1 형식으로 구성됨)
         if(l_UIATK.indexOf("_") !== -1){
@@ -1334,29 +1381,32 @@
         if(!ls_0023){continue;}
 
         //직접 입력 가능한 AGGREGATION인경우 값을 입력했다면.
-        if(ls_0023.ISSTR === "X" && oAPP.attr.oModel.oData.T_ATTR[i].UIATV !== ""){
+        if(ls_0023.ISSTR === "X" && _sAttr.UIATV !== ""){
 
           //입력값 초기화.
-          oAPP.attr.oModel.oData.T_ATTR[i].UIATV = "";
+          _sAttr.UIATV = "";
 
           //attribute 변경건 처리.
-          oAPP.fn.attrChangeProc(oAPP.attr.oModel.oData.T_ATTR[i], "", true);
+          oAPP.fn.attrChangeProc(_sAttr, "", true);
 
           continue;
         }
 
         //현재 attribute값과 default값이 같다면 skip.
-        if(oAPP.attr.oModel.oData.T_ATTR[i].UIATV === ls_0023.DEFVL){continue;}
+        if(_sAttr.UIATV === ls_0023.DEFVL){continue;}
 
 
         //attribute의 값을 변경한 경우 default 값으로 변환 처리.
-        oAPP.attr.oModel.oData.T_ATTR[i].UIATV = ls_0023.DEFVL;
+        _sAttr.UIATV = ls_0023.DEFVL;
 
         //attribute 변경건 처리.
-        oAPP.fn.attrChangeProc(oAPP.attr.oModel.oData.T_ATTR[i], "", true);
+        oAPP.fn.attrChangeProc(_sAttr, "", true);
 
         //dropAble 프로퍼티 변경건 예외처리.    
-        oAPP.fn.attrSetDropAbleException(oAPP.attr.oModel.oData.T_ATTR[i], false, true);
+        oAPP.fn.attrSetDropAbleException(_sAttr, false, true);
+
+        //autoGrowing 프로퍼티 값에 따른 예외처리.
+        oAPP.fn.attrSetAutoGrowingException(_sAttr, false, true);
 
       }
 
@@ -1461,18 +1511,36 @@
       return;
     }
 
-    //custom data 설정건 정보 얻기.
-    var lt_cdata = l_ui.getCustomData();
+    //20240829 PES -START.
+    //custom data 얻는 로직 주석 처리.
+    //N개의 custom data를 사용하게 변경됨에 따라 기존 로직 주석 처리.
+    // //custom data 설정건 정보 얻기.
+    // var lt_cdata = l_ui.getCustomData();
 
-    //custom data 설정건 정보가 존재하지 않는경우 exit.
-    if(lt_cdata.length === 0){
+    // //custom data 설정건 정보가 존재하지 않는경우 exit.
+    // if(lt_cdata.length === 0){
+    //   parent.setBusy("");
+    //   return;
+    // }
+
+
+    // //메뉴 호출전 메뉴 활성여부 설정.
+    // if(oAPP.fn.attrSetContextMenu(oAPP.attr.ui.oAttrMenu, ls_attr, lt_cdata[0].getKey()) === true){
+    //   parent.setBusy("");
+    //   return; 
+    // }
+    //20240829 PES -END.
+
+    //menu 키 정보 얻기.
+    var _menuKey = l_ui.data("CONTEXT_MENU") || undefined;
+
+    if(typeof _menuKey === "undefined"){
       parent.setBusy("");
       return;
     }
 
-
     //메뉴 호출전 메뉴 활성여부 설정.
-    if(oAPP.fn.attrSetContextMenu(oAPP.attr.ui.oAttrMenu, ls_attr, lt_cdata[0].getKey()) === true){
+    if(oAPP.fn.attrSetContextMenu(oAPP.attr.ui.oAttrMenu, ls_attr, _menuKey) === true){
       parent.setBusy("");
       return; 
     }
@@ -1593,15 +1661,15 @@
     //오류 표현 필드 초기화 처리.
     oAPP.fn.attrClearErrorField(true);
 
-    //선택한 라인이 이벤트인경우.
-    if(oAPP.fn.attrClientEventPopup(is_attr)){
+    //선택한 라인이 이벤트인경우 클라이언트 이벤트 팝업 호출 처리.
+    if(oAPP.fn.attrClientEventPopup(is_attr) === true){
       //단축키 잠금 해제처리.
       oAPP.fn.setShortcutLock(false);
       return;
     }
 
     //sap.ui.core.HTML UI의 content 프로퍼티의 icon선택시 HTML source 팝업 호출.
-    if(oAPP.fn.attrChkHTMLContent(is_attr, false, oAPP.fn.attrHTMLConentPopup)){
+    if(oAPP.fn.attrChkHTMLContent(is_attr, false, oAPP.fn.attrHTMLConentPopup) === true){
       //단축키 잠금 해제처리.
       oAPP.fn.setShortcutLock(false);
       return;
@@ -1695,6 +1763,8 @@
       case "DH001021":
         //DDLB 선택건이 DOCUMENT의 UI Theme를 변경한건인경우.
 
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_ATTR", [is_attr]);
+
         //미리보기 테마 변경처리.
         oAPP.attr.ui.frame.contentWindow.setPreviewUiTheme(is_attr.UIATV);
 
@@ -1730,15 +1800,10 @@
 
         //바인딩 팝업과 통신을 위한 broad cast이 설정되어 있지 않는경우 exit.
         //(미리보기 테마 변경이벤트에서 busy off 처리함.)
-        if(parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("IS-CHANNEL-CREATE") === false){
+        if(parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("IS-CHANNEL-CREATE") !== true){
 
           // 전체 자식 윈도우에 Busy 종료.
           oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
-
-          //단축키 잠금 해제처리.
-          oAPP.fn.setShortcutLock(false);
-
-          parent.setBusy("");
 
           return true;
         }
@@ -2103,6 +2168,20 @@
         return;
 
     }
+
+
+    if(bModelRefresh === true){
+      
+      //점검대상 ATTR항목에 해당하는건 검색.
+      var _aAttr = oAPP.attr.oModel.oData.T_ATTR.filter( a => lt_UIATK.indexOf(a.UIATK) !== -1);
+
+      //최상단에 autoGrowing 프로퍼티 추가.
+      _aAttr.splice(0, 0, is_attr);
+
+      //UNDO HISTORY 추가 처리.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_ATTR", _aAttr);
+
+    }
     
     //default 입력 가능 처리.
     var l_edit = true;
@@ -2114,7 +2193,8 @@
     }
 
     //점검대상 event 항목에 대한 처리.
-    for(var i=0, l=lt_UIATK.length; i<l; i++){
+    for(var i = 0, l = lt_UIATK.length; i < l; i++){
+
       //대상 이벤트 검색.
       var ls_attr = oAPP.attr.oModel.oData.T_ATTR.find( a => a.UIATK === lt_UIATK[i] );
 
@@ -2206,6 +2286,19 @@
 
     //dropAble 프로퍼티 변경건이 아닌경우 exit.
     if(is_attr.UIASN !== "DROPABLE"){return;}
+
+    if(bModelRefresh === true){
+      
+      //DnD Drop 이벤트 추가.
+      var _aAttr = oAPP.attr.oModel.oData.T_ATTR.filter( a => a.UIASN === "DNDDROP");
+
+      //최상단에 autoGrowing 프로퍼티 추가.
+      _aAttr.splice(0, 0, is_attr);
+
+      //UNDO HISTORY 추가 처리.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_ATTR", _aAttr);
+
+    }
 
     //default 변경 변경 불가능 처리.
     var l_edit = false;
@@ -2431,6 +2524,9 @@
         is_attr.UIATV = "";
         is_attr.ADDSC = "";
 
+        //UNDO, 이력 처리 생략을 위한 ACTION CODE 매핑.
+        is_attr.ACTCD = oAPP.oDesign.CS_ACTCD.HTML_CONTENT_EDITOR;
+
         //ATTR 변경처리.
         oAPP.fn.attrChange(is_attr, "INPUT");
         return;
@@ -2450,6 +2546,11 @@
         is_attr.MPROP = "";
         is_attr.ISBND = "";
 
+        
+        //UNDO, 이력 처리 생략을 위한 ACTION CODE 매핑.
+        is_attr.ACTCD = oAPP.oDesign.CS_ACTCD.HTML_CONTENT_EDITOR;
+        
+        
         //ATTR 변경처리.
         oAPP.fn.attrChange(is_attr, "INPUT");
         return;
@@ -2534,7 +2635,7 @@
         return true;
       }
 
-    }    
+    }
 
     //클라이언트 스크립트 호출 FUNCTION 호출.
     oAPP.fn.fnClientEditorPopupOpener("JS", l_objid,function(param){
@@ -2556,6 +2657,9 @@
         is_attr.ADDSC = "";
 
       }
+
+      //UNDO, 이력 처리 생략을 위한 ACTION CODE 매핑.
+      is_attr.ACTCD = oAPP.oDesign.CS_ACTCD.ADD_CLIENT_EVENT;
 
       //call back 이후 attr 갱신 처리.
       oAPP.fn.attrChange(is_attr, "", false, true);
@@ -2687,6 +2791,10 @@
 
       //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
+      //색상 펍업 종료 처리.
+      oColPic.destroy();
 
 
       if(typeof oEvent?.getParameter !== "function"){
@@ -2873,8 +2981,10 @@
       return;
     }
 
-    //단축키 잠금, lock 해제처리.
-    oAPP.fn.designAreaLockUnlock(false);
+    //단축키 잠금 해제처리.
+    oAPP.fn.setShortcutLock(false);
+
+    parent.setBusy("");
 
   };  //프로퍼티 f4 help 호출 처리.
 
@@ -3032,6 +3142,16 @@
       return;
     }
 
+
+    var _sParam = {
+      BEFORE_OBJID : ls_uiinfo.OBJID_bf,
+      OBJID : ls_uiinfo.OBJID
+    };
+
+    //OBJECT ID 변경전 UNDO 이력 추가 처리.
+    parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_OBJID", _sParam);
+
+
     //이전 UI OBJECT에 수집된 ATTR 정보가 존재하는경우.
     if(oAPP.attr.prev[ls_uiinfo.OBJID_bf]._T_0015.length !== 0){
       //ATTR의 OBJECT ID를 변경건으로 매핑.
@@ -3040,18 +3160,6 @@
       }
 
     }
-
-    //테스트!!!!!!!!!!!!!!!!!!!!!!
-    if(parent.REMOTE.app.isPackaged === false){
-
-      var _sParam = {
-        BEFORE_OBJID : ls_uiinfo.OBJID_bf,
-        OBJID : ls_uiinfo.OBJID
-      };
-
-      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_OBJID", _sParam);
-    }
-    //테스트!!!!!!!!!!!!!!!!!!!!!!
 
 
     //변경된 이름으로 UI 수집 처리.
@@ -3142,7 +3250,7 @@
 
 
 
-  //바인딩 처리.
+  //바인딩 처리.(사용하지 않음!!!!)
   oAPP.fn.attrBindAttr = function(is_attr, is_tree){
 
     //바인딩 팝업에서 선택한 PATH 정보.
@@ -3317,12 +3425,19 @@
     if(is_attr.UIATY === "1" && is_attr.ISBND === "X" && is_attr.T_DDLB){
 
       //바인딩값을 ddlb에 추가한 항목을 찾아 제거 처리.
-      for(var i=is_attr.T_DDLB.length-1; i>=0; i--){
+      for(var i = is_attr.T_DDLB.length - 1; i >= 0; i--){
         if(is_attr.T_DDLB[i].ISBIND === "X"){
           is_attr.T_DDLB.splice(i, 1);
         }
       }
 
+    }
+
+
+    //sap.ui.core.HTML UI의 content 프로퍼티에 바인딩 처리한경우.
+    if(is_attr.UIATK === "AT000011858"){
+      //UI에 수집되어있는 해당 이벤트 삭제.
+      oAPP.fn.attrDelClientEvent(is_attr, "HM");
     }
 
 
@@ -3366,6 +3481,14 @@
       return;
     }
 
+
+    //현재 unbind 처리 되는 프로퍼티가 sap.ui.core.HTML의 Content 프로퍼티인경우.
+    if(is_attr.UIATK === "AT000011858"){
+      //UNDO, 이력 처리 생략을 위한 ACTION CODE 매핑.
+      is_attr.ACTCD = oAPP.oDesign.CS_ACTCD.UNBIND_TREE_KEY;
+    }
+
+
     //프로퍼티 바인딩 처리.
     oAPP.fn.attrSetBindProp(is_attr, is_tree);
 
@@ -3400,12 +3523,16 @@
     }
 
 
-    for(var i=0, l=lt_UIATK.length; i<l; i++){
+    for(var i = 0, l = lt_UIATK.length; i < l; i++){
 
       var ls_attr = oAPP.attr.oModel.oData.T_ATTR.find( a => a.UIATK === lt_UIATK[i] );
 
       //PARENT, CHILD ATTRIBUTE에 바인딩이 구성되어 있다면.
       if(ls_attr && ls_attr.UIATV !== "" && ls_attr.ISBND === "X" ){
+
+        //UNDO, 이력 처리 생략을 위한 ACTION CODE 매핑.
+        ls_attr.ACTCD = oAPP.oDesign.CS_ACTCD.UNBIND_TREE_KEY;
+
 
         //변경건 대한 후속 처리.
         oAPP.fn.attrSetUnbindProp(ls_attr);
@@ -3450,8 +3577,14 @@
             //unbind 처리.
             oAPP.fn.attrUnbindAggr(oAPP.attr.prev[is_attr.OBJID], is_attr.UIATT, is_attr.UIATV);
 
+
+            //UNDO, 이력 처리 생략을 위한 ACTION CODE 매핑.
+            is_attr.ACTCD = oAPP.oDesign.CS_ACTCD.UNBIND_AGGR;
+
+
             //변경건 대한 후속 처리.
             oAPP.fn.attrSetUnbindProp(is_attr);
+
 
             //TREE의 PARENT, CHILD 프로퍼티 예외처리.
             oAPP.fn.attrUnbindTree(is_attr);
@@ -3464,11 +3597,18 @@
 
       }
 
+
       //N건 바인딩 처리한 UI가 없으면 확인팝업 없이 unbind 처리.
       oAPP.fn.attrUnbindAggr(oAPP.attr.prev[is_attr.OBJID], is_attr.UIATT, is_attr.UIATV);
 
+
+      //UNDO, 이력 처리 생략을 위한 ACTION CODE 매핑.
+      is_attr.ACTCD = oAPP.oDesign.CS_ACTCD.UNBIND_AGGR;
+      
+
       //변경건 대한 후속 처리.
       oAPP.fn.attrSetUnbindProp(is_attr);
+
 
       //TREE의 PARENT, CHILD 프로퍼티 예외처리.
       oAPP.fn.attrUnbindTree(is_attr);
@@ -3503,14 +3643,22 @@
           return;
         }
 
+
         //UNBIND 처리.
         oAPP.fn.attrUnbindAggr(oAPP.attr.prev[is_attr.OBJID],is_attr.UIATT, is_attr.UIATV);
+        
+        
+        //UNDO, 이력 처리 생략을 위한 ACTION CODE 매핑.
+        is_attr.ACTCD = oAPP.oDesign.CS_ACTCD.UNBIND_AGGR;
+        
 
-        //TREE의 PARENT, CHILD 프로퍼티 예외처리.
-        oAPP.fn.attrUnbindTree(is_attr);
 
         //AGGREGATION 바인딩 처리.
         oAPP.fn.attrSetBindProp(is_attr, is_tree);
+
+        
+        //TREE의 PARENT, CHILD 프로퍼티 예외처리.
+        oAPP.fn.attrUnbindTree(is_attr);
         
 
         oAPP.attr.prev[is_attr.OBJID]._MODEL[is_attr.UIATT] = is_attr.UIATV;
@@ -3542,7 +3690,7 @@
 
 
 
-  //바인딩 팝업 Call Back 이벤트
+  //바인딩 팝업 Call Back 이벤트(사용하지 않음!!!!)
   oAPP.fn.attrBindCallBack = function(bIsbind, is_tree, is_attr){
 
     //unbind 처리된경우.
@@ -3675,8 +3823,10 @@
 
       if(oUi._T_0015.length === 0){return;}
 
+      var _deleted = false;
+
       //현재 UI에 설정된 N건 바인딩 해제 처리.
-      for(var i=oUi._T_0015.length-1; i>=0; i--){
+      for(var i = oUi._T_0015.length - 1; i >= 0; i--){
 
         //바인딩된건이 아닌경우 SKIP.
         if(oUi._T_0015[i].ISBND !== "X"){continue;}
@@ -3684,16 +3834,22 @@
         //바인딩건인경우 N건 바인딩 처리된 건인지 판단.
         if(oAPP.fn.chkBindPath(UIATV, oUi._T_0015[i].UIATV) === true){
 
-
+          //aggregatgion에 바인딩 된건인경우 재귀호출을 통해 하위를 탐색하며 N건 바인딩 해제 처리.
           if(oUi._T_0015[i].UIATY === "3"){
             oAPP.fn.attrUnbindAggr(oUi, oUi._T_0015[i].UIATT, oUi._T_0015[i].UIATV);
           }          
 
           //N건 바인딩된 건인경우 바인딩 해제 처리.
           oUi._T_0015.splice(i,1);
+
+          //N건 바인딩 처리건 삭제됨 flag 처리.
+          _deleted = true;
+
         }
 
       }
+
+      return _deleted;
 
     } //T_0015의 바인딩 수집건 제거 처리.
 
@@ -3716,15 +3872,17 @@
 
 
     //N건 바인딩 설정한 하위 UI가 존재하는경우.
-    for(var i=oUi._BIND_AGGR[UIATT].length-1; i>=0; i--){
+    for(var i = oUi._BIND_AGGR[UIATT].length - 1; i >= 0; i--){
 
       //해당 UI로 파생된 N건 바인딩처리 UI가 없는경우.
       if(jQuery.isEmptyObject(oUi._BIND_AGGR[UIATT][i]._BIND_AGGR) === true){
         //n건 바인딩 초기화 처리.
-        lf_clearBindData(oUi._BIND_AGGR[UIATT][i]);
+        var _deleted = lf_clearBindData(oUi._BIND_AGGR[UIATT][i]);
 
-        //n건 바인딩 수집건에서 제거 처리.
-        oUi._BIND_AGGR[UIATT].splice(i, 1);
+        if(_deleted === true){
+          //n건 바인딩 수집건에서 제거 처리.
+          oUi._BIND_AGGR[UIATT].splice(i, 1);
+        }       
 
         continue;
 
@@ -3738,10 +3896,12 @@
       }
 
       //n건 바인딩 초기화 처리.
-      lf_clearBindData(oUi._BIND_AGGR[UIATT][i]);
+      var _deleted = lf_clearBindData(oUi._BIND_AGGR[UIATT][i]);
 
-      //n건 바인딩 수집건에서 제거 처리.
-      oUi._BIND_AGGR[UIATT].splice(i, 1);
+      if(_deleted === true){
+        //n건 바인딩 수집건에서 제거 처리.
+        oUi._BIND_AGGR[UIATT].splice(i, 1);
+      }
 
 
     } //N건 바인딩 설정한 하위 UI가 존재하는경우.
@@ -3795,7 +3955,7 @@
 
 
 
-  //바인딩 해제 처리 function.
+  //바인딩 해제 처리 function.(사용하지 않음!!!!)
   oAPP.fn.attrUnbindAttr = function(is_attr){
     
     //DDLB로 출력된 프로퍼티의 이전값이 바인딩된 값인경우.
@@ -4270,6 +4430,16 @@
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
 
 
+      //AppDescript 프로퍼티 얻기.
+      var _aAttr = oAPP.attr.oModel.oData.T_ATTR.filter( a=> a.UIATK === "EXT00000031" );
+
+      //맨 위에 AppID 프로퍼티 정보 추가.
+      _aAttr.splice(0, 0, is_attr);
+
+      //UNDO HISTORY 추가 처리.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_ATTR", _aAttr);
+
+
       //APPLICATION ID 매핑.
       is_attr.UIATV = param.APPID;
 
@@ -4339,6 +4509,16 @@
 
     //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
     parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
+    //AppDescript 프로퍼티 얻기.
+    var _aAttr = oAPP.attr.oModel.oData.T_ATTR.filter( a=> a.UIATK === "EXT00000031" );
+
+    //맨 위에 AppID 프로퍼티 정보 추가.
+    _aAttr.splice(0, 0, is_attr);
+
+    //UNDO HISTORY 추가 처리.
+    parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_ATTR", _aAttr);
 
 
     //입력값 초기화 처리.
@@ -4459,13 +4639,7 @@
       //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
 
-
-      //F4 HELP에서 입력한 값매핑.
-      is_attr.UIATV = param.SHLPNAME;
-
-      //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
-      oAPP.fn.attrChangeProc(is_attr);
-
+      
       //default F4HelpReturnFIeld의 attr key 구성(selectOption2)
       var l_UIATK = "EXT00001189";
 
@@ -4473,6 +4647,24 @@
       if(is_attr.UIATK === "EXT00002534"){
         l_UIATK = "EXT00002535";
       }
+
+
+      //F4HelpReturnFIeld 프로퍼티 얻기.
+      var _aAttr = oAPP.attr.oModel.oData.T_ATTR.filter( a=> a.UIATK === l_UIATK );
+
+      //맨 위에 F4HelpID 프로퍼티 정보 추가.
+      _aAttr.splice(0, 0, is_attr);
+
+      //UNDO HISTORY 추가 처리.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_ATTR", _aAttr);
+
+
+      //F4 HELP에서 입력한 값매핑.
+      is_attr.UIATV = param.SHLPNAME;
+
+      //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
+      oAPP.fn.attrChangeProc(is_attr);
+
 
       //F4HelpReturnFIeld ATTRIBUTE 검색.
       var ls_attr = oAPP.attr.oModel.oData.T_ATTR.find( a => a.UIATK === l_UIATK );
@@ -4692,18 +4884,30 @@
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
 
 
+      //default selectOption2의 F4HelpReturnFIeld 프로퍼티.
+      var l_UIATK = "EXT00001189";
+
+      //selectOption3 UI의 F4HelpID 프로퍼티인경우.
+      if(is_attr.UIATK === "EXT00002534"){
+        //selectOption3 UI의 F4HelpReturnFIeld 프로퍼티.
+        l_UIATK = "EXT00002535";
+      }
+
+      //F4HelpReturnFIeld 프로퍼티 얻기.
+      var _aAttr = oAPP.attr.oModel.oData.T_ATTR.filter( a=> a.UIATK === l_UIATK );
+
+      //맨 위에 F4HelpID 프로퍼티 정보 추가.
+      _aAttr.splice(0, 0, is_attr);
+
+      //UNDO HISTORY 추가 처리.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_ATTR", _aAttr);
+
+
       //기존 입력건 초기화.
       is_attr.UIATV = "";
 
       //바인딩 해제 처리.
       is_attr.ISBND = "";
-
-      var l_UIATK = "EXT00001189";
-
-      //selectOption3 UI의 F4HelpID 프로퍼티인경우.
-      if(is_attr.UIATK === "EXT00002534"){
-        l_UIATK = "EXT00002535";
-      }
 
       //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
       oAPP.fn.attrChangeProc(is_attr);
@@ -4746,6 +4950,10 @@
 
       //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
+
+
+      //UNDO HISTORY 추가 처리.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("CHANGE_ATTR", [is_attr]);
 
 
       //기존 입력건 초기화.
@@ -6455,6 +6663,8 @@
     //attribute 정보가 없는경우 exit.
     if(_aItem.length === 0){return;}
 
+    var _oTargetItem = undefined;
+    var _sTargetAttr = undefined;
     
     for(var i = 0, l = _aItem.length; i < l; i++){
 
@@ -6466,123 +6676,150 @@
 
       if(typeof _oCtxt === "undefined" || _oCtxt === null){continue;}
 
-      //UIATK 값 얻기.
+      //라인 데이터 얻기.
       var _sAttr = _oCtxt.getProperty();
 
       if(typeof _sAttr === "undefined"){continue;}
 
-      //focus 대상 UIATK가 아닌경우 다음건 확인.
-      if(_sAttr.UIATK !== UIATK){continue;}
+      //focus 대상 UIATK를 찾은경우.
+      if(UIATK === _sAttr.UIATK){
 
-      //default value state 처리.
-      _sAttr.valst = undefined;
-      _sAttr.valtx = undefined;        
+        //대상 라인의 UI 정보 매핑.
+        _oTargetItem = _oItem;
 
-      //type에 따른 value state 처리.
-      switch(TYPE){
-        case "E":
-          _sAttr.valst = "Error";
-          break;
+        //대상 attribute 데이터 매핑.
+        _sTargetAttr = _sAttr;
 
-        case "S":
-          _sAttr.valst = "Success";
-          break;
-
-        case "I":
-          _sAttr.valst = "Information";
-          break;
-
-        case "W":
-          _sAttr.valst = "Warning";
-          break;
-
-        default:
-          break;
+        break;
       }
-
-      //focus 처리대상건인경우 해당 라인 focus 처리.
-      oAPP.attr.ui.oRTab1.setSelectedItem(_oItem);
-
-      var l_pos;
-
-      //활성화된 ui에 따른 ui 위치 값 매핑.
-      switch(true){
-        case _sAttr.inp_visb: //input이 활성화된경우.
-          l_pos = 0;
-          break;
-
-        case _sAttr.sel_visb: //ddlb가 활성화된경우.
-          l_pos = 1;
-          break;
-
-        case _sAttr.btn_visb: //button이 활성화된경우.
-          l_pos = 2;
-          break;
-
-        case _sAttr.chk_visb: //checkbox가 활성화된경우.
-          l_pos = 3;
-          break;
-
-        default:
-          return;
-      }
-      
-      //찾은 대상 라인의 CELL 정보 얻기.
-      var _aCells = _oItem.getCells();
-
-      if(_aCells.length === 0){
-        return;
-      }
-
-      //두번째 CELL(값 입력 컬럼)
-      var _oCells = _aCells[1];
-
-      if(typeof _oCells === "undefined"){
-        return;
-      }
-
-      //해당 CELL(HBOX)의 ITEM 정보 얻기.
-      var _aHItem = _oCells.getItems();
-
-      if(_aHItem.length === 0){
-        return;
-      }
-
-      var _oTarget =  _aHItem[l_pos];
-
-      if(typeof _oTarget === "undefined"){
-        return;
-      }
-
-      //ATTR 상단 영역 접힘 처리.
-      oAPP.fn.attrHeaderExpanded(false);
-
-
-      // //해당 라인의 활성화된 입력필드에 focus 처리.
-      // _oTarget.focus();
-
-      var _oDom = _oTarget.getDomRef();
-
-      //DOM 위치로 스크롤 이동 처리.
-      if(typeof _oDom !== "undefined" && _oDom !== null){
-        // _oDom.scrollIntoView(true);
-        _oDom.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
-      }
-
-      //비동기로 focus 처리.
-      setTimeout(() => {
-        _oTarget.focus();
-      }, 0);
-
-      break;
 
     }
 
-    //타입이 존재하지 않는경우 exit.
-    if(typeof TYPE === "undefined" || TYPE === ""){return;}
 
-    //타입이 존재하는경우 모델 갱신 처리.
-    oAPP.attr.oModel.refresh();
+    //대상 라인 UI를 찾지 못한 경우 exit.
+    if(typeof _oTargetItem === "undefined"){
+      return;
+    }
+
+    //대상 라인 attribute 데이터를 찾지 못한 경우 exit.
+    if(typeof _sTargetAttr === "undefined"){
+      return;
+    }
+
+
+    //default value state 처리(초기화 처리).
+    _sTargetAttr.valst = undefined;
+    _sTargetAttr.valtx = undefined;
+
+    //type에 따른 value state 처리.
+    switch(TYPE){
+      case "E":
+        _sTargetAttr.valst = "Error";
+        break;
+
+      case "S":
+        _sTargetAttr.valst = "Success";
+        break;
+
+      case "I":
+        _sTargetAttr.valst = "Information";
+        break;
+
+      case "W":
+        _sTargetAttr.valst = "Warning";
+        break;
+
+      default:
+        //type에 해당되지 않는경우 설정하지 않음.
+        //(default value state "None" 처리됨.)
+        break;
+    }
+
+
+    //value state가 구성됐다면.
+    if(typeof _sTargetAttr.valst !== "undefined"){
+      //모델 갱신 처리.
+      oAPP.attr.oModel.refresh();
+
+    }
+
+
+    //focus 처리대상건인경우 해당 라인 선택 처리.
+    oAPP.attr.ui.oRTab1.setSelectedItem(_oTargetItem);
+
+
+    //찾은 대상 라인의 CELL 정보 얻기.
+    var _aCells = _oTargetItem.getCells();
+
+    if(_aCells.length === 0){
+      return;
+    }
+
+    //ATTRIBUTE 값변경 CELL 정보 찾기.
+    var _oCell = _aCells.find( oUi => oUi.data && oUi.data("CELL_INFO") === "ATTR_CHANGE");
+
+    if(typeof _oCell === "undefined"){
+      return;
+    }
+
+    //해당 CELL(HBOX)의 ITEM 정보 얻기.
+    var _aHItem = _oCell.getItems();
+
+    if(_aHItem.length === 0){
+      return;
+    }
+
+
+    var _UITYP = "";
+
+    //활성화된 ui에 따른 UI 유형 값 매핑.
+    switch(true){
+      case _sTargetAttr.inp_visb: //input이 활성화된경우.
+        _UITYP = "INPUT";
+        break;
+
+      case _sTargetAttr.sel_visb: //ddlb가 활성화된경우.
+        _UITYP = "COMBOBOX";
+        break;
+
+      case _sTargetAttr.btn_visb: //button이 활성화된경우.
+        _UITYP = "BUTTON";
+        break;
+
+      case _sTargetAttr.chk_visb: //checkbox가 활성화된경우.
+        _UITYP = "CHECKBOX";
+        break;
+
+      default:
+        return;
+    }
+
+    
+    //활성화된 UI를 찾기.(visible true 처리된 UI)
+    var _oTarget =  _aHItem.find( oUi => oUi.data && oUi.data("UITYP") === _UITYP );
+
+    if(typeof _oTarget === "undefined"){
+      return;
+    }
+
+
+    //ATTR 상단 영역 접힘 처리.
+    oAPP.fn.attrHeaderExpanded(false);
+
+
+    var _oDom = _oTarget.getDomRef();
+
+    //DOM 위치로 스크롤 이동 처리.
+    if(typeof _oDom !== "undefined" && _oDom !== null){
+      // _oDom.scrollIntoView(true);
+      _oDom.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+    }
+
+    //비동기로 focus 처리.
+    setTimeout(() => {
+      _oTarget.focus();
+    }, 0);
+    
 
   };  //ATTRIBUTE FOCUS 처리.
 
@@ -7548,6 +7785,7 @@
 
 
   //attribute 입력건에 오류가발생한 경우 초기값으로 변경 처리.
+  //(미리보기쪽에서 사용했으나, 해당 내용 주석 처리 되어 더이상 사용하지 않음)
   oAPP.fn.attrClearErrorValue = function(){
 
     if(!document.activeElement || !document.activeElement.id){return;}

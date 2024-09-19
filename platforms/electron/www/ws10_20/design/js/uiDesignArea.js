@@ -30,9 +30,14 @@
       //단축키도 같이 잠금 처리.
       oAPP.fn.setShortcutLock(true);
       
+      // 전체 자식 윈도우에 Busy 킨다.
+      oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_ON"});
     
       //데이터 출력 라인을 선택하지 않은경우 exit.
       if(!oEvent?.mParameters?.rowBindingContext?.getProperty){
+
+        // 전체 자식 윈도우에 Busy 종료.
+        oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
         
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
@@ -52,6 +57,9 @@
       //바인딩 팝업에 UI 라인 선택 처리.
       oAPP.fn.selectBindingPopupOBJID(ls_tree);
 
+
+      // 전체 자식 윈도우에 Busy 종료.
+      oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
 
       //단축키 잠금 해제 처리.
       oAPP.fn.setShortcutLock(false);
@@ -323,10 +331,13 @@
     oAPP.fn.clearDropEffectUI(oAPP.attr.ui.oLTree1);
 
 
-    //drop UI 생성.
-    var oLTDrop1 = new sap.ui.core.dnd.DropInfo({targetAggregation:"rows"});
-    oAPP.attr.ui.oLTree1.addDragDropConfig(oLTDrop1);
+    // //drop UI 생성.
+    // var oLTDrop1 = new sap.ui.core.dnd.DropInfo({targetAggregation:"rows"});
+    // oAPP.attr.ui.oLTree1.addDragDropConfig(oLTDrop1);
 
+    //drop UI 생성.
+    var oLTDrop1 = new sap.ui.core.dnd.DropInfo({targetAggregation:"rows", dropPosition:"OnOrBetween"});
+    oAPP.attr.ui.oLTree1.addDragDropConfig(oLTDrop1);
     
     //drag start 이벤트
     oLTDrag1.attachDragStart(function(oEvent){
@@ -389,6 +400,8 @@
 
     //drag UI가 drop위치에 올려졌을때 이벤트.
     oLTDrop1.attachDragOver(function(oEvent){
+
+      // console.log(oEvent.mParameters.dropPosition);
       
       //default move 표시.
       var l_effect = "Move";
@@ -413,6 +426,7 @@
     oLTDrop1.attachDrop(async function(oEvent){
 
       parent.setBusy("X");
+
 
       //단축키 잠금 처리.
       oAPP.fn.setShortcutLock(true);
@@ -661,45 +675,41 @@
     });
 
 
-    //테스트!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    if(parent.REMOTE.app.isPackaged === false){
+    oLTBar1.addContent(new sap.m.ToolbarSeparator({
+      visible:"{/IS_EDIT}",
+    }));
 
-      oLTBar1.addContent(new sap.m.ToolbarSeparator());
-
-      //UNDO 버튼 생성.
-      oLTBar1.addContent(new sap.m.Button({
-        icon:"sap-icon://undo",
-        visible:"{/IS_EDIT}",
-        enabled:{
-          path:"/designTree/undo",
-          formatter:function(params) {
-            return params === true ? true : false;
-          }
-        },
-        press: function(){
-          parent.require(oAPP.oDesign.pathInfo.undoRedo).executeHistory("UNDO");
+    //UNDO 버튼 생성.
+    oLTBar1.addContent(new sap.m.Button({
+      icon:"sap-icon://undo",
+      visible:"{/IS_EDIT}",
+      enabled:{
+        path:"/designTree/undo",
+        formatter:function(params) {
+          return params === true ? true : false;
         }
-      }));
+      },
+      press: function(){
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).executeHistory("UNDO");
+      }
+    }));
 
-      //REDO 버튼 생성.
-      oLTBar1.addContent(new sap.m.Button({
-        icon:"sap-icon://redo",
-        visible:"{/IS_EDIT}",
-        enabled:{
-          path:"/designTree/redo",
-          formatter:function(params) {
-            return params === true ? true : false;
-          }
-        },
-        press: function(){
-          parent.require(oAPP.oDesign.pathInfo.undoRedo).executeHistory("REDO");
+    //REDO 버튼 생성.
+    oLTBar1.addContent(new sap.m.Button({
+      icon:"sap-icon://redo",
+      visible:"{/IS_EDIT}",
+      enabled:{
+        path:"/designTree/redo",
+        formatter:function(params) {
+          return params === true ? true : false;
         }
-      }));
+      },
+      press: function(){
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).executeHistory("REDO");
+      }
+    }));
 
-      oLTBar1.addContent(new sap.m.ToolbarSeparator());
-
-    }
-    //테스트!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    oLTBar1.addContent(new sap.m.ToolbarSeparator());
 
 
     oLTBar1.addContent(new sap.m.ToolbarSpacer());
@@ -1918,6 +1928,9 @@
 
       //단축키 잠금 처리.
       oAPP.fn.setShortcutLock(true);
+
+      // 전체 자식 윈도우에 Busy 킨다.
+      oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_ON"});
       
       
       //tree를 탐색하며 ROOT로부터 입력 OBJID 까지의 PATH 정보 구성
@@ -2040,6 +2053,9 @@
 
       //OBJID가 존재하지 않는경우 EXIT.
       if(typeof OBJID === "undefined" || OBJID === null || OBJID === ""){
+
+        // 전체 자식 윈도우에 Busy 종료.
+        oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
         
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
@@ -2056,6 +2072,10 @@
 
       //path 정보를 수집하지 않은경우 exit.
       if(lt_path.length === 0){
+
+        // 전체 자식 윈도우에 Busy 종료.
+        oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
+
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
 
@@ -2066,6 +2086,10 @@
 
       var l_bind = oAPP.attr.ui.oLTree1.getBinding();
       if(!l_bind){
+
+        // 전체 자식 윈도우에 Busy 종료.
+        oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
+
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
 
@@ -2084,6 +2108,9 @@
       var _sTree = lf_expand(l_bind._oRootNode.children[0]);
 
       if(typeof _sTree === "undefined"){
+
+        // 전체 자식 윈도우에 Busy 종료.
+        oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
 
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
@@ -2113,8 +2140,8 @@
       oAPP.fn.selectBindingPopupOBJID(_sTree);
 
 
-      //attribute 영역 선택처리(UIATK가 입력된경우 선택처리)
-      oAPP.fn.setAttrFocus(UIATK, TYPE);
+      // 전체 자식 윈도우에 Busy 종료.
+      oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
 
 
       //단축키 잠금 해제 처리.
@@ -2122,6 +2149,10 @@
       
 
       parent.setBusy("");
+
+
+      //attribute 영역 선택처리(UIATK가 입력된경우 선택처리)
+      oAPP.fn.setAttrFocus(UIATK, TYPE);
 
 
       return resolve();
@@ -2235,9 +2266,15 @@
       //클라이언트 이벤트 복사 처리.
       oAPP.fn.copyUiClientEvent(is_tree.OBJID, ls_14);
 
-      //부모 정보에 현재 복사처리한 UI 수집처리.
-      is_parent.zTREE.push(ls_14);
+      if(typeof i_aggr === "undefined"){
+        //부모 정보에 현재 복사처리한 UI 수집처리.
+        is_parent.zTREE.push(ls_14);
 
+      }else{
+        //drop 위치의 index에 라인 추가.
+        is_parent.zTREE.splice(_sDropLineInfo.dropIndex, 0, ls_14);
+
+      }
 
       var l_UILIB = ls_14.UILIB;
       
@@ -2249,10 +2286,23 @@
           l_UILIB = ls_0022.LIBNM;
       }
 
-      //미리보기 UI 추가
-      oAPP.attr.ui.frame.contentWindow.addUIObjPreView(ls_14.OBJID, ls_14.UIOBK, l_UILIB, 
-        ls_14.UIFND, ls_14.POBID, ls_14.PUIOK, ls_14.UIATT, lt_0015, lt_ua018, lt_ua032, lt_ua030, lt_ua026, lt_ua050);
+
+      if(typeof i_aggr === "undefined"){
+        //미리보기 UI 추가
+        oAPP.attr.ui.frame.contentWindow.addUIObjPreView(ls_14.OBJID, ls_14.UIOBK, l_UILIB, 
+          ls_14.UIFND, ls_14.POBID, ls_14.PUIOK, ls_14.UIATT, lt_0015, lt_ua018, lt_ua032, lt_ua030, lt_ua026, lt_ua050);
       
+      }else{
+
+        //UI 생성 처리.
+        oAPP.attr.ui.frame.contentWindow.createUIInstance(ls_14, lt_0015);
+
+        //부모에 생성한 UI 추가.
+        oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(ls_14.OBJID, ls_14.UILIB, ls_14.POBID, 
+          ls_14.PUIOK, ls_14.UIATT, _sDropLineInfo.dropIndex, ls_14.ISMLB, ls_14.UIOBK, true);
+
+      }
+
 
       if(is_tree.zTREE && is_tree.zTREE.length !== 0){
         //하위 UI가 존재하는경우 하위를 탐색하며 UI 복사 처리.
@@ -2313,6 +2363,24 @@
     } //attribute 복사 처리.
 
 
+
+    var _sDropLineInfo = is_p?.dropLineInfo || undefined;
+    delete is_p?.dropLineInfo;
+
+    if(typeof _sDropLineInfo === "undefined"){
+
+      _sDropLineInfo = {};
+
+      _sDropLineInfo.dropPosition = undefined;
+      _sDropLineInfo.dropIndex    = undefined;
+
+      //기존 로직의 마지막 위치에 UI 추가를 위한 index 매핑.
+      _sDropLineInfo.dropIndex = is_p.zTREE.length;
+
+    }
+
+
+
     //공통코드 미리보기 UI Property 고정값 정보 검색.
     var lt_ua018 = oAPP.DATA.LIB.T_9011.filter( a=> a.CATCD === "UA018");
             
@@ -2358,13 +2426,9 @@
     var ls_copy = lf_copy0014(is_t, is_p, aggrParam);
 
 
-    //테스트!!!!!!!!!!!!!!!!!!!!!!
-    if(parent.REMOTE.app.isPackaged === false){
-      //UNDO HISTORY 추가 처리.
-      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("COPY", ls_copy);
+    //UNDO HISTORY 추가 처리.
+    parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("COPY", ls_copy);
 
-    }
-    //테스트!!!!!!!!!!!!!!!!!!!!!!
 
     // //MODEL 갱신 처리.
     // oAPP.attr.oModel.refresh();
@@ -2433,6 +2497,23 @@
 
   //drop callback 이벤트.
   oAPP.fn.drop_cb = async function(param, i_drag, i_drop){
+    
+    var _sDropLineInfo = i_drop?.dropLineInfo || undefined;
+    delete i_drop?.dropLineInfo;
+
+    if(typeof _sDropLineInfo === "undefined"){
+
+      _sDropLineInfo = {};
+
+      _sDropLineInfo.dropPosition = undefined;
+      _sDropLineInfo.dropIndex    = undefined;
+
+      //기존 로직의 마지막 위치에 UI 추가를 위한 index 매핑.
+      _sDropLineInfo.dropIndex = i_drop.zTREE.length;
+
+    }
+    
+
 
     //tree에 매핑된 광역변수 로컬에 매핑.
     var l_effect = oAPP.attr.ui.oLTree1.__dropEffect;
@@ -2465,19 +2546,13 @@
 
       }
 
-      //테스트!!!!!!!!!!!!!!!!!!!!!!
-      if(parent.REMOTE.app.isPackaged === false){
-        
-        var _sParam = {};
-        _sParam.S_DRAG = i_drag;
-        _sParam.S_DROP = i_drop;
 
-        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("DRAG_DROP", _sParam);
-        
+      var _sParam = {};
+      _sParam.S_DRAG = i_drag;
+      _sParam.S_DROP = i_drop;
 
-      }
-      //테스트!!!!!!!!!!!!!!!!!!!!!!
-
+      //UNDO 이력 추가.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("DRAG_DROP", _sParam);
 
       
       var l_funcnm = oAPP.fn.getUIAttrFuncName(oAPP.attr.prev[i_drag.POBID], "3", i_drag.UIATT, "_sIndexGetter");
@@ -2694,6 +2769,10 @@
 
     //복사처리로 D&D한경우.
     if(l_effect === "Copy"){
+
+      //drop 위치 정보 매핑.
+      i_drop.dropLineInfo = _sDropLineInfo;
+
       //ui복사 처리.
       oAPP.fn.designCopyUI(i_drag, i_drop, param);
       return;
@@ -2736,17 +2815,12 @@
     }
 
 
-    //테스트!!!!!!!!!!!!!!!!!!!!!!
-    if(parent.REMOTE.app.isPackaged === false){
-      
-      var _sParam = {};
-      _sParam.S_DRAG = i_drag;
-      _sParam.S_DROP = i_drop;
+    var _sParam = {};
+    _sParam.S_DRAG = i_drag;
+    _sParam.S_DROP = i_drop;
 
-      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("DRAG_DROP", _sParam);
-      
-    }
-    //테스트!!!!!!!!!!!!!!!!!!!!!!
+    //UNDO 이력 추가.
+    parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("DRAG_DROP", _sParam);
 
 
     //DRAG UI의 부모에서 DRAG UI정보 제거.
@@ -2766,8 +2840,13 @@
       i_drop.zTREE = [];
     }
 
-    //drop의 CHILD 영역에 DRAG UI를 추가.
-    i_drop.zTREE.push(i_drag);
+    
+    //기존 맨 밑에 라인 추가 로직 주석 처리.
+    // //drop의 CHILD 영역에 DRAG UI를 추가.
+    // i_drop.zTREE.push(i_drag);
+    
+    //대상 라인에 drag UI를 추가.
+    i_drop.zTREE.splice(_sDropLineInfo.dropIndex, 0, i_drag);
   
 
     //DRAG UI의 부모정보 변경.
@@ -2870,8 +2949,14 @@
     await Promise.all(_aPromise);
 
 
+    //기존 UI의 위치 정보 얻는 로직 주석 처리.
     //동일 AGGREGATION에 추가된 UI 갯수 얻기.
-    var l_indx = i_drop.zTREE.filter( a => a.UIATT === i_drag.UIATT );
+    // var l_indx = i_drop.zTREE.filter( a => a.UIATT === i_drag.UIATT );
+
+
+    var _aIndex = i_drop.zTREE.filter( a => a.UIATT === i_drag.UIATT );
+
+    var _dragPos = _aIndex.findIndex( item => item.OBJID === i_drag.OBJID );
 
 
     //onAfterRendering 이벤트 등록 대상 UI 얻기.
@@ -2894,9 +2979,15 @@
     //RichTextEditor 미리보기 출력 예외처리로직.
     var _aPromise = _oRender.renderingRichTextEditor(i_drop);
 
+
+    //미리보기 갱신 처리.
+    // oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(i_drag.OBJID, i_drag.UILIB, i_drag.POBID, 
+    //   i_drag.PUIOK, i_drag.UIATT, l_indx.length, i_drag.ISMLB, i_drag.UIOBK, true);
+
+
     //미리보기 갱신 처리.
     oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(i_drag.OBJID, i_drag.UILIB, i_drag.POBID, 
-      i_drag.PUIOK, i_drag.UIATT, l_indx.length, i_drag.ISMLB, i_drag.UIOBK, true);
+      i_drag.PUIOK, i_drag.UIATT, _dragPos, i_drag.ISMLB, i_drag.UIOBK, true);
 
 
     //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.
@@ -3242,7 +3333,7 @@
         if(is_child.zTREE.length === 0){return;}
 
         //child UI 존재시 하위를 탐색하며 drop 불가 처리.
-        for(var i=0, l=is_child.zTREE.length; i<l; i++){
+        for(var i = 0, l = is_child.zTREE.length; i < l; i++){
           lf_setDropEnable(is_child.zTREE[i], it_0027, bChild);
         }
 
@@ -3256,7 +3347,7 @@
         if(is_child.zTREE.length === 0){return;}
 
         //child UI 존재시 하위를 탐색하며 drop 불가 처리.
-        for(var i=0, l=is_child.zTREE.length; i<l; i++){
+        for(var i = 0, l = is_child.zTREE.length; i < l; i++){
           lf_setDropEnable(is_child.zTREE[i], it_0027, true);
         }
 
@@ -3270,7 +3361,7 @@
 
       if(lt_0023.length !== 0){
 
-        for(var i=0, l=lt_0023.length; i<l; i++){
+        for(var i = 0, l = lt_0023.length; i < l; i++){
           //점검대상 라인의 aggregation의 UIOBK정보 얻기.
           var ls_0022 = oAPP.DATA.LIB.T_0022.find( a=> a.LIBNM === lt_0023[i].UIADT );
           if(!ls_0022){continue;}
@@ -3305,7 +3396,7 @@
 
       if(is_child.zTREE.length === 0){return;}
 
-      for(var i=0, l=is_child.zTREE.length; i<l; i++){
+      for(var i = 0, l = is_child.zTREE.length; i < l; i++){
         lf_setDropEnable(is_child.zTREE[i], it_0027, bChild);
       }
 
@@ -3342,7 +3433,7 @@
     //tree의 row에 바인딩처리된 정보 얻기.
     var lt_ctxt = oAPP.attr.ui.oLTree1._getRowContexts();
 
-    for(var i=0, l=lt_row.length; i<l; i++){
+    for(var i = 0, l = lt_row.length; i < l; i++){
       //기존 style 제거 처리.
       lt_row[i].removeStyleClass("u4aWsDisableTreeDrop");
       
@@ -3374,6 +3465,12 @@
   //drag한 UI가 다른 라인에 올라갔을때 처리.
   oAPP.fn.designDragEnter = function(oEvent){
 
+    var _oUi = oEvent.oSource || undefined;
+
+    if(typeof _oUi === "undefined"){
+      return;
+    }
+
     if(typeof oEvent?.mParameters?.dragSession?.getDropControl !== "function"){
       oEvent.preventDefault();
       return;
@@ -3392,12 +3489,27 @@
       return;
     }
 
-    var l_drop_enable = l_ctxt.getProperty("drop_enable");
     
-    if(!l_drop_enable){
-      oEvent.preventDefault();
-      return;
+
+    var l_drop_enable = l_ctxt.getProperty("drop_enable");
+
+    
+    // if(!l_drop_enable){
+    //   oEvent.preventDefault();
+    //   return;
+    // }
+    
+
+    //default 라인에 UI 추가, 라인 사이에 추가.
+    var _position = "OnOrBetween";
+
+    //해당 라인에 UI를 추가할 수 없는경우 라인 사이에 추가 처리.
+    if(l_drop_enable !== true){
+      _position = "Between";
     }
+    
+    _oUi.setDropPosition(_position);
+    
 
   };  //drag한 UI가 다른 라인에 올라갔을때 처리.
 
@@ -3484,6 +3596,9 @@
 
     if(!i_OBJID){return;}
 
+    //drop POSITION정보(On, Before, After)
+    var _dropPosition = oEvent.mParameters.dropPosition;
+
     var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
 
     //215	디자인 화면에서 UI 추가 처리 작업을 진행하고 있습니다.
@@ -3510,6 +3625,11 @@
     //다른 세션에서 drag한 정보라면 exit.
     if(lt_dragInfo[2] !== oAPP.attr.DnDRandKey){
       //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      
+      //102	다른 영역에서의 Drag 정보는 처리할 수 없습니다.
+      parent.showMessage(sap, 10, "E", 
+        parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "102"));
+
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
     }
@@ -3519,6 +3639,11 @@
 
     //OBJID를 얻지 못한 경우 EXIT.
     if(!l_objid){
+
+      //103	Drag한 UI 정보가 존재하지 않습니다.
+      parent.showMessage(sap, 10, "E", 
+        parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "103"));
+
       //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
@@ -3527,10 +3652,16 @@
     //ui 구성정보에서 직접 검색.
     l_drag = oAPP.fn.getTreeData(l_objid);
     if(!l_drag){
+
+      //103	Drag한 UI 정보가 존재하지 않습니다.
+      parent.showMessage(sap, 10, "E", 
+        parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "103"));
+
       //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
     }
+
 
     //drop한 UI의 라인정보 얻기.
     var l_drop = oAPP.fn.getTreeData(i_OBJID);
@@ -3540,8 +3671,46 @@
       return;
     }
 
+    
+    
+    var _sDNDInfo = {};
+    
+    _sDNDInfo.sDrag = l_drag;
+    _sDNDInfo.sDrop = l_drop;
+      
+    var _sDropLineInfo = {};
+
+    //drop position 정보.
+    _sDropLineInfo.dropPosition = _dropPosition;
+
+    //default drop index 정보 매핑.
+    _sDropLineInfo.dropIndex    = l_drop.zTREE.length;
+    
+    _sDNDInfo.sDropLineInfo = _sDropLineInfo;
+    
+
+    //drop 대상 UI 얻기.(drop index 정보 매핑처리함)
+    l_drop = oAPP.oDesign.fn.getDropTargetLine(_sDNDInfo);
+      
+    
+    if(typeof l_drop === "undefined"){
+
+      //245	DROP 처리 UI를 찾을 수 없습니다.
+      parent.showMessage(sap, 10, "E", parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "245"));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+      return;
+    }
+    
+
+
     //dragUI명과 dropUI명이 같은경우 exit.
     if(l_drag.OBJID === l_drop.OBJID){
+
+      //246	해당 영역에 UI를 DROP 할 수 없습니다.
+      parent.showMessage(sap, 10, "E", parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "246"));
+
       //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
@@ -3556,10 +3725,26 @@
 
     //DRAG UI와 DROP UI의 이동 가능 여부 점검.
     if(oAPP.fn.chkDnDPossible(l_drag.zTREE, l_drop.OBJID)){
+
+      //246	해당 영역에 UI를 DROP 할 수 없습니다.
+      parent.showMessage(sap, 10, "E", parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "246"));
+
       //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
     }
+
+
+    //drop 라인의 drop 가능 flag 처리가 되지 않은경우.
+    if(l_drop.drop_enable === false){
+      
+      //246	해당 영역에 UI를 DROP 할 수 없습니다.
+      parent.showMessage(sap, 10, "E", parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "246"));
+
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+      return;
+    }
+
 
     //이벤트 발생 x, y 좌표값 얻기.
     var l_pos = oAPP.fn.getMousePosition();
@@ -3578,6 +3763,149 @@
     return true;
 
   };  //drop 처리 function.
+
+
+
+
+  //drop 대상 라인 정보 얻기.
+  oAPP.oDesign.fn.getDropTargetLine = function(sDNDInfo){
+	
+    // //design tree 라인 정보가 없다면 exit.
+    // if(typeof sDNDInfo?.sDrag === "undefined"){
+    //   return;
+    // }
+    
+    if(typeof sDNDInfo?.sDrop === "undefined"){
+      return;
+    }
+    
+    if(typeof sDNDInfo?.sDropLineInfo === "undefined"){
+      return;
+    }
+    
+    
+    var _sTarget = sDNDInfo?.sDrop;
+    
+    var _sDropLineInfo = sDNDInfo.sDropLineInfo;
+    
+    
+    //현재 DROP이 이전에 사용하는 DROP인경우(박스 형식의 DROP 이펙트)
+    if(_sDropLineInfo.dropPosition === sap.ui.core.dnd.RelativeDropPosition.On){
+      //DROP 라인에 DROP 이펙트, DROP INDEX 정보 매핑 후 RETURN.
+      _sTarget.dropLineInfo = _sDropLineInfo;
+      
+      return _sTarget;
+    }
+  
+    
+    var _aRows = oAPP.attr.ui.oLTree1.getRows();
+      
+    //현재 drop 라인에 해당하는 위치 얻기.
+    var _targetPos = _aRows.findIndex( oUi => oUi.getBindingContext && 
+      oUi.getBindingContext().getProperty("OBJID") === _sTarget.OBJID );
+    
+    if(_targetPos === -1){
+      return;
+    }
+    
+    
+    //drop의 라인 정보 얻기.
+    var _oRow = _aRows[_targetPos];
+    
+    if(typeof _oRow === "undefined"){
+      return;
+    }
+    
+    
+    //DROP 위치가 라인 이전(Before)인경우.
+    if(_sDropLineInfo.dropPosition === sap.ui.core.dnd.RelativeDropPosition.Before){
+        
+      //drop의 직전 라인 얻기.
+      var _oRow = _aRows[_targetPos - 1];
+      
+      if(typeof _oRow === "undefined"){
+        return;
+      }
+      
+      var _oCtxt = _oRow.getBindingContext();
+      
+      if(typeof _oCtxt === "undefined" || _oCtxt === null){
+        return;
+      }
+      
+      //직전 라인을 DROP 대상으로 설정.
+      _sTarget = _oCtxt.getProperty();
+      
+      
+    }	
+    
+    
+    //design tree의 바인딩 정보 얻기.
+    var _oBind = oAPP.attr.ui.oLTree1.getBinding();
+    
+    if(typeof _oBind === "undefined" || _oBind === null){
+      return;
+    }
+  
+    
+    
+    //현재 DROP design 라인이 펼침 상태 인경우
+    if(_oRow.isExpanded() === true){
+      
+      _sDropLineInfo.dropIndex = 0;
+      
+      //DROP 라인에 DROP 이펙트, DROP INDEX 정보 매핑 후 RETURN.
+      _sTarget.dropLineInfo = _sDropLineInfo;
+      
+      //현재 UI 정보 return.					
+      return _sTarget;
+    }
+      
+    
+    //현재 DROP design 라인이 접힘 상태 인경우
+      
+    //부모 design 라인 정보를 drop design으로 판단.
+    var _sParent = oAPP.fn.getTreeData(_sTarget.POBID);
+          
+    if(typeof _sParent === "undefined"){
+      return;
+    }
+     
+    
+    //DROP 대상 UI가 부모의 몇번째 위치 인지 INDEX 발췌.
+    _sDropLineInfo.dropIndex = _sParent.zTREE.findIndex( item => item.OBJID === _sTarget.OBJID );
+    
+
+    if(typeof sDNDInfo.sDrag === "undefined"){
+
+      _sDropLineInfo.dropIndex++;
+
+      _sParent.dropLineInfo = _sDropLineInfo;
+    
+      return _sParent;
+
+    }
+    
+
+    //현재 부모에 DRAG UI의 위치 존재 여부 확인.
+    var _beforeDragPos = _sParent.zTREE.findIndex( item => item.OBJID === sDNDInfo.sDrag.OBJID );
+    
+    //현재 부모에 drag UI가 존재하며, DROP 위치보다 이전에 존재하는경우
+    if(_beforeDragPos === -1){
+  
+      _sDropLineInfo.dropIndex++;
+      
+    }else if(_sDropLineInfo.dropIndex < _beforeDragPos){
+      _sDropLineInfo.dropIndex++;
+    }
+
+    
+    _sParent.dropLineInfo = _sDropLineInfo;
+    
+    return _sParent;
+      
+    
+  }; //drop 대상 라인 정보 얻기.
 
 
 
@@ -3772,18 +4100,13 @@
         return;
       }
 
+            
+      //멀티 삭제시 파라메터 정보 구성.
+      var _aDeleteParam = parent.require(oAPP.oDesign.pathInfo.undoRedo).getMultiDeleteParam();
+
+      //UNDO 이력 추가.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("MULTI_DELETE", _aDeleteParam);
       
-      //테스트!!!!!!!!!!!!!!!!!!!!!!
-      if(parent.REMOTE.app.isPackaged === false){
-
-        //멀티 삭제시 파라메터 정보 구성.
-        var _aDeleteParam = parent.require(oAPP.oDesign.pathInfo.undoRedo).getMultiDeleteParam();
-
-        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("MULTI_DELETE", _aDeleteParam);
-      }
-      //테스트!!!!!!!!!!!!!!!!!!!!!!
-
-
       
       //선택한 라인의 부모 정보 수집.
       var _aParent = oAPP.fn.collectSelectParent(oAPP.attr.oModel.oData.zTREE);
@@ -4004,7 +4327,7 @@
         l_ctxt, ls_tree, l_before;
 
     //현재 화면에 출력됐던 라인 정보를 기준으로 선택 안된 라인 판단.
-    for(var i=0, l=oAPP.fn.designGetTreeItemCount(); i<l; i++){
+    for(var i = 0, l = oAPP.fn.designGetTreeItemCount(); i < l; i++){
 
       //context 정보 얻기.
       l_ctxt = l_bind.getContextByIndex(i);
@@ -4042,7 +4365,7 @@
 
       l_cnt += it_tree.length;
 
-      for(var i=0, l=it_tree.length; i<l; i++){
+      for(var i = 0, l = it_tree.length; i < l; i++){
         lf_calcItem(it_tree[i].zTREE);
       }
 
@@ -4295,6 +4618,23 @@
   oAPP.fn.designAddUIObject = async function(is_tree, is_0022, is_0023, i_cnt){
 
 
+    var _sDropLineInfo = is_tree?.dropLineInfo || undefined;
+    delete is_tree?.dropLineInfo;
+
+    if(typeof _sDropLineInfo === "undefined"){
+
+      _sDropLineInfo = {};
+
+      _sDropLineInfo.dropPosition = undefined;
+      _sDropLineInfo.dropIndex    = undefined;
+
+      //기존 로직의 마지막 위치에 UI 추가를 위한 index 매핑.
+      _sDropLineInfo.dropIndex = is_tree.zTREE.length;
+
+    }
+
+
+
     //UI가 입력 가능한 카디널리티 여부 확인.
     if(oAPP.fn.chkUiCardinality(is_tree, is_0023.UIATK, is_0023.ISMLB) === true){
 
@@ -4432,12 +4772,9 @@
     }
 
     
-    //테스트!!!!!!!!!!!!!!!!!!!!!!
-    if(parent.REMOTE.app.isPackaged === false){
-      var _aInsertChild = [];
-    }
-    //테스트!!!!!!!!!!!!!!!!!!!!!!   
-
+    var _aInsertChild = [];
+    
+    var _dropIndex = _sDropLineInfo.dropIndex;
 
     //UI 반복 횟수만큼 그리기.
     for(var i = 0; i < l_cnt; i++){
@@ -4494,8 +4831,14 @@
         l_14.icon_visible = true;
       }
 
-      //context menu 호출 라인의 child에 추가한 UI정보 수집.
-      is_tree.zTREE.push(l_14);
+      
+      // //context menu 호출 라인의 child에 추가한 UI정보 수집.
+      // is_tree.zTREE.push(l_14);
+      
+
+      //대상 위치에 UI 추가 처리.
+      is_tree.zTREE.splice(_dropIndex, 0, l_14);
+
 
       var ls_0015 = oAPP.fn.crtStru0015();
       
@@ -4514,11 +4857,23 @@
       ls_0015.ISEMB = "X";
 
 
-      //미리보기 UI 추가
-      oAPP.attr.ui.frame.contentWindow.addUIObjPreView(l_14.OBJID, l_14.UIOBK, l_14.UILIB, 
-        l_14.UIFND, l_14.POBID, l_14.PUIOK, is_0023.UIATT, [ls_0015], 
-        oAPP.attr.S_CODE.UA018, oAPP.attr.S_CODE.UA032, oAPP.attr.S_CODE.UA030, 
-        oAPP.attr.S_CODE.UA026, oAPP.attr.S_CODE.UA050);
+      //기존에 부모의 맨 마지막에 UI를 추가하는 로직 주석 처리.
+      //(개선된 UI 추가에서는 특정 위치에 UI를 추가할 수 있기때문)
+      // //미리보기 UI 추가
+      // oAPP.attr.ui.frame.contentWindow.addUIObjPreView(l_14.OBJID, l_14.UIOBK, l_14.UILIB, 
+      //   l_14.UIFND, l_14.POBID, l_14.PUIOK, is_0023.UIATT, [ls_0015], 
+      //   oAPP.attr.S_CODE.UA018, oAPP.attr.S_CODE.UA032, oAPP.attr.S_CODE.UA030, 
+      //   oAPP.attr.S_CODE.UA026, oAPP.attr.S_CODE.UA050);
+
+      //UI 생성 처리.
+      oAPP.attr.ui.frame.contentWindow.createUIInstance(l_14, [ls_0015]);
+
+      //부모에 생성한 UI 추가.
+      oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(l_14.OBJID, l_14.UILIB, l_14.POBID, 
+        l_14.PUIOK, l_14.UIATT, _dropIndex, l_14.ISMLB, l_14.UIOBK, true);
+        
+      //부모에 추가할 index 증가 처리.
+      _dropIndex++;
 
       //aggregation 정보 초기화.
       ls_0015 = {};
@@ -4527,24 +4882,16 @@
       oAPP.fn.attrUploadUrlException(l_14.OBJID, l_14.UIOBK);
 
 
-      //테스트!!!!!!!!!!!!!!!!!!!!!!
-      if(parent.REMOTE.app.isPackaged === false){
-        _aInsertChild.push(l_14);
-      }
-      //테스트!!!!!!!!!!!!!!!!!!!!!!   
+      //UNDO시 추가된 UI 삭제를 위한 수집 처리.
+      _aInsertChild.push(l_14);
       
 
     } //UI 반복 횟수만큼 그리기.
 
 
-    
-    //테스트!!!!!!!!!!!!!!!!!!!!!!
-    if(parent.REMOTE.app.isPackaged === false){
-      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("INSERT", _aInsertChild);
-    }
-    //테스트!!!!!!!!!!!!!!!!!!!!!!   
-
-    
+    //UNDO 이력 추가 처리.
+    parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("INSERT", _aInsertChild);
+        
 
     // //MODEL 갱신 처리.
     // oAPP.attr.oModel.refresh();
@@ -4639,6 +4986,11 @@
 
   //UI Insert popup에서 Drop했다면 UI 추가 처리.
   oAPP.fn.designUIDropInsertPopup = function(oEvent, OBJID){
+    
+    
+    //drop POSITION정보(On, Before, After)
+    var _dropPosition = oEvent.mParameters.dropPosition;
+
 
     //UI 추가.
     function lf_setChild(is_0023){
@@ -4699,6 +5051,40 @@
       return;
     }
 
+
+    
+    var _sDNDInfo = {};
+    
+    _sDNDInfo.sDrag = undefined;
+    _sDNDInfo.sDrop = ls_drop;
+      
+    var _sDropLineInfo = {};
+
+    //drop position 정보.
+    _sDropLineInfo.dropPosition = _dropPosition;
+
+    //default drop index 정보 매핑.
+    _sDropLineInfo.dropIndex    = ls_drop.zTREE.length;
+    
+    _sDNDInfo.sDropLineInfo = _sDropLineInfo;
+    
+
+    //drop 대상 UI 얻기.(drop index 정보 매핑처리함)
+    ls_drop = oAPP.oDesign.fn.getDropTargetLine(_sDNDInfo);
+      
+    
+    if(typeof ls_drop === "undefined"){
+
+      //245	DROP 처리 UI를 찾을 수 없습니다.
+      parent.showMessage(sap, 10, "E", parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "245"));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+      return;
+    }
+    
+
+
     //이벤트 발생 x, y 좌표값 얻기.
     var l_pos = oAPP.fn.getMousePosition();
 
@@ -4722,6 +5108,9 @@
 
   //개인화 항목에서 D&D한 경우 UI 추가 처리.
   oAPP.fn.designUIDropP13nList = function(oEvent, is_tree){
+
+    //drop POSITION정보(On, Before, After)
+    var _dropPosition = oEvent.mParameters.dropPosition;
 
     var _sOption = JSON.parse(JSON.stringify(oAPP.oDesign.types.TY_BUSY_OPTION));
 
@@ -4749,6 +5138,11 @@
 
     //다른 WS 세션에서 D&D 한경우 EXIT.
     if(lt_dragInfo[2] !== oAPP.attr.DnDRandKey){
+
+      //102	다른 영역에서의 Drag 정보는 처리할 수 없습니다.
+      parent.showMessage(sap, 10, "E", 
+        parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "102"));
+
       //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
@@ -4801,6 +5195,45 @@
 
       return true;
     }
+
+
+
+    var _sDNDInfo = {};
+    
+    _sDNDInfo.sDrag = undefined;
+    _sDNDInfo.sDrop = is_tree;
+      
+    var _sDropLineInfo = {};
+
+    //drop position 정보.
+    _sDropLineInfo.dropPosition = _dropPosition;
+
+    //default drop index 정보 매핑.
+    _sDropLineInfo.dropIndex    = is_tree.zTREE.length;
+    
+    _sDNDInfo.sDropLineInfo = _sDropLineInfo;
+    
+
+    //drop 대상 UI 얻기.(drop index 정보 매핑처리함)
+    is_tree = oAPP.oDesign.fn.getDropTargetLine(_sDNDInfo);
+      
+    
+    if(typeof is_tree === "undefined"){
+
+      //245	DROP 처리 UI를 찾을 수 없습니다.
+      parent.showMessage(sap, 10, "E", parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "245"));
+
+      //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+      parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+      //단축키 잠금 해제 처리.
+      oAPP.fn.setShortcutLock(false);
+      
+      parent.setBusy("X");
+
+      return true;
+    }
+
     
 
     //UI 추가 처리.
@@ -4934,10 +5367,20 @@
 
         //tree embeded aggregation 아이콘 표현.
         oAPP.fn.setTreeAggrIcon(ls_14);
+        
+        // //부모 정보에 현재 복사처리한 UI 수집처리.
+        // is_parent.zTREE.push(ls_14);
+        
+        
+        //최초 호출하여 부모에 추가되는 건인경우.
+        if(typeof aggrParam !== "undefined"){
+          //부모의 해당 위치에 추가 처리.
+          is_parent.zTREE.splice(_sDropLineInfo.dropIndex, 0, ls_14);
 
-
-        //부모 정보에 현재 복사처리한 UI 수집처리.
-        is_parent.zTREE.push(ls_14);
+        }else{
+          is_parent.zTREE.push(ls_14);
+          
+        }
 
 
         //UI DESC 정보가 존재하는경우.
@@ -4959,10 +5402,27 @@
             l_UILIB = ls_0022.LIBNM;
         }
 
-        //미리보기 UI 추가
-        oAPP.attr.ui.frame.contentWindow.addUIObjPreView(ls_14.OBJID, ls_14.UIOBK, l_UILIB, 
-            ls_14.UIFND, ls_14.POBID, ls_14.PUIOK, ls_14.UIATT, lt_0015, it_ua018, it_ua032, it_ua030, it_ua026, it_ua050);
+        // //미리보기 UI 추가
+        // oAPP.attr.ui.frame.contentWindow.addUIObjPreView(ls_14.OBJID, ls_14.UIOBK, l_UILIB, 
+        //     ls_14.UIFND, ls_14.POBID, ls_14.PUIOK, ls_14.UIATT, lt_0015, it_ua018, it_ua032, it_ua030, it_ua026, it_ua050);
 
+        if(typeof aggrParam !== "undefined"){
+          
+          //UI 생성 처리.
+          oAPP.attr.ui.frame.contentWindow.createUIInstance(ls_14, lt_0015);
+  
+          //부모에 생성한 UI 추가.
+          oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(ls_14.OBJID, ls_14.UILIB, ls_14.POBID, 
+            ls_14.PUIOK, ls_14.UIATT, _sDropLineInfo.dropIndex, ls_14.ISMLB, ls_14.UIOBK, true);
+        
+        }else{
+
+          //미리보기 UI 추가
+          oAPP.attr.ui.frame.contentWindow.addUIObjPreView(ls_14.OBJID, ls_14.UIOBK, l_UILIB, 
+            ls_14.UIFND, ls_14.POBID, ls_14.PUIOK, ls_14.UIATT, lt_0015, it_ua018, it_ua032, it_ua030, it_ua026, it_ua050);
+  
+  
+        }
             
         //file uploader UI의 uploaderUrl 프로퍼티 예외처리.
         oAPP.fn.attrUploadUrlException(ls_14.OBJID, ls_14.UIOBK);
@@ -5013,13 +5473,46 @@
         // oAPP.attr.oModel.refresh();
 
 
-        //테스트!!!!!!!!!!!!!!!!!!!!!!
-        if(parent.REMOTE.app.isPackaged === false){
-          //UNDO HISTORY 추가 처리.
-          parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("INSERT_PERS", ls_14);
+        //UNDO HISTORY 추가 처리.
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("INSERT_PERS", ls_14);
 
+
+        //미리보기 onAfterRendering 처리 관련 module load.
+        var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
+
+
+        //onAfterRendering 이벤트 등록 대상 UI 얻기.
+        let _oTarget = _oRender.getTargetAfterRenderingUI(oAPP.attr.prev[is_tree.OBJID]);
+          
+        let _oDom = undefined;
+
+        if(typeof _oTarget?.getDomRef === "function"){
+          _oDom = _oTarget.getDomRef();
         }
-        //테스트!!!!!!!!!!!!!!!!!!!!!!
+        
+        let _oPromise = undefined;
+        
+        //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
+        if(typeof _oDom !== "undefined" && _oDom !== null){
+          _oPromise = _oRender.setAfterRendering(_oTarget);
+        }
+
+        //RichTextEditor 미리보기 출력 예외처리로직.
+        var _aPromise = _oRender.renderingRichTextEditor(is_tree);
+
+
+        //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.
+        if(typeof _oPromise !== "undefined"){
+          _oTarget.invalidate();
+          
+          //onAfterRendering 수행까지 대기.
+          await _oPromise;
+        }
+
+
+        //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.
+        //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
+        await Promise.all(_aPromise);
 
         
         //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
@@ -5349,6 +5842,25 @@
     //단축키 잠금 처리.
     oAPP.fn.setShortcutLock(true);
 
+
+
+    var _sDropLineInfo = is_tree?.dropLineInfo || undefined;
+    delete is_tree?.dropLineInfo;
+
+    if(typeof _sDropLineInfo === "undefined"){
+
+      _sDropLineInfo = {};
+
+      _sDropLineInfo.dropPosition = undefined;
+      _sDropLineInfo.dropIndex    = undefined;
+
+      //기존 로직의 마지막 위치에 UI 추가를 위한 index 매핑.
+      _sDropLineInfo.dropIndex = is_tree.zTREE.length;
+
+    }
+
+    
+
     //편집 불가능 상태일때는 exit.
     if(oAPP.attr.oModel.oData.IS_EDIT !== true){
       
@@ -5544,13 +6056,8 @@
       }
 
       
-      //테스트!!!!!!!!!!!!!!!!!!!!!!
-      if(parent.REMOTE.app.isPackaged === false){
-        //UNDO HISTORY 추가 처리.
-        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("DELETE", ls_tree);
-
-      }
-      //테스트!!!!!!!!!!!!!!!!!!!!!!  
+      //UNDO HISTORY 추가 처리.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("DELETE", ls_tree);
 
       
       //내 부모가 자식 UI가 필수인 UI에 자식이 없는경우 강제추가 script 처리. 

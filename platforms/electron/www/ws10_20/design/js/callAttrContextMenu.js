@@ -365,6 +365,13 @@
             //프로퍼티인경우.
             if(ls_attr.UIATY ==="1"){
                 //unbind 처리.
+
+                //현재 unbind 처리 되는 프로퍼티가 sap.ui.core.HTML의 Content 프로퍼티인경우.
+                if(ls_attr.UIATK === "AT000011858"){
+                    //UNDO, 이력 처리 생략을 위한 ACTION CODE 매핑.
+                    ls_attr.ACTCD = oAPP.oDesign.CS_ACTCD.UNBIND_TREE_KEY;
+                }
+
                 oAPP.fn.attrSetUnbindProp(ls_attr);
 
                 //005	Job finished.
@@ -377,6 +384,9 @@
             if(ls_attr.UIATY ==="3"){
                 //unbind 처리.
                 oAPP.fn.attrUnbindAggr(oAPP.attr.prev[ls_attr.OBJID], ls_attr.UIATT, ls_attr.UIATV);
+
+                //UNDO, 이력 처리 생략을 위한 ACTION CODE 매핑.
+                ls_attr.ACTCD = oAPP.oDesign.CS_ACTCD.UNBIND_AGGR;
 
                 //변경건 대한 후속 처리.
                 oAPP.fn.attrSetUnbindProp(ls_attr);
@@ -449,6 +459,10 @@
             //sap.ui.core.HTML UI의 content 프로퍼티인경우.
             if(ls_attr.UIATK === "AT000011858"){
                 l_OBJTY = "HM";
+
+                //프로퍼티 초기화 처리.
+                ls_attr.UIATV = "";
+
             }
 
             //클라이언트 이벤트 삭제 처리.
@@ -456,6 +470,9 @@
             
             //js 설정됨 flag 제거 처리.
             ls_attr.ADDSC = "";
+
+            //클라이언트 이벤트 action code 매핑.
+            ls_attr.ACTCD = oAPP.oDesign.CS_ACTCD.DEL_CLIENT_EVENT;
 
             //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
             oAPP.fn.attrChange(ls_attr, "", false, true);

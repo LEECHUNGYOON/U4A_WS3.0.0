@@ -229,6 +229,20 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
       oAPP.attr.oBindDialog._oModel.refresh();
     }
 
+    //20240830 PES -START.
+    //ATTRIBUTE가 현재 바인딩 처리가 되어 있지 않다면 UNBIND 버튼 비활성화.
+
+    //default unbind 활성화 처리.
+    oAPP.attr.oBindDialog._oModel.oData.vis_unbind = true;
+    
+    //attribute가 바인딩 처리 되지 않은경우.
+    if(oAPP.attr.oBindDialog?._is_attr?.ISBND !== "X"){
+      oAPP.attr.oBindDialog._oModel.oData.vis_unbind = false;
+    }
+
+    //20240830 PES -END.
+
+
     //화면 잠금 처리.
     oAPP.attr.oBindDialog._oModel.setProperty("/busy",true);
 
@@ -1064,6 +1078,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
       //attribute 리스트에서 해당 라인 검색.
       oAPP.attr.oBindDialog._is_attr = oAPP.attr.oModel.oData.T_ATTR.find ( a=> a.UIATK === UIATK && a.UIATY === l_UIATY );
+
     }
 
   } //입력 파라메터 설정.
@@ -1184,7 +1199,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
   //unbind
   var oToolBtn4 = new sap.m.Button({text:l_txt, icon:"sap-icon://disconnected",
-    type:"Reject", enabled:"{/edit}", busy:"{/busy}", busyIndicatorDelay:1, tooltip:l_txt});
+    type:"Reject", enabled:"{/edit}", busy:"{/busy}", visible:"{/vis_unbind}", busyIndicatorDelay:1, tooltip:l_txt});
   oTool.addContent(oToolBtn4);
 
   //unbind 버튼 선택 이벤트

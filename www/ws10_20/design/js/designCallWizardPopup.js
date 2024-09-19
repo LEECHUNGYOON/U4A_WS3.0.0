@@ -195,19 +195,14 @@
                     var _LIST = lf_createUI(oReturn.oList, aggr, ls_parent, oReturn.uName);
                     
             
-                    //테스트!!!!!!!!!!!!!!!!!!!!!!
-                    if(parent.REMOTE.app.isPackaged === false){
+                    var _aDesign = [];
 
-                        var _aDesign = [];
+                    _aDesign.push(oAPP.fn.getTreeData(l_OBJID));
 
-                        _aDesign.push(oAPP.fn.getTreeData(l_OBJID));
+                    _aDesign.push(oAPP.fn.getTreeData(_LIST));
 
-                        _aDesign.push(oAPP.fn.getTreeData(_LIST));
-
-                        //UNDO HISTORY 추가 처리.
-                        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("WIZARD_INSERT", _aDesign);
-                    }
-                    //테스트!!!!!!!!!!!!!!!!!!!!!!
+                    //UNDO HISTORY 추가 처리.
+                    parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("WIZARD_INSERT", _aDesign);
 
                     
                 }else{
@@ -216,17 +211,12 @@
                     l_OBJID = lf_createUI(oReturn, aggr, ls_parent);
 
 
-                    //테스트!!!!!!!!!!!!!!!!!!!!!!
-                    if(parent.REMOTE.app.isPackaged === false){
+                    var _aDesign = [];
 
-                        var _aDesign = [];
+                    _aDesign.push(oAPP.fn.getTreeData(l_OBJID));
 
-                        _aDesign.push(oAPP.fn.getTreeData(l_OBJID));
-
-                        //UNDO HISTORY 추가 처리.
-                        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("WIZARD_INSERT", _aDesign);
-                    }
-                    //테스트!!!!!!!!!!!!!!!!!!!!!!
+                    //UNDO HISTORY 추가 처리.
+                    parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("WIZARD_INSERT", _aDesign);
 
                 }
 
