@@ -1910,7 +1910,7 @@ module.exports = {
         } catch (error) {
 
             let _sErrMsg = "[Icon Favorite save]: " + error.toString() + " \n\n ";
-            console.log(_sErrMsg);
+            console.log("아이콘 즐겨찾기 저장 오류", _sErrMsg);
             throw new Error(error);
         }
 

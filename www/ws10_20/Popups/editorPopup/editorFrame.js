@@ -95,7 +95,7 @@ document.addEventListener('deviceready', onDeviceReady, false);
 
 function onDeviceReady() {
 
-    console.log("onDeviceReady");
+    // console.log("onDeviceReady");
 
     var oWs_frame = document.getElementById("ws_editorframe");
     if (!oWs_frame) {
@@ -108,7 +108,7 @@ function onDeviceReady() {
 
 oAPP.IPCRENDERER.on('if-editor-info', function (event, res) {
 
-    console.log("if-editor-info");
+    // console.log("if-editor-info");
 
     setEditorInfo(res);
 
@@ -118,6 +118,6 @@ oAPP.IPCRENDERER.on('if-editor-info', function (event, res) {
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    console.log("DOMContentLoaded");
+    // console.log("DOMContentLoaded");
 
 });

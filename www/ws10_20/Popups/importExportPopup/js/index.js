@@ -191,7 +191,7 @@ const oAPP = {
 
 
         }).catch(err => {
-            console.log(err);
+            console.log("APP Import Error", err);
             oAPP.oWIN.close();
             return;
 

@@ -745,7 +745,7 @@
 
     window.ondragend = (e) => {
 
-        console.log('ondragend!!!');
+        // console.log('ondragend!!!');
 
         oAPP.main.onDragend();
 
@@ -758,7 +758,7 @@
     // window.ondragstart = () => {
     window.addEventListener("dragstart", () => {
 
-        console.log('ondragstart!!!');
+        // console.log('ondragstart!!!');
 
         oAPP.main.onDragend();
 

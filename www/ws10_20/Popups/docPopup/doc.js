@@ -1002,7 +1002,7 @@ function _attachBroadCastEvent (){
               //사용자 선택중인 라인 갱신 
               oPrc.fn_UpdateDOCLineData(oNaviList.getSelectedKey());
 
-              console.log("edit 변경");
+            //   console.log("edit 변경");
 
           },
           change: () => {
@@ -1013,7 +1013,7 @@ function _attachBroadCastEvent (){
               //사용자 선택중인 라인 갱신 
               oPrc.fn_UpdateDOCLineData(oNaviList.getSelectedKey());
 
-              console.log("edit 변경");
+            //   console.log("edit 변경");
 
           }
       });
@@ -1063,7 +1063,7 @@ function _attachBroadCastEvent (){
           //사용자 선택중인 라인 갱신 
           oPrc.fn_UpdateDOCLineData(oNaviList.getSelectedKey());
 
-          console.log("edit 변경");
+        //   console.log("edit 변경");
 
       });
 

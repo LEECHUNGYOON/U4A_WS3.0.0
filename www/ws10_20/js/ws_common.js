@@ -1969,8 +1969,8 @@
             
             e.stopImmediatePropagation();
 
-            console.log("F9");
-            console.log(e);
+            // console.log("F9");
+            // console.log(e);
         });
 
         // // Busy 켜기

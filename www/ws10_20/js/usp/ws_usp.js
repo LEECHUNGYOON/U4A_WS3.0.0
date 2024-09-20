@@ -161,7 +161,7 @@
                 return;
             }
 
-            console.log(event.code);
+            zconsole.log(event.code);
 
             switch (event.keyCode) {
                 case 16: // Shift

@@ -629,7 +629,7 @@
         // 브로드캐스트 메시지 수신
         oContr.broad[oItemData.KEY].onmessage = function(e){
 
-            console.log(e.data);
+            // console.log(e.data);
 
         };
 
