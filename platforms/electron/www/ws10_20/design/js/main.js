@@ -579,6 +579,12 @@
           //display flag 설정.
           oAPP.attr.oModel.oData.IS_EDIT = false;
 
+          //undo, redo 이력 초기화.
+          parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
+
+          //undo, redo 버튼 활성 여부 처리.
+          parent.require(oAPP.oDesign.pathInfo.undoRedo).setUndoRedoButtonEnable();
+
           //UI design tree영역 drag & drop 처리.
           oAPP.fn.setTreeDnDEnable(oAPP.attr.oModel.oData.zTREE[0]);
 
@@ -612,6 +618,12 @@
 
       //라이브러리 정보가 로드된 경우.
       if(jQuery.isEmptyObject(oAPP.DATA.LIB) !== true){
+        
+        //undo, redo 이력 초기화.
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
+
+        //undo, redo 버튼 활성 여부 처리.
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).setUndoRedoButtonEnable();
         
         //design 레이아웃 순서 설정.
         oAPP.fn.setDesignLayout();
@@ -720,6 +732,9 @@
 
       //undo, redo 이력 초기화.
       parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
+
+      //undo, redo 버튼 활성 여부 처리.
+      parent.require(oAPP.oDesign.pathInfo.undoRedo).setUndoRedoButtonEnable();
 
       //라인 선택 이벤트 해제(이벤트 수행 처리 회피 목적)
       oAPP.attr.ui.oLTree1.detachRowSelectionChange(oAPP.fn.onDesignTreeRowSelChange);
@@ -845,7 +860,6 @@
 
     //UI 저장 정보 구성.
     oAPP.fn.getSaveData = function(){
-
       
       //undo, redo 이력 초기화.
       parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();

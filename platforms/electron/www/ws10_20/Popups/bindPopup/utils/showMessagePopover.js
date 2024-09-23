@@ -123,8 +123,6 @@ function clearError(){
  *************************************************************/
 function onSelLink(oEvent){
 
-    console.log("link");
-
     var _oUi = oEvent?.oSource;
 
     if(typeof _oUi === "undefined" || _oUi === null){

@@ -1807,7 +1807,6 @@ function designControl(oArea){
             //binding popup에서 drag하지 않았다면.
             if(typeof _oDrag === "undefined" || _oDrag === null){
                 //drop 영역 확보를 위한 design tree 화면 비활성 처리.
-                console.log(_oDrag);
 
                 //TREE TABLE 영역을 DROP으로 변경 처리.
                 this.setTargetAggregation();

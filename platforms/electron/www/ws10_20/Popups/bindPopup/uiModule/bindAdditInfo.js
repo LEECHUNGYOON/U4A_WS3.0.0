@@ -823,8 +823,6 @@ function designControl(oArea){
                 var _oDelegate = {
                     onAfterRendering:(oEvent)=>{
 
-                        console.log(`${oUI.sId} onAfterRendering`);
-
                         //onAfterRendering 이벤트 제거.
                         oUI.removeEventDelegate(_oDelegate);
 

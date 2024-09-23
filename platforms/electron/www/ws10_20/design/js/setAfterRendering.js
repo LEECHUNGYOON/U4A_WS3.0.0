@@ -17,9 +17,6 @@ module.exports = function(oTarget){
 		if(oTarget.isA("sap.ui.richtexteditor.RichTextEditor") === true){
 
 			oTarget.attachEventOnce("readyRecurring", async function(){
-                console.log("리치 에디터 도착");
-
-				console.log(oTarget.getDomRef("textarea_ifr"));
 
 				return resolve();
 
@@ -34,7 +31,6 @@ module.exports = function(oTarget){
 		var _oDelegate = {
 			onAfterRendering: async function(){
 				oTarget.removeEventDelegate(_oDelegate);
-				console.log("onAfterRendering 도착");
 
 				//현재 호출될 dialog 안에 richTextEditor가 없다면
 				//afterOpen이벤트 등록 후 해당 이벤트 호출까지 대기.
@@ -42,9 +38,6 @@ module.exports = function(oTarget){
 				//dialog의 afterOpen 호출전에 richTextEditor의 readyRecurring 이벤트가 호출되어
 				//문제가 발생됨)
 				await attachEventDialogAfterOpen(oTarget);
-
-				console.log(oTarget.getDomRef());
-				
 
 				return resolve();
 			}
@@ -101,10 +94,6 @@ function attachEventDialogAfterOpen(oTarget){
 
 		//dialog의 AfterOpen 이벤트 등록.
 		oTarget.attachEventOnce("afterOpen", async function(){
-			console.log("afterOpen 도착");
-
-			console.log(oTarget.getDomRef());
-
 			return resolve();
 		});
 

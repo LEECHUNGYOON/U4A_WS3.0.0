@@ -1373,7 +1373,7 @@
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
 
-            console.log("cccccc");
+            // console.log("cccccc");
 
 
             oBrowserWindow = null;

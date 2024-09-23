@@ -33,7 +33,7 @@ oAPP = {
         document.getElementsByClassName("drow-checkbox")[0].addEventListener("click", (e)=>{
 
               var isCHK = document.getElementById("check1").checked;
-                  console.log(isCHK);
+                  // console.log(isCHK);
 
                   //드로잉 체크박스 값에 따른 드로잉 초기화 버튼 활성/비활성 처리
                   if(isCHK){  //드로잉 설정
@@ -281,7 +281,7 @@ oAPP = {
 
               oAPP.fs.appendFile(fileName, Buffer.from(await e.data.arrayBuffer()), function (err) {
                 if (err) {return;};
-                console.log('Saved!');
+                // console.log('Saved!');
               });
 
         });

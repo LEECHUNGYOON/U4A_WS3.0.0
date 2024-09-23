@@ -1245,6 +1245,88 @@
 
                     oFindBtn.firePress();
                 }
+            },
+            {
+                KEY: "Ctrl+Z", // [WS20] UNDO
+                fn: (e) => {
+
+                    // 20번 페이지의 앱 정보를 구한다.
+                    let _oAppInfo = parent.getAppInfo();
+                    if(!_oAppInfo){
+                        return;
+                    }
+
+                    // 현재 문서 모드가 display일 경우
+                    if(_oAppInfo.IS_EDIT !== "X"){                    
+                        return;
+                    }                    
+
+                    e.stopImmediatePropagation();
+
+                    if (sap.ui.getCore().isLocked()) {
+                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                        return;
+                    }
+
+                    // lock 걸기
+                    sap.ui.getCore().lock();
+
+                    // 단축키 실행 할지 말지 여부 체크
+                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                    // X 이면 실행 불가
+                    if (result == "X") {
+                        sap.ui.getCore().unlock();
+                        return;
+                    }                    
+
+                    parent.require(oAPP.oDesign.pathInfo.undoRedo).executeHistory("UNDO");
+
+                    // zconsole.log("UNDO!!");
+
+
+
+                }
+            },
+            {
+                KEY: "Ctrl+Y", // [WS20] REDO
+                fn: (e) => {
+
+                    // 20번 페이지의 앱 정보를 구한다.
+                    let _oAppInfo = parent.getAppInfo();
+                    if(!_oAppInfo){
+                        return;
+                    }
+
+                    // 현재 문서 모드가 display일 경우
+                    if(_oAppInfo.IS_EDIT !== "X"){                    
+                        return;
+                    }           
+
+                    e.stopImmediatePropagation();
+
+                    if (sap.ui.getCore().isLocked()) {
+                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                        return;
+                    }
+
+                    // lock 걸기
+                    sap.ui.getCore().lock();
+
+                    // 단축키 실행 할지 말지 여부 체크
+                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                    // X 이면 실행 불가
+                    if (result == "X") {
+                        sap.ui.getCore().unlock();
+                        return;
+                    }                    
+
+                    // zconsole.log("REDO!!");
+
+                    parent.require(oAPP.oDesign.pathInfo.undoRedo).executeHistory("REDO");
+
+                }
             }
 
             ],

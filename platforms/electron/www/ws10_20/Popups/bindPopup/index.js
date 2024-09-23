@@ -136,8 +136,6 @@ let oAPP = parent.oAPP,
             var _oDelegate = {
                 onAfterRendering:(oEvent)=>{
 
-                    // console.log(`${oUI.sId} onAfterRendering`);
-
                     //onAfterRendering 이벤트 제거.
                     oUI.removeEventDelegate(_oDelegate);
 
@@ -413,10 +411,6 @@ let oAPP = parent.oAPP,
             verticalScrolling:false,
             contentHeight: "60%",
             afterOpen:function(){
-                // _oTab.attachEventOnce("rowsUpdated", function(){
-                //     console.log(123123);
-                //     oAPP.fn.setUiTableAutoResizeColumn(_oTab);
-                // });
             },
             afterClose:function(){
                 oDialog.destroy();
@@ -4677,7 +4671,6 @@ let oAPP = parent.oAPP,
 
             //다음 라인 정보 구성.
             _indx += 1;
-            console.log(_indx);
 
             //하위를 탐색하며 tree 펼첨 처리.
             _fn_expand();

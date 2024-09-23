@@ -123,7 +123,7 @@
             autoFocus: false,
             afterNavigate: function (oEvent) {
                 
-                console.log(sap.ui.getCore().isLocked());
+                // console.log(sap.ui.getCore().isLocked());
 
                 var toId = oEvent.getParameter("toId");
 

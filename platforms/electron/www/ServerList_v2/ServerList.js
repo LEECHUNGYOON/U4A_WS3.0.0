@@ -215,7 +215,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oAPP.data.SAPLogon.aSys32MsgServPort = aServ;
 
-        console.log(oAPP.data.SAPLogon.aSys32MsgServPort);
+        // console.log(oAPP.data.SAPLogon.aSys32MsgServPort);
 
     } // end of _getMsgServPortList
 
@@ -2931,13 +2931,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             _oSwitch1.setBusy(false);
 
-            console.log("afterOpen");
+            // console.log("afterOpen");
 
         });
 
         _oDialog.attachEvent("afterClose", function(){
 
-            console.log("afterClose");
+            // console.log("afterClose");
 
             _oDialog.destroy();
 

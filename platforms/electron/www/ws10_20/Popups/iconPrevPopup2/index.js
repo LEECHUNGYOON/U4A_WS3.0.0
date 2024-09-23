@@ -1781,7 +1781,7 @@ function sendAjaxAsync(pOptions, oFormData) {
 
         } catch (error) {
             resolve({ RETCD: "E" });
-            console.log(error.toString());
+            // console.log(error.toString());
         }
 
     });

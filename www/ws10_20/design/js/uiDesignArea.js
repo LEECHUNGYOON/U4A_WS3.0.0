@@ -400,8 +400,6 @@
 
     //drag UI가 drop위치에 올려졌을때 이벤트.
     oLTDrop1.attachDragOver(function(oEvent){
-
-      // console.log(oEvent.mParameters.dropPosition);
       
       //default move 표시.
       var l_effect = "Move";
@@ -2363,7 +2361,6 @@
     } //attribute 복사 처리.
 
 
-
     var _sDropLineInfo = is_p?.dropLineInfo || undefined;
     delete is_p?.dropLineInfo;
 
@@ -2467,27 +2464,36 @@
     await oAPP.fn.setSelectTreeItem(ls_copy.OBJID);
 
 
-    //복사된 라인의 위치에 메시지 출력 처리.
-    oAPP.attr.ui.oLTree1.attachEventOnce("rowsUpdated", function(){
-      //design tree의 바인딩 정보 얻기.
-      var lt_row = oAPP.attr.ui.oLTree1.getRows();
+    //design tree의 바인딩 정보 얻기.
+    let _aRow = oAPP.attr.ui.oLTree1.getRows();
 
-      //design tree의 바인딩정보에서 현재 검색한 UI의 라인 위치 얻기.
-      for(var i=0, l= lt_row.length; i<l; i++){
 
-        var l_ctxt = lt_row[i].getBindingContext();
+    //design tree의 바인딩정보에서 현재 검색한 UI의 라인 위치 얻기.
+    for(let i = 0, l = _aRow.length; i < l; i++){
 
-        if(!l_ctxt){continue;}
+      let _oRow = _aRow[i];
 
-        if(l_ctxt.getProperty("OBJID") !== ls_copy.OBJID){continue;}
+      let _oCtxt = _oRow.getBindingContext();
 
-        //272  &1 has been copied.
-        sap.m.MessageToast.show(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "272", "UI", "", "", ""),
-          {of:lt_row[i].getDomRef(), my:"center top"});
-        return;
+      if(!_oCtxt){continue;}
+
+      //대상 OBJECT ID건이 아닌경우 SKIP.
+      if(_oCtxt.getProperty("OBJID") !== ls_copy.OBJID){continue;}
+
+      let _oDom = _oRow.getDomRef() || undefined;
+
+      if(typeof _oDom === "undefined"){
+        console.error("(uiDesignArea.js oAPP.fn.designCopyUI)UI 복사->추가 처리 이후 ROW의 DOM 정보 취득 실패", ls_copy.OBJID);
+        break;
       }
 
-    });
+      //272  &1 has been copied.
+      sap.m.MessageToast.show(oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "272", "UI", "", "", ""),
+        {of:_oDom, my:"center top"});
+      
+      break;
+
+    }
    
 
   };  //design tree의 ui 복사 처리.
@@ -3770,11 +3776,6 @@
   //drop 대상 라인 정보 얻기.
   oAPP.oDesign.fn.getDropTargetLine = function(sDNDInfo){
 	
-    // //design tree 라인 정보가 없다면 exit.
-    // if(typeof sDNDInfo?.sDrag === "undefined"){
-    //   return;
-    // }
-    
     if(typeof sDNDInfo?.sDrop === "undefined"){
       return;
     }
@@ -3835,8 +3836,7 @@
       
       //직전 라인을 DROP 대상으로 설정.
       _sTarget = _oCtxt.getProperty();
-      
-      
+            
     }	
     
     
@@ -3890,13 +3890,19 @@
     //현재 부모에 DRAG UI의 위치 존재 여부 확인.
     var _beforeDragPos = _sParent.zTREE.findIndex( item => item.OBJID === sDNDInfo.sDrag.OBJID );
     
-    //현재 부모에 drag UI가 존재하며, DROP 위치보다 이전에 존재하는경우
+    
     if(_beforeDragPos === -1){
-  
+      //현재 부모에 drag UI가 존재하지 않는경우 DROP의 다음 위치에 UI 추가.
       _sDropLineInfo.dropIndex++;
       
-    }else if(_sDropLineInfo.dropIndex < _beforeDragPos){
+    }else if(_beforeDragPos > _sDropLineInfo.dropIndex){
+      //현재 부모에 drag UI가 존재하며, DRAG UI가 DROP 위치 다음에 존재하는경우, DROP의 다음 위치에 UI 추가.
       _sDropLineInfo.dropIndex++;
+
+    }else if(_beforeDragPos <= _sDropLineInfo.dropIndex  && oAPP.attr.ui.oLTree1.__dropEffect === "Copy"){
+      //현재 부모에 drag UI가 존재하며, DRAG UI가 DROP의 이전 위치에 존재하지만, COPY 처리된경우 DROP의 다음 위치에 UI 추가.
+      _sDropLineInfo.dropIndex++;
+
     }
 
     

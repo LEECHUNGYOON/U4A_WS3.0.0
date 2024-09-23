@@ -154,7 +154,7 @@
      **************************************************************************/
     oAPP.fn.fnUspTreeNodeMoveUp = (oTreeTable, pSelIndex) => {
 
-        console.log("Tree Node Up");
+        zconsole.log("Tree Node Up");
 
         var oSelectedCtx = oTreeTable.getContextByIndex(pSelIndex), // 현재 선택한 Node
             oCtxModel = oSelectedCtx.getModel(),
@@ -180,7 +180,7 @@
      **************************************************************************/
     oAPP.fn.fnUspTreeNodeMoveDown = (oTreeTable, pSelIndex) => {
 
-        console.log("Tree Node Down");
+        zconsole.log("Tree Node Down");
 
         var oSelectedCtx = oTreeTable.getContextByIndex(pSelIndex), // 현재 선택한 Node
             oCtxModel = oSelectedCtx.getModel(),
@@ -204,7 +204,7 @@
     // 이동한 Node에 선택 표시를 하기 위한 이벤트 걸기
     function _fnUspNodeSetSelectedIndex(oMeItem, oEvent) {
 
-        console.log("_fnUspNodeSetSelectedIndex");
+        zconsole.log("_fnUspNodeSetSelectedIndex");
 
         var oTreeTable = oEvent.getSource(),
             aRows = oTreeTable.getRows(),

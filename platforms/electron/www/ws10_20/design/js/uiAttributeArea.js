@@ -1950,8 +1950,6 @@
         return;
       }
 
-      //해당 파라메터를 갖고 서버 호출 펑션 수행 해야함.
-      console.log(param.PROGNM, param.LINE);
 
       // busy off Lock off
       parent.setBusy("");

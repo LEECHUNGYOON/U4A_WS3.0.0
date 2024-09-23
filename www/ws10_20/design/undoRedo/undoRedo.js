@@ -50,6 +50,11 @@ module.exports.setUndoRedoButtonEnable = function(){
  *************************************************************/
 module.exports.saveActionHistoryData = function(ACTCD, oParam){
 
+    //편집 상태가 아닌경우 exit.
+    if(oAPP.attr.oModel.oData.IS_EDIT === false){
+        return;
+    }
+
     //redo history 초기화.
     __ACT_REDO_HIST = [];
 
@@ -117,6 +122,7 @@ module.exports.saveActionHistoryData = function(ACTCD, oParam){
         default:
             //잘못된 ACTION CODE를 전달받았을때의 로직 처리.
             //(강제 오류 발생 처리등..)
+            throw(new Error(`(undoRedo.js)이력 저장시 잘못된 action code가 전달됨(${ACTCD})`));
 
     }
 
@@ -145,8 +151,22 @@ module.exports.executeHistory = async function(PRCCD){
 
     //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
     parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
-    
 
+
+    //편집 상태가 아닌경우 exit.
+    if(oAPP.attr.oModel.oData.IS_EDIT === false){
+
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+        //단축키 잠금 해제처리.
+        oAPP.fn.setShortcutLock(false);
+
+        parent.setBusy("");
+
+        return;
+    }
+    
     
     //이력 정보가 존재하지 않는경우 exit.
     if(typeof __ACT_UNDO_HIST === "undefined" || 
@@ -218,6 +238,8 @@ module.exports.executeHistory = async function(PRCCD){
     //history 처리 정보가 존재하지 않는경우.
     if(typeof _sHist === "undefined"){
 
+        console.error(`(undoRedo.js의 executeHistory)${PRCCD} 처리시 history 정보가 존재하지 않음`);
+
         //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
         parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -265,6 +287,7 @@ module.exports.executeHistory = async function(PRCCD){
         default:
             //잘못된 ACTION CODE를 전달받았을때의 로직 처리.
             //(강제 오류 발생 처리등..)
+            throw(new Error(`(undoRedo.js의 executeHistory)${PRCCD} 처리시 잘못된 action code가 전달됨(${_sHist.ACTCD})`));
         
     }
 
@@ -322,15 +345,24 @@ class CL_INSERT_UI{
     static saveActionHistoryData(aTargetHist, oParam) {
 
         //파라메터 정보가 존재하는지 확인.
-        if(typeof oParam === "undefined" || oParam === null){
+        if(typeof oParam === "undefined"){
+            console.error(`(undoRedo.js) CL_INSERT_UI 이력 저장 중 파라메터가 undefined임`);
+            return;
+        }
+
+        //파라메터 정보가 존재하는지 확인.
+        if(oParam === null){
+            console.error(`(undoRedo.js) CL_INSERT_UI 이력 저장 중 파라메터가 null임`);
             return;
         }
 
         if(Array.isArray(oParam) !== true){
+            console.error(`(undoRedo.js) CL_INSERT_UI 이력 저장 중 파라메터가 array가 아님`);
             return;
         }
 
         if(oParam.length === 0){
+            console.error(`(undoRedo.js) CL_INSERT_UI 이력 저장 중 파라메터에 데이터가 없음`);
             return;
         }
 
@@ -372,6 +404,8 @@ class CL_INSERT_UI{
         //전달받은 파라메터가 없다면 EXIT.
         if(typeof oParam?.T_INSERT_DATA === "undefined"){
 
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 T_INSERT_DATA 파라메터가 undefined임`);
+
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -384,6 +418,8 @@ class CL_INSERT_UI{
         }
 
         if(Array.isArray(oParam.T_INSERT_DATA) !== true){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 T_INSERT_DATA 파라메터가 array가 아님`);
 
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
@@ -398,6 +434,8 @@ class CL_INSERT_UI{
         }
 
         if(oParam.T_INSERT_DATA.length === 0){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 T_INSERT_DATA에 데이터가 없음`);
 
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
@@ -417,6 +455,7 @@ class CL_INSERT_UI{
 
 
         for (let i = 0, l = oParam.T_INSERT_DATA.length; i < l; i++) {
+            
             var _sInsertData = oParam.T_INSERT_DATA[i];
 
             _aDesign.push(_sInsertData.S_DESIGN);
@@ -582,18 +621,22 @@ class CL_DELETE_UI{
     static saveActionHistoryData(aTargetHist, oParam) {
 
         if(typeof oParam === "undefined"){
+            console.error(`(undoRedo.js) CL_DELETE_UI 이력 저장 중 파라메터가 undefined임`);
             return;
         }
 
         if(oParam === null){
+            console.error(`(undoRedo.js) CL_DELETE_UI 이력 저장 중 파라메터가 null임`);
             return;
         }
 
         if(Array.isArray(oParam) !== true){
+            console.error(`(undoRedo.js) CL_DELETE_UI 이력 저장 중 파라메터가 array가 아님`);
             return;
         }
 
         if(oParam.length === 0){
+            console.error(`(undoRedo.js) CL_DELETE_UI 이력 저장 중 파라메터에 데이터가 없음`);
             return;
         }
 
@@ -676,6 +719,9 @@ class CL_DELETE_UI{
     static async executeHistory(sEvent, oParam){
 
         if(typeof oParam?.T_OBJID === "undefined"){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 T_OBJID 파라메터가 undefined임`);
+
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -689,6 +735,9 @@ class CL_DELETE_UI{
 
 
         if(oParam?.T_OBJID === null){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 T_OBJID 파라메터가 null임`);
+
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -702,6 +751,9 @@ class CL_DELETE_UI{
 
 
         if(Array.isArray(oParam?.T_OBJID) !== true){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 T_OBJID 파라메터가 array가 아님`);
+
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -715,6 +767,9 @@ class CL_DELETE_UI{
 
 
         if(oParam.T_OBJID?.length === 0){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 T_OBJID 파라메터에 데이터가 없음`);
+
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -778,8 +833,6 @@ class CL_DELETE_UI{
 
         var _aParam = [];
 
-        var _aOBJID = [];
-
         for (let i = 0, l = oParam.T_OBJID.length; i < l; i++) {
             
             var _OBJID = oParam.T_OBJID[i];
@@ -823,8 +876,6 @@ class CL_DELETE_UI{
             
             var _OBJID = oParam.T_OBJID[i];
             
-            console.log(_OBJID);
-
             //design tree 및 미리보기 UI 삭제 처리.
             CL_DELETE_UI.deleteUiObject(_OBJID);
 
@@ -995,7 +1046,20 @@ class CL_MOVE_UI{
     static saveActionHistoryData(aTargetHist, oParam) {
 
         //파라메터 정보가 존재하는지 확인.
-        if(typeof oParam?.OBJID === "undefined" || oParam?.OBJID === null){
+        if(typeof oParam?.OBJID === "undefined"){
+            console.error(`(undoRedo.js) CL_MOVE_UI 이력 저장 중 파라메터가 undefined임`);
+            return;
+        }
+
+        //파라메터 정보가 존재하는지 확인.
+        if(oParam?.OBJID === null){
+            console.error(`(undoRedo.js) CL_MOVE_UI 이력 저장 중 파라메터가 null임`);
+            return;
+        }
+
+        //파라메터 값이 존재하지 않는경우.
+        if(oParam?.OBJID === ""){
+            console.error(`(undoRedo.js) CL_MOVE_UI 이력 저장 중 파라메터에 값이 없음`);
             return;
         }
 
@@ -1026,6 +1090,9 @@ class CL_MOVE_UI{
     static executeHistory(sEvent, oParam){
 
         if(typeof oParam?.OBJID === "undefined"){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 OBJID 파라메터가 undefined임`);
+
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -1033,10 +1100,14 @@ class CL_MOVE_UI{
             oAPP.fn.setShortcutLock(false);
             
             parent.setBusy("");
+
             return;
         }
 
         if(oParam?.OBJID === null){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 OBJID 파라메터가 null임`);
+
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -1044,10 +1115,14 @@ class CL_MOVE_UI{
             oAPP.fn.setShortcutLock(false);
             
             parent.setBusy("");
+
             return;
         }
 
         if(oParam?.OBJID === ""){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 OBJID 파라메터에 값이 없음`);
+
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -1055,6 +1130,7 @@ class CL_MOVE_UI{
             oAPP.fn.setShortcutLock(false);
             
             parent.setBusy("");
+
             return;
         }
 
@@ -1094,11 +1170,35 @@ class CL_CHANGE_OBJID{
     static saveActionHistoryData(aTargetHist, oParam) {
 
         //파라메터 정보가 존재하는지 확인.
-        if(typeof oParam?.BEFORE_OBJID === "undefined" || oParam?.BEFORE_OBJID === null || oParam?.BEFORE_OBJID === ""){
+        if(typeof oParam?.BEFORE_OBJID === "undefined"){
+            console.error(`(undoRedo.js) CL_CHANGE_OBJID 이력 저장 중 BEFORE_OBJID 파라메터가 undefined임`);
             return;
         }
 
-        if(typeof oParam?.OBJID === "undefined" || oParam?.OBJID === null || oParam?.OBJID === ""){
+        //파라메터 정보가 존재하는지 확인.
+        if(oParam?.BEFORE_OBJID === null){
+            console.error(`(undoRedo.js) CL_CHANGE_OBJID 이력 저장 중 BEFORE_OBJID 파라메터가 null임`);
+            return;
+        }
+
+        //파라메터 정보가 존재하는지 확인.
+        if(oParam?.BEFORE_OBJID === ""){
+            console.error(`(undoRedo.js) CL_CHANGE_OBJID 이력 저장 중 BEFORE_OBJID 파라메터에 값이 없음`);
+            return;
+        }
+
+        if(typeof oParam?.OBJID === "undefined"){
+            console.error(`(undoRedo.js) CL_CHANGE_OBJID 이력 저장 중 OBJID 파라메터가 undefined임`);
+            return;
+        }
+
+        if(oParam?.OBJID === null){
+            console.error(`(undoRedo.js) CL_CHANGE_OBJID 이력 저장 중 OBJID 파라메터가 null임`);
+            return;
+        }
+
+        if(oParam?.OBJID === ""){
+            console.error(`(undoRedo.js) CL_CHANGE_OBJID 이력 저장 중 OBJID 파라메터에 값이 없음`);
             return;
         }
 
@@ -1128,6 +1228,9 @@ class CL_CHANGE_OBJID{
 
         //파라메터 정보가 존재하는지 확인.
         if(typeof oParam?.BEFORE_OBJID === "undefined" || oParam?.BEFORE_OBJID === null || oParam?.BEFORE_OBJID === ""){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 BEFORE_OBJID 파라메터에 데이터가 없음`);
+
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -1135,10 +1238,14 @@ class CL_CHANGE_OBJID{
             oAPP.fn.setShortcutLock(false);
             
             parent.setBusy("");
+
             return;
         }
 
         if(typeof oParam?.OBJID === "undefined" || oParam?.OBJID === null || oParam?.OBJID === ""){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 OBJID 파라메터에 데이터가 없음`);
+
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -1146,6 +1253,7 @@ class CL_CHANGE_OBJID{
             oAPP.fn.setShortcutLock(false);
             
             parent.setBusy("");
+
             return;
         }
 
@@ -1182,16 +1290,30 @@ class CL_CHANGE_OBJID{
             }
         }
 
+
         //클라이언트 이벤트 수집건 objid 변경.
         oAPP.fn.attrChgClientEventOBJID(oParam.BEFORE_OBJID, oParam.OBJID);
+
+
+        //desc 입력건 정보 objid 변경.
+        oAPP.fn.changeDescOBJID(oParam.BEFORE_OBJID, oParam.OBJID);
+
+
+        //이전 UI OBJECT에 수집된 ATTR 정보가 존재하는경우.
+        if(oAPP.attr.prev[oParam.BEFORE_OBJID]._T_0015.length !== 0){
+            
+            //ATTR의 OBJECT ID를 변경건으로 매핑.
+            for(var i = 0, l = oAPP.attr.prev[oParam.BEFORE_OBJID]._T_0015.length; i < l; i++){
+                oAPP.attr.prev[oParam.BEFORE_OBJID]._T_0015[i].OBJID = oParam.BEFORE_OBJID;
+
+            }
+    
+        }
 
         
         //이전 이름의 UI 제거.
         delete oAPP.attr.prev[oParam.OBJID];
 
-
-        //desc 입력건 정보 objid 변경.
-        oAPP.fn.changeDescOBJID(oParam.BEFORE_OBJID, oParam.OBJID);
 
         var ls_uiinfo = oAPP.attr.oModel.getProperty("/uiinfo");
 
@@ -1266,6 +1388,17 @@ class CL_DRAG_DROP{
     static saveActionHistoryData(aTargetHist, oParam) {
 
         if(typeof oParam === "undefined"){
+            console.error(`(undoRedo.js) CL_DRAG_DROP 이력 저장 중 파라메터가 undefined임`);
+            return;
+        }
+
+        if(typeof oParam?.S_DRAG === "undefined"){
+            console.error(`(undoRedo.js) CL_DRAG_DROP 이력 저장 중 S_DRAG 파라메터가 undefined임`);
+            return;
+        }
+
+        if(typeof oParam?.S_DROP === "undefined"){
+            console.error(`(undoRedo.js) CL_DRAG_DROP 이력 저장 중 S_DROP 파라메터가 undefined임`);
             return;
         }
 
@@ -1316,6 +1449,25 @@ class CL_DRAG_DROP{
 
 
         if(typeof oParam?.S_DRAG === "undefined"){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 S_DRAG 파라메터가 undefined임`);
+
+            //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+            parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+            
+            parent.setBusy("");
+
+            return;
+        }
+
+
+        if(typeof oParam?.S_DROP === "undefined"){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 S_DROP 파라메터가 undefined임`);
+
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -1572,14 +1724,17 @@ class CL_CHANGE_ATTR{
     static saveActionHistoryData(aTargetHist, aParam) {
 
         if(typeof aParam === "undefined"){
+            console.error(`(undoRedo.js) CL_CHANGE_ATTR 이력 저장 중 파라메터가 undefined임`);
             return;
         }
 
         if(Array.isArray(aParam) !== true){
+            console.error(`(undoRedo.js) CL_CHANGE_ATTR 이력 저장 중 파라메터가 array가 아님`);
             return;
         }
 
         if(aParam.length === 0){
+            console.error(`(undoRedo.js) CL_CHANGE_ATTR 이력 저장 중 파라메터에 데이터가 없음`);
             return;
         }
 
@@ -1628,9 +1783,6 @@ class CL_CHANGE_ATTR{
             if(typeof _s0015 !== "undefined"){
                 _sATTR.S_0015 = JSON.parse(JSON.stringify(_s0015));
 
-                // //클라이언트 이벤트 수집 처리.
-                // _sATTR.T_CEVT =JSON.parse(JSON.stringify(CL_COMMON.collectClientEventData([_s0015])));
-
             }
 
             _sSaveHist.T_ATTR.push(_sATTR);
@@ -1654,6 +1806,9 @@ class CL_CHANGE_ATTR{
     static async executeHistory(sEvent, oParam){
 
         if(typeof oParam === "undefined"){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 oParam 파라메터가 undefined임`);
+
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -1666,6 +1821,9 @@ class CL_CHANGE_ATTR{
         }
 
         if(Array.isArray(oParam?.T_ATTR) !== true){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 T_ATTR 파라메터가 array가 아님`);
+
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -1678,6 +1836,9 @@ class CL_CHANGE_ATTR{
         }
 
         if(oParam.T_ATTR.length === 0){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 T_ATTR에 데이터가 없음`);
+
             //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
             parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -1717,21 +1878,6 @@ class CL_CHANGE_ATTR{
         for (let i = 0, l = oParam.T_ATTR.length; i < l; i++) {
 
             var _sATTR = oParam.T_ATTR[i];
-
-
-            // var _OBJID = _sATTR.OBJID + _sATTR.UIASN;
-
-            // //현재 attr의 클라이언트 이벤트(html content 정보) 존재 여부 확인.
-            // var _indx = oAPP.DATA.APPDATA.T_CEVT.findIndex( a => a.OBJID === _OBJID );
-
-            // //존재시 이전 수집 정보 제거.
-            // if(_indx !== -1){
-            //     oAPP.DATA.APPDATA.T_CEVT.splice(_indx, 1);
-            // }
-            
-            // //이전 이력 정보 매핑.
-            // oAPP.DATA.APPDATA.T_CEVT = oAPP.DATA.APPDATA.T_CEVT.concat(_sATTR.T_CEVT);
-
             
 
             //이전 ATTR 변경건 위치 확인.
@@ -2070,7 +2216,7 @@ class CL_COMMON{
      *************************************************************/
     static setUndoRedoButtonEnable = function() {
 
-        if(typeof oAPP.attr.oModel.oData.designTree === "undefined"){
+        if(typeof oAPP?.attr?.oModel?.oData?.designTree === "undefined"){
             oAPP.attr.oModel.oData.designTree = {};
         }
 

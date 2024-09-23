@@ -115,9 +115,6 @@
                     return;
                 }
 
-                console.log(e.data);
-               
-
                 /*********************************************************************
                  * 디테일 영역의 iframe에 로드 후 새창을 열면 broadcast가 둘다 수신되는데
                  * 디테일 영역의 iframe은 이미 화면이 로드된 상태에서 또 수신받으면
@@ -145,8 +142,6 @@
                 delete window.broadcast;
             }
 
-            console.log('end');    
-    
         };
 
     </script>

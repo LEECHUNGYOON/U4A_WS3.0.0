@@ -344,6 +344,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // 브라우저 zoom 레벨을 수정 한 후 로그인 페이지로 이동 시 기본 zoom 레벨 적용
     parent.WEBFRAME.setZoomLevel(0);
 
-    console.log("DOMContentLoaded_1");
+    // console.log("DOMContentLoaded_1");
 
 });

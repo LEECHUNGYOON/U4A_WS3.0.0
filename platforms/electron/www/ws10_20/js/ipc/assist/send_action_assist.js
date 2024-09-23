@@ -23,8 +23,6 @@ export function SETBUSYLOCK(oEvent, oPARAM){
         return;
     }
 
-    console.log("ipc busy");
-
     oAPP.common.fnSetBusyLock(oPARAM.ISBUSY);
     
 } // end of SETBUSYLOCK
@@ -41,8 +39,6 @@ export function BROAD_BUSY(oEvent, oPARAM){
     if(typeof oPARAM?.PRCCD === "undefined"){
         return;
     }
-
-    console.log("broad busy");
 
     // 전체 자식 윈도우에 Busy 킨다.
     oAPP.attr.oMainBroad.postMessage({PRCCD: oPARAM.PRCCD});
