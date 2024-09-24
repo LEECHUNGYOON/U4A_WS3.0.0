@@ -1352,9 +1352,11 @@
 
       //ATTR 초기화전 정보 수집.
       var _aResetAttr = parent.require(oAPP.oDesign.pathInfo.undoRedo).getResetAttrParam();
-      
-      //UNDO HISTORY 추가 처리.
-      parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("RESET_ATTR", _aResetAttr);
+
+      if(_aResetAttr.length > 0){
+        //UNDO HISTORY 추가 처리.
+        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("RESET_ATTR", _aResetAttr);
+      }     
 
 
       //현재 ATTRIBUTE 항목중 PROPERTY 항목에 대해 직접 입력하여 값을 변경했다면, DEFAULT 값으로 초기화 처리.

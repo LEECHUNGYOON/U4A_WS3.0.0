@@ -1042,19 +1042,8 @@
     oAPP.events.ev_pressActivateBtn = async function (oEvent) {
 
         // busy 키고 Lock 걸기
-        oAPP.common.fnSetBusyLock("X");
-        
+        oAPP.common.fnSetBusyLock("X");        
 
-        //undo, redo 이력 초기화.
-        parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
-
-        //undo, redo 버튼 활성여부 처리.
-        parent.require(oAPP.oDesign.pathInfo.undoRedo).setUndoRedoButtonEnable();
-
-        oAPP.attr.oModel.refresh();
-
-
-        
         // 푸터 메시지가 있을 경우 닫기
         APPCOMMON.fnHideFloatingFooterMsg();
 
@@ -1225,6 +1214,18 @@
 
             APPCOMMON.fnSetModelProperty("/WS20/APP", oAppInfo);
 
+           
+
+            //undo, redo 이력 초기화.
+            parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
+
+            //undo, redo 버튼 활성여부 처리.
+            parent.require(oAPP.oDesign.pathInfo.undoRedo).setUndoRedoButtonEnable();
+
+            oAPP.attr.oModel.refresh();
+
+
+
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
 
@@ -1242,17 +1243,6 @@
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
-
-
-        //undo, redo 이력 초기화.
-        parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
-
-        //undo, redo 버튼 활성여부 처리.
-        parent.require(oAPP.oDesign.pathInfo.undoRedo).setUndoRedoButtonEnable();
-
-        oAPP.attr.oModel.refresh();
-
-
 
         // 자식 윈도우 숨기기
         oAPP.fn.fnChildWindowShow(false);
@@ -1385,11 +1375,23 @@
 
             APPCOMMON.fnSetModelProperty("/WS20/APP", oAppInfo);
 
+
+            
+            //undo, redo 이력 초기화.
+            parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
+
+            //undo, redo 버튼 활성여부 처리.
+            parent.require(oAPP.oDesign.pathInfo.undoRedo).setUndoRedoButtonEnable();
+
+            oAPP.attr.oModel.refresh();
+
+
+
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
 
             // 자식 윈도우 활성화
-            oAPP.fn.fnChildWindowShow(true);
+            oAPP.fn.fnChildWindowShow(true);            
 
         } // end of lf_getAppInfo      
 

@@ -50,11 +50,6 @@ module.exports.setUndoRedoButtonEnable = function(){
  *************************************************************/
 module.exports.saveActionHistoryData = function(ACTCD, oParam){
 
-    //편집 상태가 아닌경우 exit.
-    if(oAPP.attr.oModel.oData.IS_EDIT === false){
-        return;
-    }
-
     //redo history 초기화.
     __ACT_REDO_HIST = [];
 
@@ -152,21 +147,6 @@ module.exports.executeHistory = async function(PRCCD){
     //WS 20 -> 바인딩 팝업 BUSY ON 요청 처리.
     parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
 
-
-    //편집 상태가 아닌경우 exit.
-    if(oAPP.attr.oModel.oData.IS_EDIT === false){
-
-        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
-        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
-
-        //단축키 잠금 해제처리.
-        oAPP.fn.setShortcutLock(false);
-
-        parent.setBusy("");
-
-        return;
-    }
-    
     
     //이력 정보가 존재하지 않는경우 exit.
     if(typeof __ACT_UNDO_HIST === "undefined" || 
@@ -237,8 +217,6 @@ module.exports.executeHistory = async function(PRCCD){
 
     //history 처리 정보가 존재하지 않는경우.
     if(typeof _sHist === "undefined"){
-
-        console.error(`(undoRedo.js의 executeHistory)${PRCCD} 처리시 history 정보가 존재하지 않음`);
 
         //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
         parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
@@ -550,7 +528,15 @@ class CL_INSERT_UI{
         oAPP.DATA.APPDATA.T_CEVT = oAPP.DATA.APPDATA.T_CEVT.concat(sInsertData.T_CEVT);
 
         //desc 정보 원복 처리.
-        oAPP.DATA.APPDATA.T_DESC = oAPP.DATA.APPDATA.T_CEVT.concat(sInsertData.T_DESC);
+        oAPP.DATA.APPDATA.T_DESC = oAPP.DATA.APPDATA.T_DESC.concat(sInsertData.T_DESC);
+
+
+        //SAP.UI.RICHTEXTEDITOR.RICHTEXTEDITOR UI의 예외처리 script 구성.
+        oAPP.attr.ui.frame.contentWindow.setRichTextEditorException(_sDesign.UIOBK, _sDesign.OBJID);
+
+
+        //자식 UI가 필수인 UI에 자식이 없는경우 강제추가 예외처리.
+        oAPP.attr.ui.frame.contentWindow.setChildUiException(_sDesign.UIOBK, _sDesign.OBJID, _sDesign.zTREE, oAPP.attr.S_CODE.UA050);
 
 
         //현재 추가하고자 하는 aggregation만 필터링.
@@ -563,6 +549,10 @@ class CL_INSERT_UI{
         //부모에 생성한 UI 추가.
         oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(_sDesign.OBJID, _sDesign.UILIB, _sDesign.POBID, 
             _sDesign.PUIOK, _sDesign.UIATT, _indx, _sDesign.ISMLB, _sDesign.UIOBK, true);
+
+
+        //미리보기 예외처리 UI 추가 draw 처리.
+        oAPP.fn.prevDrawExceptionUi(_sDesign.UIOBK, _sDesign.OBJID);
 
 
         //UI에 N건 바인딩 처리된경우 부모 UI에 해당 UI 매핑 처리.
@@ -850,13 +840,20 @@ class CL_DELETE_UI{
 
         //현재 선택건의 OBJID 매핑.
         var _SEL_OBJID = _stree?.OBJID || undefined;
+
+        
+        //삭제 대상건이 선택한건인지 확인.
+        let _selected = CL_DELETE_UI.checkSelectObjidDelete(oParam.T_OBJID);
+
+        if(_selected === true){
             
-        //해당 라인의 삭제를 위해 선택된경우.
-        if(_stree?.chk === true){
-            //선택 라인으로부터 가장 직전의 선택하지 않은 라인 정보 얻기.    
-            _SEL_OBJID = oAPP.fn.designGetPreviousTreeItem(_stree.OBJID);
+            //선택한 UI의 부모를 얻음.
+            var _sParent = oAPP.fn.getTreeData(_stree.POBID);
+
+            _SEL_OBJID = _sParent.OBJID;
 
         }
+
 
         //직전 라인 정보를 얻지 못한 경우 ROOT를 선택 처리.
         if(typeof _SEL_OBJID === "undefined"){
@@ -1029,6 +1026,68 @@ class CL_DELETE_UI{
         return aParam;
 
     };
+
+
+    /*************************************************************
+     * @method - 삭제 대상건이 선택한건인지 확인.
+     *************************************************************/
+    static checkSelectObjidDelete = function(aOBJID){	
+	
+        for(let i = 0, l = aOBJID.length; i < l; i++){
+            
+            let _OBJID = aOBJID[i];
+
+            //design tree 라인 정보 얻기.
+            let _sDesign = oAPP.fn.getTreeData(_OBJID);
+            
+            //하위를 탐색하며 삭제건이 선택한건인지 확인.
+            let _found = CL_DELETE_UI.checkSelectObjidDeleteRec(_sDesign);
+            
+            if(_found === true){
+                
+                return true;
+            }
+        }
+        
+    };
+
+
+    /*************************************************************
+     * @method - 삭제 대상건이 선택한건인지 확인 재귀호출 function.
+     *************************************************************/
+    static checkSelectObjidDeleteRec = function(sDesign){
+	
+        if(typeof sDesign === "undefined"){
+            return;
+        }
+        
+        //삭제 대상건이 선택한 건인경우.
+        if(sDesign.OBJID === oAPP?.attr?.oModel?.oData?.uiinfo?.OBJID){
+            //찾음 flag return.
+            return true;
+        }
+        
+        if(typeof sDesign?.zTREE === "undefined"){
+            return;
+        }
+        
+        if(sDesign?.zTREE?.length === 0){
+            return;
+        }
+        
+        for(let i = 0, l = sDesign.zTREE.length; i < l; i++){
+            
+            //하위를 탐색하며 삭제건이 선택한건인지 확인.
+            let _found = CL_DELETE_UI.checkSelectObjidDeleteRec(sDesign.zTREE[i]);
+            
+            if(_found === true){
+                return true;
+            }
+            
+        }
+        
+        
+    }
 
 };
 
@@ -1507,13 +1566,29 @@ class CL_DRAG_DROP{
             //현재 UI의 부모 정보 얻기.
             _aParent.push(oAPP.fn.getTreeData(_sDesign.POBID));
 
+            
+            var _sInsertData = JSON.parse(JSON.stringify(CL_INSERT_UI.TY_INSERT_DATA));
 
-            //부모의 onAfterRendering 이벤트 등록 처리.
-            var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+            _sInsertData.S_DESIGN     = oParam.S_DRAG;
+
+            _sInsertData.BEFORE_POSIT = oParam.BEFORE_DRAG_POS;
+            
+            //drag한 UI로부터 하위 UI의 ATTR 변경건.
+            _sInsertData.T_0015       = oParam.T_DRAG_0015;
+
+            //desc 정보 수집 처리.
+            _sInsertData.T_DESC       = CL_COMMON.collectDescData(_sInsertData.S_DESIGN);
+
+            //클라이언트 이벤트 수집 처리.
+            _sInsertData.T_CEVT       = CL_COMMON.collectClientEventData(_sInsertData.T_0015);
 
             
             //현재 UI를 삭제 처리.
             CL_DELETE_UI.deleteUiObject(oParam.S_DRAG.OBJID);
+            
+
+            //부모의 onAfterRendering 이벤트 등록 처리.
+            var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
 
 
             //대상 UI를 invalidate 처리.
@@ -1524,19 +1599,6 @@ class CL_DRAG_DROP{
             await Promise.all(_aPromise);
             
 
-            var _sInsertData = JSON.parse(JSON.stringify(CL_INSERT_UI.TY_INSERT_DATA));
-
-            _sInsertData.S_DESIGN     = oParam.S_DRAG;
-
-            _sInsertData.BEFORE_POSIT = oParam.BEFORE_DRAG_POS;
-            
-            //drag한 UI로부터 하위 UI의 ATTR 변경건.
-            _sInsertData.T_0015       = oParam.T_DRAG_0015;
-
-
-            //이전 부모에 UI를 추가 처리.
-            CL_INSERT_UI.insertUiObject(_sInsertData);
-
 
             var _aParent = [];
 
@@ -1546,6 +1608,10 @@ class CL_DRAG_DROP{
 
             //부모의 onAfterRendering 이벤트 등록 처리.
             var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+            
+
+            //이전 부모에 UI를 추가 처리.
+            CL_INSERT_UI.insertUiObject(_sInsertData);
                
 
             oAPP.attr.oModel.refresh();
@@ -1553,10 +1619,6 @@ class CL_DRAG_DROP{
 
             //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
             await oAPP.fn.designRefershModel();
-
-
-            //대상 UI를 invalidate 처리.
-            CL_COMMON.invalidateUiObject(_aParent);
 
         
             //부모의 onAfterRendering 처리 대기.
@@ -1583,8 +1645,6 @@ class CL_DRAG_DROP{
         _aParent.push(oAPP.fn.getTreeData(oParam.S_DRAG.POBID));
 
 
-        //부모의 onAfterRendering 이벤트 등록 처리.
-        var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
 
         var _aDNDData = [];
 
@@ -1602,6 +1662,12 @@ class CL_DRAG_DROP{
             
             _sDNDData.T_0015       = oParam.T_DROP_0015;
 
+            //desc 정보 수집 처리.
+            _sDNDData.T_DESC       = CL_COMMON.collectDescData(_sDNDData.S_DESIGN);
+
+            //클라이언트 이벤트 수집 처리.
+            _sDNDData.T_CEVT       = CL_COMMON.collectClientEventData(_sDNDData.T_0015);
+
             _aDNDData.push(_sDNDData);
 
 
@@ -1612,6 +1678,12 @@ class CL_DRAG_DROP{
             _sDNDData.BEFORE_POSIT = oParam.BEFORE_DRAG_POS;
             
             _sDNDData.T_0015       = oParam.T_DRAG_0015;
+
+            //desc 정보 수집 처리.
+            _sDNDData.T_DESC       = CL_COMMON.collectDescData(_sDNDData.S_DESIGN);
+
+            //클라이언트 이벤트 수집 처리.
+            _sDNDData.T_CEVT       = CL_COMMON.collectClientEventData(_sDNDData.T_0015);
 
             _aDNDData.push(_sDNDData);
 
@@ -1625,6 +1697,12 @@ class CL_DRAG_DROP{
             
             _sDNDData.T_0015       = oParam.T_DRAG_0015;
 
+            //desc 정보 수집 처리.
+            _sDNDData.T_DESC       = CL_COMMON.collectDescData(_sDNDData.S_DESIGN);
+
+            //클라이언트 이벤트 수집 처리.
+            _sDNDData.T_CEVT       = CL_COMMON.collectClientEventData(_sDNDData.T_0015);
+
             _aDNDData.push(_sDNDData);
 
             
@@ -1635,6 +1713,12 @@ class CL_DRAG_DROP{
             _sDNDData.BEFORE_POSIT = oParam.BEFORE_DROP_POS;
             
             _sDNDData.T_0015       = oParam.T_DROP_0015;
+
+            //desc 정보 수집 처리.
+            _sDNDData.T_DESC       = CL_COMMON.collectDescData(_sDNDData.S_DESIGN);
+
+            //클라이언트 이벤트 수집 처리.
+            _sDNDData.T_CEVT       = CL_COMMON.collectClientEventData(_sDNDData.T_0015);
 
             _aDNDData.push(_sDNDData);
 
@@ -1651,6 +1735,11 @@ class CL_DRAG_DROP{
             CL_DELETE_UI.deleteUiObject(_sDNDData.S_DESIGN.OBJID);
             
         }
+
+
+        
+        //부모의 onAfterRendering 이벤트 등록 처리.
+        var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
 
 
         //대상 UI를 invalidate 처리.
@@ -1686,10 +1775,6 @@ class CL_DRAG_DROP{
 
         //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
         await oAPP.fn.designRefershModel();
-
-
-        //대상 UI를 invalidate 처리.
-        CL_COMMON.invalidateUiObject(_aParent);
 
     
         //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.

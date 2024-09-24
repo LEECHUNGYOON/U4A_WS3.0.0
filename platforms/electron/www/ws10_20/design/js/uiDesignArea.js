@@ -2295,9 +2295,20 @@
         //UI 생성 처리.
         oAPP.attr.ui.frame.contentWindow.createUIInstance(ls_14, lt_0015);
 
+
+        //SAP.UI.RICHTEXTEDITOR.RICHTEXTEDITOR UI의 예외처리 script 구성.
+        oAPP.attr.ui.frame.contentWindow.setRichTextEditorException(ls_14.UIOBK, ls_14.OBJID);
+
+
+        //자식 UI가 필수인 UI에 자식이 없는경우 강제추가 예외처리.
+        oAPP.attr.ui.frame.contentWindow.setChildUiException(ls_14.UIOBK, ls_14.OBJID, ls_14.zTREE, oAPP.attr.S_CODE.UA050);
+
         //부모에 생성한 UI 추가.
         oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(ls_14.OBJID, ls_14.UILIB, ls_14.POBID, 
           ls_14.PUIOK, ls_14.UIATT, _sDropLineInfo.dropIndex, ls_14.ISMLB, ls_14.UIOBK, true);
+
+        //미리보기 예외처리 UI 추가 draw 처리.
+        oAPP.fn.prevDrawExceptionUi(ls_14.UIOBK, ls_14.OBJID);
 
       }
 
@@ -2853,6 +2864,9 @@
     
     //대상 라인에 drag UI를 추가.
     i_drop.zTREE.splice(_sDropLineInfo.dropIndex, 0, i_drag);
+
+    var _beforePOBID = i_drag.POBID;
+    var _beforeUIATT = i_drag.UIATT;
   
 
     //DRAG UI의 부모정보 변경.
@@ -2881,8 +2895,21 @@
     oAPP.fn.moveCorresponding(param, ls_embed);
     ls_embed.UIATY = "6";
 
+    var _UIATT = undefined;
+
+    //현재 drag 한 UI가 column이면서 template aggregation에 UI가 존재하는경우.
+    if(i_drag.UIOBK === "UO01127" && i_drag.zTREE.findIndex( item => item.UIATT === "template") !== -1){
+      //N건 바인딩을 template으로 판단.
+      _UIATT = "template";
+    }
+
+    //같은 부모의 같은 aggregation 이동건인경우 초기화.
+    if(_beforePOBID === i_drop.OBJID && _beforeUIATT === param.UIATT){
+      _UIATT = undefined;
+    }
+
     //현재 UI가 N건 바인딩 처리 됐는지 여부 확인.
-    var l_path = oAPP.fn.getParentAggrBind(oAPP.attr.prev[i_drag.OBJID]);
+    var l_path = oAPP.fn.getParentAggrBind(oAPP.attr.prev[i_drag.OBJID], _UIATT);
 
 
     //drop ui의 N건 바인딩 여부 확인.
@@ -2932,13 +2959,15 @@
     if(typeof _oDom !== "undefined" && _oDom !== null){
       _oPromise = _oRender.setAfterRendering(_oTarget);
     }
+    
+
+    //미리보기 UI 다시 생성 처리.
+    oAPP.fn.reCreateUIObjInstance(i_drag);
+
 
     //RichTextEditor 미리보기 출력 예외처리로직.
     var _aPromise = _oRender.renderingRichTextEditor(l_parent);
 
-
-    //미리보기 UI 다시 생성 처리.
-    oAPP.fn.reCreateUIObjInstance(i_drag);
 
 
     //DRAG한 UI의 이전 부모를 다시 그리는것을 대기.
@@ -3075,6 +3104,9 @@
 
     //다시 생성한 UI의 child가 필수인 건에 대한 UI 추가 처리.
     oAPP.attr.ui.frame.contentWindow.setChildUiException(is_tree.UIOBK, is_tree.OBJID, is_tree.zTREE, oAPP.attr.S_CODE.UA050);
+
+    //미리보기 예외처리 UI 추가 draw 처리.
+    oAPP.fn.prevDrawExceptionUi(is_tree.UIOBK, is_tree.OBJID);
     
     //제거했던 embeded Aggregation을 다시 추가.
     if(_indx !== -1){
@@ -4874,9 +4906,21 @@
       //UI 생성 처리.
       oAPP.attr.ui.frame.contentWindow.createUIInstance(l_14, [ls_0015]);
 
+
+      //SAP.UI.RICHTEXTEDITOR.RICHTEXTEDITOR UI의 예외처리 script 구성.
+      oAPP.attr.ui.frame.contentWindow.setRichTextEditorException(l_14.UIOBK, l_14.OBJID);
+
+
+      //자식 UI가 필수인 UI에 자식이 없는경우 강제추가 예외처리.
+      oAPP.attr.ui.frame.contentWindow.setChildUiException(l_14.UIOBK, l_14.OBJID, l_14.zTREE, oAPP.attr.S_CODE.UA050);
+
       //부모에 생성한 UI 추가.
       oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(l_14.OBJID, l_14.UILIB, l_14.POBID, 
         l_14.PUIOK, l_14.UIATT, _dropIndex, l_14.ISMLB, l_14.UIOBK, true);
+
+      
+      //미리보기 예외처리 UI 추가 draw 처리.
+      oAPP.fn.prevDrawExceptionUi(l_14.UIOBK, l_14.OBJID);
         
       //부모에 추가할 index 증가 처리.
       _dropIndex++;
@@ -5416,10 +5460,20 @@
           
           //UI 생성 처리.
           oAPP.attr.ui.frame.contentWindow.createUIInstance(ls_14, lt_0015);
+
+          //SAP.UI.RICHTEXTEDITOR.RICHTEXTEDITOR UI의 예외처리 script 구성.
+          oAPP.attr.ui.frame.contentWindow.setRichTextEditorException(ls_14.UIOBK, ls_14.OBJID);
+
+
+          //자식 UI가 필수인 UI에 자식이 없는경우 강제추가 예외처리.
+          oAPP.attr.ui.frame.contentWindow.setChildUiException(ls_14.UIOBK, ls_14.OBJID, ls_14.zTREE, oAPP.attr.S_CODE.UA050);
   
           //부모에 생성한 UI 추가.
           oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(ls_14.OBJID, ls_14.UILIB, ls_14.POBID, 
             ls_14.PUIOK, ls_14.UIATT, _sDropLineInfo.dropIndex, ls_14.ISMLB, ls_14.UIOBK, true);
+
+          //미리보기 예외처리 UI 추가 draw 처리.
+          oAPP.fn.prevDrawExceptionUi(ls_14.UIOBK, ls_14.OBJID);
         
         }else{
 

@@ -44,7 +44,7 @@
 
     //design 에서 사용하는 function 수집 object.
     oAPP.oDesign.fn = {};
-
+    
     //PATH 정보 수집 광역 OBJECT.
     oAPP.oDesign.pathInfo = {};
 
@@ -860,14 +860,6 @@
 
     //UI 저장 정보 구성.
     oAPP.fn.getSaveData = function(){
-      
-      //undo, redo 이력 초기화.
-      parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
-
-      //undo, redo 버튼 활성여부 처리.
-      parent.require(oAPP.oDesign.pathInfo.undoRedo).setUndoRedoButtonEnable();
-
-      oAPP.attr.oModel.refresh();
       
         
       oAPP.attr.POSIT = 0;
