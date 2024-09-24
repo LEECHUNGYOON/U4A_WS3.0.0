@@ -112,8 +112,6 @@
             oAppInfo = {};
         }
 
-        debugger;
-        
         var aParam = [
             sNewSessionVbsFullPath, // VBS 파일 경로
             oServerInfo.SYSTEMID, // SYSTEM ID  
