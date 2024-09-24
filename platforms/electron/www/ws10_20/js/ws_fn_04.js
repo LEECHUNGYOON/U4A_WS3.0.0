@@ -88,8 +88,6 @@
             sNewSessionVbs = "asis_" + sNewSessionVbs;
         }
 
-        debugger;
-        
         var sAppPath = APP.getPath("userData"),
             sVbsFullPath = PATH.join(sAppPath, sVbsPath, sVbsFileName),
             sNewSessionVbsFullPath = PATH.join(sAppPath, sVbsPath, sNewSessionVbs);

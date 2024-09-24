@@ -694,6 +694,7 @@
         ],
             aShortCutWS20 = [{
                 KEY: "F11", // [WS20] FullScreen
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C79"), // FullScreen Mode
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -724,6 +725,7 @@
                 }
             }, {
                 KEY: "Ctrl+Shift+F", // [WS20] textSearchPopup
+                DESC: "",
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -746,6 +748,7 @@
                 }
             }, {
                 KEY: "Ctrl+F2", // [WS20] Syntax Check Button
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B72"), // Syntax Check
                 fn: async (e) => {
 
                     e.stopImmediatePropagation();
@@ -791,6 +794,7 @@
             },
             {
                 KEY: "F3", // [WS20] Back Button
+                DESC: "",
                 fn: async (e) => {
 
                     e.stopImmediatePropagation();
@@ -851,6 +855,7 @@
             },
             {
                 KEY: "Ctrl+F1", // [WS20] Display or Change Button
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05") + " <--> " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02"),
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
