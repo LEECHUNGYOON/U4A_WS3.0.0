@@ -2,10 +2,10 @@
 <widget id="com.u4a_ws3.app" version="3.4.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>U4A Workspace</name>
     <description>
-        A U4A IDE Platform RnD Team application that responds to the deviceready event.
+        U4A Application for Integrated Development of Web Environments Developed by the U4A Solution RnD Team.
     </description>
     <author email="u4aide@u4ainfo.com" href="https://www.u4ainfo.com">
-        U4A IDE Platform RnD Team 
+        U4A Solution RnD Team
     </author>
     <content src="index.html" />
     <access origin="*" />

@@ -1,7 +1,7 @@
 {
   "name": "com.u4a_ws3.app",
   "displayName": "U4A Workspace",
-  "description": "A U4A IDE Platform R&D Team application that responds to the deviceready event.",
+  "description": "U4A Application for Integrated Development of Web Environments Developed by the U4A Solution RnD Team.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -12,7 +12,7 @@
   "keywords": [
     "ecosystem:cordova"
   ],
-  "author": "U4A R&D Team",
+  "author": "U4A Solution RnD Team",
   "license": "Apache-2.0",
   "devDependencies": {
     "cordova-electron": "^3.0.0",
