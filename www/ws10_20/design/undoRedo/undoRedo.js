@@ -1538,7 +1538,7 @@ class CL_DRAG_DROP{
             return;
         }
 
-
+        
         //drag UI의 현재 라인 정보 얻기.
         var _sDesign = oAPP.fn.getTreeData(oParam.S_DRAG.OBJID);
         
@@ -1612,6 +1612,10 @@ class CL_DRAG_DROP{
 
             //이전 부모에 UI를 추가 처리.
             CL_INSERT_UI.insertUiObject(_sInsertData);
+
+
+            //대상 UI를 invalidate 처리.
+            CL_COMMON.invalidateUiObject(_aParent);
                
 
             oAPP.attr.oModel.refresh();
@@ -1768,6 +1772,9 @@ class CL_DRAG_DROP{
             CL_INSERT_UI.insertUiObject(_sDNDData);
 
         }
+
+        //대상 UI를 invalidate 처리.
+        CL_COMMON.invalidateUiObject(_aParent);
 
        
         oAPP.attr.oModel.refresh();
