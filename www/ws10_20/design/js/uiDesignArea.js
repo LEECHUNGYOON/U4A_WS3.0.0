@@ -677,9 +677,26 @@
       visible:"{/IS_EDIT}",
     }));
 
+
+    //접속 유저 정보 얻기.
+    //(임시로직, 추후 시스템 언어로 통합 해야함)
+    var _sInfo = parent.getUserInfo();
+
+    //SAP 접속 언어 매핑(존재하지 않으면 DEFAULT EN)
+    var _LANGU = _sInfo?.LANGU || "EN";
+
+    //EN, KO 이외의 언어로 로그인 한경우 DEFAULT EN 처리.
+    if("EN|KO".indexOf(_LANGU) === -1 ){
+      _LANGU = "EN";
+    }
+    //(임시로직, 추후 시스템 언어로 통합 해야함)
+
+
     //UNDO 버튼 생성.
     oLTBar1.addContent(new sap.m.Button({
       icon:"sap-icon://undo",
+      //247	실행취소 (Ctrl+Z)
+      tooltip: parent.WSUTIL.getWsMsgClsTxt(_LANGU, "ZMSG_WS_COMMON_001", "247"),
       visible:"{/IS_EDIT}",
       enabled:{
         path:"/designTree/undo",
@@ -695,6 +712,8 @@
     //REDO 버튼 생성.
     oLTBar1.addContent(new sap.m.Button({
       icon:"sap-icon://redo",
+      //248	재실행 (Ctrl+Y)
+      tooltip: parent.WSUTIL.getWsMsgClsTxt(_LANGU, "ZMSG_WS_COMMON_001", "248"),
       visible:"{/IS_EDIT}",
       enabled:{
         path:"/designTree/redo",
