@@ -6,8 +6,8 @@
   "name": "U4A Workspace",
   "short_name": "U4A Workspace",
   "version": "com.u4a_ws3.app",
-  "description": "A U4A IDE Platform RnD Team application that responds to the deviceready event.",
-  "author": "U4A IDE Platform RnD Team",
+  "description": "U4A Application for Integrated Development of Web Environments Developed by the U4A Solution RnD Team.",
+  "author": "U4A Solution RnD Team",
   "icons": [
     {
       "src": "www/img/logo.png",
