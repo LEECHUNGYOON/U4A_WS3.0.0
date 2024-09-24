@@ -2172,7 +2172,7 @@
         } // end of lf_bindPropForVisible
 
         let sDispChgTxt = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05") + " <--> "; // Display
-        sDispChgTxt += APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02") + " (Ctrl+F1)"; // Change
+            sDispChgTxt += APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02") + " (Ctrl+F1)"; // Change
 
         var sVisiBindPath = "/WS20/APP/IS_EDIT";
 
@@ -2228,16 +2228,16 @@
             }).addStyleClass("u4aWs20ChangeModeBtn"),
 
             oActivateBtn = new sap.m.Button("activateBtn", {
-                icon: "sap-icon://activate",
-                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B73") + " (Ctrl+F3)", // Activate (Ctrl+F3)
+                icon: "sap-icon://activate",                
                 press: oAPP.events.ev_pressActivateBtn,
+                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B73") + " (Ctrl+F3)", // Activate (Ctrl+F3)
             }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible)
                 .addStyleClass("u4aWs20ActivateBtn"),
 
             oSaveBtn = new sap.m.Button("saveBtn", {
-                icon: "sap-icon://save",
-                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A64") + " (Ctrl+S)", // Save (Ctrl+S)
+                icon: "sap-icon://save",                
                 press: oAPP.events.ev_pressSaveBtn,
+                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A64") + " (Ctrl+S)", // Save (Ctrl+S)
             })
                 // .bindProperty("enabled", sVisiBindPath, lf_bindPropForVisible)
                 .bindProperty("visible", {
@@ -2261,42 +2261,43 @@
 
             oMimeBtn = new sap.m.Button("mimeBtn", {
                 icon: "sap-icon://picture",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10"), // MIME Repository
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10"), // MIME Repository                
+                press: oAPP.events.ev_pressMimeBtn,
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10") + " (Ctrl+Shift+F12)", // MIME Repository (Ctrl+Shift+F12)
-                press: oAPP.events.ev_pressMimeBtn
             }).addStyleClass("u4aWs20MimeBtn"),
 
             oControllerBtn = new sap.m.Button("controllerBtn", {
                 icon: "sap-icon://developer-settings",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A11"), // Controller (Class Builder)
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A11"), // Controller (Class Builder)                
+                press: oAPP.events.ev_pressControllerBtn,
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C38") + " (Ctrl+F12)", // Controller (Ctrl+F12)
-                press: oAPP.events.ev_pressControllerBtn
             }).addStyleClass("u4aWs20ControllerBtn"),
 
             oAppExecBtn = new sap.m.Button("ws20_appExecBtn", {
                 icon: "sap-icon://internet-browser",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06"), // Application Execution
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06"), // Application Execution                
+                press: oAPP.events.ev_pressAppExecBtn,
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06") + " (F8)", // Application Execution (F8)
-                press: oAPP.events.ev_pressAppExecBtn
             }).addStyleClass("u4aWs20AppExecBtn"),
 
             oMobileBtn = new sap.m.Button("ws20_multiPrevBtn", {
                 icon: "sap-icon://desktop-mobile",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A08"), // App Multi Preview
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A08"), // App Multi Preview                
+                press: oAPP.events.ev_pressMultiPrevBtn,
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A08") + " (Ctrl+F5)", // App Multi Preview (Ctrl+F5)
-                press: oAPP.events.ev_pressMultiPrevBtn
             }).addStyleClass("u4aWs20MultiPrevBtn"),
 
             oIconListBtn = new sap.m.Button("iconListBtn", {
                 icon: "sap-icon://activity-items",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12"), // Icon List
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12"), // Icon List                
+                press: oAPP.events.ev_pressIconListBtn,
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12") + " (Ctrl+Shift+F10)", // Icon List (Ctrl+Shift+F10)
-                press: oAPP.events.ev_pressIconListBtn
             }).addStyleClass("u4aWs20IconListBtn"),
 
             oIconCollection = new sap.m.MenuButton({
                 icon: "sap-icon://u4a-fw-regular/Face Grin Wide",
                 text: "{/WSLANGU/ZMSG_WS_COMMON_001/068}", // Icon Viewer
+                tooltip: "{/WSLANGU/ZMSG_WS_COMMON_001/068}", // Icon Viewer
                 menu: [
                     new sap.m.Menu("iconCollBtn", {
                         itemSelected: oAPP.events.ev_PressIconCollectBtn,
@@ -2310,7 +2311,8 @@
                             new sap.m.MenuItem({
                                 key: "M2",
                                 icon: "sap-icon://u4a-fw-solid/Image",
-                                text: "{/WSLANGU/ZMSG_WS_COMMON_001/067}" // Image Icons,                       
+                                text: "{/WSLANGU/ZMSG_WS_COMMON_001/067}", // Image Icons
+                                tooltip: "{/WSLANGU/ZMSG_WS_COMMON_001/067}", // Image Icons
                             })
                         ]
 
@@ -2338,6 +2340,7 @@
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A15"), // Binding Popup
                 icon: "sap-icon://connected",
                 press: oAPP.events.ev_pressBindPopupBtn,
+                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A15"), // Binding Popup
 
             }).addStyleClass("u4aWs20bindPopupBtn");
 

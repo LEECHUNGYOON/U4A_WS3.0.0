@@ -1289,7 +1289,7 @@
                 }
             },
             {
-                KEY: "Ctrl+Y", // [WS20] REDO
+                KEY: "Ctrl+X", // [WS20] REDO
                 fn: (e) => {
 
                     // 20번 페이지의 앱 정보를 구한다.
