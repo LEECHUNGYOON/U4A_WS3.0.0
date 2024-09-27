@@ -1252,7 +1252,8 @@
                 }
             },
             {
-                KEY: "Ctrl+Z", // [WS20] UNDO
+                // KEY: "Ctrl+Z", // [WS20] UNDO
+                KEY: "Ctrl+Shift+Z", // [WS20] UNDO
                 fn: (e) => {
 
                     // 20번 페이지의 앱 정보를 구한다.
@@ -1294,7 +1295,8 @@
                 }
             },
             {
-                KEY: "Ctrl+X", // [WS20] REDO
+                // KEY: "Ctrl+X", // [WS20] REDO
+                KEY: "Ctrl+Shift+X", // [WS20] REDO
                 fn: (e) => {
 
                     // 20번 페이지의 앱 정보를 구한다.
