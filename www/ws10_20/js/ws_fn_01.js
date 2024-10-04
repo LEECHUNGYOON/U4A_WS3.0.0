@@ -435,7 +435,7 @@
                 {
                     key: "Test88",
                     text: "icon Preview Popup (callback)"
-                },
+                }                
             ];
 
         return {
@@ -660,7 +660,11 @@
                 {
                     key: "Test94",
                     text: "sample script download",
-                }
+                },
+                {
+                    key: "Test87",
+                    text: "AI 연결 테스트"
+                },
 
                 // {
                 //     key: "doc01",

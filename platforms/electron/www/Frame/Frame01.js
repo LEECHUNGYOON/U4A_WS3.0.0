@@ -26,10 +26,13 @@ var // <-- 여기는 반드시 var로 선언해야함. (let, const는 자식에�
     MIMETYPES = require('mime-types'),
     POWERMONITOR = REMOTE.require('electron').powerMonitor,
     COMPUTERNAME = process.env.COMPUTERNAME,
-    WSLOG = require(PATH.join(APPPATH, "ws10_20", "js", "ws_log.js"));
+    WSLOG = require(PATH.join(APPPATH, "ws10_20", "js", "ws_log.js")),
+    UAI = require(PATH.join(PATHINFO.JS_ROOT, "uai", "index.js"));
 
 var WSUTIL_PATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js");
 var WSUTIL = require(WSUTIL_PATH);
+
+
 
 
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');

@@ -636,6 +636,32 @@
         ]);
         
     } // end of _createTaskBarMenu
+
+
+    /************************************************************************
+     * UAI 쪽에서 파라미터를 전달받기 위한 이벤트 생성
+     ************************************************************************/
+    function _attach_AI_Events(){
+
+        let _oAI_IF_DOM = parent.document.getElementById("ai_if_dom");
+        if(!_oAI_IF_DOM){
+            return;
+        }
+
+        // 커스텀 이벤트 명
+        let _sEventName = `ai-message`;
+
+        _oAI_IF_DOM.addEventListener(_sEventName, function(oEvent){
+
+           let _oEventData = oEvent.detail.RDATA;
+
+            parent.require(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "UAI", "testAI.js"))(_oEventData, oAPP);
+
+            console.log(_sEventName);
+
+        });
+
+    } // end of _attach_AI_Events
     
 
     /************************************************************************
@@ -649,6 +675,9 @@
 
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
+
+            // UAI 쪽에서 파라미터를 전달받기 위한 이벤트 생성
+            _attach_AI_Events();
 
             // 작업표시줄 메뉴 생성하기
             _createTaskBarMenu();

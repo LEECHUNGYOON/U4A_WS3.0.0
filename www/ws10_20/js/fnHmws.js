@@ -1302,6 +1302,63 @@
     }; // end of oAPP.fn.fnWS20Test91
 
 
+    /************************************************************************
+     * AI 연결 테스트
+     ************************************************************************/
+    oAPP.fn.fnWS20Test87 = async function(){
+
+        parent.setBusy(true);
+        
+        debugger;
+
+        // AI 서버에 요청할 데이터
+        let _oPARAM = {
+            CONID: parent.getBrowserKey()
+        }
+
+
+        let _oClient = await parent.UAI.connect(_oPARAM);
+        if(_oClient.RETCD === "E"){
+
+            console.error("connect", _oClient);
+
+            switch (_oClient.ERRCD) {
+
+                case "E003":    // AI 서버가 실행되지 않았을 경우
+
+                    sap.m.MessageToast.show("AI 서버가 실행되지 않았습니다!!");
+
+                    parent.setBusy(false);
+
+                    break;
+
+                case "AIE04":
+
+                    sap.m.MessageToast.show("이미 다른 서버에서 연결되어 있습니다!!");
+
+                    parent.setBusy(false);
+
+                    break;
+            
+                default:
+                    break;
+            }
+
+            return;
+        }        
+
+        sap.m.MessageToast.show("연결 성공!!");
+
+
+        
+        parent.setBusy(false);
+
+
+
+
+    };
+
+    
     // /************************************************************************
     //  * Document Popup
     //  ************************************************************************/
