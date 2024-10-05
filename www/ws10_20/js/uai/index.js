@@ -111,6 +111,9 @@ let AI = {};
      *************************************************************/
     function _connectionCloseHandle(){
 
+        // 연결이 끊어졌을 경우 CLIENT 전역 객체 초기화
+        CLIENT = undefined;
+
         let _oFrame = document.getElementById("ws_frame");
         if(!_oFrame){
             return;
@@ -151,22 +154,6 @@ let AI = {};
 /******************************************************************************
  *  💖 PUBLIC FUNCTION 선언부
  ******************************************************************************/
-
-    // getclinet = function(){
-
-    //     return new Promise((res)=>{
-
-
-    //         var CLIENT = NET.createConnection(C_PIPE_NANE)
-    //         CLIENT.on('data', ()=>{ console.log('성공') res() })
-    //         CLIENT.on('error', ()=>{ console.log('실패') res() })
-    //         CLIENT.write('{}');
-
-
-    //     })
-
-
-    // }
 
 
     /*************************************************************
@@ -269,7 +256,7 @@ let AI = {};
                 // 연결 요청 정보 전달
                 oPARAM.PRCCD = "CONNECT";
 
-                console.log("AI", 'Connected to server.', arguments);            
+                // console.log("AI", 'Connected to server.', arguments);            
 
                 _sendConnectInfo(oPARAM, function(oResult){
                     
@@ -289,7 +276,7 @@ let AI = {};
             *********************************************************************/        
             CLIENT.on('data', function(data){
                 
-                console.log("data", data.toString());     
+                // console.log("data", data.toString());     
 
                 try {
 
@@ -299,7 +286,9 @@ let AI = {};
 
                 } catch (error) {
 
-                    console.error("[AI 응답 오류!!]", error);
+                    let _sErrLoc = "[AI.connect - CLIENT.on('data')]";
+
+                    console.error(_sErrLoc, error);
 
                     // AI 서버에서 잘못된 값을 던질 경우는
                     // 다시 AI 서버로 전송한다.
@@ -314,7 +303,9 @@ let AI = {};
 
                 if(typeof _oIF_DATA?.PRCCD === "undefined"){
 
-                    console.error("[AI 응답 시 필수 필드 오류!!]");
+                    let _sErrLoc = "[AI.connect - CLIENT.on('data')]";
+                
+                    sconsole.error(_sErrLoc, "AI 응답 시 필수 필드 오류!!");
 
                     // AI 서버에서 잘못된 값을 던질 경우는
                     // 다시 AI 서버로 전송한다.
@@ -339,7 +330,11 @@ let AI = {};
              *********************************************************************/
             CLIENT.on('error', function(oError){
 
-                console.error("error", oError);
+                let _sErrLoc = "[AI.connect - CLIENT.on('error')]";
+
+                console.error(_sErrLoc, oError);
+
+                // console.error("error", oError);
 
                 return resolve({
                     RETCD: "E",
@@ -351,7 +346,7 @@ let AI = {};
 
             CLIENT.on('end', function(oEvent){
 
-                console.log("error", oEvent);
+                // console.log("error", oEvent);
 
                 // 연결 이후 AI 서버가 끊어졌을 경우에 대한 UI 핸들링                
                 _connectionCloseHandle();                
@@ -442,9 +437,6 @@ let AI = {};
         });
 
     }; // end of AI.disconnect
-
-
-
 
 
 
