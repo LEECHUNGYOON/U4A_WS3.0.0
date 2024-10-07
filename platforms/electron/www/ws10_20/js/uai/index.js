@@ -111,6 +111,9 @@ let AI = {};
      *************************************************************/
     function _connectionCloseHandle(){
 
+        // 연결이 끊어졌을 경우 CLIENT 전역 객체 초기화
+        CLIENT = undefined;
+
         let _oFrame = document.getElementById("ws_frame");
         if(!_oFrame){
             return;
@@ -121,11 +124,25 @@ let AI = {};
             return;
         }
 
-        let _oApp = _oFrameWin.oAPP;
-        if(!_oApp){
+        if(!_oFrameWin?.sap){
             return;
         }
 
+        let _oAI_Switch_Btn = _oFrameWin.sap.ui.getCore().byId("ai_con_btn");
+        if(!_oAI_Switch_Btn){
+            return;
+        }
+
+        _oAI_Switch_Btn.setState(false);
+
+        _oFrameWin.sap.m.MessageToast.show("연결 해제!!!");
+
+        // let _oApp = _oFrameWin.oAPP;
+        // if(!_oApp){
+        //     return;
+        // }
+
+        // let _oAI_Switch_Btn = sap.ui.getCore().byId("ai_con_btn");
 
         // // 내 화면에 있는 AI 서버 연결 버튼 활성, 연결 해제 버튼 비활성
         // _oApp.ui.CONN_BTN.setEnabled(true);
@@ -151,22 +168,6 @@ let AI = {};
 /******************************************************************************
  *  💖 PUBLIC FUNCTION 선언부
  ******************************************************************************/
-
-    // getclinet = function(){
-
-    //     return new Promise((res)=>{
-
-
-    //         var CLIENT = NET.createConnection(C_PIPE_NANE)
-    //         CLIENT.on('data', ()=>{ console.log('성공') res() })
-    //         CLIENT.on('error', ()=>{ console.log('실패') res() })
-    //         CLIENT.write('{}');
-
-
-    //     })
-
-
-    // }
 
 
     /*************************************************************
@@ -269,7 +270,7 @@ let AI = {};
                 // 연결 요청 정보 전달
                 oPARAM.PRCCD = "CONNECT";
 
-                console.log("AI", 'Connected to server.', arguments);            
+                // console.log("AI", 'Connected to server.', arguments);            
 
                 _sendConnectInfo(oPARAM, function(oResult){
                     
@@ -289,7 +290,7 @@ let AI = {};
             *********************************************************************/        
             CLIENT.on('data', function(data){
                 
-                console.log("data", data.toString());     
+                // console.log("data", data.toString());     
 
                 try {
 
@@ -299,7 +300,9 @@ let AI = {};
 
                 } catch (error) {
 
-                    console.error("[AI 응답 오류!!]", error);
+                    let _sErrLoc = "[AI.connect - CLIENT.on('data')]";
+
+                    // console.error(_sErrLoc, error);
 
                     // AI 서버에서 잘못된 값을 던질 경우는
                     // 다시 AI 서버로 전송한다.
@@ -314,7 +317,9 @@ let AI = {};
 
                 if(typeof _oIF_DATA?.PRCCD === "undefined"){
 
-                    console.error("[AI 응답 시 필수 필드 오류!!]");
+                    let _sErrLoc = "[AI.connect - CLIENT.on('data')]";
+                
+                    // sconsole.error(_sErrLoc, "AI 응답 시 필수 필드 오류!!");
 
                     // AI 서버에서 잘못된 값을 던질 경우는
                     // 다시 AI 서버로 전송한다.
@@ -339,19 +344,23 @@ let AI = {};
              *********************************************************************/
             CLIENT.on('error', function(oError){
 
-                console.error("error", oError);
+                let _sErrLoc = "[AI.connect - CLIENT.on('error')]";
+
+                // console.error(_sErrLoc, oError);
+
+                // console.error("error", oError);
 
                 return resolve({
                     RETCD: "E",
                     ERRCD: "E003" // AI 서버가 실행되지 않았을 경우
                 });
-            
+
             });
 
 
             CLIENT.on('end', function(oEvent){
 
-                console.log("error", oEvent);
+                // console.log("error", oEvent);
 
                 // 연결 이후 AI 서버가 끊어졌을 경우에 대한 UI 핸들링                
                 _connectionCloseHandle();                
@@ -442,9 +451,6 @@ let AI = {};
         });
 
     }; // end of AI.disconnect
-
-
-
 
 
 

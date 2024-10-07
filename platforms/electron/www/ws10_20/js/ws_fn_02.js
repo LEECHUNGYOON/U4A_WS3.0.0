@@ -273,7 +273,7 @@
         // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
         oAPP.fn.fnKillUserSession(lf_success, lf_success);
 
-        function lf_success() {
+        async function lf_success() {
 
             /**
              * 페이지 이동 시, CHANGE 모드였다면 현재 APP의 Lock Object를 해제한다.
@@ -310,6 +310,17 @@
 
             // 윈도우 헤더 타이틀 변경
             oAPP.common.setWSHeadText("U4A Workspace - Main");
+
+
+            // AI 서버 연결되어있을 경우 연결 해제 하기
+            // AI 서버에 요청할 데이터
+            let _oPARAM = {
+                CONID: parent.getBrowserKey()
+            }
+
+            // AI 연결 해제
+            parent.UAI.disconnect(_oPARAM);
+
 
             // // busy 끄고 Lock 끄기
             // oAPP.common.fnSetBusyLock("");
@@ -748,7 +759,7 @@
         // Lock을 해제한다.
         ajax_unlock_app(oAppInfo.APPID, lf_success);
 
-        function lf_success(RETURN) {
+        async function lf_success(RETURN) {
 
             if (RETURN.RTCOD == 'E') {
                 // 오류..1
@@ -785,6 +796,12 @@
 
             // parent.setBusy('');
             //테스트주석처리함!!!!!!!!!!!!!!
+            // AI 서버에 요청할 데이터
+            let _oPARAM = {
+                CONID: parent.getBrowserKey()
+            }
+
+            parent.UAI.disconnect(_oPARAM);
 
         }
 

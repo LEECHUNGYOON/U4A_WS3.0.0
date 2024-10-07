@@ -124,11 +124,25 @@ let AI = {};
             return;
         }
 
-        let _oApp = _oFrameWin.oAPP;
-        if(!_oApp){
+        if(!_oFrameWin?.sap){
             return;
         }
 
+        let _oAI_Switch_Btn = _oFrameWin.sap.ui.getCore().byId("ai_con_btn");
+        if(!_oAI_Switch_Btn){
+            return;
+        }
+
+        _oAI_Switch_Btn.setState(false);
+
+        _oFrameWin.sap.m.MessageToast.show("연결 해제!!!");
+
+        // let _oApp = _oFrameWin.oAPP;
+        // if(!_oApp){
+        //     return;
+        // }
+
+        // let _oAI_Switch_Btn = sap.ui.getCore().byId("ai_con_btn");
 
         // // 내 화면에 있는 AI 서버 연결 버튼 활성, 연결 해제 버튼 비활성
         // _oApp.ui.CONN_BTN.setEnabled(true);
@@ -288,7 +302,7 @@ let AI = {};
 
                     let _sErrLoc = "[AI.connect - CLIENT.on('data')]";
 
-                    console.error(_sErrLoc, error);
+                    // console.error(_sErrLoc, error);
 
                     // AI 서버에서 잘못된 값을 던질 경우는
                     // 다시 AI 서버로 전송한다.
@@ -305,7 +319,7 @@ let AI = {};
 
                     let _sErrLoc = "[AI.connect - CLIENT.on('data')]";
                 
-                    sconsole.error(_sErrLoc, "AI 응답 시 필수 필드 오류!!");
+                    // sconsole.error(_sErrLoc, "AI 응답 시 필수 필드 오류!!");
 
                     // AI 서버에서 잘못된 값을 던질 경우는
                     // 다시 AI 서버로 전송한다.
@@ -332,7 +346,7 @@ let AI = {};
 
                 let _sErrLoc = "[AI.connect - CLIENT.on('error')]";
 
-                console.error(_sErrLoc, oError);
+                // console.error(_sErrLoc, oError);
 
                 // console.error("error", oError);
 
@@ -340,7 +354,7 @@ let AI = {};
                     RETCD: "E",
                     ERRCD: "E003" // AI 서버가 실행되지 않았을 경우
                 });
-            
+
             });
 
 

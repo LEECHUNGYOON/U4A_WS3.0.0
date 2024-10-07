@@ -1309,8 +1309,6 @@
 
         parent.setBusy(true);
         
-        debugger;
-
         // AI 서버에 요청할 데이터
         let _oPARAM = {
             CONID: parent.getBrowserKey()
@@ -1332,6 +1330,16 @@
 
                     break;
 
+                case "E004":    // AI 서버에 요청 보냈는데 응답이 없을 경우.
+
+                    sap.m.MessageToast.show("AI 서버가 응답이 없습니다!!");
+
+                    parent.setBusy(false);
+
+                    break;
+
+
+                // AI 서버에서 에서 응답한 코드
                 case "AIE04":
 
                     sap.m.MessageToast.show("이미 다른 서버에서 연결되어 있습니다!!");
@@ -1348,13 +1356,8 @@
         }        
 
         sap.m.MessageToast.show("연결 성공!!");
-
-
         
         parent.setBusy(false);
-
-
-
 
     };
 
