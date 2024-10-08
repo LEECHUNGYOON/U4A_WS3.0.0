@@ -68,6 +68,27 @@ let AI = {};
             // AI 서버에서 전달받은 데이터
             let _oIF_DATA = oEvent.detail;
 
+            /*********************************************************************************
+             * 연결이 성공일 경우에만 CLIENT의 end 이벤트를 건다.
+             *********************************************************************************
+             * - AI 모듈 API의 connect를 수행 할때, 
+             *   createConnection을 생성하면서 CLIENT.end 이벤트를 걸어 놓으면,
+             *   기존에 다른 브라우저가 이미 연결된 상태에서 연결을 시도 시, AI서버에서 이미 연결된
+             *   브라우저가 있다고 오류 코드와 함께 Stream.end를 전송하면,
+             *   해당 파라미터를 AI 모듈 API의 connect의 콜백으로 받아서
+             *   메시지 처리 등의 후속 프로세스를 처리하려고 하는데
+             *   AI에서 Stream.end를 수행 했기 때문에 나의 CLIENT.end 이벤트도 호출되어
+             *   결과적으로 이벤트가 두번 타는 현상이 생기기 때문에,
+             *   연결 성공할때만 CLIENT.end를 걸고, 실패할 경우는 CLIENT.end 이벤트를 안걸면
+             *   위와 같은 혼선이 없어서 이렇게 처리함.
+             *********************************************************************************/
+            if(_oIF_DATA?.RETCD === "S"){
+
+                // CLIENT.end 이벤트 걸기
+                attachEndEvent();
+
+            }
+
             if(typeof fCallback === "function"){
                 fCallback(_oIF_DATA);
             }
@@ -111,6 +132,14 @@ let AI = {};
      *************************************************************/
     function _connectionCloseHandle(){
 
+        // TEST -------------
+        let bIsDisconnMsgShow = true;
+        if(CLIENT && CLIENT.bIsDisconnMsgShow === false){
+            bIsDisconnMsgShow = false;
+        }
+        // TEST -------------
+
+
         // 연결이 끊어졌을 경우 CLIENT 전역 객체 초기화
         CLIENT = undefined;
 
@@ -128,41 +157,23 @@ let AI = {};
             return;
         }
 
-        let _oAI_Switch_Btn = _oFrameWin.sap.ui.getCore().byId("ai_con_btn");
+        let _oAI_Switch_Btn = _oFrameWin.sap.ui.getCore().byId("ws20_ai_con_btn");
         if(!_oAI_Switch_Btn){
             return;
         }
 
         _oAI_Switch_Btn.setState(false);
 
-        _oFrameWin.sap.m.MessageToast.show("연결 해제!!!");
+        var _sMsg = "AI와 연결이 해제 되었습니다."; // [MSG]
 
-        // let _oApp = _oFrameWin.oAPP;
-        // if(!_oApp){
-        //     return;
-        // }
+        if(bIsDisconnMsgShow === true){
+            _oFrameWin.sap.m.MessageToast.show(_sMsg);
+        }        
 
-        // let _oAI_Switch_Btn = sap.ui.getCore().byId("ai_con_btn");
-
-        // // 내 화면에 있는 AI 서버 연결 버튼 활성, 연결 해제 버튼 비활성
-        // _oApp.ui.CONN_BTN.setEnabled(true);
-        // _oApp.ui.DISCONN_BTN.setEnabled(false);
-
-        // // 다른 창에 있는 AI 서버 연결 버튼 활성, 연결 해제 버튼 비활성
-        // if(!_oApp?.BROAD){
-        //     return;
-        // }
-
-        // // 다른 브라우저에 AI 연결 관련 버튼 비활성 하라고 시킨다.
-        // _oApp.BROAD.postMessage({ PRCCD:"AI_CONN_BTN_ENABLE", ISENABLED: "X" });
-        // _oApp.BROAD.postMessage({ PRCCD:"AI_DISCONN_BTN_ENABLE", ISENABLED: "" });
-
+        // busy 끄고 Lock 풀기
+        _oFrameWin.oAPP.common.fnSetBusyLock("");
 
     } // end of _connectionCloseHandle
-
-
-
-
 
 
 /******************************************************************************
@@ -274,6 +285,18 @@ let AI = {};
 
                 _sendConnectInfo(oPARAM, function(oResult){
                     
+                    // TEST -------------
+                    // 연결 시도하다가 다른 서버에서 이미 연결이 되어있는 상태일 경우
+                    // AI 서버에서 client end를 하는데..
+                    // 그러면 3.0의 client의 end 이벤트도 연결 끊었을 때 이벤트를 호출 하여
+                    // 그 이벤트에서 연결 해제 메시지 출력을 할지 말지 정하는 플래그를 설정함.
+                    if(oResult.PRCCD === "CONNECT" && oResult.ERRCD === "AIE04"){
+                        CLIENT.bIsDisconnMsgShow = false;
+                    }
+                    // TEST -------------
+
+                    // CLIENT.bisCloseMsgShow = true;
+
                     return resolve(oResult);
 
                 });                
@@ -358,20 +381,38 @@ let AI = {};
             });
 
 
-            CLIENT.on('end', function(oEvent){
+            // CLIENT.on('end', function(oEvent){
 
-                // console.log("error", oEvent);
+            //     // console.log("error", oEvent);
+            //     // console.log("2");
+            //     // 연결 이후 AI 서버가 끊어졌을 경우에 대한 UI 핸들링                
+            //     _connectionCloseHandle();
 
-                // 연결 이후 AI 서버가 끊어졌을 경우에 대한 UI 핸들링                
-                _connectionCloseHandle();                
-
-            });
+            // });
 
 
         });
 
 
     }; // end of AI.connect
+
+
+    function attachEndEvent (){
+
+        if(typeof CLIENT === "undefined"){
+            return;
+        }
+
+        CLIENT.on('end', function(oEvent){
+
+            // console.log("error", oEvent);
+            // console.log("2");
+            // 연결 이후 AI 서버가 끊어졌을 경우에 대한 UI 핸들링                
+            _connectionCloseHandle();
+
+        });
+
+    }
 
 
     /*************************************************************
