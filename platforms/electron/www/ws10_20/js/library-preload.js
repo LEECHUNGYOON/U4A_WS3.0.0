@@ -82,6 +82,10 @@ let oAPP = (function (window) {
         MIMETYPE: "script"
     },
     {
+        URL: "./js/ws_fn_05.js",
+        MIMETYPE: "script"
+    },
+    {
         URL: "./js/fnSuggestion.js",
         MIMETYPE: "script"
     },
