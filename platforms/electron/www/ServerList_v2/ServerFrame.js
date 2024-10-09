@@ -31,6 +31,26 @@
 
     });
 
+    oAPP.fn.setBusyIndicator = function(sIsBusy){
+
+        let _oBusyDom = document.getElementById("u4aWsBusyIndicator");
+
+        if(sIsBusy === "X"){
+
+            document.body.style.pointerEvents = "none";
+
+            _oBusyDom.style.visibility = "visible";
+
+            return;
+
+        }
+
+        document.body.style.pointerEvents = "";
+
+        _oBusyDom.style.visibility = "hidden"; 
+        
+    };
+
     oAPP.fn.fnOnDeviceReady = function() {
 
         var oWs_frame = document.getElementById("ws_serverframe");

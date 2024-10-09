@@ -706,7 +706,7 @@
             // 브라우저 상단 메뉴를 없앤다.
             parent.setBrowserMenu(null);
 
-            oAPP.common.fnSetGlobalShortcut();
+            // oAPP.common.fnSetGlobalShortcut();
 
             // APP 전체 대상 공통 Shortcut 지정하기
             oAPP.common.fnSetCommonShortcut();

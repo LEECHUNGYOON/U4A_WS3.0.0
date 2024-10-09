@@ -44,14 +44,15 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     oAPP.setBusy = (bIsBusy) => {
 
-        sap.ui.core.BusyIndicator.iDEFAULT_DELAY_MS = 0;
+        // sap.ui.core.BusyIndicator.iDEFAULT_DELAY_MS = 0;
 
         if (bIsBusy) {
 
             // 화면 Lock 걸기
             sap.ui.getCore().lock();
 
-            sap.ui.core.BusyIndicator.show(0);
+            parent.oAPP.fn.setBusyIndicator("X");
+            // sap.ui.core.BusyIndicator.show(0);
 
             return;
         }
@@ -59,7 +60,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 화면 Lock 해제
         sap.ui.getCore().unlock();
 
-        sap.ui.core.BusyIndicator.hide();
+        parent.oAPP.fn.setBusyIndicator("");
+        // sap.ui.core.BusyIndicator.hide();
 
     }; // end of oAPP.fn.setBusy    
 
@@ -223,6 +225,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      * ------------------------ [ Server List Start ] ------------------------
      * **********************************************************************/
     oAPP.fn.fnOnMainStart = async () => {
+
+        oAPP.setBusy(true);        
 
         jQuery.sap.require("sap.m.MessageBox");
 
@@ -546,7 +550,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 우측 테이블 모델 클리어
         oAPP.fn.fnMTableModelClear();
 
-        oAPP.setBusy(true);
+        // oAPP.setBusy(true);
 
         // 레지스트리에 등록된 SAPLogon 정보를 읽는다.
         oAPP.fn.fnGetRegInfoForSAPLogon().then(oAPP.fn.fnGetRegInfoForSAPLogonThen).catch(oAPP.fn.fnPromiseError);
