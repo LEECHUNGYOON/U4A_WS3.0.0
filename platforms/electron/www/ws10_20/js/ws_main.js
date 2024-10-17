@@ -655,7 +655,7 @@
 
            let _oEventData = oEvent.detail.RDATA;
 
-            parent.require(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "UAI", "testAI.js"))(_oEventData, oAPP);
+            parent.require(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "UAI", "parseAiLibraryData.js"))(_oEventData, oAPP);
 
             console.log(_sEventName);
 
