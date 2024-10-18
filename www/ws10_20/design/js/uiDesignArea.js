@@ -731,6 +731,28 @@
 
     oLTBar1.addContent(new sap.m.ToolbarSpacer());
 
+    
+    if(parent.REMOTE.app.isPackaged === false){
+      //AI 관련 테스트 버튼.
+      oLTBar1.addContent(new sap.m.Button({
+        icon:"sap-icon://laptop",
+        press: function(){
+
+          // busy 키고 Lock 걸기
+          oAPP.common.fnSetBusyLock("X");
+
+          // 전체 자식 윈도우에 Busy 킨다.
+          oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_ON"});
+
+          //
+          parent.require(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, 
+            "testFolder", "callAiInterfacePopup.js"))();
+        }
+      }));
+
+    }
+
+
     //B39	Help
     //도움말 버튼.
     var oLBtn8 = new sap.m.Button({icon:"sap-icon://question-mark", 
@@ -2322,9 +2344,26 @@
         //자식 UI가 필수인 UI에 자식이 없는경우 강제추가 예외처리.
         oAPP.attr.ui.frame.contentWindow.setChildUiException(ls_14.UIOBK, ls_14.OBJID, ls_14.zTREE, oAPP.attr.S_CODE.UA050);
 
+
+        var _cnt = 0;
+
+        //같은 aggregation안에 있는 UI중 부모에 추가되지 않은 UI 존재 여부 확인.
+        for(var i = 0; i < _sDropLineInfo.dropIndex; i++){
+
+          var _sTree =  is_parent.zTREE[i];
+
+          if(oAPP.attr.S_CODE.UA026.findIndex( item => item.FLD01 === _sTree.UILIB ) !== -1){
+            continue;
+          }
+
+          _cnt++;
+
+        }
+
+
         //부모에 생성한 UI 추가.
         oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(ls_14.OBJID, ls_14.UILIB, ls_14.POBID, 
-          ls_14.PUIOK, ls_14.UIATT, _sDropLineInfo.dropIndex, ls_14.ISMLB, ls_14.UIOBK, true);
+          ls_14.PUIOK, ls_14.UIATT, _cnt, ls_14.ISMLB, ls_14.UIOBK, true);
 
         //미리보기 예외처리 UI 추가 draw 처리.
         oAPP.fn.prevDrawExceptionUi(ls_14.UIOBK, ls_14.OBJID);
@@ -3039,9 +3078,25 @@
     //   i_drag.PUIOK, i_drag.UIATT, l_indx.length, i_drag.ISMLB, i_drag.UIOBK, true);
 
 
+    var _cnt = 0;
+
+    //같은 aggregation안에 있는 UI중 부모에 추가되지 않은 UI 존재 여부 확인.
+    for(var i = 0; i < _dragPos; i++){
+
+      var _sTree =  i_drop.zTREE[i];
+
+      if(oAPP.attr.S_CODE.UA026.findIndex( item => item.FLD01 === _sTree.UILIB ) !== -1){
+        continue;
+      }
+
+      _cnt++;
+
+    }
+
+
     //미리보기 갱신 처리.
     oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(i_drag.OBJID, i_drag.UILIB, i_drag.POBID, 
-      i_drag.PUIOK, i_drag.UIATT, _dragPos, i_drag.ISMLB, i_drag.UIOBK, true);
+      i_drag.PUIOK, i_drag.UIATT, _cnt, i_drag.ISMLB, i_drag.UIOBK, true);
 
 
     //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.
@@ -4833,6 +4888,22 @@
     
     var _dropIndex = _sDropLineInfo.dropIndex;
 
+    var _posit = 0;
+
+    //같은 aggregation안에 있는 UI중 부모에 추가되지 않은 UI 존재 여부 확인.
+    for(var i = 0; i < _dropIndex; i++){
+
+      var _sTree =  is_tree.zTREE[i];
+
+      if(oAPP.attr.S_CODE.UA026.findIndex( item => item.FLD01 === _sTree.UILIB ) !== -1){
+        continue;
+      }
+
+      _posit++;
+
+    }
+
+
     //UI 반복 횟수만큼 그리기.
     for(var i = 0; i < l_cnt; i++){
 
@@ -4935,7 +5006,7 @@
 
       //부모에 생성한 UI 추가.
       oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(l_14.OBJID, l_14.UILIB, l_14.POBID, 
-        l_14.PUIOK, l_14.UIATT, _dropIndex, l_14.ISMLB, l_14.UIOBK, true);
+        l_14.PUIOK, l_14.UIATT, _posit, l_14.ISMLB, l_14.UIOBK, true);
 
       
       //미리보기 예외처리 UI 추가 draw 처리.
@@ -4943,6 +5014,8 @@
         
       //부모에 추가할 index 증가 처리.
       _dropIndex++;
+
+      _posit++;
 
       //aggregation 정보 초기화.
       ls_0015 = {};
@@ -5486,10 +5559,27 @@
 
           //자식 UI가 필수인 UI에 자식이 없는경우 강제추가 예외처리.
           oAPP.attr.ui.frame.contentWindow.setChildUiException(ls_14.UIOBK, ls_14.OBJID, ls_14.zTREE, oAPP.attr.S_CODE.UA050);
+
+
+          var _cnt = 0;
+
+          //같은 aggregation안에 있는 UI중 부모에 추가되지 않은 UI 존재 여부 확인.
+          for(var i = 0; i < _sDropLineInfo.dropIndex; i++){
+
+            var _sTree =  is_parent.zTREE[i];
+
+            if(oAPP.attr.S_CODE.UA026.findIndex( item => item.FLD01 === _sTree.UILIB ) !== -1){
+              continue;
+            }
+
+            _cnt++;
+
+          }
+
   
           //부모에 생성한 UI 추가.
           oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(ls_14.OBJID, ls_14.UILIB, ls_14.POBID, 
-            ls_14.PUIOK, ls_14.UIATT, _sDropLineInfo.dropIndex, ls_14.ISMLB, ls_14.UIOBK, true);
+            ls_14.PUIOK, ls_14.UIATT, _cnt, ls_14.ISMLB, ls_14.UIOBK, true);
 
           //미리보기 예외처리 UI 추가 draw 처리.
           oAPP.fn.prevDrawExceptionUi(ls_14.UIOBK, ls_14.OBJID);

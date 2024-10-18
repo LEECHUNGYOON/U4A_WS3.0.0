@@ -19,7 +19,7 @@ var __ACT_REDO_HIST = [];
 
 /*************************************************************
  * @module - 이력 초기화.
- *************************************************************/
+ *************************************************d************/
 module.exports.clearHistory = function(){
 
     //UNDO 이력 초기화.
@@ -112,6 +112,11 @@ module.exports.saveActionHistoryData = function(ACTCD, oParam){
         case "RESET_ATTR":
             //attr 초기화.
             CL_CHANGE_ATTR.saveActionHistoryData(__ACT_UNDO_HIST, oParam);
+            break;
+
+        case "AI_INSERT":            
+            //AI에서 추가된 UI.        
+            CL_AI_INSERT.saveActionHistoryData(__ACT_UNDO_HIST, oParam);
             break;
     
         default:
@@ -261,6 +266,11 @@ module.exports.executeHistory = async function(PRCCD){
             //ATTRIBUTE 변경.
             CL_CHANGE_ATTR.executeHistory(_sEventParam, _sHist);
             break;
+
+        case "AI_INSERT":
+            //AI에서 추가된 UI.
+            CL_AI_INSERT.executeHistory(_sEventParam, _sHist);
+            break;
     
         default:
             //잘못된 ACTION CODE를 전달받았을때의 로직 처리.
@@ -318,6 +328,27 @@ class CL_INSERT_UI{
 
 
     /*************************************************************
+     * @method - INSERT에 대한 이력 데이터 구성 처리
+     *************************************************************/
+    static setActionHistoryData(oParam){
+        
+        let _aT_OBJID = [];
+
+        for (let i = 0, l = oParam.length; i < l; i++) {
+
+            var _sParam = oParam[i];
+
+            //object id만 수집 처리.
+            _aT_OBJID.push(_sParam.OBJID);
+
+        }
+
+        return _aT_OBJID;
+
+    };
+
+
+    /*************************************************************
      * @method - INSERT에 대한 이력 저장 처리.
      *************************************************************/
     static saveActionHistoryData(aTargetHist, oParam) {
@@ -351,16 +382,7 @@ class CL_INSERT_UI{
         _sSaveParam.ACTCD   = "DELETE";
 
         //INSERT한 UI OBJECT ID 수집 ARRAY.
-        _sSaveParam.T_OBJID = [];
-
-        for (let i = 0, l = oParam.length; i < l; i++) {
-
-            var _sParam = oParam[i];
-
-            //object id만 수집 처리.
-            _sSaveParam.T_OBJID.push(_sParam.OBJID);
-
-        }
+        _sSaveParam.T_OBJID = CL_INSERT_UI.setActionHistoryData(oParam);
 
 
         //이력 저장 처리.
@@ -376,6 +398,30 @@ class CL_INSERT_UI{
 
     /*************************************************************
      * @method - INSERT 처리.
+     * 🚩 INSERT시 순서 🚩
+     * 1. INSERT시 부모 UI에 attachOnAfterRendering 처리 필수.
+     *    (CL_COMMON.attachOnAfterRendering)
+     * 
+     * 2. INSERT할 UI를 부모에 추가.
+     *    (CL_INSERT_UI.insertUiObject)
+     *
+     * 3. 이때 부모 UI에 invalidateUiObject 처리 필수.
+     *    (CL_COMMON.invalidateUiObject)
+     *    (INSERT할 UI가 layoutData와 같이 화면에 표현되지 않는
+     *    UI인경우, 부모의 onAfterRendering이 수행되지 않음)
+     * 
+     * 4. 모델 갱신 처리, 미리보기에 UI 추가를 기다림.
+     *    (oAPP.fn.designRefershModel)
+     *    (onAfterRendering를 하는 경우 반드시 onAfterRendering를 먼저 하고 
+     *    designRefershModel를 수행 해야함. richTextEditor가 해당 순서에 영향을 받음)
+     * 
+     * 5. 이후 반드시 라인 선택 처리 해야함.
+     *    (oAPP.fn.setSelectTreeItem)
+     * 
+     * ⚠️ 내용 추가시 아래 항목도 확인 ⚠️
+     *    oAPP.fn.designAddUIObject
+     *    CL_AI_INSERT.executeInsert
+     *    
      *************************************************************/
     static async executeHistory(sEvent, oParam){
 
@@ -469,10 +515,6 @@ class CL_INSERT_UI{
         oAPP.attr.oModel.refresh();
 
 
-        //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
-        await oAPP.fn.designRefershModel();
-
-
         //대상 UI를 invalidate 처리.
         CL_COMMON.invalidateUiObject(_aParent);
 
@@ -480,6 +522,11 @@ class CL_INSERT_UI{
         //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.
         //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
         await Promise.all(_aPromise);
+
+        
+
+        //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+        await oAPP.fn.designRefershModel();
 
 
         //마지막 이력정보 얻기.
@@ -546,9 +593,25 @@ class CL_INSERT_UI{
         var _indx = _aChild.findIndex( item => item.OBJID === _sDesign.OBJID );
 
 
+        var _cnt = 0;
+
+        //같은 aggregation안에 있는 UI중 부모에 추가되지 않은 UI 존재 여부 확인.
+        for(var i = 0; i < _indx; i++){
+
+          var _sTree =  _sParent.zTREE[i];
+
+          if(oAPP.attr.S_CODE.UA026.findIndex( item => item.FLD01 === _sTree.UILIB ) !== -1){
+            continue;
+          }
+
+          _cnt++;
+
+        }
+
+
         //부모에 생성한 UI 추가.
         oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(_sDesign.OBJID, _sDesign.UILIB, _sDesign.POBID, 
-            _sDesign.PUIOK, _sDesign.UIATT, _indx, _sDesign.ISMLB, _sDesign.UIOBK, true);
+            _sDesign.PUIOK, _sDesign.UIATT, _cnt, _sDesign.ISMLB, _sDesign.UIOBK, true);
 
 
         //미리보기 예외처리 UI 추가 draw 처리.
@@ -606,38 +669,11 @@ class CL_INSERT_UI{
 class CL_DELETE_UI{
 
     /*************************************************************
-     * @method - DELETE에 대한 이력 저장 처리.
+     * @method - DELETE에 대한 이력 데이터 구성 처리.
      *************************************************************/
-    static saveActionHistoryData(aTargetHist, oParam) {
+    static setActionHistoryData(oParam){
 
-        if(typeof oParam === "undefined"){
-            console.error(`(undoRedo.js) CL_DELETE_UI 이력 저장 중 파라메터가 undefined임`);
-            return;
-        }
-
-        if(oParam === null){
-            console.error(`(undoRedo.js) CL_DELETE_UI 이력 저장 중 파라메터가 null임`);
-            return;
-        }
-
-        if(Array.isArray(oParam) !== true){
-            console.error(`(undoRedo.js) CL_DELETE_UI 이력 저장 중 파라메터가 array가 아님`);
-            return;
-        }
-
-        if(oParam.length === 0){
-            console.error(`(undoRedo.js) CL_DELETE_UI 이력 저장 중 파라메터에 데이터가 없음`);
-            return;
-        }
-
-
-        var _sSaveParam = {};
-
-        //UNDO, REDO시 수행할 ACTION 코드.
-        _sSaveParam.ACTCD         = "INSERT";
-
-        _sSaveParam.T_INSERT_DATA = [];
-
+        let _aT_INSERT_DATA = [];
 
         for (let i = 0, l = oParam.length; i < l; i++) {
             
@@ -686,12 +722,49 @@ class CL_DELETE_UI{
             _sInsertData.T_DESC       = JSON.parse(JSON.stringify(_aDESC));
 
 
-            _sSaveParam.T_INSERT_DATA.push(_sInsertData);
+            _aT_INSERT_DATA.push(_sInsertData);
 
             _sInsertData = null;
 
         }
-        
+
+        return _aT_INSERT_DATA;
+
+    };
+
+    /*************************************************************
+     * @method - DELETE에 대한 이력 저장 처리.
+     *************************************************************/
+    static saveActionHistoryData(aTargetHist, oParam) {
+
+        if(typeof oParam === "undefined"){
+            console.error(`(undoRedo.js) CL_DELETE_UI 이력 저장 중 파라메터가 undefined임`);
+            return;
+        }
+
+        if(oParam === null){
+            console.error(`(undoRedo.js) CL_DELETE_UI 이력 저장 중 파라메터가 null임`);
+            return;
+        }
+
+        if(Array.isArray(oParam) !== true){
+            console.error(`(undoRedo.js) CL_DELETE_UI 이력 저장 중 파라메터가 array가 아님`);
+            return;
+        }
+
+        if(oParam.length === 0){
+            console.error(`(undoRedo.js) CL_DELETE_UI 이력 저장 중 파라메터에 데이터가 없음`);
+            return;
+        }
+
+
+        var _sSaveParam = {};
+
+        //UNDO, REDO시 수행할 ACTION 코드.
+        _sSaveParam.ACTCD         = "INSERT";
+
+        _sSaveParam.T_INSERT_DATA = CL_DELETE_UI.setActionHistoryData(oParam);
+
         
         //이력 저장 처리.
         CL_COMMON.setHistoryData(aTargetHist, _sSaveParam);
@@ -705,6 +778,37 @@ class CL_DELETE_UI{
 
     /*************************************************************
      * @method - DELETE 처리.
+     * 🚩 DELETE시 순서 🚩
+     * 
+     * 1. 삭제전 확인 팝업.
+     *    (삭제 취소 처리 할경우 HISTORY를 되돌려야함)
+     * 
+     * 2. 삭제전 부모의 onAfterRendering 이벤트 등록.
+     *    (CL_COMMON.attachOnAfterRendering)
+     * 
+     * 3. 대상 UI 삭제 처리.
+     *    (CL_DELETE_UI.deleteUiObject)
+     * 
+     * 4. 이때 부모 UI에 invalidateUiObject 처리 필수.
+     *    (CL_COMMON.invalidateUiObject)
+     *    (INSERT할 UI가 layoutData와 같이 화면에 표현되지 않는
+     *    UI인경우, 부모의 onAfterRendering이 수행되지 않음)
+     * 
+     * 5. 모델 갱신 처리, 미리보기에 UI 추가를 기다림.
+     *    (oAPP.fn.designRefershModel)
+     *    (onAfterRendering를 하는 경우 반드시 onAfterRendering를 먼저 하고 
+     *    designRefershModel를 수행 해야함. richTextEditor가 해당 순서에 영향을 받음)
+     * 
+     * 6. 이후 반드시 라인 선택 처리 해야함.
+     *    (oAPP.fn.setSelectTreeItem)
+     *    (현재 선택한 UI가 삭제 대상건이라면 삭제 후 ATTR 영역을
+     *    갱신 시켜야함.)
+     * 
+     * ⚠️ 내용 추가시 아래 항목도 확인 ⚠️
+     *    oAPP.fn.designUIDelete
+     *    oAPP.fn.designTreeMultiDeleteItem
+     *    CL_AI_INSERT.executeDelete
+     * 
      *************************************************************/
     static async executeHistory(sEvent, oParam){
 
@@ -883,10 +987,6 @@ class CL_DELETE_UI{
         oAPP.fn.setChangeFlag();
 
         
-        //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
-        await oAPP.fn.designRefershModel();
-
-
         //대상 UI를 invalidate 처리.
         CL_COMMON.invalidateUiObject(_aParent);
 
@@ -894,6 +994,10 @@ class CL_DELETE_UI{
         //미리보기 화면 변경 대기 처리.
         await Promise.all(_aPromise);
         
+
+        //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+        await oAPP.fn.designRefershModel();
+
 
         //라인 선택 처리.
         await oAPP.fn.setSelectTreeItem(_SEL_OBJID);
@@ -903,6 +1007,12 @@ class CL_DELETE_UI{
         //바인딩 팝업의 디자인 영역 갱신처리.
         oAPP.fn.updateBindPopupDesignData();
 
+
+    };
+
+
+
+    static executeDelete = function(){
 
     };
 
@@ -2484,3 +2594,422 @@ class CL_COMMON{
 
 };
 
+
+
+/*************************************************************
+ * @class - AI를 통한 UI 추가.
+ *************************************************************/
+class CL_AI_INSERT{
+
+    /*************************************************************
+     * @method - UI 이름 변경 처리에 대한 이력 저장 처리.
+     *************************************************************/
+    static saveActionHistoryData(aTargetHist, oParam) {
+
+        //파라메터 정보가 존재하는지 확인.
+        if(typeof oParam?.PRCCD === "undefined"){
+            console.error(`(undoRedo.js) CL_AI_INSERT 이력 저장 중 PRCCD 파라메터가 undefined임`);
+            return;
+        }
+
+        //파라메터 정보가 존재하는지 확인.
+        if(oParam?.PRCCD === null){
+            console.error(`(undoRedo.js) CL_AI_INSERT 이력 저장 중 PRCCD 파라메터가 null`);
+            return; 
+        }
+
+        //파라메터 정보가 존재하는지 확인.
+        if(oParam?.PRCCD === ""){
+            console.error(`(undoRedo.js) CL_AI_INSERT 이력 저장 중 PRCCD 파라메터가 공백`);
+            return; 
+        }
+
+
+        //파라메터 정보가 존재하는지 확인.
+        if(typeof oParam?.HIST === "undefined"){
+            console.error(`(undoRedo.js) CL_AI_INSERT 이력 저장 중 HIST 파라메터가 undefined임`);
+            return;
+        }
+
+        //파라메터 정보가 존재하는지 확인.
+        if(oParam?.HIST === null){
+            console.error(`(undoRedo.js) CL_AI_INSERT 이력 저장 중 HIST 파라메터가 null`);
+            return; 
+        }
+
+
+        //저장 데이터구성.
+        var _sParam = {
+            ACTCD          : "AI_INSERT",
+            ROOT           : oParam.ROOT,
+            RAND           : oParam.RAND,
+            HIST           : [],
+        };
+
+
+        //UI가 삭제되는경우.
+        if(oParam.PRCCD === "DEL"){
+
+            _sParam.PRCCD = "ADD";
+
+            _sParam.HIST = CL_DELETE_UI.setActionHistoryData(oParam.HIST) || [];
+        }
+
+
+        //UI가 추가되는 경우.
+        if(oParam.PRCCD === "ADD"){
+
+            _sParam.PRCCD = "DEL";
+
+            _sParam.HIST = CL_INSERT_UI.setActionHistoryData(oParam.HIST) || [];    
+        }
+        
+
+        //이력 저장 처리.
+        CL_COMMON.setHistoryData(aTargetHist, _sParam);
+
+
+        //UNDO, REDO 버튼 활성화 처리.
+        CL_COMMON.setUndoRedoButtonEnable();
+
+    };
+
+
+    /*************************************************************
+     * @method - UI 추가, 삭제 처리.
+     * 🚩 AI UI 추가, 삭제 시 순서 🚩
+     * 1. 삭제건이 존재하는경우 삭제건 먼저 수행.
+     * (삭)
+     *************************************************************/
+    static async executeHistory(sEvent, oParam){
+
+        //파라메터 정보가 존재하는지 확인.
+        if(typeof oParam?.HIST === "undefined" || oParam?.HIST === null){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 HIST 파라메터에 데이터가 없음`);
+
+            //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+            parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+            
+            parent.setBusy("");
+
+            return;
+        }
+
+
+        //파라메터 정보가 존재하는지 확인.
+        if(typeof oParam?.PRCCD === "undefined" || oParam?.PRCCD === null || oParam?.PRCCD === ""){
+
+            console.error(`(undoRedo.js)[${sEvent.PRCCD}] ${oParam.ACTCD} 수행중 PRCCD 파라메터에 데이터가 없음`);
+
+            //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+            parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+            //단축키 잠금 해제처리.
+            oAPP.fn.setShortcutLock(false);
+            
+            parent.setBusy("");
+
+            return;
+        }
+
+
+        //삭제 처리건인경우.
+        if(oParam.PRCCD === "DEL"){
+            let _cancel = await CL_AI_INSERT.executeDelete(sEvent, oParam);
+
+            if(_cancel === true){
+                return;
+            }
+
+        }
+
+        //추가 처리건인경우.
+        if(oParam.PRCCD === "ADD"){
+            await CL_AI_INSERT.executeInsert(sEvent, oParam);
+        }
+
+
+        let _aTarget = undefined;
+
+        
+        //UNDO, REDO에 따른 HISTORY 판단.
+        switch (sEvent.PRCCD) {
+            case "UNDO":
+                
+                _aTarget = __ACT_UNDO_HIST;
+
+                break;
+
+            case "REDO":
+                
+                _aTarget = __ACT_REDO_HIST;
+
+                break;
+        }
+
+
+        //UNDO, REDO ACTION 수행 이후에 후속으로 수행해야하는 이력이 존재하는지 확인.
+        let _indx = _aTarget.findIndex( item => item?.RAND === oParam.RAND );
+
+        //존재하지 않는경우.
+        if(_indx === -1){
+
+            let _OBJID = oParam?.ROOT || "APP";
+
+            //라인 선택 처리.
+            await oAPP.fn.setSelectTreeItem(_OBJID);
+
+            //20240621 pes.
+            //바인딩 팝업의 디자인 영역 갱신처리.
+            oAPP.fn.updateBindPopupDesignData();
+
+            return;
+
+        }
+
+
+        //후속으로 수행해야 하는건이 존재하는경우
+        let _subHist = _aTarget[_indx];
+
+        //UNDO, REDO에서 해당 이력 삭제.
+        _aTarget.splice(_indx, 1);
+
+        //후속 ACTION 수행.
+        CL_AI_INSERT.executeHistory(sEvent, _subHist);
+        
+
+    };
+
+
+    /*************************************************************
+     * @method - UI 삭제 처리.
+     *************************************************************/
+    static executeDelete = function(sEvent, oParam){
+
+        return new Promise(async function(resolve){
+
+            if(oParam.HIST.length === 0){
+                return resolve();
+            }
+                
+            //003	Do you really want to delete the object?
+            var _msg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "003", "", "", "", "");
+
+            parent.setBusy("");
+
+            var _res = await new Promise((resolve)=>{
+
+                parent.showMessage(oWS_FRAME.sap, 30, "I", _msg, async function(oEvent){
+
+                    parent.setBusy("X");
+
+                    resolve(oEvent);
+                });
+
+            });
+
+
+            //삭제를 취소한 경우.
+            if(_res !== "YES"){
+
+                //이전 history에 다시 추가 처리. 
+                switch (sEvent.PRCCD) {
+                    case "UNDO":
+                        __ACT_UNDO_HIST.push(oParam);
+                        break;
+                
+                    case "REDO":
+                        __ACT_REDO_HIST.push(oParam);
+                        break;
+                }
+
+                //UNDO, REDO 버튼 활성화 처리.
+                CL_COMMON.setUndoRedoButtonEnable();
+                
+                oAPP.attr.oModel.refresh();
+
+                //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+                parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+
+                //단축키 잠금 해제처리.
+                oAPP.fn.setShortcutLock(false);
+                
+                parent.setBusy("");
+
+                //취소 처리됨 파라메터 RETURN.
+                return resolve(true);
+            }
+
+                
+            //저장 데이터구성.
+            var _sParam = {
+                ROOT           : oParam.ROOT,
+                PRCCD          : "DEL",
+                RAND           : oParam.RAND,
+                HIST           : [],
+            };
+
+            for (let i = 0, l = oParam.HIST.length; i < l; i++) {
+                
+                var _OBJID = oParam.HIST[i];
+
+                _sParam.HIST.push(oAPP.fn.getTreeData(_OBJID));
+
+            }
+
+            //이력 정보 저장 처리.
+            CL_AI_INSERT.saveActionHistoryData(sEvent.T_HIST, _sParam);
+                            
+
+            //현재 우측에 출력한 UI의 TREE 정보 얻기.
+            var _stree = oAPP.fn.getTreeData(oAPP.attr.oModel.oData.uiinfo.OBJID);
+
+            //현재 선택건의 OBJID 매핑.
+            var _SEL_OBJID = _stree?.OBJID || undefined;
+
+            
+            //삭제 대상건이 선택한건인지 확인.
+            let _selected = CL_DELETE_UI.checkSelectObjidDelete(oParam.HIST);
+
+            if(_selected === true){
+                
+                //선택한 UI의 부모를 얻음.
+                var _sParent = oAPP.fn.getTreeData(_stree.POBID);
+
+                _SEL_OBJID = _sParent.OBJID;
+
+            }
+
+
+            //직전 라인 정보를 얻지 못한 경우 ROOT를 선택 처리.
+            if(typeof _SEL_OBJID === "undefined"){
+                _SEL_OBJID = "ROOT";
+            }
+
+
+            //삭제 대상 UI의 부모 정보 수집 처리.
+            var _aParent = CL_COMMON.collectParent(oParam.HIST);
+
+
+            //대상 UI에 onAfterRendering 이벤트 등록 처리.
+            var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+
+
+            for (let i = 0, l = oParam.HIST.length; i < l; i++) {
+                
+                var _OBJID = oParam.HIST[i];
+                
+                //design tree 및 미리보기 UI 삭제 처리.
+                CL_DELETE_UI.deleteUiObject(_OBJID);
+
+            }
+
+
+            //변경 FLAG 처리.
+            oAPP.fn.setChangeFlag();
+
+
+            //대상 UI를 invalidate 처리.
+            CL_COMMON.invalidateUiObject(_aParent);
+
+
+            //미리보기 화면 변경 대기 처리.
+            await Promise.all(_aPromise);
+
+            oAPP.attr.oModel.refresh();
+            
+            //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+            await oAPP.fn.designRefershModel();
+
+       
+            return resolve();
+            
+
+        });
+
+    };
+
+
+    /*************************************************************
+     * @method - UI 추가 처리.
+     *************************************************************/
+    static executeInsert = function(sEvent, oParam){
+
+        return new Promise(async function(resolve){
+
+            if(oParam.HIST.length === 0){
+                return resolve();
+            }
+
+            var _aOBJID = [];
+
+            //저장 데이터구성.
+            var _sParam = {
+                ROOT           : oParam.ROOT,
+                PRCCD          : "ADD",
+                RAND           : oParam.RAND,
+                HIST           : [],
+            };
+
+
+            for (let i = 0, l = oParam.HIST.length; i < l; i++) {
+                
+                var _sInsertData = oParam.HIST[i];
+
+                _sParam.HIST.push(_sInsertData.S_DESIGN);
+
+                _aOBJID.push(_sInsertData.S_DESIGN.POBID);
+                
+            }
+            
+            //이력 정보 저장 처리.
+            CL_AI_INSERT.saveActionHistoryData(sEvent.T_HIST, _sParam);
+
+        
+
+            //UI 추가 대상 부모 정보 얻기.
+            var _aParent = CL_COMMON.collectUIObject(_aOBJID);
+
+
+            //대상 UI에 onAfterRendering 이벤트 등록 처리.
+            var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+
+
+            for (let i = 0, l = oParam.HIST.length; i < l; i++) {
+                
+                var _sInsertData = oParam.HIST[i];
+                
+                //design tree 및 미리보기 UI 생성, 추가 처리.
+                CL_INSERT_UI.insertUiObject(_sInsertData);
+
+            }
+
+
+            //대상 UI를 invalidate 처리.
+            CL_COMMON.invalidateUiObject(_aParent);
+
+        
+            //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.
+            //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
+            await Promise.all(_aPromise);
+
+
+            oAPP.attr.oModel.refresh();
+
+            //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+            await oAPP.fn.designRefershModel();
+
+
+            return resolve();
+            
+
+        });
+
+    };
+
+};

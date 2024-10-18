@@ -1,0 +1,7 @@
+.u4aWsBrowserDraggable {
+    -webkit-app-region: drag !important;
+}
+
+.u4aWsBrowserDraggable .sapMBtn {
+    -webkit-app-region: no-drag;
+}

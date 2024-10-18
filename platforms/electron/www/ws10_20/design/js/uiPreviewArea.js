@@ -632,6 +632,15 @@
     //찾지못한경우 exit.
     if(typeof l_find === "undefined"){return;}
 
+    //20230303 pes.
+    //sap.ui.core.HTML의 content에 입력값을 반영하는 과정에서
+    //ls_cevt.DATA 안에 HTML tag가 없이 text만이 존재할때 
+    //.이 있으면 오류가 나는 문제가 있기에 <div> tag로 감싸는 로직 추가.
+    //(HTML.setContent("asdasd.")); -> HTML.setContent("<div>" + "asdasd." + "</div>"));
+    let _UIATV = "<div>" + l_find.DATA + "</div>";
+
+    return _UIATV;
+
     //HTML content에 입력한 정보가 존재하는경우 return.
     l_find = JSON.stringify(l_find.DATA);
 

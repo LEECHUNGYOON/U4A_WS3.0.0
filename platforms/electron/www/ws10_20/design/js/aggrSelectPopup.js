@@ -15,6 +15,10 @@
 
     //선택가능 aggregation리스트가 존재하지 않는경우.
     if(lt_sel.length === 0){
+
+
+      delete i_drop?.dropLineInfo;
+
       //오류 메시지 출력.
       //262	이동 가능한 aggregation이 존재하지 않습니다.
       parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "262", "", "", "", ""));
@@ -45,11 +49,16 @@
       draggable:true,
       afterClose: function(){
 
+        delete i_drop?.dropLineInfo;
+
         //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
         parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
         //단축키 잠금 해제 처리.
         oAPP.fn.setShortcutLock(false);
+
+        oDlg1.destroy();
+        
       }
     });
     oDlg1.addStyleClass("sapUiSizeCompact");
@@ -168,7 +177,7 @@
       oAPP.fn.setShortcutLock(false);
       
       oDlg1.close();
-      oDlg1.destroy();
+      // oDlg1.destroy();
       //001	Cancel operation
       parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
 
@@ -257,7 +266,7 @@
       oAPP.fn.setShortcutLock(false);
 
       oDlg1.close();
-      oDlg1.destroy();
+      // oDlg1.destroy();
       //001	Cancel operation
       parent.showMessage(sap,10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
     });

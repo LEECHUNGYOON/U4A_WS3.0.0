@@ -1070,10 +1070,6 @@
     oAPP.fn.attrChangeProc(is_attr, uityp, bSkipRefresh, bForceUpdate);
 
 
-    //design tree, attr table 갱신 대기.
-    await oAPP.fn.designRefershModel();
-
-
     var _sTree = oAPP.fn.getTreeData(is_attr.OBJID);
 
     
@@ -1119,7 +1115,16 @@
       await _oPromise;
 
     }
+
+
+    //미리보기 ui 선택 처리
+    await oAPP.attr.ui.frame.contentWindow.selPreviewUI(_sTree.OBJID);
+
+
+    //design tree, attr table 갱신 대기.
+    await oAPP.fn.designRefershModel();
    
+    
     //20240621 pes.
     //바인딩 팝업의 디자인 영역 갱신처리.
     oAPP.fn.updateBindPopupDesignData();
@@ -4139,6 +4144,9 @@
 
     //입력한 이벤트명 매핑.
     is_attr.UIATV = evtnm;
+
+    //입력한 이벤트명 매핑.
+    is_attr.comboval = evtnm;
 
     //attribute 입력건에 대한 미리보기, attr 라인 style 등에 대한 처리.
     oAPP.fn.attrChange(is_attr);
