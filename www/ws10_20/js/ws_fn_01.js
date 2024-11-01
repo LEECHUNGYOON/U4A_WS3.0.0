@@ -1744,22 +1744,30 @@
             }).addStyleClass("u4aWs20NewWin");
 
 
-            let oAI_Switch = new sap.m.Switch("ws20_ai_con_btn", {               
-
+            let oAI_Switch = new sap.m.Switch("ws20_ai_con_btn", {             
                 change: function(oEvent){
-                    
-                    // busy 키고 Lock 걸기
-                    oAPP.common.fnSetBusyLock("X");
 
                     let bIsState = oEvent.getParameter("state");
 
-                    // [async] AI 연결 or 연결 해제
-                    oAPP.fn.setConnectionAI(bIsState);
+                    // [async]
+                    oAPP.fn.onAiConnSwitchBtn(bIsState);
+
+                    // // busy 키고 Lock 걸기
+                    // oAPP.common.fnSetBusyLock("X");
+
+                    // let bIsState = oEvent.getParameter("state");
+
+                    // // [async] AI 연결 or 연결 해제
+                    // oAPP.fn.setConnectionAI(bIsState);
 
                 }                
 
             }).bindProperty("visible", "/WS20/APP/IS_EDIT", function(bIsDispMode){
               
+                if(!parent.REMOTE.app.isPackaged){
+                    return true;
+                }
+
                 let bIsVisible = false;                
 
                 if (bIsDispMode == null) {
