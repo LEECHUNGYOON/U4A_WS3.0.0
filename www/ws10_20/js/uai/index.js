@@ -157,12 +157,20 @@ let AI = {};
             return;
         }
 
-        let _oAI_Switch_Btn = _oFrameWin.sap.ui.getCore().byId("ws20_ai_con_btn");
-        if(!_oAI_Switch_Btn){
-            return;
-        }
 
-        _oAI_Switch_Btn.setState(false);
+        if(typeof _oFrameWin?.oAPP?.common !== "undefined"){
+
+            // 스위치 버튼 연결 해제 표시
+            _oFrameWin.oAPP.common.fnSetModelProperty("/UAI/state", false);
+
+        }        
+
+        // let _oAI_Switch_Btn = _oFrameWin.sap.ui.getCore().byId("ws20_ai_con_btn");
+        // if(!_oAI_Switch_Btn){
+        //     return;
+        // }
+
+        // _oAI_Switch_Btn.setState(false);
 
         var _sMsg = "AI와 연결이 해제 되었습니다."; // [MSG]
 
