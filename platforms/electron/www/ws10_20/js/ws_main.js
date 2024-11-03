@@ -138,6 +138,7 @@
             WS10: oAPP.main.fnGetWs10InitData(),
             WS20: oAPP.main.fnGetWs20InitData(),
             WS30: {},
+            UAI: {},    // AI 관련 구조
             FMSG: {
                 WS10: {
                     ISSHOW: false,

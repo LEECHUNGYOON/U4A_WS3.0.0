@@ -2430,97 +2430,210 @@
      ************************************************************************/
     oAPP.common.fnGetCommonHeaderButtons = () => {
 
-        return new sap.m.HBox({
+        let HBOX1 = new sap.m.HBox({
             renderType: sap.m.FlexRendertype.Bare,
-            alignItems: sap.m.FlexAlignItems.Center,
-            items: [
+            alignItems: sap.m.FlexAlignItems.Center,     
+        }).addStyleClass("u4aWsCommonHeaderArea");
 
-                new sap.m.Button({
-                    icon: "sap-icon://hide",
-                    press: () => {
-                        oAPP.fn.fnSetHideWindow();
-                    }
-                }),
+        
+        /****************************************
+         * AI 연동 Switch
+         * 
+         * // ws20_ai_con_btn <== 아이디 바라보는거 다 제거해야함!!!!
+         ****************************************/
+        let SWITCH1 = new sap.m.Switch({
+            state: "{/UAI/state}",
+            change: function(oEvent){
+                
+                oAPP.fn.onAiConnSwitchBtn(oEvent);
+                
+            }
 
-                new sap.ui.core.Icon({
-                    src: "sap-icon://sap-logo-shape"
-                }),
+        });
+        HBOX1.addItem(SWITCH1);
 
-                new sap.m.SearchField({
+        SWITCH1.bindProperty("visible",  {
+            parts: [                
+                "/SERVERINFO/SYSID",
+                "/WS10",
+                "/WS20/APP/IS_EDIT",
+                "/WS30/APP/IS_EDIT",
+                "/UAI"
+            ],
+            formatter: async function(SYSID, WS10, WS20_IS_EDIT, WS30_IS_EDIT, UAI){                
 
-                    // properties
-                    width: "200px",
-                    maxLength: 20, // SAP Standard 기준으로 T-CODE는 최대 20자
-                    placeholder: "SAP T-CODE",
-                    showSearchButton: false,
-                    enableSuggestions: true,
+                var _bIsBusy = await new Promise(function(resove){
 
-                    // aggregations
-                    suggestionItems: {
-                        path: "/SUGG/TCODE",
-                        sorter: "{ path : '/SUGG/TCODE/TCODE' }",
-                        template: new sap.m.SuggestionItem({
-                            // key: "{TCODE}",
-                            text: "{TCODE}",
-                        })
-                    },
+                    let isbusy = false;
 
-                    // events
-                    search: (oEvent) => {
-                        oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]                        
-                    },
-                    suggest: (oEvent) => {
-                        oAPP.events.ev_suggestSapTcode(oEvent);                        
-                    }
+                    setTimeout(() => {
 
-                }).addStyleClass("u4aWs30sapTcodeInput")
-                .addEventDelegate({
-                    onAfterRendering: function(oEvent){
+                        switch (SYSID) {
+                            case "UHA":
+                            case "U4A":
+        
+                                let ROOTNAV = sap.ui.getCore().byId("WSAPP");
+                                let oCurrPage = ROOTNAV.getCurrentPage();
+                                let sCurrId = oCurrPage.getId();
 
-                        // 간헐적으로 SearchField에 값을 입력하면 maxlength가 적용이 되지 않아
-                        // 직접 maxlength 구현
-                        let oSF = oEvent.srcControl;
-                        let oSFInput = oSF.getDomRef("I");
-                        if(!oSFInput){
-                            return;
+                                // "10번 페이지일 경우"
+                                if(sCurrId === "WS10"){
+
+                                    isbusy = true;                                    
+
+                                }
+
+                                // "20번 페이지일 경우"
+                                if(sCurrId === "WS20"){
+
+                                    isbusy = ( WS20_IS_EDIT === "X" ? true : false );
+
+                                }
+                                
+                                // "30번 (USP) 페이지 일 경우"
+                                if(sCurrId === "WS30"){
+
+                                    isbusy = ( WS30_IS_EDIT === "X" ? true : false );
+
+                                }
+        
+                                break;                    
+                        
+                            default:
+                                break;
                         }
 
-                        oSFInput.setAttribute("maxlength", oSF.getMaxLength());                        
+                        resove(isbusy);
 
-                    }
-                }),
+                    }, 0);
 
-                // Browser Pin Button
-                new sap.m.OverflowToolbarToggleButton({
-                    icon: "sap-icon://pushpin-off",
-                    pressed: "{/SETTING/ISPIN}",
-                    tooltip: "Browser Pin",
-                    press: oAPP.events.ev_windowPinBtn
-                }),
+                });
 
-                // zoom 기능
-                new sap.m.Button({
-                    icon: "sap-icon://zoom-in",
-                    press: oAPP.events.ev_pressZoomBtn,
-                    tooltip: "zoom",
-                }),
+                return _bIsBusy;               
 
-                // 검색 버튼
-                new sap.m.Button({
-                    icon: "sap-icon://search",
-                    tooltip: "window Text Search",
-                    press: oAPP.events.ev_winTxtSrchWS10
-                }),
+            }
+        });
 
-                // Logoff 버튼
-                new sap.m.Button({
-                    icon: "sap-icon://log",
-                    type: sap.m.ButtonType.Reject,
-                    press: oAPP.events.ev_Logout
+        
+        /****************************************
+         * 브라우저 투명도 팝업 버튼
+         ****************************************/
+        let BUTTON1 = new sap.m.Button({
+            icon: "sap-icon://hide",
+            press: () => {
+                oAPP.fn.fnSetHideWindow();
+            }
+        });
+        HBOX1.addItem(BUTTON1);
+
+        
+        /****************************************
+         * SAP LOGO ICON
+         ****************************************/
+        let ICON1 = new sap.ui.core.Icon({
+            src: "sap-icon://sap-logo-shape"
+        });
+        HBOX1.addItem(ICON1);
+
+        
+        /****************************************
+         * T-CODE 검색
+         ****************************************/
+        let SEARCHFIELD1 = new sap.m.SearchField({
+
+            // properties
+            width: "200px",
+            maxLength: 20, // SAP Standard 기준으로 T-CODE는 최대 20자
+            placeholder: "SAP T-CODE",
+            showSearchButton: false,
+            enableSuggestions: true,
+
+            // aggregations
+            suggestionItems: {
+                path: "/SUGG/TCODE",
+                sorter: "{ path : '/SUGG/TCODE/TCODE' }",
+                template: new sap.m.SuggestionItem({
+                    // key: "{TCODE}",
+                    text: "{TCODE}",
                 })
+            },
 
-            ]
-        }).addStyleClass("u4aWsCommonHeaderArea");
+            // events
+            search: (oEvent) => {
+                oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]                        
+            },
+            suggest: (oEvent) => {
+                oAPP.events.ev_suggestSapTcode(oEvent);                        
+            }
+
+        });
+        HBOX1.addItem(SEARCHFIELD1);
+        
+        SEARCHFIELD1.addStyleClass("u4aWs30sapTcodeInput");
+
+        SEARCHFIELD1.addEventDelegate({
+            onAfterRendering: function(oEvent){
+
+                // 간헐적으로 SearchField에 값을 입력하면 maxlength가 적용이 되지 않아
+                // 직접 maxlength 구현
+                let oSF = oEvent.srcControl;
+                let oSFInput = oSF.getDomRef("I");
+                if(!oSFInput){
+                    return;
+                }
+
+                oSFInput.setAttribute("maxlength", oSF.getMaxLength());                        
+
+            }
+        });
+
+
+        /****************************************
+         * Browser Pin Button
+         ****************************************/
+        let BUTTON2 = new sap.m.OverflowToolbarToggleButton({
+            icon: "sap-icon://pushpin-off",
+            pressed: "{/SETTING/ISPIN}",
+            tooltip: "Browser Pin",
+            press: oAPP.events.ev_windowPinBtn
+        });
+        HBOX1.addItem(BUTTON2);
+
+
+        /****************************************
+         * zoom 기능
+         ****************************************/
+        let BUTTON3 = new sap.m.Button({
+            icon: "sap-icon://zoom-in",
+            press: oAPP.events.ev_pressZoomBtn,
+            tooltip: "zoom",
+        });
+        HBOX1.addItem(BUTTON3);
+
+
+        /****************************************
+         * 검색 버튼
+         ****************************************/
+        let BUTTON4 =  new sap.m.Button({
+            icon: "sap-icon://search",
+            tooltip: "window Text Search",
+            press: oAPP.events.ev_winTxtSrchWS10
+        });
+        HBOX1.addItem(BUTTON4);
+
+
+        /****************************************
+         * Logoff 버튼
+         ****************************************/
+        let BUTTON5 = new sap.m.Button({
+            icon: "sap-icon://log",
+            type: sap.m.ButtonType.Reject,
+            press: oAPP.events.ev_Logout
+        });
+        HBOX1.addItem(BUTTON5);
+
+
+        return HBOX1;
 
     }; // end of oAPP.common.fnGetCommonHeaderButtons
 

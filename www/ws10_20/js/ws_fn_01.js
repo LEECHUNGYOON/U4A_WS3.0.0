@@ -1744,49 +1744,6 @@
             }).addStyleClass("u4aWs20NewWin");
 
 
-            let oAI_Switch = new sap.m.Switch("ws20_ai_con_btn", {             
-                change: function(oEvent){
-
-                    let bIsState = oEvent.getParameter("state");
-
-                    // [async]
-                    oAPP.fn.onAiConnSwitchBtn(bIsState);
-
-                    // // busy 키고 Lock 걸기
-                    // oAPP.common.fnSetBusyLock("X");
-
-                    // let bIsState = oEvent.getParameter("state");
-
-                    // // [async] AI 연결 or 연결 해제
-                    // oAPP.fn.setConnectionAI(bIsState);
-
-                }                
-
-            }).bindProperty("visible", "/WS20/APP/IS_EDIT", function(bIsDispMode){
-              
-                if(!parent.REMOTE.app.isPackaged){
-                    return true;
-                }
-
-                let bIsVisible = false;                
-
-                if (bIsDispMode == null) {
-                    return bIsVisible;
-                }
-
-                if(bIsDispMode == "X"){
-                    bIsVisible = true;
-                }
-
-                if(parent.APP.isPackaged === true){
-                    bIsVisible = false;
-                }
-              
-                return bIsVisible;
-
-            });
-
-
         return [
 
             oBackBtn, // Back Button
@@ -1812,10 +1769,6 @@
             oFindBtn, // Find Button
 
             oNewWin, // new window Button
-
-            // TEST --------------------------
-            oAI_Switch       // AI 연결 버튼
-            // TEST --------------------------
 
         ];
 
