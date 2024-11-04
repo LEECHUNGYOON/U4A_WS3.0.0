@@ -3211,7 +3211,7 @@
 
     }; // end of fnMoveToWs10
 
-    function _fnKillUserSessionCb() {
+    async function _fnKillUserSessionCb() {
 
         /**
          * 페이지 이동 시, CHANGE 모드였다면 현재 APP의 Lock Object를 해제한다.
@@ -3235,13 +3235,7 @@
         APPCOMMON.setShortCut("WS10");
 
         // 10번 페이지로 이동
-        oAPP.fn.fnOnMoveToPage("WS10");
-
-        // Busy 끄기
-        parent.setBusy('');
-
-        // 화면 Lock 해제
-        sap.ui.getCore().unlock();
+        oAPP.fn.fnOnMoveToPage("WS10");        
 
         // // RowUpdate 이벤트를 해제 한다.
         // let oUspTreeTable = sap.ui.getCore().byId("usptree");
@@ -3256,6 +3250,23 @@
 
         // 윈도우 헤더 타이틀 변경
         oAPP.common.setWSHeadText(sTitle);
+
+        // AI 서버 연결되어있을 경우 연결 해제 하기
+        // AI 서버에 요청할 데이터
+        let _oPARAM = {
+            CONID: parent.getBrowserKey()
+        }
+
+        // AI 연결 해제
+        await parent.UAI.disconnect(_oPARAM);
+
+
+        // Busy 끄기
+        parent.setBusy('');
+
+        // 화면 Lock 해제
+        sap.ui.getCore().unlock();
+        
 
     } // end of _fnKillUserSessionCb
 

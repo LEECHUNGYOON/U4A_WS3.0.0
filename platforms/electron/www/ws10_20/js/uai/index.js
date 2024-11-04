@@ -157,7 +157,6 @@ let AI = {};
             return;
         }
 
-
         if(typeof _oFrameWin?.oAPP?.common !== "undefined"){
 
             // 스위치 버튼 연결 해제 표시

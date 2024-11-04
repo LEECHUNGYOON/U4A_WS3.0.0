@@ -319,7 +319,7 @@
             }
 
             // AI 연결 해제
-            parent.UAI.disconnect(_oPARAM);
+            await parent.UAI.disconnect(_oPARAM);
 
 
             // // busy 끄고 Lock 끄기

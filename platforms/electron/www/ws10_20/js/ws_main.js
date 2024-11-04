@@ -654,11 +654,21 @@
 
         _oAI_IF_DOM.addEventListener(_sEventName, function(oEvent){
 
-           let _oEventData = oEvent.detail.RDATA;
+            console.log("ai send", oEvent.detail);
+
+            let _oEventData = oEvent?.detail?.RDATA || undefined;
+            if(!_oEventData){
+
+                let _sConsoleMsg = "[E001]\n";
+                _sConsoleMsg += "path: [ ws10_20 => js => ws_main.js => _attach_AI_Events ]\n";
+                _sConsoleMsg += "AI 에서 데이터 전송 잘못 보냄!!";
+
+                console.error(_sConsoleMsg);
+
+                return;
+            }
 
             parent.require(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "UAI", "parseAiLibraryData.js"))(_oEventData, oAPP);
-
-            console.log(_sEventName);
 
         });
 
