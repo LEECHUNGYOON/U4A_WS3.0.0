@@ -391,49 +391,77 @@
                 // 스위치 버튼 연결 해제 표시
                 oAPP.common.fnSetModelProperty("/UAI/state", false);
 
-                // 이미 다른 서버에서 연결되어 있을 경우
-                if(_oClient.ERRCD === "AIE04"){
+                switch (_oClient.ERRCD) {
 
-                    var _sErrMsg = "이미 다른 서버에서 연결되어 있습니다!!"; // [MSG]
+                    // [AI에서 전달한 코드]
+                    // 이미 다른 서버에서 연결 되어 있을 경우
+                    case "AIE04":   
 
-                    sap.m.MessageToast.show(_sErrMsg);
+                        var _sErrMsg = "이미 다른 서버에서 연결되어 있습니다!!"; // [MSG]
 
-                    /**
-                     * 현재 연결되어있는 브라우저를 찾아서 focus를 준다.
-                     */
+                        sap.m.MessageToast.show(_sErrMsg);
 
-                    // 리턴 받은 파라미터
-                    let _oPARAM = _oClient.RDATA;
+                        /**
+                         * 현재 연결되어있는 브라우저를 찾아서 focus를 준다.
+                         */
 
-                    // 현재 AI와 연결되어 있는 브라우저의 키
-                    let _sCurrConnId = _oPARAM.CURR_CONID;
+                        // 리턴 받은 파라미터
+                        let _oPARAM = _oClient.RDATA;
 
-                    // 현재 AI와 연결되어 있는 브라우저를 찾아서 해당 브라우저에 focus를 준다.
-                    let _oFindResult = _findMainWindowWithBrowsKey(_sCurrConnId);
-                    if(_oFindResult.RETCD !== "E"){
+                        // 현재 AI와 연결되어 있는 브라우저의 키
+                        let _sCurrConnId = _oPARAM.CURR_CONID;
+
+                        // 현재 AI와 연결되어 있는 브라우저를 찾아서 해당 브라우저에 focus를 준다.
+                        let _oFindResult = _findMainWindowWithBrowsKey(_sCurrConnId);
+                        if(_oFindResult.RETCD !== "E"){
+                            
+                            let _oFoundWindow = _oFindResult.RDATA;
+
+                            _oFoundWindow.show();
+
+                        }
+
+                        // 이전에 돌고 있는 인터벌을 삭제한다.
+                        _clearIntervaliUAIConn();
+
+                        // 딥링크 실행용 iframe을 삭제한다.
+                        _clearAiDeepLinkIframe();
+
+                        delete oAPP.attr.iUAIConnRecurciveTime;
+
+                        // Busy Off
+                        parent.setBusy("");  
+
+                        // 전체 자식 윈도우에 Busy 끈다
+                        oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_OFF" });
                         
-                        let _oFoundWindow = _oFindResult.RDATA;
+                        return;
+                        
 
-                        _oFoundWindow.show();
+                    // [UAI.connect => _sendConnectInfo => AI.iConnTimeout 부분]
+                    // 연결은 됐는데 AI에서 아무런 응답이 없을 경우                    
+                    case "E004":                        
 
-                    }
+                        var _sErrMsg = "AI 프로그램에서 응답이 없습니다.";  // [MSG]
 
-                    // 이전에 돌고 있는 인터벌을 삭제한다.
-                    _clearIntervaliUAIConn();
+                        sap.m.MessageToast.show(_sErrMsg);
 
-                    // 딥링크 실행용 iframe을 삭제한다.
-                    _clearAiDeepLinkIframe();
+                        // 이전에 돌고 있는 인터벌을 삭제한다.
+                        _clearIntervaliUAIConn();
 
-                    delete oAPP.attr.iUAIConnRecurciveTime;
+                        // 딥링크 실행용 iframe을 삭제한다.
+                        _clearAiDeepLinkIframe();
 
-                    // Busy Off
-                    parent.setBusy("");  
+                        delete oAPP.attr.iUAIConnRecurciveTime;
 
-                    // 전체 자식 윈도우에 Busy 끈다
-                    oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_OFF" });
-                    
-                    return;
+                        // Busy Off
+                        parent.setBusy("");  
 
+                        // 전체 자식 윈도우에 Busy 끈다
+                        oAPP.attr.oMainBroad.postMessage({ PRCCD: "BUSY_OFF" });   
+                  
+                        return;
+                
                 }
         
                 var _sFrameId = "uai-conn";

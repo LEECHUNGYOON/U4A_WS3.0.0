@@ -3260,7 +3260,6 @@
         // AI 연결 해제
         await parent.UAI.disconnect(_oPARAM);
 
-
         // Busy 끄기
         parent.setBusy('');
 
@@ -6075,7 +6074,7 @@
         // Lock을 해제한다.
         ajax_unlock_app(oAppInfo.APPID, lf_success);
 
-        function lf_success(RETURN) {
+        async function lf_success(RETURN) {
 
             if (RETURN.RTCOD == 'E') {
                 // 오류..1
@@ -6106,6 +6105,15 @@
             // 30번 페이지 레이아웃 초기 설정
             oAPP.fn.fnOnInitLayoutSettingsWs30();
 
+            // AI 서버 연결되어있을 경우 연결 해제 하기
+            // AI 서버에 요청할 데이터
+            let _oPARAM = {
+                CONID: parent.getBrowserKey()
+            }
+
+            // AI 연결 해제
+            await parent.UAI.disconnect(_oPARAM);	
+
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
 
@@ -6131,7 +6139,7 @@
         // 서버에서 App 정보를 구한다.
         ajax_init_prc(oFormData, lf_success);
 
-        function lf_success(oAppInfo) {
+        async function lf_success(oAppInfo) {
 
             if (oAppInfo.IS_EDIT != "X") {
 
@@ -6168,6 +6176,15 @@
 
             // 30번 페이지 레이아웃 초기 설정
             oAPP.fn.fnOnInitLayoutSettingsWs30();
+
+            // AI 서버 연결되어있을 경우 연결 해제 하기
+            // AI 서버에 요청할 데이터
+            let _oPARAM = {
+                CONID: parent.getBrowserKey()
+            }
+
+            // AI 연결 해제
+            await parent.UAI.disconnect(_oPARAM);
 
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");

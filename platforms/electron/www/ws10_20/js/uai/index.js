@@ -39,6 +39,7 @@ let AI = {};
  *  💖 PRIVITE FUNCTION 선언부
  ******************************************************************************/
 
+
     /****************************************************************
      * @private function - AI 프로그램에 연결 시, 연결 정보 전송
      ****************************************************************/
@@ -132,12 +133,12 @@ let AI = {};
      *************************************************************/
     function _connectionCloseHandle(){
 
-        // TEST -------------
+        // 아래 로직에 대한 내용 설명은
+        // AI.connect => _sendConnectInfo 의 주석 참조
         let bIsDisconnMsgShow = true;
         if(CLIENT && CLIENT.bIsDisconnMsgShow === false){
             bIsDisconnMsgShow = false;
         }
-        // TEST -------------
 
 
         // 연결이 끊어졌을 경우 CLIENT 전역 객체 초기화
@@ -174,7 +175,9 @@ let AI = {};
         var _sMsg = "AI와 연결이 해제 되었습니다."; // [MSG]
 
         if(bIsDisconnMsgShow === true){
-            _oFrameWin.sap.m.MessageToast.show(_sMsg);
+            setTimeout(function(){
+                _oFrameWin.sap.m.MessageToast.show(_sMsg);
+            },0);            
         }        
 
         // busy 끄고 Lock 풀기
@@ -290,19 +293,16 @@ let AI = {};
 
                 // console.log("AI", 'Connected to server.', arguments);            
 
-                _sendConnectInfo(oPARAM, function(oResult){
+                _sendConnectInfo(oPARAM, function(oResult){                    
                     
-                    // TEST -------------
                     // 연결 시도하다가 다른 서버에서 이미 연결이 되어있는 상태일 경우
                     // AI 서버에서 client end를 하는데..
                     // 그러면 3.0의 client의 end 이벤트도 연결 끊었을 때 이벤트를 호출 하여
                     // 그 이벤트에서 연결 해제 메시지 출력을 할지 말지 정하는 플래그를 설정함.
-                    if(oResult.PRCCD === "CONNECT" && oResult.ERRCD === "AIE04"){
+                    if(oResult.PRCCD === "CONNECT" && 
+                       oResult.ERRCD === "AIE04" /* AIE04: AI와 이미 연결된 상태라는 의미의 코드 */){
                         CLIENT.bIsDisconnMsgShow = false;
-                    }
-                    // TEST -------------
-
-                    // CLIENT.bisCloseMsgShow = true;
+                    }                    
 
                     return resolve(oResult);
 
@@ -319,9 +319,7 @@ let AI = {};
             *   WS30에서는 응답을 못받게 되어 일정시간 지난 뒤 응답 없음 오류를 발생시킴         
             *********************************************************************/        
             CLIENT.on('data', function(data){
-                
-                // console.log("data", data.toString());     
-
+       
                 try {
 
                     let _sData = data.toString();
@@ -329,11 +327,7 @@ let AI = {};
                     var _oIF_DATA = JSON.parse(_sData);
 
                 } catch (error) {
-
-                    let _sErrLoc = "[AI.connect - CLIENT.on('data')]";
-
-                    // console.error(_sErrLoc, error);
-
+              
                     // AI 서버에서 잘못된 값을 던질 경우는
                     // 다시 AI 서버로 전송한다.
                     CLIENT.write(JSON.stringify({
@@ -346,10 +340,6 @@ let AI = {};
                 }    
 
                 if(typeof _oIF_DATA?.PRCCD === "undefined"){
-
-                    let _sErrLoc = "[AI.connect - CLIENT.on('data')]";
-                
-                    // sconsole.error(_sErrLoc, "AI 응답 시 필수 필드 오류!!");
 
                     // AI 서버에서 잘못된 값을 던질 경우는
                     // 다시 AI 서버로 전송한다.
@@ -373,12 +363,6 @@ let AI = {};
              * AI 서버가 실행되어 있지 않을 경우 바로 여기가 호출됨.
              *********************************************************************/
             CLIENT.on('error', function(oError){
-
-                let _sErrLoc = "[AI.connect - CLIENT.on('error')]";
-
-                // console.error(_sErrLoc, oError);
-
-                // console.error("error", oError);
 
                 return resolve({
                     RETCD: "E",
@@ -412,8 +396,6 @@ let AI = {};
 
         CLIENT.on('end', function(oEvent){
 
-            // console.log("error", oEvent);
-            // console.log("2");
             // 연결 이후 AI 서버가 끊어졌을 경우에 대한 UI 핸들링                
             _connectionCloseHandle();
 

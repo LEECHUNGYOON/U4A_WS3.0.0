@@ -49,7 +49,7 @@
         // 서버에서 App 정보를 구한다.
         ajax_init_prc(oFormData, lf_success);
 
-        function lf_success(oAppInfo) {
+        async function lf_success(oAppInfo) {
 
             let sCurrPage = parent.getCurrPage();
 
@@ -92,6 +92,16 @@
                 oAppInfo.IS_EDIT = "";
             }
 
+            // AI 서버 연결되어있을 경우 연결 해제 하기
+
+            // AI 서버에 요청할 데이터
+            let _oPARAM = {
+                CONID: parent.getBrowserKey()
+            }
+
+            // AI 연결 해제
+            await parent.UAI.disconnect(_oPARAM);
+
             // USP Application 일 경우
             if (oAppInfo.APPTY == "U") {
 
@@ -108,7 +118,7 @@
                 APPCOMMON.setShortCut("WS30");
 
                 // USP 페이지로 이동한다.
-                oAPP.fn.fnOnMoveToPage("WS30");
+                oAPP.fn.fnOnMoveToPage("WS30");                
 
                 return;
 
@@ -136,7 +146,7 @@
 
             // WS20번 페이지로 이동한다.
             oAPP.fn.fnOnMoveToPage("WS20");
-
+         
         } // end of lf_success
 
     }; // end of oAPP.fn.fnOnEnterDispChangeMode    
@@ -790,17 +800,14 @@
 
             oAPP.fn.setUIAreaEditable(oAppInfo.IS_CHAG); // Display 모드로 변환
 
-            //테스트주석처리함!!!!!!!!!!!!!!
-            // // 화면 Lock 해제
-            // sap.ui.getCore().unlock();
-
-            // parent.setBusy('');
-            //테스트주석처리함!!!!!!!!!!!!!!
+            
+            // AI 서버 연결되어있을 경우 연결 해제 하기
             // AI 서버에 요청할 데이터
             let _oPARAM = {
                 CONID: parent.getBrowserKey()
             }
-
+            
+            // AI 연결 해제
             parent.UAI.disconnect(_oPARAM);
 
         }
