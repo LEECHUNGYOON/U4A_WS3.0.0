@@ -458,7 +458,10 @@
                         parent.setBusy("");  
 
                         // 전체 자식 윈도우에 Busy 끈다
-                        oAPP.attr.oMainBroad.postMessage({ PRCCD: "BUSY_OFF" });   
+                        oAPP.attr.oMainBroad.postMessage({ PRCCD: "BUSY_OFF" });
+
+                        // AI 연결 해제
+                        await parent.UAI.disconnect({CONID: parent.getBrowserKey()});
                   
                         return;
                 
