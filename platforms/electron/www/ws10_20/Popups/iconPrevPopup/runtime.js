@@ -102,8 +102,11 @@ oAPP.fn.attachInit = async () => {
      * 무조건 맨 마지막에 수행 되어야 함!!
      */
 
+    oAPP.attr._oRendering = sap.ui.requireSync('sap/ui/core/Rendering');    
+    oAPP.attr._oRendering.attachUIUpdated(_fnUIupdatedCallback);
+
     // 자연스러운 로딩
-    sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback);
+    // sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback);
 
 }; // end of oAPP.fn.attachInit
 
@@ -832,8 +835,12 @@ function _fnUIupdatedCallback() {
     setTimeout(() => {
         $('#content').fadeIn(300, 'linear');
     }, 300);
+  
+    oAPP.attr._oRendering.detachUIUpdated(_fnUIupdatedCallback);
 
-    sap.ui.getCore().detachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback);
+    delete oAPP.attr._oRendering;
+
+    // sap.ui.getCore().detachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback);
 
     setTimeout(async () => {
 

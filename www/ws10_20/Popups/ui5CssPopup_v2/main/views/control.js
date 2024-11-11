@@ -173,6 +173,14 @@
         let sServerBootSrc = sServerHost + oContr.IF_DATA.SERVER_BOOT_PATH;        
         let sSubrootSrc = `${sServerPath}${oContr.IF_DATA.SUBROOT_PATH}`;
 
+        // 임시로직!!!
+        // 서버 라이브러리 경로가 시작이 '/zu4a_imp/' 가 아닐 경우에는
+        // 경로 앞에 접속 서버 호스트를 붙이지 말고
+        // 서버 경로 전체를 바라본다.
+        if(oContr.IF_DATA.SERVER_BOOT_PATH.substring(0,10) !== "/zu4a_imp/"){
+            sServerBootSrc = oContr.IF_DATA.SERVER_BOOT_PATH;
+        }
+
         // 좌측 메뉴의 추가 정보를 저장한다.
         for(const oMenu of aLMenuList){
 
@@ -226,6 +234,14 @@
         let sServerBootSrc = sServerHost + oContr.IF_DATA.SERVER_BOOT_PATH;        
         let sSubrootSrc = `${sServerPath}${oContr.IF_DATA.SUBROOT_PATH}`;
 
+        // 임시로직!!!
+        // 서버 라이브러리 경로가 시작이 '/zu4a_imp/' 가 아닐 경우에는
+        // 경로 앞에 접속 서버 호스트를 붙이지 말고
+        // 서버 경로 전체를 바라본다.
+        if(oContr.IF_DATA.SERVER_BOOT_PATH.substring(0,10) !== "/zu4a_imp/"){
+            sServerBootSrc = oContr.IF_DATA.SERVER_BOOT_PATH;
+        }
+        
         // Other CSS Menu의 추가 정보를 저장한다.
         for(const oMenu of aOtherMenuList){
 

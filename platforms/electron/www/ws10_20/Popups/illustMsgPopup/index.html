@@ -309,13 +309,14 @@
             oAPP.UI5LIB_WSSRC = oSetting_UI5.resourceUrl;
             oAPP.UI5LIB_SSRC = oAPP.attr.sServerHost + oAPP.attr.sServerLibPath;
 
-            // if (!oAPP.remote.app.isPackaged) {
-
-            //     oAPP.UI5LIB_WSSRC = "https://sapui5.hana.ondemand.com/1.107.1/resources/sap-ui-core.js";
-            //     oAPP.UI5LIB_SSRC = "https://u4arnd.com:44300/zu4a_imp/openui5_lib/v11071/resources/sap-ui-core.js?sap-user=pes&sap-password=dmstjq8!";
-
-            // };
-
+            // 임시로직!!!
+            // 서버 라이브러리 경로가 시작이 '/zu4a_imp/' 가 아닐 경우에는
+            // 경로 앞에 접속 서버 호스트를 붙이지 말고
+            // 서버 경로 전체를 바라본다.
+            if(oAPP.attr.sServerLibPath.substring(0,10) !== "/zu4a_imp/"){
+                oAPP.UI5LIB_SSRC = oAPP.attr.sServerLibPath;
+            }           
+  
             oAPP.UI5_LANGU = oAPP.attr.WS_LANGU;
             oAPP.UI5_THEME = oAPP.attr.sDefTheme;
 

@@ -389,7 +389,11 @@ function SETTING_FAVORITE(FAVORITELIST, GRIDMSG) {
 // ▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣ UI생성 후 ▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣
 function fn_UIUPdated() {
 
-    sap.ui.getCore().detachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, fn_UIUPdated);
+    oAPP.attr._oRendering.detachUIUpdated(fn_UIUPdated);
+
+    delete oAPP.attr._oRendering;
+
+    // sap.ui.getCore().detachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, fn_UIUPdated);
 
     GET_ILLUSTDATA();                                                       // ▶ SAP 기본 IllustratedMessage TYPE 추출
 
@@ -419,7 +423,10 @@ function fn_UIUPdated() {
 // ▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣ UI생성 ▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣
 function createUi() {
 
-    sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, fn_UIUPdated);
+    // sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, fn_UIUPdated);
+
+    oAPP.attr._oRendering = sap.ui.requireSync('sap/ui/core/Rendering');    
+    oAPP.attr._oRendering.attachUIUpdated(fn_UIUPdated);
 
     jQuery.sap.require("sap.ui.layout.cssgrid.GridBoxLayout");
 
