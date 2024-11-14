@@ -1510,7 +1510,7 @@
 
         // no build 일 경우에는 개발자 툴을 실행한다.
         // if (!APP.isPackaged) {
-            // oBrowserWindow.webContents.openDevTools();
+        //     oBrowserWindow.webContents.openDevTools();
         // }
         
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
