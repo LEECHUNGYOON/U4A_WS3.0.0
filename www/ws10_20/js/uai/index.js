@@ -327,6 +327,12 @@ let AI = {};
                     var _oIF_DATA = JSON.parse(_sData);
 
                 } catch (error) {
+
+                    let _sConsoleMsg = "[UAI]\n";
+                        _sConsoleMsg += "path: [ ws10_20 => js => uai => index.js => AI.connect => CLIENT.on('data')]\n";
+                        _sConsoleMsg += "UAI에서 값을 잘못 던짐!!";
+
+                        console.log(_sConsoleMsg); 
               
                     // AI 서버에서 잘못된 값을 던질 경우는
                     // 다시 AI 서버로 전송한다.
@@ -340,6 +346,12 @@ let AI = {};
                 }    
 
                 if(typeof _oIF_DATA?.PRCCD === "undefined"){
+
+                    let _sConsoleMsg = "[UAI]\n";
+                        _sConsoleMsg += "path: [ ws10_20 => js => uai => index.js => AI.connect => CLIENT.on('data')]\n";
+                        _sConsoleMsg += "UAI에서 필수 데이터(PRCCD) 누락!!!";
+
+                        console.log(_sConsoleMsg); 
 
                     // AI 서버에서 잘못된 값을 던질 경우는
                     // 다시 AI 서버로 전송한다.
