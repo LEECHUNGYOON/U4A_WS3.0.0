@@ -1812,6 +1812,11 @@
           // 전체 자식 윈도우에 Busy 종료.
           oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
 
+          //단축키 잠금 해제처리.
+          oAPP.fn.setShortcutLock(false);
+
+          parent.setBusy("");
+
           return true;
         }
 
@@ -4406,7 +4411,9 @@
 
     }
 
-    var l_type = sap.ui.base.DataType.getType(l_uiadt);
+
+    // var l_type = sap.ui.base.DataType.getType(l_uiadt);
+    var l_type = oAPP.attr.ui.frame.contentWindow.sap.ui.base.DataType.getType(l_uiadt);
     if(!l_type){return;}
 
     //20230417 PES -start.

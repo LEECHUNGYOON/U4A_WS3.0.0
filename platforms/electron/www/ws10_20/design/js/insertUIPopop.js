@@ -9,8 +9,10 @@
   //UI 생성 팝업
   oAPP.fn.callUIInsertPopup = function(UIOBK, retFunc){
 
+
     //Aggregation Name DDLB 바인딩 정보 구성.
     var lt_sel = oAPP.DATA.LIB.T_0023.filter(a => a.UIOBK === UIOBK && a.UIATY === "3" && a.ISDEP !== "X" );
+
 
     if(lt_sel.length === 0){
       //280	입력 가능한 Aggregation이 존재하지 않습니다.
@@ -23,6 +25,7 @@
 
       return;
     }
+
 
     var ls_sel = JSON.stringify(lt_sel[0]);
     ls_sel = JSON.parse(ls_sel);
@@ -239,7 +242,11 @@
 
 
     var oItm1 = new sap.ui.core.Item({key:"{UIATK}", text:"{UIATT}"});
+
+
     oSel1.bindAggregation("items", {path:"/T_SEL", template:oItm1});
+
+
 
     var oFrmElem2 = new sap.ui.layout.form.FormElement({visible:false});
     oFrmCont1.addFormElement(oFrmElem2);

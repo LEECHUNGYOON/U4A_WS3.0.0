@@ -2345,10 +2345,15 @@
         oAPP.attr.ui.frame.contentWindow.setChildUiException(ls_14.UIOBK, ls_14.OBJID, ls_14.zTREE, oAPP.attr.S_CODE.UA050);
 
 
+        var _aIndex = is_parent.zTREE.filter( a => a.UIATT === ls_14.UIATT );
+
+        var _dragPos = _aIndex.findIndex( item => item.OBJID === ls_14.OBJID );
+
+
         var _cnt = 0;
 
         //같은 aggregation안에 있는 UI중 부모에 추가되지 않은 UI 존재 여부 확인.
-        for(var i = 0; i < _sDropLineInfo.dropIndex; i++){
+        for(var i = 0; i < _dragPos; i++){
 
           var _sTree =  is_parent.zTREE[i];
 
@@ -5561,10 +5566,14 @@
           oAPP.attr.ui.frame.contentWindow.setChildUiException(ls_14.UIOBK, ls_14.OBJID, ls_14.zTREE, oAPP.attr.S_CODE.UA050);
 
 
+          var _aIndex = is_parent.zTREE.filter( a => a.UIATT === ls_14.UIATT );
+
+          var _dragPos = _aIndex.findIndex( item => item.OBJID === ls_14.OBJID );
+
           var _cnt = 0;
 
           //같은 aggregation안에 있는 UI중 부모에 추가되지 않은 UI 존재 여부 확인.
-          for(var i = 0; i < _sDropLineInfo.dropIndex; i++){
+          for(var i = 0; i < _dragPos; i++){
 
             var _sTree =  is_parent.zTREE[i];
 
