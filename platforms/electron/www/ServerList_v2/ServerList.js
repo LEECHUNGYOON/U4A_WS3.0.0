@@ -1438,6 +1438,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         }
 
+        // name 기준으로 오름차순 정렬
+        aItemList.sort((a,b) => {
+            return a.name.localeCompare(b.name);
+        });
+
         oTableModel.setProperty("/SAPLogonItems", aItemList);
 
     }; // end of oAPP.fn.fnPressWorkSpaceTreeItem
@@ -1615,7 +1620,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     cells: [
 
                         new sap.m.ObjectStatus({
-                            icon: "sap-icon://circle-task-2",
+                            icon: "sap-icon://circle-task-2",                           
                         }).bindProperty("text", {
                             parts: [
                                 "ISSAVE"
@@ -1681,12 +1686,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             content: [
                 new sap.m.Button({
                     icon: "sap-icon://edit",
+                    type: "Emphasized",
                     press: () => {
                         oAPP.fn.fnPressEdit();
                     }
                 }),
                 new sap.m.Button({
                     icon: "sap-icon://delete",
+                    type: "Negative",
                     press: () => {
                         oAPP.fn.fnPressDelete();
                     }
