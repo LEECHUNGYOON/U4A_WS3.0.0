@@ -4,8 +4,10 @@
 (function(window, $, oAPP) {
     "use strict";
 
-
-    function _findMainWindowWithBrowsKey(sBrowsKey){
+    /************************************************************************
+     * 현재 AI와 연결되어 있는 브라우저를 찾아서 해당 브라우저에 focus를 준다.
+     ************************************************************************/
+    function _focusOnAIBrowser(sBrowsKey){
 
         // 리턴 구조
         let _oRET = {
@@ -16,9 +18,7 @@
         let _aAllWindows = parent.REMOTE.BrowserWindow.getAllWindows();
         if(_aAllWindows.length === 0){
             return _oRET;
-        }
-
-        
+        }        
 
         for(const _oWin of _aAllWindows){
 
@@ -59,10 +59,12 @@
 
         return _oRET;
 
-    } // end of _findMainWindowWithBrowsKey
+    } // end of _focusOnAIBrowser
+    
 
-
-    // 이전에 돌고 있는 인터벌이 혹시나 있으면 삭제
+    /************************************************************************
+     * AI 연결 시도 이후에 연결 대기를 위한 인터벌 제거
+     ************************************************************************/
     function _clearIntervaliUAIConn() {
 
         if (oAPP.attr.iUAIConnInterval) {
@@ -72,6 +74,10 @@
 
     } // end of _clearIntervalSapGuiCheck
 
+
+    /************************************************************************
+     * AI 연결을 위한 딥링크용 Iframe 제거
+     ************************************************************************/
     function _clearAiDeepLinkIframe(){
 
         let _oFrameDom = document.getElementById("uai-conn");
@@ -82,6 +88,7 @@
         document.body.removeChild(_oFrameDom);
 
     } // end of _clearAiDeepLinkIframe
+
 
     /************************************************************************
      * AI 연결 스위치 버튼 이벤트
@@ -211,7 +218,7 @@
     //             let _sCurrConnId = _oPARAM.CURR_CONID;
 
     //             // 현재 AI와 연결되어 있는 브라우저를 찾아서 해당 브라우저에 focus를 준다.
-    //             let _oFindResult = _findMainWindowWithBrowsKey(_sCurrConnId);
+    //             let _oFindResult = _focusOnAIBrowser(_sCurrConnId);
     //             if(_oFindResult.RETCD !== "E"){
                     
     //                 let _oFoundWindow = _oFindResult.RDATA;
@@ -250,8 +257,8 @@
     //         let iMaxTime = 60,
     //             iCurrTime = 0;            
 
-    //         if(typeof oAPP.attr.iUAIConnRecurciveTime === "undefined"){
-    //             oAPP.attr.iUAIConnRecurciveTime = 0;
+    //         if(typeof oAPP.attr.iUAIConnRetryCount === "undefined"){
+    //             oAPP.attr.iUAIConnRetryCount = 0;
     //         }    
 
     //         // 인터벌로 1분동안 재귀 돌린다.
@@ -259,13 +266,13 @@
 
     //             // iCurrTime += 1;
 
-    //             oAPP.attr.iUAIConnRecurciveTime += 1;
+    //             oAPP.attr.iUAIConnRetryCount += 1;
 
-    //             console.log("ai 대기시간", oAPP.attr.iUAIConnRecurciveTime);
+    //             console.log("ai 대기시간", oAPP.attr.iUAIConnRetryCount);
 
     //             // iMaxTime초 이후에도 dialog가 닫히지 않았다면 강제로 닫아준다.
     //             // if (iCurrTime >= iMaxTime) {
-    //             if (oAPP.attr.iUAIConnRecurciveTime >= iMaxTime) {
+    //             if (oAPP.attr.iUAIConnRetryCount >= iMaxTime) {
 
     //                 _oSwitch.setState(false);
 
@@ -275,7 +282,7 @@
     //                 // 딥링크 실행용 iframe을 삭제한다.
     //                 _clearAiDeepLinkIframe();
 
-    //                 delete oAPP.attr.iUAIConnRecurciveTime;
+    //                 delete oAPP.attr.iUAIConnRetryCount;
 
     //                 // [MSG]
     //                 let _sMsg = "AI와 연결할 수 없습니다. 잠시후 다시 시도 하세요.";
@@ -303,7 +310,7 @@
     //     // 딥링크 실행용 iframe을 삭제한다.
     //     _clearAiDeepLinkIframe();
 
-    //     delete oAPP.attr.iUAIConnRecurciveTime;
+    //     delete oAPP.attr.iUAIConnRetryCount;
 
     //     var _sMsg = "연결 성공!!"; // [MSG]
 
@@ -412,7 +419,7 @@
                         let _sCurrConnId = _oPARAM.CURR_CONID;
 
                         // 현재 AI와 연결되어 있는 브라우저를 찾아서 해당 브라우저에 focus를 준다.
-                        let _oFindResult = _findMainWindowWithBrowsKey(_sCurrConnId);
+                        let _oFindResult = _focusOnAIBrowser(_sCurrConnId);
                         if(_oFindResult.RETCD !== "E"){
                             
                             let _oFoundWindow = _oFindResult.RDATA;
@@ -427,7 +434,8 @@
                         // 딥링크 실행용 iframe을 삭제한다.
                         _clearAiDeepLinkIframe();
 
-                        delete oAPP.attr.iUAIConnRecurciveTime;
+                        // 연결 시도 횟수 초기화
+                        delete oAPP.attr.iUAIConnRetryCount;
 
                         // Busy Off
                         parent.setBusy("");  
@@ -452,7 +460,8 @@
                         // 딥링크 실행용 iframe을 삭제한다.
                         _clearAiDeepLinkIframe();
 
-                        delete oAPP.attr.iUAIConnRecurciveTime;
+                        // 연결 시도 횟수 초기화
+                        delete oAPP.attr.iUAIConnRetryCount;
 
                         // Busy Off
                         parent.setBusy("");  
@@ -485,28 +494,31 @@
 
                 // 이전에 돌고 있는 인터벌을 삭제한다.
                 _clearIntervaliUAIConn();
-    
+                
+                // 연결 시도 최대 횟수
                 let iMaxTime = 60;        
 
-                if(typeof oAPP.attr.iUAIConnRecurciveTime === "undefined"){
-                    oAPP.attr.iUAIConnRecurciveTime = 0;
+                // 연결 시도 횟수 초기화
+                if(typeof oAPP.attr.iUAIConnRetryCount === "undefined"){
+                    oAPP.attr.iUAIConnRetryCount = 0;
                 }    
 
                 // 인터벌로 1분동안 재귀 돌린다.
                 oAPP.attr.iUAIConnInterval = setInterval(async function(){
 
-                    oAPP.attr.iUAIConnRecurciveTime += 1;
+                    // 연결 시도 횟수
+                    oAPP.attr.iUAIConnRetryCount += 1;
 
                     // Busy On
-                    let _sDescMsg = `AI 응답 대기중... ( ${oAPP.attr.iUAIConnRecurciveTime} / ${iMaxTime} )`;    // [MSG]
+                    let _sDescMsg = `AI 응답 대기중... ( ${oAPP.attr.iUAIConnRetryCount} / ${iMaxTime} )`;    // [MSG]
 
                     parent.setBusy("X", { DESC: _sDescMsg });
 
-                    // console.log("ai 대기시간", oAPP.attr.iUAIConnRecurciveTime);
+                    // console.log("ai 대기시간", oAPP.attr.iUAIConnRetryCount);
 
                     // iMaxTime초 이후에도 dialog가 닫히지 않았다면 강제로 닫아준다.
                     // if (iCurrTime >= iMaxTime) {
-                    if (oAPP.attr.iUAIConnRecurciveTime >= iMaxTime) {
+                    if (oAPP.attr.iUAIConnRetryCount >= iMaxTime) {
 
                         // 스위치 버튼 연결 해제 표시
                         oAPP.common.fnSetModelProperty("/UAI/state", false);
@@ -517,7 +529,8 @@
                         // 딥링크 실행용 iframe을 삭제한다.
                         _clearAiDeepLinkIframe();
 
-                        delete oAPP.attr.iUAIConnRecurciveTime;
+                        // 연결 시도 횟수 초기화
+                        delete oAPP.attr.iUAIConnRetryCount;
 
                         // [MSG]
                         let _sMsg = "AI와 연결할 수 없습니다. 잠시후 다시 시도 하세요.";
@@ -548,7 +561,8 @@
             // 딥링크 실행용 iframe을 삭제한다.
             _clearAiDeepLinkIframe();
 
-            delete oAPP.attr.iUAIConnRecurciveTime;
+            // 연결 시도 횟수 초기화
+            delete oAPP.attr.iUAIConnRetryCount;
 
             var _sMsg = "연결 성공!!"; // [MSG]
 
