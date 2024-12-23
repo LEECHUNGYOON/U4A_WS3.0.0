@@ -69,7 +69,7 @@
     /************************************************************************
      * SAP GUI 멀티 로그인 체크 성공시
      ************************************************************************/
-    oAPP.fn.fnSapGuiMultiLoginCheckThen = async function(oResult) {
+    oAPP.fn.fnSapGuiMultiLoginCheckThen = async function(oResult) {      
 
         // sapgui 실행시, 레지스트리에 브라우저키를 저장하고 삭제 시점을 감지한다.
         await oAPP.fn.fnSapGuiRegistryParamCheck();
@@ -111,7 +111,7 @@
         if (!oAppInfo) {
             oAppInfo = {};
         }
-
+        
         var aParam = [
             sNewSessionVbsFullPath, // VBS 파일 경로
             oServerInfo.SYSTEMID, // SYSTEM ID  
@@ -197,54 +197,256 @@
 
             });
 
-            vbs.stderr.on("data", function(data) {
-
+            vbs.stderr.on("data", function(data) {   
+                
                 // 이전에 돌고 있는 인터벌이 혹시나 있으면 삭제
                 _clearIntervalSapGuiCheck();
-
-                // 같은 SYSID && CLIENT에 해당하는 브라우저에 IPC를 전송하여 IllustedMsgDialog를 끈다. 
-                _sendIpcRendererIllustedMsgDlgClose();
 
                 //VBS 리턴 오류 CODE / MESSAGE 
                 var str = data.toString(),
                     Tstr = str.split(":"),
                     len = Tstr.length - 1;
 
-                // WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "227");
-
-                // let sErrMsg = "[VBS 실행 오류] \n\n " + sVbsFullPath + " \n\n " + str;
-                // sErrMsg += "\n \n 문제가 지속될 경우 U4A R&D 팀에 문의하세요.";
-
-                // Please contact U4A Solution Team!
-                // WSUTIL.getWsMsgClsTxt(langu, "ZMSG_WS_COMMON_001", "015");
-
-                // [MSG] - VBS 실행 오류
-                let sMsg1 = WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "227");
-
-                // [MSG] - 문제가 지속될 경우 U4A R&D 팀에 문의하세요.
-                let sMsg2 = WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "228");
-
-                let sErrMsg = `${sVbsFullPath} \n\n ${str} \n \n ${sMsg2}`;
-
-                sap.m.MessageBox.error(sErrMsg, {title: sMsg1});
-
                 console.error("[VBS 실행 오류] \n\n " + sVbsFullPath + " \n\n " + str);
+                 
+                let oPARAM = {                         
+                    DESC: sVbsFullPath + " \n\n " + str
+                };
 
-                // if (len !== 0) {
+                // 오류가 발생된 경우 오류 메시지와 점검사항 팝업을 띄운다.
+                _openControllerErrorDialog(oPARAM);                
 
-                //     str = Tstr[len];
-
-                //     if (str.indexOf("|") != -1) {
-                //         return;
-                //     }
-
-                // }
+                // 같은 SYSID && CLIENT에 해당하는 브라우저에 IPC를 전송하여 IllustedMsgDialog를 끈다. 
+                _sendIpcRendererIllustedMsgDlgClose();
 
             });
 
         });
 
     }; // end of oAPP.fn.fnSapGuiMultiLoginCheckThen
+
+
+    /************************************************************************
+     * 컨트롤러 오류 확인사항 가이드 Popup 실행
+     ************************************************************************/
+    function _showControllerErrorHelpPopup(){
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+        
+        // 전체 자식 윈도우에 Busy 킨다.
+        oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_ON" });
+
+        let sHelpRoot = PATH.join(APPPATH, "help", "controllerClass");
+        var sHelpLanguPath = PATH.join(sHelpRoot, WS_LANGU, "index.html");
+        
+        if(!parent.FS.existsSync(sHelpLanguPath)){
+
+            sHelpLanguPath = PATH.join(sHelpRoot, "EN", "index.html");
+            
+            if(!parent.FS.existsSync(sHelpLanguPath)){    
+                
+                // 전체 자식 윈도우에 Busy 끈다.
+                oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_OFF" });
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
+                return;
+            }
+
+        }        
+
+        let sPopupName = "CONTROLLER_ERROR";
+
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+        if (oResult.ISOPEN) {
+
+            // 전체 자식 윈도우에 Busy 끈다.
+            oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_OFF" });
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            return;
+
+        }
+
+        let SESSKEY = parent.getSessionKey(),
+            BROWSKEY = parent.getBrowserKey(),
+            oUserInfo = parent.getUserInfo();
+
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보      
+
+        // 브라우저 옵션 설정
+        let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.title = WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "251"); /* 컨트롤러 실행 오류 점검사항 */
+        oBrowserOptions.autoHideMenuBar = true;        
+        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.show = false;
+        oBrowserOptions.closable = false;
+
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
+
+        // 브라우저 오픈
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+       
+        oBrowserWindow.loadURL(sHelpLanguPath);
+
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.            
+            WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
+
+        });
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {           
+            
+            oBrowserWindow.show();
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
+
+            // 부모 위치 가운데 배치한다.            
+            WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
+
+            // 전체 자식 윈도우에 Busy 끈다.
+            oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_OFF" });
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            oBrowserWindow.closable = true;
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+
+            oBrowserWindow = null;
+
+            CURRWIN.focus();
+
+        });
+
+    } // end of _showControllerErrorHelpPopup
+
+
+    /************************************************************************
+     * 컨트롤러 오류 메시지 Dialog 실행
+     ************************************************************************/
+    function _openControllerErrorDialog(oPARAM){
+
+        // [MSG] - VBS 실행 오류
+        let sTitle = WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "227");
+
+        // [MSG] - 점검사항
+        let sMsg01 = WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "249");
+
+        // [MSG] - 아래의 점검사항을 확인하세요.
+        let sMsg02 = WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "250");
+
+        let oDialog = new sap.m.Dialog({
+            contentWidth: "500px",
+            draggable: true,
+            resizable: true,   
+            state: "Error",
+            buttons: [
+                new sap.m.Button({
+                    icon: "sap-icon://question-mark",
+                    text: sMsg01, /* 점검사항 */
+                    press: function(){        
+
+                        // 컨트롤러 오류 확인사항 가이드 Popup 실행
+                        _showControllerErrorHelpPopup();
+        
+                    }
+                }),
+                new sap.m.Button({
+                    icon: "sap-icon://decline",
+                    type: sap.m.ButtonType.Reject,
+                    press: function(){
+                        oDialog.close();
+                    }
+                })
+            ],
+            afterClose: function(){
+                oDialog.destroy();
+            }
+        });
+    
+        oDialog.addStyleClass("sapUiContentPadding");
+    
+        let oToolbar1 = new sap.m.Toolbar();
+        oDialog.setCustomHeader(oToolbar1);
+    
+        let oIcon1 = new sap.ui.core.Icon({
+            src: "sap-icon://developer-settings",
+            size: "20px",
+        });
+        oToolbar1.addContent(oIcon1);
+        
+        // 제목 영역
+        let oTitle1 = new sap.m.Title({
+            text: sTitle
+        });
+        oToolbar1.addContent(oTitle1);
+    
+        let oVBox1 = new sap.m.VBox();
+        oDialog.addContent(oVBox1);
+        
+        // 오류 내용
+        let oTitle2 = new sap.m.Title({            
+            text: oPARAM.DESC || "",
+            wrapping: true
+        });
+        oVBox1.addItem(oTitle2);
+    
+        oTitle2.addStyleClass("sapUiSmallMarginBottom");
+        
+        // // 전달받은 파라미터에 오류 메시지 정보를 출력한다.
+        // let sErrMsg = ``;
+        // if(oPARAM && oPARAM.DESC){
+        //     sErrMsg = oPARAM.DESC || "";
+        // }            
+
+        // let oTitle3 = new sap.m.Title({
+        //     text: sErrMsg,
+        //     wrapping: true,
+        // });
+        // oVBox1.addItem(oTitle3);
+    
+        // oTitle3.addStyleClass("sapUiSmallMarginBottom");
+    
+        let oTitle4 = new sap.m.Title({
+            text: sMsg02, /* 아래의 점검사항을 확인하세요. */
+            wrapping: true,
+        });
+        oVBox1.addItem(oTitle4);
+    
+        oDialog.open();
+
+    } // end of _openControllerErrorDialog
 
     // 이전에 돌고 있는 인터벌이 혹시나 있으면 삭제
     function _clearIntervalSapGuiCheck() {

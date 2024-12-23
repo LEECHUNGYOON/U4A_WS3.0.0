@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <div class="content">
+        <div id="1" class="contentArea">
+            <h1 class="helpTitle">
+                Troubleshooting Guide: Controller Class Errors in U4A Workspace (WS)
+            </h1>
+            <div class="overview">
+                Enable Scripting in SAPGUI Settings
+            </div> 
+            <div class="contents">
+                1. Open SAPGUI
+            </div>
+            <div class="contents">
+                2. On the SAP Logon Pad screen (where servers are listed), click the SAP icon in the top-left corner.
+            </div>
+            <div class="contents">
+                3. Select "Options..." from the menu.
+            </div>
+            <div class="contentsImg">
+                <img src="./img/img0010.png" alt="">
+            </div>
+            <div class="contents">
+                4. In the left navigation panel, expand the "Accessibility & Scripting" section.
+            </div>
+            <div class="contents">
+                5. Click on "Scripting".                
+            </div>
+            <div class="contents">
+                6. Under "User Settings" on the right, ensure "Enable scripting" is checked.            
+            </div>
+            <div class="contentsImg">
+                <img src="./img/img0020.png" alt="">
+            </div>
+        </div>
+
+        <div id="2" class="contentArea">
+
+            <h1 class="helpTitle">
+                Confirm Scripting Availability After Login
+            </h1>
+
+            <div class="contents">
+                1. Press Alt + F12.
+            </div>
+            <div class="contents">
+                2. Check if the "Script Recording and Playback..." option is active and selectable.
+            </div>
+            <div class="contentsImg">
+                <img src="./img/img0030.png" alt="">
+            </div>
+
+        </div>
+
+        <div id="3" class="contentArea">
+            <h1 class="helpTitle">
+                Verify System Profile Parameters
+            </h1>
+            <div class="contents">
+                1. Enter the transaction code "RZ11" to access the "Edit Profile Parameters" screen.<br>
+                <span style="font-size: 0.825rem;">&nbsp;&nbsp;&nbsp;<i>※ If you lack the necessary permissions, contact your BC team.</i></span>                
+            </div>
+
+            <div class="contents">
+                2. In the "Parameter Name" field, type "sapgui/user_scripting" and click "Display"
+            </div>
+            <div class="contentsImg">
+                <img src="./img/img0040.png" alt="">
+            </div>
+
+            <div class="contents">
+                3. Click "Change Value" in the top-left corner.
+            </div>
+            <div class="contents">
+                4. In the popup window, verify if the "Current Value" is set to "TRUE"
+            </div>
+
+            <div class="contentsImg">
+                <img src="./img/img0050.png" alt="">
+            </div>
+
+            <div class="contents">
+                4. If not, type TRUE in the "New Value" field and save the change.
+            </div>
+            <div class="contentsImg">
+                <img src="./img/img0060.png" alt="">
+            </div>
+
+            <div class="contents">
+                5. Restart both SAPGUI and U4A Workspace (WS).
+            </div>     
+        </div>
+
+        <div id="4" class="contentArea">
+            <h1 class="helpTitle">
+                If the Issue Persists
+            </h1>
+
+            <div class="contents">
+                If the problem persists after completing the steps above, reach out to the U4A R&D Team for further support.
+            </div>
+        </div>
+    </div>
+    <script src="./index.js"></script>
+</body>
+</html>
