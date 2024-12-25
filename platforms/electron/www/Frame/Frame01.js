@@ -739,12 +739,16 @@ oAPP.msg = {};
 
             // 브라우저가 오픈되면서 부모가 가지고 있는 메타 관련 정보들을 전달한다.
             oBrowserWindow.webContents.send('if-meta-info', oMetadata);
-
+            
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            WSUTIL.setBrowserOpacity(oBrowserWindow);
+            // WSUTIL.setBrowserOpacity(oBrowserWindow);
 
             // 부모 위치에서 우측 + 30, 하단 + 30 위치에 배치한다.
             lf_setBound();
+
+            oBrowserWindow.setOpacity(1.0);
+
+            oBrowserWindow.show();
 
         });
 
@@ -752,10 +756,10 @@ oAPP.msg = {};
         oBrowserWindow.on('closed', () => {
             oBrowserWindow = null;
 
-            if (oWS.utill.attr.oBusyIndicator) {
-                oWS.utill.attr.oBusyIndicator.close();
-                delete oWS.utill.attr.oBusyIndicator;
-            }
+            // if (oWS.utill.attr.oBusyIndicator) {
+            //     oWS.utill.attr.oBusyIndicator.close();
+            //     delete oWS.utill.attr.oBusyIndicator;
+            // }
 
         });
 

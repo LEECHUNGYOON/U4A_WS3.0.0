@@ -3637,9 +3637,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oBrowserWindow.loadURL(PATHINFO.MAINFRAME);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -3658,10 +3658,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oBrowserWindow.webContents.send('if-meta-info', oMetadata);
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
-            WSUTIL.setBrowserOpacity(oBrowserWindow);
-
+            // WSUTIL.setBrowserOpacity(oBrowserWindow);
+            
             // session samesite 회피
             configureSession(oBrowserWindow);
+
+            oBrowserWindow.setOpacity(1.0);
+
+            oBrowserWindow.show();
 
         });
 
