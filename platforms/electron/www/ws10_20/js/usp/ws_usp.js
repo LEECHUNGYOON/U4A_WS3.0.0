@@ -5661,6 +5661,10 @@
         // APP 업데이트 정보 갱신
         oAppInfo = Object.assign({}, oAppInfo, oResult.S_RETURN);
 
+        // 2024-12-26: soccerhs
+        // 갱신된 APP 정보 모델에 반영하기
+        fnSetAppInfo(oAppInfo);
+
         // 저장 당시 활성화 되어 있는 content 데이터가 존재 할 경우.
         var oBeforeSelectData = _fnGetSelectedUspTreeData(aUspTreeData);
 
@@ -5671,8 +5675,12 @@
             // 우측에 활성화 되어 있는 Content 정보가 ROOT 정보 라면..
             var bIsRoot = oBeforeSelectData.PUJKY === "" ? true : false;
             if (bIsRoot) {
+
                 // 우측 컨텐트 영역과 좌측 Root에 정보 업데이트
                 oContent = Object.assign({}, oContent, oResult.S_RETURN);
+
+                APPCOMMON.fnSetModelProperty("/WS30/USPDATA", oContent);
+
                 oBeforeSelectData = Object.assign({}, oBeforeSelectData, oResult.S_RETURN);
             }
 
@@ -5684,6 +5692,8 @@
         // code editor KeyPress 이벤트 설정
         fnCodeEditorKeyPressEvent("X");
 
+
+        // 저장처리 이후의 수행할 프로세스 분기
         switch (pAFPRC) {
 
             case "_C": // 신규 생성일 경우.     
@@ -5695,7 +5705,7 @@
 
                 return;
 
-            case "C": // 저장 후 프로세스가 신규 생성일 경우.
+            case "C": // 변경된 데이터 저장 후 프로세스가 신규 생성일 경우.
 
                 fnCreateUspNodePopup(oTreeTable);
 
@@ -5704,7 +5714,7 @@
 
                 return;
 
-            case "D": // 저장 후 프로세스가 삭제 일 경우.
+            case "D": // 변경된 데이터 저장 후 프로세스가 삭제 일 경우.
 
                 fnDeleteUspNode(oTreeTable);
 
@@ -5722,7 +5732,7 @@
 
                 return;
 
-            case "RN": // 저장 후 프로세스가 Rename 일 경우.             
+            case "RN": // 변경된 데이터 저장 후 프로세스가 Rename일 경우
 
                 fnRenameUspNodePopup(oTreeTable);
 
@@ -6439,6 +6449,15 @@
         return APPCOMMON.fnGetModelProperty("/WS30/APP");
 
     } // end of fnGetAppInfo
+
+    /**************************************************************************
+     * [WS30] App 정보 저장하기
+     **************************************************************************/
+    function fnSetAppInfo(oAppData){
+
+        APPCOMMON.fnSetModelProperty("/WS30/APP", oAppData);
+
+    }
 
 
 })(window, $, oAPP);

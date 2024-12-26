@@ -137,9 +137,9 @@ IPCRENDERER.on('if-extopen-url', (event, res) => {
         oFrame.contentWindow.document.body.style.margin = "0px";        
 
         // 브라우저 활성화
-        // CURRWIN.show();
-        
-        // WSUTIL.setBrowserOpacity(CURRWIN);
+        CURRWIN.show();
+                
+        WSUTIL.setBrowserOpacity(CURRWIN);
 
         // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
         IPCRENDERER.send(`if-send-action-${BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 

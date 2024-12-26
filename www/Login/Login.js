@@ -1910,27 +1910,29 @@ let oAPP = (function () {
      ************************************************************************/
     oAPP.fn.fnShowNoAuthIllustMsg = (sMsg) => {
 
-        let oAuthDialog = sap.ui.getCore().byId("authMsg");
-        if (oAuthDialog) {
-            return;
-        }
-
         let oMsg = new sap.m.IllustratedMessage({
             title: "No Authority!",
             description: sMsg,
             illustrationSize: sap.m.IllustratedMessageSize.Dialog,
             illustrationType: "tnt-UnsuccessfulAuth",
             additionalContent: new sap.m.Button({
+                type: "Emphasized",
                 text: "OK",
                 press: oAPP.events.ev_attachIllustMsgOkBtn
             })
         });
 
-        new sap.m.Dialog("authMsg", {
+        let oAuthDialog = new sap.m.Dialog({
             showHeader: false,
+            contentWidth: "600px", 
             content: [
                 oMsg
-            ]
+            ],
+            escapeHandler: function(){},
+            afterClose: function(){
+                oAuthDialog.destroy();
+            }
+
         }).open();
 
     }; // end of oAPP.fn.fnShowNoAuthIllustMsg
