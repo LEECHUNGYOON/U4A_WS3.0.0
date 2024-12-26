@@ -49,7 +49,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         if (bIsBusy) {
 
             // 화면 Lock 걸기
-            sap.ui.getCore().lock();
+            // sap.ui.getCore().lock();
+            document.body.style.pointerEvents = "none";
 
             parent.oAPP.fn.setBusyIndicator("X");
             // sap.ui.core.BusyIndicator.show(0);
@@ -58,7 +59,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         // 화면 Lock 해제
-        sap.ui.getCore().unlock();
+        // sap.ui.getCore().unlock();
+        document.body.style.pointerEvents = "";
 
         parent.oAPP.fn.setBusyIndicator("");
         // sap.ui.core.BusyIndicator.hide();

@@ -971,6 +971,10 @@
                 // 부모 위치 가운데 배치한다.
                 parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
+                oBrowserWindow.show();
+
+                oBrowserWindow.setOpacity(1);
+
                 // // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
                 // parent.WSUTIL.setBrowserOpacity(oBrowserWindow, () => {
                     

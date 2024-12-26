@@ -22,6 +22,28 @@ var oAPP = {};
     oAPP.attr.isBusy = ""; // 현재 busy 상태
 
 
+
+/***********************************************************
+ * 스르륵 나타나게 하는 효과
+ ***********************************************************/
+function setFadeIn(element, duration = 400) {
+    element.style.opacity = 0;
+    element.style.display = 'block';
+
+    let start = null;
+    const step = (timestamp) => {
+        if (!start) start = timestamp;
+        const progress = timestamp - start;
+        element.style.opacity = Math.min(progress / duration, 1);
+
+        if (progress < duration) {
+            requestAnimationFrame(step);
+        }
+    };
+    requestAnimationFrame(step);
+}
+
+
 /***********************************************************
  * 현재 Busy의 상태를 구한다.
  ***********************************************************/
@@ -115,20 +137,23 @@ IPCRENDERER.on('if-extopen-url', (event, res) => {
         oFrame.contentWindow.document.body.style.margin = "0px";        
 
         // 브라우저 활성화
-        CURRWIN.show();
+        // CURRWIN.show();
         
-        WSUTIL.setBrowserOpacity(CURRWIN);
+        // WSUTIL.setBrowserOpacity(CURRWIN);
 
         // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
         IPCRENDERER.send(`if-send-action-${BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" }); 
 
-        IPCRENDERER.send(`if-send-action-${BROWSKEY}`, { ACTCD: "BROAD_BUSY", PRCCD: "BUSY_OFF" });
-
-        // 현재 윈도우의 닫기 버튼 활성화
-        CURRWIN.closable = true;
+        IPCRENDERER.send(`if-send-action-${BROWSKEY}`, { ACTCD: "BROAD_BUSY", PRCCD: "BUSY_OFF" });        
 
         // 화면 처음 시작 시 실행되는 loadingbar 실행 종료
         oAPP.fn.setBusyLoading(false);
+
+        // 화면이 스르륵 나타나게 하는 효과
+        setFadeIn(oFrame);
+
+        // 현재 윈도우의 닫기 버튼 활성화
+        CURRWIN.closable = true;
 
     };
 

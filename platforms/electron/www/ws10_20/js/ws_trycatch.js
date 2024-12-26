@@ -15,10 +15,10 @@ module.exports = function (window, document, console) {
     var zconsole = {};
     zconsole.APP = APP;
 
-    if (APP.isPackaged) {
+    // if (APP.isPackaged) {
         // 오류 로그 감지
         WSLOG.start(REMOTE, console);
-    }
+    // }
 
     // 무한 루프 오류 방지 flag
     var bIsError = false;

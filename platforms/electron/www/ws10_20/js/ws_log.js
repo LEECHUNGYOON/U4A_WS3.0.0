@@ -35,6 +35,7 @@
 let PATH = undefined;
 let FS   = undefined;
 let REMOTE = undefined;
+let APP = undefined;
 let RESOLVE_FOLD = "";  //log 파일 폴더 
 let RESOLVE_PATH = "";  //log 파일 저장위치
 
@@ -82,11 +83,12 @@ function _getDate(){
 
 /* Main procces */
 exports.start = async function(REMOTE_OBJ, CONSOLE){
-   debugger;
+   
     let log = require('electron-log');
 
     if(typeof REMOTE === "undefined"){
         REMOTE = REMOTE_OBJ;
+        APP = REMOTE.app;
     }
 
     if(typeof PATH === "undefined"){
@@ -125,9 +127,16 @@ exports.start = async function(REMOTE_OBJ, CONSOLE){
     //로그파일 저장위치 설정
     log.transports.file.resolvePath = () => RESOLVE_PATH;
 
+    // 빌드일 경우에만 console 기능을 electron log에 할당한다.
+    if(APP && APP.isPackaged){
+        
+        //window console 기능을 => electron log 할당
+        Object.assign(CONSOLE, log.functions);
 
-    //window console 기능을 => electron log 할당
-    Object.assign(CONSOLE, log.functions);
+    }
+
+    // //window console 기능을 => electron log 할당
+    // Object.assign(CONSOLE, log.functions);
 
 
     return {RETCD:"S", RTMSG:""};

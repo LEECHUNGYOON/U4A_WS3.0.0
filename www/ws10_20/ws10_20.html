@@ -36,10 +36,10 @@
          ************************************************************************/
         const APP = parent.APP;
         
-        if (APP.isPackaged) {
+        // if (APP.isPackaged) {
             // 오류 로그 감지
             parent.WSLOG.start(parent.REMOTE, console);
-        }
+        // }
        
         window.onerror = parent.onError;
         document.onerror = parent.onError;

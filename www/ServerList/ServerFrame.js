@@ -20,8 +20,13 @@ let oAPP = (function (window) {
 
     const WSLOG = require(oAPP.PATH.join(oAPP.APPPATH, "ws10_20", "js", "ws_log.js"));
 
-    // 오류 로그 감지
-    WSLOG.start(oAPP.REMOTE, console);
+    // if (oAPP.APP.isPackaged) {
+
+        // 오류 로그 감지
+        WSLOG.start(oAPP.REMOTE, console);
+
+    // }
+    
 
     // [R&D 전용 console.log]
     zconsole.APP = oAPP.APP;

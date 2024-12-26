@@ -33,17 +33,19 @@ oAPP.common.fnSetBusyLock = function (pIsBusy) {
     oDialog.setBusy(bIsBusy);
 
     if (bIsBusy) {
-        sap.ui.getCore().lock();
+        // sap.ui.getCore().lock();
+        document.body.style.pointerEvents = "none";
         return;
     }
 
-    sap.ui.getCore().unlock();
+    // sap.ui.getCore().unlock();
+    document.body.style.pointerEvents = "";
 
 }; // end of oAPP.common.fnSetBusyLock
 
 /************************************************************************
-     * WS10에 있는 APPID F4 HELP 팝업내의 TAB CONTAINER 생성
-     ************************************************************************/
+ * WS10에 있는 APPID F4 HELP 팝업내의 TAB CONTAINER 생성
+ ************************************************************************/
 oAPP.fn.fnCreateAppF4TabCon = function () {
 
     var oItem1 = oAPP.fn.fnCreateAppF4Tab1(),
