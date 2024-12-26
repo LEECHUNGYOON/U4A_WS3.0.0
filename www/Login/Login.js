@@ -806,7 +806,8 @@ let oAPP = (function () {
 
             oBusyPopInit = {
                 TITLE: "Checking for updates...",
-                ILLUSTTYPE: "sapIllus-BeforeSearch",
+                DESC: "　",
+                ILLUSTTYPE: "sapIllus-BeforeSearch",                
                 PROGVISI: false,
                 PERVALUE: 0,
                 ANIMATION: true
@@ -814,6 +815,7 @@ let oAPP = (function () {
 
             oBusyPopData = {
                 TITLE: "Checking for updates...",
+                DESC: "　",
                 ILLUSTTYPE: "sapIllus-BeforeSearch",
                 PROGVISI: false,
                 PERVALUE: 0,
@@ -1858,19 +1860,23 @@ let oAPP = (function () {
 
         var oIllustMsg = new sap.m.IllustratedMessage({
             title: "{TITLE}",
-            description: "　",
+            // description: "　",
+            // description: "If the patch is completed\nplease restart your computer!",
+            description: "{DESC}",
             illustrationSize: sap.m.IllustratedMessageSize.Dialog,
             illustrationType: "{ILLUSTTYPE}"
         }).addStyleClass(`${sDialogId}--illustMsg`);
 
         jQuery.sap.require("sap.m.ProgressIndicator");
+
         var oProgressbar = new sap.m.ProgressIndicator({
             visible: "{PROGVISI}",
             percentValue: "{PERVALUE}",
             displayOnly: true,
             state: "Success",
             // displayValue: "Downloading... {PERVALUE}%"            
-            displayValue: "{PROGTXT}... {PERVALUE}%"
+            // displayValue: "{PROGTXT}... {PERVALUE}%"
+            displayValue: "{PROGTXT}..."
         }).bindProperty("displayAnimation", "ANIMATION", function (ANIMATION) {
             return ANIMATION === false ? false : true;
         }).addStyleClass("sapUiSmallMarginBeginEnd sapUiMediumMarginBottom");
@@ -1899,9 +1905,9 @@ let oAPP = (function () {
             escapeHandler: () => { }, // esc 키 방지
 
         })
-            .addStyleClass(sDialogId)
-            .bindElement("/BUSYPOP")
-            .open();
+        .addStyleClass(sDialogId)
+        .bindElement("/BUSYPOP")
+        .open();
 
     }; // end of oAPP.fn.fnVersionCheckDialogOpen    
 
@@ -2589,6 +2595,8 @@ let oAPP = (function () {
         oModelData.ANIMATION = true;
         oModelData.PROGVISI = true;
         oModelData.TITLE = "Downloading...";
+        oModelData.DESC = "If the patch is completed\nplease restart your computer!";
+
         oModelData.PROGTXT = "Downloading";
         oModelData.PERVALUE = 0;
 
@@ -2664,7 +2672,7 @@ let oAPP = (function () {
         spAutoUpdater.on("update-downloaded-SP", (e) => {
 
             // Progress Bar 종료
-            _supportPackageVersionCheckDialogProgressEnd();
+            _supportPackageVersionCheckDialogProgressEnd(true);
 
             oModel.setProperty("/BUSYPOP/TITLE", "Update Complete! Restarting...", true);
 
@@ -2778,8 +2786,15 @@ let oAPP = (function () {
 
     }; // end of oAPP.fn.fnIpcMain_browser_interconnection_04
 
-    function _supportPackageVersionCheckDialogProgressStart() {
+    function _supportPackageVersionCheckDialogProgressStart() {       
 
+        // TEST ------
+        if(oAPP.attr.progressIntervalStop === true){
+            return;
+        }
+        // TEST ------
+
+        // 기존에 돌고있던 인터벌이 있으면 제거한다.
         if (typeof oAPP.attr.progressInterval !== "undefined") {
             clearInterval(oAPP.attr.progressInterval);
             delete oAPP.attr.progressInterval;
@@ -2814,7 +2829,7 @@ let oAPP = (function () {
 
     } // end of _supportPackageVersionCheckDialogProgressStart
 
-    function _supportPackageVersionCheckDialogProgressEnd() {
+    function _supportPackageVersionCheckDialogProgressEnd(bIsStop) {
 
         let oModel = sap.ui.getCore().getModel(),
             oModelData = oModel.getProperty("/BUSYPOP");
@@ -2823,6 +2838,10 @@ let oAPP = (function () {
             clearInterval(oAPP.attr.progressInterval);
             delete oAPP.attr.progressInterval;
         }
+
+        // TEST ------
+        oAPP.attr.progressIntervalStop = bIsStop;
+        // TEST ------
 
         oModelData.PERVALUE = 100;
         oModelData.ANIMATION = false;
