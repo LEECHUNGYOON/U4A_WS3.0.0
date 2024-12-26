@@ -250,17 +250,21 @@
             aWMENU10 = [
                 {
                     key: "WMENU10_01",
+                    icon: "sap-icon://u4a-fw-solid/Arrows Rotate",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B40"), // App. Package Change
                 },
                 {
                     key: "WMENU10_02",
+                    icon: "sap-icon://u4a-fw-solid/Arrow Right Arrow Left",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B41"), // App. Import/Export
                     items: [{
                         key: "WMENU10_02_01",
+                        icon: "sap-icon://u4a-fw-solid/File Import",
                         text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B42"), // App. Importing
                     },
                     {
                         key: "WMENU10_02_02",
+                        icon: "sap-icon://u4a-fw-solid/File Export",
                         text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B43"), // App. Exporting
                     }
                     ]
@@ -272,9 +276,11 @@
                 // },
                 {
                     key: "WMENU10_04",
+                    icon: "sap-icon://shortcut",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B45"), // Shortcut Manager
                     items: [{
                         key: "WMENU10_04_01",
+                        icon: "sap-icon://generate-shortcut",
                         text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B46"), // U4A Shortcut Create
                     },
                         // 2023-04-04 로직 미완성으로 임시 주석처리
@@ -286,6 +292,7 @@
                 },
                 {
                     key: "WMENU10_05",
+                    icon: "sap-icon://hint",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B48"), // About U4A WS IDE
                 },
 
@@ -297,30 +304,33 @@
             aWMENU20 = [
                 {
                     key: "WMENU20_01",
+                    icon: "sap-icon://internet-browser",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
                 },
                 {
                     key: "WMENU20_03",
+                    icon: "sap-icon://video",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
                 },
                 {
                     key: "WMENU20_05",
+                    icon: "sap-icon://source-code",
                     text: oAPP.msg.M059, // Source Pattern                    
                 },
                 {
-                    key: "WMENU20_04",
+                    key: "WMENU20_04",                    
+                    icon: "sap-icon://u4a-fw-regular/Face Grin Wide",
                     text: oAPP.msg.M068, // Icon Viewer
-                    // icon: "sap-icon://u4a-fw-regular/Face Grin Wide",
                     visible: oAPP.common.checkWLOList("C", "UHAK900630"),
                     items: [
                         {
                             key: "WMENU20_04_01",
-                            // icon: "sap-icon://u4a-fw-solid/Icons",
+                            icon: "sap-icon://u4a-fw-solid/Icons",
                             text: oAPP.msg.M047, // Icon List
                         },
                         {
                             key: "WMENU20_04_02",
-                            // icon: "sap-icon://u4a-fw-solid/Image",
+                            icon: "sap-icon://u4a-fw-solid/Image",
                             text: oAPP.msg.M067 // Image Icons
                         },
                     ]
@@ -339,33 +349,41 @@
             aWMENU30 = [
                 {
                     key: "WMENU30_01",
+                    icon: "sap-icon://create",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
                 },
                 {
                     key: "WMENU30_02",
+                    icon: "sap-icon://decline",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B51"), // Close Window
                 },
                 {
                     key: "WMENU30_03",
+                    icon: "sap-icon://action-settings",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"), // Options
                 },
                 {
                     key: "WMENU30_04",
+                    icon: "sap-icon://log",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
                 },
                 {
                     key: "WMENU30_06",
+                    icon: "sap-icon://key-user-settings",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
                     items: [
                         {
                             key: "WMENU30_06_01",
-                            text: "DevTool"
+                            text: oAPP.msg.M252, // DevTool
+                            icon: "sap-icon://u4a-fw-solid/Bug"
                         },
                         {
                             key: "WMENU30_06_02",
+                            icon: "sap-icon://notes",
                             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Note
                         }, {
                             key: "WMENU30_06_03",
+                            icon: "sap-icon://u4a-fw-solid/Triangle Exclamation",
                             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
                         },
                     ],
@@ -373,6 +391,7 @@
                 },
                 {
                     key: "WMENU30_07",
+                    icon: "sap-icon://it-host",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C42") // Server Information
                 },
             ],
@@ -383,8 +402,16 @@
             aWMENU50 = [
                 {
                     key: "WMENU50_01",
+                    icon: "sap-icon://u4a-fw-solid/Book Open Reader",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
                     enabled: true,
+                },
+                {   // 20241227
+                    key: "WMENU50_04",
+                    icon: "sap-icon://u4a-fw-solid/Keyboard",
+                    text: oAPP.msg.M253, // Keyboard Shortcut List
+                    enabled: true,
+                    visible: !parent.APP.isPackaged
                 },
             ],
 
@@ -460,15 +487,18 @@
             aWMENU10 = [
                 {
                     key: "WMENU10_01",
+                    icon: "sap-icon://palette",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B56"), // Theme Designer
                     enabled: false,
                 }, {
                     key: "WMENU10_02",
+                    icon: "sap-icon://BusinessSuiteInAppSymbols/icon-bold",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B57"), // Font Style Wizard
                     enabled: true,
                 },
                 {
                     key: "WMENU10_03",
+                    icon: "sap-icon://u4a-fw-solid/Pen Ruler",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B58"), // UI5 Predefined CSS
                     enabled: true,
                 }
@@ -480,37 +510,41 @@
             aWMENU20 = [
                 {
                     key: "WMENU20_01",
+                    icon: "sap-icon://internet-browser",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
                     enabled: true,
                 },
                 {
                     key: "WMENU20_02",
+                    icon: "sap-icon://translate",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B59"), // OTR Manager
                     enabled: true,
                 },
                 {
                     key: "WMENU20_03",
+                    icon: "sap-icon://video",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
                     enabled: true,
                 },
                 {
                     key: "WMENU20_05",
+                    icon: "sap-icon://source-code",
                     text: oAPP.msg.M059, // Source Pattern                    
                 },
                 {
                     key: "WMENU20_04",
                     text: oAPP.msg.M068, // Icon Viewer
-                    // icon: "sap-icon://u4a-fw-regular/Face Grin Wide",
+                    icon: "sap-icon://u4a-fw-regular/Face Grin Wide",
                     visible: oAPP.common.checkWLOList("C", "UHAK900630"),
                     items: [
                         {
                             key: "WMENU20_04_01",
-                            // icon: "sap-icon://u4a-fw-solid/Icons",
+                            icon: "sap-icon://u4a-fw-solid/Icons",
                             text: oAPP.msg.M047, // Icon List
                         },
                         {
                             key: "WMENU20_04_02",
-                            // icon: "sap-icon://u4a-fw-solid/Image",
+                            icon: "sap-icon://u4a-fw-solid/Image",
                             text: oAPP.msg.M067 // Image Icons
                         },
                     ]
@@ -529,26 +563,31 @@
             aWMENU30 = [
                 {
                     key: "WMENU30_01",
+                    icon: "sap-icon://u4a-fw-brands/CSS 3 Logo",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B60"), // CSS Editor
                     enabled: true,
                 },
                 {
                     key: "WMENU30_02",
+                    icon: "sap-icon://u4a-fw-brands/JavaScript (JS)",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B61"), // Javascript Editor
                     enabled: true,
                 },
                 {
                     key: "WMENU30_03",
+                    icon: "sap-icon://u4a-fw-brands/HTML 5 Logo",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B62"), // HTML Editor
                     enabled: true,
                 },
                 {
                     key: "WMENU30_04",
+                    icon: "sap-icon://u4a-fw-regular/File Lines",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B63"), // Error Page Editor
                     enabled: true,
                 },
                 {
                     key: "WMENU30_05",
+                    icon: "sap-icon://u4a-fw-solid/Sliders",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B64"), // Skeleton Scr Setting
                     enabled: true,
                 }
@@ -560,46 +599,55 @@
             aWMENU40 = [
                 {
                     key: "WMENU40_01",
+                    icon: "sap-icon://create",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
                     enabled: true,
                 },
                 {
                     key: "WMENU40_02",
+                    icon: "sap-icon://decline",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B51"), // Close Window
                     enabled: true,
                 },
                 {
                     key: "WMENU40_03",
+                    icon: "sap-icon://action-settings",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"), // Options
                     enabled: true,
                 },
                 {
                     key: "WMENU40_04",
+                    icon: "sap-icon://log",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
                     enabled: true,
                 },
                 {
                     key: "WMENU40_06",
+                    icon: "sap-icon://key-user-settings",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
                     enabled: true,
                     visible: true,
                     items: [{
                         key: "WMENU40_06_01",
-                        text: "DevTool"
+                        text: oAPP.msg.M252, // DevTool
+                        icon: "sap-icon://u4a-fw-solid/Bug"
                     },
                     {
                         key: "WMENU40_06_02",
+                        icon: "sap-icon://notes",
                         text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Note
                         enabled: true,
                     },
                     {
                         key: "WMENU40_06_03",
+                        icon: "sap-icon://u4a-fw-solid/Triangle Exclamation",
                         text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
                         enabled: true,
                     },],
                 },
                 {
                     key: "WMENU40_07",
+                    icon: "sap-icon://it-host",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C42") // Server Information
                 },
             ],
@@ -610,6 +658,7 @@
             aWMENU50 = [
                 {
                     key: "WMENU50_01",
+                    icon: "sap-icon://u4a-fw-solid/Book Open Reader",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
                     enabled: true,
                 },
@@ -620,6 +669,7 @@
                 //  },
                 {
                     key: "WMENU50_03",
+                    icon: "sap-icon://u4a-fw-solid/Book",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B65"), // Document
                     enabled: true,
                 }
@@ -695,30 +745,33 @@
             aWMENU20 = [
                 {
                     key: "WMENU20_01",
+                    icon: "sap-icon://internet-browser",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B49"), // Select Browser Type
                 },
                 {
                     key: "WMENU20_03",
+                    icon: "sap-icon://video",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B50"), // Video Record
                 },
                 {
                     key: "WMENU20_05",
+                    icon: "sap-icon://source-code",
                     text: oAPP.msg.M059, // Source Pattern                    
                 },
                 {
-                    key: "WMENU20_04",
+                    key: "WMENU20_04",                    
+                    icon: "sap-icon://u4a-fw-regular/Face Grin Wide",
                     text: oAPP.msg.M068, // Icon Viewer
-                    // icon: "sap-icon://u4a-fw-regular/Face Grin Wide",
                     visible: oAPP.common.checkWLOList("C", "UHAK900630"),
                     items: [
                         {
                             key: "WMENU20_04_01",
-                            // icon: "sap-icon://u4a-fw-solid/Icons",
+                            icon: "sap-icon://u4a-fw-solid/Icons",
                             text: oAPP.msg.M047, // Icon List
                         },
                         {
                             key: "WMENU20_04_02",
-                            // icon: "sap-icon://u4a-fw-solid/Image",
+                            icon: "sap-icon://u4a-fw-solid/Image",
                             text: oAPP.msg.M067 // Image Icons
                         },
                     ]
@@ -737,40 +790,49 @@
             aWMENU30 = [
                 {
                     key: "WMENU30_01",
+                    icon: "sap-icon://create",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
                 },
                 {
                     key: "WMENU30_02",
+                    icon: "sap-icon://decline",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B51"), // Close Window
                 },
                 {
                     key: "WMENU30_03",
+                    icon: "sap-icon://action-settings",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52"), // Options
                 },
                 {
                     key: "WMENU30_04",
+                    icon: "sap-icon://log",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B53"), // Logoff
                 },
                 {
                     key: "WMENU30_06",
+                    icon: "sap-icon://key-user-settings",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B55"), // Administrator
                     visible: true,
                     items: [
                         {
                             key: "WMENU30_06_01",
-                            text: "DevTool"
+                            text: oAPP.msg.M252, // DevTool
+                            icon: "sap-icon://u4a-fw-solid/Bug"
                         },
                         {
                             key: "WMENU30_06_02",
+                            icon: "sap-icon://notes",
                             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B54"), // Release Notes
                         }, {
                             key: "WMENU30_06_03",
+                            icon: "sap-icon://u4a-fw-solid/Triangle Exclamation",
                             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B70"), // Error Log
                         },
                     ],
                 },
                 {
                     key: "WMENU30_07",
+                    icon: "sap-icon://it-host",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C42") // Server Information
                 },
 
@@ -782,6 +844,7 @@
             aWMENU50 = [
                 {
                     key: "WMENU50_01",
+                    icon: "sap-icon://u4a-fw-solid/Book Open Reader",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
                     enabled: true,
                 }
@@ -1998,6 +2061,7 @@
                         template: new sap.m.MenuItem({
                             key: "{key}",
                             text: "{text}",
+                            icon: "{icon}",
                             enabled: "{enabled}",
                             visible: "{visible}",
                         })
@@ -2023,6 +2087,7 @@
                         template: new sap.m.MenuItem({
                             key: "{key}",
                             text: "{text}",
+                            icon: "{icon}",
                             enabled: "{enabled}",
                             visible: "{visible}",
                         })

@@ -108,6 +108,9 @@
             oAPP.msg.M059 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "059"); // Source Pattern
             oAPP.msg.M068 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "068"); // Icon Viewer
             oAPP.msg.M067 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "067"); // Image Icons
+            oAPP.msg.M252 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "252"); // DevTool
+            oAPP.msg.M253 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "253"); // Keyboard Shortcut List
+
 
             resolve();
 

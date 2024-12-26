@@ -888,4 +888,26 @@
 
     }; // end of oAPP.fn.fnWs20SideFIXITM_10
 
+
+    /************************************************************************
+     * [WS10] Keyboard Shortcut List
+     ************************************************************************/
+    oAPP.fn.fnShowKeyboardShortcuts = function(){
+
+        // 현재 실행 중인 화면의 단축키 정보를 구한다.
+
+        debugger;
+
+        let sCurrPage = parent.getCurrPage();
+
+        let aShortcutList = oAPP.common.getShortCutList(sCurrPage);
+
+        
+
+
+
+
+
+    } // end of oAPP.fn.showKeyboardShortcuts
+
 })(window, $, oAPP);

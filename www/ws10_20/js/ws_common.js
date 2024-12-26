@@ -410,9 +410,19 @@
      * Shortcut 설정
      **************************************************************************/
     oAPP.common.getShortCutList = function (sPgNo) {
+        
+        let oSettings = parent.WSUTIL.getWsSettingsInfo();
+        let sGlobalLangu = oSettings.globalLanguage || "EN";
+        let sImgRootPath = parent.PATH.join(parent.APPPATH, "help", "keyboard_shortcut", "img", sGlobalLangu);
+
+        if(parent.FS.existsSync(sImgRootPath) === false){
+            sImgRootPath = parent.PATH.join(parent.APPPATH, "help", "keyboard_shortcut", "img", "EN");
+        }
 
         var aShortCutWS10 = [{
             KEY: "F11", // [WS10] FullScreen
+            DESC: "Browser Fullscreen",
+            IMG_SRC: parent.PATH.join(sImgRootPath, "img0010.png"),
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -443,6 +453,8 @@
             }
         }, {
             KEY: "Ctrl+Shift+F", // [WS10] textSearchPopup
+            DESC: "Text Search Popup",
+            IMG_SRC: parent.PATH.join(sImgRootPath, "img0020.png"),
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -460,6 +472,8 @@
             }
         }, {
             KEY: "Ctrl+F12", // [WS10] Application Create
+            DESC: "Application Create",
+            IMG_SRC: parent.PATH.join(sImgRootPath, "img0030.png"),
             fn: (e) => {
 
                 e.stopImmediatePropagation();
