@@ -406,7 +406,7 @@
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44"), // U4A Help Document
                     enabled: true,
                 },
-                {   // 20241227
+                {   // 20241228
                     key: "WMENU50_04",
                     icon: "sap-icon://u4a-fw-solid/Keyboard",
                     text: oAPP.msg.M253, // Keyboard Shortcut List
@@ -672,7 +672,14 @@
                     icon: "sap-icon://u4a-fw-solid/Book",
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B65"), // Document
                     enabled: true,
-                }
+                },
+                {   // 20241228
+                    key: "WMENU50_04",
+                    icon: "sap-icon://u4a-fw-solid/Keyboard",
+                    text: oAPP.msg.M253, // Keyboard Shortcut List
+                    enabled: true,
+                    visible: !parent.APP.isPackaged
+                },
             ],
 
             /** 

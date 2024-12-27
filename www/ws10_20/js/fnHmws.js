@@ -631,6 +631,9 @@
             return;
         }
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+        
         oAPP.fn.fnShowKeyboardShortcuts();
 
     }; // end of oAPP.fn.fnWS10WMENU50_04
@@ -1080,6 +1083,25 @@
         oAPP.fn.fnDocuPopupOpener();
 
     }; // end of oAPP.fn.fnWS20WMENU50_03
+
+    /************************************************************************
+     * [WS20] Keyboard Shortcut List
+     ************************************************************************/
+    oAPP.fn.fnWS20WMENU50_04 = function(){
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
+        oAPP.fn.fnShowKeyboardShortcuts();
+
+    }; // end of oAPP.fn.fnWS10WMENU50_04
+
+
 
     /***************************************************************************************************************************************************************
      **************************************** Test Menu.. **********************************************************************************************************     

@@ -97,19 +97,36 @@
 
     oAPP.common.fnGetMsgClsText = (sMsgCls, sMsgNum, p1, p2, p3, p4) => {
 
+        // test -----
+
+        // [!!YOON!!]  접속 서버 기준으로 바라볼지 여부
+        let bIsServer = true;
+
+        // [!!YOON!!]  test -----
+
+
         // Metadata에서 메시지 클래스 정보를 구한다.
         var oMeta = parent.getMetadata(),
             sLangu = oMeta.LANGU,
             aMsgClsTxt = oMeta["MSGCLS"];
 
+        // test -----
+        // [!!YOON!!] 서버 접속 언어 기준일 경우
+        if(bIsServer === true){
+            let oUserInfo = parent.getUserInfo();
+            sLangu = oUserInfo.LANGU;
+        }
+        // [!!YOON!!]  test -----
+
         if (!aMsgClsTxt || !aMsgClsTxt.length) {
             return sMsgCls + "|" + sMsgNum;
         }
 
-        let sDefLangu = "E"; // default language    
+        // let sDefLangu = "E"; // default language    
+        let sDefLangu = "EN"; // default language    
 
         // 현재 접속한 언어로 메시지를 찾는다.
-        let oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sLangu && a.MSGNR == sMsgNum);
+        let oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.LANGU == sLangu && a.MSGNR == sMsgNum);
 
         // 현재 접속한 언어로 메시지를 못찾은 경우
         if (!oMsgTxt) {
@@ -121,7 +138,7 @@
             }
 
             // 접속한 언어가 영어가 아닌데 메시지를 못찾으면 영어로 찾는다.
-            oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sDefLangu && a.MSGNR == sMsgNum);
+            oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.LANGU == sDefLangu && a.MSGNR == sMsgNum);
 
             // 그래도 없다면 빠져나간다.
             if (!oMsgTxt) {
@@ -410,19 +427,15 @@
      * Shortcut 설정
      **************************************************************************/
     oAPP.common.getShortCutList = function (sPgNo) {
-        
-        let oSettings = parent.WSUTIL.getWsSettingsInfo();
-        let sGlobalLangu = oSettings.globalLanguage || "EN";
-        let sImgRootPath = parent.PATH.join(parent.APPPATH, "help", "keyboard_shortcut", "img", sGlobalLangu);
 
-        if(parent.FS.existsSync(sImgRootPath) === false){
-            sImgRootPath = parent.PATH.join(parent.APPPATH, "help", "keyboard_shortcut", "img", "EN");
+        if(!sPgNo){
+            return [];
         }
-
+        
         var aShortCutWS10 = [{
             KEY: "F11", // [WS10] FullScreen
             DESC: "Browser Fullscreen",
-            IMG_SRC: parent.PATH.join(sImgRootPath, "img0010.png"),
+            CODE: `new sap.m.Button({icon: "sap-icon://header"})`,
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -454,7 +467,7 @@
         }, {
             KEY: "Ctrl+Shift+F", // [WS10] textSearchPopup
             DESC: "Text Search Popup",
-            IMG_SRC: parent.PATH.join(sImgRootPath, "img0020.png"),
+            CODE: `new sap.m.Button({icon: "sap-icon://search"})`,
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -473,7 +486,11 @@
         }, {
             KEY: "Ctrl+F12", // [WS10] Application Create
             DESC: "Application Create",
-            IMG_SRC: parent.PATH.join(sImgRootPath, "img0030.png"),
+            CODE: `new sap.m.Button({
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"),
+                icon: "sap-icon://document",
+                tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01") + " (Ctrl+F12)",
+            })`,
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -497,6 +514,12 @@
         },
         {           
             KEY: "F6", // [WS10] Application Change
+            DESC: "Application Change Mode",
+            CODE: `new sap.m.Button({
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02"),
+                icon: "sap-icon://edit",
+                tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02") + " (F6)",
+            })`,
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -530,6 +553,13 @@
         },
         {
             KEY: "Ctrl+F10", // [WS10] Application Delete
+            DESC: "Application Delete",
+            CODE: `new sap.m.Button({
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03"),
+                icon: "sap-icon://delete",
+                type: sap.m.ButtonType.Reject,
+                tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03") + " (Ctrl+F10)",
+            })`,
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -558,6 +588,12 @@
         },
         {
             KEY: "Shift+F11", // [WS10] Application Copy
+            DESC: "Application Copy",
+            CODE: `new sap.m.Button({
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A04"),
+                icon: "sap-icon://copy",
+                tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A04") + " (Shift+F11)",
+            })`,
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -586,6 +622,12 @@
         },
         {
             KEY: "F7", // [WS10] Display Button
+            DESC: "Application Display Mode",
+            CODE: `new sap.m.Button({
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05"),
+                icon: "sap-icon://display",
+                tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05") + " (F7)"
+            })`,
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -622,6 +664,12 @@
         },
         {
             KEY: "F8", // [WS10] Application Execution
+            DESC: "Application Execution",
+            CODE: `new sap.m.Button({
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06"),
+                icon: "sap-icon://internet-browser",
+                tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06") + " (F8)"
+            })`,
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -650,6 +698,12 @@
         },
         {
             KEY: "Ctrl+F1", // [WS10] Example Open
+            DESC: "Example Open",
+            CODE: `new sap.m.Button({
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A07"),
+                icon: "sap-icon://learning-assistant",
+                tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A07") + " (Ctrl+F1)"
+            })`,
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -678,6 +732,12 @@
         },
         {
             KEY: "Ctrl+F3", // [WS10] Multi Preview
+            DESC: "Multi Preview",
+            CODE: `new sap.m.Button({
+                text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A08"),
+                icon: "sap-icon://desktop-mobile",
+                tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A08") + " (Ctrl+F3)"
+            })`,
             fn: (e) => {
 
                 e.stopImmediatePropagation();
@@ -708,7 +768,8 @@
         ],
             aShortCutWS20 = [{
                 KEY: "F11", // [WS20] FullScreen
-                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C79"), // FullScreen Mode
+                DESC: "Browser Fullscreen",
+                CODE: `new sap.m.Button({icon: "sap-icon://header"})`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -739,7 +800,8 @@
                 }
             }, {
                 KEY: "Ctrl+Shift+F", // [WS20] textSearchPopup
-                DESC: "",
+                DESC: "Text Search Popup",
+                CODE: `new sap.m.Button({icon: "sap-icon://search"})`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -762,7 +824,11 @@
                 }
             }, {
                 KEY: "Ctrl+F2", // [WS20] Syntax Check Button
-                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B72"), // Syntax Check
+                DESC: "Syntax Check",
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://validate",
+                    tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B72") + " (Ctrl+F2)"
+                })`,
                 fn: async (e) => {
 
                     e.stopImmediatePropagation();
@@ -808,7 +874,10 @@
             },
             {
                 KEY: "F3", // [WS20] Back Button
-                DESC: "",
+                DESC: "Back",
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://nav-back",
+                })`,
                 fn: async (e) => {
 
                     e.stopImmediatePropagation();
@@ -869,7 +938,9 @@
             },
             {
                 KEY: "Ctrl+F1", // [WS20] Display or Change Button
+                // DESC: "Display <---> Change",
                 DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05") + " <--> " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02"),
+                CODE: ``,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -918,6 +989,7 @@
             },
             {
                 KEY: "Ctrl+F3", // [WS20] Activate Button
+                DESC: "Activate",
                 fn: async (e) => {
                     e.stopImmediatePropagation();
    
@@ -979,16 +1051,19 @@
                  * 타지 않게 하기 위함.               
                  ****************************************************************************************************/
                 KEY: "Ctrl+F4",
+                VISIBLE: false,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
 
                     zconsole.log("ws30/Ctrl+F4 key in!!");
 
-                }
+                },
+                
             },
             {
                 KEY: "Ctrl+S", // [WS20] Save Button
+                DESC: "Save",
                 fn: async (e) => {
 
                     e.stopImmediatePropagation();
@@ -1040,6 +1115,7 @@
             },     
             {
                 KEY: "Ctrl+Shift+F12", // [WS20] Mime Button
+                DESC: "Mime Repository",
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1067,6 +1143,7 @@
             },
             {
                 KEY: "Ctrl+F12", // [WS20] Controller Button
+                DESC: "Controller (Class Builder)",
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1094,6 +1171,7 @@
             },
             {
                 KEY: "F8", // [WS20] Application Execution Button
+                DESC: "Application Execution",
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1121,6 +1199,7 @@
             },
             {
                 KEY: "Ctrl+F5", // [WS20] Multi Preview Button
+                DESC: "Multi Preview",
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1148,6 +1227,7 @@
             },
             {
                 KEY: "Ctrl+Shift+F10", // [WS20] Icon List Button
+                DESC: "Icon List",
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1186,6 +1266,7 @@
             },
             {
                 KEY: "Shift+F1", // [WS20] Add Server Event Button
+                DESC: "Add Event Method",
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1213,6 +1294,7 @@
             },
             {
                 KEY: "F9", // [WS20] Runtime Class Navigator Event Button
+                DESC: "Runtime Class Navigator",
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1240,6 +1322,7 @@
             },
             {
                 KEY: "Ctrl+F", // [WS20] Find
+                DESC: "Find UI",
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1268,6 +1351,7 @@
             {
                 // KEY: "Ctrl+Z", // [WS20] UNDO
                 KEY: "Ctrl+Shift+Z", // [WS20] UNDO
+                DESC: "Undo",
                 fn: (e) => {
 
                     // 20번 페이지의 앱 정보를 구한다.
@@ -1311,6 +1395,7 @@
             {
                 // KEY: "Ctrl+X", // [WS20] REDO
                 KEY: "Ctrl+Shift+X", // [WS20] REDO
+                DESC: "Redo",
                 fn: (e) => {
 
                     // 20번 페이지의 앱 정보를 구한다.
@@ -1357,6 +1442,7 @@
              *****************************************************/
             aShortCutWS30 = [{
                 KEY: "F11", // [WS30] FullScreen
+                DESC: "Browser Fullscreen",
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1395,6 +1481,7 @@
              ****************************************************************************************************/
             {
                 KEY: "Ctrl+F4", // [WS30]
+                VISIBLE: false,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1405,6 +1492,7 @@
             },
             {
                 KEY: "F3",  // [WS30] 이전 페이지로 이동 
+                DESC: "Back",
                 fn: async (e) => {
 
                     e.stopImmediatePropagation();
@@ -1440,6 +1528,7 @@
                 }
             }, {
                 KEY: "Ctrl+F1", // [WS30] Display or Change Button
+                DESC: "Display <---> Change",
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1487,6 +1576,7 @@
                 }
             }, {
                 KEY: "Ctrl+F3", // [WS30] Activate Button
+                DESC: "Activate",
                 fn: async (e) => {
 
                     e.stopImmediatePropagation();
@@ -1542,16 +1632,22 @@
                 }
             }, {
                 KEY: "Ctrl+S", // [WS30] Save Button
-                fn: (e) => {
+                DESC: "Save",
+                fn: async (e) => {
 
-                    // Active 버튼 누르기 전 커서의 위치를 저장한다.
-                    if (oAPP.attr.beforeActiveElement) {
-                        delete oAPP.attr.beforeActiveElement;
-                    }
+                    // // Active 버튼 누르기 전 커서의 위치를 저장한다.
+                    // if (oAPP.attr.beforeActiveElement) {
+                    //     delete oAPP.attr.beforeActiveElement;
+                    // }
 
-                    oAPP.attr.beforeActiveElement = document.activeElement;
+                    // oAPP.attr.beforeActiveElement = document.activeElement;
 
                     e.stopImmediatePropagation();
+
+                    var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
+                    if (!oSaveBtn || !oSaveBtn.getEnabled() || !oSaveBtn.getVisible()) {
+                        return;
+                    }
 
                     if (sap.ui.getCore().isLocked()) {
                         zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
@@ -1564,12 +1660,7 @@
                     // X 이면 실행 불가
                     if (result == "X") {
                         return;
-                    }
-
-                    var oSaveBtn = sap.ui.getCore().byId("ws30_saveBtn");
-                    if (!oSaveBtn || !oSaveBtn.getEnabled() || !oSaveBtn.getVisible()) {
-                        return;
-                    }
+                    }                   
 
                     // 커서 포커스 날리기
                     if (document.activeElement && document.activeElement.blur) {
@@ -1577,10 +1668,28 @@
                     }
 
                     oSaveBtn.focus();
+
+                    sap.ui.getCore().lock();
+
+                    await new Promise((resolve) => {
+
+                        var _ointer = setInterval(() => {
+    
+                            if(parent.getBusy() === "X"){ return; } 
+    
+                            clearInterval(_ointer);
+                            resolve();
+                          
+                        }, 0);
+
+                    });
+
                     oSaveBtn.firePress();
+
                 }
             }, {
                 KEY: "Shift+F1", // [WS30] Code Editor Pretty Print
+                DESC: "Pretty Print",
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1611,6 +1720,7 @@
             },
             {
                 KEY: "F8", // [WS30] Application Execution Button
+                DESC: "Application Execution",
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1638,6 +1748,7 @@
             },
             {
                 KEY: "Ctrl+Shift+F12", // [WS30] Mime Button
+                DESC: "Mime Repository",
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1665,6 +1776,7 @@
             },
             {
                 KEY: "Ctrl+F12", // [WS30] Controller Button
+                DESC: "Controller (Class Builder)",
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1692,13 +1804,26 @@
             },
             ];
 
+        // // Shortcut에 대한 이미지 경로
+        // for(var oItem of aShortCutWS10){
+        //     oItem.IMG_SRC = parent.PATH.join(sImgRootPath, "WS10", oItem.KEY + ".png")
+        // }
+
+        // for(var oItem of aShortCutWS20){
+        //     oItem.IMG_SRC = parent.PATH.join(sImgRootPath, "WS20", oItem.KEY + ".png")
+        // }
+
+        // for(var oItem of aShortCutWS30){
+        //     oItem.IMG_SRC = parent.PATH.join(sImgRootPath, "WS30", oItem.KEY + ".png")
+        // }
+
         var oShortcutList = {
             "WS10": aShortCutWS10,
             "WS20": aShortCutWS20,
             "WS30": aShortCutWS30
         };
 
-        return oShortcutList[sPgNo];
+        return oShortcutList[sPgNo] || [];
 
     }; // end of oAPP.common.getShortCutList
 

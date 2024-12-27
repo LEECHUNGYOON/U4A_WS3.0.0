@@ -327,6 +327,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             }
 
             oCoreModel.setProperty("/WSLANGU", oLanguJsonData);
+            
             resolve();
 
         });
@@ -2541,12 +2542,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         var oInitModelData = {
             WSLANGU: WSLANGU,
             sSelectedKey: "EN",
-            aLangu: [{
-                KEY: "EN"
-            },
-            {
-                KEY: "KO"
-            },
+            aLangu: [
+                {
+                    KEY: "EN"
+                },
+                {
+                    KEY: "KO"
+                },
             ],
         };
 
@@ -2607,8 +2609,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                     label: new sap.m.Label({
                                         design: sap.m.LabelDesign.Bold,
                                         text: "{/WSLANGU/ZMSG_WS_COMMON_001/001}" //"Language"
-                                    }),
-                                    // fields: new sap.m.ComboBox({
+                                    }),                                  
                                     fields: new sap.m.Select({
                                         selectedKey: "{/sSelectedKey}",
                                         items: {
@@ -2621,11 +2622,48 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                     })
                                 })
                             ]
-                        })
-
+                        }),
+                     
                     ] // end of formContainers
 
-                }) // end of Form
+                }), // end of Form
+
+
+                // new sap.m.MessageStrip({
+                //     showIcon: true,
+                //     text: "언어 설정을 서버 로그인 기준으로 할 것인지 여부에 대한 체크 입니다."
+                // }).addStyleClass("sapUiTinyMargin"),
+
+                // new sap.ui.layout.form.Form({
+                //     editable: true,
+                //     layout: new sap.ui.layout.form.ResponsiveGridLayout({
+                //         labelSpanXL: 2,
+                //         labelSpanL: 3,
+                //         labelSpanM: 3,
+                //         labelSpanS: 12,
+                //         singleContainerFullSize: true
+                //     }),
+
+                //     formContainers: [                     
+
+                //         new sap.ui.layout.form.FormContainer({
+                //             formElements: [
+                //                 new sap.ui.layout.form.FormElement({
+                //                     label: new sap.m.Label({
+                //                         design: sap.m.LabelDesign.Bold,
+                //                         text: "SERVER" //"Language"
+                //                     }),                                  
+                //                     fields: new sap.m.CheckBox({
+                                        
+                //                     })
+                //                 })
+                //             ]
+                //         })
+
+                //     ] // end of formContainers
+
+                // }), // end of Form
+
 
             ], // end of dialog content
 

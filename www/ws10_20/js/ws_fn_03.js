@@ -894,19 +894,155 @@
      ************************************************************************/
     oAPP.fn.fnShowKeyboardShortcuts = function(){
 
-        // 현재 실행 중인 화면의 단축키 정보를 구한다.
-
-        debugger;
-
+        // 현재 실행 중인 화면의 정보를 구한다
         let sCurrPage = parent.getCurrPage();
 
+        // 현재 실행중인 화면의 단축키 정보를 구한다.
         let aShortcutList = oAPP.common.getShortCutList(sCurrPage);
 
+        let oDialog = new sap.m.Dialog({
+            contentWidth: "800px",
+            resizable: true,
+            draggable: true,
+            afterOpen: function(){
+
+                // busy 키고 Lock 걸기
+                oAPP.common.fnSetBusyLock("");
+
+            },            
+            afterClose: function(){
+                oDialog.destroy();
+            },
+            buttons: [
+                new sap.m.Button({
+                    type: "Negative",
+                    icon: "sap-icon://decline",
+                    press: function(){
+                        oDialog.close();
+                    }
+                })
+            ]    
+        });
+
+        let oToolbar1 = new sap.m.Toolbar();
+        oDialog.setCustomHeader(oToolbar1);
+
+        let oIcon1 = new sap.ui.core.Icon({
+            src: "sap-icon://u4a-fw-solid/Keyboard"
+        });
+        oToolbar1.addContent(oIcon1);
+
+        let oTitle1 = new sap.m.Title({
+            text: "Keyboard Shortcut" // [MSG]
+        });
+        oToolbar1.addContent(oTitle1);
+
+        oToolbar1.addContent(new sap.m.ToolbarSpacer());
         
+        let oButton1 = new sap.m.Button({
+            type: "Negative",
+            icon: "sap-icon://decline",
+            press: function(){
+                oDialog.close();
+            }
+        });
+        oToolbar1.addContent(oButton1);
 
+        let oTable1 = new sap.m.Table({
+            columns: [
+                new sap.m.Column({
+                    header: new sap.m.Label({
+                        design: "Bold",
+                        text: "Keyboard Shortcut" // [MSG]
+                    })
+                }),
+                new sap.m.Column({
+                    header: new sap.m.Label({
+                        design: "Bold",
+                        text: "Description" // [MSG]
+                    })
+                }),
+                new sap.m.Column({
+                    header: new sap.m.Label({
+                        design: "Bold",
+                        text: "Preview" // [MSG]
+                    })
+                }),
+            ],
+            items: {
+                path: "/T_LIST",
+                template: new sap.m.ColumnListItem({
+                    cells: [
+                        new sap.m.Text({
+                            text: "{KEY}"
+                        }),
+                        new sap.m.Text({
+                            text: "{DESC}"
+                        }),
+                        // new sap.m.Image({
+                        //     src: "{IMG_SRC}"
+                        // })
+                        new sap.m.HBox({
+                            customData: [
+                                new sap.ui.core.CustomData()
+                                .bindProperty("value", "CODE", function(sCode){
 
+                                    let oParentUI = this.getParent && this.getParent();
+                                    if(!oParentUI){
+                                        return;
+                                    }
 
+                                    if(oParentUI.destroyItems){
+                                        oParentUI.destroyItems();
+                                    }
 
+                                    if(!sCode){
+                                        return;
+                                    }
+
+                                    try {
+                                        
+                                        var oUI = eval(sCode);
+
+                                    } catch (error) {                                        
+                                        return;
+                                    }
+
+                                    if(!oParentUI.addItem){
+                                        return;
+                                    }
+
+                                    oParentUI.addItem(oUI);
+
+                                })
+
+                            ]
+                        })
+                    ]
+                })
+            }
+        });
+
+        oDialog.addContent(oTable1);
+
+        aShortcutList = aShortcutList.filter(e => e.VISIBLE !== false);
+
+        let oJsonModel = new sap.ui.model.json.JSONModel({
+            T_LIST: aShortcutList
+        });
+        
+        oDialog.setModel(oJsonModel);
+
+        // 키 기준으로 오름차순 정렬
+        let oSorter = new sap.ui.model.Sorter({
+            path: 'KEY', 
+            descending: false, 
+        });
+
+        // manual sorting
+        oTable1.getBinding("items").sort(oSorter);
+
+        oDialog.open();
 
     } // end of oAPP.fn.showKeyboardShortcuts
 

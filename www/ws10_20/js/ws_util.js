@@ -12,23 +12,25 @@ const
 const vbsDirectory = PATH.join(PATH.dirname(APP.getPath('exe')), 'resources/regedit/vbs');
 REGEDIT.setExternalVBSLocation(vbsDirectory);
 
-/**
- * 테스트 -- start
- */
+
 const CURRWIN = REMOTE.getCurrentWindow(),
     WEBCON = CURRWIN.webContents,
     WEBPREF = WEBCON.getWebPreferences(),
     USERINFO = WEBPREF.USERINFO;
 
-if (USERINFO) {
-    process.USERINFO = USERINFO;
+process.USERINFO = USERINFO;
+
+if(!process.USERINFO){
+    process.USERINFO = parent.getUserInfo && parent.getUserInfo()
 }
+
+// if (USERINFO) {
+//     process.USERINFO = USERINFO;
+// }
 
 let oAPP = {};
 
-/**
- * 테스트 -- end
- */
+
 
 module.exports = {
 
@@ -614,18 +616,31 @@ module.exports = {
          */
         fnGetMsgClsText(sMsgCls, sMsgNum, p1, p2, p3, p4) {
 
+            // [!!YOON!!] 접속 서버 기준으로 바라볼지 여부
+            let bIsServer = true;            
+            // test -----
+
             let aMsgClsTxt = this.getMsgClassTxt(),
                 sLangu = this.LANGU;
+
+            // test -----
+            // [!!YOON!!]  서버 접속 언어 기준일 경우
+            if(bIsServer === true){
+                let oUserInfo = process.USERINFO; // || parent.getUserInfo();
+                sLangu = oUserInfo.LANGU;
+            }
+            // test -----
 
             if (!aMsgClsTxt || !aMsgClsTxt.length) {
                 return sMsgCls + "|" + sMsgNum;
             }
 
-            let sDefLangu = "E";
             // default language
+            // let sDefLangu = "E";
+            let sDefLangu = "EN";
 
             // 현재 접속한 언어로 메시지를 찾는다.
-            let oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sLangu && a.MSGNR == sMsgNum);
+            let oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.LANGU == sLangu && a.MSGNR == sMsgNum);
 
             // 현재 접속한 언어로 메시지를 못찾은 경우
             if (!oMsgTxt) { // 접속한 언어가 영어일 경우 빠져나간다.
@@ -635,7 +650,7 @@ module.exports = {
                 }
 
                 // 접속한 언어가 영어가 아닌데 메시지를 못찾으면 영어로 찾는다.
-                oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.SPRSL == sDefLangu && a.MSGNR == sMsgNum);
+                oMsgTxt = aMsgClsTxt.find(a => a.ARBGB == sMsgCls && a.LANGU == sDefLangu && a.MSGNR == sMsgNum);
 
                 // 그래도 없다면 빠져나간다.
                 if (!oMsgTxt) {

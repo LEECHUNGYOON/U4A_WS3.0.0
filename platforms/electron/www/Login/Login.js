@@ -56,6 +56,54 @@ let oAPP = (function () {
         // },
     ];
 
+
+    function _serverMsgConfig(oMeta){       
+
+        // [!!YOON!!] 접속 서버 기준으로 바라볼지 여부
+        let bIsServer = true;
+
+        // 서버에서 가져온 메시지 구조가 없다면 만든다.
+        if(!oMeta.MSGCLS || Array.isArray(oMeta.MSGCLS) === false){
+            oMeta.MSGCLS = [];
+        }
+
+        // 로그인 접속 정보를 구한다.
+        let oUserInfo = parent.getUserInfo();
+
+        // 로그인 접속 언어를 구한다.
+        let sLoginLangu = oUserInfo.LANGU;
+
+        // WS 설정 정보를 구한다.
+        let oSettingsInfo = oAPP.fn.fnGetSettingsInfo();
+
+        // WS에서 관리하고있는 PATH 정보를 구한다.
+        let oPath = oSettingsInfo.path;
+
+        // 언어별 메시지가 있는 폴더 경로를 구성한다.
+        let sLanguPath = parent.PATH.join(oPath.WSMSG_ROOT, "WS_MSG", sLoginLangu, "U4AMSG_WS.json");
+
+        if(parent.FS.existsSync(sLanguPath) === false){
+            return;
+        }
+
+        try {
+        
+            var sMsgStr = parent.FS.readFileSync(sLanguPath, "utf8");
+
+            var aServMsg = JSON.parse(sMsgStr);
+
+        } catch (error) {
+
+            return;
+        }        
+
+        oMeta.MSGCLS = aServMsg;
+
+    } // end of _serverMsgConfig
+
+
+
+
     oAPP.fn.getDefaultBrowserInfo = () => {
         return oAPP.attr.aDefaultBrowsers;
     };
@@ -1958,7 +2006,7 @@ let oAPP = (function () {
     /************************************************************************
      * 로그인 성공시 
      ************************************************************************/
-    oAPP.fn.fnOnLoginSuccess = async (oResult) => {
+    oAPP.fn.fnOnLoginSuccess = async (oResult) => {        
 
         let oCoreModel = sap.ui.getCore().getModel();
         if (oCoreModel == null) {
@@ -2020,6 +2068,11 @@ let oAPP = (function () {
         // Metadata 정보 세팅 (서버 호스트명.. 또는 메시지 클래스 데이터 등..)
         if (oResult.META) {
 
+            /**
+             * 서버 언어 저장
+             */
+            _serverMsgConfig(oResult.META);   
+            
             parent.setMetadata(oResult.META);
 
             // 서버 기준 테마 목록 정보를 레지스트리에 등록
@@ -2035,7 +2088,7 @@ let oAPP = (function () {
             // 메시지 클래스 정보가 있다면 APPDATA 경로에 버전별로 JSON파일을 만든다.
             if (oResult.META.MSGCLS) {
                 oAPP.fn.fnWriteMsgClsJson(oResult.META.MSGCLS);
-            }
+            }            
 
         }
 
@@ -2046,8 +2099,16 @@ let oAPP = (function () {
             PW: oUserInfo.PW,
             SYSID: oUserInfo.SYSID,
             LANGU: oResult.META.LANGU,
-            LANGU_CNV: oUserInfo.LANGU,
+            LANGU_CNV: oUserInfo.LANGU,            
         };
+
+        // [!!YOON!!] 접속 서버 기준으로 바라볼지 여부
+        let bIsServer = true;
+
+        // [!!YOON!!] 여기에 서버 언어로 바라볼지 글로벌 언어로 바라볼 경우 해당 언어로 매핑해야함!!!
+        if(bIsServer === true){
+            oProcessUserInfo.LANGU = oUserInfo.LANGU;
+        }
 
         // process.env 변수에 접속한 User 정보를 저장한다.
         parent.setProcessEnvUserInfo(oProcessUserInfo);
@@ -2096,10 +2157,11 @@ let oAPP = (function () {
         // Launguage 별로 그룹을 만든다.
         var oGroup = aMsgCls.reduce((acc, curr) => { // [1]
             const {
-                SPRSL
+                // SPRSL
+                LANGU
             } = curr; // [2]
-            if (acc[SPRSL]) acc[SPRSL].push(curr); // [3]
-            else acc[SPRSL] = [curr]; // [4]
+            if (acc[LANGU]) acc[LANGU].push(curr); // [3]
+            else acc[LANGU] = [curr]; // [4]
             return acc; // [5]
         }, {}); // [6]
 
