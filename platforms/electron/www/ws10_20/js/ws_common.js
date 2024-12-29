@@ -18,6 +18,8 @@
         APPPATH = APP.getAppPath(),
         APPCOMMON = oAPP.common;
 
+    var oSettings = parent.WSUTIL.getWsSettingsInfo();
+
     const
         SYSADM_BIND_ROOT = "/SYSADM";
 
@@ -97,26 +99,21 @@
 
     oAPP.common.fnGetMsgClsText = (sMsgCls, sMsgNum, p1, p2, p3, p4) => {
 
-        // test -----
-
-        // [!!YOON!!]  접속 서버 기준으로 바라볼지 여부
-        let bIsServer = true;
-
-        // [!!YOON!!]  test -----
-
-
         // Metadata에서 메시지 클래스 정보를 구한다.
         var oMeta = parent.getMetadata(),
-            sLangu = oMeta.LANGU,
+            oUserInfo = parent.getUserInfo(),
+            sLangu = oUserInfo.LANGU,
             aMsgClsTxt = oMeta["MSGCLS"];
+     
+        // 메시지 언어를 서버 로그인 언어로 할지 플래그
+        let bIsServer = parent?.process?.USERINFO?.isServDependLangu;
 
-        // test -----
-        // [!!YOON!!] 서버 접속 언어 기준일 경우
-        if(bIsServer === true){
-            let oUserInfo = parent.getUserInfo();
-            sLangu = oUserInfo.LANGU;
-        }
-        // [!!YOON!!]  test -----
+        //  메시지 언어를 글로벌 언어로 할 경우
+        if(bIsServer === false){
+        
+            sLangu = parent.process.USERINFO.GLOBAL_LANGU;
+
+        } 
 
         if (!aMsgClsTxt || !aMsgClsTxt.length) {
             return sMsgCls + "|" + sMsgNum;
@@ -431,10 +428,15 @@
         if(!sPgNo){
             return [];
         }
+
+        let sGlobalLangu = oSettings.globalLanguage;
+
+        // parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "021");
+        
         
         var aShortCutWS10 = [{
             KEY: "F11", // [WS10] FullScreen
-            DESC: "Browser Fullscreen",
+            DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "255"), // Browser Fullscreen
             CODE: `new sap.m.Button({icon: "sap-icon://header"})`,
             fn: (e) => {
 
@@ -466,7 +468,7 @@
             }
         }, {
             KEY: "Ctrl+Shift+F", // [WS10] textSearchPopup
-            DESC: "Text Search Popup",
+            DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "256"), // Text Search Popup
             CODE: `new sap.m.Button({icon: "sap-icon://search"})`,
             fn: (e) => {
 
@@ -485,7 +487,7 @@
             }
         }, {
             KEY: "Ctrl+F12", // [WS10] Application Create
-            DESC: "Application Create",
+            DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "257"), // Application Create
             CODE: `new sap.m.Button({
                 text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"),
                 icon: "sap-icon://document",
@@ -514,7 +516,7 @@
         },
         {           
             KEY: "F6", // [WS10] Application Change
-            DESC: "Application Change Mode",
+            DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "258"), // Application Change Mode
             CODE: `new sap.m.Button({
                 text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02"),
                 icon: "sap-icon://edit",
@@ -553,7 +555,7 @@
         },
         {
             KEY: "Ctrl+F10", // [WS10] Application Delete
-            DESC: "Application Delete",
+            DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "259"), // Application Delete"
             CODE: `new sap.m.Button({
                 text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03"),
                 icon: "sap-icon://delete",
@@ -588,7 +590,7 @@
         },
         {
             KEY: "Shift+F11", // [WS10] Application Copy
-            DESC: "Application Copy",
+            DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "260"), // Application Copy
             CODE: `new sap.m.Button({
                 text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A04"),
                 icon: "sap-icon://copy",
@@ -622,7 +624,7 @@
         },
         {
             KEY: "F7", // [WS10] Display Button
-            DESC: "Application Display Mode",
+            DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "260"), // Application Display Mode
             CODE: `new sap.m.Button({
                 text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05"),
                 icon: "sap-icon://display",
@@ -664,7 +666,7 @@
         },
         {
             KEY: "F8", // [WS10] Application Execution
-            DESC: "Application Execution",
+            DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "260"), // Application Execution
             CODE: `new sap.m.Button({
                 text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06"),
                 icon: "sap-icon://internet-browser",
@@ -698,7 +700,7 @@
         },
         {
             KEY: "Ctrl+F1", // [WS10] Example Open
-            DESC: "Example Open",
+            DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A07"), // Example Open
             CODE: `new sap.m.Button({
                 text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A07"),
                 icon: "sap-icon://learning-assistant",
@@ -732,7 +734,7 @@
         },
         {
             KEY: "Ctrl+F3", // [WS10] Multi Preview
-            DESC: "Multi Preview",
+            DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A08"), // Multi Preview
             CODE: `new sap.m.Button({
                 text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A08"),
                 icon: "sap-icon://desktop-mobile",
@@ -768,7 +770,7 @@
         ],
             aShortCutWS20 = [{
                 KEY: "F11", // [WS20] FullScreen
-                DESC: "Browser Fullscreen",
+                DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "255"), // Browser Fullscreen
                 CODE: `new sap.m.Button({icon: "sap-icon://header"})`,
                 fn: (e) => {
 
@@ -800,7 +802,7 @@
                 }
             }, {
                 KEY: "Ctrl+Shift+F", // [WS20] textSearchPopup
-                DESC: "Text Search Popup",
+                DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "256"), // Text Search Popup
                 CODE: `new sap.m.Button({icon: "sap-icon://search"})`,
                 fn: (e) => {
 
@@ -824,7 +826,7 @@
                 }
             }, {
                 KEY: "Ctrl+F2", // [WS20] Syntax Check Button
-                DESC: "Syntax Check",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B72"), // Syntax Check
                 CODE: `new sap.m.Button({
                     icon: "sap-icon://validate",
                     tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B72") + " (Ctrl+F2)"
@@ -874,8 +876,10 @@
             },
             {
                 KEY: "F3", // [WS20] Back Button
-                DESC: "Back",
-                CODE: ``,
+                DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "264"), // Back
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://nav-back",
+                })`,
                 fn: async (e) => {
 
                     e.stopImmediatePropagation();
@@ -936,8 +940,24 @@
             },
             {
                 KEY: "Ctrl+F1", // [WS20] Display or Change Button
-                DESC: "Display <---> Change",
-                // DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05") + " <--> " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02"),
+                // DESC: "Display <---> Change",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05") + " <--> " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02"),
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://display",
+                    press: function(oEvent){
+                    
+                        let oBtn = oEvent.getSource();
+                        
+                        let sIcon = oBtn.getIcon();
+                        if(sIcon === "sap-icon://display"){
+                            oBtn.setIcon("sap-icon://edit");
+                            return;
+                        }
+                        
+                        oBtn.setIcon("sap-icon://display");
+                        
+                    }
+                })`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -986,7 +1006,8 @@
             },
             {
                 KEY: "Ctrl+F3", // [WS20] Activate Button
-                DESC: "Activate",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B73"), // Activate
+                CODE: `new sap.m.Button({icon: "sap-icon://activate"})`,
                 fn: async (e) => {
                     e.stopImmediatePropagation();
    
@@ -1060,7 +1081,8 @@
             },
             {
                 KEY: "Ctrl+S", // [WS20] Save Button
-                DESC: "Save",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A64"), // Save
+                CODE: `new sap.m.Button({icon: "sap-icon://save"})`,
                 fn: async (e) => {
 
                     e.stopImmediatePropagation();
@@ -1112,7 +1134,12 @@
             },     
             {
                 KEY: "Ctrl+Shift+F12", // [WS20] Mime Button
-                DESC: "Mime Repository",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10"), // Mime Repository
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://picture",
+                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10"),
+                    tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10") + " (Ctrl+Shift+F12)",
+                })`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1140,7 +1167,12 @@
             },
             {
                 KEY: "Ctrl+F12", // [WS20] Controller Button
-                DESC: "Controller (Class Builder)",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A11"), // Controller (Class Builder)
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://developer-settings",
+                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A11"),
+                    tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C38") + " (Ctrl+F12)",
+                })`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1168,7 +1200,12 @@
             },
             {
                 KEY: "F8", // [WS20] Application Execution Button
-                DESC: "Application Execution",
+                DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "260"), // Application Execution
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://internet-browser",
+                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06"),
+                    tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06") + " (F8)",
+                })`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1196,7 +1233,12 @@
             },
             {
                 KEY: "Ctrl+F5", // [WS20] Multi Preview Button
-                DESC: "Multi Preview",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A08"), // Multi Preview
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://desktop-mobile",
+                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A08"),
+                    tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A08") + " (Ctrl+F5)",
+                })`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1224,7 +1266,12 @@
             },
             {
                 KEY: "Ctrl+Shift+F10", // [WS20] Icon List Button
-                DESC: "Icon List",
+                DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "047"), // Icon List
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://u4a-fw-solid/Icons",
+                    text: "{/WSLANGU/ZMSG_WS_COMMON_001/047}",
+                    tooltip: "{/WSLANGU/ZMSG_WS_COMMON_001/047}" + " (Ctrl+Shift+F10)",
+                })`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1241,8 +1288,6 @@
                     if (result == "X") {
                         return;
                     }
-
-                    // iconCollBtn
 
                     var oIconListBtn = sap.ui.getCore().byId("iconCollBtn");
                     if (!oIconListBtn || !oIconListBtn.getEnabled() || !oIconListBtn.getVisible()) {
@@ -1263,7 +1308,12 @@
             },
             {
                 KEY: "Shift+F1", // [WS20] Add Server Event Button
-                DESC: "Add Event Method",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A13"), // Add Event Method
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://touch",
+                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A13"),
+                    tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A13") + " (Shift+F1)",
+                })`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1291,7 +1341,12 @@
             },
             {
                 KEY: "F9", // [WS20] Runtime Class Navigator Event Button
-                DESC: "Runtime Class Navigator",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A14"), // Runtime Class Navigator
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://functional-location",
+                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A14"),
+                    tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A14"),
+                })`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1319,7 +1374,11 @@
             },
             {
                 KEY: "Ctrl+F", // [WS20] Find
-                DESC: "Find UI",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A70"), // Find UI
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://sys-find",
+                    tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A70") + " (Ctrl+F)"
+                })`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1348,7 +1407,11 @@
             {
                 // KEY: "Ctrl+Z", // [WS20] UNDO
                 KEY: "Ctrl+Shift+Z", // [WS20] UNDO
-                DESC: "Undo",
+                DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "247"), // Undo
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://undo",
+                    tooltip: "{/WSLANGU/ZMSG_WS_COMMON_001/247}"
+                })`,
                 fn: (e) => {
 
                     // 20번 페이지의 앱 정보를 구한다.
@@ -1392,7 +1455,11 @@
             {
                 // KEY: "Ctrl+X", // [WS20] REDO
                 KEY: "Ctrl+Shift+X", // [WS20] REDO
-                DESC: "Redo",
+                DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "248"), // Redo
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://redo",
+                    tooltip: "{/WSLANGU/ZMSG_WS_COMMON_001/248}",
+                })`,
                 fn: (e) => {
 
                     // 20번 페이지의 앱 정보를 구한다.
@@ -1439,7 +1506,8 @@
              *****************************************************/
             aShortCutWS30 = [{
                 KEY: "F11", // [WS30] FullScreen
-                DESC: "Browser Fullscreen",
+                DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "255"), // Browser Fullscreen
+                CODE: `new sap.m.Button({icon: "sap-icon://header"})`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1489,7 +1557,10 @@
             },
             {
                 KEY: "F3",  // [WS30] 이전 페이지로 이동 
-                DESC: "Back",
+                DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "264"), // Back
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://nav-back",
+                })`,
                 fn: async (e) => {
 
                     e.stopImmediatePropagation();
@@ -1525,7 +1596,23 @@
                 }
             }, {
                 KEY: "Ctrl+F1", // [WS30] Display or Change Button
-                DESC: "Display <---> Change",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05") + " <--> " + oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A02"),
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://display",
+                    press: function(oEvent){
+                    
+                        let oBtn = oEvent.getSource();
+                        
+                        let sIcon = oBtn.getIcon();
+                        if(sIcon === "sap-icon://display"){
+                            oBtn.setIcon("sap-icon://edit");
+                            return;
+                        }
+                        
+                        oBtn.setIcon("sap-icon://display");
+                        
+                    }
+                })`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1573,7 +1660,8 @@
                 }
             }, {
                 KEY: "Ctrl+F3", // [WS30] Activate Button
-                DESC: "Activate",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B73"), // Activate
+                CODE: `new sap.m.Button({icon: "sap-icon://activate"})`,
                 fn: async (e) => {
 
                     e.stopImmediatePropagation();
@@ -1629,7 +1717,8 @@
                 }
             }, {
                 KEY: "Ctrl+S", // [WS30] Save Button
-                DESC: "Save",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A64"), // Save
+                CODE: `new sap.m.Button({icon: "sap-icon://save"})`,
                 fn: async (e) => {
 
                     // // Active 버튼 누르기 전 커서의 위치를 저장한다.
@@ -1686,7 +1775,12 @@
                 }
             }, {
                 KEY: "Shift+F1", // [WS30] Code Editor Pretty Print
-                DESC: "Pretty Print",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25"), // Pretty Print
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://indent",
+                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25"),
+                    tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25") + "(Shift + F1)",
+                })`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1717,7 +1811,12 @@
             },
             {
                 KEY: "F8", // [WS30] Application Execution Button
-                DESC: "Application Execution",
+                DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "260"), // Application Execution
+                CODE: `new sap.m.Button({
+                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06"),
+                    icon: "sap-icon://internet-browser",
+                    tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06") + " (F8)"
+                })`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1745,7 +1844,12 @@
             },
             {
                 KEY: "Ctrl+Shift+F12", // [WS30] Mime Button
-                DESC: "Mime Repository",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10"), // Mime Repository
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://picture",
+                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10"),
+                    tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10") + " (Ctrl+Shift+F12)",
+                })`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1773,7 +1877,12 @@
             },
             {
                 KEY: "Ctrl+F12", // [WS30] Controller Button
-                DESC: "Controller (Class Builder)",
+                DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A11"), // Controller (Class Builder)
+                CODE: `new sap.m.Button({
+                    icon: "sap-icon://developer-settings",
+                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A11"),
+                    tooltip: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C38") + " (Ctrl+F12)",
+                })`,
                 fn: (e) => {
 
                     e.stopImmediatePropagation();
@@ -1799,7 +1908,7 @@
                     oControllerBtn.firePress();
                 }
             },
-            ];
+        ];
 
         // // Shortcut에 대한 이미지 경로
         // for(var oItem of aShortCutWS10){

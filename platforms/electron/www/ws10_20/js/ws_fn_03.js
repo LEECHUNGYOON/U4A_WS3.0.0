@@ -949,6 +949,9 @@
         oToolbar1.addContent(oButton1);
 
         let oTable1 = new sap.m.Table({
+            sticky: [
+                "ColumnHeaders"
+            ],
             columns: [
                 new sap.m.Column({
                     header: new sap.m.Label({
@@ -1028,7 +1031,8 @@
         aShortcutList = aShortcutList.filter(e => e.VISIBLE !== false);
 
         let oJsonModel = new sap.ui.model.json.JSONModel({
-            T_LIST: aShortcutList
+            T_LIST: aShortcutList,
+            WSLANGU: sap.ui.getCore().getModel().getProperty("/WSLANGU")
         });
         
         oDialog.setModel(oJsonModel);

@@ -564,6 +564,16 @@ module.exports = {
             this.SYSID = pSysID;
             this.LANGU = pLangu;
 
+            // 메시지 언어를 서버 로그인 언어로 할지 플래그
+            let bIsServer = parent?.process?.USERINFO?.isServDependLangu;
+
+            //  메시지 언어를 글로벌 언어로 할 경우
+            if(bIsServer === false){
+            
+                this.LANGU = parent.process.USERINFO.GLOBAL_LANGU;
+
+            }
+
             // 로컬에 있는 메시지 json 파일을 읽어서 this.aMsgClsTxt; <-- 여기에 저장해둔다.
             this._fnReadMsgClassTxt();
 
@@ -577,12 +587,22 @@ module.exports = {
             return this._aMsgClsTxt;
         }
 
+        getWsSettingsInfo() {
+
+            let sSetttingJsonData = FS.readFileSync(PATHINFO.WSSETTINGS, 'utf-8'),
+                oSettings = JSON.parse(sSetttingJsonData);
+    
+            return oSettings;
+    
+        }
+
         /**
          * APP 설치 폴더에 있는 메시지 클래스 json 파일을 읽어서 전역 변수에 저장한다.
          *  
          * @private
          */
         _fnReadMsgClassTxt() { // APPPATH 경로를 구한다.
+
             let sSysID = this.SYSID,
                 sLangu = this.LANGU,
                 sJsonFolderPath = PATH.join(USERDATA, "msgcls", sSysID, sLangu),
@@ -616,20 +636,8 @@ module.exports = {
          */
         fnGetMsgClsText(sMsgCls, sMsgNum, p1, p2, p3, p4) {
 
-            // [!!YOON!!] 접속 서버 기준으로 바라볼지 여부
-            let bIsServer = true;            
-            // test -----
-
             let aMsgClsTxt = this.getMsgClassTxt(),
-                sLangu = this.LANGU;
-
-            // test -----
-            // [!!YOON!!]  서버 접속 언어 기준일 경우
-            if(bIsServer === true){
-                let oUserInfo = process.USERINFO; // || parent.getUserInfo();
-                sLangu = oUserInfo.LANGU;
-            }
-            // test -----
+                sLangu = this.LANGU;        
 
             if (!aMsgClsTxt || !aMsgClsTxt.length) {
                 return sMsgCls + "|" + sMsgNum;
@@ -915,7 +923,6 @@ module.exports = {
 
             return resolve(oSettingValues[key]);
 
-
         });
 
 
@@ -964,6 +971,20 @@ module.exports = {
      * WS 3.0 전용 메시지 리턴
      */
     getWsMsgClsTxt: function (LANGU, ARBGB, MSGNR, p1, p2, p3, p4) { // www에 내장되어 있는 WS 메시지 경로
+
+        let oSettingInfo = this.getWsSettingsInfo();
+
+        // 메시지 언어를 서버 로그인 언어로 할지 플래그
+        let bIsServer = parent?.process?.USERINFO?.isServDependLangu;
+
+        //  메시지 언어를 글로벌 언어로 할 경우
+        if(bIsServer === true){        
+            LANGU = parent.process.USERINFO.LANGU;
+        }
+        else {
+            LANGU = oSettingInfo.globalLanguage;
+        }
+
         let sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", LANGU, ARBGB + ".json");
 
         // WS 메시지 존재 유무
@@ -1039,9 +1060,18 @@ module.exports = {
             // let sWsLangu = await this.getWsLanguAsync(), // WS Language 설정 정보
             //     sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", sWsLangu); // www에 내장되어 있는 WS 메시지 경로
 
-            let oSettingInfo = this.getWsSettingsInfo(),
-                sWsLangu = oSettingInfo.globalLanguage, // WS Language 설정 정보
-                sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", sWsLangu); // www에 내장되어 있는 WS 메시지 경로
+            let oSettingInfo = this.getWsSettingsInfo();
+            let sWsLangu = oSettingInfo.globalLanguage; // WS Language 설정 정보
+            
+            // 메시지 언어를 서버 로그인 언어로 할지 플래그
+            let bIsServer = parent?.process?.USERINFO?.isServDependLangu;
+
+            //  메시지 언어를 서버 로그인 언어로 할 경우
+            if(bIsServer === true){            
+                sWsLangu = parent.process.USERINFO.LANGU;
+            }
+
+            let sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", sWsLangu); // www에 내장되어 있는 WS 메시지 경로
 
             let oWsLanguDir = await this.readDir(sWsMsgPath);
             if (oWsLanguDir.RETCD == "E") {
@@ -1464,6 +1494,15 @@ module.exports = {
 
     },
     // end of getWsSettingsInfo
+
+    
+    setWsSettingsInfo: function(oSettingInfo){
+
+        var sSettingJson = JSON.stringify(oSettingInfo);
+
+        FS.writeFileSync(PATHINFO.WSSETTINGS, sSettingJson);
+
+    },
 
     /**
      * WS Global Setting 정보 [레지스트리에 설정된 값 구하기]

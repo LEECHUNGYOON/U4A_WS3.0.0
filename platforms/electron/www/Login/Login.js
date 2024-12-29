@@ -57,10 +57,7 @@ let oAPP = (function () {
     ];
 
 
-    function _serverMsgConfig(oMeta){       
-
-        // [!!YOON!!] 접속 서버 기준으로 바라볼지 여부
-        let bIsServer = true;
+    function _serverMsgConfig(oMeta){        
 
         // 서버에서 가져온 메시지 구조가 없다면 만든다.
         if(!oMeta.MSGCLS || Array.isArray(oMeta.MSGCLS) === false){
@@ -78,6 +75,13 @@ let oAPP = (function () {
 
         // WS에서 관리하고있는 PATH 정보를 구한다.
         let oPath = oSettingsInfo.path;
+
+        // 메시지 언어를 메시지 언어를 글로벌 언어로 할 경우
+        if(parent.process.isServDependLangu === false){
+  
+            sLoginLangu = oSettingsInfo.globalLanguage;
+
+        }
 
         // 언어별 메시지가 있는 폴더 경로를 구성한다.
         let sLanguPath = parent.PATH.join(oPath.WSMSG_ROOT, "WS_MSG", sLoginLangu, "U4AMSG_WS.json");
@@ -232,16 +236,18 @@ let oAPP = (function () {
      ************************************************************************/
     oAPP.fn.fnGetSettingsInfo = () => {
 
-        // Browser Window option
-        var oSettingsPath = PATHINFO.WSSETTINGS,
+        // // Browser Window option
+        // var oSettingsPath = PATHINFO.WSSETTINGS,
 
-            // JSON 파일 형식의 Setting 정보를 읽는다..
-            oSettings = require(oSettingsPath);
-        if (!oSettings) {
-            return;
-        }
+        //     // JSON 파일 형식의 Setting 정보를 읽는다..
+        //     oSettings = require(oSettingsPath);
+        // if (!oSettings) {
+        //     return;
+        // }
 
-        return oSettings;
+        
+
+        return WSUTIL.getWsSettingsInfo();
 
     }; // end of fnGetSettingsInfo
 
@@ -2099,16 +2105,12 @@ let oAPP = (function () {
             PW: oUserInfo.PW,
             SYSID: oUserInfo.SYSID,
             LANGU: oResult.META.LANGU,
-            LANGU_CNV: oUserInfo.LANGU,            
+            LANGU_CNV: oUserInfo.LANGU,
+            GLOBAL_LANGU: oWsSettings.globalLanguage,
+            isServDependLangu: parent.process.isServDependLangu
         };
 
-        // [!!YOON!!] 접속 서버 기준으로 바라볼지 여부
-        let bIsServer = true;
-
-        // [!!YOON!!] 여기에 서버 언어로 바라볼지 글로벌 언어로 바라볼 경우 해당 언어로 매핑해야함!!!
-        if(bIsServer === true){
-            oProcessUserInfo.LANGU = oUserInfo.LANGU;
-        }
+        oProcessUserInfo.LANGU = oUserInfo.LANGU;
 
         // process.env 변수에 접속한 User 정보를 저장한다.
         parent.setProcessEnvUserInfo(oProcessUserInfo);
@@ -3056,9 +3058,14 @@ let oAPP = (function () {
 
             // IconPool Register Fiori icon
             oAPP.fn.fnRegisterFioriIconPool();
-
-            // trial 버전 확인
+         
             var oWsSettings = oAPP.fn.fnGetSettingsInfo();
+
+            // test ------
+            // parent.process.isServDependLangu = false;
+
+            parent.process.isServDependLangu = true;
+            // test ------
 
             // // 자연스러운 로딩
             // oAPP.fn.fnOnSmoothLoading();
