@@ -14,7 +14,11 @@
         CURRWIN = REMOTE.getCurrentWindow(),
         SESSKEY = parent.getSessionKey(),
         BROWSKEY = parent.getBrowserKey(),
-        IPCMAIN = REMOTE.require('electron').ipcMain;
+        IPCMAIN = REMOTE.require('electron').ipcMain,
+
+        WSUTIL = parent.WSUTIL,
+        SETTINGS = parent.require(PATHINFO.WSSETTINGS),
+        WS_LANGU = SETTINGS.globalLanguage;
 
     /************************************************************************
      * 설정된 세션 타임아웃 시간 체크
@@ -933,7 +937,7 @@
         oToolbar1.addContent(oIcon1);
 
         let oTitle1 = new sap.m.Title({
-            text: "Keyboard Shortcut" // [MSG]
+            text: WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "253"), // Keyboard Shortcut List
         });
         oToolbar1.addContent(oTitle1);
 
@@ -956,19 +960,19 @@
                 new sap.m.Column({
                     header: new sap.m.Label({
                         design: "Bold",
-                        text: "Keyboard Shortcut" // [MSG]
+                        text: WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "272"), // Keyboard Shortcut
                     })
                 }),
                 new sap.m.Column({
                     header: new sap.m.Label({
                         design: "Bold",
-                        text: "Description" // [MSG]
+                        text: WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "176"), // Description
                     })
                 }),
                 new sap.m.Column({
                     header: new sap.m.Label({
                         design: "Bold",
-                        text: "Preview" // [MSG]
+                        text: WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "230"), // Preview
                     })
                 }),
             ],

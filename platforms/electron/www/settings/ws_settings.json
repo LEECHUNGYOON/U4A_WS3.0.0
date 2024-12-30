@@ -30,6 +30,7 @@
     "defaultTheme": "sap_horizon_dark",
     "defaultLanguage" : "EN",
     "defaultSound": "X",
+    "defaultUseLoginLangu": "X",
     "defaultBackgroundColor": "#12171c",
     "requireFolders": [
         "msgcls",

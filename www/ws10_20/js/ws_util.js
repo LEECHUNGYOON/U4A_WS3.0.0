@@ -560,19 +560,25 @@ module.exports = {
                 throw new Error("Language is require!");
             }
 
-            // 클래스의 필드(프로퍼티)
-            this.SYSID = pSysID;
-            this.LANGU = pLangu;
-
             // 메시지 언어를 서버 로그인 언어로 할지 플래그
             let bIsServer = parent?.process?.USERINFO?.isServDependLangu;
 
-            //  메시지 언어를 글로벌 언어로 할 경우
-            if(bIsServer === false){
-            
+            if(bIsServer === ""){
                 this.LANGU = parent.process.USERINFO.GLOBAL_LANGU;
-
             }
+            
+            //  메시지 언어를 글로벌 언어로 할 경우
+            // if(bIsServer === "X"){
+            //     this.LANGU = parent.process.USERINFO.LOGIN_LANGU;
+            // }
+
+            // else {
+            //     this.LANGU = parent.process.USERINFO.GLOBAL_LANGU;
+            // }
+
+            // 클래스의 필드(프로퍼티)
+            this.SYSID = pSysID;
+            this.LANGU = pLangu;
 
             // 로컬에 있는 메시지 json 파일을 읽어서 this.aMsgClsTxt; <-- 여기에 저장해둔다.
             this._fnReadMsgClassTxt();
@@ -894,6 +900,9 @@ module.exports = {
     },
     // end of setWsLanguAsync
 
+    /*********************************************************
+     * Key값에 해당하는 글로벌 설정 값을 구한다.
+     *********************************************************/
     getGlobalSettingInfo : function(key){
 
         return new Promise(async (resolve) => {
@@ -928,7 +937,9 @@ module.exports = {
 
     },
 
-
+    /*********************************************************
+     * 글로벌 설정값을 저장하는 함수
+     *********************************************************/
     saveGlobalSettingInfo : function(key, value){
 
         return new Promise(async (resolve) => {
@@ -977,13 +988,14 @@ module.exports = {
         // 메시지 언어를 서버 로그인 언어로 할지 플래그
         let bIsServer = parent?.process?.USERINFO?.isServDependLangu;
 
-        //  메시지 언어를 글로벌 언어로 할 경우
-        if(bIsServer === true){        
+        // 메시지 언어를 글로벌 언어로 할 경우
+         if(bIsServer === "X"){        
             LANGU = parent.process.USERINFO.LANGU;
         }
         else {
             LANGU = oSettingInfo.globalLanguage;
         }
+
 
         let sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", LANGU, ARBGB + ".json");
 
@@ -1057,9 +1069,6 @@ module.exports = {
 
         return new Promise(async (resolve) => {
 
-            // let sWsLangu = await this.getWsLanguAsync(), // WS Language 설정 정보
-            //     sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", sWsLangu); // www에 내장되어 있는 WS 메시지 경로
-
             let oSettingInfo = this.getWsSettingsInfo();
             let sWsLangu = oSettingInfo.globalLanguage; // WS Language 설정 정보
             
@@ -1067,7 +1076,7 @@ module.exports = {
             let bIsServer = parent?.process?.USERINFO?.isServDependLangu;
 
             //  메시지 언어를 서버 로그인 언어로 할 경우
-            if(bIsServer === true){            
+            if(bIsServer === "X"){            
                 sWsLangu = parent.process.USERINFO.LANGU;
             }
 

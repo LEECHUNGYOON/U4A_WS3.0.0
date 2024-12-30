@@ -74,14 +74,7 @@ let oAPP = (function () {
         let oSettingsInfo = oAPP.fn.fnGetSettingsInfo();
 
         // WS에서 관리하고있는 PATH 정보를 구한다.
-        let oPath = oSettingsInfo.path;
-
-        // 메시지 언어를 메시지 언어를 글로벌 언어로 할 경우
-        if(parent.process.isServDependLangu === false){
-  
-            sLoginLangu = oSettingsInfo.globalLanguage;
-
-        }
+        let oPath = oSettingsInfo.path;   
 
         // 언어별 메시지가 있는 폴더 경로를 구성한다.
         let sLanguPath = parent.PATH.join(oPath.WSMSG_ROOT, "WS_MSG", sLoginLangu, "U4AMSG_WS.json");
@@ -2054,6 +2047,12 @@ let oAPP = (function () {
         oUserInfo.WSVER = sAppVer;
         oUserInfo.WSPATCH_LEVEL = Number(oWsSettings.patch_level || 0);
 
+        // 접속 언어 지정을 글로벌 설정 언어로 할지 로그인 언어로 할지 정한다.
+        if(parent.process.isServDependLangu === ""){
+            oUserInfo.LOGIN_LANGU   = oUserInfo.LANGU;
+            oUserInfo.LANGU         = oWsSettings.globalLanguage;
+        }      
+
         // 로그인 유저의 아이디/패스워드를 저장해둔다.    
         parent.setUserInfo(oUserInfo);
 
@@ -2066,8 +2065,9 @@ let oAPP = (function () {
         // 서버 Info 이전 값을 저장한다.
         parent.setBeforeServerInfo(jQuery.extend(true, {}, oServerInfo));
 
-        oServerInfo.CLIENT = oUserInfo.CLIENT;
-        oServerInfo.LANGU = oUserInfo.LANGU;
+        oServerInfo.CLIENT      = oUserInfo.CLIENT;
+        oServerInfo.LANGU       = oUserInfo.LANGU;
+        oServerInfo.LOGIN_LANGU = oUserInfo.LOGIN_LANGU;
 
         parent.setServerInfo(oServerInfo);
 
@@ -2098,7 +2098,7 @@ let oAPP = (function () {
 
         }
 
-        // save data to electron native object(process)
+        
         let oProcessUserInfo = {
             CLIENT: oUserInfo.CLIENT,
             ID: oUserInfo.ID,
@@ -2106,17 +2106,16 @@ let oAPP = (function () {
             SYSID: oUserInfo.SYSID,
             LANGU: oResult.META.LANGU,
             LANGU_CNV: oUserInfo.LANGU,
+            LOGIN_LANGU: oUserInfo.LOGIN_LANGU,
             GLOBAL_LANGU: oWsSettings.globalLanguage,            
             isServDependLangu: parent.process.isServDependLangu
-        };
-
-        oProcessUserInfo.LANGU = oUserInfo.LANGU;
-        oProcessUserInfo.UI5_BOOT_LANGU = oUserInfo.LANGU;
+        };  
         
-        // UI5 로드시 부트 스트립 언어를 설정한다.
-        if(parent.process.isServDependLangu === false){
-            oProcessUserInfo.UI5_BOOT_LANGU = oProcessUserInfo.GLOBAL_LANGU;
-        }
+        // 접속 언어 지정을 로그인 시 입력한 언어로 지정
+        oProcessUserInfo.LANGU = oUserInfo.LANGU;
+        
+        // 접속 언어 지정을 로그인 시 입력한 언어로 지정
+        oProcessUserInfo.LANGU = oUserInfo.LANGU;
 
         // process.env 변수에 접속한 User 정보를 저장한다.
         parent.setProcessEnvUserInfo(oProcessUserInfo);
@@ -3028,6 +3027,7 @@ let oAPP = (function () {
 
     } // end of _attachCurrentWindowEvents
 
+    
     /************************************************************************
      * IPC 이벤트 핸들러
      ************************************************************************/
@@ -3036,14 +3036,33 @@ let oAPP = (function () {
         // 브라우저간 IPC 통신
         IPCMAIN.on('if-browser-interconnection', oAPP.fn.fnIpcMain_browser_interconnection);
 
-    } // end of _attachIPCEvents   
+    } // end of _attachIPCEvents
+
+
+    /************************************************************************
+     * 글로벌 설정값 관련 설정      
+     ************************************************************************/
+    async function _globalSettingsConfig(){
+
+        // 글로벌 설정 값을 구한다.
+        let oGlobalSettings = await WSUTIL.getWsGlobalSettingInfoAsync();
+        if(!oGlobalSettings){
+            return;
+        }
+
+        // 설정 언어를 글로벌 언어로 설정할지 로그인 언어로 할지의 값을 구한다.
+        let sUseLoginLangu = oGlobalSettings?.useLoginLangu?.value || "";
+
+        parent.process.isServDependLangu = sUseLoginLangu || "";     
+
+    } // end of _globalSettingsConfig
 
     /************************************************************************s
      *---------------------[ U4A WS Login Page Start ] ----------------------
      ************************************************************************/
     oAPP.fn.fnAttachInit = () => {
 
-        sap.ui.getCore().attachInit(() => {
+        sap.ui.getCore().attachInit(async () => {
 
             jQuery.sap.require("sap.m.MessageBox");
 
@@ -3067,14 +3086,17 @@ let oAPP = (function () {
          
             var oWsSettings = oAPP.fn.fnGetSettingsInfo();
 
-            // test ------
-            // parent.process.isServDependLangu = false;
+            // 글로벌 설정값 관련 설정 
+            await _globalSettingsConfig();           
 
-            parent.process.isServDependLangu = true;
-            // test ------
+            // // test ------
+            // // parent.process.isServDependLangu = false;
 
-            // // 자연스러운 로딩
-            // oAPP.fn.fnOnSmoothLoading();
+            // parent.process.isServDependLangu = true;
+            // // test ------
+
+            // // // 자연스러운 로딩
+            // // oAPP.fn.fnOnSmoothLoading();
 
             // trial 버전 로그인 페이지를 그린다.
             if (oWsSettings.isTrial) {

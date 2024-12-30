@@ -1491,7 +1491,7 @@
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
-        oBrowserOptions.webPreferences.USERINFO = oUserInfo;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -1629,7 +1629,6 @@
     //     oBrowserOptions.webPreferences.partition = SESSKEY;
     //     oBrowserOptions.webPreferences.browserkey = BROWSKEY;
     //     oBrowserOptions.webPreferences.OBJTY = sPopupName;
-    //     oBrowserOptions.webPreferences.USERINFO = oUserInfo;
 
     //     // 브라우저 오픈
     //     let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -1797,7 +1796,7 @@
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
-        oBrowserOptions.webPreferences.USERINFO = oUserInfo;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -1815,7 +1814,7 @@
 
         // no build 일 경우에는 개발자 툴을 실행한다.
         // if (!APP.isPackaged) {
-            // oBrowserWindow.webContents.openDevTools();
+        //     oBrowserWindow.webContents.openDevTools();
         // }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
@@ -1908,7 +1907,7 @@
     //     oBrowserOptions.webPreferences.partition = SESSKEY;
     //     oBrowserOptions.webPreferences.browserkey = BROWSKEY;
     //     oBrowserOptions.webPreferences.OBJTY = sPopupName;
-    //     oBrowserOptions.webPreferences.USERINFO = oUserInfo;
+    //     oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
     //     // 브라우저 오픈
     //     let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -2192,6 +2191,7 @@
         oBrowserOptions.modal = true;
         oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.closable = false;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
@@ -2917,9 +2917,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        // if (!APP.isPackaged) {
-        //     oBrowserWindow.webContents.openDevTools();
-        // }
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {

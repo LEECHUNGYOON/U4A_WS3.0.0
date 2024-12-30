@@ -75,7 +75,8 @@ export async function start(require, IF_DATA, fnCallback){
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
         oBrowserOptions.webPreferences.OBJTY = sPopupName;
-        oBrowserOptions.webPreferences.USERINFO = oUserLoginInfo;
+        // oBrowserOptions.webPreferences.USERINFO = oUserLoginInfo;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
     
     // 브라우저 오픈
     let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);

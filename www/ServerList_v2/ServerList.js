@@ -244,9 +244,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 현재 브라우저의 이벤트 핸들러
         _attachCurrentWindowEvents();
 
-        // // WS Global 메시지 글로벌 변수 설정
-        // await oAPP.fn.fnWsGlobalMsgList();
-
         // 초기 모델 구성
         await oAPP.fn.fnOnInitModeling();
 
@@ -290,6 +287,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oAPP.msg.M14 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "020"); // Do not include Empty string!
             oAPP.msg.M15 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "080"); // Do you want to Delete?
             oAPP.msg.M16 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "206"); // 전체종료
+            oAPP.msg.M270 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "270"); // 언어 적용을 서버 로그인 언어 기준으로 할 것인지에 대한 체크 입니다.
+            oAPP.msg.M271 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "271"); // 서버 로그인 언어 사용
 
 
             resolve();
@@ -2542,6 +2541,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         var oInitModelData = {
             WSLANGU: WSLANGU,
             sSelectedKey: "EN",
+            useLoginLangu: true,
             aLangu: [
                 {
                     KEY: "EN"
@@ -2552,10 +2552,41 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             ],
         };
 
-        // 레지스트리에 저장된 WS LANGU 정보를 구한다.
-        let sWsLangu = await WSUTIL.getWsLanguAsync();
+        // 메시지 폴더를 경로를 구한다.
+        let sMsgDirPath = PATH.join(APPPATH, "MSG", "WS_COMMON");
 
-        oInitModelData.sSelectedKey = sWsLangu;
+        // 메시지 폴더 경로가 있다면 하위 디렉토리(언어별) 폴더 목록을 구한다.
+        if(FS.existsSync(sMsgDirPath) === true){
+
+            try {
+                
+                let aLanguDir = FS.readdirSync(sMsgDirPath);
+
+                let aLangu = [];
+                for(const sLangu of aLanguDir){
+
+                    aLangu.push({ KEY: sLangu });
+
+                }
+
+                oInitModelData.aLangu = aLangu;
+                
+            } catch (error) {
+                
+            }
+
+        }
+
+        // 레지스트리에 저장된 WS LANGU 정보를 구한다.
+        // let sWsLangu = await WSUTIL.getWsLanguAsync();
+        let oWsLangu = await WSUTIL.getGlobalSettingInfo("language");
+
+        oInitModelData.sSelectedKey = oWsLangu?.value;
+
+        // 언어 설정을 서버 로그인 언어 기준으로 할지 여부 설정값 구하기
+        let oUseLoginLangu = await WSUTIL.getGlobalSettingInfo("useLoginLangu");
+
+        oInitModelData.useLoginLangu = oUseLoginLangu?.value === "X" ? true : false;
 
         var oJsonModel = new sap.ui.model.json.JSONModel();
         oJsonModel.setData(oInitModelData);
@@ -2629,40 +2660,40 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 }), // end of Form
 
 
-                // new sap.m.MessageStrip({
-                //     showIcon: true,
-                //     text: "언어 설정을 서버 로그인 기준으로 할 것인지 여부에 대한 체크 입니다."
-                // }).addStyleClass("sapUiTinyMargin"),
+                new sap.m.MessageStrip({
+                    showIcon: true,
+                    text: oAPP.msg.M270, // 언어 설정을 서버 로그인 기준으로 할 것인지 여부에 대한 체크 입니다.
+                }).addStyleClass("sapUiTinyMargin"),
 
-                // new sap.ui.layout.form.Form({
-                //     editable: true,
-                //     layout: new sap.ui.layout.form.ResponsiveGridLayout({
-                //         labelSpanXL: 2,
-                //         labelSpanL: 3,
-                //         labelSpanM: 3,
-                //         labelSpanS: 12,
-                //         singleContainerFullSize: true
-                //     }),
+                new sap.ui.layout.form.Form({
+                    editable: true,
+                    layout: new sap.ui.layout.form.ResponsiveGridLayout({
+                        labelSpanXL: 2,
+                        labelSpanL: 3,
+                        labelSpanM: 3,
+                        labelSpanS: 12,
+                        singleContainerFullSize: true
+                    }),
 
-                //     formContainers: [                     
+                    formContainers: [                     
 
-                //         new sap.ui.layout.form.FormContainer({
-                //             formElements: [
-                //                 new sap.ui.layout.form.FormElement({
-                //                     label: new sap.m.Label({
-                //                         design: sap.m.LabelDesign.Bold,
-                //                         text: "SERVER" //"Language"
-                //                     }),                                  
-                //                     fields: new sap.m.CheckBox({
-                                        
-                //                     })
-                //                 })
-                //             ]
-                //         })
+                        new sap.ui.layout.form.FormContainer({
+                            formElements: [
+                                new sap.ui.layout.form.FormElement({
+                                    label: new sap.m.Label({
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: oAPP.msg.M271, // 서버 로그인 언어 사용
+                                    }),                                  
+                                    fields: new sap.m.CheckBox({
+                                        selected: "{/useLoginLangu}"                                        
+                                    })
+                                })
+                            ]
+                        })
 
-                //     ] // end of formContainers
+                    ] // end of formContainers
 
-                // }), // end of Form
+                }), // end of Form
 
 
             ], // end of dialog content
@@ -3104,13 +3135,17 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
          */
         let oDialogModel = oDialog.getModel(),
             oModelData = oDialogModel.getData(),
-            sSelectedKey = oModelData.sSelectedKey;
+            sSelectedKey = oModelData.sSelectedKey,
+            sUseLoginLangu = oModelData.useLoginLangu;
 
-        // 선택한 언어값을 레지스트리에 저장
-        await WSUTIL.setWsLanguAsync(sSelectedKey);
+            sUseLoginLangu = sUseLoginLangu === true ? "X": "";
 
-        // // 초기 모델 구성
-        // await oAPP.fn.fnOnInitModeling();
+        // 선택한 글로벌 언어값을 레지스트리에 저장
+        await WSUTIL.saveGlobalSettingInfo("language", sSelectedKey);
+
+        // 언어 설정을 서버 로그인 기준으로 할 것인지 여부에 대한 값을 
+        // 레지스트리에 저장
+        await WSUTIL.saveGlobalSettingInfo("useLoginLangu", sUseLoginLangu);
 
         oDialog.close();
 

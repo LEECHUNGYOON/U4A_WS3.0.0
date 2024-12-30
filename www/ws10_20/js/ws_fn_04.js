@@ -821,13 +821,13 @@
                 RDBTNINDEX: 0,
                 FNAME: "",
                 RDLIST: [{
-                        text: "Key In"
+                        text: WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "266"), // Key In
                     },
                     {
-                        text: "File Drag"
+                        text: WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "267"), // File Drag
                     },
                     {
-                        text: "Attach File"
+                        text: WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "268") // Attach File
                     },
                 ]
             },
@@ -847,7 +847,7 @@
         }
 
         var oDialog = new sap.m.Dialog(DIALOG_ID, {
-            title: "Administrator DevTool",
+            title: WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "265"), // Administrator DevTool
             icon: "sap-icon://key-user-settings",
             contentWidth: "500px",
             draggable: true,
@@ -858,7 +858,7 @@
                         src: "sap-icon://key-user-settings",
                     }),
                     new sap.m.Title({
-                        text: "Administrator OpenDevTool"
+                        text: WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "265"), // Administrator DevTool
                     })
                 ],
                 contentRight: [
@@ -942,7 +942,7 @@
                     ],
                     items: [
                         new sap.m.Text({
-                            text: "Drop the File!"
+                            text: WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "269") + "!" // Drop the File!
                         })
                     ]
                 }).bindProperty("visible", "/RDBTNINDEX", function(INDEX) {

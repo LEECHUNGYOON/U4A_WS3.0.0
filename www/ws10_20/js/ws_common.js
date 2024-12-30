@@ -103,18 +103,8 @@
         var oMeta = parent.getMetadata(),
             oUserInfo = parent.getUserInfo(),
             sLangu = oUserInfo.LANGU,
-            aMsgClsTxt = oMeta["MSGCLS"];
-     
-        // 메시지 언어를 서버 로그인 언어로 할지 플래그
-        let bIsServer = parent?.process?.USERINFO?.isServDependLangu;
-
-        //  메시지 언어를 글로벌 언어로 할 경우
-        if(bIsServer === false){
-        
-            sLangu = parent.process.USERINFO.GLOBAL_LANGU;
-
-        } 
-
+            aMsgClsTxt = oMeta["MSGCLS"];     
+  
         if (!aMsgClsTxt || !aMsgClsTxt.length) {
             return sMsgCls + "|" + sMsgNum;
         }
@@ -624,7 +614,7 @@
         },
         {
             KEY: "F7", // [WS10] Display Button
-            DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "260"), // Application Display Mode
+            DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "261"), // Application Display Mode
             CODE: `new sap.m.Button({
                 text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A05"),
                 icon: "sap-icon://display",
@@ -666,7 +656,7 @@
         },
         {
             KEY: "F8", // [WS10] Application Execution
-            DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "260"), // Application Execution
+            DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "262"), // Application Execution
             CODE: `new sap.m.Button({
                 text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06"),
                 icon: "sap-icon://internet-browser",
@@ -1200,7 +1190,7 @@
             },
             {
                 KEY: "F8", // [WS20] Application Execution Button
-                DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "260"), // Application Execution
+                DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "262"), // Application Execution
                 CODE: `new sap.m.Button({
                     icon: "sap-icon://internet-browser",
                     text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06"),
@@ -1811,7 +1801,7 @@
             },
             {
                 KEY: "F8", // [WS30] Application Execution Button
-                DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "260"), // Application Execution
+                DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "262"), // Application Execution
                 CODE: `new sap.m.Button({
                     text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06"),
                     icon: "sap-icon://internet-browser",
