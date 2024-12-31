@@ -2836,6 +2836,22 @@ let oAPP = (function () {
 
     }; // end of oAPP.fn.fnFloatingMenuOpen
 
+
+    /************************************************************************
+     * 서버리스트 화면과 로그인 화면간 IPC Interface
+     ************************************************************************/
+    oAPP.fn.onIpcMain_if_login_serverlist = function(oEvent, oRes){
+
+        if(!oRes){
+            return;
+        }
+
+        // 글로벌 언어 설정에 따른 Language 입력 필드 제어
+        _setLoginLanguInputHandle(oRes);
+
+    }; // end of oAPP.fn.onIpcMain_if_login_serverlist
+
+
     /************************************************************************
      * 전체 브라우저간 통신
      ************************************************************************/
@@ -3097,16 +3113,16 @@ let oAPP = (function () {
     /************************************************************************
      * 서버리스트 화면과 로그인 화면간 IPC Interface
      ************************************************************************/
-    function _onIpcMain_if_login_serverlist(oEvent, oRes){
+    // function _onIpcMain_if_login_serverlist(oEvent, oRes){
 
-        if(!oRes){
-            return;
-        }
+    //     if(!oRes){
+    //         return;
+    //     }
 
-        // 글로벌 언어 설정에 따른 Language 입력 필드 제어
-        _setLoginLanguInputHandle(oRes);
+    //     // 글로벌 언어 설정에 따른 Language 입력 필드 제어
+    //     _setLoginLanguInputHandle(oRes);
 
-    } // end of _onIpcMain_if_login_serverlist
+    // } // end of _onIpcMain_if_login_serverlist
 
     
     /************************************************************************
@@ -3118,7 +3134,7 @@ let oAPP = (function () {
         IPCMAIN.on('if-browser-interconnection', oAPP.fn.fnIpcMain_browser_interconnection);
     
         // 서버 리스트의 "WS 언어 설정" 화면에서 "서버 로그인 언어 사용" 여부 체크를 하고 저장할 때
-        IPCMAIN.on('if-login-serverlist', _onIpcMain_if_login_serverlist);
+        IPCMAIN.on('if-login-serverlist', oAPP.fn.onIpcMain_if_login_serverlist);
   
     } // end of _attachIPCEvents
 
@@ -3359,7 +3375,7 @@ window.onbeforeunload = () => {
     IPCMAIN.off('if-browser-interconnection', oAPP.fn.fnIpcMain_browser_interconnection);
 
     // 서버 리스트의 "WS 언어 설정" 화면에서 "서버 로그인 언어 사용" 여부 체크를 하고 저장할 때
-    IPCMAIN.off('if-login-serverlist', _onIpcMain_if_login_serverlist);
+    IPCMAIN.off('if-login-serverlist', oAPP.fn.onIpcMain_if_login_serverlist);
 
     oAPP.fn.fnOnBeforeUnload();
 
