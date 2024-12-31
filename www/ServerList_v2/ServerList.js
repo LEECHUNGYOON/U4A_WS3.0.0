@@ -3151,10 +3151,19 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oAPP.setBusy(false);
 
-        // UI5 Language 변경
-        // sap.ui.getCore().getConfiguration().setLanguage(sSelectedKey);
-
         sap.m.MessageToast.show(oAPP.msg.M01); // Saved success
+
+
+        // 현재 실행 중인 로그인 화면 전체에 언어 설정 정보를 전달한다.
+        // 언어 설정을 글로벌 언어로 선택할 경우에는 
+        // 강제로 로그인 화면의 언어 필드에 글로벌 언어를 설정해주는 용도.
+        let IF_DATA = {
+            useLoginLangu: sUseLoginLangu,
+            language: sSelectedKey
+        };
+
+        IPCRENDERER.send("if-login-serverlist", IF_DATA);
+
 
     } // end of _saveWsLangu
 

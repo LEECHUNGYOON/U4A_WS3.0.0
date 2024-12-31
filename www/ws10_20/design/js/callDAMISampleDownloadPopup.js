@@ -348,9 +348,9 @@
         var lt_UA007 = [];
 
         if(oAPP.attr.S_CODE.UA007){
-            lt_UA007 = oAPP.attr.S_CODE.UA007;
+            lt_UA007 = oAPP.attr.S_CODE.UA007.filter( a => a.FLD03 === "X" );
         }else{
-            lt_UA007 = oAPP.DATA.LIB.T_9011.filter( a => a.CATCD === "UA007" );
+            lt_UA007 = oAPP.DATA.LIB.T_9011.filter( a => a.CATCD === "UA007" && a.FLD03 === "X" );
         }
 
         //테마 정보.

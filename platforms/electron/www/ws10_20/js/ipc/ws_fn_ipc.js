@@ -157,7 +157,6 @@
         // 액션별 명령어 수행
         parent.IPCMAIN.on(`if-send-action-${BROWSKEY}`, oAPP.fn.fnIpcMain_if_send_action);
         
-
     }; // end of oAPP.fn.fnIpcMain_Attach_Event_Handler
 
     /************************************************************************
@@ -187,7 +186,7 @@
         
         // 부모 자식간 액션별 명령어 수행
         parent.IPCMAIN.off(`if-send-action-${BROWSKEY}`, oAPP.fn.fnIpcMain_if_send_action);
-        
+
     };
 
     /************************************************************************

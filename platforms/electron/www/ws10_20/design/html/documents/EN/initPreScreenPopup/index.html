@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <title>Document</title> -->
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <div class="content">
+        <div id="bindingPopUp" class="contentArea">
+            <h1 class="helpTitle">
+                Use init pre-screen event
+            </h1>
+            <div class="overview">
+                화면이 호출전되기 전에 HANDLE_ON_INIT 이벤트를 호출할 수 있습니다.
+            </div>
+            <div class="contents">
+                해당 기능을 활성화하면 메인 애플리케이션 실행 시, 화면이 출력되기 전에 HANDLE_ON_INIT 이벤트가 호출됩니다. 
+				<br>
+				이 과정에서 FIRST_TIME 파라미터에는 첫 호출 여부를 나타내는 값인 ABAP_TRUE가 전달됩니다.
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/initPreScreenPopup01.png" alt="Binding">
+            </div>
+            <div class="contents">
+                화면이 출력된 이후에는 기존의 HANDLE_ON_INIT이 다시 수행되며, 이때 FIRST_TIME 파라미터에는 값이 전달되지 않습니다.
+            </div>
+            <div class="contentsImg">
+                <img src="./../../image/initPreScreenPopup02.png" alt="bindingPopUp">
+            </div>
+            <div class="contents">
+                이 기능을 활용하면 화면이 표시되기 전에 기본 페이지를 설정하는 등의 초기화 로직을 구현할 수 있습니다.
+            </div>
+			<br>
+			<div class="contents">
+                주의사항: 화면 구성 전에 INIT 호출 시 대량의 데이터를 처리해야 하는 경우, 화면 출력 이후 수행되는 HANDLE_ON_INIT에서 대량의 데이터가 전송될 수 있습니다.
+				<br>
+				이를 고려하여 데이터 처리 로직을 적절히 분배하는 것이 필요합니다.
+            </div>
+        </div>
+        
+    </div>
+    <script src="./index.js"></script>
+</body>
+</html>

@@ -200,6 +200,17 @@
           ls_0022 = {},
           ls_list = {};
 
+        
+      //DEFAULT 허용 가능 오브젝트 유형.
+      //(1:CLASS, 4:Final Class)
+      var _aOBJTY = ["1", "4"];
+
+      //1.120.21 버전 이후 패치의 경우 허용 가능 오브젝트 유형을 Abstract 클래스도 허용 가능함.
+      //(1:CLASS, 2:Abstract, 4:Final Class)
+      if(oAPP.common.checkWLOList("C", "UHAK900877") === true){
+        _aOBJTY = ["1", "2", "4"];
+      }
+
       //입력 가능한 UI정보를 기준으로 실제 UI의 입력 가능 여부 확인.
       for(var i=0, l=lt_0027t.length; i<l; i++){
 
@@ -209,8 +220,14 @@
         //대상 UI를 찾지 못한 경우 SKIP.
         if(typeof ls_0022 === "undefined"){continue;}
 
-        //대상 UI가 폐기된경우, UI TYPE이 Class, Final Class가 아닌경우 SKIP.
-        if(ls_0022.ISDEP === "X" || ls_0022.ISSTP === "X" || ( ls_0022.OBJTY !== "1" && ls_0022.OBJTY !== "4" )){
+        //기존로직 주석 처리.
+        // //대상 UI가 폐기된경우, UI TYPE이 Class, Final Class가 아닌경우 SKIP.
+        // if(ls_0022.ISDEP === "X" || ls_0022.ISSTP === "X" || ( ls_0022.OBJTY !== "1" && ls_0022.OBJTY !== "4" )){
+        //   continue;
+        // }
+
+        //허용 가능 object에 해당되지 않는건은 수집 skip.
+        if(ls_0022.ISDEP === "X" || ls_0022.ISSTP === "X" || _aOBJTY.indexOf(ls_0022.OBJTY) === -1){
           continue;
         }
 

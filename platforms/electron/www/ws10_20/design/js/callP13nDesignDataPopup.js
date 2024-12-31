@@ -843,12 +843,23 @@
         loApp.attr.bootPath = oAPP.fn.getBootStrapUrl();
 
         //default 테마 정보 매핑.
-        loApp.attr.theme = oAPP.attr.prev.ROOT._T_0015.find( a => a.UIATK === "DH001021" )?.UIATV || "sap_horizon";
+        loApp.attr.theme = oAPP.attr.prev.ROOT._T_0015.find( a => a.UIATK === "DH001021" )?.UIATV || "";
+
+        //테마 정보가 존재하지 않는경우.
+        if(loApp.attr.theme === ""){
+            //공통코드의 default 테마 정보 검색.
+            loApp.attr.theme = oAPP.attr.S_CODE.UA007.find( item => item.FLD02 === "X" && item.FLD03 === "X" )?.FLD01 || "";
+        }
+        
+        let _aUA007 = oAPP.attr.S_CODE.UA007.filter( item => item.FLD03 === "X" );
         
         //테마 ddlb 정보 구성.
         loApp.attr.T_THEME = [];
-        for(var i=0, l=oAPP.attr.S_CODE.UA007.length; i<l; i++){
-            loApp.attr.T_THEME.push({key:oAPP.attr.S_CODE.UA007[i].FLD01});
+
+        for(var i = 0, l = _aUA007.length; i<l; i++){
+
+            loApp.attr.T_THEME.push({key:_aUA007[i].FLD01});
+
         }
 
     }   //초기값 설정.

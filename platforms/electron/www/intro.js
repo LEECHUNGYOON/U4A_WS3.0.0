@@ -53,14 +53,6 @@
 
     oAPP.fn.fnOnStart = async () => {
 
-        // TEST ------
-        // if(!APP.isPackaged){
-        //     await _fnwait();
-        // }        
-        // TEST ------
-
-        // debugger;
-
         CURRWIN.show();
 
         oAPP.startTime = new Date().getTime();

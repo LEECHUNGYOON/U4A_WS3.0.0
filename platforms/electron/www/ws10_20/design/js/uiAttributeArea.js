@@ -728,7 +728,7 @@
     oRHbox1.addItem(oRSel1);
 
     //Attribute Button UI
-    var oRBtn1 = new sap.m.Button({icon:"sap-icon://popup-window", width:"100%", type:"Attention", text:"{UIATV}",visible:"{btn_visb}"});
+    var oRBtn1 = new sap.m.Button({icon:"sap-icon://popup-window", width:"100%", type:"Attention", visible:"{btn_visb}"});
     oRHbox1.addItem(oRBtn1);
 
     //UI 유형 BUTTON으로 매핑.
@@ -1030,7 +1030,7 @@
     
 
     //document의 attr에 대한 처리.
-    if(oAPP.fn.attrDocumentProc(is_attr)){
+    if(await oAPP.fn.attrDocumentProc(is_attr)){
       return;
     }
    
@@ -1828,6 +1828,15 @@
 
         return true;
 
+      case "DH001106":
+        //Use init pre-screen event
+
+        //Use init pre-screen event 사용 여부 확인 팝업 호출.
+        parent.require(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, 
+          "documents", "callInitPreScreenPopup.js"))(is_attr);
+          
+        return true;
+        
       default:
         return;
 
@@ -5178,7 +5187,7 @@
           ls_0015.sel_visb = true;
 
           //UI 테마 DDLB 구성.
-          ls_0015.T_DDLB = lf_DDLB("UA007", undefined, "FLD01", "FLD01");
+          ls_0015.T_DDLB = lf_DDLB("UA007", "FLD03", "FLD01", "FLD01");
           break;
 
         case "DH001022":  //CSS Link Add
@@ -5229,6 +5238,13 @@
           //DDLB visible 처리.
           ls_0015.sel_visb = true;
           ls_0015.T_DDLB = lf_DDLB("UA052", "FLD02", "ITMCD", "FLD01");
+          break;
+
+        case "DH001106":
+          //Use init pre-screen event
+          //버튼 visible 처리.
+          ls_0015.btn_visb = true;
+          
           break;
 
         default:
@@ -5527,7 +5543,9 @@
         //이벤트에 WAIT OFF 기능을 사용한 경우.
         if(is_attr.ISWIT === "X"){
           //WAIT OFF 사용건 아이콘 처리.
-          is_attr.UIATT_ICON = "sap-icon://accept";
+          // is_attr.UIATT_ICON = "sap-icon://accept";
+          
+          is_attr.UIATT_ICON = "sap-icon://complete";
 
         }
 

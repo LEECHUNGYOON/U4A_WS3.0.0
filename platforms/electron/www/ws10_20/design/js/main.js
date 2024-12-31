@@ -121,7 +121,7 @@
       return {"APPID":"","APPNM":"","APPVR":"","LANGU":"","APPTY":"","CODPG":"","ACTST":"",
               "PACKG":"","CLSID":"","LCKFL":"","PGMID":"","OBJTY":"","AUTHG":"","UITHM":"",
               "ISWIT":"","WITTY":"","TUCTY":"","SHCUT":"","BDCOR":"","USERT":"","USESK":"","STFTP":"",
-              "USEZM":"","ERUSR":"","ERDAT":"","ERTIM":"","AEUSR":"","AEDAT":"","AETIM":""};
+              "USEZM":"","INTFT":"","ERUSR":"","ERDAT":"","ERTIM":"","AEUSR":"","AEDAT":"","AETIM":""};
 
     };  //10번 정보 구조 생성.
 

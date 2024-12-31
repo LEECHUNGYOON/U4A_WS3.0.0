@@ -57,6 +57,13 @@ let oAPP = (function () {
     ];
 
 
+    /************************************************************************
+     * 서버 언어 데이터를 수집한다.
+     * 
+     * - 기존: 접속 언어에 해당하는 메시지 정보를 로그인 성공 시 서버에서 가져옴
+     * - 변경: 접속 언어에 해당하는 메시지 정보를 클라이언트에서 가져옴
+     * 
+     ************************************************************************/
     function _serverMsgConfig(oMeta){        
 
         // 서버에서 가져온 메시지 구조가 없다면 만든다.
@@ -99,13 +106,17 @@ let oAPP = (function () {
     } // end of _serverMsgConfig
 
 
-
-
+    /************************************************************************
+     * 기본 실행 브라우저 목록을 구한다.
+     ************************************************************************/
     oAPP.fn.getDefaultBrowserInfo = () => {
         return oAPP.attr.aDefaultBrowsers;
     };
+    
 
-    // 현재 PC에 설치되어 있는 브라우저 설치 경로를 구한다.
+    /************************************************************************
+     * 현재 PC에 설치되어 있는 브라우저 설치 경로를 구한다.
+     ************************************************************************/
     oAPP.fn.fnCheckIstalledBrowser = () => {
 
         return new Promise((resolve, reject) => {
@@ -488,7 +499,7 @@ let oAPP = (function () {
                                 text: "Remember"
                             }),
                             fields: [
-                                new sap.m.CheckBox({
+                                new sap.m.CheckBox("ws_rem", {
                                     selected: "{REMEMBER}"
                                 })
                             ]
@@ -2855,13 +2866,11 @@ let oAPP = (function () {
 
     }; // end of oAPP.fn.fnIpcMain_browser_interconnection_04
 
-    function _supportPackageVersionCheckDialogProgressStart() {       
-
-        // TEST ------
+    function _supportPackageVersionCheckDialogProgressStart() { 
+ 
         if(oAPP.attr.progressIntervalStop === true){
             return;
-        }
-        // TEST ------
+        }    
 
         // 기존에 돌고있던 인터벌이 있으면 제거한다.
         if (typeof oAPP.attr.progressInterval !== "undefined") {
@@ -2907,10 +2916,8 @@ let oAPP = (function () {
             clearInterval(oAPP.attr.progressInterval);
             delete oAPP.attr.progressInterval;
         }
-
-        // TEST ------
-        oAPP.attr.progressIntervalStop = bIsStop;
-        // TEST ------
+        
+        oAPP.attr.progressIntervalStop = bIsStop;        
 
         oModelData.PERVALUE = 100;
         oModelData.ANIMATION = false;
@@ -2990,6 +2997,7 @@ let oAPP = (function () {
 
     } // end of _registry_T_REG_WLO
 
+
     /************************************************************************
      * 현재 브라우저의 이벤트 핸들러
      ************************************************************************/
@@ -3027,6 +3035,79 @@ let oAPP = (function () {
 
     } // end of _attachCurrentWindowEvents
 
+
+    /*******************************************************
+     * 글로벌 언어 설정에 따른 Language 입력 필드 제어
+     *******************************************************/
+    function _setLoginLanguInputHandle(oRes){
+
+        console.log(oRes);
+
+        if(!oRes){
+            return;
+        }
+
+        // Language Input
+        let oLanguInput = sap.ui.getCore().byId("ws_langu");
+        if(!oLanguInput){
+            return;
+        }
+
+        // Remember CheckBox
+        let oRmbCheckBox = sap.ui.getCore().byId("ws_rem");
+        if(!oRmbCheckBox){
+            return;
+        }        
+
+        // 언어 설정을 로그인 언어로 할 경우
+        if(oRes?.useLoginLangu === "X"){
+
+            // language Input의 editable를 활성화 한다.
+            oLanguInput.setEditable(true);
+            
+            // 리멤버 선택 여부
+            let bIsRemSelect = oRmbCheckBox.getSelected();
+
+            // 1. 이전에 remember 설정이 되어 있는 경우 이전 언어 값을 복원한다.
+            if(bIsRemSelect === true){
+
+                let oRememberInfo = oAPP.fn.fnGetRememberLoginInfo();
+                let sBeforeLangu = oRememberInfo && oRememberInfo?.LANGU || "";
+
+                oLanguInput.setValue(sBeforeLangu);
+
+                return;
+
+            }
+
+            oLanguInput.setValue("");
+
+            return;
+        }
+
+        // 언어 설정을 글로벌 설정 언어로 할 경우..
+        // language Input에 글로벌 설정 언어로 변경 후 editable을 막는다.
+        oLanguInput.setEditable(false);
+
+        oLanguInput.setValue(oRes?.language || "");
+
+    } // end of _setLoginLanguInputHandle
+
+
+    /************************************************************************
+     * 서버리스트 화면과 로그인 화면간 IPC Interface
+     ************************************************************************/
+    function _onIpcMain_if_login_serverlist(oEvent, oRes){
+
+        if(!oRes){
+            return;
+        }
+
+        // 글로벌 언어 설정에 따른 Language 입력 필드 제어
+        _setLoginLanguInputHandle(oRes);
+
+    } // end of _onIpcMain_if_login_serverlist
+
     
     /************************************************************************
      * IPC 이벤트 핸들러
@@ -3035,7 +3116,10 @@ let oAPP = (function () {
 
         // 브라우저간 IPC 통신
         IPCMAIN.on('if-browser-interconnection', oAPP.fn.fnIpcMain_browser_interconnection);
-
+    
+        // 서버 리스트의 "WS 언어 설정" 화면에서 "서버 로그인 언어 사용" 여부 체크를 하고 저장할 때
+        IPCMAIN.on('if-login-serverlist', _onIpcMain_if_login_serverlist);
+  
     } // end of _attachIPCEvents
 
 
@@ -3056,6 +3140,32 @@ let oAPP = (function () {
         parent.process.isServDependLangu = sUseLoginLangu || "";     
 
     } // end of _globalSettingsConfig
+
+
+    /********************************************************
+     * 화면 랜더링 이후에 호출되는 이벤트
+     ********************************************************/
+    async function _onViewReady(){
+        
+        let sLangu = "";
+
+        if(parent.process.isServDependLangu === ""){
+
+            // 글로벌 언어 설정값
+            let oWsLangu = await WSUTIL.getGlobalSettingInfo("language");
+            
+            sLangu = oWsLangu?.value;
+
+        }
+
+        // 글로벌 언어 설정 값에 따른 Language 필드 Handle
+        _setLoginLanguInputHandle({
+            useLoginLangu: parent.process.isServDependLangu,
+            language: sLangu
+        });
+
+
+    } // end of _onViewReady
 
     /************************************************************************s
      *---------------------[ U4A WS Login Page Start ] ----------------------
@@ -3089,12 +3199,6 @@ let oAPP = (function () {
             // 글로벌 설정값 관련 설정 
             await _globalSettingsConfig();           
 
-            // // test ------
-            // // parent.process.isServDependLangu = false;
-
-            // parent.process.isServDependLangu = true;
-            // // test ------
-
             // // // 자연스러운 로딩
             // // oAPP.fn.fnOnSmoothLoading();
 
@@ -3116,7 +3220,7 @@ let oAPP = (function () {
              */
 
             // 자연스러운 로딩
-            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, function () {
+            sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, async function () {
 
                 if (!oAPP.attr.UIUpdated) {
 
@@ -3126,6 +3230,9 @@ let oAPP = (function () {
 
                     oAPP.attr.UIUpdated = "X";
 
+                    // 화면 랜더링 이후 호출
+                    await _onViewReady();
+                    
                     parent.setBusy(false);
 
                 }
@@ -3250,6 +3357,9 @@ window.onbeforeunload = () => {
 
     // 브라우저간 IPC 통신
     IPCMAIN.off('if-browser-interconnection', oAPP.fn.fnIpcMain_browser_interconnection);
+
+    // 서버 리스트의 "WS 언어 설정" 화면에서 "서버 로그인 언어 사용" 여부 체크를 하고 저장할 때
+    IPCMAIN.off('if-login-serverlist', _onIpcMain_if_login_serverlist);
 
     oAPP.fn.fnOnBeforeUnload();
 

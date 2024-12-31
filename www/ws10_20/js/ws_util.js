@@ -566,16 +566,7 @@ module.exports = {
             if(bIsServer === ""){
                 this.LANGU = parent.process.USERINFO.GLOBAL_LANGU;
             }
-            
-            //  메시지 언어를 글로벌 언어로 할 경우
-            // if(bIsServer === "X"){
-            //     this.LANGU = parent.process.USERINFO.LOGIN_LANGU;
-            // }
-
-            // else {
-            //     this.LANGU = parent.process.USERINFO.GLOBAL_LANGU;
-            // }
-
+         
             // 클래스의 필드(프로퍼티)
             this.SYSID = pSysID;
             this.LANGU = pLangu;

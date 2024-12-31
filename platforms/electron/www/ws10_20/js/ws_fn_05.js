@@ -485,7 +485,10 @@
                     var _oFrameDom = document.createElement("iframe");
                         _oFrameDom.id = _sFrameId;
 
+
+                    // TEST ---- Start
                     _oFrameDom.src = "uai-suite://yoon_test";
+                    // TEST ---- End
                 
                     // 딥링크를 호출한다.
                     document.body.appendChild(_oFrameDom);
