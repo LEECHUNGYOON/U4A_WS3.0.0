@@ -2058,16 +2058,22 @@ let oAPP = (function () {
         oUserInfo.WSVER = sAppVer;
         oUserInfo.WSPATCH_LEVEL = Number(oWsSettings.patch_level || 0);
 
+        // 글로벌 설정값 관련 설정 갱신
+        await _globalSettingsConfig();
+
+        // 레지스트리에서 WS Global Langu 값을 구한다.
+        let oWsLangu = await WSUTIL.getGlobalSettingInfo("language");
+
         // 접속 언어 지정을 글로벌 설정 언어로 할지 로그인 언어로 할지 정한다.
         if(parent.process.isServDependLangu === ""){
             oUserInfo.LOGIN_LANGU   = oUserInfo.LANGU;
-            oUserInfo.LANGU         = oWsSettings.globalLanguage;
+            // oUserInfo.LANGU         = oWsSettings.globalLanguage;
+            oUserInfo.LANGU         = oWsLangu?.value;
         }      
 
-        // 로그인 유저의 아이디/패스워드를 저장해둔다.    
+        // 로그인 유저의 아이디/패스워드를 저장해둔다.
         parent.setUserInfo(oUserInfo);
-
-        // 서버 정보에 실제 로그인한 client, language 정보를 저장한다.       
+               
         var oServerInfo = parent.getServerInfo();
 
         oServerInfo.WSVER = sAppVer;
@@ -2080,6 +2086,7 @@ let oAPP = (function () {
         oServerInfo.LANGU       = oUserInfo.LANGU;
         oServerInfo.LOGIN_LANGU = oUserInfo.LOGIN_LANGU;
 
+        // 서버 정보에 실제 로그인한 client, language 정보를 저장한다.
         parent.setServerInfo(oServerInfo);
 
         // Metadata 정보 세팅 (서버 호스트명.. 또는 메시지 클래스 데이터 등..)
