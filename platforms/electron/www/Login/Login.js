@@ -2290,9 +2290,14 @@ let oAPP = (function () {
             }
 
             // 테마 정보가 있을 경우 바로 읽어서 전달
-            let oThemeInfo = parent.require(sThemeJsonPath);
-            resolve(oThemeInfo);
+            // let oThemeInfo = parent.require(sThemeJsonPath);
+            // resolve(oThemeInfo);
+            
+            // 테마 정보가 있을 경우 바로 읽어서 전달
+            let sThemeData = FS.readFileSync(sThemeJsonPath, 'utf-8'),
+                oThemeInfo = JSON.parse(sThemeData);
 
+                resolve(oThemeInfo);
         });
 
     }; // end of oAPP.fn.fnP13nCreateTheme
