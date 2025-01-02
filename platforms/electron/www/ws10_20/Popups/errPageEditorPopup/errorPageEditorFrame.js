@@ -25,6 +25,7 @@ let oAPP = (function(window) {
     oAPP.RANDOM = require("random-key");
     oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
     oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
+    oAPP.USERDATA = oAPP.APP.getPath("userData");
 
     /*******************************************************
      * 메시지클래스 텍스트 작업 관련 Object -- start
@@ -52,6 +53,35 @@ let oAPP = (function(window) {
      * 메시지클래스 텍스트 작업 관련 Object -- end
      *******************************************************/
 
+    /*************************************************************
+     * @function - 테마 정보를 구한다.
+     *************************************************************/
+    oAPP.fn.getThemeInfo = function (){
+
+        let oUserInfo = parent.process.USERINFO;
+        let sSysID = oUserInfo.SYSID;
+        
+        // 해당 SYSID별 테마 정보 JSON을 읽는다.
+        let sThemeJsonPath = oAPP.PATH.join(oAPP.USERDATA, "p13n", "theme", `${sSysID}.json`);
+        if(oAPP.FS.existsSync(sThemeJsonPath) === false){
+            return;
+        }
+
+        let sThemeJson = oAPP.FS.readFileSync(sThemeJsonPath, "utf-8");
+
+        try {
+        
+            var oThemeJsonData = JSON.parse(sThemeJson);    
+
+        } catch (error) {
+            return;
+        }
+
+        return oThemeJsonData;
+
+    } // end of oAPP.fn.getThemeInfo
+    
+    
     oAPP.fn.getSessionKey = function() {
 
         let oCurrWin = oAPP.REMOTE.getCurrentWindow();

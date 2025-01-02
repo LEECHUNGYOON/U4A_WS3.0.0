@@ -25,6 +25,42 @@ var oAPP = parent.oAPP,
         require = parent.require,
         oTimer = "";
 
+
+
+
+    /*************************************************************
+     * @function - SYSID에 해당하는 테마 변경 IPC 이벤트
+     *************************************************************/
+    function _onIpcMain_if_p13n_themeChange(){ 
+
+        let oThemeInfo = oAPP.fn.getThemeInfo();
+        if(!oThemeInfo){
+            return;
+        }
+
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        let oBrowserWindow = oAPP.REMOTE.getCurrentWindow();
+            oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+        sap.ui.getCore().applyTheme(oThemeInfo.THEME);
+
+    } // end of _onIpcMain_if_p13n_themeChange
+
+
+    /*************************************************************
+     * @function - IPC Event 등록
+     *************************************************************/
+    function _attachIpcEvents(){
+
+        let oUserInfo = parent.process.USERINFO;
+        let sSysID = oUserInfo.SYSID;
+
+        // SYSID에 해당하는 테마 변경 IPC 이벤트를 등록한다.
+        oAPP.IPCMAIN.on(`if-p13n-themeChange-${sSysID}`, _onIpcMain_if_p13n_themeChange); 
+
+    } // end of _attachIpcEvents
+    
+    
     // *-메시지 팝업
     oAPP.fn.fnMsgPopup = function (txt) {
 
@@ -150,7 +186,8 @@ var oAPP = parent.oAPP,
             oSetting_UI5 = oSettings.UI5,            
             oBootStrap = oSetting_UI5.bootstrap,
             oEditorInfo = oAPP.fn.fnGetEditorInfo(),
-            oThemeInfo = parent.oAPP.attr.oThemeInfo,
+            // oThemeInfo = parent.oAPP.attr.oThemeInfo,
+            oThemeInfo = oAPP.fn.getThemeInfo(),
             oUserInfo = oEditorInfo.USERINFO,
             sLangu = oUserInfo.LANGU;
 
@@ -584,6 +621,9 @@ var oAPP = parent.oAPP,
         _attachBroadCastEvent();
 
         sap.ui.getCore().attachInit(function () {
+
+            // IPC Event 등록
+            _attachIpcEvents();
 
             oAPP.fn.fnInitModelBinding();
 

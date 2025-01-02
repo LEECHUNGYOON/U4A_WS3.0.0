@@ -25,7 +25,11 @@ var oScript = document.createElement("script");
     oScript.id = "sap-ui-bootstrap";    
     oScript.setAttribute("src", oParentAPP.attr.IF_DATA.WS30_BOOT_PATH);
 
-let sTheme = oParentAPP.attr.IF_DATA.THEME_INFO.THEME;
+
+let oThemeInfo = oParentAPP.fn.getThemeInfo();
+let sTheme = oThemeInfo.THEME;
+// let sTheme = oParentAPP.attr.IF_DATA.THEME_INFO.THEME;
+
 let sLangu = oParentAPP.attr.IF_DATA.USER_INFO.LANGU;
 
 let oBootStrap =  {
@@ -43,6 +47,48 @@ for (const key in oBootStrap) {
 
 document.head.appendChild(oScript);
 
+
+/*************************************************************
+ * @function - SYSID에 해당하는 테마 변경 IPC 이벤트
+ *************************************************************/
+function _onIpcMain_if_p13n_themeChange(){
+
+    let oThemeInfo = oParentAPP.fn.getThemeInfo();
+    if(!oThemeInfo){
+        return;
+    }
+
+    let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+    let oBrowserWindow = oParentAPP.REMOTE.getCurrentWindow();
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+    sap.ui.getCore().applyTheme(oThemeInfo.THEME);
+
+
+    let oModel = oAPP?.oModel || undefined;
+    if(!oModel){
+        return;
+    }
+
+    oModel.setProperty("/S_DETAIL/selectedTheme", oThemeInfo.THEME);
+
+    oAPP.fn.setDetailThemeChange(oThemeInfo.THEME);
+
+} // end of _onIpcMain_if_p13n_themeChange
+
+
+/*************************************************************
+ * @function - IPC Event 등록
+ *************************************************************/
+function _attachIpcEvents(){
+
+    let oUserInfo = parent.process.USERINFO;
+    let sSysID = oUserInfo.SYSID;
+
+    // SYSID에 해당하는 테마 변경 IPC 이벤트를 등록한다.
+    oParentAPP.IPCMAIN.on(`if-p13n-themeChange-${sSysID}`, _onIpcMain_if_p13n_themeChange); 
+
+} // end of _attachIpcEvents
 
 /**************************************************
  * BroadCast Event 걸기
@@ -163,6 +209,9 @@ window.addEventListener("load", function(){
     _attachBroadCastEvent();
     
     sap.ui.getCore().attachInit(async function(){
+
+        // IPC Event 등록
+        _attachIpcEvents();        
         
         let sViewPath = parent.PATH.join(parent.__dirname, "views", "view.js");
 

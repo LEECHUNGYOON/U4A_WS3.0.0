@@ -123,7 +123,13 @@ export async function start(require, IF_DATA, fnCallback){
 
         oBrowserWindow = null;
 
-        CURRWIN.focus();
+        try {
+
+            CURRWIN.focus();    
+
+        } catch (error) {
+            
+        }
 
     });
 

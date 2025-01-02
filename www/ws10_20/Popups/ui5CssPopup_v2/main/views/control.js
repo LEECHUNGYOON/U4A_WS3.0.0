@@ -241,13 +241,17 @@
         if(oContr.IF_DATA.SERVER_BOOT_PATH.substring(0,10) !== "/zu4a_imp/"){
             sServerBootSrc = oContr.IF_DATA.SERVER_BOOT_PATH;
         }
+
+        // 테마 정보를 구한다
+        let oThemeInfo = oParentAPP.fn.getThemeInfo();
         
         // Other CSS Menu의 추가 정보를 저장한다.
         for(const oMenu of aOtherMenuList){
 
             oMenu.SERVER_BOOT_URL = sServerBootSrc;
             oMenu.SUBROOT_URL = `${sSubrootSrc}?mid=${oMenu.KEY}&menunm=${oMenu.TITLE}`;
-            oMenu.THEME_INFO = oContr.IF_DATA.THEME_INFO;
+            // oMenu.THEME_INFO = oContr.IF_DATA.THEME_INFO;
+            oMenu.THEME_INFO = oThemeInfo;
 
         }        
 
@@ -804,7 +808,10 @@
             return;        
         }
 
-        let oThemeInfo = oContr.IF_DATA.THEME_INFO;
+        // let oThemeInfo = oContr.IF_DATA.THEME_INFO;
+
+        // 테마 정보를 구한다
+        let oThemeInfo = oParentAPP.fn.getThemeInfo();
 
         let oBrowserOptions = {      
             width: 1000,
@@ -826,7 +833,8 @@
                 OBJTY: sChildKey,
                 browserkey: oContr.IF_DATA.BROWSKEY,
                 partition: oContr.IF_DATA.SESSKEY,
-                USERINFO: oContr.IF_DATA.USER_LOGIN_INFO
+                // USERINFO: oContr.IF_DATA.USER_LOGIN_INFO
+                USERINFO: parent.process.USERINFO
             },
             parent: CURRWIN      
         };
@@ -835,7 +843,7 @@
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);   
         
-         // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
         let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
         oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
@@ -854,6 +862,11 @@
         let sDetailUrl = `${C_DETAIL_HTML_PATH}?browskey=${sBrowsKey}&mid=${IF_DATA.KEY}`;
 
         oBrowserWindow.loadURL(sDetailUrl);
+
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!parent.APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function () {
@@ -888,7 +901,14 @@
 
             oBrowserWindow = null;
 
-            CURRWIN.focus();
+            try {
+
+                CURRWIN.focus();    
+
+            } catch (error) {
+                
+            }
+            
 
         });
 
@@ -928,6 +948,9 @@
             return;
         }
 
+        // 테마 정보를 구한다
+        let oThemeInfo = oParentAPP.fn.getThemeInfo();
+
         let oBrowserOptions = {          
             width: 1000,
             height: 800,
@@ -935,6 +958,7 @@
             icon: "www/img/logo.png",
             autoHideMenuBar: true,
             title: oMenuData.TITLE,
+            backgroundColor: oThemeInfo.BGCOL,
             webPreferences: {
                 devTools: true,
                 nodeIntegration: true,
@@ -955,6 +979,10 @@
         // 브라우저 오픈
         let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
         REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
         // 브라우저 상단 메뉴 없애기        
         oBrowserWindow.setMenu(null);
@@ -1007,7 +1035,13 @@
 
             oBrowserWindow = null;
 
-            CURRWIN.focus();
+            try {
+
+                CURRWIN.focus();    
+                
+            } catch (error) {
+                
+            }
 
         });
 

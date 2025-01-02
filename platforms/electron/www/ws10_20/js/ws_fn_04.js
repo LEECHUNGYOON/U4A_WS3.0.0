@@ -702,40 +702,65 @@
 
         win.setAlwaysOnTop(true);
 
-        var oBrowserOptions = {
-            "height": 120,
-            "width": 288,
-            "maxWidth": 288,
-            "minWidth": 288,
+        // var oBrowserOptions = {
+        //     "height": 120,
+        //     "width": 288,
+        //     "maxWidth": 288,
+        //     "minWidth": 288,
 
-            "maxHeight": 180,
-            "minHeight": 180,
+        //     "maxHeight": 180,
+        //     "minHeight": 180,
 
-            // "maxHeight": 120,
-            // "minHeight": 120,           
-            // "show": false,
-            // "opacity": 0.0,
-            "backgroundColor": oThemeInfo.BGCOL,
-            "acceptFirstMouse": true,
-            "alwaysOnTop": true,
-            "maximizable": false,
-            "minimizable": false,
-            "frame": false,
-            "transparent": true,
-            "parent": win,
-            "webPreferences": {
-                "OBJTY": sPopupName,
-                "devTools": true,
-                "nodeIntegration": true,
-                "enableRemoteModule": true,
-                "contextIsolation": false,
-                "webSecurity": false,
-                "nativeWindowOpen": true,
-                "partition": SESSKEY,
-                "browserkey": BROWSKEY,
-                "USERINFO": parent.process.USERINFO
-            }
-        };
+        //     // "maxHeight": 120,
+        //     // "minHeight": 120,           
+        //     // "show": false,
+        //     // "opacity": 0.0,
+        //     "backgroundColor": oThemeInfo.BGCOL,
+        //     "acceptFirstMouse": true,
+        //     "alwaysOnTop": true,
+        //     "maximizable": false,
+        //     "minimizable": false,
+        //     "frame": false,
+        //     "transparent": true,
+        //     "parent": win,
+        //     "webPreferences": {
+        //         "OBJTY": sPopupName,
+        //         "devTools": true,
+        //         "nodeIntegration": true,
+        //         "enableRemoteModule": true,
+        //         "contextIsolation": false,
+        //         "webSecurity": false,
+        //         "nativeWindowOpen": true,
+        //         "partition": SESSKEY,
+        //         "browserkey": BROWSKEY,
+        //         "USERINFO": parent.process.USERINFO
+        //     }
+        // };
+
+        // 브라우저 옵션 설정
+        let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.height = 120;
+        oBrowserOptions.width = 288;
+        oBrowserOptions.maxWidth = 288;
+        oBrowserOptions.minWidth = 288;
+        oBrowserOptions.maxHeight = 180;
+        oBrowserOptions.minHeight = 180;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+        oBrowserOptions.acceptFirstMouse = true;
+        oBrowserOptions.alwaysOnTop = true;
+        oBrowserOptions.maximizable = false;
+        oBrowserOptions.minimizable = false;
+        oBrowserOptions.frame = false;
+        oBrowserOptions.transparent = true;
+        oBrowserOptions.parent = win;
+
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
         // 브라우저 오픈
         var oBrowserWindow = new parent.REMOTE.BrowserWindow(oBrowserOptions);
@@ -761,9 +786,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         // // no build 일 경우에는 개발자 툴을 실행한다.
-        // if (!APP.isPackaged) {
-        //     oBrowserWindow.webContents.openDevTools();
-        // }     
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }     
 
         // 브라우저가 오픈이 다 되면 타는 이벤트
         oBrowserWindow.webContents.on('did-finish-load', function() {
@@ -791,17 +816,25 @@
 
             let bIsPin = APPCOMMON.fnGetModelProperty("/SETTING/ISPIN");
 
-            win.focus();
-            win.setOpacity(1);
-            win.setIgnoreMouseEvents(false);
+            try {
+            
+                win.focus();
+                win.setOpacity(1);
+                win.setIgnoreMouseEvents(false);
 
-            if (!bIsPin) {
-                win.setAlwaysOnTop(false);
-            }
+                if (!bIsPin) {
+                    win.setAlwaysOnTop(false);
+                }
 
-            oBrowserWindow = null;
+                oBrowserWindow = null;
 
-            CURRWIN.focus();	
+
+
+                CURRWIN.focus();	
+
+            } catch (error) {
+                
+            }            
 
         });
 

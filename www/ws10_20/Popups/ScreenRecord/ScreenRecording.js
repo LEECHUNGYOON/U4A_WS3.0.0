@@ -17,6 +17,7 @@
 let LOAD_THEME = ""; // sap_belize_plus, sap_horizon_dark
 
 let oAPP = {};
+oAPP.fn = {};
 oAPP.common = {};
 
 /*******************************************************
@@ -44,11 +45,80 @@ oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
 oAPP.REMOTE = REMOTE;
 oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
 oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
+oAPP.IPCRENDERER = require('electron').ipcRenderer;
+oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain,
+oAPP.PATH = oAPP.REMOTE.require('path');
+oAPP.FS = oAPP.REMOTE.require('fs');
+oAPP.APP = oAPP.REMOTE.app;
+oAPP.USERDATA = oAPP.APP.getPath("userData");
 
 oAPP.ipcRenderer = require('electron').ipcRenderer;
 
 let oScreenWindow,
     oScreenMulti;
+
+
+/*************************************************************
+ * @function - SYSID에 해당하는 테마 변경 IPC 이벤트
+ *************************************************************/
+function _onIpcMain_if_p13n_themeChange(){ 
+
+    let oThemeInfo = oAPP.fn.getThemeInfo();
+    if(!oThemeInfo){
+        return;
+    }
+
+    let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+    let oBrowserWindow = oAPP.REMOTE.getCurrentWindow();
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+        oBrowserWindow.setBackgroundColor(oThemeInfo.BGCOL);
+
+    // sap.ui.getCore().applyTheme(oThemeInfo.THEME);
+
+} // end of _onIpcMain_if_p13n_themeChange
+
+
+/*************************************************************
+ * @function - IPC Event 등록
+ *************************************************************/
+function _attachIpcEvents(){
+
+    let oUserInfo = parent.process.USERINFO;
+    let sSysID = oUserInfo.SYSID;
+
+    // SYSID에 해당하는 테마 변경 IPC 이벤트를 등록한다.
+    oAPP.IPCMAIN.on(`if-p13n-themeChange-${sSysID}`, _onIpcMain_if_p13n_themeChange); 
+
+} // end of _attachIpcEvents    
+
+/*************************************************************
+ * @function - 테마 정보를 구한다.
+ *************************************************************/
+oAPP.fn.getThemeInfo = function (){
+
+    let oUserInfo = parent.process.USERINFO;
+    let sSysID = oUserInfo.SYSID;
+    
+    // 해당 SYSID별 테마 정보 JSON을 읽는다.
+    let sThemeJsonPath = oAPP.PATH.join(oAPP.USERDATA, "p13n", "theme", `${sSysID}.json`);
+    if(oAPP.FS.existsSync(sThemeJsonPath) === false){
+        return;
+    }
+
+    let sThemeJson = oAPP.FS.readFileSync(sThemeJsonPath, "utf-8");
+
+    try {
+    
+        var oThemeJsonData = JSON.parse(sThemeJson);    
+
+    } catch (error) {
+        return;
+    }
+
+    return oThemeJsonData;
+
+} // end of oAPP.fn.getThemeInfo    
 
 /* ================================================================= */
 /* 내부 펑션 
@@ -203,19 +273,23 @@ async function _chk_MultiScr(REMOTE) {
 
         oWIN.setMenuBarVisibility(false);
 
-        //WS3.0 로드된 테마별에 따른 윈도우 백그라운드 컬러 정의 
-        switch (LOAD_THEME) {
-            case "sap_horizon_dark":
-                oWIN.setBackgroundColor('#12171c');
-                break;
+        let oThemeInfo = oAPP.fn.getThemeInfo();
 
-            case "sap_belize_plus":
-                oWIN.setBackgroundColor('#fafafa');
-                break;
+        oWIN.setBackgroundColor(oThemeInfo.BGCOL);
 
-            default:
-                break;
-        }
+        // //WS3.0 로드된 테마별에 따른 윈도우 백그라운드 컬러 정의 
+        // switch (LOAD_THEME) {
+        //     case "sap_horizon_dark":
+        //         oWIN.setBackgroundColor('#12171c');
+        //         break;
+
+        //     case "sap_belize_plus":
+        //         oWIN.setBackgroundColor('#fafafa');
+        //         break;
+
+        //     default:
+        //         break;
+        // }
 
         //모니터(Screen) 선택시 대한 이벤트 설정
         function onIPC_SELECT(event, data) {
@@ -294,8 +368,14 @@ async function _chk_MultiScr(REMOTE) {
 /* ================================================================= */
 exports.start = async function (REMOTE, P_THEME = "sap_horizon_dark") {    
 
+    _attachIpcEvents();
+
     //WS3.0 로드된 테마명
-    LOAD_THEME = P_THEME;
+    // LOAD_THEME = P_THEME;
+
+    let oThemeInfo = oAPP.fn.getThemeInfo();
+
+    LOAD_THEME = oThemeInfo.THEME;
 
     //멀티 스크린 점검
     let sINFO = await _chk_MultiScr(REMOTE);

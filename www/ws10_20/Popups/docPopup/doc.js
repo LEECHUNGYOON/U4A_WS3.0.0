@@ -10,6 +10,40 @@
 
   oAPP.CURRWIN.setTitle(sTitle);
 
+
+
+    /*************************************************************
+     * @function - SYSID에 해당하는 테마 변경 IPC 이벤트
+     *************************************************************/
+    function _onIpcMain_if_p13n_themeChange(){ 
+
+        let oThemeInfo = oAPP.fn.getThemeInfo();
+        if(!oThemeInfo){
+            return;
+        }
+
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        let oBrowserWindow = oAPP.REMOTE.getCurrentWindow();
+            oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+        sap.ui.getCore().applyTheme(oThemeInfo.THEME);
+
+    } // end of _onIpcMain_if_p13n_themeChange
+
+
+    /*************************************************************
+     * @function - IPC Event 등록
+     *************************************************************/
+    function _attachIpcEvents(){
+
+        let oUserInfo = parent.process.USERINFO;
+        let sSysID = oUserInfo.SYSID;
+
+        // SYSID에 해당하는 테마 변경 IPC 이벤트를 등록한다.
+        oAPP.IPCMAIN.on(`if-p13n-themeChange-${sSysID}`, _onIpcMain_if_p13n_themeChange); 
+
+    } // end of _attachIpcEvents  
+
   /************************************************************************
    * ws의 설정 정보를 구한다.
    ************************************************************************/
@@ -37,7 +71,8 @@
           oSetting_UI5 = oSettings.UI5,
           oBootStrap = oSetting_UI5.bootstrap,
           oUserInfo = parent.oAPP.attr.oUserInfo,
-          oThemeInfo = parent.oAPP.attr.oThemeInfo,
+          oThemeInfo = oAPP.fn.getThemeInfo(),
+        //   oThemeInfo = parent.oAPP.attr.oThemeInfo,
           sLangu = oUserInfo.LANGU;
 
       var oScript = document.createElement("script");
@@ -181,6 +216,9 @@ function _attachBroadCastEvent (){
   // document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('load', () => {
+
+    // IPC Event 등록
+    _attachIpcEvents();
 
       // 브라우저 처음 실행 시 보여지는 Busy Indicator
       parent.oAPP.setBusyLoading('');

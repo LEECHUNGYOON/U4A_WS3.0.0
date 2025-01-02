@@ -10,6 +10,21 @@
     oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
     oAPP.PARWIN = oAPP.CURRWIN.getParentWindow();
     oAPP.IPCRENDERER = require('electron').ipcRenderer;
+    oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain,
+    oAPP.PATH = oAPP.REMOTE.require('path');
+    oAPP.FS = oAPP.REMOTE.require('fs');
+    oAPP.APP = oAPP.REMOTE.app;
+    oAPP.USERDATA = oAPP.APP.getPath("userData");
+
+    var
+        REMOTE = oAPP.REMOTE,
+        CURRWIN = REMOTE.getCurrentWindow(),
+        WEBCON = CURRWIN.webContents,
+        WEBPREF = WEBCON.getWebPreferences();
+
+    oAPP.USERINFO = WEBPREF.USERINFO;
+
+
 
     oAPP.IPCRENDERER.on('if_showHidePopup', (events, oInfo) => {
 
@@ -38,6 +53,36 @@
         oWs_frame.src = "index.html";
 
     });
+
+
+    /*************************************************************
+     * @function - 테마 정보를 구한다.
+     *************************************************************/
+    oAPP.fn.getThemeInfo = function (){
+
+        let oUserInfo = oAPP.USERINFO;
+        let sSysID = oUserInfo.SYSID;
+        
+        // 해당 SYSID별 테마 정보 JSON을 읽는다.
+        let sThemeJsonPath = oAPP.PATH.join(oAPP.USERDATA, "p13n", "theme", `${sSysID}.json`);
+        if(oAPP.FS.existsSync(sThemeJsonPath) === false){
+            return;
+        }
+
+        let sThemeJson = oAPP.FS.readFileSync(sThemeJsonPath, "utf-8");
+
+        try {
+        
+            var oThemeJsonData = JSON.parse(sThemeJson);    
+
+        } catch (error) {
+            return;
+        }
+
+        return oThemeJsonData;
+
+    } // end of oAPP.fn.getThemeInfo
+
 
     oAPP.close = () => {
 

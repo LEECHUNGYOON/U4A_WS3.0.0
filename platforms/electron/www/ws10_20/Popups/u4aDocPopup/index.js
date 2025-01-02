@@ -26,6 +26,43 @@ let oAPP = parent.oAPP;
         SHELL = oAPP.SHELL,
         require = parent.require;
 
+
+    /*************************************************************
+     * @function - SYSID에 해당하는 테마 변경 IPC 이벤트
+     *************************************************************/
+    function _onIpcMain_if_p13n_themeChange(){ 
+
+        let oThemeInfo = oAPP.fn.getThemeInfo();
+        if(!oThemeInfo){
+            return;
+        }
+
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        let oBrowserWindow = oAPP.REMOTE.getCurrentWindow();
+            oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+        sap.ui.getCore().applyTheme(oThemeInfo.THEME);
+
+    } // end of _onIpcMain_if_p13n_themeChange
+
+
+    /*************************************************************
+     * @function - IPC Event 등록
+     *************************************************************/
+    function _attachIpcEvents(){
+
+        console.log("_attachIpcEvents", oAPP.IPCMAIN);
+
+        let oUserInfo = parent.process.USERINFO;
+        let sSysID = oUserInfo.SYSID;
+
+        // SYSID에 해당하는 테마 변경 IPC 이벤트를 등록한다.
+        oAPP.IPCMAIN.on(`if-p13n-themeChange-${sSysID}`, _onIpcMain_if_p13n_themeChange); 
+
+    } // end of _attachIpcEvents
+    
+    
+
     /************************************************************************
      * 모델 데이터 set
      * **********************************************************************
@@ -88,7 +125,8 @@ let oAPP = parent.oAPP;
             oSetting_UI5 = oSettings.UI5,
             oBootStrap = oSetting_UI5.bootstrap,
             oUserInfo = oAPP.attr.oUserInfo,
-            oThemeInfo = oAPP.attr.oThemeInfo,
+            // oThemeInfo = oAPP.attr.oThemeInfo,
+            oThemeInfo = oAPP.fn.getThemeInfo(),
             sLangu = oUserInfo.LANGU;
 
         var oScript = document.createElement("script");
@@ -286,6 +324,9 @@ let oAPP = parent.oAPP;
     window.onload = function () {
 
         sap.ui.getCore().attachInit(function () {
+
+            // IPC Event 등록
+            _attachIpcEvents();
 
             // u4a help document의 파일 리스트를 구한다.
             oAPP.fn.fnGetFileList().then((aFileList) => {

@@ -9,7 +9,11 @@ var oAPP = {};
     oAPP.IF_DATA = parent.IF_DATA;
 
 // 테마 정보
-let sTheme = oAPP.IF_DATA.THEME_INFO.THEME;
+let oThemeInfo = oParentAPP.fn.getThemeInfo();    
+
+// 테마 정보
+// let sTheme = oAPP.IF_DATA.THEME_INFO.THEME;
+let sTheme = oThemeInfo.THEME;
 
 // 로그인 언어 정보
 let sLangu = oAPP.IF_DATA.USER_INFO.LANGU;
@@ -34,7 +38,40 @@ for (const key in oBootStrap) {
     oScript.setAttribute(key, oBootStrap[key]);
 }
 
-document.head.appendChild(oScript);      
+document.head.appendChild(oScript);    
+
+
+/*************************************************************
+ * @function - SYSID에 해당하는 테마 변경 IPC 이벤트
+ *************************************************************/
+function _onIpcMain_if_p13n_themeChange(){ 
+
+    let oThemeInfo = oParentAPP.fn.getThemeInfo();
+    if(!oThemeInfo){
+        return;
+    }
+
+    let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+    let oBrowserWindow = oParentAPP.REMOTE.getCurrentWindow();
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+    sap.ui.getCore().applyTheme(oThemeInfo.THEME);
+
+} // end of _onIpcMain_if_p13n_themeChange
+
+
+/*************************************************************
+ * @function - IPC Event 등록
+ *************************************************************/
+function _attachIpcEvents(){
+
+    let oUserInfo = parent.process.USERINFO;
+    let sSysID = oUserInfo.SYSID;
+
+    // SYSID에 해당하는 테마 변경 IPC 이벤트를 등록한다.
+    oParentAPP.IPCMAIN.on(`if-p13n-themeChange-${sSysID}`, _onIpcMain_if_p13n_themeChange); 
+
+} // end of _attachIpcEvents
 
 /************************************************************************
  * window load
@@ -47,6 +84,9 @@ window.addEventListener("load", function(){
     }
 
     sap.ui.getCore().attachInit(async function(){
+
+        // IPC Event 등록
+        _attachIpcEvents(); 
         
         let sViewPath = parent.PATH.join(parent.__dirname, "views", "view.js");
 

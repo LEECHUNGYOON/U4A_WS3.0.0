@@ -1,5 +1,6 @@
 
 let oAPP = {
+  fn: {},
   common: {},
 //====================================================//
 //[펑션] 스타트 
@@ -40,6 +41,8 @@ let oAPP = {
     oAPP.CURRWIN     = oAPP.remote.getCurrentWindow();
     oAPP.BROWSKEY    = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
 
+    oAPP.USERINFO = USERINFO;
+
     //window 로딩 완료 이벤트 
     oAPP.ipcRenderer.on('IF-chkScrList', async (event, data) => {
 
@@ -59,6 +62,9 @@ let oAPP = {
       await oAPP.onCreatePreview();       
 
     });
+
+    // IPC Event 등록
+    _attachIpcEvents();
     
   },
 
@@ -151,10 +157,88 @@ let oAPP = {
 
 }; //oAPP
 
+
+/*************************************************************
+ * @function - 테마 정보를 구한다.
+ *************************************************************/
+oAPP.fn.getThemeInfo = function (){
+
+    // let oUserInfo = parent.process.USERINFO;
+    let oUserInfo = oAPP.USERINFO;
+    let sSysID = oUserInfo.SYSID;
+    
+    // 해당 SYSID별 테마 정보 JSON을 읽는다.
+    let sThemeJsonPath = oAPP.PATH.join(oAPP.USERDATA, "p13n", "theme", `${sSysID}.json`);
+    if(oAPP.FS.existsSync(sThemeJsonPath) === false){
+        return;
+    }
+
+    let sThemeJson = oAPP.FS.readFileSync(sThemeJsonPath, "utf-8");
+
+    try {
+    
+        var oThemeJsonData = JSON.parse(sThemeJson);    
+
+    } catch (error) {
+        return;
+    }
+
+    return oThemeJsonData;
+
+} // end of oAPP.fn.getThemeInfo
+
+
+oAPP.REMOTE = require('@electron/remote');
+oAPP.IPCRENDERER = require('electron').ipcRenderer;
+oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain,
+oAPP.PATH = oAPP.REMOTE.require('path');
+oAPP.FS = oAPP.REMOTE.require('fs');
+oAPP.APP = oAPP.REMOTE.app;
+oAPP.USERDATA = oAPP.APP.getPath("userData");
+// oAPP.USERINFO = USERINFO;
+
+
+/*************************************************************
+ * @function - SYSID에 해당하는 테마 변경 IPC 이벤트
+ *************************************************************/
+function _onIpcMain_if_p13n_themeChange(){ 
+
+    let oThemeInfo = oAPP.fn.getThemeInfo();
+    if(!oThemeInfo){
+        return;
+    }
+
+    let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+    let oBrowserWindow = oAPP.REMOTE.getCurrentWindow();
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+        oBrowserWindow.setBackgroundColor(oThemeInfo.BGCOL);
+
+    // sap.ui.getCore().applyTheme(oThemeInfo.THEME);
+
+} // end of _onIpcMain_if_p13n_themeChange
+
+
+/*************************************************************
+ * @function - IPC Event 등록
+ *************************************************************/
+function _attachIpcEvents(){
+
+    // let oUserInfo = parent.process.USERINFO;
+    let oUserInfo = oAPP.USERINFO;
+    let sSysID = oUserInfo.SYSID;
+
+    // SYSID에 해당하는 테마 변경 IPC 이벤트를 등록한다.
+    oAPP.IPCMAIN.on(`if-p13n-themeChange-${sSysID}`, _onIpcMain_if_p13n_themeChange); 
+
+} // end of _attachIpcEvents
+
+
+
 /* ================================================================= */
 /* dom ready
 /* ================================================================= */
 document.addEventListener('DOMContentLoaded', ()=> {    
+
     oAPP.onStart();
 
 });
