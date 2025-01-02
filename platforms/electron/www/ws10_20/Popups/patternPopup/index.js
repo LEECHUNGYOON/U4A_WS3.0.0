@@ -35,6 +35,39 @@ if (!oAPP) {
 
     let FS = require("fs-extra");
 
+    /*************************************************************
+     * @function - SYSID에 해당하는 테마 변경 IPC 이벤트
+     *************************************************************/
+    function _onIpcMain_if_p13n_themeChange(){ 
+
+        let oThemeInfo = oAPP.fn.getThemeInfo();
+        if(!oThemeInfo){
+            return;
+        }
+
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        let oBrowserWindow = oAPP.REMOTE.getCurrentWindow();
+            oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+        sap.ui.getCore().applyTheme(oThemeInfo.THEME);
+
+    } // end of _onIpcMain_if_p13n_themeChange
+
+
+    /*************************************************************
+     * @function - IPC Event 등록
+     *************************************************************/
+    function _attachIpcEvents(){
+
+        let oUserInfo = parent.process.USERINFO;
+        let sSysID = oUserInfo.SYSID;
+
+        // SYSID에 해당하는 테마 변경 IPC 이벤트를 등록한다.
+        oAPP.IPCMAIN.on(`if-p13n-themeChange-${sSysID}`, _onIpcMain_if_p13n_themeChange);
+
+    } // end of _attachIpcEvents
+
+
     oAPP.fn.waiting = function(iTime = 0){
 
         return new Promise(function(resolve){
@@ -95,10 +128,12 @@ if (!oAPP) {
         var oSettings = WSUTIL.getWsSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
             oBootStrap = oSetting_UI5.bootstrap,
-            // oThemeInfo = oAPP.attr.oThemeInfo,
-            sTheme = oSettings.globalTheme,
-            sLangu = oSettings.globalLanguage;
-        // sLangu = oUserInfo.LANGU;
+            oThemeInfo = oAPP.fn.getThemeInfo();
+            // oThemeInfo = oAPP.attr.oThemeInfo;
+            // sTheme = oSettings.globalTheme,
+            // sLangu = oSettings.globalLanguage;
+        let oUserInfo = parent.process.USERINFO;
+        let sLangu = oUserInfo.LANGU;
 
         var oScript = document.createElement("script");
         oScript.id = "sap-ui-bootstrap";
@@ -109,7 +144,7 @@ if (!oAPP) {
         }
 
         // 로그인 Language 적용
-        oScript.setAttribute('data-sap-ui-theme', sTheme);
+        oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
         oScript.setAttribute("data-sap-ui-language", sLangu);
         oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.codeeditor, sap.ui.table, sap.ui.layout");
         oScript.setAttribute("src", oSetting_UI5.resourceUrl);
@@ -1630,6 +1665,9 @@ if (!oAPP) {
         sap.ui.getCore().attachInit(async function () {
 
             oAPP.setBusy("X");
+
+            // IPC Event 등록
+            _attachIpcEvents();
 
             // 글로벌 BusyIndicator Delay 설정
             sap.ui.core.BusyIndicator.iDEFAULT_DELAY_MS = 0;

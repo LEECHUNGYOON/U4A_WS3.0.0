@@ -232,18 +232,32 @@
             PARWIN = CURRWIN.getParentWindow(),
             IPCRENDERER = require('electron').ipcRenderer;
 
+        oAPP.REMOTE = require('@electron/remote');
+        oAPP.IPCRENDERER = require('electron').ipcRenderer;
+        oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain,
+        oAPP.PATH = oAPP.REMOTE.require('path');
+        oAPP.FS = oAPP.REMOTE.require('fs');
+        oAPP.APP = oAPP.REMOTE.app;
+        oAPP.USERDATA = oAPP.APP.getPath("userData");
+
+
         IPCRENDERER.on("if-illust-prev", async function (events, oInfo) {
 
-            oAPP.attr.sServerPath = oInfo.sServerPath; // 서버 경로
-            oAPP.attr.sServerHost = oInfo.sServerHost; // 서버 호스트 경로
-            oAPP.attr.sDefTheme = oInfo.sDefTheme; // 기본 테마 정보
+            // 테마 정보를 구한다.
+            let oThemeInfo = oAPP.fn.getThemeInfo();
+
+            oAPP.attr.sServerPath = oInfo.sServerPath;  // 서버 경로
+            oAPP.attr.sServerHost = oInfo.sServerHost;  // 서버 호스트 경로
+            // oAPP.attr.sDefTheme = oInfo.sDefTheme;   // 기본 테마 정보
+            oAPP.attr.sDefTheme = oThemeInfo.THEME;     // 기본 테마 정보
             oAPP.attr.sServerLibPath = oInfo.sServerLibPath; // 서버 라이브러리 경로
             oAPP.attr.USERINFO = process.USERINFO; // 접속 사용자 정보  
 
-            let oSettingInfo = WSUTIL.getWsSettingsInfo();
+            // let oSettingInfo = WSUTIL.getWsSettingsInfo();
 
             // ws 글로벌 언어 설정정보
-            oAPP.attr.WS_LANGU = oSettingInfo.globalLanguage;
+            // oAPP.attr.WS_LANGU = oSettingInfo.globalLanguage;
+            oAPP.attr.WS_LANGU = oAPP.attr.USERINFO.LANGU;
 
             CURRWIN.setParentWindow(null);
 
@@ -254,6 +268,40 @@
         /************************************************************************
          * 부모 윈도우 관련 이벤트 --- start 
          ************************************************************************/
+
+        oAPP.fn.getUserInfo = function(){
+
+            return process.USERINFO;
+
+        };
+
+         /*************************************************************
+         * @function - 테마 정보를 구한다.
+         *************************************************************/
+        oAPP.fn.getThemeInfo = function (){
+
+            let oUserInfo = parent.process.USERINFO;
+            let sSysID = oUserInfo.SYSID;
+
+            // 해당 SYSID별 테마 정보 JSON을 읽는다.
+            let sThemeJsonPath = oAPP.PATH.join(oAPP.USERDATA, "p13n", "theme", `${sSysID}.json`);
+            if(oAPP.FS.existsSync(sThemeJsonPath) === false){
+                return;
+            }
+
+            let sThemeJson = oAPP.FS.readFileSync(sThemeJsonPath, "utf-8");
+
+            try {
+
+                var oThemeJsonData = JSON.parse(sThemeJson);    
+
+            } catch (error) {
+                return;
+            }
+
+            return oThemeJsonData;
+
+        } // end of oAPP.fn.getThemeInfo
 
         // 부모창 닫기 이벤트
         oAPP.fn.fnOnParentWindowClosedEvent = () => {
@@ -315,7 +363,7 @@
             // 서버 경로 전체를 바라본다.
             if(oAPP.attr.sServerLibPath.substring(0,10) !== "/zu4a_imp/"){
                 oAPP.UI5LIB_SSRC = oAPP.attr.sServerLibPath;
-            }           
+            }
   
             oAPP.UI5_LANGU = oAPP.attr.WS_LANGU;
             oAPP.UI5_THEME = oAPP.attr.sDefTheme;

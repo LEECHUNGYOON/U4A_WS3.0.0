@@ -32,6 +32,15 @@ var
     PARWIN = CURRWIN.getParentWindow(),
     IPCRENDERER = require('electron').ipcRenderer;
 
+
+    oAPP.REMOTE = REMOTE;
+    oAPP.PATH = oAPP.REMOTE.require('path');
+    oAPP.APP = oAPP.REMOTE.app;
+    oAPP.FS = oAPP.REMOTE.require('fs');
+    oAPP.USERDATA = oAPP.APP.getPath("userData");
+    oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain;
+    
+
 /************************************************************************
  * IPCRENDERER Events..
  ************************************************************************/
@@ -39,8 +48,11 @@ IPCRENDERER.on('if-icon-prev', async (events, oInfo) => {
 
     oAPP.attr.sServerPath = oInfo.sServerPath; // 서버 경로
     oAPP.attr.sServerHost = oInfo.sServerHost; // 서버 호스트 경로
-    oAPP.attr.sDefTheme = oInfo.sDefTheme; // 기본 테마 정보
-    oAPP.attr.USERINFO = process.USERINFO; // 접속 사용자 정보
+    
+    oAPP.attr.oThemeInfo = oInfo.oThemeInfo;   // 테마 정보
+    oAPP.attr.sDefTheme = oAPP.attr.oThemeInfo.THEME;  // 기본 테마 정보
+    
+    oAPP.attr.USERINFO = process.USERINFO;     // 접속 사용자 정보
     oAPP.attr.isCallback = oInfo.isCallback;
 
     let oSettingInfo = WSUTIL.getWsSettingsInfo();
@@ -62,6 +74,35 @@ IPCRENDERER.on('if-icon-prev', async (events, oInfo) => {
 /************************************************************************
  * 부모 윈도우 관련 이벤트 --- start 
  ************************************************************************/
+
+/*************************************************************
+ * @function - 테마 정보를 구한다.
+ *************************************************************/
+oAPP.fn.getThemeInfo = function (){
+
+    let oUserInfo = parent.process.USERINFO;
+    let sSysID = oUserInfo.SYSID;
+    
+    // 해당 SYSID별 테마 정보 JSON을 읽는다.
+    let sThemeJsonPath = oAPP.PATH.join(oAPP.USERDATA, "p13n", "theme", `${sSysID}.json`);
+    if(oAPP.FS.existsSync(sThemeJsonPath) === false){
+        return;
+    }
+
+    let sThemeJson = oAPP.FS.readFileSync(sThemeJsonPath, "utf-8");
+
+    try {
+    
+        var oThemeJsonData = JSON.parse(sThemeJson);    
+
+    } catch (error) {
+        return;
+    }
+
+    return oThemeJsonData;
+
+} // end of oAPP.fn.getThemeInfo
+
 
 // 부모창 닫기 이벤트
 oAPP.fn.fnOnParentWindowClosedEvent = () => {

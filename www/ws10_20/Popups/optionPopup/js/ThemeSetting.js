@@ -195,6 +195,13 @@
 
 			});
 
+			// 테마 변경된 내용을 같은 SYSID에 해당하는 브라우저에 알린다.		
+			let sSysID = oAPP.IF_DATA.SYSID;
+
+			oAPP.IPCRENDERER.send(`if-p13n-themeChange-${sSysID}`, sData);
+
+			sap.ui.getCore().applyTheme(sData.THEME);
+
 			// page.setBusy(false);
 
 			fn_WaitMode(false);

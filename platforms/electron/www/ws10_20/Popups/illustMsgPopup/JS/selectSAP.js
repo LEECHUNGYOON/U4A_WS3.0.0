@@ -7,7 +7,44 @@ let LV_SAVEFOLDER   = oAPP.path.join(oAPP.__dirname, "JSONS"),
     LV_SAVEPATH     = `${LV_SAVEFOLDER}//favorite.json`;
 
 
+/*************************************************************
+ * @function - SYSID에 해당하는 테마 변경 IPC 이벤트
+ *************************************************************/
+function _onIpcMain_if_p13n_themeChange(){ 
+
+    let oThemeInfo = oAPP.fn.getThemeInfo();
+    if(!oThemeInfo){
+        return;
+    }
+
+    let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+    let oBrowserWindow = oAPP.REMOTE.getCurrentWindow();
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+    sap.ui.getCore().applyTheme(oThemeInfo.THEME);
+
+} // end of _onIpcMain_if_p13n_themeChange
+
+
+/*************************************************************
+ * @function - IPC Event 등록
+ *************************************************************/
+function _attachIpcEvents(){
+
+    // let oUserInfo = parent.process.USERINFO;
+    let oUserInfo = oAPP.fn.getUserInfo();
+    let sSysID = oUserInfo.SYSID;
+
+    // SYSID에 해당하는 테마 변경 IPC 이벤트를 등록한다.
+    oAPP.IPCMAIN.on(`if-p13n-themeChange-${sSysID}`, _onIpcMain_if_p13n_themeChange); 
+
+} // end of _attachIpcEvents
+
+
 sap.ui.getCore().attachInit(() => {
+
+    // IPC Event 등록
+    _attachIpcEvents();
 
     SETTING_TNT();
 
@@ -448,7 +485,7 @@ function createUi() {
         
 	};
 
-    let LO_APP = new sap.m.App('topApp',);                               // ▶ App 생성
+    let LO_APP = new sap.m.App('topApp');                               // ▶ App 생성
 
     let LO_FPAGE = new sap.m.Page('sapPage',{                   // ▶ Page 생성
         showHeader:false,

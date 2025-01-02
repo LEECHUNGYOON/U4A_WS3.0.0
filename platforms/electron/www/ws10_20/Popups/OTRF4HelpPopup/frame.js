@@ -17,6 +17,9 @@ let oAPP = (function(window) {
     oAPP.IPCRENDERER = require('electron').ipcRenderer;
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
+    oAPP.FS = oAPP.REMOTE.require('fs');
+    oAPP.USERDATA = oAPP.APP.getPath("userData");
+    oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain;	
 
      /*******************************************************
      * 메시지클래스 텍스트 작업 관련 Object -- start
@@ -46,6 +49,7 @@ let oAPP = (function(window) {
 
     oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
 
+    
     /*******************************************************
      * 메시지클래스 텍스트 작업 관련 Object -- end
      *******************************************************/

@@ -750,7 +750,7 @@
             oAPP.fn.fnIpcMain_Attach_Event_Handler(); // #[ws_fn_ipc.js]
 
             // 공통 BroadCast 이벤트 걸기
-            oAPP.fn.fnBroadCast_Attach_Event_Handler();
+            oAPP.fn.fnBroadCast_Attach_Event_Handler(); // #[ws_fn_broad.js]
      
             // 자연스러운 로딩
             sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, async function () {

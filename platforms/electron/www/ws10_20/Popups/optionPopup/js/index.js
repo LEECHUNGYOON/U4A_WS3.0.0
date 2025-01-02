@@ -75,11 +75,47 @@ const oAPP = {
         oAPP.CURRWIN = REMOTE.getCurrentWindow();
         oAPP.IPCRENDERER = oAPP.ipcRenderer;
         oAPP.CURRWIN = REMOTE.getCurrentWindow();
+        oAPP.REMOTE = REMOTE;
+        oAPP.PATH = oAPP.REMOTE.require('path');
+        oAPP.APP = oAPP.REMOTE.app;
+        oAPP.FS = oAPP.REMOTE.require('fs');
+        oAPP.USERDATA = oAPP.APP.getPath("userData");
+        oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain;
+
         oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
 
     }
 
 };
+
+
+/*************************************************************
+ * @function - 테마 정보를 구한다.
+ *************************************************************/
+oAPP.fn.getThemeInfo = function (){
+
+    let oUserInfo = parent.process.USERINFO;
+    let sSysID = oUserInfo.SYSID;
+    
+    // 해당 SYSID별 테마 정보 JSON을 읽는다.
+    let sThemeJsonPath = oAPP.PATH.join(oAPP.USERDATA, "p13n", "theme", `${sSysID}.json`);
+    if(oAPP.FS.existsSync(sThemeJsonPath) === false){
+        return;
+    }
+
+    let sThemeJson = oAPP.FS.readFileSync(sThemeJsonPath, "utf-8");
+
+    try {
+    
+        var oThemeJsonData = JSON.parse(sThemeJson);    
+
+    } catch (error) {
+        return;
+    }
+
+    return oThemeJsonData;
+
+} // end of oAPP.fn.getThemeInfo
 
 
 /***********************************************************

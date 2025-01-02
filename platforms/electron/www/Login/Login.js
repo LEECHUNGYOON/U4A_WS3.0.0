@@ -249,8 +249,6 @@ let oAPP = (function () {
         //     return;
         // }
 
-        
-
         return WSUTIL.getWsSettingsInfo();
 
     }; // end of fnGetSettingsInfo
@@ -2064,9 +2062,11 @@ let oAPP = (function () {
         // 레지스트리에서 WS Global Langu 값을 구한다.
         let oWsLangu = await WSUTIL.getGlobalSettingInfo("language");
 
+        oUserInfo.LOGIN_LANGU   = oUserInfo.LANGU;
+
         // 접속 언어 지정을 글로벌 설정 언어로 할지 로그인 언어로 할지 정한다.
         if(parent.process.isServDependLangu === ""){
-            oUserInfo.LOGIN_LANGU   = oUserInfo.LANGU;
+            // oUserInfo.LOGIN_LANGU   = oUserInfo.LANGU;
             // oUserInfo.LANGU         = oWsSettings.globalLanguage;
             oUserInfo.LANGU         = oWsLangu?.value;
         }      
@@ -2142,14 +2142,47 @@ let oAPP = (function () {
             "display": "none"
         });
 
-        // 테마 설정
-        oAPP.fn.fnP13nCreateTheme().then(async (oThemeInfo) => {
+        // // 테마 설정
+        // oAPP.fn.fnP13nCreateTheme().then(async (oThemeInfo) => {
+
+        //     // 테마 정보를 저장한다.
+        //     parent.setThemeInfo(oThemeInfo);
+
+        //     var oCurrWin = REMOTE.getCurrentWindow();
+        //     oCurrWin.setBackgroundColor(oThemeInfo.BGCOL);
+
+        //     /**
+        //      * 작업표시줄의 모든창 닫기 메뉴 선택 시, 로그인 창이 닫히지 않게 하기 위해
+        //      * beforeunload 이벤트 발생 시, 커스텀한 헤더의 닫기 버튼을 눌렀을 경우에만 닫을 수 있도록
+        //      * 닫기 버튼 눌렀다는 플래그를 이용하여 닫기 기능을 구현했는데,
+        //      * 로그인 성공 후 10번 페이지로 이동 시, 로드하는 html이 바뀌면서 beforeunload를 타면서 
+        //      * 닫기 버튼 눌렀다는 플래그값이 없으면 beforeunload에서 체크 로직에 걸려 10번 페이지로 이동이 되지 않아,
+        //      * 로그인 성공시도 같은 플래그를 부여함.
+        //      */
+        //     oAPP.attr.isPressWindowClose = "X";
+
+        //     parent.onMoveToPage("WS10");
+
+        //     parent.showLoadingPage('');
+
+        //     // if (!APP.isPackaged) {
+        //     //     // Floating Menu를 오픈한다.                    
+        //     //     oAPP.fn.fnFloatingMenuOpen();
+        //     // }
+
+        // });
+
+        try {
+
+            // 테마 정보를 생성
+            var oThemeInfo = await oAPP.fn.fnP13nCreateTheme();
 
             // 테마 정보를 저장한다.
             parent.setThemeInfo(oThemeInfo);
 
+            // 브라우저 백그라운드 색상을 테마의 대표 색상으로 적용한다.
             var oCurrWin = REMOTE.getCurrentWindow();
-            oCurrWin.setBackgroundColor(oThemeInfo.BGCOL);
+                oCurrWin.setBackgroundColor(oThemeInfo.BGCOL);
 
             /**
              * 작업표시줄의 모든창 닫기 메뉴 선택 시, 로그인 창이 닫히지 않게 하기 위해
@@ -2161,6 +2194,7 @@ let oAPP = (function () {
              */
             oAPP.attr.isPressWindowClose = "X";
 
+            // WS10번 페이지로 이동
             parent.onMoveToPage("WS10");
 
             parent.showLoadingPage('');
@@ -2170,7 +2204,10 @@ let oAPP = (function () {
             //     oAPP.fn.fnFloatingMenuOpen();
             // }
 
-        });
+        } catch (error) {
+            console.error(error);
+        }
+        
 
     }; // end of oAPP.fn.fnOnLoginSuccess   
 
@@ -2865,6 +2902,41 @@ let oAPP = (function () {
 
 
     /************************************************************************
+     * 테마 개인화 변경 IPC 이벤트
+     ************************************************************************/
+    oAPP.fn.onIpcMain_if_p13n_themeChange = function(){
+
+        // 로그인 정보 중, SYSID 정보를 구한다.
+        let oCoreModel = sap.ui.getCore().getModel();
+        let oLogInData = oCoreModel.getProperty("/LOGIN");
+        let sSysID = oLogInData.SYSID;
+
+        // 해당 SYSID별 테마 정보 JSON을 읽는다.
+        let sThemeJsonPath = PATH.join(USERDATA, "p13n", "theme", `${sSysID}.json`);
+        if(FS.existsSync(sThemeJsonPath) === false){
+            return;
+        }
+
+        let sThemeJson = FS.readFileSync(sThemeJsonPath, "utf-8");
+
+        try {
+        
+            var oThemeJsonData = JSON.parse(sThemeJson);    
+
+        } catch (error) {
+            return;
+        }
+
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeJsonData.BGCOL}; }`;
+        let oBrowserWindow = REMOTE.getCurrentWindow();
+            oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+        sap.ui.getCore().applyTheme(oThemeJsonData.THEME);
+
+    }; // end of oAPP.fn.onIpcMain_if_p13n_themeChange
+
+
+    /************************************************************************
      * 전체 브라우저간 통신
      ************************************************************************/
     oAPP.fn.fnIpcMain_browser_interconnection = (oEvent, oRes) => {
@@ -3069,7 +3141,7 @@ let oAPP = (function () {
      *******************************************************/
     function _setLoginLanguInputHandle(oRes){
 
-        console.log(oRes);
+        // console.log(oRes);
 
         if(!oRes){
             return;
@@ -3147,6 +3219,15 @@ let oAPP = (function () {
     
         // 서버 리스트의 "WS 언어 설정" 화면에서 "서버 로그인 언어 사용" 여부 체크를 하고 저장할 때
         IPCMAIN.on('if-login-serverlist', oAPP.fn.onIpcMain_if_login_serverlist);
+
+        // 서버 정보를 구한다.
+        let oServerInfo = parent.getServerInfo();
+
+        // 접속 서버의 SYSID 정보를 구한다.
+        let sSysID = oServerInfo.SYSID;
+
+        // SYSID에 해당하는 테마 변경 IPC 이벤트를 등록한다.
+        IPCMAIN.on(`if-p13n-themeChange-${sSysID}`, oAPP.fn.onIpcMain_if_p13n_themeChange);
   
     } // end of _attachIPCEvents
 
@@ -3388,6 +3469,15 @@ window.onbeforeunload = () => {
 
     // 서버 리스트의 "WS 언어 설정" 화면에서 "서버 로그인 언어 사용" 여부 체크를 하고 저장할 때
     IPCMAIN.off('if-login-serverlist', oAPP.fn.onIpcMain_if_login_serverlist);
+
+    // 서버 정보를 구한다.
+    let oServerInfo = parent.getServerInfo();
+
+    // 접속 서버의 SYSID 정보를 구한다.
+    let sSysID = oServerInfo.SYSID;
+
+    // SYSID에 해당하는 테마 변경 IPC 이벤트를 등록한다.
+    IPCMAIN.off(`if-p13n-themeChange-${sSysID}`, oAPP.fn.onIpcMain_if_p13n_themeChange);
 
     oAPP.fn.fnOnBeforeUnload();
 

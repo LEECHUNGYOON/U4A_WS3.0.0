@@ -74,7 +74,8 @@
                 oSetting_UI5 = oSettings.UI5,     
                 oBootStrap = oSetting_UI5.bootstrap,
                 oUserInfo = oAPP.IF_DATA.oUserInfo,
-                sLangu = oUserInfo.LANGU;
+                sLangu = oUserInfo.LANGU,
+                oThemeInfo = oAPP.fn.getThemeInfo();
 
             var oScript = document.createElement("script");
             oScript.id = "sap-ui-bootstrap";
@@ -85,7 +86,8 @@
             }
 
             // 로그인 Language 적용
-            oScript.setAttribute('data-sap-ui-theme', oAPP.IF_DATA.THEME_INFO.THEME);
+            // oScript.setAttribute('data-sap-ui-theme', oAPP.IF_DATA.THEME_INFO.THEME);
+            oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME);
             oScript.setAttribute("data-sap-ui-language", sLangu);
             oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.ui.core, sap.tnt, sap.f");
             oScript.setAttribute("src", oSetting_UI5.resourceUrl);           

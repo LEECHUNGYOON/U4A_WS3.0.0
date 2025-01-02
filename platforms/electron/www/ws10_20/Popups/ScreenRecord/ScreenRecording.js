@@ -199,8 +199,7 @@ async function _chk_MultiScr(REMOTE) {
         };
 
         var oWIN = new REMOTE.BrowserWindow(op);  
-        REMOTE.require('@electron/remote/main').enable(oWIN.webContents);
-      
+        REMOTE.require('@electron/remote/main').enable(oWIN.webContents);      
 
         oWIN.setMenuBarVisibility(false);
 

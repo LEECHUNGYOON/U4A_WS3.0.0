@@ -22,6 +22,8 @@ let oAPP = (function (window) {
     oAPP.PATH = oAPP.REMOTE.require('path');
     oAPP.APP = oAPP.REMOTE.app;
     oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
+    oAPP.USERDATA = oAPP.APP.getPath("userData");	
+    oAPP.FS = oAPP.REMOTE.require('fs');
     oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
 
     /*******************************************************
@@ -50,6 +52,37 @@ let oAPP = (function (window) {
     /*******************************************************
      * 메시지클래스 텍스트 작업 관련 Object -- end
      *******************************************************/
+
+
+
+    /*************************************************************
+     * @function - 테마 정보를 구한다.
+     *************************************************************/
+    oAPP.fn.getThemeInfo = function (){
+
+        let oUserInfo = parent.process.USERINFO;
+        let sSysID = oUserInfo.SYSID;
+        
+        // 해당 SYSID별 테마 정보 JSON을 읽는다.
+        let sThemeJsonPath = oAPP.PATH.join(oAPP.USERDATA, "p13n", "theme", `${sSysID}.json`);
+        if(oAPP.FS.existsSync(sThemeJsonPath) === false){
+            return;
+        }
+
+        let sThemeJson = oAPP.FS.readFileSync(sThemeJsonPath, "utf-8");
+
+        try {
+        
+            var oThemeJsonData = JSON.parse(sThemeJson);    
+
+        } catch (error) {
+            return;
+        }
+
+        return oThemeJsonData;
+
+    } // end of oAPP.fn.getThemeInfo
+    
 
     /***********************************************************
      * Busy 실행 여부 정보 리턴
@@ -111,7 +144,7 @@ let oAPP = (function (window) {
 
         // oAPP.attr.oUserInfo = oInfo.oUserInfo;
         // oAPP.attr.oServerInfo = oInfo.oServerInfo;
-        // oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
+        oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {

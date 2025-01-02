@@ -877,151 +877,151 @@
     /************************************************************************
      * Design Tree의 UI 검색 팝업
      ************************************************************************/
-    oAPP.fn.fnDesignTreeFindUiPopupOpen = (fnSearch, fnCancel) => {
+    // oAPP.fn.fnDesignTreeFindUiPopupOpen = (fnSearch, fnCancel) => {
 
-        // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
-        if (parent.getBusy() == 'X') {
-            return;
-        }
+    //     // Busy Indicator가 실행중이면 하위 로직 수행 하지 않는다.
+    //     if (parent.getBusy() == 'X') {
+    //         return;
+    //     }
 
-        var sPopupName = "DESIGNTREEUISRCH";
+    //     var sPopupName = "DESIGNTREEUISRCH";
 
-        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
-        if (oResult.ISOPEN) {
-            return;
-        }
+    //     // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+    //     var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
+    //     if (oResult.ISOPEN) {
+    //         return;
+    //     }
 
-        var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
-            oDefaultOption = parent.require(sSettingsJsonPath),
-            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+    //     var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+    //         oDefaultOption = parent.require(sSettingsJsonPath),
+    //         oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        // oBrowserOptions.titleBarStyle = "hidden";
-        oBrowserOptions.autoHideMenuBar = true;
-        oBrowserOptions.width = 380;
-        oBrowserOptions.minWidth = 380;
-        oBrowserOptions.height = 60;
-        oBrowserOptions.minHeight = 60;
+    //     // oBrowserOptions.titleBarStyle = "hidden";
+    //     oBrowserOptions.autoHideMenuBar = true;
+    //     oBrowserOptions.width = 380;
+    //     oBrowserOptions.minWidth = 380;
+    //     oBrowserOptions.height = 60;
+    //     oBrowserOptions.minHeight = 60;
 
-        oBrowserOptions.frame = false;
-        oBrowserOptions.transparent = true;
-        oBrowserOptions.center = false;
-        oBrowserOptions.resizable = false;
-        oBrowserOptions.parent = CURRWIN;
-        oBrowserOptions.webPreferences.partition = SESSKEY;
-        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
-        oBrowserOptions.webPreferences.OBJTY = sPopupName;
-        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
+    //     oBrowserOptions.frame = false;
+    //     oBrowserOptions.transparent = true;
+    //     oBrowserOptions.center = false;
+    //     oBrowserOptions.resizable = false;
+    //     oBrowserOptions.parent = CURRWIN;
+    //     oBrowserOptions.webPreferences.partition = SESSKEY;
+    //     oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+    //     oBrowserOptions.webPreferences.OBJTY = sPopupName;
+    //     oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;
 
-        // 브라우저 오픈
-        var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
-        REMOTEMAIN.enable(oBrowserWindow.webContents);
+    //     // 브라우저 오픈
+    //     var oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+    //     REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-        // 브라우저 상단 메뉴 없애기
-        oBrowserWindow.setMenu(null);
+    //     // 브라우저 상단 메뉴 없애기
+    //     oBrowserWindow.setMenu(null);
 
-        var sUrlPath = parent.getPath(sPopupName);
-        oBrowserWindow.loadURL(sUrlPath);
+    //     var sUrlPath = parent.getPath(sPopupName);
+    //     oBrowserWindow.loadURL(sUrlPath);
 
-        // oBrowserWindow.webContents.openDevTools();
+    //     // oBrowserWindow.webContents.openDevTools();
 
-        function lf_move() {
+    //     function lf_move() {
 
-            // 팝업 위치를 부모 위치에 배치시킨다.          
-            var oParentBounds = CURRWIN.getBounds();
-            oBrowserWindow.setBounds({
-                x: Math.round(oParentBounds.x + 170),
-                y: Math.round(oParentBounds.y + 190),
+    //         // 팝업 위치를 부모 위치에 배치시킨다.          
+    //         var oParentBounds = CURRWIN.getBounds();
+    //         oBrowserWindow.setBounds({
+    //             x: Math.round(oParentBounds.x + 170),
+    //             y: Math.round(oParentBounds.y + 190),
 
-                // x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
-                // y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
-            });
+    //             // x: Math.round((oParentBounds.x + oParentBounds.width / 2) - (oBrowserOptions.width / 2)),
+    //             // y: Math.round(((oParentBounds.height / 2) + oParentBounds.y) - (oBrowserOptions.height / 2))
+    //         });
 
-        }
+    //     }
 
-        // 브라우저가 오픈이 다 되면 타는 이벤트
-        oBrowserWindow.webContents.on('did-finish-load', function () {
-            lf_move();
-        });
+    //     // 브라우저가 오픈이 다 되면 타는 이벤트
+    //     oBrowserWindow.webContents.on('did-finish-load', function () {
+    //         lf_move();
+    //     });
 
-        oBrowserWindow.webContents.on("dom-ready", function () {
-            lf_move();
-        });
+    //     oBrowserWindow.webContents.on("dom-ready", function () {
+    //         lf_move();
+    //     });
 
-        // 브라우저를 닫을때 타는 이벤트
-        oBrowserWindow.on('closed', () => {
+    //     // 브라우저를 닫을때 타는 이벤트
+    //     oBrowserWindow.on('closed', () => {
 
-            if (typeof fnCancel == "function") {
-                fnCancel();
-            }
+    //         if (typeof fnCancel == "function") {
+    //             fnCancel();
+    //         }
 
-            oBrowserWindow = null;
+    //         oBrowserWindow = null;
 
-            // 각종 이벤트 끄기
-            lf_off();
+    //         // 각종 이벤트 끄기
+    //         lf_off();
 
-            CURRWIN.focus();
+    //         CURRWIN.focus();
 
-        });
+    //     });
 
-        // 각종 이벤트 끄기
-        function lf_off() {
+    //     // 각종 이벤트 끄기
+    //     function lf_off() {
 
-            CURRWIN.off("move", lf_move);
-            CURRWIN.off("resize", lf_move);
-            CURRWIN.off("maximize", lf_move);
-            CURRWIN.off("unmaximize", lf_move);
+    //         CURRWIN.off("move", lf_move);
+    //         CURRWIN.off("resize", lf_move);
+    //         CURRWIN.off("maximize", lf_move);
+    //         CURRWIN.off("unmaximize", lf_move);
 
-            CURRWIN.off("moved", lf_move);
-            CURRWIN.off("will-move", lf_move);
-            CURRWIN.off("restore", lf_move);
-            CURRWIN.off("resized", lf_move);
-            CURRWIN.off("will-resize", lf_move);
-            CURRWIN.off("enter-full-screen", lf_move);
-            CURRWIN.off("leave-full-screen", lf_move);
+    //         CURRWIN.off("moved", lf_move);
+    //         CURRWIN.off("will-move", lf_move);
+    //         CURRWIN.off("restore", lf_move);
+    //         CURRWIN.off("resized", lf_move);
+    //         CURRWIN.off("will-resize", lf_move);
+    //         CURRWIN.off("enter-full-screen", lf_move);
+    //         CURRWIN.off("leave-full-screen", lf_move);
 
-            REMOTE.screen.off('display-metrics-changed', lf_screenChange);
+    //         REMOTE.screen.off('display-metrics-changed', lf_screenChange);
 
-        }
+    //     }
 
-        lf_off();
+    //     lf_off();
 
-        /**
-         * 브라우저 사이즈 변경, 이동 이벤트 걸기
-         * 팝업이 부모 창 특정 위치에 따라다니는 효과
-         */
-        CURRWIN.on('move', lf_move);
-        CURRWIN.on('resize', lf_move);
-        CURRWIN.on('maximize', lf_move);
-        CURRWIN.on('unmaximize', lf_move);
+    //     /**
+    //      * 브라우저 사이즈 변경, 이동 이벤트 걸기
+    //      * 팝업이 부모 창 특정 위치에 따라다니는 효과
+    //      */
+    //     CURRWIN.on('move', lf_move);
+    //     CURRWIN.on('resize', lf_move);
+    //     CURRWIN.on('maximize', lf_move);
+    //     CURRWIN.on('unmaximize', lf_move);
 
-        CURRWIN.on('moved', lf_move);
-        CURRWIN.on('will-move', lf_move);
-        CURRWIN.on('restore', lf_move);
-        CURRWIN.on('resized', lf_move);
-        CURRWIN.on('will-resize', lf_move);
-        CURRWIN.on('enter-full-screen', lf_move);
-        CURRWIN.on('leave-full-screen', lf_move);
+    //     CURRWIN.on('moved', lf_move);
+    //     CURRWIN.on('will-move', lf_move);
+    //     CURRWIN.on('restore', lf_move);
+    //     CURRWIN.on('resized', lf_move);
+    //     CURRWIN.on('will-resize', lf_move);
+    //     CURRWIN.on('enter-full-screen', lf_move);
+    //     CURRWIN.on('leave-full-screen', lf_move);
 
-        function lf_screenChange() {
-            lf_move();
-        }
+    //     function lf_screenChange() {
+    //         lf_move();
+    //     }
 
-        // Display 해상도가 변경 되었을때 발생하는 이벤트
-        REMOTE.screen.on('display-metrics-changed', lf_screenChange);
+    //     // Display 해상도가 변경 되었을때 발생하는 이벤트
+    //     REMOTE.screen.on('display-metrics-changed', lf_screenChange);
 
-        // IPCMAIN 이벤트 (팝업과 Interface 용)
-        IPCMAIN.on(`${BROWSKEY}--designTextSearch`, lf_DesignTextSearch);
+    //     // IPCMAIN 이벤트 (팝업과 Interface 용)
+    //     IPCMAIN.on(`${BROWSKEY}--designTextSearch`, lf_DesignTextSearch);
 
-        function lf_DesignTextSearch(event, res) {
+    //     function lf_DesignTextSearch(event, res) {
 
-            if (typeof fnSearch == "function") {
-                fnSearch(res);
-            }
+    //         if (typeof fnSearch == "function") {
+    //             fnSearch(res);
+    //         }
 
-        }
+    //     }
 
-    }; // end of oAPP.fn.fnDesignTreeFindUiPopupOpen
+    // }; // end of oAPP.fn.fnDesignTreeFindUiPopupOpen
 
     /************************************************************************
      * Current App Technical Document Popup Open
@@ -1296,8 +1296,10 @@
             return;
         }
 
-        let oSettings = parent.WSUTIL.getWsSettingsInfo(),
-            sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(oSettings.globalTheme);
+        // let oSettings = parent.WSUTIL.getWsSettingsInfo(),
+        //     sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(oSettings.globalTheme);
+
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보      
 
         // Browswer Options
         let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
@@ -1307,7 +1309,7 @@
         oBrowserOptions.title = oAPP.msg.M059; // Source Pattern
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;        
-        oBrowserOptions.backgroundColor = sWsThemeColor;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL; //테마별 색상 처리
 
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.show = false;
@@ -1323,7 +1325,7 @@
         REMOTEMAIN.enable(oBrowserWindow.webContents);     
 
         // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
-        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${sWsThemeColor}; }`;
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
         oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
         // 브라우저 상단 메뉴 없애기
@@ -1353,7 +1355,7 @@
                 // BROWSKEY: BROWSKEY, // 브라우저 고유키 
                 // oUserInfo: oUserInfo, // 로그인 사용자 정보
                 // oServerInfo: oServerInfo, // 서버 정보                
-                // oThemeInfo: oThemeInfo, // 테마 정보                
+                oThemeInfo: oThemeInfo, // 테마 정보                
             };
 
             oBrowserWindow.webContents.send('if-usp-pattern-info', oOptionData);
@@ -1450,17 +1452,21 @@
         }
 
         // 로그인 정보에서 서버의 기본 테마 정보를 구한다.        
-        let aTheme = oMeta.T_REG_THEME,
-            oDefThemeInfo = aTheme.find(elem => elem.ISDEF === "X");
+        // let aTheme = oMeta.T_REG_THEME,
+        //     oDefThemeInfo = aTheme.find(elem => elem.ISDEF === "X");
 
-        let sDefTheme = "sap_horizon";
-        if (oDefThemeInfo) {
-            sDefTheme = oDefThemeInfo.THEME;
-        }
+        // let sDefTheme = "sap_horizon";
+        // if (oDefThemeInfo) {
+        //     sDefTheme = oDefThemeInfo.THEME;
+        // }
 
-        let oSettings = parent.WSUTIL.getWsSettingsInfo(),
-            sGlobalLangu = oSettings.globalLanguage,
-            sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(sDefTheme);
+        // let oSettings = parent.WSUTIL.getWsSettingsInfo(),
+        //     sGlobalLangu = oSettings.globalLanguage,
+        //     sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(sDefTheme);
+
+        // let oUserInfo = parent.getUserInfo();
+        let sLangu = oUserInfo.LANGU;
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보  
 
         // Browswer Options
         let sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
@@ -1474,12 +1480,12 @@
             oBrowserOptions.parent = CURRWIN; 
         }
 
-        oBrowserOptions.title = parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "047"); // Icon List
+        oBrowserOptions.title = parent.WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "047"); // Icon List
         oBrowserOptions.titleBarStyle = 'hidden';        
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.resizable = true;
         oBrowserOptions.movable = true;
-        oBrowserOptions.backgroundColor = sWsThemeColor;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL; //테마별 색상 처리
         oBrowserOptions.webPreferences.nodeIntegrationInWorker = true;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -1491,7 +1497,7 @@
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
         // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
-        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${sWsThemeColor}; }`;
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
         oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
         // // 브라우저 상단 메뉴 없애기.    
@@ -1525,7 +1531,8 @@
                 // oUserInfo: oUserInfo, // 로그인 사용자 정보
                 sServerHost: parent.getHost(), //  서버 호스트 정보
                 sServerPath: parent.getServerPath(), // 서버 Url
-                sDefTheme: sDefTheme, // 테마 정보
+                // sDefTheme: sDefTheme, // 테마 정보
+                oThemeInfo: oThemeInfo, // 테마 정보
                 isCallback: isCallback // 아이콘 팝업 호출 시 콜백 펑션이 있는지 여부 플래그 
             };
 
@@ -1711,80 +1718,36 @@
             return;
         }
 
-        // // 현재 떠있는 전체 윈도우를 구한다.
-        // let aAllWindows = parent.REMOTE.BrowserWindow.getAllWindows();
-        // let oIconPrevWindow;
+        // // 로그인 정보에서 서버의 기본 테마 정보를 구한다.        
+        let sServerLibPath = oMeta.LIBPATH;
+        //     aTheme = oMeta.T_REG_THEME,
+        //     oDefThemeInfo = aTheme.find(elem => elem.ISDEF === "X");
 
-        // // 전체 윈도우 중 아이콘 미리보기 팝업이 있는지 체크
-        // for(const oWin of aAllWindows){
-
-        //     // 브라우저가 이미 죽었다면..
-        //     if (oWin.isDestroyed()) {
-        //         continue;
-        //     }
-
-        //     let oWebCon = oWin.webContents,
-        //     oWebPref = oWebCon.getWebPreferences(),
-        //     sOBJTY = oWebPref.OBJTY;
-
-        //     // OBJTY가 있는지
-        //     if (!sOBJTY) {
-        //         continue;
-        //     }
-
-        //     // OBJTY가 같은것인지
-        //     if (sOBJTY !== sPopupName) {
-        //         continue;
-        //     }
-
-        //     oIconPrevWindow = oWin;
-
+        // let sDefTheme = "sap_horizon";
+        // if (oDefThemeInfo) {
+        //     sDefTheme = oDefThemeInfo.THEME;
         // }
 
-        // // [ SYSID ] 이미 실행된 아이콘 미리보기 팝업이 있을 경우 해당 팝업에 포커스를 준다.
-        // if(oIconPrevWindow){
+        // let oSettings = parent.WSUTIL.getWsSettingsInfo(),
+        //     sGlobalLangu = oSettings.globalLanguage,
+        //     sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(sDefTheme);
 
-        //     oIconPrevWindow.show();
-
-        //     return;
-        // }
-
-        // // [!! 전체 떠있는 브라우저 기준 !!] 
-        // // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
-        // let oResult = APPCOMMON.getCheckAlreadyOpenWindow2(sPopupName);
-        // if (oResult.ISOPEN) {
-        //     let oIconWindow = oResult.WINDOW;
-        //     oIconWindow.show();
-        //     return;
-        // }
-
-        // 로그인 정보에서 서버의 기본 테마 정보를 구한다.        
-        let sServerLibPath = oMeta.LIBPATH,
-            aTheme = oMeta.T_REG_THEME,
-            oDefThemeInfo = aTheme.find(elem => elem.ISDEF === "X");
-
-        let sDefTheme = "sap_horizon";
-        if (oDefThemeInfo) {
-            sDefTheme = oDefThemeInfo.THEME;
-        }
-
-        let oSettings = parent.WSUTIL.getWsSettingsInfo(),
-            sGlobalLangu = oSettings.globalLanguage,
-            sWsThemeColor = parent.WSUTIL.getThemeBackgroundColor(sDefTheme);
+        let sLangu = oUserInfo.LANGU;
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보
 
         // Browswer Options
         let sSettingsJsonPath = PATHINFO.BROWSERSETTINGS,
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
 
-        oBrowserOptions.title = parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "067"); // Image Icons
+        oBrowserOptions.title = parent.WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "067"); // Image Icons
         // oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.titleBarStyle = 'hidden';
         // oBrowserOptions.parent = CURRWIN;
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.resizable = true;
         oBrowserOptions.movable = true;
-        oBrowserOptions.backgroundColor = sWsThemeColor;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
         oBrowserOptions.webPreferences.nodeIntegrationInWorker = true;
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -1796,7 +1759,7 @@
         REMOTEMAIN.enable(oBrowserWindow.webContents);
 
         // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
-        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${sWsThemeColor}; }`;
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.THEME}; }`;
         oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
         oBrowserWindow.setMenu(null);
@@ -1826,7 +1789,7 @@
                 // oUserInfo: oUserInfo, // 로그인 사용자 정보
                 sServerHost: parent.getHost(), //  서버 호스트 정보
                 sServerPath: parent.getServerPath(), // 서버 Url                
-                sDefTheme: sDefTheme, // 테마 정보 
+                // sDefTheme: sDefTheme, // 테마 정보 
                 sServerLibPath: sServerLibPath // 서버 라이브러리 경로
             };
 
@@ -3358,8 +3321,10 @@
         
         await oAPP.common.fnSleep(0);
 
-        let oServerInfo = parent.getServerInfo(),
-            oThemeInfo = oServerInfo.oThemeInfo,
+        // let oServerInfo = parent.getServerInfo(),
+        //     oThemeInfo = oServerInfo.oThemeInfo,
+        //     sApplyTheme = oThemeInfo.THEME;
+        let oThemeInfo = parent.getThemeInfo(),
             sApplyTheme = oThemeInfo.THEME;
 
         var oVideoPopup = oAPP.attr.videoRecordPopup;

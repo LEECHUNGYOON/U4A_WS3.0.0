@@ -86,6 +86,9 @@ oAPP.fn.attachInit = async () => {
 
     // await fnWait();
 
+    // IPC Event 등록
+    _attachIpcEvents();
+
     // 테마별 색상 정보 구하기
     _fnGetThemeColors();
 
@@ -738,6 +741,47 @@ function fnGetSavedFavIconInfo() {
     });
 
 } // end of fnGetSavedFavIconInfo
+
+
+/*************************************************************
+ * @function - SYSID에 해당하는 테마 변경 IPC 이벤트
+ *************************************************************/
+function _onIpcMain_if_p13n_themeChange(){
+
+    let oThemeInfo = oAPP.fn.getThemeInfo();
+    if(!oThemeInfo){
+        return;
+    }
+
+    let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+    let oBrowserWindow = oAPP.REMOTE.getCurrentWindow();
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);    
+
+    sap.ui.getCore().applyTheme(oThemeInfo.THEME);
+
+    let oModel = sap.ui.getCore().getModel();
+    if(!oModel){
+        return;
+    }
+
+    oModel.setProperty("/THEME/THEME_KEY", oThemeInfo.THEME);
+
+} // end of _onIpcMain_if_p13n_themeChange
+
+
+/*************************************************************
+ * @function - IPC Event 등록
+ *************************************************************/
+function _attachIpcEvents(){
+
+    let oUserInfo = parent.process.USERINFO;
+    let sSysID = oUserInfo.SYSID;
+
+    // SYSID에 해당하는 테마 변경 IPC 이벤트를 등록한다.
+    oAPP.IPCMAIN.on(`if-p13n-themeChange-${sSysID}`, _onIpcMain_if_p13n_themeChange); 
+
+} // end of _attachIpcEvents
+
 
 /************************************************************************
  * UI5 버전 및 테마별 색상 정보를 구한다.

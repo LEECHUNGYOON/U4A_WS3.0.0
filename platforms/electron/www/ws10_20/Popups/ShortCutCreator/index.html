@@ -47,6 +47,7 @@
                 oAPP.IPCRENDERER = this.ipcRenderer;
                 oAPP.CURRWIN = this.remote.getCurrentWindow();
                 oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
+                oAPP.IPCMAIN = this.ipcMain;
 
                 /*******************************************************
                  * 메시지클래스 텍스트 작업 관련 Object -- start
@@ -66,6 +67,12 @@
                     oAPP.WSMSGPATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
                     oAPP.WSUTIL = require(oAPP.WSMSGPATH),
                     oAPP.WSMSG = new oAPP.WSUTIL.MessageClassText(SYSID, LANGU);
+
+                    oAPP.REMOTE = oAPP.remote;
+                    oAPP.PATH = oAPP.REMOTE.require('path');
+                    oAPP.FS = oAPP.REMOTE.require('fs');
+                    oAPP.APP = oAPP.REMOTE.app;
+                    oAPP.USERDATA = oAPP.APP.getPath("userData");
 
                     oAPP.common.fnGetMsgClsText = oAPP.WSMSG.fnGetMsgClsText.bind(oAPP.WSMSG);
 
@@ -95,6 +102,34 @@
 
             }
         };
+
+        /*************************************************************
+         * @function - 테마 정보를 구한다.
+         *************************************************************/
+        oAPP.fn.getThemeInfo = function (){
+
+            let oUserInfo = parent.process.USERINFO;
+            let sSysID = oUserInfo.SYSID;
+
+            // 해당 SYSID별 테마 정보 JSON을 읽는다.
+            let sThemeJsonPath = oAPP.PATH.join(oAPP.USERDATA, "p13n", "theme", `${sSysID}.json`);
+            if(oAPP.FS.existsSync(sThemeJsonPath) === false){
+                return;
+            }
+
+            let sThemeJson = oAPP.FS.readFileSync(sThemeJsonPath, "utf-8");
+
+            try {
+
+                var oThemeJsonData = JSON.parse(sThemeJson);    
+
+            } catch (error) {
+                return;
+            }
+
+            return oThemeJsonData;
+
+        } // end of oAPP.fn.getThemeInfo
 
         function getMetadata() {
 

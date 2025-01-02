@@ -30,6 +30,9 @@
             document.addEventListener('DOMContentLoaded', function () { 
 
                 oAPP = parent.gfn_remote();
+                
+                // 테마 정보를 구한다.
+                let oThemeInfo = oAPP.fn.getThemeInfo();
 
                 var oHead = document.getElementsByTagName('head').item(0);
                 var oScript = document.createElement('script');
@@ -37,7 +40,8 @@
                     oScript.setAttribute('src', oAPP.config.UI5_INFO.src );
                     oScript.setAttribute('data-sap-ui-language', oAPP.config.UI5_INFO.language );
                     oScript.setAttribute('data-sap-ui-preload', 'sync');
-                    oScript.setAttribute('data-sap-ui-theme', oAPP.config.UI5_INFO.theme );
+                    // oScript.setAttribute('data-sap-ui-theme', oAPP.config.UI5_INFO.theme );
+                    oScript.setAttribute('data-sap-ui-theme', oThemeInfo.THEME );
                     oScript.setAttribute('data-sap-ui-libs', 'sap.m, sap.ui.core, sap.ui.layout');
                     oScript.setAttribute('data-sap-ui-noduplicateids', 'true');
 
