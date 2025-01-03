@@ -2175,39 +2175,41 @@ let oAPP = (function () {
         try {
 
             // 테마 정보를 생성
-            var oThemeInfo = await oAPP.fn.fnP13nCreateTheme();
-
-            // 테마 정보를 저장한다.
-            parent.setThemeInfo(oThemeInfo);
-
-            // 브라우저 백그라운드 색상을 테마의 대표 색상으로 적용한다.
-            var oCurrWin = REMOTE.getCurrentWindow();
-                oCurrWin.setBackgroundColor(oThemeInfo.BGCOL);
-
-            /**
-             * 작업표시줄의 모든창 닫기 메뉴 선택 시, 로그인 창이 닫히지 않게 하기 위해
-             * beforeunload 이벤트 발생 시, 커스텀한 헤더의 닫기 버튼을 눌렀을 경우에만 닫을 수 있도록
-             * 닫기 버튼 눌렀다는 플래그를 이용하여 닫기 기능을 구현했는데,
-             * 로그인 성공 후 10번 페이지로 이동 시, 로드하는 html이 바뀌면서 beforeunload를 타면서 
-             * 닫기 버튼 눌렀다는 플래그값이 없으면 beforeunload에서 체크 로직에 걸려 10번 페이지로 이동이 되지 않아,
-             * 로그인 성공시도 같은 플래그를 부여함.
-             */
-            oAPP.attr.isPressWindowClose = "X";
-
-            // WS10번 페이지로 이동
-            parent.onMoveToPage("WS10");
-
-            parent.showLoadingPage('');
-
-            // if (!APP.isPackaged) {
-            //     // Floating Menu를 오픈한다.                    
-            //     oAPP.fn.fnFloatingMenuOpen();
-            // }
+            var oThemeInfo = await oAPP.fn.fnP13nCreateTheme();           
 
         } catch (error) {
             console.error(error);
         }
-        
+
+        // 테마 정보를 저장한다.
+        parent.setThemeInfo(oThemeInfo);
+
+        // 브라우저 백그라운드 색상을 테마의 대표 색상으로 적용한다.
+        var oCurrWin = REMOTE.getCurrentWindow();
+            oCurrWin.setBackgroundColor(oThemeInfo.BGCOL);
+
+        /**
+         * 작업표시줄의 모든창 닫기 메뉴 선택 시, 로그인 창이 닫히지 않게 하기 위해
+         * beforeunload 이벤트 발생 시, 커스텀한 헤더의 닫기 버튼을 눌렀을 경우에만 닫을 수 있도록
+         * 닫기 버튼 눌렀다는 플래그를 이용하여 닫기 기능을 구현했는데,
+         * 로그인 성공 후 10번 페이지로 이동 시, 로드하는 html이 바뀌면서 beforeunload를 타면서 
+         * 닫기 버튼 눌렀다는 플래그값이 없으면 beforeunload에서 체크 로직에 걸려 10번 페이지로 이동이 되지 않아,
+         * 로그인 성공시도 같은 플래그를 부여함.
+         */
+        oAPP.attr.isPressWindowClose = "X";
+
+        // WS10번 페이지로 이동
+        parent.onMoveToPage("WS10");
+
+        parent.showLoadingPage('');
+
+        // if (!APP.isPackaged) {
+        //     // Floating Menu를 오픈한다.                    
+        //     oAPP.fn.fnFloatingMenuOpen();
+        // }
+
+        // 웰컴 사운드
+        parent.setSoundMsg('WELCOME');
 
     }; // end of oAPP.fn.fnOnLoginSuccess   
 

@@ -22,7 +22,7 @@
 
 </head>
 
-<body>
+<body class="sapUiBody">
 
     <div id="content"></div>
 
@@ -149,6 +149,50 @@
 
 
         }; // end of oAPP.fn.setBusy
+
+
+        /*************************************************************
+         * @function - SYSID에 해당하는 테마 변경 IPC 이벤트
+         *************************************************************/
+        function _onIpcMain_if_p13n_themeChange(){ 
+
+            let oThemeInfo = oAPP.fn.getThemeInfo();
+            if(!oThemeInfo){
+                return;
+            }
+
+            let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+            let oBrowserWindow = oAPP.REMOTE.getCurrentWindow();
+                oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+            sap.ui.getCore().applyTheme(oThemeInfo.THEME);
+
+            let oThemeSelect = oUI5?.oThemeSelect || undefined;
+            if(!oThemeSelect){
+                return;
+            }
+
+            oThemeSelect.setSelectedKey(oThemeInfo.THEME);
+
+            let oSelectedItem = oThemeSelect.getSelectedItem();
+
+            oThemeSelect.fireChange({ selectedItem: oSelectedItem });
+
+
+        } // end of _onIpcMain_if_p13n_themeChange        
+
+        /*************************************************************
+         * @function - IPC Event 등록
+         *************************************************************/
+        function _attachIpcEvents(){
+
+            let oUserInfo = parent.process.USERINFO;
+            let sSysID = oUserInfo.SYSID;
+
+            // SYSID에 해당하는 테마 변경 IPC 이벤트를 등록한다.
+            oAPP.IPCMAIN.on(`if-p13n-themeChange-${sSysID}`, _onIpcMain_if_p13n_themeChange); 
+
+        } // end of _attachIpcEvents
         
 
         /**************************************************
@@ -210,6 +254,9 @@
             _attachBroadCastEvent();
 
             sap.ui.getCore().attachInit(function () {
+
+                // IPC Event 등록
+                _attachIpcEvents();
 
                 //BASE DATA 추출 
                 oAPP.fs.readFile(oAPP.path.join(oAPP.__dirname, 'json/MenuList.json'), 'utf8', function (err, data) {
@@ -366,6 +413,21 @@
                     });
 
                     TOOLHEADER.addContent(oBtMenu);
+                    
+                    TOOLHEADER.addContent(new sap.m.ToolbarSpacer());
+
+                    let oIcon1 = new sap.ui.core.Icon({
+                        src: "sap-icon://action-settings",
+                        width: "25px"
+                    });
+                    TOOLHEADER.addContent(oIcon1);
+
+                    let oTitle1 = new sap.m.Title({
+                        text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B52") // Options
+                    });
+
+                    TOOLHEADER.addContent(oTitle1);
+
                     TOOLHEADER.addContent(new sap.m.ToolbarSpacer());
 
                     oUI5.APP.placeAt("content");

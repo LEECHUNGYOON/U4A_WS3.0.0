@@ -25,6 +25,7 @@ var zconsole = WSERR(window, document, console);
 let oAPP = parent.oAPP;
 if (!oAPP) {
     oAPP = {};
+    oAPP.ui = {};
     oAPP.attr = {};
     oAPP.fn = {};
     oAPP.msg = {};
@@ -289,9 +290,9 @@ if (!oAPP) {
 
                 oAPP.CURRWIN.show();
 
-                parent.WSUTIL.setBrowserOpacity(oAPP.CURRWIN); 
+                // parent.WSUTIL.setBrowserOpacity(oAPP.CURRWIN); 
 
-                $('#content').fadeIn(300, 'linear', () => {
+                $('#content').fadeIn(300, 'linear', () => {                    
 
                     oAPP.setBusy("");
         
@@ -337,6 +338,9 @@ if (!oAPP) {
             oAPP.msg.M15 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "038"); // YES
             oAPP.msg.M16 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "039"); // NO
 
+
+            oAPP.msg.M276 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "276"); // There is no pattern selected.
+            oAPP.msg.M277 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "277"); // If a pattern is selected, it will be displayed here.
 
 
 
@@ -693,7 +697,48 @@ if (!oAPP) {
      ************************************************************************/
     function _getPatternContentPage() {
 
-        return new sap.m.Page({
+        let oNavCon1 = new sap.m.NavContainer({
+            autoFocus: false
+        });
+
+        oAPP.ui.RNAV1 = oNavCon1;
+
+        let oPage1 = new sap.m.Page({
+            showHeader: false,
+            enableScrolling: true,
+        });
+        oNavCon1.addPage(oPage1);
+
+        oAPP.ui.RPAGE1 = oPage1;
+
+        let VBOX3 = new sap.m.VBox({
+            width: "100%",
+            height: "100%",
+            justifyContent: "Center",
+            alignItems: "Center",
+            renderType: "Bare",
+            items: [
+                
+            ]
+        });
+        oPage1.addContent(VBOX3);
+
+        // let ILLUST1 = new sap.m.Illustration({
+        //     set: "sapIllus",
+        //     media: "Scene",
+        //     type: "NoEntries"
+        // });
+
+        let ILLUST1 = new sap.m.IllustratedMessage({
+            // illustrationType: "sapIllus-NoEntries"
+            illustrationType: "sapIllus-SimpleEmptyList",
+            title: oAPP.msg.M276, // There is no pattern selected.
+            description: oAPP.msg.M277, // If a pattern is selected, it will be displayed here.
+        });
+    
+        VBOX3.addItem(ILLUST1);
+
+        let oPage2 = new sap.m.Page({
             showHeader: true,
             enableScrolling: true,
             customHeader: new sap.m.Bar({
@@ -748,6 +793,12 @@ if (!oAPP) {
             }),
             content: _getPatternCodePageContent()
         });
+
+        oAPP.ui.RPAGE2 = oPage2;
+
+        oNavCon1.addPage(oPage2);
+
+        return oNavCon1;
 
     } // end of _getPatternCodePage
 
@@ -1492,6 +1543,15 @@ if (!oAPP) {
             iRowIndex = oEvent.getParameter("rowIndex"),
             iSelectedIndex = oTable.getSelectedIndex();
 
+        // 선택한 라인이 없다면 빠져나간다.
+        if(iSelectedIndex < 0){
+
+            // Busy 끄기
+            oAPP.setBusy("");
+
+            return;
+        }
+
         oAPP.fn.fnSetModelProperty("/CONTENT", {});
 
         if (!oRowCtx) {
@@ -1515,18 +1575,34 @@ if (!oAPP) {
 
         if (oSelectedRowData.TYPE === "ROOT") {
             
+            // 테이블 선택 해제
+            oTable.clearSelection();
+            
+            // 우측 페이지를 첫번째 페이지로 이동
+            oAPP.ui.RNAV1.to(oAPP.ui.RPAGE1);
+
             // Busy 끄기
             oAPP.setBusy("");
+
             return;
         }
 
         if (!oSelectedRowData.DATA) {
 
+            // 테이블 선택 해제
+            oTable.clearSelection();
+
+            // 우측 페이지를 첫번째 페이지로 이동
+            oAPP.ui.RNAV1.to(oAPP.ui.RPAGE1);
+            
             // Busy 끄기
             oAPP.setBusy("");
 
             return;
         }
+
+        // 우측 페이지를 첫번째 페이지로 이동
+        oAPP.ui.RNAV1.to(oAPP.ui.RPAGE2);
 
         oAPP.fn.fnSetModelProperty("/CONTENT", oSelectedRowData);
 
@@ -1548,6 +1624,15 @@ if (!oAPP) {
             oRowCtx = oEvent.getParameter("rowContext"),
             iRowIndex = oEvent.getParameter("rowIndex"),
             iSelectedIndex = oTable.getSelectedIndex();
+
+            // 선택한 라인이 없다면 빠져나간다.
+        if(iSelectedIndex < 0){
+
+            // Busy 끄기
+            oAPP.setBusy("");
+
+            return;
+        }
 
         oAPP.fn.fnSetModelProperty("/CONTENT", {});
 
@@ -1572,6 +1657,12 @@ if (!oAPP) {
 
         if (oSelectedRowData.TYPE === "ROOT") {
 
+            // 테이블 선택 해제
+            oTable.clearSelection();
+
+            // 우측 페이지를 첫번째 페이지로 이동
+            oAPP.ui.RNAV1.to(oAPP.ui.RPAGE1);
+
             // Busy 끄기
             oAPP.setBusy("");
 
@@ -1580,11 +1671,20 @@ if (!oAPP) {
 
         if (!oSelectedRowData.DATA) {
 
+            // 테이블 선택 해제
+            oTable.clearSelection();
+
+            // 우측 페이지를 첫번째 페이지로 이동
+            oAPP.ui.RNAV1.to(oAPP.ui.RPAGE1);
+
             // Busy 끄기
             oAPP.setBusy("");
 
             return;
         }
+
+        // 우측 페이지를 첫번째 페이지로 이동
+        oAPP.ui.RNAV1.to(oAPP.ui.RPAGE2);
 
         oAPP.fn.fnSetModelProperty("/CONTENT", oSelectedRowData); 
 
@@ -1662,9 +1762,11 @@ if (!oAPP) {
      */
     oAPP.fn.attachInit = () => {
 
-        sap.ui.getCore().attachInit(async function () {
+        sap.ui.getCore().attachInit(async function () {            
 
             oAPP.setBusy("X");
+
+            jQuery.sap.require("sap.m.Illustration");
 
             // IPC Event 등록
             _attachIpcEvents();

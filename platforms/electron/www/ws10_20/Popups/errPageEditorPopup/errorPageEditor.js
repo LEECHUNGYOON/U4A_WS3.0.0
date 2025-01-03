@@ -26,7 +26,19 @@ var oAPP = parent.oAPP,
         oTimer = "";
 
 
+    /*************************************************************
+     * @function - 메시지 텍스트를 구하는 function
+     *************************************************************/
+    function _getMsgText(){
 
+        let oUserInfo = parent.process.USERINFO;
+        let sLangu = oUserInfo.LANGU;
+
+
+
+        oAPP.msg.M278 = oAPP.WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "278"); // Read me
+
+    } // end of _getMsgText
 
     /*************************************************************
      * @function - SYSID에 해당하는 테마 변경 IPC 이벤트
@@ -361,7 +373,8 @@ var oAPP = parent.oAPP,
                     src: "sap-icon://arrow-left"
                 }),
                 new sap.m.Title({
-                    text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D34", "", "", "", ""), // Read me
+                    // text: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D34", "", "", "", ""), // Read me
+                    text: oAPP.msg.M278, // Read me
                 }),
 
                 new sap.m.ToolbarSpacer(),
@@ -624,6 +637,9 @@ var oAPP = parent.oAPP,
 
             // IPC Event 등록
             _attachIpcEvents();
+
+            // 메시지 텍스트 정보를 수집한다.
+            _getMsgText();
 
             oAPP.fn.fnInitModelBinding();
 

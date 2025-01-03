@@ -209,8 +209,8 @@
 
                 if (parent.oWS.utill.attr.ISINIT == null) {
 
-                    // 웰컴 사운드
-                    parent.setSoundMsg('WELCOME');
+                    // // 웰컴 사운드   <--- 로그인 성공 시 사운드 출력하는 것으로 소스 이동
+                    // parent.setSoundMsg('WELCOME');
 
                     let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "299");                   
 

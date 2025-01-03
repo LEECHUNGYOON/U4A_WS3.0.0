@@ -111,8 +111,37 @@ oAPP.msg = {};
 
 
 
+/**********************************************************
+ * 📝 Local Functions 
+ **********************************************************/
 
 
+    /**********************************************************
+     * ## 접속 언어별 웰컴 사운드 경로를 반환 한다.
+     **********************************************************/
+    function _getWelComeSoundPath(){
+
+        let oUserInfo = parent.process.USERINFO;
+        if(!oUserInfo){
+            return;
+        }
+
+        let sLangu = oUserInfo.LANGU;
+
+        // 사운드 ROOT 경로
+        let sSoundRootPath = PATH.join(__dirname, '../sound/welcome/');
+        let sSoundFileName = "WELCOME";
+
+        let sSoundPath = PATH.join(sSoundRootPath, sLangu, sSoundFileName + ".wav");        
+
+        // 로그인 언어에 해당하는 사운드가 없다면 기본 EN 사운드로 출력한다.
+        if(FS.existsSync(sSoundPath) === false){            
+            return PATH.join(sSoundRootPath, "EN", sSoundFileName + ".wav");
+        }
+
+        return sSoundPath;
+
+    } // end of _getWelComeSoundPath
 
     /**********************************************************
      * ## Function 
@@ -1391,8 +1420,23 @@ oAPP.msg = {};
                 break;
 
             case "WELCOME": 
-                sAudioPath = PATH.join(sSoundRootPath, 'greeting_1.wav');
+
+                // 웰컴 사운드 경로를 구한다.
+                sAudioPath = _getWelComeSoundPath();
+
                 break;
+
+            // case "WELCOME": 
+            //     sAudioPath = PATH.join(sSoundRootPath, 'greeting_1.wav');
+            //     break;
+
+            // case "WELCOME_KO": 
+            //     sAudioPath = PATH.join(sSoundRootPath, 'WELCOME_KO.wav');
+            //     break;
+            
+            // case "WELCOME_KO": 
+            //     sAudioPath = PATH.join(sSoundRootPath, 'WELCOME_EN.wav');
+            //     break;
 
         }
 

@@ -113,16 +113,77 @@
             return;
         }
 
-        var bCheckAppNm = oAPP.fn.fnCheckAppName();
-        if (!bCheckAppNm) {
-            // busy 끄고 Lock 풀기
+        // var bCheckAppNm = oAPP.fn.fnCheckAppName();
+        // if (!bCheckAppNm) {
+        //     // busy 끄고 Lock 풀기
+        //     oAPP.common.fnSetBusyLock("");
+        //     return;
+        // }
+
+        var oAppNmInput = sap.ui.getCore().byId("AppNmInput");
+        if (!oAppNmInput) {
+
+            // busy 키고 Lock 걸기
             oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
-        // application 존재 여부 체크
-        var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
-            sAppID = oAppNmInput.getValue();
+        let oUserInfo = parent.process.USERINFO;
+        let sLangu = oUserInfo.LANGU;
+        
+        var sValue = oAppNmInput.getValue(),
+            sCurrPage = parent.getCurrPage();
+
+        // 입력값 유무 확인
+        if (typeof sValue !== "string" || sValue == "") {
+                    
+            // Application name is required.            
+            let sErrMsg = parent.WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "273");
+
+            // 페이지 푸터 메시지
+            APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sErrMsg);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            return;
+        }        
+        
+        // 입력값 공백 여부 체크
+        var reg = /\s/;
+        if (reg.test(sValue)) {
+            
+            // The application name must not contain any spaces.
+            let sErrMsg = parent.WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "274");
+
+            // 페이지 푸터 메시지
+            APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sErrMsg);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            return;
+        }
+
+        // 특수문자 존재 여부 체크
+        var reg = /[^\w]/;
+        if (reg.test(sValue)) {
+            
+            //Special characters are not allowed.
+            let sErrMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "278");
+
+            // 페이지 푸터 메시지
+            APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sErrMsg);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            return;
+        }
+
+        // application 존재 여부 체크        
+        let sAppID = oAppNmInput.getValue();
 
         // APP 존재 유무 확인
         oAPP.fn.fnCheckAppExists(sAppID, lf_result);
@@ -340,11 +401,73 @@
             return;
         }
 
-        // 어플리케이션 명 입력 유무 및 데이터 정합성 체크
-        var bCheckAppNm = oAPP.fn.fnCheckAppName();
-        if (!bCheckAppNm) {
+        // // 어플리케이션 명 입력 유무 및 데이터 정합성 체크
+        // var bCheckAppNm = oAPP.fn.fnCheckAppName();
+        // if (!bCheckAppNm) {
+        //     // busy 끄고 Lock 풀기
+        //     oAPP.common.fnSetBusyLock("");
+        //     return;
+        // }
+
+        var oAppNmInput = sap.ui.getCore().byId("AppNmInput");
+        if (!oAppNmInput) {
+
+            // busy 키고 Lock 걸기
+            oAPP.common.fnSetBusyLock("");
+
+            return;
+        }
+
+        var sValue = oAppNmInput.getValue(),
+            sCurrPage = parent.getCurrPage();
+
+        let oUserInfo = parent.process.USERINFO;
+        let sLangu = oUserInfo.LANGU;
+
+        // 입력값 유무 확인
+        if (typeof sValue !== "string" || sValue == "") {
+            
+            // Application name is required.            
+            let sErrMsg = parent.WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "273");
+
+            // 페이지 푸터 메시지
+            APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sErrMsg);
+
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
+
+            return;
+        }
+
+        // 입력값 공백 여부 체크
+        var reg = /\s/;
+        if (reg.test(sValue)) {
+            
+            // The application name must not contain any spaces.
+            let sErrMsg = parent.WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "274");
+
+            // 페이지 푸터 메시지
+            APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sErrMsg);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            return;
+        }        
+
+        // 특수문자 존재 여부 체크
+        var reg = /[^\w]/;
+        if (reg.test(sValue)) {
+            
+            //Special characters are not allowed.
+            let sErrMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "278");
+
+            // 페이지 푸터 메시지
+            APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sErrMsg);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -405,14 +528,77 @@
     oAPP.events.ev_AppExec = function () {
 
         // busy 키고 Lock 걸기
-        oAPP.common.fnSetBusyLock("X");
+        oAPP.common.fnSetBusyLock("X");       
 
-        var bCheckAppNm = oAPP.fn.fnCheckAppName();
-        if (!bCheckAppNm) {
-            // busy 끄고 Lock 풀기
+        // var bCheckAppNm = oAPP.fn.fnCheckAppName();
+        // if (!bCheckAppNm) {
+        //     // busy 끄고 Lock 풀기
+        //     oAPP.common.fnSetBusyLock("");
+        //     return;
+        // }
+
+        var oAppNmInput = sap.ui.getCore().byId("AppNmInput");
+        if (!oAppNmInput) {
+
+            // busy 키고 Lock 걸기
             oAPP.common.fnSetBusyLock("");
+
             return;
         }
+
+        var sValue = oAppNmInput.getValue(),
+            sCurrPage = parent.getCurrPage();
+
+        let oUserInfo = parent.process.USERINFO;
+        let sLangu = oUserInfo.LANGU;
+
+        // 입력값 유무 확인
+        if (typeof sValue !== "string" || sValue == "") {
+            
+            // Application name is required.            
+            let sErrMsg = parent.WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "273");
+
+            // 페이지 푸터 메시지
+            APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sErrMsg);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            return;
+        }
+
+        // 입력값 공백 여부 체크
+        var reg = /\s/;
+        if (reg.test(sValue)) {
+            
+            // The application name must not contain any spaces.
+            let sErrMsg = parent.WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "274");
+
+            // 페이지 푸터 메시지
+            APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sErrMsg);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            return;
+        }        
+
+        // 특수문자 존재 여부 체크
+        var reg = /[^\w]/;
+        if (reg.test(sValue)) {
+            
+            //Special characters are not allowed.
+            let sErrMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "278");
+
+            // 페이지 푸터 메시지
+            APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sErrMsg);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            return;
+        }
+
 
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
             sAppID = oAppNmInput.getValue();
@@ -536,12 +722,75 @@
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
 
-        var bCheckAppNm = oAPP.fn.fnCheckAppName();
-        if (!bCheckAppNm) {
-            // busy 끄고 Lock 풀기
+        // var bCheckAppNm = oAPP.fn.fnCheckAppName();
+        // if (!bCheckAppNm) {
+        //     // busy 끄고 Lock 풀기
+        //     oAPP.common.fnSetBusyLock("");
+        //     return;
+        // }
+
+        var oAppNmInput = sap.ui.getCore().byId("AppNmInput");
+        if (!oAppNmInput) {
+
+            // busy 키고 Lock 걸기
             oAPP.common.fnSetBusyLock("");
+
             return;
         }
+
+        var sValue = oAppNmInput.getValue(),
+            sCurrPage = parent.getCurrPage();
+
+        let oUserInfo = parent.process.USERINFO;
+        let sLangu = oUserInfo.LANGU;
+
+        // 입력값 유무 확인
+        if (typeof sValue !== "string" || sValue == "") {
+            
+            // Application name is required.            
+            let sErrMsg = parent.WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "273");
+
+            // 페이지 푸터 메시지
+            APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sErrMsg);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            return;
+        }
+
+        // 입력값 공백 여부 체크
+        var reg = /\s/;
+        if (reg.test(sValue)) {
+            
+            // The application name must not contain any spaces.
+            let sErrMsg = parent.WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "274");
+
+            // 페이지 푸터 메시지
+            APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sErrMsg);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            return;
+        }        
+
+        // 특수문자 존재 여부 체크
+        var reg = /[^\w]/;
+        if (reg.test(sValue)) {
+            
+            //Special characters are not allowed.
+            let sErrMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "278");
+
+            // 페이지 푸터 메시지
+            APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sErrMsg);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            return;
+        }
+        
 
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
             sAppID = oAppNmInput.getValue();
@@ -1204,7 +1453,13 @@
 
             oAppInfo.ACTST = 'A';
 
-            var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "032"); // Activity success
+            // var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "032"); // Activity success
+
+            let oUserInfo = parent.process.USERINFO;
+            let sLangu = oUserInfo.LANGU;
+
+            // Activity success
+            var sMsg = parent.WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "275");
 
             APPCOMMON.fnShowFloatingFooterMsg('S', sCurrPage, sMsg);
 

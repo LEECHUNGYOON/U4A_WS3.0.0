@@ -141,7 +141,7 @@ module.exports = function(sAttr){
 
 
 /*********************************************************
- * @module - HTML PATH 구성.
+ * @function - HTML PATH 구성.
  ********************************************************/
 function setHTMLPath(){
 
@@ -167,7 +167,7 @@ function setHTMLPath(){
 
 
 /*********************************************************
- * @module - 팝업의 모델 초기값 설정.
+ * @function - 팝업의 모델 초기값 설정.
  ********************************************************/
 function setInitPopupModelData(oModel, sAttr){
 
@@ -195,7 +195,7 @@ function setInitPopupModelData(oModel, sAttr){
 
 
 /*********************************************************
- * @module - Use init pre-screen event 사용 여부 처리.
+ * @function - Use init pre-screen event 사용 여부 처리.
  ********************************************************/
 function setInitPreScreen(oModel, sAttr){
 

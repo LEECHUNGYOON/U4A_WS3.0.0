@@ -848,10 +848,21 @@
         //테마 정보가 존재하지 않는경우.
         if(loApp.attr.theme === ""){
             //공통코드의 default 테마 정보 검색.
-            loApp.attr.theme = oAPP.attr.S_CODE.UA007.find( item => item.FLD02 === "X" && item.FLD03 === "X" )?.FLD01 || "";
+            loApp.attr.theme = oAPP.attr.S_CODE.UA007.find( item => item.FLD02 === "X" )?.FLD01 || "";
+
+            //1.120.21 버전 이후 패치의 경우 허용 가능 테마 필드명 매핑.
+            if(oAPP.common.checkWLOList("C", "UHAK900877") === true){
+                loApp.attr.theme = oAPP.attr.S_CODE.UA007.find( item => item.FLD02 === "X" && item.FLD03 === "X" )?.FLD01 || "";
+            }
         }
         
-        let _aUA007 = oAPP.attr.S_CODE.UA007.filter( item => item.FLD03 === "X" );
+
+        let _aUA007 = oAPP.attr.S_CODE.UA007;
+        
+        //1.120.21 버전 이후 패치의 경우 허용 가능 테마 필드명 매핑.
+        if(oAPP.common.checkWLOList("C", "UHAK900877") === true){
+            _aUA007 = oAPP.attr.S_CODE.UA007.filter( item => item.FLD03 === "X" );
+        }
         
         //테마 ddlb 정보 구성.
         loApp.attr.T_THEME = [];

@@ -2825,10 +2825,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             content: [
 
-                new sap.m.MessageStrip({
-                    showIcon: true,
-                    text: "{/WSLANGU/ZMSG_WS_COMMON_001/037}" // This setting is applies only to after restarting application.
-                }).addStyleClass("sapUiTinyMargin"),
+                // new sap.m.MessageStrip({
+                //     showIcon: true,
+                //     text: "{/WSLANGU/ZMSG_WS_COMMON_001/037}" // This setting is applies only to after restarting application.
+                // }).addStyleClass("sapUiTinyMargin"),
 
                 new sap.ui.layout.form.Form({
                     editable: true,
@@ -3199,8 +3199,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oAPP.setBusy(false);
 
-        // // UI5 테마 적용
-        // sap.ui.getCore().applyTheme(sSelectedTheme);
+        // UI5 테마 적용
+        sap.ui.getCore().applyTheme(sSelectedTheme);
 
         sap.m.MessageToast.show(oAPP.msg.M01); // Saved success
 

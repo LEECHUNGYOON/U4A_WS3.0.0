@@ -51,7 +51,8 @@
     oAPP.oDesign.settings = {};
 
     //WS 3.0에 설정한 언어정보.
-    oAPP.oDesign.settings.GLANGU = parent.WSUTIL.getWsSettingsInfo().globalLanguage;
+    //oAPP.oDesign.settings.GLANGU = parent.WSUTIL.getWsSettingsInfo().globalLanguage;
+    oAPP.oDesign.settings.GLANGU = parent.getUserInfo().LANGU;
 
 
     //design root path 정보 구성.(ws10_20/design/js)

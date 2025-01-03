@@ -482,6 +482,12 @@ function fnGetSapTntIcons() {
 
         let oIconList = oIconListResult.RTDATA,
             aIcons = [];
+        
+        // 20250103 yoon: 1.120.21 버전에서는 TNT Icon 정보가 있는 json 파일의 구조가 변경됨에 따라
+        // 해당 구조 유무를 가지고 아이콘 목록을 구성한다.
+        if(typeof oIconList.icons === "object"){
+            oIconList = oIconList.icons;
+        }
 
         // 가져온 JSON 목록을 추가 정보를 구성하여 Array에 저장한다.
         for (var sIconName in oIconList) {
@@ -1121,10 +1127,9 @@ function fnGetMainPageContents() {
 
         select: ev_iconListIconTabSelectEvent
 
-    });
+    });    
 
-    // 모든 팝업 및 드롭다운 등등의 영역 제한
-    sap.ui.core.Popup.setWithinArea(oIconTabBar);
+    // sap.ui.core.Popup.setWithinArea(oIconTabBar);
 
     return [
         oIconTabBar
@@ -2097,16 +2102,20 @@ oAPP.setBusy = (isBusy) => {
 
     if (bIsBusy) {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
+        // // 화면 Lock 걸기
+        // sap.ui.getCore().lock();
+
+        document.body.style.pointerEvents = 'none';
 
         sap.ui.core.BusyIndicator.show(0);
 
         return;
     }
 
-    // 화면 Lock 해제
-    sap.ui.getCore().unlock();
+    // // 화면 Lock 해제
+    // sap.ui.getCore().unlock();
+
+    document.body.style.pointerEvents = '';
 
     sap.ui.core.BusyIndicator.hide();
 

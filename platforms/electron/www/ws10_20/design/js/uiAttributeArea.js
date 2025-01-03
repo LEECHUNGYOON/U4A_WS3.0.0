@@ -4059,6 +4059,18 @@
       return;
     }
 
+    //라이브러리 DB 정보 확인.
+    var _s0023 = oAPP.DATA.LIB.T_0023.find( item => item.UIATK === is_attr.UIATK );
+
+    if(typeof _s0023 === "undefined"){
+      return;
+    }
+
+    //ENUM 처리건인경우 EXIT.
+    if(_s0023.ISLST === "X"){
+      return;
+    }
+
     //아이콘 관련 프로퍼티임 flag return.
     return true;
 
@@ -5186,8 +5198,15 @@
           //DDLB visible 처리.
           ls_0015.sel_visb = true;
 
+          var _isUsed = undefined;
+
+          //1.120.21 버전 이후 패치의 경우 허용 가능 테마 필드명 매핑.
+          if(oAPP.common.checkWLOList("C", "UHAK900877") === true){
+            _isUsed = "FLD03";
+          }
+
           //UI 테마 DDLB 구성.
-          ls_0015.T_DDLB = lf_DDLB("UA007", "FLD03", "FLD01", "FLD01");
+          ls_0015.T_DDLB = lf_DDLB("UA007", _isUsed, "FLD01", "FLD01");
           break;
 
         case "DH001022":  //CSS Link Add

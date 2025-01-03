@@ -30,7 +30,10 @@
 
 
 	// Theme Name 
-	var Ltheme = oAPP.IF_DATA.THEME_INFO.THEME;
+	// var Ltheme = oAPP.IF_DATA.THEME_INFO.THEME;
+
+	let oThemeInfo = oAPP.fn.getThemeInfo();
+	let Ltheme = oThemeInfo.THEME;
 
 	var page = new sap.m.Page({
 		showHeader: true,
@@ -53,6 +56,8 @@
 	var oSelect = new sap.m.Select({
 		selectedKey: Ltheme
 	});
+
+	oUI5.oThemeSelect = oSelect;
 
 	oSelect.addItem(new sap.ui.core.Item({
 		key: "sap_horizon_dark",
@@ -116,11 +121,11 @@
 
 
 	//경고 문구 
-	var oTxt1 = new sap.m.Text({
-		text: APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "331", "", "", "", ""), // The theme is applied after re-running.
-	});
-	oTxt1.addStyleClass("sapUiTinyMarginBegin cl_theme_notice_text");
-	oBar.addContentLeft(oTxt1);
+	// var oTxt1 = new sap.m.Text({
+	// 	text: APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "331", "", "", "", ""), // The theme is applied after re-running.
+	// });
+	// oTxt1.addStyleClass("sapUiTinyMarginBegin cl_theme_notice_text");
+	// oBar.addContentLeft(oTxt1);
 
 
 	//테마 등록저장 버튼 생성 
@@ -200,7 +205,7 @@
 
 			oAPP.IPCRENDERER.send(`if-p13n-themeChange-${sSysID}`, sData);
 
-			sap.ui.getCore().applyTheme(sData.THEME);
+			// sap.ui.getCore().applyTheme(sData.THEME);
 
 			// page.setBusy(false);
 

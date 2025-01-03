@@ -126,6 +126,8 @@
 
         }).addStyleClass(C_DIALOG_ID);
 
+        oAppF4Dialog.addStyleClass("sapUiSizeCompact");
+
         oAppF4Dialog.open();
 
     }; // end of oAPP.fn.fnAppF4PopupOpen
@@ -248,6 +250,7 @@
                                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A22"), // Package
                             }),
                             fields: new sap.m.Input("appf4_packg", {
+                                showClearIcon: true,
                                 value: "{PACKG}",
                                 submit: oAPP.events.ev_AppF4Search
                             }).bindProperty("enabled", {
@@ -271,6 +274,7 @@
                                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B95"), // User Name
                             }),
                             fields: new sap.m.Input({
+                                showClearIcon: true,
                                 width: "200px",
                                 value: "{ERUSR}",
                                 submit: oAPP.events.ev_AppF4Search
@@ -295,6 +299,7 @@
                                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A90"), // Web Application ID
                             }),
                             fields: new sap.m.Input({
+                                showClearIcon: true,
                                 value: "{APPID}",
                                 submit: oAPP.events.ev_AppF4Search
                             })
@@ -302,9 +307,10 @@
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 design: ENUM_LABEL_DESIGN_BOLD,
-                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91"), // Web Application Name
+                                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91"), // APP Description
                             }),
                             fields: new sap.m.Input({
+                                showClearIcon: true,
                                 value: "{APPNM}",
                                 submit: oAPP.events.ev_AppF4Search
                             })
@@ -321,8 +327,8 @@
                                     path: `${C_BIND_ROOT_PATH}/aAPPTY`,
                                     template: new sap.ui.core.ListItem({
                                         key: "{KEY}",
-                                        text: "{KEY}",
-                                        additionalText: "{TEXT}"
+                                        text: "{KEY}\t( {TEXT} )",
+                                        // additionalText: "{TEXT}"
                                     })
                                 },
                                 change: function (oEvent) {
@@ -365,6 +371,7 @@
                                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A76"), // Maximum No, of Hits
                             }),
                             fields: new sap.m.Input({
+                                showClearIcon: true,
                                 width: "100px",
                                 value: "{HITS}",
                                 submit: oAPP.events.ev_AppF4Search
@@ -378,20 +385,38 @@
         // form Ui에 대한 바인딩 루트 패스 지정
         oForm.bindElement(`${C_BIND_ROOT_PATH}/TAB1`);
 
-        var sHeaderText = "[U4A] " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B94"), // All App.
+        let sHeaderText = "[U4A] " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B94"); // All App.
 
-            oPanel = new sap.m.Panel({
-                headerText: sHeaderText,
-                backgroundDesign: sap.m.BackgroundDesign.Transparent,
-                expandable: true,
-                expanded: true,
-                content: oForm,
-            }).addStyleClass("sapUiNoContentPadding"),
+        let oPanel = new sap.m.Panel({
+            // headerText: sHeaderText,
+            backgroundDesign: sap.m.BackgroundDesign.Transparent,
+            expandable: true,
+            expanded: true,
+            content: oForm,
+        }).addStyleClass("sapUiNoContentPadding");        
 
-            sTableListBindPath = `${C_BIND_ROOT_PATH}/TAB1/APPLIST`,
+        let oToolbar = new sap.m.Toolbar();
+        oPanel.setHeaderToolbar(oToolbar);
 
-            oTable = oAPP.fn.fnGetAppF4ListTable(sTableListBindPath),
-            oUiTable = getAppF4ListUiTable(sTableListBindPath);
+        let oTitle1 = new sap.m.Title({
+            text: sHeaderText
+        });
+        oToolbar.addContent(oTitle1);
+
+        oTitle1.addStyleClass("sapUiTinyMarginEnd");
+
+        let oBtn1 = new sap.m.Button({
+            type: "Emphasized",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A75"), // Search
+            icon: "sap-icon://search",
+            press: oAPP.events.ev_AppF4Search            
+        });
+        oToolbar.addContent(oBtn1);
+
+        let sTableListBindPath = `${C_BIND_ROOT_PATH}/TAB1/APPLIST`;
+
+        // let oTable = oAPP.fn.fnGetAppF4ListTable(sTableListBindPath);
+        let oUiTable = getAppF4ListUiTable(sTableListBindPath);
 
         var oItem = new sap.m.IconTabFilter({
             key: "K1",
@@ -429,6 +454,8 @@
     function getAppF4ListUiTable(sBindPath) {
 
         return new sap.ui.table.Table({
+            // visibleRowCount: 1,
+            minAutoRowCount: 1,
             visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
             alternateRowColors: true,
             selectionMode: sap.ui.table.SelectionMode.Single,
@@ -437,6 +464,8 @@
             columns: [
 
                 new sap.ui.table.Column({
+                    sortProperty: "ERUSR",
+                    filterProperty: "ERUSR",
                     label: new sap.m.Label({
                         text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B95"), // User Name
                         design: sap.m.LabelDesign.Bold
@@ -449,6 +478,8 @@
                 }),
 
                 new sap.ui.table.Column({
+                    sortProperty: "APPID",
+                    filterProperty: "APPID",
                     label: new sap.m.Label({
                         text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A90"), // Web Application ID
                         design: sap.m.LabelDesign.Bold
@@ -460,6 +491,8 @@
                 }),
 
                 new sap.ui.table.Column({
+                    sortProperty: "APPNM",
+                    filterProperty: "APPNM",
                     label: new sap.m.Label({
                         text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91"), // Web Application Name
                         design: sap.m.LabelDesign.Bold
@@ -471,6 +504,8 @@
                 }),
 
                 new sap.ui.table.Column({
+                    sortProperty: "APPTY",
+                    filterProperty: "APPTY",
                     label: new sap.m.Label({
                         text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B97"), // App Type
                         design: sap.m.LabelDesign.Bold

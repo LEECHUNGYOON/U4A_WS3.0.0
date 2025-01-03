@@ -453,3 +453,15 @@ html[class*=sapUiTheme]:not([class*="dark"]) .u4aWs10Page .sapMPage > section {
 /***************************************************
  * 메인페이지의 u4a bot 배경 이미지 --- END
  ***************************************************/
+
+
+
+/* 디자인 영역의 Attribute 영역 */
+
+.u4aWsDesignAttr .sapMInputBaseDisabled {
+	opacity: 0.8;
+}
+
+.u4aWsDesignAttr .sapMInputBaseDisabled .sapMInputBaseInner {
+	color: #4098ff;
+}

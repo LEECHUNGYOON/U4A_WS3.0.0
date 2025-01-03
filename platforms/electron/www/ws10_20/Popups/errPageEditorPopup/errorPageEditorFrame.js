@@ -8,6 +8,7 @@ let oAPP = (function(window) {
     "use strict";
 
     var oAPP = {};
+    oAPP.msg = {};
     oAPP.attr = {};
     oAPP.fn = {};
     oAPP.events = {};

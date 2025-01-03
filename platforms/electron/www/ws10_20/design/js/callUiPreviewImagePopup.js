@@ -97,7 +97,9 @@
         oBtn0.attachPress(function(){
             //001  Cancel operation
             //팝업 종료 처리.
-            lf_close("001");
+            // lf_close("001");
+
+            loApp.ui.oPop.close();
 
         }); //닫기 버튼 선택 이벤트.
 

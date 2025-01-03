@@ -89,8 +89,7 @@
         oTool1.addContent(new sap.m.ToolbarSpacer());
 
         //056	닫기
-        var l_txt = parent.WSUTIL.getWsMsgClsTxt(
-            parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "056");
+        var l_txt = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "056");
 
         //팝업 상단 닫기버튼.
         var oBtn1 = new sap.m.Button({tooltip:l_txt, icon:"sap-icon://decline", type:"Reject"});
@@ -131,8 +130,7 @@
         oFCont1.addFormElement(oFElem2);
 
         //024	Title
-        var l_txt = parent.WSUTIL.getWsMsgClsTxt(
-            parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "024");
+        var l_txt = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "024");
 
         oFElem2.setLabel(new sap.m.Label({text:l_txt, design:"Bold", required:true}));
         oFElem2.addField(new sap.m.Input({value:"{/title}", valueState:"{/stat/st/title}", 
@@ -159,8 +157,7 @@
         oFCont2.addFormElement(oFElem4);
 
         //005	Theme
-        var l_txt = parent.WSUTIL.getWsMsgClsTxt(
-            parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "005");
+        var l_txt = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "005");
 
         oFElem4.setLabel(new sap.m.Label({text:l_txt, design:"Bold"}));
         
@@ -236,8 +233,7 @@
 
 
         //003 Cancel
-        var l_txt = parent.WSUTIL.getWsMsgClsTxt(
-            parent.WSUTIL.getWsSettingsInfo().globalLanguage, "ZMSG_WS_COMMON_001", "003");
+        var l_txt = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "003");
 
         //팝업 하단 닫기 버튼.
         var oBtn3 = new sap.m.Button({text:l_txt, tooltip:l_txt, type:"Reject", icon:"sap-icon://decline"});
@@ -1966,7 +1962,6 @@ sap.ui.getCore().attachInit(function(){
 
         var l_err = false;
 
-        var l_LANGU = parent.WSUTIL.getWsSettingsInfo().globalLanguage;
 
         //파일명 입력이 누락됐다면.
         if(ls_data.fileName === ""){
@@ -1978,7 +1973,7 @@ sap.ui.getCore().attachInit(function(){
 
             //027	&1 is required entry value
             ls_data.stat.tx.fileName = parent.WSUTIL.getWsMsgClsTxt(
-                l_LANGU, "ZMSG_WS_COMMON_001", "027", "파일명");
+                oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "027", "파일명");
 
         }
 

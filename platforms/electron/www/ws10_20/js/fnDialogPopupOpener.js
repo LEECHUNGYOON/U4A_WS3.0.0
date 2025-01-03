@@ -1085,9 +1085,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -1261,7 +1261,11 @@
 
             oBrowserWindow = null;
 
-            CURRWIN.focus();
+            try {
+                CURRWIN.focus();    
+            } catch (error) {
+                
+            }           
 
         });
 
@@ -1311,7 +1315,7 @@
         oBrowserOptions.parent = CURRWIN;        
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL; //테마별 색상 처리
 
-        oBrowserOptions.opacity = 0.0;
+        // oBrowserOptions.opacity = 0.0;
         oBrowserOptions.show = false;
         oBrowserOptions.closable = false;
 
@@ -1953,6 +1957,21 @@
 
     }; // end of oAPP.fn.fnU4ADocuPopupOpener
 
+
+    function _checkAppExistsPromise(APPID){
+
+        return new Promise(function(resolve){
+
+            oAPP.fn.fnCheckAppExists(APPID, function(RESULT){
+
+                resolve(RESULT);
+
+            });
+
+        });
+
+    } // end of _checkAppExistsPromise
+
     /************************************************************************
      * WS APP Import/Export Popup Opener
      * **********************************************************************
@@ -1960,7 +1979,7 @@
      * - IMPORT : Application Import
      * - EXPORT : Application Export
      * **********************************************************************/
-    oAPP.fn.fnWsImportExportPopupOpener = (sFlag) => {
+    oAPP.fn.fnWsImportExportPopupOpener = async (sFlag) => {
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
@@ -1985,18 +2004,101 @@
 
         if (sFlag == "EXPORT") {
 
-            // application명 정합성 체크
-            let bCheckAppNm = oAPP.fn.fnCheckAppName();
-            if (!bCheckAppNm) {
+            var oAppNmInput = sap.ui.getCore().byId("AppNmInput");
+            if (!oAppNmInput) {
+
+                // busy 키고 Lock 걸기
+                oAPP.common.fnSetBusyLock("");
+
+                return;
+            }
+
+            var sValue = oAppNmInput.getValue(),
+                sCurrPage = parent.getCurrPage();
+
+            let oUserInfo = parent.process.USERINFO;
+            let sLangu = oUserInfo.LANGU;
+
+            // 입력값 유무 확인
+            if (typeof sValue !== "string" || sValue == "") {
+                
+                // Application name is required.            
+                let sErrMsg = parent.WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "273");
+
+                // 페이지 푸터 메시지
+                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sErrMsg);
 
                 // busy 끄고 Lock 풀기
                 oAPP.common.fnSetBusyLock("");
 
-                // 전체 자식 윈도우에 Busy 끈다.
-                oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
+                return;
+            }
+
+            // 입력값 공백 여부 체크
+            var reg = /\s/;
+            if (reg.test(sValue)) {
+                
+                // The application name must not contain any spaces.
+                let sErrMsg = parent.WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "274");
+
+                // 페이지 푸터 메시지
+                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sErrMsg);
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
+                return;
+            }        
+
+            // 특수문자 존재 여부 체크
+            var reg = /[^\w]/;
+            if (reg.test(sValue)) {
+                
+                //Special characters are not allowed.
+                let sErrMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "278");
+
+                // 페이지 푸터 메시지
+                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sErrMsg);
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
             }
+
+            // 앱 존재 유무 확인
+            let oResult = await _checkAppExistsPromise(sValue);
+
+            var oAppInfo = oResult.RETURN,
+            oCurrWin = parent.REMOTE.getCurrentWindow(),
+            sCurrPage = parent.getCurrPage();
+
+            if (oResult.RETCD == 'E') {
+
+                // 작업표시줄 깜빡임
+                oCurrWin.flashFrame(true);
+
+                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
+                return;
+
+            }
+
+            // // application명 정합성 체크
+            // let bCheckAppNm = oAPP.fn.fnCheckAppName();
+            // if (!bCheckAppNm) {
+
+            //     // busy 끄고 Lock 풀기
+            //     oAPP.common.fnSetBusyLock("");
+
+            //     // 전체 자식 윈도우에 Busy 끈다.
+            //     oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
+
+            //     return;
+            // }
 
         }
 
