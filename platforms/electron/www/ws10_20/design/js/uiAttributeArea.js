@@ -5201,7 +5201,7 @@
           var _isUsed = undefined;
 
           //1.120.21 버전 이후 패치의 경우 허용 가능 테마 필드명 매핑.
-          if(oAPP.common.checkWLOList("C", "UHAK900877") === true){
+          if(oAPP.common.checkWLOList("C", "UHAK900889") === true){
             _isUsed = "FLD03";
           }
 
