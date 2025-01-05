@@ -3470,6 +3470,7 @@ window.onbeforeunload = () => {
     IPCMAIN.off('if-browser-interconnection', oAPP.fn.fnIpcMain_browser_interconnection);
 
     // 서버 리스트의 "WS 언어 설정" 화면에서 "서버 로그인 언어 사용" 여부 체크를 하고 저장할 때
+    // 로그인 화면의 언어 필드를 제어하기 위한 IPC 이벤트 해제
     IPCMAIN.off('if-login-serverlist', oAPP.fn.onIpcMain_if_login_serverlist);
 
     // 서버 정보를 구한다.
@@ -3478,7 +3479,7 @@ window.onbeforeunload = () => {
     // 접속 서버의 SYSID 정보를 구한다.
     let sSysID = oServerInfo.SYSID;
 
-    // SYSID에 해당하는 테마 변경 IPC 이벤트를 등록한다.
+    // SYSID에 해당하는 테마 변경 IPC 이벤트를 제거한다.
     IPCMAIN.off(`if-p13n-themeChange-${sSysID}`, oAPP.fn.onIpcMain_if_p13n_themeChange);
 
     oAPP.fn.fnOnBeforeUnload();

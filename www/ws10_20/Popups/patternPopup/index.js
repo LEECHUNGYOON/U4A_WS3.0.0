@@ -290,7 +290,7 @@ if (!oAPP) {
 
                 oAPP.CURRWIN.show();
 
-                // parent.WSUTIL.setBrowserOpacity(oAPP.CURRWIN); 
+                parent.WSUTIL.setBrowserOpacity(oAPP.CURRWIN); 
 
                 $('#content').fadeIn(300, 'linear', () => {                    
 

@@ -1315,7 +1315,7 @@
         oBrowserOptions.parent = CURRWIN;        
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL; //테마별 색상 처리
 
-        // oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.opacity = 0.0;
         oBrowserOptions.show = false;
         oBrowserOptions.closable = false;
 
