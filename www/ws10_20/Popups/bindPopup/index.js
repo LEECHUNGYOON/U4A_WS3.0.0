@@ -581,9 +581,8 @@ let oAPP = parent.oAPP,
         var oSettings = oAPP.fn.getSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
             oBootStrap = oSetting_UI5.bootstrap,
-            oUserInfo = oAPP.attr.oUserInfo,
-            // oThemeInfo = oAPP.attr.oThemeInfo,
-            oThemeInfo = oAPP.fn.getThemeInfo(),
+            oUserInfo = oAPP.attr.oUserInfo,            
+            oThemeInfo = oAPP.fn.getThemeInfo(),            
             sLangu = oUserInfo.LANGU;
 
         var oScript = document.createElement("script");

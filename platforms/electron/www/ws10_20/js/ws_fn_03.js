@@ -757,7 +757,8 @@
 
                                     fields: [
                                         new sap.m.Text({
-                                            text: "{/USERINFO/WSVER}"
+                                            // text: "{/USERINFO/WSVER}"
+                                            text: "{/SERVERINFO/WSVER}"
                                         })
                                     ] // end of fields
 
@@ -771,13 +772,15 @@
 
                                     fields: [
                                         new sap.m.Text({
-                                            text: "{/USERINFO/WSPATCH_LEVEL}"
+                                            // text: "{/USERINFO/WSPATCH_LEVEL}"
+                                            text: "{/SERVERINFO/WSPATCH_LEVEL}"
                                         })
                                     ] // end of fields
 
                                 }).bindProperty("visible", {
                                     parts: [
-                                        "/USERINFO/WSPATCH_LEVEL"
+                                        // "/USERINFO/WSPATCH_LEVEL"
+                                        "/SERVERINFO/WSPATCH_LEVEL"
                                     ],
                                     formatter: function () {
 
@@ -795,7 +798,8 @@
 
                                     fields: [
                                         new sap.m.Text({
-                                            text: "{/USERINFO/CLIENT}"
+                                            // text: "{/USERINFO/CLIENT}"
+                                            text: "{/SERVERINFO/CLIENT}"
                                         })
                                     ] // end of fields
 
@@ -809,7 +813,8 @@
 
                                     fields: [
                                         new sap.m.Text({
-                                            text: "{/USERINFO/SYSID}"
+                                            // text: "{/USERINFO/SYSID}"
+                                            text: "{/SERVERINFO/SYSID}"
                                         })
                                     ] // end of fields
 
@@ -843,7 +848,8 @@
 
                                     fields: [
                                         new sap.m.Text({
-                                            text: "{/USERINFO/LANGU}"
+                                            // text: "{/USERINFO/LANGU}"
+                                            text: "{/SERVERINFO/LANGU}"
                                         })
                                     ] // end of fields
 

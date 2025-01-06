@@ -40,13 +40,15 @@ let oAPP = (function () {
         NAME: "CHROME",
         DESC: "Google Chrome Browser",
         REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe",
-        REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"
+        REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe",
+        APP_MODE: false,
     },
     {
         NAME: "MSEDGE",
         DESC: "Microsoft Edge Browser",
         REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe",
-        REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe"
+        REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe",
+        APP_MODE: false,
     },
         // {
         //     NAME: "IE",
@@ -75,7 +77,7 @@ let oAPP = (function () {
         let oUserInfo = parent.getUserInfo();
 
         // 로그인 접속 언어를 구한다.
-        let sLoginLangu = oUserInfo.LANGU;
+        let sLoginLangu = oUserInfo.LANGU;        
 
         // WS 설정 정보를 구한다.
         let oSettingsInfo = oAPP.fn.fnGetSettingsInfo();
@@ -473,6 +475,7 @@ let oAPP = (function () {
                             }),
                             fields: [
                                 new sap.m.Input("ws_langu", {
+                                    // value: "{LANGU}",
                                     value: "{LANGU}",
                                     showValueStateMessage: false,
                                     submit: oAPP.events.ev_login,
@@ -494,6 +497,25 @@ let oAPP = (function () {
                         new sap.ui.layout.form.FormElement({
                             label: new sap.m.Label({
                                 design: sap.m.LabelDesign.Bold,
+                                text: "Workspace Language"
+                            }),
+                            fields: [
+                                new sap.m.Select("ws_wslangu", {
+                                    selectedKey: "{WSLANGU}",
+                                    items: {
+                                        path: "T_WSLANGU",
+                                        template: new sap.ui.core.ListItem({
+                                            key: "{KEY}",
+                                            text: "{VALUE}",
+                                        })
+                                    }
+                                })
+                            ]
+                        }),
+
+                        new sap.ui.layout.form.FormElement({
+                            label: new sap.m.Label({
+                                design: sap.m.LabelDesign.Bold,
                                 text: "Remember"
                             }),
                             fields: [
@@ -501,7 +523,7 @@ let oAPP = (function () {
                                     selected: "{REMEMBER}"
                                 })
                             ]
-                        }),
+                        }),                        
 
                     ]
                 })
@@ -834,7 +856,7 @@ let oAPP = (function () {
      ************************************************************************/
     oAPP.fn.fnOnInitModelBinding = () => {
 
-        var oUserInfo = parent.getUserInfo(),
+        let oUserInfo = parent.getUserInfo(),
             oServerInfo = parent.getServerInfo(),
             bIsRemember = oAPP.fn.fnGetRememberCheck(),
             oRememberInfo = oAPP.fn.fnGetRememberLoginInfo();
@@ -845,52 +867,66 @@ let oAPP = (function () {
             oServerInfo = parent.getServerInfo();
         }
 
-        var sClient = (bIsRemember ? oRememberInfo && oRememberInfo.CLIENT || "" : oServerInfo.CLIENT),
-            sLangu = (bIsRemember ? oRememberInfo && oRememberInfo.LANGU || "" : oServerInfo.LANGU),
-            sId = (bIsRemember ? oRememberInfo && oRememberInfo.ID || "" : "");
+        // SAP Client
+        let sClient     = (bIsRemember ? oRememberInfo && oRememberInfo.CLIENT || "" : oServerInfo.CLIENT);
 
-        var oLoginData = {
-            CLIENT: sClient,
-            // ID: sRememberId,
-            ID: sId,
-            PW: "",
-            LANGU: sLangu,
-            SYSID: oServerInfo.SYSID,
-            REMEMBER: bIsRemember,
-            IDSUGG: []
-        },
+        // SAP Language
+        let sLangu      = (bIsRemember ? oRememberInfo && oRememberInfo.LANGU || "" : oServerInfo.LANGU);   
 
-            oBusyPopInit = {
-                TITLE: "Checking for updates...",
-                DESC: "　",
-                ILLUSTTYPE: "sapIllus-BeforeSearch",                
-                PROGVISI: false,
-                PERVALUE: 0,
-                ANIMATION: true
-            },
+        // SAP ID
+        let sId         = (bIsRemember ? oRememberInfo && oRememberInfo.ID || "" : "");
 
-            oBusyPopData = {
-                TITLE: "Checking for updates...",
-                DESC: "　",
-                ILLUSTTYPE: "sapIllus-BeforeSearch",
-                PROGVISI: false,
-                PERVALUE: 0,
-                ANIMATION: true
-            };
+        // Workspace Language
+        let sWsLangu    = (bIsRemember ? oRememberInfo && oRememberInfo.WSLANGU || "" : "");
 
+        // Login 모델 데이터
+        let oLoginData = {
+            CLIENT  : sClient,              // SAP Client
+            ID      : sId,                  // SAP ID
+            PW      : "",                   // SAP Password
+            LANGU   : sLangu,               // SAP Language            
+            SYSID   : oServerInfo.SYSID,    // SAP System ID
+            WSLANGU : sWsLangu,             // Workspace Language
+            T_WSLANGU: [
+                { KEY: "EN", VALUE: "EN" },
+                { KEY: "KO", VALUE: "KO" },
+            ],                  // Workspace Language List
+            REMEMBER: bIsRemember,          // Remember Flag
+            IDSUGG: []                      // SAP ID Suggest Data
+        };        
 
-        var aIDSugg = oAPP.fn.fnReadIDSuggData();
+        
+        let oBusyPopInit = {
+            TITLE: "Checking for updates...",
+            DESC: "　",
+            ILLUSTTYPE: "sapIllus-BeforeSearch",                
+            PROGVISI: false,
+            PERVALUE: 0,
+            ANIMATION: true
+        };
+
+        let oBusyPopData = {
+            TITLE: "Checking for updates...",
+            DESC: "　",
+            ILLUSTTYPE: "sapIllus-BeforeSearch",
+            PROGVISI: false,
+            PERVALUE: 0,
+            ANIMATION: true
+        };
+
+        // ID Suggest Data
+        let aIDSugg = oAPP.fn.fnReadIDSuggData();
 
         oLoginData.IDSUGG = aIDSugg;
 
-        var oJsonModel = new sap.ui.model.json.JSONModel();
+        let oJsonModel = new sap.ui.model.json.JSONModel();
         oJsonModel.setData({
             LOGIN: oLoginData,
             BUSYPOPINIT: oBusyPopInit,
             BUSYPOP: oBusyPopData
         });
 
-        var oCoreModel = sap.ui.getCore().getModel();
+        let oCoreModel = sap.ui.getCore().getModel();
         if (oCoreModel == null) {
             sap.ui.getCore().setModel(oJsonModel);
             return;
@@ -914,7 +950,7 @@ let oAPP = (function () {
         if (oLogInData == null) {
             return;
         }
-
+        
         var oResult = oAPP.fn.fnLoginCheck(oLogInData.ID, oLogInData.PW, oLogInData.CLIENT, oLogInData.LANGU);
         if (oResult.RETCD == 'E') {
 
@@ -938,7 +974,7 @@ let oAPP = (function () {
         oFormData.append("SYSID", oLogInData.SYSID);
         oFormData.append("WSVER", oSettings.appVersion);
         oFormData.append("WSPATCH_LEVEL", oSettings.patch_level);
-        oFormData.append("WSLANGU", oSettings.globalLanguage || "EN");
+        // oFormData.append("WSLANGU", oSettings.globalLanguage || "EN");
         oFormData.append("PRCCD", "00"); // 로그인에서 호출하고 있다는 구분자 (로그인 성공시: [/wsloginchk] 서비스 부분에서 참조하는 파라미터)
         oFormData.append("ACTCD", "001"); // 로그인에서 호출하고 있다는 구분자 (로그인 실패시: WS_LOGIN 클래스 부분에서 참조하는 파라미터)
 
@@ -1285,7 +1321,7 @@ let oAPP = (function () {
 
             oFormData.append("WSVER", oSettings.appVersion);
             oFormData.append("WSPATCH_LEVEL", oSettings.patch_level);
-            oFormData.append("WSLANGU", oSettings.globalLanguage || "EN");
+            // oFormData.append("WSLANGU", oSettings.globalLanguage || "EN");
 
             // if (oAPP.attr.HTTPONLY && oAPP.attr.HTTPONLY == "1") {
 
@@ -1390,7 +1426,7 @@ let oAPP = (function () {
 
             oFormData.append("WSVER", oSettings.appVersion);
             oFormData.append("WSPATCH_LEVEL", oSettings.patch_level);
-            oFormData.append("WSLANGU", oSettings.globalLanguage || "EN");
+            // oFormData.append("WSLANGU", oSettings.globalLanguage || "EN");
 
             // if (oAPP.attr.HTTPONLY && oAPP.attr.HTTPONLY == "1") {
 
@@ -2055,24 +2091,6 @@ let oAPP = (function () {
 
         oUserInfo.WSVER = sAppVer;
         oUserInfo.WSPATCH_LEVEL = Number(oWsSettings.patch_level || 0);
-
-        // 글로벌 설정값 관련 설정 갱신
-        await _globalSettingsConfig();
-
-        // 레지스트리에서 WS Global Langu 값을 구한다.
-        let oWsLangu = await WSUTIL.getGlobalSettingInfo("language");
-
-        oUserInfo.LOGIN_LANGU   = oUserInfo.LANGU;
-
-        // 접속 언어 지정을 글로벌 설정 언어로 할지 로그인 언어로 할지 정한다.
-        if(parent.process.isServDependLangu === ""){
-            // oUserInfo.LOGIN_LANGU   = oUserInfo.LANGU;
-            // oUserInfo.LANGU         = oWsSettings.globalLanguage;
-            oUserInfo.LANGU         = oWsLangu?.value;
-        }      
-
-        // 로그인 유저의 아이디/패스워드를 저장해둔다.
-        parent.setUserInfo(oUserInfo);
                
         var oServerInfo = parent.getServerInfo();
 
@@ -2084,10 +2102,15 @@ let oAPP = (function () {
 
         oServerInfo.CLIENT      = oUserInfo.CLIENT;
         oServerInfo.LANGU       = oUserInfo.LANGU;
-        oServerInfo.LOGIN_LANGU = oUserInfo.LOGIN_LANGU;
 
         // 서버 정보에 실제 로그인한 client, language 정보를 저장한다.
         parent.setServerInfo(oServerInfo);
+
+        // oUserInfo.SERVER_LANGU = oUserInfo.LANGU;
+        oUserInfo.LANGU = oUserInfo.WSLANGU;
+
+        // 로그인 유저의 아이디/패스워드를 저장해둔다.
+        parent.setUserInfo(oUserInfo);
 
         // Metadata 정보 세팅 (서버 호스트명.. 또는 메시지 클래스 데이터 등..)
         if (oResult.META) {
@@ -2124,17 +2147,15 @@ let oAPP = (function () {
             SYSID: oUserInfo.SYSID,
             LANGU: oResult.META.LANGU,
             LANGU_CNV: oUserInfo.LANGU,
-            LOGIN_LANGU: oUserInfo.LOGIN_LANGU,
-            GLOBAL_LANGU: oWsSettings.globalLanguage,            
-            isServDependLangu: parent.process.isServDependLangu
+            // WSLANGU: oUserInfo.WSLANGU
+            // LOGIN_LANGU: oUserInfo.LOGIN_LANGU,
+            // GLOBAL_LANGU: oWsSettings.globalLanguage,            
+            // isServDependLangu: parent.process.isServDependLangu
         };  
         
         // 접속 언어 지정을 로그인 시 입력한 언어로 지정
         oProcessUserInfo.LANGU = oUserInfo.LANGU;
-        
-        // 접속 언어 지정을 로그인 시 입력한 언어로 지정
-        oProcessUserInfo.LANGU = oUserInfo.LANGU;
-
+  
         // process.env 변수에 접속한 User 정보를 저장한다.
         parent.setProcessEnvUserInfo(oProcessUserInfo);
 
@@ -2466,7 +2487,8 @@ let oAPP = (function () {
         if (bIsRemember) {
             oSysInfo.CLIENT = oLogInData.CLIENT;
             oSysInfo.LANGU = oLogInData.LANGU;
-            oSysInfo.ID = oLogInData.ID;
+            oSysInfo.ID = oLogInData.ID;            
+            oSysInfo.WSLANGU = oLogInData.WSLANGU;
         }
 
         // login.json 파일에 ID Suggestion 정보 저장
@@ -2891,16 +2913,16 @@ let oAPP = (function () {
     /************************************************************************
      * 서버리스트 화면과 로그인 화면간 IPC Interface
      ************************************************************************/
-    oAPP.fn.onIpcMain_if_login_serverlist = function(oEvent, oRes){
+    // oAPP.fn.onIpcMain_if_login_serverlist = function(oEvent, oRes){
 
-        if(!oRes){
-            return;
-        }
+    //     if(!oRes){
+    //         return;
+    //     }
 
-        // 글로벌 언어 설정에 따른 Language 입력 필드 제어
-        _setLoginLanguInputHandle(oRes);
+    //     // 글로벌 언어 설정에 따른 Language 입력 필드 제어
+    //     _setLoginLanguInputHandle(oRes);
 
-    }; // end of oAPP.fn.onIpcMain_if_login_serverlist
+    // }; // end of oAPP.fn.onIpcMain_if_login_serverlist
 
 
     /************************************************************************
@@ -3136,80 +3158,6 @@ let oAPP = (function () {
         });
 
     } // end of _attachCurrentWindowEvents
-
-
-    /*******************************************************
-     * 글로벌 언어 설정에 따른 Language 입력 필드 제어
-     *******************************************************/
-    function _setLoginLanguInputHandle(oRes){
-
-        // console.log(oRes);
-
-        if(!oRes){
-            return;
-        }
-
-        // Language Input
-        let oLanguInput = sap.ui.getCore().byId("ws_langu");
-        if(!oLanguInput){
-            return;
-        }
-
-        // Remember CheckBox
-        let oRmbCheckBox = sap.ui.getCore().byId("ws_rem");
-        if(!oRmbCheckBox){
-            return;
-        }        
-
-        // 언어 설정을 로그인 언어로 할 경우
-        if(oRes?.useLoginLangu === "X"){
-
-            // language Input의 editable를 활성화 한다.
-            oLanguInput.setEditable(true);
-            
-            // 리멤버 선택 여부
-            let bIsRemSelect = oRmbCheckBox.getSelected();
-
-            // 1. 이전에 remember 설정이 되어 있는 경우 이전 언어 값을 복원한다.
-            if(bIsRemSelect === true){
-
-                let oRememberInfo = oAPP.fn.fnGetRememberLoginInfo();
-                let sBeforeLangu = oRememberInfo && oRememberInfo?.LANGU || "";
-
-                oLanguInput.setValue(sBeforeLangu);
-
-                return;
-
-            }
-
-            oLanguInput.setValue("");
-
-            return;
-        }
-
-        // 언어 설정을 글로벌 설정 언어로 할 경우..
-        // language Input에 글로벌 설정 언어로 변경 후 editable을 막는다.
-        oLanguInput.setEditable(false);
-
-        oLanguInput.setValue(oRes?.language || "");
-
-    } // end of _setLoginLanguInputHandle
-
-
-    /************************************************************************
-     * 서버리스트 화면과 로그인 화면간 IPC Interface
-     ************************************************************************/
-    // function _onIpcMain_if_login_serverlist(oEvent, oRes){
-
-    //     if(!oRes){
-    //         return;
-    //     }
-
-    //     // 글로벌 언어 설정에 따른 Language 입력 필드 제어
-    //     _setLoginLanguInputHandle(oRes);
-
-    // } // end of _onIpcMain_if_login_serverlist
-
     
     /************************************************************************
      * IPC 이벤트 핸들러
@@ -3219,10 +3167,7 @@ let oAPP = (function () {
         // 브라우저간 IPC 통신
         IPCMAIN.on('if-browser-interconnection', oAPP.fn.fnIpcMain_browser_interconnection);
     
-        // 서버 리스트의 "WS 언어 설정" 화면에서 "서버 로그인 언어 사용" 여부 체크를 하고 저장할 때
-        IPCMAIN.on('if-login-serverlist', oAPP.fn.onIpcMain_if_login_serverlist);
-
-        // 서버 정보를 구한다.
+         // 서버 정보를 구한다.
         let oServerInfo = parent.getServerInfo();
 
         // 접속 서버의 SYSID 정보를 구한다.
@@ -3237,20 +3182,15 @@ let oAPP = (function () {
     /************************************************************************
      * 글로벌 설정값 관련 설정      
      ************************************************************************/
-    async function _globalSettingsConfig(){
+    // async function _globalSettingsConfig(){
 
-        // 글로벌 설정 값을 구한다.
-        let oGlobalSettings = await WSUTIL.getWsGlobalSettingInfoAsync();
-        if(!oGlobalSettings){
-            return;
-        }
+    //     // 글로벌 설정 값을 구한다.
+    //     let oGlobalSettings = await WSUTIL.getWsGlobalSettingInfoAsync();
+    //     if(!oGlobalSettings){
+    //         return;
+    //     }
 
-        // 설정 언어를 글로벌 언어로 설정할지 로그인 언어로 할지의 값을 구한다.
-        let sUseLoginLangu = oGlobalSettings?.useLoginLangu?.value || "";
-
-        parent.process.isServDependLangu = sUseLoginLangu || "";     
-
-    } // end of _globalSettingsConfig
+    // } // end of _globalSettingsConfig
 
 
     /********************************************************
@@ -3258,23 +3198,7 @@ let oAPP = (function () {
      ********************************************************/
     async function _onViewReady(){
         
-        let sLangu = "";
-
-        if(parent.process.isServDependLangu === ""){
-
-            // 글로벌 언어 설정값
-            let oWsLangu = await WSUTIL.getGlobalSettingInfo("language");
-            
-            sLangu = oWsLangu?.value;
-
-        }
-
-        // 글로벌 언어 설정 값에 따른 Language 필드 Handle
-        _setLoginLanguInputHandle({
-            useLoginLangu: parent.process.isServDependLangu,
-            language: sLangu
-        });
-
+     
 
     } // end of _onViewReady
 
@@ -3308,7 +3232,7 @@ let oAPP = (function () {
             var oWsSettings = oAPP.fn.fnGetSettingsInfo();
 
             // 글로벌 설정값 관련 설정 
-            await _globalSettingsConfig();           
+            // await _globalSettingsConfig();           
 
             // // // 자연스러운 로딩
             // // oAPP.fn.fnOnSmoothLoading();
@@ -3469,11 +3393,7 @@ window.onbeforeunload = () => {
     // 브라우저간 IPC 통신
     IPCMAIN.off('if-browser-interconnection', oAPP.fn.fnIpcMain_browser_interconnection);
 
-    // 서버 리스트의 "WS 언어 설정" 화면에서 "서버 로그인 언어 사용" 여부 체크를 하고 저장할 때
-    // 로그인 화면의 언어 필드를 제어하기 위한 IPC 이벤트 해제
-    IPCMAIN.off('if-login-serverlist', oAPP.fn.onIpcMain_if_login_serverlist);
-
-    // 서버 정보를 구한다.
+      // 서버 정보를 구한다.
     let oServerInfo = parent.getServerInfo();
 
     // 접속 서버의 SYSID 정보를 구한다.

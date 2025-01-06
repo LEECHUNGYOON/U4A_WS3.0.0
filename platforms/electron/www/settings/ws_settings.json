@@ -1,5 +1,5 @@
 {
-    "patch_level" : "00001",
+    "patch_level" : "00002",
     "SYSADMIN": {
         "AUTHKEY": "c2hvd21ldGhlbW9uZXk="
     },
@@ -30,7 +30,6 @@
     "defaultTheme": "sap_horizon_dark",
     "defaultLanguage" : "EN",
     "defaultSound": "X",
-    "defaultUseLoginLangu": "X",
     "defaultBackgroundColor": "#12171c",
     "requireFolders": [
         "msgcls",

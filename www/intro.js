@@ -757,21 +757,6 @@
 
             }
 
-            // WS Sound 정보 저장
-            // if (!oSettingValues?.useLoginLangu || !oSettingValues?.useLoginLangu?.value) {
-            if (typeof oSettingValues?.useLoginLangu?.value === "undefined") {
-
-                let oRegData = {};
-                oRegData[sGlobalSettingPath] = {};
-                oRegData[sGlobalSettingPath]["useLoginLangu"] = {
-                    value: oSettings.defaultUseLoginLangu || "X",
-                    type: "REG_SZ"
-                };
-
-                await WSUTIL.putRegeditValue(oRegData);
-
-            }
-
             resolve();
 
         });
@@ -978,9 +963,6 @@
             oSettings.globalLanguage = oGlobalSettingInfo?.language?.value || "EN";
             oSettings.globalTheme    = oGlobalSettingInfo?.theme?.value;
             oSettings.globalSound    = oGlobalSettingInfo?.sound?.value;
-            oSettings.useLoginLangu  = oGlobalSettingInfo?.useLoginLangu?.value;
-            // oSettings.globalLanguage = await WSUTIL.getWsLanguAsync();
-            // oSettings.globalTheme = await WSUTIL.getWsThemeAsync();
 
             resolve();
 

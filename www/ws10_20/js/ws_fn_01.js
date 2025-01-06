@@ -2868,6 +2868,7 @@
 
             oBrowsStatus.NAME = oBrows.NAME;
             oBrowsStatus.DESC = oBrows.DESC;
+            oBrowsStatus.APP_MODE = oBrows.APP_MODE;
 
             // 브라우저 설치 유무 확인
             var bIsExist = false;

@@ -119,10 +119,13 @@
             let sCurrPage = parent.getCurrPage();
 
             // application 이 없을 경우 메시지 처리.
-            if (oAppInfo.MSGTY == "N") {
+            if (oAppInfo.MSGTY == "N") {    
+
+                let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "007", APPID);
 
                 // 페이지 푸터 메시지
-                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
+                // APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
+                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sMsg);
 
                 // busy 끄고 Lock 풀기
                 oAPP.common.fnSetBusyLock("");
@@ -1107,7 +1110,7 @@
      * - false: 기본 브라우저 실행  
      ************************************************************************/
     oAPP.fn.fnOnExecApp = function (APPID, bIsMulti) {
-
+        
         // 기본 브라우저 설정        
         oAPP.fn.fnOnInitP13nSettings(); // [ws_fn_01.js]
 
@@ -1136,6 +1139,13 @@
 
             return;
         }
+
+
+        // TEST ------------ Start
+
+        // sPath = `--app=${sPath}`;
+
+        // TEST ------------ End
 
         // 실행전 명령어 수집
         aComm.push(sPath);

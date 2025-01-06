@@ -103,6 +103,7 @@
         var oMeta = parent.getMetadata(),
             oUserInfo = parent.getUserInfo(),
             sLangu = oUserInfo.LANGU,
+            // sLangu = oUserInfo.WSLANGU,
             aMsgClsTxt = oMeta["MSGCLS"];     
   
         if (!aMsgClsTxt || !aMsgClsTxt.length) {
@@ -3263,9 +3264,9 @@ function fnJsonParseError(e) {
 
 function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob) {
 
-    let oUserInfo = parent.getUserInfo(),
-        oSettings = parent.WSUTIL.getWsSettingsInfo(),
-        sGlobalLangu = oSettings.globalLanguage || "EN";
+    let oUserInfo = parent.getUserInfo();
+        // oSettings = parent.WSUTIL.getWsSettingsInfo(),
+        // sGlobalLangu = oSettings.globalLanguage || "EN";
 
     /**
      * 버전, 패치 레벨 정보를 무조건 전송 -- start
@@ -3274,7 +3275,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
         oFormData.append("WSVER", oUserInfo.WSVER);
         oFormData.append("WSPATCH_LEVEL", oUserInfo.WSPATCH_LEVEL);
-        oFormData.append("WSLANGU", sGlobalLangu);
+        // oFormData.append("WSLANGU", sGlobalLangu);
 
     }
 
@@ -3286,7 +3287,8 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
             sPath += "&";
         }
 
-        sPath += `WSVER=${oUserInfo.WSVER}&WSPATCH_LEVEL=${oUserInfo.WSPATCH_LEVEL}&WSLANGU=${sGlobalLangu}`;
+        // sPath += `WSVER=${oUserInfo.WSVER}&WSPATCH_LEVEL=${oUserInfo.WSPATCH_LEVEL}&WSLANGU=${sGlobalLangu}`;
+        sPath += `WSVER=${oUserInfo.WSVER}&WSPATCH_LEVEL=${oUserInfo.WSPATCH_LEVEL}`;
     }
 
     /**

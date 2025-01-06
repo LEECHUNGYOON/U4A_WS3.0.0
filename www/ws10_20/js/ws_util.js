@@ -560,16 +560,20 @@ module.exports = {
                 throw new Error("Language is require!");
             }
 
-            // 메시지 언어를 서버 로그인 언어로 할지 플래그
-            let bIsServer = parent?.process?.USERINFO?.isServDependLangu;
+            // // 메시지 언어를 서버 로그인 언어로 할지 플래그
+            // let bIsServer = parent?.process?.USERINFO?.isServDependLangu;
 
-            if(bIsServer === ""){
-                this.LANGU = parent.process.USERINFO.GLOBAL_LANGU;
-            }
-         
+            // if(bIsServer === ""){
+            //     this.LANGU = parent.process.USERINFO.GLOBAL_LANGU;
+            // }
+
             // 클래스의 필드(프로퍼티)
             this.SYSID = pSysID;
             this.LANGU = pLangu;
+
+            if(parent?.process?.USERINFO?.LANGU){
+                this.LANGU = parent?.process?.USERINFO?.LANGU;
+            }
 
             // 로컬에 있는 메시지 json 파일을 읽어서 this.aMsgClsTxt; <-- 여기에 저장해둔다.
             this._fnReadMsgClassTxt();
@@ -974,19 +978,22 @@ module.exports = {
      */
     getWsMsgClsTxt: function (LANGU, ARBGB, MSGNR, p1, p2, p3, p4) { // www에 내장되어 있는 WS 메시지 경로
 
-        let oSettingInfo = this.getWsSettingsInfo();
+        // let oSettingInfo = this.getWsSettingsInfo();
 
-        // 메시지 언어를 서버 로그인 언어로 할지 플래그
-        let bIsServer = parent?.process?.USERINFO?.isServDependLangu;
+        // // 메시지 언어를 서버 로그인 언어로 할지 플래그
+        // let bIsServer = parent?.process?.USERINFO?.isServDependLangu;
 
-        // 메시지 언어를 글로벌 언어로 할 경우
-         if(bIsServer === "X"){        
-            LANGU = parent.process.USERINFO.LANGU;
+        // // 메시지 언어를 글로벌 언어로 할 경우
+        //  if(bIsServer === "X"){        
+        //     LANGU = parent.process.USERINFO.LANGU;
+        // }
+        // else {
+        //     LANGU = oSettingInfo.globalLanguage;
+        // }
+
+        if(parent?.process?.USERINFO?.LANGU){
+            LANGU = parent?.process?.USERINFO?.LANGU;
         }
-        else {
-            LANGU = oSettingInfo.globalLanguage;
-        }
-
 
         let sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", LANGU, ARBGB + ".json");
 
@@ -1063,12 +1070,16 @@ module.exports = {
             let oSettingInfo = this.getWsSettingsInfo();
             let sWsLangu = oSettingInfo.globalLanguage; // WS Language 설정 정보
             
-            // 메시지 언어를 서버 로그인 언어로 할지 플래그
-            let bIsServer = parent?.process?.USERINFO?.isServDependLangu;
+            // // 메시지 언어를 서버 로그인 언어로 할지 플래그
+            // let bIsServer = parent?.process?.USERINFO?.isServDependLangu;
 
-            //  메시지 언어를 서버 로그인 언어로 할 경우
-            if(bIsServer === "X"){            
-                sWsLangu = parent.process.USERINFO.LANGU;
+            // //  메시지 언어를 서버 로그인 언어로 할 경우
+            // if(bIsServer === "X"){            
+            //     sWsLangu = parent.process.USERINFO.LANGU;
+            // }
+
+            if(parent?.process?.USERINFO?.LANGU){
+                sWsLangu = parent?.process?.USERINFO?.LANGU;
             }
 
             let sWsMsgPath = PATH.join(PATHINFO.WSMSG_ROOT, "WS_COMMON", sWsLangu); // www에 내장되어 있는 WS 메시지 경로

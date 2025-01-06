@@ -320,7 +320,8 @@
         }
 
         var sMetaLangu = oMetaScript.getAttribute("data-sap-ui-language");
-        if (oUserInfo.LANGU == sMetaLangu) {
+        // if (oUserInfo.LANGU == sMetaLangu) {
+        if (oUserInfo.WSLANGU == sMetaLangu) {
             return;
         }
 

@@ -71,9 +71,8 @@
           oSetting_UI5 = oSettings.UI5,
           oBootStrap = oSetting_UI5.bootstrap,
           oUserInfo = parent.oAPP.attr.oUserInfo,
-          oThemeInfo = oAPP.fn.getThemeInfo(),
-        //   oThemeInfo = parent.oAPP.attr.oThemeInfo,
-          sLangu = oUserInfo.LANGU;
+          oThemeInfo = oAPP.fn.getThemeInfo(),        
+          sLangu = oUserInfo.LANGU;        
 
       var oScript = document.createElement("script");
       oScript.id = "sap-ui-bootstrap";

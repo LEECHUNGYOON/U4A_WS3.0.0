@@ -1220,7 +1220,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                     new sap.m.MenuItem({
                                         key: "WSLANGU",
                                         icon: "sap-icon://translate",
-                                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/001}" // Language
+                                        text: "{/WSLANGU/ZMSG_WS_COMMON_001/001}", // Language
+                                        visible: true
                                     }),
                                     new sap.m.MenuItem({
                                         key: "WSTHEME",
@@ -2541,7 +2542,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         var oInitModelData = {
             WSLANGU: WSLANGU,
             sSelectedKey: "EN",
-            useLoginLangu: true,
             aLangu: [
                 {
                     KEY: "EN"
@@ -2583,11 +2583,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         oInitModelData.sSelectedKey = oWsLangu?.value;
 
-        // 언어 설정을 서버 로그인 언어 기준으로 할지 여부 설정값 구하기
-        let oUseLoginLangu = await WSUTIL.getGlobalSettingInfo("useLoginLangu");
-
-        oInitModelData.useLoginLangu = oUseLoginLangu?.value === "X" ? true : false;
-
         var oJsonModel = new sap.ui.model.json.JSONModel();
         oJsonModel.setData(oInitModelData);
 
@@ -2618,10 +2613,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             content: [
 
-                new sap.m.MessageStrip({
-                    showIcon: true,
-                    text: "{/WSLANGU/ZMSG_WS_COMMON_001/037}" // The selected language applies only to after restarting application.
-                }).addStyleClass("sapUiTinyMargin"),
+                // new sap.m.MessageStrip({
+                //     showIcon: true,
+                //     text: "{/WSLANGU/ZMSG_WS_COMMON_001/037}" // The selected language applies only to after restarting application.
+                // }).addStyleClass("sapUiTinyMargin"),
 
                 new sap.ui.layout.form.Form({
                     editable: true,
@@ -2658,43 +2653,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     ] // end of formContainers
 
                 }), // end of Form
-
-
-                new sap.m.MessageStrip({
-                    showIcon: true,
-                    text: oAPP.msg.M270, // 언어 설정을 서버 로그인 기준으로 할 것인지 여부에 대한 체크 입니다.
-                }).addStyleClass("sapUiTinyMargin"),
-
-                new sap.ui.layout.form.Form({
-                    editable: true,
-                    layout: new sap.ui.layout.form.ResponsiveGridLayout({
-                        labelSpanXL: 2,
-                        labelSpanL: 3,
-                        labelSpanM: 3,
-                        labelSpanS: 12,
-                        singleContainerFullSize: true
-                    }),
-
-                    formContainers: [                     
-
-                        new sap.ui.layout.form.FormContainer({
-                            formElements: [
-                                new sap.ui.layout.form.FormElement({
-                                    label: new sap.m.Label({
-                                        design: sap.m.LabelDesign.Bold,
-                                        text: oAPP.msg.M271, // 서버 로그인 언어 사용
-                                    }),                                  
-                                    fields: new sap.m.CheckBox({
-                                        selected: "{/useLoginLangu}"                                        
-                                    })
-                                })
-                            ]
-                        })
-
-                    ] // end of formContainers
-
-                }), // end of Form
-
 
             ], // end of dialog content
 
@@ -3135,35 +3093,19 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
          */
         let oDialogModel = oDialog.getModel(),
             oModelData = oDialogModel.getData(),
-            sSelectedKey = oModelData.sSelectedKey,
-            sUseLoginLangu = oModelData.useLoginLangu;
-
-            sUseLoginLangu = sUseLoginLangu === true ? "X": "";
-
+            sSelectedKey = oModelData.sSelectedKey;
+   
         // 선택한 글로벌 언어값을 레지스트리에 저장
         await WSUTIL.saveGlobalSettingInfo("language", sSelectedKey);
 
-        // 언어 설정을 서버 로그인 기준으로 할 것인지 여부에 대한 값을 
-        // 레지스트리에 저장
-        await WSUTIL.saveGlobalSettingInfo("useLoginLangu", sUseLoginLangu);
+        // 변경된 언어에 맞게 메시지 재구성
+        await oAPP.fn.fnWsGlobalMsgList();
 
         oDialog.close();
 
         oAPP.setBusy(false);
 
         sap.m.MessageToast.show(oAPP.msg.M01); // Saved success
-
-
-        // 현재 실행 중인 로그인 화면 전체에 언어 설정 정보를 전달한다.
-        // 언어 설정을 글로벌 언어로 선택할 경우에는 
-        // 강제로 로그인 화면의 언어 필드에 글로벌 언어를 설정해주는 용도.
-        let IF_DATA = {
-            useLoginLangu: sUseLoginLangu,
-            language: sSelectedKey
-        };
-
-        IPCRENDERER.send("if-login-serverlist", IF_DATA);
-
 
     } // end of _saveWsLangu
 

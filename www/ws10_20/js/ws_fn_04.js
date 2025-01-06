@@ -172,7 +172,8 @@
                 oUserInfo.CLIENT,
                 oUserInfo.UNAME,
                 oUserInfo.PW,
-                oUserInfo.LANGU,
+                oServerInfo.LANGU,
+                // oUserInfo.LANGU,
                 oAppInfo.APPID || "", // Application Name
                 (typeof METHNM == "undefined" ? "" : METHNM),
                 (typeof INDEX == "undefined" ? "0" : INDEX),
@@ -357,13 +358,13 @@
      ************************************************************************/
     function _openControllerErrorDialog(oPARAM){
 
-        // [MSG] - VBS 실행 오류
+        // VBS 실행 오류
         let sTitle = WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "227");
 
-        // [MSG] - 점검사항
+        // 점검사항
         let sMsg01 = WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "249");
 
-        // [MSG] - 아래의 점검사항을 확인하세요.
+        // 아래의 점검사항을 확인하세요.
         let sMsg02 = WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "250");
 
         let oDialog = new sap.m.Dialog({
@@ -1221,7 +1222,8 @@
 
                                     fields: [
                                         new sap.m.Text({
-                                            text: "{/USERINFO/WSVER}"
+                                            // text: "{/USERINFO/WSVER}"
+                                            text: "{/SERVERINFO/WSVER}"
                                         })
                                     ] // end of fields
 
@@ -1235,13 +1237,15 @@
 
                                     fields: [
                                         new sap.m.Text({
-                                            text: "{/USERINFO/WSPATCH_LEVEL}"
+                                            // text: "{/USERINFO/WSPATCH_LEVEL}"
+                                            text: "{/SERVERINFO/WSPATCH_LEVEL}"
                                         })
                                     ] // end of fields
 
                                 }).bindProperty("visible", {
                                     parts: [
-                                        "/USERINFO/WSPATCH_LEVEL"
+                                        // "/USERINFO/WSPATCH_LEVEL"
+                                        "/SERVERINFO/WSPATCH_LEVEL"
                                     ],
                                     formatter: function () {
 
@@ -1259,7 +1263,8 @@
 
                                     fields: [
                                         new sap.m.Text({
-                                            text: "{/USERINFO/CLIENT}"
+                                            // text: "{/USERINFO/CLIENT}"
+                                            text: "{/SERVERINFO/CLIENT}"
                                         })
                                     ] // end of fields
 
@@ -1273,7 +1278,8 @@
 
                                     fields: [
                                         new sap.m.Text({
-                                            text: "{/USERINFO/SYSID}"
+                                            // text: "{/USERINFO/SYSID}"
+                                            text: "{/SERVERINFO/SYSID}"
                                         })
                                     ] // end of fields
 
@@ -1307,7 +1313,8 @@
 
                                     fields: [
                                         new sap.m.Text({
-                                            text: "{/USERINFO/LANGU}"
+                                            // text: "{/USERINFO/LANGU}"
+                                            text: "{/SERVERINFO/LANGU}"
                                         })
                                     ] // end of fields
 

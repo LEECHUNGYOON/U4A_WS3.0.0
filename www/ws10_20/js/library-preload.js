@@ -230,6 +230,7 @@ let oAPP = (function (window) {
             oBootStrap = oSetting_UI5.bootstrap,
             oUserInfo = parent.getUserInfo(), // 로그인 유저 정보
             sLangu = oUserInfo.LANGU, // 접속 언어           
+            // sLangu = oUserInfo.WSLANGU,  // 접속 언어           
             oThemeInfo = parent.getThemeInfo(); // theme 정보      
 
         var oScript = document.createElement("script");
