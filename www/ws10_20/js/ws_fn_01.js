@@ -2938,7 +2938,9 @@
                     continue;
                 }
 
+                // 이전에 선택된 브라우저 정보를 저장한다
                 oBeforeSelected = oBeforeBrows;
+
                 break;
             }
 
@@ -2950,6 +2952,16 @@
         for (var j = 0; j < iCurrCnt; j++) {
 
             var oCurrBrows = aCurrentInfo[j];
+
+            if(aBeforeInfo && Array.isArray(aBeforeInfo) === true && aBeforeInfo.length !== 0){
+
+                // 추가 필드 동기화..
+                let oFind = aBeforeInfo.find(e => e.NAME === oCurrBrows.NAME);
+                if(oFind){
+                    oCurrBrows.APP_MODE = oFind.APP_MODE;
+                }
+
+            }
 
             /**
              * 위에서 구한 SELECTED 된 Browser 정보가 없으면..

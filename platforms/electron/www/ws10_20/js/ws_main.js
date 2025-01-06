@@ -715,8 +715,8 @@
             // 공통 인스턴스 정의
             oAPP.main.fnPredefineGlobalObject();
 
-            // Test..(UI5 bootstrap tag의 Language 값 설정 테스트)
-            oAPP.main.fnSetLanguage();
+            // // UI5 bootstrap tag의 Language 값 설정 테스트)
+            // oAPP.main.fnSetLanguage();
 
             // 브라우저 상단 메뉴를 없앤다.
             parent.setBrowserMenu(null);

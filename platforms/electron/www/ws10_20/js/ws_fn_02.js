@@ -1129,9 +1129,9 @@
         }
 
         var oDefBrows = APPCOMMON.fnGetModelProperty("/DEFBR"),
-            sSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
+            oSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
 
-        if (!sSelectedBrows || !sSelectedBrows?.INSPATH) {
+        if (!oSelectedBrows || !oSelectedBrows?.INSPATH) {
 
             // 설치된 브라우저가 없습니다 오류 메시지
             let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "333"); // Installed browser information not found.
@@ -1139,19 +1139,17 @@
 
             return;
         }
-
-
-        // TEST ------------ Start
-
-        // sPath = `--app=${sPath}`;
-
-        // TEST ------------ End
+        
+        // 앱모드로 실행일 경우에는 앱모드 파라미터를 동봉한다.
+        if(oSelectedBrows?.APP_MODE === true){
+            sPath = `--app=${sPath}`;
+        }
 
         // 실행전 명령어 수집
         aComm.push(sPath);
 
         // APP 실행		
-        SPAWN(sSelectedBrows.INSPATH, aComm, { detached: true });
+        SPAWN(oSelectedBrows.INSPATH, aComm, { detached: true });
 
     }; // end of oAPP.fn.fnOnExecApp
 
@@ -1177,9 +1175,9 @@
         }
 
         var oDefBrows = APPCOMMON.fnGetModelProperty("/DEFBR"),
-            sSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
+            oSelectedBrows = oDefBrows.find(a => a.SELECTED == true);
 
-        if (!sSelectedBrows || !sSelectedBrows?.INSPATH) {
+        if (!oSelectedBrows || !oSelectedBrows?.INSPATH) {
 
             // 설치된 브라우저가 없습니다 오류 메시지
             let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "333"); // Installed browser information not found.
@@ -1188,11 +1186,16 @@
             return;
         }
 
+        // 앱모드로 실행일 경우에는 앱모드 파라미터를 동봉한다.
+        if(oSelectedBrows?.APP_MODE === true){
+            sUrl = `--app=${sUrl}`;
+        }
+
         // 실행전 명령어 수집
         aComm.push(sUrl);
 
         // APP 실행		
-        SPAWN(sSelectedBrows.INSPATH, aComm, { detached: true });
+        SPAWN(oSelectedBrows.INSPATH, aComm, { detached: true });
 
     }; // end of oAPP.fn.fnExeBrowser
 

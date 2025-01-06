@@ -128,7 +128,9 @@
         /****************************************************
          * 브라우저 목록 패널 영역
          ****************************************************/
-        let oPanel1 = new sap.m.Panel();
+        let oPanel1 = new sap.m.Panel({
+            backgroundDesign: "Transparent"
+        });
         oDialog.addContent(oPanel1);
 
         let oToolbar1 = new sap.m.Toolbar();
@@ -140,7 +142,7 @@
         oToolbar1.addContent(oIcon1);
 
         let oTitle1 = new sap.m.Title({
-            text: "브라우저 리스트", // [MSG]
+            text: parent.WSUTIL.getWsMsgClsTxt(oUserInfo.LANGU, "ZMSG_WS_COMMON_001", "279") // 브라우저 리스트
         });
         oToolbar1.addContent(oTitle1);
 
@@ -152,7 +154,29 @@
                     selected: "{SELECTED}",
                     select: function(oEvent){
 
-                        debugger;
+                        let bIsSelected = oEvent.getParameter("selected");
+                        if(!bIsSelected){
+                            return;
+                        }
+
+                        let oBindCtx = oEvent.getSource().getBindingContext();
+                        if(!oBindCtx){
+                            return;
+                        }
+
+                        let oBindData = oBindCtx.getObject();
+                        if(!oBindData){
+                            return;
+                        }
+
+                        let bIsAppMode = oBindData.APP_MODE || false;
+
+                        let oCheck = sap.ui.getCore().byId("appModeCheckBox");
+                        if(!oCheck){
+                            return;
+                        }
+
+                        oCheck.setSelected(bIsAppMode);
 
                     }
                 }).bindProperty("enabled", "ENABLED", function(values) {
@@ -172,7 +196,9 @@
         /****************************************************
          * 앱모드 선택 영역
          ****************************************************/
-        let oPanel2 = new sap.m.Panel();
+        let oPanel2 = new sap.m.Panel({
+            backgroundDesign: "Transparent"
+        });
         oDialog.addContent(oPanel2);
 
         let oToolbar2 = new sap.m.Toolbar();
@@ -184,12 +210,12 @@
         oToolbar2.addContent(oIcon2);
 
         let oTitle2 = new sap.m.Title({
-            text: "앱모드", // [MSG]
+            text: parent.WSUTIL.getWsMsgClsTxt(oUserInfo.LANGU, "ZMSG_WS_COMMON_001", "280") // 앱모드
         });
         oToolbar2.addContent(oTitle2);
 
-        let oCheckBox1 = new sap.m.CheckBox({
-            text: "사용", // [MSG]
+        let oCheckBox1 = new sap.m.CheckBox("appModeCheckBox",{
+            text: parent.WSUTIL.getWsMsgClsTxt(oUserInfo.LANGU, "ZMSG_WS_COMMON_001", "281"), // 활성
             select: function(oEvent){
                 
                 let oCheck = oEvent.getSource();
@@ -227,8 +253,6 @@
                 "/DEFBR"
             ],
             formatter: function(aDEFBR){                
-
-                debugger;
 
                 if(!aDEFBR){
                     return;                
