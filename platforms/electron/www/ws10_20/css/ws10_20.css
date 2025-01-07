@@ -465,3 +465,13 @@ html[class*=sapUiTheme]:not([class*="dark"]) .u4aWs10Page .sapMPage > section {
 .u4aWsDesignAttr .sapMInputBaseDisabled .sapMInputBaseInner {
 	color: #4098ff;
 }
+
+.u4awsSelBrowsPanHdr {
+  padding-left: 0rem !important;
+  cursor: pointer;
+}
+
+.u4awsSelBrowsPanHdr div,
+.u4awsSelBrowsPanHdr span {
+  cursor: pointer;
+}

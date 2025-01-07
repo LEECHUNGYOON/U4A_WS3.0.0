@@ -360,6 +360,7 @@ let oAPP = (function () {
                                     type: sap.m.InputType.Number,
                                     value: "{CLIENT}",
                                     width: "100px",
+                                    showClearIcon: true,
                                     showValueStateMessage: false,
                                     submit: oAPP.events.ev_login
                                 })
@@ -468,12 +469,14 @@ let oAPP = (function () {
                             ]
                         }),
 
-                        new sap.ui.layout.form.FormElement({
+                        new sap.ui.layout.form.FormElement("ws_langu_input_form",{
+                            visible: false,
                             label: new sap.m.Label({
                                 design: sap.m.LabelDesign.Bold,
                                 text: "LANGUAGE"
                             }),
                             fields: [
+
                                 new sap.m.Input("ws_langu", {
                                     // value: "{LANGU}",
                                     value: "{LANGU}",
@@ -491,6 +494,29 @@ let oAPP = (function () {
 
                                     }
                                 })
+                                
+                            ]
+                        }),
+
+                        new sap.ui.layout.form.FormElement("ws_langu_select_form", {
+                            visible: false,
+                            label: new sap.m.Label({
+                                design: sap.m.LabelDesign.Bold,
+                                text: "LANGUAGE"
+                            }),
+                            fields: [
+
+                                new sap.m.Select({
+                                    selectedKey: "{LANGU}",
+                                    items: {
+                                        path: "T_LANGU",
+                                        template: new sap.ui.core.ListItem({
+                                            key: "{KEY}",
+                                            text: "{LANGU}",
+                                        })
+                                    }
+                                }),
+                                
                             ]
                         }),
 
@@ -890,7 +916,8 @@ let oAPP = (function () {
             T_WSLANGU: [
                 { KEY: "EN", VALUE: "EN" },
                 { KEY: "KO", VALUE: "KO" },
-            ],                  // Workspace Language List
+            ],
+            T_LANGU: [],                  // Workspace Language List
             REMEMBER: bIsRemember,          // Remember Flag
             IDSUGG: []                      // SAP ID Suggest Data
         };        
@@ -3192,13 +3219,153 @@ let oAPP = (function () {
 
     // } // end of _globalSettingsConfig
 
+    /********************************************************
+     * 접속서버에서 설치된 언어 목록을 구한다.
+     ********************************************************/
+    function _getSupportedLangu(PARAM){
+
+        return new Promise(function(resolve){
+
+            let sServicePath = parent.getServerPath();
+
+            // ajax 결과
+            var oResult = undefined;
+
+            let oFormData = new FormData()
+                oFormData.append("GET_LANGU", "X");
+                oFormData.append("PRCCD", PARAM.PRCCD);
+
+            jQuery.ajax({
+                async: false,
+                method: "POST",
+                url: sServicePath,
+                data: oFormData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success : function(data, textStatus, xhr) {
+                    oResult = { success : true, data : data, status : textStatus, statusCode : xhr && xhr.status };
+                },
+                error : function(xhr, textStatus, error) {
+                    oResult = { success : false, data : undefined, status : textStatus, error : error, statusCode : xhr.status, errorResponse :  xhr.responseText};
+                }
+            });
+
+            // 연결 실패일 경우
+            if(oResult.success === false){
+
+                return resolve({
+                    RETCD: "E",
+                    STCOD: "E999",
+                });
+
+            }
+
+            let sStringData = oResult.data;
+            
+            try {
+
+                var oRetJson = JSON.parse(sStringData);
+
+            } catch (error) {
+
+                return resolve({
+                    RETCD: "E",
+                    STCOD: "E999",
+                });
+            }
+            
+            return resolve(oRetJson);
+
+        });
+
+    } // end of _getSupportedLangu
+
 
     /********************************************************
      * 화면 랜더링 이후에 호출되는 이벤트
      ********************************************************/
     async function _onViewReady(){
-        
-     
+
+        // PRCCD값을 던져서 응답시 동일한 값으로 오는지 아닌지에 따라
+        // 로그인 화면 제어를 하기 위한 코드
+        let sLanguPRCCD = "GET_LANGU";
+
+        // 접속서버에서 설치된 언어 목록을 구한다.
+        let oLanguResult = await _getSupportedLangu({ PRCCD : sLanguPRCCD });
+
+        console.log(oLanguResult);
+
+        if(oLanguResult.RETCD === "E"){
+
+            let sErrMsg = "";
+
+            switch (oLanguResult.STCOD) {
+
+                case "E001": 
+
+                    sErrMsg = oAPP.msg.M282; // 지원가능한 언어가 없습니다
+
+                    break;
+
+                case "E999":
+                    
+                    sErrMsg = oAPP.msg.M283; // 통신오류
+
+                    break;
+
+                
+                default:
+
+                    sErrMsg = oAPP.msg.M283; // 통신오류
+
+                    break;
+            }
+
+            sap.m.MessageBox.error(sErrMsg, {
+                onClose: function(){
+
+                    oAPP.attr.isPressWindowClose = "X";
+
+                    CURRWIN.close();
+                    
+                }
+            });   
+
+            parent.setBusy(false);
+
+            return;
+
+        }
+
+        // 내가 던진 PRCCD 아니라면 기존 Input 형태의 language를 보여준다.
+        if(oLanguResult?.PRCCD !== sLanguPRCCD){
+
+            let oLanguForm = sap.ui.getCore().byId("ws_langu_input_form");
+                oLanguForm.setVisible(true);
+
+            return;
+        }
+
+        // 내가 던진 ACTCD가 같다면 Select 형태의 language를 보여준다.
+        let oLanguForm = sap.ui.getCore().byId("ws_langu_select_form");
+            oLanguForm.setVisible(true);
+         
+        // 접속 서버에 설치된 언어 정보 체크
+        let aLangu = oLanguResult?.T_LANGU || [];        
+
+        let oModel = sap.ui.getCore().getModel();
+        if(!oModel){
+            return;
+        }
+
+        // 기 저장된 언어 정보가 없다면 서버의 Default 언어로 설정해준다
+        let sLangu = oModel.getProperty("/LOGIN/LANGU");
+        if(!sLangu){
+            oModel.setProperty("/LOGIN/LANGU", oLanguResult.DEFLANGU || "");            
+        }
+
+        oModel.setProperty("/LOGIN/T_LANGU", aLangu);        
 
     } // end of _onViewReady
 
@@ -3361,6 +3528,11 @@ function fnWsGlobalMsgList() {
         oAPP.msg.M0272 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027", oAPP.msg.M064); // (ID) &1 is required entry value
         oAPP.msg.M0273 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027", oAPP.msg.M065); // (Password) &1 is required entry value
         oAPP.msg.M0274 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027", oAPP.msg.M001); // (Language) &1 is required entry value
+
+        oAPP.msg.M282 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "282"); // 사용 가능한 로그인 언어가 없습니다.
+        oAPP.msg.M283 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "283"); // 서버 접속 오류가 발생하였습니다.
+
+        // WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027"); 
 
         resolve();
 
