@@ -2883,11 +2883,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         });
         _oDialog.setCustomHeader(_oCustomHeader);
 
-        let _oMsgStrip = new sap.m.MessageStrip({
-            showIcon: true,
-            text: "{/WSLANGU/ZMSG_WS_COMMON_001/037}" // The selected language applies only to after restarting application.
-        }).addStyleClass("sapUiTinyMargin");
-        _oDialog.addContent(_oMsgStrip);
+        // let _oMsgStrip = new sap.m.MessageStrip({
+        //     showIcon: true,
+        //     text: "{/WSLANGU/ZMSG_WS_COMMON_001/037}" // The selected language applies only to after restarting application.
+        // }).addStyleClass("sapUiTinyMargin");
+        // _oDialog.addContent(_oMsgStrip);
 
         let _oForm = new sap.ui.layout.form.Form({
             editable: true,
@@ -2930,8 +2930,19 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 _oSwitch1.setBusy(true);
 
                 let _bState = _oSwitch1.getState();
+                let _sState = _bState === true ? "X" : "";
 
-                await WSUTIL.saveGlobalSettingInfo("sound", _bState === true ? "X" : "");
+                // Setting Json 데이터를 구한다.
+                let oSettingInfo = WSUTIL.getWsSettingsInfo();
+
+                // Setting Json에 글로벌 사운드 변경 정보를 갱신한다.
+                oSettingInfo.globalSound = _sState;
+
+                // 변경된 글로벌 사운드 정보를 Setting Json에 저장한다.
+                WSUTIL.setWsSettingsInfo(oSettingInfo);
+
+                // 선택한 글로벌 사운드값을 레지스트리에 저장
+                await WSUTIL.saveGlobalSettingInfo("sound", _sState);
 
                 _oSwitch1.setBusy(false);
 
@@ -3094,12 +3105,24 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         let oDialogModel = oDialog.getModel(),
             oModelData = oDialogModel.getData(),
             sSelectedKey = oModelData.sSelectedKey;
+
+        // Setting Json 데이터를 구한다.
+        let oSettingInfo = WSUTIL.getWsSettingsInfo();
+        
+        // Setting Json에 글로벌 언어 변경 정보를 갱신한다.
+        oSettingInfo.globalLanguage = sSelectedKey;
+
+        // 변경된 글로벌 언어 정보를 Setting Json에 저장한다.
+        WSUTIL.setWsSettingsInfo(oSettingInfo);
    
         // 선택한 글로벌 언어값을 레지스트리에 저장
         await WSUTIL.saveGlobalSettingInfo("language", sSelectedKey);
 
         // 변경된 언어에 맞게 메시지 재구성
         await oAPP.fn.fnWsGlobalMsgList();
+
+        // 초기 모델 구성
+        await oAPP.fn.fnOnInitModeling();
 
         oDialog.close();
 
@@ -3113,7 +3136,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      * [WS Global Setting] WS Theme 저장
      ************************************************************************/
     async function _saveWsThemeInfo() {
-
+ 
         let sDialogId = "GlobalSettingWsTheme";
 
         // Dialog의 모델 정보를 구한다.
@@ -3122,20 +3145,17 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         let sSelectedTheme = oModelData.sSelectedTheme;
 
-        let oSettings = WSUTIL.getWsSettingsInfo(),
-            sRegPath = oSettings.regPaths, // 각종 레지스트리 경로
-            sGlobalSettingPath = sRegPath.globalSettings; // globalsettings 레지스트리 경로        
+        // Setting Json 데이터를 구한다.
+        let oSettingInfo = WSUTIL.getWsSettingsInfo();
 
-        // 저장할 레지스트리 데이터
-        let oRegData = {};
-        oRegData[sGlobalSettingPath] = {};
-        oRegData[sGlobalSettingPath]["theme"] = {
-            value: sSelectedTheme,
-            type: "REG_SZ"
-        };
+        // Setting Json에 글로벌 테마 변경 정보를 갱신한다.
+        oSettingInfo.globalTheme = sSelectedTheme;
 
-        // 레지스트리에 테마 정보 저장
-        await WSUTIL.putRegeditValue(oRegData);
+        // 변경된 글로벌 테마 정보를 Setting Json에 저장한다.
+        WSUTIL.setWsSettingsInfo(oSettingInfo);
+       
+        // 선택한 글로벌 테마값을 레지스트리에 저장
+        await WSUTIL.saveGlobalSettingInfo("theme", sSelectedTheme);
 
         oDialog.close();
 

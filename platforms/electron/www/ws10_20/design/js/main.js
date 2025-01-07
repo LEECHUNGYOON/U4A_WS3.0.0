@@ -361,15 +361,42 @@
         //application정보 구성전 화면 잠금 처리.
         oAPP.fn.designAreaLockUnlock(true);
 
-        for(var i=param.APPDATA.T_0014.length-1; i>=0; i--){
+        for(var i = param.APPDATA.T_0014.length - 1; i >= 0; i--){
+
+          let _s0014 = param.APPDATA.T_0014[i];
           
           //StyleCSS, HTMLCode, ScriptCode UI가 존재하는경우.
-          if(param.APPDATA.T_0014[i].UIOBK === "UO99997" || param.APPDATA.T_0014[i].UIOBK === "UO99998" || 
-            param.APPDATA.T_0014[i].UIOBK === "UO99999"){
+          if(_s0014.UIOBK === "UO99997" || _s0014.UIOBK === "UO99998" || _s0014.UIOBK === "UO99999"){
             //해당 라인 삭제.
-            param.APPDATA.T_0014.splice(i,1);
+            param.APPDATA.T_0014.splice(i, 1);
             continue;
           }
+
+
+          //20250107 PES -START.
+          //HTML UI가 존재하는경우, content 프로퍼티의 값이 있으나, editor에 값이 존재하지 않다면
+          //content 프로퍼티의 값을 제거 처리함.
+          if(_s0014.UIOBK === "UO00873"){
+
+            //HTML UI의 content 프로퍼티 입력건 존재 여부 확인.(바인딩 제외)
+            let _indx = param.APPDATA.T_0015.findIndex( item => item.OBJID === _s0014.OBJID && item.UIATK === "AT000011858" && item.ISBND === "" );
+
+            //content 프로퍼티 입력건이 존재하지 않는경우 skip.
+            if(_indx === -1){
+              continue;
+            }
+
+            //찾은 index의 content 프로퍼티 라인 정보 얻기.
+            let _s0015 = param.APPDATA.T_0015[_indx];
+
+            //프로퍼티 수집건은 존재하지만 editor에 HTML 입력건이 존재하지 않는경우 프로퍼티 수집건을 제거 처리.
+            //(HTML UI의 content 프로퍼티의 경우 미리보기 성격의 값이기 때문에, editor에 입력한 값이 없는경우 수집건을 제거 처리함.)
+            if(param.APPDATA.T_CEVT.findIndex( a=> a.OBJTY === "HM" && a.OBJID === _s0015.OBJID + _s0015.UIASN ) === -1){
+              param.APPDATA.T_0015.splice(_indx, 1);
+            }
+
+          }
+          //20250107 PES -END.
 
         }
 

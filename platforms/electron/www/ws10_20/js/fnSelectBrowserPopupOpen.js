@@ -270,12 +270,7 @@
                 if(!oUi){
                     return;
                 }
-
-                // let oModel = oUi.getModel();
-                // if(!oModel){
-                //     return;
-                // }
-
+                
                 let oBindCtx = oUi.getBindingContext();
                 if(!oBindCtx){
                     return;
