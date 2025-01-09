@@ -22,10 +22,10 @@
 
 
     //DAMI의 UI5 bootstrap 라이브러리 경로.
-    const C_DAMI_LIB_SRC = "/public/lib/ui5_latest/resources/sap-ui-core.js";
+    const C_DAMI_LIB_SRC = "/public/lib/_org_files/sapui5-rt-1.120.21/resources/sap-ui-core.js";
 
     //DAMI의 UI5 bootstrap 라이브러리 data-sap-ui-resourceroots 의 경로.
-    const C_DAMI_RESOURCE_ROOT = "\"u4aApps\":\"/webapps/samples\"";
+    const C_DAMI_RESOURCE_ROOT = '"u4aApps":"./"';
 
     const C_NEWLINE = "\n";
 
@@ -364,10 +364,12 @@
             }
         }
 
+
         // application에 설정된 테마 정보 얻기.
-        var ls_0015 = oAPP.attr.prev.ROOT._T_0015.find( a => a.UIATK === "DH001021" );
-        if(ls_0015){
-            ls_data.theme = ls_0015.UIATV;
+        var _theme = oAPP.attr.prev.ROOT._T_0015.find( a => a.UIATK === "DH001021" )?.UIATV || "";
+        
+        if(lt_UA007.findIndex( item => item.KEY === _theme) !== -1){
+            ls_data.theme = _theme;
         }
 
 
@@ -520,6 +522,7 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <meta name="google" content="notranslate">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>&PATTERN001&</title>
@@ -555,7 +558,7 @@
     </head>
     <body>
         <div id="Content"></div>
-        <script src="js/index.js"></script>
+        <script src="./index.js"></script>
     </body>
 </html>`;
 
@@ -616,17 +619,20 @@
 sap.ui.getCore().attachInit(function(){
 
     //Events after the UI is configured on the screen.
-    function lf_UIUpdated(){
+    function _updatedCallback(){
         //Remove events.
-        sap.ui.getCore().detachEvent("UIUpdated", lf_UIUpdated);
+        _oRendering.detachUIUpdated(_updatedCallback);
 
     }
 
-    //Attach event.
-    sap.ui.getCore().attachEvent("UIUpdated", lf_UIUpdated);
+    
+    let _oRendering = sap.ui.requireSync('sap/ui/core/Rendering');
+
+    //Attach ui updated event.
+    _oRendering.attachUIUpdated(_updatedCallback);
 
     //call main view js.
-    sap.ui.requireSync('u4aApps/&PATTERN001&/js/main/view').ui.APP.placeAt("Content");
+    sap.ui.requireSync('u4aApps/views/main/view').ui.APP.placeAt("Content");
 
 });`
 
@@ -777,6 +783,38 @@ sap.ui.getCore().attachInit(function(){
                 return C_TAB + C_TAB + "oContr.ui." + is_tree.OBJID + " = " + is_tree.OBJID + ";" + C_NEWLINE + C_NEWLINE + 
                     C_TAB + C_TAB + is_tree.OBJID + ".setModel(oContr.attr.oModel);" + C_NEWLINE + C_NEWLINE;
 			}
+
+
+            //EMBED Aggregation에 해당하는 부모의 aggregation 정보 얻기.
+            var ls_0015 = it_0015.find( a=> a.OBJID === is_tree.POBID && a.UIATK === l_parent.UIATK );
+
+            //부모의 aggregation에 바인딩 처리가 됐다면.
+            if(ls_0015 && ls_0015.ISBND === "X" && ls_0015.UIATV !== ""){
+
+                var l_param = C_TAB + C_TAB + "templateShareable: true" +  C_NEWLINE;
+
+                //현재UI가 부모의 sap.m.Tree의 items aggregation에 존재하는경우, sap.ui.table.TreeTable의 rows aggregation에 존재하는경우.
+                if((is_tree.PUIOK === "UO00467" && is_tree.UIATT === "items") || (is_tree.PUIOK === "UO01142" && is_tree.UIATT === "rows")){
+                    l_param = 
+                        C_TAB + C_TAB + "templateShareable: true," +  C_NEWLINE +
+                        C_TAB + C_TAB + "parameters: {" + C_NEWLINE +
+                        C_TAB + C_TAB + C_TAB + "collapseRecursive: false," + C_NEWLINE + 
+                        C_TAB + C_TAB + C_TAB + `arrayNames: ["` + ls_0015.UIATV + `"]` + C_NEWLINE +
+                        C_TAB + C_TAB + "}" + C_NEWLINE;
+                }
+
+                let _UIATV = lf_getBindPath(ls_0015);
+
+                //PARENT.bindAggregation("aggregation name", {path:"bind path", template:CHILD});
+                //형식의 SCRIPT 구성.
+                return C_TAB + C_TAB + is_tree.POBID + 
+                    `.bindAggregation("` + l_parent.UIATT + `", {` + C_NEWLINE +
+                    C_TAB + C_TAB + C_TAB + `path: "` + _UIATV + `",` + C_NEWLINE +
+                    C_TAB + C_TAB + C_TAB + "template: " + is_tree.OBJID + "," + C_NEWLINE +
+                    l_param + 
+                    C_TAB + C_TAB + "});" + C_NEWLINE + C_NEWLINE;
+            }
+
 			
 			//set(add) aggregation명 얻기.
             var l_aggrnm = oAPP.fn.getUIAttrFuncName(oAPP.attr.prev[is_parent.OBJID], "3", l_parent.UIATT, "_sMutator");
@@ -803,6 +841,8 @@ sap.ui.getCore().attachInit(function(){
 
                 //OTR TEXT 정보 반영.
 				var l_UIATV = oAPP.fn.prevParseOTRValue(is_0015) || is_0015.UIATV;
+
+                l_UIATV = l_UIATV.replace(/\"/g, "\\\"");
 
                 return l_doqu + l_UIATV + l_doqu;
             }
@@ -833,12 +873,40 @@ sap.ui.getCore().attachInit(function(){
 
 
 
+        //바인딩 path 구성 처리.
+        function lf_getBindPath(s0015){
+
+            let _UIATV = s0015.UIATV;
+
+            //N건 모델 바인딩 처리 정보 얻기.
+            let _modelBind = oAPP.fn.getParentAggrBind(oAPP.attr.prev[s0015.OBJID]);
+
+            //N건 모델 바인딩 정보가 존재하는경우, 모델 필드명으로 파생되는 경우.
+            if(_UIATV.startsWith(_modelBind) === true){
+                //프로퍼티 바인딩 정보에서 해당 이름 제거 처리.
+                _UIATV = _UIATV.replace(`${_modelBind}-`, "");
+            
+            }else{
+                //그렇지 않은경우 structure 바인딩으로 처리되기에 맨 앞에 / 추가.
+                _UIATV = "/" + _UIATV;
+            }
+
+
+            //필드명-필드명 => 필드명/필드명 형식으로 변경.
+            _UIATV = _UIATV.replace(/-/, "/");
+
+            return _UIATV;
+
+        }
+
+
+
         //프로퍼티 정보 구성.
 		function lf_setProp(OBJID, it_0015){
 			
 			//현재 UI의 변경한 프로퍼티 정보 발췌.
 			var lt_0015 = it_0015.filter( a => a.OBJID === OBJID && a.UIATY === "1" 
-                && a.ISBND === "" && a.UIATK.substr(0,2) === "AT" );
+                && a.UIATK.substr(0,2) === "AT" );
 			
 			//변경한 프로퍼티 정보가 없다면 exit.
 			if(lt_0015.length === 0){return "";}
@@ -849,32 +917,55 @@ sap.ui.getCore().attachInit(function(){
 			//프로퍼티명:"값", 프로퍼티명:값, ... 형식으로 구성.
 			for(var i=0, l=lt_0015.length; i<l; i++){
 
+                let _s0015 = lt_0015[i];
+
                 //sap.ui.core.HTML UI의 content 프로퍼티인경우 skip.
-                if(lt_0015[i].UIATK === "AT000011858"){continue;}
+                if(_s0015.UIATK === "AT000011858"){continue;}
+
+                //값이 없다면 프로퍼티 구성 skip.
+				if(_s0015.UIATV === ""){continue;}
                 
-                //값에 { 문자가 포함된다면 구성 skip.
-				if(lt_0015[i].UIATV.indexOf("{") !== -1 ){continue;}
-				
-                //공통코드 예외처리 대상건인경우 처리 skip.
-                if(oAPP.attr.S_CODE.UA032.findIndex( a => a.FLD01 === lt_0015[i].UIOBK && a.FLD03 === lt_0015[i].UIATT ) !== -1){
+                //바인딩 처리된 경우.
+                if(_s0015.ISBND === "X"){
+
+                    var _UIATV = lf_getBindPath(_s0015);
+
+                    //프로퍼티명:"값" 형식의 SCRIPT 구성.
+                    l_prop += l_sep + C_TAB + C_TAB + C_TAB + _s0015.UIATT + ':"{' + _UIATV + '}"';
+                    
+                    if(l_sep === ""){
+                        l_sep = "," + C_NEWLINE;
+                    }
+
                     continue;
                 }
                 
-				//값이 없다면 프로퍼티 구성 skip.
-				if(lt_0015[i].UIATV === ""){continue;}
+                //값에 { 문자가 포함된다면 구성 skip.
+				if(_s0015.UIATV.indexOf("{") !== -1 ){continue;}
 
-
+				
+                //공통코드 예외처리 대상건인경우 처리 skip.
+                if(oAPP.attr.S_CODE.UA032.findIndex( a => a.FLD01 === _s0015.UIOBK && a.FLD03 === _s0015.UIATT ) !== -1){
+                    continue;
+                }
+                
+				
                 //프로퍼티명:"값" 형식의 SCRIPT 구성.
-				l_prop += l_sep + lt_0015[i].UIATT + ":" + lf_setPropVal(lt_0015[i]);
+				l_prop += l_sep + C_TAB + C_TAB + C_TAB + _s0015.UIATT + ":" + lf_setPropVal(_s0015);
 				
 				if(l_sep === ""){
-					l_sep = ",";
+					l_sep = "," + C_NEWLINE;
 				}
 				
 			}
+
+            
+            if(l_prop === ""){
+                return "";
+            }
 			
 			//구성한 프로퍼티 정보 return.
-			return "{" + l_prop + "}";
+			return "{" + C_NEWLINE + l_prop + C_NEWLINE + C_TAB + C_TAB + "}";
 			
 			
 		}	//프로퍼티 정보 구성.
@@ -901,8 +992,13 @@ sap.ui.getCore().attachInit(function(){
 
                 //styleClass 프로퍼티에 값을 입력한 경우.
                 if(lt_0015[i].UIATK.substr(0,3) === "EXT" && lt_0015[i].UIASN === "STYLECLASS"){
+
+                    var _UIATV = lt_0015[i].UIATV;
+
+                    _UIATV = _UIATV.replace(/\"/g, "\\\"");
+
                     //미리보기 화면의 UI STYLECLASS 처리.
-                    l_prop += is_tree.OBJID + ".addStyleClass(\"" + lt_0015[i].UIATV + "\");";
+                    l_prop += is_tree.OBJID + ".addStyleClass(\"" + _UIATV + "\");";
                     continue;
                 }
                 
@@ -911,6 +1007,9 @@ sap.ui.getCore().attachInit(function(){
 
                 //sap.ui.core.HTML UI의 content인경우 script 구성.
                 if(l_html){
+
+                    l_html = l_html.replace(/\"/g, "\\\"");
+
                     l_prop += is_tree.OBJID + ".setContent(\"" + l_html + "\");";
                     continue;
                 }
@@ -1324,7 +1423,7 @@ sap.ui.getCore().attachInit(function(){
         }
         
         //js 폴더 생성.
-        if(lf_mkdirSync(parent.PATH.join(l_downPath, "js"))){
+        if(lf_mkdirSync(parent.PATH.join(l_downPath, "views"))){
             loAPP.ui.oDialog.setBusy(false);
             //폴더 생성 실패시 작업 폴더 삭제.
             lf_rmdirSync(l_downPath);
@@ -1334,11 +1433,11 @@ sap.ui.getCore().attachInit(function(){
         //index.js source 구성.
         var l_indexJS = lf_templateIndexJS();
 
-        //index.js의 패턴 변환 처리.
-        l_indexJS = l_indexJS.replaceAll("&PATTERN001&", ls_data.fileName.toLowerCase());
+        // //index.js의 패턴 변환 처리.
+        // l_indexJS = l_indexJS.replaceAll("&PATTERN001&", ls_data.fileName.toLowerCase());
 
         //index.js 파일 생성.
-        if(lf_writeFileSync(parent.PATH.join(l_downPath, "js"), "index.js", l_indexJS)){
+        if(lf_writeFileSync(l_downPath, "index.js", l_indexJS)){
             loAPP.ui.oDialog.setBusy(false);
             //폴더 생성 실패시 작업 폴더 삭제.
             lf_rmdirSync(l_downPath);
@@ -1346,7 +1445,7 @@ sap.ui.getCore().attachInit(function(){
         }
 
         //js 폴더 안에 main 폴더 생성.
-        if(lf_mkdirSync(parent.PATH.join(l_downPath, "js", "main"))){
+        if(lf_mkdirSync(parent.PATH.join(l_downPath, "views", "main"))){
             loAPP.ui.oDialog.setBusy(false);
             //폴더 생성 실패시 작업 폴더 삭제.
             lf_rmdirSync(l_downPath);
@@ -1357,7 +1456,7 @@ sap.ui.getCore().attachInit(function(){
         var l_controlJS = lf_templateControlJS();
 
         //control.js 파일 생성.
-        if(lf_writeFileSync(parent.PATH.join(l_downPath, "js", "main"), "control.js", l_controlJS)){
+        if(lf_writeFileSync(parent.PATH.join(l_downPath, "views", "main"), "control.js", l_controlJS)){
             loAPP.ui.oDialog.setBusy(false);
             //폴더 생성 실패시 작업 폴더 삭제.
             lf_rmdirSync(l_downPath);
@@ -1365,7 +1464,7 @@ sap.ui.getCore().attachInit(function(){
         }
 
         //view.js 파일 생성.
-        if(lf_writeFileSync(parent.PATH.join(l_downPath, "js", "main"), "view.js", ls_data.source[C_MAIN_VIEW_JS])){
+        if(lf_writeFileSync(parent.PATH.join(l_downPath, "views", "main"), "view.js", ls_data.source[C_MAIN_VIEW_JS])){
             loAPP.ui.oDialog.setBusy(false);
             //폴더 생성 실패시 작업 폴더 삭제.
             lf_rmdirSync(l_downPath);
@@ -1526,7 +1625,7 @@ sap.ui.getCore().attachInit(function(){
             var l_theme = loAPP.oModel.getProperty("/theme");
 
             //APPLICATION 호출 URL 정보 구성.
-            var l_url = ls_userInfo.META.HOST + "/zu4a/" + oAPP.attr.APPID + 
+            var l_url = parent.getServerHost() + "/zu4a/" + oAPP.attr.APPID + 
                 "?sap-language=" + ls_userInfo.LANGU + 
                 "&sap-user=" + ls_userInfo.ID + 
                 "&sap-password=" + ls_userInfo.PW +
@@ -1653,7 +1752,7 @@ sap.ui.getCore().attachInit(function(){
         //작업 폴더명 구성.
         // var l_folder = lf_getWorkFolderName(ls_data.downPath);
 
-        var l_folder = ls_data.fileName;
+        var l_folder = ls_data.fileName.toLowerCase();
 
         //다운로드 경로 + 다운로드 폴더명의 path 구성.
         var l_downPath = parent.PATH.join(ls_data.downPath, l_folder);
@@ -1754,7 +1853,7 @@ sap.ui.getCore().attachInit(function(){
         }
         
         //js 폴더 생성.
-        if(lf_mkdirSync(parent.PATH.join(l_downPath, "js"))){
+        if(lf_mkdirSync(parent.PATH.join(l_downPath, "views"))){
             loAPP.ui.oDialog.setBusy(false);
             //폴더 생성 실패시 작업 폴더 삭제.
             lf_rmdirSync(l_downPath);
@@ -1764,11 +1863,11 @@ sap.ui.getCore().attachInit(function(){
         //index.js source 구성.
         var l_indexJS = lf_templateIndexJS();
 
-        //index.js의 패턴 변환 처리.
-        l_indexJS = l_indexJS.replaceAll("&PATTERN001&", ls_data.fileName.toLowerCase());
+        // //index.js의 패턴 변환 처리.
+        // l_indexJS = l_indexJS.replaceAll("&PATTERN001&", ls_data.fileName.toLowerCase());
 
         //index.js 파일 생성.
-        if(lf_writeFileSync(parent.PATH.join(l_downPath, "js"), "index.js", l_indexJS)){
+        if(lf_writeFileSync(l_downPath, "index.js", l_indexJS)){
             loAPP.ui.oDialog.setBusy(false);
             //폴더 생성 실패시 작업 폴더 삭제.
             lf_rmdirSync(l_downPath);
@@ -1776,7 +1875,7 @@ sap.ui.getCore().attachInit(function(){
         }
 
         //js 폴더 안에 main 폴더 생성.
-        if(lf_mkdirSync(parent.PATH.join(l_downPath, "js", "main"))){
+        if(lf_mkdirSync(parent.PATH.join(l_downPath, "views", "main"))){
             loAPP.ui.oDialog.setBusy(false);
             //폴더 생성 실패시 작업 폴더 삭제.
             lf_rmdirSync(l_downPath);
@@ -1787,7 +1886,7 @@ sap.ui.getCore().attachInit(function(){
         var l_controlJS = lf_templateControlJS();
 
         //control.js 파일 생성.
-        if(lf_writeFileSync(parent.PATH.join(l_downPath, "js", "main"), "control.js", l_controlJS)){
+        if(lf_writeFileSync(parent.PATH.join(l_downPath, "views", "main"), "control.js", l_controlJS)){
             loAPP.ui.oDialog.setBusy(false);
             //폴더 생성 실패시 작업 폴더 삭제.
             lf_rmdirSync(l_downPath);
@@ -1795,7 +1894,7 @@ sap.ui.getCore().attachInit(function(){
         }
 
         //view.js 파일 생성.
-        if(lf_writeFileSync(parent.PATH.join(l_downPath, "js", "main"), "view.js", ls_data.source[C_MAIN_VIEW_JS])){
+        if(lf_writeFileSync(parent.PATH.join(l_downPath, "views", "main"), "view.js", ls_data.source[C_MAIN_VIEW_JS])){
             loAPP.ui.oDialog.setBusy(false);
             //폴더 생성 실패시 작업 폴더 삭제.
             lf_rmdirSync(l_downPath);
@@ -1806,34 +1905,34 @@ sap.ui.getCore().attachInit(function(){
         // //작업폴더 압축.
         // var l_ret = await lf_executeZipFile(l_downPath, ls_data.fileName.toLowerCase(), parent.PATH.join(ls_data.downPath, ls_data.fileName.toLowerCase() + ".zip"));
 
-        //command로 tar 파일 생성 처리.
-        if(lf_createTar(ls_data.downPath, ls_data.fileName)){
+        // //command로 tar 파일 생성 처리.
+        // if(lf_createTar(ls_data.downPath, ls_data.fileName)){
 
-            loAPP.ui.oDialog.setBusy(false);
+        //     loAPP.ui.oDialog.setBusy(false);
             
-            //폴더 생성 실패시 작업 폴더 삭제.
-            lf_rmdirSync(l_downPath);
+        //     //폴더 생성 실패시 작업 폴더 삭제.
+        //     lf_rmdirSync(l_downPath);
 
-            //폴더 생성 실패시 sample folder 삭제.
-            lf_rmdirSync(l_sampleFolder);
+        //     //폴더 생성 실패시 sample folder 삭제.
+        //     lf_rmdirSync(l_sampleFolder);
 
-            return;
+        //     return;
 
-        }
+        // }
 
 
-        //압축 파일을 sample 폴더로 copy 처리.
-        if(lf_copyFileSync(parent.PATH.join(ls_data.downPath, l_folder + ".tar"), parent.PATH.join(l_downPath, l_folder + ".tar"))){
+        // //압축 파일을 sample 폴더로 copy 처리.
+        // if(lf_copyFileSync(parent.PATH.join(ls_data.downPath, l_folder + ".tar"), parent.PATH.join(l_downPath, l_folder + ".tar"))){
 
-        }
+        // }
         
 
-        //압축 처리 종료 후 작업 폴더 삭제 
-        try {
-            parent.FS.rmdirSync(parent.PATH.join(ls_data.downPath, l_folder + ".tar"), {recursive: true, force: true});
-        } catch (error) {
+        // //압축 처리 종료 후 작업 폴더 삭제 
+        // try {
+        //     parent.FS.rmdirSync(parent.PATH.join(ls_data.downPath, l_folder + ".tar"), {recursive: true, force: true});
+        // } catch (error) {
         
-        }
+        // }
 
 
         loAPP.ui.oDialog.setBusy(false);
@@ -1989,8 +2088,8 @@ sap.ui.getCore().attachInit(function(){
             //027	&1 is required entry value
             //024	Title
             ls_data.stat.tx.title = parent.WSUTIL.getWsMsgClsTxt(
-                l_LANGU, "ZMSG_WS_COMMON_001", "027", 
-                parent.WSUTIL.getWsMsgClsTxt(l_LANGU, "ZMSG_WS_COMMON_001", "024"));
+                oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "027", 
+                parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "024"));
 
         }
 
@@ -2005,7 +2104,7 @@ sap.ui.getCore().attachInit(function(){
 
             //027	&1 is required entry value
             ls_data.stat.tx.downPath = parent.WSUTIL.getWsMsgClsTxt(
-                l_LANGU, "ZMSG_WS_COMMON_001", "027", "다운로드 경로");
+                oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "027", "다운로드 경로");
 
         }
 
@@ -2019,7 +2118,7 @@ sap.ui.getCore().attachInit(function(){
 
             //027	&1 is required entry value
             ls_data.stat.tx[C_INDEX_HTML] = parent.WSUTIL.getWsMsgClsTxt(
-                l_LANGU, "ZMSG_WS_COMMON_001", "027", "index.html source");
+                oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "027", "index.html source");
 
         }
 
@@ -2033,7 +2132,7 @@ sap.ui.getCore().attachInit(function(){
 
             //027	&1 is required entry value
             ls_data.stat.tx[C_MAIN_VIEW_JS] = parent.WSUTIL.getWsMsgClsTxt(
-                l_LANGU, "ZMSG_WS_COMMON_001", "027", "main view.js source");
+                oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "027", "main view.js source");
 
         }
 
