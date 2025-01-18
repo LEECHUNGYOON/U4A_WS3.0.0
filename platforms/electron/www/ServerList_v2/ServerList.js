@@ -28,6 +28,14 @@ const
     SETTINGS = require(PATHINFO.WSSETTINGS),
     XHR = new XMLHttpRequest();
 
+/************************************************************************
+ * 에러 감지
+ ************************************************************************/
+   
+    var WSERR = parent.require(PATHINFO.WSTRYCATCH);
+
+    var zconsole = WSERR(window, document, console);
+
 XHR.withCredentials = true;
 
 const
