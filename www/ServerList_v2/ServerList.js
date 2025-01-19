@@ -741,7 +741,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oAPP.data.SAPLogon[oResult.fileName] = oResult.Result;
 
         // 결과 리스트
-        let oLogonResult = oAPP.fn.fnGetSAPLogonLandscapeList();
+        let oLogonResult = oAPP.fn.fnSetSAPLogonLandscapeList();
         if (oLogonResult.RETCD == "E") {
 
             // oAPP.fn.fnShowMessageBox("E", oLogonResult.RTMSG);
@@ -912,7 +912,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     /************************************************************************
      * 레지스트리에 등록된 SAPLogon xml 파일 정보를 JSON 데이터로 변환
      ************************************************************************/
-    oAPP.fn.fnGetSAPLogonLandscapeList = () => {
+
+    // SAP의 서버 정보가 있는 XML을 읽어서 모델에 저장한다.
+    oAPP.fn.fnSetSAPLogonLandscapeList = () => {
 
         // 성공 실패 공통 리턴 구조
         let oErr = {
@@ -1071,7 +1073,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         return oSucc;
 
-    }; // end of oAPP.fn.fnGetSAPLogonLandscapeList
+    }; // end of oAPP.fn.fnSetSAPLogonLandscapeList
 
     oAPP.fn.fnGetRegInfoForSAPLogonError = (oError) => {
 
