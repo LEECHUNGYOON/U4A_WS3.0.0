@@ -16,7 +16,7 @@
         APP = REMOTE.app,
         PATH = REMOTE.require('path'),
         APPPATH = APP.getAppPath(),
-        APPCOMMON = oAPP.common;
+        APPCOMMON = oAPP.common;    
 
     var oSettings = parent.WSUTIL.getWsSettingsInfo();
 
@@ -3245,7 +3245,7 @@ function fnCriticalError() {
 // JSON Parse Error
 function fnJsonParseError(e) {
 
-    zconsole.error(e);
+    console.error(e);
 
     // JSON parse 오류 일 경우는 critical 오류로 판단하여 메시지 팝업 호출 후 창 닫게 만든다.
 
@@ -3262,7 +3262,29 @@ function fnJsonParseError(e) {
 
 }
 
-function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob) {
+// timeout 파라미터 추가
+// default 60초
+function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout = 60000) {
+
+    /**
+     * TEST ------------------------ Start
+     */
+
+    // 빌드 상태에서는 실행하지 않음.
+    if (!APP.isPackaged) {
+        
+        iTimeout = 5000;    
+
+        sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout);
+
+        return;
+
+    }   
+    
+    /**
+     * TEST ------------------------ End
+     */
+
 
     let oUserInfo = parent.getUserInfo();
         // oSettings = parent.WSUTIL.getWsSettingsInfo(),
@@ -3349,7 +3371,10 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
                 let u4a_status = xhr.getResponseHeader("u4a_status");
                 if (u4a_status) {
 
+                    // 전역 busy 종료
                     parent.setBusy("");
+
+                    // gif busy dialog 종료
                     oAPP.common.fnSetBusyDialog(false);
 
                     try {
@@ -3489,6 +3514,256 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
 } // end of sendAjax
 
+
+
+function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout = 60000){
+
+    var oXHR = new XMLHttpRequest();
+
+    zconsole.log("sendAjax2");
+
+    // 사용자 로그인 정보를 구한다.
+    let oUserInfo = parent.getUserInfo();
+
+    /**
+     * 서버 통신 시 버전, 패치 레벨 정보 전송 -- Start
+     */
+    if (oFormData && oFormData instanceof FormData == true) {
+
+        oFormData.append("WSVER", oUserInfo.WSVER);
+        oFormData.append("WSPATCH_LEVEL", oUserInfo.WSPATCH_LEVEL);
+
+    }
+
+    // 전송방식에 따른, 버전 & 패치레벨 정보 파라미터 구성
+    if (!meth || meth !== "POST") {
+
+        if (sPath.indexOf("?") == -1) {
+            sPath += "?";
+        } else {
+            sPath += "&";
+        }
+
+        sPath += `WSVER=${oUserInfo.WSVER}&WSPATCH_LEVEL=${oUserInfo.WSPATCH_LEVEL}`;
+    }
+
+    /**
+     * 서버 통신 시 버전, 패치 레벨 정보를 무조건 전송 -- End
+     */
+
+
+    // Default Values
+    var busy = 'X',
+        sMeth = 'POST',
+        IsAsync = true;
+
+    if (bIsBusy != null) {
+        // Busy Indicator 실행
+        busy = bIsBusy;
+    }
+
+    // 부모영역에 현재 busy 실행 여부 정보를 전달
+    parent.setBusy(busy);    
+
+
+    // 요청 타임아웃 시간 지정
+    oXHR.timeout = iTimeout;
+
+
+    // 서버 요청에 대한 정상 응답
+    oXHR.onload = function(e){
+
+        // u4a status 응답 헤더를 읽는다
+        let u4a_status = oXHR.getResponseHeader("u4a_status");
+
+        // status 값이 있다면 서버에서 오류 발생
+        if (u4a_status) {
+            
+            // 전역 busy 종료
+            parent.setBusy("");
+
+            // gif busy dialog 종료 (앱 생성 시 사용하는 Busy)
+            oAPP.common.fnSetBusyDialog(false);
+
+            try {
+                var oResult = JSON.parse(oXHR.response);
+            } catch (error) {
+                fnJsonParseError(error);
+                return;
+            }
+
+            // 잘못된 url 이거나 지원하지 않는 기능 처리
+            oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, oResult);
+
+            return;
+        }
+
+        // 응답 타입이 Blob일 경우 응답 데이터를 success 콜백을 호출한다.
+        if (oXHR.responseType === 'blob') {
+
+            if (typeof fn_success === "function") {
+                fn_success(oXHR.response, oXHR);                        
+            }
+
+            return;
+
+        }
+      
+        var oReturn = oXHR.response;
+        if (oReturn === "") {
+            oReturn = JSON.stringify({});
+        }
+
+        try {
+            var oResult = JSON.parse(oReturn);
+
+        } catch (e) {
+
+            fnJsonParseError(e);
+
+            return;
+        }
+
+        // Critical Error 일 경우 로그아웃 처리
+        if (oResult.RETCD === "Z") {
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            parent.setBusy("");
+
+            parent.showMessage(sap, 20, 'E', oResult.RTMSG, fnCriticalError);
+
+            return;
+
+        }
+
+        // 로그인 티켓 만료되면 로그인 페이지로 이동한다.
+        if (oResult.TYPE === "E") {
+
+            // error 콜백이 있다면 호출
+            if (typeof fn_error === "function") {
+                fn_error();
+            }
+
+            // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Session Timeout 팝업 호출
+            fn_logoff_success('X');
+
+            return;
+
+        }
+
+        if (typeof fn_success === "function") {
+            fn_success(oResult);
+        }
+
+    }; // end of oXHR.onload
+
+
+    /***********************************************
+     * 통신 오류 또는 timeout 발생 시
+     ***********************************************/
+    function _onError(e){
+
+        // 타임아웃일 경우
+        if(e.type === "timeout"){
+
+            let _sConsoleMsg = "[ ajax timeout ]\n";
+                _sConsoleMsg += `req url: ${sPath}\n`;
+                _sConsoleMsg += "path: [ ws_common.js => _onError ]\n";
+                _sConsoleMsg += " timeout 오류!!";
+        
+            console.error(_sConsoleMsg);
+
+            // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Session Timeout 팝업 호출
+            fn_logoff_success("X");
+
+            // 화면 Lock 해제
+            sap.ui.getCore().unlock();
+
+            // Busy 종료
+            parent.setBusy('');
+
+            return;
+            
+        }
+
+        // error 콜백이 있다면 호출
+        if (typeof fn_error == "function") {
+            fn_error();
+        }
+
+        var sCleanHtml = parent.setCleanHtml(oXHR.response);
+        if (!sCleanHtml || sCleanHtml == "") {
+            sCleanHtml = "Server connection fail!!"; // [MSG]
+        }
+
+        parent.showMessage(sap, 20, 'E', sCleanHtml, fn_callback);
+
+        function fn_callback() {
+
+            // 화면에 떠있는 Dialog 들이 있을 경우 모두 닫는다.
+            oAPP.fn.fnCloseAllWs20Dialogs();
+
+            // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫는다.
+            fn_logoff_success("");
+         
+        }
+
+        // 화면 Lock 해제
+        sap.ui.getCore().unlock();
+
+        // Busy 종료
+        parent.setBusy('');
+
+    } // end of _onError
+    
+    
+    // 통신 오류가 발생한 경우
+    oXHR.onerror = _onError;
+
+    // Timeout 오류가 발생한 경우
+    oXHR.ontimeout = _onError;
+
+
+    if (meth != null) {
+        sMeth = meth;
+    }
+
+    if (bIsAsync != null) {
+        IsAsync = bIsAsync;
+    }
+    
+    oXHR.withCredentials = true;
+
+    // FormData가 없으면 GET으로 전송
+    oXHR.open(sMeth, sPath, IsAsync);
+
+    // blob 파일일 경우
+    if (bIsBlob == 'X') {
+        oXHR.responseType = 'blob';
+    }
+
+    if (oFormData) {
+        oXHR.send(oFormData);
+    } else {
+        oXHR.send();
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 // application unlock
 function ajax_unlock_app(APPID, fn_callback) {
 
@@ -3510,6 +3785,7 @@ function ajax_unlock_app(APPID, fn_callback) {
 // 로그오프 성공시 타는 펑션
 function fn_logoff_success(TYPE) {
 
+    // 파라미터가 없을 경우에는 메시지 팝업 없이 강제 종료
     if (!TYPE) {
 
         parent.setBusy("");
@@ -3519,7 +3795,10 @@ function fn_logoff_success(TYPE) {
         return;
     }
 
-    if (TYPE == "X") {
+    // 파라미터가 있을 경우에는 같은 세션 기준으로 나를 제외한 나머지 창들 전체 종료 후
+    // Session Timeout 메시지 팝업 호출 후 'OK' 선택 시, 나 자신도 종료
+
+    if (TYPE === "X") {
 
         let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D85"), // Session Timeout
             sDesc = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "349"), // Please Try Login Again!
