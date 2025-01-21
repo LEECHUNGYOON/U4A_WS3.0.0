@@ -3237,7 +3237,7 @@ function ajax_init_prc(oFormData, fn_callback, fn_fail) {
 // critical 오류
 function fnCriticalError() {
 
-    // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Login 페이지로 이동.
+    // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫는다.
     fn_logoff_success("");
 
 }
@@ -3273,7 +3273,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
     // 빌드 상태에서는 실행하지 않음.
     if (!APP.isPackaged) {
         
-        iTimeout = 5000;    
+        iTimeout = 10000;    
 
         sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout);
 
@@ -3438,7 +3438,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
                         fn_error();
                     }
 
-                    // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Login 페이지로 이동.
+                    // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Session Timeout 팝업 호출
                     fn_logoff_success('X');
 
                     return;
@@ -3474,7 +3474,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
                     // 화면에 떠있는 Dialog 들이 있을 경우 모두 닫는다.
                     oAPP.fn.fnCloseAllWs20Dialogs();
 
-                    // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Login 페이지로 이동.
+                    // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫는다.
                     fn_logoff_success("");
 
                     // // 10번 페이지로 이동
@@ -3519,6 +3519,22 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout = 60000){
 
     var oXHR = new XMLHttpRequest();
+
+    // let _oBind = {
+    //     sPath: sPath
+    // };
+
+    // // 10초 뒤에도 응답이 없을 경우에는 BusyDialog를 띄운다.
+    // let iReqPendingTimeout = setTimeout(function(){
+
+    //     let _oBind = this;
+    //     let sPath = _oBind.sPath;
+
+
+
+
+
+    // }.bind(_oBind), 10000);
 
     zconsole.log("sendAjax2");
 
@@ -3668,15 +3684,29 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
         // 타임아웃일 경우
         if(e.type === "timeout"){
 
-            let _sConsoleMsg = "[ ajax timeout ]\n";
+            let _sConsoleMsg = "[ ajax request timeout ]\n";
                 _sConsoleMsg += `req url: ${sPath}\n`;
                 _sConsoleMsg += "path: [ ws_common.js => _onError ]\n";
-                _sConsoleMsg += " timeout 오류!!";
+                _sConsoleMsg += " request timeout 오류!!";
         
             console.error(_sConsoleMsg);
 
             // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Session Timeout 팝업 호출
-            fn_logoff_success("X");
+            let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D85");
+            let sDesc = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "349"); // Please Try Login Again!
+                sDesc += "( Request Timeout )";
+
+            let sIllustType = "tnt-SessionExpired";
+            let sIllustSize = sap.m.IllustratedMessageSize.Dialog;
+
+            parent.IPCRENDERER.send('if-browser-close', {
+                ACTCD: "A", // 나를 제외한 나머지는 다 죽인다.
+                SESSKEY: parent.getSessionKey(),
+                BROWSKEY: parent.getBrowserKey()
+            });
+
+            // 일러스트 메시지 팝업을 띄운다
+            oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, fnSessionTimeOutDialogOk);
 
             // 화면 Lock 해제
             sap.ui.getCore().unlock();

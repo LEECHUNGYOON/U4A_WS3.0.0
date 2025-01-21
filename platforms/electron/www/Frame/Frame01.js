@@ -129,7 +129,8 @@ oAPP.msg = {};
         let sLangu = oUserInfo.LANGU;
 
         // 사운드 ROOT 경로
-        let sSoundRootPath = PATH.join(__dirname, '../sound/welcome/');
+        // let sSoundRootPath = PATH.join(__dirname, '../sound/welcome/');
+        let sSoundRootPath = PATH.join(APPPATH, "sound", "welcome");
         let sSoundFileName = "WELCOME";
 
         let sSoundPath = PATH.join(sSoundRootPath, sLangu, sSoundFileName + ".wav");        

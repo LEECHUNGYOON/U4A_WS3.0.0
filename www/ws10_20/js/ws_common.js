@@ -177,7 +177,38 @@
 
         return sText;
 
-    }; // end of oAPP.common.fnTestGetMsgClsText
+    }; // end of oAPP.common.fnGetMsgClsText
+
+
+    /******************************************************************
+     * 서버 요청 메시지 텍스트 구하기
+     ******************************************************************/
+    oAPP.common.fnGetAjaxReqMsgTxt = function(sMsgCls, sPath){
+
+        let oUserInfo = parent.getUserInfo();
+        let sLangu = oUserInfo.LANGU;
+
+        let sMsgTxtFilePath = parent.PATH.join(parent.APPPATH, "MSG", "AJAX_REQ_MSG", sLangu, sMsgCls + ".json");
+        if(!parent.FS.existsSync(sMsgTxtFilePath)){
+            return `${sMsgCls}|${sMsgNum}|${sLangu}`;
+        }
+
+        let sMsgListJson = parent.FS.readFileSync(sMsgTxtFilePath, "utf-8");
+
+        try {            
+            var aMsgList = JSON.parse(sMsgListJson);
+        } catch (error) {
+            return `${sMsgCls}|${sMsgNum}|${sLangu}|JSON Parse Error`;
+        }
+        
+        let oFindTxt = aMsgList.find(e => e.PATH === sPath);
+        if(!oFindTxt){
+            return "";
+        }
+
+        return oFindTxt.TEXT;
+
+    }; // end of oAPP.common.fnGetAjaxReqMsgTxt
 
     // /************************************************************************
     //  * 메타데이터의 메시지 클래스 번호에 해당하는 메시지 리턴 
@@ -3237,7 +3268,7 @@ function ajax_init_prc(oFormData, fn_callback, fn_fail) {
 // critical 오류
 function fnCriticalError() {
 
-    // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Login 페이지로 이동.
+    // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫는다.
     fn_logoff_success("");
 
 }
@@ -3263,8 +3294,8 @@ function fnJsonParseError(e) {
 }
 
 // timeout 파라미터 추가
-// default 60초
-function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout = 60000) {
+// default 10분 (vpn 환경일 경우에 엄청 느릴거 감안)
+function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout = 600000) {
 
     /**
      * TEST ------------------------ Start
@@ -3272,15 +3303,15 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
     // 빌드 상태에서는 실행하지 않음.
     if (!APP.isPackaged) {
-        
-        iTimeout = 5000;    
+
+        iTimeout = 10000;
 
         sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout);
 
         return;
 
-    }   
-    
+    }
+
     /**
      * TEST ------------------------ End
      */
@@ -3438,7 +3469,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
                         fn_error();
                     }
 
-                    // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Login 페이지로 이동.
+                    // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Session Timeout 팝업 호출
                     fn_logoff_success('X');
 
                     return;
@@ -3474,7 +3505,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
                     // 화면에 떠있는 Dialog 들이 있을 경우 모두 닫는다.
                     oAPP.fn.fnCloseAllWs20Dialogs();
 
-                    // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Login 페이지로 이동.
+                    // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫는다.
                     fn_logoff_success("");
 
                     // // 10번 페이지로 이동
@@ -3518,7 +3549,43 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
 function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout = 60000){
 
-    var oXHR = new XMLHttpRequest();
+    // var oXHR = new XMLHttpRequest();
+
+    // let _oBind = {
+    //     sPath: sPath
+    // };
+
+    // let iReqMsgTime = 10000;
+
+    // // 10초 뒤에도 응답이 없을 경우에는 BusyDialog를 띄운다.
+    // let iReqMsgTimeout = setTimeout(function(){
+
+    //     let _oBind = this;
+        
+    //     // Request Path
+    //     let sPath = _oBind.sPath;
+
+    //     try {
+    //         var oURL = new URL(sPath);    
+    //     } catch (error) {
+    //         return;
+    //     }
+
+    //     // 서버 호출시 Path를 구한다.
+    //     let sPathName = oURL.pathname;
+    //     let sBaseName = parent.PATH.basename(sPathName);
+
+    //     // Path에 맞는 메시지 매핑 텍스트 정보를 구한다.
+    //     let sReqMsg = oAPP.common.fnGetAjaxReqMsgTxt("AJAX_REQ_MSG_001", sBaseName);
+
+    //     if(!sReqMsg){
+    //         return;
+    //     }
+
+
+
+
+    // }.bind(_oBind), iReqMsgTime);
 
     zconsole.log("sendAjax2");
 
@@ -3572,6 +3639,9 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
 
     // 서버 요청에 대한 정상 응답
     oXHR.onload = function(e){
+
+        // 서버 요청 메시지 팝업 타임아웃을 죽인다.
+        clearTimeout(iReqMsgTimeout);
 
         // u4a status 응답 헤더를 읽는다
         let u4a_status = oXHR.getResponseHeader("u4a_status");
@@ -3668,15 +3738,29 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
         // 타임아웃일 경우
         if(e.type === "timeout"){
 
-            let _sConsoleMsg = "[ ajax timeout ]\n";
+            let _sConsoleMsg = "[ ajax request timeout ]\n";
                 _sConsoleMsg += `req url: ${sPath}\n`;
                 _sConsoleMsg += "path: [ ws_common.js => _onError ]\n";
-                _sConsoleMsg += " timeout 오류!!";
+                _sConsoleMsg += " request timeout 오류!!";
         
             console.error(_sConsoleMsg);
 
             // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Session Timeout 팝업 호출
-            fn_logoff_success("X");
+            let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D85");
+            let sDesc = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "349"); // Please Try Login Again!
+                sDesc += "( Request Timeout )";
+
+            let sIllustType = "tnt-SessionExpired";
+            let sIllustSize = sap.m.IllustratedMessageSize.Dialog;
+
+            parent.IPCRENDERER.send('if-browser-close', {
+                ACTCD: "A", // 나를 제외한 나머지는 다 죽인다.
+                SESSKEY: parent.getSessionKey(),
+                BROWSKEY: parent.getBrowserKey()
+            });
+
+            // 일러스트 메시지 팝업을 띄운다
+            oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, fnSessionTimeOutDialogOk);
 
             // 화면 Lock 해제
             sap.ui.getCore().unlock();
