@@ -998,6 +998,9 @@ let oAPP = (function () {
         oFormData.append("sap-password", oLogInData.PW);
         oFormData.append("sap-client", oLogInData.CLIENT);
         oFormData.append("sap-language", oLogInData.LANGU);
+
+        zconsole.log("login language", oLogInData.LANGU);
+
         oFormData.append("SYSID", oLogInData.SYSID);
         oFormData.append("WSVER", oSettings.appVersion);
         oFormData.append("WSPATCH_LEVEL", oSettings.patch_level);

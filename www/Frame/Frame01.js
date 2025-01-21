@@ -42,8 +42,8 @@ POWERMONITOR.setMaxListeners(100);
 IPCMAIN.setMaxListeners(100);
 
 // [R&D 전용 console.log]
-var zconsole = {};
-zconsole.APP = APP;
+// var zconsole = {};
+// zconsole.APP = APP;
 
 /**
  *  ## oWS WS

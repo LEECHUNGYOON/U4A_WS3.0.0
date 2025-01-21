@@ -1013,47 +1013,47 @@ function getProcessEnvUserInfo() {
 /************************************************************************
  * local console [R&D 전용 console.log]
  ************************************************************************/
-zconsole.log = (sConsole) => {
+// zconsole.log = (sConsole) => {
 
-    const
-        APP = zconsole.APP;
+//     const
+//         APP = zconsole.APP;
 
-    // 빌드 상태에서는 실행하지 않음.
-    if (APP.isPackaged) {
-        return;
-    }
+//     // 빌드 상태에서는 실행하지 않음.
+//     if (APP.isPackaged) {
+//         return;
+//     }
 
-    console.log("[zconsole]: " + sConsole);
+//     console.log("[zconsole]: " + sConsole);
 
-};
+// };
 
-zconsole.error = (sConsole) => {
+// zconsole.error = (sConsole) => {
 
-    const
-        APP = zconsole.APP;
+//     const
+//         APP = zconsole.APP;
 
-    // 빌드 상태에서는 실행하지 않음.
-    if (APP.isPackaged) {
-        return;
-    }
+//     // 빌드 상태에서는 실행하지 않음.
+//     if (APP.isPackaged) {
+//         return;
+//     }
 
-    console.error("[zconsole]: " + sConsole);
+//     console.error("[zconsole]: " + sConsole);
 
-};
+// };
 
-zconsole.warn = (sConsole) => {
+// zconsole.warn = (sConsole) => {
 
-    const
-        APP = zconsole.APP;
+//     const
+//         APP = zconsole.APP;
 
-    // 빌드 상태에서는 실행하지 않음.
-    if (APP.isPackaged) {
-        return;
-    }
+//     // 빌드 상태에서는 실행하지 않음.
+//     if (APP.isPackaged) {
+//         return;
+//     }
 
-    console.warn("[zconsole]: " + sConsole);
+//     console.warn("[zconsole]: " + sConsole);
 
-};
+// };
 
 // function fnGetMsgClsText(sMsgCls, sMsgNum, p1, p2, p3, p4) {
 

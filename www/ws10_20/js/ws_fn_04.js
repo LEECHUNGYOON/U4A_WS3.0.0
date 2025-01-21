@@ -26,23 +26,18 @@
 
         return new Promise((resolve, reject) => {
 
-            var sPath = parent.getServerPath() + '/chk_mlogin_of_gui',
-                oUserInfo = parent.getUserInfo(),
-                sId = oUserInfo.ID.toUpperCase(),
-                sPw = oUserInfo.PW,
-                sComputerName = parent.COMPUTERNAME;
+            let sPath = parent.getServerPath() + '/chk_mlogin_of_gui';            
+            let sComputerName = parent.COMPUTERNAME;
 
-            var oFormData = new FormData();
-            // oFormData.append("sap-user", sId);
-            // oFormData.append("sap-password", sPw);
-            oFormData.append("PC_NAME", sComputerName);
+            let oFormData = new FormData();            
+                oFormData.append("PC_NAME", sComputerName);
 
             sendAjax(
                 sPath,
                 oFormData,
                 (oResult) => { // success
 
-                    if (oResult.RETCD == "E") {
+                    if (oResult.RETCD === "E") {
 
                         reject(oResult);
                         return;
@@ -191,6 +186,8 @@
                 (oSvrInfoDetail.sncnosso ? oSvrInfoDetail.sncnosso : "0"), // snc sso
 
             ];
+
+            zconsole.log("controller params", aParam);
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
             vbs.stdout.on("data", function(data) {

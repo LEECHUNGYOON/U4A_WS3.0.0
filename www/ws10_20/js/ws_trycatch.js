@@ -93,7 +93,7 @@ module.exports = function (window, document, console) {
     /************************************************************************
      * local console [R&D 전용 console.log]
      ************************************************************************/
-    zconsole.log = (sConsole) => {
+    zconsole.log = function(sConsole) {
 
         const
             APP = zconsole.APP;
@@ -103,7 +103,8 @@ module.exports = function (window, document, console) {
             return;
         }
 
-        console.log("[zconsole]: " + sConsole);
+        // console.log("[zconsole]: " + sConsole);
+        console.log("[zconsole]: ", arguments);
 
     };
 
@@ -117,7 +118,7 @@ module.exports = function (window, document, console) {
             return;
         }
 
-        console.error("[zconsole]: " + sConsole);
+        console.error("[zconsole]: ", arguments);
 
     };
 
@@ -131,7 +132,7 @@ module.exports = function (window, document, console) {
             return;
         }
 
-        console.warn("[zconsole]: " + sConsole);
+        console.warn("[zconsole]: ", arguments);
 
     };
 

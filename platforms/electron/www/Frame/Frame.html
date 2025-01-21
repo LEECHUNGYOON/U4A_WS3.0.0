@@ -82,6 +82,12 @@
             APPPATH = APP.getAppPath(),
             WSLOG = require(PATH.join(APPPATH, "ws10_20", "js", "ws_log.js"));
 
+        var PATHINFOURL = PATH.join(APPPATH, "Frame", "pathInfo.js"),
+            PATHINFO = require(PATHINFOURL),
+            WSERR = require(PATHINFO.WSTRYCATCH);
+
+        var zconsole = WSERR(window, document, console);
+
         // if (APP.isPackaged) {
             // 오류 로그 감지
             WSLOG.start(REMOTE, console);

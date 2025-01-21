@@ -177,7 +177,38 @@
 
         return sText;
 
-    }; // end of oAPP.common.fnTestGetMsgClsText
+    }; // end of oAPP.common.fnGetMsgClsText
+
+
+    /******************************************************************
+     * 서버 요청 메시지 텍스트 구하기
+     ******************************************************************/
+    oAPP.common.fnGetAjaxReqMsgTxt = function(sMsgCls, sPath){
+
+        let oUserInfo = parent.getUserInfo();
+        let sLangu = oUserInfo.LANGU;
+
+        let sMsgTxtFilePath = parent.PATH.join(parent.APPPATH, "MSG", "AJAX_REQ_MSG", sLangu, sMsgCls + ".json");
+        if(!parent.FS.existsSync(sMsgTxtFilePath)){
+            return `${sMsgCls}|${sMsgNum}|${sLangu}`;
+        }
+
+        let sMsgListJson = parent.FS.readFileSync(sMsgTxtFilePath, "utf-8");
+
+        try {            
+            var aMsgList = JSON.parse(sMsgListJson);
+        } catch (error) {
+            return `${sMsgCls}|${sMsgNum}|${sLangu}|JSON Parse Error`;
+        }
+        
+        let oFindTxt = aMsgList.find(e => e.PATH === sPath);
+        if(!oFindTxt){
+            return "";
+        }
+
+        return oFindTxt.TEXT;
+
+    }; // end of oAPP.common.fnGetAjaxReqMsgTxt
 
     // /************************************************************************
     //  * 메타데이터의 메시지 클래스 번호에 해당하는 메시지 리턴 
@@ -3263,8 +3294,8 @@ function fnJsonParseError(e) {
 }
 
 // timeout 파라미터 추가
-// default 60초
-function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout = 60000) {
+// default 10분 (vpn 환경일 경우에 엄청 느릴거 감안)
+function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout = 600000) {
 
     /**
      * TEST ------------------------ Start
@@ -3272,15 +3303,15 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 
     // 빌드 상태에서는 실행하지 않음.
     if (!APP.isPackaged) {
-        
-        iTimeout = 10000;    
+
+        iTimeout = 600000;
 
         sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout);
 
         return;
 
-    }   
-    
+    }
+
     /**
      * TEST ------------------------ End
      */
@@ -3520,23 +3551,52 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
 
     var oXHR = new XMLHttpRequest();
 
-    // let _oBind = {
-    //     sPath: sPath
-    // };
+    let _oBind = {
+        sPath: sPath
+    };
 
-    // // 10초 뒤에도 응답이 없을 경우에는 BusyDialog를 띄운다.
-    // let iReqPendingTimeout = setTimeout(function(){
+    let iReqMsgTime = 10000;
 
-    //     let _oBind = this;
-    //     let sPath = _oBind.sPath;
+    // 서버 요청시 일정 시간 도래 후에 출력할 BusyDialog
+    let oBusyDlg = new sap.m.BusyDialog();
+
+    // 10초 뒤에도 응답이 없을 경우에는 BusyDialog를 띄운다.
+    let iReqMsgTimeout = setTimeout(function(){
+
+        let _oBind = this;
+        
+        // Request Path
+        let sPath = _oBind.sPath;
+
+        try {
+            var oURL = new URL(sPath);    
+        } catch (error) {
+            return;
+        }
+
+        // 서버 호출시 Path를 구한다.
+        let sPathName = oURL.pathname;
+        let sBaseName = parent.PATH.basename(sPathName);
+            sBaseName = sBaseName.toUpperCase();
+
+        // Path에 맞는 메시지 매핑 텍스트 정보를 구한다.
+        let sReqMsg = oAPP.common.fnGetAjaxReqMsgTxt("AJAX_REQ_MSG_001", sBaseName);
+        if(!sReqMsg){
+            return;
+        }
+
+        oBusyDlg.setText(sReqMsg);
+
+        // Busy Dialog가 open되지 않았을 경우 오픈시킨다.
+        if(oBusyDlg?._oDialog?.isOpen() === false){
+            oBusyDlg.open();
+        }
+
+    }.bind(_oBind), iReqMsgTime);
 
 
 
-
-
-    // }.bind(_oBind), 10000);
-
-    zconsole.log("sendAjax2");
+    // zconsole.log("sendAjax2");
 
     // 사용자 로그인 정보를 구한다.
     let oUserInfo = parent.getUserInfo();
@@ -3579,15 +3639,25 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
     }
 
     // 부모영역에 현재 busy 실행 여부 정보를 전달
-    parent.setBusy(busy);    
-
+    parent.setBusy(busy);
 
     // 요청 타임아웃 시간 지정
     oXHR.timeout = iTimeout;
 
-
     // 서버 요청에 대한 정상 응답
     oXHR.onload = function(e){
+
+        // 서버 요청 메시지 팝업 타임아웃을 죽인다.
+        if(typeof iReqMsgTimeout !== "undefined"){
+            clearTimeout(iReqMsgTimeout);
+            iReqMsgTimeout = undefined;
+        }
+        
+        // 서버 요청시 일정 시간 도래 후에 출력되는 BusyDialog 를 종료시킨다.      
+        if(typeof oBusyDlg !== "undefined"){
+            oBusyDlg.destroy();
+            oBusyDlg = undefined;
+        }
 
         // u4a status 응답 헤더를 읽는다
         let u4a_status = oXHR.getResponseHeader("u4a_status");
@@ -3680,6 +3750,19 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
      * 통신 오류 또는 timeout 발생 시
      ***********************************************/
     function _onError(e){
+
+        // 서버 요청 메시지 팝업 타임아웃을 죽인다.
+        if(typeof iReqMsgTimeout !== "undefined"){
+            clearTimeout(iReqMsgTimeout);
+            iReqMsgTimeout = undefined;
+        }
+
+        // 서버 요청시 일정 시간 도래 후에 출력되는 BusyDialog 를 종료시킨다.      
+        if(typeof oBusyDlg !== "undefined"){
+            oBusyDlg.destroy();
+            oBusyDlg = undefined;
+        }
+        
 
         // 타임아웃일 경우
         if(e.type === "timeout"){
