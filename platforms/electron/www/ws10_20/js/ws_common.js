@@ -201,12 +201,12 @@
             return `${sMsgCls}|${sMsgNum}|${sLangu}|JSON Parse Error`;
         }
         
-        let oFindTxt = aMsgList.find(e => e.PATH === sPath);
+        let oFindTxt = aMsgList.find(e => e.REQ_PATH === sPath);
         if(!oFindTxt){
             return "";
         }
 
-        return oFindTxt.TEXT;
+        return oFindTxt.REQ_TEXT || "";
 
     }; // end of oAPP.common.fnGetAjaxReqMsgTxt
 
@@ -3550,12 +3550,9 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
 function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout = 60000){
 
     var oXHR = new XMLHttpRequest();
-
-    let _oBind = {
-        sPath: sPath
-    };
-
-    let iReqMsgTime = 10000;
+  
+    // let iReqMsgTime = 10000;
+    let iReqMsgTime = 500;
 
     // 서버 요청시 일정 시간 도래 후에 출력할 BusyDialog
     let oBusyDlg = new sap.m.BusyDialog();
@@ -3592,8 +3589,7 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
             oBusyDlg.open();
         }
 
-    }.bind(_oBind), iReqMsgTime);
-
+    }.bind({ sPath: sPath }), iReqMsgTime);
 
 
     // zconsole.log("sendAjax2");
@@ -3800,6 +3796,13 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
             return;
             
         }
+
+        let _sConsoleMsg = "[ ajax request error ]\n";
+            _sConsoleMsg += `req url: ${sPath}\n`;
+            _sConsoleMsg += "path: [ ws_common.js => _onError ]\n";
+            _sConsoleMsg += " request onerror 오류 발생!!";
+        
+            console.error(_sConsoleMsg);
 
         // error 콜백이 있다면 호출
         if (typeof fn_error == "function") {

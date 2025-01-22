@@ -264,11 +264,15 @@ let oAPP = (function () {
 
         var oSettings = oAPP.fn.fnGetSettingsInfo(),
             oSetting_UI5 = oSettings.UI5,
-            oBootStrap = oSetting_UI5.bootstrap,
-            sLangu = navigator.language;
+            oBootStrap = oSetting_UI5.bootstrap;
 
-        sLangu = sLangu.toLowerCase().substring(0, 2); // 저장된 언어 값을 0부터 2까지 자르고 소문자로 변환하여 lang에 저장
-        sLangu = sLangu.toUpperCase();
+        //     sLangu = navigator.language;
+
+        // sLangu = sLangu.toLowerCase().substring(0, 2); // 저장된 언어 값을 0부터 2까지 자르고 소문자로 변환하여 lang에 저장
+        // sLangu = sLangu.toUpperCase();
+
+        let oSettingInfo = parent.WSUTIL.getWsSettingsInfo();
+        let sLangu = oSettingInfo.globalLanguage;
 
         var oScript = document.createElement("script");
         if (oScript == null) {
@@ -3297,7 +3301,7 @@ let oAPP = (function () {
         // 접속서버에서 설치된 언어 목록을 구한다.
         let oLanguResult = await _getSupportedLangu({ PRCCD : sLanguPRCCD });
 
-        console.log(oLanguResult);
+        zconsole.log(oLanguResult);
 
         if(oLanguResult.RETCD === "E"){
 

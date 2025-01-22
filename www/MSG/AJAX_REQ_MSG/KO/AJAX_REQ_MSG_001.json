@@ -1,5 +1,8 @@
 [
-    { "PATH": "GETLIBDATA", "TEXT": "라이브러리 데이터를 가져오는 중입니다." },
-    { "PATH": "INIT_PRC", "TEXT": "어플리케이션 초기 정보 구성중..." },
-    { "PATH": "GETAPPDATA", "TEXT": "어플리케이션 세부 데이터 구성 중.." }
+    { "REQ_PATH": "GETLIBDATA", "REQ_TEXT": "라이브러리 데이터를 가져오는 중입니다." },
+    { "REQ_PATH": "INIT_PRC", "REQ_TEXT": "어플리케이션 초기 정보 구성중..." },
+    { "REQ_PATH": "GETAPPDATA", "REQ_TEXT": "어플리케이션 세부 데이터 구성 중.." },
+    { "REQ_PATH": "GETMIMETREE", "REQ_TEXT": "마임 데이터 조회 중.." },
+    { "REQ_PATH": "GETMIMETREE", "REQ_TEXT": "마임 데이터 조회 중.." }
+
 ]

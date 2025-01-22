@@ -201,12 +201,12 @@
             return `${sMsgCls}|${sMsgNum}|${sLangu}|JSON Parse Error`;
         }
         
-        let oFindTxt = aMsgList.find(e => e.PATH === sPath);
+        let oFindTxt = aMsgList.find(e => e.REQ_PATH === sPath);
         if(!oFindTxt){
             return "";
         }
 
-        return oFindTxt.TEXT;
+        return oFindTxt.REQ_TEXT || "";
 
     }; // end of oAPP.common.fnGetAjaxReqMsgTxt
 
@@ -3551,7 +3551,8 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
 
     var oXHR = new XMLHttpRequest();
   
-    let iReqMsgTime = 10000;
+    // let iReqMsgTime = 10000;
+    let iReqMsgTime = 500;
 
     // 서버 요청시 일정 시간 도래 후에 출력할 BusyDialog
     let oBusyDlg = new sap.m.BusyDialog();
