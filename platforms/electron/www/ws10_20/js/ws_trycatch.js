@@ -108,7 +108,7 @@ module.exports = function (window, document, console) {
 
     };
 
-    zconsole.error = (sConsole) => {
+    zconsole.error = function(sConsole) {
 
         const
             APP = zconsole.APP;
@@ -122,7 +122,7 @@ module.exports = function (window, document, console) {
 
     };
 
-    zconsole.warn = (sConsole) => {
+    zconsole.warn = function(sConsole){
 
         const
             APP = zconsole.APP;

@@ -118,8 +118,6 @@ function getErrorMsg() {
 // 19. Busy Indicator 실행
 // - 파라미터에 Option이 존재할 경우는 busyDialog로 호출함
 function setBusy(bIsBusy, oOptions) {
-
-    // oWS.utill.fn.setBusy(bIsBusy, oOptions);
     
     //현재 busy가 on 상태인경우, 다시 on 처리시 return.
     if(oWS.utill.fn.getBusy() === "X" && bIsBusy === "X"){

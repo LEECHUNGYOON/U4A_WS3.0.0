@@ -3554,9 +3554,6 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
     // let iReqMsgTime = 10000;
     let iReqMsgTime = 500;
 
-    // 서버 요청시 일정 시간 도래 후에 출력할 BusyDialog
-    let oBusyDlg = new sap.m.BusyDialog();
-
     // 10초 뒤에도 응답이 없을 경우에는 BusyDialog를 띄운다.
     let iReqMsgTimeout = setTimeout(function(){
 
@@ -3574,20 +3571,21 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
         // 서버 호출시 Path를 구한다.
         let sPathName = oURL.pathname;
         let sBaseName = parent.PATH.basename(sPathName);
-            sBaseName = sBaseName.toUpperCase();
+            sBaseName = sBaseName.toUpperCase();        
 
         // Path에 맞는 메시지 매핑 텍스트 정보를 구한다.
         let sReqMsg = oAPP.common.fnGetAjaxReqMsgTxt("AJAX_REQ_MSG_001", sBaseName);
         if(!sReqMsg){
+
+            // parent.setBusy("");
+            // parent.setBusy("X", { DESC: sBaseName });
+
             return;
-        }
 
-        oBusyDlg.setText(sReqMsg);
-
-        // Busy Dialog가 open되지 않았을 경우 오픈시킨다.
-        if(oBusyDlg?._oDialog?.isOpen() === false){
-            oBusyDlg.open();
-        }
+        }       
+     
+        parent.setBusy("");
+        parent.setBusy("X", { DESC: sReqMsg });
 
     }.bind({ sPath: sPath }), iReqMsgTime);
 
@@ -3648,13 +3646,7 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
             clearTimeout(iReqMsgTimeout);
             iReqMsgTimeout = undefined;
         }
-        
-        // 서버 요청시 일정 시간 도래 후에 출력되는 BusyDialog 를 종료시킨다.      
-        if(typeof oBusyDlg !== "undefined"){
-            oBusyDlg.destroy();
-            oBusyDlg = undefined;
-        }
-
+    
         // u4a status 응답 헤더를 읽는다
         let u4a_status = oXHR.getResponseHeader("u4a_status");
 
@@ -3753,13 +3745,6 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
             iReqMsgTimeout = undefined;
         }
 
-        // 서버 요청시 일정 시간 도래 후에 출력되는 BusyDialog 를 종료시킨다.      
-        if(typeof oBusyDlg !== "undefined"){
-            oBusyDlg.destroy();
-            oBusyDlg = undefined;
-        }
-        
-
         // 타임아웃일 경우
         if(e.type === "timeout"){
 
@@ -3776,7 +3761,7 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
                 sDesc += "( Request Timeout )";
 
             let sIllustType = "tnt-SessionExpired";
-            let sIllustSize = sap.m.IllustratedMessageSize.Dialog;
+            let sIllustSize = sap.m.IllustratedMessageSize.Dialog;            
 
             parent.IPCRENDERER.send('if-browser-close', {
                 ACTCD: "A", // 나를 제외한 나머지는 다 죽인다.
@@ -3802,15 +3787,15 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
             _sConsoleMsg += "path: [ ws_common.js => _onError ]\n";
             _sConsoleMsg += " request onerror 오류 발생!!";
         
-            console.error(_sConsoleMsg);
+        console.error(_sConsoleMsg);
 
         // error 콜백이 있다면 호출
         if (typeof fn_error == "function") {
             fn_error();
         }
-
+       
         var sCleanHtml = parent.setCleanHtml(oXHR.response);
-        if (!sCleanHtml || sCleanHtml == "") {
+        if (!sCleanHtml || sCleanHtml === "") {
             sCleanHtml = "Server connection fail!!"; // [MSG]
         }
 
@@ -3879,14 +3864,36 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
 
 
 
+// =================   [ 원본 ] ================================
+// // application unlock
+// function ajax_unlock_app(APPID, fn_callback) {
+
+//     var sPath = parent.getServerPath() + '/unlock_app';
+
+//     var oFormData = new FormData();
+//     oFormData.append('APPID', APPID);
+//     // oFormData.append('APP_EXIT', "X");
+
+//     sendAjax(sPath, oFormData, (oReturn) => {
+
+//         if (typeof fn_callback == "function") {
+//             fn_callback(oReturn);
+//         }
+
+//     });
+
+// } // end of ajax_unlock_app
+
+
 
 // application unlock
-function ajax_unlock_app(APPID, fn_callback) {
+function ajax_unlock_app(oParams, fn_callback) {
 
     var sPath = parent.getServerPath() + '/unlock_app';
 
     var oFormData = new FormData();
-    oFormData.append('APPID', APPID);
+        oFormData.append('APPID',    oParams.APPID    || "");
+        oFormData.append('APP_EXIT', oParams.APP_EXIT || "");
 
     sendAjax(sPath, oFormData, (oReturn) => {
 
@@ -3897,6 +3904,7 @@ function ajax_unlock_app(APPID, fn_callback) {
     });
 
 } // end of ajax_unlock_app
+
 
 // 로그오프 성공시 타는 펑션
 function fn_logoff_success(TYPE) {
@@ -3951,6 +3959,9 @@ function fnServerSessionClose() {
      *	2. 내가 아닌 다른 창은 다 닫는다.
      *	3. 나는 로그인 화면으로 전환한다.
      */
+
+    // 현재 브라우저에 종속된 팝업 종류들을 닫는다. [ws_fn_04.js]            
+    oAPP.fn.closeAllCurrWinDependentPopups();
 
     parent.IPCRENDERER.send('if-browser-close', {
         ACTCD: "A", // 나를 제외한 나머지는 다 죽인다.

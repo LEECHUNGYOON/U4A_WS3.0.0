@@ -1,0 +1,16 @@
+### Mutation에서 Dialog성 UI가 감지되면 현재 떠있는 새창(예- javascript editor 같은 새창)을 숨겼다가 
+    감지가 종료되면 다시 활성화 하는 기능이 동작중임.
+
+- Dialog성 UI 종류
+    1) sap.m.BusyDialog
+    2) sap.m.MessageBox
+    3) sap.m.Dialog 등
+    
+## 만약에 해당 UI를 사용하면서 Mutation의 감지에서 예외를 적용하고 싶은경우에는
+   해당 UI 생성시 커스텀 데이터를 아래와 같이 넣어두면 감지대상에서 제외됨.
+
+예1) BusyDialog를 실행하고 싶은데 현재 떠있는 새창이 숨겨지게 하고 싶지 않을때
+
+    let oDialog = new sap.m.BusyDialog();
+
+    oDialog.data("MUTATION_EXCEP", "X");

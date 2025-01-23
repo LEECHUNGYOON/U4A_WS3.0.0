@@ -1234,7 +1234,7 @@
             APPCOMMON.fnIsChildWindowShow(true);
 
             // 이동을 하지 않는다.
-            if (ACTCD == null || ACTCD == "CANCEL") {
+            if (ACTCD == null || ACTCD === "CANCEL") {
 
                 // busy 끄고 Lock 풀기
                 oAPP.common.fnSetBusyLock("");
@@ -1243,7 +1243,7 @@
             }
 
             // 저장 후 Display 모드로 이동한다.
-            if (ACTCD == "YES") {
+            if (ACTCD === "YES") {
 
                 // 저장 로직 수행
                 var oSaveBtn = sap.ui.getCore().byId("saveBtn");

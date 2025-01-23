@@ -359,7 +359,22 @@
             var oAppInfo = parent.getAppInfo();
 
             if (oAppInfo && oAppInfo.IS_EDIT == 'X') {
-                ajax_unlock_app(oAppInfo.APPID);
+
+                await new Promise(function(resolve){
+                    
+                    let oParams = {
+                        APPID   : oAppInfo.APPID,  // Lock을 해제할 APPID
+                        APP_EXIT: "X"              // 앱을 빠져나간다는 Flag
+                    };
+
+                    ajax_unlock_app(oParams, function(oReturn){
+
+                        resolve(oReturn);
+                        
+                    });
+
+                }); 
+
             }
 
             // WS20 화면에서 떠있는 Dialog, Popup 종류, Electron Browser들 전체 닫는 function
@@ -389,19 +404,19 @@
             // 윈도우 헤더 타이틀 변경
             oAPP.common.setWSHeadText("U4A Workspace - Main");
 
-
             // AI 서버 연결되어있을 경우 연결 해제 하기
             // AI 서버에 요청할 데이터
             let _oPARAM = {
                 CONID: parent.getBrowserKey()
-            }
+            };
 
             // AI 연결 해제
             await parent.UAI.disconnect(_oPARAM);
 
-
-            // // busy 끄고 Lock 끄기
-            // oAPP.common.fnSetBusyLock("");
+            // busy 끄고 Lock 끄기
+            oAPP.common.fnSetBusyLock("");
+            
+            zconsole.warn("==== fnMoveToWs10 finish ===");
 
         } // end of lf_success
 
@@ -834,16 +849,17 @@
 
         var oAppInfo = parent.getAppInfo(),
             sCurrPage = parent.getCurrPage();
-
-        var oFormData = new FormData();
-        oFormData.append("APPID", oAppInfo.APPID);
+  
+        let oParams = {
+            APPID: oAppInfo.APPID
+        };
 
         // Lock을 해제한다.
-        ajax_unlock_app(oAppInfo.APPID, lf_success);
+        ajax_unlock_app(oParams, lf_success);
 
         async function lf_success(RETURN) {
 
-            if (RETURN.RTCOD == 'E') {
+            if (RETURN.RTCOD === 'E') {
                 // 오류..1
                 parent.showMessage(sap, 20, RETURN.RTCOD, RETURN.RTMSG);
 
@@ -880,7 +896,7 @@
             }
             
             // AI 연결 해제
-            parent.UAI.disconnect(_oPARAM);
+            await parent.UAI.disconnect(_oPARAM);
 
         }
 

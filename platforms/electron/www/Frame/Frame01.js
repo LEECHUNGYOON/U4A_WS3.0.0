@@ -1060,6 +1060,10 @@ oAPP.msg = {};
     // 19. Busy Indicator 실행
     oWS.utill.fn.setBusy = (sIsbusy) => {
 
+        // TEST ============
+        oWS.utill.attr.isBusy = sIsbusy;
+        // TEST ============
+
         var bIsBusy = (sIsbusy === "X" ? true : false);
     
         // 실행 즉시 lock을 건다
@@ -1123,12 +1127,11 @@ oAPP.msg = {};
 
             }
     
-            oWS.utill.attr.isBusy = "";
+            // oWS.utill.attr.isBusy = "";
     
-            if(oBusy.style.visibility === "visible"){
-                oWS.utill.attr.isBusy = "X";       
-    
-            }
+            // if(oBusy.style.visibility === "visible"){
+            //     oWS.utill.attr.isBusy = "X";
+            // }
     
         }, 0);
     

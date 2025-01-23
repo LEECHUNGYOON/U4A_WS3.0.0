@@ -3219,7 +3219,22 @@
         var oAppInfo = fnGetAppInfo();
 
         if (oAppInfo.IS_EDIT == 'X') {
-            ajax_unlock_app(oAppInfo.APPID);
+
+            await new Promise(function(resolve){
+                    
+                let oParam = {
+                    APPID   : oAppInfo.APPID,  // Lock을 해제할 APPID
+                    APP_EXIT: "X"              // 앱을 빠져나간다는 Flag
+                };
+
+                ajax_unlock_app(oParam, function(){
+
+                    resolve(); 
+                    
+                });
+
+            });
+
         }
 
         // WS20 화면에서 떠있는 Dialog, Popup 종류, Electron Browser들 전체 닫는 function
@@ -5996,17 +6011,21 @@
          */
         function lf_MsgCallback(ACTCD) {
 
+            // busy 키고 Lock 걸기
+            oAPP.common.fnSetBusyLock("X");
+
             // child window(각종 Editor창 등..) 가 있었을 경우, 메시지 팝업 뜬 상태에서 어떤 버튼이라도 누른 후에는 
             // child window를 활성화 한다.
             APPCOMMON.fnIsChildWindowShow(true);
 
             // 이동을 하지 않는다.
             if (ACTCD == null || ACTCD == "CANCEL") {
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
-
-            // busy 키고 Lock 걸기
-            oAPP.common.fnSetBusyLock("X");
 
             // 저장 후 Display 모드로 이동한다.
             if (ACTCD == "YES") {
@@ -6023,9 +6042,6 @@
 
             // WS20 페이지 정보 갱신
             fnSetAppDisplayMode();
-
-            // busy 끄고 Lock 풀기
-            oAPP.common.fnSetBusyLock("");
 
         } // end of lf_MsgCallback
 
@@ -6078,11 +6094,13 @@
         var oAppInfo = fnGetAppInfo(),
             sCurrPage = parent.getCurrPage();
 
-        var oFormData = new FormData();
-        oFormData.append("APPID", oAppInfo.APPID);
+        let oParams = {
+            APPID   : oAppInfo.APPID,  // Lock을 해제할 APPID
+            APP_EXIT: ""              // 앱을 빠져나간다는 Flag
+        };
 
         // Lock을 해제한다.
-        ajax_unlock_app(oAppInfo.APPID, lf_success);
+        ajax_unlock_app(oParams, lf_success);
 
         async function lf_success(RETURN) {
 
