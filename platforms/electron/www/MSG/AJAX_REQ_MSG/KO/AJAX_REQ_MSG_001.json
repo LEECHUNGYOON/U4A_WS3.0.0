@@ -4,6 +4,7 @@
     { "REQ_PATH": "GETAPPDATA", "REQ_TEXT": "어플리케이션 세부 데이터 구성 중.." },
     { "REQ_PATH": "GETMIMETREE", "REQ_TEXT": "마임 데이터 조회 중.." },
     { "REQ_PATH": "GETMIMETREE", "REQ_TEXT": "마임 데이터 조회 중.." },
-    { "REQ_PATH": "UNLOCK_APP", "REQ_TEXT": "어플리케이션 락을 해제 중입니다." }
+    { "REQ_PATH": "UNLOCK_APP", "REQ_TEXT": "어플리케이션 락을 해제 중입니다." },
+    { "REQ_PATH": "APP_COPY", "REQ_TEXT": "어플리케이션 복사 중입니다.." }
 
 ]

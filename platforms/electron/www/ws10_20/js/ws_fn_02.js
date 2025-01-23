@@ -119,8 +119,14 @@
             let sCurrPage = parent.getCurrPage();
 
             // application 이 없을 경우 메시지 처리.
-            if (oAppInfo.MSGTY == "N") {    
+            if (oAppInfo.MSGTY == "N") {
+                
+                let oCurrWin = parent.REMOTE.getCurrentWindow();
 
+                // 작업표시줄 깜빡임
+                oCurrWin.flashFrame(true);
+
+                // Application ID &1 does not exist.
                 let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "007", APPID);
 
                 // 페이지 푸터 메시지

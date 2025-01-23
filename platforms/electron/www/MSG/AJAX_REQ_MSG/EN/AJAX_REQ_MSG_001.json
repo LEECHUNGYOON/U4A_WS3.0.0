@@ -1,9 +1,9 @@
 [
-    { "REQ_PATH": "GETLIBDATA", "REQ_TEXT": "라이브러리 데이터를 가져오는 중입니다." },
-    { "REQ_PATH": "INIT_PRC", "REQ_TEXT": "어플리케이션 초기 정보 구성중..." },
-    { "REQ_PATH": "GETAPPDATA", "REQ_TEXT": "어플리케이션 세부 데이터 구성 중.." },
-    { "REQ_PATH": "GETMIMETREE", "REQ_TEXT": "마임 데이터 조회 중.." },
-    { "REQ_PATH": "GETMIMETREE", "REQ_TEXT": "마임 데이터 조회 중.." },
-    { "REQ_PATH": "UNLOCK_APP", "REQ_TEXT": "어플리케이션 락을 해제 중입니다." }
-
+    { "REQ_PATH": "GETLIBDATA", "REQ_TEXT": "Retrieving library data..." },
+    { "REQ_PATH": "INIT_PRC", "REQ_TEXT": "Initializing application information..." },
+    { "REQ_PATH": "GETAPPDATA", "REQ_TEXT": "Loading application details..." },
+    { "REQ_PATH": "GETMIMETREE", "REQ_TEXT": "Fetching MIME data..." },
+    { "REQ_PATH": "GETMIMETREE", "REQ_TEXT": "Fetching MIME data..." },
+    { "REQ_PATH": "UNLOCK_APP", "REQ_TEXT": "Unlocking application..." },
+    { "REQ_PATH": "APP_COPY", "REQ_TEXT": "Copying application..." }
 ]

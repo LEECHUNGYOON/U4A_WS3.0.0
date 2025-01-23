@@ -286,6 +286,7 @@
         if (oValid.RETCD == false) {
 
             var oCurrWin = REMOTE.getCurrentWindow();
+            
             oCurrWin.flashFrame(true); // 작업표시줄 깜빡임
 
             parent.showMessage(sap, 10, "", oValid.RETMSG);

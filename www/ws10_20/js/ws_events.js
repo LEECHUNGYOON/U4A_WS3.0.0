@@ -199,7 +199,10 @@
                 // 작업표시줄 깜빡임
                 oCurrWin.flashFrame(true);
 
-                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
+                // Application ID &1 does not exist.
+                let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "007", oAppInfo.APPID);
+
+                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sMsg);
 
                 // busy 끄고 Lock 풀기
                 oAPP.common.fnSetBusyLock("");
@@ -489,10 +492,14 @@
                 // 작업표시줄 깜빡임
                 oCurrWin.flashFrame(true);
 
-                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
+                // Application ID &1 does not exist.
+                let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "007", oAppInfo.APPID);
+
+                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sMsg);
 
                 // busy 끄고 Lock 풀기
                 oAPP.common.fnSetBusyLock("");
+
                 return;
 
             }
@@ -617,13 +624,13 @@
                 // 작업표시줄 깜빡임
                 oCurrWin.flashFrame(true);
 
-                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
+                // Application ID &1 does not exist.
+                let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "007", oAppInfo.APPID);
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
+                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sMsg);
 
-                // Busy를 끈다.
-                parent.setBusy("");
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
             }
@@ -809,13 +816,13 @@
                 // 작업표시줄 깜빡임
                 oCurrWin.flashFrame(true);
 
-                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, oAppInfo.MESSAGE);
+                // Application ID &1 does not exist.
+                let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "007", oAppInfo.APPID);
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
+                APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sMsg);
 
-                // Busy를 끈다.
-                parent.setBusy("");
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
             }

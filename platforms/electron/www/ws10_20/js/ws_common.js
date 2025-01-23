@@ -3577,22 +3577,13 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
         let sReqMsg = oAPP.common.fnGetAjaxReqMsgTxt("AJAX_REQ_MSG_001", sBaseName);
         if(!sReqMsg){
 
-            // TEST -------------- Start
-            // if(parent.getBusy() === "X"){
-            //     parent.setBusy("");
-            // }
-            
-            parent.setBusy("");
-            parent.setBusy("X", { DESC: sBaseName });    
-            // TEST -------------- End
+            // parent.setBusy("");
+            // parent.setBusy("X", { DESC: sBaseName });
 
             return;
-        }       
-        
-        // if(parent.getBusy() === "X"){
-        //     parent.setBusy("");
-        // }
 
+        }       
+     
         parent.setBusy("");
         parent.setBusy("X", { DESC: sReqMsg });
 
