@@ -446,3 +446,8 @@ body {
         transform: rotate(405deg);
     }
 }
+
+
+.sapUiBlockLayer.sapUiLocalBusyIndicator::after {
+    border: 0px;
+}

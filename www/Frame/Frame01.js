@@ -1410,9 +1410,9 @@ oAPP.msg = {};
         }
 
         // var oAudio = new Audio(),
-        var oAudio = document.getElementById("u4aWsAudio"),
-            sSoundRootPath = PATH.join(__dirname, '../sound/sap/'),
-            sAudioPath = "";
+        let oAudio = document.getElementById("u4aWsAudio");
+        let sSoundRootPath = PATH.join(APPPATH, "sound", "sap");
+        let sAudioPath = "";
 
         switch (TYPE) {
             case "01": // active

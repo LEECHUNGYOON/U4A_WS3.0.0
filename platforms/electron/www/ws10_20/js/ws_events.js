@@ -1339,7 +1339,7 @@
 
         var TRKORR = oEvent.getParameter("TRKORR");
 
-        var sPath = parent.getServerPath() + '/save_active_appdata',
+        var sPath = parent.getServerPath() + '/save_active_appdata#active',
             oFormData = new FormData();
 
         var sReqNo = "";
@@ -1515,7 +1515,7 @@
         var oLocalEvent = new sap.ui.base.Event(),
             oNewEvent = jQuery.extend(true, oLocalEvent, oEvent);
 
-        var sPath = parent.getServerPath() + '/save_active_appdata',
+        var sPath = parent.getServerPath() + '/save_active_appdata#save',
             oFormData = new FormData();
 
         var ISBACK = oEvent.getParameter("ISBACK"), // 저장후 뒤로 갈 경우 (20 -> 10)

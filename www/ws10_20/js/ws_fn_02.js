@@ -369,8 +369,8 @@
                 await new Promise(function(resolve){
                     
                     let oParams = {
-                        APPID   : oAppInfo.APPID,  // Lock을 해제할 APPID
-                        APP_EXIT: "X"              // 앱을 빠져나간다는 Flag
+                        APPID: oAppInfo.APPID,  // Lock을 해제할 APPID                        
+                        ACTCD: "APP_EXIT"       // 앱을 빠져나간다는 Action Code
                     };
 
                     ajax_unlock_app(oParams, function(oReturn){
@@ -420,9 +420,7 @@
             await parent.UAI.disconnect(_oPARAM);
 
             // busy 끄고 Lock 끄기
-            oAPP.common.fnSetBusyLock("");
-            
-            zconsole.warn("==== fnMoveToWs10 finish ===");
+            oAPP.common.fnSetBusyLock("");          
 
         } // end of lf_success
 

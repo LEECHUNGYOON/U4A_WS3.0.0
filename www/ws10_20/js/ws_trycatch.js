@@ -76,7 +76,7 @@ module.exports = function (window, document, console) {
 
         let sErrorMsg = "";
         if (event.reason) {
-            sErrorMsg = "[onunhandledrejection]: " + event.reason.stack.toString();
+            sErrorMsg = "[onunhandledrejection]: " + event?.reason?.stack?.toString();
         }
 
         if (sErrorMsg == "") {

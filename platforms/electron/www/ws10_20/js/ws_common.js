@@ -3571,10 +3571,11 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
         // 서버 호출시 Path를 구한다.
         let sPathName = oURL.pathname;
         let sBaseName = parent.PATH.basename(sPathName);
-            sBaseName = sBaseName.toUpperCase();        
+        let sReqPath = sBaseName + oURL.hash;            
+            sReqPath = sReqPath.toUpperCase();        
 
         // Path에 맞는 메시지 매핑 텍스트 정보를 구한다.
-        let sReqMsg = oAPP.common.fnGetAjaxReqMsgTxt("AJAX_REQ_MSG_001", sBaseName);
+        let sReqMsg = oAPP.common.fnGetAjaxReqMsgTxt("AJAX_REQ_MSG_001", sReqPath);
         if(!sReqMsg){
 
             // parent.setBusy("");
@@ -3892,8 +3893,8 @@ function ajax_unlock_app(oParams, fn_callback) {
     var sPath = parent.getServerPath() + '/unlock_app';
 
     var oFormData = new FormData();
-        oFormData.append('APPID',    oParams.APPID    || "");
-        oFormData.append('APP_EXIT', oParams.APP_EXIT || "");
+        oFormData.append('APPID', oParams.APPID || "");
+        oFormData.append('ACTCD', oParams.ACTCD || "");
 
     sendAjax(sPath, oFormData, (oReturn) => {
 

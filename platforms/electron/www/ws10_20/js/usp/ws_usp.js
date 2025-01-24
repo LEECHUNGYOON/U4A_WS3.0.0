@@ -3223,8 +3223,8 @@
             await new Promise(function(resolve){
                     
                 let oParam = {
-                    APPID   : oAppInfo.APPID,  // Lock을 해제할 APPID
-                    APP_EXIT: "X"              // 앱을 빠져나간다는 Flag
+                    APPID: oAppInfo.APPID,  // Lock을 해제할 APPID                    
+                    ACTCD: "APP_EXIT"       // 앱을 빠져나간다는 Action Code
                 };
 
                 ajax_unlock_app(oParam, function(){
@@ -5526,8 +5526,17 @@
 
         oSaveData.T_TREE = aUspTreeData;
 
-        var sServerPath = parent.getServerPath(),
-            sPath = `${sServerPath}/usp_save_active_appdata`;
+        let sServerPath = parent.getServerPath();
+        // let sPath = `${sServerPath}/usp_save_active_appdata`;
+        let sPath = `${sServerPath}/usp_save_active_appdata`;
+
+        // 액티브인지 저장인지에 따른 서버 호출 경로 해시태그 추가
+        // (공통 ajax에서 BusyDialog로 처리 내용에 대한 메시지 구성 시 구분용)
+        if(IS_ACT === "X"){
+            sPath += "#active";
+        }else{
+            sPath += "#save";
+        }
 
         // USP CONTENT 데이터를 BLOB로 변환한다.
         const oContBlob = new Blob( [ sContentTmp ], {
@@ -6095,8 +6104,7 @@
             sCurrPage = parent.getCurrPage();
 
         let oParams = {
-            APPID   : oAppInfo.APPID,  // Lock을 해제할 APPID
-            APP_EXIT: ""              // 앱을 빠져나간다는 Flag
+            APPID   : oAppInfo.APPID,  // Lock을 해제할 APPID            
         };
 
         // Lock을 해제한다.

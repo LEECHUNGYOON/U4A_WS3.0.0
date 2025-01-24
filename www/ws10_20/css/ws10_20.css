@@ -475,3 +475,13 @@ html[class*=sapUiTheme]:not([class*="dark"]) .u4aWs10Page .sapMPage > section {
 .u4awsSelBrowsPanHdr span {
   cursor: pointer;
 }
+
+
+.sapUiLocalBusyIndicatorAnimation.sapUiLocalBusyIndicatorAnimStandard::after {
+  content: "";
+  border: 0px !important;
+}
+.sapUiBlockLayer.sapUiLocalBusyIndicator::after {
+  content: "";
+  border: 0px !important;
+}
