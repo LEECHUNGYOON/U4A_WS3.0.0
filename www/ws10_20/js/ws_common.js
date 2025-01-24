@@ -3552,7 +3552,7 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
     var oXHR = new XMLHttpRequest();
   
     // let iReqMsgTime = 10000;
-    let iReqMsgTime = 500;
+    let iReqMsgTime = 1000;
 
     // 10초 뒤에도 응답이 없을 경우에는 BusyDialog를 띄운다.
     let iReqMsgTimeout = setTimeout(function(){
@@ -3577,21 +3577,13 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
         // Path에 맞는 메시지 매핑 텍스트 정보를 구한다.
         let sReqMsg = oAPP.common.fnGetAjaxReqMsgTxt("AJAX_REQ_MSG_001", sReqPath);
         if(!sReqMsg){
-
-            // parent.setBusy("");
-            // parent.setBusy("X", { DESC: sBaseName });
-
             return;
-
         }       
      
         parent.setBusy("");
         parent.setBusy("X", { DESC: sReqMsg });
 
     }.bind({ sPath: sPath }), iReqMsgTime);
-
-
-    // zconsole.log("sendAjax2");
 
     // 사용자 로그인 정보를 구한다.
     let oUserInfo = parent.getUserInfo();
