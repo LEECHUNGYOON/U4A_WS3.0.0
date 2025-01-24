@@ -3187,11 +3187,8 @@
 
     function fnMoveToWs10() {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
-        // Busy 실행
-        parent.setBusy('X');
+        // busy 끄고 Lock 풀기
+        oAPP.common.fnSetBusyLock("X");
 
         // 글로벌 변수 초기화
         // goBeforeSelect = undefined;
@@ -3227,9 +3224,25 @@
                     ACTCD: "APP_EXIT"       // 앱을 빠져나간다는 Action Code
                 };
 
-                ajax_unlock_app(oParam, function(){
+                ajax_unlock_app(oParam, function(oReturn){
 
-                    resolve(); 
+                    if (oReturn.RTCOD === 'E') {
+                            
+                        parent.setSoundMsg("02"); // error sound
+
+                        // 작업표시줄 깜빡임
+                        CURRWIN.flashFrame(true);
+
+                        // 크리티컬 오류 처리
+                        parent.showMessage(sap, 20, oReturn.RTCOD, oReturn.RTMSG, fnCriticalError);
+        
+                        // busy 끄고 Lock 풀기
+                        oAPP.common.fnSetBusyLock("");
+        
+                        return;
+                    }                    
+
+                    return resolve(oReturn); 
                     
                 });
 
@@ -3275,12 +3288,8 @@
         // AI 연결 해제
         await parent.UAI.disconnect(_oPARAM);
 
-        // Busy 끄기
-        parent.setBusy('');
-
-        // 화면 Lock 해제
-        sap.ui.getCore().unlock();
-        
+        // busy 끄고 Lock 풀기
+        oAPP.common.fnSetBusyLock("");        
 
     } // end of _fnKillUserSessionCb
 
@@ -5659,8 +5668,8 @@
 
             fnSetAppDisplayMode();
 
-            // busy 끄고 Lock 풀기
-            oAPP.common.fnSetBusyLock("");
+            // // busy 끄고 Lock 풀기
+            // oAPP.common.fnSetBusyLock("");
 
             return;
         }
@@ -5671,8 +5680,8 @@
             // WS10 페이지로 이동
             fnMoveToWs10();
 
-            // busy 끄고 Lock 풀기
-            oAPP.common.fnSetBusyLock("");
+            // // busy 끄고 Lock 풀기
+            // oAPP.common.fnSetBusyLock("");
 
             return;
 
@@ -6113,8 +6122,14 @@
         async function lf_success(RETURN) {
 
             if (RETURN.RTCOD == 'E') {
+
+                parent.setSoundMsg("02"); // error sound
+
+                // 작업표시줄 깜빡임
+                CURRWIN.flashFrame(true);
+
                 // 오류..1
-                parent.showMessage(sap, 20, RETURN.RTCOD, RETURN.RTMSG);
+                parent.showMessage(sap, 20, RETURN.RTCOD, RETURN.RTMSG, fnCriticalError);
 
                 // busy 끄고 Lock 풀기
                 oAPP.common.fnSetBusyLock("");
