@@ -502,7 +502,7 @@ oAPP.msg = {};
         var sServerHost = getServerHost(),
             sServicePath = sServerHost + "/zu4a_wbc/u4a_ipcmain";
 
-        if (bIsStateLess) {
+        if (bIsStateLess === true) {
             sServicePath = sServerHost + "/zu4a_wbc/u4a_dynpro";
         }
 

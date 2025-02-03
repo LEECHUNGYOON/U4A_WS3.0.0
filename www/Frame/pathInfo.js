@@ -34,6 +34,7 @@ module.exports = (() => {
         PATTERN_ROOT = PATH.join(USP_ROOT, "pattern"),
         USERDATA_PATTERN_ROOT = PATH.join(USERDATA, "p13n", "pattern"),
         CONF_ROOT = PATH.join(PATH.join(USERDATA, "conf")),
+        MODULES_ROOT = PATH.join(JS_ROOT, "modules"),
         COMMON_MODULES_ROOT = PATH.join(JS_ROOT, "common_modules");
 
     return {
@@ -62,6 +63,7 @@ module.exports = (() => {
         USP_ROOT: USP_ROOT,
         CONF_ROOT: CONF_ROOT,
         COMMON_MODULES_ROOT: COMMON_MODULES_ROOT,
+        MODULES_ROOT: MODULES_ROOT,
 
         // User Data Paths..
         CLIPBOARD: PATH.join(USERDATA, "clipboard.json"),

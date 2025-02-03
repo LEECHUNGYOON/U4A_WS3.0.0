@@ -485,3 +485,8 @@ html[class*=sapUiTheme]:not([class*="dark"]) .u4aWs10Page .sapMPage > section {
   content: "";
   border: 0px !important;
 }
+
+
+.sapMPopover .sapMPopoverResizeHandle {
+  z-index: 3;
+}

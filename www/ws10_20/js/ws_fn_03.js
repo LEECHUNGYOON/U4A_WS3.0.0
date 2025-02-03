@@ -737,7 +737,10 @@
                     editable: true,
 
                     layout: new sap.ui.layout.form.ResponsiveGridLayout({
-                        labelSpanS: 4,
+                        // labelSpanS: 4,
+                        // labelSpanM: 4,
+                        // labelSpanL: 4,
+                        labelSpanS: 5,
                         labelSpanM: 4,
                         labelSpanL: 4,
                         columnsM: 1,
@@ -749,6 +752,9 @@
                         new sap.ui.layout.form.FormContainer({
                             formElements: [
 
+                                /*****************************
+                                 * WS Version
+                                 *****************************/
                                 new sap.ui.layout.form.FormElement({
                                     label: new sap.m.Label({
                                         design: sap.m.LabelDesign.Bold,
@@ -764,6 +770,9 @@
 
                                 }), // end of sap.ui.layout.form.FormElement
 
+                                /*****************************
+                                 * Patch Level
+                                 *****************************/
                                 new sap.ui.layout.form.FormElement({
                                     label: new sap.m.Label({
                                         design: sap.m.LabelDesign.Bold,
@@ -790,10 +799,56 @@
                                     }
                                 }), // end of sap.ui.layout.form.FormElement
 
+                                /*****************************
+                                 * Server Version
+                                 *****************************/
                                 new sap.ui.layout.form.FormElement({
                                     label: new sap.m.Label({
                                         design: sap.m.LabelDesign.Bold,
-                                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C44") // Client
+                                        text: WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "285") // Server Version, 
+                                    }), // end of label
+
+                                    fields: [
+                                        new sap.m.Text().bindProperty("text", {
+                                            parts: [
+                                                "/METADATA/S_WSVER/SVRVER",
+                                                "/METADATA/S_WSVER/WSSVER"
+                                            ],
+                                            formatter: function(SVRVER, WSSVER){
+                                                
+                                                if(!SVRVER || !WSSVER){
+                                                    return;
+                                                }
+
+                                                return `${SVRVER} ( ${WSSVER} )`;
+
+                                            }
+                                        })
+                                    ] // end of fields
+
+                                }).bindProperty("visible", {
+                                    parts: [
+                                        "/METADATA/S_WSVER"
+                                    ],
+                                    formatter: function (S_WSVER) {
+
+                                        if(!S_WSVER){
+                                            return false;
+                                        }
+
+                                        return true;                                        
+
+                                    }
+                                }), // end of sap.ui.layout.form.FormElement
+
+                                /*****************************
+                                 * Client
+                                 *****************************/
+                                new sap.ui.layout.form.FormElement({
+                                    label: new sap.m.Label({
+                                        design: sap.m.LabelDesign.Bold,
+                                        text: WSUTIL.getWsMsgClsTxt(WS_LANGU, "ZMSG_WS_COMMON_001", "063") // Client, 
+                                        // APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C44") // Client
                                     }), // end of label
 
                                     fields: [
@@ -805,6 +860,9 @@
 
                                 }), // end of sap.ui.layout.form.FormElement
 
+                                /*****************************
+                                 * System ID
+                                 *****************************/
                                 new sap.ui.layout.form.FormElement({
                                     label: new sap.m.Label({
                                         design: sap.m.LabelDesign.Bold,
@@ -820,6 +878,9 @@
 
                                 }), // end of sap.ui.layout.form.FormElement
 
+                                /*****************************
+                                 * USER
+                                 *****************************/
                                 new sap.ui.layout.form.FormElement({
                                     label: new sap.m.Label({
                                         design: sap.m.LabelDesign.Bold,
@@ -840,6 +901,9 @@
 
                                 }), // end of sap.ui.layout.form.FormElement
 
+                                /*****************************
+                                 * Language
+                                 *****************************/
                                 new sap.ui.layout.form.FormElement({
                                     label: new sap.m.Label({
                                         design: sap.m.LabelDesign.Bold,
@@ -855,6 +919,9 @@
 
                                 }), // end of sap.ui.layout.form.FormElement
 
+                                /*****************************
+                                 * Host
+                                 *****************************/
                                 new sap.ui.layout.form.FormElement({
                                     label: new sap.m.Label({
                                         design: sap.m.LabelDesign.Bold,

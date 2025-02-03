@@ -11,7 +11,9 @@
     const
         REMOTE = parent.REMOTE,
         APPCOMMON = oAPP.common,
-        REMOTEMAIN = parent.REMOTEMAIN;
+        REMOTEMAIN = parent.REMOTEMAIN,
+        PATHINFOURL = parent.PATH.join(parent.APPPATH, "Frame", "pathInfo.js"),
+        PATHINFO    = parent.require(PATHINFOURL);
 
     // App. Package Change
     oAPP.fn.fnHmws10_10_10 = function (oEvent) {
@@ -807,9 +809,27 @@
             return;
         }
 
-        oAPP.fn.fnSourcePatternPopupOpener(); // [async]
+        oAPP.fn.fnSourcePatternPopupOpener();
 
     }; // end of oAPP.fn.fnWS20WMENU20_05
+
+
+    /************************************************************************
+     * [WS20] Version Management
+     ************************************************************************/
+    oAPP.fn.fnWS20WMENU20_06 = () => {
+
+        // Busy Indicator가 실행중이면 빠져나간다.
+        if (parent.getBusy() == 'X') {
+            return;
+        }        
+       
+        let sModulePath = parent.PATH.join(PATHINFO.MODULES_ROOT, "VersionManagement", "index.js");
+
+        parent.require(sModulePath)(parent.REMOTE, oAPP);
+
+    }; // end of oAPP.fn.fnWS20WMENU20_06
+
 
     /************************************************************************
      * [WS20] Editor

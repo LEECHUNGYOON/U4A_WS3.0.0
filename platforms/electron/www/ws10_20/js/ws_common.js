@@ -3293,266 +3293,267 @@ function fnJsonParseError(e) {
 
 }
 
+
+
+/********************************************************************
+ * 📝 공통 ajax 기존 로직 
+ ********************************************************************/
+
 // timeout 파라미터 추가
 // default 10분 (vpn 환경일 경우에 엄청 느릴거 감안)
-function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout = 600000) {
+// function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout = 600000) {
 
-    /**
-     * TEST ------------------------ Start
-     */
-
-    // 빌드 상태에서는 실행하지 않음.
-    if (!APP.isPackaged) {
-
-        iTimeout = 600000;
-
-        sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout);
-
-        return;
-
-    }
-
-    /**
-     * TEST ------------------------ End
-     */
-
-
-    let oUserInfo = parent.getUserInfo();
-        // oSettings = parent.WSUTIL.getWsSettingsInfo(),
-        // sGlobalLangu = oSettings.globalLanguage || "EN";
-
-    /**
-     * 버전, 패치 레벨 정보를 무조건 전송 -- start
-     */
-    if (oFormData && oFormData instanceof FormData == true) {
-
-        oFormData.append("WSVER", oUserInfo.WSVER);
-        oFormData.append("WSPATCH_LEVEL", oUserInfo.WSPATCH_LEVEL);
-        // oFormData.append("WSLANGU", sGlobalLangu);
-
-    }
-
-    if (!meth || meth !== "POST") {
-
-        if (sPath.indexOf("?") == -1) {
-            sPath += "?";
-        } else {
-            sPath += "&";
-        }
-
-        // sPath += `WSVER=${oUserInfo.WSVER}&WSPATCH_LEVEL=${oUserInfo.WSPATCH_LEVEL}&WSLANGU=${sGlobalLangu}`;
-        sPath += `WSVER=${oUserInfo.WSVER}&WSPATCH_LEVEL=${oUserInfo.WSPATCH_LEVEL}`;
-    }
-
-    /**
-     * 버전, 패치 레벨 정보를 무조건 전송 -- END
-     */
-
-
-    // 접속 서버가 HTTP Only 일 경우 서버 호출 시 ID, PW를 파라미터에 붙인다.
-
-    // if (oUserInfo && oUserInfo.HTTP_ONLY == "1") {
-
-    //     if (oFormData && oFormData instanceof FormData == true) {
-
-    //         oFormData.append("sap-user", oUserInfo.ID);
-    //         oFormData.append("sap-password", oUserInfo.PW);
-    //         oFormData.append("sap-client", oUserInfo.CLIENT);
-    //         oFormData.append("sap-language", oUserInfo.LANGU);
-
-    //     }
-
-    //     // POST 방식이 아닐 경우 호출 URL 파라미터에 ID, PW를 붙인다.
-    //     if (meth && meth !== "POST") {
-
-    //         if (sPath.indexOf("?") == -1) {
-    //             sPath += "?";
-    //         } else {
-    //             sPath += "&";
-    //         }
-
-    //         sPath += `sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.CLIENT}&sap-language=${oUserInfo.LANGU}`;
-
-    //     }
-
-    // }
-
-    // Default Values
-    var busy = 'X',
-        sMeth = 'POST',
-        IsAsync = true;
-
-    // if(typeof bIsBusy !== "undefined"){
-    if (bIsBusy != null) {
-        // Busy Indicator 실행
-        busy = bIsBusy;
-    }
-
-    parent.setBusy(busy);
-
-    var xhr = new XMLHttpRequest();
-
-    xhr.onreadystatechange = function () { // 요청에 대한 콜백
-        if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
-            if (xhr.status === 200 || xhr.status === 201) {
-
-                // // 화면 Lock 해제                
-                // sap.ui.getCore().unlock();
-
-                let u4a_status = xhr.getResponseHeader("u4a_status");
-                if (u4a_status) {
-
-                    // 전역 busy 종료
-                    parent.setBusy("");
-
-                    // gif busy dialog 종료
-                    oAPP.common.fnSetBusyDialog(false);
-
-                    try {
-                        var oResult = JSON.parse(xhr.response);
-                    } catch (error) {
-                        fnJsonParseError(error);
-                        return;
-                    }
-
-                    // 잘못된 url 이거나 지원하지 않는 기능 처리
-                    oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, oResult);
-
-                    return;
-                }
-
-                if (xhr.responseType == 'blob') {
-                    if (typeof fn_success == "function") {
-                        fn_success(xhr.response, xhr);                        
-                    }
-
-                    return;
-
-                }
-
-                var oReturn = xhr.response;
-
-                if (oReturn == "") {
-
-                    oReturn = JSON.stringify({});
-                }
-
-                try {
-                    var oResult = JSON.parse(oReturn);
-
-                } catch (e) {
-
-                    fnJsonParseError(e);
-
-                    return;
-                }
-
-                // Critical Error 일 경우 로그아웃 처리
-                if (oResult.RETCD == "Z") {
-
-                    // 화면 Lock 해제
-                    sap.ui.getCore().unlock();
-
-                    parent.setBusy("");
-
-                    parent.showMessage(sap, 20, 'E', oResult.RTMSG, fnCriticalError);
-
-                    return;
-
-                }
-
-                // 로그인 티켓 만료되면 로그인 페이지로 이동한다.
-                if (oResult.TYPE == "E") {
-
-                    // error 콜백이 있다면 호출
-                    if (typeof fn_error == "function") {
-                        fn_error();
-                    }
-
-                    // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Session Timeout 팝업 호출
-                    fn_logoff_success('X');
-
-                    return;
-
-                }
-
-                if (typeof fn_success == "function") {
-                    fn_success(oResult);
-                }
-
-            } else {
-
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
-
-                // 서버 세션이 죽었다면 오류 메시지 뿌리고 10번 화면으로 이동한다.
-                parent.setBusy('');
-
-                // error 콜백이 있다면 호출
-                if (typeof fn_error == "function") {
-                    fn_error();
-                }
-
-                var sCleanHtml = parent.setCleanHtml(xhr.response);
-                if (!sCleanHtml || sCleanHtml == "") {
-                    sCleanHtml = "Server connection fail!!"
-                }
-
-                parent.showMessage(sap, 20, 'E', sCleanHtml, fn_callback);
-
-                function fn_callback() {
-
-                    // 화면에 떠있는 Dialog 들이 있을 경우 모두 닫는다.
-                    oAPP.fn.fnCloseAllWs20Dialogs();
-
-                    // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫는다.
-                    fn_logoff_success("");
-
-                    // // 10번 페이지로 이동
-                    // oAPP.fn.fnOnMoveToPage("WS10");
-
-                }
-
-            }
-        }
-    };
-
-    // if(typeof meth !== "undefined"){
-    if (meth != null) {
-        sMeth = meth;
-    }
-
-    // if(typeof bIsAsync !== "undefined"){
-    if (bIsAsync != null) {
-        IsAsync = bIsAsync;
-    }
     
-    xhr.withCredentials = true;
 
-    // FormData가 없으면 GET으로 전송
-    xhr.open(sMeth, sPath, IsAsync);
+//     // 빌드 상태에서는 실행하지 않음.
+//     // if (!APP.isPackaged) {
 
-    // blob 파일일 경우
-    if (bIsBlob == 'X') {
-        xhr.responseType = 'blob';
-    }
+//         // iTimeout = 600000; // 10분
 
-    if (oFormData) {
-        xhr.send(oFormData);
-    } else {
-        xhr.send();
-    }
+//         sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout);
 
-} // end of sendAjax
+//         return;
+
+//     // }
+
+//     let oUserInfo = parent.getUserInfo();
+//         // oSettings = parent.WSUTIL.getWsSettingsInfo(),
+//         // sGlobalLangu = oSettings.globalLanguage || "EN";
+
+//     /**
+//      * 버전, 패치 레벨 정보를 무조건 전송 -- start
+//      */
+//     if (oFormData && oFormData instanceof FormData == true) {
+
+//         oFormData.append("WSVER", oUserInfo.WSVER);
+//         oFormData.append("WSPATCH_LEVEL", oUserInfo.WSPATCH_LEVEL);
+//         // oFormData.append("WSLANGU", sGlobalLangu);
+
+//     }
+
+//     if (!meth || meth !== "POST") {
+
+//         if (sPath.indexOf("?") == -1) {
+//             sPath += "?";
+//         } else {
+//             sPath += "&";
+//         }
+
+//         // sPath += `WSVER=${oUserInfo.WSVER}&WSPATCH_LEVEL=${oUserInfo.WSPATCH_LEVEL}&WSLANGU=${sGlobalLangu}`;
+//         sPath += `WSVER=${oUserInfo.WSVER}&WSPATCH_LEVEL=${oUserInfo.WSPATCH_LEVEL}`;
+//     }
+
+//     /**
+//      * 버전, 패치 레벨 정보를 무조건 전송 -- END
+//      */
 
 
+//     // 접속 서버가 HTTP Only 일 경우 서버 호출 시 ID, PW를 파라미터에 붙인다.
 
-function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout = 60000){
+//     // if (oUserInfo && oUserInfo.HTTP_ONLY == "1") {
+
+//     //     if (oFormData && oFormData instanceof FormData == true) {
+
+//     //         oFormData.append("sap-user", oUserInfo.ID);
+//     //         oFormData.append("sap-password", oUserInfo.PW);
+//     //         oFormData.append("sap-client", oUserInfo.CLIENT);
+//     //         oFormData.append("sap-language", oUserInfo.LANGU);
+
+//     //     }
+
+//     //     // POST 방식이 아닐 경우 호출 URL 파라미터에 ID, PW를 붙인다.
+//     //     if (meth && meth !== "POST") {
+
+//     //         if (sPath.indexOf("?") == -1) {
+//     //             sPath += "?";
+//     //         } else {
+//     //             sPath += "&";
+//     //         }
+
+//     //         sPath += `sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}&sap-client=${oUserInfo.CLIENT}&sap-language=${oUserInfo.LANGU}`;
+
+//     //     }
+
+//     // }
+
+//     // Default Values
+//     var busy = 'X',
+//         sMeth = 'POST',
+//         IsAsync = true;
+
+//     // if(typeof bIsBusy !== "undefined"){
+//     if (bIsBusy != null) {
+//         // Busy Indicator 실행
+//         busy = bIsBusy;
+//     }
+
+//     parent.setBusy(busy);
+
+//     var xhr = new XMLHttpRequest();
+
+//     xhr.onreadystatechange = function () { // 요청에 대한 콜백
+//         if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
+//             if (xhr.status === 200 || xhr.status === 201) {
+
+//                 // // 화면 Lock 해제                
+//                 // sap.ui.getCore().unlock();
+
+//                 let u4a_status = xhr.getResponseHeader("u4a_status");
+//                 if (u4a_status) {
+
+//                     // 전역 busy 종료
+//                     parent.setBusy("");
+
+//                     // gif busy dialog 종료
+//                     oAPP.common.fnSetBusyDialog(false);
+
+//                     try {
+//                         var oResult = JSON.parse(xhr.response);
+//                     } catch (error) {
+//                         fnJsonParseError(error);
+//                         return;
+//                     }
+
+//                     // 잘못된 url 이거나 지원하지 않는 기능 처리
+//                     oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, oResult);
+
+//                     return;
+//                 }
+
+//                 if (xhr.responseType == 'blob') {
+//                     if (typeof fn_success == "function") {
+//                         fn_success(xhr.response, xhr);                        
+//                     }
+
+//                     return;
+
+//                 }
+
+//                 var oReturn = xhr.response;
+
+//                 if (oReturn == "") {
+
+//                     oReturn = JSON.stringify({});
+//                 }
+
+//                 try {
+//                     var oResult = JSON.parse(oReturn);
+
+//                 } catch (e) {
+
+//                     fnJsonParseError(e);
+
+//                     return;
+//                 }
+
+//                 // Critical Error 일 경우 로그아웃 처리
+//                 if (oResult.RETCD == "Z") {
+
+//                     // 화면 Lock 해제
+//                     sap.ui.getCore().unlock();
+
+//                     parent.setBusy("");
+
+//                     parent.showMessage(sap, 20, 'E', oResult.RTMSG, fnCriticalError);
+
+//                     return;
+
+//                 }
+
+//                 // 로그인 티켓 만료되면 로그인 페이지로 이동한다.
+//                 if (oResult.TYPE == "E") {
+
+//                     // error 콜백이 있다면 호출
+//                     if (typeof fn_error == "function") {
+//                         fn_error();
+//                     }
+
+//                     // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Session Timeout 팝업 호출
+//                     fn_logoff_success('X');
+
+//                     return;
+
+//                 }
+
+//                 if (typeof fn_success == "function") {
+//                     fn_success(oResult);
+//                 }
+
+//             } else {
+
+//                 // 화면 Lock 해제
+//                 sap.ui.getCore().unlock();
+
+//                 // 서버 세션이 죽었다면 오류 메시지 뿌리고 10번 화면으로 이동한다.
+//                 parent.setBusy('');
+
+//                 // error 콜백이 있다면 호출
+//                 if (typeof fn_error == "function") {
+//                     fn_error();
+//                 }
+
+//                 var sCleanHtml = parent.setCleanHtml(xhr.response);
+//                 if (!sCleanHtml || sCleanHtml == "") {
+//                     sCleanHtml = "Server connection fail!!"
+//                 }
+
+//                 parent.showMessage(sap, 20, 'E', sCleanHtml, fn_callback);
+
+//                 function fn_callback() {
+
+//                     // 화면에 떠있는 Dialog 들이 있을 경우 모두 닫는다.
+//                     oAPP.fn.fnCloseAllWs20Dialogs();
+
+//                     // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫는다.
+//                     fn_logoff_success("");
+
+//                     // // 10번 페이지로 이동
+//                     // oAPP.fn.fnOnMoveToPage("WS10");
+
+//                 }
+
+//             }
+//         }
+//     };
+
+//     // if(typeof meth !== "undefined"){
+//     if (meth != null) {
+//         sMeth = meth;
+//     }
+
+//     // if(typeof bIsAsync !== "undefined"){
+//     if (bIsAsync != null) {
+//         IsAsync = bIsAsync;
+//     }
+    
+//     xhr.withCredentials = true;
+
+//     // FormData가 없으면 GET으로 전송
+//     xhr.open(sMeth, sPath, IsAsync);
+
+//     // blob 파일일 경우
+//     if (bIsBlob == 'X') {
+//         xhr.responseType = 'blob';
+//     }
+
+//     if (oFormData) {
+//         xhr.send(oFormData);
+//     } else {
+//         xhr.send();
+//     }
+
+// } // end of sendAjax
+
+
+/**********************************************************************************************
+ * 📝 공통 신규 ajax 기존 로직 
+ **********************************************************************************************/
+function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout = 60000){
 
     var oXHR = new XMLHttpRequest();
   
     // let iReqMsgTime = 10000;
-    let iReqMsgTime = 1000;
+    let iReqMsgTime = 1000; // 1초
 
     // 10초 뒤에도 응답이 없을 경우에는 BusyDialog를 띄운다.
     let iReqMsgTimeout = setTimeout(function(){
@@ -3669,7 +3670,7 @@ function sendAjax2(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_err
         if (oXHR.responseType === 'blob') {
 
             if (typeof fn_success === "function") {
-                fn_success(oXHR.response, oXHR);                        
+                fn_success(oXHR.response, oXHR);
             }
 
             return;

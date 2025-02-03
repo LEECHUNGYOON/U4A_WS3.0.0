@@ -549,7 +549,13 @@
                         },
                     ]
 
-                }
+                },
+                {
+                    key: "WMENU20_06",
+                    icon: "sap-icon://u4a-fw-solid/Code Branch",
+                    text: "Version Management" // [MSG]            
+                },
+
                 // {
                 //     key: "WMENU20_04",
                 //     text: oAPP.msg.M047, // Icon List

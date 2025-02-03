@@ -1340,9 +1340,9 @@
         oBrowserWindow.loadURL(sUrlPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        // if (!APP.isPackaged) {
-        //     oBrowserWindow.webContents.openDevTools();
-        // }
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -3447,6 +3447,30 @@
         oAPP.attr.videoRecordPopup.start(REMOTE, sApplyTheme);
 
     }; // end of oAPP.fn.fnOpenVideoRecord
+
+    
+    // /************************************************************************
+    //  * Version Management Popup Opener
+    //  ************************************************************************/
+    // oAPP.fn.fnVersionManagementPopupOpener = function(){
+
+    //     // busy 키고 Lock 걸기
+    //     oAPP.common.fnSetBusyLock("X");
+
+    //     // 전체 자식 윈도우에 Busy 킨다.
+    //     oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_ON" });
+
+
+
+
+
+    //     // 1. electron modal Popup
+    //     sap.m.MessageToast.show("fnVersionManagementPopupOpener");
+
+    //     // busy 키고 Lock 걸기
+    //     oAPP.common.fnSetBusyLock("");
+
+    // }; // end of oAPP.fn.fnVersionManagementPopupOpener
 
 
 })(window, $, oAPP);
