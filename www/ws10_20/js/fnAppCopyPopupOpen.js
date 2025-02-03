@@ -172,6 +172,8 @@
      ************************************************************************/
     oAPP.fn.fnSetAppCopy = function(oParam) {
 
+        parent.setBusy('X');
+
         var sPath = parent.getServerPath() + '/app_copy',
             oFormData = new FormData();
 
@@ -186,23 +188,25 @@
 
         oFormData.append("S_APPID", sSourceAppId);
         oFormData.append("T_APPID", sTargetAppId);
-        oFormData.append("PACKG", sPackg);
+        oFormData.append("PACKG", sPackg);        
 
-        parent.setBusy('X');
-
-        sendAjax(sPath, oFormData, function(oResult) {
-
-            parent.setBusy('');
+        sendAjax(sPath, oFormData, function(oResult) {            
 
             if (oResult.RETCD == "E") {
 
                 // 스크립트가 있으면 eval 처리
                 if (oResult.SCRIPT) {
+
                     eval(oResult.SCRIPT);
+
+                    parent.setBusy('');
+
                     return;
                 }
 
                 parent.showMessage(sap, 20, 'E', oResult.RTMSG);
+
+                parent.setBusy('');
 
                 return;
 
@@ -217,10 +221,15 @@
             // 스크립트가 있으면 eval 처리
             if (oResult.SCRIPT) {
                 eval(oResult.SCRIPT);
+
+                parent.setBusy('');
+
                 return;
             }
 
             parent.showMessage(sap, 20, 'S', oResult.RTMSG);
+
+            parent.setBusy('');
 
         });
 

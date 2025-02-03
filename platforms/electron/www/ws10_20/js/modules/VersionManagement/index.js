@@ -7,8 +7,6 @@ const
 
 module.exports = function(REMOTE, oAPP){
 
-    debugger;
-
     // busy 키고 Lock 걸기
     oAPP.common.fnSetBusyLock("X");
 
@@ -45,11 +43,11 @@ module.exports = function(REMOTE, oAPP){
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;        
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL; //테마별 색상 처리
-
-        // oBrowserOptions.opacity = 0.0;
-        // oBrowserOptions.show = false;
         oBrowserOptions.modal = true;
         oBrowserOptions.closable = false;
+        
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.show = false;
 
         oBrowserOptions.webPreferences.partition = SESSKEY;
         oBrowserOptions.webPreferences.browserkey = BROWSKEY;
@@ -72,9 +70,9 @@ module.exports = function(REMOTE, oAPP){
         oBrowserWindow.loadURL(sPopupPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!REMOTE.app.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!REMOTE.app.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         oBrowserWindow.once('ready-to-show', () => {
             
@@ -98,12 +96,6 @@ module.exports = function(REMOTE, oAPP){
             // 부모 위치 가운데 배치한다.
             parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
-            // busy 키고 Lock 걸기
-            oAPP.common.fnSetBusyLock("");
-
-            // 전체 자식 윈도우에 Busy 킨다.
-            oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_OFF" });
-
         });
     
         // 브라우저를 닫을때 타는 이벤트
@@ -114,15 +106,5 @@ module.exports = function(REMOTE, oAPP){
             CURRWIN.focus();
 
         });
-
-    // setTimeout(function(){
-
-        // // busy 키고 Lock 걸기
-        // oAPP.common.fnSetBusyLock("");
-
-        // // 전체 자식 윈도우에 Busy 킨다.
-        // oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_OFF" });
-
-    // }, 3000);    
 
 };

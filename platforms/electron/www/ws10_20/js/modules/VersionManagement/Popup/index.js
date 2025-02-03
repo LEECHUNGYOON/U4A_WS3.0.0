@@ -1,59 +1,50 @@
-/************************************************************************
- * Copyright 2020. INFOCG Inc. all rights reserved. 
- * ----------------------------------------------------------------------
- * - file Name : patternPopup/frame.js
- ************************************************************************/
-let oAPP = (function (window) {
-    "use strict";
 
-    let oAPP = {};
-    oAPP.fn = {};
-    oAPP.ui = {};
-    oAPP.attr = {};
-    oAPP.msg = {};
-    oAPP.events = {};
-    oAPP.common = {};
+/****************************************************************************
+ * 🔥 Global Variables
+ ****************************************************************************/
+    
+    var REMOTE = require('@electron/remote');
+    var IPCMAIN = REMOTE.require('electron').ipcMain;
+    var IPCRENDERER = require('electron').ipcRenderer;
+    var PATH = REMOTE.require('path');
+    var APP = REMOTE.app;
+    var APPPATH = APP.getAppPath();
+    var CURRWIN = REMOTE.getCurrentWindow();
+    var USERDATA = APP.getPath("userData");	
+    var FS = REMOTE.require('fs');
+    var WEBCON = CURRWIN.webContents;
+    var WEBPREF = WEBCON.getWebPreferences();
+    var BROWSKEY = WEBPREF.browserkey;
+    var USERINFO = WEBPREF.USERINFO;
+    var PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));    
+    var WSUTIL_PATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js");
+    var WSUTIL = require(WSUTIL_PATH);
+    var WSMSG = new WSUTIL.MessageClassText(USERINFO.SYSID, USERINFO.LANGU);
 
-    // 현재 비지 상태 
-    oAPP.attr.isBusy = "X";
+    // 오류 감지 객체
+    var WSERR = require(PATHINFO.WSTRYCATCH);
 
-    oAPP.REMOTE = require('@electron/remote');
-    oAPP.IPCMAIN = oAPP.REMOTE.require('electron').ipcMain;
-    oAPP.IPCRENDERER = require('electron').ipcRenderer;
-    oAPP.PATH = oAPP.REMOTE.require('path');
-    oAPP.APP = oAPP.REMOTE.app;
-    oAPP.CURRWIN = oAPP.REMOTE.getCurrentWindow();
-    oAPP.USERDATA = oAPP.APP.getPath("userData");	
-    oAPP.FS = oAPP.REMOTE.require('fs');
-    oAPP.BROWSKEY = oAPP.CURRWIN.webContents.getWebPreferences().browserkey;
+    // 오류 감지 및 zconsole
+    var zconsole = WSERR(window, document, console);
 
-    /*******************************************************
-     * 메시지클래스 텍스트 작업 관련 Object -- start
-     *******************************************************/
-    const
-        REMOTE = oAPP.REMOTE,
-        PATH = REMOTE.require('path'),
-        CURRWIN = REMOTE.getCurrentWindow(),
-        WEBCON = CURRWIN.webContents,
-        WEBPREF = WEBCON.getWebPreferences(),
-        USERINFO = WEBPREF.USERINFO,
-        APP = REMOTE.app,
-        APPPATH = APP.getAppPath(),
-        LANGU = USERINFO.LANGU,
-        SYSID = USERINFO.SYSID,
-        PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));
+    var oAPP = {};
+        oAPP.attr = {};
+        oAPP.msg = {};
+        oAPP.common = {};
+        oAPP.fn = {};
+        oAPP.views = {};
+        oAPP.ui = {};    
 
-    const
-        WSUTIL_PATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js"),
-        WSUTIL = require(WSUTIL_PATH),
-        WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
-
+    // 메시지 텍스트 관련 공통 function
     oAPP.common.fnGetMsgClsText = WSMSG.fnGetMsgClsText.bind(WSMSG);
 
-    /*******************************************************
-     * 메시지클래스 텍스트 작업 관련 Object -- end
-     *******************************************************/
+    // 현재 비지 상태 
+    oAPP.attr.isBusy = "";
 
+
+/****************************************************************************
+ * 🔥 Public functions
+ ****************************************************************************/
 
 
     /*************************************************************
@@ -61,16 +52,16 @@ let oAPP = (function (window) {
      *************************************************************/
     oAPP.fn.getThemeInfo = function (){
 
-        let oUserInfo = parent.process.USERINFO;
+        let oUserInfo = USERINFO;
         let sSysID = oUserInfo.SYSID;
         
         // 해당 SYSID별 테마 정보 JSON을 읽는다.
-        let sThemeJsonPath = oAPP.PATH.join(oAPP.USERDATA, "p13n", "theme", `${sSysID}.json`);
-        if(oAPP.FS.existsSync(sThemeJsonPath) === false){
+        let sThemeJsonPath = PATH.join(USERDATA, "p13n", "theme", `${sSysID}.json`);
+        if(FS.existsSync(sThemeJsonPath) === false){
             return;
         }
 
-        let sThemeJson = oAPP.FS.readFileSync(sThemeJsonPath, "utf-8");
+        let sThemeJson = FS.readFileSync(sThemeJsonPath, "utf-8");
 
         try {
         
@@ -83,25 +74,22 @@ let oAPP = (function (window) {
         return oThemeJsonData;
 
     } // end of oAPP.fn.getThemeInfo
-    
+
 
     /***********************************************************
      * Busy 실행 여부 정보 리턴
      ***********************************************************/
     oAPP.fn.getBusy = function(){
-
+    
         return oAPP.attr.isBusy;
 
-    };
-    
+    }; // end of oAPP.fn.getBusy
+
+
     /************************************************************************
      * IPCRENDERER Events..
      ************************************************************************/
-    oAPP.IPCRENDERER.on('if-version-management', (events, oInfo) => {
-
-        // oAPP.attr.oUserInfo = oInfo.oUserInfo;
-        // oAPP.attr.oServerInfo = oInfo.oServerInfo;
-        // oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
+    IPCRENDERER.on('if-version-management', (events, oInfo) => {
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {
@@ -111,9 +99,3 @@ let oAPP = (function (window) {
         oWs_frame.src = "frame.html";
 
     });
-
-    window.oAPP = oAPP;
-
-    return oAPP;
-
-})(window);
