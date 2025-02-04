@@ -89,12 +89,17 @@
     /************************************************************************
      * IPCRENDERER Events..
      ************************************************************************/
-    IPCRENDERER.on('if-version-management', (events, oInfo) => {
+    IPCRENDERER.on('if-version-management', (events, IF_DATA) => {
 
         var oWs_frame = document.getElementById("ws_frame");
         if (!oWs_frame) {
             return;
         }
+
+        oAPP.IF_DATA = IF_DATA;
+
+        // // 어플리케이션 정보
+        // oAPP.attr.oAppInfo = IF_DATA.oAppInfo;
 
         oWs_frame.src = "frame.html";
 

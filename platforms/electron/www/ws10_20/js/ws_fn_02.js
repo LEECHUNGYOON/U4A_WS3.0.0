@@ -12,6 +12,34 @@
         REMOTEMAIN = parent.REMOTEMAIN,
         APPCOMMON = oAPP.common;
 
+
+
+    /************************************************************************
+     * APP 상태에 따라 트랜잭션 버튼을 비활성화 시킨다.
+     ************************************************************************/
+    // function _setTransactionButtonInvisible(){
+
+    //     var oAppInfo = parent.getAppInfo();
+    //     if(!oAppInfo){
+    //         return;
+    //     }
+
+
+
+
+
+    // } // end of _setTransactionButtonInvisible
+
+
+
+
+
+
+
+
+
+
+
     /************************************************************************
      * Application Display or Change mode 
      * **********************************************************************
@@ -141,7 +169,7 @@
             }
 
             // Change 모드로 들어왔는데 APP가 Lock 걸려 있는 경우.
-            if (ISEDIT == "X" && oAppInfo.IS_EDIT == "") {
+            if (ISEDIT === "X" && oAppInfo.IS_EDIT === "") {
 
                 // USP Application 일 경우
                 if (oAppInfo.APPTY == "U") {
@@ -162,7 +190,12 @@
                 ISADM = oUserInfo.ISADM; // Admin 권한 여부
 
             // Admin이 아닌 유저가 Admin App을 열었을 경우 Disply 모드로 변환
-            if (ISADM != "X" && oAppInfo.ADMIN_APP == "X") {
+            if (ISADM !== "X" && oAppInfo.ADMIN_APP === "X") {
+                oAppInfo.IS_EDIT = "";
+            }
+
+            // 어플리케이션 정보에 버전 관리 정보가 포함되어 있을 경우 Display 모드로 전환
+            if(typeof oAppInfo.S_APP_VMS !== "undefined"){
                 oAppInfo.IS_EDIT = "";
             }
 
@@ -177,7 +210,7 @@
             await parent.UAI.disconnect(_oPARAM);
 
             // USP Application 일 경우
-            if (oAppInfo.APPTY == "U") {
+            if (oAppInfo.APPTY === "U") {
 
                 // WS10 페이지의 APPID 입력 필드에 Suggestion을 구성할 데이터를 저장한다.
                 oAPP.fn.fnOnSaveAppSuggestion(oAppInfo.APPID);
@@ -456,6 +489,9 @@
         if (!oMainPage) {
             return;
         }
+
+        // // APP 상태에 따라 트랜잭션 버튼을 비활성화 시킨다.
+        // _setTransactionButtonInvisible();
 
         // 디자인 영역을 구성한다.
         if (oAPP.attr.oArea) {

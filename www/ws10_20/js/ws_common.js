@@ -1039,11 +1039,9 @@
                         return;
                     }
 
-
                     if (sap.ui.getCore().isLocked()) {
                         return;
                     }
-
 
                     // 단축키 실행 할지 말지 여부 체크
                     var result = oAPP.common.fnShortCutExeAvaliableCheck();
@@ -1053,13 +1051,10 @@
                         return;
                     }
 
-
-
                     // 커서 포커스 날리기
                     if (document.activeElement && document.activeElement.blur) {
                         document.activeElement.blur();
                     }
-
                     
                     oActivateBtn.focus();
 
@@ -1072,6 +1067,7 @@
                             if(parent.getBusy() === "X"){ return; } 
     
                             clearInterval(_ointer);
+                            
                             resolve();
                           
                         }, 0);
@@ -2725,15 +2721,21 @@
                 "/WS10",
                 "/WS20/APP/IS_EDIT",
                 "/WS30/APP/IS_EDIT",
-                "/UAI"
+                "/UAI",
+                "/WS20/APP/S_APP_VMS"
             ],
-            formatter: async function(SYSID, WS10, WS20_IS_EDIT, WS30_IS_EDIT, UAI){                
+            formatter: async function(SYSID, WS10, WS20_IS_EDIT, WS30_IS_EDIT, UAI, S_APP_VMS){                
 
                 var _bIsBusy = await new Promise(function(resove){
 
                     let isbusy = false;
 
                     setTimeout(() => {
+
+                        // APP 정보에 버전 관리 정보가 있다면 View 용으로 만들어야 하기 때문에 버튼을 숨긴다.
+                        if(typeof S_APP_VMS !== "undefined"){
+                            resove(false);
+                        }
 
                         switch (SYSID) {
                             case "UHA":

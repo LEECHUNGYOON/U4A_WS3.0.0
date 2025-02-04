@@ -70,9 +70,9 @@ module.exports = function(REMOTE, oAPP){
         oBrowserWindow.loadURL(sPopupPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        // if (!REMOTE.app.isPackaged) {
-        //     oBrowserWindow.webContents.openDevTools();
-        // }
+        if (!REMOTE.app.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
 
         oBrowserWindow.once('ready-to-show', () => {
             
@@ -87,7 +87,10 @@ module.exports = function(REMOTE, oAPP){
             let oOptionData = {
                 // BROWSKEY: BROWSKEY, // 브라우저 고유키 
                 // oUserInfo: oUserInfo, // 로그인 사용자 정보
-                // oServerInfo: oServerInfo, // 서버 정보                
+                // oServerInfo: oServerInfo, // 서버 정보 
+                sServerHost: parent.getHost(), //  서버 호스트 정보
+                sServerPath: parent.getServerPath(), // 서버 Url
+                oAppInfo: parent.getAppInfo(),  // 앱 정보               
                 oThemeInfo: oThemeInfo, // 테마 정보                
             };
             

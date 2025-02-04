@@ -529,7 +529,8 @@
                 {
                     key: "WMENU20_05",
                     icon: "sap-icon://source-code",
-                    text: oAPP.msg.M059, // Source Pattern                    
+                    text: oAPP.msg.M059, // Source Pattern
+                    enabled: true,                    
                 },
                 {
                     key: "WMENU20_04",
@@ -553,7 +554,9 @@
                 {
                     key: "WMENU20_06",
                     icon: "sap-icon://u4a-fw-solid/Code Branch",
-                    text: "Version Management" // [MSG]            
+                    visible: oAPP.common.checkWLOList("C", "UHAK900908"),
+                    text: "Version Management", // [MSG]            
+                    enabled: true,
                 },
 
                 // {
@@ -1218,7 +1221,7 @@
             }],
             formatter: function (isDev) {
 
-                if (isDev != "D") {
+                if (isDev !== "D") {
                     return false;
                 }
 
@@ -2006,6 +2009,33 @@
                         })
                     }
                 })
+                .bindProperty("enabled", {
+                    parts: [
+                        "key",
+                        "enabled"
+                    ],
+                    formatter: function(key, enabled){
+        
+                        switch (key) {
+        
+                            case "WMENU20_06":  // Version Management
+        
+                                var oAppInfo = parent.getAppInfo();
+
+                                // APP 정보에 버전 정보가 있다면 메뉴를 비활성화 시킨다
+                                if(typeof oAppInfo?.S_APP_VMS !== "undefined"){
+                                    return false;
+                                }
+        
+                                break;        
+        
+                            default:
+                                return enabled;
+        
+                        }
+        
+                    }
+                })
             }
         }).addStyleClass("u4aWsWindowMenu");
 
@@ -2049,7 +2079,7 @@
 
                                 var IS_EDIT = oAppInfo.IS_EDIT;
 
-                                if (IS_EDIT != "X") {
+                                if (IS_EDIT !== "X") {
                                     return false;
                                 }
 
@@ -2270,86 +2300,145 @@
             icon: "sap-icon://validate",
             tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B72") + " (Ctrl+F2)", // Syntax Check (Ctrl+F2)
             press: oAPP.events.ev_pressSyntaxCheckBtn
-        }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible)
-            .addStyleClass("u4aWs20SyntaxCheckBtn"),
+        });
 
-            oDisplayModeBtn = new sap.m.Button("displayModeBtn", {
-                icon: "sap-icon://display",
-                tooltip: sDispChgTxt,
-                press: oAPP.events.ev_pressDisplayModeBtn
-            }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible)
-                .addStyleClass("u4aWs20DisplayModeBtn"),
+        oSyntaxCheckBtn.addStyleClass("u4aWs20SyntaxCheckBtn");
 
-            oChangeModeBtn = new sap.m.Button("changeModeBtn", {
-                icon: "sap-icon://edit",
-                tooltip: sDispChgTxt,
-                press: oAPP.events.ev_pressDisplayModeBtn
-            }).bindProperty("visible", {
-                parts: [{
-                    path: "/USERINFO/USER_AUTH/IS_DEV" // 개발자 권한 여부
-                },
-                {
-                    path: "/USERINFO/ISADM"
-                },
-                {
-                    path: "/WS20/APP/ADMIN_APP" // "ADMIN App 여부"
-                },
-                {
-                    path: sVisiBindPath
-                },
+        oSyntaxCheckBtn.bindProperty("visible", {
+            parts: [
+                "/WS20/APP/S_APP_VMS",
+                sVisiBindPath
+            ],
+            formatter: function(S_APP_VMS, IS_EDIT){
 
-                ],
-                formatter: (IS_DEV, ISADM, ADMIN_APP, IS_EDIT) => {
-
-                    // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
-                    if (IS_DEV != "D") {
-                        return false;
-                    }
-
-                    // Admin이 아닌 유저가 Admin App을 열었을 경우 버튼 비활성화
-                    if (ISADM != "X" && ADMIN_APP == "X") {
-                        return false;
-                    }
-
-                    let bIsDisp = (IS_EDIT == "X" ? true : false);
-                    return !bIsDisp;
-
+                // APP 정보에 버전 정보가 있다면 View 용으로 만들어야 하기 때문에 버튼을 숨긴다.
+                if(typeof S_APP_VMS !== "undefined"){
+                    return false;
                 }
-            }).addStyleClass("u4aWs20ChangeModeBtn"),
 
-            oActivateBtn = new sap.m.Button("activateBtn", {
-                icon: "sap-icon://activate",                
-                press: oAPP.events.ev_pressActivateBtn,
-                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B73") + " (Ctrl+F3)", // Activate (Ctrl+F3)
-            }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible)
-                .addStyleClass("u4aWs20ActivateBtn"),
+                return lf_bindPropForVisible.call(this, IS_EDIT);           
 
-            oSaveBtn = new sap.m.Button("saveBtn", {
-                icon: "sap-icon://save",                
-                press: oAPP.events.ev_pressSaveBtn,
-                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A64") + " (Ctrl+S)", // Save (Ctrl+S)
-            })
-                // .bindProperty("enabled", sVisiBindPath, lf_bindPropForVisible)
-                .bindProperty("visible", {
-                    parts: [{
-                        path: "/USERINFO/USER_AUTH/IS_DEV"
-                    }, {
-                        path: sVisiBindPath
-                    }],
-                    formatter: (IS_DEV, IS_EDIT) => {
+            }
+        });
 
-                        // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
-                        if (IS_DEV != "D" || IS_EDIT != "X") {
-                            return false;
-                        }
+        var oDisplayModeBtn = new sap.m.Button("displayModeBtn", {
+            icon: "sap-icon://display",
+            tooltip: sDispChgTxt,
+            press: oAPP.events.ev_pressDisplayModeBtn
+        });
 
-                        return true;
+        oDisplayModeBtn.addStyleClass("u4aWs20DisplayModeBtn");
 
-                    }
-                })
-                .addStyleClass("u4aWs20SaveBtn"),
+        oDisplayModeBtn.bindProperty("visible", {
+            parts: [
+                "/WS20/APP/S_APP_VMS",
+                sVisiBindPath
+            ],
+            formatter: function(S_APP_VMS, IS_EDIT){
 
-            oMimeBtn = new sap.m.Button("mimeBtn", {
+                // APP 정보에 버전 관리 정보가 있다면 View 용으로 만들어야 하기 때문에 버튼을 숨긴다.
+                if(typeof S_APP_VMS !== "undefined"){
+                    return false;
+                }
+
+                return lf_bindPropForVisible.call(this, IS_EDIT); 
+            }
+        });
+
+        var oChangeModeBtn = new sap.m.Button("changeModeBtn", {
+            icon: "sap-icon://edit",
+            tooltip: sDispChgTxt,
+            press: oAPP.events.ev_pressDisplayModeBtn
+        });
+
+        oChangeModeBtn.bindProperty("visible", {
+            parts: [
+                "/USERINFO/USER_AUTH/IS_DEV",   // 개발자 권한 여부
+                "/USERINFO/ISADM",
+                "/WS20/APP/ADMIN_APP",          // "ADMIN App 여부"
+                sVisiBindPath,
+                "/WS20/APP/S_APP_VMS"
+            ],
+            formatter: (IS_DEV, ISADM, ADMIN_APP, IS_EDIT, S_APP_VMS) => {
+
+                // APP 정보에 버전 정보가 있다면 View 용으로 만들어야 하기 때문에 버튼을 숨긴다.
+                if(typeof S_APP_VMS !== "undefined"){
+                    return false;
+                }
+
+                // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
+                if (IS_DEV !== "D") {
+                    return false;
+                }
+
+                // Admin이 아닌 유저가 Admin App을 열었을 경우 버튼 비활성화
+                if (ISADM !== "X" && ADMIN_APP === "X") {
+                    return false;
+                }
+
+                let bIsDisp = (IS_EDIT === "X" ? true : false);
+
+                return !bIsDisp;
+
+            }
+        }).addStyleClass("u4aWs20ChangeModeBtn");
+
+        var oActivateBtn = new sap.m.Button("activateBtn", {
+            icon: "sap-icon://activate",                
+            press: oAPP.events.ev_pressActivateBtn,
+            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B73") + " (Ctrl+F3)", // Activate (Ctrl+F3)
+        });
+
+        oActivateBtn.addStyleClass("u4aWs20ActivateBtn");
+
+        oActivateBtn.bindProperty("visible", {
+            parts: [
+                "/WS20/APP/S_APP_VMS",
+                sVisiBindPath
+            ],
+            formatter: function(S_APP_VMS, IS_EDIT){
+
+                // APP 정보에 버전 정보가 있다면 View 용으로 만들어야 하기 때문에 버튼을 숨긴다.
+                if(typeof S_APP_VMS !== "undefined"){
+                    return false;
+                }
+
+                return lf_bindPropForVisible.call(this, IS_EDIT); 
+            }
+
+        });
+
+        var oSaveBtn = new sap.m.Button("saveBtn", {
+            icon: "sap-icon://save",                
+            press: oAPP.events.ev_pressSaveBtn,
+            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A64") + " (Ctrl+S)", // Save (Ctrl+S)
+        });
+
+        oSaveBtn.addStyleClass("u4aWs20SaveBtn");
+
+        oSaveBtn.bindProperty("visible", {
+            parts: [
+                "/USERINFO/USER_AUTH/IS_DEV",
+                sVisiBindPath,
+                "/WS20/APP/S_APP_VMS",
+            ],
+            formatter: (IS_DEV, IS_EDIT, S_APP_VMS) => {
+
+                // APP 정보에 버전 정보가 있다면 View 용으로 만들어야 하기 때문에 버튼을 숨긴다.
+                if(typeof S_APP_VMS !== "undefined"){
+                    return false;
+                }
+
+                // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
+                if (IS_DEV !== "D" || IS_EDIT !== "X") {
+                    return false;
+                }
+
+                return true;
+            }
+        });        
+
+        var oMimeBtn = new sap.m.Button("mimeBtn", {
                 icon: "sap-icon://picture",
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A10"), // MIME Repository                
                 press: oAPP.events.ev_pressMimeBtn,
@@ -2361,23 +2450,60 @@
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A11"), // Controller (Class Builder)                
                 press: oAPP.events.ev_pressControllerBtn,
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C38") + " (Ctrl+F12)", // Controller (Ctrl+F12)
-            }).addStyleClass("u4aWs20ControllerBtn"),
+            }).addStyleClass("u4aWs20ControllerBtn");
 
-            oAppExecBtn = new sap.m.Button("ws20_appExecBtn", {
-                icon: "sap-icon://internet-browser",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06"), // Application Execution                
-                press: oAPP.events.ev_pressAppExecBtn,
-                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06") + " (F8)", // Application Execution (F8)
-            }).addStyleClass("u4aWs20AppExecBtn"),
+        var oAppExecBtn = new sap.m.Button("ws20_appExecBtn", {
+            icon: "sap-icon://internet-browser",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06"), // Application Execution                
+            press: oAPP.events.ev_pressAppExecBtn,
+            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A06") + " (F8)", // Application Execution (F8)
+        });
 
-            oMobileBtn = new sap.m.Button("ws20_multiPrevBtn", {
-                icon: "sap-icon://desktop-mobile",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A08"), // App Multi Preview                
-                press: oAPP.events.ev_pressMultiPrevBtn,
-                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A08") + " (Ctrl+F5)", // App Multi Preview (Ctrl+F5)
-            }).addStyleClass("u4aWs20MultiPrevBtn"),
+        oAppExecBtn.addStyleClass("u4aWs20AppExecBtn");
 
-            oIconListBtn = new sap.m.Button("iconListBtn", {
+        oAppExecBtn.bindProperty("visible", {
+            parts: [
+                "/WS20/APP/S_APP_VMS",
+            ],
+            formatter: function(S_APP_VMS){
+
+                // APP 정보에 버전 정보가 있다면 View 용으로 만들어야 하기 때문에 버튼을 숨긴다.
+                if(typeof S_APP_VMS !== "undefined"){
+                    return false;
+                }
+
+                return true;
+
+            }
+        });
+
+
+        var oMobileBtn = new sap.m.Button("ws20_multiPrevBtn", {
+            icon: "sap-icon://desktop-mobile",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A08"), // App Multi Preview                
+            press: oAPP.events.ev_pressMultiPrevBtn,
+            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A08") + " (Ctrl+F5)", // App Multi Preview (Ctrl+F5)
+        });
+
+        oMobileBtn.addStyleClass("u4aWs20MultiPrevBtn");
+
+        oMobileBtn.bindProperty("visible", {
+            parts: [
+                "/WS20/APP/S_APP_VMS",
+            ],
+            formatter: function(S_APP_VMS){
+
+                // APP 정보에 버전 정보가 있다면 View 용으로 만들어야 하기 때문에 버튼을 숨긴다.
+                if(typeof S_APP_VMS !== "undefined"){
+                    return false;
+                }
+
+                return true;
+
+            }
+        });
+
+        var oIconListBtn = new sap.m.Button("iconListBtn", {
                 icon: "sap-icon://activity-items",
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12"), // Icon List                
                 press: oAPP.events.ev_pressIconListBtn,
@@ -2409,17 +2535,35 @@
                     })
                 ]
 
-            }),
+            });
 
-            oAddEventBtn = new sap.m.Button("addEventBtn", {
-                icon: "sap-icon://touch",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A13"), // Add Event Method
-                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A13") + " (Shift+F1)", // Add Event Method (Shift+F1)
-                press: oAPP.events.ev_pressAddEventBtn
-            }).bindProperty("visible", sVisiBindPath, lf_bindPropForVisible)
-                .addStyleClass("u4aWs20AddEventBtn"),
+        var oAddEventBtn = new sap.m.Button("addEventBtn", {
+            icon: "sap-icon://touch",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A13"), // Add Event Method
+            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A13") + " (Shift+F1)", // Add Event Method (Shift+F1)
+            press: oAPP.events.ev_pressAddEventBtn
+        });
 
-            oRuntimeBtn = new sap.m.Button("runtimeBtn", {
+        oAddEventBtn.addStyleClass("u4aWs20AddEventBtn");
+
+        oAddEventBtn.bindProperty("visible", {
+            parts: [
+                "/WS20/APP/S_APP_VMS",
+                sVisiBindPath
+            ],
+            formatter: function(S_APP_VMS, IS_EDIT){
+
+                // APP 정보에 버전 정보가 있다면 View 용으로 만들어야 하기 때문에 버튼을 숨긴다.
+                if(typeof S_APP_VMS !== "undefined"){
+                    return false;
+                }
+
+                return lf_bindPropForVisible.call(this, IS_EDIT); 
+            }
+
+        });            
+
+        var oRuntimeBtn = new sap.m.Button("runtimeBtn", {
                 icon: "sap-icon://functional-location",
                 text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A14"), // Runtime Class Navigator
                 tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A14"), // Runtime Class Navigator (F9)

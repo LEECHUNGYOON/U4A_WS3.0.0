@@ -91,8 +91,8 @@ function getAppDataFromServer(oFormData, fn_success) {
 }
 
 // 15. 새창 띄우기
-function onNewWindow() {
-    oWS.utill.fn.onNewWindow();
+function onNewWindow(IF_DATA) {
+    oWS.utill.fn.onNewWindow(IF_DATA);
 }
 
 /** 
@@ -615,6 +615,25 @@ function fnReadEventSuggestion(sName) {
     }
 
 }
+
+/************************************************************************
+ * 새창 실행 시, IF_DATA 된 정보 저장
+ ************************************************************************/
+function setNewBrowserIF_DATA(IF_DATA){
+
+    oWS.utill.attr.NEW_BROWS_IF_DATA = IF_DATA;
+
+} // end of setNewBrowserIF_DATA
+
+/************************************************************************
+ * 새창 실행 시, IF_DATA 저장된 데이터 구하기
+ ************************************************************************/
+function getNewBrowserIF_DATA(){
+
+    return oWS.utill.attr.NEW_BROWS_IF_DATA || undefined;
+
+} // end of getNewBrowserIF_DATA
+
 
 /************************************************************************
  * 테마 정보 저장

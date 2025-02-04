@@ -84,6 +84,13 @@ function fnWait() {
  ************************************************************************/
 oAPP.fn.attachInit = async () => {
 
+    jQuery.sap.require("sap.m.MessageBox");
+
+
+    parent.document.getElementById("u4aWsBusyIndicator").style.visibility = "hidden";
+
+    oAPP.setBusy("X");
+
     // await fnWait();
 
     // IPC Event 등록
@@ -95,7 +102,7 @@ oAPP.fn.attachInit = async () => {
     // 현재 브라우저의 이벤트 핸들러 
     _attachCurrentWindowEvents();
 
-    await oAPP.fn.getWsMessageList(); // 반드시 이 위치에!!
+    await oAPP.fn.getWsMessageList(); // 반드시 이 위치에!!    
 
     oAPP.fn.fnInitRendering();
 
@@ -106,7 +113,7 @@ oAPP.fn.attachInit = async () => {
      */
 
     oAPP.attr._oRendering = sap.ui.requireSync('sap/ui/core/Rendering');    
-    oAPP.attr._oRendering.attachUIUpdated(_fnUIupdatedCallback);
+    oAPP.attr._oRendering.attachUIUpdated(_fnUIupdatedCallback); // [async]
 
     // 자연스러운 로딩
     // sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback);
@@ -880,17 +887,158 @@ function _attachCurrentWindowEvents() {
 
 } // end of _attachCurrentWindowEvents
 
-function _fnUIupdatedCallback() {
 
-    setTimeout(() => {
-        $('#content').fadeIn(300, 'linear');
-    }, 300);
+
+/************************************************************************
+ * 서버에서 허용 가능한 테마 목록을 구한다.
+ ************************************************************************/
+function _getSupportedThemeInfo(){
+
+    return new Promise(function(resolve){    
+
+        let sServicePath = oAPP.attr.sServerPath + "/get_supported_theme";
+
+        // ajax 결과
+        var oResult = undefined;
+        
+        // let oFormData = new FormData()
+        //     oFormData.append("GET_LANGU", "X");
+        //     oFormData.append("PRCCD", PARAM.PRCCD);
+        
+        jQuery.ajax({
+            async: false,
+            method: "POST",
+            url: sServicePath,
+            // data: oFormData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success : function(data, textStatus, xhr) {
+                oResult = { success : true, data : data, status : textStatus, statusCode : xhr && xhr.status };
+            },
+            error : function(xhr, textStatus, error) {
+                oResult = { success : false, data : undefined, status : textStatus, error : error, statusCode : xhr.status, errorResponse :  xhr.responseText};
+            }
+        });
+        
+        // 연결 실패일 경우
+        if(oResult.success === false){
+        
+            return resolve({
+                RETCD: "E",
+                STCOD: "E999",
+            });
+        
+        }
+
+        return resolve({
+            RETCD: "S",
+            RDATA: oResult.data
+        });
+
+    });
+
+} // end of _getSupportedThemeInfo
+
+
+/************************************************************************
+ * 현재 접속된 서버의 허용 가능한 테마 정보를 설정한다.
+ ************************************************************************/
+function _fnSupporedThemeConfig(){
+
+    return new Promise(async function(resolve){
+
+        let oUserInfo = oAPP.attr.USERINFO;
+        let SYSID = oUserInfo.SYSID;
+
+        let oModel = sap.ui.getCore().getModel();
+
+        let oModelData = oModel.oData;
+
+        //해당 패치 정보가 존재하는지 여부 확인.
+        var bCheckWLO = await WSUTIL.checkWLOListAsync(SYSID, "C", "UHAK900908");
+        if(!bCheckWLO){
+
+            oModelData.THEME.THEME_LIST = [];
+
+            // 현재 버전에서 지원되는 테마 목록
+            let aSupportedThemes = sap.ui.getVersionInfo().supportedThemes,
+            iThemeLength = aSupportedThemes.length;
+
+            // 테마 정보를 바인딩 구조에 맞게 변경
+            let aThemes = [];
+            for (var i = 0; i < iThemeLength; i++) {
+
+                let sThemeName = aSupportedThemes[i];
+
+                aThemes.push({
+                    KEY: sThemeName,
+                    THEME: sThemeName
+                });
+
+            }
+
+            oModelData.THEME.THEME_LIST = aThemes;
+
+            sap.ui.getCore().getModel().refresh();
+
+            return resolve();
+
+        }
+
+        let oResult = await _getSupportedThemeInfo();
+        
+        if(oResult.RETCD === "E"){
+
+            // [MSG]
+            let sErrMsg = "테마 목록을 구하는 중, 일시적인 문제가 발생하였습니다. \n다시 실행 하시거나 문제가 지속되면 U4A팀으로 문의해주세요.";
+
+            sap.m.MessageBox.error(sErrMsg, {
+                onClose: function(){
+
+                    parent.CURRWIN.close();
+
+                }
+            });
+
+            oAPP.setBusy("");            
+
+            return;
+        }
+
+
+        let aTheme = oResult.RDATA;
+
+        let aSupportedTheme = [];
+
+        for(const oTheme of aTheme){
+
+            aSupportedTheme.push({
+                KEY: oTheme.THMNM,
+                THEME: oTheme.THMNM,
+            });
+
+        }
+
+        oModelData.THEME.THEME_LIST = aSupportedTheme;
+
+        sap.ui.getCore().getModel().refresh();
+
+        resolve();
+
+    });
+
+} // end of _fnSupporedThemeConfig
+
+async function _fnUIupdatedCallback() {
+
+    // setTimeout(() => {
+    //     $('#content').fadeIn(300, 'linear');
+    // }, 300);
   
     oAPP.attr._oRendering.detachUIUpdated(_fnUIupdatedCallback);
 
     delete oAPP.attr._oRendering;
-
-    // sap.ui.getCore().detachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, _fnUIupdatedCallback);
 
     setTimeout(async () => {
 
@@ -912,14 +1060,15 @@ function _fnUIupdatedCallback() {
         // 즐겨찾기 저장할 Json 파일을 생성한다.
         _fnWriteFavJsonFile();
 
-        // // 즐거찾기 저장된 Json 파일을 감지한다.
-        // _fnWatchFavJsonFile();
+        // parent.document.getElementById("u4aWsBusyIndicator").style.visibility = "hidden";
 
-        parent.document.getElementById("u4aWsBusyIndicator").style.visibility = "hidden";
 
-        oAPP.setBusy("");
+        // 현재 접속된 서버의 허용 가능한 테마 정보를 설정한다.
+        await _fnSupporedThemeConfig();
 
         sap.ui.getCore().getModel().refresh();
+
+        oAPP.setBusy("");
 
     }, 500);
 
@@ -930,23 +1079,6 @@ function _fnUIupdatedCallback() {
  ************************************************************************/
 oAPP.fn.fnInitModelBinding = function () {
 
-    // 현재 버전에서 지원되는 테마 목록
-    let aSupportedThemes = sap.ui.getVersionInfo().supportedThemes,
-        iThemeLength = aSupportedThemes.length;
-
-    // 테마 정보를 바인딩 구조에 맞게 변경
-    let aThemes = [];
-    for (var i = 0; i < iThemeLength; i++) {
-
-        let sThemeName = aSupportedThemes[i];
-
-        aThemes.push({
-            KEY: sThemeName,
-            THEME: sThemeName
-        });
-
-    }
-
     let oModelData = {
         PRC: {
             MenuSelectedKey: "SAP",
@@ -955,7 +1087,7 @@ oAPP.fn.fnInitModelBinding = function () {
         },
         THEME: {
             THEME_KEY: oAPP.attr.sDefTheme,
-            THEME_LIST: aThemes
+            THEME_LIST: []
         },
 
         ICONS: {
@@ -977,8 +1109,8 @@ oAPP.fn.fnInitModelBinding = function () {
     oModelData.PRC.POP_TITLE = sPopUpTitle;
     
     let oJsonModel = new sap.ui.model.json.JSONModel();
-    oJsonModel.setData(oModelData);
-    oJsonModel.setSizeLimit(100000);
+        oJsonModel.setData(oModelData);
+        oJsonModel.setSizeLimit(Infinity);
 
     sap.ui.getCore().setModel(oJsonModel);
 
@@ -1092,6 +1224,19 @@ oAPP.fn.fnInitRendering = function () {
     }).addStyleClass("u4aWsIconListMainPage");
 
     oApp.addPage(oPage);
+
+
+    let oAppDelegate = {
+        onAfterRendering: function(){
+
+            oApp.removeEventDelegate(oAppDelegate);
+
+            $('#content').fadeIn(300, 'linear');
+
+        }
+    };
+
+    oApp.addEventDelegate(oAppDelegate);
 
     oApp.placeAt("content");
 
@@ -2102,18 +2247,12 @@ oAPP.setBusy = (isBusy) => {
 
     if (bIsBusy) {
 
-        // // 화면 Lock 걸기
-        // sap.ui.getCore().lock();
-
         document.body.style.pointerEvents = 'none';
 
         sap.ui.core.BusyIndicator.show(0);
 
         return;
     }
-
-    // // 화면 Lock 해제
-    // sap.ui.getCore().unlock();
 
     document.body.style.pointerEvents = '';
 

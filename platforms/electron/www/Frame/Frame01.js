@@ -672,7 +672,7 @@ oAPP.msg = {};
     }; // end of oWS.utill.fn.getAppDataFromServer
 
     // 15. 새창 띄우기
-    oWS.utill.fn.onNewWindow = function () {
+    oWS.utill.fn.onNewWindow = function (IF_DATA) {
 
         const WINDOWSTATE = REMOTE.require('electron-window-state');
 
@@ -766,6 +766,9 @@ oAPP.msg = {};
             oMetadata.DEFBR = parent.getDefaultBrowserInfo();
             oMetadata.THEMEINFO = parent.getThemeInfo();
             oMetadata.BeforeServerInfo = parent.getBeforeServerInfo();
+
+            // 새창 띄운 후 추가 파라미터
+            oMetadata.IF_DATA = IF_DATA;
 
             // 브라우저가 오픈되면서 부모가 가지고 있는 메타 관련 정보들을 전달한다.
             oBrowserWindow.webContents.send('if-meta-info', oMetadata);
@@ -1676,6 +1679,11 @@ IPCRENDERER.on('if-meta-info', (event, res) => {
     // 테마정보
     if (oMetadata.THEMEINFO) {
         setThemeInfo(oMetadata.THEMEINFO);
+    }
+
+    // 새창 실행 후 IF 데이터가 있을 경우
+    if(oMetadata.IF_DATA){
+        setNewBrowserIF_DATA(IF_DATA);
     }
 
     // 새창일 경우 process object에 USERINFO 정보를 저장한다.
