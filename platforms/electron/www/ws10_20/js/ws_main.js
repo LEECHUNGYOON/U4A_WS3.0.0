@@ -752,11 +752,51 @@
 
             // 공통 BroadCast 이벤트 걸기
             oAPP.fn.fnBroadCast_Attach_Event_Handler(); // #[ws_fn_broad.js]
+
      
             // 자연스러운 로딩
             sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, async function () {
 
                 if (!parent.oWS.utill.attr.UIUpdated) {
+
+
+                    // TEST -----
+
+                    
+
+                    let oNewWin_IF_DATA = parent.getNewBrowserIF_DATA();
+                    if(oNewWin_IF_DATA){
+
+                        parent.setNewBrowserIF_DATA(undefined);
+
+                        let ACTCD = oNewWin_IF_DATA.ACTCD;
+                        switch (ACTCD) {
+                            case "MOVE20":
+                                
+                                let APPID = oNewWin_IF_DATA.APPID;
+                                if(!APPID){
+                                    break;
+                                }
+
+                                sap.ui.getCore().byId("AppNmInput").setValue(APPID);
+                                sap.ui.getCore().byId("displayBtn").firePress();
+
+
+                                break;
+                        
+                            default:
+                                break;
+                        }
+
+
+                        zconsole.log("IF왔다!!!", oNewWin_IF_DATA);
+
+                    }
+
+                    // TEST -----
+
+
+
 
                     // Loading Page
                     parent.showLoadingPage("");

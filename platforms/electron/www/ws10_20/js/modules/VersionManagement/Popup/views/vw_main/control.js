@@ -60,8 +60,10 @@ const
 
         return new Promise(function(resolve){
 
+            // 서버 호출 URL
             let sServicePath = oAPP.IF_DATA.sServerPath + "/get_app_ver_list";
 
+            // 어플리케이션 정보
             let oAppInfo = oAPP.IF_DATA.oAppInfo;
 
             // ajax 결과
@@ -79,12 +81,12 @@ const
                 contentType: false,
                 processData: false,
                 success : function(data, textStatus, xhr) {
-                    oResult = { success : true, data : data, status : textStatus, statusCode : xhr && xhr.status };
+                    oResult = { success : true, data : data, status : textStatus, statusCode : xhr && xhr.status, xhr: xhr };
                 },
                 error : function(xhr, textStatus, error) {
-                    oResult = { success : false, data : undefined, status : textStatus, error : error, statusCode : xhr.status, errorResponse :  xhr.responseText};
+                    oResult = { success : false, data : undefined, status : textStatus, error : error, statusCode : xhr.status, errorResponse :  xhr.responseText, xhr: xhr };
                 }
-            });
+            });            
             
             // 연결 실패일 경우
             if(oResult.success === false){
@@ -94,6 +96,34 @@ const
                     STCOD: "E999",
                 });
             
+            }
+
+            // status 값이 있다면 서버에서 오류 발생
+            let u4a_status = oResult.xhr.getResponseHeader("u4a_status");
+            if(u4a_status){
+
+                switch (u4a_status) {
+                    case "UA0001": // 지원하지 않는 서비스
+
+                        // [MSG]
+                        let sErrMsg = "이 서버는 이 기능을 지원하지 않으므로 U4A 팀에 문의하세요.";
+
+                        sap.m.MessageBox.warning(sErrMsg, {
+                            onClose: function(){
+                    
+                                parent.CURRWIN.close();
+                                
+                            }
+                        });
+
+                        oAPP.fn.setBusy("");
+                        
+                        return;
+                
+                    default:
+                        break;
+                }
+                
             }
 
             return resolve(oResult.data);
@@ -111,34 +141,7 @@ const
 
             // 서버에서 어플리케이션 버전 목록을 구한다.
             let oAppVerResult = await _getAppVerList();
-
-            try {
-                
-                var oResult = JSON.parse(oAppVerResult.RDATA);
-            
-            } catch (error) {
-                
-            
-            }
-            
-            // 해당 기능이 지원되지 않는 서버일 경우..
-            // - 이 서버는 이 기능을 지원하지 않으므로 U4A 팀에 문의하세요.
-            if(oResult && oResult?.RETCD === "W"){
-            
-                sap.m.MessageBox.warning(oResult.RTMSG, {
-                    onClose: function(){
-            
-                        parent.CURRWIN.close();
-                        
-                    }
-                });
-            
-                oAPP.fn.setBusy("");
-
-                return;
-            
-            }
-
+         
             // 서버에서 버전 정보 구하는 중 통신 등의 오류가 발생한 경우..
             if(oAppVerResult.RETCD === "E"){
 
@@ -229,29 +232,45 @@ const
      *************************************************************/
     oContr.fn.onSelectApp = function(oEvent){
 
+        oAPP.fn.setBusy("X");
+
         let oUi = oEvent.getSource();
         if(!oUi){
+
+            oAPP.fn.setBusy("");
+
             return;
         }
 
         let oBindCtx = oUi.getBindingContext();
         if(!oBindCtx){
+
+            oAPP.fn.setBusy("");
+
             return;
         }
 
         let oBindData = oBindCtx.getObject();
         if(!oBindData){            
+
+            oAPP.fn.setBusy("");
+
             return;
         }
 
+        // let TAPPID = oBindData.TAPPID;
 
-        let TAPPID = oBindData.TAPPID;
+        // 버전관리용 어플리케이션 생성  블라블라~~~ 처리 완료 후 IPC로 APP 정보를 전달하여 새창으로 띄우게 하기
+        parent.IPCRENDERER.send(`${parent.BROWSKEY}-if-version-management-new-window`, oBindData);
 
-        debugger;
+        // 연속 클릭 방지용
+        setTimeout(() => {
+            
+            oAPP.fn.setBusy("");
 
+        }, 3000);
 
-
-
+        // parent.CURRWIN.close();
 
     }; // end of oContr.fn.onSelectApp
 

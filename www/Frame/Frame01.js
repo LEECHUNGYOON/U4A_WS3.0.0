@@ -739,7 +739,7 @@ oAPP.msg = {};
 
         oBrowserWindow.loadURL(parent.getPath("MAINFRAME"));
 
-        // // no build 일 경우에는 개발자 툴을 실행한다.
+        // no build 일 경우에는 개발자 툴을 실행한다.
         // if (!APP.isPackaged) {
         //     oBrowserWindow.webContents.openDevTools();
         // }
@@ -1683,7 +1683,7 @@ IPCRENDERER.on('if-meta-info', (event, res) => {
 
     // 새창 실행 후 IF 데이터가 있을 경우
     if(oMetadata.IF_DATA){
-        setNewBrowserIF_DATA(IF_DATA);
+        setNewBrowserIF_DATA(oMetadata.IF_DATA);
     }
 
     // 새창일 경우 process object에 USERINFO 정보를 저장한다.

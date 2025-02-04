@@ -3,6 +3,7 @@ const
     PATH = require("path"),
     SESSKEY = parent.getSessionKey(),
     BROWSKEY = parent.getBrowserKey();
+    
 
 
 module.exports = function(REMOTE, oAPP){
@@ -70,9 +71,9 @@ module.exports = function(REMOTE, oAPP){
         oBrowserWindow.loadURL(sPopupPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!REMOTE.app.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!REMOTE.app.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         oBrowserWindow.once('ready-to-show', () => {
             
@@ -85,9 +86,7 @@ module.exports = function(REMOTE, oAPP){
         oBrowserWindow.webContents.on('did-finish-load', function () {
          
             let oOptionData = {
-                // BROWSKEY: BROWSKEY, // 브라우저 고유키 
-                // oUserInfo: oUserInfo, // 로그인 사용자 정보
-                // oServerInfo: oServerInfo, // 서버 정보 
+                BROWSKEY: BROWSKEY, // 브라우저 고유키                 
                 sServerHost: parent.getHost(), //  서버 호스트 정보
                 sServerPath: parent.getServerPath(), // 서버 Url
                 oAppInfo: parent.getAppInfo(),  // 앱 정보               
@@ -99,15 +98,33 @@ module.exports = function(REMOTE, oAPP){
             // 부모 위치 가운데 배치한다.
             parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
 
-        });
+        });        
     
         // 브라우저를 닫을때 타는 이벤트
         oBrowserWindow.on('closed', () => {
 
             oBrowserWindow = null;
 
+            parent.IPCMAIN.off(`${BROWSKEY}-if-version-management-new-window`, _fnNewWindow);
+
             CURRWIN.focus();
 
         });
+
+        parent.IPCMAIN.on(`${BROWSKEY}-if-version-management-new-window`, _fnNewWindow);
+
+        function _fnNewWindow(event, res){
+
+            let TAPPID = res.TAPPID;
+
+            let oIF_DATA = {
+                ACTCD: "MOVE20",
+                APPID: TAPPID
+            }
+
+            // 새창 띄우면서 20번 페이지로 이동
+            parent.onNewWindow(oIF_DATA);
+
+        }
 
 };

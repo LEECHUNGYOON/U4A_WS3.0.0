@@ -3550,7 +3550,7 @@ function fnJsonParseError(e) {
 /**********************************************************************************************
  * 📝 공통 신규 ajax 기존 로직 
  **********************************************************************************************/
-function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout = 60000){
+function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob, iTimeout = 600000){
 
     var oXHR = new XMLHttpRequest();
   
