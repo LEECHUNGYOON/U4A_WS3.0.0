@@ -10,35 +10,7 @@
         APP = parent.APP,
         CURRWIN = REMOTE.getCurrentWindow(),
         REMOTEMAIN = parent.REMOTEMAIN,
-        APPCOMMON = oAPP.common;
-
-
-
-    /************************************************************************
-     * APP 상태에 따라 트랜잭션 버튼을 비활성화 시킨다.
-     ************************************************************************/
-    // function _setTransactionButtonInvisible(){
-
-    //     var oAppInfo = parent.getAppInfo();
-    //     if(!oAppInfo){
-    //         return;
-    //     }
-
-
-
-
-
-    // } // end of _setTransactionButtonInvisible
-
-
-
-
-
-
-
-
-
-
+        APPCOMMON = oAPP.common;  
 
     /************************************************************************
      * Application Display or Change mode 
@@ -116,17 +88,6 @@
 
             return;
         }
-
-        // var bCheckAppNm = oAPP.fn.fnCheckAppName();
-        // if (!bCheckAppNm) {
-
-        //     // busy 끄고 Lock 풀기
-        //     oAPP.common.fnSetBusyLock("");
-
-        //     return;
-        // }
-
-
 
         var sRandomKey = parent.getRandomKey(),
             SSID = APPID + "_" + sRandomKey;
@@ -237,13 +198,22 @@
 
             // WS20 기본 모델 데이터
             let oWs20 = oAPP.main.fnGetWs20InitData();
-            oWs20.APP = oAppInfo;
+                oWs20.APP = oAppInfo;
 
             // 모델에 데이터 업데이트
             APPCOMMON.fnSetModelProperty("/WS20", oWs20);
 
-            // WS10 페이지의 APPID 입력 필드에 Suggestion을 구성할 데이터를 저장한다.
-            oAPP.fn.fnOnSaveAppSuggestion(oAppInfo.APPID);
+            // 자동으로 새창을 띄우면서 20번 페이지로 이동 시,  
+            let oNewWin_IF_DATA = parent.getNewBrowserIF_DATA();
+            if (oNewWin_IF_DATA && oNewWin_IF_DATA.ACTCD === "VMS_MOVE20") {
+                // "VMS_MOVE20"인 경우에는 아무 동작도 하지 않음
+
+            } else {
+                
+                // "VMS_MOVE20"이 아닌 경우에만 실행
+                oAPP.fn.fnOnSaveAppSuggestion(oAppInfo.APPID);
+                
+            }
 
             // 단축키 삭제
             APPCOMMON.removeShortCut("WS10");
@@ -513,10 +483,10 @@
         oAPP.fn.setUIAreaEditable();
 
 
-        // 새창 실행 시 액션코드가 "MOVE20(20번 페이지로 이동)" 일 경우 
+        // 새창 실행 시 액션코드가 "VMS_MOVE20(20번 페이지로 이동)" 일 경우 
         // 브라우저 opacity 1을 준다.
         // let oNewWin_IF_DATA = parent.getNewBrowserIF_DATA();
-        // if(oNewWin_IF_DATA && oNewWin_IF_DATA.ACTCD === "MOVE20"){
+        // if(oNewWin_IF_DATA && oNewWin_IF_DATA.ACTCD === "VMS_MOVE20"){
 
         //     parent.CURRWIN.setOpacity(1);
 
@@ -1290,8 +1260,14 @@
                 continue;
             }
 
-            var oWebCon = oBrows.webContents,
-                oWebPref = oWebCon.getWebPreferences();
+            try {               
+            
+                var oWebCon = oBrows.webContents,
+                    oWebPref = oWebCon.getWebPreferences();
+
+            } catch (error) {
+                continue;
+            }
 
             // session 정보가 없으면 skip.
             var sSessionKey = oWebPref.partition;
@@ -1320,7 +1296,8 @@
 
             // 같은 세션키를 가진 브라우저 갯수를 카운트한다.
             iSamekeys++;
-            aSameBrows.push(oBrows);
+            aSameBrows.push(oBrows);          
+
         }
 
         return aSameBrows;
@@ -1344,8 +1321,14 @@
                 continue;
             }
 
-            var oWebCon = oBrows.webContents,
-                oWebPref = oWebCon.getWebPreferences();
+            try {
+
+                var oWebCon = oBrows.webContents,
+                    oWebPref = oWebCon.getWebPreferences();
+
+            } catch (error) {
+                continue;
+            }            
 
             // session 정보가 없으면 skip.
             var sSessionKey = oWebPref.partition;

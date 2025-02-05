@@ -118,7 +118,7 @@ module.exports = function(REMOTE, oAPP){
             let TAPPID = res.TAPPID;
 
             let oIF_DATA = {
-                ACTCD: "MOVE20",    // 새창 띄우면서 20번으로 넘어가는 액션 코드
+                ACTCD: "VMS_MOVE20",    // 새창 띄우면서 20번으로 넘어가는 액션 코드
                 APPID: TAPPID       // 실행 어플리케이션명
             };
 

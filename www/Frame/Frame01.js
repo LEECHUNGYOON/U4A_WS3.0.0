@@ -781,7 +781,7 @@ oAPP.msg = {};
 
             // 새창 띄울때 파라미터 중 20번페이지로 이동일 경우에는 브라우저 opacity를 0으로 한다.
             // 추후 새창 뜨고 나서 20번으로 넘어갈때 opacity를 줄 목적임
-            if(IF_DATA && IF_DATA.ACTCD === "MOVE20"){
+            if(IF_DATA && IF_DATA.ACTCD === "VMS_MOVE20"){
 
                 oBrowserWindow.show();
                 

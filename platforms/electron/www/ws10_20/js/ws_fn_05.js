@@ -26,9 +26,15 @@
                 continue;
             }
 
-            let _oWebCon = _oWin.webContents;
-            let _oWebPref = _oWebCon.getWebPreferences();
-            let _sBrowsKey = _oWebPref.browserkey;
+            try {               
+            
+                var _oWebCon = _oWin.webContents;
+                var _oWebPref = _oWebCon.getWebPreferences();
+                var _sBrowsKey = _oWebPref.browserkey;
+
+            } catch (error) {
+                continue;
+            }
 
             // 브라우저에 Object Type이 없다면 다음 수행
             if(!_oWebPref.OBJTY){

@@ -120,8 +120,14 @@ let oAPP = (function (window) {
             return;
         }
 
-        let oWebCon = oCurrWin.webContents,
-            oWebPref = oWebCon.getWebPreferences();
+        try {
+
+            var oWebCon = oCurrWin.webContents,
+                oWebPref = oWebCon.getWebPreferences();
+
+        } catch (error) {
+            return;
+        }        
 
         return oWebPref.partition;
 

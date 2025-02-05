@@ -764,7 +764,7 @@
                         let ACTCD = oNewWin_IF_DATA.ACTCD;
                         
                         switch (ACTCD) {
-                            case "MOVE20":
+                            case "VMS_MOVE20":
                                 
                                 let APPID = oNewWin_IF_DATA.APPID;
                                 if(!APPID){

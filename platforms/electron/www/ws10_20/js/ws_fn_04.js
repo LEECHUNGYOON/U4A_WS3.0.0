@@ -640,22 +640,28 @@
 
         for (var i = 0; i < iBrowsLen; i++) {
 
-            var oBrows = aBrowserList[i];
-            if (oBrows.isDestroyed()) {
-                continue;
+            try {                
+            
+                var oBrows = aBrowserList[i];
+                if (oBrows.isDestroyed()) {
+                    continue;
+                }
+
+                var oWebCon = oBrows.webContents,
+                    oWebPref = oWebCon.getWebPreferences();
+
+                if (oWebPref.OBJTY !== sPopupName) {
+                    continue;
+                }
+
+                oBrows.show();
+                oBrows.focus();
+
+                return;
+
+            } catch (error) {
+                    
             }
-
-            var oWebCon = oBrows.webContents,
-                oWebPref = oWebCon.getWebPreferences();
-
-            if (oWebPref.OBJTY !== sPopupName) {
-                continue;
-            }
-
-            oBrows.show();
-            oBrows.focus();
-
-            return;
 
         }
 

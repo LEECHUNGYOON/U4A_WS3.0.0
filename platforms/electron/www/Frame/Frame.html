@@ -159,38 +159,7 @@
                 bIsError = false;
 
                 REMOTE.app.exit();
-
-                // return;
-
-                // // Frame window 접근 가능 여부
-                // let bIsAccessAvaliable = false,
-                //     oAPP;
-
-                // let oWs_frame = document.getElementById("ws_frame");
-                // if (oWs_frame && oWs_frame.contentWindow && oWs_frame.contentWindow.oAPP) {
-                //     bIsAccessAvaliable = true;
-                //     oAPP = oWs_frame.contentWindow.oAPP;
-                // }
-
-                // // Frame window 접근 가능 할 경우
-                // if (bIsAccessAvaliable) {
-
-                //     let aSameBrowser = getSameBrowsers();
-
-                //     // 같은 세션의 브라우저가 나밖에 없다면
-                //     if (aSameBrowser.length == 0) {
-                //         oAPP.main.fnBeforeunload('X');
-                //         return;
-                //     }
-
-                //     oAPP.main.fnBeforeunload("");
-
-                //     return;
-
-                // }
-
-                // CURRWIN.close();
-
+  
             });
 
         } // end of showCriticalErrorDialog    

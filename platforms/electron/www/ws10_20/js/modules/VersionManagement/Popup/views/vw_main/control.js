@@ -438,8 +438,6 @@ const
             return;
         }
 
-        debugger;
-
         let sServerPath = oAPP.IF_DATA.sServerPath + "/create_temp_ver_app";
 
         let oFormData = new FormData();
@@ -448,24 +446,51 @@ const
 
         let oResult = await _sendAjax(sServerPath, oFormData);
 
-        debugger;
-
         if(oResult.RETCD === "E"){
 
-            let sErrMsg = parent.WSUTIL.getWsMsgClsTxt(parent.LANGU, "ZMSG_WS_COMMON_001", oResult.MSGNR) + "\n";
-                sErrMsg += parent.WSUTIL.getWsMsgClsTxt(parent.LANGU, "ZMSG_WS_COMMON_001", "228"); // 문제가 지속될 경우, U4A 솔루션 팀에 문의하세요.
+            // 콘솔 오류 메시지
+            var sConsoleMsg = "[\n";
+                sConsoleMsg += "- PATH: www/ws10_20/js/modules/VersionManagement/Popup/views/vw_main/control.js => oContr.fn.onSelectApp \n";
+                sConsoleMsg += `- REQ_URL: ${sServerPath}\n`;
+                sConsoleMsg += `- STCOD: ${oResult?.STCOD || "unknown error"}\n`;
+                sConsoleMsg += "]";
+
+            console.error(sConsoleMsg);
+
+            let sErrMsg = `[${oResult.STCOD}]: ` + parent.WSUTIL.getWsMsgClsTxt(parent.LANGU, "ZMSG_WS_COMMON_001", oResult.MSGNR) + "\n";
+                sErrMsg += parent.WSUTIL.getWsMsgClsTxt(parent.LANGU, "ZMSG_WS_COMMON_001", "290"); // 다시시도하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
 
             sap.m.MessageBox.error(sErrMsg);
           
             oAPP.fn.setBusy("");
 
             return;
+
         }
 
+        debugger;
+
+
+        let oRDATA = oResult.RDATA;
+
+        let TAPPID = oRDATA.TAPPID;
+
+        // 버전관리용 어플리케이션 생성  블라블라~~~ 처리 완료 후 IPC로 APP 정보를 전달하여 새창으로 띄우게 하기
+        parent.IPCRENDERER.send(`${parent.BROWSKEY}-if-version-management-new-window`, {TAPPID: TAPPID});
+
+        // 연속 클릭 방지용
+        setTimeout(() => {
+            
+            oAPP.fn.setBusy("");
+
+        }, 3000);
+
+        // sap.m.MessageBox.success("성공!!");
 
 
 
-        return oAPP.fn.setBusy("");
+
+        // return oAPP.fn.setBusy("");
 
 
         //1 서버요청 : 
@@ -489,15 +514,15 @@ const
 
         // let TAPPID = oBindData.TAPPID;
 
-        // 버전관리용 어플리케이션 생성  블라블라~~~ 처리 완료 후 IPC로 APP 정보를 전달하여 새창으로 띄우게 하기
-        parent.IPCRENDERER.send(`${parent.BROWSKEY}-if-version-management-new-window`, oBindData);
+        // // 버전관리용 어플리케이션 생성  블라블라~~~ 처리 완료 후 IPC로 APP 정보를 전달하여 새창으로 띄우게 하기
+        // parent.IPCRENDERER.send(`${parent.BROWSKEY}-if-version-management-new-window`, oBindData);
 
-        // 연속 클릭 방지용
-        setTimeout(() => {
+        // // 연속 클릭 방지용
+        // setTimeout(() => {
             
-            oAPP.fn.setBusy("");
+        //     oAPP.fn.setBusy("");
 
-        }, 3000);
+        // }, 3000);
 
         // parent.CURRWIN.close();
 
