@@ -987,11 +987,10 @@ function _fnSupporedThemeConfig(){
         }
 
         let oResult = await _getSupportedThemeInfo();
-        
         if(oResult.RETCD === "E"){
-
-            // [MSG]
-            let sErrMsg = "테마 목록을 구하는 중, 일시적인 문제가 발생하였습니다. \n다시 실행 하시거나 문제가 지속되면 U4A팀으로 문의해주세요.";
+                        
+            // 테마 목록을 구하는 중, 일시적인 문제가 발생하였습니다. \n다시 실행 하시거나 문제가 지속되면 U4A팀으로 문의해주세요.
+            let sErrMsg = oAPP.msg.M286 + "\n" + oAPP.msg.M228;
 
             sap.m.MessageBox.error(sErrMsg, {
                 onClose: function(){
@@ -2285,6 +2284,9 @@ oAPP.fn.getWsMessageList = function () {
         oAPP.msg.M073 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "073"); // Name
         oAPP.msg.M074 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "074"); // Code
         oAPP.msg.M075 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "075"); // Copy
+
+        oAPP.msg.M228 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "228"); // 문제가 지속될 경우, U4A 솔루션 팀에 문의하세요.
+        oAPP.msg.M286 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "286"); // 테마 목록을 구하는 중, 일시적인 문제가 발생하였습니다.
 
 
         resolve();

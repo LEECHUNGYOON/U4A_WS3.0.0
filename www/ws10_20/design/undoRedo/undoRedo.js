@@ -138,7 +138,7 @@ module.exports.saveActionHistoryData = function(ACTCD, oParam){
 module.exports.executeHistory = async function(PRCCD){
 
     parent.setBusy("X");
-    
+
 
     //단축키 잠금 처리.
     oAPP.fn.setShortcutLock(true);
@@ -991,8 +991,8 @@ class CL_DELETE_UI{
         CL_COMMON.invalidateUiObject(_aParent);
 
 
-        //미리보기 화면 변경 대기 처리.
-        await Promise.all(_aPromise);
+        // //미리보기 화면 변경 대기 처리.
+        // await Promise.all(_aPromise);
         
 
         //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
@@ -2918,8 +2918,8 @@ class CL_AI_INSERT{
             CL_COMMON.invalidateUiObject(_aParent);
 
 
-            //미리보기 화면 변경 대기 처리.
-            await Promise.all(_aPromise);
+            // //미리보기 화면 변경 대기 처리.
+            // await Promise.all(_aPromise);
 
             oAPP.attr.oModel.refresh();
             

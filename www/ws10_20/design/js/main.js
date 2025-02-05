@@ -555,7 +555,7 @@
         var l_find = it_lib.findIndex( a => a.END === "");
 
         //모든 table이 load완료한 경우.
-        if(l_find === -1){  
+        if(l_find === -1){
           //라이브러리 정보에 실제 라이브러리명 필드를 추가하여 매핑 처리(sap/m/Input -> sap.m.Input)
           for(var i=0, l=oAPP.DATA.LIB.T_0022.length; i<l; i++){
             oAPP.DATA.LIB.T_0022[i].LIBNM = oAPP.DATA.LIB.T_0022[i].UIOMD.replace(/\//g, ".");

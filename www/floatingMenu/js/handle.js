@@ -137,9 +137,9 @@ exports.open = function(REMOTE, SCREEN, _DIRNAME, SSID) {
         console.log('호출대상 윈도우가 로드가 완료되면 수행돼는 이벤트!!!!');
 
         // 일렉트론이 노빌드인 상태에서만
-        if (!REMOTE.app.isPackaged) {
-            oWIN.webContents.openDevTools();
-        };
+        // if (!REMOTE.app.isPackaged) {
+        //     oWIN.webContents.openDevTools();
+        // };
 
         oWIN.webContents.send('IF-WS30-FLOARTMENU', { PRCCD: "INIT", SSID: SSID});
 

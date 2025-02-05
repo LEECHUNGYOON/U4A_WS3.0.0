@@ -300,11 +300,8 @@ async function _chk_MultiScr(REMOTE) {
 
         var url = `file://${__dirname}/ScrList.html`;
         oWIN.loadURL(url);
-
-
-        // TEST !!!!!!!!!!!
-        // oWIN.webContents.openDevTools();
-        // TEST !!!!!!!!!!!
+      
+        // oWIN.webContents.openDevTools();     
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oWIN.once('ready-to-show', () => {

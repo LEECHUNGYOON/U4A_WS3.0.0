@@ -3238,12 +3238,12 @@ let oAPP = (function () {
             // ajax 결과
             var oResult = undefined;
 
-            let oFormData = new FormData()
+            let oFormData = new FormData();
                 oFormData.append("GET_LANGU", "X");
                 oFormData.append("PRCCD", PARAM.PRCCD);
 
             jQuery.ajax({
-                async: false,
+                timeout: 5000,
                 method: "POST",
                 url: sServicePath,
                 data: oFormData,
@@ -3251,38 +3251,64 @@ let oAPP = (function () {
                 contentType: false,
                 processData: false,
                 success : function(data, textStatus, xhr) {
+
                     oResult = { success : true, data : data, status : textStatus, statusCode : xhr && xhr.status };
+
+                    let sStringData = oResult.data;
+            
+                    try {
+
+                        var oRetJson = JSON.parse(sStringData);
+
+                    } catch (error) {
+
+                        return resolve({
+                            RETCD: "E",
+                            STCOD: "E999",
+                        });
+
+                    }
+                    
+                    return resolve(oRetJson);
+
                 },
                 error : function(xhr, textStatus, error) {
+                    
                     oResult = { success : false, data : undefined, status : textStatus, error : error, statusCode : xhr.status, errorResponse :  xhr.responseText};
+
+                    return resolve({
+                        RETCD: "E",
+                        STCOD: "E999",
+                    });
+
                 }
             });
 
-            // 연결 실패일 경우
-            if(oResult.success === false){
+            // // 연결 실패일 경우
+            // if(oResult.success === false){
 
-                return resolve({
-                    RETCD: "E",
-                    STCOD: "E999",
-                });
+            //     return resolve({
+            //         RETCD: "E",
+            //         STCOD: "E999",
+            //     });
 
-            }
+            // }
 
-            let sStringData = oResult.data;
+            // let sStringData = oResult.data;
             
-            try {
+            // try {
 
-                var oRetJson = JSON.parse(sStringData);
+            //     var oRetJson = JSON.parse(sStringData);
 
-            } catch (error) {
+            // } catch (error) {
 
-                return resolve({
-                    RETCD: "E",
-                    STCOD: "E999",
-                });
-            }
+            //     return resolve({
+            //         RETCD: "E",
+            //         STCOD: "E999",
+            //     });
+            // }
             
-            return resolve(oRetJson);
+            // return resolve(oRetJson);
 
         });
 

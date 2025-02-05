@@ -192,15 +192,31 @@
         //서버 호출 처리.
         sendAjax(parent.getServerPath() + "/package_change", oFormData, function(param){
 
-            parent.setBusy("");
-
             //오류가 발생한 경우.
             if(param.RETCD === "E"){
+
+                //서버로 부터 전달받은 메시지 번호가 존재하는경우.
+                if(typeof param?.MSGNO !== "undefined"){
+
+                    //메시지 출력 처리.
+                    parent.showMessage(sap, 20, 'E',
+                        parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", param.MSGNO));
+
+                    //팝업 종료 처리.
+                    lf_closePopup(oUi);
+                    
+                    parent.setBusy("");
+                    return;
+
+                }
+
                 //오류 메시지 출력.
                 parent.showMessage(sap, 20, "E", param.RTMSG);
 
                 //팝업 종료 처리.
                 lf_closePopup(oUi);
+                
+                parent.setBusy("");
 
                 return;
             }
@@ -227,6 +243,8 @@
 
             //결과 바인딩 처리.
             oModel.setData({bind:l_bind, PRC_INFO:param.PRC_INFO});
+
+            parent.setBusy("");
 
         }); //서버 호출 처리.
 

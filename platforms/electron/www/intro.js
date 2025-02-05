@@ -1082,13 +1082,6 @@
         oSettings.UI5.ServerLibraryRootPath = "/zu4a_imp/openUI5_LIB";
         oSettings.UI5.UI5IconTagsJsonPath = "/u4a/icons/tags.json";
 
-        // test url
-        // let sTestUrl = PATH.join(process.env.TEMP, "v11071", "resources", "sap-ui-core.js");
-        // sTestUrl = sTestUrl.replaceAll("\\", "/");
-        // sTestUrl = `file:///${sTestUrl}`;
-
-        // oSettings.UI5.resourceUrl = sTestUrl;
-
         // 개발 모드일 경우, UI5 CDN 경로
         if (oSettings.isDev) {
             oSettings.UI5.resourceUrl = oSettings.UI5.testResource;

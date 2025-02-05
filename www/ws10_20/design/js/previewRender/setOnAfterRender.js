@@ -4,6 +4,7 @@ var oAPP = oFrame.contentWindow.oAPP;
 
 var sap = oAPP.attr.ui?.frame?.contentWindow?.sap;
 
+
 /*********************************************************
  * @module - onAfterRendering 이벤트 등록 처리.
  ********************************************************/
@@ -29,13 +30,20 @@ module.exports.setAfterRendering = function(oTarget){
 
 			oTarget.attachEventOnce("readyRecurring", async function(){
 
+				//20250115 PES.
+				//미리보기 영역의 예외처리 UI에 대해 추가 waiting 처리.
+				//(am5 차트, richtextEditor과 같이 onAfterRendering 이후에
+				//UI 내부에서 사용하고 있는 다른 라이브러리를 통해 화면이 그려지는것을 기다리는 로직)
+				await awaitPreviewExcepionUI();
+
 				return resolve();
 
             });
 			
 			return;
 			
-		}		
+		}
+
 		
 		var _oDelegate = {
 			onAfterRendering: async function(){
@@ -47,6 +55,14 @@ module.exports.setAfterRendering = function(oTarget){
 				//dialog의 afterOpen 호출전에 richTextEditor의 readyRecurring 이벤트가 호출되어
 				//문제가 발생됨)
 				await attachEventDialogAfterOpen(oTarget);
+
+
+				//20250115 PES.
+				//미리보기 영역의 예외처리 UI에 대해 추가 waiting 처리.
+				//(am5 차트, richtextEditor과 같이 onAfterRendering 이후에
+				//UI 내부에서 사용하고 있는 다른 라이브러리를 통해 화면이 그려지는것을 기다리는 로직)
+				await awaitPreviewExcepionUI();
+
 
 				return resolve();
 			}
@@ -382,5 +398,40 @@ function findRichTextEditor(sTree){
 	}
 
 	return false;
+
+}
+
+
+
+
+/*********************************************************
+ * @function - 미리보기 영역의 예외처리 UI에 대해 추가 waiting 처리.
+ * (am5 차트, richtextEditor과 같이 onAfterRendering 이후에
+ * UI 내부에서 사용하고 있는 다른 라이브러리를 통해 화면이 그려지는것을
+ * 기다리는 로직)
+ ********************************************************/
+function awaitPreviewExcepionUI(){
+
+	return new Promise(function(resolve){
+
+		//미리보기의 oU4A 대표 오브젝트 얻기.
+		let oU4A = oAPP.attr.ui?.frame?.contentWindow?.oU4A;
+
+		//U4A 비동기 처리 수집 ARRAY가 존재하지 않는경우 exit.
+		//(미리보기 HTML에서 oU4A 오브젝트와 oU4A.taskPromiseStack array를 구성함.
+		//WS 3.0이 설치된 서버마다 버전이 다르기에 해당 OBJECT가 존재하지
+		//않는 경우 EXIT 처리.)
+		if(typeof oU4A?.taskPromiseStack === "undefined"){
+			return resolve();
+		}
+		
+		Promise.all(oU4A?.taskPromiseStack).then(function(){
+			
+			oU4A.taskPromiseStack = [];
+
+			return resolve();
+		});
+
+	});
 
 }

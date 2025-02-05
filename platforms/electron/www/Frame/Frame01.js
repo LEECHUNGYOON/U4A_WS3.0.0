@@ -1063,9 +1063,7 @@ oAPP.msg = {};
     // 19. Busy Indicator 실행
     oWS.utill.fn.setBusy = (sIsbusy) => {
 
-        // TEST ============
-        oWS.utill.attr.isBusy = sIsbusy;
-        // TEST ============
+        oWS.utill.attr.isBusy = sIsbusy;       
 
         var bIsBusy = (sIsbusy === "X" ? true : false);
     
@@ -1081,8 +1079,6 @@ oAPP.msg = {};
 
         // Cursor Focus Handle
         if (bIsBusy) {
-    
-            // var _oBeforeActiveElement = document.activeElement || undefined;
     
             var _oBeforeActiveElement = (typeof ws_frame === "object" && ws_frame?.document?.activeElement) || undefined;
     

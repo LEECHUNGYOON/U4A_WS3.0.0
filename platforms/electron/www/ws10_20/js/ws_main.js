@@ -308,8 +308,7 @@
         window.onbeforeunload = () => { };
 
     };
-
-    // Test..
+  
     oAPP.main.fnSetLanguage = function () {
 
         var oUserInfo = parent.getUserInfo(),
@@ -759,11 +758,6 @@
 
                 if (!parent.oWS.utill.attr.UIUpdated) {
 
-
-                    // TEST -----
-
-                    
-
                     let oNewWin_IF_DATA = parent.getNewBrowserIF_DATA();
                     if(oNewWin_IF_DATA){
 
@@ -787,16 +781,7 @@
                             default:
                                 break;
                         }
-
-
-                        zconsole.log("IF왔다!!!", oNewWin_IF_DATA);
-
                     }
-
-                    // TEST -----
-
-
-
 
                     // Loading Page
                     parent.showLoadingPage("");
