@@ -293,7 +293,36 @@
             // text: "{DESC}",
             selected: "{SELECTED}",
             groupName: "defaultBrowserRbg",
-            valueState: "Information"
+            valueState: "Information",
+            select: function(oEvent){
+
+                let oUi = oEvent.getSource();
+                if(!oUi){
+                    return;
+                }
+
+                let oBindCtx = oUi.getBindingContext();
+                if(!oBindCtx){
+                    return;
+                }
+
+                let oModel = oBindCtx.getModel();
+                if(!oModel){
+                    return;
+                }
+
+                let aDEFBR = oModel.getProperty("/DEFBR");
+                if(!aDEFBR || Array.isArray(aDEFBR) === false){
+                    return;
+                }
+
+                for(var oDEF of aDEFBR){
+                    oDEF.APP_MODE = false;
+                }
+
+                oModel.setProperty("/DEFBR", aDEFBR);
+
+            }
         });
         oToolbarTemplate.addContent(oRdoBtn1);
 
@@ -343,19 +372,98 @@
         let oCheckBox1 = new sap.m.CheckBox({
             text: parent.WSUTIL.getWsMsgClsTxt(oUserInfo.LANGU, "ZMSG_WS_COMMON_001", "281"), // 앱모드 활성            
             selected: "{APP_MODE}"
-        });
+        });        
+
         oPanelTemplate.addContent(oCheckBox1);
 
-        // 브라우저 설치 유무에 따른 UI 활성 비활성 처리
-        oCheckBox1.bindProperty("enabled", "ENABLED", function(values) {
+        // oCheckBox1.bindProperty("selected", {
+        //     parts: [
+        //         "APP_MODE",
+        //         "SELECTED"
+        //     ],
+        //     formatter: function(APP_MODE, SELECTED){
 
-            if (!values) {
-                this.setSelected(values);
+        //         debugger;
+
+        //         let oBindCtx = this.getBindingContext();
+        //         if(!oBindCtx){
+        //             return;
+        //         }
+
+        //         let oBindData = oBindCtx.getObject();
+        //         if(!oBindData){
+        //             return;
+        //         }
+
+        //         let oModel = oBindCtx.getModel();
+        //         if(!oModel){
+        //             return;
+        //         }
+
+        //         if(oBindData.SELECTED === false){
+
+        //             oBindData.APP_MODE = false;
+
+        //             oModel.setProperty(oBindCtx.getPath(), oBindData);                    
+
+        //             return;
+
+        //         }
+
+        //         oBindData.APP_MODE = APP_MODE;
+
+        //         oModel.setProperty(oBindCtx.getPath(), oBindData);
+             
+        //     }
+        // });
+        
+
+        // oCheckBox1.bindProperty("selected", {
+        //     parts: [
+        //         "APP_MODE",
+        //         "SELECTED"
+        //     ],
+        //     formatter: function(APP_MODE, SELECTED){
+
+        //         if(SELECTED === false){
+        //             return false;
+        //         }
+
+        //         return APP_MODE;
+
+        //     }
+        // });
+        
+        oCheckBox1.bindProperty("enabled", {
+            parts: [
+                "ENABLED",      // 브라우저 설치 여부
+                "SELECTED"      // 사용 선택 여부
+            ],
+            formatter: function(ENABLED, SELECTED){
+
+                if (!ENABLED) {
+                    return this.setSelected(values);
+                }
+
+                if(SELECTED === false){
+                    return false;
+                }
+
+                return true; 
+
             }
+        });
 
-            return values;
+          // 브라우저 설치 유무에 따른 UI 활성 비활성 처리
+        // oCheckBox1.bindProperty("enabled", "ENABLED", function(values) {
 
-        });       
+        //     if (!values) {
+        //         this.setSelected(values);
+        //     }
+
+        //     return values;
+
+        // });
 
         let oVBox1 = new sap.m.VBox({
             renderType: "Bare",

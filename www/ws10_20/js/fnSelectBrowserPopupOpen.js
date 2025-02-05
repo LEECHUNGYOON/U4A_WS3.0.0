@@ -100,160 +100,6 @@
 
         }).addStyleClass("sapUiContentPadding");
 
-        
-        /****************************************************
-         * 브라우저 목록 패널 영역
-         ****************************************************/
-        // let oPanel1 = new sap.m.Panel({
-        //     backgroundDesign: "Transparent"
-        // });
-        // oDialog.addContent(oPanel1);
-
-        // let oToolbar1 = new sap.m.Toolbar();
-        // oPanel1.setHeaderToolbar(oToolbar1);
-
-        // let oIcon1 = new sap.ui.core.Icon({
-        //     src: "sap-icon://color-fill",
-        // });
-        // oToolbar1.addContent(oIcon1);
-
-        // let oTitle1 = new sap.m.Title({
-        //     text: parent.WSUTIL.getWsMsgClsTxt(oUserInfo.LANGU, "ZMSG_WS_COMMON_001", "279") // 브라우저 리스트
-        // });
-        // oToolbar1.addContent(oTitle1);
-
-        // let oRdoGroup1 = new sap.m.RadioButtonGroup("browserSelectRadioBtn", {
-        //     buttons: {
-        //         path: "/DEFBR",
-        //         template: new sap.m.RadioButton({
-        //             text: "{DESC}",
-        //             selected: "{SELECTED}",
-        //             select: function(oEvent){
-
-        //                 let bIsSelected = oEvent.getParameter("selected");
-        //                 if(!bIsSelected){
-        //                     return;
-        //                 }
-
-        //                 let oBindCtx = oEvent.getSource().getBindingContext();
-        //                 if(!oBindCtx){
-        //                     return;
-        //                 }
-
-        //                 let oBindData = oBindCtx.getObject();
-        //                 if(!oBindData){
-        //                     return;
-        //                 }
-
-        //                 let bIsAppMode = oBindData.APP_MODE || false;
-
-        //                 let oCheck = sap.ui.getCore().byId("appModeCheckBox");
-        //                 if(!oCheck){
-        //                     return;
-        //                 }
-
-        //                 oCheck.setSelected(bIsAppMode);
-
-        //             }
-        //         }).bindProperty("enabled", "ENABLED", function(values) {
-
-        //             if (!values) {
-        //                 this.setSelected(values);
-        //             }
-
-        //             return values;
-
-        //         })
-        //     }
-        // });
-        // oPanel1.addContent(oRdoGroup1);
-
-
-        // /****************************************************
-        //  * 앱모드 선택 영역
-        //  ****************************************************/
-        // let oPanel2 = new sap.m.Panel({
-        //     backgroundDesign: "Transparent"
-        // });
-        // oDialog.addContent(oPanel2);
-
-        // let oToolbar2 = new sap.m.Toolbar();
-        // oPanel2.setHeaderToolbar(oToolbar2);
-
-        // let oIcon2 = new sap.ui.core.Icon({
-        //     src: "sap-icon://color-fill",
-        // });
-        // oToolbar2.addContent(oIcon2);
-
-        // let oTitle2 = new sap.m.Title({
-        //     text: parent.WSUTIL.getWsMsgClsTxt(oUserInfo.LANGU, "ZMSG_WS_COMMON_001", "280") // 앱모드
-        // });
-        // oToolbar2.addContent(oTitle2);
-
-        // let oCheckBox1 = new sap.m.CheckBox("appModeCheckBox",{
-        //     text: parent.WSUTIL.getWsMsgClsTxt(oUserInfo.LANGU, "ZMSG_WS_COMMON_001", "281"), // 활성
-        //     select: function(oEvent){
-                
-        //         let oCheck = oEvent.getSource();
-        //         if(!oCheck){
-        //             return;
-        //         }                
-
-        //         let oModel = oCheck.getModel();
-        //         if(!oModel){
-        //             return;
-        //         }
-
-        //         let aDEFBR = oModel.getProperty("/DEFBR");
-        //         if(!aDEFBR || Array.isArray(aDEFBR) === false || aDEFBR.length === 0){
-        //             return;
-        //         }
-
-        //         let oSelect = aDEFBR.find(e => e.SELECTED === true);
-        //         if(!oSelect){
-        //             return;
-        //         }
-
-        //         let bSelected = oEvent.getParameter("selected");
-
-        //         oSelect.APP_MODE = bSelected;
-
-        //         oModel.setProperty("/DEFBR", aDEFBR);
-
-        //     }
-        // });
-        // oPanel2.addContent(oCheckBox1);
-
-        // oCheckBox1.bindProperty("selected", {
-        //     parts: [
-        //         "/DEFBR"
-        //     ],
-        //     formatter: function(aDEFBR){                
-
-        //         if(!aDEFBR){
-        //             return;                
-        //         }
-
-        //         if(Array.isArray(aDEFBR) === false){
-        //             return;
-        //         }
-
-        //         if(aDEFBR.length === 0){
-        //             return;
-        //         }
-
-        //         let oSelect = aDEFBR.find(e => e.SELECTED === true);
-        //         if(!oSelect){
-        //             return;
-        //         }
-
-        //         return oSelect?.APP_MODE || false;
-
-        //     }        
-        // });
-
-
-
         let oPanelTemplate = new sap.m.Panel({
             backgroundDesign: "Transparent"
         });
@@ -293,7 +139,36 @@
             // text: "{DESC}",
             selected: "{SELECTED}",
             groupName: "defaultBrowserRbg",
-            valueState: "Information"
+            valueState: "Information",
+            select: function(oEvent){
+
+                let oUi = oEvent.getSource();
+                if(!oUi){
+                    return;
+                }
+
+                let oBindCtx = oUi.getBindingContext();
+                if(!oBindCtx){
+                    return;
+                }
+
+                let oModel = oBindCtx.getModel();
+                if(!oModel){
+                    return;
+                }
+
+                let aDEFBR = oModel.getProperty("/DEFBR");
+                if(!aDEFBR || Array.isArray(aDEFBR) === false){
+                    return;
+                }
+
+                for(var oDEF of aDEFBR){
+                    oDEF.APP_MODE = false;
+                }
+
+                oModel.setProperty("/DEFBR", aDEFBR);
+
+            }
         });
         oToolbarTemplate.addContent(oRdoBtn1);
 
@@ -343,19 +218,40 @@
         let oCheckBox1 = new sap.m.CheckBox({
             text: parent.WSUTIL.getWsMsgClsTxt(oUserInfo.LANGU, "ZMSG_WS_COMMON_001", "281"), // 앱모드 활성            
             selected: "{APP_MODE}"
-        });
+        });        
+
         oPanelTemplate.addContent(oCheckBox1);
+        
+        oCheckBox1.bindProperty("enabled", {
+            parts: [
+                "ENABLED",      // 브라우저 설치 여부
+                "SELECTED"      // 사용 선택 여부
+            ],
+            formatter: function(ENABLED, SELECTED){
 
-        // 브라우저 설치 유무에 따른 UI 활성 비활성 처리
-        oCheckBox1.bindProperty("enabled", "ENABLED", function(values) {
+                if (!ENABLED) {
+                    return this.setSelected(values);
+                }
 
-            if (!values) {
-                this.setSelected(values);
+                if(SELECTED === false){
+                    return false;
+                }
+
+                return true; 
+
             }
+        });
 
-            return values;
+          // 브라우저 설치 유무에 따른 UI 활성 비활성 처리
+        // oCheckBox1.bindProperty("enabled", "ENABLED", function(values) {
 
-        });       
+        //     if (!values) {
+        //         this.setSelected(values);
+        //     }
+
+        //     return values;
+
+        // });
 
         let oVBox1 = new sap.m.VBox({
             renderType: "Bare",
