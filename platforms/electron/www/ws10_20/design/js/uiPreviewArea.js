@@ -143,6 +143,26 @@
       //라이브러리 bootstrap 경로 파라메터 추가.
       lf_setParam(oform, "LIBPATH", oAPP.fn.getBootStrapUrl());
 
+      
+      //20250117 PES -START.
+      //U4A, SAPUI6 라이브러리 PATH 정보 추가 처리.
+      var sUA025 = oAPP.attr.S_CODE.UA025.find( a => a.FLD01 === "U4A_LIB"  && a.FLD06 === "X" );
+
+      if(typeof sUA025 !== "undefined"){
+        //U4A 라이브러리 PATH 정보 구성.
+        lf_setParam(oform, "LIBPATH_U4A", sUA025.FLD04 + sUA025.FLD05);
+      }
+      
+
+      var sUA025 = oAPP.attr.S_CODE.UA025.find( a => a.FLD01 === "UI6_LIB"  && a.FLD06 === "X" );
+
+      if(typeof sUA025 !== "undefined"){
+        //SAPUI6 라이브러리 PATH 정보 구성.
+        lf_setParam(oform, "LIBPATH_UI6", sUA025.FLD04 + sUA025.FLD05);
+      }      
+      //20250117 PES -END.
+
+
       //LOAD 대상 LIBRARY 항목 파라메터 추가.
       lf_setParam(oform, "LIBRARY", oAPP.fn.getUi5Libraries(true));
 

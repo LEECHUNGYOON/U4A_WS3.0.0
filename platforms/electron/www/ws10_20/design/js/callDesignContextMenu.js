@@ -543,6 +543,11 @@
             if(typeof _oTarget?.getDomRef === "function"){
                 _oDom = _oTarget.getDomRef();
             }
+
+            
+            //RichTextEditor 미리보기 출력 예외처리로직.
+            var _aPromise = _oRender.renderingRichTextEditor(l_parent);
+
             
             let _oPromise = undefined;
             
@@ -550,9 +555,6 @@
             if(typeof _oDom !== "undefined" && _oDom !== null){
                 _oPromise = _oRender.setAfterRendering(_oTarget);
             }
-
-            //RichTextEditor 미리보기 출력 예외처리로직.
-            var _aPromise = _oRender.renderingRichTextEditor(l_parent);
 
             //미리보기 갱신 처리.
             oAPP.attr.ui.frame.contentWindow.moveUIObjPreView(ls_tree.OBJID, ls_tree.UILIB, ls_tree.POBID, ls_tree.PUIOK, ls_tree.UIATT, l_cnt, ls_tree.ISMLB, ls_tree.UIOBK);
@@ -918,15 +920,17 @@
                 _oDom = _oTarget.getDomRef();
             }
             
+
+            //RichTextEditor 미리보기 출력 예외처리로직.
+            var _aPromise = _oRender.renderingRichTextEditor(ls_tree);
+
+
             let _oPromise = undefined;
             
             //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
             if(typeof _oDom !== "undefined" && _oDom !== null){
                 _oPromise = _oRender.setAfterRendering(_oTarget);
             }
-
-            //RichTextEditor 미리보기 출력 예외처리로직.
-            var _aPromise = _oRender.renderingRichTextEditor(ls_tree);
 
 
             //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.

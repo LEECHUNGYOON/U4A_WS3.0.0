@@ -2482,15 +2482,17 @@
       _oDom = _oTarget.getDomRef();
     }
     
+    
+    //RichTextEditor 미리보기 출력 예외처리로직.
+    var _aPromise = _oRender.renderingRichTextEditor(is_p);
+
+
     let _oPromise = undefined;
     
     //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
     if(typeof _oDom !== "undefined" && _oDom !== null){
       _oPromise = _oRender.setAfterRendering(_oTarget);
     }
-
-    //RichTextEditor 미리보기 출력 예외처리로직.
-    var _aPromise = _oRender.renderingRichTextEditor(is_p);
 
     
     //ui 복사 처리.
@@ -2729,15 +2731,17 @@
 
       //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.
       if(typeof _oPromise !== "undefined"){
+
+        //RichTextEditor 미리보기 출력 예외처리로직.
+        var _aPromise = _oRender.renderingRichTextEditor(l_parent);
+        
+
         _oTarget.invalidate();
         
         //onAfterRendering 수행까지 대기.
         await _oPromise;
 
           
-        //RichTextEditor 미리보기 출력 예외처리로직.
-        var _aPromise = _oRender.renderingRichTextEditor(l_parent);
-        
         //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.
         //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
         await Promise.all(_aPromise);
@@ -4385,8 +4389,6 @@
       //화면에 출력된 UI라면 onAfterRendering 이벤트 등록. 
       _aPromise.push(_oRender.setAfterRendering(_oTarget));
 
-      _oTarget.invalidate();
-      
       
       //현재 수집된 UI의 직속 child에 존재하는 richtexteditor UI에 readyRecurring이벤트 등록처리
       //(editor가 충분히 그려진 이후 이벤트).
@@ -4395,6 +4397,9 @@
       if(_aRichProm.length > 0){
         _aPromise = _aPromise.concat(_aRichProm);
       }
+      
+      _oTarget.invalidate();
+      
       
     }
     
@@ -5047,6 +5052,10 @@
     //예외처리로 추가된 UI 제거 처리.
     oAPP.fn.destroyExcepChild(is_tree, is_0023);
 
+    
+    //RichTextEditor 미리보기 출력 예외처리로직.
+    var _aPromise = _oRender.renderingRichTextEditor(is_tree);
+
 
     //대상 UI가 화면에 출력되어 onAfterRendering 이벤트가 등록된 경우.
     if(typeof _oPromise !== "undefined"){
@@ -5056,11 +5065,6 @@
       await _oPromise;
 
     }
-
-    
-    //RichTextEditor 미리보기 출력 예외처리로직.
-    var _aPromise = _oRender.renderingRichTextEditor(is_tree);
-
 
     //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.
     //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
@@ -6238,14 +6242,15 @@
       parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("DELETE", ls_tree);
 
       
+      
+      //미리보기 화면 UI 제거.
+      oAPP.attr.ui.frame.contentWindow.delUIObjPreView(ls_tree.OBJID, ls_tree.POBID, ls_tree.PUIOK, ls_tree.UIATT, ls_tree.ISMLB, ls_tree.UIOBK);
+
       //내 부모가 자식 UI가 필수인 UI에 자식이 없는경우 강제추가 script 처리. 
       oAPP.attr.ui.frame.contentWindow.setChildUiException(ls_tree.PUIOK, ls_tree.POBID, undefined, undefined, true);
 
       //현재 UI가 자식 UI가 필수인 UI에 자식이 없는경우 강제추가 script 처리.
       oAPP.attr.ui.frame.contentWindow.setChildUiException(ls_tree.UIOBK, ls_tree.OBJID, undefined, undefined, true);
-
-      //미리보기 화면 UI 제거.
-      oAPP.attr.ui.frame.contentWindow.delUIObjPreView(ls_tree.OBJID, ls_tree.POBID, ls_tree.PUIOK, ls_tree.UIATT, ls_tree.ISMLB, ls_tree.UIOBK);
 
       //삭제 이후 이전 선택처리 정보 얻기.
       var l_prev = oAPP.fn.designGetPreviousTreeItem(ls_tree.OBJID);
