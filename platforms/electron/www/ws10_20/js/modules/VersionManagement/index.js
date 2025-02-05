@@ -71,9 +71,9 @@ module.exports = function(REMOTE, oAPP){
         oBrowserWindow.loadURL(sPopupPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        // if (!REMOTE.app.isPackaged) {
-        //     oBrowserWindow.webContents.openDevTools();
-        // }
+        if (!REMOTE.app.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
 
         oBrowserWindow.once('ready-to-show', () => {
             
@@ -118,11 +118,11 @@ module.exports = function(REMOTE, oAPP){
             let TAPPID = res.TAPPID;
 
             let oIF_DATA = {
-                ACTCD: "MOVE20",
-                APPID: TAPPID
-            }
+                ACTCD: "MOVE20",    // 새창 띄우면서 20번으로 넘어가는 액션 코드
+                APPID: TAPPID       // 실행 어플리케이션명
+            };
 
-            // 새창 띄우면서 20번 페이지로 이동
+            // 새창 띄우면서 APPID에 대한 20번 페이지로 이동
             parent.onNewWindow(oIF_DATA);
 
         }

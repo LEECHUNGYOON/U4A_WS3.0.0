@@ -740,9 +740,9 @@ oAPP.msg = {};
         oBrowserWindow.loadURL(parent.getPath("MAINFRAME"));
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        // if (!APP.isPackaged) {
-        //     oBrowserWindow.webContents.openDevTools();
-        // }
+        if (!APP.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
 
         // 브라우저가 활성화 될 준비가 될때 타는 이벤트
         oBrowserWindow.once('ready-to-show', () => {
@@ -757,14 +757,14 @@ oAPP.msg = {};
             var oSAPServerInfo = getServerInfo();
 
             var oMetadata = {};
-            oMetadata.METADATA = parent.getMetadata();
-            oMetadata.SERVERINFO = oSAPServerInfo;
-            oMetadata.USERINFO = parent.getUserInfo();
-            oMetadata.SESSIONKEY = SESSKEY;
-            oMetadata.BROWSERKEY = BROWSERKEY;
-            oMetadata.EXEPAGE = "WS10";
-            oMetadata.DEFBR = parent.getDefaultBrowserInfo();
-            oMetadata.THEMEINFO = parent.getThemeInfo();
+            oMetadata.METADATA      = parent.getMetadata();
+            oMetadata.SERVERINFO    = oSAPServerInfo;
+            oMetadata.USERINFO      = parent.getUserInfo();
+            oMetadata.SESSIONKEY    = SESSKEY;
+            oMetadata.BROWSERKEY    = BROWSERKEY;
+            oMetadata.EXEPAGE       = "WS10";
+            oMetadata.DEFBR         = parent.getDefaultBrowserInfo();
+            oMetadata.THEMEINFO     = parent.getThemeInfo();
             oMetadata.BeforeServerInfo = parent.getBeforeServerInfo();
 
             // 새창 띄운 후 추가 파라미터
@@ -778,6 +778,15 @@ oAPP.msg = {};
 
             // 부모 위치에서 우측 + 30, 하단 + 30 위치에 배치한다.
             lf_setBound();
+
+            // 새창 띄울때 파라미터 중 20번페이지로 이동일 경우에는 브라우저 opacity를 0으로 한다.
+            // 추후 새창 뜨고 나서 20번으로 넘어갈때 opacity를 줄 목적임
+            if(IF_DATA && IF_DATA.ACTCD === "MOVE20"){
+
+                oBrowserWindow.show();
+                
+                return;
+            }
 
             oBrowserWindow.setOpacity(1.0);
 

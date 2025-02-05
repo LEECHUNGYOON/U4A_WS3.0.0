@@ -123,12 +123,7 @@
             autoFocus: false,
             afterNavigate: function (oEvent) {
                 
-                // console.log(sap.ui.getCore().isLocked());
-
                 var toId = oEvent.getParameter("toId");
-
-                // // 화면 Lock 해제
-                // sap.ui.getCore().unlock();
 
                 // 현재 떠있는 팝오버 종류들을 전체 닫는다.
                 sap.m.InstanceManager.closeAllPopovers();
@@ -147,7 +142,7 @@
                         var oAppNmInput = sap.ui.getCore().byId("AppNmInput");
                         if (oAppNmInput) {
                             oAppNmInput.focus();
-                        }                        
+                        }
 
                         // Example 팝업을 통해서 접속 했다면 숨겨진 팝업을 보이게 한다.
                         _checkExamPopup();
@@ -551,13 +546,13 @@
                     ]
 
                 },
-                // {
-                //     key: "WMENU20_06",
-                //     icon: "sap-icon://u4a-fw-solid/Code Branch",
-                //     visible: oAPP.common.checkWLOList("C", "UHAK900908"),
-                //     text: "Version Management", // [MSG]            
-                //     enabled: true,
-                // },
+                {
+                    key: "WMENU20_06",
+                    icon: "sap-icon://u4a-fw-solid/Code Branch",
+                    visible: oAPP.common.checkWLOList("C", "UHAK900908"),
+                    text: "Version Management", // [MSG]            
+                    enabled: true,
+                },
 
                 // {
                 //     key: "WMENU20_04",

@@ -53,6 +53,129 @@ const
 *  💖 PRIVATE FUNCTION 선언부
 ******************************************************************************/
 
+    function _sendAjax(sUrl, oFormData, oOptions){
+
+        return new Promise(function(resolve){
+
+            // default 10 분
+            let iTimeout = 1000 * 600;
+
+            if(oOptions && oOptions.iTimeout){
+                iTimeout = iTimeout;
+            }
+
+            // ajax 결과
+            var oResult = undefined;
+
+            jQuery.ajax({
+                async: true,
+                method: "POST",
+                url: sUrl,
+                data: oFormData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success : function(data, textStatus, xhr) {
+
+                    oResult = { success : true, data : data, status : textStatus, statusCode : xhr && xhr.status, xhr: xhr };
+
+                    // status 값이 있다면 서버에서 오류 발생
+                    let u4a_status = oResult.xhr.getResponseHeader("u4a_status");
+                    if(u4a_status){
+
+                        switch (u4a_status) {
+                            case "UA0001": // 지원하지 않는 서비스
+
+                                // [MSG]
+                                var sErrMsg = "이 서버는 이 기능을 지원하지 않으므로 U4A 팀에 문의하세요.";
+
+                                sap.m.MessageBox.warning(sErrMsg, {
+                                    onClose: function(){
+                            
+                                        parent.CURRWIN.close();
+                                        
+                                    }
+                                });
+
+                                oAPP.fn.setBusy("");
+                                
+                                return;
+                        
+                            default:
+
+                                var sConsoleMsg = 
+                                `[
+                                    PATH: www\ws10_20\js\modules\VersionManagement\Popup\views\vw_main\control.js => _sendAjax
+                                    DESC: response header에 'u4a_status' 값이 ${u4a_status} 값으로 날라옴.
+                                 ]`;
+
+                                console.error(sConsoleMsg);
+
+                                // [MSG]
+                                var sErrMsg = "알 수 없는 오류가 발생하였습니다. 문제가 지속될 경우 U4A 팀에 문의하세요.";
+
+                                sap.m.MessageBox.warning(sErrMsg, {
+                                    onClose: function(){
+                            
+                                        parent.CURRWIN.close();
+                                        
+                                    }
+                                });
+
+                                oAPP.fn.setBusy("");
+
+                                return;
+                        }
+                        
+                    }
+
+                    return resolve(oResult.data);
+
+                },
+                error : function(xhr, textStatus, error) {
+
+                    oResult = { success : false, data : undefined, status : textStatus, error : error, statusCode : xhr.status, errorResponse :  xhr.responseText, xhr: xhr };
+
+                    var sConsoleMsg = 
+                    `[
+                        PATH: www\ws10_20\js\modules\VersionManagement\Popup\views\vw_main\control.js => _sendAjax => error callback
+                        - REQ_URL : ${sUrl}
+                    ]`;
+
+                    console.error(sConsoleMsg);
+
+                    // 연결 실패일 경우
+                    if(oResult.success === false){
+
+                        // [MSG]
+                        var sErrMsg = "통신 오류가 발생하였습니다. 네트워크 상태를 확인하시고 문제가 지속 될 경우 U4A 팀에 문의하세요.";
+
+                        sap.m.MessageBox.warning(sErrMsg, {
+                            onClose: function(){
+                    
+                                parent.CURRWIN.close();
+                                
+                            }
+                        });
+
+                        oAPP.fn.setBusy("");
+
+                        return;
+                    
+                        // return resolve({
+                        //     RETCD: "E",
+                        //     STCOD: "E999",
+                        // });
+
+                    }
+
+                }
+            });
+
+        });
+
+    } // end of _sendAjax
+
     /*************************************************************
      * @function - 서버에서 버전 정보 구하기
      *************************************************************/
@@ -90,11 +213,34 @@ const
             
             // 연결 실패일 경우
             if(oResult.success === false){
+
+                var sConsoleMsg = 
+                `[
+                    PATH: www\ws10_20\js\modules\VersionManagement\Popup\views\vw_main\control.js => _sendAjax => error callback
+                    - REQ_URL : ${sUrl}
+                ]`;
+
+                console.error(sConsoleMsg);
+                
+                // [MSG]
+                var sErrMsg = "통신 오류가 발생하였습니다. 네트워크 상태를 확인하시고 문제가 지속 될 경우 U4A 팀에 문의하세요.";
+
+                sap.m.MessageBox.warning(sErrMsg, {
+                    onClose: function(){
             
-                return resolve({
-                    RETCD: "E",
-                    STCOD: "E999",
+                        parent.CURRWIN.close();
+                        
+                    }
                 });
+
+                oAPP.fn.setBusy("");
+
+                return;
+
+                // return resolve({
+                //     RETCD: "E",
+                //     STCOD: "E999",
+                // });
             
             }
 
@@ -106,7 +252,7 @@ const
                     case "UA0001": // 지원하지 않는 서비스
 
                         // [MSG]
-                        let sErrMsg = "이 서버는 이 기능을 지원하지 않으므로 U4A 팀에 문의하세요.";
+                        var sErrMsg = "이 서버는 이 기능을 지원하지 않으므로 U4A 팀에 문의하세요.";
 
                         sap.m.MessageBox.warning(sErrMsg, {
                             onClose: function(){
@@ -121,7 +267,29 @@ const
                         return;
                 
                     default:
-                        break;
+
+                        var sConsoleMsg = 
+                        `[
+                            PATH: www\ws10_20\js\modules\VersionManagement\Popup\views\vw_main\control.js => _sendAjax
+                            DESC: response header에 'u4a_status' 값이 ${u4a_status} 값으로 날라옴.
+                        ]`;
+
+                        console.error(sConsoleMsg);
+
+                        // [MSG]
+                        var sErrMsg = "알 수 없는 오류가 발생하였습니다. 문제가 지속될 경우 U4A 팀에 문의하세요.";
+
+                        sap.m.MessageBox.warning(sErrMsg, {
+                            onClose: function(){
+                    
+                                parent.CURRWIN.close();
+                                
+                            }
+                        });
+
+                        oAPP.fn.setBusy("");
+
+                        return;
                 }
                 
             }
@@ -187,6 +355,18 @@ const
                 _oVerItem.TCLSID    = oVersionItem.TCLSID;
                 _oVerItem.VPOSN     = oVersionItem.VPOSN;
 
+
+                // // TEST =-----
+                // _oVerItem.TAPPID    = "YUX_245JTX2T20I2NP4N";
+
+                // if(oVersionItem.VPOSN === 3){
+                //     _oVerItem.TAPPID    = "YUX_245";
+                // }
+
+                // // TEST =-----
+
+
+
                 aVerList.push(_oVerItem);
             }
 
@@ -230,7 +410,7 @@ const
     /*************************************************************
      * @function - 어플리케이션 명 선택
      *************************************************************/
-    oContr.fn.onSelectApp = function(oEvent){
+    oContr.fn.onSelectApp = async function(oEvent){
 
         oAPP.fn.setBusy("X");
 
@@ -257,6 +437,55 @@ const
 
             return;
         }
+
+        debugger;
+
+        let sServerPath = oAPP.IF_DATA.sServerPath + "/create_temp_ver_app";
+
+        let oFormData = new FormData();
+            oFormData.append("APPID", oBindData.TAPPID);
+            oFormData.append("VPOSN", oBindData.VPOSN);
+
+        let oResult = await _sendAjax(sServerPath, oFormData);
+
+        debugger;
+
+        if(oResult.RETCD === "E"){
+
+            let sErrMsg = parent.WSUTIL.getWsMsgClsTxt(parent.LANGU, "ZMSG_WS_COMMON_001", oResult.MSGNR) + "\n";
+                sErrMsg += parent.WSUTIL.getWsMsgClsTxt(parent.LANGU, "ZMSG_WS_COMMON_001", "228"); // 문제가 지속될 경우, U4A 솔루션 팀에 문의하세요.
+
+            sap.m.MessageBox.error(sErrMsg);
+          
+            oAPP.fn.setBusy("");
+
+            return;
+        }
+
+
+
+
+        return oAPP.fn.setBusy("");
+
+
+        //1 서버요청 : 
+        /*
+                CREATE_TEMP_VER_APP
+                IV_APPID
+                IV_VPOSN
+                EV_RTMSG
+                EV_TAPPID
+                EV_TCLSID
+                RV_SUBRC
+
+        */
+
+        // 응답에서 성공유무에 따라 
+        //비정상 
+         
+
+        // 버전관리용 어플리케이션 생성  블라블라~~~ 처리 완료 후 IPC로 APP 정보를 전달하여 새창으로 띄우게 하기
+        //parent.IPCRENDERER.send(`${parent.BROWSKEY}-if-version-management-new-window`, oBindData);
 
         // let TAPPID = oBindData.TAPPID;
 

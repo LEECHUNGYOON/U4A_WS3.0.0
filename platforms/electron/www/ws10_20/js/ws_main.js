@@ -761,9 +761,8 @@
                     let oNewWin_IF_DATA = parent.getNewBrowserIF_DATA();
                     if(oNewWin_IF_DATA){
 
-                        parent.setNewBrowserIF_DATA(undefined);
-
                         let ACTCD = oNewWin_IF_DATA.ACTCD;
+                        
                         switch (ACTCD) {
                             case "MOVE20":
                                 
@@ -774,7 +773,6 @@
 
                                 sap.ui.getCore().byId("AppNmInput").setValue(APPID);
                                 sap.ui.getCore().byId("displayBtn").firePress();
-
 
                                 break;
                         

@@ -19,7 +19,9 @@
     var PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js"));    
     var WSUTIL_PATH = PATH.join(APPPATH, "ws10_20", "js", "ws_util.js");
     var WSUTIL = require(WSUTIL_PATH);
-    var WSMSG = new WSUTIL.MessageClassText(USERINFO.SYSID, USERINFO.LANGU);
+    var SYSID = USERINFO.SYSID;
+    var LANGU = USERINFO.LANGU;
+    var WSMSG = new WSUTIL.MessageClassText(SYSID, LANGU);
 
     // 오류 감지 객체
     var WSERR = require(PATHINFO.WSTRYCATCH);

@@ -512,6 +512,16 @@
         // WS20 페이지의 EDIT/DISPLAY 설정(차장님 부분)
         oAPP.fn.setUIAreaEditable();
 
+
+        // 새창 실행 시 액션코드가 "MOVE20(20번 페이지로 이동)" 일 경우 
+        // 브라우저 opacity 1을 준다.
+        // let oNewWin_IF_DATA = parent.getNewBrowserIF_DATA();
+        // if(oNewWin_IF_DATA && oNewWin_IF_DATA.ACTCD === "MOVE20"){
+
+        //     parent.CURRWIN.setOpacity(1);
+
+        // }
+
     }; // end of oAPP.fn.fnMoveToWs20
 
     /************************************************************************

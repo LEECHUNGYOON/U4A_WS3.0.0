@@ -88,6 +88,7 @@ export var oContr = await new Promise(async (resolve)=>{
                     text: "{APPID}",
                     press: function (oEvent){
 
+                        // [async]
                         oContr.fn.onSelectApp(oEvent);
 
                     }
