@@ -1531,10 +1531,16 @@ let oAPP = parent.oAPP;
             return;
         }
 
-        let oWebCon = oCurrWin.webContents,
-            oWebPref = oWebCon.getWebPreferences(),
-            sBrowserKey = oWebPref.browserkey,
-            IPCRENDERER = oAPP.IPCRENDERER;
+        try {            
+        
+            var oWebCon = oCurrWin.webContents,
+                oWebPref = oWebCon.getWebPreferences(),
+                sBrowserKey = oWebPref.browserkey,
+                IPCRENDERER = oAPP.IPCRENDERER;
+
+        } catch (error) {
+            return;
+        }
 
         var sBindPath = oCtx.sPath,
             oBindData = oAPP.fn.fnGetModelProperty(sBindPath);
@@ -1560,10 +1566,16 @@ let oAPP = parent.oAPP;
             return;
         }
 
-        let oWebCon = oCurrWin.webContents,
-            oWebPref = oWebCon.getWebPreferences(),
-            sBrowserKey = oWebPref.browserkey,
-            IPCRENDERER = oAPP.IPCRENDERER;
+        try {           
+        
+            var oWebCon = oCurrWin.webContents,
+                oWebPref = oWebCon.getWebPreferences(),
+                sBrowserKey = oWebPref.browserkey,
+                IPCRENDERER = oAPP.IPCRENDERER;
+
+        } catch (error) {
+            return;
+        }
 
         var sBindPath = oCtx.sPath,
             oBindData = oAPP.fn.fnGetModelProperty(sBindPath);

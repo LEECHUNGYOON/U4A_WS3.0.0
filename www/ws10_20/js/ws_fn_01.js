@@ -41,15 +41,21 @@
                 continue;
             }
 
-            let oWebCon = oChild.webContents,
-                oWebPref = oWebCon.getWebPreferences(),
-                sOBJTY = oWebPref.OBJTY;
+            try {               
+            
+                var oWebCon = oChild.webContents,
+                    oWebPref = oWebCon.getWebPreferences(),
+                    sOBJTY = oWebPref.OBJTY;
 
-            if (sOBJTY !== "EXAMPLE") {
+                if (sOBJTY !== "EXAMPLE") {
+                    continue;
+                }
+
+                oChild.show();
+
+            } catch (error) {
                 continue;
             }
-
-            oChild.show();
 
         }
 

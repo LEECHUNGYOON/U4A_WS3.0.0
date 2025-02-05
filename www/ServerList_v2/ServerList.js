@@ -1193,8 +1193,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                                         continue;
                                     }
 
-                                    var oWebCon = oBrows.webContents,
-                                        oWebPref = oWebCon.getWebPreferences();
+                                    try {
+                                        
+                                        var oWebCon = oBrows.webContents,
+                                            oWebPref = oWebCon.getWebPreferences();
+
+                                    } catch (error) {
+                                        continue;
+                                    }                                    
 
                                     // 서버리스트, Floting menu는 카운트 제외
                                     if (oWebPref.OBJTY == "SERVERLIST" || oWebPref.OBJTY == "FLTMENU") {
@@ -3527,9 +3533,16 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             return;
         }
 
-        let oWebCon = oWin.webContents,
-            oWebPref = oWebCon.getWebPreferences(),
-            sOBJTY = oWebPref.OBJTY;
+        try {
+        
+            var oWebCon = oWin.webContents,
+                oWebPref = oWebCon.getWebPreferences(),
+                sOBJTY = oWebPref.OBJTY;
+
+        } catch (error) {
+            return;
+        }
+        
 
         oWin.blur();
 
@@ -4046,14 +4059,20 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 continue;
             }
 
-            var oWebCon = oBrows.webContents,
-                oWebPref = oWebCon.getWebPreferences();
+            try {
+            
+                var oWebCon = oBrows.webContents,
+                    oWebPref = oWebCon.getWebPreferences();
+            
+                if (oWebPref.OBJTY == "SERVERLIST") {
+                    continue;
+                }
 
-            if (oWebPref.OBJTY == "SERVERLIST") {
+                oBrows.show();
+
+            } catch (error) {
                 continue;
             }
-
-            oBrows.show();
 
             return;
 
@@ -4076,14 +4095,20 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 continue;
             }
 
-            let oWebCon = oBrows.webContents,
-                oWebPref = oWebCon.getWebPreferences();
+            try {                
+            
+                let oWebCon = oBrows.webContents,
+                    oWebPref = oWebCon.getWebPreferences();
 
-            if (oWebPref.OBJTY !== "MAIN") {
-                continue;
+                if (oWebPref.OBJTY !== "MAIN") {
+                    continue;
+                }
+
+                oBrows.show();
+
+            } catch (error) {
+                continue;   
             }
-
-            oBrows.show();
 
         }
 

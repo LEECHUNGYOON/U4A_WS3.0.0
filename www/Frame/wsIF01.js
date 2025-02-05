@@ -962,8 +962,15 @@ function getSameBrowsers() {
             continue;
         }
 
-        var oWebCon = oBrows.webContents,
-            oWebPref = oWebCon.getWebPreferences();
+        try {
+        
+            var oWebCon = oBrows.webContents,
+                oWebPref = oWebCon.getWebPreferences();
+
+        } catch (error) {
+            continue;
+        }
+        
 
         // 팝업같은 경우는 카운트 하지 않는다.
         if (oWebPref.OBJTY) {

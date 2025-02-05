@@ -81,10 +81,16 @@ let oAPP = parent.oAPP,
             return;
         }
 
-        let oWebCon = oCurrWin.webContents,
-            oWebPref = oWebCon.getWebPreferences(),
-            sBrowserKey = oWebPref.browserkey,
-            IPCRENDERER = oAPP.IPCRENDERER;
+        try {           
+        
+            var oWebCon = oCurrWin.webContents,
+                oWebPref = oWebCon.getWebPreferences(),
+                sBrowserKey = oWebPref.browserkey,
+                IPCRENDERER = oAPP.IPCRENDERER;
+
+        } catch (error) {
+            return;   
+        }
 
         IPCRENDERER.send(`${sBrowserKey}--errormsg--click`, {
             oRowData: oRowData

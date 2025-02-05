@@ -1290,8 +1290,14 @@
                 continue;
             }
 
-            var oWebCon = oBrows.webContents,
-                oWebPref = oWebCon.getWebPreferences();
+            try {               
+            
+                var oWebCon = oBrows.webContents,
+                    oWebPref = oWebCon.getWebPreferences();
+
+            } catch (error) {
+                continue;
+            }
 
             // session 정보가 없으면 skip.
             var sSessionKey = oWebPref.partition;
@@ -1320,7 +1326,8 @@
 
             // 같은 세션키를 가진 브라우저 갯수를 카운트한다.
             iSamekeys++;
-            aSameBrows.push(oBrows);
+            aSameBrows.push(oBrows);          
+
         }
 
         return aSameBrows;
@@ -1344,8 +1351,14 @@
                 continue;
             }
 
-            var oWebCon = oBrows.webContents,
-                oWebPref = oWebCon.getWebPreferences();
+            try {
+
+                var oWebCon = oBrows.webContents,
+                    oWebPref = oWebCon.getWebPreferences();
+
+            } catch (error) {
+                continue;
+            }            
 
             // session 정보가 없으면 skip.
             var sSessionKey = oWebPref.partition;

@@ -58,8 +58,14 @@ function getSessionKey() {
         return;
     }
 
-    let oWebCon = oCurrWin.webContents,
-        oWebPref = oWebCon.getWebPreferences();
+    try {
+
+        var oWebCon = oCurrWin.webContents,
+            oWebPref = oWebCon.getWebPreferences();    
+
+    } catch (error) {
+        return;
+    }    
 
     return oWebPref.partition;
 
@@ -72,8 +78,15 @@ function getBrowserKey() {
         return;
     }
 
-    let oWebCon = oCurrWin.webContents,
-        oWebPref = oWebCon.getWebPreferences();
+    try {
+
+        var oWebCon = oCurrWin.webContents,
+            oWebPref = oWebCon.getWebPreferences();    
+
+    } catch (error) {
+        return;
+    }
+    
 
     return oWebPref.browserkey;
 
