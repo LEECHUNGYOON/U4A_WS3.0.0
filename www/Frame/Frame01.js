@@ -1070,7 +1070,7 @@ oAPP.msg = {};
     };
 
     // 19. Busy Indicator 실행
-    oWS.utill.fn.setBusy = (sIsbusy) => {       
+    oWS.utill.fn.setBusy = (sIsbusy) => {        
 
         oWS.utill.attr.isBusy = sIsbusy;       
 
@@ -1119,8 +1119,10 @@ oAPP.msg = {};
     
         setTimeout(function(){
 
-            if (bIsBusy) {
-                
+            zconsole.warn("setBusy", `bIsBusy: "${bIsBusy}"`);
+
+            if (bIsBusy) {                
+           
                 oBusy.style.visibility = "visible";
                 
                 // 메인 브라우저 닫기 버튼 비활성
@@ -1162,11 +1164,13 @@ oAPP.msg = {};
      *    DESC : ""    // 내역
      * }
      **********************************************************/
-     oWS.utill.fn.setBusyDialog = function(sIsbusy, oOptions){
+    oWS.utill.fn.setBusyDialog = function(sIsbusy, oOptions){
 
         if(!oWS.utill.attr.sap){
             return;
         }
+
+        oWS.utill.attr.isBusy = sIsbusy;
 
         var bIsBusy = (sIsbusy === "X" ? true : false);
 
@@ -1275,6 +1279,8 @@ oAPP.msg = {};
          * 수행은 1 => 2의 순서로 수행했지만, 1번이 비동기라 2번 수행 후 1번이 타는 현상.
          */
         setTimeout(function(){
+
+            zconsole.warn("setBusyDialog", `bIsBusy: "${bIsBusy}"`);
 
             // Busy를 켰을 경우
             if(bIsBusy){

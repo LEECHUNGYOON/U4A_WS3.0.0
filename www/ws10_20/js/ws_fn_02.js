@@ -21,13 +21,16 @@
      * @param {Char} ISEDIT
      * - 'X': Edit mode, ' ': Display Mode
      ************************************************************************/
-    oAPP.fn.fnOnEnterDispChangeMode = function (APPID, ISEDIT) {        
+    oAPP.fn.fnOnEnterDispChangeMode = async function (APPID, ISEDIT) {        
 
-        debugger;
+        // zconsole.log("fnOnEnterDispChangeMode");
 
-        
         // busy 키고 Lock 걸기
-        oAPP.common.fnSetBusyLock("X");
+        oAPP.common.fnSetBusyLock("X");        
+
+        // await oAPP.common.fnSleep(3000);        
+
+        // zconsole.log("fnOnEnterDispChangeMode => busy 'X'");
 
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput");
         if (!oAppNmInput) {

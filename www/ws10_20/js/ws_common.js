@@ -2938,7 +2938,7 @@
      * @param {Integer} iTime 멈추는 시간 (ms)
      * @returns 
      */
-    oAPP.common.fnSleep = async (iTime) => {
+    oAPP.common.fnSleep = (iTime) => {
 
         return new Promise((resolve) => {
 
@@ -3612,8 +3612,9 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
         if(!sReqMsg){
             return;
         }
-     
+        
         parent.setBusy("");
+
         parent.setBusy("X", { DESC: sReqMsg });
 
     }.bind({ sPath: sPath }), iReqMsgTime);

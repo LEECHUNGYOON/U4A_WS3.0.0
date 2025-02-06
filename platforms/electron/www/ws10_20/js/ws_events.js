@@ -86,15 +86,17 @@
     /************************************************************************
      * App 수정
      ************************************************************************/
-    oAPP.events.ev_AppChange = function () {
+    oAPP.events.ev_AppChange = async function () {
 
-        // busy 키고 Lock 걸기
+        // busy 키고 Lock 걸기        
         oAPP.common.fnSetBusyLock("X");
+
+        zconsole.log("ev_AppChange");        
 
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
             sAppID = oAppNmInput.getValue();
-
-        oAPP.fn.fnOnEnterDispChangeMode(sAppID, "X");
+        
+        oAPP.fn.fnOnEnterDispChangeMode(sAppID, "X"); // [async]
 
     }; // end of oAPP.events.ev_AppChange
 
@@ -525,7 +527,7 @@
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput"),
             sAppID = oAppNmInput.getValue();
 
-        oAPP.fn.fnOnEnterDispChangeMode(sAppID, "");
+        oAPP.fn.fnOnEnterDispChangeMode(sAppID, ""); // [async]
 
     }; // end of oAPP.events.ev_AppDisplay
 
