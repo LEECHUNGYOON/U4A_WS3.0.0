@@ -232,8 +232,6 @@ let oAPP = parent.oAPP;
 
     function _pressOpacityButton(oEvent) {
 
-        debugger;
-
         let oBtn = oEvent.getSource(),
             sValue = oBtn.getText(),
             iSliderValue = parseInt(sValue),

@@ -1033,7 +1033,7 @@
             IS_EDIT = oAppInfo.IS_EDIT;
 
         // 변경된 데이터가 없거나 display 모드일 경우 묻지도 말고 바로 빠져나간다.
-        if (IS_CHAG != 'X' || IS_EDIT != 'X') {
+        if (IS_CHAG !== 'X' || IS_EDIT !== 'X') {
 
             // WS10 페이지로 이동        
             oAPP.fn.fnMoveToWs10();

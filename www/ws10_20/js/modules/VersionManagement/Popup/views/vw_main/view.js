@@ -67,8 +67,8 @@ export var oContr = await new Promise(async (resolve)=>{
                     design: "Bold"
                 }),
                 template: new sap.m.ObjectStatus({
-                    state: "{STATUS}",
-                    icon: "sap-icon://circle-task-2"
+                    state: "{_STATUS}",
+                    icon : "{_STATUS_ICON}"
                 })
             }),
 
@@ -80,19 +80,27 @@ export var oContr = await new Promise(async (resolve)=>{
                     text: "App ID", // [MSG]                    
                     design: "Bold"
                 }),
+                template: new sap.m.Title({
+                    text: "{APPID}"
+                })
                 // template: new sap.m.Text({
                 //     text: "{APPID}"
                 // })
+                // template: new sap.m.Link({
+                //     text: "{APPID}",
+                //     press: function (oEvent){
 
-                template: new sap.m.Link({
-                    text: "{APPID}",
-                    press: function (oEvent){
+                //         // [async]
+                //         oContr.fn.onSelectApp(oEvent);
 
-                        // [async]
-                        oContr.fn.onSelectApp(oEvent);
-
-                    }
-                })
+                //     }
+                // })
+                // template: 
+                //     new sap.m.ObjectStatus({
+                //         text: "{APPID}",
+                //         active: true,
+                //         inverted: true
+                //     }).addStyleClass("sapMObjectStatusLarge")
             }),
 
             // Compare
@@ -211,6 +219,8 @@ export var oContr = await new Promise(async (resolve)=>{
     });
     PAGE1.addContent(TABLE1);
 
+    oContr.ui.TABLE1 = TABLE1;
+
     let TOOLBAR1 = new sap.m.OverflowToolbar();
     TABLE1.addExtension(TOOLBAR1);
 
@@ -218,10 +228,12 @@ export var oContr = await new Promise(async (resolve)=>{
         icon: "sap-icon://multiselect-all",
         press: function(){
 
+            oContr.fn.setMultiSelectAll();
+
             sap.m.MessageToast.show(1);
         }
     });
-    TOOLBAR1.addContent(BUTTON1);
+    // TOOLBAR1.addContent(BUTTON1);
 
     let BUTTON2 = new sap.m.Button({
         icon: "sap-icon://multiselect-none",
@@ -230,7 +242,7 @@ export var oContr = await new Promise(async (resolve)=>{
             sap.m.MessageToast.show(2);
         }
     });
-    TOOLBAR1.addContent(BUTTON2);
+    // TOOLBAR1.addContent(BUTTON2);
 
     let BUTTON3 = new sap.m.Button({
         icon: "sap-icon://compare",
@@ -242,7 +254,21 @@ export var oContr = await new Promise(async (resolve)=>{
         }
     });
     TOOLBAR1.addContent(BUTTON3);
-    
+
+
+    let BUTTON4 = new sap.m.Button({
+        icon: "sap-icon://action",
+        // type: "Emphasized",
+        press: function(oEvent){
+
+            // oContr.fn.onSelectApp(oEvent);
+            oContr.fn.openSelectedVersion(oEvent);
+
+            // sap.m.MessageToast.show(4);
+
+        }
+    });
+    TOOLBAR1.addContent(BUTTON4);
 
 
 

@@ -156,7 +156,7 @@
                         break;
 
                     case "WS20":
-
+                        
                         oAPP.fn.fnMoveToWs20(); // #[ws_fn_02.js]                 
 
                         break;
@@ -555,7 +555,8 @@
                 {
                     key: "WMENU20_06",
                     icon: "sap-icon://u4a-fw-solid/Code Branch",
-                    visible: oAPP.common.checkWLOList("C", "UHAK900908"),
+                    visible: !parent.APP.isPackaged,
+                    // visible: oAPP.common.checkWLOList("C", "UHAK900948"),
                     text: "Version Management", // [MSG]            
                     enabled: true,
                 },
@@ -1985,7 +1986,8 @@
                     }
                 })
             }
-        }).addStyleClass("u4aWsWindowMenu");
+        })      
+        .addStyleClass("u4aWsWindowMenu");        
 
         // Utilities
         oMenuUI.WMENU20 = new sap.m.Menu({
@@ -2206,15 +2208,39 @@
                                 press: oAPP.events.ev_pressWMenu20
                             }).bindProperty("visible", {
                                 parts: [
-                                    "key"
+                                    "key",
+                                    "/WS20/APP/S_APP_VMS"
                                 ],
-                                formatter: function (sKey) {
+                                formatter: function (sKey, S_APP_VMS) {
 
                                     if (sKey == null) {
                                         return false;
                                     }
 
-                                    if (sKey != "Test20") {
+                                    /**
+                                     * APP 정보에 버전 정보가 있다면 View 용으로 만들어야 하기 때문에 일부 메뉴를 숨긴다.
+                                     * - 대상: 
+                                     * 1. CSS 스타일 클래스
+                                     * 2. 유틸리티
+                                     * 3. 시스템
+                                     */                                    
+                                    if(typeof S_APP_VMS !== "undefined"){
+
+                                        switch (sKey) {
+                                            case "WMENU10": // CSS 스타일 클래스
+                                            case "WMENU20": // 유틸리티
+                                            case "WMENU40": // 시스템
+                                                
+                                                return false;
+                                        
+                                            default:
+                                                break;
+                                        }
+
+                                        // return false;
+                                    }
+
+                                    if (sKey !== "Test20") {
                                         return true;
                                     }
 
@@ -2505,13 +2531,31 @@
         });
 
         var oIconListBtn = new sap.m.Button("iconListBtn", {
-                icon: "sap-icon://activity-items",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12"), // Icon List                
-                press: oAPP.events.ev_pressIconListBtn,
-                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12") + " (Ctrl+Shift+F10)", // Icon List (Ctrl+Shift+F10)
-            }).addStyleClass("u4aWs20IconListBtn"),
+            icon: "sap-icon://activity-items",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12"), // Icon List                
+            press: oAPP.events.ev_pressIconListBtn,
+            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A12") + " (Ctrl+Shift+F10)", // Icon List (Ctrl+Shift+F10)
+        });
 
-            oIconCollection = new sap.m.MenuButton({
+        oIconListBtn.addStyleClass("u4aWs20IconListBtn");
+
+        oIconListBtn.bindProperty("visible", {
+            parts: [
+                "/WS20/APP/S_APP_VMS",
+            ],
+            formatter: function(S_APP_VMS){
+
+                // APP 정보에 버전 정보가 있다면 View 용으로 만들어야 하기 때문에 버튼을 숨긴다.
+                if(typeof S_APP_VMS !== "undefined"){
+                    return false;
+                }
+
+                return true;
+
+            }
+        });
+
+        var oIconCollection = new sap.m.MenuButton({
                 icon: "sap-icon://u4a-fw-regular/Face Grin Wide",
                 text: "{/WSLANGU/ZMSG_WS_COMMON_001/068}", // Icon Viewer
                 tooltip: "{/WSLANGU/ZMSG_WS_COMMON_001/068}", // Icon Viewer
@@ -2565,19 +2609,55 @@
         });            
 
         var oRuntimeBtn = new sap.m.Button("runtimeBtn", {
-                icon: "sap-icon://functional-location",
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A14"), // Runtime Class Navigator
-                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A14"), // Runtime Class Navigator (F9)
-                press: oAPP.events.ev_pressRuntimeBtn
-            }).addStyleClass("u4aWs20RuntimeBtn"),
+            icon: "sap-icon://functional-location",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A14"), // Runtime Class Navigator
+            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A14"), // Runtime Class Navigator (F9)
+            press: oAPP.events.ev_pressRuntimeBtn
+        });
+        
+        oRuntimeBtn.addStyleClass("u4aWs20RuntimeBtn");
 
-            oBindPopupBtn = new sap.m.Button("bindPopupBtn", {
-                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A15"), // Binding Popup
-                icon: "sap-icon://connected",
-                press: oAPP.events.ev_pressBindPopupBtn,
-                tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A15"), // Binding Popup
+        oRuntimeBtn.bindProperty("visible", {
+            parts: [
+                "/WS20/APP/S_APP_VMS"
+            ],
+            formatter: function(S_APP_VMS){
 
-            }).addStyleClass("u4aWs20bindPopupBtn");
+                // APP 정보에 버전 정보가 있다면 View 용으로 만들어야 하기 때문에 버튼을 숨긴다.
+                if(typeof S_APP_VMS !== "undefined"){
+                    return false;
+                }
+
+                return true;
+
+            }
+        });
+
+        var oBindPopupBtn = new sap.m.Button("bindPopupBtn", {
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A15"), // Binding Popup
+            icon: "sap-icon://connected",
+            press: oAPP.events.ev_pressBindPopupBtn,
+            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A15"), // Binding Popup
+
+        });
+        
+        oBindPopupBtn.addStyleClass("u4aWs20bindPopupBtn");
+
+        oBindPopupBtn.bindProperty("visible", {
+            parts: [
+                "/WS20/APP/S_APP_VMS"
+            ],
+            formatter: function(S_APP_VMS){
+
+                // APP 정보에 버전 정보가 있다면 View 용으로 만들어야 하기 때문에 버튼을 숨긴다.
+                if(typeof S_APP_VMS !== "undefined"){
+                    return false;
+                }
+
+                return true;
+
+            }
+        });
 
 
         // WS 버전에 따른 아이콘 리스트 버튼 
@@ -2610,12 +2690,12 @@
                     formatter: (IS_DEV, ISADM, ADMIN_APP) => {
 
                         // 개발자 권한이 없거나 edit 모드가 아닌 경우 비활성화
-                        if (IS_DEV != "D") {
+                        if (IS_DEV !== "D") {
                             return false;
                         }
 
                         // Admin이 아닌 유저가 Admin App을 열었을 경우 버튼 비활성화
-                        if (ISADM != "X" && ADMIN_APP == "X") {
+                        if (ISADM !== "X" && ADMIN_APP === "X") {
                             return false;
                         }
 

@@ -178,6 +178,7 @@
  * 🔥 Public functions
  ****************************************************************************/
 
+
     /********************************************************************
      * @function - Busy 켜기 끄기
      ********************************************************************
@@ -219,11 +220,11 @@
 
         if(isBusy === "X"){
 
-            oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+            oAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
 
         } else {
 
-            oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+            oAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
 
         }
   

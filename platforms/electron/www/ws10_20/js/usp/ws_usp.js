@@ -3203,8 +3203,21 @@
         // code editor KeyPress 이벤트 설정
         fnCodeEditorKeyPressEvent("");
 
-        // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
-        oAPP.fn.fnKillUserSession(_fnKillUserSessionCb);
+        var oAppInfo = fnGetAppInfo();        
+
+        let SSID = parent.getSSID();
+        
+        parent.setSSID("");
+
+        let oFormData = new FormData();
+            oFormData.append("APPID", oAppInfo.APPID);
+            oFormData.append("SSID", SSID);
+
+        // 서버 세션 죽이기
+        fnKillSession(oFormData, _fnKillUserSessionCb);
+
+        // // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
+        // oAPP.fn.fnKillUserSession(oAppInfo, _fnKillUserSessionCb);
 
     }; // end of fnMoveToWs10
 
@@ -3215,7 +3228,7 @@
          */
         var oAppInfo = fnGetAppInfo();
 
-        if (oAppInfo.IS_EDIT == 'X') {
+        if (oAppInfo.IS_EDIT === 'X') {
 
             await new Promise(function(resolve){
                     

@@ -269,6 +269,11 @@
 
         }
 
+        // 20번, 30번일 경우에만 APPID를 던진다
+        if(oAppInfo && oAppInfo.APPID){
+            oFormData.append("APPID", oAppInfo.APPID);
+        }        
+
         oFormData.append("SSID", SSID);
 
         var oOptions = {
@@ -744,7 +749,7 @@
             oAPP.fn.fnServerSession(); // #[fnServerSession.js]
 
             // DOM 감지
-            oAPP.fn.fnSetMutationObserver(); // #[ws_fn_03.js]           
+            oAPP.fn.fnSetMutationObserver(); // #[ws_fn_03.js]
 
             // 공통 IPCMAIN 이벤트 걸기
             oAPP.fn.fnIpcMain_Attach_Event_Handler(); // #[ws_fn_ipc.js]
@@ -755,16 +760,17 @@
      
             // 자연스러운 로딩
             sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, async function () {
-
+                
                 if (!parent.oWS.utill.attr.UIUpdated) {
 
+                    // 새창 띄우면서 IF_DATA에 파라미터가 존재할 경우
                     let oNewWin_IF_DATA = parent.getNewBrowserIF_DATA();
                     if(oNewWin_IF_DATA){
 
                         let ACTCD = oNewWin_IF_DATA.ACTCD;
                         
                         switch (ACTCD) {
-                            case "VMS_MOVE20":
+                            case "VMS_MOVE20":  // 버전관리 화면에서 요청한 액션이 20번으로 이동인 경우.
                                 
                                 let APPID = oNewWin_IF_DATA.APPID;
                                 if(!APPID){
@@ -773,6 +779,10 @@
 
                                 sap.ui.getCore().byId("AppNmInput").setValue(APPID);
                                 sap.ui.getCore().byId("displayBtn").firePress();
+
+                                setTimeout(function(){
+                                    sap.ui.getCore().byId("AppNmInput").setValue("");
+                                }, 0);                                
 
                                 break;
                         

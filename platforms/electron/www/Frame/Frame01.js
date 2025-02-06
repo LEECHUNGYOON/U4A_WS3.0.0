@@ -1070,8 +1070,10 @@ oAPP.msg = {};
     };
 
     // 19. Busy Indicator 실행
-    oWS.utill.fn.setBusy = (sIsbusy) => {
+    oWS.utill.fn.setBusy = (sIsbusy) => {        
 
+        debugger;
+        
         oWS.utill.attr.isBusy = sIsbusy;       
 
         var bIsBusy = (sIsbusy === "X" ? true : false);
@@ -1117,8 +1119,8 @@ oAPP.msg = {};
         // Busy Indicator dom
         var oBusy = oWS.utill.attr.oBusyDom;
     
-        setTimeout(() => {
-    
+        setTimeout(function(){
+
             if (bIsBusy) {
                 
                 oBusy.style.visibility = "visible";
@@ -1203,63 +1205,138 @@ oAPP.msg = {};
 
         }
 
-        // Busy를 켰을 경우
-        if(bIsBusy){
+        // // Busy를 켰을 경우
+        // if(bIsBusy){
 
-            // 메인 브라우저 닫기 버튼 비활성
-            oWS.utill.fn.setMainCloseBtnDisabled("X");         
+        //     // 메인 브라우저 닫기 버튼 비활성
+        //     oWS.utill.fn.setMainCloseBtnDisabled("X");         
          
-            let sDefTitle = "";
-            let sDefDesc  = "please wait a minute..";
+        //     let sDefTitle = "";
+        //     let sDefDesc  = "please wait a minute..";
 
-            let sTitle = sDefTitle;
-            let sDesc  = sDefDesc;
+        //     let sTitle = sDefTitle;
+        //     let sDesc  = sDefDesc;
 
-            // 옵션값이 있을 경우 
-            if(typeof oOptions === "object"){
-                sTitle = oOptions.TITLE || sDefTitle;
-                sDesc  = oOptions.DESC  || sDefDesc;
-            }         
+        //     // 옵션값이 있을 경우 
+        //     if(typeof oOptions === "object"){
+        //         sTitle = oOptions.TITLE || sDefTitle;
+        //         sDesc  = oOptions.DESC  || sDefDesc;
+        //     }         
 
-            // BusyDialog가 없으면 신규 생성
-            if(!oWS.utill.attr.oBusyDlg){
+        //     // BusyDialog가 없으면 신규 생성
+        //     if(!oWS.utill.attr.oBusyDlg){
 
-                oWS.utill.attr.oBusyDlg = new oWS.utill.attr.sap.m.BusyDialog();
+        //         oWS.utill.attr.oBusyDlg = new oWS.utill.attr.sap.m.BusyDialog();
 
-                // CustomData에 MUTATION_EXCEP을 주는 이유?
-                // Mutation이 화면에 dialog 류 들이 감지되면 현재 떠있는 자식 윈도우를 활성 or 비활성 하는데,
-                // 특정 Dialog는 Mutation 감지 대상에서 제외시키고자 할 때
-                // Dialog Object에 CustomData로 구분함
-                oWS.utill.attr.oBusyDlg._oDialog.data("MUTATION_EXCEP", "X");
+        //         // CustomData에 MUTATION_EXCEP을 주는 이유?
+        //         // Mutation이 화면에 dialog 류 들이 감지되면 현재 떠있는 자식 윈도우를 활성 or 비활성 하는데,
+        //         // 특정 Dialog는 Mutation 감지 대상에서 제외시키고자 할 때
+        //         // Dialog Object에 CustomData로 구분함
+        //         oWS.utill.attr.oBusyDlg._oDialog.data("MUTATION_EXCEP", "X");
 
-            }
+        //     }
 
-            let oBusyDlg = oWS.utill.attr.oBusyDlg;
+        //     let oBusyDlg = oWS.utill.attr.oBusyDlg;
 
-            oBusyDlg.setTitle(sTitle);
-            oBusyDlg.setText(sDesc);
+        //     oBusyDlg.setTitle(sTitle);
+        //     oBusyDlg.setText(sDesc);
 
-            // Busy Dialog가 open되지 않았을 경우 오픈시킨다.
-            if(oBusyDlg?._oDialog?.isOpen() === false){
-                oBusyDlg.open();
-            }
+        //     // Busy Dialog가 open되지 않았을 경우 오픈시킨다.
+        //     if(oBusyDlg?._oDialog?.isOpen() === false){
+        //         oBusyDlg.open();
+        //     }
 
-        } else {
+        // } else {
 
-            // 메인 브라우저 닫기 버튼 활성
-            oWS.utill.fn.setMainCloseBtnDisabled("");
+        //     // 메인 브라우저 닫기 버튼 활성
+        //     oWS.utill.fn.setMainCloseBtnDisabled("");
 
-            if(oWS.utill.attr.oBusyDlg){
+        //     if(oWS.utill.attr.oBusyDlg){
                 
-                oWS.utill.attr.oBusyDlg.destroy();
+        //         oWS.utill.attr.oBusyDlg.destroy();
 
-                delete oWS.utill.attr.oBusyDlg;
+        //         delete oWS.utill.attr.oBusyDlg;
     
-                oWS.utill.attr.sap.ui.getCore().unlock();
+        //         oWS.utill.attr.sap.ui.getCore().unlock();
 
-            }            
+        //     }            
 
-        }
+        // }
+
+        /**
+         * "setBusy" function에서 Busy를 키고 끌 때, 메인 화면 상단의 "X" 버튼 활성, 비활성화 처리를
+         * setTimeout에서 실행하여, BusyDialog에서도 동일하게 setTimeout으로 해야
+         * busy와 busyDialog를 동시에 실행해도 sync가 깨지지 않음.
+         * 
+         * 예) 아래의 두개의 소스를 동시에 실행
+         * 1. setBusy("");                         <---- 메인 화면 상단의 "X" 버튼 활성 비활성을 setTimeout에서 수행
+         * 2. setBusy("X", { DESC:"loading.."});   <---- 메인 화면 상단의 "X" 버튼 활성 비활성을 동기로 수행
+         * 
+         * 동기로 수행한 2번째 로직에서는 "X"로 BusyDialog를 실행했는데,
+         * 비동기로 수행한 1번째 로직이 setTimeout으로 비동기 동작을 하여,
+         * 수행은 1 => 2의 순서로 수행했지만, 1번이 비동기라 2번 수행 후 1번이 타는 현상.
+         */
+        setTimeout(function(){
+
+            // Busy를 켰을 경우
+            if(bIsBusy){
+
+                // 메인 브라우저 닫기 버튼 비활성
+                oWS.utill.fn.setMainCloseBtnDisabled("X");         
+            
+                let sDefTitle = "";
+                let sDefDesc  = "please wait a minute..";
+
+                let sTitle = sDefTitle;
+                let sDesc  = sDefDesc;
+
+                // 옵션값이 있을 경우 
+                if(typeof oOptions === "object"){
+                    sTitle = oOptions.TITLE || sDefTitle;
+                    sDesc  = oOptions.DESC  || sDefDesc;
+                }         
+
+                // BusyDialog가 없으면 신규 생성
+                if(!oWS.utill.attr.oBusyDlg){
+
+                    oWS.utill.attr.oBusyDlg = new oWS.utill.attr.sap.m.BusyDialog();
+
+                    // CustomData에 MUTATION_EXCEP을 주는 이유?
+                    // Mutation이 화면에 dialog 류 들이 감지되면 현재 떠있는 자식 윈도우를 활성 or 비활성 하는데,
+                    // 특정 Dialog는 Mutation 감지 대상에서 제외시키고자 할 때
+                    // Dialog Object에 CustomData로 구분함
+                    oWS.utill.attr.oBusyDlg._oDialog.data("MUTATION_EXCEP", "X");
+
+                }
+
+                let oBusyDlg = oWS.utill.attr.oBusyDlg;
+
+                oBusyDlg.setTitle(sTitle);
+                oBusyDlg.setText(sDesc);
+
+                // Busy Dialog가 open되지 않았을 경우 오픈시킨다.
+                if(oBusyDlg?._oDialog?.isOpen() === false){
+                    oBusyDlg.open();
+                }
+
+            } else {
+
+                // 메인 브라우저 닫기 버튼 활성
+                oWS.utill.fn.setMainCloseBtnDisabled("");
+
+                if(oWS.utill.attr.oBusyDlg){
+                    
+                    oWS.utill.attr.oBusyDlg.destroy();
+
+                    delete oWS.utill.attr.oBusyDlg;
+        
+                    oWS.utill.attr.sap.ui.getCore().unlock();
+
+                }            
+
+            }
+
+        }, 0);
 
         // 작업표시줄에 ProgressBar 실행
         setProgressBar("S", bIsBusy);
@@ -1705,11 +1782,6 @@ IPCRENDERER.on('if-meta-info', (event, res) => {
 
     // 타이틀 설정
     CURRWIN.setTitle("U4A Workspace - #Main");
-
-    // CURRWIN.show();
-
-    // // 자연스러운 로딩   
-    // fnOnSmoothLoading();
 
 });
 

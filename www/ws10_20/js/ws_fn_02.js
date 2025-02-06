@@ -23,6 +23,9 @@
      ************************************************************************/
     oAPP.fn.fnOnEnterDispChangeMode = function (APPID, ISEDIT) {        
 
+        debugger;
+
+        
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
 
@@ -223,6 +226,7 @@
 
             // WS20번 페이지로 이동한다.
             oAPP.fn.fnOnMoveToPage("WS20");
+      
          
         } // end of lf_success
 
@@ -357,8 +361,21 @@
         // busy 키고 Lock 키기
         oAPP.common.fnSetBusyLock("X");
 
-        // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
-        oAPP.fn.fnKillUserSession(lf_success, lf_success);
+        var oAppInfo = parent.getAppInfo();
+
+        // // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
+        // oAPP.fn.fnKillUserSession(oAppInfo, lf_success, lf_success);
+
+        let SSID = parent.getSSID();
+        
+        parent.setSSID("");
+
+        let oFormData = new FormData();
+            oFormData.append("APPID", oAppInfo.APPID);
+            oFormData.append("SSID", SSID);
+
+        // 서버 세션 죽이기
+        fnKillSession(oFormData, lf_success);
 
         async function lf_success() {
 
@@ -441,7 +458,7 @@
             await parent.UAI.disconnect(_oPARAM);
 
             // busy 끄고 Lock 끄기
-            oAPP.common.fnSetBusyLock("");          
+            oAPP.common.fnSetBusyLock("");
 
         } // end of lf_success
 
@@ -485,12 +502,15 @@
 
         // 새창 실행 시 액션코드가 "VMS_MOVE20(20번 페이지로 이동)" 일 경우 
         // 브라우저 opacity 1을 준다.
-        // let oNewWin_IF_DATA = parent.getNewBrowserIF_DATA();
-        // if(oNewWin_IF_DATA && oNewWin_IF_DATA.ACTCD === "VMS_MOVE20"){
+        let oNewWin_IF_DATA = parent.getNewBrowserIF_DATA();
+        if(oNewWin_IF_DATA && oNewWin_IF_DATA.ACTCD === "VMS_MOVE20"){
 
-        //     parent.CURRWIN.setOpacity(1);
+            parent.CURRWIN.setOpacity(1);
 
-        // }
+            // IF_DATA 파라미터 삭제
+            parent.setNewBrowserIF_DATA(undefined);
+
+        }
 
     }; // end of oAPP.fn.fnMoveToWs20
 
@@ -628,21 +648,35 @@
     /************************************************************************
      * 20 -> 10번 페이지로 이동 시 서버 세션 죽이기 위한 공통 펑션
      * **********************************************************************/
-    oAPP.fn.fnKillUserSession = function (fn_callback, fn_fail) {
+    // oAPP.fn.fnKillUserSession = function (oAppInfo, fn_callback, fn_fail) {
 
-        // var oAppInfo = parent.getAppInfo();
-        let SSID = parent.getSSID();
+    //     let SSID = parent.getSSID();
 
-        parent.setSSID("");
+    //     parent.setSSID("");
 
-        let oFormData = new FormData();
-        oFormData.append("SSID", SSID);
-        oFormData.append("EXIT", 'X');
+    //     let oFormData = new FormData();
+        
+    //     if(oAppInfo && oAppInfo.APPID){
+    //         oFormData.append("APPID", oAppInfo.APPID);
+    //     }
 
-        // 서버에서 App 정보를 구한다.
-        ajax_init_prc(oFormData, fn_callback, fn_fail);
+    //     oFormData.append("SSID", SSID);
+    //     // oFormData.append("EXIT", 'X');
 
-    }; // end of oAPP.fn.fnKillUserSession
+    //     // 서버에서 App 정보를 구한다.
+    //     // ajax_init_prc(oFormData, fn_callback, fn_fail);
+
+    //     var sPath = parent.getServerPath() + '/kill_session';
+
+    //     var oOptions = {
+    //         URL: sPath,
+    //         FORMDATA: oFormData
+    //     };
+
+    //     sendServerExit(oOptions, fn_callback);
+
+
+    // }; // end of oAPP.fn.fnKillUserSession
 
     /************************************************************************
      * Application Name 정합성 체크
@@ -1589,12 +1623,6 @@
                 // 숨기려는 경우
                 if (!bShow) {
 
-                    // 이미 숨겨져 있다면 빠져나간다
-                    // if (!isVisible) {
-                    //     continue;
-                    // }
-
-
                     setTimeout(() => {
                         
                         if(oChild.isDestroyed()){
@@ -1603,31 +1631,31 @@
 
                         try {
 
-                            // oChild.setOpacity(0);
-                            oChild.hide(); 
+                            // oChild.hide(); 
+
+                            oChild.setOpacity(0);
 
                         } catch (error) {
                             return;
-                        }                        
-
+                        }
 
                     }, 0);
 
-
                     continue;
                 }
 
 
-                if (isVisible) {
-                    continue;
-                }
+                // if (isVisible) {
+                //     continue;
+                // }
 
                 if(oChild.isDestroyed()){
                     continue;
                 }
 
-                oChild.show();
-                // oChild.setOpacity(1);
+                // oChild.show();
+
+                oChild.setOpacity(1);
 
             } catch (error) {
                 continue;
