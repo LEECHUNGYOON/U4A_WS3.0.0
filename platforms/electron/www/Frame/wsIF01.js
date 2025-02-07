@@ -121,19 +121,20 @@ function setBusy(bIsBusy, oOptions) {
 
     // zconsole.warn("setBusy", `bIsBusy: "${bIsBusy}", oOptions: ${oOptions}`);
 
-    //현재 busy가 on 상태인경우, 다시 on 처리시 return.
-    if(oWS.utill.fn.getBusy() === "X" && bIsBusy === "X"){
+    // 20250207
+    // //현재 busy가 on 상태인경우, 다시 on 처리시 return.
+    // if(oWS.utill.fn.getBusy() === "X" && bIsBusy === "X"){
         
-        //현재 busy dialog가 open 된 상태인경우.
-        if(typeof oWS.utill.attr.oBusyDlg !== "undefined" && typeof oOptions !== "undefined"){
+    //     //현재 busy dialog가 open 된 상태인경우.
+    //     if(typeof oWS.utill.attr.oBusyDlg !== "undefined" && typeof oOptions !== "undefined"){
 
-            //busy dialog 재호출(text 변경 목적).
-            oWS.utill.fn.setBusyDialog(bIsBusy, oOptions);
+    //         //busy dialog 재호출(text 변경 목적).
+    //         oWS.utill.fn.setBusyDialog(bIsBusy, oOptions);
         
-        }
+    //     }
         
-        return;
-    }    
+    //     return;
+    // }    
     
     //busy on 처리 건인경우.
     if(bIsBusy === "X"){

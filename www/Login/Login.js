@@ -988,7 +988,7 @@ let oAPP = (function () {
             // 메시지 처리.. 
             // parent.showMessage(null, 99, "E", oResult.MSG);
             sap.m.MessageToast.show(oResult.MSG, { width: "auto" });
-            parent.setBusy("");
+            // parent.setBusy("");
             return;
 
         }
@@ -1012,7 +1012,7 @@ let oAPP = (function () {
         oFormData.append("PRCCD", "00"); // 로그인에서 호출하고 있다는 구분자 (로그인 성공시: [/wsloginchk] 서비스 부분에서 참조하는 파라미터)
         oFormData.append("ACTCD", "001"); // 로그인에서 호출하고 있다는 구분자 (로그인 실패시: WS_LOGIN 클래스 부분에서 참조하는 파라미터)
 
-        parent.setBusy('X');
+        // parent.setBusy('X');
 
         var oPwInput = sap.ui.getCore().byId("ws_pw");
 
@@ -1025,7 +1025,7 @@ let oAPP = (function () {
                     let u4a_status = xhr.getResponseHeader("u4a_status");
                     if (u4a_status) {
 
-                        // parent.setBusy("");
+                        // // parent.setBusy("");
                         // oAPP.common.fnSetBusyDialog(false);
                         var oResult;
                         try {
@@ -1037,7 +1037,7 @@ let oAPP = (function () {
 
                             console.log(_sLog);
 
-                            parent.setBusy("");
+                            // parent.setBusy("");
 
                             return;
                         }
@@ -1045,7 +1045,7 @@ let oAPP = (function () {
                         // // 잘못된 url 이거나 지원하지 않는 기능 처리
                         // oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, oResult);
 
-                        parent.setBusy("");
+                        // parent.setBusy("");
 
                         return;
                     }
@@ -1062,7 +1062,7 @@ let oAPP = (function () {
 
                         // parent.showMessage(null, 99, "E", sCleanHtml);
 
-                        parent.setBusy("");
+                        // parent.setBusy("");
 
                         
                         /**
@@ -1090,7 +1090,7 @@ let oAPP = (function () {
                         //오류 권한 리스트 팝업 호출.
                         var _called = await oAPP.fn.fnCallAuthErrorListPopup(oResult);
                         if (_called === true) {
-                            parent.setBusy("");
+                            // parent.setBusy("");
 
                             return;
                         }
@@ -1102,7 +1102,7 @@ let oAPP = (function () {
                          */                        
                         if(oResult.RCODE === "R001"){
                             
-                            parent.setBusy("");
+                            // parent.setBusy("");
 
                             // MSG - You need to change your password. Please update it via SAPGUI.
                             let sMsg = oAPP.msg.M082; 
@@ -1115,7 +1115,7 @@ let oAPP = (function () {
 
                         }
 
-                        parent.setBusy("");
+                        // parent.setBusy("");
                         
                         // 오류 처리..    
                         sap.m.MessageBox.error(oResult.MSG);               
@@ -1143,7 +1143,7 @@ let oAPP = (function () {
                         // no build일 경우 혹은 Trial 버전일 경우는 최신 버전 체크를 하지 않는다.                        
                         if (!bIsPackaged || bIsTrial) {
 
-                            // parent.setBusy('');
+                            // // parent.setBusy('');
 
                             oAPP.fn.fnCheckVersionFinished(oResult, oAuthInfo);
 
@@ -1155,7 +1155,7 @@ let oAPP = (function () {
 
                     }).catch((e) => {
 
-                        parent.setBusy("");
+                        // parent.setBusy("");
 
                         // 권한이 없으므로 오류 메시지를 띄운다.
                         oAPP.fn.fnShowNoAuthIllustMsg(e);                        
@@ -1169,7 +1169,7 @@ let oAPP = (function () {
                     if (xhr.response == "") {
                         // parent.showMessage(null, 99, "E", sErrMsg);
                         
-                        parent.setBusy("");
+                        // parent.setBusy("");
 
                         sap.m.MessageBox.error(sErrMsg);
                         
@@ -1178,7 +1178,7 @@ let oAPP = (function () {
 
                     var sCleanHtml = parent.setCleanHtml(xhr.response);
 
-                    parent.setBusy("");
+                    // parent.setBusy("");
 
                     parent.showMessage(null, 99, "E", sCleanHtml);                    
 
@@ -1392,7 +1392,7 @@ let oAPP = (function () {
 
                             parent.showMessage(null, 99, "E", sCleanHtml);
 
-                            parent.setBusy("");
+                            // parent.setBusy("");
 
                             return;
                         }
@@ -1413,7 +1413,7 @@ let oAPP = (function () {
 
                         parent.showMessage(null, 99, "E", xhr.response);
 
-                        parent.setBusy("");
+                        // parent.setBusy("");
 
                     }
                 }
@@ -1490,7 +1490,7 @@ let oAPP = (function () {
 
                             parent.showMessage(null, 99, "E", sCleanHtml);
 
-                            parent.setBusy("");
+                            // parent.setBusy("");
 
                             return;
 
@@ -1499,7 +1499,7 @@ let oAPP = (function () {
                     } else {
 
                         parent.showMessage(null, 99, "E", xhr.response);
-                        parent.setBusy("");
+                        // parent.setBusy("");
 
                     }
                 }
@@ -1530,7 +1530,7 @@ let oAPP = (function () {
             // 라이선스가 유효하지 않으면 오류 메시지와 함께 창 닫는다.
             oAPP.fn.fnShowNoAuthIllustMsg(oLicenseInfo.RTMSG);
 
-            parent.setBusy('');
+            // parent.setBusy('');
 
             return;
         }
@@ -1582,7 +1582,7 @@ let oAPP = (function () {
                 // Version Check Dialog를 띄운다.
                 oAPP.fn.fnVersionCheckDialogOpen();
 
-                parent.setBusy("");
+                // parent.setBusy("");
 
                 // console.log(e.params.message);
             });
@@ -1822,7 +1822,7 @@ let oAPP = (function () {
                 // Version Check Dialog를 띄운다.
                 oAPP.fn.fnVersionCheckDialogOpen();
 
-                parent.setBusy("");
+                // parent.setBusy("");
 
                 console.log("업데이트가 가능합니다.");
 
@@ -1959,7 +1959,7 @@ let oAPP = (function () {
 
             parent.showLoadingPage("X");
 
-            parent.setBusy("X");
+            // parent.setBusy("X");
 
             parent.CURRWIN.setTitle("U4A Workspace - Main");
 
@@ -2806,7 +2806,7 @@ let oAPP = (function () {
             // Version Check Dialog를 띄운다.
             oAPP.fn.fnVersionCheckDialogOpen();
 
-            parent.setBusy("");
+            // parent.setBusy("");
 
             console.log("업데이트 항목이 존재합니다");
         });
@@ -2892,7 +2892,7 @@ let oAPP = (function () {
             // 메시지 팝업을 띄운다.
             // 다운로드 중 오류가 발생하였습니다.
             // 재시작 하시겠습니까?
-            parent.setBusy("");
+            // parent.setBusy("");
 
             let sMsg = oAPP.msg.M057 + " \n \n";
             sMsg += e.message;
@@ -3365,7 +3365,7 @@ let oAPP = (function () {
                 }
             });   
 
-            parent.setBusy(false);
+            // parent.setBusy(false);
 
             return;
 
@@ -3468,7 +3468,7 @@ let oAPP = (function () {
                     // 화면 랜더링 이후 호출
                     await _onViewReady();
                     
-                    parent.setBusy(false);
+                    // parent.setBusy(false);
 
                 }
 

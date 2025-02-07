@@ -119,7 +119,7 @@ var oAPP = (function () {
         oFormData.append("sap-client", sClient);
         oFormData.append("sap-language", sLangu);
 
-        parent.setBusy('X');
+        // parent.setBusy('X');
 
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function () { // 요청에 대한 콜백
@@ -128,7 +128,7 @@ var oAPP = (function () {
 
                     debugger;
 
-                    parent.setBusy("");
+                    // parent.setBusy("");
 
                     // 서버 통신 중, u4a_status가 있을 경우 오류
                     let u4a_status = xhr.getResponseHeader("u4a_status");
@@ -185,7 +185,7 @@ var oAPP = (function () {
         // 화면 Lock 해제
         sap.ui.getCore().unlock();
 
-        parent.setBusy("");
+        // parent.setBusy("");
 
         // Fatal Error! Please contact your system administrator.
         let sErrmsg = "Fatal Error! Please contact your system administrator \n \n " + e.toString();

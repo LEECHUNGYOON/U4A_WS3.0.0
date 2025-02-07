@@ -490,3 +490,17 @@ html[class*=sapUiTheme]:not([class*="dark"]) .u4aWs10Page .sapMPage > section {
 .sapMPopover .sapMPopoverResizeHandle {
   z-index: 3;
 }
+
+
+.u4aWsMainBody .sapMBusyDialog.sapMDialog.sapMBusyDialog-Light {
+  box-shadow: auto;
+  background: none;
+  border: none;
+}
+.u4aWsMainBody .sapMBusyDialog.sapMDialog.sapMBusyDialog-Light .sapMDialogSection {
+  background: auto;
+}
+
+.u4aWsMainBody .sapUiBLy {
+  background-color: transparent;
+}

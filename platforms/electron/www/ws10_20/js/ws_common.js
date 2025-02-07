@@ -3613,9 +3613,11 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
             return;
         }
         
-        parent.setBusy("");
+        // parent.setBusy("");
 
-        parent.setBusy("X", { DESC: sReqMsg });
+        // if(parent.getBusy() === "X"){
+            parent.setBusy("X", { DESC: sReqMsg });
+        // }
 
     }.bind({ sPath: sPath }), iReqMsgTime);
 
@@ -3653,17 +3655,23 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
     var busy = 'X',
         sMeth = 'POST',
         IsAsync = true;
-
-    if (bIsBusy != null) {
-        // Busy Indicator 실행
+    
+    if(bIsBusy === "X" || bIsBusy === ""){
+        
         busy = bIsBusy;
+
+        // 부모영역에 현재 busy 실행 여부 정보를 전달
+        parent.setBusy(busy);  
+        
     }
 
-    // 부모영역에 현재 busy 실행 여부 정보를 전달
-    parent.setBusy(busy);
+    // if (typeof bIsBusy !== "undefined" || bIsBusy !== null) {
+    //     // Busy Indicator 실행
+    //     busy = bIsBusy;
+    // }
 
-    // 요청 타임아웃 시간 지정
-    oXHR.timeout = iTimeout;
+     
+    
 
     // 서버 요청에 대한 정상 응답
     oXHR.onload = function(e){
@@ -3862,6 +3870,14 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
         IsAsync = bIsAsync;
     }
     
+    // async일 경우에만 Timeout을 지정한다 그렇지 않으면 오류 발생됨!!
+    if(IsAsync === true){
+
+        // 요청 타임아웃 시간 지정
+        oXHR.timeout = iTimeout;
+
+    }    
+
     oXHR.withCredentials = true;
 
     // FormData가 없으면 GET으로 전송

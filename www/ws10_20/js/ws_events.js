@@ -1298,7 +1298,7 @@
      * Activate Button Event
      ************************************************************************/
     oAPP.events.ev_pressActivateBtn = async function (oEvent) {
-
+        
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");        
 

@@ -681,6 +681,76 @@
         });
 
     } // end of _attach_AI_Events
+
+
+
+    // UI5 BusyDialog가 거지 같아서 내가 그냥 직접 만든 BusyDialog
+    class BusyDialog {
+
+        constructor(){
+            
+            this.dialog = new sap.m.Dialog({
+                showHeader: false
+            }).addStyleClass("sapMBusyDialog");
+
+            this.dialog.data("MUTATION_EXCEP", "X");
+
+            this.busyIndicator = new sap.m.BusyIndicator();
+
+            this.text = new sap.m.Label().addStyleClass("sapMBusyDialogLabel");
+
+            this.dialog.addContent(this.text);
+            this.dialog.addContent(this.busyIndicator);
+
+        }
+
+        setText(sText = ""){
+
+            let bIsTextVisi = false;
+
+            if(sText){
+                bIsTextVisi = true;
+            }
+
+            this.text.setVisible(bIsTextVisi);
+
+            this.text.setText(sText);
+
+        }
+
+        setTitle(sTitle = ""){
+
+            this.dialog.setTitle(sTitle);
+
+            if(sTitle === ""){
+                
+                this.dialog.setShowHeader(false);
+
+                return;
+
+            }
+
+            this.dialog.setShowHeader(true);
+
+        }
+
+        isOpen(){
+            return this.dialog.isOpen();
+        }
+
+        open(){
+
+            this.dialog.open();
+
+        }
+
+        close() {
+
+            this.dialog.close();
+
+        }  
+
+    }
     
 
     /************************************************************************
@@ -694,6 +764,13 @@
 
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
+
+            // 20250207
+            parent.oWS.utill.attr.oBusy = new BusyDialog();
+
+
+            // parent.oWS.utill.attr.oBusy = new sap.m.BusyDialog();
+            // parent.oWS.utill.attr.oBusy._oDialog.data("MUTATION_EXCEP", "X");
 
             // UAI 쪽에서 파라미터를 전달받기 위한 이벤트 생성
             _attach_AI_Events();

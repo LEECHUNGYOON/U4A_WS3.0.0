@@ -23,14 +23,8 @@
      ************************************************************************/
     oAPP.fn.fnOnEnterDispChangeMode = async function (APPID, ISEDIT) {        
 
-        // zconsole.log("fnOnEnterDispChangeMode");
-
         // busy 키고 Lock 걸기
-        oAPP.common.fnSetBusyLock("X");        
-
-        // await oAPP.common.fnSleep(3000);        
-
-        // zconsole.log("fnOnEnterDispChangeMode => busy 'X'");
+        oAPP.common.fnSetBusyLock("X");
 
         var oAppNmInput = sap.ui.getCore().byId("AppNmInput");
         if (!oAppNmInput) {

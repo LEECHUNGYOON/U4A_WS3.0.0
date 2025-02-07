@@ -1070,16 +1070,12 @@ oAPP.msg = {};
     };
 
     // 19. Busy Indicator 실행
-    oWS.utill.fn.setBusy = (sIsbusy) => { 
+    oWS.utill.fn.setBusy = (sIsbusy) => {
 
-        console.log("isBusy", oWS.utill.attr.isBusy);
-
-        // // TEST ==== 
-        // let isbusy = oWS.utill.fn.getBusy();
-        // if(isbusy === sIsbusy){
-        //     return;
-        // }
-        // // TEST ====
+        // 20250207
+        if(sIsbusy === "X" && oWS.utill.attr.isBusy === "X"){
+            return;
+        }
 
         oWS.utill.attr.isBusy = sIsbusy;       
 
@@ -1094,6 +1090,8 @@ oAPP.msg = {};
                 oWS.utill.attr.sap.ui.getCore().unlock();
             }
         }
+
+        let oBusy = oWS.utill.attr.oBusy;
 
         // Cursor Focus Handle
         if (bIsBusy) {
@@ -1122,24 +1120,51 @@ oAPP.msg = {};
             }
     
         }        
-    
+        
+        // 20250207
         // Busy Indicator dom
-        var oBusy = oWS.utill.attr.oBusyDom;
+        // var oBusy = oWS.utill.attr.oBusyDom;
     
-        setTimeout(function(){
+        // setTimeout(function(){
 
-            zconsole.warn("setBusy", `bIsBusy: "${bIsBusy}"`);
+            // zconsole.warn("setBusy", `bIsBusy: "${bIsBusy}"`);
 
             if (bIsBusy) {                
            
-                oBusy.style.visibility = "visible";
+                // oBusy.style.visibility = "visible";
+                // oBusy.setTitle("　");
+                // oBusy.setText("잠시만 기다려주세요!!");
+                // oBusy.setTitle("");
+
+                // oBusy.setTitle("　");
+                // oBusy.setText("　");
+                // oBusy.setTitle("");
+
+                // if(oBusy?._oDialog?.isOpen() === false){
+                //     // 20250207
+                //     oBusy.open();
+                //     oBusy.setText("");
+                // }    
+
+                oBusy.setTitle("");
+                oBusy.setText("");
+                
+                // Busy Dialog가 open되지 않았을 경우 오픈시킨다.
+                if(oBusy.isOpen() === false){
+                    oBusy.open();
+                }      
                 
                 // 메인 브라우저 닫기 버튼 비활성
                 oWS.utill.fn.setMainCloseBtnDisabled("X");
 
             } else {
 
-                oBusy.style.visibility = "hidden";    
+                // oBusy.style.visibility = "hidden";    
+
+                // 20250207
+                if(oBusy){                    
+                    oBusy.close();
+                }
 
                 // 메인 브라우저 닫기 버튼 활성
                 oWS.utill.fn.setMainCloseBtnDisabled("");
@@ -1152,7 +1177,7 @@ oAPP.msg = {};
             //     oWS.utill.attr.isBusy = "X";
             // }
     
-        }, 0);
+        // }, 0);
     
         // 작업표시줄에 ProgressBar 실행
         setProgressBar("S", bIsBusy);
@@ -1173,18 +1198,11 @@ oAPP.msg = {};
      *    DESC : ""    // 내역
      * }
      **********************************************************/
-     oWS.utill.fn.setBusyDialog = function(sIsbusy, oOptions){
+    oWS.utill.fn.setBusyDialog = function(sIsbusy, oOptions){
 
         if(!oWS.utill.attr.sap){
             return;
         }
-
-        // // TEST ==== 
-        // let isbusy = oWS.utill.fn.getBusy();
-        // if(isbusy === sIsbusy){
-        //     return;
-        // }
-        // // TEST ====
 
         oWS.utill.attr.isBusy = sIsbusy;
 
@@ -1294,9 +1312,12 @@ oAPP.msg = {};
          * 비동기로 수행한 1번째 로직이 setTimeout으로 비동기 동작을 하여,
          * 수행은 1 => 2의 순서로 수행했지만, 1번이 비동기라 2번 수행 후 1번이 타는 현상.
          */
-        setTimeout(function(){
+        // setTimeout(function(){
 
-            zconsole.warn("setBusyDialog", `bIsBusy: "${bIsBusy}"`);
+            // 20250207
+            let oBusyDlg = oWS.utill.attr.oBusy;
+
+            // zconsole.warn("setBusyDialog", `bIsBusy: "${bIsBusy}"`);
 
             // Busy를 켰을 경우
             if(bIsBusy){
@@ -1305,37 +1326,57 @@ oAPP.msg = {};
                 oWS.utill.fn.setMainCloseBtnDisabled("X");         
             
                 let sDefTitle = "";
-                let sDefDesc  = "please wait a minute..";
+                let sDefDesc  = "";
 
                 let sTitle = sDefTitle;
                 let sDesc  = sDefDesc;
 
                 // 옵션값이 있을 경우 
                 if(typeof oOptions === "object"){
+                    
                     sTitle = oOptions.TITLE || sDefTitle;
                     sDesc  = oOptions.DESC  || sDefDesc;
+                    
                 }         
 
-                // BusyDialog가 없으면 신규 생성
-                if(!oWS.utill.attr.oBusyDlg){
+                // // BusyDialog가 없으면 신규 생성
+                // if(!oWS.utill.attr.oBusyDlg){
 
-                    oWS.utill.attr.oBusyDlg = new oWS.utill.attr.sap.m.BusyDialog();
+                //     oWS.utill.attr.oBusyDlg = new oWS.utill.attr.sap.m.BusyDialog();
 
-                    // CustomData에 MUTATION_EXCEP을 주는 이유?
-                    // Mutation이 화면에 dialog 류 들이 감지되면 현재 떠있는 자식 윈도우를 활성 or 비활성 하는데,
-                    // 특정 Dialog는 Mutation 감지 대상에서 제외시키고자 할 때
-                    // Dialog Object에 CustomData로 구분함
-                    oWS.utill.attr.oBusyDlg._oDialog.data("MUTATION_EXCEP", "X");
+                //     // CustomData에 MUTATION_EXCEP을 주는 이유?
+                //     // Mutation이 화면에 dialog 류 들이 감지되면 현재 떠있는 자식 윈도우를 활성 or 비활성 하는데,
+                //     // 특정 Dialog는 Mutation 감지 대상에서 제외시키고자 할 때
+                //     // Dialog Object에 CustomData로 구분함
+                //     oWS.utill.attr.oBusyDlg._oDialog.data("MUTATION_EXCEP", "X");
 
-                }
+                // }
 
-                let oBusyDlg = oWS.utill.attr.oBusyDlg;
+                // let oBusyDlg = oWS.utill.attr.oBusyDlg;
+
 
                 oBusyDlg.setTitle(sTitle);
-                oBusyDlg.setText(sDesc);
+                oBusyDlg.setText(sDesc); 
+
+                // if(sTitle){
+
+                //     oBusyDlg.setTitle(sTitle);
+                //     oBusyDlg.setText(sDesc);                    
+
+                // } else {
+                    
+                //     oBusyDlg.setTitle("　");
+                //     oBusyDlg.setText(sDesc);
+                //     oBusyDlg.setTitle("");
+
+                // }
+
+
+                // oBusyDlg.setTitle(sTitle);
+                // oBusyDlg.setText(sDesc);
 
                 // Busy Dialog가 open되지 않았을 경우 오픈시킨다.
-                if(oBusyDlg?._oDialog?.isOpen() === false){
+                if(oBusyDlg.isOpen() === false){
                     oBusyDlg.open();
                 }
 
@@ -1344,19 +1385,30 @@ oAPP.msg = {};
                 // 메인 브라우저 닫기 버튼 활성
                 oWS.utill.fn.setMainCloseBtnDisabled("");
 
-                if(oWS.utill.attr.oBusyDlg){
+                // if(oWS.utill.attr.oBusyDlg){
                     
-                    oWS.utill.attr.oBusyDlg.destroy();
+                //     oWS.utill.attr.oBusyDlg.destroy();
 
-                    delete oWS.utill.attr.oBusyDlg;
+                //     delete oWS.utill.attr.oBusyDlg;
         
+                //     oWS.utill.attr.sap.ui.getCore().unlock();
+
+                // }            
+
+                if(oBusyDlg){
+
+                    oBusyDlg.close();
+
+                    oBusyDlg.setTitle("");             
+                    oBusyDlg.setText("");
+
                     oWS.utill.attr.sap.ui.getCore().unlock();
 
-                }            
+                }      
 
             }
 
-        }, 0);
+        // }, 0);
 
         // 작업표시줄에 ProgressBar 실행
         setProgressBar("S", bIsBusy);
