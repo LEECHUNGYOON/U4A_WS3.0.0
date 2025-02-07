@@ -278,6 +278,8 @@
      ************************************************************************/
     oAPP.events.ev_AppCopyDlgOK = function() {
 
+        parent.setBusy('X');
+
         var oModelData = APPCOMMON.fnGetModelProperty(C_BIND_ROOT_PATH),
             sTargetId = oModelData.TARGETID;
 
@@ -302,6 +304,8 @@
 
             lf_setTargetIdValueStateChange(C_ENUM_VALUE_STATE.Error, oValid.RETMSG);
 
+            parent.setBusy('');
+
             return;
         }
 
@@ -318,6 +322,8 @@
 
             APPCOMMON.fnSetModelProperty(C_BIND_ROOT_PATH, oModelData);
 
+            parent.setBusy('');
+
             return;
         }
 
@@ -330,6 +336,9 @@
             // 복사대상 어플리케이션이 존재 하는지 유무 확인
             var bIsAppExists = lf_getAppInfo(oResult);
             if (bIsAppExists == false) {
+
+                parent.setBusy('');
+
                 return;
             }
 
@@ -389,9 +398,7 @@
     /************************************************************************
      * (Local Function) Application ID 존재 유무 확인하여 없으면 복사 수행
      ************************************************************************/
-    function lf_getAppInfo(oResult) {
-
-        parent.setBusy('');
+    function lf_getAppInfo(oResult) {        
 
         if (oResult.MSGTY !== "N") {
 
@@ -404,7 +411,7 @@
 
             // Target APPID에 대한 정합성 체크 후 오류 시, ValueState를 Error 로 변경
             lf_setTargetIdValueStateChange(C_ENUM_VALUE_STATE.Error, sMsg);
-
+            
             return false;
         }
 
