@@ -2800,7 +2800,12 @@
          * SAP LOGO ICON
          ****************************************/
         let ICON1 = new sap.ui.core.Icon({
-            src: "sap-icon://sap-logo-shape"
+            src: "sap-icon://sap-logo-shape",
+            press: function(){
+
+                oAPP.common.execControllerClass(null, null, "SMEN", null);
+                
+            }
         });
         HBOX1.addItem(ICON1);
 

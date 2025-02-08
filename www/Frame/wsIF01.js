@@ -115,6 +115,22 @@ function getErrorMsg() {
     return oWS.utill.fn.getErrorMsg();
 }
 
+function setDomBusy(bIsBusy){
+
+    let oBusyDom = document.getElementById("u4aWsBusyIndicator");
+    if(!oBusyDom){
+        return;
+    }
+
+    if(bIsBusy === "X"){
+        oBusyDom.style.display = "block";
+        return;
+    }
+
+    oBusyDom.style.display = "none";
+
+}
+
 // 19. Busy Indicator 실행
 // - 파라미터에 Option이 존재할 경우는 busyDialog로 호출함
 function setBusy(bIsBusy, oOptions) {    

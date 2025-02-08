@@ -102,7 +102,7 @@ oAPP.msg = {};
         case "01":
             oWS.utill.attr.oBusyDom = oDefBusyDom;
             break;
-        
+
         default: 
             oWS.utill.attr.oBusyDom = oDefBusyDom;
             break;

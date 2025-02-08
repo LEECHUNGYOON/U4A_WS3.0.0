@@ -878,6 +878,8 @@
                         $('#content').fadeIn(300, 'linear');
 
                         parent.setBusy("");
+                        
+                        parent.setDomBusy("");
 
                     }, 300);
 

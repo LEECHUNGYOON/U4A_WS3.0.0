@@ -11,6 +11,12 @@ body,
   padding-bottom: 0rem;
 }
 
+.sapUiIcon:focus {
+  outline-width: 0 !important;
+  /* outline-style: dotted;
+  outline-color: #4db1ff; */
+}
+
 .sapMSticky .sapMTableTH {
   top: 0;
   position: sticky;

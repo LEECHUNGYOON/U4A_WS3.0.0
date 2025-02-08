@@ -109,7 +109,7 @@
 
     oAPP.fn.fnOnPressGuestLogin = () => {
 
-        // parent.setBusy('X');
+        // parent.setDomBusy('X');
 
         // 서버 연결이 되는지 먼저 확인
         oAPP.fn.fnCheckServerAvaliable().then(oAPP.fn.fnCheckServerAvaliableThen);
@@ -136,7 +136,7 @@
                     } else {
 
                         parent.showMessage(null, 99, "E", xhr.responseText);
-                        // parent.setBusy('');
+                        // parent.setDomBusy('');
 
                     }
                 }
