@@ -3265,7 +3265,8 @@ function fnKillSession(oFormData, fn_callback){
             if (typeof fn_callback == "function") {
                 fn_callback(oReturn);
             }
-        }
+        }, 
+        "X"
     );
 
 }
@@ -3660,11 +3661,12 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
     var busy = 'X',
         sMeth = 'POST',
         IsAsync = true;
-    
-    if(bIsBusy === "X" || bIsBusy === ""){
-        
-        busy = bIsBusy;
 
+        busy = bIsBusy;
+    
+    // if(bIsBusy === "X" || bIsBusybIsBusy === ""){
+    if(bIsBusy === "X"){
+        
         // 부모영역에 현재 busy 실행 여부 정보를 전달
         parent.setBusy(busy);  
         
