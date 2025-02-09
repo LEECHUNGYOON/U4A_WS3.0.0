@@ -222,8 +222,8 @@
             if (oResult.SCRIPT) {
                 eval(oResult.SCRIPT);
 
-                parent.setBusy('');
-
+                // parent.setBusy('');
+                
                 return;
             }
 

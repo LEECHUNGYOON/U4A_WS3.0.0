@@ -1091,17 +1091,6 @@ let oAPP = (function () {
 
                         oPwInput.setValue("");
 
-                        //20231228 pes -start.
-                        //권한 점검 오류가 발생한 경우.
-                        //오류 권한 리스트 팝업 호출.
-                        var _called = await oAPP.fn.fnCallAuthErrorListPopup(oResult);
-                        if (_called === true) {
-                            parent.setDomBusy("");
-
-                            return;
-                        }
-                        //20231228 pes -end.
-
                         /**
                          * 📝 2024-06-27 soccerhs
                          * Change Password 일 경우의 메시지 처리
@@ -1120,6 +1109,17 @@ let oAPP = (function () {
                             return;
 
                         }
+
+                        //20231228 pes -start.
+                        //권한 점검 오류가 발생한 경우.
+                        //오류 권한 리스트 팝업 호출.
+                        var _called = await oAPP.fn.fnCallAuthErrorListPopup(oResult);
+                        if (_called === true) {
+                            parent.setDomBusy("");
+
+                            return;
+                        }
+                        //20231228 pes -end.                        
 
                         parent.setDomBusy("");
                         

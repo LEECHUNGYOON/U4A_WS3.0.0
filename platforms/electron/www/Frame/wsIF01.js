@@ -134,6 +134,8 @@ function setDomBusy(bIsBusy){
 // 19. Busy Indicator 실행
 // - 파라미터에 Option이 존재할 경우는 busyDialog로 호출함
 function setBusy(bIsBusy, oOptions) {    
+    
+    // console.trace(`Busy: ${bIsBusy}`);
 
     // zconsole.warn("setBusy", `bIsBusy: "${bIsBusy}", oOptions: ${oOptions}`);
 
