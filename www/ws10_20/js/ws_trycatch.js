@@ -66,6 +66,8 @@ module.exports = function (window, document, console) {
 
         console.error(sErrMsg);
 
+        console.trace(`[onError]: `);
+
         // critical 오류이므로 창을 닫는다.
         showCriticalErrorDialog(sErrMsg);
 
@@ -78,6 +80,8 @@ module.exports = function (window, document, console) {
         if (event.reason) {
             sErrorMsg = "[onunhandledrejection]: " + event?.reason?.stack?.toString();
         }
+
+        console.trace(`[onunhandledrejection]: `);
 
         if (sErrorMsg == "") {
             sErrorMsg = "critical Error!";

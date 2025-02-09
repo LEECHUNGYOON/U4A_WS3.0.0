@@ -220,19 +220,20 @@
 
             // 질문팝업? 삭제하시겠습니까?            
             parent.showMessage(sap, 30, 'W', sMsg, function (TYPE) {
-
-                if (TYPE == null || TYPE == "NO") {
-                    return;
-                }
-
+                
                 // busy 키고 Lock 걸기
                 oAPP.common.fnSetBusyLock("X");
 
-                // 삭제 어플리케이션이 USP 일 경우.
-                if (oAppInfo.APPTY == "U") {
+                if (TYPE == null || TYPE == "NO") {
 
                     // busy 키고 Lock 걸기
-                    oAPP.common.fnSetBusyLock("X");
+                    oAPP.common.fnSetBusyLock("");
+
+                    return;
+                }
+               
+                // 삭제 어플리케이션이 USP 일 경우.
+                if (oAppInfo.APPTY == "U") {
 
                     // 어플리케이션 삭제하러 서버 호출
                     oAPP.fn.fnSetUspAppDelete();
@@ -240,9 +241,6 @@
                     return;
 
                 }
-
-                // busy 키고 Lock 걸기
-                oAPP.common.fnSetBusyLock("X");
 
                 // 어플리케이션 삭제하러 서버 호출
                 oAPP.fn.fnSetAppDelete();
@@ -258,10 +256,8 @@
      ************************************************************************/
     oAPP.fn.fnSetAppDelete = function (oParam) {
 
-        // 화면 Lock 걸기
-        sap.ui.getCore().lock();
-
-        parent.setBusy('X');
+       // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // application 존재 여부 체크
         var oBindData = APPCOMMON.fnGetModelProperty("/WS10"),
@@ -301,10 +297,8 @@
                 return;
             }
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            parent.setBusy("");
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         });
 
@@ -672,12 +666,8 @@
 
             oAPP.fn.fnOnExecApp(sAppID); // [ws_fn_02.js]
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            // Busy를 끈다.
-            parent.setBusy("");
-
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
         }
 
     }; // end of oAPP.events.ev_AppExec
@@ -853,22 +843,16 @@
                 // 페이지 푸터 메시지
                 APPCOMMON.fnShowFloatingFooterMsg("W", sCurrPage, sMsg);
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
-
-                // Busy를 끈다.
-                parent.setBusy("");
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
             }
 
             oAPP.fn.fnOnExecApp(sAppID, true);
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
-
-            // Busy를 끈다.
-            parent.setBusy("");
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         }
 
@@ -1176,11 +1160,8 @@
 
                 APPCOMMON.fnShowFloatingFooterMsg('S', sCurrPage, sMsg);
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
-
-                // Busy를 끈다.
-                parent.setBusy("");
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
                 return;
             }
