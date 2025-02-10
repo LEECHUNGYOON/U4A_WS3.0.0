@@ -956,7 +956,7 @@
     /************************************************************************
      * logout
      ************************************************************************/
-    oAPP.events.ev_Logout = function () {
+    oAPP.events.ev_Logout = function () {        
 
         // Logout 버튼으로 Logout을 시도 했다는 Flag      
         oAPP.attr.isBrowserCloseLogoutMsgOpen = "X";
@@ -986,10 +986,22 @@
                 BROWSKEY: parent.getBrowserKey()
             });
 
+            // Application 정보를 구한다.
+            var oAppInfo = parent.getAppInfo() || oAPP.common.fnGetModelProperty("/WS30/APP"),
+                SSID = parent.getSSID(),
+                oFormData = new FormData();
+
+            if(oAppInfo && oAppInfo.APPID){
+                oFormData.append("APPID", oAppInfo.APPID || "");
+            }
+            
+            oFormData.append("SSID", SSID);
+
             var sUrl = parent.getServerPath() + "/logoff";
 
             var option = {
-                URL: sUrl
+                URL: sUrl,
+                FORMDATA: oFormData
             };
 
             sendServerExit(option, () => {

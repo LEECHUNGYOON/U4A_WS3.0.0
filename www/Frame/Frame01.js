@@ -1150,9 +1150,10 @@ oAPP.msg = {};
                 oBusy.setText("");
                 
                 // Busy Dialog가 open되지 않았을 경우 오픈시킨다.
-                if(oBusy.isOpen() === false){
-                    oBusy.open();
-                }      
+                // if(oBusy.isOpen() === false){
+                //     oBusy.open();
+                // }      
+                oBusy.open();
                 
                 // 메인 브라우저 닫기 버튼 비활성
                 oWS.utill.fn.setMainCloseBtnDisabled("X");

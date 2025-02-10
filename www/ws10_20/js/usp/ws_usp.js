@@ -3203,21 +3203,21 @@
         // code editor KeyPress 이벤트 설정
         fnCodeEditorKeyPressEvent("");
 
-        var oAppInfo = fnGetAppInfo();        
+        var oAppInfo = fnGetAppInfo();
 
-        let SSID = parent.getSSID();
+        // let SSID = parent.getSSID();
         
-        parent.setSSID("");
+        // parent.setSSID("");
 
-        let oFormData = new FormData();
-            oFormData.append("APPID", oAppInfo.APPID);
-            oFormData.append("SSID", SSID);
+        // let oFormData = new FormData();
+        //     oFormData.append("APPID", oAppInfo.APPID);
+        //     oFormData.append("SSID", SSID);
 
         // 서버 세션 죽이기
-        fnKillSession(oFormData, _fnKillUserSessionCb);
+        // fnKillSession(oFormData, _fnKillUserSessionCb);
 
-        // // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
-        // oAPP.fn.fnKillUserSession(oAppInfo, _fnKillUserSessionCb);
+        // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
+        oAPP.fn.fnKillUserSession(oAppInfo, _fnKillUserSessionCb);
 
     }; // end of fnMoveToWs10
 
@@ -3640,11 +3640,17 @@
      **************************************************************************/
     function ev_uspTreeItemDblClickEvent(oEvent) {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         var oTarget = oEvent.target,
             $oTreeIcon = $(oTarget).closest(".sapUiTableTreeIcon"),
             $SelectedRow = $(oTarget).closest(".sapUiTableRow");
 
         if ($oTreeIcon.length || !$SelectedRow.length) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
             return;
         }
 
@@ -3655,6 +3661,10 @@
             sRowId = "";
 
         if (sRowId1 == null && sRowId2 == null) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -3668,11 +3678,19 @@
 
         var oRow = sap.ui.getCore().byId(sRowId);
         if (!oRow) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
         // 바인딩 정보가 없으면 빠져나간다.
         if (oRow.isEmpty()) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -3686,6 +3704,10 @@
             var sCurrOBJKY = oCtx.getObject("OBJKY");
 
             if (oBindBeforeSelect && oBindBeforeSelect.OBJKY == sCurrOBJKY) {
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
 
@@ -3701,6 +3723,9 @@
 
             // 현재 떠있는 팝업 창들을 잠시 숨긴다.
             oAPP.fn.fnChildWindowShow(false);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
             return;
 
@@ -3721,6 +3746,9 @@
 
             return;
         }
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         // 취소인 경우.
         if (oEvent !== "YES") {
@@ -3893,15 +3921,18 @@
         // 파일 읽다가 오류 발생
         if(oJsonResult.RETCD === "E"){
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
+            // // 화면 Lock 해제
+            // sap.ui.getCore().unlock();
 
-            parent.setBusy("");
+            // parent.setBusy("");
 
             // Critical Error
             oAPP.fn.fnCriticalErrorWs30({
                 RTMSG: oJsonResult.RTMSG
             });
+
+            // busy 끄고 Lock 풀기
+		    oAPP.common.fnSetBusyLock("");	
 
             return;
         }
@@ -3942,10 +3973,10 @@
             
             console.error(error);
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
+            // // 화면 Lock 해제
+            // sap.ui.getCore().unlock();
 
-            parent.setBusy("");
+            // parent.setBusy("");
 
             var sMsg = "[usp_get_object_line_data] JSON Parse Error";
 
@@ -3953,6 +3984,9 @@
             oAPP.fn.fnCriticalErrorWs30({
                 RTMSG: sMsg
             });
+
+            // busy 끄고 Lock 풀기
+		    oAPP.common.fnSetBusyLock("");	
 
             return;
         }
@@ -3961,10 +3995,10 @@
         // JSON Parse 오류 일 경우
         if (typeof oResult !== "object") {
 
-            // 화면 Lock 해제
-            sap.ui.getCore().unlock();
+            // // 화면 Lock 해제
+            // sap.ui.getCore().unlock();
 
-            parent.setBusy("");
+            // parent.setBusy("");
 
             var sMsg = "[usp_get_object_line_data] JSON Parse Error";
 
@@ -3972,6 +4006,9 @@
             oAPP.fn.fnCriticalErrorWs30({
                 RTMSG: sMsg
             });
+
+            // busy 끄고 Lock 풀기
+		    oAPP.common.fnSetBusyLock("");	
 
             return;
 
@@ -3990,13 +4027,16 @@
 
                 console.error(oResult);
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
+                // // 화면 Lock 해제
+                // sap.ui.getCore().unlock();
 
-                parent.setBusy("");
+                // parent.setBusy("");
 
                 // Critical Error
                 oAPP.fn.fnCriticalErrorWs30(oResult);
+
+                // busy 끄고 Lock 풀기
+		        oAPP.common.fnSetBusyLock("");	
 
                 return;
 
@@ -4004,10 +4044,10 @@
 
                 console.error(oResult);
 
-                // 화면 Lock 해제
-                sap.ui.getCore().unlock();
+                // // 화면 Lock 해제
+                // sap.ui.getCore().unlock();
 
-                parent.setBusy("");
+                // parent.setBusy("");
 
                 parent.setSoundMsg("02"); // error sound
 
@@ -4016,6 +4056,9 @@
 
                 // Footer Msg 출력
                 APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+
+                // busy 끄고 Lock 풀기
+		        oAPP.common.fnSetBusyLock("");	
 
                 return;
 
@@ -4087,10 +4130,13 @@
 
         APPCOMMON.fnSetModelProperty("/WS30/USPDATA", oUspData);
 
-        // 화면 Lock 해제
-        sap.ui.getCore().unlock();
+        // // 화면 Lock 해제
+        // sap.ui.getCore().unlock();
 
-        parent.setBusy("");
+        // parent.setBusy("");
+
+        // busy 끄고 Lock 풀기
+		oAPP.common.fnSetBusyLock("");
 
     } // end of _fnLineSelectCb
 

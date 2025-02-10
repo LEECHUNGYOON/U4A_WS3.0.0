@@ -850,78 +850,87 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   //바인딩 선택전 점검.
   function lf_chkBindVal(bskipSelIndex, is_tree){
 
-    //선택라인 점검 필요시.
-    if(bskipSelIndex){
-      var l_indx = oAPP.attr.oBindDialog._oTree.getSelectedIndex();
+    return new Promise(function(resolve){
 
-      //선택한 라인이 존재하지 않는경우.
-      if(l_indx === -1){
-        //081	Select field information for Binding.
-        parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "081", "", "", "", ""));
-        return true;
-      }
+      //선택라인 점검 필요시.
+      if(bskipSelIndex){
+        var l_indx = oAPP.attr.oBindDialog._oTree.getSelectedIndex();
 
-    }
-
-    //선택 가능한 라인인지 여부 확인.
-    if(is_tree.enable !== true){
-      //266	This line cannot be selected.
-      parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "266", "", "", "", ""));
-      return true;
-    }
-
-    //aggregation인경우 하위 로직 점검 skip.
-    if(oAPP.attr.oBindDialog._CARDI === "T"){
-      return false;
-    }
-
-    if(!oAPP.attr.oBindDialog._oModel.oData.T_MPROP){return;}
-
-    var ls_P04 = oAPP.attr.oBindDialog._oModel.oData.T_MPROP.find( a => a.ITMCD === "P04");
-
-    //Bind type이 지정된 경우
-    if(ls_P04.val !== ""){
-
-      var ls_P05 = oAPP.attr.oBindDialog._oModel.oData.T_MPROP.find( a => a.ITMCD === "P05");
-
-      //Reference Field name이 존재하지 않는경우.
-      if(ls_P05.val === ""){
-        ls_P05.stat = "Error";
-        //267	If Bind type is selected, Reference Field name is required.
-        ls_P05.statTxt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "267", "", "", "", "");
-
-        parent.showMessage(sap, 10, "E", ls_P05.statTxt);
-        return true;
+        //선택한 라인이 존재하지 않는경우.
+        if(l_indx === -1){
+          //081	Select field information for Binding.
+          parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "081", "", "", "", ""));
+          return resolve(true);
+        }
 
       }
 
-    }
-
-    var ls_P06 = oAPP.attr.oBindDialog._oModel.oData.T_MPROP.find( a => a.ITMCD === "P06");
-
-    //Conversion Routine명을 입력하지 않은경우 점검 skip.
-    if(ls_P06.val === ""){return;}
-
-    //Conversion Routine명 서버전송 데이터 구성.
-    var oFormData = new FormData();
-    oFormData.append("CONVEXIT", ls_P06.val);
-
-    var l_ret = false;
-
-    // Conversion Routine 존재여부 확인.
-    sendAjax(oAPP.attr.servNm + "/chkConvExit", oFormData,function(param){
-      //잘못된 Conversion Routine을 입력한 경우.
-      if(param.RETCD === "E"){
-        ls_P06.stat = "Error";
-        ls_P06.statTxt = param.RTMSG;
-        parent.showMessage(sap, 10, "E", param.RTMSG);
-        l_ret = true;
+      //선택 가능한 라인인지 여부 확인.
+      if(is_tree.enable !== true){
+        //266	This line cannot be selected.
+        parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "266", "", "", "", ""));
+        return resolve(true);
       }
 
-    },"",false);
+      //aggregation인경우 하위 로직 점검 skip.
+      if(oAPP.attr.oBindDialog._CARDI === "T"){
+        return resolve(false);
+      }
 
+      if(!oAPP.attr.oBindDialog._oModel.oData.T_MPROP){
+        return resolve(false);
+      }
 
-    return l_ret;
+      var ls_P04 = oAPP.attr.oBindDialog._oModel.oData.T_MPROP.find( a => a.ITMCD === "P04");
+
+      //Bind type이 지정된 경우
+      if(ls_P04.val !== ""){
+
+        var ls_P05 = oAPP.attr.oBindDialog._oModel.oData.T_MPROP.find( a => a.ITMCD === "P05");
+
+        //Reference Field name이 존재하지 않는경우.
+        if(ls_P05.val === ""){
+          ls_P05.stat = "Error";
+          //267	If Bind type is selected, Reference Field name is required.
+          ls_P05.statTxt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "267", "", "", "", "");
+
+          parent.showMessage(sap, 10, "E", ls_P05.statTxt);
+          return resolve(true);
+
+        }
+
+      }
+
+      var ls_P06 = oAPP.attr.oBindDialog._oModel.oData.T_MPROP.find( a => a.ITMCD === "P06");
+
+      //Conversion Routine명을 입력하지 않은경우 점검 skip.
+      if(ls_P06.val === ""){
+        return resolve(false);
+      }
+
+      //Conversion Routine명 서버전송 데이터 구성.
+      var oFormData = new FormData();
+      oFormData.append("CONVEXIT", ls_P06.val);
+
+      // Conversion Routine 존재여부 확인.
+      sendAjax(oAPP.attr.servNm + "/chkConvExit", oFormData,function(param){
+        //잘못된 Conversion Routine을 입력한 경우.
+        if(param.RETCD === "E"){
+          
+          ls_P06.stat = "Error";
+          ls_P06.statTxt = param.RTMSG;
+          
+          parent.showMessage(sap, 10, "E", param.RTMSG);
+          
+          return resolve(true);
+
+        }
+
+        return resolve(false);
+
+      });
+
+    });
 
   } //바인딩 선택전 점검.
 
@@ -949,7 +958,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
 
 
   //bind 버튼 선택 이벤트.
-  function lf_bindBtnEvt(oCtxt){
+  async function lf_bindBtnEvt(oCtxt){
 
     //바인딩 추가속성정보 메시지 초기화.
     lf_resetMPROPMsg();
@@ -993,9 +1002,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
         lt_MPROP = oAPP.attr.oBindDialog._oModel.oData.T_MPROP || [];
 
         
-    
     //bind전 입력값 점검시 오류가 발생한 경우 exit.
-    if(lf_chkBindVal(oCtxt ? false : true, ls_tree) === true){
+    if(await lf_chkBindVal(oCtxt ? false : true, ls_tree) === true){
       oAPP.attr.oBindDialog._oModel.refresh();
 
       //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.

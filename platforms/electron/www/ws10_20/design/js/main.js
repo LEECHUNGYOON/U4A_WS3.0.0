@@ -354,7 +354,7 @@
       oFormData.append("APPID", oAPP.attr.APPID);
 
       //서버 호출.
-      sendAjax(oAPP.attr.servNm + "/getAppData", oFormData, function(param){
+      sendAjax(oAPP.attr.servNm + "/getAppData", oFormData, async function(param){
 
         parent.setBusy("X");
 
@@ -435,8 +435,11 @@
         //design tree의 row action 활성여부 설정.
         oAPP.fn.designTreeSetRowAction();
 
-        //모델 갱신 처리.
-        oAPP.attr.oModel.refresh();
+        // //모델 갱신 처리.
+        // oAPP.attr.oModel.refresh();
+
+        //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+        await oAPP.fn.designRefershModel();
 
 
         //ui design tree 전체 접힘 처리.
@@ -599,6 +602,7 @@
       oAPP.attr.appInfo = parent.getAppInfo();
 
       //어플리케이션 정보가 출력된 상태에서 변경된 내용 없이 display로 전환된경우
+      //(변경건 없이 EDIT -> DISP 로 전환되는경우)
       if(oAPP.attr.appInfo.IS_EDIT === "" &&
          oAPP.attr.appInfo.IS_CHAG === "" &&
          typeof oAPP.DATA.APPDATA !== "undefined" &&
@@ -634,11 +638,19 @@
           //design tree의 row action 활성여부 설정.
           oAPP.fn.designTreeSetRowAction();
 
-          //모델 갱신 처리.
-          oAPP.attr.oModel.refresh();
+          // //모델 갱신 처리.
+          // oAPP.attr.oModel.refresh();
 
-          //wait off 처리.
-          parent.setBusy("");
+          // //wait off 처리.
+          // parent.setBusy("");
+
+          //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
+          oAPP.fn.designRefershModel().then(function(){
+
+            //wait off 처리.
+            parent.setBusy("");
+
+          });
 
           return;
 

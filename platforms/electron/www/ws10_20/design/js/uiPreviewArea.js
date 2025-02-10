@@ -454,96 +454,111 @@
       return;
     }
 
+
+    //20250210 PES -START.
+    //OTR 정보를 검색하기 위해 sync로 서버 호출 하는 로직 async로 변경 처리.
     //프로퍼티 otr 입력값 존재시 text 검색.
-    var l_prop = oAPP.fn.prevGetOTRText(is_attr) || is_attr.UIATV;
+    // var l_prop = oAPP.fn.prevGetOTRText(is_attr) || is_attr.UIATV;
+    oAPP.fn.prevGetOTRText(is_attr).then(function(OTRText){
+      //20250210 PES -END.
 
-    var l_UIADT = is_attr.UIADT;
 
-    //N건 입력이 가능한 프로퍼티 인경우.
-    if(is_attr.ISMLB === "X"){
-      //프로퍼티 TYPE에 []이 없다면 추가.
-      if(l_UIADT.indexOf("[]") === -1){
-        l_UIADT += "[]";
+      var l_prop = OTRText;
+
+      if(typeof OTRText === "undefined"){
+        l_prop = is_attr.UIATV;
       }
-    }
-
-    //프로퍼티 타입에 따른 입력값 parse 처리.
-    switch(l_UIADT){
-
-       case "boolean":
-         l_prop = false;
-         if(is_attr.UIATV === "true"){
-           l_prop = true;
-         }
-         break;
-
-       case "int":
-         l_prop = parseInt(is_attr.UIATV) || 0;
-         break;
-
-       case "float":
-         l_prop = parseFloat(is_attr.UIATV) || 0;
-         break;
-
-       default:
-         break;
-    }
 
 
-    //예외처리 대상 프로퍼티입력건 여부 확인.
-    var l_ua032 = oAPP.DATA.LIB.T_9011.find( a => a.CATCD === "UA032" && a.FLD01 === is_attr.UIOBK && a.FLD03 === is_attr.UIATT && a.FLD06 !== "X" );
-    
-    //예외처리 대상 프로퍼티를 입력한 경우.
-    if(l_ua032 && l_ua032.FLD07 !== ""){
-      //해당 function을 수행한 결과값으로 변경 처리.
-      l_prop = oAPP.attr.ui.frame.contentWindow[l_ua032.FLD07](l_prop);
+      var l_UIADT = is_attr.UIADT;
+
+      //N건 입력이 가능한 프로퍼티 인경우.
+      if(is_attr.ISMLB === "X"){
+        //프로퍼티 TYPE에 []이 없다면 추가.
+        if(l_UIADT.indexOf("[]") === -1){
+          l_UIADT += "[]";
+        }
+      }
+
+      //프로퍼티 타입에 따른 입력값 parse 처리.
+      switch(l_UIADT){
+
+        case "boolean":
+          l_prop = false;
+          if(is_attr.UIATV === "true"){
+            l_prop = true;
+          }
+          break;
+
+        case "int":
+          l_prop = parseInt(is_attr.UIATV) || 0;
+          break;
+
+        case "float":
+          l_prop = parseFloat(is_attr.UIATV) || 0;
+          break;
+
+        default:
+          break;
+      }
+
+
+      //예외처리 대상 프로퍼티입력건 여부 확인.
+      var l_ua032 = oAPP.DATA.LIB.T_9011.find( a => a.CATCD === "UA032" && a.FLD01 === is_attr.UIOBK && a.FLD03 === is_attr.UIATT && a.FLD06 !== "X" );
       
-    }
-
-    //sap.ui.core.HTML의 content 프로퍼티 입력값인경우.
-    if(is_attr.UIATK === "AT000011858"){
-      //HTML CONTENT 입력건 검색.
-      var ls_cevt = oAPP.DATA.APPDATA.T_CEVT.find( a => a.OBJID === is_attr.OBJID + is_attr.UIASN && a.OBJTY === "HM" );
-
-      var l_UIATV = "";
-
-      if(typeof ls_cevt !== "undefined"){
-        //20230303 pes.
-        //sap.ui.core.HTML의 content에 입력값을 반영하는 과정에서
-        //ls_cevt.DATA 안에 HTML tag가 없이 text만이 존재할때 
-        //.이 있으면 오류가 나는 문제가 있기에 <div> tag로 감싸는 로직 추가.
-        //(HTML.setContent("asdasd.")); -> HTML.setContent("<div>" + "asdasd." + "</div>"));
-        //l_UIATV = ls_cevt.DATA;        
-        l_UIATV = "<div>" + ls_cevt.DATA + "</div>";
+      //예외처리 대상 프로퍼티를 입력한 경우.
+      if(l_ua032 && l_ua032.FLD07 !== ""){
+        //해당 function을 수행한 결과값으로 변경 처리.
+        l_prop = oAPP.attr.ui.frame.contentWindow[l_ua032.FLD07](l_prop);
+        
       }
 
-      oAPP.attr.prev[is_attr.OBJID][l_propnm](l_UIATV);
-      return;
+      //sap.ui.core.HTML의 content 프로퍼티 입력값인경우.
+      if(is_attr.UIATK === "AT000011858"){
+        //HTML CONTENT 입력건 검색.
+        var ls_cevt = oAPP.DATA.APPDATA.T_CEVT.find( a => a.OBJID === is_attr.OBJID + is_attr.UIASN && a.OBJTY === "HM" );
 
-    }
+        var l_UIATV = "";
 
+        if(typeof ls_cevt !== "undefined"){
+          //20230303 pes.
+          //sap.ui.core.HTML의 content에 입력값을 반영하는 과정에서
+          //ls_cevt.DATA 안에 HTML tag가 없이 text만이 존재할때 
+          //.이 있으면 오류가 나는 문제가 있기에 <div> tag로 감싸는 로직 추가.
+          //(HTML.setContent("asdasd.")); -> HTML.setContent("<div>" + "asdasd." + "</div>"));
+          //l_UIATV = ls_cevt.DATA;        
+          l_UIATV = "<div>" + ls_cevt.DATA + "</div>";
+        }
 
-    //프로퍼티 입력값 정합성 점검.
-    if(oAPP.fn.chkValidProp(is_attr) === false){
-      //입력 불가능한 프로퍼티를 입력한 경우.
+        oAPP.attr.prev[is_attr.OBJID][l_propnm](l_UIATV);
+        return;
 
-      //프로퍼티 정보 검색.
-      var ls_0023 = oAPP.DATA.LIB.T_0023.find( a=> a.UIATK === is_attr.UIATK );
-
-      //프로퍼티 정보를 찾은경우.
-      if(ls_0023){
-        //해당 프로퍼티의 default value를 매핑.
-        l_prop = ls_0023.DEFVL;
       }
 
-    }
 
-    //UI.setProperty(value); 처리.
-    try{
-      oAPP.attr.prev[is_attr.OBJID][l_propnm](l_prop);
-    }catch(e){
+      //프로퍼티 입력값 정합성 점검.
+      if(oAPP.fn.chkValidProp(is_attr) === false){
+        //입력 불가능한 프로퍼티를 입력한 경우.
 
-    }
+        //프로퍼티 정보 검색.
+        var ls_0023 = oAPP.DATA.LIB.T_0023.find( a=> a.UIATK === is_attr.UIATK );
+
+        //프로퍼티 정보를 찾은경우.
+        if(ls_0023){
+          //해당 프로퍼티의 default value를 매핑.
+          l_prop = ls_0023.DEFVL;
+        }
+
+      }
+
+      //UI.setProperty(value); 처리.
+      try{
+        oAPP.attr.prev[is_attr.OBJID][l_propnm](l_prop);
+      }catch(e){
+
+      }
+
+    });
     
   };  //미리보기 화면 UI의 프로퍼티 변경 처리.
 
@@ -1012,41 +1027,48 @@
   //OTR TEXT 검색.
   oAPP.fn.prevGetOTRText = function(is_attr){
 
-    //프로퍼티가 아닌경우 EXIT.
-    if(is_attr.UIATY !== "1"){return;}
+    return new Promise(function(resolve){
 
-    //입력값이 존재하지 않는경우 EIXT.
-    if(is_attr.UIATV === ""){return;}
+      //프로퍼티가 아닌경우 EXIT.
+      if(is_attr.UIATY !== "1"){
+        return resolve();
+      }
 
-    //바인딩 처리된경우 EXIT.
-    if(is_attr.ISBND === "X"){return;}
+      //입력값이 존재하지 않는경우 EIXT.
+      if(is_attr.UIATV === ""){
+        return resolve();
+      }
 
-    //프로퍼티의 시작값이 $OTR:로 시작하지 않는경우 EXIT.
-    if(is_attr.UIATV.substr(0,5) !== "$OTR:"){return;}
-    
-    //OTR alias 정보 구성.
-    var oFormData = new FormData();
-    oFormData.append("ALIAS", is_attr.UIATV.substr(5));
-    
-    var l_text;
+      //바인딩 처리된경우 EXIT.
+      if(is_attr.ISBND === "X"){
+        return resolve();
+      }
 
-    //OTR text 검색을 위한 서버 호출.
-    sendAjax(oAPP.attr.servNm + "/getOTRText", oFormData, function(param){
-
-      //wait 종료 처리.
-      parent.setBusy("");
-
-      //오류가 발생한 경우 EXIT.
-      if(param.RETCD === "E"){
-        return;
+      //프로퍼티의 시작값이 $OTR:로 시작하지 않는경우 EXIT.
+      if(is_attr.UIATV.substr(0,5) !== "$OTR:"){
+        return resolve();
       }
       
-      //검색에 성공한 경우 TEXT 정보 RETURN.
-      l_text = param.TEXT;
+      //OTR alias 정보 구성.
+      var oFormData = new FormData();
+      oFormData.append("ALIAS", is_attr.UIATV.substr(5));
       
-    },"", false);
+      var l_text;
 
-    return l_text;
+      //OTR text 검색을 위한 서버 호출.
+      sendAjax(oAPP.attr.servNm + "/getOTRText", oFormData, function(param){
+
+        //오류가 발생한 경우 EXIT.
+        if(param.RETCD === "E"){
+          return resolve();
+        }
+        
+        //검색에 성공한 경우 TEXT 정보 RETURN.
+        return resolve(param.TEXT);
+        
+      });
+      
+    });
 
   };  //OTR TEXT 검색 처리.
 

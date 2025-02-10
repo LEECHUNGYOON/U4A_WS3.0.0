@@ -552,15 +552,14 @@
                     ]
 
                 },
-                {
-                    key: "WMENU20_06",
-                    icon: "sap-icon://u4a-fw-solid/Code Branch",
-                    visible: !parent.APP.isPackaged,
-                    // visible: oAPP.common.checkWLOList("C", "UHAK900948"),
-                    text: "Version Management", // [MSG]            
-                    enabled: true,
-                },
-
+                // {
+                //     key: "WMENU20_06",
+                //     icon: "sap-icon://u4a-fw-solid/Code Branch",
+                //     visible: !parent.APP.isPackaged,
+                //     // visible: oAPP.common.checkWLOList("C", "UHAK900948"),
+                //     text: "Version Management", // [MSG]            
+                //     enabled: true,
+                // },
                 // {
                 //     key: "WMENU20_04",
                 //     text: oAPP.msg.M047, // Icon List

@@ -178,6 +178,20 @@
  * 🔥 Public functions
  ****************************************************************************/
 
+    function _setBroadCastBusy(isBusy){
+
+        if(isBusy === "X"){
+
+            oAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
+
+        } else {
+
+            oAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
+
+        }
+
+    } // end of _setBroadCastBusy
+
 
     /********************************************************************
      * @function - Busy 켜기 끄기
@@ -218,17 +232,73 @@
             return;
         }
 
-        if(isBusy === "X"){
+        _setBroadCastBusy(isBusy);
 
-            oAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
+        // if(isBusy === "X"){
 
-        } else {
+        //     oAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
 
-            oAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
+        // } else {
 
-        }
+        //     oAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
+
+        // }
   
     }; // end of oAPP.fn.setBusy
+
+    oAPP.fn.setBusyDialog = function(isBusy, sOption){
+
+        let oBusyDialog = oAPP.attr.oBusyDialog;
+        if(!oBusyDialog){
+
+            oBusyDialog = new sap.m.BusyDialog();
+
+            oAPP.attr.oBusyDialog = oBusyDialog;
+
+        }
+
+        let sTitle = sOption?.TITLE || "";
+        let sDesc = sOption?.DESC || "";
+
+        if(isBusy === "X"){
+
+            oBusyDialog.setTitle();
+            oBusyDialog.setText();
+
+            oBusyDialog.open();
+
+        }
+        else {
+
+            oBusyDialog.setTitle("");
+            oBusyDialog.setText("");
+
+            oBusyDialog.close();
+
+        }
+
+
+
+
+
+        var _ISBROAD = sOption?.ISBROAD || undefined;
+        if(typeof _ISBROAD !== "undefined"){
+            return;
+        }
+
+        _setBroadCastBusy(isBusy);
+
+        // if(isBusy === "X"){
+
+        //     oAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
+
+        // } else {
+
+        //     oAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
+
+        // }
+
+    }; // end of oAPP.fn.setBusyDialog
 
 
 

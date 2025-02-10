@@ -137,56 +137,120 @@ function checkRequireChildRec(aTree, aError = []) {
         
         var _sTree = aTree[i];
 
-        //현재 UI가 필수 점검 대상 UI 인지 여부 확인.
-        var _sUA050 = oAPP.attr.S_CODE.UA050.find( item => item.FLD01 === _sTree.UIOBK && item.FLD08 !== "X" );
+        var _aUA050 = oAPP.attr.S_CODE.UA050.filter( item => item.FLD01 === _sTree.UIOBK && item.FLD08 !== "X" );
 
-        //필수 점검 대상 UI가 아닌경우.
-        if(typeof _sUA050 === "undefined"){
-
+        if(_aUA050.length === 0){
             //하위를 탐색하며, 점검 처리.
             checkRequireChildRec(_sTree.zTREE, aError);
 
             continue;
-
         }
 
-        //필수 aggregation의 child가 존재하는지 확인.
-        var _exist = _sTree.zTREE.findIndex( item => item.UIATT === _sUA050.FLD03 );
-
-        //필수 aggregation에 child 정보가 존재하지 않는경우.
-        if(_exist === -1){
-
-            var _sError = JSON.parse(JSON.stringify(TY_ERROR));
-
-            //그룹코드 : 오브젝트 (CLAS,METH...)
-            _sError.GRCOD  = "PROG";
-
-            //오류 flag.
-            _sError.TYPE   = "E";
-
-            //오류 메시지.
-            //217	&1 UI의 &2 Aggregation에 UI를 추가하십시오.
-            _sError.DESC   = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "217", _sTree.OBJID, _sUA050.FLD03);
-
-            //오류 Index
-            _sError.LINE   = "";
+        for (let j = 0; j < _aUA050.length; j++) {
             
-            //UI OBJECT ID            
-            _sError.OBJID  = _sTree.OBJID;
-            
-            //A:UI 디자인 영역 B:컨트롤러 EDIT
-            _sError.GUBN   = "A";
+            var _sUA050 = _aUA050[j];
+
+            //필수 aggregation의 child가 존재하는지 확인.
+            var _exist = _sTree.zTREE.findIndex( item => item.UIATT === _sUA050.FLD03 );
+
+            //존재하는경우 하위 로직 skip.
+            if(_exist === 0){
+                continue;
+            }
+
+            //필수점검 예외 AGGR명(해당 AGGR에 UI가 존재시 점검 생략) 항목이 존재시 해당 aggr에 UI가 존재하는경우.
+            if(_sUA050.FLD09 !== "" && _sTree.zTREE.findIndex( item => item.UIATT === _sUA050.FLD09 ) !== -1){
+                //필수 점검 생략 처리.
+                _exist = 0;
+            }
+
+            //필수 aggregation에 child 정보가 존재하지 않는경우.
+            if(_exist === -1){
+
+                var _sError = JSON.parse(JSON.stringify(TY_ERROR));
+
+                //그룹코드 : 오브젝트 (CLAS,METH...)
+                _sError.GRCOD  = "PROG";
+
+                //오류 flag.
+                _sError.TYPE   = "E";
+
+                //오류 메시지.
+                //217	&1 UI의 &2 Aggregation에 UI를 추가하십시오.
+                _sError.DESC   = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "217", _sTree.OBJID, _sUA050.FLD03);
+
+                //오류 Index
+                _sError.LINE   = "";
+                
+                //UI OBJECT ID            
+                _sError.OBJID  = _sTree.OBJID;
+                
+                //A:UI 디자인 영역 B:컨트롤러 EDIT
+                _sError.GUBN   = "A";
 
 
-            aError.push(_sError);
-            
-            _sError = null;
+                aError.push(_sError);
+                
+                _sError = null;
+                
+            }
             
         }
 
 
         //하위를 탐색하며, 점검 처리.
         checkRequireChildRec(_sTree.zTREE, aError);
+
+        // //현재 UI가 필수 점검 대상 UI 인지 여부 확인.
+        // var _sUA050 = oAPP.attr.S_CODE.UA050.find( item => item.FLD01 === _sTree.UIOBK && item.FLD08 !== "X" );
+
+        // //필수 점검 대상 UI가 아닌경우.
+        // if(typeof _sUA050 === "undefined"){
+
+        //     //하위를 탐색하며, 점검 처리.
+        //     checkRequireChildRec(_sTree.zTREE, aError);
+
+        //     continue;
+
+        // }
+
+        // //필수 aggregation의 child가 존재하는지 확인.
+        // var _exist = _sTree.zTREE.findIndex( item => item.UIATT === _sUA050.FLD03 );
+
+        // //필수 aggregation에 child 정보가 존재하지 않는경우.
+        // if(_exist === -1){
+
+        //     var _sError = JSON.parse(JSON.stringify(TY_ERROR));
+
+        //     //그룹코드 : 오브젝트 (CLAS,METH...)
+        //     _sError.GRCOD  = "PROG";
+
+        //     //오류 flag.
+        //     _sError.TYPE   = "E";
+
+        //     //오류 메시지.
+        //     //217	&1 UI의 &2 Aggregation에 UI를 추가하십시오.
+        //     _sError.DESC   = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "217", _sTree.OBJID, _sUA050.FLD03);
+
+        //     //오류 Index
+        //     _sError.LINE   = "";
+            
+        //     //UI OBJECT ID            
+        //     _sError.OBJID  = _sTree.OBJID;
+            
+        //     //A:UI 디자인 영역 B:컨트롤러 EDIT
+        //     _sError.GUBN   = "A";
+
+
+        //     aError.push(_sError);
+            
+        //     _sError = null;
+            
+        // }
+
+
+        // //하위를 탐색하며, 점검 처리.
+        // checkRequireChildRec(_sTree.zTREE, aError);
 
     }
 

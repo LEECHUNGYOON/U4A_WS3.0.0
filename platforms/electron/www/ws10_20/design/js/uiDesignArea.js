@@ -362,8 +362,21 @@
         event.dataTransfer.setData("rtmcls", ls_0022.LIBNM);
       }
 
+      //테스트주석처리!!!!!!!!!!!!!!!!!!!!
+      //text/plain 을 사용하는용도가 바인딩 팝업 쪽인데, 바인딩 팝업은 setDragBindPopupData.js에서 처리 하고 있기에 주석 처리.
+      //사용처를 다시 확인해서 사용처 없으면 제거 처리.
       //DRAG한 UI ID 정보 세팅.
       event.dataTransfer.setData("text/plain", "designTree|" + ls_drag.OBJID + "|" + oAPP.attr.DnDRandKey);
+      
+      //테스트주석처리!!!!!!!!!!!!!!!!!!!!
+      //design tree에서 drag 해서 abap editor쪽에 D&D 하면 아래 소스를 완성하는것.
+      //
+      // var data1 = 
+      //             `DATA LO_PAGE TYPE REF TO /U4A/CL_UO00389.\n`
+      //                 + `LO_PAGE ?= AR_VIEW->GET_UI_INSTANCE( I_ID = 'PAGE1' ).`;
+      
+      //ws3.0 -> gui.
+      // event.dataTransfer.setData("text/plain", data1);
 
 
       //drag 시작시 drop 가능건에 대한 제어 처리.

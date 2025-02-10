@@ -353,6 +353,114 @@
     /************************************************************************
      * WS10 페이지로 이동
      * **********************************************************************/
+    // oAPP.fn.fnMoveToWs10 = function () {
+
+    //     // busy 키고 Lock 키기
+    //     oAPP.common.fnSetBusyLock("X");
+
+    //     var oAppInfo = parent.getAppInfo();
+
+    //     // // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
+    //     // oAPP.fn.fnKillUserSession(oAppInfo, lf_success, lf_success);
+
+    //     let SSID = parent.getSSID();
+        
+    //     parent.setSSID("");
+
+    //     let oFormData = new FormData();
+    //         oFormData.append("APPID", oAppInfo.APPID);
+    //         oFormData.append("SSID", SSID);
+
+    //     // 서버 세션 죽이기
+    //     fnKillSession(oFormData, lf_success);
+
+    //     async function lf_success() {
+
+    //         /**
+    //          * 페이지 이동 시, CHANGE 모드였다면 현재 APP의 Lock Object를 해제한다.
+    //          */
+    //         var oAppInfo = parent.getAppInfo();
+
+    //         if (oAppInfo && oAppInfo.IS_EDIT == 'X') {
+
+    //             await new Promise(function(resolve){
+                    
+    //                 let oParams = {
+    //                     APPID: oAppInfo.APPID,  // Lock을 해제할 APPID                        
+    //                     ACTCD: "APP_EXIT"       // 앱을 빠져나간다는 Action Code
+    //                 };
+
+    //                 ajax_unlock_app(oParams, function(oReturn){
+
+    //                     if (oReturn.RTCOD === 'E') {
+                            
+    //                         parent.setSoundMsg("02"); // error sound
+
+    //                         // 작업표시줄 깜빡임
+    //                         CURRWIN.flashFrame(true);
+
+    //                         // 크리티컬 오류 처리
+    //                         parent.showMessage(sap, 20, oReturn.RTCOD, oReturn.RTMSG, fnCriticalError);
+            
+    //                         // 화면 Lock 해제
+    //                         sap.ui.getCore().unlock();
+            
+    //                         parent.setBusy('');
+            
+    //                         return;
+    //                     }
+
+    //                     return resolve(oReturn);
+                        
+    //                 });
+
+    //             }); 
+
+    //         }
+
+    //         // WS20 화면에서 떠있는 Dialog, Popup 종류, Electron Browser들 전체 닫는 function
+    //         oAPP.fn.fnCloseAllWs20Dialogs();
+
+    //         // WS20 페이지 삭제
+    //         oAPP.fn.removeContent();
+
+    //         // App Info 초기화
+    //         parent.setAppInfo(undefined);
+
+    //         // WS20에 대한 모델 정보 초기화
+    //         APPCOMMON.fnSetModelProperty("/WS20", undefined);
+
+    //         // 10번 프로그램으로 이동한다.        
+    //         oAPP.fn.fnOnMoveToPage("WS10");
+
+    //         // 20번 프로그램 단축키 삭제
+    //         APPCOMMON.removeShortCut("WS20");
+
+    //         // 10번 프로그램 단축키 설정
+    //         APPCOMMON.setShortCut("WS10");
+
+    //         // 브라우저 타이틀 변경
+    //         parent.CURRWIN.setTitle("U4A Workspace - Main");
+
+    //         // 윈도우 헤더 타이틀 변경
+    //         oAPP.common.setWSHeadText("U4A Workspace - Main");
+
+    //         // AI 서버 연결되어있을 경우 연결 해제 하기
+    //         // AI 서버에 요청할 데이터
+    //         let _oPARAM = {
+    //             CONID: parent.getBrowserKey()
+    //         };
+
+    //         // AI 연결 해제
+    //         await parent.UAI.disconnect(_oPARAM);
+
+    //         // busy 끄고 Lock 끄기
+    //         oAPP.common.fnSetBusyLock("");
+
+    //     } // end of lf_success
+
+    // }; // end of oAPP.fn.fnMoveToWs10    
+
     oAPP.fn.fnMoveToWs10 = function () {
 
         // busy 키고 Lock 키기
@@ -360,19 +468,8 @@
 
         var oAppInfo = parent.getAppInfo();
 
-        // // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
-        // oAPP.fn.fnKillUserSession(oAppInfo, lf_success, lf_success);
-
-        let SSID = parent.getSSID();
-        
-        parent.setSSID("");
-
-        let oFormData = new FormData();
-            oFormData.append("APPID", oAppInfo.APPID);
-            oFormData.append("SSID", SSID);
-
-        // 서버 세션 죽이기
-        fnKillSession(oFormData, lf_success);
+        // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
+        oAPP.fn.fnKillUserSession(oAppInfo, lf_success, lf_success);
 
         async function lf_success() {
 
@@ -402,10 +499,8 @@
                             // 크리티컬 오류 처리
                             parent.showMessage(sap, 20, oReturn.RTCOD, oReturn.RTMSG, fnCriticalError);
             
-                            // 화면 Lock 해제
-                            sap.ui.getCore().unlock();
-            
-                            parent.setBusy('');
+                            // busy 끄고 Lock 끄기
+                            oAPP.common.fnSetBusyLock("");    
             
                             return;
                         }
@@ -455,7 +550,7 @@
             await parent.UAI.disconnect(_oPARAM);
 
             // busy 끄고 Lock 끄기
-            oAPP.common.fnSetBusyLock("");
+            oAPP.common.fnSetBusyLock("");          
 
         } // end of lf_success
 
@@ -645,35 +740,26 @@
     /************************************************************************
      * 20 -> 10번 페이지로 이동 시 서버 세션 죽이기 위한 공통 펑션
      * **********************************************************************/
-    // oAPP.fn.fnKillUserSession = function (oAppInfo, fn_callback, fn_fail) {
+    oAPP.fn.fnKillUserSession = function (oAppInfo, fn_callback, fn_fail) {
 
-    //     let SSID = parent.getSSID();
+        let SSID = parent.getSSID();
 
-    //     parent.setSSID("");
+        parent.setSSID("");
 
-    //     let oFormData = new FormData();
+        let oFormData = new FormData();
         
-    //     if(oAppInfo && oAppInfo.APPID){
-    //         oFormData.append("APPID", oAppInfo.APPID);
-    //     }
+        if(oAppInfo && oAppInfo.APPID){
+            oFormData.append("APPID", oAppInfo.APPID);
+        }
 
-    //     oFormData.append("SSID", SSID);
-    //     // oFormData.append("EXIT", 'X');
+        oFormData.append("SSID", SSID);
+        oFormData.append("EXIT", 'X');
 
-    //     // 서버에서 App 정보를 구한다.
-    //     // ajax_init_prc(oFormData, fn_callback, fn_fail);
-
-    //     var sPath = parent.getServerPath() + '/kill_session';
-
-    //     var oOptions = {
-    //         URL: sPath,
-    //         FORMDATA: oFormData
-    //     };
-
-    //     sendServerExit(oOptions, fn_callback);
+        // 서버에서 App 정보를 구한다.
+        ajax_init_prc(oFormData, fn_callback, fn_fail);
 
 
-    // }; // end of oAPP.fn.fnKillUserSession
+    }; // end of oAPP.fn.fnKillUserSession    
 
     /************************************************************************
      * Application Name 정합성 체크

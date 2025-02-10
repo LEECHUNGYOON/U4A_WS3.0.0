@@ -498,7 +498,8 @@ class CL_INSERT_UI{
 
 
         //대상 UI에 onAfterRendering 이벤트 등록 처리.
-        var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+        // var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+        var _sRet = CL_COMMON.attachOnAfterRendering(_aParent);
 
 
 
@@ -516,12 +517,14 @@ class CL_INSERT_UI{
 
 
         //대상 UI를 invalidate 처리.
-        CL_COMMON.invalidateUiObject(_aParent);
+        // CL_COMMON.invalidateUiObject(_aParent);
+        CL_COMMON.invalidateUiObject(_sRet.aDesign);
 
     
         //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.
         //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
-        await Promise.all(_aPromise);
+        // await Promise.all(_aPromise);
+        await Promise.all(_sRet.aPromise);
 
         
 
@@ -970,7 +973,8 @@ class CL_DELETE_UI{
 
 
         //대상 UI에 onAfterRendering 이벤트 등록 처리.
-        var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+        // var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+        var _sRet = CL_COMMON.attachOnAfterRendering(_aParent, oParam.T_OBJID);
 
 
         for (let i = 0, l = oParam.T_OBJID.length; i < l; i++) {
@@ -988,11 +992,13 @@ class CL_DELETE_UI{
 
         
         //대상 UI를 invalidate 처리.
-        CL_COMMON.invalidateUiObject(_aParent);
+        // CL_COMMON.invalidateUiObject(_aParent);
+        CL_COMMON.invalidateUiObject(_sRet.aDesign);
 
 
-        // //미리보기 화면 변경 대기 처리.
+        //미리보기 화면 변경 대기 처리.
         // await Promise.all(_aPromise);
+        await Promise.all(_sRet.aPromise);
         
 
         //디자인 영역 모델 갱신 처리 후 design tree, attr table 갱신 대기. 
@@ -1698,15 +1704,18 @@ class CL_DRAG_DROP{
             
 
             //부모의 onAfterRendering 이벤트 등록 처리.
-            var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+            // var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+            var _sRet = CL_COMMON.attachOnAfterRendering(_aParent);
 
 
             //대상 UI를 invalidate 처리.
-            CL_COMMON.invalidateUiObject(_aParent);
+            // CL_COMMON.invalidateUiObject(_aParent);
+            CL_COMMON.invalidateUiObject(_sRet.aDesign);
 
 
             //부모의 onAfterRendering 처리 대기.
-            await Promise.all(_aPromise);
+            // await Promise.all(_aPromise);
+            await Promise.all(_sRet.aPromise);
             
 
 
@@ -1717,7 +1726,8 @@ class CL_DRAG_DROP{
 
 
             //부모의 onAfterRendering 이벤트 등록 처리.
-            var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+            // var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+            var _sRet = CL_COMMON.attachOnAfterRendering(_aParent);
             
 
             //이전 부모에 UI를 추가 처리.
@@ -1725,7 +1735,8 @@ class CL_DRAG_DROP{
 
 
             //대상 UI를 invalidate 처리.
-            CL_COMMON.invalidateUiObject(_aParent);
+            // CL_COMMON.invalidateUiObject(_aParent);
+            CL_COMMON.invalidateUiObject(_sRet.aDesign);
                
 
             oAPP.attr.oModel.refresh();
@@ -1736,7 +1747,8 @@ class CL_DRAG_DROP{
 
         
             //부모의 onAfterRendering 처리 대기.
-            await Promise.all(_aPromise);
+            // await Promise.all(_aPromise);
+            await Promise.all(_sRet.aPromise);
 
 
             //라인 선택 처리.
@@ -1853,16 +1865,19 @@ class CL_DRAG_DROP{
 
         
         //부모의 onAfterRendering 이벤트 등록 처리.
-        var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+        // var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+        var _sRet = CL_COMMON.attachOnAfterRendering(_aParent);
 
 
         //대상 UI를 invalidate 처리.
-        CL_COMMON.invalidateUiObject(_aParent);
+        // CL_COMMON.invalidateUiObject(_aParent);
+        CL_COMMON.invalidateUiObject(_sRet.aDesign);
 
 
         //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.
         //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
-        await Promise.all(_aPromise);
+        // await Promise.all(_aPromise);
+        await Promise.all(_sRet.aPromise);
 
         var _aParent = [];
 
@@ -1871,7 +1886,8 @@ class CL_DRAG_DROP{
 
 
         //부모의 onAfterRendering 이벤트 등록 처리.
-        var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+        // var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+        var _sRet = CL_COMMON.attachOnAfterRendering(_aParent);
 
         //drag, drop ui 추가 처리.
         for (let i = 0, l = _aDNDData.length; i < l; i++) {
@@ -1884,7 +1900,8 @@ class CL_DRAG_DROP{
         }
 
         //대상 UI를 invalidate 처리.
-        CL_COMMON.invalidateUiObject(_aParent);
+        // CL_COMMON.invalidateUiObject(_aParent);
+        CL_COMMON.invalidateUiObject(_sRet.aDesign);
 
        
         oAPP.attr.oModel.refresh();
@@ -1896,7 +1913,8 @@ class CL_DRAG_DROP{
     
         //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.
         //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
-        await Promise.all(_aPromise);
+        // await Promise.all(_aPromise);
+        await Promise.all(_sRet.aPromise);
 
 
         //라인 선택 처리.
@@ -2375,12 +2393,18 @@ class CL_COMMON{
     /*************************************************************
      * @method - 대상 UI에 onAfterRendering 이벤트 등록 처리.
      *************************************************************/
-    static attachOnAfterRendering = function(aDesign) {
+    static attachOnAfterRendering = function(aDesign, T_OBJID = []) {
        
         //미리보기 onAfterRendering 처리 관련 module load.
         var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
 
-        var _aPromise = [];
+        // var _aPromise = [];
+
+        var _sRet = {};
+
+        _sRet.aPromise = [];
+
+        _sRet.aDesign = [];
 
 
         for (let i = 0; i < aDesign.length; i++) {
@@ -2396,19 +2420,42 @@ class CL_COMMON{
                 _oDom = _oTarget.getDomRef();
             }      
             
+            var _sTree = oAPP.fn.getTreeData(_oTarget?._OBJID);
+
+            if(_sTree === undefined){
+                continue;
+            }
             
             //대상 UI가 화면에 출력된경우 onAfterRendering 이벤트 등록.
             if(typeof _oDom !== "undefined" && _oDom !== null){
-                _aPromise.push(_oRender.setAfterRendering(_oTarget));
+                
+                // _aPromise.push(_oRender.setAfterRendering(_oTarget));
+                _sRet.aPromise.push(_oRender.setAfterRendering(_oTarget));
+
+
+                _sRet.aDesign.push(_sTree);
 
                 //RichTextEditor 미리보기 출력 예외처리로직.
-                _aPromise = _aPromise.concat(_oRender.renderingRichTextEditor(_sDesign));
+                // _aPromise = _aPromise.concat(_oRender.renderingRichTextEditor(_sDesign));
+
+                for (let j = 0; j < _sTree.zTREE.length; j++) {
+                    
+                    var _sChild = _sTree.zTREE[j];
+
+                    if(T_OBJID.indexOf(_sChild.OBJID) !== -1){
+                        continue;
+                    }
+
+                    _sRet.aPromise = _sRet.aPromise.concat(_oRender.renderingRichTextEditor(_sChild));
+                    
+                }
 
             }
             
         }
 
-        return _aPromise;
+        // return _aPromise;
+        return _sRet;
         
     };
 
@@ -2897,7 +2944,8 @@ class CL_AI_INSERT{
 
 
             //대상 UI에 onAfterRendering 이벤트 등록 처리.
-            var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+            // var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+            var _sRet = CL_COMMON.attachOnAfterRendering(_aParent, oParam.HIST);
 
 
             for (let i = 0, l = oParam.HIST.length; i < l; i++) {
@@ -2915,11 +2963,13 @@ class CL_AI_INSERT{
 
 
             //대상 UI를 invalidate 처리.
-            CL_COMMON.invalidateUiObject(_aParent);
+            // CL_COMMON.invalidateUiObject(_aParent);
+            CL_COMMON.invalidateUiObject(_sRet.aDesign);
 
 
-            // //미리보기 화면 변경 대기 처리.
+            //미리보기 화면 변경 대기 처리.
             // await Promise.all(_aPromise);
+            await Promise.all(_sRet.aPromise);
 
             oAPP.attr.oModel.refresh();
             
@@ -2977,7 +3027,8 @@ class CL_AI_INSERT{
 
 
             //대상 UI에 onAfterRendering 이벤트 등록 처리.
-            var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+            // var _aPromise = CL_COMMON.attachOnAfterRendering(_aParent);
+            var _sRet = CL_COMMON.attachOnAfterRendering(_aParent);
 
 
             for (let i = 0, l = oParam.HIST.length; i < l; i++) {
@@ -2991,12 +3042,14 @@ class CL_AI_INSERT{
 
 
             //대상 UI를 invalidate 처리.
-            CL_COMMON.invalidateUiObject(_aParent);
+            // CL_COMMON.invalidateUiObject(_aParent);
+            CL_COMMON.invalidateUiObject(_sRet.aDesign);
 
         
             //richtexteditor 미리보기 화면이 다시 그려질때까지 대기.
             //(richtexteditor가 없다면 즉시 하위 로직 수행 처리됨)
-            await Promise.all(_aPromise);
+            // await Promise.all(_aPromise);
+            await Promise.all(_sRet.aPromise);
 
 
             oAPP.attr.oModel.refresh();

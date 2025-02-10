@@ -4084,10 +4084,18 @@ async function sendServerExit(oOptions, fnCallback) {
     var sUrl = oOptions.URL,
         oFormData = oOptions.FORMDATA;
 
+    var Url = sUrl + "?";
+
     if (oFormData && oFormData.get) {
 
-        var Url = sUrl + "?APPID=" + oFormData.get("APPID") + "&SSID=" + oFormData.get("SSID");
-       
+        if(oFormData.get("APPID")){
+            Url += `APPID=${oFormData.get("APPID")}&`;
+        }
+
+        if(oFormData.get("SSID")){
+            Url += `SSID=${oFormData.get("SSID")}`;
+        }
+
         navigator.sendBeacon(Url);
 
     } else {
