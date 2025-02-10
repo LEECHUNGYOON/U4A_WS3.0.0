@@ -99,6 +99,12 @@
                 sap.ui.getCore().detachThemeChanged(lf_changeUI5Theme);
 
             },
+            beforeOpen: function(){
+                //단축키 잠금 해제 처리.
+                oAPP.fn.setShortcutLock(false);
+
+                parent.setBusy("");
+            },
             afterOpen: function(){
 
                 //테마 변경 이벤트 등록 처리.
@@ -157,9 +163,6 @@
 
                 _oPopupCont.appendChild(_oFrameDom);
 
-
-                //팝업 호출 이후 팝업에 focus 처리.
-                oPop.focus();
             }
 
         });
