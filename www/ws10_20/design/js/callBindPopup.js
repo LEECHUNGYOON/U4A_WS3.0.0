@@ -1501,7 +1501,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "");
 
   //우상단 닫기버튼.
-  var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip: l_txt});
+  var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", tooltip: l_txt, busy:"{/busy}", busyIndicatorDelay:0});
   oTool0.addContent(oBtn0);
 
   //닫기 버튼 선택 이벤트.
@@ -1534,6 +1534,8 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
         new sap.m.Button({
           type: "Reject",
           tooltip: l_txt,
+          busy: "{/busy}",
+          busyIndicatorDelay : 0,
           icon: "sap-icon://decline",
           press: function(){
             lf_closePopup(); 

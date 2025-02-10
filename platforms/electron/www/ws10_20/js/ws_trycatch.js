@@ -62,6 +62,10 @@ module.exports = function (window, document, console) {
     // window onError 오류
     function onError(message, url, line, col, errorObj) {
 
+        if (bIsError == true) {
+            return;
+        }
+
         let sErrMsg = `[onError]: ${message}\n${url}, ${line}:${col}`;
 
         console.error(sErrMsg);
@@ -76,6 +80,10 @@ module.exports = function (window, document, console) {
     // 비동기 오류
     function onunhandledrejection(event) {
 
+        if (bIsError == true) {
+            return;
+        }
+        
         let sErrorMsg = "";
         if (event.reason) {
             sErrorMsg = "[onunhandledrejection]: " + event?.reason?.stack?.toString();

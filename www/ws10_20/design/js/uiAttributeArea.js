@@ -1477,7 +1477,7 @@
 
 
   //attribute의 context menu 호출전 처리.
-  oAPP.fn.attrBeforeContextMenu = function(oEvent){
+  oAPP.fn.attrBeforeContextMenu = async function(oEvent){
 
     var _oTarget = oEvent.target || undefined;
 
@@ -1553,6 +1553,20 @@
     }
     
     parent.setBusy("");
+
+
+    //20250211 PES -START.
+    //oMenu.openBy전 busy off처리를 수행을 기다린뒤
+    //oMenu.openBy처리 하기위해 로직 추가.
+    //busy off 처리 후 즉시 메뉴를 호출하게 되면
+    //메뉴가 종료되는 문제가 존재하기에 예외 로직 추가.
+    await new Promise((res)=>{
+      setTimeout(() => {
+        res();
+      }, 0);
+    });
+    //20250211 PES -END.
+
 
     //메뉴 호출 처리.
     oAPP.attr.ui.oAttrMenu.openBy(_oTarget);

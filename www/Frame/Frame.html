@@ -174,6 +174,8 @@
 
             console.error(sErrMsg);
 
+            console.trace(`[onError]: `);
+
             // critical 오류이므로 창을 다 닫는다.
             showCriticalErrorDialog(sErrMsg);
 
@@ -187,6 +189,9 @@
 
             let oReason = event.reason,
                 sErrorMsg = `${oReason.name}\n${oReason.message}, ${oReason.at}\n\n${oReason.text}`;
+
+
+            console.trace(`[onunhandledrejection]: `);
 
             console.error(event.reason);
 

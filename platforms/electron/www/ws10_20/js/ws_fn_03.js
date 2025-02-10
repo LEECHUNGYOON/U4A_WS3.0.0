@@ -699,16 +699,36 @@
      ************************************************************************/
     oAPP.fn.fnWs20SideFIXITM_10 = (oEvent) => {
 
+        let aPopovers = sap.m.InstanceManager.getOpenPopovers();        
+
+        for(const oPop of aPopovers){
+
+            let sPop = oPop.data("oServerInfoPopup");
+            if(sPop === "X"){
+                oPop.destroy();
+                break;
+            }
+
+        }
+
         var oSelectedItem = oEvent.getParameter("item");
-   
+
         var oServerInfoPopup = new sap.m.ResponsivePopover({
             resizable: true,
             contentWidth: "350px",
             placement: sap.m.PlacementType.Auto,
+            beforeOpen: function(){
+
+                // // busy 끄고 Lock 풀기
+                // oAPP.common.fnSetBusyLock("");
+
+            },
             afterOpen: function(){
 
-                // busy 끄고 Lock 풀기
-                oAPP.common.fnSetBusyLock("");
+                // // busy 끄고 Lock 풀기
+                // oAPP.common.fnSetBusyLock("");
+
+                oServerInfoPopup.focus();
 
             },
 
@@ -959,7 +979,14 @@
 
         }); // end of popover
 
+        oServerInfoPopup.data("oServerInfoPopup", "X");
+
+        // oAPP.attr.oServerInfoPopup = oServerInfoPopup;
+
+
         // oServerInfoPopup.bindElement("/USERINFO");
+
+        oServerInfoPopup.setInitialFocus(oServerInfoPopup);
 
         oServerInfoPopup.openBy(oSelectedItem);
 

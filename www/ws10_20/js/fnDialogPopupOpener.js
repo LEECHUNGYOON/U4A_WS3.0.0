@@ -679,10 +679,15 @@
     /************************************************************************
      * Text 검색 팝업 (electron 기능)
      ************************************************************************/
-    oAPP.fn.fnTextSearchPopupOpener = function () {
+    oAPP.fn.fnTextSearchPopupOpener = async function () {
 
-        // busy 키고 Lock 걸기
-        oAPP.common.fnSetBusyLock("X");
+        // // busy 키고 Lock 걸기
+        // oAPP.common.fnSetBusyLock("X");
+
+        // await new Promise((res) => {
+        //     setTimeout(() => {res();},0);
+        // });
+
 
         var sPopupName = "TXTSRCH";
 
@@ -691,7 +696,7 @@
         if (oResult.ISOPEN) {
             
             // busy 끄고 Lock 풀기
-            oAPP.common.fnSetBusyLock("");
+            // oAPP.common.fnSetBusyLock("");
 
             return;
         }
@@ -751,6 +756,9 @@
             setTimeout(() => {
                 oBrowserWindow.show();
             }, 10);
+
+            // busy 끄고 Lock 풀기
+            // oAPP.common.fnSetBusyLock("");
      
         });
 

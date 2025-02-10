@@ -1690,17 +1690,42 @@
      * @function - Other Css 버튼 이벤트
      *******************************************************/
     oContr.fn.onOtherCssGuideButton = function(oUi){
+   
+        // 1. 이전 인스턴스를 찾는다.
+
+        // 2. 찾자마자 destroy
+
+        let aPopovers = sap.m.InstanceManager.getOpenPopovers();        
+
+        for(const oPop of aPopovers){
+
+            let sPop = oPop.data("OtherCssGuideButton");
+            if(sPop === "X"){
+                oPop.destroy();
+                break;
+            }
+
+        }
 
         let POPOVER1 = new sap.m.ResponsivePopover({
             contentWidth: "330px",
             // modal: true,
             showHeader: false,
             placement: "Top",
-            // resizable: true,            
-            afterClose: function(){
-                POPOVER1.destroy();
-            }
+            // placement:"Auto",
+            resizable: true,    
+            afterOpen: function(){
+                
+                POPOVER1.focus();
+
+            },        
+            // afterClose: function(){
+            //     POPOVER1.destroy();
+            // }
         });
+
+        POPOVER1.data("OtherCssGuideButton", "X");
+
 
         let TOOLBAR1 = new sap.m.OverflowToolbar();
         POPOVER1.setCustomHeader(TOOLBAR1);
@@ -1746,6 +1771,8 @@
             }
     
         });
+
+        // oContr.attr.oOtherCssGuidePopover = POPOVER1;
 
         POPOVER1.setInitialFocus(POPOVER1);        
 

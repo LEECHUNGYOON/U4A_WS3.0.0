@@ -4433,6 +4433,17 @@
     }
 
 
+    //20250210 PES -START.
+    //미리보기의 UI TYPE을 ENUM 정보에 등록 처리.
+    //'sap.ui.core.TooltipBase' 과 같은 타입은 등록하지 않고
+    //sap.ui.base.DataType.getType('sap.ui.core.TooltipBase') 으로 호출할 경우
+    //콘솔 오류가 발생하는 문제가 있기에 ENUM 정보를 등록 처리.
+    if(typeof oAPP.attr.ui.frame.contentWindow?.registEnumType === "function"){
+      oAPP.attr.ui.frame.contentWindow.registEnumType(l_uiadt);
+    }
+    //20250210 PES -END.
+
+
     // var l_type = sap.ui.base.DataType.getType(l_uiadt);
     var l_type = oAPP.attr.ui.frame.contentWindow.sap.ui.base.DataType.getType(l_uiadt);
     if(!l_type){return;}

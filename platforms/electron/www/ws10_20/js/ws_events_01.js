@@ -47,7 +47,7 @@
     oAPP.events.ev_winTxtSrchWS10 = function (oEvent) {
 
         // busy 키고 Lock 걸기
-        oAPP.common.fnSetBusyLock("X");
+        // oAPP.common.fnSetBusyLock("X");
 
         oAPP.fn.fnTextSearchPopupOpener();
 

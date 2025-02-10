@@ -35,7 +35,7 @@
         
         //A39	Close
         //우상단 닫기버튼.
-        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", busyIndicatorDelay:1,
+        var oBtn0 = new sap.m.Button({icon:"sap-icon://decline", type:"Reject", busyIndicatorDelay:1, busy:"{/busyButton}",
             tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A39", "", "", "", "")});
         oTool.addContent(oBtn0);
 
@@ -99,7 +99,7 @@
     function lf_getWhereUseList(oDlg, oModel, is_tree){
         
         //busy on.
-        oModel.setData({busy:true});
+        oModel.setData({busy:true, busyButton: true});
 
         
         //클래스명 서버 전송 데이터에 구성.
@@ -118,7 +118,7 @@
             }
 
             //결과정보 바인딩.
-            oModel.setData({T_DATA:param.T_DATA, busy:false},true);
+            oModel.setData({T_DATA:param.T_DATA, busy:false , busyButton: false},true);
                         
             oAPP.fn.setShortcutLock(false);
             

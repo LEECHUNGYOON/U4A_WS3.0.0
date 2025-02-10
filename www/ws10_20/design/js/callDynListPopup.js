@@ -115,7 +115,7 @@
 
 
 
-        }, "");  //동적 테이블 구성 정보 검색.
+        }, "X");  //동적 테이블 구성 정보 검색.
 
 
 
@@ -147,6 +147,9 @@
 
         //table 리스트 바인딩 처리.
         oModel.setData({T_DATA:param.T_DATA});
+
+
+        parent.setBusy("");
 
 
     }   //동적 table 구성.

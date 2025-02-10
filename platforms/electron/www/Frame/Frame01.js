@@ -1092,7 +1092,7 @@ oAPP.msg = {};
         }
 
         let oBusy = oWS.utill.attr.oBusy;
-
+        
         // Cursor Focus Handle
         if (bIsBusy) {
     
@@ -1120,7 +1120,7 @@ oAPP.msg = {};
             }
     
         }        
-        
+
         // 20250207
         // Busy Indicator dom
         // var oBusy = oWS.utill.attr.oBusyDom;
@@ -1241,6 +1241,7 @@ oAPP.msg = {};
             }
 
         }
+
 
         // // Busy를 켰을 경우
         // if(bIsBusy){

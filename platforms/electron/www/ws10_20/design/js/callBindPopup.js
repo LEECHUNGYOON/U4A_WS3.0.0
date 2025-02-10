@@ -214,6 +214,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   //서버에서 바인딩 attr 정보 얻은 이후 popup open
   function lf_openPopup(bRefresh){
 
+
     //tree table의 필터 해제 처리.
     lf_resetFilter();
 
@@ -251,6 +252,10 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
     oFormData.append("APPID", oAPP.attr.APPID);
     oFormData.append("CLSNM", oAPP.attr.appInfo.CLSID);
 
+    //팝업 호출전 busy on.
+    parent.setBusy("X");
+
+
     //바인딩 필드 정보 검색.
     sendAjax(oAPP.attr.servNm + "/getBindAttrData", oFormData, function(param){
 
@@ -269,6 +274,9 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
          
         //모델 정보 바인딩 처리.
         l_model.refresh(true);
+
+        //팝업 호출전 busy off.
+        parent.setBusy("");
 
         return;
       }
@@ -289,6 +297,9 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
         //바인딩 필드가 존재하지 않음 메시지 처리.
         //265	Binding attributes does not exist.
         parent.showMessage(sap, 10, "E", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "265", "", "", "", ""));
+
+        //팝업 호출전 busy off.
+        parent.setBusy("");
 
         return;
 
@@ -380,8 +391,11 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
       //모델 정보 바인딩 처리.
       l_model.refresh(true);
 
+      //팝업 호출전 busy off.
+      parent.setBusy("");
 
-    },"");  //바인딩 필드 정보 검색.
+    },"X");  //[서버통신]바인딩 필드 정보 검색.
+
 
   } //서버에서 바인딩 attr 정보 얻은 이후 popup open
 
@@ -1530,6 +1544,17 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
       ],
       content: [oSpt1
       ],
+
+      beforeOpen : function(){
+
+        //팝업 호출전 busy on.
+        parent.setBusy("X");
+
+        //단축키 잠금 처리.
+        oAPP.fn.setShortcutLock(true);
+
+      },
+
       afterOpen:lf_openPopup
 
     }).addStyleClass("sapUiSizeCompact");
