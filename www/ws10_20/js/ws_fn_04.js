@@ -1281,9 +1281,9 @@
                                             ],
                                             formatter: function(SVRVER, WSSVER){
                                                 
-                                                if(!SVRVER || !WSSVER){
+                                                if(SVRVER == null || WSSVER == null){
                                                     return;
-                                                }
+                                                }                                                
 
                                                 return `${SVRVER} ( ${WSSVER} )`;
 

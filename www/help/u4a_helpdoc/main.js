@@ -30,6 +30,12 @@
 /* ***************************************************************** */
 /* 내부 광역 변수  
 /* ***************************************************************** */
+
+// 로그인 사용자 정보
+const GV_USER_INFO = parent.getUserInfo();
+const LANGU = GV_USER_INFO.LANGU;
+
+
 const GS_MSG = {
     M01: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "367", "", "", "", ""), //"Help Document 처리 통신 오류",
     M02: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "368", "", "", "", ""), //"Help Document 다운로드 처리 과정에서 해더 정보 누락되었습니다",
@@ -39,9 +45,12 @@ const GS_MSG = {
     M06: oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "372", "", "", "", ""), //"Help Document 버젼 파일 생성중 오류 발생",
     M07: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B44", "", "", "", ""), // U4A Help Document
     M08: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B78", "", "", "", ""), // Download
+    M09: parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "290") // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
 };
 
 let GV_HOST = parent.getHost();
+
+
 
 /* ***************************************************************** */
 /* 내부 전역 펑션 
@@ -80,7 +89,10 @@ async function gfn_FileMove(oFS, NEW_PATH, OLD_PATH) {
 async function gfn_getHeadData() {
     return new Promise((resolve, reject) => {
 
-        var LV_URL = GV_HOST + "/zu4a_wbc/u4a_ipcmain/U4A_HELP_DOC_WS30?PRCCD=HEAD";
+        // var LV_URL = GV_HOST + "/zu4a_wbc/u4a_ipcmain/U4A_HELP_DOC_WS30?PRCCD=HEAD";
+
+        // 2025-02-11 SOCCERHS: 언어 정보까지 전달.
+        var LV_URL = `${GV_HOST}/zu4a_wbc/u4a_ipcmain/U4A_HELP_DOC_WS30?PRCCD=HEAD&LANGU_OUT=${GV_USER_INFO.LANGU}`;
         var xhttp = new XMLHttpRequest();
         xhttp.onerror = (e) => {
             resolve({
@@ -104,6 +116,20 @@ async function gfn_getHeadData() {
                     RTMSG: GS_MSG.M01
                 }); //통신오류
                 return;
+            }
+
+            if(sDATA?.RETCD === "E"){
+                
+                var sErrMsg = parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", sDATA.MSGNR) + "\n\n";
+                    sErrMsg += GS_MSG.M09; // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
+
+                return resolve({                    
+                    RETCD: "E",                    
+                    RTMSG: sErrMsg
+
+                }); //통신오류               
+                
+
             }
 
             resolve({
@@ -252,6 +278,11 @@ exports.Excute = async function (REMOTE, DOWN_ROOT_PATH) {
             });
             return;
         }
+
+        if(HEAD_DATA?.RETCD === "E"){
+            return resolve(HEAD_DATA);
+        }
+
         if (typeof HEAD_DATA.DATA !== "object") {
             resolve({
                 RETCD: "E",
@@ -259,6 +290,7 @@ exports.Excute = async function (REMOTE, DOWN_ROOT_PATH) {
             });
             return;
         }
+
         if (typeof HEAD_DATA.DATA.RINDX === "undefined") {
             resolve({
                 RETCD: "E",
@@ -350,7 +382,9 @@ exports.Excute = async function (REMOTE, DOWN_ROOT_PATH) {
             var LV_RELKY_X = LV_RELKY.toString().padStart(4, '0');
             LV_RELKY_X = LV_RINDX + LV_RELKY_X;
 
-            var LV_URL = GV_HOST + "/zu4a_wbc/u4a_ipcmain/U4A_HELP_DOC_WS30?PRCCD=ITEM" + "&RELKY=" + LV_RELKY_X;
+            // 2025-02-11 SOCCERHS: 언어 정보까지 전달.
+            // var LV_URL = GV_HOST + "/zu4a_wbc/u4a_ipcmain/U4A_HELP_DOC_WS30?PRCCD=ITEM" + "&RELKY=" + LV_RELKY_X;
+            var LV_URL = `${GV_HOST}/zu4a_wbc/u4a_ipcmain/U4A_HELP_DOC_WS30?LANGU_OUT=${GV_USER_INFO.LANGU}&PRCCD=ITEM&RELKY=${LV_RELKY_X}`;
             var xhttp = new XMLHttpRequest();
             xhttp.onerror = (e) => {
 

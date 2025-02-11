@@ -193,6 +193,14 @@ let oAPP = parent.oAPP;
             FIND2RIGHT: oFind2Data.RIGHT,
             FIND3TABLE: oAPP.fn.fnGetFindData3(),
             FIND4TABLE: oAPP.fn.fnGetFindData4(),
+            SHFLD: {
+                M001: {
+                    SHFLD1: "",
+                },
+                M002: {
+                    SHFLD1: "",
+                },
+            }
         };
 
         var oCoreModel = sap.ui.getCore().getModel(),
@@ -311,31 +319,31 @@ let oAPP = parent.oAPP;
                             })
                         }
                     })
-                    .bindProperty("selectedKey", {
-                        parts: [
-                            `${C_MENU_BIND_PATH}/SELKEY`
-                        ],
-                        formatter: function(selectedKey) {
+                    // .bindProperty("selectedKey", {
+                    //     parts: [
+                    //         `${C_MENU_BIND_PATH}/SELKEY`
+                    //     ],
+                    //     formatter: function(selectedKey) {
 
-                            if (selectedKey == null) {
-                                return;
-                            }
+                    //         if (selectedKey == null) {
+                    //             return;
+                    //         }
 
-                            this.setSelectedKey(selectedKey);
+                    //         this.setSelectedKey(selectedKey);
 
-                            var oItem = this.getSelectedItem(),
-                                oEvent = {
-                                    key: selectedKey,
-                                    item: oItem
-                                }
+                    //         var oItem = this.getSelectedItem(),
+                    //             oEvent = {
+                    //                 key: selectedKey,
+                    //                 item: oItem
+                    //             }
 
-                            this.fireItemSelect(oEvent);
+                    //         this.fireItemSelect(oEvent);
 
-                            return selectedKey;
+                    //         return selectedKey;
 
-                        }
+                    //     }
 
-                    })
+                    // })
             }),
 
             mainContents: new sap.m.NavContainer(C_NAVCON_ID, {
@@ -1424,13 +1432,21 @@ let oAPP = parent.oAPP;
 
         oAPP.fn.setBusyIndicator('');
 
-        oAPP.attr.oUserInfo = oInfo.oUserInfo;
-        oAPP.attr.oThemeInfo = oInfo.oThemeInfo;
-        oAPP.attr.aAttrData = oInfo.aAttrData;
-        oAPP.attr.aServEvtData = oInfo.aServEvtData;
-        oAPP.attr.aT_0022 = oInfo.aT_0022;
+        oAPP.attr.oUserInfo         = oInfo.oUserInfo;
+        oAPP.attr.oThemeInfo        = oInfo.oThemeInfo;
+        oAPP.attr.aAttrData         = oInfo.aAttrData;
+        oAPP.attr.aServEvtData      = oInfo.aServEvtData;
+        oAPP.attr.aT_0022           = oInfo.aT_0022;
+
+
+
+        let oModel = sap.ui.getCore().getModel();
+        
+        let sCurrSelectKey = oModel.getProperty("/FIND/SELKEY");
 
         oAPP.fn.fnInitModelBinding();
+
+        oModel.setProperty("/FIND/SELKEY", sCurrSelectKey);
 
         // sap.ui.getCore().getModel().refresh();
 
@@ -1511,6 +1527,14 @@ let oAPP = parent.oAPP;
         if (oNavCon == null) {
             return;
         }
+
+        // debugger;
+
+        oEvent.getSource().setSelectedKey(sItemKey);
+
+        // oSelectedItem.getSource().setSelectedKey(sItemKey);
+
+        // oSelectedItem.getModel().setProperty("/FIND/SELKEY", sItemKey);
 
         oNavCon.to(`${sItemKey}--page`);
 
