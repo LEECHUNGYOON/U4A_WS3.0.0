@@ -154,8 +154,6 @@ module.exports = async function(oStream, oIF_DATA){
     // // 연결 해제 팝업을 닫는다.
     // _oVW_MAIN.fn.showDisConnectPopup(false);
     
-    console.log("Discon3", _bIsDiscon);
-
     console.log("connect success!!");
   
 };

@@ -2,7 +2,8 @@
  * 🔥 Global Variables
  ****************************************************************************/
     const NET = require("net");
-    const PIPENAME = '\\\\.\\pipe\\u4a_edu';
+    // const PIPENAME = '\\\\.\\pipe\\u4a_edu';
+    const PIPENAME = '\\\\.\\pipe\\u4aws\\serverlist';
 
     const TY_RES = {
         PRCCD: "",      // 수행중인 프로세스 코드

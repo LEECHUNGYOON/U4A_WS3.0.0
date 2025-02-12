@@ -27,7 +27,7 @@ const
     WSUTIL = parent.require(PATHINFO.WSUTIL),
     SETTINGS = require(PATHINFO.WSSETTINGS),
     XHR = new XMLHttpRequest(),   
-    oU4A_EDU_SERVER = require(PATH.join(APPPATH, "ServerList_v2", "modules", "Server", "u4aedu", "index.js"));
+    oU4A_EDU_SERVER = require(PATH.join(APPPATH, "ServerList_v2", "modules", "Server", "net", "index.js"));
 
 /************************************************************************
  * 에러 감지
