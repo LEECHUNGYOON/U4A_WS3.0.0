@@ -2900,8 +2900,11 @@ let oAPP = (function () {
             // 재시작 하시겠습니까?
             parent.setDomBusy("");
 
+            // 오류 이벤트 호출 시 전달 받은 오류 메시지
+            let sRetMsg = e?.detail?.message || "";
+
             let sMsg = oAPP.msg.M057 + " \n \n";
-            sMsg += e.message;
+                sMsg += sRetMsg;
 
             sap.m.MessageBox.error(sMsg, {
                 title: oAPP.msg.M058, //"U4A Workspace Support Package Update Error",
@@ -2917,7 +2920,7 @@ let oAPP = (function () {
 
             });
 
-            console.log('에러가 발생하였습니다. 에러내용 : ' + e.message);
+            console.log('에러가 발생하였습니다. 에러내용 : ' + sRetMsg);
 
         });
 

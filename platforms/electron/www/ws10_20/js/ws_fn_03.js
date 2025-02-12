@@ -703,11 +703,15 @@
 
         for(const oPop of aPopovers){
 
-            let sPop = oPop.data("oServerInfoPopup");
-            if(sPop === "X"){
-                oPop.destroy();
-                break;
-            }
+            if(typeof oPop.data === "function"){
+
+                let sPop = oPop.data("oServerInfoPopup");
+                if(sPop === "X"){
+                    oPop.destroy();
+                    break;
+                }
+
+            }            
 
         }
 

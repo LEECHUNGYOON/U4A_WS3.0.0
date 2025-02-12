@@ -26,7 +26,8 @@ const
     PATHINFO = require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
     WSUTIL = parent.require(PATHINFO.WSUTIL),
     SETTINGS = require(PATHINFO.WSSETTINGS),
-    XHR = new XMLHttpRequest();
+    XHR = new XMLHttpRequest(),   
+    oU4A_EDU_SERVER = require(PATH.join(APPPATH, "ServerList_v2", "modules", "Server", "u4aedu", "index.js"));
 
 /************************************************************************
  * 에러 감지
@@ -231,15 +232,22 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     } // end of _getMsgServPortList
 
+
     /************************************************************************
      * ------------------------ [ Server List Start ] ------------------------
      * **********************************************************************/
     oAPP.fn.fnOnMainStart = async () => {
 
-        oAPP.setBusy(true);        
+        oAPP.setBusy(true);
 
         jQuery.sap.require("sap.m.MessageBox");
 
+        // 
+        if(!APP.isPackaged){
+            // U4A EDU와 인터페이스를 위한 서버를 올린다.
+            await oU4A_EDU_SERVER.createServer.call(window);
+        }        
+        
         // WS Global 메시지 글로벌 변수 설정
         await oAPP.fn.fnWsGlobalMsgList();
         

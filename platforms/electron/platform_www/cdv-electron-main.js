@@ -87,6 +87,21 @@ if (!isFileProtocol) {
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
+/***************************************************
+ * Deep Link 설정
+ ***************************************************/
+if (process.defaultApp) {
+
+    if (process.argv.length >= 2) {
+      app.setAsDefaultProtocolClient('u4a-ws', process.execPath, [path.resolve(process.argv[1])])
+    }
+
+} else {
+    app.setAsDefaultProtocolClient('u4a-ws');
+}
+
+
+
 // samesite 회피
 function configureSession() {
 
