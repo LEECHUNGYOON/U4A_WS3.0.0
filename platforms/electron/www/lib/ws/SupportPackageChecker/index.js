@@ -66,7 +66,10 @@ let SPLEV = 0;  //현재 WS3.0 패치 번호
 let ADMIN = {};
 let Octokit = undefined;
 let ADMZIP = undefined;
-
+let SPAWN = undefined;
+let APPPATH = undefined;
+let USERDATA = undefined;
+let oAPP = undefined;
 
 const GS_MSG = {
     M01: "처리 통신 오류",
@@ -232,21 +235,97 @@ async function gf_chkPatch_SAP() {
 }
 
 
+/************************************************************************
+ * @function - PowerShell로 SP 파일 다운로드
+ ************************************************************************/
+function _getSuppPackDataFromPowerShell(oPARAM) {
+
+    return new Promise(function(resolve){
+
+        // PowerShell 프로세스 생성
+        const ps = SPAWN("powershell.exe", [
+            "-ExecutionPolicy", "Bypass",
+            "-File", oPARAM.PS_SP_PATH,
+            "-BaseUrl", oPARAM.BASE_URL,
+            "-sapClient", oPARAM.SAP_CLIENT,
+            "-sapUser", oPARAM.SAP_USER,
+            "-sapPassword", oPARAM.SAP_PW,
+            "-spPath", oPARAM.SP_DOWN_PATH,
+            "-JsonInput", JSON.stringify(oPARAM.FILE_INFO)
+        ]);
+
+        // 실행 결과 출력
+        ps.stdout.on("data", (data) => {
+            console.log(`출력: ${data.toString()}`);
+        });
+
+        // 에러 메시지 출력
+        ps.stderr.on("data", (data) => {
+            console.error(`에러: ${data.toString()}`);
+        });
+
+        // 실행 완료 이벤트 처리
+        ps.on("close", (code) => {    
+            resolve({ SUBRC: code });
+        });
+
+    });
+
+} // end of _getSuppPackDataFromPowerShell
+
+/************************************************************************
+ * @function - PowerShell로 node_modules 파일 다운로드
+ ************************************************************************/
+function _getNodeModlueFromPowerShell(oPARAM){
+
+    return new Promise(function(resolve){
+
+        // // PowerShell 프로세스 생성
+        // const ps = SPAWN("powershell.exe", [
+        //     "-ExecutionPolicy", "Bypass",
+        //     "-File", oPARAM.PS_SP_PATH,
+        //     "-BaseUrl", oPARAM.BASE_URL,
+        //     "-sapClient", oPARAM.SAP_CLIENT,
+        //     "-sapUser", oPARAM.SAP_USER,
+        //     "-sapPassword", oPARAM.SAP_PW,
+        //     "-spPath", oPARAM.SP_DOWN_PATH,
+        //     "-JsonInput", oPARAM.FILE_INFO
+        // ]);
+
+        // // 실행 결과 출력
+        // ps.stdout.on("data", (data) => {
+        //     console.log(`출력: ${data.toString()}`);
+        // });
+
+        // // 에러 메시지 출력
+        // ps.stderr.on("data", (data) => {
+        //     console.error(`에러: ${data.toString()}`);
+        // });
+
+        // // 실행 완료 이벤트 처리
+        // ps.on("close", (code) => {    
+        //     resolve({ SUBRC: code });
+        // });    
+        
+        resolve({ SUBRC: 0 });
+
+    });
+
+} // end of _getNodeModlueFromPowerShell
+
+
 //[펑션] (SAP) 패치 다운로드 
 async function gf_download_SAP(PATCH) {
-    return new Promise(async (resolve, rej) => {
-
-        var LV_RELKY = 0;
+    return new Promise(async (resolve) => {
 
         var LS_FILE_INFO = {};
-        LS_FILE_INFO.VERSN = PATCH.S_INFO.VERSN;
-        LS_FILE_INFO.SPLEV = PATCH.S_INFO.SPLEV;
-        LS_FILE_INFO.TOTAL = PATCH.S_INFO.TOTAL;
-        LS_FILE_INFO.TRANSFERRED = 0;
+            LS_FILE_INFO.VERSN = PATCH.S_INFO.VERSN;
+            LS_FILE_INFO.SPLEV = PATCH.S_INFO.SPLEV;
+            LS_FILE_INFO.TOTAL = PATCH.S_INFO.TOTAL;
+            LS_FILE_INFO.TRANSFERRED = 0;
 
         //이벤트 트리거 - 다운로드중
         document.dispatchEvent(new CustomEvent('download-progress-SP', { detail: { message: GS_MSG.M09, file_info: LS_FILE_INFO } }));
-
 
         //(APP)다운로드 파일 경로 설정 
         var LV_TMP_DOWN_APP = PATH.join(process.resourcesPath, "app.zip");
@@ -254,218 +333,99 @@ async function gf_download_SAP(PATCH) {
         //(NODE_MODULES)다운로드 파일 경로 설정 
         var LV_TMP_DOWN_NODE = PATH.join(process.resourcesPath, "node_modules.zip");
 
+        // WS Settings 정보 구하기
+        let oSettings = getSettingsInfo();
 
-        //[펑션] WS3.0 패치 분할(SP) Data 추출
-        function Lfn_getdata_SP() {
+        // PowerShell 관련 설정 정보 구하기
+        let oSettingsPS = oSettings.ps;
 
-            LV_RELKY = LV_RELKY + 1;
-            var LV_RELKY_X = LV_RELKY.toString().padStart(10, '0');
-            var LV_URL = ADMIN.SAP.URL + "?PRCCD=02" + "&RELID=SP" + "&RELKY=" + LV_RELKY_X;
+        let sPS_SP_PATH   = PATH.join(USERDATA, oSettingsPS.rootPath, oSettingsPS.sp);
+        let sPS_NODE_PATH = PATH.join(USERDATA, oSettingsPS.rootPath, oSettingsPS.nd);
 
-            var xhttp = new XMLHttpRequest();
-            xhttp.onerror = (e) => { resolve({ RETCD: "E", RTMSG: GS_MSG.M07 }); }; //패치 정보 추출시 SAP 서버 통신 실패!! \n 관리자 문의 \n 현재창 종료 합니다
-            xhttp.ontimeout = () => { resolve({ RETCD: "E", RTMSG: GS_MSG.M07 }); }; //패치 정보 추출시 SAP 서버 통신 실패!! \n 관리자 문의 \n 현재창 종료 합니다
+        // 파워쉘 실행 파라미터
+        let oPARAM = {
+            // PS_SP_PATH   : "C:\\u4a_temp\\ws_beta\\test\\ps\\ws_patch_tmp.ps1",
+            // PS_SP_PATH   : PATH.join(APPPATH, "_test", "ps", "ws_patch_tmp.ps1"),
+            PS_SP_PATH   : sPS_SP_PATH, 
+            PS_NODE_PATH : sPS_NODE_PATH,
+            
+            BASE_URL     : ADMIN.SAP.HOST,
+            SAP_CLIENT   : ADMIN.SAP.CLIENT,
+            SAP_USER     : ADMIN.SAP.ID,
+            SAP_PW       : ADMIN.SAP.PW,
+            SP_DOWN_PATH : LV_TMP_DOWN_APP,
+            ND_DOWN_PATH : LV_TMP_DOWN_NODE,
+            FILE_INFO    : LS_FILE_INFO
+        };
 
-            xhttp.onload = async (e) => {
+        // 파워쉘로 SP 파일 다운로드
+        let oSP_RESULT = await _getSuppPackDataFromPowerShell(oPARAM);
+        
+        if(oSP_RESULT.SUBRC !== 0){
 
-                var status = e.target.getResponseHeader("u4a_status");
+            console.error(`[SP] SUBRC: ${oSP_RESULT.SUBRC}] An unknown error occurred while downloading the support package.`);
 
-                switch (status) {
-                    case "ERR": //오류일 경우
+            switch(oSP_RESULT.SUBRC){           
+                case 1: // json parse error
 
-                        //(패치) 분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다."
-                        resolve({ RETCD: "E", RTMSG: GS_MSG.M03 });
-                        break;
+                    return resolve({ RETCD: "E", RTMSG: "json parse error" });
 
+                case 2: // 필수 파라미터 누락
 
-                    case "END": //추출 완료
+                    return resolve({ RETCD: "E", RTMSG: "필수 파라미터 누락" });
 
-                        // //app.ZIP 파일 압축 해제
-                        // try {
-                        //     var zip = new ADMZIP(LV_TMP_DOWN_APP);
-                        // } catch (err) {
-                        //     resolve({RETCD:"E", RTMSG:GS_MSG.M10}); //패치 압축 파일을 푸는 과정에 문제가 발생하였습니다 \n 관리자에게 문의하세요
-                        //     return;
-                        // }
+                case 3: // 파일 다운로드 중 오류 발생
 
-                        // try {
-                        //     zip.extractAllTo(process.resourcesPath, true);
-                        // } catch (err) {
-                        //     resolve({RETCD:"E", RTMSG:GS_MSG.M10}); //패치 압축 파일을 푸는 과정에 문제가 발생하였습니다 \n 관리자에게 문의하세요
-                        //     return;
-                        // }
+                    return resolve({ RETCD: "E", RTMSG: "파일 다운로드 중 오류 발생" });
 
-                        //app.ZIP 파일 압축 해제
-                        let oExtractResult = await onZipExtractAsync("SP", LV_TMP_DOWN_APP, process.resourcesPath, true);
-                        if (oExtractResult.RETCD == "E") {
-                            resolve({ RETCD: "E", RTMSG: GS_MSG.M10 }); //패치 압축 파일을 푸는 과정에 문제가 발생하였습니다 \n 관리자에게 문의하세요
-                            return;
-                        }
+                case 4: // 파일 다운로드한 분할 파일을 합치다가 오류 발생
 
-                        //app.zip 다운로드처리 전 이전 쓰레기 File 제거
-                        try { FS.unlinkSync(LV_TMP_DOWN_APP); } catch (err) { }
+                    return resolve({ RETCD: "E", RTMSG: "파일 다운로드한 분할 파일을 합치다가 오류 발생" });
 
-                        //파일 분할KEY 초기값 설정 
-                        LV_RELKY = 0;
+                case 5: // 아이디 or Password 오류
 
-                        //WS3.0 패치 분할(ND - node_modules) Data 추출
-                        Lfn_getdata_ND();
+                    return resolve({ RETCD: "E", RTMSG: "아이디 or Password 오류" });
 
-                        break;
+                case 8: // 알 수 없는 오류 발생
 
-                    case "RUN": //추출 진행정 
+                    return resolve({ RETCD: "E", RTMSG: "알 수 없는 오류 발생" });
 
-                        LS_FILE_INFO.TRANSFERRED = LS_FILE_INFO.TRANSFERRED + 1;
+                default:// 알 수 없는 오류 발생
 
-                        //이벤트 트리거 - 다운로드중...
-                        document.dispatchEvent(new CustomEvent('download-progress-SP', { detail: { message: GS_MSG.M09, file_info: LS_FILE_INFO } }));
+                    return resolve({ RETCD: "E", RTMSG: "unknown error 알 수 없는 오류 발생" });
+            }
 
-                        //파일 다운로드 (분할)
-                        var LS_RET = await Lfn_download(e.target.response, LV_TMP_DOWN_APP);
-                        if (LS_RET.RETCD === "E") {
-                            resolve(LS_RET);
-                            return;
-                        }
+        }
+        
+        //app.ZIP 파일 압축 해제
+        let oExtractResult_SP = await onZipExtractAsync("SP", LV_TMP_DOWN_APP, process.resourcesPath, true);
+        if (oExtractResult_SP.RETCD == "E") {
+            return resolve({ RETCD: "E", RTMSG: GS_MSG.M10 }); //패치 압축 파일을 푸는 과정에 문제가 발생하였습니다 \n 관리자에게 문의하세요            
+        }
 
+        //app.zip 다운로드처리 전 이전 쓰레기 File 제거
+        try { FS.unlinkSync(LV_TMP_DOWN_APP); } catch (err) { }
 
-                        //[재수행] 분할 Data 추출 
-                        Lfn_getdata_SP();
 
-                        break;
+        // ND 파워쉘 실행
+        let oND_RESULT = await _getNodeModlueFromPowerShell(oPARAM);
 
-                    default: //오류로 간주
+        if(oND_RESULT.SUBRC !== 0){
 
-                        //"Help Document 분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다."
-                        resolve({ RETCD: "E", RTMSG: GS_MSG.M03 });
-                        break;
+            console.error(`[ND] SUBRC: ${oSP_RESULT.SUBRC}] An unknown error occurred while downloading the node_modules.`);
 
-                }
+            return resolve({ RETCD: "E", RTMSG: "노드 모듈 다운로드 오류" }); 
+        }
 
+        //node_modules.ZIP 파일 압축 해제
+        let oExtractResult_ND = await onZipExtractAsync("ND", LV_TMP_DOWN_NODE, process.resourcesPath, true);
+        if (oExtractResult_ND.RETCD == "E") {
+            resolve({ RETCD: "E", RTMSG: "압축 파일 미존재" });
+            return;
+        }
 
-            };
-
-            xhttp.open("GET", LV_URL, true);
-            xhttp.withCredentials = true;
-            xhttp.responseType = 'arraybuffer';
-            xhttp.send();
-
-        } //Lfn_getdata_SP
-
-
-        //[펑션] WS3.0 패치 분할(ND - node_modules) Data 추출
-        function Lfn_getdata_ND() {
-
-            LV_RELKY = LV_RELKY + 1;
-            var LV_RELKY_X = LV_RELKY.toString().padStart(10, '0');
-            var LV_URL = ADMIN.SAP.URL + "?PRCCD=02" + "&RELID=ND" + "&RELKY=" + LV_RELKY_X;
-
-            var xhttp = new XMLHttpRequest();
-            xhttp.onerror = (e) => { resolve({ RETCD: "E", RTMSG: GS_MSG.M01 }); }; //통신오류
-            xhttp.ontimeout = () => { resolve({ RETCD: "E", RTMSG: GS_MSG.M01 }); }; //통신오류
-            xhttp.onload = async (e) => {
-
-                var status = e.target.getResponseHeader("u4a_status");
-
-                switch (status) {
-                    case "ERR": //오류일 경우
-
-                        //분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다."
-                        resolve({ RETCD: "E", RTMSG: GS_MSG.M03 });
-                        break;
-
-
-                    case "END": //추출 완료
-
-                        // //node_modules.ZIP 파일 압축 해제
-                        // try {
-                        //     var zip = new ADMZIP(LV_TMP_DOWN_NODE);
-                        // } catch (err) {
-                        //     resolve({ RETCD: "W", RTMSG: "압축 파일 미존재" });
-                        //     return;
-                        // }
-
-                        // try {
-                        //     zip.extractAllTo(process.resourcesPath, true);
-                        // } catch (err) {
-                        //     resolve({ RETCD: "E", RTMSG: "압축 파일 미존재" });
-                        //     return;
-                        // }
-
-                        //node_modules.ZIP 파일 압축 해제
-                        let oExtractResult = await onZipExtractAsync("ND", LV_TMP_DOWN_NODE, process.resourcesPath, true);
-                        if (oExtractResult.RETCD == "E") {
-                            resolve({ RETCD: "E", RTMSG: "압축 파일 미존재" });
-                            return;
-                        }
-
-                        //node_modules.zip 다운로드처리 전 이전 쓰레기 File 제거
-                        try { FS.unlinkSync(LV_TMP_DOWN_NODE); } catch (err) { }
-
-                        //정상처리 
-                        resolve({ RETCD: "S", RTMSG: GS_MSG.M05 });
-
-                        break;
-
-                    case "RUN": //추출 진행정 ..
-
-                        LS_FILE_INFO.TRANSFERRED = LS_FILE_INFO.TRANSFERRED + 1;
-
-                        //이벤트 트리거 - 다운로드중
-                        document.dispatchEvent(new CustomEvent('download-progress-SP', { detail: { message: GS_MSG.M09, file_info: LS_FILE_INFO } }));
-
-
-                        var LS_RET = await Lfn_download(e.target.response, LV_TMP_DOWN_NODE);
-                        if (LS_RET.RETCD === "E") {
-                            resolve(LS_RET);
-                            return;
-                        }
-
-
-                        //[재수행] 분할 Data 추출 
-                        Lfn_getdata_ND();
-
-                        break;
-
-                    default: //오류로 간주
-
-                        //(패치) 분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다."
-                        resolve({ RETCD: "E", RTMSG: GS_MSG.M03 });
-                        break;
-
-                }
-
-
-            };
-
-            xhttp.open("GET", LV_URL, true);
-            xhttp.withCredentials = true;
-            xhttp.responseType = 'arraybuffer';
-            xhttp.send();
-
-        } //Lfn_getdata_ND
-
-
-        //[펑션] 분할 다운로드
-        async function Lfn_download(BIN, PATH) {
-            return new Promise((resolve, reject) => {
-                FS.appendFile(PATH, Buffer.from(BIN), function (err) {
-
-                    if (err) {
-                        //(패치) 분할 다운로드 처리 과정에서 오류 발생
-                        resolve({ RETCD: "E", RTMSG: GS_MSG.M04 });
-                        return;
-                    }
-
-                    resolve({ RETCD: "S", RTMSG: "" });
-
-                });
-
-            });
-        } //Lfn_download
-
-
-        //WS3.0 패치 분할(SP) Data 추출
-        Lfn_getdata_SP();
+        //정상처리 
+        return resolve({ RETCD: "S", RTMSG: GS_MSG.M05 });
 
     });
 }
@@ -826,14 +786,22 @@ exports.checkForUpdates = async function (remote, iscdn = false, versn, splev = 
 
 
     //사용 API 리소스 
-    FS = REMOTE.require('fs');
-    PATH = REMOTE.require('path');
-    ADMZIP = REMOTE.require("adm-zip");
-
+    FS       = REMOTE.require('fs');
+    PATH     = REMOTE.require('path');
+    ADMZIP   = REMOTE.require("adm-zip");
+    SPAWN    = REMOTE.require("child_process").spawn;
+    APPPATH  = REMOTE.app.getAppPath();
+    USERDATA = REMOTE.app.getPath("userData");
 
     //이벤트 트리거 - 업데이트 항목 존재 
     document.dispatchEvent(new CustomEvent('update-available-SP', { detail: { message: GS_MSG.M17 } }));  //업데이트 항목이 존재합니다
 
+    await gf_waiting(0);
+
+    //이벤트 트리거 - 업데이트 설치중 
+    document.dispatchEvent(new CustomEvent('update-install-SP', { detail: { message: GS_MSG.M19 } }));
+
+    await gf_waiting(0);    
 
     //asar 소스파일 압축해제 처리 
     var LS_STATUS = await fn_asarDecompress();
@@ -867,7 +835,6 @@ exports.checkForUpdates = async function (remote, iscdn = false, versn, splev = 
         document.dispatchEvent(new CustomEvent('update-error-SP', { detail: { message: LS_STATUS.RTMSG } }));
         return;
     }
-
 
     //이벤트 트리거 - 업데이트가 완료되었습니다.
     document.dispatchEvent(new CustomEvent('update-downloaded-SP', { detail: { message: '업데이트가 완료되었습니다.' } }));

@@ -39,6 +39,7 @@
         "p13n\\iconFavorite",
         "ext_api",
         "ext_api\\vbs",
+        "ext_api\\ps",
         "conf"
     ],
     "requireFiles": [
@@ -52,8 +53,14 @@
     ],
     "vbs": {
         "rootPath": "ext_api\\vbs",
+        "sapgui_ws_zip": "sapgui_ws_vbs.zip",
         "controllerClassVbs": "sapgui_ws.vbs",
         "newSessionVbs": "newSESSTION.vbs"
+    },
+    "ps": {
+        "rootPath": "ext_api\\ps",
+        "sp": "ws_sp.ps1",
+        "nd": "ws_nd.ps1"
     },
     "path": {
        

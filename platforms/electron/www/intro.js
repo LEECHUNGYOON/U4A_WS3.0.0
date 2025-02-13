@@ -77,6 +77,9 @@
         // Vbs 파일을 UserData 쪽으로 복사
         await _copyToUserDataVbs();
 
+        // ps 파일을 UserData 쪽으로 복사
+        await _copyToUserDataPs();
+
         // u4a Icon 파일을 UserData 쪽으로 복사
         await _copyToUserDataU4aIcon();
 
@@ -1492,6 +1495,47 @@
 
     } // end of _oldLogCheck
 
+
+    /************************************************************************
+     * ps 파일을 UserData에 복사한다.
+     ************************************************************************/
+    function _copyToUserDataPs(){
+
+        return new Promise(async function(resolve){
+
+            let oSettings = oAPP.fn.fnGetSettingsInfo();
+            let sUserDataPath = APP.getPath("userData");
+            let sPsUserDataFolderPath = PATH.join(sUserDataPath, oSettings.ps.rootPath); 
+
+            // 파워쉘 실행 파일명
+            let sPsPath_SP = oSettings.ps.sp;   // Support Package  다운로드 파워쉘
+            let sPsPath_ND = oSettings.ps.nd;   // node_modules     다운로드 파워쉘
+
+            let sPsSourcePath_SP = PATH.join(APPPATH, oSettings.ps.rootPath, sPsPath_SP);
+            let sPsSourcePath_ND = PATH.join(APPPATH, oSettings.ps.rootPath, sPsPath_ND);
+
+            let sPsTargetPath_SP = PATH.join(sPsUserDataFolderPath, sPsPath_SP);
+            let sPsTargetPath_ND = PATH.join(sPsUserDataFolderPath, sPsPath_ND);
+
+            let oCopyResultSP = await WSUTIL.fsCopy(sPsSourcePath_SP, sPsTargetPath_SP);
+            if (oCopyResultSP.RETCD == "E") {
+                console.error("PowerShell (SP) 파일 복사하다가 오류!!");
+                throw Error(oCopyResultSP.RTMSG);
+            }
+
+            let oCopyResultND = await WSUTIL.fsCopy(sPsSourcePath_ND, sPsTargetPath_ND);
+            if (oCopyResultND.RETCD == "E") {
+                console.error("PowerShell (ND) 파일 복사하다가 오류!!");
+                throw Error(oCopyResultND.RTMSG);
+            }
+
+            resolve();
+
+        });
+
+
+    } // end of _copyToUserDataPs
+
     /************************************************************************
      * vbs 파일을 UserData에 복사한다.
      ************************************************************************/
@@ -1499,26 +1543,21 @@
 
         return new Promise(async (resolve) => {
 
-            let sVbsFileName = "sapgui_ws_vbs.zip",
-                sVbsSourcePath = PATH.join(APPPATH, "vbs", sVbsFileName);
+            let oSettings = oAPP.fn.fnGetSettingsInfo();
+            let sUserDataPath = APP.getPath("userData");
+            let sVbsUserDataFolderPath = PATH.join(sUserDataPath, oSettings.vbs.rootPath);                
 
-            let oSettings = oAPP.fn.fnGetSettingsInfo(),
-                sUserDataPath = APP.getPath("userData"),
-                sVbsUserDataFolderPath = PATH.join(sUserDataPath, oSettings.vbs.rootPath),
-                sVbsTargetPath = PATH.join(sVbsUserDataFolderPath, sVbsFileName);
+            let sVbsFileName = oSettings.vbs.sapgui_ws_zip;
+            let sVbsSourcePath = PATH.join(APPPATH, oSettings.vbs.rootPath, sVbsFileName);
+            let sVbsTargetPath = PATH.join(sVbsUserDataFolderPath, sVbsFileName);
 
             let oCopyResult = await WSUTIL.fsCopy(sVbsSourcePath, sVbsTargetPath);
             if (oCopyResult.RETCD == "E") {
                 console.error("Vbs Zip 파일 복사하다가 오류!!");
                 throw Error(oCopyResult.RTMSG);
             }
-
-            // let oUnZipResult = await WSUTIL.zipExtract(sVbsTargetPath, sVbsUserDataFolderPath);
-            // if (oUnZipResult.RETCD == "E") {
-            //     console.error("Vbs Zip 파일 압축 풀다가 오류!!");
-            //     throw Error(oUnZipResult.RTMSG);
-            // }
-
+        
+            // 압축된 Vbs zip 풀기
             await fnExtractFileAdmZip(sVbsTargetPath, sVbsUserDataFolderPath);
 
             // 압축푼 zip 파일 삭제
@@ -1535,6 +1574,9 @@
     } // end of _copyToUserDataVbs
 
 
+    /************************************************************************
+     * zip 파일 풀기
+     ************************************************************************/
     function fnExtractFileAdmZip(sSourcePath, sTargetFolderPath) {
 
         var AdmZip = require("adm-zip");
@@ -1547,7 +1589,7 @@
                 ZIP.extractAllTo(sTargetFolderPath, /*overwrite*/ true);
 
             } catch (error) {
-                console.error("Vbs Zip 파일 압축 풀다가 오류!!");
+                console.error(`${sSourcePath}\n 파일 압축 풀다가 오류!!`);
                 throw new Error(error.toString());
             }
 
@@ -1555,10 +1597,10 @@
 
         });
 
-    }
+    } // end of fnExtractFileAdmZip
 
     /************************************************************************
-     * vbs 파일을 UserData에 복사한다.
+     * u4a icon 파일을 UserData에 복사한다.
      ************************************************************************/
     function _copyToUserDataU4aIcon() {
 
@@ -1601,15 +1643,6 @@
                 });
 
             });
-
-            // let oCopyResult = await WSUTIL.fsCopy(sIconsPath, sUserDataIconPath);
-
-            // if (oCopyResult.RETCD == "E") {
-            //     console.error("u4a icon 복사하다가 실패!");
-            //     throw Error(oCopyResult.RTMSG);
-            // }
-
-            // resolve();
 
         });
 
