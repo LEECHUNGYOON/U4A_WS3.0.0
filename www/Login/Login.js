@@ -294,7 +294,7 @@ let oAPP = (function () {
 
         //20231228 pes.
         //sap.ui.table 라이브러리 추가 로드.
-        oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.f, sap.ui.layout, sap.tnt, sap.ui.table");
+        oScript.setAttribute("data-sap-ui-libs", "sap.m, sap.f, sap.ui.layout");
 
         oScript.setAttribute("data-sap-ui-theme", oThemeInfo.THEME);
         oScript.setAttribute("src", oSetting_UI5.resourceUrl);
@@ -1203,7 +1203,9 @@ let oAPP = (function () {
      * 권한 오류 리스트 팝업 호출.
      ************************************************************************/
     oAPP.fn.fnCallAuthErrorListPopup = (oRes) => {
-
+        
+        sap.ui.getCore().loadLibrary("sap.ui.table");
+        
         return new Promise(async (resolve, reject) => {
 
             if (oRes?.TYPE !== "E") {
@@ -3329,6 +3331,36 @@ let oAPP = (function () {
      ********************************************************/
     async function _onViewReady(){
 
+        // Default Browser check
+        await oAPP.fn.fnCheckIstalledBrowser();
+
+        // WS Global 메시지 글로벌 변수 설정
+        await fnWsGlobalMsgList();
+
+        // 초기값 바인딩
+        oAPP.fn.fnOnInitModelBinding();
+
+        // 현재 브라우저의 이벤트 핸들러
+        _attachCurrentWindowEvents();
+
+        // IPC 이벤트 핸들러
+        _attachIPCEvents();
+
+        // // Shortcut 설정
+        // oAPP.fn.fnSetShortCut();
+
+        // 개인화 폴더 체크 후 없으면 생성
+        oAPP.fn.fnOnP13nFolderCreate();
+
+        // Illustration Message TNT-svg register
+        oAPP.fn.fnRegisterIllustrationPool();
+
+        // IconPool Register Fiori icon
+        oAPP.fn.fnRegisterFioriIconPool();
+
+
+
+
         // PRCCD값을 던져서 응답시 동일한 값으로 오는지 아닌지에 따라
         // 로그인 화면 제어를 하기 위한 코드
         let sLanguPRCCD = "GET_LANGU";
@@ -3418,33 +3450,9 @@ let oAPP = (function () {
 
         sap.ui.getCore().attachInit(async () => {
 
-            jQuery.sap.require("sap.m.MessageBox");
-
-            // 현재 브라우저의 이벤트 핸들러
-            _attachCurrentWindowEvents();
-
-            // IPC 이벤트 핸들러
-            _attachIPCEvents();
-
-            // // Shortcut 설정
-            // oAPP.fn.fnSetShortCut();
-
-            // 개인화 폴더 체크 후 없으면 생성
-            oAPP.fn.fnOnP13nFolderCreate();
-
-            // Illustration Message TNT-svg register
-            oAPP.fn.fnRegisterIllustrationPool();
-
-            // IconPool Register Fiori icon
-            oAPP.fn.fnRegisterFioriIconPool();
+            jQuery.sap.require("sap.m.MessageBox");            
          
             var oWsSettings = oAPP.fn.fnGetSettingsInfo();
-
-            // 글로벌 설정값 관련 설정 
-            // await _globalSettingsConfig();           
-
-            // // // 자연스러운 로딩
-            // // oAPP.fn.fnOnSmoothLoading();
 
             // trial 버전 로그인 페이지를 그린다.
             if (oWsSettings.isTrial) {
@@ -3452,9 +3460,6 @@ let oAPP = (function () {
                 oAPP.fn.fnOnTrialLoginPageRendering();
                 return;
             }
-
-            // 초기값 바인딩
-            oAPP.fn.fnOnInitModelBinding();
 
             // 로그인 페이지 초기 렌더링
             oAPP.fn.fnOnInitRendering();
@@ -3584,11 +3589,11 @@ function fnWsGlobalMsgList() {
 
 window.addEventListener("load", async () => {
 
-    // Default Browser check
-    await oAPP.fn.fnCheckIstalledBrowser();
+    // // Default Browser check
+    // await oAPP.fn.fnCheckIstalledBrowser();
 
-    // WS Global 메시지 글로벌 변수 설정
-    await fnWsGlobalMsgList();
+    // // WS Global 메시지 글로벌 변수 설정
+    // await fnWsGlobalMsgList();
 
     oAPP.fn.fnAttachInit();
 
