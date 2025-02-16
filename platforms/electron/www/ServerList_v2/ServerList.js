@@ -246,7 +246,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         if(!APP.isPackaged){
             // U4A EDU와 인터페이스를 위한 서버를 올린다.
             await oU4A_EDU_SERVER.createServer.call(window);
-        }        
+        }
         
         // WS Global 메시지 글로벌 변수 설정
         await oAPP.fn.fnWsGlobalMsgList();

@@ -69,11 +69,16 @@
 
                     } catch (oError) {
 
-                        console.error("[AIE01]", oError);
+                        let sConsoleErr  = `- [code]: E001\n`;
+                            sConsoleErr += `- [path]: www/ServerList_v2/modules/Server/net/index.js => oAPP.createServer => oStream.on('data')\n`;          
+                            sConsoleErr += `- [desc]: 요청 데이터 JSON 파싱 오류`;
+
+                        zconsole.error(sConsoleErr, oError);
+                        console.trace();
 
                         // 오류 리턴
                         _oRES.RETCD = "E";
-                        _oRES.ERRCD = "AIE01"; // 잘못된 요청 데이터 (JSON 포맷이 아닐때)
+                        _oRES.STCOD = "E001"; // 잘못된 요청 데이터 (JSON 포맷이 아닐때)
                     
                         // 오류 모듈 실행
                         require(oAPP.ERR_MOD_PATH)(oStream, _oRES);
@@ -93,10 +98,15 @@
 
                     } catch (oError) {
 
-                        console.error("[AIE02]", oError);
+                        let sConsoleErr  = `- [code]: E002\n`;
+                            sConsoleErr += `- [path]: www/ServerList_v2/modules/Server/net/index.js => oAPP.createServer => oStream.on('data')\n`;          
+                            sConsoleErr += `- [desc]: 지원하지 않는 PRCCD`;
 
+                        zconsole.error(sConsoleErr, oError);
+                        console.trace();
+                        
                         _oRES.RETCD = "E";
-                        _oRES.ERRCD = "AIE02"; // 잘못된 경로 호출
+                        _oRES.STCOD = "E002"; // 잘못된 경로 호출
 
                         // 오류 모듈 실행
                         require(oAPP.ERR_MOD_PATH)(oStream, _oRES);
@@ -115,21 +125,21 @@
                     
                     zconsole.log("stream end", data);
     
-                    // 연결 해제 되었다는 About 실행
-                    if(oAPP.DISCON_ABORT){
-                        oAPP.DISCON_ABORT.abort();
-                    }                              
+                    // // 연결 해제 되었다는 About 실행
+                    // if(oAPP.DISCON_ABORT){
+                    //     oAPP.DISCON_ABORT.abort();
+                    // }                              
     
-                    // 연결이 종료된 oStream 객체가 기존에 연결되어 있는 객체라면
-                    // 글로벌 변수에 있는 스트림 객체를 삭제한다.
-                    if(oStream.CONID){
+                    // // 연결이 종료된 oStream 객체가 기존에 연결되어 있는 객체라면
+                    // // 글로벌 변수에 있는 스트림 객체를 삭제한다.
+                    // if(oStream.CONID){
     
-                        delete oAPP.oStream;
+                    //     delete oAPP.oStream;
                         
-                        // // [async] 연결 종료시 초기화 작업
-                        // oAPP.fn.onDisconnectAI();
+                    //     // // [async] 연결 종료시 초기화 작업
+                    //     // oAPP.fn.onDisconnectAI();
                         
-                    }
+                    // }
                     
     
                 });
@@ -183,7 +193,7 @@
             
             oServer.listen(PIPENAME, () => {
 
-                zconsole.log("U4A EDU Server Listen on", `${PIPENAME}`);
+                zconsole.log("U4A Net Server(ServerList) Listen on", `${PIPENAME}`);
 
                 resolve(oServer);
         

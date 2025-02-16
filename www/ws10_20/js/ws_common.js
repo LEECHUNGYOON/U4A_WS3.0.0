@@ -2708,7 +2708,7 @@
             state: "{/UAI/state}",
             change: function(oEvent){
                 
-                oAPP.fn.onAiConnSwitchBtn(oEvent);
+                oAPP.fn.onAiConnSwitchBtn(oEvent); // [ws_fn_05.js]
                 
             }
 
