@@ -58,6 +58,27 @@ let oAPP = (function () {
         // },
     ];
 
+    /************************************************************************
+     * div의 content DOM을 활성화 처리 한다.     
+     ************************************************************************/
+    function _showContentDom(bIsShow){
+
+        let oContentDom = document.getElementById("content");
+        if(!oContentDom){
+            return;
+        }
+
+        oContentDom.style.display = "none";
+
+        if(bIsShow === "X"){
+
+            oContentDom.style.display = "";
+
+            return;    
+        }        
+
+    } // end of _contentDomDisplay
+
 
     /************************************************************************
      * 서버 언어 데이터를 수집한다.
@@ -977,8 +998,10 @@ let oAPP = (function () {
      * 로그인 버튼 클릭
      ************************************************************************/
     oAPP.events.ev_login = (oPARAM) => {
+        
+        parent.setDomBusy('X');
 
-        debugger;
+        var oLogInData;
 
         // SSO 로그인 처리가 아닐 경우에만 로그인 입력값 체크를 수행 한다.
         if(typeof oPARAM?.SSO_KEY === "undefined"){
@@ -988,7 +1011,7 @@ let oAPP = (function () {
                 return;
             }
 
-            let oLogInData = oCoreModel.getProperty("/LOGIN");
+            oLogInData = oCoreModel.getProperty("/LOGIN");
             if (oLogInData == null) {
                 return;
             }
@@ -1011,29 +1034,285 @@ let oAPP = (function () {
         let oSettings = WSUTIL.getWsSettingsInfo();
 
         var sServicePath = parent.getServerPath() + "/wsloginchk";
-
         
         var oFormData = new FormData();
-        // oFormData.append("sap-user", oLogInData.ID);
-        // oFormData.append("sap-password", oLogInData.PW);
-        // oFormData.append("sap-client", oLogInData.CLIENT);
-        // oFormData.append("sap-language", oLogInData.LANGU);
 
-        // zconsole.log("login language", oLogInData.LANGU);
+        // SSO 처리가 아닐 경우에만 아래의 FormData를 전송한다.
+        // SSO 처리 일 경우는 아래 정보는 필요 없음.
+        if(typeof oPARAM?.SSO_KEY === "undefined"){
 
-        // oFormData.append("SYSID", oLogInData.SYSID);
-        // oFormData.append("WSVER", oSettings.appVersion);
-        // oFormData.append("WSPATCH_LEVEL", oSettings.patch_level);
-        // // oFormData.append("WSLANGU", oSettings.globalLanguage || "EN");
-        // oFormData.append("PRCCD", "00"); // 로그인에서 호출하고 있다는 구분자 (로그인 성공시: [/wsloginchk] 서비스 부분에서 참조하는 파라미터)
-        // oFormData.append("ACTCD", "001"); // 로그인에서 호출하고 있다는 구분자 (로그인 실패시: WS_LOGIN 클래스 부분에서 참조하는 파라미터)
+            oFormData.append("sap-user",        oLogInData?.ID);
+            oFormData.append("sap-password",    oLogInData?.PW);
+            oFormData.append("sap-client",      oLogInData?.CLIENT);
+            oFormData.append("sap-language",    oLogInData?.LANGU);
+            oFormData.append("SYSID",           oLogInData?.SYSID);
 
+        }
 
-        parent.setDomBusy('X');
+        oFormData.append("WSVER",           oSettings.appVersion);
+        oFormData.append("WSPATCH_LEVEL",   oSettings.patch_level);        
+
+        oFormData.append("PRCCD", "00");    // 로그인에서 호출하고 있다는 구분자 (로그인 성공시: [/wsloginchk] 서비스 부분에서 참조하는 파라미터)
+        oFormData.append("ACTCD", "001");   // 로그인에서 호출하고 있다는 구분자 (로그인 실패시: WS_LOGIN 클래스 부분에서 참조하는 파라미터)
 
         var oPwInput = sap.ui.getCore().byId("ws_pw");
 
         var xhr = new XMLHttpRequest();
+
+        xhr.onload = async function(e){
+
+            let u4a_status = xhr.getResponseHeader("u4a_status");
+            if (u4a_status) {
+
+                var oResult;
+
+                try {
+
+                    oResult = JSON.parse(xhr.response);
+
+                } catch (error) {
+
+                    let _sLog = `[oAPP.events.ev_login] \n\n`;
+                        _sLog = `'u4a_status' Response header JSON Parse Error!!`;
+                        _sLog += error && error.toString() || "login Error";
+
+                    console.log(_sLog);
+
+                    // 치명적인 오류가 발생하였습니다.
+                    // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
+                    let sErrMsg = oAPP.msg.M295 + "\n\n";
+                        sErrMsg += oAPP.msg.M290;
+
+                    sap.m.MessageBox.error(sErrMsg);  
+
+                    parent.setDomBusy("");
+
+                    // div의 content DOM을 활성화 처리 한다.
+                    _showContentDom("X");
+
+                    return;
+                }
+
+                // // 잘못된 url 이거나 지원하지 않는 기능 처리
+                // oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, oResult);
+
+                parent.setDomBusy("");
+
+                // div의 content DOM을 활성화 처리 한다.
+                _showContentDom("X");
+
+                return;
+            }
+
+            var oResult;
+
+            try {
+
+                oResult = JSON.parse(xhr.response);
+
+            } catch (error) {               
+
+                /**
+                 * 📝 2024-06-27 soccerhs
+                 * 로그인 처리시 약속된 JSON구조가 아닐 경우는 알수 없는 오류처리
+                 */
+
+                // MSG - 로그인 처리 하는 과정에서 문제가 발생하였습니다. 담당자에게 문의하세요.
+                let sErrMsg = oAPP.msg.M081;
+
+                console.log(sErrMsg);
+
+                sap.m.MessageBox.error(sErrMsg);  
+                
+                parent.setDomBusy("");
+
+                // div의 content DOM을 활성화 처리 한다.
+                _showContentDom("X");
+                
+                return;
+
+            }
+
+            if (oResult.TYPE == "E") {
+
+                if(oPwInput){
+                    oPwInput.setValue("");
+                }                        
+
+                /**
+                 * 📝 2024-06-27 soccerhs
+                 * Change Password 일 경우의 메시지 처리
+                 */                        
+                if(oResult.RCODE === "R001"){M
+
+                    // MSG - You need to change your password. Please update it via SAPGUI.
+                    let sMsg = oAPP.msg.M082; 
+                    
+                    console.log(sMsg);
+
+                    sap.m.MessageBox.warning(sMsg);
+
+                    parent.setDomBusy("");
+
+                    // div의 content DOM을 활성화 처리 한다.
+                    _showContentDom("X");
+
+                    return;
+
+                }
+
+                //20231228 pes -start.
+                //권한 점검 오류가 발생한 경우.
+                //오류 권한 리스트 팝업 호출.
+                var _called = await oAPP.fn.fnCallAuthErrorListPopup(oResult);
+                if (_called === true) {
+                    
+                    parent.setDomBusy("");
+
+                    // div의 content DOM을 활성화 처리 한다.
+                    _showContentDom("X");
+
+                    return;
+                }
+                //20231228 pes -end.  
+                
+                // 오류 처리..    
+                sap.m.MessageBox.error(oResult.MSG);    
+                
+                parent.setDomBusy("");
+
+                // div의 content DOM을 활성화 처리 한다.
+                _showContentDom("X");
+
+                return;
+
+            }
+
+            // HTTP ONLY 값을 글로벌에 저장
+            oAPP.attr.HTTPONLY = oResult.HTTP_ONLY;
+            oAPP.attr.LOGIN = oLogInData;
+
+            // 여기까지 온건 로그인 성공했다는 뜻이니까 
+            // 권한 체크를 수행한다.
+            try {
+
+                var oAuthInfo = await oAPP.fn.fnCheckAuthority();
+
+            } catch (e) {                
+
+                // 권한이 없으므로 오류 메시지를 띄운다.
+                oAPP.fn.fnShowNoAuthIllustMsg(e);
+
+                parent.setDomBusy("");
+
+                // div의 content DOM을 활성화 처리 한다.
+                _showContentDom("X");
+
+                return;
+                
+            }
+
+            // trial 버전 확인
+            var oWsSettings = oAPP.fn.fnGetSettingsInfo(),
+                bIsTrial = oWsSettings.isTrial,
+                bIsPackaged = APP.isPackaged;
+
+            oAuthInfo.IS_TRIAL = bIsTrial; // 유저 권한 정보에 Trial 정보를 저장한다.
+
+            // no build일 경우 혹은 Trial 버전일 경우는 최신 버전 체크를 하지 않는다.                        
+            if (!bIsPackaged || bIsTrial) {
+
+                // parent.setDomBusy('');
+
+                oAPP.fn.fnCheckVersionFinished(oResult, oAuthInfo);
+
+                return;
+            }
+
+            // 개발자 권한 성공시
+            oAPP.fn.fnCheckAuthSuccess(oResult, oAuthInfo);
+
+        }; // end of xhr.onload
+
+        function _onError(e){
+
+            // 타임아웃일 경우
+            if(e.type === "timeout"){
+
+                let sErrMsg = oAPP.msg.M294; // 서버 응답 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.
+
+                sap.m.MessageBox.error(sErrMsg);
+
+                parent.setDomBusy("");
+
+                // div의 content DOM을 활성화 처리 한다.
+                _showContentDom("X");
+
+                return;
+            }
+
+
+            let sErrMsg = oAPP.msg.M283; // 서버 접속 오류가 발생하였습니다. 네트워크 상태 및 서버 접속 정보를 확인하세요.
+
+            if (xhr.response == "") {
+
+                sap.m.MessageBox.error(sErrMsg);
+
+                parent.setDomBusy("");
+
+                // div의 content DOM을 활성화 처리 한다.
+                _showContentDom("X");
+                
+                return;
+            }
+
+            var sCleanHtml = parent.setCleanHtml(xhr.response);            
+
+            parent.showMessage(null, 99, "E", sCleanHtml);  
+
+            parent.setDomBusy("");
+
+        }
+
+        // 통신 오류가 발생한 경우
+        xhr.onerror = _onError;
+
+        // Timeout 오류가 발생한 경우
+        xhr.ontimeout = _onError;
+
+
+        xhr.open('POST', sServicePath); // 메소드와 주소 설정
+        xhr.withCredentials = true;
+        xhr.send(oFormData); // 요청 전송
+
+
+        return;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         xhr.onreadystatechange = async function () { // 요청에 대한 콜백
             if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
@@ -1968,6 +2247,15 @@ let oAPP = (function () {
      * 버전 체크 완료시
      ************************************************************************/
     oAPP.fn.fnCheckVersionFinished = (oResult, oAuthInfo) => {
+
+        // 로그인 성공 후 서버에서 전달받은 UNAME, MANDT 정보를 기존 모델에 저장한다.
+        let oCoreModel = sap.ui.getCore().getModel();
+
+        let oLogInData = oCoreModel.getProperty("/LOGIN");
+            oLogInData.ID = oResult.UNAME;
+            oLogInData.CLIENT = oResult.MANDT;
+
+        oCoreModel.setProperty("/LOGIN", oLogInData);
 
         // 로그인 페이지의 Opacity를 적용한다.
         $('.u4aWsVersionCheckDialog,.u4aWsLoginFormFcard,.u4aWsGuestLoginCard').animate({
@@ -3490,55 +3778,57 @@ let oAPP = (function () {
             let sServerPath = parent.getServerPath();
 
             // SSO Header 구분자
-            let SSO_HDR = "XXX";
+            let SSO_HDR = `${SSO_KEY}_XXX`;
 
             // SSO 키
             let SSO_KEY     = oServerInfo.SSO_KEY;
 
             let oFormData = new FormData();
-                oFormData.append("MY", SSO_KEY);
+                oFormData.append("SSO_TICKET", SSO_KEY);
 
-            // try {
+            try {
 
-            //     var oSsoResult = await fetch(sServerPath, {
-            //         headers: {
-            //             "sso_hdr": SSO_HDR,
-            //         },
-            //         method: "POST",
-            //         body: oFormData
+                var oSsoResult = await fetch(sServerPath, {
+                    headers: {
+                        "sso_hdr": SSO_HDR,
+                    },
+                    method: "POST",
+                    body: oFormData
 
-            //     });
+                });
 
-            //     // let oRes = await oSsoResult.json();
+                // let oRes = await oSsoResult.json();
 
-            // } catch (error) {
+            } catch (error) {
 
                 
-            // }
+            }
+
+            resolve();
 
 
-            var xhttp = new XMLHttpRequest();
-            xhttp.onload = (e) => {
+            // var xhttp = new XMLHttpRequest();
+            // xhttp.onload = (e) => {
 
-                debugger;
+            //     debugger;
                 
-                resolve();
-            };
-            xhttp.onerror = (e) => {
-                resolve();
-            };
+            //     resolve();
+            // };
+            // xhttp.onerror = (e) => {
+            //     resolve();
+            // };
 
-            xhttp.ontimeout = () => {
-                resolve();
-            };
+            // xhttp.ontimeout = () => {
+            //     resolve();
+            // };
 
-            xhttp.open("POST", sServerPath, true);
+            // xhttp.open("POST", sServerPath, true);
 
-            xhttp.setRequestHeader("sso_hdr", SSO_HDR);
+            // xhttp.setRequestHeader("sso_hdr", SSO_HDR);
 
-            xhttp.withCredentials = true;
+            // xhttp.withCredentials = true;
 
-            xhttp.send(oFormData);
+            // xhttp.send(oFormData);
 
         });
 
@@ -3558,12 +3848,12 @@ let oAPP = (function () {
             // SSO 관련 로그인 처리
             await _handleSSOLogin();
 
-            oAPP.events.ev_login({ SSO_KEY: oServerInfo.SSO_KEY });
+            // oAPP.events.ev_login({ SSO_KEY: oServerInfo.SSO_KEY });
 
-            // TEST ----
-            return;
+            // // TEST ----
+            // return;
 
-            // TEST ----
+            // // TEST ----
 
             var oWsSettings = oAPP.fn.fnGetSettingsInfo();
 
@@ -3692,7 +3982,9 @@ function fnWsGlobalMsgList() {
 
         oAPP.msg.M282 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "282"); // 사용 가능한 로그인 언어가 없습니다.
         oAPP.msg.M283 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "283"); // 서버 접속 오류가 발생하였습니다.
-
+        oAPP.msg.M290 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "290"); // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
+        oAPP.msg.M294 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "294"); // 서버 응답 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.
+        oAPP.msg.M295 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "295"); // 치명적인 오류가 발생하였습니다.
         // WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027"); 
 
         resolve();
