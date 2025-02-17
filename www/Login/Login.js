@@ -976,26 +976,35 @@ let oAPP = (function () {
     /************************************************************************
      * 로그인 버튼 클릭
      ************************************************************************/
-    oAPP.events.ev_login = () => {
+    oAPP.events.ev_login = (oPARAM) => {
 
-        let oCoreModel = sap.ui.getCore().getModel();
-        if (oCoreModel == null) {
-            return;
-        }
+        debugger;
 
-        let oLogInData = oCoreModel.getProperty("/LOGIN");
-        if (oLogInData == null) {
-            return;
-        }
-        
-        var oResult = oAPP.fn.fnLoginCheck(oLogInData.ID, oLogInData.PW, oLogInData.CLIENT, oLogInData.LANGU);
-        if (oResult.RETCD == 'E') {
+        // SSO 로그인 처리가 아닐 경우에만 로그인 입력값 체크를 수행 한다.
+        if(typeof oPARAM?.SSO_KEY === "undefined"){
 
-            // 메시지 처리.. 
-            // parent.showMessage(null, 99, "E", oResult.MSG);
-            sap.m.MessageToast.show(oResult.MSG, { width: "auto" });
-            parent.setDomBusy("");
-            return;
+            let oCoreModel = sap.ui.getCore().getModel();
+            if (oCoreModel == null) {
+                return;
+            }
+
+            let oLogInData = oCoreModel.getProperty("/LOGIN");
+            if (oLogInData == null) {
+                return;
+            }
+
+            var oResult = oAPP.fn.fnLoginCheck(oLogInData.ID, oLogInData.PW, oLogInData.CLIENT, oLogInData.LANGU);
+            if (oResult.RETCD == 'E') {
+
+                // 메시지 처리.. 
+                // parent.showMessage(null, 99, "E", oResult.MSG);
+                sap.m.MessageToast.show(oResult.MSG, { width: "auto" });
+
+                parent.setDomBusy("");
+
+                return;
+
+            }
 
         }
 
@@ -1003,20 +1012,22 @@ let oAPP = (function () {
 
         var sServicePath = parent.getServerPath() + "/wsloginchk";
 
+        
         var oFormData = new FormData();
-        oFormData.append("sap-user", oLogInData.ID);
-        oFormData.append("sap-password", oLogInData.PW);
-        oFormData.append("sap-client", oLogInData.CLIENT);
-        oFormData.append("sap-language", oLogInData.LANGU);
+        // oFormData.append("sap-user", oLogInData.ID);
+        // oFormData.append("sap-password", oLogInData.PW);
+        // oFormData.append("sap-client", oLogInData.CLIENT);
+        // oFormData.append("sap-language", oLogInData.LANGU);
 
-        zconsole.log("login language", oLogInData.LANGU);
+        // zconsole.log("login language", oLogInData.LANGU);
 
-        oFormData.append("SYSID", oLogInData.SYSID);
-        oFormData.append("WSVER", oSettings.appVersion);
-        oFormData.append("WSPATCH_LEVEL", oSettings.patch_level);
-        // oFormData.append("WSLANGU", oSettings.globalLanguage || "EN");
-        oFormData.append("PRCCD", "00"); // 로그인에서 호출하고 있다는 구분자 (로그인 성공시: [/wsloginchk] 서비스 부분에서 참조하는 파라미터)
-        oFormData.append("ACTCD", "001"); // 로그인에서 호출하고 있다는 구분자 (로그인 실패시: WS_LOGIN 클래스 부분에서 참조하는 파라미터)
+        // oFormData.append("SYSID", oLogInData.SYSID);
+        // oFormData.append("WSVER", oSettings.appVersion);
+        // oFormData.append("WSPATCH_LEVEL", oSettings.patch_level);
+        // // oFormData.append("WSLANGU", oSettings.globalLanguage || "EN");
+        // oFormData.append("PRCCD", "00"); // 로그인에서 호출하고 있다는 구분자 (로그인 성공시: [/wsloginchk] 서비스 부분에서 참조하는 파라미터)
+        // oFormData.append("ACTCD", "001"); // 로그인에서 호출하고 있다는 구분자 (로그인 실패시: WS_LOGIN 클래스 부분에서 참조하는 파라미터)
+
 
         parent.setDomBusy('X');
 
@@ -1089,7 +1100,9 @@ let oAPP = (function () {
 
                     if (oResult.TYPE == "E") {
 
-                        oPwInput.setValue("");
+                        if(oPwInput){
+                            oPwInput.setValue("");
+                        }                        
 
                         /**
                          * 📝 2024-06-27 soccerhs
@@ -3359,6 +3372,20 @@ let oAPP = (function () {
         oAPP.fn.fnRegisterFioriIconPool();
 
 
+        // SSO 키 정보가 있다면 자동로그인 처리한다.
+        let oServerInfo = parent.getServerInfo();
+        if(typeof oServerInfo.SSO_KEY !== "undefined"){
+            
+            // 자동 로그인 처리
+            let oPARAM = {
+                SSO_KEY: oServerInfo.SSO_KEY
+            };
+
+            oAPP.events.ev_login(oPARAM);
+
+            return;   
+
+        }
 
 
         // PRCCD값을 던져서 응답시 동일한 값으로 오는지 아닌지에 따라
@@ -3439,9 +3466,85 @@ let oAPP = (function () {
             oModel.setProperty("/LOGIN/LANGU", oLanguResult.DEFLANGU || "");            
         }
 
-        oModel.setProperty("/LOGIN/T_LANGU", aLangu);        
+        oModel.setProperty("/LOGIN/T_LANGU", aLangu);       
 
     } // end of _onViewReady
+
+
+    /********************************************************
+     * SSO 관련 로그인 처리
+     ********************************************************/
+    function _handleSSOLogin(){
+
+        return new Promise(async function(resolve){
+
+            // 서버 정보
+            let oServerInfo = parent.getServerInfo();
+
+            // SSO 키가 있는지 확인
+            if(typeof oServerInfo.SSO_KEY === "undefined"){
+                return resolve();
+            }
+
+            // 호출할 서버 경로
+            let sServerPath = parent.getServerPath();
+
+            // SSO Header 구분자
+            let SSO_HDR = `${SSO_KEY}_XXX`;
+
+            // SSO 키
+            let SSO_KEY     = oServerInfo.SSO_KEY;
+
+            let oFormData = new FormData();
+                oFormData.append("SSO_TICKET", SSO_KEY);
+
+            try {
+
+                var oSsoResult = await fetch(sServerPath, {
+                    headers: {
+                        "sso_hdr": SSO_HDR,
+                    },
+                    method: "POST",
+                    body: oFormData
+
+                });
+
+                // let oRes = await oSsoResult.json();
+
+            } catch (error) {
+
+                
+            }
+
+            resolve();
+
+
+            // var xhttp = new XMLHttpRequest();
+            // xhttp.onload = (e) => {
+
+            //     debugger;
+                
+            //     resolve();
+            // };
+            // xhttp.onerror = (e) => {
+            //     resolve();
+            // };
+
+            // xhttp.ontimeout = () => {
+            //     resolve();
+            // };
+
+            // xhttp.open("POST", sServerPath, true);
+
+            // xhttp.setRequestHeader("sso_hdr", SSO_HDR);
+
+            // xhttp.withCredentials = true;
+
+            // xhttp.send(oFormData);
+
+        });
+
+    } // end of _handleSSOLogin
 
     /************************************************************************s
      *---------------------[ U4A WS Login Page Start ] ----------------------
@@ -3450,14 +3553,27 @@ let oAPP = (function () {
 
         sap.ui.getCore().attachInit(async () => {
 
-            jQuery.sap.require("sap.m.MessageBox");            
-         
+            jQuery.sap.require("sap.m.MessageBox");
+
+            let oServerInfo = parent.getServerInfo();
+
+            // SSO 관련 로그인 처리
+            await _handleSSOLogin();
+
+            oAPP.events.ev_login({ SSO_KEY: oServerInfo.SSO_KEY });
+
+            // TEST ----
+            return;
+
+            // TEST ----
+
             var oWsSettings = oAPP.fn.fnGetSettingsInfo();
 
             // trial 버전 로그인 페이지를 그린다.
             if (oWsSettings.isTrial) {
 
                 oAPP.fn.fnOnTrialLoginPageRendering();
+
                 return;
             }
 

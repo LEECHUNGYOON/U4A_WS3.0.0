@@ -15,7 +15,7 @@
     };
 
 
-    const oAPP = {};
+    var oAPP = {};
 
     oAPP.REMOTE = require('@electron/remote');
     oAPP.APP = oAPP.REMOTE.app;
@@ -43,7 +43,7 @@
  * 🔥 Public functions
  ****************************************************************************/
 
-    oAPP.createServer = function(a,b,c){
+    oAPP.createServer = function(){
 
         return new Promise(function(resolve){
             

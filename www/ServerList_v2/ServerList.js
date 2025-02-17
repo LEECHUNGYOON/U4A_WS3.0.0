@@ -5,7 +5,7 @@
  * - file Desc : U4A Workspace Logon Pad
  ************************************************************************/
 
-let oAPP = parent.oAPP;
+var oAPP = parent.oAPP;
 
 const
     require = parent.require,
@@ -27,7 +27,7 @@ const
     WSUTIL = parent.require(PATHINFO.WSUTIL),
     SETTINGS = require(PATHINFO.WSSETTINGS),
     XHR = new XMLHttpRequest(),   
-    oU4A_EDU_SERVER = require(PATH.join(APPPATH, "ServerList_v2", "modules", "Server", "net", "index.js"));
+    oU4ASERV = require(PATH.join(APPPATH, "ServerList_v2", "modules", "Server", "net", "index.js"));
 
 /************************************************************************
  * 에러 감지
@@ -241,11 +241,12 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oAPP.setBusy(true);
 
         jQuery.sap.require("sap.m.MessageBox");
-
-        // 
+        
         if(!APP.isPackaged){
             // U4A EDU와 인터페이스를 위한 서버를 올린다.
-            await oU4A_EDU_SERVER.createServer.call(window);
+            // await oU4ASERV.createServer.call(oAPP);
+            await oU4ASERV.createServer();
+
         }
         
         // WS Global 메시지 글로벌 변수 설정
@@ -2500,8 +2501,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             SYSID: oBindData.systemid
         };
 
+        zconsole.log(oSAPServerInfo);
+
         // 사용자 테마 정보를 읽어온다.
-        let oP13nThemeInfo = await fnP13nCreateTheme(oBindData.systemid);
+        let oP13nThemeInfo = await fnP13nCreateTheme(oSAPServerInfo.SYSID);
         if (oP13nThemeInfo.RETCD == "S") {
             oSAPServerInfo.oThemeInfo = oP13nThemeInfo.RTDATA;
         }
@@ -3753,6 +3756,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     } // end of fnLoginPage
 
+    oAPP.fn.fnLoginPage = fnLoginPage;
+
     function fnP13nCreateTheme(SYSID) {
 
         return new Promise((resolve) => {
@@ -3822,6 +3827,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         });
 
     } // end of fnP13nCreateTheme
+
+    oAPP.fn.fnP13nCreateTheme = fnP13nCreateTheme;
 
     /************************************************************************
      * WS의 설정 정보를 구한다.
@@ -4257,6 +4264,8 @@ fnLoadCommonCss();
 window.addEventListener("load", () => {
 
     sap.ui.getCore().attachInit(async () => {
+
+        oAPP.attr.sap = sap;
 
         // if (!APP.isPackaged) {
         //     // Floating Menu Open

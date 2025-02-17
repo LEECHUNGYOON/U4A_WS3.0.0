@@ -324,10 +324,12 @@ exports.Excute = async function (REMOTE, DOWN_ROOT_PATH) {
 
 
         //Help document 버젼 파일 Path 설정 
-        let LV_VESN_PATH = oPATH.join(LV_ROOT_PATH, "U4A_HELP_DOC_VER" + HEAD_DATA.DATA.VERSN + ".json");
+        // let LV_VESN_PATH = oPATH.join(LV_ROOT_PATH, "U4A_HELP_DOC_VER" + HEAD_DATA.DATA.VERSN + ".json");
+        let LV_VESN_PATH = oPATH.join(LV_ROOT_PATH, "U4A_HELP_DOC_VER" + HEAD_DATA.DATA.VERSN + "_" + GV_USER_INFO.LANGU + ".json");
 
         //Help document 버젼 파일 존재여부 점검 - 존재한다면 
-        if (await gfn_file_existence(oFS, LV_ROOT_PATH, "U4A_HELP_DOC_VER" + HEAD_DATA.DATA.VERSN + ".json")) {
+        // if (await gfn_file_existence(oFS, LV_ROOT_PATH, "U4A_HELP_DOC_VER" + HEAD_DATA.DATA.VERSN + ".json")) {
+        if (await gfn_file_existence(oFS, LV_ROOT_PATH, "U4A_HELP_DOC_VER" + HEAD_DATA.DATA.VERSN + "_" + GV_USER_INFO.LANGU + ".json")) {
 
             //Help Document 파일이 존재한다면 
             if (await gfn_file_existence(oFS, LV_ROOT_PATH, HEAD_DATA.DATA.LOCFN)) {
