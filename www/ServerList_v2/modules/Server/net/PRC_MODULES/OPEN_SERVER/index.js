@@ -1,8 +1,8 @@
 const TY_RES = {
     RETCD: "",      // 수행 결과에 대한 코드
     STCOD: "",      // 수행 결과에 대한 상태 코드   
-    PRCCD: "",      // 수행중인 프로세스 코드
-    ACTCD: "",      // 수행중인 행위에 대한 코드         
+    PRCCD: "",      // 수행 중인 프로세스 코드
+    ACTCD: "",      // 수행 중인 행위에 대한 코드         
     RTMSG: "",      // 수행 결과에 대한 메시지 
     RDATA: "",      // 수행 결과에 대한 데이터
 };
@@ -17,16 +17,19 @@ module.exports = async function(oStream, oIF_DATA){
     // 응답 구조 복사
     let _oRES = JSON.parse(JSON.stringify(TY_RES));
 
+    _oRES.RETCD = "E";
+
+    // 프로세스 코드
     _oRES.PRCCD = oIF_DATA.PRCCD;
     
     // 전달받은 파라미터
-    let oPARAM = oIF_DATA.PARAM;
+    let oPARAM = oIF_DATA?.PARAM || undefined;
 
     // 서버의 SYSID
-    let SYSID = oPARAM.SYSID;
+    let SYSID = oPARAM?.SYSID || undefined;
 
     // SSO KEY
-    let SSO_KEY = oPARAM.SSO;
+    let SSO_TICKET = oPARAM?.SSO_TICKET || undefined;
 
     // 언어
     let LANGU = oPARAM?.LANGU || undefined;
@@ -34,7 +37,12 @@ module.exports = async function(oStream, oIF_DATA){
     // WS 언어
     let WSLANGU = oPARAM?.WSLANGU || undefined;
 
-    _oRES.RETCD = "E";
+    // SAP ID
+    let SAPID = oPARAM?.SAPID || undefined;
+
+    // SAP PW
+    let SAPPW = oPARAM?.SAPPW || undefined;
+    
 
     // 전체 서버리스트 목록을 구한다.
     let aServerList = oAPP.attr.sap.ui.getCore().getModel().getProperty("/ServerList");
@@ -57,7 +65,7 @@ module.exports = async function(oStream, oIF_DATA){
     if (oSavedResult.RETCD === "E") {
 
         // 서버리스트에 등록된 서버 정보가 없습니다.
-        _oRES.STCOD = "E001";
+        _oRES.STCOD = "E002";
 
         // 응답 후 소캣을 종료한다.
         oStream.end(JSON.stringify(_oRES));
@@ -72,7 +80,7 @@ module.exports = async function(oStream, oIF_DATA){
     if(!aSavedServList || Array.isArray(aSavedServList) === false || aSavedServList.length === 0){
 
         // 서버리스트에 등록된 서버 정보가 없습니다.
-        _oRES.STCOD = "E001";
+        _oRES.STCOD = "E003";
 
         // 응답 후 소캣을 종료한다.
         oStream.end(JSON.stringify(_oRES));
@@ -87,7 +95,7 @@ module.exports = async function(oStream, oIF_DATA){
     if(!oServerFound){
 
         // 서버리스트에 등록된 서버 정보가 없습니다.
-        _oRES.STCOD = "E001";
+        _oRES.STCOD = "E004";
 
         // 응답 후 소캣을 종료한다.
         oStream.end(JSON.stringify(_oRES));
@@ -103,7 +111,7 @@ module.exports = async function(oStream, oIF_DATA){
     if(!oSysInfo){
 
         // 서버리스트에 등록된 서버 정보가 없습니다.
-        _oRES.STCOD = "E001";
+        _oRES.STCOD = "E005";
 
         // 응답 후 소캣을 종료한다.
         oStream.end(JSON.stringify(_oRES));
@@ -121,13 +129,15 @@ module.exports = async function(oStream, oIF_DATA){
         INSTANCENO: oServerFound.insno,
         SYSTEMID: oServerFound.systemid,
         CLIENT: "",
+        
         LANGU: LANGU || "",         // 서버 접속 언어
         WSLANGU: WSLANGU || "",     // WS 언어
         SYSID: oServerFound.systemid,
-        SSO_KEY : SSO_KEY
+        SSO_TICKET : SSO_TICKET,
+        SAPID: SAPID,   // SAP ID
+        SAPPW: SAPPW,   // SAP PW
+        IS_SSO: "X"
     };
-
-    // zconsole.log(oLoginInfo);
 
     // 사용자 테마 정보를 읽어온다.
     let oP13nThemeInfo = await oAPP.fn.fnP13nCreateTheme(oLoginInfo.SYSID);

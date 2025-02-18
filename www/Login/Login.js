@@ -1024,7 +1024,7 @@ let oAPP = (function () {
         }
 
         // SSO 로그인 처리가 아닐 경우에만 로그인 입력값 체크를 수행 한다.
-        if(typeof oPARAM?.SSO_KEY === "undefined"){            
+        if(typeof oPARAM?.SSO_TICKET === "undefined"){            
 
             var oResult = oAPP.fn.fnLoginCheck(oLogInData.ID, oLogInData.PW, oLogInData.CLIENT, oLogInData.LANGU);
             if (oResult.RETCD == 'E') {
@@ -1033,7 +1033,10 @@ let oAPP = (function () {
                 // parent.showMessage(null, 99, "E", oResult.MSG);
                 sap.m.MessageToast.show(oResult.MSG, { width: "auto" });
 
-                parent.setDomBusy("");                
+                parent.setDomBusy("");  
+                
+                // div의 content DOM을 활성화 처리 한다.
+                _showContentDom("X");
 
                 return;
 
@@ -1054,7 +1057,7 @@ let oAPP = (function () {
 
         // SSO 처리가 아닐 경우에만 아래의 FormData를 전송한다.
         // SSO 처리 일 경우는 아래 정보는 필요 없음.
-        if(typeof oPARAM?.SSO_KEY === "undefined"){
+        if(typeof oPARAM?.SSO_TICKET === "undefined"){
 
             oFormData.append("sap-user",        oLogInData?.ID);
             oFormData.append("sap-password",    oLogInData?.PW);
@@ -3594,11 +3597,19 @@ let oAPP = (function () {
         // SSO 키 정보가 있다면 자동로그인 처리한다.
         let oServerInfo = parent.getServerInfo();
 
-        if(typeof oServerInfo.SSO_KEY !== "undefined"){
-            
+        if(oServerInfo?.IS_SSO === "X"){
+
             // 전달받은 SYSID, LANGU, WSLANGU 값이 있다면 모델 세팅한다.
             let oCoreModel = sap.ui.getCore().getModel();
             let oLogInData = oCoreModel.getProperty("/LOGIN");
+
+            if(oServerInfo.SAPID){
+                oLogInData.ID = oServerInfo.SAPID;
+            }
+
+            if(oServerInfo.SAPPW){
+                oLogInData.PW = oServerInfo.SAPPW;
+            }
 
             if(oServerInfo.LANGU){
                 oLogInData.LANGU = oServerInfo.LANGU;
@@ -3609,7 +3620,6 @@ let oAPP = (function () {
             }
 
             oCoreModel.setProperty("/LOGIN", oLogInData);
-            
 
             // SSO 관련 로그인 처리
             await _handleSSOLogin();
@@ -3619,6 +3629,7 @@ let oAPP = (function () {
             return;
 
         }
+    
         
         setTimeout(() => {
             $('#content').fadeIn(300, 'linear');
@@ -3640,10 +3651,10 @@ let oAPP = (function () {
             let oServerInfo = parent.getServerInfo();
 
             // SSO 키
-            let SSO_KEY     = oServerInfo?.SSO_KEY || undefined;
+            let SSO_TICKET     = oServerInfo?.SSO_TICKET || undefined;
 
             // SSO 키가 있는지 확인
-            if(typeof SSO_KEY === "undefined"){
+            if(typeof SSO_TICKET === "undefined"){
                 return resolve();
             }            
 
@@ -3651,10 +3662,10 @@ let oAPP = (function () {
             let sServerPath = parent.getServerPath();
 
             // SSO Header 구분자
-            let SSO_HDR = `${SSO_KEY}_XXX`;            
+            let SSO_HDR = `${SSO_TICKET}_XXX`;            
 
             let oFormData = new FormData();
-                oFormData.append("SSO_TICKET", SSO_KEY);
+                oFormData.append("SSO_TICKET", SSO_TICKET);
 
             try {
 
@@ -3708,6 +3719,16 @@ let oAPP = (function () {
             sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, async function () {
 
                 if (!oAPP.attr.UIUpdated) {
+
+                    // SSO 접속 일 경우가 아니면 로그인 화면부터 나오게 한다.
+                    let oServerInfo = parent.getServerInfo();                    
+                    if(oServerInfo?.IS_SSO !== "X"){
+
+                        setTimeout(() => {
+                            $('#content').fadeIn(300, 'linear');
+                        }, 300);
+
+                    }
 
                     // setTimeout(() => {
                     //     $('#content').fadeIn(300, 'linear');

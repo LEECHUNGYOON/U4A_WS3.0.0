@@ -1006,6 +1006,9 @@ let oAPP = (function () {
 
             parent.setDomBusy("");
 
+            // div의 content DOM을 활성화 처리 한다.
+            _showContentDom("X");
+
             return;
         }
 
@@ -1014,11 +1017,14 @@ let oAPP = (function () {
 
             parent.setDomBusy("");
 
+            // div의 content DOM을 활성화 처리 한다.
+            _showContentDom("X");
+
             return;
         }
 
         // SSO 로그인 처리가 아닐 경우에만 로그인 입력값 체크를 수행 한다.
-        if(typeof oPARAM?.SSO_KEY === "undefined"){            
+        if(typeof oPARAM?.SSO_TICKET === "undefined"){            
 
             var oResult = oAPP.fn.fnLoginCheck(oLogInData.ID, oLogInData.PW, oLogInData.CLIENT, oLogInData.LANGU);
             if (oResult.RETCD == 'E') {
@@ -1027,7 +1033,10 @@ let oAPP = (function () {
                 // parent.showMessage(null, 99, "E", oResult.MSG);
                 sap.m.MessageToast.show(oResult.MSG, { width: "auto" });
 
-                parent.setDomBusy("");
+                parent.setDomBusy("");  
+                
+                // div의 content DOM을 활성화 처리 한다.
+                _showContentDom("X");
 
                 return;
 
@@ -1048,7 +1057,7 @@ let oAPP = (function () {
 
         // SSO 처리가 아닐 경우에만 아래의 FormData를 전송한다.
         // SSO 처리 일 경우는 아래 정보는 필요 없음.
-        if(typeof oPARAM?.SSO_KEY === "undefined"){
+        if(typeof oPARAM?.SSO_TICKET === "undefined"){
 
             oFormData.append("sap-user",        oLogInData?.ID);
             oFormData.append("sap-password",    oLogInData?.PW);
@@ -1291,214 +1300,9 @@ let oAPP = (function () {
         // Timeout 오류가 발생한 경우
         xhr.ontimeout = _onError;
 
-
         xhr.open('POST', sServicePath); // 메소드와 주소 설정
         xhr.withCredentials = true;
-        xhr.send(oFormData); // 요청 전송
-
-
-        return;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        xhr.onreadystatechange = async function () { // 요청에 대한 콜백
-            if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
-                if (xhr.status === 200 || xhr.status === 201) {
-
-                    let u4a_status = xhr.getResponseHeader("u4a_status");
-                    if (u4a_status) {
-
-                        // parent.setDomBusy("");
-                        // oAPP.common.fnSetBusyDialog(false);
-                        var oResult;
-                        try {
-                            oResult = JSON.parse(xhr.response);
-                        } catch (error) {
-
-                            let _sLog = `[oAPP.events.ev_login] \n\n`;
-                                _sLog += error && error.toString() || "login Error";
-
-                            console.log(_sLog);
-
-                            parent.setDomBusy("");
-
-                            return;
-                        }
-
-                        // // 잘못된 url 이거나 지원하지 않는 기능 처리
-                        // oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, oResult);
-
-                        parent.setDomBusy("");
-
-                        return;
-                    }
-
-                    var oResult;
-
-                    try {
-
-                        oResult = JSON.parse(xhr.response);
-
-                    } catch (error) {
-
-                        // var sCleanHtml = parent.setCleanHtml(xhr.response);
-
-                        // parent.showMessage(null, 99, "E", sCleanHtml);
-
-                        parent.setDomBusy("");
-
-                        
-                        /**
-                         * 📝 2024-06-27 soccerhs
-                         * 로그인 처리시 약속된 JSON구조가 아닐 경우는 알수 없는 오류처리
-                         */
-
-                        // MSG - 로그인 처리 하는 과정에서 문제가 발생하였습니다. 담당자에게 문의하세요.
-                        let sErrMsg = oAPP.msg.M081;
-
-                        console.log(sErrMsg);
-
-                        sap.m.MessageBox.error(sErrMsg);                        
-                        
-                        return;
-
-                    }
-
-                    if (oResult.TYPE == "E") {
-
-                        if(oPwInput){
-                            oPwInput.setValue("");
-                        }                        
-
-                        /**
-                         * 📝 2024-06-27 soccerhs
-                         * Change Password 일 경우의 메시지 처리
-                         */                        
-                        if(oResult.RCODE === "R001"){
-                            
-                            parent.setDomBusy("");
-
-                            // MSG - You need to change your password. Please update it via SAPGUI.
-                            let sMsg = oAPP.msg.M082; 
-                            
-                            console.log(sMsg);
-
-                            sap.m.MessageBox.warning(sMsg);
-
-                            return;
-
-                        }
-
-                        //20231228 pes -start.
-                        //권한 점검 오류가 발생한 경우.
-                        //오류 권한 리스트 팝업 호출.
-                        var _called = await oAPP.fn.fnCallAuthErrorListPopup(oResult);
-                        if (_called === true) {
-                            parent.setDomBusy("");
-
-                            return;
-                        }
-                        //20231228 pes -end.                        
-
-                        parent.setDomBusy("");
-                        
-                        // 오류 처리..    
-                        sap.m.MessageBox.error(oResult.MSG);               
-                        // parent.showMessage(null, 99, "E", oResult.MSG);
-
-                        return;
-
-                    }
-
-                    // HTTP ONLY 값을 글로벌에 저장
-                    oAPP.attr.HTTPONLY = oResult.HTTP_ONLY;
-                    oAPP.attr.LOGIN = oLogInData;
-
-                    // 여기까지 온건 로그인 성공했다는 뜻이니까 
-                    // 권한 체크를 수행한다.
-                    oAPP.fn.fnCheckAuthority().then((oAuthInfo) => {
-
-                        // trial 버전 확인
-                        var oWsSettings = oAPP.fn.fnGetSettingsInfo(),
-                            bIsTrial = oWsSettings.isTrial,
-                            bIsPackaged = APP.isPackaged;
-
-                        oAuthInfo.IS_TRIAL = bIsTrial; // 유저 권한 정보에 Trial 정보를 저장한다.
-
-                        // no build일 경우 혹은 Trial 버전일 경우는 최신 버전 체크를 하지 않는다.                        
-                        if (!bIsPackaged || bIsTrial) {
-
-                            // parent.setDomBusy('');
-
-                            oAPP.fn.fnCheckVersionFinished(oResult, oAuthInfo);
-
-                            return;
-                        }
-
-                        // 개발자 권한 성공시
-                        oAPP.fn.fnCheckAuthSuccess(oResult, oAuthInfo);
-
-                    }).catch((e) => {
-
-                        parent.setDomBusy("");
-
-                        // 권한이 없으므로 오류 메시지를 띄운다.
-                        oAPP.fn.fnShowNoAuthIllustMsg(e);                        
-
-                    });
-
-                } else {
-
-                    let sErrMsg = "Connection fail!";
-
-                    if (xhr.response == "") {
-                        // parent.showMessage(null, 99, "E", sErrMsg);
-                        
-                        parent.setDomBusy("");
-
-                        sap.m.MessageBox.error(sErrMsg);
-                        
-                        return;
-                    }
-
-                    var sCleanHtml = parent.setCleanHtml(xhr.response);
-
-                    parent.setDomBusy("");
-
-                    parent.showMessage(null, 99, "E", sCleanHtml);                    
-
-                }
-            }
-        };
-
-        xhr.open('POST', sServicePath); // 메소드와 주소 설정
-        //xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
-        xhr.withCredentials = true;
-        xhr.send(oFormData); // 요청 전송         
+        xhr.send(oFormData); // 요청 전송      
 
     }; // end of oAPP.events.ev_login
 
@@ -1803,6 +1607,9 @@ let oAPP = (function () {
 
                             parent.setDomBusy("");
 
+                            // div의 content DOM을 활성화 처리 한다.
+                            _showContentDom("X");
+
                             return;
 
                         }
@@ -1810,7 +1617,11 @@ let oAPP = (function () {
                     } else {
 
                         parent.showMessage(null, 99, "E", xhr.response);
+                        
                         parent.setDomBusy("");
+
+                        // div의 content DOM을 활성화 처리 한다.
+                        _showContentDom("X");
 
                     }
                 }
@@ -1842,6 +1653,9 @@ let oAPP = (function () {
             oAPP.fn.fnShowNoAuthIllustMsg(oLicenseInfo.RTMSG);
 
             parent.setDomBusy('');
+
+            // div의 content DOM을 활성화 처리 한다.
+            _showContentDom("X");
 
             return;
         }
@@ -1876,6 +1690,9 @@ let oAPP = (function () {
 
             //업데이트 가능 
             autoUpdaterSAP.on('update-available-sap', (e) => {
+
+                // div의 content DOM을 활성화 처리 한다.
+                _showContentDom("X");
 
                 let oBusyPop = oModel.getProperty("/BUSYPOP");
                 oBusyPop.PROGVISI = true;
@@ -2158,6 +1975,9 @@ let oAPP = (function () {
             });
 
             autoUpdater.on('error', (err) => {
+
+                // div의 content DOM을 활성화 처리 한다.
+                _showContentDom("X");
 
                 // 메시지 팝업을 띄운다.
                 // 다운로드 중 오류가 발생하였습니다.
@@ -3128,6 +2948,10 @@ let oAPP = (function () {
 
             parent.setDomBusy("");
 
+            // div의 content DOM을 활성화 처리 한다.
+            _showContentDom("X");
+            
+
             console.log("업데이트 항목이 존재합니다");
         });
 
@@ -3209,6 +3033,9 @@ let oAPP = (function () {
         // 업데이트 중 오류 발생
         spAutoUpdater.on("update-error-SP", (e) => {
 
+            // div의 content DOM을 활성화 처리 한다.
+            _showContentDom("X");
+            
             // 메시지 팝업을 띄운다.
             // 다운로드 중 오류가 발생하였습니다.
             // 재시작 하시겠습니까?
@@ -3770,11 +3597,19 @@ let oAPP = (function () {
         // SSO 키 정보가 있다면 자동로그인 처리한다.
         let oServerInfo = parent.getServerInfo();
 
-        if(typeof oServerInfo.SSO_KEY !== "undefined"){
-            
+        if(oServerInfo?.IS_SSO === "X"){
+
             // 전달받은 SYSID, LANGU, WSLANGU 값이 있다면 모델 세팅한다.
             let oCoreModel = sap.ui.getCore().getModel();
             let oLogInData = oCoreModel.getProperty("/LOGIN");
+
+            if(oServerInfo.SAPID){
+                oLogInData.ID = oServerInfo.SAPID;
+            }
+
+            if(oServerInfo.SAPPW){
+                oLogInData.PW = oServerInfo.SAPPW;
+            }
 
             if(oServerInfo.LANGU){
                 oLogInData.LANGU = oServerInfo.LANGU;
@@ -3785,7 +3620,6 @@ let oAPP = (function () {
             }
 
             oCoreModel.setProperty("/LOGIN", oLogInData);
-            
 
             // SSO 관련 로그인 처리
             await _handleSSOLogin();
@@ -3795,6 +3629,7 @@ let oAPP = (function () {
             return;
 
         }
+    
         
         setTimeout(() => {
             $('#content').fadeIn(300, 'linear');
@@ -3816,10 +3651,10 @@ let oAPP = (function () {
             let oServerInfo = parent.getServerInfo();
 
             // SSO 키
-            let SSO_KEY     = oServerInfo?.SSO_KEY || undefined;
+            let SSO_TICKET     = oServerInfo?.SSO_TICKET || undefined;
 
             // SSO 키가 있는지 확인
-            if(typeof SSO_KEY === "undefined"){
+            if(typeof SSO_TICKET === "undefined"){
                 return resolve();
             }            
 
@@ -3827,10 +3662,10 @@ let oAPP = (function () {
             let sServerPath = parent.getServerPath();
 
             // SSO Header 구분자
-            let SSO_HDR = `${SSO_KEY}_XXX`;            
+            let SSO_HDR = `${SSO_TICKET}_XXX`;            
 
             let oFormData = new FormData();
-                oFormData.append("SSO_TICKET", SSO_KEY);
+                oFormData.append("SSO_TICKET", SSO_TICKET);
 
             try {
 
@@ -3884,6 +3719,17 @@ let oAPP = (function () {
             sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, async function () {
 
                 if (!oAPP.attr.UIUpdated) {
+
+                    // SSO 접속 일 경우가 아니면 로그인 화면부터 나오게 한다.
+                    let oServerInfo = parent.getServerInfo();
+
+                    if(oServerInfo?.IS_SSO !== "X"){
+
+                        setTimeout(() => {
+                            $('#content').fadeIn(300, 'linear');
+                        }, 300);
+
+                    }
 
                     // setTimeout(() => {
                     //     $('#content').fadeIn(300, 'linear');
