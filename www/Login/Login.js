@@ -1001,20 +1001,30 @@ let oAPP = (function () {
         
         parent.setDomBusy('X');
 
-        var oLogInData;
+        let oCoreModel = sap.ui.getCore().getModel();
+        if (oCoreModel == null) {
+
+            parent.setDomBusy("");
+
+            // div의 content DOM을 활성화 처리 한다.
+            _showContentDom("X");
+
+            return;
+        }
+
+        let oLogInData = oCoreModel.getProperty("/LOGIN");
+        if (oLogInData == null) {
+
+            parent.setDomBusy("");
+
+            // div의 content DOM을 활성화 처리 한다.
+            _showContentDom("X");
+
+            return;
+        }
 
         // SSO 로그인 처리가 아닐 경우에만 로그인 입력값 체크를 수행 한다.
-        if(typeof oPARAM?.SSO_KEY === "undefined"){
-
-            let oCoreModel = sap.ui.getCore().getModel();
-            if (oCoreModel == null) {
-                return;
-            }
-
-            oLogInData = oCoreModel.getProperty("/LOGIN");
-            if (oLogInData == null) {
-                return;
-            }
+        if(typeof oPARAM?.SSO_KEY === "undefined"){            
 
             var oResult = oAPP.fn.fnLoginCheck(oLogInData.ID, oLogInData.PW, oLogInData.CLIENT, oLogInData.LANGU);
             if (oResult.RETCD == 'E') {
@@ -1023,13 +1033,18 @@ let oAPP = (function () {
                 // parent.showMessage(null, 99, "E", oResult.MSG);
                 sap.m.MessageToast.show(oResult.MSG, { width: "auto" });
 
-                parent.setDomBusy("");
+                parent.setDomBusy("");                
 
                 return;
 
             }
 
         }
+
+        // // 필수 파라미터!!
+        // oLogInData = {};
+        // oLogInData.SYSID = "UHA";
+        // oLogInData.LANGU = "EN";
 
         let oSettings = WSUTIL.getWsSettingsInfo();
 
@@ -1043,11 +1058,13 @@ let oAPP = (function () {
 
             oFormData.append("sap-user",        oLogInData?.ID);
             oFormData.append("sap-password",    oLogInData?.PW);
-            oFormData.append("sap-client",      oLogInData?.CLIENT);
-            oFormData.append("sap-language",    oLogInData?.LANGU);
-            oFormData.append("SYSID",           oLogInData?.SYSID);
+            oFormData.append("sap-client",      oLogInData?.CLIENT);                       
 
         }
+        
+        // 필수!!
+        oFormData.append("sap-language",    oLogInData?.LANGU);
+        oFormData.append("SYSID",           oLogInData?.SYSID);
 
         oFormData.append("WSVER",           oSettings.appVersion);
         oFormData.append("WSPATCH_LEVEL",   oSettings.patch_level);        
@@ -1143,7 +1160,7 @@ let oAPP = (function () {
                  * 📝 2024-06-27 soccerhs
                  * Change Password 일 경우의 메시지 처리
                  */                        
-                if(oResult.RCODE === "R001"){M
+                if(oResult.RCODE === "R001"){
 
                     // MSG - You need to change your password. Please update it via SAPGUI.
                     let sMsg = oAPP.msg.M082; 
@@ -1280,214 +1297,9 @@ let oAPP = (function () {
         // Timeout 오류가 발생한 경우
         xhr.ontimeout = _onError;
 
-
         xhr.open('POST', sServicePath); // 메소드와 주소 설정
         xhr.withCredentials = true;
-        xhr.send(oFormData); // 요청 전송
-
-
-        return;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        xhr.onreadystatechange = async function () { // 요청에 대한 콜백
-            if (xhr.readyState === xhr.DONE) { // 요청이 완료되면
-                if (xhr.status === 200 || xhr.status === 201) {
-
-                    let u4a_status = xhr.getResponseHeader("u4a_status");
-                    if (u4a_status) {
-
-                        // parent.setDomBusy("");
-                        // oAPP.common.fnSetBusyDialog(false);
-                        var oResult;
-                        try {
-                            oResult = JSON.parse(xhr.response);
-                        } catch (error) {
-
-                            let _sLog = `[oAPP.events.ev_login] \n\n`;
-                                _sLog += error && error.toString() || "login Error";
-
-                            console.log(_sLog);
-
-                            parent.setDomBusy("");
-
-                            return;
-                        }
-
-                        // // 잘못된 url 이거나 지원하지 않는 기능 처리
-                        // oAPP.common.fnUnsupportedServiceUrlCall(u4a_status, oResult);
-
-                        parent.setDomBusy("");
-
-                        return;
-                    }
-
-                    var oResult;
-
-                    try {
-
-                        oResult = JSON.parse(xhr.response);
-
-                    } catch (error) {
-
-                        // var sCleanHtml = parent.setCleanHtml(xhr.response);
-
-                        // parent.showMessage(null, 99, "E", sCleanHtml);
-
-                        parent.setDomBusy("");
-
-                        
-                        /**
-                         * 📝 2024-06-27 soccerhs
-                         * 로그인 처리시 약속된 JSON구조가 아닐 경우는 알수 없는 오류처리
-                         */
-
-                        // MSG - 로그인 처리 하는 과정에서 문제가 발생하였습니다. 담당자에게 문의하세요.
-                        let sErrMsg = oAPP.msg.M081;
-
-                        console.log(sErrMsg);
-
-                        sap.m.MessageBox.error(sErrMsg);                        
-                        
-                        return;
-
-                    }
-
-                    if (oResult.TYPE == "E") {
-
-                        if(oPwInput){
-                            oPwInput.setValue("");
-                        }                        
-
-                        /**
-                         * 📝 2024-06-27 soccerhs
-                         * Change Password 일 경우의 메시지 처리
-                         */                        
-                        if(oResult.RCODE === "R001"){
-                            
-                            parent.setDomBusy("");
-
-                            // MSG - You need to change your password. Please update it via SAPGUI.
-                            let sMsg = oAPP.msg.M082; 
-                            
-                            console.log(sMsg);
-
-                            sap.m.MessageBox.warning(sMsg);
-
-                            return;
-
-                        }
-
-                        //20231228 pes -start.
-                        //권한 점검 오류가 발생한 경우.
-                        //오류 권한 리스트 팝업 호출.
-                        var _called = await oAPP.fn.fnCallAuthErrorListPopup(oResult);
-                        if (_called === true) {
-                            parent.setDomBusy("");
-
-                            return;
-                        }
-                        //20231228 pes -end.                        
-
-                        parent.setDomBusy("");
-                        
-                        // 오류 처리..    
-                        sap.m.MessageBox.error(oResult.MSG);               
-                        // parent.showMessage(null, 99, "E", oResult.MSG);
-
-                        return;
-
-                    }
-
-                    // HTTP ONLY 값을 글로벌에 저장
-                    oAPP.attr.HTTPONLY = oResult.HTTP_ONLY;
-                    oAPP.attr.LOGIN = oLogInData;
-
-                    // 여기까지 온건 로그인 성공했다는 뜻이니까 
-                    // 권한 체크를 수행한다.
-                    oAPP.fn.fnCheckAuthority().then((oAuthInfo) => {
-
-                        // trial 버전 확인
-                        var oWsSettings = oAPP.fn.fnGetSettingsInfo(),
-                            bIsTrial = oWsSettings.isTrial,
-                            bIsPackaged = APP.isPackaged;
-
-                        oAuthInfo.IS_TRIAL = bIsTrial; // 유저 권한 정보에 Trial 정보를 저장한다.
-
-                        // no build일 경우 혹은 Trial 버전일 경우는 최신 버전 체크를 하지 않는다.                        
-                        if (!bIsPackaged || bIsTrial) {
-
-                            // parent.setDomBusy('');
-
-                            oAPP.fn.fnCheckVersionFinished(oResult, oAuthInfo);
-
-                            return;
-                        }
-
-                        // 개발자 권한 성공시
-                        oAPP.fn.fnCheckAuthSuccess(oResult, oAuthInfo);
-
-                    }).catch((e) => {
-
-                        parent.setDomBusy("");
-
-                        // 권한이 없으므로 오류 메시지를 띄운다.
-                        oAPP.fn.fnShowNoAuthIllustMsg(e);                        
-
-                    });
-
-                } else {
-
-                    let sErrMsg = "Connection fail!";
-
-                    if (xhr.response == "") {
-                        // parent.showMessage(null, 99, "E", sErrMsg);
-                        
-                        parent.setDomBusy("");
-
-                        sap.m.MessageBox.error(sErrMsg);
-                        
-                        return;
-                    }
-
-                    var sCleanHtml = parent.setCleanHtml(xhr.response);
-
-                    parent.setDomBusy("");
-
-                    parent.showMessage(null, 99, "E", sCleanHtml);                    
-
-                }
-            }
-        };
-
-        xhr.open('POST', sServicePath); // 메소드와 주소 설정
-        //xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
-        xhr.withCredentials = true;
-        xhr.send(oFormData); // 요청 전송         
+        xhr.send(oFormData); // 요청 전송      
 
     }; // end of oAPP.events.ev_login
 
@@ -1792,6 +1604,9 @@ let oAPP = (function () {
 
                             parent.setDomBusy("");
 
+                            // div의 content DOM을 활성화 처리 한다.
+                            _showContentDom("X");
+
                             return;
 
                         }
@@ -1799,7 +1614,11 @@ let oAPP = (function () {
                     } else {
 
                         parent.showMessage(null, 99, "E", xhr.response);
+                        
                         parent.setDomBusy("");
+
+                        // div의 content DOM을 활성화 처리 한다.
+                        _showContentDom("X");
 
                     }
                 }
@@ -1831,6 +1650,9 @@ let oAPP = (function () {
             oAPP.fn.fnShowNoAuthIllustMsg(oLicenseInfo.RTMSG);
 
             parent.setDomBusy('');
+
+            // div의 content DOM을 활성화 처리 한다.
+            _showContentDom("X");
 
             return;
         }
@@ -1865,6 +1687,9 @@ let oAPP = (function () {
 
             //업데이트 가능 
             autoUpdaterSAP.on('update-available-sap', (e) => {
+
+                // div의 content DOM을 활성화 처리 한다.
+                _showContentDom("X");
 
                 let oBusyPop = oModel.getProperty("/BUSYPOP");
                 oBusyPop.PROGVISI = true;
@@ -2148,6 +1973,9 @@ let oAPP = (function () {
 
             autoUpdater.on('error', (err) => {
 
+                // div의 content DOM을 활성화 처리 한다.
+                _showContentDom("X");
+
                 // 메시지 팝업을 띄운다.
                 // 다운로드 중 오류가 발생하였습니다.
                 // 재시작 하시겠습니까?
@@ -2257,10 +2085,10 @@ let oAPP = (function () {
 
         oCoreModel.setProperty("/LOGIN", oLogInData);
 
-        // 로그인 페이지의 Opacity를 적용한다.
-        $('.u4aWsVersionCheckDialog,.u4aWsLoginFormFcard,.u4aWsGuestLoginCard').animate({
-            opacity: "0"
-        }, 500, "linear", () => {
+        // // 로그인 페이지의 Opacity를 적용한다.
+        // $('.u4aWsVersionCheckDialog,.u4aWsLoginFormFcard,.u4aWsGuestLoginCard').animate({
+        //     opacity: "0"
+        // }, 500, "linear", () => {
 
             var oResultData = jQuery.extend(true, {}, oResult);
 
@@ -2275,7 +2103,7 @@ let oAPP = (function () {
             // [async] 권한이 있으면 성공적으로 로그인 후 10번으로 이동
             oAPP.fn.fnOnLoginSuccess(oResultData);
 
-        });
+        // });
 
     }; // end of oAPP.fn.fnCheckVersionFinished    
 
@@ -3117,6 +2945,10 @@ let oAPP = (function () {
 
             parent.setDomBusy("");
 
+            // div의 content DOM을 활성화 처리 한다.
+            _showContentDom("X");
+            
+
             console.log("업데이트 항목이 존재합니다");
         });
 
@@ -3198,6 +3030,9 @@ let oAPP = (function () {
         // 업데이트 중 오류 발생
         spAutoUpdater.on("update-error-SP", (e) => {
 
+            // div의 content DOM을 활성화 처리 한다.
+            _showContentDom("X");
+            
             // 메시지 팝업을 띄운다.
             // 다운로드 중 오류가 발생하였습니다.
             // 재시작 하시겠습니까?
@@ -3628,6 +3463,102 @@ let oAPP = (function () {
 
 
     /********************************************************
+     * PRCCD값을 던져서 응답시 동일한 값으로 오는지 아닌지에 따라
+     * 로그인 화면 제어를 하기 위한 function
+     ********************************************************/
+    function _handleLoginLangu() {
+        
+        return new Promise(async function(resolve){
+
+            // PRCCD값을 던져서 응답시 동일한 값으로 오는지 아닌지에 따라
+            // 로그인 화면 제어를 하기 위한 코드
+            let sLanguPRCCD = "GET_LANGU";
+
+            // 접속서버에서 설치된 언어 목록을 구한다.
+            let oLanguResult = await _getSupportedLangu({ PRCCD : sLanguPRCCD });
+
+            zconsole.log(oLanguResult);
+
+            if(oLanguResult.RETCD === "E"){
+
+                let sErrMsg = "";
+
+                switch (oLanguResult.STCOD) {
+
+                    case "E001": 
+
+                        sErrMsg = oAPP.msg.M282; // 지원가능한 언어가 없습니다
+
+                        break;
+
+                    case "E999":
+                        
+                        sErrMsg = oAPP.msg.M283; // 통신오류
+
+                        break;
+
+                    
+                    default:
+
+                        sErrMsg = oAPP.msg.M283; // 통신오류
+
+                        break;
+                }
+
+                sap.m.MessageBox.error(sErrMsg, {
+                    onClose: function(){
+
+                        oAPP.attr.isPressWindowClose = "X";
+
+                        CURRWIN.close();
+                        
+                    }
+                });   
+
+                parent.setDomBusy("");
+
+                return;
+
+            }
+
+            // 내가 던진 PRCCD 아니라면 기존 Input 형태의 language를 보여준다.
+            if(oLanguResult?.PRCCD !== sLanguPRCCD){
+
+                let oLanguForm = sap.ui.getCore().byId("ws_langu_input_form");
+                    oLanguForm.setVisible(true);
+
+                return;
+
+            }
+
+            // 내가 던진 ACTCD가 같다면 Select 형태의 language를 보여준다.
+            let oLanguForm = sap.ui.getCore().byId("ws_langu_select_form");
+                oLanguForm.setVisible(true);
+            
+            // 접속 서버에 설치된 언어 정보 체크
+            let aLangu = oLanguResult?.T_LANGU || [];        
+
+            let oModel = sap.ui.getCore().getModel();
+            if(!oModel){
+                return;
+            }
+
+            // 기 저장된 언어 정보가 없다면 서버의 Default 언어로 설정해준다
+            let sLangu = oModel.getProperty("/LOGIN/LANGU");
+            if(!sLangu){
+                oModel.setProperty("/LOGIN/LANGU", oLanguResult.DEFLANGU || "");            
+            }
+
+            oModel.setProperty("/LOGIN/T_LANGU", aLangu);            
+
+            resolve();
+
+        });
+
+    } // end of _handleLoginLangu
+
+
+    /********************************************************
      * 화면 랜더링 이후에 호출되는 이벤트
      ********************************************************/
     async function _onViewReady(){
@@ -3647,9 +3578,6 @@ let oAPP = (function () {
         // IPC 이벤트 핸들러
         _attachIPCEvents();
 
-        // // Shortcut 설정
-        // oAPP.fn.fnSetShortCut();
-
         // 개인화 폴더 체크 후 없으면 생성
         oAPP.fn.fnOnP13nFolderCreate();
 
@@ -3659,102 +3587,44 @@ let oAPP = (function () {
         // IconPool Register Fiori icon
         oAPP.fn.fnRegisterFioriIconPool();
 
+        // PRCCD값을 던져서 응답시 동일한 값으로 오는지 아닌지에 따라
+        // 로그인 화면 제어를 하기 위한 function
+        await _handleLoginLangu();
 
         // SSO 키 정보가 있다면 자동로그인 처리한다.
         let oServerInfo = parent.getServerInfo();
+
         if(typeof oServerInfo.SSO_KEY !== "undefined"){
             
-            // 자동 로그인 처리
-            let oPARAM = {
-                SSO_KEY: oServerInfo.SSO_KEY
-            };
+            // 전달받은 SYSID, LANGU, WSLANGU 값이 있다면 모델 세팅한다.
+            let oCoreModel = sap.ui.getCore().getModel();
+            let oLogInData = oCoreModel.getProperty("/LOGIN");
 
-            oAPP.events.ev_login(oPARAM);
-
-            return;   
-
-        }
-
-
-        // PRCCD값을 던져서 응답시 동일한 값으로 오는지 아닌지에 따라
-        // 로그인 화면 제어를 하기 위한 코드
-        let sLanguPRCCD = "GET_LANGU";
-
-        // 접속서버에서 설치된 언어 목록을 구한다.
-        let oLanguResult = await _getSupportedLangu({ PRCCD : sLanguPRCCD });
-
-        zconsole.log(oLanguResult);
-
-        if(oLanguResult.RETCD === "E"){
-
-            let sErrMsg = "";
-
-            switch (oLanguResult.STCOD) {
-
-                case "E001": 
-
-                    sErrMsg = oAPP.msg.M282; // 지원가능한 언어가 없습니다
-
-                    break;
-
-                case "E999":
-                    
-                    sErrMsg = oAPP.msg.M283; // 통신오류
-
-                    break;
-
-                
-                default:
-
-                    sErrMsg = oAPP.msg.M283; // 통신오류
-
-                    break;
+            if(oServerInfo.LANGU){
+                oLogInData.LANGU = oServerInfo.LANGU;
             }
 
-            sap.m.MessageBox.error(sErrMsg, {
-                onClose: function(){
+            if(oServerInfo.WSLANGU){
+                oLogInData.WSLANGU = oServerInfo.WSLANGU;
+            }
 
-                    oAPP.attr.isPressWindowClose = "X";
+            oCoreModel.setProperty("/LOGIN", oLogInData);
+            
 
-                    CURRWIN.close();
-                    
-                }
-            });   
+            // SSO 관련 로그인 처리
+            await _handleSSOLogin();
 
-            parent.setDomBusy("");
-
-            return;
-
-        }
-
-        // 내가 던진 PRCCD 아니라면 기존 Input 형태의 language를 보여준다.
-        if(oLanguResult?.PRCCD !== sLanguPRCCD){
-
-            let oLanguForm = sap.ui.getCore().byId("ws_langu_input_form");
-                oLanguForm.setVisible(true);
+            oAPP.events.ev_login(oServerInfo);
 
             return;
+
         }
+        
+        setTimeout(() => {
+            $('#content').fadeIn(300, 'linear');
+        }, 300);
 
-        // 내가 던진 ACTCD가 같다면 Select 형태의 language를 보여준다.
-        let oLanguForm = sap.ui.getCore().byId("ws_langu_select_form");
-            oLanguForm.setVisible(true);
-         
-        // 접속 서버에 설치된 언어 정보 체크
-        let aLangu = oLanguResult?.T_LANGU || [];        
-
-        let oModel = sap.ui.getCore().getModel();
-        if(!oModel){
-            return;
-        }
-
-        // 기 저장된 언어 정보가 없다면 서버의 Default 언어로 설정해준다
-        let sLangu = oModel.getProperty("/LOGIN/LANGU");
-        if(!sLangu){
-            oModel.setProperty("/LOGIN/LANGU", oLanguResult.DEFLANGU || "");            
-        }
-
-        oModel.setProperty("/LOGIN/T_LANGU", aLangu);       
+        parent.setDomBusy("");
 
     } // end of _onViewReady
 
@@ -3769,26 +3639,26 @@ let oAPP = (function () {
             // 서버 정보
             let oServerInfo = parent.getServerInfo();
 
+            // SSO 키
+            let SSO_KEY     = oServerInfo?.SSO_KEY || undefined;
+
             // SSO 키가 있는지 확인
-            if(typeof oServerInfo.SSO_KEY === "undefined"){
+            if(typeof SSO_KEY === "undefined"){
                 return resolve();
-            }
+            }            
 
             // 호출할 서버 경로
             let sServerPath = parent.getServerPath();
 
             // SSO Header 구분자
-            let SSO_HDR = `${SSO_KEY}_XXX`;
-
-            // SSO 키
-            let SSO_KEY     = oServerInfo.SSO_KEY;
+            let SSO_HDR = `${SSO_KEY}_XXX`;            
 
             let oFormData = new FormData();
                 oFormData.append("SSO_TICKET", SSO_KEY);
 
             try {
 
-                var oSsoResult = await fetch(sServerPath, {
+                var response = await fetch(sServerPath, {
                     headers: {
                         "sso_hdr": SSO_HDR,
                     },
@@ -3797,38 +3667,12 @@ let oAPP = (function () {
 
                 });
 
-                // let oRes = await oSsoResult.json();
-
             } catch (error) {
 
                 
             }
 
             resolve();
-
-
-            // var xhttp = new XMLHttpRequest();
-            // xhttp.onload = (e) => {
-
-            //     debugger;
-                
-            //     resolve();
-            // };
-            // xhttp.onerror = (e) => {
-            //     resolve();
-            // };
-
-            // xhttp.ontimeout = () => {
-            //     resolve();
-            // };
-
-            // xhttp.open("POST", sServerPath, true);
-
-            // xhttp.setRequestHeader("sso_hdr", SSO_HDR);
-
-            // xhttp.withCredentials = true;
-
-            // xhttp.send(oFormData);
 
         });
 
@@ -3842,18 +3686,6 @@ let oAPP = (function () {
         sap.ui.getCore().attachInit(async () => {
 
             jQuery.sap.require("sap.m.MessageBox");
-
-            let oServerInfo = parent.getServerInfo();
-
-            // SSO 관련 로그인 처리
-            await _handleSSOLogin();
-
-            // oAPP.events.ev_login({ SSO_KEY: oServerInfo.SSO_KEY });
-
-            // // TEST ----
-            // return;
-
-            // // TEST ----
 
             var oWsSettings = oAPP.fn.fnGetSettingsInfo();
 
@@ -3877,16 +3709,14 @@ let oAPP = (function () {
 
                 if (!oAPP.attr.UIUpdated) {
 
-                    setTimeout(() => {
-                        $('#content').fadeIn(300, 'linear');
-                    }, 300);
+                    // setTimeout(() => {
+                    //     $('#content').fadeIn(300, 'linear');
+                    // }, 300);
 
                     oAPP.attr.UIUpdated = "X";
 
                     // 화면 랜더링 이후 호출
                     await _onViewReady();
-                    
-                    parent.setDomBusy("");
 
                 }
 

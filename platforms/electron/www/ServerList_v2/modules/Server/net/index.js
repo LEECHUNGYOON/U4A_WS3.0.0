@@ -58,7 +58,7 @@
                 /******************************************************
                  * ⚡[Server] 요청 데이터 수신 이벤트
                  ******************************************************/
-                oStream.on('data', function (data){      
+                oStream.on('data', function (data){
                     
                     // 요청 데이터 JSON 파싱
                     try {
@@ -112,7 +112,6 @@
                         require(oAPP.ERR_MOD_PATH)(oStream, _oRES);
 
                     }
-
 
     
                 }); // end of oStream 'data' Event

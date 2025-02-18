@@ -242,13 +242,6 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         jQuery.sap.require("sap.m.MessageBox");
         
-        if(!APP.isPackaged){
-            // U4A EDU와 인터페이스를 위한 서버를 올린다.
-            // await oU4ASERV.createServer.call(oAPP);
-            await oU4ASERV.createServer();
-
-        }
-        
         // WS Global 메시지 글로벌 변수 설정
         await oAPP.fn.fnWsGlobalMsgList();
         
@@ -271,8 +264,18 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         await _getMsgServPortList();
 
         // 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
-        oAPP.fn.fnOnListupSapLogon(); // [내부 로직에 비동기가 있음]
+        await oAPP.fn.fnOnListupSapLogon();
+        
+        if(!APP.isPackaged){
 
+            // U4A EDU와 인터페이스를 위한 서버를 올린다.
+            // 서버 리스트에 모델 데이터 세팅이 다 끝난 이후에 실행한다.        
+            await oU4ASERV.createServer();
+
+        }
+
+        oAPP.setBusy(false);
+        
         CURRWIN.focus();
 
     }; // end of oAPP.fn.fnOnMainStart
@@ -553,7 +556,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     /************************************************************************
      * 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
      ************************************************************************/
-    oAPP.fn.fnOnListupSapLogon = () => {
+    oAPP.fn.fnOnListupSapLogon = async function() {
 
         // 전체 바인딩 모델 clear
         var oCoreModel = sap.ui.getCore().getModel();
@@ -571,8 +574,20 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // oAPP.setBusy(true);
 
-        // 레지스트리에 등록된 SAPLogon 정보를 읽는다.
-        oAPP.fn.fnGetRegInfoForSAPLogon().then(oAPP.fn.fnGetRegInfoForSAPLogonThen).catch(oAPP.fn.fnPromiseError);
+        try {
+
+            // 레지스트리에 등록된 SAPLogon 정보를 읽는다.            
+            var oResult = await oAPP.fn.fnGetRegInfoForSAPLogon();    
+
+        } catch (error) {    
+
+            return oAPP.fn.fnPromiseError(error);
+
+        }
+
+        await oAPP.fn.fnGetRegInfoForSAPLogonThen(oResult);
+        
+        // oAPP.fn.fnGetRegInfoForSAPLogon().then(oAPP.fn.fnGetRegInfoForSAPLogonThen).catch(oAPP.fn.fnPromiseError);
 
     }; // end of oAPP.fn.fnOnListupSapLogon
 
@@ -637,54 +652,116 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     /************************************************************************
      * 레지스트리에 등록된 SAPLogon 정보를 구했을 경우
      ************************************************************************/
-    oAPP.fn.fnGetRegInfoForSAPLogonThen = (oResult) => {
 
-        let oLandscapeFile = oResult.LandscapeFile,
-            oLandscapeFileGlobal = oResult.LandscapeFileGlobal,
-            sLandscapeFilePath = oLandscapeFile.value,
-            sErrMsg = oAPP.msg.M03; //"Please Check the SAPGUI is Installed and whether saved Server is exsists!";
+    // [원본]
+    // oAPP.fn.fnGetRegInfoForSAPLogonThen = (oResult) => {
+        
+    //     let oLandscapeFile = oResult.LandscapeFile,
+    //         oLandscapeFileGlobal = oResult.LandscapeFileGlobal,
+    //         sLandscapeFilePath = oLandscapeFile.value,
+    //         sErrMsg = oAPP.msg.M03; //"Please Check the SAPGUI is Installed and whether saved Server is exsists!";
 
-        if (typeof oLandscapeFile == "undefined") {
+    //     if (typeof oLandscapeFile == "undefined") {
 
-            oAPP.setBusy(false);
+    //         oAPP.setBusy(false);
 
-            // var sMsg = `Does not have exists. [LandscapeFile] \n Please Restart`;           
+    //         // var sMsg = `Does not have exists. [LandscapeFile] \n Please Restart`;           
 
-            oAPP.fn.fnShowMessageBox("E", sErrMsg, () => {
-                oAPP.fn.fnEditDialogClose();
-            });
+    //         oAPP.fn.fnShowMessageBox("E", sErrMsg, () => {
+    //             oAPP.fn.fnEditDialogClose();
+    //         });
 
-            return;
-        }
+    //         return;
+    //     }
 
-        // SAPLogon xml 파일이 존재하지 않을 경우 오류
-        if (!FS.existsSync(sLandscapeFilePath)) {
+    //     // SAPLogon xml 파일이 존재하지 않을 경우 오류
+    //     if (!FS.existsSync(sLandscapeFilePath)) {
 
-            oAPP.setBusy(false);
+    //         oAPP.setBusy(false);
 
-            // var sMsg = `Does not have exists. [${sLandscapeFilePath}] \n Please Restart`;
-            // let sMsg = "Please Check the SAPGUI is Installed and whether saved Server is exsists!";
+    //         // var sMsg = `Does not have exists. [${sLandscapeFilePath}] \n Please Restart`;
+    //         // let sMsg = "Please Check the SAPGUI is Installed and whether saved Server is exsists!";
 
-            // 오류 메시지 출력
-            oAPP.fn.fnShowMessageBox("E", sErrMsg, () => {
-                oAPP.fn.fnEditDialogClose();
-            });
+    //         // 오류 메시지 출력
+    //         oAPP.fn.fnShowMessageBox("E", sErrMsg, () => {
+    //             oAPP.fn.fnEditDialogClose();
+    //         });
 
-            return;
-        }
+    //         return;
+    //     }
 
-        // SAP Login XML 파일 정보 변경 감지
-        if (!oAPP.isWatch) {
-            FS.watch(sLandscapeFilePath, oAPP.fn.fnSapLogonFileChange);
-            oAPP.isWatch = true;
-        }
+    //     // SAP Login XML 파일 정보 변경 감지
+    //     if (!oAPP.isWatch) {
+    //         FS.watch(sLandscapeFilePath, oAPP.fn.fnSapLogonFileChange);
+    //         oAPP.isWatch = true;
+    //     }
 
-        // xml 정보를 읽는다
-        oAPP.fn.fnReadSAPLogonData("LandscapeFile", sLandscapeFilePath)
-            .then(oAPP.fn.fnReadSAPLogonDataThen)
-            .catch(oAPP.fn.fnPromiseError);
+    //     // xml 정보를 읽는다
+    //     oAPP.fn.fnReadSAPLogonData("LandscapeFile", sLandscapeFilePath)
+    //         .then(oAPP.fn.fnReadSAPLogonDataThen)
+    //         .catch(oAPP.fn.fnPromiseError);
 
-    }; // end of oAPP.fn.fnGetRegInfoForSAPLogonThen
+    // }; // end of oAPP.fn.fnGetRegInfoForSAPLogonThen
+
+    oAPP.fn.fnGetRegInfoForSAPLogonThen = function(oResult){
+
+        return new Promise(async function(resolve){
+
+            let oLandscapeFile = oResult.LandscapeFile,
+                oLandscapeFileGlobal = oResult.LandscapeFileGlobal,
+                sLandscapeFilePath = oLandscapeFile.value,
+                sErrMsg = oAPP.msg.M03; //"Please Check the SAPGUI is Installed and whether saved Server is exsists!";
+
+            if (typeof oLandscapeFile == "undefined") {
+
+                oAPP.setBusy(false);
+
+                // var sMsg = `Does not have exists. [LandscapeFile] \n Please Restart`;           
+
+                oAPP.fn.fnShowMessageBox("E", sErrMsg, () => {
+                    oAPP.fn.fnEditDialogClose();
+                });
+
+                return;
+            }
+
+            // SAPLogon xml 파일이 존재하지 않을 경우 오류
+            if (!FS.existsSync(sLandscapeFilePath)) {
+
+                oAPP.setBusy(false);
+
+                // 오류 메시지 출력
+                oAPP.fn.fnShowMessageBox("E", sErrMsg, () => {
+                    oAPP.fn.fnEditDialogClose();
+                });
+
+                return;
+            }
+
+            // SAP Login XML 파일 정보 변경 감지
+            if (!oAPP.isWatch) {
+                FS.watch(sLandscapeFilePath, oAPP.fn.fnSapLogonFileChange);
+                oAPP.isWatch = true;
+            }
+
+            try {
+
+                var oReadResult = await oAPP.fn.fnReadSAPLogonData("LandscapeFile", sLandscapeFilePath);
+
+            } catch (error) {
+
+                oAPP.fn.fnPromiseError(error);
+
+                return;
+            }
+
+            await oAPP.fn.fnReadSAPLogonDataThen(oReadResult);
+
+            resolve();
+
+        });
+
+    };
 
     /************************************************************************
      * SAP LOGIN XML 파일이 바뀔때 타는 이벤트
@@ -698,88 +775,92 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     /************************************************************************
      * SAP LOGIN XML 파일 읽기 성공
      ************************************************************************/
-    oAPP.fn.fnReadSAPLogonDataThen = async (oResult) => {
+    oAPP.fn.fnReadSAPLogonDataThen = (oResult) => {
 
-        // sapgui 버전을 체크한다.
-        let oCheckVer = oAPP.fn.fnCheckSapguiVersion(oResult.Result);
-        if (oCheckVer.RETCD == "E") {
+        return new Promise(async function(resolve){
 
-            oAPP.fn.fnShowMessageBox("E", oCheckVer.RTMSG, () => {
+            // sapgui 버전을 체크한다.
+            let oCheckVer = oAPP.fn.fnCheckSapguiVersion(oResult.Result);
+            if (oCheckVer.RETCD == "E") {
 
-                APP.exit();
+                oAPP.fn.fnShowMessageBox("E", oCheckVer.RTMSG, () => {
 
+                    APP.exit();
+
+                });
+
+                console.error(oCheckVer.RTMSG);
+
+                oAPP.setBusy(false);
+
+                return;
+            }
+
+            let oWsSettings = fnGetSettingsInfo(),
+                oRegPaths = oWsSettings.regPaths,
+                sGUIVerPath = oRegPaths.GUIVer,
+                cSessionPath = oRegPaths.cSession;
+
+            let SAPGUIVER = oCheckVer.RTVER,
+                sRegPath1 = sGUIVerPath, // "HKCU\\SOFTWARE\\U4A\\WS\\GUIVer",
+                sRegPath2 = cSessionPath; // "HKCU\\SOFTWARE\\U4A\\WS\\cSession";
+
+            const Regedit = parent.require('regedit').promisified;
+
+            // 레지스트리 폴더 생성
+            await Regedit.createKey([sRegPath1]);
+            await Regedit.createKey([sRegPath2]);
+
+            // 레지스트리 데이터 저장
+            await Regedit.putValue({
+                "HKCU\\SOFTWARE\\U4A\\WS\\GUIVer": {
+                    "GUIVer": {
+                        value: SAPGUIVER,
+                        type: "REG_DEFAULT"
+                    }
+                }
             });
 
-            console.error(oCheckVer.RTMSG);
-
-            oAPP.setBusy(false);
-
-            return;
-        }
-
-        let oWsSettings = fnGetSettingsInfo(),
-            oRegPaths = oWsSettings.regPaths,
-            sGUIVerPath = oRegPaths.GUIVer,
-            cSessionPath = oRegPaths.cSession;
-
-        let SAPGUIVER = oCheckVer.RTVER,
-            sRegPath1 = sGUIVerPath, // "HKCU\\SOFTWARE\\U4A\\WS\\GUIVer",
-            sRegPath2 = cSessionPath; // "HKCU\\SOFTWARE\\U4A\\WS\\cSession";
-
-        const Regedit = parent.require('regedit').promisified;
-
-        // 레지스트리 폴더 생성
-        await Regedit.createKey([sRegPath1]);
-        await Regedit.createKey([sRegPath2]);
-
-        // 레지스트리 데이터 저장
-        await Regedit.putValue({
-            "HKCU\\SOFTWARE\\U4A\\WS\\GUIVer": {
-                "GUIVer": {
-                    value: SAPGUIVER,
-                    type: "REG_DEFAULT"
-                }
+            if (oAPP.data.SAPLogon[oResult.fileName]) {
+                oAPP.data.SAPLogon[oResult.fileName] = undefined;
             }
+
+            // Landscape 정보를 글로벌 object에 저장
+            oAPP.data.SAPLogon[oResult.fileName] = oResult.Result;
+
+            // 결과 리스트
+            let oLogonResult = oAPP.fn.fnSetSAPLogonLandscapeList();
+            if (oLogonResult.RETCD == "E") {
+
+                // oAPP.fn.fnShowMessageBox("E", oLogonResult.RTMSG);
+
+                console.error(oLogonResult.RTMSG);
+
+                oAPP.setBusy(false);
+
+                return;
+            }
+
+            // WorkSpace Tree 구조 만들기
+            oAPP.fn.fnCreateWorkspaceTree();
+
+            // Tree Node 펼치기
+            var oTreeTable = sap.ui.getCore().byId("WorkTree");
+            if (oTreeTable) {
+                oTreeTable.expandToLevel(1);
+            }
+
+            // 데이터 갱신 후 화면도 갱신
+            oAPP.fn.fnSetRefreshSelectTreeItem();
+
+            let oWorkTree = sap.ui.getCore().byId("WorkTree");
+            if (oWorkTree) {
+                oWorkTree.attachEventOnce("rowsUpdated", oAPP.fn.fnAttachRowsUpdateOnce);
+            }
+
+            resolve();
+
         });
-
-        if (oAPP.data.SAPLogon[oResult.fileName]) {
-            oAPP.data.SAPLogon[oResult.fileName] = undefined;
-        }
-
-        // Landscape 정보를 글로벌 object에 저장
-        oAPP.data.SAPLogon[oResult.fileName] = oResult.Result;
-
-        // 결과 리스트
-        let oLogonResult = oAPP.fn.fnSetSAPLogonLandscapeList();
-        if (oLogonResult.RETCD == "E") {
-
-            // oAPP.fn.fnShowMessageBox("E", oLogonResult.RTMSG);
-
-            console.error(oLogonResult.RTMSG);
-
-            oAPP.setBusy(false);
-
-            return;
-        }
-
-        // WorkSpace Tree 구조 만들기
-        oAPP.fn.fnCreateWorkspaceTree();
-
-        // Tree Node 펼치기
-        var oTreeTable = sap.ui.getCore().byId("WorkTree");
-        if (oTreeTable) {
-            oTreeTable.expandToLevel(1);
-        }
-
-        // 데이터 갱신 후 화면도 갱신
-        oAPP.fn.fnSetRefreshSelectTreeItem();
-
-        oAPP.setBusy(false);
-
-        let oWorkTree = sap.ui.getCore().byId("WorkTree");
-        if (oWorkTree) {
-            oWorkTree.attachEventOnce("rowsUpdated", oAPP.fn.fnAttachRowsUpdateOnce);
-        }
 
     }; // end of oAPP.fn.fnReadSAPLogonDataThen    
 
@@ -2489,8 +2570,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             sUrl += `:${sPort}`;
         }
 
-        // 서버 정보
-        var oSAPServerInfo = {
+        // 로그인시 필요한 파라미터 정보
+        var oLoginInfo = {
             NAME: oBindData.name,
             SERVER_INFO: oRetData,
             SERVER_INFO_DETAIL: oBindData,
@@ -2501,18 +2582,18 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             SYSID: oBindData.systemid
         };
 
-        zconsole.log(oSAPServerInfo);
+        zconsole.log(oLoginInfo);
 
         // 사용자 테마 정보를 읽어온다.
-        let oP13nThemeInfo = await fnP13nCreateTheme(oSAPServerInfo.SYSID);
+        let oP13nThemeInfo = await fnP13nCreateTheme(oLoginInfo.SYSID);
         if (oP13nThemeInfo.RETCD == "S") {
-            oSAPServerInfo.oThemeInfo = oP13nThemeInfo.RTDATA;
+            oLoginInfo.oThemeInfo = oP13nThemeInfo.RTDATA;
         }
 
         // 선택한 정보를 레지스트리에 저장한다.
-        await _registSelectedSystemInfo(oSAPServerInfo);
+        await _registSelectedSystemInfo(oLoginInfo);
 
-        fnLoginPage(oSAPServerInfo);
+        fnLoginPage(oLoginInfo);
 
     }; // end of oAPP.fn.fnPressServerListItem
 
@@ -3655,7 +3736,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     /**************************************************************************
      * 서버 체크 성공시 로그인 팝업 실행하기
      **************************************************************************/
-    function fnLoginPage(oSAPServerInfo) {
+    function fnLoginPage(oLoginInfo) {
 
         const WINDOWSTATE = REMOTE.require('electron-window-state');
 
@@ -3673,7 +3754,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oDefaultOption = parent.require(sSettingsJsonPath),
             oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow),
             oWebPreferences = oBrowserOptions.webPreferences,
-            oThemeInfo = oSAPServerInfo.oThemeInfo;
+            oThemeInfo = oLoginInfo.oThemeInfo;
 
         // 브라우저 윈도우 기본 사이즈
         oBrowserOptions.opacity = 0.0;
@@ -3692,13 +3773,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         oWebPreferences.partition = SESSKEY;
         oWebPreferences.browserkey = BROWSERKEY;
         oWebPreferences.OBJTY = "MAIN";
-        oWebPreferences.SYSID = oSAPServerInfo.SYSID;
+        oWebPreferences.SYSID = oLoginInfo.SYSID;
 
         // // 새창띄울때 공통사항으로 USERINFO 정보를 담는데
         // // 메인인 경우는 로그인하기 전에는 모르므로
         // // 기존 공통사항과 구조를 맞추기 위해서 아래와 같이 구조를 구성함.
         // oWebPreferences.USERINFO = {
-        //     SYSID: oSAPServerInfo.SYSID
+        //     SYSID: oLoginInfo.SYSID
         // };
 
         // 브라우저 오픈
@@ -3727,8 +3808,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oAPP.setBusy(false);
 
             var oMetadata = {
-                SERVERINFO: oSAPServerInfo,
-                THEMEINFO: oSAPServerInfo.oThemeInfo, // 테마 개인화 정보
+                SERVERINFO: oLoginInfo,
+                THEMEINFO: oLoginInfo.oThemeInfo, // 테마 개인화 정보
                 EXEPAGE: "LOGIN",
                 SESSIONKEY: SESSKEY,
                 BROWSERKEY: BROWSERKEY
