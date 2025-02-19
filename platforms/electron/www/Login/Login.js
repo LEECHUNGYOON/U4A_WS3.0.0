@@ -3721,8 +3721,7 @@ let oAPP = (function () {
                 if (!oAPP.attr.UIUpdated) {
 
                     // SSO 접속 일 경우가 아니면 로그인 화면부터 나오게 한다.
-                    let oServerInfo = parent.getServerInfo();
-
+                    let oServerInfo = parent.getServerInfo();                    
                     if(oServerInfo?.IS_SSO !== "X"){
 
                         setTimeout(() => {
