@@ -89,13 +89,12 @@ module.exports = function (window, document, console) {
             sErrorMsg = "[onunhandledrejection]: " + event?.reason?.stack?.toString();
         }
 
-        console.trace(`[onunhandledrejection]: `);
-
         if (sErrorMsg == "") {
             sErrorMsg = "critical Error!";
         }
 
         console.error(sErrorMsg);
+        console.trace(`[onunhandledrejection]: `);
 
         // critical 오류이므로 창을 닫는다.
         showCriticalErrorDialog(sErrorMsg);

@@ -183,22 +183,26 @@
 
         function onunhandledrejection(event) {
 
-            if (bIsError) {
+            if (bIsError == true) {
                 return;
             }
+            
+            let sErrorMsg = "";
+            if (event.reason) {
+                sErrorMsg = "[onunhandledrejection]: " + event?.reason?.stack?.toString();
+            }
 
-            let oReason = event.reason,
-                sErrorMsg = `${oReason.name}\n${oReason.message}, ${oReason.at}\n\n${oReason.text}`;
+            if (sErrorMsg == "") {
+                sErrorMsg = "critical Error!";
+            }
 
-
+            console.error(sErrorMsg);
             console.trace(`[onunhandledrejection]: `);
 
-            console.error(event.reason);
-
-            // critical 오류이므로 창을 다 닫는다.
+            // critical 오류이므로 창을 닫는다.
             showCriticalErrorDialog(sErrorMsg);
 
-        }
+        }        
 
         window.onerror = onError;
         document.onerror = onError;

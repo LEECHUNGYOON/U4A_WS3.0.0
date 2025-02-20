@@ -2255,9 +2255,11 @@ let oAPP = (function () {
 
         }
 
-        var oUserInfo = jQuery.extend({}, oResult, oLogInData),
-            oPackageJson = REMOTE.require("./package.json"),
-            sAppVer = APP.getVersion();
+        var oUserInfo = jQuery.extend({}, oResult, oLogInData);
+        var oPackageJson = REMOTE.require("./package.json");
+
+        // 패키지 여부에 따른 앱 버전 정보 구하기
+        var sAppVer = APP.getVersion();
 
         if (!APP.isPackaged) {
             sAppVer = oPackageJson.version;
@@ -2391,7 +2393,23 @@ let oAPP = (function () {
          * 닫기 버튼 눌렀다는 플래그값이 없으면 beforeunload에서 체크 로직에 걸려 10번 페이지로 이동이 되지 않아,
          * 로그인 성공시도 같은 플래그를 부여함.
          */
-        oAPP.attr.isPressWindowClose = "X";
+        oAPP.attr.isPressWindowClose = "X";        
+
+        // SSO로 로그인 했을때, 전달받은 파라미터 중, APPID가 있다면 20번 페이지로 이동
+        // let oServerInfo = parent.getServerInfo();
+        if(oServerInfo?.IS_SSO === "X"){
+
+            if(oServerInfo.APPID &&  oServerInfo.APPID !== ""){
+
+                let oIF_DATA = {
+                    ACTCD: "VMS_MOVE20",            // 새창 띄우면서 20번으로 넘어가는 액션 코드
+                    APPID: oServerInfo.APPID       	// 실행 어플리케이션명
+                };
+                
+                parent.setNewBrowserIF_DATA(oIF_DATA);
+            }
+
+        }
 
         // WS10번 페이지로 이동
         parent.onMoveToPage("WS10");
@@ -2404,7 +2422,7 @@ let oAPP = (function () {
         // }
 
         // 웰컴 사운드
-        parent.setSoundMsg('WELCOME');
+        parent.setSoundMsg('WELCOME');        
 
     }; // end of oAPP.fn.fnOnLoginSuccess   
 

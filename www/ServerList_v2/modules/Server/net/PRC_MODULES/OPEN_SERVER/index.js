@@ -42,6 +42,9 @@ module.exports = async function(oStream, oIF_DATA){
 
     // SAP PW
     let SAPPW = oPARAM?.SAPPW || undefined;
+
+    // APP ID
+    let APPID = oPARAM?.APPID || undefined;
     
 
     // 전체 서버리스트 목록을 구한다.
@@ -136,7 +139,8 @@ module.exports = async function(oStream, oIF_DATA){
         SSO_TICKET : SSO_TICKET,
         SAPID: SAPID,   // SAP ID
         SAPPW: SAPPW,   // SAP PW
-        IS_SSO: "X"
+        IS_SSO: "X",
+        APPID: APPID    // 어플리케이션 ID
     };
 
     // 사용자 테마 정보를 읽어온다.
