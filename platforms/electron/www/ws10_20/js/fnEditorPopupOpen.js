@@ -49,6 +49,9 @@
                 lf_webContentSend(oResult.WINDOW, sSearchValue);
             }
 
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
+
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
 

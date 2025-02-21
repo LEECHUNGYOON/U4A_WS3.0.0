@@ -1350,12 +1350,12 @@ module.exports = {
         const [parentX, parentY] = oMainWindow.getPosition();
         const [parentWidth, parentHeight] = oMainWindow.getSize();
 
+        zconsole.log("parentX", parentX);
+        zconsole.log("parentY", parentY);
+
         // 부모 창의 중앙 위치
         const parentCenterX = parentX + parentWidth / 2;
         const parentCenterY = parentY + parentHeight / 2;
-
-        // const parentCenterX = parentX;
-        // const parentCenterY = parentY;
 
         // 부모 창이 위치한 디스플레이들을 찾기
         const displays = SCREEN.getAllDisplays();
@@ -1373,11 +1373,11 @@ module.exports = {
         }
 
         // 자식 창의 위치, 크기 정보
-        let oChildBounds = oChildWinow.getBounds();
+        let oChildBounds = oChildWinow.getBounds();        
 
         // 자식 창의 크기 설정
         const childWidth = oChildBounds.width;
-        const childHeight = oChildBounds.height;
+        const childHeight = oChildBounds.height;        
 
         // 자식 창의 위치를 부모 창의 가운데로 설정, 배율을 고려하여 계산
         let childX = Math.round(parentX + (parentWidth - childWidth) / 2);
@@ -1405,6 +1405,22 @@ module.exports = {
             height: childHeight,
             x: childX,
             y: childY,    
+        }
+
+        var oCurrScreen = displayA || displayB;
+        var oCurrScreenBound = oCurrScreen?.bounds;
+
+        // 계산된 자식의 y위치보다 부모의 y가 더 크다면 부모 y로 조정
+        if(oBounds.y <= parentY){
+            
+            oBounds.y = parentY;
+
+            if(oCurrScreenBound && oBounds.y <= oCurrScreenBound.y){
+
+                oBounds.y = oCurrScreenBound.y;
+
+            }
+            
         }
 
         oChildWinow.setBounds(oBounds);
