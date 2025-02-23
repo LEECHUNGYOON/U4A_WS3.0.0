@@ -611,6 +611,12 @@
      ************************************************************************/
     oAPP.fn.setParentCenterBounds = (oChildWinow, oBrowserOptions) => {
 
+     
+        parent.WSUTIL.setParentCenterBounds(REMOTE, oChildWinow);
+
+        return;
+
+
         var oMainWindow = REMOTE.getCurrentWindow();
 
         // 부모 창의 위치와 크기 가져오기
@@ -1047,6 +1053,9 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
             
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
@@ -1164,6 +1173,9 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
             
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
@@ -1298,6 +1310,9 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
 
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
@@ -1452,6 +1467,9 @@
             // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
             let oResult = APPCOMMON.getCheckAlreadyOpenWindow2(sPopupName);
             if (oResult.ISOPEN) {
+
+                // 부모 위치 가운데 배치한다.            
+                parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
 
                 let oIconWindow = oResult.WINDOW;
 
@@ -1725,6 +1743,10 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow2(sPopupName);
         if (oResult.ISOPEN) {
+
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
+
             let oIconWindow = oResult.WINDOW;
             oIconWindow.show();
             return;
@@ -2001,6 +2023,9 @@
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
 
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
+
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
 
@@ -2223,6 +2248,9 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
             
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
@@ -2353,13 +2381,16 @@
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
-        if (oResult.ISOPEN) {            
-
-            // 전체 자식 윈도우에 Busy 끈다.
-            oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
+        if (oResult.ISOPEN) {      
+            
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
 
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
+
+            // 전체 자식 윈도우에 Busy 끈다.
+            oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});            
 
             return;
         }
@@ -2461,6 +2492,9 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
             
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
@@ -2794,6 +2828,9 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
             
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
@@ -2933,6 +2970,9 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
             
             // busy 끄고 Lock 끄기
             oAPP.common.fnSetBusyLock("");
@@ -3048,12 +3088,15 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
-            
-            // 전체 자식 윈도우에 Busy 끈다.
-            oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});
+
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
 
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
+
+            // 전체 자식 윈도우에 Busy 끈다.
+            oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});            
             
             return;
         }
@@ -3273,6 +3316,9 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
 
             // 전체 자식 윈도우에 Busy 끈다.
             oAPP.attr.oMainBroad.postMessage({PRCCD:"BUSY_OFF"});

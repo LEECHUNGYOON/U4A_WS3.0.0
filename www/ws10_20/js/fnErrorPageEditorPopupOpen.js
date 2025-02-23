@@ -32,6 +32,9 @@
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
 
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
+
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
 
@@ -244,7 +247,7 @@
         oBrowserWindow.once('ready-to-show', () => {
 
             // 부모 위치 가운데 배치한다.
-            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);            
 
         });
 
@@ -253,7 +256,7 @@
             oBrowserWindow.webContents.send('if-Error-Page-prev', oSaveData);
 
             // 부모 위치 가운데 배치한다.
-            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);            
 
             // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
             parent.WSUTIL.setBrowserOpacity(oBrowserWindow, () => {

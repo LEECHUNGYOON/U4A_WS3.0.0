@@ -261,6 +261,9 @@
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
 
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
+
             // 전체 자식 윈도우에 Busy 끈다.
             oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_OFF" });
 
@@ -692,6 +695,10 @@
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         let oResult = APPCOMMON.getCheckAlreadyOpenWindow(sPopupName);
         if (oResult.ISOPEN) {
+
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
+            
             return;
         }
 

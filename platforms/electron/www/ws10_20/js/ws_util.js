@@ -1386,7 +1386,7 @@ module.exports = {
 
         var oCurrScreenBound = displayA?.bounds;
         if(oCurrScreenBound){
-            
+
             // 자식 창이 현재 모니터에서 위로 벗어날 경우는 모니터의 최상단 위치로 조정
             if(oBounds.y <= oCurrScreenBound.y){
                 oBounds.y = oCurrScreenBound.y;
@@ -1412,137 +1412,137 @@ module.exports = {
 
     },
 
-    /**
-     * 부모 윈도우 위치의 가운데 배치한다.
-     * @param {REMOTE} REMOTE
-     * - REMOTE 객체
-     * 
-     * @param {BrowserWindow} oChildWinow
-     * - 부모 윈도우 위치에 가운데 배치할 자식 윈도우 인스턴스
-     * 
-     * @param {Object} oBrowserOptions
-     * - 자식 윈도우 인스턴스의 브라우저 옵션
-     */
-    setParentCenterBounds1: function (REMOTE, oChildWinow, oBrowserOptions) {
+    // /**
+    //  * 부모 윈도우 위치의 가운데 배치한다.
+    //  * @param {REMOTE} REMOTE
+    //  * - REMOTE 객체
+    //  * 
+    //  * @param {BrowserWindow} oChildWinow
+    //  * - 부모 윈도우 위치에 가운데 배치할 자식 윈도우 인스턴스
+    //  * 
+    //  * @param {Object} oBrowserOptions
+    //  * - 자식 윈도우 인스턴스의 브라우저 옵션
+    //  */
+    // setParentCenterBounds1: function (REMOTE, oChildWinow, oBrowserOptions) {
 
-        var oMainWindow = REMOTE.getCurrentWindow();
+    //     var oMainWindow = REMOTE.getCurrentWindow();
 
-        var SCREEN = REMOTE.require("electron").screen;
+    //     var SCREEN = REMOTE.require("electron").screen;
 
-        // 부모 창의 위치와 크기 가져오기
-        const [parentX, parentY] = oMainWindow.getPosition();
-        const [parentWidth, parentHeight] = oMainWindow.getSize();
+    //     // 부모 창의 위치와 크기 가져오기
+    //     const [parentX, parentY] = oMainWindow.getPosition();
+    //     const [parentWidth, parentHeight] = oMainWindow.getSize();
 
-        // 부모 창의 중앙 위치
-        const parentCenterX = parentX + parentWidth / 2;
-        const parentCenterY = parentY + parentHeight / 2;
+    //     // 부모 창의 중앙 위치
+    //     const parentCenterX = parentX + parentWidth / 2;
+    //     const parentCenterY = parentY + parentHeight / 2;
 
-        // 부모 창이 위치한 디스플레이들을 찾기
-        const displays = SCREEN.getAllDisplays();
-        let displayA, displayB;
-        for (const display of displays) {
-            const { x, y, width, height } = display.workArea;
-            // if (parentCenterX >= x && parentCenterX < x + width && parentCenterY >= y && parentCenterY < y + height) {
-            if (parentCenterX >= x && parentCenterX < x + width) {
-                if (!displayA) {
-                    displayA = display;
-                } else {
-                    displayB = display;
-                    break;
-                }
-            }
-        }
+    //     // 부모 창이 위치한 디스플레이들을 찾기
+    //     const displays = SCREEN.getAllDisplays();
+    //     let displayA, displayB;
+    //     for (const display of displays) {
+    //         const { x, y, width, height } = display.workArea;
+    //         // if (parentCenterX >= x && parentCenterX < x + width && parentCenterY >= y && parentCenterY < y + height) {
+    //         if (parentCenterX >= x && parentCenterX < x + width) {
+    //             if (!displayA) {
+    //                 displayA = display;
+    //             } else {
+    //                 displayB = display;
+    //                 break;
+    //             }
+    //         }
+    //     }
 
         
-        displayA = SCREEN.getDisplayMatching(CURRWIN.getBounds());
-        displayB = undefined;
+    //     displayA = SCREEN.getDisplayMatching(CURRWIN.getBounds());
+    //     displayB = undefined;
 
-        // 자식 창의 위치, 크기 정보
-        let oChildBounds = oChildWinow.getBounds();        
+    //     // 자식 창의 위치, 크기 정보
+    //     let oChildBounds = oChildWinow.getBounds();        
 
-        // 자식 창의 크기 설정
-        const childWidth = oChildBounds.width;
-        const childHeight = oChildBounds.height;        
+    //     // 자식 창의 크기 설정
+    //     const childWidth = oChildBounds.width;
+    //     const childHeight = oChildBounds.height;        
 
-        // 자식 창의 위치를 부모 창의 가운데로 설정, 배율을 고려하여 계산
-        let childX = Math.round(parentX + (parentWidth - childWidth) / 2);
-        let childY = Math.round(parentY + (parentHeight - childHeight) / 2);
+    //     // 자식 창의 위치를 부모 창의 가운데로 설정, 배율을 고려하여 계산
+    //     let childX = Math.round(parentX + (parentWidth - childWidth) / 2);
+    //     let childY = Math.round(parentY + (parentHeight - childHeight) / 2);
 
-        // 자식 창의 위치를 디스플레이 작업 영역 안에 있도록 조정
-        if (displayA) {
-            const { x: displayAX, y: displayAY, width: displayAWidth, height: displayAHeight } = displayA.workArea;
-            if (childX < displayAX) childX = displayAX;
-            if (childY < displayAY) childY = displayAY;
-            if (childX + childWidth > displayAX + displayAWidth) childX = displayAX + displayAWidth - childWidth;
-            if (childY + childHeight > displayAY + displayAHeight) childY = displayAY + displayAHeight - childHeight;
-        }
+    //     // 자식 창의 위치를 디스플레이 작업 영역 안에 있도록 조정
+    //     if (displayA) {
+    //         const { x: displayAX, y: displayAY, width: displayAWidth, height: displayAHeight } = displayA.workArea;
+    //         if (childX < displayAX) childX = displayAX;
+    //         if (childY < displayAY) childY = displayAY;
+    //         if (childX + childWidth > displayAX + displayAWidth) childX = displayAX + displayAWidth - childWidth;
+    //         if (childY + childHeight > displayAY + displayAHeight) childY = displayAY + displayAHeight - childHeight;
+    //     }
 
-        if (displayB) {
-            const { x: displayBX, y: displayBY, width: displayBWidth, height: displayBHeight } = displayB.workArea;
-            if (childX < displayBX) childX = displayBX;
-            if (childY < displayBY) childY = displayBY;
-            if (childX + childWidth > displayBX + displayBWidth) childX = displayBX + displayBWidth - childWidth;
-            if (childY + childHeight > displayBY + displayBHeight) childY = displayBY + displayBHeight - childHeight;
-        }
+    //     if (displayB) {
+    //         const { x: displayBX, y: displayBY, width: displayBWidth, height: displayBHeight } = displayB.workArea;
+    //         if (childX < displayBX) childX = displayBX;
+    //         if (childY < displayBY) childY = displayBY;
+    //         if (childX + childWidth > displayBX + displayBWidth) childX = displayBX + displayBWidth - childWidth;
+    //         if (childY + childHeight > displayBY + displayBHeight) childY = displayBY + displayBHeight - childHeight;
+    //     }
 
-        let oBounds = {
-            width: childWidth,
-            height: childHeight,
-            x: childX,
-            y: childY,    
-        }
+    //     let oBounds = {
+    //         width: childWidth,
+    //         height: childHeight,
+    //         x: childX,
+    //         y: childY,    
+    //     }
 
-        // var oCurrScreen = displayA || displayB;
+    //     // var oCurrScreen = displayA || displayB;
 
-        // var oCurrScreen = SCREEN.getDisplayMatching(CURRWIN.getBounds());
-        // var oCurrScreenBound = oCurrScreen?.bounds;
+    //     // var oCurrScreen = SCREEN.getDisplayMatching(CURRWIN.getBounds());
+    //     // var oCurrScreenBound = oCurrScreen?.bounds;
 
 
-        // // 계산된 자식의 y위치보다 부모의 y가 더 크다면 부모 y로 조정
-        // if(oBounds.y <= parentY){            
-        //     oBounds.y = parentY;
-        // }
+    //     // // 계산된 자식의 y위치보다 부모의 y가 더 크다면 부모 y로 조정
+    //     // if(oBounds.y <= parentY){            
+    //     //     oBounds.y = parentY;
+    //     // }
 
-        // // if(parentX <= oBounds.x){
-        // //     oBounds.x = parentX;
-        // // }
+    //     // // if(parentX <= oBounds.x){
+    //     // //     oBounds.x = parentX;
+    //     // // }
 
-        // // 현재 부모의 위치가 어느 모니터인지 정보가 있을 경우
-        // if(oCurrScreenBound){
+    //     // // 현재 부모의 위치가 어느 모니터인지 정보가 있을 경우
+    //     // if(oCurrScreenBound){
                 
-        //     // 자식 창이 현재 모니터에서 위로 벗어날 경우는 모니터의 최상단 위치로 조정
-        //     if(oBounds.y <= oCurrScreenBound.y){
-        //         oBounds.y = oCurrScreenBound.y;
-        //     }
+    //     //     // 자식 창이 현재 모니터에서 위로 벗어날 경우는 모니터의 최상단 위치로 조정
+    //     //     if(oBounds.y <= oCurrScreenBound.y){
+    //     //         oBounds.y = oCurrScreenBound.y;
+    //     //     }
 
-        //     // 자식창이 현재 모니터에서 아래로 벗어날 경우는 부모 창의 y 값으로 지정
-        //     if(oCurrScreenBound.height <= oBounds.y){
-        //         oBounds.y = parentY;
-        //     }
+    //     //     // 자식창이 현재 모니터에서 아래로 벗어날 경우는 부모 창의 y 값으로 지정
+    //     //     if(oCurrScreenBound.height <= oBounds.y){
+    //     //         oBounds.y = parentY;
+    //     //     }
 
-        //     // if(oBounds.x <= oCurrScreenBound.x){
-        //     //     oBounds.x = oCurrScreenBound.x;
-        //     // }
+    //     //     // if(oBounds.x <= oCurrScreenBound.x){
+    //     //     //     oBounds.x = oCurrScreenBound.x;
+    //     //     // }
 
-        //     // if(oCurrScreenBound.width >= oBounds.x){
-        //     //     oBounds.x = oCurrScreenBound.x;
-        //     // }
+    //     //     // if(oCurrScreenBound.width >= oBounds.x){
+    //     //     //     oBounds.x = oCurrScreenBound.x;
+    //     //     // }
 
-        // } 
+    //     // } 
 
-        // 위에서 계산되어진 값들 중 소수점이 있으면
-        // setBounds 수행시 스크립트 오류가 발생하여 반올림 처리
-        oBounds.x      = Math.ceil(oBounds.x);
-        oBounds.y      = Math.ceil(oBounds.y);
-        oBounds.width  = Math.ceil(oBounds.width);
-        oBounds.height = Math.ceil(oBounds.height);
+    //     // 위에서 계산되어진 값들 중 소수점이 있으면
+    //     // setBounds 수행시 스크립트 오류가 발생하여 반올림 처리
+    //     oBounds.x      = Math.ceil(oBounds.x);
+    //     oBounds.y      = Math.ceil(oBounds.y);
+    //     oBounds.width  = Math.ceil(oBounds.width);
+    //     oBounds.height = Math.ceil(oBounds.height);
 
 
-        // setBounds를 두번 수행해야 정확한 위치로 적용됨
-        oChildWinow.setBounds(oBounds);
-        oChildWinow.setBounds(oBounds);
+    //     // setBounds를 두번 수행해야 정확한 위치로 적용됨
+    //     oChildWinow.setBounds(oBounds);
+    //     oChildWinow.setBounds(oBounds);
 
-    },
+    // },
     // end of setParentCenterBounds
 
     /**
