@@ -3687,6 +3687,19 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
         if(typeof iReqMsgTimeout !== "undefined"){
             clearTimeout(iReqMsgTimeout);
             iReqMsgTimeout = undefined;
+        }        
+        
+        let sap_err = oXHR.getResponseHeader("sap-err-id");
+        if(sap_err){
+
+            // 현재 같은 세션으로 떠있는 브라우저 창을 전체 닫고 내 창은 Session Timeout 팝업 호출
+            fn_logoff_success('X');
+
+            // 전역 busy 종료
+            parent.setBusy("");            
+
+            return;
+
         }
     
         // u4a status 응답 헤더를 읽는다
