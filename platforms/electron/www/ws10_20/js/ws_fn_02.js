@@ -469,7 +469,8 @@
         var oAppInfo = parent.getAppInfo();
 
         // 10번 페이지로 이동할때 서버 한번 콜 해준다. (서버 세션 죽이기)
-        oAPP.fn.fnKillUserSession(oAppInfo, lf_success, lf_success);
+        // oAPP.fn.fnKillUserSession(oAppInfo, lf_success, lf_success);
+        oAPP.fn.fnKillUserSession(oAppInfo, lf_success);
 
         async function lf_success() {
 

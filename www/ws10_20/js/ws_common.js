@@ -3677,9 +3677,6 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
     //     busy = bIsBusy;
     // }
 
-     
-    
-
     // 서버 요청에 대한 정상 응답
     oXHR.onload = function(e){
 
@@ -3687,8 +3684,18 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
         if(typeof iReqMsgTimeout !== "undefined"){
             clearTimeout(iReqMsgTimeout);
             iReqMsgTimeout = undefined;
-        }        
+        }
         
+        // Status 코드가 오류일 경우는 오류쪽 function 호출
+        if(e?.target?.status !== 200 && e?.target?.status !== 201){            
+
+            _onError(e);
+         
+            return;
+
+        }
+        
+        // 혹시 sap에서 응답 헤더 중 오류 내용이 있다면 오류 처리
         let sap_err = oXHR.getResponseHeader("sap-err-id");
         if(sap_err){
 
@@ -3696,7 +3703,7 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
             fn_logoff_success('X');
 
             // 전역 busy 종료
-            parent.setBusy("");            
+            parent.setBusy("");
 
             return;
 
@@ -3715,9 +3722,13 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
             oAPP.common.fnSetBusyDialog(false);
 
             try {
+
                 var oResult = JSON.parse(oXHR.response);
+
             } catch (error) {
+
                 fnJsonParseError(error);
+
                 return;
             }
 
@@ -3848,6 +3859,12 @@ function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_erro
         if (typeof fn_error == "function") {
             fn_error();
         }
+
+        parent.IPCRENDERER.send('if-browser-close', {
+            ACTCD: "A", // 나를 제외한 나머지는 다 죽인다.
+            SESSKEY: parent.getSessionKey(),
+            BROWSKEY: parent.getBrowserKey()
+        });
        
         var sCleanHtml = parent.setCleanHtml(oXHR.response);
         if (!sCleanHtml || sCleanHtml === "") {
