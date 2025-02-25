@@ -1,4 +1,20 @@
 <?xml version='1.0' encoding='utf-8'?>
+<!-- 
+    /********************************/
+    📝📝 버전 증가시 주의사항!!📝📝
+    /********************************/    
+
+    [버전 구성]
+    X.X.X
+
+    [버전의 의미]
+    Major.Middle.Minor
+
+    [주의사항]
+    - Major 버전만 2자릿수 이상 증가 가능함.
+    - Middle, Minor 버전 증가는 반드시 1자리 숫자로 증가해야함. 
+    - 위 내용은 패치 버전도 동일함.    
+ -->
 <widget id="com.u4a_ws3.app" version="3.5.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>U4A Workspace</name>
     <description>
