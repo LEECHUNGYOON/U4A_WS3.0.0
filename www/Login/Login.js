@@ -1928,7 +1928,7 @@ let oAPP = (function () {
 
             autoUpdater.on('checking-for-update', () => {
 
-                console.log("업데이트 확인 중...");
+                console.log("CDN - 업데이트 확인 중...");
 
             });
 
@@ -1952,7 +1952,7 @@ let oAPP = (function () {
 
                 parent.setDomBusy("");
 
-                console.log("업데이트가 가능합니다.");
+                console.log("CDN - 업데이트가 가능합니다.");
 
             });
 
@@ -1967,7 +1967,7 @@ let oAPP = (function () {
 
                 // resolve();
 
-                console.log("현재 최신버전입니다.");
+                console.log("CDN - 현재 최신버전입니다.");
 
                 // 업데이트가 완료되면 기존 CDN 체크를 해제 한다.
                 parent.setIsCDN("");
@@ -2022,7 +2022,7 @@ let oAPP = (function () {
 
                 });
 
-                console.log('에러가 발생하였습니다. 에러내용 : ' + err);
+                console.log('CDN - 에러가 발생하였습니다. 에러내용 : ' + err);
 
             });
 
@@ -2042,7 +2042,7 @@ let oAPP = (function () {
 
                 oModel.setProperty("/BUSYPOP/ILLUSTTYPE", "sapIllus-SuccessHighFive", true);
 
-                console.log('업데이트가 완료되었습니다.');
+                console.log('CDN - 업데이트가 완료되었습니다.');
 
                 setTimeout(() => {
 
