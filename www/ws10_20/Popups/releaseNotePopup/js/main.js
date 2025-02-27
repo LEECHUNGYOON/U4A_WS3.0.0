@@ -33,6 +33,14 @@ function onLoadBootStrapSetting() {
 
 } // end of onLoadBootStrapSetting
 
+function HexToStr(hex) {
+    var hex = hex.toString();//force conversion
+    var str = '';
+    for (var i = 0; i < hex.length; i += 2)
+        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+    return str;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 
     //electron API 오브젝트 
@@ -48,7 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
         sGitDevKey = oGitSettings.devKey;
 
     //GITHUB     
-    oHandle.DEVKEY = atob(sGitDevKey);
+    // oHandle.DEVKEY = atob(sGitDevKey);
+    oHandle.DEVKEY = HexToStr(sGitDevKey);
     oHandle.OWNER = oGitSettings.OWNER; //기본값
     oHandle.REPO = oGitSettings.REPO; //폴더명
 

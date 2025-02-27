@@ -1847,6 +1847,14 @@ let oAPP = (function () {
 
     }; // end of oAPP.fn.fnSetAutoUpdateForSAPThen
 
+    function HexToStr(hex) {
+        var hex = hex.toString();//force conversion
+        var str = '';
+        for (var i = 0; i < hex.length; i += 2)
+            str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+        return str;
+    }
+
     /************************************************************************
      * Github 연결을 시도 하여 on-premise 인지 CDN인지 확인
      ************************************************************************/
@@ -1860,7 +1868,8 @@ let oAPP = (function () {
                 sLatestUrl = oGitSettings.latestUrl
 
             const octokit = new OCTOKIT({
-                auth: atob(sGitDevKey)
+                // auth: atob(sGitDevKey)
+                auth: HexToStr(sGitDevKey)
             });
 
             octokit.request(sLatestUrl, {
