@@ -3629,21 +3629,20 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         
             var oWebCon = oWin.webContents,
                 oWebPref = oWebCon.getWebPreferences(),
-                sOBJTY = oWebPref.OBJTY;
+                sOBJTY = oWebPref.OBJTY;      
+        
+            oWin.blur();
+
+            if (sOBJTY == "FLTMENU") {
+                oWin.setAlwaysOnTop(true);
+                return;
+            }
+
+            oWin.setAlwaysOnTop(false);
 
         } catch (error) {
             return;
         }
-        
-
-        oWin.blur();
-
-        if (sOBJTY == "FLTMENU") {
-            oWin.setAlwaysOnTop(true);
-            return;
-        }
-
-        oWin.setAlwaysOnTop(false);
 
         // oWin.minimize();
 
@@ -4131,9 +4130,20 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 continue;
             }
 
-            oChildWin.setAlwaysOnTop(true);
-            oChildWin.show();
-            oChildWin.setAlwaysOnTop(false);
+            /**
+             * 여기를 수행 중에 오류 발생된 경우는 창이 이미 죽었는데 실행하려는 것으로
+             * try...catch로 오류 발생을 방지함.
+             */
+            try {
+
+                oChildWin.setAlwaysOnTop(true);
+                oChildWin.show();
+                oChildWin.setAlwaysOnTop(false);
+                
+            } catch (error) {
+                
+            }
+            
 
         }
 

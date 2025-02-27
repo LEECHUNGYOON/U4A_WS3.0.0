@@ -113,7 +113,14 @@ oAPP.fn.fnOnParentWindowClosedEvent = () => {
 
     oAPP.attr.isPressWindowClose = "X";
 
-    CURRWIN.close();
+    try {
+
+        CURRWIN.close();    
+        
+    } catch (error) {
+        
+    }
+    
 
 }; // end of oAPP.fn.fnOnParentWindowClosedEvent
 

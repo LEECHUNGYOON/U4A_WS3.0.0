@@ -373,8 +373,14 @@
             if (oCurrWindow.isDestroyed()) {
                 return;
             }
+            
+            try {
+                oCurrWindow.close();    
+            } catch (error) {
+                
+            }
 
-            oCurrWindow.close();
+            
         });
 
     };

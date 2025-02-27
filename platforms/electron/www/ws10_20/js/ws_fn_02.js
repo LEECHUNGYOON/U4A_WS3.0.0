@@ -1738,8 +1738,12 @@
                 }
 
                 // oChild.show();
-
-                oChild.setOpacity(1);
+                try {
+                    oChild.setOpacity(1);    
+                } catch (error) {
+                    
+                }
+                
 
             } catch (error) {
                 continue;

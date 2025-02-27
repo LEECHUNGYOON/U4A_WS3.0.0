@@ -83,8 +83,15 @@ let oAPP = (() => {
 
         if (!CURRWIN.isDestroyed()) {
 
-            // 검색창을 닫는다.
-            CURRWIN.close();
+            try {
+            
+                // 검색창을 닫는다.
+                CURRWIN.close();
+
+            } catch (error) {
+                
+            }
+            
 
         }
 
