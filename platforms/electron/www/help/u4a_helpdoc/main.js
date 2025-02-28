@@ -31,6 +31,19 @@
 /* 내부 광역 변수  
 /* ***************************************************************** */
 
+// IF 구조
+const TY_IFDATA = {
+    PRCCD: "",      // 수행중인 프로세스 코드    
+    ACTCD: "",      // 수행중인 행위에 대한 코드     
+    PARAM: "",      // 수행 결과에 대한 데이터
+};
+
+const REMOTE = parent.REMOTE;
+const APP = REMOTE.app;
+const APPPATH = APP.getAppPath();
+const FS = require("fs");
+const PATH = require("path");
+
 // 로그인 사용자 정보
 const GV_USER_INFO = parent.getUserInfo();
 const LANGU = GV_USER_INFO.LANGU;
@@ -248,6 +261,11 @@ function gfn_setProgressbar(iValue, iTotalValue) {
 
     sPerValue = sPerValue.toFixed(2);
 
+    // 계산된 퍼센트 값이 100이 넘으면 100으로 고정
+    if(sPerValue >= 100){
+        sPerValue = 100;
+    }
+
     oProgressbar.setPercentValue(sPerValue);
 
     let sMsg = `${GS_MSG.M08}.....${sPerValue}%`;
@@ -257,6 +275,186 @@ function gfn_setProgressbar(iValue, iTotalValue) {
 } // end of gfn_setProgressbar
 
 
+
+/**
+ * @since   2025-02-27
+ * @version 3.5.0-sp7
+ * @author  soccerhs
+ * 
+ * @description
+ * Help Document 파일 다운로드
+ * 
+ * @returns
+ * resolve의 Return 구조는 다음과 같이 한다.
+ * 
+ * resolve({
+ *    RETCD: "",      // 리턴코드 S: 성공, E: 오류)
+ *    RTMSG: "",      // 리턴코드에 대한 메시지
+ * }); 
+ */
+function _getHelpDocFileDown(oPARAM){
+
+    // 응답 공통 구조
+    let TY_RES = {
+        RETCD: "",
+        RTMSG: "",
+    };
+
+    return new Promise(function(resolve){
+
+        // Document 다운로드 처리에 대한 Worker js
+        let _sWorkerPath = PATH.join(APPPATH, "help", "u4a_helpdoc", "workers", "u4aHelpDownWorker.js");
+
+        let oWorker = new Worker(_sWorkerPath);
+
+        oWorker.onmessage = function(e){
+            
+            // 공통 응답 구조
+            var oRES = JSON.parse(JSON.stringify(TY_RES)); 
+
+            oRES.RETCD = "E";
+
+            var oIF_DATA = e?.data || undefined;
+            if(!oIF_DATA){
+
+                // 실행 중인 워커를 종료시킨다.
+                try {
+                    oWorker.terminate();
+                    console.log("worker terminate - [WORKER-001]");
+                } catch (error) {
+                    
+                }
+
+                var aConsoleMsg = [              
+                    `[PATH]: www/help/u4a_helpdoc/main.js`,  
+                    `=> _getHelpDocFileDown`,
+                    `=> oWorker.onmessage`,                    
+                    `=> oIF_DATA undefined`,
+                    `[WORKER-001]`                   
+                ];
+                console.error(aConsoleMsg.join("\r\n"));
+                console.trace();
+
+                // Help Document 버젼 파일 생성중 오류 발생
+                // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
+                let sErrMsg = GS_MSG.M06 + "\n\n";
+                    sErrMsg += GS_MSG.M09;
+             
+                oRES.RTMSG = sErrMsg;
+
+                resolve(oRES);
+
+                return;
+            }
+
+          
+            // 프로세스 코드에 따른 분기
+            switch (oIF_DATA.PRCCD) { 
+
+                // 오류
+                case "ERROR":
+
+                    // 프로그래스 Dialog를 닫는다.
+                    gfn_closeProgressDialog();
+
+                    var aConsoleMsg = [              
+                        `[PATH]: www/help/u4a_helpdoc/main.js`,  
+                        `=> _getHelpDocFileDown`,
+                        `=> oWorker.onmessage`,  
+                        `[WORKER-${oIF_DATA.STCOD}]`                   
+                    ];
+                    console.error(aConsoleMsg.join("\r\n"));
+                    console.trace();
+                    
+                    // [Default Error Msg] Help Document 버젼 파일 생성중 오류 발생
+                    // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
+                    var sDefErrMsg = GS_MSG.M06 + "\n\n";
+                        sDefErrMsg += GS_MSG.M09;
+
+                    var sErrMsg = GS_MSG[oIF_DATA.MSGNR];
+
+                    // MSGNR에 해당하는 메시지가 있을 경우 추가 메시지 내용을 덧붙인다.
+                    if(sErrMsg){
+                        sErrMsg += "\n\n" + GS_MSG.M09; // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
+                    }
+
+                    // MSGNR에 해당하는 메시지가 없을 경우에는 기본값 메시지 내용을 출력한다.
+                    oRES.RTMSG = sErrMsg || sDefErrMsg;
+
+                    break;
+
+                // Document 실행
+                case "OPEN_DOCU":
+
+                    // 프로그래스 Dialog를 닫는다.
+                    gfn_closeProgressDialog();
+
+                    var _oPARAM = oIF_DATA.PARAM;
+                    var _sDocFilePath = _oPARAM.DOC_FILE_PATH;
+
+                    REMOTE.shell.openPath(_sDocFilePath); //파일 실행 
+
+                    oRES.RETCD = "S";
+                    oRES.RTMSG = "";                   
+
+                    break;
+
+                // 프로그래스바 Dialog Open
+                case "PROG_DIALOG_OPEN": 
+
+                    gfn_openProgressDialogOpen();
+
+                    return;
+
+                // 프로그래스바 Dialog Close
+                case "PROG_DIALOG_CLOSE": 
+
+                    gfn_closeProgressDialog();
+
+                    return;
+
+                // 프로그래스바 데이터 설정
+                case "SET_PROG_DATA":
+
+                    var _oPARAM = oIF_DATA.PARAM;
+
+                    let iCount = _oPARAM.COUNT;
+                    let iTotal = _oPARAM.TOTAL;
+
+                    gfn_setProgressbar(iCount, iTotal);
+
+                    return;
+
+                default:                
+
+                    break;
+
+            }
+
+            // 실행 중인 워커를 종료시킨다.
+            try {
+                oWorker.terminate();
+                console.log("worker terminate - END");
+            } catch (error) {
+                
+            }
+
+            resolve(oRES);
+
+        };
+
+        // 공통 IF 구조
+        let oIF_DATA = JSON.parse(JSON.stringify(TY_IFDATA));
+
+        oIF_DATA.PRCCD = "WS_HELP_DOCU_DOWN";
+        oIF_DATA.PARAM = oPARAM;
+
+        oWorker.postMessage(oIF_DATA);
+
+    });
+
+} // end of _getHelpDocFileDown
+
 /*=================================================================== */
 // Export Module Function - Help document 서버 Data 추출후 다운로드 처리
 /*=================================================================== */
@@ -265,7 +463,7 @@ exports.Excute = async function (REMOTE, DOWN_ROOT_PATH) {
     //HEAD_DATA      : Help document 해더 Data => getHeadData <- 이 펑션에서 추출한 Data
     //DOWN_ROOT_PATH : 다운로드 처리할 폴더 경로 
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve, reject) => {        
 
         //Help document 해더 정보 추출
         let HEAD_DATA = await gfn_getHeadData();
@@ -299,248 +497,66 @@ exports.Excute = async function (REMOTE, DOWN_ROOT_PATH) {
             return;
         }
 
-        let oFS = REMOTE.require('fs'),
-            oPATH = REMOTE.require('path');
+        // WS Setting Json 정보
+        let oSettings = parent.getSettingsInfo();
 
+        // WS Setting Json 정보에서 powerShell 관련 정보
+        let oPsInfo   = oSettings.ps;
 
-        //다운로드 파일 처리 경로 설정 
+        // WS Setting Json 정보에서 powerShell 파일 루트 경로
+        let sPsRootPath = oPsInfo.rootPath;
+
+        // WS Setting Json 정보에서 powerShell 실행 파일 경로
+        let sWsDocPath = oPsInfo.ws_help_doc;
+
+        // Package 여부에 따른 PowerShell 파일 경로
+        let sPsPath = PATH.join(process.resourcesPath, "www",  sPsRootPath /* ext_api/ps */, sWsDocPath /* WS_HELP/ws_doc.ps1 */);
+
+        if(!APP.isPackaged){
+            sPsPath = PATH.join(APPPATH, sPsRootPath /* ext_api/ps */, sWsDocPath /* WS_HELP/ws_doc.ps1 */);   
+        }
+
+        // 로그인 사용자 정보
+        let oLoginInfo = GV_USER_INFO;
+
+        let oPATH = PATH;
+
+        // 다운로드 파일 처리 경로 설정 
         let LV_ROOT_PATH = oPATH.join(DOWN_ROOT_PATH, "U4A_HELP_DOC");
         let LV_DOWN_PATH = oPATH.join(LV_ROOT_PATH, HEAD_DATA.DATA.LOCFN);
 
-
-        //Help Document 폴더 생성
-        if (!oFS.existsSync(LV_ROOT_PATH)) {
-            oFS.mkdirSync(LV_ROOT_PATH);
-        }
-
-        //다운로드 임시폴더 경로 설정 
+        // 다운로드 임시폴더 경로 설정 
         let LV_TMP_ROOT_PATH = oPATH.join(LV_ROOT_PATH, "U4A_HELP_DOC_TMP");
         let LV_TMP_DOWN_PATH = oPATH.join(LV_TMP_ROOT_PATH, HEAD_DATA.DATA.LOCFN);
 
-        //Help Document 임시폴더 생성
-        if (!oFS.existsSync(LV_TMP_ROOT_PATH)) {
-            oFS.mkdirSync(LV_TMP_ROOT_PATH);
-        }
-
-
         //Help document 버젼 파일 Path 설정 
-        // let LV_VESN_PATH = oPATH.join(LV_ROOT_PATH, "U4A_HELP_DOC_VER" + HEAD_DATA.DATA.VERSN + ".json");
-        let LV_VESN_PATH = oPATH.join(LV_ROOT_PATH, "U4A_HELP_DOC_VER" + HEAD_DATA.DATA.VERSN + "_" + GV_USER_INFO.LANGU + ".json");
+        let LV_VESN_PATH = oPATH.join(LV_ROOT_PATH, "U4A_HELP_DOC_VER" + HEAD_DATA.DATA.VERSN + ".json");
+        
+        let oPARAM = {
 
-        //Help document 버젼 파일 존재여부 점검 - 존재한다면 
-        // if (await gfn_file_existence(oFS, LV_ROOT_PATH, "U4A_HELP_DOC_VER" + HEAD_DATA.DATA.VERSN + ".json")) {
-        if (await gfn_file_existence(oFS, LV_ROOT_PATH, "U4A_HELP_DOC_VER" + HEAD_DATA.DATA.VERSN + "_" + GV_USER_INFO.LANGU + ".json")) {
+            // 파워쉘 파일 경로
+            PS_DOC_PATH : sPsPath,
 
-            //Help Document 파일이 존재한다면 
-            if (await gfn_file_existence(oFS, LV_ROOT_PATH, HEAD_DATA.DATA.LOCFN)) {
-                REMOTE.shell.openPath(LV_DOWN_PATH); //파일 실행 
+            BASE_URL     : parent.getServerHost(),
+            SAP_CLIENT   : oLoginInfo.CLIENT,
+            SAP_USER     : oLoginInfo.ID,
+            SAP_PW       : oLoginInfo.PW,
 
-                //성공 처리 
-                resolve({
-                    RETCD: "S",
-                    RTMSG: ""
-                });
-                return;
+            ROOT_PATH    : LV_ROOT_PATH,
+            DOWN_PATH    : LV_DOWN_PATH,
+            TMP_ROOT_PATH: LV_TMP_ROOT_PATH,
+            TMP_DOWN_PATH: LV_TMP_DOWN_PATH,
+            VESN_PATH    : LV_VESN_PATH,
 
-            }
+            // Help Document Header Data
+            HEAD_DATA: HEAD_DATA
 
-        }
+        };
 
+        // Help Document 파일 다운로드
+        let oResult = await _getHelpDocFileDown(oPARAM);
 
-        //버젼 파일 생성
-        try {
-            oFS.writeFileSync(LV_VESN_PATH, JSON.stringify(HEAD_DATA.DATA), 'utf-8');
-        } catch (error) {
-            //Help Document 버젼 파일 생성중 오류 발생
-            resolve({
-                RETCD: "E",
-                RTMSG: GS_MSG.M06
-            });
-            return;
-        }
-
-
-        //릴레이션 해더키 
-        let LV_RINDX = HEAD_DATA.DATA.RINDX.toString().padStart(10, '0');
-        let LV_RELKY = 0;
-
-
-        //이전 Help Document 임시 파일 삭제
-        await gfn_fileDel(oFS, LV_TMP_DOWN_PATH);
-
-
-        //프로그레스 UI OPEN
-        gfn_openProgressDialogOpen();
-
-        // HEAD_DATA.DATA.SPCNT < TOTAL 
-
-
-
-        //Help Document 다운로드 분할 Data 추출 
-        function lfn_getdata() {
-
-            LV_RELKY = LV_RELKY + 1;
-
-            var LV_RELKY_X = LV_RELKY.toString().padStart(4, '0');
-            LV_RELKY_X = LV_RINDX + LV_RELKY_X;
-
-            // 2025-02-11 SOCCERHS: 언어 정보까지 전달.
-            // var LV_URL = GV_HOST + "/zu4a_wbc/u4a_ipcmain/U4A_HELP_DOC_WS30?PRCCD=ITEM" + "&RELKY=" + LV_RELKY_X;
-            var LV_URL = `${GV_HOST}/zu4a_wbc/u4a_ipcmain/U4A_HELP_DOC_WS30?LANGU_OUT=${GV_USER_INFO.LANGU}&PRCCD=ITEM&RELKY=${LV_RELKY_X}`;
-            var xhttp = new XMLHttpRequest();
-            xhttp.onerror = (e) => {
-
-                //프로그레스 ERROR 종료 처리 
-                gfn_closeProgressDialog();
-
-                resolve({
-                    RETCD: "E",
-                    RTMSG: GS_MSG.M01
-                });
-            }; //통신오류
-            xhttp.ontimeout = () => {
-
-                //프로그레스 ERROR 종료 처리 
-                gfn_closeProgressDialog();
-
-                resolve({
-                    RETCD: "E",
-                    RTMSG: GS_MSG.M01
-                });
-
-            }; //통신오류
-            xhttp.onload = async (e) => {
-
-                var status = e.target.getResponseHeader("u4a_status");
-
-                switch (status) {
-                    case "ERR": //오류일 경우
-
-                        //프로그레스 ERROR 종료 처리 
-                        gfn_closeProgressDialog();
-
-                        //"Help Document 분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다."
-                        resolve({
-                            RETCD: "E",
-                            RTMSG: GS_MSG.M03
-                        });
-                        break;
-
-
-                    case "END": //추출 완료                        
-
-                        //프로그레스 ERROR 종료 처리 
-                        gfn_closeProgressDialog();
-
-                        //서버측에 응답코드가 실제 Data 미존재? 아님 처리 완료? 알수 없기에
-                        //Temp 폴더에 파일여부를 확인해본다 미존재하면 서버측에 Data가 없는것으로 추측함
-                        if (!await gfn_file_existence(oFS, LV_TMP_ROOT_PATH, HEAD_DATA.DATA.LOCFN)) {
-                            resolve({
-                                RETCD: "E",
-                                RTMSG: GS_MSG.M03
-                            });
-                            return;
-
-                        }
-
-                        //기존 파일 삭제
-                        await gfn_fileDel(oFS, LV_DOWN_PATH);
-
-
-                        //Help Document 임시파일 => 실제 폴더에 이관
-                        await gfn_FileMove(oFS, LV_DOWN_PATH, LV_TMP_DOWN_PATH);
-
-
-                        //Help Document 임시 파일 삭제
-                        await gfn_fileDel(oFS, LV_TMP_DOWN_PATH);
-
-
-                        //Help Document 실행
-                        REMOTE.shell.openPath(LV_DOWN_PATH);
-
-
-                        //정상처리 
-                        resolve({
-                            RETCD: "S",
-                            RTMSG: GS_MSG.M05
-                        });
-
-                        break;
-
-                    case "RUN": //추출 진행정 ..
-
-                        //Help Document 다운로드 분할 Data 다운로드
-                        var LS_RET = await lfn_download(e.target.response, LV_TMP_DOWN_PATH);
-                        if (LS_RET.RETCD === "E") {
-
-                            //프로그레스 ERROR 종료 처리                             
-                            gfn_closeProgressDialog();
-
-                            resolve(LS_RET);
-                            return;
-                        }
-
-                        //프로그레스바 증가 로직삽입
-                        gfn_setProgressbar(LV_RELKY, HEAD_DATA.DATA.SPCNT);
-
-                        //[재수행] Help Document 다운로드 분할 Data 추출 
-                        lfn_getdata();
-
-                        break;
-
-                    default: //오류로 간주
-
-                        //프로그레스 ERROR 종료 처리 
-                        gfn_closeProgressDialog();
-
-                        //"Help Document 분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다."
-                        resolve({
-                            RETCD: "E",
-                            RTMSG: GS_MSG.M03
-                        });
-                        break;
-
-                }
-
-            };
-
-            xhttp.open("GET", LV_URL, true);
-            xhttp.withCredentials = true;
-            xhttp.responseType = 'arraybuffer';
-            xhttp.send();
-
-
-        } //lfn_getdata
-
-
-        //분할 다운로드
-        async function lfn_download(BIN, PATH) {
-            return new Promise((resolve, reject) => {
-                oFS.appendFile(PATH, Buffer.from(BIN), function (err) {
-
-                    if (err) {
-                        //Help Document 다운로드 처리 과정에서 오류 발생
-                        resolve({
-                            RETCD: "E",
-                            RTMSG: GS_MSG.M04
-                        });
-                        return;
-                    }
-
-                    resolve({
-                        RETCD: "S",
-                        RTMSG: ""
-                    });
-
-                });
-
-            });
-        } //lfn_download
-
-
-        //Help Document Down 처리 시작
-        lfn_getdata();
-
+        resolve(oResult);
 
     }); //return new Promise( async (resolve, reject)
 

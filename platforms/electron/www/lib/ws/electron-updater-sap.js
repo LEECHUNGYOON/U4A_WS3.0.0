@@ -10,6 +10,31 @@
 
 //==================
 
+// IF 구조
+const TY_IFDATA = {
+    PRCCD: "",      // 수행중인 프로세스 코드    
+    ACTCD: "",      // 수행중인 행위에 대한 코드     
+    PARAM: "",      // 수행 결과에 대한 데이터
+};
+
+// // 응답 구조
+// const TY_RES = {
+//     PRCCD: "",      // 수행중인 프로세스 코드
+//     RETCD: "",      // 수행 결과에 대한 코드
+//     ERRCD: "",      // 오류 코드
+//     ACTCD: "",      // 수행중인 행위에 대한 코드    
+//     STCOD: "",      // 수행 결과에 대한 상태 코드    
+//     RTMSG: "",      // 수행 결과에 대한 메시지 
+//     RDATA: "",      // 수행 결과에 대한 데이터
+// };
+
+
+// 전역 메시지 변수 구조
+var GS_MSG = {
+    M001: "U4A Workspace 버전 정보를 조회 하는 도중에 문제가 발생하였습니다.",
+    M002: "U4A Workspace 업데이트 파일을 다운받는 과정에 문제가 발생하였습니다.",
+    M003: "다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요."
+};
 
 
 //----------------------------------------------------------------//
@@ -19,7 +44,10 @@
 const
     HOST = parent.getServerHost(),
     PATH = parent.PATH,
-    REMOTE = parent.REMOTE;
+    REMOTE = parent.REMOTE,
+    APP = REMOTE.app,
+    FS = parent.FS,
+    APPPATH = APP.getAppPath();
 
 let __updateFilename = "",
     __appVer = "",
@@ -36,6 +64,10 @@ let __sap_id_pw = ""; //WS3.0 이관후 삭제대상!!!
 // sap 서버 통신 url 
 let _sURL_V = `${HOST}/zu4a_wbc/u4a_ipcmain/update_check`,
     _sURL_U = `${HOST}/zu4a_wbc/u4a_ipcmain/ws_update_file_get`;
+
+
+// Worker 경로
+let _sWorkerPath = PATH.join(APPPATH, "lib", "ws", "worker", "majorUpdateWorker.js");
 
 //----------------------------------------------------------------//
 // 로컬 전역 펑션 
@@ -88,244 +120,353 @@ function __fireEvent(node, eventName, param) {
     }
 }
 
+/**
+ * 업데이트 파일을 워커로 다운
+ */
+function _getUpdateFileWorker(oPARAM) {
 
-//get update file - exe
-function __getUpdateFile() {
+    let oWsVerInfo = oPARAM.WSVER_INFO;     // 설치할 WS 버전 정보
+    let oLoginInfo = oPARAM.LOGIN_INFO;     // 로그인 정보
 
-    //다운로드 경로 
-    if (__downPath === "") {
-        __downPath = PATH.join(__downFldPath, __updateFilename);
+    let oWorker = new Worker(_sWorkerPath);
 
-    }
-
-    var Lfirst = "";
-    if (__jobCnt === 0) {
-
-        //처음 실행 flg 
-        Lfirst = "X";
-
-        //이전 파일 삭제 
-        try {
-            __ofs.unlinkSync(__downPath);
-        } catch (err) {
-
-        }
-
-
-    }
-
-    //분활 처리 count
-    __jobCnt++;
-
-    var url = _sURL_U +
-        "?JOBCNT=" + __jobCnt +
-        "&FIRST=" + Lfirst +
-        "&" +
-        __sap_id_pw;
-
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.responseType = "arraybuffer";
-    xhr.onreadystatechange = function (oEvent) {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-
-            if (xhr.status !== 200) {
-                __jobCnt = 0;
-                __total = 0;
-                //업데이트 오류 발생 ..event 핸들러 call
-                __fireEvent(document, 'update-error-sap', {
-                    message: "허용하지 않는 서비스 호출됨!! 서비스 url 확인바람"
-                });
-                return;
-
-            }
+    oWorker.onmessage = function(e){
+        
+        var oIF_DATA = e?.data || undefined;
+        if(!oIF_DATA){
 
             try {
-
-                //정상적으로 파싱된다는건 서버측에서 처리 오류 메시지를 리턴  의미임 !!
-                var sRET = JSON.parse(xhr.response);
-                __jobCnt = 0;
-                __total = 0;
-                //업데이트 오류 발생 ..event 핸들러 call
-                // __fireEvent(document, 'update-error-sap', sRET);
+                oWorker.terminate();
+                console.log("worker terminate - [WORKER-001]");
+            } catch (error) {
                 
-                // 20240708 soccerhs: 오류 발생시 오류 메시지 데이터를 공통 구조로 매핑함
-                __fireEvent(document, 'update-error-sap', {
-                    message: sRET.RTMSG
-                });
-                return;
+            }
 
-            } catch (err) {
+            var aConsoleMsg = [              
+              `[PATH]: www/lib/ws/electron-updater-sap.js`,  
+              `=> _getUpdateFileWorker`,
+              `=> oWorker.onmessage`,                    
+              `=> oIF_DATA undefined`,
+              `[WORKER-001]`                   
+            ];
+            console.error(aConsoleMsg.join("\r\n"));
+            console.trace();
+            
 
-                if (xhr.getResponseHeader('ACTCD') === "END") {
-                    __jobCnt = 0;
-                    __total = 0;
-                    __WriteStream(xhr.response, 'X');
+            // U4A Workspace 업데이트 파일을 다운받는 과정에 문제가 발생하였습니다.
+            // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
+            let sErrMsg = GS_MSG.M002 + "\n\n";
+                sErrMsg += GS_MSG.M003;
 
-                    //다운로드중 완료 ..event 핸들러 call
-                    __fireEvent(document, 'update-downloaded-sap', {
-                        message: "다운로드 완료"
-                    });
+            // 응답 오류!!
+            __fireEvent(document, 'update-error-sap', {
+                message: `[WORKER-001] ${sErrMsg}`
+            });
 
+            return;
+        }
+        
+        switch (oIF_DATA.PRCCD) {
+            
+            case "download-progress-sap": //다운로드중 ..
 
-                    return;
+                var oPARAM = oIF_DATA.PARAM;
 
-                }
-
-                //전체 건수 
-                if (__total == 0) {
-                    __total = Number(xhr.getResponseHeader('TOTAL'));
-                }
+                let sTotal = oPARAM.TOTAL;
+                let iCount = oPARAM.COUNT;
 
                 //다운로드중 ..event 핸들러 call
                 __fireEvent(document, 'download-progress-sap', {
-                    TOTAL: __total,
-                    jobCnt: __jobCnt
+                    TOTAL: sTotal,
+                    jobCnt: iCount
                 });
 
-                __WriteStream(xhr.response, '');
+                return;
 
-            }
+            case "update-downloaded-sap": // 다운로드 완료 
 
+                try {
+                    oWorker.terminate();
+                    console.log("worker terminate - [update-downloaded-sap]");
+                } catch (error) {
+                    
+                }
+
+                //다운로드중 완료 ..event 핸들러 call
+                __fireEvent(document, 'update-downloaded-sap', {
+                    message: "다운로드 완료"
+                });
+
+                return;
+
+            case "update-error-sap": //오류
+
+                try {
+                    oWorker.terminate();
+                    console.log("worker terminate - [update-error-sap]");
+                } catch (error) {
+                    
+                }                
+
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [             
+                    `[PATH]: www/lib/ws/electron-updater-sap.js`,  
+                    `=> _getUpdateFileWorker`,
+                    `=> oWorker.onmessage`,
+                    `=> update-error-sap`,
+                    `[WORKER-${oIF_DATA.STCOD}]`
+                ];
+
+                console.error(aConsoleMsg.join("\r\n"), oIF_DATA);
+                console.trace();       
+                
+                // [Default Error Msg] 
+                // U4A Workspace 업데이트 파일을 다운받는 과정에 문제가 발생하였습니다.
+                // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
+                var sDefErrMsg = GS_MSG.M002 + "\n\n";
+                    sDefErrMsg += GS_MSG.M003;
+
+                var sErrMsg = GS_MSG[oIF_DATA.MSGNR];
+
+                // MSGNR에 해당하는 메시지가 있을 경우 추가 메시지 내용을 덧붙인다.
+                if(sErrMsg){
+                    sErrMsg += "\n\n" + GS_MSG.M003; // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
+                }
+
+                sErrMsg = sErrMsg || sDefErrMsg;
+                
+                // 응답 오류!!
+                __fireEvent(document, 'update-error-sap', {
+                    message: `[WORKER-${oIF_DATA.STCOD}]\n${sErrMsg}`
+                });
+
+                return;
+        
+            default:                
+
+                return;
         }
+
     };
 
+    // WS Setting Json 정보
+    let oSettings = getSettingsInfo();
 
-    xhr.send();
+    // WS Setting Json 정보에서 powerShell 관련 정보
+    let oPsInfo   = oSettings.ps;
+
+    // WS Setting Json 정보에서 powerShell 파일 루트 경로
+    let sPsRootPath = oPsInfo.rootPath;
+
+    // WS Setting Json 정보에서 powerShell 실행 파일 경로
+    let sWsMajorPsPath = oPsInfo.ws_major;
+
+    // WS 설치 파일 다운로드 경로
+    let sInstFileDownPath = PATH.join(APP.getPath("userData"), oWsVerInfo.UPDT_FNAME);
+
+    /**
+     * @description
+     * 
+     * WS 설치 파일 다운로드 경로를 전역변수에 저장.
+     * 
+     * 설치가 정상적으로 완료되면 마지막에 quitAndInstall 호출 시 
+     * 해당 function에서 설치 파일 다운로드 경로를 참조함.
+     */
+    __downPath = sInstFileDownPath;
+
+    // Package 여부에 따른 PowerShell 파일 경로
+    let sPsPath = PATH.join(APPPATH, sPsRootPath /* ext_api/ps */, sWsMajorPsPath /* WS_PATCH/ws_major_update.ps1 */);
+    
+    if(APP.isPackaged){
+        sPsPath = PATH.join(process.resourcesPath, "www",  sPsRootPath /* ext_api/ps */, sWsMajorPsPath /* WS_PATCH/ws_major_update.ps1 */);
+    }
+
+    // powerShell 실행 파일이 없을 경우 오류!!
+    if(FS.existsSync(sPsPath) === false){
+
+        try {
+            oWorker.terminate();
+            console.log("worker terminate - [WORKER-002]");
+        } catch (error) {
+            
+        }
+
+        __fireEvent(document, 'update-error-sap', {
+            message: `[WORKER-002 ${GS_MSG.M002}`
+        });
+
+        return;
+    } 
+
+    // 파워쉘 실행 파라미터
+    let _oPARAM = {
+        PS_PATH      : sPsPath,
+        BASE_URL     : parent.getServerHost(),
+        SAP_CLIENT   : oLoginInfo.CLIENT,
+        SAP_USER     : oLoginInfo.ID,
+        SAP_PW       : oLoginInfo.PW,
+        DOWN_PATH    : sInstFileDownPath,
+        FILE_INFO    : oWsVerInfo
+    };
+
+    // 공통 IF 구조
+    let oIF_DATA = JSON.parse(JSON.stringify(TY_IFDATA));
+
+    oIF_DATA.PRCCD = "WS_MAJOR_UPDATE";
+    oIF_DATA.PARAM = _oPARAM;
+
+    oWorker.postMessage(oIF_DATA);
 
 }
-
-
-//pc 디렉토리 스트림형식 파일 down 
-function __WriteStream(LBIN, ISEND) {
-
-    if (ISEND === "X") {
-        if (typeof __oWriter !== "undefined") {
-            __oWriter.close();
-            __oWriter = "undefined";
-        }
-        return;
-    }
-
-
-    //스트리밍 객체 생성 
-    if (typeof __oWriter === "undefined") {
-        __oWriter = __ofs.createWriteStream(__downPath);
-
-    }
-
-    var oBuff = Buffer.from(LBIN);
-    __oWriter.write(oBuff, null, (err) => {
-        if (err) {
-            //업데이트 오류 발생 ..event 핸들러 call
-            __fireEvent(document, 'update-error-sap', {
-                message: "스트리밍 다운로드 오류발생"
-            });
-            return;
-
-        }
-
-        //sap 서버 업데이트 파일 요청 펑션 재수행 
-        __getUpdateFile();
-
-    });
-
-};
-
 
 //----------------------------------------------------------------//
 // 메인 
 //----------------------------------------------------------------//
 exports.autoUpdaterSAP = {
 
-    //이벤트 핸들러 등록 
-    on: function (evtNM, cb) {
-        document.addEventListener(evtNM, cb);
+    // 글로벌 언어 정보 가져오기
+    getGlobalMsg: function(){
+
+        // WS Setting Json 정보
+        let oSettingInfo = parent.getSettingsInfo();
+
+        let sWsLangu = oSettingInfo.globalLanguage;
+
+        const WSUTIL = parent.WSUTIL;
+
+        GS_MSG.M001 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "296"); // U4A Workspace 버전 정보를 조회 하는 도중에 문제가 발생하였습니다.
+        GS_MSG.M002 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "297"); // U4A Workspace 업데이트 파일을 다운받는 과정에 문제가 발생하였습니다.
+        GS_MSG.M003 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "290"); // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
 
     },
 
-    //== 점검 수행 ==
+    //이벤트 핸들러 등록 
+    on: function (evtNM, cb) {
+        document.addEventListener(evtNM, cb);
+    },
+
+    // == 점검 수행 ==
     checkForUpdates: function (appVer, oServerInfo) {
-
-        __jobCnt = 0;
-        __total = 0;
-        __downPath = "";
-
-        //현재 WS3.0 앱 버전 
-        __appVer = appVer;
-
-        //업데이트 파일 다운로드 폴더 경로 
-        __downFldPath = PATH.join(parent.process.env.APPDATA, REMOTE.require('electron').app.name);
-
+        
         //업데이트 확인 이벤트 수행 
         __fireEvent(document, 'checking-for-update-sap', {
             message: "check version"
         });
 
+        // 글로벌 언어 정보 가져오기
+        this.getGlobalMsg();
+
+        __downPath = "";
+
+        //현재 WS3.0 앱 버전 
+        __appVer = appVer;        
+
         var oFormData = new FormData();
 
-        // if (oServerInfo && oServerInfo.HTTPONLY && oServerInfo.HTTPONLY == "1") {
-
-        //     let oLogInData = oServerInfo.LOGIN;
-
-        //     oFormData.append("sap-user", oLogInData.ID);
-        //     oFormData.append("sap-password", oLogInData.PW);
-        //     oFormData.append("sap-client", oLogInData.CLIENT);
-        //     oFormData.append("sap-language", oLogInData.LANGU);
-
-        // }
+        // (New) 신규 개선된 업데이트에 대한 플래그
+        oFormData.append("NEW_UPCK", "X");
 
         var xhr = new XMLHttpRequest();
 
         xhr.open("POST", _sURL_V, true);
-        // xhr.open("GET", _sURL_V, true);
 
         xhr.onreadystatechange = function (oEvent) {
             if (xhr.readyState == XMLHttpRequest.DONE) {
 
+                // try {
+
+                //     //정상적으로 파싱된다는건 서버측에서 처리 오류 메시지를 리턴받앗다는 의미임 !!
+                //     var sRET = JSON.parse(xhr.response);
+
+                //     //업데이트 오류 발생 
+                //     // __fireEvent(document, 'update-error-sap', sRET);
+
+                //     // 20240708 soccerhs: 오류 발생시 오류 메시지 데이터를 공통 구조로 매핑함
+                //     __fireEvent(document, 'update-error-sap', {
+                //         message: sRET.RTMSG
+                //     });
+
+                //     return;
+
+                // } catch (error) {
+
+                //     var YAML = REMOTE.require('yamljs');
+
+                //     //download exe update file name 
+                //     __updateFilename = xhr.getResponseHeader('UPDT_FNAME');
+
+                //     var nativeObject = YAML.parse(xhr.response);
+
+                //     //var appVER = "V1.0.4";//현재 app 버젼  oAPP.remote.app.getVersion()
+                //     var appVer = "";
+                //     var updVER = nativeObject.version; //등록되있는 서버 업데이트 버젼 
+
+                //     var regex = /[^0-9]/g;
+                //     appVer = Number(__appVer.replace(regex, "")); //현재 app 버젼  oAPP.remote.app.getVersion()
+                //     updVER = Number(updVER.replace(regex, "")); //등록되있는 서버 업데이트 버젼  
+
+                //     if (appVer < updVER) {
+                //         //업데이트 가능 
+                //         __fireEvent(document, 'update-available-sap', {
+                //             message: "업데이트가능"
+                //         });
+
+                //         __ofs = REMOTE.require('fs');
+
+                //         //get update file - exe
+                //         __getUpdateFile();
+
+                //     } else {
+                //         //최신버젼 
+                //         __fireEvent(document, 'update-not-available-sap', {
+                //             message: "최신버젼",
+                //             verInfo: {                                
+                //                 appVer: appVer,
+                //                 updVER : updVER
+                //             }
+                //         });
+
+                //     }
+
+                // }
+
+
+                /**
+                 * @description 
+                 * 신규 업데이트 버전에 따른 로직 변경
+                 *                  
+                 * @author soccerhs
+                 * @version 3.5.0-sp7
+                 * @date 2025-02-25                               
+                 */
+
                 try {
-                    //정상적으로 파싱된다는건 서버측에서 처리 오류 메시지를 리턴받앗다는 의미임 !!
-                    var sRET = JSON.parse(xhr.response);
-
-                    //업데이트 오류 발생 
-                    // __fireEvent(document, 'update-error-sap', sRET);
-
-                    // 20240708 soccerhs: 오류 발생시 오류 메시지 데이터를 공통 구조로 매핑함
-                    __fireEvent(document, 'update-error-sap', {
-                        message: sRET.RTMSG
-                    });
-
-                    return;
-
-                } catch (error) {
-
-                    var YAML = REMOTE.require('yamljs');
-
-                    //download exe update file name 
-                    __updateFilename = xhr.getResponseHeader('UPDT_FNAME');
-
-                    var nativeObject = YAML.parse(xhr.response);
-
-                    //var appVER = "V1.0.4";//현재 app 버젼  oAPP.remote.app.getVersion()
-                    var appVer = "";
-                    var updVER = nativeObject.version; //등록되있는 서버 업데이트 버젼 
+                    
+                    var oWsVerInfo = JSON.parse(xhr.response);
+                    var updVER = oWsVerInfo.VERSN;
 
                     var regex = /[^0-9]/g;
+                 
                     appVer = Number(__appVer.replace(regex, "")); //현재 app 버젼  oAPP.remote.app.getVersion()
                     updVER = Number(updVER.replace(regex, "")); //등록되있는 서버 업데이트 버젼  
 
                     if (appVer < updVER) {
+
                         //업데이트 가능 
                         __fireEvent(document, 'update-available-sap', {
                             message: "업데이트가능"
                         });
 
-                        __ofs = REMOTE.require('fs');
+                        let oPARAM = {
+                            WSVER_INFO : oWsVerInfo,         // 서버의 최신 WS 버전 정보
+                            LOGIN_INFO : oServerInfo.LOGIN   // 현재 접속하려는 서버의 정보(SYSID, LOGIN 정보등)
+                        };
 
-                        //get update file - exe
-                        __getUpdateFile();
+                        // 업데이트 파일을 워커로 다운
+                        _getUpdateFileWorker(oPARAM);
 
                     } else {
+
                         //최신버젼 
                         __fireEvent(document, 'update-not-available-sap', {
                             message: "최신버젼",
@@ -337,6 +478,17 @@ exports.autoUpdaterSAP = {
 
                     }
 
+                } catch (error) {
+
+                    console.error(error);
+                    console.trace();
+
+                    __fireEvent(document, 'update-error-sap', {
+                        message: GS_MSG.M001 // 버전 정보 구하는 도중에 문제가 발생하였습니다
+                    });
+
+                    return;
+
                 }
 
             }
@@ -345,7 +497,8 @@ exports.autoUpdaterSAP = {
 
         xhr.send(oFormData);
 
-    },
+    },   
+
     quitAndInstall: function () {
 
         if (__downPath !== "") {

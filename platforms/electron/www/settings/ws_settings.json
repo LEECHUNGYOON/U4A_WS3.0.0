@@ -59,8 +59,9 @@
     },
     "ps": {
         "rootPath": "ext_api\\ps",
-        "sp": "ws_sp.ps1",
-        "nd": "ws_nd.ps1"
+        "ws_major": "WS_PATCH\\ws_major_update.ps1",
+        "ws_sp": "WS_PATCH\\ws_sp_patch.ps1",
+        "ws_help_doc": "WS_HELP\\ws_doc.ps1"
     },
     "path": {
        

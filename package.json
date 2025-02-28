@@ -49,6 +49,7 @@
     "extraResources": [
       "./node_modules/**/*",
       "./node_modules/@electron/remote/**",
+      "./www/ext_api/**",
       {
         "from": "node_modules/regedit/vbs",
         "to": "regedit/vbs",

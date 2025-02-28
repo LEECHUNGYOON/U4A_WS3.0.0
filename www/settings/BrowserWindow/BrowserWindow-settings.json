@@ -12,7 +12,8 @@
             "backgroundThrottling": false,
             "nativeWindowOpen": true,
             "webSecurity": false,
-            "autoplayPolicy": "no-user-gesture-required"
+            "autoplayPolicy": "no-user-gesture-required",
+            "nodeIntegrationInWorker": true
         }
     },
     "browserWindowInstance": {

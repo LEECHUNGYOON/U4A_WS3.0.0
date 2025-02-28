@@ -1751,6 +1751,13 @@ let oAPP = (function () {
 
                 var iPer = parseFloat(iPerCnt).toFixed(2); // 소수점 2자리까지
 
+                /**
+                 * 업데이트 파일 다운로드시 퍼센트가 100이 넘을 경우에는 100으로 하드코딩
+                 */
+                if(iPer >= 100){
+                    iPer = 100;
+                }
+
                 oModel.setProperty("/BUSYPOP/TITLE", "Downloading...", true);
 
                 oModel.setProperty("/BUSYPOP/PERVALUE", iPer, true);
@@ -1763,6 +1770,8 @@ let oAPP = (function () {
                 oModel.setProperty("/BUSYPOP/TITLE", "Update Complete! Restarting...", true);
 
                 oModel.setProperty("/BUSYPOP/ILLUSTTYPE", "sapIllus-SuccessHighFive", true);
+
+                oModel.setProperty("/BUSYPOP/PERVALUE", 100, true);
 
                 console.log('업데이트가 완료되었습니다.');
 
@@ -1777,13 +1786,22 @@ let oAPP = (function () {
             //오류
             autoUpdaterSAP.on('update-error-sap', (e) => {
 
+                // 이벤트 파라미터의 오류 메시지
+                let sErrMsg = e?.params?.message || "";
+
                 // 메시지 팝업을 띄운다.
                 // 다운로드 중 오류가 발생하였습니다.
                 // 재시작 하시겠습니까?
-                let sMsg = oAPP.msg.M051 + " \n ";
-                sMsg += oAPP.msg.M052 + " \n \n";
-                sMsg += sap.m.MessageBox.Action.RETRY + ": " + oAPP.msg.M055 + " " + oAPP.msg.M056 + " \n \n ";
-                sMsg += sap.m.MessageBox.Action.CLOSE + ": " + oAPP.msg.M055 + " " + oAPP.msg.M056 + " \n \n ";
+                let sMsg = oAPP.msg.M051 + "\n\n";
+
+                // 이벤트 파라미터에 메시지 내용이 있다면 메시지 팝업 내용에 동봉한다.
+                if(sErrMsg !== ""){
+                    sMsg += sErrMsg + "\n\n";
+                }
+
+                sMsg += oAPP.msg.M052 + "\n\n";
+                sMsg += sap.m.MessageBox.Action.RETRY + ": " + oAPP.msg.M055 + " " + oAPP.msg.M056 + "\n\n";
+                sMsg += sap.m.MessageBox.Action.CLOSE + ": " + oAPP.msg.M055 + " " + oAPP.msg.M056 + "\n\n";
                 sMsg += sap.m.MessageBox.Action.IGNORE + ": " + oAPP.msg.M053; //"Ignoring updates and then running the program"
 
                 sap.m.MessageBox.error(sMsg, {
@@ -2979,12 +2997,12 @@ let oAPP = (function () {
             _showContentDom("X");
             
 
-            console.log("업데이트 항목이 존재합니다");
+            console.log("SP - 업데이트 항목이 존재합니다");
         });
 
         spAutoUpdater.on("update-not-available-SP", (e) => {
 
-            console.log("현재 최신버전입니다.");
+            console.log("SP - 현재 최신버전입니다.");
 
             resolve();
 
@@ -3007,6 +3025,12 @@ let oAPP = (function () {
                 iCurr = e.detail.file_info.TRANSFERRED;
 
             let iPer = parseFloat(iCurr / iTotal * 100).toFixed(2);
+            
+            // 퍼센트 계산 중, 100이 넘을 경우는 강제로 100으로 만들어서
+            // 프로그레스바에 표시한다.
+            if(iPer >= 100){
+                iPer = 100;
+            }
 
             oModel.setProperty("/BUSYPOP/PERVALUE", iPer, true);
 
@@ -3038,7 +3062,7 @@ let oAPP = (function () {
 
             oModel.setProperty("/BUSYPOP/ILLUSTTYPE", "sapIllus-SuccessHighFive", true);
 
-            console.log('업데이트가 완료되었습니다.');
+            console.log('SP - 업데이트가 완료되었습니다.');
 
             setTimeout(() => {
 
@@ -3067,12 +3091,13 @@ let oAPP = (function () {
             // 다운로드 중 오류가 발생하였습니다.
             // 재시작 하시겠습니까?
             parent.setDomBusy("");
-
+        
             // 오류 이벤트 호출 시 전달 받은 오류 메시지
             let sRetMsg = e?.detail?.message || "";
 
-            let sMsg = oAPP.msg.M057 + " \n \n";
-                sMsg += sRetMsg;
+            let sMsg = oAPP.msg.M057 + "\n\n";
+                sMsg += sRetMsg + "\n\n";
+                sMsg += oAPP.msg.M290;  // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
 
             sap.m.MessageBox.error(sMsg, {
                 title: oAPP.msg.M058, //"U4A Workspace Support Package Update Error",
@@ -3088,7 +3113,7 @@ let oAPP = (function () {
 
             });
 
-            console.log('에러가 발생하였습니다. 에러내용 : ' + sRetMsg);
+            console.log('SP - 에러가 발생하였습니다. 에러내용 : ' + sRetMsg);
 
         });
 
