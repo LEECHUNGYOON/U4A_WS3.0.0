@@ -354,14 +354,30 @@ function _getHelpDocFileDown(oPARAM){
                 // 오류
                 case "ERROR":
 
+                    // 실행 중인 워커를 종료시킨다.
+                    try {
+                        oWorker.terminate();
+                        console.log(`worker terminate - [PRCCD]: ${oIF_DATA.PRCCD}`);
+                    } catch (error) {
+                        
+                    }
+
                     // 프로그래스 Dialog를 닫는다.
                     gfn_closeProgressDialog();
+
+                    // 로그 정보가 있을 경우에는 콘솔 오류에 로그 정보를 담는다
+                    var sLog = "";
+                    var oPARAM = oIF_DATA?.PARAM || undefined;
+                    if(oPARAM?.LOG){
+                        sLog = oPARAM.LOG;
+                    }    
 
                     var aConsoleMsg = [              
                         `[PATH]: www/help/u4a_helpdoc/main.js`,  
                         `=> _getHelpDocFileDown`,
                         `=> oWorker.onmessage`,  
-                        `[WORKER-${oIF_DATA.STCOD}]`                   
+                        `[WORKER-${oIF_DATA.STCOD}]`,
+                        `[Log]: ${sLog}`                  
                     ];
                     console.error(aConsoleMsg.join("\r\n"));
                     console.trace();
@@ -385,6 +401,14 @@ function _getHelpDocFileDown(oPARAM){
 
                 // Document 실행
                 case "OPEN_DOCU":
+
+                    // 실행 중인 워커를 종료시킨다.
+                    try {
+                        oWorker.terminate();
+                        console.log(`worker terminate - [PRCCD]: ${oIF_DATA.PRCCD}`);
+                    } catch (error) {
+                        
+                    }
 
                     // 프로그래스 Dialog를 닫는다.
                     gfn_closeProgressDialog();
@@ -420,6 +444,9 @@ function _getHelpDocFileDown(oPARAM){
 
                     let iCount = _oPARAM.COUNT;
                     let iTotal = _oPARAM.TOTAL;
+                    var sLog   = _oPARAM.LOG || "";
+
+                    console.log(sLog);
 
                     gfn_setProgressbar(iCount, iTotal);
 
@@ -496,6 +523,20 @@ exports.Excute = async function (REMOTE, DOWN_ROOT_PATH) {
             });
             return;
         }
+
+
+        // 하위 버전 서버를 접속했을 경우에는
+        // 헤더 정보에 아래의 필드(LANG_O, BLOBCNT) 가 없는데
+        // PowerShell 에서는 필수 파라미터 이므로
+        // 필요한 값을 정의해준다.
+        if(typeof HEAD_DATA?.DATA?.LANG_O === "undefined"){
+            HEAD_DATA.DATA.LANG_O = LANGU;
+        }
+
+        if(typeof HEAD_DATA?.DATA?.BLOBCNT === "undefined"){
+            HEAD_DATA.DATA.BLOBCNT = HEAD_DATA.DATA.SPCNT;
+        }
+    
 
         // WS Setting Json 정보
         let oSettings = parent.getSettingsInfo();

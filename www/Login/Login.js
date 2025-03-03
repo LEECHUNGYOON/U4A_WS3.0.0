@@ -1292,6 +1292,9 @@ let oAPP = (function () {
 
             parent.setDomBusy("");
 
+            // div의 content DOM을 활성화 처리 한다.
+            _showContentDom("X");
+
         }
 
         // 통신 오류가 발생한 경우
@@ -1786,6 +1789,11 @@ let oAPP = (function () {
             //오류
             autoUpdaterSAP.on('update-error-sap', (e) => {
 
+                // div의 content DOM을 활성화 처리 한다.
+                _showContentDom("X");
+
+                parent.setDomBusy("");
+
                 // 이벤트 파라미터의 오류 메시지
                 let sErrMsg = e?.params?.message || "";
 
@@ -1802,7 +1810,7 @@ let oAPP = (function () {
                 sMsg += oAPP.msg.M052 + "\n\n";
                 sMsg += sap.m.MessageBox.Action.RETRY + ": " + oAPP.msg.M055 + " " + oAPP.msg.M056 + "\n\n";
                 sMsg += sap.m.MessageBox.Action.CLOSE + ": " + oAPP.msg.M055 + " " + oAPP.msg.M056 + "\n\n";
-                sMsg += sap.m.MessageBox.Action.IGNORE + ": " + oAPP.msg.M053; //"Ignoring updates and then running the program"
+                // sMsg += sap.m.MessageBox.Action.IGNORE + ": " + oAPP.msg.M053; //"Ignoring updates and then running the program"
 
                 sap.m.MessageBox.error(sMsg, {
                     title: oAPP.msg.M054, // "U4A Workspace Update Error"
@@ -1824,17 +1832,18 @@ let oAPP = (function () {
 
                                 return;
 
-                            case "IGNORE": // 무시하고 진행
+                            // case "IGNORE": // 무시하고 진행
 
-                                resolve();
+                            //     resolve();
 
-                                return;
+                            //     return;
 
                         }
 
                     },
 
-                    actions: [sap.m.MessageBox.Action.RETRY, sap.m.MessageBox.Action.CLOSE, sap.m.MessageBox.Action.IGNORE]
+                    // actions: [sap.m.MessageBox.Action.RETRY, sap.m.MessageBox.Action.CLOSE, sap.m.MessageBox.Action.IGNORE]
+                    actions: [sap.m.MessageBox.Action.RETRY, sap.m.MessageBox.Action.CLOSE]
 
                 });
 
@@ -1961,6 +1970,9 @@ let oAPP = (function () {
 
             autoUpdater.on('update-available', (info) => {
 
+                // div의 content DOM을 활성화 처리 한다.
+                _showContentDom("X");
+
                 let oBusyPop = oModel.getProperty("/BUSYPOP");
                 oBusyPop.PROGVISI = true;
                 oBusyPop.PROGTXT = "Downloading";
@@ -2013,7 +2025,7 @@ let oAPP = (function () {
                 sMsg += oAPP.msg.M052 + " \n \n";
                 sMsg += sap.m.MessageBox.Action.RETRY + ": " + oAPP.msg.M055 + " " + oAPP.msg.M056 + " \n \n ";
                 sMsg += sap.m.MessageBox.Action.CLOSE + ": " + oAPP.msg.M055 + " " + oAPP.msg.M056 + " \n \n ";
-                sMsg += sap.m.MessageBox.Action.IGNORE + ": " + oAPP.msg.M053; //"Ignoring updates and then running the program"
+                // sMsg += sap.m.MessageBox.Action.IGNORE + ": " + oAPP.msg.M053; //"Ignoring updates and then running the program"
 
                 sap.m.MessageBox.error(sMsg, {
                     title: oAPP.msg.M054, //"U4A Workspace Update Error",
@@ -2035,17 +2047,18 @@ let oAPP = (function () {
 
                                 return;
 
-                            case "IGNORE": // 무시하고 진행
+                            // case "IGNORE": // 무시하고 진행
 
-                                resolve();
+                            //     resolve();
 
-                                return;
+                            //     return;
 
                         }
 
                     },
 
-                    actions: [sap.m.MessageBox.Action.RETRY, sap.m.MessageBox.Action.CLOSE, sap.m.MessageBox.Action.IGNORE]
+                    // actions: [sap.m.MessageBox.Action.RETRY, sap.m.MessageBox.Action.CLOSE, sap.m.MessageBox.Action.IGNORE]
+                    actions: [sap.m.MessageBox.Action.RETRY, sap.m.MessageBox.Action.CLOSE]
 
                 });
 
@@ -2977,10 +2990,12 @@ let oAPP = (function () {
         let sSupportPackageCheckerPath = parent.getPath("WS_SP_UPD"),
             spAutoUpdater = require(sSupportPackageCheckerPath);
 
+        //업데이트 확인
         spAutoUpdater.on("checking-for-update-SP", (e) => {
-            console.log("업데이트 확인중");
+            console.log(e?.detail?.message);
         });
 
+        //업데이트 가능 
         spAutoUpdater.on("update-available-SP", (e) => {
 
             // 로그인 페이지의 Opacity를 적용한다.
@@ -2995,7 +3010,6 @@ let oAPP = (function () {
 
             // div의 content DOM을 활성화 처리 한다.
             _showContentDom("X");
-            
 
             console.log("SP - 업데이트 항목이 존재합니다");
         });
@@ -3097,7 +3111,6 @@ let oAPP = (function () {
 
             let sMsg = oAPP.msg.M057 + "\n\n";
                 sMsg += sRetMsg + "\n\n";
-                sMsg += oAPP.msg.M290;  // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
 
             sap.m.MessageBox.error(sMsg, {
                 title: oAPP.msg.M058, //"U4A Workspace Support Package Update Error",
@@ -3580,9 +3593,9 @@ let oAPP = (function () {
             if(oLanguResult?.PRCCD !== sLanguPRCCD){
 
                 let oLanguForm = sap.ui.getCore().byId("ws_langu_input_form");
-                    oLanguForm.setVisible(true);
+                    oLanguForm.setVisible(true);                    
 
-                return;
+                return resolve();
 
             }
 
@@ -3595,7 +3608,7 @@ let oAPP = (function () {
 
             let oModel = sap.ui.getCore().getModel();
             if(!oModel){
-                return;
+                return resolve();
             }
 
             // 기 저장된 언어 정보가 없다면 서버의 Default 언어로 설정해준다
@@ -3606,7 +3619,7 @@ let oAPP = (function () {
 
             oModel.setProperty("/LOGIN/T_LANGU", aLangu);            
 
-            resolve();
+            return resolve();
 
         });
 

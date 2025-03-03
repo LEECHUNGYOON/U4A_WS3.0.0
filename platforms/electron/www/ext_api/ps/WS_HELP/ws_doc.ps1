@@ -282,11 +282,11 @@ try {
     
     # "[언어키] 키워드가 없는지 확인하고 없으면 .chm 앞에 _[언어키] 추가
     $lfnam = $config.LOCFN
-    # if ($lfnam -notmatch $config.LANG_O) {
-    #     $fext = "_" + $config.LANG_O + ".chm"
-    #     $lfnam = $lfnam -replace '\.chm$', $fext
-    #     Write-Host "Converted filename: $lfnam"
-    # }
+#   if ($lfnam -notmatch $config.LANG_O) {
+#       $fext = "_" + $config.LANG_O + ".chm"
+#       $lfnam = $lfnam -replace '\.chm$', $fext
+#       Write-Host "Converted filename: $lfnam"
+#   }
 
     # Clean up any existing .dxx files
     Remove-Item -Path "*.dxx" -ErrorAction SilentlyContinue

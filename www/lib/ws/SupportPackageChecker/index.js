@@ -268,131 +268,6 @@ async function gf_chkPatch_SAP() {
     });
 }
 
-// //[펑션] (SAP) 패치 다운로드 
-// async function gf_download_SAP(PATCH) {
-//     return new Promise(async (resolve) => {
-
-//         var LS_FILE_INFO = {};
-//             LS_FILE_INFO.VERSN = PATCH.S_INFO.VERSN;
-//             LS_FILE_INFO.SPLEV = PATCH.S_INFO.SPLEV;
-//             LS_FILE_INFO.TOTAL = PATCH.S_INFO.TOTAL;
-//             LS_FILE_INFO.TOTSP = PATCH.S_INFO.TOTSP;
-//             LS_FILE_INFO.TOTND = PATCH.S_INFO.TOTND;
-//             LS_FILE_INFO.TRANSFERRED = 0;
-
-//         //이벤트 트리거 - 다운로드중
-//         document.dispatchEvent(new CustomEvent('download-progress-SP', { detail: { message: GS_MSG.M09, file_info: LS_FILE_INFO } }));
-
-//         //(APP)다운로드 파일 경로 설정 
-//         var LV_TMP_DOWN_APP = PATH.join(process.resourcesPath, "app.zip");
-
-//         //(NODE_MODULES)다운로드 파일 경로 설정 
-//         var LV_TMP_DOWN_NODE = PATH.join(process.resourcesPath, "node_modules.zip");
-
-//         // WS Settings 정보 구하기
-//         let oSettings = getSettingsInfo();
-
-//         // PowerShell 관련 설정 정보 구하기
-//         let oSettingsPS = oSettings.ps;
-
-//         let sPS_SP_PATH   = PATH.join(USERDATA, oSettingsPS.rootPath, oSettingsPS.sp);       
-
-//         // 파워쉘 실행 파라미터
-//         let oPARAM = {            
-//             PS_SP_PATH   : sPS_SP_PATH,         // 파워쉘 실행 파일 경로            
-//             BASE_URL     : ADMIN.SAP.HOST,      // 서버 호스트
-//             SAP_CLIENT   : ADMIN.SAP.CLIENT,    // 서버 클라이언트
-//             SAP_USER     : ADMIN.SAP.ID,        // 서버 아이디
-//             SAP_PW       : ADMIN.SAP.PW,        // 서버 비밀번호
-//             SP_DOWN_PATH : LV_TMP_DOWN_APP,     // SP 파일 임시 다운로드 경로
-//             ND_DOWN_PATH : LV_TMP_DOWN_NODE,    // ND 파일 임시 다운로드 경로
-//             FILE_INFO    : LS_FILE_INFO         // SP 파일 정보
-//         };
-
-//         // 파워쉘로 SP 파일 다운로드
-//         let oSP_RESULT = await _getSuppPackDataFromPowerShell(oPARAM);
-        
-//         if(oSP_RESULT.SUBRC !== 0){
-
-//             console.error(`[SP] SUBRC: ${oSP_RESULT.SUBRC}] An unknown error occurred while downloading the support package.`);
-
-//             switch(oSP_RESULT.SUBRC){
-
-//                 case 1: // json parse error
-
-//                     return resolve({ RETCD: "E", RTMSG: "json parse error" });
-
-//                 case 2: // 필수 파라미터 누락
-
-//                     return resolve({ RETCD: "E", RTMSG: "필수 파라미터 누락" });
-
-//                 case 3: // 파일 다운로드 중 오류 발생
-
-//                     return resolve({ RETCD: "E", RTMSG: "파일 다운로드 중 오류 발생" });
-
-//                 case 4: // 파일 다운로드한 분할 파일을 합치다가 오류 발생
-
-//                     return resolve({ RETCD: "E", RTMSG: "파일 다운로드한 분할 파일을 합치다가 오류 발생" });
-
-//                 case 5: // 아이디 or Password 오류
-
-//                     return resolve({ RETCD: "E", RTMSG: "아이디 or Password 오류" });
-
-//                 case 8: // 알 수 없는 오류 발생
-
-//                     return resolve({ RETCD: "E", RTMSG: "알 수 없는 오류 발생" });
-
-//                 default:// 알 수 없는 오류 발생
-
-//                     var sErrMsg = "unknown error 알 수 없는 오류 발생\n\n";
-//                         sErrMsg += oSP_RESULT?.RTMSG || "";
-
-//                     return resolve({ RETCD: "E", RTMSG: sErrMsg });
-//             }
-
-//         }
-
-//         // 여기까지 왔다는건 다운로드 완료 되었다고 보고,
-//         // 다운로드 프로그레스바 이벤트에 TOTAL 값을 전달한다.
-//         oPARAM.FILE_INFO.TRANSFERRED = oPARAM.FILE_INFO.TOTAL;
-
-//         //이벤트 트리거 - 다운로드중
-//         document.dispatchEvent(new CustomEvent('download-progress-SP', { detail: { message: GS_MSG.M09, file_info: oPARAM.FILE_INFO.TRANSFERRED } }));
-        
-//         //app.ZIP 파일 압축 해제
-//         let oExtractResult_SP = await onZipExtractAsync("SP", LV_TMP_DOWN_APP, process.resourcesPath, true);
-//         if (oExtractResult_SP.RETCD == "E") {
-//             return resolve({ RETCD: "E", RTMSG: GS_MSG.M10 }); //패치 압축 파일을 푸는 과정에 문제가 발생하였습니다 \n 관리자에게 문의하세요            
-//         }
-
-//         //app.zip 다운로드처리 전 이전 쓰레기 File 제거
-//         try { FS.unlinkSync(LV_TMP_DOWN_APP); } catch (err) { }
-
-//         // // ND 파워쉘 실행
-//         // let oND_RESULT = await _getNodeModlueFromPowerShell(oPARAM);
-
-//         // if(oND_RESULT.SUBRC !== 0){
-
-//         //     console.error(`[ND] SUBRC: ${oSP_RESULT.SUBRC}] An unknown error occurred while downloading the node_modules.`);
-
-//         //     return resolve({ RETCD: "E", RTMSG: "노드 모듈 다운로드 오류" }); 
-//         // }
-
-//         //node_modules.ZIP 파일 압축 해제
-//         let oExtractResult_ND = await onZipExtractAsync("ND", LV_TMP_DOWN_NODE, process.resourcesPath, true);
-//         if (oExtractResult_ND.RETCD == "E") {
-//             resolve({ RETCD: "E", RTMSG: "압축 파일 미존재" });
-//             return;
-//         }
-
-//         //정상처리 
-//         return resolve({ RETCD: "S", RTMSG: GS_MSG.M05 });
-
-//     });
-// }
-
-
-
 //[펑션] (GIT) 패치 존재여부 점검 
 async function gf_chkPatch_GIT() {
     return new Promise(async (res, rej) => {
@@ -685,7 +560,14 @@ function _getPatchUpdateFileWorker(oPARAM){
             
             case "download-progress-SP": //다운로드중 ..
          
-                var _oPARAM = oIF_DATA.PARAM;
+                // 로그 정보가 있을 경우에는 콘솔 오류에 로그 정보를 담는다
+                var sLog = "";
+                var _oPARAM = oIF_DATA?.PARAM || undefined;
+                if(_oPARAM?.LOG){
+                    sLog = _oPARAM.LOG;
+                }
+
+                console.log(sLog);
 
                 document.dispatchEvent(new CustomEvent('download-progress-SP', { 
                     detail: { message: GS_MSG.M09, file_info: _oPARAM.FILE_INFO } 
@@ -725,15 +607,23 @@ function _getPatchUpdateFileWorker(oPARAM){
                     console.log("worker terminate - [update-error-SP]");
                 } catch (error) {
                     
-                }                
+                }   
+                
+                // 로그 정보가 있을 경우에는 콘솔 오류에 로그 정보를 담는다
+                var sLog = "";
+                var _oPARAM = oIF_DATA?.PARAM || undefined;
+                if(_oPARAM?.LOG){
+                    sLog = _oPARAM.LOG;
+                }    
 
                 // 콘솔용 오류 메시지
-                var aConsoleMsg = [             
+                var aConsoleMsg = [
                     `[PATH]: www/lib/ws/SupportPackageChecker/index.js`,  
                     `=> _getPatchUpdateFileWorker`,
                     `=> oWorker.onmessage`,
                     `=> update-error-SP`,
-                    `[WORKER-${oIF_DATA.STCOD}]`
+                    `[WORKER-${oIF_DATA.STCOD}]`,
+                    `[Log]: ${sLog}`
                 ];           
 
                 console.error(aConsoleMsg.join("\r\n"), oIF_DATA);

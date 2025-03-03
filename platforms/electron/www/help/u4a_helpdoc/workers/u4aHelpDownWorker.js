@@ -1,5 +1,5 @@
 const FS    = require("fs");
-const PATH  = require("path");
+// const PATH  = require("path");
 const spawn = require("child_process").spawn;
 
 // 공통 응답 구조
@@ -51,7 +51,7 @@ self.onmessage = async function(e){
         oRES.PRCCD = PRC.ERROR;
         oRES.STCOD = "onmessage-E001";    
         oRES.RTMSG = "필수 파라미터 누락!!"; 
-        oRES.MSGNR = "M06";
+        oRES.MSGNR = "M06"; // Help Document 버젼 파일 생성중 오류 발생
 
         self.postMessage(oRES);
 
@@ -64,7 +64,7 @@ self.onmessage = async function(e){
         oRES.PRCCD = PRC.ERROR;
         oRES.STCOD = "onmessage-E002";
         oRES.RTMSG = "필수 파라미터 누락!!";
-        oRES.MSGNR = "M06";
+        oRES.MSGNR = "M06"; // Help Document 버젼 파일 생성중 오류 발생
      
         self.postMessage(oRES);
 
@@ -83,7 +83,15 @@ self.onmessage = async function(e){
         oRES.PRCCD = PRC.ERROR;
         oRES.STCOD = "onmessage-E003";
         oRES.RTMSG = "잘못된 PRCCD";
-        oRES.MSGNR = "M06";
+        oRES.MSGNR = "M06"; // Help Document 버젼 파일 생성중 오류 발생
+
+        // Error Log
+        var sErrLog = error && error?.toString() || "";
+            sErrLog += error && error?.stack || "";
+
+        oRES.PARAM = {
+            LOG: sErrLog
+        }
 
         self.postMessage(oRES);
 
@@ -195,24 +203,29 @@ function _getHelpDocuDataFromPowerShell(oPARAM){
             // 다운로드 수행 횟수 증가
             iCount++;
 
+            let sLog = `Help Document 다운로드 중: ${data.toString()}`;
+
             var oRES = JSON.parse(JSON.stringify(TY_RES)); 
 
             oRES.PRCCD = PRC.SET_PROG_DATA; // 프로그래스바 데이터 설정
             oRES.PARAM = {
                 TOTAL: iTotal,
-                COUNT: iCount
+                COUNT: iCount,
+                LOG  : sLog
             };
 
             self.postMessage(oRES);
 
-            console.log(`Document 다운로드 중: ${data.toString()}`);
+            console.log(sLog);
             
         });
 
         // 에러 메시지 출력
         ps.stderr.on("data", (data) => {
 
-            console.error(`Document 다운로드 중 에러: ${data.toString()}`);            
+            let sLog = `Document 다운로드 중 에러: ${data.toString()}`;
+
+            console.error(sLog);            
             console.trace();
 
             if (!ps.killed) {              
@@ -220,7 +233,7 @@ function _getHelpDocuDataFromPowerShell(oPARAM){
                 console.log("kill-1");
             }
 
-            return resolve({ SUBRC: 999, RTMSG: data.toString() });
+            return resolve({ SUBRC: 999, LOG: sLog });
 
         });
 
@@ -308,11 +321,18 @@ self.WS_HELP_DOCU_DOWN = async function (oPARAM) {
         oFS.writeFileSync(LV_VESN_PATH, JSON.stringify(HEAD_DATA.DATA), 'utf-8');
 
     } catch (error) {
-
-        // Document 파일 실행
+       
         oRES.PRCCD = PRC.ERROR;
         oRES.STCOD = "WS_HELP_DOCU_DOWN-E001";
         oRES.MSGNR = "M06"; // Help Document 버젼 파일 생성중 오류 발생
+
+        // Error Log
+        var sErrLog = error && error?.toString() || "";
+            sErrLog += error && error?.stack || "";
+
+        oRES.PARAM = {
+            LOG: sErrLog
+        }
 
         self.postMessage(oRES);
     
@@ -336,8 +356,11 @@ self.WS_HELP_DOCU_DOWN = async function (oPARAM) {
 
         // Document 파일 실행
         oRES.PRCCD = PRC.ERROR;
-        oRES.STCOD = "WS_HELP_DOCU_DOWN-E002";
+        oRES.STCOD = `WS_HELP_DOCU_DOWN-E002-SUBRC:${oShellResult.SUBRC}`;
         oRES.MSGNR = "M03"; // Help Document 분할 파일정보를 가져오는 과정에서 오류가 발생하였습니다.
+        oRES.PARAM = {
+            LOG: oShellResult?.LOG || "" // PowerShell 오류 로그
+        };
 
         self.postMessage(oRES);  
 

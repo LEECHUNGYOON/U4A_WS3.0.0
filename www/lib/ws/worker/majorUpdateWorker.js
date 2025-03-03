@@ -1,5 +1,4 @@
 const FS = require("fs");
-
 const spawn = require("child_process").spawn;
 
 // 공통 응답 구조
@@ -36,7 +35,7 @@ self.onmessage = async function(e){
         oRES.PRCCD = PRC.UPDATE_ERROR;
         oRES.STCOD = "onmessage-E001";    
         oRES.RTMSG = "필수 파라미터 누락!!";
-        oRES.MSGNR = "M002";
+        oRES.MSGNR = "M002"; // U4A Workspace 업데이트 파일을 다운받는 과정에 문제가 발생하였습니다.
 
         self.postMessage(oRES);
 
@@ -49,7 +48,7 @@ self.onmessage = async function(e){
         oRES.PRCCD = PRC.UPDATE_ERROR;
         oRES.STCOD = "onmessage-E002";
         oRES.RTMSG = "필수 파라미터 누락!!";
-        oRES.MSGNR = "M002";
+        oRES.MSGNR = "M002";  // U4A Workspace 업데이트 파일을 다운받는 과정에 문제가 발생하였습니다.
      
         self.postMessage(oRES);
 
@@ -64,11 +63,19 @@ self.onmessage = async function(e){
         self[oIF_DATA.PRCCD](oPARAM);
         
     } catch (error) {
-    
+        
         oRES.PRCCD = PRC.UPDATE_ERROR;
         oRES.STCOD = "onmessage-E003";
         oRES.RTMSG = "잘못된 PRCCD";
-        oRES.MSGNR = "M002";
+        oRES.MSGNR = "M002";    // U4A Workspace 업데이트 파일을 다운받는 과정에 문제가 발생하였습니다.
+
+        // Error Log
+        var sErrLog = error && error?.toString() || "";
+            sErrLog += error && error?.stack || "";
+
+        oRES.PARAM = {
+            LOG: sErrLog
+        }
 
         self.postMessage(oRES);
 
@@ -128,25 +135,30 @@ function _majorVersionDownPowerShell(oPARAM){
 
             // 다운로드 수행 횟수 증가
             iCount++;
+
+            let sLog = `Major 업데이트 파일 다운로드 중..: ${data.toString()}`;
             
             var oRES = JSON.parse(JSON.stringify(TY_RES)); 
 
             oRES.PRCCD = PRC.DOWN_LOADING; // // 다운로드 중
             oRES.PARAM = {
                 TOTAL: iTotal,
-                COUNT: iCount
+                COUNT: iCount,
+                LOG  : sLog
             };
 
             self.postMessage(oRES);
 
-            console.log(`다운로드 중: ${data.toString()}`);
+            console.log(sLog);
 
         });
 
         // 에러 메시지 출력
         ps.stderr.on("data", (data) => {
+      
+            let sLog = `Major 업데이트 다운로드 중 에러: ${data.toString()}`;
             
-            console.error(`다운로드 중 에러: ${data.toString()}`);            
+            console.error(sLog);            
             console.trace();
 
             if (!ps.killed) {              
@@ -154,7 +166,7 @@ function _majorVersionDownPowerShell(oPARAM){
                 console.log("kill-1");
             }
 
-            return resolve({ SUBRC: 999 });
+            return resolve({ SUBRC: 999, LOG: sLog });
 
         });
 
@@ -202,8 +214,11 @@ self.WS_MAJOR_UPDATE = async function(oPARAM){
     if(oShellResult.SUBRC !== 0){
 
         oRES.PRCCD = PRC.UPDATE_ERROR; // 다운로드 오류
-        oRES.STCOD = `SHELL-${oShellResult.SUBRC}`;
-        oRES.MSGNR = "M002";
+        oRES.STCOD = `WS_MAJOR_UPDATE-E001-SUBRC:${oShellResult.SUBRC}`;
+        oRES.MSGNR = "M002";  // U4A Workspace 업데이트 파일을 다운받는 과정에 문제가 발생하였습니다.
+        oRES.PARAM = {
+            LOG: oShellResult?.LOG || "" // PowerShell 오류 로그
+        };
 
         self.postMessage(oRES);
 

@@ -55,7 +55,7 @@ self.onmessage = async function(e){
         oRES.PRCCD = PRC.UPDATE_ERROR;
         oRES.STCOD = "onmessage-E001";    
         oRES.RTMSG = "필수 파라미터 누락!!";    
-        oRES.MSGNR = "M22";
+        oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
 
         self.postMessage(oRES);
 
@@ -68,7 +68,7 @@ self.onmessage = async function(e){
         oRES.PRCCD = PRC.UPDATE_ERROR;
         oRES.STCOD = "onmessage-E002";
         oRES.RTMSG = "필수 파라미터 누락!!";
-        oRES.MSGNR = "M22";
+        oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
      
         self.postMessage(oRES);
 
@@ -87,7 +87,15 @@ self.onmessage = async function(e){
         oRES.PRCCD = PRC.UPDATE_ERROR;
         oRES.STCOD = "onmessage-E003";
         oRES.RTMSG = "잘못된 PRCCD";
-        oRES.MSGNR = "M22";
+        oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
+
+        // Error Log
+        var sErrLog = error && error?.toString() || "";
+            sErrLog += error && error?.stack || "";
+
+        oRES.PARAM = {
+            LOG: sErrLog
+        }
 
         self.postMessage(oRES);
 
@@ -112,7 +120,7 @@ function _getSuppPackDataFromPowerShell(oPARAM) {
 
         var oRES = JSON.parse(JSON.stringify(TY_RES)); 
 
-        oRES.PRCCD = PRC.DOWN_LOADING; // // 다운로드 중
+        oRES.PRCCD = PRC.DOWN_LOADING; // 다운로드 중
         oRES.PARAM = {
             FILE_INFO: oFileInfo
         };
@@ -141,26 +149,31 @@ function _getSuppPackDataFromPowerShell(oPARAM) {
                 return;
             }
 
+            let sLog = `Patch 업데이트 파일 다운로드 중..: ${data.toString()}`;
+
             // 다운로드 수행 횟수 증가
             oFileInfo.TRANSFERRED++;
 
             var oRES = JSON.parse(JSON.stringify(TY_RES)); 
 
-            oRES.PRCCD = PRC.DOWN_LOADING; // // 다운로드 중
+            oRES.PRCCD = PRC.DOWN_LOADING; // 다운로드 중
             oRES.PARAM = {
-                FILE_INFO: oFileInfo
+                FILE_INFO: oFileInfo,
+                LOG: sLog
             };
 
             self.postMessage(oRES);
 
-            console.log(`다운로드 중: ${data.toString()}`);
+            console.log(sLog);
             
         });
 
         // 에러 메시지 출력
         ps.stderr.on("data", (data) => {
 
-            console.error(`다운로드 중 에러: ${data.toString()}`);            
+            let sLog = `Patch 업데이트 다운로드 중 에러: ${data.toString()}`;
+            
+            console.error(sLog);            
             console.trace();
 
             if (!ps.killed) {              
@@ -168,7 +181,7 @@ function _getSuppPackDataFromPowerShell(oPARAM) {
                 console.log("kill-1");
             }
 
-            return resolve({ SUBRC: 999, RTMSG: data.toString() });
+            return resolve({ SUBRC: 999, LOG: sLog });
 
         });
 
@@ -262,9 +275,8 @@ function _updateSuppPackFromCDN(oPARAM){
  */
 self.WS_PATCH_UPDATE = async function (oPARAM) {
 
-// --------------------------------------------
-// ☝️step1. asar 소스파일 압축해제 처리
-// --------------------------------------------
+    // 공통 응답 구조
+    var oRES = JSON.parse(JSON.stringify(TY_RES));
 
     // 리소스 경로
     let sResourcePath = oPARAM.RESOURCE_PATH;
@@ -278,53 +290,47 @@ self.WS_PATCH_UPDATE = async function (oPARAM) {
     // 기존 asar 파일 경로
     var LV_ASAR_PATH = PATH.join(sResourcePath, "app.asar");
 
-
-    var oRES = JSON.parse(JSON.stringify(TY_RES));
-
-    //압축 해제(소스 원복)
-    try {
-
-        await ASAR.extractAll(LV_ASAR_PATH, LV_APP_PATH);
-
-    } catch (err) {
+    // 기존 asar 파일이 있는지 체크
+    if(FS.existsSync(LV_ASAR_PATH) === false){
 
         oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
-        oRES.STCOD = `WS_PATCH_UPDATE-E001`; // asar 파일 압축 풀다가 오류 발생
-        oRES.MSGNR = "M22";
+        oRES.STCOD = `WS_PATCH_UPDATE-E001`; // app.asar 파일 없음!!
+        oRES.MSGNR = "M22";  // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
 
         self.postMessage(oRES);
 
         return;
     }
 
-    // 공통 응답 구조
-    var oRES = JSON.parse(JSON.stringify(TY_RES));
 
+// // --------------------------------------------
+// // 업데이트 방식에 따른 분기처리
+// // --------------------------------------------
 
-// --------------------------------------------
-// ☝️step3. 업데이트 방식에 따른 분기처리
-// --------------------------------------------
+//     let bIsCdn = oPARAM.ISCDN;
+//     if(bIsCdn === true){
 
-    let bIsCdn = oPARAM.ISCDN;
-    if(bIsCdn === true){
+//         // CDN 방식 업데이트
+//         _updateSuppPackFromCDN(oPARAM);
 
-        // CDN 방식 업데이트
-        _updateSuppPackFromCDN(oPARAM);
+//         return;
+//     }
 
-        return;
-    }
 
 
 // --------------------------------------------
-// ☝️step4. Patch 파일을 쉘로 다운 받는다.
+// ☝️step1. Patch 파일을 쉘로 다운 받는다.
 // --------------------------------------------
 
     let oShellResult = await _getSuppPackDataFromPowerShell(oPARAM);
     if(oShellResult.SUBRC !== 0){
 
         oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
-        oRES.STCOD = `WS_PATCH_UPDATE-SHELL-${oShellResult.SUBRC}`;
-        oRES.MSGNR = "M22";
+        oRES.STCOD = `WS_PATCH_UPDATE-E002-SUBRC:${oShellResult.SUBRC}`;
+        oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
+        oRES.PARAM = {
+            LOG: oShellResult?.LOG || "" // PowerShell 오류 로그
+        };
 
         self.postMessage(oRES);
 
@@ -336,6 +342,27 @@ self.WS_PATCH_UPDATE = async function (oPARAM) {
 
     self.postMessage(oRES);
 
+
+// --------------------------------------------
+// ☝️step2. asar 소스파일 압축해제 처리
+// --------------------------------------------
+try {
+
+    await ASAR.extractAll(LV_ASAR_PATH, LV_APP_PATH);
+
+} catch (err) {        
+
+    oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
+    oRES.STCOD = `WS_PATCH_UPDATE-E003`; // asar 파일 압축 풀다가 오류 발생
+    oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
+    oRES.PARAM = {
+        LOG: err && err?.toString() || "" // 오류 로그
+    };
+
+    self.postMessage(oRES);
+
+    return;
+}
 
 // --------------------------------------------
 // ☝️step5. 다운받은 app.zip 파일 압축 해제
@@ -350,8 +377,8 @@ self.WS_PATCH_UPDATE = async function (oPARAM) {
     if(oAppZipExtResult.RETCD === "E"){
 
         oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
-        oRES.STCOD = `WS_PATCH_UPDATE-E002`; // 다운받은 app.zip 파일 압축 풀다가 오류 발생
-        oRES.MSGNR = "M22";
+        oRES.STCOD = `WS_PATCH_UPDATE-E004`; // 다운받은 app.zip 파일 압축 풀다가 오류 발생
+        oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
 
         self.postMessage(oRES);
 
@@ -376,8 +403,8 @@ self.WS_PATCH_UPDATE = async function (oPARAM) {
         if(oNDZipExtResult.RETCD === "E"){
 
             oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
-            oRES.STCOD = `WS_PATCH_UPDATE-E003`; // 다운받은 node_modules.zip 파일 압축 풀다가 오류 발생
-            oRES.MSGNR = "M22";
+            oRES.STCOD = `WS_PATCH_UPDATE-E005`; // 다운받은 node_modules.zip 파일 압축 풀다가 오류 발생
+            oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
 
             self.postMessage(oRES);
 
@@ -398,8 +425,11 @@ self.WS_PATCH_UPDATE = async function (oPARAM) {
     } catch (err) {
 
         oRES.PRCCD = PRC.UPDATE_ERROR; // 오류
-        oRES.STCOD = `WS_PATCH_UPDATE-E004`; // app.asar 만들다가 오류
-        oRES.MSGNR = "M22";
+        oRES.STCOD = `WS_PATCH_UPDATE-E006`; // app.asar 만들다가 오류
+        oRES.MSGNR = "M22"; // 패치 업데이트 진행 과정에 문제가 발생하였습니다.
+        oRES.PARAM = {
+            LOG: err && err?.toString() || "" // PowerShell 오류 로그
+        };
         
         self.postMessage(oRES);
 

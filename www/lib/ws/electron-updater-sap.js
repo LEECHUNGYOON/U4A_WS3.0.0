@@ -154,8 +154,8 @@ function _getUpdateFileWorker(oPARAM) {
             console.trace();
             
 
-            // U4A Workspace 업데이트 파일을 다운받는 과정에 문제가 발생하였습니다.
-            // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
+            // [MSG - M002] U4A Workspace 업데이트 파일을 다운받는 과정에 문제가 발생하였습니다.
+            // [MSG - M003] 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
             let sErrMsg = GS_MSG.M002 + "\n\n";
                 sErrMsg += GS_MSG.M003;
 
@@ -171,10 +171,13 @@ function _getUpdateFileWorker(oPARAM) {
             
             case "download-progress-sap": //다운로드중 ..
 
-                var oPARAM = oIF_DATA.PARAM;
+                var _oPARAM = oIF_DATA.PARAM;
 
-                let sTotal = oPARAM.TOTAL;
-                let iCount = oPARAM.COUNT;
+                let sTotal = _oPARAM.TOTAL;
+                let iCount = _oPARAM.COUNT;
+                var sLog   = _oPARAM?.LOG || "";
+                
+                console.log(sLog);
 
                 //다운로드중 ..event 핸들러 call
                 __fireEvent(document, 'download-progress-sap', {
@@ -209,15 +212,22 @@ function _getUpdateFileWorker(oPARAM) {
                     
                 }                
 
+                // 로그 정보가 있을 경우에는 콘솔 오류에 로그 정보를 담는다
+                var sLog = "";
+                var _oPARAM = oIF_DATA?.PARAM || undefined;
+                if(_oPARAM?.LOG){
+                    sLog = _oPARAM.LOG;
+                }
+
                 // 콘솔용 오류 메시지
                 var aConsoleMsg = [             
                     `[PATH]: www/lib/ws/electron-updater-sap.js`,  
                     `=> _getUpdateFileWorker`,
                     `=> oWorker.onmessage`,
                     `=> update-error-sap`,
-                    `[WORKER-${oIF_DATA.STCOD}]`
+                    `[WORKER-${oIF_DATA.STCOD}]`,
+                    `[Log]: ${sLog}`
                 ];
-
                 console.error(aConsoleMsg.join("\r\n"), oIF_DATA);
                 console.trace();       
                 
@@ -374,6 +384,9 @@ exports.autoUpdaterSAP = {
         xhr.onreadystatechange = function (oEvent) {
             if (xhr.readyState == XMLHttpRequest.DONE) {
 
+                /*****************************************************************
+                 * 이전로직 ----------------Start
+                 *****************************************************************/
                 // try {
 
                 //     //정상적으로 파싱된다는건 서버측에서 처리 오류 메시지를 리턴받앗다는 의미임 !!
@@ -431,25 +444,135 @@ exports.autoUpdaterSAP = {
 
                 // }
 
+                /*****************************************************************
+                 * 이전로직 ---------------- End
+                 *****************************************************************/
 
-                /**
-                 * @description 
-                 * 신규 업데이트 버전에 따른 로직 변경
-                 *                  
-                 * @author soccerhs
-                 * @version 3.5.0-sp7
-                 * @date 2025-02-25                               
-                 */
 
+                /*****************************************************************
+                 * 📝 TO-BE ---------Start
+                 *****************************************************************/
+
+                // /**
+                //  * @description 
+                //  * 신규 업데이트 버전에 따른 로직 변경
+                //  *                  
+                //  * @author soccerhs
+                //  * @version 3.5.0-sp7
+                //  * @date 2025-02-25                               
+                //  */
+
+                // try {
+                   
+                //     var oWsVerInfo = JSON.parse(xhr.response);
+                //     var updVER = oWsVerInfo.VERSN;
+
+                //     var regex = /[^0-9]/g;
+                 
+                //     appVer = Number(__appVer.replace(regex, "")); //현재 app 버젼  oAPP.remote.app.getVersion()
+                //     updVER = Number(updVER.replace(regex, "")); //등록되있는 서버 업데이트 버젼  
+
+                //     if (appVer < updVER) {
+
+                //         //업데이트 가능 
+                //         __fireEvent(document, 'update-available-sap', {
+                //             message: "업데이트가능"
+                //         });
+
+                //         let oPARAM = {
+                //             WSVER_INFO : oWsVerInfo,         // 서버의 최신 WS 버전 정보
+                //             LOGIN_INFO : oServerInfo.LOGIN   // 현재 접속하려는 서버의 정보(SYSID, LOGIN 정보등)
+                //         };
+
+                //         // 업데이트 파일을 워커로 다운
+                //         _getUpdateFileWorker(oPARAM);
+
+                //     } else {
+
+                //         //최신버젼 
+                //         __fireEvent(document, 'update-not-available-sap', {
+                //             message: "최신버젼",
+                //             verInfo: {                                
+                //                 appVer: appVer,
+                //                 updVER : updVER
+                //             }
+                //         });
+
+                //     }
+
+                // } catch (error) {
+
+                //     console.error(error);
+                //     console.trace();
+
+                //     __fireEvent(document, 'update-error-sap', {
+                //         message: GS_MSG.M001 // 버전 정보 구하는 도중에 문제가 발생하였습니다
+                //     });
+
+                //     return;
+
+                // }
+
+                /*****************************************************************
+                 * TO-BE ---------End
+                 *****************************************************************/
+
+                // 1. 오류가 있는지 먼저 체크한다.
                 try {
                     
-                    var oWsVerInfo = JSON.parse(xhr.response);
-                    var updVER = oWsVerInfo.VERSN;
+                    //정상적으로 파싱된다는건 서버측에서 처리 오류 메시지를 리턴받앗다는 의미임 !!
+                    var oRES = JSON.parse(xhr.response);
+                    if(oRES.RETCD === "E"){
 
-                    var regex = /[^0-9]/g;
-                 
-                    appVer = Number(__appVer.replace(regex, "")); //현재 app 버젼  oAPP.remote.app.getVersion()
-                    updVER = Number(updVER.replace(regex, "")); //등록되있는 서버 업데이트 버젼  
+                        // 20240708 soccerhs: 오류 발생시 오류 메시지 데이터를 공통 구조로 매핑함
+                        __fireEvent(document, 'update-error-sap', {
+                            message: oRES.RTMSG
+                        });
+
+                        return;
+                    }
+
+                } catch (error) {
+                    
+                }
+
+
+                try {
+
+                    var oWsVerInfo = {};
+
+                    var appVer = "";
+
+                    var updVER = "";
+
+                    var regexVer = /[^0-9]/g;
+
+                    // 1. header (UPDT_FNAME) 부터 읽어서 이전 소스인지 아닌지 판단한다.
+                    let sUpdateFilename = xhr.getResponseHeader('UPDT_FNAME');
+                    if(sUpdateFilename){
+
+                        var YAML = REMOTE.require('yamljs');
+
+                        var nativeObject = YAML.parse(xhr.response);
+
+                        updVER = nativeObject.version; //등록되있는 서버 업데이트 버젼 
+                        
+                        appVer = Number(__appVer.replace(regexVer, "")); //현재 app 버젼  oAPP.remote.app.getVersion()
+                        updVER = Number(updVER.replace(regexVer, "")); //등록되있는 서버 업데이트 버젼  
+
+                        oWsVerInfo.VERSN = updVER;
+                        
+                    }
+                    else {
+
+                        oWsVerInfo = JSON.parse(xhr.response);
+
+                        updVER = oWsVerInfo.VERSN;
+                        
+                        appVer = Number(__appVer.replace(regexVer, "")); //현재 app 버젼  oAPP.remote.app.getVersion()
+                        updVER = Number(updVER.replace(regexVer, "")); //등록되있는 서버 업데이트 버젼
+
+                    }
 
                     if (appVer < updVER) {
 
@@ -479,8 +602,9 @@ exports.autoUpdaterSAP = {
 
                     }
 
-                } catch (error) {
 
+                } catch (error) {
+                        
                     console.error(error);
                     console.trace();
 
