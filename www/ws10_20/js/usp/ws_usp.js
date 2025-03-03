@@ -118,6 +118,94 @@
 
     }; // end of fnOnInitLayoutSettingsWs30
 
+    oAPP.fn.setCodeEditorZoomEvent = function(bIsEnable){
+
+        let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
+            oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
+
+        // 에디터가 둘중에 하나라도 없다면 빠져나감.
+        if (!oCodeEditor1 || !oCodeEditor2) {
+            return;
+        }
+
+        // Code Editor 인스턴스가 둘중에 하나라도 없다면 빠져나감.
+        // let oEditor1 = oCodeEditor1._oEditorDomRef,
+        //     oEditor2 = oCodeEditor2._oEditorDomRef;
+
+        // // if (!oEditor1 || !oEditor2) {
+        // //     return;
+        // // }
+
+        // let oEditorDom1 = oCodeEditor1.getDomRef();
+        // let oEditorDom2 = oCodeEditor2.getDomRef();
+
+        let oEditorDom1 = oCodeEditor1?._oEditorDomRef,
+            oEditorDom2 = oCodeEditor2?._oEditorDomRef;
+
+        // 에디터가 둘중에 하나라도 없다면 빠져나감.
+        if (!oEditorDom1 || !oEditorDom2) {
+            return;
+        }
+
+        // 에디터1에 휠 이벤트 function이 있을 경우 삭제하고 휠 이벤트도 삭제한다.
+        if(!!oCodeEditor1.data("zoomEvent")){
+            oEditorDom1.removeEventListener("wheel", oCodeEditor1.data("zoomEvent"));
+            oCodeEditor1.data("zoomEvent", null);
+        }
+
+        // 에디터2에 휠 이벤트 function이 있을 경우 삭제하고 휠 이벤트도 삭제한다.
+        if(!!oCodeEditor2.data("zoomEvent")){
+            oEditorDom2.removeEventListener("wheel", oCodeEditor2.data("zoomEvent"));
+            oCodeEditor2.data("zoomEvent", null);
+        }
+
+        // zoom 이벤트를 해제 할 경우에는 여기서 리턴한다.
+        if(bIsEnable === false){
+            return;
+        }
+
+        // zoom Event Callback
+        let _fnZoomEvent = function(oEvent){       
+
+            let that = this;
+
+            let oEditor = that?._oEditor || undefined;
+            if(!oEditor){
+                return;
+            }
+
+            if (oEvent.ctrlKey) {            
+                
+                oEvent.stopPropagation();
+
+                zconsole.log("_fnZoomEvent");                
+		
+                let iFontSize = parseInt(oEditor.getFontSize(), 10);
+                
+                iFontSize += oEvent.deltaY < 0 ? 1 : -1;
+                
+                iFontSize = Math.max(10, Math.min(40, iFontSize)); // 최소 10px, 최대 40px 제한
+                
+                oEditor.setFontSize(iFontSize + "px");
+
+                return;
+
+            }
+
+            oEditor.session.setScrollTop(oEditor.session.getScrollTop() + oEvent.deltaY);
+
+        }; // end of _fnZoomEvent
+
+        oCodeEditor1.data("zoomEvent", _fnZoomEvent.bind(oCodeEditor1));
+        oCodeEditor2.data("zoomEvent", _fnZoomEvent.bind(oCodeEditor2));
+
+        oEditorDom1.addEventListener("wheel", oCodeEditor1.data("zoomEvent"));
+        oEditorDom2.addEventListener("wheel", oCodeEditor2.data("zoomEvent"));
+
+    }; // end of oAPP.fn.setCodeEditorZoomEvent
+
+
+
     oAPP.fn.fnOnResizeWs30 = function () {
 
         zconsole.log("resize30!!!");
@@ -3203,6 +3291,9 @@
         // code editor KeyPress 이벤트 설정
         fnCodeEditorKeyPressEvent("");
 
+        // 에디터에 마우스 휠 이벤트를 해제한다. 
+        oAPP.fn.setCodeEditorZoomEvent(false); // #[ ws_usp.js ]
+
         var oAppInfo = fnGetAppInfo();
 
         // let SSID = parent.getSSID();
@@ -4349,10 +4440,12 @@
     /**************************************************************************
      * [WS30] 화면 처음 로딩 시, Usp Tree의 Root 정보를 구한다
      **************************************************************************/
-    function ev_getRootNodeRowsUpdated(oEvent) {
+    function ev_getRootNodeRowsUpdated(oEvent) {        
 
-        var oTable = oEvent.getSource(),
-            aRows = oTable.getRows(),
+        var oTable = oEvent.getSource();
+            oTable.detachRowsUpdated(ev_getRootNodeRowsUpdated);
+
+        var aRows = oTable.getRows(),
             oRow = aRows[0];
 
         // 바인딩 정보가 없으면 빠져나간다.
@@ -4369,9 +4462,7 @@
         }
 
         // Tree Table Row 데이터 구하기
-        fnUspTreeTableRowSelect(oRow);
-
-        oTable.detachRowsUpdated(ev_getRootNodeRowsUpdated);
+        fnUspTreeTableRowSelect(oRow);       
 
         oTable.focus();
 
