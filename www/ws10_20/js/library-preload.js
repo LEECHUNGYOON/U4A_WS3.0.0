@@ -255,11 +255,17 @@ let oAPP = (function (window) {
      ************************************************************************/
     oAPP.fnWindowOnInitLoad = function () {
 
-        // 초기 JS Load
-        oAPP.loadLibrary(oAPP.aPreloadScripts, 0);
+        sap.ui.getCore().attachInit(function(){        
 
-        // WS 시작
-        oAPP.main.fnWsStart();
+            zconsole.log("preload attachInit");
+
+            // 초기 JS Load
+            oAPP.loadLibrary(oAPP.aPreloadScripts, 0);
+
+            // WS 시작
+            oAPP.main.fnWsStart();
+
+        });
 
     }; // end of oAPP.fnWindowOnInitLoad
 

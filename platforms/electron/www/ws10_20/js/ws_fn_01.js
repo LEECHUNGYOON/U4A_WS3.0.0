@@ -2943,6 +2943,27 @@
 
         WEBFRAME.setZoomLevel(0);
 
+        zconsole.log("setBrowserZoomZero");
+
+        // 현재 페이지 별 동작 정의
+        let sCurrPage = parent.getCurrPage();
+        switch (sCurrPage) {
+
+            // USP 일 경우 에디터 영역의 폰트 크기를 기본값으로 지정한다.
+            case "WS30":
+
+                let oDefaultFontBtn = sap.ui.getCore().byId("editorDefaultFontBtn");
+                if(oDefaultFontBtn){
+                    oDefaultFontBtn.firePress();
+                }
+                
+                break;
+        
+            default:
+                break;
+        }
+
+
     }; // end of oAPP.fn.setBrowserZoomZero
 
     /************************************************************************

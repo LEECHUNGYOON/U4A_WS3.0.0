@@ -677,11 +677,11 @@
 
         // Application Copy Popup Open
         if (oAPP.fn.fnCreateWs30) {
-            oAPP.fn.fnCreateWs30();
+            oAPP.fn.fnCreateWs30(); // async
             return;
         }
 
-        oAPP.fn.fnCreateWs30();
+        oAPP.fn.fnCreateWs30(); // async
 
     }; // end of oAPP.fn.fnWs30Creator
 

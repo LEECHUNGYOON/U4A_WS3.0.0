@@ -1688,7 +1688,7 @@ let oAPP = (function () {
 
             //업데이트 확인
             autoUpdaterSAP.on('checking-for-update-sap', (e) => {
-                console.log(e.params.message);
+                console.log(e?.params?.message || "check version");
             });
 
             //업데이트 가능 
