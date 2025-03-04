@@ -751,22 +751,7 @@
 
         }  
 
-    }
-
-
-
-    function _attachFocusEvent(){
-
-        // window.addEventListener("click", function(){
-
-        //     oAPP.attr.beforeActiveElement = document.activeElement;
-
-        //     zconsole.log("click!!! yoon", document.activeElement);
-
-        // });
-
-    }
-    
+    }    
 
     /************************************************************************
      *--------------------------[ U4A WS Start ] ----------------------------
@@ -783,12 +768,6 @@
             // 20250207
             parent.oWS.utill.attr.oBusy = new BusyDialog();
 
-
-            // TEST ---- Start
-
-            _attachFocusEvent();
-
-            // TEST ---- End
 
             // parent.oWS.utill.attr.oBusy = new sap.m.BusyDialog();
             // parent.oWS.utill.attr.oBusy._oDialog.data("MUTATION_EXCEP", "X");

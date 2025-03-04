@@ -52,18 +52,6 @@
             return;
         }
 
-        // try {
-
-        //     // 파일 확장자 이미지 경로 구하기
-        //     await fnGetFileExtendImgList();    
-
-        // } catch (error) {
-            
-        // }
-        
-        // // USP 화면 렌더링
-        // fnOnInitRendering();
-
         // 파일 확장자 이미지 경로 구하기
         fnGetFileExtendImgList()
             .then(function () {
@@ -4476,8 +4464,6 @@
     function ev_getRootNodeRowsUpdated(oEvent) {        
 
         var oTable = oEvent.getSource();
-            oTable.detachRowsUpdated(ev_getRootNodeRowsUpdated);
-
         var aRows = oTable.getRows(),
             oRow = aRows[0];
 
@@ -4495,7 +4481,9 @@
         }
 
         // Tree Table Row 데이터 구하기
-        fnUspTreeTableRowSelect(oRow);       
+        fnUspTreeTableRowSelect(oRow);  
+        
+        oTable.detachRowsUpdated(ev_getRootNodeRowsUpdated);
 
         oTable.focus();
 
