@@ -702,8 +702,7 @@
             }
 
             // 에디터에 마우스 휠 이벤트를 적용하여 확대 에디터 영역에 확대 축소 기능을 추가한다.
-            oAPP.fn.setCodeEditorZoomEvent(true); // #[ ws_usp.js ]
-
+            // oAPP.fn.setCodeEditorZoomEvent(true); // #[ ws_usp.js ]
 
             // APP가 EDIT모드라면 Codeeditor에 키다운 이벤트를 실행한다.
             let oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");

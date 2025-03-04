@@ -193,6 +193,15 @@ let oAPP = parent.oAPP;
             FIND2RIGHT: oFind2Data.RIGHT,
             FIND3TABLE: oAPP.fn.fnGetFindData3(),
             FIND4TABLE: oAPP.fn.fnGetFindData4(),
+
+            // 각 메뉴별 서치필드 구조
+            // 구조이름은 메뉴 ID와 동일하게 할것!!
+            // 예) 메뉴 ID가 M999 일경우
+            //  => SHFLDS: { 
+            //       M999: { 
+            //          SHFLD1: ""
+            //       } 
+            //     }
             SHFLDS: {
                 M001: {
                     SHFLD1: "",
@@ -218,8 +227,9 @@ let oAPP = parent.oAPP;
 
         if (oCoreModel == null) {
 
-            sap.ui.getCore().setModel(oJsonModel);
             oJsonModel.setData(oData);
+
+            sap.ui.getCore().setModel(oJsonModel);           
 
             return;
 
@@ -227,7 +237,7 @@ let oAPP = parent.oAPP;
 
         oCoreModel.setData(oData);
 
-        oCoreModel.refresh(true);
+        oCoreModel.refresh();
 
     }; // end of oAPP.fn.fnInitModelBinding
 
@@ -504,13 +514,44 @@ let oAPP = parent.oAPP;
 
         let SEARCHFIELD1 = new sap.m.SearchField({
             width: "300px",
-            value: "{/SHFLDS/M001/SHFLD1}",
+            value: `{${C_MENU_BIND_PATH}/SHFLDS/M001/SHFLD1}`,
             change: function(oEvent){
 
                 oAPP.fn.fnFindPage1Filter(oEvent);
 
-            }
+            },
         });
+
+        // SEARCHFIELD1.bindProperty("value", {
+        //     parts: [
+        //         `${C_MENU_BIND_PATH}/SHFLDS/M001/SHFLD1`
+        //     ],
+        //     formatter: function(SHFLD1){
+                
+        //         console.log("bindProperty value", SHFLD1);
+
+        //         // this.fireChange({ value: SHFLD1 });
+
+        //         // this.setValue(SHFLD1);
+
+        //         return SHFLD1;
+
+        //     }
+        // });
+
+        // SEARCHFIELD1.bindProperty("value", `${C_MENU_BIND_PATH}/SHFLDS/M001/SHFLD1`, function(SHFLD1){
+          
+        //     console.log("bindProperty value", this.getValue());
+
+        //     this.setValue(this.getValue());
+
+        //     this.fireChange({ value: this.getValue() });
+
+        //     return this.getValue();
+
+        // });
+
+
         TOOLBAR1.addContent(SEARCHFIELD1);
 
         SEARCHFIELD1.data("table", TABLE1);
@@ -539,7 +580,9 @@ let oAPP = parent.oAPP;
             return;
         }                                                                 
 
-        let sValue = oEvent.getSource().getValue();
+        // let sValue = oEvent.getSource().getValue();
+
+        let sValue = oEvent.getParameter("value") || "";
 
         //검색조건 값이 입력안된 경우 필터 해제 처리.
         if(sValue === ""){
@@ -753,6 +796,7 @@ let oAPP = parent.oAPP;
 
         let SEARCHFIELD1 = new sap.m.SearchField({
             width: "300px",
+            value: `{${C_MENU_BIND_PATH}/SHFLDS/M002/SHFLD1}`,
             change: function(oEvent){
 
                 oAPP.fn.fnFindPage2_LeftPageFilter(oEvent);
@@ -922,7 +966,8 @@ let oAPP = parent.oAPP;
         TOOLBAR1.addContent(new sap.m.ToolbarSpacer());
 
         let SEARCHFIELD1 = new sap.m.SearchField({
-            width: "300px",                    
+            width: "300px",
+            value: `{${C_MENU_BIND_PATH}/SHFLDS/M002/SHFLD2}`,
             change: function(oEvent){
 
                 oAPP.fn.fnFindPage2_RightPageFilter(oEvent);
@@ -1056,7 +1101,8 @@ let oAPP = parent.oAPP;
         TABLE1.setHeaderToolbar(TOOLBAR1);       
 
         let SEARCHFIELD1 = new sap.m.SearchField({
-            width: "300px",                    
+            width: "300px",     
+            value: `{${C_MENU_BIND_PATH}/SHFLDS/M003/SHFLD1}`,               
             change: function(oEvent){
 
                 oAPP.fn.fnFindPage3Filter(oEvent);
@@ -1201,7 +1247,8 @@ let oAPP = parent.oAPP;
         TABLE1.setHeaderToolbar(TOOLBAR1);       
 
         let SEARCHFIELD1 = new sap.m.SearchField({
-            width: "300px",                    
+            width: "300px", 
+            value: `{${C_MENU_BIND_PATH}/SHFLDS/M004/SHFLD1}`,                   
             change: function(oEvent){
 
                 oAPP.fn.fnFindPage4Filter(oEvent);
@@ -1446,17 +1493,35 @@ let oAPP = parent.oAPP;
         oAPP.attr.aServEvtData      = oInfo.aServEvtData;
         oAPP.attr.aT_0022           = oInfo.aT_0022;
 
-
-
         let oModel = sap.ui.getCore().getModel();
-        
-        let sCurrSelectKey = oModel.getProperty("/FIND/SELKEY");
 
+        // 현재 선택된 메뉴
+        let sCurrSelectKey = oModel.getProperty(`${C_MENU_BIND_PATH}/SELKEY`);
+
+        // 서치필드 관련 모델 데이터
+        let oShfModelData = oModel.getProperty(`${C_MENU_BIND_PATH}/SHFLDS`);
+
+        // 모델 초기화
         oAPP.fn.fnInitModelBinding();
 
-        oModel.setProperty("/FIND/SELKEY", sCurrSelectKey);
+        // 초기화 하기전에 이전에 서치필드에 입력한 값을 저장했다가,
+        // 모델 초기화 한 이후에 현재 메뉴에 해당하는 서치필드만 지우고 나머지는 지우지 않는 목적으로 설계됨.
+        for(var i in oShfModelData){
 
-        // sap.ui.getCore().getModel().refresh();
+            // 모델 정보 중, 현재 선택된 메뉴에 해당하는 서치필드 모델은 스킵
+            if(i === sCurrSelectKey){
+                continue;
+            }
+
+            // // 모델 정보 중, 현재 선택되지 않은 모델은 다시 이전 입력값으로 데이터 설정
+            // oModel.setProperty(`${C_MENU_BIND_PATH}/SHFLDS/${i}`, oShfModelData[i]);
+
+        }
+
+        // 마지막 선택된 메뉴로 설정
+        oModel.setProperty(`${C_MENU_BIND_PATH}/SELKEY`, sCurrSelectKey);
+
+        sap.ui.getCore().getModel().refresh(true);
 
     }; // end of oAPP.fn.fnIpcRendererFind_data_refresh_callback
 
@@ -1536,13 +1601,7 @@ let oAPP = parent.oAPP;
             return;
         }
 
-        // debugger;
-
         oEvent.getSource().setSelectedKey(sItemKey);
-
-        // oSelectedItem.getSource().setSelectedKey(sItemKey);
-
-        // oSelectedItem.getModel().setProperty("/FIND/SELKEY", sItemKey);
 
         oNavCon.to(`${sItemKey}--page`);
 

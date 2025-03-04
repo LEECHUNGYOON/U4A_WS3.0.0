@@ -978,19 +978,25 @@ let oAPP = (function () {
         oLoginData.IDSUGG = aIDSugg;
 
         let oJsonModel = new sap.ui.model.json.JSONModel();
-        oJsonModel.setData({
+        let oData = {
             LOGIN: oLoginData,
             BUSYPOPINIT: oBusyPopInit,
             BUSYPOP: oBusyPopData
-        });
+        };       
 
         let oCoreModel = sap.ui.getCore().getModel();
         if (oCoreModel == null) {
+            
+            oJsonModel.setData(oData);
+
             sap.ui.getCore().setModel(oJsonModel);
+
             return;
         }
 
-        oCoreModel.setModel(oJsonModel);
+        oCoreModel.setData(oData);
+
+        oCoreModel.refresh();
 
     }; // end of oAPP.fn.fnOnInitModelBinding
 

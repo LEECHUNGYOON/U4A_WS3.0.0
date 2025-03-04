@@ -31,7 +31,7 @@
         gThemeColors,               // UI5의 테마별 색상 코드 정보
         gfSelectRowUpdate,          // Ui Table RowUpdated Global function
 
-        gEditorFontSize = 20;       // 에디터의 기본 폰트 사이즈
+        gEditorFontSize = 20;       // 에디터의 기본 폰트 사이즈           
 
     /**
      * Bind root paths
@@ -41,7 +41,7 @@
     /************************************************************************
      * [WS30] 30번 페이지 생성
      ************************************************************************/
-    oAPP.fn.fnCreateWs30 = async () => {
+    oAPP.fn.fnCreateWs30 = () => {
 
         // 현재 테마의 색상 정보 구하기
         gThemeColors = sap.ui.core.theming.Parameters.get();
@@ -52,32 +52,32 @@
             return;
         }
 
-        try {
+        // try {
 
-            // 파일 확장자 이미지 경로 구하기
-            await fnGetFileExtendImgList();    
+        //     // 파일 확장자 이미지 경로 구하기
+        //     await fnGetFileExtendImgList();    
 
-        } catch (error) {
+        // } catch (error) {
             
-        }
+        // }
         
-        // USP 화면 렌더링
-        fnOnInitRendering();
+        // // USP 화면 렌더링
+        // fnOnInitRendering();
 
-        // // 파일 확장자 이미지 경로 구하기
-        // fnGetFileExtendImgList()
-        //     .then(function () {
+        // 파일 확장자 이미지 경로 구하기
+        fnGetFileExtendImgList()
+            .then(function () {
 
-        //         // 없으면 렌더링부터..
-        //         fnOnInitRendering();
+                // 없으면 렌더링부터..
+                fnOnInitRendering();
 
-        //     })
-        //     .catch(function () {
+            })
+            .catch(function () {
 
-        //         // 없으면 렌더링부터..
-        //         fnOnInitRendering();
+                // 없으면 렌더링부터..
+                fnOnInitRendering();
 
-        //     });
+            });
 
     }; // end of oAPP.fn.fnCreateWs30
 
@@ -1680,61 +1680,6 @@
 
             }
         });
-
-        // let oHeaderToolbar = new sap.m.Bar({
-
-        //     contentLeft: [
-        //         new sap.m.Title({
-        //             text: "{/WS30/USPDATA/OBDEC}"
-        //         })
-        //     ],
-
-        //     contentRight: [
-
-        //         new sap.m.Button({
-        //             icon: "sap-icon://rotate",
-        //             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C22"), // Split Orientation Change
-        //             tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C22"), // Split Orientation Change
-        //             press: ev_codeeditorSplitOrientationChange
-        //         }).bindProperty("enabled", {
-        //             parts: [
-        //                 "/WS30/USPDATA/ISFLD",
-        //             ],
-        //             formatter: (ISFLD) => {
-
-        //                 if (ISFLD == "X") {
-        //                     return false;
-        //                 }
-
-        //                 return true;
-
-        //             }
-        //         }),
-
-        //         new sap.m.Button({
-        //             icon: "sap-icon://full-screen",
-        //             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C23"), // Full Screen                    
-        //             tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D23") + " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C79"), // Editor Full Screen Mode
-        //             press: ev_codeeditorFullscreen
-        //         }),
-
-        //         // new sap.m.Button({
-        //         //     icon: "sap-icon://syntax",
-        //         //     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C24"), // Pattern
-        //         //     tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D46"), // Source Pattern
-        //         //     press: ev_codeeditorPattern
-        //         // }).bindProperty("enabled", lfCodeeditorBindProperty()),
-
-        //         new sap.m.Button("ws30_codeeditor_prettyBtn", {
-        //             icon: "sap-icon://indent",
-        //             text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25"), // Pretty Print
-        //             tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25") + "(Shift + F1)", // Pretty Print                    
-        //             press: ev_codeeditorPrettyPrint,
-        //         }).bindProperty("enabled", lfCodeeditorBindProperty())
-        //     ]
-
-        // });
-
 
         let oHeaderToolbar = new sap.m.OverflowToolbar();
         
@@ -6033,15 +5978,22 @@
 
         }
 
+        // busy 끄고 Lock 풀기
+        oAPP.common.fnSetBusyLock("");
+
         // 마지막 포커스 위치가 있다면 해당 에디터에 포커스를 준다!!
         if (oAPP.attr.beforeActiveElement) {
 
-            oAPP.fn.fnLastActivateElementFocus(); // #[ws_usp_01.js]
+            setTimeout(function(){
+
+                oAPP.attr.beforeActiveElement.focus();
+
+            }, 0);
+            
+
+            // oAPP.fn.fnLastActivateElementFocus(); // #[ws_usp_01.js]
 
         }
-
-        // busy 끄고 Lock 풀기
-        oAPP.common.fnSetBusyLock("");
 
     } // end of _fnSaveCallback
 
