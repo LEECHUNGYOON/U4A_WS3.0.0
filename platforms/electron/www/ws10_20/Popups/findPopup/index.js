@@ -429,6 +429,7 @@ let oAPP = parent.oAPP;
             growingScrollToLoad: true,
             growingThreshold: 50,
             sticky: [
+                EnumSticky.HeaderToolbar,
                 EnumSticky.ColumnHeaders
             ],
 
@@ -512,7 +513,7 @@ let oAPP = parent.oAPP;
         let TOOLBAR1 = new sap.m.Toolbar();        
         TABLE1.setHeaderToolbar(TOOLBAR1);       
 
-        let SEARCHFIELD1 = new sap.m.SearchField({
+        let SEARCHFIELD1 = new sap.m.SearchField(`${C_FIND_MENU1_ID}--SHFLD1`, {
             width: "300px",
             value: `{${C_MENU_BIND_PATH}/SHFLDS/M001/SHFLD1}`,
             change: function(oEvent){
@@ -521,36 +522,6 @@ let oAPP = parent.oAPP;
 
             },
         });
-
-        // SEARCHFIELD1.bindProperty("value", {
-        //     parts: [
-        //         `${C_MENU_BIND_PATH}/SHFLDS/M001/SHFLD1`
-        //     ],
-        //     formatter: function(SHFLD1){
-                
-        //         console.log("bindProperty value", SHFLD1);
-
-        //         // this.fireChange({ value: SHFLD1 });
-
-        //         // this.setValue(SHFLD1);
-
-        //         return SHFLD1;
-
-        //     }
-        // });
-
-        // SEARCHFIELD1.bindProperty("value", `${C_MENU_BIND_PATH}/SHFLDS/M001/SHFLD1`, function(SHFLD1){
-          
-        //     console.log("bindProperty value", this.getValue());
-
-        //     this.setValue(this.getValue());
-
-        //     this.fireChange({ value: this.getValue() });
-
-        //     return this.getValue();
-
-        // });
-
 
         TOOLBAR1.addContent(SEARCHFIELD1);
 
@@ -672,8 +643,8 @@ let oAPP = parent.oAPP;
             growingScrollToLoad: true,
             growingThreshold: 50,
             sticky: [
-                EnumSticky.ColumnHeaders,
-                // EnumSticky.HeaderToolbar
+                EnumSticky.HeaderToolbar,
+                EnumSticky.ColumnHeaders
             ],
 
             // Aggregations
@@ -794,7 +765,7 @@ let oAPP = parent.oAPP;
 
         oHeaderToolbar.addContent(new sap.m.ToolbarSpacer());
 
-        let SEARCHFIELD1 = new sap.m.SearchField({
+        let SEARCHFIELD1 = new sap.m.SearchField(`${C_FIND_MENU2_ID}--SHFLD1`, {
             width: "300px",
             value: `{${C_MENU_BIND_PATH}/SHFLDS/M002/SHFLD1}`,
             change: function(oEvent){
@@ -872,6 +843,7 @@ let oAPP = parent.oAPP;
             growingScrollToLoad: true,
             growingThreshold: 50,
             sticky: [
+                EnumSticky.HeaderToolbar,
                 EnumSticky.ColumnHeaders
             ],
 
@@ -965,7 +937,7 @@ let oAPP = parent.oAPP;
 
         TOOLBAR1.addContent(new sap.m.ToolbarSpacer());
 
-        let SEARCHFIELD1 = new sap.m.SearchField({
+        let SEARCHFIELD1 = new sap.m.SearchField(`${C_FIND_MENU2_ID}--SHFLD2`,{
             width: "300px",
             value: `{${C_MENU_BIND_PATH}/SHFLDS/M002/SHFLD2}`,
             change: function(oEvent){
@@ -1047,6 +1019,7 @@ let oAPP = parent.oAPP;
             growingScrollToLoad: true,
             growingThreshold: 50,
             sticky: [
+                EnumSticky.HeaderToolbar,
                 EnumSticky.ColumnHeaders
             ],
 
@@ -1100,7 +1073,7 @@ let oAPP = parent.oAPP;
         let TOOLBAR1 = new sap.m.Toolbar();        
         TABLE1.setHeaderToolbar(TOOLBAR1);       
 
-        let SEARCHFIELD1 = new sap.m.SearchField({
+        let SEARCHFIELD1 = new sap.m.SearchField(`${C_FIND_MENU3_ID}--SHFLD1`,{
             width: "300px",     
             value: `{${C_MENU_BIND_PATH}/SHFLDS/M003/SHFLD1}`,               
             change: function(oEvent){
@@ -1182,6 +1155,7 @@ let oAPP = parent.oAPP;
             growingScrollToLoad: true,
             growingThreshold: 50,
             sticky: [
+                EnumSticky.HeaderToolbar,
                 EnumSticky.ColumnHeaders
             ],
 
@@ -1246,7 +1220,7 @@ let oAPP = parent.oAPP;
         let TOOLBAR1 = new sap.m.Toolbar();        
         TABLE1.setHeaderToolbar(TOOLBAR1);       
 
-        let SEARCHFIELD1 = new sap.m.SearchField({
+        let SEARCHFIELD1 = new sap.m.SearchField(`${C_FIND_MENU4_ID}--SHFLD1`,{
             width: "300px", 
             value: `{${C_MENU_BIND_PATH}/SHFLDS/M004/SHFLD1}`,                   
             change: function(oEvent){
@@ -1513,15 +1487,34 @@ let oAPP = parent.oAPP;
                 continue;
             }
 
-            // // 모델 정보 중, 현재 선택되지 않은 모델은 다시 이전 입력값으로 데이터 설정
-            // oModel.setProperty(`${C_MENU_BIND_PATH}/SHFLDS/${i}`, oShfModelData[i]);
+            // 모델 정보 중, 현재 선택되지 않은 모델은 다시 이전 입력값으로 데이터 설정
+            oModel.setProperty(`${C_MENU_BIND_PATH}/SHFLDS/${i}`, oShfModelData[i]);
 
         }
 
         // 마지막 선택된 메뉴로 설정
         oModel.setProperty(`${C_MENU_BIND_PATH}/SELKEY`, sCurrSelectKey);
 
-        sap.ui.getCore().getModel().refresh(true);
+        var oSHFLDModelData = oModel.getProperty(`${C_MENU_BIND_PATH}/SHFLDS/${sCurrSelectKey}`);
+        if(!oSHFLDModelData){
+            return;
+        }
+
+        for(var i in oSHFLDModelData){
+
+            let sId = `${sCurrSelectKey}--${i}`;
+            var oSrchField = sap.ui.getCore().byId(sId);
+            if(!oSrchField){
+                continue;
+            }
+
+            oSrchField.fireChange();
+
+        }
+
+        
+
+        // sap.ui.getCore().getModel().refresh(true);
 
     }; // end of oAPP.fn.fnIpcRendererFind_data_refresh_callback
 

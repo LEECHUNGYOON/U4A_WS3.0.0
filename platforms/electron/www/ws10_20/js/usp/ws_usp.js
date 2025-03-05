@@ -4483,6 +4483,7 @@
         // Tree Table Row 데이터 구하기
         fnUspTreeTableRowSelect(oRow);  
         
+        // 반드시 여기에 위치해야함!! 위치 변경 금지
         oTable.detachRowsUpdated(ev_getRootNodeRowsUpdated);
 
         oTable.focus();
