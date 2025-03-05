@@ -8,13 +8,12 @@ const LANGU = USERINFO.LANGU;
 // 메시지 정보
 var GS_MSG = {};
 
+
+// [MSG]
 // GS_MSG.M001 = WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "296"); // U4A Workspace 버전 정보를 조회 하는 도중에 문제가 발생하였습니다.
 GS_MSG.M001 = "Settings";
 GS_MSG.M002 = "Editor Comment Color";
 GS_MSG.M003 = "Editor Theme";
-
-
-
 
 
 // 공통 메뉴 구조

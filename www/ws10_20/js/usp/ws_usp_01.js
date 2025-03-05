@@ -318,14 +318,14 @@
             return;
         }
 
-        // USP Folder 생성 팝업
+        // USP Tree의 Node 이동 팝업
         var oDialog = new sap.m.Dialog("ws30_movePosPopup", {
 
             // properties
             draggable: true,
             resizable: true,
             icon: "sap-icon://outdent",
-            title: "Move Position",
+            title: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A57"), // Move Position
             // contentWidth: "500px",
 
             // aggregations
@@ -683,22 +683,15 @@
 
             // USP Context Menu 관련 모듈 경로
             let sCtxMenuModuleRootPath = PATH.join(sUspRootPath, "contextMenu", "MENU_MODULES", sCKEY, "index.js");
-          
-            // 전달할 파라미터 구조
-            let oPARAM = {
-                BIND_CTX: oCtx,     // 바인딩 컨텍스트                
-            };
-
-            debugger;
-
-            // parent.require(sCtxMenuModuleRootPath)(sap, oPARAM);
-            // parent.require(sCtxMenuModuleRootPath).call(globalThis, oPARAM);
-
+     
             var oModules = await import(sCtxMenuModuleRootPath);
 
-                oModules.exports(oBindData);
+            // 모듈에 전달할 파라미터 정보
+            let oPARAM = {
+                oBindData: oBindData
+            };
 
-            debugger;
+            oModules.exports(oPARAM);
             
         } catch (error) {            
 

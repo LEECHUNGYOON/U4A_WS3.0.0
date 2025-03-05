@@ -28,47 +28,104 @@
 const SERVER_INFO = parent.getServerInfo();
 const SYSID = SERVER_INFO.SYSID;
 
+// 주석 기본 색상
+const DEFAULT_COMMENT_COLOR = "#8E908C";
 
-export function exports(oBindData){
-
-    debugger;
-    
+export function exports(oPARAM){
 
     let sP13nRootPath = parent.getPath("P13N_ROOT");
     let sUspSettingJsonPath = parent.PATH.join(sP13nRootPath, "usp", "settings.json");    
 
-    let sUspSettings = parent.FS.readFileSync(sUspSettingJsonPath);
+    let sUspSettings = parent.FS.readFileSync(sUspSettingJsonPath, "utf-8");
 
     try {
 
         var oUspSettingsInfo = JSON.parse(sUspSettings);
         
     } catch (error) {
-        
         oUspSettingsInfo = {};
-
     }
 
+    if(typeof oUspSettingsInfo !== "object"){
+        oUspSettingsInfo = {};
+    }
+
+    // SYSID 별 옵션 데이터 구조 생성
     if(!oUspSettingsInfo[SYSID]){
         oUspSettingsInfo[SYSID] = {};
+    }    
+
+    // 주석 기본색상 설정
+    if(!oUspSettingsInfo[SYSID]?.comment_color){
+        oUspSettingsInfo[SYSID].comment_color = DEFAULT_COMMENT_COLOR;
     }
 
-    
+    // 주석 색상
+    let sCommentColor = oUspSettingsInfo[SYSID].comment_color;
+
+    debugger;
+
+ 
+    let oDialog = new sap.m.Dialog({
+
+        // properties
+        draggable: true,
+        resizable: true,
+
+        // aggregations
+        buttons: [
+            new sap.m.Button({
+                type: sap.m.ButtonType.Emphasized,
+                icon: "sap-icon://accept",
+                press: function(oEvent){
 
 
 
+                }
+            }),
 
+            new sap.m.Button({
+                type: sap.m.ButtonType.Reject,
+                icon: "sap-icon://decline",
+                press: function(oEvent){
+        
+        
+                }
+            })
+        ],
 
-//     // 색상 변경 팔레트 팝업부터 띄운다.
+        // aggregations
+        customHeader: new sap.m.Toolbar({
+            content: [
 
-//         // 팝업 afterOpen에서..
-//             // 기 저장된 주석 색상 메뉴를 구한다.
-//                 // 있으면 기본값으로 해당 색상을 표시해준다.
+                new sap.ui.core.Icon({
+                    src: "sap-icon://write-new"
+                }),
 
-//                 // 없다면 기본값 회색으로 표시한다.
+                new sap.m.Title({
+                    text: ""
+                }).addStyleClass("sapUiTinyMarginBegin"),
 
+                new sap.m.ToolbarSpacer(),
 
-//     // 저장 눌렀을 경우
+                new sap.m.Button({
+                    type: sap.m.ButtonType.Reject,
+                    icon: "sap-icon://decline",
+                    press: function(oEvent){
+            
+            
+                    }
+                })
+
+            ]
+
+        }),        
+
+    });
+
+    let COLPAL1 = new sap.m.ColorPalette();
+
+    oDialog.addContent(COLPAL1);
 
 
 }
