@@ -1034,12 +1034,12 @@
                     e.stopImmediatePropagation();
    
                     var oActivateBtn = sap.ui.getCore().byId("activateBtn");
-
                     if (!oActivateBtn || !oActivateBtn.getEnabled() || !oActivateBtn.getVisible()) {
                         return;
                     }
 
                     if (sap.ui.getCore().isLocked()) {
+                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                         return;
                     }
 
@@ -1050,6 +1050,13 @@
                     if (result == "X") {
                         return;
                     }
+
+                    // Active 버튼 누르기 전 커서의 위치를 저장한다.
+                    if (oAPP.attr.beforeActiveElement) {
+                        delete oAPP.attr.beforeActiveElement;
+                    }
+
+                    oAPP.attr.beforeActiveElement = document.activeElement;
 
                     // 커서 포커스 날리기
                     if (document.activeElement && document.activeElement.blur) {
@@ -1123,11 +1130,17 @@
                         return;
                     }
 
+                    // Active 버튼 누르기 전 커서의 위치를 저장한다.
+                    if (oAPP.attr.beforeActiveElement) {
+                        delete oAPP.attr.beforeActiveElement;
+                    }
+
+                    oAPP.attr.beforeActiveElement = document.activeElement;
+
                     // 커서 포커스 날리기
                     if (document.activeElement && document.activeElement.blur) {
                         document.activeElement.blur();
                     }
-
 
                     oSaveBtn.focus();
 
@@ -1689,13 +1702,6 @@
                         return;
                     }
 
-                    // Active 버튼 누르기 전 커서의 위치를 저장한다.
-                    if (oAPP.attr.beforeActiveElement) {
-                        delete oAPP.attr.beforeActiveElement;
-                    }
-
-                    oAPP.attr.beforeActiveElement = document.activeElement;                    
-
                     if (sap.ui.getCore().isLocked()) {
                         zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
                         return;
@@ -1707,7 +1713,14 @@
                     // X 이면 실행 불가
                     if (result == "X") {
                         return;
-                    }                    
+                    }
+                    
+                    // Active 버튼 누르기 전 커서의 위치를 저장한다.
+                    if (oAPP.attr.beforeActiveElement) {
+                        delete oAPP.attr.beforeActiveElement;
+                    }
+
+                    oAPP.attr.beforeActiveElement = document.activeElement;
 
                     // 커서 포커스 날리기
                     if (document.activeElement && document.activeElement.blur) {
@@ -1725,6 +1738,7 @@
                             if(parent.getBusy() === "X"){ return; } 
     
                             clearInterval(_ointer);
+
                             resolve();
                           
                         }, 0);
@@ -1738,13 +1752,6 @@
                 DESC: oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A64"), // Save
                 CODE: `new sap.m.Button({icon: "sap-icon://save"})`,
                 fn: async (e) => {
-
-                    // // Active 버튼 누르기 전 커서의 위치를 저장한다.
-                    // if (oAPP.attr.beforeActiveElement) {
-                    //     delete oAPP.attr.beforeActiveElement;
-                    // }
-
-                    // oAPP.attr.beforeActiveElement = document.activeElement;
 
                     e.stopImmediatePropagation();
 
@@ -1765,6 +1772,13 @@
                     if (result == "X") {
                         return;
                     }                   
+
+                    // Active 버튼 누르기 전 커서의 위치를 저장한다.
+                    if (oAPP.attr.beforeActiveElement) {
+                        delete oAPP.attr.beforeActiveElement;
+                    }
+
+                    oAPP.attr.beforeActiveElement = document.activeElement;
 
                     // 커서 포커스 날리기
                     if (document.activeElement && document.activeElement.blur) {
@@ -1815,6 +1829,13 @@
                     if (result == "X") {
                         return;
                     }
+
+                    // Active 버튼 누르기 전 커서의 위치를 저장한다.
+                    if (oAPP.attr.beforeActiveElement) {
+                        delete oAPP.attr.beforeActiveElement;
+                    }
+
+                    oAPP.attr.beforeActiveElement = document.activeElement;
 
                     var oBtn = sap.ui.getCore().byId("ws30_codeeditor_prettyBtn");
                     if (!oBtn || !oBtn.getEnabled() || !oBtn.getVisible()) {

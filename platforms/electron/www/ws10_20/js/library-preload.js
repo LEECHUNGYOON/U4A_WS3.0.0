@@ -257,8 +257,6 @@ let oAPP = (function (window) {
 
         sap.ui.getCore().attachInit(function(){        
 
-            zconsole.log("preload attachInit");
-
             // 초기 JS Load
             oAPP.loadLibrary(oAPP.aPreloadScripts, 0);
 

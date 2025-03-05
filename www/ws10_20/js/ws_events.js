@@ -1489,6 +1489,17 @@
             // 자식 윈도우 활성화
             oAPP.fn.fnChildWindowShow(true);
 
+            // 마지막 포커스 위치가 있다면 해당 에디터에 포커스를 준다!!
+            if (oAPP.attr.beforeActiveElement) {
+
+                setTimeout(function(){
+
+                    oAPP.attr.beforeActiveElement.focus();
+
+                }, 0);            
+
+            }
+
         });
 
     }; // end of oAPP.events.ev_pressActivateBtn   
@@ -1631,8 +1642,6 @@
             oAppInfo = jQuery.extend(true, {}, parent.getAppInfo());
 
             APPCOMMON.fnSetModelProperty("/WS20/APP", oAppInfo);
-
-
             
             //undo, redo 이력 초기화.
             parent.require(oAPP.oDesign.pathInfo.undoRedo).clearHistory();
@@ -1642,13 +1651,22 @@
 
             oAPP.attr.oModel.refresh();
 
-
-
             // busy 끄고 Lock 풀기
             oAPP.common.fnSetBusyLock("");
 
             // 자식 윈도우 활성화
             oAPP.fn.fnChildWindowShow(true);            
+
+            // 마지막 포커스 위치가 있다면 해당 에디터에 포커스를 준다!!
+            if (oAPP.attr.beforeActiveElement) {
+
+                setTimeout(function(){
+
+                    oAPP.attr.beforeActiveElement.focus();
+
+                }, 0);            
+
+            }
 
         } // end of lf_getAppInfo      
 

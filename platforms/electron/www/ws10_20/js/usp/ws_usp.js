@@ -5977,10 +5977,7 @@
 
                 oAPP.attr.beforeActiveElement.focus();
 
-            }, 0);
-            
-
-            // oAPP.fn.fnLastActivateElementFocus(); // #[ws_usp_01.js]
+            }, 0);            
 
         }
 
