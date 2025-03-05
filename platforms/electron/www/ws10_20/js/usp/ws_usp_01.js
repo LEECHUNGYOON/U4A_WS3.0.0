@@ -519,11 +519,26 @@
             // 기본 패턴과 커스텀 패턴을 합친다.
             aPatternMerge = aPatternJson.concat(aCustmPatternJson);
 
-            APPCOMMON.fnSetModelProperty("/PATTN", aPatternMerge);
+            // 우클릭 메뉴에 추가할 메뉴를 세팅한다.
+            let aCtxMenu = _additionalUspCtxMenu();
+
+            // 패턴 메뉴가 없을 경우에는 해당 변수를 Array로 만든다.
+            if(Array.isArray(aPatternMerge) === false){
+                aPatternMerge = [];
+            }
+
+            // 추가할 컨텍스트 메뉴가 있다면 기존 메뉴정보와 합친다.
+            if(Array.isArray(aCtxMenu) === true){
+                aPatternMerge = aPatternMerge.concat(aCtxMenu);
+            }            
+
+            // APPCOMMON.fnSetModelProperty("/PATTN", aPatternMerge);
+            APPCOMMON.fnSetModelProperty("/WS30/USP_EDITOR_CTX_MENU", aPatternMerge);
 
             let oModel = sap.ui.getCore().getModel();
 
-            parent.WSUTIL.parseArrayToTree(oModel, "PATTN", "CKEY", "PKEY", "PATTN");
+            parent.WSUTIL.parseArrayToTree(oModel, "WS30.USP_EDITOR_CTX_MENU", "CKEY", "PKEY", "USP_EDITOR_CTX_MENU");
+            // parent.WSUTIL.parseArrayToTree(oModel, "PATTN", "CKEY", "PKEY", "PATTN");
 
             oModel.refresh();
 
@@ -548,58 +563,67 @@
 
         let sMenuId = "uspCDECtxMenu";
 
+        let aPatterns = APPCOMMON.fnGetModelProperty("/WS30/USP_EDITOR_CTX_MENU"),
+            oUspAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+            
         var oCtxMenu = sap.ui.getCore().byId(sMenuId);
         if (oCtxMenu) {
 
-            let aPatterns = APPCOMMON.fnGetModelProperty("/PATTN"),
-                oUspAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
-                oCtxMenuModel = oCtxMenu.getModel();
+            let oCtxMenuModel = oCtxMenu.getModel();
 
-            oCtxMenuModel.setProperty("/APPINFO", oUspAppInfo);
-            oCtxMenuModel.setProperty("/PATTN", aPatterns);
+            oCtxMenuModel.setProperty("/", {
+                USP_EDITOR_CTX_MENU: aPatterns,
+                APPINFO: oUspAppInfo
+            });
+
             oCtxMenu.openAsContextMenu(oEvent, oCodeEditor);
+
             return;
         }
 
         var oCtxMenu = new sap.m.Menu(sMenuId, {
             itemSelected: (oEvent) => { // USP Pattern Contextmenu Event
-                oAPP.fn.fnUspPatternContextMenuClick(oEvent);
-
+                oAPP.fn.fnUspPatternContextMenuClick(oEvent); // #[ws_usp_01.js]
             },
             items: {
-                path: "/PATTN",
+                path: "/USP_EDITOR_CTX_MENU",
                 template: new sap.m.MenuItem({
                     key: "{CKEY}",
                     text: "{DESC}",
                     startsSection: "{ISSTART}",
                     icon: "{ICON}",
+                    enabled: "{ENABLED}",
                     // tooltip: "{DATA}",
                     items: {
-                        path: "PATTN",
+                        // path: "PATTN",
+                        path: "USP_EDITOR_CTX_MENU",
                         templateShareable: true,
                         template: new sap.m.MenuItem({
                             key: "{CKEY}",
                             text: "{DESC}",
                             startsSection: "{ISSTART}",
                             icon: "{ICON}",
+                            enabled: "{ENABLED}",
                             // tooltip: "{DATA}",
                             items: {
-                                path: "PATTN",
+                                path: "USP_EDITOR_CTX_MENU",
                                 templateShareable: true,
                                 template: new sap.m.MenuItem({
                                     key: "{CKEY}",
                                     text: "{DESC}",
                                     startsSection: "{ISSTART}",
                                     icon: "{ICON}",
+                                    enabled: "{ENABLED}",
                                     // tooltip: "{DATA}",
                                     items: {
-                                        path: "PATTN",
+                                        path: "USP_EDITOR_CTX_MENU",
                                         templateShareable: true,
                                         template: new sap.m.MenuItem({
                                             key: "{CKEY}",
                                             text: "{DESC}",
                                             startsSection: "{ISSTART}",
                                             icon: "{ICON}",
+                                            enabled: "{ENABLED}",
                                             // tooltip: "{DATA}"
                                         })
                                     }
@@ -611,12 +635,10 @@
             }
         }).addStyleClass("u4aWsUspPatternMenu");
 
-        let aPatterns = APPCOMMON.fnGetModelProperty("/PATTN"),
-            oUspAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP"),
-            oModel = new sap.ui.model.json.JSONModel();
+        let oModel = new sap.ui.model.json.JSONModel();
 
         oModel.setData({
-            PATTN: aPatterns,
+            USP_EDITOR_CTX_MENU: aPatterns,
             APPINFO: oUspAppInfo
         });
 
@@ -629,7 +651,7 @@
     /**************************************************************************
      * [WS30] USP Pattern Context Menu Event
      **************************************************************************/
-    oAPP.fn.fnUspPatternContextMenuClick = (oEvent) => {
+    oAPP.fn.fnUspPatternContextMenuClick = async (oEvent) => {
 
         // 선택한 ContextMenu 정보를 구한다.
         let oSelectMenuItem = oEvent.getParameter("item"),
@@ -637,42 +659,65 @@
 
         if (!oCtx) {
             return;
-        }
+        }        
 
-        // 현재 어플리케이션의 change 모드 여부를 확인한다.
-        let oAppInfo = oCtx.getProperty("/APPINFO"),
-            bIsEdit = (oAppInfo.IS_EDIT == "X" ? true : false);
+        // 바인딩 데이터
+        let oBindData = oCtx.getProperty(oCtx.getPath());
 
-        // 어플리케이션이 change 모드가 아니면 빠져나감.
-        if (!bIsEdit) {
+        // 선택한 메뉴가 소스 패턴 관련 메뉴일 경우 해당 function 수행 후 
+        // 이후 로직은 수행하지 않음.
+        if(_setCtxPatternMenuClick(oCtx) === true){
             return;
         }
 
-        // 마우스 우클릭한 위치의 Editor 정보를 구한다.
-        let oCodeEditor = oAPP.attr.oCtxMenuClickEditor;
-        if (!oCodeEditor) {
+        // 자식키
+        let sCKEY = oBindData?.CKEY || "";
+        if(!sCKEY){
             return;
         }
 
-        let oBindData = oCtx.getProperty(oCtx.getPath()),
-            oEditor = oCodeEditor._oEditor,
-            oCursorPos = oEditor.getCursorPosition(),
-            sInsertTxt = oBindData.DATA;
+        try {
 
-        if (!sInsertTxt) {
+            // USP ROOT 폴더 경로
+            let sUspRootPath = PATHINFO.USP_ROOT;
+
+            // USP Context Menu 관련 모듈 경로
+            let sCtxMenuModuleRootPath = PATH.join(sUspRootPath, "contextMenu", "MENU_MODULES", sCKEY, "index.js");
+          
+            // 전달할 파라미터 구조
+            let oPARAM = {
+                BIND_CTX: oCtx,     // 바인딩 컨텍스트                
+            };
+
+            debugger;
+
+            // parent.require(sCtxMenuModuleRootPath)(sap, oPARAM);
+            // parent.require(sCtxMenuModuleRootPath).call(globalThis, oPARAM);
+
+            var oModules = await import(sCtxMenuModuleRootPath);
+
+                oModules.exports(oBindData);
+
+            debugger;
+            
+        } catch (error) {            
+
+            // 콘솔용 오류 메시지
+            var aConsoleMsg = [             
+                `[PATH]: www/ws10_20/js/usp/ws_usp_01.js`,  
+                `=> oAPP.fn.fnUspPatternContextMenuClick`,
+            ];
+            
+            if(error && error?.stack){
+                aConsoleMsg.push(error?.stack);
+            }
+
+            console.error(aConsoleMsg.join("\r\n"));
+            console.trace();   
+
             return;
+
         }
-
-        // Editor에 선택한 패턴을 출력해준다.
-        oEditor.session.insert(oCursorPos, sInsertTxt);
-
-        // Editor에 변경 이벤트를 발생시킨다.
-        oCodeEditor.fireChange({
-            value: oEditor.session.getValue()
-        });
-
-        // 앱 변경 사항 플래그 설정
-        oAPP.fn.setAppChangeWs30("X");
 
     }; // end of oAPP.fn.fnUspPatternContextMenuClick
 
@@ -781,5 +826,89 @@
         }, 0);
 
     } // end of ev_uspTreeNodeStepInputEnter
+
+
+    /**************************************************************************
+     * [WS30] USP Code Editor의 Ctx Menu에 추가할 메뉴
+     **************************************************************************/
+    function _additionalUspCtxMenu(){
+
+        let sUspRootPath = PATHINFO.USP_ROOT;
+        let sContextMenuModulePath = PATH.join(sUspRootPath, "contextMenu", "contextMenuInfo.js");
+
+        let fnGetCtxMenu = parent.require(sContextMenuModulePath);
+
+        return fnGetCtxMenu();
+
+    } // end of _additionalUspCtxMenu
+
+
+    /**************************************************************************
+     * [WS30] USP Ctx Menu 메뉴 중, 소스 패턴 메뉴일 경우
+     **************************************************************************/
+    function _setCtxPatternMenuClick(oCtx){
+
+        // 다음 로직을 수행할지 말지 여부 플래그
+        let bIsStop = false;
+
+        let oBindData = oCtx.getProperty(oCtx.getPath());
+
+        // 자식키
+        let sCKEY = oBindData?.CKEY || "";
+
+        // 패턴 데이터
+        let sPattData = oBindData?.DATA || "";
+
+        // 자식키의 시작이 "PATT" or "PTN" 으로 시작하지 않으면 
+        // 다음 프로세스 진행시켜~!
+        if (!sCKEY || (!sCKEY.startsWith("PAT") && !sCKEY.startsWith("PTN"))) {
+            return bIsStop;
+        }
+
+        // 패턴 데이터가 없을 경우 다음 프로세스 진행시켜~!
+        if(!sPattData){
+            return bIsStop;
+        }
+
+        // 다음 프로세스 수행 금지
+        bIsStop = true;
+
+        // 현재 어플리케이션의 change 모드 여부를 확인한다.
+        let oAppInfo = oCtx.getProperty("/APPINFO"),
+            bIsEdit = (oAppInfo.IS_EDIT == "X" ? true : false);
+
+        // 어플리케이션이 change 모드가 아니면 빠져나감.
+        if (!bIsEdit) {
+            return bIsStop;
+        }
+
+        // 마우스 우클릭한 위치의 Editor 정보를 구한다.
+        let oCodeEditor = oAPP.attr.oCtxMenuClickEditor;
+        if (!oCodeEditor) {
+            return bIsStop;
+        }
+        
+        let oEditor = oCodeEditor._oEditor,
+            oCursorPos = oEditor.getCursorPosition(),
+            sInsertTxt = oBindData.DATA;
+
+        if (!sInsertTxt) {
+            return bIsStop;
+        }
+
+        // Editor에 선택한 패턴을 출력해준다.
+        oEditor.session.insert(oCursorPos, sInsertTxt);
+
+        // Editor에 변경 이벤트를 발생시킨다.
+        oCodeEditor.fireChange({
+            value: oEditor.session.getValue()
+        });
+
+        // 앱 변경 사항 플래그 설정
+        oAPP.fn.setAppChangeWs30("X");
+
+        return bIsStop;
+
+    }
 
 })(window, $, oAPP);

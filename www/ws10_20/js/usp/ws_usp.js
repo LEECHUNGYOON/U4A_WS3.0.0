@@ -1577,18 +1577,18 @@
             };
 
         },
-            lfCodeeditorAttribute = () => { // codeeditor 속성 정보
+        lfCodeeditorAttribute = () => { // codeeditor 속성 정보
 
-                return {
-                    height: "100%",
-                    width: "100%",
-                    syntaxHints: true,
-                    type: "{/WS30/USPDATA/EXTEN}",                    
-                    value: "{/WS30/USPDATA/CONTENT}",
-                    change: _codeeditorChange
-                };
-
+            return {
+                height: "100%",
+                width: "100%",
+                syntaxHints: true,
+                type: "{/WS30/USPDATA/EXTEN}",                    
+                value: "{/WS30/USPDATA/CONTENT}",
+                change: _codeeditorChange
             };
+
+        };
 
         var oCodeEditor = new sap.ui.codeeditor.CodeEditor("ws30_codeeditor", lfCodeeditorAttribute())
             .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding)

@@ -53,6 +53,7 @@ module.exports = {
                 "PKEY": "",
                 "CKEY": "PATT001",
                 "TYPE": "ROOT",
+                "ICON": "sap-icon://source-code",
                 "DESC": WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "021") // Default Pattern
             }, {
                 "PKEY": "PATT001",
@@ -152,9 +153,10 @@ module.exports = {
             resolve([{
                 "PKEY": "",
                 "CKEY": "PATT002",
-                "TYPE": "ROOT",             
+                "TYPE": "ROOT",
+                "ICON": "sap-icon://source-code",             
                 "DESC": WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "022"), // Custom Pattern
-                "ISSTART": true
+                "ISSTART": false
             }]);
 
         });

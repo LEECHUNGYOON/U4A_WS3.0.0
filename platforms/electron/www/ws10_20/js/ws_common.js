@@ -2854,6 +2854,16 @@
             },
 
             // events
+            liveChange: function(oEvent){
+
+                var oInput = oEvent.getSource(),
+                    sValue = oInput.getValue();
+
+                if (typeof sValue == "string" && sValue.length > 0 && sValue !== "") {
+                    oInput.setValue(sValue.toUpperCase());
+                }
+                
+            },
             search: (oEvent) => {
                 oAPP.events.ev_pressTcodeInputSubmit(oEvent); // #[ws_events_01.js]                        
             },

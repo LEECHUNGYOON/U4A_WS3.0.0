@@ -251,8 +251,19 @@
                             }),
                             fields: new sap.m.Input("appf4_packg", {
                                 showClearIcon: true,
+                                width: "200px",
                                 value: "{PACKG}",
-                                submit: oAPP.events.ev_AppF4Search
+                                submit: oAPP.events.ev_AppF4Search,
+                                liveChange: function(oEvent){
+
+                                    var oInput = oEvent.getSource(),
+                                        sValue = oInput.getValue();
+
+                                    if (typeof sValue == "string" && sValue.length > 0 && sValue !== "") {
+                                        oInput.setValue(sValue.toUpperCase());
+                                    }
+
+                                }
                             }).bindProperty("enabled", {
                                 parts: [
                                     `${C_BIND_ROOT_PATH}/ISTRIAL`
@@ -277,7 +288,17 @@
                                 showClearIcon: true,
                                 width: "200px",
                                 value: "{ERUSR}",
-                                submit: oAPP.events.ev_AppF4Search
+                                submit: oAPP.events.ev_AppF4Search,
+                                liveChange: function(oEvent){
+
+                                    var oInput = oEvent.getSource(),
+                                        sValue = oInput.getValue();
+
+                                    if (typeof sValue == "string" && sValue.length > 0 && sValue !== "") {
+                                        oInput.setValue(sValue.toUpperCase());
+                                    }
+                                    
+                                }
                             }).bindProperty("enabled", {
                                 parts: [
                                     `${C_BIND_ROOT_PATH}/ISTRIAL`
@@ -301,7 +322,18 @@
                             fields: new sap.m.Input({
                                 showClearIcon: true,
                                 value: "{APPID}",
-                                submit: oAPP.events.ev_AppF4Search
+                                width: "200px",
+                                submit: oAPP.events.ev_AppF4Search,
+                                liveChange: function(oEvent){
+
+                                    var oInput = oEvent.getSource(),
+                                        sValue = oInput.getValue();
+
+                                    if (typeof sValue == "string" && sValue.length > 0 && sValue !== "") {
+                                        oInput.setValue(sValue.toUpperCase());
+                                    }
+                                    
+                                }
                             })
                         }),
                         new sap.ui.layout.form.FormElement({
