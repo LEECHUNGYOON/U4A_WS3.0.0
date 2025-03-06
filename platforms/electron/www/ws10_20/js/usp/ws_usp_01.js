@@ -318,7 +318,7 @@
             return;
         }
 
-        // USP Folder 생성 팝업
+        // USP Tree의 Node 이동 팝업
         var oDialog = new sap.m.Dialog("ws30_movePosPopup", {
 
             // properties
@@ -688,7 +688,7 @@
 
             // 모듈에 전달할 파라미터 정보
             let oPARAM = {
-                oBindData: oBindData
+                MENU_INFO: oBindData
             };
 
             oModules.exports(oPARAM);

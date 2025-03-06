@@ -31,6 +31,20 @@ const SYSID = SERVER_INFO.SYSID;
 // 주석 기본 색상
 const DEFAULT_COMMENT_COLOR = "#8E908C";
 
+
+/**************************************************************************
+ * 주석 색상 저장
+ **************************************************************************/
+function _saveCommentColor(sColor){
+
+
+
+
+
+
+} // end of _saveCommentColor
+
+
 export function exports(oPARAM){
 
     let sP13nRootPath = parent.getPath("P13N_ROOT");
@@ -63,9 +77,9 @@ export function exports(oPARAM){
     // 주석 색상
     let sCommentColor = oUspSettingsInfo[SYSID].comment_color;
 
-    debugger;
+    // 선택한 컨텍스트 메뉴 정보
+    let oMenuInfo = oPARAM?.MENU_INFO || {};
 
- 
     let oDialog = new sap.m.Dialog({
 
         // properties
@@ -74,22 +88,35 @@ export function exports(oPARAM){
 
         // aggregations
         buttons: [
+
+            /**
+             * 저장 버튼
+             */
             new sap.m.Button({
                 type: sap.m.ButtonType.Emphasized,
                 icon: "sap-icon://accept",
                 press: function(oEvent){
 
+                   
 
+                    let oColorPicker = oDialog.data("ColorPicker");
+                    if(oColorPicker){
+                        return;
+                    }
+
+                    debugger;
 
                 }
             }),
 
+            /**
+             * 닫기 버튼
+             */
             new sap.m.Button({
                 type: sap.m.ButtonType.Reject,
                 icon: "sap-icon://decline",
                 press: function(oEvent){
-        
-        
+                    oDialog.close();        
                 }
             })
         ],
@@ -99,33 +126,55 @@ export function exports(oPARAM){
             content: [
 
                 new sap.ui.core.Icon({
-                    src: "sap-icon://write-new"
+                    src: oMenuInfo?.ICON || ""
                 }),
-
+                
+                /**
+                 * 타이틀
+                 */
                 new sap.m.Title({
-                    text: ""
+                    text: oMenuInfo?.DESC || ""
                 }).addStyleClass("sapUiTinyMarginBegin"),
 
                 new sap.m.ToolbarSpacer(),
 
+
+                /**
+                 * 닫기 버튼
+                 */
                 new sap.m.Button({
                     type: sap.m.ButtonType.Reject,
                     icon: "sap-icon://decline",
-                    press: function(oEvent){
-            
-            
+                    press: function(oEvent){            
+                        oDialog.close();    
                     }
                 })
 
             ]
 
-        }),        
+        }),
+
+        afterClose: function(){
+            oDialog.destroy();
+        }
 
     });
 
-    let COLPAL1 = new sap.m.ColorPalette();
+    let VBOX1 = new sap.m.VBox({
+        renderType: "Bare",
+        alignItems: "Center"
+    });
 
-    oDialog.addContent(COLPAL1);
+    oDialog.addContent(VBOX1);
 
+    let COLPIC1 = new sap.ui.unified.ColorPicker({
+        colorString: sCommentColor
+    });
 
+    oDialog.data("ColorPicker", COLPIC1);
+
+    VBOX1.addItem(COLPIC1);
+
+    oDialog.open();
+    
 }
