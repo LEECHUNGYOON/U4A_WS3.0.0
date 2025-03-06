@@ -265,15 +265,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         // 레지스트리에 등록된 SAPLogon 정보를 화면에 출력
         await oAPP.fn.fnOnListupSapLogon();
-        
-        if(!APP.isPackaged){
 
-            // U4A EDU와 인터페이스를 위한 서버를 올린다.
-            // 서버 리스트에 모델 데이터 세팅이 다 끝난 이후에 실행한다.        
-            await oU4ASERV.createServer();
-
-        }
-
+        // U4A EDU와 인터페이스를 위한 서버를 올린다.
+        // 서버 리스트에 모델 데이터 세팅이 다 끝난 이후에 실행한다.        
+        await oU4ASERV.createServer();
+    
         oAPP.setBusy(false);
         
         CURRWIN.focus();

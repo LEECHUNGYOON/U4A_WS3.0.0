@@ -37,7 +37,7 @@ const DEFAULT_COMMENT_COLOR = "#8E908C";
  **************************************************************************/
 function _saveCommentColor(sColor){
 
-    
+
 
 
 
@@ -96,6 +96,13 @@ export function exports(oPARAM){
                 type: sap.m.ButtonType.Emphasized,
                 icon: "sap-icon://accept",
                 press: function(oEvent){
+
+                   
+
+                    let oColorPicker = oDialog.data("ColorPicker");
+                    if(oColorPicker){
+                        return;
+                    }
 
                     debugger;
 
@@ -160,11 +167,13 @@ export function exports(oPARAM){
 
     oDialog.addContent(VBOX1);
 
-    let COLPAL1 = new sap.ui.unified.ColorPicker({
+    let COLPIC1 = new sap.ui.unified.ColorPicker({
         colorString: sCommentColor
     });
 
-    VBOX1.addItem(COLPAL1);
+    oDialog.data("ColorPicker", COLPIC1);
+
+    VBOX1.addItem(COLPIC1);
 
     oDialog.open();
     

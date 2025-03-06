@@ -527,8 +527,17 @@
                 aPatternMerge = [];
             }
 
+            // TEST ------ Start
+
+            // 패키지일 경우에는 추가 컨텍스트 메뉴를 추가하지 않는다.
+            if (APP.isPackaged) {
+                aCtxMenu = [];
+            }
+            
+            // TEST ------ End
+
             // 추가할 컨텍스트 메뉴가 있다면 기존 메뉴정보와 합친다.
-            if(Array.isArray(aCtxMenu) === true){
+            if(Array.isArray(aCtxMenu) === true && aCtxMenu.length !== 0){
                 aPatternMerge = aPatternMerge.concat(aCtxMenu);
             }            
 
