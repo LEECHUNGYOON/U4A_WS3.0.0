@@ -519,27 +519,27 @@
             // 기본 패턴과 커스텀 패턴을 합친다.
             aPatternMerge = aPatternJson.concat(aCustmPatternJson);
 
-            // 우클릭 메뉴에 추가할 메뉴를 세팅한다.
-            let aCtxMenu = _additionalUspCtxMenu();
+            // // 우클릭 메뉴에 추가할 메뉴를 세팅한다.
+            // let aCtxMenu = _additionalUspCtxMenu();
 
-            // 패턴 메뉴가 없을 경우에는 해당 변수를 Array로 만든다.
-            if(Array.isArray(aPatternMerge) === false){
-                aPatternMerge = [];
-            }
+            // // 패턴 메뉴가 없을 경우에는 해당 변수를 Array로 만든다.
+            // if(Array.isArray(aPatternMerge) === false){
+            //     aPatternMerge = [];
+            // }
 
-            // TEST ------ Start
+            // // TEST ------ Start
 
-            // 패키지일 경우에는 추가 컨텍스트 메뉴를 추가하지 않는다.
-            if (APP.isPackaged) {
-                aCtxMenu = [];
-            }
+            // // 패키지일 경우에는 추가 컨텍스트 메뉴를 추가하지 않는다.
+            // if (APP.isPackaged) {
+            //     aCtxMenu = [];
+            // }
             
-            // TEST ------ End
+            // // TEST ------ End
 
-            // 추가할 컨텍스트 메뉴가 있다면 기존 메뉴정보와 합친다.
-            if(Array.isArray(aCtxMenu) === true && aCtxMenu.length !== 0){
-                aPatternMerge = aPatternMerge.concat(aCtxMenu);
-            }            
+            // // 추가할 컨텍스트 메뉴가 있다면 기존 메뉴정보와 합친다.
+            // if(Array.isArray(aCtxMenu) === true && aCtxMenu.length !== 0){
+            //     aPatternMerge = aPatternMerge.concat(aCtxMenu);
+            // }            
 
             // APPCOMMON.fnSetModelProperty("/PATTN", aPatternMerge);
             APPCOMMON.fnSetModelProperty("/WS30/USP_EDITOR_CTX_MENU", aPatternMerge);
@@ -846,6 +846,30 @@
 
 
     /**************************************************************************
+     * [WS30] USP Code Editor의 CtxMenu 중, 최상위 메뉴 정보 구하기
+     **************************************************************************/
+    function _getCodeEditorCtxMenuRootModelData(oModelData, sBindPath){
+
+        var oBindInfo = oAPP.fn._fnFindModelData2(oModelData, sBindPath);
+        if(!oBindInfo){
+            return;
+        }
+
+        if(Array.isArray(oBindInfo.Nodes) === true){
+            return _getCodeEditorCtxMenuRootModelData(oModelData, oBindInfo.Path);
+        }
+
+        let oNode = oBindInfo.Nodes;
+        if(oNode.PKEY === "" || oNode.TYPE === "ROOT"){
+            return oNode;
+        }
+
+        return _getCodeEditorCtxMenuRootModelData(oModelData, oBindInfo.Path);
+
+    } // end of _getCodeEditorCtxMenuRootModelData
+
+
+    /**************************************************************************
      * [WS30] USP Ctx Menu 메뉴 중, 소스 패턴 메뉴일 경우
      **************************************************************************/
     function _setCtxPatternMenuClick(oCtx){
@@ -853,15 +877,24 @@
         // 다음 로직을 수행할지 말지 여부 플래그
         let bIsStop = false;
 
-        let oBindData = oCtx.getProperty(oCtx.getPath());
+        let oModel = oCtx.getModel();
+        let sBindPath = oCtx.getPath();
+        let oModelData = oModel.getData();
+        let oBindData = oCtx.getProperty(oCtx.getPath()); 
 
-        // 자식키
-        let sCKEY = oBindData?.CKEY || "";
+        // 선택한 메뉴의 최상위 부모를 찾아서 소스 패턴 관련 메뉴인지 확인
+        let oFindRoot = _getCodeEditorCtxMenuRootModelData(oModelData, sBindPath);
+        if(!oFindRoot){
+            return bIsStop;
+        }
+    
+        // 최상위 부모키
+        let sCKEY = oFindRoot?.CKEY || "";
 
         // 패턴 데이터
         let sPattData = oBindData?.DATA || "";
 
-        // 자식키의 시작이 "PATT" or "PTN" 으로 시작하지 않으면 
+        // 최상위 부모키키의 시작이 "PATT" or "PTN" 으로 시작하지 않으면 
         // 다음 프로세스 진행시켜~!
         if (!sCKEY || (!sCKEY.startsWith("PAT") && !sCKEY.startsWith("PTN"))) {
             return bIsStop;
@@ -911,6 +944,74 @@
 
         return bIsStop;
 
-    }
+    } // end of _setCtxPatternMenuClick
+
+    /**************************************************************************
+     * [WS30] USP Ctx Menu 메뉴 중, 소스 패턴 메뉴일 경우
+     **************************************************************************/
+    // function _setCtxPatternMenuClick(oCtx){
+
+    //     // 다음 로직을 수행할지 말지 여부 플래그
+    //     let bIsStop = false;
+
+    //     let oBindData = oCtx.getProperty(oCtx.getPath());
+
+    //     // 자식키
+    //     let sCKEY = oBindData?.CKEY || "";
+
+    //     // 패턴 데이터
+    //     let sPattData = oBindData?.DATA || "";
+
+    //     // 자식키의 시작이 "PATT" or "PTN" 으로 시작하지 않으면 
+    //     // 다음 프로세스 진행시켜~!
+    //     if (!sCKEY || (!sCKEY.startsWith("PAT") && !sCKEY.startsWith("PTN"))) {
+    //         return bIsStop;
+    //     }
+
+    //     // 패턴 데이터가 없을 경우 다음 프로세스 진행시켜~!
+    //     if(!sPattData){
+    //         return bIsStop;
+    //     }
+
+    //     // 다음 프로세스 수행 금지
+    //     bIsStop = true;
+
+    //     // 현재 어플리케이션의 change 모드 여부를 확인한다.
+    //     let oAppInfo = oCtx.getProperty("/APPINFO"),
+    //         bIsEdit = (oAppInfo.IS_EDIT == "X" ? true : false);
+
+    //     // 어플리케이션이 change 모드가 아니면 빠져나감.
+    //     if (!bIsEdit) {
+    //         return bIsStop;
+    //     }
+
+    //     // 마우스 우클릭한 위치의 Editor 정보를 구한다.
+    //     let oCodeEditor = oAPP.attr.oCtxMenuClickEditor;
+    //     if (!oCodeEditor) {
+    //         return bIsStop;
+    //     }
+        
+    //     let oEditor = oCodeEditor._oEditor,
+    //         oCursorPos = oEditor.getCursorPosition(),
+    //         sInsertTxt = oBindData.DATA;
+
+    //     if (!sInsertTxt) {
+    //         return bIsStop;
+    //     }
+
+    //     // Editor에 선택한 패턴을 출력해준다.
+    //     oEditor.session.insert(oCursorPos, sInsertTxt);
+
+    //     // Editor에 변경 이벤트를 발생시킨다.
+    //     oCodeEditor.fireChange({
+    //         value: oEditor.session.getValue()
+    //     });
+
+    //     // 앱 변경 사항 플래그 설정
+    //     oAPP.fn.setAppChangeWs30("X");
+
+    //     return bIsStop;
+
+    // }
 
 })(window, $, oAPP);
