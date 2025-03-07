@@ -163,6 +163,17 @@
       //20250117 PES -END.
 
 
+      //20250212 PES -START.
+      //AM5 차트의 라이브러리 정보도 서버 전송 데이터에 구성 처리.
+      var sUA025 = oAPP.attr.S_CODE.UA025.find( a => a.FLD01 === "AM5CHART"  && a.FLD06 === "X" );
+
+      if(typeof sUA025 !== "undefined"){
+        //SAPUI6 라이브러리 PATH 정보 구성.
+        lf_setParam(oform, "LIBPATH_AM5", sUA025.FLD04 + sUA025.FLD05);
+      }      
+      //20250212 PES -END.
+
+
       //LOAD 대상 LIBRARY 항목 파라메터 추가.
       lf_setParam(oform, "LIBRARY", oAPP.fn.getUi5Libraries(true));
 
