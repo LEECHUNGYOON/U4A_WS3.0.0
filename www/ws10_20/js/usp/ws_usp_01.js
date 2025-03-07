@@ -522,10 +522,10 @@
             // // 우클릭 메뉴에 추가할 메뉴를 세팅한다.
             // let aCtxMenu = _additionalUspCtxMenu();
 
-            // // 패턴 메뉴가 없을 경우에는 해당 변수를 Array로 만든다.
-            // if(Array.isArray(aPatternMerge) === false){
-            //     aPatternMerge = [];
-            // }
+            // 패턴 메뉴가 없을 경우에는 해당 변수를 Array로 만든다.
+            if(Array.isArray(aPatternMerge) === false){
+                aPatternMerge = [];
+            }
 
             // // TEST ------ Start
 
