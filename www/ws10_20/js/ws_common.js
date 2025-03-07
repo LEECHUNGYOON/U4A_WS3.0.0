@@ -496,6 +496,11 @@
 
                 e.stopImmediatePropagation();
 
+                if (sap.ui.getCore().isLocked()) {
+                    zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                    return;
+                }
+
                 // 단축키 실행 할지 말지 여부 체크
                 var result = oAPP.common.fnShortCutExeAvaliableCheck();
 
@@ -1565,6 +1570,31 @@
                     }
 
                     oMaxWinBtn.firePress();
+
+                }
+            },
+            {
+                KEY: "Ctrl+Shift+F", // [WS30] textSearchPopup
+                DESC: parent.WSUTIL.getWsMsgClsTxt(sGlobalLangu, "ZMSG_WS_COMMON_001", "256"), // Text Search Popup
+                CODE: `new sap.m.Button({icon: "sap-icon://search"})`,
+                fn: (e) => {
+
+                    e.stopImmediatePropagation();
+
+                    if (sap.ui.getCore().isLocked()) {
+                        zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                        return;
+                    }
+
+                    // 단축키 실행 할지 말지 여부 체크
+                    var result = oAPP.common.fnShortCutExeAvaliableCheck();
+
+                    // X 이면 실행 불가
+                    if (result == "X") {
+                        return;
+                    }
+
+                    oAPP.fn.fnTextSearchPopupOpener();
 
                 }
             },
