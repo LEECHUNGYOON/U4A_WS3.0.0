@@ -211,14 +211,42 @@
         _aOBJTY = ["1", "2", "4"];
       }
 
+
       //입력 가능한 UI정보를 기준으로 실제 UI의 입력 가능 여부 확인.
-      for(var i=0, l=lt_0027t.length; i<l; i++){
+      for(var i = 0, l = lt_0027t.length; i < l; i++){
 
         //대상 UI검색.
         ls_0022 = oAPP.DATA.LIB.T_0022.find( a => a.UIOBK === lt_0027t[i].TGOBJ );
 
         //대상 UI를 찾지 못한 경우 SKIP.
         if(typeof ls_0022 === "undefined"){continue;}
+
+        
+        //20250309 PES -START.
+        //sap.ui.core.Control로부터 파생된 UI일지라도
+        //특정 UI에만 추가 되야 하는경우만 UI 리스트를 구성하도록 로직 처리.
+
+        //UI의 허용 가능 부모 정보 항목에 해당하는 UI인지 여부 확인.
+        var _aUW02 = oAPP.attr.S_CODE.UW03.filter( item => item.FLD01 === ls_0022.UIOBK && item.FLD06 !== "X" );
+  
+        //허용가능 UI건인경우.
+        if(_aUW02.length > 0){
+
+          //현재 추가 하려는 UI에 가능한 항목인지 확인.
+          var _sUW02 = _aUW02.find( item => item.FLD03 === UIOBK );
+
+          //추가 하려는 UI에 허용 불가능한 경우 skip.
+          if(typeof _sUW02 === "undefined"){
+            continue;
+          }
+
+          //허용 대상 aggregation과 다른 경우 skip.
+          if(_sUW02.FLD05 !== ls_sel.UIATT){
+            continue;
+          }
+          
+        }
+        //20250309 PES -END.
 
         //기존로직 주석 처리.
         // //대상 UI가 폐기된경우, UI TYPE이 Class, Final Class가 아닌경우 SKIP.
