@@ -177,6 +177,13 @@
 
 <body class="sapUiBody">
 
+    <!-- webview에 docker html 호출 (input 2개 button 1개 id/pw, login 버튼 그려놓는다.)-->
+    <!--  로그인 버튼 누르면 /zu4a_wbc/u4a_ipcmain/xxxxxx -->
+    
+    <div id="U4A_WEBVIEW">
+        <webview id="u4a_webview" style="border:none;width:100%;height:100%;" preload="./contextbridge/bridge.js" disablewebsecurity allowpopups></webview>
+    </div>
+
     <div id="content" style="display:none;" class="u4aWsContent"></div>
 
     <!-- Page Loading Start -->

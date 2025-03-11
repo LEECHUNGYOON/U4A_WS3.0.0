@@ -3631,6 +3631,13 @@ let oAPP = (function () {
 
     } // end of _handleLoginLangu
 
+    function _setWebview(){
+
+        let oWebview = document.getElementById("u4a_webview");
+            oWebview.src = "https://u000.u4aide.com:10001/webapps/_tmp/soccerhs/lotte_sso/index.html";
+
+    } // end of _setWebview
+
 
     /********************************************************
      * 화면 랜더링 이후에 호출되는 이벤트
@@ -3700,6 +3707,10 @@ let oAPP = (function () {
             return;
 
         }
+
+        // TEST ------------- Start
+        _setWebview();
+        // TEST ------------- End
     
         
         setTimeout(() => {
