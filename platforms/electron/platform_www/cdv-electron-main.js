@@ -90,14 +90,20 @@ let mainWindow;
 /***************************************************
  * Deep Link 설정
  ***************************************************/
+let sDeepLinkId = 'u4a-ws';
+
+if (!app.isPackaged) {
+    sDeepLinkId = 'u4a-ws-dev';
+}
+
 if (process.defaultApp) {
 
     if (process.argv.length >= 2) {
-      app.setAsDefaultProtocolClient('u4a-ws', process.execPath, [path.resolve(process.argv[1])])
+      app.setAsDefaultProtocolClient(sDeepLinkId, process.execPath, [path.resolve(process.argv[1])])
     }
 
 } else {
-    app.setAsDefaultProtocolClient('u4a-ws');
+    app.setAsDefaultProtocolClient(sDeepLinkId);
 }
 
 
