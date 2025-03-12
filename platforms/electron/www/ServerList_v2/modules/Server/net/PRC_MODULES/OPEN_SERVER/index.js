@@ -26,25 +26,28 @@ module.exports = async function(oStream, oIF_DATA){
     let oPARAM = oIF_DATA?.PARAM || undefined;
 
     // 서버의 SYSID
-    let SYSID = oPARAM?.SYSID || undefined;
+    let SYSID = oPARAM?.SYSID || "";
 
     // SSO KEY
     let SSO_TICKET = oPARAM?.SSO_TICKET || undefined;
 
     // 언어
-    let LANGU = oPARAM?.LANGU || undefined;
+    let LANGU = oPARAM?.LANGU || "";
 
     // WS 언어
-    let WSLANGU = oPARAM?.WSLANGU || undefined;
+    let WSLANGU = oPARAM?.WSLANGU || "";
+
+    // 클라이언트
+    let CLIENT = oPARAM.CLIENT || "";
 
     // SAP ID
-    let SAPID = oPARAM?.SAPID || undefined;
+    let SAPID = oPARAM?.SAPID || "";
 
     // SAP PW
-    let SAPPW = oPARAM?.SAPPW || undefined;
+    let SAPPW = oPARAM?.SAPPW || "";
 
     // APP ID
-    let APPID = oPARAM?.APPID || undefined;
+    let APPID = oPARAM?.APPID || "";
     
 
     // 전체 서버리스트 목록을 구한다.
@@ -131,10 +134,10 @@ module.exports = async function(oStream, oIF_DATA){
         SERVER_INFO_DETAIL: oServerFound,
         INSTANCENO: oServerFound.insno,
         SYSTEMID: oServerFound.systemid,
-        CLIENT: "",
+        CLIENT: CLIENT,
         
-        LANGU: LANGU || "",         // 서버 접속 언어
-        WSLANGU: WSLANGU || "",     // WS 언어
+        LANGU: LANGU,         // 서버 접속 언어
+        WSLANGU: WSLANGU,     // WS 언어
         SYSID: oServerFound.systemid,
         SSO_TICKET : SSO_TICKET,
         SAPID: SAPID,   // SAP ID

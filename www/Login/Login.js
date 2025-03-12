@@ -3674,6 +3674,10 @@ let oAPP = (function () {
             let oCoreModel = sap.ui.getCore().getModel();
             let oLogInData = oCoreModel.getProperty("/LOGIN");
 
+            if(oServerInfo.CLIENT){
+                oLogInData.CLIENT = oServerInfo.CLIENT;
+            }
+
             if(oServerInfo.SAPID){
                 oLogInData.ID = oServerInfo.SAPID;
             }
