@@ -51,7 +51,7 @@ let PS_ROOT_PATH = PATH.join(APPPATH, "ext_api", "ps");
 
 // 패키징일 경우의 PowerShell 파일 루트 경로
 if(APP.isPackaged){
-    PS_ROOT_PATH = PATH.join(process.resourcesPath, "www", "ext_api", "ps");
+    PS_ROOT_PATH = PATH.join(parent.process.resourcesPath, "www", "ext_api", "ps");
 }
 
 // PowerShell 관련 실행 파일 경로 구조

@@ -51,7 +51,7 @@ let PS_ROOT_PATH = PATH.join(APPPATH, "ext_api", "ps");
 
 // 패키징일 경우의 PowerShell 파일 루트 경로
 if(APP.isPackaged){
-    PS_ROOT_PATH = PATH.join(process.resourcesPath, "www", "ext_api", "ps");
+    PS_ROOT_PATH = PATH.join(parent.process.resourcesPath, "www", "ext_api", "ps");
 }
 
 // PowerShell 관련 실행 파일 경로 구조
@@ -893,76 +893,76 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      * sapgui Version 체크
      * sapgui 770버전 이하는 지원 불가!!
      ************************************************************************/
-    oAPP.fn.fnCheckSapguiVersion = (oResult) => {
+    // oAPP.fn.fnCheckSapguiVersion = (oResult) => {
 
-        // 성공 실패 공통 리턴 구조
-        let oErr = {
-            RETCD: "E",
-            RTMSG: oAPP.msg.M04, // "Server information does not exist in the SAPGUI logon file."
-        },
-            oSucc = {
-                RETCD: "S",
-                RTMSG: ""
-            };
+    //     // 성공 실패 공통 리턴 구조
+    //     let oErr = {
+    //         RETCD: "E",
+    //         RTMSG: oAPP.msg.M04, // "Server information does not exist in the SAPGUI logon file."
+    //     },
+    //         oSucc = {
+    //             RETCD: "S",
+    //             RTMSG: ""
+    //         };
 
-        if (!oResult) {
-            return oErr;
-        }
+    //     if (!oResult) {
+    //         return oErr;
+    //     }
 
-        // xml의 attribute
-        let oAttribute = oResult._attributes;
-        if (!oAttribute) {
-            return oErr;
-        }
+    //     // xml의 attribute
+    //     let oAttribute = oResult._attributes;
+    //     if (!oAttribute) {
+    //         return oErr;
+    //     }
 
-        let sGenerator = oAttribute.generator;
-        if (!sGenerator || sGenerator == "") {
-            return oErr;
-        }
+    //     let sGenerator = oAttribute.generator;
+    //     if (!sGenerator || sGenerator == "") {
+    //         return oErr;
+    //     }
 
-        // // 버전 정보를 정규식으로 발췌한다.               
-        // let oRegex = new RegExp(/(?<=v)(.*?)(?=\.)/g, "i"),
-        //     aVersion = oRegex.exec(sGenerator);
+    //     // // 버전 정보를 정규식으로 발췌한다.               
+    //     // let oRegex = new RegExp(/(?<=v)(.*?)(?=\.)/g, "i"),
+    //     //     aVersion = oRegex.exec(sGenerator);
 
-        // 버전 정보를 정규식으로 발췌한다.               
-        let sVerRegex = /(?<=v)(.*)/g,
-            aVersion = sGenerator.match(sVerRegex);
+    //     // 버전 정보를 정규식으로 발췌한다.               
+    //     let sVerRegex = /(?<=v)(.*)/g,
+    //         aVersion = sGenerator.match(sVerRegex);
 
-        // 정규식으로 null 값이면 버전정보가 없다고 간주함.
-        if (aVersion == null) {
-            oErr.RTMSG = oAPP.msg.M05; // "No SAPGUI version information.";
-            return oErr;
-        }
+    //     // 정규식으로 null 값이면 버전정보가 없다고 간주함.
+    //     if (aVersion == null) {
+    //         oErr.RTMSG = oAPP.msg.M05; // "No SAPGUI version information.";
+    //         return oErr;
+    //     }
 
-        // 정규식으로 버전 정보를 찾았다면 Array 타입
-        if (Array.isArray(aVersion) == false) {
-            oErr.RTMSG = oAPP.msg.M05; // "No SAPGUI version information.";
-            return oErr;
-        }
+    //     // 정규식으로 버전 정보를 찾았다면 Array 타입
+    //     if (Array.isArray(aVersion) == false) {
+    //         oErr.RTMSG = oAPP.msg.M05; // "No SAPGUI version information.";
+    //         return oErr;
+    //     }
 
-        let sVer = aVersion[0],
-            parseVer = parseInt(sVer);
+    //     let sVer = aVersion[0],
+    //         parseVer = parseInt(sVer);
 
-        if (isNaN(parseVer)) {
+    //     if (isNaN(parseVer)) {
 
-            oErr.RTMSG = oAPP.msg.M06; // "SAPGUI version information not Found.";
-            return oErr;
-        }
+    //         oErr.RTMSG = oAPP.msg.M06; // "SAPGUI version information not Found.";
+    //         return oErr;
+    //     }
 
-        // 770 보다 낮다면 지원 불가
-        if (parseVer < SAPGUIVER) {
+    //     // 770 보다 낮다면 지원 불가
+    //     if (parseVer < SAPGUIVER) {
 
-            //"Not supported lower than SAPGUI 770 versions. \n Please upgrade SAPGUI 770 or Higher";
-            oErr.RTMSG = oAPP.msg.M07 + " \n " + oAPP.msg.M08;
-            return oErr;
-        }
+    //         //"Not supported lower than SAPGUI 770 versions. \n Please upgrade SAPGUI 770 or Higher";
+    //         oErr.RTMSG = oAPP.msg.M07 + " \n " + oAPP.msg.M08;
+    //         return oErr;
+    //     }
 
-        // SAPGUI 버전을 리턴한다.
-        oSucc.RTVER = sVer;
+    //     // SAPGUI 버전을 리턴한다.
+    //     oSucc.RTVER = sVer;
 
-        return oSucc;
+    //     return oSucc;
 
-    }; // end of oAPP.fn.fnCheckSapguiVersion
+    // }; // end of oAPP.fn.fnCheckSapguiVersion
 
     /*************************************************************
      * @function - SAPGUI 버전 체크 (Shell 방식)
