@@ -857,7 +857,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             let oLogonResult = oAPP.fn.fnSetSAPLogonLandscapeList();
             if (oLogonResult.RETCD == "E") {
 
-                // oAPP.fn.fnShowMessageBox("E", oLogonResult.RTMSG);
+                oAPP.fn.fnShowMessageBox("E", oLogonResult.RTMSG);
 
                 console.error(oLogonResult.RTMSG);
 
@@ -1023,20 +1023,17 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     console.log("ps-close");
                 }
 
-                // 수집된 콘솔 메시지에서 SAPGUI 버전을 찾는다.
-                var sSapGuiVer = aShellConsole.find(function(s){
-    
-                    if(typeof s !== "string"){
-                        return false;
-                    }
-                    
-                    return s.replace(/[\r\n]/g, '').startsWith("SAPGUI_VER");
-                    
-                })?.replace(/[\r\n]/g, '');
+                // SAPGUI 버전정보 구하기
+                let sSapGuiVer = "";
+
+                let oFound = aShellConsole?.find(item => item.includes("SAPGUI_VER|"));
+                if (oFound) {
+                    sSapGuiVer = oFound?.split("SAPGUI_VER|")[1]?.trim();
+                }
 
                 // 리턴 데이터
                 let oRDATA = {
-                    SAPGUI_VER: sSapGuiVer?.split("|")[1] || ""     // 설치된 SAPGUI 버전
+                    SAPGUI_VER: sSapGuiVer     // 설치된 SAPGUI 버전
                 }
 
                 return resolve({ SUBRC: code, RDATA: oRDATA });
