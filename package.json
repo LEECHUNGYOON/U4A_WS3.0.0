@@ -32,7 +32,8 @@
   },
   "build": {
     "nsis": {
-      "deleteAppDataOnUninstall": true
+      "deleteAppDataOnUninstall": true,
+      "include": "www/ext_api/nsh/uninstaller.nsh"
     },
     "asar": true,
     "copyright": "Copyright 2020. INFOCG Inc. all rights reserved.",
