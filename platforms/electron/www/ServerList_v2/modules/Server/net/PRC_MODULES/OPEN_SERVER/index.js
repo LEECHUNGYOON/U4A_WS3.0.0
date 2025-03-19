@@ -1,11 +1,102 @@
-const TY_RES = {
-    RETCD: "",      // 수행 결과에 대한 코드
-    STCOD: "",      // 수행 결과에 대한 상태 코드   
-    PRCCD: "",      // 수행 중인 프로세스 코드
-    ACTCD: "",      // 수행 중인 행위에 대한 코드         
-    RTMSG: "",      // 수행 결과에 대한 메시지 
-    RDATA: "",      // 수행 결과에 대한 데이터
-};
+/****************************************************************************
+ * 🔥 Global Variables
+ ****************************************************************************/
+
+    const TY_RES = {
+        RETCD: "",      // 수행 결과에 대한 코드
+        STCOD: "",      // 수행 결과에 대한 상태 코드   
+        PRCCD: "",      // 수행 중인 프로세스 코드
+        ACTCD: "",      // 수행 중인 행위에 대한 코드         
+        RTMSG: "",      // 수행 결과에 대한 메시지 
+        RDATA: "",      // 수행 결과에 대한 데이터
+    };
+
+/****************************************************************************
+ * 🔥 Remote / Modules
+ ****************************************************************************/
+    const REMOTE = require("@electron/remote");
+    const APP = REMOTE.app;
+    const PATH = require("path");
+    const FS = require("fs");
+
+    // SAP Landscape 관련 모듈
+    const SAP_LANDSCAPE = require(PATH.join(__dirname, "sap_landscape.js"));
+
+
+/****************************************************************************
+ * 🔥 Private functions
+ ****************************************************************************/
+
+
+    /*********************************************************************     
+     * @function
+     * - SAP Logon Pad에 저장되어 있는 서버정보의 UUID값으로 
+     *   SAP Logon Pad의 좌측트리 기준에 어떤 폴더에 속해있는지 정보를 구한다.
+     * 
+     * @param {string} sUUID - 서버정보의 UUID
+     * 
+     * @returns {Promise<Object|undefined>} 
+     * - 서버가 속한 루트 폴더 정보 객체 또는 `undefined`
+     *********************************************************************/
+    function _getSAPLogonRootDirInfo(sUUID){
+
+        return new Promise(async function(resolve){
+
+            // 1. SAP Landscape xml 파일 경로 구하기
+            let sLandscapeFilePath = await _getSAPLandscapeFilePath();
+            if(!sLandscapeFilePath){
+                return resolve();
+            }
+
+            // 2. Landscape xml을 Json Parse 해서 UUID가 속한 폴더 정보를 구한다.
+            let oRootInfo = await SAP_LANDSCAPE.getSAPLogonRootDirInfo(sLandscapeFilePath, sUUID);
+            if(!oRootInfo){
+                return resolve();
+            }
+
+            return resolve(oRootInfo);
+
+        });
+
+    } // end of _getSAPLogonDirRootNodeInfo
+
+    /*********************************************************************     
+     * @function
+     * - SAPGUI Logon XML 파일 경로 구하기
+     * 
+     * 
+     * @returns {Promise<Object|undefined>} - JSON 객체 또는 `undefined`
+     *********************************************************************/
+    function _getSAPLandscapeFilePath(){
+
+        return new Promise(async function(resolve){
+
+            try {                
+
+                // 레지스트리에 등록된 SAPLogon 정보를 읽는다.            
+                var oRegInfoSapResult = await oAPP.fn.fnGetRegInfoForSAPLogon();
+
+                var oLandscapeFileInfo = oRegInfoSapResult?.LandscapeFile || undefined;
+                if(!oLandscapeFileInfo){
+                    return resolve();
+                }
+
+                var sLandscapeFilePath = oLandscapeFileInfo?.value || "";
+                if(!sLandscapeFilePath){
+                    return resolve();
+                }
+
+                return resolve(sLandscapeFilePath);
+
+            } catch (error) {
+                return resolve();
+            }
+
+        });
+
+    } // end of _getLandscapeFilePath
+
+
 
 
 module.exports = async function(oStream, oIF_DATA){    
@@ -127,6 +218,27 @@ module.exports = async function(oStream, oIF_DATA){
         return;
     }
 
+    // 파라미터로 전달받은 서버가 SAP Logon Pad의 좌측트리 기준에 어떤 폴더에 속해있는지 정보를 구한다.
+    let oRootNodeInfo = await _getSAPLogonRootDirInfo(sUUID);
+    if(oRootNodeInfo){
+        
+        let parent_uuid = oRootNodeInfo.parent_uuid;
+
+        // UUID 를 레지스트리에 저장
+        await oAPP.fn.setRegistryLastSelectedNodeKey(parent_uuid);
+
+        // 죄측 트리에서 해당 폴더의 위치로 선택표시 하기
+        let oWorkTree = oAPP.attr.sap.ui.getCore().byId("WorkTree");
+        if (oWorkTree && oWorkTree.getModel()) {
+
+            oWorkTree.getModel().refresh(true);
+
+            oWorkTree.attachEventOnce("rowsUpdated", oAPP.fn.fnAttachRowsUpdateOnce);
+
+        }
+      
+    }
+    
     // 로그인시 필요한 파라미터 정보
     var oLoginInfo = {
         NAME: oServerFound.name,

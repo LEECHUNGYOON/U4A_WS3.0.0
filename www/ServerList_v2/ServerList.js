@@ -1607,7 +1607,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 // 우측 서버 리스트 전체 선택 해제
                 oAPP.fn.fnServerListUnselect();
 
-                // 좌측 트리 선택 이벤트
+                //[async] 좌측 트리 선택 이벤트
                 oAPP.fn.fnPressWorkSpaceTreeItem(oEvent);
 
             }
@@ -1635,7 +1635,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     /************************************************************************
      * WorkSpace Tree Item Select Event
      ************************************************************************/
-    oAPP.fn.fnPressWorkSpaceTreeItem = (oEvent) => {
+    oAPP.fn.fnPressWorkSpaceTreeItem = async (oEvent) => {
 
         let oRowCtx = oEvent.getParameter("rowContext");
         if (oRowCtx == null) {
@@ -1656,8 +1656,24 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oSelectItemData = oTableModel.getProperty(sBindPath),
             oSelectSubItem = oSelectItemData.Item;
 
+        if (!oSelectItemData) {
+            return;
+        }
+
+        if (!oSelectItemData._attributes) {
+            return;
+        }
+
+        // 선택한 라인의 UUID를 구한다.
+        let oSelectedItem = oSelectItemData._attributes,
+            sUUID = oSelectedItem.uuid, // 선택한 UUID
+            LastSelectedNodeKey = sUUID;
+
         // 선택한 라인 위치를 개인화 파일에 저장한다.
-        oAPP.fn.fnSetSaveSelectedItemPosition(oSelectItemData);
+        await oAPP.fn.setRegistryLastSelectedNodeKey(LastSelectedNodeKey);
+
+        // 선택한 라인 위치를 개인화 파일에 저장한다.
+        // oAPP.fn.fnSetSaveSelectedItemPosition(oSelectItemData);
 
         // 선택된 라인에 해당하는 서버 리스트 값이 없을 경우 우측 리스트 모델 초기화
         if (typeof oSelectSubItem == "undefined") {
@@ -1738,23 +1754,11 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
     }; // end of oAPP.fn.fnPressWorkSpaceTreeItem
 
+
     /************************************************************************
      * 선택한 라인 위치를 개인화 파일에 저장한다.
      ************************************************************************/
-    oAPP.fn.fnSetSaveSelectedItemPosition = async (oSelectItemData) => {
-
-        if (!oSelectItemData) {
-            return;
-        }
-
-        if (!oSelectItemData._attributes) {
-            return;
-        }
-
-        // 선택한 라인의 UUID를 구한다.
-        let oSelectedItem = oSelectItemData._attributes,
-            sUUID = oSelectedItem.uuid, // 선택한 UUID
-            LastSelectedNodeKey = sUUID;
+    oAPP.fn.setRegistryLastSelectedNodeKey = async function(sSelectedNodeKey) {
 
         let oWsSettings = fnGetSettingsInfo(),
             oRegPaths = oWsSettings.regPaths,
@@ -1763,7 +1767,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         let oRegData = {};
         oRegData[sSettingsPath] = {};
         oRegData[sSettingsPath]["LastSelectedNodeKey"] = {
-            value: LastSelectedNodeKey,
+            value: sSelectedNodeKey,
             type: "REG_SZ"
         };
 
@@ -1773,7 +1777,44 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         await RegeditPromisified.putValue(oRegData);
 
 
-    }; // end of oAPP.fn.fnSetSaveSelectedItemPosition
+    }; // end of oAPP.fn.setRegistryLastSelectedNodeKey
+
+    /************************************************************************
+     * 선택한 라인 위치를 개인화 파일에 저장한다.
+     ************************************************************************/
+    // oAPP.fn.fnSetSaveSelectedItemPosition = async (oSelectItemData) => {
+
+    //     if (!oSelectItemData) {
+    //         return;
+    //     }
+
+    //     if (!oSelectItemData._attributes) {
+    //         return;
+    //     }
+
+    //     // 선택한 라인의 UUID를 구한다.
+    //     let oSelectedItem = oSelectItemData._attributes,
+    //         sUUID = oSelectedItem.uuid, // 선택한 UUID
+    //         LastSelectedNodeKey = sUUID;
+
+    //     let oWsSettings = fnGetSettingsInfo(),
+    //         oRegPaths = oWsSettings.regPaths,
+    //         sSettingsPath = oRegPaths.LogonSettings;
+
+    //     let oRegData = {};
+    //     oRegData[sSettingsPath] = {};
+    //     oRegData[sSettingsPath]["LastSelectedNodeKey"] = {
+    //         value: LastSelectedNodeKey,
+    //         type: "REG_SZ"
+    //     };
+
+    //     const RegeditPromisified = parent.require('regedit').promisified;
+
+    //     // 레지스트리 데이터 저장
+    //     await RegeditPromisified.putValue(oRegData);
+
+
+    // }; // end of oAPP.fn.fnSetSaveSelectedItemPosition
 
     /************************************************************************
      * WorkSpace Tree 구조 만들기
