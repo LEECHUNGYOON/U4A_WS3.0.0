@@ -1237,7 +1237,7 @@
             sPath = `${sHost}/zu4a/${APPID}?sap-language=${oServerInfo.LANGU}&sap-client=${oServerInfo.CLIENT}`;
 
         if (bIsMulti) {
-            sPath = `${sHost}/zu4a_imp/ui5multipreview?applid=${APPID}`;
+            sPath = `${sHost}/zu4a_imp/ui5multipreview?ws-platform=3.0&applid=${APPID}`;
         }
 
         var oDefBrows = APPCOMMON.fnGetModelProperty("/DEFBR"),
