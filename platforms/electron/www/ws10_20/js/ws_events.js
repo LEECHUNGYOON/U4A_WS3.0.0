@@ -688,8 +688,10 @@
             SESSKEY = parent.getSessionKey(),
             BROWSERKEY = parent.getBrowserKey();
 
-        var sExamUrl = encodeURI("/zu4a_imp/u4a_samples?parentTyp=ELEC&WS=X"),
-            sPath = parent.getServerPath() + "/external_open?URL=" + encodeURIComponent(sExamUrl);
+        // var sExamUrl = encodeURI("/zu4a_imp/u4a_samples?parentTyp=ELEC&WS=X");
+        // var sPath = parent.getServerPath() + "/external_open?URL=" + encodeURIComponent(sExamUrl);
+        var sExamUrl = encodeURI("/zu4a_imp/u4a_samples?parentTyp=ELEC&WS=X&ws-platform=3.0");        
+        var sPath = parent.getServerPath() + "/external_open?ws-platform=3.0&URL=" + encodeURIComponent(sExamUrl);
 
         var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
             oDefaultOption = parent.require(sSettingsJsonPath),

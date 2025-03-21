@@ -137,15 +137,17 @@ if (PARWIN && !PARWIN.isDestroyed()) {
  ************************************************************************/
 oAPP.fn.fnFrameLoad = () => {
 
-    let sServerPath = oAPP.attr.sServerPath,
-        sServerHtmlUrl = sServerPath + "/getP13nPreviewHTML",
-        oForm = document.getElementById("u4asendform"),
-        aParam = [
+    let sServerPath = oAPP.attr.sServerPath;
+    let sServerHtmlUrl = sServerPath + "/getP13nPreviewHTML";
+
+    let oForm = document.getElementById("u4asendform");
+    let aParam = [
             { NAME: "LIBRARY", VALUE: "sap.m, sap.f, sap.ui.table" },
             { NAME: "LANGU", VALUE: oAPP.attr.WS_LANGU },
             // { NAME: "THEME", VALUE: "sap_horizon" },
             { NAME: "THEME", VALUE: oAPP.attr.sDefTheme },
             { NAME: "CALLBACKFUNC", VALUE: "parent.oAPP.fn.onFrameLoadSuccess();" },
+            { NAME: "ws-platform", VALUE: "3.0" },
         ]
 
     for (var i = 0; i < aParam.length; i++) {

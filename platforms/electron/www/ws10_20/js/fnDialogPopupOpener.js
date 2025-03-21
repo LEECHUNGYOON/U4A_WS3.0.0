@@ -2514,7 +2514,8 @@
         // 실행시킬 호스트명 + U4A URL 만들기
 
         var sHost = oServerHost,
-            sUrl = encodeURI(`${sHost}/zu4a_imp/cssfontstylewizrd?sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}`);
+            // sUrl = encodeURI(`${sHost}/zu4a_imp/cssfontstylewizrd?sap-user=${oUserInfo.ID}&sap-password=${oUserInfo.PW}`);
+            sUrl = encodeURI(`${sHost}/zu4a_imp/cssfontstylewizrd?ws-platform=3.0`);
 
         // 브라우저 옵션 설정
         var sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
@@ -2605,10 +2606,10 @@
             sHost = parent.getServerHost(),
             oUserInfo = parent.getUserInfo(),
             sServerPath = parent.getServerPath(),
-            sIconListUrl = sHost + "/zu4a_acs/icon_exp?sap-user=" + oUserInfo.ID + "&sap-password=" + oUserInfo.PW + "&sap-language=" + oUserInfo.LANGU + "&WS=X#/overview/SAP-icons",
+            sIconListUrl = sHost + "/zu4a_acs/icon_exp?ws-platform=3.0&sap-user=" + oUserInfo.ID + "&sap-password=" + oUserInfo.PW + "&sap-language=" + oUserInfo.LANGU + "&WS=X#/overview/SAP-icons",
             sUrl = encodeURI(sIconListUrl),
             // sUrl = encodeURI("/zu4a_acs/icon_exp?WS=X#/overview/SAP-icons"),
-            sPath = sServerPath + "/external_open?URL=" + encodeURIComponent(sUrl);
+            sPath = sServerPath + "/external_open?ws-platform=3.0&URL=" + encodeURIComponent(sUrl);
 
         // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
         var oResult = APPCOMMON.getCheckAlreadyOpenWindow(sWinObjType);
@@ -2757,7 +2758,7 @@
         oAPP.common.fnSetBusyLock("X");
 
         var sWinObjType = APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D28"), // Property Help
-            sPath = parent.getServerPath() + "/external_open?URL=" + encodeURIComponent(sUrl + "&WS=X");
+            sPath = parent.getServerPath() + "/external_open?ws-platform=3.0&URL=" + encodeURIComponent(sUrl + "&WS=X");
 
         // // 테스트 목적임.
         // if (typeof sUrl !== "string") {
