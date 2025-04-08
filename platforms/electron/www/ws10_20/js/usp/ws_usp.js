@@ -1552,6 +1552,36 @@
 
     }
 
+    function fnSetEditorSearchInputMaxlength(_oAceEditor){
+
+        if(!_oAceEditor){
+            return;
+        }
+
+        _oAceEditor.commands.addCommand({
+            name: "find",
+            bindKey: { win: "Ctrl-F", mac: "Command-F" },
+            exec: function(editor) {
+                console.log("찾기 명령 실행됨");
+        
+                // 기존 find 명령을 호출
+                editor.execCommand("find", true); // true로 넣으면 중복 호출 방지 가능
+        
+                // setTimeout으로 DOM 생성 직후를 포착 가능
+                setTimeout(() => {
+                    const searchBox = editor.container.querySelector(".ace_search");
+                    if (searchBox) {
+                        console.log("Searchbox DOM:", searchBox);
+                    }
+                }, 0);
+            },
+            readOnly: true
+        });
+
+        // console.log(document.querySelectorAll(".ace_search_field"));
+
+    } // end of fnSetEditorSearchInputMaxlength
+
     /**************************************************************************
      * [WS30] Usp Page
      **************************************************************************/
@@ -1560,7 +1590,7 @@
         let lfCodeeditorDelegate = () => { // codeeditor Delegate
 
             return {
-
+                canSkipRendering: true,
                 onAfterRendering: function (oControl) {
 
                     var oEditor = oControl.srcControl,
@@ -1572,6 +1602,18 @@
 
                     // 에디터에 기본 폰트 사이즈 적용
                     _oAceEditor.setFontSize(gEditorFontSize);
+
+                    /**
+                     * @since   2025-02-27
+                     * @version 3.5.0-sp7
+                     * @author  soccerhs
+                     * 
+                     * @description
+                     * 
+                     *
+                     *  
+                     */
+                    fnSetEditorSearchInputMaxlength(_oAceEditor);
 
                 }
             };
@@ -1649,6 +1691,7 @@
          */
 
         oCodeEditor.addEventDelegate({
+            canSkipRendering: true,
             onkeyup: _fnCodeeditorKeyupEvent,
             oncontextmenu: (oEvent) => {
 
@@ -1660,6 +1703,7 @@
         });
 
         oCodeEditorClone.addEventDelegate({
+            canSkipRendering: true,
             onkeyup: _fnCodeeditorKeyupEvent,
             oncontextmenu: (oEvent) => {
 
