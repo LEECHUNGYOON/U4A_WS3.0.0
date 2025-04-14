@@ -1351,7 +1351,7 @@
             e = n[o],
                 h = e[r],
                 u = e[t] || 0,
-                c[h] = c[h] || [],
+                c[h] = c[h] || [],                
                 e[z] = c[h],
                 0 != u ? (c[u] = c[u] || [], c[u].push(e)) : a.push(e);
         }
