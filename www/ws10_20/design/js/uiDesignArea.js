@@ -3857,6 +3857,8 @@
     //dragUI명과 dropUI명이 같은경우 exit.
     if(l_drag.OBJID === l_drop.OBJID){
 
+      delete l_drop.dropLineInfo;
+
       //246	해당 영역에 UI를 DROP 할 수 없습니다.
       parent.showMessage(sap, 10, "E", parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "246"));
 
@@ -3867,6 +3869,9 @@
 
     //U4A_HIDDEN_AREA DIV 영역에 추가대상 UI 정보 확인.
     if(oAPP.fn.designChkHiddenAreaUi(l_drag.UIOBK, l_drop.UIOBK) === true){
+
+      delete l_drop.dropLineInfo;
+
       //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
       return;
@@ -3874,6 +3879,8 @@
 
     //DRAG UI와 DROP UI의 이동 가능 여부 점검.
     if(oAPP.fn.chkDnDPossible(l_drag.zTREE, l_drop.OBJID)){
+
+      delete l_drop.dropLineInfo;
 
       //246	해당 영역에 UI를 DROP 할 수 없습니다.
       parent.showMessage(sap, 10, "E", parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "246"));
@@ -3886,6 +3893,8 @@
 
     //drop 라인의 drop 가능 flag 처리가 되지 않은경우.
     if(l_drop.drop_enable === false){
+
+      delete l_drop.dropLineInfo;
       
       //246	해당 영역에 UI를 DROP 할 수 없습니다.
       parent.showMessage(sap, 10, "E", parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "246"));

@@ -348,9 +348,9 @@
 
         oBrowserWindow.loadURL(PATHINFO.SERVERLIST_v2);
 
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         oBrowserWindow.webContents.on('did-finish-load', async function() {
             

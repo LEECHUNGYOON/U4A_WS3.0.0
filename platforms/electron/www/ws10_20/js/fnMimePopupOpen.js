@@ -10,6 +10,7 @@
 
     const
         REMOTE = parent.REMOTE,
+        CURRWIN = REMOTE.getCurrentWindow(),
         PATH = parent.PATH,
         APP = parent.APP,
         FS = REMOTE.require('fs'),
@@ -17,28 +18,31 @@
         SHELL = REMOTE.shell,
         APPCOMMON = oAPP.common;
 
+    let USERINFO = parent.getUserInfo();
+    let LANGU = USERINFO.LANGU;
+
     const
         C_DIALOG_ID = "u4aMimeTreeDlg";
 
-    var oAppInfo,
+    var APPINFO,
         oThemeColors;
 
     oAPP.fn.fnMimePopupOpen = function () {
 
         oThemeColors = sap.ui.core.theming.Parameters.get();
 
-        if (oAppInfo) {
-            oAppInfo = undefined;
+        if (APPINFO) {
+            APPINFO = undefined;
         }
 
         let oWs20App = APPCOMMON.fnGetModelProperty("/WS20/APP");
         if (oWs20App) {
-            oAppInfo = jQuery.extend(true, {}, oWs20App);
+            APPINFO = jQuery.extend(true, {}, oWs20App);
         }
 
         let oWs30App = APPCOMMON.fnGetModelProperty("/WS30/APP");
         if (oWs30App) {
-            oAppInfo = jQuery.extend(true, {}, oWs30App);
+            APPINFO = jQuery.extend(true, {}, oWs30App);
             APPCOMMON.fnSetModelProperty("/WS20", {});
         }
 
@@ -56,18 +60,14 @@
             CONTENT: "",
             VISI: "",
         };
-
+ 
         // Mime 관련 Default 모델 데이터 초기 세팅
-        APPCOMMON.fnSetModelProperty("/WS20/MIME", oMimeInfo); // Mime File 정보	
-        APPCOMMON.fnSetModelProperty("/WS20/MIMETREE", null); // Mime Tree Data	
-        APPCOMMON.fnSetModelProperty("/WS20/MIMEDATA", oMimeData); // Mime File Data
-
-        // // Mime Tree Data 구하기        
-        // oAPP.fn.fnGetMimeTreeData();
+        APPCOMMON.fnSetModelProperty("/WS20/MIME", oMimeInfo);      // Mime File 정보	
+        APPCOMMON.fnSetModelProperty("/WS20/MIMETREE", null);       // Mime Tree Data	
+        APPCOMMON.fnSetModelProperty("/WS20/MIMEDATA", oMimeData);  // Mime File Data
 
         var oMimeTreeDlg = sap.ui.getCore().byId(C_DIALOG_ID);
-        if (oMimeTreeDlg) {
-            // oMimeTreeDlg.rerender();
+        if (oMimeTreeDlg) {            
             oMimeTreeDlg.open();
             return;
         }
@@ -105,8 +105,7 @@
 
                 return sFormattedDate;
 
-            })
-                .addStyleClass("sapUiTinyMarginEnd"),
+            }).addStyleClass("sapUiTinyMarginEnd"),
 
             // Mime Create Time
             oCreateTimeInput = new sap.m.Input({
@@ -125,8 +124,7 @@
 
                 return sFormattedDate;
 
-            })
-                .addStyleClass("sapUiTinyMarginEnd"),
+            }).addStyleClass("sapUiTinyMarginEnd"),
 
             oCreateUnameInput = new sap.m.Input({
                 value: "{/WS20/MIME/ERNAM}",
@@ -190,8 +188,7 @@
                 content: [
                     new sap.m.Image({
                         src: "{/WS20/MIMEDATA/CONTENT}"
-                    })
-                        .bindProperty("src", {
+                    }).bindProperty("src", {
                             parts: [{
                                 path: "/WS20/MIMEDATA/CONTENT"
                             },
@@ -243,8 +240,7 @@
                             return CONT;
 
                         }
-                    })
-                        .bindProperty("visible", "/WS20/MIMEDATA/VISI", function (value) {
+                    }).bindProperty("visible", "/WS20/MIMEDATA/VISI", function (value) {
 
                             if (value == "TEXT") {
                                 return true;
@@ -264,8 +260,7 @@
                                 text: APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "313"), // This file can't be previewed.
                             })
                         ]
-                    })
-                        .bindProperty("visible", "/WS20/MIMEDATA/VISI", function (value) {
+                    }).bindProperty("visible", "/WS20/MIMEDATA/VISI", function (value) {
 
                             // visible 값이 없으면 No data 화면을 보여준다.
                             if (!value || value == "") {
@@ -287,9 +282,6 @@
             resizable: true,
             contentWidth: "100%",
             contentHeight: "100%",
-            // title: "U4A MIME Repository",
-            // titleAlignment: sap.m.TitleAlignment.Center,
-            // icon: "sap-icon://picture",
 
             // Aggregations
             customHeader: new sap.m.Toolbar({
@@ -383,27 +375,31 @@
      ************************************************************************/
     oAPP.fn.fnGetMimeTreeData = function () {
 
-        // var oAppInfo = parent.getAppInfo();
-
-        // // WS20에 app 정보가 없다면 Usp App 정보를 가져온다.
-        // if (!oAppInfo) {
-        //     oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
-        // }
-
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
 
         //MIME 데이터 구하기..
-        var sPath = parent.getServerPath() + '/getmimetree?APPID=' + oAppInfo.APPID;
+        var sPath = parent.getServerPath() + '/getmimetree?APPID=' + APPINFO.APPID;
 
         sendAjax(sPath, null, lf_success, null, true, 'GET');
 
-        function lf_success(oResult) {
+        async function lf_success(oResult) {
 
             // 현재 떠있는 브라우저
             var oCurrWin = REMOTE.getCurrentWindow();
 
-            if (oResult.RETCD == "E") {
+            if (oResult.RETCD === "E") {
+
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [             
+                    `[PATH]: www/ws10_20/js/fnMimePopupOpen.js`,  
+                    `=> oAPP.fn.fnGetMimeTreeData`,
+                    `=> lf_success`,
+                    `[LOG]: Mime Data Not Found`     
+                ];
+
+                console.log(aConsoleMsg.join("\r\n"));
+                console.trace();
 
                 // 오류 사운드 실행
                 parent.setSoundMsg('02'); // sap sound(error)
@@ -412,9 +408,51 @@
                 oCurrWin.flashFrame(true);
 
                 // busy 끄고 Lock 풀기
-                oAPP.common.fnSetBusyLock("");
+                APPCOMMON.fnSetBusyLock("");
 
                 return;
+            }
+
+            /**
+             * @since   2025-04-15
+             * @version 3.5.1-sp3
+             * @author  soccerhs
+             * 
+             * @title - Mime Repository 속도 개선에 따른 보완작업
+             * @description
+             * - 전체 마임 정보 중, 자식이 있는 노드일 경우에는
+             *   트리 테이블에 "접기 펼치기" 아이콘을 활성화 하기 위해 Dummy 자식을 붙인다.
+             */
+            if(APPCOMMON.checkWLOList("C", "UHAK901016") === true){
+
+                // 각 노드 중, Child가 있는 노드만 추출한다.
+                let aHasChild = oResult.MIMETREE.filter(e => e.ISECD === 'X');
+                
+                // 자식이 있을 경우에는 Tree Table에 "접기/펼치기 아이콘"을 활성화 하기 위해 
+                // 해당 노드에 Dummy 자식을 붙여 놓는다.
+                for(var oHasChild of aHasChild){
+
+                    // 노드 레벨이 3레벨일 경우 Skip..
+                    if(oHasChild.ZLEVEL !== 3){
+                        continue;
+                    }
+
+                    // 노드 중 나의 APPID는 Skip..
+                    if(oHasChild.NTEXT === APPINFO.APPID){
+                        continue;
+                    }
+
+                    // 더미 자식을 넣는다.
+                    let oDummyChild = {
+                        PARENT: oHasChild.CHILD,
+                        CHILD: "DUMMY_CHILD",
+                        NTEXT: parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "312") // No data Found.
+                    };
+
+                    oResult.MIMETREE.push(oDummyChild);
+
+                }
+                
             }
 
             // Mime Tree 데이터에 My APP 표시를 위한 플래그 지정
@@ -590,6 +628,7 @@
     oAPP.fn.fnGetMimeTreeTable = function () {
 
         var oTreeTable = new sap.ui.table.TreeTable("mimeTree", {
+            busyIndicatorDelay: 0,
             selectionMode: sap.ui.table.SelectionMode.Single,
             selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
             visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
@@ -722,6 +761,22 @@
             }
 
         }).addStyleClass("u4aWsMimeTreeTable");
+
+
+        /**
+         * @since   2025-04-15
+         * @version 3.5.1-sp3
+         * @author  soccerhs
+         * 
+         * @title - Mime Repository 속도 개선에 따른 보완작업
+         * @description
+         * - 트리 테이블의 "접힘/펼침 버튼" 버튼을 선택하여 펼친 경우, 
+         *   선택한 노드의 하위 자식을 한번도 가져오지 않은 상태일 경우에만
+         *   서버에 가서 하위 자식 데이터를 서버에서 구하여 하위 자식 데이터를 넣는다.
+         */
+        if(APPCOMMON.checkWLOList("C", "UHAK901016") === true){
+            oTreeTable.attachToggleOpenState(_onMimeTreeToggleOpenState);
+        }
 
         return oTreeTable;
 
@@ -1130,8 +1185,8 @@
             FLDNM: oData.NTEXT, // 파일 및 폴더 명
             FLDPATH: oData.URL, // 파일 및 폴더 경로
             DESC: oData.MDESC, // DESCRIPTION
-            DEVPKG : oAppInfo.PACKG, // 개발 패키지
-            REQNO: oAppInfo.REQNO || "" // Request/Task 
+            DEVPKG : APPINFO.PACKG, // 개발 패키지
+            REQNO: APPINFO.REQNO || "" // Request/Task 
         };
 
         var sPath = parent.getServerPath() + '/set_mime_crud',
@@ -1880,8 +1935,8 @@
                 TRCOD: "C", // C: 생성, D: 삭제
                 OBJTYPE: "FILE", // FILE: 파일, FOLD: 폴더
                 FLDPATH: oData.URL, // 파일 및 폴더 경로
-                DEVPKG: oAppInfo.PACKG, // 개발 패키지
-                REQNO: sReqNo == null ? oAppInfo.REQNO : sReqNo, // Request/Task                
+                DEVPKG: APPINFO.PACKG, // 개발 패키지
+                REQNO: sReqNo == null ? APPINFO.REQNO : sReqNo, // Request/Task                
             };
 
             var sPath = parent.getServerPath() + '/set_mime_crud',
@@ -2023,12 +2078,12 @@
         }
 
         var oRowData = oModel.getProperty(oCtx.sPath);
-        // oAppInfo = parent.getAppInfo();
+        // APPINFO = parent.getAppInfo();
 
         // mime tree 의 기본 contextmenu 정보를 구한다. 
         var aCtxMenu = oAPP.fn.fnGetMimeTreeDefCtxMenuList();
 
-        if (oAppInfo.IS_EDIT == 'X') {
+        if (APPINFO.IS_EDIT == 'X') {
 
             lf_mimeEdit();
             return;
@@ -2318,7 +2373,7 @@
         function lf_createMimeFolder(sReqNo) {
 
             // 현재 APP 정보
-            // var oAppInfo = parent.getAppInfo();
+            // var APPINFO = parent.getAppInfo();
 
             // 마임 폴더 생성 정보
             var oCrFldInfo = {
@@ -2327,10 +2382,10 @@
                 FLDNM: oData.FLDNM, // 파일 및 폴더 명
                 FLDPATH: oData.FLDPATH, // 파일 및 폴더 경로
                 DESC: oData.DESC, // DESCRIPTION
-                DEVPKG: oAppInfo.PACKG, // 개발 패키지
-                REQNO: sReqNo == null ? oAppInfo.REQNO : sReqNo, // Request/Task
+                DEVPKG: APPINFO.PACKG, // 개발 패키지
+                REQNO: sReqNo == null ? APPINFO.REQNO : sReqNo, // Request/Task
                 CONTENT: "", // 파일 컨텐츠(xstring)
-                CLSID: oAppInfo.CLSID
+                CLSID: APPINFO.CLSID
             };
 
             // 마임 생성 서비스
@@ -2391,5 +2446,210 @@
         oEvent.getSource().getParent().close();
 
     }; // end of ev_createMimeFolderCloseEvent
+
+
+    /************************************************************************
+     * 선택한 노드의 하위 자식 데이터를 구한다.
+     ************************************************************************/
+    function _getMimeChildData(oSelNode){
+
+        return new Promise(function(resolve){
+
+            //MIME 데이터 구하기..
+            var sPath = parent.getServerPath() + "/get_mime_children";
+
+            let oFormData = new FormData();
+                oFormData.append("MIME_DATA", JSON.stringify(oSelNode));
+
+            function fnSuccess(oResult){
+
+                return resolve(oResult);
+
+            }
+
+            function fnError(){
+
+                return resolve({
+                    RETCD: "E"
+                });
+
+            }
+
+            // function sendAjax(sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob) {
+            sendAjax(sPath, oFormData, fnSuccess, null, null, 'POST', fnError);
+
+        });
+
+    } // end of _getMimeChildData
+
+
+    /************************************************************************
+     * Tree Table의 "접힘/펼침" 버튼 이벤트
+     ************************************************************************/
+    async function _onMimeTreeToggleOpenState(oEvent){
+
+        let bIsExpanded = oEvent.getParameter("expanded");
+            
+        if(bIsExpanded === false){
+            return;
+        }
+
+        // let oTable = oEvent.getSource();
+
+        let oRowCtx = oEvent.getParameter("rowContext");
+        let oModel = oRowCtx.getModel();
+        let sPath = oRowCtx.getPath();
+        
+        // 선택한 노드 정보를 구한다.
+        let oSelNode = oModel.getProperty(sPath);
+        let aChild = oSelNode.MIMETREE;
+
+        // 하위에 이미 자식 데이터가 있다면 빠져나감 
+        // (더미로 생성된 데이터가 없다면 이미 한번은 서버가서 자식 마임 정보를 가져왔다는 의미임)
+        // 한번은 자식 데이터를 가져온적이 있다면 또 다시 자식 요소를 서버가서 구하지 않음.
+
+        // ☝️ 더미 데이터가 있다는 의미? 
+        // - 자식 데이터를 한번도 가져오지 않은 상태
+        let oChild = aChild.find(e => e.CHILD === "DUMMY_CHILD");
+        if(!oChild){
+            return;
+        }
+
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");        
+
+        // 선택한 노드의 자식 마임 데이터를 구한다.
+        let oMimeChildResult = await _getMimeChildData(oSelNode);
+        
+        var sRetMsg = "";
+
+        if(oMimeChildResult.RETCD === "E"){   
+ 
+            switch (oMimeChildResult.STCOD) {
+                case "E001": // 필수 파라미터가 누락된 경우                    
+          
+                    // 마임정보를 구하는 도중에 문제가 발생하였습니다.
+                    sRetMsg = parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "313");
+
+                    // 콘솔용 오류 메시지
+                    var aConsoleMsg = [             
+                        `[PATH]: www/ws10_20/js/fnMimePopupOpen.js`,  
+                        `=> _onMimeTreeToggleOpenState`,
+                        `=> 마임 정보 구하러 서버 호출 할 때 파라미터 필수 누락!!`,
+                    ];
+
+                    console.error(aConsoleMsg.join("\r\n"));
+                    console.trace();
+
+                    break;
+
+                case "E002": // 서버로 전달한 파라미터 중, 마임 정보 구성이 잘못 된 경우                    
+  
+                    // 마임정보를 구하는 도중에 문제가 발생하였습니다.
+                    sRetMsg = parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "313");                    
+                    
+                    // 콘솔용 오류 메시지
+                    var aConsoleMsg = [             
+                        `[PATH]: www/ws10_20/js/fnMimePopupOpen.js`,  
+                        `=> _onMimeTreeToggleOpenState`,
+                        `=> 서버에서 마임 정보 구성이 잘못됨!!`,      
+                    ];
+
+                    console.error(aConsoleMsg.join("\r\n"));
+                    console.trace();
+
+                    break;
+            
+                default:
+
+                    // 마임 정보 구성중, 알 수 없는 오류가 발생하였습니다.
+                    sRetMsg = parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "314"); 
+
+                    // 콘솔용 오류 메시지
+                    var aConsoleMsg = [             
+                        `[PATH]: www/ws10_20/js/fnMimePopupOpen.js`,  
+                        `=> _onMimeTreeToggleOpenState`,
+                        `=> 알수 없는 오류 발생!!`,      
+                    ];
+
+                    console.error(aConsoleMsg.join("\r\n"));
+                    console.trace();
+
+                    break;
+            }
+
+            sRetMsg = sRetMsg + "\n\n";
+
+            // 문제가 지속될 경우, U4A 솔루션 팀에 문의하세요.
+            sRetMsg += parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "228");
+
+            // 오류 사운드 실행
+            parent.setSoundMsg('02'); // sap sound(error)
+            
+            CURRWIN.flashFrame(true); // 작업표시줄 깜빡임
+
+            parent.showMessage(sap, 20, "E", sRetMsg);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
+            return;
+        }
+
+        /**
+         * 자식 마임 데이터를 구한 뒤, 
+         * 자식 마임에 대한 계층 구조를 만들어 준다.
+         */
+        let aChildData = oMimeChildResult?.T_MIME_CHILD || [];
+      
+        /**
+         * 선택한 노드를 복사한 후 PARENT 정보를 지운다.
+         * 
+         * ☝️ PARENT 정보를 지우는 이유
+         * 
+         * - 자식 노드에 대한 계층 구조를 만들어줄 때,
+         *   계층구조 만들어주는 function 에서 부모 노드 정보가 space 인 노드가 있어야 계층구조 만들어 주기 때문에, 
+         *          
+         *   선택한 노드의 정보와 서버에서 구한 자식 노드 정보를 하나의 Array에 담아서
+         *   계층구조 만들어주는 function을 수행한 이후에,
+         *   만들어진 계층구조에서 자식 요소만 발췌한 후 원본 모델에 넣어준다.
+         * 
+         */
+        let oCopySelNode = JSON.parse(JSON.stringify(oSelNode));
+            oCopySelNode.PARENT = "";
+
+        aChildData.push(oCopySelNode);
+
+        let oJsonModel = new sap.ui.model.json.JSONModel();
+            oJsonModel.setProperty("/MIMETREE", aChildData);
+
+        oAPP.fn.fnSetTreeJson(oJsonModel, "MIMETREE", "CHILD", "PARENT", "MIMETREE");
+
+        let oChilren = oJsonModel.getProperty("/MIMETREE/0");
+
+        oSelNode.MIMETREE = oChilren.MIMETREE;
+        
+        // 자식 요소가 없을 경우 데이터 없음 표시를 해준다.
+        if(oSelNode.MIMETREE.length === 0){
+         
+            // 더미 자식을 넣은 후, 데이터 없음 메시지를 노드에 출력한다.
+            let oDummyChild = {
+                PARENT: oSelNode.CHILD,
+                CHILD: "DUMMY_CHILD",
+                NTEXT: parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "312") // No data Found.
+            };
+            
+            oSelNode.MIMETREE.push(oDummyChild);
+        
+        }
+
+        oModel.setProperty(sPath, oSelNode);
+            
+        oModel.refresh();
+
+        // busy 끄고 Lock 풀기기
+        oAPP.common.fnSetBusyLock("");        
+
+    } // end of _onMimeTreeToggleOpenState
 
 })(window, $, oAPP);

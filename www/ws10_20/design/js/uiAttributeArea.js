@@ -3409,6 +3409,10 @@
     if(is_attr.UIATK === "AT000011858"){
       //UI에 수집되어있는 해당 이벤트 삭제.
       oAPP.fn.attrDelClientEvent(is_attr, "HM");
+
+      //HTML Added Source Type 유형 초기화.
+      is_attr.ADDSC = "";
+
     }
 
     

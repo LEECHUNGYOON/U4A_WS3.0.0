@@ -233,17 +233,13 @@
         if(_aUW02.length > 0){
 
           //현재 추가 하려는 UI에 가능한 항목인지 확인.
-          var _sUW02 = _aUW02.find( item => item.FLD03 === UIOBK );
+          var _sUW02 = _aUW02.find( item => item.FLD03 === UIOBK && item.FLD05 === ls_sel.UIATT );
 
           //추가 하려는 UI에 허용 불가능한 경우 skip.
           if(typeof _sUW02 === "undefined"){
             continue;
           }
 
-          //허용 대상 aggregation과 다른 경우 skip.
-          if(_sUW02.FLD05 !== ls_sel.UIATT){
-            continue;
-          }
           
         }
         //20250309 PES -END.
