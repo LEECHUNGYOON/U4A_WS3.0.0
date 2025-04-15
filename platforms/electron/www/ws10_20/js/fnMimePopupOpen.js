@@ -1250,9 +1250,33 @@
             return;
         }
 
-        oTreeTableModel.setProperty(oCtx.sPath, null, true); // 마임 트리 테이블에 데이터 삭제
+        let oDelObj = oCtx.getObject();
+        let sDelkey = oDelObj.CHILD;
+        
+        let iLastIndex = oCtx.sPath.lastIndexOf("/");
+        if(iLastIndex === -1){
+            return;
+        }
+
+        let sParentBindPath = oCtx.sPath.substr(0, iLastIndex);
+
+        let aChildren = oTreeTableModel.getProperty(sParentBindPath);
+        if(!aChildren || Array.isArray(aChildren) === false || aChildren.length === 0){
+            return;
+        }
+
+        let iFindIdx = aChildren.findIndex(e => e.CHILD === sDelkey);
+        if(iFindIdx === -1){
+            return;
+        }
+
+        aChildren.splice(iFindIdx, 1);        
+
+        // oTreeTableModel.setProperty(oCtx.sPath, null, true); // 마임 트리 테이블에 데이터 삭제
         oTreeTableModel.setProperty("/WS20/MIME", null, true); // 마임의 프로퍼티 데이터 초기화
         oTreeTableModel.setProperty("/WS20/MIMEDATA", null, true); // 마임의 미리보기 모델 초기화        
+
+        oTreeTableModel.refresh();
 
     }; // end of oAPP.fn.fnMimeDeleteSuccess
 
