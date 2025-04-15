@@ -426,7 +426,7 @@
             if(APPCOMMON.checkWLOList("C", "UHAK901016") === true){
 
                 // 각 노드 중, Child가 있는 노드만 추출한다.
-                let aHasChild = oResult.MIMETREE.filter(e => e.ISECD === 'X');
+                let aHasChild = oResult.MIMETREE.filter(e => e && e?.ISECD === 'X');
                 
                 // 자식이 있을 경우에는 Tree Table에 "접기/펼치기 아이콘"을 활성화 하기 위해 
                 // 해당 노드에 Dummy 자식을 붙여 놓는다.
@@ -2510,7 +2510,7 @@
 
         // ☝️ 더미 데이터가 있다는 의미? 
         // - 자식 데이터를 한번도 가져오지 않은 상태
-        let oChild = aChild.find(e => e.CHILD === "DUMMY_CHILD");
+        let oChild = aChild.find(e => e && e?.CHILD === "DUMMY_CHILD");
         if(!oChild){
             return;
         }
