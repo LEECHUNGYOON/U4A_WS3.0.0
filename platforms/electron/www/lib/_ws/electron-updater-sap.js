@@ -292,7 +292,7 @@ exports.autoUpdaterSAP = {
 
                     // 20240708 soccerhs: 오류 발생시 오류 메시지 데이터를 공통 구조로 매핑함
                     __fireEvent(document, 'update-error-sap', {
-                        message: sRET.RTMSG
+                        message: sRET?.RTMSG || ""
                     });
 
                     return;
