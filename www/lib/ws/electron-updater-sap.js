@@ -526,7 +526,7 @@ exports.autoUpdaterSAP = {
 
                         // 20240708 soccerhs: 오류 발생시 오류 메시지 데이터를 공통 구조로 매핑함
                         __fireEvent(document, 'update-error-sap', {
-                            message: oRES.RTMSG
+                            message: oRES?.RTMSG || ""
                         });
 
                         return;
@@ -567,7 +567,27 @@ exports.autoUpdaterSAP = {
 
                         oWsVerInfo = JSON.parse(xhr.response);
 
-                        updVER = oWsVerInfo.VERSN;
+                        updVER = oWsVerInfo?.VERSN || "";
+
+                        if(!updVER){
+
+                            __fireEvent(document, 'update-error-sap', {
+                                message: GS_MSG.M001 // 버전 정보 구하는 도중에 문제가 발생하였습니다
+                            });
+
+                            // 콘솔용 오류 메시지
+                            var aConsoleMsg = [             
+                                `[PATH]: www/lib/ws/electron-updater-sap.js`,  
+                                `=> checkForUpdates`,
+                                `=> xhr.onreadystatechange`,
+                                `=> oWsVerInfo: ${oWsVerInfo}`,  
+                            ];
+
+                            console.error(aConsoleMsg.join("\r\n"));
+                            console.trace();
+
+                            return;
+                        }
                         
                         appVer = Number(__appVer.replace(regexVer, "")); //현재 app 버젼  oAPP.remote.app.getVersion()
                         updVER = Number(updVER.replace(regexVer, "")); //등록되있는 서버 업데이트 버젼
