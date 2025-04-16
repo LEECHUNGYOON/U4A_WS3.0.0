@@ -1223,6 +1223,30 @@ let oAPP = (function () {
             try {
 
                 var oAuthInfo = await oAPP.fn.fnCheckAuthority();
+                if(oAuthInfo?.TYPE === "E"){
+                    
+                    // 오류 처리..    
+                    sap.m.MessageBox.error(oAuthInfo.MSG);   
+
+                    parent.setDomBusy("");
+
+                    // div의 content DOM을 활성화 처리 한다.
+                    _showContentDom("X");
+
+                    // 콘솔용 오류 메시지
+                    var aConsoleMsg = [             
+                        `[PATH]: www/Login/Login.js`,
+                        `=> oAPP.events.ev_login`,
+                        `=> oAPP.fn.fnCheckAuthority`,
+                        `=> [RETURN]: ${JSON.stringify(oAuthInfo)}`,
+                        `=> [DESC]  : 권한 체크 중 오류 발생!!`, 
+                    ];
+
+                    console.error(aConsoleMsg.join("\r\n"));
+                    console.trace();
+
+                    return;
+                }
 
             } catch (e) {                
 
