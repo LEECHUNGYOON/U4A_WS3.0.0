@@ -16,6 +16,121 @@ $fileVersion = $null
 # Initialize variables for finding saplogon.exe
 $fileFound = $false
 
+# Function to check registry for SAP installation paths
+function Get-SapRegistryPaths {
+    $registryPaths = @()
+    
+    # Check registry for installed SAP GUI
+    $uninstallKeys = @(
+        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*",
+        "HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*"
+    )
+    
+    foreach ($key in $uninstallKeys) {
+        if (Test-Path $key) {
+            $apps = Get-ItemProperty $key | Where-Object { $_.DisplayName -like "*SAP GUI*" }
+            foreach ($app in $apps) {
+                if ($app.InstallLocation) {
+                    $registryPaths += $app.InstallLocation
+                    Write-Host "Found SAP registry path: $($app.InstallLocation)" -ForegroundColor Cyan
+                }
+                
+                # Try to extract path from UninstallString
+                if ($app.UninstallString) {
+                    if ($app.UninstallString -match '"([^"]+)"') {
+                        $extractPath = Split-Path $matches[1] -Parent
+                        $registryPaths += $extractPath
+                        Write-Host "Found SAP registry uninstall path: $extractPath" -ForegroundColor Cyan
+                    }
+                }
+            }
+        }
+    }
+    
+    # Check SapFront.App registry paths
+    $sapFrontPaths = @(
+        "Registry::HKEY_CLASSES_ROOT\SapFront.App\protocol\StdFileEditing\server",
+        "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Classes\SapFront.App\protocol\StdFileEditing\server",
+        "Registry::HKEY_CURRENT_USER\SOFTWARE\Classes\SapFront.App\protocol\StdFileEditing\server"
+    )
+    
+    foreach ($regPath in $sapFrontPaths) {
+        if (Test-Path $regPath) {
+            try {
+                $regValue = (Get-ItemProperty -Path $regPath -ErrorAction SilentlyContinue).'(default)'
+                if ($regValue) {
+                    # Handle path that points to saplgpad.exe
+                    if ($regValue -like "*saplgpad.exe*") {
+                        $sapPath = $regValue -replace "saplgpad.exe", "saplogon.exe"
+                        $registryPaths += $sapPath
+                        Write-Host "Found SAP Front path (saplgpad): $sapPath" -ForegroundColor Cyan
+                    }
+                    
+                    # Handle path that doesn't include SAPGUI
+                    $frontEndPath = $regValue -replace "FrontEnd", "FrontEnd\SAPGUI"
+                    if (-not $frontEndPath.EndsWith("\saplogon.exe")) {
+                        $frontEndPath = $frontEndPath.TrimEnd('\') + "\saplogon.exe"
+                    }
+                    $registryPaths += $frontEndPath
+                    Write-Host "Found SAP Front path (frontend): $frontEndPath" -ForegroundColor Cyan
+                    
+                    # Add the parent directory
+                    $parentDir = Split-Path -Path $regValue -Parent
+                    if ($parentDir) {
+                        $registryPaths += $parentDir
+                        Write-Host "Added parent directory: $parentDir" -ForegroundColor Cyan
+                    }
+                }
+            }
+            catch {
+                $errorMsg = $_.Exception.Message
+                Write-Host "Error reading registry path $regPath`: $errorMsg" -ForegroundColor Red
+            }
+        }
+    }
+    
+    # Return unique paths
+    return $registryPaths | Select-Object -Unique
+}
+
+# Function to recursively search for saplogon.exe in a given path with time limit
+function Find-SapLogonInPath {
+    param (
+        [string]$Path,
+        [int]$TimeoutSeconds = 30  # Default timeout of 30 seconds per path
+    )
+    
+    Write-Host "Searching in $Path..." -ForegroundColor Yellow
+    
+    try {
+        # Start a job for the search to allow timeout
+        $job = Start-Job -ScriptBlock {
+            param($searchPath)
+            Get-ChildItem -Path $searchPath -Filter "saplogon.exe" -Recurse -ErrorAction SilentlyContinue -Force
+        } -ArgumentList $Path
+        
+        # Wait for the job to complete or timeout
+        $completed = Wait-Job -Job $job -Timeout $TimeoutSeconds
+        
+        if ($completed -eq $null) {
+            Write-Host "Search in $Path timed out after $TimeoutSeconds seconds" -ForegroundColor Yellow
+            Stop-Job -Job $job
+            Remove-Job -Job $job -Force
+            return $null
+        }
+        
+        $results = Receive-Job -Job $job
+        Remove-Job -Job $job -Force
+        
+        return $results
+    }
+    catch {
+        $errorMsg = $_.Exception.Message
+        Write-Host "Error searching in $Path`: $errorMsg" -ForegroundColor Red
+        return $null
+    }
+}
+
 # First, check the standard paths as per original script
 if (Test-Path $pathA) {
     Write-Host "File exists at: $pathA" -ForegroundColor Green
@@ -28,166 +143,120 @@ elseif (Test-Path $pathB) {
     $filePath = $pathB
     $fileFound = $true
 } 
-# If file doesn't exist in both standard paths, check registry
-elseif (-not $fileFound) {
+else {
     Write-Host "File not found in standard paths. Checking registry..." -ForegroundColor Yellow
     
-    # First registry path to check
-    try {
-        $regPath1 = "Registry::HKEY_CLASSES_ROOT\SapFront.App\protocol\StdFileEditing\server"
-        if (Test-Path $regPath1) {
-            $regValue = (Get-ItemProperty -Path $regPath1).'(default)'
-            if ($regValue) {
-                $potentialPath = $regValue -replace "FrontEnd", "FrontEnd\SAPGUI"
-                if (-not $potentialPath.EndsWith("saplogon.exe")) {
-                    $potentialPath = $potentialPath.TrimEnd('\') + "\saplogon.exe"
-                }
-                
-                if (Test-Path $potentialPath) {
-                    $filePath = $potentialPath
-                    $fileFound = $true
-                    Write-Host "File found via registry path 1: $filePath" -ForegroundColor Green
-                }
-            }
-        }
-    } catch {
-        Write-Host "Error reading registry path 1: $_" -ForegroundColor Red
-    }
+    # Get potential paths from registry
+    $registryPaths = Get-SapRegistryPaths
     
-    # Second registry path to check if first one didn't work
-    if (-not $fileFound) {
-        try {
-            $regPath2 = "Registry::HKEY_CLASSES_ROOT\SapFront.App\protocol\StdFileEditing\server\"
-            if (Test-Path $regPath2) {
-                $regValue = (Get-ItemProperty -Path $regPath2).'(default)'
-                if ($regValue) {
-                    $potentialPath = $regValue -replace "saplgpad.exe", "saplogon.exe"
-                    
-                    if (Test-Path $potentialPath) {
-                        $filePath = $potentialPath
-                        $fileFound = $true
-                        Write-Host "File found via registry path 2: $filePath" -ForegroundColor Green
-                    }
-                }
-            }
-        } catch {
-            Write-Host "Error reading registry path 2: $_" -ForegroundColor Red
-        }
-    }
-}
-# If file doesn't exist in both standard paths, search more extensively
-else {
-    Write-Host "File not found in standard paths. Searching more extensively..." -ForegroundColor Yellow
-    
-    # Define additional common SAP GUI paths to check
-    $additionalSpecificPaths = @(
-        "C:\Program Files\SAP\FrontEnd\SAPgui\saplogon.exe",  # Different capitalization
-        "C:\Program Files (x86)\SAP\FrontEnd\SAPGUI\saplogon.exe"  # Different capitalization
-    )
-    
-    # Check additional specific paths
-    foreach ($specificPath in $additionalSpecificPaths) {
-        if (Test-Path -Path $specificPath) {
-            $filePath = $specificPath
-            $fileFound = $true
-            Write-Host "File found at: $filePath" -ForegroundColor Green
-            break
-        }
-    }
-    
-    # If still not found, search in Program Files directories
-    if (-not $fileFound) {
-        # Set priority search paths
-        $priorityPaths = @(
-            "C:\Program Files",
-            "C:\Program Files (x86)"
-        )
-    
-        # Search in priority paths
-        foreach ($path in $priorityPaths) {
-            if (Test-Path -Path $path) {
-                Write-Host "Searching in ${path}..." -ForegroundColor Yellow
-                try {
-                    # Add SAP subfolder check first if it exists
-                    $sapPath = Join-Path -Path $path -ChildPath "SAP"
-                    if (Test-Path -Path $sapPath) {
-                        $foundFiles = Get-ChildItem -Path $sapPath -Filter "saplogon.exe" -Recurse -ErrorAction SilentlyContinue -Force
-                        
-                        if ($foundFiles -and $foundFiles.Count -gt 0) {
-                            $filePath = $foundFiles[0].FullName
-                            $fileFound = $true
-                            Write-Host "File found at: $filePath" -ForegroundColor Green
-                            break
-                        }
-                    }
-                    
-                    # If not found in SAP subfolder, search entire Program Files directory
-                    if (-not $fileFound) {
-                        $foundFiles = Get-ChildItem -Path $path -Filter "saplogon.exe" -Recurse -ErrorAction SilentlyContinue -Force
-                        
-                        if ($foundFiles -and $foundFiles.Count -gt 0) {
-                            $filePath = $foundFiles[0].FullName
-                            $fileFound = $true
-                            Write-Host "File found at: $filePath" -ForegroundColor Green
-                            break
-                        }
-                    }
-                }
-                catch {
-                    Write-Host "Error accessing path ${path}: ${_}" -ForegroundColor Red
-                }
-            }
-        }
-    }
-    
-    # If still not found, search all drives
-    if (-not $fileFound) {
-        # Get all available drives
-        $drives = Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Name -match "^[C-Z]$" } | Sort-Object Name
-        
-        # Search for saplogon.exe in each drive
-        foreach ($drive in $drives) {
-            # Display current drive being searched
-            $driveName = $drive.Name
-            Write-Host "Searching drive ${driveName}..." -ForegroundColor Yellow
+    # Check registry-based paths
+    foreach ($regPath in $registryPaths) {
+        if ($regPath -and (Test-Path $regPath)) {
+            Write-Host "Checking registry path: $regPath" -ForegroundColor Yellow
             
-            try {
-                # For C drive, exclude Program Files as they were already searched
-                if ($driveName -eq "C") {
-                    # Search in paths excluding Program Files and Program Files (x86)
-                    $excludePaths = @("Program Files", "Program Files (x86)")
-                    $cDriveDirs = Get-ChildItem -Path "C:\" -Directory -ErrorAction SilentlyContinue | 
-                                  Where-Object { $excludePaths -notcontains $_.Name }
-                    
-                    foreach ($dir in $cDriveDirs) {
-                        $dirPath = $dir.FullName
-                        $foundFiles = Get-ChildItem -Path $dirPath -Filter "saplogon.exe" -Recurse -ErrorAction SilentlyContinue -Force
-                        
-                        if ($foundFiles -and $foundFiles.Count -gt 0) {
-                            $filePath = $foundFiles[0].FullName
+            # Direct file check
+            if (Test-Path $regPath -PathType Leaf) {
+                $filePath = $regPath
+                $fileFound = $true
+                Write-Host "File found at registry path: $filePath" -ForegroundColor Green
+                break
+            }
+            
+            # Directory search
+            $foundInDir = Get-ChildItem -Path $regPath -Filter "saplogon.exe" -ErrorAction SilentlyContinue
+            if ($foundInDir) {
+                $filePath = $foundInDir[0].FullName
+                $fileFound = $true
+                Write-Host "File found in registry directory: $filePath" -ForegroundColor Green
+                break
+            }
+            
+            # Search deeper but with a reasonable timeout
+            $deepSearch = Find-SapLogonInPath -Path $regPath -TimeoutSeconds 15
+            if ($deepSearch -and $deepSearch.Count -gt 0) {
+                $filePath = $deepSearch[0].FullName
+                $fileFound = $true
+                Write-Host "File found via deep search in registry path: $filePath" -ForegroundColor Green
+                break
+            }
+        }
+    }
+    
+    # If still not found, check common SAP paths in all drives
+    if (-not $fileFound) {
+        # Get all drives
+        $allDrives = Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Name -match "^[A-Z]$" }
+        
+        # Define relative SAP paths to check
+        $relativeSapPaths = @(
+            "Program Files\SAP\FrontEnd\SAPGUI\saplogon.exe",
+            "Program Files\SAP\FrontEnd\SAPgui\saplogon.exe", 
+            "Program Files\SAPGUI\saplogon.exe", 
+            "Program Files\SAPgui\saplogon.exe", 
+            "Program Files (x86)\SAP\FrontEnd\SAPGUI\saplogon.exe",
+            "Program Files (x86)\SAP\FrontEnd\SAPgui\saplogon.exe",
+            "SAP\FrontEnd\SAPGUI\saplogon.exe",
+            "SAP\FrontEnd\SAPgui\saplogon.exe",
+            "SAPGUI\saplogon.exe",
+            "SAPgui\saplogon.exe"
+
+        )
+        
+        # Check common locations across all drives
+        foreach ($drive in $allDrives) {
+            $driveLetter = $drive.Name + ":"
+            Write-Host "Checking common SAP paths on drive $driveLetter" -ForegroundColor Yellow
+            
+            foreach ($relPath in $relativeSapPaths) {
+                $fullPath = Join-Path -Path $driveLetter -ChildPath $relPath
+                if (Test-Path $fullPath) {
+                    $filePath = $fullPath
+                    $fileFound = $true
+                    Write-Host "File found at: $filePath" -ForegroundColor Green
+                    break
+                }
+            }
+            
+            if ($fileFound) { break }
+            
+            # If not found in common locations, check for "SAP" folder on the drive root
+            $sapRootFolder = Join-Path -Path $driveLetter -ChildPath "SAP"
+            if (Test-Path $sapRootFolder) {
+                $sapSearch = Find-SapLogonInPath -Path $sapRootFolder -TimeoutSeconds 20
+                if ($sapSearch -and $sapSearch.Count -gt 0) {
+                    $filePath = $sapSearch[0].FullName
+                    $fileFound = $true
+                    Write-Host "File found in SAP folder: $filePath" -ForegroundColor Green
+                    break
+                }
+            }
+        }
+        
+        # Last resort: Full drive search with reasonable timeouts
+        if (-not $fileFound) {
+            Write-Host "File not found in common locations. Starting targeted drive search..." -ForegroundColor Yellow
+            
+            foreach ($drive in $allDrives) {
+                $driveLetter = $drive.Name + ":"
+                Write-Host "Searching drive $driveLetter..." -ForegroundColor Yellow
+                
+                # Get first-level directories to target search
+                $firstLevelDirs = Get-ChildItem -Path $driveLetter -Directory -ErrorAction SilentlyContinue | 
+                                 Where-Object { $_.Name -like "*SAP*" -or $_.Name -like "Program Files*" }
+                
+                if ($firstLevelDirs) {
+                    foreach ($dir in $firstLevelDirs) {
+                        $sapSearch = Find-SapLogonInPath -Path $dir.FullName -TimeoutSeconds 30
+                        if ($sapSearch -and $sapSearch.Count -gt 0) {
+                            $filePath = $sapSearch[0].FullName
                             $fileFound = $true
-                            Write-Host "File found at: $filePath" -ForegroundColor Green
+                            Write-Host "File found in: $filePath" -ForegroundColor Green
                             break
                         }
                     }
                     
                     if ($fileFound) { break }
                 }
-                else {
-                    # For non-C drives, search the entire drive
-                    $drivePath = "${driveName}:\"
-                    $foundFiles = Get-ChildItem -Path $drivePath -Filter "saplogon.exe" -Recurse -ErrorAction SilentlyContinue -Force
-                    
-                    if ($foundFiles -and $foundFiles.Count -gt 0) {
-                        $filePath = $foundFiles[0].FullName
-                        $fileFound = $true
-                        Write-Host "File found at: $filePath" -ForegroundColor Green
-                        break
-                    }
-                }
-            }
-            catch {
-                Write-Host "Error accessing drive ${driveName}: ${_}" -ForegroundColor Red
             }
         }
     }
@@ -246,20 +315,12 @@ try {
             $architecture = "Unknown"
             Write-Host "Architecture: Unknown (Machine Type: 0x$($machineType.ToString('X4')))" -ForegroundColor Yellow
         }
-        
-        # Additional characteristics check
-        $characteristics = [BitConverter]::ToUInt16($bytes, $peHeaderOffset + 22)
-        if (($characteristics -band 0x0100) -eq 0x0100) {
-            Write-Host "Characteristic: Uses 32-bit words" -ForegroundColor Yellow
-        }
-        if (($characteristics -band 0x2000) -eq 0x2000) {
-            Write-Host "Characteristic: DLL file" -ForegroundColor Yellow
-        }
     } else {
         Write-Host "PE signature not found. This may not be a valid executable file." -ForegroundColor Red
     }
 } catch {
-    Write-Host "Error while checking file architecture: $_" -ForegroundColor Red
+    $errorMsg = $_.Exception.Message
+    Write-Host "Error while checking file architecture`: $errorMsg" -ForegroundColor Red
 }
 
 # Determine exit code based on version and architecture
