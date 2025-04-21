@@ -2,7 +2,7 @@
   "main": "cdv-electron-main.js",
   "name": "com.u4a_ws3.app",
   "displayName": "U4A Workspace",
-  "version": "3.5.2",
+  "version": "3.5.3",
   "description": "U4A Application for Integrated Development of Web Environments Developed by the U4A Solution RnD Team.",
   "homepage": "https://www.u4ainfo.com",
   "license": "Apache-2.0",

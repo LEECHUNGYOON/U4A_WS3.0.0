@@ -986,8 +986,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         return new Promise(async function(resolve){
 
+            let sPsRoot = PS_ROOT_PATH;
+
+            if(!APP.isPackaged){
+                sPsRoot = "C:\\";
+            }
+            
             const psOptions = {
-                cwd : PS_ROOT_PATH   
+                cwd : sPsRoot   
             };
 
             // PowerShell 프로세스 생성
