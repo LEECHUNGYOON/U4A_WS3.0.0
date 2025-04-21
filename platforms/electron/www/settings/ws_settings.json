@@ -76,6 +76,7 @@
         "u4aws": "HKCU\\SOFTWARE\\U4A\\WS",
         "cSession": "HKCU\\SOFTWARE\\U4A\\WS\\cSession",
         "GUIVer": "HKCU\\SOFTWARE\\U4A\\WS\\GUIVer",
+        "GUIPath": "HKCU\\SOFTWARE\\U4A\\WS\\GUIPath",
         "systems": "HKCU\\SOFTWARE\\U4A\\WS\\Systems",
         "LogonSettings": "HKCU\\SOFTWARE\\U4A\\WS\\WSLogon\\Settings",
         "globalSettings" : "HKCU\\SOFTWARE\\U4A\\WS\\GlobalSettings"

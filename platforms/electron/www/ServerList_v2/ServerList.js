@@ -29,6 +29,7 @@ const
     SETTINGS = require(PATHINFO.WSSETTINGS),
     XHR = new XMLHttpRequest(),   
     oU4ASERV = require(PATH.join(APPPATH, "ServerList_v2", "modules", "Server", "net", "index.js"));
+    // SYSTEMDRIVE = parent.process.env.SystemDrive;
 
 /************************************************************************
  * 에러 감지
@@ -824,23 +825,37 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             let oWsSettings = fnGetSettingsInfo(),
                 oRegPaths = oWsSettings.regPaths,
                 sGUIVerPath = oRegPaths.GUIVer,
+                sGUIPath = oRegPaths.GUIPath,
                 cSessionPath = oRegPaths.cSession;
 
             let SAPGUIVER = oCheckVer.RTVER,
+                SAPGUIPATH = oCheckVer.RTPATH,
                 sRegPath1 = sGUIVerPath, // "HKCU\\SOFTWARE\\U4A\\WS\\GUIVer",
-                sRegPath2 = cSessionPath; // "HKCU\\SOFTWARE\\U4A\\WS\\cSession";
+                sRegPath2 = cSessionPath, // "HKCU\\SOFTWARE\\U4A\\WS\\cSession";
+                sRegPath3 = sGUIPath;
 
             const Regedit = parent.require('regedit').promisified;
 
             // 레지스트리 폴더 생성
             await Regedit.createKey([sRegPath1]);
             await Regedit.createKey([sRegPath2]);
+            await Regedit.createKey([sRegPath3]);
 
-            // 레지스트리 데이터 저장
+            // 레지스트리에 SAPGUI 버전 정보 저장
             await Regedit.putValue({
                 "HKCU\\SOFTWARE\\U4A\\WS\\GUIVer": {
                     "GUIVer": {
                         value: SAPGUIVER,
+                        type: "REG_DEFAULT"
+                    }
+                }
+            });
+
+            // 레지스트리에 SAPGUI 설치 경로 정보 저장
+            await Regedit.putValue({
+                "HKCU\\SOFTWARE\\U4A\\WS\\GUIPath": {
+                    "GUIVer": {
+                        value: SAPGUIPATH,
                         type: "REG_DEFAULT"
                     }
                 }
@@ -967,17 +982,19 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     /*************************************************************
      * @function - SAPGUI 버전 체크 (Shell 방식)
      *************************************************************/
-    function _checkSapGuiVersionShell(){
+    function _checkSapGuiInfoShell(){
 
         return new Promise(async function(resolve){
+
+            const psOptions = {
+                cwd : PS_ROOT_PATH   
+            };
 
             // PowerShell 프로세스 생성
             const ps = SPAWN("powershell.exe", [
                 "-ExecutionPolicy", "Bypass",
                 "-File", PS_PATH.GET_SAPGUI_INFO,               
-            ], {
-                cwd : PS_ROOT_PATH
-            });
+            ], psOptions);
 
             // 쉘에서 전달하는 콘솔을 수집할 공간
             let aShellConsole = [];
@@ -1026,14 +1043,22 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 // SAPGUI 버전정보 구하기
                 let sSapGuiVer = "";
 
-                let oFound = aShellConsole?.find(item => item.includes("SAPGUI_VER|"));
-                if (oFound) {
-                    sSapGuiVer = oFound?.split("SAPGUI_VER|")[1]?.trim();
+                let oFoundVer = aShellConsole?.find(item => item.includes("SAPGUI_VER|"));
+                if (oFoundVer) {
+                    sSapGuiVer = oFoundVer?.split("SAPGUI_VER|")[1]?.trim();
+                }
+
+                // SAPGUI 경로 구하기
+                let sSapGuiPath = "";
+                let oFoundPath = aShellConsole?.find(item => item.includes("SAPGUI_PATH|"));
+                if (oFoundPath) {
+                    sSapGuiPath = oFoundPath?.split("SAPGUI_PATH|")[1]?.trim();
                 }
 
                 // 리턴 데이터
                 let oRDATA = {
-                    SAPGUI_VER: sSapGuiVer     // 설치된 SAPGUI 버전
+                    SAPGUI_VER:  sSapGuiVer,     // 설치된 SAPGUI 버전
+                    SAPGUI_PATH: sSapGuiPath     // 설치된 SAPGUI 경로
                 }
 
                 return resolve({ SUBRC: code, RDATA: oRDATA });
@@ -1042,7 +1067,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         });
 
-    } // end of _checkSapGuiVersionShell
+    } // end of _checkSapGuiInfoShell
 
 
     /************************************************************************
@@ -1059,13 +1084,13 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             oRES.RETCD = "E";
 
             // (PowerShell) 설치된 SAPGUI 버전 체크
-            let oCheckSapVer = await _checkSapGuiVersionShell();
+            let oCheckSapVer = await _checkSapGuiInfoShell();
 
             // 콘솔용 로그 메시지
             var aConsoleMsg = [             
                 `[PATH]: www/ServerList_v2/ServerList.js`,  
                 `=> oAPP.fn.fnCheckSapguiVersion`,
-                `=> _checkSapGuiVersionShell`,
+                `=> _checkSapGuiInfoShell`,
                 `=> SUBRC: ${oCheckSapVer?.SUBRC}`,
                 `=> RETURN`,
                 `${JSON.stringify(oCheckSapVer)}`
@@ -1084,6 +1109,9 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             // SAPGUI 버전
             let sSapGuiVer = oCheckSapVer?.RDATA?.SAPGUI_VER;
+
+            // SAPGUI 설치 경로
+            let sSapGuiPath = oCheckSapVer?.RDATA?.SAPGUI_PATH || "";
 
             // SAPGUI 버전 정보가 없을 경우
             if(!sSapGuiVer){
@@ -1111,9 +1139,10 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 return resolve(oRES);
             }
 
-            // SAPGUI 버전을 리턴한다.
+            // SAPGUI 버전, 설치 경로를 리턴한다.
             oRES.RETCD = "S";
             oRES.RTVER = sSapGuiVer;
+            oRES.RTPATH = sSapGuiPath;
 
             return resolve(oRES);
 

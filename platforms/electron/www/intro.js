@@ -493,80 +493,80 @@
     /************************************************************************
      * build된 폴더에서 vbs 파일을 로컬 폴더로 복사한다.
      ************************************************************************/
-    oAPP.fn.copyVbsToLocalFolder = function(fnCallback) {
+    // oAPP.fn.copyVbsToLocalFolder = function(fnCallback) {
 
-        var sVbsFolderPath = PATH.join(APPPATH, "vbs"),
-            aVbsFolderList = FS.readdirSync(sVbsFolderPath),
-            iFileCount = aVbsFolderList.length;
+    //     var sVbsFolderPath = PATH.join(APPPATH, "vbs"),
+    //         aVbsFolderList = FS.readdirSync(sVbsFolderPath),
+    //         iFileCount = aVbsFolderList.length;
 
-        if (iFileCount <= 0) {
-            return;
-        }
+    //     if (iFileCount <= 0) {
+    //         return;
+    //     }
 
-        var oResult = {
-            RETCD: "",
-            MSG: ""
-        };
+    //     var oResult = {
+    //         RETCD: "",
+    //         MSG: ""
+    //     };
 
-        var aPromise = [];
+    //     var aPromise = [];
 
-        for (var i = 0; i < iFileCount; i++) {
+    //     for (var i = 0; i < iFileCount; i++) {
 
-            var sFile = aVbsFolderList[i];
-            if (!sFile.endsWith(".vbs")) {
-                continue;
-            }
+    //         var sFile = aVbsFolderList[i];
+    //         if (!sFile.endsWith(".vbs")) {
+    //             continue;
+    //         }
 
-            var sVbsPath = sVbsFolderPath + "\\" + sFile;
+    //         var sVbsPath = sVbsFolderPath + "\\" + sFile;
 
-            var oPromise = oAPP.fn.copyVbsPromise(sFile, sVbsPath);
+    //         var oPromise = oAPP.fn.copyVbsPromise(sFile, sVbsPath);
 
-            aPromise.push(oPromise);
+    //         aPromise.push(oPromise);
 
-        }
+    //     }
 
-        Promise.all(aPromise).then((aValues) => {
+    //     Promise.all(aPromise).then((aValues) => {
 
-            oResult.RETCD = 'S';
+    //         oResult.RETCD = 'S';
 
-            fnCallback(oResult);
+    //         fnCallback(oResult);
 
-        }).catch(function(err) {
+    //     }).catch(function(err) {
 
-            oResult.RETCD = 'E';
-            oResult.MSG = err.toString();
+    //         oResult.RETCD = 'E';
+    //         oResult.MSG = err.toString();
 
-            fnCallback(oResult);
+    //         fnCallback(oResult);
 
-        });
+    //     });
 
-    }; // end of oAPP.fn.copyVbsToLocalFolder
+    // }; // end of oAPP.fn.copyVbsToLocalFolder
 
-    oAPP.fn.copyVbsPromise = function(sFile, sVbsOrigPath) {
+    // oAPP.fn.copyVbsPromise = function(sFile, sVbsOrigPath) {
 
-        var oSettingsPath = PATHINFO.WSSETTINGS,
-            oSettings = require(oSettingsPath),
-            sUserDataPath = APP.getPath("userData"),
-            sVbsFolderPath = oSettings.vbs.rootPath,
-            sVbsFullPath = PATH.join(sUserDataPath, sVbsFolderPath, sFile);
+    //     var oSettingsPath = PATHINFO.WSSETTINGS,
+    //         oSettings = require(oSettingsPath),
+    //         sUserDataPath = APP.getPath("userData"),
+    //         sVbsFolderPath = oSettings.vbs.rootPath,
+    //         sVbsFullPath = PATH.join(sUserDataPath, sVbsFolderPath, sFile);
 
-        return new Promise((resolve, reject) => {
+    //     return new Promise((resolve, reject) => {
 
-            FS.copy(sVbsOrigPath, sVbsFullPath, {
-                overwrite: true,
-            }).then(function() {
+    //         FS.copy(sVbsOrigPath, sVbsFullPath, {
+    //             overwrite: true,
+    //         }).then(function() {
 
-                resolve("X");
+    //             resolve("X");
 
-            }).catch(function(err) {
+    //         }).catch(function(err) {
 
-                reject(err.toString());
+    //             reject(err.toString());
 
-            });
+    //         });
 
-        });
+    //     });
 
-    }; // end of oAPP.fn.copyVbsPromise
+    // }; // end of oAPP.fn.copyVbsPromise
 
 
 
