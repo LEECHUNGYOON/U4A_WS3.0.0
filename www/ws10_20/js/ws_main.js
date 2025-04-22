@@ -966,16 +966,30 @@
                 return;
             }
 
-            // Logout 메시지 Open 여부 Flag
-            oAPP.attr.isBrowserCloseLogoutMsgOpen = 'X';
+            // // Logout 메시지 Open 여부 Flag
+            // oAPP.attr.isBrowserCloseLogoutMsgOpen = 'X';
 
-            // Unsaved data will be lost.
-            // Do you want to log off?
-            var sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "301", "", "", "", "");
-            sMsg += " \n " + oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "302", "", "", "", "");
+            // // Unsaved data will be lost.
+            // // Do you want to log off?
+            // var sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "301", "", "", "", "");
+            // sMsg += " \n " + oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "302", "", "", "", "");
 
-            // 질문 팝업?
-            parent.showMessage(sap, 30, 'I', sMsg, lf_MsgCallback);
+            // // 질문 팝업?
+            // parent.showMessage(sap, 30, 'I', sMsg, lf_MsgCallback);
+
+            /**
+             * @since   2025-04-22
+             * @version 3.5.3-sp2
+             * @author  soccerhs
+             * 
+             * @description
+             * - 같은 세션의 브라우저가 나밖에 없을 경우에는 Logoff 처리 한다.
+             * 
+             * - 기존에는 브라우저 창닫기 시, 백엔드에서 세션만 죽이는 로직을 수행했더니,
+             *   SM05의 Http Security Session이 죽지 않은 현상이 발견되어
+             *   창닫기 시, 같은 세션의 브라우저가 나밖에 없을 경우에는 Logoff 서비스를 호출함.
+             */
+            oAPP.events.ev_Logout();
 
             return "";
 
@@ -989,25 +1003,25 @@
 
     }; // end of window.onbeforeunload
 
-    function lf_MsgCallback(sAction) {
+    // function lf_MsgCallback(sAction) {
 
-        delete oAPP.attr.isBrowserCloseLogoutMsgOpen; // Logout 메시지 Open 여부 Flag
-        delete oAPP.attr.isPressWindowClose; // 브라우저의 닫기 버튼을 눌렀는지 여부 Flag
+    //     delete oAPP.attr.isBrowserCloseLogoutMsgOpen; // Logout 메시지 Open 여부 Flag
+    //     delete oAPP.attr.isPressWindowClose; // 브라우저의 닫기 버튼을 눌렀는지 여부 Flag
 
-        if (sAction != "YES") {
-            return;
-        }
+    //     if (sAction != "YES") {
+    //         return;
+    //     }
 
-        // 현재 브라우저에 종속된 팝업 종류들을 닫는다.
-        oAPP.fn.closeAllCurrWinDependentPopups(); // => [ws_fn_04.js]
+    //     // 현재 브라우저에 종속된 팝업 종류들을 닫는다.
+    //     oAPP.fn.closeAllCurrWinDependentPopups(); // => [ws_fn_04.js]
 
-        // 서버리스트 팝업에 포커스를 준다.
-        oAPP.fn.fnSetFocusServerList(); // [ws_fn_04.js]
+    //     // 서버리스트 팝업에 포커스를 준다.
+    //     oAPP.fn.fnSetFocusServerList(); // [ws_fn_04.js]
 
-        // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
-        // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
-        oAPP.main.fnBeforeunload('X');
+    //     // 현재 브라우저에 걸려있는 shortcut, IPCMAIN 이벤트 등 각종 이벤트 핸들러를 제거 하고, 
+    //     // 현재 브라우저의 화면이 20번 페이지일 경우는 서버 세션 죽이고 Lock도 해제한다.
+    //     oAPP.main.fnBeforeunload('X');
 
-    }
+    // }
 
 })(window, oAPP);
