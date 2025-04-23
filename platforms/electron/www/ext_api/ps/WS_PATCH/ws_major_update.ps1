@@ -33,9 +33,6 @@ param (
     [Parameter(Mandatory=$false)]
     [int]$MaximumRedirection = 5,
     
-#    [Parameter(Mandatory=$false)]
-#    [Microsoft.PowerShell.Commands.WebRequestSession]$WebSession,
-    
     [Parameter(Mandatory=$false)]
     [switch]$DisableKeepAlive,
     
@@ -109,10 +106,8 @@ function Check-retError {
             $responseJson = $content | ConvertFrom-Json
             if ($responseJson.TYPE -eq "E" -and $responseJson.ACTCD -eq "999") {
                 return "Authentication Error: $($responseJson.MSG)"
-
             }elseif ($responseJson.RETCD -eq "E") {
                 return "An Response Error Code: $($responseJson.MSGNR)"
-
             }
         }
         return $null
@@ -214,6 +209,24 @@ try {
         exit $ERROR_MISSING_FIELD
     }
 
+    # Ensure the ePath exists
+    if (-not (Test-Path -Path $ePath -PathType Container)) {
+        try {
+            New-Item -Path $ePath -ItemType Directory -Force | Out-Null
+            Write-Host "Created directory: $ePath"
+        }
+        catch {
+            Write-Error "Failed to create directory $ePath : $($_.Exception.Message)"
+            exit $ERROR_GENERAL
+        }
+    }
+
+    # Store the original location to restore later
+    $originalLocation = Get-Location
+    
+    # Change to the work directory (ePath)
+    Set-Location -Path $ePath
+    Write-Host "Working directory set to: $ePath"
    
     # 2. Process downloads based on TOT_CHUNK count
     $baseUrl = $BaseUrl + "/zu4a_wbc/u4a_ipcmain/ws_update_file_get"
@@ -221,7 +234,7 @@ try {
         'sap-client' = $sapClient
         'sap-user' = $sapUser
         'sap-password' = $sapPassword
-		'NEW_UPRC' = 'X'
+        'NEW_UPRC' = 'X'
     }
 
     # Build request parameters - will be used for both testing and actual requests
@@ -244,10 +257,6 @@ try {
     if ($PSBoundParameters.ContainsKey('MaximumRedirection')) {
         $requestParams.Add('MaximumRedirection', $MaximumRedirection)
     }
-    
-#    if ($PSBoundParameters.ContainsKey('WebSession')) {
-#        $requestParams.Add('WebSession', $WebSession)
-#    }
     
     if ($DisableKeepAlive) {
         $requestParams.Add('DisableKeepAlive', $true)
@@ -276,20 +285,22 @@ try {
     
     if (-not $isConnected) {
         Write-Error "Cannot connect to server at $baseServer. Please check your network connection and server status."
+        # Restore original location before exiting
+        Set-Location -Path $originalLocation
         exit $ERROR_CONNECTION
     }
 
     Write-Host "Starting download of $($config.UPDT_FNAME) files..."
 
-    # Clean up any existing .exx files
-    Remove-Item -Path "*.exx" -ErrorAction SilentlyContinue
+    # Clean up any existing .exx files in the work directory
+    Remove-Item -Path "$ePath\*.exx" -ErrorAction SilentlyContinue
     
-	$lfnam = $config.UPDT_FNAME
-	
+    $lfnam = $config.UPDT_FNAME
+    
     # 3. Download files using Invoke-WebRequest with progress bar    
     for ($i = 1; $i -le $config.TOT_CHUNK; $i++) {
         $posNumber = Format-NumberWithLeadingZeros -Number $i -Length 10
-        $outputFile = "$posNumber.exx"
+        $outputFile = Join-Path -Path $ePath -ChildPath "$posNumber.exx"
         
         Show-DownloadProgress -Current $i -Total $config.TOT_CHUNK
         
@@ -307,7 +318,9 @@ try {
             $ProgressPreference = 'Continue'
             
             if (-not (Test-Path $outputFile)) {
-                Write-Error "Failed to download $Type file: $outputFile"
+                Write-Error "Failed to download file: $outputFile"
+                # Restore original location before exiting
+                Set-Location -Path $originalLocation
                 exit $ERROR_DOWNLOAD
             }
 
@@ -315,17 +328,20 @@ try {
             $retError = Check-retError -FilePath $outputFile
             if ($retError) {
                 Write-Error $retError
+                # Restore original location before exiting
+                Set-Location -Path $originalLocation
                 exit $ERROR_RESPONSE
             }
-			
-			Write-Host "CHUNK_DOWN_OK:$i"
-			
+            
+            Write-Host "CHUNK_DOWN_OK:$i"
+            
         }
         catch {
             Write-Error "Failed to download file $outputFile : $($_.Exception.Message)"
+            # Restore original location before exiting
+            Set-Location -Path $originalLocation
             exit $ERROR_DOWNLOAD
         }
-
     }
     
     # Clear the progress bar
@@ -334,28 +350,32 @@ try {
     # 4. Combine all .exx files into final executable
     Write-Host "Combining files into $($lfnam) ..."
 
-    # Check if $ePath ends with .exe
+    # Determine the output file path
     if ($ePath -notmatch '\.exe$') {
         # If ePath doesn't end with .exe, combine with UPDT_FNAME
-        $chk = $ePath.EndsWith("\")
-        if ($chk) {
-            # If path ends with \, just append filename
-            $outputEXE = $ePath + $config.UPDT_FNAME
-        } else {
-            # If path doesn't end with \, add \ then filename
-            $outputEXE = $ePath + '\' + $config.UPDT_FNAME
-        }
+        $outputEXE = Join-Path -Path $ePath -ChildPath $config.UPDT_FNAME
     } else {
         # If ePath already ends with .exe, use it as is
         $outputEXE = $ePath
     }
 
-    # Use cmd.exe to execute the copy command
+    # Get all .exx files in the work directory and combine them
+    $exxFiles = Get-ChildItem -Path "$ePath\*.exx" | Sort-Object Name
+    if ($exxFiles.Count -ne $config.TOT_CHUNK) {
+        Write-Error "Expected $($config.TOT_CHUNK) .exx files but found $($exxFiles.Count)"
+        # Restore original location before exiting
+        Set-Location -Path $originalLocation
+        exit $ERROR_FILE_COMBINE
+    }
+    
+    # Use cmd.exe to execute the copy command in the work directory
     $copyCommand = "copy /b *.exx `"$outputEXE`" >nul 2>&1"
-
     $result = cmd /c $copyCommand
+    
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Failed to combine files. Exit code: $LASTEXITCODE"
+        # Restore original location before exiting
+        Set-Location -Path $originalLocation
         exit $ERROR_FILE_COMBINE
     }
     
@@ -364,16 +384,25 @@ try {
         Write-Host "Successfully created $outputEXE"
         
         # Clean up .exx files
-        Remove-Item -Path "*.exx" -Force
+        Remove-Item -Path "$ePath\*.exx" -Force
         Write-Host "Cleaned up temporary .exx files"
+        
+        # Restore the original location
+        Set-Location -Path $originalLocation
         exit $SUCCESS
     }
     else {
         Write-Error "Failed to create final executable"
+        # Restore original location before exiting
+        Set-Location -Path $originalLocation
         exit $ERROR_FILE_COMBINE
     }
 }
 catch {
     Write-Error "An error occurred: $($_.Exception.Message)"
+    # Restore original location if changed
+    if ((Get-Location).Path -ne $originalLocation.Path) {
+        Set-Location -Path $originalLocation
+    }
     exit $ERROR_GENERAL
 }

@@ -201,7 +201,22 @@ function Process-Downloads {
         [hashtable]$ReqParam
     )
 
+    # 파일 경로에서 디렉토리와 파일명 분리
+    $workDirectory = Split-Path -Path $OutputPath -Parent
+    $outputFileName = Split-Path -Path $OutputPath -Leaf
+    
     Write-Host "Starting download of $TotalCount $Type files..."
+    Write-Host "Work Directory: $workDirectory"
+    Write-Host "Output File: $outputFileName"
+    
+    # 작업 디렉토리가 존재하는지 확인하고 없으면 생성
+    if (-not (Test-Path -Path $workDirectory)) {
+        New-Item -Path $workDirectory -ItemType Directory -Force | Out-Null
+        Write-Host "Created work directory: $workDirectory"
+    }
+    
+    # 작업 디렉토리로 이동
+    Push-Location $workDirectory
     
     # Clean up any existing .wsx files for this type
     $filePattern = "$Type*.wsx"
@@ -212,14 +227,14 @@ function Process-Downloads {
     # Download files
     for ($i = 1; $i -le $TotalCount; $i++) {
         $formattedNumber = Format-NumberWithLeadingZeros -Number $i
-        $outputFile = "$Type$formattedNumber.wsx"
+        $tempOutputFile = Join-Path -Path $workDirectory -ChildPath "$Type$formattedNumber.wsx"
         
         Show-DownloadProgress -Current $i -Total $TotalCount -Type $Type
         
         $body = $Credentials.Clone()
         $body['RELKY'] = $formattedNumber
         
-        $reqParms.OutFile = $outputFile
+        $reqParms.OutFile = $tempOutputFile
         $reqParms.Body = $body
 
         try {
@@ -227,30 +242,32 @@ function Process-Downloads {
             $response = Invoke-WebRequest @reqParms
             $ProgressPreference = 'Continue'
 
-            if (-not (Test-Path $outputFile)) {
-                Write-Error "Failed to download $Type file: $outputFile"
+            if (-not (Test-Path $tempOutputFile)) {
+                Write-Error "Failed to download $Type file: $tempOutputFile"
+                Pop-Location
                 exit $ERROR_DOWNLOAD
             }
 
             # Check for bad file data
-            $fileContent = Get-Content $outputFile -Raw -ErrorAction SilentlyContinue
-            # Write-Host "Downloaded content length for ${outputFile}: $($fileContent.Length)"
+            $fileContent = Get-Content $tempOutputFile -Raw -ErrorAction SilentlyContinue
             if ($fileContent -eq "X") {
                 Write-Host "Warning: File contains only 'X' character, which indicates an error"
             }
 
             # Check for response error in the downloaded file
-            $retError = Check-retError -FilePath $outputFile
+            $retError = Check-retError -FilePath $tempOutputFile
             if ($retError) {
                 Write-Error $retError
+                Pop-Location
                 exit $ERROR_RESPONSE
             }
-						
-			Write-Host "CHUNK_DOWN_OK:$i"
-			
+            
+            Write-Host "CHUNK_DOWN_OK:$i"
+            
         }
         catch {
-            Write-Error "Failed to download $Type file $outputFile : $($_.Exception.Message)"
+            Write-Error "Failed to download $Type file $tempOutputFile : $($_.Exception.Message)"
+            Pop-Location
             exit $ERROR_DOWNLOAD
         }
     }
@@ -259,24 +276,29 @@ function Process-Downloads {
     
     # Combine files
     Write-Host "Combining $Type files into $OutputPath..."
-    $copyCommand = "copy /b $filePattern `"$OutputPath`" >nul 2>&1"
+    $copyCommand = "copy /b $filePattern `"$outputFileName`" >nul 2>&1"
     
     $result = cmd /c $copyCommand
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Failed to combine $Type files. Exit code: $LASTEXITCODE"
+        Pop-Location
         exit $ERROR_FILE_COMBINE
     }
     
     # Verify and cleanup
-    if (Test-Path $OutputPath) {
-        Write-Host "Successfully created $OutputPath"
+    if (Test-Path $outputFileName) {
+        Write-Host "Successfully created $outputFileName in $workDirectory"
         Remove-Item -Path $filePattern -Force
         Write-Host "Cleaned up temporary $Type .wsx files"
     }
     else {
         Write-Error "Failed to create final $Type file"
+        Pop-Location
         exit $ERROR_FILE_COMBINE
     }
+    
+    # 작업 디렉토리에서 나오기
+    Pop-Location
 }
 
 # Main execution block
@@ -302,6 +324,7 @@ try {
         'sap-user' = $sapUser
         'sap-password' = $sapPassword
         'PRCCD' = '02'
+        'NEW_PATCH' = 'X'
     }
 
     # Build request parameters - will be used for both testing and actual requests
