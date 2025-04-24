@@ -77,8 +77,8 @@
         // Vbs 파일을 UserData 쪽으로 복사
         await _copyToUserDataVbs();
 
-        // // ps 파일을 UserData 쪽으로 복사
-        // await _copyToUserDataPs();
+        // ps 파일을 UserData 쪽으로 복사
+        await _copyToUserDataPs();
 
         // u4a Icon 파일을 UserData 쪽으로 복사
         await _copyToUserDataU4aIcon();
@@ -1505,42 +1505,40 @@
     /************************************************************************
      * ps 파일을 UserData에 복사한다.
      ************************************************************************/
-    // function _copyToUserDataPs(){
+    function _copyToUserDataPs(){
 
-    //     return new Promise(async function(resolve){
+        return new Promise(async function(resolve){
 
-    //         let oSettings = oAPP.fn.fnGetSettingsInfo();
-    //         let sUserDataPath = APP.getPath("userData");
-    //         let sPsUserDataFolderPath = PATH.join(sUserDataPath, oSettings.ps.rootPath); 
+            let oSettings = oAPP.fn.fnGetSettingsInfo();
+            let sUserDataPath = APP.getPath("userData");
+            let sPsUserDataFolderPath = PATH.join(sUserDataPath, oSettings.ps.rootPath); 
 
-    //         // 파워쉘 실행 파일명
-    //         let sPsPath_SP = oSettings.ps.sp;   // Support Package  다운로드 파워쉘
-    //         let sPsPath_ND = oSettings.ps.nd;   // node_modules     다운로드 파워쉘
+            let sPsFileName = oSettings.ps.ws_ps;
+            let sPsSourcePath = PATH.join(APPPATH, oSettings.ps.rootPath, sPsFileName);
+            let sPsTargetPath = PATH.join(sPsUserDataFolderPath, sPsFileName);
 
-    //         let sPsSourcePath_SP = PATH.join(APPPATH, oSettings.ps.rootPath, sPsPath_SP);
-    //         let sPsSourcePath_ND = PATH.join(APPPATH, oSettings.ps.rootPath, sPsPath_ND);
+            let oCopyResult = await WSUTIL.fsCopy(sPsSourcePath, sPsTargetPath);
+            if (oCopyResult.RETCD == "E") {
+                console.error("ws_ps.zip 파일 복사하다가 오류!!");
+                throw Error(oCopyResult.RTMSG);
+            }
 
-    //         let sPsTargetPath_SP = PATH.join(sPsUserDataFolderPath, sPsPath_SP);
-    //         let sPsTargetPath_ND = PATH.join(sPsUserDataFolderPath, sPsPath_ND);
+            // 압축된 ps zip 풀기
+            await fnExtractFileAdmZip(sPsTargetPath, sPsUserDataFolderPath);
 
-    //         let oCopyResultSP = await WSUTIL.fsCopy(sPsSourcePath_SP, sPsTargetPath_SP);
-    //         if (oCopyResultSP.RETCD == "E") {
-    //             console.error("PowerShell (SP) 파일 복사하다가 오류!!");
-    //             throw Error(oCopyResultSP.RTMSG);
-    //         }
+            // 압축푼 zip 파일 삭제
+            let oRemoveResult = await WSUTIL.fsRemove(sPsTargetPath);
+            if (oRemoveResult.RETCD == "E") {
+                console.error("ws_ps.zip 파일 압축풀고 삭제하다가 오류!!");
+                throw Error(oRemoveResult.RTMSG);
+            }
 
-    //         let oCopyResultND = await WSUTIL.fsCopy(sPsSourcePath_ND, sPsTargetPath_ND);
-    //         if (oCopyResultND.RETCD == "E") {
-    //             console.error("PowerShell (ND) 파일 복사하다가 오류!!");
-    //             throw Error(oCopyResultND.RTMSG);
-    //         }
+            resolve();
 
-    //         resolve();
-
-    //     });
+        });
 
 
-    // } // end of _copyToUserDataPs
+    } // end of _copyToUserDataPs
 
     /************************************************************************
      * vbs 파일을 UserData에 복사한다.

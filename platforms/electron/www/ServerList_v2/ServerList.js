@@ -47,13 +47,26 @@ const
     SERVER_TBL_ID = "serverlist_table",
     BINDROOT = "/SAVEDATA";
 
-// PowerShell 파일 루트 경로
-let PS_ROOT_PATH = PATH.join(APPPATH, "ext_api", "ps");
+// // PowerShell 파일 루트 경로
+// let PS_ROOT_PATH = PATH.join(APPPATH, "ext_api", "ps");
 
-// 패키징일 경우의 PowerShell 파일 루트 경로
-if(APP.isPackaged){
-    PS_ROOT_PATH = PATH.join(parent.process.resourcesPath, "www", "ext_api", "ps");
-}
+// // 패키징일 경우의 PowerShell 파일 루트 경로
+// if(APP.isPackaged){
+//     PS_ROOT_PATH = PATH.join(parent.process.resourcesPath, "www", "ext_api", "ps");
+// }
+
+/**
+ * @since   2025-04-24
+ * @version 3.5.5-sp0
+ * @author  soccerhs
+ * 
+ * @description
+ * ## Powershell 경로 변경
+ *
+ * - 기존: [extraResource]/www/ext_api
+ * - 변경: [UserData]/ext_api
+ */
+let PS_ROOT_PATH = PATH.join(APP.getPath("userData"), "ext_api", "ps");
 
 // PowerShell 관련 실행 파일 경로 구조
 const PS_PATH = {  

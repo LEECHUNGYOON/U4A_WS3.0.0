@@ -551,11 +551,25 @@ exports.Excute = async function (REMOTE, DOWN_ROOT_PATH) {
         let sWsDocPath = oPsInfo.ws_help_doc;
 
         // Package 여부에 따른 PowerShell 파일 경로
-        let sPsPath = PATH.join(process.resourcesPath, "www",  sPsRootPath /* ext_api/ps */, sWsDocPath /* WS_HELP/ws_doc.ps1 */);
+        // let sPsPath = PATH.join(process.resourcesPath, "www",  sPsRootPath /* ext_api/ps */, sWsDocPath /* WS_HELP/ws_doc.ps1 */);
 
-        if(!APP.isPackaged){
-            sPsPath = PATH.join(APPPATH, sPsRootPath /* ext_api/ps */, sWsDocPath /* WS_HELP/ws_doc.ps1 */);   
-        }
+        // if(!APP.isPackaged){
+        //     sPsPath = PATH.join(APPPATH, sPsRootPath /* ext_api/ps */, sWsDocPath /* WS_HELP/ws_doc.ps1 */);   
+        // }
+
+        /**
+         * @since   2025-04-24
+         * @version 3.5.5-sp0
+         * @author  soccerhs
+         * 
+         * @description
+         * ## Powershell 경로 변경
+         *
+         * - 기존: [extraResource]/www/ext_api
+         * - 변경: [UserData]/ext_api
+         */
+        let sPsPath = PATH.join(APP.getPath("userData"), sPsRootPath /* ext_api/ps */, sWsDocPath /* WS_HELP/ws_doc.ps1 */);
+
 
         // 로그인 사용자 정보
         let oLoginInfo = GV_USER_INFO;

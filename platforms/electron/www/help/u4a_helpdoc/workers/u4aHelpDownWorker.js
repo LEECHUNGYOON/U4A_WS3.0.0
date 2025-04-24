@@ -216,7 +216,7 @@ function _getHelpDocuDataFromPowerShell(oPARAM){
 
             self.postMessage(oRES);
 
-            console.log(sLog);
+            // console.log(sLog);
             
         });
 
