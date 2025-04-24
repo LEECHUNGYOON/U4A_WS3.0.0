@@ -117,6 +117,7 @@ function Find-SapLogonOnDrive {
         
         # Check other common patterns
         $patterns = @(
+            "SAPGUI\saplogon.exe",
             "SAP\SAPGUI\saplogon.exe",
             "Program Files\SAP\FrontEnd\SAPGUI\saplogon.exe",
             "Program Files (x86)\SAP\FrontEnd\SAPGUI\saplogon.exe",
@@ -132,7 +133,7 @@ function Find-SapLogonOnDrive {
         }
         
         # If not found with direct patterns, do a more targeted search for SAPGUI directory
-        $sapGuiDirs = Get-ChildItem -Path $DrivePath -Filter "SAPGUI" -Directory -Recurse -Depth 2 -ErrorAction SilentlyContinue
+        $sapGuiDirs = Get-ChildItem -Path $DrivePath -Filter "SAPGUI" -Directory -Recurse -Depth 4 -ErrorAction SilentlyContinue
         foreach ($dir in $sapGuiDirs) {
             $saplogonPath = Join-Path -Path $dir.FullName -ChildPath "saplogon.exe"
             if (Test-Path $saplogonPath -PathType Leaf) {

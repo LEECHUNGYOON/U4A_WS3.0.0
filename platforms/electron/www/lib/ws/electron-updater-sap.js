@@ -330,7 +330,7 @@ function _getUpdateFileWorker(oPARAM) {
         SAP_CLIENT   : oLoginInfo.CLIENT,
         SAP_USER     : oLoginInfo.ID,
         SAP_PW       : oLoginInfo.PW,
-        DOWN_PATH    : sInstFileDownPath,
+        DOWN_PATH    : PATH.join(sInstFileDownPath, ".."),
         FILE_INFO    : oWsVerInfo
     };
 
