@@ -127,6 +127,10 @@
                     return;
                 }
 
+                if(oBindData.ENABLED === false){
+                    return;
+                }
+
                 oBindData.SELECTED = true;
 
                 oBindCtx.getModel().setProperty(oBindCtx.getPath(), oBindData);
@@ -229,8 +233,11 @@
             ],
             formatter: function(ENABLED, SELECTED){
 
-                if (!ENABLED) {
-                    return this.setSelected(values);
+                if (!ENABLED) {                   
+
+                    this.setSelected(false);
+
+                    return false;
                 }
 
                 if(SELECTED === false){
