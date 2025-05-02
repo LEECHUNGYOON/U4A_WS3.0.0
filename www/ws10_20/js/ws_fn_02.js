@@ -977,7 +977,7 @@
             // 현재 떠있는 Electron Browser들 전체 닫는 function
             oAPP.fn.fnChildWindowClose();
 
-            var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "020"); // Switch to edit mode.
+            var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "029"); // Switch to display mode.
 
             // 푸터 메시지 처리
             APPCOMMON.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
