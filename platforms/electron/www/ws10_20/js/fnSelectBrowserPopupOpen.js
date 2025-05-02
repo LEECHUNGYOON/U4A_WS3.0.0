@@ -13,23 +13,31 @@
 
     oAPP.fn.fnSelectBrowserPopupOpen = function() {
 
-        var FS = parent.FS,
+        // var FS = parent.FS,
 
-            oServerInfo = parent.getServerInfo(),
-            sSysID = oServerInfo.SYSID,
+        //     oServerInfo = parent.getServerInfo(),
+        //     sSysID = oServerInfo.SYSID,
 
-            // 로그인 유저 정보
-            oUserInfo = parent.getUserInfo(),
-            sUserId = oUserInfo.ID.toUpperCase(),
+        //     // 로그인 유저 정보
+        //     oUserInfo = parent.getUserInfo(),
+        //     sUserId = oUserInfo.ID.toUpperCase(),
 
-            sP13nPath = parent.getPath("P13N"),
+        //     sP13nPath = parent.getPath("P13N"),
 
-            sP13nJsonData = FS.readFileSync(sP13nPath, 'utf-8'),
+        //     sP13nJsonData = FS.readFileSync(sP13nPath, 'utf-8'),
 
-            // 개인화 정보
-            oP13nData = JSON.parse(sP13nJsonData);
+        //     // 개인화 정보
+        //     oP13nData = JSON.parse(sP13nJsonData);
 
-        APPCOMMON.fnSetModelProperty("/DEFBR", oP13nData[sSysID].DEFBR);
+        // APPCOMMON.fnSetModelProperty("/DEFBR", oP13nData[sSysID].DEFBR);
+
+        // 개인화 폴더없으면 생성
+        oAPP.fn.fnOnP13nFolderCreate();
+
+        // 개인화 기본 브라우저 설정 
+        oAPP.fn.fnOnP13nExeDefaultBrowser();
+
+        let oUserInfo = parent.getUserInfo();
 
         var oDialog = sap.ui.getCore().byId("selBrwsDlg");
 
