@@ -1,0 +1,641 @@
+[
+    {
+        "label": "html",
+        "kind": 27,
+        "insertText": "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n    <title>\uD0C0\uC774\uD2C0<\/title>\r\n    <meta charset=\"utf-8\"\/>\t\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\"\/>\r\n    <meta http-equiv=\"Content-Type\" content=\"text\/html;charset=utf-8\"\/>\r\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" \/> \r\n<\/head>\r\n    \r\n<style>\r\n\r\n    html,\r\n    body {\r\n        height:100%;    \r\n    }\r\n    body {\r\n        margin: 0px;\r\n    }\r\n\r\n<\/style>\r\n\r\n<body> \r\n    <script>\r\n\r\n    <\/script>\r\n\r\n    <div class=\"className\">\r\n        \uB0B4\uC6A9\uC785\uB825    \r\n    <\/div>\r\n\r\n<\/body> \r\n    \r\n<\/html>",
+        "insertTextRules": 4,
+        "documentation": "기본 HTML 문서 구조를 생성합니다."
+    },
+    {
+        "label": "form",
+        "kind": 27,
+        "insertText": "<form action=\"${1:처리할URL}\" method=\"post\">\n\t<!-- Hidden 필드 -->\n\t<input type=\"hidden\" name=\"${2:hiddenName1}\" value=\"${3:hiddenValue1}\">\n\t<input type=\"hidden\" name=\"${4:hiddenName2}\" value=\"${5:hiddenValue2}\">\n\t\n\t<!-- 사용자 입력 필드 -->\n\t<div>\n\t\t<label for=\"${6:username}\">${7:사용자 이름}</label>\n\t\t<input type=\"text\" id=\"${6:username}\" name=\"${6:username}\" placeholder=\"${8:이름을 입력하세요}\">\n\t</div>\n\t\n\t<div>\n\t\t<label for=\"${9:email}\">${10:이메일}</label>\n\t\t<input type=\"email\" id=\"${9:email}\" name=\"${9:email}\" placeholder=\"${11:이메일을 입력하세요}\">\n\t</div>\n\t\n\t<div>\n\t\t<label for=\"${12:message}\">${13:메시지}</label>\n\t\t<textarea id=\"${12:message}\" name=\"${12:message}\" rows=\"${14:4}\" placeholder=\"${15:메시지를 입력하세요}\"></textarea>\n\t</div>\n\t\n\t<!-- 제출 버튼 -->\n\t<div>\n\t\t<button type=\"submit\">${16:제출하기}</button>\n\t\t<button type=\"reset\">${17:초기화}</button>\n\t</div>\n</form>",
+        "insertTextRules": 4,
+        "documentation": "POST 방식으로 제출하는 폼 템플릿입니다. Hidden 필드가 포함되어 있습니다."
+    },
+    {
+        "label": "link-css",
+        "kind": 27,
+        "insertText": "<link rel=\"stylesheet\" href=\"${1:styles.css}\">",
+        "insertTextRules": 4,
+        "documentation": "외부 CSS 파일을 연결합니다."
+    },
+    {
+        "label": "script-js",
+        "kind": 27,
+        "insertText": "<script src=\"${1:script.js}\"></script>",
+        "insertTextRules": 4,
+        "documentation": "외부 JavaScript 파일을 연결합니다."
+    },
+    {
+        "label": "style-tag",
+        "kind": 27,
+        "insertText": "<style>\n\t${1}\n</style>",
+        "insertTextRules": 4,
+        "documentation": "내부 스타일 태그를 생성합니다."
+    },
+    {
+        "label": "script-tag",
+        "kind": 27,
+        "insertText": "<script>\n\t${1}\n</script>",
+        "insertTextRules": 4,
+        "documentation": "내부 스크립트 태그를 생성합니다."
+    },
+    {
+        "label": "meta-viewport",
+        "kind": 27,
+        "insertText": "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
+        "insertTextRules": 4,
+        "documentation": "반응형 웹 디자인을 위한 뷰포트 메타 태그를 생성합니다."
+    },
+    {
+        "label": "meta-description",
+        "kind": 27,
+        "insertText": "<meta name=\"description\" content=\"${1:웹 페이지 설명}\">",
+        "insertTextRules": 4,
+        "documentation": "웹 페이지 설명을 위한 메타 태그를 생성합니다."
+    },
+    {
+        "label": "meta-keywords",
+        "kind": 27,
+        "insertText": "<meta name=\"keywords\" content=\"${1:키워드1, 키워드2, 키워드3}\">",
+        "insertTextRules": 4,
+        "documentation": "웹 페이지 키워드를 위한 메타 태그를 생성합니다."
+    },
+    {
+        "label": "meta-author",
+        "kind": 27,
+        "insertText": "<meta name=\"author\" content=\"${1:작성자 이름}\">",
+        "insertTextRules": 4,
+        "documentation": "웹 페이지 작성자를 위한 메타 태그를 생성합니다."
+    },
+    {
+        "label": "div",
+        "kind": 27,
+        "insertText": "<div${1: class=\"${2:className}\"}>\n\t${3}\n</div>",
+        "insertTextRules": 4,
+        "documentation": "div 태그를 생성합니다."
+    },
+    {
+        "label": "section",
+        "kind": 27,
+        "insertText": "<section${1: class=\"${2:className}\"}>\n\t${3}\n</section>",
+        "insertTextRules": 4,
+        "documentation": "section 태그를 생성합니다."
+    },
+    {
+        "label": "article",
+        "kind": 27,
+        "insertText": "<article${1: class=\"${2:className}\"}>\n\t${3}\n</article>",
+        "insertTextRules": 4,
+        "documentation": "article 태그를 생성합니다."
+    },
+    {
+        "label": "header",
+        "kind": 27,
+        "insertText": "<header${1: class=\"${2:className}\"}>\n\t${3}\n</header>",
+        "insertTextRules": 4,
+        "documentation": "header 태그를 생성합니다."
+    },
+    {
+        "label": "footer",
+        "kind": 27,
+        "insertText": "<footer${1: class=\"${2:className}\"}>\n\t${3}\n</footer>",
+        "insertTextRules": 4,
+        "documentation": "footer 태그를 생성합니다."
+    },
+    {
+        "label": "nav",
+        "kind": 27,
+        "insertText": "<nav${1: class=\"${2:className}\"}>\n\t${3}\n</nav>",
+        "insertTextRules": 4,
+        "documentation": "nav 태그를 생성합니다."
+    },
+    {
+        "label": "aside",
+        "kind": 27,
+        "insertText": "<aside${1: class=\"${2:className}\"}>\n\t${3}\n</aside>",
+        "insertTextRules": 4,
+        "documentation": "aside 태그를 생성합니다."
+    },
+    {
+        "label": "main",
+        "kind": 27,
+        "insertText": "<main${1: class=\"${2:className}\"}>\n\t${3}\n</main>",
+        "insertTextRules": 4,
+        "documentation": "main 태그를 생성합니다."
+    },
+    {
+        "label": "ul",
+        "kind": 27,
+        "insertText": "<ul>\n\t<li>${1:항목 1}</li>\n\t<li>${2:항목 2}</li>\n\t<li>${3:항목 3}</li>\n</ul>",
+        "insertTextRules": 4,
+        "documentation": "순서 없는 목록을 생성합니다."
+    },
+    {
+        "label": "ol",
+        "kind": 27,
+        "insertText": "<ol>\n\t<li>${1:항목 1}</li>\n\t<li>${2:항목 2}</li>\n\t<li>${3:항목 3}</li>\n</ol>",
+        "insertTextRules": 4,
+        "documentation": "순서 있는 목록을 생성합니다."
+    },
+    {
+        "label": "li",
+        "kind": 27,
+        "insertText": "<li>${1}</li>",
+        "insertTextRules": 4,
+        "documentation": "목록 항목을 생성합니다."
+    },
+    {
+        "label": "table",
+        "kind": 27,
+        "insertText": "<table>\n\t<thead>\n\t\t<tr>\n\t\t\t<th>${1:제목 1}</th>\n\t\t\t<th>${2:제목 2}</th>\n\t\t\t<th>${3:제목 3}</th>\n\t\t</tr>\n\t</thead>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>${4:내용 1}</td>\n\t\t\t<td>${5:내용 2}</td>\n\t\t\t<td>${6:내용 3}</td>\n\t\t</tr>\n\t</tbody>\n</table>",
+        "insertTextRules": 4,
+        "documentation": "기본 테이블 구조를 생성합니다."
+    },
+    {
+        "label": "form",
+        "kind": 27,
+        "insertText": "<form action=\"${1:#}\" method=\"${2:post}\">\n\t${3}\n\t<button type=\"submit\">${4:제출}</button>\n</form>",
+        "insertTextRules": 4,
+        "documentation": "기본 폼 구조를 생성합니다."
+    },
+    {
+        "label": "input-text",
+        "kind": 27,
+        "insertText": "<input type=\"text\" id=\"${1:id}\" name=\"${2:name}\" placeholder=\"${3:입력하세요}\"${4: required}>",
+        "insertTextRules": 4,
+        "documentation": "텍스트 입력 필드를 생성합니다."
+    },
+    {
+        "label": "input-email",
+        "kind": 27,
+        "insertText": "<input type=\"email\" id=\"${1:email}\" name=\"${2:email}\" placeholder=\"${3:이메일을 입력하세요}\"${4: required}>",
+        "insertTextRules": 4,
+        "documentation": "이메일 입력 필드를 생성합니다."
+    },
+    {
+        "label": "input-password",
+        "kind": 27,
+        "insertText": "<input type=\"password\" id=\"${1:password}\" name=\"${2:password}\" placeholder=\"${3:비밀번호를 입력하세요}\"${4: required}>",
+        "insertTextRules": 4,
+        "documentation": "비밀번호 입력 필드를 생성합니다."
+    },
+    {
+        "label": "input-checkbox",
+        "kind": 27,
+        "insertText": "<input type=\"checkbox\" id=\"${1:id}\" name=\"${2:name}\"${3: checked}> <label for=\"${1:id}\">${4:레이블}</label>",
+        "insertTextRules": 4,
+        "documentation": "체크박스를 생성합니다."
+    },
+    {
+        "label": "input-radio",
+        "kind": 27,
+        "insertText": "<input type=\"radio\" id=\"${1:id}\" name=\"${2:name}\" value=\"${3:value}\"${4: checked}> <label for=\"${1:id}\">${5:레이블}</label>",
+        "insertTextRules": 4,
+        "documentation": "라디오 버튼을 생성합니다."
+    },
+    {
+        "label": "textarea",
+        "kind": 27,
+        "insertText": "<textarea id=\"${1:id}\" name=\"${2:name}\" rows=\"${3:4}\" placeholder=\"${4:내용을 입력하세요}\"${5: required}></textarea>",
+        "insertTextRules": 4,
+        "documentation": "여러 줄 텍스트 입력 영역을 생성합니다."
+    },
+    {
+        "label": "select",
+        "kind": 27,
+        "insertText": "<select id=\"${1:id}\" name=\"${2:name}\"${3: required}>\n\t<option value=\"${4:value1}\">${5:옵션 1}</option>\n\t<option value=\"${6:value2}\">${7:옵션 2}</option>\n\t<option value=\"${8:value3}\">${9:옵션 3}</option>\n</select>",
+        "insertTextRules": 4,
+        "documentation": "드롭다운 선택 목록을 생성합니다."
+    },
+    {
+        "label": "button",
+        "kind": 27,
+        "insertText": "<button type=\"${1:button}\"${2: class=\"${3:className}\"}>${4:버튼 텍스트}</button>",
+        "insertTextRules": 4,
+        "documentation": "버튼을 생성합니다."
+    },
+    {
+        "label": "a",
+        "kind": 27,
+        "insertText": "<a href=\"${1:#}\"${2: target=\"_blank\"${3: rel=\"noopener noreferrer\"}}>${4:링크 텍스트}</a>",
+        "insertTextRules": 4,
+        "documentation": "링크를 생성합니다."
+    },
+    {
+        "label": "img",
+        "kind": 27,
+        "insertText": "<img src=\"${1:이미지 경로}\" alt=\"${2:대체 텍스트}\"${3: width=\"${4:너비}\" height=\"${5:높이}\"}>",
+        "insertTextRules": 4,
+        "documentation": "이미지를 삽입합니다."
+    },
+    {
+        "label": "audio",
+        "kind": 27,
+        "insertText": "<audio${1: controls}>\n\t<source src=\"${2:오디오 경로}\" type=\"audio/${3:mp3}\">\n\t브라우저가 오디오 태그를 지원하지 않습니다.\n</audio>",
+        "insertTextRules": 4,
+        "documentation": "오디오 요소를 삽입합니다."
+    },
+    {
+        "label": "video",
+        "kind": 27,
+        "insertText": "<video${1: width=\"${2:너비}\" height=\"${3:높이}\"}${4: controls}>\n\t<source src=\"${5:비디오 경로}\" type=\"video/${6:mp4}\">\n\t브라우저가 비디오 태그를 지원하지 않습니다.\n</video>",
+        "insertTextRules": 4,
+        "documentation": "비디오 요소를 삽입합니다."
+    },
+    {
+        "label": "iframe",
+        "kind": 27,
+        "insertText": "<iframe src=\"${1:URL}\" width=\"${2:너비}\" height=\"${3:높이}\" frameborder=\"0\"${4: allowfullscreen}></iframe>",
+        "insertTextRules": 4,
+        "documentation": "인라인 프레임을 삽입합니다."
+    },
+    {
+        "label": "responsive-meta",
+        "kind": 27,
+        "insertText": "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\">",
+        "insertTextRules": 4,
+        "documentation": "반응형 웹 디자인을 위한 상세 뷰포트 메타 태그를 생성합니다."
+    },
+    {
+        "label": "favicon",
+        "kind": 27,
+        "insertText": "<link rel=\"icon\" href=\"${1:favicon.ico}\" type=\"image/x-icon\">\n<link rel=\"shortcut icon\" href=\"${1:favicon.ico}\" type=\"image/x-icon\">",
+        "insertTextRules": 4,
+        "documentation": "파비콘 링크를 생성합니다."
+    },
+    {
+        "label": "css-reset",
+        "kind": 27,
+        "insertText": "<style>\n\t* {\n\t\tmargin: 0;\n\t\tpadding: 0;\n\t\tbox-sizing: border-box;\n\t}\n\n\tbody {\n\t\tfont-family: Arial, sans-serif;\n\t\tline-height: 1.6;\n\t}\n</style>",
+        "insertTextRules": 4,
+        "documentation": "간단한 CSS 리셋을 생성합니다."
+    },
+    {
+        "label": "media-query",
+        "kind": 27,
+        "insertText": "<style>\n\t@media (max-width: ${1:768}px) {\n\t\t${2}\n\t}\n</style>",
+        "insertTextRules": 4,
+        "documentation": "미디어 쿼리를 생성합니다."
+    },
+    {
+        "label": "flexbox",
+        "kind": 27,
+        "insertText": "<style>\n\t.flex-container {\n\t\tdisplay: flex;\n\t\tflex-direction: ${1:row};\n\t\tjustify-content: ${2:center};\n\t\talign-items: ${3:center};\n\t\tflex-wrap: ${4:wrap};\n\t}\n</style>\n\n<div class=\"flex-container\">\n\t${5}\n</div>",
+        "insertTextRules": 4,
+        "documentation": "Flexbox 컨테이너와 기본 스타일을 생성합니다."
+    },
+    {
+        "label": "grid",
+        "kind": 27,
+        "insertText": "<style>\n\t.grid-container {\n\t\tdisplay: grid;\n\t\tgrid-template-columns: ${1:repeat(3, 1fr)};\n\t\tgrid-gap: ${2:10px};\n\t}\n</style>\n\n<div class=\"grid-container\">\n\t${3}\n</div>",
+        "insertTextRules": 4,
+        "documentation": "Grid 컨테이너와 기본 스타일을 생성합니다."
+    },
+    {
+        "label": "iframe-basic",
+        "kind": 27,
+        "insertText": "<iframe src=\"${1:URL}\" width=\"${2:600}\" height=\"${3:400}\" frameborder=\"0\"></iframe>",
+        "insertTextRules": 4,
+        "documentation": "기본 iframe을 생성합니다."
+    },
+    {
+        "label": "iframe-responsive",
+        "kind": 27,
+        "insertText": "<div style=\"position: relative; overflow: hidden; padding-top: ${1:56.25}%;\">\n\t<iframe style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%;\" src=\"${2:URL}\" frameborder=\"0\" allowfullscreen></iframe>\n</div>",
+        "insertTextRules": 4,
+        "documentation": "반응형 iframe 컨테이너를 생성합니다. 기본 비율은 16:9 입니다."
+    },
+    {
+        "label": "iframe-youtube",
+        "kind": 27,
+        "insertText": "<iframe width=\"${1:560}\" height=\"${2:315}\" src=\"https://www.youtube.com/embed/${3:VIDEO_ID}\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>",
+        "insertTextRules": 4,
+        "documentation": "YouTube 동영상 임베드용 iframe을 생성합니다."
+    },
+    {
+        "label": "iframe-youtube-responsive",
+        "kind": 27,
+        "insertText": "<div style=\"position: relative; overflow: hidden; padding-top: 56.25%;\">\n\t<iframe style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%;\" src=\"https://www.youtube.com/embed/${1:VIDEO_ID}\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>\n</div>",
+        "insertTextRules": 4,
+        "documentation": "반응형 YouTube 동영상 임베드용 iframe을 생성합니다."
+    },
+    {
+        "label": "iframe-vimeo",
+        "kind": 27,
+        "insertText": "<iframe src=\"https://player.vimeo.com/video/${1:VIDEO_ID}\" width=\"${2:640}\" height=\"${3:360}\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen></iframe>",
+        "insertTextRules": 4,
+        "documentation": "Vimeo 동영상 임베드용 iframe을 생성합니다."
+    },
+    {
+        "label": "iframe-vimeo-responsive",
+        "kind": 27,
+        "insertText": "<div style=\"position: relative; overflow: hidden; padding-top: 56.25%;\">\n\t<iframe style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%;\" src=\"https://player.vimeo.com/video/${1:VIDEO_ID}\" frameborder=\"0\" allow=\"autoplay; fullscreen; picture-in-picture\" allowfullscreen></iframe>\n</div>",
+        "insertTextRules": 4,
+        "documentation": "반응형 Vimeo 동영상 임베드용 iframe을 생성합니다."
+    },
+    {
+        "label": "iframe-google-maps",
+        "kind": 27,
+        "insertText": "<iframe src=\"https://www.google.com/maps/embed?pb=${1:GOOGLE_MAPS_EMBED_CODE}\" width=\"${2:600}\" height=\"${3:450}\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\"></iframe>",
+        "insertTextRules": 4,
+        "documentation": "Google 지도 임베드용 iframe을 생성합니다."
+    },
+    {
+        "label": "iframe-google-maps-responsive",
+        "kind": 27,
+        "insertText": "<div style=\"position: relative; overflow: hidden; padding-top: 75%;\">\n\t<iframe style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%;\" src=\"https://www.google.com/maps/embed?pb=${1:GOOGLE_MAPS_EMBED_CODE}\" frameborder=\"0\" allowfullscreen=\"\" loading=\"lazy\"></iframe>\n</div>",
+        "insertTextRules": 4,
+        "documentation": "반응형 Google 지도 임베드용 iframe을 생성합니다. 기본 비율은 4:3 입니다."
+    },
+    {
+        "label": "iframe-sandbox",
+        "kind": 27,
+        "insertText": "<iframe src=\"${1:URL}\" width=\"${2:600}\" height=\"${3:400}\" sandbox=\"${4:allow-same-origin allow-scripts}\" frameborder=\"0\"></iframe>",
+        "insertTextRules": 4,
+        "documentation": "보안 설정이 강화된 sandbox 속성을 가진 iframe을 생성합니다."
+    },
+    {
+        "label": "iframe-srcdoc",
+        "kind": 27,
+        "insertText": "<iframe width=\"${1:600}\" height=\"${2:400}\" srcdoc=\"<html><body>${3:내용을 여기에 입력하세요}</body></html>\" frameborder=\"0\"></iframe>",
+        "insertTextRules": 4,
+        "documentation": "srcdoc 속성을 사용해 직접 HTML 내용을 가진 iframe을 생성합니다."
+    },
+    {
+        "label": "iframe-lazy-loading",
+        "kind": 27,
+        "insertText": "<iframe src=\"${1:URL}\" width=\"${2:600}\" height=\"${3:400}\" loading=\"lazy\" frameborder=\"0\"></iframe>",
+        "insertTextRules": 4,
+        "documentation": "지연 로딩(lazy loading)을 적용한 iframe을 생성합니다."
+    },
+    {
+        "label": "iframe-title",
+        "kind": 27,
+        "insertText": "<iframe src=\"${1:URL}\" width=\"${2:600}\" height=\"${3:400}\" title=\"${4:iframe 제목}\" frameborder=\"0\"></iframe>",
+        "insertTextRules": 4,
+        "documentation": "접근성을 위한 title 속성을 포함한 iframe을 생성합니다."
+    },
+
+    {
+        "label": "setTimeout",
+        "kind": 27,
+        "insertText": "setTimeout(() => {\n\t${1}\n}, ${2:1000});",
+        "insertTextRules": 4,
+        "documentation": "일정 시간 후에 코드를 한 번 실행합니다. (기본값: 1초)"
+    },
+    {
+        "label": "setTimeoutVar",
+        "kind": 27,
+        "insertText": "const ${1:timeoutId} = setTimeout(() => {\n\t${2}\n}, ${3:1000});",
+        "insertTextRules": 4,
+        "documentation": "일정 시간 후에 코드를 한 번 실행하고 ID를 변수에 저장합니다. (기본값: 1초)"
+    },
+    {
+        "label": "clearTimeout",
+        "kind": 27,
+        "insertText": "clearTimeout(${1:timeoutId});",
+        "insertTextRules": 4,
+        "documentation": "설정된 타임아웃을 취소합니다."
+    },
+    {
+        "label": "setInterval",
+        "kind": 27,
+        "insertText": "setInterval(() => {\n\t${1}\n}, ${2:1000});",
+        "insertTextRules": 4,
+        "documentation": "일정 시간마다 코드를 반복적으로 실행합니다. (기본값: 1초)"
+    },
+    {
+        "label": "setIntervalVar",
+        "kind": 27,
+        "insertText": "const ${1:intervalId} = setInterval(() => {\n\t${2}\n}, ${3:1000});",
+        "insertTextRules": 4,
+        "documentation": "일정 시간마다 코드를 반복적으로 실행하고 ID를 변수에 저장합니다. (기본값: 1초)"
+    },
+    {
+        "label": "clearInterval",
+        "kind": 27,
+        "insertText": "clearInterval(${1:intervalId});",
+        "insertTextRules": 4,
+        "documentation": "설정된 인터벌을 취소합니다."
+    },
+    {
+        "label": "setIntervalWithClear",
+        "kind": 27,
+        "insertText": "const ${1:intervalId} = setInterval(() => {\n\t${2}\n\tif (${3:condition}) {\n\t\tclearInterval(${1:intervalId});\n\t}\n}, ${4:1000});",
+        "insertTextRules": 4,
+        "documentation": "조건에 따라 자동으로 중단되는 인터벌을 설정합니다. (기본값: 1초)"
+    },
+    {
+        "label": "debounce",
+        "kind": 27,
+        "insertText": "function ${1:debounce}(func, delay) {\n\tlet timeoutId;\n\treturn function(...args) {\n\t\tconst context = this;\n\t\tclearTimeout(timeoutId);\n\t\ttimeoutId = setTimeout(() => {\n\t\t\tfunc.apply(context, args);\n\t\t}, delay);\n\t};\n}\n\nconst ${2:debouncedFunction} = ${1:debounce}((${3:params}) => {\n\t${4}\n}, ${5:300});",
+        "insertTextRules": 4,
+        "documentation": "디바운스 함수 구현 및 사용 예시입니다. 연속된 호출에서 마지막 호출만 실행합니다."
+    },
+    {
+        "label": "throttle",
+        "kind": 27,
+        "insertText": "function ${1:throttle}(func, limit) {\n\tlet inThrottle;\n\treturn function(...args) {\n\t\tconst context = this;\n\t\tif (!inThrottle) {\n\t\t\tfunc.apply(context, args);\n\t\t\tinThrottle = true;\n\t\t\tsetTimeout(() => (inThrottle = false), limit);\n\t\t}\n\t};\n}\n\nconst ${2:throttledFunction} = ${1:throttle}((${3:params}) => {\n\t${4}\n}, ${5:300});",
+        "insertTextRules": 4,
+        "documentation": "스로틀 함수 구현 및 사용 예시입니다. 일정 주기마다 한 번씩만 실행을 허용합니다."
+    },
+    {
+        "label": "requestAnimationFrame",
+        "kind": 27,
+        "insertText": "function ${1:animate}() {\n\t${2}\n\trequestAnimationFrame(${1:animate});\n}\n\nrequestAnimationFrame(${1:animate});",
+        "insertTextRules": 4,
+        "documentation": "requestAnimationFrame을 사용한 애니메이션 루프입니다."
+    },
+    {
+        "label": "cancelAnimationFrame",
+        "kind": 27,
+        "insertText": "const ${1:rafId} = requestAnimationFrame(${2:animate});\n\n// 애니메이션 취소\ncancelAnimationFrame(${1:rafId});",
+        "insertTextRules": 4,
+        "documentation": "requestAnimationFrame 애니메이션을 취소합니다."
+    },
+    {
+        "label": "timeoutPromise",
+        "kind": 27,
+        "insertText": "const ${1:delay} = (ms) => new Promise(resolve => setTimeout(resolve, ms));\n\n// 사용 예시\nawait ${1:delay}(${2:1000}); // ${2:1000}ms 대기",
+        "insertTextRules": 4,
+        "documentation": "Promise를 반환하는 타임아웃 함수입니다. async/await와 함께 사용할 수 있습니다."
+    },
+    {
+        "label": "console.log",
+        "kind": 27,
+        "insertText": "console.log(${1:object});",
+        "insertTextRules": 4,
+        "documentation": "콘솔에 로그를 출력합니다."
+    },
+    {
+        "label": "console.logVar",
+        "kind": 27,
+        "insertText": "console.log('${1:variable}:', ${1:variable});",
+        "insertTextRules": 4,
+        "documentation": "변수명과 값을 함께 콘솔에 출력합니다."
+    },
+    {
+        "label": "for",
+        "kind": 27,
+        "insertText": "for (let ${1:i} = 0; ${1:i} < ${2:array}.length; ${1:i}++) {\n\t${3}\n}",
+        "insertTextRules": 4,
+        "documentation": "기본 for 루프입니다."
+    },
+    {
+        "label": "forEach",
+        "kind": 27,
+        "insertText": "${1:array}.forEach((${2:item}) => {\n\t${3}\n});",
+        "insertTextRules": 4,
+        "documentation": "forEach 메서드를 사용한 배열 순회입니다."
+    },
+    {
+        "label": "if",
+        "kind": 27,
+        "insertText": "if (${1:condition}) {\n\t${2}\n}",
+        "insertTextRules": 4,
+        "documentation": "If 조건문입니다."
+    },
+    {
+        "label": "ifelse",
+        "kind": 27,
+        "insertText": "if (${1:condition}) {\n\t${2}\n} else {\n\t${3}\n}",
+        "insertTextRules": 4,
+        "documentation": "If-Else 조건문입니다."
+    },
+    {
+        "label": "elseif",
+        "kind": 27,
+        "insertText": "if (${1:condition1}) {\n\t${2}\n} else if (${3:condition2}) {\n\t${4}\n} else {\n\t${5}\n}",
+        "insertTextRules": 4,
+        "documentation": "If-Else If-Else 조건문입니다."
+    },
+    {
+        "label": "switch",
+        "kind": 27,
+        "insertText": "switch (${1:expression}) {\n\tcase ${2:value1}:\n\t\t${3}\n\t\tbreak;\n\tcase ${4:value2}:\n\t\t${5}\n\t\tbreak;\n\tdefault:\n\t\t${6}\n}",
+        "insertTextRules": 4,
+        "documentation": "Switch 조건문입니다."
+    },
+    {
+        "label": "function",
+        "kind": 27,
+        "insertText": "function ${1:name}(${2:params}) {\n\t${3}\n}",
+        "insertTextRules": 4,
+        "documentation": "함수 선언입니다."
+    },
+    {
+        "label": "arrow",
+        "kind": 27,
+        "insertText": "const ${1:name} = (${2:params}) => {\n\t${3}\n};",
+        "insertTextRules": 4,
+        "documentation": "화살표 함수 선언입니다."
+    },
+    {
+        "label": "try",
+        "kind": 27,
+        "insertText": "try {\n\t${1}\n} catch (${2:error}) {\n\t${3}\n}",
+        "insertTextRules": 4,
+        "documentation": "Try-Catch 예외 처리 블록입니다."
+    },
+    {
+        "label": "class",
+        "kind": 27,
+        "insertText": "class ${1:ClassName} {\n\tconstructor(${2:params}) {\n\t\t${3}\n\t}\n\n\t${4:methodName}() {\n\t\t${5}\n\t}\n}",
+        "insertTextRules": 4,
+        "documentation": "클래스 선언입니다."
+    },
+    {
+        "label": "promise",
+        "kind": 27,
+        "insertText": "return new Promise((resolve, reject) => {\n\t${1}\n});",
+        "insertTextRules": 4,
+        "documentation": "Promise 객체를 생성합니다."
+    },
+    {
+        "label": "async",
+        "kind": 27,
+        "insertText": "async function ${1:functionName}(${2:params}) {\n\ttry {\n\t\t${3}\n\t} catch (error) {\n\t\t${4}\n\t}\n}",
+        "insertTextRules": 4,
+        "documentation": "비동기 함수 선언입니다."
+    },
+    {
+        "label": "await",
+        "kind": 27,
+        "insertText": "const ${1:result} = await ${2:promise};",
+        "insertTextRules": 4,
+        "documentation": "Promise 대기 구문입니다."
+    },
+    {
+        "label": "ajax-fetch",
+        "kind": 27,
+        "insertText": "var sUrl = 'path-to-url';\r\n\r\nfetch(sUrl)\r\n.then(response => {\r\n\tif (!response.ok) {\r\n\t\tthrow new Error('Network response was not ok');\r\n\t}\r\n\treturn response.json();\r\n})\r\n.then(data => {\r\n\tconsole.log(data);\r\n\t\r\n})\r\n.catch(error => {\r\n\tconsole.error('Error:', error);\r\n\t\r\n});",
+        "insertTextRules": 4,
+        "documentation": "기본적인 Fetch API를 사용한 AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-fetch-async",
+        "kind": 27,
+        "insertText": "async function ${1:fetchData}() {\n\ttry {\n\t\tconst response = await fetch('${2:url}');\n\t\tif (!response.ok) {\n\t\t\tthrow new Error('Network response was not ok');\n\t\t}\n\t\tconst data = await response.json();\n\t\tconsole.log(data);\n\t\t${3}\n\t} catch (error) {\n\t\tconsole.error('Error:', error);\n\t\t${4}\n\t}\n}",
+        "insertTextRules": 4,
+        "documentation": "async/await를 사용한 Fetch API AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-post",
+        "kind": 27,
+        "insertText": "fetch('${1:url}', {\n\tmethod: 'POST',\n\theaders: {\n\t\t'Content-Type': 'application/json',\n\t},\n\tbody: JSON.stringify(${2:data}),\n})\n.then(response => response.json())\n.then(data => {\n\tconsole.log('Success:', data);\n\t${3}\n})\n.catch(error => {\n\tconsole.error('Error:', error);\n\t${4}\n});",
+        "insertTextRules": 4,
+        "documentation": "POST 메서드를 사용한 Fetch API AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-put",
+        "kind": 27,
+        "insertText": "fetch('${1:url}', {\n\tmethod: 'PUT',\n\theaders: {\n\t\t'Content-Type': 'application/json',\n\t},\n\tbody: JSON.stringify(${2:data}),\n})\n.then(response => response.json())\n.then(data => {\n\tconsole.log('Success:', data);\n\t${3}\n})\n.catch(error => {\n\tconsole.error('Error:', error);\n\t${4}\n});",
+        "insertTextRules": 4,
+        "documentation": "PUT 메서드를 사용한 Fetch API AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-delete",
+        "kind": 27,
+        "insertText": "fetch('${1:url}', {\n\tmethod: 'DELETE',\n})\n.then(response => response.json())\n.then(data => {\n\tconsole.log('Success:', data);\n\t${2}\n})\n.catch(error => {\n\tconsole.error('Error:', error);\n\t${3}\n});",
+        "insertTextRules": 4,
+        "documentation": "DELETE 메서드를 사용한 Fetch API AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-xhr",
+        "kind": 27,
+        "insertText": "const xhr = new XMLHttpRequest();\nxhr.open('${1:GET}', '${2:url}');\nxhr.setRequestHeader('Content-Type', 'application/json');\nxhr.onload = function() {\n\tif (xhr.status === 200) {\n\t\tconst data = JSON.parse(xhr.responseText);\n\t\tconsole.log(data);\n\t\t${3}\n\t} else {\n\t\tconsole.error('Request failed. Status:', xhr.status);\n\t\t${4}\n\t}\n};\nxhr.onerror = function() {\n\tconsole.error('Request failed. Network error');\n\t${5}\n};\nxhr.send(${6:null});",
+        "insertTextRules": 4,
+        "documentation": "XMLHttpRequest를 사용한 전통적인 AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-jquery-get",
+        "kind": 27,
+        "insertText": "$.ajax({\n\turl: '${1:url}',\n\tmethod: '${2:GET}',\n\tdataType: 'json',\n\tdata: ${3:null},\n\tsuccess: function(data) {\n\t\tconsole.log('Success:', data);\n\t\t${4}\n\t},\n\terror: function(xhr, status, error) {\n\t\tconsole.error('Error:', error);\n\t\t${5}\n\t}\n});",
+        "insertTextRules": 4,
+        "documentation": "jQuery를 사용한 AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-jquery-post",
+        "kind": 27,
+        "insertText": "let sPath = 'path-to-url';\r\n\r\n\/\/ ajax \uACB0\uACFC\r\nvar oResult = undefined;\r\n\r\n\/\/ formdata \uAD6C\uC131\r\nlet oFormData = new FormData()\r\n\toFormData.append(\"PARAM1\", \"\");\r\n\toFormData.append(\"PARAM2\", \"\");\r\n\r\n$.ajax({\r\n\tasync: false,\r\n\tmethod: \"POST\",\r\n\turl: sPath,\r\n\tdata: oFormData,\r\n\tcache: false,\r\n\tcontentType: false,\r\n\tprocessData: false,\r\n\tsuccess : function(data, textStatus, xhr) {\r\n\t\toResult = { success : true, data : data, status : textStatus, statusCode : xhr && xhr.status };\r\n\t},\r\n\terror : function(xhr, textStatus, error) {\r\n\t\toResult = { success : false, data : undefined, status : textStatus, error : error, statusCode : xhr.status, errorResponse :  xhr.responseText };\r\n\t}\r\n});\r\n\r\nif(oResult.success === false){\t\r\n\r\n\t\/\/ connect fail..\r\n\t\r\n\treturn;\r\n}",
+        "insertTextRules": 4,
+        "documentation": "jQuery를 사용한 AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-form-data",
+        "kind": 27,
+        "insertText": "const formData = new FormData();\nformData.append('${1:key1}', '${2:value1}');\nformData.append('${3:key2}', '${4:value2}');\n\nfetch('${5:url}', {\n\tmethod: 'POST',\n\tbody: formData\n})\n.then(response => response.json())\n.then(data => {\n\tconsole.log('Success:', data);\n\t${6}\n})\n.catch(error => {\n\tconsole.error('Error:', error);\n\t${7}\n});",
+        "insertTextRules": 4,
+        "documentation": "FormData를 사용한 파일 업로드 등의 멀티파트 요청입니다."
+    },
+    {
+        "label": "ajax-fetch-headers",
+        "kind": 27,
+        "insertText": "fetch('${1:url}', {\n\tmethod: '${2:GET}',\n\theaders: {\n\t\t'Content-Type': 'application/json',\n\t\t'Authorization': 'Bearer ${3:token}',\n\t\t'${4:CustomHeader}': '${5:value}'\n\t}\n})\n.then(response => response.json())\n.then(data => {\n\tconsole.log('Success:', data);\n\t${6}\n})\n.catch(error => {\n\tconsole.error('Error:', error);\n\t${7}\n});",
+        "insertTextRules": 4,
+        "documentation": "사용자 지정 헤더를 포함한 Fetch API 요청입니다."
+    }
+
+]

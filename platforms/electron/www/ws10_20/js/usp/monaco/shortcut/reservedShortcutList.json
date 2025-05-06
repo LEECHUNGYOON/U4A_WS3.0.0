@@ -1,0 +1,68 @@
+[
+    {   
+        "desc": "Save",
+        "keyBindingName": "Ctrl+S",
+        "keyBinding" : {
+            "ctrlKey": true, 
+            "altKey": false, 
+            "shiftKey": false,
+            "code": "KeyS",
+            "keyCode": 49
+        }        
+    },
+    {   
+        "desc": "Active",
+        "keyBindingName": "Ctrl+F3",
+        "keyBinding" : {
+            "ctrlKey": true, 
+            "altKey": false, 
+            "shiftKey": false,
+            "code": "F3",
+            "keyCode": 114
+        }        
+    },
+    {   
+        "desc": "change <==> display",
+        "keyBindingName": "Ctrl+F1",
+        "keyBinding" : {
+            "ctrlKey": true, 
+            "altKey": false, 
+            "shiftKey": false,
+            "code": "F1",
+            "keyCode": 112
+        }        
+    },
+    {   
+        "desc": "Application Execution",
+        "keyBindingName": "F8",
+        "keyBinding" : {
+            "ctrlKey": false, 
+            "altKey": false, 
+            "shiftKey": false,
+            "code": "F8",
+            "keyCode": 119
+        }        
+    },
+    {   
+        "desc": "Pretty Print",
+        "keyBindingName": "Shift+F1",
+        "keyBinding" : {
+            "ctrlKey": false, 
+            "altKey": false, 
+            "shiftKey": true,
+            "code": "F1",
+            "keyCode": 112
+        }        
+    },
+    {   
+        "desc": "뒤로가기",
+        "keyBindingName": "F3",
+        "keyBinding" : {
+            "ctrlKey": false, 
+            "altKey": false, 
+            "shiftKey": false,
+            "code": "F3",
+            "keyCode": 114
+        }        
+    }
+]

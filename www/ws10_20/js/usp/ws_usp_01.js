@@ -955,4 +955,41 @@
 
     } // end of _setCtxPatternMenuClick
 
+
+    /*****************************************************
+     * @since   2025-05-06
+     * @version 3.5.6-sp2
+     * @author  soccerhs
+     * 
+     * @description
+     * ## USP EDITOR 변경 작업 ##
+     *
+     *  USP EDITOR 영역의 Iframe Load 이벤트
+     ******************************************************/
+    oAPP.fn.onFrameLoadUspEditor = function(oEvent){
+
+        oEvent.preventDefault();
+        
+        if(!oEvent?.target?.classList){
+            return;
+        }
+
+        zconsole.log(`USP IFrame onLoad!!!!!! --- ${oEvent.target.className}`);
+
+        if(oEvent.target.classList.contains("EDITOR_FRAME1")){
+            
+            oEvent.target.contentWindow.postMessage({ actcd: 'init', port: oAPP.usp.USP_EDITOR_CHANNEL.port1 }, '*', [oAPP.usp.USP_EDITOR_CHANNEL.port1]);
+
+            return;
+        }
+
+        if(oEvent.target.classList.contains("EDITOR_FRAME2")){
+            
+            oEvent.target.contentWindow.postMessage({ actcd: 'init', port: oAPP.usp.USP_EDITOR_CHANNEL.port2 }, '*', [oAPP.usp.USP_EDITOR_CHANNEL.port2]);
+
+            return;
+        }
+
+    }; // end of oAPP.fn.onFrameLoadUspEditor
+
 })(window, $, oAPP);

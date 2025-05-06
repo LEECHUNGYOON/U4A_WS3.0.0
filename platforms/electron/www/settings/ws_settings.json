@@ -35,9 +35,20 @@
         "msgcls",
         "p13n",
         "p13n\\theme",
-        "p13n\\suggestion",       
+
+        "p13n\\monaco",
+        "p13n\\monaco\\snippet",
+        "p13n\\monaco\\theme",
+
+        "p13n\\suggestion",
         "p13n\\iconFavorite",
+        
         "p13n\\usp",
+        "p13n\\usp",
+        "p13n\\usp\\monaco",
+        "p13n\\usp\\monaco\\theme",
+        "p13n\\usp\\monaco\\snippet",
+
         "ext_api",
         "ext_api\\vbs",
         "ext_api\\ps",

@@ -2190,4 +2190,312 @@ module.exports = {
     }, // end of getSysInfoIPC
 
 
+    /*****************************************************
+     * @since   2025-05-06
+     * @version 3.5.6-sp2
+     * @author  soccerhs
+     * 
+     * @description
+     * USP의 모나코 에디터 관런 클래스
+     *
+     *  
+     ******************************************************/
+    MONACO_EDITOR: class {
+
+        // 스탠다드 테마 루트 폴더 경로
+        static _getStandardThemeRootPath(){
+
+            return PATH.join(APPPATH, "lib", "monaco", "themes");
+
+        }
+
+        // Custom 테마 루트 경로
+        static _getCustomThemeRootPath(){
+
+            return PATH.join(PATHINFO.P13N_ROOT, "monaco", "theme");
+
+        }
+
+
+        // 스탠다드 테마 목록 구하기
+        static getStandardThemeList(){
+
+            let sPath = this._getStandardThemeRootPath();
+
+            if(FS.existsSync(sPath) === false){
+                return [];
+            }
+
+            try {
+
+                var aThemes = FS.readdirSync(sPath);
+
+            } catch (error) {
+
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [             
+                    `[PATH]: www/ws10_20/js/ws_util.js`,
+                    `=> MONACO_EDITOR.getStandardThemeList`,
+                    `=> 에디터의 스탠다드 테마 폴더가 존재하지 않음!!`,     
+                ];
+                
+                console.error(aConsoleMsg.join("\r\n"));
+                console.error(error);                
+                console.trace();
+                    
+                return [];
+
+            }
+
+            return aThemes;
+
+        }
+
+        // Custom 테마 목록 구하기
+        static getCustomThemeList(){
+
+            let sPath = this._getCustomThemeRootPath();
+
+            if(FS.existsSync(sPath) === false){
+                return [];
+            }
+
+            try {
+
+                var aThemes = FS.readdirSync(sPath);
+
+            } catch (error) {
+
+                // // 콘솔용 오류 메시지
+                // var aConsoleMsg = [             
+                //     `[PATH]: www/ws10_20/js/usp/ws_usp.js`,
+                //     `=> _onEditorThemeSelectClick`,
+                //     `=> 에디터의 스탠다드 테마 폴더가 존재하지 않음!!`,     
+                // ];
+
+                // console.error(aConsoleMsg.join("\r\n"));
+                // console.trace();
+                    
+                return [];
+
+            }
+
+            return aThemes;
+
+        }
+
+        // 테마명으로 스탠다드 테마 정보 구하기
+        static _getStandardThemeInfo(sThemeName){
+
+            if(!sThemeName){
+                return;
+            }
+
+            // 스탠다드 테마 루트 경로
+            let sRootPath = this._getStandardThemeRootPath();
+
+            if(FS.existsSync(sRootPath) === false){
+                return;
+            }
+
+            let sThemeFilePath = PATH.join(sRootPath, sThemeName + ".json");
+            if(FS.existsSync(sThemeFilePath) === false){
+                return;
+            }
+
+            try {
+                
+                var sThemeInfo = FS.readFileSync(sThemeFilePath, { encoding: "utf-8" });
+                
+                var oThemeInfo = JSON.parse(sThemeInfo);
+
+                return { themeName: sThemeName, themeInfo: oThemeInfo };
+
+            } catch (error) {
+
+                return;
+
+            }
+
+        }
+
+
+        // 테마명으로 커스텀 테마 정보 구하기
+        static _getCustomThemeInfo(sThemeName){
+
+            if(!sThemeName){
+                return;
+            }
+
+            // 커스텀 테마 루트 경로
+            let sRootPath = this._getCustomThemeRootPath();
+
+            if(FS.existsSync(sRootPath) === false){
+                return;
+            }
+
+            let sThemeFilePath = PATH.join(sRootPath, sThemeName + ".json");
+            if(FS.existsSync(sThemeFilePath) === false){
+                return;
+            }
+
+            try {
+                
+                var sThemeInfo = FS.readFileSync(sThemeFilePath, { encoding: "utf-8" });
+                
+                var oThemeInfo = JSON.parse(sThemeInfo);
+
+                return { themeName: sThemeName, themeInfo: oThemeInfo };
+
+            } catch (error) {
+
+                return;
+
+            }
+
+        }
+
+        // standard or person Theme 정보 구하기
+        static getThemeInfo(sThemeName){
+
+            if(!sThemeName){
+                return;
+            }
+
+            // 스탠다드 테마 정보가 있을 경우 리턴
+            var oStandardThemeInfo = this._getStandardThemeInfo(sThemeName);
+            if(oStandardThemeInfo){
+                return oStandardThemeInfo;
+            }
+
+            // 커스텀 테마 정보가 있을 경우 리턴
+            var oCustomThemeInfo = this._getCustomThemeInfo(sThemeName);
+            if(oCustomThemeInfo){
+                return oCustomThemeInfo;
+            }
+
+            // 그래도 없으면 undefined
+            return undefined;
+
+        }
+
+        static getThemeList(){
+
+            let aThemeList = [];
+
+            let aStandardThemeList = this.getStandardThemeList();
+            
+            if(aStandardThemeList.length !== 0){
+        
+                for(var sStTheme of aStandardThemeList){
+
+                    let oThemeInfo = {};
+
+                    if(!sStTheme){
+                        continue;
+                    }
+
+                    let oParseInfo = PATH.parse(sStTheme);
+                    if(!oParseInfo){
+                        continue;
+                    }
+
+                    let sThemeName = oParseInfo?.name || "";
+                    if(!sThemeName){
+                        continue;
+                    }
+
+                    oThemeInfo.groupName = "standard";
+                    oThemeInfo.name      = sThemeName;
+
+                    aThemeList.push(oThemeInfo);
+
+                }
+
+            }
+
+            let aCustomThemeList = this.getCustomThemeList();
+
+            if(aCustomThemeList.length !== 0){
+
+                for(var sTheme of aCustomThemeList){
+    
+                    let oThemeInfo = {};
+        
+                    if(!sStTheme){
+                        continue;
+                    }
+        
+                    let oParseInfo = PATH.parse(sTheme);
+                    if(!oParseInfo){
+                        continue;
+                    }
+        
+                    let sThemeName = oParseInfo?.name || "";
+                    if(!sThemeName){
+                        continue;
+                    }
+        
+                    oThemeInfo.groupName = "person";
+                    oThemeInfo.name      = sThemeName;
+        
+                    aThemeList.push(oThemeInfo);
+        
+                }
+    
+            }
+
+            return aThemeList;
+
+        }
+
+
+        static saveCustomTheme(sFileName, oThemeInfo){
+
+            if(!sFileName || !oThemeInfo){
+                return false;
+            }
+
+            if(typeof sFileName !== "string"){
+                return false;
+            }
+
+            if(typeof oThemeInfo !== "object"){
+                return false;
+            }
+
+            let sCustomThemePath = this._getCustomThemeRootPath();
+
+            if(FS.existsSync(sCustomThemePath) === false){
+                FS.mkdirSync(sCustomThemePath, { recursive: true });
+            }
+
+            try {
+            
+                FS.writeFileSync(PATH.join(sCustomThemePath, sFileName), JSON.stringify(oThemeInfo), 'utf-8');    
+
+            } catch (error) {
+
+
+                // // 콘솔용 오류 메시지
+                // var aConsoleMsg = [             
+                //     `[PATH]: www/ws10_20/js/usp/ws_usp.js`,
+                //     `=> _onEditorThemeSelectClick`,
+                //     `=> 에디터의 스탠다드 테마 폴더가 존재하지 않음!!`,     
+                // ];
+
+                // console.error(aConsoleMsg.join("\r\n"));
+                // console.trace();
+
+
+                return false;
+            }
+
+            return true;
+
+        }
+
+    }    
+
+
 };

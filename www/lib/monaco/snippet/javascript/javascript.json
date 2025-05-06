@@ -1,0 +1,290 @@
+[
+    {
+        "label": "setTimeout",
+        "kind": 27,
+        "insertText": "setTimeout(() => {\n\t${1}\n}, ${2:1000});",
+        "insertTextRules": 4,
+        "documentation": "일정 시간 후에 코드를 한 번 실행합니다. (기본값: 1초)"
+    },
+    {
+        "label": "setTimeoutVar",
+        "kind": 27,
+        "insertText": "const ${1:timeoutId} = setTimeout(() => {\n\t${2}\n}, ${3:1000});",
+        "insertTextRules": 4,
+        "documentation": "일정 시간 후에 코드를 한 번 실행하고 ID를 변수에 저장합니다. (기본값: 1초)"
+    },
+    {
+        "label": "clearTimeout",
+        "kind": 27,
+        "insertText": "clearTimeout(${1:timeoutId});",
+        "insertTextRules": 4,
+        "documentation": "설정된 타임아웃을 취소합니다."
+    },
+    {
+        "label": "setInterval",
+        "kind": 27,
+        "insertText": "setInterval(() => {\n\t${1}\n}, ${2:1000});",
+        "insertTextRules": 4,
+        "documentation": "일정 시간마다 코드를 반복적으로 실행합니다. (기본값: 1초)"
+    },
+    {
+        "label": "setIntervalVar",
+        "kind": 27,
+        "insertText": "const ${1:intervalId} = setInterval(() => {\n\t${2}\n}, ${3:1000});",
+        "insertTextRules": 4,
+        "documentation": "일정 시간마다 코드를 반복적으로 실행하고 ID를 변수에 저장합니다. (기본값: 1초)"
+    },
+    {
+        "label": "clearInterval",
+        "kind": 27,
+        "insertText": "clearInterval(${1:intervalId});",
+        "insertTextRules": 4,
+        "documentation": "설정된 인터벌을 취소합니다."
+    },
+    {
+        "label": "setIntervalWithClear",
+        "kind": 27,
+        "insertText": "const ${1:intervalId} = setInterval(() => {\n\t${2}\n\tif (${3:condition}) {\n\t\tclearInterval(${1:intervalId});\n\t}\n}, ${4:1000});",
+        "insertTextRules": 4,
+        "documentation": "조건에 따라 자동으로 중단되는 인터벌을 설정합니다. (기본값: 1초)"
+    },
+    {
+        "label": "debounce",
+        "kind": 27,
+        "insertText": "function ${1:debounce}(func, delay) {\n\tlet timeoutId;\n\treturn function(...args) {\n\t\tconst context = this;\n\t\tclearTimeout(timeoutId);\n\t\ttimeoutId = setTimeout(() => {\n\t\t\tfunc.apply(context, args);\n\t\t}, delay);\n\t};\n}\n\nconst ${2:debouncedFunction} = ${1:debounce}((${3:params}) => {\n\t${4}\n}, ${5:300});",
+        "insertTextRules": 4,
+        "documentation": "디바운스 함수 구현 및 사용 예시입니다. 연속된 호출에서 마지막 호출만 실행합니다."
+    },
+    {
+        "label": "throttle",
+        "kind": 27,
+        "insertText": "function ${1:throttle}(func, limit) {\n\tlet inThrottle;\n\treturn function(...args) {\n\t\tconst context = this;\n\t\tif (!inThrottle) {\n\t\t\tfunc.apply(context, args);\n\t\t\tinThrottle = true;\n\t\t\tsetTimeout(() => (inThrottle = false), limit);\n\t\t}\n\t};\n}\n\nconst ${2:throttledFunction} = ${1:throttle}((${3:params}) => {\n\t${4}\n}, ${5:300});",
+        "insertTextRules": 4,
+        "documentation": "스로틀 함수 구현 및 사용 예시입니다. 일정 주기마다 한 번씩만 실행을 허용합니다."
+    },
+    {
+        "label": "requestAnimationFrame",
+        "kind": 27,
+        "insertText": "function ${1:animate}() {\n\t${2}\n\trequestAnimationFrame(${1:animate});\n}\n\nrequestAnimationFrame(${1:animate});",
+        "insertTextRules": 4,
+        "documentation": "requestAnimationFrame을 사용한 애니메이션 루프입니다."
+    },
+    {
+        "label": "cancelAnimationFrame",
+        "kind": 27,
+        "insertText": "const ${1:rafId} = requestAnimationFrame(${2:animate});\n\n// 애니메이션 취소\ncancelAnimationFrame(${1:rafId});",
+        "insertTextRules": 4,
+        "documentation": "requestAnimationFrame 애니메이션을 취소합니다."
+    },
+    {
+        "label": "timeoutPromise",
+        "kind": 27,
+        "insertText": "const ${1:delay} = (ms) => new Promise(resolve => setTimeout(resolve, ms));\n\n// 사용 예시\nawait ${1:delay}(${2:1000}); // ${2:1000}ms 대기",
+        "insertTextRules": 4,
+        "documentation": "Promise를 반환하는 타임아웃 함수입니다. async/await와 함께 사용할 수 있습니다."
+    },
+    {
+        "label": "console.log",
+        "kind": 27,
+        "insertText": "console.log(${1:object});",
+        "insertTextRules": 4,
+        "documentation": "콘솔에 로그를 출력합니다."
+    },
+    {
+        "label": "console.logVar",
+        "kind": 27,
+        "insertText": "console.log('${1:variable}:', ${1:variable});",
+        "insertTextRules": 4,
+        "documentation": "변수명과 값을 함께 콘솔에 출력합니다."
+    },
+    {
+        "label": "for",
+        "kind": 27,
+        "insertText": "for (let ${1:i} = 0; ${1:i} < ${2:array}.length; ${1:i}++) {\n\t${3}\n}",
+        "insertTextRules": 4,
+        "documentation": "기본 for 루프입니다."
+    },
+    {
+        "label": "forEach",
+        "kind": 27,
+        "insertText": "${1:array}.forEach((${2:item}) => {\n\t${3}\n});",
+        "insertTextRules": 4,
+        "documentation": "forEach 메서드를 사용한 배열 순회입니다."
+    },
+    {
+        "label": "if",
+        "kind": 27,
+        "insertText": "if (${1:condition}) {\n\t${2}\n}",
+        "insertTextRules": 4,
+        "documentation": "If 조건문입니다."
+    },
+    {
+        "label": "ifelse",
+        "kind": 27,
+        "insertText": "if (${1:condition}) {\n\t${2}\n} else {\n\t${3}\n}",
+        "insertTextRules": 4,
+        "documentation": "If-Else 조건문입니다."
+    },
+    {
+        "label": "elseif",
+        "kind": 27,
+        "insertText": "if (${1:condition1}) {\n\t${2}\n} else if (${3:condition2}) {\n\t${4}\n} else {\n\t${5}\n}",
+        "insertTextRules": 4,
+        "documentation": "If-Else If-Else 조건문입니다."
+    },
+    {
+        "label": "switch",
+        "kind": 27,
+        "insertText": "switch (${1:expression}) {\n\tcase ${2:value1}:\n\t\t${3}\n\t\tbreak;\n\tcase ${4:value2}:\n\t\t${5}\n\t\tbreak;\n\tdefault:\n\t\t${6}\n}",
+        "insertTextRules": 4,
+        "documentation": "Switch 조건문입니다."
+    },
+    {
+        "label": "function",
+        "kind": 27,
+        "insertText": "function ${1:name}(${2:params}) {\n\t${3}\n}",
+        "insertTextRules": 4,
+        "documentation": "함수 선언입니다."
+    },
+    {
+        "label": "arrow",
+        "kind": 27,
+        "insertText": "const ${1:name} = (${2:params}) => {\n\t${3}\n};",
+        "insertTextRules": 4,
+        "documentation": "화살표 함수 선언입니다."
+    },
+    {
+        "label": "try",
+        "kind": 27,
+        "insertText": "try {\n\t${1}\n} catch (${2:error}) {\n\t${3}\n}",
+        "insertTextRules": 4,
+        "documentation": "Try-Catch 예외 처리 블록입니다."
+    },
+    {
+        "label": "class",
+        "kind": 27,
+        "insertText": "class ${1:ClassName} {\n\tconstructor(${2:params}) {\n\t\t${3}\n\t}\n\n\t${4:methodName}() {\n\t\t${5}\n\t}\n}",
+        "insertTextRules": 4,
+        "documentation": "클래스 선언입니다."
+    },
+    {
+        "label": "promise",
+        "kind": 27,
+        "insertText": "return new Promise((resolve, reject) => {\n\t${1}\n});",
+        "insertTextRules": 4,
+        "documentation": "Promise 객체를 생성합니다."
+    },
+    {
+        "label": "async",
+        "kind": 27,
+        "insertText": "async function ${1:functionName}(${2:params}) {\n\ttry {\n\t\t${3}\n\t} catch (error) {\n\t\t${4}\n\t}\n}",
+        "insertTextRules": 4,
+        "documentation": "비동기 함수 선언입니다."
+    },
+    {
+        "label": "await",
+        "kind": 27,
+        "insertText": "const ${1:result} = await ${2:promise};",
+        "insertTextRules": 4,
+        "documentation": "Promise 대기 구문입니다."
+    },
+    {
+        "label": "ajax-fetch",
+        "kind": 27,
+        "insertText": "fetch('${1:url}')\n\t.then(response => {\n\t\tif (!response.ok) {\n\t\t\tthrow new Error('Network response was not ok');\n\t\t}\n\t\treturn response.json();\n\t})\n\t.then(data => {\n\t\tconsole.log(data);\n\t\t${2}\n\t})\n\t.catch(error => {\n\t\tconsole.error('Error:', error);\n\t\t${3}\n\t});",
+        "insertTextRules": 4,
+        "documentation": "기본적인 Fetch API를 사용한 AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-fetch-async",
+        "kind": 27,
+        "insertText": "async function ${1:fetchData}() {\n\ttry {\n\t\tconst response = await fetch('${2:url}');\n\t\tif (!response.ok) {\n\t\t\tthrow new Error('Network response was not ok');\n\t\t}\n\t\tconst data = await response.json();\n\t\tconsole.log(data);\n\t\t${3}\n\t} catch (error) {\n\t\tconsole.error('Error:', error);\n\t\t${4}\n\t}\n}",
+        "insertTextRules": 4,
+        "documentation": "async/await를 사용한 Fetch API AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-post",
+        "kind": 27,
+        "insertText": "fetch('${1:url}', {\n\tmethod: 'POST',\n\theaders: {\n\t\t'Content-Type': 'application/json',\n\t},\n\tbody: JSON.stringify(${2:data}),\n})\n.then(response => response.json())\n.then(data => {\n\tconsole.log('Success:', data);\n\t${3}\n})\n.catch(error => {\n\tconsole.error('Error:', error);\n\t${4}\n});",
+        "insertTextRules": 4,
+        "documentation": "POST 메서드를 사용한 Fetch API AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-put",
+        "kind": 27,
+        "insertText": "fetch('${1:url}', {\n\tmethod: 'PUT',\n\theaders: {\n\t\t'Content-Type': 'application/json',\n\t},\n\tbody: JSON.stringify(${2:data}),\n})\n.then(response => response.json())\n.then(data => {\n\tconsole.log('Success:', data);\n\t${3}\n})\n.catch(error => {\n\tconsole.error('Error:', error);\n\t${4}\n});",
+        "insertTextRules": 4,
+        "documentation": "PUT 메서드를 사용한 Fetch API AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-delete",
+        "kind": 27,
+        "insertText": "fetch('${1:url}', {\n\tmethod: 'DELETE',\n})\n.then(response => response.json())\n.then(data => {\n\tconsole.log('Success:', data);\n\t${2}\n})\n.catch(error => {\n\tconsole.error('Error:', error);\n\t${3}\n});",
+        "insertTextRules": 4,
+        "documentation": "DELETE 메서드를 사용한 Fetch API AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-xhr",
+        "kind": 27,
+        "insertText": "const xhr = new XMLHttpRequest();\nxhr.open('${1:GET}', '${2:url}');\nxhr.setRequestHeader('Content-Type', 'application/json');\nxhr.onload = function() {\n\tif (xhr.status === 200) {\n\t\tconst data = JSON.parse(xhr.responseText);\n\t\tconsole.log(data);\n\t\t${3}\n\t} else {\n\t\tconsole.error('Request failed. Status:', xhr.status);\n\t\t${4}\n\t}\n};\nxhr.onerror = function() {\n\tconsole.error('Request failed. Network error');\n\t${5}\n};\nxhr.send(${6:null});",
+        "insertTextRules": 4,
+        "documentation": "XMLHttpRequest를 사용한 전통적인 AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-jquery-get",
+        "kind": 27,
+        "insertText": "$.ajax({\n\turl: '${1:url}',\n\tmethod: '${2:GET}',\n\tdataType: 'json',\n\tdata: ${3:null},\n\tsuccess: function(data) {\n\t\tconsole.log('Success:', data);\n\t\t${4}\n\t},\n\terror: function(xhr, status, error) {\n\t\tconsole.error('Error:', error);\n\t\t${5}\n\t}\n});",
+        "insertTextRules": 4,
+        "documentation": "jQuery를 사용한 AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-jquery-post",
+        "kind": 27,
+        "insertText": "let sPath = 'path-to-url';\r\n\r\n\/\/ ajax \uACB0\uACFC\r\nvar oResult = undefined;\r\n\r\n\/\/ formdata \uAD6C\uC131\r\nlet oFormData = new FormData()\r\n\toFormData.append(\"PARAM1\", \"\");\r\n\toFormData.append(\"PARAM2\", \"\");\r\n\r\n$.ajax({\r\n\tasync: false,\r\n\tmethod: \"POST\",\r\n\turl: sPath,\r\n\tdata: oFormData,\r\n\tcache: false,\r\n\tcontentType: false,\r\n\tprocessData: false,\r\n\tsuccess : function(data, textStatus, xhr) {\r\n\t\toResult = { success : true, data : data, status : textStatus, statusCode : xhr && xhr.status };\r\n\t},\r\n\terror : function(xhr, textStatus, error) {\r\n\t\toResult = { success : false, data : undefined, status : textStatus, error : error, statusCode : xhr.status, errorResponse :  xhr.responseText };\r\n\t}\r\n});\r\n\r\nif(oResult.success === false){\t\r\n\r\n\t\/\/ connect fail..\r\n\t\r\n\treturn;\r\n}",
+        "insertTextRules": 4,
+        "documentation": "jQuery를 사용한 AJAX 요청입니다."
+    },
+    {
+        "label": "ajax-form-data",
+        "kind": 27,
+        "insertText": "const formData = new FormData();\nformData.append('${1:key1}', '${2:value1}');\nformData.append('${3:key2}', '${4:value2}');\n\nfetch('${5:url}', {\n\tmethod: 'POST',\n\tbody: formData\n})\n.then(response => response.json())\n.then(data => {\n\tconsole.log('Success:', data);\n\t${6}\n})\n.catch(error => {\n\tconsole.error('Error:', error);\n\t${7}\n});",
+        "insertTextRules": 4,
+        "documentation": "FormData를 사용한 파일 업로드 등의 멀티파트 요청입니다."
+    },
+    {
+        "label": "ajax-fetch-headers",
+        "kind": 27,
+        "insertText": "fetch('${1:url}', {\n\tmethod: '${2:GET}',\n\theaders: {\n\t\t'Content-Type': 'application/json',\n\t\t'Authorization': 'Bearer ${3:token}',\n\t\t'${4:CustomHeader}': '${5:value}'\n\t}\n})\n.then(response => response.json())\n.then(data => {\n\tconsole.log('Success:', data);\n\t${6}\n})\n.catch(error => {\n\tconsole.error('Error:', error);\n\t${7}\n});",
+        "insertTextRules": 4,
+        "documentation": "사용자 지정 헤더를 포함한 Fetch API 요청입니다."
+    },
+    {
+        "label": "random",
+        "kind": 27,
+        "insertText": "\/*********************************************************\r\n * @function - RandomKey \uC0DD\uC131\r\n *********************************************************\r\n * @param {Integer} length\r\n * - \uC22B\uC790\uB9CC\uD07C \uB79C\uB364\uD0A4 \uC0DD\uC131\r\n *********************************************************\/\r\nfunction getRandomKey(length) {\r\n    let result = '';\r\n    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';\r\n    const charactersLength = characters.length;\r\n    let counter = 0;\r\n    while (counter < length) {\r\n      result += characters.charAt(Math.floor(Math.random() * charactersLength));\r\n      counter += 1;\r\n    }\r\n    return result;\r\n} \/\/ end of getRandomKey",
+        "insertTextRules": 4,
+        "documentation": "randomkey 생성 function 입니다."
+    },
+    {
+        "label": "fadeIn",
+        "kind": 27,
+        "insertText": "\/*********************************************************\r\n * @function - \uD2B9\uC815 Html \uC601\uC5ED\uC744 FadeIn \uD6A8\uACFC \uC8FC\uAE30\r\n * \uC2A4\uB974\uB975 \uB098\uD0C0\uB098\uB294 \uD6A8\uACFC\r\n *********************************************************\r\n * @param {DOM} oDomRef \r\n * - DOM\r\n * @param {Integer} itime\r\n * - FadeIn \uD6A8\uACFC \uC801\uC6A9 \uC2DC \uB51C\uB808\uC774 \uD0C0\uC784 \r\n *********************************************************\/\r\n function domFadeIn(oDomRef, itime = 200) {\r\n\r\n    return new Promise((resolve) => {\r\n\r\n        $(oDomRef).fadeIn(itime, () => {\r\n            resolve();\r\n        });\r\n\r\n    });\r\n\r\n} \/\/ end of domFadeIn",
+        "insertTextRules": 4,
+        "documentation": ""
+    },
+    {
+        "label": "fadeOut",
+        "kind": 27,
+        "insertText": "\/*********************************************************\r\n * @function - \uD2B9\uC815 Html \uC601\uC5ED\uC744 FadeOut \uD6A8\uACFC \uC8FC\uAE30  \r\n * \uC2A4\uB974\uB975 \uC0AC\uB77C\uC9C0\uB294 \uD6A8\uACFC \r\n *********************************************************\r\n * @param {DOM} oDomRef \r\n * - DOM\r\n * @param {Integer} itime\r\n * - FadeOut \uD6A8\uACFC \uC801\uC6A9 \uC2DC \uB51C\uB808\uC774 \uD0C0\uC784 \r\n *********************************************************\/\r\n function domFadeOut(oDomRef, itime = 200) {\r\n\r\n    return new Promise((resolve) => {\r\n\r\n        $(oDomRef).fadeOut(itime, () => {\r\n            resolve();\r\n        });\r\n\r\n    });\r\n\r\n} \/\/ end of domFadeOut",
+        "insertTextRules": 4,
+        "documentation": ""
+    },
+    {
+        "label": "domId",
+        "kind": 27,
+        "insertText": "document.getElementById(\"${1}\");",
+        "insertTextRules": 4,
+        "documentation": "document에서 id에 해당하는 DOM 정보 얻기."
+    }
+
+]

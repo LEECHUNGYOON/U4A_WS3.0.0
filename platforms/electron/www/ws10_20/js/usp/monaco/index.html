@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Monaco Editor</title>
+    <style>
+        html,
+        body,
+        #container {
+            margin: 0;
+            height: 100%;
+        }
+    </style>
+
+    <style>
+        .my-icon-gutter {
+            background: url('dddd.png') no-repeat center center;
+            /* background-size: contain;
+    width: 16px;
+    height: 16px; */
+            background-size: 24px 24px;
+        }
+
+        .my-line-highlight {
+            background-color: yellow !important;
+            opacity: 0.1;
+            color: red !important;
+            font-weight: bold;
+        }
+    </style>
+
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #split-container {
+            display: flex;
+            flex-direction: row;
+            /* 수평 분할 */
+            height: 100%;
+            width: 100%;
+        }
+
+        #editor-left,
+        #editor-right {
+            flex: 1;
+            height: 100%;
+        }
+
+        #editor-left {
+            border-right: 1px solid #444;
+        }
+    </style>
+
+    <style>
+        /* 공통 스크롤바 설정 */
+        .monaco-scrollable-element>.scrollbar {
+            background: transparent !important;
+            z-index: 10;
+        }
+
+        .monaco-scrollable-element>.scrollbar>.slider {
+            background: rgba(128, 128, 128, 0.3) !important;
+            /* 회색 & 투명도 */
+            border-radius: 4px !important;
+            transition: opacity 0.2s;
+        }
+
+        /* 스크롤바 기본은 숨김 */
+        .monaco-scrollable-element>.scrollbar>.slider {
+            opacity: 0;
+        }
+
+        /* 마우스 오버 시 나타남 */
+        .monaco-scrollable-element:hover>.scrollbar>.slider {
+            opacity: 1;
+        }
+
+        /* 사이즈 조절 */
+        .monaco-scrollable-element>.scrollbar.vertical {
+            width: 6px !important;
+        }
+
+        .monaco-scrollable-element>.scrollbar.horizontal {
+            height: 6px !important;
+        }
+    </style>
+
+
+    <script>
+
+/****************************************************************************
+ * 🔥 Global Variables
+ ****************************************************************************/
+        const
+            oAPP = {};
+            oAPP.params = {};
+            oAPP.attr = {};
+
+        // 부모의 부모 객체(할아버지 객체)
+        const GRAND_FATHER = parent.parent;
+
+        // URL 객체
+        const oURL = new URL(location.href);
+
+        // URL에 있는 QueryString 파라미터 객체
+        const oSearchParams = oURL.searchParams;
+
+
+
+        // 스니펫 데이터를 저장하는 전역 변수
+        oAPP.attr.aSnippetData = [];
+
+
+
+/****************************************************************************
+ * 🔥 Npm Library
+ ****************************************************************************/        
+        const PATH = GRAND_FATHER.PATH;
+        const FS   = GRAND_FATHER.FS;
+
+
+        
+/****************************************************************************
+ * 🔥 Paths
+ ****************************************************************************/
+
+        // USP root 경로
+        const USP_ROOT_PATH = GRAND_FATHER.PATHINFO.USP_ROOT;
+
+
+        // 모나코 에디터 관련 경로
+        const MONACO_LIB_PATH = PATH.join(GRAND_FATHER.APPPATH, "lib", "monaco");
+        const MONACO_VS_ROOT_PATH = PATH.join(MONACO_LIB_PATH, "vs");
+        const MONACO_LOADER_PATH  = PATH.join(MONACO_VS_ROOT_PATH, "loader.js");
+        
+
+
+
+        // URL QueryString 정보를 파라미터 객체에 저장한다.
+        oAPP.params = oSearchParams;
+
+        // 전달받은 파라미터 (JSON Stringify Data)
+        let sPARAMS = oAPP.params.get("PARAMS");
+
+        // 전달받은 파라미터를 객체화 
+        let oPARAMS = JSON.parse(sPARAMS);
+
+        // 현재 페이지의 ID 정보를 저장해 둔다.
+        oAPP.attr.PAGEID = oPARAMS.PAGEID;
+
+        // 현재 BROWSKEY 정보를 저장해둔다.
+        oAPP.attr.BROWSKEY = GRAND_FATHER.getBrowserKey();
+
+        // 부모와 통신하기 위한 커스텀 이벤트용 DOM
+        let sCustDomId = "IF_USP_EDITOR";
+
+        oAPP.attr.oCustomEvtDom = parent.document.getElementById(sCustDomId);
+
+
+
+
+        // 이미 예약된 단축키 목록 정보 구하기
+        let aReservedShortcutList = GRAND_FATHER.require(GRAND_FATHER.PATH.join(USP_ROOT_PATH, "monaco", "shortcut", "reservedShortcutList.json"));
+
+        
+        function onLoad() {
+
+            var loaderScript = document.createElement('script');
+            loaderScript.src = 'index.js'; // ← 경로 정확히
+
+            document.head.append(loaderScript);
+        };
+
+        // onMessage에서 Action 코드가 Init 일 경우 호출되는 function
+        function onMessageInit(oParams) {
+
+            if (typeof oParams?.port === "undefined") { return; }
+
+            console.log("onMessageInit");
+
+            oAPP.MESSAGE_CHANEL_PORT = oParams.port;
+
+            oAPP.MESSAGE_CHANEL_PORT.onmessage = (oEvent) => {
+
+                // 외부에서 에디터 데이터 정보를 업데이트 했다는 플래그를 설정한다.
+                editor.bExternalUpdated = true;
+
+                editor.setValue(oEvent.data);
+
+            };
+
+        } // end of onMessageInit
+
+
+        // onMessage에서의 테마 적용 메소드
+        function onApplyTheme(oParams){
+            
+            if(!oParams){
+                return;
+            }
+
+            let oThemeInfo = oParams?.oThemeInfo || undefined;
+            if(!oThemeInfo){
+                return;
+            }
+
+            let sThemeName = oThemeInfo?.themeName || "";
+            if(!sThemeName){
+                return;
+            }
+
+            // 테마 적용하기
+            setApplyTheme(sThemeName);
+
+        }
+
+        // 테마 적용하기
+        function setApplyTheme(sThemeName){
+
+            let oThemeData = GRAND_FATHER.WSUTIL.MONACO_EDITOR.getThemeInfo(sThemeName);
+            if(!oThemeData){
+                return;
+            }
+
+            let oThemeInfo = oThemeData?.themeInfo || undefined;
+            if(!oThemeInfo){
+                return;
+            }
+
+
+            // 테마 선언
+            monaco.editor.defineTheme(sThemeName, oThemeInfo);
+
+            // 테마 변경
+            monaco.editor.setTheme(sThemeName);
+
+        }
+
+        window.addEventListener('message', (oEvent) => {
+
+            // 파라미터가 없을 경우 빠져나감
+            let oParams = oEvent?.data || undefined;
+            if(!oParams){
+                return;
+            }
+
+            // 액션코드가 없다면 빠져나감
+            let sActcd = oParams?.actcd || "";
+            if(!sActcd){
+                return;
+            }
+
+            // 전달받은 파라미터 중, ACTION CODE(actcd) 별 프로세스 분기
+            switch (sActcd) {
+                case "init":
+
+                    // onMessageInit(oEvent);
+                    onMessageInit(oParams);
+
+                    return;
+
+                case "applyTheme":  // 테마 적용
+                    
+                    // onApplyTheme(oEvent.data);
+                    onApplyTheme(oParams);
+
+                    return;
+
+                default:
+                    break;
+            }
+
+        });
+
+        window.addEventListener("DOMContentLoaded", function () {
+          
+            var loaderScript = document.createElement('script');
+            loaderScript.src = MONACO_LOADER_PATH;
+
+            document.head.append(loaderScript);
+
+            loaderScript.onload = onLoad;
+
+
+            // let oMsgEvt = new MessageEvent("IF_USP_EDITOR", { data: { ACTCD: "ON_LOAD" } });
+            // if(oAPP.attr.oCustomEvtDom){
+            //     oAPP.attr.oCustomEvtDom.dispatchEvent(oMsgEvt);
+            // }
+
+            // // Shortcut 라이브러리 로드
+            // let sShortCutJsPath = GRAND_FATHER.PATH.join(GRAND_FATHER.APPPATH, "js", "shortcut.js");	 
+            // var loaderScript = document.createElement('script');
+            // 	loaderScript.src = sShortCutJsPath
+
+            // document.head.append(loaderScript);
+
+
+        });
+
+        window.onload = function () {
+
+            // // USP Shortcut 등록
+            // var aShortcutList = parent.oAPP.common.getShortCutList("WS30"),
+            //     iLength = aShortcutList.length;
+
+            // for (var i = 0; i < iLength; i++) {
+
+            //     var oShortcutInfo = aShortcutList[i];
+
+            //     shortcut.add(oShortcutInfo.KEY, oShortcutInfo.fn);
+
+            // }
+
+        }
+
+    </script>
+
+
+    <!-- <script src="./lib/monaco/vs/loader.js" onload="onLoad()" ></script> -->
+    <!-- <script src="./lib/monaco/vs/loader.js" onload="onLoad();"></script> -->
+    <!-- <script src="" onload="onLoad();"></script> -->
+
+
+    <!-- <script src="monaco.js"></script> -->
+
+</head>
+
+<body>
+
+    <div id="content" style="height:100%;"></div>
+    <!-- <div id="split-container">
+    <div id="editor-left"></div>
+    <div id="editor-right"></div>
+  </div> -->
+
+    <!-- <div id="container"></div> -->
+
+    <!-- <div id="custom-tooltip" style="
+    display: none;
+    position: absolute;
+    background: #333;
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    max-width: 300px;
+    z-index: 9999;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+  "></div> -->
+
+</body>
+
+</html>

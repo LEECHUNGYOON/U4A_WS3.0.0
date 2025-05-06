@@ -590,6 +590,51 @@
 
         sap.ui.getCore().applyTheme(oThemeJsonData.THEME);
 
+
+        /*****************************************************
+         * @since   2025-05-06
+         * @version 3.5.6-sp2
+         * @author  soccerhs
+         * 
+         * @description
+         * USP의 모나코 에디터의 테마 변경 관런로직
+         * 
+         * # Workspace Theme 변경시 테마에 따른 
+         *   USP 모나코 에디터 테마 동시 변경 적용을 하지 않는 것으로 
+         *   결정하여 임시 주석처리함
+         ******************************************************/
+        // // 마지막 선택한 테마 정보를 구한다.
+        // let sSelectedThemeUsp = oAPP.common.fnGetModelProperty("/WS30/USP_EDITOR/sSelectedTheme");
+        // if(!sSelectedThemeUsp){
+        //     return;
+        // }
+
+        // // USP 에디터에 마지막 선택한 테마 정보가 있는지 확인
+        // let oLastSelectedThemeInfo = oAPP.usp.getLastSelectedEditorTheme();
+        // let sLastThemeName = oLastSelectedThemeInfo?.themeName;
+        // if(sLastThemeName){
+        //     return;
+        // }
+
+        // // 마지막 선택한 테마 정보가 없다면 테마의 다크 or 화이트에 따른 
+        // // 에디터 영역 테마 설정
+
+        // // 기본 에디터 테마 설정
+        // let sThemeName = "vs-light";
+
+        // if (oThemeJsonData.THEME.endsWith("dark")) {
+        //     sThemeName = "vs-dark";
+        // }
+
+        // // 선택된 테마 정보
+        // let oSelectedThemeInfo = {
+        //     themeName : sThemeName,
+        // };
+
+        // // 전체 USP의 모나코 에디터에 PostMessage 를 전송한다.
+        // oAPP.usp.sendEditorPostMessageAll({ actcd: 'applyTheme', oThemeInfo: oSelectedThemeInfo });
+
+
     }; // end of oAPP.fn.fnIpcMain_if_p13n_themeChange
 
 })(window, $, oAPP);

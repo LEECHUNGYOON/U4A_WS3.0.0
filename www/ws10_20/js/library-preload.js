@@ -20,6 +20,9 @@ let oAPP = (function (window) {
 
     oAPP.fn = {};
 
+    oAPP.ui = {};
+    oAPP.usp = {};    
+
     oAPP.DATA = {};
 
     oAPP.sap = {};

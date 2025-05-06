@@ -1,0 +1,9 @@
+[
+    {
+        "label": "sapId",
+        "kind": 27,
+        "insertText": "sap.ui.getCore().byId(\"${0:}\");",
+        "insertTextRules": 4,
+        "documentation": "DOM id에 해당하는 sap UI Instance 정보 얻기."
+    }
+]

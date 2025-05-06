@@ -1088,46 +1088,360 @@
 
     } // end of fnGetUspDocPageContentWs30
 
+
     /**************************************************************************
      * [WS30] USP Page의 우측 Content Page
      **************************************************************************/
-    function fnGetUspContPageWs30() {
+    // function fnGetUspContPageWs30() {
 
-        var oPanel = fnGetUspPanelWs30(),
-            oPage = fnGetUspPageWs30();
+    //     var oPanel = fnGetUspPanelWs30(),
+    //         oPage = fnGetUspPageWs30();
 
-        return new sap.m.Page("USP20", {
-            showHeader: false,
+    //     return new sap.m.Page("USP20", {
+    //         showHeader: false,
+    //         enableScrolling: false,
+    //         content: [
+
+    //             new sap.m.VBox({
+    //                 height: "100%",
+    //                 renderType: sap.m.FlexRendertype.Bare,
+    //                 items: [
+
+    //                     new sap.m.VBox({
+    //                         renderType: sap.m.FlexRendertype.Bare,
+    //                         items: [
+    //                             oPanel
+    //                         ]
+    //                     }),
+    //                     new sap.m.VBox({
+    //                         height: "100%",
+    //                         renderType: sap.m.FlexRendertype.Bare,
+    //                         items: [
+    //                             oPage
+    //                         ]
+    //                     }),
+
+    //                 ]
+    //             })
+
+    //         ]
+
+    //     });
+
+    // } // end of fnGetUspContPageWs30
+
+    /*****************************************************
+     * @since   2025-05-06
+     * @version 3.5.6-sp2
+     * @author  soccerhs
+     * 
+     * @description
+     * ## USP EDITOR 변경 작업 ##
+     * 
+     * [WS30] USP Page의 우측 Content Page      
+     ******************************************************/
+    function fnGetUspPageWs30(){
+
+        let lfCodeeditorBindProperty = () => {
+
+            return {
+
+                parts: [
+                    "/WS30/APP/IS_EDIT",    // Change 모드 여부
+                    "/WS30/USPDATA/PUJKY",  // 내부 계층구조의 부모키
+                    "/WS30/USPDATA/ISFLD",  // 폴더 여부
+                ],
+                formatter: (IS_EDIT, PUJKY, ISFLD) => {
+
+                    // Change 모드가 아니면 숨긴다.
+                    if (IS_EDIT != "X") {
+                        return false;
+                    }
+
+                    // 부모키가 없다면 숨긴다 (최상위 루트일 경우)
+                    if (PUJKY == "") {
+                        return false;
+                    }
+
+                    // 폴더일 경우는 숨긴다.
+                    if (ISFLD == "X") {
+                        return false;
+                    }
+
+                    return true;
+
+                }
+            };
+
+        };
+
+        let PAGE = new sap.m.Page({
+            showHeader: true,
             enableScrolling: false,
-            content: [
-
-                new sap.m.VBox({
-                    height: "100%",
-                    renderType: sap.m.FlexRendertype.Bare,
-                    items: [
-
-                        new sap.m.VBox({
-                            renderType: sap.m.FlexRendertype.Bare,
-                            items: [
-                                oPanel
-                            ]
-                        }),
-                        new sap.m.VBox({
-                            height: "100%",
-                            renderType: sap.m.FlexRendertype.Bare,
-                            items: [
-                                oPage
-                            ]
-                        }),
-
-                    ]
-                })
-
-            ]
-
+            showFooter: false,
         });
 
+        let oHeaderToolbar = new sap.m.OverflowToolbar();
+        PAGE.setCustomHeader(oHeaderToolbar);
+
+        let oTITLE1 = new sap.m.Title({
+            text: "{/WS30/USPDATA/OBDEC}"
+        });
+
+        oHeaderToolbar.addContent(oTITLE1);
+
+        oHeaderToolbar.addContent(new sap.m.ToolbarSpacer());
+
+        let COMBOBOX1 = new sap.m.Select({
+            busyIndicatorDelay: 0,
+            selectedKey: "{/WS30/USP_EDITOR/sSelectedTheme}",
+            width: "200px",
+            change: function(oEvent){
+
+                zconsole.log("Select change");
+
+                // [async]
+                _oEditorThemeChange(oEvent);
+            },
+            
+            items: {
+                path: "/WS30/USP_EDITOR/aThemeList",
+                template: new sap.ui.core.ListItem({    
+                    key: "{name}",
+                    text: "{name}",                    
+                })
+            }
+        });
+
+        COMBOBOX1.addEventDelegate({
+            onclick: function(oEvent){
+
+                zconsole.log("Select onclick");
+
+                // [async]
+                _onEditorThemeSelectClick(oEvent);
+
+            }
+        });
+
+        oHeaderToolbar.addContent(COMBOBOX1);
+
+        let oBUTTON4 = new sap.m.Button("editorDefaultFontBtn",{
+            icon: "sap-icon://u4a-fw-solid/Text Height",
+            text: oAPP.msg.M311, // Default Font Size
+            tooltip: oAPP.msg.M311, // Default Font Size
+            press: ev_codeeditorDefaultFontSize
+        });
+
+        oBUTTON4.bindProperty("enabled", {
+            parts: [
+                "/WS30/USPDATA/ISFLD",
+            ],
+            formatter: (ISFLD) => {
+
+                if (ISFLD == "X") {
+                    return false;
+                }
+
+                return true;
+
+            }
+        });
+
+        oHeaderToolbar.addContent(oBUTTON4);
+
+        let oBUTTON1 = new sap.m.Button({
+            icon: "sap-icon://rotate",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C22"), // Split Orientation Change
+            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C22"), // Split Orientation Change
+            press: ev_codeeditorSplitOrientationChange
+        }).bindProperty("enabled", {
+            parts: [
+                "/WS30/USPDATA/ISFLD",
+            ],
+            formatter: (ISFLD) => {
+
+                if (ISFLD == "X") {
+                    return false;
+                }
+
+                return true;
+
+            }
+        });
+
+        oHeaderToolbar.addContent(oBUTTON1);
+
+        let oBUTTON2 = new sap.m.Button({
+            icon: "sap-icon://full-screen",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C23"), // Full Screen                    
+            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D23") + " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C79"), // Editor Full Screen Mode
+            press: ev_codeeditorFullscreen
+        });
+
+        oHeaderToolbar.addContent(oBUTTON2);
+
+        
+        let oBUTTON3 = new sap.m.Button("ws30_codeeditor_prettyBtn", {
+            icon: "sap-icon://indent",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25"), // Pretty Print
+            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25") + "(Shift + F1)", // Pretty Print                    
+            press: ev_codeeditorPrettyPrint,
+        }).bindProperty("enabled", lfCodeeditorBindProperty())
+
+        oHeaderToolbar.addContent(oBUTTON3);
+
+        let oSplitter = new sap.ui.layout.Splitter("uspCodeeditorSplit", {
+            height: "100%",
+            width: "100%", 
+        })
+        .addEventDelegate({
+            ondblclick: _fnDoubleClickSplitbar,
+        })
+        .addStyleClass("uspCodeeditorSplit sapUiSmallMarginBottom");
+
+        PAGE.addContent(oSplitter);
+
+        let PAGE1 = new sap.m.Page({
+            showHeader: false,
+            enableScrolling: false
+        });
+
+        oSplitter.addContentArea(PAGE1);
+        
+        let SPLITTER_LAYOUTDATA = new sap.ui.layout.SplitterLayoutData("codeEditorSplitLayout", {
+            size: "0px",
+        });
+
+        PAGE1.setLayoutData(SPLITTER_LAYOUTDATA);
+
+        PAGE.data("SPLITTER_LAYOUTDATA", SPLITTER_LAYOUTDATA);
+        PAGE.data("EDITOR_SPLITTER", oSplitter);
+
+        var sPageId = "EDITPAGE1";
+
+        PAGE.data(sPageId, PAGE1);
+
+        let sEditorIndexPath = parent.PATH.join(PATHINFO.USP_ROOT, "monaco", "index.html");
+
+        var oQueryStringParams = {
+
+            // custom Data 이름과 동일하게 해야함.
+            // 해당 PageID를 iframe에 파라미터를 전달 후,
+            // monaco Editor에서 contextMenu 이벤트 발생 시, 
+            // 해당 이벤트 발생 위치를 찾을 때 활용함.
+            PAGEID: sPageId,
+        };
+
+        var sQueryString = JSON.stringify(oQueryStringParams);
+            sQueryString = encodeURIComponent(sQueryString);
+   
+        let sFrameHtml1 = `
+        <div style="height: 100%">
+            <iframe class="MONACO_EDITOR EDITOR_FRAME1" src="${sEditorIndexPath}?PARAMS=${sQueryString}" onload="oAPP.fn.onFrameLoadUspEditor(event);" style="border:none;width:100%;height:100%;">
+            </iframe>
+        </div>`;
+
+        let HTML1 = new sap.ui.core.HTML({
+            content: sFrameHtml1,
+            preferDOM: false,
+        });
+
+        PAGE1.addContent(HTML1);
+
+        let PAGE2 = new sap.m.Page({
+            showHeader: false,
+            enableScrolling: false
+        });
+
+        oSplitter.addContentArea(PAGE2);
+
+        var sPageId = "EDITPAGE2";
+
+        PAGE.data(sPageId, PAGE2);
+
+        var oQueryStringParams = {
+
+            // custom Data 이름과 동일하게 해야함.
+            // 해당 PageID를 iframe에 파라미터를 전달 후,
+            // monaco Editor에서 contextMenu 이벤트 발생 시, 
+            // 해당 이벤트 발생 위치를 찾을 때 활용함.            
+            PAGEID: sPageId,
+        };
+
+        var sQueryString = JSON.stringify(oQueryStringParams);
+            sQueryString = encodeURIComponent(sQueryString);
+        
+        let sFrameHtml2 = `
+        <div style="height: 100%">
+            <iframe class="MONACO_EDITOR EDITOR_FRAME2 EDITOR_MAIN" src="${sEditorIndexPath}?PARAMS=${sQueryString}" onload="oAPP.fn.onFrameLoadUspEditor(event);" style="border:none;width:100%;height:100%;">
+            </iframe>
+        </div>`;
+
+        let HTML2 = new sap.ui.core.HTML({
+            content: sFrameHtml2,
+            preferDOM: false,
+        });
+
+        PAGE2.addContent(HTML2);
+
+        return PAGE;
+        
+    } // end of fnGetUspPageWs30
+
+
+    /*****************************************************
+     * @since   2025-05-06
+     * @version 3.5.6-sp2
+     * @author  soccerhs
+     * 
+     * @description
+     * ## USP EDITOR 변경 작업 ##
+     *
+     * [WS30] USP Page의 우측 Content Page 
+     ******************************************************/    
+    function fnGetUspContPageWs30() {
+
+        var oPanel = fnGetUspPanelWs30();
+
+        var USP_EDITOR_PAGE = fnGetUspPageWs30();
+
+        oAPP.ui.USP_EDITOR_PAGE = USP_EDITOR_PAGE;
+
+        let USP_PAGE_20 = new sap.m.Page("USP20", {
+            showHeader: false,
+            enableScrolling: false,
+        });
+
+        let VBOX1 = new sap.m.VBox({
+            height: "100%",
+            renderType: sap.m.FlexRendertype.Bare,
+        });
+
+        USP_PAGE_20.addContent(VBOX1);
+
+        let VBOX2 = new sap.m.VBox({
+            renderType: sap.m.FlexRendertype.Bare,
+            items: [
+                oPanel
+            ]
+        });
+        VBOX1.addItem(VBOX2);
+
+        let VBOX3 = new sap.m.VBox({
+            height: "100%",
+            renderType: sap.m.FlexRendertype.Bare,  
+        });
+        VBOX1.addItem(VBOX3);
+
+        oAPP.ui.USP_EDITOR_PAGE_PARENT = VBOX3;
+
+        VBOX3.addItem(USP_EDITOR_PAGE);
+
+        return USP_PAGE_20;
+
     } // end of fnGetUspContPageWs30
+        
 
     /**************************************************************************
      * [WS30] Tree Table
@@ -1162,80 +1476,100 @@
 
                             new sap.m.Image({
                                 width: "20px"
-                            })
-                                .bindProperty("src", {
-                                    parts: [
-                                        "ISFLD",
-                                        "EXTEN"
-                                    ],
-                                    formatter: function (ISFLD, EXTEN) {
+                            }).bindProperty("src", {
+                                parts: [
+                                    "ISFLD",
+                                    "EXTEN"
+                                ],
+                                formatter: function (ISFLD, EXTEN) {
 
-                                        var iFileImgListLength = gaFileExtendImgList.length;
-                                        if (iFileImgListLength == 0) {
-                                            return;
-                                        }
+                                    var iFileImgListLength = gaFileExtendImgList.length;
+                                    if (iFileImgListLength == 0) {
+                                        return;
+                                    }
 
-                                        // SVG 폴더 경로
-                                        var svgFolder = PATH.join(APP.getAppPath(), "svg"),
-                                            sIconPath = "";
+                                    // SVG 폴더 경로
+                                    var svgFolder = PATH.join(APP.getAppPath(), "svg"),
+                                        sIconPath = "";
 
-                                        // 폴더일 경우 폴더 아이콘
-                                        if (ISFLD == "X") {
+                                    // 폴더일 경우 폴더 아이콘
+                                    if (ISFLD == "X") {
 
-                                            sIconPath = svgFolder + "/folder.svg";
-
-                                            return sIconPath;
-
-                                        }
-
-                                        if (!EXTEN) {
-                                            return;
-                                        }
-
-                                        var sFind = gaFileExtendImgList.find((elem) => {
-
-                                            if (elem.startsWith(EXTEN.toLowerCase()) == true) {
-                                                return elem;
-                                            }
-
-                                        });
-
-                                        // SVG 폴더 경로에 해당 파일 확장자가 없으면 알수 없는 파일 아이콘
-                                        if (!sFind) {
-
-                                            sIconPath = svgFolder + "/file.svg";
-
-                                            return sIconPath;
-
-                                        }
-
-                                        // SVG 폴더 경로에 해당 파일 확장자가 있을 경우
-                                        sIconPath = svgFolder + "/" + sFind;
+                                        sIconPath = svgFolder + "/folder.svg";
 
                                         return sIconPath;
 
                                     }
-                                })
-                                .bindProperty("visible", {
-                                    parts: [
-                                        "PUJKY",
-                                        "ISFLD"
-                                    ],
-                                    formatter: (PUJKY, ISFLD) => {
 
-                                        if (PUJKY == null || ISFLD == null) {
-                                            return;
+                                   // 확장자가 없을 경우 알수 없는 파일 아이콘
+                                   if (!EXTEN) {
+                                            
+                                        sIconPath = svgFolder + "/file.svg";
+
+                                        return sIconPath;
+                                        
+                                    }
+
+                                    var sFind = gaFileExtendImgList.find((elem) => {
+
+                                        if (elem.startsWith(EXTEN.toLowerCase()) == true) {
+                                            return elem;
                                         }
 
-                                        if (PUJKY == "") {
-                                            return true;
-                                        }
+                                    });
 
-                                        return true;
+                                    // SVG 폴더 경로에 해당 파일 확장자가 없으면 알수 없는 파일 아이콘
+                                    if (!sFind) {
+
+                                        sIconPath = svgFolder + "/file.svg";
+
+                                        return sIconPath;
 
                                     }
 
-                                }).addStyleClass("sapUiTinyMarginEnd"),
+                                    var sFind = gaFileExtendImgList.find((elem) => {
+
+                                        if (elem.startsWith(EXTEN.toLowerCase()) == true) {
+                                            return elem;
+                                        }
+
+                                    });
+
+                                    // SVG 폴더 경로에 해당 파일 확장자가 없으면 알수 없는 파일 아이콘
+                                    if (!sFind) {
+
+                                        sIconPath = svgFolder + "/file.svg";
+
+                                        return sIconPath;
+
+                                    }
+
+                                    // SVG 폴더 경로에 해당 파일 확장자가 있을 경우
+                                    sIconPath = svgFolder + "/" + sFind;
+
+                                    return sIconPath;
+
+                                }
+                            }).bindProperty("visible", {
+                                parts: [
+                                    "PUJKY",
+                                    "ISFLD"
+                                ],
+                                formatter: (PUJKY, ISFLD) => {
+
+                                    if (PUJKY == null || ISFLD == null) {
+                                        return;
+                                    }
+
+                                    if (PUJKY == "") {
+                                        return true;
+                                    }
+
+                                    return true;
+
+                                }
+
+                            }).addStyleClass("sapUiTinyMarginEnd"),
 
                             new sap.m.Text({
                                 text: "{OBDEC}",
@@ -1528,31 +1862,120 @@
 
         });
 
-    } // end of fnGetUspPanelWs30    
+    } // end of fnGetUspPanelWs30
+    
 
-    function _codeeditorChange(oEvent) {
+    /**************************************************************************
+     * [WS30] Usp Monaco Editor 테마 선택 이벤트
+     **************************************************************************/    
+    async function _onEditorThemeSelectClick(oEvent){
 
-        let sId = oEvent.getParameter("id"),
-            sFireId = "ws30_codeeditor";
-
-        if (sId == sFireId) {
-            sFireId = "ws30_codeeditor-clone1";
-        }
-
-        let oEditor = sap.ui.getCore().byId(sFireId);
-        if (!oEditor) {
+        let oCombo = oEvent.srcControl;
+        if(!oCombo){
             return;
         }
 
-        let sValue = oEvent.getParameter("value");
-        oEditor.setValue(sValue);
+        oCombo.setBusy(true);   
 
-        // 앱 변경 사항 플래그 설정
-        oAPP.fn.setAppChangeWs30("X");
+        // Monaco Editor의 테마 정보(스탠다드 & 커스텀) 목록을 구한다.
+        let aThemeList = WSUTIL.MONACO_EDITOR.getThemeList(); 
+        
+        APPCOMMON.fnSetModelProperty("/WS30/USP_EDITOR/aThemeList", aThemeList);
 
-    }
+        oCombo.setBusy(false);
 
-    function fnSetEditorSearchInputMaxlength(_oAceEditor){
+    } // end of _onEditorThemeSelectClick
+
+
+    /**************************************************************************
+     * [WS30] Usp Monaco Editor 테마 변경 이벤트
+     **************************************************************************/      
+    async function _oEditorThemeChange(oEvent){
+
+        if(!oEvent){
+            return;
+        }
+
+        let oCombo = oEvent.getSource();
+        if(!oCombo){
+            return;
+        }
+
+
+        let oSelectedItem = oEvent.getParameter("selectedItem");
+        if(!oSelectedItem){
+            return;
+        }
+
+        let sSelectedKey = oSelectedItem.getKey();
+        if(!sSelectedKey){
+            return;
+        }
+
+        // 선택된 테마 정보
+        let oSelectedThemeInfo = {
+            themeName : sSelectedKey,
+        };
+
+        // 전체 USP의 모나코 에디터에 PostMessage 를 전송한다.
+        oAPP.usp.sendEditorPostMessageAll({ actcd: 'applyTheme', oThemeInfo: oSelectedThemeInfo });
+
+        // 개인화 폴더에 선택된 테마 정보 저장하기
+        let sThemeP13nFolderPath = PATH.join(PATHINFO.P13N_ROOT, "usp", "monaco", "theme", parent.getUserInfo().SYSID);
+        
+        if(FS.existsSync(sThemeP13nFolderPath) === false){
+            FS.mkdirSync(sThemeP13nFolderPath, { recursive: true });
+        }
+
+        // 선택한 테마 정보를 저장할 파일 경로
+        let sThemeFilePath = PATH.join(sThemeP13nFolderPath, "select_theme.json");
+
+        try {
+
+            let oThemeSaveInfo = {
+                themeName: oSelectedThemeInfo.themeName
+            };
+
+            FS.writeFileSync(sThemeFilePath, JSON.stringify(oThemeSaveInfo), 'utf-8');    
+
+        } catch (error) {
+            
+            // 오류 및 메시지 처리..
+
+            //[MSG] 테마 정보 저장 중 문제가 발생하였습니다. 문제가 지속될 경우 U4A Team으로 연락해 주세요.
+
+            // 콘솔 오류 로그 남기기...
+
+            return;
+
+        }
+
+    } // end of _oEditorThemeChange    
+
+
+    // function _codeeditorChange(oEvent) {
+
+    //     let sId = oEvent.getParameter("id"),
+    //         sFireId = "ws30_codeeditor";
+
+    //     if (sId == sFireId) {
+    //         sFireId = "ws30_codeeditor-clone1";
+    //     }
+
+    //     let oEditor = sap.ui.getCore().byId(sFireId);
+    //     if (!oEditor) {
+    //         return;
+    //     }
+
+    //     let sValue = oEvent.getParameter("value");
+    //     oEditor.setValue(sValue);
+
+    //     // 앱 변경 사항 플래그 설정
+    //     oAPP.fn.setAppChangeWs30("X");
+
+    // }
+
+    // function fnSetEditorSearchInputMaxlength(_oAceEditor){
 
         // if(!_oAceEditor){
         //     return;
@@ -1580,232 +2003,238 @@
 
         // console.log(document.querySelectorAll(".ace_search_field"));
 
-    } // end of fnSetEditorSearchInputMaxlength
+    // } // end of fnSetEditorSearchInputMaxlength
+
+
 
     /**************************************************************************
      * [WS30] Usp Page
      **************************************************************************/
-    function fnGetUspPageWs30() {
+    // function fnGetUspPageWs30() {
 
-        let lfCodeeditorDelegate = () => { // codeeditor Delegate
+    //     let lfCodeeditorDelegate = () => { // codeeditor Delegate
 
-            return {
-                canSkipRendering: true,
-                onAfterRendering: function (oControl) {
+    //         return {
+    //             canSkipRendering: true,
+    //             onAfterRendering: function (oControl) {
 
-                    var oEditor = oControl.srcControl,
-                        _oAceEditor = oEditor._oEditor;
+    //                 var oEditor = oControl.srcControl,
+    //                     _oAceEditor = oEditor._oEditor;
 
-                    if (!_oAceEditor) {
-                        return;
-                    }
+    //                 if (!_oAceEditor) {
+    //                     return;
+    //                 }
 
-                    // 에디터에 기본 폰트 사이즈 적용
-                    _oAceEditor.setFontSize(gEditorFontSize);
+    //                 // 에디터에 기본 폰트 사이즈 적용
+    //                 _oAceEditor.setFontSize(gEditorFontSize);
 
 
-                    fnSetEditorSearchInputMaxlength(_oAceEditor);
+    //                 fnSetEditorSearchInputMaxlength(_oAceEditor);
 
-                }
-            };
+    //             }
+    //         };
 
-        },
-        lfCodeeditorAttribute = () => { // codeeditor 속성 정보
+    //     },
+    //     lfCodeeditorAttribute = () => { // codeeditor 속성 정보
 
-            return {
-                height: "100%",
-                width: "100%",
-                syntaxHints: true,
-                type: "{/WS30/USPDATA/EXTEN}",                    
-                value: "{/WS30/USPDATA/CONTENT}",
-                change: _codeeditorChange
-            };
+    //         return {
+    //             height: "100%",
+    //             width: "100%",
+    //             syntaxHints: true,
+    //             type: "{/WS30/USPDATA/EXTEN}",                    
+    //             value: "{/WS30/USPDATA/CONTENT}",
+    //             change: _codeeditorChange
+    //         };
 
-        };
+    //     };
 
-        var oCodeEditor = new sap.ui.codeeditor.CodeEditor("ws30_codeeditor", lfCodeeditorAttribute())
-            .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding)
-            .bindProperty("type", "/WS30/USPDATA/EXTEN", _fnCodeEditorBindPropertyType)
-            .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
+    //     var oCodeEditor = new sap.ui.codeeditor.CodeEditor("ws30_codeeditor", lfCodeeditorAttribute())
+    //         .bindProperty("editable", "/WS30/APP/IS_EDIT", oAPP.fn.fnUiVisibleBinding)
+    //         .bindProperty("type", "/WS30/USPDATA/EXTEN", _fnCodeEditorBindPropertyType)
+    //         .bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
-        oCodeEditor.addDelegate(lfCodeeditorDelegate());
+    //     oCodeEditor.addDelegate(lfCodeeditorDelegate());
 
-        let oCodeEditorClone = oCodeEditor.clone("clone1");
-        oCodeEditorClone.addDelegate(lfCodeeditorDelegate());
+    //     let oCodeEditorClone = oCodeEditor.clone("clone1");
+    //     oCodeEditorClone.addDelegate(lfCodeeditorDelegate());
 
-        // CodeEditor 각각의 고유 CSS 클래스를 적용한다.
-        oCodeEditor.addStyleClass("u4aUspCodeeditor1");
-        oCodeEditorClone.addStyleClass("u4aUspCodeeditor2");
+    //     // CodeEditor 각각의 고유 CSS 클래스를 적용한다.
+    //     oCodeEditor.addStyleClass("u4aUspCodeeditor1");
+    //     oCodeEditorClone.addStyleClass("u4aUspCodeeditor2");
 
-        oCodeEditor.setLayoutData(new sap.ui.layout.SplitterLayoutData("codeEditorSplitLayout", {
-            size: "0px",
-        }));
+    //     oCodeEditor.setLayoutData(new sap.ui.layout.SplitterLayoutData("codeEditorSplitLayout", {
+    //         size: "0px",
+    //     }));
 
-        let lfCodeeditorBindProperty = () => {
+    //     let lfCodeeditorBindProperty = () => {
 
-            return {
+    //         return {
 
-                parts: [
-                    "/WS30/APP/IS_EDIT",    // Change 모드 여부
-                    "/WS30/USPDATA/PUJKY",  // 내부 계층구조의 부모키
-                    "/WS30/USPDATA/ISFLD",  // 폴더 여부
-                ],
-                formatter: (IS_EDIT, PUJKY, ISFLD) => {
+    //             parts: [
+    //                 "/WS30/APP/IS_EDIT",    // Change 모드 여부
+    //                 "/WS30/USPDATA/PUJKY",  // 내부 계층구조의 부모키
+    //                 "/WS30/USPDATA/ISFLD",  // 폴더 여부
+    //             ],
+    //             formatter: (IS_EDIT, PUJKY, ISFLD) => {
 
-                    // Change 모드가 아니면 숨긴다.
-                    if (IS_EDIT != "X") {
-                        return false;
-                    }
+    //                 // Change 모드가 아니면 숨긴다.
+    //                 if (IS_EDIT != "X") {
+    //                     return false;
+    //                 }
 
-                    // 부모키가 없다면 숨긴다 (최상위 루트일 경우)
-                    if (PUJKY == "") {
-                        return false;
-                    }
+    //                 // 부모키가 없다면 숨긴다 (최상위 루트일 경우)
+    //                 if (PUJKY == "") {
+    //                     return false;
+    //                 }
 
-                    // 폴더일 경우는 숨긴다.
-                    if (ISFLD == "X") {
-                        return false;
-                    }
+    //                 // 폴더일 경우는 숨긴다.
+    //                 if (ISFLD == "X") {
+    //                     return false;
+    //                 }
 
-                    return true;
+    //                 return true;
 
-                }
-            };
+    //             }
+    //         };
 
-        };
+    //     };
 
-        oAPP.attr.oCodeEditor1 = oCodeEditor;
-        oAPP.attr.oCodeEditor2 = oCodeEditorClone;
+    //     oAPP.attr.oCodeEditor1 = oCodeEditor;
+    //     oAPP.attr.oCodeEditor2 = oCodeEditorClone;
 
-        /**
-         * 코드 에디터 입력한 값 동기화
-         */
+    //     /**
+    //      * 코드 에디터 입력한 값 동기화
+    //      */
 
-        oCodeEditor.addEventDelegate({
-            canSkipRendering: true,
-            onkeyup: _fnCodeeditorKeyupEvent,
-            oncontextmenu: (oEvent) => {
+    //     oCodeEditor.addEventDelegate({
+    //         canSkipRendering: true,
+    //         onkeyup: _fnCodeeditorKeyupEvent,
+    //         oncontextmenu: (oEvent) => {
 
-                // [async] Usp Codeeditor ContextMenu
-                _fnCodeeditorContextMenuEvent(oEvent);
+    //             // [async] Usp Codeeditor ContextMenu
+    //             _fnCodeeditorContextMenuEvent(oEvent);
 
-            }
+    //         }
 
-        });
+    //     });
 
-        oCodeEditorClone.addEventDelegate({
-            canSkipRendering: true,
-            onkeyup: _fnCodeeditorKeyupEvent,
-            oncontextmenu: (oEvent) => {
+    //     oCodeEditorClone.addEventDelegate({
+    //         canSkipRendering: true,
+    //         onkeyup: _fnCodeeditorKeyupEvent,
+    //         oncontextmenu: (oEvent) => {
 
-                // [async] Usp Codeeditor ContextMenu
-                _fnCodeeditorContextMenuEvent(oEvent);
+    //             // [async] Usp Codeeditor ContextMenu
+    //             _fnCodeeditorContextMenuEvent(oEvent);
 
-            }
-        });
+    //         }
+    //     });
 
-        let oHeaderToolbar = new sap.m.OverflowToolbar();
+    //     let oHeaderToolbar = new sap.m.OverflowToolbar();
         
-        let oTITLE1 = new sap.m.Title({
-            text: "{/WS30/USPDATA/OBDEC}"
-        });
+    //     let oTITLE1 = new sap.m.Title({
+    //         text: "{/WS30/USPDATA/OBDEC}"
+    //     });
 
-        oHeaderToolbar.addContent(oTITLE1);
+    //     oHeaderToolbar.addContent(oTITLE1);
 
-        oHeaderToolbar.addContent(new sap.m.ToolbarSpacer());
+    //     oHeaderToolbar.addContent(new sap.m.ToolbarSpacer());
 
-        let oBUTTON4 = new sap.m.Button("editorDefaultFontBtn",{
-            icon: "sap-icon://u4a-fw-solid/Text Height",
-            text: oAPP.msg.M311, // Default Font Size
-            tooltip: oAPP.msg.M311, // Default Font Size
-            press: ev_codeeditorDefaultFontSize
-        });
+    //     let oBUTTON4 = new sap.m.Button("editorDefaultFontBtn",{
+    //         icon: "sap-icon://u4a-fw-solid/Text Height",
+    //         text: oAPP.msg.M311, // Default Font Size
+    //         tooltip: oAPP.msg.M311, // Default Font Size
+    //         press: ev_codeeditorDefaultFontSize
+    //     });
 
-        oBUTTON4.bindProperty("enabled", {
-            parts: [
-                "/WS30/USPDATA/ISFLD",
-            ],
-            formatter: (ISFLD) => {
+    //     oBUTTON4.bindProperty("enabled", {
+    //         parts: [
+    //             "/WS30/USPDATA/ISFLD",
+    //         ],
+    //         formatter: (ISFLD) => {
 
-                if (ISFLD == "X") {
-                    return false;
-                }
+    //             if (ISFLD == "X") {
+    //                 return false;
+    //             }
 
-                return true;
+    //             return true;
 
-            }
-        });
+    //         }
+    //     });
 
-        oHeaderToolbar.addContent(oBUTTON4);
+    //     oHeaderToolbar.addContent(oBUTTON4);
 
-        let oBUTTON1 = new sap.m.Button({
-            icon: "sap-icon://rotate",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C22"), // Split Orientation Change
-            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C22"), // Split Orientation Change
-            press: ev_codeeditorSplitOrientationChange
-        }).bindProperty("enabled", {
-            parts: [
-                "/WS30/USPDATA/ISFLD",
-            ],
-            formatter: (ISFLD) => {
+    //     let oBUTTON1 = new sap.m.Button({
+    //         icon: "sap-icon://rotate",
+    //         text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C22"), // Split Orientation Change
+    //         tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C22"), // Split Orientation Change
+    //         press: ev_codeeditorSplitOrientationChange
+    //     }).bindProperty("enabled", {
+    //         parts: [
+    //             "/WS30/USPDATA/ISFLD",
+    //         ],
+    //         formatter: (ISFLD) => {
 
-                if (ISFLD == "X") {
-                    return false;
-                }
+    //             if (ISFLD == "X") {
+    //                 return false;
+    //             }
 
-                return true;
+    //             return true;
 
-            }
-        });
+    //         }
+    //     });
 
-        oHeaderToolbar.addContent(oBUTTON1);
+    //     oHeaderToolbar.addContent(oBUTTON1);
 
-        let oBUTTON2 = new sap.m.Button({
-            icon: "sap-icon://full-screen",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C23"), // Full Screen                    
-            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D23") + " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C79"), // Editor Full Screen Mode
-            press: ev_codeeditorFullscreen
-        });
+    //     let oBUTTON2 = new sap.m.Button({
+    //         icon: "sap-icon://full-screen",
+    //         text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C23"), // Full Screen                    
+    //         tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D23") + " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C79"), // Editor Full Screen Mode
+    //         press: ev_codeeditorFullscreen
+    //     });
 
-        oHeaderToolbar.addContent(oBUTTON2);
+    //     oHeaderToolbar.addContent(oBUTTON2);
 
-        let oBUTTON3 = new sap.m.Button("ws30_codeeditor_prettyBtn", {
-            icon: "sap-icon://indent",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25"), // Pretty Print
-            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25") + "(Shift + F1)", // Pretty Print                    
-            press: ev_codeeditorPrettyPrint,
-        }).bindProperty("enabled", lfCodeeditorBindProperty())
+    //     let oBUTTON3 = new sap.m.Button("ws30_codeeditor_prettyBtn", {
+    //         icon: "sap-icon://indent",
+    //         text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25"), // Pretty Print
+    //         tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C25") + "(Shift + F1)", // Pretty Print                    
+    //         press: ev_codeeditorPrettyPrint,
+    //     }).bindProperty("enabled", lfCodeeditorBindProperty())
 
-        oHeaderToolbar.addContent(oBUTTON3);
+    //     oHeaderToolbar.addContent(oBUTTON3);
 
-        return new sap.m.Page({
-            showHeader: true,
-            showFooter: false,
-            enableScrolling: false,
-            customHeader: oHeaderToolbar,
+    //     return new sap.m.Page({
+    //         showHeader: true,
+    //         showFooter: false,
+    //         enableScrolling: false,
+    //         customHeader: oHeaderToolbar,
 
-            content: [
+    //         content: [
 
-                new sap.ui.layout.Splitter("uspCodeeditorSplit", {
-                    height: "100%",
-                    width: "100%",
-                    contentAreas: [
-                        oCodeEditor,
-                        oCodeEditorClone
+    //             new sap.ui.layout.Splitter("uspCodeeditorSplit", {
+    //                 height: "100%",
+    //                 width: "100%",
+    //                 contentAreas: [
+    //                     oCodeEditor,
+    //                     oCodeEditorClone
 
-                    ]
-                })
-                    .bindProperty("visible", _fnCodeEditorBindPropertyVisible())
-                    .addEventDelegate({
-                        ondblclick: _fnDoubleClickSplitbar,
-                    })
-                    .addStyleClass("uspCodeeditorSplit sapUiSmallMarginBottom")
+    //                 ]
+    //             })
+    //                 .bindProperty("visible", _fnCodeEditorBindPropertyVisible())
+    //                 .addEventDelegate({
+    //                     ondblclick: _fnDoubleClickSplitbar,
+    //                 })
+    //                 .addStyleClass("uspCodeeditorSplit sapUiSmallMarginBottom")
 
-            ]
+    //         ]
 
-        }).bindProperty("visible", _fnCodeEditorBindPropertyVisible());
+    //     }).bindProperty("visible", _fnCodeEditorBindPropertyVisible());
 
-    } // end of fnGetUspPageWs30  
+    // } // end of fnGetUspPageWs30  
+
+
+
+
 
     /************************************************************************
      * [WS30] Codeeditor Keyup Event
@@ -1919,17 +2348,46 @@
     /************************************************************************
      * [WS30] Codeeditor splitbar 더블클릭 이벤트
      ************************************************************************/
+    // function _fnDoubleClickSplitbar(e) {
+
+    //     let oSplitLayoutData = sap.ui.getCore().byId("codeEditorSplitLayout"),
+    //         oTarget = e.target,
+    //         bIsSplitBar = $(oTarget).hasClass("uspCodeeditorSplit");
+
+    //     if (!oSplitLayoutData || !bIsSplitBar) {
+    //         return;
+    //     }
+
+    //     oSplitLayoutData.setSize("0px");
+
+    // } // end of _fnDoubleClickSplitbar
+
+
+    /************************************************************************
+     * [WS30] Codeeditor splitbar 더블클릭 이벤트
+     ************************************************************************/
     function _fnDoubleClickSplitbar(e) {
 
-        let oSplitLayoutData = sap.ui.getCore().byId("codeEditorSplitLayout"),
-            oTarget = e.target,
-            bIsSplitBar = $(oTarget).hasClass("uspCodeeditorSplit");
+        let oTarget = e.target;
 
-        if (!oSplitLayoutData || !bIsSplitBar) {
+        // 스플릿 영역을 선택했을 경우에만 로직 수행
+        let bIsSplitBar = $(oTarget).hasClass("uspCodeeditorSplit");
+        if(!bIsSplitBar){
             return;
         }
 
-        oSplitLayoutData.setSize("0px");
+        // EDITOR PAGE 객체가 있을 경우에만 로직 수행
+        if(!oAPP?.ui?.USP_EDITOR_PAGE){
+            return;
+        }
+
+        // EDITOR PAGE 객체에 Splitter LayoutData 객체 구하기
+        let oSplitterLayoutData = oAPP.ui.USP_EDITOR_PAGE.data("SPLITTER_LAYOUTDATA");
+        if(!oSplitterLayoutData){
+            return;
+        }
+
+        oSplitterLayoutData.setSize("0px");
 
     } // end of _fnDoubleClickSplitbar
 
@@ -4033,6 +4491,270 @@
 
     } // end of fnTreeTableRowSelect    
 
+    // async function _fnLineSelectCb(oResult, xhr) {
+
+    //     // Blob를 text로 변환
+    //     var oJsonResult = await new Promise((resolve) => {
+    //         var reader = new FileReader();
+    //         reader.onload = function() {                
+    //             return resolve({
+    //                 RETCD: "S",
+    //                 RDATA: reader.result
+    //             });
+    //         };
+
+    //         reader.onerror = function(error){               
+
+    //             let sErrMsg = "[usp_get_object_line_data] Usp Data Read Error!!";
+    //             if(error && error.toString){
+    //                 sErrMsg += "\n\n" + error.toString();
+    //             }
+
+    //             console.error("[fnLineSelectCb]: " + sErrMsg);
+
+    //             return resolve({
+    //                 RETCD: "E",
+    //                 RTMSG: sErrMsg
+    //             });
+
+    //         };
+
+    //         reader.readAsText(oResult);
+
+    //     });
+
+    //     // 파일 읽다가 오류 발생
+    //     if(oJsonResult.RETCD === "E"){
+
+    //         // // 화면 Lock 해제
+    //         // sap.ui.getCore().unlock();
+
+    //         // parent.setBusy("");
+
+    //         // Critical Error
+    //         oAPP.fn.fnCriticalErrorWs30({
+    //             RTMSG: oJsonResult.RTMSG
+    //         });
+
+    //         // busy 끄고 Lock 풀기
+	// 	    oAPP.common.fnSetBusyLock("");	
+
+    //         return;
+    //     }
+       
+    //     // Multipart data parsing 결과
+    //     var oMULTI_RESULT = undefined;
+
+    //     // U4A WS 3.4.1 - sp 00000 버전일 경우        
+    //     // Multipart 데이터를 읽어서 USP content 데이터를 구한다.
+    //     if(APPCOMMON.checkWLOList("C", "UHAK900763")){     
+
+    //         try {
+
+    //             // Multipart 데이터 읽기
+    //             oMULTI_RESULT = await _getUspMultiPartData(oJsonResult.RDATA, xhr);
+
+    //             if(oMULTI_RESULT.RETCD !== "E"){
+
+    //                 // 기존 구조에 USP Head data를 넣는다.( 기존로직을 위한 행위 )
+    //                 oJsonResult.RDATA = oMULTI_RESULT.RDATA.usp_head_data;
+           
+    //             }
+
+    //         } catch (error) {            
+    //             console.error(error);
+    //         }
+
+    //     }
+
+    //     // BLOB => string => JSON
+    //     var sJsonResult = oJsonResult.RDATA;
+
+    //     try {
+
+    //         oResult = JSON.parse(sJsonResult);
+           
+    //     } catch (error) {
+            
+    //         console.error(error);
+
+    //         // // 화면 Lock 해제
+    //         // sap.ui.getCore().unlock();
+
+    //         // parent.setBusy("");
+
+    //         var sMsg = "[usp_get_object_line_data] JSON Parse Error";
+
+    //         // Critical Error
+    //         oAPP.fn.fnCriticalErrorWs30({
+    //             RTMSG: sMsg
+    //         });
+
+    //         // busy 끄고 Lock 풀기
+	// 	    oAPP.common.fnSetBusyLock("");	
+
+    //         return;
+    //     }
+
+
+    //     // JSON Parse 오류 일 경우
+    //     if (typeof oResult !== "object") {
+
+    //         // // 화면 Lock 해제
+    //         // sap.ui.getCore().unlock();
+
+    //         // parent.setBusy("");
+
+    //         var sMsg = "[usp_get_object_line_data] JSON Parse Error";
+
+    //         // Critical Error
+    //         oAPP.fn.fnCriticalErrorWs30({
+    //             RTMSG: sMsg
+    //         });
+
+    //         // busy 끄고 Lock 풀기
+	// 	    oAPP.common.fnSetBusyLock("");	
+
+    //         return;
+
+    //     }
+
+    //     // Multipart 데이터 수집 결과가 있고 body data가 존재 할 경우에만
+    //     // USP CONTENT 데이터를 매핑한다.
+    //     if(typeof oMULTI_RESULT?.RDATA?.usp_body_data !== "undefined"){
+    //         oResult.CONTENT = oMULTI_RESULT.RDATA.usp_body_data;
+    //     }        
+
+    //     // Normal or Critical Error
+    //     switch (oResult.RETCD) {
+
+    //         case "Z":
+
+    //             console.error(oResult);
+
+    //             // // 화면 Lock 해제
+    //             // sap.ui.getCore().unlock();
+
+    //             // parent.setBusy("");
+
+    //             // Critical Error
+    //             oAPP.fn.fnCriticalErrorWs30(oResult);
+
+    //             // busy 끄고 Lock 풀기
+	// 	        oAPP.common.fnSetBusyLock("");	
+
+    //             return;
+
+    //         case "E":
+
+    //             console.error(oResult);
+
+    //             // // 화면 Lock 해제
+    //             // sap.ui.getCore().unlock();
+
+    //             // parent.setBusy("");
+
+    //             parent.setSoundMsg("02"); // error sound
+
+    //             // 작업표시줄 깜빡임
+    //             CURRWIN.flashFrame(true);
+
+    //             // Footer Msg 출력
+    //             APPCOMMON.fnShowFloatingFooterMsg("E", "WS30", oResult.RTMSG);
+
+    //             // busy 끄고 Lock 풀기
+	// 	        oAPP.common.fnSetBusyLock("");	
+
+    //             return;
+
+    //     }
+
+    //     // 이전에 선택한 라인이 있다면 해당 라인 선택 아이콘 표시 해제
+    //     fnOnUspTreeUnSelect();
+
+    //     var oParam = this,
+    //         oRow = oParam.oRow,
+    //         oTable = oRow.getParent(),
+    //         iRowIndex = oRow.getIndex(),
+    //         oRowModel = oRow.getModel(),
+    //         oCtx = oRow.getBindingContext(),
+    //         sCurrBindPath = oCtx.getPath();
+
+    //     // 선택한 라인의 선택 표시
+    //     oTable.setSelectedIndex(iRowIndex);
+
+    //     var oRowBindData = oRowModel.getProperty(sCurrBindPath),
+    //         bIsRoot = oRowBindData.PUJKY === "" ? true : false;
+
+    //     // 리턴받은 라인 정보
+    //     var oResultRowData = oResult.S_HEAD;
+    //     oResultRowData.ISSEL = true;
+
+    //     // 서버에서 리턴 받은 라인 정보와 바인딩 되어있는 데이터를 병합
+    //     oResultRowData = jQuery.extend(true, oRowBindData, oResultRowData);
+
+    //     // 선택한 위치가 Root 여부
+    //     if (bIsRoot) {
+
+    //         // 현재 APP 정보를 구한다.
+    //         var oAppInfo = fnGetAppInfo();
+
+    //         // 서버에서 리턴 받은 10번 테이블 정보로 머지 한다.
+    //         oAppInfo = Object.assign({}, oAppInfo, oResult.S_APPINFO);
+
+    //         // APP 정보 갱신
+    //         APPCOMMON.fnSetModelProperty("/WS30/APP", oAppInfo);
+
+    //         // Root 일 경우는 APP 정보 까지 Object 복사한다.
+    //         oResultRowData = jQuery.extend(true, oResultRowData, oAppInfo);
+
+    //         //Root 일 경우 Document 페이지로 이동한다.
+    //         fnOnMoveToPage("USP30");
+
+    //     } else {
+
+    //         // Content Page로 이동
+    //         fnOnMoveToPage("USP20");
+
+    //     }
+
+    //     // 우측에 Property 패널이 있고 접힌 상태면 펼친다.
+    //     let oPropPanel = sap.ui.getCore().byId("uspPanel");
+    //     if(oPropPanel && !oPropPanel.getExpanded()){
+    //         oPropPanel.setExpanded(true);
+    //     }
+        
+
+    //     // 위에서 병합한 데이터를 복사해서 우측 Content 영역을 복사할 Object 생성
+    //     var oUspData = jQuery.extend(true, {}, oResultRowData);
+
+    //     oResultRowData.CONTENT = oUspData.CONTENT = oResult.CONTENT;
+
+    //     // 현재 선택한 좌측 트리 데이터 업데이트
+    //     oRowModel.setProperty(sCurrBindPath, oResultRowData);
+
+    //     APPCOMMON.fnSetModelProperty("/WS30/USPDATA", oUspData);
+
+    //     // // 화면 Lock 해제
+    //     // sap.ui.getCore().unlock();
+
+    //     // parent.setBusy("");
+
+    //     // busy 끄고 Lock 풀기
+	// 	oAPP.common.fnSetBusyLock("");
+
+    // } // end of _fnLineSelectCb
+
+    /*****************************************************
+     * @since   2025-05-06
+     * @version 3.5.6-sp2
+     * @author  soccerhs
+     * 
+     * @description
+     * ## USP EDITOR 변경 작업 ##
+     * 
+     * [WS30] 좌측에 선택된 USP 라인 데이터 구하기     
+     ******************************************************/
     async function _fnLineSelectCb(oResult, xhr) {
 
         // Blob를 text로 변환
@@ -4045,14 +4767,22 @@
                 });
             };
 
-            reader.onerror = function(error){               
+            reader.onerror = function(error){
 
-                let sErrMsg = "[usp_get_object_line_data] Usp Data Read Error!!";
-                if(error && error.toString){
-                    sErrMsg += "\n\n" + error.toString();
-                }
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [             
+                    `[PATH]: www/ws10_20/js/usp/ws_usp.js`,  
+                    `=> _fnLineSelectCb`,
+                    `=> reader.onerror`,
+                    `=> Blob 타입의 USP 데이터를 Text로 변환하다가 오류 발생!! `,
+                ];
+                
+                // [MSG]
+                let sErrMsg = "USP 데이터를 Parsing 하는 도중에 문제가 발생하였습니다\n\n문제가 지속될 경우 U4A 기술지원팀으로 문의하세요.";
 
-                console.error("[fnLineSelectCb]: " + sErrMsg);
+                console.error(aConsoleMsg.join("\r\n"));
+                console.error(error);
+                console.trace();
 
                 return resolve({
                     RETCD: "E",
@@ -4067,11 +4797,6 @@
 
         // 파일 읽다가 오류 발생
         if(oJsonResult.RETCD === "E"){
-
-            // // 화면 Lock 해제
-            // sap.ui.getCore().unlock();
-
-            // parent.setBusy("");
 
             // Critical Error
             oAPP.fn.fnCriticalErrorWs30({
@@ -4103,8 +4828,34 @@
            
                 }
 
-            } catch (error) {            
+            } catch (error) {
+  
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [             
+                    `[PATH]: www/ws10_20/js/usp/ws_usp.js`,  
+                    `=> _fnLineSelectCb`,
+                    `=> _getUspMultiPartData`,
+                    `=> try..catch error`,
+                    `=> Multipart 형태의 USP 데이터를 Text로 변환하다가 오류 발생!! `,
+                ];
+                
+                // [MSG]
+                let sErrMsg = "USP 데이터를 Parsing 하는 도중에 문제가 발생하였습니다\n\n문제가 지속될 경우 U4A 기술지원팀으로 문의하세요.";
+
+                console.error(aConsoleMsg.join("\r\n"));
                 console.error(error);
+                console.trace();
+
+                // Critical Error
+                oAPP.fn.fnCriticalErrorWs30({
+                    RTMSG: sErrMsg
+                });
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");	
+
+                return;
+                
             }
 
         }
@@ -4118,22 +4869,29 @@
            
         } catch (error) {
             
+            // 콘솔용 오류 메시지
+            var aConsoleMsg = [             
+                `[PATH]: www/ws10_20/js/usp/ws_usp.js`,  
+                `=> _fnLineSelectCb`,
+                `=> oResult = JSON.parse(sJsonResult)`,
+                `=> try..catch error`,
+                `=> Text 형태의 USP 데이터를 JSON Parse 하다가 오류 발생!! `,
+            ];
+            
+            // [MSG]
+            let sErrMsg = "USP 데이터를 Parsing 하는 도중에 문제가 발생하였습니다\n\n문제가 지속될 경우 U4A 기술지원팀으로 문의하세요.";
+
+            console.error(aConsoleMsg.join("\r\n"));
             console.error(error);
-
-            // // 화면 Lock 해제
-            // sap.ui.getCore().unlock();
-
-            // parent.setBusy("");
-
-            var sMsg = "[usp_get_object_line_data] JSON Parse Error";
+            console.trace();
 
             // Critical Error
             oAPP.fn.fnCriticalErrorWs30({
-                RTMSG: sMsg
+                RTMSG: sErrMsg
             });
 
             // busy 끄고 Lock 풀기
-		    oAPP.common.fnSetBusyLock("");	
+            oAPP.common.fnSetBusyLock("");	
 
             return;
         }
@@ -4142,20 +4900,28 @@
         // JSON Parse 오류 일 경우
         if (typeof oResult !== "object") {
 
-            // // 화면 Lock 해제
-            // sap.ui.getCore().unlock();
+            // 콘솔용 오류 메시지
+            var aConsoleMsg = [             
+                `[PATH]: www/ws10_20/js/usp/ws_usp.js`,  
+                `=> _fnLineSelectCb`,
+                `=> typeof oResult !== "object"`,
+                `=> Text 형태의 USP 데이터를 JSON Parse 했는데 Object 타입이 아님!! `,
+            ];
+            
+            // [MSG]
+            let sErrMsg = "USP 데이터를 Parsing 하는 도중에 문제가 발생하였습니다\n\n문제가 지속될 경우 U4A 기술지원팀으로 문의하세요.";
 
-            // parent.setBusy("");
-
-            var sMsg = "[usp_get_object_line_data] JSON Parse Error";
+            console.error(aConsoleMsg.join("\r\n"));
+            console.error(error);
+            console.trace();
 
             // Critical Error
             oAPP.fn.fnCriticalErrorWs30({
-                RTMSG: sMsg
+                RTMSG: sErrMsg
             });
 
             // busy 끄고 Lock 풀기
-		    oAPP.common.fnSetBusyLock("");	
+            oAPP.common.fnSetBusyLock("");	
 
             return;
 
@@ -4174,11 +4940,6 @@
 
                 console.error(oResult);
 
-                // // 화면 Lock 해제
-                // sap.ui.getCore().unlock();
-
-                // parent.setBusy("");
-
                 // Critical Error
                 oAPP.fn.fnCriticalErrorWs30(oResult);
 
@@ -4190,11 +4951,6 @@
             case "E":
 
                 console.error(oResult);
-
-                // // 화면 Lock 해제
-                // sap.ui.getCore().unlock();
-
-                // parent.setBusy("");
 
                 parent.setSoundMsg("02"); // error sound
 
@@ -4225,15 +4981,122 @@
         // 선택한 라인의 선택 표시
         oTable.setSelectedIndex(iRowIndex);
 
-        var oRowBindData = oRowModel.getProperty(sCurrBindPath),
-            bIsRoot = oRowBindData.PUJKY === "" ? true : false;
+        var oRowBindData = oRowModel.getProperty(sCurrBindPath);
+        var bIsRoot = oRowBindData.PUJKY === "" ? true : false;
 
         // 리턴받은 라인 정보
         var oResultRowData = oResult.S_HEAD;
-        oResultRowData.ISSEL = true;
+            oResultRowData.ISSEL = true;
 
         // 서버에서 리턴 받은 라인 정보와 바인딩 되어있는 데이터를 병합
         oResultRowData = jQuery.extend(true, oRowBindData, oResultRowData);
+
+
+        // 선택한 라인의 바인딩된 데이터
+        oAPP.usp.oSelectRowData = oResultRowData;
+
+        // 선택한 라인의 폴더 여부
+        let bIsFold = (oResultRowData?.ISFLD === "X" ? true : false);
+
+        // 기존 에디터 페이지
+        var oUSP_EDITOR_PAGE = oAPP.ui.USP_EDITOR_PAGE;
+        if(oUSP_EDITOR_PAGE){
+
+            // 기존 에디터 페이지를 죽인다.
+            oUSP_EDITOR_PAGE.destroy();
+
+            // 에디터 영역 페이지를 복사한다.
+            var oUSP_EDITOR_PAGE_CLONE = fnGetUspPageWs30();  
+
+            // 폴더가 아닐 경우에만 에디터 페이지를 붙인다.
+            if(!bIsFold){
+                
+                delete oAPP.usp.USP_EDITOR_CHANNEL;
+
+                // USP Editor 간 통신을 위한 메시지 채널 생성 (*필수)
+                oAPP.usp.USP_EDITOR_CHANNEL = new MessageChannel();
+
+                var sCustDomId = "IF_USP_EDITOR";
+                
+                var oCustomEvtDom = document.getElementById(sCustDomId);
+                if(oCustomEvtDom){
+                    document.body.removeChild(oCustomEvtDom);
+                }
+
+                var oCustomEvtDom = document.createElement("div");
+                    oCustomEvtDom.id = sCustDomId;
+
+                document.body.appendChild(oCustomEvtDom);
+
+                // 에디터가 로드된 갯수 카운트 변수
+                let iEditorLoadCnt = 2;
+
+                oCustomEvtDom.addEventListener("IF_USP_EDITOR", function(oEvent){
+
+                    let oData = oEvent?.data || "";
+
+                    let sACTCD = oData?.ACTCD;
+                    
+                    switch (sACTCD) {
+
+                        case "CONTENT_SYNC":    // 에디터에 입력한 값을 모델에 동기화  
+                            
+                            oRowBindData.CONTENT = oData?.CONTENT || "";
+
+                            oRowModel.setProperty("/WS30/USPDATA", oRowBindData);
+        
+                            // 앱 변경 플래그
+                            oAPP.fn.setAppChangeWs30("X");
+
+                            return;
+
+                        case "EDITOR_LOAD":
+
+                            --iEditorLoadCnt;
+
+                            zconsole.log(`EDITOR_LOAD: ${iEditorLoadCnt}`);
+
+                            // 에디터 전체가 로드 완료되었을 경우에 Busy를 꺼준다.
+                            if(iEditorLoadCnt !== 0){
+                                return;                                
+                            }
+
+                            // busy 끄고 Lock 풀기
+                            oAPP.common.fnSetBusyLock("");                            
+
+                            return;
+
+                        default:
+                            break;
+                    }
+
+                });
+
+                // 클론뜬거 붙인다.
+                oAPP.ui.USP_EDITOR_PAGE_PARENT.addItem(oUSP_EDITOR_PAGE_CLONE);
+
+            }
+
+            // 복사했던 에디터 페이지를 다시 전역에 저장해둔다.
+            oAPP.ui.USP_EDITOR_PAGE = oUSP_EDITOR_PAGE_CLONE;
+        
+        }
+
+        // 우측에 Property 패널이 있고 접힌 상태면 펼친다.
+        let oPropPanel = sap.ui.getCore().byId("uspPanel");
+        if(oPropPanel && !oPropPanel.getExpanded()){
+            oPropPanel.setExpanded(true);
+        }        
+
+        // 위에서 병합한 데이터를 복사해서 우측 Content 영역을 복사할 Object 생성
+        var oUspData = jQuery.extend(true, {}, oResultRowData);
+
+        oResultRowData.CONTENT = oUspData.CONTENT = oResult.CONTENT;
+
+        // 현재 선택한 좌측 트리 데이터 업데이트
+        oRowModel.setProperty(sCurrBindPath, oResultRowData);
+
+        APPCOMMON.fnSetModelProperty("/WS30/USPDATA", oUspData);
 
         // 선택한 위치가 Root 여부
         if (bIsRoot) {
@@ -4253,39 +5116,176 @@
             //Root 일 경우 Document 페이지로 이동한다.
             fnOnMoveToPage("USP30");
 
-        } else {
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
-            // Content Page로 이동
-            fnOnMoveToPage("USP20");
+            return;
 
         }
 
-        // 우측에 Property 패널이 있고 접힌 상태면 펼친다.
-        let oPropPanel = sap.ui.getCore().byId("uspPanel");
-        if(oPropPanel && !oPropPanel.getExpanded()){
-            oPropPanel.setExpanded(true);
+        // Content Page로 이동
+        fnOnMoveToPage("USP20");
+
+        if(bIsFold === true){
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+            
         }
-        
-
-        // 위에서 병합한 데이터를 복사해서 우측 Content 영역을 복사할 Object 생성
-        var oUspData = jQuery.extend(true, {}, oResultRowData);
-
-        oResultRowData.CONTENT = oUspData.CONTENT = oResult.CONTENT;
-
-        // 현재 선택한 좌측 트리 데이터 업데이트
-        oRowModel.setProperty(sCurrBindPath, oResultRowData);
-
-        APPCOMMON.fnSetModelProperty("/WS30/USPDATA", oUspData);
-
-        // // 화면 Lock 해제
-        // sap.ui.getCore().unlock();
-
-        // parent.setBusy("");
-
-        // busy 끄고 Lock 풀기
-		oAPP.common.fnSetBusyLock("");
 
     } // end of _fnLineSelectCb
+
+
+    /*****************************************************
+     * @since   2025-05-06
+     * @version 3.5.6-sp2
+     * @author  soccerhs
+     * 
+     * @description
+     * ## USP EDITOR 변경 작업 ##
+     * 
+     * [WS30] 전체 USP의 모나코 에디터에 PostMessage 를 전송한다.   
+     ******************************************************/    
+    oAPP.usp.sendEditorPostMessageAll = function(oParams){
+
+        // 전체 모나코 에디터의 iFrame 정보를 구한다.
+        let aMonacoEditorFrames = document.querySelectorAll(".MONACO_EDITOR");
+        if(!aMonacoEditorFrames || aMonacoEditorFrames.length === 0){
+            return false;
+        }
+
+        
+        // 전체 모나코 에디터 영역에 테마 정보를 postMessage로 전달한다.
+        for(const oEditorFrame of aMonacoEditorFrames){
+
+            let oContWin = oEditorFrame?.contentWindow || undefined;
+            if(!oContWin){
+                continue;
+            }
+
+            oContWin.postMessage(oParams);
+
+        }
+
+        return true;
+
+    }; // end of oAPP.usp.sendEditorPostMessageAll
+
+
+    /*****************************************************
+     * @since   2025-05-06
+     * @version 3.5.6-sp2
+     * @author  soccerhs
+     * 
+     * @description
+     * ## USP EDITOR 변경 작업 ##
+     * 
+     * [WS30] 마지막 선택한 테마 정보를 구한다.
+     *  - iFrame에 있는 Editor 에서도 해당 function을 사용함.
+     ******************************************************/   
+    oAPP.usp.getLastSelectedEditorTheme = function(){
+
+        // 개인화 폴더에 선택된 테마 정보 구하기
+        let sThemeP13nFolderPath = PATH.join(PATHINFO.P13N_ROOT, "usp", "monaco", "theme", parent.getUserInfo().SYSID);
+
+        let sThemeFilePath = PATH.join(sThemeP13nFolderPath, "select_theme.json");
+
+        if(FS.existsSync(sThemeFilePath) === false){
+            return;
+        }
+
+        try {
+            
+            let sThemeInfo = FS.readFileSync(sThemeFilePath, 'utf-8');
+            let oThemeInfo = JSON.parse(sThemeInfo);
+
+            return oThemeInfo;
+
+        } catch (error) {
+            
+            return;
+
+        }
+
+    }; // end of oAPP.usp.getLastSelectedEditorTheme
+
+
+    /*****************************************************
+     * @since   2025-05-06
+     * @version 3.5.6-sp2
+     * @author  soccerhs
+     * 
+     * @description
+     * ## USP EDITOR 변경 작업 ##
+     * 
+     * [WS30] 현재 선택된 USP 정보를 구한다. 
+     ******************************************************/   
+    oAPP.fn.getSelectedUspLineData = function(){
+
+        return oAPP?.usp?.oSelectRowData || undefined;
+
+    }; // end of oAPP.fn.getSelectedUspLineData
+    
+
+    /*****************************************************
+     * @since   2025-05-06
+     * @version 3.5.6-sp2
+     * @author  soccerhs
+     * 
+     * @description
+     * ## USP EDITOR 변경 작업 ##
+     * 
+     * [WS30] 에디터의 컨텍스트 이벤트
+     ******************************************************/ 
+    oAPP.fn.onEditorContextMenu = async function(oEvent, oParams){
+
+        if(!oEvent){
+            return;
+        }
+
+        // 컨트롤키 누르고 마우스 우클릭이면 전체 팝업을 띄운다.
+        if (oEvent.ctrlKey) {
+
+            oAPP.fn.fnSourcePatternPopupOpener(); // [async]
+
+            return;
+        }
+
+        if(!oParams){
+            return;
+        }
+
+        // 에디터를 감싸고 있는 페이지 객체를 구한다.
+        let oUspEditorPage = oAPP.ui.USP_EDITOR_PAGE;
+        if(!oUspEditorPage){
+            return;
+        }
+
+        // 우클릭한 위치의 페이지 ID
+        let sPageId = oParams?.sPageId || "";
+        
+        // 페이지 ID에 해당하는 PAGE 객체 구하기
+        var oTargetPage = oUspEditorPage.data(sPageId);
+        if(!oTargetPage){
+            return;
+        }
+
+        // JSON으로 저장된 USP 기본패턴 & 커스텀패턴 정보를 모델 바인딩 한다.
+        await oAPP.fn.fnModelBindingUspPattern(); // #[ws_usp_01.js]
+
+        // 컨텍스트 이벤트가 발생된 위치 및 에디터 정보
+        let oSelectedCtxInfo = {
+            oTargetPage: oTargetPage,           // 컨텍스트 메뉴가 클릭된 페이지
+            oEditor: oParams?.oEditor,    // Editor 객체
+            oMonaco: oParams?.oMonaco           // 모나코 객체
+        };
+
+        setTimeout(() => {
+            oAPP.fn.fnUspCodeeditorContextMenuOpen(oEvent, oSelectedCtxInfo); // #[ws_usp_01.js]
+        }, 0);
+
+    }; // end of oAPP.fn.onEditorContextMenu
+
 
     /**************************************************************************
      * [WS30] USP Multipart Data 읽기
@@ -5570,38 +6570,47 @@
             }
 
         }
-        // 파일 일 경우 파일명 체크
-        else {
 
-            // 파일명에 확장자가 있는지 체크..            
-            var path = oCrateData.NAME;
-            let file = path.substring(path.lastIndexOf('\\') + 1, path.length);
+        /*****************************************************
+         * @since   2025-05-06
+         * @version 3.5.6-sp2
+         * @author  soccerhs
+         * 
+         * @description
+         * USP 저장 시, 체크로직 중 파일 확장자 체크 해제
+         ******************************************************/
+        // // 파일 일 경우 파일명 체크
+        // else {
 
-            let filename;
-            let exp;
-            if (file.indexOf('.') >= 0) {
-                filename = file.substring(0, file.lastIndexOf('.'));
-                exp = file.substring(file.lastIndexOf('.') + 1, file.length);
-            } else {
-                filename = file;
-                exp = '';
-            }
+        //     // 파일명에 확장자가 있는지 체크..            
+        //     var path = oCrateData.NAME;
+        //     let file = path.substring(path.lastIndexOf('\\') + 1, path.length);
 
-            var sCheck = MIMETYPES.lookup(oCrateData.NAME);
+        //     let filename;
+        //     let exp;
+        //     if (file.indexOf('.') >= 0) {
+        //         filename = file.substring(0, file.lastIndexOf('.'));
+        //         exp = file.substring(file.lastIndexOf('.') + 1, file.length);
+        //     } else {
+        //         filename = file;
+        //         exp = '';
+        //     }
 
-            if ((typeof sCheck == "boolean" && sCheck == false) || exp == '') {
+        //     var sCheck = MIMETYPES.lookup(oCrateData.NAME);
 
-                let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "360");
-                sMsg += " ex) aaa.txt, aaa.js..";
+        //     if ((typeof sCheck == "boolean" && sCheck == false) || exp == '') {
 
-                oCheck.RETCD = "E";
-                oCheck.RTMSG = sMsg; // Invalid MimeType! Check the extension of the file name. ex) aaa.txt, aaa.js..";
+        //         let sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "360");
+        //         sMsg += " ex) aaa.txt, aaa.js..";
 
-                return oCheck;
+        //         oCheck.RETCD = "E";
+        //         oCheck.RTMSG = sMsg; // Invalid MimeType! Check the extension of the file name. ex) aaa.txt, aaa.js..";
 
-            }
+        //         return oCheck;
 
-        }
+        //     }
+
+        // }
 
         oCheck.RETCD = "S";
 
@@ -6563,82 +7572,112 @@
 
     } // end of fnCodeEditorKeyPressEvent
 
+
     /**************************************************************************
      * [WS30] Content 영역의 Code Editor Pretty Print 기능
      **************************************************************************/
+    // function ev_codeeditorPrettyPrint(oEvent) {
+
+    //     let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
+    //         oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
+
+    //     // 에디터가 둘중에 하나라도 없다면 빠져나감.
+    //     if (!oCodeEditor1 || !oCodeEditor2) {
+    //         return;
+    //     }
+
+    //     let oEditor1 = oCodeEditor1._oEditor,
+    //         oEditor2 = oCodeEditor2._oEditor,
+    //         bIsShortCut = oEvent.getParameter("ISSHORTCUT");
+
+    //     // 단축키로 실행하지 않았을 경우
+    //     if (!bIsShortCut) {
+
+    //         oCodeEditor1.prettyPrint();
+    //         oCodeEditor2.prettyPrint();
+
+    //         // 앱 변경 사항 플래그 설정
+    //         oAPP.fn.setAppChangeWs30("X");
+    //         return;
+    //     }
+
+    //     /**
+    //      * 단축키로 실행했을 경우 하위로직 수행
+    //      */
+    //     let oActiveDom = document.activeElement;
+    //     if (!oActiveDom) {
+    //         return;
+    //     }
+
+    //     // 현재 커서의 위치가 어떤 에디터인지 확인
+    //     let $oCodeeditor1 = $(oActiveDom).closest(".u4aUspCodeeditor1"),
+    //         $oCodeeditor2 = $(oActiveDom).closest(".u4aUspCodeeditor2");
+
+    //     // 커서가 왼쪽 에디터에 있었을 경우
+    //     if ($oCodeeditor1.length !== 0) {
+
+    //         let oCursorPos = oEditor1.getCursorPosition();
+
+    //         oCodeEditor1.prettyPrint();
+
+    //         oCodeEditor1.focus();
+
+    //         oEditor1.selection.$setSelection(oCursorPos.row, oCursorPos.column, oCursorPos.row, oCursorPos.column);
+
+    //         // 앱 변경 사항 플래그 설정
+    //         oAPP.fn.setAppChangeWs30("X");
+
+    //         return;
+    //     }
+
+    //     // 커서가 오른쪽 에디터에 있었을 경우
+    //     if ($oCodeeditor2.length !== 0) {
+
+    //         let oCursorPos = oEditor2.getCursorPosition();
+
+    //         oCodeEditor2.prettyPrint();
+
+    //         oCodeEditor2.focus();
+
+    //         oEditor2.selection.$setSelection(oCursorPos.row, oCursorPos.column, oCursorPos.row, oCursorPos.column);
+
+    //         // 앱 변경 사항 플래그 설정
+    //         oAPP.fn.setAppChangeWs30("X");
+
+    //         return;
+
+    //     }
+
+    // } // end of ev_codeeditorPrettyPrint
+
+    /*****************************************************
+     * @since   2025-05-06
+     * @version 3.5.6-sp2
+     * @author  soccerhs
+     * 
+     * @description
+     * ## USP EDITOR 변경 작업 ##
+     * 
+     * [WS30] Pretty Print 기능     
+     ******************************************************/    
     function ev_codeeditorPrettyPrint(oEvent) {
 
-        let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
-            oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
+        let oEditorFrame1 = document.querySelector(".EDITOR_FRAME1");
+        if(oEditorFrame1 && oEditorFrame1?.contentWindow?.editor){
+            
+            oEditorFrame1.contentWindow.editor.getAction('editor.action.formatDocument').run();
 
-        // 에디터가 둘중에 하나라도 없다면 빠져나감.
-        if (!oCodeEditor1 || !oCodeEditor2) {
-            return;
         }
 
-        let oEditor1 = oCodeEditor1._oEditor,
-            oEditor2 = oCodeEditor2._oEditor,
-            bIsShortCut = oEvent.getParameter("ISSHORTCUT");
-
-        // 단축키로 실행하지 않았을 경우
-        if (!bIsShortCut) {
-
-            oCodeEditor1.prettyPrint();
-            oCodeEditor2.prettyPrint();
-
-            // 앱 변경 사항 플래그 설정
-            oAPP.fn.setAppChangeWs30("X");
-            return;
-        }
-
-        /**
-         * 단축키로 실행했을 경우 하위로직 수행
-         */
-        let oActiveDom = document.activeElement;
-        if (!oActiveDom) {
-            return;
-        }
-
-        // 현재 커서의 위치가 어떤 에디터인지 확인
-        let $oCodeeditor1 = $(oActiveDom).closest(".u4aUspCodeeditor1"),
-            $oCodeeditor2 = $(oActiveDom).closest(".u4aUspCodeeditor2");
-
-        // 커서가 왼쪽 에디터에 있었을 경우
-        if ($oCodeeditor1.length !== 0) {
-
-            let oCursorPos = oEditor1.getCursorPosition();
-
-            oCodeEditor1.prettyPrint();
-
-            oCodeEditor1.focus();
-
-            oEditor1.selection.$setSelection(oCursorPos.row, oCursorPos.column, oCursorPos.row, oCursorPos.column);
-
-            // 앱 변경 사항 플래그 설정
-            oAPP.fn.setAppChangeWs30("X");
-
-            return;
-        }
-
-        // 커서가 오른쪽 에디터에 있었을 경우
-        if ($oCodeeditor2.length !== 0) {
-
-            let oCursorPos = oEditor2.getCursorPosition();
-
-            oCodeEditor2.prettyPrint();
-
-            oCodeEditor2.focus();
-
-            oEditor2.selection.$setSelection(oCursorPos.row, oCursorPos.column, oCursorPos.row, oCursorPos.column);
-
-            // 앱 변경 사항 플래그 설정
-            oAPP.fn.setAppChangeWs30("X");
-
-            return;
+        let oEditorFrame2 = document.querySelector(".EDITOR_FRAME2");
+        if(oEditorFrame2 && oEditorFrame2?.contentWindow?.editor){
+            
+            oEditorFrame2.contentWindow.editor.getAction('editor.action.formatDocument').run();
 
         }
 
     } // end of ev_codeeditorPrettyPrint
+
 
     // /**************************************************************************
     //  * [WS30] Content 영역의 Code Editor Pattern Popover
@@ -6669,58 +7708,133 @@
     /**************************************************************************
      * [WS30] Content 영역의 Code Editor 화면 분할 변경
      **************************************************************************/
+    // function ev_codeeditorSplitOrientationChange() {
+
+    //     let oCodeEditorSplit = sap.ui.getCore().byId("uspCodeeditorSplit");
+    //     if (!oCodeEditorSplit) {
+    //         return;
+    //     }
+
+    //     let oCodeEditorSplitLayoutData = sap.ui.getCore().byId("codeEditorSplitLayout");
+    //     if (!oCodeEditorSplitLayoutData) {
+    //         return;
+    //     }
+
+    //     oCodeEditorSplitLayoutData.setSize("0px");
+
+    //     let sOrientation = oCodeEditorSplit.getOrientation();
+    //     if (sOrientation == sap.ui.core.Orientation.Horizontal) {
+    //         oCodeEditorSplit.setOrientation(sap.ui.core.Orientation.Vertical);
+    //         return;
+    //     }
+
+    //     oCodeEditorSplit.setOrientation(sap.ui.core.Orientation.Horizontal);
+
+    // } // end of ev_codeeditorSplitOrientationChange
+
+
+    /*****************************************************
+     * @since   2025-05-06
+     * @version 3.5.6-sp2
+     * @author  soccerhs
+     * 
+     * @description
+     * ## USP EDITOR 변경 작업 ##
+     *
+     * [WS30] Editor 영역의 Code Editor 화면 분할 변경
+     ******************************************************/     
     function ev_codeeditorSplitOrientationChange() {
 
-        let oCodeEditorSplit = sap.ui.getCore().byId("uspCodeeditorSplit");
-        if (!oCodeEditorSplit) {
+        if(!oAPP?.ui?.USP_EDITOR_PAGE){
             return;
         }
 
-        let oCodeEditorSplitLayoutData = sap.ui.getCore().byId("codeEditorSplitLayout");
-        if (!oCodeEditorSplitLayoutData) {
+        // EDITOR PAGE 객체에 Splitter LayoutData 객체 구하기
+        let oSplitterLayoutData = oAPP.ui.USP_EDITOR_PAGE.data("SPLITTER_LAYOUTDATA");
+        if(!oSplitterLayoutData){
             return;
         }
 
-        oCodeEditorSplitLayoutData.setSize("0px");
+        let oEditorSplitter = oAPP.ui.USP_EDITOR_PAGE.data("EDITOR_SPLITTER");
+        if(!oEditorSplitter){
+            return;
+        }
 
-        let sOrientation = oCodeEditorSplit.getOrientation();
+        oSplitterLayoutData.setSize("0px");
+
+        delete oAPP.usp.USP_EDITOR_CHANNEL;
+
+        // USP Editor 간 통신을 위한 메시지 채널 생성 (*필수)
+        oAPP.usp.USP_EDITOR_CHANNEL = new MessageChannel();
+        
+        let sOrientation = oEditorSplitter.getOrientation();
         if (sOrientation == sap.ui.core.Orientation.Horizontal) {
-            oCodeEditorSplit.setOrientation(sap.ui.core.Orientation.Vertical);
+            oEditorSplitter.setOrientation(sap.ui.core.Orientation.Vertical);
             return;
         }
 
-        oCodeEditorSplit.setOrientation(sap.ui.core.Orientation.Horizontal);
+        oEditorSplitter.setOrientation(sap.ui.core.Orientation.Horizontal);
 
-    } // end of ev_codeeditorSplitOrientationChange
+    } // end of ev_codeeditorSplitOrientationChange    
 
 
     /**************************************************************************
      * [WS30] Content 영역의 fontSize 기본사이즈로 변경
      **************************************************************************/
+    // function ev_codeeditorDefaultFontSize(oEvent){
+
+    //     let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
+    //         oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
+
+    //     // 에디터가 둘중에 하나라도 없다면 빠져나감.
+    //     if (!oCodeEditor1 || !oCodeEditor2) {
+    //         return;
+    //     }
+
+    //     // Code Editor 인스턴스가 둘중에 하나라도 없다면 빠져나감.
+    //     let oEditor1 = oCodeEditor1?._oEditor,
+    //         oEditor2 = oCodeEditor2?._oEditor;
+
+    //     // 에디터가 둘중에 하나라도 없다면 빠져나감.
+    //     if (!oEditor1 || !oEditor2) {
+    //         return;
+    //     }
+
+    //     // 에디터에 기본 폰트 사이즈 적용
+    //     oEditor1.setFontSize(gEditorFontSize);
+    //     oEditor2.setFontSize(gEditorFontSize);        
+
+    // } // end of ev_codeeditorDefaultFontSize
+
+
+    /*****************************************************
+     * @since   2025-05-06
+     * @version 3.5.6-sp2
+     * @author  soccerhs
+     * 
+     * @description
+     * ## USP EDITOR 변경 작업 ##
+     *
+     * [WS30] Editor 영역의 fontSize 기본사이즈로 변경
+     ******************************************************/     
     function ev_codeeditorDefaultFontSize(oEvent){
 
-        let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
-            oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
+        let oEditorFrame1 = document.querySelector(".EDITOR_FRAME1");
+        if(oEditorFrame1 && oEditorFrame1?.contentWindow?.editor){
+            
+            oEditorFrame1.contentWindow.editor.setDefaultFontSize();
 
-        // 에디터가 둘중에 하나라도 없다면 빠져나감.
-        if (!oCodeEditor1 || !oCodeEditor2) {
-            return;
         }
 
-        // Code Editor 인스턴스가 둘중에 하나라도 없다면 빠져나감.
-        let oEditor1 = oCodeEditor1?._oEditor,
-            oEditor2 = oCodeEditor2?._oEditor;
+        let oEditorFrame2 = document.querySelector(".EDITOR_FRAME2");
+        if(oEditorFrame2 && oEditorFrame2?.contentWindow?.editor){
+            
+            oEditorFrame2.contentWindow.editor.setDefaultFontSize();
 
-        // 에디터가 둘중에 하나라도 없다면 빠져나감.
-        if (!oEditor1 || !oEditor2) {
-            return;
-        }
-
-        // 에디터에 기본 폰트 사이즈 적용
-        oEditor1.setFontSize(gEditorFontSize);
-        oEditor2.setFontSize(gEditorFontSize);        
+        }        
 
     } // end of ev_codeeditorDefaultFontSize
+    
 
     /**************************************************************************
      * [WS30] App 정보 가져오기.
