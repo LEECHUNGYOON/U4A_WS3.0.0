@@ -8,7 +8,7 @@ const
 module.exports = function(REMOTE, oAPP){
 
     // busy 키고 Lock 걸기
-    oAPP.common.fnSetBusyLock("X");
+    // oAPP.common.fnSetBusyLock("X");
 
     // // 전체 자식 윈도우에 Busy 킨다.
     // oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_ON" });
@@ -16,7 +16,7 @@ module.exports = function(REMOTE, oAPP){
     let CURRWIN = REMOTE.getCurrentWindow();
 
     // 팝업 고유 이름
-    let sPopupName = "MONACO_SNIPPET_CREATER";
+    let sPopupName = "MONACO_SNIPPET_CREATOR";
 
     // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
     let oResult = oAPP.common.getCheckAlreadyOpenWindow(sPopupName);
@@ -42,11 +42,11 @@ module.exports = function(REMOTE, oAPP){
         oDefaultOption = parent.require(sSettingsJsonPath),
         oBrowserOptions = JSON.parse(JSON.stringify(oDefaultOption.browserWindow));        
 
-        oBrowserOptions.title = "Code Editor Snippet Creater"; // [MSG]
+        oBrowserOptions.title = "Code Editor Snippet Creator"; // [MSG]
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;        
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL; //테마별 색상 처리
-        oBrowserOptions.modal = true;
+        oBrowserOptions.modal = false;
         oBrowserOptions.closable = false;
         
         oBrowserOptions.opacity = 0.0;
@@ -73,9 +73,9 @@ module.exports = function(REMOTE, oAPP){
         oBrowserWindow.loadURL(sPopupPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        // if (!REMOTE.app.isPackaged) {
-        //     oBrowserWindow.webContents.openDevTools();
-        // }
+        if (!REMOTE.app.isPackaged) {
+            oBrowserWindow.webContents.openDevTools();
+        }
 
         oBrowserWindow.once('ready-to-show', () => {
             

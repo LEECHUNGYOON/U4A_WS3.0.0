@@ -178,6 +178,7 @@
  * 🔥 Public functions
  ****************************************************************************/
 
+
     /********************************************************************
      * @function - Busy 켜기 끄기
      ********************************************************************
@@ -212,20 +213,20 @@
 
         }
 
-        var _ISBROAD = sOption?.ISBROAD || undefined;
-        if(typeof _ISBROAD !== "undefined"){
-            return;
-        }
+        // var _ISBROAD = sOption?.ISBROAD || undefined;
+        // if(typeof _ISBROAD !== "undefined"){
+        //     return;
+        // }
 
-        if(isBusy === "X"){
+        // if(isBusy === "X"){
 
-            oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
+        //     oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
 
-        } else {
+        // } else {
 
-            oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
+        //     oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
 
-        }
+        // }
   
     }; // end of oAPP.fn.setBusy
 
@@ -237,7 +238,7 @@
 window.addEventListener("load", function(){
 
     // BroadCast Event 걸기
-    _attachBroadCastEvent();
+    // _attachBroadCastEvent();
 
     // Events after UI5 CORE libraries have been loaded.
     sap.ui.getCore().attachInit(async () => {
@@ -250,8 +251,6 @@ window.addEventListener("load", function(){
         parent.CURRWIN.show();
 
         parent.CURRWIN.setOpacity(1);
-
-        // parent.WSUTIL.setBrowserOpacity(parent.CURRWIN); 
 
         let sViewPath = parent.PATH.join(parent.__dirname, "views", "vw_main", "view.js");
 
@@ -298,6 +297,6 @@ window.onbeforeunload = function() {
     }
 
     // 브라우저 창을 닫을 때 Broadcast로 busy 끄라는 지시를 한다.
-    _setBroadCastBusy();
+    // _setBroadCastBusy();
 
 };

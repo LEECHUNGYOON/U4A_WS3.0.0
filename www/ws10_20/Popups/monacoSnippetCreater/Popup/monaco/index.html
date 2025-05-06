@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Monaco Editor</title>
+    <style>
+        html,
+        body,
+        #container {
+            margin: 0;
+            height: 100%;
+        }
+    </style>
+
+    <style>
+        .my-icon-gutter {
+            /*background: url('dddd.png') no-repeat center center;*/
+            /* background-size: contain;
+    width: 16px;
+    height: 16px; */
+            background-size: 24px 24px;
+        }
+
+        .my-line-highlight {
+            background-color: yellow !important;
+            opacity: 0.1;
+            color: red !important;
+            font-weight: bold;
+        }
+    </style>
+
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #split-container {
+            display: flex;
+            flex-direction: row;
+            /* 수평 분할 */
+            height: 100%;
+            width: 100%;
+        }
+
+        #editor-left,
+        #editor-right {
+            flex: 1;
+            height: 100%;
+        }
+
+        #editor-left {
+            border-right: 1px solid #444;
+        }
+    </style>
+
+    <style>
+        /* 공통 스크롤바 설정 */
+        .monaco-scrollable-element>.scrollbar {
+            background: transparent !important;
+            z-index: 10;
+        }
+
+        .monaco-scrollable-element>.scrollbar>.slider {
+            background: rgba(128, 128, 128, 0.3) !important;
+            /* 회색 & 투명도 */
+            border-radius: 4px !important;
+            transition: opacity 0.2s;
+        }
+
+        /* 스크롤바 기본은 숨김 */
+        .monaco-scrollable-element>.scrollbar>.slider {
+            opacity: 0;
+        }
+
+        /* 마우스 오버 시 나타남 */
+        .monaco-scrollable-element:hover>.scrollbar>.slider {
+            opacity: 1;
+        }
+
+        /* 사이즈 조절 */
+        .monaco-scrollable-element>.scrollbar.vertical {
+            width: 6px !important;
+        }
+
+        .monaco-scrollable-element>.scrollbar.horizontal {
+            height: 6px !important;
+        }
+    </style>
+
+
+    <script>
+
+/****************************************************************************
+ * 🔥 Global Variables
+ ****************************************************************************/
+    const
+        oAPP = {};
+        oAPP.params = {};
+        oAPP.attr = {};
+        oAPP.oModel = parent.oAPP.views.VW_MAIN.oModel;
+
+    // 부모의 부모 객체(할아버지 객체)
+    const GRAND_FATHER = parent.parent;    
+        
+    // 부모와 통신하기 위한 커스텀 이벤트용 DOM
+    let sCustDomId = "if-editor";
+    
+    oAPP.attr.oCustomEvtDom = parent.document.getElementById(sCustDomId);
+
+/****************************************************************************
+ * 🔥 Npm Library
+ ****************************************************************************/        
+    const PATH = GRAND_FATHER.PATH;
+    const FS   = GRAND_FATHER.FS;
+    const APPPATH = GRAND_FATHER.APPPATH;      
+        
+
+/****************************************************************************
+ * 🔥 Paths
+ ****************************************************************************/        
+
+    // USP root 경로
+    const USP_ROOT_PATH = GRAND_FATHER.PATHINFO.USP_ROOT;
+
+    // 모나코 에디터 관련 경로
+    const MONACO_LIB_PATH = PATH.join(APPPATH, "lib", "monaco");
+    const MONACO_VS_ROOT_PATH = PATH.join(MONACO_LIB_PATH, "vs");
+    const MONACO_LOADER_PATH  = PATH.join(MONACO_VS_ROOT_PATH, "loader.js");
+
+
+    function onLoad() {
+
+        var loaderScript = document.createElement('script');
+        loaderScript.src = 'index.js'; // ← 경로 정확히
+
+        document.head.append(loaderScript);
+    };        
+
+
+    window.addEventListener('message', (oEvent) => {
+
+        // 파라미터가 없을 경우 빠져나감
+        let oParams = oEvent?.data || undefined;
+        if(!oParams){
+            return;
+        }
+
+        // 액션코드가 없다면 빠져나감
+        let sActcd = oParams?.actcd || "";
+        if(!sActcd){
+            return;
+        }
+
+        // 전달받은 파라미터 중, ACTION CODE(actcd) 별 프로세스 분기
+        switch (sActcd) {
+            case "init":
+
+                return;
+
+            case "applyTheme":  // 테마 적용                    
+
+                return;
+
+            case "setFocus": 
+                
+                editor.focus();
+
+                return;
+
+            case "clear": 
+
+                editor.setValue("");
+
+                return;
+
+            case "readonly": 
+                
+                console.log("readonly");
+
+                var bIsReadOnly = true;
+
+                if(oParams?.value === false){
+                    bIsReadOnly = false;
+                }
+
+                editor.updateOptions({ readOnly: bIsReadOnly });                    
+
+                return;
+            
+            case "setValue":
+
+                var sValue = "";
+
+                if(oParams?.value){
+                    sValue = oParams?.value || "";
+                }
+
+                // 외부에서 에디터 데이터 정보를 업데이트 했다는 플래그를 설정한다.
+                editor.bExternalUpdated = true;
+
+                editor.setValue(sValue);
+
+                return;
+
+            default:
+                break;
+        }
+
+    });
+        
+    window.addEventListener("DOMContentLoaded", function () {
+        
+        var loaderScript = document.createElement('script');
+        loaderScript.src = MONACO_LOADER_PATH;
+
+        document.head.append(loaderScript);
+
+        loaderScript.onload = onLoad;
+        
+        
+    });
+
+       
+    </script>
+
+</head>
+
+<body>
+
+    <div id="content" style="height:100%;"></div>
+  
+</body>
+
+</html>
