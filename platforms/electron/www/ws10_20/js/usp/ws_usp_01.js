@@ -561,20 +561,133 @@
     /**************************************************************************
      * [WS30] USP Codeeditor ContextMenu Open
      **************************************************************************/
-    oAPP.fn.fnUspCodeeditorContextMenuOpen = (oEvent, oCodeEditor) => {
+    // oAPP.fn.fnUspCodeeditorContextMenuOpen = (oEvent, oCodeEditor) => {
 
-        // 패턴메뉴 선택 시, 출력될 에디터 위치를 저장한다.
-        if (oAPP.attr.oCtxMenuClickEditor) {
-            delete oAPP.attr.oCtxMenuClickEditor;
+    //     // 패턴메뉴 선택 시, 출력될 에디터 위치를 저장한다.
+    //     if (oAPP.attr.oCtxMenuClickEditor) {
+    //         delete oAPP.attr.oCtxMenuClickEditor;
+    //     }
+
+    //     oAPP.attr.oCtxMenuClickEditor = oCodeEditor;
+
+    //     let sMenuId = "uspCDECtxMenu";
+
+    //     let aPatterns = APPCOMMON.fnGetModelProperty("/WS30/USP_EDITOR_CTX_MENU"),
+    //         oUspAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
+            
+    //     var oCtxMenu = sap.ui.getCore().byId(sMenuId);
+    //     if (oCtxMenu) {
+
+    //         let oCtxMenuModel = oCtxMenu.getModel();
+
+    //         oCtxMenuModel.setProperty("/", {
+    //             USP_EDITOR_CTX_MENU: aPatterns,
+    //             APPINFO: oUspAppInfo
+    //         });
+
+    //         oCtxMenu.openAsContextMenu(oEvent, oCodeEditor);
+
+    //         return;
+    //     }
+
+    //     var oCtxMenu = new sap.m.Menu(sMenuId, {
+    //         itemSelected: (oEvent) => { // USP Pattern Contextmenu Event
+    //             oAPP.fn.fnUspPatternContextMenuClick(oEvent); // #[ws_usp_01.js]
+    //         },
+    //         items: {
+    //             path: "/USP_EDITOR_CTX_MENU",
+    //             template: new sap.m.MenuItem({
+    //                 key: "{CKEY}",
+    //                 text: "{DESC}",
+    //                 startsSection: "{ISSTART}",
+    //                 icon: "{ICON}",
+    //                 enabled: "{ENABLED}",
+    //                 // tooltip: "{DATA}",
+    //                 items: {
+    //                     // path: "PATTN",
+    //                     path: "USP_EDITOR_CTX_MENU",
+    //                     templateShareable: true,
+    //                     template: new sap.m.MenuItem({
+    //                         key: "{CKEY}",
+    //                         text: "{DESC}",
+    //                         startsSection: "{ISSTART}",
+    //                         icon: "{ICON}",
+    //                         enabled: "{ENABLED}",
+    //                         // tooltip: "{DATA}",
+    //                         items: {
+    //                             path: "USP_EDITOR_CTX_MENU",
+    //                             templateShareable: true,
+    //                             template: new sap.m.MenuItem({
+    //                                 key: "{CKEY}",
+    //                                 text: "{DESC}",
+    //                                 startsSection: "{ISSTART}",
+    //                                 icon: "{ICON}",
+    //                                 enabled: "{ENABLED}",
+    //                                 // tooltip: "{DATA}",
+    //                                 items: {
+    //                                     path: "USP_EDITOR_CTX_MENU",
+    //                                     templateShareable: true,
+    //                                     template: new sap.m.MenuItem({
+    //                                         key: "{CKEY}",
+    //                                         text: "{DESC}",
+    //                                         startsSection: "{ISSTART}",
+    //                                         icon: "{ICON}",
+    //                                         enabled: "{ENABLED}",
+    //                                         // tooltip: "{DATA}"
+    //                                     })
+    //                                 }
+    //                             })
+    //                         }
+    //                     })
+    //                 }
+    //             })
+    //         }
+    //     }).addStyleClass("u4aWsUspPatternMenu");
+
+    //     let oModel = new sap.ui.model.json.JSONModel();
+
+    //     oModel.setData({
+    //         USP_EDITOR_CTX_MENU: aPatterns,
+    //         APPINFO: oUspAppInfo
+    //     });
+
+    //     oCtxMenu.setModel(oModel);
+
+    //     oCtxMenu.openAsContextMenu(oEvent, oCodeEditor);
+
+    // }; // end of oAPP.fn.fnUspCodeeditorContextMenuOpen
+
+    
+    /*****************************************************
+     * @since   2025-05-06
+     * @version 3.5.6-sp2
+     * @author  soccerhs
+     * 
+     * @description
+     * ## USP EDITOR 변경 작업 ##
+     * 
+     * [WS30] Editor에 ContextMenu 이벤트 시 메뉴 팝업 띄우기 
+     ******************************************************/       
+    oAPP.fn.fnUspCodeeditorContextMenuOpen = (oEvent, oSelectedCtxInfo) => {
+
+        // 선택된 컨텍스트 메뉴 정보를 전역에 저장한다.
+        // 추후, 컨텍스트 메뉴 선택 시, 어떤 에디터에 출력할지 판단하기 위함.
+        delete oAPP.usp.oSelectedCtxInfo;
+
+        oAPP.usp.oSelectedCtxInfo = oSelectedCtxInfo;
+
+        // 컨텍스트 메뉴 이벤트가 발생된 페이지 
+        let oTargetPage = oSelectedCtxInfo?.oTargetPage;
+        if(!oTargetPage){
+            return;
         }
-
-        oAPP.attr.oCtxMenuClickEditor = oCodeEditor;
+        
 
         let sMenuId = "uspCDECtxMenu";
 
         let aPatterns = APPCOMMON.fnGetModelProperty("/WS30/USP_EDITOR_CTX_MENU"),
             oUspAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
-            
+        
         var oCtxMenu = sap.ui.getCore().byId(sMenuId);
         if (oCtxMenu) {
 
@@ -585,7 +698,10 @@
                 APPINFO: oUspAppInfo
             });
 
-            oCtxMenu.openAsContextMenu(oEvent, oCodeEditor);
+            
+            oCtxMenu.close();
+            
+            oCtxMenu.openBy(oTargetPage, false, "begin top", "begin top", `${oEvent.x} ${oEvent.y}`);
 
             return;
         }
@@ -652,10 +768,11 @@
         });
 
         oCtxMenu.setModel(oModel);
-
-        oCtxMenu.openAsContextMenu(oEvent, oCodeEditor);
+      
+        oCtxMenu.openBy(oTargetPage, false, "begin top", "begin top", `${oEvent.x} ${oEvent.y}`);
 
     }; // end of oAPP.fn.fnUspCodeeditorContextMenuOpen
+
 
     /**************************************************************************
      * [WS30] USP Pattern Context Menu Event
@@ -872,6 +989,101 @@
     /**************************************************************************
      * [WS30] USP Ctx Menu 메뉴 중, 소스 패턴 메뉴일 경우
      **************************************************************************/
+    // function _setCtxPatternMenuClick(oCtx){
+
+    //     // 다음 로직을 수행할지 말지 여부 플래그
+    //     let bIsStop = false;
+
+    //     let oModel      = oCtx.getModel();
+    //     let sBindPath   = oCtx.getPath();
+    //     let oModelData  = oModel.getData();
+    //     let oBindData   = oCtx.getProperty(oCtx.getPath());
+
+    //     let oRootNode;
+    //     if(oBindData.CKEY === "" || oBindData.TYPE === "ROOT"){
+    //         oRootNode = oBindData;
+    //     }
+    //     else {
+
+    //         // 선택한 메뉴의 최상위 부모를 찾아서 소스 패턴 관련 메뉴인지 확인
+    //         let oFindRoot = _getCodeEditorCtxMenuRootModelData(oModelData, sBindPath);
+    //         if(!oFindRoot){
+    //             return bIsStop;
+    //         }
+
+    //         oRootNode = oFindRoot;
+    //     }
+
+    //     // 최상위 부모키
+    //     let sCKEY = oRootNode?.CKEY || "";
+
+    //     // 패턴 데이터
+    //     let sPattData = oBindData?.DATA || "";
+
+    //     // 최상위 부모키의 시작이 "PATT" or "PTN" 으로 시작하지 않으면 
+    //     // 다음 프로세스 진행시켜~!
+    //     if (!sCKEY || (!sCKEY.startsWith("PAT") && !sCKEY.startsWith("PTN"))) {
+    //         return bIsStop;
+    //     }
+
+    //     // 다음 프로세스 수행 금지
+    //     bIsStop = true;
+
+    //     // 패턴 데이터가 없을 경우 빠져나감
+    //     if(!sPattData){
+    //         return bIsStop;
+    //     }        
+
+    //     // 현재 어플리케이션의 change 모드 여부를 확인한다.
+    //     let oAppInfo = oCtx.getProperty("/APPINFO"),
+    //         bIsEdit = (oAppInfo.IS_EDIT == "X" ? true : false);
+
+    //     // 어플리케이션이 change 모드가 아니면 빠져나감.
+    //     if (!bIsEdit) {
+    //         return bIsStop;
+    //     }
+
+    //     // 마우스 우클릭한 위치의 Editor 정보를 구한다.
+    //     let oCodeEditor = oAPP.attr.oCtxMenuClickEditor;
+    //     if (!oCodeEditor) {
+    //         return bIsStop;
+    //     }
+        
+    //     let oEditor = oCodeEditor._oEditor,
+    //         oCursorPos = oEditor.getCursorPosition(),
+    //         sInsertTxt = oBindData.DATA;
+
+    //     if (!sInsertTxt) {
+    //         return bIsStop;
+    //     }
+
+    //     // Editor에 선택한 패턴을 출력해준다.
+    //     oEditor.session.insert(oCursorPos, sInsertTxt);
+
+    //     // Editor에 변경 이벤트를 발생시킨다.
+    //     oCodeEditor.fireChange({
+    //         value: oEditor.session.getValue()
+    //     });
+
+    //     // 앱 변경 사항 플래그 설정
+    //     oAPP.fn.setAppChangeWs30("X");
+
+    //     return bIsStop;
+
+    // } // end of _setCtxPatternMenuClick
+
+
+    /*****************************************************
+     * @since   2025-05-06
+     * @version 3.5.6-sp2
+     * @author  soccerhs
+     * 
+     * @description
+     * ## USP EDITOR 변경 작업 ##
+     *
+     * USP Ctx Menu 메뉴 중, 소스 패턴 메뉴일 경우에 대한 
+     * 에디터에 패턴 적용
+     ******************************************************/    
     function _setCtxPatternMenuClick(oCtx){
 
         // 다음 로직을 수행할지 말지 여부 플래그
@@ -926,27 +1138,41 @@
             return bIsStop;
         }
 
-        // 마우스 우클릭한 위치의 Editor 정보를 구한다.
-        let oCodeEditor = oAPP.attr.oCtxMenuClickEditor;
-        if (!oCodeEditor) {
+        let oSelectedCtxInfo = oAPP?.usp?.oSelectedCtxInfo || undefined;
+        if(!oSelectedCtxInfo){
             return bIsStop;
         }
+
+        let oEditor = oSelectedCtxInfo?.oEditor || undefined;
+        let oMonaco = oSelectedCtxInfo?.oMonaco || undefined;
+        if(!oEditor || !oMonaco){
+            return;
+        }
+
+        // // 현재 커서 위치 가져오기
+        const position = oEditor.getPosition();
+
+        // // 해당 위치에 텍스트 삽입
+        oEditor.executeEdits('', [
+            {
+                range: new oMonaco.Range(
+                    position.lineNumber,
+                    position.column,
+                    position.lineNumber,
+                    position.column
+                ),
+                text: sPattData,
+                // forceMoveMarkers: true
+            }
+        ]);
+
+        // 삽입된 텍스트의 끝 위치 계산
+        const lastPosition = oEditor.getPosition();
         
-        let oEditor = oCodeEditor._oEditor,
-            oCursorPos = oEditor.getCursorPosition(),
-            sInsertTxt = oBindData.DATA;
-
-        if (!sInsertTxt) {
-            return bIsStop;
-        }
-
-        // Editor에 선택한 패턴을 출력해준다.
-        oEditor.session.insert(oCursorPos, sInsertTxt);
-
-        // Editor에 변경 이벤트를 발생시킨다.
-        oCodeEditor.fireChange({
-            value: oEditor.session.getValue()
-        });
+        // 선택 없이 커서만 이동
+        oEditor.setPosition(lastPosition);
+        
+        oEditor.focus();
 
         // 앱 변경 사항 플래그 설정
         oAPP.fn.setAppChangeWs30("X");

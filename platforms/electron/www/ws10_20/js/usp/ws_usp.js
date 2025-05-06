@@ -469,7 +469,7 @@
         }).addStyleClass("u4aWsWindowMenu");
 
         oMenuUI.Test10 = new sap.m.Menu({
-            itemSelected: oAPP.events.ev_pressWmenuItemWS10,
+            itemSelected: oAPP.events.ev_pressWmenuItemWS30,
             items: {
                 path: `${sBindRoot}/Test10`,
                 template: new sap.m.MenuItem({
@@ -1917,9 +1917,6 @@
             themeName : sSelectedKey,
         };
 
-        // 전체 USP의 모나코 에디터에 PostMessage 를 전송한다.
-        oAPP.usp.sendEditorPostMessageAll({ actcd: 'applyTheme', oThemeInfo: oSelectedThemeInfo });
-
         // 개인화 폴더에 선택된 테마 정보 저장하기
         let sThemeP13nFolderPath = PATH.join(PATHINFO.P13N_ROOT, "usp", "monaco", "theme", parent.getUserInfo().SYSID);
         
@@ -1938,17 +1935,38 @@
 
             FS.writeFileSync(sThemeFilePath, JSON.stringify(oThemeSaveInfo), 'utf-8');    
 
-        } catch (error) {
+        } catch (error) {       
+
+            // 콘솔용 오류 메시지
+            var aConsoleMsg = [             
+                `[PATH]: www/ws10_20/js/usp/ws_usp.js`,  
+                `=> _oEditorThemeChange`,
+                `=> FS.writeFileSync(sThemeFilePath)`,
+                `=> try...catch error`,
+                `=> 에디터에서 선택한 테마 정보를 개인화 폴더에 저장하는 과정에서 오류 발생!!`,
+            ];
             
-            // 오류 및 메시지 처리..
+            // [MSG]
+            let sErrMsg = "선택한 테마 정보를 개인화 저장 하는 과정에 문제가 발생하였습니다\n\n문제가 지속될 경우 U4A 기술지원팀으로 문의하세요.";
 
-            //[MSG] 테마 정보 저장 중 문제가 발생하였습니다. 문제가 지속될 경우 U4A Team으로 연락해 주세요.
+            console.error(aConsoleMsg.join("\r\n"));
+            console.error(error);
+            console.trace();
 
-            // 콘솔 오류 로그 남기기...
+            // Critical Error
+            oAPP.fn.fnCriticalErrorWs30({
+                RTMSG: sErrMsg
+            });
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");	
 
             return;
 
         }
+
+        // 전체 USP의 모나코 에디터에 PostMessage 를 전송한다.
+        oAPP.usp.sendEditorPostMessageAll({ actcd: 'applyTheme', oThemeInfo: oSelectedThemeInfo });
 
     } // end of _oEditorThemeChange    
 
@@ -2462,26 +2480,27 @@
      **************************************************************************/
     function fnGetWindowMenuWS30() {
 
-        return [{
-            key: "WMENU20",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B35"), // Utilities
-            icon: "",
-        },
-        {
-            key: "WMENU30",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B36"), // System
-            icon: "",
-        },
-        {
-            key: "WMENU50",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39"), // Help
-            icon: "",
-        },
-        {
-            key: "Test10",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B69"), // Test
-            icon: "",
-        },
+        return [
+            {
+                key: "WMENU20",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B35"), // Utilities
+                icon: "",
+            },
+            {
+                key: "WMENU30",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B36"), // System
+                icon: "",
+            },
+            {
+                key: "WMENU50",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39"), // Help
+                icon: "",
+            },
+            {
+                key: "Test10",
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B69"), // Test
+                icon: "",
+            }
         ];
 
     } // end of fnGetWindowMenuWS30
@@ -2586,102 +2605,103 @@
          * 위 두 function에 가서 find 로직도 같이 삭제할것!!
          */
 
-        return [{
-            ICON: "sap-icon://expand-group",
-            KEY: "K1",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C27"), // Expand Subtree
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://collapse-group",
-            KEY: "K2",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C28"), // Collapse Subtree
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://internet-browser",
-            KEY: "K6",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D43"), // Test Service
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://popup-window",
-            KEY: "K11",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: false
-        },
-        {
-            ICON: "sap-icon://write-new",
-            KEY: "K3",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"), // Create
-            ENABLED: true,
-            ISSTART: true,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://delete",
-            KEY: "K4",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03"), // Delete
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://edit",
-            KEY: "K7",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D44"), // Rename
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://navigation-up-arrow",
-            KEY: "K8",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A55"), // Up
-            ENABLED: true,
-            ISSTART: true,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://navigation-down-arrow",
-            KEY: "K9",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A56"), // Down
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://outdent",
-            KEY: "K10",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A57"), // Move Position
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
-        {
-            ICON: "sap-icon://upload",
-            KEY: "K12",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D88"), // Upload
-            ENABLED: true,
-            ISSTART: true,
-            VISIBLE: false
-        },
-        {
-            ICON: "sap-icon://download",
-            KEY: "K5",
-            TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B78"), // Download
-            ENABLED: true,
-            ISSTART: false,
-            VISIBLE: true
-        },
+        return [
+            {
+                ICON: "sap-icon://expand-group",
+                KEY: "K1",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C27"), // Expand Subtree
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://collapse-group",
+                KEY: "K2",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C28"), // Collapse Subtree
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://internet-browser",
+                KEY: "K6",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D43"), // Test Service
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://popup-window",
+                KEY: "K11",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A09"), // New Window
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: false
+            },
+            {
+                ICON: "sap-icon://write-new",
+                KEY: "K3",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A01"), // Create
+                ENABLED: true,
+                ISSTART: true,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://delete",
+                KEY: "K4",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03"), // Delete
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://edit",
+                KEY: "K7",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D44"), // Rename
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://navigation-up-arrow",
+                KEY: "K8",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A55"), // Up
+                ENABLED: true,
+                ISSTART: true,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://navigation-down-arrow",
+                KEY: "K9",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A56"), // Down
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://outdent",
+                KEY: "K10",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A57"), // Move Position
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
+            {
+                ICON: "sap-icon://upload",
+                KEY: "K12",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D88"), // Upload
+                ENABLED: true,
+                ISSTART: true,
+                VISIBLE: false
+            },
+            {
+                ICON: "sap-icon://download",
+                KEY: "K5",
+                TXT: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B78"), // Download
+                ENABLED: true,
+                ISSTART: false,
+                VISIBLE: true
+            },
 
         ];
 

@@ -224,6 +224,28 @@
 
     }; // end of oAPP.events.ev_pressWmenuItemWS20
 
+    /************************************************************************
+     * [WS30] Window Menu Item Click Event
+     ************************************************************************/
+    oAPP.events.ev_pressWmenuItemWS30 = function (oEvent) {
+
+        var oSelectedItem = oEvent.getParameter("item"),
+            oBindCtx = oSelectedItem.getBindingContext(),
+            sBindPath = oBindCtx.sPath,
+            oBindData = APPCOMMON.fnGetModelProperty(sBindPath),
+            sItemKey = oBindData.key;
+
+        var sPrefix = "fnWS30",
+            fName = sPrefix + sItemKey;
+
+        if (oAPP.fn[fName] == null) {
+            return;
+        }
+
+        oAPP.fn[fName]();
+
+    }; // end of oAPP.events.ev_pressWmenuItemWS30
+
     // /************************************************************************
     //  * [WS20] Binding Popup 버튼 이벤트
     //  ************************************************************************/

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Monaco Editor</title>
+  <style>
+    html, body, #container { margin: 0; height: 100%; }
+  </style>
+
+<style>
+  .my-icon-gutter {
+    /* background: url('dddd.png') no-repeat center center; */
+    /* background-size: contain;
+    width: 16px;
+    height: 16px; */
+    background-size: 24px 24px;
+  }
+
+  .my-line-highlight {
+    background-color: yellow !important;
+    opacity: 0.1;
+    color: red !important;
+    font-weight: bold;
+  }
+
+  </style>
+
+
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  #split-container {
+    display: flex;
+    flex-direction: row; /* 수평 분할 */
+    height: 100%;
+    width: 100%;
+  }
+
+  #editor-left,
+  #editor-right {
+    flex: 1;
+    height: 100%;
+  }
+
+  #editor-left {
+    border-right: 1px solid #444;
+  }
+</style>
+
+<style>
+
+/* 공통 스크롤바 설정 */
+.monaco-scrollable-element > .scrollbar {
+  background: transparent !important;
+  z-index: 10;
+}
+
+.monaco-scrollable-element > .scrollbar > .slider {
+  background: rgba(128, 128, 128, 0.3) !important; /* 회색 & 투명도 */
+  border-radius: 4px !important;
+  transition: opacity 0.2s;
+}
+
+/* 스크롤바 기본은 숨김 */
+.monaco-scrollable-element > .scrollbar > .slider {
+  opacity: 0;
+}
+
+/* 마우스 오버 시 나타남 */
+.monaco-scrollable-element:hover > .scrollbar > .slider {
+  opacity: 1;
+}
+
+/* 사이즈 조절 */
+.monaco-scrollable-element > .scrollbar.vertical {
+  width: 6px !important;
+}
+
+.monaco-scrollable-element > .scrollbar.horizontal {
+  height: 6px !important;
+}
+
+
+</style>
+
+
+  <script>
+
+      const oAPP = {};
+
+      oAPP.attr = {};
+
+      oAPP.attr.initThemeName = "";
+      oAPP.attr.initThemeData = undefined;
+
+      function onLoad(){
+
+          const params = new URLSearchParams(window.location.search);
+
+          // oAPP.params.
+          oAPP.params = params.get('frame');
+
+          const loaderScript = document.createElement('script');
+          loaderScript.src = 'index.js'; // ← 경로 정확히
+          document.head.append(loaderScript);
+
+      };
+
+      
+
+      window.addEventListener('message', (event) => {
+          event.preventDefault();
+
+          let _sData = event.data;
+
+          switch (_sData.actcd) {
+
+            case "init":
+              //최초 호출한 경우.
+
+              oAPP.attr.initThemeName = _sData.themeName;
+              oAPP.attr.initThemeData = _sData.themeData;
+
+              break;
+
+            case "changeTheme":
+              //테마 변경인 경우.
+              monaco.editor.defineTheme(_sData.themeName, _sData.themeData);
+
+              monaco.editor.setTheme(_sData.themeName);
+                
+              break;
+            
+            case "changeLanguage":
+              //langage 변경건인경우.
+
+              monaco.editor.setModelLanguage(editor.getModel(), _sData.language);
+
+              break;
+
+            default:
+              break;
+          }
+        
+
+      });
+      
+
+
+      window.addEventListener('load', (event) => {
+
+        let _oScript = document.createElement("script");
+
+        _oScript.setAttribute("src", parent.oAPP.views.VW_MAIN.attr.monacoLoaderPath);
+
+        _oScript.addEventListener("load", onLoad);
+
+        document.body.appendChild(_oScript);
+
+      });
+
+
+  </script>
+ 
+
+  <!-- <script src="./vs/loader.js" onload="onLoad()" ></script> -->
+
+
+  <!-- <script src="monaco.js"></script> -->
+
+</head>
+<body>
+
+  <div id="container"></div>
+
+ 
+
+
+</body>
+</html>

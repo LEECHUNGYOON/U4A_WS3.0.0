@@ -444,26 +444,34 @@
                     key: "Test94",
                     text: "잘못된 서버 호출"
                 },
+                // {
+                //     key: "Test93",
+                //     text: "abap 펑션 버젼 확인"
+                // },
+                // {
+                //     key: "Test92",
+                //     text: "abap syntax 버젼 확인"
+                // },
+                // {
+                //     key: "Test91",
+                //     text: "Source Pattern Popop"
+                // },
+                // {
+                //     key: "Test89",
+                //     text: "icon Preview Popup"
+                // },
+                // {
+                //     key: "Test88",
+                //     text: "icon Preview Popup (callback)"
+                // },
                 {
-                    key: "Test93",
-                    text: "abap 펑션 버젼 확인"
+                    key: "Test86",
+                    text: "모나코 에디터 테마 디자이너"
                 },
                 {
-                    key: "Test92",
-                    text: "abap syntax 버젼 확인"
-                },
-                {
-                    key: "Test91",
-                    text: "Source Pattern Popop"
-                },
-                {
-                    key: "Test89",
-                    text: "icon Preview Popup"
-                },
-                {
-                    key: "Test88",
-                    text: "icon Preview Popup (callback)"
-                }                
+                    key: "Test85",
+                    text: "모나코 에디터 스니펫 생성기"
+                },                
             ];
 
         return {
@@ -881,7 +889,15 @@
                 {
                     key: "Test97",
                     text: "개발툴"
-                }
+                },
+                {
+                    key: "Test86",
+                    text: "모나코 에디터 테마 디자이너"
+                },
+                {
+                    key: "Test85",
+                    text: "모나코 에디터 스니펫 생성기"
+                },
             ];
 
         return {
