@@ -4,7 +4,7 @@
 	const PATH = parent.PATH;
 	const FS = parent.FS;
 	const PATHINFO = parent.PATHINFO;
-	const IPCRENDERER = parent.IPCRENDERER;
+	const IPCRENDERER = parent.IPCRENDERER;    
 
 
 /******************************************************************************
@@ -21,6 +21,10 @@ sap.ui.getCore().loadLibrary("sap.ui.table");
  *  💖 DATA / ATTRIBUTE 선언부
  ******************************************************************************/
 
+    const USERINFO = parent.USERINFO;
+    const WSUTIL = parent.WSUTIL;
+
+    
 const 
     oContr          = {};
     oContr.msg      = {};
@@ -110,6 +114,9 @@ const
 /******************************************************************************
 *  💖 PRIVATE FUNCTION 선언부
 ******************************************************************************/
+    
+    // 로그인 언어별 메시지 구성
+    _setWsMsgTextConfig();
 
 
     /*************************************************************
@@ -480,7 +487,7 @@ const
 		// 스니펫 언어 선택을 하지 않았을 경우
 		if (!oSnippetData.snippet_langu) { 
 
-			var sMsg = "언어 선택은 필수 입니다!"; // [MSG]
+			var sMsg = oContr.msg.M349; // 언어 선택은 필수 입니다.
 
 			_showMsgToastCenter(sMsg);
 
@@ -500,7 +507,7 @@ const
 		// 스니펫 이름을 지정하지 않았을 경우
 		if (!oSnippetData.snippet_name) { 
 
-			var sMsg = "Snippet 이름은 필수 입니다!";	// [MSG]
+			var sMsg = oContr.msg.M350; // 스니펫 이름은 필수 입니다.
 
 			_showMsgToastCenter(sMsg);
 
@@ -518,7 +525,7 @@ const
 
 		if (/\s/.test(oSnippetData.snippet_name)) {
 
-			var sMsg = "Snippet 이름에 공백을 포함할 수 없습니다!";	// [MSG]
+			var sMsg = oContr.msg.M351; // 스니펫 이름에 공백이 포함될 수 없습니다.
 
 			_showMsgToastCenter(sMsg);
 
@@ -536,9 +543,8 @@ const
 
 		// 스니펫 코드를 입력하지 않았을 경우.
 		if (!oSnippetData.snippet_code) {
-
-			// [MSG]
-			var sMsg = "Snippet 코드를 입력하세요!";
+			
+			var sMsg = oContr.msg.M352;  // 스니펫의 코드를 입력하세요.
 
 			_showMsgToastCenter(sMsg);
 
@@ -701,6 +707,49 @@ const
 	} // end of _getSpippetListItemWithKey
 
 
+    /*************************************************************
+	 * @function - 로그인 언어별 메시지 구성
+	 *************************************************************/
+    function _setWsMsgTextConfig(){
+
+        let sLoginLangu = USERINFO.LANGU;
+
+        oContr.msg.M001 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "001");   // Language
+        oContr.msg.M003 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "003");   // Cancel
+        oContr.msg.M029 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "029");   // Delete
+        oContr.msg.M073 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "073");   // Name
+        oContr.msg.M080 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "080");   // 삭제하시겠습니까?        
+        oContr.msg.M176 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "176");   // Description
+
+        oContr.msg.M228 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "228");   // 문제가 지속될 경우, U4A 솔루션 팀에 문의하세요.
+        oContr.msg.M349 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "349");   // 언어 선택은 필수 입니다.
+        oContr.msg.M350 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "350");   // 스니펫 이름은 필수 입니다.
+        oContr.msg.M351 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "351");   // 스니펫 이름에 공백이 포함될 수 없습니다.
+        oContr.msg.M352 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "352");   // 스니펫의 코드를 입력하세요.
+        oContr.msg.M353 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "353");   // 이미 추가된 신규건이 존재합니다.
+        oContr.msg.M354 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "354");   // 입력한 정보는 초기화 됩니다. 계속하시겠습니까?
+        oContr.msg.M355 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "355");   // 저장하지 않은 신규 데이터가 있습니다.
+        oContr.msg.M356 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "356");   // 신규 항목을 무시하고 선택한 항목으로 이동하시겠습니까?
+        oContr.msg.M357 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "357");   // 스니펫 삭제 후 개인화 파일 업데이트 중 오류가 발생하였습니다!
+        oContr.msg.M358 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "358");   // 선택한 항목이 없습니다!
+        oContr.msg.M359 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "359");   // 스니펫 목록 중, 하나를 선택하세요.
+        oContr.msg.M360 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "360");   // 스니펫 리스트
+        oContr.msg.M361 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "361");   // 신규 생성
+        oContr.msg.M362 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "362");   // 스니펫 기본정보
+        oContr.msg.M363 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "363");   // 스니펫 이름
+        oContr.msg.M364 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "364");   // 스니펫 코드
+        oContr.msg.M365 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "365");   // 저장
+        oContr.msg.M366 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "366");   // 저장되었습니다!
+        oContr.msg.M367 = WSUTIL.getWsMsgClsTxt(sLoginLangu, "ZMSG_WS_COMMON_001", "367");   // 스니펫 데이터 저장 중 문제가 발생하였습니다!
+
+
+
+
+
+
+    } // end of _setWsMsgTextConfig
+
+
 /******************************************************************************
 * 💖  PUBLIC EVENT FUNCTION 선언부
 ******************************************************************************/
@@ -712,26 +761,6 @@ const
     oContr.onViewReady = async function () {
 
         await oContr.fn.setInit();
-
-        // TEST ------- Start
-
-        let aaa = [];
-
-		for (var i = 0; i < 100; i++) {
-
-			var bb = JSON.parse(JSON.stringify(oContr.types.TY_SNIPPET));
-			bb._key = getRandomKey(30);
-			bb.snippet_name = `name_${i}`;
-			bb.snippet_desc = `desc_${i}`;
-			bb.snippet_langu = "javascript";
-			bb.snippet_code = `snippet_code_${i}`;
-			
-			aaa.push(bb);
-		}
-
-		// oContr.oModel.setProperty('/T_SNIPPET_LIST', aaa);
-
-        // TEST ------ End
 
         oAPP.fn.setBusy("");
 
@@ -817,9 +846,7 @@ const
 	oContr.fn.onPressDetail = async function (oSelectItem) {
 
 		// Busy On
-		oContr.fn.setBusy(true);
-
-		console.log("onPressDetail");
+		oContr.fn.setBusy(true);		
 
 		// 특정 영역 포커스 시 생기는 CSS로 그려진 파란 테두리를 제거하기 위한 포커스 제거
 		_activeElementBlur();
@@ -873,8 +900,8 @@ const
 			// 스니펫 리스트에서 선택된 라인과 우측 스니펫 상세 데이터가 다를 경우에만 질문 팝업을 띄운다.
 			if (oBindData._key !== oRowData._key) {
 
-				// [MSG]
-				var sMsg = "신규 등록 데이터가 있습니다.\n\n 신규 등록 항목을 무시하고 선택한 항목으로 이동하시겠습니까?";
+                // 저장하지 않은 신규 데이터가 있습니다.\n\n신규 항목을 무시하고 선택한 항목으로 이동하시겠습니까?
+				var sMsg = oContr.msg.M355 + "\n\n" + oContr.msg.M356;
 
 				// Busy Off
 				oContr.fn.setBusy(false);
@@ -910,8 +937,7 @@ const
 		// 기존 데이터 중, 변경된 데이터가 존재할 경우 경고 메시지 출력
 		if (oSnippet._isnew === false && oSnippet._ischg === true) {
 
-			// [MSG]
-			var sMsg = "입력한 정보는 초기화 됩니다. 계속하시겠습니까?";
+            var sMsg = oContr.msg.M354;   // 입력한 정보는 초기화 됩니다. 계속하시겠습니까?  
 
 			// Busy Off
 			oContr.fn.setBusy(false);
@@ -984,9 +1010,7 @@ const
 		 */
 		let oIFDOM = document.getElementById("if-editor");
 
-		let lf_editor_load = function () {
-
-			console.log("editor load!!");
+		let lf_editor_load = function () {			
 
 			oIFDOM.removeEventListener("EDITOR_LOAD", lf_editor_load);
 
@@ -1036,9 +1060,7 @@ const
 	/*************************************************************
 	 * @function - [공통] 스니펫 입력 필드 UI의 Change 이벤트
 	 *************************************************************/
-	oContr.fn.onSnippetInfoChange = async function (oUI) {
-
-		console.log("onSnippetInfoChange");
+	oContr.fn.onSnippetInfoChange = async function (oUI) {		
 
 		let oSnippetData = oContr.oModel.getProperty("/S_SNIPPET");
 		if (!oSnippetData) {
@@ -1074,7 +1096,7 @@ const
 					break;
 				}			
 
-				var sMsg = "언어 선택은 필수 입니다!"; // [MSG]
+				var sMsg = oContr.msg.M349; // 언어 선택은 필수 입니다.
 				
 				oSnippetData._snippet_langu_vs = "Error";
 				oSnippetData._snippet_langu_vst = sMsg;				
@@ -1095,7 +1117,7 @@ const
 
 				if (/\s/.test(sValue)) { 
 
-					var sMsg = "Snippet 이름에 공백을 포함할 수 없습니다!";	// [MSG]
+					var sMsg = oContr.msg.M351; // 스니펫 이름에 공백이 포함될 수 없습니다.
 
 					_showMsgToastCenter(sMsg);
 
@@ -1127,9 +1149,7 @@ const
 	/*************************************************************
 	 * @function - 에디터가 로드가 된 이후 호출 되는 function
 	 *************************************************************/
-	oContr.fn.onFrameLoadEditor = function () {
-
-		console.log("onFrameLoadEditor");
+	oContr.fn.onFrameLoadEditor = function () {		
 
 	}; // end of oContr.fn.onFrameLoadEditor
 
@@ -1145,8 +1165,7 @@ const
 		let oNewSnippet = aSnippetList.find(e => e._isnew === true);
 		if (oNewSnippet) {
 
-			// [MSG]
-			let sMsg = "이미 추가된 신규건이 존재합니다.";
+			let sMsg = oContr.msg.M353; // 이미 추가된 신규건이 존재합니다.
 
 			_showMsgToastCenter(sMsg);
 
@@ -1164,8 +1183,7 @@ const
 		// 변경된 데이터가 존재할 경우 경고 메시지 출력
 		if (oSnippet._ischg === true) {
 
-			// [MSG]
-			var sMsg = "입력한 정보는 초기화 됩니다. 계속하시겠습니까?";
+			var sMsg = oContr.msg.M354;   // 입력한 정보는 초기화 됩니다. 계속하시겠습니까?  
 
 			let sAction = await _showMsgBoxConfirm(sMsg);
 
@@ -1242,8 +1260,7 @@ const
 		// 삭제라인 선택 표시			
 		_setSelectedSnippetItem(sItemKey);
 
-		// [MSG]
-		let sMsg = "삭제하시겠습니까?";
+		let sMsg = oContr.msg.M080; // 삭제하시겠습니까?
 		let sAction = await _showMsgBoxConfirm(sMsg);
 		if (sAction === "CANCEL") {
 			return;
@@ -1259,8 +1276,8 @@ const
 		var oResult = await _saveP13nSnippetListData(aSnippetList);
 		if(oResult.RETCD === "E"){
 
-			// [MSG]
-			var sErrMsg = "스니펫 삭제 후 개인화 파일 업데이트 중 오류가 발생하였습니다!\n\n문제가 지속될 경우 U4A 기술지원팀에 문의하세요.";			
+			// 스니펫 삭제 후 개인화 파일 업데이트 중 오류가 발생하였습니다!\n\n문제가 지속될 경우, U4A 솔루션 팀에 문의하세요.
+			var sErrMsg = oContr.msg.M357 + "\n\n" +  oContr.msg.M228;
 
 			sap.m.MessageBox.error(sErrMsg);
 
@@ -1352,8 +1369,8 @@ const
         let oSaveResult = await _saveP13nSnippetData(oSaveData);
 		if(oSaveResult.RETCD === "E"){
 
-			// [MSG]
-			let sErrMsg = "스니펫 데이터 저장 중 문제가 발생하였습니다! 문제가 지속될 경우 U4A 기술지원팀으로 문의하세요.";
+			// 스니펫 데이터 저장 중 문제가 발생하였습니다!\n\n문제가 지속될 경우, U4A 솔루션 팀에 문의하세요.
+			let sErrMsg = oContr.msg.M367 + "\n\n" + oContr.msg.M228;
 
 			sap.m.MessageBox.error(sErrMsg);
 
@@ -1371,8 +1388,7 @@ const
 
 		oContr.oModel.refresh();
 
-		// [MSG]
-		var sMsg = "저장하였습니다!";
+		var sMsg = oContr.msg.M366; // 저장되었습니다!
 
 		sap.m.MessageToast.show(sMsg, { my: "center center", at: "center center" });
 
@@ -1397,8 +1413,7 @@ const
 
 		if (oSnippetData._ischg === true) {
 
-			// [MSG]
-			var sMsg = "입력한 정보는 초기화 됩니다. 계속하시겠습니까?";
+			var sMsg = oContr.msg.M354; // 입력한 정보는 초기화 됩니다. 계속하시겠습니까?
 
 			let sAction = await _showMsgBoxConfirm(sMsg);
 

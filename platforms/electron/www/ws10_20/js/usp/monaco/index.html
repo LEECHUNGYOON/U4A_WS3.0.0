@@ -164,9 +164,6 @@
         // 현재 BROWSKEY 정보를 저장해둔다.
         oAPP.attr.BROWSKEY = GRAND_FATHER.getBrowserKey();
 
-        // 스니펫 변경 신호를 감지할 BroadCast 객체
-        oAPP.attr.SNIPPET_CHANGE_BROADCAST = new BroadcastChannel(`broadcast-snippet-change`);
-
         // 부모와 통신하기 위한 커스텀 이벤트용 DOM
         let sCustDomId = "IF_USP_EDITOR";
 
@@ -190,7 +187,7 @@
 
             if (typeof oParams?.port === "undefined") { return; }
 
-            console.log("onMessageInit");
+            // console.log("onMessageInit");
 
             oAPP.MESSAGE_CHANEL_PORT = oParams.port;
 
@@ -282,7 +279,10 @@
 
                 case "snippet_change": 
 
-                    console.log("monaco_editor_snippet_change");
+                    // console.log("monaco_editor_snippet_change");
+
+                    // Language에 해당하는 스니펫을 구성
+                    _setSnippetConfig(oAPP.attr.snippetLanguage);
 
                     return;
 

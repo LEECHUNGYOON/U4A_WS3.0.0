@@ -18,6 +18,7 @@
         PATH = parent.PATH,
         RANDOM = parent.RANDOM,
         CURRWIN = REMOTE.getCurrentWindow(),
+        USERINFO = parent.USERINFO,
         PATHINFO = parent.require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
         WSUTIL = parent.require(PATHINFO.WSUTIL),
         MIMETYPES = parent.MIMETYPES;
@@ -127,82 +128,82 @@
     /************************************************************************
      * [WS30] Editor 영역에 zoom 이벤트
      ************************************************************************/    
-    oAPP.fn.setCodeEditorZoomEvent = function(bIsEnable){
+    // oAPP.fn.setCodeEditorZoomEvent = function(bIsEnable){
 
-        let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
-            oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
+    //     let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
+    //         oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
 
-        // 에디터가 둘중에 하나라도 없다면 빠져나감.
-        if (!oCodeEditor1 || !oCodeEditor2) {
-            return;
-        }
+    //     // 에디터가 둘중에 하나라도 없다면 빠져나감.
+    //     if (!oCodeEditor1 || !oCodeEditor2) {
+    //         return;
+    //     }
 
-        let oEditorDom1 = oCodeEditor1?._oEditorDomRef,
-            oEditorDom2 = oCodeEditor2?._oEditorDomRef;
+    //     let oEditorDom1 = oCodeEditor1?._oEditorDomRef,
+    //         oEditorDom2 = oCodeEditor2?._oEditorDomRef;
 
-        // 에디터가 둘중에 하나라도 없다면 빠져나감.
-        if (!oEditorDom1 || !oEditorDom2) {
-            return;
-        }
+    //     // 에디터가 둘중에 하나라도 없다면 빠져나감.
+    //     if (!oEditorDom1 || !oEditorDom2) {
+    //         return;
+    //     }
 
-        // 에디터1에 휠 이벤트 function이 있을 경우 삭제하고 휠 이벤트도 삭제한다.
-        if(!!oCodeEditor1.data("zoomEvent")){
-            oEditorDom1.removeEventListener("wheel", oCodeEditor1.data("zoomEvent"));
-            oCodeEditor1.data("zoomEvent", null);
-        }
+    //     // 에디터1에 휠 이벤트 function이 있을 경우 삭제하고 휠 이벤트도 삭제한다.
+    //     if(!!oCodeEditor1.data("zoomEvent")){
+    //         oEditorDom1.removeEventListener("wheel", oCodeEditor1.data("zoomEvent"));
+    //         oCodeEditor1.data("zoomEvent", null);
+    //     }
 
-        // 에디터2에 휠 이벤트 function이 있을 경우 삭제하고 휠 이벤트도 삭제한다.
-        if(!!oCodeEditor2.data("zoomEvent")){
-            oEditorDom2.removeEventListener("wheel", oCodeEditor2.data("zoomEvent"));
-            oCodeEditor2.data("zoomEvent", null);
-        }
+    //     // 에디터2에 휠 이벤트 function이 있을 경우 삭제하고 휠 이벤트도 삭제한다.
+    //     if(!!oCodeEditor2.data("zoomEvent")){
+    //         oEditorDom2.removeEventListener("wheel", oCodeEditor2.data("zoomEvent"));
+    //         oCodeEditor2.data("zoomEvent", null);
+    //     }
 
-        // zoom 이벤트를 해제 할 경우에는 여기서 리턴한다.
-        if(bIsEnable === false){
-            return;
-        }
+    //     // zoom 이벤트를 해제 할 경우에는 여기서 리턴한다.
+    //     if(bIsEnable === false){
+    //         return;
+    //     }
 
-        // zoom Event Callback
-        let _fnZoomEvent = function(oEvent){       
+    //     // zoom Event Callback
+    //     let _fnZoomEvent = function(oEvent){       
 
-            let that = this;
+    //         let that = this;
 
-            let oEditor = that?._oEditor || undefined;
-            if(!oEditor){
-                return;
-            }
+    //         let oEditor = that?._oEditor || undefined;
+    //         if(!oEditor){
+    //             return;
+    //         }
 
-            // 컨트롤 키를 눌렀을 경우에만 에디터 폰트 크기를 확대 및 축소한다.
-            if (oEvent.ctrlKey) {            
+    //         // 컨트롤 키를 눌렀을 경우에만 에디터 폰트 크기를 확대 및 축소한다.
+    //         if (oEvent.ctrlKey) {            
                 
-                // 이벤트 상위 전파 방지
-                oEvent.stopPropagation();
+    //             // 이벤트 상위 전파 방지
+    //             oEvent.stopPropagation();
 
-                let iFontSize = parseInt(oEditor.getFontSize(), 10);
+    //             let iFontSize = parseInt(oEditor.getFontSize(), 10);
                 
-                iFontSize += oEvent.deltaY < 0 ? 1 : -1;
+    //             iFontSize += oEvent.deltaY < 0 ? 1 : -1;
                 
-                iFontSize = Math.max(10, Math.min(40, iFontSize)); // 최소 10px, 최대 40px 제한
+    //             iFontSize = Math.max(10, Math.min(40, iFontSize)); // 최소 10px, 최대 40px 제한
                 
-                oEditor.setFontSize(iFontSize + "px");
+    //             oEditor.setFontSize(iFontSize + "px");
 
-                return;
+    //             return;
 
-            }
+    //         }
 
-            oEditor.session.setScrollTop(oEditor.session.getScrollTop() + oEvent.deltaY);
+    //         oEditor.session.setScrollTop(oEditor.session.getScrollTop() + oEvent.deltaY);
 
-        }; // end of _fnZoomEvent
+    //     }; // end of _fnZoomEvent
 
-        // CodeEditor에 줌 이벤트 콜백 function 저장
-        oCodeEditor1.data("zoomEvent", _fnZoomEvent.bind(oCodeEditor1));
-        oCodeEditor2.data("zoomEvent", _fnZoomEvent.bind(oCodeEditor2));
+    //     // CodeEditor에 줌 이벤트 콜백 function 저장
+    //     oCodeEditor1.data("zoomEvent", _fnZoomEvent.bind(oCodeEditor1));
+    //     oCodeEditor2.data("zoomEvent", _fnZoomEvent.bind(oCodeEditor2));
 
-        // CodeEditor Dom에 줌 이벤트 걸기
-        oEditorDom1.addEventListener("wheel", oCodeEditor1.data("zoomEvent"));
-        oEditorDom2.addEventListener("wheel", oCodeEditor2.data("zoomEvent"));
+    //     // CodeEditor Dom에 줌 이벤트 걸기
+    //     oEditorDom1.addEventListener("wheel", oCodeEditor1.data("zoomEvent"));
+    //     oEditorDom2.addEventListener("wheel", oCodeEditor2.data("zoomEvent"));
 
-    }; // end of oAPP.fn.setCodeEditorZoomEvent
+    // }; // end of oAPP.fn.setCodeEditorZoomEvent
 
 
 
@@ -227,82 +228,82 @@
     /************************************************************************
      * [WS30] Code Editor Key Press Callback Event
      ************************************************************************/
-    oAPP.fn.fnAttachKeyPressEventCodeEditorWs30 = () => {
+    // oAPP.fn.fnAttachKeyPressEventCodeEditorWs30 = () => {
 
-        if (event && event.keyCode) {
+    //     if (event && event.keyCode) {
 
-            // 붙여넣기로 입력한 경우 APP Change 플래그 적용
-            if (event.ctrlKey && event.keyCode == 86) {
+    //         // 붙여넣기로 입력한 경우 APP Change 플래그 적용
+    //         if (event.ctrlKey && event.keyCode == 86) {
 
-                // 앱 변경 사항 플래그 설정
-                oAPP.fn.setAppChangeWs30("X");
+    //             // 앱 변경 사항 플래그 설정
+    //             oAPP.fn.setAppChangeWs30("X");
 
-                zconsole.log("codeeditor change!!");
+    //             zconsole.log("codeeditor change!!");
 
-                // code editor keyPress 이벤트 해제
-                fnCodeEditorKeyPressEvent("");
+    //             // code editor keyPress 이벤트 해제
+    //             fnCodeEditorKeyPressEvent("");
 
-                return;
-            }
+    //             return;
+    //         }
 
-            if (event.ctrlKey || event.altKey) {
-                return;
-            }
+    //         if (event.ctrlKey || event.altKey) {
+    //             return;
+    //         }
 
-            zconsole.log(event.code);
+    //         zconsole.log(event.code);
 
-            switch (event.keyCode) {
-                case 16: // Shift
-                case 17: // Ctrl
-                case 18: // Alt
-                case 19: // Pause
-                case 20: // Caps Lock
-                case 25: // ControlRight
+    //         switch (event.keyCode) {
+    //             case 16: // Shift
+    //             case 17: // Ctrl
+    //             case 18: // Alt
+    //             case 19: // Pause
+    //             case 20: // Caps Lock
+    //             case 25: // ControlRight
 
-                case 27: // esc
-                case 33: // Page Up
-                case 34: // Page Down
-                case 35: // End
-                case 36: // Home
-                case 37: // Arrow Left
-                case 38: // Arrow Up
-                case 39: // Arrow Right
-                case 40: // Arrow Down
+    //             case 27: // esc
+    //             case 33: // Page Up
+    //             case 34: // Page Down
+    //             case 35: // End
+    //             case 36: // Home
+    //             case 37: // Arrow Left
+    //             case 38: // Arrow Up
+    //             case 39: // Arrow Right
+    //             case 40: // Arrow Down
 
-                case 45: // Insert
+    //             case 45: // Insert
 
-                case 91: // Windows
-                case 93: // ContextMenu
+    //             case 91: // Windows
+    //             case 93: // ContextMenu
 
-                case 112: // F1
-                case 113: // F2
-                case 114: // F3
-                case 115: // F4
-                case 116: // F5
-                case 117: // F6
-                case 118: // F7
-                case 119: // F8
-                case 120: // F9
-                case 121: // F10
-                case 122: // F11
-                case 123: // F12
+    //             case 112: // F1
+    //             case 113: // F2
+    //             case 114: // F3
+    //             case 115: // F4
+    //             case 116: // F5
+    //             case 117: // F6
+    //             case 118: // F7
+    //             case 119: // F8
+    //             case 120: // F9
+    //             case 121: // F10
+    //             case 122: // F11
+    //             case 123: // F12
 
-                case 144: // Num Lock
-                case 145: // ScrollLock
+    //             case 144: // Num Lock
+    //             case 145: // ScrollLock
 
-                    return;
+    //                 return;
 
-            }
+    //         }
 
-        }
+    //     }
 
-        // 앱 변경 사항 플래그 설정
-        oAPP.fn.setAppChangeWs30("X");
+    //     // 앱 변경 사항 플래그 설정
+    //     oAPP.fn.setAppChangeWs30("X");
 
-        // code editor keyPress 이벤트 해제
-        fnCodeEditorKeyPressEvent("");
+    //     // code editor keyPress 이벤트 해제
+    //     fnCodeEditorKeyPressEvent("");
 
-    }; // end of oAPP.fn.fnAttachKeyPressEventCodeEditorWs30
+    // }; // end of oAPP.fn.fnAttachKeyPressEventCodeEditorWs30
 
     /************************************************************************
      * [WS30] 초기 화면 그리기
@@ -1949,8 +1950,8 @@
                 `=> 에디터에서 선택한 테마 정보를 개인화 폴더에 저장하는 과정에서 오류 발생!!`,
             ];
             
-            // [MSG]
-            let sErrMsg = "선택한 테마 정보를 개인화 저장 하는 과정에 문제가 발생하였습니다\n\n문제가 지속될 경우 U4A 기술지원팀으로 문의하세요.";
+            // 선택한 테마 정보를 개인화 저장 하는 과정에 문제가 발생하였습니다.\n\n문제가 지속될 경우, U4A 솔루션 팀에 문의하세요";
+            let sErrMsg = oAPP.msg.M347 + "\n\n" + oAPP.msg.M228;
 
             console.error(aConsoleMsg.join("\r\n"));
             console.error(error);
@@ -2260,111 +2261,111 @@
     /************************************************************************
      * [WS30] Codeeditor Keyup Event
      ************************************************************************/
-    function _fnCodeeditorKeyupEvent(oEvent) {
+    // function _fnCodeeditorKeyupEvent(oEvent) {
 
-        let oCurrTarget = oEvent.currentTarget;
-        if (!oCurrTarget) {
-            return;
-        }
+    //     let oCurrTarget = oEvent.currentTarget;
+    //     if (!oCurrTarget) {
+    //         return;
+    //     }
 
-        let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
-            oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
+    //     let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
+    //         oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
 
-        // 에디터가 둘중에 하나라도 없다면 빠져나감.
-        if (!oCodeEditor1 || !oCodeEditor2) {
-            return;
-        }
+    //     // 에디터가 둘중에 하나라도 없다면 빠져나감.
+    //     if (!oCodeEditor1 || !oCodeEditor2) {
+    //         return;
+    //     }
 
-        let oEditor1 = oCodeEditor1._oEditor,
-            oEditor2 = oCodeEditor2._oEditor;
+    //     let oEditor1 = oCodeEditor1._oEditor,
+    //         oEditor2 = oCodeEditor2._oEditor;
 
-        // 현재 커서의 위치가 어떤 에디터인지 확인
-        let $oCodeeditor1 = $(oCurrTarget).closest(".u4aUspCodeeditor1"),
-            $oCodeeditor2 = $(oCurrTarget).closest(".u4aUspCodeeditor2");
+    //     // 현재 커서의 위치가 어떤 에디터인지 확인
+    //     let $oCodeeditor1 = $(oCurrTarget).closest(".u4aUspCodeeditor1"),
+    //         $oCodeeditor2 = $(oCurrTarget).closest(".u4aUspCodeeditor2");
 
-        // 현재 키 입력한 위치가 왼쪽 에디터에 있었을 경우
-        if ($oCodeeditor1.length !== 0) {
+    //     // 현재 키 입력한 위치가 왼쪽 에디터에 있었을 경우
+    //     if ($oCodeeditor1.length !== 0) {
 
-            let value = oEditor1.getValue();
+    //         let value = oEditor1.getValue();
 
-            oEditor2.setValue(value, 1);
+    //         oEditor2.setValue(value, 1);
 
-            return;
+    //         return;
 
-        }
+    //     }
 
-        // 현재 키 입력한 위치가 오른쪽 에디터에 있었을 경우
-        if ($oCodeeditor2.length !== 0) {
+    //     // 현재 키 입력한 위치가 오른쪽 에디터에 있었을 경우
+    //     if ($oCodeeditor2.length !== 0) {
 
-            let value = oEditor2.getValue();
+    //         let value = oEditor2.getValue();
 
-            oEditor1.setValue(value, 1);
+    //         oEditor1.setValue(value, 1);
 
-            return;
+    //         return;
 
-        }
+    //     }
 
-    } // end of _fnCodeeditorKeyupEvent
+    // } // end of _fnCodeeditorKeyupEvent
 
     /************************************************************************
      * [WS30] Codeeditor ContextMenu Event
      ************************************************************************/
-    async function _fnCodeeditorContextMenuEvent(oEvent) {
+    // async function _fnCodeeditorContextMenuEvent(oEvent) {
 
-        // 컨트롤키 누르고 마우스 우클릭이면 전체 팝업을 띄운다.
-        if (oEvent.ctrlKey) {
+    //     // 컨트롤키 누르고 마우스 우클릭이면 전체 팝업을 띄운다.
+    //     if (oEvent.ctrlKey) {
 
-            oAPP.fn.fnSourcePatternPopupOpener(); // [async]
+    //         oAPP.fn.fnSourcePatternPopupOpener(); // [async]
 
-            return;
-        }
+    //         return;
+    //     }
 
-        /**
-         * 원본
-         */
-        let oCurrTarget = oEvent.currentTarget;
-        if (!oCurrTarget) {
-            return;
-        }
+    //     /**
+    //      * 원본
+    //      */
+    //     let oCurrTarget = oEvent.currentTarget;
+    //     if (!oCurrTarget) {
+    //         return;
+    //     }
 
-        let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
-            oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
+    //     let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
+    //         oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
 
-        // 에디터가 둘중에 하나라도 없다면 빠져나감.
-        if (!oCodeEditor1 || !oCodeEditor2) {
-            return;
-        }
+    //     // 에디터가 둘중에 하나라도 없다면 빠져나감.
+    //     if (!oCodeEditor1 || !oCodeEditor2) {
+    //         return;
+    //     }
 
-        // JSON으로 저장된 USP 기본패턴 & 커스텀패턴 정보를 모델 바인딩 한다.
-        await oAPP.fn.fnModelBindingUspPattern(); // #[ws_usp_01.js]
+    //     // JSON으로 저장된 USP 기본패턴 & 커스텀패턴 정보를 모델 바인딩 한다.
+    //     await oAPP.fn.fnModelBindingUspPattern(); // #[ws_usp_01.js]
 
-        // 현재 커서의 위치가 어떤 에디터인지 확인
-        let $oCodeeditor1 = $(oCurrTarget).closest(".u4aUspCodeeditor1"),
-            $oCodeeditor2 = $(oCurrTarget).closest(".u4aUspCodeeditor2");
+    //     // 현재 커서의 위치가 어떤 에디터인지 확인
+    //     let $oCodeeditor1 = $(oCurrTarget).closest(".u4aUspCodeeditor1"),
+    //         $oCodeeditor2 = $(oCurrTarget).closest(".u4aUspCodeeditor2");
 
-        // 현재 키 입력한 위치가 왼쪽 에디터에 있었을 경우
-        if ($oCodeeditor1.length !== 0) {
+    //     // 현재 키 입력한 위치가 왼쪽 에디터에 있었을 경우
+    //     if ($oCodeeditor1.length !== 0) {
 
-            setTimeout(() => {
-                oAPP.fn.fnUspCodeeditorContextMenuOpen(oEvent, oCodeEditor1); // #[ws_usp_01.js]
-            }, 0);
+    //         setTimeout(() => {
+    //             oAPP.fn.fnUspCodeeditorContextMenuOpen(oEvent, oCodeEditor1); // #[ws_usp_01.js]
+    //         }, 0);
 
-            return;
+    //         return;
 
-        }
+    //     }
 
-        // 현재 키 입력한 위치가 오른쪽 에디터에 있었을 경우
-        if ($oCodeeditor2.length !== 0) {
+    //     // 현재 키 입력한 위치가 오른쪽 에디터에 있었을 경우
+    //     if ($oCodeeditor2.length !== 0) {
 
-            setTimeout(() => {
-                oAPP.fn.fnUspCodeeditorContextMenuOpen(oEvent, oCodeEditor2); // #[ws_usp_01.js]
-            }, 0);
+    //         setTimeout(() => {
+    //             oAPP.fn.fnUspCodeeditorContextMenuOpen(oEvent, oCodeEditor2); // #[ws_usp_01.js]
+    //         }, 0);
 
-            return;
+    //         return;
 
-        }
+    //     }
 
-    } // end of _fnCodeeditorContextMenuEvent
+    // } // end of _fnCodeeditorContextMenuEvent
 
     /************************************************************************
      * [WS30] Codeeditor splitbar 더블클릭 이벤트
@@ -3825,11 +3826,17 @@
         // 우측 에디터 영역을 메인 페이지로 이동
         fnOnMoveToPage("USP10");
 
+        // 기존 에디터 페이지를 죽인다.
+        var oUSP_EDITOR_PAGE = oAPP.ui.USP_EDITOR_PAGE;
+        if(oUSP_EDITOR_PAGE){            
+            oUSP_EDITOR_PAGE.destroy();
+        }
+
         // code editor KeyPress 이벤트 설정
-        fnCodeEditorKeyPressEvent("");
+        // fnCodeEditorKeyPressEvent("");
 
         // 에디터에 마우스 휠 이벤트를 해제한다. 
-        oAPP.fn.setCodeEditorZoomEvent(false); // #[ ws_usp.js ]
+        // oAPP.fn.setCodeEditorZoomEvent(false); // #[ ws_usp.js ]
 
         var oAppInfo = fnGetAppInfo();
 
@@ -4388,7 +4395,7 @@
             oAPP.fn.setAppChangeWs30("");
 
             // code editor key press 이벤트 설정
-            fnCodeEditorKeyPressEvent("X");
+            // fnCodeEditorKeyPressEvent("X");
 
             // 좌측 Usp Tree 정보에 변경한 내역이 있을 경우 마지막 저장한 상태로 복원한다.
             oAPP.fn.fnResetUspTree();
@@ -4779,7 +4786,7 @@
      * [WS30] 좌측에 선택된 USP 라인 데이터 구하기     
      ******************************************************/
     async function _fnLineSelectCb(oResult, xhr) {
-
+ 
         // Blob를 text로 변환
         var oJsonResult = await new Promise((resolve) => {
             var reader = new FileReader();
@@ -4800,8 +4807,8 @@
                     `=> Blob 타입의 USP 데이터를 Text로 변환하다가 오류 발생!! `,
                 ];
                 
-                // [MSG]
-                let sErrMsg = "USP 데이터를 Parsing 하는 도중에 문제가 발생하였습니다\n\n문제가 지속될 경우 U4A 기술지원팀으로 문의하세요.";
+                // USP 데이터를 Parsing 하는 도중에 문제가 발생하였습니다\n\n문제가 지속될 경우 U4A 기술지원팀으로 문의하세요.
+                let sErrMsg = oAPP.msg.M348 + "\n\n" + oAPP.msg.M228;
 
                 console.error(aConsoleMsg.join("\r\n"));
                 console.error(error);
@@ -4862,8 +4869,8 @@
                     `=> Multipart 형태의 USP 데이터를 Text로 변환하다가 오류 발생!! `,
                 ];
                 
-                // [MSG]
-                let sErrMsg = "USP 데이터를 Parsing 하는 도중에 문제가 발생하였습니다\n\n문제가 지속될 경우 U4A 기술지원팀으로 문의하세요.";
+                // USP 데이터를 Parsing 하는 도중에 문제가 발생하였습니다\n\n문제가 지속될 경우 U4A 기술지원팀으로 문의하세요.
+                let sErrMsg = oAPP.msg.M348 + "\n\n" + oAPP.msg.M228;
 
                 console.error(aConsoleMsg.join("\r\n"));
                 console.error(error);
@@ -4901,8 +4908,8 @@
                 `=> Text 형태의 USP 데이터를 JSON Parse 하다가 오류 발생!! `,
             ];
             
-            // [MSG]
-            let sErrMsg = "USP 데이터를 Parsing 하는 도중에 문제가 발생하였습니다\n\n문제가 지속될 경우 U4A 기술지원팀으로 문의하세요.";
+            // USP 데이터를 Parsing 하는 도중에 문제가 발생하였습니다\n\n문제가 지속될 경우 U4A 기술지원팀으로 문의하세요.
+            let sErrMsg = oAPP.msg.M348 + "\n\n" + oAPP.msg.M228;
 
             console.error(aConsoleMsg.join("\r\n"));
             console.error(error);
@@ -4931,8 +4938,8 @@
                 `=> Text 형태의 USP 데이터를 JSON Parse 했는데 Object 타입이 아님!! `,
             ];
             
-            // [MSG]
-            let sErrMsg = "USP 데이터를 Parsing 하는 도중에 문제가 발생하였습니다\n\n문제가 지속될 경우 U4A 기술지원팀으로 문의하세요.";
+            // USP 데이터를 Parsing 하는 도중에 문제가 발생하였습니다\n\n문제가 지속될 경우 U4A 기술지원팀으로 문의하세요.
+            let sErrMsg = oAPP.msg.M348 + "\n\n" + oAPP.msg.M228;
 
             console.error(aConsoleMsg.join("\r\n"));
             console.error(error);
@@ -6242,7 +6249,7 @@
         oAPP.fn.setAppChangeWs30("");
 
         // code editor key press 이벤트 설정
-        fnCodeEditorKeyPressEvent("X");
+        // fnCodeEditorKeyPressEvent("X");
 
     } // end of _fnSaveCancel
 
@@ -6962,7 +6969,7 @@
         sap.ui.getCore().getModel().refresh();
 
         // code editor KeyPress 이벤트 설정
-        fnCodeEditorKeyPressEvent("X");
+        // fnCodeEditorKeyPressEvent("X");
 
 
         // 저장처리 이후의 수행할 프로세스 분기
@@ -7394,7 +7401,7 @@
             APPCOMMON.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
 
             // code editor KeyPress 이벤트 해제
-            fnCodeEditorKeyPressEvent("");
+            // fnCodeEditorKeyPressEvent("");
 
             // 30번 페이지 레이아웃 초기 설정
             oAPP.fn.fnOnInitLayoutSettingsWs30();
@@ -7466,7 +7473,7 @@
             APPCOMMON.fnShowFloatingFooterMsg("S", sCurrPage, sMsg);
 
             // code editor KeyPress 이벤트 설정
-            fnCodeEditorKeyPressEvent("X");
+            // fnCodeEditorKeyPressEvent("X");
 
             // 30번 페이지 레이아웃 초기 설정
             oAPP.fn.fnOnInitLayoutSettingsWs30();
@@ -7567,33 +7574,33 @@
      * @param {Char1} IsAttach (X: true, '': false)
      * - Application Change 모드 여부
      **************************************************************************/
-    function fnCodeEditorKeyPressEvent(IsAttach) {
+    // function fnCodeEditorKeyPressEvent(IsAttach) {
 
-        let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor");
-        if (!oCodeEditor1) {
-            return;
-        }
+    //     let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor");
+    //     if (!oCodeEditor1) {
+    //         return;
+    //     }
 
-        let oCodeEditor2 = oAPP.attr.oCodeEditor2;
-        if (!oCodeEditor2) {
-            return;
-        }
+    //     let oCodeEditor2 = oAPP.attr.oCodeEditor2;
+    //     if (!oCodeEditor2) {
+    //         return;
+    //     }
 
-        let oEditorDom1 = oCodeEditor1._oEditor.textInput.getElement(),
-            oEditorDom2 = oCodeEditor2._oEditor.textInput.getElement();
+    //     let oEditorDom1 = oCodeEditor1._oEditor.textInput.getElement(),
+    //         oEditorDom2 = oCodeEditor2._oEditor.textInput.getElement();
 
-        if (IsAttach == "X") {
+    //     if (IsAttach == "X") {
 
-            oEditorDom1.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
-            oEditorDom2.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+    //         oEditorDom1.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+    //         oEditorDom2.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
 
-            return;
-        }
+    //         return;
+    //     }
 
-        oEditorDom1.removeEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
-        oEditorDom2.removeEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+    //     oEditorDom1.removeEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
+    //     oEditorDom2.removeEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
 
-    } // end of fnCodeEditorKeyPressEvent
+    // } // end of fnCodeEditorKeyPressEvent
 
 
     /**************************************************************************

@@ -2212,7 +2212,7 @@ module.exports = {
         // Custom 테마 루트 경로
         static _getCustomThemeRootPath(){
 
-            return PATH.join(PATHINFO.P13N_ROOT, "monaco", "theme");
+            return PATH.join(PATHINFO.P13N_ROOT, "monaco", "theme", process.USERINFO.SYSID, "usp_main", "list");
 
         }
 
@@ -2230,13 +2230,24 @@ module.exports = {
 
                 var aThemes = FS.readdirSync(sPath);
 
+                if(Array.isArray(aThemes) === false){
+                    return [];
+                }
+        
+                if(aThemes.length === 0){
+                    return [];
+                }
+
             } catch (error) {
 
                 // 콘솔용 오류 메시지
                 var aConsoleMsg = [             
                     `[PATH]: www/ws10_20/js/ws_util.js`,
                     `=> MONACO_EDITOR.getStandardThemeList`,
-                    `=> 에디터의 스탠다드 테마 폴더가 존재하지 않음!!`,     
+                    `=> var aThemes = FS.readdirSync(sPath)`,
+                    `=> try...catch error`,
+                    `=> sStandardThemeRootPath: ${sPath}`,
+                    `=> 에디터의 스탠다드 테마 폴더의 하위 데이터 읽는 도중 문제 발생!!`,     
                 ];
                 
                 console.error(aConsoleMsg.join("\r\n"));
@@ -2246,6 +2257,9 @@ module.exports = {
                 return [];
 
             }
+
+            // 스탠다드 테마 폴더 중 확장자가 json 인 것만 추출하여 리턴
+            aThemes = aThemes.filter(e => e && PATH.extname(e) === ".json");
 
             return aThemes;
 
@@ -2264,21 +2278,36 @@ module.exports = {
 
                 var aThemes = FS.readdirSync(sPath);
 
+                if(Array.isArray(aThemes) === false){
+                    return [];
+                }
+        
+                if(aThemes.length === 0){
+                    return [];
+                }
+
             } catch (error) {
 
-                // // 콘솔용 오류 메시지
-                // var aConsoleMsg = [             
-                //     `[PATH]: www/ws10_20/js/usp/ws_usp.js`,
-                //     `=> _onEditorThemeSelectClick`,
-                //     `=> 에디터의 스탠다드 테마 폴더가 존재하지 않음!!`,     
-                // ];
-
-                // console.error(aConsoleMsg.join("\r\n"));
-                // console.trace();
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [             
+                    `[PATH]: www/ws10_20/js/ws_util.js`,
+                    `=> MONACO_EDITOR.getCustomThemeList`,
+                    `=> var aThemes = FS.readdirSync(sPath)`,
+                    `=> try...catch error`,
+                    `=> sCustomThemeRootPath: ${sPath}`,
+                    `=> 에디터의 Custom 테마 폴더의 하위 데이터 읽는 도중 문제 발생!!`,     
+                ];
+                
+                console.error(aConsoleMsg.join("\r\n"));
+                console.error(error);                
+                console.trace();
                     
                 return [];
 
             }
+
+            // Custom 테마 폴더 중 확장자가 json 인 것만 추출하여 리턴
+            aThemes = aThemes.filter(e => e && PATH.extname(e) === ".json");
 
             return aThemes;
 
@@ -2312,6 +2341,21 @@ module.exports = {
                 return { themeName: sThemeName, themeInfo: oThemeInfo };
 
             } catch (error) {
+
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [             
+                    `[PATH]: www/ws10_20/js/ws_util.js`,
+                    `=> MONACO_EDITOR._getStandardThemeInfo`,
+                    `=> var sThemeInfo = FS.readFileSync(sThemeFilePath, { encoding: "utf-8" })`,
+                    `=> try...catch error`,
+                    `=> sThemeName: ${sThemeName}`,
+                    `=> sThemeFilePath: ${sThemeFilePath}`,
+                    `=> 스탠다드 테마 정보 `,     
+                ];
+                
+                console.error(aConsoleMsg.join("\r\n"));
+                console.error(error);                
+                console.trace();
 
                 return;
 
@@ -2379,12 +2423,45 @@ module.exports = {
 
         }
 
+        // USP Editor 테마 목록 구하기
         static getThemeList(){
 
             let aThemeList = [];
 
-            let aStandardThemeList = this.getStandardThemeList();
-            
+            // USP Editor의 Custom 테마 목록 구하기
+            let aCustomThemeList = this.getCustomThemeList();
+
+            if(aCustomThemeList.length !== 0){
+
+                for(var sTheme of aCustomThemeList){
+    
+                    let oThemeInfo = {};
+        
+                    if(!sTheme){
+                        continue;
+                    }
+        
+                    let oParseInfo = PATH.parse(sTheme);
+                    if(!oParseInfo){
+                        continue;
+                    }
+        
+                    let sThemeName = oParseInfo?.name || "";
+                    if(!sThemeName){
+                        continue;
+                    }
+        
+                    oThemeInfo.groupName = "person";
+                    oThemeInfo.name      = sThemeName;
+        
+                    aThemeList.push(oThemeInfo);
+        
+                }
+    
+            }
+
+            // USP Editor의 Standard 테마 목록 구하기
+            let aStandardThemeList = this.getStandardThemeList();            
             if(aStandardThemeList.length !== 0){
         
                 for(var sStTheme of aStandardThemeList){
@@ -2412,37 +2489,6 @@ module.exports = {
 
                 }
 
-            }
-
-            let aCustomThemeList = this.getCustomThemeList();
-
-            if(aCustomThemeList.length !== 0){
-
-                for(var sTheme of aCustomThemeList){
-    
-                    let oThemeInfo = {};
-        
-                    if(!sStTheme){
-                        continue;
-                    }
-        
-                    let oParseInfo = PATH.parse(sTheme);
-                    if(!oParseInfo){
-                        continue;
-                    }
-        
-                    let sThemeName = oParseInfo?.name || "";
-                    if(!sThemeName){
-                        continue;
-                    }
-        
-                    oThemeInfo.groupName = "person";
-                    oThemeInfo.name      = sThemeName;
-        
-                    aThemeList.push(oThemeInfo);
-        
-                }
-    
             }
 
             return aThemeList;

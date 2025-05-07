@@ -47,7 +47,7 @@ export var oContr = await new Promise(async (resolve)=>{
 
 
     var SPLITTERLAYOUTDATA1 = new sap.ui.layout.SplitterLayoutData({
-        size: "500px",
+        size: "400px",
         minSize: 400
     });
 
@@ -193,7 +193,7 @@ export var oContr = await new Promise(async (resolve)=>{
 
     var LABEL3 = new sap.m.Label({
         design: "Bold",
-        text: "Name"
+        text: oContr.msg.M363   // 스니펫 이름
     });
 
     COLUMN3.setHeader(LABEL3);
@@ -209,7 +209,7 @@ export var oContr = await new Promise(async (resolve)=>{
 
     var LABEL4 = new sap.m.Label({
         design: "Bold",
-        text: "description"
+        text: oContr.msg.M176   // Description
     });
 
     COLUMN4.setHeader(LABEL4);
@@ -226,7 +226,7 @@ export var oContr = await new Promise(async (resolve)=>{
 
     var LABEL1 = new sap.m.Label({
         design: "Bold",
-        text: "language"
+        text: oContr.msg.M001   // Language
     });
 
     COLUMN4.setHeader(LABEL1);
@@ -258,7 +258,7 @@ export var oContr = await new Promise(async (resolve)=>{
     OVERFLOWTOOLBAR7.addContent(ICON1);
 
     var TITLE2 = new sap.m.Title({
-        text: "Snippet List"
+        text: oContr.msg.M360   // 스니펫 리스트
     });
 
     OVERFLOWTOOLBAR7.addContent(TITLE2);
@@ -266,7 +266,7 @@ export var oContr = await new Promise(async (resolve)=>{
     OVERFLOWTOOLBAR7.addContent(new sap.m.ToolbarSpacer());
 
     var BUTTON1 = new sap.m.Button({
-        text: "New",
+        text: oContr.msg.M361,  // 신규 생성
         icon: "sap-icon://create",
         type: "Emphasized",
         enabled: "{/S_PAGE_HDR_HNDL/newBtn_enable}",
@@ -279,7 +279,7 @@ export var oContr = await new Promise(async (resolve)=>{
 
 
     var BUTTON16 = new sap.m.Button({
-        text: "Delete",
+        text: oContr.msg.M029,  // Delete
         icon: "sap-icon://delete",
         type: "Reject",
         enabled: "{/S_PAGE_HDR_HNDL/delBtn_enable}",
@@ -326,7 +326,7 @@ export var oContr = await new Promise(async (resolve)=>{
 
     var TITLE4 = new sap.m.Title({
         titleStyle: "H3",
-        text: "선택한 항목이 없습니다!"	// [MSG]
+        text: oContr.msg.M358   // 선택한 항목이 없습니다!
     });
     VBOX4.addItem(TITLE4);
 
@@ -334,7 +334,7 @@ export var oContr = await new Promise(async (resolve)=>{
 
     var TITLE5 = new sap.m.Title({
         titleStyle: "H5",
-        text: "스니펫 목록 중, 하나를 선택하세요."	// [MSG]
+        text: oContr.msg.M359   // 스니펫 목록 중, 하나를 선택하세요.
     });
     VBOX4.addItem(TITLE5);
 
@@ -371,7 +371,7 @@ export var oContr = await new Promise(async (resolve)=>{
     PANEL1.setHeaderToolbar(TOOLBAR1);
 
     var TITLE3 = new sap.m.Title({
-        text: "Snippet Info."
+        text: oContr.msg.M362   // 스니펫 기본정보
     });
     TOOLBAR1.addContent(TITLE3);
 
@@ -400,7 +400,7 @@ export var oContr = await new Promise(async (resolve)=>{
 
     var LABEL7 = new sap.m.Label({
         design: "Bold",
-        text: "Language",
+        text: oContr.msg.M001,  // Language
         required: true,
     });
 
@@ -441,7 +441,7 @@ export var oContr = await new Promise(async (resolve)=>{
 
     var LABEL5 = new sap.m.Label({
         design: "Bold",
-        text: "Snippet Name",
+        text: oContr.msg.M363,  // 스니펫 이름
         required: true,
     });
 
@@ -477,7 +477,7 @@ export var oContr = await new Promise(async (resolve)=>{
      **********************************/
     var LABEL6 = new sap.m.Label({
         design: "Bold",
-        text: "Snippet Description",
+        text: oContr.msg.M176   // Description
     });
 
     FORMELEMENT2.setLabel(LABEL6);
@@ -532,7 +532,7 @@ export var oContr = await new Promise(async (resolve)=>{
     OVERFLOWTOOLBAR4.addContent(ICON2);
 
     var TITLE1 = new sap.m.Title({
-        text: "Snippet Code"
+        text: oContr.msg.M364   // 스니펫 코드
     });
 
     OVERFLOWTOOLBAR4.addContent(TITLE1);
@@ -556,7 +556,7 @@ export var oContr = await new Promise(async (resolve)=>{
     PAGE3.setCustomHeader(OVERFLOWTOOLBAR5);
 
     var BUTTON14 = new sap.m.Button({
-        text: "Save",
+        text: oContr.msg.M365,  // 저장호
         type: "Accept",
         icon: "sap-icon://save",
         enabled: "{/S_PAGE_HDR_HNDL/saveBtn_enable}",
@@ -568,7 +568,7 @@ export var oContr = await new Promise(async (resolve)=>{
     OVERFLOWTOOLBAR5.addContent(BUTTON14);
 
     var BUTTON15 = new sap.m.Button({
-        text: "Cancel",
+        text: oContr.msg.M003,  // Cancel
         type: "Reject",
         icon: "sap-icon://decline",
         enabled: "{/S_PAGE_HDR_HNDL/cancBtn_enable}",

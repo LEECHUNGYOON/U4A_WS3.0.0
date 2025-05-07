@@ -47,7 +47,18 @@ function _getP13nSnippetCodeData(sKey) {
         return sSavedSnippetCode;
 
     } catch (error) {
-        
+
+        // 콘솔용 오류 메시지
+        var aConsoleMsg = [             
+            `[PATH]: www/ws10_20/js/usp/monaco/index.js`,
+            `=> _getP13nSnippetCodeData`,
+            `=> FS.readFileSync(sSnippetCodeFile, 'utf-8')`,
+            `=> p13n 폴더에 저장된 Snippet 코드 파일 읽다가 오류!!`,
+            `=> sSnippetCodeFile: ${sSnippetCodeFile}`,
+        ];
+
+        console.error(aConsoleMsg.join("\r\n"));
+        console.error(error);
         
     }
 
@@ -72,42 +83,76 @@ function _getP13nSnippetList(sLanguage){
 
     try {
 			
-        let sSavedSnippetList = FS.readFileSync(sSnippetListFile, 'utf-8');
-
-        let aSavedSnippetList = JSON.parse(sSavedSnippetList);
-        if(!aSavedSnippetList || Array.isArray(aSavedSnippetList) === false){
-            return;
-        }
-
-        // 저장된 스니펫 목록 중, 전달받은 파라미터의 language가 같은 것만 추출
-        aSavedSnippetList = aSavedSnippetList.filter(e => e?.snippet_langu === sLanguage);
-        if(aSavedSnippetList.length === 0){
-            return;
-        }
-
-        let aSnippetList = [];
-
-        for(var oSavedSnippet of aSavedSnippetList){
-
-            if(sLanguage !== oSavedSnippet.snippet_langu){
-                continue;
-            }            
-
-            let oSnippet = JSON.parse(JSON.stringify(oAPP.types.S_SNIPPET));
-
-            oSnippet.label          = oSavedSnippet.snippet_name;
-            oSnippet.documentation  = oSavedSnippet.snippet_desc;
-            oSnippet.insertText     = _getP13nSnippetCodeData(oSavedSnippet._key);
-    
-            aSnippetList.push(oSnippet);
-
-        }
-
-        return aSnippetList;
+        var sSavedSnippetList = FS.readFileSync(sSnippetListFile, 'utf-8');
 
     } catch (error) {
+
+        // 콘솔용 오류 메시지
+        var aConsoleMsg = [             
+            `[PATH]: www/ws10_20/js/usp/monaco/index.js`,
+            `=> _getP13nSnippetList`,
+            `=> FS.readFileSync(sSnippetListFile, 'utf-8')`,
+            `=> P13n에 저장되어 있는 스니펫 리스트 JSON 파일 읽다가 오류!!`,
+            `=> sSnippetListFile: ${sSnippetListFile}`,
+        ];
+
+        console.error(aConsoleMsg.join("\r\n"));
+        console.error(error);
+
         return;
-    }    
+    } 
+
+    try {
+    
+        var aSavedSnippetList = JSON.parse(sSavedSnippetList);
+
+    } catch (error) {
+
+        // 콘솔용 오류 메시지
+        var aConsoleMsg = [             
+            `[PATH]: www/ws10_20/js/usp/monaco/index.js`,
+            `=> _getP13nSnippetList`,
+            `=> var aSavedSnippetList = JSON.parse(sSavedSnippetList)`,
+            `=> P13n에 저장되어 있는 스니펫 리스트 JSON 파일 Parse 오류!!`,
+            `=> sSavedSnippetList: ${sSavedSnippetList}`,
+        ];
+
+        console.error(aConsoleMsg.join("\r\n"));
+        console.error(error);
+
+        return;
+        
+    } 
+
+    if(!aSavedSnippetList || Array.isArray(aSavedSnippetList) === false){
+        return;
+    }
+
+    // 저장된 스니펫 목록 중, 전달받은 파라미터의 language가 같은 것만 추출
+    aSavedSnippetList = aSavedSnippetList.filter(e => e?.snippet_langu === sLanguage);
+    if(aSavedSnippetList.length === 0){
+        return;
+    }
+
+    let aSnippetList = [];
+
+    for(var oSavedSnippet of aSavedSnippetList){
+
+        if(sLanguage !== oSavedSnippet.snippet_langu){
+            continue;
+        }            
+
+        let oSnippet = JSON.parse(JSON.stringify(oAPP.types.S_SNIPPET));
+
+        oSnippet.label          = oSavedSnippet.snippet_name;
+        oSnippet.documentation  = oSavedSnippet.snippet_desc;
+        oSnippet.insertText     = _getP13nSnippetCodeData(oSavedSnippet._key);
+
+        aSnippetList.push(oSnippet);
+
+    }
+
+    return aSnippetList; 
 
 } // end of _getP13nSnippetList
 
@@ -157,6 +202,7 @@ function _getStandardSnippetData(sLanguage){
             var aConsoleMsg = [             
                 `[PATH]: www\\ws10_20\\js\\usp\\monaco\\index.js`,
                 `=> _getStandardSnippetData`,
+                `=> FS.statSync(sSnippetRootPath)`,
                 `=> Snippet Root Path: ${sSnippetRootPath}`,
                 `=> 스니펫 루트 폴더 경로가 디렉토리가 아님!!!`,
             ];
@@ -172,6 +218,7 @@ function _getStandardSnippetData(sLanguage){
         var aConsoleMsg = [             
             `[PATH]: www\\ws10_20\\js\\usp\\monaco\\index.js`,
             `=> _getStandardSnippetData`,
+            `=> FS.statSync(sSnippetRootPath)`,
             `=> Snippet Root Path: ${sSnippetRootPath}`,
             `=> Snippet Langage: ${sLanguage}`,
             `=> 스니펫 루트 폴더 정보 구하려다가 오류!!`,
@@ -202,6 +249,7 @@ function _getStandardSnippetData(sLanguage){
         var aConsoleMsg = [             
             `[PATH]: www\\ws10_20\\js\\usp\\monaco\\index.js`,
             `=> _getStandardSnippetData`,
+            `=> FS.readdirSync(sSnippetRootPath)`,
             `=> Snippet Root Path: ${sSnippetRootPath}`,
             `=> Snippet Langage: ${sLanguage}`,
             `=> 스니펫 루트 폴더의 하위 목록 구하려다가 실패!!`,
@@ -223,8 +271,27 @@ function _getStandardSnippetData(sLanguage){
     for(var sFileName of aSnippetFiles){
 
         let sSnippetJsonPath = PATH.join(sSnippetRootPath, sFileName);
+        
+        try {
+            
+            var sSnippetInfo = FS.readFileSync(sSnippetJsonPath, "utf-8");
 
-        let sSnippetInfo = FS.readFileSync(sSnippetJsonPath, "utf-8");
+        } catch (error) {
+
+            // 콘솔용 오류 메시지
+            var aConsoleMsg = [             
+                `[PATH]: www\\ws10_20\\js\\usp\\monaco\\index.js`,
+                `=> _getStandardSnippetData`,
+                `=> FS.readFileSync(sSnippetJsonPath, "utf-8");`,
+                `=> Json File Path: ${sSnippetJsonPath}`,                
+                `=> JSON 파일 읽다가 오류!`
+            ];
+
+            console.error(error);
+            console.error(aConsoleMsg.join("\r\n"));
+            
+            continue;
+        }
 
         try {
 
@@ -263,6 +330,7 @@ function _getStandardSnippetData(sLanguage){
             var aConsoleMsg = [             
                 `[PATH]: www\\ws10_20\\js\\usp\\monaco\\index.js`,
                 `=> _getStandardSnippetData`,
+                `=> aSnippetInfo = JSON.parse(sSnippetInfo)`,
                 `=> Json File Path: ${sSnippetJsonPath}`,                
                 `=> JSON Parse 오류!!`
             ];
@@ -293,9 +361,7 @@ function _setRegisterSnippet(sLanguage){
     // 스니펫 등록하기
     monaco.languages.registerCompletionItemProvider(sLanguage, {
         triggerCharacters: ['f', 'i'],
-        provideCompletionItems: function(model, position) {
-
-            // console.log(model);
+        provideCompletionItems: function(model, position) {            
 
             var _snippetData = JSON.parse(JSON.stringify(oAPP.attr.aSnippetData));
 
@@ -497,6 +563,8 @@ window.require([
         if(oLanguage){
             sLanguage = oLanguage.langu;
         }
+
+        oAPP.attr.snippetLanguage = sLanguage;
         
         
 
@@ -871,16 +939,6 @@ window.require([
         if(oAPP?.attr?.oCustomEvtDom){
             oAPP.attr.oCustomEvtDom.dispatchEvent(oMsgEvt);
         }
-
-        // 스니펫 개인화 변경 감지 
-        oAPP.attr.SNIPPET_CHANGE_BROADCAST.onmessage = function(){
-
-            console.log("SNIPPET_CHANGE_BROADCAST.onmessage");
-
-            // Language에 해당하는 스니펫을 구성
-            _setSnippetConfig(sLanguage);
-
-        };
 
         return;
 

@@ -110,7 +110,18 @@
             oAPP.msg.M067 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "067"); // Image Icons
             oAPP.msg.M252 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "252"); // DevTool
             oAPP.msg.M253 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "253"); // Keyboard Shortcut List
+            oAPP.msg.M228 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "228"); // 문제가 지속될 경우, U4A 솔루션 팀에 문의하세요.
             oAPP.msg.M311 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "311"); // Default Font size
+            oAPP.msg.M344 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "344"); // Code Editor
+            oAPP.msg.M345 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "345"); // Theme Designer
+            oAPP.msg.M346 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "346"); // Snippet Designer
+            oAPP.msg.M347 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "347"); // 선택한 테마 정보를 개인화 저장 하는 과정에 문제가 발생하였습니다.
+            oAPP.msg.M348 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "348"); // USP 데이터를 Parsing 하는 도중에 문제가 발생하였습니다.
+
+
+
+
+
 
 
             resolve();

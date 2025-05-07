@@ -844,42 +844,42 @@
      * [WS30] 단축키로 save 및 active 시 마지막 선택한 커서의 위치가 에디터였다면 
      * 해당 에디터로 포커스를 준다!!
      **************************************************************************/
-    oAPP.fn.fnLastActivateElementFocus = () => {
+    // oAPP.fn.fnLastActivateElementFocus = () => {
 
-        /**
-         * 단축키로 실행했을 경우 하위로직 수행
-         */
-        let oActiveDom = oAPP.attr.beforeActiveElement;
-        if (!oActiveDom) {
-            return;
-        }
+    //     /**
+    //      * 단축키로 실행했을 경우 하위로직 수행
+    //      */
+    //     let oActiveDom = oAPP.attr.beforeActiveElement;
+    //     if (!oActiveDom) {
+    //         return;
+    //     }
 
-        let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
-            oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
+    //     let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
+    //         oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
 
-        // 에디터가 둘중에 하나라도 없다면 빠져나감.
-        if (!oCodeEditor1 || !oCodeEditor2) {
-            return;
-        }
+    //     // 에디터가 둘중에 하나라도 없다면 빠져나감.
+    //     if (!oCodeEditor1 || !oCodeEditor2) {
+    //         return;
+    //     }
 
-        // 이전 포커스의 위치 정보를 지운다.
-        delete oAPP.attr.beforeActiveElement;
+    //     // 이전 포커스의 위치 정보를 지운다.
+    //     delete oAPP.attr.beforeActiveElement;
 
-        // 현재 커서의 위치가 어떤 에디터인지 확인
-        let $oCodeeditor1 = $(oActiveDom).closest(".u4aUspCodeeditor1");
+    //     // 현재 커서의 위치가 어떤 에디터인지 확인
+    //     let $oCodeeditor1 = $(oActiveDom).closest(".u4aUspCodeeditor1");
 
-        // 커서가 왼쪽 에디터에 있었을 경우
-        if ($oCodeeditor1.length !== 0) {
+    //     // 커서가 왼쪽 에디터에 있었을 경우
+    //     if ($oCodeeditor1.length !== 0) {
 
-            oCodeEditor1.focus();
+    //         oCodeEditor1.focus();
 
-            return;
+    //         return;
 
-        }
+    //     }
 
-        oCodeEditor2.focus();
+    //     oCodeEditor2.focus();
 
-    }; // end of oAPP.fn.fnLastActivateElementFocus
+    // }; // end of oAPP.fn.fnLastActivateElementFocus
 
     /**************************************************************************
      * [WS30] USP Move Position Popup Close
