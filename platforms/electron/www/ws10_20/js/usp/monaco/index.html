@@ -102,6 +102,7 @@
             oAPP = {};
             oAPP.params = {};
             oAPP.attr = {};
+            oAPP.types = {};
 
         // 부모의 부모 객체(할아버지 객체)
         const GRAND_FATHER = parent.parent;
@@ -112,10 +113,17 @@
         // URL에 있는 QueryString 파라미터 객체
         const oSearchParams = oURL.searchParams;
 
-
-
         // 스니펫 데이터를 저장하는 전역 변수
         oAPP.attr.aSnippetData = [];
+
+        // 스니펫 구조
+        oAPP.types.S_SNIPPET = {
+            "label": "",
+            "kind": 27,
+            "insertText": "",
+            "insertTextRules": 4,
+            "documentation": ""
+        };
 
 
 
@@ -124,8 +132,6 @@
  ****************************************************************************/        
         const PATH = GRAND_FATHER.PATH;
         const FS   = GRAND_FATHER.FS;
-
-
         
 /****************************************************************************
  * 🔥 Paths
@@ -134,13 +140,13 @@
         // USP root 경로
         const USP_ROOT_PATH = GRAND_FATHER.PATHINFO.USP_ROOT;
 
-
         // 모나코 에디터 관련 경로
         const MONACO_LIB_PATH = PATH.join(GRAND_FATHER.APPPATH, "lib", "monaco");
         const MONACO_VS_ROOT_PATH = PATH.join(MONACO_LIB_PATH, "vs");
         const MONACO_LOADER_PATH  = PATH.join(MONACO_VS_ROOT_PATH, "loader.js");
         
-
+        // 모나코 에디터 스니펫 개인화 폴더 경로
+        const MONACO_EDITOR_SNIPPET_P13N_ROOT = PATH.join(GRAND_FATHER.PATHINFO.P13N_ROOT, "monaco", "snippet");
 
 
         // URL QueryString 정보를 파라미터 객체에 저장한다.
@@ -158,12 +164,13 @@
         // 현재 BROWSKEY 정보를 저장해둔다.
         oAPP.attr.BROWSKEY = GRAND_FATHER.getBrowserKey();
 
+        // 스니펫 변경 신호를 감지할 BroadCast 객체
+        oAPP.attr.SNIPPET_CHANGE_BROADCAST = new BroadcastChannel(`broadcast-snippet-change`);
+
         // 부모와 통신하기 위한 커스텀 이벤트용 DOM
         let sCustDomId = "IF_USP_EDITOR";
 
         oAPP.attr.oCustomEvtDom = parent.document.getElementById(sCustDomId);
-
-
 
 
         // 이미 예약된 단축키 목록 정보 구하기
@@ -270,6 +277,12 @@
                     
                     // onApplyTheme(oEvent.data);
                     onApplyTheme(oParams);
+
+                    return;
+
+                case "snippet_change": 
+
+                    console.log("monaco_editor_snippet_change");
 
                     return;
 

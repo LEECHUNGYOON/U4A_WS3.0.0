@@ -1280,8 +1280,12 @@
      ************************************************************************/
     oAPP.fn.fnWS10Test86 = function(){
 
+        let oPARAM = {
+            scopeCode: "usp_main"
+        };
+
         // 모나코 에디터 테마 디자이너 팝업 실행
-        oAPP.fn.openMonacoThemeDesigner();
+        oAPP.fn.openMonacoThemeDesigner(oPARAM);
 
     }; // end of oAPP.fn.fnWS10Test86
 
@@ -1290,7 +1294,11 @@
      ************************************************************************/
     oAPP.fn.fnWS10Test85 = function(){
 
-        oAPP.fn.openMonacoSnippetEditor();
+        let oPARAM = {
+            scopeCode: "usp_main"
+        };
+
+        oAPP.fn.openMonacoSnippetDesigner(oPARAM);
 
     }; // end of oAPP.fn.fnWS10Test85       
 
@@ -1453,7 +1461,12 @@
      ************************************************************************/
     oAPP.fn.fnWS30Test86 = function(){
 
-        oAPP.fn.openMonacoThemeDesigner();
+        
+        let oPARAM = {
+            scopeCode: "usp_main"
+        };
+
+        oAPP.fn.openMonacoThemeDesigner(oPARAM);
 
     }; // end of oAPP.fn.fnWS30Test86
 
@@ -1463,7 +1476,11 @@
      ************************************************************************/
     oAPP.fn.fnWS30Test85 = function(){
 
-        oAPP.fn.openMonacoSnippetEditor();
+        let oPARAM = {
+            scopeCode: "usp_main"
+        };
+
+        oAPP.fn.openMonacoSnippetDesigner(oPARAM);
 
     }; // end of oAPP.fn.fnWS30Test85
 

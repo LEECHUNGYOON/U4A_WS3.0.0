@@ -38,6 +38,9 @@
      */
     const RENAME_BINDROOT = "/WS30/USPRN";
 
+    // USP 메인 에디터의 선택된 테마 정보 저장 경로
+    const MONACO_EDITOR_SELECT_THEME_P13N_ROOT_USP_MAIN = PATH.join(PATHINFO.P13N_ROOT, "monaco", "theme", parent.getUserInfo().SYSID, "usp_main");
+
     /************************************************************************
      * [WS30] 30번 페이지 생성
      ************************************************************************/
@@ -1917,8 +1920,8 @@
             themeName : sSelectedKey,
         };
 
-        // 개인화 폴더에 선택된 테마 정보 저장하기
-        let sThemeP13nFolderPath = PATH.join(PATHINFO.P13N_ROOT, "usp", "monaco", "theme", parent.getUserInfo().SYSID);
+        // 개인화 폴더에 선택된 테마 정보 저장하기     
+        let sThemeP13nFolderPath = MONACO_EDITOR_SELECT_THEME_P13N_ROOT_USP_MAIN;
         
         if(FS.existsSync(sThemeP13nFolderPath) === false){
             FS.mkdirSync(sThemeP13nFolderPath, { recursive: true });
@@ -5205,8 +5208,8 @@
      ******************************************************/   
     oAPP.usp.getLastSelectedEditorTheme = function(){
 
-        // 개인화 폴더에 선택된 테마 정보 구하기
-        let sThemeP13nFolderPath = PATH.join(PATHINFO.P13N_ROOT, "usp", "monaco", "theme", parent.getUserInfo().SYSID);
+        // 개인화 폴더에 선택된 테마 정보 구하기        
+        let sThemeP13nFolderPath = MONACO_EDITOR_SELECT_THEME_P13N_ROOT_USP_MAIN;
 
         let sThemeFilePath = PATH.join(sThemeP13nFolderPath, "select_theme.json");
 

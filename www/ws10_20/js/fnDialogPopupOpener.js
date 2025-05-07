@@ -3530,27 +3530,27 @@
     /************************************************************************
      * 모나코 에디터 스니펫 생성 팝업 실행
      ************************************************************************/
-    oAPP.fn.openMonacoSnippetEditor = function(){
+    oAPP.fn.openMonacoSnippetDesigner = function(oPARAM){
 
         var oSettingsInfo = parent.getSettingsInfo();
 
-        var sIndexPath = parent.PATH.join(oSettingsInfo.path.POPUP_ROOT, "monacoSnippetCreater", "index.js");
+        var sIndexPath = parent.PATH.join(oSettingsInfo.path.POPUP_ROOT, "monacoSnippetDesigner", "index.js");
 
-        parent.require(sIndexPath)(parent.REMOTE, oAPP);
+        parent.require(sIndexPath)(parent.REMOTE, oAPP, oPARAM);
 
-    }; // end of oAPP.fn.openMonacoSnippetEditor
+    }; // end of oAPP.fn.openMonacoSnippetDesigner
 
 
     /************************************************************************
      * 모나코 에디터 테마 디자이너 팝업 실행
      ************************************************************************/
-    oAPP.fn.openMonacoThemeDesigner = function(){
+    oAPP.fn.openMonacoThemeDesigner = function(oPARAM){
 
         let oSettingsInfo = parent.getSettingsInfo();
 
-        var sIndexPath = parent.PATH.join(oSettingsInfo.path.POPUP_ROOT, "monacoThemeSettings", "index.js");
+        var sIndexPath = parent.PATH.join(oSettingsInfo.path.POPUP_ROOT, "monacoThemeDesign", "index.js");
 
-        parent.require(sIndexPath)(parent.REMOTE, oAPP);
+        parent.require(sIndexPath)(parent.REMOTE, oAPP, oPARAM);
 
     }; // end of oAPP.fn.openMonacoThemeDesigner
 

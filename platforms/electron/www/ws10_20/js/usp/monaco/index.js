@@ -4,12 +4,117 @@ window.require.config({
     }
 });
 
+/**********************************************************************
+ * Language에 해당하는 스니펫을 구성한다.
+ **********************************************************************/
+function _setSnippetConfig(sLanguage){
 
+    if(!sLanguage){
+        return;
+    }
+
+    // 위에서 얻은 Language 로 스니펫 데이터 구하기
+    let aSnippetStandard = _getStandardSnippetData(sLanguage) || [];
+
+    let aP13nSnippetList = _getP13nSnippetList(sLanguage) || [];
+
+    let aSnippetList = [];
+
+    aSnippetList = aSnippetList.concat(aSnippetStandard);
+    aSnippetList = aSnippetList.concat(aP13nSnippetList);
+
+    // 스니펫 정보를 전역 변수에 저장한다.
+    oAPP.attr.aSnippetData = aSnippetList || [];
+
+} // end of _setSnippetConfig
+
+
+/************************************************************************
+ * @function - p13n 폴더에 저장된 Snippet 코드 정보를 구한다.
+ ************************************************************************/
+function _getP13nSnippetCodeData(sKey) {
+    
+    let sSnippetCodeFile = PATH.join(MONACO_EDITOR_SNIPPET_P13N_ROOT, sKey);
+
+    if(FS.existsSync(sSnippetCodeFile) === false){
+        return "";
+    }
+
+    try {
+        
+        let sSavedSnippetCode = FS.readFileSync(sSnippetCodeFile, 'utf-8');
+
+        return sSavedSnippetCode;
+
+    } catch (error) {
+        
+        
+    }
+
+    return "";
+
+} // end of _getP13nSnippetCodeData
+
+
+/**********************************************************************
+ * P13n에 저장되어 있는 스니펫 정보를 구한다.
+ **********************************************************************/
+function _getP13nSnippetList(sLanguage){
+
+    if(!sLanguage){
+        return;
+    }
+
+    let sSnippetListFile = PATH.join(MONACO_EDITOR_SNIPPET_P13N_ROOT, "list.json");
+    if(FS.existsSync(sSnippetListFile) === false){
+        return;
+    }
+
+    try {
+			
+        let sSavedSnippetList = FS.readFileSync(sSnippetListFile, 'utf-8');
+
+        let aSavedSnippetList = JSON.parse(sSavedSnippetList);
+        if(!aSavedSnippetList || Array.isArray(aSavedSnippetList) === false){
+            return;
+        }
+
+        // 저장된 스니펫 목록 중, 전달받은 파라미터의 language가 같은 것만 추출
+        aSavedSnippetList = aSavedSnippetList.filter(e => e?.snippet_langu === sLanguage);
+        if(aSavedSnippetList.length === 0){
+            return;
+        }
+
+        let aSnippetList = [];
+
+        for(var oSavedSnippet of aSavedSnippetList){
+
+            if(sLanguage !== oSavedSnippet.snippet_langu){
+                continue;
+            }            
+
+            let oSnippet = JSON.parse(JSON.stringify(oAPP.types.S_SNIPPET));
+
+            oSnippet.label          = oSavedSnippet.snippet_name;
+            oSnippet.documentation  = oSavedSnippet.snippet_desc;
+            oSnippet.insertText     = _getP13nSnippetCodeData(oSavedSnippet._key);
+    
+            aSnippetList.push(oSnippet);
+
+        }
+
+        return aSnippetList;
+
+    } catch (error) {
+        return;
+    }    
+
+} // end of _getP13nSnippetList
 
 /**********************************************************************
  * Language에 해당하는 스니펫 데이터를 구한다.
  **********************************************************************/
-function _getSnippetData(sLanguage){
+function _getStandardSnippetData(sLanguage){
 
     if(!sLanguage){
         return;
@@ -18,10 +123,10 @@ function _getSnippetData(sLanguage){
     // 스니펫 루트 폴더 경로
     let sSnippetRootPath = PATH.join(MONACO_LIB_PATH, "snippet", sLanguage);
 
-    // 테스트일 경우 로컬 디렉토리 바라보게..
-	if(!GRAND_FATHER.APP.isPackaged){
-		sSnippetRootPath = PATH.join("C:\\u4a_temp\\U4A USP\\monaco", "snippet", sLanguage);
-	}
+    // // 테스트일 경우 로컬 디렉토리 바라보게..
+	// if(!GRAND_FATHER.APP.isPackaged){
+	// 	sSnippetRootPath = PATH.join("C:\\u4a_temp\\U4A USP\\monaco", "snippet", sLanguage);
+	// }
 
     // 스니펫 루트 폴더가 없을 경우 빠져나감.
     if(FS.existsSync(sSnippetRootPath) === false){
@@ -29,7 +134,7 @@ function _getSnippetData(sLanguage){
         // 콘솔용 오류 메시지
         var aConsoleMsg = [             
             `[PATH]: www\\ws10_20\\js\\usp\\monaco\\index.js`,
-            `=> _getSnippetData`,
+            `=> _getStandardSnippetData`,
             `=> Snippet Langage: ${sLanguage}`,
             `=> SnippetRootPath: ${sSnippetRootPath}`,
             `=> 스니펫 루트 경로가 없음!!`,
@@ -51,7 +156,7 @@ function _getSnippetData(sLanguage){
             // 콘솔용 오류 메시지
             var aConsoleMsg = [             
                 `[PATH]: www\\ws10_20\\js\\usp\\monaco\\index.js`,
-                `=> _getSnippetData`,
+                `=> _getStandardSnippetData`,
                 `=> Snippet Root Path: ${sSnippetRootPath}`,
                 `=> 스니펫 루트 폴더 경로가 디렉토리가 아님!!!`,
             ];
@@ -66,7 +171,7 @@ function _getSnippetData(sLanguage){
         // 콘솔용 오류 메시지
         var aConsoleMsg = [             
             `[PATH]: www\\ws10_20\\js\\usp\\monaco\\index.js`,
-            `=> _getSnippetData`,
+            `=> _getStandardSnippetData`,
             `=> Snippet Root Path: ${sSnippetRootPath}`,
             `=> Snippet Langage: ${sLanguage}`,
             `=> 스니펫 루트 폴더 정보 구하려다가 오류!!`,
@@ -96,7 +201,7 @@ function _getSnippetData(sLanguage){
         // 콘솔용 오류 메시지
         var aConsoleMsg = [             
             `[PATH]: www\\ws10_20\\js\\usp\\monaco\\index.js`,
-            `=> _getSnippetData`,
+            `=> _getStandardSnippetData`,
             `=> Snippet Root Path: ${sSnippetRootPath}`,
             `=> Snippet Langage: ${sLanguage}`,
             `=> 스니펫 루트 폴더의 하위 목록 구하려다가 실패!!`,
@@ -131,7 +236,7 @@ function _getSnippetData(sLanguage){
                 // 콘솔용 오류 메시지
                 var aConsoleMsg = [             
                     `[PATH]: www\\ws10_20\\js\\usp\\monaco\\index.js`,
-                    `=> _getSnippetData`,
+                    `=> _getStandardSnippetData`,
                     `=> Json File Path: ${sSnippetJsonPath}`, 
                     `=> Json Parse Data: ${JSON.stringify(aSnippetInfo)}`,
                     `=> JSON이 Array 타입이 아님!!!`
@@ -157,7 +262,7 @@ function _getSnippetData(sLanguage){
             // 콘솔용 오류 메시지
             var aConsoleMsg = [             
                 `[PATH]: www\\ws10_20\\js\\usp\\monaco\\index.js`,
-                `=> _getSnippetData`,
+                `=> _getStandardSnippetData`,
                 `=> Json File Path: ${sSnippetJsonPath}`,                
                 `=> JSON Parse 오류!!`
             ];
@@ -173,7 +278,7 @@ function _getSnippetData(sLanguage){
 
     return aSnippet;  
 
-} // end of _getSnippetData
+} // end of _getStandardSnippetData
 
 
 /**********************************************************************
@@ -190,7 +295,7 @@ function _setRegisterSnippet(sLanguage){
         triggerCharacters: ['f', 'i'],
         provideCompletionItems: function(model, position) {
 
-            console.log(model);
+            // console.log(model);
 
             var _snippetData = JSON.parse(JSON.stringify(oAPP.attr.aSnippetData));
 
@@ -399,22 +504,17 @@ window.require([
      * ➡️ 스니펫 설정
      ***********************************************************************/
 
-        // 위에서 얻은 Language 로 스니펫 데이터 구하기
-        let aSnippet = _getSnippetData(sLanguage);
-
-        // 스니펫 정보를 전역 변수에 저장한다.
-        oAPP.attr.aSnippetData = aSnippet || [];
+        // Language에 해당하는 스니펫을 구성
+        _setSnippetConfig(sLanguage);
 
         // 스니펫을 등록한다.
         _setRegisterSnippet(sLanguage);
-        
-
 
     /***********************************************************************
      * ➡️ Editor 랜더링
      ***********************************************************************/
         
-        window.editor =  monaco.editor.create(document.getElementById('content'), {
+        window.editor = monaco.editor.create(document.getElementById('content'), {
             value: oSelectedUspLineData?.CONTENT || "",
             language: sLanguage,
             readOnly: !bIsEdit,
@@ -771,6 +871,16 @@ window.require([
         if(oAPP?.attr?.oCustomEvtDom){
             oAPP.attr.oCustomEvtDom.dispatchEvent(oMsgEvt);
         }
+
+        // 스니펫 개인화 변경 감지 
+        oAPP.attr.SNIPPET_CHANGE_BROADCAST.onmessage = function(){
+
+            console.log("SNIPPET_CHANGE_BROADCAST.onmessage");
+
+            // Language에 해당하는 스니펫을 구성
+            _setSnippetConfig(sLanguage);
+
+        };
 
         return;
 

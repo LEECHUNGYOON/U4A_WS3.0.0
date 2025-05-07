@@ -364,9 +364,12 @@
     /************************************************************************
      * 전체 브라우저간 통신
      ************************************************************************/
-    oAPP.fn.fnIpcMain_browser_interconnection = (oEvent, oRes) => {
+    oAPP.fn.fnIpcMain_browser_interconnection = async (oEvent, oRes) => {
 
-        let PRCCD = oRes.PRCCD;
+        let PRCCD = oRes?.PRCCD;
+        if(!PRCCD){
+            return;
+        }
 
         switch (PRCCD) {
             case "01": // [컨트롤러 클래스 눌렀을 때 팝업] 같은 SYSID & CLIENT에 ILLUST 메시지 팝업 오픈
@@ -395,6 +398,53 @@
 
             default:
                 break;
+        }
+
+
+        /**
+         * @since   2025-05-07
+         * @version 3.5.6-sp2
+         * @author  soccerhs
+         * 
+         * @description
+         * 전체 브라우저 통신 시, PRCCD를 Case 분기로 처리하는 방식을
+         * 앞으로는 모듈 성격의 assist js 안에서 동적처리로 방식 변경함
+         *  
+         */
+        let PATHINFO    = parent.PATHINFO;
+
+        let sIpcModulePath = parent.PATH.join(PATHINFO.JS_ROOT, "ipc", "assist", "browser_interconnection_assist.js");       
+
+        try {
+
+            let oASSIST = await import(sIpcModulePath);
+
+            if(!oASSIST || !oASSIST[PRCCD]){
+                return;
+            }
+            
+            oASSIST[PRCCD](oEvent, oRes);
+
+        } catch (error) {
+
+            // 콘솔용 오류 메시지
+            var aConsoleMsg = [             
+                `[PATH]: www/ws10_20/js/ipc/ws_fn_ipc.js`,  
+                `=> oAPP.fn.fnIpcMain_browser_interconnection`,
+                `=> let oASSIST = await import(sIpcModulePath)`,
+                `=> try...catch error`,
+                `[DESC]:`
+                `=> assist.js 파일 Import 하다가 오류 발생`                
+                `=> 또는 assist js 안의 로직에서 오류 발생!!`                
+                `=> PRCCD: ${PRCCD}`
+            ];
+
+            console.error(aConsoleMsg.join("\r\n"));
+            console.error(error);
+            console.trace();
+
+            return;
+
         }
 
     }; // end of oAPP.fn.fnIpcMain_browser_interconnection
