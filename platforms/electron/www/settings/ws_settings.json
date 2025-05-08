@@ -1,5 +1,5 @@
 {
-    "patch_level" : "00002",
+    "patch_level" : "00003",
     "SYSADMIN": {
         "AUTHKEY": "c2hvd21ldGhlbW9uZXk="
     },
@@ -86,6 +86,22 @@
         "globalSettings" : "HKCU\\SOFTWARE\\U4A\\WS\\GlobalSettings"
 
     },
+    "aBrowserInfo": [
+        {
+            "NAME": "CHROME",
+            "DESC": "Google Chrome Browser",
+            "REGPATH": "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe",
+            "REGPATH2": "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe",
+            "APP_MODE": false
+        },
+        {
+            "NAME": "MSEDGE",
+            "DESC": "Microsoft Edge Browser",
+            "REGPATH": "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe",
+            "REGPATH2": "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe",
+            "APP_MODE": false
+        }
+    ],
     "isDev": true,
     "isTrial": false,
     "trialServerInfo": {

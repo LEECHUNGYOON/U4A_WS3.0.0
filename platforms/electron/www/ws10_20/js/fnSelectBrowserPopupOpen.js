@@ -11,7 +11,7 @@
     const
         APPCOMMON = oAPP.common;
 
-    oAPP.fn.fnSelectBrowserPopupOpen = function() {
+    oAPP.fn.fnSelectBrowserPopupOpen = async function() {
 
         // var FS = parent.FS,
 
@@ -31,11 +31,36 @@
 
         // APPCOMMON.fnSetModelProperty("/DEFBR", oP13nData[sSysID].DEFBR);
 
+        // PC에 설치된 브라우저의 실제 설치 경로 위치를 얻는다.
+        let aBrowserInstallPaths = await parent.WSUTIL.EXE_BROWSER.getBrowserInstallPath();
+
+        // 해당 정보를 전역에 설정
+        parent.setDefaultBrowserInfo(aBrowserInstallPaths);
+
         // 개인화 폴더없으면 생성
         oAPP.fn.fnOnP13nFolderCreate();
 
         // 개인화 기본 브라우저 설정 
         oAPP.fn.fnOnP13nExeDefaultBrowser();
+
+        let oModel = sap.ui.getCore().getModel();
+        let aDEFBR = oModel.getProperty("/DEFBR");
+
+        // 브라우저 정보가 있을 경우에만 수행
+        if(aDEFBR && Array.isArray(aDEFBR) === true && aDEFBR.length !== 0){
+
+            // 브라우저 정보 중, SELECT가 아닌 경우는 APP_MODE도 false로 강제 적용
+            for(var oDef of aDEFBR){
+
+                if(oDef.SELECTED === false){
+                    oDef.APP_MODE = false;
+                }
+
+            }
+
+            oModel.setProperty("/DEFBR", aDEFBR);
+
+        }        
 
         let oUserInfo = parent.getUserInfo();
 
@@ -50,6 +75,7 @@
             }
 
             oDialog.open();
+
             return;
 
         }
@@ -233,6 +259,23 @@
         });        
 
         oPanelTemplate.addContent(oCheckBox1);
+
+        // // 앱모드 체크박스에서 SELECTED가 false 인 경우는 무조건 체크 해제
+        // oCheckBox1.bindProperty("selected", {
+        //     parts: [
+        //         { path: "APP_MODE" },
+        //         { path: "SELECTED" }
+        //     ],
+        //     formatter: function(SELECTED, APP_MODE){
+
+        //         if(SELECTED === false){
+        //             return false;
+        //         }
+
+        //         return APP_MODE;
+        //     }
+
+        // });
         
         oCheckBox1.bindProperty("enabled", {
             parts: [

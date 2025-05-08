@@ -374,10 +374,60 @@ function _setRegisterSnippet(sLanguage){
 } // end of _setRegisterSnippet
 
 
+
 window.require([
     'vs/editor/editor.main',
     // 'vs/language/html/htmlWorker'   // ✅ 추가 필요!
     ], function () {
+
+        // TEST -------------- Start
+        
+
+        // /**
+        //  * Place Holder 작업
+        //  */
+        // var decorations = [];
+
+        // // Apply a placeholder when the editor is empty
+        // const placeholderText = 'Type your code here...';
+        // const placeholderDecoration = {
+        //     range: new monaco.Range(1, 1, 1, 1),
+        //     options: {
+        //         isWholeLine: true,
+        //         className: 'monaco-placeholder',
+        //         glyphMarginClassName: 'monaco-placeholder',
+        //         hoverMessage: { value: placeholderText }
+        //     }
+        // };
+
+        // // Function to update placeholder visibility
+        // function updatePlaceholder() {
+        //     const model = editor.getModel();
+        //     const value = model.getValue();
+            
+        //     // Remove existing decoration
+        //     decorations = editor.deltaDecorations(decorations, []);
+            
+        //     // Add placeholder if editor is empty
+        //     if (!value) {
+        //         decorations = editor.deltaDecorations([], [placeholderDecoration]);
+        //     }
+        // }
+
+        // const style = document.createElement('style');
+        // style.textContent = `
+        // .cdr.monaco-placeholder::after {
+        //     content: "${placeholderText}";
+        //     position: absolute;
+        //     opacity: 0.6;
+        //     pointer-events: none;
+        //     white-space: pre;
+        // }`;
+        // document.head.appendChild(style);
+
+
+        // TEST -------------- End
+
 
         // var path = "C:\\u4a_temp\\U4A USP\\U4A_WS3.0.0-3.5.2-sp3\\www\\lib\\monaco\\snippet\\javascript.json";
 
@@ -658,6 +708,10 @@ window.require([
         editor.bExternalUpdated = false;
         
         editor.onDidChangeModelContent((event) => {
+            
+            // TEST --------- Start
+            updatePlaceholder();
+            // TEST --------- End
 
             // 외부에서 업데이트가 되어서 Change 이벤트가 발생했을 경우에는 하위로직 수행 하지 않고 빠져나간다.            
             if(editor.bExternalUpdated === true){
@@ -990,15 +1044,15 @@ window.require([
 
 
         // ✅ 라인 숫자 옆 아이콘 설정 
-        const decorations = editor.deltaDecorations([], [
-            {
-              range: new monaco.Range(2, 1, 2, 1), // 2번째 줄
-              options: {
-                isWholeLine: true,
-                glyphMarginClassName: 'my-icon-gutter' // 커스텀 클래스 삽입
-              }
-            }
-        ]);
+        // const decorations = editor.deltaDecorations([], [
+        //     {
+        //       range: new monaco.Range(2, 1, 2, 1), // 2번째 줄
+        //       options: {
+        //         isWholeLine: true,
+        //         glyphMarginClassName: 'my-icon-gutter' // 커스텀 클래스 삽입
+        //       }
+        //     }
+        // ]);
 
 
 

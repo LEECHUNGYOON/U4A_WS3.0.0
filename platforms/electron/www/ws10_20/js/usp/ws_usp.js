@@ -18,7 +18,7 @@
         PATH = parent.PATH,
         RANDOM = parent.RANDOM,
         CURRWIN = REMOTE.getCurrentWindow(),
-        USERINFO = parent.USERINFO,
+        // USERINFO = parent.USERINFO,
         PATHINFO = parent.require(PATH.join(APPPATH, "Frame", "pathInfo.js")),
         WSUTIL = parent.require(PATHINFO.WSUTIL),
         MIMETYPES = parent.MIMETYPES;
@@ -123,6 +123,38 @@
         fnOnUspTreeUnSelect();
 
     }; // end of fnOnInitLayoutSettingsWs30
+
+
+    // /************************************************************************
+    //  * [WS30] USP Page Layout Init Settings
+    //  ************************************************************************/
+    // oAPP.fn.fnInitUspPageLayoutSetting = function(){
+
+    //     // usp tree 부분 split 영역 
+    //     let oSplitLayout = sap.ui.getCore().byId("usptreeSplitLayout");
+    //     if (oSplitLayout) {
+    //         oSplitLayout.setSize("500px");
+    //     }
+
+    //     // content 영역 split orientation 초기화
+    //     let oCodeEditorSplit = sap.ui.getCore().byId("uspCodeeditorSplit");
+    //     if (oCodeEditorSplit) {
+    //         oCodeEditorSplit.setOrientation("Horizontal");
+    //     }
+
+    //     // content 영역 split size 초기화
+    //     let oCodeEditorSplitLayoutData = sap.ui.getCore().byId("codeEditorSplitLayout");
+    //     if (oCodeEditorSplitLayoutData) {
+    //         oCodeEditorSplitLayoutData.setSize("0px");
+    //     }
+
+    //     // content 영역 상단 패널 펼치기
+    //     let oPanel = sap.ui.getCore().byId("uspPanel");
+    //     if (oPanel) {
+    //         oPanel.setExpanded(true);
+    //     }
+
+    // }; // end of oAPP.fn.fnInitUspPageLayoutSetting
 
 
     /************************************************************************
@@ -1196,11 +1228,19 @@
 
         oHeaderToolbar.addContent(new sap.m.ToolbarSpacer());
 
-        let COMBOBOX1 = new sap.m.Select({
+        // Standard Theme
+        let C_STANDARD_THEME_TXT = WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "317");
+
+        // Custom Theme
+        let C_CUSTOM_THEME_TXT   = WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "318");
+
+        // let COMBOBOX1 = new sap.m.Select({
+        let COMBOBOX1 = new sap.m.ComboBox({
             busyIndicatorDelay: 0,
+            showSecondaryValues: true,
             selectedKey: "{/WS30/USP_EDITOR/sSelectedTheme}",
             width: "200px",
-            change: function(oEvent){
+            selectionChange: function(oEvent){
 
                 zconsole.log("Select change");
 
@@ -1212,15 +1252,42 @@
                 path: "/WS30/USP_EDITOR/aThemeList",
                 template: new sap.ui.core.ListItem({    
                     key: "{name}",
-                    text: "{name}",                    
-                })
+                    text: "{name}",
+                    additionalText: "{themeBase}"
+                }),
+                sorter: [
+
+                    new sap.ui.model.Sorter("groupName", false, function(oContext){
+                        
+                        var sGroupName = oContext.getProperty("groupName");
+                        let sText = "";
+
+                        switch (sGroupName) {
+                            case "custom":
+
+                                sText = C_CUSTOM_THEME_TXT;
+
+                                break;
+
+                            case "standard":
+                                
+                                sText = C_STANDARD_THEME_TXT;
+
+                                break;  
+                        
+                            default:
+                                break;
+                        }
+
+                        return { key: sGroupName, text: sText };
+    
+                    })
+                ]
             }
         });
 
         COMBOBOX1.addEventDelegate({
             onclick: function(oEvent){
-
-                zconsole.log("Select onclick");
 
                 // [async]
                 _onEditorThemeSelectClick(oEvent);
@@ -1276,13 +1343,50 @@
 
         oHeaderToolbar.addContent(oBUTTON1);
 
-        let oBUTTON2 = new sap.m.Button({
-            icon: "sap-icon://full-screen",
-            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C23"), // Full Screen                    
-            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D23") + " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C79"), // Editor Full Screen Mode
-            press: ev_codeeditorFullscreen
-        });
+        // let oBUTTON2 = new sap.m.Button({
+        //     icon: "sap-icon://full-screen",
+        //     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C23"), // Full Screen                    
+        //     tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D23") + " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C79"), // Editor Full Screen Mode
+        //     press: ev_codeeditorFullscreen
+        // });
 
+        // oHeaderToolbar.addContent(oBUTTON2);
+
+        let oBUTTON2 = new sap.m.ToggleButton({
+            icon: "sap-icon://full-screen",
+            text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C23"), // Full Screen 
+            tooltip: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D23") + " " + APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C79"), // Editor Full Screen Mode
+            press: function(oEvent){
+
+                let bIsPressed = oEvent.getParameter("pressed");
+
+                let sIconPath = "";
+                let sButtonTxt = "";
+
+                if(bIsPressed === true){        
+
+                    // 축소 버튼 아이콘
+                    sIconPath = "sap-icon://exit-full-screen";            
+                    sButtonTxt = WSUTIL.getWsMsgClsTxt(parent.getUserInfo().LANGU, "ZMSG_WS_COMMON_001", "370"); // Exit Full Screen
+
+                    // 확대
+                    ev_codeeditorFullscreen(true);
+
+                } else {
+
+                    // 축소
+                    sIconPath = "sap-icon://full-screen";
+                    sButtonTxt = WSUTIL.getWsMsgClsTxt(parent.getUserInfo().LANGU, "ZMSG_WS_COMMON_001", "369"); // Full Screen
+
+                    ev_codeeditorFullscreen(false);
+                }
+
+
+                this.setIcon(sIconPath);
+                this.setText(sButtonTxt);
+
+            }
+        });
         oHeaderToolbar.addContent(oBUTTON2);
 
         
@@ -1882,7 +1986,7 @@
         oCombo.setBusy(true);   
 
         // Monaco Editor의 테마 정보(스탠다드 & 커스텀) 목록을 구한다.
-        let aThemeList = WSUTIL.MONACO_EDITOR.getThemeList(); 
+        let aThemeList = WSUTIL.MONACO_EDITOR.getThemeList();
         
         APPCOMMON.fnSetModelProperty("/WS30/USP_EDITOR/aThemeList", aThemeList);
 
@@ -7718,20 +7822,50 @@
 
     // } // end of ev_codeeditorPattern
 
+    // /**************************************************************************
+    //  * [WS30] Content 영역의 Code Editor Full Screen
+    //  **************************************************************************/
+    // function ev_codeeditorFullscreen() {
+
+    //     let oSplitLayout = sap.ui.getCore().byId("usptreeSplitLayout");
+    //     if (oSplitLayout) {
+    //         oSplitLayout.setSize("0px");
+    //     }
+
+    //     let oPanel = sap.ui.getCore().byId("uspPanel");
+    //     if (oPanel) {
+    //         oPanel.setExpanded(false);
+    //     }
+
+    // } // end of ev_codeeditorFullscreen
+
     /**************************************************************************
      * [WS30] Content 영역의 Code Editor Full Screen
      **************************************************************************/
-    function ev_codeeditorFullscreen() {
+    function ev_codeeditorFullscreen(bIsFull) {
 
         let oSplitLayout = sap.ui.getCore().byId("usptreeSplitLayout");
-        if (oSplitLayout) {
-            oSplitLayout.setSize("0px");
+        let oPanel       = sap.ui.getCore().byId("uspPanel");
+        let oCodeEditorSplitLayoutData = sap.ui.getCore().byId("codeEditorSplitLayout");
+
+        if(!oSplitLayout || !oPanel || !oCodeEditorSplitLayoutData){
+            return;
         }
 
-        let oPanel = sap.ui.getCore().byId("uspPanel");
-        if (oPanel) {
+        if(bIsFull === true){            
+    
+            oSplitLayout.setSize("0px");
+
             oPanel.setExpanded(false);
+
+            return;
         }
+
+        oSplitLayout.setSize("500px");
+        
+        // oCodeEditorSplitLayoutData.setSize("0px");
+
+        oPanel.setExpanded(true);
 
     } // end of ev_codeeditorFullscreen
 

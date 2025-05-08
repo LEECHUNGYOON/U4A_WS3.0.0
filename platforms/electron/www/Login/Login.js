@@ -36,27 +36,27 @@ let oAPP = (function () {
      * Default Browser 기준정보
      *  @ !! 위에서 부터 Default 값 우선 순위 브라우저임!! @@
      */
-    oAPP.attr.aDefaultBrowsers = [{
-        NAME: "CHROME",
-        DESC: "Google Chrome Browser",
-        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe",
-        REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe",
-        APP_MODE: false,
-    },
-    {
-        NAME: "MSEDGE",
-        DESC: "Microsoft Edge Browser",
-        REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe",
-        REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe",
-        APP_MODE: false,
-    },
-        // {
-        //     NAME: "IE",
-        //     DESC: "Microsoft Internet Explorer",
-        //     REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\IEXPLORE.EXE",
-        //     REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\IEXPLORE.EXE"
-        // },
-    ];
+    // oAPP.attr.aDefaultBrowsers = [{
+    //     NAME: "CHROME",
+    //     DESC: "Google Chrome Browser",
+    //     REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe",
+    //     REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe",
+    //     APP_MODE: false,
+    // },
+    // {
+    //     NAME: "MSEDGE",
+    //     DESC: "Microsoft Edge Browser",
+    //     REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe",
+    //     REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe",
+    //     APP_MODE: false,
+    // },
+    //     // {
+    //     //     NAME: "IE",
+    //     //     DESC: "Microsoft Internet Explorer",
+    //     //     REGPATH: "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\IEXPLORE.EXE",
+    //     //     REGPATH2: "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\IEXPLORE.EXE"
+    //     // },
+    // ];
 
     /************************************************************************
      * div의 content DOM을 활성화 처리 한다.     
@@ -139,7 +139,12 @@ let oAPP = (function () {
      * 기본 실행 브라우저 목록을 구한다.
      ************************************************************************/
     oAPP.fn.getDefaultBrowserInfo = () => {
-        return oAPP.attr.aDefaultBrowsers;
+
+        let oSettingsInfo = parent.getSettingsInfo();
+
+        // return oAPP.attr.aDefaultBrowsers;
+
+        return oSettingsInfo.aBrowserInfo;
     };
     
 

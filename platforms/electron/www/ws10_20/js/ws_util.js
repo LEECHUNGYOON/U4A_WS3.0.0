@@ -2216,7 +2216,6 @@ module.exports = {
 
         }
 
-
         // 스탠다드 테마 목록 구하기
         static getStandardThemeList(){
 
@@ -2363,7 +2362,6 @@ module.exports = {
 
         }
 
-
         // 테마명으로 커스텀 테마 정보 구하기
         static _getCustomThemeInfo(sThemeName){
 
@@ -2423,8 +2421,59 @@ module.exports = {
 
         }
 
+        // JSON 파일 정보 구하기
+        static getJsonData(sPath){
+
+            if(!sPath){
+                return;
+            }
+
+            if(FS.existsSync(sPath) === false){
+                return;
+            }
+
+            try {
+
+                var sThemeInfo = FS.readFileSync(sPath, { encoding: "utf-8" });
+                var oThemeInfo = JSON.parse(sThemeInfo);
+                
+                return oThemeInfo;
+
+            } catch (error) {
+                return;
+            }
+
+        }
+
+        // 테마 베이스 별 텍스트
+        static getThemeBase(sThemeBase){
+            
+            if(!sThemeBase){
+                return;
+            }
+
+            switch (sThemeBase) {
+                case "vs":
+                    
+                    // return "밝은 테마";
+                    return WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "333");
+
+                case "vs-dark":
+
+                    // return "어두운 테마";
+                    return WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "334");
+            
+                default:
+                    return;
+            }
+
+        }
+
         // USP Editor 테마 목록 구하기
         static getThemeList(){
+
+            // 커스텀 테마 루트 경로
+            let sCustomThemeRootPath = this._getCustomThemeRootPath();
 
             let aThemeList = [];
 
@@ -2450,8 +2499,24 @@ module.exports = {
                     if(!sThemeName){
                         continue;
                     }
-        
-                    oThemeInfo.groupName = "person";
+
+                    // 테마 베이스
+                    oThemeInfo.themeBase = "";
+
+                    // 테마 JSON 파일을 읽어서 베이스 테마 정보를 구한다.
+                    let oThemeJsonData = this.getJsonData(PATH.join(sCustomThemeRootPath, sTheme));
+                    if(oThemeJsonData){
+
+                        let sThemebase = this.getThemeBase(oThemeJsonData?.base);
+
+                        oThemeInfo.themeBase = sThemebase || "";
+                        
+                    }
+                    
+                    // 테마 그룹
+                    oThemeInfo.groupName = "custom";
+
+                    // 테마 명
                     oThemeInfo.name      = sThemeName;
         
                     aThemeList.push(oThemeInfo);
@@ -2459,6 +2524,9 @@ module.exports = {
                 }
     
             }
+
+            // Standard 테마 루트 경로
+            let sStandardThemeRootPath = this._getStandardThemeRootPath();
 
             // USP Editor의 Standard 테마 목록 구하기
             let aStandardThemeList = this.getStandardThemeList();            
@@ -2480,6 +2548,19 @@ module.exports = {
                     let sThemeName = oParseInfo?.name || "";
                     if(!sThemeName){
                         continue;
+                    }
+
+                    // 테마 베이스
+                    oThemeInfo.themeBase = "";
+
+                    // 테마 JSON 파일을 읽어서 베이스 테마 정보를 구한다.
+                    let oThemeJsonData = this.getJsonData(PATH.join(sStandardThemeRootPath, sStTheme));
+                    if(oThemeJsonData){
+
+                        let sThemebase = this.getThemeBase(oThemeJsonData?.base);
+
+                        oThemeInfo.themeBase = sThemebase || "";
+                        
                     }
 
                     oThemeInfo.groupName = "standard";
@@ -2535,13 +2616,90 @@ module.exports = {
 
 
                 return false;
+                
             }
 
             return true;
 
         }
 
-    }    
+    },
+    
+
+    EXE_BROWSER: class {
+
+        static getBrowserInfo(){
+
+            let oSettingsInfo = parent.getSettingsInfo();
+            if(!oSettingsInfo){
+                return;
+            }
+
+            let aBrowsers = oSettingsInfo.aBrowserInfo;
+            if(!aBrowsers){
+                return;
+            }
+
+            return aBrowsers;
+
+        }
+
+        static async getBrowserInstallPath(){
+
+            let aBrowsers = this.getBrowserInfo();
+            if(!aBrowsers){
+                return;
+            }
+
+            for(var oBrows of aBrowsers){
+
+                let sRegPath = oBrows.REGPATH,
+                    sRegPath2 = oBrows.REGPATH2;
+
+                let oBrowsInstResult = await WSUTIL.getRegeditList([sRegPath, sRegPath2]);
+                if(oBrowsInstResult.RETCD === "E"){
+                    continue;
+                }
+
+                /**
+                 * Current User(HKCU) 경로 레지스트리 정보에 브라우저 설치 경로가 있는지 확인한다.
+                 */
+                let oBrowsInstData = oBrowsInstResult.RTDATA,
+                    oCheckHKCU = oBrowsInstData[sRegPath2];
+
+                if (oCheckHKCU.exists) {
+
+                    var oExePathObj = oCheckHKCU.values[""];
+                    if (oExePathObj != null) {                        
+                        oBrows.INSPATH = oExePathObj.value;                      
+                        continue;
+                    }
+
+                }
+
+                /**
+                 * Local Machine (HKLM) 경로 레지스트리 정보에 브라우저 설치 경로가 있는지 확인한다.
+                 */
+                let oCheckHKLM = oBrowsInstData[sRegPath];
+
+                if (oCheckHKLM.exists) {
+                    var oExePathObj = oCheckHKLM.values[""];
+
+                    if (oExePathObj != null) {
+                        oBrows.INSPATH = oExePathObj.value;                        
+                        continue;
+                    }
+
+                }
+
+
+            }
+
+            return aBrowsers;
+
+        }
+
+    },   
 
 
 };
