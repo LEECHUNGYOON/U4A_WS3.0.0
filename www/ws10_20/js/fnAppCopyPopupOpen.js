@@ -20,6 +20,8 @@
     var APPCOMMON = oAPP.common,
         REMOTE = parent.REMOTE;
 
+    let USERINFO = parent.getUserInfo();
+
     /************************************************************************
      * Application Copy Popup Open
      ************************************************************************/
@@ -403,7 +405,8 @@
         if (oResult.MSGTY !== "N") {
 
             var oCurrWin = REMOTE.getCurrentWindow(),                
-                sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "035"); // It is already registered application information.
+                // sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "035"); // It is already registered application information.
+                sMsg = parent.WSUTIL.getWsMsgClsTxt(USERINFO.LANGU, "ZMSG_WS_COMMON_001", "371"); // It is already registered application information.
 
             parent.showMessage(sap, 10, "", sMsg);
 
