@@ -460,7 +460,7 @@
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "294", "", "", "", "");
 
         //검색조건 필드.
-        var oInp = new sap.m.Input({placeholder:l_txt, tooltip:l_txt, 
+        var oInp = new sap.m.Input({placeholder:l_txt, tooltip:l_txt, showClearIcon : true,
             layoutData: new sap.ui.layout.GridData({span:"XL8 L8 M8 S8"})});
         oGrid.addContent(oInp);
 

@@ -191,7 +191,7 @@
     
     //APP Description.
     oUIobj.gen.oInpDesc = new sap.m.Input({value:"{/CREATE/APPNM}", valueState:"{/CREATE/APPNM_stat}",
-      valueStateText:"{/CREATE/APPNM_stxt}", maxLength:40});
+      showClearIcon : true, valueStateText:"{/CREATE/APPNM_stxt}", maxLength:40});
 
     //A91	APP Description
     var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91", "", "", "", "");
@@ -258,7 +258,7 @@
 
     //Package Input Field
     oUIobj.gen.oInpPack = new sap.m.Input({value:"{/CREATE/PACKG}", valueState:"{/CREATE/PACKG_stat}",
-      valueStateText:"{/CREATE/PACKG_stxt}", editable:"{/CREATE/PACKG_edit}", maxLength:30});
+      showClearIcon : true, valueStateText:"{/CREATE/PACKG_stxt}", editable:"{/CREATE/PACKG_edit}", maxLength:30});
 
     //package 입력값 변경 이벤트.
     oUIobj.gen.oInpPack.attachChange(function(){      
@@ -277,7 +277,7 @@
     //Request No. Input Field
     oUIobj.gen.oInpReqNo = new sap.m.Input({value:"{/CREATE/REQNR}", valueState:"{/CREATE/REQNR_stat}",
       required:"{/CREATE/REQNR_requ}", editable:"{/CREATE/REQNR_edit}", showValueHelp:true, 
-      valueHelpOnly:true, maxLength:20});
+      showClearIcon : true, valueHelpOnly:true, maxLength:20});
     
     //Request No f4 help 이벤트.
     oUIobj.gen.oInpReqNo.attachValueHelpRequest(function(){      
@@ -348,7 +348,7 @@
     
 
     //OBJECT NAME INPUT FIELD(VIEW, TABLE명 입력필드.)
-    oUIobj.dataset.oInp1 = new sap.m.Input({showValueHelp:true, fieldWidth:"40%", value:"{/DATASET/TABNM}",
+    oUIobj.dataset.oInp1 = new sap.m.Input({showValueHelp:true, fieldWidth:"40%", value:"{/DATASET/TABNM}", showClearIcon : true,
       valueState:"{/DATASET/TABNM_stat}", valueStateText:"{/DATASET/TABNM_stxt}", description:"{/DATASET/TABTX}", maxLength:16});
     
     //OBJECT NAME change 이벤트.
@@ -373,7 +373,7 @@
 
     //APP Description.
     oUIobj.dataset.oInpDesc = new sap.m.Input({value:"{/DATASET/APPNM}", valueState:"{/DATASET/APPNM_stat}",
-      valueStateText:"{/DATASET/APPNM_stxt}", maxLength:40});
+      showClearIcon : true, valueStateText:"{/DATASET/APPNM_stxt}", maxLength:40});
 
     //A91	APP Description
     var l_txt = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91", "", "", "", "");
@@ -431,7 +431,7 @@
 
     //Package Input Field
     oUIobj.dataset.oInpPack = new sap.m.Input({value:"{/DATASET/PACKG}", valueState:"{/DATASET/PACKG_stat}",
-      valueStateText:"{/DATASET/PACKG_stxt}", editable:"{/DATASET/PACKG_edit}", maxLength:30});
+      showClearIcon : true, valueStateText:"{/DATASET/PACKG_stxt}", editable:"{/DATASET/PACKG_edit}", maxLength:30});
 
     //package 입력값 변경 이벤트.
     oUIobj.dataset.oInpPack.attachChange(function(){      
@@ -450,7 +450,7 @@
     //Request No. Input Field
     oUIobj.dataset.oInpReqNo = new sap.m.Input({value:"{/DATASET/REQNR}", valueState:"{/DATASET/REQNR_stat}",
       required:"{/DATASET/REQNR_requ}", editable:"{/DATASET/REQNR_edit}", showValueHelp:true, 
-      valueHelpOnly:true, maxLength:20});
+      showClearIcon : true, valueHelpOnly:true, maxLength:20});
     
     //Request No f4 help 이벤트.
     oUIobj.dataset.oInpReqNo.attachValueHelpRequest(function(){      

@@ -1632,6 +1632,7 @@ let oAPP = parent.oAPP,
             valueState: "{stat}",
             valueStateText: "{statTxt}",
             enabled: "{/edit}",
+            showClearIcon : true,
             change: oAPP.fn.onChangeInput,
             liveChange: oAPP.fn.onLiveChangeInput
         });

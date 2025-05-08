@@ -802,24 +802,24 @@
                     ]
 
                 },
-                {
-                    key: "WMENU20_07",
-                    icon: "sap-icon://u4a-fw-solid/Code",
-                    text: oAPP.msg.M344, // Code Editor
-                    items: [
-                        {
-                            key: "WMENU20_07_01",
-                            icon: "sap-icon://palette",
-                            text: oAPP.msg.M345, // Theme Designer
-                        },
-                        {
-                            key: "WMENU20_07_02",
-                            icon: "sap-icon://palette",
-                            text: oAPP.msg.M346, // Snippet Designer
-                        },
+                // {
+                //     key: "WMENU20_07",
+                //     icon: "sap-icon://u4a-fw-solid/Code",
+                //     text: oAPP.msg.M344, // Code Editor
+                //     items: [
+                //         {
+                //             key: "WMENU20_07_01",
+                //             icon: "sap-icon://palette",
+                //             text: oAPP.msg.M345, // Theme Designer
+                //         },
+                //         {
+                //             key: "WMENU20_07_02",
+                //             icon: "sap-icon://palette",
+                //             text: oAPP.msg.M346, // Snippet Designer
+                //         },
                         
-                    ]
-                }
+                //     ]
+                // }
 
             ],
 

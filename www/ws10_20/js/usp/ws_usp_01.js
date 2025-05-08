@@ -519,8 +519,8 @@
             // 기본 패턴과 커스텀 패턴을 합친다.
             aPatternMerge = aPatternJson.concat(aCustmPatternJson);
 
-            // // 우클릭 메뉴에 추가할 메뉴를 세팅한다.
-            // let aCtxMenu = _additionalUspCtxMenu();
+            // 우클릭 메뉴에 추가할 메뉴를 세팅한다.
+            let aCtxMenu = _additionalUspCtxMenu();
 
             // 패턴 메뉴가 없을 경우에는 해당 변수를 Array로 만든다.
             if(Array.isArray(aPatternMerge) === false){
@@ -536,10 +536,10 @@
             
             // // TEST ------ End
 
-            // // 추가할 컨텍스트 메뉴가 있다면 기존 메뉴정보와 합친다.
-            // if(Array.isArray(aCtxMenu) === true && aCtxMenu.length !== 0){
-            //     aPatternMerge = aPatternMerge.concat(aCtxMenu);
-            // }            
+            // 추가할 컨텍스트 메뉴가 있다면 기존 메뉴정보와 합친다.
+            if(Array.isArray(aCtxMenu) === true && aCtxMenu.length !== 0){
+                aPatternMerge = aPatternMerge.concat(aCtxMenu);
+            }            
 
             // APPCOMMON.fnSetModelProperty("/PATTN", aPatternMerge);
             APPCOMMON.fnSetModelProperty("/WS30/USP_EDITOR_CTX_MENU", aPatternMerge);

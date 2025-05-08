@@ -423,7 +423,6 @@ const
 		// 스니펫 목록을 저장한다.
 		let aSaveTargetList = [];
 		
-		// var oSaveSnippetItem;
 		for(var oItem of aSnippetList){
 
 			if(oItem._isnew === true){

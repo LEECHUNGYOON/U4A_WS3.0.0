@@ -286,7 +286,7 @@
             }else{
                 //일반 입력 필드인경우.
 
-                var oInp = new sap.m.Input({value:"{/UIATV}", showValueHelp:"{/showF4}"});
+                var oInp = new sap.m.Input({showClearIcon : true, value:"{/UIATV}", showValueHelp:"{/showF4}"});
                 oElem3.addField(oInp);
 
                 //input f4 help 이벤트.

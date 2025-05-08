@@ -203,7 +203,7 @@
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_ON", _sOption);
 
       //OBJID 변경건 처리.
-      oAPP.fn.attrChnageOBJID();
+      oAPP.fn.attrChnageOBJID(oEvent);
 
     }); //OBJID를 변경 이벤트.
 
@@ -471,7 +471,7 @@
     oRHbox1.data("CELL_INFO", "ATTR_CHANGE");
 
     //attribute 직접입력 필드
-    var oRInp2 = new sap.m.Input({value:"{UIATV}", editable:"{edit}", visible:"{inp_visb}", tooltip:"{UIATV}",
+    var oRInp2 = new sap.m.Input({value:"{UIATV}", editable:"{edit}", visible:"{inp_visb}", tooltip:"{UIATV}", showClearIcon : true,
       showValueHelp:"{showF4}", enabled:"{/IS_EDIT}", valueState:"{valst}", valueStateText:"{valtx}", valueHelpOnly:"{F4Only}"});
     oRHbox1.addItem(oRInp2);
 
@@ -3025,7 +3025,7 @@
 
 
   //OBJID 입력건 처리.
-  oAPP.fn.attrChnageOBJID = function(){
+  oAPP.fn.attrChnageOBJID = function(oEvent){
     
     ls_uiinfo = oAPP.attr.oModel.getProperty("/uiinfo");
 
@@ -3235,6 +3235,15 @@
 
     //이전 OBJID를 변경된 ID로 업데이트.
     ls_uiinfo.OBJID_bf = ls_uiinfo.OBJID;
+
+
+    let _oUi = oEvent.oSource;
+
+    //parent.setBusy("X") function 내부에서 sap.ui.getCore().lock();을 사용하고 있어
+    //input에서 valueState에 의해 출력된 메시지 팝업을 종료하지 못하는 문제를 보완하고자 예외 로직 처리.
+    if(_oUi?._oValueStateMessage?._oPopup?.isOpen && _oUi._oValueStateMessage._oPopup.isOpen()){
+      _oUi._oValueStateMessage._oPopup.close();
+    }
 
     //MODEL 갱신 처리.
     oAPP.attr.oModel.setProperty("/uiinfo", ls_uiinfo);

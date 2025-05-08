@@ -1,180 +1,24 @@
 
 /**
  * @title 
- * USP Code Editor ContextMenu
+ * USP Code Editor Theme Designer
  * 
  * @description 
- * 에디터 주석 색상 변경 메뉴
- * 
- * 
- * @notice
- * #### 해당 모듈 영역에서 사용하는 this 객체는 UI5 scope임 #####
- * 
- * - 해당 모듈을 호출할 당시에 GlobalThis를 scope chain으로 호출함
- * (참고 소스: 
- * => www\ws10_20\js\usp\ws_usp_01.js 
- * => oAPP.fn.fnUspPatternContextMenuClick
- * => parent.require(sCtxMenuModuleRootPath).call(globalThis, oPARAM)
- * )
- * 
- * - 예1) 자주 사용하던 oAPP 오브젝트 접근 시,
- *   현재 scope에서는 this.oAPP로 접근하면 됨.
- * 
- * - 예2) UI5 라이브러리를 사용할 경우
- *   this.sap 으로 접근하면 됨.
+ * 에디터 테마 변경 팝업
  */
 
 // 접속 서버 정보
 const SERVER_INFO = parent.getServerInfo();
 const SYSID = SERVER_INFO.SYSID;
 
-// 주석 기본 색상
-const DEFAULT_COMMENT_COLOR = "#8E908C";
 
+export function exports(IF_DATA){
 
-/**************************************************************************
- * 주석 색상 저장
- **************************************************************************/
-function _saveCommentColor(sColor){
+    let oPARAM = {
+        scopeCode: "usp_main"
+    };
 
+    // 모나코 에디터 테마 디자이너 팝업 실행
+    oAPP.fn.openMonacoThemeDesigner(oPARAM);
 
-
-
-
-
-} // end of _saveCommentColor
-
-
-export function exports(oPARAM){
-
-    let sP13nRootPath = parent.getPath("P13N_ROOT");
-    let sUspSettingJsonPath = parent.PATH.join(sP13nRootPath, "usp", "settings.json");    
-
-    let sUspSettings = parent.FS.readFileSync(sUspSettingJsonPath, "utf-8");
-
-    try {
-
-        var oUspSettingsInfo = JSON.parse(sUspSettings);
-        
-    } catch (error) {
-        oUspSettingsInfo = {};
-    }
-
-    if(typeof oUspSettingsInfo !== "object"){
-        oUspSettingsInfo = {};
-    }
-
-    // SYSID 별 옵션 데이터 구조 생성
-    if(!oUspSettingsInfo[SYSID]){
-        oUspSettingsInfo[SYSID] = {};
-    }    
-
-    // 주석 기본색상 설정
-    if(!oUspSettingsInfo[SYSID]?.comment_color){
-        oUspSettingsInfo[SYSID].comment_color = DEFAULT_COMMENT_COLOR;
-    }
-
-    // 주석 색상
-    let sCommentColor = oUspSettingsInfo[SYSID].comment_color;
-
-    // 선택한 컨텍스트 메뉴 정보
-    let oMenuInfo = oPARAM?.MENU_INFO || {};
-
-    let oDialog = new sap.m.Dialog({
-
-        // properties
-        draggable: true,
-        resizable: true,
-
-        // aggregations
-        buttons: [
-
-            /**
-             * 저장 버튼
-             */
-            new sap.m.Button({
-                type: sap.m.ButtonType.Emphasized,
-                icon: "sap-icon://accept",
-                press: function(oEvent){
-
-                   
-
-                    let oColorPicker = oDialog.data("ColorPicker");
-                    if(oColorPicker){
-                        return;
-                    }
-
-                    debugger;
-
-                }
-            }),
-
-            /**
-             * 닫기 버튼
-             */
-            new sap.m.Button({
-                type: sap.m.ButtonType.Reject,
-                icon: "sap-icon://decline",
-                press: function(oEvent){
-                    oDialog.close();        
-                }
-            })
-        ],
-
-        // aggregations
-        customHeader: new sap.m.Toolbar({
-            content: [
-
-                new sap.ui.core.Icon({
-                    src: oMenuInfo?.ICON || ""
-                }),
-                
-                /**
-                 * 타이틀
-                 */
-                new sap.m.Title({
-                    text: oMenuInfo?.DESC || ""
-                }).addStyleClass("sapUiTinyMarginBegin"),
-
-                new sap.m.ToolbarSpacer(),
-
-
-                /**
-                 * 닫기 버튼
-                 */
-                new sap.m.Button({
-                    type: sap.m.ButtonType.Reject,
-                    icon: "sap-icon://decline",
-                    press: function(oEvent){            
-                        oDialog.close();    
-                    }
-                })
-
-            ]
-
-        }),
-
-        afterClose: function(){
-            oDialog.destroy();
-        }
-
-    });
-
-    let VBOX1 = new sap.m.VBox({
-        renderType: "Bare",
-        alignItems: "Center"
-    });
-
-    oDialog.addContent(VBOX1);
-
-    let COLPIC1 = new sap.ui.unified.ColorPicker({
-        colorString: sCommentColor
-    });
-
-    oDialog.data("ColorPicker", COLPIC1);
-
-    VBOX1.addItem(COLPIC1);
-
-    oDialog.open();
-    
 }

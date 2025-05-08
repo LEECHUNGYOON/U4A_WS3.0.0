@@ -1154,6 +1154,7 @@ function designView(oArea, oTable){
             valueState: "{stat}",
             valueStateText: "{statTxt}",
             enabled: "{/edit}",
+            showClearIcon : true,
             change: oContr.fn.onChangeInput,
             liveChange: oContr.fn.onLiveChangeInput
         });

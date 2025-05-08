@@ -87,7 +87,7 @@
         oCont.addFormElement(oElem3);
 
         //신규 package 명 입력 input UI 생성.
-        var oInp3 = new sap.m.Input({value:"{/bind/NEWPK}", showValueHelp:true, valueState:"{/bind/NEWPK_vs}",
+        var oInp3 = new sap.m.Input({showClearIcon : true, value:"{/bind/NEWPK}", showValueHelp:true, valueState:"{/bind/NEWPK_vs}",
             valueStateText:"{/bind/NEWPK_tx}", fieldWidth:"30%", description:"{/bind/NEWPN}"});
         oElem3.addField(oInp3);
 
@@ -114,7 +114,7 @@
 
         //change Request No. 출력 input UI 생성.
         var oInp4 = new sap.m.Input({value:"{/bind/CREQN}", showValueHelp:true, valueHelpOnly:true, valueState:"{/bind/CREQN_vs}",
-            valueStateText:"{/bind/CREQN_tx}", editable:"{/bind/edit01}", fieldWidth:"30%", description:"{/bind/REQTX}"});
+            showClearIcon : true, valueStateText:"{/bind/CREQN_tx}", editable:"{/bind/edit01}", fieldWidth:"30%", description:"{/bind/REQTX}"});
         oElem4.addField(oInp4);
 
         //change Request No. change 이벤트.

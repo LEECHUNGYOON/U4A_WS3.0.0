@@ -472,38 +472,38 @@
     /************************************************************************
      * 모나코 테마 디자이너
      ************************************************************************/
-    oAPP.fn.fnWS10WMENU20_07_01 = function(){
+    // oAPP.fn.fnWS10WMENU20_07_01 = function(){
 
-        let oPARAM = {
-            scopeCode: "usp_main"
-        };
+    //     let oPARAM = {
+    //         scopeCode: "usp_main"
+    //     };
 
-        // 모나코 에디터 테마 디자이너 팝업 실행
-        oAPP.fn.openMonacoThemeDesigner(oPARAM);
+    //     // 모나코 에디터 테마 디자이너 팝업 실행
+    //     oAPP.fn.openMonacoThemeDesigner(oPARAM);
 
-    }; // end of oAPP.fn.fnWS10WMENU20_07_01
+    // }; // end of oAPP.fn.fnWS10WMENU20_07_01
 
 
-    /************************************************************************
-     * 모나코 스니펫 디자이너
-     ************************************************************************/
-    oAPP.fn.fnWS10WMENU20_07_02 = function(){
+    // /************************************************************************
+    //  * 모나코 스니펫 디자이너
+    //  ************************************************************************/
+    // oAPP.fn.fnWS10WMENU20_07_02 = function(){
 
-        // Busy Indicator가 실행중이면 빠져나간다.
-        if (parent.getBusy() == 'X') {
-            return;
-        }
+    //     // Busy Indicator가 실행중이면 빠져나간다.
+    //     if (parent.getBusy() == 'X') {
+    //         return;
+    //     }
 
-        // // busy 키고 Lock 걸기
-        // oAPP.common.fnSetBusyLock("X");
+    //     // // busy 키고 Lock 걸기
+    //     // oAPP.common.fnSetBusyLock("X");
 
-        let oPARAM = {
-            scopeCode: "usp_main"
-        };
+    //     let oPARAM = {
+    //         scopeCode: "usp_main"
+    //     };
 
-        oAPP.fn.openMonacoSnippetDesigner(oPARAM);
+    //     oAPP.fn.openMonacoSnippetDesigner(oPARAM);
 
-    }; // end of oAPP.fn.fnWS10WMENU20_07_02
+    // }; // end of oAPP.fn.fnWS10WMENU20_07_02
 
 
     /************************************************************************

@@ -28,10 +28,8 @@
 const SERVER_INFO = parent.getServerInfo();
 
 
-module.exports = function(oPARAM){
+export function exports(IF_DATA){
 
-
-    debugger;
 
 
 }

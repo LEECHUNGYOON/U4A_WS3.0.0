@@ -352,7 +352,7 @@
     var oLab9 = new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt});
     oFrmElem3.setLabel(oLab9);
 
-    var oInp2 = new sap.m.Input();
+    var oInp2 = new sap.m.Input({showClearIcon : true, showClearIcon : true});
     oFrmElem3.addField(oInp2);
 
     //ui 검색 필드 Suggest 처리.

@@ -124,7 +124,7 @@
 
         oFElem1.setLabel(new sap.m.Label({text:"파일명", design:"Bold", required:true}));
         oFElem1.addField(new sap.m.Input({value:"{/fileName}", valueState:"{/stat/st/fileName}", 
-            valueStateText:"{/stat/tx/fileName}"}));
+            showClearIcon : true, valueStateText:"{/stat/tx/fileName}"}));
 
         var oFElem2 = new sap.ui.layout.form.FormElement();
         oFCont1.addFormElement(oFElem2);
@@ -134,7 +134,7 @@
 
         oFElem2.setLabel(new sap.m.Label({text:l_txt, design:"Bold", required:true}));
         oFElem2.addField(new sap.m.Input({value:"{/title}", valueState:"{/stat/st/title}", 
-            valueStateText:"{/stat/tx/title}"}));
+            showClearIcon : true, valueStateText:"{/stat/tx/title}"}));
 
         var oFCont2 = new sap.ui.layout.form.FormContainer();
         oForm.addFormContainer(oFCont2);
@@ -145,7 +145,7 @@
         oFElem3.setLabel(new sap.m.Label({text:"다운로드 경로", design:"Bold", required:true}));
 
         var oInp1 = new sap.m.Input({value:"{/downPath}", valueState:"{/stat/st/downPath}", 
-            valueStateText:"{/stat/tx/downPath}", showValueHelp:true, valueHelpOnly:true});
+            showClearIcon : true, valueStateText:"{/stat/tx/downPath}", showValueHelp:true, valueHelpOnly:true});
         oFElem3.addField(oInp1);
 
         //f4 help 선택 이벤트.

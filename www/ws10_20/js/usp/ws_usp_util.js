@@ -49,11 +49,14 @@ module.exports = {
                 sUi5IconUrl = "";
             }
 
+            sUi5IconUrl = "";
+
             let aPatternJson = [{
                 "PKEY": "",
                 "CKEY": "PATT001",
                 "TYPE": "ROOT",
                 "ICON": "sap-icon://source-code",
+                // "DESC": "zzzzzz"
                 "DESC": WSUTIL.getWsMsgClsTxt(sLangu, "ZMSG_WS_COMMON_001", "021") // Default Pattern
             }, {
                 "PKEY": "PATT001",

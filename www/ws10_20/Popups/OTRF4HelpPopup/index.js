@@ -311,7 +311,7 @@ var oAPP = parent.gfn_getParent();
 
 					default:
 						// DEFAULT INPUT필드.
-						var oSFld = new sap.m.Input({ type: "Text", valueLiveUpdate: true, maxLength: it_fdesc[i].OUTPUTLEN });
+						var oSFld = new sap.m.Input({ type: "Text", valueLiveUpdate: true, maxLength: it_fdesc[i].OUTPUTLEN, showClearIcon : true });
 
 						//enter event
 						oSFld.attachSubmit(function () { LF_getServerData(); });
@@ -632,7 +632,7 @@ var oAPP = parent.gfn_getParent();
 		ZF4SH_ovtoolbar.addContent(olb01);
 
 		//max Hits
-		var ZF4SH_input01 = new sap.m.Input({ type: "Number", width: "60px" });
+		var ZF4SH_input01 = new sap.m.Input({ type: "Number", width: "60px", showClearIcon : true });
 
 		//최대 검색건수 설정.
 		ZF4SH_input01.setValue(200);

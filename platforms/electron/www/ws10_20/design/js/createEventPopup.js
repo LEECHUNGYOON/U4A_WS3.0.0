@@ -373,7 +373,8 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
     value:"{/event/meth}",
     valueState:"{/event/meth_stat}",
     valueStateText:"{/event/meth_text}",
-    maxLength:27
+    maxLength:27,
+    showClearIcon : true
   });
   oFmElem1.addField(oFmInp1);
   
@@ -401,7 +402,8 @@ oAPP.fn.createEventPopup = function(is_attr, f_callBack){
     value:"{/event/desc}",
     valueState:"{/event/desc_stat}",
     valueStateText:"{/event/desc_text}",
-    maxLength:40
+    maxLength:40,
+    showClearIcon : true
   });
   oFmElem2.addField(oFmInp2);
 

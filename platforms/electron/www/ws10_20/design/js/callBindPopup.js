@@ -895,6 +895,10 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
         return resolve(false);
       }
 
+      if(oAPP.attr.oBindDialog._oModel.oData.T_MPROP.length === 0){
+        return resolve(false);
+      }
+
       var ls_P04 = oAPP.attr.oBindDialog._oModel.oData.T_MPROP.find( a => a.ITMCD === "P04");
 
       //Bind type이 지정된 경우
@@ -1419,7 +1423,7 @@ oAPP.fn.callBindPopup = function(sTitle, CARDI, f_callback, UIATK){
   oTabCol2HBox1.addItem(oTabCol2Txt1);
 
   //바인딩 추가 속성정보 INPUT UI.
-  var oTabCol2Inp1 = new sap.m.Input({value:"{val}", tooltip:"{val}", visible:"{inp_vis}",
+  var oTabCol2Inp1 = new sap.m.Input({value:"{val}", tooltip:"{val}", visible:"{inp_vis}", showClearIcon : true,
     editable:"{edit}", maxLength:"{maxlen}", valueState:"{stat}", valueStateText:"{statTxt}", enabled:"{/edit}"});
   oTabCol2HBox1.addItem(oTabCol2Inp1);
 

@@ -17,7 +17,7 @@
         var l_txt = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "294", "", "", "", "");
         //필터 검색조건 필드.
 
-        var oInp = new sap.m.Input({placeholder:l_txt, tooltip:l_txt});
+        var oInp = new sap.m.Input({placeholder:l_txt, tooltip:l_txt, showClearIcon : true});
         oPop.addContent(oInp);
 
         //필터 엔터 이벤트.
