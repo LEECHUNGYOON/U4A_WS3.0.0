@@ -710,7 +710,7 @@ window.require([
         editor.onDidChangeModelContent((event) => {
             
             // TEST --------- Start
-            updatePlaceholder();
+            // updatePlaceholder();
             // TEST --------- End
 
             // 외부에서 업데이트가 되어서 Change 이벤트가 발생했을 경우에는 하위로직 수행 하지 않고 빠져나간다.            
