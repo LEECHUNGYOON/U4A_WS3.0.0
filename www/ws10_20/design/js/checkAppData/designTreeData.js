@@ -339,14 +339,23 @@ oCheckFunc.validFromTo = function(sAttr, from, to){
 
     var _sRes = JSON.parse(JSON.stringify(TY_CHECK_RES));
     
-    //값을 입력하지 않은경우 exit.
-    if(sAttr.UIATV === ""){
+
+    //attribute에 입력한 값을 integer으로 변환.
+    var _UIATV = parseInt(Number(sAttr.UIATV));
+
+    //숫자 유형 여부 확인.
+    if(isNaN(_UIATV) === true){
+        _sRes.RETCD = "E";
+
+        //372	&1 은 숫자 유형이 아닙니다. 숫자 유형의 값을 입력 하십시오.
+        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "372", sAttr.UIATV);
+
         return _sRes;
     }
 
 
     //from 값보다 작은 값을 입력했거나, to 값보다 큰 값을 입력한 경우.
-    if(sAttr.UIATV < from || sAttr.UIATV > to){
+    if(_UIATV < from || _UIATV > to){
 
         _sRes.RETCD = "E";
 
