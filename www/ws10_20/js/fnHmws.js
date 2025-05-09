@@ -865,9 +865,10 @@
             return;
         }        
        
-        let sModulePath = parent.PATH.join(PATHINFO.MODULES_ROOT, "VersionManagement", "index.js");
+        // let sModulePath = parent.PATH.join(PATHINFO.MODULES_ROOT, "VersionManagement", "index.js");
+        var sIndexPath = parent.PATH.join(PATHINFO.POPUP_ROOT, "versionManagement", "index.js");
 
-        parent.require(sModulePath)(parent.REMOTE, oAPP);
+        parent.require(sIndexPath)(parent.REMOTE, oAPP);
 
     }; // end of oAPP.fn.fnWS20WMENU20_06
 

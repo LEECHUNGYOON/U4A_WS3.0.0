@@ -42,7 +42,7 @@ module.exports = function(REMOTE, oAPP){
         oDefaultOption = parent.require(sSettingsJsonPath),
         oBrowserOptions = JSON.parse(JSON.stringify(oDefaultOption.browserWindow));        
 
-        oBrowserOptions.title = "Version Management"; // [MSG]
+        oBrowserOptions.title = "[APP TITLE]"; // [MSG]
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;        
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL; //테마별 색상 처리
