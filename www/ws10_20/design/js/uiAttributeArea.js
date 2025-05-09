@@ -1162,8 +1162,12 @@
       is_attr.valst = "Error";
       is_attr.valtx = _aReuireError.RTMSG;
 
-      //입력값 초기화.
-      is_attr.UIATV = "";
+      // //입력값 초기화.
+      // is_attr.UIATV = "";
+
+      //기존 입력값을 DEFAULT 값으로 변경.
+      is_attr.UIATV = oAPP.DATA.LIB.T_0023.find( a => a.UIATK === is_attr.UIATK )?.DEFVL || "";
+
 
     }
 

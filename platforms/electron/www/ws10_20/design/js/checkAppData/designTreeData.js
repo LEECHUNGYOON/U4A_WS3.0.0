@@ -108,7 +108,7 @@ module.exports.checkPropertyValue = function(sAttr){
     try {
         eval(_eval);    
     } catch (error) {
-        debugger;
+
     }
     
 
@@ -362,6 +362,44 @@ oCheckFunc.validFromTo = function(sAttr, from, to){
 
 };
 
+
+
+
+/*********************************************************
+ * @function - 입력한 property의 최소값 숫자 점검.
+ ********************************************************/
+oCheckFunc.validMinInt = function(sAttr, minValue){
+
+    var _sRes = JSON.parse(JSON.stringify(TY_CHECK_RES));
+
+    //attribute에 입력한 값을 integer으로 변환.
+    var _UIATV = parseInt(Number(sAttr.UIATV));
+
+    //숫자 유형 여부 확인.
+    if(isNaN(_UIATV) === true){
+        _sRes.RETCD = "E";
+
+        //372	&1 은 숫자 유형이 아닙니다. 숫자 유형의 값을 입력 하십시오.
+        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "372", sAttr.UIATV);
+
+        return _sRes;
+    }
+    
+    //입력값이 기준값보다 작은경우.
+    if(_UIATV < minValue){
+
+        _sRes.RETCD = "E";
+
+        //373	&1 보다 큰 값을 입력 하십시오.
+        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt(oAPP.oDesign.settings.GLANGU, "ZMSG_WS_COMMON_001", "373", minValue);
+
+        return _sRes;
+
+    }
+
+    return _sRes;
+
+};
 
 
 
