@@ -254,13 +254,44 @@
                                 width: "200px",
                                 value: "{PACKG}",
                                 submit: oAPP.events.ev_AppF4Search,
+                                // liveChange: function(oEvent){
+
+                                //     var oInput = oEvent.getSource(),
+                                //         sValue = oInput.getValue();
+
+                                //     if (typeof sValue == "string" && sValue.length > 0 && sValue !== "") {
+                                //         oInput.setValue(sValue.toUpperCase());
+                                //     }
+
+                                // }
+
                                 liveChange: function(oEvent){
 
                                     var oInput = oEvent.getSource(),
                                         sValue = oInput.getValue();
 
-                                    if (typeof sValue == "string" && sValue.length > 0 && sValue !== "") {
+                                    /**
+                                     * UI5의 Input에 setValue 메소드를 수행하면 무조건 커서가 맨 끝으로 이동되는 현상때문에
+                                     * 텍스트의 중간부터 입력할 경우에도 setValue를 할 경우 무조건 커서가 텍스트 맨 마지막으로 
+                                     * 이동되기 때문에 이전 커서 위치를 기억했다가 setValue 이후에 이전 위치로 다시 커서를 
+                                     * 이동시켜야 자연스럽게 입력이 됨.
+                                     */
+
+                                    // 입력한 값의 커서 위치
+                                    let beforeCurPos;
+
+                                    let oHtmlInputDom = $(oInput.getDomRef()).find("input")[0];
+                                    if(oHtmlInputDom){
+                                        beforeCurPos = oHtmlInputDom.selectionStart;
+                                    }
+
+                                    if(sValue){
                                         oInput.setValue(sValue.toUpperCase());
+                                    }
+
+                                    // 입력한 값의 이전 위치로 이동
+                                    if(typeof beforeCurPos !== "undefined"){
+                                        oHtmlInputDom.setSelectionRange(beforeCurPos, beforeCurPos);
                                     }
 
                                 }
@@ -289,16 +320,47 @@
                                 width: "200px",
                                 value: "{ERUSR}",
                                 submit: oAPP.events.ev_AppF4Search,
+                                // liveChange: function(oEvent){
+
+                                //     var oInput = oEvent.getSource(),
+                                //         sValue = oInput.getValue();
+
+                                //     if (typeof sValue == "string" && sValue.length > 0 && sValue !== "") {
+                                //         oInput.setValue(sValue.toUpperCase());
+                                //     }
+                                    
+                                // }
                                 liveChange: function(oEvent){
 
                                     var oInput = oEvent.getSource(),
                                         sValue = oInput.getValue();
 
-                                    if (typeof sValue == "string" && sValue.length > 0 && sValue !== "") {
+                                    /**
+                                     * UI5의 Input에 setValue 메소드를 수행하면 무조건 커서가 맨 끝으로 이동되는 현상때문에
+                                     * 텍스트의 중간부터 입력할 경우에도 setValue를 할 경우 무조건 커서가 텍스트 맨 마지막으로 
+                                     * 이동되기 때문에 이전 커서 위치를 기억했다가 setValue 이후에 이전 위치로 다시 커서를 
+                                     * 이동시켜야 자연스럽게 입력이 됨.
+                                     */
+
+                                    // 입력한 값의 커서 위치
+                                    let beforeCurPos;
+
+                                    let oHtmlInputDom = $(oInput.getDomRef()).find("input")[0];
+                                    if(oHtmlInputDom){
+                                        beforeCurPos = oHtmlInputDom.selectionStart;
+                                    }
+
+                                    if(sValue){
                                         oInput.setValue(sValue.toUpperCase());
                                     }
-                                    
+
+                                    // 입력한 값의 이전 위치로 이동
+                                    if(typeof beforeCurPos !== "undefined"){
+                                        oHtmlInputDom.setSelectionRange(beforeCurPos, beforeCurPos);
+                                    }
+
                                 }
+
                             }).bindProperty("enabled", {
                                 parts: [
                                     `${C_BIND_ROOT_PATH}/ISTRIAL`
@@ -324,16 +386,46 @@
                                 value: "{APPID}",
                                 width: "200px",
                                 submit: oAPP.events.ev_AppF4Search,
+                                // liveChange: function(oEvent){
+
+                                //     var oInput = oEvent.getSource(),
+                                //         sValue = oInput.getValue();
+
+                                //     if (typeof sValue == "string" && sValue.length > 0 && sValue !== "") {
+                                //         oInput.setValue(sValue.toUpperCase());
+                                //     }
+                                    
+                                // }
                                 liveChange: function(oEvent){
 
                                     var oInput = oEvent.getSource(),
                                         sValue = oInput.getValue();
 
-                                    if (typeof sValue == "string" && sValue.length > 0 && sValue !== "") {
+                                    /**
+                                     * UI5의 Input에 setValue 메소드를 수행하면 무조건 커서가 맨 끝으로 이동되는 현상때문에
+                                     * 텍스트의 중간부터 입력할 경우에도 setValue를 할 경우 무조건 커서가 텍스트 맨 마지막으로 
+                                     * 이동되기 때문에 이전 커서 위치를 기억했다가 setValue 이후에 이전 위치로 다시 커서를 
+                                     * 이동시켜야 자연스럽게 입력이 됨.
+                                     */
+
+                                    // 입력한 값의 커서 위치
+                                    let beforeCurPos;
+
+                                    let oHtmlInputDom = $(oInput.getDomRef()).find("input")[0];
+                                    if(oHtmlInputDom){
+                                        beforeCurPos = oHtmlInputDom.selectionStart;
+                                    }
+
+                                    if(sValue){
                                         oInput.setValue(sValue.toUpperCase());
                                     }
-                                    
-                                }
+
+                                    // 입력한 값의 이전 위치로 이동
+                                    if(typeof beforeCurPos !== "undefined"){
+                                        oHtmlInputDom.setSelectionRange(beforeCurPos, beforeCurPos);
+                                    }
+
+                                }                                
                             })
                         }),
                         new sap.ui.layout.form.FormElement({

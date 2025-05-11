@@ -996,7 +996,7 @@ const
 		// 기존에 스니펫 페이지가 있다면 지우고 다시 붙인다.
 		let oPage = oNavcon.getPage(oSnippetPage.getId());
 		if (oPage) { 
-			oNavcon.removePage(oSnippetPage);
+			oNavcon.removePage(oPage);
 		}
 
 		oNavcon.addPage(oSnippetPage);
