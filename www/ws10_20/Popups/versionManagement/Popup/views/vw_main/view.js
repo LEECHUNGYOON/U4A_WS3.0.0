@@ -1,4 +1,4 @@
-export var oContr = await new Promise(async (resolve)=>{
+export let oContr = await new Promise(async (resolve)=>{
 
 /************************************************************************
  * 💖 컨트롤러 호출
@@ -23,39 +23,60 @@ export var oContr = await new Promise(async (resolve)=>{
     /*****************************************
      * 📑 전체 메인
      *****************************************/
-    let PAGE = new sap.m.Page({
+    let MAIN_PAGE = new sap.m.Page({
         showHeader: false,
         enableScrolling: false,
         showFooter: false,
     });
 
-    APP.addPage(PAGE);
+    APP.addPage(MAIN_PAGE);
 
-    PAGE.setModel(oContr.oModel);
+    MAIN_PAGE.setModel(oContr.oModel);
 
     let NAVCON1 = new sap.m.NavContainer();
-    PAGE.addContent(NAVCON1);
+    MAIN_PAGE.addContent(NAVCON1);
 
-    let PAGE1 = new sap.m.Page({
+    oContr.ui.NAVCON1 = NAVCON1;
 
+    let PAGE = new sap.m.Page({
+        enableScrolling: false
     });
-    NAVCON1.addPage(PAGE1);
+    NAVCON1.addPage(PAGE);
 
     let OVERFLOWTOOLBAR1 = new sap.m.OverflowToolbar();
-    PAGE1.setCustomHeader(OVERFLOWTOOLBAR1);
+    PAGE.setCustomHeader(OVERFLOWTOOLBAR1);
 
     let TITLE1 = new sap.m.Title({
-        text: `Version of ${oAPP.IF_DATA.oAppInfo.APPID}`  // [MSG]
+        text: oContr.msg.M005   // 버전 히스토리 [ APPID ];
     });
-    
+
     OVERFLOWTOOLBAR1.addContent(TITLE1);
+
+    let SPLITTER1 = new sap.ui.layout.Splitter({
+        orientation: "Vertical"
+    });
+    SPLITTER1.addStyleClass("snippetSplitter");
+
+    PAGE.addContent(SPLITTER1);
+
+    let PAGE1 = new sap.m.Page({
+        enableScrolling: false,
+        showHeader: false
+    });
+    SPLITTER1.addContentArea(PAGE1);
+
+    oContr.ui.VERLIST_PAGE = PAGE1;
+
+    oContr.ui.SPLITTER1 = SPLITTER1;
 
     let TABLE1 = new sap.ui.table.Table({
         rowHeight: 45,
-        selectionMode: "Multi",
+        // selectionMode: "Multi",
+        selectionMode: "Single",
+        selectionBehavior: "Row",
         minAutoRowCount: 1,
         visibleRowCountMode: "Auto",
-        fixedColumnCount: 3,
+        fixedColumnCount: 4,
         columns: [
 
             // Status
@@ -63,12 +84,12 @@ export var oContr = await new Promise(async (resolve)=>{
                 width: "80px",
                 hAlign: "Center",
                 label: new sap.m.Label({
-                    text: "Status", // [MSG]                 
+                    text: oContr.msg.M006, // Status,
                     design: "Bold"
                 }),
                 template: new sap.m.ObjectStatus({
                     state: "{_STATUS}",
-                    icon : "{_STATUS_ICON}"
+                    icon: "{_STATUS_ICON}"
                 })
             }),
 
@@ -77,11 +98,13 @@ export var oContr = await new Promise(async (resolve)=>{
                 width: "200px",
                 hAlign: "Begin",
                 label: new sap.m.Label({
-                    text: "App ID", // [MSG]                    
+                    text: oContr.msg.M007,  // Application ID           
                     design: "Bold"
                 }),
                 template: new sap.m.Title({
-                    text: "{APPID}"
+                    text: "{APPID}",
+                    wrapping: false,
+                    tooltip: "{APPID}"
                 })
                 // template: new sap.m.Text({
                 //     text: "{APPID}"
@@ -103,30 +126,12 @@ export var oContr = await new Promise(async (resolve)=>{
                 //     }).addStyleClass("sapMObjectStatusLarge")
             }),
 
-            // Compare
-            new sap.ui.table.Column({
-                width: "100px",
-                hAlign: "Center",
-                label: new sap.m.Label({
-                    text: "Compare", // [MSG]                    
-                    design: "Bold"
-                }),
-                template: new sap.m.Button({
-                    icon: "sap-icon://compare",
-                    press: function(oEvent){
-
-                        oContr.fn.onCompareCurrVersion(oEvent);
-
-                    }
-                })
-            }),
-
             // App Version
             new sap.ui.table.Column({
                 width: "100px",
                 hAlign: "Center",
                 label: new sap.m.Label({
-                    text: "App Version", // [MSG]                    
+                    text: oContr.msg.M009,  // App Version
                     design: "Bold"
                 }),
                 template: new sap.m.Text({
@@ -134,29 +139,67 @@ export var oContr = await new Promise(async (resolve)=>{
                 })
             }),
 
-            // Request
+            // Compare (Base/Target)
             new sap.ui.table.Column({
                 width: "200px",
-                hAlign: "Begin",
+                hAlign: "Center",
                 label: new sap.m.Label({
-                    text: "Request", // [MSG]                    
+                    text: oContr.msg.M008,  // Compare (Base/Target)
+                    design: "Bold"
+                }),   
+                template: new sap.m.HBox({
+                    width: "100%",
+                    alignItems: "Center",
+                    justifyContent: "Center",
+                    items: [
+                        new sap.m.RadioButton({
+                            selected: "{_ISSOURCE}",
+                            groupName: "g1",
+                            text: oContr.msg.M021,   // 비교 기준
+                            select: function (oEvent) {
+                                oContr.ui.TABLE1.clearSelection();
+                            }
+                        }),
+                        new sap.m.RadioButton({
+                            selected: "{_ISTARGET}",
+                            groupName: "g2",
+                            text: oContr.msg.M022,   // 비교 대상
+                            select: function (oEvent) {
+                                oContr.ui.TABLE1.clearSelection();
+                            }
+                        }),
+                    ]
+                })
+
+            }),
+
+            // Request
+            new sap.ui.table.Column({
+                width: "120px",
+                hAlign: "Center",
+                label: new sap.m.Label({
+                    text: oContr.msg.M010,  // Request No.
                     design: "Bold"
                 }),
                 template: new sap.m.Text({
-                    text: "{CTSNO}"
+                    text: "{CTSNO}",
+                    wrapping: false,
+                    tooltip: "{CTSNO}"
                 })
             }),
 
             // Request Text
             new sap.ui.table.Column({
-                width: "1000px",
+                width: "500px",
                 hAlign: "Begin",
                 label: new sap.m.Label({
-                    text: "Request Text", // [MSG]                    
+                    text: oContr.msg.M011,  // Request Desc.
                     design: "Bold"
                 }),
                 template: new sap.m.Text({
-                    text: "{CTSTX}"
+                    text: "{CTSTX}",
+                    wrapping: false,
+                    tooltip: "{CTSTX}"
                 })
             }),
 
@@ -165,7 +208,7 @@ export var oContr = await new Promise(async (resolve)=>{
                 width: "120px",
                 hAlign: "Center",
                 label: new sap.m.Label({
-                    text: "Package", // [MSG]                    
+                    text: oContr.msg.M012,  // Package
                     design: "Bold"
                 }),
                 template: new sap.m.Text({
@@ -178,7 +221,7 @@ export var oContr = await new Promise(async (resolve)=>{
                 width: "120px",
                 hAlign: "Center",
                 label: new sap.m.Label({
-                    text: "Create Date", // [MSG]                    
+                    text: oContr.msg.M013,  // Create Date
                     design: "Bold"
                 }),
                 template: new sap.m.Text({
@@ -191,7 +234,7 @@ export var oContr = await new Promise(async (resolve)=>{
                 width: "120px",
                 hAlign: "Center",
                 label: new sap.m.Label({
-                    text: "Create Time", // [MSG]                    
+                    text: oContr.msg.M014,  // Create Time
                     design: "Bold"
                 }),
                 template: new sap.m.Text({
@@ -204,7 +247,7 @@ export var oContr = await new Promise(async (resolve)=>{
                 width: "120px",
                 hAlign: "Center",
                 label: new sap.m.Label({
-                    text: "Create User", // [MSG]                    
+                    text: oContr.msg.M015, // Create User
                     design: "Bold"
                 }),
                 template: new sap.m.Text({
@@ -224,42 +267,28 @@ export var oContr = await new Promise(async (resolve)=>{
     let TOOLBAR1 = new sap.m.OverflowToolbar();
     TABLE1.addExtension(TOOLBAR1);
 
-    let BUTTON1 = new sap.m.Button({
-        icon: "sap-icon://multiselect-all",
-        press: function(){
-
-            oContr.fn.setMultiSelectAll();
-
-            sap.m.MessageToast.show(1);
-        }
-    });
-    // TOOLBAR1.addContent(BUTTON1);
-
-    let BUTTON2 = new sap.m.Button({
-        icon: "sap-icon://multiselect-none",
-        press: function(){
-
-            sap.m.MessageToast.show(2);
-        }
-    });
-    // TOOLBAR1.addContent(BUTTON2);
-
+    /**
+     * 선택한 기준/대상 비교 버튼
+     */
     let BUTTON3 = new sap.m.Button({
         icon: "sap-icon://compare",
         type: "Emphasized",
-        press: function(){
+        press: function () {
 
-            sap.m.MessageToast.show(3);
+            // sap.m.MessageToast.show(3);
+            oContr.fn.compareSelectedApp();
 
         }
     });
     TOOLBAR1.addContent(BUTTON3);
 
-
+    /**
+     * 해당 버전을 새창으로 실행하여 조회
+     */
     let BUTTON4 = new sap.m.Button({
         icon: "sap-icon://action",
         // type: "Emphasized",
-        press: function(oEvent){
+        press: function (oEvent) {
 
             // oContr.fn.onSelectApp(oEvent);
             oContr.fn.openSelectedVersion(oEvent);
@@ -271,6 +300,129 @@ export var oContr = await new Promise(async (resolve)=>{
     TOOLBAR1.addContent(BUTTON4);
 
 
+    /**
+     * 소스 비교 페이지
+     */
+    let PAGE2 = new sap.m.Page({
+        enableScrolling: false,
+        layoutData: new sap.ui.layout.SplitterLayoutData({
+            size: "50%",
+            minSize: 200
+        })
+    });
+
+    let OVERFLOWTOOLBAR17 = new sap.m.OverflowToolbar();
+    PAGE2.setCustomHeader(OVERFLOWTOOLBAR17);
+
+    // let TOOLBARSPACER12 = new sap.m.ToolbarSpacer();
+    // OVERFLOWTOOLBAR17.addContent(TOOLBARSPACER12);
+
+    let BUTTON28 = new sap.m.Button({
+        icon: "sap-icon://navigation-down-arrow",
+        press: function () { 
+            oContr.fn.moveNextChangeCode();
+        }
+    });
+
+    OVERFLOWTOOLBAR17.addContent(BUTTON28);
+
+    let BUTTON27 = new sap.m.Button({
+        icon: "sap-icon://navigation-up-arrow",
+        press: function () { 
+            oContr.fn.movePreviousChangeCode();
+        }
+    });
+
+    OVERFLOWTOOLBAR17.addContent(BUTTON27);
+
+    let TOOLBARSPACER1 = new sap.m.ToolbarSeparator();
+    OVERFLOWTOOLBAR17.addContent(TOOLBARSPACER1);
+
+    let TITLE2 = new sap.m.Title({
+        text: "{/S_COMPARE_PAGE_HANDLE/hdr_title_base}"
+    });
+
+    OVERFLOWTOOLBAR17.addContent(TITLE2);
+
+    TITLE2.addStyleClass("sapUiSmallMarginBegin");
+
+    let OBJNUM1 = new sap.m.ObjectNumber({
+        inverted: true,
+        state: "Information",
+        number: "{/S_COMPARE_PAGE_HANDLE/base_ver}"
+    });
+    OVERFLOWTOOLBAR17.addContent(OBJNUM1);
+
+    OBJNUM1.addStyleClass("sapMObjectNumberLarge u4aCompareVer");
+
+    // let OBJNUM1 = new sap.m.ObjectStatus({
+    //     inverted: true,
+    //     state: "Information",
+    //     // title: "{/S_COMPARE_PAGE_HANDLE/base_ver}",
+    //     text: "{/S_COMPARE_PAGE_HANDLE/base_ver}"
+    // });
+    // OVERFLOWTOOLBAR17.addContent(OBJNUM1);
+    // OBJNUM1.addStyleClass("sapMObjectStatusLarge");
+    
+
+    let TOOLBARSPACER13 = new sap.m.ToolbarSpacer({ width: "50px" });
+    OVERFLOWTOOLBAR17.addContent(TOOLBARSPACER13);
+
+    let TITLE3 = new sap.m.Title({
+        text: "{/S_COMPARE_PAGE_HANDLE/hdr_title_target}"
+    });
+
+    OVERFLOWTOOLBAR17.addContent(TITLE3);
+
+    let OBJNUM2 = new sap.m.ObjectNumber({
+        inverted: true,
+        state: "Success",
+        number: "{/S_COMPARE_PAGE_HANDLE/target_ver}"
+    });   
+
+    OVERFLOWTOOLBAR17.addContent(OBJNUM2);
+
+    OBJNUM2.addStyleClass("sapMObjectNumberLarge u4aCompareVer");
+
+    
+
+    let TOOLBARSPACER12 = new sap.m.ToolbarSpacer();
+    OVERFLOWTOOLBAR17.addContent(TOOLBARSPACER12);
+
+    let BUTTON29 = new sap.m.Button({
+        icon: "sap-icon://decline",
+        type: "Negative",
+        press: function () { 
+            oContr.fn.closeSplitterComparePage();
+        }
+    });
+    OVERFLOWTOOLBAR17.addContent(BUTTON29);
+
+
+    let VBOX9 = new sap.m.VBox({
+        height: "100%",
+        width: "100%",
+        renderType: "Bare"
+    });
+
+    PAGE2.addContent(VBOX9);
+
+    // let sEditorIndexPath1 = "/zu4a/usp/ylcy_usp_monaco/version_management/source/index.html";
+    // let sEditorIndexPath1 = "/zu4a/usp/ylcy_usp_monaco/version_management/diffeditor/index.html";
+    let sEditorIndexPath1 = "./monaco/index.html";
+
+    let sFrameHtml1 = `
+    <div style="height: 100%">
+        <iframe class="MONACO_EDITOR EDITOR_FRAME1" src="${sEditorIndexPath1}" onload="" style="border:none;width:100%;height:100%;">
+        </iframe>
+    </div>`;
+
+    let HTML7 = new sap.ui.core.HTML();
+    HTML7.setContent(sFrameHtml1);
+
+    VBOX9.addItem(HTML7);
+
+    oContr.ui.COMPARE_PAGE = PAGE2;
 
     oContr.ui.APP = APP;
 

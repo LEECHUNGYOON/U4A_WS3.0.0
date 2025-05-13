@@ -556,7 +556,7 @@ export var oContr = await new Promise(async (resolve)=>{
     PAGE3.setCustomHeader(OVERFLOWTOOLBAR5);
 
     var BUTTON14 = new sap.m.Button({
-        text: oContr.msg.M365,  // 저장호
+        text: oContr.msg.M365,  // 저장
         type: "Accept",
         icon: "sap-icon://save",
         enabled: "{/S_PAGE_HDR_HNDL/saveBtn_enable}",

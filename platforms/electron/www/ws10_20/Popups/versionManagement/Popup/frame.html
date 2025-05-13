@@ -23,11 +23,32 @@
             background-color: transparent !important;
         }
 
+        .snippetSplitter.sapUiLoSplitter .sapUiLoSplitterContent {
+            overflow: hidden;
+        }
+
+        .u4aCompareVer.sapMObjectNumber.sapMObjectNumberLarge.sapMObjectNumberInverted .sapMObjectNumberInner {
+            min-width: 30px;
+            text-align: center;
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .sapMMessageToast {
+            max-width: none !important;
+            width: fit-content;
+            max-width: calc(100vw - 10px);
+            box-sizing: border-box; /* padding 포함 */
+            overflow-wrap: break-word; /* 긴 단어 줄바꿈 허용 */
+        }
+
     </style>
 </head>
 
 
 <body class="sapUiBody">
+
+    <div id="if-editor" style="display: none;"></div>
 
     <div id="content" style="display: none;"></div>  
 
