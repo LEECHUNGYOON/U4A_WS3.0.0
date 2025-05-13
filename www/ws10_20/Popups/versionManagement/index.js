@@ -2,7 +2,8 @@
 const 
     PATH = require("path"),
     SESSKEY = parent.getSessionKey(),
-    BROWSKEY = parent.getBrowserKey();
+    BROWSKEY = parent.getBrowserKey(),
+    USERINFO = parent.getUserInfo();
     
 
 
@@ -43,7 +44,7 @@ module.exports = function(REMOTE, oAPP){
         oDefaultOption = parent.require(sSettingsJsonPath),
         oBrowserOptions = JSON.parse(JSON.stringify(oDefaultOption.browserWindow));        
 
-        oBrowserOptions.title = "Version Management"; // [MSG]
+        oBrowserOptions.title = parent.WSUTIL.getWsMsgClsTxt(USERINFO.LANGU, "ZMSG_WS_COMMON_001", "403"); // Version Management
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;        
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL; //테마별 색상 처리

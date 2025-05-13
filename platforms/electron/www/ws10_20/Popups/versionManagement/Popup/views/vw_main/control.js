@@ -36,8 +36,8 @@ const
         _ISSOURCE: false,   // 비교 기준
         _ISTARGET: false,   // 비교 대상
 
-        APPID: "",
-        CLSID: "",
+        APPID: "",      // APPID
+        CLSID: "",      // 
         CTSNO: "",
         CTSTX: "",
         ERDAT: "",
@@ -79,12 +79,6 @@ const
 
     /*************************************************************
      * @function - 공통 메시지 구성
-     * 
-     * 😡 주의사항 😡
-     * 백엔드에서 해당 메시지 번호를 바라볼 경우가 있기 때문에 
-     * 함부로 메시지 번호 수정하지 말것!!!!
-     * 
-     * 필요하면 그냥 번호 하나 파서 만들것!!!
      *************************************************************/
     function _getWsMsg(){
 
@@ -92,51 +86,44 @@ const
 
         oContr.msg.M290 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "290"); // 다시시도하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
 
-        oContr.msg.M001 = "선택된 버전 항목이 없습니다.";
-        oContr.msg.M002 = "하나의 어플리케이션만 선택하세요.";
+        oContr.msg.M001 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "376"); // 선택된 버전 항목이 없습니다.
+        oContr.msg.M002 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "377"); // 하나의 어플리케이션만 선택하세요.
         oContr.msg.M003 = oContr.msg.M290;
-        oContr.msg.M004 = "선택한 버전은 최신 버전입니다. 다른버전을 선택하세요.";// 선택할 수 없습니다.";
-        oContr.msg.M005 = `버전 히스토리 [ ${oAPP.IF_DATA.oAppInfo.APPID} ]`;
+        oContr.msg.M004 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "378"); // 선택한 버전은 최신 버전입니다. 다른버전을 선택하세요.
+        oContr.msg.M005 = `${parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "379") /* 버전 히스토리 */} [ ${oAPP.IF_DATA.oAppInfo.APPID} ]`;
 
-        oContr.msg.M006 = "Status";
-        oContr.msg.M007 = "Application ID";
-        oContr.msg.M008 = "Compare (Base/Target)"; // "비교 기준/대상 선택";
-        // oContr.msg.M008 = "비교 기준/대상 선택"; // "비교 기준/대상 선택";
-        oContr.msg.M009 = "App Version";
-        oContr.msg.M010 = "Request No.";
-        oContr.msg.M011 = "Request Desc.";
-        oContr.msg.M012 = "Package";
-        oContr.msg.M013 = "Create Date";
-        oContr.msg.M014 = "Create Time";
-        oContr.msg.M015 = "Create User";
+        oContr.msg.M006 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "380"); // 상태
+        oContr.msg.M007 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "381"); // 어플리케이션 ID
+        oContr.msg.M008 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "382"); // Compare (Base/Target)"; // "비교 기준/대상 선택";        
+        oContr.msg.M009 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "383"); // App Version
+        oContr.msg.M010 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "384"); // Request No.
+        oContr.msg.M011 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "385"); // Request Desc.
+        oContr.msg.M012 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "386"); // Package
+        oContr.msg.M013 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "387"); // Create Date
+        oContr.msg.M014 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "388"); // Create Time
+        oContr.msg.M015 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "389"); // Create User
 
-        oContr.msg.M016 = "현재 서버는 이 기능을 지원하지 않으므로 U4A 팀에 문의하세요.";
-        oContr.msg.M017 = "알 수 없는 오류가 발생하였습니다." + "\n\n" + oContr.msg.M290;
-        oContr.msg.M018 = "통신 오류가 발생하였습니다. 네트워크 상태를 확인하시고 문제가 지속 될 경우 U4A 팀에 문의하세요.";
-        oContr.msg.M019 = "어플리케이션 버전 정보를 구성하는 중, 문제가 발생하였습니다." + "\n\n" + oContr.msg.M003;  // 다시 실행 하시거나 문제가 지속되면 U4A팀으로 문의해주세요.";
+        oContr.msg.M016 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "390"); // 현재 서버는 이 기능을 지원하지 않으므로 U4A 솔루션 팀에 문의하세요.
+        
+        // 알 수 없는 오류가 발생하였습니다.
+        oContr.msg.M017 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "314") + "\n\n" + oContr.msg.M290;
+        oContr.msg.M018 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "391"); // 통신 오류가 발생하였습니다. 네트워크 상태를 확인하시고 문제가 지속 될 경우 U4A 솔루션 팀에 문의하세요.
+        oContr.msg.M019 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "392") /* 어플리케이션 버전 정보를 구성하는 중, 문제가 발생하였습니다.*/ + "\n\n" + oContr.msg.M003;  // 다시 실행 하시거나 문제가 지속되면 U4A팀으로 문의해주세요.";
 
-        oContr.msg.M020 = "두개의 어플리케이션만 선택하세요.";
-        oContr.msg.M021 = "Base";   // 비교 기준
-        // oContr.msg.M021 = "기준";   // 비교 기준
-        oContr.msg.M022 = "Target"; // 비교 대상
-        // oContr.msg.M022 = "대상"; // 비교 대상
+        oContr.msg.M020 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "393"); // 비교할 두개의 어플리케이션만 선택하세요.
+        oContr.msg.M021 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "394"); // 비교 기준        
+        oContr.msg.M022 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "395"); // 비교 대상
 
-
-        oContr.msg.M023 = "선택한 어플리케이션으로 이동하시겠습니까?";
-        oContr.msg.M024 = "비교할 데이터가 없습니다.";
+        oContr.msg.M023 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "396"); // 선택한 어플리케이션으로 이동하시겠습니까?
+        oContr.msg.M024 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "397"); // 비교할 데이터가 없습니다.
 
 
-        oContr.msg.M025 = "비교 기준을 선택하세요.";
-        oContr.msg.M026 = "비교 대상을 선택하세요.";
+        oContr.msg.M025 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "398"); // 비교 기준을 선택하세요.
+        oContr.msg.M026 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "399"); // 비교 대상을 선택하세요.
 
-        oContr.msg.M027 = "비교 기준과 비교 대상이 동일합니다.";
-        oContr.msg.M028 = "비교 기준 또는 비교대상을 다른 버전으로 선택하세요.";
-        oContr.msg.M029 = "어플리케이션 버전 비교 데이터를 구성하는 중, 문제가 발생하였습니다" + "\n\n" + oContr.msg.M003;  // 다시 실행 하시거나 문제가 지속되면 U4A팀으로 문의해주세요.
-
-        oContr.msg.M030 = "어플리케이션 ID가 누락되었습니다." + "\n\n" + oContr.msg.M003;
-        oContr.msg.M031 = "비교 기준 버전 정보가 누락되었습니다." + "\n\n" + oContr.msg.M003;
-        oContr.msg.M032 = "비교 대상 버전 정보가 누락되었습니다." + "\n\n" + oContr.msg.M003;
-
+        oContr.msg.M027 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "400"); // 비교 기준과 비교 대상이 동일합니다.
+        oContr.msg.M028 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "401"); // 비교 기준 또는 비교대상을 다른 버전으로 선택하세요.
+        oContr.msg.M029 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "402") /* 어플리케이션 버전 비교 데이터를 구성하는 중, 문제가 발생하였습니다*/ + "\n\n" + oContr.msg.M003;  // 다시 실행 하시거나 문제가 지속되면 U4A팀으로 문의해주세요.
 
     } // end of _getWsMsg
 
@@ -442,7 +429,9 @@ const
 
                 // 어플리케이션 버전 정보를 구성하는 중, 문제가 발생하였습니다. 
                 // 다시 실행 하시거나 문제가 지속되면 U4A팀으로 문의해주세요.
-                let sErrMsg = oContr.msg.M019;
+                // let sErrMsg = oContr.msg.M019;
+                let sErrMsg = `[${oAppVerResult.STCOD}]: ` + parent.WSUTIL.getWsMsgClsTxt(parent.LANGU, "ZMSG_WS_COMMON_001", oAppVerResult.MSGNR) + "\n\n";
+                    sErrMsg += oContr.msg.M003; // 다시시도하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
                 
                 sap.m.MessageBox.error(sErrMsg, {
                     onClose: function () {
@@ -721,18 +710,9 @@ const
         // 서버에서 비교 데이터 소스 구하는 중 통신 등의 오류가 발생한 경우..
         if (oCompareResult.RETCD === "E") {
 
-            // 어플리케이션 버전 비교 데이터를 구성하는 중, 문제가 발생하였습니다.
-            // 다시 실행 하시거나 문제가 지속되면 U4A팀으로 문의해주세요.
-            var sErrMsg = oContr.msg.M029;
+            let sErrMsg = `[${oCompareResult.STCOD}]: ` + parent.WSUTIL.getWsMsgClsTxt(parent.LANGU, "ZMSG_WS_COMMON_001", oCompareResult.MSGNR) + "\n\n";
+                sErrMsg += oContr.msg.M003; // 다시시도하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
 
-            // 서버에서 리턴받은 메시지 번호
-            let sMSGNR = oCompareResult?.MSGNR || "";
-
-            // 서버에서 리턴받은 메시지 번호가 있을 경우 해당 메시지로 출력.
-            var sMsg = oContr.msg[sMSGNR] || "";
-            if (sMsg) { 
-                sErrMsg = sMsg;
-            }
 
             sap.m.MessageBox.error(sErrMsg, {
                 onClose: function () {
@@ -849,10 +829,12 @@ const
         // TAPPID가 없는 건은 새창으로 실행 후 해당 앱 생성 불가
         if (oBindData.TAPPID === "") {
 
-            let sMsg = oContr.msg.M004; // 현재 버전은 선택할 수 없습니다.
+            let sMsg = oContr.msg.M004; // 선택한 버전은 최신 버전입니다. 다른버전을 선택하세요.
 
             // 메시지 토스트 출력
             _showMsgToastCenter(sMsg);
+
+            oContr.fn.setBusy(false);
 
             return;
         }
@@ -891,10 +873,17 @@ const
             console.error(aConsoleMsg.join("\r\n"));
             console.trace();
 
-            let sErrMsg = `[${oResult.STCOD}]: ` + parent.WSUTIL.getWsMsgClsTxt(parent.LANGU, "ZMSG_WS_COMMON_001", oResult.MSGNR) + "\n";
+            let sErrMsg = `[${oResult.STCOD}]: ` + parent.WSUTIL.getWsMsgClsTxt(parent.LANGU, "ZMSG_WS_COMMON_001", oResult.MSGNR) + "\n\n";
             sErrMsg += oContr.msg.M003; // 다시시도하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
 
-            sap.m.MessageBox.error(sErrMsg);
+            // sap.m.MessageBox.error(sErrMsg);
+            sap.m.MessageBox.error(sErrMsg, {
+                onClose: function () {
+
+                    parent.CURRWIN.close();
+
+                }
+            });
 
             oContr.fn.setBusy(false);
 

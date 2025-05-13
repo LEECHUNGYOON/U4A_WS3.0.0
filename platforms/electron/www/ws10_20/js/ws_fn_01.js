@@ -563,10 +563,10 @@
                 {
                     key: "WMENU20_06",
                     icon: "sap-icon://u4a-fw-solid/Code Branch",
-                    visible: !parent.APP.isPackaged,
-                    // visible: oAPP.common.checkWLOList("C", "UHAK900948"),
-                    text: "Version Management", // [MSG]            
-                    enabled: true,
+                    // visible: !parent.APP.isPackaged,
+                    visible: oAPP.common.checkWLOList("C", "UHAK901131"),
+                    text: oAPP.msg.M403, // Version Management",
+                    // enabled: true,
                 },
                 // {
                 //     key: "WMENU20_04",

@@ -141,7 +141,7 @@ export let oContr = await new Promise(async (resolve)=>{
 
             // Compare (Base/Target)
             new sap.ui.table.Column({
-                width: "200px",
+                width: "250px",
                 hAlign: "Center",
                 label: new sap.m.Label({
                     text: oContr.msg.M008,  // Compare (Base/Target)
@@ -311,6 +311,8 @@ export let oContr = await new Promise(async (resolve)=>{
         })
     });
 
+    oContr.ui.COMPARE_PAGE = PAGE2;
+
     let OVERFLOWTOOLBAR17 = new sap.m.OverflowToolbar();
     PAGE2.setCustomHeader(OVERFLOWTOOLBAR17);
 
@@ -355,16 +357,7 @@ export let oContr = await new Promise(async (resolve)=>{
 
     OBJNUM1.addStyleClass("sapMObjectNumberLarge u4aCompareVer");
 
-    // let OBJNUM1 = new sap.m.ObjectStatus({
-    //     inverted: true,
-    //     state: "Information",
-    //     // title: "{/S_COMPARE_PAGE_HANDLE/base_ver}",
-    //     text: "{/S_COMPARE_PAGE_HANDLE/base_ver}"
-    // });
-    // OVERFLOWTOOLBAR17.addContent(OBJNUM1);
-    // OBJNUM1.addStyleClass("sapMObjectStatusLarge");
-    
-
+ 
     let TOOLBARSPACER13 = new sap.m.ToolbarSpacer({ width: "50px" });
     OVERFLOWTOOLBAR17.addContent(TOOLBARSPACER13);
 
@@ -407,8 +400,6 @@ export let oContr = await new Promise(async (resolve)=>{
 
     PAGE2.addContent(VBOX9);
 
-    // let sEditorIndexPath1 = "/zu4a/usp/ylcy_usp_monaco/version_management/source/index.html";
-    // let sEditorIndexPath1 = "/zu4a/usp/ylcy_usp_monaco/version_management/diffeditor/index.html";
     let sEditorIndexPath1 = "./monaco/index.html";
 
     let sFrameHtml1 = `
@@ -420,9 +411,7 @@ export let oContr = await new Promise(async (resolve)=>{
     let HTML7 = new sap.ui.core.HTML();
     HTML7.setContent(sFrameHtml1);
 
-    VBOX9.addItem(HTML7);
-
-    oContr.ui.COMPARE_PAGE = PAGE2;
+    VBOX9.addItem(HTML7);    
 
     oContr.ui.APP = APP;
 

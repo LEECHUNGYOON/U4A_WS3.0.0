@@ -117,6 +117,8 @@
             oAPP.msg.M346 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "346"); // Snippet Designer
             oAPP.msg.M347 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "347"); // 선택한 테마 정보를 개인화 저장 하는 과정에 문제가 발생하였습니다.
             oAPP.msg.M348 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "348"); // USP 데이터를 Parsing 하는 도중에 문제가 발생하였습니다.
+            oAPP.msg.M403 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "403"); // Version Management
+
 
 
 
