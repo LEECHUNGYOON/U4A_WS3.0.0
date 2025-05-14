@@ -874,6 +874,41 @@
 
                             }
                         }),
+
+                        new sap.m.ToolbarSeparator(),
+
+                        new sap.m.Input({
+                            showClearIcon: true,
+                            width: "200px",
+                            placeholder: "please enter the App ID.", // [MSG]
+                            change: function(oEvent){
+
+                                // row 의 바인딩 정보
+                                let oBindingInfo = oTreeTable.getBinding("rows");
+                                if(!oBindingInfo){
+                                    return;
+                                }
+
+                                let sValue = oEvent.getParameter("value") || "";
+
+                                let oFilter = [
+                                    new sap.ui.model.Filter({ path:"APPID", operator:"Contains", value1: "ROOT" }),
+                                    new sap.ui.model.Filter({ path:"APPID", operator:"Contains", value1: sValue }),
+                                    new sap.ui.model.Filter({ path:"APPNM", operator:"Contains", value1: sValue }),
+                                ];
+
+                                oBindingInfo.filter([new sap.ui.model.Filter(oFilter, false)]);
+
+                                if(sValue){                                   
+                                    oTreeTable.expandToLevel(99);
+                                } else {
+                                    oTreeTable.collapseAll();
+                                    oTreeTable.expandToLevel(1);
+                                }
+
+                            }
+
+                        }).addStyleClass("sapUiSmallMarginBegin")
                     ]
                 })
             ],

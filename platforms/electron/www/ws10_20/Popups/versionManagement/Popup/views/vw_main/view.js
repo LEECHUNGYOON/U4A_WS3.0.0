@@ -225,7 +225,17 @@ export let oContr = await new Promise(async (resolve)=>{
                     design: "Bold"
                 }),
                 template: new sap.m.Text({
-                    text: "{ERDAT}"
+                    // text: "{ERDAT}"
+                    text: {
+                        path: "ERDAT",
+                        type: "sap.ui.model.type.Date",
+                        formatOptions: {
+                            pattern: "yyyy-MM-dd",
+                            source: {
+                                pattern: "yyyyMMdd"
+                            }
+                        }
+                    }
                 })
             }),
 
@@ -238,7 +248,17 @@ export let oContr = await new Promise(async (resolve)=>{
                     design: "Bold"
                 }),
                 template: new sap.m.Text({
-                    text: "{ERTIM}"
+                    // text: "{ERTIM}"
+                    text: {
+                        path: "ERTIM",
+                        type: "sap.ui.model.type.Time",
+                        formatOptions: {
+                            pattern: "hh:mm:ss",
+                            source: {
+                                pattern: "HHmmss"
+                            }
+                        }
+                    }
                 })
             }),
 

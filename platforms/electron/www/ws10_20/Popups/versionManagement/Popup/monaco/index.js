@@ -50,76 +50,49 @@ window.require([
     'vs/editor/editor.main',
     ], function () {
 
-    monaco.editor.defineTheme('vs-dark',
-        {
-            base: 'vs-dark',
-            inherit: false,
-            rules: [
-                { token: '', foreground: 'D4D4D4', background: '1E1E1E' },
-                { token: 'invalid', foreground: 'f44747' },
-                { token: 'emphasis', fontStyle: 'italic' },
-                { token: 'strong', fontStyle: 'bold' },
-
-                { token: 'variable', foreground: '74B0DF' },
-                { token: 'variable.predefined', foreground: '4864AA' },
-                { token: 'variable.parameter', foreground: '9CDCFE' },
-                { token: 'constant', foreground: '569CD6' },
-                { token: 'comment', foreground: '#f5e342' },
-                { token: 'number', foreground: 'B5CEA8' },
-                { token: 'number.hex', foreground: '5BB498' },
-                { token: 'regexp', foreground: 'B46695' },
-                { token: 'annotation', foreground: 'cc6666' },
-                { token: 'type', foreground: '3DC9B0' },
-
-                { token: 'delimiter', foreground: 'DCDCDC' },
-                { token: 'delimiter.html', foreground: '808080' },
-                { token: 'delimiter.xml', foreground: '808080' },
-
-                { token: 'tag', foreground: '569CD6' },
-                { token: 'tag.id.pug', foreground: '4F76AC' },
-                { token: 'tag.class.pug', foreground: '4F76AC' },
-                { token: 'meta.scss', foreground: 'A79873' },
-                { token: 'meta.tag', foreground: 'CE9178' },
-                { token: 'metatag', foreground: 'DD6A6F' },
-                { token: 'metatag.content.html', foreground: '9CDCFE' },
-                { token: 'metatag.html', foreground: '569CD6' },
-                { token: 'metatag.xml', foreground: '569CD6' },
-                { token: 'metatag.php', fontStyle: 'bold' },
-
-                { token: 'key', foreground: '9CDCFE' },
-                { token: 'string.key.json', foreground: '9CDCFE' },
-                { token: 'string.value.json', foreground: 'CE9178' },
-
-                { token: 'attribute.name', foreground: '9CDCFE' },
-                { token: 'attribute.value', foreground: 'CE9178' },
-                { token: 'attribute.value.number.css', foreground: 'B5CEA8' },
-                { token: 'attribute.value.unit.css', foreground: 'B5CEA8' },
-                { token: 'attribute.value.hex.css', foreground: 'D4D4D4' },
-
-                { token: 'string', foreground: 'CE9178' },
-                { token: 'string.sql', foreground: 'FF0000' },
-
-                { token: 'keyword', foreground: '569CD6' },
-                { token: 'keyword.flow', foreground: 'C586C0' },
-                { token: 'keyword.json', foreground: 'CE9178' },
-                { token: 'keyword.flow.scss', foreground: '569CD6' },
-
-                { token: 'operator.scss', foreground: '909090' },
-                { token: 'operator.sql', foreground: '778899' },
-                { token: 'operator.swift', foreground: '909090' },
-                { token: 'predefined.sql', foreground: 'FF00FF' },
-            ],
-            colors: {
-                'editor.background': '#1E1E1E',
-                'editor.foreground': '#D4D4D4',
-                'editor.InactiveSelection': '#3A3D41',
-                'editor.IndentGuide1': '#404040',
-                'editor.ActiveIndentGuide1': '#707070',
-                'editor.SelectionHighlight': '#ADD6FF26'
+    var oTheme = {
+        "base": "vs",
+        "inherit": true,
+        "rules": [
+            {
+                "token": "comment",
+                "foreground": "000000",
+                "fontStyle": "italic"
+            },
+            {
+                "token": "constant",
+                "foreground": "005cc5",
+                "fontStyle": "None"
+            },
+            {
+                "token": "keyword",
+                "foreground": "0000ff",
+                "fontStyle": "None"
+            },
+            {
+                "token": "string",
+                "foreground": "00AA00",
+                "fontStyle": "None"
+            },
+            {
+                "token": "type",
+                "foreground": "000000",
+                "fontStyle": "None"
+            },
+            {
+                "token": "variable",
+                "foreground": "e36209",
+                "fontStyle": "None"
             }
-
+        ],
+        "colors": {
+            "editor.foreground": "#24292e",
+            "editor.background": "#eef6f9"
         }
+    };
 
+    monaco.editor.defineTheme(oTheme.base,
+        oTheme
     );
     
 
@@ -127,7 +100,7 @@ window.require([
     const DEFAUT_FONT_SIZE = 20;
 
     window.editor = monaco.editor.createDiffEditor(document.getElementById('content'), {
-        theme: 'vs-dark',
+        theme: oTheme.base,
         fontSize: DEFAUT_FONT_SIZE,
         enableSplitViewResizing: true,
         renderSideBySide: true,
@@ -147,6 +120,12 @@ window.require([
         ignoreCharChanges: false,
         alwaysRevealFirst: true
     });
+
+    // 원본 에디터에 입력 막기
+    editor.getOriginalEditor().updateOptions({ readOnly: true });
+
+    // 비교 에디터에 입력 막기
+    editor.getModifiedEditor().updateOptions({ readOnly: true });
 
 
     /***********************************************************************

@@ -53,10 +53,10 @@ const
         // let sLANGU = parent.LANGU;
         // parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "290"); // 다시 시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
 
-        oContr.msg.M001 = "선택된 버전 항목이 없습니다.";
-        oContr.msg.M002 = "하나의 어플리케이션만 선택하세요.";
-        oContr.msg.M003 = "다시 시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.";
-        oContr.msg.M004 = "현재 버전은 선택할 수 없습니다.";
+        // oContr.msg.M001 = "선택된 버전 항목이 없습니다.";
+        // oContr.msg.M002 = "하나의 어플리케이션만 선택하세요.";
+        // oContr.msg.M003 = "다시 시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.";
+        // oContr.msg.M004 = "현재 버전은 선택할 수 없습니다.";
 
         
     } // end of _getWsMsg
@@ -78,6 +78,18 @@ const
     }; // end of oContr.onViewReady
 
 
+	/*************************************************************
+	 * @function - Busy Indicator
+	 *************************************************************/
+	oContr.fn.setBusy = function (bIsbusy, oOptions) {
+
+        let sIsBusy = (bIsbusy === true ? "X" : "");
+
+		// oAPP.fn.setBusy(sIsBusy);
+        
+        // oAPP.fn.setBusyDialog(sIsBusy, oOptions);
+
+	}; // end of oContr.fn.setBusy
 
     /*************************************************************
      * @function - XXXXXXX

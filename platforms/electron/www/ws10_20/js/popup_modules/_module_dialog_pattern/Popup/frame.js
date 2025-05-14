@@ -178,21 +178,6 @@
  * 🔥 Public functions
  ****************************************************************************/
 
-    function _setBroadCastBusy(isBusy){
-
-        if(isBusy === "X"){
-
-            oAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
-
-        } else {
-
-            oAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
-
-        }
-
-    } // end of _setBroadCastBusy
-
-
     /********************************************************************
      * @function - Busy 켜기 끄기
      ********************************************************************
@@ -232,21 +217,25 @@
             return;
         }
 
-        _setBroadCastBusy(isBusy);
+        if(isBusy === "X"){
 
-        // if(isBusy === "X"){
+            oAPP.broadToChild.postMessage({PRCCD:"BUSY_ON"});
 
-        //     oAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
+        } else {
 
-        // } else {
+            oAPP.broadToChild.postMessage({PRCCD:"BUSY_OFF"});
 
-        //     oAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
-
-        // }
+        }
   
     }; // end of oAPP.fn.setBusy
 
+
+    /*************************************************************
+     * @function - Busy Dialog
+     *************************************************************/
     oAPP.fn.setBusyDialog = function(isBusy, sOption){
+        
+        oAPP.attr.isBusy = isBusy;
 
         let oBusyDialog = oAPP.attr.oBusyDialog;
         if(!oBusyDialog){
@@ -262,8 +251,8 @@
 
         if(isBusy === "X"){
 
-            oBusyDialog.setTitle();
-            oBusyDialog.setText();
+            oBusyDialog.setTitle(sTitle);
+            oBusyDialog.setText(sDesc);
 
             oBusyDialog.open();
 
@@ -276,10 +265,6 @@
             oBusyDialog.close();
 
         }
-
-
-
-
 
         var _ISBROAD = sOption?.ISBROAD || undefined;
         if(typeof _ISBROAD !== "undefined"){

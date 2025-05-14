@@ -6,13 +6,6 @@ jQuery.sap.require("sap.m.MessageBox");
 sap.ui.getCore().loadLibrary("sap.ui.table");
 sap.ui.getCore().loadLibrary("sap.ui.layout");
 
-// jQuery.sap.require("sap.ui.layout.cssgrid.GridBoxLayout");
-
-// sap.ui.getCore().loadLibrary("sap.m"); 
-// sap.ui.getCore().loadLibrary("sap.f");
-
-// sap.ui.getCore().loadLibrary("sap.ui.unified");    
-
 
 /******************************************************************************
 *  💖 DATA / ATTRIBUTE 선언부
@@ -123,7 +116,10 @@ const
 
         oContr.msg.M027 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "400"); // 비교 기준과 비교 대상이 동일합니다.
         oContr.msg.M028 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "401"); // 비교 기준 또는 비교대상을 다른 버전으로 선택하세요.
-        oContr.msg.M029 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "402") /* 어플리케이션 버전 비교 데이터를 구성하는 중, 문제가 발생하였습니다*/ + "\n\n" + oContr.msg.M003;  // 다시 실행 하시거나 문제가 지속되면 U4A팀으로 문의해주세요.
+        oContr.msg.M029 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "402"); /* 어플리케이션 버전 비교 데이터를 구성하는 중, 문제가 발생하였습니다*/ + "\n\n" + oContr.msg.M003;  // 다시 실행 하시거나 문제가 지속되면 U4A팀으로 문의해주세요.
+        oContr.msg.M030 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "404"); // 선택한 버전의 어플리케이션을 생성 중입니다.
+        oContr.msg.M031 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "405"); // 선택한 버전의 어플리케이션을 실행 중입니다.
+
 
     } // end of _getWsMsg
 
@@ -544,7 +540,9 @@ const
         // 버전 정보 구성하기
         await _setVersionList();
 
-        oContr.fn.setBusy(false);
+        oAPP.fn.setBusy("");
+
+        // oContr.fn.setBusy(false);
 
     }; // end of oContr.onViewReady
 
@@ -552,11 +550,13 @@ const
 	/*************************************************************
 	 * @function - Busy Indicator
 	 *************************************************************/
-	oContr.fn.setBusy = function (bIsbusy) {
+	oContr.fn.setBusy = function (bIsbusy, oOptions) {
 
         let sIsBusy = (bIsbusy === true ? "X" : "");
 
-		oAPP.fn.setBusy(sIsBusy);
+		// oAPP.fn.setBusy(sIsBusy);
+        
+        oAPP.fn.setBusyDialog(sIsBusy, oOptions);
 
 	}; // end of oContr.fn.setBusy
 
@@ -751,7 +751,7 @@ const
             sourceB: sSourceB,
             deltaX: aDeltaX,
             deltaY: aDeltaY
-        }
+        };
 
         // 소스와 delta값을 에디터에 전달한다.
         oContr.fn.editorPostMessage({ actcd: "setCompareData", PARAM: oPARAM });
@@ -848,8 +848,10 @@ const
         if (sAction === "CANCEL") {
             return;
         }
+        
+        var sDesc = oContr.msg.M030; // 선택한 버전의 어플리케이션을 생성 중입니다.
 
-        oContr.fn.setBusy(true);
+        oContr.fn.setBusy(true, { DESC: sDesc });
 
         let sServerPath = oAPP.IF_DATA.sServerPath + "/create_temp_ver_app";
 
@@ -891,6 +893,10 @@ const
 
         }
 
+        var sDesc = oContr.msg.M031; // 선택한 버전의 어플리케이션을 실행 중입니다.
+
+        oContr.fn.setBusy(true, { DESC: sDesc });
+
         let oRDATA = oResult.RDATA;
 
         let TAPPID = oRDATA.TAPPID;
@@ -903,7 +909,7 @@ const
 
             oContr.fn.setBusy(false);
 
-        }, 3000);
+        }, 5000);
 
 
     }; // end of oContr.fn.onSelectApp

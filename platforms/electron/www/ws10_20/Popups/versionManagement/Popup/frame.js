@@ -178,19 +178,19 @@
  * 🔥 Public functions
  ****************************************************************************/
 
-    function _setBroadCastBusy(isBusy){
+    // function _setBroadCastBusy(isBusy){
 
-        if(isBusy === "X"){
+    //     if(isBusy === "X"){
 
-            oAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
+    //         oAPP.broadToChild.postMessage({ PRCCD:"BUSY_ON" });
 
-        } else {
+    //     } else {
 
-            oAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
+    //         oAPP.broadToChild.postMessage({ PRCCD:"BUSY_OFF" });
 
-        }
+    //     }
 
-    } // end of _setBroadCastBusy
+    // } // end of _setBroadCastBusy
 
 
     /********************************************************************
@@ -246,7 +246,13 @@
   
     }; // end of oAPP.fn.setBusy
 
+
+    /*************************************************************
+     * @function - Busy Dialog
+     *************************************************************/
     oAPP.fn.setBusyDialog = function(isBusy, sOption){
+        
+        oAPP.attr.isBusy = isBusy;
 
         let oBusyDialog = oAPP.attr.oBusyDialog;
         if(!oBusyDialog){
@@ -262,24 +268,27 @@
 
         if(isBusy === "X"){
 
-            oBusyDialog.setTitle();
-            oBusyDialog.setText();
+            // 브라우저 창 닫기 버튼 비활성
+            parent.CURRWIN.closable = false;
+
+            oBusyDialog.setTitle(sTitle);
+            oBusyDialog.setText(sDesc);
 
             oBusyDialog.open();
 
         }
         else {
-
+            
+            
+            // 브라우저 창 닫기 버튼 활성
+            parent.CURRWIN.closable = true;
+            
             oBusyDialog.setTitle("");
             oBusyDialog.setText("");
 
             oBusyDialog.close();
 
         }
-
-
-
-
 
         var _ISBROAD = sOption?.ISBROAD || undefined;
         if(typeof _ISBROAD !== "undefined"){

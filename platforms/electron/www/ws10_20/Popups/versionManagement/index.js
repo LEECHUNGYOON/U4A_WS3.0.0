@@ -12,8 +12,8 @@ module.exports = function(REMOTE, oAPP){
     // busy 키고 Lock 걸기
     oAPP.common.fnSetBusyLock("X");
 
-    // 전체 자식 윈도우에 Busy 킨다.
-    oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_ON" });
+    // // 전체 자식 윈도우에 Busy 킨다.
+    // oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_ON" });
 
     let CURRWIN = REMOTE.getCurrentWindow();
 
@@ -30,8 +30,8 @@ module.exports = function(REMOTE, oAPP){
         // busy 끄고 Lock 풀기
         oAPP.common.fnSetBusyLock("");
 
-        // 전체 자식 윈도우에 Busy 끈다.
-        oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_OFF" });
+        // // 전체 자식 윈도우에 Busy 끈다.
+        // oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_OFF" });
 
         return;
     }
@@ -48,8 +48,9 @@ module.exports = function(REMOTE, oAPP){
         oBrowserOptions.autoHideMenuBar = true;
         oBrowserOptions.parent = CURRWIN;        
         oBrowserOptions.backgroundColor = oThemeInfo.BGCOL; //테마별 색상 처리
-        oBrowserOptions.modal = true;
+        oBrowserOptions.modal = false;
         oBrowserOptions.closable = false;
+        oBrowserOptions.width = 1200;
         
         oBrowserOptions.opacity = 0.0;
         oBrowserOptions.show = false;
@@ -83,6 +84,9 @@ module.exports = function(REMOTE, oAPP){
             
             // 부모 위치 가운데 배치한다.
             parent.WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
 
         });
 
