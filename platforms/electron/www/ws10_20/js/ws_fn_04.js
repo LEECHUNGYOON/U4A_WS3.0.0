@@ -187,7 +187,13 @@
 
             ];
 
-            zconsole.log("controller params", aParam);
+            // 콘솔 메시지
+            var aConsoleMsg = [             
+                `[VBS 실행 파라미터]:`,
+                `PARAM: ${JSON.stringify(aParam)}`
+            ];
+
+            console.log(aConsoleMsg.join("\r\n"));
 
             var vbs = parent.SPAWN('cscript.exe', aParam);
             vbs.stdout.on("data", function(data) {
@@ -205,8 +211,19 @@
                     Tstr = str.split(":"),
                     len = Tstr.length - 1;
 
-                console.error("[VBS 실행 오류] \n\n " + sVbsFullPath + " \n\n " + str);
-                 
+                // console.error("[VBS 실행 오류] \n\n " + sVbsFullPath + " \n\n " + str);
+
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [             
+                    `[VBS 실행 오류]:`,
+                    `=> sVbsFullPath: ${sVbsFullPath}`,
+                    `=> vbs error msg: ${str}`,
+                    `[PATH]: www/ws10_20/js/ws_fn_04.js`,  
+                    `=> oAPP.fn.fnSapGuiMultiLoginCheckThen`                 
+                ];
+
+                console.error(aConsoleMsg.join("\r\n"));
+
                 let oPARAM = {                         
                     DESC: sVbsFullPath + " \n\n " + str
                 };

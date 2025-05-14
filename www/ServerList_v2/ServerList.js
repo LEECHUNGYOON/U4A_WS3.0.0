@@ -205,7 +205,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      * Array 구조로 만든다.
      **************************************************************************/
     async function _getMsgServPortList(){
-
+        
         // /etc/services에 있는 메시지 서버관련 정보를 추출
         let oSys32Services = await _getSys32Services();
         if(oSys32Services.RETCD === "E"){
@@ -213,51 +213,78 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }
 
         let sServices = oSys32Services.RDATA;
-            sServices = sServices.replace(/'/g, "''");
-            sServices = sServices.replace(/\r/g, "");
-            sServices = sServices.replace(/\t/g, " ");
+        //     sServices = sServices.replace(/'/g, "''");
+        //     sServices = sServices.replace(/\r/g, "");
+        //     sServices = sServices.replace(/\t/g, " ");
 
-        let aServices = sServices.split("\n");
+        // let aServices = sServices.split("\n");
         
-        let aServ = [];
-        for(const sItem of aServices){
+        // let aServ = [];
+        // for(const sItem of aServices){
 
-            let sServ = sItem;
+        //     let sServ = sItem;
     
-            if(!sServ){
-                continue;
-            }
+        //     if(!sServ){
+        //         continue;
+        //     }
             
-            let aServItem = sServ.split(" ");
+        //     let aServItem = sServ.split(" ");
     
-            if(aServItem.length !== 2){
-               continue;
-            }
+        //     if(aServItem.length !== 2){
+        //        continue;
+        //     }
     
-            let sMsg_serv_name = aServItem[0];
-            if(!sMsg_serv_name){
-                continue;
-            }
+        //     let sMsg_serv_name = aServItem[0];
+        //     if(!sMsg_serv_name){
+        //         continue;
+        //     }
     
-            sMsg_serv_name = sMsg_serv_name.replace(/sapms/g, "");
+        //     sMsg_serv_name = sMsg_serv_name.replace(/sapms/g, "");
             
-            let sMsg_serv_port = aServItem[1];
-            if(!sMsg_serv_port){
-                continue;
-            }
+        //     let sMsg_serv_port = aServItem[1];
+        //     if(!sMsg_serv_port){
+        //         continue;
+        //     }
     
-            sMsg_serv_port = sMsg_serv_port.replace(/\/.*/g, "");
+        //     sMsg_serv_port = sMsg_serv_port.replace(/\/.*/g, "");
     
-            let oServices = {};
-            oServices.SYSID = sMsg_serv_name;
-            oServices.PORT  = sMsg_serv_port;
+        //     let oServices = {};
+        //     oServices.SYSID = sMsg_serv_name;
+        //     oServices.PORT  = sMsg_serv_port;
     
-            aServ.push(oServices);
-        }
+        //     aServ.push(oServices);
+        // }
 
-        oAPP.data.SAPLogon.aSys32MsgServPort = aServ;
+        /**
+         * @since   2025-05-15
+         * @version 3.5.6-sp6
+         * @author  soccerhs
+         * 
+         * @description
+         * 
+         *  /Windows/System32/drivers/etc/services
+         * 
+         * 위 경로에 있는 파일의 데이터 중, message Server의 SYSID와 Port 정보 추출 개선
+         *  
+         */
+        const lines = sServices.split('\n');
+        const sapmsEntries = lines.filter(line => line.trim().startsWith('sapms'))
+            .map(line => {
+                // 예: "sapmsNEP 3601/tcp #Retail System"
+                const match = line.match(/^sapms(\w+)\s+(\d+)\/tcp/);
+                if (match) {
+                    return {
+                        SYSID: match[1],
+                        PORT: match[2]
+                    };
+                }
+                return null;
+            })
+            .filter(entry => entry !== null);
 
-        // console.log(oAPP.data.SAPLogon.aSys32MsgServPort);
+        oAPP.data.SAPLogon.aSys32MsgServPort = sapmsEntries;
+
+        console.log("[/Windows/System32/drivers/etc/services] entries: ", oAPP.data.SAPLogon.aSys32MsgServPort);
 
     } // end of _getMsgServPortList
 

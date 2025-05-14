@@ -880,7 +880,7 @@
                         new sap.m.Input({
                             showClearIcon: true,
                             width: "200px",
-                            placeholder: "please enter the App ID.", // [MSG]
+                            placeholder: "Application Search", // [MSG]
                             change: function(oEvent){
 
                                 // row 의 바인딩 정보

@@ -240,6 +240,7 @@ const
                 url: sUrl,
                 data: oFormData,
                 cache: false,
+                timeout: iTimeout,
                 contentType: false,
                 processData: false,
                 success: function (data, textStatus, xhr) {
@@ -354,7 +355,7 @@ const
     /*************************************************************
      * @function - 에디터가 로드 되는 시점까지 기다린다.
      *************************************************************/
-    function _waitToEditorFrameLoad() {
+    function _waitUntilEditorFrameLoad() {
 
         return new Promise((resolve, reject) => {
 
@@ -380,7 +381,7 @@ const
 
         });
 
-    } // end of _waitToEditorFrameLoad
+    } // end of _waitUntilEditorFrameLoad
 
 
     /*************************************************************
@@ -699,7 +700,7 @@ const
         oContr.ui.SPLITTER1.addContentArea(oContr.ui.COMPARE_PAGE);    
 
         // 에디터가 로드 되는 시점까지 기다린다.
-        await _waitToEditorFrameLoad();
+        await _waitUntilEditorFrameLoad();
 
         // // 스르륵 나타나는 효과
         // await domFadeIn(oContr.ui.COMPARE_PAGE.getDomRef(), 300);
