@@ -42,18 +42,34 @@ const
         VPOSN: ""
     };
 
+    // 소스 비교 페이지 관련 
     oContr.types.S_COMPARE_PAGE_HANDLE = {
+        
+        hdr_title_base: "",     // 비교 기준 텍스트
+        hdr_title_target: "",   // 비교 대상 텍스트
 
-        hdr_title_base: "",
-        hdr_title_target: "",
+        base_ver: "",   // 비교 기준 버전 정보
+        target_ver: ""  // 비교 대상 버전 정보
 
-        base_ver: "",
-        target_ver: ""
+    };
+
+    // 범례 관련 구조
+    oContr.types.S_LEGEND = {
+        colorStyleClass: "",
+        desc: ""
     };
 
     oContr.oModel = new sap.ui.model.json.JSONModel({
+        
+        // 어플리케이션 버전 목록
         T_APP_VER_LIST: [],
-        S_COMPARE_PAGE_HANDLE: {}
+
+        // 범례 관련 목록
+        T_LEGEND: [],
+
+        // 소스 비교 페이지 관련 구조
+        S_COMPARE_PAGE_HANDLE: {},
+
     });
 
     oContr.oModel.setSizeLimit(Infinity);
@@ -119,6 +135,13 @@ const
         oContr.msg.M029 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "402"); /* 어플리케이션 버전 비교 데이터를 구성하는 중, 문제가 발생하였습니다*/ + "\n\n" + oContr.msg.M003;  // 다시 실행 하시거나 문제가 지속되면 U4A팀으로 문의해주세요.
         oContr.msg.M030 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "404"); // 선택한 버전의 어플리케이션을 생성 중입니다.
         oContr.msg.M031 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "405"); // 선택한 버전의 어플리케이션을 실행 중입니다.
+        oContr.msg.M032 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "406"); // 비교하기
+        oContr.msg.M033 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "407"); // 새창으로 보기
+        oContr.msg.M034 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "408"); // 범례
+        oContr.msg.M035 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "409"); // 삭제된 영역
+        oContr.msg.M036 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "410"); // 추가된 영역
+        oContr.msg.M037 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "326"); // 색상
+        oContr.msg.M038 = parent.WSUTIL.getWsMsgClsTxt(sLANGU, "ZMSG_WS_COMMON_001", "176"); // 설명
 
 
     } // end of _getWsMsg
@@ -513,12 +536,37 @@ const
 
 
     /*************************************************************
+     * @function - 레전드 관련 데이터 모델 설정
+     *************************************************************/  
+    function _setModelBindLegend(){
+
+        let aLegendList = [];
+
+        var oLegendData = JSON.parse(JSON.stringify(oContr.types.S_LEGEND));
+
+        oLegendData.colorStyleClass = "legendColorArea red";
+        oLegendData.desc = oContr.msg.M035; // 삭제된 영역
+        aLegendList.push(oLegendData);
+
+        var oLegendData = JSON.parse(JSON.stringify(oContr.types.S_LEGEND));
+
+        oLegendData.colorStyleClass = "legendColorArea green";
+        oLegendData.desc = oContr.msg.M036; // 추가된 영역
+        aLegendList.push(oLegendData);
+
+        oContr.oModel.setProperty("/T_LEGEND", aLegendList);
+
+    } // end of _setModelBindLegend
+
+
+    /*************************************************************
      * @function - 모델 초기 설정
      *************************************************************/    
     function _initModel() { 
 
+        // 레전드 관련 데이터 모델 설정
+        _setModelBindLegend();
 
-        
         oContr.oModel.setProperty("/S_COMPARE_PAGE_HANDLE", JSON.parse(JSON.stringify(oContr.types.S_COMPARE_PAGE_HANDLE)));
 
     } // end of _initModel    
@@ -560,6 +608,20 @@ const
         oAPP.fn.setBusyDialog(sIsBusy, oOptions);
 
 	}; // end of oContr.fn.setBusy
+
+
+	/*************************************************************
+	 * @function - 소스 비교 내용에 대한 범례 표시 팝오버 실행
+	 *************************************************************/
+    oContr.fn.openSourceCompareLegendPopover = function(oOpenByUI){
+      
+        if(!oOpenByUI){
+            return;
+        }
+
+        oContr.ui.LEGEND_POPOVER.openBy(oOpenByUI);
+
+    }; // end of oContr.fn.openSourceCompareLegendPopover
 
 
     /*************************************************************
@@ -775,60 +837,20 @@ const
 
     }; // end of oContr.fn.compareSelectedApp
 
-
     /*************************************************************
      * @function - 선택한 버전을 새창으로 오픈
      *************************************************************/
-    oContr.fn.openSelectedVersion = async function () {
+    oContr.fn.openAppNewBrowser = async function (oAppInfo){
 
         oContr.fn.setBusy(true);
 
-        let oTable = oContr.ui.TABLE1;
-
-        let aSelIdx = oTable.getSelectedIndices();
-
-        let iSelLength = aSelIdx.length;
-        if (iSelLength === 0) {
-
-            let sMsg = oContr.msg.M001; // 선택된 버전 항목이 없습니다.
-
-            // 메시지 토스트 출력
-            _showMsgToastCenter(sMsg);
-
+        if(!oAppInfo){
             oContr.fn.setBusy(false);
-
-            return;
-
-        }
-
-        // 하나만 선택되어야 함.
-        if (iSelLength > 1) {
-
-            let sMsg = oContr.msg.M002; // 하나의 어플리케이션만 선택하세요.
-
-            // 메시지 토스트 출력
-            _showMsgToastCenter(sMsg);
-
-            oContr.fn.setBusy(false);
-
-            return;
-
-        }
-
-        let iSelIdx = aSelIdx[0];
-
-        let oBindCtx = oTable.getContextByIndex(iSelIdx);
-        if (!oBindCtx) {
-
-            oContr.fn.setBusy(false);
-
             return;
         }
-
-        let oBindData = oBindCtx.getObject();
 
         // TAPPID가 없는 건은 새창으로 실행 후 해당 앱 생성 불가
-        if (oBindData.TAPPID === "") {
+        if (oAppInfo.TAPPID === "" || oAppInfo.TCLSID === "" || oAppInfo === 0) {
 
             let sMsg = oContr.msg.M004; // 선택한 버전은 최신 버전입니다. 다른버전을 선택하세요.
 
@@ -849,7 +871,7 @@ const
         if (sAction === "CANCEL") {
             return;
         }
-        
+
         var sDesc = oContr.msg.M030; // 선택한 버전의 어플리케이션을 생성 중입니다.
 
         oContr.fn.setBusy(true, { DESC: sDesc });
@@ -857,8 +879,8 @@ const
         let sServerPath = oAPP.IF_DATA.sServerPath + "/create_temp_ver_app";
 
         let oFormData = new FormData();
-        oFormData.append("APPID", oBindData.APPID);
-        oFormData.append("VPOSN", oBindData.VPOSN);
+            oFormData.append("APPID", oAppInfo.APPID);
+            oFormData.append("VPOSN", oAppInfo.VPOSN);
 
         let oResult = await _sendAjax(sServerPath, oFormData);
 
@@ -912,8 +934,7 @@ const
 
         }, 5000);
 
-
-    }; // end of oContr.fn.onSelectApp
+    }; // end of oContr.fn.openAppNewBrowser
 
 
 /********************************************************************

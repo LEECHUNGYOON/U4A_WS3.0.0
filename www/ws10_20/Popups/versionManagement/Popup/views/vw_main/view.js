@@ -72,7 +72,7 @@ export let oContr = await new Promise(async (resolve)=>{
     let TABLE1 = new sap.ui.table.Table({
         rowHeight: 45,
         // selectionMode: "Multi",
-        selectionMode: "Single",
+        selectionMode: "None",
         selectionBehavior: "Row",
         minAutoRowCount: 1,
         visibleRowCountMode: "Auto",
@@ -95,17 +95,73 @@ export let oContr = await new Promise(async (resolve)=>{
 
             // App ID
             new sap.ui.table.Column({
-                width: "200px",
-                hAlign: "Begin",
+                width: "250px",
+                hAlign: "Center",
                 label: new sap.m.Label({
                     text: oContr.msg.M007,  // Application ID           
                     design: "Bold"
                 }),
-                template: new sap.m.Title({
-                    text: "{APPID}",
-                    wrapping: false,
-                    tooltip: "{APPID}"
+                template: new sap.m.HBox({
+                    width: "100%",
+                    alignItems: "Center",
+                    justifyContent: "Center",
+                    items: [
+                        new sap.m.Title({
+                            text: "{APPID}",
+                            wrapping: false,
+                            tooltip: "{APPID}"
+                        }).addStyleClass("sapUiSmallMarginEnd"),
+
+                        new sap.m.Button({
+                            icon: "sap-icon://action",
+                            press: function(oEvent){
+
+                                let oBtn = oEvent.getSource();
+                                if(!oBtn){
+                                    return;
+                                }
+
+                                let oBindCtx = oBtn.getBindingContext();
+                                if(!oBindCtx){
+                                    return;
+                                }
+
+                                let oAppInfo = oBindCtx.getObject();
+                                if(!oAppInfo){
+                                    return;
+                                }
+
+                                oContr.fn.openAppNewBrowser(oAppInfo);
+
+                            },
+                            
+                            tooltip: oContr.msg.M033    // 새창으로 보기
+
+                        }).bindProperty("enabled", {
+                            parts: [
+                                { path: "TAPPID" },
+                                { path: "TCLSID" },
+                                { path: "VPOSN" },
+
+                            ],
+                            formatter: function(TAPPID, TCLSID, VPOSN){
+
+                                if(TAPPID === "" && TCLSID === "" && VPOSN === 0){
+                                    return false;
+                                }
+
+                                return true;
+
+                            }
+                        })
+                    ]
                 })
+                
+                // new sap.m.Title({
+                //     text: "{APPID}",
+                //     wrapping: false,
+                //     tooltip: "{APPID}"
+                // })
                 // template: new sap.m.Text({
                 //     text: "{APPID}"
                 // })
@@ -152,21 +208,23 @@ export let oContr = await new Promise(async (resolve)=>{
                     alignItems: "Center",
                     justifyContent: "Center",
                     items: [
+
                         new sap.m.RadioButton({
                             selected: "{_ISSOURCE}",
                             groupName: "g1",
                             text: oContr.msg.M021,   // 비교 기준
-                            select: function (oEvent) {
-                                oContr.ui.TABLE1.clearSelection();
-                            }
+                            // select: function (oEvent) {
+                            //     // oContr.ui.TABLE1.clearSelection();
+                            // }
                         }),
+
                         new sap.m.RadioButton({
                             selected: "{_ISTARGET}",
                             groupName: "g2",
                             text: oContr.msg.M022,   // 비교 대상
-                            select: function (oEvent) {
-                                oContr.ui.TABLE1.clearSelection();
-                            }
+                            // select: function (oEvent) {
+                            //     // oContr.ui.TABLE1.clearSelection();
+                            // }
                         }),
                     ]
                 })
@@ -293,9 +351,10 @@ export let oContr = await new Promise(async (resolve)=>{
     let BUTTON3 = new sap.m.Button({
         icon: "sap-icon://compare",
         type: "Emphasized",
-        press: function () {
+        text: oContr.msg.M032,  // 비교하기
+        tooltip: oContr.msg.M032,   // 비교하기
+        press: function () {            
 
-            // sap.m.MessageToast.show(3);
             oContr.fn.compareSelectedApp();
 
         }
@@ -305,19 +364,16 @@ export let oContr = await new Promise(async (resolve)=>{
     /**
      * 해당 버전을 새창으로 실행하여 조회
      */
-    let BUTTON4 = new sap.m.Button({
-        icon: "sap-icon://action",
-        // type: "Emphasized",
-        press: function (oEvent) {
+    // let BUTTON4 = new sap.m.Button({
+    //     icon: "sap-icon://action",
+    //     // type: "Emphasized",
+    //     press: function (oEvent) {
+            
+    //         oContr.fn.openSelectedVersion(oEvent);            
 
-            // oContr.fn.onSelectApp(oEvent);
-            oContr.fn.openSelectedVersion(oEvent);
-
-            // sap.m.MessageToast.show(4);
-
-        }
-    });
-    TOOLBAR1.addContent(BUTTON4);
+    //     }
+    // });
+    // TOOLBAR1.addContent(BUTTON4);
 
 
     /**
@@ -402,6 +458,28 @@ export let oContr = await new Promise(async (resolve)=>{
     let TOOLBARSPACER12 = new sap.m.ToolbarSpacer();
     OVERFLOWTOOLBAR17.addContent(TOOLBARSPACER12);
 
+
+
+    // sap-icon://legend
+    let BUTTON21 = new sap.m.Button({
+        icon: "sap-icon://legend",
+        // type: "Negative",
+        text: oContr.msg.M034,      // 범례
+        tooltip: oContr.msg.M034,   // 범례
+        press: function (oEvent) {
+
+            let oBtn = oEvent.getSource();
+            if(!oBtn){
+                return;
+            }
+  
+            oContr.fn.openSourceCompareLegendPopover(oBtn);
+
+        }
+    });
+    OVERFLOWTOOLBAR17.addContent(BUTTON21);
+
+
     let BUTTON29 = new sap.m.Button({
         icon: "sap-icon://decline",
         type: "Negative",
@@ -431,7 +509,113 @@ export let oContr = await new Promise(async (resolve)=>{
     let HTML7 = new sap.ui.core.HTML();
     HTML7.setContent(sFrameHtml1);
 
-    VBOX9.addItem(HTML7);    
+    VBOX9.addItem(HTML7);
+    
+    
+
+    /********************************************
+     * Legend Popover
+     ********************************************/
+
+    let RESPONSIVEPOPOVER1 = new sap.m.ResponsivePopover({
+        placement:"Auto",
+        resizable:true,
+        contentWidth:"300px"
+    });
+        
+    RESPONSIVEPOPOVER1.addStyleClass("sourceCompareLegendPopover sapUiSizeCompact");
+
+    RESPONSIVEPOPOVER1.setModel(oContr.oModel);
+
+    oContr.ui.LEGEND_POPOVER = RESPONSIVEPOPOVER1;
+
+    let OVERFLOWTOOLBAR14 = new sap.m.OverflowToolbar();
+    RESPONSIVEPOPOVER1.setCustomHeader(OVERFLOWTOOLBAR14);
+
+    let ICON1 = new sap.ui.core.Icon({
+        src: "sap-icon://legend",
+        size: "20px"
+    });
+    
+    OVERFLOWTOOLBAR14.addContent(ICON1);
+
+    let TITLE12 = new sap.m.Title({
+        text: oContr.msg.M034 // 범례
+    });
+    
+    OVERFLOWTOOLBAR14.addContent(TITLE12);
+
+    let VBOX4 = new sap.m.VBox({
+        renderType:"Bare"
+    }).addStyleClass("legendListWrapperVBox");
+    
+    RESPONSIVEPOPOVER1.addContent(VBOX4);
+
+    let TABLE6 = new sap.m.Table();
+    TABLE6.addStyleClass("legendList");
+    VBOX4.addItem(TABLE6);
+
+    let COLUMNLISTITEM1 = new sap.m.ColumnListItem();
+    TABLE6.bindAggregation("items", {
+        path: "/T_LEGEND",
+        template: COLUMNLISTITEM1,
+        templateShareable: true
+    });
+
+    let HBOX4 = new sap.m.HBox({
+        width:"100%"
+    });
+    
+    COLUMNLISTITEM1.addCell(HBOX4);
+
+    let FLEXITEMDATA1 = new sap.m.FlexItemData({
+        growFactor:1,
+        order:1,
+        styleClass: "{colorStyleClass}"
+    });
+    
+    HBOX4.setLayoutData(FLEXITEMDATA1);
+
+    let DUMMYBOX = new sap.m.HBox();
+    HBOX4.addItem(DUMMYBOX);
+
+    DUMMYBOX.setLayoutData(FLEXITEMDATA1.clone());
+
+    let TEXT28 = new sap.m.Text({
+        text: "{desc}",
+        wrapping:false
+    });
+    
+    COLUMNLISTITEM1.addCell(TEXT28);
+
+    let COLUMN31 = new sap.m.Column({
+        width:"100px"
+    });
+    
+    TABLE6.addColumn(COLUMN31);
+
+    let LABEL31 = new sap.m.Label({
+        design:"Bold",
+        text: oContr.msg.M037 // 색상
+    });
+    
+    COLUMN31.setHeader(LABEL31);
+
+    let COLUMN32 = new sap.m.Column();
+    TABLE6.addColumn(COLUMN32);
+
+    let LABEL32 = new sap.m.Label({
+        design:"Bold",
+        text: oContr.msg.M038 // 설명
+    });
+    
+    COLUMN32.setHeader(LABEL32);
+
+
+
+
+
+
 
     oContr.ui.APP = APP;
 
