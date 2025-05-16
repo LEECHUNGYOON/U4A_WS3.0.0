@@ -185,3 +185,7 @@ li {
 .contentArea>*:last-child {
     margin-bottom: 3rem;
 }
+
+* {
+    -webkit-user-drag: none;
+}

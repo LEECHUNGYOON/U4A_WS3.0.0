@@ -86,6 +86,14 @@
                 <img src="./img/img0060.png" alt="">
             </div>
 
+            <!-- <div class="contents">
+                <span>5. Controller Class 실행 시 오류 메시지 중,</span><span style="color:rgb(245 28 28);"> "Login session not found." </span><span>내용이 포함되어 있을 경우</span>
+            </div>
+            <div class="contents">
+                1번 설명 (T-CODE: RZ11) 에서 매개변수 이름" 입력 필드에 "login/disable_multi_gui_login" 입력 후 "조회" 버튼 클릭<br>
+                <span style="font-size: 0.825rem;"><i>※ ( 멀티 로그인을 허용하지 않는 서버이고, 다중로그인 시도 시 위와 같은 오류 메시지가 발생하면서 실행이 안될 수 있다. )</i></span>
+            </div> -->           
+
             <div class="contents">
                 5. SAPGUI 및 U4A Workspace(WS) 전체 종료 후 재실행
             </div>     
@@ -127,6 +135,45 @@
         </div>
 
         <div id="5" class="contentArea">
+            <h1 class="helpTitle">
+                오류 메시지별 확인사항
+            </h1>
+
+            <div class="overview" style="color:rgb(245 28 28);">
+                "Login session not found."
+            </div> 
+
+            <div class="contents" style="margin-bottom: 1rem;">
+                <div style="margin-bottom: 0.5rem;">
+                    📑 아래 내용을 참고하여 접속 서버의 멀티 로그인 허용 여부를 확인한다.<br>
+                    <span style="font-size: 0.825rem;"><i>※ ( 멀티 로그인이 허용되지 않은 서버일 경우, 다중 로그인을 시도하면 오류 메시지가 발생하며 실행되지 않을 수 있다. )</i></span>
+                </div>
+            </div>
+
+            <div class="contents" style="margin-bottom: 1.5rem;">
+                1. T-CODE: "RZ11"을 입력하여 "프로파일 매개변수 유지보수" 화면 접속<br>
+                <span style="font-size: 0.825rem;"><i>&nbsp;&nbsp;&nbsp;※ 권한이 없을 경우 담당 BC에게 문의</i></span>
+            </div>
+
+            <div class="contents" style="margin-bottom: 1.5rem;">
+                2. "매개변수 이름" 입력 필드에 "login/disable_multi_gui_login" 입력 후 "조회" 버튼 클릭<br>
+                <span style="font-size: 0.825rem;"><i>&nbsp;&nbsp;&nbsp;※ <u>System Profile Parameter 확인</u> 섹션 참고</i></span>
+            </div>
+
+
+            <div class="contents">
+                <div style="margin-bottom: 0.25rem;">3. 아래의 이미지에서 Default Profile(빨간색 테두리 부분)의 값이 1일 경우, </div>
+                <div style="margin-bottom: 0.25rem;">&nbsp;&nbsp;&nbsp;시스템은 동일 계정의 중복 로그인을 허용하지 않도록 설정되어 있는 상태이므로,</div>
+                <div style="margin-bottom: 0.25rem;">&nbsp;&nbsp;&nbsp;기존에 접속된 SAP GUI를 종료하고, 중복 로그인 상태가 아닌 환경에서 다시 실행한다.</div>                
+            </div>     
+
+            <div class="contentsImg">
+                <img src="./img/img0090.png" alt="">
+            </div>
+
+        </div>
+
+        <div id="6" class="contentArea">
             <h1 class="helpTitle">
                 조치 후에도 실행되지 않을 경우
             </h1>
