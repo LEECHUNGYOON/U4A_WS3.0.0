@@ -122,18 +122,6 @@ module.exports = async function(oStream, oIF_DATA){
 
     oBrowserWindow.webContents.send('if-ws20-get', oIF_DATA);
 
-    oBrowserWindow.webContents.on("yoon", function(oEvent, oRes){
-
-        debugger;        
-
-    });    
-
-    IPCRENDERER.on("yoon", function(oEvent, oRes){
-
-        debugger;        
-
-    });
-
     IPCMAIN.on('yoon', function(oEvent, oRes){
 
         debugger;

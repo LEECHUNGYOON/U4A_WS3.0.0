@@ -192,12 +192,6 @@
             // 1안
             oEvent.sender.send('yoon', oRes);
 
-            debugger;
-
-            // 2안
-            parent.IPCRENDERER.send('yoon', oRes);
-
-
         });
         
         

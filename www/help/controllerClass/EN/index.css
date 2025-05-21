@@ -189,3 +189,18 @@ li {
 * {
     -webkit-user-drag: none;
 }
+
+
+.overview.errmsg {
+    margin-top: 2rem;
+    color: rgb(245 28 28);
+    display: flex;
+    align-items: center;
+    padding-right: 15px;
+    width: fit-content;
+    background: #fbe4e4;
+    margin-left: 1rem;
+    border-radius: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}

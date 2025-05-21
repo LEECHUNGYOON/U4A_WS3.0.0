@@ -138,14 +138,14 @@
                 Checklist by Error Message
             </h1>
 
-            <div class="overview" style="color:rgb(245 28 28);">
+            <div class="overview errmsg">
                 "Login session not found."
             </div> 
 
             <div class="contents" style="margin-bottom: 1rem;">
                 <div style="margin-bottom: 0.5rem;">
                     📑 Refer to the following steps to check whether multi-login is allowed on the connected server.<br>
-                    <span style="font-size: 0.825rem;"><i>※ If multi-login is not allowed on the server, an error message may occur and execution may fail when attempting multiple logins.</i></span>
+                    <span style="font-size: 0.825rem;"><i>&nbsp;&nbsp;&nbsp;※ If multi-login is not allowed on the server, an error message may occur and execution may fail when attempting multiple logins.</i></span>
                 </div>
             </div>
 
@@ -156,7 +156,7 @@
 
             <div class="contents" style="margin-bottom: 1.5rem;">
                 2. In the "Parameter Name" input field, enter "login/disable_multi_gui_login" and click the "Display" button.<br>
-                <span style="font-size: 0.825rem;"><i>&nbsp;&nbsp;&nbsp;※ Refer to the <u>System Profile Parameter Check</u> section.</i></span>
+                <span style="font-size: 0.825rem;"><i>&nbsp;&nbsp;&nbsp;※ Refer to the <a href="#3"><u>Verify System Profile Parameters</u></a> section.</i></span>
             </div>
 
             <div class="contents">
@@ -168,6 +168,16 @@
             <div class="contentsImg">
                 <img src="./img/img0090.png" alt="">
             </div>
+
+            <div class="overview errmsg">
+                "\\AppData\Roaming\com.u4a_ws3.app\ext_api\vbs\sapgui_ws.vbs(204, 3) WshShell.RegRead: .... "HKCR\SapFront.App\protocol\StdFileEditing\server\ ...."
+            </div> 
+
+            <div class="contents" style="margin-bottom: 1.5rem;">
+                📑 This issue may occur when SAP GUI has been upgraded from version 770 to 800. <br>  
+                <span style="font-size: 0.825rem;"><i>&nbsp;&nbsp;&nbsp;※ Refer to the <a href="#4"><u>If SAPGUI Has Been Upgraded</u></a> section.</i></span>             
+            </div>
+
         </div>
 
         <div id="6" class="contentArea">
