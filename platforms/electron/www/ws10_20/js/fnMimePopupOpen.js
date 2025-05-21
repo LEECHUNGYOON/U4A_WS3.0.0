@@ -1701,6 +1701,10 @@
 
         var oTreeTable = new sap.ui.getCore().byId("mimeTree");
         if (!oTreeTable) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -1709,16 +1713,28 @@
             oCtx = oTreeTable.getContextByIndex(iIndex);
 
         if(!oCtx){
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
         let oModel = oTreeTable.getModel();
         if(!oModel){
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
         var oData = oModel.getProperty(oCtx.sPath);
         if(!oData){
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -1740,6 +1756,10 @@
         // 마임 생성 팝업을 닫는다.
         var oDialog = sap.ui.getCore().byId("CrMimeFldDlg");
         if (!oDialog) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -1750,6 +1770,9 @@
         oDialog.close();
 
         oTreeTable.expand(iIndex);
+
+        // busy 끄고 Lock 풀기
+        oAPP.common.fnSetBusyLock("");
 
     }; // end of oAPP.fn.fnMimeFolderCreateSuccess
 
@@ -1914,15 +1937,26 @@
      ************************************************************************/
     oAPP.events.ev_attachMimeDlgSaveEvent = function () {
 
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
+
         var sModelPath = "/WS20/MIMETREE/FILEATTACHES",
             aFiles = APPCOMMON.fnGetModelProperty(sModelPath);
 
         if (!aFiles) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
         var oTreeTable = sap.ui.getCore().byId("mimeTree");
         if (!oTreeTable) {
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -1937,21 +1971,36 @@
 
         function lf_createMimeFile(sReqNo) {
 
+            // busy 키고 Lock 걸기
+            oAPP.common.fnSetBusyLock("X");
+
             // 트리 테이블에 선택한 라인의 모델 정보를 구한다.
             var iIndex = oTreeTable.getSelectedIndex(),
                 oCtx = oTreeTable.getContextByIndex(iIndex);
 
             if(!oCtx){
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
 
             var oModel = oTreeTable.getModel();
             if(!oModel){
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
 
             var oData = oModel.getProperty(oCtx.sPath);
             if(!oData){
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
+
                 return;
             }
 
@@ -1983,9 +2032,16 @@
 
             function lf_attachFile(e) {
 
-                parent.setBusy('');
+                // busy 키고 Lock 걸기
+                oAPP.common.fnSetBusyLock("X");
+
+                // parent.setBusy('');
 
                 if (e == {}) {
+
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
+
                     return;
                 }
 
@@ -2002,11 +2058,18 @@
                         eval(e.SCRIPT);
                     }
 
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
+
                     return;
                 }
 
                 var oTreeTable = sap.ui.getCore().byId("mimeTree");
                 if (!oTreeTable) {
+
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
+
                     return;
                 }
 
@@ -2015,16 +2078,28 @@
                     oCtx = oTreeTable.getContextByIndex(iIndex);
 
                 if(!oCtx){
+
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
+
                     return;                    
                 }
 
                 let oModel = oTreeTable.getModel();
                 if(!oModel){
+
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
+
                     return;
                 }
 
                 var oData = oModel.getProperty(oCtx.sPath);
                 if(!oData){
+
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
+
                     return;
                 }
                 
@@ -2042,6 +2117,10 @@
 
                 var oAttachMimeDlg = sap.ui.getCore().byId('attachMimeDlg');
                 if (!oAttachMimeDlg) {
+
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
+
                     return;
                 }
 
@@ -2050,6 +2129,9 @@
                 }
 
                 oTreeTable.expand(iIndex);
+
+                // busy 끄고 Lock 풀기
+                oAPP.common.fnSetBusyLock("");
 
             } // end of lf_attachFile
 
@@ -2361,19 +2443,34 @@
      * Mime Repository Popup => MIME Folder 생성 팝업
      ************************************************************************/
     oAPP.events.ev_createMimeFolderEvent = function (oEvent) {
+        
+        // busy 키고 Lock 걸기
+        oAPP.common.fnSetBusyLock("X");
 
         var oDialog = oEvent.getSource().getParent();
         if(!oDialog){
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
         var oDialogModel = oDialog.getModel();
         if(!oDialogModel){
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
         var oData = oDialogModel.getProperty("/WS20/MIMETREE/CRFLD");
         if(!oData){
+
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -2388,6 +2485,9 @@
 
             APPCOMMON.fnSetModelProperty("/WS20/MIMETREE/CRFLD/", oData);
 
+            // busy 끄고 Lock 풀기
+            oAPP.common.fnSetBusyLock("");
+
             return;
         }
 
@@ -2395,6 +2495,9 @@
         lf_createMimeFolder();
 
         function lf_createMimeFolder(sReqNo) {
+
+            // busy 키고 Lock 걸기
+            oAPP.common.fnSetBusyLock("X");
 
             // 현재 APP 정보
             // var APPINFO = parent.getAppInfo();
@@ -2423,7 +2526,7 @@
 
             function lf_success(oResult) {
 
-                parent.setBusy('');
+                // parent.setBusy('');
 
                 if (oResult.RETCD == 'E') {
 
@@ -2437,6 +2540,9 @@
                     if (oResult.SCRIPT != null) {
                         eval(oResult.SCRIPT);
                     }
+
+                    // busy 끄고 Lock 풀기
+                    oAPP.common.fnSetBusyLock("");
 
                     return;
                 }
