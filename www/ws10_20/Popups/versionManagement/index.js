@@ -76,9 +76,9 @@ module.exports = function(REMOTE, oAPP){
         oBrowserWindow.loadURL(sPopupPath);
 
         // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!REMOTE.app.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // if (!REMOTE.app.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
         oBrowserWindow.once('ready-to-show', () => {
             
