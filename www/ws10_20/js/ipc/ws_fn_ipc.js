@@ -166,6 +166,34 @@
 
         // SYSID에 해당하는 테마 변경 IPC 이벤트를 등록한다.
         parent.IPCMAIN.on(`if-p13n-themeChange-${sSysID}`, oAPP.fn.fnIpcMain_if_p13n_themeChange);
+
+
+        
+
+        // parent.IPCMAIN.on("if-ws20-get", function(oEvent, oRes){
+
+        //     console.log(`IPCMAIN.on("if-ws20-get")`);
+            
+        //     debugger;
+
+        //     // oEvent.sender.send('if-ws20-set', oRes);
+
+        //     parent.IPCRENDERER.send('if-ws20-set', oRes);
+
+
+        // });
+
+        parent.IPCRENDERER.on("if-ws20-get", function(oEvent, oRes){
+
+            console.log(`zz`);
+            
+            debugger;
+
+            // 1안
+            oEvent.sender.send('yoon', oRes);
+
+        });
+        
         
     }; // end of oAPP.fn.fnIpcMain_Attach_Event_Handler
 
