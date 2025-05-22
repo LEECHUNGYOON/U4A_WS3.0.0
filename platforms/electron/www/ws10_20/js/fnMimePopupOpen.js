@@ -2443,7 +2443,7 @@
      * Mime Repository Popup => MIME Folder 생성 팝업
      ************************************************************************/
     oAPP.events.ev_createMimeFolderEvent = function (oEvent) {
-        debugger;
+
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
 
@@ -2531,11 +2531,13 @@
                 if (oResult.RETCD == 'E') {
 
                     var oCurrWin = REMOTE.getCurrentWindow();
-                    oCurrWin.flashFrame(true); // 작업표시줄 깜빡임
+                        oCurrWin.flashFrame(true); // 작업표시줄 깜빡임
 
                     parent.setSoundMsg('02'); // sap sound(error)
-
-                    parent.showMessage(sap, 10, "", oResult.RETMSG);
+                    
+                    if(oResult.RTMSG){
+                        parent.showMessage(sap, 10, "", oResult.RTMSG);
+                    }                    
 
                     if (oResult.SCRIPT != null) {
                         eval(oResult.SCRIPT);
