@@ -1053,11 +1053,20 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 }                
 
                 let sLog = `${data.toString()}`;
-
-                // 쉘에서 전달하는 콘솔을 수집한다.
-                aShellConsole.push(sLog);
-
+                
                 console.log(sLog);
+
+                if(!sLog){
+                    return;
+                }
+
+                // 문자열에 개행문자가 있을 경우 나눈다.
+                let aSplit = sLog.split(/\r?\n/).filter(e => e !== "");
+
+                aShellConsole = aShellConsole.concat(aSplit);
+
+                // // 쉘에서 전달하는 콘솔을 수집한다.
+                // aShellConsole.push(sLog);
 
             });
 
