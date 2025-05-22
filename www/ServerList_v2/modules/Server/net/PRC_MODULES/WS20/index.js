@@ -126,6 +126,8 @@ module.exports = async function(oStream, oIF_DATA){
 
         debugger;
 
+        oStream.write(JSON.stringify(oRes));
+
     });
 
 

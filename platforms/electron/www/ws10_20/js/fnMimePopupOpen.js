@@ -2443,7 +2443,7 @@
      * Mime Repository Popup => MIME Folder 생성 팝업
      ************************************************************************/
     oAPP.events.ev_createMimeFolderEvent = function (oEvent) {
-        
+        debugger;
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
 
