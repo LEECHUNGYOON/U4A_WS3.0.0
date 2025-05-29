@@ -4623,7 +4623,9 @@
         // sPath, oFormData, fn_success, bIsBusy, bIsAsync, meth, fn_error, bIsBlob
         sendAjax(sPath, oFormData, _fnLineSelectCb.bind(oParam), null, null, null, null, "X");
 
-    } // end of fnTreeTableRowSelect    
+    } // end of fnTreeTableRowSelect
+    
+    oAPP.fn.fnUspTreeTableRowSelect = fnUspTreeTableRowSelect;
 
     // async function _fnLineSelectCb(oResult, xhr) {
 

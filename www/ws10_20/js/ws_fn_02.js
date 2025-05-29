@@ -688,6 +688,7 @@
 
             }
 
+            
             // USP 좌측 Tree 구성
             APPCOMMON.fnSetModelProperty("/WS30/USPTREE", oResult.T_DATA);
 
@@ -696,10 +697,74 @@
             oAPP.fn.fnSetTreeJson(oModel, "WS30.USPTREE", "OBJKY", "PUJKY", "USPTREE");
 
             let oUspTreeTable = sap.ui.getCore().byId("usptree");
+            if(!oUspTreeTable){
 
-            if (oUspTreeTable && oUspTreeTable.getModel()) {
-                oUspTreeTable.getModel().refresh();
+                // busy 끄고 Lock 끄기
+                oAPP.common.fnSetBusyLock("");
+
+                return;
             }
+
+            let oTreeModel = oUspTreeTable.getModel();
+            if(!oTreeModel){
+
+                // busy 끄고 Lock 끄기
+                oAPP.common.fnSetBusyLock("");
+
+                return;
+            }
+
+            // TEST ----- Start
+            // debugger;
+            
+
+            oUspTreeTable.attachEventOnce("rowsUpdated", function(oEvent){
+
+                zconsole.log("init ws30 rowsUpdated!!!");
+
+                let oTable = oEvent.getSource();
+                if(!oTable){
+
+                    // busy 끄고 Lock 끄기
+                    oAPP.common.fnSetBusyLock("");
+
+                    return;
+                }
+
+                let oRow = oTable.getRows()[0];
+                if(!oRow){
+
+                    // busy 끄고 Lock 끄기
+                    oAPP.common.fnSetBusyLock("");
+
+                    return;
+                }
+
+                let oBindCtx = oRow.getBindingContext();
+                if(!oBindCtx){
+
+                    // busy 끄고 Lock 끄기
+                    oAPP.common.fnSetBusyLock("");
+
+                    return;
+                }
+
+                oAPP.fn.fnUspTreeTableRowSelect(oRow);
+
+            });
+
+
+            oTreeModel.refresh();
+
+            // TEST ----- End
+
+
+
+            // if (oUspTreeTable && oUspTreeTable.getModel()) {
+            //     oUspTreeTable.getModel().refresh();
+            // }
+
+
 
             // 에디터에 마우스 휠 이벤트를 적용하여 확대 에디터 영역에 확대 축소 기능을 추가한다.
             // oAPP.fn.setCodeEditorZoomEvent(true); // #[ ws_usp.js ]
@@ -734,8 +799,8 @@
 
             // }
 
-            // busy 끄고 Lock 끄기
-            oAPP.common.fnSetBusyLock("");
+            // // busy 끄고 Lock 끄기
+            // oAPP.common.fnSetBusyLock("");
 
         }
 
