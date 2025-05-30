@@ -8,7 +8,8 @@
         "testResource2": "https://u000.u4aide.com:10101/zu4a_imp/openui5_lib/v11071/resources/sap-ui-core.js",
         "testResource1": "https://openui5.hana.ondemand.com/1.108.16/resources/sap-ui-core.js",
         "testResource3": "https://s000.smartils.kr:49999/public/lib/_org_files/sapui5-rt-1.107.1/resources/sap-ui-core.js",        
-        "testResource": "https://u000.u4aide.com:10001/public/lib/_org_files/sapui5-rt-1.107.1/resources/sap-ui-core.js",        
+        "testResource4": "https://u000.u4aide.com:10001/public/lib/_org_files/sapui5-rt-1.107.1/resources/sap-ui-core.js",        
+        "testResource": "file:///C:/Users/socce/AppData/Local/Programs/com.u4a_ws3.app/resources/node_modules/U4A/WS/lib/ui5/v11071/resources/sap-ui-core.js",        
         "localResource" : "node_modules/U4A/WS/lib/ui5/v11071/resources/sap-ui-core.js",
         "bootstrap": {
             "data-sap-ui-language": "EN",

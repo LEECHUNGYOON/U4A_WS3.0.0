@@ -3512,9 +3512,24 @@ let oAPP = (function () {
 
                     } catch (error) {
 
+                        // 콘솔용 오류 메시지
+                        var aConsoleMsg = [             
+                            `[PATH]: www/Login/Login.js`,  
+                            `=> _getSupportedLangu`,
+                            `=> success`,
+                            `=> JSON.parse error!`,
+                            `=> 여기서 JSON Parse 오류 발생 시`,
+                            `=> 백엔드에 해당 체크 로직이 없어서 로그인 클래스에서 html이 리턴됨.`,
+                            `=> 그러므로 상위 WS 에서 하위 버전(3.4.x) 서버를 접근하는 것으로`,
+                            `=> 로그인 페이지의 언어 선택 영역이 서버 언어 입력 Input만 나오게 처리`,                            
+                        ];
+
+                        console.log(aConsoleMsg.join("\r\n"));
+                        console.trace();
+
                         return resolve({
                             RETCD: "E",
-                            STCOD: "E999",
+                            STCOD: "E998",
                         });
 
                     }
@@ -3523,7 +3538,19 @@ let oAPP = (function () {
 
                 },
                 error : function(xhr, textStatus, error) {
-                    
+
+                    // 콘솔용 오류 메시지
+                    var aConsoleMsg = [             
+                        `[PATH]: www/Login/Login.js`,  
+                        `=> _getSupportedLangu`,
+                        `=> 통신오류 발생!!`,
+                        `=> 접속 정보 확인 요망!!`,                         
+                    ];
+
+                    console.error(error);
+                    console.error(aConsoleMsg.join("\r\n"));
+                    console.trace();
+
                     oResult = { success : false, data : undefined, status : textStatus, error : error, statusCode : xhr.status, errorResponse :  xhr.responseText};
 
                     return resolve({
@@ -3576,11 +3603,18 @@ let oAPP = (function () {
             // PRCCD값을 던져서 응답시 동일한 값으로 오는지 아닌지에 따라
             // 로그인 화면 제어를 하기 위한 코드
             let sLanguPRCCD = "GET_LANGU";
-
+            
             // 접속서버에서 설치된 언어 목록을 구한다.
             let oLanguResult = await _getSupportedLangu({ PRCCD : sLanguPRCCD });
 
-            zconsole.log(oLanguResult);
+            // 로그 메시지
+            var aConsoleMsg = [             
+                `[PATH]: www/Login/Login.js`,  
+                `=> _handleLoginLangu`,                    
+            ];
+
+            console.log(aConsoleMsg.join("\r\n"));
+            console.log(oLanguResult);
 
             if(oLanguResult.RETCD === "E"){
 
@@ -3594,6 +3628,15 @@ let oAPP = (function () {
 
                         break;
 
+                    case "E998":
+
+                        // 해당 오류는 상위 WS 에서 하위 버전(3.4.x) 서버를 접근하는 내용으로,
+                        // 로그인 페이지의 언어 선택 영역이 서버 언어 입력 Input만 나오게 처리하면 됨.
+                        let oLanguForm = sap.ui.getCore().byId("ws_langu_input_form");
+                            oLanguForm.setVisible(true);  
+
+                        return resolve();
+
                     case "E999":
                         
                         sErrMsg = oAPP.msg.M283; // 통신오류
@@ -3605,7 +3648,6 @@ let oAPP = (function () {
 
                         sErrMsg = oAPP.msg.M283; // 통신오류
 
-                        break;
                 }
 
                 sap.m.MessageBox.error(sErrMsg, {
