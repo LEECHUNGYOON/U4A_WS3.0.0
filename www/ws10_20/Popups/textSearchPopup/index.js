@@ -1,202 +1,227 @@
-/************************************************************************
- * Copyright 2020. INFOCG Inc. all rights reserved. 
- * ----------------------------------------------------------------------
- * - file Name : textSearchPopup/index.js
- ************************************************************************/
 
-let oAPP = (() => {
-    "use strict";
+const 
+    PATH = require("path"),
+    SESSKEY = parent.getSessionKey(),
+    BROWSKEY = parent.getBrowserKey();
 
-    var oAPP = {};
-    oAPP.fn = {};
 
-    const
-        REMOTE = require('@electron/remote'),
-        CURRWIN = REMOTE.getCurrentWindow(),
-        PARWIN = CURRWIN.getParentWindow(),
-        PARCON = PARWIN.webContents;
+module.exports = function(REMOTE, oAPP){
+
+    let CURRWIN = REMOTE.getCurrentWindow();
+
+    // 팝업 고유 이름
+    let sPopupName = "TXTSRCH";
+
+    // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+    let oResult = oAPP.common.getCheckAlreadyOpenWindow(sPopupName);
+    if (oResult.ISOPEN) {
+
+        return;
+    }
+
+    // theme 정보
+    let oThemeInfo = parent.getThemeInfo(); 
+
+    // Browswer Options
+    let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+        oDefaultOption = parent.require(sSettingsJsonPath),
+        oBrowserOptions = JSON.parse(JSON.stringify(oDefaultOption.browserWindow));       
+
+
+        oBrowserOptions.autoHideMenuBar = true;
         
-    var BROWSKEY = CURRWIN.webContents.getWebPreferences().browserkey;
-    var IPCRENDERER = require('electron').ipcRenderer;
+        // oBrowserOptions.width = 380;
+        // oBrowserOptions.minWidth = 380;
+        // oBrowserOptions.height = 60;
+        // oBrowserOptions.minHeight = 60;
 
-    var gBeforeSearchText = ""; // 이전 검색한 텍스트    
 
-    /************************************************************************
-     * 텍스트 검색
-     ************************************************************************/
-    oAPP.fn.fnEnterTxtSearch = (oInput) => {
+        oBrowserOptions.width = 400;
+        oBrowserOptions.minWidth = 400;
+        oBrowserOptions.height = 49;
+        oBrowserOptions.minHeight = 49;
 
-        // esc 키를 눌렀다면 검색창 닫기
-        if (event.keyCode == 27) {
-            oAPP.fn.fnTextSearchClose();
-            return;
-        }
 
-        var oFindTxt = document.getElementById("searchCnt");
-        if (oFindTxt == null) {
-            return;
-        }
+        oBrowserOptions.frame = false;
+        oBrowserOptions.thickFrame = false;
+        oBrowserOptions.transparent = false;
+        oBrowserOptions.center = false;
+        oBrowserOptions.resizable = false;
+        oBrowserOptions.parent = CURRWIN;
 
-        // 현재 입력한 값을 글로벌에 저장
-        gBeforeSearchText = sValue;
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
+        oBrowserOptions.webPreferences.USERINFO = parent.process.USERINFO;        
 
-        // 입력된 값이 없을경우
-        var sValue = oInput.value;
-        if (sValue == "") {
+        // 브라우저 오픈
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions); 
+        parent.REMOTEMAIN.enable(oBrowserWindow.webContents);
 
-            PARCON.stopFindInPage("clearSelection");
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
 
-            oFindTxt.innerHTML = "";
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
 
-            return;
-        }
+        let sPopupPath = PATH.join(__dirname, "Popup", "index.html");
 
-        var bIsFindNext = false;
+        oBrowserWindow.loadURL(sPopupPath);
 
-        // 현재 입력한 텍스트가 이전에 검색한 텍스트와 다를경우 검색 옵션값 설정
-        if (gBeforeSearchText != sValue) {
-            bIsFindNext = true;
-        }
+        oBrowserWindow.hide();
 
-        var oFindOptions = {
-            forward: true,
-            findNext: bIsFindNext
-        };
+        // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!REMOTE.app.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
-        PARCON.findInPage(sValue, oFindOptions);
+        oBrowserWindow.once('ready-to-show', () => {
+            lf_move();
+        });
 
-    }; // end of oAPP.fn.fnEnterTxtSearch
-
-    /************************************************************************
-     * 텍스트 검색창 닫기
-     ************************************************************************/
-    oAPP.fn.fnTextSearchClose = () => {
-
-        // 검색된 텍스트에 블럭들을 제거한다.
-        PARCON.stopFindInPage("clearSelection");
-
-        // 검색 이벤트 핸들러를 제거한다.
-        PARCON.off("found-in-page", oAPP.fn.fnFoundInPage);
-
-        // 부모창에 포커스를 준다.
-        PARCON.focus();
-
-        if (!CURRWIN.isDestroyed()) {
-
-            try {
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {
+         
+            let oOptionData = {           
+                oThemeInfo: oThemeInfo, // 테마 정보                
+            };
             
-                // 검색창을 닫는다.
-                CURRWIN.close();
+            oBrowserWindow.webContents.send('if-text-search', oOptionData);
 
-            } catch (error) {
-                
+            lf_move();
+
+            // setTimeout(() => {
+            //     oBrowserWindow.show();
+            // }, 10);
+
+        });
+
+        oBrowserWindow.webContents.on("dom-ready", function () {
+
+            lf_move();
+
+        });
+
+        // function lf_move() {
+
+        //     let oCurrWin = REMOTE.getCurrentWindow();
+
+        //     // // 팝업 위치를 부모 위치에 배치시킨다.
+        //     var oParentBounds = oCurrWin.getBounds(),
+        //         oBrowserBounds = oBrowserWindow.getBounds();
+
+        //     let xPos = (oParentBounds.x + oParentBounds.width) - 390,
+        //         yPos = Math.round((oParentBounds.y) + 30)
+
+        //     if (oParentBounds.y > oBrowserBounds.y) {
+        //         yPos = oParentBounds.y + 10;
+        //     }
+
+        //     oBrowserWindow.setBounds({
+        //         x: xPos,
+        //         y: yPos
+        //     });
+
+        // }
+
+
+
+        function lf_move() {
+
+            let oCurrWin = REMOTE.getCurrentWindow();
+
+            // // 팝업 위치를 부모 위치에 배치시킨다.
+            var oParentBounds = oCurrWin.getBounds(),
+                oBrowserBounds = oBrowserWindow.getBounds();
+
+            let xPos = (oParentBounds.x + oParentBounds.width) - 410,
+                yPos = Math.round((oParentBounds.y) + 40)
+
+            if (oParentBounds.y > oBrowserBounds.y) {
+                yPos = oParentBounds.y + 10;
             }
-            
+
+            oBrowserWindow.setBounds({
+                x: xPos,
+                y: yPos
+            });
 
         }
 
-    }; // end of oAPP.fn.fnTextSearchClose
+        // 부모 창이 움직일려고 할때 타는 이벤트
+        function lf_will_move() {
 
-    /************************************************************************
-     * 검색된 텍스트 중 위로 찾기
-     ************************************************************************/
-    oAPP.fn.fnTextSearchUP = () => {
+            lf_move();
 
-        var oFindTxt = document.getElementById("searchCnt");
-        if (oFindTxt == null) {
-            return;
+            oBrowserWindow.hide();
+
         }
 
-        var oInput = document.getElementById("srchInput");
-        if (oInput == null) {
-            return;
+        // 부모 창이 움직임 완료 되었을 때 타는 이벤트
+        function lf_moved() {
+
+            lf_move();
+
+            oBrowserWindow.show();
+
         }
 
-        var sValue = oInput.value;
-        if (sValue == "") {
-            PARCON.stopFindInPage("clearSelection");
-            oFindTxt.innerHTML = "";
-            return;
+        function lf_off() {
+
+            CURRWIN.off("maximize", lf_move);
+            CURRWIN.off("unmaximize", lf_move);
+
+            CURRWIN.off('will-move', lf_will_move);
+            CURRWIN.off("move", lf_move);
+            CURRWIN.off('moved', lf_moved);
+
+            CURRWIN.off('will-resize', lf_will_move);
+            CURRWIN.off('resize', lf_move);
+            CURRWIN.off('resized', lf_moved);
+
+            CURRWIN.off("restore", lf_move);
+
+            CURRWIN.off("enter-full-screen", lf_move);
+            CURRWIN.off("leave-full-screen", lf_move);
+
+            REMOTE.screen.off('display-metrics-changed', lf_screenChange);
+
         }
 
-        var oFindOptions = {
-            forward: false,
-            findNext: false,
-        };
+        lf_off();
 
-        PARCON.findInPage(sValue, oFindOptions);
+        CURRWIN.on('maximize', lf_move);
+        CURRWIN.on('unmaximize', lf_move);
 
-    }; // end of oAPP.fn.fnTextSearchUP
+        CURRWIN.on('will-move', lf_will_move);
+        CURRWIN.on('move', lf_move);
+        CURRWIN.on('moved', lf_moved);
 
-    /************************************************************************
-     * 검색된 텍스트 중 아래로 찾기
-     ************************************************************************/
-    oAPP.fn.fnTextSearchDOWN = () => {
+        CURRWIN.on('will-resize', lf_will_move);
+        CURRWIN.on('resize', lf_move);
+        CURRWIN.on('resized', lf_moved);     
 
-        var oFindTxt = document.getElementById("searchCnt");
-        if (oFindTxt == null) {
-            return;
+        CURRWIN.on('restore', lf_move);
+        CURRWIN.on('enter-full-screen', lf_move);
+        CURRWIN.on('leave-full-screen', lf_move);
+
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+
+            lf_off();
+
+            oBrowserWindow = null;
+
+            CURRWIN.focus();
+
+        });
+
+        function lf_screenChange() {
+            lf_move();
         }
 
-        var oInput = document.getElementById("srchInput");
-        if (oInput == null) {
-            return;
-        }
+        REMOTE.screen.on('display-metrics-changed', lf_screenChange);
 
-        var sValue = oInput.value;
-        if (sValue == "") {
-            PARCON.stopFindInPage("clearSelection");
-            oFindTxt.innerHTML = "";
-            return;
-        }
-
-        var oFindOptions = {
-            forward: true,
-            findNext: false,
-        };
-
-        PARCON.findInPage(sValue, oFindOptions);
-
-    }; // end of oAPP.fn.fnTextSearchDOWN
-
-    /************************************************************************
-     * 텍스트 검색 이벤트 핸들러
-     ************************************************************************/
-    oAPP.fn.fnFoundInPage = (event, result) => {
-
-        var oFindTxt = document.getElementById("searchCnt");
-        if (oFindTxt == null) {
-            return;
-        }
-
-        oFindTxt.innerHTML = `${result.activeMatchOrdinal} / ${result.matches}`;
-
-    }; // end of oAPP.fn.fnFoundInPage
-
-    oAPP.onLoad = () => {
-
-        // 화면이 다 그려지고 난 후 메인 영역 Busy 끄기
-		IPCRENDERER.send(`if-send-action-${BROWSKEY}`, { ACTCD: "SETBUSYLOCK", ISBUSY: "" });
-
-        var oSrchInput = document.getElementById("srchInput");
-        if (oSrchInput == null) {
-            return;
-        }
-
-        oSrchInput.focus();
-
-    };
-
-    PARCON.on("found-in-page", oAPP.fn.fnFoundInPage);
-
-    return oAPP;
-
-})();
-
-window.addEventListener('load', oAPP.onLoad, false);
-
-window.addEventListener('beforeunload', () => {
-
-    oAPP.fn.fnTextSearchClose();
-
-});
+};

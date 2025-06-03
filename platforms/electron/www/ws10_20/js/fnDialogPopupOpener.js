@@ -687,12 +687,18 @@
      ************************************************************************/
     oAPP.fn.fnTextSearchPopupOpener = async function () {
 
-        // // busy 키고 Lock 걸기
-        // oAPP.common.fnSetBusyLock("X");
 
-        // await new Promise((res) => {
-        //     setTimeout(() => {res();},0);
-        // });
+        // TEST ---- Start
+
+        var oSettingsInfo = parent.getSettingsInfo();
+
+        var sIndexPath = parent.PATH.join(oSettingsInfo.path.POPUP_ROOT, "textSearchPopup", "index.js");
+
+        parent.require(sIndexPath)(parent.REMOTE, oAPP);
+
+        return;
+
+        // TEST ---- End
 
 
         var sPopupName = "TXTSRCH";
