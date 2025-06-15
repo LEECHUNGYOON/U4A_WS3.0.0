@@ -8,6 +8,9 @@
 (function (window, $, oAPP) {
     "use strict";
 
+    const USERINFO = parent.getUserInfo();
+    const LANGU = USERINFO.LANGU;
+
     const
         C_BIND_ROOT_PATH = "/WS10/APPF4",
         C_DIALOG_ID = "AppF4Dialog";
@@ -572,36 +575,128 @@
 
     }; // end of oAPP.fn.fnCreateAppF4Tab1
 
+
+    // [원본]
+    // /************************************************************************
+    // * APP SearchHelp의 App List UI Table object return
+    // ************************************************************************/
+    // function getAppF4ListUiTable(sBindPath) {
+
+    //     return new sap.ui.table.Table({
+    //         // visibleRowCount: 1,
+    //         minAutoRowCount: 1,
+    //         visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
+    //         alternateRowColors: true,
+    //         selectionMode: sap.ui.table.SelectionMode.Single,
+    //         selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
+    //         rowHeight: 45,
+    //         columns: [
+
+    //             new sap.ui.table.Column({
+    //                 sortProperty: "ERUSR",
+    //                 filterProperty: "ERUSR",
+    //                 label: new sap.m.Label({
+    //                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B95"), // User Name
+    //                     design: sap.m.LabelDesign.Bold
+    //                 }),
+
+    //                 template: new sap.m.Text({
+    //                     text: "{ERUSR}"
+    //                 }),
+
+    //             }),
+
+    //             new sap.ui.table.Column({
+    //                 sortProperty: "APPID",
+    //                 filterProperty: "APPID",
+    //                 label: new sap.m.Label({
+    //                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A90"), // Web Application ID
+    //                     design: sap.m.LabelDesign.Bold
+    //                 }),
+    //                 template: new sap.m.Text({
+    //                     text: "{APPID}"
+    //                 }),
+
+    //             }),
+
+    //             new sap.ui.table.Column({
+    //                 sortProperty: "APPNM",
+    //                 filterProperty: "APPNM",
+    //                 label: new sap.m.Label({
+    //                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A91"), // Web Application Name
+    //                     design: sap.m.LabelDesign.Bold
+    //                 }),
+    //                 template: new sap.m.Text({
+    //                     text: "{APPNM}"
+    //                 }),
+
+    //             }),
+
+    //             new sap.ui.table.Column({
+    //                 sortProperty: "APPTY",
+    //                 filterProperty: "APPTY",
+    //                 label: new sap.m.Label({
+    //                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B97"), // App Type
+    //                     design: sap.m.LabelDesign.Bold
+    //                 }),
+    //                 template: new sap.m.Text({
+    //                     text: "{APPTY}"
+    //                 }),
+
+    //             }),
+
+    //         ],
+
+    //         rows: {
+    //             path: sBindPath,
+    //         },
+
+
+    //     }).addEventDelegate({
+
+    //         ondblclick: ev_AppF4ListUiTableDblClick
+
+    //     });
+
+    // } // end of getAppF4ListUiTable
+
+
     /************************************************************************
     * APP SearchHelp의 App List UI Table object return
     ************************************************************************/
     function getAppF4ListUiTable(sBindPath) {
 
-        return new sap.ui.table.Table({
+        let oTable = new sap.ui.table.Table({
+            width: "100%",
             // visibleRowCount: 1,
             minAutoRowCount: 1,
             visibleRowCountMode: sap.ui.table.VisibleRowCountMode.Auto,
             alternateRowColors: true,
             selectionMode: sap.ui.table.SelectionMode.Single,
-            selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,
+            selectionBehavior: sap.ui.table.SelectionBehavior.RowOnly,            
             rowHeight: 45,
             columns: [
 
+                // new sap.ui.table.Column({
+                //     hAlign: "Center",
+                //     width: "120px",
+                //     sortProperty: "ERUSR",
+                //     filterProperty: "ERUSR",
+                //     label: new sap.m.Label({
+                //         text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B95"), // User Name
+                //         design: sap.m.LabelDesign.Bold
+                //     }),
+
+                //     template: new sap.m.Text({
+                //         text: "{ERUSR}",
+                //         wrapping: true,
+                //         tooltip: "{ERUSR}",
+                //     }),
+
+                // }),
+
                 new sap.ui.table.Column({
-                    sortProperty: "ERUSR",
-                    filterProperty: "ERUSR",
-                    label: new sap.m.Label({
-                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B95"), // User Name
-                        design: sap.m.LabelDesign.Bold
-                    }),
-
-                    template: new sap.m.Text({
-                        text: "{ERUSR}"
-                    }),
-
-                }),
-
-                new sap.ui.table.Column({
+                    width: "250px",
                     sortProperty: "APPID",
                     filterProperty: "APPID",
                     label: new sap.m.Label({
@@ -609,12 +704,15 @@
                         design: sap.m.LabelDesign.Bold
                     }),
                     template: new sap.m.Text({
-                        text: "{APPID}"
+                        text: "{APPID}",
+                        wrapping: false,
+                        tooltip: "{APPID}",
                     }),
 
                 }),
 
                 new sap.ui.table.Column({
+                    width: "400px",
                     sortProperty: "APPNM",
                     filterProperty: "APPNM",
                     label: new sap.m.Label({
@@ -622,12 +720,16 @@
                         design: sap.m.LabelDesign.Bold
                     }),
                     template: new sap.m.Text({
-                        text: "{APPNM}"
+                        text: "{APPNM}",
+                        wrapping: false,
+                        tooltip: "{APPNM}",
                     }),
 
                 }),
 
                 new sap.ui.table.Column({
+                    hAlign: "Center",
+                    width: "100px",
                     sortProperty: "APPTY",
                     filterProperty: "APPTY",
                     label: new sap.m.Label({
@@ -635,7 +737,9 @@
                         design: sap.m.LabelDesign.Bold
                     }),
                     template: new sap.m.Text({
-                        text: "{APPTY}"
+                        text: "{APPTY}",
+                        wrapping: false,
+                        tooltip: "{APPTY}",
                     }),
 
                 }),
@@ -653,7 +757,205 @@
 
         });
 
+  
+        let COLUMN1 = new sap.ui.table.Column({
+            hAlign: "Center",
+            width: "120px",
+            sortProperty: "ERUSR",
+            filterProperty: "ERUSR",
+            label: new sap.m.Label({
+                text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B95"), // User Name
+                design: sap.m.LabelDesign.Bold
+            }),
+            template: new sap.m.Text({
+                text: "{ERUSR}",
+                wrapping: false,
+                tooltip: "{ERUSR}",
+            }),
+
+        });
+        oTable.addColumn(COLUMN1);
+
+
+        let aColumns = [];
+
+        /**
+         * @since   2025-06-16
+         * @version 3.5.6-sp8
+         * @author  soccerhs
+         * 
+         * @description 컬럼추가
+         * - ERDAT : 생성일자
+         * - ERTIM : 생성시간
+         * - AEUSR : 변경자
+         * - AEDAT : 변경일자
+         * - AETIM : 변경시간
+         */      
+        let COLUMN2 = new sap.ui.table.Column({
+            hAlign: "Center",
+            width: "120px",
+            sortProperty: "ERDAT",
+            filterProperty: "ERDAT",
+            label: new sap.m.Label({                
+                text: parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "387"), // 생성일자                
+                design: sap.m.LabelDesign.Bold
+            }),
+            template: new sap.m.Text({
+                // text: "{ERDAT}",
+                text: {
+                    path: "ERDAT",
+                    type: "sap.ui.model.type.Date",
+                    formatOptions: {
+                        pattern: "yyyy-MM-dd",
+                        source: {
+                            pattern: "yyyyMMdd"
+                        }
+                    }
+                },
+                wrapping: false,
+                tooltip: "{ERDAT}",
+            }),
+
+        });
+        // oTable.addColumn(COLUMN2);
+
+        aColumns.push(COLUMN2);
+
+        let COLUMN3 = new sap.ui.table.Column({
+            hAlign: "Center",
+            width: "120px",
+            sortProperty: "ERTIM",
+            filterProperty: "ERTIM",
+            label: new sap.m.Label({
+                text: parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "388"), // 생성시간                
+                design: sap.m.LabelDesign.Bold
+            }),
+            template: new sap.m.Text({
+                // text: "{ERTIM}",
+                text: {
+                    path: "ERTIM",
+                    type: "sap.ui.model.type.Time",
+                    formatOptions: {
+                        pattern: "hh:mm:ss",
+                        source: {
+                            pattern: "HHmmss"
+                        }
+                    }
+                },
+                wrapping: false,
+                tooltip: "{ERTIM}",
+            }),
+
+        });
+        // oTable.addColumn(COLUMN3);
+        aColumns.push(COLUMN3);
+
+        let COLUMN4 = new sap.ui.table.Column({
+            hAlign: "Center",
+            width: "120px",
+            sortProperty: "AEUSR",
+            filterProperty: "AEUSR",
+            label: new sap.m.Label({
+                text: parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "411"), // 변경자                
+                design: sap.m.LabelDesign.Bold
+            }),
+            template: new sap.m.Text({
+                text: "{AEUSR}",
+                wrapping: false,
+                tooltip: "{AEUSR}",
+            }),
+
+        });
+        // oTable.addColumn(COLUMN4);
+        aColumns.push(COLUMN4);
+
+        let COLUMN5 = new sap.ui.table.Column({
+            hAlign: "Center",
+            width: "120px",
+            sortProperty: "AEDAT",
+            filterProperty: "AEDAT",
+            label: new sap.m.Label({
+                text: parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "412"), // 변경일자                
+                design: sap.m.LabelDesign.Bold
+            }),
+            template: new sap.m.Text({
+                // text: "{AEDAT}",
+                text: {
+                    path: "AEDAT",
+                    type: "sap.ui.model.type.Date",
+                    formatOptions: {
+                        pattern: "yyyy-MM-dd",
+                        source: {
+                            pattern: "yyyyMMdd"
+                        }
+                    }
+                },
+                wrapping: false,
+                tooltip: "{AEDAT}",
+            }),
+
+        });
+        // oTable.addColumn(COLUMN5);
+        aColumns.push(COLUMN5);
+
+        let COLUMN6 = new sap.ui.table.Column({
+            hAlign: "Center",
+            width: "120px",
+            sortProperty: "AETIM",
+            filterProperty: "AETIM",
+            label: new sap.m.Label({
+                text: parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "413"), // 변경시간                
+                design: sap.m.LabelDesign.Bold
+            }),
+            template: new sap.m.Text({
+                // text: "{AETIM}",
+                text: {
+                    path: "AETIM",
+                    type: "sap.ui.model.type.Time",
+                    formatOptions: {
+                        pattern: "hh:mm:ss",
+                        source: {
+                            pattern: "HHmmss"
+                        }
+                    }
+                },
+                wrapping: false,
+                tooltip: "{AETIM}",
+            }),
+
+        });
+        // oTable.addColumn(COLUMN6);
+
+        aColumns.push(COLUMN6);
+
+        /**
+         * @since   2025-06-16
+         * @version 3.5.6-sp8
+         * @author  soccerhs
+         * 
+         * @description 컬럼추가
+         * - ERDAT : 생성일자
+         * - ERTIM : 생성시간
+         * - AEUSR : 변경자
+         * - AEDAT : 변경일자
+         * - AETIM : 변경시간
+         */      
+        if(oAPP.common.checkWLOList("C", "UHAK901182")){
+            
+            // 고정 컬럼 지정
+            oTable.setFixedColumnCount(3);
+
+            for(const oColumn of aColumns){
+                oTable.addColumn(oColumn);
+            }
+
+        }
+
+
+        return oTable;
+
     } // end of getAppF4ListUiTable
+
 
     /************************************************************************
      * APP SearchHelp의 App List UI Table의 더블 클릭 이벤트
@@ -715,6 +1017,79 @@
      * Application Name F4 의 TabContainer Item2 생성
      ************************************************************************/
     oAPP.fn.fnCreateAppF4Tab2 = function () {
+
+        function lf_nozero_time(sBindValue){
+
+            if (!sBindValue) {
+                return;
+            }
+
+            if(sBindValue === "000000"){
+                return;
+            }
+
+            var oBindCtx = this.getBindingContext();
+            if (oBindCtx == null) { 
+                return;
+            }
+
+            var oBindData = this.getModel().getProperty(oBindCtx.sPath);
+            if (oBindData.APPID == "ROOT") {
+                return "";
+            }
+
+            if (oBindData.PACKG == "ROOT") {
+                return "";
+            }
+
+            const oTime = sap.ui.core.format.DateFormat.getTimeInstance({
+                pattern: "HHmmss"
+            }).parse(sBindValue);
+
+            if (!oTime) return "";
+
+            return sap.ui.core.format.DateFormat.getTimeInstance({
+                pattern: "hh:mm:ss" // a는 AM/PM 표시. 원하면 제거 가능
+            }).format(oTime);
+
+        } // end of lf_nozero_time
+
+        function lf_nozero_date(sBindValue){
+
+            if (!sBindValue) {
+                return;
+            }
+
+            if(sBindValue === "00000000"){
+                return;
+            }
+
+            var oBindCtx = this.getBindingContext();
+            if (oBindCtx == null) { 
+                return;
+            }
+
+            var oBindData = this.getModel().getProperty(oBindCtx.sPath);
+            if (oBindData.APPID == "ROOT") {
+                return "";
+            }
+
+            if (oBindData.PACKG == "ROOT") {
+                return "";
+            }
+
+            // 날짜 형식이 yyyyMMdd 인 경우 포맷팅
+            const oDateFormat = sap.ui.core.format.DateFormat.getInstance({
+                pattern: "yyyy-MM-dd"
+            });
+
+            const oDate = sap.ui.core.format.DateFormat.getInstance({
+                pattern: "yyyyMMdd"
+            }).parse(sBindValue);
+
+            return oDate ? oDateFormat.format(oDate) : "";
+
+        } // end of lf_nozero_date
 
         function lf_nozero(sBindValue) {
 
@@ -793,6 +1168,7 @@
                 new sap.ui.table.Column({
                     width: "120px",
                     hAlign: ENUM_HORIZONTAL_ALIGN.Center,
+                    // label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C05"), // Creator
                     label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C05"), // Creator
                     template: new sap.m.Text({
                         text: "{ERUSR}"
@@ -801,19 +1177,24 @@
                 new sap.ui.table.Column({
                     width: "120px",
                     hAlign: ENUM_HORIZONTAL_ALIGN.Center,
-                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C06"), // Create Date
-                    template: new sap.m.Text().bindProperty("text", "ERDAT", lf_nozero),
+                    // label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C06"), // Create Date                    
+                    // template: new sap.m.Text().bindProperty("text", "ERDAT", lf_nozero),
+                    label: parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "387"), // Create Date
+                    template: new sap.m.Text().bindProperty("text", "ERDAT", lf_nozero_date),
                 }),
                 new sap.ui.table.Column({
                     width: "120px",
                     hAlign: ENUM_HORIZONTAL_ALIGN.Center,
-                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C07"), // Create Time
-                    template: new sap.m.Text().bindProperty("text", "ERTIM", lf_nozero),
+                    // label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C07"), // Create Time                    
+                    // template: new sap.m.Text().bindProperty("text", "ERTIM", lf_nozero),
+                    label: parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "388"), // Create Time
+                    template: new sap.m.Text().bindProperty("text", "ERTIM", lf_nozero_time),
                 }),
                 new sap.ui.table.Column({
                     width: "120px",
                     hAlign: ENUM_HORIZONTAL_ALIGN.Center,
-                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C08"), // Change User
+                    // label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C08"), // Change User
+                    label: parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "411"), // Change User
                     template: new sap.m.Text({
                         text: "{AEUSR}"
                     }),
@@ -821,14 +1202,18 @@
                 new sap.ui.table.Column({
                     width: "120px",
                     hAlign: ENUM_HORIZONTAL_ALIGN.Center,
-                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C09"), // Change Date
-                    template: new sap.m.Text().bindProperty("text", "AEDAT", lf_nozero),
+                    // label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C09"), // Change Date
+                    label: parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "412"), // Change Date
+                    // template: new sap.m.Text().bindProperty("text", "AEDAT", lf_nozero),
+                    template: new sap.m.Text().bindProperty("text", "AEDAT", lf_nozero_date),
                 }),
                 new sap.ui.table.Column({
                     width: "120px",
                     hAlign: ENUM_HORIZONTAL_ALIGN.Center,
-                    label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C10"), // Change Time
-                    template: new sap.m.Text().bindProperty("text", "AETIM", lf_nozero),
+                    // label: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "C10"), // Change Time
+                    label: parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "413"), // Change Time
+                    // template: new sap.m.Text().bindProperty("text", "AETIM", lf_nozero),
+                    template: new sap.m.Text().bindProperty("text", "AETIM", lf_nozero_time),
                 }),
             ],
             rows: {
