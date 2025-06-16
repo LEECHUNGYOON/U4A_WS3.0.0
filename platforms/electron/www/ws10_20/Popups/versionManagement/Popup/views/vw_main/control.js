@@ -2,6 +2,7 @@
  *  💖 LIBRARY LOAD 선언부
  ******************************************************************************/
 jQuery.sap.require("sap.m.MessageBox");
+jQuery.sap.require("sap.ui.core.format.DateFormat");
 
 sap.ui.getCore().loadLibrary("sap.ui.table");
 sap.ui.getCore().loadLibrary("sap.ui.layout");
@@ -935,6 +936,80 @@ const
         }, 5000);
 
     }; // end of oContr.fn.openAppNewBrowser
+
+
+    /*************************************************************
+     * @function - (bindProperty - formatter) 날짜값 no zero 
+     *************************************************************/
+    oContr.fn.formatterNoZeroDate = function(sBindValue){
+
+        if (!sBindValue) {
+            return;
+        }
+
+        if (sBindValue === "00000000") {
+            return;
+        }
+
+        try {
+
+            // 날짜 형식이 yyyyMMdd 인 경우 포맷팅
+            const oDateFormat = sap.ui.core.format.DateFormat.getInstance({
+                pattern: "yyyy-MM-dd"
+            });
+
+            const oParseFormat = sap.ui.core.format.DateFormat.getInstance({
+                pattern: "yyyyMMdd"
+            });
+
+            const oDate = oParseFormat.parse(sBindValue);
+
+            return oDate ? oDateFormat.format(oDate) : "";
+
+        } catch (e) {
+            // 오류 발생 시 안전하게 처리
+            // console.error("날짜 포맷팅 중 오류 발생:", e);
+            return "";
+        }
+
+    }; // end of oContr.fn.formatterNoZeroDate
+
+
+    /*************************************************************
+     * @function - (bindProperty - formatter) 시간값 no zero 
+     *************************************************************/    
+    oContr.fn.formatterNoZeroTime = function(sBindValue){
+
+        if (!sBindValue) {
+            return;
+        }
+
+        if (sBindValue === "000000") {
+            return;
+        }
+
+        try {
+
+            const oParseFormat = sap.ui.core.format.DateFormat.getTimeInstance({
+                pattern: "HHmmss"
+            });
+
+            const oTime = oParseFormat.parse(sBindValue);
+
+            if (!oTime) return "";
+
+            const oDisplayFormat = sap.ui.core.format.DateFormat.getTimeInstance({
+                pattern: "hh:mm:ss" // 필요에 따라 "HH:mm:ss"로 24시간제 가능
+            });
+
+            return oDisplayFormat.format(oTime);
+
+        } catch (e) {
+            
+            return "";
+        }
+
+    }; // end of oContr.fn.formatterNoZeroDate
 
 
 /********************************************************************

@@ -284,17 +284,19 @@ export let oContr = await new Promise(async (resolve)=>{
                 }),
                 template: new sap.m.Text({
                     // text: "{ERDAT}"
-                    text: {
-                        path: "ERDAT",
-                        type: "sap.ui.model.type.Date",
-                        formatOptions: {
-                            pattern: "yyyy-MM-dd",
-                            source: {
-                                pattern: "yyyyMMdd"
-                            }
-                        }
-                    }
-                })
+                    // text: {
+                    //     path: "ERDAT",
+                    //     type: "sap.ui.model.type.Date",
+                    //     formatOptions: {
+                    //         pattern: "yyyy-MM-dd",
+                    //         source: {
+                    //             pattern: "yyyyMMdd"
+                    //         }
+                    //     }
+                    // }
+                    wrapping: false,
+                    tooltip: "{ERDAT}",
+                }).bindProperty("text", "ERDAT", oContr.fn.formatterNoZeroDate),
             }),
 
             // Create Time
@@ -307,17 +309,19 @@ export let oContr = await new Promise(async (resolve)=>{
                 }),
                 template: new sap.m.Text({
                     // text: "{ERTIM}"
-                    text: {
-                        path: "ERTIM",
-                        type: "sap.ui.model.type.Time",
-                        formatOptions: {
-                            pattern: "hh:mm:ss",
-                            source: {
-                                pattern: "HHmmss"
-                            }
-                        }
-                    }
-                })
+                    // text: {
+                    //     path: "ERTIM",
+                    //     type: "sap.ui.model.type.Time",
+                    //     formatOptions: {
+                    //         pattern: "hh:mm:ss",
+                    //         source: {
+                    //             pattern: "HHmmss"
+                    //         }
+                    //     }
+                    // }
+                    wrapping: false,
+                    tooltip: "{ERTIM}",
+                }).bindProperty("text", "ERTIM", oContr.fn.formatterNoZeroTime)
             }),
 
             // Create User

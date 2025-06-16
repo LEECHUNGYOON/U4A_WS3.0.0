@@ -775,6 +775,8 @@
 
             jQuery.sap.require("sap.m.MessageBox");
 
+            jQuery.sap.require("sap.ui.core.format.DateFormat");
+
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
 
