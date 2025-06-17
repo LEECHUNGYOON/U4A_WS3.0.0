@@ -1055,6 +1055,12 @@ let oAPP = (function () {
 
         }
 
+        // Remember 정보 저장
+        oAPP.fn.fnSaveRemember(oLogInData);
+
+        // 로그인 아이디 저장
+        oAPP.fn.fnSaveIDSuggData(oLogInData.ID);
+
         // // 필수 파라미터!!
         // oLogInData = {};
         // oLogInData.SYSID = "UHA";
@@ -1103,11 +1109,25 @@ let oAPP = (function () {
 
                 } catch (error) {
 
-                    let _sLog = `[oAPP.events.ev_login] \n\n`;
-                        _sLog = `'u4a_status' Response header JSON Parse Error!!`;
-                        _sLog += error && error.toString() || "login Error";
+                    // let _sLog = `[oAPP.events.ev_login] \n\n`;
+                    //     _sLog = `'u4a_status' Response header JSON Parse Error!!`;
+                    //     _sLog += error && error.toString() || "login Error";
 
-                    console.log(_sLog);
+                    // console.log(_sLog);
+
+                    // 콘솔용 오류 메시지
+                    var aConsoleMsg = [
+                        `\n############# 로그인 오류 ###############`,
+                        `[PATH]: www/Login/Login.js`,  
+                        `=> oAPP.events.ev_login`,                        
+                        `=> 'u4a_status' 응답 헤더에 값이 있을 경우에 JSON parse Error!!\n`,
+                        `[xhr.response]: ${xhr.response}`,                         
+                        `########################################\n`,
+                    ];
+
+                    console.error(error);
+                    console.error(aConsoleMsg.join("\r\n"));
+                    console.trace();
 
                     // 치명적인 오류가 발생하였습니다.
                     // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
@@ -1141,17 +1161,31 @@ let oAPP = (function () {
 
                 oResult = JSON.parse(xhr.response);
 
-            } catch (error) {               
+            } catch (error) {
+
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [
+                    `\n############# 로그인 오류 ###############`,
+                    `[PATH]: www/Login/Login.js`,  
+                    `=> oAPP.events.ev_login`,                        
+                    `=> oResult = JSON.parse(xhr.response)`,
+                    `로그인 처리시 약속된 JSON 구조가 아님!!\n`,
+                    `[xhr.response]: ${xhr.response}`,
+                    `########################################\n`,
+                ];
+
+                console.error(error);
+                console.error(aConsoleMsg.join("\r\n"));
+                console.trace();
 
                 /**
                  * 📝 2024-06-27 soccerhs
-                 * 로그인 처리시 약속된 JSON구조가 아닐 경우는 알수 없는 오류처리
+                 * 로그인 처리시 약속된 JSON 구조가 아닐 경우는 알수 없는 오류처리
                  */
 
                 // MSG - 로그인 처리 하는 과정에서 문제가 발생하였습니다. 담당자에게 문의하세요.
                 let sErrMsg = oAPP.msg.M081;
-
-                console.log(sErrMsg);
+          
 
                 sap.m.MessageBox.error(sErrMsg);  
                 
@@ -1253,7 +1287,21 @@ let oAPP = (function () {
                     return;
                 }
 
-            } catch (e) {                
+            } catch (e) {
+                
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [
+                    `\n############# 로그인시 권한 체크 오류 ###############`,
+                    `[PATH]: www/Login/Login.js`,  
+                    `=> oAPP.events.ev_login`,                        
+                    `=> var oAuthInfo = await oAPP.fn.fnCheckAuthority()\n`,
+                    `=> try...catch 오류`,                       
+                    `#####################################################\n`,
+                ];
+
+                console.error(e);
+                console.error(aConsoleMsg.join("\r\n"));
+                console.trace();
 
                 // 권한이 없으므로 오류 메시지를 띄운다.
                 oAPP.fn.fnShowNoAuthIllustMsg(e);
@@ -1290,6 +1338,21 @@ let oAPP = (function () {
         }; // end of xhr.onload
 
         function _onError(e){
+
+            // 콘솔용 오류 메시지
+            var aConsoleMsg = [
+                `\n############# 로그인시 오류 발생!! ###############`,
+                `[PATH]: www/Login/Login.js`,
+                `=> oAPP.events.ev_login`,
+                `=> _onError\n`,
+                `[xhr.response]: ${xhr.response}`, 
+                `########################################\n`,
+            ];
+
+            console.error(e);
+            console.error(aConsoleMsg.join("\r\n"));
+            console.trace();
+
 
             // 타임아웃일 경우
             if(e.type === "timeout"){
@@ -1639,6 +1702,21 @@ let oAPP = (function () {
 
                         } catch (error) {
 
+                            // 콘솔용 오류 메시지
+                            var aConsoleMsg = [
+                                `\n############# 고객사 라이센스 체크시 오류 발생!! ###############`,
+                                `[PATH]: www/Login/Login.js`,  
+                                `=> oAPP.fn.fnCheckCustomerLisence`,                                 
+                                `=> JSON parse Error!!\n`,
+                                `[xhr.response]: ${xhr.response}`,                         
+                                `################################################################\n`,
+                            ];
+
+                            console.error(error);
+                            console.error(aConsoleMsg.join("\r\n"));
+                            console.trace();
+
+
                             var sCleanHtml = parent.setCleanHtml(xhr.response);
 
                             parent.showMessage(null, 99, "E", sCleanHtml);
@@ -1687,6 +1765,16 @@ let oAPP = (function () {
         // 오류 확인
         if (oLicenseInfo.RETCD == "E") {
 
+            // 콘솔용 오류 메시지
+            var aConsoleMsg = [
+                `\n############# 고객사 라이센스 체크 후 오류 ###############`,
+                `[PATH]: www/Login/Login.js`,  
+                `=> oAPP.fn.fnCheckCustomerLisenceThen\n`,
+                `=> [oLicenseInfo]: ${JSON.parse(oLicenseInfo)}`,
+                `#####################################################\n`,
+            ];
+            console.error(aConsoleMsg.join("\r\n"));
+
             // 라이선스가 유효하지 않으면 오류 메시지와 함께 창 닫는다.
             oAPP.fn.fnShowNoAuthIllustMsg(oLicenseInfo.RTMSG);
 
@@ -1723,7 +1811,7 @@ let oAPP = (function () {
 
             //업데이트 확인
             autoUpdaterSAP.on('checking-for-update-sap', (e) => {
-                console.log(e?.params?.message || "check version");
+                console.log(e?.params?.message || "major update check...");
             });
 
             //업데이트 가능 
@@ -1731,10 +1819,10 @@ let oAPP = (function () {
 
                 // div의 content DOM을 활성화 처리 한다.
                 _showContentDom("X");
-
+                
                 let oBusyPop = oModel.getProperty("/BUSYPOP");
-                oBusyPop.PROGVISI = true;
-                oBusyPop.PROGTXT = "Downloading";
+                    oBusyPop.PROGVISI = true;
+                    oBusyPop.PROGTXT = "Downloading";
 
                 oModel.setProperty("/BUSYPOP", oBusyPop, true);
 
@@ -1767,6 +1855,8 @@ let oAPP = (function () {
                     // WS의 메이져 버전이 같을 경우에만 Support package 업데이트 체크를 한다.
                     if(oVerInfo.appVer === oVerInfo.updVER){
                         
+                        console.log("WS Support Package Version Check...");
+
                         // WS Support Package Version Check
                         oAPP.fn.fnCheckSupportPackageVersion(resolve, oParam);
 
@@ -2669,7 +2759,7 @@ let oAPP = (function () {
 
             setTimeout(() => {
                 oClientInput.focus();
-            });
+            },0);
 
             return oCheck;
 
@@ -2684,7 +2774,7 @@ let oAPP = (function () {
 
             setTimeout(() => {
                 oIdInput.focus();
-            });
+            },0);
 
             return oCheck;
 
@@ -2699,7 +2789,7 @@ let oAPP = (function () {
 
             setTimeout(() => {
                 oPwInput.focus();
-            });
+            },0);
 
             return oCheck;
 
@@ -2714,7 +2804,7 @@ let oAPP = (function () {
 
             setTimeout(() => {
                 oLanguInput.focus();
-            });
+            },0);
 
             return oCheck;
 
@@ -2727,41 +2817,99 @@ let oAPP = (function () {
     /************************************************************************
      * Remember Check 시 로그인한 정보 저장
      ************************************************************************/
-    oAPP.fn.fnSaveRemember = (oLogInData) => {
+    // oAPP.fn.fnSaveRemember = (oLogInData) => {
 
-        var oServerInfo = parent.getServerInfo(),
-            sSysID = oServerInfo.SYSID;
+    //     var oServerInfo = parent.getServerInfo(),
+    //         sSysID = oServerInfo.SYSID;
 
-        let sJsonPath = PATH.join(USERDATA, "p13n", "login.json"),
-            sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
-            oLoginInfo = JSON.parse(sJsonData);
+    //     let sJsonPath = PATH.join(USERDATA, "p13n", "login.json"),
+    //         sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
+    //         oLoginInfo = JSON.parse(sJsonData);
 
-        if (typeof oLoginInfo !== "object") {
-            oLoginInfo = {};
-        }
+    //     if (typeof oLoginInfo !== "object") {
+    //         oLoginInfo = {};
+    //     }
 
-        // System ID 별로 Client, Language를 저장할 Object 생성
-        if (typeof oLoginInfo[sSysID] == "undefined") {
-            oLoginInfo[sSysID] = {};
-        }
+    //     // System ID 별로 Client, Language를 저장할 Object 생성
+    //     if (typeof oLoginInfo[sSysID] == "undefined") {
+    //         oLoginInfo[sSysID] = {};
+    //     }
 
-        // Remember Check 했을 경우 ID, Client, Language 정보를 저장한다.
-        var oSysInfo = oLoginInfo[sSysID],
-            bIsRemember = oLogInData.REMEMBER;
+    //     // Remember Check 했을 경우 ID, Client, Language 정보를 저장한다.
+    //     var oSysInfo = oLoginInfo[sSysID],
+    //         bIsRemember = oLogInData.REMEMBER;
 
-        oSysInfo.REMEMBER = bIsRemember;
+    //     oSysInfo.REMEMBER = bIsRemember;
 
-        if (bIsRemember) {
-            oSysInfo.CLIENT = oLogInData.CLIENT;
-            oSysInfo.LANGU = oLogInData.LANGU;
-            oSysInfo.ID = oLogInData.ID;            
-            oSysInfo.WSLANGU = oLogInData.WSLANGU;
-        }
+    //     if (bIsRemember) {
+    //         oSysInfo.CLIENT = oLogInData.CLIENT;
+    //         oSysInfo.LANGU = oLogInData.LANGU;
+    //         oSysInfo.ID = oLogInData.ID;            
+    //         oSysInfo.WSLANGU = oLogInData.WSLANGU;
+    //     }
 
-        // login.json 파일에 ID Suggestion 정보 저장
-        FS.writeFileSync(sJsonPath, JSON.stringify(oLoginInfo));
+    //     // login.json 파일에 ID Suggestion 정보 저장
+    //     FS.writeFileSync(sJsonPath, JSON.stringify(oLoginInfo));
 
-    }; // end of oAPP.fn.fnSaveRemember
+    // }; // end of oAPP.fn.fnSaveRemember
+
+        oAPP.fn.fnSaveRemember = (oLogInData) => {
+
+            // [1] 현재 접속한 시스템의 SYSID(시스템 ID) 정보를 가져옴
+            const oServerInfo = parent.getServerInfo();
+            const sSysID = oServerInfo?.SYSID;
+
+            // [2] 사용자별 설정이 저장되는 login.json 파일 경로 구성
+            const sJsonPath = PATH.join(USERDATA, "p13n", "login.json");
+
+            let oLoginInfo = {};
+
+            // [3] login.json 파일이 존재하면 내용을 읽고 JSON 객체로 파싱
+            try {
+
+                if (FS.existsSync(sJsonPath)) {
+                    const sJsonData = FS.readFileSync(sJsonPath, 'utf-8');
+                    oLoginInfo = JSON.parse(sJsonData);
+                }
+
+            } catch (e) {
+                console.error("login.json read/parse error", e);
+                // 파일 읽기나 파싱 오류 발생 시 기본 객체 유지
+            }
+
+            // [4] 시스템별 저장 공간이 없을 경우 초기화 (예: S4H, DEV 등)
+            oLoginInfo[sSysID] = oLoginInfo[sSysID] || {};
+
+            // [5] 해당 시스템에 대한 로그인 정보 저장 객체 참조
+            const oSysInfo = oLoginInfo[sSysID];
+
+            // [6] 사용자가 'Remember me' 체크박스를 체크했는지 여부 확인
+            const bIsRemember = !!oLogInData.REMEMBER;
+
+            // [7] 체크 여부 저장 (항상 저장: UI 복원 판단용)
+            oSysInfo.REMEMBER = bIsRemember;
+
+            // [8] Remember가 true일 경우에만 사용자 정보 저장
+            if (bIsRemember) {
+                oSysInfo.CLIENT = oLogInData.CLIENT;     // 클라이언트 번호 (예: 100)
+                oSysInfo.LANGU = oLogInData.LANGU;       // SAP 로그인 언어 (예: EN, KO)
+                oSysInfo.ID = oLogInData.ID;             // 사용자 ID
+                oSysInfo.WSLANGU = oLogInData.WSLANGU;   // 워크스페이스 언어 설정 (내부 용도)
+            }
+
+            // [9] 최종적으로 login.json 파일에 전체 정보를 다시 저장
+            try {
+
+                FS.writeFileSync(sJsonPath, JSON.stringify(oLoginInfo));
+
+            } catch (e) {
+
+                console.error("login.json write error", e);
+
+            }
+
+        };
+
 
     /************************************************************************
      * Remember 저장한 로그인 정보 읽어오기
@@ -2817,75 +2965,46 @@ let oAPP = (function () {
     oAPP.fn.fnSaveIDSuggData = (ID) => {
 
         const iIdSuggMaxCnt = 10;
+        const sJsonPath = PATH.join(USERDATA, "p13n", "login.json");
 
-        let sJsonPath = PATH.join(USERDATA, "p13n", "login.json"),
-            sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
-            oLoginInfo = JSON.parse(sJsonData);
+        let oLoginInfo = {};
 
-        if (typeof oLoginInfo !== "object") {
+        try {
+
+            if (FS.existsSync(sJsonPath)) {
+                const sJsonData = FS.readFileSync(sJsonPath, 'utf-8');
+                oLoginInfo = JSON.parse(sJsonData);
+            }
+
+        } catch (e) {
+
             oLoginInfo = {};
-        }
-
-        if (oLoginInfo.aIds == null) {
-            oLoginInfo.aIds = [];
-            oLoginInfo.aIds.push({
-                ID: ID
-            });
-
-            // login.json 파일에 ID Suggestion 정보 저장
-            FS.writeFileSync(sJsonPath, JSON.stringify(oLoginInfo));
-
-            return;
-        }
-
-        let aIds = oLoginInfo.aIds;
-
-        // 저장하려는 ID가 이미 있으면
-        // 해당 ID를 Suggestion 최상단에 배치한다. 
-        var iFindIndex = aIds.findIndex(a => a.ID == ID);
-
-        // 저장하려는 ID가 이미 있고 Array에 가장 첫번째에 있으면 빠져나간다.    
-        if (iFindIndex == 0) {
-            return;
-        }
-
-        // 저장하려는 ID가 이미 있고 Array에 첫번째가 아니면 
-        // 기존 저장된 위치의 ID 정보를 삭제
-        if (iFindIndex > 0) {
-            aIds.splice(iFindIndex, 1);
-        }
-
-        var iBeforeCnt = aIds.length,
-            oNewData = {
-                ID: ID
-            },
-
-            aNewArr = [];
-
-        // 저장된 Suggestion 갯수가 MaxLength 이상이면
-        // 마지막거 지우고 최신거를 1번째로 저장한다.
-        if (iBeforeCnt >= iIdSuggMaxCnt) {
-
-            for (var i = 0; i < iIdSuggMaxCnt - 1; i++) {
-                aNewArr.push(aIds[i]);
-            }
-
-        } else {
-
-            for (var i = 0; i < iBeforeCnt; i++) {
-                aNewArr.push(aIds[i]);
-            }
 
         }
 
-        aNewArr.unshift(oNewData);
+        oLoginInfo.aIds = Array.isArray(oLoginInfo.aIds) ? oLoginInfo.aIds : [];
 
-        oLoginInfo.aIds = aNewArr;
+        // 중복 제거 후 맨 앞에 추가
+        oLoginInfo.aIds = oLoginInfo.aIds.filter(a => a.ID !== ID);
+        oLoginInfo.aIds.unshift({ ID });
 
-        // login.json 파일에 ID Suggestion 정보 저장
-        FS.writeFileSync(sJsonPath, JSON.stringify(oLoginInfo));
+        // 최대 개수 초과 시 자르기
+        if (oLoginInfo.aIds.length > iIdSuggMaxCnt) {
+            oLoginInfo.aIds = oLoginInfo.aIds.slice(0, iIdSuggMaxCnt);
+        }
+
+        try {
+
+            FS.writeFileSync(sJsonPath, JSON.stringify(oLoginInfo, null, 2));
+
+        } catch (e) {
+
+            console.error("login.json write error", e);
+
+        }
 
     }; // end of oAPP.fn.fnSaveIDSuggData
+
 
     /************************************************************************
      * ID Suggestion Data Read
@@ -3027,7 +3146,7 @@ let oAPP = (function () {
 
         //업데이트 확인
         spAutoUpdater.on("checking-for-update-SP", (e) => {
-            console.log(e?.detail?.message);
+            console.log(e?.detail?.message || "패치 업데이트 확인중..");
         });
 
         //업데이트 가능 
@@ -3087,6 +3206,8 @@ let oAPP = (function () {
 
         // 다운로드 후, asar 압축 및 인스톨
         spAutoUpdater.on("update-install-SP", (e) => {
+
+            console.log("SP - 패치 파일 다운로드 후 asar 압축 및 인스톨..");
 
             // Progress Bar 종료
             _supportPackageVersionCheckDialogProgressEnd();
@@ -3161,7 +3282,7 @@ let oAPP = (function () {
 
             });
 
-            console.log('SP - 에러가 발생하였습니다. 에러내용 : ' + sRetMsg);
+            console.log('SP - 패치 업데이트 중 에러가 발생하였습니다. 에러내용 : ' + sRetMsg);
 
         });
 
@@ -3544,7 +3665,8 @@ let oAPP = (function () {
                         `[PATH]: www/Login/Login.js`,  
                         `=> _getSupportedLangu`,
                         `=> 통신오류 발생!!`,
-                        `=> 접속 정보 확인 요망!!`,                         
+                        `=> 접속 정보 확인 요망!!`,
+                        `=> 접속 서버가 SSO(SAML 2.0) 적용 서버일 경우, ZU4A_WBC 서비스에 SAML 삭제!!`,                        
                     ];
 
                     console.error(error);
@@ -3560,32 +3682,6 @@ let oAPP = (function () {
 
                 }
             });
-
-            // // 연결 실패일 경우
-            // if(oResult.success === false){
-
-            //     return resolve({
-            //         RETCD: "E",
-            //         STCOD: "E999",
-            //     });
-
-            // }
-
-            // let sStringData = oResult.data;
-            
-            // try {
-
-            //     var oRetJson = JSON.parse(sStringData);
-
-            // } catch (error) {
-
-            //     return resolve({
-            //         RETCD: "E",
-            //         STCOD: "E999",
-            //     });
-            // }
-            
-            // return resolve(oRetJson);
 
         });
 
@@ -3826,7 +3922,19 @@ let oAPP = (function () {
 
             } catch (error) {
 
-                
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [             
+                    `[PATH]: www/Login/Login.js`,  
+                    `=> _handleSSOLogin`,
+                    `=> 통신오류 발생!!`,
+                    `=> SSO 관련 로그인 처리 실패!!`,
+                    `=> 접속 정보 확인 요망!!`,
+                    `=> 접속 서버가 SSO(SAML 2.0) 적용 서버일 경우, ZU4A_WBC 서비스에 SAML 삭제!!`,                        
+                ];
+
+                console.error(error);
+                console.error(aConsoleMsg.join("\r\n"));
+                console.trace();
             }
 
             resolve();
