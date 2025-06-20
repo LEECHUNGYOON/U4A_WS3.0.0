@@ -1330,86 +1330,230 @@ module.exports = {
     // end of setBrowserOpacity
 
 
+    // /**
+    //  * 부모 윈도우 위치의 가운데 배치한다.
+    //  * @param {REMOTE} REMOTE
+    //  * - REMOTE 객체
+    //  * 
+    //  * @param {BrowserWindow} oChildWinow
+    //  * - 부모 윈도우 위치에 가운데 배치할 자식 윈도우 인스턴스
+    //  * 
+    //  * @param {Object} oBrowserOptions
+    //  * - 자식 윈도우 인스턴스의 브라우저 옵션
+    //  */
+    // setParentCenterBounds: function (REMOTE, oChildWinow, oBrowserOptions) {
+
+    //     var oMainWindow = REMOTE.getCurrentWindow();
+
+    //     var SCREEN = REMOTE.require("electron").screen;
+
+    //     // 부모 창의 위치와 크기 가져오기
+    //     const [parentX, parentY] = oMainWindow.getPosition();
+    //     const [parentWidth, parentHeight] = oMainWindow.getSize();
+
+    //     let displayA = SCREEN.getDisplayMatching(CURRWIN.getBounds());
+
+    //     // 자식 창의 위치, 크기 정보
+    //     let oChildBounds = oChildWinow.getBounds();        
+
+    //     // 자식 창의 크기 설정
+    //     var childWidth = oChildBounds.width;
+    //     var childHeight = oChildBounds.height;   
+
+    //     // 자식 창의 위치를 부모 창의 가운데로 설정, 배율을 고려하여 계산
+    //     let childX = Math.round(parentX + (parentWidth - childWidth) / 2);
+    //     let childY = Math.round(parentY + (parentHeight - childHeight) / 2);
+
+    //     // 자식 창의 위치를 디스플레이 작업 영역 안에 있도록 조정
+    //     const { x: displayAX, y: displayAY, width: displayAWidth, height: displayAHeight } = displayA.workArea;
+    //     if (childX < displayAX) childX = displayAX;
+    //     if (childY < displayAY) childY = displayAY;
+    //     if (childX + childWidth > displayAX + displayAWidth) childX = displayAX + displayAWidth - childWidth;
+    //     if (childY + childHeight > displayAY + displayAHeight) childY = displayAY + displayAHeight - childHeight;
+
+
+    //     let oBounds = {
+    //         width: childWidth,
+    //         height: childHeight,
+    //         x: childX,
+    //         y: childY,    
+    //     }
+
+    //     // 계산된 자식의 y위치보다 부모의 y가 더 크다면 부모 y로 조정
+    //     if(oBounds.y <= parentY){            
+    //         oBounds.y = parentY;
+    //     }
+
+    //     var oCurrScreenBound = displayA?.bounds;
+    //     if(oCurrScreenBound){
+
+    //         // 자식 창이 현재 모니터에서 위로 벗어날 경우는 모니터의 최상단 위치로 조정
+    //         if(oBounds.y <= oCurrScreenBound.y){
+    //             oBounds.y = oCurrScreenBound.y;
+    //         }
+
+    //         // 자식창이 현재 모니터에서 아래로 벗어날 경우는 부모 창의 y 값으로 지정
+    //         if(oCurrScreenBound.height <= oBounds.y){
+    //             oBounds.y = parentY;
+    //         }
+    //     }
+
+
+    //     // 위에서 계산되어진 값들 중 소수점이 있으면
+    //     // setBounds 수행시 스크립트 오류가 발생하여 반올림 처리
+    //     oBounds.x      = Math.ceil(oBounds.x);
+    //     oBounds.y      = Math.ceil(oBounds.y);
+    //     oBounds.width  = Math.ceil(oBounds.width);
+    //     oBounds.height = Math.ceil(oBounds.height);
+
+    //     // setBounds를 두번 수행해야 정확한 위치로 적용됨
+    //     oChildWinow.setBounds(oBounds);
+    //     oChildWinow.setBounds(oBounds);
+
+    // },
+
+
     /**
      * 부모 윈도우 위치의 가운데 배치한다.
      * @param {REMOTE} REMOTE
-     * - REMOTE 객체
-     * 
+     * - REMOTE 객체 (electron 모듈 접근용)
+     *
      * @param {BrowserWindow} oChildWinow
      * - 부모 윈도우 위치에 가운데 배치할 자식 윈도우 인스턴스
-     * 
+     *
      * @param {Object} oBrowserOptions
-     * - 자식 윈도우 인스턴스의 브라우저 옵션
+     * - 자식 윈도우 인스턴스의 브라우저 옵션 (현재 코드에서는 직접 사용되지 않지만 인자 명세에 포함)
      */
     setParentCenterBounds: function (REMOTE, oChildWinow, oBrowserOptions) {
+        // --- 1. 필수 인자 및 Electron 모듈 유효성 검사 ---
+        if (!REMOTE || typeof REMOTE.getCurrentWindow !== 'function' || typeof REMOTE.require !== 'function') {
+            console.error("setParentCenterBounds: 유효하지 않거나 불완전한 REMOTE 객체가 제공되었습니다. 작업을 중단합니다.");
+            return;
+        }
 
-        var oMainWindow = REMOTE.getCurrentWindow();
+        if (!oChildWinow || typeof oChildWinow.getBounds !== 'function' || typeof oChildWinow.setBounds !== 'function') {
+            console.error("setParentCenterBounds: 유효하지 않은 자식 윈도우(oChildWinow) 객체입니다. getBounds 및 setBounds 메소드를 가진 BrowserWindow 인스턴스여야 합니다. 작업을 중단합니다.");
+            return;
+        }
 
-        var SCREEN = REMOTE.require("electron").screen;
+        const oMainWindow = REMOTE.getCurrentWindow();
+        if (!oMainWindow || typeof oMainWindow.getPosition !== 'function' || typeof oMainWindow.getSize !== 'function') {
+            console.error("setParentCenterBounds: 메인 윈도우(oMainWindow)가 유효하지 않거나 접근할 수 없습니다. 작업을 중단합니다.");
+            return;
+        }
 
-        // 부모 창의 위치와 크기 가져오기
+        // --- 2. CURRWIN 전역변수 유효성 검사 ---
+        // CURRWIN이 유효한 BrowserWindow 인스턴스이며, 파괴되지 않았는지 확인
+        if (!global.CURRWIN || typeof global.CURRWIN.getBounds !== 'function' || (typeof global.CURRWIN.isDestroyed === 'function' && global.CURRWIN.isDestroyed())) {
+            console.error("setParentCenterBounds: 전역 CURRWIN이 유효한 BrowserWindow 인스턴스가 아니거나 파괴되었습니다. 정확한 위치 지정을 위한 디스플레이 정보를 가져올 수 없습니다. 작업을 중단합니다.");
+            return;
+        }
+
+        const SCREEN = REMOTE.require("electron").screen;
+        if (!SCREEN || typeof SCREEN.getDisplayMatching !== 'function') {
+            console.error("setParentCenterBounds: Electron 'screen' 모듈에 접근할 수 없습니다. 작업을 중단합니다.");
+            return;
+        }
+
+        // --- 3. 부모 창의 위치와 크기 가져오기 및 유효성 검사 ---
         const [parentX, parentY] = oMainWindow.getPosition();
         const [parentWidth, parentHeight] = oMainWindow.getSize();
 
-        let displayA = SCREEN.getDisplayMatching(CURRWIN.getBounds());
+        if (isNaN(parentX) || isNaN(parentY) || isNaN(parentWidth) || isNaN(parentHeight)) {
+            console.error(`setParentCenterBounds: 유효하지 않은 부모 윈도우 경계가 감지되었습니다. X=${parentX}, Y=${parentY}, W=${parentWidth}, H=${parentHeight}. 작업을 중단합니다.`);
+            return;
+        }
+        // console.log(`setParentCenterBounds: 부모 윈도우 경계 - X:${parentX}, Y:${parentY}, W:${parentWidth}, H:${parentHeight}`);
 
-        // 자식 창의 위치, 크기 정보
-        let oChildBounds = oChildWinow.getBounds();        
+        // --- 4. 현재 디스플레이 정보 가져오기 및 유효성 검사 ---
+        let displayA = SCREEN.getDisplayMatching(global.CURRWIN.getBounds());
+        let oCurrScreenBound = displayA && displayA.bounds ? displayA.bounds : null;
+        let displayAWorkArea = displayA && displayA.workArea ? displayA.workArea : null;
 
-        // 자식 창의 크기 설정
+        if (!displayA || !oCurrScreenBound || !displayAWorkArea) {
+            console.warn("setParentCenterBounds: 유효한 디스플레이 또는 작업 영역 정보를 가져올 수 없습니다. 화면 경계 조정이 부정확할 수 있습니다.");
+        } else {
+            // console.log(`setParentCenterBounds: 현재 화면 경계 - X:${oCurrScreenBound.x}, Y:${oCurrScreenBound.y}, W:${oCurrScreenBound.width}, H:${oCurrScreenBound.height}`);
+            // console.log(`setParentCenterBounds: 현재 작업 영역 경계 - X:${displayAWorkArea.x}, Y:${displayAWorkArea.y}, W:${displayAWorkArea.width}, H:${displayAWorkArea.height}`);
+        }
+
+
+        // --- 5. 자식 창의 현재 위치, 크기 정보 가져오기 ---
+        let oChildBounds = oChildWinow.getBounds();
+        if (isNaN(oChildBounds.width) || isNaN(oChildBounds.height)) {
+            console.error(`setParentCenterBounds: 유효하지 않은 초기 자식 윈도우 경계가 감지되었습니다. 너비=${oChildBounds.width}, 높이=${oChildBounds.height}. 작업을 중단합니다.`);
+            return;
+        }
+        console.log(`setParentCenterBounds: 자식 윈도우 초기 경계 - 너비:${oChildBounds.width}, 높이:${oChildBounds.height}`);
+
+
         var childWidth = oChildBounds.width;
-        var childHeight = oChildBounds.height;   
+        var childHeight = oChildBounds.height;
 
-        // 자식 창의 위치를 부모 창의 가운데로 설정, 배율을 고려하여 계산
+        // --- 6. 자식 창의 위치를 부모 창의 가운데로 설정, 배율을 고려하여 계산 ---
         let childX = Math.round(parentX + (parentWidth - childWidth) / 2);
         let childY = Math.round(parentY + (parentHeight - childHeight) / 2);
-
-        // 자식 창의 위치를 디스플레이 작업 영역 안에 있도록 조정
-        const { x: displayAX, y: displayAY, width: displayAWidth, height: displayAHeight } = displayA.workArea;
-        if (childX < displayAX) childX = displayAX;
-        if (childY < displayAY) childY = displayAY;
-        if (childX + childWidth > displayAX + displayAWidth) childX = displayAX + displayAWidth - childWidth;
-        if (childY + childHeight > displayAY + displayAHeight) childY = displayAY + displayAHeight - childHeight;
-
 
         let oBounds = {
             width: childWidth,
             height: childHeight,
             x: childX,
-            y: childY,    
+            y: childY,
         }
 
-        // 계산된 자식의 y위치보다 부모의 y가 더 크다면 부모 y로 조정
-        if(oBounds.y <= parentY){            
+        // --- 7. 자식 창의 위치를 디스플레이 작업 영역 안에 있도록 조정 ---
+        if (displayAWorkArea) {
+            const { x: displayAX, y: displayAY, width: displayAWidth, height: displayAHeight } = displayAWorkArea;
+
+            // 좌측 경계 조정
+            if (oBounds.x < displayAX) oBounds.x = displayAX;
+            // 상단 경계 조정
+            if (oBounds.y < displayAY) oBounds.y = displayAY;
+            // 우측 경계 조정
+            if (oBounds.x + oBounds.width > displayAX + displayAWidth) {
+                oBounds.x = displayAX + displayAWidth - oBounds.width;
+                if (oBounds.x < displayAX) oBounds.x = displayAX; // 조정 후 좌측 경계 다시 확인
+            }
+            // 하단 경계 조정 (논리 개선)
+            if (oBounds.y + oBounds.height > displayAY + displayAHeight) {
+                oBounds.y = displayAY + displayAHeight - oBounds.height;
+                if (oBounds.y < displayAY) oBounds.y = displayAY; // 조정 후 상단 경계 다시 확인
+            }
+        } else {
+            console.warn("setParentCenterBounds: 유효하지 않은 작업 영역 정보로 인해 작업 영역 조정을 건너뜁니다.");
+        }
+
+        // --- 8. 부모 Y 값에 따른 추가 조정 (기존 로직 유지, 필요시 재검토) ---
+        if(oBounds.y <= parentY){
             oBounds.y = parentY;
         }
 
-        var oCurrScreenBound = displayA?.bounds;
-        if(oCurrScreenBound){
-
-            // 자식 창이 현재 모니터에서 위로 벗어날 경우는 모니터의 최상단 위치로 조정
-            if(oBounds.y <= oCurrScreenBound.y){
-                oBounds.y = oCurrScreenBound.y;
-            }
-
-            // 자식창이 현재 모니터에서 아래로 벗어날 경우는 부모 창의 y 값으로 지정
-            if(oCurrScreenBound.height <= oBounds.y){
-                oBounds.y = parentY;
-            }
-        }
-
-
-        // 위에서 계산되어진 값들 중 소수점이 있으면
-        // setBounds 수행시 스크립트 오류가 발생하여 반올림 처리
+        // --- 9. 최종 값 반올림 (ceil) 처리 ---
         oBounds.x      = Math.ceil(oBounds.x);
         oBounds.y      = Math.ceil(oBounds.y);
         oBounds.width  = Math.ceil(oBounds.width);
         oBounds.height = Math.ceil(oBounds.height);
 
-        // setBounds를 두번 수행해야 정확한 위치로 적용됨
-        oChildWinow.setBounds(oBounds);
-        oChildWinow.setBounds(oBounds);
+        // console.log(`setParentCenterBounds: 계산된 최종 경계 (올림 처리 후) - X:${oBounds.x}, Y:${oBounds.y}, 너비:${oBounds.width}, 높이:${oBounds.height}`);
 
+        // --- 10. setBounds 호출 전 최종 유효성 검사 (가장 중요) ---
+        const finalIsValidBounds =
+            typeof oBounds.x === 'number' && !isNaN(oBounds.x) &&
+            typeof oBounds.y === 'number' && !isNaN(oBounds.y) &&
+            typeof oBounds.width === 'number' && !isNaN(oBounds.width) &&
+            typeof oBounds.height === 'number' && !isNaN(oBounds.height);
+
+        if (finalIsValidBounds) {
+            try {
+                oChildWinow.setBounds(oBounds);
+                oChildWinow.setBounds(oBounds); // 두 번째 호출 (기존 주석에 따름)
+                console.log("setParentCenterBounds: setBounds를 성공적으로 두 번 호출했습니다.");
+            } catch (e) {
+                console.error(`setParentCenterBounds: setBounds 호출 중 오류 발생: ${e.message}`, e);
+            }
+        } else {
+            console.error(`setParentCenterBounds: 최종 계산된 경계가 유효하지 않습니다. setBounds 호출을 중단합니다. 유효하지 않은 경계: ${JSON.stringify(oBounds)}`);
+        }
     },
 
     // /**
