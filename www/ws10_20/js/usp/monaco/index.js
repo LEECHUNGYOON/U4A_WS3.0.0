@@ -642,8 +642,8 @@ window.require([
             tabCompletion: 'on',  // 탭 완성 활성화
             snippetSuggestions: 'inline',  // 스니펫 제안 표시 방법
             automaticLayout: true,
-            formatOnPaste: true,
-            formatOnType: true,
+            formatOnPaste: false,
+            formatOnType: false,
             wordWrap: "off", // ✅ 줄 바꿈 끄기 → 가로 스크롤 생김!
 
             scrollbar: {
