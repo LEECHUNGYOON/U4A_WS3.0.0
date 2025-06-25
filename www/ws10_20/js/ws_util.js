@@ -1471,7 +1471,7 @@ module.exports = {
         let displayAWorkArea = displayA && displayA.workArea ? displayA.workArea : null;
 
         if (!displayA || !oCurrScreenBound || !displayAWorkArea) {
-            console.warn("setParentCenterBounds: 유효한 디스플레이 또는 작업 영역 정보를 가져올 수 없습니다. 화면 경계 조정이 부정확할 수 있습니다.");
+            // console.warn("setParentCenterBounds: 유효한 디스플레이 또는 작업 영역 정보를 가져올 수 없습니다. 화면 경계 조정이 부정확할 수 있습니다.");
         } else {
             // console.log(`setParentCenterBounds: 현재 화면 경계 - X:${oCurrScreenBound.x}, Y:${oCurrScreenBound.y}, W:${oCurrScreenBound.width}, H:${oCurrScreenBound.height}`);
             // console.log(`setParentCenterBounds: 현재 작업 영역 경계 - X:${displayAWorkArea.x}, Y:${displayAWorkArea.y}, W:${displayAWorkArea.width}, H:${displayAWorkArea.height}`);
@@ -1484,7 +1484,7 @@ module.exports = {
             console.error(`setParentCenterBounds: 유효하지 않은 초기 자식 윈도우 경계가 감지되었습니다. 너비=${oChildBounds.width}, 높이=${oChildBounds.height}. 작업을 중단합니다.`);
             return;
         }
-        console.log(`setParentCenterBounds: 자식 윈도우 초기 경계 - 너비:${oChildBounds.width}, 높이:${oChildBounds.height}`);
+        // console.log(`setParentCenterBounds: 자식 윈도우 초기 경계 - 너비:${oChildBounds.width}, 높이:${oChildBounds.height}`);
 
 
         var childWidth = oChildBounds.width;
@@ -1520,7 +1520,7 @@ module.exports = {
                 if (oBounds.y < displayAY) oBounds.y = displayAY; // 조정 후 상단 경계 다시 확인
             }
         } else {
-            console.warn("setParentCenterBounds: 유효하지 않은 작업 영역 정보로 인해 작업 영역 조정을 건너뜁니다.");
+            // console.warn("setParentCenterBounds: 유효하지 않은 작업 영역 정보로 인해 작업 영역 조정을 건너뜁니다.");
         }
 
         // --- 8. 부모 Y 값에 따른 추가 조정 (기존 로직 유지, 필요시 재검토) ---
@@ -1547,7 +1547,7 @@ module.exports = {
             try {
                 oChildWinow.setBounds(oBounds);
                 oChildWinow.setBounds(oBounds); // 두 번째 호출 (기존 주석에 따름)
-                console.log("setParentCenterBounds: setBounds를 성공적으로 두 번 호출했습니다.");
+                // console.log("setParentCenterBounds: setBounds를 성공적으로 두 번 호출했습니다.");
             } catch (e) {
                 console.error(`setParentCenterBounds: setBounds 호출 중 오류 발생: ${e.message}`, e);
             }

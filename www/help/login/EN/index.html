@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <div class="content">
+        <div id="1" class="contentArea">
+            <h1 class="helpTitle">
+                U4A Workspace(WS) Login Error Troubleshooting Manual
+            </h1>
+
+        <div id="2" class="contentArea">
+            <div class="overview">
+                Check the host information of the connected server              
+            </div>
+
+            <div class="contents">
+                1. Check the server connection information in Workspace
+            </div>
+            <div class="contentsImg">
+                <img src="./img/img0070.png" alt="">
+            </div>
+
+            <div class="contents">
+                2. Refer to the registered connection information and access services such as Webgui in the browser
+            </div>
+
+        <div class="example">
+        <div class="example-title">Example)
+
+Registered connection information  
+- Protocol: "https"  
+- Host: "sapdevap.u4a.com"  
+- Port: "44300"
+
+- Execution URL:  
+https://sapdevap.u4a.com:44300/sap/bc/gui/sap/its/webgui</div>
+        </div>
+</div>
+        
+        <div id="3" class="contentArea">
+
+            <div class="overview">
+                Check if SSO (SAML2.0) is applied to the target server                
+            </div>
+
+            <div class="contents">
+                1. Log in to the target server via SAPGUI and enter T-CODE: "SICF" to access the "Definition Service" screen
+            </div>
+
+            <div class="contents">
+                2. Enter "ZU4A_WBC" in the "Service Name" field and execute
+            </div>
+            <div class="contentsImg">
+                <img src="./img/img0010.png" alt="">
+            </div>
+
+            <div class="contents">
+                3. On the result screen, double-click the "ZU4A_WBC" service
+            </div>
+            <div class="contentsImg">
+                <img src="./img/img0020.png" alt="">
+            </div>
+
+            <div class="contents">
+                4. On the "Create/Change Service" screen, select the "Logon Data" tab and then click the "Change" button at the top
+            </div>
+            <div class="contentsImg">
+                <img src="./img/img0030.png" alt="">
+            </div>
+
+            <div class="contents">
+                5. After all input fields are enabled, select "Alternative Logon Procedure" from the "Procedure" dropdown
+            </div>
+            <div class="contentsImg">
+                <img src="./img/img0040.png" alt="">
+            </div>
+            <div class="contents">
+                6. At the bottom of the screen, check if "SAML Logon" exists in the "Logon Procedure List" section
+            </div>
+            <div class="contentsImg">
+                <img src="./img/img0050.png" alt="">
+            </div>
+
+            <div class="contents">
+                7. If it needs to be deleted, follow the steps shown in the image below to remove it
+            </div>
+            <div class="contentsImg">
+                <img src="./img/img0060.png" alt="">
+            </div>
+
+            <div class="contents">
+                8. Restart U4A Workspace and try logging in again
+            </div>
+
+            <div class="warning-wrapper">
+                <div class="warning-box">
+                    <div class="warning-title">Warning</div>
+                    We are not responsible for any errors or issues caused by changes or arbitrary actions not covered in this guide.
+
+                    Also, problems resulting from modifications to system files, settings, components, or the use of external tools without prior approval from us will not be supported.
+
+                    For stable use, please follow the procedures specified in this guide.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+        <div id="4" class="contentArea">
+            <h1 class="helpTitle">
+                If the issue persists after checking and action
+            </h1>
+
+            <div class="contents">
+                If the problem continues after checking and performing the above actions, please contact the U4A R&D team.
+            </div>
+        </div>
+    </div>
+    <script src="./index.js"></script>
+</body>
+</html>

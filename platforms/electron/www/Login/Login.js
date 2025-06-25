@@ -10,6 +10,7 @@ let oAPP = (function () {
     const
         require = parent.require,
         REMOTE = parent.REMOTE,
+        REMOTEMAIN = parent.REMOTEMAIN,
         CURRWIN = REMOTE.getCurrentWindow(),
         APPPATH = parent.APPPATH,
         PATH = parent.PATH,
@@ -1105,16 +1106,10 @@ let oAPP = (function () {
 
                 try {
 
-                    oResult = JSON.parse(xhr.response);
+                    oResult = JSON.parse(xhr.response);    
 
                 } catch (error) {
-
-                    // let _sLog = `[oAPP.events.ev_login] \n\n`;
-                    //     _sLog = `'u4a_status' Response header JSON Parse Error!!`;
-                    //     _sLog += error && error.toString() || "login Error";
-
-                    // console.log(_sLog);
-
+        
                     // 콘솔용 오류 메시지
                     var aConsoleMsg = [
                         `\n############# 로그인 오류 ###############`,
@@ -1134,7 +1129,26 @@ let oAPP = (function () {
                     let sErrMsg = oAPP.msg.M295 + "\n\n";
                         sErrMsg += oAPP.msg.M290;
 
-                    sap.m.MessageBox.error(sErrMsg);  
+                    // sap.m.MessageBox.error(sErrMsg);
+                    
+                    /**
+                     * @since   2025-06-25
+                     * @version 3.5.6-sp8
+                     * @author  soccerhs
+                     * 
+                     * @description
+                     * 로그인창 실행 시 오류 발생에 대한 확인 및 조치 가이드 내용 추가
+                     *
+                     * - 기존:
+                     *   단순 서버 접속 실패 메시지
+                     * 
+                     * - 변경:
+                     *   접속 실패 메시지와 함께 확인 사항 가이드 내용 추가
+                     */
+                    let sTitle = oAPP.msg.M417; // 서버 연결 실패!
+
+                    // 로그인 오류 메시지 Dialog 호출
+                    _openLoginErrorDialog({ TITLE: sTitle, DESC: sErrMsg });
 
                     parent.setDomBusy("");
 
@@ -1185,9 +1199,27 @@ let oAPP = (function () {
 
                 // MSG - 로그인 처리 하는 과정에서 문제가 발생하였습니다. 담당자에게 문의하세요.
                 let sErrMsg = oAPP.msg.M081;
-          
+                
+                // sap.m.MessageBox.error(sErrMsg);  
 
-                sap.m.MessageBox.error(sErrMsg);  
+                /**
+                 * @since   2025-06-25
+                 * @version 3.5.6-sp8
+                 * @author  soccerhs
+                 * 
+                 * @description
+                 * 로그인창 실행 시 오류 발생에 대한 확인 및 조치 가이드 내용 추가
+                 *
+                 * - 기존:
+                 *   단순 서버 접속 실패 메시지
+                 * 
+                 * - 변경:
+                 *   접속 실패 메시지와 함께 확인 사항 가이드 내용 추가
+                 */
+                let sTitle = oAPP.msg.M417; // 서버 연결 실패!
+
+                // 로그인 오류 메시지 Dialog 호출
+                _openLoginErrorDialog({ TITLE: sTitle, DESC: sErrMsg });                
                 
                 parent.setDomBusy("");
 
@@ -3561,6 +3593,283 @@ let oAPP = (function () {
 
     // } // end of _globalSettingsConfig
 
+
+    /************************************************************************
+     * !! 현재 브라우저의 Child 기준 !!
+     ************************************************************************
+     * 에디터 타입별로 이미 오픈된 팝업이 있는지 확인
+     * 있으면 새창을 띄우지 말고 focus 를 준다.
+     * **********************************************************************
+     * @param {Object} oEditInfo
+     * - 오픈 하려는 에디터의 타입 정보
+     * 
+     * @return {Object} 
+     *  - ISOPEN {Boolean} 
+     *      true : 같은 타입의 오픈된 에디터 팝업이 이미 있는 경우.
+     *      false : 같은 타입의 오픈된 에디터 팝업이 없는 신규일 경우.
+     * 
+     *  - WINDOW {Object}
+     *      BrowserWindow Instance
+     *  
+     ************************************************************************/
+    function _getCheckAlreadyOpenWindow (OBJTY) {
+
+        var oCurrWin = REMOTE.getCurrentWindow(), // 현재 window
+            aChildWin = oCurrWin.getChildWindows(), // 현재 window의 child window           
+            iChildWinCnt = aChildWin.length,
+            sObjType = OBJTY;
+
+        if (iChildWinCnt <= 0) {
+            return {
+                ISOPEN: false
+            };
+        }
+
+        for (var i = 0; i < iChildWinCnt; i++) {
+
+            var oWin = aChildWin[i];
+
+            if (oWin.isDestroyed()) {
+                continue;
+            }
+
+            try {
+
+                var oWebCon = oWin.webContents;
+                var oWebPref = oWebCon.getWebPreferences();
+                var sType = oWebPref.OBJTY;
+
+                if (sObjType != sType) {
+                    continue;
+                }
+
+                oWin.focus();
+
+                return {
+                    ISOPEN: true,
+                    WINDOW: oWin
+                };
+
+            } catch (error) {
+                continue;
+            }
+
+        }
+
+        return {
+            ISOPEN: false
+        };
+
+    }; // end of _getCheckAlreadyOpenWindow
+
+
+    /************************************************************************
+     * 로그인 오류 확인사항 가이드 Popup 실행
+     ************************************************************************/
+    function _showLoginErrorHelpPopup(){
+ 
+        parent.setDomBusy("X");
+
+        let oSettingInfo = WSUTIL.getWsSettingsInfo(),
+            WS_LANGU = oSettingInfo.globalLanguage;
+
+        let sHelpRoot = PATH.join(APPPATH, "help", "login");
+        var sHelpLanguPath = PATH.join(sHelpRoot, WS_LANGU, "index.html");
+        
+        if(!parent.FS.existsSync(sHelpLanguPath)){
+
+            sHelpLanguPath = PATH.join(sHelpRoot, "EN", "index.html");
+            
+            if(!parent.FS.existsSync(sHelpLanguPath)){
+
+                // 해당 언어에 대한 가이드 문서가 없습니다. U4A 솔루션 팀에 문의하세요.
+                let sErrMsg = oAPP.msg.M414;  
+
+                sap.m.MessageBox.information(sErrMsg);
+
+                parent.setDomBusy("");
+
+                return;
+            }
+
+        }        
+
+        let sPopupName = "LOGIN_ERROR";
+
+        // 기존 팝업이 열렸을 경우 새창 띄우지 말고 해당 윈도우에 포커스를 준다.
+        let oResult = _getCheckAlreadyOpenWindow(sPopupName);
+        if (oResult.ISOPEN) {
+
+            // 부모 위치 가운데 배치한다.            
+            parent.WSUTIL.setParentCenterBounds(REMOTE, oResult.WINDOW);
+
+            parent.setDomBusy("");
+
+            return;
+
+        }
+
+        let SESSKEY = parent.getSessionKey(),
+            BROWSKEY = parent.getBrowserKey();            
+
+        let oThemeInfo = parent.getThemeInfo(); // theme 정보      
+
+        // 브라우저 옵션 설정
+        let sSettingsJsonPath = parent.getPath("BROWSERSETTINGS"),
+            oDefaultOption = parent.require(sSettingsJsonPath),
+            oBrowserOptions = jQuery.extend(true, {}, oDefaultOption.browserWindow);
+
+        oBrowserOptions.title = oAPP.msg.M415;  // 서버 접속 관련 오류 점검사항
+        oBrowserOptions.autoHideMenuBar = true;        
+        oBrowserOptions.parent = CURRWIN;
+        oBrowserOptions.backgroundColor = oThemeInfo.BGCOL;
+
+        oBrowserOptions.opacity = 0.0;
+        oBrowserOptions.show = false;
+        oBrowserOptions.closable = false;
+
+        oBrowserOptions.webPreferences.partition = SESSKEY;
+        oBrowserOptions.webPreferences.browserkey = BROWSKEY;
+        oBrowserOptions.webPreferences.OBJTY = sPopupName;
+
+        // 브라우저 오픈
+        let oBrowserWindow = new REMOTE.BrowserWindow(oBrowserOptions);
+        REMOTEMAIN.enable(oBrowserWindow.webContents);
+
+        // 오픈할 브라우저 백그라운드 색상을 테마 색상으로 적용
+        let sWebConBodyCss = `html, body { margin: 0px; height: 100%; background-color: ${oThemeInfo.BGCOL}; }`;
+        oBrowserWindow.webContents.insertCSS(sWebConBodyCss);
+
+        // 브라우저 상단 메뉴 없애기
+        oBrowserWindow.setMenu(null);
+       
+        oBrowserWindow.loadURL(sHelpLanguPath);
+
+        // 브라우저가 활성화 될 준비가 될때 타는 이벤트
+        oBrowserWindow.once('ready-to-show', () => {
+
+            // 부모 위치 가운데 배치한다.            
+            WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
+
+        });
+
+        // 브라우저가 오픈이 다 되면 타는 이벤트
+        oBrowserWindow.webContents.on('did-finish-load', function () {     
+
+            // 윈도우 오픈할때 opacity를 이용하여 자연스러운 동작 연출
+            WSUTIL.setBrowserOpacity(oBrowserWindow);
+
+            // 부모 위치 가운데 배치한다.            
+            WSUTIL.setParentCenterBounds(REMOTE, oBrowserWindow);
+
+            parent.setDomBusy("");
+
+            oBrowserWindow.closable = true;
+
+            oBrowserWindow.show();
+
+        });
+
+        // 브라우저를 닫을때 타는 이벤트
+        oBrowserWindow.on('closed', () => {
+
+            oBrowserWindow = null;
+
+            CURRWIN.focus();
+
+        });
+
+    } // end of _showLoginErrorHelpPopup
+
+
+    /************************************************************************
+     * 컨트롤러 오류 메시지 Dialog 실행
+     ************************************************************************/
+    function _openLoginErrorDialog(oPARAM){
+
+        // 제목
+        let sTitle = oPARAM?.TITLE || "";
+
+        // 점검사항
+        let sMsg01 = oAPP.msg.M249;
+
+        // 아래의 점검사항을 확인하세요.
+        let sMsg02 = oAPP.msg.M250;
+
+        let oDialog = new sap.m.Dialog({
+            contentWidth: "500px",
+            draggable: true,
+            resizable: true,   
+            state: "Error",
+            buttons: [
+                new sap.m.Button({
+                    icon: "sap-icon://question-mark",
+                    text: sMsg01, /* 점검사항 */
+                    press: function(){        
+
+                        // 컨트롤러 오류 확인사항 가이드 Popup 실행
+                        _showLoginErrorHelpPopup();
+        
+                    }
+                }),
+                new sap.m.Button({
+                    icon: "sap-icon://decline",
+                    type: sap.m.ButtonType.Reject,
+                    press: function(){
+                        oDialog.close();
+                    }
+                })
+            ],
+            afterClose: function(){
+
+                oDialog.destroy();
+
+                oAPP.attr.isPressWindowClose = "X";
+
+                CURRWIN.close();
+
+            }
+        });
+    
+        oDialog.addStyleClass("sapUiContentPadding");
+    
+        let oToolbar1 = new sap.m.Toolbar();
+        oDialog.setCustomHeader(oToolbar1);
+    
+        let oIcon1 = new sap.ui.core.Icon({
+            src: "sap-icon://disconnected",
+            size: "20px",
+        });
+        oToolbar1.addContent(oIcon1);
+        
+        // 제목 영역
+        let oTitle1 = new sap.m.Title({
+            text: sTitle
+        });
+        oToolbar1.addContent(oTitle1);
+    
+        let oVBox1 = new sap.m.VBox();
+        oDialog.addContent(oVBox1);
+        
+        // 오류 내용
+        let oTitle2 = new sap.m.Title({            
+            text: oPARAM?.DESC || "",
+            wrapping: true
+        });
+        oVBox1.addItem(oTitle2);
+    
+        oTitle2.addStyleClass("sapUiSmallMarginBottom");
+    
+        let oTitle4 = new sap.m.Title({
+            text: sMsg02, /* 아래의 점검사항을 확인하세요. */
+            wrapping: true,
+        });
+        oVBox1.addItem(oTitle4);
+    
+        oDialog.open();
+
+    } // end of _openLoginErrorDialog
+
     /********************************************************
      * 접속서버에서 설치된 언어 목록을 구한다.
      ********************************************************/
@@ -3708,17 +4017,38 @@ let oAPP = (function () {
 
                         sErrMsg = oAPP.msg.M283; // 통신오류
 
+                        break;
+
                 }
 
-                sap.m.MessageBox.error(sErrMsg, {
-                    onClose: function(){
+                // sap.m.MessageBox.error(sErrMsg, {
+                //     onClose: function(){
 
-                        oAPP.attr.isPressWindowClose = "X";
+                //         oAPP.attr.isPressWindowClose = "X";
 
-                        CURRWIN.close();
+                //         CURRWIN.close();
                         
-                    }
-                });   
+                //     }
+                // });   
+
+                /**
+                 * @since   2025-06-25
+                 * @version 3.5.6-sp8
+                 * @author  soccerhs
+                 * 
+                 * @description
+                 * 로그인창 실행 시 오류 발생에 대한 확인 및 조치 가이드 내용 추가
+                 *
+                 * - 기존:
+                 *   단순 서버 접속 실패 메시지
+                 * 
+                 * - 변경:
+                 *   접속 실패 메시지와 함께 확인 사항 가이드 내용 추가
+                 */
+                let sTitle = oAPP.msg.M416; // 서버 연결 실패!
+
+                // 로그인 오류 메시지 Dialog 호출
+                _openLoginErrorDialog({ TITLE: sTitle, DESC: sErrMsg });
 
                 parent.setDomBusy("");
 
@@ -4044,6 +4374,11 @@ function fnWsGlobalMsgList() {
         oAPP.msg.M081 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "081"); // An issue occurred during login. Please contact support for assistance.
         oAPP.msg.M082 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "082"); // You need to change your password. Please update it via SAPGUI.
 
+
+
+        oAPP.msg.M249 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "249"); // 점검사항
+        oAPP.msg.M250 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "250"); // 아래의 점검사항을 확인하세요.
+
         oAPP.msg.M0271 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027", oAPP.msg.M063); // (Client) &1 is required entry value
         oAPP.msg.M0272 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027", oAPP.msg.M064); // (ID) &1 is required entry value
         oAPP.msg.M0273 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027", oAPP.msg.M065); // (Password) &1 is required entry value
@@ -4054,7 +4389,16 @@ function fnWsGlobalMsgList() {
         oAPP.msg.M290 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "290"); // 다시시도 하시거나, 문제가 지속될 경우 U4A 솔루션 팀에 문의 하세요.
         oAPP.msg.M294 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "294"); // 서버 응답 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.
         oAPP.msg.M295 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "295"); // 치명적인 오류가 발생하였습니다.
-        // WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "027"); 
+
+
+
+
+
+        oAPP.msg.M414 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "414"); // 해당 언어에 대한 가이드 문서가 없습니다. U4A 솔루션 팀에 문의하세요.
+        oAPP.msg.M415 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "415"); // 서버 접속 관련 오류 점검사항
+        oAPP.msg.M416 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "416"); // 서버 연결 실패!
+        oAPP.msg.M417 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "417"); // 로그인 실패!
+        
 
         resolve();
 
