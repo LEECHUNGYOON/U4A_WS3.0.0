@@ -3,12 +3,14 @@
     //application의 package 변경 팝업.
     oAPP.fn.changeAppPackagePopup = function(APPID){
 
+        parent.setBusy("X");
+
         //라이브러리 로드.
         sap.ui.getCore().loadLibrary("sap.m");
         sap.ui.getCore().loadLibrary("sap.ui.layout");
 
         //application의 package 변경 dialog UI 생성.
-        var oDlg = new sap.m.Dialog({draggable:true, resizable:true, contentWidth:"50%"});
+        var oDlg = new sap.m.Dialog({draggable:true, resizable:true, contentWidth:"50%", busyIndicatorDelay:0, busy:true});
 
         //popup 열기전 이벤트.
         oDlg.attachBeforeOpen(function(){
@@ -206,6 +208,9 @@
                     lf_closePopup(oUi);
                     
                     parent.setBusy("");
+
+                    oUi.setBusy(false);
+
                     return;
 
                 }
@@ -217,6 +222,8 @@
                 lf_closePopup(oUi);
                 
                 parent.setBusy("");
+
+                oUi.setBusy(false);
 
                 return;
             }
@@ -246,6 +253,8 @@
 
             parent.setBusy("");
 
+            oUi.setBusy(false);
+
         }); //서버 호출 처리.
 
 
@@ -272,6 +281,8 @@
             //YES를 선택하지 않은경우 EXIT.
             if(oEvent !== "YES"){return;}
 
+            parent.setBusy("X");
+
             //서버 전송 구조 정보 얻기.
             var l_PRC_INFO = oModel.getProperty("/PRC_INFO");
 
@@ -294,10 +305,11 @@
             //서버 호출 처리.
             sendAjax(parent.getServerPath() + "/package_change", oFormData, function(param){
 
-                parent.setBusy("");
-
                 if(param.RETCD === "E" && (typeof param.SCRIPT !== "undefined" && param.SCRIPT !== "")){
                     eval(param.SCRIPT);
+
+                    parent.setBusy("");
+
                     return;
                 }
 
@@ -305,6 +317,9 @@
                 if(param.RETCD === "E"){
                     //오류 메시지 출력.
                     parent.showMessage(sap, 20, "E", param.RTMSG);
+
+                    parent.setBusy("");
+
                     return;
                 }
 
@@ -313,6 +328,8 @@
 
                 //팝업 종료 처리.
                 lf_closePopup(oDlg);
+
+                parent.setBusy("");
 
 
             }); //서버 호출 처리.

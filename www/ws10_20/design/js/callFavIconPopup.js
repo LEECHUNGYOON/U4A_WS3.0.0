@@ -92,6 +92,7 @@
             contentHeight:"40%", 
             contentWidth:"30%", 
             verticalScrolling:false, 
+            horizontalScrolling : false,
             resizable:false,
             afterClose: function(){
 
@@ -209,6 +210,7 @@
 
         oPop.addContent(new sap.m.Title({
             titleStyle : "H4",
+            width: "90%",
             text:oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "365", "", "", "", "")
         }).addStyleClass("sapUiSmallMargin"));
 

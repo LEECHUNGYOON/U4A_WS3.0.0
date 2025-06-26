@@ -181,22 +181,35 @@
             case "AT02":
                 //프로퍼티, 이벤트 aggregation 입력란에서 context 메뉴 호출한 경우.
 
-                //프로퍼티, aggregation이 아닌경우 exit.
-                if(is_attr.UIATY !== "1" && is_attr.UIATY !== "3"){
+                //프로퍼티, 이벤트, aggregation이 아닌경우 exit.
+                if(is_attr.UIATY !== "1" && is_attr.UIATY !== "2" && is_attr.UIATY !== "3"){
                     return true;
                 }
+
+
+                //20250615 -pes start.
+                //이벤트의 경우도 동일속성 동기화 메뉴 활성화 처리.
+                //이벤트에서 발생한경우.
+                if(is_attr.UIATY === "2"){
+                    //동일속성 메뉴 활성화 처리.
+                    ls_menu.vis03 = true;
+                }
+                //20250615 -pes end.
 
                 //ATTRIBUTE TYPE이 프로퍼티이면서 바인딩 처리가 안된경우.
                 if(is_attr.UIATY === "1" && is_attr.ISBND === ""){
                     //프로퍼티 동일 속성 동기화 메뉴 활성화 처리.
 
-                    //프로퍼티 정보 검색.
-                    var ls_0023 = oAPP.DATA.LIB.T_0023.find( a => a.UIATK === is_attr.UIATK );
+                    //20250615 -pes start.
+                    //external 프로퍼티의 경우 동일속성 처리를 하지 않는 로직 주석 처리.
+                    // //프로퍼티 정보 검색.
+                    // var ls_0023 = oAPP.DATA.LIB.T_0023.find( a => a.UIATK === is_attr.UIATK );
 
-                    //extand 프로퍼티인경우 exit.
-                    if(ls_0023 && ls_0023.ISEXT === "X"){
-                        return true;
-                    }
+                    // //extand 프로퍼티인경우 exit.
+                    // if(ls_0023 && ls_0023.ISEXT === "X"){
+                    //     return true;
+                    // }
+                    //20250615 -pes end.
 
                     ls_menu.vis03 = true;
 
