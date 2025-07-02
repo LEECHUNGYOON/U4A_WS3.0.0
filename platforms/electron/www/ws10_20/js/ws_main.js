@@ -671,26 +671,88 @@
             return;
         }
 
+        let oWsSettingInfo = WSUTIL.getWsSettingsInfo();
+        let oWsPaths = oWsSettingInfo.path;
+
         // 커스텀 이벤트 명
         let _sEventName = `ai-message`;
 
         _oAI_IF_DOM.addEventListener(_sEventName, function(oEvent){
 
-            console.log("ai send", oEvent.detail);
+            let oIF_DATA = oEvent?.detail || undefined;
+            if(!oIF_DATA){
 
-            let _oEventData = oEvent?.detail?.RDATA || undefined;
-            if(!_oEventData){
-
-                let _sConsoleMsg = "[E001]\n";
-                _sConsoleMsg += "path: [ ws10_20 => js => ws_main.js => _attach_AI_Events ]\n";
-                _sConsoleMsg += "AI 에서 데이터 전송 잘못 보냄!!";
-
-                console.error(_sConsoleMsg);
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [
+                    `######################################`,
+                    `## AI에서 전송 데이터 누락!!!!`,
+                    `######################################`,
+                    `[PATH]: www/ws10_20/js/ws_main.js`,  
+                    `=> _attach_AI_Events`,
+                    `######################################\n`,
+                ];
+                console.error(aConsoleMsg.join("\r\n"));
 
                 return;
             }
 
-            parent.require(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, "UAI", "parseAiLibraryData.js"))(_oEventData, oAPP);
+            // 액션코드 기준으로 분기
+            if(!oIF_DATA.ACTCD){
+
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [
+                    `######################################`,
+                    `## AI에서 ACTCD 데이터 누락!!!!`,
+                    `######################################`,
+                    `[PATH]: www/ws10_20/js/ws_main.js`,  
+                    `=> _attach_AI_Events`,
+                    `######################################\n`,
+                ];
+                console.error(aConsoleMsg.join("\r\n"));
+
+                return;
+            }
+
+            try {
+                
+                let sModulePath = parent.PATH.join(oWsPaths.JS_ROOT, "uai", "ACTCD_MODULES", oIF_DATA.ACTCD, "index.js");
+                if(parent.FS.existsSync(sModulePath) === false){
+
+                    // 콘솔용 오류 메시지
+                    var aConsoleMsg = [
+                        `######################################`,
+                        `## AI에서 전달한 ACTCD 별 분기 Modules 없음!!`,
+                        `######################################`,
+                        `[PATH]: www/ws10_20/js/ws_main.js`,  
+                        `=> _attach_AI_Events`,
+                        `######################################\n`,
+                    ];
+
+                    console.error(aConsoleMsg.join("\r\n"));
+
+                    return;
+                }
+
+                parent.require(sModulePath)(oAPP, oIF_DATA);
+
+            } catch (error) {
+
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [
+                    `######################################`,
+                    `## AI에서 전달한 ACTCD 별 분기 Modules 오류!!`,
+                    `######################################`,
+                    `[PATH]: www/ws10_20/js/ws_main.js`,  
+                    `=> _attach_AI_Events`,
+                    `######################################\n`,
+                ];
+                
+                console.error(aConsoleMsg.join("\r\n"));
+                console.error(error);
+                
+                return;
+
+            }
 
         });
 

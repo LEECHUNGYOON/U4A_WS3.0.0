@@ -1018,9 +1018,9 @@ class CL_DELETE_UI{
 
 
 
-    static executeDelete = function(){
+    // static executeDelete = function(){
 
-    };
+    // };
 
 
 
@@ -1939,37 +1939,16 @@ class CL_DRAG_DROP{
 class CL_CHANGE_ATTR{
 
     /*************************************************************
-     * @method - ATTRIBUTE 변경 처리에 대한 이력 저장 처리.
+     * @method - attr 변경에 대한 이력 데이터 구성 처리.
      *************************************************************/
-    static saveActionHistoryData(aTargetHist, aParam) {
+    static setActionHistoryData(oParam){
 
-        if(typeof aParam === "undefined"){
-            console.error(`(undoRedo.js) CL_CHANGE_ATTR 이력 저장 중 파라메터가 undefined임`);
-            return;
-        }
-
-        if(Array.isArray(aParam) !== true){
-            console.error(`(undoRedo.js) CL_CHANGE_ATTR 이력 저장 중 파라메터가 array가 아님`);
-            return;
-        }
-
-        if(aParam.length === 0){
-            console.error(`(undoRedo.js) CL_CHANGE_ATTR 이력 저장 중 파라메터에 데이터가 없음`);
-            return;
-        }
+        var aT_ATTR  = [];
 
 
-        var _sSaveHist = {};
-
-        //UNDO, REDO시 수행할 ACTION 코드.
-        _sSaveHist.ACTCD   = "CHANGE_ATTR";
-
-        _sSaveHist.T_ATTR  = [];
-
-
-        for (let i = 0, l = aParam.length; i < l; i++) {
+        for (let i = 0, l = oParam.length; i < l; i++) {
             
-            var _sParam = aParam[i];
+            var _sParam = oParam[i];
 
             var _sATTR = {};
 
@@ -2005,10 +1984,43 @@ class CL_CHANGE_ATTR{
 
             }
 
-            _sSaveHist.T_ATTR.push(_sATTR);
-
+            aT_ATTR.push(_sATTR);
             
         }
+
+        return aT_ATTR;
+
+    };
+
+    /*************************************************************
+     * @method - ATTRIBUTE 변경 처리에 대한 이력 저장 처리.
+     *************************************************************/
+    static saveActionHistoryData(aTargetHist, aParam) {
+
+        if(typeof aParam === "undefined"){
+            console.error(`(undoRedo.js) CL_CHANGE_ATTR 이력 저장 중 파라메터가 undefined임`);
+            return;
+        }
+
+        if(Array.isArray(aParam) !== true){
+            console.error(`(undoRedo.js) CL_CHANGE_ATTR 이력 저장 중 파라메터가 array가 아님`);
+            return;
+        }
+
+        if(aParam.length === 0){
+            console.error(`(undoRedo.js) CL_CHANGE_ATTR 이력 저장 중 파라메터에 데이터가 없음`);
+            return;
+        }
+
+
+        var _sSaveHist = {};
+
+        //UNDO, REDO시 수행할 ACTION 코드.
+        _sSaveHist.ACTCD   = "CHANGE_ATTR";
+
+        //attr 변경에 대한 이력 데이터 구성 처리.
+        _sSaveHist.T_ATTR  = CL_CHANGE_ATTR.setActionHistoryData(aParam);
+
 
         //이력 저장 처리.
         CL_COMMON.setHistoryData(aTargetHist, _sSaveHist);
@@ -2074,6 +2086,20 @@ class CL_CHANGE_ATTR{
         //이력 정보 저장 처리.
         CL_CHANGE_ATTR.saveActionHistoryData(sEvent.T_HIST, oParam.T_ATTR);
         
+        
+        //ATTRIBUTE 변경 처리.
+        CL_CHANGE_ATTR.executeChangeAttr(oParam);
+
+
+    };
+
+
+
+
+    /*************************************************************
+     * @method - ATTRIBUTE 변경 처리.
+     *************************************************************/
+    static executeChangeAttr = async function(oParam){
 
         var _aOBJID = [];
 
@@ -2237,8 +2263,8 @@ class CL_CHANGE_ATTR{
         //DESIGN tree item 선택 처리
         await oAPP.fn.setSelectTreeItem(_sAttr.OBJID, _sAttr.UIATK);
 
-
     };
+
 
 
 
@@ -2710,6 +2736,16 @@ class CL_AI_INSERT{
 
             _sParam.HIST = CL_INSERT_UI.setActionHistoryData(oParam.HIST) || [];    
         }
+
+
+        //UI의 ATTRIBUTE 변경건인 경우.
+        if(oParam.PRCCD === "CHANGE_ATTR"){
+
+            _sParam.PRCCD = "CHANGE_ATTR";
+
+            _sParam.HIST = CL_CHANGE_ATTR.setActionHistoryData(oParam.HIST) || [];
+        }
+
         
 
         //이력 저장 처리.
@@ -2779,6 +2815,12 @@ class CL_AI_INSERT{
             await CL_AI_INSERT.executeInsert(sEvent, oParam);
         }
 
+        
+        //ATTR 변경건인경우.
+        if(oParam.PRCCD === "CHANGE_ATTR"){
+            CL_AI_INSERT.executeChangeAttr(sEvent, oParam);
+        }
+        
 
         let _aTarget = undefined;
 
@@ -2800,10 +2842,10 @@ class CL_AI_INSERT{
 
 
         //UNDO, REDO ACTION 수행 이후에 후속으로 수행해야하는 이력이 존재하는지 확인.
-        let _indx = _aTarget.findIndex( item => item?.RAND === oParam.RAND );
+        let _aSubHist = _aTarget.filter( item => item?.RAND === oParam.RAND );
 
         //존재하지 않는경우.
-        if(_indx === -1){
+        if(_aSubHist.length === 0){
 
             let _OBJID = oParam?.ROOT || "APP";
 
@@ -2819,10 +2861,13 @@ class CL_AI_INSERT{
         }
 
 
-        //후속으로 수행해야 하는건이 존재하는경우
-        let _subHist = _aTarget[_indx];
+        //후속으로 수행해야 하는건이 존재하는경우 마지막 라인 발췌.
+        let _subHist = _aSubHist.pop();
 
-        //UNDO, REDO에서 해당 이력 삭제.
+        //원본 이력 array에서 수행라인 위치 얻기.
+        var _indx = _aTarget.findIndex( item => item === _subHist );
+
+        //원본 이력 array에서 해당 라인 삭제.
         _aTarget.splice(_indx, 1);
 
         //후속 ACTION 수행.
@@ -2830,6 +2875,48 @@ class CL_AI_INSERT{
         
 
     };
+
+
+
+    /*************************************************************
+     * @method - UI ATTR 변경건 처리
+     *************************************************************/
+    static executeChangeAttr = function(sEvent, oParam){
+
+        return new Promise(async function(resolve){
+
+            if(oParam.HIST.length === 0){
+                return resolve();
+            }
+            
+            //저장 데이터구성.
+            var _sParam = {
+                ROOT           : oParam.ROOT,
+                PRCCD          : "CHANGE_ATTR",
+                RAND           : oParam.RAND,
+                HIST           : [],
+            };
+
+            
+            _sParam.HIST = oParam.HIST;
+
+            //이력 정보 저장 처리.
+            CL_AI_INSERT.saveActionHistoryData(sEvent.T_HIST, _sParam);
+
+            
+            var _sChangeAttr = {};
+
+            _sChangeAttr.T_ATTR = oParam.HIST;
+            
+
+            CL_CHANGE_ATTR.executeChangeAttr(_sChangeAttr);
+
+
+        });
+
+    };
+
+
 
 
     /*************************************************************
