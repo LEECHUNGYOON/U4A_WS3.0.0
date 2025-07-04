@@ -89,11 +89,11 @@ module.exports = async function(sAiParams){
         
     }
 
-    
+    //액션 코드에 따른 로직 분기.
+    //DROP인경우 BUSY, 팝업 호출 여부를 확인하지 않음.
+
     //전달받은 파라메터에서 UI 정보만 발췌
     var _sAppData = {...TY_RET};
-
-    _sAppData.RCODE  = "";
 
     //UI를 구성하기 위한 정보 발췌.
     _sAppData.T_0014 = sAiParams.T_0014;
@@ -104,45 +104,6 @@ module.exports = async function(sAiParams){
     
     _sAppData.sParent = undefined;
 
-    //액션 코드에 따른 로직 분기.
-    //DROP인경우 BUSY, 팝업 호출 여부를 확인하지 않음.
-    switch (sAiParams.ACTCD) {
-        case C_TRANS_AI_DATA:
-            //AI와 통신을 통한 UI 생성 처리.
-            
-            //UI를 생성 가능한 상태인지 확인.
-            _sAppData = chkUiCreateReadyState(_sAppData);
-            
-            break;
-    
-        default:
-            break;
-    }
-
-
-    //점검 오류건이 존재하는경우.
-    if(_sAppData.RETCD === "E"){
-
-        var _sRes = {...TY_RET};
-
-        _sRes.RETCD = _sAppData.RETCD;
-        
-        _sRes.RTMSG = _sAppData.RTMSG;
-
-        //오류 메시지 출력.
-        parent.showMessage(sap, 20, "I", _sRes.RTMSG);
-
-        return _sRes;
-
-    }
-
-    
-    parent.setBusy("X");
-
-    //단축키 잠금처리.
-    oAPP.fn.setShortcutLock(true);
-
-   
     //UI를 추가하는 TARGET UI명(PAGE)이 있는경우.
     if(sAiParams?.OBJID){
         //해당 UI명의 라인 정보 얻기.
@@ -155,13 +116,12 @@ module.exports = async function(sAiParams){
         //선택한 라인 정보 얻기. 
         _sAppData.sParent = oAPP.fn.designGetSelectedTreeItem();
     }
-    
 
     
     //aggregation 선택 팝업 및 확인 팝업 호출에 대한 로직 처리.
     _sAppData = await setAiDataParentAggr(_sAppData);
 
-    //처리결과 오류건이 존재하는경우.
+    //
     if(_sAppData.RETCD === "E"){
 
         var _sRes = {...TY_RET};
@@ -170,17 +130,8 @@ module.exports = async function(sAiParams){
         
         _sRes.RTMSG = _sAppData.RTMSG;
 
-        //default 메시지 유형(messageToast)
-        var _KIND = 10;
-
-        //aggregation 선택 건이 존재하지 않는 return code를 받은경우.
-        if(_sAppData.RCODE === "02"){
-            //messageBox로 처리.
-            _KIND = 20;
-        }
-
         //편집 모드인 경우.
-        parent.showMessage(sap, _KIND, "I", _sRes.RTMSG);
+        parent.showMessage(sap, 20, "I", _sRes.RTMSG);
 
         return _sRes;
 
@@ -190,6 +141,9 @@ module.exports = async function(sAiParams){
     //구성한 UI, attribute 정보를 RETURN 처리.
     _sAppData = rebuildAppData(_sAppData);
 
+    //구성한 UI 정보를 기준으로 UI 재구성 처리.
+    //(design tree 데이터, ui attribute 정보)
+
 
     //ROOT, APP UI 정보 설정.
     _sAppData = setRootAppData(_sAppData);
@@ -197,24 +151,18 @@ module.exports = async function(sAiParams){
     
     //구성한 UI, attribute 정보를 기준으로 design tree, 
     //attribute, 미리보기 영역의 UI 정보를 생성 하는 함수.
-    _sAppData = await createAppData(_sAppData);
+    createAppData(_sAppData);
 
 
     // //처리 결과 반환.
-    return {RETCD:_sAppData.RETCD, RTMSG: _sAppData.RTMSG};
+    // return _sRes;
 
 };
 
 
 
 
-/*********************************************************
- * @function - AI로 부터 전달받은 UI를 기준으로 추가 가능 정보 확인.
- * @param {sAppData} - AI 처리 대상 Object.
- *  sAiParams.T_0014 - AI로 부터 전달 받은 UI 정보
- *  sAiParams.T_0015 - AI로 부터 전달 받은 UI의 attribute(property, event, aggregation) 정보
- *  sAiParams.sParent - UI가 추가될 DESIGN 영역의 부모 라인 정보.
- ********************************************************/
+
 async function setAiDataParentAggr(sAppData) {
 
     //AI로 부터 전달받은 UI의 ROOT UI를 얻음.
@@ -232,7 +180,7 @@ async function setAiDataParentAggr(sAppData) {
 
         //$$MSG
         //default 메시지.
-        _sMsgConfig.msg = "AI로 부터 전달받은 UI를 기준으로 재구성 하시겠습니까?";
+        _sMsgConfig.msg = "AI로 부터 전달받은 UI를 추가 하시겠습니까?";
 
         //$$MSG
         //default 버튼.
@@ -301,7 +249,7 @@ async function setAiDataParentAggr(sAppData) {
         sAppData.sParent = oAPP.fn.getTreeData(CS_ROOT.ROOT_UI);
     }
 
-    
+
     //AI로 부터 전달받은 ROOT UI가 APP 인경우.
     var _isRemoved = removeRootAppAIData(sAppData);
 
@@ -317,62 +265,6 @@ async function setAiDataParentAggr(sAppData) {
 
     if(typeof _s0022 !== "undefined"){
         _sAIRoot.UIOBK = _s0022.UIOBK;
-    }
-
-
-    //입력 UI의 UI 가능 AGGREGATION 정보 얻기.
-    var _aT_AGGR = oAPP.fn.chkAggrRelation(sAppData.sParent.UIOBK, sAppData.sParent.OBJID, _sAIRoot.UIOBK);
-
-    //추가 가능한 aggregation 항목이 존재하지 않는경우.
-    if(_aT_AGGR.length === 0){
-
-        sAppData.RETCD = "E";
-
-        //RCODE 02 : 선택할 aggregation이 존재하지 않음
-        sAppData.RCODE = "02";
-
-        //$$MSG
-        sAppData.RTMSG = "선택 가능한 Aggregation이 존재하지 않습니다.";
-        
-        return sAppData;
-
-    }
-
-    
-    var _sMsgConfig = {};
-    
-    _sMsgConfig.state = "Information";
-
-    //$$MSG
-    _sMsgConfig.title = "확인";
-
-    //$$MSG
-    //default 메시지.
-    _sMsgConfig.msg = `${sAppData.sParent.OBJID} UI에 AI로 부터 전달받은 UI를 추가 하시겠습니까?`;
-
-    _sMsgConfig.width = "500px";
-
-    //$$MSG
-    _sMsgConfig.T_BUTTON = [
-        {ACTCD:"YES", text:"초기화 후 UI추가", icon: "sap-icon://accept", type: "Emphasized"}, 
-        {ACTCD:"NO", text:"UI추가", icon:"sap-icon://edit", type:"Success"},
-        {ACTCD:"CANCEL", text:"취소", icon:"sap-icon://edit", type:"Attention"}
-    ];
-
-
-    
-    //확인 팝업 호출.
-    var _ret = await callMessagePopup(_sMsgConfig);
-
-    if(typeof _ret === "undefined" || _ret === "CANCEL"){
-
-        sAppData.RETCD = "E";
-
-        //$$MSG
-        sAppData.RTMSG = "취소 했습니다.";
-        
-        return sAppData;
-
     }
 
 
@@ -396,11 +288,68 @@ async function setAiDataParentAggr(sAppData) {
     }
     
 
+    //부모에 선택한 aggregation에 해당하는 child가 존재하는지 여부 확인.
+    var _found = sAppData.sParent.zTREE.findIndex( item => item.UIATK === _sResAggr.sAggr.UIATK );
+
+    
+    var _sMsgConfig = {};
+    
+    _sMsgConfig.state = "Information";
+
+    //$$MSG
+    _sMsgConfig.title = "확인";
+
+    //$$MSG
+    //default 메시지.
+    _sMsgConfig.msg = "AI로 부터 전달받은 UI를 추가 하시겠습니까?";
+
+    //$$MSG
+    //default 버튼.
+    _sMsgConfig.T_BUTTON = [
+        {ACTCD:"YES", text:"Yes"}, 
+        {ACTCD:"CANCEL", text:"No"}
+    ];
+
+
+    //aggregation에 CHILD가 존재하는경우.
+    if(_found !== -1){
+        
+        _sMsgConfig.width = "500px";
+
+        //$$MSG
+        _sMsgConfig.msg = `${sAppData.sParent.OBJID}의 ${_sResAggr.sAggr.UIATT} Aggeregation에 Child UI가 존재합니다. \n `+
+            `${_sResAggr.sAggr.UIATT} Aggregation의 UI를 초기화 처리 후 \n ` +
+            `AI로 부터 전달받은 UI를 추가 하시겠습니까?`;
+
+        //$$MSG
+        _sMsgConfig.T_BUTTON = [
+            {ACTCD:"YES", text:"UI를 초기화 처리 후 UI추가", icon: "sap-icon://accept", type: "Emphasized"}, 
+            {ACTCD:"NO", text:"UI추가", icon:"sap-icon://edit", type:"Success"},
+            {ACTCD:"CANCEL", text:"취소", icon:"sap-icon://edit", type:"Attention"}
+        ];
+
+    }
+
+    
+    //확인 팝업 호출.
+    var _ret = await callMessagePopup(_sMsgConfig);
+
+    if(typeof _ret === "undefined" || _ret === "CANCEL"){
+
+        sAppData.RETCD = "E";
+
+        //$$MSG
+        sAppData.RTMSG = "취소 했습니다.";
+        
+        return sAppData;
+
+    }
+
     parent.setBusy("X");
+
         
     //단축키 잠금처리.
     oAPP.fn.setShortcutLock(true);
-
 
     //확인 팝업에서 YES를 선택 한 경우.
     if(_ret === "YES"){
@@ -409,13 +358,11 @@ async function setAiDataParentAggr(sAppData) {
     }
 
 
-    //부모 UI 정보가 존재하지 않는건 검색.
-    var _aT_0014 = sAppData.T_0014.filter( item => item.POBID === "" );
+    var _a0014 = sAppData.T_0014.filter( item => item.POBID === "" );
 
-
-    for (let i = 0; i < _aT_0014.length; i++) {
+    for (let i = 0; i < _a0014.length; i++) {
         
-        var _s0014 = _aT_0014[i];
+        var _s0014 = _a0014[i];
 
         
         //embed aggregation 초기화 대상 UI가 아닌 경우 skip.
@@ -611,8 +558,7 @@ function callMessagePopup(sMsgInfo) {
 
 /*********************************************************
  * @function - 대상 UI의 추가될 aggregation 정보 얻기.
- * @param {sSource} - 부모에 추가할 UI 라인 정보.
- * @param {sTarget} - UI가 추가될 부모 라인 정보
+ * 
  ********************************************************/
 function getEmbeddedAggregation(sSource, sTarget){
 
@@ -705,40 +651,42 @@ function chkAiTransData(sAppData) {
  *                BUSY 상태인지, 팝업이 열려있는지 등을 확인.
  * @returns {void}
  ********************************************************/
-function chkUiCreateReadyState(sAppData) {
+function chkUiCreateReadyState() {
     
+    var _sRes = {...TY_RET};
+
     //BUSY 상태인지 확인.
     if(parent.getBusy() === "X"){
         
-        sAppData.RETCD = "E";
+        _sRes.RETCD = "E";
 
         //$$MSG
-        sAppData.RTMSG = "수행중인 작업이 존재하여 UI 구성을 진행할 수 없습니다.";
+        _sRes.RTMSG = "수행중인 작업이 존재하여 UI 구성을 진행할 수 없습니다.";
 
-        return sAppData; //BUSY 상태이면 UI 생성 불가.
+        return _sRes; //BUSY 상태이면 UI 생성 불가.
+
 
     }
 
 
     //호출된 팝업이 존재하는지 확인.
-    var _aDialog = sap.m.InstanceManager.getOpenDialogs();
+    var _aDialog = sap.m.instanceManager.getOpenDialogs();
 
     //busy 상태인지 확인.
     if(_aDialog.length > 0){
         
-        sAppData.RETCD = "E";
+        _sRes.RETCD = "E";
+        //$$MSG
         
-        //$$MSG        
-        sAppData.RTMSG = "수행중인 작업이 존재하여 UI 구성을 진행할 수 없습니다.";
+        _sRes.RTMSG = "수행중인 작업이 존재하여 UI 구성을 진행할 수 없습니다.";
         
-        return sAppData; //팝업이 열려있으면 UI 생성 불가.
+        return _sRes; //팝업이 열려있으면 UI 생성 불가.
         
     }
 
-    return sAppData;
+    return _sRes;
 
 }
-
 
 
 
@@ -848,14 +796,6 @@ async function createAppData(sAppData){
     
     //선택된 라인을 펼침처리.
     oAPP.fn.expandTreeItem();
-
-
-    sAppData.RETCD = "S";
-
-    //$$MSG.
-    sAppData.RTMSG = "AI를 통한 UI 생성 처리를 완료 했습니다.";
-
-    return sAppData;
     
 
 }
@@ -892,7 +832,7 @@ function rebuildAppData(sAppData) {
     //테마명이 입력된 경우.
     if(sAppData?.THEME_NAME !== ""){
 
-        var _s0015 = _aT_0015.find( item => item.UIATK === "DH001021");
+        var _s0015 = sAppData.T_0015.find( item => item.UIATK === "DH001021");
         //입력한 테마명을 매핑.
         _s0015.UIATV = sAppData.THEME_NAME;
 

@@ -92,7 +92,7 @@ module.exports = function(){
     broadcast.onmessage = async function(oEvent){
         console.log(oEvent);
 
-        parent.setBusy("X");
+        // parent.setBusy("X");
 
         // let _sRoot;
 
@@ -106,8 +106,21 @@ module.exports = function(){
         //     return;
         // }
 
+        oEvent.data.LIBDATA
+
+        var _sParams = {};
+
+        _sParams.ACTCD = "TRANS_AI_DATA";
+        _sParams.T_0014 = oEvent.data.LIBDATA.T_0014;
+        _sParams.T_0015 = oEvent.data.LIBDATA.T_0015;
+
+        _sParams.THEME_NAME = "sap_horizon_dark";
+
+        _sParams.oAPP = oAPP;
+        
+
         require(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, 
-            "UAI", "parseAiLibraryData.js"))(oEvent.data.LIBDATA, oAPP);
+            "UAI", "parseAiLibraryData.js"))(_sParams);
 
 
         // require(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, 
@@ -154,10 +167,10 @@ module.exports = function(){
         parent.setBusy("", {});
 
         
-        // no build 일 경우에는 개발자 툴을 실행한다.
-        if (!APP.isPackaged) {
-            oBrowserWindow.webContents.openDevTools();
-        }
+        // // no build 일 경우에는 개발자 툴을 실행한다.
+        // if (!APP.isPackaged) {
+        //     oBrowserWindow.webContents.openDevTools();
+        // }
 
 
 

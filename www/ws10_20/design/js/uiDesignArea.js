@@ -528,6 +528,7 @@
     //테스트!!!!!!!!!!!!!!!!!!!!!!!!!
     oAPP.oDesign.fn.testAIDataDrop = function(appData, sDrop){
       
+      //패키징 처리됐다면 exit.
       if(parent.REMOTE.app.isPackaged !== false){
         return;
       }
@@ -538,6 +539,7 @@
         return;
       }
 
+      //AI를 통해 생성된 UI 정보를 구성하는 경우가 아니라면 EXIT.
       if(_sAppData?.PRCCD !== "AI_APP_DATA"){
         return;
       }
@@ -550,23 +552,25 @@
         return;
       }
 
-      var _sParam = {};
+      var _sAiData = {};
 
-      _sParam.ACTCD = "DESIGN_DROP";
+      _sAiData.ACTCD = "DESIGN_DROP";
 
-      _sParam.OBJID = sDrop.OBJID;
+      _sAiData.T_0014 = _sAppData.T_0014;
 
-      _sParam.T_0014 = _sAppData.T_0014;
+      _sAiData.T_0015 = _sAppData.T_0015;
 
-      _sParam.T_0015 = _sAppData.T_0015;
+      _sAiData.OBJID = sDrop.OBJID;
+
+      _sAiData.THEME_NAME = _sAppData?.THEME_NAME || "";
+
+      _sAiData.oAPP  = oAPP;
 
 
       //AI로 부터 전달받은 데이터를 통해 UI 생성 처리.
       parent.require(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, 
-            "UAI", "parseAiLibraryData.js"))(_sParam, oAPP);
+            "UAI", "parseAiLibraryData.js"))(_sAiData);
 
-      console.log(_sAppData);
-      console.log(sDrop);
 
       return true;
 
@@ -1348,7 +1352,9 @@
 
     //선택 라인 정보 얻기.
     var l_indx = oAPP.attr.ui.oLTree1.getSelectedIndex();
-    if(l_indx === -1){return;}
+    if(l_indx === -1){
+      return oAPP.fn.getTreeData(oAPP.attr.oModel.oData.uiinfo.OBJID);
+    }
 
     //선택한 라인 정보값 return.
     return oAPP.attr.ui.oLTree1.getContextByIndex(l_indx).getProperty();

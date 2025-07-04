@@ -2621,6 +2621,10 @@ class CL_COMMON{
             
             var _sATTR = aATTR[i];
 
+            if(_sATTR.UIATY !== "1" && _sATTR.UIATY !== "2"){
+                continue;
+            }
+
             //UI OBJECT ID + EVENT명.(BUTTON1PRESS)
             var _OBJID = _sATTR.OBJID + _sATTR.UIASN;
 
