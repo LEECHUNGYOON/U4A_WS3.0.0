@@ -58,16 +58,6 @@ let sap = undefined;
  ********************************************************/
 module.exports = async function(sAiParams){
 
-    console.log(`
-************************************************************
-*   [AI] parseAiLibraryData.js 
-*   AI를 통한 UI 생성처리 
-*   ACTCD : ${sAiParams?.ACTCD}
-*   OBJID : ${sAiParams?.OBJID}
-*   생성할 UI COUNT : ${sAiParams?.T_0014?.length}
-*   생성할 ATTR COUNT : ${sAiParams?.T_0015?.length}
-************************************************************`);
-
     //WS10_20 공통 기능 인스턴스 객체가 정의되지 않은 경우.
     if(typeof oAPP === "undefined"){
         //전달 받은 파라메터에서 oAPP를 가져옴.
@@ -89,9 +79,8 @@ module.exports = async function(sAiParams){
         var _sRes = {...TY_RET};
 
         _sRes.RETCD = "E";
-        
-        //419	AI 기반 UI 생성은 조회 상태에서 사용할 수 없습니다.
-        _sRes.RTMSG = parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "419");
+        //$$MSG
+        _sRes.RTMSG = "조회 모드에서는 AI를 통한 UI를 생성할 수 없습니다.";
 
         //편집 모드인 경우.
         parent.showMessage(sap, 20, "I", _sRes.RTMSG);
@@ -106,9 +95,6 @@ module.exports = async function(sAiParams){
 
     _sAppData.RCODE  = "";
 
-    //UNDO, HISTORY 구성을 위한 랜덤키 생성.
-    _sAppData.RAND   = oAPP.fn.getRandomKey();
-
     //UI를 구성하기 위한 정보 발췌.
     _sAppData.T_0014 = sAiParams.T_0014;
     _sAppData.T_0015 = sAiParams.T_0015;
@@ -118,7 +104,6 @@ module.exports = async function(sAiParams){
     
     _sAppData.sParent = undefined;
 
-
     //액션 코드에 따른 로직 분기.
     //DROP인경우 BUSY, 팝업 호출 여부를 확인하지 않음.
     switch (sAiParams.ACTCD) {
@@ -126,7 +111,7 @@ module.exports = async function(sAiParams){
             //AI와 통신을 통한 UI 생성 처리.
             
             //UI를 생성 가능한 상태인지 확인.
-            _sAppData = chkValidState(_sAppData);
+            _sAppData = chkUiCreateReadyState(_sAppData);
             
             break;
     
@@ -146,12 +131,6 @@ module.exports = async function(sAiParams){
 
         //오류 메시지 출력.
         parent.showMessage(sap, 20, "I", _sRes.RTMSG);
-        
-        //단축키 잠금 해제처리.
-        oAPP.fn.setShortcutLock(false);
-            
-        parent.setBusy("");
-
 
         return _sRes;
 
@@ -177,8 +156,6 @@ module.exports = async function(sAiParams){
         _sAppData.sParent = oAPP.fn.designGetSelectedTreeItem();
     }
     
-    
-    console.log(`[AI] - 추가 대상 OBJID : ${_sAppData?.sParent?.OBJID}`);
 
     
     //aggregation 선택 팝업 및 확인 팝업 호출에 대한 로직 처리.
@@ -205,11 +182,6 @@ module.exports = async function(sAiParams){
         //편집 모드인 경우.
         parent.showMessage(sap, _KIND, "I", _sRes.RTMSG);
 
-        //단축키 잠금 해제처리.
-        oAPP.fn.setShortcutLock(false);
-            
-        parent.setBusy("");
-
         return _sRes;
 
     }
@@ -235,32 +207,6 @@ module.exports = async function(sAiParams){
 
 
 
-/*********************************************************
- * @function - AI로 부터 전달받은 UI를 생성 가능 여부 점검.
- * @param {sAppData} - AI 처리 대상 Object.
- ********************************************************/
-function chkValidState(sAppData){
-
-    //UI를 생성 가능한 상태인지 확인.
-    sAppData = chkUiCreateReadyState(sAppData);
-
-    if(sAppData.RETCD === "E"){
-        return sAppData;
-    }
-
-
-    //AI로 부터 전달받은 UI의 정합성 점검.
-    sAppData = chkAiTransData(sAppData);
-
-    if(sAppData.RETCD === "E"){
-        return sAppData;
-    }
-
-    return sAppData;
-
-}
-
-
 
 /*********************************************************
  * @function - AI로 부터 전달받은 UI를 기준으로 추가 가능 정보 확인.
@@ -281,19 +227,18 @@ async function setAiDataParentAggr(sAppData) {
     
         _sMsgConfig.state = "Information";
 
-        //418	정보
-        _sMsgConfig.title = parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "418");
+        //$$MSG
+        _sMsgConfig.title = "확인";
 
+        //$$MSG
         //default 메시지.
-        //420	AI가 생성한 UI를 기준으로 화면을 다시 구성하시겠습니까?
-        _sMsgConfig.msg = parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "420");
+        _sMsgConfig.msg = "AI로 부터 전달받은 UI를 기준으로 재구성 하시겠습니까?";
 
-        //421	예
-        //422	아니오
+        //$$MSG
         //default 버튼.
         _sMsgConfig.T_BUTTON = [
-            {ACTCD:"YES", text:parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "421")}, 
-            {ACTCD:"CANCEL", text:parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "422")}
+            {ACTCD:"YES", text:"Yes"}, 
+            {ACTCD:"CANCEL", text:"No"}
         ];
 
         //확인 팝업 호출.
@@ -304,9 +249,9 @@ async function setAiDataParentAggr(sAppData) {
 
             sAppData.RETCD = "E";
 
-            //424	취소 했습니다.
-            sAppData.RTMSG = parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "424");
-            
+            //$$MSG
+            sAppData.RTMSG = "취소 했습니다.";
+
             return sAppData;
         }
 
@@ -315,31 +260,6 @@ async function setAiDataParentAggr(sAppData) {
         
         //단축키 잠금처리.
         oAPP.fn.setShortcutLock(true);
-
-        //APP 라인 정보 얻기.
-        var _sAPP = oAPP.fn.getTreeData(CS_ROOT.ROOT_UI);
-
-        //APP의 ATTR 변경건 이력 설정.
-        var _sUndoHist = {
-            ROOT : _sAPP.OBJID,
-            PRCCD : "CHANGE_ATTR",
-            RAND : sAppData.RAND,
-            HIST : oAPP.attr.prev[_sAPP.OBJID]._T_0015
-        };
-
-        //UNDO 이력 추가.
-        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("AI_INSERT", _sUndoHist);
-
-
-        var _sUndoHist = {
-            ROOT : _sAPP.OBJID,
-            PRCCD : "DEL",
-            RAND : sAppData.RAND,
-            HIST : _sAPP.zTREE
-        };
-
-        //UNDO 이력 추가.
-        parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("AI_INSERT", _sUndoHist);
 
 
         //기존 DESIGN TREE의 APP에 수집된 ATTR 항목 병합 처리.
@@ -361,11 +281,7 @@ async function setAiDataParentAggr(sAppData) {
             sAppData.T_0015.push(_s0015);
             
         }
-
         
-        //대상 UI의 클라이언트 이벤트, desc 정보 수집건 정보 제거 처리.
-        removeUiSubData(_sAPP.zTREE);
-
 
         //ROOT의 CHILD 정보 모두 제거 처리.
         sAppData.sParent.zTREE = [];
@@ -415,8 +331,8 @@ async function setAiDataParentAggr(sAppData) {
         //RCODE 02 : 선택할 aggregation이 존재하지 않음
         sAppData.RCODE = "02";
 
-        //425	선택 가능한 Aggregation이 존재하지 않습니다.
-        sAppData.RTMSG = parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "425");
+        //$$MSG
+        sAppData.RTMSG = "선택 가능한 Aggregation이 존재하지 않습니다.";
         
         return sAppData;
 
@@ -427,24 +343,20 @@ async function setAiDataParentAggr(sAppData) {
     
     _sMsgConfig.state = "Information";
 
-    //418	정보
-    _sMsgConfig.title = parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "418");
+    //$$MSG
+    _sMsgConfig.title = "확인";
 
-
+    //$$MSG
     //default 메시지.
-    //423	AI가 생성한 UI 정보를 &1 영역에 추가하시겠습니까?
-    _sMsgConfig.msg = parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "423", sAppData.sParent.OBJID);
+    _sMsgConfig.msg = `${sAppData.sParent.OBJID} UI에 AI로 부터 전달받은 UI를 추가 하시겠습니까?`;
 
     _sMsgConfig.width = "500px";
 
-    
-    //426	UI 초기화 후 적용
-    //427	UI 유지 후 적용
-    //003	취소
+    //$$MSG
     _sMsgConfig.T_BUTTON = [
-        {ACTCD:"YES", text:parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "426")}, 
-        {ACTCD:"NO", text:parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "427")},
-        {ACTCD:"CANCEL", text:parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "003")}
+        {ACTCD:"YES", text:"초기화 후 UI추가", icon: "sap-icon://accept", type: "Emphasized"}, 
+        {ACTCD:"NO", text:"UI추가", icon:"sap-icon://edit", type:"Success"},
+        {ACTCD:"CANCEL", text:"취소", icon:"sap-icon://edit", type:"Attention"}
     ];
 
 
@@ -456,8 +368,8 @@ async function setAiDataParentAggr(sAppData) {
 
         sAppData.RETCD = "E";
 
-        //424	취소 했습니다.
-        sAppData.RTMSG = parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "424");
+        //$$MSG
+        sAppData.RTMSG = "취소 했습니다.";
         
         return sAppData;
 
@@ -489,26 +401,9 @@ async function setAiDataParentAggr(sAppData) {
     //단축키 잠금처리.
     oAPP.fn.setShortcutLock(true);
 
-    
-
-    var _sUndoHist = {
-        ROOT : sAppData.sParent.OBJID,
-        PRCCD : "DEL",
-        RAND : sAppData.RAND,
-        HIST : sAppData.sParent.zTREE
-    };
-
-    //UNDO 이력 추가.
-    parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("AI_INSERT", _sUndoHist);
-
-
 
     //확인 팝업에서 YES를 선택 한 경우.
     if(_ret === "YES"){
-
-        //대상 UI의 클라이언트 이벤트, desc 정보 수집건 정보 제거 처리.
-        removeUiSubData(sAppData.sParent.zTREE.filter( item => item.UIATK === _sResAggr.sAggr.UIATK ));
-
         //선택한 aggregation의 child를 제거 처리.
         sAppData.sParent.zTREE = sAppData.sParent.zTREE.filter( item => item.UIATK !== _sResAggr.sAggr.UIATK );
     }
@@ -543,37 +438,6 @@ async function setAiDataParentAggr(sAppData) {
     return sAppData;
 
     
-}
-
-
-
-
-/*********************************************************
- * @function - 대상 UI의 클라이언트 이벤트, desc 정보 수집건 정보 제거 처리.
- ********************************************************/
-function removeUiSubData(aDesignTree){
-
-    for (let i = 0; i < aDesignTree.length; i++) {
-        
-        var _sDesignTree = aDesignTree[i];
-
-        //하위를 탐색하며, UI의 클라이언트 이벤트, desc 정보 수집건 정보 제거 처리.
-        removeUiSubData(_sDesignTree.zTREE);
-
-
-        //클라이언트 이벤트 및 sap.ui.core.HTML의 프로퍼티 입력건 제거 처리.
-        oAPP.fn.delUiClientEvent(_sDesignTree);
-
-
-        //Description 삭제.
-        oAPP.fn.delDesc(_sDesignTree.OBJID);
-
-
-        //팝업 수집건에서 해당 UI 제거 처리.
-        oAPP.fn.removeCollectPopup(_sDesignTree.OBJID);
-        
-    }
-
 }
 
 
@@ -800,7 +664,7 @@ function getEmbeddedAggregation(sSource, sTarget){
 
 /*********************************************************
  * @function - chkAiTransData
- * @description - AI로 부터 전달받은 UI의 정합성 점검.
+ * @description - UI 정보와 attribute 정보의 정합성 확인.
  * @param {sAppData} - UI 정보 객체
  *  sAppData.RETCD - AI에서 UI 구성시 처리한 결과 코드.("E" - 오류)
  *  sAppData.RTMSG - AI에서 UI 구성시 처리한 결과 메시지(오류 발생시 메시지).
@@ -810,6 +674,8 @@ function getEmbeddedAggregation(sSource, sTarget){
  ********************************************************/
 function chkAiTransData(sAppData) {
 
+    var _sRes = {...TY_RET};
+
     
     //최상위 ROOT UI 존재 여부 확인.
     let _indx = sAppData.T_0014.findIndex( item => item.POBID === "" );
@@ -817,17 +683,17 @@ function chkAiTransData(sAppData) {
     //날라온 데이터의 ROOT를 봤더니 POBID가 있으면 오류.
     if(_indx === -1){
 
-        sAppData.RETCD = "E";
+        _sRes.RETCD = "E";
 
-        //430	AI가 생성한 UI 정보에 Root UI가 포함되어 있지 않습니다.
-        sAppData.RTMSG = parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "430");
+        //$$MSG
+        _sRes.RTMSG = "AI로 부터 전달 받은 UI 정보 중 ROOT UI가 존재하지 않습니다.";
 
-        return sAppData; //정합성 검사 결과 반환.
+        return _sRes; //정합성 검사 결과 반환.
 
     }
 
-    return sAppData; //정합성 검사 결과 반환.
 
+    return _sRes; //정합성 검사 결과 반환.
 }
 
 
@@ -846,8 +712,8 @@ function chkUiCreateReadyState(sAppData) {
         
         sAppData.RETCD = "E";
 
-        //428	현재 수행 중인 작업으로 인해, AI가 생성한 UI 정보를 적용할 수 없습니다.
-        sAppData.RTMSG = parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "428");
+        //$$MSG
+        sAppData.RTMSG = "수행중인 작업이 존재하여 UI 구성을 진행할 수 없습니다.";
 
         return sAppData; //BUSY 상태이면 UI 생성 불가.
 
@@ -862,8 +728,8 @@ function chkUiCreateReadyState(sAppData) {
         
         sAppData.RETCD = "E";
         
-        //428	현재 수행 중인 작업으로 인해, AI가 생성한 UI 정보를 적용할 수 없습니다.
-        sAppData.RTMSG = parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "428");
+        //$$MSG        
+        sAppData.RTMSG = "수행중인 작업이 존재하여 UI 구성을 진행할 수 없습니다.";
         
         return sAppData; //팝업이 열려있으면 UI 생성 불가.
         
@@ -927,27 +793,6 @@ function setOBJID(OBJID, aT_0014){
  ********************************************************/
 async function createAppData(sAppData){
 
-    //추가 대상 parent UI 정보 얻기.
-    var _OBJID = sAppData.sParent.OBJID;
-
-    //parent UI가 ROOT 인경우.
-    if(_OBJID === CS_ROOT.ROOT_ID){
-        //최상위 UI 인 APP로 대체 처리.
-        _OBJID = CS_ROOT.ROOT_UI;
-    }
-
-
-    var _sUndoHist = {
-        ROOT : _OBJID,
-        PRCCD : "ADD",
-        RAND : sAppData.RAND,
-        HIST : sAppData.T_0014.filter( item => item.POBID === _OBJID )
-    };
-
-    //UNDO 이력 추가.
-    parent.require(oAPP.oDesign.pathInfo.undoRedo).saveActionHistoryData("AI_INSERT", _sUndoHist);
-
-
     //구성한 UI 정보를 model메 매핑.
     oAPP.attr.oModel.oData.TREE = sAppData.T_0014;
 
@@ -1007,8 +852,8 @@ async function createAppData(sAppData){
 
     sAppData.RETCD = "S";
 
-    //429	AI가 생성한 UI를 기반으로 화면 구성이 완료되었습니다.
-    sAppData.RTMSG = parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "429");
+    //$$MSG.
+    sAppData.RTMSG = "AI를 통한 UI 생성 처리를 완료 했습니다.";
 
     return sAppData;
     
@@ -1115,21 +960,32 @@ function rebuildAppData(sAppData) {
         //현재 UI의 CHILD UI 정보 발췌.
         let _aChild = sAppData.T_0014.filter( item => item.POBID === _BEFORE_OBJID );
 
-
+        //CHILD UI의 부모 OBJECT ID 매핑.
         for (let index = 0; index < _aChild.length; index++) {
+            
             let _sChild = _aChild[index];
 
-            _sChild.NEW_POBID = _OBJID;
+            //새로 구성한 OBJECT ID를 부모 OBJID 필드에 매핑.
+            _sChild.POBID = _OBJID;
+
+            //부모 ui의 UI OBJECT KEY 매핑.(UO00249)
+            _sChild.PUIOK = _s0022.UIOBK;
             
         }
 
+        
+        //현재 UI에 해당하는 attribute 정보 발췌.
+        var _aT_ATTR = sAppData.T_0015.filter( item => item.OBJID === _BEFORE_OBJID );
 
-        let _a0015 = sAppData.T_0015.filter( item => item.OBJID === _BEFORE_OBJID );
+        for (let index = 0; index < _aT_ATTR.length; index++) {
+            
+            let _s0015 = _aT_ATTR[index];
 
-        for (let index = 0; index < _a0015.length; index++) {
-            let _s0015 = _a0015[index];
+            //새로 구성한 OBJECT ID 매핑.
+            _s0015.OBJID = _OBJID;
 
-            _s0015.NEW_OBJID = _OBJID;
+            //현재 UI의 UI OBJECT KEY 매핑.(UO00249)
+            _s0015.UIOBK = _s0022.UIOBK;
             
         }
 
@@ -1160,12 +1016,6 @@ function rebuildAppData(sAppData) {
         
         var _s0014 = sAppData.T_0014[i];
 
-        if(typeof _s0014.NEW_POBID !== "undefined"){
-            _s0014.POBID = _s0014.NEW_POBID;
-        }
-
-        delete _s0014.NEW_POBID;
-
         //부모 UI OBJECT KEY가 없는경우 최상위.
         //호출처에서 만들어진 UI
         if(_s0014.POBID === ""){
@@ -1174,16 +1024,6 @@ function rebuildAppData(sAppData) {
 
             continue;
         }
-
-        //부모 instance 검색.
-        let _sParent = sAppData.T_0014.find( item => item.OBJID === _s0014.POBID );
-
-        if(typeof _sParent === "undefined"){
-            continue;
-        }
-
-        //부모 UI의 UI OBJECT KEY 매핑.
-        _s0014.PUIOK = _sParent.UIOBK;
         
         
         //embedded Aggregation 검색.
@@ -1211,22 +1051,8 @@ function rebuildAppData(sAppData) {
     for (let i = 0, l = sAppData.T_0015.length; i < l; i++) {
 
         let _s0015 = sAppData.T_0015[i];
-
-        if(typeof _s0015.NEW_OBJID !== "undefined"){
-            _s0015.OBJID = _s0015.NEW_OBJID;
-        }
-
-        delete _s0015.NEW_OBJID;
-                
-
-        //대상 UI 검색.
-        let _s0014 = sAppData.T_0014.find( item => item.OBJID === _s0015.OBJID );
-
-        if(typeof _s0014 === "undefined"){
-            continue;
-        }
-
-        let _s0022 = _aT_0022.find( item => item.UIOBK === _s0014.UIOBK );
+        
+        let _s0022 = _aT_0022.find( item => item.UIOBK === _s0015.UIOBK );
 
         if(typeof _s0022 === "undefined"){
             continue;
@@ -1234,6 +1060,13 @@ function rebuildAppData(sAppData) {
 
         //폐기된 건인경우 수집 생략.
         if(_s0022.ISDEP === "X"){
+            continue;
+        }
+
+        //대상 UI 검색.
+        let _s0014 = _aT_0014.find( item => item.OBJID === _s0015.OBJID );
+
+        if(typeof _s0014 === "undefined"){
             continue;
         }
 
@@ -1462,3 +1295,66 @@ function setRootAppData(sAppData){
     return sAppData;
 
 }
+
+
+
+
+/*********************************************************
+ * @function - procAiTransData
+ * @description - AI와 통신을 통해 전달받은 데이터를 기준으로 UI 생성 처리.
+ * @param {sAiParams} - AI를 통해 전달받은 어플리케이션 정보 객체
+ *  sAppData.T_0014 - UI 정보
+ *  sAppData.T_0015 - UI의 attribute(property, event, aggregation) 정보
+ * @returns {void}
+ ********************************************************/
+async function procAiTransData(sAppData) {
+
+
+    //AI로 부터 전달받은 처리결과 파라메터, UI, attribute 정보의 정합성 검사.
+    var _sRes = chkAiTransData(sAiParams);
+
+    if(_sRes.RETCD === "E"){
+        //정합성 검사에서 오류가 발생한 경우.
+        return _sRes; //오류 메시지 반환.
+    }
+
+
+    //UI를 생성 가능한 상태인지 확인.
+    _sRes = chkUiCreateReadyState();
+
+    if(_sRes.RETCD === "E"){
+        //UI를 생성할 수 없는 상태인 경우.
+        return _sRes; //오류 메시지 반환.
+    }
+
+
+    //AI로 부터 전달받은 UI 정보 중 최상위 UI의를 확인.
+    //(최상위 UI가 APP인경우 제거 처리)
+    sAppData.sParent = oAPP.fn.designGetSelectedTreeItem();
+
+
+    //design tree의 선택한 라인이 ROOT, APP 인경우 확인 팝업 호출.
+    //(선택한 라인이 ROOT, APP 인경우 APP의 하위를 초기화 처리)
+
+
+    //design tree의 선택한 라인이 ROOT, APP 아닌 경우.
+    //aggregation 선택 팝업 호출
+
+
+    //선택한 aggregation에 child ui가 존재하는경우 초기화 처리 질문 팝업 호출.
+
+
+
+    //AI로 부터 전달 받은 정보와 현재 desgin tree의 UI 정보를 취합하여
+    //UI 생성 데이터를 구성.
+
+
+    //선택한 라인의 부모 UI 정보 얻기.
+    
+
+    //구성한 UI, attribute 정보를 RETURN 처리.
+    return rebuildAppData(sAppData);
+
+    
+}
+

@@ -552,24 +552,25 @@
         return;
       }
 
-      var _sParam = {};
+      var _sAiData = {};
 
-      _sParam.ACTCD = "DESIGN_DROP";
+      _sAiData.ACTCD = "DESIGN_DROP";
 
-      _sParam.OBJID = sDrop.OBJID;
+      _sAiData.T_0014 = _sAppData.T_0014;
 
-      _sParam.T_0014 = _sAppData.T_0014;
+      _sAiData.T_0015 = _sAppData.T_0015;
 
-      _sParam.T_0015 = _sAppData.T_0015;
+      _sAiData.OBJID = sDrop.OBJID;
 
-      parent.setBusy("");
+      _sAiData.THEME_NAME = _sAppData?.THEME_NAME || "";
+
+      _sAiData.oAPP  = oAPP;
+
 
       //AI로 부터 전달받은 데이터를 통해 UI 생성 처리.
       parent.require(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, 
-            "UAI", "parseAiLibraryData.js"))(_sParam, oAPP);
+            "UAI", "parseAiLibraryData.js"))(_sAiData);
 
-      console.log(_sAppData);
-      console.log(sDrop);
 
       return true;
 

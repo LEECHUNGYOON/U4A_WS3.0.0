@@ -121,7 +121,8 @@
 
 
 
-
+            oAPP.msg.M431 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "431"); // AI 연결됨
+            oAPP.msg.M432 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "432"); // AI 연결해제됨
 
 
 

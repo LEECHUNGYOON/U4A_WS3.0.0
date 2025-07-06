@@ -106,7 +106,6 @@ module.exports = function(){
         //     return;
         // }
 
-        oEvent.data.LIBDATA
 
         var _sParams = {};
 
@@ -119,8 +118,15 @@ module.exports = function(){
         _sParams.oAPP = oAPP;
         
 
-        require(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, 
+        await require(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, 
             "UAI", "parseAiLibraryData.js"))(_sParams);
+
+            
+        //단축키 잠금 해제처리.
+        oAPP.fn.setShortcutLock(false);
+            
+        parent.setBusy("");
+
 
 
         // require(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, 
