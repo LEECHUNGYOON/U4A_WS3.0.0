@@ -2819,9 +2819,9 @@
             ],
             formatter: async function(SYSID, WS10, WS20_IS_EDIT, WS30_IS_EDIT, UAI, S_APP_VMS){                
 
-                var _bIsBusy = await new Promise(function(resove){
+                var _bIsVisi = await new Promise(function(resove){
 
-                    let isbusy = false;
+                    let isVisi = false;
 
                     setTimeout(() => {
 
@@ -2838,24 +2838,26 @@
                                 let oCurrPage = ROOTNAV.getCurrentPage();
                                 let sCurrId = oCurrPage.getId();
 
-                                // "10번 페이지일 경우"
+                                /**
+                                 * 10번 페이지에서는 보여주지 않는다.
+                                 */
                                 if(sCurrId === "WS10"){
 
-                                    isbusy = true;                                    
-
+                                    isVisi = false;
+                                    
                                 }
 
-                                // "20번 페이지일 경우"
+                                // 20번 페이지일 경우, APP 상태가 Edit 상태일 경우에만 활성화 시킨다.
                                 if(sCurrId === "WS20"){
 
-                                    isbusy = ( WS20_IS_EDIT === "X" ? true : false );
+                                    isVisi = ( WS20_IS_EDIT === "X" ? true : false );
 
                                 }
                                 
-                                // "30번 (USP) 페이지 일 경우"
+                                // 30번 (USP) 페이지 일 경우, APP 상태가 Edit 상태일 경우에만 활성화 시킨다.
                                 if(sCurrId === "WS30"){
 
-                                    isbusy = ( WS30_IS_EDIT === "X" ? true : false );
+                                    isVisi = ( WS30_IS_EDIT === "X" ? true : false );
 
                                 }
         
@@ -2865,16 +2867,17 @@
                                 break;
                         }
 
-                        resove(isbusy);
+                        resove(isVisi);
 
                     }, 0);
 
                 });
 
-                return _bIsBusy;               
+                return _bIsVisi;               
 
             }
         });
+
 
 
         /****************************************

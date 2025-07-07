@@ -123,7 +123,8 @@
 
             oAPP.msg.M431 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "431"); // AI 연결됨
             oAPP.msg.M432 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "432"); // AI 연결해제됨
-
+            oAPP.msg.M433 = WSUTIL.getWsMsgClsTxt(sWsLangu, "ZMSG_WS_COMMON_001", "433"); // U4A 디자인 영역에서만 가능합니다
+            
 
 
 
