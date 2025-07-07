@@ -1,7 +1,22 @@
 (function(){
+
+/*********************************************************
+ * @function - AGGREGATION 선택 팝업.
+ * @params i_drag     - 이동하고자 하는 UI의 라인 정보.
+ * @params i_drop     - 이동 대상 부모 UI의 라인 정보.
+ * @params retfunc    - AGGREGATION 정보가 1건만 존재하거나,
+ *                      AGGREGATION을 선택 했을 경우 callback function.
+ * @params i_x        - AGGREGATION 팝업을 호출할 x축 좌표(숫자값)
+ * @params i_y        - AGGREGATION 팝업을 호출할 y축 좌표(숫자값)
+ * @params cancelFunc - 선택할 aggregation이 존재하지 않거나, 
+ *                      팝업에서 aggregation을 선택하지 않고
+ *                      종료 처리 했을경우 호출하는 callback function.
+ *                      (RCODE 01 : aggregation을 선택하지 않고 종료 
+ *                       RCODE 02 : 선택할 aggregation이 존재하지 않음)
+ ********************************************************/
   
   //AGGREGATION 선택 팝업.
-  oAPP.fn.aggrSelectPopup = function(i_drag, i_drop, retfunc, i_x, i_y){
+  oAPP.fn.aggrSelectPopup = function(i_drag, i_drop, retfunc, i_x, i_y, cancelFunc){
 
     //입력 UI의 UI 가능 AGGREGATION 정보 얻기.
     var lt_sel = oAPP.fn.chkAggrRelation(i_drop.UIOBK, i_drop.OBJID, i_drag.UIOBK);
@@ -16,15 +31,38 @@
     //선택가능 aggregation리스트가 존재하지 않는경우.
     if(lt_sel.length === 0){
 
-
       delete i_drop?.dropLineInfo;
+
+
+      //tree drop effect 초기화 처리(ctrl 누르고 drop시 복사를 위한 광역변수값).
+      oAPP.attr.ui.oLTree1.__dropEffect = "";
+
+      
+      //20250702 PES -START.
+      //aggr 선택 팝업에서 취소를 통해 종료 처리시, 
+      //취소 callback function을 지정한 경우 function 호출 처리.
+      if(typeof cancelFunc === "function"){
+
+        var _sRes = {};
+        _sRes.RETCD = "E";
+
+        //RCODE 02 : 선택할 aggregation이 존재하지 않음
+        _sRes.RCODE = "02";
+
+        //262	이동 가능한 aggregation이 존재하지 않습니다.
+        _sRes.RTMSG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "262", "", "", "", "");
+
+        //취소 callback function 호출.
+        cancelFunc(_sRes);
+
+        return;
+
+      }
+      //20250702 PES -END.
 
       //오류 메시지 출력.
       //262	이동 가능한 aggregation이 존재하지 않습니다.
       parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "262", "", "", "", ""));
-
-      //tree drop effect 초기화 처리(ctrl 누르고 drop시 복사를 위한 광역변수값).
-      oAPP.attr.ui.oLTree1.__dropEffect = "";
 
       //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
@@ -47,6 +85,35 @@
     sap.ui.getCore().loadLibrary("sap.m");
     var oDlg1 = new sap.m.Dialog({
       draggable:true,
+      //20250702 PES -START.
+      escapeHandler : function(oEvent){
+        
+        //tree drop effect 초기화 처리(ctrl 누르고 drop시 복사를 위한 광역변수값).
+        oAPP.attr.ui.oLTree1.__dropEffect = "";
+
+        //esc키를 통해 aggregation 선택 팝업 종료 처리.
+        oEvent.resolve();
+
+        //aggr 선택 팝업에서 취소를 통해 종료 처리시, 
+        //취소 callback function을 지정한 경우 function 호출 처리.
+        if(typeof cancelFunc === "undefined"){
+          return;
+        }
+
+        var _sRes = {};
+        _sRes.RETCD = "E";
+        
+        //RCODE 01 : aggregation을 선택하지 않고 종료.
+        _sRes.RCODE = "01";
+        
+        //001	Cancel operation
+        _sRes.RTMSG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", "");
+
+        //취소 callback function 호출.
+        cancelFunc(_sRes);
+
+      },
+      //20250702 PES -END.
       afterClose: function(){
 
         delete i_drop?.dropLineInfo;
@@ -169,6 +236,30 @@
       //tree drop effect 초기화 처리(ctrl 누르고 drop시 복사를 위한 광역변수값).
       oAPP.attr.ui.oLTree1.__dropEffect = "";
 
+      //20250702 PES -START.
+      //aggr 선택 팝업에서 취소를 통해 종료 처리시, 
+      //취소 callback function을 지정한 경우 function 호출 처리.
+      if(typeof cancelFunc === "function"){
+
+        oDlg1.close();
+        
+        var _sRes = {};
+        _sRes.RETCD = "E";
+        
+        //RCODE 01 : aggregation을 선택하지 않고 종료 
+        _sRes.RCODE = "01";
+
+        //001	Cancel operation
+        _sRes.RTMSG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", "");
+
+        //취소 callback function 호출.
+        cancelFunc(_sRes);
+
+        return;
+
+      }
+      //20250702 PES -END.
+
       //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -180,6 +271,7 @@
       // oDlg1.destroy();
       //001	Cancel operation
       parent.showMessage(sap, 10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
+
 
     });
 
@@ -227,6 +319,8 @@
       ls_0023 = oAPP.DATA.LIB.T_0023.find( a => a.UIATK === l_sel);
       if(!ls_0023){
 
+        //치명적 오류 처리!!!!!!!!!
+
         //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
         parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -259,6 +353,30 @@
       //tree drop effect 초기화 처리(ctrl 누르고 drop시 복사를 위한 광역변수값).
       oAPP.attr.ui.oLTree1.__dropEffect = "";
 
+      //20250702 PES -START.
+      //aggr 선택 팝업에서 취소를 통해 종료 처리시, 
+      //취소 callback function을 지정한 경우 function 호출 처리.
+      if(typeof cancelFunc === "function"){
+
+        oDlg1.close();
+
+        var _sRes = {};
+        _sRes.RETCD = "E";
+        
+        //RCODE 01 : aggregation을 선택하지 않고 종료 
+        _sRes.RCODE = "01";
+
+        //001	Cancel operation
+        _sRes.RTMSG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", "");
+
+        //취소 callback function 호출.
+        cancelFunc(_sRes);
+
+        return;
+
+      }
+      //20250702 PES -END.
+
       //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
       parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
 
@@ -269,6 +387,8 @@
       // oDlg1.destroy();
       //001	Cancel operation
       parent.showMessage(sap,10, "I", oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "001", "", "", "", ""));
+
+
     });
 
 

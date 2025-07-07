@@ -482,6 +482,24 @@
       }
 
 
+      //테스트!!!!!!!!!!!!!!!!!!!!!!!!!
+      var _drag = oEvent.mParameters.browserEvent.dataTransfer.getData("text/plain");
+
+      //AI 테스트.
+      if(oAPP.oDesign.fn.testAIDataDrop(_drag, ls_drop) === true){
+        //WS 20 -> 바인딩 팝업 BUSY OFF 요청 처리.
+        parent.require(oAPP.oDesign.pathInfo.bindPopupBroadCast)("BUSY_OFF");
+
+        //단축키 잠금 해제 처리.
+        oAPP.fn.setShortcutLock(false);
+
+        parent.setBusy("");
+        return;
+      }       
+      //테스트!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
       //미리보기, design tree에서 D&D 했다면 DROP 처리.
       if(oAPP.fn.UIDrop(oEvent, ls_drop.OBJID)){
         return;
@@ -505,6 +523,59 @@
 
 
     }); //drop 이벤트.
+
+
+    //테스트!!!!!!!!!!!!!!!!!!!!!!!!!
+    oAPP.oDesign.fn.testAIDataDrop = function(appData, sDrop){
+      
+      //패키징 처리됐다면 exit.
+      if(parent.REMOTE.app.isPackaged !== false){
+        return;
+      }
+
+      try {
+        var _sAppData = JSON.parse(appData);
+      } catch (error) {
+        return;
+      }
+
+      //AI를 통해 생성된 UI 정보를 구성하는 경우가 아니라면 EXIT.
+      if(_sAppData?.PRCCD !== "AI_APP_DATA"){
+        return;
+      }
+
+      if(typeof _sAppData?.T_0014 === "undefined"){
+        return;
+      }
+
+      if(typeof _sAppData?.T_0015 === "undefined"){
+        return;
+      }
+
+      var _sAiData = {};
+
+      _sAiData.ACTCD = "DESIGN_DROP";
+
+      _sAiData.T_0014 = _sAppData.T_0014;
+
+      _sAiData.T_0015 = _sAppData.T_0015;
+
+      _sAiData.OBJID = sDrop.OBJID;
+
+      _sAiData.THEME_NAME = _sAppData?.THEME_NAME || "";
+
+      _sAiData.oAPP  = oAPP;
+
+
+      //AI로 부터 전달받은 데이터를 통해 UI 생성 처리.
+      parent.require(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath, 
+            "UAI", "parseAiLibraryData.js"))(_sAiData);
+
+
+      return true;
+
+    };
+    //테스트!!!!!!!!!!!!!!!!!!!!!!!!!
     
 
 
@@ -514,7 +585,9 @@
 
     //B21  Expand
     //펼침 버튼.
-    var oLBtn1 = new sap.m.Button({icon:"sap-icon://expand-group", 
+    // var oLBtn1 = new sap.m.Button({icon:"sap-icon://expand-group", 
+    var oLBtn1 = new sap.m.OverflowToolbarButton({icon:"sap-icon://expand-group", 
+      text : oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B21", "", "", "", ""),
       tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B21", "", "", "", "")});
     oLTBar1.addContent(oLBtn1);
 
@@ -530,7 +603,9 @@
 
     //B22  Collapse
     //접힘 버튼.
-    var oLBtn2 = new sap.m.Button({icon:"sap-icon://collapse-group", 
+    // var oLBtn2 = new sap.m.Button({icon:"sap-icon://collapse-group", 
+    var oLBtn2 = new sap.m.OverflowToolbarButton({icon:"sap-icon://collapse-group", 
+      text : oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B22", "", "", "", ""),
       tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B22", "", "", "", "")});
     oLTBar1.addContent(oLBtn2);
 
@@ -547,7 +622,9 @@
     
     //A70  Find UI
     //UI FILTER 버튼.
-    var oLBtn6 = new sap.m.Button({icon:"sap-icon://search", 
+    // var oLBtn6 = new sap.m.Button({icon:"sap-icon://search", 
+    var oLBtn6 = new sap.m.OverflowToolbarButton({icon:"sap-icon://search", 
+      text : oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A70", "", "", "", ""),
       tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A70", "", "", "", "")});
     oLTBar1.addContent(oLBtn6);
 
@@ -581,7 +658,9 @@
 
     //B23  Clear selection
     //전체선택 해제 버튼.
-    var oLBtn5 = new sap.m.Button({icon:"sap-icon://multiselect-none", visible:"{/IS_EDIT}", 
+    // var oLBtn5 = new sap.m.Button({icon:"sap-icon://multiselect-none", visible:"{/IS_EDIT}", 
+    var oLBtn5 = new sap.m.OverflowToolbarButton({icon:"sap-icon://multiselect-none", visible:"{/IS_EDIT}", 
+      text : oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B23", "", "", "", ""),
       tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B23", "", "", "", "")});
     oLTBar1.addContent(oLBtn5);
 
@@ -599,7 +678,9 @@
 
     //A03  Delete
     //삭제 버튼.
-    var oLBtn3 = new sap.m.Button({icon:"sap-icon://delete", visible:"{/IS_EDIT}", type:"Reject",
+    // var oLBtn3 = new sap.m.Button({icon:"sap-icon://delete", visible:"{/IS_EDIT}", type:"Reject",
+    var oLBtn3 = new sap.m.OverflowToolbarButton({icon:"sap-icon://delete", visible:"{/IS_EDIT}", type:"Reject",
+      text : oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03", "", "", "", ""),
       tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A03", "", "", "", "")});
     oLTBar1.addContent(oLBtn3);
 
@@ -631,7 +712,9 @@
 
     //B24  UI Template Wizard
     //wizard 버튼 추가.
-    var oLBtn4 = new sap.m.Button({icon:"sap-icon://responsive", visible:"{/IS_EDIT}", type:"Accept",
+    // var oLBtn4 = new sap.m.Button({icon:"sap-icon://responsive", visible:"{/IS_EDIT}", type:"Accept",
+    var oLBtn4 = new sap.m.OverflowToolbarButton({icon:"sap-icon://responsive", visible:"{/IS_EDIT}", type:"Accept",
+      text : oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B24", "", "", "", ""),
       tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B24", "", "", "", "")});
     oLTBar1.addContent(oLBtn4);
 
@@ -662,8 +745,10 @@
     
     //E28  UI Personalization List
     //개인화 팝업 호출 버튼.
-    var oLBtn7 = new sap.m.Button({icon:"sap-icon://user-settings",
+    // var oLBtn7 = new sap.m.Button({icon:"sap-icon://user-settings",
+    var oLBtn7 = new sap.m.OverflowToolbarButton({icon:"sap-icon://user-settings",
       // visible:parent.REMOTE.app.isPackaged ? false : true, //no build mode 일때만 활성화 처리(작업 완료후 해제 필요)
+      text : oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E28", "", "", "", ""),
       tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "E28", "", "", "", "")});
     oLTBar1.addContent(oLBtn7);
 
@@ -706,9 +791,11 @@
 
 
     //UNDO 버튼 생성.
-    oLTBar1.addContent(new sap.m.Button({
+    // oLTBar1.addContent(new sap.m.Button({
+    oLTBar1.addContent(new sap.m.OverflowToolbarButton({
       icon:"sap-icon://undo",
       //247	실행취소 (Ctrl+Z)
+      text : parent.WSUTIL.getWsMsgClsTxt(_LANGU, "ZMSG_WS_COMMON_001", "247"),
       tooltip: parent.WSUTIL.getWsMsgClsTxt(_LANGU, "ZMSG_WS_COMMON_001", "247"),
       visible:"{/IS_EDIT}",
       enabled:{
@@ -723,9 +810,11 @@
     }));
 
     //REDO 버튼 생성.
-    oLTBar1.addContent(new sap.m.Button({
+    // oLTBar1.addContent(new sap.m.Button({
+    oLTBar1.addContent(new sap.m.OverflowToolbarButton({
       icon:"sap-icon://redo",
       //248	재실행 (Ctrl+Y)
+      text: parent.WSUTIL.getWsMsgClsTxt(_LANGU, "ZMSG_WS_COMMON_001", "248"),
       tooltip: parent.WSUTIL.getWsMsgClsTxt(_LANGU, "ZMSG_WS_COMMON_001", "248"),
       visible:"{/IS_EDIT}",
       enabled:{
@@ -747,8 +836,10 @@
     
     if(parent.REMOTE.app.isPackaged === false){
       //AI 관련 테스트 버튼.
-      oLTBar1.addContent(new sap.m.Button({
+      // oLTBar1.addContent(new sap.m.Button({
+      oLTBar1.addContent(new sap.m.OverflowToolbarButton({
         icon:"sap-icon://laptop",
+        text:"AI 테스트",
         press: function(){
 
           // busy 키고 Lock 걸기
@@ -768,8 +859,10 @@
 
     //B39	Help
     //도움말 버튼.
-    var oLBtn8 = new sap.m.Button({icon:"sap-icon://question-mark", 
+    // var oLBtn8 = new sap.m.Button({icon:"sap-icon://question-mark", 
+    var oLBtn8 = new sap.m.OverflowToolbarButton({icon:"sap-icon://question-mark", 
       // visible:parent.REMOTE.app.isPackaged ? false : true,
+      text : oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39", "", "", "", ""),
       tooltip:oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "B39", "", "", "", "")});
     oLTBar1.addContent(oLBtn8);
 
@@ -1259,7 +1352,9 @@
 
     //선택 라인 정보 얻기.
     var l_indx = oAPP.attr.ui.oLTree1.getSelectedIndex();
-    if(l_indx === -1){return;}
+    if(l_indx === -1){
+      return oAPP.fn.getTreeData(oAPP.attr.oModel.oData.uiinfo.OBJID);
+    }
 
     //선택한 라인 정보값 return.
     return oAPP.attr.ui.oLTree1.getContextByIndex(l_indx).getProperty();

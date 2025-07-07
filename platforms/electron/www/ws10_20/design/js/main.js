@@ -1664,6 +1664,18 @@
 
     };
 
+    /*************************************************************
+     * @function - oAPP.oDesign.fn.getUI5RootInstance
+     * @description - UI5 root Instance를 얻기 위한 function.
+     *                 UI5 root Instance는 sap 객체를 의미함.
+     *                 이 function은 UI5 라이브러리의 최상위 객체를 얻기 위해 사용됨.
+     * @returns {object} - UI5 root Instance(sap 객체)
+     *************************************************************/
+    oAPP.oDesign.fn.getUI5RootInstance = function(){ 
+      //SAP UI5 라이브러리의 최상위 객체를 return.
+      return sap;
+    };  
+
 
     //workbench 화면을 구성할 UI가 존재하지 않는경우 exit.
     if(!oAPP.attr.oArea){return;}

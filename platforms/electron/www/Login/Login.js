@@ -2846,65 +2846,45 @@ let oAPP = (function () {
 
     }; // end of oAPP.fn.fnLoginCheck
 
+
     /************************************************************************
      * Remember Check 시 로그인한 정보 저장
      ************************************************************************/
     oAPP.fn.fnSaveRemember = (oLogInData) => {
 
-        // [1] 현재 접속한 시스템의 SYSID(시스템 ID) 정보를 가져옴
-        const oServerInfo = parent.getServerInfo();
-        const sSysID = oServerInfo?.SYSID;
+        var oServerInfo = parent.getServerInfo(),
+            sSysID = oServerInfo.SYSID;
 
-        // [2] 사용자별 설정이 저장되는 login.json 파일 경로 구성
-        const sJsonPath = PATH.join(USERDATA, "p13n", "login.json");
+        let sJsonPath = PATH.join(USERDATA, "p13n", "login.json"),
+            sJsonData = FS.readFileSync(sJsonPath, 'utf-8'),
+            oLoginInfo = JSON.parse(sJsonData);
 
-        let oLoginInfo = {};
-
-        // [3] login.json 파일이 존재하면 내용을 읽고 JSON 객체로 파싱
-        try {
-
-            if (FS.existsSync(sJsonPath)) {
-                const sJsonData = FS.readFileSync(sJsonPath, 'utf-8');
-                oLoginInfo = JSON.parse(sJsonData);
-            }
-
-        } catch (e) {
-            console.error("login.json read/parse error", e);
-            // 파일 읽기나 파싱 오류 발생 시 기본 객체 유지
+        if (typeof oLoginInfo !== "object") {
+            oLoginInfo = {};
         }
 
-        // [4] 시스템별 저장 공간이 없을 경우 초기화 (예: S4H, DEV 등)
-        oLoginInfo[sSysID] = oLoginInfo[sSysID] || {};
+        // System ID 별로 Client, Language를 저장할 Object 생성
+        if (typeof oLoginInfo[sSysID] == "undefined") {
+            oLoginInfo[sSysID] = {};
+        }
 
-        // [5] 해당 시스템에 대한 로그인 정보 저장 객체 참조
-        const oSysInfo = oLoginInfo[sSysID];
+        // Remember Check 했을 경우 ID, Client, Language 정보를 저장한다.
+        var oSysInfo = oLoginInfo[sSysID],
+            bIsRemember = oLogInData.REMEMBER;
 
-        // [6] 사용자가 'Remember me' 체크박스를 체크했는지 여부 확인
-        const bIsRemember = !!oLogInData.REMEMBER;
-
-        // [7] 체크 여부 저장 (항상 저장: UI 복원 판단용)
         oSysInfo.REMEMBER = bIsRemember;
 
-        // [8] Remember가 true일 경우에만 사용자 정보 저장
         if (bIsRemember) {
-            oSysInfo.CLIENT = oLogInData.CLIENT;     // 클라이언트 번호 (예: 100)
-            oSysInfo.LANGU = oLogInData.LANGU;       // SAP 로그인 언어 (예: EN, KO)
-            oSysInfo.ID = oLogInData.ID;             // 사용자 ID
-            oSysInfo.WSLANGU = oLogInData.WSLANGU;   // 워크스페이스 언어 설정 (내부 용도)
+            oSysInfo.CLIENT = oLogInData.CLIENT;
+            oSysInfo.LANGU = oLogInData.LANGU;
+            oSysInfo.ID = oLogInData.ID;            
+            oSysInfo.WSLANGU = oLogInData.WSLANGU;
         }
 
-        // [9] 최종적으로 login.json 파일에 전체 정보를 다시 저장
-        try {
+        // login.json 파일에 ID Suggestion 정보 저장
+        FS.writeFileSync(sJsonPath, JSON.stringify(oLoginInfo));
 
-            FS.writeFileSync(sJsonPath, JSON.stringify(oLoginInfo));
-
-        } catch (e) {
-
-            console.error("login.json write error", e);
-
-        }
-
-    };
+    }; // end of oAPP.fn.fnSaveRemember
 
 
     /************************************************************************
