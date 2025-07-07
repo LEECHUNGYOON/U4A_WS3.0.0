@@ -2749,7 +2749,9 @@
             alignItems: sap.m.FlexAlignItems.Center,     
         }).addStyleClass("u4aWsCommonHeaderArea");
 
-
+        /**
+         * AI 연결 / 연결해제 버튼
+         */
         let BUTTON6 = new sap.m.Button({
             press: function(){                
 
@@ -2768,6 +2770,7 @@
         });
         HBOX1.addItem(BUTTON6);
 
+        // 연결 상태에 따른 버튼 텍스트 변경
         BUTTON6.bindProperty("text", "/UAI/state", function(bIsState){
 
             let sStateText = oAPP.msg.M432; // AI Disconnected
@@ -2780,6 +2783,7 @@
 
         });
 
+        // 연결 상태에 따른 버튼 아이콘 변경
         BUTTON6.bindProperty("icon", "/UAI/state", function(bIsState){
             
             if(bIsState !== true){
@@ -2790,6 +2794,7 @@
 
         });
 
+        // 연결 상태에 따른 버튼 타입 변경
         BUTTON6.bindProperty("type", "/UAI/state", function(bIsState){
 
             let sButtonType = "Default";
@@ -2803,73 +2808,73 @@
 
         });
 
-        // BUTTON6.bindProperty("visible",  {
-        //     parts: [                
-        //         "/SERVERINFO/SYSID",
-        //         "/WS10",
-        //         "/WS20/APP/IS_EDIT",
-        //         "/WS30/APP/IS_EDIT",
-        //         "/UAI",
-        //         "/WS20/APP/S_APP_VMS"
-        //     ],
-        //     formatter: async function(SYSID, WS10, WS20_IS_EDIT, WS30_IS_EDIT, UAI, S_APP_VMS){                
+        BUTTON6.bindProperty("visible",  {
+            parts: [                
+                "/SERVERINFO/SYSID",
+                "/WS10",
+                "/WS20/APP/IS_EDIT",
+                "/WS30/APP/IS_EDIT",
+                "/UAI",
+                "/WS20/APP/S_APP_VMS"
+            ],
+            formatter: async function(SYSID, WS10, WS20_IS_EDIT, WS30_IS_EDIT, UAI, S_APP_VMS){                
 
-        //         var _bIsBusy = await new Promise(function(resove){
+                var _bIsBusy = await new Promise(function(resove){
 
-        //             let isbusy = false;
+                    let isbusy = false;
 
-        //             setTimeout(() => {
+                    setTimeout(() => {
 
-        //                 // APP 정보에 버전 관리 정보가 있다면 View 용으로 만들어야 하기 때문에 버튼을 숨긴다.
-        //                 if(typeof S_APP_VMS !== "undefined"){
-        //                     resove(false);
-        //                 }
+                        // APP 정보에 버전 관리 정보가 있다면 View 용으로 만들어야 하기 때문에 버튼을 숨긴다.
+                        if(typeof S_APP_VMS !== "undefined"){
+                            resove(false);
+                        }
 
-        //                 switch (SYSID) {
-        //                     case "UHA":
-        //                     case "U4A":
+                        switch (SYSID) {
+                            case "UHA":
+                            case "U4A":
         
-        //                         let ROOTNAV = sap.ui.getCore().byId("WSAPP");
-        //                         let oCurrPage = ROOTNAV.getCurrentPage();
-        //                         let sCurrId = oCurrPage.getId();
+                                let ROOTNAV = sap.ui.getCore().byId("WSAPP");
+                                let oCurrPage = ROOTNAV.getCurrentPage();
+                                let sCurrId = oCurrPage.getId();
 
-        //                         // "10번 페이지일 경우"
-        //                         if(sCurrId === "WS10"){
+                                // "10번 페이지일 경우"
+                                if(sCurrId === "WS10"){
 
-        //                             isbusy = true;                                    
+                                    isbusy = true;                                    
 
-        //                         }
+                                }
 
-        //                         // "20번 페이지일 경우"
-        //                         if(sCurrId === "WS20"){
+                                // "20번 페이지일 경우"
+                                if(sCurrId === "WS20"){
 
-        //                             isbusy = ( WS20_IS_EDIT === "X" ? true : false );
+                                    isbusy = ( WS20_IS_EDIT === "X" ? true : false );
 
-        //                         }
+                                }
                                 
-        //                         // "30번 (USP) 페이지 일 경우"
-        //                         if(sCurrId === "WS30"){
+                                // "30번 (USP) 페이지 일 경우"
+                                if(sCurrId === "WS30"){
 
-        //                             isbusy = ( WS30_IS_EDIT === "X" ? true : false );
+                                    isbusy = ( WS30_IS_EDIT === "X" ? true : false );
 
-        //                         }
+                                }
         
-        //                         break;                    
+                                break;                    
                         
-        //                     default:
-        //                         break;
-        //                 }
+                            default:
+                                break;
+                        }
 
-        //                 resove(isbusy);
+                        resove(isbusy);
 
-        //             }, 0);
+                    }, 0);
 
-        //         });
+                });
 
-        //         return _bIsBusy;               
+                return _bIsBusy;               
 
-        //     }
-        // });
+            }
+        });
 
 
         /****************************************
