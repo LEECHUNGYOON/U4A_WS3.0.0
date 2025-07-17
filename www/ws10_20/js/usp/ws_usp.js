@@ -4031,14 +4031,14 @@
         // 윈도우 헤더 타이틀 변경
         oAPP.common.setWSHeadText(sTitle);
 
-        // AI 서버 연결되어있을 경우 연결 해제 하기
-        // AI 서버에 요청할 데이터
-        let _oPARAM = {
-            CONID: parent.getBrowserKey()
-        }
+        // // AI 서버 연결되어있을 경우 연결 해제 하기
+        // // AI 서버에 요청할 데이터
+        // let _oPARAM = {
+        //     CONID: parent.getBrowserKey()
+        // }
 
-        // AI 연결 해제
-        await parent.UAI.disconnect(_oPARAM);
+        // // AI 연결 해제
+        // await parent.UAI.disconnect(_oPARAM);
 
         // busy 끄고 Lock 풀기
         oAPP.common.fnSetBusyLock("");        

@@ -2831,8 +2831,8 @@
                         }
 
                         switch (SYSID) {
-                            case "UHA":
-                            case "U4A":
+                            case "UHA":     // 개발서버
+                            case "U4A":     // 운영서버
         
                                 let ROOTNAV = sap.ui.getCore().byId("WSAPP");
                                 let oCurrPage = ROOTNAV.getCurrentPage();
@@ -2843,7 +2843,7 @@
                                  */
                                 if(sCurrId === "WS10"){
 
-                                    isVisi = false;
+                                    isVisi = true;
                                     
                                 }
 

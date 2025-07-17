@@ -364,6 +364,16 @@ let AI = {};
             
                 }
 
+
+                if(_oIF_DATA.PRCCD === "WS30"){
+
+                    
+                    return;
+                }
+
+                // IF 데이터 전달 시, Net의 Client 인스턴스도 함께 전달 
+                _oIF_DATA.CLIENT = CLIENT;
+
                 let oCustom = new CustomEvent(`ai-${_oIF_DATA.PRCCD}`, { detail: _oIF_DATA });
 
                 oAI_IF_DOM.dispatchEvent(oCustom);

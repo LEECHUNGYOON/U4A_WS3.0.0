@@ -677,7 +677,8 @@
         let oWsPaths = oWsSettingInfo.path;
 
         // 커스텀 이벤트 명
-        let _sEventName = `ai-message`;
+        // let _sEventName = `ai-message`;
+        let _sEventName = `ai-WS30`;
 
         _oAI_IF_DOM.addEventListener(_sEventName, function(oEvent){
 

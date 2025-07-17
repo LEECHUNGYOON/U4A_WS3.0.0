@@ -64,15 +64,12 @@
     } // end of _setMovePosAiWinMonitor
 
 
-
-
 /****************************************************************************
  * 🔥 Modules Start !!!
  ****************************************************************************/
-module.exports = async function(oAPP, oIF_DATA){    
-    
-    
-    let sTargetPage = oIF_DATA?.TARPG || "";
+module.exports = async function(oAPP, oIF_DATA){
+
+    let oPARAM = oIF_DATA.PARAM;
 
     // 3.0 브라우저가 숨어져 있을 수 있으므로 최상단에 위치시킨다.
     CURRWIN.setAlwaysOnTop(true);
@@ -86,7 +83,7 @@ module.exports = async function(oAPP, oIF_DATA){
         parent.CURRWIN.focus();
 
         // AI의 미리보기 브라우저의 위치 정보
-        let oPrevBounds = oIF_DATA?.PREV_BOUNDS || undefined;
+        let oPrevBounds = oPARAM?.PREV_BOUNDS || undefined;
         if(oPrevBounds){
 
             // 현재 ws3.0 윈도우를 AI 미리보기 창이 있는 브라우저로 이동시킨다.
@@ -110,7 +107,8 @@ module.exports = async function(oAPP, oIF_DATA){
     let sCurrPage = parent.getCurrPage();
 
     // 현재 페이지와 전달받은 파라미터 중 타겟 페이지가 WS20 페이지가 아닌 경우 빠져나감
-    if(sTargetPage !== "WS20" || sCurrPage !== "WS20"){
+    // if(sTargetPage !== "WS20" || sCurrPage !== "WS20"){
+    if(sCurrPage !== "WS20"){
 
         // U4A 디자인 영역에서만 가능합니다.
         let sMsg = oAPP.msg.M433; 
@@ -129,15 +127,18 @@ module.exports = async function(oAPP, oIF_DATA){
     //     oAPP: oAPP
     // };
 
-    let oPARAM = oIF_DATA.PARAM;
-        oPARAM.oAPP = oAPP;
+    // let oPARAM = oIF_DATA.PARAM;
+    //     oPARAM.oAPP = oAPP;
 
-    // 리턴 필드 구조
-    // RETCD, RTMSG
-    // var oResult = await require(PATH.join(oAPP.oDesign.pathInfo.designRootPath, "UAI", "parseAiLibraryData.js"))(oPARAM, oAPP);
+    // // 리턴 필드 구조
+    // // RETCD, RTMSG
+    // // var oResult = await require(PATH.join(oAPP.oDesign.pathInfo.designRootPath, "UAI", "parseAiLibraryData.js"))(oPARAM, oAPP);
 
+
+    let oSEND_PARAM = oPARAM.EXTRACTED_U4A_DATA;
+        oSEND_PARAM.oAPP = oAPP;
 
     // [TO-BE]
-    var oResult = await require(PATH.join(oAPP.oDesign.pathInfo.designRootPath, "UAI", "parseAiLibraryData.js"))(oPARAM);
+    var oResult = await require(PATH.join(oAPP.oDesign.pathInfo.designRootPath, "UAI", "parseAiLibraryData.js"))(oSEND_PARAM);
 
 };

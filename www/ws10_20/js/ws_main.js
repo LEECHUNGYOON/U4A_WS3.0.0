@@ -666,7 +666,7 @@
     /************************************************************************
      * UAI 쪽에서 파라미터를 전달받기 위한 이벤트 생성
      ************************************************************************/
-    function _attach_AI_Events(){
+    function _attach_AI_Events_WS10(){
 
         let _oAI_IF_DOM = parent.document.getElementById("ai_if_dom");
         if(!_oAI_IF_DOM){
@@ -677,7 +677,8 @@
         let oWsPaths = oWsSettingInfo.path;
 
         // 커스텀 이벤트 명
-        let _sEventName = `ai-message`;
+        // let _sEventName = `ai-message`;
+        let _sEventName = `ai-WS30_10`;
 
         _oAI_IF_DOM.addEventListener(_sEventName, function(oEvent){
 
@@ -847,12 +848,8 @@
             // 20250207
             parent.oWS.utill.attr.oBusy = new BusyDialog();
 
-
-            // parent.oWS.utill.attr.oBusy = new sap.m.BusyDialog();
-            // parent.oWS.utill.attr.oBusy._oDialog.data("MUTATION_EXCEP", "X");
-
-            // UAI 쪽에서 파라미터를 전달받기 위한 이벤트 생성
-            _attach_AI_Events();
+            // // UAI 쪽에서 파라미터를 전달받기 위한 이벤트 생성
+            // _attach_AI_Events();
 
             // 작업표시줄 메뉴 생성하기
             _createTaskBarMenu();
@@ -912,59 +909,56 @@
 
             // 공통 BroadCast 이벤트 걸기
             oAPP.fn.fnBroadCast_Attach_Event_Handler(); // #[ws_fn_broad.js]
-
      
             // 자연스러운 로딩
             sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, async function () {
                 
-                if (!parent.oWS.utill.attr.UIUpdated) {
+                if(parent.oWS.utill.attr.UIUpdated) { return; }
 
-                    // 새창 띄우면서 IF_DATA에 파라미터가 존재할 경우
-                    let oNewWin_IF_DATA = parent.getNewBrowserIF_DATA();
-                    if(oNewWin_IF_DATA){
+                // 새창 띄우면서 IF_DATA에 파라미터가 존재할 경우
+                let oNewWin_IF_DATA = parent.getNewBrowserIF_DATA();
+                if(oNewWin_IF_DATA){
 
-                        let ACTCD = oNewWin_IF_DATA.ACTCD;
-                        
-                        switch (ACTCD) {
-                            case "VMS_MOVE20":  // 버전관리 화면에서 요청한 액션이 20번으로 이동인 경우.
-                                
-                                let APPID = oNewWin_IF_DATA.APPID;
-                                if(!APPID){
-                                    break;
-                                }
-
-                                sap.ui.getCore().byId("AppNmInput").setValue(APPID);
-                                sap.ui.getCore().byId("displayBtn").firePress();
-
-                                setTimeout(function(){
-                                    sap.ui.getCore().byId("AppNmInput").setValue("");
-                                }, 0);                                
-
+                    let ACTCD = oNewWin_IF_DATA.ACTCD;
+                    
+                    switch (ACTCD) {
+                        case "VMS_MOVE20":  // 버전관리 화면에서 요청한 액션이 20번으로 이동인 경우.
+                            
+                            let APPID = oNewWin_IF_DATA.APPID;
+                            if(!APPID){
                                 break;
-                        
-                            default:
-                                break;
-                        }
+                            }
+
+                            sap.ui.getCore().byId("AppNmInput").setValue(APPID);
+                            sap.ui.getCore().byId("displayBtn").firePress();
+
+                            setTimeout(function(){
+                                sap.ui.getCore().byId("AppNmInput").setValue("");
+                            }, 0);
+
+                            break;
+                    
+                        default:
+                            break;
                     }
-
-                    // Loading Page
-                    parent.showLoadingPage("");
-
-                    // parent.setBusy("");
-
-                    setTimeout(() => {
-
-                        $('#content').fadeIn(300, 'linear');
-
-                        parent.setBusy("");
-                        
-                        parent.setDomBusy("");
-
-                    }, 300);
-
-                    parent.oWS.utill.attr.UIUpdated = "X";
-
                 }
+
+                // Loading Page
+                parent.showLoadingPage("");
+
+                // parent.setBusy("");
+
+                setTimeout(() => {
+
+                    $('#content').fadeIn(300, 'linear');
+
+                    parent.setBusy("");
+                    
+                    parent.setDomBusy("");
+
+                }, 300);
+
+                parent.oWS.utill.attr.UIUpdated = "X";
 
             });
 
