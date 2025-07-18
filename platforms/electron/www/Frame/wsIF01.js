@@ -1178,3 +1178,9 @@ function getProcessEnvUserInfo() {
 //     return sText;
 
 // } // end of oAPP.common.fnTestGetMsgClsText
+
+
+
+function getAiIfMap(){
+    return oWS.utill.attr.AI_IF_MAP;
+} // end of getAiIfMap

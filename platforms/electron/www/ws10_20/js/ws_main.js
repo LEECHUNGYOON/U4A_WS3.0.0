@@ -663,103 +663,103 @@
     } // end of _createTaskBarMenu
 
 
-    /************************************************************************
-     * UAI 쪽에서 파라미터를 전달받기 위한 이벤트 생성
-     ************************************************************************/
-    function _attach_AI_Events(){
+    // /************************************************************************
+    //  * UAI 쪽에서 파라미터를 전달받기 위한 이벤트 생성
+    //  ************************************************************************/
+    // function _attach_AI_Events_WS10(){
 
-        let _oAI_IF_DOM = parent.document.getElementById("ai_if_dom");
-        if(!_oAI_IF_DOM){
-            return;
-        }
+    //     let _oAI_IF_DOM = parent.document.getElementById("ai_if_dom");
+    //     if(!_oAI_IF_DOM){
+    //         return;
+    //     }
 
-        let oWsSettingInfo = WSUTIL.getWsSettingsInfo();
-        let oWsPaths = oWsSettingInfo.path;
+    //     let oWsSettingInfo = WSUTIL.getWsSettingsInfo();
+    //     let oWsPaths = oWsSettingInfo.path;
 
-        // 커스텀 이벤트 명
-        // let _sEventName = `ai-message`;
-        let _sEventName = `ai-WS30`;
+    //     // 커스텀 이벤트 명
+    //     // let _sEventName = `ai-message`;
+    //     let _sEventName = `ai-WS30_10`;
 
-        _oAI_IF_DOM.addEventListener(_sEventName, function(oEvent){
+    //     _oAI_IF_DOM.addEventListener(_sEventName, function(oEvent){
 
-            let oIF_DATA = oEvent?.detail || undefined;
-            if(!oIF_DATA){
+    //         let oIF_DATA = oEvent?.detail || undefined;
+    //         if(!oIF_DATA){
 
-                // 콘솔용 오류 메시지
-                var aConsoleMsg = [
-                    `######################################`,
-                    `## AI에서 전송 데이터 누락!!!!`,
-                    `######################################`,
-                    `[PATH]: www/ws10_20/js/ws_main.js`,  
-                    `=> _attach_AI_Events`,
-                    `######################################\n`,
-                ];
-                console.error(aConsoleMsg.join("\r\n"));
+    //             // 콘솔용 오류 메시지
+    //             var aConsoleMsg = [
+    //                 `######################################`,
+    //                 `## AI에서 전송 데이터 누락!!!!`,
+    //                 `######################################`,
+    //                 `[PATH]: www/ws10_20/js/ws_main.js`,  
+    //                 `=> _attach_AI_Events`,
+    //                 `######################################\n`,
+    //             ];
+    //             console.error(aConsoleMsg.join("\r\n"));
 
-                return;
-            }
+    //             return;
+    //         }
 
-            // 액션코드 기준으로 분기
-            if(!oIF_DATA.ACTCD){
+    //         // 액션코드 기준으로 분기
+    //         if(!oIF_DATA.ACTCD){
 
-                // 콘솔용 오류 메시지
-                var aConsoleMsg = [
-                    `######################################`,
-                    `## AI에서 ACTCD 데이터 누락!!!!`,
-                    `######################################`,
-                    `[PATH]: www/ws10_20/js/ws_main.js`,  
-                    `=> _attach_AI_Events`,
-                    `######################################\n`,
-                ];
-                console.error(aConsoleMsg.join("\r\n"));
+    //             // 콘솔용 오류 메시지
+    //             var aConsoleMsg = [
+    //                 `######################################`,
+    //                 `## AI에서 ACTCD 데이터 누락!!!!`,
+    //                 `######################################`,
+    //                 `[PATH]: www/ws10_20/js/ws_main.js`,  
+    //                 `=> _attach_AI_Events`,
+    //                 `######################################\n`,
+    //             ];
+    //             console.error(aConsoleMsg.join("\r\n"));
 
-                return;
-            }
+    //             return;
+    //         }
 
-            try {
+    //         try {
                 
-                let sModulePath = parent.PATH.join(oWsPaths.JS_ROOT, "uai", "ACTCD_MODULES", oIF_DATA.ACTCD, "index.js");
-                if(parent.FS.existsSync(sModulePath) === false){
+    //             let sModulePath = parent.PATH.join(oWsPaths.JS_ROOT, "uai", "ACTCD_MODULES", oIF_DATA.ACTCD, "index.js");
+    //             if(parent.FS.existsSync(sModulePath) === false){
 
-                    // 콘솔용 오류 메시지
-                    var aConsoleMsg = [
-                        `######################################`,
-                        `## AI에서 전달한 ACTCD 별 분기 Modules 없음!!`,
-                        `######################################`,
-                        `[PATH]: www/ws10_20/js/ws_main.js`,  
-                        `=> _attach_AI_Events`,
-                        `######################################\n`,
-                    ];
+    //                 // 콘솔용 오류 메시지
+    //                 var aConsoleMsg = [
+    //                     `######################################`,
+    //                     `## AI에서 전달한 ACTCD 별 분기 Modules 없음!!`,
+    //                     `######################################`,
+    //                     `[PATH]: www/ws10_20/js/ws_main.js`,  
+    //                     `=> _attach_AI_Events`,
+    //                     `######################################\n`,
+    //                 ];
 
-                    console.error(aConsoleMsg.join("\r\n"));
+    //                 console.error(aConsoleMsg.join("\r\n"));
 
-                    return;
-                }
+    //                 return;
+    //             }
 
-                parent.require(sModulePath)(oAPP, oIF_DATA);
+    //             parent.require(sModulePath)(oAPP, oIF_DATA);
 
-            } catch (error) {
+    //         } catch (error) {
 
-                // 콘솔용 오류 메시지
-                var aConsoleMsg = [
-                    `######################################`,
-                    `## AI에서 전달한 ACTCD 별 분기 Modules 오류!!`,
-                    `######################################`,
-                    `[PATH]: www/ws10_20/js/ws_main.js`,  
-                    `=> _attach_AI_Events`,
-                    `######################################\n`,
-                ];
+    //             // 콘솔용 오류 메시지
+    //             var aConsoleMsg = [
+    //                 `######################################`,
+    //                 `## AI에서 전달한 ACTCD 별 분기 Modules 오류!!`,
+    //                 `######################################`,
+    //                 `[PATH]: www/ws10_20/js/ws_main.js`,  
+    //                 `=> _attach_AI_Events`,
+    //                 `######################################\n`,
+    //             ];
                 
-                console.error(aConsoleMsg.join("\r\n"));
-                console.error(error);
+    //             console.error(aConsoleMsg.join("\r\n"));
+    //             console.error(error);
                 
-                return;
+    //             return;
 
-            }
+    //         }
 
-        });
+    //     });
 
-    } // end of _attach_AI_Events
+    // } // end of _attach_AI_Events
 
 
 
@@ -837,10 +837,12 @@
     oAPP.main.fnWsStart = function () {
 
         sap.ui.getCore().attachInit(async function () {
-
+            
             jQuery.sap.require("sap.m.MessageBox");
 
             jQuery.sap.require("sap.ui.core.format.DateFormat");
+
+            oAPP.sap = sap;
 
             // 부모에 sap 인스턴스 전달
             parent.oWS.utill.attr.sap = sap;
@@ -848,12 +850,11 @@
             // 20250207
             parent.oWS.utill.attr.oBusy = new BusyDialog();
 
+            // AI 연결 관련 초기 설정
+            parent.UAI.init();
 
-            // parent.oWS.utill.attr.oBusy = new sap.m.BusyDialog();
-            // parent.oWS.utill.attr.oBusy._oDialog.data("MUTATION_EXCEP", "X");
-
-            // UAI 쪽에서 파라미터를 전달받기 위한 이벤트 생성
-            _attach_AI_Events();
+            // // UAI 쪽에서 파라미터를 전달받기 위한 이벤트 생성
+            // _attach_AI_Events();
 
             // 작업표시줄 메뉴 생성하기
             _createTaskBarMenu();
@@ -913,59 +914,56 @@
 
             // 공통 BroadCast 이벤트 걸기
             oAPP.fn.fnBroadCast_Attach_Event_Handler(); // #[ws_fn_broad.js]
-
      
             // 자연스러운 로딩
             sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, async function () {
                 
-                if (!parent.oWS.utill.attr.UIUpdated) {
+                if(parent.oWS.utill.attr.UIUpdated) { return; }
 
-                    // 새창 띄우면서 IF_DATA에 파라미터가 존재할 경우
-                    let oNewWin_IF_DATA = parent.getNewBrowserIF_DATA();
-                    if(oNewWin_IF_DATA){
+                // 새창 띄우면서 IF_DATA에 파라미터가 존재할 경우
+                let oNewWin_IF_DATA = parent.getNewBrowserIF_DATA();
+                if(oNewWin_IF_DATA){
 
-                        let ACTCD = oNewWin_IF_DATA.ACTCD;
-                        
-                        switch (ACTCD) {
-                            case "VMS_MOVE20":  // 버전관리 화면에서 요청한 액션이 20번으로 이동인 경우.
-                                
-                                let APPID = oNewWin_IF_DATA.APPID;
-                                if(!APPID){
-                                    break;
-                                }
-
-                                sap.ui.getCore().byId("AppNmInput").setValue(APPID);
-                                sap.ui.getCore().byId("displayBtn").firePress();
-
-                                setTimeout(function(){
-                                    sap.ui.getCore().byId("AppNmInput").setValue("");
-                                }, 0);                                
-
+                    let ACTCD = oNewWin_IF_DATA.ACTCD;
+                    
+                    switch (ACTCD) {
+                        case "VMS_MOVE20":  // 버전관리 화면에서 요청한 액션이 20번으로 이동인 경우.
+                            
+                            let APPID = oNewWin_IF_DATA.APPID;
+                            if(!APPID){
                                 break;
-                        
-                            default:
-                                break;
-                        }
+                            }
+
+                            sap.ui.getCore().byId("AppNmInput").setValue(APPID);
+                            sap.ui.getCore().byId("displayBtn").firePress();
+
+                            setTimeout(function(){
+                                sap.ui.getCore().byId("AppNmInput").setValue("");
+                            }, 0);
+
+                            break;
+                    
+                        default:
+                            break;
                     }
-
-                    // Loading Page
-                    parent.showLoadingPage("");
-
-                    // parent.setBusy("");
-
-                    setTimeout(() => {
-
-                        $('#content').fadeIn(300, 'linear');
-
-                        parent.setBusy("");
-                        
-                        parent.setDomBusy("");
-
-                    }, 300);
-
-                    parent.oWS.utill.attr.UIUpdated = "X";
-
                 }
+
+                // Loading Page
+                parent.showLoadingPage("");
+
+                // parent.setBusy("");
+
+                setTimeout(() => {
+
+                    $('#content').fadeIn(300, 'linear');
+
+                    parent.setBusy("");
+                    
+                    parent.setDomBusy("");
+
+                }, 300);
+
+                parent.oWS.utill.attr.UIUpdated = "X";
 
             });
 

@@ -21,7 +21,10 @@
      * @param {Char} ISEDIT
      * - 'X': Edit mode, ' ': Display Mode
      ************************************************************************/
-    oAPP.fn.fnOnEnterDispChangeMode = async function (APPID, ISEDIT) {        
+    oAPP.fn.fnOnEnterDispChangeMode = async function (APPID, ISEDIT) {
+
+        // AI I/F 커스텀 이벤트를 등록한다.(기존에 걸려있다면 다시 안걸림!!)        
+        parent.UAI.setCustomEvent_WS_20();
 
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");

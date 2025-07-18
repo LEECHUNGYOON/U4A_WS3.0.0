@@ -1,16 +1,3 @@
-
-/**
- * 오류 코드 정의
- * 
- * E001: 전송 데이터 포맷 오류
- * E002: PRCCD 필수값 오류
- * E003: AI 서버가 실행되지 않았을 경우
- * E004: 응답 없음 오류!!
- * E005: AI 서버와 연결된 상태가 아닐 경우
- * E006: AI 서버에서 잘못된 응답을 준 경우
- */
-
-
 /******************************************************************************
  *  💖 DATA / ATTRIBUTE 선언부
  ******************************************************************************/
@@ -21,10 +8,10 @@ const C_PIPE_NANE = '\\\\.\\pipe\\u4a_ai';
 // AI 서버와 통신 시 응답 대기 시간
 const C_AI_CB_WAIT_TIME = 10000;
 
-const NET = require("net");
+// 콘솔용 로그 파일 경로
+const CONSOLE_LOG_FILE_PATH = "www/ws10_20/js/uai/index.js";
 
-// AI간 IF 시, custom event 를 사용하기 위한 DOM
-let oAI_IF_DOM = document.getElementById("ai_if_dom");
+const NET = require("net");
 
 // AI 서버 연결 클라이언트 인스턴스
 let CLIENT = undefined;
@@ -32,29 +19,78 @@ let CLIENT = undefined;
 // AI 대표 Object
 let AI = {};
 
-
-
-
 /******************************************************************************
  *  💖 PRIVITE FUNCTION 선언부
  ******************************************************************************/
 
 
+    /*************************************************************
+     * @function - 커스텀 이벤트 대표 function
+     *************************************************************/
+    function _customEventAI(oEvent){
+
+        let oIF_DATA = oEvent?.detail || undefined;
+        if(!oIF_DATA){
+            
+            // ‼️‼️‼️‼️ 여기 탔다는건 크리티컬 오류 ‼️‼️‼️‼️
+            
+
+
+            return;
+        }
+
+        // 프로세스 코드가 없다면 오류!!
+        if(!oIF_DATA.PRCCD){
+
+
+            // ‼️‼️‼️‼️ 여기 탔다는건 크리티컬 오류 ‼️‼️‼️‼️
+
+
+            return;
+        }
+
+
+        // 요청 데이터의 PRCCD 코드별 호출 분기
+        try {
+
+            // PRC_MODULES 폴더를 ROOT로 해서 하위 PRC별 프로세스 수행
+           let _sModulePath = parent.PATH.join(parent.PATHINFO.JS_ROOT, "uai", "PRC_MODULES", oIF_DATA.PRCCD, "index.js");
+
+            require(_sModulePath)(oIF_DATA);
+
+        } catch (oError) {
+
+            // var sErrcode = "[AI_SERVER-E002]";
+
+            // console.error(sErrcode, oError);
+
+            // var _sErrMsg = `[${sErrcode}] 외부에서 잘못된 요청을 수행하였습니다.`;
+
+            // oAPP.UaiMessageBox.error({title: "U4A Ai Suite", desc: _sErrMsg });
+
+            return;
+
+        }
+
+    } // end of _customEventAI
+
+
     /****************************************************************
      * @private function - AI 프로그램에 연결 시, 연결 정보 전송
      ****************************************************************/
-    function _sendConnectInfo(oPARAM, fCallback){
-            
+    function _sendConnectInfo(oIF_DATA, fCallback){
+        
+        console.log("ai와 논리적인 연결 시도");
+
         // AI 서버에 요청 수행 타임아웃 변수 초기화
         if(AI.iConnTimeout){
             clearTimeout(AI.iConnTimeout);
             delete AI.iConnTimeout;
         }
 
-        // 커스텀 이벤트 명
-        let _sEventName = `ai-${oPARAM.PRCCD}`;
+        // AI IF용 Map
+        let oAI_IF_MAP = parent.getAiIfMap();
 
-        // 커스텀 이벤트 콜백
         let _fCallback = function(oEvent){
 
             // AI 서버에 요청 수행 타임아웃 변수 초기화
@@ -62,9 +98,6 @@ let AI = {};
                 clearTimeout(AI.iConnTimeout);
                 delete AI.iConnTimeout;
             }
-
-            // 커스텀 이벤트 지우기
-            oAI_IF_DOM.removeEventListener(_sEventName, _fCallback);
 
             // AI 서버에서 전달받은 데이터
             let _oIF_DATA = oEvent.detail;
@@ -94,17 +127,24 @@ let AI = {};
                 fCallback(_oIF_DATA);
             }
 
-        } // end of _fCallback
+            // 맵에서 등록된 이벤트 삭제
+            oAI_IF_MAP.delete(oIF_DATA.CB_ID);
 
-        oAI_IF_DOM.addEventListener(_sEventName, _fCallback);
+        };
+
+
+        // 콜백받을 용도의 커스텀 이벤트를 등록한다.
+        let oCustomEvent = oAPP.oChildApp.common.addCustomEvent(oIF_DATA.CB_ID, _fCallback);
+
+        // 등록한 커스텀 이벤트를 맵에 저장한다.
+        oAI_IF_MAP.set(oIF_DATA.CB_ID, oCustomEvent);
+
 
         // 연결 정보 전달
-        CLIENT.write(JSON.stringify(oPARAM));
+        CLIENT.write(JSON.stringify(oIF_DATA));
 
         // AI 서버에 요청 수행 후 응답 대기
         AI.iConnTimeout = setTimeout(function(){
-
-            // 응답이 없습니다 연결 실패!!
 
             // AI 서버에 요청 수행 타임아웃 변수 초기화
             if(AI.iConnTimeout){
@@ -112,20 +152,18 @@ let AI = {};
                 delete AI.iConnTimeout;
             }
 
-            // 커스텀 이벤트 지우기
-            oAI_IF_DOM.removeEventListener(_sEventName, _fCallback);
-
             if(typeof fCallback === "function"){            
 
                 fCallback({
                     RETCD: "E",
-                    ERRCD: "E004" // 응답 없음 오류!!
+                    STCOD: "AI-CONNECT-E999" // 응답 없음 오류!!
                 });
             }
 
-        }, C_AI_CB_WAIT_TIME);
+        }, C_AI_CB_WAIT_TIME);        
 
     } // end of _sendConnectInfo
+
 
     /*************************************************************
      * @function - AI 서버와 연결된 이후에 
@@ -144,44 +182,19 @@ let AI = {};
         // 연결이 끊어졌을 경우 CLIENT 전역 객체 초기화
         CLIENT = undefined;
 
-        let _oFrame = document.getElementById("ws_frame");
-        if(!_oFrame){
-            return;
-        }
-
-        let _oFrameWin = _oFrame?.contentWindow;
-        if(!_oFrameWin){
-            return;
-        }
-
-        if(!_oFrameWin?.sap){
-            return;
-        }
-
-        if(typeof _oFrameWin?.oAPP?.common !== "undefined"){
-
-            // 스위치 버튼 연결 해제 표시
-            _oFrameWin.oAPP.common.fnSetModelProperty("/UAI/state", false);
-
-        }        
-
-        // let _oAI_Switch_Btn = _oFrameWin.sap.ui.getCore().byId("ws20_ai_con_btn");
-        // if(!_oAI_Switch_Btn){
-        //     return;
-        // }
-
-        // _oAI_Switch_Btn.setState(false);
+        // 스위치 버튼 연결 해제 표시
+        oAPP.oChildApp.common.fnSetModelProperty("/UAI/state", false);        
 
         var _sMsg = "AI와 연결이 해제 되었습니다."; // [MSG]
 
         if(bIsDisconnMsgShow === true){
             setTimeout(function(){
-                _oFrameWin.sap.m.MessageToast.show(_sMsg);
+                oAPP.oChildApp.sap.m.MessageToast.show(_sMsg);
             },0);            
         }        
 
         // busy 끄고 Lock 풀기
-        _oFrameWin.oAPP.common.fnSetBusyLock("");
+        oAPP.oChildApp.common.fnSetBusyLock("");
 
     } // end of _connectionCloseHandle
 
@@ -192,86 +205,50 @@ let AI = {};
 
 
     /*************************************************************
-     * @function - AI 서버가 이미 연결 되어있는 상태인지 확인
+     * @function - AI 연결 관련 초기 설정
      *************************************************************/
-    // AI.isconnected = function(){
+    AI.init = function(){
 
-    //     return new Promise(function(resolve){
+        const sPRCCD = "WS";
 
-    //         let _oClient = NET.createConnection(C_PIPE_NANE);
+        // AI IF용 Map
+        const oAI_IF_MAP = parent.getAiIfMap();
 
-    //         /**************************************************
-    //          * AI 서버에서 응답 받을 이벤트
-    //          **************************************************/
-    //         _oClient.on('data', function(data){
+        const oCustomEvent = oAPP.oChildApp.common.addCustomEvent(sPRCCD, _customEventAI);
 
-    //             console.log("isconnected - data", data);
+        oAI_IF_MAP.set(sPRCCD, oCustomEvent);
 
-    //             try {
+    }; // end of AI.init
 
-    //                 var _oIF_DATA = JSON.parse(data.toString());
+    /*************************************************************
+     * @function - WS20에 대한 AI I/F 용 Custom Event 설정 (1회만)
+     *************************************************************/
+    AI.setCustomEvent_WS_20 = function(){
 
-    //             } catch (error) {
+        const sPRCCD = "WS_20";
 
-    //                 console.error("isconnected - AI 응답 오류", error);
+        // AI I/F용 Map
+        const oAI_IF_MAP = parent.getAiIfMap();
 
-    //                 // AI 서버에서 잘못된 값을 던질 경우는
-    //                 // 다시 AI 서버로 전송한다.
-    //                 CLIENT.write(JSON.stringify({
-    //                     RETCD: "E",
-    //                     ERRCD: "E001" // 전송 데이터 포맷 오류
-    //                 }));
+        // 기존에 맵에 커스텀 이벤트가 등록되어 있을 경우 빠져나간다.
+        const oEventTarget = oAI_IF_MAP.get(sPRCCD);
+        if(oEventTarget){
+            return;
+        }
 
-    //                 return resolve({ RETCD: "E" });
+        // Process code 에 대한 커스텀 이벤트를 맵에 등록한다.
+        const oCustomEvent = oAPP.oChildApp.common.addCustomEvent(sPRCCD, _customEventAI);
 
-    //             }
+        oAI_IF_MAP.set(sPRCCD, oCustomEvent);
 
-    //             if(typeof _oIF_DATA?.PRCCD === "undefined"){
-
-    //                 console.error("isconnected - AI 응답 시 필수 필드 오류!", error);
-
-    //                 // AI 서버에서 잘못된 값을 던질 경우는
-    //                 // 다시 AI 서버로 전송한다.
-    //                 CLIENT.write(JSON.stringify({
-    //                     RETCD: "E",
-    //                     ERRCD: "E002" // PRCCD 필수값 오류
-    //                 }));
-
-    //                 return resolve({ RETCD: "E" });
-
-    //             }
-
-    //             return resolve(_oIF_DATA);
-
-    //         });
-
-    //         /*******************************************************
-    //          * AI 서버가 실행되어 있지 않을 경우 바로 여기가 호출됨.
-    //          *******************************************************/
-    //         _oClient.on('error', function(oError){
-
-    //             console.log("isconnected - error", oError);
-
-    //             return resolve({ RETCD: "E" });
-
-    //         });
-
-    //         let _oPARAM = {
-    //             PRCCD: "ISCONNECT"
-    //         }
-
-    //         _oClient.write(JSON.stringify(_oPARAM));
-
-    //     });
-
-
-    // }; // end of AI.isconnected
-
+    }; // end of AI.setCustomEvent_WS_20
 
     /*************************************************************
      * @function - AI 서버 연결
      *************************************************************/
     AI.connect = function(oPARAM){
+
+        console.log("ai와 net 연결 시도");
 
         return new Promise(async (resolve) => {
             
@@ -280,33 +257,48 @@ let AI = {};
                 
                 let _sErrMsg = "[critical error!!] AI.connect 수행 시, 필수 파라미터 누락!!";
 
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [
+                    `######################################`,
+                    `## AI 연결 요청 시 필수 파라미터 CONID 누락`,
+                    `######################################`,
+                    `[PATH]: ${CONSOLE_LOG_FILE_PATH}`,  
+                    `=> AI.connect`,
+                    `######################################\n`,
+                ];
+                console.error(aConsoleMsg.join("\r\n"));
+
                 throw new Error(_sErrMsg);
 
-            }        
+            }
 
             CLIENT = NET.createConnection(C_PIPE_NANE, function(e){
                 
-                // 서버와 연결이 가능한 상태일 경우
+                console.log("ai와 net 연결 성공");
 
-                // 연결 요청 정보 전달
-                oPARAM.PRCCD = "CONNECT";
+                // AI에 전달할 I/F 데이터
+                let oIF_DATA = {
+                    PRCCD: "AI",
+                    ACTCD: "CONNECT",
+                    PARAM: oPARAM
+                };
 
-                // console.log("AI", 'Connected to server.', arguments);            
+                // 콜백 받을 이벤트 명
+                oIF_DATA.CB_ID = `${oIF_DATA.PRCCD}-${oIF_DATA.ACTCD}-${getRandomKey(30)}`; 
 
-                _sendConnectInfo(oPARAM, function(oResult){                    
+                _sendConnectInfo(oIF_DATA, function(oResult){                    
                     
                     // 연결 시도하다가 다른 서버에서 이미 연결이 되어있는 상태일 경우
                     // AI 서버에서 client end를 하는데..
                     // 그러면 3.0의 client의 end 이벤트도 연결 끊었을 때 이벤트를 호출 하여
                     // 그 이벤트에서 연결 해제 메시지 출력을 할지 말지 정하는 플래그를 설정함.
-                    if(oResult.PRCCD === "CONNECT" && 
-                       oResult.ERRCD === "AIE04" /* AIE04: AI와 이미 연결된 상태라는 의미의 코드 */){
+                    if(oResult.ACTCD === "CONNECT" && oResult.STCOD === "AI-CONNECT-E002"){
                         CLIENT.bIsDisconnMsgShow = false;
-                    }                    
+                    }
 
                     return resolve(oResult);
 
-                });                
+                });
                 
             });
 
@@ -319,7 +311,7 @@ let AI = {};
             *   WS30에서는 응답을 못받게 되어 일정시간 지난 뒤 응답 없음 오류를 발생시킴         
             *********************************************************************/        
             CLIENT.on('data', function(data){
-       
+                
                 try {
 
                     let _sData = data.toString();
@@ -327,19 +319,25 @@ let AI = {};
                     var _oIF_DATA = JSON.parse(_sData);
 
                 } catch (error) {
+    
+                    // 콘솔용 오류 메시지
+                    var aConsoleMsg = [
+                        `######################################`,
+                        `## UAI에서 전달한 값을 JSON 파싱 하다가 오류`,
+                        `######################################`,
+                        `[PATH]: ${CONSOLE_LOG_FILE_PATH}`,  
+                        `=> AI.connect`,
+                        `=> CLIENT.on('data')`,
+                        `######################################\n`,
+                    ];
+                    console.error(aConsoleMsg.join("\r\n"));
+                    console.error(error);
 
-                    let _sConsoleMsg = "[UAI]\n";
-                        _sConsoleMsg += "path: [ ws10_20 => js => uai => index.js => AI.connect => CLIENT.on('data')]\n";
-                        _sConsoleMsg += "UAI에서 값을 잘못 던짐!!";
+                    // 😡😡😡😡 여기 탔다는건 크리티컬 오류 😡😡😡😡  
 
-                        console.log(_sConsoleMsg); 
-              
-                    // AI 서버에서 잘못된 값을 던질 경우는
-                    // 다시 AI 서버로 전송한다.
-                    CLIENT.write(JSON.stringify({
-                        RETCD: "E",
-                        ERRCD: "E001" // 전송 데이터 포맷 오류
-                    }));
+                    // AI 서버에서 잘못된 포맷의 데이터를 호출했다는 메시지 처리..
+
+
 
                     return;         
 
@@ -347,30 +345,60 @@ let AI = {};
 
                 if(typeof _oIF_DATA?.PRCCD === "undefined"){
 
-                    let _sConsoleMsg = "[UAI]\n";
-                        _sConsoleMsg += "path: [ ws10_20 => js => uai => index.js => AI.connect => CLIENT.on('data')]\n";
-                        _sConsoleMsg += "UAI에서 필수 데이터(PRCCD) 누락!!!";
+                    // 콘솔용 오류 메시지
+                    var aConsoleMsg = [
+                        `######################################`,
+                        `## UAI에서 전달한 값중, 필수 파라미터 누락!!`,
+                        `######################################`,
+                        `[PATH]: ${CONSOLE_LOG_FILE_PATH}`,  
+                        `=> AI.connect`,
+                        `=> CLIENT.on('data')`,
+                        `######################################\n`,
+                    ];
+                    console.error(aConsoleMsg.join("\r\n"));
 
-                        console.log(_sConsoleMsg); 
 
-                    // AI 서버에서 잘못된 값을 던질 경우는
-                    // 다시 AI 서버로 전송한다.
-                    CLIENT.write(JSON.stringify({
-                        RETCD: "E",
-                        ERRCD: "E002" // PRCCD 필수값 오류
-                    }));
+                    // 😡😡😡😡 여기 탔다는건 크리티컬 오류 😡😡😡😡                  
+                    
+                    // AI 서버에서 잘못된 포맷의 데이터를 호출했다는 메시지 처리..
+
+                    // // AI 서버에서 잘못된 값을 던질 경우는
+                    // // 다시 AI 서버로 전송한다.
+                    // CLIENT.write(JSON.stringify({
+                    //     RETCD: "E",
+                    //     ERRCD: "E002" // PRCCD 필수값 오류
+                    // }));
 
                     return;
             
                 }
 
+
+                let oAI_IF_MAP = parent.getAiIfMap();
+                let oEventTarget = oAI_IF_MAP.get(_oIF_DATA.PRCCD);
+                if(!oEventTarget){
+
+                    // 📝📝📝📝📝📝실행할 수 없는 상태입니다.📝📝📝📝📝📝
+                    // 메시지 처리라도 할것!!
+
+                    // [MSG]
+                    var sMsg = "현재 화면에서는 실행 할 수 없습니다.";
+
+                    parent.showMessage(oAPP.oChildApp.sap, 10, "W", sMsg);
+
+                    parent.CURRWIN.show();
+                    parent.CURRWIN.focus();
+
+                    return;
+                }
+         
                 // IF 데이터 전달 시, Net의 Client 인스턴스도 함께 전달 
                 _oIF_DATA.CLIENT = CLIENT;
 
-                let oCustom = new CustomEvent(`ai-${_oIF_DATA.PRCCD}`, { detail: _oIF_DATA });
+                let oCustomEvent = new CustomEvent(_oIF_DATA.PRCCD, { detail: _oIF_DATA });
 
-                oAI_IF_DOM.dispatchEvent(oCustom);
-            
+                oEventTarget.dispatchEvent(oCustomEvent);
+    
             });
       
 
@@ -381,7 +409,7 @@ let AI = {};
 
                 return resolve({
                     RETCD: "E",
-                    ERRCD: "E003" // AI 서버가 실행되지 않았을 경우
+                    ERRCD: "AI-CONNECT-E998" // AI 서버가 실행되지 않았을 경우
                 });
 
             });
@@ -402,7 +430,10 @@ let AI = {};
 
     }; // end of AI.connect
 
-
+    
+    /*************************************************************
+     * @function - CLIENT.end 이벤트 걸기
+     *************************************************************/
     function attachEndEvent (){
 
         if(typeof CLIENT === "undefined"){
@@ -416,7 +447,7 @@ let AI = {};
 
         });
 
-    }
+    } // end of attachEndEvent
 
 
     /*************************************************************
@@ -424,17 +455,21 @@ let AI = {};
      *************************************************************/
     AI.disconnect = function(oPARAM){
 
-        //1. 연결 버튼 활성.. 
-        // 내 화면 부터 연결 버튼 활성
-        //2.현재 떠있는 브라우저에 전체 전송해서 연결 버튼 활성 등....
+        console.log("ai와 net 연결 해제");
 
         return new Promise(function(resolve){
 
-            oPARAM.PRCCD = "DISCONNECT";
+            // AI에 전달할 I/F 데이터
+            let oIF_DATA = {
+                PRCCD: "AI",
+                ACTCD: "DISCONNECT",
+                CB_ID: getRandomKey(30),
+                PARAM: oPARAM
+            };
 
             // 연결된 상태가 아닐 경우
             if(typeof CLIENT === "undefined"){
-                return resolve({ RETCD: "E", ERRCD: "E005" });
+                return resolve({ RETCD: "E", STCOD: "AI-DISCONNECT-E001" });
             }
 
             // AI 서버에 요청 수행 타임아웃 변수 초기화
@@ -443,8 +478,8 @@ let AI = {};
                 delete AI.iDisconTimeout;
             }
 
-            // 커스텀 이벤트 명
-            let _sEventName = `ai-${oPARAM.PRCCD}`;
+            // AI IF용 Map
+            let oAI_IF_MAP = parent.getAiIfMap();
 
             // 커스텀 이벤트 콜백
             let _fCallback = function(oEvent){
@@ -455,40 +490,38 @@ let AI = {};
                     delete AI.iDisconTimeout;
                 }
 
-                // 커스텀 이벤트 지우기
-                oAI_IF_DOM.removeEventListener(_sEventName, _fCallback);
-
                 // AI 서버에서 전달받은 데이터
                 let _oIF_DATA = oEvent.detail;
 
                 CLIENT = undefined;
 
+                // 맵에서 등록된 이벤트 삭제
+                oAI_IF_MAP.delete(oIF_DATA.CB_ID);
+
                 return resolve(_oIF_DATA);
 
             };
 
-            oAI_IF_DOM.addEventListener(_sEventName, _fCallback);
+            let oCustomEvent = oAPP.oChildApp.common.addCustomEvent(oIF_DATA.CB_ID, _fCallback);
+
+            oAI_IF_MAP.set(oIF_DATA.CB_ID, oCustomEvent);
 
             // 연결 정보 전달
-            CLIENT.write(JSON.stringify(oPARAM));
+            CLIENT.write(JSON.stringify(oIF_DATA));
 
             // AI 서버에 요청 수행 후 응답 대기
             AI.iDisconTimeout = setTimeout(function(){
 
                 // 응답이 없습니다 연결 실패!!
-
                 // AI 서버에 요청 수행 타임아웃 변수 초기화
                 if(AI.iDisconTimeout){
                     clearTimeout(AI.iDisconTimeout);
                     delete AI.iDisconTimeout;
                 }
 
-                // 커스텀 이벤트 지우기
-                oAI_IF_DOM.removeEventListener(_sEventName, _fCallback);
-
                 return resolve({
                     RETCD: "E",
-                    ERRCD: "E004" // 응답 없음 오류!!
+                    STCOD: "AI-DISCONNECT-E999" // 응답 없음 오류!!
                 });
 
             }, C_AI_CB_WAIT_TIME);
@@ -496,7 +529,6 @@ let AI = {};
         });
 
     }; // end of AI.disconnect
-
 
 
 module.exports = AI;

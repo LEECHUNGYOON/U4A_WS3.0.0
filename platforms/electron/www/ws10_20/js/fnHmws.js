@@ -1438,8 +1438,7 @@
         // AI 서버에 요청할 데이터
         let _oPARAM = {
             CONID: parent.getBrowserKey()
-        }
-
+        };
 
         let _oClient = await parent.UAI.connect(_oPARAM);
         if(_oClient.RETCD === "E"){
@@ -1448,7 +1447,7 @@
 
             switch (_oClient.ERRCD) {
 
-                case "E003":    // AI 서버가 실행되지 않았을 경우
+                case "AI-CONNECT-E998":    // AI 서버가 실행되지 않았을 경우
 
                     sap.m.MessageToast.show("AI 서버가 실행되지 않았습니다!!");
 
@@ -1456,7 +1455,7 @@
 
                     break;
 
-                case "E004":    // AI 서버에 요청 보냈는데 응답이 없을 경우.
+                case "AI-CONNECT-E999":    // AI 서버에 요청 보냈는데 응답이 없을 경우.
 
                     sap.m.MessageToast.show("AI 서버가 응답이 없습니다!!");
 
@@ -1464,9 +1463,7 @@
 
                     break;
 
-
-                // AI 서버에서 에서 응답한 코드
-                case "AIE04":
+                case "AI-CONNECT-E002": 
 
                     sap.m.MessageToast.show("이미 다른 서버에서 연결되어 있습니다!!");
 

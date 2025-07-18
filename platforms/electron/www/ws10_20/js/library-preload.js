@@ -15,18 +15,20 @@ let oAPP = (function (window) {
         USERDATA = parent.USERDATA,
         require = parent.require;
 
+
+    parent.oAPP.oChildApp = oAPP;
+
     oAPP.global = {};
     oAPP.main = {};
 
     oAPP.fn = {};
-
     oAPP.ui = {};
     oAPP.usp = {};    
 
     oAPP.DATA = {};
 
-    oAPP.sap = {};
-    oAPP.sap.msgcls = {};
+    // oAPP.sap = {};
+    // oAPP.sap.msgcls = {};
 
     oAPP.attr = {};
     oAPP.common = {};

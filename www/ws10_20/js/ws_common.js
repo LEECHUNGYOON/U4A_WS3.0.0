@@ -3430,6 +3430,28 @@
 
     }; // end of oAPP.common.getWsWLOList
 
+
+    /**
+     * Custom Event 등록
+     * @param {string} eventName
+     * - 이벤트 명
+     * 
+     * @param {function} cb 
+     * - 이벤트 콜백
+     * 
+     * @returns {EventTarget}
+     */
+    oAPP.common.addCustomEvent = function(eventName, cb){
+
+        const oEventTarget = new EventTarget();
+
+        oEventTarget.addEventListener(eventName, cb);
+
+        return oEventTarget;
+
+    }; // end of oAPP.common.addCustomEvent
+
+
 })(window, $, oAPP);
 
 // 세션 죽이기

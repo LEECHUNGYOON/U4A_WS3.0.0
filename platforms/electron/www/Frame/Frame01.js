@@ -64,6 +64,9 @@ oAPP.msg = {};
     oWS.utill.attr.paths = {}; // 각종 패스 모음
     oWS.utill.attr.METADATA = {}; // 메타 데이터
 
+    // AI와 인터페이스 관련 맵 정보
+    oWS.utill.attr.AI_IF_MAP = new Map();
+
     // Busy Indicator 상태
     oWS.utill.attr.isBusy = "";
 

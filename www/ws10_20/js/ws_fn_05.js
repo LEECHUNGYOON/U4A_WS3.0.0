@@ -160,9 +160,9 @@
                 // 스위치 버튼 연결 해제 표시
                 oAPP.common.fnSetModelProperty("/UAI/state", false);
 
-                switch (_oClient.ERRCD) {
+                switch (_oClient.STCOD) {
 
-                    case "E005": // AI 서버와 연결된 상태가 아닐 경우
+                    case "AI-DISCONNECT-E001": // AI 서버와 연결된 상태가 아닐 경우
                         
                         var _sErrMsg = "연결된 상태가 아닙니다!!"; // [MSG]
 
@@ -207,11 +207,11 @@
                 // 스위치 버튼 연결 해제 표시
                 oAPP.common.fnSetModelProperty("/UAI/state", false);
 
-                switch (_oClient.ERRCD) {
+                switch (_oClient.STCOD) {
 
                     // [AI에서 전달한 코드]
                     // 이미 다른 서버에서 연결 되어 있을 경우
-                    case "AIE04":   
+                    case "AI-CONNECT-E002":
 
                         var _sErrMsg = "이미 다른 서버에서 연결되어 있습니다!!"; // [MSG]
 
@@ -222,7 +222,7 @@
                          */
 
                         // 리턴 받은 파라미터
-                        let _oPARAM = _oClient.RDATA;
+                        let _oPARAM = _oClient.PARAM;
 
                         // 현재 AI와 연결되어 있는 브라우저의 키
                         let _sCurrConnId = _oPARAM.CURR_CONID;
@@ -257,7 +257,8 @@
 
                     // [UAI.connect => _sendConnectInfo => AI.iConnTimeout 부분]
                     // 연결은 됐는데 AI에서 아무런 응답이 없을 경우                    
-                    case "E004":                        
+                    // case "E004":                        
+                    case "AI-CONNECT-E999":
 
                         var _sErrMsg = "AI 프로그램에서 응답이 없습니다.";  // [MSG]
 
@@ -279,7 +280,7 @@
                         oAPP.attr.oMainBroad.postMessage({ PRCCD: "BUSY_OFF" });
 
                         // AI 연결 해제
-                        await parent.UAI.disconnect({CONID: parent.getBrowserKey()});
+                        await parent.UAI.disconnect({ CONID: parent.getBrowserKey() });
                   
                         return;
                 
@@ -424,15 +425,23 @@
         // AI 서버에 전달할 파라미터
         let _oPARAM = {
             CONID: _sBrowsKey,
-            PARAM: {
-                USER_INFO   : parent.getUserInfo(),         // 로그인 유저 정보
-                SERVER_INFO : parent.getServerInfo(),       // 접속 서버 정보
-                SERVER_HOST : parent.getServerHost(),       // 접속 서버의 호스트 정보
-                SERVER_PATH : parent.getServerPath(),       // 접속 서버 호출 URL 정보
-                BROWSKEY    : _sBrowsKey,                   // AI와 연결할 Workspace의 Browser Key
-                FROM        : parent.getCurrPage()          // 호출처 정보 (현재 페이지 정보, WS10, WS20, WS30)
-            }
-        }
+            USER_INFO   : parent.getUserInfo(),         // 로그인 유저 정보
+            SERVER_INFO : parent.getServerInfo(),       // 접속 서버 정보
+            SERVER_HOST : parent.getServerHost(),       // 접속 서버의 호스트 정보
+            SERVER_PATH : parent.getServerPath(),       // 접속 서버 호출 URL 정보
+            BROWSKEY    : _sBrowsKey,                   // AI와 연결할 Workspace의 Browser Key
+            FROM        : parent.getCurrPage(),         // 호출처 정보 (현재 페이지 정보, WS10, WS20, WS30)
+
+            // PARAM: {
+            //     USER_INFO   : parent.getUserInfo(),         // 로그인 유저 정보
+            //     SERVER_INFO : parent.getServerInfo(),       // 접속 서버 정보
+            //     SERVER_HOST : parent.getServerHost(),       // 접속 서버의 호스트 정보
+            //     SERVER_PATH : parent.getServerPath(),       // 접속 서버 호출 URL 정보
+            //     BROWSKEY    : _sBrowsKey,                   // AI와 연결할 Workspace의 Browser Key
+            //     FROM        : parent.getCurrPage()          // 호출처 정보 (현재 페이지 정보, WS10, WS20, WS30)
+            // }
+
+        };
 
         // Busy On
         var _sDescMsg = "AI 연결중...";    // [MSG]
