@@ -14,13 +14,14 @@ module.exports = async function(oIF_DATA){
 
     } catch (oError) {
 
-        // var sErrcode = "[PRC-AI-E001]";
+        var sErrcode = "PRC-WS_30-E001";
 
-        // console.error(sErrcode, oError);
+        console.error(sErrcode, oError);
 
-        // var _sErrMsg = `[${sErrcode}] 외부에서 잘못된 요청을 수행하였습니다.`;
+        // [MSG]
+        var _sErrMsg = `[${sErrcode}] 외부에서 잘못된 요청을 수행하였습니다.`;
 
-        // oAPP.UaiMessageBox.error({title: "U4A Ai Suite", desc: _sErrMsg });
+        parent.showMessage(oAPP.oChildApp.sap, 20, "E", _sErrMsg);
 
         return;
 

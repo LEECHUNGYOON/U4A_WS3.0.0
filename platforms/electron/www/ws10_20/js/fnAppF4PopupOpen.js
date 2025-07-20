@@ -716,40 +716,83 @@
                             
                             parent.setBusy('X');
 
-                            if(!oEvent){
-                                parent.setBusy('');
-                                return;
+                            if(!oEvent){                                
+                                return parent.setBusy('');
                             }
 
                             let oUi = oEvent.getSource();
                             if(!oUi){
-                                parent.setBusy('');
-                                return;
+                                return parent.setBusy('');
                             }
                             let oBindCtx = oUi.getBindingContext();
                             if(!oBindCtx){
-                                parent.setBusy('');
-                                return;
+                                return parent.setBusy('');
                             }
 
                             let oBindData = oBindCtx.getObject();
                             if(!oBindData){
-                                parent.setBusy('');
-                                return;
+                                return parent.setBusy('');
                             }
 
                             let sAPPID = oBindData?.APPID || "";
                             if(!sAPPID){
-                                parent.setBusy('');
-                                return;
+                                return parent.setBusy('');
                             }
 
-                            oAPP.fn.fnOnExecApp(sAPPID);                            
+                            // APP 존재 유무 확인
+                            oAPP.fn.fnCheckAppExists(sAPPID, (oResult) => {
 
-                            // 연속 클릭 방지용
-                            setTimeout(function(){
-                                parent.setBusy('');
-                            }, 1000);
+                                var oAppInfo = oResult.RETURN;
+                                if (oAppInfo.RETCD === 'E') {
+
+                                    // 작업표시줄 깜빡임
+                                    parent.CURRWIN.flashFrame(true);
+                                    
+                                    // Application ID &1 does not exist.
+                                    var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "007", oAppInfo.APPID);
+
+                                    parent.showMessage(sap, 10, "E", sMsg);
+
+                                    return parent.setBusy('');
+                                }
+
+                                // USP App 일 경우 실행하지 않음.
+                                if(oAppInfo.APPTY === "U"){
+
+                                    // 작업표시줄 깜빡임
+                                    parent.CURRWIN.flashFrame(true);
+
+                                    // USP apps are not supported.
+                                    var sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "189"); 
+
+                                    parent.showMessage(sap, 10, "E", sMsg);
+                                    
+                                    return parent.setBusy('');
+                                }
+
+                                // Inactivate 상태일 경우 실행 불가
+                                if (oAppInfo.ACTST == "I") {
+
+                                    // 작업표시줄 깜빡임
+                                    parent.CURRWIN.flashFrame(true);
+
+                                    // This application cannot be executed.
+                                    var sMsg = parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "434"); 
+
+                                    parent.showMessage(sap, 10, "E", sMsg);
+                                    
+                                    return parent.setBusy('');
+                                }
+
+                                // 어플리케이션 브라우저 실행
+                                oAPP.fn.fnOnExecApp(sAPPID);                            
+
+                                // 연속 클릭 방지용
+                                setTimeout(function(){
+                                    parent.setBusy('');
+                                }, 1000);
+
+                            });
              
                         }
                     })
@@ -1302,32 +1345,105 @@
                                 parent.setBusy('');
                                 return;
                             }
+                            
+                            // 실행할 수 없는 어플리케이션 입니다.
+                            var sNoExeAppMsg = parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "435");
 
                             // 하위 정보가 있다는건 루트 노드라는 의미로 실행 하지 않음.
-                            if(oBindData.APPF4HIER && Array.isArray(oBindData.APPF4HIER) === true && oBindData.APPF4HIER.length !== 0){
-                                parent.setBusy('');
-                                return;
-                            }
+                            if(oBindData.APPF4HIER && Array.isArray(oBindData.APPF4HIER) === true && oBindData.APPF4HIER.length !== 0){                                
 
+                                // 작업표시줄 깜빡임
+                                parent.CURRWIN.flashFrame(true);
+
+                                parent.showMessage(sap, 10, "E", sNoExeAppMsg);
+
+                                parent.setBusy('');
+
+                                return;
+                            }                            
+
+                            // APPID가 없을 경우 실행 불가
                             let sAPPID = oBindData?.APPID || "";
                             if(!sAPPID){
+
+                                // 작업표시줄 깜빡임
+                                parent.CURRWIN.flashFrame(true);
+
+                                parent.showMessage(sap, 10, "E", sNoExeAppMsg);
+
                                 parent.setBusy('');
+
                                 return;
                             }
 
+                            // ROOT인 경우 어플리케이션이 아니므로 실행 불가
                             if(sAPPID === "ROOT"){
+
+                                // 작업표시줄 깜빡임
+                                parent.CURRWIN.flashFrame(true);
+
+                                parent.showMessage(sap, 10, "E", sNoExeAppMsg);
+
                                 parent.setBusy('');
+
                                 return;
                             }
 
-                            oAPP.fn.fnOnExecApp(sAPPID);                            
+                            // APP 존재 유무 확인
+                            oAPP.fn.fnCheckAppExists(sAPPID, (oResult) => {
 
-                            // 연속 클릭 방지용
-                            setTimeout(function(){
-                                parent.setBusy('');
-                            }, 1000);
-             
-                            parent.setBusy('');
+                                var oAppInfo = oResult.RETURN;
+                                if (oAppInfo.RETCD === 'E') {
+
+                                    // 작업표시줄 깜빡임
+                                    parent.CURRWIN.flashFrame(true);
+                                    
+                                    // Application ID &1 does not exist.
+                                    var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "007", oAppInfo.APPID);
+
+                                    parent.showMessage(sap, 10, "E", sMsg);
+
+                                    return parent.setBusy('');
+                                }
+
+                                // USP App 일 경우 실행하지 않음.
+                                if(oAppInfo.APPTY === "U"){
+
+                                    // 작업표시줄 깜빡임
+                                    parent.CURRWIN.flashFrame(true);
+
+                                    // USP apps are not supported.
+                                    var sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "189"); 
+
+                                    parent.showMessage(sap, 10, "E", sMsg);
+                                    
+                                    return parent.setBusy('');
+                                }
+
+                                // Inactivate 상태일 경우 실행 불가
+                                if (oAppInfo.ACTST === "I") {
+
+                                    // 작업표시줄 깜빡임
+                                    parent.CURRWIN.flashFrame(true);
+
+                                    // Only in activity state !!!
+                                    // var sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "031"); 
+                                    var sMsg = parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "434"); 
+
+                                    parent.showMessage(sap, 10, "E", sMsg);
+                                    
+                                    return parent.setBusy('');
+                                }
+
+                                // 어플리케이션 브라우저 실행
+                                oAPP.fn.fnOnExecApp(sAPPID);                            
+
+                                // 연속 클릭 방지용
+                                setTimeout(function(){
+                                    parent.setBusy('');
+                                }, 1000);
+
+                            });
 
                         }
                     })

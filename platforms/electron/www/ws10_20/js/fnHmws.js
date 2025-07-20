@@ -1445,7 +1445,7 @@
 
             console.error("connect", _oClient);
 
-            switch (_oClient.ERRCD) {
+            switch (_oClient.STCOD) {
 
                 case "AI-CONNECT-E998":    // AI 서버가 실행되지 않았을 경우
 

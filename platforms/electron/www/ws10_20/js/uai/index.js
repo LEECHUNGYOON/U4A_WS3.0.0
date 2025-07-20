@@ -29,26 +29,7 @@ let AI = {};
      *************************************************************/
     function _customEventAI(oEvent){
 
-        let oIF_DATA = oEvent?.detail || undefined;
-        if(!oIF_DATA){
-            
-            // ‼️‼️‼️‼️ 여기 탔다는건 크리티컬 오류 ‼️‼️‼️‼️
-            
-
-
-            return;
-        }
-
-        // 프로세스 코드가 없다면 오류!!
-        if(!oIF_DATA.PRCCD){
-
-
-            // ‼️‼️‼️‼️ 여기 탔다는건 크리티컬 오류 ‼️‼️‼️‼️
-
-
-            return;
-        }
-
+        let oIF_DATA = oEvent.detail;
 
         // 요청 데이터의 PRCCD 코드별 호출 분기
         try {
@@ -60,13 +41,14 @@ let AI = {};
 
         } catch (oError) {
 
-            // var sErrcode = "[AI_SERVER-E002]";
+            var sErrcode = "[PRC-COMMON-E001]";
 
-            // console.error(sErrcode, oError);
+            console.error(sErrcode, oError);
 
-            // var _sErrMsg = `[${sErrcode}] 외부에서 잘못된 요청을 수행하였습니다.`;
+            // [MSG]
+            var _sErrMsg = `[${sErrcode}] 외부에서 잘못된 요청을 수행하였습니다.`;
 
-            // oAPP.UaiMessageBox.error({title: "U4A Ai Suite", desc: _sErrMsg });
+            parent.showMessage(oAPP.oChildApp.sap, 20, "E", _sErrMsg);
 
             return;
 
@@ -92,12 +74,15 @@ let AI = {};
         let oAI_IF_MAP = parent.getAiIfMap();
 
         let _fCallback = function(oEvent){
-
+            
             // AI 서버에 요청 수행 타임아웃 변수 초기화
             if(AI.iConnTimeout){
                 clearTimeout(AI.iConnTimeout);
                 delete AI.iConnTimeout;
             }
+
+            // 맵에서 등록된 이벤트 삭제
+            oAI_IF_MAP.delete(oIF_DATA.CB_ID);
 
             // AI 서버에서 전달받은 데이터
             let _oIF_DATA = oEvent.detail;
@@ -118,6 +103,8 @@ let AI = {};
              *********************************************************************************/
             if(_oIF_DATA?.RETCD === "S"){
 
+                console.log("ai와 논리적인 연결 성공!");
+
                 // CLIENT.end 이벤트 걸기
                 attachEndEvent();
 
@@ -126,9 +113,6 @@ let AI = {};
             if(typeof fCallback === "function"){
                 fCallback(_oIF_DATA);
             }
-
-            // 맵에서 등록된 이벤트 삭제
-            oAI_IF_MAP.delete(oIF_DATA.CB_ID);
 
         };
 
@@ -146,6 +130,9 @@ let AI = {};
         // AI 서버에 요청 수행 후 응답 대기
         AI.iConnTimeout = setTimeout(function(){
 
+            // 맵에서 등록된 이벤트 삭제
+            oAI_IF_MAP.delete(oIF_DATA.CB_ID);
+
             // AI 서버에 요청 수행 타임아웃 변수 초기화
             if(AI.iConnTimeout){
                 clearTimeout(AI.iConnTimeout);
@@ -158,6 +145,7 @@ let AI = {};
                     RETCD: "E",
                     STCOD: "AI-CONNECT-E999" // 응답 없음 오류!!
                 });
+                
             }
 
         }, C_AI_CB_WAIT_TIME);        
@@ -185,7 +173,8 @@ let AI = {};
         // 스위치 버튼 연결 해제 표시
         oAPP.oChildApp.common.fnSetModelProperty("/UAI/state", false);        
 
-        var _sMsg = "AI와 연결이 해제 되었습니다."; // [MSG]
+        // [MSG]
+        var _sMsg = "AI와 연결이 해제 되었습니다."; 
 
         if(bIsDisconnMsgShow === true){
             setTimeout(function(){
@@ -213,12 +202,15 @@ let AI = {};
 
         // AI IF용 Map
         const oAI_IF_MAP = parent.getAiIfMap();
-
+        
+        // Process code 에 대한 커스텀 이벤트를 구한다.
         const oCustomEvent = oAPP.oChildApp.common.addCustomEvent(sPRCCD, _customEventAI);
 
+        // Process code 에 대한 커스텀 이벤트를 맵에 등록한다.
         oAI_IF_MAP.set(sPRCCD, oCustomEvent);
 
     }; // end of AI.init
+
 
     /*************************************************************
      * @function - WS20에 대한 AI I/F 용 Custom Event 설정 (1회만)
@@ -235,13 +227,15 @@ let AI = {};
         if(oEventTarget){
             return;
         }
-
-        // Process code 에 대한 커스텀 이벤트를 맵에 등록한다.
+        
+        // Process code 에 대한 커스텀 이벤트를 구한다.
         const oCustomEvent = oAPP.oChildApp.common.addCustomEvent(sPRCCD, _customEventAI);
 
+        // Process code 에 대한 커스텀 이벤트를 맵에 등록한다.
         oAI_IF_MAP.set(sPRCCD, oCustomEvent);
 
     }; // end of AI.setCustomEvent_WS_20
+
 
     /*************************************************************
      * @function - AI 서버 연결
@@ -319,11 +313,13 @@ let AI = {};
                     var _oIF_DATA = JSON.parse(_sData);
 
                 } catch (error) {
+
+                    var sErrcode = "AI-CLIENT-E001";
     
                     // 콘솔용 오류 메시지
                     var aConsoleMsg = [
                         `######################################`,
-                        `## UAI에서 전달한 값을 JSON 파싱 하다가 오류`,
+                        `## [${sErrcode}] UAI에서 전달한 값을 JSON 파싱 하다가 오류`,
                         `######################################`,
                         `[PATH]: ${CONSOLE_LOG_FILE_PATH}`,  
                         `=> AI.connect`,
@@ -337,7 +333,10 @@ let AI = {};
 
                     // AI 서버에서 잘못된 포맷의 데이터를 호출했다는 메시지 처리..
 
+                    // [MSG]
+                    var sMsg = `[${sErrcode}] AI 서버에서 잘못된 포맷의 데이터를 전송하였습니다.`;
 
+                    parent.showMessage(oAPP.oChildApp.sap, 20, "E", sMsg);
 
                     return;         
 
@@ -345,10 +344,12 @@ let AI = {};
 
                 if(typeof _oIF_DATA?.PRCCD === "undefined"){
 
+                    var sErrcode = "AI-CLIENT-E002";
+
                     // 콘솔용 오류 메시지
                     var aConsoleMsg = [
                         `######################################`,
-                        `## UAI에서 전달한 값중, 필수 파라미터 누락!!`,
+                        `## [${sErrcode}] UAI에서 전달한 값중, 필수 파라미터 누락!!`,
                         `######################################`,
                         `[PATH]: ${CONSOLE_LOG_FILE_PATH}`,  
                         `=> AI.connect`,
@@ -362,12 +363,10 @@ let AI = {};
                     
                     // AI 서버에서 잘못된 포맷의 데이터를 호출했다는 메시지 처리..
 
-                    // // AI 서버에서 잘못된 값을 던질 경우는
-                    // // 다시 AI 서버로 전송한다.
-                    // CLIENT.write(JSON.stringify({
-                    //     RETCD: "E",
-                    //     ERRCD: "E002" // PRCCD 필수값 오류
-                    // }));
+                    // [MSG]
+                    var sMsg = `[${sErrcode}] AI 서버에서 잘못된 포맷의 데이터를 전송하였습니다.`;
+
+                    parent.showMessage(oAPP.oChildApp.sap, 20, "E", sMsg);
 
                     return;
             
@@ -378,22 +377,30 @@ let AI = {};
                 let oEventTarget = oAI_IF_MAP.get(_oIF_DATA.PRCCD);
                 if(!oEventTarget){
 
+                    // 3.0 브라우저가 숨어져 있을 수 있으므로 최상단에 위치시킨다.
+                    CURRWIN.setAlwaysOnTop(true);
+
                     // 📝📝📝📝📝📝실행할 수 없는 상태입니다.📝📝📝📝📝📝
                     // 메시지 처리라도 할것!!
 
                     // [MSG]
                     var sMsg = "현재 화면에서는 실행 할 수 없습니다.";
 
-                    parent.showMessage(oAPP.oChildApp.sap, 10, "W", sMsg);
+                    parent.showMessage(oAPP.oChildApp.sap, 10, "W", sMsg);                    
 
                     parent.CURRWIN.show();
                     parent.CURRWIN.focus();
+
+                    // 사용자가 브라우저 최상위 고정 핀을 박았다면 setAlwaysOnTop을 원복 시키지 않음
+                    if(oAPP.oChildApp.common.fnGetModelProperty("/SETTING/ISPIN") !== true){
+                        CURRWIN.setAlwaysOnTop(false);
+                    }    
 
                     return;
                 }
          
                 // IF 데이터 전달 시, Net의 Client 인스턴스도 함께 전달 
-                _oIF_DATA.CLIENT = CLIENT;
+                _oIF_DATA.AI_CLIENT = CLIENT;
 
                 let oCustomEvent = new CustomEvent(_oIF_DATA.PRCCD, { detail: _oIF_DATA });
 
@@ -409,7 +416,8 @@ let AI = {};
 
                 return resolve({
                     RETCD: "E",
-                    ERRCD: "AI-CONNECT-E998" // AI 서버가 실행되지 않았을 경우
+                    // ERRCD: "AI-CONNECT-E998" // AI 서버가 실행되지 않았을 경우
+                    STCOD: "AI-CONNECT-E998" // AI 서버가 실행되지 않았을 경우
                 });
 
             });

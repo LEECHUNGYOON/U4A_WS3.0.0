@@ -69,8 +69,6 @@
  ****************************************************************************/
 module.exports = async function(oIF_DATA){
 
-    debugger;
-    
     let oPARAM = oIF_DATA.PARAM;
 
     // 3.0 브라우저가 숨어져 있을 수 있으므로 최상단에 위치시킨다.
@@ -112,10 +110,16 @@ module.exports = async function(oIF_DATA){
     // if(sTargetPage !== "WS20" || sCurrPage !== "WS20"){
     if(sCurrPage !== "WS20"){
 
-        // U4A 디자인 영역에서만 가능합니다.
-        let sMsg = oAPP.msg.M433; 
+        // // U4A 디자인 영역에서만 가능합니다.
+        // let sMsg = oAPP.oChildApp.msg.M433; 
 
-        parent.showMessage(sap, 20, "W", sMsg);
+        // parent.showMessage(sap, 20, "W", sMsg);
+
+
+            // [MSG]
+        var sMsg = "방금전에 AI 앱에서 요청된 프로세스는 U4A 개발 화면에서만 가능합니다. ";
+
+        parent.showMessage(sap, 10, "W", sMsg);
 
         return;
     }

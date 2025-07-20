@@ -5,6 +5,9 @@
 (function (window, $, oAPP) {
     "use strict";
 
+    const USERINFO = parent.getUserInfo();
+    const LANGU = USERINFO.LANGU;
+
     oAPP.events = {};
 
     let REMOTE = parent.REMOTE,
@@ -632,8 +635,11 @@
             }
 
             // USP App 일 경우 실행하지 않음.
-            if (oAppInfo.APPTY == "U") {
+            if (oAppInfo.APPTY === "U") {
 
+                // 작업표시줄 깜빡임
+                oCurrWin.flashFrame(true);
+                
                 let sMsg = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "189"); // USP apps are not supported.
 
                 APPCOMMON.fnShowFloatingFooterMsg("E", sCurrPage, sMsg);
@@ -650,7 +656,10 @@
                 // 작업표시줄 깜빡임
                 oCurrWin.flashFrame(true);
 
-                var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "031"); // Only in activity state !!!
+                // var sMsg = APPCOMMON.fnGetMsgClsText("/U4A/MSG_WS", "031"); // Only in activity state !!!
+
+                // This application cannot be executed.
+                var sMsg = parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "434");
 
                 // 페이지 푸터 메시지
                 APPCOMMON.fnShowFloatingFooterMsg("W", sCurrPage, sMsg);

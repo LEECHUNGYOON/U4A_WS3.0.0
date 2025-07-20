@@ -1,7 +1,6 @@
 module.exports = async function(oIF_DATA){
 
-    // 안녕? 여기는 WS 모듈이야
-        
+    // 안녕? 여기는 WS 모듈이야        
   
     // 요청 데이터의 PRCCD 코드별 호출 분기
     try {
@@ -13,13 +12,14 @@ module.exports = async function(oIF_DATA){
 
     } catch (oError) {
 
-        // var sErrcode = "[PRC-AI-E001]";
+        var sErrcode = "PRC-WS-E001";
 
-        // console.error(sErrcode, oError);
+        console.error(sErrcode, oError);
 
-        // var _sErrMsg = `[${sErrcode}] 외부에서 잘못된 요청을 수행하였습니다.`;
+        // [MSG]
+        var _sErrMsg = `[${sErrcode}] 외부에서 잘못된 요청을 수행하였습니다.`;
 
-        // oAPP.UaiMessageBox.error({title: "U4A Ai Suite", desc: _sErrMsg });
+        parent.showMessage(oAPP.oChildApp.sap, 20, "E", _sErrMsg);
 
         return;
 
