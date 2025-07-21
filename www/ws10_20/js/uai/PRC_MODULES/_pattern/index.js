@@ -15,19 +15,19 @@
  ****************************************************************************/
 module.exports = async function(oIF_DATA){
 
-    // 여기는 CONNECT 에 대한 모듈이야!
+    // // 여기는 CONNECT 에 대한 모듈이야!
 
-    let sCallbackId = oIF_DATA.CB_ID;
+    // let sCallbackId = oIF_DATA.CB_ID;
 
-    let oAI_IF_MAP = parent.getAiIfMap();
+    // let oAI_IF_MAP = parent.getAiIfMap();
 
-    let oEventTarget = oAI_IF_MAP.get(sCallbackId);    
-    if(!oEventTarget){
-        return;
-    }
+    // let oEventTarget = oAI_IF_MAP.get(sCallbackId);    
+    // if(!oEventTarget){
+    //     return;
+    // }
 
-    let oCustomEvent = new CustomEvent(sCallbackId, { detail: oIF_DATA });
+    // let oCustomEvent = new CustomEvent(sCallbackId, { detail: oIF_DATA });
 
-    oEventTarget.dispatchEvent(oCustomEvent);
+    // oEventTarget.dispatchEvent(oCustomEvent);
 
 };

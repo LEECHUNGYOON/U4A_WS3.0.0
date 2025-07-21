@@ -442,6 +442,48 @@
 
     }; // end of oAPP.common.fnShortCutExeAvaliableCheck
 
+
+    /*************************************************************************
+     * 프로세스가 실행 중인지 상태 확인
+     **************************************************************************/
+    oAPP.common.isProcessRunning = function(){
+
+        // 1. 락 걸린 상태인지?
+        if (sap.ui.getCore().isLocked()) {
+            return true;
+        }
+
+        // 2. 단축키 잠금 상태인지? ==> 이것도 프로세스 진행 중으로 판단.
+        if (oAPP.attr.isShortcutLock == true) {
+            return true;
+        }
+
+        // 3. Busy Indicator가 실행 중 인지?
+        if (parent.getBusy() == 'X') {        
+            return true;
+        }
+
+        // 4. 화면에 메뉴 팝업이 떠있는 상태인지?
+        var oMenuDom = document.querySelector(".sapMMenu");
+        if (oMenuDom) {
+            var sId = oMenuDom.id,
+                oMenu = sap.ui.getCore().byId(sId);
+            if (oMenu && oMenu.bOpen) {                
+                return true;
+            }
+        }
+
+        // 5. 현재 Dialog Popup이 실행 되어 있는지?
+        var bIsDialogOpen = oAPP.fn.fnCheckIsDialogOpen();
+        if (bIsDialogOpen) {            
+            return true;
+        }
+
+        return false;
+
+    }; // end of isProcessRunning
+
+
     /*************************************************************************
      * Shortcut 설정
      **************************************************************************/

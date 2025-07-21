@@ -23,9 +23,6 @@
      ************************************************************************/
     oAPP.fn.fnOnEnterDispChangeMode = async function (APPID, ISEDIT) {
 
-        // AI I/F 커스텀 이벤트를 등록한다.(기존에 걸려있다면 다시 안걸림!!)        
-        parent.UAI.setCustomEvent_WS_20();
-
         // busy 키고 Lock 걸기
         oAPP.common.fnSetBusyLock("X");
 
@@ -192,7 +189,10 @@
                 APPCOMMON.setShortCut("WS30");
 
                 // USP 페이지로 이동한다.
-                oAPP.fn.fnOnMoveToPage("WS30");                
+                oAPP.fn.fnOnMoveToPage("WS30");    
+                
+                // WS30번 페이지에 대한 AI I/F 커스텀 이벤트를 등록한다.(기존에 걸려있다면 다시 안걸림!!)        
+                parent.UAI.setCustomEvent_WS_30();
 
                 return;
 
@@ -229,7 +229,9 @@
 
             // WS20번 페이지로 이동한다.
             oAPP.fn.fnOnMoveToPage("WS20");
-      
+
+            // WS20번 페이지에 대한 AI I/F 커스텀 이벤트를 등록한다.(기존에 걸려있다면 다시 안걸림!!)        
+            parent.UAI.setCustomEvent_WS_20();      
          
         } // end of lf_success
 

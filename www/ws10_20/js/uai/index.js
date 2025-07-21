@@ -188,6 +188,29 @@ let AI = {};
     } // end of _connectionCloseHandle
 
 
+    /*************************************************************
+     * @function - [공통] PRCCD 별, AI I/F 용 Custom Event 설정
+     *************************************************************/
+    function _setCustomEvent(sPRCCD){
+
+        // AI I/F용 Map
+        const oAI_IF_MAP = parent.getAiIfMap();
+
+        // 기존에 맵에 커스텀 이벤트가 등록되어 있을 경우 빠져나간다.
+        const oEventTarget = oAI_IF_MAP.get(sPRCCD);
+        if(oEventTarget){
+            return;
+        }
+        
+        // Process code 에 대한 커스텀 이벤트를 구한다.
+        const oCustomEvent = oAPP.oChildApp.common.addCustomEvent(sPRCCD, _customEventAI);
+
+        // Process code 에 대한 커스텀 이벤트를 맵에 등록한다.
+        oAI_IF_MAP.set(sPRCCD, oCustomEvent);
+
+    } // end of setCustomEvent
+
+
 /******************************************************************************
  *  💖 PUBLIC FUNCTION 선언부
  ******************************************************************************/
@@ -213,28 +236,39 @@ let AI = {};
 
 
     /*************************************************************
+     * @function - WS10에 대한 AI I/F 용 Custom Event 설정 (1회만)
+     *************************************************************/
+    AI.setCustomEvent_WS_10 = function(){
+
+        const sPRCCD = "WS_10";
+
+        _setCustomEvent(sPRCCD);
+
+    }; // end of AI.setCustomEvent_WS_20
+
+
+    /*************************************************************
      * @function - WS20에 대한 AI I/F 용 Custom Event 설정 (1회만)
      *************************************************************/
     AI.setCustomEvent_WS_20 = function(){
 
         const sPRCCD = "WS_20";
 
-        // AI I/F용 Map
-        const oAI_IF_MAP = parent.getAiIfMap();
-
-        // 기존에 맵에 커스텀 이벤트가 등록되어 있을 경우 빠져나간다.
-        const oEventTarget = oAI_IF_MAP.get(sPRCCD);
-        if(oEventTarget){
-            return;
-        }
-        
-        // Process code 에 대한 커스텀 이벤트를 구한다.
-        const oCustomEvent = oAPP.oChildApp.common.addCustomEvent(sPRCCD, _customEventAI);
-
-        // Process code 에 대한 커스텀 이벤트를 맵에 등록한다.
-        oAI_IF_MAP.set(sPRCCD, oCustomEvent);
+        _setCustomEvent(sPRCCD);
 
     }; // end of AI.setCustomEvent_WS_20
+
+
+    /*************************************************************
+     * @function - WS30에 대한 AI I/F 용 Custom Event 설정 (1회만)
+     *************************************************************/
+    AI.setCustomEvent_WS_30 = function(){
+
+        const sPRCCD = "WS_30";
+
+        _setCustomEvent(sPRCCD);
+
+    }; // end of AI.setCustomEvent_WS_30
 
 
     /*************************************************************

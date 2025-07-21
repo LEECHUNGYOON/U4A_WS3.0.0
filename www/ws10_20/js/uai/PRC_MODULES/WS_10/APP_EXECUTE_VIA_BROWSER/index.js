@@ -2,12 +2,10 @@
  * 🔥 Global Variables
  ****************************************************************************/
 
+    const sap = oWS.utill.attr.sap;
+
     const REMOTE         = require('@electron/remote');
     const CURRWIN        = REMOTE.getCurrentWindow();
-    const PATH           = REMOTE.require('path');
-    const SCREEN         = REMOTE.require('electron').screen;
-
-    const sap = oWS.utill.attr.sap;
 
 
 /****************************************************************************
@@ -63,7 +61,7 @@
 
         CURRWIN.setBounds(oBounds);
 
-    } // end of _setMovePosAiWinMonitor
+    } // end of _setMovePosAiWinMonitor    
 
 
 /****************************************************************************
@@ -71,7 +69,15 @@
  ****************************************************************************/
 module.exports = async function(oIF_DATA){
 
+    // 여기는 APP_EXE 에 대한 모듈이야!
+
+    console.log("AI-APP_EXECUTE_VIA_BROWSER");
+
+    // 전달받은 파라미터
     let oPARAM = oIF_DATA.PARAM;
+
+    // 전달받은 APPID
+    let sAPPID = oPARAM.APPID;
 
     // 3.0 브라우저가 숨어져 있을 수 있으므로 최상단에 위치시킨다.
     CURRWIN.setAlwaysOnTop(true);
@@ -88,6 +94,7 @@ module.exports = async function(oIF_DATA){
             // 현재 ws3.0 윈도우를 AI 미리보기 창이 있는 브라우저로 이동시킨다.
             _moveWindowToAiMonitorCenter(oPrevBounds);
         }
+
     }
 
     // 활성/비활성 여부 상관없이 무조건 focus는 줘야 함
@@ -97,42 +104,38 @@ module.exports = async function(oIF_DATA){
     if (oAPP.oChildApp.common.fnGetModelProperty("/SETTING/ISPIN") !== true) {
         CURRWIN.setAlwaysOnTop(false);
     }
-    
+
+    // 현재 다른 프로세스가 실행 중인지 체크
+    let bIsProcessing = oAPP.oChildApp.common.isProcessRunning();
+    if(bIsProcessing){
+
+        // [MSG]
+        var sMsg = "진행 중인 프로세스가 완료된 이후에 다시 시도하세요.";
+
+        parent.showMessage(sap, 10, "W", sMsg);
+
+        return;
+    }
 
     // 현재 페이지 정보
     let sCurrPage = parent.getCurrPage();
 
-    // 현재 페이지가 WS20이 아닌 경우 빠져나감
-    if (sCurrPage !== "WS20") {
-        var sMsg = "방금전에 AI 앱에서 요청된 프로세스는 U4A 디자인 영역에서만 가능합니다. ";
+    if(sCurrPage !== "WS10"){ 
+
+        // [MSG]
+        var sMsg = "방금 AI 앱에서 요청한 프로세스는 U4A 애플리케이션 메인 화면에서만 실행할 수 있습니다.";
+
         parent.showMessage(sap, 10, "W", sMsg);
+
         return;
     }
 
-    // let oPARAM = {
-    //     ACTCD: "",
-    //     RETCD: "",
-    //     RTMSG: "",
-    //     T_0014: [],
-    //     T_0015: [],
-    //     oAPP: oAPP
-    // };
 
-    // let oPARAM = oIF_DATA.PARAM;
-    //     oPARAM.oAPP = oAPP;
+    sap.ui.getCore().byId("AppNmInput").setValue(sAPPID);
+    sap.ui.getCore().byId("appExecBtn").firePress();
 
-    // // 리턴 필드 구조
-    // // RETCD, RTMSG
-    // // var oResult = await require(PATH.join(oAPP.oDesign.pathInfo.designRootPath, "UAI", "parseAiLibraryData.js"))(oPARAM, oAPP);
-
-
-    // WS20일 경우 → AI 파싱 실행
-    let oSEND_PARAM = oPARAM.EXTRACTED_U4A_DATA;
-        oSEND_PARAM.oAPP = oAPP.oChildApp;
-
-    var oResult = await require(
-        PATH.join(oAPP.oChildApp.oDesign.pathInfo.designRootPath, "UAI", "parseAiLibraryData.js")
-    )(oSEND_PARAM);
-
+    // setTimeout(function(){
+    //     sap.ui.getCore().byId("AppNmInput").setValue("");
+    // }, 0);
 
 };

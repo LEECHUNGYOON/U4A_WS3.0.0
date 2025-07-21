@@ -2,10 +2,12 @@
  * 🔥 Global Variables
  ****************************************************************************/
 
-    const { screen } = REMOTE.require('electron');
+    const REMOTE         = require('@electron/remote');
+    const CURRWIN        = REMOTE.getCurrentWindow();
+    const PATH           = REMOTE.require('path');
+    const SCREEN         = REMOTE.require('electron').screen;
 
     const sap = oWS.utill.attr.sap;
-
 
 
 /****************************************************************************
@@ -25,7 +27,7 @@
             return;
         }
 
-        const display = screen.getDisplayMatching(parentBounds);
+        const display = SCREEN.getDisplayMatching(parentBounds);
         const { x: monX, y: monY, width: monW, height: monH } = display.workArea;
 
         const centeredX = Math.floor(monX + (monW - width) / 2);
@@ -74,31 +76,25 @@ module.exports = async function(oIF_DATA){
     // 3.0 브라우저가 숨어져 있을 수 있으므로 최상단에 위치시킨다.
     CURRWIN.setAlwaysOnTop(true);
 
-    // 현재 브라우저가 활성화 or 작업표시줄에 있을 경우에는
-    // 현재 브라우저를 활성화 시키면서 AI의 미리보기 창이 있는 모니터로 이동시킨다.
-    if(CURRWIN.isVisible() === false || CURRWIN.isMinimized() === true){
-        
-        // 현재 윈도우를 먼저 활성화 시켜준 다음에 3.0 윈도우를 이동시켜야 정확하게 이동됨
-        parent.CURRWIN.show();
-        parent.CURRWIN.focus();
+    // 현재 브라우저가 비가시 상태 or 최소화 상태라면 → show() 후 focus()
+    if (CURRWIN.isVisible() === false || CURRWIN.isMinimized() === true) {
 
-        // AI의 미리보기 브라우저의 위치 정보
+        // 현재 윈도우를 먼저 활성화 시켜야 정확하게 이동됨
+        CURRWIN.show();
+
+        // AI 미리보기 브라우저의 위치 정보
         let oPrevBounds = oPARAM?.PREV_BOUNDS || undefined;
-        if(oPrevBounds){
-
+        if (oPrevBounds) {
             // 현재 ws3.0 윈도우를 AI 미리보기 창이 있는 브라우저로 이동시킨다.
             _moveWindowToAiMonitorCenter(oPrevBounds);
-
         }
-
     }
 
-    // 3.0이 다른창에 숨어져 있을 수 있으므로 여기서 활성화 및 포커스를 줌
-    parent.CURRWIN.show();
-    parent.CURRWIN.focus();
+    // 활성/비활성 여부 상관없이 무조건 focus는 줘야 함
+    CURRWIN.focus();
 
     // 사용자가 브라우저 최상위 고정 핀을 박았다면 setAlwaysOnTop을 원복 시키지 않음
-    if(oAPP.oChildApp.common.fnGetModelProperty("/SETTING/ISPIN") !== true){
+    if (oAPP.oChildApp.common.fnGetModelProperty("/SETTING/ISPIN") !== true) {
         CURRWIN.setAlwaysOnTop(false);
     }
     
@@ -106,21 +102,10 @@ module.exports = async function(oIF_DATA){
     // 현재 페이지 정보
     let sCurrPage = parent.getCurrPage();
 
-    // 현재 페이지와 전달받은 파라미터 중 타겟 페이지가 WS20 페이지가 아닌 경우 빠져나감
-    // if(sTargetPage !== "WS20" || sCurrPage !== "WS20"){
-    if(sCurrPage !== "WS20"){
-
-        // // U4A 디자인 영역에서만 가능합니다.
-        // let sMsg = oAPP.oChildApp.msg.M433; 
-
-        // parent.showMessage(sap, 20, "W", sMsg);
-
-
-            // [MSG]
-        var sMsg = "방금전에 AI 앱에서 요청된 프로세스는 U4A 개발 화면에서만 가능합니다. ";
-
+    // 현재 페이지가 WS20이 아닌 경우 빠져나감
+    if (sCurrPage !== "WS20") {
+        var sMsg = "방금전에 AI 앱에서 요청된 프로세스는 U4A 디자인 영역에서만 가능합니다. ";
         parent.showMessage(sap, 10, "W", sMsg);
-
         return;
     }
 
@@ -141,10 +126,13 @@ module.exports = async function(oIF_DATA){
     // // var oResult = await require(PATH.join(oAPP.oDesign.pathInfo.designRootPath, "UAI", "parseAiLibraryData.js"))(oPARAM, oAPP);
 
 
+    // WS20일 경우 → AI 파싱 실행
     let oSEND_PARAM = oPARAM.EXTRACTED_U4A_DATA;
         oSEND_PARAM.oAPP = oAPP.oChildApp;
 
-    // [TO-BE]
-    var oResult = await require(PATH.join(oAPP.oChildApp.oDesign.pathInfo.designRootPath, "UAI", "parseAiLibraryData.js"))(oSEND_PARAM);
+    var oResult = await require(
+        PATH.join(oAPP.oChildApp.oDesign.pathInfo.designRootPath, "UAI", "parseAiLibraryData.js")
+    )(oSEND_PARAM);
+
 
 };

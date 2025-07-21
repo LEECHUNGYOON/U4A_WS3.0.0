@@ -295,9 +295,16 @@
                     var _oFrameDom = document.createElement("iframe");
                         _oFrameDom.id = _sFrameId;
 
+                    // Deeplink ID
+                    let sDeepLinkId = 'u4a-ai-suite';
+
+                    // 패키지가 아닐 경우의 Deeplink ID
+                    if(!parent.APP.isPackaged){
+                        sDeepLinkId = 'u4a-ai-suite-dev';
+                    }
 
                     // TEST ---- Start
-                    _oFrameDom.src = "uai-suite://yoon_test";
+                    _oFrameDom.src = `${sDeepLinkId}://yoon_test`;
                     // TEST ---- End
                 
                     // 딥링크를 호출한다.

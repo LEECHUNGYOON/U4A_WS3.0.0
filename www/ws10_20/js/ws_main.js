@@ -850,8 +850,8 @@
             // 20250207
             parent.oWS.utill.attr.oBusy = new BusyDialog();
 
-            // AI 연결 관련 초기 설정
-            parent.UAI.init();
+            // AI 연결 관련 커스텀 이벤트 초기 설정
+            parent.UAI.init();            
 
             // // UAI 쪽에서 파라미터를 전달받기 위한 이벤트 생성
             // _attach_AI_Events();
@@ -919,6 +919,9 @@
             sap.ui.getCore().attachEvent(sap.ui.core.Core.M_EVENTS.UIUpdated, async function () {
                 
                 if(parent.oWS.utill.attr.UIUpdated) { return; }
+
+                // WS 10번 화면 관련 AI 커스텀 이벤트 등록
+                parent.UAI.setCustomEvent_WS_10();
 
                 // 새창 띄우면서 IF_DATA에 파라미터가 존재할 경우
                 let oNewWin_IF_DATA = parent.getNewBrowserIF_DATA();
