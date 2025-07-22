@@ -127,6 +127,14 @@
 
         var oApp = new sap.m.NavContainer("WSAPP", {
             autoFocus: false,
+            navigate: function(oEvent){
+	
+                var toId = oEvent.getParameter("toId");
+
+                // 현재 페이지의 위치를 저장한다.
+                parent.setCurrPage(toId);
+
+            },
             afterNavigate: function (oEvent) {
                 
                 var toId = oEvent.getParameter("toId");

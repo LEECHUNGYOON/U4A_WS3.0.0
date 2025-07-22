@@ -294,6 +294,7 @@ function setHeaderMenuVisible(bIsVisi) {
 
 function setCurrPage(sPageId) {
     oWS.utill.attr.currPage = sPageId;
+    oAPP.oChildApp.common.fnSetModelProperty("/CURR_PAGE", sPageId);
 }
 
 function getCurrPage() {

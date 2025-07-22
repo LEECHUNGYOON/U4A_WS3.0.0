@@ -408,9 +408,13 @@
      **************************************************************************/
     oAPP.common.fnShortCutExeAvaliableCheck = () => {
 
-        if (oAPP.attr.isShortcutLock == true) {
+        if (oAPP.attr.isShortcutLock === true) {
             return "X";
         }
+
+        // if (!oAPP.attr?.isShortcutLock) {
+        //     return "X";
+        // }
 
         // Busy Indicator가 실행중인지 확인
         if (parent.getBusy() == 'X') {

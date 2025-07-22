@@ -842,6 +842,12 @@
 
             jQuery.sap.require("sap.ui.core.format.DateFormat");
 
+            // 초기 모델 바인딩
+            oAPP.main.fnOnInitModelBinding();
+
+            // 초기 현재 화면 위치 정보 저장
+            parent.setCurrPage("WS10");
+
             oAPP.sap = sap;
 
             // 부모에 sap 인스턴스 전달
@@ -871,8 +877,8 @@
             // U4A Icon 추가하기
             oAPP.fn.fnRegisterU4AIcons();
 
-            // 초기 현재 화면 위치 정보 저장
-            parent.setCurrPage("WS10");
+            // // 초기 현재 화면 위치 정보 저장
+            // parent.setCurrPage("WS10");
 
             // 공통 인스턴스 정의
             oAPP.main.fnPredefineGlobalObject();
@@ -888,8 +894,8 @@
             // APP 전체 대상 공통 Shortcut 지정하기
             oAPP.common.fnSetCommonShortcut();
 
-            // 초기 모델 바인딩
-            oAPP.main.fnOnInitModelBinding();
+            // // 초기 모델 바인딩
+            // oAPP.main.fnOnInitModelBinding();
 
             //WS Global Setting Lauguage에 맞는 메시지 텍스트 정보를 구해서 모델에 저장한다.
             await oAPP.main.fnGetWsMsgModelData();
