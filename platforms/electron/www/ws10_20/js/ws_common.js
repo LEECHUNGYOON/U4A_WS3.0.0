@@ -707,6 +707,11 @@
 
                 e.stopImmediatePropagation();
 
+                if (sap.ui.getCore().isLocked()) {
+                    zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                    return;
+                }                
+
                 // lock 걸기
                 sap.ui.getCore().lock();
 
@@ -962,8 +967,8 @@
                         return;
                     }
 
-                    // // lock 걸기
-                    // sap.ui.getCore().lock();
+                    // lock 걸기
+                    sap.ui.getCore().lock();
 
                     // 메뉴 팝오버 닫기
                     oAPP.common.fnCloseMenuPopover();
@@ -977,11 +982,11 @@
                         return;
                     }
 
-                    // var oBackBtn = sap.ui.getCore().byId("backBtn");
-                    // if (!oBackBtn || !oBackBtn.getEnabled() || !oBackBtn.getVisible()) {
-                    //     sap.ui.getCore().unlock();
-                    //     return;
-                    // }
+                    var oBackBtn = sap.ui.getCore().byId("backBtn");
+                    if (!oBackBtn || !oBackBtn.getEnabled() || !oBackBtn.getVisible()) {
+                        sap.ui.getCore().unlock();
+                        return;
+                    }
 
                     // 커서 포커스 날리기
                     if (document.activeElement && document.activeElement.blur) {
@@ -2861,9 +2866,10 @@
                 "/WS20/APP/IS_EDIT",
                 "/WS30/APP/IS_EDIT",
                 "/UAI",
-                "/WS20/APP/S_APP_VMS"
+                "/WS20/APP/S_APP_VMS",
+                "/CURR_PAGE"
             ],
-            formatter: async function(SYSID, WS10, WS20_IS_EDIT, WS30_IS_EDIT, UAI, S_APP_VMS){                
+            formatter: async function(SYSID, WS10, WS20_IS_EDIT, WS30_IS_EDIT, UAI, S_APP_VMS, CURR_PAGE){                
 
                 var _bIsVisi = await new Promise(function(resove){
 
@@ -2880,9 +2886,11 @@
                             case "UHA":     // 개발서버
                             case "U4A":     // 운영서버
         
-                                let ROOTNAV = sap.ui.getCore().byId("WSAPP");
-                                let oCurrPage = ROOTNAV.getCurrentPage();
-                                let sCurrId = oCurrPage.getId();
+                                // let ROOTNAV = sap.ui.getCore().byId("WSAPP");
+                                // let oCurrPage = ROOTNAV.getCurrentPage();
+                                // let sCurrId = oCurrPage.getId();
+
+                                let sCurrId = CURR_PAGE;
 
                                 /**
                                  * 10번 페이지에서는 보여주지 않는다.
@@ -2896,14 +2904,16 @@
                                 // 20번 페이지일 경우, APP 상태가 Edit 상태일 경우에만 활성화 시킨다.
                                 if(sCurrId === "WS20"){
 
-                                    isVisi = ( WS20_IS_EDIT === "X" ? true : false );
+                                    // isVisi = ( WS20_IS_EDIT === "X" ? true : false );
+                                    isVisi = true;
 
                                 }
                                 
                                 // 30번 (USP) 페이지 일 경우, APP 상태가 Edit 상태일 경우에만 활성화 시킨다.
                                 if(sCurrId === "WS30"){
 
-                                    isVisi = ( WS30_IS_EDIT === "X" ? true : false );
+                                    // isVisi = ( WS30_IS_EDIT === "X" ? true : false );
+                                    isVisi = true;
 
                                 }
         
