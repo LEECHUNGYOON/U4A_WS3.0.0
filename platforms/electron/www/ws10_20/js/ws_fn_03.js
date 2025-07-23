@@ -328,14 +328,20 @@
      ************************************************************************/
     oAPP.fn.fnCheckIsDialogOpen = function () {
 
-        var $oDialog = $(".sapMDialogOpen"),
-            iDialogLength = $oDialog.length;
+        // var $oDialog = $(".sapMDialogOpen"),
+        //     iDialogLength = $oDialog.length;
 
-        if (iDialogLength <= 0) {
-            return false;
-        }
-
-        return true;
+        // if (iDialogLength <= 0) {
+        //     return false;
+        // }
+        
+        let oInstManager = sap.m.InstanceManager;
+        
+        return (
+            oInstManager.hasOpenDialog()    ||
+            oInstManager.hasOpenLightBox()  ||
+            oInstManager.hasOpenPopover()
+        );
 
     }; // end of oAPP.fn.fnCheckIsDialogOpen
 

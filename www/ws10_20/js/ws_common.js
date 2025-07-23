@@ -409,6 +409,7 @@
     oAPP.common.fnShortCutExeAvaliableCheck = () => {
 
         if (oAPP.attr.isShortcutLock === true) {
+            zconsole.log("!! isShortcutLock => true 여서 단축키 실행 불가 !! ");
             return "X";
         }
 
@@ -458,7 +459,7 @@
         }
 
         // 2. 단축키 잠금 상태인지? ==> 이것도 프로세스 진행 중으로 판단.
-        if (oAPP.attr.isShortcutLock == true) {
+        if (oAPP.attr.isShortcutLock === true) {
             return true;
         }
 
@@ -599,13 +600,16 @@
 
                 e.stopImmediatePropagation();
 
-                // 커서 포커스 날리기
-                if (document.activeElement && document.activeElement.blur) {
-                    document.activeElement.blur();
+                if (sap.ui.getCore().isLocked()) {
+                    zconsole.log("!! 락 걸려서 단축기 실행 불가!!");
+                    return;
                 }
 
                 // lock 걸기
                 sap.ui.getCore().lock();
+
+                // 메뉴 팝오버 닫기
+                oAPP.common.fnCloseMenuPopover();                
 
                 // 단축키 실행 할지 말지 여부 체크
                 var result = oAPP.common.fnShortCutExeAvaliableCheck();
@@ -621,6 +625,11 @@
                     sap.ui.getCore().unlock();
                     return;
                 }
+
+                // 커서 포커스 날리기
+                if (document.activeElement && document.activeElement.blur) {
+                    document.activeElement.blur();
+                }                
 
                 oAppChangeBtn.firePress();
 
@@ -2804,7 +2813,7 @@
          * AI 연결 / 연결해제 버튼
          */
         let BUTTON6 = new sap.m.Button({
-            press: function(){                
+            press: async function(){                
 
                 // Busy On
                 parent.setBusy("X", {});
@@ -2812,7 +2821,37 @@
                 // 전체 자식 윈도우에 Busy 킨다.
                 oAPP.attr.oMainBroad.postMessage({ PRCCD:"BUSY_ON" });                
 
-                let bIsState = oAPP.common.fnGetModelProperty("/UAI/state");                
+                let bIsState = oAPP.common.fnGetModelProperty("/UAI/state");
+                
+                // AI와 연결을 해제할 경우에는 질문 팝업을 물어본다.
+                if(bIsState === true){
+
+                    let sAction = await new Promise(function(resolve){
+
+                        // Busy Off
+                        parent.setBusy("");
+
+                        // [MSG]
+                        let sMsg = "AI와 연결을 해제 하시겠습니까?";
+
+                        parent.showMessage(sap, 30, "I", sMsg, function(sAction){
+                            resolve(sAction);
+                        });
+
+                    });
+
+                    // Busy On
+                    parent.setBusy("X");
+
+                    if(sAction !== "YES"){
+                        
+                        // Busy Off
+                        parent.setBusy("");
+
+                        return;
+                    }
+
+                }
 
                 // AI와 연동 or 연동 해제
                 oAPP.fn.setConnectionAI(!!!bIsState);
