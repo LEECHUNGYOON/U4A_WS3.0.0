@@ -18,6 +18,9 @@
 
         let oMetaData = parent.getMetadata();
 
+        // 단축키 락 여부 플래그
+        oAPP.attr.isShortcutLock = false;   
+        
         oAPP.attr.oShortcut = jQuery.extend(true, {}, shortcut);
         oAPP.attr.oServerInfo = parent.getServerInfo(); // 접속 서버 정보
         oAPP.attr.iAppSuggMaxCnt = 20; // WS10 의 APPID Suggestion Max 갯수
@@ -842,6 +845,9 @@
 
             jQuery.sap.require("sap.ui.core.format.DateFormat");
 
+            // 공통 인스턴스 정의
+            oAPP.main.fnPredefineGlobalObject();
+
             // 초기 모델 바인딩
             oAPP.main.fnOnInitModelBinding();
 
@@ -880,8 +886,8 @@
             // // 초기 현재 화면 위치 정보 저장
             // parent.setCurrPage("WS10");
 
-            // 공통 인스턴스 정의
-            oAPP.main.fnPredefineGlobalObject();
+            // // 공통 인스턴스 정의
+            // oAPP.main.fnPredefineGlobalObject();
 
             // // UI5 bootstrap tag의 Language 값 설정 테스트)
             // oAPP.main.fnSetLanguage();

@@ -818,10 +818,46 @@
       
 
       oAPP.attr.oModel.refresh();
+      
+      
+      
+      //미리보기에서 사용하는 UI 제거 처리.
+      delete oAPP.attr.ui.prevRootPage;
+      delete oAPP.attr.ui._page1;
+      delete oAPP.attr.ui.prevPopupArea;
+      delete oAPP.attr.ui._hbox1;
+      delete oAPP.attr.ui.oMenu;
+
+
+      //🦺WS10 -> WS20 으로 이동전 WS20 디자인 영역의 광역 정보를 초기화
+      //하는 과정에서 미리보기 iFrame 정보가 존재하지 않는경우 치명적
+      //오류로 판단하여 메시지 처리.
+      //(WS20 디자인 영역에서 어플리케이션 정보를 얻은 이후 미리보기 iFrame을
+      //구성이 완료되어 ROOT를 선택 완료 하는 시점까지 WS10화면으로 이동할 수 없기에
+      //oAPP.fn.removeContent가 호출되는것은 치명적 오류로 판단.)
+      if(typeof oAPP?.attr?.ui?.frame?.src === "undefined"){
+
+        //크리티컬오류!!!!!!!!!!!!
+        //로직 구현 해야함!!!!!!!!!!
+
+        return;
+      }
 
 
       //미리보기 iframe의 부모 dom 정보 얻기.
       var _oParent = oAPP.attr.ui.frame.parentElement;
+
+      //🤩🤩oAPP.attr.ui.frame.parentElement <-- 없으면 절대 안됨 
+
+
+      //20230116 pes -start.
+      //미리보기 src 초기화.
+      //미리보기 frame를 유지하며 ui만 제거하는 로직을 대체하여 frame 자체를 초기화 하는 내용을 추가함.
+      // document.getElementById("prevHTML").src = "";
+      // document.getElementById("prevHTML").style.display = "none";
+
+      oAPP.attr.ui.frame.src = "";
+      oAPP.attr.ui.frame.style.display = "none";
 
       //미리보기 iframe 복사 처리.
       var _oClone = oAPP.attr.ui.frame.cloneNode();
@@ -835,18 +871,6 @@
       }
 
 
-      
-      //20230116 pes -start.
-      //미리보기 src 초기화.
-      //미리보기 frame를 유지하며 ui만 제거하는 로직을 대체하여 frame 자체를 초기화 하는 내용을 추가함.
-      document.getElementById("prevHTML").src = "";
-      document.getElementById("prevHTML").style.display = "none";
-
-      delete oAPP.attr.ui.prevRootPage;
-      delete oAPP.attr.ui._page1;
-      delete oAPP.attr.ui.prevPopupArea;
-      delete oAPP.attr.ui._hbox1;
-      delete oAPP.attr.ui.oMenu;
 
       //oAPP.attr.ui.frame.src = "";
 

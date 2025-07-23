@@ -94,7 +94,7 @@
   //미리보기 iframe 영역 구성.
   oAPP.fn.loadPreviewFrame = function(bReset){
 
-
+    //🦺자주 사용할 내용에 대해서 util로 기능을 빼놓기.
     function lf_setParam(oForm, name, value){
 
       var iput = document.createElement("input");
@@ -187,6 +187,9 @@
       //미리보기 영역이 onAfterRendering 호출되는경우 다시 미리보기 영역을 load처리.
       oAPP.attr.ui.oDesignPreview.addEventDelegate(oAPP.fn.prevFrameReload);
 
+      //🦺body에 추가 하는게 아니라 이런 용도로 보이지 않는 dom을 만들어
+      //해당 영역에 추가.
+      //그리고 나갈때 삭제 한다던가 해야함.
       setTimeout(() => {
         document.body.removeChild(oform);
       }, 0);
