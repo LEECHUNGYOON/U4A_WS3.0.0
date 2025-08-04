@@ -1363,36 +1363,9 @@
             oFormData.append("TRKORR", sReqNo);
         }
 
+
         oFormData.append("IS_ACT", 'X');
-
-
-        // 어플리케이션 저장 데이터
-        let oSaveData = JSON.parse(JSON.stringify(oAPP.fn.getSaveData()));
-
-        /**
-         * @description
-         * [FIX] 어플리케이션 데이터 중, 에디터 데이터 내 특수문자 (\n, \t 등) 저장 시 JSON 변환 과정에서 escape 처리 오류 발생.
-         * 조회 시 줄바꿈이 의도치 않게 적용되어 코드가 깨져 보이는 문제가 있었음.
-         * 
-         * ex: 저장 시 => `var aaa = "\naaa\n";`
-         *     조회 시 => 
-         *     var aaa = "
-         *     aaa
-         *     "
-         * 
-         * 해결 방안:
-         * 에디터 관련 데이터(CSS, HTML, JS, Error HTML 등)는 전체 JSON 포함 대신 개별 FormData 항목으로 전송.
-         * 백엔드에서 별도 escape 처리 없이 저장 및 조회하도록 변경함.
-         *
-         * @date 2025-08-04
-         * @version 3.5.6-sp10
-         * @author soccerhs
-         */
-        // 어플리케이션 저장 데이터에서 FormData로 변환
-        _convertSaveDataToFormData(oFormData, oSaveData);
-
-        // oFormData.append("APPDATA", JSON.stringify(oAPP.fn.getSaveData()));
-        oFormData.append("APPDATA", JSON.stringify(oSaveData));
+        oFormData.append("APPDATA", JSON.stringify(oAPP.fn.getSaveData()));
 
         // Ajax 서버 호출
         sendAjax(sPath, oFormData, function (oResult) {
@@ -1540,95 +1513,7 @@
 
         });
 
-    }; // end of oAPP.events.ev_pressActivateBtn
-
-
-    /************************************************************************
-     * 어플리케이션 저장 데이터에서 FormData로 변환
-     ************************************************************************/    
-    function _convertSaveDataToFormData(oFormData, oSaveData){
-
-        if(!oFormData || !oSaveData){
-            return;
-        }
-
-        /**
-         * formdata 변환 대상
-         */
-        // ** T_EDIT -> /U4A/Y0050
-            
-        // 	OBJID -> formdata (name)
-        // 	OBJTY
-        // 	DATA  -> formdata (value)
-
-        let aT_EDIT = oSaveData?.T_EDIT || [];
-        if(aT_EDIT && Array.isArray(aT_EDIT) === true && aT_EDIT.length !== 0){
-
-            for(const oEdit of aT_EDIT){
-
-                let sOBJID = oEdit?.OBJID || "";
-                let sDATA  = oEdit?.DATA  || "";
-
-                if(!sOBJID || !sDATA){
-                    continue;
-                }                
-
-                oFormData.append(sOBJID, sDATA);
-
-                oEdit.DATA = "";
-
-            }
-
-        }
-
-        // ** S_ERHTML -> /U4A/S0056
-
-        // 	formdata (name) -> ERHTML ?
-
-        // 	IS_USE	
-        // 	HTML -> formdata (value)
-
-        let oErrHtml = oSaveData?.S_ERHTML || undefined;
-        if(oErrHtml){
-
-            let sErrHtml = oErrHtml?.HTML || "";
-            if(sErrHtml){
-                
-                oFormData.append("ERHTML", sErrHtml);
-
-                oErrHtml.HTML = "";
-
-            }
-
-        }
-
-        // ** T_CEVT -> /U4A/Y0050
-
-        // 	OBJID -> formdata (name)
-        // 	OBJTY
-        // 	DATA  -> formdata (value)
-
-        let aT_CEVT = oSaveData?.T_CEVT || [];
-        if(aT_CEVT && Array.isArray(aT_CEVT) === true && aT_CEVT.length !== 0){
-            
-            for(const oCEVT of aT_CEVT){
-
-                let sOBJID = oCEVT?.OBJID || "";
-                let sDATA  = oCEVT?.DATA  || "";
-
-                if(!sOBJID || !sDATA){
-                    continue;
-                }
-
-                oFormData.append(sOBJID, sDATA);
-
-                oCEVT.DATA = "";
-
-            }
-
-        }
-
-    } // end of _convertSaveDataToFormData
+    }; // end of oAPP.events.ev_pressActivateBtn   
 
     /************************************************************************
      * Save Button Event
@@ -1670,34 +1555,7 @@
             oFormData.append("TRKORR", sReqNo);
         }
 
-        // 어플리케이션 저장 데이터
-        let oSaveData = JSON.parse(JSON.stringify(oAPP.fn.getSaveData()));
-
-        /**
-         * @description
-         * [FIX] 어플리케이션 데이터 중, 에디터 데이터 내 특수문자 (\n, \t 등) 저장 시 JSON 변환 과정에서 escape 처리 오류 발생.
-         * 조회 시 줄바꿈이 의도치 않게 적용되어 코드가 깨져 보이는 문제가 있었음.
-         * 
-         * ex: 저장 시 => `var aaa = "\naaa\n";`
-         *     조회 시 => 
-         *     var aaa = "
-         *     aaa
-         *     "
-         * 
-         * 해결 방안:
-         * 에디터 관련 데이터(CSS, HTML, JS, Error HTML 등)는 전체 JSON 포함 대신 개별 FormData 항목으로 전송.
-         * 백엔드에서 별도 escape 처리 없이 저장 및 조회하도록 변경함.
-         *
-         * @date 2025-08-04
-         * @version 3.5.6-sp10
-         * @author soccerhs
-         */
-
-        // 어플리케이션 저장 데이터에서 FormData로 변환
-        _convertSaveDataToFormData(oFormData, oSaveData);
-
-        // oFormData.append("APPDATA", JSON.stringify(oAPP.fn.getSaveData()));
-        oFormData.append("APPDATA", JSON.stringify(oSaveData));
+        oFormData.append("APPDATA", JSON.stringify(oAPP.fn.getSaveData()));
 
         // Ajax 서버 호출
         sendAjax(sPath, oFormData, lf_getAppInfo);
