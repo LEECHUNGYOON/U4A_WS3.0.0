@@ -695,25 +695,25 @@
 
                 }),
 
+
                 new sap.ui.table.Column({
-                    width: "250px",
+                    hAlign: "Center",
+                    width: "140px",
                     sortProperty: "APPID",
                     filterProperty: "APPID",
                     label: new sap.m.Label({
-                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A90"), // Web Application ID
+                        // text: "앱 실행",                        
+                        // text: "Open in Browser",                        
+                        text: parent.WSUTIL.getWsMsgClsTxt(LANGU, "ZMSG_WS_COMMON_001", "436"), // 앱 실행,                        
                         design: sap.m.LabelDesign.Bold
                     }),
-                    // template: new sap.m.Text({
-                    //     text: "{APPID}",
-                    //     wrapping: false,
-                    //     tooltip: "{APPID}",
-                    // }),
-                    template: new sap.m.Link({
-                        emphasized: true,
-                        text: "{APPID}",
-                        tooltip: "{APPID}",
+
+                    template: new sap.m.Button({
+                        width: "100%",
+                        type: "Transparent",
+                        icon: "sap-icon://internet-browser",
                         press: function(oEvent){
-                            
+
                             parent.setBusy('X');
 
                             if(!oEvent){                                
@@ -792,10 +792,37 @@
                                     parent.setBusy('');
                                 }, 1000);
 
-                            });
-             
+                            });                            
+
                         }
                     })
+
+                }),
+
+
+                new sap.ui.table.Column({
+                    width: "250px",
+                    sortProperty: "APPID",
+                    filterProperty: "APPID",
+                    label: new sap.m.Label({
+                        text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "A90"), // Web Application ID
+                        design: sap.m.LabelDesign.Bold
+                    }),
+                    template: new sap.m.Text({
+                        text: "{APPID}",
+                        wrapping: false,
+                        tooltip: "{APPID}",
+                    }),
+                    // template: new sap.m.Link({
+                    //     emphasized: true,
+                    //     text: "{APPID}",
+                    //     tooltip: "{APPID}",
+                    //     press: function(oEvent){
+                            
+                            
+             
+                    //     }
+                    // })
 
                 }),
 
