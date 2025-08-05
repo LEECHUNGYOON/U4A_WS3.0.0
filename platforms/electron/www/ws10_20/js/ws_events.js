@@ -1550,7 +1550,10 @@
 
         if(!oFormData || !oSaveData){
             return;
-        }
+        }        
+
+        // whiteList 포함 여부        
+        let bIsWhiteList = oAPP.common.checkWLOList("C", "UHAK901209");
 
         /**
          * formdata 변환 대상
@@ -1575,7 +1578,11 @@
 
                 oFormData.append(sOBJID, sDATA);
 
-                oEdit.DATA = "";
+                // 화이트리스트에 포함될 경우에만 에디터 데이터를 지운다. (서버 전송 데이터 용량 축소 목적)
+                if(bIsWhiteList === true){
+                    oEdit.DATA = "";
+                }
+                
 
             }
 
@@ -1596,7 +1603,10 @@
                 
                 oFormData.append("ERHTML", sErrHtml);
 
-                oErrHtml.HTML = "";
+                // 화이트리스트에 포함될 경우에만 에디터 데이터를 지운다. (서버 전송 데이터 용량 축소 목적)
+                if(bIsWhiteList === true){
+                    oErrHtml.HTML = "";
+                }
 
             }
 
@@ -1622,7 +1632,10 @@
 
                 oFormData.append(sOBJID, sDATA);
 
-                oCEVT.DATA = "";
+                // 화이트리스트에 포함될 경우에만 에디터 데이터를 지운다. (서버 전송 데이터 용량 축소 목적)
+                if(bIsWhiteList === true){
+                    oCEVT.DATA = "";
+                }
 
             }
 
