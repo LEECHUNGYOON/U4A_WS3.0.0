@@ -529,20 +529,26 @@
 
       //sap.ui.core.HTML의 content 프로퍼티 입력값인경우.
       if(is_attr.UIATK === "AT000011858"){
+
+        //20250805 pes -start.
         //HTML CONTENT 입력건 검색.
-        var ls_cevt = oAPP.DATA.APPDATA.T_CEVT.find( a => a.OBJID === is_attr.OBJID + is_attr.UIASN && a.OBJTY === "HM" );
+        // var ls_cevt = oAPP.DATA.APPDATA.T_CEVT.find( a => a.OBJID === is_attr.OBJID + is_attr.UIASN && a.OBJTY === "HM" );
 
-        var l_UIATV = "";
+        // var l_UIATV = "";
 
-        if(typeof ls_cevt !== "undefined"){
-          //20230303 pes.
-          //sap.ui.core.HTML의 content에 입력값을 반영하는 과정에서
-          //ls_cevt.DATA 안에 HTML tag가 없이 text만이 존재할때 
-          //.이 있으면 오류가 나는 문제가 있기에 <div> tag로 감싸는 로직 추가.
-          //(HTML.setContent("asdasd.")); -> HTML.setContent("<div>" + "asdasd." + "</div>"));
-          //l_UIATV = ls_cevt.DATA;        
-          l_UIATV = "<div>" + ls_cevt.DATA + "</div>";
-        }
+        // if(typeof ls_cevt !== "undefined"){
+        //   //20230303 pes.
+        //   //sap.ui.core.HTML의 content에 입력값을 반영하는 과정에서
+        //   //ls_cevt.DATA 안에 HTML tag가 없이 text만이 존재할때 
+        //   //.이 있으면 오류가 나는 문제가 있기에 <div> tag로 감싸는 로직 추가.
+        //   //(HTML.setContent("asdasd.")); -> HTML.setContent("<div>" + "asdasd." + "</div>"));
+        //   //l_UIATV = ls_cevt.DATA;        
+        //   l_UIATV = "<div>" + ls_cevt.DATA + "</div>";
+        // }
+
+        //sap.ui.core.HTML UI의 content 프로퍼티 입력건 검색.
+        var l_UIATV = oAPP.fn.setHTMLContentProp(is_attr) || "";
+        //20250805 pes -end.
 
         oAPP.attr.prev[is_attr.OBJID][l_propnm](l_UIATV);
         return;
@@ -686,7 +692,17 @@
     //ls_cevt.DATA 안에 HTML tag가 없이 text만이 존재할때 
     //.이 있으면 오류가 나는 문제가 있기에 <div> tag로 감싸는 로직 추가.
     //(HTML.setContent("asdasd.")); -> HTML.setContent("<div>" + "asdasd." + "</div>"));
-    let _UIATV = "<div>" + l_find.DATA + "</div>";
+
+    //20250805 pes -start.
+    //<button onclick="test001()">test</button> 형식의 html을 구성하게 되는경우,
+    //미리보기 화면에서 해당 버튼을 선택시 test001() function을 수행 하게 됨.
+    //이때 해당 function이 존재하지 않기에 오류로 이어지는 문제가 존재햐여,
+    //html의 content를 화면으로 표현할때 pointer-events style을 사용하여
+    //선택을 할 수 없도록 예외처리 로직을 추가함.
+    // let _UIATV = "<div>" + l_find.DATA + "</div>";
+    
+    let _UIATV = `<div><div style="pointer-events:none">` + l_find.DATA + `</div></div>`;
+    //20250805 pes -end.
 
     return _UIATV;
 

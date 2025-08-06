@@ -721,11 +721,7 @@
 
                 return;
             }
-
-            // TEST ----- Start
-            // debugger;
-            
-
+  
             oUspTreeTable.attachEventOnce("rowsUpdated", function(oEvent){
 
                 zconsole.log("init ws30 rowsUpdated!!!");
@@ -761,54 +757,7 @@
 
             });
 
-
             oTreeModel.refresh();
-
-            // TEST ----- End
-
-
-
-            // if (oUspTreeTable && oUspTreeTable.getModel()) {
-            //     oUspTreeTable.getModel().refresh();
-            // }
-
-
-
-            // 에디터에 마우스 휠 이벤트를 적용하여 확대 에디터 영역에 확대 축소 기능을 추가한다.
-            // oAPP.fn.setCodeEditorZoomEvent(true); // #[ ws_usp.js ]
-
-            // // APP가 EDIT모드라면 Codeeditor에 키다운 이벤트를 실행한다.
-            // let oAppInfo = APPCOMMON.fnGetModelProperty("/WS30/APP");
-            // if (oAppInfo.IS_EDIT == "X") {
-
-            //     let oCodeEditor1 = sap.ui.getCore().byId("ws30_codeeditor"),
-            //         oCodeEditor2 = sap.ui.getCore().byId("ws30_codeeditor-clone1");
-
-            //     // 에디터가 둘중에 하나라도 없다면 빠져나감.
-            //     if (!oCodeEditor1 || !oCodeEditor2) {
-            //         return;
-            //     }
-
-            //     // Code Editor 인스턴스가 둘중에 하나라도 없다면 빠져나감.
-            //     let oEditor1 = oCodeEditor1._oEditor,
-            //         oEditor2 = oCodeEditor2._oEditor;
-
-            //     if (!oEditor1 || !oEditor2) {
-            //         return;
-            //     }
-
-            //     let oEditorDom1 = oEditor1.textInput.getElement(),
-            //         oEditorDom2 = oEditor2.textInput.getElement();
-
-            //     if (oEditorDom1 && oEditorDom2) {
-            //         oEditorDom1.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
-            //         oEditorDom2.addEventListener("keydown", oAPP.fn.fnAttachKeyPressEventCodeEditorWs30);
-            //     }
-
-            // }
-
-            // // busy 끄고 Lock 끄기
-            // oAPP.common.fnSetBusyLock("");
 
         }
 
