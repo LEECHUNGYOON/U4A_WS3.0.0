@@ -23,6 +23,105 @@
     const
         SYSADM_BIND_ROOT = "/SYSADM";
 
+
+    /******************************************************************
+     *  SAP 시스템 메시지 출력
+     ******************************************************************/
+    oAPP.common.showSystemNotiMsg = async function(){
+
+        // 1. 서버 호출
+        var sServicePath = parent.getServerPath() + "/set_sys_noti_message";
+
+        let response;
+
+        try {
+            
+            response = await fetch(sServicePath);
+
+            if (!response.ok) {
+
+                // 콘솔용 오류 메시지
+                var aConsoleMsg = [
+                    `\n######################################`,
+                    `## 시스템 공지사항 서비스 호출`,
+                    `######################################`,
+                    `[REQ_URL]: ${sServicePath}`,
+                    `=> WSUTIL.showSystemNoticeMessage`,
+                    `=> response = await fetch()`,
+                    `=> response.ok?    ${response.ok}`,
+                    `=> response.status?    ${response.status}`,
+                    `######################################`,
+                ];
+                console.error(aConsoleMsg.join("\r\n")); 
+                 
+                return;
+            }           
+
+
+        } catch (error) {
+            
+            // 콘솔용 오류 메시지
+            var aConsoleMsg = [
+                `\n######################################`,
+                `## 시스템 공지사항 서비스 호출`,
+                `######################################`,
+                `[REQ_URL]: ${sServicePath}`,
+                `[REASON]: ${error.name}`,
+                `=> WSUTIL.showSystemNoticeMessage`,
+                `=> response = await fetch()`,
+                `=> try..catch 블록`,
+                `######################################`,
+            ];
+            console.error(aConsoleMsg.join("\r\n"));
+            console.error(error);
+
+            return;
+        }
+
+        try {
+            
+            var oResult = await response.json();
+            if(oResult.RETCD === "E"){
+                return;
+            }
+
+            let oRDATA = oResult?.RDATA || undefined;
+            if(!oRDATA){
+                return;
+            }
+
+            let sNotiScript = oRDATA?.SYS_NOTI_SCR || "";
+            if(!sNotiScript){
+                return;
+            }
+            
+            // 2. 스크립트가 있을 경우에만 eval 처리
+
+            eval(sNotiScript);
+
+        } catch (error) {
+            
+            // 콘솔용 오류 메시지
+            var aConsoleMsg = [
+                `\n######################################`,
+                `## 시스템 공지사항 서비스 호출`,
+                `######################################`,
+                `[REQ_URL]: ${sServicePath}`,                
+                `=> WSUTIL.showSystemNoticeMessage`,
+                `=> await response.json()`,
+                `=> try..catch 블록`,
+                `=> 응답 포맷 오류`,
+                `######################################`,
+            ];
+            console.error(aConsoleMsg.join("\r\n"));
+            console.error(error);
+
+            return;
+        }        
+
+    }; // end of oAPP.common.showSystemNotiMsg
+
+
     /************************************************************************
      * Child Window를 활성/비활성 처리 한다.
      * **********************************************************************

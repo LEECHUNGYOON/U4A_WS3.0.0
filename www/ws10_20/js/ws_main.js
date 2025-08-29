@@ -30,7 +30,7 @@
         // oAPP.attr.iServerSessionTimeout = oMetaData.STIME - 1; // 서버 세션 타임아웃 시간 (1: 1분)
         oAPP.attr.bIsNwActive = true; // 네트워크 연결 상태 Flag        
 
-    }; // end of fnPredefineGlobalObject      
+    }; // end of fnPredefineGlobalObject
 
     /**************************************************************************
      * [WS10] 모델 데이터 기본세팅
@@ -932,8 +932,15 @@
                 
                 if(parent.oWS.utill.attr.UIUpdated) { return; }
 
+                parent.oWS.utill.attr.UIUpdated = "X";
+
                 // WS 10번 화면 관련 AI 커스텀 이벤트 등록
                 parent.UAI.setCustomEvent_WS_10();
+
+                // 시스템 공지사항이 있을 경우 화면에 출력
+                if(oAPP.common.checkWLOList("C", "UHAK901215") === true){            
+                    await oAPP.common.showSystemNotiMsg();
+                }
 
                 // 새창 띄우면서 IF_DATA에 파라미터가 존재할 경우
                 let oNewWin_IF_DATA = parent.getNewBrowserIF_DATA();
@@ -978,7 +985,7 @@
 
                 }, 300);
 
-                parent.oWS.utill.attr.UIUpdated = "X";
+                // parent.oWS.utill.attr.UIUpdated = "X";
 
             });
 
