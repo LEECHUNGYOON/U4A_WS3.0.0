@@ -795,7 +795,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                 FS.watch(sLandscapeFilePath, oAPP.fn.fnSapLogonFileChange);
                 oAPP.isWatch = true;
             }
-
+            
             try {
 
                 var oReadResult = await oAPP.fn.fnReadSAPLogonData("LandscapeFile", sLandscapeFilePath);
@@ -1361,7 +1361,22 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             }
 
             // 라우터 id가 있다면 라우터 정보를 저장.. 
-            if (oServiceAttr.routerid) {
+
+            /**
+             * @since   2025-10-01
+             * @version 3.5.6-sp11
+             * @author  soccerhs
+             * 
+             * @description
+             * - 내용: 
+             * SAPUILandscape.xml 파일을 읽은 후, "Services" 리스트 항목 중, 
+             * 속성 값에(attribute) "routerid" 가 있다면 Routers Array에 라우터 정보가
+             * 무조건 있다는 가정하에서 발생된 오류 보완
+             *  
+             * - 수정: 
+             * "routerid"와 "Services" 리스트 항목이 둘다 있는지 확인하는 로직으로 보완함.
+             */
+            if (oServiceAttr.routerid && oAPP?.data?.SAPLogon?.aRouters) {
 
                 var oRouter = oAPP.data.SAPLogon.aRouters.find(element => element._attributes.uuid == oServiceAttr.routerid);
 
@@ -1370,7 +1385,22 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             }
 
             // 메시지 서버 id가 있다면 메시지 서버정보 저장..
-            if (oServiceAttr.msid) {
+
+            /**
+             * @since   2025-10-01
+             * @version 3.5.6-sp11
+             * @author  soccerhs
+             * 
+             * @description
+             * - 내용: 
+             * SAPUILandscape.xml 파일을 읽은 후, "Message servers" 리스트 항목 중, 
+             * 속성 값에(attribute) "msid" 가 있다면 Message servers Array에 메시지 서버 정보가
+             * 무조건 있다는 가정하에서 발생된 오류 보완
+             *  
+             * - 수정: 
+             * "msid"와 "Message servers" 리스트 항목이 둘다 있는지 확인하는 로직으로 보완함.
+             */            
+            if (oServiceAttr.msid && oAPP?.data?.SAPLogon?.aMessageservers) {
 
                 var oMsgSvr = oAPP.data.SAPLogon.aMessageservers.find(element => element._attributes.uuid == oServiceAttr.msid);
 
