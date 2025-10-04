@@ -4682,6 +4682,57 @@ function fnLoadCommonCss() {
 
 } // end of fnLoadCommonCss  
 
+/**
+ * 🔒 애플리케이션 단일 인스턴스 실행 보장 함수
+ * 
+ * Electron의 `app.requestSingleInstanceLock()` 기능을 이용하여
+ * 프로그램이 동시에 여러 번 실행되는 것을 방지합니다.
+ * 
+ * - 이미 실행 중인 인스턴스가 있을 경우, 새로 실행된 프로세스는 즉시 종료합니다.
+ * - 최초 실행된 인스턴스일 경우, 이후 실행 시도 시 기존 창을 앞으로 가져옵니다.
+ * 
+ * 💡 일반적으로 패키징된 환경(app.isPackaged)에서만 사용하며,
+ *    개발 중에는 중복 실행이 허용될 수 있습니다.
+ * 
+ * @returns {boolean} true: 메인 인스턴스로 계속 실행 / false: 중복 실행으로 종료됨
+ */
+function _ensureSingleInstance() {
+    
+    const app = APP;
+    const mainWindow = CURRWIN;
+
+    if(!app.isPackaged){
+        return false;
+    }
+
+    const gotTheLock = app.requestSingleInstanceLock();
+    if (!gotTheLock) {
+        app.quit();
+        return false;
+    }
+
+    app.on('second-instance', () => {
+
+        try {
+        
+            if (mainWindow) {
+                if (mainWindow.isMinimized() || !mainWindow.isVisible()) {
+                    mainWindow.show();
+                }
+                mainWindow.focus();
+            }
+            
+        } catch (error) {
+            
+        }
+        
+    });
+
+    return true;
+
+} // end of _ensureSingleInstance
+
+
 // Bootstrap Setting
 fnLoadBootStrapSetting();
 
@@ -4690,6 +4741,9 @@ fnLoadCommonCss();
 
 // Window onload
 window.addEventListener("load", () => {
+
+    // 애플리케이션 단일 인스턴스 실행 보장 함수
+    _ensureSingleInstance();
 
     sap.ui.getCore().attachInit(async () => {
 
