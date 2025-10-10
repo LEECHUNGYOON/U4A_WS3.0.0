@@ -55,8 +55,6 @@
             return;
         }
 
-        zconsole.log("세션종료!! -> " + Math.floor(+new Date() / 1000));
-
         // 워커 종료
         if (oAPP.attr._oWorker) {
             oAPP.attr._oWorker.terminate();
@@ -75,40 +73,12 @@
         // Logout 버튼으로 Logout을 시도 했다는 Flag      
         oAPP.attr.isBrowserCloseLogoutMsgOpen = "X";
 
-        // 세션 타임 아웃 팝업을 띄운다.
-        let sTitle = "Session Timeout",
-            sDesc = "Please Try Login Again!",
+        let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D85"), // Session Timeout
+            sDesc = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "349"), // Please Try Login Again!
             sIllustType = "tnt-SessionExpired",
             sIllustSize = sap.m.IllustratedMessageSize.Dialog;
 
-        oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, lfSessionTimeOutDialogOk);
-
-        function lfSessionTimeOutDialogOk() {
-
-            parent.IPCRENDERER.send('if-browser-close', {
-                ACTCD: "A", // 나를 제외한 나머지는 다 죽인다.
-                SESSKEY: parent.getSessionKey(),
-                BROWSKEY: parent.getBrowserKey()
-            });
-
-            var sUrl = parent.getServerPath() + "/logoff";
-
-            var option = {
-                URL: sUrl
-            };
-
-            sendServerExit(option, () => {
-
-                window.onbeforeunload = null;
-
-                top.window.close();
-
-            });
-
-        }
-
-        // //세션타임아웃 후 전체 로그아웃 및 같은 세션 창 전체 닫기
-        // APPCOMMON.setSessionTimeout();
+        oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, fnSessionTimeOutDialogOk);
 
     }; // end of oAPP.fn.fnSessionTimeWorkerOnMessage
 

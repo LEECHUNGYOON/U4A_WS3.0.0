@@ -66,10 +66,10 @@
      ************************************************************************/
     oAPP.fn.fnAttachPowerMonitorLockScreen = () => {
 
+        console.log("----- 화면 대기모드 진입 -----");
+
         // 세션 타임아웃 체크
         oAPP.fn.fnSessionTimeoutCheck(); // #[ws_fn_03.js]
-
-        zconsole.log("워커가 켜졌다!!");
 
     }; // end of oAPP.fn.fnAttachPowerMonitorLockScreen
 
@@ -77,6 +77,8 @@
      * 화면 보호기 대기모드가 아닐때 타는 이벤트
      ************************************************************************/
     oAPP.fn.fnAttachPowerMonitorUnLockScreen = () => {
+
+        console.log("----- 화면 대기모드 진입 해제 -----");
 
         // 이벤트를 받으면 세션 타임을 초기화 한다.
         parent.IPCMAIN.off('if-session-time', oAPP.fn.fnIpcMain_if_session_time);
@@ -90,8 +92,6 @@
         oAPP.attr._oWorker.terminate();
 
         delete oAPP.attr._oWorker;
-
-        zconsole.log("워커 죽었다!!!!");
 
     }; // end of oAPP.fn.fnAttachPowerMonitorUnLockScreen    
 
