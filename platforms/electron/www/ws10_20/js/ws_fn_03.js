@@ -55,8 +55,6 @@
             return;
         }
 
-        // fn_logoff_success("X");
-
         // 워커 종료
         if (oAPP.attr._oWorker) {
             oAPP.attr._oWorker.terminate();
@@ -75,44 +73,12 @@
         // Logout 버튼으로 Logout을 시도 했다는 Flag      
         oAPP.attr.isBrowserCloseLogoutMsgOpen = "X";
 
-        // // 세션 타임 아웃 팝업을 띄운다.
-        // let sTitle = "Session Timeout",
-        //     sDesc = "Please Try Login Again!",
-        //     sIllustType = "tnt-SessionExpired",
-        //     sIllustSize = sap.m.IllustratedMessageSize.Dialog;
-
         let sTitle = oAPP.common.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D85"), // Session Timeout
             sDesc = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "349"), // Please Try Login Again!
             sIllustType = "tnt-SessionExpired",
             sIllustSize = sap.m.IllustratedMessageSize.Dialog;
 
-        // oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, lfSessionTimeOutDialogOk);
         oAPP.fn.fnShowIllustMsgDialog(sTitle, sDesc, sIllustType, sIllustSize, fnSessionTimeOutDialogOk);
-
-        // function lfSessionTimeOutDialogOk() {
-
-        //     parent.IPCRENDERER.send('if-browser-close', {
-        //         ACTCD: "A", // 나를 제외한 나머지는 다 죽인다.
-        //         SESSKEY: parent.getSessionKey(),
-        //         BROWSKEY: parent.getBrowserKey()
-        //     });
-
-        //     var sUrl = parent.getServerPath() + "/logoff";
-
-        //     var option = {
-        //         URL: sUrl
-        //     };
-
-        //     sendServerExit(option, () => {
-
-        //         window.onbeforeunload = null;
-
-        //         top.window.close();
-
-        //     });
-
-        // }
-
 
     }; // end of oAPP.fn.fnSessionTimeWorkerOnMessage
 

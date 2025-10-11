@@ -25,8 +25,8 @@
         oAPP.attr.oServerInfo = parent.getServerInfo(); // 접속 서버 정보
         oAPP.attr.iAppSuggMaxCnt = 20; // WS10 의 APPID Suggestion Max 갯수
         oAPP.attr.iAppNameMaxLength = 15; // WS10 의 어플리케이션명 이름의 Max 길이  
-        oAPP.attr.iSessionTimeout = 0.5; // 세션타임아웃 시간 (1: 1분)
-        // oAPP.attr.iSessionTimeout = oMetaData.STIME; // 세션타임아웃 시간 (1: 1분)
+        // oAPP.attr.iSessionTimeout = 0.5; // 세션타임아웃 시간 (1: 1분)
+        oAPP.attr.iSessionTimeout = oMetaData.STIME; // 세션타임아웃 시간 (1: 1분)
         
         oAPP.attr.bIsNwActive = true; // 네트워크 연결 상태 Flag        
 
