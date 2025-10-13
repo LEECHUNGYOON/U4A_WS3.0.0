@@ -91,7 +91,7 @@ export async function createControl(oParam){
         S_EDIT   : {...TY_EDIT},
         S_VALST  : {...TY_VALST},
         S_VALTX  : {...TY_VALTX},
-        TY_VLIST : []
+        T_VLIST  : []
     });
     
 
@@ -157,10 +157,16 @@ export async function createControl(oParam){
         //어플리케이션 ID.
         oContr.oModel.oData.S_UAWD.APPID     = oParam.APPID;
 
-       
-        const _oMudule = await import(oContr.path.UIUpdated);
+        var _oPromise = undefined;
 
-        var _oPromise = _oMudule.UIUpdated();
+        try {
+            const _oMudule = await import(oContr.path.UIUpdated);
+
+            _oPromise = _oMudule.UIUpdated();
+
+        } catch (e) {
+        
+        }
 
         
         oContr.oModel.refresh(true);
@@ -192,6 +198,9 @@ export async function createControl(oParam){
 
         parent.setBusy("X");
 
+        //결과 테이블 sort, filter 초기화.
+        oContr.fn.resetUiTableFilterSort(oContr.ui.VLIST);
+
         var _oUi = oEvent?.oSource;
 
         var _WD_COMP_NAME = oEvent.getParameter("value");
@@ -209,6 +218,9 @@ export async function createControl(oParam){
         //웹딘 컴포넌트명 입력건이 존재하지 않는경우 EXIT.
         if(_WD_COMP_NAME === ""){
             oContr.oModel.refresh();
+
+            sap.ui.getCore().unlock();
+
             parent.setBusy("");
             return;
         }
@@ -217,6 +229,20 @@ export async function createControl(oParam){
         var _sRes = await oContr.fn.getWebDynCompData();
 
         if(_sRes.RETCD === "E"){
+            
+            if(_sRes?.SCRIPT){
+                eval(_sRes.SCRIPT);
+
+                //WEB DYNPRO 컴포넌트 DESC 초기화.
+                oContr.oModel.oData.S_UAWD.COMP_DESC = "";
+
+                oContr.oModel.refresh(true);
+
+                //wait off 처리.
+                parent.setBusy("");
+
+                return;
+            }
 
             //오류 표현 필드처리.
             oContr.oModel.oData.S_VALST.COMP_NAME = "Error";
@@ -226,6 +252,7 @@ export async function createControl(oParam){
             oContr.oModel.oData.S_UAWD.COMP_DESC = "";
 
             oContr.oModel.refresh(true);
+           
 
             parent.setBusy("");
 
@@ -271,6 +298,18 @@ export async function createControl(oParam){
         oContr.oModel.oData.S_VALST.PACKG = undefined;
         oContr.oModel.oData.S_VALTX.PACKG = "";
 
+        var _PACKG = oEvent.getParameter("value");
+
+        //패키지 입력건이 존재하지 않는경우 EXIT.
+        if(_PACKG === ""){
+            oContr.oModel.refresh();
+
+            sap.ui.getCore().unlock();
+
+            parent.setBusy("");
+            return;
+        }
+
 
         //패키지 입력건 점검.
         var _sRes = await oContr.fn.checkPackage();
@@ -304,7 +343,7 @@ export async function createControl(oParam){
             oContr.oModel.oData.S_EDIT.REQNR = true;
 
             //REQNR 필수 처리.
-            oContr.oModel.oData.S_EDIT.REQNR_REQ = true;
+            oContr.oModel.oData.S_UAWD.REQNR_REQ = true;
 
         }
 
@@ -331,6 +370,13 @@ export async function createControl(oParam){
         async function _callback(sRes){
 
             parent.setBusy("X");
+            
+            //오류 표현 필드 초기화.
+            oContr.oModel.oData.S_VALST.COMP_NAME = undefined;
+            oContr.oModel.oData.S_VALTX.COMP_NAME = "";
+
+            //view 리스트 초기화.
+            oContr.oModel.oData.T_VLIST = [];
 
             //WD 컴포넌트명.
             oContr.oModel.oData.S_UAWD.COMP_NAME = sRes.COMPONENT_NAME;
@@ -342,14 +388,24 @@ export async function createControl(oParam){
             //웹딘 위자드에서 호출된 경우.
             if(oParam.PRCCD === "CREATE_WIZARD"){
 
-                //오류 표현 필드 초기화.
-                oContr.oModel.oData.S_VALST.COMP_NAME = undefined;
-                oContr.oModel.oData.S_VALTX.COMP_NAME = "";     
-
                 //WEB DYNPRO 컴포넌트정보 검색.
                 var _sRes = await oContr.fn.getWebDynCompData();
 
                 if(_sRes.RETCD === "E"){
+
+                    if(_sRes?.SCRIPT){
+                        eval(_sRes?.SCRIPT);
+
+                        //WEB DYNPRO 컴포넌트 DESC 초기화.
+                        oContr.oModel.oData.S_UAWD.COMP_DESC = "";
+
+                        oContr.oModel.refresh(true);
+
+                        //wait off 처리.
+                        parent.setBusy("");
+
+                        return;
+                    }
 
                     //오류 표현 필드 처리.
                     oContr.oModel.oData.S_VALST.COMP_NAME = "Error";
@@ -393,9 +449,10 @@ export async function createControl(oParam){
         //f4 help팝업을 load한경우.
         if(typeof oAPP.fn.callF4HelpPopup !== "undefined"){
             //f4 help 팝업 호출.
-            oAPP.fn.callF4HelpPopup("WD_COMPONENT", "WD_COMPONENT", [], [], _callback);
-            //하위로직 skip처리를 위한 flag return
-            return true;
+            // oAPP.fn.callF4HelpPopup("WD_COMPONENT", "WD_COMPONENT", [], [], _callback);
+            oAPP.fn.callF4HelpPopup("YYUAWDH0010", "YYUAWDH0010", [], [], _callback);
+
+            return;
         }
 
         var _sRes = await fetch(oContr.path.callF4HelpPopup);
@@ -405,7 +462,8 @@ export async function createControl(oParam){
         eval(_source);
 
         //f4 help 팝업 function load 이후 팝업 호출.
-        oAPP.fn.callF4HelpPopup("WD_COMPONENT", "WD_COMPONENT", [], [], _callback);
+        // oAPP.fn.callF4HelpPopup("WD_COMPONENT", "WD_COMPONENT", [], [], _callback);
+        oAPP.fn.callF4HelpPopup("YYUAWDH0010", "YYUAWDH0010", [], [], _callback);
 
     };
 
@@ -455,8 +513,8 @@ export async function createControl(oParam){
         if(typeof oAPP.fn.callF4HelpPopup !== "undefined"){
             //f4 help 팝업 호출.
             oAPP.fn.callF4HelpPopup("DEVCLASS", "DEVCLASS", [], [], _callback);
-            //하위로직 skip처리를 위한 flag return
-            return true;
+
+            return;
         }
 
         var _sRes = await fetch(oContr.path.callF4HelpPopup);
@@ -483,6 +541,10 @@ export async function createControl(oParam){
             
             oContr.oModel.oData.S_UAWD.REQNR = param.TRKORR;
             oContr.oModel.oData.S_UAWD.REQTX = param.AS4TEXT;
+
+            oContr.oModel.oData.S_VALST.REQNR = undefined;
+            oContr.oModel.oData.S_VALTX.REQNR = "";
+
             oContr.oModel.refresh(true);
         
         });
@@ -517,6 +579,87 @@ export async function createControl(oParam){
 
 
     /********************************************************************
+     *📝 테이블 sort, filter 초기화.
+    ********************************************************************/
+    oContr.fn.resetUiTableFilterSort = function(oTable) {
+
+      if (typeof oTable === "undefined") { return; }
+
+      //table 바인딩 sort 해제 처리.
+      oTable.sort();
+
+      //table의 컬럼 정보 얻기.
+      var _aCol = oTable.getColumns();
+
+      for (var i = 0, l = _aCol.length; i < l; i++) {
+
+        var _oCol = _aCol[i];
+
+        //필터 초기화.
+        oTable.filter(_oCol);
+
+        //sort 초기화.
+        _oCol.setSorted(false);
+      }
+
+    };
+
+
+
+
+    /********************************************************************
+     *📝 view list 테이블 더블클릭 이벤트.
+    ********************************************************************/
+    oContr.fn.onDblClickViewTable = function(oEvent){
+
+        parent.setBusy("X");
+        
+        //이벤트 발생 UI 정보 얻기.
+        var _oUi = oAPP.fn.getUiInstanceDOM(oEvent.target, sap.ui.getCore());
+
+        //UI정보를 얻지 못한 경우 exit.
+        if(!_oUi){
+            parent.setBusy("");
+            return;
+        }
+        
+        //바인딩정보 얻기.
+        var _oCtxt = _oUi.getBindingContext();
+
+        //바인딩 정보를 얻지 못한 경우 exit.
+        if(!_oCtxt){
+            parent.setBusy("");
+            return;
+        }
+
+        var _oBind = oContr.ui.VLIST.getBinding("rows");
+
+        if(!_oBind){
+            parent.setBusy("");
+            return;
+        }
+        
+        var _aContext = _oBind.getContexts();
+
+        var _pos = _aContext.findIndex( item => item === _oCtxt);
+
+        if(_pos === -1){
+            parent.setBusy("");
+            return;
+        }
+
+        oContr.ui.VLIST.setSelectedIndex(_pos);
+
+        //위자드 - WEBDYN UI 컨버전
+        oContr.fn.convWebdynUI();
+
+    };
+
+
+
+
+
+    /********************************************************************
      *📝 CUSTOM EVENT.
     ********************************************************************/
     oContr.onEvt.addEventListener("conversionWebdynpro", (oEvent)=>{ 
@@ -530,7 +673,7 @@ export async function createControl(oParam){
 
             case "WIZARD_CONV":
                 //위자드 - WEBDYN UI 컨버전
-                oContr.fn.convWebdynUI(oEvent.detail);
+                oContr.fn.convWebdynUI();
                 break;
 
             default:
@@ -602,7 +745,7 @@ export async function createControl(oParam){
     /********************************************************************
      *📝 위자드 - WEBDYN UI 컨버전
     ********************************************************************/
-    oContr.fn.convWebdynUI = async function(sParmas){
+    oContr.fn.convWebdynUI = async function(){
 
         parent.setBusy("X");
 
@@ -988,6 +1131,22 @@ export async function createControl(oParam){
 
             }
 
+
+            //Y, Z 로 시작하는 패키지인지 점검.
+            if(_sUAWD.PACKG !== "$TMP" && "YZ".indexOf(_sUAWD.PACKG.substring(0,1)) === -1){
+                _sRes.RETCD = "E";
+
+                //274	Check input value.
+                _sRes.RTMSG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "274", "", "", "", ""); 
+
+                _sVALST.PACKG = "Error";
+
+                //275	Standard package cannot be entered.
+                _sVALTX.PACKG = oAPP.common.fnGetMsgClsText("/U4A/MSG_WS", "275", "", "", "", "");
+                
+            }
+
+
             //로컬 패키지가 아닌경우 REQNR를 입력하지 않은경우.
             if(_sUAWD.PACKG !== "$TMP" && _sUAWD.REQNR === ""){
 
@@ -1071,8 +1230,8 @@ export async function createControl(oParam){
 
         if(_sRes.RETCD === "E"){
 
-            if(_sRet?.SCRIPT){
-                eval(_sRet?.SCRIPT);
+            if(_sRes?.SCRIPT){
+                eval(_sRes?.SCRIPT);
 
                 oContr.oModel.refresh(true);
                 

@@ -528,7 +528,7 @@ oAPP.fn.callF4HelpPopup = function(I_SHLPNAME, I_SHLP_DEF, IT_SHLP, IT_FIELDDESC
   ZF4SH_ovtoolbar.addContent(olb01);
 
   //max Hits
-  var ZF4SH_input01 = new sap.m.Input({showClearIcon : true, type:"Number", width:"60px"});
+  var ZF4SH_input01 = new sap.m.Input({showClearIcon : true, type:"Number", width:"100px"});
 
   //최대 검색건수 설정.
   ZF4SH_input01.setValue(200);

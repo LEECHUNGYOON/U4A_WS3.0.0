@@ -274,6 +274,14 @@ export async function createView(oParam){
 
     _oContr.ui.VLIST = TABLE1;
 
+    //table 더블클릭 이벤트.
+    TABLE1.attachBrowserEvent("dblclick", function(oEvent){
+
+        _oContr.fn.onDblClickViewTable(oEvent);
+
+
+    });
+
 
     //445	View Name
     var _txt = parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "445");
