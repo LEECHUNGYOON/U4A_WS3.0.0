@@ -225,6 +225,7 @@ module.exports.previewThemeChanged = function(is_attr){
 
 
 
+
 /*********************************************************
  * @function - 미리보기 화면에 출력될 RichTextEditor의 
  *             readyRecurring 이벤트 등록 처리 내부 function.
@@ -316,7 +317,7 @@ function attachEventDialogAfterOpen(oTarget){
 
 		
 		//현재 UI의 tree 정보 얻기.
-		var _sTree = oAPP.fn.getTreeData(oTarget._OBJID);
+		var _sTree = oAPP?.fn?.getTreeData?.(oTarget._OBJID);
 
 		if(typeof _sTree === "undefined"){
 			return resolve();

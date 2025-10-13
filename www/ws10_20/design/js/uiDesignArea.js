@@ -5477,6 +5477,7 @@
       parent.setBusy("X");
 
       return true;
+      
     }
 
 
@@ -5515,12 +5516,43 @@
       parent.setBusy("X");
 
       return true;
+
     }
 
-    
 
-    //UI 추가 처리.
-    oAPP.fn.designAddTreeData(ls_item.is_tree, is_tree);
+    //이벤트 발생 x, y 좌표값 얻기.
+    var _sPos = oAPP.fn.getMousePosition();
+
+
+    //대상 UI의 추가될 aggregation 정보 얻기.
+    oAPP.fn.aggrSelectPopupOpener(ls_item.is_tree, is_tree, _sPos).then((sRes)=>{
+
+      if(sRes.RETCD === "E"){
+        //default 메시지 유형(messageToast)
+        var _KIND = 10;
+
+        //aggregation 선택 건이 존재하지 않는 return code를 받은경우.
+        if(sRes.RCODE === "02"){
+            //messageBox로 처리.
+            _KIND = 20;
+        }
+
+        //편집 모드인 경우.
+        parent.showMessage(sap, _KIND, "I", sRes.RTMSG);
+
+        //단축키 잠금 해제처리.
+        oAPP.fn.setShortcutLock(false);
+
+        parent.setBusy("");
+
+        return;
+
+      }
+
+      //UI 추가 처리.
+      oAPP.fn.designAddTreeData(ls_item.is_tree, is_tree, sRes.sAggr);
+
+    });
 
 
     return true;
@@ -5528,10 +5560,10 @@
   };  //개인화 항목에서 D&D한 경우 UI 추가 처리.
 
 
-
+  
 
   //design에 tree 데이터 추가 처리.
-  oAPP.fn.designAddTreeData = function(is_data, is_tree){
+  oAPP.fn.designAddTreeData = function(is_data, is_tree, sAggr){
         
     //UI의 attr 정보 복사 처리.
     function lf_copyAttrData(is_14, is_copied, aggrParam, bKeep){
@@ -5540,7 +5572,7 @@
 
         var lt_0015 = [];
 
-        for(var i=0, l=is_copied._T_0015.length; i<l; i++){
+        for(var i = 0, l = is_copied._T_0015.length; i < l; i++){
             
             //바인딩 정보를 유지 안하는경우.
             if(bKeep !== true){
@@ -5605,6 +5637,7 @@
         ls_14.APPID = oAPP.attr.appInfo.APPID;
         ls_14.GUINR = oAPP.attr.appInfo.GUINR;
 
+
         if(aggrParam){
             //aggr 선택 팝업에서 선택한 aggregation정보 매핑.
             ls_14.UIATK = aggrParam.UIATK;
@@ -5614,7 +5647,7 @@
             ls_14.UIADT = aggrParam.UIADT;
             ls_14.UIADS = aggrParam.UIADS;
             ls_14.ISMLB = aggrParam.ISMLB;
-            ls_14.PUIATK = aggrParam.UIATK;                
+            ls_14.PUIATK = aggrParam.UIATK;
         }
 
         //OBJID에 포함된 숫자 제거.
@@ -5635,21 +5668,37 @@
         //attribute 입력건 복사 처리.
         var lt_0015 = lf_copyAttrData(ls_14, is_copied, aggrParam, bKeep);
 
+        //20251001 PES -START.
+        //UI에 대한 TREE 라인 정보 구성시 체크박스, 아이콘에 대한 세팅을
+        //공통으로 사용하는 펑션을통해 설정 되야 하므로, 기존 로직 주석 처리함.
+        // //UI의 아이콘 구성 처리.
+        // ls_14.UICON = oAPP.fn.fnGetSapIconPath(ls_14.UICON);
 
-        //UI의 아이콘 구성 처리.
-        ls_14.UICON = oAPP.fn.fnGetSapIconPath(ls_14.UICON);
+        // ls_14.icon_visible = true;
 
-        ls_14.icon_visible = true;
+        // //추가버튼 활성화.
+        // ls_14.visible_add    = true;
 
-        //추가버튼 활성화.
-        ls_14.visible_add    = true;
-
-        //삭제 버튼 활성화.
-        ls_14.visible_delete = true;
+        // //삭제 버튼 활성화.
+        // ls_14.visible_delete = true;
 
 
-        //tree embeded aggregation 아이콘 표현.
-        oAPP.fn.setTreeAggrIcon(ls_14);
+        // //tree embeded aggregation 아이콘 표현.
+        // oAPP.fn.setTreeAggrIcon(ls_14);
+
+        //tree drag & drop 가능여부 처리.
+        oAPP.fn.setTreeDnDEnable(ls_14);
+
+        //UI design tree영역 체크박스 활성여부 처리.
+        oAPP.fn.setTreeChkBoxEnable(ls_14);
+
+        //UI design tree 영역 UI에 따른 ICON 세팅.
+        oAPP.fn.setTreeUiIcon(ls_14);
+
+        //UI design tree 영역의 action icon 활성여부 처리.
+        oAPP.fn.designSetActionIcon(ls_14);
+        //20251001 PES -END.
+
         
         // //부모 정보에 현재 복사처리한 UI 수집처리.
         // is_parent.zTREE.push(ls_14);
@@ -5855,7 +5904,6 @@
 
     //붙여넣기 정보의 OTR ALIAS검색.
     function lf_getOTRtext(param, i_cdata, bKeep){
-
         
         //붙여넣기 처리하려는 정보의 OTR ALIAS 수집 처리.
         function lf_getOTRAlise(is_tree){
@@ -5863,7 +5911,7 @@
             if(is_tree._T_0015.length === 0){return;}
 
             //ATTR 정보를 기준으로 OTR ALIAS 수집 처리.
-            for(var i=0, l=is_tree._T_0015.length; i<l; i++){
+            for(var i = 0, l = is_tree._T_0015.length; i < l; i++){
 
                 //프로퍼티, 바인딩처리안됨, 입력값이 $OTR:로 시작함.
                 if(is_tree._T_0015[i].UIATY === "1" && 
@@ -5883,7 +5931,7 @@
         //TREE를 기준으로 하위를 탐색하며, OTR ALIAS정보 수집.
         function lf_getOTRAlisetree(is_tree){
             //CHILD가 존재하는경우 CHILD의 OTR ALIAS정보 수집을 위한 탐색.
-            if(is_tree.zTREE.length.length !== 0){
+            if(is_tree.zTREE.length !== 0){
                 for(var i=0, l=is_tree.zTREE.length; i<l; i++){
                     lf_getOTRAlisetree(is_tree.zTREE[i]);
                 }
@@ -6125,7 +6173,7 @@
         //child UI가 존재하는경우.
         if(typeof is_tree.zTREE !== "undefined" && is_tree.zTREE.length !== 0){
 
-            for(var i=0, l=is_tree.zTREE.length; i<l; i++){
+            for(var i = 0, l = is_tree.zTREE.length; i < l; i++){
                 var l_found = lf_chkBindNEvent(is_tree.zTREE[i]);
 
                 if(l_found){return true;}
@@ -6143,7 +6191,7 @@
         if(typeof is_tree._CEVT === "undefined"){return;}
 
         //클라이언트 이벤트를 복사 처리.
-        for(var i=0, l=is_tree._CEVT.length; i<l; i++){
+        for(var i = 0, l = is_tree._CEVT.length; i < l; i++){
             //이전의 클라이언트 이벤트의 OBJID를 복사된 UI의 이름으로 변경처리.
             is_tree._CEVT[i].OBJID = is_tree._CEVT[i].OBJID.replace(is_tree.OBJID, OBJID);
         }
@@ -6218,20 +6266,25 @@
         return;
     }
 
-    
-    //이벤트 발생 x, y 좌표값 얻기.
-    var l_pos = oAPP.fn.getMousePosition();
 
-    //aggregation 선택 팝업 호출.
-    if(typeof oAPP.fn.aggrSelectPopup !== "undefined"){
-        oAPP.fn.aggrSelectPopup(is_data, is_tree, lf_aggrPopup_cb, l_pos.x, l_pos.y);
-        return;
-    }
+    lf_aggrPopup_cb(sAggr, is_data);
 
-    //aggregation 선택 팝업이 존재하지 않는경우 js load후 호출.
-    oAPP.fn.getScript("design/js/aggrSelectPopup",function(){
-        oAPP.fn.aggrSelectPopup(is_data, is_tree, lf_aggrPopup_cb, l_pos.x, l_pos.y);
-    });
+    //20251013 PES - START.
+    // 부모의 추가될 AGGREGATION을 function 호출처에서 지정하도록 로직이 변경되어 기존 로직 주석 처리.
+    // //이벤트 발생 x, y 좌표값 얻기.
+    // var l_pos = oAPP.fn.getMousePosition();
+
+    // //aggregation 선택 팝업 호출.
+    // if(typeof oAPP.fn.aggrSelectPopup !== "undefined"){
+    //     oAPP.fn.aggrSelectPopup(is_data, is_tree, lf_aggrPopup_cb, l_pos.x, l_pos.y);
+    //     return;
+    // }
+
+    // //aggregation 선택 팝업이 존재하지 않는경우 js load후 호출.
+    // oAPP.fn.getScript("design/js/aggrSelectPopup",function(){
+    //     oAPP.fn.aggrSelectPopup(is_data, is_tree, lf_aggrPopup_cb, l_pos.x, l_pos.y);
+    // });
+    //20251013 PES - END.
 
 
   };  //context menu ui 붙여넣기 처리.

@@ -197,6 +197,21 @@
             //오류가 발생한 경우.
             if(param.RETCD === "E"){
 
+                //스크립트 처리건이 존재하는경우.
+                if(typeof param.SCRIPT !== "undefined" && param.SCRIPT !== ""){
+                    eval(param.SCRIPT);
+
+                    //팝업 종료 처리.
+                    lf_closePopup(oUi);
+                    
+                    parent.setBusy("");
+
+                    oUi.setBusy(false);
+
+                    return;
+                }
+
+
                 //서버로 부터 전달받은 메시지 번호가 존재하는경우.
                 if(typeof param?.MSGNO !== "undefined"){
 

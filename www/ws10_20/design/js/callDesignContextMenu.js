@@ -1005,7 +1005,7 @@
             //TREE를 기준으로 하위를 탐색하며, OTR ALIAS정보 수집.
             function lf_getOTRAlisetree(is_tree){
                 //CHILD가 존재하는경우 CHILD의 OTR ALIAS정보 수집을 위한 탐색.
-                if(is_tree.zTREE.length.length !== 0){
+                if(is_tree.zTREE.length !== 0){
                     for(var i=0, l=is_tree.zTREE.length; i<l; i++){
                         lf_getOTRAlisetree(is_tree.zTREE[i]);
                     }
@@ -1342,6 +1342,46 @@
 
         //복사된 정보중 tree에 관련된 정보 발췌.
         var l_cdata = l_cpoied[0].DATA;
+
+
+        // oAPP.fn.designAddTreeData(l_cdata, ls_tree);
+
+
+        //이벤트 발생 x, y 좌표값 얻기.
+        var _sPos = oAPP.fn.getMousePosition();
+
+
+        //대상 UI의 추가될 aggregation 정보 얻기.
+        oAPP.fn.aggrSelectPopupOpener(l_cdata, ls_tree, _sPos).then((sRes)=>{
+
+            if(sRes.RETCD === "E"){
+                //default 메시지 유형(messageToast)
+                var _KIND = 10;
+
+                //aggregation 선택 건이 존재하지 않는 return code를 받은경우.
+                if(sRes.RCODE === "02"){
+                    //messageBox로 처리.
+                    _KIND = 20;
+                }
+
+                //편집 모드인 경우.
+                parent.showMessage(sap, _KIND, "I", sRes.RTMSG);
+
+                //단축키 잠금 해제처리.
+                oAPP.fn.setShortcutLock(false);
+
+                parent.setBusy("");
+
+                return;
+
+            }
+
+            //UI 추가 처리.
+            oAPP.fn.designAddTreeData(l_cdata, ls_tree, sRes.sAggr);
+
+        });
+
+        return;
 
 
         //복사한 UI가 이미 존재하는경우 붙여넣기 skip 처리.(공통코드 UA039에 해당하는 UI는 APP당 1개만 존재 가능)

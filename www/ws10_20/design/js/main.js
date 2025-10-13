@@ -74,6 +74,15 @@
     //sap core 정보 광역화.
     oAPP.attr.oCore = sap.ui.getCore();
 
+    //위자드 팝업에서 웹딘 -> U4A로 컨버전 관련 테스트.
+    if(!parent.REMOTE.app.isPackaged){
+      import(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath,"testFolder", "U4A_CVT_WDR", "Test84.js"));
+    }
+
+    //20251002 pes.
+    //기능 펑션 호출 처리 모음 js 로드.
+    import(parent.PATH.join(oAPP.oDesign.pathInfo.designRootPath,"tools", "opner.js"));
+
 
     //20240819 PES -START.
     //MENU ITEM이 모두 비활성 처리 상태인경우, 방향키로 이동시 스크립트 오류발생.
@@ -318,27 +327,58 @@
 
       }
 
-      //table 복사 처리.
-      var lt_copy = JSON.parse(JSON.stringify(lt_org));
+      
+      //tree data 구성.
+      tm2[treePath] = oAPP.fn.setTreeData(lt_org, parent, child, treePath);
 
-      for (var e, h, u, a = [], c = {}, o = 0, f = lt_copy.length; f > o; o++){
+      // //table 복사 처리.
+      // var lt_copy = JSON.parse(JSON.stringify(lt_org));
 
-          e = lt_copy[o];
+      // for (var e, h, u, a = [], c = {}, o = 0, f = lt_copy.length; f > o; o++){
 
-          h = e[child];
+      //     e = lt_copy[o];
 
-          u = e[parent] || 0;
+      //     h = e[child];
 
-          c[h] = c[h] || [];
+      //     u = e[parent] || 0;
 
-          e[treePath] = c[h];
+      //     c[h] = c[h] || [];
 
-          0 != u ? (c[u] = c[u] || [], c[u].push(e)) : a.push(e);
-      }
+      //     e[treePath] = c[h];
 
-      tm2[treePath] = a;
+      //     0 != u ? (c[u] = c[u] || [], c[u].push(e)) : a.push(e);
+      // }
+
+      // tm2[treePath] = a;
 
     };  //tree 구성 function.
+
+
+
+
+    //tree data 구성.
+    oAPP.fn.setTreeData = function(it_data, parent, child, treePath){
+
+      var lt_copy = JSON.parse(JSON.stringify(it_data));
+
+			for (var e, h, u, a = [], c = {}, o = 0, f = lt_copy.length; f > o; o++){
+
+				e = lt_copy[o];
+
+				h = e[child];
+
+				u = e[parent] || 0;
+
+				c[h] = c[h] || [];
+
+				e[treePath] = c[h];
+
+				0 != u ? (c[u] = c[u] || [], c[u].push(e)) : a.push(e);
+			}
+			
+			return a;
+
+    };
 
 
 

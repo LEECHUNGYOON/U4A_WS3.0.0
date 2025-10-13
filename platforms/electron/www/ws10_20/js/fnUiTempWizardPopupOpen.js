@@ -13,6 +13,7 @@
         C_TMPL_WZD1_ID = "u4aWsTmplWzd1",
         C_TMPL_WZD2_ID = "u4aWsTmplWzd2",
         C_TMPL_WZD3_ID = "u4aWsTmplWzd3",
+        C_TMPL_WZD4_ID = "u4aWsTmplWzd4",
 
         C_TMPL_NAVCON_ID = "u4aWsTmplWzdNavCon",
         C_TMPL_LNAVCON_ID = "u4aWsTmplWzdLNavCon",
@@ -90,6 +91,8 @@
 
         }).addStyleClass(C_TMPL_WZD_DLG_ID);
 
+        oTmplWzdDlg.addStyleClass("sapUiSizeCompact");
+
         oTmplWzdDlg.bindElement(C_TMPL_BIND_ROOT);
 
         oTmplWzdDlg.setInitialFocus(oTmplWzdDlg);
@@ -126,6 +129,15 @@
         // Model 정보 테이블 초기화
         APPCOMMON.fnSetModelProperty(`${C_TMPL_BIND_ROOT}/UICHOICE/T/selectedKey`, "");
         APPCOMMON.fnSetModelProperty(C_TMPL_WZD1_MODEL_TABLE, undefined);
+
+        // Web Dynpro Conversion Page 초기화
+        var _oWebDynPage = sap.ui.getCore().byId(`${C_TMPL_WZD4_ID}--page`);
+
+        if(_oWebDynPage){
+                
+            _oWebDynPage.removeAllContent();            
+        
+        }
 
         // Tree Table Flag 초기화
         let oFlags = {
@@ -245,6 +257,10 @@
                     key: C_TMPL_WZD3_ID,
                     text: APPCOMMON.fnGetMsgClsText("/U4A/CL_WS_COMMON", "D65"), // Report Template Create
                     enabled: false,
+                }, {
+                    key: C_TMPL_WZD4_ID,
+                    text: parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "457"), // 457	Web Dynpro Conversion
+                    enabled: true,
                 }]
             },
             UICHOICE: { // UI Choice DropDown 구조
@@ -579,6 +595,18 @@
 
                                         break;
 
+                                    case C_TMPL_WZD4_ID:
+                                        //위자드 컨버전이 가능한지 메타에서 확인 해서 메뉴 활성/비활성(enabled) 처리
+
+                                        var _sInfo = parent.getUserInfo();
+
+                                        if(_sInfo?.META?.T_PLIST?.findIndex?.( item => item === "U4A_CVT_WDR") !== -1){
+                                            bEnabled = true;
+                                        }
+
+
+                                        break;
+
                                 }
 
                                 return bEnabled;
@@ -666,6 +694,12 @@
                     new sap.m.Page(`${C_TMPL_WZD3_ID}--page`, {
                         content: [
                             oWizard3
+                        ]
+                    }),
+
+                    // Report UI Create Page
+                    new sap.m.Page(`${C_TMPL_WZD4_ID}--page`, {
+                        content: [
                         ]
                     }),
 
@@ -3788,7 +3822,7 @@
     /************************************************************************
      * UI TEMPLATE WIZARD Dialog Tnt Menu Item Select Event
      ************************************************************************/
-    oAPP.events.ev_sideNaviItemSelection = function (oEvent) {       
+    oAPP.events.ev_sideNaviItemSelection = async function (oEvent) {       
 
         var oSelectedItem = oEvent.getParameter("item"),
             sItemKey = oSelectedItem.getProperty("key"),
@@ -3808,6 +3842,32 @@
         if (!oPage) {
             return;
         }
+
+
+        //이전 메뉴 선택건 정보 얻기.
+        var _selKey = this.getSelectedKey();
+
+        //이전에 선택한 메뉴가 web dynpro 컨버전 인경우.
+        if(_selKey === C_TMPL_WZD4_ID){
+            
+            var _oWebDynPage = sap.ui.getCore().byId(`${C_TMPL_WZD4_ID}--page`);
+
+            if(_oWebDynPage){
+
+                //미리보기 onAfterRendering 처리 관련 module load.
+                var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
+
+                //attr table에 onAfterRendering 이벤트 등록 처리.
+                var _oPromise = _oRender.setAfterRendering(_oWebDynPage);
+                                
+                _oWebDynPage?.removeAllContent?.();
+                
+                await _oPromise;
+            
+            }
+        
+        }
+
 
         oPage.setTitle(sTitle);
 
@@ -3837,6 +3897,34 @@
                 fnSetPrevImage("ReportTemplate"); // 미리보기 영역에 이미지 출력
 
                 return;
+
+            case C_TMPL_WZD4_ID:
+
+                sSelectedKey = C_TMPL_WZD4_ID;
+
+                var _path = parent.PATH.join(parent.getPath("WS10_20_ROOT"), "design", 
+                "createApplication", "conversionWebdynpro", "main", "view.js");
+                
+                var _oView = await import(_path);
+
+                //웹딘 -> U4A 컨버전 view 정보 생성.
+                var _oContr = await _oView.createView({PRCCD:"CREATE_WIZARD"});
+
+                //미리보기 onAfterRendering 처리 관련 module load.
+                var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
+
+                //attr table에 onAfterRendering 이벤트 등록 처리.
+                var _oPromise = _oRender.setAfterRendering(oPage);
+                
+                oPage.addContent(_oContr.ui.ROOT);
+                
+                await _oPromise;
+
+
+                //web dyn 화면 추가 후 대기 처리.
+
+
+                break;
 
         }
 

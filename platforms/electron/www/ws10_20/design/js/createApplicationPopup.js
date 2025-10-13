@@ -8,12 +8,27 @@
   const LAYOUT_IMG3 = "COL3.jpg";
   const LAYOUT_IMG4 = "COL4.jpg";
 
+  var loAPP = {};
 
   //application 생성시 추가 입력정보 팝업 호출.
-  oAPP.fn.createApplicationPopup = function(appid){
+  oAPP.fn.createApplicationPopup = async function(appid){
 
     //UI 구성정보 매핑 OBJECT.
-    var oUIobj = {gen:{}, dataset:{}};
+    var oUIobj = {};
+
+    //application 일반정보 UI.
+    oUIobj.gen = {};
+
+    //application dataset UI.
+    oUIobj.dataset = {};
+
+    oUIobj.UAWD = {};
+
+    oUIobj.path = {};
+
+    //웹딘 -> U4A 컨버전 path.
+    oUIobj.path.UAWD = parent.PATH.join(parent.getPath("WS10_20_ROOT"), "design", 
+            "createApplication", "conversionWebdynpro", "main", "view.js");
     
 
     // Application 생성 Dialog
@@ -63,17 +78,32 @@
     var oHead = new sap.m.IconTabHeader({selectedKey:"{/selHKey}"});
     oPage1.setCustomHeader(new sap.m.Toolbar({content:[oHead]}));
 
-    //header item 선택 이벤트.
-    oHead.attachSelect(function(){
 
-      switch(this.getSelectedKey()){ 
-        case "K01": //General
-          oNav.to(oGenPage);
-          break;
-        case "K02": //dataset.
-          oNav.to(oDatesetPage);
-          break;
-      }
+
+
+    //header item 선택 이벤트.
+    oHead.attachSelect(async function(oEvent){
+
+      var _sParam = {};
+
+      //어플리케이션 생성 화면 ui object 수집 정보.
+      _sParam.oUIobj = oUIobj;
+
+      //IconTabHeader 이전 선택 key.
+      _sParam.prevKey = oEvent.getParameter("previousKey");
+
+      //navContainer UI.
+      _sParam.oNav = oNav;
+
+      //IconTabHeader UI.
+      _sParam.oHead = oHead;
+
+      //생성 application id.
+      _sParam.appid = appid;
+
+      //iconTabHeader 선택 이벤트.
+      lf_selectIconTabHeader(_sParam);
+
 
     }); //header item 선택 이벤트.
 
@@ -92,23 +122,41 @@
     var oNav = new sap.m.NavContainer();
     oPage1.addContent(oNav);
 
-    //일반 정보 영역 page.
-    var oGenPage = new sap.m.Page({showHeader:false});
-    oNav.addPage(oGenPage);
+    // //일반 정보 영역 page.
+    // var oGenPage = new sap.m.Page({showHeader:false}).data("SEL_KEY", "K01");
+    // oNav.addPage(oGenPage);
     
     //application 일반 정보 UI 영역 구성.
-    lf_createGenUI(oGenPage, oUIobj);
+    oNav.addPage(lf_createGenUI(oUIobj));
 
 
-    //dataset 영역 page.
-    var oDatesetPage = new sap.m.Page({showHeader:false});
-    oNav.addPage(oDatesetPage);
+    // //dataset 영역 page.
+    // var oDatesetPage = new sap.m.Page({showHeader:false}).data("SEL_KEY", "K02");
+    // oNav.addPage(oDatesetPage);
 
-    //application dataset UI 영역 구성.
-    lf_createDatasetUI(oDatesetPage, oUIobj);
+    // //application dataset UI 영역 구성.
+    // lf_createDatasetUI(oDatesetPage, oUIobj);
 
+    var _sUserInfo = parent.getUserInfo();
 
+    var _enabled = false;
 
+    //접속한 서버에 웹딘 -> U4A 컨버전 플러그인이 설치되어 있는경우 탭 활성화.
+    if(_sUserInfo.META?.T_PLIST?.find?.( item => item === "U4A_CVT_WDR")){
+      _enabled = true;
+    }
+    
+    // 457	Web Dynpro Conversion
+    var _txt = parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "457"); 
+
+    var oFilter3 = new sap.m.IconTabFilter({
+      key:"UAWD", 
+      text:_txt,
+      tooltip:_txt,
+      enabled: _enabled
+    });
+    oHead.addItem(oFilter3);
+  
     
     var oFoot = new sap.m.Toolbar({content:[new sap.m.ToolbarSpacer()]});
     oPage1.setFooter(oFoot);
@@ -142,7 +190,7 @@
     //application 생성버튼 선택 이벤트.
     oCreate.attachPress(function(){
       //application 생성 처리.
-      lf_createApplication(oModel, oUIobj, appid);
+      lf_createApplication(oModel, oUIobj, appid, false);
 
     }); //application 생성버튼 선택 이벤트.
 
@@ -171,12 +219,107 @@
   };  //application 생성시 추가 입력정보 팝업 호출.
 
 
+
+
+  /************************************************************************
+   * uiUpdated 이벤트.
+   ************************************************************************/
+  function lf_attachUIUpdated(){
+    
+    return new Promise(function(resolve){
+        
+      async function _updatedCallback(){
+        
+        //UI UPDATED 이벤트 제거.
+        _oRendering.detachUIUpdated(_updatedCallback);
+        
+        resolve();
+        
+      }
+          
+      let _oRendering = sap.ui.requireSync('sap/ui/core/Rendering');
+      
+      //UI가 화면에 충분히 그려질때까지 대기 처리 이벤트 등록 처리.
+      _oRendering.attachUIUpdated(_updatedCallback);
+      
+      
+
+    });
+	
+  }
+
+
+
+
+  /************************************************************************
+   * iconTabHeader 선택 이벤트.
+   ************************************************************************/
+  async function lf_selectIconTabHeader(sParam){
+
+      var _aPage = sParam.oNav.getPages();
+
+      //이전 페이지 정보 얻기.
+      var _oPrevPage = _aPage.find( item => item.data("SEL_KEY") === sParam.prevKey );
+
+      //ui Updated 이벤트 등록.
+      var _oPromise = lf_attachUIUpdated();
+
+      //이전 페이지 제거.
+      sParam.oNav.removePage(_oPrevPage);
+
+      //UI가 충분히 제거 되는것을 대기.
+      await _oPromise;
+
+
+      //ui Updated 이벤트 등록.
+      var _oPromise = lf_attachUIUpdated();
+
+      //iconTabHeader의 선택 탭에 따른 로직 분기.
+      switch(sParam.oHead.getSelectedKey()){ 
+        case "K01": //General
+
+          var _oPage = lf_createGenUI(sParam.oUIobj);
+
+          break;
+        case "K02": //dataset.
+
+          //application dataset UI 영역 구성.
+          var _oPage = lf_createDatasetUI(sParam.oUIobj);
+
+          break;
+
+
+        case "UAWD": //web dynpro conversion.
+
+          var _oView = await import(sParam.oUIobj.path.UAWD);
+
+          //웹딘 -> U4A 컨버전 view 정보 생성.
+          sParam.oUIobj.UAWD.oContr = await _oView.createView({APPID: sParam.appid, PRCCD:"CREATE_APP"});
+
+          var _oPage = sParam.oUIobj.UAWD.oContr.ui.ROOT;
+
+          _oPage.data("SEL_KEY", "UAWD");
+
+          break;
+
+      }
+
+      sParam.oNav.addPage(_oPage);
+
+      sParam.oNav.to(_oPage);
+
+      await _oPromise;
+
+  }
+
   
 
   /************************************************************************
    * application 일반 정보 UI 영역
     ************************************************************************/
-  function lf_createGenUI(oPage, oUIobj){
+  function lf_createGenUI(oUIobj){
+
+    var oGenPage = new sap.m.Page({showHeader:false}).data("SEL_KEY", "K01");
 
     //기본정보 form UI.
     var oGenForm = new sap.ui.layout.form.Form({editable:true, width:"100%",
@@ -184,7 +327,7 @@
         labelSpanXL: 3, labelSpanL: 3, labelSpanM: 4, labelSpanS: 12, columnsL:1,
         singleContainerFullSize: false, adjustLabelSpan: false, backgroundDesign:"Transparent"})});
     
-    oPage.addContent(oGenForm);
+    oGenPage.addContent(oGenForm);
     
     var oCont1 = new sap.ui.layout.form.FormContainer();
     oGenForm.addFormContainer(oCont1);
@@ -300,6 +443,9 @@
       label: new sap.m.Label({design:"Bold", text:l_txt, tooltip:l_txt})}));
 
 
+    return oGenPage;
+
+
   } //application 일반 정보 UI 영역
 
 
@@ -308,7 +454,9 @@
   /************************************************************************
    * application dataset 정보 UI 영역.
     ************************************************************************/
-  function lf_createDatasetUI(oPage, oUIobj){
+  function lf_createDatasetUI(oUIobj){
+
+    var oDatesetPage = new sap.m.Page({showHeader:false}).data("SEL_KEY", "K02");
     
     //dataset form UI.
     var oDatasetForm = new sap.ui.layout.form.Form({editable:true, width:"100%",
@@ -316,7 +464,7 @@
         labelSpanXL: 3, labelSpanL: 4, labelSpanM: 4, labelSpanS: 12, columnsL:2,
         singleContainerFullSize: false, adjustLabelSpan: false, backgroundDesign:"Transparent"})});
     
-    oPage.addContent(oDatasetForm);
+    oDatesetPage.addContent(oDatasetForm);
 
     var oCont1 = new sap.ui.layout.form.FormContainer();
     oDatasetForm.addFormContainer(oCont1);
@@ -523,6 +671,8 @@
       detailBox:new sap.m.LightBox({imageContent:new sap.m.LightBoxItem({imageSrc:"{/DATASET/imgsrc}"})})});
         
     oCont2.addFormElement( new sap.ui.layout.form.FormElement({fields:[oImg]}));
+
+    return oDatesetPage;
 
 
   } //dataset 영역 UI 구성.
@@ -731,6 +881,20 @@
         parent.showMessage(sap, 20, "E", ret.ERMSG);
         
         return;
+      }
+
+      //패키지 입력건 점검 중 오류가 발생한 경우.
+      if(ret.ERFLG === "E"){
+        is_create.PACKG_stat = "Error"; 
+        is_create.PACKG_stxt = ret.ERMSG;        
+
+        oModel.setProperty(ls_stru, is_create);
+
+        //오류 메시지 처리.
+        parent.showMessage(sap, 20, "E", ret.ERMSG);
+
+        return;
+        
       }
 
       //로컬 PACKAGE를 입력한 경우.
@@ -1278,6 +1442,24 @@
 
     //busy dialog true.
     oAPP.common.fnSetBusyDialog(true);
+    
+    
+    //WEBDYNPRO -> U4A 컨버전을 통해 APP 생성하는 경우.
+    if(oModel.oData.selHKey === "UAWD"){
+
+      var _sParam = {};
+      _sParam.ACTCD   = "CREATE_APP";
+      _sParam.APPID   = appid;
+      _sParam.ISLOCAL = bIsLocal;
+      _sParam.oUIobj  = oUIobj;
+
+      var _oCEvt = new CustomEvent('conversionWebdynpro', { detail: _sParam });
+      
+      oUIobj.UAWD.oContr.onEvt.dispatchEvent(_oCEvt);
+
+      return;
+
+    }
 
     //icon header의 선택건에 따른 모델 구조명 얻기.
     var l_stru = lf_getStruName(oModel);
