@@ -856,6 +856,39 @@
 
     }
 
+    
+    //469	Web Dynpro Conversion Log
+    var _txt = parent.WSUTIL.getWsMsgClsTxt("", "ZMSG_WS_COMMON_001", "469"); 
+
+
+    var _enabled = false;
+
+    var _sUserInfo = parent.getUserInfo();
+
+    //접속한 서버에 웹딘 -> U4A 컨버전 플러그인이 설치되어 있는경우 탭 활성화.
+    if(_sUserInfo.META?.T_PLIST?.find?.( item => item === "U4A_CVT_WDR")){
+      _enabled = true;
+    }
+
+    //#region WEBDYN 컨버전 로그 확인.
+    //WEBDYN 컨버전 로그 확인 버튼.
+    //#endregion 20251020 WEBDYN 컨버전 로그 확인.
+    oLTBar1.addContent(new sap.m.OverflowToolbarButton({
+      icon:"sap-icon://detail-view",
+      text : _txt,
+      tooltip: _txt,
+      enabled: _enabled,
+      press: function(){
+
+        let oSettingsInfo = parent.getSettingsInfo();
+
+        var _path = parent.PATH.join(oSettingsInfo.path.POPUP_ROOT, "webDynConversionLog", "index.js");
+
+        parent.require(_path)(parent.REMOTE, oAPP);
+
+      }
+    }));
+
 
     //B39	Help
     //도움말 버튼.

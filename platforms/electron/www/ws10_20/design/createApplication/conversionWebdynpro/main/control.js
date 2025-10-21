@@ -795,8 +795,11 @@ export async function createControl(oParam){
         //Web Dynpro Component Name.
         _sAppData.COMP_NAME = oContr.oModel.oData.S_UAWD.COMP_NAME;
 
+        //U4A APP ID.
+        _sAppData.APPID     = oContr.oModel.oData.S_UAWD.APPID;
+
         //선택한 라인의 view 정보 매핑.
-        _sAppData.T_VLIST = oContr.fn.getSelectedViewData();
+        _sAppData.T_VLIST   = oContr.fn.getSelectedViewData();
         
         
         _oFormData.append("APPDATA", JSON.stringify(_sAppData));

@@ -3907,8 +3907,11 @@
                 
                 var _oView = await import(_path);
 
+                //어플리케이션 정보 얻기.
+                var _sAppInfo = parent.getAppInfo();
+
                 //웹딘 -> U4A 컨버전 view 정보 생성.
-                var _oContr = await _oView.createView({PRCCD:"CREATE_WIZARD"});
+                var _oContr = await _oView.createView({PRCCD:"CREATE_WIZARD", APPID: _sAppInfo.APPID});
 
                 //미리보기 onAfterRendering 처리 관련 module load.
                 var _oRender = parent.require(oAPP.oDesign.pathInfo.setOnAfterRender);
