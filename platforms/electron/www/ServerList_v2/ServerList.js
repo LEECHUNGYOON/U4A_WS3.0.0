@@ -1750,7 +1750,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
      * WorkSpace Tree Item Select Event
      ************************************************************************/
     oAPP.fn.fnPressWorkSpaceTreeItem = async (oEvent) => {
-
+        debugger;
         let oRowCtx = oEvent.getParameter("rowContext");
         if (oRowCtx == null) {
             return;
@@ -2057,6 +2057,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     })
                 }),
 
+                new sap.m.Column({
+                    hAlign: sap.ui.core.TextAlign.Center,
+                    header: new sap.m.Label({
+                        design: sap.m.LabelDesign.Bold,
+                        text: "Internal/External"         // #no text
+                    })
+                }),
+
             ],
 
             items: {
@@ -2111,6 +2119,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                         new sap.m.Text({
                             text: "{insno}"
                         }),
+                        new sap.m.Button({
+                            text: "in/ext",
+                            press: function(oEvent){
+
+                                debugger;
+
+                            }
+                        })
 
                     ],
 

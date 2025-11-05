@@ -505,11 +505,17 @@ async function onZipExtractAsync(PRCCD, sSourcePath, sTargetPath, pOverwrite = t
 /* Export Module Function 
 /* ================================================================= */
 
-//이벤트 설정 
+//#region 이벤트 설정 
 exports.on = function (evtnm, CB) {
     document.addEventListener(evtnm, CB);
-
 };
+//#endregion
+
+//#region 이벤트 해제
+exports.off = function (evtnm, CB) {
+    document.removeEventListener(evtnm, CB);
+};
+//#endregion
 
 /**
  * 패치 업데이트 파일을 워커로 다운
@@ -598,6 +604,21 @@ function _getPatchUpdateFileWorker(oPARAM){
                 }));
 
                 return;
+
+            //#region 콘솔 오류 출력 대상
+            case "update-error-console-SP": // 콘솔 오류 대상
+
+                // 로그 정보가 있을 경우에는 콘솔 오류에 로그 정보를 담는다
+                var sLog = "";
+                var _oPARAM = oIF_DATA?.PARAM || undefined;
+                if(_oPARAM?.LOG){
+                    sLog = _oPARAM.LOG;
+                }  
+
+                console.error(sLog);
+
+                return;
+            //#endregion    
 
             case "update-error-SP": //오류
 
@@ -788,6 +809,11 @@ function _getGlobalMsg(){
 //업데이트 점검 시작 
 exports.checkForUpdates = async function (remote, iscdn = false, versn, splev = 0, oLoginInfo) {
 
+    debugger;
+
+    // 글로벌 언어 정보 가져오기
+    _getGlobalMsg();
+
     //업데이트 확인중 
     document.dispatchEvent(new CustomEvent('checking-for-update-SP', { detail: { message: GS_MSG.M15 } }));
 
@@ -799,10 +825,6 @@ exports.checkForUpdates = async function (remote, iscdn = false, versn, splev = 
 
     //초기값 설정
     gf_initData(oLoginInfo);
-
-    // 글로벌 언어 정보 가져오기
-    _getGlobalMsg();
-
     
     //업데이트 방식에 따른 분기
     switch (ISCDN) {

@@ -1,3 +1,5 @@
+const { resolveFiles } = require("electron-updater/out/providers/Provider");
+
 /************************************************************************
  * Copyright 2020. INFOCG Inc. all rights reserved. 
  * ----------------------------------------------------------------------
@@ -1009,6 +1011,8 @@ let oAPP = (function () {
     /************************************************************************
      * 로그인 버튼 클릭
      ************************************************************************/
+    //#region - 로그인
+    //#endregion
     oAPP.events.ev_login = (oPARAM) => {
         
         parent.setDomBusy('X');
@@ -1289,10 +1293,15 @@ let oAPP = (function () {
             oAPP.attr.HTTPONLY = oResult.HTTP_ONLY;
             oAPP.attr.LOGIN = oLogInData;
 
+
+            oAPP.attr.LOGIN_INFO = oResult;
+
+
             // 여기까지 온건 로그인 성공했다는 뜻이니까 
             // 권한 체크를 수행한다.
             try {
-
+                //#region - 로그인 -> 권한 체크
+                //#endregion
                 var oAuthInfo = await oAPP.fn.fnCheckAuthority();
                 if(oAuthInfo?.TYPE === "E"){
                     
@@ -1359,7 +1368,16 @@ let oAPP = (function () {
 
                 // parent.setDomBusy('');
 
-                oAPP.fn.fnCheckVersionFinished(oResult, oAuthInfo);
+                //#region TEST ------ Start
+                debugger;
+
+                // 개발자 권한 성공시
+                oAPP.fn.fnCheckAuthSuccess(oResult, oAuthInfo);
+
+                return;
+                //#endregion TEST ---------End
+
+                oAPP.fn.fnCheckVersionFinished(oResult, oAuthInfo);               
 
                 return;
             }
@@ -1687,6 +1705,8 @@ let oAPP = (function () {
             oAuthInfo: oAuthInfo
         };
 
+        //#region - 로그인 -> 권한체크 -> 고객사 라이센스 체크
+        //#endregion
         // 고객사 라이센스를 체크한다.
         oAPP.fn.fnCheckCustomerLisence().then(oAPP.fn.fnCheckCustomerLisenceThen.bind(oResultData));
 
@@ -1828,14 +1848,15 @@ let oAPP = (function () {
 
             return;
 
-        }
-
+        }       
+        
         // sap 서버에 최신 버전 체크 후 있다면 다운받기
-        oAPP.fn.fnSetAutoUpdateForSAP().then(oAPP.fn.fnSetAutoUpdateForSAPThen.bind(this));
+        oAPP.fn.fnSetAutoUpdateForSAP(this).then(oAPP.fn.fnSetAutoUpdateForSAPThen.bind(this));
 
     }; // end of oAPP.fn.fnCheckCustomerLisenceThen
 
-    oAPP.fn.fnSetAutoUpdateForSAP = () => {
+    //#region - 메이저 버전 체크
+    oAPP.fn.fnSetAutoUpdateForSAP = (oPARAM) => {
 
         return new Promise((resolve, reject) => {
 
@@ -1878,6 +1899,7 @@ let oAPP = (function () {
 
                 let oParam = {
                     ISCDN: "",
+                    oLoginInfo: oPARAM.oResult // 서버에서 받은 로그인 정보
                 };
 
                 // 현재 버전 정보와 서버 버전정보를 구한다.
@@ -1888,10 +1910,10 @@ let oAPP = (function () {
                     if(oVerInfo.appVer === oVerInfo.updVER){
                         
                         console.log("WS Support Package Version Check...");
-
+    
                         // WS Support Package Version Check
                         oAPP.fn.fnCheckSupportPackageVersion(resolve, oParam);
-
+              
                         return;
 
                     }
@@ -2014,12 +2036,20 @@ let oAPP = (function () {
 
             let sVersion = REMOTE.app.getVersion();
 
+            // 서버에서 받은 로그인 정보
+            let oLoginInfo = oPARAM.oResult;            
+
+            //#region TEST --------- Start
+            sVersion = '3.5.6';
+            //#endregion TEST ------ End
+
             // 자동 업데이트 체크
-            autoUpdaterSAP.checkForUpdates(sVersion, oServerInfo);
+            autoUpdaterSAP.checkForUpdates(sVersion, oServerInfo, oLoginInfo);
 
         });
 
-    }; // end of  oAPP.fn.fnSetAutoUpdateForSAP
+    }; // end of  oAPP.fn.fnSetAutoUpdateForSAP 
+    //#endregion 메이저 버전 체크
 
     oAPP.fn.fnSetAutoUpdateForSAPThen = function () {
 
@@ -2090,21 +2120,22 @@ let oAPP = (function () {
         if (oReturn.ISCDN != "X") {
 
             // sap 서버에 최신 버전 체크 후 있다면 다운받기
-            oAPP.fn.fnSetAutoUpdateForSAP().then(oAPP.fn.fnSetAutoUpdateForSAPThen.bind(this));
+            oAPP.fn.fnSetAutoUpdateForSAP(this).then(oAPP.fn.fnSetAutoUpdateForSAPThen.bind(this));
 
             return;
 
         }
 
         // 버전 체크 수행
-        oAPP.fn.fnSetAutoUpdateForCDN().then(oAPP.fn.fnSetAutoUpdateForCDNThen.bind(this));
+        oAPP.fn.fnSetAutoUpdateForCDN(this).then(oAPP.fn.fnSetAutoUpdateForCDNThen.bind(this));
 
     }; // end of oAPP.fn.fnConnectionGithubThen
 
     /************************************************************************
      * WS Version을 확인한다.
      ************************************************************************/
-    oAPP.fn.fnSetAutoUpdateForCDN = (sVersionCheckUrl) => {
+    // oAPP.fn.fnSetAutoUpdateForCDN = (sVersionCheckUrl) => {
+    oAPP.fn.fnSetAutoUpdateForCDN = (oPARAM) => {
 
         return new Promise((resolve, reject) => {
 
@@ -2113,11 +2144,11 @@ let oAPP = (function () {
             /* Updater Event 설정 ======================================================*/
 
             // 온프로미스 이면.
-            if (typeof sVersionCheckUrl !== "undefined") {
+            // if (typeof sVersionCheckUrl !== "undefined") {
 
-                autoUpdater.setFeedURL(sVersionCheckUrl);
+            //     autoUpdater.setFeedURL(sVersionCheckUrl);
 
-            }
+            // }
 
             autoUpdater.on('checking-for-update', () => {
 
@@ -2126,6 +2157,8 @@ let oAPP = (function () {
             });
 
             autoUpdater.on('update-available', (info) => {
+
+                console.log("CDN - 업데이트가 가능합니다.");
 
                 // div의 content DOM을 활성화 처리 한다.
                 _showContentDom("X");
@@ -2148,22 +2181,21 @@ let oAPP = (function () {
 
                 parent.setDomBusy("");
 
-                console.log("CDN - 업데이트가 가능합니다.");
-
             });
 
             autoUpdater.on('update-not-available', (info) => {
 
+                console.log("CDN - 현재 최신버전입니다.");
+
                 let oParam = {
                     ISCDN: "X",
+                    oLoginInfo: oPARAM.oResult // 서버에서 받은 로그인 정보
                 };
 
                 // WS Support Package Version Check
                 oAPP.fn.fnCheckSupportPackageVersion(resolve, oParam);
 
-                // resolve();
-
-                console.log("CDN - 현재 최신버전입니다.");
+                // resolve();                
 
                 // 업데이트가 완료되면 기존 CDN 체크를 해제 한다.
                 parent.setIsCDN("");
@@ -3102,6 +3134,7 @@ let oAPP = (function () {
     /************************************************************************
      * WS Support Package Version Check
      ************************************************************************/
+    //#region - WS Support Package Version Check
     oAPP.fn.fnCheckSupportPackageVersion = (resolve, oParam) => {
 
         let oModel = sap.ui.getCore().getModel(),
@@ -3128,6 +3161,8 @@ let oAPP = (function () {
         //업데이트 가능 
         spAutoUpdater.on("update-available-SP", (e) => {
 
+            console.log("SP - 업데이트 항목이 존재합니다");
+
             // 로그인 페이지의 Opacity를 적용한다.
             $('.u4aWsLoginFormFcard').animate({
                 opacity: "0.3"
@@ -3141,7 +3176,6 @@ let oAPP = (function () {
             // div의 content DOM을 활성화 처리 한다.
             _showContentDom("X");
 
-            console.log("SP - 업데이트 항목이 존재합니다");
         });
 
         spAutoUpdater.on("update-not-available-SP", (e) => {
@@ -3199,6 +3233,8 @@ let oAPP = (function () {
         // 다운로드 완료시
         spAutoUpdater.on("update-downloaded-SP", (e) => {
 
+            console.log('SP - 업데이트가 완료되었습니다.');
+
             // Progress Bar 종료
             _supportPackageVersionCheckDialogProgressEnd(true);
 
@@ -3206,9 +3242,7 @@ let oAPP = (function () {
 
             oModel.setProperty("/BUSYPOP/PROGTXT", "Processing Complete!", true);
 
-            oModel.setProperty("/BUSYPOP/ILLUSTTYPE", "sapIllus-SuccessHighFive", true);
-
-            console.log('SP - 업데이트가 완료되었습니다.');
+            oModel.setProperty("/BUSYPOP/ILLUSTTYPE", "sapIllus-SuccessHighFive", true);            
 
             setTimeout(() => {
 
@@ -3266,11 +3300,20 @@ let oAPP = (function () {
             sAppVer = `v${APP.getVersion()}`,
             oSettings = oAPP.fn.fnGetSettingsInfo(),
             sPatch_level = oSettings.patch_level,
-            oLoginInfo = sap.ui.getCore().getModel().getProperty("/LOGIN");
+            oWSLoginInfo = sap.ui.getCore().getModel().getProperty("/LOGIN");
 
-        spAutoUpdater.checkForUpdates(REMOTE, bIsCDN, sAppVer, sPatch_level, oLoginInfo);
+        // 로그인 정보에 서버에서 구한 메타 정보 추가
+        oWSLoginInfo.META = oParam.oLoginInfo.META;
+
+        //#region TEST --------- Start
+        sAppVer = 'v3.5.6';
+        sPatch_level = 0;
+        //#endregion TEST ------ End
+
+        spAutoUpdater.checkForUpdates(REMOTE, bIsCDN, sAppVer, sPatch_level, oWSLoginInfo);
 
     }; // end of oAPP.fn.fnCheckSupportPackageVersion
+    //#endregion - WS Support Package Version Check
 
     oAPP.fn.fnFloatingMenuOpen = () => {
 

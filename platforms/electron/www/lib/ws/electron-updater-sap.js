@@ -371,7 +371,7 @@ exports.autoUpdaterSAP = {
     },
 
     // == 점검 수행 ==
-    checkForUpdates: function (appVer, oServerInfo) {
+    checkForUpdates: function (appVer, oServerInfo, oLoginInfo) {
         
         //업데이트 확인 이벤트 수행 
         __fireEvent(document, 'checking-for-update-sap', {

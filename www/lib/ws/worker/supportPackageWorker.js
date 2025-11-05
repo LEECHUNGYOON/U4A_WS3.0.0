@@ -27,6 +27,7 @@ const TY_RES = {
  * update-install-SP        다운로드 이후에 asar 압축 및 인스톨할 때
  * update-downloaded-SP     다운로드 완료시
  * update-error-SP          오류 발생시
+ * update-error-console-SP  다운로드 중 콘솔오류 대상
  */
 
 
@@ -35,8 +36,11 @@ const PRC = {
     DOWN_LOADING   : "download-progress-SP",  // 다운로드 중
     DOWN_FINISH    : "update-downloaded-SP",  // 다운로드 완료
     UPDATE_INSTALL : "update-install-SP",     // 다운로드 이후에 asar 압축 및 인스톨할 때
-    UPDATE_ERROR   : "update-error-SP"        // 다운로드 오류
+    UPDATE_ERROR   : "update-error-SP",       // 다운로드 오류
+    UPDATE_ERROR_CONSOLE  : "update-error-console-SP" // 다운로드 중 콘솔오류 대상
+
 };
+
 
 
 /**
@@ -149,10 +153,29 @@ function _getSuppPackDataFromPowerShell(oPARAM) {
                 return;
             }
 
-            let sLog = `Patch 업데이트 파일 다운로드 중..: ${data.toString()}`;
+            let sData = data?.toString();
 
-            // 다운로드 수행 횟수 증가
-            oFileInfo.TRANSFERRED++;
+            let sLog = `Patch 업데이트 파일 다운로드 중..: ${sData}`;
+
+            /**
+             * @since   2025-11-05
+             * @version 3.5.6-sp14
+             * @author  soccerhs
+             * 
+             * @description
+             *  [기존] 
+             *      - powershell에서 패치 파일 다운로드 진행 중,
+             *        Write-Host 출력(stdout)을 다운로드 성공 신호로 인식하여 퍼센트 계산함
+             *  [변경]
+             *      - stdout 로그 중 단순 로그 용으로 Write-Host를 사용하는 경우가 있어서,
+             *        특정 키워드(CHUNK_DOWN_OK) 포함 시에만 다운로드 성공으로 간주하도록 수정함
+             */
+            if(sData.includes("CHUNK_DOWN_OK") === true){
+
+                // 다운로드 수행 횟수 증가
+                oFileInfo.TRANSFERRED++;
+            
+            } 
 
             var oRES = JSON.parse(JSON.stringify(TY_RES)); 
 
@@ -162,9 +185,7 @@ function _getSuppPackDataFromPowerShell(oPARAM) {
                 LOG: sLog
             };
 
-            self.postMessage(oRES);
-
-            console.log(sLog);
+            self.postMessage(oRES);            
             
         });
 
@@ -172,16 +193,34 @@ function _getSuppPackDataFromPowerShell(oPARAM) {
         ps.stderr.on("data", (data) => {
 
             let sLog = `Patch 업데이트 다운로드 중 에러: ${data.toString()}`;
-            
-            console.error(sLog);            
-            console.trace();
 
-            if (!ps.killed) {              
-                ps.kill();
-                console.log("kill-1");
-            }
+            // console.error(sLog);            
+            // console.trace();
 
-            return resolve({ SUBRC: 999, LOG: sLog });
+            // if (!ps.killed) {              
+            //     ps.kill();
+            //     console.log("kill-1");
+            // }
+
+            // return resolve({ SUBRC: 999, LOG: sLog });
+
+            /**
+             * @since   2025-11-05
+             * @version 3.5.6-sp14
+             * @author  soccerhs
+             * 
+             * @description
+             * - powershell 에서 발생되는 오류 메시지를 받으면 child_process를 중지 시키지 않고 
+             *   콘솔 오류만 발생시키는 로직으로 수정함             
+             */    
+            var oRES = JSON.parse(JSON.stringify(TY_RES)); 
+
+            oRES.PRCCD = PRC.UPDATE_ERROR_CONSOLE; // 다운로드 중 콘솔오류 대상
+            oRES.PARAM = {
+                LOG: sLog
+            };
+
+            self.postMessage(oRES);            
 
         });
 
@@ -190,7 +229,6 @@ function _getSuppPackDataFromPowerShell(oPARAM) {
 
             if (!ps.killed) {              
                 ps.kill();
-                console.log("kill-2");
             }
 
             return resolve({ SUBRC: code });
