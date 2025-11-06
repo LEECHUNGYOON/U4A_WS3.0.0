@@ -1749,6 +1749,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
     /************************************************************************
      * WorkSpace Tree Item Select Event
      ************************************************************************/
+    //#region - WorkSpace Tree Item 선택 이벤트
+    //#endregion 
     oAPP.fn.fnPressWorkSpaceTreeItem = async (oEvent) => {
 
         let oRowCtx = oEvent.getParameter("rowContext");
@@ -1806,29 +1808,27 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         var aServerList = oTableModel.getProperty("/ServerList"),
             aItemList = [];
 
-        let aSavedAllData = [];
+        // let aSavedAllData = [];
 
-        // 기 저장된 값 전체를 구한다.
-        let oSavedAllReturn = oAPP.fn.fnGetSavedServerListDataAll();
-        if (oSavedAllReturn.RETCD == "S") {
-            aSavedAllData = oSavedAllReturn.RETDATA;
-        }
+        // // 기 저장된 값 전체를 구한다.
+        // let oSavedAllReturn = oAPP.fn.fnGetSavedServerListDataAll();
+        // if (oSavedAllReturn.RETCD == "S") {
+        //     aSavedAllData = oSavedAllReturn.RETDATA;
+        // }
 
-        debugger;
-        
         // Item이 배열이 아닌 경우 (폴더의 하위 서버 정보 데이터가 1건만 있을 경우 object로 저장되어 있음.)       
-        if (typeof iSelectSubItemLength == "undefined") {
+        if (typeof iSelectSubItemLength === "undefined") {
 
             var oFindItem = aServerList.find(element => element.uuid == oSelectSubItem._attributes.serviceid);
             if (oFindItem) {
 
                 let oFindCopyItem = jQuery.extend(true, {}, oFindItem);
 
-                // 기 저장된 서버 정보가 있을 경우 저장 플래그를 심는다.
-                let oSavedData = aSavedAllData.find(element => element.uuid == oFindCopyItem.uuid);
-                if (oSavedData) {
-                    oFindCopyItem.ISSAVE = true;
-                }
+                // // 기 저장된 서버 정보가 있을 경우 저장 플래그를 심는다.
+                // let oSavedData = aSavedAllData.find(element => element.uuid == oFindCopyItem.uuid);
+                // if (oSavedData) {
+                //     oFindCopyItem.ISSAVE = true;
+                // }
 
                 aItemList.push(oFindCopyItem);
                 oTableModel.setProperty("/SAPLogonItems", aItemList);
@@ -1840,22 +1840,22 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         // 기 저장된 서버 호스트 정보가 있을 경우 저장 플래그를 심는다.
         for (var i = 0; i < iSelectSubItemLength; i++) {
 
-            var oItem = oSelectItemData.Item[i], // 현재 선택된 메뉴의 서브 아이템
+            let oItem = oSelectItemData.Item[i], // 현재 선택된 메뉴의 서브 아이템
                 sServiceid = oItem._attributes.serviceid;
 
             // 저장된 서버 호스트 정보를 찾는다.
-            var oFindItem = aServerList.find(element => element.uuid == sServiceid);
+            let oFindItem = aServerList.find(element => element.uuid == sServiceid);
             if (!oFindItem) {
                 continue;
             }
 
             // 저장된 서버 호스트 정보가 있다면 저장 플래그를 심는다.
-            let oFindCopyItem = jQuery.extend(true, {}, oFindItem),
-                oSavedData = aSavedAllData.find(element => element.uuid == oFindCopyItem.uuid);
+            let oFindCopyItem = jQuery.extend(true, {}, oFindItem);
 
-            if (oSavedData) {
-                oFindCopyItem.ISSAVE = true;
-            }
+            // let oSavedData = aSavedAllData.find(element => element.uuid == oFindCopyItem.uuid);
+            // if (oSavedData) {
+            //     oFindCopyItem.ISSAVE = true;
+            // }
 
             aItemList.push(oFindCopyItem);
 
@@ -2012,142 +2012,235 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         let oToolbar = oAPP.fn.fnGetSAPLogonListTableToolbar();
 
-        return new sap.m.Table(SERVER_TBL_ID, {
+        let oColumnListItem = new sap.m.ColumnListItem({
+            type: sap.m.ListType.Active,
+        });
+
+        let oCell1 = new sap.m.ObjectStatus({
+            icon: "sap-icon://circle-task-2",                           
+        }).bindProperty("text", {
+            parts: [
+                "ISSAVE"
+            ],
+            formatter: (ISSAVE) => {
+
+                let sStatusTxt = "Inactive";
+
+                if (ISSAVE == true) {
+                    sStatusTxt = "Active";
+                }
+
+                return sStatusTxt;
+            }
+
+        }).bindProperty("state", {
+            parts: [
+                "ISSAVE"
+            ],
+            formatter: (ISSAVE) => {
+
+                let sState = sap.ui.core.ValueState.None;
+
+                if (ISSAVE == true) {
+                    sState = sap.ui.core.ValueState.Success;
+                }
+
+                return sState;
+
+            }
+        });
+        oColumnListItem.addCell(oCell1);
+
+        oCell1.addStyleClass("u4aWsServerList");
+        
+        let oCell2 = new sap.m.Text({
+            text: "{name}"
+        });
+        oColumnListItem.addCell(oCell2);
+
+        let oCell3 = new sap.m.Text({
+            text: "{systemid}"
+        });
+        oColumnListItem.addCell(oCell3);
+
+        let oCell4 = new sap.m.Text({
+            text: "{host}"
+        });
+        oColumnListItem.addCell(oCell4);
+
+        let oCell5 = new sap.m.Text({
+            text: "{insno}"
+        });
+        oColumnListItem.addCell(oCell5);
+
+        let oCell6 = new sap.m.Button({
+            icon: "sap-icon://settings",
+            press: function(oEvent){
+
+                oAPP.fn.fnOpenServerSettings(oEvent);
+
+            }
+        }).bindProperty("enabled", {
+            parts: [
+                { path: "ISSAVE" }
+            ],
+            formatter: function(ISSAVE){
+                return !!ISSAVE;
+            }
+        });
+        oColumnListItem.addCell(oCell6);
+
+        let oTable = new sap.m.Table(SERVER_TBL_ID, {
             fixedLayout: false,
             alternateRowColors: true,
             autoPopinMode: true,
             headerToolbar: oToolbar,
             mode: sap.m.ListMode.SingleSelectMaster,
             sticky: [sap.m.Sticky.ColumnHeaders, sap.m.Sticky.HeaderToolbar],
-            columns: [
-
-                new sap.m.Column({
-                    width: "150px",
-                    header: new sap.m.Label({
-                        design: sap.m.LabelDesign.Bold,
-                        text: "STATUS"      // #no text
-                    })
-                }),
-
-                new sap.m.Column({
-                    header: new sap.m.Label({
-                        design: sap.m.LabelDesign.Bold,
-                        text: "SERVER NAME" // #no text
-                    })
-                }),
-
-                new sap.m.Column({
-                    hAlign: sap.ui.core.TextAlign.Center,
-                    header: new sap.m.Label({
-                        design: sap.m.LabelDesign.Bold,
-                        text: "SID"         // #no text
-                    })
-                }),
-
-                new sap.m.Column({
-                    header: new sap.m.Label({
-                        design: sap.m.LabelDesign.Bold,
-                        text: "HOST(Or IP)" // #no text
-                    })
-                }),
-
-                new sap.m.Column({
-                    hAlign: sap.ui.core.TextAlign.Center,
-                    header: new sap.m.Label({
-                        design: sap.m.LabelDesign.Bold,
-                        text: "SNO"         // #no text
-                    })
-                }),
-
-                new sap.m.Column({
-                    hAlign: sap.ui.core.TextAlign.Center,
-                    header: new sap.m.Label({
-                        design: sap.m.LabelDesign.Bold,
-                        text: "Settings"    // #no text
-                    })
-                }),
-
-            ],
-
             items: {
                 path: "/SAPLogonItems",
-                template: new sap.m.ColumnListItem({
-                    type: sap.m.ListType.Active,
-                    cells: [
-
-                        new sap.m.ObjectStatus({
-                            icon: "sap-icon://circle-task-2",                           
-                        }).bindProperty("text", {
-                            parts: [
-                                "ISSAVE"
-                            ],
-                            formatter: (ISSAVE) => {
-
-                                let sStatusTxt = "Inactive";
-
-                                if (ISSAVE == true) {
-                                    sStatusTxt = "Active";
-                                }
-
-                                return sStatusTxt;
-
-                            }
-                        }).bindProperty("state", {
-                            parts: [
-                                "ISSAVE"
-                            ],
-                            formatter: (ISSAVE) => {
-
-                                let sState = sap.ui.core.ValueState.None;
-
-                                if (ISSAVE == true) {
-                                    sState = sap.ui.core.ValueState.Success;
-                                }
-
-                                return sState;
-
-                            }
-                        }).addStyleClass("u4aWsServerList"),
-
-                        new sap.m.Text({
-                            text: "{name}"
-                        }),
-                        new sap.m.Text({
-                            text: "{systemid}"
-                        }),
-                        new sap.m.Text({
-                            text: "{host}"
-                        }),
-                        new sap.m.Text({
-                            text: "{insno}"
-                        }),
-                        new sap.m.Button({
-                            icon: "sap-icon://settings",
-                            press: function(oEvent){
-
-                                oAPP.fn.fnOpenServerSettings(oEvent);
-
-                            }
-                        }).bindProperty("enabled", {
-                            parts: [
-                                { path: "ISSAVE" }
-                            ],
-                            formatter: function(ISSAVE){
-                                return !!ISSAVE;
-                            }
-                        }),
-                        
-
-                    ],
-
-                })
+                template: oColumnListItem
             }
 
         }).addEventDelegate({
-            ondblclick: oAPP.fn.fnPressServerListItem
+            ondblclick: oAPP.fn.fnPressServerListItem,
+            onAfterRendering: function(oEvent){                
+                oAPP.fn.fnServerListonAfterRendering(oEvent);
+            }
         }).addStyleClass("u4aWsServerListTbl");
 
+        /**
+         * Columns
+         */
+        let oColumn1 = new sap.m.Column({
+            width: "150px",
+            header: new sap.m.Label({
+                design: sap.m.LabelDesign.Bold,
+                text: "STATUS"      // #no text
+            })
+        });
+        oTable.addColumn(oColumn1);
+
+        let oColumn2 = new sap.m.Column({
+            header: new sap.m.Label({
+                design: sap.m.LabelDesign.Bold,
+                text: "SERVER NAME" // #no text
+            })
+        });
+        oTable.addColumn(oColumn2);
+
+        let oColumn3 = new sap.m.Column({
+            hAlign: sap.ui.core.TextAlign.Center,
+            header: new sap.m.Label({
+                design: sap.m.LabelDesign.Bold,
+                text: "SID"         // #no text
+            })
+        });
+        oTable.addColumn(oColumn3);
+
+        let oColumn4 = new sap.m.Column({
+            header: new sap.m.Label({
+                design: sap.m.LabelDesign.Bold,
+                text: "HOST(Or IP)" // #no text
+            })
+        });
+        oTable.addColumn(oColumn4);
+
+        let oColumn5 = new sap.m.Column({
+            hAlign: sap.ui.core.TextAlign.Center,
+            header: new sap.m.Label({
+                design: sap.m.LabelDesign.Bold,
+                text: "SNO"         // #no text
+            })
+        });
+        oTable.addColumn(oColumn5);
+
+        let oColumn6 = new sap.m.Column({
+            hAlign: sap.ui.core.TextAlign.Center,
+            header: new sap.m.Label({
+                design: sap.m.LabelDesign.Bold,
+                text: "Settings"    // #no text
+            })
+        });
+        oTable.addColumn(oColumn6);
+
+        return oTable;
+
     }; // end of oAPP.fn.fnGetSAPLogonListTable
+
+
+    /**
+     * @since   2025-11-07 00:50:44
+     * @version vNAN-NAN
+     * @author  soccerhs
+     * @description
+     * 
+     * 기존에 저장된 서버 정보일 경우 내부 필드에 저장 여부 값 지정하기.
+     * 
+     */
+    function _markSavedServersInList(oModel){        
+
+        let aServerList = oModel.getProperty("/SAPLogonItems");
+        if(!aServerList || Array.isArray(aServerList) === false || aServerList.length === 0){
+            return;
+        }
+
+        let aSavedAllData = [];
+
+        // 기 저장된 값 전체를 구한다.
+        let oSavedAllReturn = oAPP.fn.fnGetSavedServerListDataAll();
+        if(oSavedAllReturn.RETCD !== "S"){
+            return;
+        }
+
+        aSavedAllData = oSavedAllReturn.RETDATA;
+
+        if(aSavedAllData.length === 0){
+            return;
+        }
+
+        for(var oServerList of aServerList){
+
+            let oServerFound = aSavedAllData.find(e => e.uuid === oServerList.uuid);
+            if(!oServerFound){
+                continue;
+            }
+
+            oServerList.ISSAVE = true;
+
+        }
+
+        oModel.refresh();
+
+    } // end of _markSavedServersInList
+
+
+    /**
+     * @since   2025-11-07 00:50:22
+     * @version vNAN-NAN
+     * @author  soccerhs
+     * @description
+     * 
+     *  서버 리스트가 다 그려진 이후에 호출 되는 이벤트
+     * 
+     * 
+     */
+    //#region - 서버리스트 onAfterRendering
+    //#endregion 
+    oAPP.fn.fnServerListonAfterRendering = function(oEvent){
+
+        console.log("SAPLogonItems ---> onAfterRendering!!");
+
+        let oSrcControl = oEvent.srcControl;
+        let oModel = oSrcControl.getModel();
+
+        // 기존에 저장된 서버 정보일 경우 내부 필드에 저장 여부 값 지정하기.
+        _markSavedServersInList(oModel);
+
+       
+
+
+    }; // end of oAPP.fn.fnServerListonAfterRendering
 
     oAPP.fn.fnOpenServerSettings = function(oEvent){
 
