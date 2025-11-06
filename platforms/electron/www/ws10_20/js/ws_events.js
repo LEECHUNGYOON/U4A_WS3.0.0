@@ -1385,7 +1385,7 @@
          * 백엔드에서 별도 escape 처리 없이 저장 및 조회하도록 변경함.
          *
          * @date 2025-08-04
-         * @version 3.5.6-sp10
+         * @version v3.5.6-10
          * @author soccerhs
          */
         // 어플리케이션 저장 데이터에서 FormData로 변환
@@ -1702,7 +1702,7 @@
          * 백엔드에서 별도 escape 처리 없이 저장 및 조회하도록 변경함.
          *
          * @date 2025-08-04
-         * @version 3.5.6-sp10
+         * @version v3.5.6-10
          * @author soccerhs
          */
 

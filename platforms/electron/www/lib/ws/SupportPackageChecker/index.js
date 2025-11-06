@@ -748,6 +748,13 @@ function _getPatchUpdateFileWorker(oPARAM){
     // node_modules 파일 다운 경로
     let sNdDownPath = PATH.join(sResourcePath, "node_modules.zip");
 
+    // 로그 저장 폴더 경로
+    let sLogFolderPath = PATH.join(USERDATA, "logs", "u4a_ws_sp");
+    
+    if(APP.isPackaged){
+        sLogFolderPath = PATH.join(USERDATA, "logs");
+    }
+
     // 파워쉘 실행 파라미터
     let _oPARAM = {
         PS_SP_PATH    : sPsPath,
@@ -759,7 +766,8 @@ function _getPatchUpdateFileWorker(oPARAM){
         ND_DOWN_PATH  : sNdDownPath,
         FILE_INFO     : oFileInfo,
         RESOURCE_PATH : sResourcePath,
-        ISCDN         : ISCDN               // CDN 여부
+        ISCDN         : ISCDN,               // CDN 여부
+        LOG_FLD_PATH  : sLogFolderPath
     };
 
     // 공통 IF 구조

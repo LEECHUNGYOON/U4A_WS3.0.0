@@ -1814,6 +1814,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             aSavedAllData = oSavedAllReturn.RETDATA;
         }
 
+        debugger;
+        
         // Item이 배열이 아닌 경우 (폴더의 하위 서버 정보 데이터가 1건만 있을 경우 object로 저장되어 있음.)       
         if (typeof iSelectSubItemLength == "undefined") {
 
@@ -2061,7 +2063,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                     hAlign: sap.ui.core.TextAlign.Center,
                     header: new sap.m.Label({
                         design: sap.m.LabelDesign.Bold,
-                        text: "Internal/External"         // #no text
+                        text: "Settings"    // #no text
                     })
                 }),
 
@@ -2120,13 +2122,21 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
                             text: "{insno}"
                         }),
                         new sap.m.Button({
-                            text: "in/ext",
+                            icon: "sap-icon://settings",
                             press: function(oEvent){
 
-                                debugger;
+                                oAPP.fn.fnOpenServerSettings(oEvent);
 
                             }
-                        })
+                        }).bindProperty("enabled", {
+                            parts: [
+                                { path: "ISSAVE" }
+                            ],
+                            formatter: function(ISSAVE){
+                                return !!ISSAVE;
+                            }
+                        }),
+                        
 
                     ],
 
@@ -2138,6 +2148,14 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
         }).addStyleClass("u4aWsServerListTbl");
 
     }; // end of oAPP.fn.fnGetSAPLogonListTable
+
+    oAPP.fn.fnOpenServerSettings = function(oEvent){
+
+        debugger;
+
+
+
+    }; // end of oAPP.fn.fnOpenServerSettings
 
     /************************************************************************
      * 서버 리스트 테이블의 헤더 툴바 영역
@@ -2645,6 +2663,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             protocol: oSaveData.protocol,
             host: oSaveData.host,
             port: oSaveData.port,
+            useInternal: !!oSaveData.useInternal
         };
 
         // 로컬에 저장된 서버리스트 정보 JSON PATH
@@ -2689,6 +2708,8 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
             // 저장여부 플래그 값을 저장한다.
             var oCtxData = oCtx.getProperty(sBindPath);
             oCtxData.ISSAVE = true;
+
+            oCtxData = Object.assign(oCtxData, oLocalSaveData);
 
             oCtx.getModel().setProperty(sBindPath, oCtxData);
 

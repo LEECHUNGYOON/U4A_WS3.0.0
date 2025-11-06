@@ -1137,7 +1137,7 @@ let oAPP = (function () {
                     
                     /**
                      * @since   2025-06-25
-                     * @version 3.5.6-sp8
+                     * @version v3.5.6-8
                      * @author  soccerhs
                      * 
                      * @description
@@ -1208,7 +1208,7 @@ let oAPP = (function () {
 
                 /**
                  * @since   2025-06-25
-                 * @version 3.5.6-sp8
+                 * @version v3.5.6-8
                  * @author  soccerhs
                  * 
                  * @description
@@ -4056,7 +4056,7 @@ let oAPP = (function () {
 
                 /**
                  * @since   2025-06-25
-                 * @version 3.5.6-sp8
+                 * @version v3.5.6-8
                  * @author  soccerhs
                  * 
                  * @description
