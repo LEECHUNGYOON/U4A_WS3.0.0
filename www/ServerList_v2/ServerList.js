@@ -257,7 +257,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
         /**
          * @since   2025-05-15
-         * @version 3.5.6-sp6
+         * @version v3.5.6-6
          * @author  soccerhs
          * 
          * @description
@@ -1364,7 +1364,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             /**
              * @since   2025-10-01
-             * @version 3.5.6-sp11
+             * @version v3.5.6-11
              * @author  soccerhs
              * 
              * @description
@@ -1388,7 +1388,7 @@ REGEDIT.setExternalVBSLocation(vbsDirectory);
 
             /**
              * @since   2025-10-01
-             * @version 3.5.6-sp11
+             * @version v3.5.6-11
              * @author  soccerhs
              * 
              * @description

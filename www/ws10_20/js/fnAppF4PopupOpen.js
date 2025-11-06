@@ -896,7 +896,7 @@
 
         /**
          * @since   2025-06-16
-         * @version 3.5.6-sp8
+         * @version v3.5.6-8
          * @author  soccerhs
          * 
          * @description 컬럼추가
@@ -1045,7 +1045,7 @@
 
         /**
          * @since   2025-06-16
-         * @version 3.5.6-sp8
+         * @version v3.5.6-8
          * @author  soccerhs
          * 
          * @description 컬럼추가

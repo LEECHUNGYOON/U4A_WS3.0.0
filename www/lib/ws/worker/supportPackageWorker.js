@@ -159,7 +159,7 @@ function _getSuppPackDataFromPowerShell(oPARAM) {
 
             /**
              * @since   2025-11-05
-             * @version 3.5.6-sp14
+             * @version v3.5.6-14
              * @author  soccerhs
              * 
              * @description
@@ -206,13 +206,13 @@ function _getSuppPackDataFromPowerShell(oPARAM) {
 
             /**
              * @since   2025-11-05
-             * @version 3.5.6-sp14
+             * @version v3.5.6-13
              * @author  soccerhs
              * 
              * @description
              * - powershell 에서 발생되는 오류 메시지를 받으면 child_process를 중지 시키지 않고 
              *   콘솔 오류만 발생시키는 로직으로 수정함             
-             */    
+             */
             var oRES = JSON.parse(JSON.stringify(TY_RES)); 
 
             oRES.PRCCD = PRC.UPDATE_ERROR_CONSOLE; // 다운로드 중 콘솔오류 대상
@@ -220,7 +220,7 @@ function _getSuppPackDataFromPowerShell(oPARAM) {
                 LOG: sLog
             };
 
-            self.postMessage(oRES);            
+            self.postMessage(oRES);
 
         });
 
