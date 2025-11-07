@@ -682,7 +682,9 @@ function _getPatchUpdateFileWorker(oPARAM){
     let oFileInfo  = oPARAM.FILE_INFO;
 
     // 로그인 정보
-    let oLoginInfo = oPARAM.LOGIN_INFO;     
+    let oLoginInfo = oPARAM.LOGIN_INFO;
+    
+    let oServerSettings = oLoginInfo?.SERVER_SETTINGS || undefined;
 
     // WS Setting Json 정보
     let oSettings = parent.getSettingsInfo();
@@ -705,7 +707,7 @@ function _getPatchUpdateFileWorker(oPARAM){
 
     /**
      * @since   2025-04-24
-     * @version 3.5.5-sp0
+     * @version v3.5.5-0
      * @author  soccerhs
      * 
      * @description
@@ -755,10 +757,26 @@ function _getPatchUpdateFileWorker(oPARAM){
         sLogFolderPath = PATH.join(USERDATA, "logs");
     }
 
+    // Base Url 설정
+    let sBaseUrl = parent.getServerHost();
+
+    /**
+     * @since   2025-11-07 15:06:07
+     * @version vNAN-NAN
+     * @author  soccerhs
+     * @description
+     * 
+     * 서버 설정값에 내부 인터널 주소 설정이 되어있다면 내부 호스트를 BaseUrl로 지정한다.
+     *      
+     */
+    if(oServerSettings && oServerSettings.useInternal === true){
+        sBaseUrl = oLoginInfo.META.HOST;
+    }
+
     // 파워쉘 실행 파라미터
     let _oPARAM = {
         PS_SP_PATH    : sPsPath,
-        BASE_URL      : parent.getServerHost(),
+        BASE_URL      : sBaseUrl,
         SAP_CLIENT    : oLoginInfo.CLIENT,
         SAP_USER      : oLoginInfo.ID,
         SAP_PW        : oLoginInfo.PW,
@@ -816,8 +834,6 @@ function _getGlobalMsg(){
 
 //업데이트 점검 시작 
 exports.checkForUpdates = async function (remote, iscdn = false, versn, splev = 0, oLoginInfo) {
-
-    debugger;
 
     // 글로벌 언어 정보 가져오기
     _getGlobalMsg();

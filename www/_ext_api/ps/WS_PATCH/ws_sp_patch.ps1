@@ -48,17 +48,8 @@ param (
     [string]$ProxyAddress,
     
     [Parameter(Mandatory=$false)]
-    [pscredential]$ProxyCredential,
-
-    # logPath
-    [Parameter(Mandatory=$true)]
-    [string]$logPath
+    [pscredential]$ProxyCredential
 )
-
-#region 2025-11-03 by yoon ---- output Encoding
-# UTF-8 환경 강제 설정
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-#endregion
 
 # Exit codes
 $SUCCESS = 0
@@ -70,33 +61,6 @@ $ERROR_AUTH = 5
 $ERROR_CONNECTION = 6
 $ERROR_GENERAL = 8
 
-#region 📝 2025-11-05 by yoon ---- 로그 관련 
-# $logCommPath = Join-Path "../COMMON/log.ps1"
-# . $logCommPath
-
-# Import-Module "../COMMON/log.psm1"
-Import-Module "$PSScriptRoot/../COMMON/log.psm1"
-
-$logPrefix = "U4A_WS_PATCH";
-
-#endregion 📝 2025-11-05 by yoon ---- 로그 관련 
-
-#region 📝 2025-11-05 by yoon ---- 파일레벨로 로그 남기는 공통 함수
-function Write-Log {
-    param (
-
-        [Parameter(Mandatory = $true)]
-        [string]$Message,   
-
-        [string]$Type = 'I'
-  
-    )
-
-    Write-DailyLog -Message $Message -Prefix $logPrefix -LogDir $logPath -Type $Type
-}
-
-#endregion 📝 2025-11-05 by yoon ---- 파일레벨로 로그 남기는 공통 함수
-
 # Function to parse JSON safely
 function Parse-JsonSafely {
     param([string]$JsonString)
@@ -106,7 +70,6 @@ function Parse-JsonSafely {
     }
     catch {
         Write-Error "Failed to parse JSON input: $($_.Exception.Message)"
-        Write-Log -Type "E" -Message "Failed to parse JSON input: $($_.Exception.Message)"
         exit $ERROR_JSON_PARSE
     }
 }
@@ -170,8 +133,7 @@ function Test-UrlConnectivity {
     
     try {
         Write-Host "Testing connectivity to $Url..."
-        Write-Log -Type "I" -Message "Testing connectivity to $Url..."        
-
+        
         # Create parameter hashtable for Invoke-WebRequest
         $testParams = @{
             Uri = $Url
@@ -196,80 +158,38 @@ function Test-UrlConnectivity {
         # Check status code
         if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 400) {
             Write-Host "Connection successful: Status code $($response.StatusCode)"
-            Write-Log -Type "I" -Message "Connection successful: Status code $($response.StatusCode)"   
             return $true
         } else {
             Write-Host "Connection failed: Status code $($response.StatusCode)"
-            Write-Log -Type "I" -Message "Connection failed: Status code $($response.StatusCode)"
             return $false
         }
     }
     catch [System.Net.WebException] {
         $statusCode = [int]$_.Exception.Response.StatusCode
         Write-Host "Connection failed with status code: $statusCode"
-        Write-Log -Type "I" -Message "Connection failed with status code: $statusCode"
-
+        
         if ($_.Exception.Message -match "The remote name could not be resolved") {
             Write-Error "DNS resolution failed for $Url. Please check the URL and your network connectivity."
-            Write-Log -Type "E" -Message "DNS resolution failed for $Url. Please check the URL and your network connectivity."
         }
         elseif ($_.Exception.Message -match "The operation has timed out") {
             Write-Error "Connection to $Url timed out after $Timeout seconds."
-            Write-Log -Type "E" -Message "Connection to $Url timed out after $Timeout seconds."
         }
         elseif ($statusCode -eq 401 -or $statusCode -eq 403) {
             Write-Error "Authentication or authorization error connecting to $Url."
-            Write-Log -Type "E" -Message "Authentication or authorization error connecting to $Url."
         }
         elseif ($statusCode -eq 404) {
             Write-Error "The requested resource at $Url was not found (404)."
-            Write-Log -Type "E" -Message "The requested resource at $Url was not found (404)."
         }
         else {
             Write-Error "Connection to $Url failed: $($_.Exception.Message)"
-            Write-Log -Type "E" -Message "Connection to $Url failed: $($_.Exception.Message)"
         }
         return $false
     }
     catch {
         Write-Error "Error testing connection to ${Url}: $($_.Exception.Message)"
-        Write-Log -Type "E" -Message "Error testing connection to ${Url}: $($_.Exception.Message)"
         return $false
     }
 }
-
-#region 2025-11-03 by yoon ---- 추가로직
-### 2025-11-03 by yoon
-# Waits up to 30 seconds for a file to appear; returns 1 if found, 0 otherwise.
-function Wait-ForFile {
-    param(
-        [string]$FilePath,
-        [int]$TimeoutSeconds  = 1,
-        [int]$IntervalSeconds = 1
-    )
-    
-    Write-Host "Check exists File. $FilePath"
-    Write-Log -Type "I" -Message "Check exists File. $FilePath"
-    
-    # 파일 존재 여부 체크 카운트
-    $iCheckCnt = 1
-
-    $startTime = Get-Date
-    while ((Get-Date) - $startTime -lt (New-TimeSpan -Seconds $TimeoutSeconds)) {
-        if (Test-Path $FilePath) {
-            return 1
-        }
-
-        Write-Host "No exists File ($iCheckCnt) --- $FilePath"
-        Write-Log -Type "I" -Message "No exists File ($iCheckCnt) --- $FilePath"
-
-        $iCheckCnt++
-
-        Start-Sleep -Seconds $IntervalSeconds
-    }
-    return 0
-}
-#endregion 
 
 # Function to process downloads and combine files
 function Process-Downloads {
@@ -288,16 +208,11 @@ function Process-Downloads {
     Write-Host "Starting download of $TotalCount $Type files..."
     Write-Host "Work Directory: $workDirectory"
     Write-Host "Output File: $outputFileName"
-
-    Write-Log -Type "I" -Message "Starting download of $TotalCount $Type files..."
-    Write-Log -Type "I" -Message "Work Directory: $workDirectory"
-    Write-Log -Type "I" -Message "Output File: $outputFileName"
     
     # 작업 디렉토리가 존재하는지 확인하고 없으면 생성
     if (-not (Test-Path -Path $workDirectory)) {
         New-Item -Path $workDirectory -ItemType Directory -Force | Out-Null
         Write-Host "Created work directory: $workDirectory"
-        Write-Log -Type "I" -Message "Created work directory: $workDirectory"
     }
     
     # 작업 디렉토리로 이동
@@ -322,82 +237,50 @@ function Process-Downloads {
         $reqParms.OutFile = $tempOutputFile
         $reqParms.Body = $body
 
-        #region 2025-11-03 by yoon ---- 수정 로직
-
         try {
-
             $ProgressPreference = 'SilentlyContinue'
             $response = Invoke-WebRequest @reqParms
             $ProgressPreference = 'Continue'
+
+            if (-not (Test-Path $tempOutputFile)) {
+                Write-Error "Failed to download $Type file: $tempOutputFile"
+                Pop-Location
+                exit $ERROR_DOWNLOAD
+            }
+
+            # Check for bad file data
+            $fileContent = Get-Content $tempOutputFile -Raw -ErrorAction SilentlyContinue
+            if ($fileContent -eq "X") {
+                Write-Host "Warning: File contains only 'X' character, which indicates an error"
+            }
+
+            # Check for response error in the downloaded file
+            $retError = Check-retError -FilePath $tempOutputFile
+            if ($retError) {
+                Write-Error $retError
+                Pop-Location
+                exit $ERROR_RESPONSE
+            }
+            
+            Write-Host "CHUNK_DOWN_OK:$i"
+            
         }
         catch {
-            # 예외 객체 저장
-            $errMsg = $_.Exception.Message
-            $errType = $_.Exception.GetType().FullName
-
-            # 콘솔(표준 오류)에 기록
-            Write-Error "Invoke-WebRequest failed: [$errType] $errMsg"
-            Write-Log -Type "E" -Message "Invoke-WebRequest failed: [$errType] $errMsg"
-
-            # 종료 코드로 명시적 전달
-            exit 10
-        }
-        #endregion 2025-11-03 by yoon ---- 수정 로직
-        
-
-        #region TEST ----- Start
-        
-        # $tempOutputFile = "c:\aaa.txt";
-
-        # Write-Host "[TEST] ------ tempOutputFile $tempOutputFile"
-
-        #endregion TEST ---- END        
-
-        #region 2025-11-03 by yoon ---- 추가로직
-        # 실제 파일이 있는지 확인
-        $isfileExixts = Wait-ForFile -FilePath $tempOutputFile -TimeoutSeconds 30
-        if ($isfileExixts -eq 1) {
-            Write-Host "Success: File exists. $Type file: $tempOutputFile"
-            Write-Log -Type "I" -Message "Success: File exists. $Type file: $tempOutputFile"
-        } else {         
-            Write-Error "Error: File not found. $Type file: $tempOutputFile"
-            Write-Log -Type "E" -Message "Error: File not found. $Type file: $tempOutputFile"
-            exit 11
-        }
-        #endregion 2025-11-03 by yoon ---- 추가로직
-
-        # Check for bad file data
-        $fileContent = Get-Content $tempOutputFile -Raw -ErrorAction SilentlyContinue
-        if ($fileContent -eq "X") {
-            Write-Host "Warning: File contains only 'X' character, which indicates an error"
-            Write-Log -Type "I" -Message "Warning: File contains only 'X' character, which indicates an error"
-        }
-
-        # Check for response error in the downloaded file
-        $retError = Check-retError -FilePath $tempOutputFile
-        if ($retError) {
-            Write-Error $retError
-            Write-Log -Type "E" -Message $retError
+            Write-Error "Failed to download $Type file $tempOutputFile : $($_.Exception.Message)"
             Pop-Location
-            exit $ERROR_RESPONSE
+            exit $ERROR_DOWNLOAD
         }
-        
-        Write-Host "CHUNK_DOWN_OK:$i"
-        Write-Log -Type "I" -Message "CHUNK_DOWN_OK_GOOD:$i"
     }
     
     Write-Progress -Activity "Downloading $Type Files" -Completed
     
     # Combine files
     Write-Host "Combining $Type files into $OutputPath..."
-    Write-Log -Type "I" -Message "Combining $Type files into $OutputPath..."
-
     $copyCommand = "copy /b $filePattern `"$outputFileName`" >nul 2>&1"
     
     $result = cmd /c $copyCommand
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Failed to combine $Type files. Exit code: $LASTEXITCODE"
-        Write-Log -Type "E" -Message "Failed to combine $Type files. Exit code: $LASTEXITCODE"
         Pop-Location
         exit $ERROR_FILE_COMBINE
     }
@@ -405,16 +288,11 @@ function Process-Downloads {
     # Verify and cleanup
     if (Test-Path $outputFileName) {
         Write-Host "Successfully created $outputFileName in $workDirectory"
-        Write-Log -Type "I" -Message "Successfully created $outputFileName in $workDirectory"
-        
         Remove-Item -Path $filePattern -Force
-
         Write-Host "Cleaned up temporary $Type .wsx files"
-        Write-Log -Type "I" -Message "Cleaned up temporary $Type .wsx files"
     }
     else {
         Write-Error "Failed to create final $Type file"
-        Write-Log -Type "E" -Message "Failed to create final $Type file"
         Pop-Location
         exit $ERROR_FILE_COMBINE
     }
@@ -431,14 +309,12 @@ try {
     # Verify JSON fields and validate counts
     if ($null -eq $config.TOTSP -or $null -eq $config.TOTND) {
         Write-Error "Missing required TOTSP or TOTND field in JSON input"
-        Write-Log -Type "E" -Message "Missing required TOTSP or TOTND field in JSON input"
         exit $ERROR_MISSING_FIELD
     }
     
     # Check if both counts are 0
     if ($config.TOTSP -eq 0 -and $config.TOTND -eq 0) {
         Write-Error "Both TOTSP and TOTND counts cannot be 0"
-        Write-Log -Type "E" -Message "Both TOTSP and TOTND counts cannot be 0"
         exit $ERROR_MISSING_FIELD
     }
     
@@ -503,7 +379,6 @@ try {
     
     if (-not $isConnected) {
         Write-Error "Cannot connect to server at $baseServer. Please check your network connection and server status."
-        Write-Log -Type "E" -Message "Cannot connect to server at $baseServer. Please check your network connection and server status."
         exit $ERROR_CONNECTION
     }
 
@@ -527,6 +402,5 @@ try {
 }
 catch {
     Write-Error "An error occurred: $($_.Exception.Message)"
-    Write-Log -Type "E" -Message "An error occurred: $($_.Exception.Message)"
     exit $ERROR_GENERAL
 }

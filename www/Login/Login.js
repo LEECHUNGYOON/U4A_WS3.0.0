@@ -958,7 +958,8 @@ let oAPP = (function () {
             ],
             T_LANGU: [],                  // Workspace Language List
             REMEMBER: bIsRemember,          // Remember Flag
-            IDSUGG: []                      // SAP ID Suggest Data
+            IDSUGG: [],                      // SAP ID Suggest Data
+            SERVER_SETTINGS: oServerInfo.SETTINGS // 서버 설정 정보
         };        
 
         
@@ -1179,6 +1180,8 @@ let oAPP = (function () {
 
                 oResult = JSON.parse(xhr.response);
 
+                oResult.SERVER_SETTINGS = oLogInData.SERVER_SETTINGS;
+
             } catch (error) {
 
                 // 콘솔용 오류 메시지
@@ -1369,7 +1372,7 @@ let oAPP = (function () {
                 // parent.setDomBusy('');
 
                 //#region TEST ------ Start
-                debugger;
+                debugger;                
 
                 // 개발자 권한 성공시
                 oAPP.fn.fnCheckAuthSuccess(oResult, oAuthInfo);
@@ -2037,11 +2040,14 @@ let oAPP = (function () {
             let sVersion = REMOTE.app.getVersion();
 
             // 서버에서 받은 로그인 정보
-            let oLoginInfo = oPARAM.oResult;            
+            let oLoginInfo = oPARAM.oResult; 
+            if(!REMOTE.app.isPackaged){
+                
+                //#region TEST --------- Start
+                sVersion = '3.5.6';
+                //#endregion TEST ------ End
 
-            //#region TEST --------- Start
-            sVersion = '3.5.6';
-            //#endregion TEST ------ End
+            }            
 
             // 자동 업데이트 체크
             autoUpdaterSAP.checkForUpdates(sVersion, oServerInfo, oLoginInfo);
@@ -3303,12 +3309,14 @@ let oAPP = (function () {
             oWSLoginInfo = sap.ui.getCore().getModel().getProperty("/LOGIN");
 
         // 로그인 정보에 서버에서 구한 메타 정보 추가
-        oWSLoginInfo.META = oParam.oLoginInfo.META;
+        oWSLoginInfo.META = oParam.oLoginInfo.META;        
 
-        //#region TEST --------- Start
-        sAppVer = 'v3.5.6';
-        sPatch_level = 0;
-        //#endregion TEST ------ End
+        if(!REMOTE.app.isPackaged){            
+            //#region TEST  patch update --------- Start
+            sAppVer = 'v3.5.6';
+            sPatch_level = 0;
+            //#endregion TEST patch update ------ End
+        }
 
         spAutoUpdater.checkForUpdates(REMOTE, bIsCDN, sAppVer, sPatch_level, oWSLoginInfo);
 
