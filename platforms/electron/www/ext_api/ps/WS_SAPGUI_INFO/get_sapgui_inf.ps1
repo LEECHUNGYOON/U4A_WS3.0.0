@@ -1,4 +1,4 @@
-# Exit code legend:
+﻿# Exit code legend:
 # 0 - Version starts with 800 and 64bit
 # 1 - Version starts with 800 and 32bit
 # 2 - Version starts with 770 and 64bit

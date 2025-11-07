@@ -1,4 +1,4 @@
-﻿## Target Host Connection Check Script
+## Target Host Connection Check Script
 # HowTo : host_conn_chk.ps1 -BaseUrl '[Server Host Url]:[Service Port]' -Timeout [**기본값 10]
 
 param (

@@ -757,8 +757,6 @@ function _getPatchUpdateFileWorker(oPARAM){
         sLogFolderPath = PATH.join(USERDATA, "logs");
     }
 
-    debugger;
-    
     // Base Url 설정
     let sBaseUrl = parent.getServerHost();
 

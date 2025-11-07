@@ -141,7 +141,8 @@ function _getSuppPackDataFromPowerShell(oPARAM) {
             "-sapPassword", oPARAM.SAP_PW,
             "-spPath", oPARAM.SP_DOWN_PATH,
             "-ndPath", oPARAM.ND_DOWN_PATH,
-            "-JsonInput", JSON.stringify(oPARAM.FILE_INFO)
+            "-JsonInput", JSON.stringify(oPARAM.FILE_INFO),
+            "-logPath", oPARAM.LOG_FLD_PATH
         ]);
 
         // 실행 결과 출력

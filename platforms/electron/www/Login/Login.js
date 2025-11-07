@@ -3311,7 +3311,7 @@ let oAPP = (function () {
         // 로그인 정보에 서버에서 구한 메타 정보 추가
         oWSLoginInfo.META = oParam.oLoginInfo.META;        
 
-        if(!REMOTE.app.isPackaged){        
+        if(!REMOTE.app.isPackaged){            
             //#region TEST  patch update --------- Start
             sAppVer = 'v3.5.6';
             sPatch_level = 0;

@@ -1,4 +1,4 @@
-## SAP U4A Workspace Major Version Update Download Script
+﻿## SAP U4A Workspace Major Version Update Download Script
 # HowTo : ws_major_update.ps1 -BaseUrl '[Server Host Url]:[Service Port]' -sapClient '[클라이언트]' -sapUser '[User]' -sapPassword '[비번]' -ePath '[설치파일 저장경로]' -JsonInput '{"VERSN":"v3.5.0","UPDT_FNAME":"U4A-Workspace-Setup-3.5.0.exe","TOT_CHUNK":117}' -Timeout [**기본값 300] -UserAgent '[**옵션]' -UseBasicParsing '[**옵션]' -MaximumRedirection [**기본값 5] -DisableKeepAlive [** 기본값 false] -SkipCertificateCheck [** 기본값 false] -ProxyAddress '[**옵션]' -ProxyCredential '[**옵션]'
 
 param (

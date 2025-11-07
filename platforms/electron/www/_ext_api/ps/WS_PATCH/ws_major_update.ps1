@@ -1,5 +1,5 @@
-﻿## SAP U4A Workspace Help Document Download Script
-# HowTo : ws_doc.ps1 -BaseUrl '[Server Host Url]:[Service Port]' -sapClient '[클라이언트]' -sapUser '[User]' -sapPassword '[비번]' -dPath '[문서 저장경로]' -JsonInput '{"LANGU":"3","RINDX":3,"VERSN":"1.03","SPCNT":37,"RFNAM":"U4A_Document.chm","LOCFN":"U4A_WS30_DOCU_V1.03.chm","FSIZE":36188716,"BSPSZ":0,"DUMMY":"","ISACT":"X","CRDAT":"20250210","CRTIM":"225247","CRNAM":"U4AIDE","RETCD":"","MSGNR":"","LANG_O":"KO","BLOBCNT":37}' -Timeout [**기본값 300] -UserAgent '[**옵션]' -UseBasicParsing '[**옵션]' -MaximumRedirection [**기본값 5] -DisableKeepAlive [** 기본값 false] -SkipCertificateCheck [** 기본값 false] -ProxyAddress '[**옵션]' -ProxyCredential '[**옵션]'
+## SAP U4A Workspace Major Version Update Download Script
+# HowTo : ws_major_update.ps1 -BaseUrl '[Server Host Url]:[Service Port]' -sapClient '[클라이언트]' -sapUser '[User]' -sapPassword '[비번]' -ePath '[설치파일 저장경로]' -JsonInput '{"VERSN":"v3.5.0","UPDT_FNAME":"U4A-Workspace-Setup-3.5.0.exe","TOT_CHUNK":117}' -Timeout [**기본값 300] -UserAgent '[**옵션]' -UseBasicParsing '[**옵션]' -MaximumRedirection [**기본값 5] -DisableKeepAlive [** 기본값 false] -SkipCertificateCheck [** 기본값 false] -ProxyAddress '[**옵션]' -ProxyCredential '[**옵션]'
 
 param (
     [Parameter(Mandatory=$true)]
@@ -15,11 +15,11 @@ param (
     [string]$sapPassword,
 
     [Parameter(Mandatory=$true)]
-    [string]$dPath,
+    [string]$ePath,
 
     [Parameter(Mandatory=$true)]
     [string]$JsonInput,
-    
+
     # Optional Request Parameters
     [Parameter(Mandatory=$false)]
     [int]$Timeout = 300,
@@ -32,9 +32,6 @@ param (
     
     [Parameter(Mandatory=$false)]
     [int]$MaximumRedirection = 5,
-    
-#    [Parameter(Mandatory=$false)]
-#    [Microsoft.PowerShell.Commands.WebRequestSession]$WebSession,
     
     [Parameter(Mandatory=$false)]
     [switch]$DisableKeepAlive,
@@ -88,7 +85,7 @@ function Show-DownloadProgress {
         [int]$Total
     )
     $percentComplete = [math]::Round(($Current / $Total) * 100)
-    Write-Progress -Activity "Downloading Patch Files" -Status "$Current of $Total files ($percentComplete%)" -PercentComplete $percentComplete
+    Write-Progress -Activity "Downloading Major Update Files" -Status "$Current of $Total files ($percentComplete%)" -PercentComplete $percentComplete
 }
 
 # Function to check error in response
@@ -99,12 +96,17 @@ function Check-retError {
     
     try {
         $content = Get-Content $FilePath -Raw -Encoding UTF8
+		
+		# Check for >>NULL<< in non-JSON content first
+        if ($content -match '>>NULL<<') {
+            return "Error: NULL content detected in file"
+        }
+		
         if ($content -match '^\s*\{.*\}\s*$') {
             $responseJson = $content | ConvertFrom-Json
             if ($responseJson.TYPE -eq "E" -and $responseJson.ACTCD -eq "999") {
                 return "Authentication Error: $($responseJson.MSG)"
-            }
-            elseif ($responseJson.RETCD -eq "E") {
+            }elseif ($responseJson.RETCD -eq "E") {
                 return "An Response Error Code: $($responseJson.MSGNR)"
             }
         }
@@ -189,40 +191,52 @@ try {
     # 1. Parse the JSON input
     $config = Parse-JsonSafely -JsonString $JsonInput
     
-    # Verify required JSON field exists(Language Key)
-    if ($null -eq $config.LANG_O) {
-        Write-Error "Missing required \"LANG_O\" field in JSON input"
+    # Verify required JSON field exists(version)
+    if ($null -eq $config.VERSN) {
+        Write-Error "Missing required \"VERSN\" field in JSON input"
         exit $ERROR_MISSING_FIELD
     }
 
-    # Verify required JSON field exists(Rel. Index)
-    if ($null -eq $config.RINDX) {
-        Write-Error "Missing required \"RINDX\" field in JSON input"
+    # Verify required JSON field exists(Update Filename)
+    if ($null -eq $config.UPDT_FNAME) {
+        Write-Error "Missing required \"UPDT_FNAME\" field in JSON input"
         exit $ERROR_MISSING_FIELD
     }
 
-    # Verify required JSON field exists(BLOB Request Count)
-    if ($null -eq $config.BLOBCNT) {
-        Write-Error "Missing required \"BLOBCNT\" field in JSON input"
+    # Verify required JSON field exists(BLOB Chunk Count)
+    if ($null -eq $config.TOT_CHUNK) {
+        Write-Error "Missing required \"TOT_CHUNK\" field in JSON input"
         exit $ERROR_MISSING_FIELD
     }
 
-    # Verify required JSON field exists(Local File Name)
-    if ($null -eq $config.LOCFN) {
-        Write-Error "Missing required \"LOCFN\" field in JSON input"
-        exit $ERROR_MISSING_FIELD
+    # Ensure the ePath exists
+    if (-not (Test-Path -Path $ePath -PathType Container)) {
+        try {
+            New-Item -Path $ePath -ItemType Directory -Force | Out-Null
+            Write-Host "Created directory: $ePath"
+        }
+        catch {
+            Write-Error "Failed to create directory $ePath : $($_.Exception.Message)"
+            exit $ERROR_GENERAL
+        }
     }
 
-    # 2. Process downloads based on BLOBCNT count
-    $baseUrl = $BaseUrl + "/zu4a_wbc/u4a_ipcmain/u4a_help_doc_ws30"
+    # Store the original location to restore later
+    $originalLocation = Get-Location
+    
+    # Change to the work directory (ePath)
+    Set-Location -Path $ePath
+    Write-Host "Working directory set to: $ePath"
+   
+    # 2. Process downloads based on TOT_CHUNK count
+    $baseUrl = $BaseUrl + "/zu4a_wbc/u4a_ipcmain/ws_update_file_get"
     $credentials = @{
         'sap-client' = $sapClient
         'sap-user' = $sapUser
         'sap-password' = $sapPassword
-        'PRCCD' = 'ITEM'
-        'LANGU_OUT' = $config.LANG_O
+        'NEW_UPRC' = 'X'
     }
-    
+
     # Build request parameters - will be used for both testing and actual requests
     $requestParams = @{
         Uri = $baseUrl
@@ -243,10 +257,6 @@ try {
     if ($PSBoundParameters.ContainsKey('MaximumRedirection')) {
         $requestParams.Add('MaximumRedirection', $MaximumRedirection)
     }
-    
-#   if ($PSBoundParameters.ContainsKey('WebSession')) {
-#       $requestParams.Add('WebSession', $WebSession)
-#   }
     
     if ($DisableKeepAlive) {
         $requestParams.Add('DisableKeepAlive', $true)
@@ -275,35 +285,27 @@ try {
     
     if (-not $isConnected) {
         Write-Error "Cannot connect to server at $baseServer. Please check your network connection and server status."
+        # Restore original location before exiting
+        Set-Location -Path $originalLocation
         exit $ERROR_CONNECTION
     }
-    
-    Write-Host "Starting download of $($config.LOCFN) files..."
-    
-    # "[언어키] 키워드가 없는지 확인하고 없으면 .chm 앞에 _[언어키] 추가
-    $lfnam = $config.LOCFN
-#   if ($lfnam -notmatch $config.LANG_O) {
-#       $fext = "_" + $config.LANG_O + ".chm"
-#       $lfnam = $lfnam -replace '\.chm$', $fext
-#       Write-Host "Converted filename: $lfnam"
-#   }
 
-    # Clean up any existing .dxx files
-    Remove-Item -Path "*.dxx" -ErrorAction SilentlyContinue
+    Write-Host "Starting download of $($config.UPDT_FNAME) files..."
+
+    # Clean up any existing .exx files in the work directory
+    Remove-Item -Path "$ePath\*.exx" -ErrorAction SilentlyContinue
+    
+    $lfnam = $config.UPDT_FNAME
     
     # 3. Download files using Invoke-WebRequest with progress bar    
-    $relNumber = Format-NumberWithLeadingZeros -Number $config.RINDX -Length 10
-
-    # Using previously created requestParams for all requests
-    
-    for ($i = 1; $i -le $config.BLOBCNT; $i++) {
-        $posNumber = Format-NumberWithLeadingZeros -Number $i -Length 4
-        $outputFile = "$relNumber" + "$posNumber.dxx"
+    for ($i = 1; $i -le $config.TOT_CHUNK; $i++) {
+        $posNumber = Format-NumberWithLeadingZeros -Number $i -Length 10
+        $outputFile = Join-Path -Path $ePath -ChildPath "$posNumber.exx"
         
-        Show-DownloadProgress -Current $i -Total $config.BLOBCNT
+        Show-DownloadProgress -Current $i -Total $config.TOT_CHUNK
         
         $body = $credentials.Clone()
-        $body['RELKY'] = "$relNumber" + "$posNumber"
+        $body['relky'] = "$posNumber"
         
         try {
             # Update the OutFile for this iteration
@@ -311,12 +313,14 @@ try {
             $requestParams.Body = $body
             
             # Use Invoke-WebRequest in silent mode
-            $ProgressPreference = 'SilentlyContinue'
+            $ProgressPreference = 'SilentlyContinue'            
             $response = Invoke-WebRequest @requestParams
             $ProgressPreference = 'Continue'
             
             if (-not (Test-Path $outputFile)) {
                 Write-Error "Failed to download file: $outputFile"
+                # Restore original location before exiting
+                Set-Location -Path $originalLocation
                 exit $ERROR_DOWNLOAD
             }
 
@@ -324,54 +328,81 @@ try {
             $retError = Check-retError -FilePath $outputFile
             if ($retError) {
                 Write-Error $retError
+                # Restore original location before exiting
+                Set-Location -Path $originalLocation
                 exit $ERROR_RESPONSE
             }
             
             Write-Host "CHUNK_DOWN_OK:$i"
+            
         }
         catch {
             Write-Error "Failed to download file $outputFile : $($_.Exception.Message)"
+            # Restore original location before exiting
+            Set-Location -Path $originalLocation
             exit $ERROR_DOWNLOAD
         }
     }
     
     # Clear the progress bar
-    Write-Progress -Activity "Downloading Patch Files" -Completed
+    Write-Progress -Activity "Downloading Major Version Update Files" -Completed
     
-    # 4. Combine all .wsx files into final executable
+    # 4. Combine all .exx files into final executable
     Write-Host "Combining files into $($lfnam) ..."
 
-    $chk = $dPath.EndsWith("\")
-    if ($chk -ne "True") {
-        $outputDoc = $dPath + '\' + $lfnam
+    # Determine the output file path
+    if ($ePath -notmatch '\.exe$') {
+        # If ePath doesn't end with .exe, combine with UPDT_FNAME
+        $outputEXE = Join-Path -Path $ePath -ChildPath $config.UPDT_FNAME
     } else {
-        $outputDoc = $dPath + $lfnam
+        # If ePath already ends with .exe, use it as is
+        $outputEXE = $ePath
     }
 
-    # Use cmd.exe to execute the copy command
-    $copyCommand = "copy /b *.dxx `"$outputDoc`" >nul 2>&1"
-
+    # Get all .exx files in the work directory and combine them
+    $exxFiles = Get-ChildItem -Path "$ePath\*.exx" | Sort-Object Name
+    if ($exxFiles.Count -ne $config.TOT_CHUNK) {
+        Write-Error "Expected $($config.TOT_CHUNK) .exx files but found $($exxFiles.Count)"
+        # Restore original location before exiting
+        Set-Location -Path $originalLocation
+        exit $ERROR_FILE_COMBINE
+    }
+    
+    # Use cmd.exe to execute the copy command in the work directory
+    $copyCommand = "copy /b *.exx `"$outputEXE`" >nul 2>&1"
     $result = cmd /c $copyCommand
+    
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Failed to combine files. Exit code: $LASTEXITCODE"
+        # Restore original location before exiting
+        Set-Location -Path $originalLocation
         exit $ERROR_FILE_COMBINE
     }
     
     # Verify the final file was created
-    if (Test-Path $outputDoc) {
-        Write-Host "Successfully created $outputDoc"
+    if (Test-Path $outputEXE) {
+        Write-Host "Successfully created $outputEXE"
         
-        # Clean up .dxx files
-        Remove-Item -Path "*.dxx" -Force
-        Write-Host "Cleaned up temporary .dxx files"
+        # Clean up .exx files
+        Remove-Item -Path "$ePath\*.exx" -Force
+        Write-Host "Cleaned up temporary .exx files"
+        
+        # Restore the original location
+        Set-Location -Path $originalLocation
         exit $SUCCESS
     }
     else {
         Write-Error "Failed to create final executable"
+        # Restore original location before exiting
+        Set-Location -Path $originalLocation
         exit $ERROR_FILE_COMBINE
     }
 }
 catch {
     Write-Error "An error occurred: $($_.Exception.Message)"
+    # Restore original location if changed
+    if ((Get-Location).Path -ne $originalLocation.Path) {
+        Set-Location -Path $originalLocation
+    }
     exit $ERROR_GENERAL
 }
