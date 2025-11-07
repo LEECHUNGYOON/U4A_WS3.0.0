@@ -2044,13 +2044,16 @@ let oAPP = (function () {
             if(!REMOTE.app.isPackaged){
                 
                 //#region TEST --------- Start
-                sVersion = '3.5.6';
+                sVersion = '3.5.5';
                 //#endregion TEST ------ End
 
-            }            
+            }
+
+            // 로그인 정보에 서버에서 구한 메타 정보 추가
+            oServerInfo.LOGIN.META = oLoginInfo.META;            
 
             // 자동 업데이트 체크
-            autoUpdaterSAP.checkForUpdates(sVersion, oServerInfo, oLoginInfo);
+            autoUpdaterSAP.checkForUpdates(sVersion, oServerInfo);
 
         });
 

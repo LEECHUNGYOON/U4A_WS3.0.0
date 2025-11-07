@@ -16,7 +16,8 @@ const TY_RES = {
 const PRC = {
     DOWN_LOADING: "download-progress-sap",  // 다운로드 중
     DOWN_FINISH : "update-downloaded-sap",  // 다운로드 완료
-    UPDATE_ERROR: "update-error-sap"        // 다운로드 오류
+    UPDATE_ERROR: "update-error-sap",       // 다운로드 오류    
+    UPDATE_ERROR_CONSOLE  : "update-error-console" // 다운로드 중 콘솔오류 대상    
 };
 
 /**
@@ -104,7 +105,7 @@ function _majorVersionDownPowerShell(oPARAM){
 
         var oRES = JSON.parse(JSON.stringify(TY_RES)); 
 
-        oRES.PRCCD = PRC.DOWN_LOADING; // // 다운로드 중
+        oRES.PRCCD = PRC.DOWN_LOADING; // 다운로드 중
         oRES.PARAM = {
             TOTAL: iTotal,
             COUNT: iCount
@@ -121,7 +122,8 @@ function _majorVersionDownPowerShell(oPARAM){
             "-sapUser", oPARAM.SAP_USER,
             "-sapPassword", oPARAM.SAP_PW,
             "-ePath", oPARAM.DOWN_PATH,               
-            "-JsonInput", JSON.stringify(oPARAM.FILE_INFO)
+            "-JsonInput", JSON.stringify(oPARAM.FILE_INFO),
+            "-logPath", oPARAM.LOG_FLD_PATH
         ]);
 
         // 실행 결과 출력
@@ -133,8 +135,16 @@ function _majorVersionDownPowerShell(oPARAM){
                 return;
             }
 
-            // 다운로드 수행 횟수 증가
-            iCount++;
+            let sData = data?.toString();
+
+            //#region - ws3.0 에 추가 및 수정 해야할 항목
+            if(sData.includes("CHUNK_DOWN_OK") === true){
+
+                // 다운로드 수행 횟수 증가
+                iCount++;
+            
+            }
+            //#endregion
 
             let sLog = `Major 업데이트 파일 다운로드 중..: ${data.toString()}`;
             
@@ -158,15 +168,16 @@ function _majorVersionDownPowerShell(oPARAM){
       
             let sLog = `Major 업데이트 다운로드 중 에러: ${data.toString()}`;
             
-            console.error(sLog);            
-            console.trace();
+            //#region - ws3.0 에 추가 및 수정 해야할 항목
+            var oRES = JSON.parse(JSON.stringify(TY_RES)); 
 
-            if (!ps.killed) {              
-                ps.kill();
-                console.log("kill-1");
-            }
+            oRES.PRCCD = PRC.UPDATE_ERROR_CONSOLE; // 다운로드 중 콘솔오류 대상
+            oRES.PARAM = {
+                LOG: sLog
+            };
 
-            return resolve({ SUBRC: 999, LOG: sLog });
+            self.postMessage(oRES);
+            //#endregion
 
         });
 
@@ -175,13 +186,11 @@ function _majorVersionDownPowerShell(oPARAM){
 
             if (!ps.killed) {              
                 ps.kill();
-                console.log("kill-2");
             }
 
             return resolve({ SUBRC: code });
 
         });
-
 
     });
 

@@ -69,9 +69,9 @@ $ERROR_FILE_COMBINE = 4
 $ERROR_AUTH = 5
 $ERROR_CONNECTION = 6
 $ERROR_GENERAL = 8
-$ERROR_RESPONSE = 9;
-$ERROR_INVOKE_WEB_REQ = 10;
-$ERROR_NO_FILE_EXIST = 11;
+$ERROR_RESPONSE = 9
+$ERROR_INVOKE_WEB_REQ = 10
+$ERROR_NO_FILE_EXIST = 11
 
 #region 📝 2025-11-05 by yoon ---- 로그 관련 Import
 Import-Module "$PSScriptRoot/../COMMON/log.psm1"
@@ -105,9 +105,7 @@ function Parse-JsonSafely {
     }
     catch {
         Write-Error "Failed to parse JSON input: $($_.Exception.Message)"
-
-        $errMsg = $_ | Out-String
-        Write-Log -Type "E" -Message "Failed to parse JSON input: $errMsg"
+        Write-Log -Type "E" -Message "Failed to parse JSON input: $($_ | Out-String)"
 
         exit $ERROR_JSON_PARSE
     }
@@ -157,10 +155,8 @@ function Check-retError {
         return $null
     }
     catch {
-        Write-Debug "Error checking authentication: $($_.Exception.Message)"
-        
-        $errMsg = $_ | Out-String
-        Write-Log -Type "E" -Message "Error checking authentication: $($errMsg)"
+        Write-Debug "Error checking authentication: $($_.Exception.Message)"     
+        Write-Log -Type "E" -Message "Error checking authentication: $($_ | Out-String)"
 
         return $null
     }
@@ -218,28 +214,34 @@ function Test-UrlConnectivity {
         if ($_.Exception.Message -match "The remote name could not be resolved") {
             Write-Error "DNS resolution failed for $Url. Please check the URL and your network connectivity."
             Write-Log -Type "E" -Message "DNS resolution failed for $Url. Please check the URL and your network connectivity."
+            Write-Log -Type "E" -Message  ($_ | Out-String)
         }
         elseif ($_.Exception.Message -match "The operation has timed out") {
             Write-Error "Connection to $Url timed out after $Timeout seconds."
             Write-Log -Type "E" -Message "Connection to $Url timed out after $Timeout seconds."
+            Write-Log -Type "E" -Message  ($_ | Out-String)
         }
         elseif ($statusCode -eq 401 -or $statusCode -eq 403) {
             Write-Error "Authentication or authorization error connecting to $Url."
             Write-Log -Type "E" -Message "Authentication or authorization error connecting to $Url."
+            Write-Log -Type "E" -Message  ($_ | Out-String)
         }
         elseif ($statusCode -eq 404) {
             Write-Error "The requested resource at $Url was not found (404)."
             Write-Log -Type "E" -Message "The requested resource at $Url was not found (404)."
+            Write-Log -Type "E" -Message  ($_ | Out-String)
         }
         else {
             Write-Error "Connection to $Url failed: $($_.Exception.Message)"
             Write-Log -Type "E" -Message "Connection to $Url failed: $($_.Exception.Message)"
+            Write-Log -Type "E" -Message  ($_ | Out-String)
         }
         return $false
     }
     catch {
         Write-Error "Error testing connection to ${Url}: $($_.Exception.Message)"
         Write-Log -Type "E" -Message "Error testing connection to ${Url}: $($_.Exception.Message)"
+        Write-Log -Type "E" -Message  ($_ | Out-String)
         return $false
     }
 }
@@ -336,7 +338,6 @@ function Process-Downloads {
             $ProgressPreference = 'Continue'
         }
         catch {
-            # 예외 객체 저장
 
             $errMsg = $_ | Out-String            
             $errType = $_.Exception.GetType().FullName
@@ -525,6 +526,6 @@ try {
 }
 catch {
     Write-Error "An error occurred: $($_.Exception.Message)"
-    Write-Log -Type "E" -Message "An error occurred: $($_.Exception.Message)"
+    Write-Log -Type "E" -Message  "An error occurred: $($_ | Out-String)"
     exit $ERROR_GENERAL
 }

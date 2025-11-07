@@ -48,6 +48,11 @@ const
     REMOTE = parent.REMOTE,
     APP = REMOTE.app,
     FS = parent.FS,
+
+    //#region ws3.0 추가해야할 항목
+    USERDATA = APP.getPath("userData"),
+    //#endregion
+
     APPPATH = APP.getAppPath();
 
 let __updateFilename = "",
@@ -203,6 +208,21 @@ function _getUpdateFileWorker(oPARAM) {
 
                 return;
 
+            //#region ws3.0 에 추가해야할 항목
+            case "update-error-console": // 콘솔 오류 대상
+
+                // 로그 정보가 있을 경우에는 콘솔 오류에 로그 정보를 담는다
+                var sLog = "";
+                var _oPARAM = oIF_DATA?.PARAM || undefined;
+                if(_oPARAM?.LOG){
+                    sLog = _oPARAM.LOG;
+                }  
+
+                console.error(sLog);
+
+                return;
+            //#endregion      
+
             case "update-error-sap": //오류
 
                 try {
@@ -323,15 +343,43 @@ function _getUpdateFileWorker(oPARAM) {
         return;
     } 
 
+    //#region ws3.0 에 추가해야할 항목
+    // 로그 저장 폴더 경로
+    let sLogFolderPath = PATH.join(USERDATA, "logs", "u4a_ws_major");
+    
+    if(APP.isPackaged){
+        sLogFolderPath = PATH.join(USERDATA, "logs");
+    }
+    //#endregion
+
+    let oServerSettings = oLoginInfo?.SERVER_SETTINGS || undefined;
+
+    // Base Url 설정
+    let sBaseUrl = parent.getServerHost();
+
+    /**
+     * @since   2025-11-07 15:06:07
+     * @version vNAN-NAN
+     * @author  soccerhs
+     * @description
+     * 
+     * 서버 설정값에 내부 인터널 주소 설정이 되어있다면 내부 호스트를 BaseUrl로 지정한다.
+     *      
+     */
+    if(oServerSettings && oServerSettings.useInternal === true){
+        sBaseUrl = oLoginInfo.META.HOST;
+    }
+
     // 파워쉘 실행 파라미터
     let _oPARAM = {
         PS_PATH      : sPsPath,
-        BASE_URL     : parent.getServerHost(),
+        BASE_URL     : sBaseUrl,
         SAP_CLIENT   : oLoginInfo.CLIENT,
         SAP_USER     : oLoginInfo.ID,
         SAP_PW       : oLoginInfo.PW,
         DOWN_PATH    : PATH.join(sInstFileDownPath, ".."),
-        FILE_INFO    : oWsVerInfo
+        FILE_INFO    : oWsVerInfo,
+        LOG_FLD_PATH : sLogFolderPath
     };
 
     // 공통 IF 구조
@@ -371,7 +419,7 @@ exports.autoUpdaterSAP = {
     },
 
     // == 점검 수행 ==
-    checkForUpdates: function (appVer, oServerInfo, oLoginInfo) {
+    checkForUpdates: function (appVer, oServerInfo) {
         
         //업데이트 확인 이벤트 수행 
         __fireEvent(document, 'checking-for-update-sap', {
